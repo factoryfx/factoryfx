@@ -59,7 +59,7 @@ public abstract class FactoryBase<E extends LiveObject, T extends FactoryBase<E,
                         if (attribute instanceof ReferenceAttribute<?>) {
                             visitor.reference((ReferenceAttribute<?>) attribute);
                         }  else {
-                            visitor.value((ReferenceAttribute<?>) attribute);
+                            visitor.value(attribute);
                         }
                     }
 
@@ -295,7 +295,7 @@ public abstract class FactoryBase<E extends LiveObject, T extends FactoryBase<E,
         loopProtector.enter();
         try {
             Optional<E> previousLiveObject = previousLiveObjectProvider.get(this);
-            E liveObject = createImp(previousLiveObject);
+            E liveObject = createImp(previousLiveObject,previousLiveObjectProvider);
             createdLiveObjects=liveObject;
             return liveObject;
         } finally {
@@ -303,7 +303,7 @@ public abstract class FactoryBase<E extends LiveObject, T extends FactoryBase<E,
         }
     }
 
-    protected abstract E createImp(Optional<E> closedPreviousLiveObject);
+    protected abstract E createImp(Optional<E> previousLiveObject, PreviousLiveObjectProvider previousLiveObjectProvider);
 
     public void collectLiveObjects(Map<String,LiveObject> liveObjects){
         loopProtector.enter();
@@ -316,7 +316,10 @@ public abstract class FactoryBase<E extends LiveObject, T extends FactoryBase<E,
 
                 @Override
                 public void reference(ReferenceAttribute<?> reference) {
-                    reference.get().collectLiveObjects(liveObjects);
+                    FactoryBase<LiveObject, ?> factory = (FactoryBase<LiveObject, ?>) reference.get();
+                    if (factory!=null){
+                        factory.collectLiveObjects(liveObjects);
+                    }
                 }
 
                 @Override

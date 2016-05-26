@@ -3,10 +3,10 @@ package de.factoryfx.factory.testfactories;
 import de.factoryfx.factory.LiveObject;
 
 public class ExampleLiveObjectB implements LiveObject{
-    private final ExampleLiveObjectA exampleLiveObjectA;
+    private final ExampleLiveObjectC exampleLiveObjectC;
 
-    public ExampleLiveObjectB(ExampleLiveObjectA exampleLiveObjectA) {
-        this.exampleLiveObjectA = exampleLiveObjectA;
+    public ExampleLiveObjectB(ExampleLiveObjectC exampleLiveObjectC) {
+        this.exampleLiveObjectC = exampleLiveObjectC;
     }
 
     @Override

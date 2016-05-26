@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Optional;
 
 import de.factoryfx.factory.FactoryBase;
+import de.factoryfx.factory.PreviousLiveObjectProvider;
 import de.factoryfx.factory.jackson.ObjectMapperBuilder;
 import de.factoryfx.factory.testfactories.ExampleFactoryA;
 import de.factoryfx.factory.testfactories.ExampleLiveObjectA;
@@ -16,7 +17,7 @@ public class MapAttributeTest {
         public MapAttribute<Integer,String> mapAttribute=new MapAttribute<>(new AttributeMetadata<>("ExampleA1"));
 
         @Override
-        protected ExampleLiveObjectA createImp(Optional<ExampleLiveObjectA> closedPreviousLiveObject) {
+        protected ExampleLiveObjectA createImp(Optional<ExampleLiveObjectA> previousLiveObject, PreviousLiveObjectProvider previousLiveObjectProvider) {
             return null;
         }
     }

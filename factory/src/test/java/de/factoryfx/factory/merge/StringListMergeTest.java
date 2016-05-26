@@ -3,6 +3,7 @@ package de.factoryfx.factory.merge;
 import java.util.Optional;
 
 import de.factoryfx.factory.FactoryBase;
+import de.factoryfx.factory.PreviousLiveObjectProvider;
 import de.factoryfx.factory.attribute.AttributeMetadata;
 import de.factoryfx.factory.attribute.ValueListAttribute;
 import de.factoryfx.factory.testfactories.ExampleLiveObjectA;
@@ -15,7 +16,7 @@ public class StringListMergeTest extends MergeHelperTestBase {
         public final ValueListAttribute<String> refB= new ValueListAttribute<>(new AttributeMetadata<>(""));
 
         @Override
-        protected ExampleLiveObjectA createImp(Optional<ExampleLiveObjectA> closedPreviousLiveObject) {
+        protected ExampleLiveObjectA createImp(Optional<ExampleLiveObjectA> previousLiveObject, PreviousLiveObjectProvider previousLiveObjectProvider) {
             return null;
         }
     }
