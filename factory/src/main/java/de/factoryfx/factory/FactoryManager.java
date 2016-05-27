@@ -1,6 +1,5 @@
 package de.factoryfx.factory;
 
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -24,7 +23,7 @@ public class FactoryManager<T extends FactoryBase<? extends LiveObject, ? extend
             mergeResultEntry.getPreviousEntityModel().markChanged();
         }
 
-        currentFactory.create(new PreviousLiveObjectProvider(new HashMap<>()));
+        currentFactory.create();
 
         LinkedHashMap<String, LiveObject> newLiveObjects = new LinkedHashMap<>();
         currentFactory.collectLiveObjects(newLiveObjects);
@@ -64,7 +63,7 @@ public class FactoryManager<T extends FactoryBase<? extends LiveObject, ? extend
         newFactory.loopDetector();
         currentFactory=newFactory;
 
-        newFactory.create(new PreviousLiveObjectProvider(new HashMap<>()));
+        newFactory.create();
 
         LinkedHashMap<String, LiveObject> newLiveObjects = new LinkedHashMap<>();
         newFactory.collectLiveObjects(newLiveObjects);

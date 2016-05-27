@@ -288,21 +288,19 @@ public abstract class FactoryBase<E extends LiveObject, T extends FactoryBase<E,
 
 
     private E createdLiveObjects;
-    LoopProtector loopProtector = new LoopProtector();
-
-    public E create(PreviousLiveObjectProvider previousLiveObjectProvider) {
-        Optional<E> previousLiveObject = previousLiveObjectProvider.get(this);
+    public E create() {
+        Optional<E> previousLiveObject = Optional.ofNullable(createdLiveObjects);
         if (!changedDeep()) {
             return createdLiveObjects;
         } else{
-            E liveObject = createImp(previousLiveObject,previousLiveObjectProvider);
+            E liveObject = createImp(previousLiveObject);
             createdLiveObjects=liveObject;
             changed=false;
             return liveObject;
         }
     }
 
-    protected abstract E createImp(Optional<E> previousLiveObject, PreviousLiveObjectProvider previousLiveObjectProvider);
+    protected abstract E createImp(Optional<E> previousLiveObject);
 
     public void collectLiveObjects(Map<String,LiveObject> liveObjects){
 
@@ -367,9 +365,10 @@ public abstract class FactoryBase<E extends LiveObject, T extends FactoryBase<E,
         return changedDeep;
     }
 
+    LoopProtector loopProtector = new LoopProtector();
     public void loopDetector(){
         loopProtector.enter();
-        try {//order important deep first
+        try {
             this.visitAttributesFlat(new AttributeVisitor() {
                 @Override
                 public void value(Attribute<?> value) {
@@ -378,10 +377,7 @@ public abstract class FactoryBase<E extends LiveObject, T extends FactoryBase<E,
 
                 @Override
                 public void reference(ReferenceAttribute<?> reference) {
-                    FactoryBase<LiveObject, ?> factory = (FactoryBase<LiveObject, ?>) reference.get();
-                    if (factory!=null){
-                        factory.loopDetector();
-                    }
+                    reference.getOptional().ifPresent((factory)->factory.loopDetector());
                 }
 
                 @Override

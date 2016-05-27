@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Optional;
 
 import de.factoryfx.factory.FactoryBase;
-import de.factoryfx.factory.PreviousLiveObjectProvider;
 import de.factoryfx.factory.attribute.AttributeMetadata;
 import de.factoryfx.factory.attribute.ListMetadata;
 import de.factoryfx.factory.attribute.ReferenceAttribute;
@@ -17,12 +16,12 @@ public class ExampleFactoryA extends FactoryBase<ExampleLiveObjectA,ExampleFacto
     public ReferenceListAttribute<ExampleFactoryB> referenceListAttribute = new ReferenceListAttribute<ExampleFactoryB>(new ListMetadata<>("ExampleA3"));
 
     @Override
-    protected ExampleLiveObjectA createImp(Optional<ExampleLiveObjectA> previousLiveObject, PreviousLiveObjectProvider previousLiveObjectProvider) {
+    protected ExampleLiveObjectA createImp(Optional<ExampleLiveObjectA> previousLiveObject) {
         ArrayList<ExampleLiveObjectB> exampleLiveObjectBs = new ArrayList<>();
         referenceListAttribute.get().forEach(exampleFactoryB -> {
-            exampleLiveObjectBs.add(exampleFactoryB.create(null));
+            exampleLiveObjectBs.add(exampleFactoryB.create());
         });
 
-        return new ExampleLiveObjectA(referenceAttribute.get().create(previousLiveObjectProvider), exampleLiveObjectBs);
+        return new ExampleLiveObjectA(referenceAttribute.get().create(), exampleLiveObjectBs);
     }
 }

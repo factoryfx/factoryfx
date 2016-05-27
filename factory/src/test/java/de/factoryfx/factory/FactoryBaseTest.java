@@ -30,7 +30,7 @@ public class FactoryBaseTest {
 
         exampleFactoryA.referenceAttribute.set(exampleFactoryB);
 
-        exampleFactoryA.create(new PreviousLiveObjectProvider(new HashMap<>()));
+        exampleFactoryA.create();
 
         HashMap<String, LiveObject> liveObjects = new HashMap<>();
         exampleFactoryA.collectLiveObjects(liveObjects);

@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Optional;
 
 import de.factoryfx.factory.FactoryBase;
-import de.factoryfx.factory.PreviousLiveObjectProvider;
 import de.factoryfx.factory.jackson.ObjectMapperBuilder;
 import de.factoryfx.factory.testfactories.ExampleFactoryA;
 import de.factoryfx.factory.testfactories.ExampleLiveObjectA;
@@ -18,7 +17,7 @@ public class SetAttributeTest {
         public ValueSetAttribute<String> setAttribute =new ValueSetAttribute<>(new AttributeMetadata<>("ExampleA1"));
 
         @Override
-        protected ExampleLiveObjectA createImp(Optional<ExampleLiveObjectA> previousLiveObject, PreviousLiveObjectProvider previousLiveObjectProvider) {
+        protected ExampleLiveObjectA createImp(Optional<ExampleLiveObjectA> previousLiveObject) {
             return null;
         }
     }
