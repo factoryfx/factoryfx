@@ -13,10 +13,10 @@ public class FactoryMerger {
     private final FactoryBase<?,?> originalModel;
     private final FactoryBase<?,?> newModel;
 
-    public FactoryMerger(FactoryBase<?,?> currentModel, FactoryBase<?,?> originalModel, FactoryBase<?,?> newModel) {
-        this.currentModel = currentModel;
-        this.originalModel = originalModel;
-        this.newModel = newModel;
+    public FactoryMerger(FactoryBase<?,?> currentFactory, FactoryBase<?,?> commonFactory, FactoryBase<?,?> newFactory) {
+        this.currentModel = currentFactory;
+        this.originalModel = commonFactory;
+        this.newModel = newFactory;
     }
 
     private HashMap<String, FactoryBase<?,?>> collectFlatMap(FactoryBase<?,?> root) {

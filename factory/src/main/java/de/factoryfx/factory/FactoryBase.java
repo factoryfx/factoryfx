@@ -20,7 +20,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import de.factoryfx.factory.attribute.Attribute;
-import de.factoryfx.factory.attribute.IterableAttributes;
 import de.factoryfx.factory.attribute.ReferenceAttribute;
 import de.factoryfx.factory.attribute.ReferenceListAttribute;
 import de.factoryfx.factory.jackson.ObjectMapperBuilder;
@@ -30,9 +29,7 @@ import de.factoryfx.factory.merge.attribute.AttributeMergeHelper;
 
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public abstract class FactoryBase<E extends LiveObject, T extends FactoryBase<E,T>> implements IterableAttributes {
-
-
+public abstract class FactoryBase<E extends LiveObject, T extends FactoryBase<E,T>> {
 
     public interface AttributeVisitor{
         void value(Attribute<?> value);
@@ -254,6 +251,7 @@ public abstract class FactoryBase<E extends LiveObject, T extends FactoryBase<E,
     }
 
 
+    @JsonIgnore
     public Field[] getFields() {
         return instanceFields;
     }
@@ -291,21 +289,85 @@ public abstract class FactoryBase<E extends LiveObject, T extends FactoryBase<E,
 
     private E createdLiveObjects;
     LoopProtector loopProtector = new LoopProtector();
-    public E create(PreviousLiveObjectProvider previousLiveObjectProvider){
-        loopProtector.enter();
-        try {
-            Optional<E> previousLiveObject = previousLiveObjectProvider.get(this);
+
+    public E create(PreviousLiveObjectProvider previousLiveObjectProvider) {
+        Optional<E> previousLiveObject = previousLiveObjectProvider.get(this);
+        if (!changedDeep()) {
+            return createdLiveObjects;
+        } else{
             E liveObject = createImp(previousLiveObject,previousLiveObjectProvider);
             createdLiveObjects=liveObject;
+            changed=false;
             return liveObject;
-        } finally {
-            loopProtector.exit();
         }
     }
 
     protected abstract E createImp(Optional<E> previousLiveObject, PreviousLiveObjectProvider previousLiveObjectProvider);
 
     public void collectLiveObjects(Map<String,LiveObject> liveObjects){
+
+        //order important deep first
+        this.visitAttributesFlat(new AttributeVisitor() {
+            @Override
+            public void value(Attribute<?> value) {
+                //nothing
+            }
+
+            @Override
+            public void reference(ReferenceAttribute<?> reference) {
+                FactoryBase<LiveObject, ?> factory = (FactoryBase<LiveObject, ?>) reference.get();
+                if (factory!=null){
+                    factory.collectLiveObjects(liveObjects);
+                }
+            }
+
+            @Override
+            public void referenceList(ReferenceListAttribute<?> referenceList) {
+                referenceList.get().forEach((Consumer<FactoryBase<?, ?>>) factory -> {
+                    factory.collectLiveObjects(liveObjects);
+                });
+            }
+        });
+        if (createdLiveObjects!=null){
+            liveObjects.put(getId(),createdLiveObjects);
+        }
+    }
+
+    @JsonIgnore
+    private boolean changed=true;
+    public void markChanged() {
+        changed=true;
+    }
+
+    @JsonIgnore
+    private boolean changedDeep;
+    public boolean changedDeep(){
+        if (changed){
+            return true;
+        }
+        changedDeep=false;
+        this.visitAttributesFlat(new AttributeVisitor() {
+            @Override
+            public void value(Attribute<?> value) {
+
+            }
+
+            @Override
+            public void reference(ReferenceAttribute<?> reference) {
+                reference.getOptional().ifPresent((Consumer<FactoryBase<?, ?>>) factoryBase -> changedDeep = changedDeep || reference.get().changedDeep());
+            }
+
+            @Override
+            public void referenceList(ReferenceListAttribute<?> referenceList) {
+                for (FactoryBase<?,?> factory: referenceList.get()){
+                    changedDeep = changedDeep || factory.changedDeep();
+                }
+            }
+        });
+        return changedDeep;
+    }
+
+    public void loopDetector(){
         loopProtector.enter();
         try {//order important deep first
             this.visitAttributesFlat(new AttributeVisitor() {
@@ -318,20 +380,17 @@ public abstract class FactoryBase<E extends LiveObject, T extends FactoryBase<E,
                 public void reference(ReferenceAttribute<?> reference) {
                     FactoryBase<LiveObject, ?> factory = (FactoryBase<LiveObject, ?>) reference.get();
                     if (factory!=null){
-                        factory.collectLiveObjects(liveObjects);
+                        factory.loopDetector();
                     }
                 }
 
                 @Override
                 public void referenceList(ReferenceListAttribute<?> referenceList) {
                     referenceList.get().forEach((Consumer<FactoryBase<?, ?>>) factory -> {
-                        factory.collectLiveObjects(liveObjects);
+                        factory.loopDetector();
                     });
                 }
             });
-            if (createdLiveObjects!=null){
-                liveObjects.put(getId(),createdLiveObjects);
-            }
         } finally {
             loopProtector.exit();
         }

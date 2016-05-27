@@ -5,6 +5,7 @@ import java.util.HashMap;
 
 import de.factoryfx.factory.testfactories.ExampleFactoryA;
 import de.factoryfx.factory.testfactories.ExampleFactoryB;
+import de.factoryfx.factory.testfactories.ExampleFactoryC;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -17,13 +18,16 @@ public class FactoryBaseTest {
         exampleFactoryB.referenceAttribute.set(exampleFactoryA);
         exampleFactoryA.referenceAttribute.set(exampleFactoryB);
 
-        exampleFactoryA.create(new PreviousLiveObjectProvider(new HashMap<>()));
+        exampleFactoryA.loopDetector();
     }
 
     @Test
     public void test_collect_Live_Objects(){
         ExampleFactoryA exampleFactoryA = new ExampleFactoryA();
         ExampleFactoryB exampleFactoryB = new ExampleFactoryB();
+        ExampleFactoryC exampleFactoryC = new ExampleFactoryC();
+        exampleFactoryB.referenceAttributeC.set(exampleFactoryC);
+
         exampleFactoryA.referenceAttribute.set(exampleFactoryB);
 
         exampleFactoryA.create(new PreviousLiveObjectProvider(new HashMap<>()));
@@ -31,7 +35,7 @@ public class FactoryBaseTest {
         HashMap<String, LiveObject> liveObjects = new HashMap<>();
         exampleFactoryA.collectLiveObjects(liveObjects);
 
-        Assert.assertEquals(2,liveObjects.entrySet().size());
+        Assert.assertEquals(3,liveObjects.entrySet().size());
     }
 
 
@@ -46,5 +50,6 @@ public class FactoryBaseTest {
         Assert.assertEquals(3,calls.size());
         Assert.assertEquals("xxxx",calls.get(0));
     }
+
 
 }

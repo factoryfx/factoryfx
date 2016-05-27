@@ -75,6 +75,10 @@ public class ReferenceAttribute<T extends FactoryBase<?,? super T>> extends Attr
         return value;
     }
 
+    public Optional<T> getOptional() {
+        return Optional.ofNullable(value);
+    }
+
     private Property<T> getObservable() {
         if (observable == null) {
             observable = new SimpleObjectProperty<>();

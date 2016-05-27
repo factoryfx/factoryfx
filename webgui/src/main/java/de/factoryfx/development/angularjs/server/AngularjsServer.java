@@ -27,7 +27,7 @@ public class AngularjsServer {
 
 
         public void start() {
-            System.setProperty("java.net.preferIPv4Stack", "true");
+            System.setProperty("java.net.preferIPv4Stack", "true");//TODO optional?
 
             server = new org.eclipse.jetty.server.Server();
 

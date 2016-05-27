@@ -14,7 +14,7 @@ public class FactoryValidator {
      * all Attributes not null after instantiation*/
     public Optional<String> validateModel(FactoryBase<?,?> factoryBase){
         for (Field field: factoryBase.getClass().getDeclaredFields()){
-            System.out.println(field.getName());
+
             if (Attribute.class.isAssignableFrom(field.getType())){
                 if((field.getModifiers() & Modifier.PUBLIC) != java.lang.reflect.Modifier.PUBLIC) {
                     return Optional.of("should be public "+ factoryBase.getClass().getName()+field.getName());

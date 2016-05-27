@@ -5,20 +5,31 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import de.factoryfx.factory.merge.FactoryMerger;
+import de.factoryfx.factory.merge.MergeDiff;
+import de.factoryfx.factory.merge.MergeResultEntry;
+
 public class FactoryManager<T extends FactoryBase<? extends LiveObject, ? extends FactoryBase>> {
 
     T currentFactory;
 
-    public void update(T newFactory){
+    public void update(T commonVersion ,T newVersion){
+        newVersion.loopDetector();
         LinkedHashMap<String, LiveObject> previousLiveObjects = new LinkedHashMap<>();
         currentFactory.collectLiveObjects(previousLiveObjects);
 
-        newFactory.create(new PreviousLiveObjectProvider(previousLiveObjects));
-        newFactory.collectLiveObjects(new HashMap<>());
-        currentFactory=newFactory;
+        FactoryMerger factoryMerger = new FactoryMerger(currentFactory, commonVersion, newVersion);
+        MergeDiff mergeDiff= factoryMerger.mergeIntoCurrent();
+        for (MergeResultEntry<?> mergeResultEntry: mergeDiff.getMergeInfos()){
+            mergeResultEntry.getPreviousEntityModel().markChanged();
+        }
+
+        currentFactory.create(new PreviousLiveObjectProvider(new HashMap<>()));
 
         LinkedHashMap<String, LiveObject> newLiveObjects = new LinkedHashMap<>();
-        currentFactory.collectLiveObjects(previousLiveObjects);
+        currentFactory.collectLiveObjects(newLiveObjects);
+
+
 
         updateLiveObjects(previousLiveObjects,newLiveObjects);
     }
@@ -50,6 +61,7 @@ public class FactoryManager<T extends FactoryBase<? extends LiveObject, ? extend
     }
 
     public void start(T newFactory){
+        newFactory.loopDetector();
         currentFactory=newFactory;
 
         newFactory.create(new PreviousLiveObjectProvider(new HashMap<>()));
