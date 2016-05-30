@@ -58,6 +58,15 @@ project(':webgui') {
 
 }
 
+project(':guimodel') {
+
+    dependencies {
+        compile project(":factory")
+        testCompile project(":development")
+    }
+
+}
+
 project(':development') {
 
     dependencies {

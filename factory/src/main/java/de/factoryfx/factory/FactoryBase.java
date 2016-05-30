@@ -42,6 +42,30 @@ public abstract class FactoryBase<E extends LiveObject, T extends FactoryBase<E,
         void accept(A a, B b, C c);
     }
 
+    public void visitChildFactoriesFlat(Consumer<FactoryBase<?,?>> consumer) {
+        visitAttributesFlat(new AttributeVisitor() {
+            @Override
+            public void value(Attribute<?> value) {
+
+            }
+
+            @Override
+            public void reference(ReferenceAttribute<?> reference) {
+                reference.getOptional().ifPresent((factoryBase)->consumer.accept(factoryBase));
+            }
+
+            @Override
+            public void referenceList(ReferenceListAttribute<?> referenceList) {
+                referenceList.forEach(new Consumer<FactoryBase<?, ?>>() {
+                    @Override
+                    public void accept(FactoryBase<?, ?> factoryBase) {
+                        consumer.accept(factoryBase);
+                    }
+                });
+            }
+        });
+    }
+
     public void visitAttributesFlat(AttributeVisitor visitor ) {
         Field[] fields = getFields();
         for (Field field : fields) {
@@ -305,27 +329,8 @@ public abstract class FactoryBase<E extends LiveObject, T extends FactoryBase<E,
     public void collectLiveObjects(Map<String,LiveObject> liveObjects){
 
         //order important deep first
-        this.visitAttributesFlat(new AttributeVisitor() {
-            @Override
-            public void value(Attribute<?> value) {
-                //nothing
-            }
+        this.visitChildFactoriesFlat(factory -> factory.collectLiveObjects(liveObjects));
 
-            @Override
-            public void reference(ReferenceAttribute<?> reference) {
-                FactoryBase<LiveObject, ?> factory = (FactoryBase<LiveObject, ?>) reference.get();
-                if (factory!=null){
-                    factory.collectLiveObjects(liveObjects);
-                }
-            }
-
-            @Override
-            public void referenceList(ReferenceListAttribute<?> referenceList) {
-                referenceList.get().forEach((Consumer<FactoryBase<?, ?>>) factory -> {
-                    factory.collectLiveObjects(liveObjects);
-                });
-            }
-        });
         if (createdLiveObjects!=null){
             liveObjects.put(getId(),createdLiveObjects);
         }
@@ -344,24 +349,7 @@ public abstract class FactoryBase<E extends LiveObject, T extends FactoryBase<E,
             return true;
         }
         changedDeep=false;
-        this.visitAttributesFlat(new AttributeVisitor() {
-            @Override
-            public void value(Attribute<?> value) {
-
-            }
-
-            @Override
-            public void reference(ReferenceAttribute<?> reference) {
-                reference.getOptional().ifPresent((Consumer<FactoryBase<?, ?>>) factoryBase -> changedDeep = changedDeep || reference.get().changedDeep());
-            }
-
-            @Override
-            public void referenceList(ReferenceListAttribute<?> referenceList) {
-                for (FactoryBase<?,?> factory: referenceList.get()){
-                    changedDeep = changedDeep || factory.changedDeep();
-                }
-            }
-        });
+        this.visitChildFactoriesFlat(factoryBase -> changedDeep = changedDeep || factoryBase.changedDeep());
         return changedDeep;
     }
 
@@ -369,24 +357,7 @@ public abstract class FactoryBase<E extends LiveObject, T extends FactoryBase<E,
     public void loopDetector(){
         loopProtector.enter();
         try {
-            this.visitAttributesFlat(new AttributeVisitor() {
-                @Override
-                public void value(Attribute<?> value) {
-                    //nothing
-                }
-
-                @Override
-                public void reference(ReferenceAttribute<?> reference) {
-                    reference.getOptional().ifPresent((factory)->factory.loopDetector());
-                }
-
-                @Override
-                public void referenceList(ReferenceListAttribute<?> referenceList) {
-                    referenceList.get().forEach((Consumer<FactoryBase<?, ?>>) factory -> {
-                        factory.loopDetector();
-                    });
-                }
-            });
+            this.visitChildFactoriesFlat(factory -> factory.loopDetector());
         } finally {
             loopProtector.exit();
         }
