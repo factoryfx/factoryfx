@@ -32,9 +32,9 @@ import de.factoryfx.factory.merge.attribute.AttributeMergeHelper;
 public abstract class FactoryBase<E extends LiveObject, T extends FactoryBase<E,T>> {
 
     public interface AttributeVisitor{
-        void value(Attribute<?> value);
-        void reference(ReferenceAttribute<?> reference);
-        void referenceList(ReferenceListAttribute<?> referenceList);
+        void value(Attribute<?> value, FactoryBase<?,?> parent);
+        void reference(ReferenceAttribute<?> reference, FactoryBase<?,?> parent);
+        void referenceList(ReferenceListAttribute<?> referenceList, FactoryBase<?,?> parent);
     }
 
     @FunctionalInterface
@@ -45,17 +45,17 @@ public abstract class FactoryBase<E extends LiveObject, T extends FactoryBase<E,
     public void visitChildFactoriesFlat(Consumer<FactoryBase<?,?>> consumer) {
         visitAttributesFlat(new AttributeVisitor() {
             @Override
-            public void value(Attribute<?> value) {
+            public void value(Attribute<?> value, FactoryBase<?,?> parent) {
 
             }
 
             @Override
-            public void reference(ReferenceAttribute<?> reference) {
+            public void reference(ReferenceAttribute<?> reference, FactoryBase<?,?> parent) {
                 reference.getOptional().ifPresent((factoryBase)->consumer.accept(factoryBase));
             }
 
             @Override
-            public void referenceList(ReferenceListAttribute<?> referenceList) {
+            public void referenceList(ReferenceListAttribute<?> referenceList, FactoryBase<?,?> parent) {
                 referenceList.forEach(new Consumer<FactoryBase<?, ?>>() {
                     @Override
                     public void accept(FactoryBase<?, ?> factoryBase) {
@@ -75,12 +75,12 @@ public abstract class FactoryBase<E extends LiveObject, T extends FactoryBase<E,
                     Attribute attribute = (Attribute) fieldValue;
 
                     if (attribute instanceof ReferenceListAttribute) {
-                        visitor.referenceList((ReferenceListAttribute<?>) attribute);
+                        visitor.referenceList((ReferenceListAttribute<?>) attribute,this);
                     } else {
                         if (attribute instanceof ReferenceAttribute<?>) {
-                            visitor.reference((ReferenceAttribute<?>) attribute);
+                            visitor.reference((ReferenceAttribute<?>) attribute,this);
                         }  else {
-                            visitor.value(attribute);
+                            visitor.value(attribute,this);
                         }
                     }
 

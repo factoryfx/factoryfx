@@ -9,7 +9,6 @@ import java.util.stream.Stream;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.factory.jackson.ObservableSetJacksonAbleWrapper;
-import javafx.beans.InvalidationListener;
 import javafx.beans.property.SimpleSetProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableSet;
@@ -63,15 +62,16 @@ public class ValueSetAttribute<T> extends ValueAttribute<ObservableSet<T>, Simpl
         return get().toArray();
     }
 
-    Map<InvalidationListener, SetChangeListener<T>> listeners= new HashMap<>();
+    Map<AttributeChangeListener<ObservableSet<T>>, SetChangeListener<T>> listeners= new HashMap<>();
     @Override
-    public void addListener(InvalidationListener listener) {
-        SetChangeListener<T> mapListener = change -> listener.invalidated(get());
-        listeners.put(listener,mapListener);
-        getObservable().addListener(mapListener);
+    public void addListener(AttributeChangeListener<ObservableSet<T>> listener) {
+        SetChangeListener<T> setListener = change -> listener.changed(get());
+        listeners.put(listener,setListener);
+        getObservable().addListener(setListener);
     }
     @Override
-    public void removeListener(InvalidationListener listener) {
+    public void removeListener(AttributeChangeListener<ObservableSet<T>> listener) {
         getObservable().removeListener(listeners.get(listener));
+        listeners.remove(listener);
     }
 }

@@ -74,3 +74,24 @@ project(':development') {
     }
 
 }
+
+project(':richclient') {
+
+    dependencies {
+        compile project(":guimodel")
+        compile project(":factory")
+    }
+
+}
+
+
+project(':example') {
+
+    dependencies {
+        compile project(":richclient")
+        compile project(":guimodel")
+        compile project(":factory")
+        compile project(":development")
+    }
+
+}

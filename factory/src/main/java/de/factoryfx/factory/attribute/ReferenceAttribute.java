@@ -1,6 +1,7 @@
 package de.factoryfx.factory.attribute;
 
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
@@ -98,14 +99,19 @@ public class ReferenceAttribute<T extends FactoryBase<?,? super T>> extends Attr
         this.value=value;
     }
 
+    Map<AttributeChangeListener<T>, InvalidationListener> listeners= new HashMap<>();
     @Override
-    public void addListener(InvalidationListener listener) {
-        getObservable().addListener(listener);
+    public void addListener(AttributeChangeListener<T> listener) {
+        InvalidationListener invalidationListener = observable1 -> {
+            listener.changed((T) observable1);
+        };
+        listeners.put(listener,invalidationListener);
+        getObservable().addListener(invalidationListener);
     }
-
     @Override
-    public void removeListener(InvalidationListener listener) {
-        getObservable().removeListener(listener);
+    public void removeListener(AttributeChangeListener<T> listener) {
+        getObservable().removeListener(listeners.get(listener));
+        listeners.remove(listener);
     }
 
     @JsonValue

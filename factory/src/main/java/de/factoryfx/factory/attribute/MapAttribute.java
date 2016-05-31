@@ -7,7 +7,6 @@ import java.util.TreeMap;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.factory.jackson.ObservableMapJacksonAbleWrapper;
-import javafx.beans.InvalidationListener;
 import javafx.beans.property.SimpleMapProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.MapChangeListener;
@@ -47,16 +46,17 @@ public class MapAttribute<K, V> extends ValueAttribute<ObservableMap<K,V>, Simpl
     }
 
 
-    Map<InvalidationListener, MapChangeListener<K, V>> listeners= new HashMap<>();
+    Map<AttributeChangeListener<ObservableMap<K,V>>, MapChangeListener<K, V>> listeners= new HashMap<>();
     @Override
-    public void addListener(InvalidationListener listener) {
-        MapChangeListener<K, V> mapListener = change -> listener.invalidated(get());
+    public void addListener(AttributeChangeListener<ObservableMap<K,V>> listener) {
+        MapChangeListener<K, V> mapListener = change -> listener.changed(get());
         listeners.put(listener,mapListener);
         getObservable().addListener(mapListener);
     }
     @Override
-    public void removeListener(InvalidationListener listener) {
+    public void removeListener(AttributeChangeListener<ObservableMap<K,V>> listener) {
         getObservable().removeListener(listeners.get(listener));
+        listeners.remove(listener);
     }
 
 }

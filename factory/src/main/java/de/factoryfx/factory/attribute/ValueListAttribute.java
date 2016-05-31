@@ -8,7 +8,6 @@ import java.util.stream.Stream;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.factory.jackson.ObservableListJacksonAbleWrapper;
-import javafx.beans.InvalidationListener;
 import javafx.beans.property.SimpleListProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
@@ -75,16 +74,17 @@ public class ValueListAttribute<T> extends ValueAttribute<ObservableList<T>, Sim
     }
 
 
-    Map<InvalidationListener, ListChangeListener<T>> listeners= new HashMap<>();
+    Map<AttributeChangeListener<ObservableList<T>>, ListChangeListener<T>> listeners= new HashMap<>();
     @Override
-    public void addListener(InvalidationListener listener) {
-        ListChangeListener<T> mapListener = change -> listener.invalidated(get());
+    public void addListener(AttributeChangeListener<ObservableList<T>> listener) {
+        ListChangeListener<T> mapListener = change -> listener.changed(get());
         listeners.put(listener,mapListener);
         getObservable().addListener(mapListener);
     }
     @Override
-    public void removeListener(InvalidationListener listener) {
+    public void removeListener(AttributeChangeListener<ObservableList<T>> listener) {
         getObservable().removeListener(listeners.get(listener));
+        listeners.remove(listener);
     }
 
 }

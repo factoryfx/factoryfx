@@ -11,9 +11,8 @@ import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.factory.merge.attribute.AttributeMergeHelper;
 import de.factoryfx.factory.validation.Validation;
 import de.factoryfx.factory.validation.ValidationResult;
-import javafx.beans.Observable;
 
-public abstract class Attribute<T> implements Observable {
+public abstract class Attribute<T>{
 
     public final AttributeMetadata<T> metadata;
 
@@ -46,4 +45,9 @@ public abstract class Attribute<T> implements Observable {
         }
         return validationResults;
     }
+
+
+    public abstract void addListener(AttributeChangeListener<T> listener);
+
+    public abstract void removeListener(AttributeChangeListener<T> listener);
 }

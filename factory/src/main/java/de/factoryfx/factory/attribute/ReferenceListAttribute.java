@@ -16,7 +16,6 @@ import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.factory.jackson.ObservableListJacksonAbleWrapper;
 import de.factoryfx.factory.merge.attribute.AttributeMergeHelper;
 import de.factoryfx.factory.merge.attribute.ReferenceListMergeHelper;
-import javafx.beans.InvalidationListener;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
@@ -130,16 +129,17 @@ public class ReferenceListAttribute<T extends FactoryBase<?,? super T>> extends 
         return get().stream();
     }
 
-    Map<InvalidationListener, ListChangeListener<T>> listeners= new HashMap<>();
+    Map<AttributeChangeListener<ObservableList<T>>, ListChangeListener<T>> listeners= new HashMap<>();
     @Override
-    public void addListener(InvalidationListener listener) {
-        ListChangeListener<T> mapListener = change -> listener.invalidated(get());
-        listeners.put(listener,mapListener);
-        list.addListener(mapListener);
+    public void addListener(AttributeChangeListener<ObservableList<T>> listener) {
+        ListChangeListener<T> listListener = change -> listener.changed(get());
+        listeners.put(listener,listListener);
+        list.addListener(listListener);
     }
     @Override
-    public void removeListener(InvalidationListener listener) {
+    public void removeListener(AttributeChangeListener<ObservableList<T>> listener) {
         list.removeListener(listeners.get(listener));
+        listeners.remove(listener);
     }
 
 }
