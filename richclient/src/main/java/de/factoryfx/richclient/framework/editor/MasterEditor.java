@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import de.factoryfx.factory.attribute.Attribute;
-import de.factoryfx.richclient.framework.Widget;
+import de.factoryfx.richclient.framework.widget.Widget;
 import de.factoryfx.richclient.framework.editor.editors.IntegerEditor;
 import de.factoryfx.richclient.framework.editor.editors.StringEditor;
 import javafx.scene.Node;

@@ -2,7 +2,7 @@ package de.factoryfx.richclient.framework.editor;
 
 import de.factoryfx.factory.attribute.Attribute;
 import de.factoryfx.factory.attribute.AttributeChangeListener;
-import de.factoryfx.richclient.framework.Widget;
+import de.factoryfx.richclient.framework.widget.Widget;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.Node;
@@ -11,11 +11,19 @@ public abstract class AttributeEditor<T,A extends Attribute<T>> implements Widge
     protected SimpleObjectProperty<A> boundToAttribute= new SimpleObjectProperty<>();
     protected SimpleObjectProperty<T> boundTo= new SimpleObjectProperty<>();
     protected SimpleBooleanProperty disabledProperty= new SimpleBooleanProperty(true);
-    private AttributeChangeListener<T> attributeChangeListener=value -> boundTo.set(value);
+    private AttributeChangeListener<T> attributeChangeListener=value -> {
+        boundTo.set(value);
+    };
 
     Class<T> clazz;
     public AttributeEditor(Class<T> clazz){
         this.clazz = clazz;
+
+        boundTo.addListener(observable -> {
+            if (boundToAttribute.get()!=null){
+                boundToAttribute.get().set(boundTo.get());
+            }
+        });
     }
 
     public void bind(Attribute<?> attribute){
@@ -23,6 +31,7 @@ public abstract class AttributeEditor<T,A extends Attribute<T>> implements Widge
         disabledProperty.set(attribute==null);
 
         boundToAttribute.get().addListener(attributeChangeListener);
+        attributeChangeListener.changed(boundToAttribute.get().get());
     }
 
     public boolean canEdit(Object attribute){

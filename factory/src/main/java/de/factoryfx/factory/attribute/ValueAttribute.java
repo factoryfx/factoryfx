@@ -1,27 +1,21 @@
 package de.factoryfx.factory.attribute;
 
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 import java.util.Set;
-import java.util.function.Supplier;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonValue;
 import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.factory.merge.attribute.AttributeMergeHelper;
 import de.factoryfx.factory.merge.attribute.DataMergeHelper;
-import javafx.beans.InvalidationListener;
-import javafx.beans.property.Property;
 
-public class ValueAttribute<T, U extends Property<T>> extends Attribute<T> {
-    private final Supplier<U> observableFactory;
+public class ValueAttribute<T> extends Attribute<T> {
     //    @JsonProperty
     private T value;
-    @JsonIgnore
-    private U observable;
-    public ValueAttribute(AttributeMetadata<T> attributeMetadata, Supplier<U> observableFactory) {
+
+    public ValueAttribute(AttributeMetadata<T> attributeMetadata) {
         super(attributeMetadata);
-        this.observableFactory = observableFactory;
     }
 
     @Override
@@ -40,39 +34,21 @@ public class ValueAttribute<T, U extends Property<T>> extends Attribute<T> {
     }
 
 
-    Map<AttributeChangeListener<T>, InvalidationListener> listeners= new HashMap<>();
+    List<AttributeChangeListener<T>> listeners= new ArrayList<>();
     @Override
     public void addListener(AttributeChangeListener<T> listener) {
-        InvalidationListener invalidationListener = observable1 -> {
-            listener.changed((T) observable1);
-        };
-        listeners.put(listener,invalidationListener);
-        getObservable().addListener(invalidationListener);
+        listeners.add(listener);
     }
     @Override
     public void removeListener(AttributeChangeListener<T> listener) {
-        getObservable().removeListener(listeners.get(listener));
         listeners.remove(listener);
     }
 
-
-
-    protected U getObservable() {
-        if (observable == null) {
-            observable = observableFactory.get();
-            observable.setValue(get());
-            observable.addListener(observable1 -> {
-                set(observable.getValue());
-            });
-        }
-        return observable;
-    }
-
     public void set(T value) {
-        if (observable != null) {
-            observable.setValue(value);
-        }
         this.value = value;
+        for (AttributeChangeListener<T> listener: listeners){
+            listener.changed(value);
+        }
     }
 
     @Override

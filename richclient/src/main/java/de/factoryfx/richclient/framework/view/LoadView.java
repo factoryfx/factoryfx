@@ -1,10 +1,11 @@
-package de.factoryfx.richclient;
+package de.factoryfx.richclient.framework.view;
 
 import java.util.function.Supplier;
 
 import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.factory.LiveObject;
-import de.factoryfx.richclient.framework.Widget;
+import de.factoryfx.richclient.GenericTreeFactoryViewRichClient;
+import de.factoryfx.richclient.framework.widget.Widget;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.layout.HBox;

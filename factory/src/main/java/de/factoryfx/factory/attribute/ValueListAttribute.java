@@ -2,23 +2,27 @@ package de.factoryfx.factory.attribute;
 
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Map;
 import java.util.stream.Stream;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.factory.jackson.ObservableListJacksonAbleWrapper;
-import javafx.beans.property.SimpleListProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 
-public class ValueListAttribute<T> extends ValueAttribute<ObservableList<T>, SimpleListProperty<T>> {
+public class ValueListAttribute<T> extends ValueAttribute<ObservableList<T>> {
 
 
     public ValueListAttribute(AttributeMetadata<ObservableList<T>> attributeMetadata) {
-        super(attributeMetadata,()->new SimpleListProperty<>());
+        super(attributeMetadata);
         set(FXCollections.observableArrayList() );
+
+        get().addListener((ListChangeListener<T>) c -> {
+            for (AttributeChangeListener<ObservableList<T>> listener: listeners){
+                listener.changed(get());
+            }
+        });
     }
 
     @JsonCreator
@@ -71,20 +75,6 @@ public class ValueListAttribute<T> extends ValueAttribute<ObservableList<T>, Sim
 
     public Object[] toArray() {
         return get().toArray();
-    }
-
-
-    Map<AttributeChangeListener<ObservableList<T>>, ListChangeListener<T>> listeners= new HashMap<>();
-    @Override
-    public void addListener(AttributeChangeListener<ObservableList<T>> listener) {
-        ListChangeListener<T> mapListener = change -> listener.changed(get());
-        listeners.put(listener,mapListener);
-        getObservable().addListener(mapListener);
-    }
-    @Override
-    public void removeListener(AttributeChangeListener<ObservableList<T>> listener) {
-        getObservable().removeListener(listeners.get(listener));
-        listeners.remove(listener);
     }
 
 }

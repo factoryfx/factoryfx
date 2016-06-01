@@ -3,8 +3,13 @@ package de.factoryfx.example.factory;
 import de.factoryfx.factory.LiveObject;
 
 public class Product implements LiveObject {
-    private String name;
-    private int price;
+    private final String name;
+    private final int price;
+
+    public Product(String name, int price) {
+        this.name = name;
+        this.price = price;
+    }
 
     @Override
     public void start() {

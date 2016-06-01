@@ -1,4 +1,4 @@
-package de.factoryfx.richclient.framework;
+package de.factoryfx.richclient.framework.widget;
 
 import javafx.scene.Node;
 

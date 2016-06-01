@@ -13,6 +13,6 @@ public class ProductFactory extends FactoryBase<Product,ProductFactory> {
 
     @Override
     protected Product createImp(Optional<Product> previousLiveObject) {
-        return null;
+        return new Product(name.get(),price.get());
     }
 }

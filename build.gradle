@@ -78,6 +78,9 @@ project(':development') {
 project(':richclient') {
 
     dependencies {
+        compile 'com.googlecode.java-diff-utils:diffutils:1.3.0'
+        compile 'org.fxmisc.richtext:richtextfx:0.6.7'
+        compile 'org.controlsfx:controlsfx:8.40.9'
         compile project(":guimodel")
         compile project(":factory")
     }

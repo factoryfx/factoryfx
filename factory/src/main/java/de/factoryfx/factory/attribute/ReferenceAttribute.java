@@ -1,26 +1,21 @@
 package de.factoryfx.factory.attribute;
 
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonValue;
 import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.factory.merge.attribute.AttributeMergeHelper;
 import de.factoryfx.factory.merge.attribute.ReferenceMergeHelper;
-import javafx.beans.InvalidationListener;
-import javafx.beans.property.Property;
-import javafx.beans.property.SimpleObjectProperty;
 
 public class ReferenceAttribute<T extends FactoryBase<?,? super T>> extends Attribute<T> {
 
     private T value;
-    @JsonIgnore
-    private SimpleObjectProperty<T> observable;
 
     public ReferenceAttribute(AttributeMetadata<T> attributeMetadata) {
         super(attributeMetadata);
@@ -80,38 +75,13 @@ public class ReferenceAttribute<T extends FactoryBase<?,? super T>> extends Attr
         return Optional.ofNullable(value);
     }
 
-    private Property<T> getObservable() {
-        if (observable == null) {
-            observable = new SimpleObjectProperty<>();
-            observable.setValue(get());
-            observable.addListener(observable1 -> {
-                set(observable.getValue());
-            });
-        }
-        return observable;
-    }
 
     @Override
     public void set(T value) {
-        if (observable != null) {
-            observable.setValue(value);
+        for (AttributeChangeListener<T> listener: listeners){
+            listener.changed(value);
         }
         this.value=value;
-    }
-
-    Map<AttributeChangeListener<T>, InvalidationListener> listeners= new HashMap<>();
-    @Override
-    public void addListener(AttributeChangeListener<T> listener) {
-        InvalidationListener invalidationListener = observable1 -> {
-            listener.changed((T) observable1);
-        };
-        listeners.put(listener,invalidationListener);
-        getObservable().addListener(invalidationListener);
-    }
-    @Override
-    public void removeListener(AttributeChangeListener<T> listener) {
-        getObservable().removeListener(listeners.get(listener));
-        listeners.remove(listener);
     }
 
     @JsonValue
@@ -122,5 +92,15 @@ public class ReferenceAttribute<T extends FactoryBase<?,? super T>> extends Attr
     @JsonValue
     void setValue(T value) {
         this.value = value;
+    }
+
+    List<AttributeChangeListener<T>> listeners= new ArrayList<>();
+    @Override
+    public void addListener(AttributeChangeListener<T> listener) {
+        listeners.add(listener);
+    }
+    @Override
+    public void removeListener(AttributeChangeListener<T> listener) {
+        listeners.remove(listener);
     }
 }

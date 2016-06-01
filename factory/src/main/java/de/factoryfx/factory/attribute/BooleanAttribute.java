@@ -1,13 +1,11 @@
 package de.factoryfx.factory.attribute;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
-import javafx.beans.property.Property;
-import javafx.beans.property.SimpleBooleanProperty;
 
-public class BooleanAttribute extends ValueAttribute<Boolean, Property<Boolean>> {
+public class BooleanAttribute extends ValueAttribute<Boolean> {
 
     public BooleanAttribute(AttributeMetadata<Boolean> attributeMetadata) {
-        super(attributeMetadata, () -> new SimpleBooleanProperty());
+        super(attributeMetadata);
         set(Boolean.FALSE);
     }
 

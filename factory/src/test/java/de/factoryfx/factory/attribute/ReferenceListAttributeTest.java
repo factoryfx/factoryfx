@@ -7,7 +7,7 @@ import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.factory.jackson.ObjectMapperBuilder;
 import de.factoryfx.factory.testfactories.ExampleFactoryA;
 import de.factoryfx.factory.testfactories.ExampleLiveObjectA;
-import javafx.beans.InvalidationListener;
+import javafx.collections.ObservableList;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -47,7 +47,7 @@ public class ReferenceListAttributeTest {
     public void remove_Listener(){
         ExampleReferenceListFactory exampleReferenceListFactory = new ExampleReferenceListFactory();
         ArrayList<String> calls= new ArrayList<>();
-        InvalidationListener invalidationListener = (o) -> {
+        AttributeChangeListener<ObservableList<ExampleFactoryA>> invalidationListener = (o) -> {
             calls.add("");
         };
         exampleReferenceListFactory.referenceListAttribute.addListener(invalidationListener);

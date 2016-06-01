@@ -7,7 +7,7 @@ import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.factory.jackson.ObjectMapperBuilder;
 import de.factoryfx.factory.testfactories.ExampleFactoryA;
 import de.factoryfx.factory.testfactories.ExampleLiveObjectA;
-import javafx.beans.InvalidationListener;
+import javafx.collections.ObservableSet;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -45,7 +45,7 @@ public class SetAttributeTest {
     public void remove_Listener(){
         ExampleSetFactory exampleSetFactory = new ExampleSetFactory();
         ArrayList<String> calls= new ArrayList<>();
-        InvalidationListener invalidationListener = (o) -> {
+        AttributeChangeListener<ObservableSet<String>> invalidationListener = (o) -> {
             calls.add("");
         };
         exampleSetFactory.setAttribute.addListener(invalidationListener);

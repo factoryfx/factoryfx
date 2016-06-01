@@ -3,22 +3,26 @@ package de.factoryfx.factory.attribute;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.stream.Stream;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.factory.jackson.ObservableSetJacksonAbleWrapper;
-import javafx.beans.property.SimpleSetProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableSet;
 import javafx.collections.SetChangeListener;
 
-public class ValueSetAttribute<T> extends ValueAttribute<ObservableSet<T>, SimpleSetProperty<T>> {
+public class ValueSetAttribute<T> extends ValueAttribute<ObservableSet<T>> {
 
     public ValueSetAttribute(AttributeMetadata<ObservableSet<T>> attributeMetadata) {
-        super(attributeMetadata, ()->new SimpleSetProperty<>());
+        super(attributeMetadata);
         set(FXCollections.observableSet(new HashSet<>()));
+
+        get().addListener((SetChangeListener<T>) change -> {
+            for (AttributeChangeListener<ObservableSet<T>> listener: listeners){
+                listener.changed(get());
+            }
+        });
     }
 
 
@@ -62,16 +66,5 @@ public class ValueSetAttribute<T> extends ValueAttribute<ObservableSet<T>, Simpl
         return get().toArray();
     }
 
-    Map<AttributeChangeListener<ObservableSet<T>>, SetChangeListener<T>> listeners= new HashMap<>();
-    @Override
-    public void addListener(AttributeChangeListener<ObservableSet<T>> listener) {
-        SetChangeListener<T> setListener = change -> listener.changed(get());
-        listeners.put(listener,setListener);
-        getObservable().addListener(setListener);
-    }
-    @Override
-    public void removeListener(AttributeChangeListener<ObservableSet<T>> listener) {
-        getObservable().removeListener(listeners.get(listener));
-        listeners.remove(listener);
-    }
+
 }

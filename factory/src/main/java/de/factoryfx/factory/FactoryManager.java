@@ -12,7 +12,7 @@ public class FactoryManager<T extends FactoryBase<? extends LiveObject, ? extend
 
     T currentFactory;
 
-    public void update(T commonVersion ,T newVersion){
+    public MergeDiff update(T commonVersion ,T newVersion){
         newVersion.loopDetector();
         LinkedHashMap<String, LiveObject> previousLiveObjects = new LinkedHashMap<>();
         currentFactory.collectLiveObjects(previousLiveObjects);
@@ -31,6 +31,7 @@ public class FactoryManager<T extends FactoryBase<? extends LiveObject, ? extend
 
 
         updateLiveObjects(previousLiveObjects,newLiveObjects);
+        return mergeDiff;
     }
 
     private void updateLiveObjects(Map<String, LiveObject> previousLiveObjects, Map<String, LiveObject> newLiveObjects){

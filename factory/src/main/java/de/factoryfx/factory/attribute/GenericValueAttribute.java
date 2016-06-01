@@ -1,12 +1,10 @@
 package de.factoryfx.factory.attribute;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
-import javafx.beans.property.Property;
-import javafx.beans.property.SimpleObjectProperty;
 
-public class GenericValueAttribute<T> extends ValueAttribute<T, Property<T>> {
+public class GenericValueAttribute<T> extends ValueAttribute<T> {
     public GenericValueAttribute(AttributeMetadata<T> attributeMetadata) {
-        super(attributeMetadata, () -> new SimpleObjectProperty<>());
+        super(attributeMetadata);
     }
 
     public GenericValueAttribute(AttributeMetadata<T> attributeMetadata, T defaultValue) {
