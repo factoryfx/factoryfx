@@ -19,18 +19,17 @@ public class FactoryManager<T extends FactoryBase<? extends LiveObject, ? extend
 
         FactoryMerger factoryMerger = new FactoryMerger(currentFactory, commonVersion, newVersion);
         MergeDiff mergeDiff= factoryMerger.mergeIntoCurrent();
-        for (MergeResultEntry<?> mergeResultEntry: mergeDiff.getMergeInfos()){
-            mergeResultEntry.getPreviousEntityModel().markChanged();
+        if (mergeDiff.hasNoConflicts()){
+            for (MergeResultEntry<?> mergeResultEntry: mergeDiff.getMergeInfos()){
+                mergeResultEntry.getPreviousEntityModel().markChanged();
+            }
+
+            currentFactory.create();
+
+            LinkedHashMap<String, LiveObject> newLiveObjects = new LinkedHashMap<>();
+            currentFactory.collectLiveObjects(newLiveObjects);
+            updateLiveObjects(previousLiveObjects,newLiveObjects);
         }
-
-        currentFactory.create();
-
-        LinkedHashMap<String, LiveObject> newLiveObjects = new LinkedHashMap<>();
-        currentFactory.collectLiveObjects(newLiveObjects);
-
-
-
-        updateLiveObjects(previousLiveObjects,newLiveObjects);
         return mergeDiff;
     }
 

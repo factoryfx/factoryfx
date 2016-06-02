@@ -66,9 +66,8 @@ public class FactoryMerger {
 
         if (mergeDiff.hasNoConflicts()) {
             mergeResult.executeMerge();
+            currentModel.fixDuplicateObjects(s -> Optional.ofNullable(currentMap.get(s)));
         }
-
-        currentModel.fixDuplicateObjects(s -> Optional.ofNullable(currentMap.get(s)));
         return mergeDiff;
     }
 }

@@ -5,6 +5,7 @@ import java.util.HashMap;
 import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.factory.LiveObject;
 import de.factoryfx.factory.attribute.Attribute;
+import de.factoryfx.factory.attribute.AttributeChangeListener;
 import de.factoryfx.factory.attribute.AttributeMetadata;
 import de.factoryfx.factory.attribute.ReferenceAttribute;
 import de.factoryfx.factory.attribute.ReferenceListAttribute;
@@ -16,7 +17,6 @@ import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.control.cell.TextFieldTreeCell;
 import javafx.scene.layout.BorderPane;
-import javafx.util.StringConverter;
 
 public class GenericTreeFactoryViewRichClient<T extends FactoryBase<? extends LiveObject, T>> extends FactoryView<T> {
 
@@ -26,23 +26,33 @@ public class GenericTreeFactoryViewRichClient<T extends FactoryBase<? extends Li
 
     @Override
     public Node createContent() {
+//        if (object!=null){
+//            return object.metadata.displayName+": "+object.get();
+//        }
 
+        TreeView<Attribute<?>> tree = new TreeView<>();
+        tree.setCellFactory(param -> new TextFieldTreeCell<Attribute<?>>() {
+            AttributeChangeListener attributeChangeListener = attribute -> updateText((Attribute<?>) attribute);
 
-        TreeView<Attribute<?>> tree = new TreeView<> ();
-        tree.setCellFactory(param -> new TextFieldTreeCell<>(new StringConverter<Attribute<?>>() {
             @Override
-            public String toString(Attribute<?> object) {
-                if (object!=null){
-                    return object.metadata.displayName+": "+object.get();
+            public void updateItem(Attribute<?> item, boolean empty) {
+                super.updateItem(item, empty);
+
+                if (item != null) {
+                    item.addListener(attributeChangeListener);
+                    updateText(item);
+                } else {
+                    this.setText("");
                 }
-                return "null";
+                //CellUtils.updateItem(this, getConverter(), hbox, getTreeItemGraphic(), textField);
             }
 
-            @Override
-            public Attribute<?> fromString(String string) {
-                return null;
+            private void updateText(Attribute<?> attribute) {
+                if (attribute != null) {
+                    setText(attribute.metadata.displayName + ": " + attribute.get());
+                }
             }
-        }));
+        });
 
 
         ChangeListener<T> changeListener = (observable, oldValue, newValue) -> {
