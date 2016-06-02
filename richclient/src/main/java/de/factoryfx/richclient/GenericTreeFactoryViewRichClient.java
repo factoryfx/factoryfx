@@ -26,9 +26,6 @@ public class GenericTreeFactoryViewRichClient<T extends FactoryBase<? extends Li
 
     @Override
     public Node createContent() {
-//        if (object!=null){
-//            return object.metadata.displayName+": "+object.get();
-//        }
 
         TreeView<Attribute<?>> tree = new TreeView<>();
         tree.setCellFactory(param -> new TextFieldTreeCell<Attribute<?>>() {
