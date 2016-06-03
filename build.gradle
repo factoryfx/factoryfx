@@ -40,7 +40,13 @@ subprojects {
 
 project(':server') {
     dependencies {
-        
+        compile project(":factory")
+        compile group: 'org.glassfish.jersey.core', name: 'jersey-server', version: '2.23'
+        compile group: 'org.eclipse.jetty', name: 'jetty-server', version: '9.3.8.v20160314'
+        compile group: 'org.eclipse.jetty', name: 'jetty-servlet', version: '9.3.8.v20160314'
+        compile group: 'org.eclipse.jetty', name: 'jetty-webapp', version: '9.3.8.v20160314'
+        compile group: 'com.fasterxml.jackson.jaxrs', name: 'jackson-jaxrs-json-provider', version: '2.7.4'
+        compile 'org.glassfish.jersey.containers:jersey-container-servlet-core:2.23'
     }
 }
 

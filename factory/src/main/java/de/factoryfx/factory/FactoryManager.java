@@ -7,7 +7,7 @@ import java.util.Map;
 import de.factoryfx.factory.merge.FactoryMerger;
 import de.factoryfx.factory.merge.MergeDiff;
 
-public class FactoryManager<T extends FactoryBase<? extends LiveObject, ? extends FactoryBase>> {
+public class FactoryManager<T extends FactoryBase<? extends LiveObject, T>> {
 
     T currentFactory;
 
