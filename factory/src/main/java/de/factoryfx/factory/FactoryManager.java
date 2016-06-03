@@ -6,7 +6,6 @@ import java.util.Map;
 
 import de.factoryfx.factory.merge.FactoryMerger;
 import de.factoryfx.factory.merge.MergeDiff;
-import de.factoryfx.factory.merge.MergeResultEntry;
 
 public class FactoryManager<T extends FactoryBase<? extends LiveObject, ? extends FactoryBase>> {
 
@@ -20,10 +19,6 @@ public class FactoryManager<T extends FactoryBase<? extends LiveObject, ? extend
         FactoryMerger factoryMerger = new FactoryMerger(currentFactory, commonVersion, newVersion);
         MergeDiff mergeDiff= factoryMerger.mergeIntoCurrent();
         if (mergeDiff.hasNoConflicts()){
-            for (MergeResultEntry<?> mergeResultEntry: mergeDiff.getMergeInfos()){
-                mergeResultEntry.getPreviousEntityModel().markChanged();
-            }
-
             currentFactory.create();
 
             LinkedHashMap<String, LiveObject> newLiveObjects = new LinkedHashMap<>();

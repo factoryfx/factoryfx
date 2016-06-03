@@ -11,7 +11,7 @@ public abstract class AttributeEditor<T,A extends Attribute<T>> implements Widge
     protected SimpleObjectProperty<A> boundToAttribute= new SimpleObjectProperty<>();
     protected SimpleObjectProperty<T> boundTo= new SimpleObjectProperty<>();
     protected SimpleBooleanProperty disabledProperty= new SimpleBooleanProperty(true);
-    private AttributeChangeListener<T> attributeChangeListener=value -> {
+    private AttributeChangeListener<T> attributeChangeListener=(attribute, value) -> {
         boundTo.set(value);
     };
 
@@ -31,7 +31,7 @@ public abstract class AttributeEditor<T,A extends Attribute<T>> implements Widge
         disabledProperty.set(attribute==null);
 
         boundToAttribute.get().addListener(attributeChangeListener);
-        attributeChangeListener.changed(boundToAttribute.get().get());
+        attributeChangeListener.changed(boundToAttribute.get(),boundToAttribute.get().get());
     }
 
     public boolean canEdit(Object attribute){

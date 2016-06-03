@@ -2,8 +2,8 @@ package de.factoryfx.richclient;
 
 import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.factory.LiveObject;
-import de.factoryfx.guimodel.GenericTreeFactoryView;
-import de.factoryfx.guimodel.ViewManager;
+import de.factoryfx.guimodel.GenericEditor;
+import de.factoryfx.guimodel.GuiModel;
 import de.factoryfx.richclient.framework.view.LoadView;
 import de.factoryfx.richclient.framework.view.SaveView;
 import javafx.scene.Scene;
@@ -17,13 +17,13 @@ import javafx.stage.Stage;
 
 public class MainStage<T extends FactoryBase<? extends LiveObject, T>> {
 
-    private final ViewManager viewManager;
+    private final GuiModel guiModel;
     private final LoadView<?> loadView;
     private final GenericTreeFactoryViewRichClient<T> genericTreeFactoryViewRichClient;
     private final SaveView<T> saveView;
 
-    public MainStage(ViewManager<T> viewManager, GenericTreeFactoryViewRichClient<T> genericTreeFactoryViewRichClient, LoadView<T> loadView, SaveView<T> saveView) {
-        this.viewManager = viewManager;
+    public MainStage(GuiModel<T> guiModel, GenericTreeFactoryViewRichClient<T> genericTreeFactoryViewRichClient, LoadView<T> loadView, SaveView<T> saveView) {
+        this.guiModel = guiModel;
         this.loadView = loadView;
         this.genericTreeFactoryViewRichClient = genericTreeFactoryViewRichClient;
         this.saveView = saveView;
@@ -81,8 +81,8 @@ public class MainStage<T extends FactoryBase<? extends LiveObject, T>> {
         }
 
         borderPane.setTop(menuBar);
-        viewManager.getViews().forEach(view -> {
-            if (view instanceof GenericTreeFactoryView<?>){
+        guiModel.getViews().forEach(view -> {
+            if (view instanceof GenericEditor<?>){
 
             }
         });

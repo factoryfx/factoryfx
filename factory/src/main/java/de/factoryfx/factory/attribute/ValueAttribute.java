@@ -3,7 +3,9 @@ package de.factoryfx.factory.attribute;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
+import java.util.function.Function;
 
 import com.fasterxml.jackson.annotation.JsonValue;
 import de.factoryfx.factory.FactoryBase;
@@ -29,6 +31,11 @@ public class ValueAttribute<T> extends Attribute<T> {
     }
 
     @Override
+    public void fixDuplicateObjects(Function<String, Optional<FactoryBase<?, ?>>> getCurrentEntity) {
+        //do nothing
+    }
+
+    @Override
     public T get() {
         return value;
     }
@@ -44,10 +51,15 @@ public class ValueAttribute<T> extends Attribute<T> {
         listeners.remove(listener);
     }
 
+    @Override
+    public String getDisplayText() {
+        return metadata.displayName+": "+ value;
+    }
+
     public void set(T value) {
         this.value = value;
         for (AttributeChangeListener<T> listener: listeners){
-            listener.changed(value);
+            listener.changed(this,value);
         }
     }
 
@@ -66,4 +78,6 @@ public class ValueAttribute<T> extends Attribute<T> {
     void setValue(T value) {
         this.value = value;
     }
+
+
 }

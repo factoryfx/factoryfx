@@ -3,8 +3,8 @@ package de.factoryfx.example.factory;
 import java.util.ArrayList;
 
 import de.factoryfx.factory.FactoryManager;
+import de.factoryfx.guimodel.GuiModel;
 import de.factoryfx.guimodel.View;
-import de.factoryfx.guimodel.ViewManager;
 import de.factoryfx.richclient.GenericTreeFactoryViewRichClient;
 import de.factoryfx.richclient.MainStage;
 import de.factoryfx.richclient.framework.view.LoadView;
@@ -43,9 +43,16 @@ public class Main extends Application {
 
         ArrayList<View> views = new ArrayList<>();
         GenericTreeFactoryViewRichClient genericTreeFactoryViewRichClient = new GenericTreeFactoryViewRichClient();
-        MainStage<ShopFactory> factoryEditor = new MainStage<>(new ViewManager<>(shopFactory, views),genericTreeFactoryViewRichClient,
-                new LoadView<>(genericTreeFactoryViewRichClient, () -> localCopyShopFactory),
-                new SaveView<>(newFactory -> factoryManager.update(shopFactory, newFactory), () -> localCopyShopFactory));
+        SaveView<ShopFactory> saveView = new SaveView<>(() -> factoryManager.update(shopFactory, localCopyShopFactory));
+
+
+        MainStage<ShopFactory> factoryEditor =
+                new MainStage<>(
+                        new GuiModel<>(shopFactory, views),
+                        genericTreeFactoryViewRichClient,
+                        new LoadView<>(genericTreeFactoryViewRichClient, () -> localCopyShopFactory),
+                        saveView
+                );
         factoryEditor.show();
 
 

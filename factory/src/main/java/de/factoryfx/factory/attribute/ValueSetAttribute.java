@@ -20,7 +20,7 @@ public class ValueSetAttribute<T> extends ValueAttribute<ObservableSet<T>> {
 
         get().addListener((SetChangeListener<T>) change -> {
             for (AttributeChangeListener<ObservableSet<T>> listener: listeners){
-                listener.changed(get());
+                listener.changed(ValueSetAttribute.this,get());
             }
         });
     }
@@ -66,5 +66,13 @@ public class ValueSetAttribute<T> extends ValueAttribute<ObservableSet<T>> {
         return get().toArray();
     }
 
-
+    @Override
+    public String getDisplayText() {
+        StringBuilder stringBuilder = new StringBuilder("Set (number of entries: "+ get().size()+")\n");
+        for (T item:  get()){
+            stringBuilder.append(item);
+            stringBuilder.append(",\n");
+        }
+        return metadata.displayName+":\n"+stringBuilder.toString();
+    }
 }

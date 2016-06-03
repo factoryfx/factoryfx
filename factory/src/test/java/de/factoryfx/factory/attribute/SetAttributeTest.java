@@ -26,7 +26,7 @@ public class SetAttributeTest {
     public void testObservable(){
         ExampleSetFactory exampleSetFactory = new ExampleSetFactory();
         ArrayList<String> calls= new ArrayList<>();
-        exampleSetFactory.setAttribute.addListener((o)-> {
+        exampleSetFactory.setAttribute.addListener((a,o)-> {
             calls.add("");
         });
         exampleSetFactory.setAttribute.get().add("7787");
@@ -45,7 +45,7 @@ public class SetAttributeTest {
     public void remove_Listener(){
         ExampleSetFactory exampleSetFactory = new ExampleSetFactory();
         ArrayList<String> calls= new ArrayList<>();
-        AttributeChangeListener<ObservableSet<String>> invalidationListener = (o) -> {
+        AttributeChangeListener<ObservableSet<String>> invalidationListener = (a,o) -> {
             calls.add("");
         };
         exampleSetFactory.setAttribute.addListener(invalidationListener);

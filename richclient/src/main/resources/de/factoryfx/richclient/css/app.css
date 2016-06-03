@@ -21,3 +21,7 @@
     /*-fx-border-style: solid;*/
     /*-fx-border-color:red;*/
 }
+
+.table-view {
+    -fx-font-size: 12px;
+}

@@ -26,7 +26,7 @@ public class ReferenceListAttributeTest {
     public void testObservable(){
         ExampleReferenceListFactory exampleReferenceListFactory = new ExampleReferenceListFactory();
         ArrayList<String> calls= new ArrayList<>();
-        exampleReferenceListFactory.referenceListAttribute.addListener((o)-> {
+        exampleReferenceListFactory.referenceListAttribute.addListener((a,o)-> {
             calls.add("");
         });
         exampleReferenceListFactory.referenceListAttribute.get().add(new ExampleFactoryA());
@@ -47,7 +47,7 @@ public class ReferenceListAttributeTest {
     public void remove_Listener(){
         ExampleReferenceListFactory exampleReferenceListFactory = new ExampleReferenceListFactory();
         ArrayList<String> calls= new ArrayList<>();
-        AttributeChangeListener<ObservableList<ExampleFactoryA>> invalidationListener = (o) -> {
+        AttributeChangeListener<ObservableList<ExampleFactoryA>> invalidationListener = (a,o) -> {
             calls.add("");
         };
         exampleReferenceListFactory.referenceListAttribute.addListener(invalidationListener);

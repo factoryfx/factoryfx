@@ -26,7 +26,7 @@ public class ListAttributeTest {
     public void testObservable(){
         ExampleListFactory exampleListFactory = new ExampleListFactory();
         ArrayList<String> calls= new ArrayList<>();
-        exampleListFactory.listAttribute.addListener((o)-> {
+        exampleListFactory.listAttribute.addListener((a,o)-> {
             calls.add("");
         });
         exampleListFactory.listAttribute.get().add("7787");
@@ -45,7 +45,7 @@ public class ListAttributeTest {
     public void remove_Listener(){
         ExampleListFactory exampleListFactory = new ExampleListFactory();
         ArrayList<String> calls= new ArrayList<>();
-        AttributeChangeListener<ObservableList<String>> invalidationListener = (o) -> {
+        AttributeChangeListener<ObservableList<String>> invalidationListener = (a,o) -> {
             calls.add("");
         };
         exampleListFactory.listAttribute.addListener(invalidationListener);

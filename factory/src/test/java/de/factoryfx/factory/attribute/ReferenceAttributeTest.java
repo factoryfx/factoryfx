@@ -24,7 +24,7 @@ public class ReferenceAttributeTest {
     public void testObservable(){
         ExampleReferenceFactory exampleReferenceFactory = new ExampleReferenceFactory();
         ArrayList<String> calls= new ArrayList<>();
-        exampleReferenceFactory.referenceAttribute.addListener(value -> calls.add(""));
+        exampleReferenceFactory.referenceAttribute.addListener((a,value) -> calls.add(""));
         exampleReferenceFactory.referenceAttribute.set(new ExampleFactoryA());
 
         Assert.assertEquals(1,calls.size());
@@ -43,7 +43,7 @@ public class ReferenceAttributeTest {
     public void remove_Listener(){
         ExampleReferenceFactory exampleReferenceFactory = new ExampleReferenceFactory();
         ArrayList<String> calls= new ArrayList<>();
-        AttributeChangeListener<ExampleFactoryA> invalidationListener = (o) -> {
+        AttributeChangeListener<ExampleFactoryA> invalidationListener = (a,o) -> {
             calls.add("");
         };
         exampleReferenceFactory.referenceAttribute.addListener(invalidationListener);

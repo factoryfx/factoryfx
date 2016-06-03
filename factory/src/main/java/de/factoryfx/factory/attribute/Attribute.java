@@ -7,6 +7,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.factory.merge.attribute.AttributeMergeHelper;
 import de.factoryfx.factory.validation.Validation;
@@ -28,9 +29,7 @@ public abstract class Attribute<T>{
     /*
     see test {{@Link MergerTest#test_dublicate_ids_bug}} why this is needed
     */
-    public void fixDuplicateObjects(Function<String, Optional<FactoryBase<?,?>>> getCurrentEntity) {
-        //do nothing
-    }
+    public abstract void fixDuplicateObjects(Function<String, Optional<FactoryBase<?,?>>> getCurrentEntity);
 
     public abstract T get();
 
@@ -50,4 +49,7 @@ public abstract class Attribute<T>{
     public abstract void addListener(AttributeChangeListener<T> listener);
 
     public abstract void removeListener(AttributeChangeListener<T> listener);
+
+    @JsonIgnore
+    public abstract String getDisplayText();
 }

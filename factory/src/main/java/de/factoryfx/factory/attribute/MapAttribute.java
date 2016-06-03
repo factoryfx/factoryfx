@@ -19,7 +19,7 @@ public class MapAttribute<K, V> extends ValueAttribute<ObservableMap<K,V>> {
 
         get().addListener((MapChangeListener<K, V>) change -> {
             for (AttributeChangeListener<ObservableMap<K,V>> listener: listeners){
-                listener.changed(get());
+                listener.changed(MapAttribute.this,get());
             }
         });
     }
@@ -48,6 +48,16 @@ public class MapAttribute<K, V> extends ValueAttribute<ObservableMap<K,V>> {
 
     public V getOrDefault(K key, V defaultValue) {
         return get().getOrDefault(key, defaultValue);
+    }
+
+    @Override
+    public String getDisplayText() {
+        StringBuilder stringBuilder = new StringBuilder("List (number of entries: "+ get().size()+")\n");
+        for (Map.Entry<K,V> item:  get().entrySet()){
+            stringBuilder.append(item.getKey()+":"+item.getValue());
+            stringBuilder.append(",\n");
+        }
+        return metadata.displayName+":\n"+stringBuilder.toString();
     }
 
 }

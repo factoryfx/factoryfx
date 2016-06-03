@@ -11,6 +11,14 @@ public class Product implements LiveObject {
         this.price = price;
     }
 
+    public String getName() {
+        return name;
+    }
+
+    public int getPrice() {
+        return price;
+    }
+
     @Override
     public void start() {
 

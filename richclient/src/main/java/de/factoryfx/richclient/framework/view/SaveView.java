@@ -1,6 +1,5 @@
 package de.factoryfx.richclient.framework.view;
 
-import java.util.function.Function;
 import java.util.function.Supplier;
 
 import de.factoryfx.factory.FactoryBase;
@@ -14,12 +13,11 @@ import javafx.scene.layout.VBox;
 
 public class SaveView<T extends FactoryBase<? extends LiveObject, T>> implements Widget {
 
-    private final Function<T,MergeDiff>  factorySaver;
-    private final Supplier<T> currentLoadedFactoryProvider;
+    private final Supplier<MergeDiff>  factorySaver;
 
-    public SaveView(Function<T,MergeDiff> factorySaver, Supplier<T> currentLoadedFactoryProvider) {
+
+    public SaveView(Supplier<MergeDiff> factorySaver) {
         this.factorySaver = factorySaver;
-        this.currentLoadedFactoryProvider = currentLoadedFactoryProvider;
     }
 
     @Override
@@ -29,7 +27,7 @@ public class SaveView<T extends FactoryBase<? extends LiveObject, T>> implements
         VBox vBox = new VBox();
         Button button= new Button("save");
         button.setOnAction(event -> {
-            MergeDiff mergeDiff= factorySaver.apply(currentLoadedFactoryProvider.get());
+            MergeDiff mergeDiff= factorySaver.get();
             factoryDiffWidget.updateMergeResult(mergeDiff);
         });
         vBox.getChildren().add(button);

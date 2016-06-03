@@ -20,7 +20,7 @@ public class ValueListAttribute<T> extends ValueAttribute<ObservableList<T>> {
 
         get().addListener((ListChangeListener<T>) c -> {
             for (AttributeChangeListener<ObservableList<T>> listener: listeners){
-                listener.changed(get());
+                listener.changed(ValueListAttribute.this,get());
             }
         });
     }
@@ -75,6 +75,16 @@ public class ValueListAttribute<T> extends ValueAttribute<ObservableList<T>> {
 
     public Object[] toArray() {
         return get().toArray();
+    }
+
+    @Override
+    public String getDisplayText() {
+        StringBuilder stringBuilder = new StringBuilder("List (number of entries: "+ get().size()+")\n");
+        for (T item:  get()){
+            stringBuilder.append(item);
+            stringBuilder.append(",\n");
+        }
+        return metadata.displayName+":\n"+stringBuilder.toString();
     }
 
 }

@@ -79,7 +79,7 @@ public class ReferenceAttribute<T extends FactoryBase<?,? super T>> extends Attr
     @Override
     public void set(T value) {
         for (AttributeChangeListener<T> listener: listeners){
-            listener.changed(value);
+            listener.changed(this,value);
         }
         this.value=value;
     }
@@ -103,4 +103,14 @@ public class ReferenceAttribute<T extends FactoryBase<?,? super T>> extends Attr
     public void removeListener(AttributeChangeListener<T> listener) {
         listeners.remove(listener);
     }
+
+    @Override
+    public String getDisplayText() {
+        String referenceDisplayText = "empty";
+        if (value!=null){
+            referenceDisplayText=value.getDisplayText();
+        }
+        return metadata.displayName+":"+ referenceDisplayText;
+    }
+
 }

@@ -94,10 +94,10 @@ public class FactoryDiffWidget implements Widget {
             MergeResultEntry<?> diffItem=diffTableView.getSelectionModel().getSelectedItem().entry;
             if (diffItem!=null){
                 Patch<String> patch = DiffUtils.diff(
-                        convertToList(diffItem.getPreviousValue()),
-                        convertToList(diffItem.getNewValue())
+                        convertToList(diffItem.previousValueDisplayText),
+                        convertToList(diffItem.newValuepValueDisplayText)
                 );
-                String originalText=diffItem.getPreviousValue();
+                String originalText=diffItem.previousValueDisplayText;
 
                 List<StyleClassArea> styleChanges= new ArrayList<>();
 
@@ -160,8 +160,8 @@ public class FactoryDiffWidget implements Widget {
                     }
                 });
 
-                previousValueDisplay.replaceText(diffItem.getPreviousValue());
-                newValueDisplay.replaceText(diffItem.getNewValue());
+                previousValueDisplay.replaceText(diffItem.previousValueDisplayText);
+                newValueDisplay.replaceText(diffItem.newValuepValueDisplayText);
             }
         });
 
@@ -190,18 +190,19 @@ public class FactoryDiffWidget implements Widget {
         TableView<MergeResultEntryWrapper> tableView = new TableView<>();
         tableView.setPlaceholder(new Label("No changes found"));
         {
-            TableColumn<MergeResultEntryWrapper, String> pathColumn = new TableColumn<>("Path");
-            pathColumn.setCellValueFactory(param -> new SimpleStringProperty(param.getValue().entry.getPathDisplayText()));
-            tableView.getColumns().add(pathColumn);
+//            TableColumn<MergeResultEntryWrapper, String> pathColumn = new TableColumn<>("Path");
+//            pathColumn.setCellValueFactory(param -> new SimpleStringProperty(param.getValue().entry.getPathDisplayText()));
+//            tableView.getColumns().add(pathColumn);
 
             TableColumn<MergeResultEntryWrapper, String> entityColumn = new TableColumn<>("Data Item");
 //            entityColumn.getStyleClass().add("dividerColumn");
-            entityColumn.setCellValueFactory(param -> new SimpleStringProperty(param.getValue().entry.getPreviousEntity()));
+            entityColumn.setCellValueFactory(param -> new SimpleStringProperty(param.getValue().entry.parent.getDisplayText()));
             tableView.getColumns().add(entityColumn);
 
-            TableColumn<MergeResultEntryWrapper, String> filedColumn = new TableColumn<>("Field");
-            filedColumn.setCellValueFactory(param -> new SimpleStringProperty(param.getValue().entry.getPreviousField()));
-            tableView.getColumns().add(filedColumn);
+//            TableColumn<MergeResultEntryWrapper, String> filedColumn = new TableColumn<>("Field");
+//            filedColumn.setCellValueFactory(param -> new SimpleStringProperty(param.getValue().entry.getPreviousField()));
+//            tableView.getColumns().add(filedColumn);
+
 
 //            TableColumn<MergeResultEntryWrapper, String> changeColumn = new TableColumn<>("change type");
             /*
@@ -213,11 +214,11 @@ public class FactoryDiffWidget implements Widget {
             */
 
             TableColumn<MergeResultEntryWrapper, String> oldValueColumn = new TableColumn<>("Previous value");
-            oldValueColumn.setCellValueFactory(param -> new SimpleStringProperty(param.getValue().entry.getPreviousValue()));
+            oldValueColumn.setCellValueFactory(param -> new SimpleStringProperty(param.getValue().entry.previousValueDisplayText));
             tableView.getColumns().add(oldValueColumn);
 
             TableColumn<MergeResultEntryWrapper, String> valueColumn = new TableColumn<>("New value");
-            valueColumn.setCellValueFactory(param -> new SimpleStringProperty(param.getValue().entry.getNewValue()));
+            valueColumn.setCellValueFactory(param -> new SimpleStringProperty(param.getValue().entry.newValuepValueDisplayText));
             tableView.getColumns().add(valueColumn);
         }
 

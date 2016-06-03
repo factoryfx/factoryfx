@@ -132,7 +132,7 @@ public class ReferenceListAttribute<T extends FactoryBase<?,? super T>> extends 
     Map<AttributeChangeListener<ObservableList<T>>, ListChangeListener<T>> listeners= new HashMap<>();
     @Override
     public void addListener(AttributeChangeListener<ObservableList<T>> listener) {
-        ListChangeListener<T> listListener = change -> listener.changed(get());
+        ListChangeListener<T> listListener = change -> listener.changed(ReferenceListAttribute.this,get());
         listeners.put(listener,listListener);
         list.addListener(listListener);
     }
@@ -140,6 +140,16 @@ public class ReferenceListAttribute<T extends FactoryBase<?,? super T>> extends 
     public void removeListener(AttributeChangeListener<ObservableList<T>> listener) {
         list.removeListener(listeners.get(listener));
         listeners.remove(listener);
+    }
+
+    @Override
+    public String getDisplayText() {
+        StringBuilder stringBuilder = new StringBuilder("List (number of entries: "+ list.size()+")\n");
+        for (T item:  list){
+            stringBuilder.append(item.getDisplayText());
+            stringBuilder.append(",\n");
+        }
+        return metadata.displayName+":\n"+stringBuilder.toString();
     }
 
 }

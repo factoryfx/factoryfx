@@ -29,22 +29,25 @@ public class GenericTreeFactoryViewRichClient<T extends FactoryBase<? extends Li
 
         TreeView<Attribute<?>> tree = new TreeView<>();
         tree.setCellFactory(param -> new TextFieldTreeCell<Attribute<?>>() {
-            AttributeChangeListener attributeChangeListener = attribute -> updateText((Attribute<?>) attribute);
-
+            AttributeChangeListener attributeChangeListener = (attribute, value) -> updateText((Attribute<?>) attribute);
+            Attribute<?> attribute;
             @Override
             public void updateItem(Attribute<?> item, boolean empty) {
                 super.updateItem(item, empty);
-
-                if (item != null) {
-                    item.addListener(attributeChangeListener);
-                    updateText(item);
+                if (attribute!=null){
+                    attribute.removeListener(attributeChangeListener);
+                }
+                attribute=item;
+                if (attribute != null) {
+                    attribute.addListener(attributeChangeListener);
+                    updateText(attribute);
                 } else {
                     this.setText("");
                 }
                 //CellUtils.updateItem(this, getConverter(), hbox, getTreeItemGraphic(), textField);
             }
 
-            private void updateText(Attribute<?> attribute) {
+            private void updateText(Attribute attribute) {
                 if (attribute != null) {
                     setText(attribute.metadata.displayName + ": " + attribute.get());
                 }

@@ -54,7 +54,8 @@ public class FactoryMerger {
         }
         HashMap<FactoryBase<?,?>, FactoryBase<?,?>> childToParentMap = currentModel.getChildToParentMap(allModelEntities);
         for (MergeResultEntry<?> mergeResultEntry : mergeResult.allResults()) {
-            mergeResultEntry.setPath(currentModel.getMassPathTo(childToParentMap, mergeResultEntry.getPreviousEntityModel()));
+//TODO
+//            mergeResultEntry.setPath(currentModel.getMassPathTo(childToParentMap, mergeResultEntry.getPreviousEntityModel()));
         }
         return mergeResult;
     }
@@ -65,6 +66,15 @@ public class FactoryMerger {
         MergeDiff mergeDiff = mergeResult.getMergeDiff();
 
         if (mergeDiff.hasNoConflicts()) {
+
+            for (FactoryBase<?,?> current : currentMap.values()){
+                current.unMarkChanged();
+            }
+
+            for (MergeResultEntry<?> mergeResultEntry: mergeDiff.getMergeInfos()){
+                mergeResultEntry.parent.markChanged();
+            }
+
             mergeResult.executeMerge();
             currentModel.fixDuplicateObjects(s -> Optional.ofNullable(currentMap.get(s)));
         }

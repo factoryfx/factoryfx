@@ -221,7 +221,7 @@ public abstract class FactoryBase<E extends LiveObject, T extends FactoryBase<E,
         this.visitAttributesTripleFlat(originalValue, newValue, (currentAttribute, originalAttribute, newAttribute) -> {
             AttributeMergeHelper<?> attributeMergeHelper = currentAttribute.createMergeHelper();
             boolean mergeable = attributeMergeHelper.isMergeable(originalAttribute, newAttribute);
-            MergeResultEntry<T> mergeResultEntry = new MergeResultEntry<>((T) FactoryBase.this, (Optional<T>) newValue, Optional.ofNullable(currentAttribute), newAttribute);
+            MergeResultEntry<T> mergeResultEntry = new MergeResultEntry<>(FactoryBase.this, currentAttribute,  currentAttribute.getDisplayText(), newAttribute.map((attribute)->attribute.getDisplayText()).orElse(""));
             if (mergeable) {
                 if (newAttribute.isPresent()) {
                     if (!attributeMergeHelper.equalValues(newAttribute.get())) {
@@ -338,8 +338,13 @@ public abstract class FactoryBase<E extends LiveObject, T extends FactoryBase<E,
 
     @JsonIgnore
     private boolean changed=true;
+
+    /**set from Merger used to determine which live Objects needs update*/
     public void markChanged() {
         changed=true;
+    }
+    public void unMarkChanged() {
+        changed=false;
     }
 
     @JsonIgnore
@@ -361,6 +366,11 @@ public abstract class FactoryBase<E extends LiveObject, T extends FactoryBase<E,
         } finally {
             loopProtector.exit();
         }
+    }
+
+    @JsonIgnore
+    public String getDisplayText(){
+        return getDescriptiveName()+":"+getId();
     }
 
 }
