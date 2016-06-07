@@ -9,12 +9,12 @@ import de.factoryfx.factory.FactoryManager;
 import de.factoryfx.factory.LiveObject;
 import de.factoryfx.factory.merge.MergeDiff;
 
-public class DefaultApplicationServer<T extends FactoryBase<? extends LiveObject, T>> implements ApplicationServer<T> {
+public class DefaultApplicationServer<T extends FactoryBase<? extends LiveObject, T>,V> implements ApplicationServer<T,V> {
 
-    private final FactoryManager<T> factoryManager;
+    private final FactoryManager<T,V> factoryManager;
     private final FactoryStorage<T> factoryStorage;
 
-    public DefaultApplicationServer(FactoryManager<T> factoryManager, FactoryStorage<T> factoryStorage) {
+    public DefaultApplicationServer(FactoryManager<T,V> factoryManager, FactoryStorage<T> factoryStorage) {
         this.factoryManager = factoryManager;
         this.factoryStorage = factoryStorage;
     }
@@ -53,6 +53,11 @@ public class DefaultApplicationServer<T extends FactoryBase<? extends LiveObject
     @Override
     public void stop() {
         factoryManager.stop();
+    }
+
+    @Override
+    public void query(V visitor) {
+        factoryManager.query(visitor);
     }
 
 }

@@ -1,24 +1,9 @@
 package de.factoryfx.guimodel;
 
+import java.util.ArrayList;
 import java.util.List;
 
-import de.factoryfx.factory.FactoryBase;
-import de.factoryfx.factory.LiveObject;
-
-public class GuiModel<T extends FactoryBase<? extends LiveObject, T>> {
-    private final T rootFactory;
-    private final List<View> views;
-
-    public boolean showGenericEditor;
-
-
-    public GuiModel(T rootFactory, List<View> views) {
-        this.rootFactory = rootFactory;
-        this.views = views;
-    }
-
-    public List<View> getViews(){
-        return views;
-    }
-
+public class GuiModel {
+    public final List<RuntimeQueryView> runtimeQueryViews=new ArrayList<>();
+    public boolean showGenericEditor=true;
 }

@@ -28,4 +28,9 @@ public class Product implements LiveObject {
     public void stop() {
 
     }
+
+    @Override
+    public void accept(Object visitor) {
+        //nothing
+    }
 }

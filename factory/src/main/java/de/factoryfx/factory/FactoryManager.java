@@ -7,7 +7,7 @@ import java.util.Map;
 import de.factoryfx.factory.merge.FactoryMerger;
 import de.factoryfx.factory.merge.MergeDiff;
 
-public class FactoryManager<T extends FactoryBase<? extends LiveObject, T>> {
+public class FactoryManager<T extends FactoryBase<? extends LiveObject, T>,V> {
 
     T currentFactory;
 
@@ -76,6 +76,14 @@ public class FactoryManager<T extends FactoryBase<? extends LiveObject, T>> {
 
         for (LiveObject newLiveObject: newLiveObjects.values()){
             newLiveObject.stop();
+        }
+    }
+
+    public void query(V visitor){
+        LinkedHashMap<String, LiveObject> previousLiveObjects = new LinkedHashMap<>();
+        currentFactory.collectLiveObjects(previousLiveObjects);
+        for(LiveObject<V> liveObject: previousLiveObjects.values()){
+            liveObject.accept(visitor);
         }
     }
 

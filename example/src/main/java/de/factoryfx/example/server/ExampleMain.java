@@ -1,14 +1,17 @@
 package de.factoryfx.example.server;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 
 import de.factoryfx.datastorage.ApplicationFactoryMetadata;
 import de.factoryfx.development.InMemoryFactoryStorage;
+import de.factoryfx.development.SinglePrecessInstanceUtil;
 import de.factoryfx.example.factory.ProductFactory;
 import de.factoryfx.example.factory.ShopFactory;
 import de.factoryfx.factory.FactoryManager;
 import de.factoryfx.guimodel.GuiModel;
-import de.factoryfx.guimodel.View;
+import de.factoryfx.guimodel.RuntimeQueryView;
+import de.factoryfx.guimodel.Table;
+import de.factoryfx.guimodel.TableColumn;
 import de.factoryfx.richclient.GenericTreeFactoryViewRichClient;
 import de.factoryfx.richclient.MainStage;
 import de.factoryfx.richclient.framework.view.LoadView;
@@ -17,7 +20,7 @@ import de.factoryfx.server.DefaultApplicationServer;
 import javafx.application.Application;
 import javafx.stage.Stage;
 
-public class Main extends Application {
+public class ExampleMain extends Application {
 
 
 
@@ -25,8 +28,7 @@ public class Main extends Application {
     public void start(Stage primaryStage) throws Exception {
 
         ShopFactory shopFactory = new ShopFactory();
-        shopFactory.port.set(123);
-        shopFactory.host.set("testhost");
+        shopFactory.stageTitle.set("Simple Example");
         {
             ProductFactory productFactory = new ProductFactory();
             productFactory.name.set("Product1");
@@ -40,19 +42,26 @@ public class Main extends Application {
             shopFactory.products.add(productFactory);
         }
 
-        DefaultApplicationServer<ShopFactory> applicationServer = new DefaultApplicationServer<>(new FactoryManager<>(),new InMemoryFactoryStorage<>(shopFactory));
+        DefaultApplicationServer<ShopFactory,OrderCollector> applicationServer = new DefaultApplicationServer<>(new FactoryManager<>(),new InMemoryFactoryStorage<>(shopFactory));
         applicationServer.start();
 
         ApplicationFactoryMetadata<ShopFactory> localCopyShopFactory=applicationServer.getCurrentFactory();
 
-        ArrayList<View> views = new ArrayList<>();
         GenericTreeFactoryViewRichClient genericTreeFactoryViewRichClient = new GenericTreeFactoryViewRichClient();
         SaveView<ShopFactory> saveView = new SaveView<>(() -> applicationServer.updateCurrentFactory(localCopyShopFactory));
 
+        GuiModel guiModel = new GuiModel();
+
+        TableColumn<OrderStorage.Order> productColumn = new TableColumn<>("Product", (order)-> order.productName);
+        TableColumn<OrderStorage.Order> customerColumn = new TableColumn<>("Customer", (order)-> order.customerName);
+        guiModel.runtimeQueryViews.add(new RuntimeQueryView<>("Orders", s -> {
+            OrderCollector visitor = new OrderCollector();
+            applicationServer.query(visitor);
+            return visitor.getOrders();
+        },new Table<>(Arrays.asList(productColumn,customerColumn))));
 
         MainStage<ShopFactory> factoryEditor =
-                new MainStage<>(
-                        new GuiModel<>(shopFactory, views),
+                new MainStage<>(guiModel,
                         genericTreeFactoryViewRichClient,
                         new LoadView<>(genericTreeFactoryViewRichClient, () -> localCopyShopFactory.root),
                         saveView
@@ -63,6 +72,7 @@ public class Main extends Application {
     }
 
     public static void main(String[] args) {
+        SinglePrecessInstanceUtil.enforceSingleProzessInstance(37453);
         Application.launch();
     }
 

@@ -2,9 +2,9 @@ package de.factoryfx.richclient;
 
 import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.factory.LiveObject;
-import de.factoryfx.guimodel.GenericEditor;
 import de.factoryfx.guimodel.GuiModel;
 import de.factoryfx.richclient.framework.view.LoadView;
+import de.factoryfx.richclient.framework.view.RuntimeView;
 import de.factoryfx.richclient.framework.view.SaveView;
 import javafx.scene.Scene;
 import javafx.scene.control.Menu;
@@ -22,7 +22,7 @@ public class MainStage<T extends FactoryBase<? extends LiveObject, T>> {
     private final GenericTreeFactoryViewRichClient<T> genericTreeFactoryViewRichClient;
     private final SaveView<T> saveView;
 
-    public MainStage(GuiModel<T> guiModel, GenericTreeFactoryViewRichClient<T> genericTreeFactoryViewRichClient, LoadView<T> loadView, SaveView<T> saveView) {
+    public MainStage(GuiModel guiModel, GenericTreeFactoryViewRichClient<T> genericTreeFactoryViewRichClient, LoadView<T> loadView, SaveView<T> saveView) {
         this.guiModel = guiModel;
         this.loadView = loadView;
         this.genericTreeFactoryViewRichClient = genericTreeFactoryViewRichClient;
@@ -81,10 +81,19 @@ public class MainStage<T extends FactoryBase<? extends LiveObject, T>> {
         }
 
         borderPane.setTop(menuBar);
-        guiModel.getViews().forEach(view -> {
-            if (view instanceof GenericEditor<?>){
 
-            }
+        Menu menu = new Menu("Runtime views");
+        menuBar.getMenus().add(menu);
+//
+        guiModel.runtimeQueryViews.forEach(view -> {
+            RuntimeView runtimeView = new RuntimeView(view);
+            MenuItem menuItem = new MenuItem(view.name);
+            menuItem.setOnAction(event -> {
+                Tab tab = new Tab(view.name);
+                tabPane.getTabs().add(tab);
+                tab.setContent(runtimeView.createContent());
+            });
+            menu.getItems().add(menuItem);
         });
 
 
