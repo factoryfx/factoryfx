@@ -18,9 +18,4 @@ public class IntegerAttribute extends ValueAttribute<Integer> {
         this((AttributeMetadata<Integer>) null);
         set(value);
     }
-
-    @Override
-    public Integer get() {
-        return (Integer) super.get();
-    }
 }

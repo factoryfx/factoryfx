@@ -1,7 +1,11 @@
-package de.factoryfx.example.factory;
+package de.factoryfx.example.server;
 
 import java.util.ArrayList;
 
+import de.factoryfx.datastorage.ApplicationFactoryMetadata;
+import de.factoryfx.development.InMemoryFactoryStorage;
+import de.factoryfx.example.factory.ProductFactory;
+import de.factoryfx.example.factory.ShopFactory;
 import de.factoryfx.factory.FactoryManager;
 import de.factoryfx.guimodel.GuiModel;
 import de.factoryfx.guimodel.View;
@@ -9,6 +13,7 @@ import de.factoryfx.richclient.GenericTreeFactoryViewRichClient;
 import de.factoryfx.richclient.MainStage;
 import de.factoryfx.richclient.framework.view.LoadView;
 import de.factoryfx.richclient.framework.view.SaveView;
+import de.factoryfx.server.DefaultApplicationServer;
 import javafx.application.Application;
 import javafx.stage.Stage;
 
@@ -35,22 +40,21 @@ public class Main extends Application {
             shopFactory.products.add(productFactory);
         }
 
-        FactoryManager<ShopFactory> factoryManager = new FactoryManager<>();
+        DefaultApplicationServer<ShopFactory> applicationServer = new DefaultApplicationServer<>(new FactoryManager<>(),new InMemoryFactoryStorage<>(shopFactory));
+        applicationServer.start();
 
-        factoryManager.start(shopFactory);
-
-        ShopFactory localCopyShopFactory = shopFactory.copy();
+        ApplicationFactoryMetadata<ShopFactory> localCopyShopFactory=applicationServer.getCurrentFactory();
 
         ArrayList<View> views = new ArrayList<>();
         GenericTreeFactoryViewRichClient genericTreeFactoryViewRichClient = new GenericTreeFactoryViewRichClient();
-        SaveView<ShopFactory> saveView = new SaveView<>(() -> factoryManager.update(shopFactory, localCopyShopFactory));
+        SaveView<ShopFactory> saveView = new SaveView<>(() -> applicationServer.updateCurrentFactory(localCopyShopFactory));
 
 
         MainStage<ShopFactory> factoryEditor =
                 new MainStage<>(
                         new GuiModel<>(shopFactory, views),
                         genericTreeFactoryViewRichClient,
-                        new LoadView<>(genericTreeFactoryViewRichClient, () -> localCopyShopFactory),
+                        new LoadView<>(genericTreeFactoryViewRichClient, () -> localCopyShopFactory.root),
                         saveView
                 );
         factoryEditor.show();

@@ -10,12 +10,12 @@ public class ExampleModelTest {
 
     @Test
     public void test_ExampleA(){
-        Assert.assertEquals("",new FactoryValidator().validateModel(new ExampleFactoryA()).orElse(""));
+        Assert.assertEquals("",new FactoryValidator().validateFactory(new ExampleFactoryA()).orElse(""));
     }
 
     @Test
     public void test_ExampleB(){
-        Assert.assertEquals("",new FactoryValidator().validateModel(new ExampleFactoryB()).orElse(""));
+        Assert.assertEquals("",new FactoryValidator().validateFactory(new ExampleFactoryB()).orElse(""));
     }
 
 }

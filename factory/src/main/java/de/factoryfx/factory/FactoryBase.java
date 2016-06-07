@@ -160,7 +160,6 @@ public abstract class FactoryBase<E extends LiveObject, T extends FactoryBase<E,
         visitAttributesFlat(attribute -> attribute.collectChildren(allModelEntities));
     }
 
-    @SuppressWarnings("unchecked")
     public T copy() {
         return ObjectMapperBuilder.build().copy(this).reconstructMetadataDeepRoot();
     }
@@ -265,9 +264,9 @@ public abstract class FactoryBase<E extends LiveObject, T extends FactoryBase<E,
     }
 
     @JsonIgnore
-    static final Map<Class<?>, Field[]> fields = new HashMap<>();
+    private static final Map<Class<?>, Field[]> fields = new HashMap<>();
     @JsonIgnore
-    Field[] instanceFields;
+    private Field[] instanceFields;
     private String id;
 
     public FactoryBase() {
@@ -276,7 +275,7 @@ public abstract class FactoryBase<E extends LiveObject, T extends FactoryBase<E,
 
 
     @JsonIgnore
-    public Field[] getFields() {
+    private Field[] getFields() {
         return instanceFields;
     }
 
@@ -359,7 +358,7 @@ public abstract class FactoryBase<E extends LiveObject, T extends FactoryBase<E,
     }
 
     LoopProtector loopProtector = new LoopProtector();
-    public void loopDetector(){
+    void loopDetector(){
         loopProtector.enter();
         try {
             this.visitChildFactoriesFlat(factory -> factory.loopDetector());

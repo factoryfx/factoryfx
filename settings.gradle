@@ -1,1 +1,1 @@
-include 'server', 'webgui', 'factory', 'development', 'guimodel', 'richclient', 'example'
+include 'server', 'webgui', 'factory', 'development', 'guimodel', 'richclient', 'example', 'jettyserver', 'datastorage'

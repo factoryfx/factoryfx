@@ -61,7 +61,7 @@ public class ConfigurableResourceHandler extends AbstractHandler {
     private void writeResponse(HttpServletResponse response, String file) throws IOException {
         String mimeByExtension = mimeTypes.getMimeByExtension(file);
         if (mimeByExtension!=null){
-            response.setContentType(mimeByExtension.toString());
+            response.setContentType(mimeByExtension);
         }
 
         byte[] fileContent = fileContentProvider.getFile(file);

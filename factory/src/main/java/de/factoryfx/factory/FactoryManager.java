@@ -50,8 +50,10 @@ public class FactoryManager<T extends FactoryBase<? extends LiveObject, T>> {
                 newLiveObject.start();
             }
         }
+    }
 
-
+    public T getCurrentFactory(){
+        return currentFactory;
     }
 
     public void start(T newFactory){
@@ -65,6 +67,15 @@ public class FactoryManager<T extends FactoryBase<? extends LiveObject, T>> {
 
         for (LiveObject newLiveObject: newLiveObjects.values()){
             newLiveObject.start();
+        }
+    }
+
+    public void stop(){
+        LinkedHashMap<String, LiveObject> newLiveObjects = new LinkedHashMap<>();
+        currentFactory.collectLiveObjects(newLiveObjects);
+
+        for (LiveObject newLiveObject: newLiveObjects.values()){
+            newLiveObject.stop();
         }
     }
 

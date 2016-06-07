@@ -1,7 +1,6 @@
 package de.factoryfx.development.angularjs.server;
 
 import java.nio.file.Paths;
-import java.util.HashSet;
 import java.util.UUID;
 
 import de.factoryfx.development.angularjs.server.resourcehandler.ConfigurableResourceHandler;
@@ -32,7 +31,7 @@ public class AngularjsServer {
             server = new org.eclipse.jetty.server.Server();
 
             connector = new NetworkTrafficServerConnector(server);
-            connector.setPort(httpPort.intValue());
+            connector.setPort(httpPort);
             connector.setHost(host);
             server.addConnector(connector);
 
@@ -40,12 +39,12 @@ public class AngularjsServer {
 
 
             GzipHandler gzipHandler = new GzipHandler();
-            HashSet<String> mimeTypes = new HashSet<>();
-            mimeTypes.add("text/html");
-            mimeTypes.add("text/plain");
-            mimeTypes.add("text/css");
-            mimeTypes.add("application/x-javascript");
-            mimeTypes.add("application/json");
+//            HashSet<String> mimeTypes = new HashSet<>();
+//            mimeTypes.add("text/html");
+//            mimeTypes.add("text/plain");
+//            mimeTypes.add("text/css");
+//            mimeTypes.add("application/x-javascript");
+//            mimeTypes.add("application/json");
             gzipHandler.setMinGzipSize(0);
 //            gzipHandler.setMimeTypes(mimeTypes);
 

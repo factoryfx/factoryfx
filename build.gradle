@@ -37,10 +37,23 @@ subprojects {
 
 }
 
+project(':datastorage') {
+    dependencies {
+        compile project(":factory")
+    }
+}
+
 
 project(':server') {
     dependencies {
         compile project(":factory")
+        compile project(":datastorage")
+    }
+}
+
+project(':jettyserver') {
+    dependencies {
+        compile project(":server")
         compile group: 'org.glassfish.jersey.core', name: 'jersey-server', version: '2.23'
         compile group: 'org.eclipse.jetty', name: 'jetty-server', version: '9.3.8.v20160314'
         compile group: 'org.eclipse.jetty', name: 'jetty-servlet', version: '9.3.8.v20160314'
@@ -86,6 +99,7 @@ project(':development') {
 
     dependencies {
         compile project(":factory")
+        compile project(":server")
     }
 
 }
@@ -110,6 +124,7 @@ project(':example') {
         compile project(":guimodel")
         compile project(":factory")
         compile project(":development")
+        compile project(":server")
     }
 
 }
