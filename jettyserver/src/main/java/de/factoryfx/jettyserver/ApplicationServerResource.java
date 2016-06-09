@@ -10,17 +10,17 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
 import de.factoryfx.datastorage.ApplicationFactoryMetadata;
-import de.factoryfx.server.ApplicationServer;
 import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.factory.LiveObject;
 import de.factoryfx.factory.merge.MergeDiff;
+import de.factoryfx.server.ApplicationServer;
 
 @Path("/") /** path defined in {@link de.scoopsoftware.xtc.ticketproxy.configuration.ConfigurationServer}*/
-public class ApplicationServerResource<T extends FactoryBase<? extends LiveObject, T>> implements ApplicationServer<T> {
+public class ApplicationServerResource<V, T extends FactoryBase<? extends LiveObject<V>, T>> implements ApplicationServer<V,T> {
 
-    private final ApplicationServer<T> applicationServer;
+    private final ApplicationServer<V,T> applicationServer;
 
-    public ApplicationServerResource(ApplicationServer<T> applicationServer) {
+    public ApplicationServerResource(ApplicationServer<V,T> applicationServer) {
         this.applicationServer = applicationServer;
     }
 
@@ -65,6 +65,12 @@ public class ApplicationServerResource<T extends FactoryBase<? extends LiveObjec
     @Override
     public void stop() {
         applicationServer.stop();
+    }
+
+
+    @Override
+    public V query(V visitor) {
+        return applicationServer.query(visitor);
     }
 
 }

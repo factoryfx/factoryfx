@@ -79,12 +79,13 @@ public class FactoryManager<T extends FactoryBase<? extends LiveObject, T>,V> {
         }
     }
 
-    public void query(V visitor){
+    public V query(V visitor){
         LinkedHashMap<String, LiveObject> previousLiveObjects = new LinkedHashMap<>();
         currentFactory.collectLiveObjects(previousLiveObjects);
         for(LiveObject<V> liveObject: previousLiveObjects.values()){
             liveObject.accept(visitor);
         }
+        return visitor;
     }
 
 }

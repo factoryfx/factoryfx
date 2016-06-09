@@ -9,7 +9,7 @@ import de.factoryfx.factory.FactoryManager;
 import de.factoryfx.factory.LiveObject;
 import de.factoryfx.factory.merge.MergeDiff;
 
-public class DefaultApplicationServer<T extends FactoryBase<? extends LiveObject, T>,V> implements ApplicationServer<T,V> {
+public class DefaultApplicationServer<V,T extends FactoryBase<? extends LiveObject<V>, T>> implements ApplicationServer<V,T> {
 
     private final FactoryManager<T,V> factoryManager;
     private final FactoryStorage<T> factoryStorage;
@@ -56,8 +56,8 @@ public class DefaultApplicationServer<T extends FactoryBase<? extends LiveObject
     }
 
     @Override
-    public void query(V visitor) {
-        factoryManager.query(visitor);
+    public V query(V visitor) {
+        return factoryManager.query(visitor);
     }
 
 }

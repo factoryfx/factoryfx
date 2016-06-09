@@ -42,7 +42,7 @@ public class ExampleMain extends Application {
             shopFactory.products.add(productFactory);
         }
 
-        DefaultApplicationServer<ShopFactory,OrderCollector> applicationServer = new DefaultApplicationServer<>(new FactoryManager<>(),new InMemoryFactoryStorage<>(shopFactory));
+        DefaultApplicationServer<OrderCollector,ShopFactory> applicationServer = new DefaultApplicationServer<>(new FactoryManager<>(),new InMemoryFactoryStorage<>(shopFactory));
         applicationServer.start();
 
         ApplicationFactoryMetadata<ShopFactory> localCopyShopFactory=applicationServer.getCurrentFactory();

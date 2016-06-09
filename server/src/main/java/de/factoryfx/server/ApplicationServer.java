@@ -8,7 +8,7 @@ import de.factoryfx.factory.LiveObject;
 import de.factoryfx.factory.merge.MergeDiff;
 
 
-public interface ApplicationServer<T extends FactoryBase<? extends LiveObject, T>,V> {
+public interface ApplicationServer<V,T extends FactoryBase<? extends LiveObject<V>, T>> {
     MergeDiff updateCurrentFactory(ApplicationFactoryMetadata<T> updateFactoryRequest);
     ApplicationFactoryMetadata<T> getCurrentFactory();
     ApplicationFactoryMetadata<T> getHistoryFactory(String id);
@@ -16,5 +16,5 @@ public interface ApplicationServer<T extends FactoryBase<? extends LiveObject, T
     void start();
     void stop();
 
-    void query(V visitor);
+    V query(V visitor);
 }

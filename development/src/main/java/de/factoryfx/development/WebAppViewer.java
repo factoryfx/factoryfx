@@ -7,6 +7,7 @@ import java.net.URL;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.web.WebView;
 import javafx.stage.Stage;
 import netscape.javascript.JSObject;
@@ -28,6 +29,11 @@ public class WebAppViewer{
         root.setCenter(webView);
 
         new Thread(serverCreator).start();
+        try {
+            Thread.sleep(100);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
 
         webView.getEngine().getLoadWorker().stateProperty().addListener((observable, oldValue, newValue) -> {
             JSObject window = (JSObject) webView.getEngine().executeScript("window");
@@ -57,7 +63,16 @@ public class WebAppViewer{
                 throw new RuntimeException(e);
             }
         });
-        root.setTop(showInBrowser);
+        Button refresh = new Button("refresh");
+        refresh.setOnAction(event -> {
+            webView.getEngine().reload();
+            webView.getEngine().load(startUrl);
+        });
+        HBox buttons = new HBox(3);
+        buttons.getChildren().addAll(showInBrowser,refresh);
+        root.setTop(buttons);
+
+
     }
 
     public class JavaBridge {

@@ -108,6 +108,20 @@ public abstract class FactoryBase<E extends LiveObject, T extends FactoryBase<E,
         }
     }
 
+    public void visitAttributesFlat(BiConsumer<String,Attribute<?>> consumer) {
+        Field[] fields = getFields();
+        for (Field field : fields) {
+            try {
+                Object fieldValue = field.get(this);
+                if (fieldValue instanceof Attribute) {
+                    consumer.accept(field.getName(),(Attribute) fieldValue);
+                }
+            } catch (IllegalAccessException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
     public void visitAttributesFlat(Consumer<Attribute<?>> consumer) {
         Field[] fields = getFields();
         for (Field field : fields) {
