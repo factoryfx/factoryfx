@@ -26,16 +26,12 @@ import de.factoryfx.factory.jackson.ObjectMapperBuilder;
 import de.factoryfx.factory.merge.MergeResult;
 import de.factoryfx.factory.merge.MergeResultEntry;
 import de.factoryfx.factory.merge.attribute.AttributeMergeHelper;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public abstract class FactoryBase<E extends LiveObject, T extends FactoryBase<E,T>> {
-
-    public interface AttributeVisitor{
-        void value(Attribute<?> value, FactoryBase<?,?> parent);
-        void reference(ReferenceAttribute<?> reference, FactoryBase<?,?> parent);
-        void referenceList(ReferenceListAttribute<?> referenceList, FactoryBase<?,?> parent);
-    }
 
     @FunctionalInterface
     interface TriConsumer<A, B, C> {
@@ -43,50 +39,38 @@ public abstract class FactoryBase<E extends LiveObject, T extends FactoryBase<E,
     }
 
     public void visitChildFactoriesFlat(Consumer<FactoryBase<?,?>> consumer) {
-        visitAttributesFlat(new AttributeVisitor() {
-            @Override
-            public void value(Attribute<?> value, FactoryBase<?,?> parent) {
+        visitAttributesFlat((attributeVariableName, attribute) -> {
+            attribute.visit(new Attribute.AttributeVisitor() {
+                @Override
+                public void value(Attribute<?> value) {
 
-            }
+                }
 
-            @Override
-            public void reference(ReferenceAttribute<?> reference, FactoryBase<?,?> parent) {
-                reference.getOptional().ifPresent((factoryBase)->consumer.accept(factoryBase));
-            }
+                @Override
+                public void reference(ReferenceAttribute<?> reference) {
+                    reference.getOptional().ifPresent((factoryBase)->consumer.accept(factoryBase));
+                }
 
-            @Override
-            public void referenceList(ReferenceListAttribute<?> referenceList, FactoryBase<?,?> parent) {
-                referenceList.forEach(new Consumer<FactoryBase<?, ?>>() {
-                    @Override
-                    public void accept(FactoryBase<?, ?> factoryBase) {
-                        consumer.accept(factoryBase);
-                    }
-                });
-            }
+                @Override
+                public void referenceList(ReferenceListAttribute<?> referenceList) {
+                    referenceList.forEach(new Consumer<FactoryBase<?, ?>>() {
+                        @Override
+                        public void accept(FactoryBase<?, ?> factoryBase) {
+                            consumer.accept(factoryBase);
+                        }
+                    });
+                }
+            });
         });
     }
 
-    public void visitAttributesFlat(AttributeVisitor visitor ) {
+    public <A> void  visitAttributesDualFlat(T modelBase, BiConsumer<Attribute<A>, Attribute<A>> consumer) {
         Field[] fields = getFields();
         for (Field field : fields) {
             try {
                 Object fieldValue = field.get(this);
                 if (fieldValue instanceof Attribute) {
-                    Attribute attribute = (Attribute) fieldValue;
-
-                    if (attribute instanceof ReferenceListAttribute) {
-                        visitor.referenceList((ReferenceListAttribute<?>) attribute,this);
-                    } else {
-                        if (attribute instanceof ReferenceAttribute<?>) {
-                            visitor.reference((ReferenceAttribute<?>) attribute,this);
-                        }  else {
-                            visitor.value(attribute,this);
-                        }
-                    }
-
-
-
-
+                    consumer.accept((Attribute<A>) field.get(this), (Attribute<A>) field.get(modelBase));
                 }
             } catch (IllegalAccessException e) {
                 throw new RuntimeException(e);
@@ -94,21 +78,12 @@ public abstract class FactoryBase<E extends LiveObject, T extends FactoryBase<E,
         }
     }
 
-    public void visitAttributesDualFlat(Object modelBase, BiConsumer<Attribute<?>, Attribute<?>> consumer) {
-        Field[] fields = getFields();
-        for (Field field : fields) {
-            try {
-                Object fieldValue = field.get(this);
-                if (fieldValue instanceof Attribute) {
-                    consumer.accept((Attribute<?>) field.get(this), (Attribute<?>) field.get(modelBase));
-                }
-            } catch (IllegalAccessException e) {
-                throw new RuntimeException(e);
-            }
-        }
+    @FunctionalInterface
+    public interface FactoryVisitor{
+        void accept(String attributeVariableName, Attribute<?> attribute);
     }
 
-    public void visitAttributesFlat(BiConsumer<String,Attribute<?>> consumer) {
+    public <A> void visitAttributesFlat(FactoryVisitor consumer) {
         Field[] fields = getFields();
         for (Field field : fields) {
             try {
@@ -178,6 +153,34 @@ public abstract class FactoryBase<E extends LiveObject, T extends FactoryBase<E,
         return ObjectMapperBuilder.build().copy(this).reconstructMetadataDeepRoot();
     }
 
+    /**copy including one the references first level of nested references*/
+    public T copyOneLevelDeep(){
+        return copyOneLevelDeep(0);
+    }
+
+    private T copyOneLevelDeep(final int level){
+        if (level>1){
+            return null;
+        }
+        T result = newInstance();
+        result.setId(this.getId());
+        this.visitAttributesDualFlat(result, (thisAttribute, copyAttribute) -> {
+            Object value = thisAttribute.get();
+            if (value instanceof FactoryBase){
+                value=((FactoryBase)value).copyOneLevelDeep(level+1);
+            }
+            if (thisAttribute instanceof ReferenceListAttribute){
+                final ObservableList<FactoryBase> referenceList = FXCollections.observableArrayList();
+                ((ReferenceListAttribute)thisAttribute).get().forEach(factory -> referenceList.add(((FactoryBase)factory).copyOneLevelDeep(level+1)));
+                value=referenceList;
+            }
+
+            copyAttribute.set(value);
+        });
+        return result;
+    }
+
+
     @SuppressWarnings("unchecked")
     public void fixDuplicateObjects(Function<String, Optional<FactoryBase<?,?>>> getCurrentEntity) {
         visitAttributesFlat(attribute -> attribute.fixDuplicateObjects(getCurrentEntity));
@@ -187,14 +190,25 @@ public abstract class FactoryBase<E extends LiveObject, T extends FactoryBase<E,
         HashMap<FactoryBase<?,?>, FactoryBase<?,?>> result = new HashMap<>();
         for (FactoryBase<?,?> factoryBase : allModelEntities) {
             factoryBase.visitAttributesFlat(attribute -> {
-                if (attribute instanceof ReferenceListAttribute) {
-                    for (FactoryBase<?,?> factoryBaseRef : ((ReferenceListAttribute<?>) attribute).get()) {
-                        result.put(factoryBaseRef, factoryBase);
+                attribute.visit(new Attribute.AttributeVisitor() {
+                    @Override
+                    public void value(Attribute<?> value) {
+
                     }
-                }
-                if (attribute instanceof ReferenceAttribute<?>) {
-                    result.put(((ReferenceAttribute<?>) attribute).get(), factoryBase);
-                }
+
+                    @Override
+                    public void reference(ReferenceAttribute<?> referenc) {
+                        result.put(((ReferenceAttribute<?>) attribute).get(), factoryBase);
+                    }
+
+                    @Override
+                    public void referenceList(ReferenceListAttribute<?> referenceList) {
+                        for (FactoryBase<?,?> factoryBaseRef : referenceList.get()) {
+                            result.put(factoryBaseRef, factoryBase);
+                        }
+                    }
+                });
+
             });
         }
         return result;
@@ -257,24 +271,36 @@ public abstract class FactoryBase<E extends LiveObject, T extends FactoryBase<E,
         }
     }
 
+
     /**
      * after deserialization from json only the value is present and metadata are missing
-     * we create a copy which contains the metadata and than copy the values into the copy
+     * we create a copy which contains the metadata and than copy the meta data in teh original object
      */
-    @SuppressWarnings("unchecked")
-    public T reconstructMetadataDeep(HashMap<String, FactoryBase<?,?>> objectPool) {
-        T copy = (T) objectPool.get(this.getId());
-        if (copy == null) {
-            copy = newInstance();
-            copy.setId(this.getId());
-            objectPool.put(copy.getId(), copy);
-            visitAttributesDualFlat(copy, (thisAttribute, copyAttribute) -> copyAttribute.setFromValueOnlyAttribute(thisAttribute.get(), objectPool));
-        }
-        return copy;
-    }
-
     public T reconstructMetadataDeepRoot() {
-        return reconstructMetadataDeep(new HashMap<>());
+        T copy = this.newInstance();
+
+
+        Field[] fields = getFields();
+        for (Field field : fields) {
+            try {
+                if (Attribute.class.isAssignableFrom(field.getType())){
+                    Object value=null;
+                    if (field.get(this)!=null){
+                        value= ((Attribute)field.get(this)).get();
+                    }
+                    field.setAccessible(true);
+                    field.set(this,field.get(copy));
+
+                    ((Attribute)field.get(this)).set(value);
+                }
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        this.visitChildFactoriesFlat(factoryBase -> factoryBase.reconstructMetadataDeepRoot());
+
+        return (T) this;
     }
 
     @JsonIgnore
@@ -372,7 +398,7 @@ public abstract class FactoryBase<E extends LiveObject, T extends FactoryBase<E,
     }
 
     LoopProtector loopProtector = new LoopProtector();
-    void loopDetector(){
+    public void loopDetector(){
         loopProtector.enter();
         try {
             this.visitChildFactoriesFlat(factory -> factory.loopDetector());

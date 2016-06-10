@@ -4,7 +4,7 @@ import java.util.List;
 
 import de.factoryfx.factory.LiveObject;
 
-public class ExampleLiveObjectA implements LiveObject{
+public class ExampleLiveObjectA implements LiveObject<Void>{
     public final ExampleLiveObjectB exampleLiveObjectB;
     public final List<ExampleLiveObjectB> exampleLiveObjectBs;
 
@@ -20,6 +20,11 @@ public class ExampleLiveObjectA implements LiveObject{
 
     @Override
     public void stop() {
+
+    }
+
+    @Override
+    public void accept(Void visitor) {
 
     }
 }

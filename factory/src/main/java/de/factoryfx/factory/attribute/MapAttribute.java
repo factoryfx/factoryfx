@@ -35,13 +35,6 @@ public class MapAttribute<K, V> extends ValueAttribute<ObservableMap<K,V>> {
         this.set(map.unwrap());
     }
 
-    @Override
-    @SuppressWarnings("unchecked")
-    public void setFromValueOnlyAttribute(Object value, HashMap<String, FactoryBase<?,?>> objectPool) {
-        ObservableMap<K, V> newMap = (ObservableMap<K, V>) value;
-        set(newMap);
-    }
-
     public V get(String key) {
         return get().get(key);
     }

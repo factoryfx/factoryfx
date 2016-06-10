@@ -3,3 +3,11 @@
 /factory/build/
 /webgui/build/
 /.idea/
+/server/build/
+/richclient/build/
+/restutil/build/
+/jettyserver/build/
+/guimodel/build/
+/example/build/
+/datastorage/build/
+/build/

@@ -19,13 +19,13 @@ public class MainStage<T extends FactoryBase<? extends LiveObject, T>> {
 
     private final GuiModel guiModel;
     private final LoadView<?> loadView;
-    private final GenericTreeFactoryViewRichClient<T> genericTreeFactoryViewRichClient;
+    private final FactoryTreeEditor<T> factoryTreeEditor;
     private final SaveView<T> saveView;
 
-    public MainStage(GuiModel guiModel, GenericTreeFactoryViewRichClient<T> genericTreeFactoryViewRichClient, LoadView<T> loadView, SaveView<T> saveView) {
+    public MainStage(GuiModel guiModel, FactoryTreeEditor<T> factoryTreeEditor, LoadView<T> loadView, SaveView<T> saveView) {
         this.guiModel = guiModel;
         this.loadView = loadView;
-        this.genericTreeFactoryViewRichClient = genericTreeFactoryViewRichClient;
+        this.factoryTreeEditor = factoryTreeEditor;
         this.saveView = saveView;
     }
 
@@ -76,7 +76,7 @@ public class MainStage<T extends FactoryBase<? extends LiveObject, T>> {
             menuItem.setOnAction(event -> {
                 Tab tab = new Tab("Tree Editor");
                 tabPane.getTabs().add(tab);
-                tab.setContent(genericTreeFactoryViewRichClient.createContent());
+                tab.setContent(factoryTreeEditor.createContent());
             });
         }
 

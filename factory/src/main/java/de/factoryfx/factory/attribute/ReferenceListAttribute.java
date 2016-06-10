@@ -83,14 +83,6 @@ public class ReferenceListAttribute<T extends FactoryBase<?,? super T>> extends 
         setList(value);
     }
 
-    @Override
-    @SuppressWarnings("unchecked")
-    public void setFromValueOnlyAttribute(Object value, HashMap<String, FactoryBase<?,?>> objectPool) {
-        ObservableList<T> newList = (ObservableList<T>) value;
-        list.clear();
-        newList.forEach(t -> list.add((T) ((FactoryBase<?,?>) t).reconstructMetadataDeep(objectPool)));
-    }
-
     public boolean contains(T value) {
         return get().contains(value);
     }
@@ -150,6 +142,11 @@ public class ReferenceListAttribute<T extends FactoryBase<?,? super T>> extends 
             stringBuilder.append(",\n");
         }
         return metadata.displayName+":\n"+stringBuilder.toString();
+    }
+
+    @Override
+    public void visit(AttributeVisitor attributeVisitor) {
+        attributeVisitor.referenceList(this);
     }
 
 }

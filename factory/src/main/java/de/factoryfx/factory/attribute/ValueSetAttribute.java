@@ -32,12 +32,6 @@ public class ValueSetAttribute<T> extends ValueAttribute<ObservableSet<T>> {
         set(setCollection.unwrap());
     }
 
-    @Override
-    @SuppressWarnings("unchecked")
-    public void setFromValueOnlyAttribute(Object value, HashMap<String, FactoryBase<?,?>> objectPool) {
-        set((ObservableSet<T>) value);
-    }
-
     public void add(T value) {
         get().add(value);
     }

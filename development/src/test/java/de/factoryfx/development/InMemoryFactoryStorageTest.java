@@ -26,7 +26,7 @@ public class InMemoryFactoryStorageTest {
         }
     }
 
-    public static class DummyLive implements LiveObject {
+    public static class DummyLive implements LiveObject<Object> {
         private final String test;
 
         public DummyLive(String test) {
@@ -42,13 +42,18 @@ public class InMemoryFactoryStorageTest {
         public void stop() {
 
         }
+
+        @Override
+        public void accept(Object visitor) {
+
+        }
     }
 
     static List<String> calls = new ArrayList<>();
 
     @Test
     public void test(){
-        DefaultApplicationServer<Dummy> applicationServer = new DefaultApplicationServer<>(new FactoryManager<>(),new InMemoryFactoryStorage<>(new Dummy()));
+        DefaultApplicationServer<Object,Dummy> applicationServer = new DefaultApplicationServer<>(new FactoryManager<>(),new InMemoryFactoryStorage<>(new Dummy()));
         applicationServer.start();
 
         ApplicationFactoryMetadata<Dummy> currentFactory = applicationServer.getCurrentFactory();

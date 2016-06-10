@@ -11,9 +11,9 @@ import de.factoryfx.factory.attribute.ReferenceListAttribute;
 import de.factoryfx.factory.attribute.StringAttribute;
 
 public class ExampleFactoryA extends FactoryBase<ExampleLiveObjectA,ExampleFactoryA> {
-    public StringAttribute stringAttribute=new StringAttribute(new AttributeMetadata<>("ExampleA1"));
-    public ReferenceAttribute<ExampleFactoryB> referenceAttribute = new ReferenceAttribute<ExampleFactoryB>(new AttributeMetadata<>("ExampleA2"));
-    public ReferenceListAttribute<ExampleFactoryB> referenceListAttribute = new ReferenceListAttribute<ExampleFactoryB>(new ListMetadata<>("ExampleA3"));
+    public final StringAttribute stringAttribute=new StringAttribute(new AttributeMetadata<>("ExampleA1"));
+    public final ReferenceAttribute<ExampleFactoryB> referenceAttribute = new ReferenceAttribute<ExampleFactoryB>(new AttributeMetadata<>("ExampleA2"));
+    public final ReferenceListAttribute<ExampleFactoryB> referenceListAttribute = new ReferenceListAttribute<ExampleFactoryB>(new ListMetadata<>("ExampleA3"));
 
     @Override
     protected ExampleLiveObjectA createImp(Optional<ExampleLiveObjectA> previousLiveObject) {

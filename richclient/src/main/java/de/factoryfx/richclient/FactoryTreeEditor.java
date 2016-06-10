@@ -1,6 +1,7 @@
 package de.factoryfx.richclient;
 
 import java.util.HashMap;
+import java.util.HashSet;
 
 import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.factory.LiveObject;
@@ -18,10 +19,10 @@ import javafx.scene.control.TreeView;
 import javafx.scene.control.cell.TextFieldTreeCell;
 import javafx.scene.layout.BorderPane;
 
-public class GenericTreeFactoryViewRichClient<T extends FactoryBase<? extends LiveObject, T>> extends FactoryView<T> {
+public class FactoryTreeEditor<T extends FactoryBase<? extends LiveObject, T>> extends FactoryView<T> {
 
 
-    public GenericTreeFactoryViewRichClient() {
+    public FactoryTreeEditor() {
     }
 
     @Override
@@ -61,30 +62,35 @@ public class GenericTreeFactoryViewRichClient<T extends FactoryBase<? extends Li
             addOrGetTreeItem(newValue,factoryToTreeItem).setValue(new ReferenceAttribute<>(new AttributeMetadata<T>("root")));
 
             if (newValue!=null){
-                newValue.visitAttributesFlat(new FactoryBase.AttributeVisitor() {
-                    @Override
-                    public void value(Attribute<?> value, FactoryBase<?,?> parent) {
-                        addOrGetTreeItem(parent,factoryToTreeItem).getChildren().add(new TreeItem<>(value));
-                    }
+                HashSet<FactoryBase<?, ?>> allModelEntities = new HashSet<>();
+                newValue.collectModelEntitiesTo(allModelEntities);
 
-                    @Override
-                    public void reference(ReferenceAttribute<?> reference, FactoryBase<?,?> parent) {
-                        TreeItem<Attribute<?>> treeItem = addOrGetTreeItem(reference.get(), factoryToTreeItem);
-                        treeItem.setValue(reference);
-                        addOrGetTreeItem(parent,factoryToTreeItem).getChildren().add(treeItem);
-                        reference.getOptional().ifPresent(r->r.visitAttributesFlat(this));
-                    }
+                for (FactoryBase<?, ?> factoryBase: allModelEntities){
+                    factoryBase.visitAttributesFlat((attributeVariableName, attribute) -> {
+                        attribute.visit(new Attribute.AttributeVisitor() {
+                            @Override
+                            public void value(Attribute<?> value) {
+                                addOrGetTreeItem(factoryBase,factoryToTreeItem).getChildren().add(new TreeItem<>(value));
+                            }
 
-                    @Override
-                    public void referenceList(ReferenceListAttribute<?> referenceList, FactoryBase<?,?> parent) {
-                        referenceList.forEach(r -> {
-                            TreeItem<Attribute<?>> treeItem = addOrGetTreeItem(r, factoryToTreeItem);
-                            treeItem.setValue(referenceList);
-                            addOrGetTreeItem(parent, factoryToTreeItem).getChildren().add(treeItem);
+                            @Override
+                            public void reference(ReferenceAttribute<?> reference) {
+                                TreeItem<Attribute<?>> treeItem = addOrGetTreeItem(factoryBase, factoryToTreeItem);
+                                treeItem.setValue(reference);
+                                addOrGetTreeItem(factoryBase,factoryToTreeItem).getChildren().add(treeItem);
+                            }
+
+                            @Override
+                            public void referenceList(ReferenceListAttribute<?> referenceList) {
+                                referenceList.forEach(r -> {
+                                    TreeItem<Attribute<?>> treeItem = addOrGetTreeItem(r, factoryToTreeItem);
+                                    treeItem.setValue(referenceList);
+                                    addOrGetTreeItem(factoryBase, factoryToTreeItem).getChildren().add(treeItem);
+                                });
+                            }
                         });
-                        referenceList.forEach(r->r.visitAttributesFlat(this));
-                    }
-                });
+                    });
+                }
 
                 tree.setRoot(addOrGetTreeItem(newValue,factoryToTreeItem));
 

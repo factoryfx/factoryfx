@@ -1,7 +1,6 @@
 package de.factoryfx.factory.attribute;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -44,13 +43,6 @@ public class ReferenceAttribute<T extends FactoryBase<?,? super T>> extends Attr
         return new ReferenceMergeHelper<>(this);
     }
 
-    @Override
-    @SuppressWarnings("unchecked")
-    public void setFromValueOnlyAttribute(Object value, HashMap<String, FactoryBase<?,?>> objectPool) {
-        if (value != null) {
-            set((T) ((FactoryBase<?,?>) value).reconstructMetadataDeep(objectPool));
-        }
-    }
 
     @Override
     @SuppressWarnings("unchecked")
@@ -111,6 +103,11 @@ public class ReferenceAttribute<T extends FactoryBase<?,? super T>> extends Attr
             referenceDisplayText=value.getDisplayText();
         }
         return metadata.displayName+":"+ referenceDisplayText;
+    }
+
+    @Override
+    public void visit(AttributeVisitor attributeVisitor) {
+        attributeVisitor.reference(this);
     }
 
 }

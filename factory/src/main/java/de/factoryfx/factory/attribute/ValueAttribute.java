@@ -1,7 +1,6 @@
 package de.factoryfx.factory.attribute;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -56,17 +55,16 @@ public class ValueAttribute<T> extends Attribute<T> {
         return metadata.displayName+": "+ value;
     }
 
+    @Override
+    public void visit(AttributeVisitor attributeVisitor) {
+        attributeVisitor.value(this);
+    }
+
     public void set(T value) {
         this.value = value;
         for (AttributeChangeListener<T> listener: listeners){
             listener.changed(this,value);
         }
-    }
-
-    @Override
-    @SuppressWarnings("unchecked")
-    public void setFromValueOnlyAttribute(Object value, HashMap<String, FactoryBase<?,?>> objectPool) {
-        this.value = (T) value;
     }
 
     @JsonValue

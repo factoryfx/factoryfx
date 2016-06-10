@@ -1,7 +1,6 @@
 package de.factoryfx.factory.attribute;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -35,8 +34,6 @@ public abstract class Attribute<T>{
 
     public abstract void set(T value);
 
-    public abstract void setFromValueOnlyAttribute(Object value, HashMap<String, FactoryBase<?,?>> objectPool);
-
     public List<ValidationResult> validate() {
         List<ValidationResult> validationResults = new ArrayList<>();
         for (Validation<T> validation : metadata.validations) {
@@ -52,4 +49,12 @@ public abstract class Attribute<T>{
 
     @JsonIgnore
     public abstract String getDisplayText();
+
+    public interface AttributeVisitor{
+        void value(Attribute<?> value);
+        void reference(ReferenceAttribute<?> referenc);
+        void referenceList(ReferenceListAttribute<?> referenceList);
+    }
+
+    public abstract void visit(AttributeVisitor attributeVisitor);
 }

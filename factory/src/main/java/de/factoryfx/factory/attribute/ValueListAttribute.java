@@ -47,11 +47,6 @@ public class ValueListAttribute<T> extends ValueAttribute<ObservableList<T>> {
         return get().isEmpty();
     }
 
-    @Override
-    @SuppressWarnings("unchecked")
-    public void setFromValueOnlyAttribute(Object value, HashMap<String, FactoryBase<?,?>> objectPool) {
-        set((ObservableList<T>) value);
-    }
 
     public boolean contains(T value) {
         return get().contains(value);

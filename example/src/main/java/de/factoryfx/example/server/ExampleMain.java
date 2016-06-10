@@ -12,7 +12,7 @@ import de.factoryfx.guimodel.GuiModel;
 import de.factoryfx.guimodel.RuntimeQueryView;
 import de.factoryfx.guimodel.Table;
 import de.factoryfx.guimodel.TableColumn;
-import de.factoryfx.richclient.GenericTreeFactoryViewRichClient;
+import de.factoryfx.richclient.FactoryTreeEditor;
 import de.factoryfx.richclient.MainStage;
 import de.factoryfx.richclient.framework.view.LoadView;
 import de.factoryfx.richclient.framework.view.SaveView;
@@ -47,7 +47,7 @@ public class ExampleMain extends Application {
 
         ApplicationFactoryMetadata<ShopFactory> localCopyShopFactory=applicationServer.getCurrentFactory();
 
-        GenericTreeFactoryViewRichClient genericTreeFactoryViewRichClient = new GenericTreeFactoryViewRichClient();
+        FactoryTreeEditor factoryTreeEditor = new FactoryTreeEditor();
         SaveView<ShopFactory> saveView = new SaveView<>(() -> applicationServer.updateCurrentFactory(localCopyShopFactory));
 
         GuiModel guiModel = new GuiModel();
@@ -61,9 +61,8 @@ public class ExampleMain extends Application {
         },new Table<>(Arrays.asList(productColumn,customerColumn))));
 
         MainStage<ShopFactory> factoryEditor =
-                new MainStage<>(guiModel,
-                        genericTreeFactoryViewRichClient,
-                        new LoadView<>(genericTreeFactoryViewRichClient, () -> localCopyShopFactory.root),
+                new MainStage<>(guiModel, factoryTreeEditor,
+                        new LoadView<>(factoryTreeEditor, () -> localCopyShopFactory.root),
                         saveView
                 );
         factoryEditor.show();
