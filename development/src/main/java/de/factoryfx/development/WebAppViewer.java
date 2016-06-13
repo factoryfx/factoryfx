@@ -28,12 +28,13 @@ public class WebAppViewer{
         WebView webView = new WebView();
         root.setCenter(webView);
 
-        new Thread(serverCreator).start();
-        try {
-            Thread.sleep(100);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        }
+        serverCreator.run();
+//        new Thread(serverCreator).start();
+//        try {
+//            Thread.sleep(100);
+//        } catch (InterruptedException e) {
+//            Thread.currentThread().interrupt();
+//        }
 
         webView.getEngine().getLoadWorker().stateProperty().addListener((observable, oldValue, newValue) -> {
             JSObject window = (JSObject) webView.getEngine().executeScript("window");

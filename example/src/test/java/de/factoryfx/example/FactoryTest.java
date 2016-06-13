@@ -19,9 +19,11 @@ public class FactoryTest {
     public static Iterable<Object[]> data1() throws IOException {
         List<Object[]> result = new ArrayList<>();
         for (ClassPath.ClassInfo classInfo: ClassPath.from(FactoryTest.class.getClassLoader()).getAllClasses()){
-            Class<?> load = classInfo.load();
-            if (FactoryBase.class.isAssignableFrom(load) && load!=FactoryBase.class){
-                result.add(new Object[]{load});
+            if (classInfo.getName().startsWith("de.factoryfx")){
+                Class<?> clazz = classInfo.load();
+                if (FactoryBase.class.isAssignableFrom(clazz) && clazz!=FactoryBase.class){
+                    result.add(new Object[]{clazz});
+                }
             }
         }
 

@@ -30,4 +30,14 @@ function                                ($scope,  metaDataService,   $resource) 
     $resource('../applicationServer/root').get(function(response){
         $scope.selected.factory=response;
     })
+
+    $scope.selectFactory=function(id){
+        $resource('../applicationServer/factory', {id:id}).get(function(response){
+            $scope.selected.factory=response;
+        })
+    }
+
+    $scope.save=function(id){
+        $resource('../applicationServer/factory').save($scope.selected.factory);
+    }
 }]);

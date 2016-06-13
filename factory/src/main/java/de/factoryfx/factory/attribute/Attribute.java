@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -52,9 +53,33 @@ public abstract class Attribute<T>{
 
     public interface AttributeVisitor{
         void value(Attribute<?> value);
-        void reference(ReferenceAttribute<?> referenc);
+        void reference(ReferenceAttribute<?> reference);
         void referenceList(ReferenceListAttribute<?> referenceList);
     }
 
     public abstract void visit(AttributeVisitor attributeVisitor);
+
+    public void visit(Consumer<FactoryBase<?,?>> nestedFactoriesVisitor){
+        visit(new AttributeVisitor() {
+            @Override
+            public void value(Attribute<?> value) {
+
+            }
+
+            @Override
+            public void reference(ReferenceAttribute<?> reference) {
+                reference.getOptional().ifPresent((factory)->nestedFactoriesVisitor.accept(factory));
+            }
+
+            @Override
+            public void referenceList(ReferenceListAttribute<?> referenceList) {
+                referenceList.get().forEach(new Consumer<FactoryBase<?,?>>() {
+                    @Override
+                    public void accept(FactoryBase<?,?> item) {
+                        nestedFactoriesVisitor.accept(item);
+                    }
+                });
+            }
+        });
+    }
 }

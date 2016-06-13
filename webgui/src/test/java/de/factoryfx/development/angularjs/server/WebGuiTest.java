@@ -20,17 +20,15 @@ public class WebGuiTest extends Application{
         new WebAppViewer(primaryStage, () -> {
             ExampleFactoryA exampleFactoryA = new ExampleFactoryA();
             exampleFactoryA.stringAttribute.set("balblub");
-            exampleFactoryA.referenceAttribute.set(new ExampleFactoryB());
-            for (int i=0; i<10000;i++){
+            ExampleFactoryB exampleFactoryB = new ExampleFactoryB();
+            exampleFactoryB.stringAttribute.set("BBBBBBBBBBBBBBBB");
+            exampleFactoryA.referenceAttribute.set(exampleFactoryB);
+
+
+            for (int i=0; i<5;i++){
                 ExampleFactoryB value = new ExampleFactoryB();
                 value.stringAttribute.set("i");
                 exampleFactoryA.referenceListAttribute.add(value);
-                ExampleFactoryA factoryA = new ExampleFactoryA();
-                factoryA.stringAttribute.set("dgfdg"+1);
-                value.referenceAttribute.set(factoryA);
-                ExampleFactoryB factoryB = new ExampleFactoryB();
-                factoryB.stringAttribute.set("jhfhgfhgfhgghfh"+1);
-                factoryA.referenceAttribute.set(factoryB);
             }
 
             DefaultApplicationServer<Void, ExampleFactoryA> applicationServer = new DefaultApplicationServer<>(new FactoryManager<>(), new InMemoryFactoryStorage<>(exampleFactoryA));

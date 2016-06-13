@@ -139,9 +139,23 @@ public abstract class FactoryBase<E extends LiveObject, T extends FactoryBase<E,
 
 
 
+    public Map<String,FactoryBase<?,?>> collectModelEntitiesMap() {
+        HashSet<FactoryBase<?, ?>> factoryBases = new HashSet<>();
+        collectModelEntitiesTo(factoryBases);
+
+        HashMap<String, FactoryBase<?, ?>> result = new HashMap<>();
+        for (FactoryBase<?, ?> factory: factoryBases){
+            result.put(factory.getId(),factory);
+        }
+        return result;
+    }
 
 
-
+    public Set<FactoryBase<?,?>> collectModelEntities() {
+        HashSet<FactoryBase<?, ?>> factoryBases = new HashSet<>();
+        collectModelEntitiesTo(factoryBases);
+        return factoryBases;
+    }
 
 
     public void collectModelEntitiesTo(Set<FactoryBase<?,?>> allModelEntities) {
@@ -180,7 +194,6 @@ public abstract class FactoryBase<E extends LiveObject, T extends FactoryBase<E,
         return result;
     }
 
-
     @SuppressWarnings("unchecked")
     public void fixDuplicateObjects(Function<String, Optional<FactoryBase<?,?>>> getCurrentEntity) {
         visitAttributesFlat(attribute -> attribute.fixDuplicateObjects(getCurrentEntity));
@@ -190,25 +203,9 @@ public abstract class FactoryBase<E extends LiveObject, T extends FactoryBase<E,
         HashMap<FactoryBase<?,?>, FactoryBase<?,?>> result = new HashMap<>();
         for (FactoryBase<?,?> factoryBase : allModelEntities) {
             factoryBase.visitAttributesFlat(attribute -> {
-                attribute.visit(new Attribute.AttributeVisitor() {
-                    @Override
-                    public void value(Attribute<?> value) {
-
-                    }
-
-                    @Override
-                    public void reference(ReferenceAttribute<?> referenc) {
-                        result.put(((ReferenceAttribute<?>) attribute).get(), factoryBase);
-                    }
-
-                    @Override
-                    public void referenceList(ReferenceListAttribute<?> referenceList) {
-                        for (FactoryBase<?,?> factoryBaseRef : referenceList.get()) {
-                            result.put(factoryBaseRef, factoryBase);
-                        }
-                    }
+                attribute.visit(nestedFactoryBase -> {
+                    result.put(nestedFactoryBase, factoryBase);
                 });
-
             });
         }
         return result;
@@ -237,9 +234,7 @@ public abstract class FactoryBase<E extends LiveObject, T extends FactoryBase<E,
 
     /**Slow. for multiple calls use getMassPathTo*/
     public List<FactoryBase<?,?>> getPathTo(FactoryBase<?,?> target) {
-        HashSet<FactoryBase<?,?>> allModelEntities = new HashSet<>();
-        collectModelEntitiesTo(allModelEntities);
-        return getMassPathTo(getChildToParentMap(allModelEntities), target);
+        return getMassPathTo(getChildToParentMap(collectModelEntities()), target);
     }
 
     @SuppressWarnings("unchecked")

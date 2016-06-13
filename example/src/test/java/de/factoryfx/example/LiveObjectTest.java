@@ -19,9 +19,11 @@ public class LiveObjectTest {
     public static Iterable<Object[]> data1() throws IOException {
         List<Object[]> result = new ArrayList<>();
         for (ClassPath.ClassInfo classInfo: ClassPath.from(LiveObjectTest.class.getClassLoader()).getAllClasses()){
-            Class<?> load = classInfo.load();
-            if (LiveObject.class.isAssignableFrom(load) && load!=LiveObject.class){
-                result.add(new Object[]{load});
+            if (classInfo.getName().startsWith("de.factoryfx")) {
+                Class<?> load = classInfo.load();
+                if (LiveObject.class.isAssignableFrom(load) && load != LiveObject.class) {
+                    result.add(new Object[]{load});
+                }
             }
         }
 

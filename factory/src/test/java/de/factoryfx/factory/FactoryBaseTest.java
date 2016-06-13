@@ -3,6 +3,7 @@ package de.factoryfx.factory;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import de.factoryfx.factory.jackson.ObjectMapperBuilder;
 import de.factoryfx.factory.jackson.SimpleObjectMapper;
@@ -109,5 +110,16 @@ public class FactoryBaseTest {
         Assert.assertNotNull(copy.referenceAttribute.get());
         Assert.assertNull(copy.referenceAttribute.get().referenceAttributeC.get());
         Assert.assertNull(copy.referenceListAttribute.get(0).referenceAttributeC.get());
+    }
+
+    @Test
+    public void test_getPathTo(){
+        ExampleFactoryA exampleFactoryA = new ExampleFactoryA();
+        ExampleFactoryB exampleFactoryB = new ExampleFactoryB();
+        exampleFactoryA.referenceAttribute.set(exampleFactoryB);
+
+        List<FactoryBase<?, ?>> pathTo = exampleFactoryA.getPathTo(exampleFactoryB);
+        Assert.assertEquals(1,pathTo.size());
+        Assert.assertEquals(exampleFactoryA.getId(),pathTo.get(0).getId());
     }
 }
