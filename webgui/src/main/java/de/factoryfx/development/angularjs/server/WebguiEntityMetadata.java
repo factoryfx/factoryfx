@@ -17,6 +17,8 @@ public class WebGuiEntityMetadata {
     public Map<String,AttributeMetadata<?>> attributes = new HashMap<>();
     public Map<String,String> attributesTypes = new HashMap<>();
 
+
+
     public WebGuiEntityMetadata(Class<? extends FactoryBase> factoryBaseClass){
         type=factoryBaseClass.getName();
         try {
@@ -34,5 +36,7 @@ public class WebGuiEntityMetadata {
         }
 
     }
+
+
 
 }
