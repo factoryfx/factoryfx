@@ -22,12 +22,12 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
 @Path("/") /** path defined in {@link de.scoopsoftware.xtc.ticketproxy.configuration.ConfigurationServer}*/
-public class WebGuiResource2 {
+public class WebGuiResource {
 
     private final ApplicationServer<?,?> applicationServer;
     private final Supplier<List<Class<? extends FactoryBase>>> factoryClassesProvider;
 
-    public WebGuiResource2(ApplicationServer<?,?> applicationServer, Supplier<List<Class<? extends FactoryBase>>> factoryClassesProvider) {
+    public WebGuiResource(ApplicationServer<?,?> applicationServer, Supplier<List<Class<? extends FactoryBase>>> factoryClassesProvider) {
         this.applicationServer = applicationServer;
         this.factoryClassesProvider = factoryClassesProvider;
     }

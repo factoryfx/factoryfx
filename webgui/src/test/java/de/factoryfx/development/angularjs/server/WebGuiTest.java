@@ -33,7 +33,7 @@ public class WebGuiTest extends Application{
 
             DefaultApplicationServer<Void, ExampleFactoryA> applicationServer = new DefaultApplicationServer<>(new FactoryManager<>(), new InMemoryFactoryStorage<>(exampleFactoryA));
             applicationServer.start();
-            new WebGuiServer(8089, "localhost", new WebGuiResource2(applicationServer, () -> Arrays.asList(ExampleFactoryA.class,ExampleFactoryB.class))).start();
+            new WebGuiServer(8089, "localhost", new WebGuiResource(applicationServer, () -> Arrays.asList(ExampleFactoryA.class,ExampleFactoryB.class))).start();
         },"http://localhost:8089/#/view1");
     }
 

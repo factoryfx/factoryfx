@@ -32,9 +32,9 @@ public class WebGuiServer {
     private final String host;
 
     private ServerConnector connector;
-    private final WebGuiResource2 webGuiResource;
+    private final WebGuiResource webGuiResource;
 
-    public WebGuiServer(Integer httpPort, String host, WebGuiResource2 webGuiResource) {
+    public WebGuiServer(Integer httpPort, String host, WebGuiResource webGuiResource) {
         super();
         this.httpPort = httpPort;
         this.host = host;
