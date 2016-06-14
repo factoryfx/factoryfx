@@ -36,12 +36,12 @@ public class WebGuiResource {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("metaData")
-    public Map<String,WebGuiEntityMetadata2> getMetaData() {
+    public Map<String,WebGuiEntityMetadata> getMetaData() {
         List<Class<? extends FactoryBase>> classList = factoryClassesProvider.get();
 
-        HashMap<String,WebGuiEntityMetadata2> result = new HashMap<>();
+        HashMap<String,WebGuiEntityMetadata> result = new HashMap<>();
         for (Class<? extends FactoryBase> factoryBaseClass: classList){
-            WebGuiEntityMetadata2 webGuiEntityMetadata = new WebGuiEntityMetadata2(factoryBaseClass);
+            WebGuiEntityMetadata webGuiEntityMetadata = new WebGuiEntityMetadata(factoryBaseClass);
             result.put(webGuiEntityMetadata.type, webGuiEntityMetadata);
         }
 
