@@ -24,8 +24,8 @@ import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.servlet.ServletContainer;
 import org.slf4j.LoggerFactory;
 
-public class WebGuiServer2 {
-    private static final org.slf4j.Logger logger = LoggerFactory.getLogger(WebGuiServer2.class);
+public class WebGuiServer {
+    private static final org.slf4j.Logger logger = LoggerFactory.getLogger(WebGuiServer.class);
 
     private org.eclipse.jetty.server.Server server;
     private final Integer httpPort;
@@ -34,7 +34,7 @@ public class WebGuiServer2 {
     private ServerConnector connector;
     private final WebGuiResource webGuiResource;
 
-    public WebGuiServer2(Integer httpPort, String host, WebGuiResource webGuiResource) {
+    public WebGuiServer(Integer httpPort, String host, WebGuiResource webGuiResource) {
         super();
         this.httpPort = httpPort;
         this.host = host;
