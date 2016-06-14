@@ -19,27 +19,16 @@ public class FactoryMerger {
         this.newModel = newFactory;
     }
 
-    private HashMap<String, FactoryBase<?,?>> collectFlatMap(FactoryBase<?,?> root) {
-        HashMap<String, FactoryBase<?,?>> result = new HashMap<>();
-        HashSet<FactoryBase<?,?>> allModelEntities = new HashSet<>();
-        root.collectModelEntitiesTo(allModelEntities);
-
-        for (FactoryBase<?,?> base : allModelEntities) {
-            result.put(base.getId(), base);
-        }
-        return result;
-    }
-
     public MergeDiff createMergeResult() {
-        return createMergeResult(collectFlatMap(currentModel)).getMergeDiff();
+        return createMergeResult(currentModel.collectModelEntitiesMap()).getMergeDiff();
     }
 
     @SuppressWarnings("unchecked")
-    private MergeResult createMergeResult(HashMap<String, FactoryBase<?,?>> currentMap) {
+    private MergeResult createMergeResult(Map<String, FactoryBase<?,?>> currentMap) {
         MergeResult mergeResult = new MergeResult();
 
-        HashMap<String, FactoryBase<?,?>> originalMap = collectFlatMap(originalModel);
-        HashMap<String, FactoryBase<?,?>> newMap = collectFlatMap(newModel);
+        Map<String, FactoryBase<?,?>> originalMap = originalModel.collectModelEntitiesMap();
+        Map<String, FactoryBase<?,?>> newMap = newModel.collectModelEntitiesMap();
 
         for (Map.Entry<String, FactoryBase<?,?>> entry : currentMap.entrySet()) {
             FactoryBase originalValue = originalMap.get(entry.getKey());
@@ -61,7 +50,7 @@ public class FactoryMerger {
     }
 
     public MergeDiff mergeIntoCurrent() {
-        HashMap<String, FactoryBase<?,?>> currentMap = collectFlatMap(currentModel);
+        Map<String, FactoryBase<?,?>> currentMap = currentModel.collectModelEntitiesMap();
         MergeResult mergeResult = createMergeResult(currentMap);
         MergeDiff mergeDiff = mergeResult.getMergeDiff();
 

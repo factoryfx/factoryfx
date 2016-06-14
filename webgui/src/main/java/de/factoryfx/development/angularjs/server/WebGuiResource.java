@@ -3,6 +3,7 @@ package de.factoryfx.development.angularjs.server;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Supplier;
 
 import javax.ws.rs.Consumes;
@@ -35,12 +36,12 @@ public class WebGuiResource {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("metaData")
-    public Map<String,WebGuiEntityMetadata> getMetaData() {
+    public Map<String,WebGuiEntityMetadata2> getMetaData() {
         List<Class<? extends FactoryBase>> classList = factoryClassesProvider.get();
 
-        HashMap<String,WebGuiEntityMetadata> result = new HashMap<>();
+        HashMap<String,WebGuiEntityMetadata2> result = new HashMap<>();
         for (Class<? extends FactoryBase> factoryBaseClass: classList){
-            WebGuiEntityMetadata webGuiEntityMetadata = new WebGuiEntityMetadata(factoryBaseClass);
+            WebGuiEntityMetadata2 webGuiEntityMetadata = new WebGuiEntityMetadata2(factoryBaseClass);
             result.put(webGuiEntityMetadata.type, webGuiEntityMetadata);
         }
 
@@ -92,6 +93,8 @@ public class WebGuiResource {
 
             ((Attribute)thisAttribute).set(value);
         });
+
+        root.fixDuplicateObjects(id -> Optional.of(map.get(id)));
 
     }
 }
