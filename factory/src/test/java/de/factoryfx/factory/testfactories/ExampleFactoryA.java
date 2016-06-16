@@ -4,16 +4,15 @@ import java.util.ArrayList;
 import java.util.Optional;
 
 import de.factoryfx.factory.FactoryBase;
-import de.factoryfx.factory.attribute.AttributeMetadata;
-import de.factoryfx.factory.attribute.ListMetadata;
 import de.factoryfx.factory.attribute.ReferenceAttribute;
 import de.factoryfx.factory.attribute.ReferenceListAttribute;
 import de.factoryfx.factory.attribute.StringAttribute;
+import de.factoryfx.factory.attribute.builder.AttributeBuilder;
 
 public class ExampleFactoryA extends FactoryBase<ExampleLiveObjectA,ExampleFactoryA> {
-    public final StringAttribute stringAttribute=new StringAttribute(new AttributeMetadata<>("ExampleA1"));
-    public final ReferenceAttribute<ExampleFactoryB> referenceAttribute = new ReferenceAttribute<ExampleFactoryB>(new AttributeMetadata<>("ExampleA2"));
-    public final ReferenceListAttribute<ExampleFactoryB> referenceListAttribute = new ReferenceListAttribute<ExampleFactoryB>(new ListMetadata<>("ExampleA3"));
+    public final StringAttribute stringAttribute= AttributeBuilder.string().labelText("ExampleA1").build();
+    public final ReferenceAttribute<ExampleFactoryB> referenceAttribute = AttributeBuilder.<ExampleFactoryB>reference().labelText("ExampleA2").build();
+    public final ReferenceListAttribute<ExampleFactoryB> referenceListAttribute = AttributeBuilder.<ExampleFactoryB>referenceList().labelText("ExampleA3").build();
 
     @Override
     protected ExampleLiveObjectA createImp(Optional<ExampleLiveObjectA> previousLiveObject) {

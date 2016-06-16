@@ -75,18 +75,18 @@ public class FactoryBaseTest {
         }
 
         Assert.assertEquals(null,readed.stringAttribute);
-        Assert.assertEquals("",readed.referenceAttribute.metadata.displayName);
-        Assert.assertEquals(null,readed.referenceListAttribute.metadata);
+        Assert.assertEquals(null,readed.referenceAttribute.metadata.labelText);
+        Assert.assertEquals(null,readed.referenceListAttribute.metadata.labelText);
         Assert.assertEquals(null,readed.referenceAttribute.get().stringAttribute);
         Assert.assertEquals(null,readed.referenceListAttribute.get(0).stringAttribute);
 
         readed.reconstructMetadataDeepRoot();
 
-        Assert.assertEquals("ExampleA1",readed.stringAttribute.metadata.displayName);
-        Assert.assertEquals("ExampleA2",readed.referenceAttribute.metadata.displayName);
-        Assert.assertEquals("ExampleA3",readed.referenceListAttribute.metadata.displayName);
-        Assert.assertEquals("ExampleB1",readed.referenceAttribute.get().stringAttribute.metadata.displayName);
-        Assert.assertEquals("ExampleB1",readed.referenceListAttribute.get(0).stringAttribute.metadata.displayName);
+        Assert.assertEquals("ExampleA1",readed.stringAttribute.metadata.labelText);
+        Assert.assertEquals("ExampleA2",readed.referenceAttribute.metadata.labelText);
+        Assert.assertEquals("ExampleA3",readed.referenceListAttribute.metadata.labelText);
+        Assert.assertEquals("ExampleB1",readed.referenceAttribute.get().stringAttribute.metadata.labelText);
+        Assert.assertEquals("ExampleB1",readed.referenceListAttribute.get(0).stringAttribute.metadata.labelText);
     }
 
     @Test

@@ -15,16 +15,19 @@ import de.factoryfx.factory.validation.ValidationResult;
 
 public abstract class Attribute<T>{
 
-    public final AttributeMetadata<T> metadata;
+    public final AttributeMetadata<T> metadata=new AttributeMetadata<>(this);
 
-    public Attribute(AttributeMetadata<T> metadata) {
-        this.metadata = metadata;
+    public Attribute() {
     }
-
 
     public abstract void collectChildren(Set<FactoryBase<?,?>> allModelEntities);
 
     public abstract AttributeMergeHelper<?> createMergeHelper();
+
+    public Attribute<T> defaultValue(T defaultValue) {
+        set(defaultValue);
+        return this;
+    }
 
     /*
     see test {{@Link MergerTest#test_dublicate_ids_bug}} why this is needed

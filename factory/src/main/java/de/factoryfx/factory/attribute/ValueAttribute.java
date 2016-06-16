@@ -15,8 +15,8 @@ public class ValueAttribute<T> extends Attribute<T> {
     //    @JsonProperty
     private T value;
 
-    public ValueAttribute(AttributeMetadata<T> attributeMetadata) {
-        super(attributeMetadata);
+    public ValueAttribute() {
+        super();
     }
 
     @Override
@@ -52,7 +52,7 @@ public class ValueAttribute<T> extends Attribute<T> {
 
     @Override
     public String getDisplayText() {
-        return metadata.displayName+": "+ value;
+        return metadata.labelText+": "+ value;
     }
 
     @Override

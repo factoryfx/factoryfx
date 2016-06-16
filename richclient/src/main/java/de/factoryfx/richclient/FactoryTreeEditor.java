@@ -7,7 +7,6 @@ import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.factory.LiveObject;
 import de.factoryfx.factory.attribute.Attribute;
 import de.factoryfx.factory.attribute.AttributeChangeListener;
-import de.factoryfx.factory.attribute.AttributeMetadata;
 import de.factoryfx.factory.attribute.ReferenceAttribute;
 import de.factoryfx.factory.attribute.ReferenceListAttribute;
 import de.factoryfx.richclient.framework.editor.MasterEditor;
@@ -49,8 +48,8 @@ public class FactoryTreeEditor<T extends FactoryBase<? extends LiveObject, T>> e
             }
 
             private void updateText(Attribute attribute) {
-                if (attribute != null) {
-                    setText(attribute.metadata.displayName + ": " + attribute.get());
+                if (attribute != null) {//TODO locale
+                    setText(attribute.metadata.labelText + ": " + attribute.get());
                 }
             }
         });
@@ -59,7 +58,7 @@ public class FactoryTreeEditor<T extends FactoryBase<? extends LiveObject, T>> e
         ChangeListener<T> changeListener = (observable, oldValue, newValue) -> {
             HashMap<FactoryBase<?,?>,TreeItem<Attribute<?>>> factoryToTreeItem= new HashMap<>();
 
-            addOrGetTreeItem(newValue,factoryToTreeItem).setValue(new ReferenceAttribute<>(new AttributeMetadata<T>("root")));
+            addOrGetTreeItem(newValue,factoryToTreeItem).setValue(new ReferenceAttribute<>());//"root"
 
             if (newValue!=null){
                 HashSet<FactoryBase<?, ?>> allModelEntities = new HashSet<>();

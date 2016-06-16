@@ -23,14 +23,16 @@ import javafx.collections.ObservableList;
 public class ReferenceListAttribute<T extends FactoryBase<?,? super T>> extends Attribute<ObservableList<T>> {
     ObservableList<T> list = FXCollections.observableArrayList();
 
-    public ReferenceListAttribute(AttributeMetadata<ObservableList<T>> attributeMetadata) {
-        super(attributeMetadata);
+    public ReferenceListAttribute(ObservableList<T> defaultValue) {
+        list=defaultValue;
+    }
+
+    public ReferenceListAttribute() {
     }
 
     @JsonCreator
     public ReferenceListAttribute(ObservableListJacksonAbleWrapper<T> list) {
-        super(null);
-        this.list = list;
+        this.list = list.unwrap();
     }
 
     public void add(T value) {
@@ -141,7 +143,7 @@ public class ReferenceListAttribute<T extends FactoryBase<?,? super T>> extends 
             stringBuilder.append(item.getDisplayText());
             stringBuilder.append(",\n");
         }
-        return metadata.displayName+":\n"+stringBuilder.toString();
+        return metadata.labelText+":\n"+stringBuilder.toString();
     }
 
     @Override
@@ -149,4 +151,6 @@ public class ReferenceListAttribute<T extends FactoryBase<?,? super T>> extends 
         attributeVisitor.referenceList(this);
     }
 
+
+    public Optional<Function<FactoryBase<?,?>,List<T>>> possibleValueProviderFromRoot=Optional.empty();
 }

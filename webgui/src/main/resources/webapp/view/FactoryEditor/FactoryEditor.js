@@ -10,8 +10,8 @@ var defaultResolve = {
 angular.module('factoryfxwebgui.view1', ['ngRoute'])
 
 .config(['$routeProvider', function($routeProvider) {
-    $routeProvider.when('/view1', {
-        templateUrl: 'view/GenericEditor/GenericEditor.html',
+    $routeProvider.when('/factoryEditor', {
+        templateUrl: 'view/factoryEditor/FactoryEditor.html',
         controller: 'GenericEditorController',
         resolve: defaultResolve
     });
@@ -19,8 +19,6 @@ angular.module('factoryfxwebgui.view1', ['ngRoute'])
 
 .controller('GenericEditorController', ['$scope','metaDataService', '$resource',
 function                                ($scope,  metaDataService,   $resource) {
-
-    $scope.headline = 'Basis Controller';
     $scope.metaData = metaDataService;
     
     $scope.selected={

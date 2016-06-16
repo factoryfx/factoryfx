@@ -1,11 +1,9 @@
 package de.factoryfx.factory.attribute;
 
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.stream.Stream;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
-import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.factory.jackson.ObservableListJacksonAbleWrapper;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
@@ -14,8 +12,7 @@ import javafx.collections.ObservableList;
 public class ValueListAttribute<T> extends ValueAttribute<ObservableList<T>> {
 
 
-    public ValueListAttribute(AttributeMetadata<ObservableList<T>> attributeMetadata) {
-        super(attributeMetadata);
+    public ValueListAttribute() {
         set(FXCollections.observableArrayList() );
 
         get().addListener((ListChangeListener<T>) c -> {
@@ -27,7 +24,7 @@ public class ValueListAttribute<T> extends ValueAttribute<ObservableList<T>> {
 
     @JsonCreator
     public ValueListAttribute(ObservableListJacksonAbleWrapper<T> list) {
-        this((AttributeMetadata<ObservableList<T>>)null);
+        this();
         set(list.unwrap());
     }
 
@@ -79,7 +76,7 @@ public class ValueListAttribute<T> extends ValueAttribute<ObservableList<T>> {
             stringBuilder.append(item);
             stringBuilder.append(",\n");
         }
-        return metadata.displayName+":\n"+stringBuilder.toString();
+        return metadata.labelText+":\n"+stringBuilder.toString();
     }
 
 }

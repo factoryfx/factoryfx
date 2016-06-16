@@ -94,6 +94,7 @@ public class WebGuiServer {
 
     private ResourceConfig jerseySetup(Object resource) {
         ResourceConfig resourceConfig = new ResourceConfig();
+        resourceConfig.register(new AuthorizationRequestFilter());
         resourceConfig.register(resource);
         resourceConfig.register(new AllExceptionMapper());
 

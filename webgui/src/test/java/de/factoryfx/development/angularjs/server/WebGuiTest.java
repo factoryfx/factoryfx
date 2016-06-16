@@ -1,6 +1,7 @@
 package de.factoryfx.development.angularjs.server;
 
 import java.util.Arrays;
+import java.util.Locale;
 
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
@@ -27,14 +28,14 @@ public class WebGuiTest extends Application{
 
             for (int i=0; i<5;i++){
                 ExampleFactoryB value = new ExampleFactoryB();
-                value.stringAttribute.set("i");
+                value.stringAttribute.set("i"+i);
                 exampleFactoryA.referenceListAttribute.add(value);
             }
 
             DefaultApplicationServer<Void, ExampleFactoryA> applicationServer = new DefaultApplicationServer<>(new FactoryManager<>(), new InMemoryFactoryStorage<>(exampleFactoryA));
             applicationServer.start();
-            new WebGuiServer(8089, "localhost", new WebGuiResource(applicationServer, () -> Arrays.asList(ExampleFactoryA.class,ExampleFactoryB.class))).start();
-        },"http://localhost:8089/#/view1");
+            new WebGuiServer(8089, "localhost", new WebGuiResource(applicationServer, () -> Arrays.asList(ExampleFactoryA.class,ExampleFactoryB.class),Arrays.asList(Locale.ENGLISH,Locale.GERMAN))).start();
+        },"http://localhost:8089/#/login");
     }
 
     public static void main(String[] args) {

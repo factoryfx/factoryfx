@@ -1,11 +1,9 @@
 package de.factoryfx.factory.attribute;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
-import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.factory.jackson.ObservableMapJacksonAbleWrapper;
 import javafx.collections.FXCollections;
 import javafx.collections.MapChangeListener;
@@ -13,8 +11,8 @@ import javafx.collections.ObservableMap;
 
 public class MapAttribute<K, V> extends ValueAttribute<ObservableMap<K,V>> {
 
-    public MapAttribute(AttributeMetadata<ObservableMap<K, V>> attributeMetadata) {
-        super(attributeMetadata);
+    public MapAttribute() {
+        super();
         set(FXCollections.observableMap(new TreeMap<>()));
 
         get().addListener((MapChangeListener<K, V>) change -> {
@@ -24,14 +22,14 @@ public class MapAttribute<K, V> extends ValueAttribute<ObservableMap<K,V>> {
         });
     }
 
-    public MapAttribute(AttributeMetadata<ObservableMap<K, V>> attributeMetadata, Map<K, V> defaultValue) {
-        this(attributeMetadata);
+    public MapAttribute(Map<K, V> defaultValue) {
+        this();
         get().putAll(defaultValue);
     }
 
     @JsonCreator
     public MapAttribute(ObservableMapJacksonAbleWrapper<K, V> map) {
-        this((AttributeMetadata<ObservableMap<K, V>>)null);
+        this();
         this.set(map.unwrap());
     }
 
@@ -50,7 +48,7 @@ public class MapAttribute<K, V> extends ValueAttribute<ObservableMap<K,V>> {
             stringBuilder.append(item.getKey()+":"+item.getValue());
             stringBuilder.append(",\n");
         }
-        return metadata.displayName+":\n"+stringBuilder.toString();
+        return metadata.labelText+":\n"+stringBuilder.toString();
     }
 
 }

@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import de.factoryfx.factory.FactoryBase;
 
@@ -14,7 +15,7 @@ public class WebGuiEntity {
         public final String id;
         public final String displayText;
 
-        public PathElement(String id, String displayText) {
+        public PathElement(@JsonProperty("id")String id, @JsonProperty("displayText")String displayText) {
             this.id = id;
             this.displayText = displayText;
         }

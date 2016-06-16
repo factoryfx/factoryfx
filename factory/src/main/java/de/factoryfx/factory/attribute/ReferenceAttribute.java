@@ -16,19 +16,13 @@ public class ReferenceAttribute<T extends FactoryBase<?,? super T>> extends Attr
 
     private T value;
 
-    public ReferenceAttribute(AttributeMetadata<T> attributeMetadata) {
-        super(attributeMetadata);
-    }
-
-    public ReferenceAttribute(AttributeMetadata<T> attributeMetadata, T defaultValue) {
-        this(attributeMetadata);
-        set(defaultValue);
-    }
-
     @JsonCreator
     public ReferenceAttribute(T value) {
-        this(new AttributeMetadata<>(""));
         set(value);
+    }
+
+    public ReferenceAttribute() {
+
     }
 
     @Override
@@ -102,7 +96,7 @@ public class ReferenceAttribute<T extends FactoryBase<?,? super T>> extends Attr
         if (value!=null){
             referenceDisplayText=value.getDisplayText();
         }
-        return metadata.displayName+":"+ referenceDisplayText;
+        return metadata.labelText+":"+ referenceDisplayText;
     }
 
     @Override

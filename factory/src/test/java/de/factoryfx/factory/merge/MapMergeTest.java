@@ -3,7 +3,6 @@ package de.factoryfx.factory.merge;
 import java.util.Optional;
 
 import de.factoryfx.factory.FactoryBase;
-import de.factoryfx.factory.attribute.AttributeMetadata;
 import de.factoryfx.factory.attribute.MapAttribute;
 import de.factoryfx.factory.testfactories.ExampleLiveObjectA;
 import org.junit.Assert;
@@ -12,7 +11,7 @@ import org.junit.Test;
 public class MapMergeTest extends MergeHelperTestBase{
 
     public static class MapExampleFactory extends FactoryBase<ExampleLiveObjectA,MapExampleFactory> {
-        public final MapAttribute<String,String> mapAttribute =new MapAttribute(new AttributeMetadata<>(""));
+        public final MapAttribute<String,String> mapAttribute =new MapAttribute();
 
         @Override
         protected ExampleLiveObjectA createImp(Optional<ExampleLiveObjectA> previousLiveObject) {

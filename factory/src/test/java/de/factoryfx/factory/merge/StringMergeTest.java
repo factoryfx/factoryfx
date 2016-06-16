@@ -3,7 +3,6 @@ package de.factoryfx.factory.merge;
 import java.util.Optional;
 
 import de.factoryfx.factory.FactoryBase;
-import de.factoryfx.factory.attribute.AttributeMetadata;
 import de.factoryfx.factory.attribute.StringAttribute;
 import de.factoryfx.factory.testfactories.ExampleLiveObjectA;
 import org.junit.Assert;
@@ -12,8 +11,8 @@ import org.junit.Test;
 public class StringMergeTest extends MergeHelperTestBase {
 
     public static class StringTestPojo extends FactoryBase<ExampleLiveObjectA,StringTestPojo> {
-        public final StringAttribute stringA=new StringAttribute(new AttributeMetadata<>(""));
-        public final StringAttribute stringB=new StringAttribute(new AttributeMetadata<>(""));
+        public final StringAttribute stringA=new StringAttribute();
+        public final StringAttribute stringB=new StringAttribute();
 
         @Override
         protected ExampleLiveObjectA createImp(Optional<ExampleLiveObjectA> previousLiveObject) {

@@ -1,12 +1,10 @@
 package de.factoryfx.factory.attribute;
 
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.stream.Stream;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
-import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.factory.jackson.ObservableSetJacksonAbleWrapper;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableSet;
@@ -14,8 +12,7 @@ import javafx.collections.SetChangeListener;
 
 public class ValueSetAttribute<T> extends ValueAttribute<ObservableSet<T>> {
 
-    public ValueSetAttribute(AttributeMetadata<ObservableSet<T>> attributeMetadata) {
-        super(attributeMetadata);
+    public ValueSetAttribute() {
         set(FXCollections.observableSet(new HashSet<>()));
 
         get().addListener((SetChangeListener<T>) change -> {
@@ -28,7 +25,7 @@ public class ValueSetAttribute<T> extends ValueAttribute<ObservableSet<T>> {
 
     @JsonCreator
     public ValueSetAttribute(ObservableSetJacksonAbleWrapper<T> setCollection) {
-        this((AttributeMetadata<ObservableSet<T>>)null);
+        this();
         set(setCollection.unwrap());
     }
 
@@ -67,6 +64,6 @@ public class ValueSetAttribute<T> extends ValueAttribute<ObservableSet<T>> {
             stringBuilder.append(item);
             stringBuilder.append(",\n");
         }
-        return metadata.displayName+":\n"+stringBuilder.toString();
+        return metadata.labelText+":\n"+stringBuilder.toString();
     }
 }

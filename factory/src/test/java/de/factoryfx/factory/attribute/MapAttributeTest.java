@@ -13,7 +13,7 @@ import org.junit.Test;
 public class MapAttributeTest {
 
     public static class ExampleMapFactory extends FactoryBase<ExampleLiveObjectA,ExampleFactoryA> {
-        public MapAttribute<Integer,String> mapAttribute=new MapAttribute<>(new AttributeMetadata<>("ExampleA1"));
+        public MapAttribute<Integer,String> mapAttribute=new MapAttribute<>();
 
         @Override
         protected ExampleLiveObjectA createImp(Optional<ExampleLiveObjectA> previousLiveObject) {
