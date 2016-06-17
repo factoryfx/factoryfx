@@ -1,0 +1,77 @@
+<div class="container">
+    <h2>Editor</h2>
+    <button class="btn btn-primary" ng-if="!selected.factory" type="button" ng-click="loadRoot()"><span class="glyphicon glyphicon-edit glyphicon-align-left" aria-hidden="true"></span>edit</button>
+    <div ng-if="selected.factory">
+        <ol class="breadcrumb">
+            <li ng-repeat="pathElement in selected.factory.path"><a ng-click="selectFactory(pathElement.id)" ng-class="{active: pathElement.id===selected.factory.factory.id}">{{pathElement.displayText}}</a></li>
+            <li class="active">{{selected.factory.displayText}}</li>
+        </ol>
+        <div class="panel panel-default">
+            <div class="panel-heading">{{ selected.factory.displayText }}</div>
+            <div class="panel-body">
+                <form ng-submit="save()" name="factoryForm" novalidate>
+                    <div ng-repeat="(attributeName, attributeValue) in selected.factory.factory" ng-init="labelText=metaData.data[selected.factory.type].attributes[attributeName].labelText">
+                        <!--{{attributeName}}-->
+                        <div ng-if="attributeName!=='id'">
+                            <!--{{metaData.data[selected.factory.type].attributes[attributeName].displayName}}-->
+                            <div class="form-group" ng-if="metaData.data[selected.factory.type].attributesTypes[attributeName]==='StringAttribute'">
+                                <label for="{{attributeName}}">{{labelText}}</label>
+                                <input type="text" class="form-control" id="{{attributeName}}" ng-model="selected.factory.factory[attributeName]">
+                            </div>
+
+                            <div class="form-group" ng-if="metaData.data[selected.factory.type].attributesTypes[attributeName]==='ReferenceAttribute'">
+                                <label for="{{attributeName}}">{{labelText}}</label>
+                                <div class="input-group" id ="{{attributeName}}" >
+                                    <input type="text" class="form-control" readonly ng-required="field.metadata.required" placeholder="empty" value="{{selected.factory.nestedFactoriesDisplayText[selected.factory.factory[attributeName].id]}}"/>
+                                    <span class="input-group-btn">
+                                        <!--<button type="button" class="btn btn-default" ng-click="openAssociationAttribute(value)" ng-disabled="field.readonly">...</button>-->
+                                        <button type="button" class="btn btn-default" ng-click="selectFactory(selected.factory.factory[attributeName].id)" ng-disabled="!selected.factory.factory[attributeName]" ><span class="glyphicon glyphicon-search"></span></button>
+                                    </span>
+                                </div>
+                            </div>
+
+                            <div class="form-group" ng-if="metaData.data[selected.factory.type].attributesTypes[attributeName]==='ReferenceListAttribute'">
+                                <label for="{{attributeName}}">{{labelText}}</label>
+                                <div class="input-group" style="width: 100%;" id ="{{attributeName}}">
+                                    <ul class="list-group" style="width: 100%; margin-bottom: 0px;">
+                                        <li class="list-group-item clearfix" ng-repeat="item in selected.factory.factory[attributeName] track by $index">
+                                            {{selected.factory.nestedFactoriesDisplayText[item.id]}}
+                                            <span class="pull-right">
+                                                <button type="button" class="btn btn-default" ng-click="selectFactory(item.id)" ><span class="glyphicon glyphicon-search"></span></button>
+                                            </span>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+
+
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary" ng-disabled="factoryForm.$pristine">Save</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    <h2>Deployment</h2>
+    <button type="button" class="btn btn-danger" ng-click="deploy()" ng-disabled="!selected.factory">Deploy</button>
+    <div ng-if="mergeDiff">
+        <h2>Deployed changes</h2>
+        <table class="table table-condensed table-bordered tble-striped">
+            <thead>
+                <tr>
+                    <th>Data Item</th>
+                    <th>Previous value</th>
+                    <th>New value</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat="item in mergeDiff.mergeInfos">
+                    <td>{{item.mergeResultEntryInfo.parentDisplayText}}</td>
+                    <td>{{item.mergeResultEntryInfo.previousValueDisplayText}}</td>
+                    <td>{{item.mergeResultEntryInfo.newValueValueDisplayText}}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>

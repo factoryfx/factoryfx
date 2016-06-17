@@ -7,7 +7,7 @@ var defaultResolve = {
     }]
 };
 
-angular.module('factoryfxwebgui.view1', ['ngRoute'])
+angular.module('factoryfxwebgui.factoryEditor', ['ngRoute'])
 
 .config(['$routeProvider', function($routeProvider) {
     $routeProvider.when('/factoryEditor', {
@@ -24,10 +24,12 @@ function                                ($scope,  metaDataService,   $resource) 
     $scope.selected={
         factory: undefined
     }
-    
-    $resource('../applicationServer/root').get(function(response){
-        $scope.selected.factory=response;
-    })
+
+    $scope.loadRoot=function() {
+        $resource('../applicationServer/root').get(function (response) {
+            $scope.selected.factory = response;
+        })
+    }
 
     $scope.selectFactory=function(id){
         $resource('../applicationServer/factory', {id:id}).get(function(response){
@@ -37,5 +39,10 @@ function                                ($scope,  metaDataService,   $resource) 
 
     $scope.save=function(id){
         $resource('../applicationServer/factory').save($scope.selected.factory);
+    }
+
+    $scope.deploy=function(){
+        $scope.selected.factory=null;
+        $scope.mergeDiff = $resource('../applicationServer/deploy').get();
     }
 }]);
