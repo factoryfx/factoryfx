@@ -94,10 +94,10 @@ public class FactoryDiffWidget implements Widget {
             MergeResultEntry<?> diffItem=diffTableView.getSelectionModel().getSelectedItem().entry;
             if (diffItem!=null){
                 Patch<String> patch = DiffUtils.diff(
-                        convertToList(diffItem.previousValueDisplayText),
-                        convertToList(diffItem.newValueValueDisplayText)
+                        convertToList(diffItem.mergeResultEntryInfo.previousValueDisplayText),
+                        convertToList(diffItem.mergeResultEntryInfo.newValueValueDisplayText)
                 );
-                String originalText=diffItem.previousValueDisplayText;
+                String originalText=diffItem.mergeResultEntryInfo.previousValueDisplayText;
 
                 List<StyleClassArea> styleChanges= new ArrayList<>();
 
@@ -160,8 +160,8 @@ public class FactoryDiffWidget implements Widget {
                     }
                 });
 
-                previousValueDisplay.replaceText(diffItem.previousValueDisplayText);
-                newValueDisplay.replaceText(diffItem.newValueValueDisplayText);
+                previousValueDisplay.replaceText(diffItem.mergeResultEntryInfo.previousValueDisplayText);
+                newValueDisplay.replaceText(diffItem.mergeResultEntryInfo.newValueValueDisplayText);
             }
         });
 
@@ -214,11 +214,11 @@ public class FactoryDiffWidget implements Widget {
             */
 
             TableColumn<MergeResultEntryWrapper, String> oldValueColumn = new TableColumn<>("Previous value");
-            oldValueColumn.setCellValueFactory(param -> new SimpleStringProperty(param.getValue().entry.previousValueDisplayText));
+            oldValueColumn.setCellValueFactory(param -> new SimpleStringProperty(param.getValue().entry.mergeResultEntryInfo.previousValueDisplayText));
             tableView.getColumns().add(oldValueColumn);
 
             TableColumn<MergeResultEntryWrapper, String> valueColumn = new TableColumn<>("New value");
-            valueColumn.setCellValueFactory(param -> new SimpleStringProperty(param.getValue().entry.newValueValueDisplayText));
+            valueColumn.setCellValueFactory(param -> new SimpleStringProperty(param.getValue().entry.mergeResultEntryInfo.newValueValueDisplayText));
             tableView.getColumns().add(valueColumn);
         }
 
