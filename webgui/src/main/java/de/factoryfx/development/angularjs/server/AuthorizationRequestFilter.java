@@ -21,7 +21,8 @@ public class AuthorizationRequestFilter implements ContainerRequestFilter {
         if (webRequest.getSession(false) == null) {
             if (
                 !((ContainerRequest) requestContext).getPath(true).equals("login") &&
-                !((ContainerRequest) requestContext).getPath(true).equals("locales")
+                !((ContainerRequest) requestContext).getPath(true).equals("locales") &&
+                !((ContainerRequest) requestContext).getPath(true).equals("guimodel")
                ) {
                 requestContext.abortWith(Response.status(Response.Status.UNAUTHORIZED).type(MediaType.TEXT_PLAIN_TYPE).entity("User cannot access the resource.").build());
             }

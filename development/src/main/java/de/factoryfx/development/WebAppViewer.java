@@ -23,7 +23,7 @@ public class WebAppViewer{
 
 
         BorderPane root = new BorderPane();
-        primaryStage.setScene(new Scene(root,1200,700));
+        primaryStage.setScene(new Scene(root,1200,900));
 
         WebView webView = new WebView();
         root.setCenter(webView);
@@ -67,6 +67,7 @@ public class WebAppViewer{
         Button refresh = new Button("refresh");
         refresh.setOnAction(event -> {
             webView.getEngine().reload();
+            webView.getEngine().load("about:blank");
             webView.getEngine().load(startUrl);
         });
         HBox buttons = new HBox(3);

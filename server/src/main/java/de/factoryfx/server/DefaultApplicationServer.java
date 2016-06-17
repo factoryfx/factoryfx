@@ -20,9 +20,9 @@ public class DefaultApplicationServer<V,T extends FactoryBase<? extends LiveObje
     }
 
     @Override
-    public MergeDiff updateCurrentFactory(ApplicationFactoryMetadata<T> updateFactoryRequest) {
-        T commonVersion = factoryStorage.getHistoryFactory(updateFactoryRequest.baseVersionId).root;
-        MergeDiff mergeDiff = factoryManager.update(commonVersion, updateFactoryRequest.root);
+    public MergeDiff updateCurrentFactory(ApplicationFactoryMetadata<T> updateFactory) {
+        T commonVersion = factoryStorage.getHistoryFactory(updateFactory.baseVersionId).root;
+        MergeDiff mergeDiff = factoryManager.update(commonVersion, updateFactory.root);
         if (mergeDiff.hasNoConflicts()){
             factoryStorage.updateCurrentFactory(factoryManager.getCurrentFactory());
         }

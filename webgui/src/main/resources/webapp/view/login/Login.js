@@ -17,7 +17,14 @@ angular.module('factoryfxwebgui.loginView', ['ngRoute'])
 
 .controller('LoginController', ['$scope', '$resource', '$location','$routeParams',
 function                        ($scope,   $resource,   $location,  $routeParams ) {
+    $scope.guiModel=$resource("../applicationServer/guimodel").get();
+
+
+
     $scope.userData = {};
+    $scope.userData.user="a";
+    $scope.userData.password="a";
+    $scope.userData.locale="en";
     if ($routeParams.user){
         userData.user=$routeParams.user;
 

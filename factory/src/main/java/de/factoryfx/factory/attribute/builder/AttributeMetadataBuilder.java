@@ -1,10 +1,7 @@
 package de.factoryfx.factory.attribute.builder;
 
 import java.util.Locale;
-import java.util.Optional;
-import java.util.function.Function;
 
-import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.factory.attribute.Attribute;
 import de.factoryfx.factory.validation.Validation;
 
@@ -39,13 +36,7 @@ public class AttributeMetadataBuilder<T,A extends Attribute<T>> {
         attribute.metadata.labelText.put(Locale.ENGLISH,labelText);
         return this;
     }
-
-    public AttributeMetadataBuilder<T,A> possibleValueProvider(Function<FactoryBase,T> possibleValueProviderFromRoot){
-        attribute.metadata.possibleValueProviderFromRoot= Optional.of(possibleValueProviderFromRoot);
-        return this;
-    }
-
-
+    
     public A build(){
         return attribute;
     }

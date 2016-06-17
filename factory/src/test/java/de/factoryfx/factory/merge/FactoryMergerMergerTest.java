@@ -18,7 +18,7 @@ public class FactoryMergerMergerTest {
 
         MergeDiff mergeDiff= factoryMerger.mergeIntoCurrent();
         Assert.assertTrue(mergeDiff.hasNoConflicts());
-        Assert.assertEquals("ExampleA1: 2222222",mergeDiff.getMergeInfos().get(0).newValuepValueDisplayText);
+        Assert.assertEquals("ExampleA1: 2222222",mergeDiff.getMergeInfos().get(0).newValueValueDisplayText);
         Assert.assertEquals("ExampleA1: 1111111",mergeDiff.getMergeInfos().get(0).previousValueDisplayText);
     }
 
@@ -34,7 +34,7 @@ public class FactoryMergerMergerTest {
 
         MergeDiff mergeDiff= factoryMerger.mergeIntoCurrent();
         Assert.assertTrue(mergeDiff.hasNoConflicts());
-        Assert.assertEquals("ExampleA2:empty",mergeDiff.getMergeInfos().get(0).newValuepValueDisplayText);
+        Assert.assertEquals("ExampleA2:empty",mergeDiff.getMergeInfos().get(0).newValueValueDisplayText);
         Assert.assertTrue(mergeDiff.getMergeInfos().get(0).previousValueDisplayText.contains(exampleFactoryB.getId()));
     }
 

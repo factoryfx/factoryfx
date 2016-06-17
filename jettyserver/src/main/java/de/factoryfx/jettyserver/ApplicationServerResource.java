@@ -29,8 +29,8 @@ public class ApplicationServerResource<V, T extends FactoryBase<? extends LiveOb
     @Produces(MediaType.APPLICATION_JSON)
     @Path("updateCurrentFactory")
     @Override
-    public MergeDiff updateCurrentFactory(ApplicationFactoryMetadata<T> newFactory) {
-        return  applicationServer.updateCurrentFactory(newFactory);
+    public MergeDiff updateCurrentFactory(ApplicationFactoryMetadata<T> updateFactory) {
+        return  applicationServer.updateCurrentFactory(updateFactory);
     }
 
     @GET

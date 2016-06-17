@@ -1,14 +1,18 @@
 package de.factoryfx.development.angularjs.server;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Locale;
 
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
+import com.google.common.io.ByteStreams;
 import de.factoryfx.development.InMemoryFactoryStorage;
 import de.factoryfx.development.SinglePrecessInstanceUtil;
 import de.factoryfx.development.WebAppViewer;
 import de.factoryfx.factory.FactoryManager;
+import de.factoryfx.guimodel.GuiModel;
 import de.factoryfx.server.DefaultApplicationServer;
 import javafx.application.Application;
 import javafx.stage.Stage;
@@ -32,9 +36,22 @@ public class WebGuiTest extends Application{
                 exampleFactoryA.referenceListAttribute.add(value);
             }
 
+            GuiModel guiModel = new GuiModel();
+            guiModel.title.en("Test example");
+            try(InputStream inputStream= WebGuiTest.class.getResourceAsStream("/logo/logoLarge.png")){
+                guiModel.logoLarge= ByteStreams.toByteArray(inputStream);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+            try(InputStream inputStream= WebGuiTest.class.getResourceAsStream("/logo/logoSmall.png")){
+                guiModel.logoSmall= ByteStreams.toByteArray(inputStream);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+
             DefaultApplicationServer<Void, ExampleFactoryA> applicationServer = new DefaultApplicationServer<>(new FactoryManager<>(), new InMemoryFactoryStorage<>(exampleFactoryA));
             applicationServer.start();
-            new WebGuiServer(8089, "localhost", new WebGuiResource(applicationServer, () -> Arrays.asList(ExampleFactoryA.class,ExampleFactoryB.class),Arrays.asList(Locale.ENGLISH,Locale.GERMAN))).start();
+            new WebGuiServer(8089, "localhost", new WebGuiResource(guiModel,applicationServer, () -> Arrays.asList(ExampleFactoryA.class,ExampleFactoryB.class),Arrays.asList(Locale.ENGLISH,Locale.GERMAN))).start();
         },"http://localhost:8089/#/login");
     }
 

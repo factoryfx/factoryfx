@@ -243,7 +243,7 @@ public abstract class FactoryBase<E extends LiveObject, T extends FactoryBase<E,
         this.visitAttributesTripleFlat(originalValue, newValue, (currentAttribute, originalAttribute, newAttribute) -> {
             AttributeMergeHelper<?> attributeMergeHelper = currentAttribute.createMergeHelper();
             boolean mergeable = attributeMergeHelper.isMergeable(originalAttribute, newAttribute);
-            MergeResultEntry<T> mergeResultEntry = new MergeResultEntry<>(FactoryBase.this, currentAttribute,  currentAttribute.getDisplayText(), newAttribute.map((attribute)->attribute.getDisplayText()).orElse(""));
+            MergeResultEntry<T> mergeResultEntry = new MergeResultEntry<>(FactoryBase.this, currentAttribute, newAttribute);
             if (mergeable) {
                 if (newAttribute.isPresent()) {
                     if (!attributeMergeHelper.equalValues(newAttribute.get())) {

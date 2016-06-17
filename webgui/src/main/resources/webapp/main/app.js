@@ -5,8 +5,9 @@ var mod = angular.module('factoryfxwebgui', [
     'ngRoute',
     'ngResource',
     'ngAnimate',
+    'factoryfxwebgui.navigationBar',
     'factoryfxwebgui.services',
-    'factoryfxwebgui.view1',
+    'factoryfxwebgui.factoryEditor',
     'factoryfxwebgui.loginView',
     'factoryfxwebgui.errorView'
 ]).

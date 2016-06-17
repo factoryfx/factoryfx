@@ -10,7 +10,7 @@ import de.factoryfx.factory.merge.MergeDiff;
 public class ApplicationServerRestBridge<T extends FactoryBase<? extends LiveObject<V>, T>,V> implements ApplicationServer<V,T> {
 
     @Override
-    public MergeDiff updateCurrentFactory(ApplicationFactoryMetadata<T> updateFactoryRequest) {
+    public MergeDiff updateCurrentFactory(ApplicationFactoryMetadata<T> updateFactory) {
         return null;
     }
 

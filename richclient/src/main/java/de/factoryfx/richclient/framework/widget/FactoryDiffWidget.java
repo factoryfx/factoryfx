@@ -95,7 +95,7 @@ public class FactoryDiffWidget implements Widget {
             if (diffItem!=null){
                 Patch<String> patch = DiffUtils.diff(
                         convertToList(diffItem.previousValueDisplayText),
-                        convertToList(diffItem.newValuepValueDisplayText)
+                        convertToList(diffItem.newValueValueDisplayText)
                 );
                 String originalText=diffItem.previousValueDisplayText;
 
@@ -161,7 +161,7 @@ public class FactoryDiffWidget implements Widget {
                 });
 
                 previousValueDisplay.replaceText(diffItem.previousValueDisplayText);
-                newValueDisplay.replaceText(diffItem.newValuepValueDisplayText);
+                newValueDisplay.replaceText(diffItem.newValueValueDisplayText);
             }
         });
 
@@ -218,7 +218,7 @@ public class FactoryDiffWidget implements Widget {
             tableView.getColumns().add(oldValueColumn);
 
             TableColumn<MergeResultEntryWrapper, String> valueColumn = new TableColumn<>("New value");
-            valueColumn.setCellValueFactory(param -> new SimpleStringProperty(param.getValue().entry.newValuepValueDisplayText));
+            valueColumn.setCellValueFactory(param -> new SimpleStringProperty(param.getValue().entry.newValueValueDisplayText));
             tableView.getColumns().add(valueColumn);
         }
 

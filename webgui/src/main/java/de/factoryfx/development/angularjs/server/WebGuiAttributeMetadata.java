@@ -8,6 +8,6 @@ public class WebGuiAttributeMetadata {
     public String labelText;
 
     public WebGuiAttributeMetadata(AttributeMetadata attributeMetadata, Locale locale){
-        labelText=attributeMetadata.labelText.get(locale);
+        labelText=attributeMetadata.labelText.getPreferred(locale);
     }
 }

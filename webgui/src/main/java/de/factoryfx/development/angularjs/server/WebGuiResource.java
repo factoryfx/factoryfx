@@ -18,25 +18,31 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 
+import de.factoryfx.datastorage.ApplicationFactoryMetadata;
 import de.factoryfx.factory.FactoryBase;
+import de.factoryfx.factory.LiveObject;
 import de.factoryfx.factory.attribute.Attribute;
 import de.factoryfx.factory.attribute.ReferenceListAttribute;
+import de.factoryfx.factory.merge.MergeDiff;
+import de.factoryfx.guimodel.GuiModel;
 import de.factoryfx.server.ApplicationServer;
 import de.factoryfx.user.User;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
 @Path("/") /** path defined in {@link de.scoopsoftware.xtc.ticketproxy.configuration.ConfigurationServer}*/
-public class WebGuiResource {
+public class WebGuiResource<V,T extends FactoryBase<? extends LiveObject<V>, T>> {
 
-    private final ApplicationServer<?,?> applicationServer;
+    private final ApplicationServer<V,T> applicationServer;
     private final Supplier<List<Class<? extends FactoryBase>>> factoryClassesProvider;
     private List<Locale> locales =new ArrayList<>();
+    private final GuiModel guimodel;
 
-    public WebGuiResource(ApplicationServer<?,?> applicationServer, Supplier<List<Class<? extends FactoryBase>>> factoryClassesProvider, List<Locale> locales ) {
+    public WebGuiResource(GuiModel guimodel, ApplicationServer<V,T> applicationServer, Supplier<List<Class<? extends FactoryBase>>> factoryClassesProvider, List<Locale> locales ) {
         this.applicationServer = applicationServer;
         this.factoryClassesProvider = factoryClassesProvider;
         this.locales =locales;
+        this.guimodel=guimodel;
     }
 
     @GET
@@ -58,14 +64,14 @@ public class WebGuiResource {
     @Produces(MediaType.APPLICATION_JSON)
     @Path("root")
     public WebGuiEntity getRoot() {
-        return new WebGuiEntity(getCurrentEditingFactoryRoot(), getCurrentEditingFactoryRoot());
+        return new WebGuiEntity(getCurrentEditingFactoryRoot().root, getCurrentEditingFactoryRoot().root);
     }
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("factory")
     public WebGuiEntity getFactory(@QueryParam("id")String id) {
-        FactoryBase<?, ?> root = getCurrentEditingFactoryRoot();
+        FactoryBase<?, ?> root = getCurrentEditingFactoryRoot().root;
 
         //TODO use map?
         for (FactoryBase<?,?> factory: root.collectModelEntities()){
@@ -82,14 +88,14 @@ public class WebGuiResource {
     @Path("factory")
     public void save(WebGuiEntity newFactory) {
         newFactory.factory=newFactory.factory.reconstructMetadataDeepRoot();
-        FactoryBase<?, ?> root = getCurrentEditingFactoryRoot();
+        FactoryBase<?, ?> root = getCurrentEditingFactoryRoot().root;
         Map<String,FactoryBase<?,?>>  map = root.collectModelEntitiesMap();
         FactoryBase existing = map.get(newFactory.factory.getId());
 
 
         //TODO fix generics,casts
         existing.visitAttributesDualFlat(newFactory.factory, (thisAttribute, copyAttribute) -> {
-            Object value = ((Attribute)copyAttribute).get();
+            Object value = ((Attribute)copyAttribute).get();//The cast is necessary don't trust intellij
             if (value instanceof FactoryBase){
                 value=map.get(((FactoryBase)value).getId());
             }
@@ -120,7 +126,7 @@ public class WebGuiResource {
         LoginResponse loginResponse = new LoginResponse();
         loginResponse.successfully =true;
 
-        request.getSession(true).setAttribute(CURRENT_EDITING_FACTORY_SESSION_KEY,applicationServer.getCurrentFactory().root);
+        request.getSession(true).setAttribute(CURRENT_EDITING_FACTORY_SESSION_KEY,applicationServer.getCurrentFactory());
         request.getSession(true).setAttribute(USER_LOCALE,Locale.forLanguageTag(user.locale));
 
         return loginResponse;
@@ -128,13 +134,17 @@ public class WebGuiResource {
 
     @Context HttpServletRequest request;
 
-    public FactoryBase<?,?> getCurrentEditingFactoryRoot(){
-        return (FactoryBase<?, ?>) request.getSession(true).getAttribute(CURRENT_EDITING_FACTORY_SESSION_KEY);
+    private ApplicationFactoryMetadata<T> getCurrentEditingFactoryRoot(){
+        return (ApplicationFactoryMetadata<T>) request.getSession(true).getAttribute(CURRENT_EDITING_FACTORY_SESSION_KEY);
 
     }
 
     public Locale getUserLocale(){
-        return (Locale) request.getSession(true).getAttribute(USER_LOCALE);
+        if (request.getSession(false)==null){
+            return request.getLocale();
+        } else  {
+            return (Locale) request.getSession(true).getAttribute(USER_LOCALE);
+        }
     }
 
     @GET
@@ -148,5 +158,26 @@ public class WebGuiResource {
         return result;
     }
 
+
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("guimodel")
+    public WebGuiModel getGuimodel(){
+        ArrayList<String> result = new ArrayList<>();
+        for (Locale locale: locales){
+            result.add(locale.toString());
+        }
+        return new WebGuiModel(guimodel,getUserLocale());
+    }
+
+
+
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("deploy")
+    public MergeDiff deploy(){
+        //TODO handle conflicts
+        return applicationServer.updateCurrentFactory(getCurrentEditingFactoryRoot());
+    }
 
 }
