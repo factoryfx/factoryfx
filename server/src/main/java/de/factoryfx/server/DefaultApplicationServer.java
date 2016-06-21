@@ -1,6 +1,7 @@
 package de.factoryfx.server;
 
 import java.util.Collection;
+import java.util.Locale;
 
 import de.factoryfx.datastorage.ApplicationFactoryMetadata;
 import de.factoryfx.datastorage.FactoryStorage;
@@ -20,9 +21,9 @@ public class DefaultApplicationServer<V,T extends FactoryBase<? extends LiveObje
     }
 
     @Override
-    public MergeDiff updateCurrentFactory(ApplicationFactoryMetadata<T> updateFactory) {
+    public MergeDiff updateCurrentFactory(ApplicationFactoryMetadata<T> updateFactory, Locale locale) {
         T commonVersion = factoryStorage.getHistoryFactory(updateFactory.baseVersionId).root;
-        MergeDiff mergeDiff = factoryManager.update(commonVersion, updateFactory.root);
+        MergeDiff mergeDiff = factoryManager.update(commonVersion, updateFactory.root,locale);
         if (mergeDiff.hasNoConflicts()){
             factoryStorage.updateCurrentFactory(factoryManager.getCurrentFactory());
         }

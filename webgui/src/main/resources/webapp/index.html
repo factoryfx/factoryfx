@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en" ng-app="factoryfxwebgui">
+<html lang="en" ng-app="factoryfxwebgui" ng-controller="NavigationController">
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title> ??????? </title>
+    <title>{{guiModel.title}}</title>
 
     <link rel="stylesheet" href="lib/bootstrap/css/bootstrap.min.css" />
     <link rel="stylesheet" href="main/app.css" />
@@ -23,7 +23,7 @@
 
 <body>
 
-    <div ng-controller="NavigationController" ng-show="$location.path()!=='/login'">
+    <div ng-show="$location.path()!=='/login'">
         <nav class="navbar navbar-default navbar-fixed-top">
             <div class="container">
                 <div class="navbar-header">
@@ -48,7 +48,12 @@
     <script src="view/factoryEditor/FactoryEditor.js"></script>
     <script src="view/login/Login.js"></script>
     <script src="view/error/Error.js"></script>
+
+    <script src="components/directives.js"></script>
+    <script src="components/selectReference/selectReference.js"></script>
+
     <script src="main/app.js"></script>
+
 
 </body>
 </html>

@@ -10,7 +10,6 @@ import java.util.function.Function;
 import com.fasterxml.jackson.annotation.JsonValue;
 import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.factory.merge.attribute.AttributeMergeHelper;
-import de.factoryfx.factory.merge.attribute.DataMergeHelper;
 
 public class ValueAttribute<T> extends Attribute<T> {
     //    @JsonProperty
@@ -27,7 +26,7 @@ public class ValueAttribute<T> extends Attribute<T> {
 
     @Override
     public AttributeMergeHelper<?> createMergeHelper() {
-        return new DataMergeHelper<>(this);
+        return new AttributeMergeHelper<>(this);
     }
 
     @Override
@@ -52,9 +51,8 @@ public class ValueAttribute<T> extends Attribute<T> {
     }
 
     @Override
-    public String getDisplayText() {
-        //TODO fix  hard coded locale
-        return metadata.labelText.getPreferred(Locale.ENGLISH)+": "+ value;
+    public String getDisplayText(Locale locale) {
+        return metadata.labelText.getPreferred(locale)+": "+ value;
     }
 
     @Override

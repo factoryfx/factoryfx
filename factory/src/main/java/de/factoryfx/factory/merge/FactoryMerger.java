@@ -2,6 +2,7 @@ package de.factoryfx.factory.merge;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 
@@ -20,21 +21,27 @@ public class FactoryMerger {
     }
 
     public MergeDiff createMergeResult() {
-        return createMergeResult(currentModel.collectModelEntitiesMap()).getMergeDiff();
+        return createMergeResult(currentModel.collectChildFactoriesMap()).getMergeDiff();
+    }
+
+    Locale locale=Locale.ENGLISH;
+    public FactoryMerger setLocale(Locale locale){
+        this.locale=locale;
+        return this;
     }
 
     @SuppressWarnings("unchecked")
     private MergeResult createMergeResult(Map<String, FactoryBase<?,?>> currentMap) {
         MergeResult mergeResult = new MergeResult();
 
-        Map<String, FactoryBase<?,?>> originalMap = originalModel.collectModelEntitiesMap();
-        Map<String, FactoryBase<?,?>> newMap = newModel.collectModelEntitiesMap();
+        Map<String, FactoryBase<?,?>> originalMap = originalModel.collectChildFactoriesMap();
+        Map<String, FactoryBase<?,?>> newMap = newModel.collectChildFactoriesMap();
 
         for (Map.Entry<String, FactoryBase<?,?>> entry : currentMap.entrySet()) {
             FactoryBase originalValue = originalMap.get(entry.getKey());
             FactoryBase newValue = newMap.get(entry.getKey());
 
-            entry.getValue().merge(Optional.ofNullable(originalValue), Optional.ofNullable(newValue), mergeResult);
+            entry.getValue().merge(Optional.ofNullable(originalValue), Optional.ofNullable(newValue), mergeResult,locale);
         }
 
         HashSet<FactoryBase<?,?>> allModelEntities = new HashSet<>();
@@ -50,7 +57,7 @@ public class FactoryMerger {
     }
 
     public MergeDiff mergeIntoCurrent() {
-        Map<String, FactoryBase<?,?>> currentMap = currentModel.collectModelEntitiesMap();
+        Map<String, FactoryBase<?,?>> currentMap = currentModel.collectChildFactoriesMap();
         MergeResult mergeResult = createMergeResult(currentMap);
         MergeDiff mergeDiff = mergeResult.getMergeDiff();
 

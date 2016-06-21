@@ -2,6 +2,7 @@ package de.factoryfx.factory.attribute;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
@@ -52,7 +53,7 @@ public abstract class Attribute<T>{
     public abstract void removeListener(AttributeChangeListener<T> listener);
 
     @JsonIgnore
-    public abstract String getDisplayText();
+    public abstract String getDisplayText(Locale locale);
 
     public interface AttributeVisitor{
         void value(Attribute<?> value);

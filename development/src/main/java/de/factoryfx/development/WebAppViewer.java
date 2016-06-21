@@ -48,6 +48,10 @@ public class WebAppViewer{
                     "{\n" +
                     "    java.log(message);\n" +
                     "};");
+            webView.getEngine().executeScript("console.info = function(message)\n" +
+                    "{\n" +
+                    "    java.log(message);\n" +
+                    "};");
         });
 
         webView.getEngine().load(startUrl);
@@ -77,7 +81,7 @@ public class WebAppViewer{
 
     }
 
-    public class JavaBridge {
+    public static class JavaBridge {
         public void log(String text) {
             System.out.println(text);
         }

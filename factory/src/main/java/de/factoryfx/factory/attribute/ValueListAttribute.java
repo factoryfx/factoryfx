@@ -1,6 +1,7 @@
 package de.factoryfx.factory.attribute;
 
 import java.util.Collection;
+import java.util.Locale;
 import java.util.stream.Stream;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
@@ -70,13 +71,13 @@ public class ValueListAttribute<T> extends ValueAttribute<ObservableList<T>> {
     }
 
     @Override
-    public String getDisplayText() {
+    public String getDisplayText(Locale locale) {
         StringBuilder stringBuilder = new StringBuilder("List (number of entries: "+ get().size()+")\n");
         for (T item:  get()){
             stringBuilder.append(item);
             stringBuilder.append(",\n");
         }
-        return metadata.labelText+":\n"+stringBuilder.toString();
+        return metadata.labelText.getPreferred(locale)+":\n"+stringBuilder.toString();
     }
 
 }

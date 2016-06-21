@@ -567,7 +567,84 @@ public class MergeTest {
         Assert.assertEquals("3",currentModel.stringAttribute.get());
 
     }
-    
+
+    @Test
+    public void test_no_change_different_current(){
+        ExampleFactoryA currentModel = new ExampleFactoryA();
+        currentModel.stringAttribute.set("3");
+
+        ExampleFactoryA originalModel = copy(currentModel);
+        originalModel.stringAttribute.set("1");
+
+        ExampleFactoryA newModel = copy(currentModel);
+        newModel.stringAttribute.set("1");
+
+        FactoryMerger factoryMerger = new FactoryMerger(currentModel, originalModel, newModel);
+
+        MergeDiff mergeDiff= factoryMerger.mergeIntoCurrent();
+        Assert.assertTrue(mergeDiff.hasNoConflicts());
+        Assert.assertEquals("3",currentModel.stringAttribute.get());
+
+    }
+
+    @Test
+    public void test_no_change_different_current_reference(){
+        ExampleFactoryA currentModel = new ExampleFactoryA();
+        ExampleFactoryB newValueInCurrent = new ExampleFactoryB();
+        currentModel.referenceAttribute.set(newValueInCurrent);
+
+        ExampleFactoryA originalModel = copy(currentModel);
+        originalModel.referenceAttribute.set(new ExampleFactoryB());
+
+        ExampleFactoryA newModel = copy(originalModel);
+
+
+        FactoryMerger factoryMerger = new FactoryMerger(currentModel, originalModel, newModel);
+
+        MergeDiff mergeDiff= factoryMerger.mergeIntoCurrent();
+        Assert.assertTrue(mergeDiff.hasNoConflicts());
+        Assert.assertEquals(newValueInCurrent.getId(),currentModel.referenceAttribute.get().getId());
+    }
+
+    @Test
+    public void test_no_change_different_current_referencelist(){
+        ExampleFactoryA currentModel = new ExampleFactoryA();
+        ExampleFactoryB newValueInCurrent = new ExampleFactoryB();
+        currentModel.referenceListAttribute.add(newValueInCurrent);
+
+        ExampleFactoryA originalModel = copy(currentModel);
+        originalModel.referenceListAttribute.get().clear();
+        originalModel.referenceListAttribute.add(new ExampleFactoryB());
+
+        ExampleFactoryA newModel = copy(originalModel);
+
+
+        FactoryMerger factoryMerger = new FactoryMerger(currentModel, originalModel, newModel);
+
+        MergeDiff mergeDiff= factoryMerger.mergeIntoCurrent();
+        Assert.assertTrue(mergeDiff.hasNoConflicts());
+        Assert.assertEquals(newValueInCurrent.getId(),currentModel.referenceListAttribute.get(0).getId());
+    }
+
+    @Test
+    public void test_reflist_noconflict(){
+        ExampleFactoryA currentModel = new ExampleFactoryA();
+        ExampleFactoryB newValueInCurrent = new ExampleFactoryB();
+        currentModel.referenceListAttribute.add(newValueInCurrent);
+
+        ExampleFactoryA originalModel = copy(currentModel);
+
+        ExampleFactoryA newModel = copy(currentModel);
+        originalModel.referenceListAttribute.get().clear();
+        originalModel.referenceListAttribute.add(new ExampleFactoryB());
+
+        FactoryMerger factoryMerger = new FactoryMerger(currentModel, originalModel, newModel);
+
+        MergeDiff mergeDiff= factoryMerger.mergeIntoCurrent();
+        Assert.assertTrue(mergeDiff.hasNoConflicts());
+        Assert.assertEquals(newValueInCurrent.getId(),currentModel.referenceListAttribute.get(0).getId());
+    }
+
     private <T extends FactoryBase<?,T>> T copy(T value){
         return  value.copy();
     }

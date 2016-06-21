@@ -1,6 +1,7 @@
 package de.factoryfx.jettyserver;
 
 import java.util.Collection;
+import java.util.Locale;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -29,8 +30,8 @@ public class ApplicationServerResource<V, T extends FactoryBase<? extends LiveOb
     @Produces(MediaType.APPLICATION_JSON)
     @Path("updateCurrentFactory")
     @Override
-    public MergeDiff updateCurrentFactory(ApplicationFactoryMetadata<T> updateFactory) {
-        return  applicationServer.updateCurrentFactory(updateFactory);
+    public MergeDiff updateCurrentFactory(ApplicationFactoryMetadata<T> updateFactory,Locale locale) {
+        return  applicationServer.updateCurrentFactory(updateFactory,locale);
     }
 
     @GET

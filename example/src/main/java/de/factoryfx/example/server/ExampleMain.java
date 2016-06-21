@@ -1,6 +1,7 @@
 package de.factoryfx.example.server;
 
 import java.util.Arrays;
+import java.util.Locale;
 
 import de.factoryfx.datastorage.ApplicationFactoryMetadata;
 import de.factoryfx.development.InMemoryFactoryStorage;
@@ -48,7 +49,7 @@ public class ExampleMain extends Application {
         ApplicationFactoryMetadata<ShopFactory> localCopyShopFactory=applicationServer.getCurrentFactory();
 
         FactoryTreeEditor factoryTreeEditor = new FactoryTreeEditor();
-        SaveView<ShopFactory> saveView = new SaveView<>(() -> applicationServer.updateCurrentFactory(localCopyShopFactory));
+        SaveView<ShopFactory> saveView = new SaveView<>(() -> applicationServer.updateCurrentFactory(localCopyShopFactory, Locale.ENGLISH));
 
         GuiModel guiModel = new GuiModel();
 

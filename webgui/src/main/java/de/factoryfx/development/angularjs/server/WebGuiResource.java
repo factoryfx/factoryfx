@@ -22,6 +22,7 @@ import de.factoryfx.datastorage.ApplicationFactoryMetadata;
 import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.factory.LiveObject;
 import de.factoryfx.factory.attribute.Attribute;
+import de.factoryfx.factory.attribute.ReferenceAttribute;
 import de.factoryfx.factory.attribute.ReferenceListAttribute;
 import de.factoryfx.factory.merge.MergeDiff;
 import de.factoryfx.guimodel.GuiModel;
@@ -74,7 +75,7 @@ public class WebGuiResource<V,T extends FactoryBase<? extends LiveObject<V>, T>>
         FactoryBase<?, ?> root = getCurrentEditingFactoryRoot().root;
 
         //TODO use map?
-        for (FactoryBase<?,?> factory: root.collectModelEntities()){
+        for (FactoryBase<?,?> factory: root.collectChildFactories()){
             if (factory.getId().equals(id)){
                 return new WebGuiEntity(factory,root);
             }
@@ -89,7 +90,7 @@ public class WebGuiResource<V,T extends FactoryBase<? extends LiveObject<V>, T>>
     public void save(WebGuiEntity newFactory) {
         newFactory.factory=newFactory.factory.reconstructMetadataDeepRoot();
         FactoryBase<?, ?> root = getCurrentEditingFactoryRoot().root;
-        Map<String,FactoryBase<?,?>>  map = root.collectModelEntitiesMap();
+        Map<String,FactoryBase<?,?>>  map = root.collectChildFactoriesMap();
         FactoryBase existing = map.get(newFactory.factory.getId());
 
 
@@ -177,7 +178,43 @@ public class WebGuiResource<V,T extends FactoryBase<? extends LiveObject<V>, T>>
     @Path("deploy")
     public MergeDiff deploy(){
         //TODO handle conflicts
-        return applicationServer.updateCurrentFactory(getCurrentEditingFactoryRoot());
+        return applicationServer.updateCurrentFactory(getCurrentEditingFactoryRoot(),getUserLocale());
+    }
+
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("possibleValues")
+    public List<WebGuiPossibleEntity> deploy(String id, String attributeName){
+        List<WebGuiPossibleEntity> result = new ArrayList<>() ;
+
+        T root = getCurrentEditingFactoryRoot().root;
+        root.collectChildFactoriesMap().get(id).visitAttributesFlat((attributeVariableName, attribute) -> {
+            if (attributeVariableName.equals(attributeName)){
+
+                attribute.visit(new Attribute.AttributeVisitor() {
+                    @Override
+                    public void value(Attribute<?> value) {
+
+                    }
+
+                    @Override
+                    public void reference(ReferenceAttribute<?> reference) {
+                        //TODO
+//                            result   WebGuiPossibleEntity
+                    }
+
+                    @Override
+                    public void referenceList(ReferenceListAttribute<?> referenceList) {
+                        referenceList.possibleValueProviderFromRoot.ifPresent(factoryBaseListFunction -> {
+                            List<FactoryBase<?,?>> apply = factoryBaseListFunction.apply(root);
+                            apply.forEach(factoryBase -> result.add(new WebGuiPossibleEntity(factoryBase)));
+                        });
+                    }
+                });
+
+            }
+        });
+        return result;
     }
 
 }

@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 
 import de.factoryfx.factory.jackson.ObjectMapperBuilder;
 import de.factoryfx.factory.jackson.SimpleObjectMapper;
@@ -75,18 +76,18 @@ public class FactoryBaseTest {
         }
 
         Assert.assertEquals(null,readed.stringAttribute);
-        Assert.assertEquals(null,readed.referenceAttribute.metadata.labelText);
-        Assert.assertEquals(null,readed.referenceListAttribute.metadata.labelText);
+        Assert.assertEquals(null,readed.referenceAttribute.metadata.labelText.getPreferred(Locale.ENGLISH));
+        Assert.assertEquals(null,readed.referenceListAttribute.metadata.labelText.getPreferred(Locale.ENGLISH));
         Assert.assertEquals(null,readed.referenceAttribute.get().stringAttribute);
         Assert.assertEquals(null,readed.referenceListAttribute.get(0).stringAttribute);
 
         readed.reconstructMetadataDeepRoot();
 
-        Assert.assertEquals("ExampleA1",readed.stringAttribute.metadata.labelText);
-        Assert.assertEquals("ExampleA2",readed.referenceAttribute.metadata.labelText);
-        Assert.assertEquals("ExampleA3",readed.referenceListAttribute.metadata.labelText);
-        Assert.assertEquals("ExampleB1",readed.referenceAttribute.get().stringAttribute.metadata.labelText);
-        Assert.assertEquals("ExampleB1",readed.referenceListAttribute.get(0).stringAttribute.metadata.labelText);
+        Assert.assertEquals("ExampleA1",readed.stringAttribute.metadata.labelText.getPreferred(Locale.ENGLISH));
+        Assert.assertEquals("ExampleA2",readed.referenceAttribute.metadata.labelText.getPreferred(Locale.ENGLISH));
+        Assert.assertEquals("ExampleA3",readed.referenceListAttribute.metadata.labelText.getPreferred(Locale.ENGLISH));
+        Assert.assertEquals("ExampleB1",readed.referenceAttribute.get().stringAttribute.metadata.labelText.getPreferred(Locale.ENGLISH));
+        Assert.assertEquals("ExampleB1",readed.referenceListAttribute.get(0).stringAttribute.metadata.labelText.getPreferred(Locale.ENGLISH));
     }
 
     @Test

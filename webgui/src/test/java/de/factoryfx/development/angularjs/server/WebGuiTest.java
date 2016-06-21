@@ -30,7 +30,7 @@ public class WebGuiTest extends Application{
             exampleFactoryA.referenceAttribute.set(exampleFactoryB);
 
 
-            for (int i=0; i<5;i++){
+            for (int i=0; i<100;i++){
                 ExampleFactoryB value = new ExampleFactoryB();
                 value.stringAttribute.set("i"+i);
                 exampleFactoryA.referenceListAttribute.add(value);

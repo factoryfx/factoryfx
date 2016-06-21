@@ -37,10 +37,10 @@ public class AttributeBuilder {
     public static <T extends FactoryBase<?,? super T>> AttributeMetadataBuilder<ObservableList<T>,ReferenceListAttribute<T>> referenceList(Class<T> clazz){
         ReferenceListAttribute<T> referenceListAttribute = new ReferenceListAttribute<>();
         referenceListAttribute.possibleValueProviderFromRoot= Optional.of(factoryBase -> {
-            List<T> result = new ArrayList<>();
-            for (FactoryBase<?, ?>  factory: factoryBase.collectModelEntities()){
+            List<FactoryBase<?,?>> result = new ArrayList<>();
+            for (FactoryBase<?, ?>  factory: factoryBase.collectChildFactories()){
                 if (clazz.isAssignableFrom(factory.getClass())){
-                    result.add((T) factory);
+                    result.add(factory);
                 }
             }
             return result;
@@ -48,9 +48,9 @@ public class AttributeBuilder {
         return new AttributeMetadataBuilder<>(referenceListAttribute);
     }
 
-    public static <T extends FactoryBase<?,? super T>> AttributeMetadataBuilder<ObservableList<T>,ReferenceListAttribute<T>> referenceList(Function<FactoryBase<?,?>,List<T>> clazz){
+    public static <T extends FactoryBase<?,? super T>> AttributeMetadataBuilder<ObservableList<T>,ReferenceListAttribute<T>> referenceList(Function<FactoryBase<?,?>,List<FactoryBase<?,?>>> supplier){
         ReferenceListAttribute<T> referenceListAttribute = new ReferenceListAttribute<>();
-        referenceListAttribute.possibleValueProviderFromRoot= Optional.of(clazz);
+        referenceListAttribute.possibleValueProviderFromRoot= Optional.of(supplier);
         return new AttributeMetadataBuilder<>(referenceListAttribute);
     }
 

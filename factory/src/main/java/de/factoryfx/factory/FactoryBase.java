@@ -7,6 +7,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -139,7 +140,7 @@ public abstract class FactoryBase<E extends LiveObject, T extends FactoryBase<E,
 
 
 
-    public Map<String,FactoryBase<?,?>> collectModelEntitiesMap() {
+    public Map<String,FactoryBase<?,?>> collectChildFactoriesMap() {
         HashSet<FactoryBase<?, ?>> factoryBases = new HashSet<>();
         collectModelEntitiesTo(factoryBases);
 
@@ -151,7 +152,7 @@ public abstract class FactoryBase<E extends LiveObject, T extends FactoryBase<E,
     }
 
 
-    public Set<FactoryBase<?,?>> collectModelEntities() {
+    public Set<FactoryBase<?,?>> collectChildFactories() {
         HashSet<FactoryBase<?, ?>> factoryBases = new HashSet<>();
         collectModelEntitiesTo(factoryBases);
         return factoryBases;
@@ -234,19 +235,19 @@ public abstract class FactoryBase<E extends LiveObject, T extends FactoryBase<E,
 
     /**Slow. for multiple calls use getMassPathTo*/
     public List<FactoryBase<?,?>> getPathTo(FactoryBase<?,?> target) {
-        return getMassPathTo(getChildToParentMap(collectModelEntities()), target);
+        return getMassPathTo(getChildToParentMap(collectChildFactories()), target);
     }
 
     @SuppressWarnings("unchecked")
-    public void merge(Optional<FactoryBase<?,T>> originalValue, Optional<FactoryBase<?,T>> newValue, MergeResult mergeResult) {
+    public void merge(Optional<FactoryBase<?,T>> originalValue, Optional<FactoryBase<?,T>> newValue, MergeResult mergeResult, Locale locale) {
 
         this.visitAttributesTripleFlat(originalValue, newValue, (currentAttribute, originalAttribute, newAttribute) -> {
             AttributeMergeHelper<?> attributeMergeHelper = currentAttribute.createMergeHelper();
-            boolean mergeable = attributeMergeHelper.isMergeable(originalAttribute, newAttribute);
-            MergeResultEntry<T> mergeResultEntry = new MergeResultEntry<>(FactoryBase.this, currentAttribute, newAttribute);
-            if (mergeable) {
+            boolean hasNoConflict = attributeMergeHelper.hasNoConflict(originalAttribute, newAttribute);
+            MergeResultEntry<T> mergeResultEntry = new MergeResultEntry<>(FactoryBase.this, currentAttribute, newAttribute,locale);
+            if (hasNoConflict) {
                 if (newAttribute.isPresent()) {
-                    if (!attributeMergeHelper.equalValues(newAttribute.get())) {
+                    if (attributeMergeHelper.isMergeable(originalAttribute, newAttribute)){
                         mergeResult.addMergeExecutions(() -> attributeMergeHelper.merge(originalAttribute, newAttribute.get()));
                         mergeResult.addMergeInfo(mergeResultEntry);
                     }

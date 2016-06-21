@@ -1,11 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <FindBugsFilter>
 
-    <!-- exclude messages pertaining to security -->
     <Match>
         <Bug category="SECURITY" />
     </Match>
 
+    <Match>
+        <Bug pattern="URF_UNREAD_PUBLIC_OR_PROTECTED_FIELD"/>
+    </Match>
+
+    <Match>
+        <Bug pattern="UUF_UNUSED_PUBLIC_OR_PROTECTED_FIELD"/>
+    </Match>
+
+
+    <Match>
+        <Class name="de.factoryfx.development.SinglePrecessInstanceUtil"/>
+        <Bug pattern="REC_CATCH_EXCEPTION"/>
+    </Match>
+    <Match>
+        <Class name="de.factoryfx.development.SinglePrecessInstanceUtil"/>
+        <Bug pattern="DE_MIGHT_IGNORE"/>
+    </Match>
+    <Match>
+        <Class name="de.factoryfx.development.SinglePrecessInstanceUtil"/>
+        <Bug pattern="DM_EXIT"/>
+    </Match>
 
 
 

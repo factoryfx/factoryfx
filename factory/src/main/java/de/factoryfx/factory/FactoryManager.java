@@ -2,6 +2,7 @@ package de.factoryfx.factory;
 
 import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.Locale;
 import java.util.Map;
 
 import de.factoryfx.factory.merge.FactoryMerger;
@@ -9,14 +10,15 @@ import de.factoryfx.factory.merge.MergeDiff;
 
 public class FactoryManager<T extends FactoryBase<? extends LiveObject, T>,V> {
 
-    T currentFactory;
+    private T currentFactory;
 
-    public MergeDiff update(T commonVersion ,T newVersion){
+    public MergeDiff update(T commonVersion , T newVersion, Locale locale){
         newVersion.loopDetector();
         LinkedHashMap<String, LiveObject> previousLiveObjects = new LinkedHashMap<>();
         currentFactory.collectLiveObjects(previousLiveObjects);
 
         FactoryMerger factoryMerger = new FactoryMerger(currentFactory, commonVersion, newVersion);
+        factoryMerger.setLocale(locale);
         MergeDiff mergeDiff= factoryMerger.mergeIntoCurrent();
         if (mergeDiff.hasNoConflicts()){
             currentFactory.create();
@@ -27,6 +29,11 @@ public class FactoryManager<T extends FactoryBase<? extends LiveObject, T>,V> {
         }
         return mergeDiff;
     }
+
+    public MergeDiff update(T commonVersion , T newVersion){
+        return update(commonVersion , newVersion,Locale.ENGLISH);
+    }
+
 
     private void updateLiveObjects(Map<String, LiveObject> previousLiveObjects, Map<String, LiveObject> newLiveObjects){
         HashSet<LiveObject> previousLiveObjectsSet = new HashSet<>();

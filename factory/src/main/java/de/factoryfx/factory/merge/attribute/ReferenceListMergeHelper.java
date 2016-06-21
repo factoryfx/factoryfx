@@ -11,18 +11,15 @@ import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.factory.attribute.Attribute;
 import javafx.collections.ObservableList;
 
-public class ReferenceListMergeHelper<T extends FactoryBase<?,? super T>> extends AttributeMergeHelper<List<T>> {
-
-    final Attribute<ObservableList<T>> attribute;
+public class ReferenceListMergeHelper<T extends FactoryBase<?,? super T>> extends AttributeMergeHelper<ObservableList<T>> {
 
     public ReferenceListMergeHelper(Attribute<ObservableList<T>> attribute) {
-        this.attribute = attribute;
+        super(attribute);
     }
 
     @Override
-    public boolean equalValuesTyped(List<T> value) {
+    public boolean equalValuesTyped(ObservableList<T> valueList) {
         List<T> currentList = attribute.get();
-        List<T> valueList = value;
 
         if (currentList.size() != valueList.size()) {
             return false;
@@ -36,13 +33,29 @@ public class ReferenceListMergeHelper<T extends FactoryBase<?,? super T>> extend
     }
 
     @Override
-    public boolean isMergeableTyped(Optional<List<T>> originalValue, Optional<List<T>> newValue) {
+    public boolean hasNoConflictTyped(Optional<ObservableList<T>> originalValue, Optional<ObservableList<T>> newValue) {
         return true;
     }
 
     @Override
-    public void mergeTyped(Optional<List<T>> originalValue, List<T> newValue) {
-        ObservableList<T> currentToEditList = attribute.get();
+    public boolean isMergeable(Optional<Attribute<?>> originalValue, Optional<Attribute<?>> newValue) {
+        ObservableList<T> newValueTyped = null;
+        if (newValue.isPresent()) {
+            newValueTyped = (ObservableList<T>)newValue.get().get();
+        }
+//        ObservableList<T> originalValueTyped = null;
+//        if (originalValue.isPresent()) {
+//            originalValueTyped = (ObservableList<T>) originalValue.get().get();
+//        }
+        if (/*!equalValuesTyped(originalValueTyped) ||*/ equalValuesTyped(newValueTyped)) {
+            return false ;
+        }
+        return true;
+    }
+
+    @Override
+    public void mergeTyped(Optional<ObservableList<T>> originalValue, ObservableList<T> newValue) {
+        List<T> currentToEditList = attribute.get();
 
         List<T> currentList = new ArrayList<>(attribute.get());
         List<T> originalList = new ArrayList<>();
