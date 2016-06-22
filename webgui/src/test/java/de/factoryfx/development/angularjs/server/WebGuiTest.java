@@ -30,7 +30,7 @@ public class WebGuiTest extends Application{
             exampleFactoryA.referenceAttribute.set(exampleFactoryB);
 
 
-            for (int i=0; i<100;i++){
+            for (int i=0; i<3;i++){
                 ExampleFactoryB value = new ExampleFactoryB();
                 value.stringAttribute.set("i"+i);
                 exampleFactoryA.referenceListAttribute.add(value);
@@ -51,7 +51,7 @@ public class WebGuiTest extends Application{
 
             DefaultApplicationServer<Void, ExampleFactoryA> applicationServer = new DefaultApplicationServer<>(new FactoryManager<>(), new InMemoryFactoryStorage<>(exampleFactoryA));
             applicationServer.start();
-            new WebGuiServer(8089, "localhost", new WebGuiResource(guiModel,applicationServer, () -> Arrays.asList(ExampleFactoryA.class,ExampleFactoryB.class),Arrays.asList(Locale.ENGLISH,Locale.GERMAN))).start();
+            new WebGuiServer(8089, "localhost", new WebGuiResource<>(guiModel,applicationServer, () -> Arrays.asList(ExampleFactoryA.class,ExampleFactoryB.class),Arrays.asList(Locale.ENGLISH,Locale.GERMAN))).start();
         },"http://localhost:8089/#/login");
     }
 

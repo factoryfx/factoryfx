@@ -6,7 +6,7 @@ import java.util.Map;
 
 import de.factoryfx.factory.FactoryBase;
 
-public class WebGuiEntityMetadata {
+public class WebGuiFactoryMetadata {
 
 //    public static class WebGuiAttributeMetadata{
 //
@@ -19,7 +19,7 @@ public class WebGuiEntityMetadata {
 
 
 
-    public WebGuiEntityMetadata(Class<? extends FactoryBase> factoryBaseClass, Locale locale){
+    public WebGuiFactoryMetadata(Class<? extends FactoryBase> factoryBaseClass, Locale locale){
         type=factoryBaseClass.getName();
         try {
             FactoryBase<?,?> factoryBase = factoryBaseClass.newInstance();

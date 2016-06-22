@@ -16,7 +16,8 @@ import de.factoryfx.factory.validation.ValidationResult;
 
 public abstract class Attribute<T>{
 
-    public final AttributeMetadata<T> metadata=new AttributeMetadata<>(this);
+    public final AttributeMetadata metadata=new AttributeMetadata();
+    public final List<Validation<T>> validations = new ArrayList<>();
 
     public Attribute() {
     }
@@ -41,7 +42,7 @@ public abstract class Attribute<T>{
 
     public List<ValidationResult> validate() {
         List<ValidationResult> validationResults = new ArrayList<>();
-        for (Validation<T> validation : metadata.validations) {
+        for (Validation<T> validation : validations) {
             validationResults.add(validation.validate(get()));
         }
         return validationResults;

@@ -9,7 +9,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import de.factoryfx.factory.FactoryBase;
 
-public class WebGuiEntity {
+public class WebGuiFactory {
 
     public static class PathElement{
         public final String id;
@@ -30,7 +30,7 @@ public class WebGuiEntity {
 
     public List<PathElement> path=new ArrayList<>();
 
-    public WebGuiEntity(FactoryBase<?,?> factory, FactoryBase<?,?> root) {
+    public WebGuiFactory(FactoryBase<?,?> factory, FactoryBase<?,?> root) {
         this.factory = factory.copyOneLevelDeep();
         this.type = factory.getClass().getName();
 
@@ -47,7 +47,7 @@ public class WebGuiEntity {
         }
     }
 
-    public WebGuiEntity() {
+    public WebGuiFactory() {
         //for jackson
 
     }

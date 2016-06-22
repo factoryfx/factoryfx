@@ -2,6 +2,7 @@ package de.factoryfx.development;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 
 import de.factoryfx.datastorage.ApplicationFactoryMetadata;
@@ -59,7 +60,7 @@ public class InMemoryFactoryStorageTest {
         ApplicationFactoryMetadata<Dummy> currentFactory = applicationServer.getCurrentFactory();
         currentFactory.root.test.set("2");
 
-        applicationServer.updateCurrentFactory(currentFactory);
+        applicationServer.updateCurrentFactory(currentFactory, Locale.ENGLISH);
         Assert.assertEquals(2,calls.size());
         Assert.assertEquals("1",calls.get(0));
         Assert.assertEquals("2",calls.get(1));

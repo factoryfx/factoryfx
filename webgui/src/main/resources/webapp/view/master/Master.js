@@ -8,7 +8,7 @@
 
 angular.module('factoryfxwebgui.navigationBar', ['ngRoute'])
 
-    .controller('NavigationController', ['$scope', '$resource', '$location',
+    .controller('MasterController', ['$scope', '$resource', '$location',
         function                         ($scope,   $resource,   $location ) {
             $scope.guiModel=$resource("../applicationServer/guimodel").get();
             //TODO load only once

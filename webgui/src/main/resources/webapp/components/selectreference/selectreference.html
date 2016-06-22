@@ -1,0 +1,18 @@
+<div>
+    <div>
+        <button ng-class="{'active': selectDialog.visible}" class="btn btn-default" ng-click="selectDialog.visible=!selectDialog.visible;"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span></button>
+    </div>
+    <div uib-collapse="!selectDialog.visible" ng-init="loadPossibleValues()">
+        <div class="well well-lg">
+            <ul class="list-group" style="width: 100%; margin-bottom: 0px;">
+                <li class="list-group-item clearfix" ng-repeat="item in (selectDialog.possibleValues | pagingFilter:pagingConfig.itemsPerPage:pagingConfig.currentPage) track by $index">
+                    {{item.displayText}}
+                    <span class="pull-right">
+                        <button type="button" class="btn btn-default" ng-click="addFactory(item.id);" ><span class="glyphicon glyphicon-plus-sign"></span></button>
+                    </span>
+                </li>
+            </ul>
+            <uib-pagination style="margin: 9px 0;" boundary-links="true" total-items="selectDialog.possibleValues.length" max-size="10" items-per-page="pagingConfig.itemsPerPage" ng-model="pagingConfig.currentPage" class="pagination-sm" previous-text="&lsaquo;" next-text="&rsaquo;" first-text="&laquo;" last-text="&raquo;"></uib-pagination>
+        </div>
+    </div>
+</div>

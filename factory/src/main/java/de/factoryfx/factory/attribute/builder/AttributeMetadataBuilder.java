@@ -13,7 +13,12 @@ public class AttributeMetadataBuilder<T,A extends Attribute<T>> {
     }
 
     public AttributeMetadataBuilder<T,A> validation(Validation<T> validation){
-        attribute.metadata.validations.add(validation);
+        attribute.validations.add(validation);
+        return this;
+    }
+
+    public AttributeMetadataBuilder<T,A> possibleValues(Validation<T> validation){
+        attribute.validations.add(validation);
         return this;
     }
 

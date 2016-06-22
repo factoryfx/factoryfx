@@ -15,6 +15,7 @@ import javafx.collections.ObservableList;
 public class AttributeBuilder {
 
 
+
     public static AttributeMetadataBuilder<String,StringAttribute> string(){
         return new AttributeMetadataBuilder<>(new StringAttribute());
     }
@@ -29,12 +30,12 @@ public class AttributeBuilder {
         return new AttributeMetadataBuilder<>(new IntegerAttribute());
     }
 
-    public static <T extends FactoryBase<?,? super T>> AttributeMetadataBuilder<ObservableList<T>,ReferenceListAttribute<T>> referenceList(){
+    public static <T extends FactoryBase<?,T>> AttributeMetadataBuilder<ObservableList<T>,ReferenceListAttribute<T>> referenceList(){
         ReferenceListAttribute<T> referenceListAttribute = new ReferenceListAttribute<>();
         return new AttributeMetadataBuilder<>(referenceListAttribute);
     }
 
-    public static <T extends FactoryBase<?,? super T>> AttributeMetadataBuilder<ObservableList<T>,ReferenceListAttribute<T>> referenceList(Class<T> clazz){
+    public static <T extends FactoryBase<?,T>> AttributeMetadataBuilder<ObservableList<T>,ReferenceListAttribute<T>> referenceList(Class<T> clazz){
         ReferenceListAttribute<T> referenceListAttribute = new ReferenceListAttribute<>();
         referenceListAttribute.possibleValueProviderFromRoot= Optional.of(factoryBase -> {
             List<FactoryBase<?,?>> result = new ArrayList<>();
@@ -48,13 +49,13 @@ public class AttributeBuilder {
         return new AttributeMetadataBuilder<>(referenceListAttribute);
     }
 
-    public static <T extends FactoryBase<?,? super T>> AttributeMetadataBuilder<ObservableList<T>,ReferenceListAttribute<T>> referenceList(Function<FactoryBase<?,?>,List<FactoryBase<?,?>>> supplier){
+    public static <T extends FactoryBase<?,T>> AttributeMetadataBuilder<ObservableList<T>,ReferenceListAttribute<T>> referenceList(Function<FactoryBase<?,?>,List<FactoryBase<?,?>>> supplier){
         ReferenceListAttribute<T> referenceListAttribute = new ReferenceListAttribute<>();
         referenceListAttribute.possibleValueProviderFromRoot= Optional.of(supplier);
         return new AttributeMetadataBuilder<>(referenceListAttribute);
     }
 
-    public static <T extends FactoryBase<?,? super T>> AttributeMetadataBuilder<T,ReferenceAttribute<T>> reference(){
+    public static <T extends FactoryBase<?,T>> AttributeMetadataBuilder<T,ReferenceAttribute<T>> reference(){
         return new AttributeMetadataBuilder<>(new ReferenceAttribute<T>());
     }
 }

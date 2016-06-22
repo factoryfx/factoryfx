@@ -7,12 +7,14 @@ import java.util.Map;
 public class LanguageText {
     private HashMap<Locale, String> texts = new HashMap<>();
 
-    public void en(String text) {
+    public LanguageText en(String text) {
         put(Locale.ENGLISH,text);
+        return this;
     }
 
-    public void de(String text) {
+    public LanguageText de(String text) {
         put(Locale.GERMAN,text);
+        return this;
     }
 
     /** get the text in the locale if possible else rerturn the text in a random(probably ony english) locale or null if no text avaible*/
@@ -26,7 +28,8 @@ public class LanguageText {
         return text;
     }
 
-    public void put(Locale locale, String text) {
+    public LanguageText put(Locale locale, String text) {
         texts.put(locale, text);
+        return this;
     }
 }

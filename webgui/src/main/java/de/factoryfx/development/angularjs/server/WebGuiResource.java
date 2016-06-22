@@ -19,6 +19,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 
 import de.factoryfx.datastorage.ApplicationFactoryMetadata;
+import de.factoryfx.development.angularjs.server.model.WebGuiModel;
 import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.factory.LiveObject;
 import de.factoryfx.factory.attribute.Attribute;
@@ -49,12 +50,12 @@ public class WebGuiResource<V,T extends FactoryBase<? extends LiveObject<V>, T>>
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("metaData")
-    public Map<String,WebGuiEntityMetadata> getMetaData() {
+    public Map<String,WebGuiFactoryMetadata> getMetaData() {
         List<Class<? extends FactoryBase>> classList = factoryClassesProvider.get();
 
-        HashMap<String,WebGuiEntityMetadata> result = new HashMap<>();
+        HashMap<String,WebGuiFactoryMetadata> result = new HashMap<>();
         for (Class<? extends FactoryBase> factoryBaseClass: classList){
-            WebGuiEntityMetadata webGuiEntityMetadata = new WebGuiEntityMetadata(factoryBaseClass,getUserLocale());
+            WebGuiFactoryMetadata webGuiEntityMetadata = new WebGuiFactoryMetadata(factoryBaseClass,getUserLocale());
             result.put(webGuiEntityMetadata.type, webGuiEntityMetadata);
         }
 
@@ -64,20 +65,20 @@ public class WebGuiResource<V,T extends FactoryBase<? extends LiveObject<V>, T>>
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("root")
-    public WebGuiEntity getRoot() {
-        return new WebGuiEntity(getCurrentEditingFactoryRoot().root, getCurrentEditingFactoryRoot().root);
+    public WebGuiFactory getRoot() {
+        return new WebGuiFactory(getCurrentEditingFactoryRoot().root, getCurrentEditingFactoryRoot().root);
     }
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("factory")
-    public WebGuiEntity getFactory(@QueryParam("id")String id) {
+    public WebGuiFactory getFactory(@QueryParam("id")String id) {
         FactoryBase<?, ?> root = getCurrentEditingFactoryRoot().root;
 
         //TODO use map?
         for (FactoryBase<?,?> factory: root.collectChildFactories()){
             if (factory.getId().equals(id)){
-                return new WebGuiEntity(factory,root);
+                return new WebGuiFactory(factory,root);
             }
         }
         throw new IllegalStateException("cant find id"+id);
@@ -87,7 +88,7 @@ public class WebGuiResource<V,T extends FactoryBase<? extends LiveObject<V>, T>>
     @Consumes(MediaType.APPLICATION_JSON)
 //    @Produces(MediaType.APPLICATION_JSON)
     @Path("factory")
-    public void save(WebGuiEntity newFactory) {
+    public void save(WebGuiFactory newFactory) {
         newFactory.factory=newFactory.factory.reconstructMetadataDeepRoot();
         FactoryBase<?, ?> root = getCurrentEditingFactoryRoot().root;
         Map<String,FactoryBase<?,?>>  map = root.collectChildFactoriesMap();
@@ -184,7 +185,7 @@ public class WebGuiResource<V,T extends FactoryBase<? extends LiveObject<V>, T>>
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("possibleValues")
-    public List<WebGuiPossibleEntity> deploy(String id, String attributeName){
+    public List<WebGuiPossibleEntity> possibleValues(@QueryParam("id")String id, @QueryParam("attributeName")String attributeName){
         List<WebGuiPossibleEntity> result = new ArrayList<>() ;
 
         T root = getCurrentEditingFactoryRoot().root;
@@ -214,6 +215,7 @@ public class WebGuiResource<V,T extends FactoryBase<? extends LiveObject<V>, T>>
 
             }
         });
+        result.add(new WebGuiPossibleEntity(root));
         return result;
     }
 

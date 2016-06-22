@@ -11,4 +11,6 @@ public class GuiModel {
     public byte[] logoLarge;
     public byte[] logoSmall;
 
+    public FactoryEditorModel factoryEditorModel = new FactoryEditorModel();
+
 }
