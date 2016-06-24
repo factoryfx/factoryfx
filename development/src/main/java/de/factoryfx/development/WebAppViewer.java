@@ -13,9 +13,9 @@ import javafx.stage.Stage;
 import netscape.javascript.JSObject;
 
 public class WebAppViewer{
-    Runnable serverCreator;
-    String startUrl;
-    Stage primaryStag;
+    private Runnable serverCreator;
+    private String startUrl;
+    private Stage primaryStag;
 
     public WebAppViewer(Stage primaryStage, Runnable serverCreator, String startUrl){
         this.serverCreator= serverCreator;
@@ -28,7 +28,7 @@ public class WebAppViewer{
         WebView webView = new WebView();
         root.setCenter(webView);
 
-        serverCreator.run();
+        this.serverCreator.run();
 //        new Thread(serverCreator).start();
 //        try {
 //            Thread.sleep(100);
@@ -54,7 +54,7 @@ public class WebAppViewer{
                     "};");
         });
 
-        webView.getEngine().load(startUrl);
+        webView.getEngine().load(this.startUrl);
 
         primaryStage.show();
 
@@ -63,7 +63,7 @@ public class WebAppViewer{
         Button showInBrowser = new Button("show in browser");
         showInBrowser.setOnAction(event -> {
             try {
-                java.awt.Desktop.getDesktop().browse(new URL(startUrl).toURI());
+                java.awt.Desktop.getDesktop().browse(new URL(this.startUrl).toURI());
             } catch (IOException | URISyntaxException e) {
                 throw new RuntimeException(e);
             }

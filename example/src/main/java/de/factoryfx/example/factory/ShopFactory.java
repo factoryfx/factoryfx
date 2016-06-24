@@ -5,14 +5,14 @@ import java.util.stream.Collectors;
 
 import de.factoryfx.example.server.OrderStorage;
 import de.factoryfx.factory.FactoryBase;
+import de.factoryfx.factory.attribute.AttributeMetadata;
 import de.factoryfx.factory.attribute.ReferenceListAttribute;
 import de.factoryfx.factory.attribute.StringAttribute;
-import de.factoryfx.factory.attribute.builder.AttributeBuilder;
 import javafx.stage.Stage;
 
 public class ShopFactory extends FactoryBase<Shop,ShopFactory> {
-    public final StringAttribute stageTitle = AttributeBuilder.string().labelText("stageTitle").build();
-    public final ReferenceListAttribute<ProductFactory> products = AttributeBuilder.<ProductFactory>referenceList().labelText("Products").build();
+    public final StringAttribute stageTitle = new StringAttribute(new AttributeMetadata().labelText("stageTitle"));
+    public final ReferenceListAttribute<ProductFactory> products = new ReferenceListAttribute<ProductFactory>(new AttributeMetadata().labelText("Products"));
 
     @Override
     protected Shop createImp(Optional<Shop> previousLiveObject) {

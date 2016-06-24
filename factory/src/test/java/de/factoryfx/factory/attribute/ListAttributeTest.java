@@ -14,7 +14,7 @@ import org.junit.Test;
 public class ListAttributeTest {
 
     public static class ExampleListFactory extends FactoryBase<ExampleLiveObjectA,ExampleFactoryA> {
-        public ValueListAttribute<String> listAttribute =new ValueListAttribute<>();
+        public ValueListAttribute<String> listAttribute =new ValueListAttribute<>(new AttributeMetadata());
 
         @Override
         protected ExampleLiveObjectA createImp(Optional<ExampleLiveObjectA> previousLiveObject) {

@@ -3,6 +3,7 @@ package de.factoryfx.factory.merge;
 import java.util.Optional;
 
 import de.factoryfx.factory.FactoryBase;
+import de.factoryfx.factory.attribute.AttributeMetadata;
 import de.factoryfx.factory.attribute.MapAttribute;
 import de.factoryfx.factory.testfactories.ExampleLiveObjectA;
 import org.junit.Assert;
@@ -11,7 +12,7 @@ import org.junit.Test;
 public class MapMergeTest extends MergeHelperTestBase{
 
     public static class MapExampleFactory extends FactoryBase<ExampleLiveObjectA,MapExampleFactory> {
-        public final MapAttribute<String,String> mapAttribute =new MapAttribute();
+        public final MapAttribute<String,String> mapAttribute =new MapAttribute(new AttributeMetadata());
 
         @Override
         protected ExampleLiveObjectA createImp(Optional<ExampleLiveObjectA> previousLiveObject) {
@@ -24,7 +25,7 @@ public class MapMergeTest extends MergeHelperTestBase{
     public void test_same(){
         MapExampleFactory original = new MapExampleFactory();
         original.mapAttribute.get().put("k1","v1");
-        original.mapAttribute.get().put("k2","v2");;
+        original.mapAttribute.get().put("k2","v2");
         original.mapAttribute.get().put("k3","v3");
 
         MapExampleFactory update = new MapExampleFactory();
@@ -43,7 +44,7 @@ public class MapMergeTest extends MergeHelperTestBase{
     public void test_1_different(){
         MapExampleFactory original = new MapExampleFactory();
         original.mapAttribute.get().put("k1","v1");
-        original.mapAttribute.get().put("k2","v2");;
+        original.mapAttribute.get().put("k2","v2");
         original.mapAttribute.get().put("k3","v3");
 
         MapExampleFactory update = new MapExampleFactory();
@@ -62,7 +63,7 @@ public class MapMergeTest extends MergeHelperTestBase{
     public void test_1_deleted(){
         MapExampleFactory original = new MapExampleFactory();
         original.mapAttribute.get().put("k1","v1");
-        original.mapAttribute.get().put("k2","v2");;
+        original.mapAttribute.get().put("k2","v2");
         original.mapAttribute.get().put("k3","v3");
 
         MapExampleFactory update = new MapExampleFactory();

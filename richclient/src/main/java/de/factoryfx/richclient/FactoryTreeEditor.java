@@ -7,6 +7,7 @@ import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.factory.LiveObject;
 import de.factoryfx.factory.attribute.Attribute;
 import de.factoryfx.factory.attribute.AttributeChangeListener;
+import de.factoryfx.factory.attribute.AttributeMetadata;
 import de.factoryfx.factory.attribute.ReferenceAttribute;
 import de.factoryfx.factory.attribute.ReferenceListAttribute;
 import de.factoryfx.richclient.framework.editor.MasterEditor;
@@ -27,12 +28,12 @@ public class FactoryTreeEditor<T extends FactoryBase<? extends LiveObject, T>> e
     @Override
     public Node createContent() {
 
-        TreeView<Attribute<?>> tree = new TreeView<>();
-        tree.setCellFactory(param -> new TextFieldTreeCell<Attribute<?>>() {
-            AttributeChangeListener attributeChangeListener = (attribute, value) -> updateText((Attribute<?>) attribute);
-            Attribute<?> attribute;
+        TreeView<Attribute<?,?>> tree = new TreeView<>();
+        tree.setCellFactory(param -> new TextFieldTreeCell<Attribute<?,?>>() {
+            AttributeChangeListener attributeChangeListener = (attribute, value) -> updateText((Attribute<?,?>) attribute);
+            Attribute<?,?> attribute;
             @Override
-            public void updateItem(Attribute<?> item, boolean empty) {
+            public void updateItem(Attribute<?,?> item, boolean empty) {
                 super.updateItem(item, empty);
                 if (attribute!=null){
                     attribute.removeListener(attributeChangeListener);
@@ -56,9 +57,9 @@ public class FactoryTreeEditor<T extends FactoryBase<? extends LiveObject, T>> e
 
 
         ChangeListener<T> changeListener = (observable, oldValue, newValue) -> {
-            HashMap<FactoryBase<?,?>,TreeItem<Attribute<?>>> factoryToTreeItem= new HashMap<>();
+            HashMap<FactoryBase<?,?>,TreeItem<Attribute<?,?>>> factoryToTreeItem= new HashMap<>();
 
-            addOrGetTreeItem(newValue,factoryToTreeItem).setValue(new ReferenceAttribute<>());//"root"
+            addOrGetTreeItem(newValue,factoryToTreeItem).setValue(new ReferenceAttribute<>(new AttributeMetadata()));//"root"
 
             if (newValue!=null){
                 HashSet<FactoryBase<?, ?>> allModelEntities = new HashSet<>();
@@ -68,13 +69,13 @@ public class FactoryTreeEditor<T extends FactoryBase<? extends LiveObject, T>> e
                     factoryBase.visitAttributesFlat((attributeVariableName, attribute) -> {
                         attribute.visit(new Attribute.AttributeVisitor() {
                             @Override
-                            public void value(Attribute<?> value) {
+                            public void value(Attribute<?,?> value) {
                                 addOrGetTreeItem(factoryBase,factoryToTreeItem).getChildren().add(new TreeItem<>(value));
                             }
 
                             @Override
                             public void reference(ReferenceAttribute<?> reference) {
-                                TreeItem<Attribute<?>> treeItem = addOrGetTreeItem(factoryBase, factoryToTreeItem);
+                                TreeItem<Attribute<?,?>> treeItem = addOrGetTreeItem(factoryBase, factoryToTreeItem);
                                 treeItem.setValue(reference);
                                 addOrGetTreeItem(factoryBase,factoryToTreeItem).getChildren().add(treeItem);
                             }
@@ -82,7 +83,7 @@ public class FactoryTreeEditor<T extends FactoryBase<? extends LiveObject, T>> e
                             @Override
                             public void referenceList(ReferenceListAttribute<?> referenceList) {
                                 referenceList.forEach(r -> {
-                                    TreeItem<Attribute<?>> treeItem = addOrGetTreeItem(r, factoryToTreeItem);
+                                    TreeItem<Attribute<?,?>> treeItem = addOrGetTreeItem(r, factoryToTreeItem);
                                     treeItem.setValue(referenceList);
                                     addOrGetTreeItem(factoryBase, factoryToTreeItem).getChildren().add(treeItem);
                                 });
@@ -115,8 +116,8 @@ public class FactoryTreeEditor<T extends FactoryBase<? extends LiveObject, T>> e
         return borderPane;
     }
 
-    private TreeItem<Attribute<?>> addOrGetTreeItem(FactoryBase<?,?> factory , HashMap<FactoryBase<?,?>,TreeItem<Attribute<?>>> factoryToTreeItem){
-        TreeItem<Attribute<?>> result = factoryToTreeItem.get(factory);
+    private TreeItem<Attribute<?,?>> addOrGetTreeItem(FactoryBase<?,?> factory , HashMap<FactoryBase<?,?>,TreeItem<Attribute<?,?>>> factoryToTreeItem){
+        TreeItem<Attribute<?,?>> result = factoryToTreeItem.get(factory);
         if (result==null){
             result = new TreeItem<>();
             factoryToTreeItem.put(factory,result);

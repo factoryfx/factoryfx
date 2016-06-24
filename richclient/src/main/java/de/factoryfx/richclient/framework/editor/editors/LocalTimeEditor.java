@@ -14,7 +14,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.util.converter.LocalTimeStringConverter;
 
-public class LocalTimeEditor extends AttributeEditor<LocalTime,Attribute<LocalTime>> {
+public class LocalTimeEditor extends AttributeEditor<LocalTime,Attribute<LocalTime,?>> {
 
     public LocalTimeEditor() {
         super(LocalTime.class);

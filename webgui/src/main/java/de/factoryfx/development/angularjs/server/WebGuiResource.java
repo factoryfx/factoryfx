@@ -194,7 +194,7 @@ public class WebGuiResource<V,T extends FactoryBase<? extends LiveObject<V>, T>>
 
                 attribute.visit(new Attribute.AttributeVisitor() {
                     @Override
-                    public void value(Attribute<?> value) {
+                    public void value(Attribute<?,?> value) {
 
                     }
 
@@ -215,8 +215,43 @@ public class WebGuiResource<V,T extends FactoryBase<? extends LiveObject<V>, T>>
 
             }
         });
-        result.add(new WebGuiPossibleEntity(root));
         return result;
+    }
+
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("newEntry")
+    public WebGuiFactory addFactory(@QueryParam("id")String id, @QueryParam("attributeName")String attributeName){
+
+        T root = getCurrentEditingFactoryRoot().root;
+        FactoryBase<?, ?> factoryBase = root.collectChildFactoriesMap().get(id);
+        factoryBase.visitAttributesFlat((attributeVariableName, attribute) -> {
+            if (attributeVariableName.equals(attributeName)){
+
+                attribute.visit(new Attribute.AttributeVisitor() {
+                    @Override
+                    public void value(Attribute<?,?> value) {
+
+                    }
+
+                    @Override
+                    public void reference(ReferenceAttribute<?> reference) {
+                        //TODO
+//                            result   WebGuiPossibleEntity
+                    }
+
+                    @Override
+                    public void referenceList(ReferenceListAttribute<?> referenceList) {
+//                        referenceList.possibleValueProviderFromRoot.ifPresent(factoryBaseListFunction -> {
+//                            List<FactoryBase<?,?>> apply = factoryBaseListFunction.apply(root);
+//                            apply.forEach(factoryBase -> result.add(new WebGuiPossibleEntity(factoryBase)));
+//                        });
+                    }
+                });
+
+            }
+        });
+        return new WebGuiFactory(factoryBase,root);
     }
 
 }

@@ -2,15 +2,15 @@ package de.factoryfx.factory.attribute;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 
-public class EnumAttribute<T extends Enum<T>> extends ValueAttribute<T,EnumAttribute<T>> {
+public class DoubleAttribute extends ValueAttribute<Double,DoubleAttribute> {
 
     @JsonCreator
-    EnumAttribute(T value) {
+    DoubleAttribute(Double value) {
         super(null);
         set(value);
     }
 
-    public EnumAttribute(AttributeMetadata attributeMetadata) {
+    public DoubleAttribute(AttributeMetadata attributeMetadata) {
         super(attributeMetadata);
     }
 }

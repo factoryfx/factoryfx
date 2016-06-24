@@ -13,7 +13,7 @@ import javafx.collections.ObservableList;
 
 public class ReferenceListMergeHelper<T extends FactoryBase<?,? super T>> extends AttributeMergeHelper<ObservableList<T>> {
 
-    public ReferenceListMergeHelper(Attribute<ObservableList<T>> attribute) {
+    public ReferenceListMergeHelper(Attribute<ObservableList<T>,?> attribute) {
         super(attribute);
     }
 
@@ -38,7 +38,7 @@ public class ReferenceListMergeHelper<T extends FactoryBase<?,? super T>> extend
     }
 
     @Override
-    public boolean isMergeable(Optional<Attribute<?>> originalValue, Optional<Attribute<?>> newValue) {
+    public boolean isMergeable(Optional<Attribute<?,?>> originalValue, Optional<Attribute<?,?>> newValue) {
         ObservableList<T> newValueTyped = null;
         if (newValue.isPresent()) {
             newValueTyped = (ObservableList<T>)newValue.get().get();

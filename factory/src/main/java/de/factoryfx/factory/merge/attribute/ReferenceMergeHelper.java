@@ -5,7 +5,7 @@ import de.factoryfx.factory.attribute.Attribute;
 
 public class ReferenceMergeHelper<T extends FactoryBase<?,? super T>> extends AttributeMergeHelper<T> {
 
-    public ReferenceMergeHelper(Attribute<T> attribute) {
+    public ReferenceMergeHelper(Attribute<T,?> attribute) {
         super(attribute);
     }
 

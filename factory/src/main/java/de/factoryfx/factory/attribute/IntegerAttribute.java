@@ -2,14 +2,15 @@ package de.factoryfx.factory.attribute;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 
-public class IntegerAttribute extends ValueAttribute<Integer> {
+public class IntegerAttribute extends ValueAttribute<Integer,IntegerAttribute> {
 
     @JsonCreator
-    public IntegerAttribute(Integer value) {
+    IntegerAttribute(Integer value) {
+        super(null);
         set(value);
     }
 
-    public IntegerAttribute() {
-
+    public IntegerAttribute(AttributeMetadata attributeMetadata) {
+        super(attributeMetadata);
     }
 }

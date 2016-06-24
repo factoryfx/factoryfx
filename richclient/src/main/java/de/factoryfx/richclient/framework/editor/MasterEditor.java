@@ -21,7 +21,7 @@ public class MasterEditor implements Widget{
         //TODO
     }
 
-    public void bind(Attribute<?> attribute){
+    public void bind(Attribute<?,?> attribute){
         for (AttributeEditor<?,?> attributeEditor: attributeEditors){
             if (attributeEditor.canEdit(attribute.get())){
                 borderPane.setCenter(attributeEditor.createContent());
@@ -30,7 +30,7 @@ public class MasterEditor implements Widget{
         }
     }
 
-    public void unbind(Attribute<?> attribute){
+    public void unbind(Attribute<?,?> attribute){
 
     }
 

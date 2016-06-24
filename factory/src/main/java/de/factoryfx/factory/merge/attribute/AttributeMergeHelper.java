@@ -7,9 +7,9 @@ import de.factoryfx.factory.attribute.Attribute;
 
 public class AttributeMergeHelper<T> {
 
-    protected final Attribute<T> attribute;
+    protected final Attribute<T,?> attribute;
 
-    public AttributeMergeHelper(Attribute<T> attribute) {
+    public AttributeMergeHelper(Attribute<T,?> attribute) {
         this.attribute = attribute;
     }
 
@@ -27,7 +27,7 @@ public class AttributeMergeHelper<T> {
     }
 
     @SuppressWarnings("unchecked")
-    public boolean hasNoConflict(Optional<Attribute<?>> originalValue, Optional<Attribute<?>> newValue) {
+    public boolean hasNoConflict(Optional<Attribute<?,?>> originalValue, Optional<Attribute<?,?>> newValue) {
         Optional<T> originalValueTyped = Optional.empty();
         if (originalValue.isPresent()) {
             originalValueTyped = Optional.ofNullable((T) originalValue.get().get());
@@ -43,7 +43,7 @@ public class AttributeMergeHelper<T> {
     /**
      * check if merge should be executed e.g. not if values ar equals
      * */
-    public boolean isMergeable(Optional<Attribute<?>> originalValue, Optional<Attribute<?>> newValue) {
+    public boolean isMergeable(Optional<Attribute<?,?>> originalValue, Optional<Attribute<?,?>> newValue) {
         T originalValueTyped = null;
         if (originalValue.isPresent()) {
             originalValueTyped = (T) originalValue.get().get();
@@ -86,7 +86,7 @@ public class AttributeMergeHelper<T> {
     }
 
     @SuppressWarnings("unchecked")
-    public void merge(Optional<Attribute<?>> originalValue, Attribute<?> newValue) {
+    public void merge(Optional<Attribute<?,?>> originalValue, Attribute<?,?> newValue) {
         Optional<T> originalValueTyped = Optional.empty();
         if (originalValue.isPresent()) {
             originalValueTyped = Optional.ofNullable((T) originalValue.get().get());

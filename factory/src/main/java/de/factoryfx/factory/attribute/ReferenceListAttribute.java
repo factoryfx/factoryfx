@@ -21,18 +21,16 @@ import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 
-public class ReferenceListAttribute<T extends FactoryBase<?,? super T>> extends Attribute<ObservableList<T>> {
+public class ReferenceListAttribute<T extends FactoryBase<?,? super T>> extends Attribute<ObservableList<T>,ReferenceListAttribute<T>> {
     ObservableList<T> list = FXCollections.observableArrayList();
 
-    public ReferenceListAttribute(ObservableList<T> defaultValue) {
-        list=defaultValue;
-    }
-
-    public ReferenceListAttribute() {
+    public ReferenceListAttribute(AttributeMetadata attributeMetadata) {
+        super(attributeMetadata);
     }
 
     @JsonCreator
-    public ReferenceListAttribute(ObservableListJacksonAbleWrapper<T> list) {
+    ReferenceListAttribute(ObservableListJacksonAbleWrapper<T> list) {
+        super(null);
         this.list = list.unwrap();
     }
 

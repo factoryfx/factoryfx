@@ -13,7 +13,7 @@ public class MergeResultEntry<T extends FactoryBase<?,T>> {
 
     public MergeResultEntryInfo mergeResultEntryInfo;
 
-    public MergeResultEntry(FactoryBase<?, T> parent, Attribute<?> attribute, Optional<Attribute<?>> newAttribute, Locale locale) {
+    public MergeResultEntry(FactoryBase<?, T> parent, Attribute<?,?> attribute, Optional<Attribute<?,?>> newAttribute, Locale locale) {
         this.parent=parent;
 
         mergeResultEntryInfo=new MergeResultEntryInfo(attribute.getDisplayText(locale), newAttribute.map((a)->a.getDisplayText(locale)).orElse(""),parent.getDisplayText());

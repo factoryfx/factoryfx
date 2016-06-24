@@ -14,7 +14,7 @@ import org.junit.Test;
 public class SetAttributeTest {
 
     public static class ExampleSetFactory extends FactoryBase<ExampleLiveObjectA,ExampleFactoryA> {
-        public ValueSetAttribute<String> setAttribute =new ValueSetAttribute<>();
+        public ValueSetAttribute<String> setAttribute =new ValueSetAttribute<>(new AttributeMetadata());
 
         @Override
         protected ExampleLiveObjectA createImp(Optional<ExampleLiveObjectA> previousLiveObject) {

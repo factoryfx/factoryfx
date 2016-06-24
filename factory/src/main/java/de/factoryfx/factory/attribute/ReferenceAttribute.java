@@ -13,17 +13,18 @@ import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.factory.merge.attribute.AttributeMergeHelper;
 import de.factoryfx.factory.merge.attribute.ReferenceMergeHelper;
 
-public class ReferenceAttribute<T extends FactoryBase<?,? super T>> extends Attribute<T> {
+public class ReferenceAttribute<T extends FactoryBase<?,? super T>> extends Attribute<T,ReferenceAttribute<T>> {
 
     private T value;
 
     @JsonCreator
-    public ReferenceAttribute(T value) {
+    ReferenceAttribute(T value) {
+        super(null);
         set(value);
     }
 
-    public ReferenceAttribute() {
-
+    public ReferenceAttribute(AttributeMetadata attributeMetadata) {
+        super(attributeMetadata);
     }
 
     @Override

@@ -7,7 +7,7 @@ import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.Node;
 
-public abstract class AttributeEditor<T,A extends Attribute<T>> implements Widget {
+public abstract class AttributeEditor<T,A extends Attribute<T,?>> implements Widget {
     protected SimpleObjectProperty<A> boundToAttribute= new SimpleObjectProperty<>();
     protected SimpleObjectProperty<T> boundTo= new SimpleObjectProperty<>();
     protected SimpleBooleanProperty disabledProperty= new SimpleBooleanProperty(true);
@@ -26,7 +26,7 @@ public abstract class AttributeEditor<T,A extends Attribute<T>> implements Widge
         });
     }
 
-    public void bind(Attribute<?> attribute){
+    public void bind(Attribute<?,?> attribute){
         boundToAttribute.set((A)attribute);
         disabledProperty.set(attribute==null);
 

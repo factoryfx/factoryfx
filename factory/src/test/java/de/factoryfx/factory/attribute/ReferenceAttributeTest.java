@@ -13,7 +13,7 @@ import org.junit.Test;
 public class ReferenceAttributeTest {
 
     public static class ExampleReferenceFactory extends FactoryBase<ExampleLiveObjectA,ExampleFactoryA> {
-        public ReferenceAttribute<ExampleFactoryA> referenceAttribute =new ReferenceAttribute<ExampleFactoryA>();
+        public ReferenceAttribute<ExampleFactoryA> referenceAttribute =new ReferenceAttribute<ExampleFactoryA>(new AttributeMetadata());
         @Override
         protected ExampleLiveObjectA createImp(Optional<ExampleLiveObjectA> previousLiveObject) {
             return null;

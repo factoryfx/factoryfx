@@ -10,10 +10,10 @@ import javafx.collections.FXCollections;
 import javafx.collections.MapChangeListener;
 import javafx.collections.ObservableMap;
 
-public class MapAttribute<K, V> extends ValueAttribute<ObservableMap<K,V>> {
+public class MapAttribute<K, V> extends ValueAttribute<ObservableMap<K,V>,MapAttribute<K, V>> {
 
-    public MapAttribute() {
-        super();
+    public MapAttribute(AttributeMetadata attributeMetadata) {
+        super(attributeMetadata);
         set(FXCollections.observableMap(new TreeMap<>()));
 
         get().addListener((MapChangeListener<K, V>) change -> {
@@ -23,23 +23,10 @@ public class MapAttribute<K, V> extends ValueAttribute<ObservableMap<K,V>> {
         });
     }
 
-    public MapAttribute(Map<K, V> defaultValue) {
-        this();
-        get().putAll(defaultValue);
-    }
-
     @JsonCreator
-    public MapAttribute(ObservableMapJacksonAbleWrapper<K, V> map) {
-        this();
+    MapAttribute(ObservableMapJacksonAbleWrapper<K, V> map) {
+        this((AttributeMetadata)null);
         this.set(map.unwrap());
-    }
-
-    public V get(String key) {
-        return get().get(key);
-    }
-
-    public V getOrDefault(K key, V defaultValue) {
-        return get().getOrDefault(key, defaultValue);
     }
 
     @Override

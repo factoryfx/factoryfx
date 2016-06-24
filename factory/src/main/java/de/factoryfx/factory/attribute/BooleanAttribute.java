@@ -2,15 +2,16 @@ package de.factoryfx.factory.attribute;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 
-public class BooleanAttribute extends ValueAttribute<Boolean> {
+public class BooleanAttribute extends ValueAttribute<Boolean,BooleanAttribute> {
 
-    public BooleanAttribute() {
-        super();
+    public BooleanAttribute(AttributeMetadata attributeMetadata) {
+        super(attributeMetadata);
         set(Boolean.FALSE);
     }
 
     @JsonCreator
-    public BooleanAttribute(Boolean value) {
+    BooleanAttribute(Boolean value) {
+        super(null);
         set(value);
     }
 

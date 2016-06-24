@@ -76,8 +76,8 @@ public class FactoryBaseTest {
         }
 
         Assert.assertEquals(null,readed.stringAttribute);
-        Assert.assertEquals(null,readed.referenceAttribute.metadata.labelText.getPreferred(Locale.ENGLISH));
-        Assert.assertEquals(null,readed.referenceListAttribute.metadata.labelText.getPreferred(Locale.ENGLISH));
+        Assert.assertEquals(null,readed.referenceAttribute.metadata);
+        Assert.assertEquals(null,readed.referenceListAttribute.metadata);
         Assert.assertEquals(null,readed.referenceAttribute.get().stringAttribute);
         Assert.assertEquals(null,readed.referenceListAttribute.get(0).stringAttribute);
 

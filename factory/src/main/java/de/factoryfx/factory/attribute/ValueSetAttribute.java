@@ -1,9 +1,7 @@
 package de.factoryfx.factory.attribute;
 
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.Locale;
-import java.util.stream.Stream;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import de.factoryfx.factory.jackson.ObservableSetJacksonAbleWrapper;
@@ -11,9 +9,10 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableSet;
 import javafx.collections.SetChangeListener;
 
-public class ValueSetAttribute<T> extends ValueAttribute<ObservableSet<T>> {
+public class ValueSetAttribute<T> extends ValueAttribute<ObservableSet<T>,ValueSetAttribute<T>> {
 
-    public ValueSetAttribute() {
+    public ValueSetAttribute(AttributeMetadata attributeMetadata) {
+        super(attributeMetadata);
         set(FXCollections.observableSet(new HashSet<>()));
 
         get().addListener((SetChangeListener<T>) change -> {
@@ -25,37 +24,9 @@ public class ValueSetAttribute<T> extends ValueAttribute<ObservableSet<T>> {
 
 
     @JsonCreator
-    public ValueSetAttribute(ObservableSetJacksonAbleWrapper<T> setCollection) {
-        this();
+    ValueSetAttribute(ObservableSetJacksonAbleWrapper<T> setCollection) {
+        this((AttributeMetadata)null);
         set(setCollection.unwrap());
-    }
-
-    public void add(T value) {
-        get().add(value);
-    }
-
-    public void addAll(Collection<T> values) {
-        get().addAll(values);
-    }
-
-    public boolean contains(T value) {
-        return get().contains(value);
-    }
-
-    public int size() {
-        return get().size();
-    }
-
-    public Stream<T> stream() {
-        return get().stream();
-    }
-
-    public T[] toArray(T[] a) {
-        return get().toArray(a);
-    }
-
-    public Object[] toArray() {
-        return get().toArray();
     }
 
     @Override

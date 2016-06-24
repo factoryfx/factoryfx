@@ -14,7 +14,7 @@ import org.junit.Test;
 public class ReferenceListAttributeTest {
 
     public static class ExampleReferenceListFactory extends FactoryBase<ExampleLiveObjectA,ExampleFactoryA> {
-        public ReferenceListAttribute<ExampleFactoryA> referenceListAttribute =new ReferenceListAttribute<>();
+        public ReferenceListAttribute<ExampleFactoryA> referenceListAttribute =new ReferenceListAttribute<>(new AttributeMetadata());
 
         @Override
         protected ExampleLiveObjectA createImp(Optional<ExampleLiveObjectA> previousLiveObject) {

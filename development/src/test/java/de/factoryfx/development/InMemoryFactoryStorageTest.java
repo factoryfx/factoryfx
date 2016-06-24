@@ -9,8 +9,8 @@ import de.factoryfx.datastorage.ApplicationFactoryMetadata;
 import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.factory.FactoryManager;
 import de.factoryfx.factory.LiveObject;
+import de.factoryfx.factory.attribute.AttributeMetadata;
 import de.factoryfx.factory.attribute.StringAttribute;
-import de.factoryfx.factory.attribute.builder.AttributeBuilder;
 import de.factoryfx.server.DefaultApplicationServer;
 import org.junit.Assert;
 import org.junit.Test;
@@ -19,7 +19,7 @@ public class InMemoryFactoryStorageTest {
 
     public static class Dummy extends FactoryBase<DummyLive,Dummy>{
 
-        public final StringAttribute test= AttributeBuilder.string("1").labelText("fsdsf").build();
+        public final StringAttribute test= new StringAttribute(new AttributeMetadata().labelText("fsdsf")).defaultValue("1");
 
         @Override
         protected DummyLive createImp(Optional<DummyLive> previousLiveObject) {

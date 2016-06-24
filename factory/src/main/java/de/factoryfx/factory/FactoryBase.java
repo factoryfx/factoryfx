@@ -43,7 +43,7 @@ public abstract class FactoryBase<E extends LiveObject, T extends FactoryBase<E,
         visitAttributesFlat((attributeVariableName, attribute) -> {
             attribute.visit(new Attribute.AttributeVisitor() {
                 @Override
-                public void value(Attribute<?> value) {
+                public void value(Attribute<?,?> value) {
 
                 }
 
@@ -65,13 +65,14 @@ public abstract class FactoryBase<E extends LiveObject, T extends FactoryBase<E,
         });
     }
 
-    public <A> void  visitAttributesDualFlat(T modelBase, BiConsumer<Attribute<A>, Attribute<A>> consumer) {
+    @SuppressWarnings("unchecked")
+    public <A> void  visitAttributesDualFlat(T modelBase, BiConsumer<Attribute<A,?>, Attribute<A,?>> consumer) {
         Field[] fields = getFields();
         for (Field field : fields) {
             try {
                 Object fieldValue = field.get(this);
                 if (fieldValue instanceof Attribute) {
-                    consumer.accept((Attribute<A>) field.get(this), (Attribute<A>) field.get(modelBase));
+                    consumer.accept((Attribute<A,?>) field.get(this), (Attribute<A,?>) field.get(modelBase));
                 }
             } catch (IllegalAccessException e) {
                 throw new RuntimeException(e);
@@ -81,7 +82,7 @@ public abstract class FactoryBase<E extends LiveObject, T extends FactoryBase<E,
 
     @FunctionalInterface
     public interface FactoryVisitor{
-        void accept(String attributeVariableName, Attribute<?> attribute);
+        void accept(String attributeVariableName, Attribute<?,?> attribute);
     }
 
     public <A> void visitAttributesFlat(FactoryVisitor consumer) {
@@ -98,7 +99,7 @@ public abstract class FactoryBase<E extends LiveObject, T extends FactoryBase<E,
         }
     }
 
-    public void visitAttributesFlat(Consumer<Attribute<?>> consumer) {
+    public void visitAttributesFlat(Consumer<Attribute<?,?>> consumer) {
         Field[] fields = getFields();
         for (Field field : fields) {
             try {
@@ -112,7 +113,7 @@ public abstract class FactoryBase<E extends LiveObject, T extends FactoryBase<E,
         }
     }
 
-    public void visitAttributesTripleFlat(Optional<?> modelBase1, Optional<?> modelBase2, TriConsumer<Attribute<?>, Optional<Attribute<?>>, Optional<Attribute<?>>> consumer) {
+    public void visitAttributesTripleFlat(Optional<?> modelBase1, Optional<?> modelBase2, TriConsumer<Attribute<?,?>, Optional<Attribute<?,?>>, Optional<Attribute<?,?>>> consumer) {
         Field[] fields = getFields();
         for (Field field : fields) {
             try {
@@ -120,15 +121,15 @@ public abstract class FactoryBase<E extends LiveObject, T extends FactoryBase<E,
                 Object fieldValue = field.get(this);
                 if (fieldValue instanceof Attribute) {
 
-                    Attribute<?> value1 = null;
+                    Attribute<?,?> value1 = null;
                     if (modelBase1.isPresent()) {
-                        value1 = (Attribute<?>) field.get(modelBase1.get());
+                        value1 = (Attribute<?,?>) field.get(modelBase1.get());
                     }
-                    Attribute<?> value2 = null;
+                    Attribute<?,?> value2 = null;
                     if (modelBase2.isPresent()) {
-                        value2 = (Attribute<?>) field.get(modelBase2.get());
+                        value2 = (Attribute<?,?>) field.get(modelBase2.get());
                     }
-                    consumer.accept((Attribute<?>) field.get(this), Optional.ofNullable(value1), Optional.ofNullable(value2));
+                    consumer.accept((Attribute<?,?>) field.get(this), Optional.ofNullable(value1), Optional.ofNullable(value2));
                 }
             } catch (IllegalAccessException e) {
                 throw new RuntimeException(e);
@@ -173,6 +174,7 @@ public abstract class FactoryBase<E extends LiveObject, T extends FactoryBase<E,
         return copyOneLevelDeep(0);
     }
 
+    @SuppressWarnings("unchecked")
     private T copyOneLevelDeep(final int level){
         if (level>1){
             return null;
@@ -272,6 +274,7 @@ public abstract class FactoryBase<E extends LiveObject, T extends FactoryBase<E,
      * after deserialization from json only the value is present and metadata are missing
      * we create a copy which contains the metadata and than copy the meta data in teh original object
      */
+    @SuppressWarnings("unchecked")
     public T reconstructMetadataDeepRoot() {
         T copy = this.newInstance();
 
@@ -393,7 +396,7 @@ public abstract class FactoryBase<E extends LiveObject, T extends FactoryBase<E,
         return changedDeep;
     }
 
-    LoopProtector loopProtector = new LoopProtector();
+    private LoopProtector loopProtector = new LoopProtector();
     public void loopDetector(){
         loopProtector.enter();
         try {

@@ -14,21 +14,27 @@ import de.factoryfx.factory.merge.attribute.AttributeMergeHelper;
 import de.factoryfx.factory.validation.Validation;
 import de.factoryfx.factory.validation.ValidationResult;
 
-public abstract class Attribute<T>{
+public abstract class Attribute<T,A extends Attribute<T,A>>{
 
-    public final AttributeMetadata metadata=new AttributeMetadata();
+    public final AttributeMetadata metadata;
     public final List<Validation<T>> validations = new ArrayList<>();
 
-    public Attribute() {
+    public A validation(Validation<T> validation){
+        this.validations.add(validation);
+        return (A)this;
+    }
+
+    public Attribute(AttributeMetadata attributeMetadata) {
+        this.metadata=attributeMetadata;
     }
 
     public abstract void collectChildren(Set<FactoryBase<?,?>> allModelEntities);
 
     public abstract AttributeMergeHelper<?> createMergeHelper();
 
-    public Attribute<T> defaultValue(T defaultValue) {
+    public A defaultValue(T defaultValue) {
         set(defaultValue);
-        return this;
+        return (A)this;
     }
 
     /*
@@ -57,7 +63,7 @@ public abstract class Attribute<T>{
     public abstract String getDisplayText(Locale locale);
 
     public interface AttributeVisitor{
-        void value(Attribute<?> value);
+        void value(Attribute<?,?> value);
         void reference(ReferenceAttribute<?> reference);
         void referenceList(ReferenceListAttribute<?> referenceList);
     }
@@ -67,7 +73,7 @@ public abstract class Attribute<T>{
     public void visit(Consumer<FactoryBase<?,?>> nestedFactoriesVisitor){
         visit(new AttributeVisitor() {
             @Override
-            public void value(Attribute<?> value) {
+            public void value(Attribute<?,?> value) {
 
             }
 

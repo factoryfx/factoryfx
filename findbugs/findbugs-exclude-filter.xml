@@ -13,6 +13,11 @@
         <Bug pattern="UUF_UNUSED_PUBLIC_OR_PROTECTED_FIELD"/>
     </Match>
 
+    <Match>
+        <Bug pattern="J2EE_STORE_OF_NON_SERIALIZABLE_OBJECT_INTO_SESSION"/>
+    </Match>
+
+
 
     <Match>
         <Class name="de.factoryfx.development.SinglePrecessInstanceUtil"/>
@@ -26,6 +31,8 @@
         <Class name="de.factoryfx.development.SinglePrecessInstanceUtil"/>
         <Bug pattern="DM_EXIT"/>
     </Match>
+
+
 
 
 

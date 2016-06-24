@@ -11,12 +11,12 @@ import com.fasterxml.jackson.annotation.JsonValue;
 import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.factory.merge.attribute.AttributeMergeHelper;
 
-public class ValueAttribute<T> extends Attribute<T> {
+public class ValueAttribute<T,A extends Attribute<T,A>> extends Attribute<T,A> {
     //    @JsonProperty
     private T value;
 
-    public ValueAttribute() {
-        super();
+    public ValueAttribute(AttributeMetadata attributeMetadata) {
+        super(attributeMetadata);
     }
 
     @Override
