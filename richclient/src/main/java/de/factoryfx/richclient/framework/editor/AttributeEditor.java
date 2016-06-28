@@ -26,6 +26,7 @@ public abstract class AttributeEditor<T,A extends Attribute<T,?>> implements Wid
         });
     }
 
+    @SuppressWarnings("unchecked")
     public void bind(Attribute<?,?> attribute){
         boundToAttribute.set((A)attribute);
         disabledProperty.set(attribute==null);

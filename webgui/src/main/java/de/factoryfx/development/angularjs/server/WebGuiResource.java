@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import javax.servlet.http.HttpServletRequest;
@@ -88,6 +89,7 @@ public class WebGuiResource<V,T extends FactoryBase<? extends LiveObject<V>, T>>
     @Consumes(MediaType.APPLICATION_JSON)
 //    @Produces(MediaType.APPLICATION_JSON)
     @Path("factory")
+    @SuppressWarnings("unchecked")
     public void save(WebGuiFactory newFactory) {
         newFactory.factory=newFactory.factory.reconstructMetadataDeepRoot();
         FactoryBase<?, ?> root = getCurrentEditingFactoryRoot().root;
@@ -136,6 +138,7 @@ public class WebGuiResource<V,T extends FactoryBase<? extends LiveObject<V>, T>>
 
     @Context HttpServletRequest request;
 
+    @SuppressWarnings("unchecked")
     private ApplicationFactoryMetadata<T> getCurrentEditingFactoryRoot(){
         return (ApplicationFactoryMetadata<T>) request.getSession(true).getAttribute(CURRENT_EDITING_FACTORY_SESSION_KEY);
 
@@ -165,10 +168,6 @@ public class WebGuiResource<V,T extends FactoryBase<? extends LiveObject<V>, T>>
     @Produces(MediaType.APPLICATION_JSON)
     @Path("guimodel")
     public WebGuiModel getGuimodel(){
-        ArrayList<String> result = new ArrayList<>();
-        for (Locale locale: locales){
-            result.add(locale.toString());
-        }
         return new WebGuiModel(guimodel,getUserLocale());
     }
 
@@ -185,6 +184,7 @@ public class WebGuiResource<V,T extends FactoryBase<? extends LiveObject<V>, T>>
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("possibleValues")
+    @SuppressWarnings("unchecked")
     public List<WebGuiPossibleEntity> possibleValues(@QueryParam("id")String id, @QueryParam("attributeName")String attributeName){
         List<WebGuiPossibleEntity> result = new ArrayList<>() ;
 
@@ -195,20 +195,28 @@ public class WebGuiResource<V,T extends FactoryBase<? extends LiveObject<V>, T>>
                 attribute.visit(new Attribute.AttributeVisitor() {
                     @Override
                     public void value(Attribute<?,?> value) {
-
+                        //nothing
                     }
 
                     @Override
                     public void reference(ReferenceAttribute<?> reference) {
-                        //TODO
-//                            result   WebGuiPossibleEntity
+                        List<? extends FactoryBase<?,?>> objects = reference.possibleValues(root);
+                        objects.forEach(new Consumer<FactoryBase<?,?>>() {
+                            @Override
+                            public void accept(FactoryBase<?,?> factoryBase) {
+                                result.add(new WebGuiPossibleEntity(factoryBase));
+                            }
+                        });
                     }
 
                     @Override
                     public void referenceList(ReferenceListAttribute<?> referenceList) {
-                        referenceList.possibleValueProviderFromRoot.ifPresent(factoryBaseListFunction -> {
-                            List<FactoryBase<?,?>> apply = factoryBaseListFunction.apply(root);
-                            apply.forEach(factoryBase -> result.add(new WebGuiPossibleEntity(factoryBase)));
+                        List<? extends FactoryBase<?,?>> objects = referenceList.possibleValues(root);
+                        objects.forEach(new Consumer<FactoryBase<?,?>>() {
+                            @Override
+                            public void accept(FactoryBase<?,?> factoryBase) {
+                                result.add(new WebGuiPossibleEntity(factoryBase));
+                            }
                         });
                     }
                 });
@@ -221,6 +229,7 @@ public class WebGuiResource<V,T extends FactoryBase<? extends LiveObject<V>, T>>
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("newEntry")
+    @SuppressWarnings("unchecked")
     public WebGuiFactory addFactory(@QueryParam("id")String id, @QueryParam("attributeName")String attributeName){
 
         T root = getCurrentEditingFactoryRoot().root;
@@ -231,21 +240,17 @@ public class WebGuiResource<V,T extends FactoryBase<? extends LiveObject<V>, T>>
                 attribute.visit(new Attribute.AttributeVisitor() {
                     @Override
                     public void value(Attribute<?,?> value) {
-
+                        //nothing
                     }
 
                     @Override
                     public void reference(ReferenceAttribute<?> reference) {
-                        //TODO
-//                            result   WebGuiPossibleEntity
+                        reference.addNewFactory(root);
                     }
 
                     @Override
                     public void referenceList(ReferenceListAttribute<?> referenceList) {
-//                        referenceList.possibleValueProviderFromRoot.ifPresent(factoryBaseListFunction -> {
-//                            List<FactoryBase<?,?>> apply = factoryBaseListFunction.apply(root);
-//                            apply.forEach(factoryBase -> result.add(new WebGuiPossibleEntity(factoryBase)));
-//                        });
+                        referenceList.addNewFactory(root);
                     }
                 });
 

@@ -9,7 +9,7 @@ import de.factoryfx.factory.attribute.StringAttribute;
 
 public class ProductFactory extends FactoryBase<Product,ProductFactory> {
     public final StringAttribute name = new StringAttribute(new AttributeMetadata().labelText("Name"));
-    public final IntegerAttribute price = new IntegerAttribute(new AttributeMetadata().labelText("Name"));
+    public final IntegerAttribute price = new IntegerAttribute(new AttributeMetadata().labelText("Price"));
 
     @Override
     protected Product createImp(Optional<Product> previousLiveObject) {

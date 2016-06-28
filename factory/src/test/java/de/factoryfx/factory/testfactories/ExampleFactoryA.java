@@ -11,8 +11,8 @@ import de.factoryfx.factory.attribute.StringAttribute;
 
 public class ExampleFactoryA extends FactoryBase<ExampleLiveObjectA,ExampleFactoryA> {
     public final StringAttribute stringAttribute= new StringAttribute(new AttributeMetadata().labelText("ExampleA1"));
-    public final ReferenceAttribute<ExampleFactoryB> referenceAttribute = new ReferenceAttribute<ExampleFactoryB>(new AttributeMetadata().labelText("ExampleA2"));
-    public final ReferenceListAttribute<ExampleFactoryB> referenceListAttribute = new ReferenceListAttribute<ExampleFactoryB>(new AttributeMetadata().labelText("ExampleA3"));
+    public final ReferenceAttribute<ExampleFactoryB> referenceAttribute = new ReferenceAttribute<>(ExampleFactoryB.class,new AttributeMetadata().labelText("ExampleA2"));
+    public final ReferenceListAttribute<ExampleFactoryB> referenceListAttribute = new ReferenceListAttribute<>(ExampleFactoryB.class,new AttributeMetadata().labelText("ExampleA3"));
 
     @Override
     protected ExampleLiveObjectA createImp(Optional<ExampleLiveObjectA> previousLiveObject) {
@@ -23,4 +23,5 @@ public class ExampleFactoryA extends FactoryBase<ExampleLiveObjectA,ExampleFacto
 
         return new ExampleLiveObjectA(referenceAttribute.get().create(), exampleLiveObjectBs);
     }
+
 }

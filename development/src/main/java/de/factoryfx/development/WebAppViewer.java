@@ -15,15 +15,15 @@ import netscape.javascript.JSObject;
 public class WebAppViewer{
     private Runnable serverCreator;
     private String startUrl;
-    private Stage primaryStag;
+    private Stage primaryStage;
 
     public WebAppViewer(Stage primaryStage, Runnable serverCreator, String startUrl){
         this.serverCreator= serverCreator;
         this.startUrl=startUrl;
-
+        this.primaryStage=primaryStage;
 
         BorderPane root = new BorderPane();
-        primaryStage.setScene(new Scene(root,1200,900));
+        this.primaryStage.setScene(new Scene(root,1250,900));
 
         WebView webView = new WebView();
         root.setCenter(webView);

@@ -39,10 +39,10 @@ public class AttributeMergeHelper<T> {
         return hasNoConflictTyped(originalValueTyped, newValueTyped);
     }
 
-    @SuppressWarnings("unchecked")
     /**
      * check if merge should be executed e.g. not if values ar equals
      * */
+    @SuppressWarnings("unchecked")
     public boolean isMergeable(Optional<Attribute<?,?>> originalValue, Optional<Attribute<?,?>> newValue) {
         T originalValueTyped = null;
         if (originalValue.isPresent()) {

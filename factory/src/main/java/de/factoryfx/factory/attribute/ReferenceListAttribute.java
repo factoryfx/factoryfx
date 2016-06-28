@@ -23,9 +23,11 @@ import javafx.collections.ObservableList;
 
 public class ReferenceListAttribute<T extends FactoryBase<?,? super T>> extends Attribute<ObservableList<T>,ReferenceListAttribute<T>> {
     ObservableList<T> list = FXCollections.observableArrayList();
+    private Class<T> clazz;
 
-    public ReferenceListAttribute(AttributeMetadata attributeMetadata) {
+    public ReferenceListAttribute(Class<T> clazz, AttributeMetadata attributeMetadata) {
         super(attributeMetadata);
+        this.clazz=clazz;
     }
 
     @JsonCreator
@@ -151,5 +153,31 @@ public class ReferenceListAttribute<T extends FactoryBase<?,? super T>> extends 
     }
 
 
-    public Optional<Function<FactoryBase<?,?>,List<FactoryBase<?,?>>>> possibleValueProviderFromRoot=Optional.empty();
+    public Optional<Function<FactoryBase<?,?>,List<T>>> possibleValueProviderFromRoot=Optional.empty();
+    public Optional<Function<FactoryBase<?,?>,T>> newValueProviderFromRoot=Optional.empty();
+
+    public void addNewFactory(FactoryBase<?,?> root){
+        newValueProviderFromRoot.ifPresent(newFactoryFunction -> {
+            T newFactory = newFactoryFunction.apply(root);
+            get().add(newFactory);
+        });
+        if (!newValueProviderFromRoot.isPresent()){
+            try {
+                get().add(clazz.newInstance());
+            } catch (InstantiationException e) {
+                throw new RuntimeException(e);
+            } catch (IllegalAccessException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
+    public List<T> possibleValues(FactoryBase<?,?> root){
+        ArrayList<T> result = new ArrayList<>();
+        possibleValueProviderFromRoot.ifPresent(factoryBaseListFunction -> {
+            List<T> factories = factoryBaseListFunction.apply(root);
+            factories.forEach(factory -> result.add(factory));
+        });
+        return result;
+    }
 }

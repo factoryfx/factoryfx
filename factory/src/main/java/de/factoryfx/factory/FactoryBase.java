@@ -161,8 +161,9 @@ public abstract class FactoryBase<E extends LiveObject, T extends FactoryBase<E,
 
 
     public void collectModelEntitiesTo(Set<FactoryBase<?,?>> allModelEntities) {
-        allModelEntities.add(this);
-        visitAttributesFlat(attribute -> attribute.collectChildren(allModelEntities));
+        if (allModelEntities.add(this)){
+            visitAttributesFlat(attribute -> attribute.collectChildren(allModelEntities));
+        }
     }
 
     public T copy() {

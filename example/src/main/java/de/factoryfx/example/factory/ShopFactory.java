@@ -12,7 +12,7 @@ import javafx.stage.Stage;
 
 public class ShopFactory extends FactoryBase<Shop,ShopFactory> {
     public final StringAttribute stageTitle = new StringAttribute(new AttributeMetadata().labelText("stageTitle"));
-    public final ReferenceListAttribute<ProductFactory> products = new ReferenceListAttribute<ProductFactory>(new AttributeMetadata().labelText("Products"));
+    public final ReferenceListAttribute<ProductFactory> products = new ReferenceListAttribute<>(ProductFactory.class,new AttributeMetadata().labelText("Products"));
 
     @Override
     protected Shop createImp(Optional<Shop> previousLiveObject) {

@@ -11,10 +11,10 @@ import javafx.scene.control.Button;
 import javafx.scene.layout.HBox;
 
 public class LoadView<T extends FactoryBase<? extends LiveObject, T>> implements Widget {
-    private final FactoryTreeEditor factoryTreeEditor;
+    private final FactoryTreeEditor<T> factoryTreeEditor;
     private final Supplier<T> factoryLoader;
 
-    public LoadView(FactoryTreeEditor factoryTreeEditor, Supplier<T> factoryLoader) {
+    public LoadView(FactoryTreeEditor<T> factoryTreeEditor, Supplier<T> factoryLoader) {
         this.factoryTreeEditor = factoryTreeEditor;
         this.factoryLoader = factoryLoader;
     }

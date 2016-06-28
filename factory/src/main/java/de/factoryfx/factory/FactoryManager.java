@@ -12,6 +12,7 @@ public class FactoryManager<T extends FactoryBase<? extends LiveObject, T>,V> {
 
     private T currentFactory;
 
+    @SuppressWarnings("unchecked")
     public MergeDiff update(T commonVersion , T newVersion, Locale locale){
         newVersion.loopDetector();
         LinkedHashMap<String, LiveObject> previousLiveObjects = new LinkedHashMap<>();
@@ -63,6 +64,7 @@ public class FactoryManager<T extends FactoryBase<? extends LiveObject, T>,V> {
         return currentFactory;
     }
 
+    @SuppressWarnings("unchecked")
     public void start(T newFactory){
         newFactory.loopDetector();
         currentFactory=newFactory;
@@ -77,6 +79,7 @@ public class FactoryManager<T extends FactoryBase<? extends LiveObject, T>,V> {
         }
     }
 
+    @SuppressWarnings("unchecked")
     public void stop(){
         LinkedHashMap<String, LiveObject> newLiveObjects = new LinkedHashMap<>();
         currentFactory.collectLiveObjects(newLiveObjects);
@@ -86,6 +89,7 @@ public class FactoryManager<T extends FactoryBase<? extends LiveObject, T>,V> {
         }
     }
 
+    @SuppressWarnings("unchecked")
     public V query(V visitor){
         LinkedHashMap<String, LiveObject> previousLiveObjects = new LinkedHashMap<>();
         currentFactory.collectLiveObjects(previousLiveObjects);

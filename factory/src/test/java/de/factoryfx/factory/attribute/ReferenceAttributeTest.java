@@ -13,7 +13,7 @@ import org.junit.Test;
 public class ReferenceAttributeTest {
 
     public static class ExampleReferenceFactory extends FactoryBase<ExampleLiveObjectA,ExampleFactoryA> {
-        public ReferenceAttribute<ExampleFactoryA> referenceAttribute =new ReferenceAttribute<ExampleFactoryA>(new AttributeMetadata());
+        public ReferenceAttribute<ExampleFactoryA> referenceAttribute =new ReferenceAttribute<>(ExampleFactoryA.class,new AttributeMetadata());
         @Override
         protected ExampleLiveObjectA createImp(Optional<ExampleLiveObjectA> previousLiveObject) {
             return null;
@@ -54,5 +54,14 @@ public class ReferenceAttributeTest {
         exampleReferenceFactory.referenceAttribute.removeListener(invalidationListener);
         exampleReferenceFactory.referenceAttribute.set(new ExampleFactoryA());
         Assert.assertEquals(1,calls.size());
+    }
+
+    @Test
+    public void test_add_new(){
+        ExampleReferenceFactory exampleReferenceFactory = new ExampleReferenceFactory();
+        Assert.assertNull(exampleReferenceFactory.referenceAttribute.get());
+        exampleReferenceFactory.referenceAttribute.addNewFactory(null);
+        Assert.assertNotNull(exampleReferenceFactory.referenceAttribute.get());
+
     }
 }

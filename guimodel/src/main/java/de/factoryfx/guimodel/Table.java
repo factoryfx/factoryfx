@@ -10,6 +10,7 @@ public class Table<T> {
         this.tableColumn = tableColumn;
     }
 
+    @SafeVarargs
     public Table(TableColumn<T>... tableColumn) {
         this.tableColumn = Arrays.asList(tableColumn);
     }

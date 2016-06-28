@@ -38,6 +38,7 @@ public class ReferenceListMergeHelper<T extends FactoryBase<?,? super T>> extend
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public boolean isMergeable(Optional<Attribute<?,?>> originalValue, Optional<Attribute<?,?>> newValue) {
         ObservableList<T> newValueTyped = null;
         if (newValue.isPresent()) {

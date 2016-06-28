@@ -11,6 +11,7 @@ public class TableColumn<T> {
         this.name = name;
     }
 
+    @SuppressWarnings("unchecked")
     public String apply(Object object){
         return provider.apply((T)object);
     }

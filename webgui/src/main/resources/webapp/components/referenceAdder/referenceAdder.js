@@ -9,15 +9,16 @@
 
 angular.module('factoryfxwebgui.directives')//re-open module definition
 
-.directive('selectreference',function () {
+.directive('referenceadder',function () {
     return {
         restrict: 'EA',
         scope: {
             attributename: '=attributename',
-            factoryid: '=factoryid',
+            factory: '=factory',
             attribute: '=attribute'
+
         },
-        templateUrl: 'components/selectReference/selectReference.html',
+        templateUrl: 'components/referenceAdder/referenceAdder.html',
         replace: true,
 
         controller: ["$scope", "$resource", function ($scope,$resource) {
@@ -32,7 +33,7 @@ angular.module('factoryfxwebgui.directives')//re-open module definition
             };
 
             $scope.loadPossibleValues =function(){
-                $resource('../applicationServer/possibleValues', {id:$scope.factoryid, attributeName: $scope.attributename}).query(function(response){
+                $resource('../applicationServer/possibleValues', {id:$scope.factory.factory.id, attributeName: $scope.attributename}).query(function(response){
                     $scope.selectDialog.possibleValues=response;
                 })
             }
@@ -43,6 +44,15 @@ angular.module('factoryfxwebgui.directives')//re-open module definition
                 } else {
                     $scope.attribute={id: id};
                 }
+            }
+
+            $scope.addNewFactory = function () {
+                $resource('../applicationServer/newEntry', {
+                    id: $scope.factory.factory.id,
+                    attributeName: $scope.attributename
+                }).get(function (response) {
+                    $scope.factory = response;
+                })
             }
 
         }]

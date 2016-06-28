@@ -16,6 +16,7 @@ import de.factoryfx.factory.merge.attribute.ReferenceMergeHelper;
 public class ReferenceAttribute<T extends FactoryBase<?,? super T>> extends Attribute<T,ReferenceAttribute<T>> {
 
     private T value;
+    private Class<T> clazz;
 
     @JsonCreator
     ReferenceAttribute(T value) {
@@ -23,8 +24,9 @@ public class ReferenceAttribute<T extends FactoryBase<?,? super T>> extends Attr
         set(value);
     }
 
-    public ReferenceAttribute(AttributeMetadata attributeMetadata) {
+    public ReferenceAttribute(Class<T> clazz, AttributeMetadata attributeMetadata) {
         super(attributeMetadata);
+        this.clazz=clazz;
     }
 
     @Override
@@ -106,4 +108,33 @@ public class ReferenceAttribute<T extends FactoryBase<?,? super T>> extends Attr
         attributeVisitor.reference(this);
     }
 
+
+
+    public Optional<Function<FactoryBase<?,?>,List<T>>> possibleValueProviderFromRoot=Optional.empty();
+    public Optional<Function<FactoryBase<?,?>,T>> newValueProviderFromRoot=Optional.empty();
+
+    public void addNewFactory(FactoryBase<?,?> root){
+        newValueProviderFromRoot.ifPresent(newFactoryFunction -> {
+            T newFactory = newFactoryFunction.apply(root);
+            set(newFactory);
+        });
+        if (!newValueProviderFromRoot.isPresent()){
+            try {
+                set(clazz.newInstance());
+            } catch (InstantiationException e) {
+                throw new RuntimeException(e);
+            } catch (IllegalAccessException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
+    public List<T> possibleValues(FactoryBase<?,?> root){
+        ArrayList<T> result = new ArrayList<>();
+        possibleValueProviderFromRoot.ifPresent(factoryBaseListFunction -> {
+            List<T> factories = factoryBaseListFunction.apply(root);
+            factories.forEach(factory -> result.add(factory));
+        });
+        return result;
+    }
 }

@@ -26,11 +26,12 @@ public class FactoryTreeEditor<T extends FactoryBase<? extends LiveObject, T>> e
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public Node createContent() {
 
         TreeView<Attribute<?,?>> tree = new TreeView<>();
         tree.setCellFactory(param -> new TextFieldTreeCell<Attribute<?,?>>() {
-            AttributeChangeListener attributeChangeListener = (attribute, value) -> updateText((Attribute<?,?>) attribute);
+            final AttributeChangeListener attributeChangeListener = (attribute, value) -> updateText((Attribute<?,?>) attribute);
             Attribute<?,?> attribute;
             @Override
             public void updateItem(Attribute<?,?> item, boolean empty) {
@@ -59,7 +60,7 @@ public class FactoryTreeEditor<T extends FactoryBase<? extends LiveObject, T>> e
         ChangeListener<T> changeListener = (observable, oldValue, newValue) -> {
             HashMap<FactoryBase<?,?>,TreeItem<Attribute<?,?>>> factoryToTreeItem= new HashMap<>();
 
-            addOrGetTreeItem(newValue,factoryToTreeItem).setValue(new ReferenceAttribute<>(new AttributeMetadata()));//"root"
+            addOrGetTreeItem(newValue,factoryToTreeItem).setValue(new ReferenceAttribute<>(null,new AttributeMetadata()));//"root"
 
             if (newValue!=null){
                 HashSet<FactoryBase<?, ?>> allModelEntities = new HashSet<>();

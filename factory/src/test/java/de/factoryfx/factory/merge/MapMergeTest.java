@@ -12,7 +12,7 @@ import org.junit.Test;
 public class MapMergeTest extends MergeHelperTestBase{
 
     public static class MapExampleFactory extends FactoryBase<ExampleLiveObjectA,MapExampleFactory> {
-        public final MapAttribute<String,String> mapAttribute =new MapAttribute(new AttributeMetadata());
+        public final MapAttribute<String,String> mapAttribute =new MapAttribute<>(new AttributeMetadata());
 
         @Override
         protected ExampleLiveObjectA createImp(Optional<ExampleLiveObjectA> previousLiveObject) {

@@ -48,7 +48,7 @@ public class ExampleMain extends Application {
 
         ApplicationFactoryMetadata<ShopFactory> localCopyShopFactory=applicationServer.getCurrentFactory();
 
-        FactoryTreeEditor factoryTreeEditor = new FactoryTreeEditor();
+        FactoryTreeEditor<ShopFactory> factoryTreeEditor = new FactoryTreeEditor<>();
         SaveView<ShopFactory> saveView = new SaveView<>(() -> applicationServer.updateCurrentFactory(localCopyShopFactory, Locale.ENGLISH));
 
         GuiModel guiModel = new GuiModel();

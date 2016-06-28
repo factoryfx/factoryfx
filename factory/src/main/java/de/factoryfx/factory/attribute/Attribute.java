@@ -19,6 +19,7 @@ public abstract class Attribute<T,A extends Attribute<T,A>>{
     public final AttributeMetadata metadata;
     public final List<Validation<T>> validations = new ArrayList<>();
 
+    @SuppressWarnings("unchecked")
     public A validation(Validation<T> validation){
         this.validations.add(validation);
         return (A)this;
@@ -32,6 +33,7 @@ public abstract class Attribute<T,A extends Attribute<T,A>>{
 
     public abstract AttributeMergeHelper<?> createMergeHelper();
 
+    @SuppressWarnings("unchecked")
     public A defaultValue(T defaultValue) {
         set(defaultValue);
         return (A)this;
