@@ -153,8 +153,18 @@ public class ReferenceListAttribute<T extends FactoryBase<?,? super T>> extends 
     }
 
 
-    public Optional<Function<FactoryBase<?,?>,List<T>>> possibleValueProviderFromRoot=Optional.empty();
-    public Optional<Function<FactoryBase<?,?>,T>> newValueProviderFromRoot=Optional.empty();
+    private Optional<Function<FactoryBase<?,?>,List<T>>> possibleValueProviderFromRoot=Optional.empty();
+    private Optional<Function<FactoryBase<?,?>,T>> newValueProviderFromRoot=Optional.empty();
+
+    public ReferenceListAttribute possibleValueProvider(Function<FactoryBase<?,?>,List<T>> provider){
+        possibleValueProviderFromRoot=Optional.of(provider);
+        return this;
+    }
+
+    public ReferenceListAttribute newValueProvider(Function<FactoryBase<?,?>,T> newValueProvider){
+        newValueProviderFromRoot=Optional.of(newValueProvider);
+        return this;
+    }
 
     public void addNewFactory(FactoryBase<?,?> root){
         newValueProviderFromRoot.ifPresent(newFactoryFunction -> {
@@ -178,6 +188,13 @@ public class ReferenceListAttribute<T extends FactoryBase<?,? super T>> extends 
             List<T> factories = factoryBaseListFunction.apply(root);
             factories.forEach(factory -> result.add(factory));
         });
+        if (!possibleValueProviderFromRoot.isPresent()){
+            for (FactoryBase<?,?> factory: root.collectChildFactories()){
+                if (clazz.isAssignableFrom(factory.getClass())){
+                    result.add((T) factory);
+                }
+            }
+        }
         return result;
     }
 }

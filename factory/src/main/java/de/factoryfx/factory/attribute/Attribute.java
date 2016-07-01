@@ -12,7 +12,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.factory.merge.attribute.AttributeMergeHelper;
 import de.factoryfx.factory.validation.Validation;
-import de.factoryfx.factory.validation.ValidationResult;
+import de.factoryfx.factory.validation.ValidationError;
 
 public abstract class Attribute<T,A extends Attribute<T,A>>{
 
@@ -48,12 +48,14 @@ public abstract class Attribute<T,A extends Attribute<T,A>>{
 
     public abstract void set(T value);
 
-    public List<ValidationResult> validate() {
-        List<ValidationResult> validationResults = new ArrayList<>();
+    public List<ValidationError> validate() {
+        List<ValidationError> validationErrors = new ArrayList<>();
         for (Validation<T> validation : validations) {
-            validationResults.add(validation.validate(get()));
+            if (!validation.validate(get())){
+                validationErrors.add(new ValidationError(validation.getValidationDescription(),metadata.labelText));
+            }
         }
-        return validationResults;
+        return validationErrors;
     }
 
 

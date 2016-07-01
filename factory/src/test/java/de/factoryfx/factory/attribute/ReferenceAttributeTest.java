@@ -1,6 +1,7 @@
 package de.factoryfx.factory.attribute;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import de.factoryfx.factory.FactoryBase;
@@ -62,6 +63,18 @@ public class ReferenceAttributeTest {
         Assert.assertNull(exampleReferenceFactory.referenceAttribute.get());
         exampleReferenceFactory.referenceAttribute.addNewFactory(null);
         Assert.assertNotNull(exampleReferenceFactory.referenceAttribute.get());
+
+    }
+
+    @Test
+    public void test_get_possible(){
+        ExampleReferenceFactory exampleReferenceFactory = new ExampleReferenceFactory();
+        ExampleFactoryA exampleFactoryA = new ExampleFactoryA();
+        exampleReferenceFactory.referenceAttribute.set(exampleFactoryA);
+
+        List<ExampleFactoryA> possibleFactories = exampleReferenceFactory.referenceAttribute.possibleValues(exampleReferenceFactory);
+        Assert.assertEquals(1,possibleFactories.size());
+        Assert.assertEquals(exampleFactoryA,possibleFactories.get(0));
 
     }
 }

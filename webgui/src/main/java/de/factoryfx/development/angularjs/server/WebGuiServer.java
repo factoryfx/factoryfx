@@ -6,6 +6,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider;
 import de.factoryfx.development.angularjs.server.resourcehandler.ConfigurableResourceHandler;
 import de.factoryfx.development.angularjs.server.resourcehandler.FilesystemFileContentProvider;
@@ -99,8 +100,8 @@ public class WebGuiServer {
         resourceConfig.register(new AllExceptionMapper());
 
         JacksonJaxbJsonProvider provider = new JacksonJaxbJsonProvider();
-        ObjectMapper objectMapper = ObjectMapperBuilder.build().getObjectMapper();
-//        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        ObjectMapper objectMapper = getObjectMapper();
+
         provider.setMapper(objectMapper);
         resourceConfig.register(provider);
 
@@ -119,6 +120,15 @@ public class WebGuiServer {
         });
         resourceConfig.registerInstances(loggingFilter);
         return resourceConfig;
+    }
+
+    ObjectMapper getObjectMapper() {
+        ObjectMapper objectMapper = ObjectMapperBuilder.build().getObjectMapper();
+//        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        SimpleModule module = new SimpleModule();
+//        module.addSerializer(BigDecimal.class, new ToStringSerializer());
+        objectMapper.registerModule(module);
+        return objectMapper;
     }
 
 }

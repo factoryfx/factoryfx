@@ -121,20 +121,28 @@ public class ReferenceAttribute<T extends FactoryBase<?,? super T>> extends Attr
         if (!newValueProviderFromRoot.isPresent()){
             try {
                 set(clazz.newInstance());
-            } catch (InstantiationException e) {
-                throw new RuntimeException(e);
-            } catch (IllegalAccessException e) {
+            } catch (InstantiationException | IllegalAccessException e) {
                 throw new RuntimeException(e);
             }
         }
     }
 
+    @SuppressWarnings("unchecked")
     public List<T> possibleValues(FactoryBase<?,?> root){
         ArrayList<T> result = new ArrayList<>();
         possibleValueProviderFromRoot.ifPresent(factoryBaseListFunction -> {
             List<T> factories = factoryBaseListFunction.apply(root);
             factories.forEach(factory -> result.add(factory));
         });
+        if (!newValueProviderFromRoot.isPresent()){
+            if (!possibleValueProviderFromRoot.isPresent()){
+                for (FactoryBase<?,?> factory: root.collectChildFactories()){
+                    if (clazz.isAssignableFrom(factory.getClass())){
+                        result.add((T) factory);
+                    }
+                }
+            }
+        }
         return result;
     }
 }

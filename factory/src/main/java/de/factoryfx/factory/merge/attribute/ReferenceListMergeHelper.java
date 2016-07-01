@@ -21,6 +21,9 @@ public class ReferenceListMergeHelper<T extends FactoryBase<?,? super T>> extend
     public boolean equalValuesTyped(ObservableList<T> valueList) {
         List<T> currentList = attribute.get();
 
+        if (valueList==null ){
+            return false;
+        }
         if (currentList.size() != valueList.size()) {
             return false;
         }

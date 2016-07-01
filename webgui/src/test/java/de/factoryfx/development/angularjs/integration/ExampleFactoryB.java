@@ -1,4 +1,4 @@
-package de.factoryfx.development.angularjs.server;
+package de.factoryfx.development.angularjs.integration;
 
 import java.util.Optional;
 

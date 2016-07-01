@@ -3,9 +3,21 @@ package de.factoryfx.factory.validation;
 import java.util.Optional;
 import java.util.regex.Pattern;
 
-public class RegexValidation extends SimpleValidation<String> {
+import de.factoryfx.factory.util.LanguageText;
 
+public class RegexValidation implements Validation<String> {
+    private final Pattern pattern;
     public RegexValidation(Pattern pattern) {
-        super(s -> new ValidationResult(Optional.ofNullable(s).map(ss -> pattern.matcher(ss).matches()).orElse(true), "Input does not match pattern '" + pattern.pattern() + "'"), "pattern match");
+        this.pattern = pattern;
+    }
+
+    @Override
+    public LanguageText getValidationDescription() {
+        return new LanguageText().en("Input match pattern '" + pattern.pattern() + "'");
+    }
+
+    @Override
+    public boolean validate(String value) {
+        return Optional.ofNullable(value).map(ss -> pattern.matcher(ss).matches()).orElse(true);
     }
 }

@@ -21,6 +21,7 @@ import javax.ws.rs.core.MediaType;
 
 import de.factoryfx.datastorage.ApplicationFactoryMetadata;
 import de.factoryfx.development.angularjs.server.model.WebGuiModel;
+import de.factoryfx.development.angularjs.server.model.WebGuiValidationError;
 import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.factory.LiveObject;
 import de.factoryfx.factory.attribute.Attribute;
@@ -116,8 +117,8 @@ public class WebGuiResource<V,T extends FactoryBase<? extends LiveObject<V>, T>>
 
     }
 
-    public static final String CURRENT_EDITING_FACTORY_SESSION_KEY = "CurrentEditingFactory";
-    public static final String USER_LOCALE = "USER_LOCALE";
+    private static final String CURRENT_EDITING_FACTORY_SESSION_KEY = "CurrentEditingFactory";
+    private static final String USER_LOCALE = "USER_LOCALE";
 
     public static class LoginResponse{
         public boolean successfully;
@@ -144,7 +145,7 @@ public class WebGuiResource<V,T extends FactoryBase<? extends LiveObject<V>, T>>
 
     }
 
-    public Locale getUserLocale(){
+    private Locale getUserLocale(){
         if (request.getSession(false)==null){
             return request.getLocale();
         } else  {
@@ -172,13 +173,31 @@ public class WebGuiResource<V,T extends FactoryBase<? extends LiveObject<V>, T>>
     }
 
 
+    public static class DeployResponse{
+        public MergeDiff mergeDiff;
+        public List<WebGuiValidationError> validationErrors=new ArrayList<>();
+        public boolean deployed;
+    }
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("deploy")
-    public MergeDiff deploy(){
-        //TODO handle conflicts
-        return applicationServer.updateCurrentFactory(getCurrentEditingFactoryRoot(),getUserLocale());
+    public DeployResponse deploy(){
+        DeployResponse response=new DeployResponse();
+        for (FactoryBase<?,?> factoryBase: getCurrentEditingFactoryRoot().root.collectChildFactories()){
+            factoryBase.validateFlat().stream().map(validationError -> new WebGuiValidationError(validationError,getUserLocale(),factoryBase)).forEach(w -> response.validationErrors.add(w));
+        }
+
+        if (response.validationErrors.isEmpty()){
+            //TODO handle conflicts
+            response.mergeDiff=applicationServer.updateCurrentFactory(getCurrentEditingFactoryRoot(),getUserLocale());
+            if (response.mergeDiff.hasNoConflicts()){
+                response.deployed=true;
+            }
+        }
+
+
+        return response;
     }
 
     @GET

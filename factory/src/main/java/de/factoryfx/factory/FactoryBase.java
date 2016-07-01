@@ -27,6 +27,7 @@ import de.factoryfx.factory.jackson.ObjectMapperBuilder;
 import de.factoryfx.factory.merge.MergeResult;
 import de.factoryfx.factory.merge.MergeResultEntry;
 import de.factoryfx.factory.merge.attribute.AttributeMergeHelper;
+import de.factoryfx.factory.validation.ValidationError;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
@@ -410,6 +411,15 @@ public abstract class FactoryBase<E extends LiveObject, T extends FactoryBase<E,
     @JsonIgnore
     public String getDisplayText(){
         return getDescriptiveName()+":"+getId();
+    }
+
+    /** validate attributes without visting chield factories*/
+    public List<ValidationError> validateFlat(){
+        ArrayList<ValidationError> result = new ArrayList<>();
+        visitAttributesFlat((attributeVariableName, attribute) -> {
+            result.addAll(attribute.validate());
+        });
+        return result;
     }
 
 }

@@ -9,7 +9,7 @@ import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.factory.LiveObject;
 import de.factoryfx.factory.attribute.Attribute;
 
-public class FactoryValidator {
+public class FactoryStyleValidator {
 
     /** test if the model is valid:
      * all Attributes are public

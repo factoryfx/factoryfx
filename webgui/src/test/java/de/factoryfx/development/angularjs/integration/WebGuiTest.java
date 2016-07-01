@@ -1,4 +1,4 @@
-package de.factoryfx.development.angularjs.server;
+package de.factoryfx.development.angularjs.integration;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -11,6 +11,8 @@ import com.google.common.io.ByteStreams;
 import de.factoryfx.development.InMemoryFactoryStorage;
 import de.factoryfx.development.SinglePrecessInstanceUtil;
 import de.factoryfx.development.WebAppViewer;
+import de.factoryfx.development.angularjs.server.WebGuiResource;
+import de.factoryfx.development.angularjs.server.WebGuiServer;
 import de.factoryfx.factory.FactoryManager;
 import de.factoryfx.guimodel.GuiModel;
 import de.factoryfx.server.DefaultApplicationServer;

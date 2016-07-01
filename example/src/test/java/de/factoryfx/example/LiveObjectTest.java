@@ -6,7 +6,7 @@ import java.util.List;
 
 import com.google.common.reflect.ClassPath;
 import de.factoryfx.factory.LiveObject;
-import de.factoryfx.factory.validator.FactoryValidator;
+import de.factoryfx.factory.validator.FactoryStyleValidator;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -37,6 +37,6 @@ public class LiveObjectTest {
 
     @Test
     public void test() throws IllegalAccessException, InstantiationException {
-        Assert.assertEquals("",new FactoryValidator().validateLiveObject(clazz).orElse(""));
+        Assert.assertEquals("",new FactoryStyleValidator().validateLiveObject(clazz).orElse(""));
     }
 }

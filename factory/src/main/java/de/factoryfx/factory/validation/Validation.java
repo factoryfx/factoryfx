@@ -1,13 +1,11 @@
 package de.factoryfx.factory.validation;
 
+import de.factoryfx.factory.util.LanguageText;
+
 public interface Validation<T> {
 
-    default String getValidationDescription() {
-        return getClass().getSimpleName();
-    }
+    public LanguageText getValidationDescription();
 
-    default ValidationResult validate(T value) {
-        return new ValidationResult();
-    }
+    public boolean validate(T value);
 
 }

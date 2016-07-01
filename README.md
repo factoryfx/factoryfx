@@ -1,6 +1,6 @@
 # Factoryfx
 
-*Dependency Injection Framework für java.*
+*Domain specificity Dependency Injection Framework for java.*
 
 ## Introduction
 
@@ -14,6 +14,10 @@ explained here: https://www.youtube.com/watch?v=RlfLCWKxHJ0&index=3&list=PL693EF
 Most dependency injection frameworks automate the Factory code.
 Factoryfx takes a different approach by defining a manually created structure for the factories.
 
+###Why domain specificity?
+* configuration data
+* editable with gui
+* no extra format /language
 
 ###Example
 
