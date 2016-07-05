@@ -8,10 +8,13 @@
 
 angular.module('factoryfxwebgui.navigationBar', ['ngRoute'])
 
-    .controller('MasterController', ['$scope', '$resource', '$location',
-        function                         ($scope,   $resource,   $location ) {
-            $scope.guiModel=$resource("../applicationServer/guimodel").get();
-            //TODO load only once
+.controller('MasterController', ['$scope', '$resource', '$location', 'guiModelService',
+function                         ($scope,   $resource,   $location,   guiModelService ) {
+    guiModelService.update().then(function(result) {
+        $scope.guiModel=guiModelService.data;
+        return result;
+    });
 
-            $scope.$location=$location;
-        }]);
+
+    $scope.$location=$location;
+}]);

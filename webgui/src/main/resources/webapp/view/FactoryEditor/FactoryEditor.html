@@ -1,82 +1,194 @@
-<div class="container">
-    <h2>{{guiModel.factoryEditorModel.editorTitle}}</h2>
-    <button class="btn btn-primary" ng-if="!selected.factory" type="button" ng-click="loadRoot()">
-        <span class="glyphicon glyphicon-edit glyphicon-align-left" aria-hidden="true"></span>{{guiModel.factoryEditorModel.editButton}}
-    </button>
-    <div ng-if="selected.factory">
-        <ol class="breadcrumb">
-            <li ng-repeat="pathElement in selected.factory.path"><a ng-click="selectFactory(pathElement.id)" ng-class="{active: pathElement.id===selected.factory.factory.id}">{{pathElement.displayText}}</a></li>
-            <li class="active">{{selected.factory.displayText}}</li>
-        </ol>
-        <div class="panel panel-default">
-            <div class="panel-heading">{{ selected.factory.displayText }}</div>
-            <div class="panel-body">
-                <form ng-submit="save()" name="factoryForm" novalidate>
-                    <div ng-repeat="(attributeName, attributeValue) in selected.factory.factory" ng-init="labelText=metaData.data[selected.factory.type].attributes[attributeName].labelText">
-                        <!--{{attributeName}}-->
-                        <div ng-if="attributeName!=='id'">
-                            <!--{{metaData.data[selected.factory.type].attributes[attributeName].displayName}}-->
-                            <div class="form-group" ng-if="metaData.data[selected.factory.type].attributesTypes[attributeName]==='StringAttribute'">
-                                <label for="{{attributeName}}">{{labelText}}</label>
-                                <input type="text" class="form-control" id="{{attributeName}}" ng-model="selected.factory.factory[attributeName]">
-                            </div>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-12">
+            <h2>{{guiModel.factoryEditorModel.editorTitle}}</h2>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <h3>{{guiModel.factoryEditorModel.initialisationTitle}}</h3>
+            <uib-progressbar ng-if="loading.configuration" class="progress-striped active" value="dynamic">loading configuration</uib-progressbar>
+            <uib-progressbar ng-if="!loading.configuration" animate="true" value="dynamic" type="success">loaded</uib-progressbar>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            <h3>{{guiModel.factoryEditorModel.editingTitle}}</h3>
+            <div ng-if="selected.factory">
+                <ol class="breadcrumb">
+                    <li ng-repeat="pathElement in selected.factory.path"><a  ng-click="!isDirty() && selectFactory(pathElement.id)" ng-class="{disabledLink: isDirty(), active: pathElement.id===selected.factory.factory.id}">{{pathElement.displayText}}</a></li>
+                    <li class="active">{{selected.factory.displayText}}</li>
+                </ol>
+                <form ng-submit="factoryForm.$valid && save()" name="factoryForm" novalidate>
+                    <div class="panel panel-default">
+                        <div class="panel-heading">{{ selected.factory.displayText }}</div>
+                        <div class="panel-body">
+                            <div ng-repeat="(attributeName, attributeValue) in selected.factory.factory" ng-init="labelText=metaData[selected.factory.type].attributes[attributeName].labelText; required=metaData[selected.factory.type].attributes[attributeName].required">
 
-                            <div class="form-group" ng-if="metaData.data[selected.factory.type].attributesTypes[attributeName]==='ReferenceAttribute'">
-                                <label for="{{attributeName}}">{{labelText}}</label>
-                                <div class="input-group" id ="{{attributeName}}" >
-                                    <input type="text" class="form-control" readonly ng-required="field.metadata.required" placeholder="empty" value="{{selected.factory.nestedFactoriesDisplayText[selected.factory.factory[attributeName].id]}}"/>
-                                    <span class="input-group-btn">
-                                        <button type="button" class="btn btn-default" ng-click="selectFactory(selected.factory.factory[attributeName].id)" ng-disabled="!selected.factory.factory[attributeName]" ><span class="glyphicon glyphicon-search"></span></button>
-                                    </span>
+                                <div ng-if="attributeName!=='id' && attributeName!=='@class'">
+
+                                    <div ng-switch="metaData[selected.factory.type].attributes[attributeName].type">
+                                        <div class="form-group" ng-switch-when="StringAttribute" ng-class="getInputCssClass(factoryForm[attributeName].$error)">
+                                            <label class="control-label" for="{{attributeName}}">{{labelText}}</label>
+                                            <input type="text" class="form-control" id="{{attributeName}}" name="{{attributeName}}" ng-model="selected.factory.factory[attributeName]" ng-required="required">
+                                        </div>
+
+                                        <div class="form-group" ng-switch-when="BigDecimalAttribute" ng-class="getInputCssClass(factoryForm[attributeName].$error)">
+                                            <label class="control-label" for="{{attributeName}}">{{labelText}}</label>
+                                            <input type="text" class="form-control" id="{{attributeName}}" name="{{attributeName}}" ng-model="selected.factory.factory[attributeName]" ng-required="required" ng-pattern="/^-{0,1}[0-9]+(\.[0-9]+)?$/">
+                                        </div>
+
+                                        <div class="form-group" ng-switch-when="BooleanAttribute" ng-class="getInputCssClass(factoryForm[attributeName].$error)">
+                                            <label for="{{attributeName}}">
+                                                <input type="checkbox" id="{{attributeName}}" name="{{attributeName}}"  ng-model="selected.factory.factory[attributeName]" ng-required="required">
+                                                {{labelText}}
+                                            </label>
+                                        </div>
+
+                                        <div class="form-group" ng-switch-when="DoubleAttribute" ng-class="getInputCssClass(factoryForm[attributeName].$error)">
+                                            <label class="control-label" for="{{attributeName}}">{{labelText}}</label>
+                                            <input type="number" class="form-control" id="{{attributeName}}" name="{{attributeName}}" ng-model="selected.factory.factory[attributeName]" ng-required="required">
+                                        </div>
+
+                                        <div class="form-group" ng-switch-when="IntegerAttribute" ng-class="getInputCssClass(factoryForm[attributeName].$error)">
+                                            <label class="control-label" for="{{attributeName}}">{{labelText}}</label>
+                                            <input type="number" class="form-control" id="{{attributeName}}" name="{{attributeName}}" ng-model="selected.factory.factory[attributeName]" min="-2147483648" max="2147483647" ng-required="required">
+                                        </div>
+
+                                        <div class="form-group" ng-switch-when="LongAttribute" ng-class="getInputCssClass(factoryForm[attributeName].$error)">
+                                            <label class="control-label" for="{{attributeName}}">{{labelText}}</label>
+                                            <input type="text" class="form-control" id="{{attributeName}}" name="{{attributeName}}" ng-model="selected.factory.factory[attributeName]" ng-minlength="0" ng-maxlength="20" ng-required="required" ng-pattern="/^-{0,1}[0-9]+$/">
+                                        </div>
+
+                                        <div class="form-group" ng-switch-when="EnumAttribute" ng-class="getInputCssClass(factoryForm[attributeName].$error)">
+                                            <label class="control-label" for="{{attributeName}}">{{labelText}}</label>
+                                            <select class="form-control" id="{{attributeName}}" name="{{attributeName}}"  ng-required="required" ng-model="selected.factory.factory[attributeName]">
+                                                <option ng-repeat="option in metaData[selected.factory.type].attributes[attributeName].enumValues" value="{{option}}">{{option}}</option>
+                                                <option></option>
+                                            </select>
+                                        </div>
+
+
+                                        <div class="form-group" ng-switch-when="ReferenceAttribute">
+                                            <label for="{{attributeName}}">{{labelText}}</label>
+                                            <div class="input-group" id ="{{attributeName}}" >
+                                                <input type="text" class="form-control" readonly ng-required="field.metadata.required" placeholder="empty" value="{{selected.factory.nestedFactoriesDisplayText[selected.factory.factory[attributeName].id]}}"/>
+                                                <span class="input-group-btn" role="group">
+                                                    <button type="button" class="btn btn-danger" ng-click="selected.factory.factory[attributeName]=null" ><span class="glyphicon glyphicon-remove"></span></button>
+                                                    <waiting-button click="selectFactory(selected.factory.factory[attributeName].id)" text="" disabled="!selected.factory.factory[attributeName] || isDirty()" bootstrapicon="glyphicon-search" bootsrapbtntype="btn-default"></waiting-button>
+                                                    <!--<button type="button" class="btn btn-default" ng-click="selectFactory(selected.factory.factory[attributeName].id)" ng-disabled="!selected.factory.factory[attributeName] || isDirty()" ><span class="glyphicon glyphicon-search"></span></button>-->
+                                                </span>
+                                            </div>
+                                            <div referenceadder attribute="selected.factory.factory[attributeName]" attributename="attributeName" factory="selected.factory"></div>
+                                        </div>
+
+                                        <div class="form-group" ng-switch-when="ReferenceListAttribute">
+                                            <label class="control-label" for="{{attributeName}}">{{labelText}}</label>
+                                            <div class="input-group" style="width: 100%;" id ="{{attributeName}}">
+                                                <ul class="list-group" style="width: 100%; margin-bottom: 0;">
+                                                    <li class="list-group-item clearfix" ng-repeat="item in (selected.factory.factory[attributeName] | pagingFilter:pagingConfig.itemsPerPage:pagingConfig.currentPage) track by $index">
+                                                        {{selected.factory.nestedFactoriesDisplayText[item.id]}}
+                                                        <span class="pull-right">
+                                                            <div class="btn-group" role="group" aria-label="...">
+                                                                <button type="button" class="btn btn-danger btn-sm" ng-click="selected.factory.factory[attributeName].splice(selected.factory.factory[attributeName].indexOf(item),1)" ><span class="glyphicon glyphicon-remove"></span></button>
+                                                                <waiting-button click="selectFactory(item.id)" text="" disabled="isDirty()" bootstrapicon="glyphicon-search" bootsrapbtntype="btn-default btn-sm"></waiting-button>
+
+                                                                <!--<button type="button" class="btn btn-default btn-sm" ng-click="selectFactory(item.id)" ng-disabled="isDirty()"><span class="glyphicon glyphicon-search"></span></button>-->
+                                                            </div>
+                                                        </span>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                            <div class="pull-left" referenceadder attribute="selected.factory.factory[attributeName]" attributename="attributeName" factory="selected.factory"></div>
+                                            <uib-pagination class="pull-right pagination-sm" style="margin: 9px 0;" boundary-links="true" total-items="selected.factory.factory[attributeName].length" max-size="10" items-per-page="pagingConfig.itemsPerPage" ng-model="pagingConfig.currentPage" previous-text="&lsaquo;" next-text="&rsaquo;" first-text="&laquo;" last-text="&raquo;"></uib-pagination>
+                                            <div class="clearfix"></div>
+                                        </div>
+                                        <div ng-switch-default>
+                                            <div class="form-group">
+                                                <label >{{labelText}}</label>
+                                                <div>unsupported attribute type {{metaData[selected.factory.type].attributes[attributeName].type}}</div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+
+
+
+
+
+
                                 </div>
                             </div>
-
-                            <div class="form-group" ng-if="metaData.data[selected.factory.type].attributesTypes[attributeName]==='ReferenceListAttribute'">
-                                <label for="{{attributeName}}">{{labelText}}</label>
-                                <div class="input-group" style="width: 100%;" id ="{{attributeName}}">
-                                    <ul class="list-group" style="width: 100%; margin-bottom: 0px;">
-                                        <li class="list-group-item clearfix" ng-repeat="item in (selected.factory.factory[attributeName] | pagingFilter:pagingConfig.itemsPerPage:pagingConfig.currentPage) track by $index">
-                                            {{selected.factory.nestedFactoriesDisplayText[item.id]}}
-                                            <span class="pull-right">
-                                                <button type="button" class="btn btn-default" ng-click="selectFactory(item.id)" ><span class="glyphicon glyphicon-search"></span></button>
-                                            </span>
-                                        </li>
-                                    </ul>
-                                </div>
-                                <uib-pagination style="margin: 9px 0;" boundary-links="true" total-items="selected.factory.factory[attributeName].length" max-size="10" items-per-page="pagingConfig.itemsPerPage" ng-model="pagingConfig.currentPage" class="pagination-sm" previous-text="&lsaquo;" next-text="&rsaquo;" first-text="&laquo;" last-text="&raquo;"></uib-pagination>
-                                <div selectreference attribute="selected.factory.factory[attributeName]" attributename="attributeName" factoryid="selected.factory.factory.id"></div>
-                            </div>
-
-
-
+                        </div>
+                        <div class="panel-footer">
+                            <waiting-button class="pull-left" bootsrapbtntype="btn-primary" bootstrapicon="glyphicon-save" disabled="!isDirty() || factoryForm.$invalid" click="save()" text="{{guiModel.factoryEditorModel.saveButton}}"></waiting-button>
+                            <input type="submit" style="visibility: hidden;" />
+                            <waiting-button class="pull-right" bootsrapbtntype="btn-default" bootstrapicon="glyphicon-erase" disabled="!isDirty()" click="reset()" text="{{guiModel.factoryEditorModel.resetButton}}"></waiting-button>
+                            <div class="clearfix"></div>
                         </div>
                     </div>
-
-                    <button type="submit" class="btn btn-primary" ng-disabled="!isDirty()">{{guiModel.factoryEditorModel.saveButton}}</button>
                 </form>
             </div>
         </div>
-    </div>
-    <h2>{{guiModel.factoryEditorModel.deploymentTitle}}</h2>
-    <button type="button" class="btn btn-danger" ng-click="deploy()" ng-disabled="!selected.factory">{{guiModel.factoryEditorModel.deployButton}}</button>
-    <div ng-if="mergeDiff">
-        <h2>{{guiModel.factoryEditorModel.deployedChangesTitle}}</h2>
-        <table class="table table-condensed table-bordered tble-striped">
-            <thead>
-                <tr>
-                    <th>{{guiModel.factoryEditorModel.dataItemTableColumn}}</th>
-                    <th>{{guiModel.factoryEditorModel.previousValueTableColumn}}</th>
-                    <th>{{guiModel.factoryEditorModel.newValueTableColumn}}</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr ng-repeat="item in mergeDiff.mergeInfos">
-                    <td>{{item.mergeResultEntryInfo.parentDisplayText}}</td>
-                    <td>{{item.mergeResultEntryInfo.previousValueDisplayText}}</td>
-                    <td>{{item.mergeResultEntryInfo.newValueValueDisplayText}}</td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
+        <div class="col-md-6">
+            <h3>{{guiModel.factoryEditorModel.deploymentTitle}}</h3>
+            <waiting-button bootsrapbtntype="btn-danger" bootstrapicon="glyphicon-share" disabled="!selected.factory || isDirty()" click="deploy()" text="{{guiModel.factoryEditorModel.deployButton}}"></waiting-button>
 
+            <div class="panel panel-danger spacer" ng-if="deployResponse.validationErrors.length>0">
+                <div class="panel-heading">
+                    {{guiModel.factoryEditorModel.deployedValidationsTitle}}
+                </div>
+                <div class="panel-body">
+                    <table class="table table-condensed table-bordered tble-striped" style="table-layout: fixed;">
+                        <thead>
+                        <tr>
+                            <th>{{guiModel.factoryEditorModel.validationErrorTableColumn}}</th>
+                            <th>{{guiModel.factoryEditorModel.validationAttributeTableColumn}}</th>
+                            <th>{{guiModel.factoryEditorModel.validationFactoryTableColumn}}</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr ng-repeat="item in deployResponse.validationErrors">
+                            <td class="danger"><strong>{{item.validationDescription}}</strong></td>
+                            <td>{{item.attributeLabel}}</td>
+                            <td><a ng-click="selectFactory(item.factoryId)">{{item.factoryDisplayText}}</a></td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="panel panel-info spacer" ng-if="deployResponse.mergeDiff">
+                <div class="panel-heading">
+                    {{guiModel.factoryEditorModel.deployedChangesTitle}}
+                </div>
+                <div class="panel-body">
+                    <table class="table table-condensed table-bordered tble-striped">
+                        <thead>
+                            <tr>
+                                <th>{{guiModel.factoryEditorModel.dataItemTableColumn}}</th>
+                                <th>{{guiModel.factoryEditorModel.previousValueTableColumn}}</th>
+                                <th>{{guiModel.factoryEditorModel.newValueTableColumn}}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat="item in deployResponse.mergeDiff.mergeInfos">
+                                <td>{{item.mergeResultEntryInfo.parentDisplayText}}</td>
+                                <td>{{item.mergeResultEntryInfo.previousValueDisplayText}}</td>
+                                <td>{{item.mergeResultEntryInfo.newValueValueDisplayText}}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="alert alert-success" role="alert" ng-if="deployResponse.deployed">
+                {{guiModel.factoryEditorModel.deployMessage}}
+            </div>
+
+            <button class="btn btn-primary" ng-if="!selected.factory" type="button" ng-click="loadRoot()">
+                <span style="margin-right: 6px" class="glyphicon glyphicon-edit glyphicon-align-left" aria-hidden="true"></span >{{guiModel.factoryEditorModel.editButton}}
+            </button>
+        </div>
+    </div>
 </div>

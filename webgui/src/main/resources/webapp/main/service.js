@@ -6,7 +6,7 @@ angular.module('factoryfxwebgui.services', ['ngResource'])
         var metaDataService = {};
 
         metaDataService.update= function(){
-            if (metaDataService.userDataloaded){
+            if (metaDataService.data){
                 return $q.when(metaDataService);
             }
 
@@ -16,6 +16,24 @@ angular.module('factoryfxwebgui.services', ['ngResource'])
         };
 
         return metaDataService;
+    }
+)
+
+.service('guiModelService',
+    function($resource, $q) {
+        var guiModelService = {};
+
+        guiModelService.update= function(){
+            if (guiModelService.data){
+                return $q.when(guiModelService);
+            }
+
+            return $resource('../applicationServer/guimodel').get(function (response) {
+                guiModelService.data=response;
+            }).$promise;
+        };
+
+        return guiModelService;
     }
 )
 

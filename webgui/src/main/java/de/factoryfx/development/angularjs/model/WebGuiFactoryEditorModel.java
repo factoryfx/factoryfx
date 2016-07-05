@@ -1,4 +1,4 @@
-package de.factoryfx.development.angularjs.server.model;
+package de.factoryfx.development.angularjs.model;
 
 import java.util.Locale;
 
@@ -8,8 +8,12 @@ public class WebGuiFactoryEditorModel {
     public final String editorTitle;
     public final String editButton;
     public final String saveButton;
+    public final String resetButton;
 
     public final String deploymentTitle;
+    public final String initialisationTitle;
+    public final String editingTitle;
+
     public final String deployedChangesTitle;
     public final String deployedValidationsTitle;
     public final String deployButton;
@@ -27,8 +31,13 @@ public class WebGuiFactoryEditorModel {
         this.editorTitle = factoryEditorModel.editorTitle.getPreferred(locale);
         this.editButton = factoryEditorModel.editButton.getPreferred(locale);
         this.saveButton = factoryEditorModel.saveButton.getPreferred(locale);
+        this.resetButton = factoryEditorModel.resetButton.getPreferred(locale);
 
         this.deploymentTitle = factoryEditorModel.deploymentTitle.getPreferred(locale);
+        this.initialisationTitle = factoryEditorModel.initialisationTitle.getPreferred(locale);
+        this.editingTitle = factoryEditorModel.editingTitle.getPreferred(locale);
+
+
         this.deployedChangesTitle = factoryEditorModel.deployedChangesTitle.getPreferred(locale);
         this.deployButton = factoryEditorModel.deployButton.getPreferred(locale);
         this.dataItemTableColumn = factoryEditorModel.dataItemTableColumn.getPreferred(locale);

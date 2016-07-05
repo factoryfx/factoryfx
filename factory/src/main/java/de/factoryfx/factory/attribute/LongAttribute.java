@@ -2,20 +2,21 @@ package de.factoryfx.factory.attribute;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 
-public class DoubleAttribute extends ValueAttribute<Double,DoubleAttribute> {
+public class LongAttribute extends ValueAttribute<Long,LongAttribute> {
 
     @JsonCreator
-    DoubleAttribute(Double value) {
+    LongAttribute(Long value) {
         super(null);
         set(value);
     }
 
     @JsonCreator
-    DoubleAttribute(Long value) {
+    LongAttribute(String value) {
         super(null);
-        set(value.doubleValue());
+        set(Long.parseLong(value));
     }
-    public DoubleAttribute(AttributeMetadata attributeMetadata) {
+
+    public LongAttribute(AttributeMetadata attributeMetadata) {
         super(attributeMetadata);
     }
 }

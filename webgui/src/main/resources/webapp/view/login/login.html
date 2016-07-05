@@ -2,7 +2,7 @@
     <div class="container">
         <div class="row">
             <div class="jumbotron vertical-center">
-                <div class="container">
+                <div class="container" ng-if="guiModel.logoLarge">
                     <img ng-src="data:image/PNG;base64,{{guiModel.logoLarge}}" alt="logo"/>
                     <h1>{{guiModel.title}}</h1>
                 </div>
@@ -31,7 +31,8 @@
 
                     <div class="clearfix"></div>
                     <div class="form-group spacer ">
-                        <button type="submit" class="btn btn-primary" ng-disabled="form1.$invalid">Login</button>
+                        <waiting-button click="connect()" text="Login" bootstrapicon="glyphicon-log-in" bootsrapbtntype="btn-primary"></waiting-button>
+                        <input type="submit" style="visibility: hidden;" />
                     </div>
                 </fieldset>
             </form>

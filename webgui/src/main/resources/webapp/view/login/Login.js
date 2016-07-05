@@ -6,18 +6,28 @@
 /*global angular */
 /*global alert */
 
+var defaultResolve = {
+    'userDataResolved': ['metaDataService','guiModelService','$q',
+        function(            metaDataService,  guiModelService,  $q) {
+            var promiseUserData = metaDataService.update();
+            var guiModelService = guiModelService.update();
+            return $q.all([promiseUserData,guiModelService]);
+        }]
+};
+
 angular.module('factoryfxwebgui.loginView', ['ngRoute'])
 
 .config(['$routeProvider', function($routeProvider) {
     $routeProvider.when('/login', {
         templateUrl: 'view/login/Login.html',
-        controller: 'LoginController'
+        controller: 'LoginController',
+        resolve: defaultResolve
     });
 }])
 
-.controller('LoginController', ['$scope', '$resource', '$location','$routeParams',
-function                        ($scope,   $resource,   $location,  $routeParams ) {
-    $scope.guiModel=$resource("../applicationServer/guimodel").get();
+.controller('LoginController', ['$scope', '$resource', '$location','$routeParams','guiModelService',
+function                        ($scope,   $resource,   $location,  $routeParams,  guiModelService  ) {
+    $scope.guiModel=guiModelService.data;
 
 
 
@@ -34,7 +44,7 @@ function                        ($scope,   $resource,   $location,  $routeParams
     }
     $scope.loginFailed = false;
     $scope.connect = function () {
-        $resource('../applicationServer/login').save($scope.userData,
+        return $resource('../applicationServer/login').save($scope.userData,
             function (loginResult) {
                 if (loginResult.successfully) {
                     $location.path('factoryEditor');
@@ -43,7 +53,7 @@ function                        ($scope,   $resource,   $location,  $routeParams
                     $scope.loginFailed=true;
                 }
             }
-        );
+        ).$promise;
     };
 
     $scope.locales=$resource('../applicationServer/locales').query();

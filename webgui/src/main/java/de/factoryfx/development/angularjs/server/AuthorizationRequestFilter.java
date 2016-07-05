@@ -12,16 +12,18 @@ import javax.ws.rs.core.Response;
 import org.glassfish.jersey.server.ContainerRequest;
 
 public class AuthorizationRequestFilter implements ContainerRequestFilter {
+    public static final String LOGIN_SESSION_KEY = "login";
     @Context
     HttpServletRequest webRequest;
 
     @Override
     public void filter(ContainerRequestContext requestContext)
                     throws IOException {
-        if (webRequest.getSession(false) == null) {
+        if (webRequest.getSession(false) == null || webRequest.getSession(false).getAttribute(LOGIN_SESSION_KEY)==null ) {
             if (
                 !((ContainerRequest) requestContext).getPath(true).equals("login") &&
                 !((ContainerRequest) requestContext).getPath(true).equals("locales") &&
+                !((ContainerRequest) requestContext).getPath(true).equals("metaData") &&
                 !((ContainerRequest) requestContext).getPath(true).equals("guimodel")
                ) {
                 requestContext.abortWith(Response.status(Response.Status.UNAUTHORIZED).type(MediaType.TEXT_PLAIN_TYPE).entity("User cannot access the resource.").build());

@@ -9,6 +9,7 @@ import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.factory.LiveObject;
 import de.factoryfx.factory.attribute.AttributeMetadata;
 import de.factoryfx.factory.attribute.BigDecimalAttribute;
+import de.factoryfx.factory.attribute.LongAttribute;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -41,6 +42,16 @@ public class WebGuiServerTest {
         }
     }
 
+    public static class TestLongDecimal extends FactoryBase<TestBigDecimalLiveObject,TestBigDecimal>{
+        public final LongAttribute value = new LongAttribute(new AttributeMetadata());
+
+        @Override
+        protected TestBigDecimalLiveObject createImp(Optional<TestBigDecimalLiveObject> previousLiveObject) {
+            return null;
+        }
+    }
+
+
 
     @Test
     public void test_bigdecimal() throws IOException {
@@ -60,4 +71,24 @@ public class WebGuiServerTest {
 
 
     }
+
+    @Test //JavaScript and long not good
+    public void test_long() throws IOException {
+        TestLongDecimal testLongDecimal = new TestLongDecimal();
+        testLongDecimal.value.set(54564L);
+
+        WebGuiServer webGuiServer = new WebGuiServer(null,null,null);
+        ObjectMapper objectMapper = webGuiServer.getObjectMapper();
+
+        String data = objectMapper.writeValueAsString(testLongDecimal);
+        System.out.println(data);
+
+        TestLongDecimal readed = objectMapper.readValue(data,TestLongDecimal.class);
+        readed.reconstructMetadataDeepRoot();
+        Assert.assertEquals("54564",readed.value.get().toString());
+
+
+
+    }
+
 }

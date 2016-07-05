@@ -1,5 +1,6 @@
 package de.factoryfx.development.angularjs.server;
 
+import java.math.BigDecimal;
 import java.nio.file.Paths;
 import java.util.UUID;
 import java.util.logging.Level;
@@ -7,6 +8,7 @@ import java.util.logging.Logger;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider;
 import de.factoryfx.development.angularjs.server.resourcehandler.ConfigurableResourceHandler;
 import de.factoryfx.development.angularjs.server.resourcehandler.FilesystemFileContentProvider;
@@ -126,7 +128,8 @@ public class WebGuiServer {
         ObjectMapper objectMapper = ObjectMapperBuilder.build().getObjectMapper();
 //        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         SimpleModule module = new SimpleModule();
-//        module.addSerializer(BigDecimal.class, new ToStringSerializer());
+        module.addSerializer(BigDecimal.class, new ToStringSerializer());
+        module.addSerializer(Long.class, new ToStringSerializer());
         objectMapper.registerModule(module);
         return objectMapper;
     }

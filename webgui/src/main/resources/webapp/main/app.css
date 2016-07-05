@@ -2,6 +2,11 @@ a {
     cursor: pointer;
 }
 
+.disabledLink {
+    cursor: not-allowed;
+}
+
+
 .spacer {
     margin-top: 10px; /* define margin as you see fit */
 }
@@ -9,6 +14,16 @@ a {
 body {
     padding-top: 60px;
     padding-bottom: 5px;
+    /*padding-left: 5px;*/
+    /*padding-right: 5px;*/
+}
+
+/**http://stackoverflow.com/questions/23768152/using-container-fluid-within-bootstrap-cause-horizontal-scrollbar*/
+.container-fluid {
+    padding-right: 15px;
+    padding-left: 15px;
+    margin-right: auto;
+    margin-left: auto;
 }
 
 .fade {
@@ -44,4 +59,24 @@ body {
     width:100%;
     height:100%;
     z-index:1000;
+}
+
+.glyphicon-fw {
+    width: 1.28571429em;
+    text-align: center;
+}
+
+.glyphicon.spinning {
+    animation: spin 1s infinite linear;
+    -webkit-animation: spin2 1s infinite linear;
+}
+
+@keyframes spin {
+    from { transform: scale(1) rotate(0deg); }
+    to { transform: scale(1) rotate(360deg); }
+}
+
+@-webkit-keyframes spin2 {
+    from { -webkit-transform: rotate(0deg); }
+    to { -webkit-transform: rotate(360deg); }
 }

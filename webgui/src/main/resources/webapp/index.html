@@ -25,10 +25,10 @@
 
     <div ng-show="$location.path()!=='/login'">
         <nav class="navbar navbar-default navbar-fixed-top">
-            <div class="container">
+            <div class="container-fluid">
                 <div class="navbar-header">
                     <a class="navbar-brand" href="#">
-                        <img alt="Brand" src="data:image/PNG;base64,{{guiModel.logoSmall}}">
+                        <img alt="Brand" ng-src="data:image/PNG;base64,{{guiModel.logoSmall}}">
                     </a>
                     <a class="navbar-brand" href="#">{{guiModel.title}}</a>
                 </div>
@@ -39,8 +39,8 @@
                 </div><!--/.nav-collapse -->
             </div>
         </nav>
-
     </div>
+
     <div ng-view class="fade"></div>
 
     <script src="main/service.js"></script>
@@ -51,6 +51,7 @@
 
     <script src="components/directives.js"></script>
     <script src="components/referenceAdder/referenceAdder.js"></script>
+    <script src="components/waitingButton/waitingButton.js"></script>
 
     <script src="main/app.js"></script>
 

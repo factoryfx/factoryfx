@@ -18,10 +18,14 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 import de.factoryfx.datastorage.ApplicationFactoryMetadata;
-import de.factoryfx.development.angularjs.server.model.WebGuiModel;
-import de.factoryfx.development.angularjs.server.model.WebGuiValidationError;
+import de.factoryfx.development.angularjs.model.WebGuiFactory;
+import de.factoryfx.development.angularjs.model.WebGuiFactoryMetadata;
+import de.factoryfx.development.angularjs.model.WebGuiModel;
+import de.factoryfx.development.angularjs.model.WebGuiPossibleEntity;
+import de.factoryfx.development.angularjs.model.WebGuiValidationError;
 import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.factory.LiveObject;
 import de.factoryfx.factory.attribute.Attribute;
@@ -131,8 +135,10 @@ public class WebGuiResource<V,T extends FactoryBase<? extends LiveObject<V>, T>>
         LoginResponse loginResponse = new LoginResponse();
         loginResponse.successfully =true;
 
-        request.getSession(true).setAttribute(CURRENT_EDITING_FACTORY_SESSION_KEY,applicationServer.getCurrentFactory());
+        request.getSession(true).setAttribute(AuthorizationRequestFilter.LOGIN_SESSION_KEY,true);
         request.getSession(true).setAttribute(USER_LOCALE,Locale.forLanguageTag(user.locale));
+
+
 
         return loginResponse;
     }
@@ -143,6 +149,21 @@ public class WebGuiResource<V,T extends FactoryBase<? extends LiveObject<V>, T>>
     private ApplicationFactoryMetadata<T> getCurrentEditingFactoryRoot(){
         return (ApplicationFactoryMetadata<T>) request.getSession(true).getAttribute(CURRENT_EDITING_FACTORY_SESSION_KEY);
 
+    }
+
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("loadCurrentFactory")
+    public Response init(){
+        if (request.getSession(true).getAttribute(CURRENT_EDITING_FACTORY_SESSION_KEY)==null){
+            try {
+                Thread.sleep(5000);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+            request.getSession(true).setAttribute(CURRENT_EDITING_FACTORY_SESSION_KEY,applicationServer.getCurrentFactory());
+        }
+        return Response.ok().build();
     }
 
     private Locale getUserLocale(){

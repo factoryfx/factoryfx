@@ -35,7 +35,6 @@ mod.factory('myHttpInterceptor', function ($q, $location, errorDataService) {
         'responseError': function (rejection) {
             errorDataService.errorResponse=rejection;
             $location.path("error");
-            console.log(rejection);
             return $q.reject(rejection);
         }
 

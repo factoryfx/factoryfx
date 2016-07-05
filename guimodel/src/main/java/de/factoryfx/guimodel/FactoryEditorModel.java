@@ -4,11 +4,16 @@ import de.factoryfx.factory.util.LanguageText;
 
 public class FactoryEditorModel {
 
-    public final LanguageText editorTitle = new LanguageText().en("Editor");
-    public final LanguageText editButton = new LanguageText().en("edit");
-    public final LanguageText saveButton = new LanguageText().en("stage");
+    public final LanguageText editorTitle = new LanguageText().en("Factory editor");
 
+    public final LanguageText initialisationTitle = new LanguageText().en("Initialisation");
+    public final LanguageText editingTitle = new LanguageText().en("Edit");
     public final LanguageText deploymentTitle = new LanguageText().en("Deployment");
+
+    public final LanguageText editButton = new LanguageText().en("continue editing");
+    public final LanguageText saveButton = new LanguageText().en("stage changes");
+    public final LanguageText resetButton= new LanguageText().en("revert changes");
+
     public final LanguageText deployedChangesTitle = new LanguageText().en("Deployed changes");
     public final LanguageText deployedValidationsTitle = new LanguageText().en("Validation error");
     public final LanguageText deployButton = new LanguageText().en("Deploy");

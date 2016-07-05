@@ -1,4 +1,4 @@
-package de.factoryfx.development.angularjs.server;
+package de.factoryfx.development.angularjs.model;
 
 import de.factoryfx.factory.FactoryBase;
 

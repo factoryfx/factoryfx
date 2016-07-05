@@ -1,4 +1,4 @@
-package de.factoryfx.development.angularjs.server.model;
+package de.factoryfx.development.angularjs.model;
 
 import java.util.Locale;
 
