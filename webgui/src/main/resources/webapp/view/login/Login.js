@@ -32,8 +32,6 @@ function                        ($scope,   $resource,   $location,  $routeParams
 
 
     $scope.userData = {};
-    $scope.userData.user="a";
-    $scope.userData.password="a";
     $scope.userData.locale="en";
     if ($routeParams.user){
         userData.user=$routeParams.user;
@@ -44,11 +42,12 @@ function                        ($scope,   $resource,   $location,  $routeParams
     }
     $scope.loginFailed = false;
     $scope.connect = function () {
+        $scope.loginFailed = false;
         return $resource('../applicationServer/login').save($scope.userData,
             function (loginResult) {
                 if (loginResult.successfully) {
                     $location.path('factoryEditor');
-                    //userDataService.update();
+                    guiModelService.update();
                 } else {
                     $scope.loginFailed=true;
                 }
@@ -68,4 +67,8 @@ function                        ($scope,   $resource,   $location,  $routeParams
         }
         return '';
     };
+
+    if (!$scope.guiModel.authorisationRequired){
+        $scope.connect();
+    }
 }]);

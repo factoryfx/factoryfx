@@ -1,9 +1,11 @@
 'use strict';
 
 var defaultResolve = {
-    'userDataResolved': ['metaDataService','$q', function(metaDataService,$q) {
+    'userDataResolved': ['metaDataService','guiModelService','$q',
+     function(            metaDataService,  guiModelService,  $q) {
         var promiseUserData = metaDataService.update();
-        return $q.all([promiseUserData]);
+        var guiModelService = guiModelService.update();
+        return $q.all([promiseUserData,guiModelService]);
     }]
 };
 
@@ -23,9 +25,10 @@ angular.module('factoryfxwebgui.factoryEditor', ['ngRoute'])
     });
 }])
 
-.controller('GenericEditorController', ['$scope','metaDataService', '$resource',
-function                                ($scope,  metaDataService,   $resource) {
-    $scope.metaData = metaDataService;
+.controller('GenericEditorController', ['$scope','metaDataService','guiModelService', '$resource',
+function                                ($scope,  metaDataService,  guiModelService,   $resource) {
+    $scope.metaData = metaDataService.data;
+    $scope.guiModel = guiModelService.data;
 
     $scope.pagingConfig={
         itemsPerPage: 5,
@@ -37,30 +40,65 @@ function                                ($scope,  metaDataService,   $resource) 
     }
 
     $scope.loadRoot=function() {
-        $scope.mergeDiff=null;
-        $resource('../applicationServer/root').get(function (response) {
-            $scope.selected.factory = response;
+        $scope.stagedChanges=false;
+        $scope.deployResponse=null;
+        return $resource('../applicationServer/root').get(function (response) {
+            $scope.selected.factory = response.toJSON();
             $scope.selected.originalFactory={};
-            angular.copy(response,$scope.selected.originalFactory);
-        })
+            angular.copy($scope.selected.factory,$scope.selected.originalFactory);
+        }).$promise;
     }
 
     $scope.selectFactory=function(id){
-        $resource('../applicationServer/factory', {id:id}).get(function(response){
+        $scope.selected.factory=null;
+        return $resource('../applicationServer/factory', {id:id}).get(function(response){
             $scope.selected.factory=response;
-        })
+            $scope.selected.originalFactory={};
+            angular.copy(response,$scope.selected.originalFactory);
+        }).$promise;
     }
 
-    $scope.save=function(id){
-        $resource('../applicationServer/factory').save($scope.selected.factory);
+    $scope.stagedChanges=false;
+    $scope.save=function(){
+        return $resource('../applicationServer/factory').save($scope.selected.factory, function(response){
+            $scope.stagedChanges=true;
+            $scope.selected.originalFactory={};
+            angular.copy(response,$scope.selected.originalFactory);
+        }).$promise;
+    }
+
+    $scope.reset=function(){
+        $scope.selected.factory=angular.copy($scope.selected.originalFactory);
     }
 
     $scope.deploy=function(){
         $scope.selected.factory=null;
-        $scope.mergeDiff = $resource('../applicationServer/deploy').get();
+        return $resource('../applicationServer/deploy').get(function(response){
+            $scope.deployResponse=response;
+        }).$promise;
     }
     $scope.isDirty=function(){
         return !angular.equals($scope.selected.factory,$scope.selected.originalFactory);
     }
+
+    $scope.getInputCssClass = function(error){
+        for (var prop in error) {
+            if (error.hasOwnProperty(prop)) {
+                if (error[prop]){
+                    return 'has-error';
+                }
+            }
+        }
+        return '';
+    };
+
+    $scope.initializingEditing=true;
+    $resource('../applicationServer/loadCurrentFactory').get(function(response){
+        $scope.loadRoot().then(function(result) {
+            $scope.initializingEditing=false;
+            return result;
+        });
+    });
+
     
 }]);

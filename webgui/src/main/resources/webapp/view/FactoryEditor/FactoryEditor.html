@@ -7,8 +7,8 @@
     <div class="row">
         <div class="col-md-12">
             <h3>{{guiModel.factoryEditorModel.initialisationTitle}}</h3>
-            <uib-progressbar ng-if="loading.configuration" class="progress-striped active" value="dynamic">loading configuration</uib-progressbar>
-            <uib-progressbar ng-if="!loading.configuration" animate="true" value="dynamic" type="success">loaded</uib-progressbar>
+            <uib-progressbar ng-if="initializingEditing" class="progress-striped active" value="dynamic">loading configuration</uib-progressbar>
+            <uib-progressbar ng-if="!initializingEditing" animate="true" value="dynamic" type="success">loaded</uib-progressbar>
         </div>
     </div>
     <div class="row">
@@ -132,14 +132,14 @@
         </div>
         <div class="col-md-6">
             <h3>{{guiModel.factoryEditorModel.deploymentTitle}}</h3>
-            <waiting-button bootsrapbtntype="btn-danger" bootstrapicon="glyphicon-share" disabled="!selected.factory || isDirty()" click="deploy()" text="{{guiModel.factoryEditorModel.deployButton}}"></waiting-button>
+            <waiting-button bootsrapbtntype="btn-danger" bootstrapicon="glyphicon-share" disabled="!selected.factory || isDirty() || !stagedChanges" click="deploy()" text="{{guiModel.factoryEditorModel.deployButton}}"></waiting-button>
 
             <div class="panel panel-danger spacer" ng-if="deployResponse.validationErrors.length>0">
                 <div class="panel-heading">
                     {{guiModel.factoryEditorModel.deployedValidationsTitle}}
                 </div>
                 <div class="panel-body">
-                    <table class="table table-condensed table-bordered tble-striped" style="table-layout: fixed;">
+                    <table class="table table-condensed table-bordered table-striped" style="table-layout: fixed;">
                         <thead>
                         <tr>
                             <th>{{guiModel.factoryEditorModel.validationErrorTableColumn}}</th>
@@ -163,7 +163,7 @@
                     {{guiModel.factoryEditorModel.deployedChangesTitle}}
                 </div>
                 <div class="panel-body">
-                    <table class="table table-condensed table-bordered tble-striped">
+                    <table class="table table-condensed table-bordered table-striped">
                         <thead>
                             <tr>
                                 <th>{{guiModel.factoryEditorModel.dataItemTableColumn}}</th>
@@ -186,7 +186,7 @@
                 {{guiModel.factoryEditorModel.deployMessage}}
             </div>
 
-            <button class="btn btn-primary" ng-if="!selected.factory" type="button" ng-click="loadRoot()">
+            <button class="btn btn-primary" ng-if="!selected.factory && deployResponse.mergeDiff" type="button" ng-click="loadRoot()">
                 <span style="margin-right: 6px" class="glyphicon glyphicon-edit glyphicon-align-left" aria-hidden="true"></span >{{guiModel.factoryEditorModel.editButton}}
             </button>
         </div>

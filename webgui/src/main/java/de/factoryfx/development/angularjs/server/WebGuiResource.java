@@ -25,6 +25,7 @@ import de.factoryfx.development.angularjs.model.WebGuiFactory;
 import de.factoryfx.development.angularjs.model.WebGuiFactoryMetadata;
 import de.factoryfx.development.angularjs.model.WebGuiModel;
 import de.factoryfx.development.angularjs.model.WebGuiPossibleEntity;
+import de.factoryfx.development.angularjs.model.WebGuiUser;
 import de.factoryfx.development.angularjs.model.WebGuiValidationError;
 import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.factory.LiveObject;
@@ -32,9 +33,11 @@ import de.factoryfx.factory.attribute.Attribute;
 import de.factoryfx.factory.attribute.ReferenceAttribute;
 import de.factoryfx.factory.attribute.ReferenceListAttribute;
 import de.factoryfx.factory.merge.MergeDiff;
+import de.factoryfx.factory.merge.MergeResultEntry;
 import de.factoryfx.guimodel.GuiModel;
 import de.factoryfx.server.ApplicationServer;
 import de.factoryfx.user.User;
+import de.factoryfx.user.UserManagement;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
@@ -45,12 +48,14 @@ public class WebGuiResource<V,T extends FactoryBase<? extends LiveObject<V>, T>>
     private final Supplier<List<Class<? extends FactoryBase>>> factoryClassesProvider;
     private List<Locale> locales =new ArrayList<>();
     private final GuiModel guimodel;
+    private final UserManagement userManagement;
 
-    public WebGuiResource(GuiModel guimodel, ApplicationServer<V,T> applicationServer, Supplier<List<Class<? extends FactoryBase>>> factoryClassesProvider, List<Locale> locales ) {
+    public WebGuiResource(GuiModel guimodel, ApplicationServer<V,T> applicationServer, Supplier<List<Class<? extends FactoryBase>>> factoryClassesProvider, List<Locale> locales, UserManagement userManagement) {
         this.applicationServer = applicationServer;
         this.factoryClassesProvider = factoryClassesProvider;
         this.locales =locales;
         this.guimodel=guimodel;
+        this.userManagement=userManagement;
     }
 
     @GET
@@ -122,7 +127,7 @@ public class WebGuiResource<V,T extends FactoryBase<? extends LiveObject<V>, T>>
     }
 
     private static final String CURRENT_EDITING_FACTORY_SESSION_KEY = "CurrentEditingFactory";
-    private static final String USER_LOCALE = "USER_LOCALE";
+    private static final String USER = "USER_";
 
     public static class LoginResponse{
         public boolean successfully;
@@ -131,15 +136,15 @@ public class WebGuiResource<V,T extends FactoryBase<? extends LiveObject<V>, T>>
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @Path("login")
-    public LoginResponse login(User user) {
+    public LoginResponse login(WebGuiUser user) {
         LoginResponse loginResponse = new LoginResponse();
-        loginResponse.successfully =true;
-
-        request.getSession(true).setAttribute(AuthorizationRequestFilter.LOGIN_SESSION_KEY,true);
-        request.getSession(true).setAttribute(USER_LOCALE,Locale.forLanguageTag(user.locale));
-
-
-
+        loginResponse.successfully =false;
+        Optional<User> authenticatedUser = userManagement.authenticate(user.user, user.password);
+        if (authenticatedUser.isPresent()){
+            loginResponse.successfully =true;
+            request.getSession(true).setAttribute(AuthorizationRequestFilter.LOGIN_SESSION_KEY,true);
+            request.getSession(true).setAttribute(USER,authenticatedUser.get());
+        }
         return loginResponse;
     }
 
@@ -156,11 +161,6 @@ public class WebGuiResource<V,T extends FactoryBase<? extends LiveObject<V>, T>>
     @Path("loadCurrentFactory")
     public Response init(){
         if (request.getSession(true).getAttribute(CURRENT_EDITING_FACTORY_SESSION_KEY)==null){
-            try {
-                Thread.sleep(5000);
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
             request.getSession(true).setAttribute(CURRENT_EDITING_FACTORY_SESSION_KEY,applicationServer.getCurrentFactory());
         }
         return Response.ok().build();
@@ -170,8 +170,12 @@ public class WebGuiResource<V,T extends FactoryBase<? extends LiveObject<V>, T>>
         if (request.getSession(false)==null){
             return request.getLocale();
         } else  {
-            return (Locale) request.getSession(true).getAttribute(USER_LOCALE);
+            return getUser().locale;
         }
+    }
+
+    private User getUser(){
+        return (User) request.getSession(true).getAttribute(USER);
     }
 
     @GET
@@ -190,7 +194,7 @@ public class WebGuiResource<V,T extends FactoryBase<? extends LiveObject<V>, T>>
     @Produces(MediaType.APPLICATION_JSON)
     @Path("guimodel")
     public WebGuiModel getGuimodel(){
-        return new WebGuiModel(guimodel,getUserLocale());
+        return new WebGuiModel(guimodel,getUserLocale(),userManagement);
     }
 
 
@@ -205,6 +209,21 @@ public class WebGuiResource<V,T extends FactoryBase<? extends LiveObject<V>, T>>
     @Path("deploy")
     public DeployResponse deploy(){
         DeployResponse response=new DeployResponse();
+
+
+        MergeDiff simMergeDiff= applicationServer.simulateUpdateCurrentFactory(getCurrentEditingFactoryRoot(),getUserLocale());
+        if (simMergeDiff.hasNoConflicts()){
+            if (userManagement.authorisationRequired()){
+                User user = getUser();
+                for (MergeResultEntry<?> mergeInfo: simMergeDiff.getMergeInfos()){
+                    user.checkPermission(mergeInfo.requiredPermission);
+                }
+            }
+        } else {
+            //TODO
+        }
+
+
         for (FactoryBase<?,?> factoryBase: getCurrentEditingFactoryRoot().root.collectChildFactories()){
             factoryBase.validateFlat().stream().map(validationError -> new WebGuiValidationError(validationError,getUserLocale(),factoryBase)).forEach(w -> response.validationErrors.add(w));
         }

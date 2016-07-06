@@ -16,6 +16,11 @@ public class ApplicationServerRestBridge<T extends FactoryBase<? extends LiveObj
     }
 
     @Override
+    public MergeDiff simulateUpdateCurrentFactory(ApplicationFactoryMetadata<T> updateFactory, Locale locale) {
+        return null;
+    }
+
+    @Override
     public ApplicationFactoryMetadata<T> getCurrentFactory() {
         return null;
     }

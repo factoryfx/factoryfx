@@ -16,6 +16,8 @@ import de.factoryfx.development.angularjs.server.WebGuiServer;
 import de.factoryfx.factory.FactoryManager;
 import de.factoryfx.guimodel.GuiModel;
 import de.factoryfx.server.DefaultApplicationServer;
+import de.factoryfx.user.NoUserManagement;
+import de.factoryfx.user.UserManagement;
 import javafx.application.Application;
 import javafx.stage.Stage;
 import org.slf4j.LoggerFactory;
@@ -53,8 +55,12 @@ public class WebGuiTest extends Application{
 
             DefaultApplicationServer<Void, ExampleFactoryA> applicationServer = new DefaultApplicationServer<>(new FactoryManager<>(), new InMemoryFactoryStorage<>(exampleFactoryA));
             applicationServer.start();
-            new WebGuiServer(8089, "localhost", new WebGuiResource<>(guiModel,applicationServer, () -> Arrays.asList(ExampleFactoryA.class,ExampleFactoryB.class),Arrays.asList(Locale.ENGLISH,Locale.GERMAN))).start();
+            new WebGuiServer(8089, "localhost", new WebGuiResource<>(guiModel,applicationServer, () -> Arrays.asList(ExampleFactoryA.class,ExampleFactoryB.class),Arrays.asList(Locale.ENGLISH,Locale.GERMAN),getUserManagement())).start();
         },"http://localhost:8089/#/login");
+    }
+
+    protected UserManagement getUserManagement() {
+        return new NoUserManagement();
     }
 
     public static void main(String[] args) {

@@ -27,7 +27,7 @@ public class ExampleFactoryA extends FactoryBase<ExampleLiveObjectA,ExampleFacto
         EXAMPLE_3;
     }
 
-    public final StringAttribute stringAttribute=new StringAttribute(new AttributeMetadata().en("ExampleA1en").de("ExampleA1ger")).validation(new StringRequired());
+    public final StringAttribute stringAttribute=new StringAttribute(new AttributeMetadata().en("ExampleA1en").de("ExampleA1ger").permission(Permissions.PERMISSON_X)).validation(new StringRequired());
     public final BigDecimalAttribute bigDecimalAttribute=new BigDecimalAttribute(new AttributeMetadata().en("BigDecimalAttribute").de("ExampleA1ger"));
     public final BooleanAttribute booleanAttribute=new BooleanAttribute(new AttributeMetadata().en("BooleanAttribute").de("ExampleA1ger"));
     public final DoubleAttribute doubleAttribute=new DoubleAttribute(new AttributeMetadata().en("DoubleAttribute").de("ExampleA1ger"));

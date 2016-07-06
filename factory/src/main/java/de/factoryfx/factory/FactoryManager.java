@@ -31,6 +31,19 @@ public class FactoryManager<T extends FactoryBase<? extends LiveObject, T>,V> {
         return mergeDiff;
     }
 
+
+    /** get the merge result  but don't execute the merge and liveobjects Update*/
+    @SuppressWarnings("unchecked")
+    public MergeDiff simulateUpdate(T commonVersion , T newVersion, Locale locale){
+        newVersion.loopDetector();
+        LinkedHashMap<String, LiveObject> previousLiveObjects = new LinkedHashMap<>();
+        currentFactory.collectLiveObjects(previousLiveObjects);
+
+        FactoryMerger factoryMerger = new FactoryMerger(currentFactory, commonVersion, newVersion);
+        factoryMerger.setLocale(locale);
+        return factoryMerger.createMergeResult();
+    }
+
     public MergeDiff update(T commonVersion , T newVersion){
         return update(commonVersion , newVersion,Locale.ENGLISH);
     }

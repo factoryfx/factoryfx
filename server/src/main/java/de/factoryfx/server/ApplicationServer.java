@@ -11,6 +11,7 @@ import de.factoryfx.factory.merge.MergeDiff;
 
 public interface ApplicationServer<V,T extends FactoryBase<? extends LiveObject<V>, T>> {
     MergeDiff updateCurrentFactory(ApplicationFactoryMetadata<T> updateFactory, Locale locale);
+    MergeDiff simulateUpdateCurrentFactory(ApplicationFactoryMetadata<T> updateFactory, Locale locale);
     ApplicationFactoryMetadata<T> getCurrentFactory();
     ApplicationFactoryMetadata<T> getHistoryFactory(String id);
     Collection<ApplicationFactoryMetadata<T>> getHistoryFactoryList();

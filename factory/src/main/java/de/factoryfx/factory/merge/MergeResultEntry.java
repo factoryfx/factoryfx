@@ -10,15 +10,16 @@ import de.factoryfx.factory.attribute.Attribute;
 public class MergeResultEntry<T extends FactoryBase<?,T>> {
     public final FactoryBase<?,T> parent;
     public List<FactoryBase<?,?>> path;
+    public String requiredPermission;
 
     public MergeResultEntryInfo mergeResultEntryInfo;
 
     public MergeResultEntry(FactoryBase<?, T> parent, Attribute<?,?> attribute, Optional<Attribute<?,?>> newAttribute, Locale locale) {
         this.parent=parent;
+        this.requiredPermission=attribute.metadata.permisson;
 
         mergeResultEntryInfo=new MergeResultEntryInfo(attribute.getDisplayText(locale), newAttribute.map((a)->a.getDisplayText(locale)).orElse(""),parent.getDisplayText());
     }
-
 
 
     //    public String getPathDisplayText() {

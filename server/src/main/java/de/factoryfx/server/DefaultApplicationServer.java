@@ -31,6 +31,12 @@ public class DefaultApplicationServer<V,T extends FactoryBase<? extends LiveObje
     }
 
     @Override
+    public MergeDiff simulateUpdateCurrentFactory(ApplicationFactoryMetadata<T> updateFactory, Locale locale){
+        T commonVersion = factoryStorage.getHistoryFactory(updateFactory.baseVersionId).root;
+        return factoryManager.simulateUpdate(commonVersion , updateFactory.root, locale);
+    }
+
+    @Override
     public ApplicationFactoryMetadata<T> getCurrentFactory() {
         return factoryStorage.getCurrentFactory();
     }
