@@ -3,8 +3,8 @@ package de.factoryfx.server;
 import java.util.Collection;
 import java.util.Locale;
 
-import de.factoryfx.datastorage.ApplicationFactoryMetadata;
-import de.factoryfx.datastorage.FactoryStorage;
+import de.factoryfx.factory.datastorage.ApplicationFactoryMetadata;
+import de.factoryfx.factory.datastorage.FactoryStorage;
 import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.factory.FactoryManager;
 import de.factoryfx.factory.LiveObject;

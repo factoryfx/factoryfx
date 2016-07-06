@@ -2,7 +2,7 @@
 angular.module('factoryfxwebgui.services', ['ngResource'])
 
 .service('metaDataService',
-    function($resource, $q) {
+    ["$resource", "$q", function($resource, $q) {
         var metaDataService = {};
 
         metaDataService.update= function(){
@@ -16,11 +16,11 @@ angular.module('factoryfxwebgui.services', ['ngResource'])
         };
 
         return metaDataService;
-    }
+    }]
 )
 
 .service('guiModelService',
-    function($resource, $q) {
+    ["$resource", "$q", function($resource, $q) {
         var guiModelService = {};
 
         guiModelService.update= function(){
@@ -34,10 +34,10 @@ angular.module('factoryfxwebgui.services', ['ngResource'])
         };
 
         return guiModelService;
-    }
+    }]
 )
 
-.factory('errorDataService', function($rootScope) {
+.factory('errorDataService', ["$rootScope", function($rootScope) {
     var result={
         errorResponse : null,
         previousPath: null
@@ -47,4 +47,4 @@ angular.module('factoryfxwebgui.services', ['ngResource'])
     });
 
     return result;
-});
+}]);

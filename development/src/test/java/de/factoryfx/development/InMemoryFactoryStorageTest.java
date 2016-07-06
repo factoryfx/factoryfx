@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 
-import de.factoryfx.datastorage.ApplicationFactoryMetadata;
+import de.factoryfx.factory.datastorage.ApplicationFactoryMetadata;
 import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.factory.FactoryManager;
 import de.factoryfx.factory.LiveObject;

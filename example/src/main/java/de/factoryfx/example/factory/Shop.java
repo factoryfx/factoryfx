@@ -5,6 +5,7 @@ import java.util.List;
 import de.factoryfx.example.server.OrderCollector;
 import de.factoryfx.example.server.OrderStorage;
 import de.factoryfx.factory.LiveObject;
+import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -37,42 +38,45 @@ public class Shop  implements LiveObject<OrderCollector> {
 
     @Override
     public void start() {
-        BorderPane root = new BorderPane();
-        stage.setScene(new Scene(root,1000,800));
+        Platform.runLater(()->{
+            BorderPane root = new BorderPane();
+            stage.setScene(new Scene(root,1000,800));
 
-        stage.setTitle(stageTitle);
+            stage.setTitle(stageTitle);
 
-        TableView<Product> productTableView = new TableView<>();
-        productTableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
-        TableColumn<Product, String> name = new TableColumn<>("Name");
-        name.setCellValueFactory(param -> new SimpleStringProperty(""+param.getValue().getName()));
-        productTableView.getColumns().add(name);
-        TableColumn<Product, String> price = new TableColumn<>("Price");
-        price.setCellValueFactory(param -> new SimpleStringProperty(""+param.getValue().getPrice()));
-        productTableView.getColumns().add(price);
-        root.setCenter(productTableView);
-        productTableView.getItems().addAll(products);
+            TableView<Product> productTableView = new TableView<>();
+            productTableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+            TableColumn<Product, String> name = new TableColumn<>("Name");
+            name.setCellValueFactory(param -> new SimpleStringProperty(""+param.getValue().getName()));
+            productTableView.getColumns().add(name);
+            TableColumn<Product, String> price = new TableColumn<>("Price");
+            price.setCellValueFactory(param -> new SimpleStringProperty(""+param.getValue().getPrice()));
+            productTableView.getColumns().add(price);
+            root.setCenter(productTableView);
+            productTableView.getItems().addAll(products);
 
-        HBox buyPane = new HBox(3);
-        buyPane.setAlignment(Pos.CENTER_LEFT);
-        buyPane.setPadding(new Insets(3));
-        buyPane.getChildren().add(new Label("user name"));
-        TextField customerName = new TextField();
-        buyPane.getChildren().add(customerName);
-        Button buy = new Button("buy");
-        buy.setOnAction(event -> {
-            orderStorage.storeOrder(new OrderStorage.Order(customerName.getText(),productTableView.getSelectionModel().getSelectedItem().getName()));
+            HBox buyPane = new HBox(3);
+            buyPane.setAlignment(Pos.CENTER_LEFT);
+            buyPane.setPadding(new Insets(3));
+            buyPane.getChildren().add(new Label("user name"));
+            TextField customerName = new TextField();
+            buyPane.getChildren().add(customerName);
+            Button buy = new Button("buy");
+            buy.setOnAction(event -> {
+                orderStorage.storeOrder(new OrderStorage.Order(customerName.getText(),productTableView.getSelectionModel().getSelectedItem().getName()));
+            });
+            buy.disableProperty().bind(productTableView.getSelectionModel().selectedItemProperty().isNull().or(customerName.textProperty().isEmpty()));
+            buyPane.getChildren().add(buy);
+            root.setBottom(buyPane);
+
+            stage.show();
         });
-        buy.disableProperty().bind(productTableView.getSelectionModel().selectedItemProperty().isNull().or(customerName.textProperty().isEmpty()));
-        buyPane.getChildren().add(buy);
-        root.setBottom(buyPane);
-
-        stage.show();
     }
 
     @Override
     public void stop() {
-        stage.hide();
+        Platform.runLater(() -> stage.hide());
+
     }
 
     @Override

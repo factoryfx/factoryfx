@@ -20,7 +20,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import de.factoryfx.datastorage.ApplicationFactoryMetadata;
+import de.factoryfx.factory.datastorage.ApplicationFactoryMetadata;
 import de.factoryfx.development.angularjs.model.WebGuiFactory;
 import de.factoryfx.development.angularjs.model.WebGuiFactoryMetadata;
 import de.factoryfx.development.angularjs.model.WebGuiModel;

@@ -1,8 +1,6 @@
 package de.factoryfx.development.angularjs.server;
 
 import java.math.BigDecimal;
-import java.nio.file.Paths;
-import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -11,7 +9,6 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider;
 import de.factoryfx.development.angularjs.server.resourcehandler.ConfigurableResourceHandler;
-import de.factoryfx.development.angularjs.server.resourcehandler.FilesystemFileContentProvider;
 import de.factoryfx.factory.jackson.ObjectMapperBuilder;
 import de.factoryfx.jettyserver.AllExceptionMapper;
 import org.eclipse.jetty.server.Handler;
@@ -36,12 +33,14 @@ public class WebGuiServer {
 
     private ServerConnector connector;
     private final WebGuiResource webGuiResource;
+    private final ConfigurableResourceHandler resourceHandler;
 
-    public WebGuiServer(Integer httpPort, String host, WebGuiResource webGuiResource) {
+    public WebGuiServer(Integer httpPort, String host, WebGuiResource webGuiResource, ConfigurableResourceHandler resourceHandler) {
         super();
         this.httpPort = httpPort;
         this.host = host;
         this.webGuiResource = webGuiResource;
+        this.resourceHandler =resourceHandler;
     }
 
     public void start() {
@@ -53,8 +52,6 @@ public class WebGuiServer {
         connector.setPort(httpPort);
         connector.setHost(host);
         server.addConnector(connector);
-
-        ConfigurableResourceHandler resourceHandler = new ConfigurableResourceHandler(new FilesystemFileContentProvider(Paths.get("./src/main/resources/webapp")), () -> UUID.randomUUID().toString());
 
         ServletContextHandler contextHandler = new ServletContextHandler(ServletContextHandler.SESSIONS);
         contextHandler.addServlet(new ServletHolder(new ServletContainer(jerseySetup(webGuiResource))), "/applicationServer/*");

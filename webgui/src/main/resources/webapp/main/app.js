@@ -18,7 +18,7 @@ config(['$routeProvider', function($routeProvider) {
     $routeProvider.otherwise({redirectTo: '/login'});
 }]);
 
-mod.factory('myHttpInterceptor', function ($q, $location, errorDataService) {
+mod.factory('myHttpInterceptor', ["$q", "$location", "errorDataService",function ($q, $location, errorDataService) {
     return {
         'request': function (config) {
             return config || $q.when(config);
@@ -39,7 +39,7 @@ mod.factory('myHttpInterceptor', function ($q, $location, errorDataService) {
         }
 
     };
-});
-mod.config(function ($httpProvider) {
+}]);
+mod.config(["$httpProvider", function ($httpProvider) {
     $httpProvider.interceptors.push('myHttpInterceptor');
-});
+}]);

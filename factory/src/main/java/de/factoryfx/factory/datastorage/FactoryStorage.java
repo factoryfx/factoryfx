@@ -1,4 +1,4 @@
-package de.factoryfx.datastorage;
+package de.factoryfx.factory.datastorage;
 
 import java.util.Collection;
 

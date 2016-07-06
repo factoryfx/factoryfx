@@ -6,10 +6,12 @@ import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.factory.attribute.AttributeMetadata;
 import de.factoryfx.factory.attribute.IntegerAttribute;
 import de.factoryfx.factory.attribute.StringAttribute;
+import de.factoryfx.factory.validation.ObjectRequired;
+import de.factoryfx.factory.validation.StringRequired;
 
 public class ProductFactory extends FactoryBase<Product,ProductFactory> {
-    public final StringAttribute name = new StringAttribute(new AttributeMetadata().labelText("Name"));
-    public final IntegerAttribute price = new IntegerAttribute(new AttributeMetadata().labelText("Price"));
+    public final StringAttribute name = new StringAttribute(new AttributeMetadata().labelText("Name")).validation(new StringRequired());
+    public final IntegerAttribute price = new IntegerAttribute(new AttributeMetadata().labelText("Price")).validation(new ObjectRequired<>());
 
     @Override
     protected Product createImp(Optional<Product> previousLiveObject) {

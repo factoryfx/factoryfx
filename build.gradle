@@ -37,17 +37,11 @@ subprojects {
 
 }
 
-project(':datastorage') {
-    dependencies {
-        compile project(":factory")
-    }
-}
 
 
 project(':server') {
     dependencies {
         compile project(":factory")
-        compile project(":datastorage")
     }
 }
 
@@ -139,11 +133,12 @@ project(':restutil') {
 project(':example') {
 
     dependencies {
-        compile project(":richclient")
+        compile project(":webgui")
         compile project(":guimodel")
         compile project(":factory")
         compile project(":development")
         compile project(":server")
+        compile group: 'ch.qos.logback', name: 'logback-classic', version: '1.1.7'
     }
 
 }

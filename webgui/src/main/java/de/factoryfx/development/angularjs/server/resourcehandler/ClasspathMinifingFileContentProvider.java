@@ -43,7 +43,7 @@ public class ClasspathMinifingFileContentProvider implements FileContentProvider
 
         for (String resourcePath: getWebAppResources()){
             try (InputStream inputstream=getClass().getResourceAsStream(resourcePath)){
-                resourceCache.put(resourcePath.replace("/de/scoopgmbh/xtc/xmonweb/webapp/", ""), ByteStreams.toByteArray(inputstream));
+                resourceCache.put(resourcePath.replace("/webapp/", ""), ByteStreams.toByteArray(inputstream));
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
@@ -57,7 +57,7 @@ public class ClasspathMinifingFileContentProvider implements FileContentProvider
 
 
 
-        try (InputStream inputStream=getClass().getResourceAsStream("/de/scoopgmbh/xtc/xmonweb/webapp/index.html")) {
+        try (InputStream inputStream=getClass().getResourceAsStream("/webapp/index.html")) {
             Document doc = Jsoup.parse(inputStream, "UTF8", "/");
 
             {
@@ -98,7 +98,7 @@ public class ClasspathMinifingFileContentProvider implements FileContentProvider
     private List<String> getWebAppResources() {
         try {
             final ArrayList<String> result = new ArrayList<>();
-            final String path = "de/scoopgmbh/xtc/xmonweb/webapp/";
+            final String path = "webapp/";
             final File jarFile = new File(getClass().getProtectionDomain().getCodeSource().getLocation().toURI());
 
             if (jarFile.isFile()) {  // Run with JAR file

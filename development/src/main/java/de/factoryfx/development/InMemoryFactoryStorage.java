@@ -5,8 +5,8 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.UUID;
 
-import de.factoryfx.datastorage.ApplicationFactoryMetadata;
-import de.factoryfx.datastorage.FactoryStorage;
+import de.factoryfx.factory.datastorage.ApplicationFactoryMetadata;
+import de.factoryfx.factory.datastorage.FactoryStorage;
 import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.factory.LiveObject;
 

@@ -12,7 +12,48 @@ when you manually use dependency injection you have 2 types of objects.
 explained here: https://www.youtube.com/watch?v=RlfLCWKxHJ0&index=3&list=PL693EFD059797C21E#t=30m
 
 Most dependency injection frameworks automate the Factory code.
-Factoryfx takes a different approach by defining a manually created structure for the factories.
+Instead of automating the creation process Factoryfx takes a different approach by focusing on an explicit defined lifecycle and end user ediable datastructure.
+
+###Example
+####Factory
+```java
+public class ShopFactory extends FactoryBase<Shop,ShopFactory> {
+    public final StringAttribute shopTitle = new StringAttribute(new AttributeMetadata().labelText("stageTitle"));
+
+    @Override
+    protected Shop createImp(Optional<Shop> previousLiveObject) {
+        ...
+        return new Shop(stageTitle.get(), ...);
+    }
+}
+```
+####Live Object
+```java
+public class Shop  implements LiveObject<OrderCollector> {
+    private final String shopTitle;
+
+    public Shop(String shopTitle, ...) {
+        this.stageTitle = stageTitle;
+    }
+
+    @Override
+    public void start() {
+        ...
+    }
+
+    @Override
+    public void stop() {
+        ...
+    }
+
+    @Override
+    public void accept(OrderCollector visitor) {
+        ...
+    }
+}
+```
+Why do we need 2 classes? There are 2 conflicting requirements. The Model should be editable but during the in the running application the attributes should be final.
+That's why the ShopFactory have the shopTitle Attribute with Label text and so on. And the shop liveobject simply have a final shopTitle String field.
 
 ###Why domain specificity?
 * configuration data

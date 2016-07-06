@@ -23,7 +23,7 @@ angular.module('factoryfxwebgui.directives')//re-open module definition
         templateUrl: 'components/waitingButton/waitingButton.html',
         replace: true,
 
-        controller: function($scope, $timeout) {
+        controller: ["$scope", "$timeout", function($scope, $timeout) {
             $scope.bootsrapbtntype = $scope.bootsrapbtntype || 'btn-default';
 
             $scope.isloading={
@@ -34,7 +34,7 @@ angular.module('factoryfxwebgui.directives')//re-open module definition
                 $scope.isloading.value=true;
                 var promise = $scope.click();
                 if (promise){
-                    promise.finally(function(){
+                    promise.then(function(){
                         $scope.isloading.value=false;
                         $scope.success=true;
                         $timeout(function(){
@@ -53,7 +53,7 @@ angular.module('factoryfxwebgui.directives')//re-open module definition
                 }
                 return result;
             };
-        }
+        }]
 
     };
 });

@@ -10,7 +10,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
-import de.factoryfx.datastorage.ApplicationFactoryMetadata;
+import de.factoryfx.factory.datastorage.ApplicationFactoryMetadata;
 import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.factory.LiveObject;
 import de.factoryfx.factory.merge.MergeDiff;
@@ -32,6 +32,11 @@ public class ApplicationServerResource<V, T extends FactoryBase<? extends LiveOb
     @Override
     public MergeDiff updateCurrentFactory(ApplicationFactoryMetadata<T> updateFactory,Locale locale) {
         return  applicationServer.updateCurrentFactory(updateFactory,locale);
+    }
+
+    @Override
+    public MergeDiff simulateUpdateCurrentFactory(ApplicationFactoryMetadata<T> updateFactory, Locale locale) {
+        return applicationServer.simulateUpdateCurrentFactory(updateFactory,locale);
     }
 
     @GET
