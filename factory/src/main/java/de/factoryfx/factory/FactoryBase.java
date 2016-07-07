@@ -410,10 +410,10 @@ public abstract class FactoryBase<E extends LiveObject, T extends FactoryBase<E,
 
     @JsonIgnore
     public String getDisplayText(){
-        return getDescriptiveName()+":"+getId();
+        return metadata.getDisplayText(this,getClass());
     }
 
-    /** validate attributes without visting chield factories*/
+    /** validate attributes without visiting child factories*/
     public List<ValidationError> validateFlat(){
         ArrayList<ValidationError> result = new ArrayList<>();
         visitAttributesFlat((attributeVariableName, attribute) -> {
@@ -421,5 +421,8 @@ public abstract class FactoryBase<E extends LiveObject, T extends FactoryBase<E,
         });
         return result;
     }
+
+    @JsonIgnore
+    public static FactoryMetadata metadata=new FactoryMetadata();
 
 }

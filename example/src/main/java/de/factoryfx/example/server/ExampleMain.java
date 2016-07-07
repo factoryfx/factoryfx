@@ -32,22 +32,22 @@ public class ExampleMain extends Application {
 
         new WebAppViewer(primaryStage, () -> {
             ShopFactory shopFactory = new ShopFactory();
-            shopFactory.stageTitle.set("Simple Example");
+            shopFactory.stageTitle.set("vehicle shop");
             {
                 ProductFactory productFactory = new ProductFactory();
-                productFactory.name.set("Product1");
+                productFactory.name.set("Car");
                 productFactory.price.set(5);
                 shopFactory.products.add(productFactory);
             }
             {
                 ProductFactory productFactory = new ProductFactory();
-                productFactory.name.set("Product2");
+                productFactory.name.set("Bike");
                 productFactory.price.set(10);
                 shopFactory.products.add(productFactory);
             }
 
             GuiModel guiModel = new GuiModel();
-            guiModel.title.en("Shop example");
+            guiModel.title.en("Vehicle shop admin interface");
 //            try(InputStream inputStream= WebGuiTest.class.getResourceAsStream("/logo/logoLarge.png")){
 //                guiModel.logoLarge= ByteStreams.toByteArray(inputStream);
 //            } catch (IOException e) {

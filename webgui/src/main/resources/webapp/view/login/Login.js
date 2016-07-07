@@ -34,11 +34,11 @@ function                        ($scope,   $resource,   $location,  $routeParams
     $scope.userData = {};
     $scope.userData.locale="en";
     if ($routeParams.user){
-        userData.user=$routeParams.user;
+        $scope.userData.user=$routeParams.user;
 
     }
     if($routeParams.password){
-        userDataService.password=$routeParams.password;
+        $scope.userData=$routeParams.password;
     }
     $scope.loginFailed = false;
     $scope.connect = function () {

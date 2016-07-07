@@ -15,6 +15,7 @@ angular.module('factoryfxwebgui.directives')//re-open module definition
         scope: {
             attributename: '=attributename',
             factory: '=factory',
+            originalFactory: '=originalFactory',
             attribute: '=attribute'
 
         },
@@ -25,7 +26,7 @@ angular.module('factoryfxwebgui.directives')//re-open module definition
             $scope.selectDialog={
                 visible: false,
                 possibleValues:[]
-            }
+            };
 
             $scope.pagingConfig={
                 itemsPerPage: 5,
@@ -35,16 +36,16 @@ angular.module('factoryfxwebgui.directives')//re-open module definition
             $scope.loadPossibleValues =function(){
                 $resource('../applicationServer/possibleValues', {id:$scope.factory.factory.id, attributeName: $scope.attributename}).query(function(response){
                     $scope.selectDialog.possibleValues=response;
-                })
-            }
+                });
+            };
 
             $scope.addFactory=function(id){
                 if (Array.isArray($scope.attribute)){
-                    $scope.attribute.push({id: id})
+                    $scope.attribute.push({id: id});
                 } else {
                     $scope.attribute={id: id};
                 }
-            }
+            };
 
             $scope.addNewFactory = function () {
                 $resource('../applicationServer/newEntry', {
@@ -52,8 +53,15 @@ angular.module('factoryfxwebgui.directives')//re-open module definition
                     attributeName: $scope.attributename
                 }).get(function (response) {
                     $scope.factory = response;
-                })
-            }
+                    $scope.originalFactory={};
+                    angular.copy($scope.factory,$scope.originalFactory);
+                });
+            };
+
+            $scope.isDirty=function(){
+                return !angular.equals($scope.factory,$scope.originalFactory);
+            };
+
 
         }]
     };
