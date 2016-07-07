@@ -19,7 +19,7 @@ angular.module('factoryfxwebgui.factoryEditor', ['ngRoute'])
 
 .config(['$routeProvider', function($routeProvider) {
     $routeProvider.when('/factoryEditor', {
-        templateUrl: 'view/factoryEditor/FactoryEditor.html',
+        templateUrl: 'view/FactoryEditor/FactoryEditor.html',
         controller: 'GenericEditorController',
         resolve: defaultResolve
     });
