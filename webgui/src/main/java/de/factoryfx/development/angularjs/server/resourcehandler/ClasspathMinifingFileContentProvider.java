@@ -37,6 +37,18 @@ public class ClasspathMinifingFileContentProvider implements FileContentProvider
 
 
 
+    List<String> combineIndexHtml(Document doc){
+        Elements scripts = doc.select("script");
+        List<String> allJsFiles = new ArrayList<>();
+        for (Element element : scripts) {
+            allJsFiles.add(element.attr("src"));
+            element.remove();
+        }
+        doc.getElementsByTag("head").prepend("<script src=\"combined.js\"></script>");
+        resourceCache.put("combined.js", combineFiles(allJsFiles));
+        return allJsFiles;
+    }
+
 
     public ClasspathMinifingFileContentProvider(){
         logger.info("start javascript minification");
@@ -62,27 +74,12 @@ public class ClasspathMinifingFileContentProvider implements FileContentProvider
 
             {
                 logger.info("combine javascript files");
-                Elements scripts = doc.select("script");
-                List<String> allJsFiles = new ArrayList<>();
-                for (Element element : scripts) {
-                    allJsFiles.add(element.attr("src"));
-                    element.remove();
-                }
-                doc.getElementsByTag("head").prepend("<script src=\"combined.js\"></script>");
+                List<String> allJsFiles = combineIndexHtml(doc);
                 resourceCache.put("combined.js", combineFiles(allJsFiles));
             }
 
             {
-//                buggy cause relative paths in fontawsome
-//                logger.info("combine css files");
-//                Elements css = doc.select("link[rel=stylesheet]");
-//                List<String> allCssFiles = new ArrayList<>();
-//                for (Element element : css) {
-//                    allCssFiles.add(element.attr("href"));
-//                    element.remove();
-//                }
-//                doc.getElementsByTag("head").prepend("<link rel=\"stylesheet\" href=\"combined.css\" />");
-//                resourceCache.put("combined.css", combineFiles(allCssFiles));
+//                css combine buggy cause relative paths in css file like fonts
             }
 
             resourceCache.put("index.html", doc.html().getBytes(StandardCharsets.UTF_8));
