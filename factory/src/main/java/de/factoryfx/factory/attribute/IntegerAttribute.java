@@ -6,11 +6,11 @@ public class IntegerAttribute extends ValueAttribute<Integer,IntegerAttribute> {
 
     @JsonCreator
     IntegerAttribute(Integer value) {
-        super(null);
+        super(null,Integer.class);
         set(value);
     }
 
     public IntegerAttribute(AttributeMetadata attributeMetadata) {
-        super(attributeMetadata);
+        super(attributeMetadata,Integer.class);
     }
 }

@@ -97,4 +97,6 @@ public abstract class Attribute<T,A extends Attribute<T,A>>{
             }
         });
     }
+
+    public abstract AttributeTypeInfo getAttributeType();
 }

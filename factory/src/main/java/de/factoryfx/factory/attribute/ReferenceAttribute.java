@@ -108,6 +108,10 @@ public class ReferenceAttribute<T extends FactoryBase<?,? super T>> extends Attr
         attributeVisitor.reference(this);
     }
 
+    @Override
+    public AttributeTypeInfo getAttributeType() {
+        return new AttributeTypeInfo(null,null,null, AttributeTypeInfo.AttributeTypeCategory.REFERENCE);
+    }
 
 
     public Optional<Function<FactoryBase<?,?>,List<T>>> possibleValueProviderFromRoot=Optional.empty();

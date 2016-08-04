@@ -152,6 +152,11 @@ public class ReferenceListAttribute<T extends FactoryBase<?,? super T>> extends 
         attributeVisitor.referenceList(this);
     }
 
+    @Override
+    public AttributeTypeInfo getAttributeType() {
+        return new AttributeTypeInfo(null,null,null, AttributeTypeInfo.AttributeTypeCategory.REFERENCE_LIST);
+    }
+
 
     private Optional<Function<FactoryBase<?,?>,List<T>>> possibleValueProviderFromRoot=Optional.empty();
     private Optional<Function<FactoryBase<?,?>,T>> newValueProviderFromRoot=Optional.empty();

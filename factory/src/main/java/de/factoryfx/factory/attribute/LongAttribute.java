@@ -6,17 +6,17 @@ public class LongAttribute extends ValueAttribute<Long,LongAttribute> {
 
     @JsonCreator
     LongAttribute(Long value) {
-        super(null);
+        super(null,Long.class);
         set(value);
     }
 
     @JsonCreator
     LongAttribute(String value) {
-        super(null);
+        super(null,Long.class);
         set(Long.parseLong(value));
     }
 
     public LongAttribute(AttributeMetadata attributeMetadata) {
-        super(attributeMetadata);
+        super(attributeMetadata,Long.class);
     }
 }

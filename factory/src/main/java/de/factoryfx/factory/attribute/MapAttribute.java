@@ -11,9 +11,13 @@ import javafx.collections.MapChangeListener;
 import javafx.collections.ObservableMap;
 
 public class MapAttribute<K, V> extends ValueAttribute<ObservableMap<K,V>,MapAttribute<K, V>> {
+    private final Class<K> keyType;
+    private final Class<V> valueType;
 
-    public MapAttribute(AttributeMetadata attributeMetadata) {
-        super(attributeMetadata);
+    public MapAttribute(AttributeMetadata attributeMetadata, Class<K> keyType, Class<V> valueType) {
+        super(attributeMetadata,null);
+        this.keyType=keyType;
+        this.valueType=valueType;
         set(FXCollections.observableMap(new TreeMap<>()));
 
         get().addListener((MapChangeListener<K, V>) change -> {
@@ -25,7 +29,7 @@ public class MapAttribute<K, V> extends ValueAttribute<ObservableMap<K,V>,MapAtt
 
     @JsonCreator
     MapAttribute(ObservableMapJacksonAbleWrapper<K, V> map) {
-        this((AttributeMetadata)null);
+        this(null,null,null);
         this.set(map.unwrap());
     }
 
@@ -37,6 +41,11 @@ public class MapAttribute<K, V> extends ValueAttribute<ObservableMap<K,V>,MapAtt
             stringBuilder.append(",\n");
         }
         return metadata.labelText.getPreferred(locale)+":\n"+stringBuilder.toString();
+    }
+
+    @Override
+    public AttributeTypeInfo getAttributeType() {
+        return new AttributeTypeInfo(null,keyType,valueType, AttributeTypeInfo.AttributeTypeCategory.MAP);
     }
 
 }

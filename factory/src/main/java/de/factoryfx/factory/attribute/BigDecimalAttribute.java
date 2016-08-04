@@ -8,11 +8,11 @@ public class BigDecimalAttribute extends ValueAttribute<BigDecimal,BigDecimalAtt
 
     @JsonCreator
     BigDecimalAttribute(BigDecimal value) {
-        super(null);
+        super(null,BigDecimal.class);
         set(value);
     }
 
     public BigDecimalAttribute(AttributeMetadata attributeMetadata) {
-        super(attributeMetadata);
+        super(attributeMetadata,BigDecimal.class);
     }
 }

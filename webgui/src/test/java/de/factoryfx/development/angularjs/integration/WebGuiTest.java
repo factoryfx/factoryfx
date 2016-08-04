@@ -36,13 +36,21 @@ public class WebGuiTest extends Application{
             ExampleFactoryB exampleFactoryB = new ExampleFactoryB();
             exampleFactoryB.stringAttribute.set("BBBBBBBBBBBBBBBB");
             exampleFactoryA.referenceAttribute.set(exampleFactoryB);
+            exampleFactoryA.valueListAttribute.add("111111");
+            exampleFactoryA.valueListAttribute.add("222222");
 
+            exampleFactoryA.mapAttribute.get().put("key1","value1");
+            exampleFactoryA.mapAttribute.get().put("key2","value2");
+            exampleFactoryA.mapAttribute.get().put("key3","value3");
 
             for (int i=0; i<3;i++){
                 ExampleFactoryB value = new ExampleFactoryB();
                 value.stringAttribute.set("i"+i);
                 exampleFactoryA.referenceListAttribute.add(value);
             }
+
+
+
 
             GuiModel guiModel = new GuiModel();
             guiModel.title.en("Test example");

@@ -9,17 +9,23 @@ public class EnumAttribute<T extends Enum<T>> extends ValueAttribute<T,EnumAttri
 
     @JsonCreator
     EnumAttribute(T value) {
-        super(null);
+        super(null,null);
         set(value);
     }
     private Class<T> clazz;
 
     public EnumAttribute(Class<T> clazz, AttributeMetadata attributeMetadata) {
-        super(attributeMetadata);
+        super(attributeMetadata,clazz);
         this.clazz=clazz;
     }
 
-    public List<Enum<T>> getEnumValues(){
+    private List<Enum<T>> getEnumValues(){
         return Arrays.asList(clazz.getEnumConstants());
+    }
+
+    @Override
+    public AttributeTypeInfo getAttributeType() {
+
+        return new AttributeTypeInfo(clazz,null,null,AttributeTypeInfo.AttributeTypeCategory.VALUE);
     }
 }

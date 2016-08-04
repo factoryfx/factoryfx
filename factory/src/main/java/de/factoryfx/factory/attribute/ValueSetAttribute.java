@@ -10,9 +10,13 @@ import javafx.collections.ObservableSet;
 import javafx.collections.SetChangeListener;
 
 public class ValueSetAttribute<T> extends ValueAttribute<ObservableSet<T>,ValueSetAttribute<T>> {
+    private final Class<T> itemType;
+    private final T emptyValue;
 
-    public ValueSetAttribute(AttributeMetadata attributeMetadata) {
-        super(attributeMetadata);
+    public ValueSetAttribute(AttributeMetadata attributeMetadata, Class<T> itemType, T emptyValue) {
+        super(attributeMetadata,null);
+        this.itemType = itemType;
+        this.emptyValue = emptyValue;
         set(FXCollections.observableSet(new HashSet<>()));
 
         get().addListener((SetChangeListener<T>) change -> {
@@ -25,7 +29,7 @@ public class ValueSetAttribute<T> extends ValueAttribute<ObservableSet<T>,ValueS
 
     @JsonCreator
     ValueSetAttribute(ObservableSetJacksonAbleWrapper<T> setCollection) {
-        this((AttributeMetadata)null);
+        this(null,null,null);
         set(setCollection.unwrap());
     }
 
@@ -37,5 +41,10 @@ public class ValueSetAttribute<T> extends ValueAttribute<ObservableSet<T>,ValueS
             stringBuilder.append(",\n");
         }
         return metadata.labelText.getPreferred(locale)+":\n"+stringBuilder.toString();
+    }
+
+    @Override
+    public AttributeTypeInfo getAttributeType() {
+        return new AttributeTypeInfo(itemType,null,null,itemType, AttributeTypeInfo.AttributeTypeCategory.COLLECTION,emptyValue);
     }
 }

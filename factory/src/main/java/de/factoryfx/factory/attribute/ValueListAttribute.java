@@ -9,10 +9,13 @@ import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 
 public class ValueListAttribute<T> extends ValueAttribute<ObservableList<T>,ValueListAttribute<T>> {
+    private final Class<T> itemType;
+    private final T emptyValue;
 
-
-    public ValueListAttribute(AttributeMetadata attributeMetadata) {
-        super(attributeMetadata);
+    public ValueListAttribute(AttributeMetadata attributeMetadata, Class<T> itemType, T emptyValue) {
+        super(attributeMetadata,null);
+        this.itemType=itemType;
+        this.emptyValue = emptyValue;
         set(FXCollections.observableArrayList() );
 
         get().addListener((ListChangeListener<T>) c -> {
@@ -24,7 +27,7 @@ public class ValueListAttribute<T> extends ValueAttribute<ObservableList<T>,Valu
 
     @JsonCreator
     ValueListAttribute(ObservableListJacksonAbleWrapper<T> list) {
-        this((AttributeMetadata)null);
+        this(null,null,null);
         set(list.unwrap());
     }
 
@@ -41,6 +44,11 @@ public class ValueListAttribute<T> extends ValueAttribute<ObservableList<T>,Valu
             stringBuilder.append(",\n");
         }
         return metadata.labelText.getPreferred(locale)+":\n"+stringBuilder.toString();
+    }
+
+    @Override
+    public AttributeTypeInfo getAttributeType() {
+        return new AttributeTypeInfo(itemType,null,null,itemType, AttributeTypeInfo.AttributeTypeCategory.COLLECTION,emptyValue);
     }
 
 }

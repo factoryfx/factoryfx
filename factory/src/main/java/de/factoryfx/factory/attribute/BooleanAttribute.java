@@ -5,13 +5,13 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 public class BooleanAttribute extends ValueAttribute<Boolean,BooleanAttribute> {
 
     public BooleanAttribute(AttributeMetadata attributeMetadata) {
-        super(attributeMetadata);
+        super(attributeMetadata,Boolean.class);
         set(Boolean.FALSE);
     }
 
     @JsonCreator
     BooleanAttribute(Boolean value) {
-        super(null);
+        super(null,Boolean.class);
         set(value);
     }
 

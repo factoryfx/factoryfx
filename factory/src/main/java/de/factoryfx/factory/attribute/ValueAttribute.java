@@ -14,9 +14,11 @@ import de.factoryfx.factory.merge.attribute.AttributeMergeHelper;
 public class ValueAttribute<T,A extends Attribute<T,A>> extends Attribute<T,A> {
     //    @JsonProperty
     private T value;
+    private Class<T> dataType;
 
-    public ValueAttribute(AttributeMetadata attributeMetadata) {
+    public ValueAttribute(AttributeMetadata attributeMetadata, Class<T> dataType) {
         super(attributeMetadata);
+        this.dataType=dataType;
     }
 
     @Override
@@ -60,6 +62,12 @@ public class ValueAttribute<T,A extends Attribute<T,A>> extends Attribute<T,A> {
         attributeVisitor.value(this);
     }
 
+    @Override
+    public AttributeTypeInfo getAttributeType() {
+        return new AttributeTypeInfo(dataType);
+    }
+
+    @Override
     public void set(T value) {
         this.value = value;
         for (AttributeChangeListener<T> listener: listeners){
@@ -76,6 +84,8 @@ public class ValueAttribute<T,A extends Attribute<T,A>> extends Attribute<T,A> {
     void setValue(T value) {
         this.value = value;
     }
+
+
 
 
 }

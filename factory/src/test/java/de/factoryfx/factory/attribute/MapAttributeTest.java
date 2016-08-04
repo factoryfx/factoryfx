@@ -13,7 +13,7 @@ import org.junit.Test;
 public class MapAttributeTest {
 
     public static class ExampleMapFactory extends FactoryBase<ExampleLiveObjectA,ExampleFactoryA> {
-        public MapAttribute<Integer,String> mapAttribute=new MapAttribute<>(new AttributeMetadata());
+        public StringMapAttribute mapAttribute=new StringMapAttribute(new AttributeMetadata());
 
         @Override
         protected ExampleLiveObjectA createImp(Optional<ExampleLiveObjectA> previousLiveObject) {
@@ -28,7 +28,7 @@ public class MapAttributeTest {
         exampleMapFactory.mapAttribute.addListener((a,o)-> {
             calls.add("");
         });
-        exampleMapFactory.mapAttribute.get().put(123,"7787");
+        exampleMapFactory.mapAttribute.get().put("123","7787");
 
         Assert.assertEquals(1,calls.size());
     }
@@ -36,7 +36,7 @@ public class MapAttributeTest {
     @Test
     public void test_json(){
         ExampleMapFactory exampleMapFactory = new ExampleMapFactory();
-        exampleMapFactory.mapAttribute.get().put(123,"7787");
+        exampleMapFactory.mapAttribute.get().put("123","7787");
         ObjectMapperBuilder.build().copy(exampleMapFactory);
     }
 }
