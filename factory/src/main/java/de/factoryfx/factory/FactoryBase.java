@@ -423,6 +423,6 @@ public abstract class FactoryBase<E extends LiveObject, T extends FactoryBase<E,
     }
 
     @JsonIgnore
-    public static FactoryMetadata metadata=new FactoryMetadata();
+    public static final FactoryMetadata metadata=new FactoryMetadata();
 
 }

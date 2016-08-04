@@ -1,11 +1,14 @@
 'use strict';
 
+/* jhint helpers: */
+/*global moment */
+/*global angular */
+/*global alert */
+
 var defaultResolve = {
     'userDataResolved': ['metaDataService','guiModelService','$q',
      function(            metaDataService,  guiModelService,  $q) {
-        var promiseUserData = metaDataService.update();
-        var guiModelService = guiModelService.update();
-        return $q.all([promiseUserData,guiModelService]);
+        return $q.all([metaDataService.update(),guiModelService.update()]);
     }]
 };
 
@@ -37,49 +40,51 @@ function                                ($scope,  metaDataService,  guiModelServ
     
     $scope.selected={
         factory: undefined
-    }
+    };
 
     $scope.loadRoot=function() {
         $scope.stagedChanges=false;
         $scope.deployResponse=null;
         return $resource('../applicationServer/root').get(function (response) {
             $scope.selected.factory = response.toJSON();
-            $scope.selected.originalFactory={};
-            angular.copy($scope.selected.factory,$scope.selected.originalFactory);
+            $scope.resetDirtyTracking();
         }).$promise;
-    }
+    };
+
+    $scope.resetDirtyTracking = function(){
+        $scope.selected.originalFactory={};
+        angular.copy($scope.selected.factory,$scope.selected.originalFactory);
+    };
 
     $scope.selectFactory=function(id){
         $scope.selected.factory=null;
         return $resource('../applicationServer/factory', {id:id}).get(function(response){
             $scope.selected.factory=response;
-            $scope.selected.originalFactory={};
-            angular.copy(response,$scope.selected.originalFactory);
+            $scope.resetDirtyTracking();
         }).$promise;
-    }
+    };
 
     $scope.stagedChanges=false;
     $scope.save=function(){
         return $resource('../applicationServer/factory').save($scope.selected.factory, function(response){
             $scope.stagedChanges=true;
-            $scope.selected.originalFactory={};
-            angular.copy(response,$scope.selected.originalFactory);
+            $scope.resetDirtyTracking();
         }).$promise;
-    }
+    };
 
     $scope.reset=function(){
         $scope.selected.factory=angular.copy($scope.selected.originalFactory);
-    }
+    };
 
     $scope.deploy=function(){
         $scope.selected.factory=null;
         return $resource('../applicationServer/deploy').get(function(response){
             $scope.deployResponse=response;
         }).$promise;
-    }
+    };
     $scope.isDirty=function(){
         return !angular.equals($scope.selected.factory,$scope.selected.originalFactory);
-    }
+    };
 
     $scope.getInputCssClass = function(error){
         for (var prop in error) {
@@ -100,5 +105,30 @@ function                                ($scope,  metaDataService,  guiModelServ
         });
     });
 
+    $scope.factory={
+        form: {}
+    };
+    $scope.auto={
+        staging: true
+    };
+    $scope.$watch('selected.factory',function(newValue,oldvalue) {
+        if(newValue && $scope.factory.form.$valid && $scope.auto.staging) {
+            $scope.save();
+        }
+
+    },true);
+
+
+    $scope.getMap=function(attribute){
+        var result=[];
+        if (attribute){
+            for (var property in attribute) {
+                if (attribute.hasOwnProperty(property)) {
+                    result.push({key: property,value:attribute[property]});
+                }
+            }
+        }
+        return result;
+    };
     
 }]);
