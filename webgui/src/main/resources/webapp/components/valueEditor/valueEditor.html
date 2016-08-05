@@ -1,10 +1,10 @@
-<div>
-    <div ng-switch="datatype.dataType">
+<span>
+    <span ng-switch="datatype.dataType">
         {{modelValue}}
-        <div class="form-group" ng-switch-when="String" ng-class="getInputCssClass(formmodel[name].$error)">
+        <span class="form-group" ng-switch-when="String" ng-class="getInputCssClass(formmodel[name].$error)">
             <label class="control-label" for="{{name}}">{{labelText}}</label>
             <input ng-model-options="{ debounce: 200 }" type="text" class="form-control" id="{{name}}" name="{{name}}" ng-model="$parent.model" ng-required="required">
-        </div>
+        </span>
 
         <div class="form-group" ng-switch-when="BigDecimal" ng-class="getInputCssClass(formmodel[name].$error)">
             <label class="control-label" for="{{name}}">{{labelText}}</label>
@@ -47,5 +47,5 @@
                 <div>unsupported attribute type {{datatype.dataType}}</div>
             </div>
         </div>
-    </div>
-</div>
+    </span>
+</span>

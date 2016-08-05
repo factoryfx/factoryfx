@@ -1,7 +1,7 @@
 package de.factoryfx.richclient.framework.editor.editors;
 
 import com.google.common.base.Strings;
-import de.factoryfx.factory.attribute.IntegerAttribute;
+import de.factoryfx.factory.attribute.util.IntegerAttribute;
 import de.factoryfx.richclient.framework.editor.AttributeEditor;
 import javafx.scene.Node;
 import javafx.scene.control.TextField;

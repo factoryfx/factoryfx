@@ -7,7 +7,7 @@ import de.factoryfx.example.server.OrderStorage;
 import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.factory.attribute.AttributeMetadata;
 import de.factoryfx.factory.attribute.ReferenceListAttribute;
-import de.factoryfx.factory.attribute.StringAttribute;
+import de.factoryfx.factory.attribute.util.StringAttribute;
 import javafx.stage.Stage;
 
 public class ShopFactory extends FactoryBase<Shop,ShopFactory> {

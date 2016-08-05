@@ -8,8 +8,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.factory.LiveObject;
 import de.factoryfx.factory.attribute.AttributeMetadata;
-import de.factoryfx.factory.attribute.BigDecimalAttribute;
-import de.factoryfx.factory.attribute.LongAttribute;
+import de.factoryfx.factory.attribute.util.BigDecimalAttribute;
+import de.factoryfx.factory.attribute.util.LongAttribute;
 import org.junit.Assert;
 import org.junit.Test;
 

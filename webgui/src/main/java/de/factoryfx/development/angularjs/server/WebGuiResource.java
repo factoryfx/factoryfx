@@ -157,13 +157,13 @@ public class WebGuiResource<V,T extends FactoryBase<? extends LiveObject<V>, T>>
     }
 
     @GET
-    @Produces(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.TEXT_PLAIN)
     @Path("loadCurrentFactory")
     public Response init(){
         if (request.getSession(true).getAttribute(CURRENT_EDITING_FACTORY_SESSION_KEY)==null){
             request.getSession(true).setAttribute(CURRENT_EDITING_FACTORY_SESSION_KEY,applicationServer.getCurrentFactory());
         }
-        return Response.ok().build();
+        return Response.ok().entity("ok").build();
     }
 
     private Locale getUserLocale(){

@@ -1,6 +1,6 @@
 package de.factoryfx.richclient.framework.editor.editors;
 
-import de.factoryfx.factory.attribute.EnumAttribute;
+import de.factoryfx.factory.attribute.util.EnumAttribute;
 import de.factoryfx.richclient.framework.editor.AttributeEditor;
 import javafx.scene.Node;
 import javafx.scene.control.ComboBox;

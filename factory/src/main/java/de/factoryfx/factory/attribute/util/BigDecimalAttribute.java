@@ -1,8 +1,10 @@
-package de.factoryfx.factory.attribute;
+package de.factoryfx.factory.attribute.util;
 
 import java.math.BigDecimal;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import de.factoryfx.factory.attribute.AttributeMetadata;
+import de.factoryfx.factory.attribute.ValueAttribute;
 
 public class BigDecimalAttribute extends ValueAttribute<BigDecimal,BigDecimalAttribute> {
 

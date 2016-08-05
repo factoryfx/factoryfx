@@ -4,7 +4,7 @@ import java.util.Locale;
 
 import de.factoryfx.development.angularjs.integration.ExampleEnum;
 import de.factoryfx.factory.attribute.AttributeMetadata;
-import de.factoryfx.factory.attribute.EnumAttribute;
+import de.factoryfx.factory.attribute.util.EnumAttribute;
 import org.junit.Assert;
 import org.junit.Test;
 

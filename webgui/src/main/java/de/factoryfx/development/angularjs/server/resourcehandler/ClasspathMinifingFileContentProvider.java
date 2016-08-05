@@ -20,6 +20,7 @@ import java.util.Map;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
+import com.google.common.base.Joiner;
 import com.google.common.io.ByteStreams;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -145,6 +146,10 @@ public class ClasspathMinifingFileContentProvider implements FileContentProvider
         ByteArrayOutputStream result = new ByteArrayOutputStream( );
         for (String file: allFiles){
             try {
+                if (getFile(file)==null){
+                    Joiner.MapJoiner mapJoiner = Joiner.on("\n").withKeyValueSeparator("=");
+                    throw new IllegalStateException("missing file:"+file+"\n"+mapJoiner.join(javaScriptFiles));
+                }
                 result.write(getFile(file));
             } catch (IOException e) {
                 throw new RuntimeException(e);

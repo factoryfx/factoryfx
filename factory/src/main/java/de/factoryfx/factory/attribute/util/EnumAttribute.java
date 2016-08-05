@@ -1,9 +1,12 @@
-package de.factoryfx.factory.attribute;
+package de.factoryfx.factory.attribute.util;
 
 import java.util.Arrays;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import de.factoryfx.factory.attribute.AttributeMetadata;
+import de.factoryfx.factory.attribute.AttributeTypeInfo;
+import de.factoryfx.factory.attribute.ValueAttribute;
 
 public class EnumAttribute<T extends Enum<T>> extends ValueAttribute<T,EnumAttribute<T>> {
 

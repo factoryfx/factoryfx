@@ -1,6 +1,8 @@
-package de.factoryfx.factory.attribute;
+package de.factoryfx.factory.attribute.util;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import de.factoryfx.factory.attribute.AttributeMetadata;
+import de.factoryfx.factory.attribute.ValueAttribute;
 
 public class LongAttribute extends ValueAttribute<Long,LongAttribute> {
 

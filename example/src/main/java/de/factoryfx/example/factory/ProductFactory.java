@@ -4,8 +4,8 @@ import java.util.Optional;
 
 import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.factory.attribute.AttributeMetadata;
-import de.factoryfx.factory.attribute.IntegerAttribute;
-import de.factoryfx.factory.attribute.StringAttribute;
+import de.factoryfx.factory.attribute.util.IntegerAttribute;
+import de.factoryfx.factory.attribute.util.StringAttribute;
 import de.factoryfx.factory.validation.ObjectRequired;
 import de.factoryfx.factory.validation.StringRequired;
 

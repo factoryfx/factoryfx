@@ -1,9 +1,11 @@
-package de.factoryfx.factory.attribute;
+package de.factoryfx.factory.attribute.util;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import de.factoryfx.factory.attribute.AttributeMetadata;
+import de.factoryfx.factory.attribute.MapAttribute;
 import de.factoryfx.factory.jackson.ObservableMapJacksonAbleWrapper;
 
-public class StringMapAttribute extends MapAttribute<String,String>{
+public class StringMapAttribute extends MapAttribute<String,String> {
 
     public StringMapAttribute(AttributeMetadata attributeMetadata) {
         super(attributeMetadata, String.class, String.class);
@@ -11,6 +13,7 @@ public class StringMapAttribute extends MapAttribute<String,String>{
 
     @JsonCreator
     StringMapAttribute(ObservableMapJacksonAbleWrapper<String,String> map) {
-        super(map);
+        super(null,null,null);
+        this.set(map.unwrap());
     }
 }

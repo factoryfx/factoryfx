@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Optional;
 
 import de.factoryfx.factory.FactoryBase;
+import de.factoryfx.factory.attribute.util.StringMapAttribute;
 import de.factoryfx.factory.jackson.ObjectMapperBuilder;
 import de.factoryfx.factory.testfactories.ExampleFactoryA;
 import de.factoryfx.factory.testfactories.ExampleLiveObjectA;

@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 import de.factoryfx.factory.FactoryBase;
+import de.factoryfx.factory.attribute.util.StringAttribute;
 import de.factoryfx.factory.testfactories.ExampleLiveObjectA;
 import de.factoryfx.factory.validation.StringRequired;
 import de.factoryfx.factory.validation.ValidationError;

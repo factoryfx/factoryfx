@@ -4,7 +4,7 @@ import java.util.Optional;
 
 import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.factory.attribute.AttributeMetadata;
-import de.factoryfx.factory.attribute.StringAttribute;
+import de.factoryfx.factory.attribute.util.StringAttribute;
 
 public class ExampleFactoryC extends FactoryBase<ExampleLiveObjectC,ExampleFactoryC> {
     public final StringAttribute stringAttribute= new StringAttribute(new AttributeMetadata().labelText("ExampleB1"));

@@ -5,7 +5,7 @@ import java.util.Optional;
 import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.factory.attribute.AttributeMetadata;
 import de.factoryfx.factory.attribute.ReferenceAttribute;
-import de.factoryfx.factory.attribute.StringAttribute;
+import de.factoryfx.factory.attribute.util.StringAttribute;
 
 public class ExampleFactoryB extends FactoryBase<ExampleLiveObjectB,ExampleFactoryB> {
     public final StringAttribute stringAttribute= new StringAttribute(new AttributeMetadata().en("ExampleB1en").de("ExampleB2de"));

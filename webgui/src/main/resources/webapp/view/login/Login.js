@@ -19,7 +19,7 @@ angular.module('factoryfxwebgui.loginView', ['ngRoute'])
 
 .config(['$routeProvider', function($routeProvider) {
     $routeProvider.when('/login', {
-        templateUrl: 'view/login/login.html',
+        templateUrl: 'view/login/Login.html',
         controller: 'LoginController',
         resolve: defaultResolve
     });

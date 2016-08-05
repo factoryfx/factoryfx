@@ -5,17 +5,17 @@ import java.util.Optional;
 
 import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.factory.attribute.AttributeMetadata;
-import de.factoryfx.factory.attribute.BigDecimalAttribute;
-import de.factoryfx.factory.attribute.BooleanAttribute;
-import de.factoryfx.factory.attribute.DoubleAttribute;
-import de.factoryfx.factory.attribute.EnumAttribute;
-import de.factoryfx.factory.attribute.IntegerAttribute;
-import de.factoryfx.factory.attribute.LongAttribute;
+import de.factoryfx.factory.attribute.util.BigDecimalAttribute;
+import de.factoryfx.factory.attribute.util.BooleanAttribute;
+import de.factoryfx.factory.attribute.util.DoubleAttribute;
+import de.factoryfx.factory.attribute.util.EnumAttribute;
+import de.factoryfx.factory.attribute.util.IntegerAttribute;
+import de.factoryfx.factory.attribute.util.LongAttribute;
 import de.factoryfx.factory.attribute.ReferenceAttribute;
 import de.factoryfx.factory.attribute.ReferenceListAttribute;
-import de.factoryfx.factory.attribute.StringAttribute;
-import de.factoryfx.factory.attribute.StringListAttribute;
-import de.factoryfx.factory.attribute.StringMapAttribute;
+import de.factoryfx.factory.attribute.util.StringAttribute;
+import de.factoryfx.factory.attribute.util.StringListAttribute;
+import de.factoryfx.factory.attribute.util.StringMapAttribute;
 import de.factoryfx.factory.validation.StringRequired;
 
 public class ExampleFactoryA extends FactoryBase<ExampleLiveObjectA,ExampleFactoryA> {

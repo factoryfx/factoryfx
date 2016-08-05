@@ -1,6 +1,6 @@
 package de.factoryfx.richclient.framework.editor.editors;
 
-import de.factoryfx.factory.attribute.StringAttribute;
+import de.factoryfx.factory.attribute.util.StringAttribute;
 import de.factoryfx.richclient.framework.editor.AttributeEditor;
 import javafx.scene.control.TextArea;
 
