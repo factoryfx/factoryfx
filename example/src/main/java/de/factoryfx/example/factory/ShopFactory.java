@@ -15,7 +15,7 @@ public class ShopFactory extends FactoryBase<Shop,ShopFactory> {
         metadata.setDisplayTextProvider(factoryBase -> "Shop",ShopFactory.class);
     }
 
-    public final StringAttribute stageTitle = new StringAttribute(new AttributeMetadata().labelText("stageTitle"));
+    public final StringAttribute stageTitle = new StringAttribute(new AttributeMetadata().labelText("Stage title"));
     public final ReferenceListAttribute<ProductFactory> products = new ReferenceListAttribute<>(ProductFactory.class,new AttributeMetadata().labelText("Products"));
 
     @Override

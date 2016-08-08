@@ -2,6 +2,7 @@ package de.factoryfx.development.angularjs.integration;
 
 import java.util.ArrayList;
 import java.util.Optional;
+import java.util.regex.Pattern;
 
 import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.factory.attribute.AttributeMetadata;
@@ -16,11 +17,13 @@ import de.factoryfx.factory.attribute.ReferenceListAttribute;
 import de.factoryfx.factory.attribute.util.StringAttribute;
 import de.factoryfx.factory.attribute.util.StringListAttribute;
 import de.factoryfx.factory.attribute.util.StringMapAttribute;
+import de.factoryfx.factory.validation.RegexValidation;
 import de.factoryfx.factory.validation.StringRequired;
 
 public class ExampleFactoryA extends FactoryBase<ExampleLiveObjectA,ExampleFactoryA> {
 
     public final StringAttribute stringAttribute=new StringAttribute(new AttributeMetadata().en("StringAttribute").de("StringAttribute de").permission(Permissions.PERMISSON_X)).validation(new StringRequired());
+    public final StringAttribute regexValidationNumber=new StringAttribute(new AttributeMetadata().en("regexValidationNumber").de("regexValidationNumber de").permission(Permissions.PERMISSON_X)).validation(new RegexValidation(Pattern.compile("[0-9]*")));
     public final BigDecimalAttribute bigDecimalAttribute=new BigDecimalAttribute(new AttributeMetadata().en("BigDecimalAttribute").de("BigDecimalAttribute de"));
     public final BooleanAttribute booleanAttribute=new BooleanAttribute(new AttributeMetadata().en("BooleanAttribute").de("BooleanAttribute de"));
     public final DoubleAttribute doubleAttribute=new DoubleAttribute(new AttributeMetadata().en("DoubleAttribute").de("DoubleAttribute de"));

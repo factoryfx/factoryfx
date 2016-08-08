@@ -1,6 +1,5 @@
 package de.factoryfx.factory.attribute;
 
-import java.util.Locale;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -34,13 +33,13 @@ public class MapAttribute<K, V> extends ValueAttribute<ObservableMap<K,V>,MapAtt
     }
 
     @Override
-    public String getDisplayText(Locale locale) {
+    public String getDisplayText() {
         StringBuilder stringBuilder = new StringBuilder("List (number of entries: "+ get().size()+")\n");
         for (Map.Entry<K,V> item:  get().entrySet()){
             stringBuilder.append(item.getKey()+":"+item.getValue());
             stringBuilder.append(",\n");
         }
-        return metadata.labelText.getPreferred(locale)+":\n"+stringBuilder.toString();
+        return stringBuilder.toString();
     }
 
     @Override

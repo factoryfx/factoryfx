@@ -8,18 +8,20 @@ public class FactoryEditorModel {
 
     public final LanguageText initialisationTitle = new LanguageText().en("Initialisation");
     public final LanguageText editingTitle = new LanguageText().en("Edit");
+    public final LanguageText changeTitle = new LanguageText().en("Staged changes");
     public final LanguageText deploymentTitle = new LanguageText().en("Deployment");
 
     public final LanguageText editButton = new LanguageText().en("continue editing");
     public final LanguageText saveButton = new LanguageText().en("stage changes");
     public final LanguageText resetButton= new LanguageText().en("revert changes");
 
-    public final LanguageText deployedChangesTitle = new LanguageText().en("Deployed changes");
+    public final LanguageText deployedChangesTitle = new LanguageText().en("Changes");
     public final LanguageText deployedValidationsTitle = new LanguageText().en("Validation error");
     public final LanguageText deployButton = new LanguageText().en("Deploy");
     public final LanguageText deployMessage = new LanguageText().en("Changes successfully deployed");
 
-    public final LanguageText dataItemTableColumn = new LanguageText().en("Data Item");
+    public final LanguageText dataItemTableColumn = new LanguageText().en("Factory");
+    public final LanguageText fieldTableColumn = new LanguageText().en("Attribute");
     public final LanguageText previousValueTableColumn = new LanguageText().en("Previous value");
     public final LanguageText newValueTableColumn = new LanguageText().en("New value");
 

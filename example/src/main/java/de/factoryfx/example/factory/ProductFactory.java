@@ -11,7 +11,7 @@ import de.factoryfx.factory.validation.StringRequired;
 
 public class ProductFactory extends FactoryBase<Product,ProductFactory> {
     {
-        metadata.setDisplayTextProvider(product -> "Product: "+product.name.get(),ProductFactory.class);
+        metadata.setDisplayTextProvider(product -> product.name.get(),ProductFactory.class);
     }
 
 

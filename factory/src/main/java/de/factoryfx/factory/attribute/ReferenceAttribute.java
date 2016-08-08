@@ -2,7 +2,6 @@ package de.factoryfx.factory.attribute;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
@@ -95,12 +94,12 @@ public class ReferenceAttribute<T extends FactoryBase<?,? super T>> extends Attr
     }
 
     @Override
-    public String getDisplayText(Locale locale) {
+    public String getDisplayText() {
         String referenceDisplayText = "empty";
         if (value!=null){
             referenceDisplayText=value.getDisplayText();
         }
-        return metadata.labelText.getPreferred(locale)+":"+ referenceDisplayText;
+        return referenceDisplayText;
     }
 
     @Override

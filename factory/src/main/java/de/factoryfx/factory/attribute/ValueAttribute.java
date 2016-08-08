@@ -2,7 +2,6 @@ package de.factoryfx.factory.attribute;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
@@ -53,8 +52,8 @@ public class ValueAttribute<T,A extends Attribute<T,A>> extends Attribute<T,A> {
     }
 
     @Override
-    public String getDisplayText(Locale locale) {
-        return metadata.labelText.getPreferred(locale)+": "+ value;
+    public String getDisplayText() {
+        return value.toString();
     }
 
     @Override

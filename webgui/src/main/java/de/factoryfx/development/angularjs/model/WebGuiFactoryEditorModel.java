@@ -13,12 +13,14 @@ public class WebGuiFactoryEditorModel {
     public final String deploymentTitle;
     public final String initialisationTitle;
     public final String editingTitle;
+    public final String changeTitle;
 
     public final String deployedChangesTitle;
     public final String deployedValidationsTitle;
     public final String deployButton;
 
     public final String dataItemTableColumn;
+    public final String fieldTableColumn;
     public final String previousValueTableColumn;
     public final String newValueTableColumn;
 
@@ -36,11 +38,13 @@ public class WebGuiFactoryEditorModel {
         this.deploymentTitle = factoryEditorModel.deploymentTitle.getPreferred(locale);
         this.initialisationTitle = factoryEditorModel.initialisationTitle.getPreferred(locale);
         this.editingTitle = factoryEditorModel.editingTitle.getPreferred(locale);
+        this.changeTitle = factoryEditorModel.changeTitle.getPreferred(locale);
 
 
         this.deployedChangesTitle = factoryEditorModel.deployedChangesTitle.getPreferred(locale);
         this.deployButton = factoryEditorModel.deployButton.getPreferred(locale);
         this.dataItemTableColumn = factoryEditorModel.dataItemTableColumn.getPreferred(locale);
+        this.fieldTableColumn = factoryEditorModel.fieldTableColumn.getPreferred(locale);
         this.previousValueTableColumn = factoryEditorModel.previousValueTableColumn.getPreferred(locale);
         this.newValueTableColumn = factoryEditorModel.newValueTableColumn.getPreferred(locale);
 

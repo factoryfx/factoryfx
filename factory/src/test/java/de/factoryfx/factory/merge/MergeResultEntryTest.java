@@ -8,7 +8,7 @@ public class MergeResultEntryTest {
 
     @Test
     public void json_serialisable(){
-        MergeResultEntryInfo  mergeResultEntry = new MergeResultEntryInfo("","","");
+        MergeResultEntryInfo  mergeResultEntry = new MergeResultEntryInfo("","", fieldDisplayText, "");
         ObjectMapperBuilder.build().copy(mergeResultEntry);//Test json serialisation
     }
 }

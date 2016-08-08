@@ -70,6 +70,7 @@ function                                ($scope,  metaDataService,  guiModelServ
         return $resource('../applicationServer/factory').save($scope.selected.factory, function(response){
             $scope.stagedChanges=true;
             $scope.resetDirtyTracking();
+            $scope.deployResponse=response;
         }).$promise;
     };
 

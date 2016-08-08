@@ -3,7 +3,6 @@ package de.factoryfx.factory.attribute;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -138,13 +137,13 @@ public class ReferenceListAttribute<T extends FactoryBase<?,? super T>> extends 
     }
 
     @Override
-    public String getDisplayText(Locale locale) {
+    public String getDisplayText() {
         StringBuilder stringBuilder = new StringBuilder("List (number of entries: "+ list.size()+")\n");
         for (T item:  list){
             stringBuilder.append(item.getDisplayText());
             stringBuilder.append(",\n");
         }
-        return metadata.labelText.getPreferred(locale)+":\n"+stringBuilder.toString();
+        return stringBuilder.toString();
     }
 
     @Override

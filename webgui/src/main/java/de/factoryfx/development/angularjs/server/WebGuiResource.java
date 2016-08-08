@@ -97,10 +97,10 @@ public class WebGuiResource<V,T extends FactoryBase<? extends LiveObject<V>, T>>
 
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
-//    @Produces(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
     @Path("factory")
     @SuppressWarnings("unchecked")
-    public void save(WebGuiFactory newFactory) {
+    public StageResponse save(WebGuiFactory newFactory) {
         newFactory.factory=newFactory.factory.reconstructMetadataDeepRoot();
         FactoryBase<?, ?> root = getCurrentEditingFactoryRoot().root;
         Map<String,FactoryBase<?,?>>  map = root.collectChildFactoriesMap();
@@ -124,6 +124,7 @@ public class WebGuiResource<V,T extends FactoryBase<? extends LiveObject<V>, T>>
 
         root.fixDuplicateObjects(id -> Optional.of(map.get(id)));
 
+        return createStageResponse();
     }
 
     private static final String CURRENT_EDITING_FACTORY_SESSION_KEY = "CurrentEditingFactory";
@@ -198,24 +199,35 @@ public class WebGuiResource<V,T extends FactoryBase<? extends LiveObject<V>, T>>
     }
 
 
-    public static class DeployResponse{
+    public static class StageResponse {
         public MergeDiff mergeDiff;
         public List<WebGuiValidationError> validationErrors=new ArrayList<>();
         public boolean deployed;
     }
 
+    private StageResponse createStageResponse(){
+        StageResponse response=new StageResponse();
+        response.mergeDiff= applicationServer.simulateUpdateCurrentFactory(getCurrentEditingFactoryRoot(),getUserLocale());
+
+
+        for (FactoryBase<?,?> factoryBase: getCurrentEditingFactoryRoot().root.collectChildFactories()){
+            factoryBase.validateFlat().stream().map(validationError -> new WebGuiValidationError(validationError,getUserLocale(),factoryBase)).forEach(w -> response.validationErrors.add(w));
+        }
+
+        return response;
+    }
+
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("deploy")
-    public DeployResponse deploy(){
-        DeployResponse response=new DeployResponse();
+    public StageResponse deploy(){
+        StageResponse response=createStageResponse();
 
 
-        MergeDiff simMergeDiff= applicationServer.simulateUpdateCurrentFactory(getCurrentEditingFactoryRoot(),getUserLocale());
-        if (simMergeDiff.hasNoConflicts()){
+        if (response.mergeDiff.hasNoConflicts()){
             if (userManagement.authorisationRequired()){
                 User user = getUser();
-                for (MergeResultEntry<?> mergeInfo: simMergeDiff.getMergeInfos()){
+                for (MergeResultEntry<?> mergeInfo: response.mergeDiff.getMergeInfos()){
                     user.checkPermission(mergeInfo.requiredPermission);
                 }
             }
@@ -224,15 +236,13 @@ public class WebGuiResource<V,T extends FactoryBase<? extends LiveObject<V>, T>>
         }
 
 
-        for (FactoryBase<?,?> factoryBase: getCurrentEditingFactoryRoot().root.collectChildFactories()){
-            factoryBase.validateFlat().stream().map(validationError -> new WebGuiValidationError(validationError,getUserLocale(),factoryBase)).forEach(w -> response.validationErrors.add(w));
-        }
-
         if (response.validationErrors.isEmpty()){
             //TODO handle conflicts
             response.mergeDiff=applicationServer.updateCurrentFactory(getCurrentEditingFactoryRoot(),getUserLocale());
             if (response.mergeDiff.hasNoConflicts()){
                 response.deployed=true;
+
+                request.getSession(true).setAttribute(CURRENT_EDITING_FACTORY_SESSION_KEY,applicationServer.getCurrentFactory());
             }
         }
 

@@ -18,7 +18,7 @@ public class MergeResultEntry<T extends FactoryBase<?,T>> {
         this.parent=parent;
         this.requiredPermission=attribute.metadata.permisson;
 
-        mergeResultEntryInfo=new MergeResultEntryInfo(attribute.getDisplayText(locale), newAttribute.map((a)->a.getDisplayText(locale)).orElse(""),parent.getDisplayText());
+        mergeResultEntryInfo=new MergeResultEntryInfo(attribute.getDisplayText(), newAttribute.map((a)->a.getDisplayText()).orElse(""), attribute.metadata.labelText.getPreferred(locale), parent.getDisplayText());
     }
 
 
