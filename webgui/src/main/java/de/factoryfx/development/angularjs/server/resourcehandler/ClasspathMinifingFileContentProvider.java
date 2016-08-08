@@ -148,7 +148,7 @@ public class ClasspathMinifingFileContentProvider implements FileContentProvider
             try {
                 if (getFile(file)==null){
                     Joiner.MapJoiner mapJoiner = Joiner.on("\n").withKeyValueSeparator("=");
-                    throw new IllegalStateException("missing file:"+file+"\n"+mapJoiner.join(javaScriptFiles));
+                    throw new IllegalStateException("missing file:"+file+"\navaible files:\n"+mapJoiner.join(javaScriptFiles));
                 }
                 result.write(getFile(file));
             } catch (IOException e) {

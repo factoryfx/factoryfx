@@ -47,4 +47,9 @@ class JavaScriptFile {
         }
         throw new IllegalArgumentException("Unable to minify, input source\n"+ errorText);
     }
+
+    @Override
+    public String toString() {
+        return "JavaScriptFile as bytes (size: "+content.length+")";
+    }
 }
