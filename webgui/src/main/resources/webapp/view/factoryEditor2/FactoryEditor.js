@@ -22,7 +22,7 @@ angular.module('factoryfxwebgui.factoryEditor', ['ngRoute'])
 
 .config(['$routeProvider', function($routeProvider) {
     $routeProvider.when('/factoryEditor', {
-        templateUrl: 'view/FactoryEditor/FactoryEditor.html',
+        templateUrl: 'view/factoryEditor/FactoryEditor.html',
         controller: 'GenericEditorController',
         resolve: defaultResolve
     });
@@ -52,6 +52,7 @@ function                                ($scope,  metaDataService,  guiModelServ
     };
 
     $scope.resetDirtyTracking = function(){
+        $scope.mapCache={};
         $scope.selected.originalFactory={};
         angular.copy($scope.selected.factory,$scope.selected.originalFactory);
     };
@@ -112,14 +113,18 @@ function                                ($scope,  metaDataService,  guiModelServ
         staging: true
     };
     $scope.$watch('selected.factory',function(newValue,oldvalue) {
-        if(newValue && $scope.factory.form.$valid && $scope.auto.staging) {
+        if($scope.factory.form && newValue && $scope.factory.form.$valid && $scope.auto.staging) {
             $scope.save();
         }
 
     },true);
 
-
-    $scope.getMap=function(attribute){
+    //cause angularjs limitation https://github.com/angular/angular.js/issues/2694#issuecomment-71328638
+    $scope.mapCache={};
+    $scope.getMap=function(attribute,attributeName){
+        if ($scope.mapCache[attributeName]){
+            return $scope.mapCache[attributeName];
+        }
         var result=[];
         if (attribute){
             for (var property in attribute) {
@@ -127,8 +132,14 @@ function                                ($scope,  metaDataService,  guiModelServ
                     result.push({key: property,value:attribute[property]});
                 }
             }
+            $scope.mapCache[attributeName]=result;
         }
         return result;
+    };
+    $scope.deleteMapItem=function(key,attribute,attributeName){
+        delete attribute[key];
+        $scope.mapCache[attributeName]=undefined;//reset cache
+        $scope.getMap(attribute,attributeName);
     };
     
 }]);
