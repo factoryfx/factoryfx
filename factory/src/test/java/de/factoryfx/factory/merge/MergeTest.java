@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.stream.Collectors;
 
 import de.factoryfx.factory.FactoryBase;
+import de.factoryfx.factory.FactoryBaseTest;
 import de.factoryfx.factory.testfactories.ExampleFactoryA;
 import de.factoryfx.factory.testfactories.ExampleFactoryB;
 import de.factoryfx.factory.testfactories.ExampleFactoryC;
@@ -643,6 +644,26 @@ public class MergeTest {
         MergeDiff mergeDiff= factoryMerger.mergeIntoCurrent();
         Assert.assertTrue(mergeDiff.hasNoConflicts());
         Assert.assertEquals(newValueInCurrent.getId(),currentModel.referenceListAttribute.get(0).getId());
+    }
+
+
+    @Test
+    public void test_copy_withObjectValue(){
+        FactoryBaseTest.ExampleObjectProperty currentModel = new FactoryBaseTest.ExampleObjectProperty();
+        ExampleFactoryB newValueInCurrent = new ExampleFactoryB();
+        currentModel.objectValueAttribute.set("test2");
+
+        FactoryBaseTest.ExampleObjectProperty originalModel = copy(currentModel);
+
+        FactoryBaseTest.ExampleObjectProperty newModel = copy(currentModel);
+        newModel.objectValueAttribute.set(null);
+
+        FactoryMerger factoryMerger = new FactoryMerger(currentModel, originalModel, newModel);
+
+        MergeDiff mergeDiff= factoryMerger.mergeIntoCurrent();
+        Assert.assertTrue(mergeDiff.hasNoConflicts());
+        Assert.assertEquals("test2",currentModel.objectValueAttribute.get());
+
     }
 
     private <T extends FactoryBase<?,T>> T copy(T value){

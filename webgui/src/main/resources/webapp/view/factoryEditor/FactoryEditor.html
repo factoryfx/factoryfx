@@ -1,22 +1,22 @@
 <div class="container-fluid">
     <div class="row">
         <div class="col-md-12">
-            <h2>{{guiModel.factoryEditorModel.editorTitle}}</h2>
+            <h2>{{guiModel.messages.editorTitle}}</h2>
         </div>
     </div>
     <div class="row">
         <div class="col-md-12">
-            <h3>{{guiModel.factoryEditorModel.initialisationTitle}}</h3>
+            <h3>{{guiModel.messages.initialisationTitle}}</h3>
             <uib-progressbar ng-if="initializingEditing" class="progress-striped active" value="dynamic">loading configuration</uib-progressbar>
             <uib-progressbar ng-if="!initializingEditing" animate="true" value="dynamic" type="success">loaded</uib-progressbar>
         </div>
     </div>
     <div class="row">
         <div class="col-md-6">
-            <h3>{{guiModel.factoryEditorModel.editingTitle}}</h3>
+            <h3>{{guiModel.messages.editingTitle}}</h3>
             <div ng-if="selected.factory">
                 <ol class="breadcrumb">
-                    <li ng-repeat="pathElement in selected.factory.path"><a  ng-click="!isDirty() && selectFactory(pathElement.id)" ng-class="{disabledLink: isDirty(), active: pathElement.id===selected.factory.factory.id}">{{pathElement.displayText}}</a></li>
+                    <li ng-repeat="pathElement in selected.factory.path"><a  ng-click="selectFactory(pathElement.id)" ng-class="{disabledLink: isDirty(), active: pathElement.id===selected.factory.factory.id}">{{pathElement.displayText}}</a></li>
                     <li class="active">{{selected.factory.displayText}}</li>
                 </ol>
                 <form ng-submit="factory.form.$valid && save()" name="factory.form" novalidate>
@@ -130,7 +130,7 @@
                             </div>
                         </div>
                         <div class="panel-footer">
-                            <waiting-button class="pull-left" bootsrapbtntype="btn-primary" bootstrapicon="glyphicon-save" disabled="!isDirty() || factory.form.$invalid || auto.staging" click="save()" text="{{guiModel.factoryEditorModel.saveButton}}"></waiting-button>
+                            <waiting-button class="pull-left" bootsrapbtntype="btn-primary" bootstrapicon="glyphicon-save" disabled="!isDirty() || factory.form.$invalid || auto.staging" click="save()" text="{{guiModel.messages.saveButton}}"></waiting-button>
                             <span style="margin-left:6px" class="form-group">
                                 <label for="autoStaging">
                                     <input type="checkbox" id="autoStaging" name="autoStaging"  ng-model="auto.staging">
@@ -138,7 +138,7 @@
                                 </label>
                             </span>
                             <input type="submit" style="visibility: hidden;" />
-                            <waiting-button class="pull-right" bootsrapbtntype="btn-default" bootstrapicon="glyphicon-erase" disabled="!isDirty() || auto.staging" click="reset()" text="{{guiModel.factoryEditorModel.resetButton}}"></waiting-button>
+                            <waiting-button class="pull-right" bootsrapbtntype="btn-default" bootstrapicon="glyphicon-erase" disabled="!isDirty() || auto.staging" click="reset()" text="{{guiModel.messages.resetButton}}"></waiting-button>
                             <div class="clearfix"></div>
                         </div>
                     </div>
@@ -146,18 +146,18 @@
             </div>
         </div>
         <div class="col-md-6">
-            <h3>{{guiModel.factoryEditorModel.changeTitle}}</h3>
+            <h3>{{guiModel.messages.changeTitle}}</h3>
             <div class="panel panel-danger spacer" ng-if="deployResponse.validationErrors.length>0">
                 <div class="panel-heading">
-                    {{guiModel.factoryEditorModel.deployedValidationsTitle}}
+                    {{guiModel.messages.deployedValidationsTitle}}
                 </div>
                 <div class="panel-body">
                     <table class="table table-condensed table-bordered table-striped" style="table-layout: fixed;">
                         <thead>
                         <tr>
-                            <th>{{guiModel.factoryEditorModel.validationErrorTableColumn}}</th>
-                            <th>{{guiModel.factoryEditorModel.validationAttributeTableColumn}}</th>
-                            <th>{{guiModel.factoryEditorModel.validationFactoryTableColumn}}</th>
+                            <th>{{guiModel.messages.validationErrorTableColumn}}</th>
+                            <th>{{guiModel.messages.validationAttributeTableColumn}}</th>
+                            <th>{{guiModel.messages.validationFactoryTableColumn}}</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -173,16 +173,16 @@
 
             <div class="panel panel-info spacer" ng-if="deployResponse.mergeDiff">
                 <div class="panel-heading">
-                    {{guiModel.factoryEditorModel.deployedChangesTitle}}
+                    {{guiModel.messages.deployedChangesTitle}}
                 </div>
                 <div class="panel-body">
                     <table class="table table-condensed table-bordered table-striped">
                         <thead>
                         <tr>
-                            <th>{{guiModel.factoryEditorModel.dataItemTableColumn}}</th>
-                            <th>{{guiModel.factoryEditorModel.fieldTableColumn}}</th>
-                            <th>{{guiModel.factoryEditorModel.previousValueTableColumn}}</th>
-                            <th>{{guiModel.factoryEditorModel.newValueTableColumn}}</th>
+                            <th>{{guiModel.messages.dataItemTableColumn}}</th>
+                            <th>{{guiModel.messages.fieldTableColumn}}</th>
+                            <th>{{guiModel.messages.previousValueTableColumn}}</th>
+                            <th>{{guiModel.messages.newValueTableColumn}}</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -201,15 +201,15 @@
             </div>
 
 
-            <h3>{{guiModel.factoryEditorModel.deploymentTitle}}</h3>
-            <waiting-button  class="text-center" bootsrapbtntype="btn-danger" bootstrapicon="glyphicon-share" disabled="!selected.factory || isDirty() || !stagedChanges" click="deploy()" text="{{guiModel.factoryEditorModel.deployButton}}"></waiting-button>
+            <h3>{{guiModel.messages.deploymentTitle}}</h3>
+            <waiting-button  class="text-center" bootsrapbtntype="btn-danger" bootstrapicon="glyphicon-share" disabled="!selected.factory || isDirty() || !stagedChanges" click="deploy()" text="{{guiModel.messages.deployButton}}"></waiting-button>
 
             <div class="alert alert-success spacer" role="alert" ng-if="deployResponse.deployed">
-                {{guiModel.factoryEditorModel.deployMessage}}
+                {{guiModel.messages.deployMessage}}
             </div>
 
             <button class="btn btn-primary" ng-if="!selected.factory && (deployResponse.mergeDiff || deployResponse.validationErrors.length>0)" type="button" ng-click="loadRoot()">
-                <span style="margin-right: 6px" class="glyphicon glyphicon-edit glyphicon-align-left" aria-hidden="true"></span >{{guiModel.factoryEditorModel.editButton}}
+                <span style="margin-right: 6px" class="glyphicon glyphicon-edit glyphicon-align-left" aria-hidden="true"></span >{{guiModel.messages.editButton}}
             </button>
         </div>
     </div>

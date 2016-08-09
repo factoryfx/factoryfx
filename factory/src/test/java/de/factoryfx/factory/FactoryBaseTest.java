@@ -5,12 +5,17 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 
+import de.factoryfx.factory.attribute.AttributeMetadata;
+import de.factoryfx.factory.attribute.util.ObjectValueAttribute;
+import de.factoryfx.factory.attribute.util.StringAttribute;
 import de.factoryfx.factory.jackson.ObjectMapperBuilder;
 import de.factoryfx.factory.jackson.SimpleObjectMapper;
 import de.factoryfx.factory.testfactories.ExampleFactoryA;
 import de.factoryfx.factory.testfactories.ExampleFactoryB;
 import de.factoryfx.factory.testfactories.ExampleFactoryC;
+import de.factoryfx.factory.testfactories.ExampleLiveObjectA;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -122,5 +127,16 @@ public class FactoryBaseTest {
         List<FactoryBase<?, ?>> pathTo = exampleFactoryA.getPathTo(exampleFactoryB);
         Assert.assertEquals(1,pathTo.size());
         Assert.assertEquals(exampleFactoryA.getId(),pathTo.get(0).getId());
+    }
+
+
+    public static class ExampleObjectProperty extends FactoryBase<ExampleLiveObjectA, ExampleObjectProperty> {
+        public final StringAttribute stringAttribute= new StringAttribute(new AttributeMetadata().labelText("stringAttribute"));
+        public final ObjectValueAttribute<String> objectValueAttribute= new ObjectValueAttribute<>(new AttributeMetadata().labelText("objectValueAttribute"));
+        @Override
+        protected ExampleLiveObjectA createImp(Optional<ExampleLiveObjectA> previousLiveObject) {
+            return null;
+        }
+
     }
 }

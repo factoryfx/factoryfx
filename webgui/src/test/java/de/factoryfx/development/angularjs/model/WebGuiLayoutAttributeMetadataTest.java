@@ -8,7 +8,7 @@ import de.factoryfx.factory.attribute.util.EnumAttribute;
 import org.junit.Assert;
 import org.junit.Test;
 
-public class WebGuiAttributeMetadataTest {
+public class WebGuiLayoutAttributeMetadataTest {
 
 
     @Test

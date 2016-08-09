@@ -8,7 +8,7 @@ import de.factoryfx.factory.jackson.ObservableListJacksonAbleWrapper;
 public class StringListAttribute extends ValueListAttribute<String> {
 
     public StringListAttribute(AttributeMetadata attributeMetadata) {
-        super(attributeMetadata, String.class,"empty");
+        super(String.class,attributeMetadata,"empty");
     }
 
     @JsonCreator

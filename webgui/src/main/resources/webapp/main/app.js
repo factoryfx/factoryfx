@@ -1,5 +1,10 @@
 'use strict';
 
+/* jhint helpers: */
+/*global moment */
+/*global angular */
+/*global alert */
+
 // Declare app level module which depends on views, and components
 var mod = angular.module('factoryfxwebgui', [
     'ngRoute',

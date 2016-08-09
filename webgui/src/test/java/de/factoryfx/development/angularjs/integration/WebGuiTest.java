@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Paths;
 import java.util.Arrays;
-import java.util.Locale;
 import java.util.UUID;
 
 import ch.qos.logback.classic.Level;
@@ -13,12 +12,11 @@ import com.google.common.io.ByteStreams;
 import de.factoryfx.development.InMemoryFactoryStorage;
 import de.factoryfx.development.SinglePrecessInstanceUtil;
 import de.factoryfx.development.WebAppViewer;
-import de.factoryfx.development.angularjs.server.WebGuiResource;
-import de.factoryfx.development.angularjs.server.WebGuiServer;
 import de.factoryfx.development.angularjs.server.resourcehandler.ConfigurableResourceHandler;
 import de.factoryfx.development.angularjs.server.resourcehandler.FilesystemFileContentProvider;
+import de.factoryfx.development.factory.WebGuiApplication;
+import de.factoryfx.development.factory.WebGuiServerFactory;
 import de.factoryfx.factory.FactoryManager;
-import de.factoryfx.guimodel.GuiModel;
 import de.factoryfx.server.DefaultApplicationServer;
 import de.factoryfx.user.NoUserManagement;
 import de.factoryfx.user.UserManagement;
@@ -48,27 +46,31 @@ public class WebGuiTest extends Application{
                 value.stringAttribute.set("i"+i);
                 exampleFactoryA.referenceListAttribute.add(value);
             }
+            DefaultApplicationServer<Void, ExampleFactoryA> exampleApplicationServer = new DefaultApplicationServer<>(new FactoryManager<>(), new InMemoryFactoryStorage<>(exampleFactoryA));
+            exampleApplicationServer.start();
 
+            WebGuiApplication<Void, ExampleFactoryA> webGuiApplication =new WebGuiApplication<>(exampleApplicationServer,Arrays.asList(ExampleFactoryA.class, ExampleFactoryB.class),(WebGuiServerFactory root)->new InMemoryFactoryStorage<>(root),getUserManagement(),
+                    (config)->{
+                        if (WebGuiApplication.class.getResourceAsStream("/logo/logoLarge.png")!=null){
+                            try(InputStream inputStream= WebGuiApplication.class.getResourceAsStream("/logo/logoLarge.png")){
+                                config.webGuiResource.get().layout.get().logoLarge.setBytes(ByteStreams.toByteArray(inputStream));
+                            } catch (IOException e) {
+                                throw new RuntimeException(e);
+                            }
+                        }
+                        if (WebGuiApplication.class.getResourceAsStream("/logo/logoSmall.png")!=null) {
+                            try (InputStream inputStream = WebGuiApplication.class.getResourceAsStream("/logo/logoSmall.png")) {
+                                config.webGuiResource.get().layout.get().logoSmall.setBytes(ByteStreams.toByteArray(inputStream));
+                            } catch (IOException e) {
+                                throw new RuntimeException(e);
+                            }
+                        }
+                        config.resourceHandler.set(new ConfigurableResourceHandler(new FilesystemFileContentProvider(Paths.get("./src/main/resources/webapp")), () -> UUID.randomUUID().toString()));
+                    });
+            webGuiApplication.start();
 
-
-
-            GuiModel guiModel = new GuiModel();
-            guiModel.title.en("Test example");
-            try(InputStream inputStream= WebGuiTest.class.getResourceAsStream("/logo/logoLarge.png")){
-                guiModel.logoLarge= ByteStreams.toByteArray(inputStream);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-            try(InputStream inputStream= WebGuiTest.class.getResourceAsStream("/logo/logoSmall.png")){
-                guiModel.logoSmall= ByteStreams.toByteArray(inputStream);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-
-            DefaultApplicationServer<Void, ExampleFactoryA> applicationServer = new DefaultApplicationServer<>(new FactoryManager<>(), new InMemoryFactoryStorage<>(exampleFactoryA));
-            applicationServer.start();
-            WebGuiServer webGuiServer = new WebGuiServer(8089, "localhost", new WebGuiResource<>(guiModel, applicationServer, () -> Arrays.asList(ExampleFactoryA.class, ExampleFactoryB.class), Arrays.asList(Locale.ENGLISH, Locale.GERMAN), getUserManagement()), new ConfigurableResourceHandler(new FilesystemFileContentProvider(Paths.get("./src/main/resources/webapp")), () -> UUID.randomUUID().toString()));
-            webGuiServer.start();
+//            WebGuiApplication<WebGuiServer, WebGuiServerFactory> webGuiApplicationSelf =new WebGuiApplication<>(webGuiApplication.getServer(),8088,Arrays.asList(WebGuiServerFactory.class, WebGuiLayoutFactory.class, WebGuiResourceFactory.class),(root)->new InMemoryFactoryStorage<>(root),getUserManagement());
+//            webGuiApplicationSelf.start();
         },"http://localhost:8089/#/login");
     }
 

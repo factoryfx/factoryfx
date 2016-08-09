@@ -8,12 +8,12 @@ import javafx.collections.ObservableList;
 
 public class ValueListAttribute<T> extends ValueAttribute<ObservableList<T>,ValueListAttribute<T>> {
     private final Class<T> itemType;
-    private final T emptyValue;
+    private final T listNewItemEmptyValue;
 
-    public ValueListAttribute(AttributeMetadata attributeMetadata, Class<T> itemType, T emptyValue) {
+    public ValueListAttribute(Class<T> itemType, AttributeMetadata attributeMetadata, T listNewItemEmptyValue) {
         super(attributeMetadata,null);
         this.itemType=itemType;
-        this.emptyValue = emptyValue;
+        this.listNewItemEmptyValue = listNewItemEmptyValue;
         set(FXCollections.observableArrayList() );
 
         get().addListener((ListChangeListener<T>) c -> {
@@ -46,7 +46,7 @@ public class ValueListAttribute<T> extends ValueAttribute<ObservableList<T>,Valu
 
     @Override
     public AttributeTypeInfo getAttributeType() {
-        return new AttributeTypeInfo(itemType,null,null,itemType, AttributeTypeInfo.AttributeTypeCategory.COLLECTION,emptyValue);
+        return new AttributeTypeInfo(itemType,null,null,null, AttributeTypeInfo.AttributeTypeCategory.COLLECTION,listNewItemEmptyValue);
     }
 
 }

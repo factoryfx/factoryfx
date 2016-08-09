@@ -4,7 +4,7 @@ import de.factoryfx.development.angularjs.integration.ExampleEnum;
 import org.junit.Assert;
 import org.junit.Test;
 
-public class WebGuiDataTypeTest {
+public class WebGuiLayoutDataTypeTest {
 
     @Test
     public void test_enum(){

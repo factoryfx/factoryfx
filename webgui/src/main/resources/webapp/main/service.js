@@ -1,3 +1,9 @@
+'use strict';
+
+/* jhint helpers: */
+/*global moment */
+/*global angular */
+/*global alert */
 
 angular.module('factoryfxwebgui.services', ['ngResource'])
 

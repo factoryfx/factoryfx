@@ -12,10 +12,10 @@ import de.factoryfx.factory.merge.MergeDiff;
 
 public class DefaultApplicationServer<V,T extends FactoryBase<? extends LiveObject<V>, T>> implements ApplicationServer<V,T> {
 
-    private final FactoryManager<T,V> factoryManager;
+    private final FactoryManager<V,T> factoryManager;
     private final FactoryStorage<T> factoryStorage;
 
-    public DefaultApplicationServer(FactoryManager<T,V> factoryManager, FactoryStorage<T> factoryStorage) {
+    public DefaultApplicationServer(FactoryManager<V,T> factoryManager, FactoryStorage<T> factoryStorage) {
         this.factoryManager = factoryManager;
         this.factoryStorage = factoryStorage;
     }

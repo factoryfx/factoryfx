@@ -1,4 +1,4 @@
-package de.factoryfx.development.angularjs.server;
+package de.factoryfx.development.factory;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -15,7 +15,7 @@ import org.junit.Test;
 
 public class WebGuiServerTest {
 
-    public static class TestBigDecimalLiveObject implements LiveObject{
+    public static class TestBigDecimalLiveObject implements LiveObject {
 
         @Override
         public void start() {
@@ -33,7 +33,7 @@ public class WebGuiServerTest {
         }
     }
 
-    public static class TestBigDecimal extends FactoryBase<TestBigDecimalLiveObject,TestBigDecimal>{
+    public static class TestBigDecimal extends FactoryBase<TestBigDecimalLiveObject,TestBigDecimal> {
         public final BigDecimalAttribute value = new BigDecimalAttribute(new AttributeMetadata());
 
         @Override
@@ -90,5 +90,6 @@ public class WebGuiServerTest {
 
 
     }
+
 
 }

@@ -37,7 +37,8 @@ public class ObjectMapperBuilder {
             objectMapper.registerModule(new Jdk8Module());
             objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
             objectMapper.disable(DeserializationFeature.ADJUST_DATES_TO_CONTEXT_TIME_ZONE);
-
+            objectMapper.disable(SerializationFeature.FAIL_ON_EMPTY_BEANS);
+//            objectMapper.enableDefaultTyping();
 
             simpleObjectMapper = new SimpleObjectMapper(objectMapper);
         }

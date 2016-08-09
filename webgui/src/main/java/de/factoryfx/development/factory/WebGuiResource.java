@@ -1,4 +1,4 @@
-package de.factoryfx.development.angularjs.server;
+package de.factoryfx.development.factory;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -7,7 +7,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Consumer;
-import java.util.function.Supplier;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
@@ -20,21 +19,19 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import de.factoryfx.factory.datastorage.ApplicationFactoryMetadata;
-import de.factoryfx.development.angularjs.model.WebGuiFactory;
 import de.factoryfx.development.angularjs.model.WebGuiFactoryMetadata;
-import de.factoryfx.development.angularjs.model.WebGuiModel;
 import de.factoryfx.development.angularjs.model.WebGuiPossibleEntity;
 import de.factoryfx.development.angularjs.model.WebGuiUser;
 import de.factoryfx.development.angularjs.model.WebGuiValidationError;
+import de.factoryfx.development.angularjs.server.AuthorizationRequestFilter;
 import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.factory.LiveObject;
 import de.factoryfx.factory.attribute.Attribute;
 import de.factoryfx.factory.attribute.ReferenceAttribute;
 import de.factoryfx.factory.attribute.ReferenceListAttribute;
+import de.factoryfx.factory.datastorage.ApplicationFactoryMetadata;
 import de.factoryfx.factory.merge.MergeDiff;
 import de.factoryfx.factory.merge.MergeResultEntry;
-import de.factoryfx.guimodel.GuiModel;
 import de.factoryfx.server.ApplicationServer;
 import de.factoryfx.user.User;
 import de.factoryfx.user.UserManagement;
@@ -42,30 +39,51 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
 @Path("/") /** path defined in {@link de.scoopsoftware.xtc.ticketproxy.configuration.ConfigurationServer}*/
-public class WebGuiResource<V,T extends FactoryBase<? extends LiveObject<V>, T>> {
+public class WebGuiResource<V,T extends FactoryBase<? extends LiveObject<V>, T>>  implements LiveObject<WebGuiResource> {
+
+    @Override
+    public void start() {
+
+    }
+
+    @Override
+    public void stop() {
+
+    }
+
+    @Override
+    public void accept(WebGuiResource visitor) {
+
+    }
 
     private final ApplicationServer<V,T> applicationServer;
-    private final Supplier<List<Class<? extends FactoryBase>>> factoryClassesProvider;
-    private List<Locale> locales =new ArrayList<>();
-    private final GuiModel guimodel;
+    private final List<Class<? extends FactoryBase>> appFactoryClasses;
+    private final List<Locale> locales;
+    private final WebGuiLayout webGuiLayout;
     private final UserManagement userManagement;
 
-    public WebGuiResource(GuiModel guimodel, ApplicationServer<V,T> applicationServer, Supplier<List<Class<? extends FactoryBase>>> factoryClassesProvider, List<Locale> locales, UserManagement userManagement) {
+    /**
+     *
+     * @param guimodel
+     * @param applicationServer
+     * @param appFactoryClasses the factory class from application
+     * @param locales
+     * @param userManagement
+     */
+    public WebGuiResource(WebGuiLayout webGuiLayout, ApplicationServer<V,T> applicationServer, List<Class<? extends FactoryBase>> appFactoryClasses, List<Locale> locales, UserManagement userManagement) {
         this.applicationServer = applicationServer;
-        this.factoryClassesProvider = factoryClassesProvider;
-        this.locales =locales;
-        this.guimodel=guimodel;
-        this.userManagement=userManagement;
+        this.appFactoryClasses = appFactoryClasses;
+        this.locales = locales;
+        this.webGuiLayout = webGuiLayout;
+        this.userManagement = userManagement;
     }
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("metaData")
     public Map<String,WebGuiFactoryMetadata> getMetaData() {
-        List<Class<? extends FactoryBase>> classList = factoryClassesProvider.get();
-
         HashMap<String,WebGuiFactoryMetadata> result = new HashMap<>();
-        for (Class<? extends FactoryBase> factoryBaseClass: classList){
+        for (Class<? extends FactoryBase> factoryBaseClass: appFactoryClasses){
             WebGuiFactoryMetadata webGuiEntityMetadata = new WebGuiFactoryMetadata(factoryBaseClass,getUserLocale());
             result.put(webGuiEntityMetadata.type, webGuiEntityMetadata);
         }
@@ -76,20 +94,20 @@ public class WebGuiResource<V,T extends FactoryBase<? extends LiveObject<V>, T>>
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("root")
-    public WebGuiFactory getRoot() {
-        return new WebGuiFactory(getCurrentEditingFactoryRoot().root, getCurrentEditingFactoryRoot().root);
+    public de.factoryfx.development.angularjs.model.WebGuiFactory getRoot() {
+        return new de.factoryfx.development.angularjs.model.WebGuiFactory(getCurrentEditingFactoryRoot().root, getCurrentEditingFactoryRoot().root);
     }
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("factory")
-    public WebGuiFactory getFactory(@QueryParam("id")String id) {
+    public de.factoryfx.development.angularjs.model.WebGuiFactory getFactory(@QueryParam("id")String id) {
         FactoryBase<?, ?> root = getCurrentEditingFactoryRoot().root;
 
         //TODO use map?
         for (FactoryBase<?,?> factory: root.collectChildFactories()){
             if (factory.getId().equals(id)){
-                return new WebGuiFactory(factory,root);
+                return new de.factoryfx.development.angularjs.model.WebGuiFactory(factory,root);
             }
         }
         throw new IllegalStateException("cant find id"+id);
@@ -100,7 +118,7 @@ public class WebGuiResource<V,T extends FactoryBase<? extends LiveObject<V>, T>>
     @Produces(MediaType.APPLICATION_JSON)
     @Path("factory")
     @SuppressWarnings("unchecked")
-    public StageResponse save(WebGuiFactory newFactory) {
+    public StageResponse save(de.factoryfx.development.angularjs.model.WebGuiFactory newFactory) {
         newFactory.factory=newFactory.factory.reconstructMetadataDeepRoot();
         FactoryBase<?, ?> root = getCurrentEditingFactoryRoot().root;
         Map<String,FactoryBase<?,?>>  map = root.collectChildFactoriesMap();
@@ -149,7 +167,8 @@ public class WebGuiResource<V,T extends FactoryBase<? extends LiveObject<V>, T>>
         return loginResponse;
     }
 
-    @Context HttpServletRequest request;
+    @Context
+    HttpServletRequest request;
 
     @SuppressWarnings("unchecked")
     private ApplicationFactoryMetadata<T> getCurrentEditingFactoryRoot(){
@@ -194,8 +213,8 @@ public class WebGuiResource<V,T extends FactoryBase<? extends LiveObject<V>, T>>
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("guimodel")
-    public WebGuiModel getGuimodel(){
-        return new WebGuiModel(guimodel,getUserLocale(),userManagement);
+    public WebGuiLayout getGuimodel(){
+        return webGuiLayout;
     }
 
 
@@ -299,7 +318,7 @@ public class WebGuiResource<V,T extends FactoryBase<? extends LiveObject<V>, T>>
     @Produces(MediaType.APPLICATION_JSON)
     @Path("newEntry")
     @SuppressWarnings("unchecked")
-    public WebGuiFactory addFactory(@QueryParam("id")String id, @QueryParam("attributeName")String attributeName){
+    public de.factoryfx.development.angularjs.model.WebGuiFactory addFactory(@QueryParam("id")String id, @QueryParam("attributeName")String attributeName){
 
         T root = getCurrentEditingFactoryRoot().root;
         FactoryBase<?, ?> factoryBase = root.collectChildFactoriesMap().get(id);
@@ -325,7 +344,7 @@ public class WebGuiResource<V,T extends FactoryBase<? extends LiveObject<V>, T>>
 
             }
         });
-        return new WebGuiFactory(factoryBase,root);
+        return new de.factoryfx.development.angularjs.model.WebGuiFactory(factoryBase,root);
     }
 
 }

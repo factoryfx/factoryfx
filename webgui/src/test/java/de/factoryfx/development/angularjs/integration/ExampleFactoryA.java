@@ -10,6 +10,7 @@ import de.factoryfx.factory.attribute.util.BigDecimalAttribute;
 import de.factoryfx.factory.attribute.util.BooleanAttribute;
 import de.factoryfx.factory.attribute.util.DoubleAttribute;
 import de.factoryfx.factory.attribute.util.EnumAttribute;
+import de.factoryfx.factory.attribute.util.I18nAttribute;
 import de.factoryfx.factory.attribute.util.IntegerAttribute;
 import de.factoryfx.factory.attribute.util.LongAttribute;
 import de.factoryfx.factory.attribute.ReferenceAttribute;
@@ -32,6 +33,7 @@ public class ExampleFactoryA extends FactoryBase<ExampleLiveObjectA,ExampleFacto
     public final LongAttribute longAttribute=new LongAttribute(new AttributeMetadata().en("LongAttribute").de("LongAttribute de"));
     public final StringListAttribute valueListAttribute=new StringListAttribute(new AttributeMetadata().en("ValueListAttribute").de("ValueListAttribute de"));
     public final StringMapAttribute mapAttribute=new StringMapAttribute(new AttributeMetadata().en("MapAttribute").de("MapAttribute de"));
+    public final I18nAttribute i18nAttribute=new I18nAttribute(new AttributeMetadata().en("i18nAttribute").de("i18nAttribute de")).en("envalue").de("devalue");
 
     public final ReferenceAttribute<ExampleFactoryB> referenceAttribute = new ReferenceAttribute<>(ExampleFactoryB.class,new AttributeMetadata().en("ReferenceAttribute").de("ReferenceAttribute de"));
     public final ReferenceListAttribute<ExampleFactoryB> referenceListAttribute = new ReferenceListAttribute<>(ExampleFactoryB.class,new AttributeMetadata().en("ReferenceListAttribute").de("ReferenceListAttribute de"));

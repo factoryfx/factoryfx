@@ -53,7 +53,10 @@ public class ValueAttribute<T,A extends Attribute<T,A>> extends Attribute<T,A> {
 
     @Override
     public String getDisplayText() {
-        return value.toString();
+        if (value!=null){
+            return value.toString();
+        }
+        return "<empty>";
     }
 
     @Override
@@ -75,12 +78,12 @@ public class ValueAttribute<T,A extends Attribute<T,A>> extends Attribute<T,A> {
     }
 
     @JsonValue
-    T getValue() {
+    protected T getValue() {
         return value;
     }
 
     @JsonValue
-    void setValue(T value) {
+    protected void setValue(T value) {
         this.value = value;
     }
 

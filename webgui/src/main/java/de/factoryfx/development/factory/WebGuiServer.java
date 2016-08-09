@@ -1,4 +1,4 @@
-package de.factoryfx.development.angularjs.server;
+package de.factoryfx.development.factory;
 
 import java.math.BigDecimal;
 import java.util.logging.Level;
@@ -8,7 +8,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider;
+import de.factoryfx.development.angularjs.server.AuthorizationRequestFilter;
 import de.factoryfx.development.angularjs.server.resourcehandler.ConfigurableResourceHandler;
+import de.factoryfx.factory.LiveObject;
 import de.factoryfx.factory.jackson.ObjectMapperBuilder;
 import de.factoryfx.jettyserver.AllExceptionMapper;
 import org.eclipse.jetty.server.Handler;
@@ -24,7 +26,7 @@ import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.servlet.ServletContainer;
 import org.slf4j.LoggerFactory;
 
-public class WebGuiServer {
+public class WebGuiServer implements LiveObject<WebGuiServer> {
     private static final org.slf4j.Logger logger = LoggerFactory.getLogger(WebGuiServer.class);
 
     private org.eclipse.jetty.server.Server server;
@@ -43,54 +45,6 @@ public class WebGuiServer {
         this.resourceHandler =resourceHandler;
     }
 
-    public void start() {
-        System.setProperty("java.net.preferIPv4Stack", "true");//TODO optional?
-
-        server = new org.eclipse.jetty.server.Server();
-
-        connector = new NetworkTrafficServerConnector(server);
-        connector.setPort(httpPort);
-        connector.setHost(host);
-        server.addConnector(connector);
-
-        ServletContextHandler contextHandler = new ServletContextHandler(ServletContextHandler.SESSIONS);
-        contextHandler.addServlet(new ServletHolder(new ServletContainer(jerseySetup(webGuiResource))), "/applicationServer/*");
-
-        ErrorHandler errorHandler = new ErrorHandler();
-        errorHandler.setShowStacks(true);
-        contextHandler.setErrorHandler(errorHandler);
-
-        GzipHandler gzipHandler = new GzipHandler();
-//            HashSet<String> mimeTypes = new HashSet<>();
-//            mimeTypes.add("text/html");
-//            mimeTypes.add("text/plain");
-//            mimeTypes.add("text/css");
-//            mimeTypes.add("application/x-javascript");
-//            mimeTypes.add("application/json");
-        gzipHandler.setMinGzipSize(0);
-//            gzipHandler.setMimeTypes(mimeTypes);
-
-        HandlerCollection handlers = new HandlerCollection();
-        handlers.setHandlers(new Handler[]{resourceHandler, contextHandler});
-        gzipHandler.setHandler(handlers);
-        server.setHandler(gzipHandler);
-
-        try {
-            server.start();
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public void stop() {
-        try {
-            server.setStopAtShutdown(true);
-            server.stop();
-            server.destroy();
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
 
     private ResourceConfig jerseySetup(Object resource) {
         ResourceConfig resourceConfig = new ResourceConfig();
@@ -131,4 +85,59 @@ public class WebGuiServer {
         return objectMapper;
     }
 
+    @Override
+    public void start() {
+        System.setProperty("java.net.preferIPv4Stack", "true");//TODO optional?
+
+        server = new org.eclipse.jetty.server.Server();
+
+        connector = new NetworkTrafficServerConnector(server);
+        connector.setPort(httpPort);
+        connector.setHost(host);
+        server.addConnector(connector);
+
+        ServletContextHandler contextHandler = new ServletContextHandler(ServletContextHandler.SESSIONS);
+        contextHandler.addServlet(new ServletHolder(new ServletContainer(jerseySetup(webGuiResource))), "/applicationServer/*");
+
+        ErrorHandler errorHandler = new ErrorHandler();
+        errorHandler.setShowStacks(true);
+        contextHandler.setErrorHandler(errorHandler);
+
+        GzipHandler gzipHandler = new GzipHandler();
+//            HashSet<String> mimeTypes = new HashSet<>();
+//            mimeTypes.add("text/html");
+//            mimeTypes.add("text/plain");
+//            mimeTypes.add("text/css");
+//            mimeTypes.add("application/x-javascript");
+//            mimeTypes.add("application/json");
+        gzipHandler.setMinGzipSize(0);
+//            gzipHandler.setMimeTypes(mimeTypes);
+
+        HandlerCollection handlers = new HandlerCollection();
+        handlers.setHandlers(new Handler[]{resourceHandler, contextHandler});
+        gzipHandler.setHandler(handlers);
+        server.setHandler(gzipHandler);
+
+        try {
+            server.start();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public void stop() {
+        try {
+            server.setStopAtShutdown(true);
+            server.stop();
+            server.destroy();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public void accept(WebGuiServer visitor) {
+
+    }
 }

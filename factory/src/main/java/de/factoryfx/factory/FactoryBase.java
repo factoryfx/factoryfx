@@ -23,6 +23,7 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import de.factoryfx.factory.attribute.Attribute;
 import de.factoryfx.factory.attribute.ReferenceAttribute;
 import de.factoryfx.factory.attribute.ReferenceListAttribute;
+import de.factoryfx.factory.attribute.util.ObjectValueAttribute;
 import de.factoryfx.factory.jackson.ObjectMapperBuilder;
 import de.factoryfx.factory.merge.MergeResult;
 import de.factoryfx.factory.merge.MergeResultEntry;
@@ -82,11 +83,11 @@ public abstract class FactoryBase<E extends LiveObject, T extends FactoryBase<E,
     }
 
     @FunctionalInterface
-    public interface FactoryVisitor{
+    public interface AttributeVisitor{
         void accept(String attributeVariableName, Attribute<?,?> attribute);
     }
 
-    public <A> void visitAttributesFlat(FactoryVisitor consumer) {
+    public <A> void visitAttributesFlat(AttributeVisitor consumer) {
         Field[] fields = getFields();
         for (Field field : fields) {
             try {
@@ -144,6 +145,7 @@ public abstract class FactoryBase<E extends LiveObject, T extends FactoryBase<E,
 
     public Map<String,FactoryBase<?,?>> collectChildFactoriesMap() {
         HashSet<FactoryBase<?, ?>> factoryBases = new HashSet<>();
+//        factoryBases.add(this); TODO required?
         collectModelEntitiesTo(factoryBases);
 
         HashMap<String, FactoryBase<?, ?>> result = new HashMap<>();
@@ -168,7 +170,19 @@ public abstract class FactoryBase<E extends LiveObject, T extends FactoryBase<E,
     }
 
     public T copy() {
-        return ObjectMapperBuilder.build().copy(this).reconstructMetadataDeepRoot();
+
+        T copy = ObjectMapperBuilder.build().copy(this).reconstructMetadataDeepRoot();
+        Map<String, FactoryBase<?, ?>> stringFactoryBaseMap = this.collectChildFactoriesMap();
+        for (FactoryBase factory: copy.collectChildFactories()){
+            factory.visitAttributesDualFlat(stringFactoryBaseMap.get(factory.getId()),(copyAttribute, previousAttribute) -> {
+                if (copyAttribute instanceof ObjectValueAttribute){
+                    ((Attribute)copyAttribute).set(((Attribute)previousAttribute).get());
+                }
+            });
+        }
+
+
+        return copy;
     }
 
     /**copy including one the references first level of nested references*/

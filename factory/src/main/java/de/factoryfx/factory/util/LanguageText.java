@@ -4,8 +4,16 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class LanguageText {
-    private HashMap<Locale, String> texts = new HashMap<>();
+    @JsonProperty
+    private Map<Locale, String> texts = new HashMap<>();
+
+
+    public LanguageText() {
+    }
+
 
     public LanguageText en(String text) {
         put(Locale.ENGLISH,text);
