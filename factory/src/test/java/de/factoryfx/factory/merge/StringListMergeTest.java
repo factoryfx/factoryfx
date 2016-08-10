@@ -5,17 +5,17 @@ import java.util.Optional;
 import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.factory.attribute.AttributeMetadata;
 import de.factoryfx.factory.attribute.util.StringListAttribute;
-import de.factoryfx.factory.testfactories.ExampleLiveObjectA;
+import de.factoryfx.factory.testfactories.VoidLiveObject;
 import org.junit.Assert;
 import org.junit.Test;
 
 public class StringListMergeTest extends MergeHelperTestBase {
 
-    public static class StringListTest extends FactoryBase<ExampleLiveObjectA,StringListTest> {
+    public static class StringListTest extends FactoryBase<VoidLiveObject,StringListTest> {
         public final StringListAttribute refB= new StringListAttribute(new AttributeMetadata());
 
         @Override
-        protected ExampleLiveObjectA createImp(Optional<ExampleLiveObjectA> previousLiveObject) {
+        protected VoidLiveObject createImp(Optional<VoidLiveObject> previousLiveObject) {
             return null;
         }
     }

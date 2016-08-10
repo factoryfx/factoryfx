@@ -12,7 +12,7 @@ public class FactoryManagerTest {
 
     @Test
     public void test(){
-        FactoryManager<ExampleFactoryA,Void> factoryManager = new FactoryManager<>();
+        FactoryManager<Void,ExampleFactoryA> factoryManager = new FactoryManager<>();
 
         ExampleFactoryA newFactory = new ExampleFactoryA();
         ExampleFactoryB exampleFactoryB = new ExampleFactoryB();
@@ -30,7 +30,7 @@ public class FactoryManagerTest {
 
     @Test
     public void test_reuse_live_objects_part_differnt(){
-        FactoryManager<ExampleFactoryA,Void> factoryManager = new FactoryManager<>();
+        FactoryManager<Void,ExampleFactoryA> factoryManager = new FactoryManager<>();
 
         ExampleFactoryA exampleFactoryA = new ExampleFactoryA();
 
@@ -66,7 +66,7 @@ public class FactoryManagerTest {
 
     @Test
     public void test_reuse_live_objects_all_same(){
-        FactoryManager<ExampleFactoryA,Void> factoryManager = new FactoryManager<>();
+        FactoryManager<Void,ExampleFactoryA> factoryManager = new FactoryManager<>();
 
         ExampleFactoryA exampleFactoryA = new ExampleFactoryA();
 
@@ -100,7 +100,7 @@ public class FactoryManagerTest {
 
     @Test
     public void test_reuse_live_objects_all_different(){
-        FactoryManager<ExampleFactoryA,Void> factoryManager = new FactoryManager<>();
+        FactoryManager<Void,ExampleFactoryA> factoryManager = new FactoryManager<>();
 
         ExampleFactoryA exampleFactoryA = new ExampleFactoryA();
 

@@ -26,12 +26,25 @@ angular.module('factoryfxwebgui.directives')//re-open module definition
 
         controller: ["$scope", "$timeout", function($scope, $timeout) {
 
-            // $scope.model[$scope.name]="dgdgfdgfdgf";
-            // $scope.modelValue=$scope.model[$scope.name];
-            // $scope.$watch('modelValue', function(newValue) {
-            //     console.log("dsfdsdfs");
-            //     $scope.model[$scope.name]=newValue;
-            // });
+            //angularjs workaround for file type  http://stackoverflow.com/questions/17922557/angularjs-how-to-check-for-changes-in-file-input-fields
+            $scope.handleFileSelect = function(event) {
+                var file = event.target.files[0];
+                if (file) {
+                    var reader = new FileReader();
+
+                    reader.onload = function(readerEvt) {
+                        var binaryString = readerEvt.target.result;
+                        $scope.$apply(function () {
+                            $scope.model = btoa(binaryString);
+                        });
+                    };
+
+                    reader.readAsBinaryString(file);
+                    // if (file.name){
+                        // $scope.selectedFile=file.name.slice(0, -4);
+                    // }
+                }
+            };
 
             $scope.getInputCssClass = function(error){
                 for (var prop in error) {
@@ -41,7 +54,6 @@ angular.module('factoryfxwebgui.directives')//re-open module definition
                         }
                     }
                 }
-
                 return '';
             };
 

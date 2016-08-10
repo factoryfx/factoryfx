@@ -7,16 +7,16 @@ import java.util.Optional;
 import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.factory.jackson.ObjectMapperBuilder;
 import de.factoryfx.factory.testfactories.ExampleFactoryA;
-import de.factoryfx.factory.testfactories.ExampleLiveObjectA;
+import de.factoryfx.factory.testfactories.VoidLiveObject;
 import org.junit.Assert;
 import org.junit.Test;
 
 public class ReferenceAttributeTest {
 
-    public static class ExampleReferenceFactory extends FactoryBase<ExampleLiveObjectA,ExampleFactoryA> {
+    public static class ExampleReferenceFactory extends FactoryBase<VoidLiveObject,ExampleFactoryA> {
         public ReferenceAttribute<ExampleFactoryA> referenceAttribute =new ReferenceAttribute<>(ExampleFactoryA.class,new AttributeMetadata());
         @Override
-        protected ExampleLiveObjectA createImp(Optional<ExampleLiveObjectA> previousLiveObject) {
+        protected VoidLiveObject createImp(Optional<VoidLiveObject> previousLiveObject) {
             return null;
         }
     }

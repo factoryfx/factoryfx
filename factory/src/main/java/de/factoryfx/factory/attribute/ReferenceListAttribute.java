@@ -186,6 +186,7 @@ public class ReferenceListAttribute<T extends FactoryBase<?,? super T>> extends 
         }
     }
 
+    @SuppressWarnings("unchecked")
     public List<T> possibleValues(FactoryBase<?,?> root){
         ArrayList<T> result = new ArrayList<>();
         possibleValueProviderFromRoot.ifPresent(factoryBaseListFunction -> {

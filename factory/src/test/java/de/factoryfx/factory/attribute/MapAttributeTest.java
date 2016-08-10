@@ -7,17 +7,17 @@ import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.factory.attribute.util.StringMapAttribute;
 import de.factoryfx.factory.jackson.ObjectMapperBuilder;
 import de.factoryfx.factory.testfactories.ExampleFactoryA;
-import de.factoryfx.factory.testfactories.ExampleLiveObjectA;
+import de.factoryfx.factory.testfactories.VoidLiveObject;
 import org.junit.Assert;
 import org.junit.Test;
 
 public class MapAttributeTest {
 
-    public static class ExampleMapFactory extends FactoryBase<ExampleLiveObjectA,ExampleFactoryA> {
+    public static class ExampleMapFactory extends FactoryBase<VoidLiveObject,ExampleFactoryA> {
         public StringMapAttribute mapAttribute=new StringMapAttribute(new AttributeMetadata());
 
         @Override
-        protected ExampleLiveObjectA createImp(Optional<ExampleLiveObjectA> previousLiveObject) {
+        protected VoidLiveObject createImp(Optional<VoidLiveObject> previousLiveObject) {
             return null;
         }
     }

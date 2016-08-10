@@ -8,11 +8,11 @@ public class WebGuiLayout extends VoidLiveObject {
 
     public final Map<String,String> messages;
 
-    public final Byte[] logoLarge;
-    public final Byte[] logoSmall;
+    public final byte[] logoLarge;
+    public final byte[] logoSmall;
     public final boolean authorisationRequired;
 
-    public WebGuiLayout(Map<String,String> messages, Byte[] logoLarge, Byte[] logoSmall, boolean authorisationRequired) {
+    public WebGuiLayout(Map<String,String> messages, byte[] logoSmall, byte[] logoLarge, boolean authorisationRequired) {
         this.logoLarge = logoLarge;
         this.logoSmall = logoSmall;
         this.authorisationRequired = authorisationRequired;

@@ -7,7 +7,7 @@ import de.factoryfx.factory.attribute.Attribute;
 import de.factoryfx.factory.attribute.util.ObjectValueAttribute;
 
 public class ObjectValueMergeHelper<T extends FactoryBase<?,? super T>> extends AttributeMergeHelper<T> {
-
+    @SuppressWarnings("unchecked") //TODO ObjectValueAttribute<T> generic fix
     public ObjectValueMergeHelper(ObjectValueAttribute attribute) {
         super(attribute);
     }

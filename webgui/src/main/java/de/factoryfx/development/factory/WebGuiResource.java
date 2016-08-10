@@ -32,6 +32,7 @@ import de.factoryfx.factory.attribute.ReferenceListAttribute;
 import de.factoryfx.factory.datastorage.ApplicationFactoryMetadata;
 import de.factoryfx.factory.merge.MergeDiff;
 import de.factoryfx.factory.merge.MergeResultEntry;
+import de.factoryfx.factory.util.VoidLiveObject;
 import de.factoryfx.server.ApplicationServer;
 import de.factoryfx.user.User;
 import de.factoryfx.user.UserManagement;
@@ -39,22 +40,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
 @Path("/") /** path defined in {@link de.scoopsoftware.xtc.ticketproxy.configuration.ConfigurationServer}*/
-public class WebGuiResource<V,T extends FactoryBase<? extends LiveObject<V>, T>>  implements LiveObject<WebGuiResource> {
-
-    @Override
-    public void start() {
-
-    }
-
-    @Override
-    public void stop() {
-
-    }
-
-    @Override
-    public void accept(WebGuiResource visitor) {
-
-    }
+public class WebGuiResource<V,T extends FactoryBase<? extends LiveObject<V>, T>>  extends VoidLiveObject {
 
     private final ApplicationServer<V,T> applicationServer;
     private final List<Class<? extends FactoryBase>> appFactoryClasses;

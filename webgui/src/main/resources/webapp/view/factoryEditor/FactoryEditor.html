@@ -45,7 +45,7 @@
                                                             <valueeditor model="selected.factory.factory[attributeName][$index]" formmodel="factory.form" name="attributeName+'_ListItem'+$index" required="required" datatype="attributeMetadata.listItemType" label-text=""></valueeditor>
                                                         </span>
                                                         <span class="pull-right">
-                                                             <button type="button" class="btn btn-danger" ng-click="selected.factory.factory[attributeName].splice(selected.factory.factory[attributeName].indexOf(item),1)" ><span class="glyphicon glyphicon-remove"></span></button>
+                                                             <button type="button" class="btn btn-danger btn-sm" ng-click="selected.factory.factory[attributeName].splice(selected.factory.factory[attributeName].indexOf(item),1)" ><span class="glyphicon glyphicon-remove"></span></button>
                                                         </span>
                                                     </li>
                                                 </ul>
@@ -66,7 +66,7 @@
                                                             <valueeditor model="selected.factory.factory[attributeName][item.key]" formmodel="factory.form" name="attributeName+'_ListItem'+$index" required="required" datatype="attributeMetadata.mapValueType" label-text="item.key"></valueeditor>
                                                         </span>
                                                         <span class="pull-right">
-                                                             <button type="button" class="btn btn-danger" ng-click="deleteMapItem(item.key,selected.factory.factory[attributeName],attributeName)" ><span class="glyphicon glyphicon-remove"></span></button>
+                                                             <button type="button" class="btn btn-danger btn-sm" ng-click="deleteMapItem(item.key,selected.factory.factory[attributeName],attributeName)" ><span class="glyphicon glyphicon-remove"></span></button>
                                                         </span>
                                                     </li>
                                                 </ul>
@@ -191,6 +191,12 @@
                             <td style="white-space: pre-wrap;">{{item.mergeResultEntryInfo.fieldDisplayText}}</td>
                             <td style="white-space: pre-wrap;">{{item.mergeResultEntryInfo.previousValueDisplayText}}</td>
                             <td style="white-space: pre-wrap;">{{item.mergeResultEntryInfo.newValueValueDisplayText}}</td>
+                        </tr>
+                        <tr ng-repeat="item in deployResponse.mergeDiff.conflictInfos">
+                            <td style="white-space: pre-wrap;" class="danger">{{item.mergeResultEntryInfo.parentDisplayText}}</td>
+                            <td style="white-space: pre-wrap;" class="danger">{{item.mergeResultEntryInfo.fieldDisplayText}}</td>
+                            <td style="white-space: pre-wrap;" class="danger">{{item.mergeResultEntryInfo.previousValueDisplayText}}</td>
+                            <td style="white-space: pre-wrap;" class="danger">{{item.mergeResultEntryInfo.newValueValueDisplayText}}</td>
                         </tr>
                         </tbody>
                     </table>

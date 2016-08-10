@@ -169,6 +169,7 @@ public abstract class FactoryBase<E extends LiveObject, T extends FactoryBase<E,
         }
     }
 
+    @SuppressWarnings("unchecked")
     public T copy() {
 
         T copy = ObjectMapperBuilder.build().copy(this).reconstructMetadataDeepRoot();

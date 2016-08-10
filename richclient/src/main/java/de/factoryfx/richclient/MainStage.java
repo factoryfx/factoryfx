@@ -2,9 +2,7 @@ package de.factoryfx.richclient;
 
 import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.factory.LiveObject;
-import de.factoryfx.guimodel.GuiModel;
 import de.factoryfx.richclient.framework.view.LoadView;
-import de.factoryfx.richclient.framework.view.RuntimeView;
 import de.factoryfx.richclient.framework.view.SaveView;
 import javafx.scene.Scene;
 import javafx.scene.control.Menu;
@@ -17,13 +15,11 @@ import javafx.stage.Stage;
 
 public class MainStage<T extends FactoryBase<? extends LiveObject, T>> {
 
-    private final GuiModel guiModel;
     private final LoadView<?> loadView;
     private final FactoryTreeEditor<T> factoryTreeEditor;
     private final SaveView<T> saveView;
 
-    public MainStage(GuiModel guiModel, FactoryTreeEditor<T> factoryTreeEditor, LoadView<T> loadView, SaveView<T> saveView) {
-        this.guiModel = guiModel;
+    public MainStage( FactoryTreeEditor<T> factoryTreeEditor, LoadView<T> loadView, SaveView<T> saveView) {
         this.loadView = loadView;
         this.factoryTreeEditor = factoryTreeEditor;
         this.saveView = saveView;
@@ -85,16 +81,16 @@ public class MainStage<T extends FactoryBase<? extends LiveObject, T>> {
         Menu menu = new Menu("Runtime views");
         menuBar.getMenus().add(menu);
 //
-        guiModel.runtimeQueryViews.forEach(view -> {
-            RuntimeView runtimeView = new RuntimeView(view);
-            MenuItem menuItem = new MenuItem(view.name);
-            menuItem.setOnAction(event -> {
-                Tab tab = new Tab(view.name);
-                tabPane.getTabs().add(tab);
-                tab.setContent(runtimeView.createContent());
-            });
-            menu.getItems().add(menuItem);
-        });
+//        guiModel.runtimeQueryViews.forEach(view -> {
+//            RuntimeView runtimeView = new RuntimeView(view);
+//            MenuItem menuItem = new MenuItem(view.name);
+//            menuItem.setOnAction(event -> {
+//                Tab tab = new Tab(view.name);
+//                tabPane.getTabs().add(tab);
+//                tab.setContent(runtimeView.createContent());
+//            });
+//            menu.getItems().add(menuItem);
+//        });
 
 
         stage.show();

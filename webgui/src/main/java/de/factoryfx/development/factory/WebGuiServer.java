@@ -19,6 +19,9 @@ import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.server.handler.ErrorHandler;
 import org.eclipse.jetty.server.handler.HandlerCollection;
 import org.eclipse.jetty.server.handler.gzip.GzipHandler;
+import org.eclipse.jetty.server.session.HashSessionIdManager;
+import org.eclipse.jetty.server.session.HashSessionManager;
+import org.eclipse.jetty.server.session.SessionHandler;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.glassfish.jersey.logging.LoggingFeature;
@@ -90,13 +93,20 @@ public class WebGuiServer implements LiveObject<WebGuiServer> {
         System.setProperty("java.net.preferIPv4Stack", "true");//TODO optional?
 
         server = new org.eclipse.jetty.server.Server();
+        HashSessionIdManager sessionIdManager = new HashSessionIdManager();
+        server.setSessionIdManager(sessionIdManager);
 
         connector = new NetworkTrafficServerConnector(server);
         connector.setPort(httpPort);
         connector.setHost(host);
         server.addConnector(connector);
 
-        ServletContextHandler contextHandler = new ServletContextHandler(ServletContextHandler.SESSIONS);
+
+        ServletContextHandler contextHandler = new ServletContextHandler();
+        SessionHandler sessionHandler = new SessionHandler();
+        sessionHandler.setSessionManager(new HashSessionManager());
+
+        contextHandler.setSessionHandler(sessionHandler);
         contextHandler.addServlet(new ServletHolder(new ServletContainer(jerseySetup(webGuiResource))), "/applicationServer/*");
 
         ErrorHandler errorHandler = new ErrorHandler();

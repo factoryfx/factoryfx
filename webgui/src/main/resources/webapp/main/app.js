@@ -22,6 +22,9 @@ var mod = angular.module('factoryfxwebgui', [
 config(['$routeProvider', function($routeProvider) {
     $routeProvider.otherwise({redirectTo: '/login'});
 }]);
+mod.config(['$compileProvider', function ($compileProvider) {
+    // $compileProvider.debugInfoEnabled(false);//https://docs.angularjs.org/guide/production
+}]);
 
 mod.factory('myHttpInterceptor', ["$q", "$location", "errorDataService",function ($q, $location, errorDataService) {
     return {

@@ -15,7 +15,7 @@ import de.factoryfx.factory.jackson.SimpleObjectMapper;
 import de.factoryfx.factory.testfactories.ExampleFactoryA;
 import de.factoryfx.factory.testfactories.ExampleFactoryB;
 import de.factoryfx.factory.testfactories.ExampleFactoryC;
-import de.factoryfx.factory.testfactories.ExampleLiveObjectA;
+import de.factoryfx.factory.testfactories.VoidLiveObject;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -130,11 +130,11 @@ public class FactoryBaseTest {
     }
 
 
-    public static class ExampleObjectProperty extends FactoryBase<ExampleLiveObjectA, ExampleObjectProperty> {
+    public static class ExampleObjectProperty extends FactoryBase<VoidLiveObject, ExampleObjectProperty> {
         public final StringAttribute stringAttribute= new StringAttribute(new AttributeMetadata().labelText("stringAttribute"));
         public final ObjectValueAttribute<String> objectValueAttribute= new ObjectValueAttribute<>(new AttributeMetadata().labelText("objectValueAttribute"));
         @Override
-        protected ExampleLiveObjectA createImp(Optional<ExampleLiveObjectA> previousLiveObject) {
+        protected VoidLiveObject createImp(Optional<VoidLiveObject> previousLiveObject) {
             return null;
         }
 

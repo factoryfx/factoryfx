@@ -6,15 +6,16 @@ import java.util.regex.Pattern;
 
 import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.factory.attribute.AttributeMetadata;
+import de.factoryfx.factory.attribute.ReferenceAttribute;
+import de.factoryfx.factory.attribute.ReferenceListAttribute;
 import de.factoryfx.factory.attribute.util.BigDecimalAttribute;
 import de.factoryfx.factory.attribute.util.BooleanAttribute;
+import de.factoryfx.factory.attribute.util.ByteArrayAttribute;
 import de.factoryfx.factory.attribute.util.DoubleAttribute;
 import de.factoryfx.factory.attribute.util.EnumAttribute;
 import de.factoryfx.factory.attribute.util.I18nAttribute;
 import de.factoryfx.factory.attribute.util.IntegerAttribute;
 import de.factoryfx.factory.attribute.util.LongAttribute;
-import de.factoryfx.factory.attribute.ReferenceAttribute;
-import de.factoryfx.factory.attribute.ReferenceListAttribute;
 import de.factoryfx.factory.attribute.util.StringAttribute;
 import de.factoryfx.factory.attribute.util.StringListAttribute;
 import de.factoryfx.factory.attribute.util.StringMapAttribute;
@@ -34,6 +35,7 @@ public class ExampleFactoryA extends FactoryBase<ExampleLiveObjectA,ExampleFacto
     public final StringListAttribute valueListAttribute=new StringListAttribute(new AttributeMetadata().en("ValueListAttribute").de("ValueListAttribute de"));
     public final StringMapAttribute mapAttribute=new StringMapAttribute(new AttributeMetadata().en("MapAttribute").de("MapAttribute de"));
     public final I18nAttribute i18nAttribute=new I18nAttribute(new AttributeMetadata().en("i18nAttribute").de("i18nAttribute de")).en("envalue").de("devalue");
+    public final ByteArrayAttribute byteArrayAttribute=new ByteArrayAttribute(new AttributeMetadata().en("byteArrayAttribute").de("byteArrayAttribute de"));
 
     public final ReferenceAttribute<ExampleFactoryB> referenceAttribute = new ReferenceAttribute<>(ExampleFactoryB.class,new AttributeMetadata().en("ReferenceAttribute").de("ReferenceAttribute de"));
     public final ReferenceListAttribute<ExampleFactoryB> referenceListAttribute = new ReferenceListAttribute<>(ExampleFactoryB.class,new AttributeMetadata().en("ReferenceListAttribute").de("ReferenceListAttribute de"));

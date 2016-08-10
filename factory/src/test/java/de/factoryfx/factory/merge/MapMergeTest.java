@@ -5,17 +5,17 @@ import java.util.Optional;
 import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.factory.attribute.AttributeMetadata;
 import de.factoryfx.factory.attribute.util.StringMapAttribute;
-import de.factoryfx.factory.testfactories.ExampleLiveObjectA;
+import de.factoryfx.factory.testfactories.VoidLiveObject;
 import org.junit.Assert;
 import org.junit.Test;
 
 public class MapMergeTest extends MergeHelperTestBase{
 
-    public static class MapExampleFactory extends FactoryBase<ExampleLiveObjectA,MapExampleFactory> {
+    public static class MapExampleFactory extends FactoryBase<VoidLiveObject,MapExampleFactory> {
         public final StringMapAttribute mapAttribute =new StringMapAttribute(new AttributeMetadata());
 
         @Override
-        protected ExampleLiveObjectA createImp(Optional<ExampleLiveObjectA> previousLiveObject) {
+        protected VoidLiveObject createImp(Optional<VoidLiveObject> previousLiveObject) {
             return null;
         }
     }

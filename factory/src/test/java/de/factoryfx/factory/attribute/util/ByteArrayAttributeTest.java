@@ -9,10 +9,12 @@ public class ByteArrayAttributeTest {
 
     @Test
     public void test_json(){
-        ByteArrayAttribute attribute= new ByteArrayAttribute(new AttributeMetadata()).defaultValue(new Byte[]{1,2});
+        ByteArrayAttribute attribute= new ByteArrayAttribute(new AttributeMetadata()).defaultValue(new byte[]{1,2});
         ByteArrayAttribute copy= ObjectMapperBuilder.build().copy(attribute);
+        System.out.println(ObjectMapperBuilder.build().writeValueAsString(copy));
 
-        Assert.assertArrayEquals(new Byte[]{1,2},copy.get());
+
+        Assert.assertArrayEquals(new byte[]{1,2},copy.get());
     }
 
 

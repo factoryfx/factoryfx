@@ -46,7 +46,7 @@ public class ValueListAttribute<T> extends ValueAttribute<ObservableList<T>,Valu
 
     @Override
     public AttributeTypeInfo getAttributeType() {
-        return new AttributeTypeInfo(itemType,null,null,null, AttributeTypeInfo.AttributeTypeCategory.COLLECTION,listNewItemEmptyValue);
+        return new AttributeTypeInfo(itemType,null,null,itemType, AttributeTypeInfo.AttributeTypeCategory.COLLECTION,listNewItemEmptyValue);
     }
 
 }

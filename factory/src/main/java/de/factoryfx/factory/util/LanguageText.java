@@ -3,6 +3,7 @@ package de.factoryfx.factory.util;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -39,5 +40,34 @@ public class LanguageText {
     public LanguageText put(Locale locale, String text) {
         texts.put(locale, text);
         return this;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder result = new StringBuilder();
+        for (Map.Entry<Locale,String> entry: texts.entrySet()){
+            result.append(entry.getKey());
+            result.append(":");
+            result.append(entry.getValue());
+            result.append(", ");
+        }
+        return result.toString();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        LanguageText that = (LanguageText) o;
+        return Objects.equals(texts, that.texts);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(texts);
     }
 }
