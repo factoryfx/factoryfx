@@ -23,7 +23,7 @@ public class ObjectValueAttributeTest {
         attribute.set(new NoJsonPropertiesObject());
 
         ObjectValueAttribute<NoJsonPropertiesObject>  copy= ObjectMapperBuilder.build().copy(attribute);
-        Assert.assertNull(copy.get());
+        Assert.assertNull(copy);
     }
 
     @Test
@@ -33,7 +33,7 @@ public class ObjectValueAttributeTest {
         attribute.set(new NoJsonPropertiesObjectAbstract(){});
 
         ObjectValueAttribute<NoJsonPropertiesObjectAbstract>  copy= ObjectMapperBuilder.build().copy(attribute);
-        Assert.assertNull(copy.get());
+        Assert.assertNull(copy);
     }
 
     @Test
