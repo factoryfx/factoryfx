@@ -28,6 +28,13 @@ public class ReferenceAttribute<T extends FactoryBase<?,? super T>> extends Attr
         this.clazz=clazz;
     }
 
+    @SuppressWarnings("unchecked")
+    //workaround for generic parameter ReferenceAttribute<Example<V>> webGuiResource=new ReferenceAttribute(Example<V>)
+    public ReferenceAttribute(AttributeMetadata attributeMetadata, Class clazz) {
+        super(attributeMetadata);
+        this.clazz=clazz;
+    }
+
     @Override
     public void collectChildren(Set<FactoryBase<?,?>> allModelEntities) {
         if (get() != null) {

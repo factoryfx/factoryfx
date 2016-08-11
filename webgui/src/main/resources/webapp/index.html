@@ -34,7 +34,8 @@
                 </div>
                 <div id="navbar" class="navbar-collapse collapse">
                     <ul class="nav navbar-nav">
-                        <li class="active"><a href="#/factoryEditor">Editor</a></li>
+                        <li ng-class="{active:$location.path()==='/dashboard'}"><a href="#/dashboard">Dashboard</a></li>
+                        <li ng-class="{active:$location.path()==='/factoryEditor'}"><a href="#/factoryEditor">Editor</a></li>
                     </ul>
                 </div><!--/.nav-collapse -->
             </div>
@@ -48,6 +49,7 @@
     <script src="view/factoryEditor/FactoryEditor.js"></script>
     <script src="view/login/Login.js"></script>
     <script src="view/error/Error.js"></script>
+    <script src="view/dashboard/Dashboard.js"></script>
 
     <script src="components/directives.js"></script>
     <script src="components/referenceAdder/referenceAdder.js"></script>

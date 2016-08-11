@@ -1,7 +1,9 @@
-package de.factoryfx.example.server;
+package de.factoryfx.example.factory;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import de.factoryfx.example.server.OrderStorage;
 
 public class OrderCollector {
     private List<OrderStorage.Order> orders=new ArrayList<>();

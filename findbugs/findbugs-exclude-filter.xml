@@ -6,6 +6,11 @@
     </Match>
 
     <Match>
+        <Bug category="URF_UNREAD_FIELD" />
+    </Match>
+
+
+    <Match>
         <Bug pattern="URF_UNREAD_PUBLIC_OR_PROTECTED_FIELD"/>
     </Match>
 

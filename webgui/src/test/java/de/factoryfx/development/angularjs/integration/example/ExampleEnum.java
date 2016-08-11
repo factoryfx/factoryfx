@@ -1,4 +1,4 @@
-package de.factoryfx.development.angularjs.integration;
+package de.factoryfx.development.angularjs.integration.example;
 
 public enum ExampleEnum {
     EXAMPLE_1,

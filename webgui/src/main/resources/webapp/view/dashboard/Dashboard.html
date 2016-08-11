@@ -1,0 +1,25 @@
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-12">
+            <h2>{{guiModel.messages.dashboardTitle}}</h2>
+        </div>
+    </div>
+
+    <div ng-repeat="table in dashboard.tables">
+        <table class="table table-condensed table-bordered table-striped" style="table-layout: fixed; word-wrap:break-word;">
+            <caption>{{table.title}}</caption>
+            <thead>
+            <tr>
+                <th ng-repeat="column in table.tableColumns">{{column}}</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr ng-repeat="row in table.tableRows">
+                <td ng-repeat="cell in row">{{cell}}</td>
+            </tr>
+            </tbody>
+        </table>
+
+    </div>
+
+</div>

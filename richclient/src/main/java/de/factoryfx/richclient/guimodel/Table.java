@@ -1,4 +1,4 @@
-package de.factoryfx.guimodel;
+package de.factoryfx.richclient.guimodel;
 
 import java.util.Arrays;
 import java.util.List;

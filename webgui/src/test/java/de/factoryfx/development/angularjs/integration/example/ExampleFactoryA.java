@@ -1,9 +1,10 @@
-package de.factoryfx.development.angularjs.integration;
+package de.factoryfx.development.angularjs.integration.example;
 
 import java.util.ArrayList;
 import java.util.Optional;
 import java.util.regex.Pattern;
 
+import de.factoryfx.development.angularjs.integration.Permissions;
 import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.factory.attribute.AttributeMetadata;
 import de.factoryfx.factory.attribute.ReferenceAttribute;

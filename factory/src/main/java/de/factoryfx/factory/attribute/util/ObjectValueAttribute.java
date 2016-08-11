@@ -10,6 +10,10 @@ import de.factoryfx.factory.jackson.ObjectValueAttributeSerializer;
 import de.factoryfx.factory.merge.attribute.AttributeMergeHelper;
 import de.factoryfx.factory.merge.attribute.ObjectValueMergeHelper;
 
+//**
+// *special case Attribute to pass object from outside in the application.
+// *the ObjectValue ist not serialised or merged
+// */
 @JsonSerialize(using = ObjectValueAttributeSerializer.class)
 @JsonDeserialize(using = ObjectValueAttributeDeserializer.class)
 public class ObjectValueAttribute<T> extends ValueAttribute<T,ObjectValueAttribute<T>> {

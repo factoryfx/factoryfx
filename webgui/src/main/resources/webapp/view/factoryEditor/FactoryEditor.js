@@ -103,6 +103,7 @@ function                                ($scope,  metaDataService,  guiModelServ
     $resource('../applicationServer/loadCurrentFactory').get(function(response){
         $scope.loadRoot().then(function(result) {
             $scope.initializingEditing=false;
+            $scope.save();//show previous chnages storedin session
             return result;
         });
     });

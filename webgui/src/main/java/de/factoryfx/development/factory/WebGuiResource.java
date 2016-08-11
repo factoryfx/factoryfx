@@ -7,6 +7,8 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Supplier;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
@@ -23,6 +25,7 @@ import de.factoryfx.development.angularjs.model.WebGuiFactoryMetadata;
 import de.factoryfx.development.angularjs.model.WebGuiPossibleEntity;
 import de.factoryfx.development.angularjs.model.WebGuiUser;
 import de.factoryfx.development.angularjs.model.WebGuiValidationError;
+import de.factoryfx.development.angularjs.model.table.WebGuiTable;
 import de.factoryfx.development.angularjs.server.AuthorizationRequestFilter;
 import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.factory.LiveObject;
@@ -47,21 +50,24 @@ public class WebGuiResource<V,T extends FactoryBase<? extends LiveObject<V>, T>>
     private final List<Locale> locales;
     private final WebGuiLayout webGuiLayout;
     private final UserManagement userManagement;
+    private final Function<V,List<WebGuiTable>> dashboardTablesProvider;
+    private final Supplier<V> emptyVisitorCreator;
 
     /**
      *
-     * @param guimodel
      * @param applicationServer
      * @param appFactoryClasses the factory class from application
      * @param locales
      * @param userManagement
      */
-    public WebGuiResource(WebGuiLayout webGuiLayout, ApplicationServer<V,T> applicationServer, List<Class<? extends FactoryBase>> appFactoryClasses, List<Locale> locales, UserManagement userManagement) {
+    public WebGuiResource(WebGuiLayout webGuiLayout, ApplicationServer<V,T> applicationServer, List<Class<? extends FactoryBase>> appFactoryClasses, List<Locale> locales, UserManagement userManagement, Supplier<V> emptyVisitorCreator, Function<V,List<WebGuiTable>> dashboardTablesProvider) {
         this.applicationServer = applicationServer;
         this.appFactoryClasses = appFactoryClasses;
         this.locales = locales;
         this.webGuiLayout = webGuiLayout;
         this.userManagement = userManagement;
+        this.dashboardTablesProvider= dashboardTablesProvider;
+        this.emptyVisitorCreator = emptyVisitorCreator;
     }
 
     @GET
@@ -331,6 +337,23 @@ public class WebGuiResource<V,T extends FactoryBase<? extends LiveObject<V>, T>>
             }
         });
         return new de.factoryfx.development.angularjs.model.WebGuiFactory(factoryBase,root);
+    }
+
+    public static class DashboardResponse{
+        public List<WebGuiTable> tables =new ArrayList<>();
+    }
+
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("dashboard")
+    public DashboardResponse possibleValues(){
+        V visitor = emptyVisitorCreator.get();
+        applicationServer.query(visitor);
+
+
+        DashboardResponse dashboardResponse = new DashboardResponse();
+        dashboardResponse.tables=dashboardTablesProvider.apply(visitor);
+        return dashboardResponse;
     }
 
 }

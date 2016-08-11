@@ -10,15 +10,15 @@ import de.factoryfx.factory.attribute.util.IntegerAttribute;
 import de.factoryfx.factory.attribute.util.ObjectValueAttribute;
 import de.factoryfx.factory.attribute.util.StringAttribute;
 
-public class WebGuiServerFactory extends FactoryBase<WebGuiServer,WebGuiServerFactory> {
+public class WebGuiServerFactory<V> extends FactoryBase<WebGuiServer<V>,WebGuiServerFactory<V>> {
 
     public final IntegerAttribute port=new IntegerAttribute(new AttributeMetadata().labelText("port"));
     public final StringAttribute host=new StringAttribute(new AttributeMetadata().labelText("port"));
-    public final ReferenceAttribute<WebGuiResourceFactory> webGuiResource=new ReferenceAttribute<>(WebGuiResourceFactory.class,new AttributeMetadata().labelText("WebGuiResource"));
+    public final ReferenceAttribute<WebGuiResourceFactory<V>> webGuiResource=new ReferenceAttribute<>(new AttributeMetadata().labelText("WebGuiResource"),WebGuiResourceFactory.class);
     public final ObjectValueAttribute<ConfigurableResourceHandler> resourceHandler=new ObjectValueAttribute<>(new AttributeMetadata().labelText("resourceHandler"));
 
     @Override
-    protected WebGuiServer createImp(Optional<WebGuiServer> previousLiveObject) {
-        return new WebGuiServer(port.get(),host.get(),webGuiResource.get().create(),resourceHandler.get());
+    protected WebGuiServer<V> createImp(Optional<WebGuiServer<V>> previousLiveObject) {
+        return new WebGuiServer<>(port.get(),host.get(),webGuiResource.get().create(),resourceHandler.get());
     }
 }

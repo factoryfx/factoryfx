@@ -2,7 +2,7 @@ package de.factoryfx.development.angularjs.model;
 
 import java.util.Locale;
 
-import de.factoryfx.development.angularjs.integration.ExampleEnum;
+import de.factoryfx.development.angularjs.integration.example.ExampleEnum;
 import de.factoryfx.factory.attribute.AttributeMetadata;
 import de.factoryfx.factory.attribute.util.EnumAttribute;
 import org.junit.Assert;

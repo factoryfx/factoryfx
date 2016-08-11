@@ -1,6 +1,6 @@
 package de.factoryfx.development.angularjs.model;
 
-import de.factoryfx.development.angularjs.integration.ExampleEnum;
+import de.factoryfx.development.angularjs.integration.example.ExampleEnum;
 import org.junit.Assert;
 import org.junit.Test;
 

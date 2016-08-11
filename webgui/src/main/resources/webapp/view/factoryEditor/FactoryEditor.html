@@ -30,10 +30,11 @@
                                           ">
 
                                 <div ng-if="attributeName!=='id' && attributeName!=='@class'">
-                                    <div ng-switch="attributeMetadata.attributeType">
+                                    <div ng-switch="attributeMetadata.attributeType" class="factoryform">
 
-                                        <div class="form-group" ng-switch-when="VALUE">
+                                        <div ng-switch-when="VALUE">
                                             <valueeditor model="selected.factory.factory[attributeName]" formmodel="factory.form" name="attributeName" required="required" datatype="attributeMetadata.dataType" label-text="labelText"></valueeditor>
+                                            <!--<div style=" background-color: rgba(192, 192, 192, 0.21); width: 100%; height: 1px"></div>-->
                                         </div>
 
                                         <div class="form-group" ng-switch-when="COLLECTION">
@@ -151,8 +152,8 @@
                 <div class="panel-heading">
                     {{guiModel.messages.deployedValidationsTitle}}
                 </div>
-                <div class="panel-body">
-                    <table class="table table-condensed table-bordered table-striped" style="table-layout: fixed;">
+                <div class="panel-body" style="max-height:500px; overflow:auto">
+                    <table class="table table-condensed table-bordered table-striped" style="table-layout: fixed; word-wrap:break-word;">
                         <thead>
                         <tr>
                             <th>{{guiModel.messages.validationErrorTableColumn}}</th>
@@ -175,8 +176,8 @@
                 <div class="panel-heading">
                     {{guiModel.messages.deployedChangesTitle}}
                 </div>
-                <div class="panel-body">
-                    <table class="table table-condensed table-bordered table-striped">
+                <div class="panel-body" style="max-height:500px; overflow:auto">
+                    <table class="table table-condensed table-bordered table-striped" style="table-layout: fixed; word-wrap:break-word;">
                         <thead>
                         <tr>
                             <th>{{guiModel.messages.dataItemTableColumn}}</th>

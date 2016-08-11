@@ -2,7 +2,6 @@ package de.factoryfx.example.factory;
 
 import java.util.List;
 
-import de.factoryfx.example.server.OrderCollector;
 import de.factoryfx.example.server.OrderStorage;
 import de.factoryfx.factory.LiveObject;
 import javafx.application.Platform;

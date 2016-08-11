@@ -1,8 +1,11 @@
 package de.factoryfx.factory.attribute.util;
 
+import java.util.Base64;
+
 import com.fasterxml.jackson.annotation.JsonCreator;
 import de.factoryfx.factory.attribute.AttributeMetadata;
 import de.factoryfx.factory.attribute.ValueAttribute;
+import de.factoryfx.factory.merge.attribute.ByteArrayMergeHelper;
 
 public class ByteArrayAttribute extends ValueAttribute<byte[],ByteArrayAttribute> {
     public ByteArrayAttribute(AttributeMetadata attributeMetadata) {
@@ -15,12 +18,19 @@ public class ByteArrayAttribute extends ValueAttribute<byte[],ByteArrayAttribute
         set(value);
     }
 
-    //byte vs Byte workaround
-//    public ByteArrayAttribute setBytes(byte[] bytesPrim) {
-//        Byte[] bytes = new Byte[bytesPrim.length];
-//        Arrays.setAll(bytes, n -> bytesPrim[n]);
-////        set(bytes);
-//        return this;
-//    }
+    @Override
+    public ByteArrayMergeHelper createMergeHelper() {
+        return new ByteArrayMergeHelper(this);
+    }
+
+    @Override
+    public String getDisplayText() {
+        if (get()!=null){
+            return Base64.getEncoder().encodeToString(get());
+        }
+        return "<empty>";
+    }
+
+
 }
 

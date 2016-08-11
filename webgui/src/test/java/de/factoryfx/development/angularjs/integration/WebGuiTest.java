@@ -12,12 +12,13 @@ import com.google.common.io.ByteStreams;
 import de.factoryfx.development.InMemoryFactoryStorage;
 import de.factoryfx.development.SinglePrecessInstanceUtil;
 import de.factoryfx.development.WebAppViewer;
+import de.factoryfx.development.angularjs.integration.example.ExampleFactoryA;
+import de.factoryfx.development.angularjs.integration.example.ExampleFactoryB;
+import de.factoryfx.development.angularjs.integration.example.ExampleVisitor;
+import de.factoryfx.development.angularjs.integration.example.VisitorToTables;
 import de.factoryfx.development.angularjs.server.resourcehandler.ConfigurableResourceHandler;
 import de.factoryfx.development.angularjs.server.resourcehandler.FilesystemFileContentProvider;
 import de.factoryfx.development.factory.WebGuiApplication;
-import de.factoryfx.development.factory.WebGuiLayoutFactory;
-import de.factoryfx.development.factory.WebGuiResourceFactory;
-import de.factoryfx.development.factory.WebGuiServer;
 import de.factoryfx.development.factory.WebGuiServerFactory;
 import de.factoryfx.factory.FactoryManager;
 import de.factoryfx.server.DefaultApplicationServer;
@@ -51,10 +52,10 @@ public class WebGuiTest extends Application{
                 value.stringAttribute.set("i"+i);
                 exampleFactoryA.referenceListAttribute.add(value);
             }
-            DefaultApplicationServer<Void, ExampleFactoryA> exampleApplicationServer = new DefaultApplicationServer<>(new FactoryManager<>(), new InMemoryFactoryStorage<>(exampleFactoryA));
+            DefaultApplicationServer<ExampleVisitor, ExampleFactoryA> exampleApplicationServer = new DefaultApplicationServer<>(new FactoryManager<>(), new InMemoryFactoryStorage<>(exampleFactoryA));
             exampleApplicationServer.start();
 
-            WebGuiApplication<Void, ExampleFactoryA> webGuiApplication =new WebGuiApplication<>(exampleApplicationServer,Arrays.asList(ExampleFactoryA.class, ExampleFactoryB.class),(WebGuiServerFactory root)->new InMemoryFactoryStorage<>(root),getUserManagement(),
+            WebGuiApplication<ExampleVisitor, ExampleFactoryA> webGuiApplication =new WebGuiApplication<>(exampleApplicationServer,Arrays.asList(ExampleFactoryA.class, ExampleFactoryB.class),(WebGuiServerFactory<ExampleVisitor> root)->new InMemoryFactoryStorage<>(root),getUserManagement(),
                     (config)->{
                         if (WebGuiApplication.class.getResourceAsStream("/logo/logoLarge.png")!=null){
                             try(InputStream inputStream= WebGuiApplication.class.getResourceAsStream("/logo/logoLarge.png")){
@@ -71,13 +72,13 @@ public class WebGuiTest extends Application{
                             }
                         }
                         config.resourceHandler.set(new ConfigurableResourceHandler(new FilesystemFileContentProvider(Paths.get("./src/main/resources/webapp")), () -> UUID.randomUUID().toString()));
-                    });
+                    },()->new ExampleVisitor(),new VisitorToTables());
             webGuiApplication.start();
 
-            WebGuiApplication<WebGuiServer, WebGuiServerFactory> webGuiApplicationSelf =new WebGuiApplication<>(webGuiApplication.getServer(),Arrays.asList(WebGuiServerFactory.class, WebGuiLayoutFactory.class, WebGuiResourceFactory.class),(root)->new InMemoryFactoryStorage<>(root),getUserManagement(),
-                    (config)->{
-                config.port.set(8087);
-            });
+//            WebGuiApplication<WebGuiServer, WebGuiServerFactory> webGuiApplicationSelf =new WebGuiApplication<>(webGuiApplication.getServer(),Arrays.asList(WebGuiServerFactory.class, WebGuiLayoutFactory.class, WebGuiResourceFactory.class),(root)->new InMemoryFactoryStorage<>(root),getUserManagement(),
+//                    (config)->{
+//                config.port.set(8087);
+//            });
 //            webGuiApplicationSelf.start();
         },"http://localhost:8089/#/login"/*"http://localhost:8087/#/login"*/);
     }

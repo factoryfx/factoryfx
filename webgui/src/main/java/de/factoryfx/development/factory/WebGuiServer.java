@@ -29,7 +29,7 @@ import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.servlet.ServletContainer;
 import org.slf4j.LoggerFactory;
 
-public class WebGuiServer implements LiveObject<WebGuiServer> {
+public class WebGuiServer<V> implements LiveObject<V> {
     private static final org.slf4j.Logger logger = LoggerFactory.getLogger(WebGuiServer.class);
 
     private org.eclipse.jetty.server.Server server;
@@ -147,7 +147,7 @@ public class WebGuiServer implements LiveObject<WebGuiServer> {
     }
 
     @Override
-    public void accept(WebGuiServer visitor) {
+    public void accept(V visitor) {
 
     }
 }

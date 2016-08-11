@@ -8,7 +8,7 @@ public class FactoryMetadata {
     private String permission;
     private Function<Object,String> labelProvider= t -> t.getClass().getSimpleName()+":"+((FactoryBase)t).getId();
 
-    private class FactoryMetadataData{
+    private static class FactoryMetadataData{
         public String permission;
         public Function<Object,String> labelProvider= t -> t.getClass().getSimpleName()+":"+((FactoryBase)t).getId();
     }

@@ -8,6 +8,8 @@ import de.factoryfx.development.InMemoryFactoryStorage;
 import de.factoryfx.development.SinglePrecessInstanceUtil;
 import de.factoryfx.development.WebAppViewer;
 import de.factoryfx.development.factory.WebGuiApplication;
+import de.factoryfx.example.factory.OrderCollector;
+import de.factoryfx.example.factory.OrderCollectorToTables;
 import de.factoryfx.example.factory.ProductFactory;
 import de.factoryfx.example.factory.ShopFactory;
 import de.factoryfx.factory.FactoryManager;
@@ -41,7 +43,11 @@ public class ExampleMain extends Application {
             DefaultApplicationServer<OrderCollector, ShopFactory> applicationServer = new DefaultApplicationServer<>(new FactoryManager<>(), new InMemoryFactoryStorage<>(shopFactory));
             applicationServer.start();
 
-            WebGuiApplication<OrderCollector, ShopFactory> webGuiApplication=new WebGuiApplication<>(applicationServer,Arrays.asList(ShopFactory.class,ProductFactory.class),(root)->new InMemoryFactoryStorage<>(root),new NoUserManagement());
+            WebGuiApplication<OrderCollector, ShopFactory> webGuiApplication=new WebGuiApplication<>(
+                    applicationServer,
+                    Arrays.asList(ShopFactory.class,ProductFactory.class),
+                    (root)->new InMemoryFactoryStorage<>(root),
+                    new NoUserManagement(),()->new OrderCollector(),new OrderCollectorToTables());
             webGuiApplication.start();
 
         },"http://localhost:8089/#/login");

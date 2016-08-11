@@ -2,9 +2,9 @@ package de.factoryfx.richclient.framework.view;
 
 import java.util.function.Consumer;
 
-import de.factoryfx.guimodel.RuntimeQueryView;
-import de.factoryfx.guimodel.TableColumn;
 import de.factoryfx.richclient.framework.widget.Widget;
+import de.factoryfx.richclient.guimodel.RuntimeQueryView;
+import de.factoryfx.richclient.guimodel.TableColumn;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
