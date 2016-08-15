@@ -13,6 +13,7 @@ explained here: https://www.youtube.com/watch?v=RlfLCWKxHJ0&index=3&list=PL693EF
 
 Most dependency injection frameworks automate the Factory code.
 Instead of automating the creation process Factoryfx takes a different approach by focusing on an explicit defined lifecycle and end user ediable datastructure.
+Since the Factory is not automated you can edit metadata like validatio, labeltext and permissions directly to Model.
 
 ###Example
 ####Factory
@@ -52,15 +53,13 @@ public class Shop  implements LiveObject<OrderCollector> {
     }
 }
 ```
-Why do we need 2 classes? There are 2 conflicting requirements. The Model should be editable but during the in the running application the attributes should be final.
+Why do we need 2 classes? There are 2 conflicting requirements. The Model should be editable but the aruntime should have immutable attributes .
 That's why the ShopFactory have the shopTitle Attribute with Label text and so on. And the shop liveobject simply have a final shopTitle String field.
 
 ###Why domain specificity?
 * configuration data
 * editable with gui
 * no extra format /language
-
-###Example
 
 #####Advantages:
 * no reflection magic means easy to debug and no surprises at runtime

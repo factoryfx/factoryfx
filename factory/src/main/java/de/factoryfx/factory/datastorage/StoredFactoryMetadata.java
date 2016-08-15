@@ -3,19 +3,18 @@ package de.factoryfx.factory.datastorage;
 import java.time.LocalDateTime;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import de.factoryfx.factory.FactoryBase;
 
-public class ApplicationFactoryMetadata<T extends FactoryBase<?,T>> {
+public class StoredFactoryMetadata {
     public LocalDateTime creationTime;
-    public T root;
+    public String id;
+    public String user;
 
     /**the base version on the server*/
     public String baseVersionId;
 
 
     @JsonCreator
-    public ApplicationFactoryMetadata(@JsonProperty("root")T root) {
-        this.root = root;
+    public StoredFactoryMetadata() {
+        this.creationTime=LocalDateTime.now();
     }
 }

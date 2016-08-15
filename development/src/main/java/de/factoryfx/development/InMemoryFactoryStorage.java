@@ -4,15 +4,17 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
-import de.factoryfx.factory.datastorage.ApplicationFactoryMetadata;
-import de.factoryfx.factory.datastorage.FactoryStorage;
 import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.factory.LiveObject;
+import de.factoryfx.factory.datastorage.FactoryAndStorageMetadata;
+import de.factoryfx.factory.datastorage.FactoryStorage;
+import de.factoryfx.factory.datastorage.StoredFactoryMetadata;
 
 
-public class InMemoryFactoryStorage<T extends FactoryBase<? extends LiveObject, T>> implements FactoryStorage<T> {
-    private Map<String,ApplicationFactoryMetadata<T>> storage = new TreeMap<>();
+public class InMemoryFactoryStorage<T extends FactoryBase<? extends LiveObject<?>, T>> implements FactoryStorage<T> {
+    private Map<String,FactoryAndStorageMetadata<T>> storage = new TreeMap<>();
     private String current;
     private T initialFactory;
 
@@ -22,37 +24,41 @@ public class InMemoryFactoryStorage<T extends FactoryBase<? extends LiveObject, 
 
 
     @Override
-    public ApplicationFactoryMetadata<T> getHistoryFactory(String id) {
-        ApplicationFactoryMetadata<T> metadata = storage.get(id);
-        ApplicationFactoryMetadata<T> result = new ApplicationFactoryMetadata<>(metadata.root.copy());
-        result.baseVersionId=metadata.baseVersionId;
-        return result;
+    public T getHistoryFactory(String id) {
+        FactoryAndStorageMetadata<T> data = storage.get(id);
+        return data.root.copy();
     }
 
     @Override
-    public Collection<ApplicationFactoryMetadata<T>> getHistoryFactoryList() {
-        return storage.values();
+    public Collection<StoredFactoryMetadata> getHistoryFactoryList() {
+        return storage.values().stream().filter(factory -> !factory.metadata.id.equals(current)).map(item -> item.metadata).collect(Collectors.toList());
     }
 
     @Override
-    public ApplicationFactoryMetadata<T> getCurrentFactory() {
-        ApplicationFactoryMetadata<T> factoriesMetadata = new ApplicationFactoryMetadata<>(storage.get(current).root.copy());
-        factoriesMetadata.baseVersionId=current;
-        return factoriesMetadata;
+    public FactoryAndStorageMetadata<T> getCurrentFactory() {
+        FactoryAndStorageMetadata<T> result = storage.get(current);
+        return result.copy();
     }
 
     @Override
-    public ApplicationFactoryMetadata<T> updateCurrentFactory(T factoryRoot) {
+    public void updateCurrentFactory(T factoryRoot, String user) {
         String newId = UUID.randomUUID().toString();
-        ApplicationFactoryMetadata<T> value = new ApplicationFactoryMetadata<>(factoryRoot.copy());
+        StoredFactoryMetadata metadata = new StoredFactoryMetadata();
+        metadata.id=newId;
+        metadata.baseVersionId=current;
+        metadata.user=user;
+        FactoryAndStorageMetadata<T> value = new FactoryAndStorageMetadata<>(factoryRoot.copy(), metadata);
         storage.put(newId, value);
         current=newId;
-        return value;
     }
 
     @Override
     public void loadInitialFactory() {
         current = UUID.randomUUID().toString();
-        storage.put(current,new ApplicationFactoryMetadata<>(initialFactory));
+        StoredFactoryMetadata metadata = new StoredFactoryMetadata();
+        metadata.id=current;
+        metadata.baseVersionId=current;
+        metadata.user="System";
+        storage.put(current,new FactoryAndStorageMetadata<>(initialFactory, metadata));
     }
 }

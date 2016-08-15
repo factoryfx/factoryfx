@@ -3,7 +3,8 @@ package de.factoryfx.server;
 import java.util.Collection;
 import java.util.Locale;
 
-import de.factoryfx.factory.datastorage.ApplicationFactoryMetadata;
+import de.factoryfx.factory.datastorage.StoredFactoryMetadata;
+import de.factoryfx.factory.datastorage.FactoryAndStorageMetadata;
 import de.factoryfx.factory.datastorage.FactoryStorage;
 import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.factory.FactoryManager;
@@ -21,33 +22,33 @@ public class DefaultApplicationServer<V,T extends FactoryBase<? extends LiveObje
     }
 
     @Override
-    public MergeDiff updateCurrentFactory(ApplicationFactoryMetadata<T> updateFactory, Locale locale) {
-        T commonVersion = factoryStorage.getHistoryFactory(updateFactory.baseVersionId).root;
-        MergeDiff mergeDiff = factoryManager.update(commonVersion, updateFactory.root,locale);
+    public MergeDiff updateCurrentFactory(T updateFactory, String baseVersionId, Locale locale, String user) {
+        T commonVersion = factoryStorage.getHistoryFactory(baseVersionId);
+        MergeDiff mergeDiff = factoryManager.update(commonVersion, updateFactory, locale);
         if (mergeDiff.hasNoConflicts()){
-            factoryStorage.updateCurrentFactory(factoryManager.getCurrentFactory());
+            factoryStorage.updateCurrentFactory(factoryManager.getCurrentFactory(),user);
         }
         return mergeDiff;
     }
 
     @Override
-    public MergeDiff simulateUpdateCurrentFactory(ApplicationFactoryMetadata<T> updateFactory, Locale locale){
-        T commonVersion = factoryStorage.getHistoryFactory(updateFactory.baseVersionId).root;
-        return factoryManager.simulateUpdate(commonVersion , updateFactory.root, locale);
+    public MergeDiff simulateUpdateCurrentFactory(T updateFactory, String baseVersionId, Locale locale){
+        T commonVersion = factoryStorage.getHistoryFactory(baseVersionId);
+        return factoryManager.simulateUpdate(commonVersion , updateFactory, locale);
     }
 
     @Override
-    public ApplicationFactoryMetadata<T> getCurrentFactory() {
+    public FactoryAndStorageMetadata<T> getCurrentFactory() {
         return factoryStorage.getCurrentFactory();
     }
 
     @Override
-    public ApplicationFactoryMetadata<T> getHistoryFactory(String id) {
+    public T getHistoryFactory(String id) {
         return factoryStorage.getHistoryFactory(id);
     }
 
     @Override
-    public Collection<ApplicationFactoryMetadata<T>> getHistoryFactoryList() {
+    public Collection<StoredFactoryMetadata> getHistoryFactoryList() {
         return factoryStorage.getHistoryFactoryList();
     }
 

@@ -1,6 +1,7 @@
 package de.factoryfx.development.factory;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -32,7 +33,8 @@ import de.factoryfx.factory.LiveObject;
 import de.factoryfx.factory.attribute.Attribute;
 import de.factoryfx.factory.attribute.ReferenceAttribute;
 import de.factoryfx.factory.attribute.ReferenceListAttribute;
-import de.factoryfx.factory.datastorage.ApplicationFactoryMetadata;
+import de.factoryfx.factory.datastorage.StoredFactoryMetadata;
+import de.factoryfx.factory.datastorage.FactoryAndStorageMetadata;
 import de.factoryfx.factory.merge.MergeDiff;
 import de.factoryfx.factory.merge.MergeResultEntry;
 import de.factoryfx.factory.util.VoidLiveObject;
@@ -163,8 +165,8 @@ public class WebGuiResource<V,T extends FactoryBase<? extends LiveObject<V>, T>>
     HttpServletRequest request;
 
     @SuppressWarnings("unchecked")
-    private ApplicationFactoryMetadata<T> getCurrentEditingFactoryRoot(){
-        return (ApplicationFactoryMetadata<T>) request.getSession(true).getAttribute(CURRENT_EDITING_FACTORY_SESSION_KEY);
+    private FactoryAndStorageMetadata<T> getCurrentEditingFactoryRoot(){
+        return (FactoryAndStorageMetadata<T>) request.getSession(true).getAttribute(CURRENT_EDITING_FACTORY_SESSION_KEY);
 
     }
 
@@ -218,10 +220,11 @@ public class WebGuiResource<V,T extends FactoryBase<? extends LiveObject<V>, T>>
 
     private StageResponse createStageResponse(){
         StageResponse response=new StageResponse();
-        response.mergeDiff= applicationServer.simulateUpdateCurrentFactory(getCurrentEditingFactoryRoot(),getUserLocale());
+        FactoryAndStorageMetadata<T> currentEditingFactoryRoot = getCurrentEditingFactoryRoot();
+        response.mergeDiff= applicationServer.simulateUpdateCurrentFactory(currentEditingFactoryRoot.root, currentEditingFactoryRoot.metadata.baseVersionId,getUserLocale());
 
 
-        for (FactoryBase<?,?> factoryBase: getCurrentEditingFactoryRoot().root.collectChildFactories()){
+        for (FactoryBase<?,?> factoryBase: currentEditingFactoryRoot.root.collectChildFactories()){
             factoryBase.validateFlat().stream().map(validationError -> new WebGuiValidationError(validationError,getUserLocale(),factoryBase)).forEach(w -> response.validationErrors.add(w));
         }
 
@@ -249,7 +252,8 @@ public class WebGuiResource<V,T extends FactoryBase<? extends LiveObject<V>, T>>
 
         if (response.validationErrors.isEmpty()){
             //TODO handle conflicts
-            response.mergeDiff=applicationServer.updateCurrentFactory(getCurrentEditingFactoryRoot(),getUserLocale());
+            FactoryAndStorageMetadata<T> currentEditingFactoryRoot = getCurrentEditingFactoryRoot();
+            response.mergeDiff=applicationServer.updateCurrentFactory(currentEditingFactoryRoot.root,currentEditingFactoryRoot.metadata.baseVersionId,getUserLocale(),getUser().user);
             if (response.mergeDiff.hasNoConflicts()){
                 response.deployed=true;
 
@@ -346,7 +350,7 @@ public class WebGuiResource<V,T extends FactoryBase<? extends LiveObject<V>, T>>
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("dashboard")
-    public DashboardResponse possibleValues(){
+    public DashboardResponse dashboard(){
         V visitor = emptyVisitorCreator.get();
         applicationServer.query(visitor);
 
@@ -356,4 +360,10 @@ public class WebGuiResource<V,T extends FactoryBase<? extends LiveObject<V>, T>>
         return dashboardResponse;
     }
 
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("history")
+    public Collection<StoredFactoryMetadata> history(){
+        return applicationServer.getHistoryFactoryList();
+    }
 }

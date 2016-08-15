@@ -1,0 +1,30 @@
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-12">
+            <h2>{{guiModel.messages.historyTitle}}</h2>
+        </div>
+    </div>
+
+
+    <table class="table table-condensed table-bordered table-striped" style="table-layout: fixed; word-wrap:break-word;">
+        <caption>{{table.title}}</caption>
+        <thead>
+        <tr>
+            <th>date</th>
+            <th>id</th>
+            <th>baseId</th>
+            <th>user</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr ng-repeat="row in history">
+            <td>{{row.creationTime}}</td>
+            <td>{{row.id}}</td>
+            <td>{{row.baseVersionId}}</td>
+            <td>{{row.user}}</td>
+        </tr>
+        </tbody>
+    </table>
+
+
+</div>

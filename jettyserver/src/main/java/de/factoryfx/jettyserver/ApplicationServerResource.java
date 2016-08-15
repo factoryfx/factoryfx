@@ -10,9 +10,10 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
-import de.factoryfx.factory.datastorage.ApplicationFactoryMetadata;
+import de.factoryfx.factory.datastorage.StoredFactoryMetadata;
 import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.factory.LiveObject;
+import de.factoryfx.factory.datastorage.FactoryAndStorageMetadata;
 import de.factoryfx.factory.merge.MergeDiff;
 import de.factoryfx.server.ApplicationServer;
 
@@ -30,20 +31,20 @@ public class ApplicationServerResource<V, T extends FactoryBase<? extends LiveOb
     @Produces(MediaType.APPLICATION_JSON)
     @Path("updateCurrentFactory")
     @Override
-    public MergeDiff updateCurrentFactory(ApplicationFactoryMetadata<T> updateFactory,Locale locale) {
-        return  applicationServer.updateCurrentFactory(updateFactory,locale);
+    public MergeDiff updateCurrentFactory(T updateFactory, String baseVersionId,Locale locale, String user) {
+        return  applicationServer.updateCurrentFactory(updateFactory,baseVersionId,locale,user);
     }
 
     @Override
-    public MergeDiff simulateUpdateCurrentFactory(ApplicationFactoryMetadata<T> updateFactory, Locale locale) {
-        return applicationServer.simulateUpdateCurrentFactory(updateFactory,locale);
+    public MergeDiff simulateUpdateCurrentFactory(T updateFactory, String baseVersionId, Locale locale) {
+        return applicationServer.simulateUpdateCurrentFactory(updateFactory,baseVersionId,locale);
     }
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("currentFactory")
     @Override
-    public ApplicationFactoryMetadata<T> getCurrentFactory() {
+    public FactoryAndStorageMetadata<T> getCurrentFactory() {
         return applicationServer.getCurrentFactory();
     }
 
@@ -51,7 +52,7 @@ public class ApplicationServerResource<V, T extends FactoryBase<? extends LiveOb
     @Produces(MediaType.APPLICATION_JSON)
     @Path("historyFactory")
     @Override
-    public ApplicationFactoryMetadata<T> getHistoryFactory(String id) {
+    public T getHistoryFactory(String id) {
         return applicationServer.getHistoryFactory(id);
     }
 
@@ -59,7 +60,7 @@ public class ApplicationServerResource<V, T extends FactoryBase<? extends LiveOb
     @Produces(MediaType.APPLICATION_JSON)
     @Path("historyFactoryList")
     @Override
-    public Collection<ApplicationFactoryMetadata<T>> getHistoryFactoryList() {
+    public Collection<StoredFactoryMetadata> getHistoryFactoryList() {
         return applicationServer.getHistoryFactoryList();
     }
 

@@ -5,15 +5,15 @@ import java.util.Collection;
 import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.factory.LiveObject;
 
-public interface FactoryStorage<T extends FactoryBase<? extends LiveObject, T>> {
+public interface FactoryStorage<T extends FactoryBase<? extends LiveObject<?>, T>> {
 
-    ApplicationFactoryMetadata<T> getHistoryFactory(String id);
+    T getHistoryFactory(String id);
 
-    Collection<ApplicationFactoryMetadata<T>> getHistoryFactoryList();
+    Collection<StoredFactoryMetadata> getHistoryFactoryList();
 
-    ApplicationFactoryMetadata<T> getCurrentFactory();
+    FactoryAndStorageMetadata<T> getCurrentFactory();
 
-    ApplicationFactoryMetadata<T> updateCurrentFactory(T factoryRoot);
+    void updateCurrentFactory(T factoryRoot, String user);
 
     /**at Application start load current Factory*/
     void loadInitialFactory();

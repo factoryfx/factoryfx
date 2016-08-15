@@ -24,6 +24,7 @@ public class ObjectMapperBuilder {
             objectMapper.enable(SerializationFeature.WRITE_ENUMS_USING_TO_STRING);
             objectMapper.enable(DeserializationFeature.READ_ENUMS_USING_TO_STRING);
             objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
+            objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
             objectMapper.setSerializationInclusion(JsonInclude.Include.ALWAYS);
 
             SimpleModule m = new SimpleModule();
@@ -37,8 +38,11 @@ public class ObjectMapperBuilder {
             objectMapper.registerModule(new Jdk8Module());
             objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
             objectMapper.disable(DeserializationFeature.ADJUST_DATES_TO_CONTEXT_TIME_ZONE);
+//            objectMapper.disable(DeserializationFeature.);
             objectMapper.disable(SerializationFeature.FAIL_ON_EMPTY_BEANS);
 //            objectMapper.enableDefaultTyping();
+
+
 
             simpleObjectMapper = new SimpleObjectMapper(objectMapper);
         }
