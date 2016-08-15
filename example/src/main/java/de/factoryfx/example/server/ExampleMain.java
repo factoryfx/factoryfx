@@ -4,10 +4,10 @@ import java.util.Arrays;
 
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
-import de.factoryfx.development.InMemoryFactoryStorage;
-import de.factoryfx.development.SinglePrecessInstanceUtil;
-import de.factoryfx.development.WebAppViewer;
-import de.factoryfx.development.factory.WebGuiApplication;
+import de.factoryfx.adminui.InMemoryFactoryStorage;
+import de.factoryfx.adminui.SinglePrecessInstanceUtil;
+import de.factoryfx.adminui.WebAppViewer;
+import de.factoryfx.adminui.angularjs.factory.WebGuiApplication;
 import de.factoryfx.example.factory.OrderCollector;
 import de.factoryfx.example.factory.OrderCollectorToTables;
 import de.factoryfx.example.factory.ProductFactory;

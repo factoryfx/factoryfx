@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 
-import de.factoryfx.development.angularjs.model.table.WebGuiTable;
+import de.factoryfx.adminui.angularjs.model.table.WebGuiTable;
 
 public class OrderCollectorToTables implements Function<OrderCollector,List<WebGuiTable>> {
 

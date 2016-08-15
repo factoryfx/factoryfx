@@ -1,0 +1,51 @@
+<div>
+    <div class="container">
+        <div class="row">
+            <div class="jumbotron vertical-center">
+                <div class="container" ng-if="guiModel.logoLarge">
+                    <img ng-src="data:image/PNG;base64,{{guiModel.logoLarge}}" alt="logo"/>
+                    <h1>{{guiModel.title}}</h1>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="row">
+            <form ng-submit="connect()" name="form1" class="form-inline" novalidate>
+                <fieldset>
+                    <legend>Login</legend>
+                    <div class="form-group" ng-class="getInputCssClass(form1.user.$error)">
+                        <label for="password" class="control-label" accesskey="n">Name</label>
+                        <input type="text" class="form-control input-medium" id="user" name="user" ng-model="userData.user" required focus-on>
+                    </div>
+                    <div class="form-group" ng-class="getInputCssClass(form1.password.$error)">
+                        <label for="password" class="control-label" accesskey="w">Passwort</label>
+                        <input type="password" class="form-control input-medium" id="password" name="password" ng-model="userData.password" required>
+                    </div>
+                    <div class="form-group" ng-class="getInputCssClass(form1.localeSelect.$error)">
+                        <label for="localeSelect" class="control-label" accesskey="w">Locale</label>
+                        <select required class="form-control" name="localeSelect" id="localeSelect" ng-model="userData.locale">
+                            <option ng-repeat="locale in locales" value="{{locale}}">{{locale}}</option>
+                        </select>
+                    </div>
+
+                    <div class="clearfix"></div>
+                    <div class="form-group spacer ">
+                        <waiting-button click="connect()" text="Login" bootstrapicon="glyphicon-log-in" bootsrapbtntype="btn-primary"></waiting-button>
+                        <input type="submit" style="visibility: hidden;" />
+                    </div>
+                </fieldset>
+            </form>
+        </div>
+
+
+        <div class="row" ng-show="loginFailed" style="margin-top: 9px">
+            <div class="alert alert-danger ">
+                Failed login
+            </div>
+        </div>
+    </div>
+</div>
+
+
+

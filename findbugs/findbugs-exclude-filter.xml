@@ -38,11 +38,11 @@
 
 
     <Match>
-        <Class name="de.factoryfx.development.SinglePrecessInstanceUtil"/>
+        <Class name="de.factoryfx.adminui.SinglePrecessInstanceUtil"/>
         <Bug pattern="REC_CATCH_EXCEPTION"/>
     </Match>
     <Match>
-        <Class name="de.factoryfx.development.SinglePrecessInstanceUtil"/>
+        <Class name="de.factoryfx.adminui.SinglePrecessInstanceUtil"/>
         <Bug pattern="DE_MIGHT_IGNORE"/>
     </Match>
 
