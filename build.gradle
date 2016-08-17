@@ -1,4 +1,7 @@
 
+
+
+
 apply plugin: 'idea'
 idea {
     project {
@@ -35,12 +38,45 @@ subprojects {
         excludeFilter = file("$rootProject.projectDir/findbugs/findbugs-exclude-filter.xml")
     }
 
+    apply plugin: 'maven-publish'
+
+    task sourceJar(type: Jar) {
+        from sourceSets.main.allJava
+    }
+
+    publishing {
+
+        publications {
+            mavenJava(MavenPublication) {
+                from components.java
+                artifact sourceJar {
+                    classifier "sources"
+                }
+            }
+        }
+
+        repositories {
+            maven {
+                // change to point to your repo, e.g. http://my.org/repo
+                credentials {
+                    username System.getProperty("repouser")
+                    password System.getProperty("repopassword")
+                }
+                url System.getProperty("repourl")
+            }
+        }
+    }
+
+    group = 'de.scoopsoftware.factoryfx'
+    version = '0.1'
+
+
 }
 
 
 
 project(':server') {
-    dependencies {
+  dependencies {
         compile project(":factory")
     }
 }
