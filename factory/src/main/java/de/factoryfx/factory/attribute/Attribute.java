@@ -67,8 +67,8 @@ public abstract class Attribute<T,A extends Attribute<T,A>>{
 
     public interface AttributeVisitor{
         void value(Attribute<?,?> value);
-        void reference(ReferenceAttribute<?> reference);
-        void referenceList(ReferenceListAttribute<?> referenceList);
+        void reference(ReferenceAttribute<?,?> reference);
+        void referenceList(ReferenceListAttribute<?,?> referenceList);
     }
 
     public abstract void visit(AttributeVisitor attributeVisitor);
@@ -81,12 +81,12 @@ public abstract class Attribute<T,A extends Attribute<T,A>>{
             }
 
             @Override
-            public void reference(ReferenceAttribute<?> reference) {
+            public void reference(ReferenceAttribute<?,?> reference) {
                 reference.getOptional().ifPresent((factory)->nestedFactoriesVisitor.accept(factory));
             }
 
             @Override
-            public void referenceList(ReferenceListAttribute<?> referenceList) {
+            public void referenceList(ReferenceListAttribute<?,?> referenceList) {
                 referenceList.get().forEach(new Consumer<FactoryBase<?,?>>() {
                     @Override
                     public void accept(FactoryBase<?,?> item) {

@@ -13,6 +13,7 @@ import java.util.stream.Stream;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 import de.factoryfx.factory.FactoryBase;
+import de.factoryfx.factory.LiveObject;
 import de.factoryfx.factory.jackson.ObservableListJacksonAbleWrapper;
 import de.factoryfx.factory.merge.attribute.AttributeMergeHelper;
 import de.factoryfx.factory.merge.attribute.ReferenceListMergeHelper;
@@ -20,7 +21,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 
-public class ReferenceListAttribute<T extends FactoryBase<?,? super T>> extends Attribute<ObservableList<T>,ReferenceListAttribute<T>> {
+public class ReferenceListAttribute<L extends LiveObject,T extends FactoryBase<L,? super T>> extends Attribute<ObservableList<T>,ReferenceListAttribute<L,T>> {
     ObservableList<T> list = FXCollections.observableArrayList();
     private Class<T> clazz;
 
@@ -199,6 +200,17 @@ public class ReferenceListAttribute<T extends FactoryBase<?,? super T>> extends 
                     result.add((T) factory);
                 }
             }
+        }
+        return result;
+    }
+
+    public List<L> instances(){
+        if (get()==null){
+            return null;
+        }
+        ArrayList<L> result = new ArrayList<>();
+        for(T item: get()){
+            result.add(item.instance());
         }
         return result;
     }

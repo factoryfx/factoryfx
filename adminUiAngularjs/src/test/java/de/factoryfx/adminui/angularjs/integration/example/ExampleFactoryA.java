@@ -1,6 +1,5 @@
 package de.factoryfx.adminui.angularjs.integration.example;
 
-import java.util.ArrayList;
 import java.util.Optional;
 import java.util.regex.Pattern;
 
@@ -38,16 +37,11 @@ public class ExampleFactoryA extends FactoryBase<ExampleLiveObjectA,ExampleFacto
     public final I18nAttribute i18nAttribute=new I18nAttribute(new AttributeMetadata().en("i18nAttribute").de("i18nAttribute de")).en("envalue").de("devalue");
     public final ByteArrayAttribute byteArrayAttribute=new ByteArrayAttribute(new AttributeMetadata().en("byteArrayAttribute").de("byteArrayAttribute de"));
 
-    public final ReferenceAttribute<ExampleFactoryB> referenceAttribute = new ReferenceAttribute<>(ExampleFactoryB.class,new AttributeMetadata().en("ReferenceAttribute").de("ReferenceAttribute de"));
-    public final ReferenceListAttribute<ExampleFactoryB> referenceListAttribute = new ReferenceListAttribute<>(ExampleFactoryB.class,new AttributeMetadata().en("ReferenceListAttribute").de("ReferenceListAttribute de"));
+    public final ReferenceAttribute<ExampleLiveObjectB,ExampleFactoryB> referenceAttribute = new ReferenceAttribute<>(ExampleFactoryB.class,new AttributeMetadata().en("ReferenceAttribute").de("ReferenceAttribute de"));
+    public final ReferenceListAttribute<ExampleLiveObjectB,ExampleFactoryB> referenceListAttribute = new ReferenceListAttribute<>(ExampleFactoryB.class,new AttributeMetadata().en("ReferenceListAttribute").de("ReferenceListAttribute de"));
 
     @Override
     protected ExampleLiveObjectA createImp(Optional<ExampleLiveObjectA> previousLiveObject) {
-        ArrayList<ExampleLiveObjectB> exampleLiveObjectBs = new ArrayList<>();
-        referenceListAttribute.get().forEach(exampleFactoryB -> {
-            exampleLiveObjectBs.add(exampleFactoryB.create());
-        });
-
-        return new ExampleLiveObjectA(referenceAttribute.get().create(), exampleLiveObjectBs);
+        return new ExampleLiveObjectA(referenceAttribute.get().instance(), referenceListAttribute.instances());
     }
 }

@@ -9,10 +9,11 @@ import java.util.function.Function;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 import de.factoryfx.factory.FactoryBase;
+import de.factoryfx.factory.LiveObject;
 import de.factoryfx.factory.merge.attribute.AttributeMergeHelper;
 import de.factoryfx.factory.merge.attribute.ReferenceMergeHelper;
 
-public class ReferenceAttribute<T extends FactoryBase<?,? super T>> extends Attribute<T,ReferenceAttribute<T>> {
+public class ReferenceAttribute<L extends LiveObject,T extends FactoryBase<L,? super T>> extends Attribute<T,ReferenceAttribute<L,T>> {
 
     private T value;
     private Class<T> clazz;
@@ -154,5 +155,12 @@ public class ReferenceAttribute<T extends FactoryBase<?,? super T>> extends Attr
             }
         }
         return result;
+    }
+
+    public L instance(){
+        if (get()==null){
+            return null;
+        }
+        return get().instance();
     }
 }

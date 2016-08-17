@@ -20,7 +20,7 @@ public class WebGuiLayoutFactory extends FactoryBase<WebGuiLayout, WebGuiLayoutF
 
     public final I18nAttribute title = new I18nAttribute(new AttributeMetadata().en("title")).en("Example");
 
-    public final I18nAttribute editorTitle = new I18nAttribute(new AttributeMetadata().en("editorTitle")).en("Factory editor");
+    public final I18nAttribute editorTitle = new I18nAttribute(new AttributeMetadata().en("editorTitle")).en("Editor");
     public final I18nAttribute dashboardTitle = new I18nAttribute(new AttributeMetadata().en("Dashboard")).en("Dashboard");
     public final I18nAttribute historyTitle = new I18nAttribute(new AttributeMetadata().en("History")).en("History");
 
@@ -36,6 +36,7 @@ public class WebGuiLayoutFactory extends FactoryBase<WebGuiLayout, WebGuiLayoutF
     public final I18nAttribute deployedChangesTitle = new I18nAttribute(new AttributeMetadata().en("deployedChangesTitle")).en("Changes");
     public final I18nAttribute deployedValidationsTitle = new I18nAttribute(new AttributeMetadata().en("deployedValidationsTitle")).en("Validation error");
     public final I18nAttribute deployButton = new I18nAttribute(new AttributeMetadata().en("deployButton")).en("Deploy");
+    public final I18nAttribute deployRestButton = new I18nAttribute(new AttributeMetadata().en("deployButton")).en("Reset");
     public final I18nAttribute deployMessage = new I18nAttribute(new AttributeMetadata().en("deployMessage")).en("Changes successfully deployed");
 
     public final I18nAttribute dataItemTableColumn = new I18nAttribute(new AttributeMetadata().en("dataItemTableColumn")).en("Factory");

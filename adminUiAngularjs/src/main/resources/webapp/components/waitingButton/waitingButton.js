@@ -36,10 +36,11 @@ angular.module('factoryfxwebgui.directives')//re-open module definition
                 if (promise){
                     promise.then(function(){
                         $scope.isloading.value=false;
-                        $scope.success=true;
-                        $timeout(function(){
-                            $scope.success=false;
-                        },1000);
+                        // $scope.success=true;
+                        // $timeout(function(){
+                        //     $scope.success=false;
+                        // },1000);
+                        $scope.success=false;
                     });
                 } else {
                     $scope.isloading.value=false;

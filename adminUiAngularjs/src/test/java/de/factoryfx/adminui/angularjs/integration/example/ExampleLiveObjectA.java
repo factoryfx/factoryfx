@@ -1,11 +1,11 @@
 package de.factoryfx.adminui.angularjs.integration.example;
 
-import java.util.ArrayList;
+import java.util.List;
 
 import de.factoryfx.factory.LiveObject;
 
 public class ExampleLiveObjectA implements LiveObject<ExampleVisitor> {
-    public ExampleLiveObjectA(ExampleLiveObjectB exampleLiveObjectB, ArrayList<ExampleLiveObjectB> exampleLiveObjectBs) {
+    public ExampleLiveObjectA(ExampleLiveObjectB exampleLiveObjectB, List<ExampleLiveObjectB> exampleLiveObjectBs) {
 
     }
 

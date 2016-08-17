@@ -7,14 +7,15 @@ import java.util.Optional;
 import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.factory.jackson.ObjectMapperBuilder;
 import de.factoryfx.factory.testfactories.ExampleFactoryA;
-import de.factoryfx.factory.testfactories.VoidLiveObject;
+import de.factoryfx.factory.testfactories.ExampleLiveObjectA;
+import de.factoryfx.factory.util.VoidLiveObject;
 import org.junit.Assert;
 import org.junit.Test;
 
 public class ReferenceAttributeTest {
 
-    public static class ExampleReferenceFactory extends FactoryBase<VoidLiveObject,ExampleFactoryA> {
-        public ReferenceAttribute<ExampleFactoryA> referenceAttribute =new ReferenceAttribute<>(ExampleFactoryA.class,new AttributeMetadata());
+    public static class ExampleReferenceFactory extends FactoryBase<VoidLiveObject,ExampleReferenceFactory> {
+        public ReferenceAttribute<ExampleLiveObjectA,ExampleFactoryA> referenceAttribute =new ReferenceAttribute<>(ExampleFactoryA.class,new AttributeMetadata());
         @Override
         protected VoidLiveObject createImp(Optional<VoidLiveObject> previousLiveObject) {
             return null;
@@ -44,7 +45,7 @@ public class ReferenceAttributeTest {
     public void remove_Listener(){
         ExampleReferenceFactory exampleReferenceFactory = new ExampleReferenceFactory();
         ArrayList<String> calls= new ArrayList<>();
-        AttributeChangeListener<ExampleFactoryA> invalidationListener = (a,o) -> {
+        AttributeChangeListener<ExampleFactoryA> invalidationListener = (a, o) -> {
             calls.add("");
         };
         exampleReferenceFactory.referenceAttribute.addListener(invalidationListener);

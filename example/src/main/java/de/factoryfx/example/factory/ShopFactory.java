@@ -1,7 +1,6 @@
 package de.factoryfx.example.factory;
 
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import de.factoryfx.example.server.OrderStorage;
 import de.factoryfx.factory.FactoryBase;
@@ -11,12 +10,12 @@ import de.factoryfx.factory.attribute.util.StringAttribute;
 import javafx.stage.Stage;
 
 public class ShopFactory extends FactoryBase<Shop,ShopFactory> {
-    {
+    static {
         metadata.setDisplayTextProvider(factoryBase -> "Shop",ShopFactory.class);
     }
 
     public final StringAttribute stageTitle = new StringAttribute(new AttributeMetadata().labelText("Stage title"));
-    public final ReferenceListAttribute<ProductFactory> products = new ReferenceListAttribute<>(ProductFactory.class,new AttributeMetadata().labelText("Products"));
+    public final ReferenceListAttribute<Product,ProductFactory> products = new ReferenceListAttribute<>(ProductFactory.class,new AttributeMetadata().labelText("Products"));
 
     @Override
     protected Shop createImp(Optional<Shop> previousLiveObject) {
@@ -29,6 +28,6 @@ public class ShopFactory extends FactoryBase<Shop,ShopFactory> {
             stage=new Stage();
         }
 
-        return new Shop(stageTitle.get(), products.get().stream().map(productFactory -> productFactory.create()).collect(Collectors.toList()),stage, orderStorage);
+        return new Shop(stageTitle.get(), products.instances(),stage, orderStorage);
     }
 }

@@ -6,15 +6,14 @@ import java.util.Optional;
 import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.factory.attribute.util.StringListAttribute;
 import de.factoryfx.factory.jackson.ObjectMapperBuilder;
-import de.factoryfx.factory.testfactories.ExampleFactoryA;
-import de.factoryfx.factory.testfactories.VoidLiveObject;
+import de.factoryfx.factory.util.VoidLiveObject;
 import javafx.collections.ObservableList;
 import org.junit.Assert;
 import org.junit.Test;
 
 public class ListAttributeTest {
 
-    public static class ExampleListFactory extends FactoryBase<VoidLiveObject,ExampleFactoryA> {
+    public static class ExampleListFactory extends FactoryBase<VoidLiveObject,ExampleListFactory> {
         public StringListAttribute listAttribute =new StringListAttribute(new AttributeMetadata());
 
         @Override

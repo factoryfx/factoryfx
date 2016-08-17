@@ -14,11 +14,11 @@ public class WebGuiServerFactory<V> extends FactoryBase<WebGuiServer<V>,WebGuiSe
 
     public final IntegerAttribute port=new IntegerAttribute(new AttributeMetadata().labelText("port"));
     public final StringAttribute host=new StringAttribute(new AttributeMetadata().labelText("port"));
-    public final ReferenceAttribute<WebGuiResourceFactory<V>> webGuiResource=new ReferenceAttribute<>(new AttributeMetadata().labelText("WebGuiResource"),WebGuiResourceFactory.class);
+    public final ReferenceAttribute<WebGuiResource,WebGuiResourceFactory<V>> webGuiResource=new ReferenceAttribute<>(new AttributeMetadata().labelText("WebGuiResource"),WebGuiResourceFactory.class);
     public final ObjectValueAttribute<ConfigurableResourceHandler> resourceHandler=new ObjectValueAttribute<>(new AttributeMetadata().labelText("resourceHandler"));
 
     @Override
     protected WebGuiServer<V> createImp(Optional<WebGuiServer<V>> previousLiveObject) {
-        return new WebGuiServer<>(port.get(),host.get(),webGuiResource.get().create(),resourceHandler.get());
+        return new WebGuiServer<>(port.get(),host.get(),webGuiResource.get().instance(),resourceHandler.get());
     }
 }

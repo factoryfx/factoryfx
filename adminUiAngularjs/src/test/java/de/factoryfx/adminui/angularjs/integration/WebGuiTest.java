@@ -52,6 +52,8 @@ public class WebGuiTest extends Application{
                 value.stringAttribute.set("i"+i);
                 exampleFactoryA.referenceListAttribute.add(value);
             }
+            exampleFactoryA.referenceListAttribute.add(exampleFactoryA.referenceAttribute.get());
+
             DefaultApplicationServer<ExampleVisitor, ExampleFactoryA> exampleApplicationServer = new DefaultApplicationServer<>(new FactoryManager<>(), new InMemoryFactoryStorage<>(exampleFactoryA));
             exampleApplicationServer.start();
 

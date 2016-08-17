@@ -5,7 +5,7 @@ import java.util.Optional;
 
 import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.factory.attribute.util.StringAttribute;
-import de.factoryfx.factory.testfactories.VoidLiveObject;
+import de.factoryfx.factory.testfactories.ExampleLiveObjectA;
 import de.factoryfx.factory.validation.StringRequired;
 import de.factoryfx.factory.validation.ValidationError;
 import org.junit.Assert;
@@ -13,11 +13,11 @@ import org.junit.Test;
 
 public class AttributeTest {
 
-    public class ExampleFactoryA extends FactoryBase<VoidLiveObject,de.factoryfx.factory.testfactories.ExampleFactoryA> {
+    public class ExampleFactoryA extends FactoryBase<ExampleLiveObjectA, ExampleFactoryA> {
         public final StringAttribute stringAttribute= new StringAttribute(new AttributeMetadata().labelText("ExampleA1")).validation(new StringRequired());
 
         @Override
-        protected VoidLiveObject createImp(Optional<VoidLiveObject> previousLiveObject) {
+        protected ExampleLiveObjectA createImp(Optional<ExampleLiveObjectA> previousLiveObject) {
             return null;
         }
 

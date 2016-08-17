@@ -62,15 +62,6 @@ public class FactoryMerger {
         MergeDiff mergeDiff = mergeResult.getMergeDiff();
 
         if (mergeDiff.hasNoConflicts()) {
-
-            for (FactoryBase<?,?> current : currentMap.values()){
-                current.unMarkChanged();
-            }
-
-            for (MergeResultEntry<?> mergeResultEntry: mergeDiff.getMergeInfos()){
-                mergeResultEntry.parent.markChanged();
-            }
-
             mergeResult.executeMerge();
             currentModel.fixDuplicateObjects(s -> Optional.ofNullable(currentMap.get(s)));
         }

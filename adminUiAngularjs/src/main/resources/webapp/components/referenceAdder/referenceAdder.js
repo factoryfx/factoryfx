@@ -41,9 +41,9 @@ angular.module('factoryfxwebgui.directives')//re-open module definition
 
             $scope.addFactory=function(id){
                 if (Array.isArray($scope.attribute)){
-                    $scope.attribute.push({id: id});
+                    $scope.attribute.push(id);
                 } else {
-                    $scope.attribute={id: id};
+                    $scope.attribute=id;
                 }
             };
 

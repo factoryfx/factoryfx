@@ -7,15 +7,16 @@ import java.util.Optional;
 import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.factory.jackson.ObjectMapperBuilder;
 import de.factoryfx.factory.testfactories.ExampleFactoryA;
-import de.factoryfx.factory.testfactories.VoidLiveObject;
+import de.factoryfx.factory.testfactories.ExampleLiveObjectA;
+import de.factoryfx.factory.util.VoidLiveObject;
 import javafx.collections.ObservableList;
 import org.junit.Assert;
 import org.junit.Test;
 
 public class ReferenceListAttributeTest {
 
-    public static class ExampleReferenceListFactory extends FactoryBase<VoidLiveObject,ExampleFactoryA> {
-        public ReferenceListAttribute<ExampleFactoryA> referenceListAttribute =new ReferenceListAttribute<>(ExampleFactoryA.class,new AttributeMetadata());
+    public static class ExampleReferenceListFactory extends FactoryBase<VoidLiveObject,ExampleReferenceListFactory> {
+        public ReferenceListAttribute<ExampleLiveObjectA,ExampleFactoryA> referenceListAttribute =new ReferenceListAttribute<>(ExampleFactoryA.class,new AttributeMetadata());
 
         @Override
         protected VoidLiveObject createImp(Optional<VoidLiveObject> previousLiveObject) {

@@ -7,6 +7,7 @@ import java.util.Map;
 
 import de.factoryfx.factory.merge.FactoryMerger;
 import de.factoryfx.factory.merge.MergeDiff;
+import de.factoryfx.factory.merge.MergeResultEntry;
 
 public class FactoryManager<V,T extends FactoryBase<? extends LiveObject<V>, T>> {
 
@@ -22,7 +23,15 @@ public class FactoryManager<V,T extends FactoryBase<? extends LiveObject<V>, T>>
         factoryMerger.setLocale(locale);
         MergeDiff mergeDiff= factoryMerger.mergeIntoCurrent();
         if (mergeDiff.hasNoConflicts()){
-            currentFactory.create();
+            for (FactoryBase<?,?> current : currentFactory.collectChildFactories()){
+                current.unMarkChanged();
+            }
+            for (MergeResultEntry<?> mergeResultEntry: mergeDiff.getMergeInfos()){
+                mergeResultEntry.parent.markChanged();
+            }
+
+
+            currentFactory.instance();
 
             LinkedHashMap<String, LiveObject> newLiveObjects = new LinkedHashMap<>();
             currentFactory.collectLiveObjects(newLiveObjects);
@@ -82,7 +91,7 @@ public class FactoryManager<V,T extends FactoryBase<? extends LiveObject<V>, T>>
         newFactory.loopDetector();
         currentFactory=newFactory;
 
-        newFactory.create();
+        newFactory.instance();
 
         LinkedHashMap<String, LiveObject> newLiveObjects = new LinkedHashMap<>();
         newFactory.collectLiveObjects(newLiveObjects);

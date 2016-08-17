@@ -75,14 +75,14 @@ public class FactoryTreeEditor<T extends FactoryBase<? extends LiveObject, T>> e
                             }
 
                             @Override
-                            public void reference(ReferenceAttribute<?> reference) {
+                            public void reference(ReferenceAttribute<?,?> reference) {
                                 TreeItem<Attribute<?,?>> treeItem = addOrGetTreeItem(factoryBase, factoryToTreeItem);
                                 treeItem.setValue(reference);
                                 addOrGetTreeItem(factoryBase,factoryToTreeItem).getChildren().add(treeItem);
                             }
 
                             @Override
-                            public void referenceList(ReferenceListAttribute<?> referenceList) {
+                            public void referenceList(ReferenceListAttribute<?,?> referenceList) {
                                 referenceList.forEach(r -> {
                                     TreeItem<Attribute<?,?>> treeItem = addOrGetTreeItem(r, factoryToTreeItem);
                                     treeItem.setValue(referenceList);

@@ -67,7 +67,7 @@ function                                ($scope,  metaDataService,  guiModelServ
 
     $scope.stagedChanges=false;
     $scope.save=function(){
-        return $resource('../applicationServer/factory').save($scope.selected.factory, function(response){
+        return $resource('../applicationServer/factory').save({factory: $scope.selected.factory.factory}, function(response){
             $scope.stagedChanges=true;
             $scope.resetDirtyTracking();
             $scope.deployResponse=response;
@@ -84,6 +84,13 @@ function                                ($scope,  metaDataService,  guiModelServ
             $scope.deployResponse=response;
         }).$promise;
     };
+
+    $scope.deployReset=function(){
+        return $resource('../applicationServer/deployReset').get(function(response){
+            $scope.deployResponse=response;
+        }).$promise;
+    };
+
     $scope.isDirty=function(){
         return !angular.equals($scope.selected.factory,$scope.selected.originalFactory);
     };
@@ -103,7 +110,7 @@ function                                ($scope,  metaDataService,  guiModelServ
     $resource('../applicationServer/loadCurrentFactory').get(function(response){
         $scope.loadRoot().then(function(result) {
             $scope.initializingEditing=false;
-            $scope.save();//show previous chnages storedin session
+            $scope.save();//show previous changes store in session
             return result;
         });
     });
@@ -142,6 +149,14 @@ function                                ($scope,  metaDataService,  guiModelServ
         delete attribute[key];
         $scope.mapCache[attributeName]=undefined;//reset cache
         $scope.getMap(attribute,attributeName);
+    };
+
+    $scope.getNestedFactoriesDisplayText=function(item){
+        var nestedFactoriesDisplayText = $scope.selected.factory.nestedFactoriesDisplayText[item.id];
+        if (!nestedFactoriesDisplayText){
+            nestedFactoriesDisplayText = $scope.selected.factory.nestedFactoriesDisplayText[item];
+        }
+        return nestedFactoriesDisplayText;
     };
     
 }]);

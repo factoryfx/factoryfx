@@ -50,12 +50,12 @@ public abstract class FactoryBase<E extends LiveObject, T extends FactoryBase<E,
                 }
 
                 @Override
-                public void reference(ReferenceAttribute<?> reference) {
+                public void reference(ReferenceAttribute<?,?> reference) {
                     reference.getOptional().ifPresent((factoryBase)->consumer.accept(factoryBase));
                 }
 
                 @Override
-                public void referenceList(ReferenceListAttribute<?> referenceList) {
+                public void referenceList(ReferenceListAttribute<?,?> referenceList) {
                     referenceList.forEach(new Consumer<FactoryBase<?, ?>>() {
                         @Override
                         public void accept(FactoryBase<?, ?> factoryBase) {
@@ -188,29 +188,32 @@ public abstract class FactoryBase<E extends LiveObject, T extends FactoryBase<E,
 
     /**copy including one the references first level of nested references*/
     public T copyOneLevelDeep(){
-        return copyOneLevelDeep(0);
+        return copyOneLevelDeep(0,new HashMap<>());
     }
 
     @SuppressWarnings("unchecked")
-    private T copyOneLevelDeep(final int level){
+    private T copyOneLevelDeep(final int level, HashMap<String,FactoryBase> identityPreserver){
         if (level>1){
             return null;
         }
-        T result = newInstance();
-        result.setId(this.getId());
-        this.visitAttributesDualFlat(result, (thisAttribute, copyAttribute) -> {
-            Object value = thisAttribute.get();
-            if (value instanceof FactoryBase){
-                value=((FactoryBase)value).copyOneLevelDeep(level+1);
-            }
-            if (thisAttribute instanceof ReferenceListAttribute){
-                final ObservableList<FactoryBase> referenceList = FXCollections.observableArrayList();
-                ((ReferenceListAttribute)thisAttribute).get().forEach(factory -> referenceList.add(((FactoryBase)factory).copyOneLevelDeep(level+1)));
-                value=referenceList;
-            }
+        T result= (T) identityPreserver.get(this.getId());
+        if (result==null){
+            result = newInstance();
+            result.setId(this.getId());
+            this.visitAttributesDualFlat(result, (thisAttribute, copyAttribute) -> {
+                Object value = thisAttribute.get();
+                if (value instanceof FactoryBase){
+                    value=((FactoryBase)value);
+                }
+                if (thisAttribute instanceof ReferenceListAttribute){
+                    final ObservableList<FactoryBase> referenceList = FXCollections.observableArrayList();
+                    ((ReferenceListAttribute)thisAttribute).get().forEach(factory -> referenceList.add(((FactoryBase)factory)));
+                    value=referenceList;
+                }
 
-            copyAttribute.set(value);
-        });
+                copyAttribute.set(value);
+            });
+        }
         return result;
     }
 
@@ -367,7 +370,7 @@ public abstract class FactoryBase<E extends LiveObject, T extends FactoryBase<E,
 
 
     private E createdLiveObjects;
-    public E create() {
+    public E instance() {
         Optional<E> previousLiveObject = Optional.ofNullable(createdLiveObjects);
         if (!changedDeep()) {
             return createdLiveObjects;

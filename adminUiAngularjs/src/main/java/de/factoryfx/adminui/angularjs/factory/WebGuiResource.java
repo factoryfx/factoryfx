@@ -22,6 +22,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import de.factoryfx.adminui.angularjs.model.FactoryTypeInfoWrapper;
 import de.factoryfx.adminui.angularjs.model.WebGuiFactoryMetadata;
 import de.factoryfx.adminui.angularjs.model.WebGuiPossibleEntity;
 import de.factoryfx.adminui.angularjs.model.WebGuiUser;
@@ -33,8 +34,8 @@ import de.factoryfx.factory.LiveObject;
 import de.factoryfx.factory.attribute.Attribute;
 import de.factoryfx.factory.attribute.ReferenceAttribute;
 import de.factoryfx.factory.attribute.ReferenceListAttribute;
-import de.factoryfx.factory.datastorage.StoredFactoryMetadata;
 import de.factoryfx.factory.datastorage.FactoryAndStorageMetadata;
+import de.factoryfx.factory.datastorage.StoredFactoryMetadata;
 import de.factoryfx.factory.merge.MergeDiff;
 import de.factoryfx.factory.merge.MergeResultEntry;
 import de.factoryfx.factory.util.VoidLiveObject;
@@ -112,22 +113,22 @@ public class WebGuiResource<V,T extends FactoryBase<? extends LiveObject<V>, T>>
     @Produces(MediaType.APPLICATION_JSON)
     @Path("factory")
     @SuppressWarnings("unchecked")
-    public StageResponse save(de.factoryfx.adminui.angularjs.model.WebGuiFactory newFactory) {
-        newFactory.factory=newFactory.factory.reconstructMetadataDeepRoot();
+    public StageResponse save(FactoryTypeInfoWrapper newFactoryParam) {
+        FactoryBase<?,?> newFactory=newFactoryParam.factory.reconstructMetadataDeepRoot();
         FactoryBase<?, ?> root = getCurrentEditingFactoryRoot().root;
         Map<String,FactoryBase<?,?>>  map = root.collectChildFactoriesMap();
-        FactoryBase existing = map.get(newFactory.factory.getId());
+        FactoryBase existing = map.get(newFactory.getId());
 
 
         //TODO fix generics,casts
-        existing.visitAttributesDualFlat(newFactory.factory, (thisAttribute, copyAttribute) -> {
+        existing.visitAttributesDualFlat(newFactory, (thisAttribute, copyAttribute) -> {
             Object value = ((Attribute)copyAttribute).get();//The cast is necessary don't trust intellij
             if (value instanceof FactoryBase){
                 value=map.get(((FactoryBase)value).getId());
             }
             if (copyAttribute instanceof ReferenceListAttribute){
                 final ObservableList<FactoryBase> referenceList = FXCollections.observableArrayList();
-                ((ReferenceListAttribute<?>)copyAttribute).get().forEach(factory -> referenceList.add(map.get(factory.getId())));
+                ((ReferenceListAttribute<?,?>)copyAttribute).get().forEach(factory -> referenceList.add(map.get(factory.getId())));
                 value=referenceList;
             }
 
@@ -230,6 +231,14 @@ public class WebGuiResource<V,T extends FactoryBase<? extends LiveObject<V>, T>>
 
         return response;
     }
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("deployReset")
+    public StageResponse deployReset(){
+        request.getSession(true).setAttribute(CURRENT_EDITING_FACTORY_SESSION_KEY,applicationServer.getCurrentFactory());
+        return createStageResponse();
+    }
+
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
@@ -283,7 +292,7 @@ public class WebGuiResource<V,T extends FactoryBase<? extends LiveObject<V>, T>>
                     }
 
                     @Override
-                    public void reference(ReferenceAttribute<?> reference) {
+                    public void reference(ReferenceAttribute<?,?> reference) {
                         List<? extends FactoryBase<?,?>> objects = reference.possibleValues(root);
                         objects.forEach(new Consumer<FactoryBase<?,?>>() {
                             @Override
@@ -294,7 +303,7 @@ public class WebGuiResource<V,T extends FactoryBase<? extends LiveObject<V>, T>>
                     }
 
                     @Override
-                    public void referenceList(ReferenceListAttribute<?> referenceList) {
+                    public void referenceList(ReferenceListAttribute<?,?> referenceList) {
                         List<? extends FactoryBase<?,?>> objects = referenceList.possibleValues(root);
                         objects.forEach(new Consumer<FactoryBase<?,?>>() {
                             @Override
@@ -328,12 +337,12 @@ public class WebGuiResource<V,T extends FactoryBase<? extends LiveObject<V>, T>>
                     }
 
                     @Override
-                    public void reference(ReferenceAttribute<?> reference) {
+                    public void reference(ReferenceAttribute<?,?> reference) {
                         reference.addNewFactory(root);
                     }
 
                     @Override
-                    public void referenceList(ReferenceListAttribute<?> referenceList) {
+                    public void referenceList(ReferenceListAttribute<?,?> referenceList) {
                         referenceList.addNewFactory(root);
                     }
                 });

@@ -59,6 +59,9 @@
                                         </div>
 
                                         <div class="form-group" ng-switch-when="MAP">
+                                            <div class="input-group">
+
+                                            </div>
                                             <label class="control-label" for="{{attributeName}}">{{labelText}}</label>
                                             <div class="input-group" style="width: 100%;" id ="{{attributeName}}">
                                                 <ul class="list-group" style="width: 100%; margin-bottom: 0;">
@@ -82,7 +85,7 @@
                                         <div class="form-group" ng-switch-when="REFERENCE">
                                             <label for="{{attributeName}}">{{labelText}}</label>
                                             <div class="input-group" id ="{{attributeName}}" >
-                                                <input type="text" class="form-control" readonly ng-required="field.metadata.required" placeholder="empty" value="{{selected.factory.nestedFactoriesDisplayText[selected.factory.factory[attributeName].id]}}"/>
+                                                <input type="text" class="form-control" readonly ng-required="field.metadata.required" placeholder="empty" value="{{getNestedFactoriesDisplayText(selected.factory.factory[attributeName])}}"/>
                                                 <span class="input-group-btn" role="group">
                                                     <button type="button" class="btn btn-danger" ng-click="selected.factory.factory[attributeName]=null"  ng-disabled="!selected.factory.factory[attributeName]" ><span class="glyphicon glyphicon-remove"></span></button>
                                                     <waiting-button click="selectFactory(selected.factory.factory[attributeName].id)" text="" disabled="!selected.factory.factory[attributeName] || isDirty()" bootstrapicon="glyphicon-search" bootsrapbtntype="btn-default"></waiting-button>
@@ -97,7 +100,7 @@
                                             <div class="input-group" style="width: 100%;" id ="{{attributeName}}">
                                                 <ul class="list-group" style="width: 100%; margin-bottom: 0;">
                                                     <li class="list-group-item clearfix" ng-repeat="item in (selected.factory.factory[attributeName] | pagingFilter:pagingConfig.itemsPerPage:pagingConfig.currentPage) track by $index">
-                                                        {{selected.factory.nestedFactoriesDisplayText[item.id]}}
+                                                        {{getNestedFactoriesDisplayText(item)}}
                                                         <span class="pull-right">
                                                             <div class="btn-group" role="group" aria-label="...">
                                                                 <button type="button" class="btn btn-danger btn-sm" ng-click="selected.factory.factory[attributeName].splice(selected.factory.factory[attributeName].indexOf(item),1)" ><span class="glyphicon glyphicon-remove"></span></button>
@@ -177,7 +180,7 @@
                     {{guiModel.messages.deployedChangesTitle}}
                 </div>
                 <div class="panel-body" style="max-height:500px; overflow:auto">
-                    <table class="table table-condensed table-bordered table-striped" style="table-layout: fixed; word-wrap:break-word;">
+                    <table class="table table-condensed table-bordered table-striped" style="table-layout: fixed; word-wrap:break-word;" ng-if="deployResponse.mergeDiff.mergeInfos.length!==0 || deployResponse.mergeDiff.conflictInfos.length!==0">
                         <thead>
                         <tr>
                             <th>{{guiModel.messages.dataItemTableColumn}}</th>
@@ -201,15 +204,17 @@
                         </tr>
                         </tbody>
                     </table>
+                    <div class="alert alert-info" role="alert" ng-if="!deployResponse.mergeDiff || deployResponse.mergeDiff.mergeInfos.length==0">
+                        No changes.
+                    </div>
                 </div>
-            </div>
-            <div class="alert alert-info" role="alert" ng-if="!deployResponse.mergeDiff || deployResponse.mergeDiff.mergeInfos.length==0">
-                No changes.
             </div>
 
 
             <h3>{{guiModel.messages.deploymentTitle}}</h3>
-            <waiting-button  class="text-center" bootsrapbtntype="btn-danger" bootstrapicon="glyphicon-share" disabled="!selected.factory || isDirty() || !stagedChanges" click="deploy()" text="{{guiModel.messages.deployButton}}"></waiting-button>
+            <waiting-button  class="pull-left" bootsrapbtntype="btn-danger" bootstrapicon="glyphicon-share" disabled="!selected.factory || isDirty() || !stagedChanges || deployResponse.mergeDiff.mergeInfos.length===0" click="deploy()" text="{{guiModel.messages.deployButton}}"></waiting-button>
+            <waiting-button  class="pull-right" bootsrapbtntype="btn-default" bootstrapicon="glyphicon-share" disabled="!selected.factory || isDirty() || !stagedChanges || deployResponse.mergeDiff.mergeInfos.length===0" click="deployReset()" text="{{guiModel.messages.deployRestButton}}"></waiting-button>
+            <div class="clearfix"></div>
 
             <div class="alert alert-success spacer" role="alert" ng-if="deployResponse.deployed">
                 {{guiModel.messages.deployMessage}}

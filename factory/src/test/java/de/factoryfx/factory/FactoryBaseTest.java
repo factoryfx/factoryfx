@@ -15,7 +15,7 @@ import de.factoryfx.factory.jackson.SimpleObjectMapper;
 import de.factoryfx.factory.testfactories.ExampleFactoryA;
 import de.factoryfx.factory.testfactories.ExampleFactoryB;
 import de.factoryfx.factory.testfactories.ExampleFactoryC;
-import de.factoryfx.factory.testfactories.VoidLiveObject;
+import de.factoryfx.factory.util.VoidLiveObject;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -40,7 +40,7 @@ public class FactoryBaseTest {
 
         exampleFactoryA.referenceAttribute.set(exampleFactoryB);
 
-        exampleFactoryA.create();
+        exampleFactoryA.instance();
 
         HashMap<String, LiveObject> liveObjects = new HashMap<>();
         exampleFactoryA.collectLiveObjects(liveObjects);

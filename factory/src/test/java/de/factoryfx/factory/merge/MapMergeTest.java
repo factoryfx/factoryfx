@@ -5,7 +5,7 @@ import java.util.Optional;
 import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.factory.attribute.AttributeMetadata;
 import de.factoryfx.factory.attribute.util.StringMapAttribute;
-import de.factoryfx.factory.testfactories.VoidLiveObject;
+import de.factoryfx.factory.util.VoidLiveObject;
 import org.junit.Assert;
 import org.junit.Test;
 

@@ -53,7 +53,7 @@ project(':adminUiJavafxServer') {
         compile group: 'org.eclipse.jetty', name: 'jetty-servlet', version: '9.3.8.v20160314'
         compile group: 'org.eclipse.jetty', name: 'jetty-webapp', version: '9.3.8.v20160314'
         compile group: 'org.glassfish.jersey.core', name: 'jersey-server', version: '2.23'
-        compile group: 'com.fasterxml.jackson.jaxrs', name: 'jackson-jaxrs-json-provider', version: '2.7.4'
+        compile group: 'com.fasterxml.jackson.jaxrs', name: 'jackson-jaxrs-json-provider', version: '2.8.1'
         compile 'org.glassfish.jersey.containers:jersey-container-servlet-core:2.23'
     }
 }
@@ -71,10 +71,10 @@ project(':adminUiJavafxClient') {
 
 project(':factory') {
     dependencies {
-        compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.7.4'
-        compile group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jdk8', version: '2.7.4'
-        compile group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jdk7', version: '2.6.6'
-        compile group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jsr310', version: '2.7.4'
+        compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.8.1'
+        compile group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jdk8', version: '2.8.1'
+        compile group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jdk7', version: '2.6.7'
+        compile group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jsr310', version: '2.8.1'
     }
 }
 
@@ -90,7 +90,7 @@ project(':adminUiAngularjs') {
         compile group: 'org.eclipse.jetty', name: 'jetty-servlet', version: '9.3.8.v20160314'
         compile group: 'org.eclipse.jetty', name: 'jetty-webapp', version: '9.3.8.v20160314'
         compile group: 'org.glassfish.jersey.core', name: 'jersey-server', version: '2.23'
-        compile group: 'com.fasterxml.jackson.jaxrs', name: 'jackson-jaxrs-json-provider', version: '2.7.4'
+        compile group: 'com.fasterxml.jackson.jaxrs', name: 'jackson-jaxrs-json-provider', version: '2.8.1'
         compile 'org.glassfish.jersey.containers:jersey-container-servlet-core:2.23'
 
         compile project(":restutil")
