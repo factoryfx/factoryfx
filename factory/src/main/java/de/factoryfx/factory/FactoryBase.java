@@ -203,16 +203,17 @@ public abstract class FactoryBase<E extends LiveObject, T extends FactoryBase<E,
             this.visitAttributesDualFlat(result, (thisAttribute, copyAttribute) -> {
                 Object value = thisAttribute.get();
                 if (value instanceof FactoryBase){
-                    value=((FactoryBase)value);
+                    value=((FactoryBase)value).copyOneLevelDeep(level+1,identityPreserver);
                 }
                 if (thisAttribute instanceof ReferenceListAttribute){
                     final ObservableList<FactoryBase> referenceList = FXCollections.observableArrayList();
-                    ((ReferenceListAttribute)thisAttribute).get().forEach(factory -> referenceList.add(((FactoryBase)factory)));
+                    ((ReferenceListAttribute)thisAttribute).get().forEach(factory -> referenceList.add(((FactoryBase)factory).copyOneLevelDeep(level+1,identityPreserver)));
                     value=referenceList;
                 }
 
                 copyAttribute.set(value);
             });
+            identityPreserver.put(result.getId(),result);
         }
         return result;
     }
