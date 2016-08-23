@@ -1,0 +1,30 @@
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-12">
+            <h2>{{factoryView.title}}</h2>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-4">
+            <table class="table table-condensed table-bordered table-striped table-hover" style="table-layout: fixed; word-wrap:break-word;">
+                <thead>
+                <tr>
+                    <th>Factory</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr ng-repeat="factory in factoryView.factories">
+                    <td ng-click="showFactory(factory.id)">{{factory.displayText}}</td>
+                </tr>
+                </tbody>
+            </table>
+
+        </div>
+        <div class="col-md-8">
+            {{factory | json}}
+        </div>
+    </div>
+
+
+</div>

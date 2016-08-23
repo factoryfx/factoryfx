@@ -16,7 +16,7 @@ import de.factoryfx.factory.merge.attribute.ReferenceMergeHelper;
 public class ReferenceAttribute<L extends LiveObject,T extends FactoryBase<L,? super T>> extends Attribute<T,ReferenceAttribute<L,T>> {
 
     private T value;
-    private Class<T> clazz;
+    private Optional<Class<T>> clazz;
 
     @JsonCreator
     ReferenceAttribute(T value) {
@@ -26,14 +26,14 @@ public class ReferenceAttribute<L extends LiveObject,T extends FactoryBase<L,? s
 
     public ReferenceAttribute(Class<T> clazz, AttributeMetadata attributeMetadata) {
         super(attributeMetadata);
-        this.clazz=clazz;
+        this.clazz=Optional.ofNullable(clazz);
     }
 
     @SuppressWarnings("unchecked")
     //workaround for generic parameter ReferenceAttribute<Example<V>> webGuiResource=new ReferenceAttribute(Example<V>)
     public ReferenceAttribute(AttributeMetadata attributeMetadata, Class clazz) {
         super(attributeMetadata);
-        this.clazz=clazz;
+        this.clazz=Optional.ofNullable(clazz);
     }
 
     @Override
@@ -130,11 +130,16 @@ public class ReferenceAttribute<L extends LiveObject,T extends FactoryBase<L,? s
             set(newFactory);
         });
         if (!newValueProviderFromRoot.isPresent()){
-            try {
-                set(clazz.newInstance());
-            } catch (InstantiationException | IllegalAccessException e) {
-                throw new RuntimeException(e);
+            if (clazz.isPresent()){
+                try {
+                    set(clazz.get().newInstance());
+                } catch (InstantiationException | IllegalAccessException e) {
+                    throw new RuntimeException(e);
+                }
+            } else {
+                set(null);
             }
+
         }
     }
 
@@ -148,8 +153,10 @@ public class ReferenceAttribute<L extends LiveObject,T extends FactoryBase<L,? s
         if (!newValueProviderFromRoot.isPresent()){
             if (!possibleValueProviderFromRoot.isPresent()){
                 for (FactoryBase<?,?> factory: root.collectChildFactories()){
-                    if (clazz.isAssignableFrom(factory.getClass())){
-                        result.add((T) factory);
+                    if (clazz.isPresent()){
+                        if (clazz.get().isAssignableFrom(factory.getClass())){
+                            result.add((T) factory);
+                        }
                     }
                 }
             }

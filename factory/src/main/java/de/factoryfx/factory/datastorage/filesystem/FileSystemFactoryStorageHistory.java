@@ -22,7 +22,9 @@ public class FileSystemFactoryStorageHistory<T extends FactoryBase<? extends Liv
     public FileSystemFactoryStorageHistory(Path basePath, Class<T> rootClass){
         historyDirectory= Paths.get(basePath.toString()+"/history/");
         if (!Files.exists(historyDirectory)){
-            historyDirectory.toFile().mkdirs();
+            if (!historyDirectory.toFile().mkdirs()){
+                throw new IllegalStateException("Unable to create path"+historyDirectory.toFile().getAbsolutePath());
+            }
         }
         this.rootClass =rootClass;
     }

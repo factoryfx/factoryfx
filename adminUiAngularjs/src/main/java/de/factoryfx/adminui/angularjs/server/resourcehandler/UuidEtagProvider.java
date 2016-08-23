@@ -2,9 +2,9 @@ package de.factoryfx.adminui.angularjs.server.resourcehandler;
 
 import java.util.UUID;
 
-public class UuidEtagProvider implements EtagProvider {
+public class UuidETagProvider implements ETagProvider {
     private final String etag;
-    public UuidEtagProvider(){
+    public UuidETagProvider(){
         this.etag=UUID.randomUUID().toString();
     }
 

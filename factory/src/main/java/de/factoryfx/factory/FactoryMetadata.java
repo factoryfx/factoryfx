@@ -5,8 +5,8 @@ import java.util.function.Function;
 
 public class FactoryMetadata {
 
-    private String permission;
-    private Function<Object,String> labelProvider= t -> t.getClass().getSimpleName()+":"+((FactoryBase)t).getId();
+//    private String permission;
+//    private Function<Object,String> labelProvider= t -> t.getClass().getSimpleName()+":"+((FactoryBase)t).getId();
 
     private static class FactoryMetadataData{
         public String permission;

@@ -35,5 +35,8 @@ function                          ($scope,  metaDataService,  guiModelService,  
     };
     $scope.update();
 
-    
+    $scope.showDiff=function(row){
+
+    };
+
 }]);

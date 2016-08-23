@@ -15,12 +15,12 @@
  */
 package de.factoryfx.adminui;
 
-import java.lang.management.ManagementFactory;
 import java.rmi.registry.LocateRegistry;
 
 import javax.management.JMX;
 import javax.management.MBeanServer;
 import javax.management.MBeanServerConnection;
+import javax.management.MBeanServerFactory;
 import javax.management.MalformedObjectNameException;
 import javax.management.ObjectName;
 import javax.management.remote.JMXConnector;
@@ -73,7 +73,7 @@ public class SinglePrecessInstanceUtil {
 		
 		try {
 			LocateRegistry.createRegistry(port);
-			MBeanServer server = ManagementFactory.getPlatformMBeanServer();
+			MBeanServer server = MBeanServerFactory.createMBeanServer();
 			String url = "service:jmx:rmi:///jndi/rmi://localhost:"+port+"/jmxrmi";
 			JMXConnectorServer connectorServer = JMXConnectorServerFactory.newJMXConnectorServer(
 			                                       new JMXServiceURL( url), null, server );

@@ -72,7 +72,7 @@ public class ClasspathMinifingFileContentProvider implements FileContentProvider
 
         try (InputStream inputStream=getClass().getResourceAsStream("/webapp/index.html")) {
             Document doc = Jsoup.parse(inputStream, "UTF8", "/");
-
+            replaceIndexHtmlPlaceholder(doc);
             {
                 logger.info("combine javascript files");
                 List<String> allJsFiles = combineIndexHtml(doc);

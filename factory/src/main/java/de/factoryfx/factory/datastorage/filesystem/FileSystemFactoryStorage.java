@@ -18,7 +18,6 @@ public class FileSystemFactoryStorage<T extends FactoryBase<? extends LiveObject
     private final FileSystemFactoryStorageHistory<T> fileSystemFactoryStorageHistory;
 
     private T initialFactory;
-    private Path basePath;
     private Path currentFactoryPath;
     private Path currentFactoryPathMetadata;
     private final SimpleObjectMapper objectMapper=ObjectMapperBuilder.build();

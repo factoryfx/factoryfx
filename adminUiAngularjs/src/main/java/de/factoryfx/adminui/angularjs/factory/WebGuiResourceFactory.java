@@ -6,6 +6,7 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
+import de.factoryfx.adminui.angularjs.model.view.GuiView;
 import de.factoryfx.adminui.angularjs.model.table.WebGuiTable;
 import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.factory.attribute.AttributeMetadata;
@@ -22,9 +23,10 @@ public class WebGuiResourceFactory<V> extends FactoryBase<WebGuiResource,WebGuiR
     public final ObjectValueAttribute<UserManagement> userManagement=new ObjectValueAttribute<>(new AttributeMetadata().labelText("userManagement"));
     public final ObjectValueAttribute<Supplier<V>> emptyVisitorCreator=new ObjectValueAttribute<>(new AttributeMetadata().labelText("emptyVisitorCreator"));
     public final ObjectValueAttribute<Function<V,List<WebGuiTable>>> dashboardTablesProvider=new ObjectValueAttribute<>(new AttributeMetadata().labelText("dashboardTablesProvider"));
+    public final ObjectValueAttribute<List<GuiView<?>>> guiViews=new ObjectValueAttribute<>(new AttributeMetadata().labelText("guiViews"));
 
     @Override
     protected WebGuiResource createImp(Optional<WebGuiResource> previousLiveObject) {
-        return new WebGuiResource<>(layout.get().instance(),applicationServer.get(),appFactoryClasses.get(),locales.get(),userManagement.get(),emptyVisitorCreator.get(),dashboardTablesProvider.get());
+        return new WebGuiResource<>(layout.get().instance(),applicationServer.get(),appFactoryClasses.get(),locales.get(),userManagement.get(),emptyVisitorCreator.get(),dashboardTablesProvider.get(),guiViews.get());
     }
 }

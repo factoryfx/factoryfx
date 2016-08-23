@@ -1,5 +1,6 @@
 package de.factoryfx.adminui.angularjs.factory;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
@@ -9,6 +10,7 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 import de.factoryfx.adminui.angularjs.model.table.WebGuiTable;
+import de.factoryfx.adminui.angularjs.model.view.GuiView;
 import de.factoryfx.adminui.angularjs.server.resourcehandler.ClasspathMinifingFileContentProvider;
 import de.factoryfx.adminui.angularjs.server.resourcehandler.ConfigurableResourceHandler;
 import de.factoryfx.factory.FactoryBase;
@@ -30,7 +32,8 @@ public class WebGuiApplication<V,T extends FactoryBase<? extends LiveObject<V>, 
             UserManagement userManagement,
             Consumer<WebGuiServerFactory<V>> configurationCustomiser,
             Supplier<V> emptyVisitorCreator,
-            Function<V,List<WebGuiTable>> dashboardTablesProvider){
+            Function<V,List<WebGuiTable>> dashboardTablesProvider,
+            List<GuiView<T>> guiViews){
         WebGuiServerFactory<V> webGuiServerFactory =new WebGuiServerFactory<>();
         webGuiServerFactory.port.set(8089);
         webGuiServerFactory.host.set("localhost");
@@ -48,6 +51,10 @@ public class WebGuiApplication<V,T extends FactoryBase<? extends LiveObject<V>, 
         webGuiResourceFactory.emptyVisitorCreator.set(emptyVisitorCreator);
         webGuiResourceFactory.dashboardTablesProvider.set(dashboardTablesProvider);
 
+        ArrayList<GuiView<?>> list = new ArrayList<>();
+        guiViews.forEach(list::add);
+        webGuiResourceFactory.guiViews.set(list);
+
         webGuiServerFactory.webGuiResource.set(webGuiResourceFactory);
         webGuiServerFactory.resourceHandler.set(new ConfigurableResourceHandler(new ClasspathMinifingFileContentProvider(), () -> UUID.randomUUID().toString()));
 
@@ -62,8 +69,9 @@ public class WebGuiApplication<V,T extends FactoryBase<? extends LiveObject<V>, 
             Function<WebGuiServerFactory<V>,FactoryStorage<WebGuiServerFactory<V>>>  factoryStorageProvider,
             UserManagement userManagement,
             Supplier<V> emptyVisitorCreator,
-            Function<V,List<WebGuiTable>> dashboardTablesProvider){
-        this(applicationServer,appFactoryClasses,factoryStorageProvider,userManagement,(config)->{},emptyVisitorCreator,dashboardTablesProvider);
+            Function<V,List<WebGuiTable>> dashboardTablesProvider,
+            List<GuiView<T>> guiViews){
+        this(applicationServer,appFactoryClasses,factoryStorageProvider,userManagement,(config)->{},emptyVisitorCreator,dashboardTablesProvider,guiViews);
     }
 
     public void start(){

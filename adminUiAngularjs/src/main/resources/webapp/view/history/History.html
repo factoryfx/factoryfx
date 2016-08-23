@@ -6,23 +6,23 @@
     </div>
 
 
-    <table class="table table-condensed table-bordered table-striped" style="table-layout: fixed; word-wrap:break-word;">
+    <table class="table table-condensed table-bordered table-striped table-hover" style="table-layout: fixed; word-wrap:break-word;">
         <caption>{{table.title}}</caption>
         <thead>
-        <tr>
-            <th>date</th>
-            <th>id</th>
-            <th>baseId</th>
-            <th>user</th>
-        </tr>
+            <tr>
+                <th>date</th>
+                <th>id</th>
+                <th>baseId</th>
+                <th>user</th>
+            </tr>
         </thead>
         <tbody>
-        <tr ng-repeat="row in history">
-            <td>{{row.creationTime}}</td>
-            <td>{{row.id}}</td>
-            <td>{{row.baseVersionId}}</td>
-            <td>{{row.user}}</td>
-        </tr>
+            <tr ng-repeat="row in history" ng-click="showDiff(row)">
+                <td>{{row.creationTime}}</td>
+                <td>{{row.id}}</td>
+                <td>{{row.baseVersionId}}</td>
+                <td>{{row.user}}</td>
+            </tr>
         </tbody>
     </table>
 

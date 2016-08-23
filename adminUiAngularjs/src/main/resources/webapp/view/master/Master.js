@@ -15,6 +15,8 @@ function                         ($scope,   $resource,   $location,   guiModelSe
         return result;
     });
 
+    $scope.views=$resource('../applicationServer/views').query();
+
 
     $scope.$location=$location;
 }]);

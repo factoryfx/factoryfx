@@ -2,6 +2,7 @@ package de.factoryfx.adminui.angularjs.integration;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.UUID;
@@ -12,14 +13,15 @@ import com.google.common.io.ByteStreams;
 import de.factoryfx.adminui.InMemoryFactoryStorage;
 import de.factoryfx.adminui.SinglePrecessInstanceUtil;
 import de.factoryfx.adminui.WebAppViewer;
+import de.factoryfx.adminui.angularjs.factory.WebGuiApplication;
+import de.factoryfx.adminui.angularjs.factory.WebGuiServerFactory;
 import de.factoryfx.adminui.angularjs.integration.example.ExampleFactoryA;
 import de.factoryfx.adminui.angularjs.integration.example.ExampleFactoryB;
 import de.factoryfx.adminui.angularjs.integration.example.ExampleVisitor;
+import de.factoryfx.adminui.angularjs.integration.example.ViewCreator;
 import de.factoryfx.adminui.angularjs.integration.example.VisitorToTables;
 import de.factoryfx.adminui.angularjs.server.resourcehandler.ConfigurableResourceHandler;
 import de.factoryfx.adminui.angularjs.server.resourcehandler.FilesystemFileContentProvider;
-import de.factoryfx.adminui.angularjs.factory.WebGuiApplication;
-import de.factoryfx.adminui.angularjs.factory.WebGuiServerFactory;
 import de.factoryfx.factory.FactoryManager;
 import de.factoryfx.server.DefaultApplicationServer;
 import de.factoryfx.user.NoUserManagement;
@@ -73,8 +75,8 @@ public class WebGuiTest extends Application{
                                 throw new RuntimeException(e);
                             }
                         }
-                        config.resourceHandler.set(new ConfigurableResourceHandler(new FilesystemFileContentProvider(Paths.get("./src/main/resources/webapp")), () -> UUID.randomUUID().toString()));
-                    },()->new ExampleVisitor(),new VisitorToTables());
+                        config.resourceHandler.set(new ConfigurableResourceHandler(new FilesystemFileContentProvider(Paths.get("./src/main/resources/webapp"),"body {background-color: inherited;}".getBytes(StandardCharsets.UTF_8)), () -> UUID.randomUUID().toString()));
+                    },()->new ExampleVisitor(),new VisitorToTables(),new ViewCreator().create());
             webGuiApplication.start();
 
 //            WebGuiApplication<WebGuiServer, WebGuiServerFactory> webGuiApplicationSelf =new WebGuiApplication<>(webGuiApplication.getServer(),Arrays.asList(WebGuiServerFactory.class, WebGuiLayoutFactory.class, WebGuiResourceFactory.class),(root)->new InMemoryFactoryStorage<>(root),getUserManagement(),

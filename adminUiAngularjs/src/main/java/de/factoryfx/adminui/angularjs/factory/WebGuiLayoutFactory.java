@@ -23,6 +23,7 @@ public class WebGuiLayoutFactory extends FactoryBase<WebGuiLayout, WebGuiLayoutF
     public final I18nAttribute editorTitle = new I18nAttribute(new AttributeMetadata().en("editorTitle")).en("Editor");
     public final I18nAttribute dashboardTitle = new I18nAttribute(new AttributeMetadata().en("Dashboard")).en("Dashboard");
     public final I18nAttribute historyTitle = new I18nAttribute(new AttributeMetadata().en("History")).en("History");
+    public final I18nAttribute viewsTitle = new I18nAttribute(new AttributeMetadata().en("View")).en("View");
 
     public final I18nAttribute initialisationTitle = new I18nAttribute(new AttributeMetadata().en("editorTitle")).en("Initialisation");
     public final I18nAttribute editingTitle = new I18nAttribute(new AttributeMetadata().en("editingTitle")).en("Edit");

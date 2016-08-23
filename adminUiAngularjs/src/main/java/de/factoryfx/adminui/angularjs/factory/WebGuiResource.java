@@ -28,6 +28,9 @@ import de.factoryfx.adminui.angularjs.model.WebGuiPossibleEntity;
 import de.factoryfx.adminui.angularjs.model.WebGuiUser;
 import de.factoryfx.adminui.angularjs.model.WebGuiValidationError;
 import de.factoryfx.adminui.angularjs.model.table.WebGuiTable;
+import de.factoryfx.adminui.angularjs.model.view.GuiView;
+import de.factoryfx.adminui.angularjs.model.view.ViewHeader;
+import de.factoryfx.adminui.angularjs.model.view.WebGuiView;
 import de.factoryfx.adminui.angularjs.server.AuthorizationRequestFilter;
 import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.factory.LiveObject;
@@ -36,6 +39,7 @@ import de.factoryfx.factory.attribute.ReferenceAttribute;
 import de.factoryfx.factory.attribute.ReferenceListAttribute;
 import de.factoryfx.factory.datastorage.FactoryAndStorageMetadata;
 import de.factoryfx.factory.datastorage.StoredFactoryMetadata;
+import de.factoryfx.factory.merge.FactoryMerger;
 import de.factoryfx.factory.merge.MergeDiff;
 import de.factoryfx.factory.merge.MergeResultEntry;
 import de.factoryfx.factory.util.VoidLiveObject;
@@ -55,6 +59,7 @@ public class WebGuiResource<V,T extends FactoryBase<? extends LiveObject<V>, T>>
     private final UserManagement userManagement;
     private final Function<V,List<WebGuiTable>> dashboardTablesProvider;
     private final Supplier<V> emptyVisitorCreator;
+    private final List<GuiView<?>> views;
 
     /**
      *
@@ -63,7 +68,15 @@ public class WebGuiResource<V,T extends FactoryBase<? extends LiveObject<V>, T>>
      * @param locales
      * @param userManagement
      */
-    public WebGuiResource(WebGuiLayout webGuiLayout, ApplicationServer<V,T> applicationServer, List<Class<? extends FactoryBase>> appFactoryClasses, List<Locale> locales, UserManagement userManagement, Supplier<V> emptyVisitorCreator, Function<V,List<WebGuiTable>> dashboardTablesProvider) {
+    public WebGuiResource(
+            WebGuiLayout webGuiLayout,
+            ApplicationServer<V,T> applicationServer,
+            List<Class<? extends FactoryBase>> appFactoryClasses,
+            List<Locale> locales,
+            UserManagement userManagement,
+            Supplier<V> emptyVisitorCreator,
+            Function<V,List<WebGuiTable>> dashboardTablesProvider,
+            List<GuiView<?>> views) {
         this.applicationServer = applicationServer;
         this.appFactoryClasses = appFactoryClasses;
         this.locales = locales;
@@ -71,6 +84,7 @@ public class WebGuiResource<V,T extends FactoryBase<? extends LiveObject<V>, T>>
         this.userManagement = userManagement;
         this.dashboardTablesProvider= dashboardTablesProvider;
         this.emptyVisitorCreator = emptyVisitorCreator;
+        this.views=views;
     }
 
     @GET
@@ -374,5 +388,44 @@ public class WebGuiResource<V,T extends FactoryBase<? extends LiveObject<V>, T>>
     @Path("history")
     public Collection<StoredFactoryMetadata> history(){
         return applicationServer.getHistoryFactoryList();
+    }
+
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("views")
+    public List<ViewHeader> getViews() {
+        ArrayList<ViewHeader> viewHeaders = new ArrayList<>();
+        for (GuiView<?> view: views){
+            viewHeaders.add(view.createHeader(getUserLocale()));
+        }
+        return viewHeaders;
+    }
+
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("view")
+    public WebGuiView getView(@QueryParam("id")String id) {
+        for (GuiView<?> view: views){
+            if (view.id.equals(id)){
+                return view.createWebGuiView(getCurrentEditingFactoryRoot().root,getUserLocale());
+            }
+        }
+        return null;
+    }
+
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("diff")
+    public MergeDiff getDiff(@QueryParam("id")String id) {
+        applicationServer.getHistoryFactory(id);
+        for(StoredFactoryMetadata storedFactoryMetadata: applicationServer.getHistoryFactoryList()){
+            if (storedFactoryMetadata.id.equals(id)){
+                T historyFactory = applicationServer.getHistoryFactory(id);
+                T historyFactoryPrevious = applicationServer.getHistoryFactory(storedFactoryMetadata.baseVersionId);
+                return new FactoryMerger(historyFactory,historyFactory,historyFactoryPrevious).createMergeResult();
+            }
+        }
+
+        return null;
     }
 }

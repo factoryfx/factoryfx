@@ -7,6 +7,7 @@
 
     <link rel="stylesheet" href="lib/bootstrap/css/bootstrap.min.css" />
     <link rel="stylesheet" href="main/app.css" />
+    <link id="customisableCss" rel="stylesheet"/><!--replaced from application-->
 
     <script src="lib/moment/moment.js"></script>
 
@@ -34,11 +35,22 @@
                 </div>
                 <div id="navbar" class="navbar-collapse collapse">
                     <ul class="nav navbar-nav">
-                        <li ng-class="{active:$location.path()==='/dashboard'}"><a href="#/dashboard">Dashboard</a></li>
-                        <li ng-class="{active:$location.path()==='/factoryEditor'}"><a href="#/factoryEditor">Editor</a></li>
+                        <li ng-class="{active:$location.path()==='/dashboard'} && !status.isopen"><a href="#/dashboard">Dashboard</a></li>
+                        <li ng-class="{active:$location.path()==='/factoryEditor' && !status.isopen}"><a href="#/factoryEditor">Editor</a></li>
+                        <li role="presentation" class="dropdown" uib-dropdown is-open="status.isopen">
+                            <a class="dropdown-toggle" uib-dropdown-toggle ng-disabled="disabled">
+                                Views <span class="caret"></span>
+                            </a>
+                            <ul class="dropdown-menu" role="menu">
+                                <li ng-repeat="view in views"><a ng-href="#/factoryView?id={{view.id}}">{{view.title}}</a></li>
+                            </ul>
+                        </li>
                         <li ng-class="{active:$location.path()==='/history'}"><a href="#/history">History</a></li>
                     </ul>
-                </div><!--/.nav-collapse -->
+
+
+
+                </div>
             </div>
         </nav>
     </div>
@@ -52,6 +64,7 @@
     <script src="view/error/Error.js"></script>
     <script src="view/dashboard/Dashboard.js"></script>
     <script src="view/history/History.js"></script>
+    <script src="view/factoryView/FactoryView.js"></script>
 
     <script src="components/directives.js"></script>
     <script src="components/referenceAdder/referenceAdder.js"></script>

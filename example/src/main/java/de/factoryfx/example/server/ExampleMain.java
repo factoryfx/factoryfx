@@ -1,6 +1,7 @@
 package de.factoryfx.example.server;
 
 import java.util.Arrays;
+import java.util.stream.Collectors;
 
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
@@ -8,11 +9,14 @@ import de.factoryfx.adminui.InMemoryFactoryStorage;
 import de.factoryfx.adminui.SinglePrecessInstanceUtil;
 import de.factoryfx.adminui.WebAppViewer;
 import de.factoryfx.adminui.angularjs.factory.WebGuiApplication;
+import de.factoryfx.adminui.angularjs.model.view.GuiView;
+import de.factoryfx.adminui.angularjs.model.view.WebGuiFactoryHeader;
 import de.factoryfx.example.factory.OrderCollector;
 import de.factoryfx.example.factory.OrderCollectorToTables;
 import de.factoryfx.example.factory.ProductFactory;
 import de.factoryfx.example.factory.ShopFactory;
 import de.factoryfx.factory.FactoryManager;
+import de.factoryfx.factory.util.LanguageText;
 import de.factoryfx.server.DefaultApplicationServer;
 import de.factoryfx.user.NoUserManagement;
 import javafx.application.Application;
@@ -47,7 +51,8 @@ public class ExampleMain extends Application {
                     applicationServer,
                     Arrays.asList(ShopFactory.class,ProductFactory.class),
                     (root)->new InMemoryFactoryStorage<>(root),
-                    new NoUserManagement(),()->new OrderCollector(),new OrderCollectorToTables());
+                    new NoUserManagement(),()->new OrderCollector(),new OrderCollectorToTables(),
+                    Arrays.asList(new GuiView<>("sgjhfgdsj", new LanguageText().en("Products"), shopFactory1 -> shopFactory1.products.stream().map(WebGuiFactoryHeader::new).collect(Collectors.toList()))));
             webGuiApplication.start();
 
         },"http://localhost:8089/#/login");

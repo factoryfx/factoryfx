@@ -19,7 +19,8 @@ var mod = angular.module('factoryfxwebgui', [
     'factoryfxwebgui.loginView',
     'factoryfxwebgui.errorView',
     'factoryfxwebgui.dashboard',
-    'factoryfxwebgui.historyView'
+    'factoryfxwebgui.historyView',
+    'factoryfxwebgui.factoryView'
 ]).
 config(['$routeProvider', function($routeProvider) {
     $routeProvider.otherwise({redirectTo: '/login'});
