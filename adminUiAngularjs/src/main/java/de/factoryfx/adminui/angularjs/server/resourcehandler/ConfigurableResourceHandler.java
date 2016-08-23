@@ -17,9 +17,9 @@ public class ConfigurableResourceHandler extends AbstractHandler {
     MimeTypes mimeTypes = new MimeTypes();
 
     private final FileContentProvider fileContentProvider;
-    private final ETagProvider2 etagProvider;
+    private final ETagProvider etagProvider;
 
-    public ConfigurableResourceHandler(FileContentProvider fileContentProvider, ETagProvider2 etagProvider){
+    public ConfigurableResourceHandler(FileContentProvider fileContentProvider, ETagProvider etagProvider){
         this.fileContentProvider=fileContentProvider;
         this.etagProvider=etagProvider;
     }
