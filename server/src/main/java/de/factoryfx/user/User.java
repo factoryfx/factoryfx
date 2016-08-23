@@ -13,7 +13,7 @@ public class User {
     public Set<String> permissions=new HashSet<>();
 
     public boolean matchUser(String user, String password){
-        return user.equals(user) && password.equals(password);
+        return this.user.equals(user) && this.password.equals(password);
     }
 
     public User(String user, String password, Locale locale, List<String> permissions) {

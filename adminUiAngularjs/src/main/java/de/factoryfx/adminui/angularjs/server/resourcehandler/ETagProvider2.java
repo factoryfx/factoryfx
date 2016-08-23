@@ -1,5 +1,5 @@
 package de.factoryfx.adminui.angularjs.server.resourcehandler;
 
-public interface ETagProvider {
+public interface ETagProvider2 {
     String getEtag();
 }
