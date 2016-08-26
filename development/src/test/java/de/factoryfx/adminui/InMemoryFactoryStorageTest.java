@@ -60,7 +60,7 @@ public class InMemoryFactoryStorageTest {
         FactoryAndStorageMetadata<Dummy> currentFactory = applicationServer.getCurrentFactory();
         currentFactory.root.test.set("2");
 
-        applicationServer.updateCurrentFactory(currentFactory.root, currentFactory.metadata.baseVersionId, Locale.ENGLISH, "fdsag");
+        applicationServer.updateCurrentFactory(new FactoryAndStorageMetadata<>(currentFactory.root,currentFactory.metadata), Locale.ENGLISH);
         Assert.assertEquals(2,calls.size());
         Assert.assertEquals("1",calls.get(0));
         Assert.assertEquals("2",calls.get(1));
