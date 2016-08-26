@@ -11,9 +11,11 @@ import de.factoryfx.factory.merge.MergeDiff;
 
 
 public interface ApplicationServer<V,T extends FactoryBase<? extends LiveObject<V>, T>> {
-    MergeDiff updateCurrentFactory(T updateFactory, String baseVersionId, Locale locale, String user);
+    MergeDiff updateCurrentFactory(FactoryAndStorageMetadata<T> update, Locale locale);
     MergeDiff simulateUpdateCurrentFactory(T updateFactory, String baseVersionId, Locale locale);
     FactoryAndStorageMetadata<T> getCurrentFactory();
+    //** creates a new factory which is ready for edditing mainly assign the right ids*/
+    FactoryAndStorageMetadata<T> getPrepareNewFactory();
     T getHistoryFactory(String id);
     Collection<StoredFactoryMetadata> getHistoryFactoryList();
     void start();

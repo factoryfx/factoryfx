@@ -55,19 +55,22 @@ public class FileSystemFactoryStorage<T extends FactoryBase<? extends LiveObject
     }
 
     @Override
-    public void updateCurrentFactory(T factoryRoot, String user) {
+    public void updateCurrentFactory(FactoryAndStorageMetadata<T> update) {
         FactoryAndStorageMetadata<T> currentFactory = getCurrentFactory();
         fileSystemFactoryStorageHistory.updateHistory(currentFactory.metadata,currentFactory.root);
 
-        String newId = UUID.randomUUID().toString();
-        StoredFactoryMetadata metadata = new StoredFactoryMetadata();
-        metadata.id=newId;
-        metadata.baseVersionId= currentFactory.metadata.id;
-        metadata.user=user;
-
-        objectMapper.writeValue(currentFactoryPath.toFile(),factoryRoot);
-        objectMapper.writeValue(currentFactoryPathMetadata.toFile(),metadata);
+        objectMapper.writeValue(currentFactoryPath.toFile(),update.root);
+        objectMapper.writeValue(currentFactoryPathMetadata.toFile(),update.metadata);
     }
+
+    @Override
+    public FactoryAndStorageMetadata<T> getPrepareNewFactory(){
+        StoredFactoryMetadata metadata = new StoredFactoryMetadata();
+        metadata.id=UUID.randomUUID().toString();
+        metadata.baseVersionId=getCurrentFactory().metadata.id;
+        return new FactoryAndStorageMetadata<>(getCurrentFactory().root,metadata);
+    }
+
 
     @Override
     public void loadInitialFactory() {

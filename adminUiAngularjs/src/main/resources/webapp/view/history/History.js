@@ -35,8 +35,15 @@ function                          ($scope,  metaDataService,  guiModelService,  
     };
     $scope.update();
 
+    $scope.selected={
+        factory: null,
+        mergeDiff:null
+    };
     $scope.showDiff=function(row){
-
+        $scope.selected.factory=row;
+        $resource('../applicationServer/diff', {id:row.id}).get(function(response){
+            $scope.selected.mergeDiff=response;
+        });
     };
 
 }]);

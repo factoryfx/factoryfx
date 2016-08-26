@@ -17,12 +17,10 @@ import netscape.javascript.JSObject;
 public class WebAppViewer{
     private Runnable serverCreator;
     private List<String> startUrls;
-    private Stage primaryStage;
 
     public WebAppViewer(Stage primaryStage, Runnable serverCreator, String... startUrls){
         this.serverCreator= serverCreator;
         this.startUrls= Arrays.asList(startUrls);
-        this.primaryStage=primaryStage;
 
         this.serverCreator.run();
 

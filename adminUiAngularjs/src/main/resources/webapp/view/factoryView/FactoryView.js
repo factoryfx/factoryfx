@@ -35,11 +35,17 @@ function                              ($scope,  metaDataService,  guiModelServic
     };
     $scope.update();
 
-    $scope.factory=null;
+    $scope.selected={
+        factory: null
+    };
     $scope.showFactory= function(factoryId){
         return $resource('../applicationServer/factory', {id:factoryId}).get(function(response){
-            $scope.factory=response;
+            $scope.selected.factory=response;
         }).$promise;
+    };
+
+    $scope.editFactory= function(factory){
+        $location.path("/factoryEditor").search({'id': factory.id});
     };
 
     

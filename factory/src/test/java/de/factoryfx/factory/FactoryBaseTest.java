@@ -139,4 +139,17 @@ public class FactoryBaseTest {
         }
 
     }
+
+    @Test
+    public void test_copyOneLevelDeep_doubleref(){
+        ExampleFactoryA exampleFactoryA = new ExampleFactoryA();
+        ExampleFactoryB exampleFactoryB = new ExampleFactoryB();
+
+        exampleFactoryA.referenceAttribute.set(exampleFactoryB);
+        exampleFactoryA.referenceListAttribute.add(exampleFactoryB);
+
+        ExampleFactoryA copy =  exampleFactoryA.copyOneLevelDeep();
+
+        Assert.assertEquals(copy.referenceAttribute.get(),copy.referenceListAttribute.get().get(0));
+    }
 }

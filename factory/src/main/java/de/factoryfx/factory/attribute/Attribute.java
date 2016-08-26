@@ -14,8 +14,9 @@ import de.factoryfx.factory.validation.Validation;
 import de.factoryfx.factory.validation.ValidationError;
 
 public abstract class Attribute<T,A extends Attribute<T,A>>{
-
+    @JsonIgnore
     public final AttributeMetadata metadata;
+    @JsonIgnore
     public final List<Validation<T>> validations = new ArrayList<>();
 
     @SuppressWarnings("unchecked")

@@ -19,6 +19,7 @@ import java.util.function.Function;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import de.factoryfx.factory.attribute.Attribute;
 import de.factoryfx.factory.attribute.ReferenceAttribute;
@@ -34,7 +35,13 @@ import javafx.collections.ObservableList;
 
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 @JsonInclude(JsonInclude.Include.NON_NULL)
+@JsonTypeInfo(use=JsonTypeInfo.Id.CLASS, include=JsonTypeInfo.As.PROPERTY, property="@class")
 public abstract class FactoryBase<E extends LiveObject, T extends FactoryBase<E,T>> {
+
+    //jackson bug: missing @class fields if we use @JsonValue
+    //FIXME This adds double @class properties in json
+//    @JsonProperty("@class")
+//    final String jacksonBugWorkaround = getClass().getName();
 
     @FunctionalInterface
     interface TriConsumer<A, B, C> {
@@ -427,9 +434,14 @@ public abstract class FactoryBase<E extends LiveObject, T extends FactoryBase<E,
         }
     }
 
+    Function<T,String> displayTextProvider=factory -> factory.getClass().getSimpleName()+":"+factory.getId();
     @JsonIgnore
+    @SuppressWarnings("unchecked")
     public String getDisplayText(){
-        return metadata.getDisplayText(this,getClass());
+        return displayTextProvider.apply((T)this);
+    }
+    public void setDisplayTextProvider(Function<T,String> displayTextProvide){
+        this.displayTextProvider=displayTextProvide;
     }
 
     /** validate attributes without visiting child factories*/
@@ -441,7 +453,7 @@ public abstract class FactoryBase<E extends LiveObject, T extends FactoryBase<E,
         return result;
     }
 
-    @JsonIgnore
-    public static final FactoryMetadata metadata=new FactoryMetadata();
+//    @JsonIgnore
+//    public static final FactoryMetadata metadata=new FactoryMetadata();
 
 }

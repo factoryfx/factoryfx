@@ -41,15 +41,17 @@ public class InMemoryFactoryStorage<T extends FactoryBase<? extends LiveObject<?
     }
 
     @Override
-    public void updateCurrentFactory(T factoryRoot, String user) {
-        String newId = UUID.randomUUID().toString();
+    public void updateCurrentFactory(FactoryAndStorageMetadata<T> update) {
+        storage.put(update.metadata.id, update);
+        current=update.metadata.id;
+    }
+
+    @Override
+    public FactoryAndStorageMetadata<T> getPrepareNewFactory(){
         StoredFactoryMetadata metadata = new StoredFactoryMetadata();
-        metadata.id=newId;
+        metadata.id=UUID.randomUUID().toString();
         metadata.baseVersionId=current;
-        metadata.user=user;
-        FactoryAndStorageMetadata<T> value = new FactoryAndStorageMetadata<>(factoryRoot.copy(), metadata);
-        storage.put(newId, value);
-        current=newId;
+        return new FactoryAndStorageMetadata<>(getCurrentFactory().root,metadata);
     }
 
     @Override

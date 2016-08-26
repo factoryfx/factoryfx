@@ -11,7 +11,8 @@ import java.util.function.Function;
 import java.util.stream.Stream;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.factory.LiveObject;
 import de.factoryfx.factory.jackson.ObservableListJacksonAbleWrapper;
@@ -28,6 +29,12 @@ public class ReferenceListAttribute<L extends LiveObject,T extends FactoryBase<L
     public ReferenceListAttribute(Class<T> clazz, AttributeMetadata attributeMetadata) {
         super(attributeMetadata);
         this.clazz=clazz;
+    }
+
+    @JsonCreator
+    ReferenceListAttribute() {
+        super(null);
+//        this.list = ((ObservableListJacksonAbleWrapper<T>)list).unwrap();
     }
 
     @JsonCreator
@@ -83,7 +90,7 @@ public class ReferenceListAttribute<L extends LiveObject,T extends FactoryBase<L
 
     @Override
     public void set(ObservableList<T> value) {
-        setList(value);
+        this.list = value;
     }
 
     public boolean contains(T value) {
@@ -98,14 +105,14 @@ public class ReferenceListAttribute<L extends LiveObject,T extends FactoryBase<L
         return list.get(i);
     }
 
-    @JsonValue
+    @JsonProperty
     ObservableList<T> getList() {
         return list;
     }
 
-    @JsonValue
+    @JsonProperty
     void setList(ObservableList<T> list) {
-        this.list = list;
+        this.list = ((ObservableListJacksonAbleWrapper<T>)list).unwrap();
     }
 
     public void remove(T value) {
@@ -153,6 +160,7 @@ public class ReferenceListAttribute<L extends LiveObject,T extends FactoryBase<L
     }
 
     @Override
+    @JsonIgnore
     public AttributeTypeInfo getAttributeType() {
         return new AttributeTypeInfo(null,null,null, AttributeTypeInfo.AttributeTypeCategory.REFERENCE_LIST);
     }

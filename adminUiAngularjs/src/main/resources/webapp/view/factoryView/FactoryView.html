@@ -14,7 +14,7 @@
                 </tr>
                 </thead>
                 <tbody>
-                <tr ng-repeat="factory in factoryView.factories">
+                <tr ng-repeat="factory in factoryView.factories" ng-class="{'info': factory.id===selected.factory.factory.id}">
                     <td ng-click="showFactory(factory.id)">{{factory.displayText}}</td>
                 </tr>
                 </tbody>
@@ -22,7 +22,20 @@
 
         </div>
         <div class="col-md-8">
-            {{factory | json}}
+            <h3 style="margin-top: 0px">Details</h3>
+            <div ng-if="selected.factory.factory">
+                <dl class="dl-horizontal">
+                    <dt ng-repeat-start="(attributeName, attributeValue) in selected.factory.factory"
+                        ng-init="attributeMetadata=metaData[selected.factory.type].attributes[attributeName];
+                                 labelText=attributeMetadata.labelText;"
+                        ng-if="attributeName!=='id' && attributeName!=='@class'">
+                    {{labelText}}</dt>
+                    <dd ng-repeat-end ng-if="attributeName!=='id' && attributeName!=='@class'">{{attributeValue}}</dd>
+                </dl>
+                <div>
+                    <button ng-disabled="!selected.factory.factory" type="button" class="btn btn-default pull-right" ng-click="editFactory(selected.factory.factory)">edit</button>
+                </div>
+            </div>
         </div>
     </div>
 

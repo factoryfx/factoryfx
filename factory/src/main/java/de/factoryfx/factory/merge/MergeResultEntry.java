@@ -1,6 +1,5 @@
 package de.factoryfx.factory.merge;
 
-import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 
@@ -9,7 +8,6 @@ import de.factoryfx.factory.attribute.Attribute;
 
 public class MergeResultEntry<T extends FactoryBase<?,T>> {
     public final FactoryBase<?,T> parent;
-    public List<FactoryBase<?,?>> path;
     public String requiredPermission;
 
     public MergeResultEntryInfo mergeResultEntryInfo;

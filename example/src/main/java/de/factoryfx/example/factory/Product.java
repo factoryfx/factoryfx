@@ -2,12 +2,15 @@ package de.factoryfx.example.factory;
 
 import de.factoryfx.factory.LiveObject;
 
+
 public class Product implements LiveObject {
     private final String name;
-    private final int price;
+    protected final double price;//in real world you should use BigDecimal for money, just to keep it simple
+    protected final VatRate vatRate;
 
-    public Product(String name, int price) {
+    public Product(String name, double price, VatRate vatRate) {
         this.name = name;
+        this.vatRate = vatRate;
         this.price = price;
     }
 
@@ -15,8 +18,8 @@ public class Product implements LiveObject {
         return name;
     }
 
-    public int getPrice() {
-        return price;
+    public double getPrice() {
+        return vatRate.calcTotalPrice(price);
     }
 
     @Override

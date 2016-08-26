@@ -13,7 +13,9 @@ public interface FactoryStorage<T extends FactoryBase<? extends LiveObject<?>, T
 
     FactoryAndStorageMetadata<T> getCurrentFactory();
 
-    void updateCurrentFactory(T factoryRoot, String user);
+    FactoryAndStorageMetadata<T> getPrepareNewFactory();
+
+    void updateCurrentFactory(FactoryAndStorageMetadata<T> update);
 
     /**at Application start load current Factory*/
     void loadInitialFactory();

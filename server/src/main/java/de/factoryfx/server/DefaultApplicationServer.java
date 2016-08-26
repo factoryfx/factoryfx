@@ -22,11 +22,11 @@ public class DefaultApplicationServer<V,T extends FactoryBase<? extends LiveObje
     }
 
     @Override
-    public MergeDiff updateCurrentFactory(T updateFactory, String baseVersionId, Locale locale, String user) {
-        T commonVersion = factoryStorage.getHistoryFactory(baseVersionId);
-        MergeDiff mergeDiff = factoryManager.update(commonVersion, updateFactory, locale);
+    public MergeDiff updateCurrentFactory(FactoryAndStorageMetadata<T> update, Locale locale) {
+        T commonVersion = factoryStorage.getHistoryFactory(update.metadata.baseVersionId);
+        MergeDiff mergeDiff = factoryManager.update(commonVersion, update.root, locale);
         if (mergeDiff.hasNoConflicts()){
-            factoryStorage.updateCurrentFactory(factoryManager.getCurrentFactory(),user);
+            factoryStorage.updateCurrentFactory(update);
         }
         return mergeDiff;
     }
@@ -40,6 +40,11 @@ public class DefaultApplicationServer<V,T extends FactoryBase<? extends LiveObje
     @Override
     public FactoryAndStorageMetadata<T> getCurrentFactory() {
         return factoryStorage.getCurrentFactory();
+    }
+
+    @Override
+    public FactoryAndStorageMetadata<T> getPrepareNewFactory() {
+        return factoryStorage.getPrepareNewFactory();
     }
 
     @Override

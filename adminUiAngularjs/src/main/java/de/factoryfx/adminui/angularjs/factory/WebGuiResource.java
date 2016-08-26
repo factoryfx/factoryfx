@@ -104,14 +104,14 @@ public class WebGuiResource<V,T extends FactoryBase<? extends LiveObject<V>, T>>
     @Produces(MediaType.APPLICATION_JSON)
     @Path("root")
     public de.factoryfx.adminui.angularjs.model.WebGuiFactory getRoot() {
-        return new de.factoryfx.adminui.angularjs.model.WebGuiFactory(getCurrentEditingFactoryRoot().root, getCurrentEditingFactoryRoot().root);
+        return new de.factoryfx.adminui.angularjs.model.WebGuiFactory(getCurrentEditingFactory().root, getCurrentEditingFactory().root);
     }
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("factory")
     public de.factoryfx.adminui.angularjs.model.WebGuiFactory getFactory(@QueryParam("id")String id) {
-        FactoryBase<?, ?> root = getCurrentEditingFactoryRoot().root;
+        FactoryBase<?, ?> root = getCurrentEditingFactory().root;
 
         //TODO use map?
         for (FactoryBase<?,?> factory: root.collectChildFactories()){
@@ -129,7 +129,7 @@ public class WebGuiResource<V,T extends FactoryBase<? extends LiveObject<V>, T>>
     @SuppressWarnings("unchecked")
     public StageResponse save(FactoryTypeInfoWrapper newFactoryParam) {
         FactoryBase<?,?> newFactory=newFactoryParam.factory.reconstructMetadataDeepRoot();
-        FactoryBase<?, ?> root = getCurrentEditingFactoryRoot().root;
+        FactoryBase<?, ?> root = getCurrentEditingFactory().root;
         Map<String,FactoryBase<?,?>>  map = root.collectChildFactoriesMap();
         FactoryBase existing = map.get(newFactory.getId());
 
@@ -180,7 +180,7 @@ public class WebGuiResource<V,T extends FactoryBase<? extends LiveObject<V>, T>>
     HttpServletRequest request;
 
     @SuppressWarnings("unchecked")
-    private FactoryAndStorageMetadata<T> getCurrentEditingFactoryRoot(){
+    private FactoryAndStorageMetadata<T> getCurrentEditingFactory(){
         return (FactoryAndStorageMetadata<T>) request.getSession(true).getAttribute(CURRENT_EDITING_FACTORY_SESSION_KEY);
 
     }
@@ -190,7 +190,9 @@ public class WebGuiResource<V,T extends FactoryBase<? extends LiveObject<V>, T>>
     @Path("loadCurrentFactory")
     public Response init(){
         if (request.getSession(true).getAttribute(CURRENT_EDITING_FACTORY_SESSION_KEY)==null){
-            request.getSession(true).setAttribute(CURRENT_EDITING_FACTORY_SESSION_KEY,applicationServer.getCurrentFactory());
+            FactoryAndStorageMetadata<T> prepareNewFactory = applicationServer.getPrepareNewFactory();
+            prepareNewFactory.metadata.user=getUser().user;
+            request.getSession(true).setAttribute(CURRENT_EDITING_FACTORY_SESSION_KEY, prepareNewFactory);
         }
         return Response.ok().entity("ok").build();
     }
@@ -235,7 +237,7 @@ public class WebGuiResource<V,T extends FactoryBase<? extends LiveObject<V>, T>>
 
     private StageResponse createStageResponse(){
         StageResponse response=new StageResponse();
-        FactoryAndStorageMetadata<T> currentEditingFactoryRoot = getCurrentEditingFactoryRoot();
+        FactoryAndStorageMetadata<T> currentEditingFactoryRoot = getCurrentEditingFactory();
         response.mergeDiff= applicationServer.simulateUpdateCurrentFactory(currentEditingFactoryRoot.root, currentEditingFactoryRoot.metadata.baseVersionId,getUserLocale());
 
 
@@ -249,7 +251,7 @@ public class WebGuiResource<V,T extends FactoryBase<? extends LiveObject<V>, T>>
     @Produces(MediaType.APPLICATION_JSON)
     @Path("deployReset")
     public StageResponse deployReset(){
-        request.getSession(true).setAttribute(CURRENT_EDITING_FACTORY_SESSION_KEY,applicationServer.getCurrentFactory());
+        request.getSession(true).setAttribute(CURRENT_EDITING_FACTORY_SESSION_KEY,applicationServer.getPrepareNewFactory());
         return createStageResponse();
     }
 
@@ -275,12 +277,11 @@ public class WebGuiResource<V,T extends FactoryBase<? extends LiveObject<V>, T>>
 
         if (response.validationErrors.isEmpty()){
             //TODO handle conflicts
-            FactoryAndStorageMetadata<T> currentEditingFactoryRoot = getCurrentEditingFactoryRoot();
-            response.mergeDiff=applicationServer.updateCurrentFactory(currentEditingFactoryRoot.root,currentEditingFactoryRoot.metadata.baseVersionId,getUserLocale(),getUser().user);
+            response.mergeDiff=applicationServer.updateCurrentFactory(getCurrentEditingFactory(),getUserLocale());
             if (response.mergeDiff.hasNoConflicts()){
                 response.deployed=true;
 
-                request.getSession(true).setAttribute(CURRENT_EDITING_FACTORY_SESSION_KEY,applicationServer.getCurrentFactory());
+                request.getSession(true).setAttribute(CURRENT_EDITING_FACTORY_SESSION_KEY,applicationServer.getPrepareNewFactory());
             }
         }
 
@@ -295,7 +296,7 @@ public class WebGuiResource<V,T extends FactoryBase<? extends LiveObject<V>, T>>
     public List<WebGuiPossibleEntity> possibleValues(@QueryParam("id")String id, @QueryParam("attributeName")String attributeName){
         List<WebGuiPossibleEntity> result = new ArrayList<>() ;
 
-        T root = getCurrentEditingFactoryRoot().root;
+        T root = getCurrentEditingFactory().root;
         root.collectChildFactoriesMap().get(id).visitAttributesFlat((attributeVariableName, attribute) -> {
             if (attributeVariableName.equals(attributeName)){
 
@@ -339,7 +340,7 @@ public class WebGuiResource<V,T extends FactoryBase<? extends LiveObject<V>, T>>
     @SuppressWarnings("unchecked")
     public de.factoryfx.adminui.angularjs.model.WebGuiFactory addFactory(@QueryParam("id")String id, @QueryParam("attributeName")String attributeName){
 
-        T root = getCurrentEditingFactoryRoot().root;
+        T root = getCurrentEditingFactory().root;
         FactoryBase<?, ?> factoryBase = root.collectChildFactoriesMap().get(id);
         factoryBase.visitAttributesFlat((attributeVariableName, attribute) -> {
             if (attributeVariableName.equals(attributeName)){
@@ -407,7 +408,7 @@ public class WebGuiResource<V,T extends FactoryBase<? extends LiveObject<V>, T>>
     public WebGuiView getView(@QueryParam("id")String id) {
         for (GuiView<?> view: views){
             if (view.id.equals(id)){
-                return view.createWebGuiView(getCurrentEditingFactoryRoot().root,getUserLocale());
+                return view.createWebGuiView(getCurrentEditingFactory().root,getUserLocale());
             }
         }
         return null;

@@ -87,7 +87,7 @@
                                             <div class="input-group" id ="{{attributeName}}" >
                                                 <input type="text" class="form-control" readonly ng-required="field.metadata.required" placeholder="empty" value="{{getNestedFactoriesDisplayText(selected.factory.factory[attributeName])}}"/>
                                                 <span class="input-group-btn" role="group">
-                                                    <button type="button" class="btn btn-danger" ng-click="selected.factory.factory[attributeName]=null"  ng-disabled="!selected.factory.factory[attributeName]" ><span class="glyphicon glyphicon-remove"></span></button>
+                                                    <button type="button" class="btn btn-danger" ng-click="deleteReference(attributeName)"  ng-disabled="!selected.factory.factory[attributeName]" ><span class="glyphicon glyphicon-remove"></span></button>
                                                     <waiting-button click="selectFactory(selected.factory.factory[attributeName].id)" text="" disabled="!selected.factory.factory[attributeName] || isDirty()" bootstrapicon="glyphicon-search" bootsrapbtntype="btn-default"></waiting-button>
                                                     <!--<button type="button" class="btn btn-default" ng-click="selectFactory(selected.factory.factory[attributeName].id)" ng-disabled="!selected.factory.factory[attributeName] || isDirty()" ><span class="glyphicon glyphicon-search"></span></button>-->
                                                 </span>
@@ -99,11 +99,11 @@
                                             <label class="control-label" for="{{attributeName}}">{{labelText}}</label>
                                             <div class="input-group" style="width: 100%;" id ="{{attributeName}}">
                                                 <ul class="list-group" style="width: 100%; margin-bottom: 0;">
-                                                    <li class="list-group-item clearfix" ng-repeat="item in (selected.factory.factory[attributeName] | pagingFilter:pagingConfig.itemsPerPage:pagingConfig.currentPage) track by $index">
+                                                    <li class="list-group-item clearfix" ng-repeat="item in (selected.factory.factory[attributeName].list | pagingFilter:pagingConfig.itemsPerPage:pagingConfig.currentPage) track by $index">
                                                         {{getNestedFactoriesDisplayText(item)}}
                                                         <span class="pull-right">
                                                             <div class="btn-group" role="group" aria-label="...">
-                                                                <button type="button" class="btn btn-danger btn-sm" ng-click="selected.factory.factory[attributeName].splice(selected.factory.factory[attributeName].indexOf(item),1)" ><span class="glyphicon glyphicon-remove"></span></button>
+                                                                <button type="button" class="btn btn-danger btn-sm" ng-click="deleteListReference(attributeName,item)" ><span class="glyphicon glyphicon-remove"></span></button>
                                                                 <waiting-button click="selectFactory(item.id)" text="" disabled="isDirty()" bootstrapicon="glyphicon-search" bootsrapbtntype="btn-default btn-sm"></waiting-button>
 
                                                                 <!--<button type="button" class="btn btn-default btn-sm" ng-click="selectFactory(item.id)" ng-disabled="isDirty()"><span class="glyphicon glyphicon-search"></span></button>-->
@@ -112,8 +112,8 @@
                                                     </li>
                                                 </ul>
                                             </div>
-                                            <div class="pull-left" referenceadder attribute="selected.factory.factory[attributeName]" attributename="attributeName" factory="selected.factory" original-factory="selected.originalFactory"></div>
-                                            <uib-pagination class="pull-right pagination-sm" style="margin: 9px 0;" boundary-links="true" total-items="selected.factory.factory[attributeName].length" max-size="10" items-per-page="pagingConfig.itemsPerPage" ng-model="pagingConfig.currentPage" previous-text="&lsaquo;" next-text="&rsaquo;" first-text="&laquo;" last-text="&raquo;"></uib-pagination>
+                                            <div class="pull-left" referenceadder attribute="selected.factory.factory[attributeName].list" attributename="attributeName" factory="selected.factory" original-factory="selected.originalFactory"></div>
+                                            <uib-pagination class="pull-right pagination-sm" style="margin: 9px 0;" boundary-links="true" total-items="selected.factory.factory[attributeName].list.length" max-size="10" items-per-page="pagingConfig.itemsPerPage" ng-model="pagingConfig.currentPage" previous-text="&lsaquo;" next-text="&rsaquo;" first-text="&laquo;" last-text="&raquo;"></uib-pagination>
                                             <div class="clearfix"></div>
                                         </div>
                                         <div ng-switch-default>
@@ -179,34 +179,8 @@
                 <div class="panel-heading">
                     {{guiModel.messages.deployedChangesTitle}}
                 </div>
-                <div class="panel-body" style="max-height:500px; overflow:auto">
-                    <table class="table table-condensed table-bordered table-striped" style="table-layout: fixed; word-wrap:break-word;" ng-if="deployResponse.mergeDiff.mergeInfos.length!==0 || deployResponse.mergeDiff.conflictInfos.length!==0">
-                        <thead>
-                        <tr>
-                            <th>{{guiModel.messages.dataItemTableColumn}}</th>
-                            <th>{{guiModel.messages.fieldTableColumn}}</th>
-                            <th>{{guiModel.messages.previousValueTableColumn}}</th>
-                            <th>{{guiModel.messages.newValueTableColumn}}</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        <tr ng-repeat="item in deployResponse.mergeDiff.mergeInfos">
-                            <td style="white-space: pre-wrap;">{{item.mergeResultEntryInfo.parentDisplayText}}</td>
-                            <td style="white-space: pre-wrap;">{{item.mergeResultEntryInfo.fieldDisplayText}}</td>
-                            <td style="white-space: pre-wrap;">{{item.mergeResultEntryInfo.previousValueDisplayText}}</td>
-                            <td style="white-space: pre-wrap;">{{item.mergeResultEntryInfo.newValueValueDisplayText}}</td>
-                        </tr>
-                        <tr ng-repeat="item in deployResponse.mergeDiff.conflictInfos">
-                            <td style="white-space: pre-wrap;" class="danger">{{item.mergeResultEntryInfo.parentDisplayText}}</td>
-                            <td style="white-space: pre-wrap;" class="danger">{{item.mergeResultEntryInfo.fieldDisplayText}}</td>
-                            <td style="white-space: pre-wrap;" class="danger">{{item.mergeResultEntryInfo.previousValueDisplayText}}</td>
-                            <td style="white-space: pre-wrap;" class="danger">{{item.mergeResultEntryInfo.newValueValueDisplayText}}</td>
-                        </tr>
-                        </tbody>
-                    </table>
-                    <div class="alert alert-info" role="alert" ng-if="!deployResponse.mergeDiff || deployResponse.mergeDiff.mergeInfos.length==0">
-                        No changes.
-                    </div>
+                <div class="panel-body">
+                    <factorydiff merge-diff="deployResponse.mergeDiff" gui-model="guiModel"></factorydiff>
                 </div>
             </div>
 

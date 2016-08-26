@@ -10,12 +10,13 @@ import de.factoryfx.factory.attribute.util.StringAttribute;
 import javafx.stage.Stage;
 
 public class ShopFactory extends FactoryBase<Shop,ShopFactory> {
-    static {
-        metadata.setDisplayTextProvider(factoryBase -> "Shop",ShopFactory.class);
+    {
+        setDisplayTextProvider(factoryBase -> "Shop");
     }
 
     public final StringAttribute stageTitle = new StringAttribute(new AttributeMetadata().labelText("Stage title"));
-    public final ReferenceListAttribute<Product,ProductFactory> products = new ReferenceListAttribute<>(ProductFactory.class,new AttributeMetadata().labelText("Products"));
+
+    public final ReferenceListAttribute<Product,ProductFactory> products = new ReferenceListAttribute<Product,ProductFactory>(ProductFactory.class,new AttributeMetadata().labelText("Products"));
 
     @Override
     protected Shop createImp(Optional<Shop> previousLiveObject) {
