@@ -1,0 +1,29 @@
+<div style="max-height:500px; overflow:auto">
+    <table class="table table-condensed table-bordered table-striped" style="table-layout: fixed; word-wrap:break-word;" ng-if="mergeDiff.mergeInfos.length!==0 || mergeDiff.conflictInfos.length!==0">
+        <thead>
+        <tr>
+            <th>{{guiModel.messages.dataItemTableColumn}}</th>
+            <th>{{guiModel.messages.fieldTableColumn}}</th>
+            <th>{{guiModel.messages.previousValueTableColumn}}</th>
+            <th>{{guiModel.messages.newValueTableColumn}}</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr ng-repeat="item in mergeDiff.mergeInfos">
+            <td style="white-space: pre-wrap;">{{item.mergeResultEntryInfo.parentDisplayText}}</td>
+            <td style="white-space: pre-wrap;">{{item.mergeResultEntryInfo.fieldDisplayText}}</td>
+            <td style="white-space: pre-wrap;">{{item.mergeResultEntryInfo.previousValueDisplayText}}</td>
+            <td style="white-space: pre-wrap;">{{item.mergeResultEntryInfo.newValueValueDisplayText}}</td>
+        </tr>
+        <tr ng-repeat="item in mergeDiff.conflictInfos">
+            <td style="white-space: pre-wrap;" class="danger">{{item.mergeResultEntryInfo.parentDisplayText}}</td>
+            <td style="white-space: pre-wrap;" class="danger">{{item.mergeResultEntryInfo.fieldDisplayText}}</td>
+            <td style="white-space: pre-wrap;" class="danger">{{item.mergeResultEntryInfo.previousValueDisplayText}}</td>
+            <td style="white-space: pre-wrap;" class="danger">{{item.mergeResultEntryInfo.newValueValueDisplayText}}</td>
+        </tr>
+        </tbody>
+    </table>
+    <div class="alert alert-info" role="alert" ng-if="!mergeDiff || mergeDiff.mergeInfos.length==0">
+        No changes.
+    </div>
+</div>
