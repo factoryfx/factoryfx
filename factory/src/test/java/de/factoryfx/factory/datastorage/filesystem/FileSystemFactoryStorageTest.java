@@ -5,6 +5,8 @@ import java.net.MalformedURLException;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 
+import de.factoryfx.factory.datastorage.FactoryAndStorageMetadata;
+import de.factoryfx.factory.datastorage.StoredFactoryMetadata;
 import de.factoryfx.factory.testfactories.ExampleFactoryA;
 import org.junit.Assert;
 import org.junit.Rule;
@@ -43,8 +45,8 @@ public class FileSystemFactoryStorageTest {
         fileSystemFactoryStorage.loadInitialFactory();
         String id=fileSystemFactoryStorage.getCurrentFactory().metadata.id;
 
-
-        fileSystemFactoryStorage.updateCurrentFactory(new ExampleFactoryA(),"fhdgd");
+        FactoryAndStorageMetadata<ExampleFactoryA> update = new FactoryAndStorageMetadata<>(new ExampleFactoryA(),new StoredFactoryMetadata());
+        fileSystemFactoryStorage.updateCurrentFactory(update);
         Assert.assertNotEquals(id,fileSystemFactoryStorage.getCurrentFactory().metadata.id);
         Assert.assertEquals(1,fileSystemFactoryStorage.getHistoryFactoryList().size());
         Assert.assertEquals(id,new ArrayList<>(fileSystemFactoryStorage.getHistoryFactoryList()).get(0).id);

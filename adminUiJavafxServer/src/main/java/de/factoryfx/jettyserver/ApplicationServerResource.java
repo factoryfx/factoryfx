@@ -31,8 +31,8 @@ public class ApplicationServerResource<V, T extends FactoryBase<? extends LiveOb
     @Produces(MediaType.APPLICATION_JSON)
     @Path("updateCurrentFactory")
     @Override
-    public MergeDiff updateCurrentFactory(T updateFactory, String baseVersionId,Locale locale, String user) {
-        return  applicationServer.updateCurrentFactory(updateFactory,baseVersionId,locale,user);
+    public MergeDiff updateCurrentFactory(FactoryAndStorageMetadata<T> update, Locale locale) {
+        return  applicationServer.updateCurrentFactory(update, locale);
     }
 
     @Override
@@ -46,6 +46,11 @@ public class ApplicationServerResource<V, T extends FactoryBase<? extends LiveOb
     @Override
     public FactoryAndStorageMetadata<T> getCurrentFactory() {
         return applicationServer.getCurrentFactory();
+    }
+
+    @Override
+    public FactoryAndStorageMetadata<T> getPrepareNewFactory() {
+        return null;
     }
 
     @GET
