@@ -16,7 +16,7 @@ public class ProductFactory extends FactoryBase<Product,ProductFactory> {
     }
 
     public final StringAttribute name = new StringAttribute(new AttributeMetadata().labelText("Name")).validation(new StringRequired());
-    public final IntegerAttribute price = new IntegerAttribute(new AttributeMetadata().labelText("Price")).validation(new ObjectRequired<>());
+    public final IntegerAttribute price = new IntegerAttribute(new AttributeMetadata().labelText("Price").addonText("EUR")).validation(new ObjectRequired<>());
     public final ReferenceAttribute<VatRate,VatRateFactory> vatRate = new ReferenceAttribute<>(VatRateFactory.class,new AttributeMetadata().labelText("VatRate")).validation(new ObjectRequired<>());
 
     @Override

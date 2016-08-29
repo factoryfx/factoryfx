@@ -48,5 +48,19 @@ function                              ($scope,  metaDataService,  guiModelServic
         $location.path("/factoryEditor").search({'id': factory.id});
     };
 
+    $scope.getDisplayValue=function(attributeValue, attributeType){
+        if (attributeValue===undefined || attributeValue===null){
+            return "<empty>";
+        }
+        if (attributeType==='REFERENCE'){
+            var nestedFactoriesDisplayText = $scope.selected.factory.nestedFactoriesDisplayText[attributeValue.id];
+            if (!nestedFactoriesDisplayText){
+                nestedFactoriesDisplayText = $scope.selected.factory.nestedFactoriesDisplayText[attributeValue];
+            }
+            return nestedFactoriesDisplayText;
+        }
+        return attributeValue;
+    };
+
     
 }]);

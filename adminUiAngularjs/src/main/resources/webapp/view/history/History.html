@@ -18,7 +18,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr ng-repeat="row in history" ng-click="showDiff(row)" ng-class="{'info': row.id===selected.factory.id}">
+                    <tr ng-repeat="row in history" ng-click="showDiff(row)" ng-class="{'info': row.id===selected.factory.id, 'success': $index===0}">
                         <td>{{row.creationTime | date:'MM.dd.yyyy HH:mm:ss'}}</td>
                         <td>{{row.id}}</td>
                         <td>{{row.baseVersionId}}</td>

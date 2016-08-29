@@ -11,6 +11,7 @@ var mod = angular.module('factoryfxwebgui', [
     'ngResource',
     'ngAnimate',
     'ngAria',
+    'ngSanitize',
     'ui.bootstrap',
     'factoryfxwebgui.directives',
     'factoryfxwebgui.navigationBar',

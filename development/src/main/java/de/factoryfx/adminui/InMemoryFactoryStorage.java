@@ -31,7 +31,7 @@ public class InMemoryFactoryStorage<T extends FactoryBase<? extends LiveObject<?
 
     @Override
     public Collection<StoredFactoryMetadata> getHistoryFactoryList() {
-        return storage.values().stream().filter(factory -> !factory.metadata.id.equals(current)).map(item -> item.metadata).collect(Collectors.toList());
+        return storage.values().stream()/*.filter(factory -> !factory.metadata.id.equals(current))*/.map(item -> item.metadata).collect(Collectors.toList());
     }
 
     @Override

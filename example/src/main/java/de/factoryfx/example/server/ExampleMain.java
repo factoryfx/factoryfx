@@ -19,7 +19,6 @@ import de.factoryfx.example.factory.ShopFactory;
 import de.factoryfx.example.factory.VatRateFactory;
 import de.factoryfx.example.factory.netherlands.CarProductFactory;
 import de.factoryfx.factory.FactoryManager;
-import de.factoryfx.factory.jackson.ObjectMapperBuilder;
 import de.factoryfx.factory.util.LanguageText;
 import de.factoryfx.server.DefaultApplicationServer;
 import de.factoryfx.user.NoUserManagement;
@@ -78,7 +77,7 @@ public class ExampleMain extends Application {
         shopFactory.stageTitle.set("vehicle shop");
 
         VatRateFactory vatRate =new VatRateFactory();
-        vatRate.rate.set(0.19);
+        vatRate.rate.set(0.21);
         {
             CarProductFactory productFactory = new CarProductFactory();
             productFactory.name.set("Car");
@@ -94,8 +93,6 @@ public class ExampleMain extends Application {
             productFactory.vatRate.set(vatRate);
             shopFactory.products.add(productFactory);
         }
-
-        ShopFactory copy = ObjectMapperBuilder.build().copy(shopFactory);
         return shopFactory;
     }
 

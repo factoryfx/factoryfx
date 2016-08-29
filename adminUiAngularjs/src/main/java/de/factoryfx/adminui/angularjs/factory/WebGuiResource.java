@@ -2,14 +2,17 @@ package de.factoryfx.adminui.angularjs.factory;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
@@ -42,10 +45,14 @@ import de.factoryfx.factory.datastorage.StoredFactoryMetadata;
 import de.factoryfx.factory.merge.FactoryMerger;
 import de.factoryfx.factory.merge.MergeDiff;
 import de.factoryfx.factory.merge.MergeResultEntry;
+import de.factoryfx.factory.merge.MergeResultEntryInfo;
 import de.factoryfx.factory.util.VoidLiveObject;
 import de.factoryfx.server.ApplicationServer;
 import de.factoryfx.user.User;
 import de.factoryfx.user.UserManagement;
+import difflib.Delta;
+import difflib.DiffUtils;
+import difflib.Patch;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
@@ -388,7 +395,9 @@ public class WebGuiResource<V,T extends FactoryBase<? extends LiveObject<V>, T>>
     @Produces(MediaType.APPLICATION_JSON)
     @Path("history")
     public Collection<StoredFactoryMetadata> history(){
-        return applicationServer.getHistoryFactoryList();
+        List<StoredFactoryMetadata> historyFactoryList = new ArrayList<>(applicationServer.getHistoryFactoryList());
+        Collections.sort(historyFactoryList, (o1, o2) -> Objects.compare(o1.creationTime, o2.creationTime, (o11, o21) -> o21.compareTo(o11)));
+        return historyFactoryList;
     }
 
     @GET
@@ -423,10 +432,68 @@ public class WebGuiResource<V,T extends FactoryBase<? extends LiveObject<V>, T>>
             if (storedFactoryMetadata.id.equals(id)){
                 T historyFactory = applicationServer.getHistoryFactory(id);
                 T historyFactoryPrevious = applicationServer.getHistoryFactory(storedFactoryMetadata.baseVersionId);
-                return new FactoryMerger(historyFactory,historyFactory,historyFactoryPrevious).createMergeResult();
+                return new FactoryMerger(historyFactoryPrevious,historyFactoryPrevious,historyFactory).createMergeResult();
             }
         }
 
         return null;
+    }
+
+    public static class DiffDetailResponse{
+        public String text;//text/plain dont work well with angulrajs
+
+        public DiffDetailResponse(String text) {
+            this.text = text;
+        }
+    }
+    @POST
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Path("diffdetail")
+    public DiffDetailResponse getDiffDetail(MergeResultEntryInfo info) {
+        Patch<String> patch = DiffUtils.diff(
+                convertToList(info.previousValueDisplayText),
+                convertToList(info.newValueValueDisplayText)
+        );
+        String originalText=info.previousValueDisplayText;
+
+
+        int previousOriginalPosition=0;
+        StringBuilder diffString = new StringBuilder();
+        String  lastOriginalStringDelta="";
+
+        for (Delta<String> delta: patch.getDeltas()) {
+            String originalStringDelta = delta.getOriginal().getLines().stream().collect(Collectors.joining());
+            String revisitedStringDelta = delta.getRevised().getLines().stream().collect(Collectors.joining());
+            final String unchanged=originalText.substring(previousOriginalPosition,delta.getOriginal().getPosition()).replace(lastOriginalStringDelta,"");
+
+            diffString.append("<span class=\"diffUnchanged\">");
+            diffString.append(unchanged);
+            diffString.append("</span>");
+
+            diffString.append("<span class=\"diffOld\">");
+            diffString.append(originalStringDelta);
+            diffString.append("</span>");
+
+            diffString.append("<span class=\"diffNew\">");
+            diffString.append(revisitedStringDelta);
+            diffString.append("</span>");
+
+            previousOriginalPosition=delta.getOriginal().getPosition();
+            lastOriginalStringDelta=originalStringDelta;
+        }
+        final String unchanged = originalText.substring(previousOriginalPosition, originalText.length()).replace(lastOriginalStringDelta,"");
+        diffString.append(unchanged);
+
+        return new DiffDetailResponse(diffString.toString());
+    }
+
+    private List<String> convertToList(String value){
+        //Arrays.asList(value.split(""))  slower
+        ArrayList<String> result = new ArrayList<>(value.length());
+        for (int i = 0;i < value.length(); i++){
+            result.add(String.valueOf(value.charAt(i)));
+        }
+        return result;
     }
 }

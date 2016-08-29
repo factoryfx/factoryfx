@@ -26,6 +26,7 @@
                             <div ng-repeat="(attributeName, attributeValue) in selected.factory.factory"
                                  ng-init="attributeMetadata=metaData[selected.factory.type].attributes[attributeName];
                                           labelText=attributeMetadata.labelText;
+                                          addonText=attributeMetadata.addonText;
                                           required=attributeMetadata.required;
                                           ">
 
@@ -33,7 +34,7 @@
                                     <div ng-switch="attributeMetadata.attributeType" class="factoryform">
 
                                         <div ng-switch-when="VALUE">
-                                            <valueeditor model="selected.factory.factory[attributeName]" formmodel="factory.form" name="attributeName" required="required" datatype="attributeMetadata.dataType" label-text="labelText"></valueeditor>
+                                            <valueeditor model="selected.factory.factory[attributeName]" formmodel="factory.form" name="attributeName" required="required" datatype="attributeMetadata.dataType" label-text="labelText" addon-text="addonText"></valueeditor>
                                             <!--<div style=" background-color: rgba(192, 192, 192, 0.21); width: 100%; height: 1px"></div>-->
                                         </div>
 
@@ -43,7 +44,7 @@
                                                 <ul class="list-group" style="width: 100%; margin-bottom: 0;">
                                                     <li class="list-group-item clearfix" ng-repeat="item in (selected.factory.factory[attributeName] | pagingFilter:pagingConfig.itemsPerPage:pagingConfig.currentPage) track by $index">
                                                         <span class="pull-left" style="width: 90%">
-                                                            <valueeditor model="selected.factory.factory[attributeName][$index]" formmodel="factory.form" name="attributeName+'_ListItem'+$index" required="required" datatype="attributeMetadata.listItemType" label-text=""></valueeditor>
+                                                            <valueeditor model="selected.factory.factory[attributeName][$index]" formmodel="factory.form" name="attributeName+'_ListItem'+$index" required="required" datatype="attributeMetadata.listItemType" label-text="" hidelabel="true"></valueeditor>
                                                         </span>
                                                         <span class="pull-right">
                                                              <button type="button" class="btn btn-danger btn-sm" ng-click="selected.factory.factory[attributeName].splice(selected.factory.factory[attributeName].indexOf(item),1)" ><span class="glyphicon glyphicon-remove"></span></button>
@@ -67,7 +68,12 @@
                                                 <ul class="list-group" style="width: 100%; margin-bottom: 0;">
                                                     <li class="list-group-item clearfix" ng-repeat="item in (getMap(selected.factory.factory[attributeName],attributeName) | pagingFilter:pagingConfig.itemsPerPage:pagingConfig.currentPage) track by item.key">
                                                         <span class="pull-left">
-                                                            <valueeditor model="selected.factory.factory[attributeName][item.key]" formmodel="factory.form" name="attributeName+'_ListItem'+$index" required="required" datatype="attributeMetadata.mapValueType" label-text="item.key"></valueeditor>
+                                                        <div class="form-group">
+                                                            <label for="{{'mapItem'+$index}}" class="col-sm-2 control-label">{{item.key}}</label>
+                                                            <div class="col-sm-10">
+                                                                <valueeditor id="{{'mapItem'+$index}}" model="selected.factory.factory[attributeName][item.key]" formmodel="factory.form" name="attributeName+'_ListItem'+$index" required="required" datatype="attributeMetadata.mapValueType" label-text="item.key" hidelabel="true"></valueeditor>
+                                                            </div>
+                                                        </div>
                                                         </span>
                                                         <span class="pull-right">
                                                              <button type="button" class="btn btn-danger btn-sm" ng-click="deleteMapItem(item.key,selected.factory.factory[attributeName],attributeName)" ><span class="glyphicon glyphicon-remove"></span></button>

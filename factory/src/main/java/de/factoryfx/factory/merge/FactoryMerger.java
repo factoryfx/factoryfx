@@ -1,6 +1,5 @@
 package de.factoryfx.factory.merge;
 
-import java.util.HashSet;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
@@ -41,11 +40,6 @@ public class FactoryMerger {
             FactoryBase newValue = newMap.get(entry.getKey());
 
             entry.getValue().merge(Optional.ofNullable(originalValue), Optional.ofNullable(newValue), mergeResult,locale);
-        }
-
-        HashSet<FactoryBase<?,?>> allModelEntities = new HashSet<>();
-        for (Map.Entry<String, FactoryBase<?,?>> entry : currentMap.entrySet()) {
-            allModelEntities.add(entry.getValue());
         }
         return mergeResult;
     }

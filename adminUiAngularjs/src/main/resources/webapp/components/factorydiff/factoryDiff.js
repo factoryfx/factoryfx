@@ -20,10 +20,26 @@ angular.module('factoryfxwebgui.directives')//re-open module definition
         templateUrl: 'components/factorydiff/factoryDiff.html',
         replace: true,
 
-        controller: ["$scope", "$resource", function ($scope,$resource) {
+        controller: ["$scope", "$resource", "$sce", function ($scope,$resource,$sce) {
+            $scope.selected={
+                diffdetail: undefined
+            };
+            $scope.getDiffDetail=function(mergeResultEntryInfo){
+                $scope.selected.info=mergeResultEntryInfo;
+                return $resource('../applicationServer/diffdetail').save(mergeResultEntryInfo,function(response){
+                    $scope.selected.diffdetail=response.text;
+                });
+            };
+
+            $scope.resetSelected=function(){
+                $scope.selected.diffdetail=undefined;
+                $scope.selected.info=undefined;
+            };
+            $scope.$watch('mergeDiff',function(newValue,oldvalue) {
+                $scope.resetSelected();
+            });
+
             
-
-
         }]
     };
 });

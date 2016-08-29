@@ -18,6 +18,8 @@ angular.module('factoryfxwebgui.directives')//re-open module definition
                     formmodel: '=',
                     name: '=',
                     labelText: '=',
+                    addonText: '=',
+                    hidelabel: '=',
                     required: '='
                },
         restrict: 'E',

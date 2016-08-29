@@ -10,6 +10,7 @@ import de.factoryfx.factory.validation.Validation;
 
 public class WebGuiAttributeMetadata {
     public final String labelText;
+    public final String addonText;
     public final boolean required;
     public final String attributeType;
     public final WebGuiDataType dataType;
@@ -19,6 +20,7 @@ public class WebGuiAttributeMetadata {
 
     public WebGuiAttributeMetadata(AttributeMetadata attributeMetadata, Locale locale, Attribute<?, ?> attribute){
         labelText=attributeMetadata.labelText.getPreferred(locale);
+        addonText=attributeMetadata.addonText;
         boolean required=false;
         for (Validation<?> validation: attribute.validations){
             if (validation instanceof ObjectRequired<?>) {
@@ -29,6 +31,7 @@ public class WebGuiAttributeMetadata {
         this.required=required;
         AttributeTypeInfo attributeType = attribute.getAttributeType();
         this.attributeType = attributeType.attributeType.toString();
+
 
         dataType =new WebGuiDataType(attributeType.dataType);
         listItemType =new WebGuiDataType(attributeType.listItemType);

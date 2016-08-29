@@ -2,13 +2,19 @@
     <span ng-switch="datatype.dataType">
 
         <span class="form-group" ng-switch-when="String" ng-class="getInputCssClass(formmodel[name].$error)">
-            <label class="control-label" for="{{name}}">{{labelText}}</label>
-            <input ng-model-options="{ debounce: 200 }" type="text" class="form-control" id="{{name}}" name="{{name}}" ng-model="$parent.model" ng-required="required">
+            <label ng-if="!$parent.hidelabel" class="control-label" for="{{name}}">{{labelText}}</label>
+            <div ng-class="{'input-group': addonText}">
+                <input ng-model-options="{ debounce: 200 }" type="text" class="form-control" id="{{name}}" name="{{name}}" ng-model="$parent.model" ng-required="required">
+                <div class="input-group-addon" ng-if="addonText">{{addonText}}</div>
+            </div>
         </span>
 
         <div class="form-group" ng-switch-when="BigDecimal" ng-class="getInputCssClass(formmodel[name].$error)">
             <label class="control-label" for="{{name}}">{{labelText}}</label>
-            <input ng-model-options="{ debounce: 200 }" type="text" class="form-control" id="{{name}}" name="{{name}}" ng-model="$parent.model" ng-required="required" ng-pattern="/^-{0,1}[0-9]+(\.[0-9]+)?$/">
+            <div ng-class="{'input-group': addonText}">
+                <input ng-model-options="{ debounce: 200 }" type="text" class="form-control" id="{{name}}" name="{{name}}" ng-model="$parent.model" ng-required="required" ng-pattern="/^-{0,1}[0-9]+(\.[0-9]+)?$/">
+                <div class="input-group-addon" ng-if="addonText">{{addonText}}</div>
+            </div>
         </div>
 
         <div class="form-group" ng-switch-when="Boolean" ng-class="getInputCssClass(formmodel[name].$error)">
@@ -20,17 +26,26 @@
 
         <div class="form-group" ng-switch-when="Double" ng-class="getInputCssClass(formmodel[name].$error)">
             <label class="control-label" for="{{name}}">{{labelText}}</label>
-            <input ng-model-options="{ debounce: 200 }" type="number" class="form-control" id="{{name}}" name="{{name}}" ng-model="$parent.model" ng-required="required">
+            <div ng-class="{'input-group': addonText}">
+                <input ng-model-options="{ debounce: 200 }" type="number" class="form-control" id="{{name}}" name="{{name}}" ng-model="$parent.model" ng-required="required">
+                <div class="input-group-addon" ng-if="addonText">{{addonText}}</div>
+            </div>
         </div>
 
         <div class="form-group" ng-switch-when="Integer" ng-class="getInputCssClass(formmodel[name].$error)">
             <label class="control-label" for="{{name}}">{{labelText}}</label>
-            <input ng-model-options="{ debounce: 200 }" type="number" class="form-control" id="{{name}}" name="{{name}}" ng-model="$parent.model" min="-2147483648" max="2147483647" ng-required="required">
+            <div ng-class="{'input-group': addonText}">
+                <input ng-model-options="{ debounce: 200 }" type="number" class="form-control" id="{{name}}" name="{{name}}" ng-model="$parent.model" min="-2147483648" max="2147483647" ng-required="required">
+                <div class="input-group-addon" ng-if="addonText">{{addonText}}</div>
+            </div>
         </div>
 
         <div class="form-group" ng-switch-when="Long" ng-class="getInputCssClass(formmodel[name].$error)">
             <label class="control-label" for="{{name}}">{{labelText}}</label>
-            <input ng-model-options="{ debounce: 200 }" type="text" class="form-control" id="{{name}}" name="{{name}}" ng-model="$parent.model" ng-minlength="0" ng-maxlength="20" ng-required="required" ng-pattern="/^-{0,1}[0-9]+$/">
+            <div ng-class="{'input-group': addonText}">
+                <input ng-model-options="{ debounce: 200 }" type="text" class="form-control" id="{{name}}" name="{{name}}" ng-model="$parent.model" ng-minlength="0" ng-maxlength="20" ng-required="required" ng-pattern="/^-{0,1}[0-9]+$/">
+                <div class="input-group-addon" ng-if="addonText">{{addonText}}</div>
+            </div>
         </div>
 
         <div class="form-group" ng-switch-when="Enum" ng-class="getInputCssClass(formmodel[name].$error)">

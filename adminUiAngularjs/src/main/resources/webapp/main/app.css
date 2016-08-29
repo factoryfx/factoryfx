@@ -80,3 +80,21 @@ body {
     from { -webkit-transform: rotate(0deg); }
     to { -webkit-transform: rotate(360deg); }
 }
+
+/*https://github.com/twbs/bootstrap/issues/13005 Single input in input group losing rounded corners*/
+.input-group .form-control:last-child:first-child {
+    border-radius: 4px;
+}
+
+.diffUnchanged {
+    color: rgba(0, 0, 0, 1);
+    text-decoration: none;
+}
+.diffOld {
+    color: #ff6140;
+    text-decoration: line-through;
+}
+.diffNew {
+    color: #2c8033;
+    text-decoration: none;
+}
