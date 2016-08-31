@@ -9,13 +9,13 @@
         </tr>
         </thead>
         <tbody>
-        <tr ng-repeat="item in mergeDiff.mergeInfos">
+        <tr ng-repeat="item in mergeDiff.mergeInfos" ng-click="getDiffDetail(item.mergeResultEntryInfo)" ng-class="{'info': item.mergeResultEntryInfo===selected.info}">
             <td style="white-space: pre-wrap;">{{item.mergeResultEntryInfo.parentDisplayText}}</td>
             <td style="white-space: pre-wrap;">{{item.mergeResultEntryInfo.fieldDisplayText}}</td>
             <td style="white-space: pre-wrap;">{{item.mergeResultEntryInfo.previousValueDisplayText}}</td>
             <td style="white-space: pre-wrap;">{{item.mergeResultEntryInfo.newValueValueDisplayText}}</td>
         </tr>
-        <tr ng-repeat="item in mergeDiff.conflictInfos">
+        <tr ng-repeat="item in mergeDiff.conflictInfos" ng-click="getDiffDetail(item.mergeResultEntryInfo)" ng-class="{'info': item.mergeResultEntryInfo===selected.info}">
             <td style="white-space: pre-wrap;" class="danger">{{item.mergeResultEntryInfo.parentDisplayText}}</td>
             <td style="white-space: pre-wrap;" class="danger">{{item.mergeResultEntryInfo.fieldDisplayText}}</td>
             <td style="white-space: pre-wrap;" class="danger">{{item.mergeResultEntryInfo.previousValueDisplayText}}</td>
@@ -23,6 +23,10 @@
         </tr>
         </tbody>
     </table>
+    <div ng-if="selected.diffdetail">
+        <h4>Diff</h4>
+        <pre  ng-bind-html="selected.diffdetail"></pre>
+    </div>
     <div class="alert alert-info" role="alert" ng-if="!mergeDiff || mergeDiff.mergeInfos.length==0">
         No changes.
     </div>

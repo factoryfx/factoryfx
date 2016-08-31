@@ -26,6 +26,26 @@ public class LanguageText {
         return this;
     }
 
+    public LanguageText es(String text) {
+        put(new Locale("es", "ES"),text);
+        return this;
+    }
+
+    public LanguageText fr(String text) {
+        put(Locale.FRANCE,text);
+        return this;
+    }
+
+    public LanguageText it(String text) {
+        put(Locale.ITALIAN,text);
+        return this;
+    }
+
+    public LanguageText pt(String text) {
+        put(new Locale("pt", "PT"),text);
+        return this;
+    }
+
     /** get the text in the locale if possible else return the text in a random(probably only english) locale or null if no text avaible*/
     public String getPreferred(Locale locale) {
         String text = texts.get(locale);

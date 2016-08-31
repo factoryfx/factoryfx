@@ -5,6 +5,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.introspect.Annotated;
+import com.fasterxml.jackson.databind.introspect.JacksonAnnotationIntrospector;
+import com.fasterxml.jackson.databind.introspect.ObjectIdInfo;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider;
@@ -79,12 +82,22 @@ public class WebGuiServer<V> implements LiveObject<V> {
     }
 
     ObjectMapper getObjectMapper() {
-        ObjectMapper objectMapper = ObjectMapperBuilder.build().getObjectMapper();
+        ObjectMapper objectMapper = ObjectMapperBuilder.buildNew().getObjectMapper();
 //        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         SimpleModule module = new SimpleModule();
         module.addSerializer(BigDecimal.class, new ToStringSerializer());
         module.addSerializer(Long.class, new ToStringSerializer());
         objectMapper.registerModule(module);
+
+        //Disable JsonIdentityInfo
+        JacksonAnnotationIntrospector ignoreJsonTypeInfoIntrospector = new JacksonAnnotationIntrospector() {
+            @Override
+            public ObjectIdInfo findObjectIdInfo(Annotated ann) {
+                return null;
+            }
+        };
+        objectMapper.setAnnotationIntrospector(ignoreJsonTypeInfoIntrospector);
+
         return objectMapper;
     }
 

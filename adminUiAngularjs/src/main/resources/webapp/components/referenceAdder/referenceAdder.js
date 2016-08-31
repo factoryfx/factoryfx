@@ -39,11 +39,11 @@ angular.module('factoryfxwebgui.directives')//re-open module definition
                 });
             };
 
-            $scope.addFactory=function(id){
+            $scope.addFactory=function(factory){
                 if (Array.isArray($scope.attribute)){
-                    $scope.attribute.push(id);
+                    $scope.attribute.push(factory);
                 } else {
-                    $scope.attribute=id;
+                    $scope.attribute=factory;
                 }
             };
 

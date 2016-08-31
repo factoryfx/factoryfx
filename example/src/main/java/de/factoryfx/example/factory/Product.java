@@ -3,7 +3,7 @@ package de.factoryfx.example.factory;
 import de.factoryfx.factory.LiveObject;
 
 
-public class Product implements LiveObject {
+public class Product implements LiveObject<OrderCollector> {
     private final String name;
     protected final double price;//in real world you should use BigDecimal for money, just to keep it simple
     protected final VatRate vatRate;
@@ -33,7 +33,7 @@ public class Product implements LiveObject {
     }
 
     @Override
-    public void accept(Object visitor) {
+    public void accept(OrderCollector visitor) {
         //nothing
     }
 }

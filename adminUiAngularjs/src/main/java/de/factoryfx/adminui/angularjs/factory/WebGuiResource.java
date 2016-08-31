@@ -142,6 +142,7 @@ public class WebGuiResource<V,T extends FactoryBase<? extends LiveObject<V>, T>>
 
 
         //TODO fix generics,casts
+        //copy FactoryUpdate into existing
         existing.visitAttributesDualFlat(newFactory, (thisAttribute, copyAttribute) -> {
             Object value = ((Attribute)copyAttribute).get();//The cast is necessary don't trust intellij
             if (value instanceof FactoryBase){

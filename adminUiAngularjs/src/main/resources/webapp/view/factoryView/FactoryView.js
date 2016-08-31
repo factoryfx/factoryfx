@@ -53,11 +53,7 @@ function                              ($scope,  metaDataService,  guiModelServic
             return "<empty>";
         }
         if (attributeType==='REFERENCE'){
-            var nestedFactoriesDisplayText = $scope.selected.factory.nestedFactoriesDisplayText[attributeValue.id];
-            if (!nestedFactoriesDisplayText){
-                nestedFactoriesDisplayText = $scope.selected.factory.nestedFactoriesDisplayText[attributeValue];
-            }
-            return nestedFactoriesDisplayText;
+            return $scope.selected.factory.nestedFactoriesDisplayText[attributeValue.id];
         }
         return attributeValue;
     };

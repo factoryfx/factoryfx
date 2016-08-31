@@ -19,20 +19,42 @@ public class I18nAttribute extends ValueAttribute<LanguageText,I18nAttribute> {
     }
 
     public I18nAttribute en(String text) {
-        if (get()==null){
-            set(new LanguageText());
-        }
-        get().en(text);
+        getOrCreate().en(text);
         return this;
     }
 
     public I18nAttribute de(String text) {
+        getOrCreate().de(text);
+        return this;
+    }
+
+    public I18nAttribute es(String text) {
+        getOrCreate().es(text);
+        return this;
+    }
+
+    public I18nAttribute fr(String text) {
+        getOrCreate().fr(text);
+        return this;
+    }
+
+    public I18nAttribute it(String text) {
+        getOrCreate().it(text);
+        return this;
+    }
+
+    public I18nAttribute pt(String text) {
+        getOrCreate().pt(text);
+        return this;
+    }
+
+    private LanguageText getOrCreate(){
         if (get()==null){
             set(new LanguageText());
         }
-        get().de(text);
-        return this;
+        return get();
     }
+
 
     public String getPreferred(Locale locale) {
         return get().getPreferred(locale);

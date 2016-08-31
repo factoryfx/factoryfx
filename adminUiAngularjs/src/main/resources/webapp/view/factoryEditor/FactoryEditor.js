@@ -162,52 +162,19 @@ function                                ($scope,  metaDataService,  guiModelServ
         $scope.getMap(attribute,attributeName);
     };
 
-    $scope.getNestedFactoriesDisplayText=function(item){
-        if (!item){
+    $scope.getNestedFactoriesDisplayText=function(factory){
+        if (!factory){
             return "<empty>";
         }
-        var nestedFactoriesDisplayText = $scope.selected.factory.nestedFactoriesDisplayText[item.id];
-        if (!nestedFactoriesDisplayText){
-            nestedFactoriesDisplayText = $scope.selected.factory.nestedFactoriesDisplayText[item];
-        }
-        return nestedFactoriesDisplayText;
+        return $scope.selected.factory.nestedFactoriesDisplayText[factory.id];
     };
 
-    //jackson serialise the first object ref as object and other only as id
-    //if we delete the first object we must search for other ids else the object and reference is lost
     $scope.deleteReference=function(attributeName){
-        if (!$scope.selected.factory.factory[attributeName].id){
-            $scope.selected.factory.factory[attributeName]=null;
-        } else {
-            var id=$scope.selected.factory.factory[attributeName].id;
-            var removed=$scope.selected.factory.factory[attributeName];
-            $scope.selected.factory.factory[attributeName]=null;
-            for (var attribute in $scope.selected.factory.factory) {
-                if (attribute!==attributeName){
-                    if ($scope.selected.factory.factory.hasOwnProperty(attribute)) {
-                        var attributeValue=$scope.selected.factory.factory[attribute].list;
-                        if (Array.isArray(attributeValue)){
-                            for (var i = 0; i < attributeValue.length; i++) {
-                                if (attributeValue[i]===id){
-                                    $scope.selected.factory.factory[attribute].list.splice( i, 1 );
-                                    $scope.selected.factory.factory[attribute].list.push(removed);
-                                    return;
-                                }
-
-                            }
-                        }
-                    }
-                }
-            }
-        }
+        $scope.selected.factory.factory[attributeName]=null;
     };
     $scope.deleteListReference=function(attributeName,item){
-        if (!item.id){
-            $scope.selected.factory.factory[attributeName].splice($scope.selected.factory.factory[attributeName].indexOf(item),1);
-        } else {
-            //TODO same problem as deleteReference try to unify?
-            $scope.selected.factory.factory[attributeName].splice($scope.selected.factory.factory[attributeName].indexOf(item),1);
-        }
+        var arrayAttr=$scope.selected.factory.factory[attributeName].list;
+        arrayAttr.splice(arrayAttr.indexOf(item),1);
     };
 
     $scope.$on('$routeUpdate', function(){

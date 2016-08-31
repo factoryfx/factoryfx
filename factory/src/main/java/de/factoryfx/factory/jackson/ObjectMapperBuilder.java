@@ -17,35 +17,36 @@ public class ObjectMapperBuilder {
 
     public static SimpleObjectMapper build() {
         if (simpleObjectMapper == null) {
-
-
-            ObjectMapper objectMapper = new ObjectMapper();
-
-            objectMapper.enable(SerializationFeature.WRITE_ENUMS_USING_TO_STRING);
-            objectMapper.enable(DeserializationFeature.READ_ENUMS_USING_TO_STRING);
-            objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
-            objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
-            objectMapper.setSerializationInclusion(JsonInclude.Include.ALWAYS);
-
-            SimpleModule m = new SimpleModule();
-            m.addAbstractTypeMapping(ObservableMap.class, ObservableMapJacksonAbleWrapper.class);
-            m.addAbstractTypeMapping(ObservableList.class, ObservableListJacksonAbleWrapper.class);
-            m.addAbstractTypeMapping(ObservableSet.class, ObservableSetJacksonAbleWrapper.class);
-            objectMapper.registerModule(m);
-
-            objectMapper.registerModule(new JavaTimeModule());
-            objectMapper.registerModule(new Jdk7Module());
-            objectMapper.registerModule(new Jdk8Module());
-            objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
-            objectMapper.disable(DeserializationFeature.ADJUST_DATES_TO_CONTEXT_TIME_ZONE);
-//            objectMapper.disable(DeserializationFeature.);
-            objectMapper.disable(SerializationFeature.FAIL_ON_EMPTY_BEANS);
-//            objectMapper.enableDefaultTyping();
-
-
-
-            simpleObjectMapper = new SimpleObjectMapper(objectMapper);
+            simpleObjectMapper = buildNew();
         }
         return simpleObjectMapper;
+    }
+
+    public static SimpleObjectMapper buildNew() {
+
+        ObjectMapper objectMapper = new ObjectMapper();
+
+        objectMapper.enable(SerializationFeature.WRITE_ENUMS_USING_TO_STRING);
+        objectMapper.enable(DeserializationFeature.READ_ENUMS_USING_TO_STRING);
+        objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
+        objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+        objectMapper.setSerializationInclusion(JsonInclude.Include.ALWAYS);
+
+        SimpleModule m = new SimpleModule();
+        m.addAbstractTypeMapping(ObservableMap.class, ObservableMapJacksonAbleWrapper.class);
+        m.addAbstractTypeMapping(ObservableList.class, ObservableListJacksonAbleWrapper.class);
+        m.addAbstractTypeMapping(ObservableSet.class, ObservableSetJacksonAbleWrapper.class);
+        objectMapper.registerModule(m);
+
+        objectMapper.registerModule(new JavaTimeModule());
+        objectMapper.registerModule(new Jdk7Module());
+        objectMapper.registerModule(new Jdk8Module());
+        objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+        objectMapper.disable(DeserializationFeature.ADJUST_DATES_TO_CONTEXT_TIME_ZONE);
+//            objectMapper.disable(DeserializationFeature.);
+        objectMapper.disable(SerializationFeature.FAIL_ON_EMPTY_BEANS);
+//            objectMapper.enableDefaultTyping();
+
+        return new SimpleObjectMapper(objectMapper);
     }
 }

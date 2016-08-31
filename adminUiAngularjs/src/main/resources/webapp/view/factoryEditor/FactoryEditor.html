@@ -4,13 +4,13 @@
             <h2>{{guiModel.messages.editorTitle}}</h2>
         </div>
     </div>
-    <div class="row">
-        <div class="col-md-12">
-            <h3>{{guiModel.messages.initialisationTitle}}</h3>
-            <uib-progressbar ng-if="initializingEditing" class="progress-striped active" value="dynamic">loading configuration</uib-progressbar>
-            <uib-progressbar ng-if="!initializingEditing" animate="true" value="dynamic" type="success">loaded</uib-progressbar>
-        </div>
-    </div>
+    <!--<div class="row">-->
+        <!--<div class="col-md-12">-->
+            <!--<h3>{{guiModel.messages.initialisationTitle}}</h3>-->
+            <!--<uib-progressbar ng-if="initializingEditing" class="progress-striped active" value="dynamic">loading configuration</uib-progressbar>-->
+            <!--<uib-progressbar ng-if="!initializingEditing" animate="true" value="dynamic" type="success">loaded</uib-progressbar>-->
+        <!--</div>-->
+    <!--</div>-->
     <div class="row">
         <div class="col-md-6">
             <h3>{{guiModel.messages.editingTitle}}</h3>
@@ -106,7 +106,7 @@
                                             <div class="input-group" style="width: 100%;" id ="{{attributeName}}">
                                                 <ul class="list-group" style="width: 100%; margin-bottom: 0;">
                                                     <li class="list-group-item clearfix" ng-repeat="item in (selected.factory.factory[attributeName].list | pagingFilter:pagingConfig.itemsPerPage:pagingConfig.currentPage) track by $index">
-                                                        {{getNestedFactoriesDisplayText(item)}}
+                                                        <a ng-click="selectFactory(item.id)">{{getNestedFactoriesDisplayText(item)}}</a>
                                                         <span class="pull-right">
                                                             <div class="btn-group" role="group" aria-label="...">
                                                                 <button type="button" class="btn btn-danger btn-sm" ng-click="deleteListReference(attributeName,item)" ><span class="glyphicon glyphicon-remove"></span></button>

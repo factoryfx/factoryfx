@@ -1,10 +1,13 @@
 package de.factoryfx.example.server;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
+import com.google.common.io.ByteStreams;
 import de.factoryfx.adminui.InMemoryFactoryStorage;
 import de.factoryfx.adminui.SinglePrecessInstanceUtil;
 import de.factoryfx.adminui.WebAppViewer;
@@ -40,7 +43,15 @@ public class ExampleMain extends Application {
             WebGuiApplication<OrderCollector, ShopFactory> webGuiApplication=new WebGuiApplication<>(
                     applicationServer,
                     new ClasspathBasedFactoryProvider().get(ShopFactory.class), InMemoryFactoryStorage::new,
-                    new NoUserManagement(), OrderCollector::new,new OrderCollectorToTables(),
+                    new NoUserManagement(),
+                    (config)->{
+                        try (InputStream inputStream = WebGuiApplication.class.getResourceAsStream("/logo/logo.png")) {
+                            config.webGuiResource.get().layout.get().logoSmall.set(ByteStreams.toByteArray(inputStream));
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
+                        }
+                    },
+                    OrderCollector::new,new OrderCollectorToTables(),
                     Arrays.asList(new GuiView<>("sgjhfgdsj", new LanguageText().en("Products"), shopFactory1 -> shopFactory1.products.stream().map(WebGuiFactoryHeader::new).collect(Collectors.toList())))
             );
             webGuiApplication.start();
