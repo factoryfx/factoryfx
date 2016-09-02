@@ -26,7 +26,8 @@ public class DefaultApplicationServer<V,T extends FactoryBase<? extends LiveObje
         T commonVersion = factoryStorage.getHistoryFactory(update.metadata.baseVersionId);
         MergeDiff mergeDiff = factoryManager.update(commonVersion, update.root, locale);
         if (mergeDiff.hasNoConflicts()){
-            factoryStorage.updateCurrentFactory(update);
+            FactoryAndStorageMetadata<T> copy = new FactoryAndStorageMetadata<>(factoryManager.getCurrentFactory().copy(),update.metadata);
+            factoryStorage.updateCurrentFactory(copy);
         }
         return mergeDiff;
     }

@@ -50,6 +50,7 @@ public class WebGuiApplication<V,T extends FactoryBase<? extends LiveObject<V>, 
         webGuiResourceFactory.userManagement.set(userManagement);
         webGuiResourceFactory.emptyVisitorCreator.set(emptyVisitorCreator);
         webGuiResourceFactory.dashboardTablesProvider.set(dashboardTablesProvider);
+        webGuiResourceFactory.sessionStorage.set(new SessionStorageFactory());
 
         ArrayList<GuiView<?>> list = new ArrayList<>();
         guiViews.forEach(list::add);

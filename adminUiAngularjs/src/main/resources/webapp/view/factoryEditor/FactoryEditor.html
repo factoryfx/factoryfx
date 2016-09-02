@@ -192,7 +192,7 @@
 
 
             <h3>{{guiModel.messages.deploymentTitle}}</h3>
-            <waiting-button  class="pull-left" bootsrapbtntype="btn-danger" bootstrapicon="glyphicon-share" disabled="!selected.factory || isDirty() || !stagedChanges || deployResponse.mergeDiff.mergeInfos.length===0" click="deploy()" text="{{guiModel.messages.deployButton}}"></waiting-button>
+            <waiting-button  class="pull-left" bootsrapbtntype="btn-danger" bootstrapicon="glyphicon-share" disabled="!selected.factory || isDirty() || !stagedChanges || deployResponse.mergeDiff.mergeInfos.length===0  || deployResponse.validationErrors.length!==0" click="deploy()" text="{{guiModel.messages.deployButton}}"></waiting-button>
             <waiting-button  class="pull-right" bootsrapbtntype="btn-default" bootstrapicon="glyphicon-share" disabled="!selected.factory || isDirty() || !stagedChanges || deployResponse.mergeDiff.mergeInfos.length===0" click="deployReset()" text="{{guiModel.messages.deployRestButton}}"></waiting-button>
             <div class="clearfix"></div>
 

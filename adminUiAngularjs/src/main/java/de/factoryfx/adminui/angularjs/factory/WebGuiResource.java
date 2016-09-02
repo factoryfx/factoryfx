@@ -34,7 +34,6 @@ import de.factoryfx.adminui.angularjs.model.table.WebGuiTable;
 import de.factoryfx.adminui.angularjs.model.view.GuiView;
 import de.factoryfx.adminui.angularjs.model.view.ViewHeader;
 import de.factoryfx.adminui.angularjs.model.view.WebGuiView;
-import de.factoryfx.adminui.angularjs.server.AuthorizationRequestFilter;
 import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.factory.LiveObject;
 import de.factoryfx.factory.attribute.Attribute;
@@ -67,23 +66,16 @@ public class WebGuiResource<V,T extends FactoryBase<? extends LiveObject<V>, T>>
     private final Function<V,List<WebGuiTable>> dashboardTablesProvider;
     private final Supplier<V> emptyVisitorCreator;
     private final List<GuiView<?>> views;
+    private final SessionStorage sessionStorage;
 
     /**
-     *
-     * @param applicationServer
+     *  @param applicationServer
      * @param appFactoryClasses the factory class from application
      * @param locales
      * @param userManagement
+     * @param sessionStorage
      */
-    public WebGuiResource(
-            WebGuiLayout webGuiLayout,
-            ApplicationServer<V,T> applicationServer,
-            List<Class<? extends FactoryBase>> appFactoryClasses,
-            List<Locale> locales,
-            UserManagement userManagement,
-            Supplier<V> emptyVisitorCreator,
-            Function<V,List<WebGuiTable>> dashboardTablesProvider,
-            List<GuiView<?>> views) {
+    public WebGuiResource(WebGuiLayout webGuiLayout, ApplicationServer<V, T> applicationServer, List<Class<? extends FactoryBase>> appFactoryClasses, List<Locale> locales, UserManagement userManagement, Supplier<V> emptyVisitorCreator, Function<V, List<WebGuiTable>> dashboardTablesProvider, List<GuiView<?>> views, SessionStorage sessionStorage) {
         this.applicationServer = applicationServer;
         this.appFactoryClasses = appFactoryClasses;
         this.locales = locales;
@@ -92,6 +84,7 @@ public class WebGuiResource<V,T extends FactoryBase<? extends LiveObject<V>, T>>
         this.dashboardTablesProvider= dashboardTablesProvider;
         this.emptyVisitorCreator = emptyVisitorCreator;
         this.views=views;
+        this.sessionStorage = sessionStorage;
     }
 
     @GET
@@ -140,30 +133,38 @@ public class WebGuiResource<V,T extends FactoryBase<? extends LiveObject<V>, T>>
         Map<String,FactoryBase<?,?>>  map = root.collectChildFactoriesMap();
         FactoryBase existing = map.get(newFactory.getId());
 
+        Function<FactoryBase,FactoryBase> existingOrNew= factoryBase -> {
+            FactoryBase result = map.get(factoryBase.getId());
+            if (factoryBase!=null && result==null){//new added factory
+                result=factoryBase;
+            }
+            return result;
+        };
+
 
         //TODO fix generics,casts
         //copy FactoryUpdate into existing
         existing.visitAttributesDualFlat(newFactory, (thisAttribute, copyAttribute) -> {
             Object value = ((Attribute)copyAttribute).get();//The cast is necessary don't trust intellij
             if (value instanceof FactoryBase){
-                value=map.get(((FactoryBase)value).getId());
+                value=existingOrNew.apply((FactoryBase)value);
             }
             if (copyAttribute instanceof ReferenceListAttribute){
                 final ObservableList<FactoryBase> referenceList = FXCollections.observableArrayList();
-                ((ReferenceListAttribute<?,?>)copyAttribute).get().forEach(factory -> referenceList.add(map.get(factory.getId())));
+                ((ReferenceListAttribute<?,?>)copyAttribute).get().forEach(factory -> referenceList.add(existingOrNew.apply(factory)));
                 value=referenceList;
             }
 
             ((Attribute)thisAttribute).set(value);
         });
 
-        root.fixDuplicateObjects(id -> Optional.of(map.get(id)));
+        Map<String,FactoryBase<?,?>>  map2 = root.collectChildFactoriesMap();
+        root.fixDuplicateObjects(id -> Optional.of(map2.get(id)));
 
+
+        getCurrentEditingFactory().root.copy();
         return createStageResponse();
     }
-
-    private static final String CURRENT_EDITING_FACTORY_SESSION_KEY = "CurrentEditingFactory";
-    private static final String USER = "USER_";
 
     public static class LoginResponse{
         public boolean successfully;
@@ -178,8 +179,9 @@ public class WebGuiResource<V,T extends FactoryBase<? extends LiveObject<V>, T>>
         Optional<User> authenticatedUser = userManagement.authenticate(user.user, user.password);
         if (authenticatedUser.isPresent()){
             loginResponse.successfully =true;
-            request.getSession(true).setAttribute(AuthorizationRequestFilter.LOGIN_SESSION_KEY,true);
-            request.getSession(true).setAttribute(USER,authenticatedUser.get());
+            sessionStorage.loginUser(request,authenticatedUser.get());
+
+
         }
         return loginResponse;
     }
@@ -189,7 +191,7 @@ public class WebGuiResource<V,T extends FactoryBase<? extends LiveObject<V>, T>>
 
     @SuppressWarnings("unchecked")
     private FactoryAndStorageMetadata<T> getCurrentEditingFactory(){
-        return (FactoryAndStorageMetadata<T>) request.getSession(true).getAttribute(CURRENT_EDITING_FACTORY_SESSION_KEY);
+        return (FactoryAndStorageMetadata<T>)sessionStorage.getCurrentEditingFactory(request);
 
     }
 
@@ -197,15 +199,18 @@ public class WebGuiResource<V,T extends FactoryBase<? extends LiveObject<V>, T>>
     @Produces(MediaType.TEXT_PLAIN)
     @Path("loadCurrentFactory")
     public Response init(){
-        if (request.getSession(true).getAttribute(CURRENT_EDITING_FACTORY_SESSION_KEY)==null){
+        if (!sessionStorage.hasCurrentEditingFactory(request)){
             FactoryAndStorageMetadata<T> prepareNewFactory = applicationServer.getPrepareNewFactory();
             prepareNewFactory.metadata.user=getUser().user;
-            request.getSession(true).setAttribute(CURRENT_EDITING_FACTORY_SESSION_KEY, prepareNewFactory);
+            sessionStorage.setCurrentEditingFactory(request,prepareNewFactory);
         }
         return Response.ok().entity("ok").build();
     }
 
     private Locale getUserLocale(){
+        if (request==null){//hack for testability
+            return Locale.ENGLISH;
+        }
         if (request.getSession(false)==null){
             return request.getLocale();
         } else  {
@@ -214,7 +219,7 @@ public class WebGuiResource<V,T extends FactoryBase<? extends LiveObject<V>, T>>
     }
 
     private User getUser(){
-        return (User) request.getSession(true).getAttribute(USER);
+        return sessionStorage.getUser(request);
     }
 
     @GET
@@ -259,7 +264,7 @@ public class WebGuiResource<V,T extends FactoryBase<? extends LiveObject<V>, T>>
     @Produces(MediaType.APPLICATION_JSON)
     @Path("deployReset")
     public StageResponse deployReset(){
-        request.getSession(true).setAttribute(CURRENT_EDITING_FACTORY_SESSION_KEY,applicationServer.getPrepareNewFactory());
+        sessionStorage.setCurrentEditingFactory(request,applicationServer.getPrepareNewFactory());
         return createStageResponse();
     }
 
@@ -288,8 +293,7 @@ public class WebGuiResource<V,T extends FactoryBase<? extends LiveObject<V>, T>>
             response.mergeDiff=applicationServer.updateCurrentFactory(getCurrentEditingFactory(),getUserLocale());
             if (response.mergeDiff.hasNoConflicts()){
                 response.deployed=true;
-
-                request.getSession(true).setAttribute(CURRENT_EDITING_FACTORY_SESSION_KEY,applicationServer.getPrepareNewFactory());
+                sessionStorage.setCurrentEditingFactory(request,applicationServer.getPrepareNewFactory());
             }
         }
 

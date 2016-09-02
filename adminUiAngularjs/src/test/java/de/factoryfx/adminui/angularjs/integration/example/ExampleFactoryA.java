@@ -42,6 +42,6 @@ public class ExampleFactoryA extends FactoryBase<ExampleLiveObjectA,ExampleFacto
 
     @Override
     protected ExampleLiveObjectA createImp(Optional<ExampleLiveObjectA> previousLiveObject) {
-        return new ExampleLiveObjectA(referenceAttribute.get().instance(), referenceListAttribute.instances());
+        return new ExampleLiveObjectA(referenceAttribute.instance(), referenceListAttribute.instances());
     }
 }

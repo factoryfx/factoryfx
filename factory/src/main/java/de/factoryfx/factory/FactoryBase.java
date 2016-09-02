@@ -380,7 +380,7 @@ public abstract class FactoryBase<E extends LiveObject, T extends FactoryBase<E,
     private E createdLiveObjects;
     public E instance() {
         Optional<E> previousLiveObject = Optional.ofNullable(createdLiveObjects);
-        if (!changedDeep()) {
+        if (!changedDeep() && createdLiveObjects!=null) {//TODO is the createdLiveObjects==null correct? is is used if new Factory is transitive added (Limitation of the mergerdiff)
             return createdLiveObjects;
         } else{
             E liveObject = createImp(previousLiveObject);

@@ -24,9 +24,10 @@ public class WebGuiResourceFactory<V> extends FactoryBase<WebGuiResource,WebGuiR
     public final ObjectValueAttribute<Supplier<V>> emptyVisitorCreator=new ObjectValueAttribute<>(new AttributeMetadata().labelText("emptyVisitorCreator"));
     public final ObjectValueAttribute<Function<V,List<WebGuiTable>>> dashboardTablesProvider=new ObjectValueAttribute<>(new AttributeMetadata().labelText("dashboardTablesProvider"));
     public final ObjectValueAttribute<List<GuiView<?>>> guiViews=new ObjectValueAttribute<>(new AttributeMetadata().labelText("guiViews"));
+    public final ReferenceAttribute<SessionStorage,SessionStorageFactory> sessionStorage= new ReferenceAttribute<>(SessionStorageFactory.class, new AttributeMetadata().labelText("emptyVisitorCreator"));
 
     @Override
     protected WebGuiResource createImp(Optional<WebGuiResource> previousLiveObject) {
-        return new WebGuiResource<>(layout.get().instance(),applicationServer.get(),appFactoryClasses.get(),locales.get(),userManagement.get(),emptyVisitorCreator.get(),dashboardTablesProvider.get(),guiViews.get());
+        return new WebGuiResource<>(layout.get().instance(),applicationServer.get(),appFactoryClasses.get(),locales.get(),userManagement.get(),emptyVisitorCreator.get(),dashboardTablesProvider.get(),guiViews.get(), sessionStorage.instance());
     }
 }
