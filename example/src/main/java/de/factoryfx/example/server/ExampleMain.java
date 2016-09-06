@@ -11,7 +11,8 @@ import com.google.common.io.ByteStreams;
 import de.factoryfx.adminui.InMemoryFactoryStorage;
 import de.factoryfx.adminui.SinglePrecessInstanceUtil;
 import de.factoryfx.adminui.WebAppViewer;
-import de.factoryfx.adminui.angularjs.factory.WebGuiApplication;
+import de.factoryfx.adminui.angularjs.factory.WebGuiApplicationCreator;
+import de.factoryfx.adminui.angularjs.factory.WebGuiServerFactory;
 import de.factoryfx.adminui.angularjs.model.view.GuiView;
 import de.factoryfx.adminui.angularjs.model.view.WebGuiFactoryHeader;
 import de.factoryfx.adminui.angularjs.util.ClasspathBasedFactoryProvider;
@@ -20,9 +21,10 @@ import de.factoryfx.example.factory.OrderCollectorToTables;
 import de.factoryfx.example.factory.ProductFactory;
 import de.factoryfx.example.factory.ShopFactory;
 import de.factoryfx.example.factory.VatRateFactory;
-import de.factoryfx.example.factory.netherlands.CarProductFactory;
+import de.factoryfx.example.factory.netherlands.NetherlandsCarProductFactory;
 import de.factoryfx.factory.FactoryManager;
 import de.factoryfx.factory.util.LanguageText;
+import de.factoryfx.server.ApplicationServer;
 import de.factoryfx.server.DefaultApplicationServer;
 import de.factoryfx.user.NoUserManagement;
 import javafx.application.Application;
@@ -40,21 +42,21 @@ public class ExampleMain extends Application {
             DefaultApplicationServer<OrderCollector, ShopFactory> applicationServer = new DefaultApplicationServer<>(new FactoryManager<>(), new InMemoryFactoryStorage<>(shopFactory));
             applicationServer.start();
 
-            WebGuiApplication<OrderCollector, ShopFactory> webGuiApplication=new WebGuiApplication<>(
+            WebGuiApplicationCreator<OrderCollector, ShopFactory> webGuiApplicationCreator=new WebGuiApplicationCreator<>(
                     applicationServer,
-                    new ClasspathBasedFactoryProvider().get(ShopFactory.class), InMemoryFactoryStorage::new,
+                    new ClasspathBasedFactoryProvider().get(ShopFactory.class),
                     new NoUserManagement(),
-                    (config)->{
-                        try (InputStream inputStream = WebGuiApplication.class.getResourceAsStream("/logo/logo.png")) {
-                            config.webGuiResource.get().layout.get().logoSmall.set(ByteStreams.toByteArray(inputStream));
-                        } catch (IOException e) {
-                            throw new RuntimeException(e);
-                        }
-                    },
                     OrderCollector::new,new OrderCollectorToTables(),
                     Arrays.asList(new GuiView<>("sgjhfgdsj", new LanguageText().en("Products"), shopFactory1 -> shopFactory1.products.stream().map(WebGuiFactoryHeader::new).collect(Collectors.toList())))
             );
-            webGuiApplication.start();
+            WebGuiServerFactory<OrderCollector> defaultFactory = webGuiApplicationCreator.createDefaultFactory();
+            try (InputStream inputStream = WebGuiApplicationCreator.class.getResourceAsStream("/logo/logo.png")) {
+                defaultFactory.webGuiResource.get().layout.get().logoSmall.set(ByteStreams.toByteArray(inputStream));
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+            ApplicationServer<OrderCollector, WebGuiServerFactory<OrderCollector>> shopApplication = webGuiApplicationCreator.createApplication(defaultFactory, new InMemoryFactoryStorage<>(defaultFactory));
+            shopApplication.start();
 
         },"http://localhost:8089/#/login");
 
@@ -90,7 +92,7 @@ public class ExampleMain extends Application {
         VatRateFactory vatRate =new VatRateFactory();
         vatRate.rate.set(0.21);
         {
-            CarProductFactory productFactory = new CarProductFactory();
+            NetherlandsCarProductFactory productFactory = new NetherlandsCarProductFactory();
             productFactory.name.set("Car");
             productFactory.price.set(5);
             productFactory.vatRate.set(vatRate);

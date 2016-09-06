@@ -8,13 +8,13 @@ import de.factoryfx.factory.attribute.AttributeMetadata;
 import de.factoryfx.factory.attribute.util.DoubleAttribute;
 
 
-public class CarProductFactory extends ProductFactory {
+public class NetherlandsCarProductFactory extends ProductFactory {
     //specila tax for cars
     public final DoubleAttribute bpmTax=new DoubleAttribute(new AttributeMetadata().en("BPM-Steuer"));
 
 
     @Override
     protected Product createImp(Optional<Product> previousLiveObject) {
-        return new CarProduct(name.get(), price.get(), vatRate.instance(),bpmTax.get());
+        return new NetherlandsCarProduct(name.get(), price.get(), vatRate.instance(),bpmTax.get());
     }
 }

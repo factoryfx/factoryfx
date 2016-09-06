@@ -58,7 +58,7 @@ public class WebGuiServerTest {
         TestBigDecimal testBigDecimal = new TestBigDecimal();
         testBigDecimal.value.set(new BigDecimal("12445.67"));
 
-        WebGuiServer webGuiServer = new WebGuiServer(null,null,null,null);
+        WebGuiServer webGuiServer = new WebGuiServer(null,null,0,null,null);
         ObjectMapper objectMapper = webGuiServer.getObjectMapper();
 
         String data = objectMapper.writeValueAsString(testBigDecimal);
@@ -77,7 +77,7 @@ public class WebGuiServerTest {
         TestLongDecimal testLongDecimal = new TestLongDecimal();
         testLongDecimal.value.set(54564L);
 
-        WebGuiServer webGuiServer = new WebGuiServer(null,null,null,null);
+        WebGuiServer webGuiServer = new WebGuiServer(null,null,0,null,null);
         ObjectMapper objectMapper = webGuiServer.getObjectMapper();
 
         String data = objectMapper.writeValueAsString(testLongDecimal);

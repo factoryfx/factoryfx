@@ -5,6 +5,7 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Paths;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.UUID;
 
 import ch.qos.logback.classic.Level;
@@ -13,7 +14,9 @@ import com.google.common.io.ByteStreams;
 import de.factoryfx.adminui.InMemoryFactoryStorage;
 import de.factoryfx.adminui.SinglePrecessInstanceUtil;
 import de.factoryfx.adminui.WebAppViewer;
-import de.factoryfx.adminui.angularjs.factory.WebGuiApplication;
+import de.factoryfx.adminui.angularjs.factory.WebGuiApplicationCreator;
+import de.factoryfx.adminui.angularjs.factory.WebGuiLayoutFactory;
+import de.factoryfx.adminui.angularjs.factory.WebGuiResourceFactory;
 import de.factoryfx.adminui.angularjs.factory.WebGuiServerFactory;
 import de.factoryfx.adminui.angularjs.integration.example.ExampleFactoryA;
 import de.factoryfx.adminui.angularjs.integration.example.ExampleFactoryB;
@@ -23,6 +26,7 @@ import de.factoryfx.adminui.angularjs.integration.example.VisitorToTables;
 import de.factoryfx.adminui.angularjs.server.resourcehandler.ConfigurableResourceHandler;
 import de.factoryfx.adminui.angularjs.server.resourcehandler.FilesystemFileContentProvider;
 import de.factoryfx.factory.FactoryManager;
+import de.factoryfx.server.ApplicationServer;
 import de.factoryfx.server.DefaultApplicationServer;
 import de.factoryfx.user.NoUserManagement;
 import de.factoryfx.user.UserManagement;
@@ -59,32 +63,45 @@ public class WebGuiTest extends Application{
             DefaultApplicationServer<ExampleVisitor, ExampleFactoryA> exampleApplicationServer = new DefaultApplicationServer<>(new FactoryManager<>(), new InMemoryFactoryStorage<>(exampleFactoryA));
             exampleApplicationServer.start();
 
-            WebGuiApplication<ExampleVisitor, ExampleFactoryA> webGuiApplication =new WebGuiApplication<>(exampleApplicationServer,Arrays.asList(ExampleFactoryA.class, ExampleFactoryB.class),(WebGuiServerFactory<ExampleVisitor> root)->new InMemoryFactoryStorage<>(root),getUserManagement(),
-                    (config)->{
-                        if (WebGuiApplication.class.getResourceAsStream("/logo/logoLarge.png")!=null){
-                            try(InputStream inputStream= WebGuiApplication.class.getResourceAsStream("/logo/logoLarge.png")){
-                                config.webGuiResource.get().layout.get().logoLarge.set(ByteStreams.toByteArray(inputStream));
-                            } catch (IOException e) {
-                                throw new RuntimeException(e);
-                            }
-                        }
-                        if (WebGuiApplication.class.getResourceAsStream("/logo/logoSmall.png")!=null) {
-                            try (InputStream inputStream = WebGuiApplication.class.getResourceAsStream("/logo/logoSmall.png")) {
-                                config.webGuiResource.get().layout.get().logoSmall.set(ByteStreams.toByteArray(inputStream));
-                            } catch (IOException e) {
-                                throw new RuntimeException(e);
-                            }
-                        }
-                        config.resourceHandler.set(new ConfigurableResourceHandler(new FilesystemFileContentProvider(Paths.get("./src/main/resources/webapp"),"body {background-color: inherited;}".getBytes(StandardCharsets.UTF_8)), () -> UUID.randomUUID().toString()));
-                    },()->new ExampleVisitor(),new VisitorToTables(),new ViewCreator().create());
-            webGuiApplication.start();
+            WebGuiApplicationCreator<ExampleVisitor, ExampleFactoryA> webGuiApplicationCreator=new WebGuiApplicationCreator<>(
+                    exampleApplicationServer,
+                    Arrays.asList(ExampleFactoryA.class, ExampleFactoryB.class),
+                    getUserManagement(),
+                    ()->new ExampleVisitor(),
+                    new VisitorToTables(),
+                    new ViewCreator().create());
+            WebGuiServerFactory<ExampleVisitor> defaultFactory = webGuiApplicationCreator.createDefaultFactory();
+            if (WebGuiApplicationCreator.class.getResourceAsStream("/logo/logoLarge.png")!=null){
+                try(InputStream inputStream= WebGuiApplicationCreator.class.getResourceAsStream("/logo/logoLarge.png")){
+                    defaultFactory.webGuiResource.get().layout.get().logoLarge.set(ByteStreams.toByteArray(inputStream));
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+            if (WebGuiApplicationCreator.class.getResourceAsStream("/logo/logoSmall.png")!=null) {
+                try (InputStream inputStream = WebGuiApplicationCreator.class.getResourceAsStream("/logo/logoSmall.png")) {
+                    defaultFactory.webGuiResource.get().layout.get().logoSmall.set(ByteStreams.toByteArray(inputStream));
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+            defaultFactory.resourceHandler.set(new ConfigurableResourceHandler(new FilesystemFileContentProvider(Paths.get("./src/main/resources/webapp"),"body {background-color: inherited;}".getBytes(StandardCharsets.UTF_8)), () -> UUID.randomUUID().toString()));
+            ApplicationServer<ExampleVisitor, WebGuiServerFactory<ExampleVisitor>> exampleServer = webGuiApplicationCreator.createApplication(defaultFactory, new InMemoryFactoryStorage<>(defaultFactory));
+            exampleServer.start();
 
-//            WebGuiApplication<WebGuiServer, WebGuiServerFactory> webGuiApplicationSelf =new WebGuiApplication<>(webGuiApplication.getServer(),Arrays.asList(WebGuiServerFactory.class, WebGuiLayoutFactory.class, WebGuiResourceFactory.class),(root)->new InMemoryFactoryStorage<>(root),getUserManagement(),
-//                    (config)->{
-//                config.port.set(8087);
-//            });
-//            webGuiApplicationSelf.start();
-        },"http://localhost:8089/#/login"/*"http://localhost:8087/#/login"*/);
+
+            WebGuiApplicationCreator<ExampleVisitor, WebGuiServerFactory<ExampleVisitor>> selfServerCreator=new WebGuiApplicationCreator<>(
+                    exampleServer,
+                    Arrays.asList(WebGuiServerFactory.class, WebGuiLayoutFactory.class, WebGuiResourceFactory.class),
+                    getUserManagement(),
+                    null,null, Collections.emptyList());
+            WebGuiServerFactory<ExampleVisitor> selfDefaultFactory = selfServerCreator.createDefaultFactory();
+            selfDefaultFactory.port.set(8087);
+            ApplicationServer<ExampleVisitor, WebGuiServerFactory<ExampleVisitor>> selfServer = selfServerCreator.createApplication(selfDefaultFactory, new InMemoryFactoryStorage<>(selfDefaultFactory));
+            selfServer.start();
+
+
+        },"http://localhost:8089/#/login","http://localhost:8087/#/login");
     }
 
     protected UserManagement getUserManagement() {

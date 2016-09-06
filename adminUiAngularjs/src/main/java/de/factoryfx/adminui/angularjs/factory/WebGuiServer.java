@@ -42,13 +42,15 @@ public class WebGuiServer<V> implements LiveObject<V> {
     private ServerConnector connector;
     private final WebGuiResource webGuiResource;
     private final ConfigurableResourceHandler resourceHandler;
+    private final int sessionTimeoutS;
 
-    public WebGuiServer(Integer httpPort, String host, WebGuiResource webGuiResource, ConfigurableResourceHandler resourceHandler) {
+    public WebGuiServer(Integer httpPort, String host, int sessionTimeoutS, WebGuiResource webGuiResource, ConfigurableResourceHandler resourceHandler) {
         super();
         this.httpPort = httpPort;
         this.host = host;
         this.webGuiResource = webGuiResource;
         this.resourceHandler =resourceHandler;
+        this.sessionTimeoutS = sessionTimeoutS;
     }
 
 
@@ -117,7 +119,11 @@ public class WebGuiServer<V> implements LiveObject<V> {
 
         ServletContextHandler contextHandler = new ServletContextHandler();
         SessionHandler sessionHandler = new SessionHandler();
-        sessionHandler.setSessionManager(new HashSessionManager());
+        HashSessionManager sessionManager = new HashSessionManager();
+        sessionManager.setMaxInactiveInterval(sessionTimeoutS);
+        sessionManager.setSessionCookie(sessionManager.getSessionCookie()+httpPort); //avoid session mixup for 2 server runnning as localhost
+        sessionHandler.setSessionManager(sessionManager);
+
 
         contextHandler.setSessionHandler(sessionHandler);
         contextHandler.addServlet(new ServletHolder(new ServletContainer(jerseySetup(webGuiResource))), "/applicationServer/*");

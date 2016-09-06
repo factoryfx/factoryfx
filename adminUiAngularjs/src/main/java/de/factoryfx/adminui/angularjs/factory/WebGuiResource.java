@@ -135,7 +135,7 @@ public class WebGuiResource<V,T extends FactoryBase<? extends LiveObject<V>, T>>
 
         Function<FactoryBase,FactoryBase> existingOrNew= factoryBase -> {
             FactoryBase result = map.get(factoryBase.getId());
-            if (factoryBase!=null && result==null){//new added factory
+            if (factoryBase!=null && result==null){//new added nested factory
                 result=factoryBase;
             }
             return result;
@@ -161,8 +161,6 @@ public class WebGuiResource<V,T extends FactoryBase<? extends LiveObject<V>, T>>
         Map<String,FactoryBase<?,?>>  map2 = root.collectChildFactoriesMap();
         root.fixDuplicateObjects(id -> Optional.of(map2.get(id)));
 
-
-        getCurrentEditingFactory().root.copy();
         return createStageResponse();
     }
 
