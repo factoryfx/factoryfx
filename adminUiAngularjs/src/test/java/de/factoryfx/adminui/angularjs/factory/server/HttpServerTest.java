@@ -1,10 +1,11 @@
-package de.factoryfx.adminui.angularjs.factory;
+package de.factoryfx.adminui.angularjs.factory.server;
 
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.Optional;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import de.factoryfx.adminui.angularjs.factory.server.HttpServer;
 import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.factory.LiveObject;
 import de.factoryfx.factory.attribute.AttributeMetadata;
@@ -13,7 +14,7 @@ import de.factoryfx.factory.attribute.util.LongAttribute;
 import org.junit.Assert;
 import org.junit.Test;
 
-public class WebGuiServerTest {
+public class HttpServerTest {
 
     public static class TestBigDecimalLiveObject implements LiveObject {
 
@@ -58,8 +59,8 @@ public class WebGuiServerTest {
         TestBigDecimal testBigDecimal = new TestBigDecimal();
         testBigDecimal.value.set(new BigDecimal("12445.67"));
 
-        WebGuiServer webGuiServer = new WebGuiServer(null,null,0,null,null);
-        ObjectMapper objectMapper = webGuiServer.getObjectMapper();
+        HttpServer httpServer = new HttpServer(null,null,0,null,null);
+        ObjectMapper objectMapper = httpServer.getObjectMapper();
 
         String data = objectMapper.writeValueAsString(testBigDecimal);
         System.out.println(data);
@@ -77,8 +78,8 @@ public class WebGuiServerTest {
         TestLongDecimal testLongDecimal = new TestLongDecimal();
         testLongDecimal.value.set(54564L);
 
-        WebGuiServer webGuiServer = new WebGuiServer(null,null,0,null,null);
-        ObjectMapper objectMapper = webGuiServer.getObjectMapper();
+        HttpServer httpServer = new HttpServer(null,null,0,null,null);
+        ObjectMapper objectMapper = httpServer.getObjectMapper();
 
         String data = objectMapper.writeValueAsString(testLongDecimal);
         System.out.println(data);

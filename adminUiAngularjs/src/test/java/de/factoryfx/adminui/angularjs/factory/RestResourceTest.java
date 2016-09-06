@@ -16,11 +16,11 @@ import de.factoryfx.server.DefaultApplicationServer;
 import de.factoryfx.user.NoUserManagement;
 import org.junit.Test;
 
-public class WebGuiResourceTest {
+public class RestResourceTest {
 
     @Test
     public void test_add_new_with_reference(){
-        WebGuiLayout webGuiLayout = new WebGuiLayout(new HashMap<>(), null, null, false);
+        Layout layout = new Layout(new HashMap<>(), null, null, false);
 
         ExampleFactoryA exampleFactoryA = new ExampleFactoryA();
         ExampleFactoryB existingListEntry = new ExampleFactoryB();
@@ -31,8 +31,7 @@ public class WebGuiResourceTest {
         ApplicationServer<ExampleVisitor, ExampleFactoryA> defaultApplicationServer = new DefaultApplicationServer<>(new FactoryManager<>(), new InMemoryFactoryStorage<>(exampleFactoryA));
         defaultApplicationServer.start();
 
-        WebGuiResource<ExampleVisitor,ExampleFactoryA> webGuiResource= new WebGuiResource<>(
-                webGuiLayout,
+        RestResource<ExampleVisitor,ExampleFactoryA> restResource = new RestResource<>(layout,
                 defaultApplicationServer,
                 Arrays.asList(ExampleFactoryA.class, ExampleFactoryB.class),
                 Arrays.asList(Locale.ENGLISH),
@@ -44,22 +43,22 @@ public class WebGuiResourceTest {
 
         WebGuiUser user = new WebGuiUser();
         user.user="sfsgfdgfdfgf";
-        webGuiResource.login(user);
-        webGuiResource.init();
+        restResource.login(user);
+        restResource.init();
 
 
         ExampleFactoryA update = exampleFactoryA.copy();
         ExampleFactoryB exampleFactoryB = new ExampleFactoryB();
 
         update.referenceListAttribute.add(exampleFactoryB);
-        webGuiResource.save(new FactoryTypeInfoWrapper(update));
+        restResource.save(new FactoryTypeInfoWrapper(update));
 
 
         exampleFactoryB.referenceAttribute.set(shared.copy());
-        webGuiResource.save(new FactoryTypeInfoWrapper(update));
+        restResource.save(new FactoryTypeInfoWrapper(update));
 
 
-        webGuiResource.deploy();
+        restResource.deploy();
 
 
     }

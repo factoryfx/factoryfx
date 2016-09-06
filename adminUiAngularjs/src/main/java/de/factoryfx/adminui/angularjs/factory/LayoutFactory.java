@@ -11,7 +11,7 @@ import de.factoryfx.factory.attribute.util.I18nAttribute;
 import de.factoryfx.factory.attribute.util.ObjectValueAttribute;
 import de.factoryfx.user.UserManagement;
 
-public class WebGuiLayoutFactory extends FactoryBase<WebGuiLayout, WebGuiLayoutFactory> {
+public class LayoutFactory extends FactoryBase<Layout, LayoutFactory> {
     public final ObjectValueAttribute<UserManagement> userManagement = new ObjectValueAttribute<>(new AttributeMetadata().labelText("userManagement"));
 
     public final ByteArrayAttribute logoSmall = new ByteArrayAttribute(new AttributeMetadata().labelText("logoSmall"));
@@ -51,7 +51,7 @@ public class WebGuiLayoutFactory extends FactoryBase<WebGuiLayout, WebGuiLayoutF
     public final I18nAttribute validationFactoryTableColumn = new I18nAttribute(new AttributeMetadata().en("validationFactoryTableColumn")).en("Factory");
 
     @Override
-    protected WebGuiLayout createImp(Optional<WebGuiLayout> previousLiveObject) {
+    protected Layout createImp(Optional<Layout> previousLiveObject) {
         HashMap<String,String> messages=new HashMap<>();
         this.visitAttributesFlat((attributeVariableName, attribute) -> {
             if (attribute instanceof I18nAttribute) {
@@ -59,6 +59,6 @@ public class WebGuiLayoutFactory extends FactoryBase<WebGuiLayout, WebGuiLayoutF
             }
         });
 
-        return new WebGuiLayout(messages, logoSmall.get(), logoLarge.get(), userManagement.get().authorisationRequired());
+        return new Layout(messages, logoSmall.get(), logoLarge.get(), userManagement.get().authorisationRequired());
     }
 }

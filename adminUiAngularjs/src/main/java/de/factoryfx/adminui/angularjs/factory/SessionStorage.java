@@ -2,7 +2,7 @@ package de.factoryfx.adminui.angularjs.factory;
 
 import javax.servlet.http.HttpServletRequest;
 
-import de.factoryfx.adminui.angularjs.server.AuthorizationRequestFilter;
+import de.factoryfx.adminui.angularjs.factory.server.AuthorizationRequestFilter;
 import de.factoryfx.factory.datastorage.FactoryAndStorageMetadata;
 import de.factoryfx.factory.util.VoidLiveObject;
 import de.factoryfx.user.User;

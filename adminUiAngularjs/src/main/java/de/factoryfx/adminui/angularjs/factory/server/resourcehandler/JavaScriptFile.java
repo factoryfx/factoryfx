@@ -1,4 +1,4 @@
-package de.factoryfx.adminui.angularjs.server.resourcehandler;
+package de.factoryfx.adminui.angularjs.factory.server.resourcehandler;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;

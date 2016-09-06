@@ -1,4 +1,4 @@
-package de.factoryfx.adminui.angularjs.server;
+package de.factoryfx.adminui.angularjs.factory.server;
 
 import java.io.IOException;
 

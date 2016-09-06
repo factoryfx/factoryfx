@@ -1,4 +1,4 @@
-package de.factoryfx.adminui.angularjs.factory;
+package de.factoryfx.adminui.angularjs.factory.server;
 
 import java.math.BigDecimal;
 import java.util.logging.Level;
@@ -11,10 +11,10 @@ import com.fasterxml.jackson.databind.introspect.ObjectIdInfo;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider;
-import de.factoryfx.adminui.angularjs.server.AuthorizationRequestFilter;
-import de.factoryfx.adminui.angularjs.server.resourcehandler.ConfigurableResourceHandler;
-import de.factoryfx.factory.LiveObject;
+import de.factoryfx.adminui.angularjs.factory.RestResource;
+import de.factoryfx.adminui.angularjs.factory.server.resourcehandler.ConfigurableResourceHandler;
 import de.factoryfx.factory.jackson.ObjectMapperBuilder;
+import de.factoryfx.factory.util.VoidLiveObject;
 import de.factoryfx.jettyserver.AllExceptionMapper;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.NetworkTrafficServerConnector;
@@ -32,23 +32,23 @@ import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.servlet.ServletContainer;
 import org.slf4j.LoggerFactory;
 
-public class WebGuiServer<V> implements LiveObject<V> {
-    private static final org.slf4j.Logger logger = LoggerFactory.getLogger(WebGuiServer.class);
+public class HttpServer extends VoidLiveObject {
+    private static final org.slf4j.Logger logger = LoggerFactory.getLogger(HttpServer.class);
 
     private org.eclipse.jetty.server.Server server;
     private final Integer httpPort;
     private final String host;
 
     private ServerConnector connector;
-    private final WebGuiResource webGuiResource;
+    private final RestResource restResource;
     private final ConfigurableResourceHandler resourceHandler;
     private final int sessionTimeoutS;
 
-    public WebGuiServer(Integer httpPort, String host, int sessionTimeoutS, WebGuiResource webGuiResource, ConfigurableResourceHandler resourceHandler) {
+    public HttpServer(Integer httpPort, String host, int sessionTimeoutS, RestResource restResource, ConfigurableResourceHandler resourceHandler) {
         super();
         this.httpPort = httpPort;
         this.host = host;
-        this.webGuiResource = webGuiResource;
+        this.restResource = restResource;
         this.resourceHandler =resourceHandler;
         this.sessionTimeoutS = sessionTimeoutS;
     }
@@ -126,7 +126,7 @@ public class WebGuiServer<V> implements LiveObject<V> {
 
 
         contextHandler.setSessionHandler(sessionHandler);
-        contextHandler.addServlet(new ServletHolder(new ServletContainer(jerseySetup(webGuiResource))), "/applicationServer/*");
+        contextHandler.addServlet(new ServletHolder(new ServletContainer(jerseySetup(restResource))), "/applicationServer/*");
 
         ErrorHandler errorHandler = new ErrorHandler();
         errorHandler.setShowStacks(true);
@@ -165,8 +165,4 @@ public class WebGuiServer<V> implements LiveObject<V> {
         }
     }
 
-    @Override
-    public void accept(V visitor) {
-
-    }
 }

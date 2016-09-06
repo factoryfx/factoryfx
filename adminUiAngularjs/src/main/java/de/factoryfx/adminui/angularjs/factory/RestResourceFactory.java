@@ -15,8 +15,8 @@ import de.factoryfx.factory.attribute.util.ObjectValueAttribute;
 import de.factoryfx.server.ApplicationServer;
 import de.factoryfx.user.UserManagement;
 
-public class WebGuiResourceFactory<V> extends FactoryBase<WebGuiResource,WebGuiResourceFactory<V>> {
-    public final ReferenceAttribute<WebGuiLayout,WebGuiLayoutFactory> layout=new ReferenceAttribute<>(WebGuiLayoutFactory.class,new AttributeMetadata().labelText("Layout"));
+public class RestResourceFactory<V> extends FactoryBase<RestResource,RestResourceFactory<V>> {
+    public final ReferenceAttribute<Layout,LayoutFactory> layout=new ReferenceAttribute<>(LayoutFactory.class,new AttributeMetadata().labelText("Layout"));
     public final ObjectValueAttribute<ApplicationServer<V,?>> applicationServer=new ObjectValueAttribute<>(new AttributeMetadata().labelText("applicationServer"));
     public final ObjectValueAttribute<List<Class<? extends FactoryBase>>> appFactoryClasses = new ObjectValueAttribute<>(new AttributeMetadata().labelText("appFactoryClasses"));
     public final ObjectValueAttribute<List<Locale>> locales = new ObjectValueAttribute<>(new AttributeMetadata().labelText("locales"));
@@ -27,7 +27,7 @@ public class WebGuiResourceFactory<V> extends FactoryBase<WebGuiResource,WebGuiR
     public final ReferenceAttribute<SessionStorage,SessionStorageFactory> sessionStorage= new ReferenceAttribute<>(SessionStorageFactory.class, new AttributeMetadata().labelText("emptyVisitorCreator"));
 
     @Override
-    protected WebGuiResource createImp(Optional<WebGuiResource> previousLiveObject) {
-        return new WebGuiResource<>(layout.get().instance(),applicationServer.get(),appFactoryClasses.get(),locales.get(),userManagement.get(),emptyVisitorCreator.get(),dashboardTablesProvider.get(),guiViews.get(), sessionStorage.instance());
+    protected RestResource createImp(Optional<RestResource> previousLiveObject) {
+        return new RestResource<>(layout.get().instance(),applicationServer.get(),appFactoryClasses.get(),locales.get(),userManagement.get(),emptyVisitorCreator.get(),dashboardTablesProvider.get(),guiViews.get(), sessionStorage.instance());
     }
 }

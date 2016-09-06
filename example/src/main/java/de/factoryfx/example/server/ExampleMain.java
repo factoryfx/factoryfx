@@ -11,8 +11,8 @@ import com.google.common.io.ByteStreams;
 import de.factoryfx.adminui.InMemoryFactoryStorage;
 import de.factoryfx.adminui.SinglePrecessInstanceUtil;
 import de.factoryfx.adminui.WebAppViewer;
-import de.factoryfx.adminui.angularjs.factory.WebGuiApplicationCreator;
-import de.factoryfx.adminui.angularjs.factory.WebGuiServerFactory;
+import de.factoryfx.adminui.angularjs.WebGuiApplicationCreator;
+import de.factoryfx.adminui.angularjs.factory.server.HttpServerFactory;
 import de.factoryfx.adminui.angularjs.model.view.GuiView;
 import de.factoryfx.adminui.angularjs.model.view.WebGuiFactoryHeader;
 import de.factoryfx.adminui.angularjs.util.ClasspathBasedFactoryProvider;
@@ -49,13 +49,13 @@ public class ExampleMain extends Application {
                     OrderCollector::new,new OrderCollectorToTables(),
                     Arrays.asList(new GuiView<>("sgjhfgdsj", new LanguageText().en("Products"), shopFactory1 -> shopFactory1.products.stream().map(WebGuiFactoryHeader::new).collect(Collectors.toList())))
             );
-            WebGuiServerFactory<OrderCollector> defaultFactory = webGuiApplicationCreator.createDefaultFactory();
+            HttpServerFactory<OrderCollector> defaultFactory = webGuiApplicationCreator.createDefaultFactory();
             try (InputStream inputStream = WebGuiApplicationCreator.class.getResourceAsStream("/logo/logo.png")) {
                 defaultFactory.webGuiResource.get().layout.get().logoSmall.set(ByteStreams.toByteArray(inputStream));
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
-            ApplicationServer<OrderCollector, WebGuiServerFactory<OrderCollector>> shopApplication = webGuiApplicationCreator.createApplication(defaultFactory, new InMemoryFactoryStorage<>(defaultFactory));
+            ApplicationServer<Void, HttpServerFactory<OrderCollector>> shopApplication = webGuiApplicationCreator.createApplication(new InMemoryFactoryStorage<>(defaultFactory));
             shopApplication.start();
 
         },"http://localhost:8089/#/login");

@@ -56,12 +56,12 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
 @Path("/") /** path defined in {@link de.scoopsoftware.xtc.ticketproxy.configuration.ConfigurationServer}*/
-public class WebGuiResource<V,T extends FactoryBase<? extends LiveObject<V>, T>>  extends VoidLiveObject {
+public class RestResource<V,T extends FactoryBase<? extends LiveObject<V>, T>>  extends VoidLiveObject {
 
     private final ApplicationServer<V,T> applicationServer;
     private final List<Class<? extends FactoryBase>> appFactoryClasses;
     private final List<Locale> locales;
-    private final WebGuiLayout webGuiLayout;
+    private final Layout webGuiLayout;
     private final UserManagement userManagement;
     private final Function<V,List<WebGuiTable>> dashboardTablesProvider;
     private final Supplier<V> emptyVisitorCreator;
@@ -75,11 +75,11 @@ public class WebGuiResource<V,T extends FactoryBase<? extends LiveObject<V>, T>>
      * @param userManagement
      * @param sessionStorage
      */
-    public WebGuiResource(WebGuiLayout webGuiLayout, ApplicationServer<V, T> applicationServer, List<Class<? extends FactoryBase>> appFactoryClasses, List<Locale> locales, UserManagement userManagement, Supplier<V> emptyVisitorCreator, Function<V, List<WebGuiTable>> dashboardTablesProvider, List<GuiView<?>> views, SessionStorage sessionStorage) {
+    public RestResource(Layout layout, ApplicationServer<V, T> applicationServer, List<Class<? extends FactoryBase>> appFactoryClasses, List<Locale> locales, UserManagement userManagement, Supplier<V> emptyVisitorCreator, Function<V, List<WebGuiTable>> dashboardTablesProvider, List<GuiView<?>> views, SessionStorage sessionStorage) {
         this.applicationServer = applicationServer;
         this.appFactoryClasses = appFactoryClasses;
         this.locales = locales;
-        this.webGuiLayout = webGuiLayout;
+        this.webGuiLayout = layout;
         this.userManagement = userManagement;
         this.dashboardTablesProvider= dashboardTablesProvider;
         this.emptyVisitorCreator = emptyVisitorCreator;
@@ -235,7 +235,7 @@ public class WebGuiResource<V,T extends FactoryBase<? extends LiveObject<V>, T>>
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("guimodel")
-    public WebGuiLayout getGuimodel(){
+    public Layout getGuimodel(){
         return webGuiLayout;
     }
 
