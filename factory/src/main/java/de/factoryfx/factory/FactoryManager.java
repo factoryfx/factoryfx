@@ -3,8 +3,9 @@ package de.factoryfx.factory;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Locale;
-import java.util.Map;
+import java.util.function.Function;
 
+import com.google.common.collect.TreeTraverser;
 import de.factoryfx.factory.merge.FactoryMerger;
 import de.factoryfx.factory.merge.MergeDiff;
 import de.factoryfx.factory.merge.MergeResultEntry;
@@ -16,8 +17,7 @@ public class FactoryManager<V,T extends FactoryBase<? extends LiveObject<V>, T>>
     @SuppressWarnings("unchecked")
     public MergeDiff update(T commonVersion , T newVersion, Locale locale){
         newVersion.loopDetector();
-        LinkedHashMap<String, LiveObject> previousLiveObjects = new LinkedHashMap<>();
-        currentFactory.collectLiveObjects(previousLiveObjects);
+        HashSet<LiveObject> previousLiveObjects = stopOrderProvider.apply(currentFactory);
 
         FactoryMerger factoryMerger = new FactoryMerger(currentFactory, commonVersion, newVersion);
         factoryMerger.setLocale(locale);
@@ -33,8 +33,8 @@ public class FactoryManager<V,T extends FactoryBase<? extends LiveObject<V>, T>>
 
             currentFactory.instance();
 
-            LinkedHashMap<String, LiveObject> newLiveObjects = new LinkedHashMap<>();
-            currentFactory.collectLiveObjects(newLiveObjects);
+
+            HashSet<LiveObject> newLiveObjects = startOrderProvider.apply(currentFactory);
             updateLiveObjects(previousLiveObjects,newLiveObjects);
         }
         return mergeDiff;
@@ -45,8 +45,6 @@ public class FactoryManager<V,T extends FactoryBase<? extends LiveObject<V>, T>>
     @SuppressWarnings("unchecked")
     public MergeDiff simulateUpdate(T commonVersion , T newVersion, Locale locale){
         newVersion.loopDetector();
-        LinkedHashMap<String, LiveObject> previousLiveObjects = new LinkedHashMap<>();
-        currentFactory.collectLiveObjects(previousLiveObjects);
 
         FactoryMerger factoryMerger = new FactoryMerger(currentFactory, commonVersion, newVersion);
         factoryMerger.setLocale(locale);
@@ -58,28 +56,49 @@ public class FactoryManager<V,T extends FactoryBase<? extends LiveObject<V>, T>>
     }
 
 
-    private void updateLiveObjects(Map<String, LiveObject> previousLiveObjects, Map<String, LiveObject> newLiveObjects){
-        HashSet<LiveObject> previousLiveObjectsSet = new HashSet<>();
-        previousLiveObjects.values().forEach(liveObject -> previousLiveObjectsSet.add(liveObject));
-
-        HashSet<LiveObject> newLiveObjectsSet = new HashSet<>();
-        newLiveObjects.values().forEach(liveObject -> newLiveObjectsSet.add(liveObject));
-
-
-        for (LiveObject previousLiveObject: previousLiveObjectsSet){
-            if (!newLiveObjectsSet.contains(previousLiveObject)){
+    private void updateLiveObjects(HashSet<LiveObject> previousLiveObjects, HashSet<LiveObject> newLiveObjects){
+        for (LiveObject previousLiveObject: previousLiveObjects){
+            if (!newLiveObjects.contains(previousLiveObject)){
                 previousLiveObject.stop();
             }
         }
 
-        for (LiveObject newLiveObject: newLiveObjectsSet){
-            if (previousLiveObjectsSet.contains(newLiveObject)){
+        for (LiveObject newLiveObject: newLiveObjects){
+            if (previousLiveObjects.contains(newLiveObject)){
                 //nothing reused live object
             }
-            if (!previousLiveObjectsSet.contains(newLiveObject)){
+            if (!previousLiveObjects.contains(newLiveObject)){
                 newLiveObject.start();
             }
         }
+    }
+
+    TreeTraverser<FactoryBase<?,?>> factoryTraverser = new TreeTraverser<FactoryBase<?,?>>() {
+        @Override
+        public Iterable<FactoryBase<?,?>> children(FactoryBase<?,?> factory) {
+            return factory.getChildFactories();
+        }
+    };
+    private Function<T,HashSet<LiveObject>> startOrderProvider= root -> {
+        HashSet<LiveObject> result = new HashSet<>();
+        for (FactoryBase<?,?> factory : factoryTraverser.postOrderTraversal(root)) {
+            factory.getCreatedLiveObject().ifPresent(result::add);
+        }
+        return result;
+    };
+    public void customizeStartOrder(Function<T,HashSet<LiveObject>> orderProvider){
+        startOrderProvider=orderProvider;
+    }
+
+    private Function<T,HashSet<LiveObject>> stopOrderProvider= root -> {
+        HashSet<LiveObject> result = new HashSet<>();
+        for (FactoryBase<?,?> factory : factoryTraverser.breadthFirstTraversal(root)) {
+            factory.getCreatedLiveObject().ifPresent(result::add);
+        }
+        return result;
+    };
+    public void customizeStopOrder(Function<T,HashSet<LiveObject>> orderProvider){
+        stopOrderProvider=orderProvider;
     }
 
     public T getCurrentFactory(){

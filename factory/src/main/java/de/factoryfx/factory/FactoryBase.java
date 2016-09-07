@@ -74,6 +74,13 @@ public abstract class FactoryBase<E extends LiveObject, T extends FactoryBase<E,
         });
     }
 
+    @JsonIgnore
+    public List<FactoryBase<?,?>> getChildFactories() {
+        ArrayList<FactoryBase<?, ?>> result = new ArrayList<>();
+        this.visitChildFactoriesFlat(factoryBase -> result.add(factoryBase));
+        return result;
+    }
+
     @SuppressWarnings("unchecked")
     public <A> void  visitAttributesDualFlat(T modelBase, BiConsumer<Attribute<A,?>, Attribute<A,?>> consumer) {
         Field[] fields = getFields();
@@ -400,6 +407,11 @@ public abstract class FactoryBase<E extends LiveObject, T extends FactoryBase<E,
         if (createdLiveObjects!=null){
             liveObjects.put(getId(),createdLiveObjects);
         }
+    }
+
+    @JsonIgnore
+    public Optional<E> getCreatedLiveObject(){
+        return Optional.of(createdLiveObjects);
     }
 
     @JsonIgnore
