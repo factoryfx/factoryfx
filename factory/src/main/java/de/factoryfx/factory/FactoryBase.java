@@ -410,7 +410,7 @@ public abstract class FactoryBase<E extends LiveObject, T extends FactoryBase<E,
 
     @JsonIgnore
     public Optional<E> getCreatedLiveObject(){
-        return Optional.of(createdLiveObjects);
+        return Optional.ofNullable(createdLiveObjects);
     }
 
     @JsonIgnore
