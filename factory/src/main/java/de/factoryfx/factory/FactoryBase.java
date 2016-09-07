@@ -401,7 +401,6 @@ public abstract class FactoryBase<E extends LiveObject, T extends FactoryBase<E,
 
     public void collectLiveObjects(Map<String,LiveObject> liveObjects){
 
-        //order important deep first
         this.visitChildFactoriesFlat(factory -> factory.collectLiveObjects(liveObjects));
 
         if (createdLiveObjects!=null){
