@@ -2,21 +2,21 @@ package de.factoryfx.example.factory;
 
 import java.util.Optional;
 
+import de.factoryfx.data.attribute.AttributeMetadata;
+import de.factoryfx.data.attribute.util.StringAttribute;
 import de.factoryfx.example.server.OrderStorage;
 import de.factoryfx.factory.FactoryBase;
-import de.factoryfx.factory.attribute.AttributeMetadata;
-import de.factoryfx.factory.attribute.ReferenceListAttribute;
-import de.factoryfx.factory.attribute.util.StringAttribute;
+import de.factoryfx.factory.atrribute.FactoryReferenceListAttribute;
 import javafx.stage.Stage;
 
-public class ShopFactory extends FactoryBase<Shop,ShopFactory> {
-    {
-        setDisplayTextProvider(factoryBase -> "Shop");
+public class ShopFactory extends FactoryBase<Shop> {
+    public ShopFactory(){
+        setDisplayTextProvider(()->"Shop");
     }
 
     public final StringAttribute stageTitle = new StringAttribute(new AttributeMetadata().labelText("Stage title"));
 
-    public final ReferenceListAttribute<Product,ProductFactory> products = new ReferenceListAttribute<Product,ProductFactory>(ProductFactory.class,new AttributeMetadata().labelText("Products"));
+    public final FactoryReferenceListAttribute<Product,ProductFactory> products = new FactoryReferenceListAttribute<>(ProductFactory.class,new AttributeMetadata().labelText("Products"));
 
     @Override
     protected Shop createImp(Optional<Shop> previousLiveObject) {

@@ -24,7 +24,7 @@ import de.factoryfx.server.ApplicationServer;
 import de.factoryfx.server.DefaultApplicationServer;
 import de.factoryfx.user.UserManagement;
 
-public class WebGuiApplicationCreator<V, T extends FactoryBase<? extends LiveObject<V>, T>> {
+public class WebGuiApplicationCreator<V, T extends FactoryBase<? extends LiveObject<V>>> {
     private final ApplicationServer<V, T> applicationServer;
     private final List<Class<? extends FactoryBase>> appFactoryClasses;
     private final UserManagement userManagement;

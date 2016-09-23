@@ -5,13 +5,13 @@ import java.util.Locale;
 import java.util.Optional;
 
 import de.factoryfx.factory.FactoryBase;
-import de.factoryfx.factory.attribute.AttributeMetadata;
-import de.factoryfx.factory.attribute.util.ByteArrayAttribute;
-import de.factoryfx.factory.attribute.util.I18nAttribute;
-import de.factoryfx.factory.attribute.util.ObjectValueAttribute;
+import de.factoryfx.data.attribute.AttributeMetadata;
+import de.factoryfx.data.attribute.util.ByteArrayAttribute;
+import de.factoryfx.data.attribute.util.I18nAttribute;
+import de.factoryfx.data.attribute.util.ObjectValueAttribute;
 import de.factoryfx.user.UserManagement;
 
-public class LayoutFactory extends FactoryBase<Layout, LayoutFactory> {
+public class LayoutFactory extends FactoryBase<Layout> {
     public final ObjectValueAttribute<UserManagement> userManagement = new ObjectValueAttribute<>(new AttributeMetadata().labelText("userManagement"));
 
     public final ByteArrayAttribute logoSmall = new ByteArrayAttribute(new AttributeMetadata().labelText("logoSmall"));

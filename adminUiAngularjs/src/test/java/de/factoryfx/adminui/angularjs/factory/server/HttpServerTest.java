@@ -5,12 +5,11 @@ import java.math.BigDecimal;
 import java.util.Optional;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import de.factoryfx.adminui.angularjs.factory.server.HttpServer;
 import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.factory.LiveObject;
-import de.factoryfx.factory.attribute.AttributeMetadata;
-import de.factoryfx.factory.attribute.util.BigDecimalAttribute;
-import de.factoryfx.factory.attribute.util.LongAttribute;
+import de.factoryfx.data.attribute.AttributeMetadata;
+import de.factoryfx.data.attribute.util.BigDecimalAttribute;
+import de.factoryfx.data.attribute.util.LongAttribute;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -34,7 +33,7 @@ public class HttpServerTest {
         }
     }
 
-    public static class TestBigDecimal extends FactoryBase<TestBigDecimalLiveObject,TestBigDecimal> {
+    public static class TestBigDecimal extends FactoryBase<TestBigDecimalLiveObject> {
         public final BigDecimalAttribute value = new BigDecimalAttribute(new AttributeMetadata());
 
         @Override
@@ -43,7 +42,7 @@ public class HttpServerTest {
         }
     }
 
-    public static class TestLongDecimal extends FactoryBase<TestBigDecimalLiveObject,TestBigDecimal>{
+    public static class TestLongDecimal extends FactoryBase<TestBigDecimalLiveObject>{
         public final LongAttribute value = new LongAttribute(new AttributeMetadata());
 
         @Override

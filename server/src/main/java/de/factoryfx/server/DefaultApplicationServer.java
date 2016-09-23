@@ -9,9 +9,9 @@ import de.factoryfx.factory.datastorage.FactoryStorage;
 import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.factory.FactoryManager;
 import de.factoryfx.factory.LiveObject;
-import de.factoryfx.factory.merge.MergeDiff;
+import de.factoryfx.data.merge.MergeDiff;
 
-public class DefaultApplicationServer<V,T extends FactoryBase<? extends LiveObject<V>, T>> implements ApplicationServer<V,T> {
+public class DefaultApplicationServer<V,T extends FactoryBase<? extends LiveObject<V>>> implements ApplicationServer<V,T> {
 
     private final FactoryManager<V,T> factoryManager;
     private final FactoryStorage<T> factoryStorage;
@@ -26,7 +26,7 @@ public class DefaultApplicationServer<V,T extends FactoryBase<? extends LiveObje
         T commonVersion = factoryStorage.getHistoryFactory(update.metadata.baseVersionId);
         MergeDiff mergeDiff = factoryManager.update(commonVersion, update.root, locale);
         if (mergeDiff.hasNoConflicts()){
-            FactoryAndStorageMetadata<T> copy = new FactoryAndStorageMetadata<>(factoryManager.getCurrentFactory().copy(),update.metadata);
+            FactoryAndStorageMetadata<T> copy = new FactoryAndStorageMetadata<T>(factoryManager.getCurrentFactory().copy(),update.metadata);
             factoryStorage.updateCurrentFactory(copy);
         }
         return mergeDiff;

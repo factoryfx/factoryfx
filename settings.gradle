@@ -1,1 +1,1 @@
-include 'server', 'adminUiAngularjs', 'adminUiJavafxClient', 'adminUiJavafxServer', 'factory', 'development', 'example', 'restutil'
+include 'server', 'adminUiAngularjs', 'adminUiJavafxClient', 'adminUiJavafxServer', 'data', 'factory', 'development', 'example', 'restutil', 'javafxFramework'

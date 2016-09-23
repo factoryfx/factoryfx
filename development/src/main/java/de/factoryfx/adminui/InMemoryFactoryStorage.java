@@ -13,7 +13,7 @@ import de.factoryfx.factory.datastorage.FactoryStorage;
 import de.factoryfx.factory.datastorage.StoredFactoryMetadata;
 
 
-public class InMemoryFactoryStorage<T extends FactoryBase<? extends LiveObject<?>, T>> implements FactoryStorage<T> {
+public class InMemoryFactoryStorage<T extends FactoryBase<? extends LiveObject<?>>> implements FactoryStorage<T> {
     private Map<String,FactoryAndStorageMetadata<T>> storage = new TreeMap<>();
     private String current;
     private T initialFactory;

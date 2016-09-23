@@ -11,7 +11,7 @@ public class WebGuiFactoryHeader {
         this.id = id;
     }
 
-    public WebGuiFactoryHeader(FactoryBase<?,?> factoryBase) {
+    public WebGuiFactoryHeader(FactoryBase<?> factoryBase) {
         this(factoryBase.getDisplayText(),factoryBase.getId());
     }
 }

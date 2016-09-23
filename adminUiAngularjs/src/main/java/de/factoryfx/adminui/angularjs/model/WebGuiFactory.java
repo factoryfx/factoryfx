@@ -7,6 +7,7 @@ import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import de.factoryfx.data.Data;
 import de.factoryfx.factory.FactoryBase;
 
 public class WebGuiFactory {
@@ -23,27 +24,27 @@ public class WebGuiFactory {
 
 
     @JsonTypeInfo(use=JsonTypeInfo.Id.CLASS, include=JsonTypeInfo.As.PROPERTY, property="@class")
-    public FactoryBase<?,?> factory;
+    public FactoryBase<?> factory;
     public String type;
     public String displayText;
     public Map<String,String> nestedFactoriesDisplayText = new HashMap<>();
 
     public List<PathElement> path=new ArrayList<>();
 
-    public WebGuiFactory(FactoryBase<?,?> factory, FactoryBase<?,?> root) {
+    public WebGuiFactory(FactoryBase<?> factory, FactoryBase<?> root) {
         this.factory = factory.copyOneLevelDeep();
         this.type = factory.getClass().getName();
 
         factory.visitAttributesFlat((attributeName, attribute) -> {
             attribute.visit(factoryBase1 -> {
-                nestedFactoriesDisplayText.put(factoryBase1.getId(), factoryBase1.getDisplayText());
+                nestedFactoriesDisplayText.put(factoryBase1.getId().toString(), factoryBase1.getDisplayText());
             });
         });
 
         displayText=factory.getDisplayText();
 
-        for (FactoryBase<?,?> factoryBase: root.getPathTo(factory)){
-            path.add(new PathElement(factoryBase.getId(),factoryBase.getDisplayText()));
+        for (Data factoryBase: root.getPathTo(factory)){
+            path.add(new PathElement(factoryBase.getId().toString(),factoryBase.getDisplayText()));
         }
     }
 

@@ -6,11 +6,11 @@ import java.util.Locale;
 import java.util.function.Function;
 
 import com.google.common.collect.TreeTraverser;
-import de.factoryfx.factory.merge.FactoryMerger;
-import de.factoryfx.factory.merge.MergeDiff;
-import de.factoryfx.factory.merge.MergeResultEntry;
+import de.factoryfx.data.merge.FactoryMerger;
+import de.factoryfx.data.merge.MergeDiff;
+import de.factoryfx.data.merge.MergeResultEntry;
 
-public class FactoryManager<V,T extends FactoryBase<? extends LiveObject<V>, T>> {
+public class FactoryManager<V,T extends FactoryBase<? extends LiveObject<V>>> {
 
     private T currentFactory;
 
@@ -23,11 +23,12 @@ public class FactoryManager<V,T extends FactoryBase<? extends LiveObject<V>, T>>
         factoryMerger.setLocale(locale);
         MergeDiff mergeDiff= factoryMerger.mergeIntoCurrent();
         if (mergeDiff.hasNoConflicts()){
-            for (FactoryBase<?,?> current : currentFactory.collectChildFactories()){
+            for (FactoryBase<?> current : currentFactory.collectChildFactories()){
                 current.unMarkChanged();
             }
             for (MergeResultEntry<?> mergeResultEntry: mergeDiff.getMergeInfos()){
-                mergeResultEntry.parent.markChanged();
+                //TODO check cast required
+                ((FactoryBase<?>)mergeResultEntry.parent).markChanged();
             }
 
 
@@ -73,15 +74,15 @@ public class FactoryManager<V,T extends FactoryBase<? extends LiveObject<V>, T>>
         }
     }
 
-    TreeTraverser<FactoryBase<?,?>> factoryTraverser = new TreeTraverser<FactoryBase<?,?>>() {
+    TreeTraverser<FactoryBase<?>> factoryTraverser = new TreeTraverser<FactoryBase<?>>() {
         @Override
-        public Iterable<FactoryBase<?,?>> children(FactoryBase<?,?> factory) {
-            return factory.getChildFactories();
+        public Iterable<FactoryBase<?>> children(FactoryBase<?> factory) {
+            return factory.collectChildrenFlat();
         }
     };
     private Function<T,HashSet<LiveObject>> startLiveObjectProvider = root -> {
         HashSet<LiveObject> result = new HashSet<>();
-        for (FactoryBase<?,?> factory : factoryTraverser.postOrderTraversal(root)) {
+        for (FactoryBase<?> factory : factoryTraverser.postOrderTraversal(root)) {
             factory.getCreatedLiveObject().ifPresent(result::add);
         }
         return result;
@@ -92,7 +93,7 @@ public class FactoryManager<V,T extends FactoryBase<? extends LiveObject<V>, T>>
 
     private Function<T,HashSet<LiveObject>> stopLiveObjectProvider = root -> {
         HashSet<LiveObject> result = new HashSet<>();
-        for (FactoryBase<?,?> factory : factoryTraverser.breadthFirstTraversal(root)) {
+        for (FactoryBase<?> factory : factoryTraverser.breadthFirstTraversal(root)) {
             factory.getCreatedLiveObject().ifPresent(result::add);
         }
         return result;

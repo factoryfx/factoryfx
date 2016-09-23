@@ -4,25 +4,25 @@ import java.util.Optional;
 import java.util.regex.Pattern;
 
 import de.factoryfx.adminui.angularjs.integration.Permissions;
+import de.factoryfx.data.attribute.AttributeMetadata;
+import de.factoryfx.data.attribute.util.BigDecimalAttribute;
+import de.factoryfx.data.attribute.util.BooleanAttribute;
+import de.factoryfx.data.attribute.util.ByteArrayAttribute;
+import de.factoryfx.data.attribute.util.DoubleAttribute;
+import de.factoryfx.data.attribute.util.EnumAttribute;
+import de.factoryfx.data.attribute.util.I18nAttribute;
+import de.factoryfx.data.attribute.util.IntegerAttribute;
+import de.factoryfx.data.attribute.util.LongAttribute;
+import de.factoryfx.data.attribute.util.StringAttribute;
+import de.factoryfx.data.attribute.util.StringListAttribute;
+import de.factoryfx.data.attribute.util.StringMapAttribute;
+import de.factoryfx.data.validation.RegexValidation;
+import de.factoryfx.data.validation.StringRequired;
 import de.factoryfx.factory.FactoryBase;
-import de.factoryfx.factory.attribute.AttributeMetadata;
-import de.factoryfx.factory.attribute.ReferenceAttribute;
-import de.factoryfx.factory.attribute.ReferenceListAttribute;
-import de.factoryfx.factory.attribute.util.BigDecimalAttribute;
-import de.factoryfx.factory.attribute.util.BooleanAttribute;
-import de.factoryfx.factory.attribute.util.ByteArrayAttribute;
-import de.factoryfx.factory.attribute.util.DoubleAttribute;
-import de.factoryfx.factory.attribute.util.EnumAttribute;
-import de.factoryfx.factory.attribute.util.I18nAttribute;
-import de.factoryfx.factory.attribute.util.IntegerAttribute;
-import de.factoryfx.factory.attribute.util.LongAttribute;
-import de.factoryfx.factory.attribute.util.StringAttribute;
-import de.factoryfx.factory.attribute.util.StringListAttribute;
-import de.factoryfx.factory.attribute.util.StringMapAttribute;
-import de.factoryfx.factory.validation.RegexValidation;
-import de.factoryfx.factory.validation.StringRequired;
+import de.factoryfx.factory.atrribute.FactoryReferenceAttribute;
+import de.factoryfx.factory.atrribute.FactoryReferenceListAttribute;
 
-public class ExampleFactoryA extends FactoryBase<ExampleLiveObjectA,ExampleFactoryA> {
+public class ExampleFactoryA extends FactoryBase<ExampleLiveObjectA> {
 
     public final StringAttribute stringAttribute=new StringAttribute(new AttributeMetadata().en("StringAttribute").de("StringAttribute de").permission(Permissions.PERMISSON_X)).validation(new StringRequired());
     public final StringAttribute regexValidationNumber=new StringAttribute(new AttributeMetadata().en("regexValidationNumber").de("regexValidationNumber de").permission(Permissions.PERMISSON_X)).validation(new RegexValidation(Pattern.compile("[0-9]*")));
@@ -37,8 +37,8 @@ public class ExampleFactoryA extends FactoryBase<ExampleLiveObjectA,ExampleFacto
     public final I18nAttribute i18nAttribute=new I18nAttribute(new AttributeMetadata().en("i18nAttribute").de("i18nAttribute de")).en("envalue").de("devalue");
     public final ByteArrayAttribute byteArrayAttribute=new ByteArrayAttribute(new AttributeMetadata().en("byteArrayAttribute").de("byteArrayAttribute de"));
 
-    public final ReferenceAttribute<ExampleLiveObjectB,ExampleFactoryB> referenceAttribute = new ReferenceAttribute<>(ExampleFactoryB.class,new AttributeMetadata().en("ReferenceAttribute").de("ReferenceAttribute de"));
-    public final ReferenceListAttribute<ExampleLiveObjectB,ExampleFactoryB> referenceListAttribute = new ReferenceListAttribute<>(ExampleFactoryB.class,new AttributeMetadata().en("ReferenceListAttribute").de("ReferenceListAttribute de"));
+    public final FactoryReferenceAttribute<ExampleLiveObjectB,ExampleFactoryB> referenceAttribute = new FactoryReferenceAttribute<>(ExampleFactoryB.class,new AttributeMetadata().en("ReferenceAttribute").de("ReferenceAttribute de"));
+    public final FactoryReferenceListAttribute<ExampleLiveObjectB,ExampleFactoryB> referenceListAttribute = new FactoryReferenceListAttribute<>(ExampleFactoryB.class,new AttributeMetadata().en("ReferenceListAttribute").de("ReferenceListAttribute de"));
 
     @Override
     protected ExampleLiveObjectA createImp(Optional<ExampleLiveObjectA> previousLiveObject) {

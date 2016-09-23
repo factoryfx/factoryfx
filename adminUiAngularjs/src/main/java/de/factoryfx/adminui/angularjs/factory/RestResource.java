@@ -9,7 +9,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -34,17 +33,18 @@ import de.factoryfx.adminui.angularjs.model.table.WebGuiTable;
 import de.factoryfx.adminui.angularjs.model.view.GuiView;
 import de.factoryfx.adminui.angularjs.model.view.ViewHeader;
 import de.factoryfx.adminui.angularjs.model.view.WebGuiView;
+import de.factoryfx.data.Data;
+import de.factoryfx.data.attribute.Attribute;
+import de.factoryfx.data.attribute.ReferenceAttribute;
+import de.factoryfx.data.attribute.ReferenceListAttribute;
+import de.factoryfx.data.merge.FactoryMerger;
+import de.factoryfx.data.merge.MergeDiff;
+import de.factoryfx.data.merge.MergeResultEntry;
+import de.factoryfx.data.merge.MergeResultEntryInfo;
 import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.factory.LiveObject;
-import de.factoryfx.factory.attribute.Attribute;
-import de.factoryfx.factory.attribute.ReferenceAttribute;
-import de.factoryfx.factory.attribute.ReferenceListAttribute;
 import de.factoryfx.factory.datastorage.FactoryAndStorageMetadata;
 import de.factoryfx.factory.datastorage.StoredFactoryMetadata;
-import de.factoryfx.factory.merge.FactoryMerger;
-import de.factoryfx.factory.merge.MergeDiff;
-import de.factoryfx.factory.merge.MergeResultEntry;
-import de.factoryfx.factory.merge.MergeResultEntryInfo;
 import de.factoryfx.factory.util.VoidLiveObject;
 import de.factoryfx.server.ApplicationServer;
 import de.factoryfx.user.User;
@@ -55,8 +55,8 @@ import difflib.Patch;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
-@Path("/") /** path defined in {@link de.scoopsoftware.xtc.ticketproxy.configuration.ConfigurationServer}*/
-public class RestResource<V,T extends FactoryBase<? extends LiveObject<V>, T>>  extends VoidLiveObject {
+@Path("/") /** path defined in {@link de.factoryfx.xtc.ticketproxy.configuration.ConfigurationServer}*/
+public class RestResource<V,T extends FactoryBase<? extends LiveObject<V>>>  extends VoidLiveObject {
 
     private final ApplicationServer<V,T> applicationServer;
     private final List<Class<? extends FactoryBase>> appFactoryClasses;
@@ -111,12 +111,12 @@ public class RestResource<V,T extends FactoryBase<? extends LiveObject<V>, T>>  
     @Produces(MediaType.APPLICATION_JSON)
     @Path("factory")
     public de.factoryfx.adminui.angularjs.model.WebGuiFactory getFactory(@QueryParam("id")String id) {
-        FactoryBase<?, ?> root = getCurrentEditingFactory().root;
+        FactoryBase<?> root = getCurrentEditingFactory().root;
 
         //TODO use map?
-        for (FactoryBase<?,?> factory: root.collectChildFactories()){
+        for (Data factory: root.collectChildrenDeep()){
             if (factory.getId().equals(id)){
-                return new de.factoryfx.adminui.angularjs.model.WebGuiFactory(factory,root);
+                return new de.factoryfx.adminui.angularjs.model.WebGuiFactory((FactoryBase<?>)factory,root);
             }
         }
         throw new IllegalStateException("cant find id"+id);
@@ -128,13 +128,13 @@ public class RestResource<V,T extends FactoryBase<? extends LiveObject<V>, T>>  
     @Path("factory")
     @SuppressWarnings("unchecked")
     public StageResponse save(FactoryTypeInfoWrapper newFactoryParam) {
-        FactoryBase<?,?> newFactory=newFactoryParam.factory.reconstructMetadataDeepRoot();
-        FactoryBase<?, ?> root = getCurrentEditingFactory().root;
-        Map<String,FactoryBase<?,?>>  map = root.collectChildFactoriesMap();
-        FactoryBase existing = map.get(newFactory.getId());
+        FactoryBase<?> newFactory=newFactoryParam.factory.reconstructMetadataDeepRoot();
+        FactoryBase<?> root = getCurrentEditingFactory().root;
+        Map<Object,Data>  map = root.collectChildFactoriesMap();
+        Data existing = map.get(newFactory.getId());
 
-        Function<FactoryBase,FactoryBase> existingOrNew= factoryBase -> {
-            FactoryBase result = map.get(factoryBase.getId());
+        Function<Data,Data> existingOrNew= factoryBase -> {
+            Data result = map.get(factoryBase.getId());
             if (factoryBase!=null && result==null){//new added nested factory
                 result=factoryBase;
             }
@@ -147,18 +147,18 @@ public class RestResource<V,T extends FactoryBase<? extends LiveObject<V>, T>>  
         existing.visitAttributesDualFlat(newFactory, (thisAttribute, copyAttribute) -> {
             Object value = ((Attribute)copyAttribute).get();//The cast is necessary don't trust intellij
             if (value instanceof FactoryBase){
-                value=existingOrNew.apply((FactoryBase)value);
+                value=existingOrNew.apply((Data)value);
             }
             if (copyAttribute instanceof ReferenceListAttribute){
-                final ObservableList<FactoryBase> referenceList = FXCollections.observableArrayList();
-                ((ReferenceListAttribute<?,?>)copyAttribute).get().forEach(factory -> referenceList.add(existingOrNew.apply(factory)));
+                final ObservableList<Data> referenceList = FXCollections.observableArrayList();
+                ((ReferenceListAttribute)copyAttribute).get().forEach(factory -> referenceList.add(existingOrNew.apply((Data)factory)));
                 value=referenceList;
             }
 
             ((Attribute)thisAttribute).set(value);
         });
 
-        Map<String,FactoryBase<?,?>>  map2 = root.collectChildFactoriesMap();
+        Map<Object,Data>  map2 = root.collectChildFactoriesMap();
         root.fixDuplicateObjects(id -> Optional.of(map2.get(id)));
 
         return createStageResponse();
@@ -252,7 +252,7 @@ public class RestResource<V,T extends FactoryBase<? extends LiveObject<V>, T>>  
         response.mergeDiff= applicationServer.simulateUpdateCurrentFactory(currentEditingFactoryRoot.root, currentEditingFactoryRoot.metadata.baseVersionId,getUserLocale());
 
 
-        for (FactoryBase<?,?> factoryBase: currentEditingFactoryRoot.root.collectChildFactories()){
+        for (Data factoryBase: currentEditingFactoryRoot.root.collectChildrenDeep()){
             factoryBase.validateFlat().stream().map(validationError -> new WebGuiValidationError(validationError,getUserLocale(),factoryBase)).forEach(w -> response.validationErrors.add(w));
         }
 
@@ -312,30 +312,20 @@ public class RestResource<V,T extends FactoryBase<? extends LiveObject<V>, T>>  
 
                 attribute.visit(new Attribute.AttributeVisitor() {
                     @Override
-                    public void value(Attribute<?,?> value) {
+                    public void value(Attribute<?> value) {
                         //nothing
                     }
 
                     @Override
-                    public void reference(ReferenceAttribute<?,?> reference) {
-                        List<? extends FactoryBase<?,?>> objects = reference.possibleValues(root);
-                        objects.forEach(new Consumer<FactoryBase<?,?>>() {
-                            @Override
-                            public void accept(FactoryBase<?,?> factoryBase) {
-                                result.add(new WebGuiPossibleEntity(factoryBase));
-                            }
-                        });
+                    public void reference(ReferenceAttribute<?> reference) {
+                        List<? extends Data> objects = reference.possibleValues(root);
+                        objects.forEach(data -> result.add(new WebGuiPossibleEntity(data)));
                     }
 
                     @Override
-                    public void referenceList(ReferenceListAttribute<?,?> referenceList) {
-                        List<? extends FactoryBase<?,?>> objects = referenceList.possibleValues(root);
-                        objects.forEach(new Consumer<FactoryBase<?,?>>() {
-                            @Override
-                            public void accept(FactoryBase<?,?> factoryBase) {
-                                result.add(new WebGuiPossibleEntity(factoryBase));
-                            }
-                        });
+                    public void referenceList(ReferenceListAttribute<?> referenceList) {
+                        List<? extends Data> objects = referenceList.possibleValues(root);
+                        objects.forEach(data -> result.add(new WebGuiPossibleEntity(data)));
                     }
                 });
 
@@ -351,30 +341,30 @@ public class RestResource<V,T extends FactoryBase<? extends LiveObject<V>, T>>  
     public de.factoryfx.adminui.angularjs.model.WebGuiFactory addFactory(@QueryParam("id")String id, @QueryParam("attributeName")String attributeName){
 
         T root = getCurrentEditingFactory().root;
-        FactoryBase<?, ?> factoryBase = root.collectChildFactoriesMap().get(id);
+        Data factoryBase = root.collectChildFactoriesMap().get(id);
         factoryBase.visitAttributesFlat((attributeVariableName, attribute) -> {
             if (attributeVariableName.equals(attributeName)){
 
                 attribute.visit(new Attribute.AttributeVisitor() {
                     @Override
-                    public void value(Attribute<?,?> value) {
+                    public void value(Attribute<?> value) {
                         //nothing
                     }
 
                     @Override
-                    public void reference(ReferenceAttribute<?,?> reference) {
+                    public void reference(ReferenceAttribute<?> reference) {
                         reference.addNewFactory(root);
                     }
 
                     @Override
-                    public void referenceList(ReferenceListAttribute<?,?> referenceList) {
+                    public void referenceList(ReferenceListAttribute<?> referenceList) {
                         referenceList.addNewFactory(root);
                     }
                 });
 
             }
         });
-        return new de.factoryfx.adminui.angularjs.model.WebGuiFactory(factoryBase,root);
+        return new de.factoryfx.adminui.angularjs.model.WebGuiFactory((FactoryBase<?>) factoryBase,root);
     }
 
     public static class DashboardResponse{

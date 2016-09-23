@@ -13,7 +13,7 @@ import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider;
 import de.factoryfx.adminui.angularjs.factory.RestResource;
 import de.factoryfx.adminui.angularjs.factory.server.resourcehandler.ConfigurableResourceHandler;
-import de.factoryfx.factory.jackson.ObjectMapperBuilder;
+import de.factoryfx.data.jackson.ObjectMapperBuilder;
 import de.factoryfx.factory.util.VoidLiveObject;
 import de.factoryfx.jettyserver.AllExceptionMapper;
 import org.eclipse.jetty.server.Handler;

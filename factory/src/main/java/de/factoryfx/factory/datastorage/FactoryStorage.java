@@ -5,7 +5,7 @@ import java.util.Collection;
 import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.factory.LiveObject;
 
-public interface FactoryStorage<T extends FactoryBase<? extends LiveObject<?>, T>> {
+public interface FactoryStorage<T extends FactoryBase<? extends LiveObject<?>>> {
 
     T getHistoryFactory(String id);
 

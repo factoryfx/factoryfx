@@ -3,8 +3,8 @@ package de.factoryfx.adminui.angularjs.model;
 import java.util.Locale;
 
 import de.factoryfx.adminui.angularjs.integration.example.ExampleEnum;
-import de.factoryfx.factory.attribute.AttributeMetadata;
-import de.factoryfx.factory.attribute.util.EnumAttribute;
+import de.factoryfx.data.attribute.AttributeMetadata;
+import de.factoryfx.data.attribute.util.EnumAttribute;
 import org.junit.Assert;
 import org.junit.Test;
 

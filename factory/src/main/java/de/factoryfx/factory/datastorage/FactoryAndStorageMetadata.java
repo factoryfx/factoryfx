@@ -3,7 +3,7 @@ package de.factoryfx.factory.datastorage;
 import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.factory.LiveObject;
 
-public class FactoryAndStorageMetadata<T extends FactoryBase<? extends LiveObject<?>, T>> {
+public class FactoryAndStorageMetadata<T extends FactoryBase<? extends LiveObject<?>>> {
     public final T root;
     public final StoredFactoryMetadata metadata;
 
@@ -13,6 +13,6 @@ public class FactoryAndStorageMetadata<T extends FactoryBase<? extends LiveObjec
     }
 
     public FactoryAndStorageMetadata<T> copy(){
-        return new FactoryAndStorageMetadata<>(root.copy(),metadata);
+        return new FactoryAndStorageMetadata<>(root.<T>copy(),metadata);
     }
 }

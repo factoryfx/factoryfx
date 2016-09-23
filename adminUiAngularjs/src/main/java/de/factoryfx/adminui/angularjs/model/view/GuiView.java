@@ -4,8 +4,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.function.Function;
 
+import de.factoryfx.data.util.LanguageText;
 import de.factoryfx.factory.FactoryBase;
-import de.factoryfx.factory.util.LanguageText;
 
 public class GuiView<T extends FactoryBase> {
     public final String id;

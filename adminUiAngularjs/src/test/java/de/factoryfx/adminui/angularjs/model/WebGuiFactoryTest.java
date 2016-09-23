@@ -2,7 +2,7 @@ package de.factoryfx.adminui.angularjs.model;
 
 import de.factoryfx.adminui.angularjs.integration.example.ExampleFactoryA;
 import de.factoryfx.adminui.angularjs.integration.example.ExampleFactoryB;
-import de.factoryfx.factory.jackson.ObjectMapperBuilder;
+import de.factoryfx.data.jackson.ObjectMapperBuilder;
 import org.junit.Test;
 
 public class WebGuiFactoryTest {

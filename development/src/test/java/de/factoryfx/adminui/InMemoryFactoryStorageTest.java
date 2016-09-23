@@ -8,8 +8,8 @@ import java.util.Optional;
 import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.factory.FactoryManager;
 import de.factoryfx.factory.LiveObject;
-import de.factoryfx.factory.attribute.AttributeMetadata;
-import de.factoryfx.factory.attribute.util.StringAttribute;
+import de.factoryfx.data.attribute.AttributeMetadata;
+import de.factoryfx.data.attribute.util.StringAttribute;
 import de.factoryfx.factory.datastorage.FactoryAndStorageMetadata;
 import de.factoryfx.server.DefaultApplicationServer;
 import org.junit.Assert;
@@ -17,7 +17,7 @@ import org.junit.Test;
 
 public class InMemoryFactoryStorageTest {
 
-    public static class Dummy extends FactoryBase<DummyLive,Dummy>{
+    public static class Dummy extends FactoryBase<DummyLive>{
 
         public final StringAttribute test= new StringAttribute(new AttributeMetadata().labelText("fsdsf")).defaultValue("1");
 

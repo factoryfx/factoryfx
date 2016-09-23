@@ -14,11 +14,11 @@ import de.factoryfx.factory.datastorage.StoredFactoryMetadata;
 import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.factory.LiveObject;
 import de.factoryfx.factory.datastorage.FactoryAndStorageMetadata;
-import de.factoryfx.factory.merge.MergeDiff;
+import de.factoryfx.data.merge.MergeDiff;
 import de.factoryfx.server.ApplicationServer;
 
-@Path("/") /** path defined in {@link de.scoopsoftware.xtc.ticketproxy.configuration.ConfigurationServer}*/
-public class ApplicationServerResource<V, T extends FactoryBase<? extends LiveObject<V>, T>> implements ApplicationServer<V,T> {
+@Path("/") /** path defined in {@link de.factoryfx.xtc.ticketproxy.configuration.ConfigurationServer}*/
+public class ApplicationServerResource<V, T extends FactoryBase<? extends LiveObject<V>>> implements ApplicationServer<V,T> {
 
     private final ApplicationServer<V,T> applicationServer;
 

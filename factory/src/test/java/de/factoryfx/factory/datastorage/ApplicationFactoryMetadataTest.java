@@ -1,6 +1,6 @@
 package de.factoryfx.factory.datastorage;
 
-import de.factoryfx.factory.jackson.ObjectMapperBuilder;
+import de.factoryfx.data.jackson.ObjectMapperBuilder;
 import org.junit.Test;
 
 public class ApplicationFactoryMetadataTest {

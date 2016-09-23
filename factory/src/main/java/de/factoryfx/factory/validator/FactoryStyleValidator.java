@@ -7,14 +7,14 @@ import java.util.Optional;
 
 import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.factory.LiveObject;
-import de.factoryfx.factory.attribute.Attribute;
+import de.factoryfx.data.attribute.Attribute;
 
 public class FactoryStyleValidator {
 
     /** test if the model is valid:
      * all Attributes are public
      * all Attributes not null after instantiation*/
-    public Optional<String> validateFactory(FactoryBase<?,?> factoryBase){
+    public Optional<String> validateFactory(FactoryBase<?> factoryBase){
         for (Field field: factoryBase.getClass().getDeclaredFields()){
 
             if (Attribute.class.isAssignableFrom(field.getType())){

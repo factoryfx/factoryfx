@@ -2,11 +2,11 @@ package de.factoryfx.adminui.angularjs.model;
 
 import java.util.Locale;
 
-import de.factoryfx.factory.attribute.Attribute;
-import de.factoryfx.factory.attribute.AttributeMetadata;
-import de.factoryfx.factory.attribute.AttributeTypeInfo;
-import de.factoryfx.factory.validation.ObjectRequired;
-import de.factoryfx.factory.validation.Validation;
+import de.factoryfx.data.attribute.Attribute;
+import de.factoryfx.data.attribute.AttributeMetadata;
+import de.factoryfx.data.attribute.AttributeTypeInfo;
+import de.factoryfx.data.validation.ObjectRequired;
+import de.factoryfx.data.validation.Validation;
 
 public class WebGuiAttributeMetadata {
     public final String labelText;
@@ -18,7 +18,7 @@ public class WebGuiAttributeMetadata {
     public final WebGuiDataType mapValueType;
     public final Object listItemEmptyValue;
 
-    public WebGuiAttributeMetadata(AttributeMetadata attributeMetadata, Locale locale, Attribute<?, ?> attribute){
+    public WebGuiAttributeMetadata(AttributeMetadata attributeMetadata, Locale locale, Attribute<?> attribute){
         labelText=attributeMetadata.labelText.getPreferred(locale);
         addonText=attributeMetadata.addonText;
         boolean required=false;

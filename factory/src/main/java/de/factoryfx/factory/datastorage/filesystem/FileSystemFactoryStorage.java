@@ -11,10 +11,10 @@ import de.factoryfx.factory.LiveObject;
 import de.factoryfx.factory.datastorage.FactoryAndStorageMetadata;
 import de.factoryfx.factory.datastorage.FactoryStorage;
 import de.factoryfx.factory.datastorage.StoredFactoryMetadata;
-import de.factoryfx.factory.jackson.ObjectMapperBuilder;
-import de.factoryfx.factory.jackson.SimpleObjectMapper;
+import de.factoryfx.data.jackson.ObjectMapperBuilder;
+import de.factoryfx.data.jackson.SimpleObjectMapper;
 
-public class FileSystemFactoryStorage<T extends FactoryBase<? extends LiveObject<?>, T>> implements FactoryStorage<T> {
+public class FileSystemFactoryStorage<T extends FactoryBase<? extends LiveObject<?>>> implements FactoryStorage<T> {
     private final FileSystemFactoryStorageHistory<T> fileSystemFactoryStorageHistory;
 
     private T initialFactory;

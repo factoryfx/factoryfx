@@ -2,11 +2,11 @@ package de.factoryfx.factory.testfactories;
 
 import java.util.Optional;
 
+import de.factoryfx.data.attribute.AttributeMetadata;
+import de.factoryfx.data.attribute.util.StringAttribute;
 import de.factoryfx.factory.FactoryBase;
-import de.factoryfx.factory.attribute.AttributeMetadata;
-import de.factoryfx.factory.attribute.util.StringAttribute;
 
-public class ExampleFactoryC extends FactoryBase<ExampleLiveObjectC,ExampleFactoryC> {
+public class ExampleFactoryC extends FactoryBase<ExampleLiveObjectC> {
     public final StringAttribute stringAttribute= new StringAttribute(new AttributeMetadata().labelText("ExampleB1"));
 
     @Override

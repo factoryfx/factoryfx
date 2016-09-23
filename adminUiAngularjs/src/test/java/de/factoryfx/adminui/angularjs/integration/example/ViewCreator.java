@@ -6,7 +6,7 @@ import java.util.stream.Collectors;
 
 import de.factoryfx.adminui.angularjs.model.view.GuiView;
 import de.factoryfx.adminui.angularjs.model.view.WebGuiFactoryHeader;
-import de.factoryfx.factory.util.LanguageText;
+import de.factoryfx.data.util.LanguageText;
 
 public class ViewCreator {
 
