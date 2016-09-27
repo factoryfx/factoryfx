@@ -15,7 +15,7 @@ public class UniformDesign {
 
     private static final GlyphFont FONT_AWESOME;
     static {
-        try (InputStream inputStream = UniformDesign.class.getResourceAsStream("/de/scoopsoftware/champ/gui/icon/fontawesome-webfont4_3.ttf")) {
+        try (InputStream inputStream = UniformDesign.class.getResourceAsStream("/de/factoryfx/javafx/icon/fontawesome-webfont4_3.ttf")) {
             GlyphFont font_awesome = new FontAwesome(inputStream);
             GlyphFontRegistry.register(font_awesome);
             FONT_AWESOME = GlyphFontRegistry.font("FontAwesome");

@@ -6,9 +6,9 @@ import de.factoryfx.adminui.angularjs.factory.RestResource;
 import de.factoryfx.adminui.angularjs.factory.RestResourceFactory;
 import de.factoryfx.adminui.angularjs.factory.server.resourcehandler.ConfigurableResourceHandler;
 import de.factoryfx.data.attribute.AttributeMetadata;
-import de.factoryfx.data.attribute.util.IntegerAttribute;
-import de.factoryfx.data.attribute.util.ObjectValueAttribute;
-import de.factoryfx.data.attribute.util.StringAttribute;
+import de.factoryfx.data.attribute.types.IntegerAttribute;
+import de.factoryfx.data.attribute.types.ObjectValueAttribute;
+import de.factoryfx.data.attribute.types.StringAttribute;
 import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.factory.atrribute.FactoryReferenceAttribute;
 

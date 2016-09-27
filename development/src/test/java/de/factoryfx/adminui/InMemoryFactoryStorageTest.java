@@ -9,7 +9,7 @@ import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.factory.FactoryManager;
 import de.factoryfx.factory.LiveObject;
 import de.factoryfx.data.attribute.AttributeMetadata;
-import de.factoryfx.data.attribute.util.StringAttribute;
+import de.factoryfx.data.attribute.types.StringAttribute;
 import de.factoryfx.factory.datastorage.FactoryAndStorageMetadata;
 import de.factoryfx.server.DefaultApplicationServer;
 import org.junit.Assert;

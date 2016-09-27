@@ -5,7 +5,7 @@ import java.util.Optional;
 import de.factoryfx.example.factory.Product;
 import de.factoryfx.example.factory.ProductFactory;
 import de.factoryfx.data.attribute.AttributeMetadata;
-import de.factoryfx.data.attribute.util.DoubleAttribute;
+import de.factoryfx.data.attribute.types.DoubleAttribute;
 
 
 public class NetherlandsCarProductFactory extends ProductFactory {

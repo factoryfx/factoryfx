@@ -3,7 +3,8 @@ package de.factoryfx.javafx.editor.attribute;
 import java.util.ArrayList;
 
 import de.factoryfx.data.attribute.AttributeMetadata;
-import de.factoryfx.data.attribute.util.StringAttribute;
+import de.factoryfx.data.attribute.types.StringAttribute;
+import javafx.beans.value.ChangeListener;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -18,16 +19,15 @@ public class AttributeEditorTest {
         stringAttribute.set("Hallo");
 
         ArrayList<String> calls = new ArrayList<>();
-        AttributeEditor<String> attributeEditor = new AttributeEditor<>(boundTo -> {
-            boundTo.addListener((observable, oldValue, newValue) -> {
+        AttributeEditor<String> attributeEditor = new AttributeEditor<>(stringAttribute,(boundTo, attribute) -> {
+            ChangeListener<String> stringChangeListener = (observable, oldValue, newValue) -> {
                 calls.add(boundTo.get());
-            });
+            };
+            boundTo.addListener(stringChangeListener);
+            stringChangeListener.changed(boundTo,boundTo.get(),boundTo.get());
             return null;
         });
         attributeEditor.createContent();
-
-
-        attributeEditor.bind(stringAttribute);
 
         Assert.assertEquals(1,calls.size());
         Assert.assertEquals("Hallo",calls.get(0));
@@ -43,11 +43,10 @@ public class AttributeEditorTest {
         StringAttribute stringAttribute=new StringAttribute(new AttributeMetadata());
         stringAttribute.set("Hallo");
 
-        AttributeEditor<String> attributeEditor = new AttributeEditor<>(boundTo -> {
+        AttributeEditor<String> attributeEditor = new AttributeEditor<>(stringAttribute,(boundTo, attribute) -> {
             boundTo.set("Welt");
             return null;
         });
-        attributeEditor.bind(stringAttribute);
         attributeEditor.createContent();
 
         Assert.assertEquals("Welt",stringAttribute.get());

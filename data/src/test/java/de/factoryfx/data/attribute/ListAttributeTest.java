@@ -2,7 +2,7 @@ package de.factoryfx.data.attribute;
 
 import java.util.ArrayList;
 
-import de.factoryfx.data.attribute.util.StringListAttribute;
+import de.factoryfx.data.attribute.types.StringListAttribute;
 import de.factoryfx.data.jackson.ObjectMapperBuilder;
 import de.factoryfx.data.merge.testfactories.IdData;
 import javafx.collections.ObservableList;

@@ -3,7 +3,7 @@ package de.factoryfx.factory.testfactories;
 import java.util.Optional;
 
 import de.factoryfx.data.attribute.AttributeMetadata;
-import de.factoryfx.data.attribute.util.StringAttribute;
+import de.factoryfx.data.attribute.types.StringAttribute;
 import de.factoryfx.factory.FactoryBase;
 
 public class ExampleFactoryC extends FactoryBase<ExampleLiveObjectC> {

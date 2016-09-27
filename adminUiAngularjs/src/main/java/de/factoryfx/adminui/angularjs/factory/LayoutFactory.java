@@ -6,9 +6,9 @@ import java.util.Optional;
 
 import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.data.attribute.AttributeMetadata;
-import de.factoryfx.data.attribute.util.ByteArrayAttribute;
-import de.factoryfx.data.attribute.util.I18nAttribute;
-import de.factoryfx.data.attribute.util.ObjectValueAttribute;
+import de.factoryfx.data.attribute.types.ByteArrayAttribute;
+import de.factoryfx.data.attribute.types.I18nAttribute;
+import de.factoryfx.data.attribute.types.ObjectValueAttribute;
 import de.factoryfx.user.UserManagement;
 
 public class LayoutFactory extends FactoryBase<Layout> {

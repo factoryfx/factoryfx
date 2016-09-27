@@ -40,8 +40,17 @@ public class ValueAttribute<T> extends Attribute<T> {
         return value;
     }
 
+    @Override
+    public void set(T value) {
+        this.value = value;
+        for (AttributeChangeListener<T> listener: listeners){
+            listener.changed(this,value);
+        }
+    }
 
-    List<AttributeChangeListener<T>> listeners= new ArrayList<>();
+
+
+    protected List<AttributeChangeListener<T>> listeners= new ArrayList<>();
     @Override
     public void addListener(AttributeChangeListener<T> listener) {
         listeners.add(listener);
@@ -69,22 +78,14 @@ public class ValueAttribute<T> extends Attribute<T> {
         return new AttributeTypeInfo(dataType);
     }
 
-    @Override
-    public void set(T value) {
-        this.value = value;
-        for (AttributeChangeListener<T> listener: listeners){
-            listener.changed(this,value);
-        }
-    }
-
     @JsonValue
     protected T getValue() {
-        return value;
+        return get();
     }
 
     @JsonValue
     protected void setValue(T value) {
-        this.value = value;
+        set(value);
     }
 
 

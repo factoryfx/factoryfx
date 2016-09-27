@@ -4,7 +4,7 @@ import java.util.UUID;
 
 import de.factoryfx.data.Data;
 import de.factoryfx.data.attribute.AttributeMetadata;
-import de.factoryfx.data.attribute.util.StringAttribute;
+import de.factoryfx.data.attribute.types.StringAttribute;
 import de.factoryfx.data.validation.StringRequired;
 
 public class ExampleData2 extends Data {

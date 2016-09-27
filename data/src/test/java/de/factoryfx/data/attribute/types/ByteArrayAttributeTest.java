@@ -1,4 +1,4 @@
-package de.factoryfx.data.attribute.util;
+package de.factoryfx.data.attribute.types;
 
 import de.factoryfx.data.attribute.AttributeMetadata;
 import de.factoryfx.data.jackson.ObjectMapperBuilder;

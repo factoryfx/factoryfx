@@ -58,15 +58,12 @@ public class DataEditor implements Widget {
                     //TOO locale configurable , unformdesign?
                     addLabelContent(grid, row,attribute.metadata.labelText.getPreferred(Locale.ENGLISH));
 
-                    attributeEditorFactory.getAttributeEditor(attribute);
                     Optional<AttributeEditor<?>> attributeEditor = attributeEditorFactory.getAttributeEditor(attribute);
                     int rowFinal=row;
-                    attributeEditor.ifPresent(attributeEditor1 -> addEditorContent(grid, rowFinal, attributeEditor1.createContent()));
                     if (attributeEditor.isPresent()){
                         addEditorContent(grid, rowFinal, attributeEditor.get().createContent());
-                        attributeEditor.get().bindAnyway(attribute);
                     } else {
-                        addEditorContent(grid, rowFinal, new Label("unsupported attribute"));
+                        addEditorContent(grid, rowFinal, new Label("unsupported attribute:"+attribute.getAttributeType().dataType));
                     }
 
 

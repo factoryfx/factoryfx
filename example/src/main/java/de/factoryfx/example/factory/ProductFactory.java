@@ -3,8 +3,8 @@ package de.factoryfx.example.factory;
 import java.util.Optional;
 
 import de.factoryfx.data.attribute.AttributeMetadata;
-import de.factoryfx.data.attribute.util.IntegerAttribute;
-import de.factoryfx.data.attribute.util.StringAttribute;
+import de.factoryfx.data.attribute.types.IntegerAttribute;
+import de.factoryfx.data.attribute.types.StringAttribute;
 import de.factoryfx.data.validation.ObjectRequired;
 import de.factoryfx.data.validation.StringRequired;
 import de.factoryfx.factory.FactoryBase;

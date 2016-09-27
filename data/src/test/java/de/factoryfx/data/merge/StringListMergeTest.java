@@ -1,7 +1,7 @@
 package de.factoryfx.data.merge;
 
 import de.factoryfx.data.attribute.AttributeMetadata;
-import de.factoryfx.data.attribute.util.StringListAttribute;
+import de.factoryfx.data.attribute.types.StringListAttribute;
 import de.factoryfx.data.merge.testfactories.IdData;
 import org.junit.Assert;
 import org.junit.Test;

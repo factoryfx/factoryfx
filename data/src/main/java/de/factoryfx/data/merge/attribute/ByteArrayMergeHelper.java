@@ -2,7 +2,7 @@ package de.factoryfx.data.merge.attribute;
 
 import java.util.Arrays;
 
-import de.factoryfx.data.attribute.util.ByteArrayAttribute;
+import de.factoryfx.data.attribute.types.ByteArrayAttribute;
 
 public class ByteArrayMergeHelper extends AttributeMergeHelper<byte[]> {
 

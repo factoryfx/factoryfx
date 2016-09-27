@@ -4,7 +4,7 @@ import java.util.Optional;
 
 import de.factoryfx.data.Data;
 import de.factoryfx.data.attribute.Attribute;
-import de.factoryfx.data.attribute.util.ObjectValueAttribute;
+import de.factoryfx.data.attribute.types.ObjectValueAttribute;
 
 public class ObjectValueMergeHelper<T extends Data> extends AttributeMergeHelper<T> {
     @SuppressWarnings("unchecked") //TODO ObjectValueAttribute<T> generic fix

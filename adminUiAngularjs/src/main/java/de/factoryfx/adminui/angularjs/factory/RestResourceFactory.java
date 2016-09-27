@@ -9,7 +9,7 @@ import java.util.function.Supplier;
 import de.factoryfx.adminui.angularjs.model.table.WebGuiTable;
 import de.factoryfx.adminui.angularjs.model.view.GuiView;
 import de.factoryfx.data.attribute.AttributeMetadata;
-import de.factoryfx.data.attribute.util.ObjectValueAttribute;
+import de.factoryfx.data.attribute.types.ObjectValueAttribute;
 import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.factory.atrribute.FactoryReferenceAttribute;
 import de.factoryfx.server.ApplicationServer;

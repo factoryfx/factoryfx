@@ -13,36 +13,29 @@ public class AttributeEditor<T> implements Widget {
     private SimpleObjectProperty<T> bound = new SimpleObjectProperty<>();
     private Attribute<T> boundAttribute;
 
-    public AttributeEditor(AttributeEditorVisualisation<T> attributeEditorVisualisation) {
+    public AttributeEditor(Attribute<T> boundAttribute, AttributeEditorVisualisation<T> attributeEditorVisualisation) {
+        this.boundAttribute=boundAttribute;
         this.attributeEditorVisualisation=attributeEditorVisualisation;
 
         bound.addListener((observable, oldValue, newValue1) -> {
             boundAttribute.set(newValue1);
         });
+
+        bound.set(boundAttribute.get());
+        boundAttribute.addListener(attributeChangeListener);
     }
 
     private AttributeChangeListener<T> attributeChangeListener = (attribute, value) -> {
         bound.set(boundAttribute.get());
     };
 
-    @SuppressWarnings("unchecked")
-    public void bindAnyway(Attribute<?> newAttribute) {
-        bind((Attribute<T>)newAttribute);
-    }
-
-    public void bind(Attribute<T> newAttribute) {
-        if (boundAttribute!=null){
-            boundAttribute.removeListener(attributeChangeListener);
-        }
-        boundAttribute=newAttribute;
-
-        bound.set(newAttribute.get());
-        newAttribute.addListener(attributeChangeListener);
-    }
-
+    Node content;
     @Override
     public Node createContent() {
-        return attributeEditorVisualisation.createContent(bound);
+        if (content==null){
+            content = attributeEditorVisualisation.createContent(bound, boundAttribute);
+        }
+        return content;
     }
 
 }

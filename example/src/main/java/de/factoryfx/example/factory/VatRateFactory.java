@@ -4,7 +4,7 @@ import java.util.Optional;
 
 import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.data.attribute.AttributeMetadata;
-import de.factoryfx.data.attribute.util.DoubleAttribute;
+import de.factoryfx.data.attribute.types.DoubleAttribute;
 import de.factoryfx.data.validation.ObjectRequired;
 
 public class VatRateFactory extends FactoryBase<VatRate>{

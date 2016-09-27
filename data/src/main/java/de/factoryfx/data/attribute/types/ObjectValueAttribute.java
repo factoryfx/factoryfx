@@ -1,4 +1,4 @@
-package de.factoryfx.data.attribute.util;
+package de.factoryfx.data.attribute.types;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;

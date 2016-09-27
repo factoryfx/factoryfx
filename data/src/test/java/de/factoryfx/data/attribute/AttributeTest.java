@@ -2,7 +2,7 @@ package de.factoryfx.data.attribute;
 
 import java.util.List;
 
-import de.factoryfx.data.attribute.util.StringAttribute;
+import de.factoryfx.data.attribute.types.StringAttribute;
 import de.factoryfx.data.merge.testfactories.IdData;
 import de.factoryfx.data.validation.StringRequired;
 import de.factoryfx.data.validation.ValidationError;

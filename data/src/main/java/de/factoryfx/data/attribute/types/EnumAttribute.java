@@ -1,7 +1,4 @@
-package de.factoryfx.data.attribute.util;
-
-import java.util.Arrays;
-import java.util.List;
+package de.factoryfx.data.attribute.types;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import de.factoryfx.data.attribute.AttributeMetadata;
@@ -20,10 +17,6 @@ public class EnumAttribute<T extends Enum<T>> extends ValueAttribute<T> {
     public EnumAttribute(Class<T> clazz, AttributeMetadata attributeMetadata) {
         super(attributeMetadata,clazz);
         this.clazz=clazz;
-    }
-
-    private List<Enum<T>> getEnumValues(){
-        return Arrays.asList(clazz.getEnumConstants());
     }
 
     @Override

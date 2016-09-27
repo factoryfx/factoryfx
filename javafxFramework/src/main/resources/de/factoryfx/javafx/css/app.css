@@ -25,3 +25,11 @@
 .table-view {
     -fx-font-size: 12px;
 }
+
+.hidden-tableview-headers{
+
+}
+
+.hidden-tableview-headers .column-header-background {
+    visibility: hidden; -fx-padding: -1em;
+}

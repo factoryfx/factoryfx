@@ -2,7 +2,7 @@ package de.factoryfx.data.attribute;
 
 import java.util.ArrayList;
 
-import de.factoryfx.data.attribute.util.StringMapAttribute;
+import de.factoryfx.data.attribute.types.StringMapAttribute;
 import de.factoryfx.data.jackson.ObjectMapperBuilder;
 import de.factoryfx.data.merge.testfactories.IdData;
 import org.junit.Assert;
