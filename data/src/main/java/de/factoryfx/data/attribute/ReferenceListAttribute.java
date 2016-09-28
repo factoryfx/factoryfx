@@ -33,7 +33,6 @@ public class ReferenceListAttribute<T extends Data> extends Attribute<Observable
     @JsonCreator
     protected ReferenceListAttribute() {
         super(null);
-//        this.list = ((ObservableListJacksonAbleWrapper<T>)list).unwrap();
     }
 
     @JsonCreator
@@ -161,7 +160,7 @@ public class ReferenceListAttribute<T extends Data> extends Attribute<Observable
     @Override
     @JsonIgnore
     public AttributeTypeInfo getAttributeType() {
-        return new AttributeTypeInfo(ReferenceListAttribute.class,null,null, AttributeTypeInfo.AttributeTypeCategory.REFERENCE_LIST);
+        return new AttributeTypeInfo(ObservableList.class,null,null,Data.class, AttributeTypeInfo.AttributeTypeCategory.REFERENCE_LIST, null);
     }
 
 

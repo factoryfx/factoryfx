@@ -116,7 +116,7 @@ public class ReferenceAttribute<T extends Data> extends Attribute<T> {
 
     @Override
     public AttributeTypeInfo getAttributeType() {
-        return new AttributeTypeInfo(ReferenceAttribute.class,null,null, AttributeTypeInfo.AttributeTypeCategory.REFERENCE);
+        return new AttributeTypeInfo(Data.class,null,null, AttributeTypeInfo.AttributeTypeCategory.REFERENCE);
     }
 
 

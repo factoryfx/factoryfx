@@ -17,10 +17,10 @@ public class ReferenceAttributeTest {
 
     @Test
     public void testObservable(){
-        ExampleReferenceFactory exampleReferenceFactory = new ExampleReferenceFactory();
+        ReferenceAttribute<ExampleFactoryA> referenceAttribute=new ReferenceAttribute<>(ExampleFactoryA.class,new AttributeMetadata());
         ArrayList<String> calls= new ArrayList<>();
-        exampleReferenceFactory.referenceAttribute.addListener((a,value) -> calls.add(""));
-        exampleReferenceFactory.referenceAttribute.set(new ExampleFactoryA());
+        referenceAttribute.addListener((a,value) -> calls.add(""));
+        referenceAttribute.set(new ExampleFactoryA());
 
         Assert.assertEquals(1,calls.size());
     }
@@ -36,39 +36,54 @@ public class ReferenceAttributeTest {
 
     @Test
     public void remove_Listener(){
-        ExampleReferenceFactory exampleReferenceFactory = new ExampleReferenceFactory();
+        ReferenceAttribute<ExampleFactoryA> referenceAttribute=new ReferenceAttribute<>(ExampleFactoryA.class,new AttributeMetadata());
         ArrayList<String> calls= new ArrayList<>();
         AttributeChangeListener<ExampleFactoryA> invalidationListener = (a, o) -> {
             calls.add("");
         };
-        exampleReferenceFactory.referenceAttribute.addListener(invalidationListener);
-        exampleReferenceFactory.referenceAttribute.set(new ExampleFactoryA());
+        referenceAttribute.addListener(invalidationListener);
+        referenceAttribute.set(new ExampleFactoryA());
 
         Assert.assertEquals(1,calls.size());
 
-        exampleReferenceFactory.referenceAttribute.removeListener(invalidationListener);
-        exampleReferenceFactory.referenceAttribute.set(new ExampleFactoryA());
+        referenceAttribute.removeListener(invalidationListener);
+        referenceAttribute.set(new ExampleFactoryA());
         Assert.assertEquals(1,calls.size());
     }
 
     @Test
     public void test_add_new(){
-        ExampleReferenceFactory exampleReferenceFactory = new ExampleReferenceFactory();
-        Assert.assertNull(exampleReferenceFactory.referenceAttribute.get());
-        exampleReferenceFactory.referenceAttribute.addNewFactory(null);
-        Assert.assertNotNull(exampleReferenceFactory.referenceAttribute.get());
+        ReferenceAttribute<ExampleFactoryA> referenceAttribute=new ReferenceAttribute<>(ExampleFactoryA.class,new AttributeMetadata());
+        Assert.assertNull(referenceAttribute.get());
+        referenceAttribute.addNewFactory(null);
+        Assert.assertNotNull(referenceAttribute.get());
 
     }
 
     @Test
     public void test_get_possible(){
-        ExampleReferenceFactory exampleReferenceFactory = new ExampleReferenceFactory();
-        ExampleFactoryA exampleFactoryA = new ExampleFactoryA();
-        exampleReferenceFactory.referenceAttribute.set(exampleFactoryA);
+        ReferenceAttribute<ExampleFactoryA> referenceAttribute=new ReferenceAttribute<>(ExampleFactoryA.class,new AttributeMetadata());
 
-        List<ExampleFactoryA> possibleFactories = exampleReferenceFactory.referenceAttribute.possibleValues(exampleReferenceFactory);
+        ExampleReferenceFactory root = new ExampleReferenceFactory();
+        ExampleFactoryA exampleFactoryA = new ExampleFactoryA();
+        root.referenceAttribute.set(exampleFactoryA);
+
+        List<ExampleFactoryA> possibleFactories =referenceAttribute.possibleValues(root);
         Assert.assertEquals(1,possibleFactories.size());
         Assert.assertEquals(exampleFactoryA,possibleFactories.get(0));
 
     }
+
+    @Test
+    public void test_Observable_first(){
+        ReferenceAttribute<ExampleFactoryA> referenceAttribute=new ReferenceAttribute<>(ExampleFactoryA.class,new AttributeMetadata());
+        ArrayList<Object> calls= new ArrayList<>();
+        referenceAttribute.addListener((a,value) -> calls.add(value));
+        ExampleFactoryA added = new ExampleFactoryA();
+        referenceAttribute.set(added);
+
+        Assert.assertEquals(1,calls.size());
+        Assert.assertEquals(added,calls.get(0));
+    }
+
 }

@@ -13,16 +13,7 @@ import org.controlsfx.glyphfont.GlyphFontRegistry;
 
 public class UniformDesign {
 
-    private static final GlyphFont FONT_AWESOME;
-    static {
-        try (InputStream inputStream = UniformDesign.class.getResourceAsStream("/de/factoryfx/javafx/icon/fontawesome-webfont4_3.ttf")) {
-            GlyphFont font_awesome = new FontAwesome(inputStream);
-            GlyphFontRegistry.register(font_awesome);
-            FONT_AWESOME = GlyphFontRegistry.font("FontAwesome");
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
+    private GlyphFont fontAwesome;
 
     private final Color dangerColor;
     private final Color warningColor;
@@ -45,20 +36,33 @@ public class UniformDesign {
     }
 
     public void addIcon(Labeled component, FontAwesome.Glyph icon){
-        component.setGraphic(UniformDesign.FONT_AWESOME.create(icon));
+        component.setGraphic(getFontAwesome().create(icon));
     }
 
     public void addDangerIcon(Labeled component, FontAwesome.Glyph icon){
-        component.setGraphic(UniformDesign.FONT_AWESOME.create(icon).color(dangerColor));
+        component.setGraphic(getFontAwesome().create(icon).color(dangerColor));
     }
 
 
     public void addIcon(MenuItem component, FontAwesome.Glyph icon){
-        component.setGraphic(UniformDesign.FONT_AWESOME.create(icon));
+        component.setGraphic(getFontAwesome().create(icon));
     }
 
     public Glyph createIcon(FontAwesome.Glyph icon){
-        return UniformDesign.FONT_AWESOME.create(icon);
+        return getFontAwesome().create(icon);
+    }
+
+    private GlyphFont getFontAwesome(){
+        if (fontAwesome==null){
+            try (InputStream inputStream = UniformDesign.class.getResourceAsStream("/de/factoryfx/javafx/icon/fontawesome-webfont4_3.ttf")) {
+                GlyphFont font_awesome = new FontAwesome(inputStream);
+                GlyphFontRegistry.register(font_awesome);
+                fontAwesome = GlyphFontRegistry.font("FontAwesome");
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        return fontAwesome;
     }
 
 //

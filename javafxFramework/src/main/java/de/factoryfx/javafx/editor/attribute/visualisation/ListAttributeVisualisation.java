@@ -37,7 +37,7 @@ public class ListAttributeVisualisation<T> implements AttributeEditorVisualisati
     }
 
     @Override
-    public Node createContent(SimpleObjectProperty<ObservableList<T>> boundTo, Attribute<ObservableList<T>> attribute) {
+    public Node createContent(SimpleObjectProperty<ObservableList<T>> boundTo) {
         TextField textField = new TextField();
         TypedTextFieldHelper.setupLongTextField(textField);
 //        textField.textProperty().bindBidirectional(boundTo, new LongStringConverter());
@@ -117,7 +117,7 @@ public class ListAttributeVisualisation<T> implements AttributeEditorVisualisati
         vBox.getChildren().add(new Separator());
         vBox.getChildren().add(editorWrapper);
 
-//        editorWrapper.disableProperty().bind(tableView.getSelectionModel().selectedItemProperty().isNull().and(content.focusedProperty().not()));
+//        editorWrapper.disableProperty().edit(tableView.getSelectionModel().selectedItemProperty().isNull().and(content.focusedProperty().not()));
 
         SplitPane splitPaneForBorder = new SplitPane();
         splitPaneForBorder.getItems().add(vBox);

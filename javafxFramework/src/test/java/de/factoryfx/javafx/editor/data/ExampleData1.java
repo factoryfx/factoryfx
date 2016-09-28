@@ -36,7 +36,7 @@ public class ExampleData1 extends Data {
     public final I18nAttribute i18nAttribute=new I18nAttribute(new AttributeMetadata().en("i18nAttribute").de("i18nAttribute de")).en("envalue").de("devalue");
     public final ByteArrayAttribute byteArrayAttribute=new ByteArrayAttribute(new AttributeMetadata().en("byteArrayAttribute").de("byteArrayAttribute de"));
 
-    public final ReferenceAttribute<ExampleData1> referenceAttribute = new ReferenceAttribute<>(ExampleData1.class,new AttributeMetadata().en("ReferenceAttribute").de("ReferenceAttribute de"));
+    public final ReferenceAttribute<ExampleData2> referenceAttribute = new ReferenceAttribute<>(ExampleData2.class,new AttributeMetadata().en("ReferenceAttribute").de("ReferenceAttribute de"));
     public final ReferenceListAttribute<ExampleData1> referenceListAttribute = new ReferenceListAttribute<>(ExampleData1.class,new AttributeMetadata().en("ReferenceListAttribute").de("ReferenceListAttribute de"));
 
     String id= UUID.randomUUID().toString();

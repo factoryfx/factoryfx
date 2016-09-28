@@ -10,9 +10,9 @@ public class AttributeEditorFactoryTest {
 
     @Test
     public void test_canEdit(){
-        AttributeEditorFactory attributeEditor = new  AttributeEditorFactory(new UniformDesign());
+        AttributeEditorFactory attributeEditor = new  AttributeEditorFactory(new UniformDesign(),null);
 
-        Assert.assertNotNull(attributeEditor.getAttributeEditor(new StringAttribute(new AttributeMetadata())));
+        Assert.assertNotNull(attributeEditor.getAttributeEditor(new StringAttribute(new AttributeMetadata()),null));
     }
 
 }

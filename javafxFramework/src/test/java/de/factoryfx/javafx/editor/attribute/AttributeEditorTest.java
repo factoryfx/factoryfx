@@ -19,7 +19,7 @@ public class AttributeEditorTest {
         stringAttribute.set("Hallo");
 
         ArrayList<String> calls = new ArrayList<>();
-        AttributeEditor<String> attributeEditor = new AttributeEditor<>(stringAttribute,(boundTo, attribute) -> {
+        AttributeEditor<String> attributeEditor = new AttributeEditor<>(stringAttribute,(boundTo) -> {
             ChangeListener<String> stringChangeListener = (observable, oldValue, newValue) -> {
                 calls.add(boundTo.get());
             };
@@ -43,7 +43,7 @@ public class AttributeEditorTest {
         StringAttribute stringAttribute=new StringAttribute(new AttributeMetadata());
         stringAttribute.set("Hallo");
 
-        AttributeEditor<String> attributeEditor = new AttributeEditor<>(stringAttribute,(boundTo, attribute) -> {
+        AttributeEditor<String> attributeEditor = new AttributeEditor<>(stringAttribute,(boundTo) -> {
             boundTo.set("Welt");
             return null;
         });

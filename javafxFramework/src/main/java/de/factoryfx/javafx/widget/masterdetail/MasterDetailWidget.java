@@ -16,7 +16,7 @@ import javafx.scene.layout.VBox;
 public class MasterDetailWidget<T extends Data> implements CloseAwareWidget {
 
     private final SelectDataListWidget<T> selectDataListWidget;
-    private final DataEditor dataEditor;//prevent garbage collection for bind to select
+    private final DataEditor dataEditor;//prevent garbage collection for edit to select
     private final ChangeListener<T> listener;
     private double dividerPosition = 0.333;
 
@@ -25,7 +25,7 @@ public class MasterDetailWidget<T extends Data> implements CloseAwareWidget {
         this.dataEditor = dataEditor;
 
         listener = (observable, oldValue, newValue) -> {
-            dataEditor.bind(newValue);
+            dataEditor.edit(newValue);
         };
         selectDataListWidget.selected.addListener(listener);
     }

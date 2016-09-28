@@ -4,7 +4,6 @@ import java.time.LocalTime;
 import java.time.format.DateTimeParseException;
 
 import com.google.common.base.Strings;
-import de.factoryfx.data.attribute.Attribute;
 import de.factoryfx.javafx.editor.attribute.AttributeEditorVisualisation;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.Node;
@@ -18,7 +17,7 @@ import javafx.util.converter.LocalTimeStringConverter;
 public class LocalTimeEditor implements AttributeEditorVisualisation<LocalTime> {
 
     @Override
-    public Node createContent(SimpleObjectProperty<LocalTime> boundTo, Attribute<LocalTime> attribute) {
+    public Node createContent(SimpleObjectProperty<LocalTime> boundTo) {
         TextField textField = new TextField();
         textField.setPromptText("e.g.: 12:13");
         textField.textProperty().bindBidirectional(boundTo,new LocalTimeStringConverter());

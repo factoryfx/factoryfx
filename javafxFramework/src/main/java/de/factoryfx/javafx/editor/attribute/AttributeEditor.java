@@ -26,16 +26,19 @@ public class AttributeEditor<T> implements Widget {
     }
 
     private AttributeChangeListener<T> attributeChangeListener = (attribute, value) -> {
-        bound.set(boundAttribute.get());
+        bound.set(value);
     };
 
     Node content;
     @Override
     public Node createContent() {
         if (content==null){
-            content = attributeEditorVisualisation.createContent(bound, boundAttribute);
+            content = attributeEditorVisualisation.createContent(bound);
         }
         return content;
     }
 
+    public void unbind() {
+        boundAttribute.removeListener(attributeChangeListener);
+    }
 }
