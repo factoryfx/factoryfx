@@ -25,7 +25,7 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import org.controlsfx.glyphfont.FontAwesome;
 
-public class SelectDataListWidget<T> implements Widget {
+public class SelectDataDialog<T> implements Widget {
     public final SimpleObjectProperty<T> selected = new SimpleObjectProperty<>();
     private final TableInitializer<T> tableInitializer;
     private final Supplier<ObservableList<T>> listProvider;
@@ -35,7 +35,7 @@ public class SelectDataListWidget<T> implements Widget {
     boolean setFlag = false;
     private final UniformDesign uniformDesign;
 
-    public SelectDataListWidget(TableInitializer<T> tableInitializer, Supplier<ObservableList<T>> listProvider, Supplier<T> emptyAdder, Consumer<T> itemDeleter, UniformDesign uniformDesign) {
+    public SelectDataDialog(TableInitializer<T> tableInitializer, Supplier<ObservableList<T>> listProvider, Supplier<T> emptyAdder, Consumer<T> itemDeleter, UniformDesign uniformDesign) {
         this.tableInitializer = tableInitializer;
         this.listProvider = listProvider;
         this.emptyAdder = Optional.ofNullable(emptyAdder);
@@ -45,6 +45,9 @@ public class SelectDataListWidget<T> implements Widget {
 
     @Override
     public Node createContent() {
+
+
+
         TableView<T> tableView = new TableView<>();
         tableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         tableView.getSelectionModel().selectedItemProperty();

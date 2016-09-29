@@ -48,6 +48,7 @@ public class ListAttributeVisualisation<T> implements AttributeEditorVisualisati
         TableColumn<T, String> test = new TableColumn<>("test");
         test.setCellValueFactory(param -> new SimpleStringProperty(""+param.getValue()));
         tableView.getColumns().add(test);
+        tableView.getStyleClass().add("hidden-tableview-headers");
 
 //        tableInitializer.initTable(tableView);
 //        tableView.setItems(tableItems);
@@ -71,9 +72,7 @@ public class ListAttributeVisualisation<T> implements AttributeEditorVisualisati
         deleteButton.setOnAction(event -> boundTo.get().remove(tableView.getSelectionModel().getSelectedItem()));
         deleteButton.disableProperty().bind(tableView.getSelectionModel().selectedItemProperty().isNull());
 
-        if (tableView.getColumns().size()<=1){
-            tableView.getStyleClass().add("hidden-tableview-headers");
-        }
+
 
         tableView.getSelectionModel().selectedItemProperty().addListener(observable -> {
             detailAttribute.set(tableView.getSelectionModel().getSelectedItem());

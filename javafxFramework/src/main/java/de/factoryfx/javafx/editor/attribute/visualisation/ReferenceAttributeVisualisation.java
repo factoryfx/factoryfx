@@ -40,11 +40,7 @@ public class ReferenceAttributeVisualisation implements AttributeEditorVisualisa
 //            newSelectDialog.with(selected -> updateReferenceValue(selected));
 //            newSelectDialog.show();
         });
-//        if (!selectDialog.isPresent()){
-//            selectButton.setDisable(true);
-//        }else {
-//            selectButton.disableProperty().bind(disabledProperty());
-//        }
+
 
         Button newButton = new Button();
         uniformDesign.addIcon(newButton,FontAwesome.Glyph.PLUS);
@@ -66,27 +62,7 @@ public class ReferenceAttributeVisualisation implements AttributeEditorVisualisa
         invalidationListener.invalidated(boundTo);
         boundTo.addListener(invalidationListener);
 
-//        ChangeListener<T> innerListener = (v, o, n)->{
-//            textField.textProperty().unbind();
-//            textField.clear();
-//            if (n != null) {
-//                textBinding = Bindings.createStringBinding(
-//                        ()->n.getIdentifierInfoProperty().getValue(), n.getIdentifierInfoProperty());
-//                textField.textProperty().bind(textBinding);
-//            }
-//            isReferenceEmpty.set(isReferenceEmpty());
-//        };
-//        ChangeListener<ReferenceAttribute<T>> outterListener = (x, oldValue, newValue) -> {
-//            ReferenceAttribute<T> tReferenceAttribute = boundTo.get();
-//            if (tReferenceAttribute == null) {
-//                return;
-//            }
-//            Optional.ofNullable(oldValue).map(v -> v.getObservable()).ifPresent(v -> v.removeListener(innerListener));
-//            Optional.ofNullable(newValue).map(v -> v.getObservable()).ifPresent(v -> v.addListener(innerListener));
-//            Optional.ofNullable(newValue).ifPresent(v -> innerListener.changed(newValue.getObservable(), null, newValue.getObservable().getValue()));
-//        };
-//        boundTo.addListener(outterListener);
-//        outterListener.changed(boundTo,null,boundTo.getValue());
+
 
         HBox.setHgrow(textField, Priority.ALWAYS);
         textField.setEditable(false);

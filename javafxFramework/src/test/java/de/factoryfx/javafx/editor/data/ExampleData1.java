@@ -37,7 +37,7 @@ public class ExampleData1 extends Data {
     public final ByteArrayAttribute byteArrayAttribute=new ByteArrayAttribute(new AttributeMetadata().en("byteArrayAttribute").de("byteArrayAttribute de"));
 
     public final ReferenceAttribute<ExampleData2> referenceAttribute = new ReferenceAttribute<>(ExampleData2.class,new AttributeMetadata().en("ReferenceAttribute").de("ReferenceAttribute de"));
-    public final ReferenceListAttribute<ExampleData1> referenceListAttribute = new ReferenceListAttribute<>(ExampleData1.class,new AttributeMetadata().en("ReferenceListAttribute").de("ReferenceListAttribute de"));
+    public final ReferenceListAttribute<ExampleData2> referenceListAttribute = new ReferenceListAttribute<>(ExampleData2.class,new AttributeMetadata().en("ReferenceListAttribute").de("ReferenceListAttribute de"));
 
     String id= UUID.randomUUID().toString();
     @Override

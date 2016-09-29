@@ -3,7 +3,7 @@ package de.factoryfx.javafx.widget.masterdetail;
 import de.factoryfx.data.Data;
 import de.factoryfx.javafx.editor.data.DataEditor;
 import de.factoryfx.javafx.widget.CloseAwareWidget;
-import de.factoryfx.javafx.widget.select.SelectDataListWidget;
+import de.factoryfx.javafx.widget.select.SelectDataDialog;
 import javafx.beans.value.ChangeListener;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
@@ -15,12 +15,12 @@ import javafx.scene.layout.VBox;
 
 public class MasterDetailWidget<T extends Data> implements CloseAwareWidget {
 
-    private final SelectDataListWidget<T> selectDataListWidget;
+    private final SelectDataDialog<T> selectDataListWidget;
     private final DataEditor dataEditor;//prevent garbage collection for edit to select
     private final ChangeListener<T> listener;
     private double dividerPosition = 0.333;
 
-    public MasterDetailWidget(SelectDataListWidget<T> selectDataListWidget, DataEditor dataEditor) {
+    public MasterDetailWidget(SelectDataDialog<T> selectDataListWidget, DataEditor dataEditor) {
         this.selectDataListWidget = selectDataListWidget;
         this.dataEditor = dataEditor;
 
