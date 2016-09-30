@@ -29,13 +29,9 @@ public class DataEditorIntegrationTest extends Application{
         primaryStage.setScene(new Scene(root,1200,800));
 
         Button syso = new Button("syso");
-        syso.setOnAction(event -> {
-            System.out.println(ObjectMapperBuilder.build().writeValueAsString(exampleData1));
-        });
+        syso.setOnAction(event -> System.out.println(ObjectMapperBuilder.build().writeValueAsString(exampleData1)));
         Button gc = new Button("gc");
-        gc.setOnAction(event -> {
-            System.gc();
-        });
+        gc.setOnAction(event -> System.gc());
         HBox buttons = new HBox();
         buttons.getChildren().add(syso);
         buttons.getChildren().add(gc);

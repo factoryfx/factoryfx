@@ -1,6 +1,7 @@
 package de.factoryfx.javafx.editor.attribute.visualisation;
 
 import de.factoryfx.data.attribute.Attribute;
+import de.factoryfx.data.attribute.AttributeChangeListener;
 import de.factoryfx.javafx.editor.attribute.AttributeEditor;
 import de.factoryfx.javafx.editor.attribute.AttributeEditorVisualisation;
 import de.factoryfx.javafx.util.TypedTextFieldHelper;
@@ -9,6 +10,7 @@ import de.factoryfx.javafx.widget.table.TableControlWidget;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -61,11 +63,14 @@ public class ListAttributeVisualisation<T> implements AttributeEditorVisualisati
 
         Button addButton=new Button("", uniformDesign.createIcon(FontAwesome.Glyph.PLUS));
         addButton.setOnAction(event -> {
-            //TODO use empty provider from Attribute
-            boundTo.get().add(null);
-            tableView.getSelectionModel().selectLast();
+            boundTo.get().add(detailAttribute.get());
         });
 
+        Button replaceButton=new Button("", uniformDesign.createIcon(FontAwesome.Glyph.EXCHANGE));
+        replaceButton.setOnAction(event -> {
+            int selectedIndex = tableView.getSelectionModel().getSelectedIndex();
+            boundTo.get().set(selectedIndex, detailAttribute.get());
+        });
 
         Button deleteButton = new Button("");
         uniformDesign.addDangerIcon(deleteButton,FontAwesome.Glyph.TIMES);
@@ -77,15 +82,12 @@ public class ListAttributeVisualisation<T> implements AttributeEditorVisualisati
         tableView.getSelectionModel().selectedItemProperty().addListener(observable -> {
             detailAttribute.set(tableView.getSelectionModel().getSelectedItem());
         });
-        detailAttribute.addListener((attribute1, value) -> {
-            if (tableView.getSelectionModel().getSelectedItem()!=value){
-
-                int selectedIndex = tableView.getSelectionModel().getSelectedIndex();
-                boundTo.get().set(selectedIndex,value);
-                tableView.getSelectionModel().select(selectedIndex);
-            }
-        });
-
+        AttributeChangeListener<T> detailAttributeChangeListener = (attribute1, value) -> {
+            addButton.setDisable(value == null);
+            replaceButton.setDisable(value == null || tableView.getSelectionModel().getSelectedItem()==null);
+        };
+        detailAttribute.addListener(detailAttributeChangeListener);
+        detailAttributeChangeListener.changed(detailAttribute,detailAttribute.get());
 
         VBox vBox  = new VBox();
         VBox.setVgrow(tableView, Priority.ALWAYS);
@@ -95,7 +97,8 @@ public class ListAttributeVisualisation<T> implements AttributeEditorVisualisati
         listControls.setAlignment(Pos.CENTER_LEFT);
         VBox.setMargin(listControls, new Insets(0, 0, 0, 0));
         listControls.setSpacing(3);
-        listControls.getChildren().add(addButton);
+//        listControls.getChildren().add(addButton);
+//        listControls.getChildren().add(replaceButton);
         listControls.getChildren().add(deleteButton);
         vBox.getChildren().add(listControls);
 
@@ -109,10 +112,17 @@ public class ListAttributeVisualisation<T> implements AttributeEditorVisualisati
         HBox editorWrapper= new HBox(3);
         editorWrapper.setAlignment(Pos.CENTER_LEFT);
         editorWrapper.setPadding(new Insets(3));
-        editorWrapper.getChildren().add(new Label("selected value"));
+        editorWrapper.getChildren().add(new Label(uniformDesign.getLabelText(detailAttribute)));
         Node content = attributeEditor.createContent();
+//        content.disableProperty().bind(tableView.getSelectionModel().selectedItemProperty().isNull());
+        tableView.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<T>() {
+            @Override
+            public void changed(ObservableValue<? extends T> observable, T oldValue, T newValue) {
+                System.out.println(newValue);
+            }
+        });
         HBox.setHgrow(content,Priority.ALWAYS);
-        editorWrapper.getChildren().add(content);
+        editorWrapper.getChildren().addAll(content,addButton,replaceButton);
         vBox.getChildren().add(new Separator());
         vBox.getChildren().add(editorWrapper);
 

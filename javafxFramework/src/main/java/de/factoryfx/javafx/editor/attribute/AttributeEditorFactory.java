@@ -12,6 +12,10 @@ import de.factoryfx.data.attribute.Attribute;
 import de.factoryfx.data.attribute.AttributeMetadata;
 import de.factoryfx.data.attribute.ReferenceAttribute;
 import de.factoryfx.data.attribute.ReferenceListAttribute;
+import de.factoryfx.data.attribute.types.BigDecimalAttribute;
+import de.factoryfx.data.attribute.types.DoubleAttribute;
+import de.factoryfx.data.attribute.types.IntegerAttribute;
+import de.factoryfx.data.attribute.types.LongAttribute;
 import de.factoryfx.data.attribute.types.StringAttribute;
 import de.factoryfx.javafx.editor.attribute.visualisation.BigDecimalAttributeVisualisation;
 import de.factoryfx.javafx.editor.attribute.visualisation.BooleanAttributeVisualisation;
@@ -82,15 +86,45 @@ public class AttributeEditorFactory {
             return Optional.of(new AttributeEditor<>((Attribute<Double>)attribute,new DoubleAttributeVisualisation()));
         }
 
+
+
+
+        if (ObservableList.class.isAssignableFrom(attribute.getAttributeType().dataType) && String.class==attribute.getAttributeType().listItemType){
+            StringAttribute detailAttribute = new StringAttribute(new AttributeMetadata().de("Wert").en("Value"));
+            AttributeEditor<String> attributeEditor = (AttributeEditor<String>) getAttributeEditor(detailAttribute,dataEditor).get();
+            return Optional.of(new AttributeEditor<>((Attribute<ObservableList<String>>)attribute,new ListAttributeVisualisation<>(uniformDesign, detailAttribute, attributeEditor)));
+        }
+
+        if (ObservableList.class.isAssignableFrom(attribute.getAttributeType().dataType) && Integer.class==attribute.getAttributeType().listItemType){
+            IntegerAttribute detailAttribute = new IntegerAttribute(new AttributeMetadata().de("Wert").en("Value"));
+            AttributeEditor<Integer> attributeEditor = (AttributeEditor<Integer>) getAttributeEditor(detailAttribute,dataEditor).get();
+            return Optional.of(new AttributeEditor<>((Attribute<ObservableList<Integer>>)attribute,new ListAttributeVisualisation<>(uniformDesign, detailAttribute, attributeEditor)));
+        }
+
+        if (ObservableList.class.isAssignableFrom(attribute.getAttributeType().dataType) && Long.class==attribute.getAttributeType().listItemType){
+            LongAttribute detailAttribute = new LongAttribute(new AttributeMetadata().de("Wert").en("Value"));
+            AttributeEditor<Long> attributeEditor = (AttributeEditor<Long>) getAttributeEditor(detailAttribute,dataEditor).get();
+            return Optional.of(new AttributeEditor<>((Attribute<ObservableList<Long>>)attribute,new ListAttributeVisualisation<>(uniformDesign, detailAttribute, attributeEditor)));
+        }
+
+        if (ObservableList.class.isAssignableFrom(attribute.getAttributeType().dataType) && BigDecimal.class==attribute.getAttributeType().listItemType){
+            BigDecimalAttribute detailAttribute = new BigDecimalAttribute(new AttributeMetadata().de("Wert").en("Value"));
+            AttributeEditor<BigDecimal> attributeEditor = (AttributeEditor<BigDecimal>) getAttributeEditor(detailAttribute,dataEditor).get();
+            return Optional.of(new AttributeEditor<>((Attribute<ObservableList<BigDecimal>>)attribute,new ListAttributeVisualisation<>(uniformDesign, detailAttribute, attributeEditor)));
+        }
+
+        if (ObservableList.class.isAssignableFrom(attribute.getAttributeType().dataType) && Double.class==attribute.getAttributeType().listItemType){
+            DoubleAttribute detailAttribute = new DoubleAttribute(new AttributeMetadata().de("Wert").en("Value"));
+            AttributeEditor<Double> attributeEditor = (AttributeEditor<Double>) getAttributeEditor(detailAttribute,dataEditor).get();
+            return Optional.of(new AttributeEditor<>((Attribute<ObservableList<Double>>)attribute,new ListAttributeVisualisation<>(uniformDesign, detailAttribute, attributeEditor)));
+        }
+
+
+
+
         if (Data.class==attribute.getAttributeType().dataType){
             ReferenceAttribute<?> referenceAttribute = (ReferenceAttribute<?>) attribute;
             return Optional.of(new AttributeEditor<>((Attribute<Data>)attribute,new ReferenceAttributeVisualisation(uniformDesign,dataEditor,()->referenceAttribute.addNewFactory(root),()->(List<Data>)referenceAttribute.possibleValues(root))));
-        }
-
-        if (ObservableList.class.isAssignableFrom(attribute.getAttributeType().dataType) && String.class.isAssignableFrom(attribute.getAttributeType().listItemType)){
-            StringAttribute detailAttribute = new StringAttribute(new AttributeMetadata());
-            AttributeEditor<String> attributeEditor = (AttributeEditor<String>) getAttributeEditor(detailAttribute,dataEditor).get();
-            return Optional.of(new AttributeEditor<>((Attribute<ObservableList<String>>)attribute,new ListAttributeVisualisation<>(uniformDesign, detailAttribute, attributeEditor)));
         }
 
         if (ObservableList.class.isAssignableFrom(attribute.getAttributeType().dataType) && Data.class.isAssignableFrom(attribute.getAttributeType().listItemType)){

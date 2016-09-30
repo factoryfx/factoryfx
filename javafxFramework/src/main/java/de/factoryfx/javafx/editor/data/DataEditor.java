@@ -2,7 +2,6 @@ package de.factoryfx.javafx.editor.data;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 import java.util.Optional;
 
 import de.factoryfx.data.Data;
@@ -86,7 +85,7 @@ public class DataEditor implements Widget {
                 int row = 0;
                 for (Attribute<?> attribute: newValue.attrributeList()) {
                     //TOO locale configurable , uniformdesign?
-                    addLabelContent(grid, row,attribute.metadata.labelText.getPreferred(Locale.ENGLISH));
+                    addLabelContent(grid, row,uniformDesign.getLabelText(attribute));
 
                     Optional<AttributeEditor<?>> attributeEditor = attributeEditorFactory.getAttributeEditor(attribute,this);
                     int rowFinal=row;

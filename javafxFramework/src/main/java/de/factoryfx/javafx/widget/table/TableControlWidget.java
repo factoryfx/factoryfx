@@ -2,8 +2,7 @@ package de.factoryfx.javafx.widget.table;
 
 import java.text.DecimalFormat;
 
-import de.factoryfx.data.jackson.ObjectMapperBuilder;
-import de.factoryfx.data.jackson.SimpleObjectMapper;
+import de.factoryfx.data.Data;
 import de.factoryfx.javafx.util.UniformDesign;
 import de.factoryfx.javafx.widget.Widget;
 import javafx.animation.FadeTransition;
@@ -229,22 +228,16 @@ public class TableControlWidget<T> implements Widget {
 
         @Override
         public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-            SimpleObjectMapper objectMapper = ObjectMapperBuilder.build();
             filteredData.setPredicate(data -> {
                 // If filter text is empty, display all.
+                if (newValue==null || newValue.isEmpty()) {
+                    return true;
+                }
+                if (data instanceof Data){
+                    String displayText = ((Data) data).getDisplayText().toLowerCase();
+                    return displayText.contains(newValue.toLowerCase());
+                }
 
-//TODO            ModelSearchQuery modelSearchQuery = new ModelSearchQuery(newValue);
-//                if (modelSearchQuery.isEmpty()) {
-//                    return true;
-//                }
-//
-//                if (data instanceof TextSearchSupport) {
-//                    return ((TextSearchSupport) data).matchText(modelSearchQuery);
-//                } else {
-//                    String json = objectMapper.writeValueAsString(data);
-//                    return json.toLowerCase().contains(newValue.trim().toLowerCase());
-//
-//                }
                 return true;
             });
         }

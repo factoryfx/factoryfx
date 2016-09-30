@@ -42,6 +42,7 @@ public class ReferenceListAttributeVisualisation implements AttributeEditorVisua
 
     @Override
     public Node createContent(SimpleObjectProperty<ObservableList<Data>> boundTo) {
+
         TableView<Data> tableView = new TableView<>();
         tableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         TableColumn<Data, String> test = new TableColumn<>("Data");
@@ -69,7 +70,7 @@ public class ReferenceListAttributeVisualisation implements AttributeEditorVisua
 //        };
         InvalidationListener listener = observable -> {
             if (boundTo.get() == null) {
-                tableView.getItems().clear();
+                items.clear();
             } else {
                 items.setAll(boundTo.get());
             }
@@ -86,7 +87,10 @@ public class ReferenceListAttributeVisualisation implements AttributeEditorVisua
 
         Button selectButton = new Button("", uniformDesign.createIcon(FontAwesome.Glyph.SEARCH_PLUS));
         selectButton.setOnAction(event -> {
-            boundTo.get().add(new DataChoiceDialog().show(possibleValuesProvider.get()));
+            Data toAdd = new DataChoiceDialog().show(possibleValuesProvider.get());
+            if (toAdd!=null){
+                boundTo.get().add(toAdd);
+            }
         });
 
         Button adderButton = new Button();

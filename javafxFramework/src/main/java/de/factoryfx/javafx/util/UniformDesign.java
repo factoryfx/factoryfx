@@ -2,7 +2,9 @@ package de.factoryfx.javafx.util;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Locale;
 
+import de.factoryfx.data.attribute.Attribute;
 import javafx.scene.control.Labeled;
 import javafx.scene.control.MenuItem;
 import javafx.scene.paint.Color;
@@ -21,8 +23,10 @@ public class UniformDesign {
     private final Color successColor;
     private final Color primaryColor;
     private final Color borderColor;
+    private final Locale locale;
 
-    public UniformDesign(Color dangerColor, Color warningColor, Color infoColor, Color successColor, Color primaryColor, Color borderColor) {
+    public UniformDesign(Locale locale, Color dangerColor, Color warningColor, Color infoColor, Color successColor, Color primaryColor, Color borderColor) {
+        this.locale = locale;
         this.dangerColor = dangerColor;
         this.warningColor = warningColor;
         this.infoColor = infoColor;
@@ -32,7 +36,7 @@ public class UniformDesign {
     }
 
     public UniformDesign() {
-        this(Color.web("#FF7979"),Color.web("#F0AD4E"),Color.web("#5BC0DE"),Color.web("#5CB85C"),Color.web("#5494CB"),Color.web("#B5B5B5"));
+        this(Locale.ENGLISH,Color.web("#FF7979"),Color.web("#F0AD4E"),Color.web("#5BC0DE"),Color.web("#5CB85C"),Color.web("#5494CB"),Color.web("#B5B5B5"));
     }
 
     public void addIcon(Labeled component, FontAwesome.Glyph icon){
@@ -64,6 +68,20 @@ public class UniformDesign {
         }
         return fontAwesome;
     }
+
+    public Locale getLocale(){
+        return locale;
+    }
+
+    public Locale get(){
+        return locale;
+    }
+
+    public String getLabelText(Attribute<?> attribute){
+        return attribute.metadata.labelText.getPreferred(locale);
+    }
+
+
 
 //
 //    private static void clearButtonClasses(Button button) {
