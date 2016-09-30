@@ -1,8 +1,12 @@
 package de.factoryfx.javafx.editor.attribute.visualisation;
 
+import java.util.List;
+import java.util.function.Supplier;
+
 import de.factoryfx.data.Data;
 import de.factoryfx.javafx.editor.attribute.AttributeEditorVisualisation;
 import de.factoryfx.javafx.editor.data.DataEditor;
+import de.factoryfx.javafx.util.DataChoiceDialog;
 import de.factoryfx.javafx.util.UniformDesign;
 import javafx.beans.InvalidationListener;
 import javafx.beans.property.SimpleObjectProperty;
@@ -19,11 +23,13 @@ public class ReferenceAttributeVisualisation implements AttributeEditorVisualisa
     private final UniformDesign uniformDesign;
     private final DataEditor dataEditor;
     private final Runnable emptyAdder;
+    private final Supplier<List<Data>> possibleValuesProvider;
 
-    public ReferenceAttributeVisualisation(UniformDesign uniformDesign, DataEditor dataEditor, Runnable emptyAdder) {
+    public ReferenceAttributeVisualisation(UniformDesign uniformDesign, DataEditor dataEditor, Runnable emptyAdder, Supplier<List<Data>> possibleValuesProvider) {
         this.uniformDesign = uniformDesign;
         this.dataEditor = dataEditor;
         this.emptyAdder = emptyAdder;
+        this.possibleValuesProvider = possibleValuesProvider;
     }
 
     @Override
@@ -36,9 +42,7 @@ public class ReferenceAttributeVisualisation implements AttributeEditorVisualisa
         Button selectButton = new Button();
         uniformDesign.addIcon(selectButton,FontAwesome.Glyph.SEARCH_PLUS);
         selectButton.setOnAction(event -> {
-//            SelectDialog<T> newSelectDialog = ReferenceEditor.this.selectDialog.get().get();
-//            newSelectDialog.with(selected -> updateReferenceValue(selected));
-//            newSelectDialog.show();
+            boundTo.set(new DataChoiceDialog().show(possibleValuesProvider.get()));
         });
 
 

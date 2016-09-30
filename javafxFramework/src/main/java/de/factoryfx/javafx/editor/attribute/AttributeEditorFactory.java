@@ -44,6 +44,14 @@ public class AttributeEditorFactory {
     @SuppressWarnings("unchecked")
     public Optional<AttributeEditor<?>> getAttributeEditor(Attribute<?> attribute, DataEditor dataEditor){
 
+        for (Function<Attribute<?>,Optional<AttributeEditor<?>>> editorAssociation: editorAssociations) {
+            Optional<AttributeEditor<?>> attributeEditor = editorAssociation.apply(attribute);
+            if (attributeEditor.isPresent()) {
+                return attributeEditor;
+            }
+        }
+
+
         if (String.class==attribute.getAttributeType().dataType){
             return Optional.of(new AttributeEditor<>((Attribute<String>)attribute,new StringAttributeVisualisation()));
         }
@@ -75,7 +83,8 @@ public class AttributeEditorFactory {
         }
 
         if (Data.class==attribute.getAttributeType().dataType){
-            return Optional.of(new AttributeEditor<>((Attribute<Data>)attribute,new ReferenceAttributeVisualisation(uniformDesign,dataEditor,()->((ReferenceAttribute<?>)attribute).addNewFactory(root))));
+            ReferenceAttribute<?> referenceAttribute = (ReferenceAttribute<?>) attribute;
+            return Optional.of(new AttributeEditor<>((Attribute<Data>)attribute,new ReferenceAttributeVisualisation(uniformDesign,dataEditor,()->referenceAttribute.addNewFactory(root),()->(List<Data>)referenceAttribute.possibleValues(root))));
         }
 
         if (ObservableList.class.isAssignableFrom(attribute.getAttributeType().dataType) && String.class.isAssignableFrom(attribute.getAttributeType().listItemType)){
@@ -86,14 +95,7 @@ public class AttributeEditorFactory {
 
         if (ObservableList.class.isAssignableFrom(attribute.getAttributeType().dataType) && Data.class.isAssignableFrom(attribute.getAttributeType().listItemType)){
             ReferenceListAttribute<?> referenceListAttribute = (ReferenceListAttribute<?>) attribute;
-            return Optional.of(new AttributeEditor<>((Attribute<ObservableList<Data>>)attribute,new ReferenceListAttributeVisualisation(uniformDesign, dataEditor, () -> referenceListAttribute.addNewFactory(root), null)));
-        }
-
-        for (Function<Attribute<?>,Optional<AttributeEditor<?>>> editorAssociation: editorAssociations) {
-            Optional<AttributeEditor<?>> attributeEditor = editorAssociation.apply(attribute);
-            if (attributeEditor.isPresent()) {
-                return attributeEditor;
-            }
+            return Optional.of(new AttributeEditor<>((Attribute<ObservableList<Data>>)attribute,new ReferenceListAttributeVisualisation(uniformDesign, dataEditor, () -> referenceListAttribute.addNewFactory(root), ()->(List<Data>)referenceListAttribute.possibleValues(root))));
         }
 
         return Optional.empty();

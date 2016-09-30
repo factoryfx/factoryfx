@@ -6,11 +6,13 @@ import java.util.function.Supplier;
 import de.factoryfx.data.Data;
 import de.factoryfx.javafx.editor.attribute.AttributeEditorVisualisation;
 import de.factoryfx.javafx.editor.data.DataEditor;
+import de.factoryfx.javafx.util.DataChoiceDialog;
 import de.factoryfx.javafx.util.UniformDesign;
 import de.factoryfx.javafx.widget.table.TableControlWidget;
+import javafx.beans.InvalidationListener;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
-import javafx.collections.ListChangeListener;
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -29,9 +31,9 @@ public class ReferenceListAttributeVisualisation implements AttributeEditorVisua
     private final UniformDesign uniformDesign;
     private final DataEditor dataEditor;
     private final Runnable emptyAdder;
-    private final Supplier<List<? extends Data>> possibleValuesProvider;
+    private final Supplier<List<Data>> possibleValuesProvider;
 
-    public ReferenceListAttributeVisualisation(UniformDesign uniformDesign, DataEditor dataEditor, Runnable emptyAdder, Supplier<List<? extends Data>> possibleValuesProvider) {
+    public ReferenceListAttributeVisualisation(UniformDesign uniformDesign, DataEditor dataEditor, Runnable emptyAdder, Supplier<List<Data>> possibleValuesProvider) {
         this.uniformDesign = uniformDesign;
         this.dataEditor = dataEditor;
         this.emptyAdder = emptyAdder;
@@ -46,6 +48,8 @@ public class ReferenceListAttributeVisualisation implements AttributeEditorVisua
         test.setCellValueFactory(param -> new SimpleStringProperty(param.getValue().getDisplayText()));
         tableView.getColumns().add(test);
         tableView.getStyleClass().add("hidden-tableview-headers");
+        ObservableList<Data> items = FXCollections.observableArrayList();
+        tableView.setItems(items);
 
         tableView.setOnMouseClicked(mouseEvent -> {
             if (mouseEvent.getButton().equals(MouseButton.PRIMARY)) {
@@ -56,15 +60,22 @@ public class ReferenceListAttributeVisualisation implements AttributeEditorVisua
         });
 
         //invalidation listener for boundTo don't work
-        ListChangeListener<Data> dataListChangeListener = c -> {
+//        ListChangeListener<Data> dataListChangeListener = c -> {
+//            if (boundTo.get() == null) {
+//                tableView.setItems(null);
+//            } else {
+//                tableView.setItems(boundTo.get());
+//            }
+//        };
+        InvalidationListener listener = observable -> {
             if (boundTo.get() == null) {
-                tableView.setItems(null);
+                tableView.getItems().clear();
             } else {
-                tableView.setItems(boundTo.get());
+                items.setAll(boundTo.get());
             }
         };
-        boundTo.get().addListener(dataListChangeListener);
-        dataListChangeListener.onChanged(null);
+        boundTo.addListener(listener);
+        listener.invalidated(null);
 
 
 
@@ -75,7 +86,7 @@ public class ReferenceListAttributeVisualisation implements AttributeEditorVisua
 
         Button selectButton = new Button("", uniformDesign.createIcon(FontAwesome.Glyph.SEARCH_PLUS));
         selectButton.setOnAction(event -> {
-//            boundTo.get().add(new DataChoiceDialog().show(possibleValuesProvider.get()));
+            boundTo.get().add(new DataChoiceDialog().show(possibleValuesProvider.get()));
         });
 
         Button adderButton = new Button();

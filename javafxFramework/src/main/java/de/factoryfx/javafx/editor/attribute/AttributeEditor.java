@@ -26,6 +26,12 @@ public class AttributeEditor<T> implements Widget {
     }
 
     private AttributeChangeListener<T> attributeChangeListener = (attribute, value) -> {
+        if (value==bound.get()){
+            //workaround to force changelistener to trigger
+            //same ref doesn't mean the content didn't chnage e.g List
+            bound.set(null);
+            bound.set(value);
+        }
         bound.set(value);
     };
 
@@ -39,6 +45,7 @@ public class AttributeEditor<T> implements Widget {
     }
 
     public void unbind() {
+        content=null;
         boundAttribute.removeListener(attributeChangeListener);
     }
 }

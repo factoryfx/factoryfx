@@ -28,6 +28,7 @@ import javafx.scene.control.Separator;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TablePosition;
 import javafx.scene.control.TableView;
+import javafx.scene.control.TextField;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.DataFormat;
@@ -38,14 +39,11 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.util.Duration;
-import org.controlsfx.control.textfield.CustomTextField;
-import org.controlsfx.control.textfield.TextFields;
-import org.controlsfx.glyphfont.FontAwesome;
 
 public class TableControlWidget<T> implements Widget {
     private final HBox target = new HBox();
     private final TableView<T> tableView;
-    CustomTextField filterField;
+    TextField filterField;
     private final UniformDesign uniformDesign;
 
     public TableControlWidget(TableView<T> tableView, UniformDesign uniformDesign) {
@@ -144,9 +142,9 @@ public class TableControlWidget<T> implements Widget {
     }
 
     private void setupTableControls() {
-        filterField = (CustomTextField) TextFields.createClearableTextField();
+        filterField = new TextField();//(CustomTextField) TextFields.createClearableTextField();
 
-        filterField.leftProperty().set(uniformDesign.createIcon(FontAwesome.Glyph.FILTER));
+//        filterField.leftProperty().set(uniformDesign.createIcon(FontAwesome.Glyph.FILTER));
         filterField.disableProperty().bind(tableView.disabledProperty().or(tableView.itemsProperty().isNull()));
         filterField.setMinWidth(50);
 

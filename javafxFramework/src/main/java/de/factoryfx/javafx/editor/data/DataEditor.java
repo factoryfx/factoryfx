@@ -33,7 +33,6 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.RowConstraints;
-import javafx.scene.layout.VBox;
 import org.controlsfx.control.BreadCrumbBar;
 import org.controlsfx.glyphfont.FontAwesome;
 
@@ -171,11 +170,6 @@ public class DataEditor implements Widget {
 
         breadCrumbBar.setAutoNavigationEnabled(false);
 
-
-        BorderPane borderPane = new BorderPane();
-
-        VBox vBox = new VBox();
-        VBox.setVgrow(borderPane, Priority.ALWAYS);
 
         HBox navigation = new HBox(3);
         navigation.getStyleClass().add("navigationhbox");
