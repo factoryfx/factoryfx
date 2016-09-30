@@ -18,14 +18,19 @@ public class AttributeEditor<T> implements Widget {
         this.attributeEditorVisualisation=attributeEditorVisualisation;
 
         bound.addListener((observable, oldValue, newValue1) -> {
-            boundAttribute.set(newValue1);
+            if (!setLoop){
+
+                boundAttribute.set(newValue1);
+            }
         });
 
         bound.set(boundAttribute.get());
         boundAttribute.addListener(attributeChangeListener);
     }
 
+    boolean setLoop=false;
     private AttributeChangeListener<T> attributeChangeListener = (attribute, value) -> {
+        setLoop=true;
         if (value==bound.get()){
             //workaround to force changelistener to trigger
             //same ref doesn't mean the content didn't chnage e.g List
@@ -33,6 +38,7 @@ public class AttributeEditor<T> implements Widget {
             bound.set(value);
         }
         bound.set(value);
+        setLoop=false;
     };
 
     Node content;
