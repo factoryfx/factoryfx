@@ -1,0 +1,35 @@
+.diffUnchanged {
+    -fx-fill: rgba(0, 0, 0, 1);
+}
+.diffOld {
+    -fx-fill: #ff6140;
+    -fx-strikethrough: true;
+}
+.diffNew {
+    -fx-fill: #2c8033;
+}
+.diffTextField{
+    -fx-font-family: Consolas;
+}
+
+.conflictRow {
+    -fx-background-color: #ff8991;
+    -fx-font-weight: bold;
+    /*-fx-background: red ;*/
+    /*-fx-alignment:CENTER-RIGHT;*/
+    /*-fx-border-width: .5px;*/
+    /*-fx-border-style: solid;*/
+    /*-fx-border-color:red;*/
+}
+
+.table-view {
+    -fx-font-size: 12px;
+}
+
+.hidden-tableview-headers{
+
+}
+
+.hidden-tableview-headers .column-header-background {
+    visibility: hidden; -fx-padding: -1em;
+}

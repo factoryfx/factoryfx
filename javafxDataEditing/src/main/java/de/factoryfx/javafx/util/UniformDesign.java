@@ -116,20 +116,6 @@ public class UniformDesign {
 //        label.setStyle("-fx-font-size: " + size + ";");
 //    }
 //
-//    public static void setPrimaryButton(Button button) {
-//        clearButtonClasses(button);
-//        button.getStyleClass().add("primaryButton");
-//    }
-//
-//    public static void setSuccessButton(Button button) {
-//        clearButtonClasses(button);
-//        button.getStyleClass().add("successButton");
-//    }
-//
-//    public static void setWarningsButton(Button button) {
-//        clearButtonClasses(button);
-//        button.getStyleClass().add("warningButton");
-//    }
 //
 //    public static String toCssColor(Color color) {
 //        return "rgba(" +
