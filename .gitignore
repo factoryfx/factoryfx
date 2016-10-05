@@ -18,3 +18,5 @@
 /javafxDistributionExample/build/
 /javafxDistribution/build/
 /javafxDataEditing/build/
+/data/build/
+/.gradle/
