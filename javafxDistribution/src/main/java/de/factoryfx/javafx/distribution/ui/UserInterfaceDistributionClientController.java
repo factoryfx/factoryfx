@@ -112,7 +112,7 @@ public class UserInterfaceDistributionClientController {
 //            new ProcessBuilder(guiFolder.getAbsolutePath() + "/gui/bin/UserInterface.bat").start();
             URL distributionServerURL = new URL(serverUrl);
             URL serverURL = new URL(distributionServerURL.getProtocol(),distributionServerURL.getHost(),8100,distributionServerURL.getPath());
-            new ProcessBuilder(guiFolder.getAbsolutePath() + "/gui/bin/UserInterface.bat",serverURL.toExternalForm()).directory(new File(guiFolder.getAbsolutePath(),"./gui/bin")).inheritIO().start();
+            new ProcessBuilder(guiFolder.getAbsolutePath() + "/project.exe",serverURL.toExternalForm()).directory(new File(guiFolder.getAbsolutePath(),"./gui/bin")).inheritIO().start();
 //                System.exit(0);
 
             progress.setProgress(1);

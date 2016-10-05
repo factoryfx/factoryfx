@@ -25,7 +25,7 @@ public class UserInterfaceDistributionClient extends javafx.application.Applicat
             throw new RuntimeException(exception);
         }
 
-        primaryStage.setTitle("CMS GUI launcher");
+        primaryStage.setTitle("Launcher");
 
         primaryStage.setScene(new Scene(root));
         primaryStage.show();
