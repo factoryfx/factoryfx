@@ -9,9 +9,9 @@ import de.factoryfx.factory.FactoryBase;
 
 public class DistributionClientDownloadServerFactory extends FactoryBase<DistributionClientDownloadServer> {
 
-    StringAttribute host = new StringAttribute(new AttributeMetadata().labelText("host"));
-    IntegerAttribute port = new IntegerAttribute(new AttributeMetadata().labelText("port"));
-    StringAttribute distributionClientBasePath = new StringAttribute(new AttributeMetadata().labelText("distributionClientBasePath"));
+    public final StringAttribute host = new StringAttribute(new AttributeMetadata().labelText("host"));
+    public final IntegerAttribute port = new IntegerAttribute(new AttributeMetadata().labelText("port"));
+    public final StringAttribute distributionClientBasePath = new StringAttribute(new AttributeMetadata().labelText("distributionClientBasePath"));
 
     @Override
     protected DistributionClientDownloadServer createImp(Optional<DistributionClientDownloadServer> previousLiveObject) {
