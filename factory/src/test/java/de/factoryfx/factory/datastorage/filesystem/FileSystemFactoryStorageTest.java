@@ -4,6 +4,7 @@ import java.io.File;
 import java.net.MalformedURLException;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.UUID;
 
 import de.factoryfx.factory.datastorage.FactoryAndStorageMetadata;
 import de.factoryfx.factory.datastorage.StoredFactoryMetadata;
@@ -45,10 +46,12 @@ public class FileSystemFactoryStorageTest {
         fileSystemFactoryStorage.loadInitialFactory();
         String id=fileSystemFactoryStorage.getCurrentFactory().metadata.id;
 
-        FactoryAndStorageMetadata<ExampleFactoryA> update = new FactoryAndStorageMetadata<>(new ExampleFactoryA(),new StoredFactoryMetadata());
+        StoredFactoryMetadata metadata = new StoredFactoryMetadata();
+        metadata.id = UUID.randomUUID().toString();
+        FactoryAndStorageMetadata<ExampleFactoryA> update = new FactoryAndStorageMetadata<>(new ExampleFactoryA(), metadata);
         fileSystemFactoryStorage.updateCurrentFactory(update);
         Assert.assertNotEquals(id,fileSystemFactoryStorage.getCurrentFactory().metadata.id);
-        Assert.assertEquals(1,fileSystemFactoryStorage.getHistoryFactoryList().size());
+        Assert.assertEquals(2,fileSystemFactoryStorage.getHistoryFactoryList().size());
         Assert.assertEquals(id,new ArrayList<>(fileSystemFactoryStorage.getHistoryFactoryList()).get(0).id);
 
     }

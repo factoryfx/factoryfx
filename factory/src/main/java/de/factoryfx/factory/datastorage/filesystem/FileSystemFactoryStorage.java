@@ -56,11 +56,9 @@ public class FileSystemFactoryStorage<T extends FactoryBase<? extends LiveObject
 
     @Override
     public void updateCurrentFactory(FactoryAndStorageMetadata<T> update) {
-        FactoryAndStorageMetadata<T> currentFactory = getCurrentFactory();
-        fileSystemFactoryStorageHistory.updateHistory(currentFactory.metadata,currentFactory.root);
-
         objectMapper.writeValue(currentFactoryPath.toFile(),update.root);
         objectMapper.writeValue(currentFactoryPathMetadata.toFile(),update.metadata);
+        fileSystemFactoryStorageHistory.updateHistory(update.metadata,update.root);
     }
 
     @Override
@@ -79,13 +77,14 @@ public class FileSystemFactoryStorage<T extends FactoryBase<? extends LiveObject
             objectMapper.readValue(currentFactoryPath.toFile(),rootClass);
             objectMapper.readValue(currentFactoryPathMetadata.toFile(),StoredFactoryMetadata.class);
         } else {
-            objectMapper.writeValue(currentFactoryPath.toFile(),initialFactory);
             StoredFactoryMetadata metadata = new StoredFactoryMetadata();
             String newId = UUID.randomUUID().toString();
             metadata.id=newId;
             metadata.baseVersionId= newId;
             metadata.user="System";
-            objectMapper.writeValue(currentFactoryPathMetadata.toFile(), metadata);
+            FactoryAndStorageMetadata<T> initialFactoryAndStorageMetadata = new FactoryAndStorageMetadata<T>(
+                    initialFactory,metadata);
+            updateCurrentFactory(initialFactoryAndStorageMetadata);
         }
     }
 }
