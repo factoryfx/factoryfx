@@ -1,7 +1,6 @@
 package de.factoryfx.factory;
 
 import java.util.HashMap;
-import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -20,15 +19,19 @@ import javafx.collections.ObservableList;
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonTypeInfo(use=JsonTypeInfo.Id.CLASS, include=JsonTypeInfo.As.PROPERTY, property="@class")
-public abstract class FactoryBase<L extends LiveObject> extends Data {
+/**
+ *  L liveobject created from this factory
+ *  V runtime visitor
+ */
+public abstract class FactoryBase<L,V> extends Data {
 
     /**copy including one the references first level of nested references*/
-    public <T extends FactoryBase<L>> T copyOneLevelDeep(){
+    public <T extends FactoryBase<L,V>> T copyOneLevelDeep(){
         return copyOneLevelDeep(0,new HashMap<>());
     }
 
     @SuppressWarnings("unchecked")
-    private <T extends FactoryBase<L>> T copyOneLevelDeep(final int level, HashMap<String,FactoryBase> identityPreserver){
+    private <T extends FactoryBase<L,V>> T copyOneLevelDeep(final int level, HashMap<String,FactoryBase> identityPreserver){
         if (level>1){
             return null;
         }
@@ -60,6 +63,7 @@ public abstract class FactoryBase<L extends LiveObject> extends Data {
 
     }
 
+    @Override
     public String getId() {
         if (id == null) {
             id = UUID.randomUUID().toString();
@@ -74,33 +78,34 @@ public abstract class FactoryBase<L extends LiveObject> extends Data {
 
 
 
-
+    private Lifecycle<V> lifecycle=new Lifecycle<>();
     private L createdLiveObjects;
     public L instance() {
         Optional<L> previousLiveObject = Optional.ofNullable(createdLiveObjects);
         if (!changedDeep() && createdLiveObjects!=null) {//TODO is the createdLiveObjects==null correct? is is used if new Factory is transitive added (Limitation of the mergerdiff)
             return createdLiveObjects;
         } else{
-            L liveObject = createImp(previousLiveObject);
+            L liveObject = createImp(previousLiveObject,lifecycle);
             createdLiveObjects=liveObject;
             changed=false;
             return liveObject;
         }
     }
 
-    protected abstract L createImp(Optional<L> previousLiveObject);
+    protected abstract L createImp(Optional<L> previousLiveObject, LifecycleNotifier<V> lifecycle);
 
-    public void collectLiveObjects(Map<String,LiveObject> liveObjects){
-
-        this.visitChildFactoriesFlat(factory -> cast(factory).collectLiveObjects(liveObjects));
-
-        if (createdLiveObjects!=null){
-            liveObjects.put(getId(),createdLiveObjects);
-        }
-    }
+//    public void collectLiveObjects(Map<String,LiveObject> liveObjects){
+//
+//        this.visitChildFactoriesFlat(factory -> cast(factory).collectLiveObjects(liveObjects));
+//
+//        if (createdLiveObjects!=null){
+//            liveObjects.put(getId(),createdLiveObjects);
+//        }
+//    }
 
     @JsonIgnore
-    public Optional<L> getCreatedLiveObject(){
+    //intented for test only
+    protected Optional<L> getCreatedLiveObject(){
         return Optional.ofNullable(createdLiveObjects);
     }
 
@@ -111,6 +116,7 @@ public abstract class FactoryBase<L extends LiveObject> extends Data {
     public void markChanged() {
         changed=true;
     }
+
     public void unMarkChanged() {
         changed=false;
     }
@@ -138,18 +144,24 @@ public abstract class FactoryBase<L extends LiveObject> extends Data {
 
     //TODO this works as long als tree elements extends FactoryBase, how to enforce that?
     @SuppressWarnings("unchecked")
-    private FactoryBase<?> cast(Data data){
-        return (FactoryBase<?>)data;
+    private FactoryBase<?,V> cast(Data data){
+        return (FactoryBase<?,V>)data;
     }
 
     @SuppressWarnings("unchecked")
-    public Set<FactoryBase<?>> collectChildFactories(){
+    public Set<FactoryBase<?,V>> collectChildFactoriesDeep(){
         return super.collectChildrenDeep().stream().map(this::cast).collect(Collectors.toSet());
     }
 
+    public void start(){
+        lifecycle.start();
+    }
 
+    public void stop(){
+        lifecycle.stop();
+    }
 
-//    @JsonIgnore
-//    public static final FactoryMetadata metadata=new FactoryMetadata();
-
+    public void runtimeQuery(V visitor){
+        lifecycle.runtimeQuery(visitor);
+    }
 }

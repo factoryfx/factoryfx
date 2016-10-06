@@ -10,19 +10,18 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
-import de.factoryfx.factory.datastorage.StoredFactoryMetadata;
-import de.factoryfx.factory.FactoryBase;
-import de.factoryfx.factory.LiveObject;
-import de.factoryfx.factory.datastorage.FactoryAndStorageMetadata;
 import de.factoryfx.data.merge.MergeDiff;
+import de.factoryfx.factory.FactoryBase;
+import de.factoryfx.factory.datastorage.FactoryAndStorageMetadata;
+import de.factoryfx.factory.datastorage.StoredFactoryMetadata;
 import de.factoryfx.server.ApplicationServer;
 
 @Path("/") /** path defined in {@link de.factoryfx.xtc.ticketproxy.configuration.ConfigurationServer}*/
-public class ApplicationServerResource<V, T extends FactoryBase<? extends LiveObject<V>>> implements ApplicationServer<V,T> {
+public class ApplicationServerResource<L,V,T extends FactoryBase<L,V>> implements ApplicationServer<L,V,T> {
 
-    private final ApplicationServer<V,T> applicationServer;
+    private final ApplicationServer<L,V,T> applicationServer;
 
-    public ApplicationServerResource(ApplicationServer<V,T> applicationServer) {
+    public ApplicationServerResource(ApplicationServer<L,V,T> applicationServer) {
         this.applicationServer = applicationServer;
     }
 

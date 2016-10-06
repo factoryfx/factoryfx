@@ -2,9 +2,7 @@ package de.factoryfx.factory.testfactories;
 
 import java.util.List;
 
-import de.factoryfx.factory.LiveObject;
-
-public class ExampleLiveObjectA implements LiveObject<Void>{
+public class ExampleLiveObjectA{
     public final ExampleLiveObjectB exampleLiveObjectB;
     public final List<ExampleLiveObjectB> exampleLiveObjectBs;
 
@@ -13,18 +11,4 @@ public class ExampleLiveObjectA implements LiveObject<Void>{
         this.exampleLiveObjectBs = exampleLiveObjectBs;
     }
 
-    @Override
-    public void start() {
-
-    }
-
-    @Override
-    public void stop() {
-
-    }
-
-    @Override
-    public void accept(Void visitor) {
-
-    }
 }

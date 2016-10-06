@@ -9,9 +9,10 @@ import de.factoryfx.data.attribute.AttributeMetadata;
 import de.factoryfx.data.attribute.types.ByteArrayAttribute;
 import de.factoryfx.data.attribute.types.I18nAttribute;
 import de.factoryfx.data.attribute.types.ObjectValueAttribute;
+import de.factoryfx.factory.LifecycleNotifier;
 import de.factoryfx.user.UserManagement;
 
-public class LayoutFactory extends FactoryBase<Layout> {
+public class LayoutFactory extends FactoryBase<Layout,Void> {
     public final ObjectValueAttribute<UserManagement> userManagement = new ObjectValueAttribute<>(new AttributeMetadata().labelText("userManagement"));
 
     public final ByteArrayAttribute logoSmall = new ByteArrayAttribute(new AttributeMetadata().labelText("logoSmall"));
@@ -51,7 +52,7 @@ public class LayoutFactory extends FactoryBase<Layout> {
     public final I18nAttribute validationFactoryTableColumn = new I18nAttribute(new AttributeMetadata().en("validationFactoryTableColumn")).en("Factory");
 
     @Override
-    protected Layout createImp(Optional<Layout> previousLiveObject) {
+    protected Layout createImp(Optional<Layout> previousLiveObject, LifecycleNotifier<Void> lifecycle) {
         HashMap<String,String> messages=new HashMap<>();
         this.visitAttributesFlat((attributeVariableName, attribute) -> {
             if (attribute instanceof I18nAttribute) {
@@ -61,4 +62,6 @@ public class LayoutFactory extends FactoryBase<Layout> {
 
         return new Layout(messages, logoSmall.get(), logoLarge.get(), userManagement.get().authorisationRequired());
     }
+
+
 }

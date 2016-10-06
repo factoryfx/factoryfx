@@ -1,10 +1,11 @@
 package de.factoryfx.factory;
 
-import java.util.LinkedHashMap;
-
 import de.factoryfx.factory.testfactories.ExampleFactoryA;
 import de.factoryfx.factory.testfactories.ExampleFactoryB;
 import de.factoryfx.factory.testfactories.ExampleFactoryC;
+import de.factoryfx.factory.testfactories.ExampleLiveObjectA;
+import de.factoryfx.factory.testfactories.ExampleLiveObjectB;
+import de.factoryfx.factory.testfactories.ExampleLiveObjectC;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -12,25 +13,25 @@ public class FactoryManagerTest {
 
     @Test
     public void test(){
-        FactoryManager<Void,ExampleFactoryA> factoryManager = new FactoryManager<>();
+        FactoryManager<ExampleLiveObjectA,Void,ExampleFactoryA> factoryManager = new FactoryManager<>();
 
-        ExampleFactoryA newFactory = new ExampleFactoryA();
+        ExampleFactoryA exampleFactoryA = new ExampleFactoryA();
         ExampleFactoryB exampleFactoryB = new ExampleFactoryB();
-        exampleFactoryB.referenceAttributeC.set(new ExampleFactoryC());
-        newFactory.referenceAttribute.set(exampleFactoryB);
+        ExampleFactoryC exampleFactoryC = new ExampleFactoryC();
+        exampleFactoryB.referenceAttributeC.set(exampleFactoryC);
+        exampleFactoryA.referenceAttribute.set(exampleFactoryB);
 
-        factoryManager.start(newFactory);
+        factoryManager.start(exampleFactoryA);
 
-        LinkedHashMap<String, LiveObject> liveObjects = new LinkedHashMap<>();
-        newFactory.collectLiveObjects(liveObjects);
-        Assert.assertEquals(3,liveObjects.size());
-
+        exampleFactoryA.getCreatedLiveObject().isPresent();
+        exampleFactoryB.getCreatedLiveObject().isPresent();
+        exampleFactoryC.getCreatedLiveObject().isPresent();
     }
 
 
     @Test
     public void test_reuse_live_objects_part_differnt(){
-        FactoryManager<Void,ExampleFactoryA> factoryManager = new FactoryManager<>();
+        FactoryManager<ExampleLiveObjectA,Void,ExampleFactoryA> factoryManager = new FactoryManager<>();
 
         ExampleFactoryA exampleFactoryA = new ExampleFactoryA();
 
@@ -43,30 +44,23 @@ public class FactoryManagerTest {
 
         factoryManager.start(exampleFactoryA);
 
-        LinkedHashMap<String, LiveObject> liveObjects = new LinkedHashMap<>();
-        exampleFactoryA.collectLiveObjects(liveObjects);
-        Assert.assertEquals(3,liveObjects.size());
-
-
+        ExampleLiveObjectA exampleLiveObjectA = exampleFactoryA.getCreatedLiveObject().get();
+        ExampleLiveObjectB exampleLiveObjectB = exampleFactoryB.getCreatedLiveObject().get();
+        ExampleLiveObjectC exampleLiveObjectC = exampleFactoryC.getCreatedLiveObject().get();
 
         ExampleFactoryA change = exampleFactoryA.copy();
         change.referenceAttribute.get().stringAttribute.set("update");
 
         factoryManager.update(exampleFactoryA,change);
 
-
-        LinkedHashMap<String, LiveObject> liveObjectsAfterChange = new LinkedHashMap<>();
-        exampleFactoryA.collectLiveObjects(liveObjectsAfterChange);
-        Assert.assertEquals(3,liveObjectsAfterChange.size());
-
-        Assert.assertNotEquals(liveObjects.get(exampleFactoryA.getId()),liveObjectsAfterChange.get(exampleFactoryA.getId()));// root always change
-        Assert.assertNotEquals(liveObjects.get(exampleFactoryB.getId()),liveObjectsAfterChange.get(exampleFactoryB.getId()));
-        Assert.assertEquals(liveObjects.get(exampleFactoryC.getId()),liveObjectsAfterChange.get(exampleFactoryC.getId()));
+        Assert.assertNotEquals(exampleLiveObjectA,exampleFactoryA.getCreatedLiveObject().get());// root always change
+        Assert.assertNotEquals(exampleLiveObjectB,exampleFactoryB.getCreatedLiveObject().get());
+        Assert.assertEquals(exampleLiveObjectC,exampleFactoryC.getCreatedLiveObject().get());
     }
 
     @Test
     public void test_reuse_live_objects_all_same(){
-        FactoryManager<Void,ExampleFactoryA> factoryManager = new FactoryManager<>();
+        FactoryManager<ExampleLiveObjectA,Void,ExampleFactoryA> factoryManager = new FactoryManager<>();
 
         ExampleFactoryA exampleFactoryA = new ExampleFactoryA();
 
@@ -79,28 +73,22 @@ public class FactoryManagerTest {
 
         factoryManager.start(exampleFactoryA);
 
-        LinkedHashMap<String, LiveObject> liveObjects = new LinkedHashMap<>();
-        exampleFactoryA.collectLiveObjects(liveObjects);
-        Assert.assertEquals(3,liveObjects.size());
+        ExampleLiveObjectA exampleLiveObjectA = exampleFactoryA.getCreatedLiveObject().get();
+        ExampleLiveObjectB exampleLiveObjectB = exampleFactoryB.getCreatedLiveObject().get();
+        ExampleLiveObjectC exampleLiveObjectC = exampleFactoryC.getCreatedLiveObject().get();
 
         ExampleFactoryA change = exampleFactoryA.copy();
-//        change.referenceAttribute.get().stringAttribute.set("update");
 
         factoryManager.update(exampleFactoryA,change);
 
-
-        LinkedHashMap<String, LiveObject> liveObjectsAfterChange = new LinkedHashMap<>();
-        exampleFactoryA.collectLiveObjects(liveObjectsAfterChange);
-        Assert.assertEquals(3,liveObjectsAfterChange.size());
-
-        Assert.assertEquals(liveObjects.get(exampleFactoryA.getId()),liveObjectsAfterChange.get(exampleFactoryA.getId()));
-        Assert.assertEquals(liveObjects.get(exampleFactoryB.getId()),liveObjectsAfterChange.get(exampleFactoryB.getId()));
-        Assert.assertEquals(liveObjects.get(exampleFactoryC.getId()),liveObjectsAfterChange.get(exampleFactoryC.getId()));
+        Assert.assertEquals(exampleLiveObjectA,exampleFactoryA.getCreatedLiveObject().get());// root always change
+        Assert.assertEquals(exampleLiveObjectB,exampleFactoryB.getCreatedLiveObject().get());
+        Assert.assertEquals(exampleLiveObjectC,exampleFactoryC.getCreatedLiveObject().get());
     }
 
     @Test
     public void test_reuse_live_objects_all_different(){
-        FactoryManager<Void,ExampleFactoryA> factoryManager = new FactoryManager<>();
+        FactoryManager<ExampleLiveObjectA,Void,ExampleFactoryA> factoryManager = new FactoryManager<>();
 
         ExampleFactoryA exampleFactoryA = new ExampleFactoryA();
 
@@ -116,9 +104,9 @@ public class FactoryManagerTest {
 
         factoryManager.start(exampleFactoryA);
 
-        LinkedHashMap<String, LiveObject> liveObjects = new LinkedHashMap<>();
-        exampleFactoryA.collectLiveObjects(liveObjects);
-        Assert.assertEquals(3,liveObjects.size());
+        ExampleLiveObjectA exampleLiveObjectA = exampleFactoryA.getCreatedLiveObject().get();
+        ExampleLiveObjectB exampleLiveObjectB = exampleFactoryB.getCreatedLiveObject().get();
+        ExampleLiveObjectC exampleLiveObjectC = exampleFactoryC.getCreatedLiveObject().get();
 
         ExampleFactoryA change = exampleFactoryA.copy();
         change.stringAttribute.set("update1");
@@ -128,13 +116,9 @@ public class FactoryManagerTest {
         factoryManager.update(exampleFactoryA,change);
 
 
-        LinkedHashMap<String, LiveObject> liveObjectsAfterChange = new LinkedHashMap<>();
-        exampleFactoryA.collectLiveObjects(liveObjectsAfterChange);
-        Assert.assertEquals(3,liveObjectsAfterChange.size());
-
-        Assert.assertNotEquals(liveObjects.get(exampleFactoryA.getId()),liveObjectsAfterChange.get(exampleFactoryA.getId()));
-        Assert.assertNotEquals(liveObjects.get(exampleFactoryB.getId()),liveObjectsAfterChange.get(exampleFactoryB.getId()));
-        Assert.assertNotEquals(liveObjects.get(exampleFactoryC.getId()),liveObjectsAfterChange.get(exampleFactoryC.getId()));
+        Assert.assertNotEquals(exampleLiveObjectA,exampleFactoryA.getCreatedLiveObject().get());// root always change
+        Assert.assertNotEquals(exampleLiveObjectB,exampleFactoryB.getCreatedLiveObject().get());
+        Assert.assertNotEquals(exampleLiveObjectC,exampleFactoryC.getCreatedLiveObject().get());
     }
 
 }

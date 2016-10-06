@@ -10,11 +10,10 @@ import java.util.TreeMap;
 import java.util.stream.Stream;
 
 import de.factoryfx.factory.FactoryBase;
-import de.factoryfx.factory.LiveObject;
 import de.factoryfx.factory.datastorage.StoredFactoryMetadata;
 import de.factoryfx.data.jackson.ObjectMapperBuilder;
 
-public class FileSystemFactoryStorageHistory<T extends FactoryBase<? extends LiveObject<?>>> {
+public class FileSystemFactoryStorageHistory<L,V,T extends FactoryBase<L,V>> {
     private Map<String,StoredFactoryMetadata> cache = new TreeMap<>();
     private Path historyDirectory;
     private final Class<T> rootClass;

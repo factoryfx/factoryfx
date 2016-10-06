@@ -1,7 +1,6 @@
 package de.factoryfx.factory;
 
 import java.util.HashSet;
-import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.function.Function;
 
@@ -10,32 +9,32 @@ import de.factoryfx.data.merge.FactoryMerger;
 import de.factoryfx.data.merge.MergeDiff;
 import de.factoryfx.data.merge.MergeResultEntry;
 
-public class FactoryManager<V,T extends FactoryBase<? extends LiveObject<V>>> {
+public class FactoryManager<L,V,T extends FactoryBase<L,V>> {
 
     private T currentFactory;
 
     @SuppressWarnings("unchecked")
     public MergeDiff update(T commonVersion , T newVersion, Locale locale){
         newVersion.loopDetector();
-        HashSet<LiveObject> previousLiveObjects = stopLiveObjectProvider.apply(currentFactory);
+        HashSet<FactoryBase<?,?>> previousLiveObjects = stopLiveObjectProvider.apply(currentFactory);
 
         FactoryMerger factoryMerger = new FactoryMerger(currentFactory, commonVersion, newVersion);
         factoryMerger.setLocale(locale);
         MergeDiff mergeDiff= factoryMerger.mergeIntoCurrent();
         if (mergeDiff.hasNoConflicts()){
-            for (FactoryBase<?> current : currentFactory.collectChildFactories()){
+            for (FactoryBase<?,?> current : currentFactory.collectChildFactoriesDeep()){
                 current.unMarkChanged();
             }
             for (MergeResultEntry<?> mergeResultEntry: mergeDiff.getMergeInfos()){
                 //TODO check cast required
-                ((FactoryBase<?>)mergeResultEntry.parent).markChanged();
+                ((FactoryBase<?,?>)mergeResultEntry.parent).markChanged();
             }
 
 
             currentFactory.instance();
 
 
-            HashSet<LiveObject> newLiveObjects = startLiveObjectProvider.apply(currentFactory);
+            HashSet<FactoryBase<?,?>> newLiveObjects = startLiveObjectProvider.apply(currentFactory);
             updateLiveObjects(previousLiveObjects,newLiveObjects);
         }
         return mergeDiff;
@@ -57,14 +56,14 @@ public class FactoryManager<V,T extends FactoryBase<? extends LiveObject<V>>> {
     }
 
 
-    private void updateLiveObjects(HashSet<LiveObject> previousLiveObjects, HashSet<LiveObject> newLiveObjects){
-        for (LiveObject previousLiveObject: previousLiveObjects){
+    private void updateLiveObjects(HashSet<FactoryBase<?,?>> previousLiveObjects, HashSet<FactoryBase<?,?>> newLiveObjects){
+        for (FactoryBase<?,?> previousLiveObject: previousLiveObjects){
             if (!newLiveObjects.contains(previousLiveObject)){
                 previousLiveObject.stop();
             }
         }
 
-        for (LiveObject newLiveObject: newLiveObjects){
+        for (FactoryBase<?,?> newLiveObject: newLiveObjects){
             if (previousLiveObjects.contains(newLiveObject)){
                 //nothing reused live object
             }
@@ -74,31 +73,31 @@ public class FactoryManager<V,T extends FactoryBase<? extends LiveObject<V>>> {
         }
     }
 
-    TreeTraverser<FactoryBase<?>> factoryTraverser = new TreeTraverser<FactoryBase<?>>() {
+    TreeTraverser<FactoryBase<?,?>> factoryTraverser = new TreeTraverser<FactoryBase<?,?>>() {
         @Override
-        public Iterable<FactoryBase<?>> children(FactoryBase<?> factory) {
+        public Iterable<FactoryBase<?,?>> children(FactoryBase<?,?> factory) {
             return factory.collectChildrenFlat();
         }
     };
-    private Function<T,HashSet<LiveObject>> startLiveObjectProvider = root -> {
-        HashSet<LiveObject> result = new HashSet<>();
-        for (FactoryBase<?> factory : factoryTraverser.postOrderTraversal(root)) {
-            factory.getCreatedLiveObject().ifPresent(result::add);
+    private Function<T,HashSet<FactoryBase<?,?>>> startLiveObjectProvider = root -> {
+        HashSet<FactoryBase<?,?>> result = new HashSet<>();
+        for (FactoryBase<?,?> factory : factoryTraverser.postOrderTraversal(root)) {
+            result.add(factory);
         }
         return result;
     };
-    public void customizeStartOrder(Function<T,HashSet<LiveObject>> orderProvider){
+    public void customizeStartOrder(Function<T,HashSet<FactoryBase<?,?>>> orderProvider){
         startLiveObjectProvider =orderProvider;
     }
 
-    private Function<T,HashSet<LiveObject>> stopLiveObjectProvider = root -> {
-        HashSet<LiveObject> result = new HashSet<>();
-        for (FactoryBase<?> factory : factoryTraverser.breadthFirstTraversal(root)) {
-            factory.getCreatedLiveObject().ifPresent(result::add);
+    private Function<T,HashSet<FactoryBase<?,?>>> stopLiveObjectProvider = root -> {
+        HashSet<FactoryBase<?,?>> result = new HashSet<>();
+        for (FactoryBase<?,?> factory : factoryTraverser.breadthFirstTraversal(root)) {
+            result.add(factory);
         }
         return result;
     };
-    public void customizeStopOrder(Function<T,HashSet<LiveObject>> orderProvider){
+    public void customizeStopOrder(Function<T,HashSet<FactoryBase<?,?>>> orderProvider){
         stopLiveObjectProvider =orderProvider;
     }
 
@@ -113,28 +112,26 @@ public class FactoryManager<V,T extends FactoryBase<? extends LiveObject<V>>> {
 
         newFactory.instance();
 
-        HashSet<LiveObject> newLiveObjects = startLiveObjectProvider.apply(newFactory);
+        HashSet<FactoryBase<?,?>> newLiveObjects = startLiveObjectProvider.apply(newFactory);
 
-        for (LiveObject newLiveObject: newLiveObjects){
+        for (FactoryBase<?,?> newLiveObject: newLiveObjects){
             newLiveObject.start();
         }
     }
 
     @SuppressWarnings("unchecked")
     public void stop(){
-        HashSet<LiveObject> liveObjects = stopLiveObjectProvider.apply(currentFactory);
+        HashSet<FactoryBase<?,?>> liveObjects = stopLiveObjectProvider.apply(currentFactory);
 
-        for (LiveObject newLiveObject: liveObjects){
+        for (FactoryBase<?,?> newLiveObject: liveObjects){
             newLiveObject.stop();
         }
     }
 
     @SuppressWarnings("unchecked")
     public V query(V visitor){
-        LinkedHashMap<String, LiveObject> previousLiveObjects = new LinkedHashMap<>();
-        currentFactory.collectLiveObjects(previousLiveObjects);
-        for(LiveObject<V> liveObject: previousLiveObjects.values()){
-            liveObject.accept(visitor);
+        for (FactoryBase<?,V> factory: currentFactory.collectChildFactoriesDeep()){
+            factory.runtimeQuery(visitor);
         }
         return visitor;
     }

@@ -12,6 +12,7 @@ import de.factoryfx.adminui.InMemoryFactoryStorage;
 import de.factoryfx.adminui.SinglePrecessInstanceUtil;
 import de.factoryfx.adminui.WebAppViewer;
 import de.factoryfx.adminui.angularjs.WebGuiApplicationCreator;
+import de.factoryfx.adminui.angularjs.factory.server.HttpServer;
 import de.factoryfx.adminui.angularjs.factory.server.HttpServerFactory;
 import de.factoryfx.adminui.angularjs.model.view.GuiView;
 import de.factoryfx.adminui.angularjs.model.view.WebGuiFactoryHeader;
@@ -20,6 +21,7 @@ import de.factoryfx.data.util.LanguageText;
 import de.factoryfx.example.factory.OrderCollector;
 import de.factoryfx.example.factory.OrderCollectorToTables;
 import de.factoryfx.example.factory.ProductFactory;
+import de.factoryfx.example.factory.Shop;
 import de.factoryfx.example.factory.ShopFactory;
 import de.factoryfx.example.factory.VatRateFactory;
 import de.factoryfx.example.factory.netherlands.NetherlandsCarProductFactory;
@@ -39,23 +41,23 @@ public class ExampleMain extends Application {
         new WebAppViewer(primaryStage, () -> {
             ShopFactory shopFactory = getNetherlandsShopFactory();
 
-            DefaultApplicationServer<OrderCollector, ShopFactory> applicationServer = new DefaultApplicationServer<>(new FactoryManager<>(), new InMemoryFactoryStorage<>(shopFactory));
+            DefaultApplicationServer<Shop, OrderCollector, ShopFactory> applicationServer = new DefaultApplicationServer<>(new FactoryManager<>(), new InMemoryFactoryStorage<>(shopFactory));
             applicationServer.start();
 
-            WebGuiApplicationCreator<OrderCollector, ShopFactory> webGuiApplicationCreator=new WebGuiApplicationCreator<>(
+            WebGuiApplicationCreator<Shop, OrderCollector, ShopFactory> webGuiApplicationCreator=new WebGuiApplicationCreator<>(
                     applicationServer,
                     new ClasspathBasedFactoryProvider().get(ShopFactory.class),
                     new NoUserManagement(),
                     OrderCollector::new,new OrderCollectorToTables(),
                     Arrays.asList(new GuiView<>("sgjhfgdsj", new LanguageText().en("Products"), shopFactory1 -> shopFactory1.products.stream().map(WebGuiFactoryHeader::new).collect(Collectors.toList())))
             );
-            HttpServerFactory<OrderCollector> defaultFactory = webGuiApplicationCreator.createDefaultFactory();
+            HttpServerFactory<Shop, OrderCollector, ShopFactory> defaultFactory = webGuiApplicationCreator.createDefaultFactory();
             try (InputStream inputStream = WebGuiApplicationCreator.class.getResourceAsStream("/logo/logo.png")) {
                 defaultFactory.webGuiResource.get().layout.get().logoSmall.set(ByteStreams.toByteArray(inputStream));
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
-            ApplicationServer<Void, HttpServerFactory<OrderCollector>> shopApplication = webGuiApplicationCreator.createApplication(new InMemoryFactoryStorage<>(defaultFactory));
+            ApplicationServer<HttpServer, Void, HttpServerFactory<Shop, OrderCollector, ShopFactory>> shopApplication = webGuiApplicationCreator.createApplication(new InMemoryFactoryStorage<>(defaultFactory));
             shopApplication.start();
 
         },"http://localhost:8089/#/login");

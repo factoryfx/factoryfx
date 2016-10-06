@@ -1,30 +1,28 @@
 package de.factoryfx.factory.datastorage.postgres;
 
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.UUID;
+
+import javax.sql.DataSource;
+
 import com.google.common.io.CharStreams;
 import de.factoryfx.data.jackson.ObjectMapperBuilder;
 import de.factoryfx.data.jackson.SimpleObjectMapper;
 import de.factoryfx.factory.FactoryBase;
-import de.factoryfx.factory.LiveObject;
 import de.factoryfx.factory.datastorage.FactoryAndStorageMetadata;
 import de.factoryfx.factory.datastorage.FactoryStorage;
 import de.factoryfx.factory.datastorage.StoredFactoryMetadata;
 
-import javax.sql.DataSource;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.nio.CharBuffer;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.sql.*;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Optional;
-import java.util.UUID;
-import java.util.function.Consumer;
-import java.util.function.Function;
-
-public class PostgresFactoryStorage<T extends FactoryBase<? extends LiveObject<?>>> implements FactoryStorage<T> {
+public class PostgresFactoryStorage<L,V,T extends FactoryBase<L,V>> implements FactoryStorage<L,V,T> {
 
     private T initialFactory;
     private final DataSource dataSource;

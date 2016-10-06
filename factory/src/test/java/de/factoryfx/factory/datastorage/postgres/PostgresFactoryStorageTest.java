@@ -1,9 +1,25 @@
 package de.factoryfx.factory.datastorage.postgres;
 
+import java.io.IOException;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.UUID;
+
+import javax.sql.DataSource;
+
 import de.factoryfx.factory.datastorage.FactoryAndStorageMetadata;
 import de.factoryfx.factory.datastorage.StoredFactoryMetadata;
 import de.factoryfx.factory.testfactories.ExampleFactoryA;
-import org.junit.*;
+import de.factoryfx.factory.testfactories.ExampleLiveObjectA;
+import org.junit.AfterClass;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
 import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
@@ -13,16 +29,6 @@ import ru.yandex.qatools.embed.postgresql.PostgresExecutable;
 import ru.yandex.qatools.embed.postgresql.PostgresProcess;
 import ru.yandex.qatools.embed.postgresql.PostgresStarter;
 import ru.yandex.qatools.embed.postgresql.config.PostgresConfig;
-
-import javax.sql.DataSource;
-import java.io.IOException;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.UUID;
 
 public class PostgresFactoryStorageTest {
 
@@ -63,7 +69,7 @@ public class PostgresFactoryStorageTest {
 
     @Test
     public void test_init_no_existing_factory() throws SQLException {
-        PostgresFactoryStorage<ExampleFactoryA> postgresFactoryStorage = new PostgresFactoryStorage<>(postgresDatasource, new ExampleFactoryA(),ExampleFactoryA.class);
+        PostgresFactoryStorage<ExampleLiveObjectA,Void, ExampleFactoryA> postgresFactoryStorage = new PostgresFactoryStorage<>(postgresDatasource, new ExampleFactoryA(),ExampleFactoryA.class);
         postgresFactoryStorage.loadInitialFactory();
         try (Connection con = postgresDatasource.getConnection()) {
             for (String sql : Arrays.asList("select * from currentconfiguration"
@@ -79,18 +85,18 @@ public class PostgresFactoryStorageTest {
 
     @Test
     public void test_init_existing_factory() throws SQLException {
-        PostgresFactoryStorage<ExampleFactoryA> postgresFactoryStorage = new PostgresFactoryStorage<>(postgresDatasource, new ExampleFactoryA(),ExampleFactoryA.class);
+        PostgresFactoryStorage<ExampleLiveObjectA,Void, ExampleFactoryA> postgresFactoryStorage = new PostgresFactoryStorage<>(postgresDatasource, new ExampleFactoryA(),ExampleFactoryA.class);
         postgresFactoryStorage.loadInitialFactory();
         String id=postgresFactoryStorage.getCurrentFactory().metadata.id;
 
-        PostgresFactoryStorage<ExampleFactoryA> restored = new PostgresFactoryStorage<>(postgresDatasource, null,ExampleFactoryA.class);
+        PostgresFactoryStorage<ExampleLiveObjectA,Void, ExampleFactoryA> restored = new PostgresFactoryStorage<>(postgresDatasource, null,ExampleFactoryA.class);
         restored.loadInitialFactory();
         Assert.assertEquals(id,restored.getCurrentFactory().metadata.id);
     }
 
     @Test
     public void test_update() throws SQLException {
-        PostgresFactoryStorage<ExampleFactoryA> postgresFactoryStorage = new PostgresFactoryStorage<>(postgresDatasource, new ExampleFactoryA(),ExampleFactoryA.class);
+        PostgresFactoryStorage<ExampleLiveObjectA,Void, ExampleFactoryA> postgresFactoryStorage = new PostgresFactoryStorage<>(postgresDatasource, new ExampleFactoryA(),ExampleFactoryA.class);
         postgresFactoryStorage.loadInitialFactory();
         String id=postgresFactoryStorage.getCurrentFactory().metadata.id;
 
@@ -119,7 +125,7 @@ public class PostgresFactoryStorageTest {
 
     @Test
     public void test_initial_history() throws SQLException {
-        PostgresFactoryStorage<ExampleFactoryA> postgresFactoryStorage = new PostgresFactoryStorage<>(postgresDatasource,new ExampleFactoryA(),ExampleFactoryA.class);
+        PostgresFactoryStorage<ExampleLiveObjectA,Void, ExampleFactoryA> postgresFactoryStorage = new PostgresFactoryStorage<>(postgresDatasource,new ExampleFactoryA(),ExampleFactoryA.class);
         postgresFactoryStorage.loadInitialFactory();
 
         Assert.assertEquals(1,postgresFactoryStorage.getHistoryFactoryList().size());
@@ -127,7 +133,7 @@ public class PostgresFactoryStorageTest {
 
     @Test
     public void test_multi_add() throws SQLException {
-        PostgresFactoryStorage<ExampleFactoryA> postgresFactoryStorage = new PostgresFactoryStorage<>(postgresDatasource,new ExampleFactoryA(),ExampleFactoryA.class);
+        PostgresFactoryStorage<ExampleLiveObjectA,Void, ExampleFactoryA> postgresFactoryStorage = new PostgresFactoryStorage<>(postgresDatasource,new ExampleFactoryA(),ExampleFactoryA.class);
         postgresFactoryStorage.loadInitialFactory();
 
         {
@@ -153,7 +159,7 @@ public class PostgresFactoryStorageTest {
 
     @Test
     public void test_restore() throws SQLException {
-        PostgresFactoryStorage<ExampleFactoryA> postgresFactoryStorage = new PostgresFactoryStorage<>(postgresDatasource,new ExampleFactoryA(),ExampleFactoryA.class);
+        PostgresFactoryStorage<ExampleLiveObjectA,Void, ExampleFactoryA> postgresFactoryStorage = new PostgresFactoryStorage<>(postgresDatasource,new ExampleFactoryA(),ExampleFactoryA.class);
         postgresFactoryStorage.loadInitialFactory();
 
         StoredFactoryMetadata metadata = new StoredFactoryMetadata();
@@ -161,7 +167,7 @@ public class PostgresFactoryStorageTest {
         postgresFactoryStorage.updateCurrentFactory(new FactoryAndStorageMetadata<>(new ExampleFactoryA(),metadata));
         Assert.assertEquals(2,postgresFactoryStorage.getHistoryFactoryList().size());
 
-        PostgresFactoryStorage<ExampleFactoryA> restored = new PostgresFactoryStorage<>(postgresDatasource,new ExampleFactoryA(), ExampleFactoryA.class);
+        PostgresFactoryStorage<ExampleLiveObjectA,Void, ExampleFactoryA> restored = new PostgresFactoryStorage<>(postgresDatasource,new ExampleFactoryA(), ExampleFactoryA.class);
         restored.loadInitialFactory();
         Assert.assertEquals(2,restored.getHistoryFactoryList().size());
     }

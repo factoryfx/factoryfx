@@ -16,16 +16,19 @@ import de.factoryfx.adminui.SinglePrecessInstanceUtil;
 import de.factoryfx.adminui.WebAppViewer;
 import de.factoryfx.adminui.angularjs.WebGuiApplicationCreator;
 import de.factoryfx.adminui.angularjs.factory.SessionStorageFactory;
+import de.factoryfx.adminui.angularjs.factory.server.HttpServer;
 import de.factoryfx.adminui.angularjs.factory.server.HttpServerFactory;
 import de.factoryfx.adminui.angularjs.factory.server.resourcehandler.ConfigurableResourceHandler;
 import de.factoryfx.adminui.angularjs.factory.server.resourcehandler.FilesystemFileContentProvider;
 import de.factoryfx.adminui.angularjs.integration.example.ExampleFactoryA;
 import de.factoryfx.adminui.angularjs.integration.example.ExampleFactoryB;
+import de.factoryfx.adminui.angularjs.integration.example.ExampleLiveObjectA;
 import de.factoryfx.adminui.angularjs.integration.example.ExampleVisitor;
 import de.factoryfx.adminui.angularjs.integration.example.ViewCreator;
 import de.factoryfx.adminui.angularjs.integration.example.VisitorToTables;
 import de.factoryfx.adminui.angularjs.util.ClasspathBasedFactoryProvider;
 import de.factoryfx.factory.FactoryManager;
+import de.factoryfx.factory.datastorage.FactoryStorage;
 import de.factoryfx.server.ApplicationServer;
 import de.factoryfx.server.DefaultApplicationServer;
 import de.factoryfx.user.NoUserManagement;
@@ -60,12 +63,12 @@ public class WebGuiTest extends Application{
             }
             exampleFactoryA.referenceListAttribute.add(exampleFactoryA.referenceAttribute.get());
 
-            DefaultApplicationServer<ExampleVisitor, ExampleFactoryA> exampleApplicationServer = new DefaultApplicationServer<>(new FactoryManager<>(), new InMemoryFactoryStorage<>(exampleFactoryA));
+            DefaultApplicationServer<ExampleLiveObjectA, ExampleVisitor, ExampleFactoryA> exampleApplicationServer = new DefaultApplicationServer<>(new FactoryManager<>(), new InMemoryFactoryStorage<>(exampleFactoryA));
             exampleApplicationServer.start();
 
             {
-                WebGuiApplicationCreator<ExampleVisitor, ExampleFactoryA> webGuiApplicationCreator = new WebGuiApplicationCreator<>(exampleApplicationServer, Arrays.asList(ExampleFactoryA.class, ExampleFactoryB.class), getUserManagement(), () -> new ExampleVisitor(), new VisitorToTables(), new ViewCreator().create());
-                HttpServerFactory<ExampleVisitor> defaultFactory = webGuiApplicationCreator.createDefaultFactory();
+                WebGuiApplicationCreator<ExampleLiveObjectA, ExampleVisitor, ExampleFactoryA> webGuiApplicationCreator = new WebGuiApplicationCreator<>(exampleApplicationServer, Arrays.asList(ExampleFactoryA.class, ExampleFactoryB.class), getUserManagement(), () -> new ExampleVisitor(), new VisitorToTables(), new ViewCreator().create());
+                HttpServerFactory<ExampleLiveObjectA, ExampleVisitor, ExampleFactoryA> defaultFactory = webGuiApplicationCreator.createDefaultFactory();
                 if (WebGuiApplicationCreator.class.getResourceAsStream("/logo/logoLarge.png") != null) {
                     try (InputStream inputStream = WebGuiApplicationCreator.class.getResourceAsStream("/logo/logoLarge.png")) {
                         defaultFactory.webGuiResource.get().layout.get().logoLarge.set(ByteStreams.toByteArray(inputStream));
@@ -81,14 +84,15 @@ public class WebGuiTest extends Application{
                     }
                 }
                 defaultFactory.resourceHandler.set(new ConfigurableResourceHandler(new FilesystemFileContentProvider(Paths.get("./src/main/resources/webapp"), "body {background-color: inherited;}".getBytes(StandardCharsets.UTF_8)), () -> UUID.randomUUID().toString()));
-                ApplicationServer<Void, HttpServerFactory<ExampleVisitor>> exampleServer = webGuiApplicationCreator.createApplication(new InMemoryFactoryStorage<>(defaultFactory));
+                FactoryStorage<HttpServer,Void,HttpServerFactory<ExampleLiveObjectA, ExampleVisitor, ExampleFactoryA>> lvtInMemoryFactoryStorage = new InMemoryFactoryStorage<>(defaultFactory);
+                ApplicationServer<HttpServer,Void,HttpServerFactory<ExampleLiveObjectA, ExampleVisitor, ExampleFactoryA>> exampleServer = webGuiApplicationCreator.createApplication(lvtInMemoryFactoryStorage);
                 exampleServer.start();
 
                 {
-                    WebGuiApplicationCreator<Void, HttpServerFactory<ExampleVisitor>> selfServerCreator = new WebGuiApplicationCreator<>(exampleServer, new ClasspathBasedFactoryProvider().get(SessionStorageFactory.class), new NoUserManagement(), null, null, Collections.emptyList());
-                    HttpServerFactory<Void> selfDefaultFactory = selfServerCreator.createDefaultFactory();
+                    WebGuiApplicationCreator<HttpServer,Void,HttpServerFactory<ExampleLiveObjectA, ExampleVisitor, ExampleFactoryA>> selfServerCreator = new WebGuiApplicationCreator<>(exampleServer, new ClasspathBasedFactoryProvider().get(SessionStorageFactory.class), new NoUserManagement(), null, null, Collections.emptyList());
+                    HttpServerFactory<HttpServer,Void,HttpServerFactory<ExampleLiveObjectA, ExampleVisitor, ExampleFactoryA>> selfDefaultFactory = selfServerCreator.createDefaultFactory();
                     selfDefaultFactory.port.set(8087);
-                    ApplicationServer<Void, HttpServerFactory<Void>> selfServer = selfServerCreator.createApplication(new InMemoryFactoryStorage<>(selfDefaultFactory));
+                    ApplicationServer<HttpServer, Void, HttpServerFactory<HttpServer, Void, HttpServerFactory<ExampleLiveObjectA, ExampleVisitor, ExampleFactoryA>>> selfServer = selfServerCreator.createApplication(new InMemoryFactoryStorage<>(selfDefaultFactory));
                     selfServer.start();
                 }
 

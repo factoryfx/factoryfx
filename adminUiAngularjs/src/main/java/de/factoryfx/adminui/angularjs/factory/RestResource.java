@@ -42,10 +42,8 @@ import de.factoryfx.data.merge.MergeDiff;
 import de.factoryfx.data.merge.MergeResultEntry;
 import de.factoryfx.data.merge.MergeResultEntryInfo;
 import de.factoryfx.factory.FactoryBase;
-import de.factoryfx.factory.LiveObject;
 import de.factoryfx.factory.datastorage.FactoryAndStorageMetadata;
 import de.factoryfx.factory.datastorage.StoredFactoryMetadata;
-import de.factoryfx.factory.util.VoidLiveObject;
 import de.factoryfx.server.ApplicationServer;
 import de.factoryfx.user.User;
 import de.factoryfx.user.UserManagement;
@@ -56,9 +54,9 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
 @Path("/") /** path defined in {@link de.factoryfx.xtc.ticketproxy.configuration.ConfigurationServer}*/
-public class RestResource<V,T extends FactoryBase<? extends LiveObject<V>>>  extends VoidLiveObject {
+public class RestResource<L,V,T extends FactoryBase<L,V>> {
 
-    private final ApplicationServer<V,T> applicationServer;
+    private final ApplicationServer<L,V,T> applicationServer;
     private final List<Class<? extends FactoryBase>> appFactoryClasses;
     private final List<Locale> locales;
     private final Layout webGuiLayout;
@@ -75,7 +73,7 @@ public class RestResource<V,T extends FactoryBase<? extends LiveObject<V>>>  ext
      * @param userManagement
      * @param sessionStorage
      */
-    public RestResource(Layout layout, ApplicationServer<V, T> applicationServer, List<Class<? extends FactoryBase>> appFactoryClasses, List<Locale> locales, UserManagement userManagement, Supplier<V> emptyVisitorCreator, Function<V, List<WebGuiTable>> dashboardTablesProvider, List<GuiView<?>> views, SessionStorage sessionStorage) {
+    public RestResource(Layout layout, ApplicationServer<L,V,T> applicationServer, List<Class<? extends FactoryBase>> appFactoryClasses, List<Locale> locales, UserManagement userManagement, Supplier<V> emptyVisitorCreator, Function<V, List<WebGuiTable>> dashboardTablesProvider, List<GuiView<?>> views, SessionStorage sessionStorage) {
         this.applicationServer = applicationServer;
         this.appFactoryClasses = appFactoryClasses;
         this.locales = locales;
@@ -111,12 +109,12 @@ public class RestResource<V,T extends FactoryBase<? extends LiveObject<V>>>  ext
     @Produces(MediaType.APPLICATION_JSON)
     @Path("factory")
     public de.factoryfx.adminui.angularjs.model.WebGuiFactory getFactory(@QueryParam("id")String id) {
-        FactoryBase<?> root = getCurrentEditingFactory().root;
+        FactoryBase<?,?> root = getCurrentEditingFactory().root;
 
         //TODO use map?
         for (Data factory: root.collectChildrenDeep()){
             if (factory.getId().equals(id)){
-                return new de.factoryfx.adminui.angularjs.model.WebGuiFactory((FactoryBase<?>)factory,root);
+                return new de.factoryfx.adminui.angularjs.model.WebGuiFactory((FactoryBase<?,?>)factory,root);
             }
         }
         throw new IllegalStateException("cant find id"+id);
@@ -128,8 +126,8 @@ public class RestResource<V,T extends FactoryBase<? extends LiveObject<V>>>  ext
     @Path("factory")
     @SuppressWarnings("unchecked")
     public StageResponse save(FactoryTypeInfoWrapper newFactoryParam) {
-        FactoryBase<?> newFactory=newFactoryParam.factory.reconstructMetadataDeepRoot();
-        FactoryBase<?> root = getCurrentEditingFactory().root;
+        FactoryBase<?,?> newFactory=newFactoryParam.factory.reconstructMetadataDeepRoot();
+        FactoryBase<?,?> root = getCurrentEditingFactory().root;
         Map<Object,Data>  map = root.collectChildFactoriesMap();
         Data existing = map.get(newFactory.getId());
 
@@ -364,7 +362,7 @@ public class RestResource<V,T extends FactoryBase<? extends LiveObject<V>>>  ext
 
             }
         });
-        return new de.factoryfx.adminui.angularjs.model.WebGuiFactory((FactoryBase<?>) factoryBase,root);
+        return new de.factoryfx.adminui.angularjs.model.WebGuiFactory((FactoryBase<?,?>) factoryBase,root);
     }
 
     public static class DashboardResponse{

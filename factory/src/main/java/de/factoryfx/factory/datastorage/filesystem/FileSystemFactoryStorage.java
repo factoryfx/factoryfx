@@ -6,16 +6,15 @@ import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.UUID;
 
+import de.factoryfx.data.jackson.ObjectMapperBuilder;
+import de.factoryfx.data.jackson.SimpleObjectMapper;
 import de.factoryfx.factory.FactoryBase;
-import de.factoryfx.factory.LiveObject;
 import de.factoryfx.factory.datastorage.FactoryAndStorageMetadata;
 import de.factoryfx.factory.datastorage.FactoryStorage;
 import de.factoryfx.factory.datastorage.StoredFactoryMetadata;
-import de.factoryfx.data.jackson.ObjectMapperBuilder;
-import de.factoryfx.data.jackson.SimpleObjectMapper;
 
-public class FileSystemFactoryStorage<T extends FactoryBase<? extends LiveObject<?>>> implements FactoryStorage<T> {
-    private final FileSystemFactoryStorageHistory<T> fileSystemFactoryStorageHistory;
+public class FileSystemFactoryStorage<L,V,T extends FactoryBase<L,V>> implements FactoryStorage<L,V,T> {
+    private final FileSystemFactoryStorageHistory<L,V,T> fileSystemFactoryStorageHistory;
 
     private T initialFactory;
     private Path currentFactoryPath;
@@ -23,7 +22,7 @@ public class FileSystemFactoryStorage<T extends FactoryBase<? extends LiveObject
     private final SimpleObjectMapper objectMapper=ObjectMapperBuilder.build();
     private final Class<T> rootClass;
 
-    public FileSystemFactoryStorage(Path basePath, T defaultFactory, Class<T> rootClass, FileSystemFactoryStorageHistory<T> fileSystemFactoryStorageHistory){
+    public FileSystemFactoryStorage(Path basePath, T defaultFactory, Class<T> rootClass, FileSystemFactoryStorageHistory<L,V,T> fileSystemFactoryStorageHistory){
         this.initialFactory=defaultFactory;
         if (!Files.exists(basePath)){
             throw new IllegalArgumentException("path don't exists:"+basePath);

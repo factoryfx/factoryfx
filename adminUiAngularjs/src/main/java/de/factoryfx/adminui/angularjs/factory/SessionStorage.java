@@ -4,10 +4,9 @@ import javax.servlet.http.HttpServletRequest;
 
 import de.factoryfx.adminui.angularjs.factory.server.AuthorizationRequestFilter;
 import de.factoryfx.factory.datastorage.FactoryAndStorageMetadata;
-import de.factoryfx.factory.util.VoidLiveObject;
 import de.factoryfx.user.User;
 
-public class SessionStorage extends VoidLiveObject {
+public class SessionStorage {
 
     private static final String CURRENT_EDITING_FACTORY_SESSION_KEY = "CurrentEditingFactory";
     private static final String USER = "USER_";

@@ -19,10 +19,11 @@ import de.factoryfx.data.attribute.types.StringMapAttribute;
 import de.factoryfx.data.validation.RegexValidation;
 import de.factoryfx.data.validation.StringRequired;
 import de.factoryfx.factory.FactoryBase;
+import de.factoryfx.factory.LifecycleNotifier;
 import de.factoryfx.factory.atrribute.FactoryReferenceAttribute;
 import de.factoryfx.factory.atrribute.FactoryReferenceListAttribute;
 
-public class ExampleFactoryA extends FactoryBase<ExampleLiveObjectA> {
+public class ExampleFactoryA extends FactoryBase<ExampleLiveObjectA,ExampleVisitor> {
 
     public final StringAttribute stringAttribute=new StringAttribute(new AttributeMetadata().en("StringAttribute").de("StringAttribute de").permission(Permissions.PERMISSON_X)).validation(new StringRequired());
     public final StringAttribute regexValidationNumber=new StringAttribute(new AttributeMetadata().en("regexValidationNumber").de("regexValidationNumber de").permission(Permissions.PERMISSON_X)).validation(new RegexValidation(Pattern.compile("[0-9]*")));
@@ -41,7 +42,9 @@ public class ExampleFactoryA extends FactoryBase<ExampleLiveObjectA> {
     public final FactoryReferenceListAttribute<ExampleLiveObjectB,ExampleFactoryB> referenceListAttribute = new FactoryReferenceListAttribute<>(ExampleFactoryB.class,new AttributeMetadata().en("ReferenceListAttribute").de("ReferenceListAttribute de"));
 
     @Override
-    protected ExampleLiveObjectA createImp(Optional<ExampleLiveObjectA> previousLiveObject) {
-        return new ExampleLiveObjectA(referenceAttribute.instance(), referenceListAttribute.instances());
+    protected ExampleLiveObjectA createImp(Optional<ExampleLiveObjectA> previousLiveObject, LifecycleNotifier<ExampleVisitor> lifecycle) {
+        return new ExampleLiveObjectA(referenceAttribute.instance(), referenceListAttribute.instances(),lifecycle);
     }
+
+
 }

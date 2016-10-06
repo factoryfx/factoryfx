@@ -8,9 +8,10 @@ import de.factoryfx.data.attribute.types.StringAttribute;
 import de.factoryfx.data.validation.ObjectRequired;
 import de.factoryfx.data.validation.StringRequired;
 import de.factoryfx.factory.FactoryBase;
+import de.factoryfx.factory.LifecycleNotifier;
 import de.factoryfx.factory.atrribute.FactoryReferenceAttribute;
 
-public class ProductFactory extends FactoryBase<Product> {
+public class ProductFactory extends FactoryBase<Product,OrderCollector> {
     public ProductFactory(){
         this.setDisplayTextProvider(() -> name.get());
     }
@@ -20,8 +21,9 @@ public class ProductFactory extends FactoryBase<Product> {
     public final FactoryReferenceAttribute<VatRate,VatRateFactory> vatRate = new FactoryReferenceAttribute<>(VatRateFactory.class,new AttributeMetadata().labelText("VatRate")).validation(new ObjectRequired<>());
 
     @Override
-    protected Product createImp(Optional<Product> previousLiveObject) {
-        return new Product(name.get(), price.get(), vatRate.instance());
+    protected Product createImp(Optional<Product> previousLiveObject, LifecycleNotifier<OrderCollector> lifecycle) {
+        Product product = new Product(name.get(), price.get(), vatRate.instance());
+        return product;
     }
 
 }

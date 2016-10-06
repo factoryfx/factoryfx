@@ -5,16 +5,15 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.Optional;
 
-import de.factoryfx.factory.FactoryBase;
-import de.factoryfx.factory.LiveObject;
 import de.factoryfx.data.attribute.Attribute;
+import de.factoryfx.factory.FactoryBase;
 
 public class FactoryStyleValidator {
 
     /** test if the model is valid:
      * all Attributes are public
      * all Attributes not null after instantiation*/
-    public Optional<String> validateFactory(FactoryBase<?> factoryBase){
+    public Optional<String> validateFactory(FactoryBase<?,?> factoryBase){
         for (Field field: factoryBase.getClass().getDeclaredFields()){
 
             if (Attribute.class.isAssignableFrom(field.getType())){
@@ -37,7 +36,7 @@ public class FactoryStyleValidator {
         return Optional.empty();
     }
 
-    public Optional<String> validateLiveObject(Class<? extends LiveObject> liveObject){
+    public Optional<String> validateLiveObject(Class<?> liveObject){
         for (Constructor<?> constructor: liveObject.getDeclaredConstructors()){
             for (Class<?> constructorParameterClass: constructor.getParameterTypes()){
                 if (FactoryBase.class.isAssignableFrom(constructorParameterClass)){

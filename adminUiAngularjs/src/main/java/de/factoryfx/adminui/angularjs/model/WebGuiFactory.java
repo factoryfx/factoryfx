@@ -24,14 +24,14 @@ public class WebGuiFactory {
 
 
     @JsonTypeInfo(use=JsonTypeInfo.Id.CLASS, include=JsonTypeInfo.As.PROPERTY, property="@class")
-    public FactoryBase<?> factory;
+    public FactoryBase<?,?> factory;
     public String type;
     public String displayText;
     public Map<String,String> nestedFactoriesDisplayText = new HashMap<>();
 
     public List<PathElement> path=new ArrayList<>();
 
-    public WebGuiFactory(FactoryBase<?> factory, FactoryBase<?> root) {
+    public WebGuiFactory(FactoryBase<?,?> factory, FactoryBase<?,?> root) {
         this.factory = factory.copyOneLevelDeep();
         this.type = factory.getClass().getName();
 

@@ -7,6 +7,7 @@ import java.util.Locale;
 import de.factoryfx.adminui.InMemoryFactoryStorage;
 import de.factoryfx.adminui.angularjs.integration.example.ExampleFactoryA;
 import de.factoryfx.adminui.angularjs.integration.example.ExampleFactoryB;
+import de.factoryfx.adminui.angularjs.integration.example.ExampleLiveObjectA;
 import de.factoryfx.adminui.angularjs.integration.example.ExampleVisitor;
 import de.factoryfx.adminui.angularjs.model.FactoryTypeInfoWrapper;
 import de.factoryfx.adminui.angularjs.model.WebGuiUser;
@@ -28,10 +29,10 @@ public class RestResourceTest {
         existingListEntry.referenceAttribute.set(shared);
         exampleFactoryA.referenceListAttribute.add(existingListEntry);
 
-        ApplicationServer<ExampleVisitor, ExampleFactoryA> defaultApplicationServer = new DefaultApplicationServer<>(new FactoryManager<>(), new InMemoryFactoryStorage<>(exampleFactoryA));
+        ApplicationServer<ExampleLiveObjectA, ExampleVisitor, ExampleFactoryA> defaultApplicationServer = new DefaultApplicationServer<>(new FactoryManager<>(), new InMemoryFactoryStorage<>(exampleFactoryA));
         defaultApplicationServer.start();
 
-        RestResource<ExampleVisitor,ExampleFactoryA> restResource = new RestResource<>(layout,
+        RestResource<ExampleLiveObjectA, ExampleVisitor,ExampleFactoryA> restResource = new RestResource<>(layout,
                 defaultApplicationServer,
                 Arrays.asList(ExampleFactoryA.class, ExampleFactoryB.class),
                 Arrays.asList(Locale.ENGLISH),

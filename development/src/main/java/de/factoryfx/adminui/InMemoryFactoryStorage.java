@@ -7,13 +7,12 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import de.factoryfx.factory.FactoryBase;
-import de.factoryfx.factory.LiveObject;
 import de.factoryfx.factory.datastorage.FactoryAndStorageMetadata;
 import de.factoryfx.factory.datastorage.FactoryStorage;
 import de.factoryfx.factory.datastorage.StoredFactoryMetadata;
 
 
-public class InMemoryFactoryStorage<T extends FactoryBase<? extends LiveObject<?>>> implements FactoryStorage<T> {
+public class InMemoryFactoryStorage<L,V,T extends FactoryBase<L,V>> implements FactoryStorage<L,V,T> {
     private Map<String,FactoryAndStorageMetadata<T>> storage = new TreeMap<>();
     private String current;
     private T initialFactory;
@@ -21,6 +20,7 @@ public class InMemoryFactoryStorage<T extends FactoryBase<? extends LiveObject<?
     public InMemoryFactoryStorage(T initialFactory){
         this.initialFactory=initialFactory;
     }
+
 
 
     @Override

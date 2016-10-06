@@ -8,6 +8,7 @@ import java.util.UUID;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
+import de.factoryfx.adminui.angularjs.factory.server.HttpServer;
 import de.factoryfx.adminui.angularjs.factory.server.HttpServerFactory;
 import de.factoryfx.adminui.angularjs.factory.LayoutFactory;
 import de.factoryfx.adminui.angularjs.factory.RestResourceFactory;
@@ -18,21 +19,20 @@ import de.factoryfx.adminui.angularjs.factory.server.resourcehandler.ClasspathMi
 import de.factoryfx.adminui.angularjs.factory.server.resourcehandler.ConfigurableResourceHandler;
 import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.factory.FactoryManager;
-import de.factoryfx.factory.LiveObject;
 import de.factoryfx.factory.datastorage.FactoryStorage;
 import de.factoryfx.server.ApplicationServer;
 import de.factoryfx.server.DefaultApplicationServer;
 import de.factoryfx.user.UserManagement;
 
-public class WebGuiApplicationCreator<V, T extends FactoryBase<? extends LiveObject<V>>> {
-    private final ApplicationServer<V, T> applicationServer;
+public class WebGuiApplicationCreator<L,V,T extends FactoryBase<L,V>> {
+    private final ApplicationServer<L,V,T> applicationServer;
     private final List<Class<? extends FactoryBase>> appFactoryClasses;
     private final UserManagement userManagement;
     private final Supplier<V> emptyVisitorCreator;
     private final Function<V, List<WebGuiTable>> dashboardTablesProvider;
     private final List<GuiView<T>> guiViews;
 
-    public WebGuiApplicationCreator(ApplicationServer<V, T> applicationServer, List<Class<? extends FactoryBase>> appFactoryClasses, UserManagement userManagement, Supplier<V> emptyVisitorCreator, Function<V, List<WebGuiTable>> dashboardTablesProvider, List<GuiView<T>> guiViews) {
+    public WebGuiApplicationCreator(ApplicationServer<L,V,T> applicationServer, List<Class<? extends FactoryBase>> appFactoryClasses, UserManagement userManagement, Supplier<V> emptyVisitorCreator, Function<V, List<WebGuiTable>> dashboardTablesProvider, List<GuiView<T>> guiViews) {
         this.applicationServer = applicationServer;
         this.appFactoryClasses = appFactoryClasses;
         this.userManagement = userManagement;
@@ -41,17 +41,17 @@ public class WebGuiApplicationCreator<V, T extends FactoryBase<? extends LiveObj
         this.guiViews = guiViews;
     }
 
-    public ApplicationServer<Void,HttpServerFactory<V>> createApplication(FactoryStorage<HttpServerFactory<V>>  factoryStorage){
+    public ApplicationServer<HttpServer,Void,HttpServerFactory<L, V, T>> createApplication(FactoryStorage<HttpServer,Void,HttpServerFactory<L, V, T>>  factoryStorage){
         return new DefaultApplicationServer<>(new FactoryManager<>(), factoryStorage);
     }
 
-    public HttpServerFactory<V> createDefaultFactory() {
-        HttpServerFactory<V> httpServerFactory =new HttpServerFactory<>();
+    public HttpServerFactory<L,V,T> createDefaultFactory() {
+        HttpServerFactory<L,V,T> httpServerFactory =new HttpServerFactory<>();
         httpServerFactory.port.set(8089);
         httpServerFactory.host.set("localhost");
         httpServerFactory.sessionTimeoutS.set(60*30);
 
-        RestResourceFactory<V> restResourceFactory = new RestResourceFactory<>();
+        RestResourceFactory<L,V,T> restResourceFactory = new RestResourceFactory<>();
         LayoutFactory layoutFactory = new LayoutFactory();
         layoutFactory.title.en("Admin UI");
 

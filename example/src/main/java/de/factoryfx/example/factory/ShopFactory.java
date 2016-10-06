@@ -6,10 +6,11 @@ import de.factoryfx.data.attribute.AttributeMetadata;
 import de.factoryfx.data.attribute.types.StringAttribute;
 import de.factoryfx.example.server.OrderStorage;
 import de.factoryfx.factory.FactoryBase;
+import de.factoryfx.factory.LifecycleNotifier;
 import de.factoryfx.factory.atrribute.FactoryReferenceListAttribute;
 import javafx.stage.Stage;
 
-public class ShopFactory extends FactoryBase<Shop> {
+public class ShopFactory extends FactoryBase<Shop,OrderCollector> {
     public ShopFactory(){
         setDisplayTextProvider(()->"Shop");
     }
@@ -19,7 +20,7 @@ public class ShopFactory extends FactoryBase<Shop> {
     public final FactoryReferenceListAttribute<Product,ProductFactory> products = new FactoryReferenceListAttribute<>(ProductFactory.class,new AttributeMetadata().labelText("Products"));
 
     @Override
-    protected Shop createImp(Optional<Shop> previousLiveObject) {
+    protected Shop createImp(Optional<Shop> previousLiveObject, LifecycleNotifier<OrderCollector> lifecycle) {
         OrderStorage orderStorage = new OrderStorage();
         Stage stage;
         if (previousLiveObject.isPresent()){
@@ -29,6 +30,6 @@ public class ShopFactory extends FactoryBase<Shop> {
             stage=new Stage();
         }
 
-        return new Shop(stageTitle.get(), products.instances(),stage, orderStorage);
+        return new Shop(stageTitle.get(), products.instances(),stage, orderStorage,lifecycle);
     }
 }

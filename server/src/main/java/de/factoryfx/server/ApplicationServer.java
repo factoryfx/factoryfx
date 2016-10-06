@@ -3,14 +3,13 @@ package de.factoryfx.server;
 import java.util.Collection;
 import java.util.Locale;
 
-import de.factoryfx.factory.FactoryBase;
-import de.factoryfx.factory.LiveObject;
-import de.factoryfx.factory.datastorage.StoredFactoryMetadata;
-import de.factoryfx.factory.datastorage.FactoryAndStorageMetadata;
 import de.factoryfx.data.merge.MergeDiff;
+import de.factoryfx.factory.FactoryBase;
+import de.factoryfx.factory.datastorage.FactoryAndStorageMetadata;
+import de.factoryfx.factory.datastorage.StoredFactoryMetadata;
 
 
-public interface ApplicationServer<V,T extends FactoryBase<? extends LiveObject<V>>> {
+public interface ApplicationServer<L,V,T extends FactoryBase<L,V>> {
     MergeDiff updateCurrentFactory(FactoryAndStorageMetadata<T> update, Locale locale);
     MergeDiff simulateUpdateCurrentFactory(T updateFactory, String baseVersionId, Locale locale);
     FactoryAndStorageMetadata<T> getCurrentFactory();

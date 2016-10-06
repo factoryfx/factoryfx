@@ -2,9 +2,7 @@ package de.factoryfx.adminui.angularjs.factory;
 
 import java.util.Map;
 
-import de.factoryfx.factory.util.VoidLiveObject;
-
-public class Layout extends VoidLiveObject {
+public class Layout {
 
     public final Map<String,String> messages;
 

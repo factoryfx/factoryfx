@@ -1,9 +1,6 @@
 package de.factoryfx.example.factory;
 
-import de.factoryfx.factory.LiveObject;
-
-
-public class Product implements LiveObject<OrderCollector> {
+public class Product {
     private final String name;
     protected final double price;//in real world you should use BigDecimal for money, just to keep it simple
     protected final VatRate vatRate;
@@ -22,18 +19,4 @@ public class Product implements LiveObject<OrderCollector> {
         return vatRate.calcTotalPrice(price);
     }
 
-    @Override
-    public void start() {
-
-    }
-
-    @Override
-    public void stop() {
-
-    }
-
-    @Override
-    public void accept(OrderCollector visitor) {
-        //nothing
-    }
 }

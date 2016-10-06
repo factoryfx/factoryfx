@@ -6,47 +6,36 @@ import java.util.Optional;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.factoryfx.factory.FactoryBase;
-import de.factoryfx.factory.LiveObject;
 import de.factoryfx.data.attribute.AttributeMetadata;
 import de.factoryfx.data.attribute.types.BigDecimalAttribute;
 import de.factoryfx.data.attribute.types.LongAttribute;
+import de.factoryfx.factory.Lifecycle;
+import de.factoryfx.factory.LifecycleNotifier;
 import org.junit.Assert;
 import org.junit.Test;
 
 public class HttpServerTest {
 
-    public static class TestBigDecimalLiveObject implements LiveObject {
+    public static class TestBigDecimalLiveObject  {
 
-        @Override
-        public void start() {
 
-        }
-
-        @Override
-        public void stop() {
-
-        }
-
-        @Override
-        public void accept(Object visitor) {
-
-        }
     }
 
-    public static class TestBigDecimal extends FactoryBase<TestBigDecimalLiveObject> {
+    public static class TestBigDecimal extends FactoryBase<TestBigDecimalLiveObject,Void> {
         public final BigDecimalAttribute value = new BigDecimalAttribute(new AttributeMetadata());
 
         @Override
-        protected TestBigDecimalLiveObject createImp(Optional<TestBigDecimalLiveObject> previousLiveObject) {
+        protected TestBigDecimalLiveObject createImp(Optional<TestBigDecimalLiveObject> previousLiveObject, LifecycleNotifier<Void> lifecycle) {
             return null;
         }
+
     }
 
-    public static class TestLongDecimal extends FactoryBase<TestBigDecimalLiveObject>{
+    public static class TestLongDecimal extends FactoryBase<TestBigDecimalLiveObject,Void>{
         public final LongAttribute value = new LongAttribute(new AttributeMetadata());
 
         @Override
-        protected TestBigDecimalLiveObject createImp(Optional<TestBigDecimalLiveObject> previousLiveObject) {
+        protected TestBigDecimalLiveObject createImp(Optional<TestBigDecimalLiveObject> previousLiveObject, LifecycleNotifier<Void> lifecycle) {
             return null;
         }
     }
@@ -58,7 +47,7 @@ public class HttpServerTest {
         TestBigDecimal testBigDecimal = new TestBigDecimal();
         testBigDecimal.value.set(new BigDecimal("12445.67"));
 
-        HttpServer httpServer = new HttpServer(null,null,0,null,null);
+        HttpServer httpServer = new HttpServer(null,null,0,null,null,new Lifecycle<>());
         ObjectMapper objectMapper = httpServer.getObjectMapper();
 
         String data = objectMapper.writeValueAsString(testBigDecimal);
@@ -77,7 +66,7 @@ public class HttpServerTest {
         TestLongDecimal testLongDecimal = new TestLongDecimal();
         testLongDecimal.value.set(54564L);
 
-        HttpServer httpServer = new HttpServer(null,null,0,null,null);
+        HttpServer httpServer = new HttpServer(null,null,0,null,null,new Lifecycle<>());
         ObjectMapper objectMapper = httpServer.getObjectMapper();
 
         String data = objectMapper.writeValueAsString(testLongDecimal);

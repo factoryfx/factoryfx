@@ -14,7 +14,7 @@ import com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider;
 import de.factoryfx.adminui.angularjs.factory.RestResource;
 import de.factoryfx.adminui.angularjs.factory.server.resourcehandler.ConfigurableResourceHandler;
 import de.factoryfx.data.jackson.ObjectMapperBuilder;
-import de.factoryfx.factory.util.VoidLiveObject;
+import de.factoryfx.factory.LifecycleNotifier;
 import de.factoryfx.jettyserver.AllExceptionMapper;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.NetworkTrafficServerConnector;
@@ -32,7 +32,7 @@ import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.servlet.ServletContainer;
 import org.slf4j.LoggerFactory;
 
-public class HttpServer extends VoidLiveObject {
+public class HttpServer {
     private static final org.slf4j.Logger logger = LoggerFactory.getLogger(HttpServer.class);
 
     private org.eclipse.jetty.server.Server server;
@@ -44,13 +44,16 @@ public class HttpServer extends VoidLiveObject {
     private final ConfigurableResourceHandler resourceHandler;
     private final int sessionTimeoutS;
 
-    public HttpServer(Integer httpPort, String host, int sessionTimeoutS, RestResource restResource, ConfigurableResourceHandler resourceHandler) {
+    public HttpServer(Integer httpPort, String host, int sessionTimeoutS, RestResource restResource, ConfigurableResourceHandler resourceHandler, LifecycleNotifier lifecycleNotifier) {
         super();
         this.httpPort = httpPort;
         this.host = host;
         this.restResource = restResource;
         this.resourceHandler =resourceHandler;
         this.sessionTimeoutS = sessionTimeoutS;
+
+        lifecycleNotifier.setStartAction(this::start);
+        lifecycleNotifier.setStopAction(this::stop);
     }
 
 
@@ -103,8 +106,8 @@ public class HttpServer extends VoidLiveObject {
         return objectMapper;
     }
 
-    @Override
-    public void start() {
+
+    private void start() {
         System.setProperty("java.net.preferIPv4Stack", "true");//TODO optional?
 
         server = new org.eclipse.jetty.server.Server();
@@ -154,8 +157,8 @@ public class HttpServer extends VoidLiveObject {
         }
     }
 
-    @Override
-    public void stop() {
+
+    private void stop() {
         try {
             server.setStopAtShutdown(true);
             server.stop();

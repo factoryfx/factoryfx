@@ -19,7 +19,7 @@ public class WebGuiFactoryMetadata {
     public WebGuiFactoryMetadata(Class<? extends FactoryBase> factoryBaseClass, Locale locale){
         type=factoryBaseClass.getName();
         try {
-            FactoryBase<?> factoryBase = factoryBaseClass.newInstance();
+            FactoryBase<?,?> factoryBase = factoryBaseClass.newInstance();
             factoryBase.visitAttributesFlat((attributeName, attribute) -> {
                 attributes.put(attributeName,new WebGuiAttributeMetadata(attribute.metadata,locale,attribute));
             });

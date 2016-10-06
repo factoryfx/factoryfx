@@ -3,7 +3,7 @@ package de.factoryfx.example.factory;
 import java.util.List;
 
 import de.factoryfx.example.server.OrderStorage;
-import de.factoryfx.factory.LiveObject;
+import de.factoryfx.factory.LifecycleNotifier;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.geometry.Insets;
@@ -18,25 +18,28 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 
-public class Shop  implements LiveObject<OrderCollector> {
+public class Shop {
     private final String stageTitle;
     private final List<Product> products;
     private final Stage stage;
     private final OrderStorage orderStorage;
 
-    public Shop(String stageTitle, List<Product> products, Stage stage, OrderStorage orderStorage) {
+    public Shop(String stageTitle, List<Product> products, Stage stage, OrderStorage orderStorage, LifecycleNotifier<OrderCollector> lifecycle) {
         this.stageTitle = stageTitle;
         this.products = products;
         this.stage = stage;
         this.orderStorage =orderStorage;
+
+        lifecycle.setStartAction(this::start);
+        lifecycle.setStopAction(this::stop);
+        lifecycle.setRuntimeQueryConsumer(this::accept);
     }
 
     public OrderStorage getOrderStorage() {
         return orderStorage;
     }
 
-    @Override
-    public void start() {
+    private void start() {
         Platform.runLater(()->{
             BorderPane root = new BorderPane();
             stage.setScene(new Scene(root,1000,800));
@@ -72,14 +75,12 @@ public class Shop  implements LiveObject<OrderCollector> {
         });
     }
 
-    @Override
     public void stop() {
         Platform.runLater(() -> stage.hide());
 
     }
 
-    @Override
-    public void accept(OrderCollector visitor) {
+    private void accept(OrderCollector visitor) {
         visitor.addOrders(orderStorage.getAllOrders());
     }
 

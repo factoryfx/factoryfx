@@ -8,9 +8,8 @@ import de.factoryfx.data.attribute.AttributeMetadata;
 import de.factoryfx.data.attribute.ReferenceListAttribute;
 import de.factoryfx.data.jackson.ObservableListJacksonAbleWrapper;
 import de.factoryfx.factory.FactoryBase;
-import de.factoryfx.factory.LiveObject;
 
-public class FactoryReferenceListAttribute<L extends LiveObject,T extends FactoryBase<L>> extends  ReferenceListAttribute<T>{
+public class FactoryReferenceListAttribute<L,T extends FactoryBase<L,?>> extends  ReferenceListAttribute<T>{
 
     @JsonCreator
     protected FactoryReferenceListAttribute() {

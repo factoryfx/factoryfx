@@ -1,9 +1,8 @@
 package de.factoryfx.factory.datastorage;
 
 import de.factoryfx.factory.FactoryBase;
-import de.factoryfx.factory.LiveObject;
 
-public class FactoryAndStorageMetadata<T extends FactoryBase<? extends LiveObject<?>>> {
+public class FactoryAndStorageMetadata<T extends FactoryBase<?,?>> {
     public final T root;
     public final StoredFactoryMetadata metadata;
 

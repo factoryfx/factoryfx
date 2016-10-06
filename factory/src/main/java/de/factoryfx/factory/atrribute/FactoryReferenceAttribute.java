@@ -4,9 +4,8 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import de.factoryfx.data.attribute.AttributeMetadata;
 import de.factoryfx.data.attribute.ReferenceAttribute;
 import de.factoryfx.factory.FactoryBase;
-import de.factoryfx.factory.LiveObject;
 
-public class FactoryReferenceAttribute<L extends LiveObject, T extends FactoryBase<L>> extends ReferenceAttribute<T> {
+public class FactoryReferenceAttribute<L, T extends FactoryBase<L,?>> extends ReferenceAttribute<T> {
 
     @JsonCreator
     protected FactoryReferenceAttribute(T value) {
