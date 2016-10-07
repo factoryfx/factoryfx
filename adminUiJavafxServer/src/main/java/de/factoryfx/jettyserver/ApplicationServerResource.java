@@ -17,46 +17,35 @@ import de.factoryfx.factory.datastorage.StoredFactoryMetadata;
 import de.factoryfx.server.ApplicationServer;
 
 @Path("/") /** path defined in {@link de.factoryfx.xtc.ticketproxy.configuration.ConfigurationServer}*/
-public class ApplicationServerResource<L,V,T extends FactoryBase<L,V>> extends ApplicationServer<L,V,T> {
+public class ApplicationServerResource<L,V,T extends FactoryBase<L,V>> {
 
     private final ApplicationServer<L,V,T> applicationServer;
 
     public ApplicationServerResource(ApplicationServer<L,V,T> applicationServer) {
-        super(null,null);
         this.applicationServer = applicationServer;
     }
+
+    static final Locale locale = Locale.US;
 
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @Path("updateCurrentFactory")
-    @Override
-    public MergeDiff updateCurrentFactory(FactoryAndStorageMetadata<T> update, Locale locale) {
+    public MergeDiff updateCurrentFactory(FactoryAndStorageMetadata<T> update) {
         return  applicationServer.updateCurrentFactory(update, locale);
-    }
-
-    @Override
-    public MergeDiff simulateUpdateCurrentFactory(T updateFactory, String baseVersionId, Locale locale) {
-        return applicationServer.simulateUpdateCurrentFactory(updateFactory,baseVersionId,locale);
     }
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("currentFactory")
-    @Override
     public FactoryAndStorageMetadata<T> getCurrentFactory() {
         return applicationServer.getCurrentFactory();
     }
 
-    @Override
-    public FactoryAndStorageMetadata<T> getPrepareNewFactory() {
-        return null;
-    }
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("historyFactory")
-    @Override
     public T getHistoryFactory(String id) {
         return applicationServer.getHistoryFactory(id);
     }
@@ -64,23 +53,29 @@ public class ApplicationServerResource<L,V,T extends FactoryBase<L,V>> extends A
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("historyFactoryList")
-    @Override
     public Collection<StoredFactoryMetadata> getHistoryFactoryList() {
         return applicationServer.getHistoryFactoryList();
     }
 
-    @Override
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("start")
     public void start() {
         applicationServer.start();
     }
 
-    @Override
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("stop")
     public void stop() {
         applicationServer.stop();
     }
 
 
-    @Override
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("query")
     public V query(V visitor) {
         return applicationServer.query(visitor);
     }
