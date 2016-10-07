@@ -12,17 +12,17 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collection;
 
-public class RestApplicationServerClient<V,T extends FactoryBase<?,V>> {
+public class AdminUiJavafxServerClient<V,T extends FactoryBase<?,V>> {
 
     private final Client client;
     private final URI baseURI;
     private final Class<? extends T> configurationRootClass;
 
-    public RestApplicationServerClient(Client client, String host, int port, boolean ssl, Class<? extends T> configurationRootClass) {
+    public AdminUiJavafxServerClient(Client client, String host, int port, boolean ssl, Class<? extends T> configurationRootClass) {
         this(client,buildURI(host, port, ssl),configurationRootClass);
     }
 
-    public RestApplicationServerClient(Client client, URI baseURI, Class<? extends T> configurationRootClass) {
+    public AdminUiJavafxServerClient(Client client, URI baseURI, Class<? extends T> configurationRootClass) {
         this.client = client;
         this.baseURI = baseURI;
         this.configurationRootClass = configurationRootClass;
