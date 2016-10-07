@@ -15,7 +15,7 @@ import de.factoryfx.adminui.angularjs.factory.RestResource;
 import de.factoryfx.adminui.angularjs.factory.server.resourcehandler.ConfigurableResourceHandler;
 import de.factoryfx.data.jackson.ObjectMapperBuilder;
 import de.factoryfx.factory.LifecycleNotifier;
-import de.factoryfx.jettyserver.AllExceptionMapper;
+import de.factoryfx.adminui.javafx.server.AllExceptionMapper;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.NetworkTrafficServerConnector;
 import org.eclipse.jetty.server.ServerConnector;

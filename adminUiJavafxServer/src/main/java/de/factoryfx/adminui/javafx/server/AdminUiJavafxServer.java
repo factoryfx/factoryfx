@@ -1,10 +1,11 @@
-package de.factoryfx.jettyserver;
+package de.factoryfx.adminui.javafx.server;
 
+import java.util.Collection;
+import java.util.function.Function;
 import java.util.logging.LogManager;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider;
-import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
@@ -18,22 +19,20 @@ import org.glassfish.jersey.logging.LoggingFeature;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.servlet.ServletContainer;
 
-public class JettyApplicationServer {
+public class AdminUiJavafxServer {
 
     private final ApplicationServerResource factoryManagerResource;
     private final Server server;
-    private final ServerConnector connector;
 
-    public JettyApplicationServer(ApplicationServerResource factoryManagerResource, ServerConnector connector) {
+    public AdminUiJavafxServer(ApplicationServerResource factoryManagerResource,
+                               Function<Server,Collection<ServerConnector>> connectorFactory, String contextPath) {
         this.factoryManagerResource = factoryManagerResource;
-        this.connector = connector;
-
         server=new Server();
-
-        server.setConnectors(new Connector[]{this.connector});
+        Collection<ServerConnector> connectors = connectorFactory.apply(server);
+        server.setConnectors(connectors.toArray(new ServerConnector[connectors.size()]));
 
         ServletContextHandler contextHandler = new ServletContextHandler(ServletContextHandler.SESSIONS);
-        contextHandler.addServlet( new ServletHolder(new ServletContainer(jerseySetup(factoryManagerResource))), "/applicationServer/*");
+        contextHandler.addServlet( new ServletHolder(new ServletContainer(jerseySetup(factoryManagerResource))), contextPath);
 
         ErrorHandler errorHandler = new ErrorHandler();
         errorHandler.setShowStacks(true);

@@ -1,4 +1,4 @@
-package de.factoryfx.jettyserver;
+package de.factoryfx.adminui.javafx.server;
 
 import java.util.Collection;
 import java.util.Locale;

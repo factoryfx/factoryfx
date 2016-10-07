@@ -5,7 +5,7 @@ import java.util.logging.LogManager;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider;
 import de.factoryfx.javafx.distribution.server.rest.DownloadResource;
-import de.factoryfx.jettyserver.AllExceptionMapper;
+import de.factoryfx.adminui.javafx.server.AllExceptionMapper;
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.NetworkTrafficServerConnector;
