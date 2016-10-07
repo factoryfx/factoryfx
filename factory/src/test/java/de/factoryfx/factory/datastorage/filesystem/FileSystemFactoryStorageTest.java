@@ -3,7 +3,7 @@ package de.factoryfx.factory.datastorage.filesystem;
 import java.io.File;
 import java.net.MalformedURLException;
 import java.nio.file.Paths;
-import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.UUID;
 
 import de.factoryfx.factory.datastorage.FactoryAndStorageMetadata;
@@ -53,7 +53,12 @@ public class FileSystemFactoryStorageTest {
         fileSystemFactoryStorage.updateCurrentFactory(update);
         Assert.assertNotEquals(id,fileSystemFactoryStorage.getCurrentFactory().metadata.id);
         Assert.assertEquals(2,fileSystemFactoryStorage.getHistoryFactoryList().size());
-        Assert.assertEquals(id,new ArrayList<>(fileSystemFactoryStorage.getHistoryFactoryList()).get(0).id);
+
+        HashSet<String> ids= new HashSet<>();
+        fileSystemFactoryStorage.getHistoryFactoryList().forEach(storedFactoryMetadata -> {
+            ids.add(storedFactoryMetadata.id);
+        });
+        Assert.assertTrue(ids.contains(id));
 
     }
 }
