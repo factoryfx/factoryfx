@@ -48,6 +48,7 @@ public class AdminUiJavafxServerFactory<L,V,T extends FactoryBase<L,V>> extends 
             }
         }).collect(Collectors.toList());
         AdminUiJavafxServer adminUiJavafxServer = new AdminUiJavafxServer(applicationServerResource, server->connectorFactories.stream().map(f->f.apply(server)).collect(Collectors.toList()),contentPath.get());
+        lifecycle.setStartAction(()->adminUiJavafxServer.start());
         return adminUiJavafxServer;
     }
 
