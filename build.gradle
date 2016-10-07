@@ -69,14 +69,14 @@ subprojects {
     }
 
     group = 'de.scoopsoftware.factoryfx'
-    version = '0.1'
+    version = '0.1.2'
 
 
 }
 
 
 
-project(':server') {
+project(':applicationServer') {
   dependencies {
       compile project(":factory")
 
@@ -85,7 +85,7 @@ project(':server') {
 
 project(':adminUiJavafxServer') {
     dependencies {
-        compile project(":server")
+        compile project(":applicationServer")
         compile project(":restutil")
         compile group: 'org.eclipse.jetty', name: 'jetty-server', version: '9.3.8.v20160314'
         compile group: 'org.eclipse.jetty', name: 'jetty-servlet', version: '9.3.8.v20160314'
@@ -148,7 +148,7 @@ project(':adminUiAngularjs') {
         compile 'com.googlecode.java-diff-utils:diffutils:1.3.0'
 
         compile project(":restutil")
-        compile project(":server")
+        compile project(":applicationServer")
         testCompile project(":development")
         testCompile group: 'ch.qos.logback', name: 'logback-classic', version: '1.1.7'
     }
@@ -159,7 +159,7 @@ project(':development') {
 
     dependencies {
         compile project(":factory")
-        compile project(":server")
+        compile project(":applicationServer")
     }
 
 }
@@ -180,7 +180,7 @@ project(':example') {
         compile project(":adminUiAngularjs")
         compile project(":factory")
         compile project(":development")
-        compile project(":server")
+        compile project(":applicationServer")
         compile group: 'ch.qos.logback', name: 'logback-classic', version: '1.1.7'
     }
 

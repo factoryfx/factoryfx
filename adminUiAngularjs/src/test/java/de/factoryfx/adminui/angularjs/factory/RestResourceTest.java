@@ -13,7 +13,6 @@ import de.factoryfx.adminui.angularjs.model.FactoryTypeInfoWrapper;
 import de.factoryfx.adminui.angularjs.model.WebGuiUser;
 import de.factoryfx.factory.FactoryManager;
 import de.factoryfx.server.ApplicationServer;
-import de.factoryfx.server.DefaultApplicationServer;
 import de.factoryfx.user.NoUserManagement;
 import org.junit.Test;
 
@@ -29,7 +28,7 @@ public class RestResourceTest {
         existingListEntry.referenceAttribute.set(shared);
         exampleFactoryA.referenceListAttribute.add(existingListEntry);
 
-        ApplicationServer<ExampleLiveObjectA, ExampleVisitor, ExampleFactoryA> defaultApplicationServer = new DefaultApplicationServer<>(new FactoryManager<>(), new InMemoryFactoryStorage<>(exampleFactoryA));
+        ApplicationServer<ExampleLiveObjectA, ExampleVisitor, ExampleFactoryA> defaultApplicationServer = new ApplicationServer<>(new FactoryManager<>(), new InMemoryFactoryStorage<>(exampleFactoryA));
         defaultApplicationServer.start();
 
         RestResource<ExampleLiveObjectA, ExampleVisitor,ExampleFactoryA> restResource = new RestResource<>(layout,

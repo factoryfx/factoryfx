@@ -1,4 +1,4 @@
-package de.factoryfx.javafx.distribution.ui;
+package de.factoryfx.javafx.distribution.launcher.ui;
 
 import java.io.IOException;
 
