@@ -103,7 +103,7 @@ public class UserInterfaceDistributionClientController {
                 Response responseDownload = webResourceDownload.request("application/zip").get();
                 File tempDownloadFile = responseDownload.readEntity(File.class);
                 File newFile = new File(guiFolder, GUI_ZIP);
-                guiFolder.mkdirs();
+                mkdir(guiFolder);
                 Files.move(tempDownloadFile, newFile);
                 unzip(newFile.getAbsolutePath(), newFile.getParent());
             }
@@ -131,11 +131,15 @@ public class UserInterfaceDistributionClientController {
         }
     }
 
+    private void mkdir(File folder) throws IOException {
+        if (!folder.exists() && !folder.mkdirs()) {
+            throw new IOException("Could not create directory "+ folder.getAbsolutePath());
+        }
+    }
+
     public void unzip(String zipFilePath, String destDirectory) throws IOException {
         File destDir = new File(destDirectory);
-        if (!destDir.exists()) {
-            destDir.mkdir();
-        }
+        mkdir(destDir);
         ZipInputStream zipIn = new ZipInputStream(new FileInputStream(zipFilePath));
         ZipEntry entry = zipIn.getNextEntry();
         // iterates over entries in the zip file
@@ -147,7 +151,7 @@ public class UserInterfaceDistributionClientController {
             } else {
                 // if the entry is a directory, make the directory
                 File dir = new File(filePath);
-                dir.mkdir();
+                mkdir(dir);
             }
             zipIn.closeEntry();
             entry = zipIn.getNextEntry();
