@@ -15,7 +15,7 @@ public class DistributionClientDownloadServerTest {
         DistributionClientDownloadServerFactory distributionClientDownloadServerFactory=new DistributionClientDownloadServerFactory();
         distributionClientDownloadServerFactory.port.set(43654);
         distributionClientDownloadServerFactory.host.set("localhost");
-        distributionClientDownloadServerFactory.distributionClientBasePath.set("src/test/java/de/factoryfx/javafx/distribution/downloadserver");
+        distributionClientDownloadServerFactory.distributionClientBasePath.set("src/test/java/de/factoryfx/javafx/distribution/launcher/downloadserver");
         Lifecycle<Object> lifecycle = new Lifecycle<>();
         distributionClientDownloadServerFactory.createImp(Optional.empty(), lifecycle);
         lifecycle.start();

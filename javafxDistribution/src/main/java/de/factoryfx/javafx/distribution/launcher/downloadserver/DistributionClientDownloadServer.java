@@ -16,7 +16,7 @@ public class DistributionClientDownloadServer<V>  {
     private final org.eclipse.jetty.server.Server server;
     private final NetworkTrafficServerConnector connector;
 
-    public DistributionClientDownloadServer(String host, int port, String distributionClientBasePath, LifecycleNotifier<V> lifecycle) {
+    public DistributionClientDownloadServer(String host, int port, String distributionClientBasePath, LifecycleNotifier<V> lifecycle, boolean directoriesListed) {
         server=new org.eclipse.jetty.server.Server();
 
         connector = new NetworkTrafficServerConnector(server);
@@ -28,7 +28,7 @@ public class DistributionClientDownloadServer<V>  {
 
         ResourceHandler resourceHandler = new ResourceHandler();
         resourceHandler.setBaseResource(Resource.newResource(new File(distributionClientBasePath)));
-
+        resourceHandler.setDirectoriesListed(directoriesListed);
 
         HandlerCollection handlers = new HandlerCollection();
         handlers.setHandlers(new Handler[] {resourceHandler, new DefaultHandler() });
