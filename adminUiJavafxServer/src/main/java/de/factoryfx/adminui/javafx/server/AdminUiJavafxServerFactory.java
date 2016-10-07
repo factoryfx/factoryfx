@@ -18,7 +18,7 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-public class AdminUiJavafxServerFactory<L,V,T extends FactoryBase<L,V>,R> extends FactoryBase<AdminUiJavafxServer,Void> {
+public class AdminUiJavafxServerFactory<L,V,T extends FactoryBase<L,V>> extends FactoryBase<AdminUiJavafxServer,Void> {
 
     public final StringListAttribute bindAddresses = new StringListAttribute(new AttributeMetadata().labelText("bindaddresses"));
     public final StringAttribute contentPath = new StringAttribute(new AttributeMetadata().labelText("context path")).defaultValue("/applicationServer/*");
