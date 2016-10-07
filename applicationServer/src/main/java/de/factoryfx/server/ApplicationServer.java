@@ -10,17 +10,16 @@ import de.factoryfx.factory.datastorage.FactoryAndStorageMetadata;
 import de.factoryfx.factory.datastorage.FactoryStorage;
 import de.factoryfx.factory.datastorage.StoredFactoryMetadata;
 
-public class DefaultApplicationServer<L,V,T extends FactoryBase<L,V>> implements ApplicationServer<L,V,T> {
 
+public class ApplicationServer<L,V,T extends FactoryBase<L,V>> {
     private final FactoryManager<L,V,T> factoryManager;
     private final FactoryStorage<L,V,T> factoryStorage;
 
-    public DefaultApplicationServer(FactoryManager<L,V,T> factoryManager, FactoryStorage<L,V,T> factoryStorage) {
+    public ApplicationServer(FactoryManager<L,V,T> factoryManager, FactoryStorage<L,V,T> factoryStorage) {
         this.factoryManager = factoryManager;
         this.factoryStorage = factoryStorage;
     }
 
-    @Override
     public MergeDiff updateCurrentFactory(FactoryAndStorageMetadata<T> update, Locale locale) {
         T commonVersion = factoryStorage.getHistoryFactory(update.metadata.baseVersionId);
         MergeDiff mergeDiff = factoryManager.update(commonVersion, update.root, locale);
@@ -31,46 +30,38 @@ public class DefaultApplicationServer<L,V,T extends FactoryBase<L,V>> implements
         return mergeDiff;
     }
 
-    @Override
     public MergeDiff simulateUpdateCurrentFactory(T updateFactory, String baseVersionId, Locale locale){
         T commonVersion = factoryStorage.getHistoryFactory(baseVersionId);
         return factoryManager.simulateUpdate(commonVersion , updateFactory, locale);
     }
 
-    @Override
     public FactoryAndStorageMetadata<T> getCurrentFactory() {
         return factoryStorage.getCurrentFactory();
     }
 
-    @Override
+    /** creates a new factory which is ready for editing mainly assign the right ids*/
     public FactoryAndStorageMetadata<T> getPrepareNewFactory() {
         return factoryStorage.getPrepareNewFactory();
     }
 
-    @Override
     public T getHistoryFactory(String id) {
         return factoryStorage.getHistoryFactory(id);
     }
 
-    @Override
     public Collection<StoredFactoryMetadata> getHistoryFactoryList() {
         return factoryStorage.getHistoryFactoryList();
     }
 
-    @Override
     public void start() {
         factoryStorage.loadInitialFactory();
         factoryManager.start(factoryStorage.getCurrentFactory().root);
     }
 
-    @Override
     public void stop() {
         factoryManager.stop();
     }
 
-    @Override
     public V query(V visitor) {
         return factoryManager.query(visitor);
     }
-
 }

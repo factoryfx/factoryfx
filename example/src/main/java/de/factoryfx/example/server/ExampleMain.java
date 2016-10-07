@@ -27,7 +27,6 @@ import de.factoryfx.example.factory.VatRateFactory;
 import de.factoryfx.example.factory.netherlands.NetherlandsCarProductFactory;
 import de.factoryfx.factory.FactoryManager;
 import de.factoryfx.server.ApplicationServer;
-import de.factoryfx.server.DefaultApplicationServer;
 import de.factoryfx.user.NoUserManagement;
 import javafx.application.Application;
 import javafx.stage.Stage;
@@ -41,7 +40,7 @@ public class ExampleMain extends Application {
         new WebAppViewer(primaryStage, () -> {
             ShopFactory shopFactory = getNetherlandsShopFactory();
 
-            DefaultApplicationServer<Shop, OrderCollector, ShopFactory> applicationServer = new DefaultApplicationServer<>(new FactoryManager<>(), new InMemoryFactoryStorage<>(shopFactory));
+            ApplicationServer<Shop, OrderCollector, ShopFactory> applicationServer = new ApplicationServer<>(new FactoryManager<>(), new InMemoryFactoryStorage<>(shopFactory));
             applicationServer.start();
 
             WebGuiApplicationCreator<Shop, OrderCollector, ShopFactory> webGuiApplicationCreator=new WebGuiApplicationCreator<>(

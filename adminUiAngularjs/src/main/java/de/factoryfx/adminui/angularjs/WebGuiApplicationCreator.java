@@ -21,7 +21,6 @@ import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.factory.FactoryManager;
 import de.factoryfx.factory.datastorage.FactoryStorage;
 import de.factoryfx.server.ApplicationServer;
-import de.factoryfx.server.DefaultApplicationServer;
 import de.factoryfx.user.UserManagement;
 
 public class WebGuiApplicationCreator<L,V,T extends FactoryBase<L,V>> {
@@ -42,7 +41,7 @@ public class WebGuiApplicationCreator<L,V,T extends FactoryBase<L,V>> {
     }
 
     public ApplicationServer<HttpServer,Void,HttpServerFactory<L, V, T>> createApplication(FactoryStorage<HttpServer,Void,HttpServerFactory<L, V, T>>  factoryStorage){
-        return new DefaultApplicationServer<>(new FactoryManager<>(), factoryStorage);
+        return new ApplicationServer<>(new FactoryManager<>(), factoryStorage);
     }
 
     public HttpServerFactory<L,V,T> createDefaultFactory() {

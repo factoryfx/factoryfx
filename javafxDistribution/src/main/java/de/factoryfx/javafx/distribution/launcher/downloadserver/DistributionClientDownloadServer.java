@@ -1,4 +1,4 @@
-package de.factoryfx.javafx.distribution.downloadserver;
+package de.factoryfx.javafx.distribution.launcher.downloadserver;
 
 import java.io.File;
 

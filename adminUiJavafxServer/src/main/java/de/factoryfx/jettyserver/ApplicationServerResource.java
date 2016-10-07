@@ -17,11 +17,12 @@ import de.factoryfx.factory.datastorage.StoredFactoryMetadata;
 import de.factoryfx.server.ApplicationServer;
 
 @Path("/") /** path defined in {@link de.factoryfx.xtc.ticketproxy.configuration.ConfigurationServer}*/
-public class ApplicationServerResource<L,V,T extends FactoryBase<L,V>> implements ApplicationServer<L,V,T> {
+public class ApplicationServerResource<L,V,T extends FactoryBase<L,V>> extends ApplicationServer<L,V,T> {
 
     private final ApplicationServer<L,V,T> applicationServer;
 
     public ApplicationServerResource(ApplicationServer<L,V,T> applicationServer) {
+        super(null,null);
         this.applicationServer = applicationServer;
     }
 

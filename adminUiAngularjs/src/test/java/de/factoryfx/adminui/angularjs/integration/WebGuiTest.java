@@ -30,7 +30,6 @@ import de.factoryfx.adminui.angularjs.util.ClasspathBasedFactoryProvider;
 import de.factoryfx.factory.FactoryManager;
 import de.factoryfx.factory.datastorage.FactoryStorage;
 import de.factoryfx.server.ApplicationServer;
-import de.factoryfx.server.DefaultApplicationServer;
 import de.factoryfx.user.NoUserManagement;
 import de.factoryfx.user.UserManagement;
 import javafx.application.Application;
@@ -63,7 +62,7 @@ public class WebGuiTest extends Application{
             }
             exampleFactoryA.referenceListAttribute.add(exampleFactoryA.referenceAttribute.get());
 
-            DefaultApplicationServer<ExampleLiveObjectA, ExampleVisitor, ExampleFactoryA> exampleApplicationServer = new DefaultApplicationServer<>(new FactoryManager<>(), new InMemoryFactoryStorage<>(exampleFactoryA));
+            ApplicationServer<ExampleLiveObjectA, ExampleVisitor, ExampleFactoryA> exampleApplicationServer = new ApplicationServer<>(new FactoryManager<>(), new InMemoryFactoryStorage<>(exampleFactoryA));
             exampleApplicationServer.start();
 
             {

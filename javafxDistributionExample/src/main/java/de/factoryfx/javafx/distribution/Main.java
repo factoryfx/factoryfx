@@ -6,7 +6,7 @@ import de.factoryfx.adminui.SinglePrecessInstanceUtil;
 import de.factoryfx.javafx.distribution.server.GuiFileService;
 import de.factoryfx.javafx.distribution.server.UserInterfaceDistributionServer;
 import de.factoryfx.javafx.distribution.server.rest.DownloadResource;
-import de.factoryfx.javafx.distribution.ui.UserInterfaceDistributionClient;
+import de.factoryfx.javafx.distribution.launcher.ui.UserInterfaceDistributionClient;
 import javafx.application.Application;
 
 public class Main {
