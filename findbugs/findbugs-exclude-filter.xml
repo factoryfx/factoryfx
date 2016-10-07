@@ -33,6 +33,12 @@
         <Bug pattern="EI_EXPOSE_REP2"/>
     </Match>
 
+    <Match>
+        <Bug pattern="DM_NEW_FOR_GETCLASS"/>
+    </Match>
+
+
+
 
 
 
