@@ -1,6 +1,7 @@
 package de.factoryfx.factory;
 
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Locale;
 import java.util.function.Function;
 
@@ -16,7 +17,7 @@ public class FactoryManager<L,V,T extends FactoryBase<L,V>> {
     @SuppressWarnings("unchecked")
     public MergeDiff update(T commonVersion , T newVersion, Locale locale){
         newVersion.loopDetector();
-        HashSet<FactoryBase<?,?>> previousLiveObjects = stopLiveObjectProvider.apply(currentFactory);
+        LinkedHashSet<FactoryBase<?,?>> previousLiveObjects = stopFactoryProvider.apply(currentFactory);
 
         FactoryMerger factoryMerger = new FactoryMerger(currentFactory, commonVersion, newVersion);
         factoryMerger.setLocale(locale);
@@ -34,7 +35,7 @@ public class FactoryManager<L,V,T extends FactoryBase<L,V>> {
             currentFactory.instance();
 
 
-            HashSet<FactoryBase<?,?>> newLiveObjects = startLiveObjectProvider.apply(currentFactory);
+            LinkedHashSet<FactoryBase<?,?>> newLiveObjects = startFactoryProvider.apply(currentFactory);
             updateLiveObjects(previousLiveObjects,newLiveObjects);
         }
         return mergeDiff;
@@ -56,18 +57,18 @@ public class FactoryManager<L,V,T extends FactoryBase<L,V>> {
     }
 
 
-    private void updateLiveObjects(HashSet<FactoryBase<?,?>> previousLiveObjects, HashSet<FactoryBase<?,?>> newLiveObjects){
-        for (FactoryBase<?,?> previousLiveObject: previousLiveObjects){
-            if (!newLiveObjects.contains(previousLiveObject)){
+    private void updateLiveObjects(LinkedHashSet<FactoryBase<?,?>> previousFactories, LinkedHashSet<FactoryBase<?,?>> newFactories){
+        for (FactoryBase<?,?> previousLiveObject: previousFactories){
+            if (!newFactories.contains(previousLiveObject)){
                 previousLiveObject.stop();
             }
         }
 
-        for (FactoryBase<?,?> newLiveObject: newLiveObjects){
-            if (previousLiveObjects.contains(newLiveObject)){
+        for (FactoryBase<?,?> newLiveObject: newFactories){
+            if (previousFactories.contains(newLiveObject)){
                 //nothing reused live object
             }
-            if (!previousLiveObjects.contains(newLiveObject)){
+            if (!previousFactories.contains(newLiveObject)){
                 newLiveObject.start();
             }
         }
@@ -79,26 +80,26 @@ public class FactoryManager<L,V,T extends FactoryBase<L,V>> {
             return factory.collectChildrenFlat();
         }
     };
-    private Function<T,HashSet<FactoryBase<?,?>>> startLiveObjectProvider = root -> {
-        HashSet<FactoryBase<?,?>> result = new HashSet<>();
+    private Function<T,LinkedHashSet<FactoryBase<?,?>>> startFactoryProvider = root -> {
+        LinkedHashSet<FactoryBase<?,?>> result = new LinkedHashSet<>();
         for (FactoryBase<?,?> factory : factoryTraverser.postOrderTraversal(root)) {
             result.add(factory);
         }
         return result;
     };
-    public void customizeStartOrder(Function<T,HashSet<FactoryBase<?,?>>> orderProvider){
-        startLiveObjectProvider =orderProvider;
+    public void customizeStartOrder(Function<T,LinkedHashSet<FactoryBase<?,?>>> orderProvider){
+        startFactoryProvider =orderProvider;
     }
 
-    private Function<T,HashSet<FactoryBase<?,?>>> stopLiveObjectProvider = root -> {
-        HashSet<FactoryBase<?,?>> result = new HashSet<>();
+    private Function<T,LinkedHashSet<FactoryBase<?,?>>> stopFactoryProvider = root -> {
+        LinkedHashSet<FactoryBase<?,?>> result = new LinkedHashSet<>();
         for (FactoryBase<?,?> factory : factoryTraverser.breadthFirstTraversal(root)) {
             result.add(factory);
         }
         return result;
     };
-    public void customizeStopOrder(Function<T,HashSet<FactoryBase<?,?>>> orderProvider){
-        stopLiveObjectProvider =orderProvider;
+    public void customizeStopOrder(Function<T,LinkedHashSet<FactoryBase<?,?>>> orderProvider){
+        stopFactoryProvider =orderProvider;
     }
 
     public T getCurrentFactory(){
@@ -112,7 +113,7 @@ public class FactoryManager<L,V,T extends FactoryBase<L,V>> {
 
         newFactory.instance();
 
-        HashSet<FactoryBase<?,?>> newLiveObjects = startLiveObjectProvider.apply(newFactory);
+        HashSet<FactoryBase<?,?>> newLiveObjects = startFactoryProvider.apply(newFactory);
 
         for (FactoryBase<?,?> newLiveObject: newLiveObjects){
             newLiveObject.start();
@@ -121,7 +122,7 @@ public class FactoryManager<L,V,T extends FactoryBase<L,V>> {
 
     @SuppressWarnings("unchecked")
     public void stop(){
-        HashSet<FactoryBase<?,?>> liveObjects = stopLiveObjectProvider.apply(currentFactory);
+        HashSet<FactoryBase<?,?>> liveObjects = stopFactoryProvider.apply(currentFactory);
 
         for (FactoryBase<?,?> newLiveObject: liveObjects){
             newLiveObject.stop();
