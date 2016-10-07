@@ -8,6 +8,7 @@ import de.factoryfx.factory.datastorage.StoredFactoryMetadata;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.Entity;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -16,6 +17,10 @@ public class RestApplicationServerClient<V,T extends FactoryBase<?,V>> {
     private final Client client;
     private final URI baseURI;
     private final Class<? extends T> configurationRootClass;
+
+    public RestApplicationServerClient(Client client, String host, int port, boolean ssl, Class<? extends T> configurationRootClass) {
+        this(client,buildURI(host, port, ssl),configurationRootClass);
+    }
 
     public RestApplicationServerClient(Client client, URI baseURI, Class<? extends T> configurationRootClass) {
         this.client = client;
@@ -66,6 +71,14 @@ public class RestApplicationServerClient<V,T extends FactoryBase<?,V>> {
         return client.target(baseURI.resolve(subPath)).request().get().getEntity();
     }
 
+
+    private static URI buildURI(String host, int port, boolean ssl)  {
+        try {
+            return new URI((ssl?"http":"https")+"://"+host+":"+port+"/applicationServer/");
+        } catch (URISyntaxException e) {
+            throw new IllegalArgumentException("bad host name",e);
+        }
+    }
 
 
 }
