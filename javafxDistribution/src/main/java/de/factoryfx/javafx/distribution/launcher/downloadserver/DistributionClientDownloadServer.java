@@ -28,7 +28,7 @@ public class DistributionClientDownloadServer<V>  {
 
         ResourceHandler resourceHandler = new ResourceHandler();
         resourceHandler.setBaseResource(Resource.newResource(new File(distributionClientBasePath)));
-
+        resourceHandler.setDirectoriesListed(true);
 
         HandlerCollection handlers = new HandlerCollection();
         handlers.setHandlers(new Handler[] {resourceHandler, new DefaultHandler() });
