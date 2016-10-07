@@ -2,6 +2,7 @@ package de.factoryfx.factory.datastorage.postgres;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -187,7 +188,7 @@ public class PostgresFactoryStorage<L,V,T extends FactoryBase<L,V>> implements F
 
     private void createTables(Connection connection) throws SQLException, IOException {
         try (Statement stmt = connection.createStatement()) {
-            stmt.execute(CharStreams.toString(new InputStreamReader(getClass().getResourceAsStream("createConfigurationtables.sql"))));
+            stmt.execute(CharStreams.toString(new InputStreamReader(getClass().getResourceAsStream("createConfigurationtables.sql"), StandardCharsets.UTF_8)));
         }
     }
 }
