@@ -66,6 +66,18 @@ public class AdminUiJavafxServer {
     public void start() throws Error {
         try {
             server.start();
+        } catch (RuntimeException | Error re) {
+            throw re;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void stop() {
+        try {
+            server.stop();
+        } catch (RuntimeException | Error re) {
+            throw re;
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
