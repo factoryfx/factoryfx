@@ -11,6 +11,7 @@ import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.server.handler.DefaultHandler;
 import org.eclipse.jetty.server.handler.ErrorHandler;
 import org.eclipse.jetty.server.handler.HandlerCollection;
+import org.eclipse.jetty.server.handler.gzip.GzipHandler;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.glassfish.jersey.logging.LoggingFeature;
@@ -39,7 +40,10 @@ public class JettyApplicationServer {
         contextHandler.setErrorHandler(errorHandler);
 
         HandlerCollection handlers = new HandlerCollection();
-        handlers.setHandlers(new Handler[] {contextHandler, new DefaultHandler() });
+        GzipHandler gzipHandler = new GzipHandler();
+        gzipHandler.setHandler(contextHandler);
+        handlers.setHandlers(new Handler[]{gzipHandler, new DefaultHandler()});
+
         server.setHandler(handlers);
     }
 
