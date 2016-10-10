@@ -69,6 +69,9 @@ public class AttributeEditor<T> implements Widget {
 
     public Node addValidationDecoration(Node node) {
 
+        if (node == null)
+            return null;
+
         ContextMenu validationPopupWorkaround = new ContextMenu();//workaround for missing javax feature https://bugs.openjdk.java.net/browse/JDK-8090477
         validationPopupWorkaround.getStyleClass().add("errorContextMenu");
         MenuItem menuItem = new MenuItem();
