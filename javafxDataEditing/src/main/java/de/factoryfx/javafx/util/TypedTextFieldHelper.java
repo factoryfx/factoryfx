@@ -1,6 +1,8 @@
 package de.factoryfx.javafx.util;
 
 import java.math.BigDecimal;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.function.Consumer;
 
 import com.google.common.base.Strings;
@@ -8,6 +10,9 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.TextFormatter;
 
 public class TypedTextFieldHelper {
+
+    private static Consumer<String> stringConsumer;
+
     private static void setupTextField(TextField textField, Consumer<String> converter) {
         textField.setTextFormatter(new TextFormatter<>(change -> {
             try {
@@ -23,6 +28,17 @@ public class TypedTextFieldHelper {
 
     public static void setupIntegerTextField(TextField textField) {
         setupTextField(textField, Integer::valueOf);
+    }
+
+    public static void setupURITextField(TextField textField) {
+        stringConsumer = s -> {
+            try {
+                new URI(s);
+            } catch (URISyntaxException e) {
+                throw new IllegalArgumentException(e);
+            }
+        };
+        setupTextField(textField, stringConsumer);
     }
 
     public static void setupLongTextField(TextField textField) {
