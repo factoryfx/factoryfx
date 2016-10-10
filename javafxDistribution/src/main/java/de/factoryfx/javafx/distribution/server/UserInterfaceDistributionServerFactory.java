@@ -13,7 +13,7 @@ import de.factoryfx.javafx.distribution.server.rest.DownloadResource;
 public class UserInterfaceDistributionServerFactory<V> extends FactoryBase<UserInterfaceDistributionServer,V> {
     public final StringAttribute host = new StringAttribute(new AttributeMetadata().labelText("host"));
     public final IntegerAttribute port = new IntegerAttribute(new AttributeMetadata().labelText("port"));
-    public final StringAttribute guiZipFile = new StringAttribute(new AttributeMetadata().labelText("port"));
+    public final StringAttribute guiZipFile = new StringAttribute(new AttributeMetadata().de("Datei für UI").en("File containing UI"));
 
     @Override
     protected UserInterfaceDistributionServer createImp(Optional<UserInterfaceDistributionServer> previousLiveObject, LifecycleNotifier<V> lifecycle) {
