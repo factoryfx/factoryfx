@@ -36,12 +36,14 @@ public class AdminUiJavafxServerClient<V,T extends FactoryBase<?,V>> {
     }
 
     public FactoryAndStorageMetadata<T> getCurrentFactory() {
-        return get("currentFactory", FactoryAndStorageMetadata.class);
+        FactoryAndStorageMetadata currentFactory = get("currentFactory", FactoryAndStorageMetadata.class);
+        currentFactory.root.reconstructMetadataDeepRoot();
+        return currentFactory;
     }
 
 
     public T getHistoryFactory(String id) {
-        return get("historyFactory", configurationRootClass);
+        return get("historyFactory", configurationRootClass).reconstructMetadataDeepRoot();
     }
 
     static final Class<? extends ArrayList<StoredFactoryMetadata>> collectionOfStoredFactoryMetadataClass = new ArrayList<StoredFactoryMetadata>() {}.getClass();
