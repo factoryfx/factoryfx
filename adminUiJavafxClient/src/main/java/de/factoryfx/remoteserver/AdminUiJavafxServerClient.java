@@ -9,6 +9,7 @@ import javax.ws.rs.client.Client;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.Invocation;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -62,11 +63,20 @@ public class AdminUiJavafxServerClient<V,T extends FactoryBase<?,V>> {
     }
 
     private <R> R post(String subPath, Object entity, Class<R> returnType) {
-        return createRequest(subPath).post(Entity.json(entity)).readEntity(returnType);
+        Response response = createRequest(subPath).post(Entity.json(entity));
+        checkResponseStatus(response);
+        return response.readEntity(returnType);
     }
 
     private <R> R get(String subPath, Class<R> returnType) {
-        return createRequest(subPath).get().readEntity(returnType);
+        Response response = createRequest(subPath).get();
+        checkResponseStatus(response);
+        return response.readEntity(returnType);
+    }
+
+    private void checkResponseStatus(Response response) {
+        if (response.getStatus() != 200)
+            throw new RuntimeException("Received http status code "+response.getStatus()+"\n"+response.readEntity(String.class));
     }
 
     private Invocation.Builder createRequest(String subPath) {
