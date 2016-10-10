@@ -7,6 +7,8 @@ import de.factoryfx.factory.datastorage.StoredFactoryMetadata;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.Entity;
+import javax.ws.rs.client.Invocation;
+import javax.ws.rs.core.MediaType;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -60,15 +62,19 @@ public class AdminUiJavafxServerClient<V,T extends FactoryBase<?,V>> {
     }
 
     private <R> R post(String subPath, Object entity, Class<R> returnType) {
-        return client.target(baseURI.resolve(subPath)).request().post(Entity.json(entity)).readEntity(returnType);
+        return createRequest(subPath).post(Entity.json(entity)).readEntity(returnType);
     }
 
     private <R> R get(String subPath, Class<R> returnType) {
-        return client.target(baseURI.resolve(subPath)).request().get().readEntity(returnType);
+        return createRequest(subPath).get().readEntity(returnType);
+    }
+
+    private Invocation.Builder createRequest(String subPath) {
+        return client.target(baseURI.resolve(subPath)).request().accept(MediaType.APPLICATION_JSON_TYPE);
     }
 
     private Object get(String subPath) {
-        return client.target(baseURI.resolve(subPath)).request().get().getEntity();
+        return createRequest(subPath).get().getEntity();
     }
 
 

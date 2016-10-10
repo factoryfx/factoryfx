@@ -34,8 +34,7 @@ public class TypedTextFieldHelper {
         stringConsumer = s -> {
             try {
                 new URI(s);
-            } catch (URISyntaxException e) {
-                throw new IllegalArgumentException(e);
+            } catch (URISyntaxException ignored) {
             }
         };
         setupTextField(textField, stringConsumer);

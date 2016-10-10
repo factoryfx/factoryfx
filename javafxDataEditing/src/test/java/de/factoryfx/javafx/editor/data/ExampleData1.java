@@ -8,17 +8,7 @@ import de.factoryfx.data.attribute.AttributeMetadata;
 import de.factoryfx.data.attribute.ReferenceAttribute;
 import de.factoryfx.data.attribute.ReferenceListAttribute;
 import de.factoryfx.data.attribute.ValueListAttribute;
-import de.factoryfx.data.attribute.types.BigDecimalAttribute;
-import de.factoryfx.data.attribute.types.BooleanAttribute;
-import de.factoryfx.data.attribute.types.ByteArrayAttribute;
-import de.factoryfx.data.attribute.types.DoubleAttribute;
-import de.factoryfx.data.attribute.types.EnumAttribute;
-import de.factoryfx.data.attribute.types.I18nAttribute;
-import de.factoryfx.data.attribute.types.IntegerAttribute;
-import de.factoryfx.data.attribute.types.LongAttribute;
-import de.factoryfx.data.attribute.types.StringAttribute;
-import de.factoryfx.data.attribute.types.StringListAttribute;
-import de.factoryfx.data.attribute.types.StringMapAttribute;
+import de.factoryfx.data.attribute.types.*;
 import de.factoryfx.data.validation.RegexValidation;
 import de.factoryfx.data.validation.StringRequired;
 
@@ -40,6 +30,9 @@ public class ExampleData1 extends Data {
 
     public final ReferenceAttribute<ExampleData2> referenceAttribute = new ReferenceAttribute<>(ExampleData2.class,new AttributeMetadata().en("ReferenceAttribute").de("ReferenceAttribute de"));
     public final ReferenceListAttribute<ExampleData2> referenceListAttribute = new ReferenceListAttribute<>(ExampleData2.class,new AttributeMetadata().en("ReferenceListAttribute").de("ReferenceListAttribute de"));
+
+    public final URIAttribute uriAttribute = new URIAttribute(new AttributeMetadata().en("URI"));
+    public final URIListAttribute uriListAttribute = new URIListAttribute(new AttributeMetadata().en("URIList"));
 
     String id= UUID.randomUUID().toString();
     @Override
