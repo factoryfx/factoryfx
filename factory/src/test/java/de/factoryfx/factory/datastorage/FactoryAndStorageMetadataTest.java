@@ -1,7 +1,5 @@
 package de.factoryfx.factory.datastorage;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.Module;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import de.factoryfx.factory.FactoryBase;
@@ -10,8 +8,6 @@ import org.junit.Test;
 
 import java.io.IOException;
 import java.util.Optional;
-
-import static org.junit.Assert.*;
 
 public class FactoryAndStorageMetadataTest {
 
