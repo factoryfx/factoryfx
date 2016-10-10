@@ -31,13 +31,19 @@ public class TypedTextFieldHelper {
     }
 
     public static void setupURITextField(TextField textField) {
-        stringConsumer = s -> {
-            try {
-                new URI(s);
-            } catch (URISyntaxException ignored) {
+        textField.textProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue!=null){
+                try {
+                    URI uri = new URI(newValue);
+                    textField.getStyleClass().removeIf(c -> c.equals("error"));
+                } catch (URISyntaxException e) {
+                    textField.getStyleClass().add("error");
+                }
+
             }
-        };
-        setupTextField(textField, stringConsumer);
+        });
+
+
     }
 
     public static void setupLongTextField(TextField textField) {
