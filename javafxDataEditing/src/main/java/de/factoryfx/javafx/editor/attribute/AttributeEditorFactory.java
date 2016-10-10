@@ -1,6 +1,7 @@
 package de.factoryfx.javafx.editor.attribute;
 
 import java.math.BigDecimal;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -12,21 +13,8 @@ import de.factoryfx.data.attribute.Attribute;
 import de.factoryfx.data.attribute.AttributeMetadata;
 import de.factoryfx.data.attribute.ReferenceAttribute;
 import de.factoryfx.data.attribute.ReferenceListAttribute;
-import de.factoryfx.data.attribute.types.BigDecimalAttribute;
-import de.factoryfx.data.attribute.types.DoubleAttribute;
-import de.factoryfx.data.attribute.types.IntegerAttribute;
-import de.factoryfx.data.attribute.types.LongAttribute;
-import de.factoryfx.data.attribute.types.StringAttribute;
-import de.factoryfx.javafx.editor.attribute.visualisation.BigDecimalAttributeVisualisation;
-import de.factoryfx.javafx.editor.attribute.visualisation.BooleanAttributeVisualisation;
-import de.factoryfx.javafx.editor.attribute.visualisation.DoubleAttributeVisualisation;
-import de.factoryfx.javafx.editor.attribute.visualisation.EnumAttributeVisualisation;
-import de.factoryfx.javafx.editor.attribute.visualisation.IntegerAttributeVisualisation;
-import de.factoryfx.javafx.editor.attribute.visualisation.ListAttributeVisualisation;
-import de.factoryfx.javafx.editor.attribute.visualisation.LongAttributeVisualisation;
-import de.factoryfx.javafx.editor.attribute.visualisation.ReferenceAttributeVisualisation;
-import de.factoryfx.javafx.editor.attribute.visualisation.ReferenceListAttributeVisualisation;
-import de.factoryfx.javafx.editor.attribute.visualisation.StringAttributeVisualisation;
+import de.factoryfx.data.attribute.types.*;
+import de.factoryfx.javafx.editor.attribute.visualisation.*;
 import de.factoryfx.javafx.editor.data.DataEditor;
 import de.factoryfx.javafx.util.UniformDesign;
 import javafx.collections.ObservableList;
@@ -130,6 +118,16 @@ public class AttributeEditorFactory {
         if (ObservableList.class.isAssignableFrom(attribute.getAttributeType().dataType) && Data.class.isAssignableFrom(attribute.getAttributeType().listItemType)){
             ReferenceListAttribute<?> referenceListAttribute = (ReferenceListAttribute<?>) attribute;
             return Optional.of(new AttributeEditor<>((Attribute<ObservableList<Data>>)attribute,new ReferenceListAttributeVisualisation(uniformDesign, dataEditor, () -> referenceListAttribute.addNewFactory(root), ()->(List<Data>)referenceListAttribute.possibleValues(root))));
+        }
+        
+        if (URI.class.isAssignableFrom(attribute.getAttributeType().dataType)) {
+            return Optional.of(new AttributeEditor<>((Attribute<URI>)attribute,new URIAttributeVisualisation()));
+        }
+
+        if (ObservableList.class.isAssignableFrom(attribute.getAttributeType().dataType) && URI.class==attribute.getAttributeType().listItemType){
+            URIAttribute detailAttribute = new URIAttribute(new AttributeMetadata().de("URI").en("URI"));
+            AttributeEditor<URI> attributeEditor = (AttributeEditor<URI>) getAttributeEditor(detailAttribute,dataEditor).get();
+            return Optional.of(new AttributeEditor<>((Attribute<ObservableList<URI>>)attribute,new ListAttributeVisualisation<>(uniformDesign, detailAttribute, attributeEditor)));
         }
 
         return Optional.empty();
