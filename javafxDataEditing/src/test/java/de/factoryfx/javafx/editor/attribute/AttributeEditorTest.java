@@ -4,11 +4,13 @@ import java.util.ArrayList;
 
 import de.factoryfx.data.attribute.AttributeMetadata;
 import de.factoryfx.data.attribute.types.StringAttribute;
+import de.factoryfx.javafx.InitializeFX;
 import javafx.beans.value.ChangeListener;
+import javafx.scene.layout.Region;
 import org.junit.Assert;
 import org.junit.Test;
 
-public class AttributeEditorTest {
+public class AttributeEditorTest extends InitializeFX {
 
 
 
@@ -25,7 +27,7 @@ public class AttributeEditorTest {
             };
             boundTo.addListener(stringChangeListener);
             stringChangeListener.changed(boundTo,boundTo.get(),boundTo.get());
-            return null;
+            return new Region();
         });
         attributeEditor.createContent();
 
@@ -45,7 +47,7 @@ public class AttributeEditorTest {
 
         AttributeEditor<String> attributeEditor = new AttributeEditor<>(stringAttribute,(boundTo) -> {
             boundTo.set("Welt");
-            return null;
+            return new Region();
         });
         attributeEditor.createContent();
 
