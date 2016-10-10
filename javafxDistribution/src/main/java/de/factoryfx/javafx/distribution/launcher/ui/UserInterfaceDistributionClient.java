@@ -15,7 +15,7 @@ public class UserInterfaceDistributionClient extends javafx.application.Applicat
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/de/factoryfx/javafx/distribution/ui/UserInterfaceDistributionClientView.fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/de/factoryfx/javafx/distribution/launcher/ui/UserInterfaceDistributionClientView.fxml"));
         fxmlLoader.setController(new UserInterfaceDistributionClientController());
         Parent root = null;
         try {
