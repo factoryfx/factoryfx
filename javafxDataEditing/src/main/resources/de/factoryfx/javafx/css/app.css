@@ -1,3 +1,13 @@
+* {
+    DANGER_COLOR: #FF7979;
+    WARNING_COLOR: #F0AD4E;
+    INFO_COLOR: #5BC0DE;
+    SUCCESS_COLOR: #5CB85C;
+    PRIMARY_COLOR: #5494CB;
+}
+
+
+
 .diffUnchanged {
     -fx-fill: rgba(0, 0, 0, 1);
 }
@@ -32,4 +42,10 @@
 
 .hidden-tableview-headers .column-header-background {
     visibility: hidden; -fx-padding: -1em;
+}
+
+.error {
+    -fx-effect: dropshadow(three-pass-box, DANGER_COLOR, 5, 0, 0, 0);
+    /*-fx-border-color: DANGER_COLOR;*/
+    -fx-control-inner-background: derive(DANGER_COLOR,90%);
 }
