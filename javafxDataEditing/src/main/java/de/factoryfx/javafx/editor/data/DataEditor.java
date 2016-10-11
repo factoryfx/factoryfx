@@ -83,7 +83,7 @@ public class DataEditor implements Widget {
 
             if (newValue!=null){
                 int row = 0;
-                for (Attribute<?> attribute: newValue.attrributeList()) {
+                for (Attribute<?> attribute: newValue.attributeList()) {
                     //TOO locale configurable , uniformdesign?
                     addLabelContent(grid, row,uniformDesign.getLabelText(attribute));
 
