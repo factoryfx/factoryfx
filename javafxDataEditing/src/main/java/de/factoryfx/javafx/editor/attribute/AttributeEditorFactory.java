@@ -59,11 +59,6 @@ public class AttributeEditorFactory {
         Optional<AttributeEditor<?>> referenceAttribute = getAttributeEditorReference(attribute, dataEditor);
         if (referenceAttribute != null) return referenceAttribute;
 
-
-        if (Long.class==attribute.getAttributeType().dataType){
-            return Optional.of(new AttributeEditor<>((Attribute<Long>)attribute,new LongAttributeVisualisation()));
-        }
-
         if (ObservableList.class.isAssignableFrom(attribute.getAttributeType().dataType) && Data.class.isAssignableFrom(attribute.getAttributeType().listItemType)){
             ReferenceListAttribute<?> referenceListAttribute = (ReferenceListAttribute<?>) attribute;
             return Optional.of(new AttributeEditor<>((Attribute<ObservableList<Data>>)attribute,new ReferenceListAttributeVisualisation(uniformDesign, dataEditor, () -> referenceListAttribute.addNewFactory(root), ()->(List<Data>)referenceListAttribute.possibleValues(root))));
