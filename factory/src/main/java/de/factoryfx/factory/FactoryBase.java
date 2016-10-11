@@ -25,6 +25,15 @@ import javafx.collections.ObservableList;
  */
 public abstract class FactoryBase<L,V> extends Data {
 
+    public abstract LiveCycleController<L,V> createLifecycleController();
+    LiveCycleController<L, V> lifecycleController;
+    private LiveCycleController<L,V> getLifecycleController(){
+        if (lifecycleController==null){
+            lifecycleController = createLifecycleController();
+        }
+        return lifecycleController;
+    }
+
     /**copy including one the references first level of nested references*/
     public <T extends FactoryBase<L,V>> T copyOneLevelDeep(){
         return copyOneLevelDeep(0,new HashMap<>());
@@ -78,35 +87,34 @@ public abstract class FactoryBase<L,V> extends Data {
 
 
 
-    private Lifecycle<V> lifecycle=new Lifecycle<>();
-    private L createdLiveObjects;
+    private L createdLiveObject;
     public L instance() {
-        Optional<L> previousLiveObject = Optional.ofNullable(createdLiveObjects);
-        if (!changedDeep() && createdLiveObjects!=null) {//TODO is the createdLiveObjects==null correct? is is used if new Factory is transitive added (Limitation of the mergerdiff)
-            return createdLiveObjects;
+        Optional<L> previousLiveObject = Optional.ofNullable(createdLiveObject);
+        if (!changedDeep() && createdLiveObject !=null) {//TODO is the createdLiveObject==null correct? is is used if new Factory is transitive added (Limitation of the mergerdiff)
+            return createdLiveObject;
         } else{
-            L liveObject = createImp(previousLiveObject,lifecycle);
-            createdLiveObjects=liveObject;
+            L liveObject = getLifecycleController().create();
+            createdLiveObject =liveObject;
             changed=false;
             return liveObject;
         }
     }
 
-    protected abstract L createImp(Optional<L> previousLiveObject, LifecycleNotifier<V> lifecycle);
+//    protected abstract L createImp(Optional<L> previousLiveObject, LifecycleNotifier<V> lifecycle);
 
 //    public void collectLiveObjects(Map<String,LiveObject> liveObjects){
 //
 //        this.visitChildFactoriesFlat(factory -> cast(factory).collectLiveObjects(liveObjects));
 //
-//        if (createdLiveObjects!=null){
-//            liveObjects.put(getId(),createdLiveObjects);
+//        if (createdLiveObject!=null){
+//            liveObjects.put(getId(),createdLiveObject);
 //        }
 //    }
 
     @JsonIgnore
     //intented for test only
     protected Optional<L> getCreatedLiveObject(){
-        return Optional.ofNullable(createdLiveObjects);
+        return Optional.ofNullable(createdLiveObject);
     }
 
     @JsonIgnore
@@ -154,14 +162,15 @@ public abstract class FactoryBase<L,V> extends Data {
     }
 
     public void start(){
-        lifecycle.start();
+        getLifecycleController().start(createdLiveObject);
     }
 
     public void stop(){
-        lifecycle.stop();
+        getLifecycleController().destroy(createdLiveObject);
     }
 
     public void runtimeQuery(V visitor){
-        lifecycle.runtimeQuery(visitor);
+        getLifecycleController().runtimeQuery(visitor,createdLiveObject);
     }
+
 }
