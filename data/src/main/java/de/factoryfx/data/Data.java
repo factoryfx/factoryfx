@@ -21,24 +21,24 @@ import de.factoryfx.data.attribute.Attribute;
 import de.factoryfx.data.attribute.ReferenceAttribute;
 import de.factoryfx.data.attribute.ReferenceListAttribute;
 import de.factoryfx.data.attribute.types.ObjectValueAttribute;
-import de.factoryfx.data.jackson.ObjectMapperBuilder;
 import de.factoryfx.data.merge.MergeResult;
 import de.factoryfx.data.merge.MergeResultEntry;
 import de.factoryfx.data.merge.attribute.AttributeMergeHelper;
 import de.factoryfx.data.validation.ValidationError;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 
 public abstract class Data {
 
 
     public abstract Object getId();
 
-
+    public abstract void setId(Object object);
 
     @JsonIgnore
     private static final Map<Class<?>, Field[]> fields = new HashMap<>();
     @JsonIgnore
     private Field[] instanceFields;
-    private String id;
 
     public Data() {
         initFieldsCache();
@@ -329,7 +329,8 @@ public abstract class Data {
     @SuppressWarnings("unchecked")
     public <T extends Data> T copy() {
 
-        Data copy = ObjectMapperBuilder.build().copy(this).reconstructMetadataDeepRoot();
+        T copy = copyDeep(0,Integer.MAX_VALUE,new HashMap<>());
+
         Map<Object, Data> stringFactoryBaseMap = this.collectChildFactoriesMap();
         for (Data factory: copy.collectChildrenDeep()){
             factory.visitAttributesDualFlat(stringFactoryBaseMap.get(factory.getId()),(copyAttribute, previousAttribute) -> {
@@ -338,9 +339,39 @@ public abstract class Data {
                 }
             });
         }
+        return copy;
+    }
 
+    /**copy including one the references first level of nested references*/
+    public <T extends Data> T copyOneLevelDeep(){
+        return copyDeep(0,1,new HashMap<>());
+    }
 
-        return (T)copy;
+    @SuppressWarnings("unchecked")
+    private <T extends Data> T copyDeep(final int level,final int maxLevel, HashMap<Object,Data> identityPreserver){
+        if (level>maxLevel){
+            return null;
+        }
+        T result= (T) identityPreserver.get(this.getId());
+        if (result==null){
+            result = (T)newInstance();
+            result.setId(this.getId());
+            this.visitAttributesDualFlat(result, (thisAttribute, copyAttribute) -> {
+                Object value = thisAttribute.get();
+                if (value instanceof Data){
+                    value=((Data)value).copyDeep(level+1,maxLevel,identityPreserver);
+                }
+                if (thisAttribute instanceof ReferenceListAttribute){
+                    final ObservableList<Data> referenceList = FXCollections.observableArrayList();
+                    ((ReferenceListAttribute)thisAttribute).get().forEach(factory -> referenceList.add(((Data)factory).copyDeep(level+1,maxLevel,identityPreserver)));
+                    value=referenceList;
+                }
+
+                copyAttribute.set(value);
+            });
+            identityPreserver.put(result.getId(),result);
+        }
+        return result;
     }
 
 

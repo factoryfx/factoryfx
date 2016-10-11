@@ -83,5 +83,59 @@ public class DataTest {
         public final ObjectValueAttribute<String> objectValueAttribute= new ObjectValueAttribute<>(new AttributeMetadata().labelText("objectValueAttribute"));
     }
 
+    @Test
+    public void test_copyOneLevelDeep(){
+        ExampleFactoryA exampleFactoryA = new ExampleFactoryA();
+        ExampleFactoryB exampleFactoryB = new ExampleFactoryB();
+        exampleFactoryA.referenceAttribute.set(exampleFactoryB);
+        ExampleFactoryC exampleFactoryC = new ExampleFactoryC();
+        exampleFactoryB.referenceAttributeC.set(exampleFactoryC);
 
+        ExampleFactoryB factoryB = new ExampleFactoryB();
+        factoryB.referenceAttributeC.set(new ExampleFactoryC());
+        exampleFactoryA.referenceListAttribute.add(factoryB);
+
+        Assert.assertNotNull(exampleFactoryA.referenceAttribute.get());
+        Assert.assertNotNull(exampleFactoryA.referenceAttribute.get().referenceAttributeC.get());
+
+        ExampleFactoryA copy =  exampleFactoryA.copyOneLevelDeep();
+
+        Assert.assertNotEquals(copy,exampleFactoryA);
+        Assert.assertNotNull(copy.referenceAttribute.get());
+        Assert.assertNull(copy.referenceAttribute.get().referenceAttributeC.get());
+        Assert.assertNull(copy.referenceListAttribute.get(0).referenceAttributeC.get());
+    }
+
+    @Test
+    public void test_copyOneLevelDeep_doubleref(){
+        ExampleFactoryA exampleFactoryA = new ExampleFactoryA();
+        ExampleFactoryB exampleFactoryB = new ExampleFactoryB();
+
+        exampleFactoryA.referenceAttribute.set(exampleFactoryB);
+        exampleFactoryA.referenceListAttribute.add(exampleFactoryB);
+
+        ExampleFactoryA copy =  exampleFactoryA.copyOneLevelDeep();
+
+        Assert.assertEquals(copy.referenceAttribute.get(),copy.referenceListAttribute.get().get(0));
+    }
+
+    @Test
+    public void test_copy(){
+        ExampleFactoryA exampleFactoryA = new ExampleFactoryA();
+        ExampleFactoryB exampleFactoryB = new ExampleFactoryB();
+        exampleFactoryB.stringAttribute.set("dfssfdsfdsfd");
+
+        exampleFactoryA.referenceAttribute.set(exampleFactoryB);
+        exampleFactoryA.referenceListAttribute.add(new ExampleFactoryB());
+
+        ExampleFactoryA copy =  exampleFactoryA.copy();
+
+        SimpleObjectMapper mapper = ObjectMapperBuilder.build();
+        String expected = mapper.writeValueAsString(mapper.copy(exampleFactoryA));
+        String actual = mapper.writeValueAsString(copy);
+
+        System.out.println(expected);
+        System.out.println(actual);
+        Assert.assertEquals(expected, actual);
+    }
 }

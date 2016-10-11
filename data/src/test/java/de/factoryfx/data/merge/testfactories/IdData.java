@@ -10,4 +10,9 @@ public class IdData extends Data {
     public Object getId() {
         return id;
     }
+
+    @Override
+    public void setId(Object object) {
+        id= (String) object;
+    }
 }

@@ -41,4 +41,9 @@ public class ExampleData1 extends Data {
     public Object getId() {
         return id;
     }
+
+    @Override
+    public void setId(Object object) {
+        id=(String)object;
+    }
 }

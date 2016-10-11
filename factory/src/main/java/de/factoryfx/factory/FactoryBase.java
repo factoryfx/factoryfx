@@ -1,6 +1,5 @@
 package de.factoryfx.factory;
 
-import java.util.HashMap;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -12,9 +11,6 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import de.factoryfx.data.Data;
-import de.factoryfx.data.attribute.ReferenceListAttribute;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -34,38 +30,6 @@ public abstract class FactoryBase<L,V> extends Data {
         return lifecycleController;
     }
 
-    /**copy including one the references first level of nested references*/
-    public <T extends FactoryBase<L,V>> T copyOneLevelDeep(){
-        return copyOneLevelDeep(0,new HashMap<>());
-    }
-
-    @SuppressWarnings("unchecked")
-    private <T extends FactoryBase<L,V>> T copyOneLevelDeep(final int level, HashMap<String,FactoryBase> identityPreserver){
-        if (level>1){
-            return null;
-        }
-        T result= (T) identityPreserver.get(this.getId());
-        if (result==null){
-            result = (T)newInstance();
-            result.setId(this.getId());
-            this.visitAttributesDualFlat(result, (thisAttribute, copyAttribute) -> {
-                Object value = thisAttribute.get();
-                if (value instanceof FactoryBase){
-                    value=((FactoryBase)value).copyOneLevelDeep(level+1,identityPreserver);
-                }
-                if (thisAttribute instanceof ReferenceListAttribute){
-                    final ObservableList<FactoryBase> referenceList = FXCollections.observableArrayList();
-                    ((ReferenceListAttribute)thisAttribute).get().forEach(factory -> referenceList.add(((FactoryBase)factory).copyOneLevelDeep(level+1,identityPreserver)));
-                    value=referenceList;
-                }
-
-                copyAttribute.set(value);
-            });
-            identityPreserver.put(result.getId(),result);
-        }
-        return result;
-    }
-
     private String id;
 
     public FactoryBase() {
@@ -83,20 +47,26 @@ public abstract class FactoryBase<L,V> extends Data {
     public void setId(String value) {
         id = value;
     }
-
+    public void setId(Object value) {
+        id = (String)value;
+    }
 
 
 
     private L createdLiveObject;
     public L instance() {
-        Optional<L> previousLiveObject = Optional.ofNullable(createdLiveObject);
         if (!changedDeep() && createdLiveObject !=null) {//TODO is the createdLiveObject==null correct? is is used if new Factory is transitive added (Limitation of the mergerdiff)
             return createdLiveObject;
         } else{
-            L liveObject = getLifecycleController().create();
-            createdLiveObject =liveObject;
+            if (createdLiveObject==null){
+                createdLiveObject =getLifecycleController().create();
+            } else {
+                L previousLiveObject = this.createdLiveObject;
+                this.createdLiveObject =getLifecycleController().reCreate(previousLiveObject);
+                getLifecycleController().destroy(previousLiveObject);//TODO check if this is the wrong destroy order (parent are destroyed before the children)
+            }
             changed=false;
-            return liveObject;
+            return createdLiveObject;
         }
     }
 
@@ -165,7 +135,7 @@ public abstract class FactoryBase<L,V> extends Data {
         getLifecycleController().start(createdLiveObject);
     }
 
-    public void stop(){
+    public void destroy(){
         getLifecycleController().destroy(createdLiveObject);
     }
 
