@@ -82,7 +82,7 @@ public class UserInterfaceDistributionServer {
         }
     }
 
-    public void close() {
+    public void stop() {
         try {
             server.stop();
         } catch (Exception e) {

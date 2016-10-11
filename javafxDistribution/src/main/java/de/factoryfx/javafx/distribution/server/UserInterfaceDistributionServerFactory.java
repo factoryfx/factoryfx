@@ -10,12 +10,33 @@ import de.factoryfx.factory.LiveCycleController;
 import de.factoryfx.javafx.distribution.server.rest.DownloadResource;
 
 public class UserInterfaceDistributionServerFactory<V> extends FactoryBase<UserInterfaceDistributionServer,V> {
-    public final StringAttribute host = new StringAttribute(new AttributeMetadata().labelText("host"));
-    public final IntegerAttribute port = new IntegerAttribute(new AttributeMetadata().labelText("port"));
+    public UserInterfaceDistributionServerFactory(){
+        setDisplayTextProvider(() -> host.get()+port.get());
+    }
+
+    public final StringAttribute host = new StringAttribute(new AttributeMetadata().de("host").en("host"));
+    public final IntegerAttribute port = new IntegerAttribute(new AttributeMetadata().de("port").en("port"));
     public final StringAttribute guiZipFile = new StringAttribute(new AttributeMetadata().de("Datei für UI").en("File containing UI"));
 
     @Override
     public LiveCycleController<UserInterfaceDistributionServer, V> createLifecycleController() {
-        return () -> new UserInterfaceDistributionServer(host.get(),port.get(),new DownloadResource(new File(guiZipFile.get())));
+        return new LiveCycleController<UserInterfaceDistributionServer, V>() {
+            @Override
+            public UserInterfaceDistributionServer create() {
+                return new UserInterfaceDistributionServer(host.get(),port.get(),new DownloadResource(new File(guiZipFile.get())));
+            }
+
+            @Override
+            public void start(UserInterfaceDistributionServer newLiveObject) {
+                newLiveObject.start();
+            }
+
+            @Override
+            public void destroy(UserInterfaceDistributionServer previousLiveObject) {
+                previousLiveObject.stop();
+            }
+        };
+
+
     }
 }
