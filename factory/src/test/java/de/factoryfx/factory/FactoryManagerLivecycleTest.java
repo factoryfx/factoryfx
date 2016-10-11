@@ -5,6 +5,7 @@ import de.factoryfx.data.attribute.types.StringAttribute;
 import de.factoryfx.factory.atrribute.FactoryReferenceAttribute;
 import de.factoryfx.factory.testfactories.ExampleLiveObjectA;
 import de.factoryfx.factory.testfactories.ExampleLiveObjectB;
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class FactoryManagerLivecycleTest {
@@ -41,6 +42,7 @@ public class FactoryManagerLivecycleTest {
         }
     }
 
+    @Ignore
     @Test
     public void test_initial_start(){
         FactoryManager<ExampleLiveObjectA,Void,ExampleFactoryA> factoryManager = new FactoryManager<>();
