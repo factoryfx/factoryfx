@@ -73,7 +73,7 @@ public abstract class Data {
         ArrayList<Field> fields = new ArrayList<>();
         Class<?> parent = clazz.getSuperclass();
         Stream.of(getFieldsOrdered(parent)).forEach(fields::add);
-        Stream.of(clazz.getDeclaredFields()).forEach(fields::add);
+        Stream.of(clazz.getDeclaredFields()).filter(f->Modifier.isPublic(f.getModifiers())).forEach(fields::add);
         return fields.toArray(new Field[fields.size()]);
     }
 
