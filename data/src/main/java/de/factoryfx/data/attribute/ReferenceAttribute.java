@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
@@ -120,15 +121,27 @@ public class ReferenceAttribute<T extends Data> extends Attribute<T> {
     }
 
 
-    public Optional<Function<Data,List<T>>> possibleValueProviderFromRoot=Optional.empty();
-    public Optional<Function<Data,T>> newValueProviderFromRoot=Optional.empty();
+    private Optional<Function<Data,List<T>>> possibleValueProviderFromRoot=Optional.empty();
+    private Optional<Supplier<T>> newValueProvider=Optional.empty();
+
+    /**customise the list of selectable items*/
+    public ReferenceAttribute possibleValueProvider(Function<Data,List<T>> possibleValueProvider){
+        this.possibleValueProviderFromRoot =Optional.of(possibleValueProvider);
+        return this;
+    }
+
+    /**customise how new values are created*/
+    public ReferenceAttribute newValueProvider(Supplier<T> newValueProvider){
+        this.newValueProvider =Optional.of(newValueProvider);
+        return this;
+    }
 
     public void addNewFactory(Data root){
-        newValueProviderFromRoot.ifPresent(newFactoryFunction -> {
-            T newFactory = newFactoryFunction.apply(root);
+        newValueProvider.ifPresent(newFactoryFunction -> {
+            T newFactory = newFactoryFunction.get();
             set(newFactory);
         });
-        if (!newValueProviderFromRoot.isPresent()){
+        if (!newValueProvider.isPresent()){
             if (clazz.isPresent()){
                 try {
                     set(clazz.get().newInstance());
@@ -149,13 +162,11 @@ public class ReferenceAttribute<T extends Data> extends Attribute<T> {
             List<T> factories = factoryBaseListFunction.apply(root);
             factories.forEach(factory -> result.add(factory));
         });
-        if (!newValueProviderFromRoot.isPresent()){
-            if (!possibleValueProviderFromRoot.isPresent()){
-                for (Data factory: root.collectChildrenDeep()){
-                    if (clazz.isPresent()){
-                        if (clazz.get().isAssignableFrom(factory.getClass())){
-                            result.add((T) factory);
-                        }
+        if (!possibleValueProviderFromRoot.isPresent()){
+            for (Data factory: root.collectChildrenDeep()){
+                if (clazz.isPresent()){
+                    if (clazz.get().isAssignableFrom(factory.getClass())){
+                        result.add((T) factory);
                     }
                 }
             }
