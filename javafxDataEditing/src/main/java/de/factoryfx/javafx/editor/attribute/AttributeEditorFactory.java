@@ -2,6 +2,7 @@ package de.factoryfx.javafx.editor.attribute;
 
 import java.math.BigDecimal;
 import java.net.URI;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -19,22 +20,13 @@ import de.factoryfx.data.attribute.types.IntegerAttribute;
 import de.factoryfx.data.attribute.types.LongAttribute;
 import de.factoryfx.data.attribute.types.StringAttribute;
 import de.factoryfx.data.attribute.types.URIAttribute;
-import de.factoryfx.javafx.editor.attribute.visualisation.BigDecimalAttributeVisualisation;
-import de.factoryfx.javafx.editor.attribute.visualisation.BooleanAttributeVisualisation;
-import de.factoryfx.javafx.editor.attribute.visualisation.DoubleAttributeVisualisation;
-import de.factoryfx.javafx.editor.attribute.visualisation.EnumAttributeVisualisation;
-import de.factoryfx.javafx.editor.attribute.visualisation.IntegerAttributeVisualisation;
-import de.factoryfx.javafx.editor.attribute.visualisation.ListAttributeVisualisation;
-import de.factoryfx.javafx.editor.attribute.visualisation.LongAttributeVisualisation;
-import de.factoryfx.javafx.editor.attribute.visualisation.ReferenceAttributeVisualisation;
-import de.factoryfx.javafx.editor.attribute.visualisation.ReferenceListAttributeVisualisation;
-import de.factoryfx.javafx.editor.attribute.visualisation.StringAttributeVisualisation;
-import de.factoryfx.javafx.editor.attribute.visualisation.URIAttributeVisualisation;
+import de.factoryfx.javafx.editor.attribute.visualisation.*;
 import de.factoryfx.javafx.editor.data.DataEditor;
 import de.factoryfx.javafx.util.UniformDesign;
 import javafx.collections.ObservableList;
 
 public class AttributeEditorFactory {
+
     private final UniformDesign uniformDesign;
     private final Data root;
 
@@ -68,9 +60,6 @@ public class AttributeEditorFactory {
         if (referenceAttribute != null) return referenceAttribute;
 
 
-        return Optional.empty();
-    }
-
         if (Long.class==attribute.getAttributeType().dataType){
             return Optional.of(new AttributeEditor<>((Attribute<Long>)attribute,new LongAttributeVisualisation()));
         }
@@ -79,8 +68,22 @@ public class AttributeEditorFactory {
             ReferenceListAttribute<?> referenceListAttribute = (ReferenceListAttribute<?>) attribute;
             return Optional.of(new AttributeEditor<>((Attribute<ObservableList<Data>>)attribute,new ReferenceListAttributeVisualisation(uniformDesign, dataEditor, () -> referenceListAttribute.addNewFactory(root), ()->(List<Data>)referenceListAttribute.possibleValues(root))));
         }
+        return Optional.empty();
+    }
+
+    private Optional<AttributeEditor<?>> getAttributeEditorReference(Attribute<?> attribute, DataEditor dataEditor) {
+        if (Data.class==attribute.getAttributeType().dataType){
+            ReferenceAttribute<?> referenceAttribute = (ReferenceAttribute<?>) attribute;
+            return Optional.of(new AttributeEditor<>((Attribute<Data>)attribute,new ReferenceAttributeVisualisation(uniformDesign,dataEditor,()->referenceAttribute.addNewFactory(root),()->(List<Data>)referenceAttribute.possibleValues(root))));
+        }
+
+        if (ObservableList.class.isAssignableFrom(attribute.getAttributeType().dataType) && Data.class.isAssignableFrom(attribute.getAttributeType().listItemType)){
+            ReferenceListAttribute<?> referenceListAttribute = (ReferenceListAttribute<?>) attribute;
+            return Optional.of(new AttributeEditor<>((Attribute<ObservableList<Data>>)attribute,new ReferenceListAttributeVisualisation(uniformDesign, dataEditor, () -> referenceListAttribute.addNewFactory(root), ()->(List<Data>)referenceListAttribute.possibleValues(root))));
+        }
         return null;
     }
+
 
     private Optional<AttributeEditor<?>> getAttributeEditorList(Attribute<?> attribute, DataEditor dataEditor) {
         if (ObservableList.class.isAssignableFrom(attribute.getAttributeType().dataType) && String.class==attribute.getAttributeType().listItemType){
@@ -135,14 +138,15 @@ public class AttributeEditorFactory {
             AttributeEditor<URI> attributeEditor = (AttributeEditor<URI>) getAttributeEditor(detailAttribute,dataEditor).get();
             return Optional.of(new AttributeEditor<>((Attribute<ObservableList<URI>>)attribute,new ListAttributeVisualisation<>(uniformDesign, detailAttribute, attributeEditor)));
         }
-        return null;
-    }
 
         if (LocalDate.class.isAssignableFrom(attribute.getAttributeType().dataType)) {
             return Optional.of(new AttributeEditor<>((Attribute<LocalDate>)attribute,new LocalDateAttributeVisualisation()));
         }
 
-        return Optional.empty();
+        return null;
+    }
+
+
     private Optional<AttributeEditor<?>> getAttributeEditorSimpleType(Attribute<?> attribute) {
         if (String.class==attribute.getAttributeType().dataType){
             return Optional.of(new AttributeEditor<>((Attribute<String>)attribute,new StringAttributeVisualisation()));
