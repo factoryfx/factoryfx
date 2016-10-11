@@ -83,7 +83,7 @@ public class DataEditor implements Widget {
 
             if (newValue!=null){
                 int row = 0;
-                for (Attribute<?> attribute: newValue.attrributeList()) {
+                for (Attribute<?> attribute: newValue.attributeList()) {
                     //TOO locale configurable , uniformdesign?
                     addLabelContent(grid, row,uniformDesign.getLabelText(attribute));
 
@@ -160,7 +160,10 @@ public class DataEditor implements Widget {
             }
             return breadCrumbButton;
         });
-        breadCrumbBar.setOnCrumbAction(event -> edit(event.getSelectedCrumb().getValue()));
+        breadCrumbBar.setOnCrumbAction(event -> {
+            edit(event.getSelectedCrumb().getValue());
+            breadCrumbBar.setSelectedCrumb(BreadCrumbBar.buildTreeModel(displayedEntities.toArray(new Data[0])));
+        });
         displayedEntities.addListener((ListChangeListener<Data>) c -> {
             breadCrumbBar.setSelectedCrumb(BreadCrumbBar.buildTreeModel(displayedEntities.toArray(new Data[0])));
         });

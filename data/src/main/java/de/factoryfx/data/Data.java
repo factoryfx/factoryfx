@@ -169,7 +169,7 @@ public abstract class Data {
         }
     }
 
-    public List<Attribute<?>> attrributeList(){
+    public List<Attribute<?>> attributeList(){
         ArrayList<Attribute<?>> result = new ArrayList<>();
         this.visitAttributesFlat((attributeVariableName, attribute) -> {
             result.add(attribute);
