@@ -1,13 +1,11 @@
 package de.factoryfx.javafx.distribution.launcher.downloadserver;
 
-import java.util.Optional;
-
 import de.factoryfx.data.attribute.AttributeMetadata;
 import de.factoryfx.data.attribute.types.BooleanAttribute;
 import de.factoryfx.data.attribute.types.IntegerAttribute;
 import de.factoryfx.data.attribute.types.StringAttribute;
 import de.factoryfx.factory.FactoryBase;
-import de.factoryfx.factory.LifecycleNotifier;
+import de.factoryfx.factory.LiveCycleController;
 
 public class DistributionClientDownloadServerFactory<V> extends FactoryBase<DistributionClientDownloadServer,V> {
 
@@ -17,7 +15,21 @@ public class DistributionClientDownloadServerFactory<V> extends FactoryBase<Dist
     public final BooleanAttribute directoriesListed = new BooleanAttribute(new AttributeMetadata().labelText("directoriesListed"));
 
     @Override
-    protected DistributionClientDownloadServer createImp(Optional<DistributionClientDownloadServer> previousLiveObject, LifecycleNotifier<V> lifecycleNotifier) {
-        return new DistributionClientDownloadServer<>(host.get(),port.get(),distributionClientBasePath.get(),lifecycleNotifier,directoriesListed.get());
+    public LiveCycleController<DistributionClientDownloadServer, V> createLifecycleController() {
+        return new LiveCycleController<DistributionClientDownloadServer, V>() {
+            @Override
+            public DistributionClientDownloadServer create() {
+                return new DistributionClientDownloadServer<>(host.get(),port.get(),distributionClientBasePath.get(),directoriesListed.get());
+            }
+
+            @Override
+            public void start(DistributionClientDownloadServer newLiveObject) {
+                newLiveObject.start();
+            }
+            @Override
+            public void destroy(DistributionClientDownloadServer previousLiveObject) {
+                previousLiveObject.stop();
+            };
+        };
     }
 }

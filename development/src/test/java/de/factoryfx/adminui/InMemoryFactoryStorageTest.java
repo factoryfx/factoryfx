@@ -1,12 +1,11 @@
 package de.factoryfx.adminui;
 
 import java.net.MalformedURLException;
-import java.util.Optional;
 
 import de.factoryfx.data.attribute.AttributeMetadata;
 import de.factoryfx.data.attribute.types.StringAttribute;
 import de.factoryfx.factory.FactoryBase;
-import de.factoryfx.factory.LifecycleNotifier;
+import de.factoryfx.factory.LiveCycleController;
 import de.factoryfx.factory.datastorage.FactoryAndStorageMetadata;
 import org.junit.Assert;
 import org.junit.Test;
@@ -18,10 +17,11 @@ public class InMemoryFactoryStorageTest {
         public final StringAttribute test= new StringAttribute(new AttributeMetadata().labelText("fsdsf")).defaultValue("1");
 
         @Override
-        protected DummyLive createImp(Optional<DummyLive> previousLiveObject, LifecycleNotifier<Void> lifecycle) {
-            return new DummyLive(test.get());
+        public LiveCycleController<DummyLive, Void> createLifecycleController() {
+            return () -> {
+                return new DummyLive(test.get());
+            };
         }
-
     }
 
     public static class DummyLive {

@@ -2,44 +2,34 @@ package de.factoryfx.adminui.angularjs.factory.server;
 
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.util.Optional;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import de.factoryfx.factory.FactoryBase;
+import de.factoryfx.data.Data;
 import de.factoryfx.data.attribute.AttributeMetadata;
 import de.factoryfx.data.attribute.types.BigDecimalAttribute;
 import de.factoryfx.data.attribute.types.LongAttribute;
-import de.factoryfx.factory.Lifecycle;
-import de.factoryfx.factory.LifecycleNotifier;
 import org.junit.Assert;
 import org.junit.Test;
 
 public class HttpServerTest {
 
-    public static class TestBigDecimalLiveObject  {
-
-
-    }
-
-    public static class TestBigDecimal extends FactoryBase<TestBigDecimalLiveObject,Void> {
+    public static class TestBigDecimal extends Data {
         public final BigDecimalAttribute value = new BigDecimalAttribute(new AttributeMetadata());
 
         @Override
-        protected TestBigDecimalLiveObject createImp(Optional<TestBigDecimalLiveObject> previousLiveObject, LifecycleNotifier<Void> lifecycle) {
-            return null;
+        public Object getId() {
+            return 1;
         }
-
     }
 
-    public static class TestLongDecimal extends FactoryBase<TestBigDecimalLiveObject,Void>{
+    public static class TestLongDecimal extends Data {
         public final LongAttribute value = new LongAttribute(new AttributeMetadata());
 
         @Override
-        protected TestBigDecimalLiveObject createImp(Optional<TestBigDecimalLiveObject> previousLiveObject, LifecycleNotifier<Void> lifecycle) {
-            return null;
+        public Object getId() {
+            return 2;
         }
     }
-
 
 
     @Test
@@ -47,7 +37,7 @@ public class HttpServerTest {
         TestBigDecimal testBigDecimal = new TestBigDecimal();
         testBigDecimal.value.set(new BigDecimal("12445.67"));
 
-        HttpServer httpServer = new HttpServer(null,null,0,null,null,new Lifecycle<>());
+        HttpServer httpServer = new HttpServer(null,null,0,null,null);
         ObjectMapper objectMapper = httpServer.getObjectMapper();
 
         String data = objectMapper.writeValueAsString(testBigDecimal);
@@ -66,7 +56,7 @@ public class HttpServerTest {
         TestLongDecimal testLongDecimal = new TestLongDecimal();
         testLongDecimal.value.set(54564L);
 
-        HttpServer httpServer = new HttpServer(null,null,0,null,null,new Lifecycle<>());
+        HttpServer httpServer = new HttpServer(null,null,0,null,null);
         ObjectMapper objectMapper = httpServer.getObjectMapper();
 
         String data = objectMapper.writeValueAsString(testLongDecimal);

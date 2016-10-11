@@ -2,14 +2,13 @@ package de.factoryfx.adminui.angularjs.factory;
 
 import java.util.HashMap;
 import java.util.Locale;
-import java.util.Optional;
 
-import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.data.attribute.AttributeMetadata;
 import de.factoryfx.data.attribute.types.ByteArrayAttribute;
 import de.factoryfx.data.attribute.types.I18nAttribute;
 import de.factoryfx.data.attribute.types.ObjectValueAttribute;
-import de.factoryfx.factory.LifecycleNotifier;
+import de.factoryfx.factory.FactoryBase;
+import de.factoryfx.factory.LiveCycleController;
 import de.factoryfx.user.UserManagement;
 
 public class LayoutFactory extends FactoryBase<Layout,Void> {
@@ -52,16 +51,16 @@ public class LayoutFactory extends FactoryBase<Layout,Void> {
     public final I18nAttribute validationFactoryTableColumn = new I18nAttribute(new AttributeMetadata().en("validationFactoryTableColumn")).en("Factory");
 
     @Override
-    protected Layout createImp(Optional<Layout> previousLiveObject, LifecycleNotifier<Void> lifecycle) {
-        HashMap<String,String> messages=new HashMap<>();
-        this.visitAttributesFlat((attributeVariableName, attribute) -> {
-            if (attribute instanceof I18nAttribute) {
-                messages.put(attributeVariableName,((I18nAttribute) attribute).get().getPreferred(Locale.ENGLISH));
-            }
-        });
+    public LiveCycleController<Layout, Void> createLifecycleController() {
+        return () -> {
+            HashMap<String,String> messages=new HashMap<>();
+            visitAttributesFlat((attributeVariableName, attribute) -> {
+                if (attribute instanceof I18nAttribute) {
+                    messages.put(attributeVariableName,((I18nAttribute) attribute).get().getPreferred(Locale.ENGLISH));
+                }
+            });
 
-        return new Layout(messages, logoSmall.get(), logoLarge.get(), userManagement.get().authorisationRequired());
+            return new Layout(messages, logoSmall.get(), logoLarge.get(), userManagement.get().authorisationRequired());
+        };
     }
-
-
 }

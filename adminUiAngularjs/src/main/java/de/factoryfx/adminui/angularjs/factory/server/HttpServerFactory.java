@@ -1,7 +1,5 @@
 package de.factoryfx.adminui.angularjs.factory.server;
 
-import java.util.Optional;
-
 import de.factoryfx.adminui.angularjs.factory.RestResource;
 import de.factoryfx.adminui.angularjs.factory.RestResourceFactory;
 import de.factoryfx.adminui.angularjs.factory.server.resourcehandler.ConfigurableResourceHandler;
@@ -10,7 +8,7 @@ import de.factoryfx.data.attribute.types.IntegerAttribute;
 import de.factoryfx.data.attribute.types.ObjectValueAttribute;
 import de.factoryfx.data.attribute.types.StringAttribute;
 import de.factoryfx.factory.FactoryBase;
-import de.factoryfx.factory.LifecycleNotifier;
+import de.factoryfx.factory.LiveCycleController;
 import de.factoryfx.factory.atrribute.FactoryReferenceAttribute;
 
 public class HttpServerFactory<L,V,T extends FactoryBase<L,V>> extends FactoryBase<HttpServer,Void> {
@@ -22,8 +20,7 @@ public class HttpServerFactory<L,V,T extends FactoryBase<L,V>> extends FactoryBa
     public final ObjectValueAttribute<ConfigurableResourceHandler> resourceHandler=new ObjectValueAttribute<>(new AttributeMetadata().labelText("resourceHandler"));
 
     @Override
-    protected HttpServer createImp(Optional<HttpServer> previousLiveObject, LifecycleNotifier<Void> lifecycle) {
-        return new HttpServer(port.get(),host.get(),sessionTimeoutS.get(),webGuiResource.get().instance(),resourceHandler.get(),lifecycle);
+    public LiveCycleController<HttpServer, Void> createLifecycleController() {
+        return () -> new HttpServer(port.get(),host.get(),sessionTimeoutS.get(),webGuiResource.get().instance(),resourceHandler.get());
     }
-
 }

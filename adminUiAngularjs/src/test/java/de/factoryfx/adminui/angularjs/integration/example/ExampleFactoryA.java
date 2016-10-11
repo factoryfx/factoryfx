@@ -1,6 +1,5 @@
 package de.factoryfx.adminui.angularjs.integration.example;
 
-import java.util.Optional;
 import java.util.regex.Pattern;
 
 import de.factoryfx.adminui.angularjs.integration.Permissions;
@@ -19,7 +18,7 @@ import de.factoryfx.data.attribute.types.StringMapAttribute;
 import de.factoryfx.data.validation.RegexValidation;
 import de.factoryfx.data.validation.StringRequired;
 import de.factoryfx.factory.FactoryBase;
-import de.factoryfx.factory.LifecycleNotifier;
+import de.factoryfx.factory.LiveCycleController;
 import de.factoryfx.factory.atrribute.FactoryReferenceAttribute;
 import de.factoryfx.factory.atrribute.FactoryReferenceListAttribute;
 
@@ -41,10 +40,21 @@ public class ExampleFactoryA extends FactoryBase<ExampleLiveObjectA,ExampleVisit
     public final FactoryReferenceAttribute<ExampleLiveObjectB,ExampleFactoryB> referenceAttribute = new FactoryReferenceAttribute<>(ExampleFactoryB.class,new AttributeMetadata().en("ReferenceAttribute").de("ReferenceAttribute de"));
     public final FactoryReferenceListAttribute<ExampleLiveObjectB,ExampleFactoryB> referenceListAttribute = new FactoryReferenceListAttribute<>(ExampleFactoryB.class,new AttributeMetadata().en("ReferenceListAttribute").de("ReferenceListAttribute de"));
 
+
     @Override
-    protected ExampleLiveObjectA createImp(Optional<ExampleLiveObjectA> previousLiveObject, LifecycleNotifier<ExampleVisitor> lifecycle) {
-        return new ExampleLiveObjectA(referenceAttribute.instance(), referenceListAttribute.instances(),lifecycle);
+    public LiveCycleController<ExampleLiveObjectA, ExampleVisitor> createLifecycleController() {
+        return new LiveCycleController<ExampleLiveObjectA, ExampleVisitor>() {
+            @Override
+            public ExampleLiveObjectA create() {
+                return new ExampleLiveObjectA(referenceAttribute.instance(), referenceListAttribute.instances());
+            }
+
+
+            @Override
+            public void runtimeQuery(ExampleVisitor visitor, ExampleLiveObjectA exampleLiveObjectA) {
+                visitor.exampleDates.add(new ExampleData("a","b","c"));
+                visitor.exampleDates.add(new ExampleData("a2","b2","c2"));
+            };
+        };
     }
-
-
 }

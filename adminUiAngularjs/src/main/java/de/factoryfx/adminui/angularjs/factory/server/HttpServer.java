@@ -13,9 +13,8 @@ import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider;
 import de.factoryfx.adminui.angularjs.factory.RestResource;
 import de.factoryfx.adminui.angularjs.factory.server.resourcehandler.ConfigurableResourceHandler;
-import de.factoryfx.data.jackson.ObjectMapperBuilder;
-import de.factoryfx.factory.LifecycleNotifier;
 import de.factoryfx.adminui.javafx.server.AllExceptionMapper;
+import de.factoryfx.data.jackson.ObjectMapperBuilder;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.NetworkTrafficServerConnector;
 import org.eclipse.jetty.server.ServerConnector;
@@ -44,7 +43,7 @@ public class HttpServer {
     private final ConfigurableResourceHandler resourceHandler;
     private final int sessionTimeoutS;
 
-    public HttpServer(Integer httpPort, String host, int sessionTimeoutS, RestResource restResource, ConfigurableResourceHandler resourceHandler, LifecycleNotifier lifecycleNotifier) {
+    public HttpServer(Integer httpPort, String host, int sessionTimeoutS, RestResource restResource, ConfigurableResourceHandler resourceHandler) {
         super();
         this.httpPort = httpPort;
         this.host = host;
@@ -52,8 +51,6 @@ public class HttpServer {
         this.resourceHandler =resourceHandler;
         this.sessionTimeoutS = sessionTimeoutS;
 
-        lifecycleNotifier.setStartAction(this::start);
-        lifecycleNotifier.setStopAction(this::stop);
     }
 
 
@@ -107,7 +104,7 @@ public class HttpServer {
     }
 
 
-    private void start() {
+    public void start() {
         System.setProperty("java.net.preferIPv4Stack", "true");//TODO optional?
 
         server = new org.eclipse.jetty.server.Server();
@@ -158,7 +155,7 @@ public class HttpServer {
     }
 
 
-    private void stop() {
+    public void stop() {
         try {
             server.setStopAtShutdown(true);
             server.stop();

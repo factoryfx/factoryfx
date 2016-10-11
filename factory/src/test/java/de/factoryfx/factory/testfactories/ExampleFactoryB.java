@@ -1,11 +1,9 @@
 package de.factoryfx.factory.testfactories;
 
-import java.util.Optional;
-
 import de.factoryfx.data.attribute.AttributeMetadata;
 import de.factoryfx.data.attribute.types.StringAttribute;
 import de.factoryfx.factory.FactoryBase;
-import de.factoryfx.factory.LifecycleNotifier;
+import de.factoryfx.factory.LiveCycleController;
 import de.factoryfx.factory.atrribute.FactoryReferenceAttribute;
 
 public class ExampleFactoryB extends FactoryBase<ExampleLiveObjectB,Void> {
@@ -14,7 +12,7 @@ public class ExampleFactoryB extends FactoryBase<ExampleLiveObjectB,Void> {
     public final FactoryReferenceAttribute<ExampleLiveObjectC,ExampleFactoryC> referenceAttributeC = new FactoryReferenceAttribute<>(ExampleFactoryC.class,new AttributeMetadata().labelText("ExampleC2"));
 
     @Override
-    protected ExampleLiveObjectB createImp(Optional<ExampleLiveObjectB> previousLiveObject, LifecycleNotifier<Void> lifecycle) {
-        return new ExampleLiveObjectB(referenceAttributeC.instance());
+    public LiveCycleController<ExampleLiveObjectB, Void> createLifecycleController() {
+        return () -> new ExampleLiveObjectB(referenceAttributeC.instance());
     }
 }

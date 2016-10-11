@@ -3,7 +3,6 @@ package de.factoryfx.example.factory;
 import java.util.List;
 
 import de.factoryfx.example.server.OrderStorage;
-import de.factoryfx.factory.LifecycleNotifier;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.geometry.Insets;
@@ -24,22 +23,19 @@ public class Shop {
     private final Stage stage;
     private final OrderStorage orderStorage;
 
-    public Shop(String stageTitle, List<Product> products, Stage stage, OrderStorage orderStorage, LifecycleNotifier<OrderCollector> lifecycle) {
+    public Shop(String stageTitle, List<Product> products, Stage stage, OrderStorage orderStorage) {
         this.stageTitle = stageTitle;
         this.products = products;
         this.stage = stage;
         this.orderStorage =orderStorage;
 
-        lifecycle.setStartAction(this::start);
-        lifecycle.setStopAction(this::stop);
-        lifecycle.setRuntimeQueryConsumer(this::accept);
     }
 
     public OrderStorage getOrderStorage() {
         return orderStorage;
     }
 
-    private void start() {
+    public void start() {
         Platform.runLater(()->{
             BorderPane root = new BorderPane();
             stage.setScene(new Scene(root,1000,800));
@@ -80,7 +76,7 @@ public class Shop {
 
     }
 
-    private void accept(OrderCollector visitor) {
+    public void accept(OrderCollector visitor) {
         visitor.addOrders(orderStorage.getAllOrders());
     }
 

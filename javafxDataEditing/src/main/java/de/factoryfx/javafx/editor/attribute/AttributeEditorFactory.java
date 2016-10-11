@@ -2,7 +2,6 @@ package de.factoryfx.javafx.editor.attribute;
 
 import java.math.BigDecimal;
 import java.net.URI;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -14,8 +13,23 @@ import de.factoryfx.data.attribute.Attribute;
 import de.factoryfx.data.attribute.AttributeMetadata;
 import de.factoryfx.data.attribute.ReferenceAttribute;
 import de.factoryfx.data.attribute.ReferenceListAttribute;
-import de.factoryfx.data.attribute.types.*;
-import de.factoryfx.javafx.editor.attribute.visualisation.*;
+import de.factoryfx.data.attribute.types.BigDecimalAttribute;
+import de.factoryfx.data.attribute.types.DoubleAttribute;
+import de.factoryfx.data.attribute.types.IntegerAttribute;
+import de.factoryfx.data.attribute.types.LongAttribute;
+import de.factoryfx.data.attribute.types.StringAttribute;
+import de.factoryfx.data.attribute.types.URIAttribute;
+import de.factoryfx.javafx.editor.attribute.visualisation.BigDecimalAttributeVisualisation;
+import de.factoryfx.javafx.editor.attribute.visualisation.BooleanAttributeVisualisation;
+import de.factoryfx.javafx.editor.attribute.visualisation.DoubleAttributeVisualisation;
+import de.factoryfx.javafx.editor.attribute.visualisation.EnumAttributeVisualisation;
+import de.factoryfx.javafx.editor.attribute.visualisation.IntegerAttributeVisualisation;
+import de.factoryfx.javafx.editor.attribute.visualisation.ListAttributeVisualisation;
+import de.factoryfx.javafx.editor.attribute.visualisation.LongAttributeVisualisation;
+import de.factoryfx.javafx.editor.attribute.visualisation.ReferenceAttributeVisualisation;
+import de.factoryfx.javafx.editor.attribute.visualisation.ReferenceListAttributeVisualisation;
+import de.factoryfx.javafx.editor.attribute.visualisation.StringAttributeVisualisation;
+import de.factoryfx.javafx.editor.attribute.visualisation.URIAttributeVisualisation;
 import de.factoryfx.javafx.editor.data.DataEditor;
 import de.factoryfx.javafx.util.UniformDesign;
 import javafx.collections.ObservableList;
@@ -44,40 +58,31 @@ public class AttributeEditorFactory {
             }
         }
 
+        Optional<AttributeEditor<?>> enumAttribute = getAttributeEditorSimpleType(attribute);
+        if (enumAttribute != null) return enumAttribute;
 
-        if (String.class==attribute.getAttributeType().dataType){
-            return Optional.of(new AttributeEditor<>((Attribute<String>)attribute,new StringAttributeVisualisation()));
-        }
+        Optional<AttributeEditor<?>> detailAttribute = getAttributeEditorList(attribute, dataEditor);
+        if (detailAttribute != null) return detailAttribute;
 
-        if (Integer.class==attribute.getAttributeType().dataType){
-            return Optional.of(new AttributeEditor<>((Attribute<Integer>)attribute,new IntegerAttributeVisualisation()));
-        }
+        Optional<AttributeEditor<?>> referenceAttribute = getAttributeEditorReference(attribute, dataEditor);
+        if (referenceAttribute != null) return referenceAttribute;
 
-        if (Boolean.class==attribute.getAttributeType().dataType){
-            return Optional.of(new AttributeEditor<>((Attribute<Boolean>)attribute,new BooleanAttributeVisualisation()));
-        }
 
-        if (Enum.class.isAssignableFrom(attribute.getAttributeType().dataType)){
-            Attribute<Enum> enumAttribute = (Attribute<Enum>) attribute;
-            List<Enum> enumConstants = Arrays.asList((Enum[]) enumAttribute.getAttributeType().dataType.getEnumConstants());
-            return Optional.of(new AttributeEditor<>(enumAttribute,new EnumAttributeVisualisation(enumConstants)));
-        }
+        return Optional.empty();
+    }
 
         if (Long.class==attribute.getAttributeType().dataType){
             return Optional.of(new AttributeEditor<>((Attribute<Long>)attribute,new LongAttributeVisualisation()));
         }
 
-        if (BigDecimal.class==attribute.getAttributeType().dataType){
-            return Optional.of(new AttributeEditor<>((Attribute<BigDecimal>)attribute,new BigDecimalAttributeVisualisation()));
+        if (ObservableList.class.isAssignableFrom(attribute.getAttributeType().dataType) && Data.class.isAssignableFrom(attribute.getAttributeType().listItemType)){
+            ReferenceListAttribute<?> referenceListAttribute = (ReferenceListAttribute<?>) attribute;
+            return Optional.of(new AttributeEditor<>((Attribute<ObservableList<Data>>)attribute,new ReferenceListAttributeVisualisation(uniformDesign, dataEditor, () -> referenceListAttribute.addNewFactory(root), ()->(List<Data>)referenceListAttribute.possibleValues(root))));
         }
+        return null;
+    }
 
-        if (Double.class==attribute.getAttributeType().dataType){
-            return Optional.of(new AttributeEditor<>((Attribute<Double>)attribute,new DoubleAttributeVisualisation()));
-        }
-
-
-
-
+    private Optional<AttributeEditor<?>> getAttributeEditorList(Attribute<?> attribute, DataEditor dataEditor) {
         if (ObservableList.class.isAssignableFrom(attribute.getAttributeType().dataType) && String.class==attribute.getAttributeType().listItemType){
             StringAttribute detailAttribute = new StringAttribute(new AttributeMetadata().de("Wert").en("Value"));
             AttributeEditor<String> attributeEditor = (AttributeEditor<String>) getAttributeEditor(detailAttribute,dataEditor).get();
@@ -130,12 +135,49 @@ public class AttributeEditorFactory {
             AttributeEditor<URI> attributeEditor = (AttributeEditor<URI>) getAttributeEditor(detailAttribute,dataEditor).get();
             return Optional.of(new AttributeEditor<>((Attribute<ObservableList<URI>>)attribute,new ListAttributeVisualisation<>(uniformDesign, detailAttribute, attributeEditor)));
         }
+        return null;
+    }
 
         if (LocalDate.class.isAssignableFrom(attribute.getAttributeType().dataType)) {
             return Optional.of(new AttributeEditor<>((Attribute<LocalDate>)attribute,new LocalDateAttributeVisualisation()));
         }
 
         return Optional.empty();
+    private Optional<AttributeEditor<?>> getAttributeEditorSimpleType(Attribute<?> attribute) {
+        if (String.class==attribute.getAttributeType().dataType){
+            return Optional.of(new AttributeEditor<>((Attribute<String>)attribute,new StringAttributeVisualisation()));
+        }
+
+        if (Integer.class==attribute.getAttributeType().dataType){
+            return Optional.of(new AttributeEditor<>((Attribute<Integer>)attribute,new IntegerAttributeVisualisation()));
+        }
+
+        if (Boolean.class==attribute.getAttributeType().dataType){
+            return Optional.of(new AttributeEditor<>((Attribute<Boolean>)attribute,new BooleanAttributeVisualisation()));
+        }
+
+        if (Enum.class.isAssignableFrom(attribute.getAttributeType().dataType)){
+            Attribute<Enum> enumAttribute = (Attribute<Enum>) attribute;
+            List<Enum> enumConstants = Arrays.asList((Enum[]) enumAttribute.getAttributeType().dataType.getEnumConstants());
+            return Optional.of(new AttributeEditor<>(enumAttribute,new EnumAttributeVisualisation(enumConstants)));
+        }
+
+        if (Long.class==attribute.getAttributeType().dataType){
+            return Optional.of(new AttributeEditor<>((Attribute<Long>)attribute,new LongAttributeVisualisation()));
+        }
+
+        if (BigDecimal.class==attribute.getAttributeType().dataType){
+            return Optional.of(new AttributeEditor<>((Attribute<BigDecimal>)attribute,new BigDecimalAttributeVisualisation()));
+        }
+
+        if (Double.class==attribute.getAttributeType().dataType){
+            return Optional.of(new AttributeEditor<>((Attribute<Double>)attribute,new DoubleAttributeVisualisation()));
+        }
+
+        if (URI.class.isAssignableFrom(attribute.getAttributeType().dataType)) {
+            return Optional.of(new AttributeEditor<>((Attribute<URI>)attribute,new URIAttributeVisualisation()));
+        }
+        return null;
     }
 
 }

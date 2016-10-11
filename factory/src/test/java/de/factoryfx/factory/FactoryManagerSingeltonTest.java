@@ -1,7 +1,5 @@
 package de.factoryfx.factory;
 
-import java.util.Optional;
-
 import de.factoryfx.data.attribute.AttributeMetadata;
 import de.factoryfx.factory.atrribute.FactoryReferenceAttribute;
 import de.factoryfx.factory.testfactories.ExampleFactoryB;
@@ -14,9 +12,10 @@ public class FactoryManagerSingeltonTest {
         public final FactoryReferenceAttribute<ExampleLiveObjectB,ExampleFactoryB> referenceAttribute1 = new FactoryReferenceAttribute<>(ExampleFactoryB.class,new AttributeMetadata().labelText("ExampleA2"));
         public final FactoryReferenceAttribute<ExampleLiveObjectB,ExampleFactoryB> referenceAttribute2 = new FactoryReferenceAttribute<>(ExampleFactoryB.class,new AttributeMetadata().labelText("ExampleA2"));
 
+
         @Override
-        protected ExampleSingletonLiveObjectA createImp(Optional<ExampleSingletonLiveObjectA> previousLiveObject, LifecycleNotifier<Void> lifecycle) {
-            return new ExampleSingletonLiveObjectA(referenceAttribute1.instance(), referenceAttribute2.instance());
+        public LiveCycleController<ExampleSingletonLiveObjectA, Void> createLifecycleController() {
+            return () -> new ExampleSingletonLiveObjectA(referenceAttribute1.instance(), referenceAttribute2.instance());
         }
     }
 

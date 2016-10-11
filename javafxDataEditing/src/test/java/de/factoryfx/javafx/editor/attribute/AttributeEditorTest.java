@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import de.factoryfx.data.attribute.AttributeMetadata;
 import de.factoryfx.data.attribute.types.StringAttribute;
 import javafx.beans.value.ChangeListener;
-import javafx.scene.layout.Region;
 import org.junit.Assert;
 import org.junit.Test;
 
