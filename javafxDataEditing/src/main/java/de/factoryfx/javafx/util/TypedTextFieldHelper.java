@@ -3,6 +3,12 @@ package de.factoryfx.javafx.util;
 import java.math.BigDecimal;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.time.chrono.IsoChronology;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
+import java.time.format.DateTimeParseException;
+import java.time.format.FormatStyle;
+import java.util.Locale;
 import java.util.function.Consumer;
 
 import com.google.common.base.Strings;
@@ -35,8 +41,25 @@ public class TypedTextFieldHelper {
             if (newValue!=null){
                 try {
                     URI uri = new URI(newValue);
-                    textField.getStyleClass().removeIf(c -> c.equals("error"));
+                    textField.getStyleClass().removeIf(c->"error".equals(c));
                 } catch (URISyntaxException e) {
+                    textField.getStyleClass().add("error");
+                }
+
+            }
+        });
+
+
+    }
+
+    public static void setupLocalDateTextField(TextField textField) {
+        textField.textProperty().addListener((observable, oldValue, newValue) -> {
+            DateTimeFormatter dtf = new DateTimeFormatterBuilder().appendLocalized(FormatStyle.SHORT, null).toFormatter(Locale.getDefault());
+            if (newValue!=null){
+                try {
+                    dtf.parse(newValue);
+                    textField.getStyleClass().removeIf(c->"error".equals(c));
+                } catch (DateTimeParseException e) {
                     textField.getStyleClass().add("error");
                 }
 

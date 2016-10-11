@@ -2,6 +2,7 @@ package de.factoryfx.javafx.editor.attribute;
 
 import java.math.BigDecimal;
 import java.net.URI;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -128,6 +129,10 @@ public class AttributeEditorFactory {
             URIAttribute detailAttribute = new URIAttribute(new AttributeMetadata().de("URI").en("URI"));
             AttributeEditor<URI> attributeEditor = (AttributeEditor<URI>) getAttributeEditor(detailAttribute,dataEditor).get();
             return Optional.of(new AttributeEditor<>((Attribute<ObservableList<URI>>)attribute,new ListAttributeVisualisation<>(uniformDesign, detailAttribute, attributeEditor)));
+        }
+
+        if (LocalDate.class.isAssignableFrom(attribute.getAttributeType().dataType)) {
+            return Optional.of(new AttributeEditor<>((Attribute<LocalDate>)attribute,new LocalDateAttributeVisualisation()));
         }
 
         return Optional.empty();
