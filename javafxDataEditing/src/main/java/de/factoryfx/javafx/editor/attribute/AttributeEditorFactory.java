@@ -1,16 +1,5 @@
 package de.factoryfx.javafx.editor.attribute;
 
-import de.factoryfx.data.Data;
-import de.factoryfx.data.attribute.Attribute;
-import de.factoryfx.data.attribute.AttributeMetadata;
-import de.factoryfx.data.attribute.ReferenceAttribute;
-import de.factoryfx.data.attribute.ReferenceListAttribute;
-import de.factoryfx.data.attribute.types.*;
-import de.factoryfx.javafx.editor.attribute.visualisation.*;
-import de.factoryfx.javafx.editor.data.DataEditor;
-import de.factoryfx.javafx.util.UniformDesign;
-import javafx.collections.ObservableList;
-
 import java.math.BigDecimal;
 import java.net.URI;
 import java.time.LocalDate;
@@ -19,6 +8,33 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
+
+import de.factoryfx.data.Data;
+import de.factoryfx.data.attribute.Attribute;
+import de.factoryfx.data.attribute.AttributeMetadata;
+import de.factoryfx.data.attribute.ReferenceAttribute;
+import de.factoryfx.data.attribute.ReferenceListAttribute;
+import de.factoryfx.data.attribute.types.BigDecimalAttribute;
+import de.factoryfx.data.attribute.types.DoubleAttribute;
+import de.factoryfx.data.attribute.types.IntegerAttribute;
+import de.factoryfx.data.attribute.types.LongAttribute;
+import de.factoryfx.data.attribute.types.StringAttribute;
+import de.factoryfx.data.attribute.types.URIAttribute;
+import de.factoryfx.javafx.editor.attribute.visualisation.BigDecimalAttributeVisualisation;
+import de.factoryfx.javafx.editor.attribute.visualisation.BooleanAttributeVisualisation;
+import de.factoryfx.javafx.editor.attribute.visualisation.DoubleAttributeVisualisation;
+import de.factoryfx.javafx.editor.attribute.visualisation.EnumAttributeVisualisation;
+import de.factoryfx.javafx.editor.attribute.visualisation.IntegerAttributeVisualisation;
+import de.factoryfx.javafx.editor.attribute.visualisation.ListAttributeVisualisation;
+import de.factoryfx.javafx.editor.attribute.visualisation.LocalDateAttributeVisualisation;
+import de.factoryfx.javafx.editor.attribute.visualisation.LongAttributeVisualisation;
+import de.factoryfx.javafx.editor.attribute.visualisation.ReferenceAttributeVisualisation;
+import de.factoryfx.javafx.editor.attribute.visualisation.ReferenceListAttributeVisualisation;
+import de.factoryfx.javafx.editor.attribute.visualisation.StringAttributeVisualisation;
+import de.factoryfx.javafx.editor.attribute.visualisation.URIAttributeVisualisation;
+import de.factoryfx.javafx.editor.data.DataEditor;
+import de.factoryfx.javafx.util.UniformDesign;
+import javafx.collections.ObservableList;
 
 public class AttributeEditorFactory {
 
@@ -46,13 +62,13 @@ public class AttributeEditorFactory {
         }
 
         Optional<AttributeEditor<?>> enumAttribute = getAttributeEditorSimpleType(attribute);
-        if (enumAttribute != null) return enumAttribute;
+        if (enumAttribute.isPresent()) return enumAttribute;
 
         Optional<AttributeEditor<?>> detailAttribute = getAttributeEditorList(attribute, dataEditor);
-        if (detailAttribute != null) return detailAttribute;
+        if (detailAttribute.isPresent()) return detailAttribute;
 
         Optional<AttributeEditor<?>> referenceAttribute = getAttributeEditorReference(attribute, dataEditor);
-        if (referenceAttribute != null) return referenceAttribute;
+        if (referenceAttribute.isPresent()) return referenceAttribute;
 
         return Optional.empty();
     }
@@ -67,7 +83,7 @@ public class AttributeEditorFactory {
             ReferenceListAttribute<?> referenceListAttribute = (ReferenceListAttribute<?>) attribute;
             return Optional.of(new AttributeEditor<>((Attribute<ObservableList<Data>>)attribute,new ReferenceListAttributeVisualisation(uniformDesign, dataEditor, () -> referenceListAttribute.addNewFactory(root), ()->(List<Data>)referenceListAttribute.possibleValues(root))));
         }
-        return null;
+        return Optional.empty();
     }
 
 
@@ -108,7 +124,7 @@ public class AttributeEditorFactory {
             return Optional.of(new AttributeEditor<>((Attribute<ObservableList<URI>>)attribute,new ListAttributeVisualisation<>(uniformDesign, detailAttribute, attributeEditor)));
         }
 
-        return null;
+        return Optional.empty();
     }
 
 
@@ -151,7 +167,7 @@ public class AttributeEditorFactory {
             return Optional.of(new AttributeEditor<>((Attribute<LocalDate>)attribute,new LocalDateAttributeVisualisation()));
         }
 
-        return null;
+        return Optional.empty();
     }
 
 }
