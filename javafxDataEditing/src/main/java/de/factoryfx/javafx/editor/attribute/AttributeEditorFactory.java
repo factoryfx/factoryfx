@@ -116,9 +116,6 @@ public class AttributeEditorFactory {
             return Optional.of(new AttributeEditor<>((Attribute<ObservableList<Double>>)attribute,new ListAttributeVisualisation<>(uniformDesign, detailAttribute, attributeEditor)));
         }
 
-
-
-
         if (Data.class==attribute.getAttributeType().dataType){
             ReferenceAttribute<?> referenceAttribute = (ReferenceAttribute<?>) attribute;
             return Optional.of(new AttributeEditor<>((Attribute<Data>)attribute,new ReferenceAttributeVisualisation(uniformDesign,dataEditor,()->referenceAttribute.addNewFactory(root),()->(List<Data>)referenceAttribute.possibleValues(root))));
@@ -129,18 +126,10 @@ public class AttributeEditorFactory {
             return Optional.of(new AttributeEditor<>((Attribute<ObservableList<Data>>)attribute,new ReferenceListAttributeVisualisation(uniformDesign, dataEditor, () -> referenceListAttribute.addNewFactory(root), ()->(List<Data>)referenceListAttribute.possibleValues(root))));
         }
         
-        if (URI.class.isAssignableFrom(attribute.getAttributeType().dataType)) {
-            return Optional.of(new AttributeEditor<>((Attribute<URI>)attribute,new URIAttributeVisualisation()));
-        }
-
         if (ObservableList.class.isAssignableFrom(attribute.getAttributeType().dataType) && URI.class==attribute.getAttributeType().listItemType){
             URIAttribute detailAttribute = new URIAttribute(new AttributeMetadata().de("URI").en("URI"));
             AttributeEditor<URI> attributeEditor = (AttributeEditor<URI>) getAttributeEditor(detailAttribute,dataEditor).get();
             return Optional.of(new AttributeEditor<>((Attribute<ObservableList<URI>>)attribute,new ListAttributeVisualisation<>(uniformDesign, detailAttribute, attributeEditor)));
-        }
-
-        if (LocalDate.class.isAssignableFrom(attribute.getAttributeType().dataType)) {
-            return Optional.of(new AttributeEditor<>((Attribute<LocalDate>)attribute,new LocalDateAttributeVisualisation()));
         }
 
         return null;
@@ -181,6 +170,11 @@ public class AttributeEditorFactory {
         if (URI.class.isAssignableFrom(attribute.getAttributeType().dataType)) {
             return Optional.of(new AttributeEditor<>((Attribute<URI>)attribute,new URIAttributeVisualisation()));
         }
+
+        if (LocalDate.class.isAssignableFrom(attribute.getAttributeType().dataType)) {
+            return Optional.of(new AttributeEditor<>((Attribute<LocalDate>)attribute,new LocalDateAttributeVisualisation()));
+        }
+
         return null;
     }
 
