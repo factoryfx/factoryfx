@@ -9,8 +9,12 @@ import de.factoryfx.factory.LiveCycleController;
 
 public class DistributionClientDownloadServerFactory<V> extends FactoryBase<DistributionClientDownloadServer,V> {
 
-    public final StringAttribute host = new StringAttribute(new AttributeMetadata().labelText("host"));
-    public final IntegerAttribute port = new IntegerAttribute(new AttributeMetadata().labelText("port"));
+    public DistributionClientDownloadServerFactory(){
+        setDisplayTextProvider(() -> host.get()+port.get());
+    }
+
+    public final StringAttribute host = new StringAttribute(new AttributeMetadata().de("host").en("host"));
+    public final IntegerAttribute port = new IntegerAttribute(new AttributeMetadata().de("port").en("port"));
     public final StringAttribute distributionClientBasePath = new StringAttribute(new AttributeMetadata().labelText("distributionClientBasePath"));
     public final BooleanAttribute directoriesListed = new BooleanAttribute(new AttributeMetadata().labelText("directoriesListed"));
 
