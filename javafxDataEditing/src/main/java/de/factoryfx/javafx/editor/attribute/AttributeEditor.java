@@ -87,7 +87,7 @@ public class AttributeEditor<T> implements Widget {
                 for (ValidationError validationError : newValue) {
                     validationErrorText.append(counter);
                     validationErrorText.append(": ");
-                    validationErrorText.append(validationError.validationDescription.getPreferred(Locale.ENGLISH));
+                    validationErrorText.append(validationError.validationDescription.getPreferred(Locale.getDefault()));
                     validationErrorText.append("\n");
                     counter++;
                     isValid=false;

@@ -15,6 +15,7 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
+import java.util.stream.Stream;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import de.factoryfx.data.attribute.Attribute;
@@ -53,7 +54,7 @@ public abstract class Data {
         synchronized (fields) {
             Field[] f = fields.get(getClass());
             if (f == null) {
-                f = getClass().getFields();
+                f = getFieldsOrdered(getClass());
                 ArrayList<Field> removeStatic = new ArrayList<>();
                 for (Field ff : f) {
                     if (!Modifier.isStatic(ff.getModifiers())) {
@@ -64,6 +65,16 @@ public abstract class Data {
             }
             instanceFields = f;
         }
+    }
+
+    private Field[] getFieldsOrdered(Class<?> clazz) {
+        if (clazz == Object.class)
+            return new Field[0];
+        ArrayList<Field> fields = new ArrayList<>();
+        Class<?> parent = clazz.getSuperclass();
+        Stream.of(getFieldsOrdered(parent)).forEach(fields::add);
+        Stream.of(clazz.getDeclaredFields()).forEach(fields::add);
+        return fields.toArray(new Field[fields.size()]);
     }
 
     @FunctionalInterface
