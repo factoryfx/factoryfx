@@ -27,6 +27,11 @@ public class WrappingValueAttributeTest {
         public Object getId() {
             return 1;
         }
+
+        @Override
+        public void setId(Object object) {
+
+        }
     }
 
     @Test

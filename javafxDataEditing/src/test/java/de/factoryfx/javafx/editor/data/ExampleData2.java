@@ -16,4 +16,9 @@ public class ExampleData2 extends Data {
     public Object getId() {
         return id;
     }
+
+    @Override
+    public void setId(Object id) {
+        this.id=(String)id;
+    }
 }

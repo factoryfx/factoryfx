@@ -4,6 +4,7 @@ import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Locale;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import com.google.common.collect.TreeTraverser;
 import de.factoryfx.data.merge.FactoryMerger;
@@ -31,12 +32,14 @@ public class FactoryManager<L,V,T extends FactoryBase<L,V>> {
                 ((FactoryBase<?,?>)mergeResultEntry.parent).markChanged();
             }
 
+            LinkedHashSet<FactoryBase<?,?>> changedFactories = startFactoryProvider.apply(currentFactory)
+                    .stream().filter(factoryBase -> factoryBase.changedDeep()).collect(Collectors.toCollection(LinkedHashSet::new));
 
             currentFactory.instance();
 
 
-            LinkedHashSet<FactoryBase<?,?>> newLiveObjects = startFactoryProvider.apply(currentFactory);
-            updateLiveObjects(previousLiveObjects,newLiveObjects);
+            LinkedHashSet<FactoryBase<?,?>> newFactories = startFactoryProvider.apply(currentFactory);
+            updateLiveObjects(previousLiveObjects,changedFactories,newFactories);
         }
         return mergeDiff;
     }
@@ -57,19 +60,21 @@ public class FactoryManager<L,V,T extends FactoryBase<L,V>> {
     }
 
 
-    private void updateLiveObjects(LinkedHashSet<FactoryBase<?,?>> previousFactories, LinkedHashSet<FactoryBase<?,?>> newFactories){
+    private void updateLiveObjects(LinkedHashSet<FactoryBase<?,?>> previousFactories, LinkedHashSet<FactoryBase<?,?>> changedFactories , LinkedHashSet<FactoryBase<?,?>> newFactories){
         for (FactoryBase<?,?> previousLiveObject: previousFactories){
             if (!newFactories.contains(previousLiveObject)){
-                previousLiveObject.stop();
+                previousLiveObject.destroy();
             }
         }
 
         for (FactoryBase<?,?> newLiveObject: newFactories){
-            if (previousFactories.contains(newLiveObject)){
-                //nothing reused live object
+            if (changedFactories.contains(newLiveObject)){
+                newLiveObject.start();
+                continue;
             }
             if (!previousFactories.contains(newLiveObject)){
                 newLiveObject.start();
+                continue;
             }
         }
     }
@@ -125,7 +130,7 @@ public class FactoryManager<L,V,T extends FactoryBase<L,V>> {
         HashSet<FactoryBase<?,?>> liveObjects = stopFactoryProvider.apply(currentFactory);
 
         for (FactoryBase<?,?> newLiveObject: liveObjects){
-            newLiveObject.stop();
+            newLiveObject.destroy();
         }
     }
 

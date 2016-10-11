@@ -20,6 +20,12 @@ public class HttpServerTest {
         public Object getId() {
             return 1;
         }
+
+        @Override
+        public void setId(Object object) {
+
+        }
+
     }
 
     public static class TestLongDecimal extends Data {
@@ -28,6 +34,11 @@ public class HttpServerTest {
         @Override
         public Object getId() {
             return 2;
+        }
+
+        @Override
+        public void setId(Object object) {
+
         }
     }
 
