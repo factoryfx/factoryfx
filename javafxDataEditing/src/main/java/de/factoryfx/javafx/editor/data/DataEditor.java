@@ -58,6 +58,7 @@ public class DataEditor implements Widget {
     }
 
     List<AttributeEditor<?>> createdEditors=new ArrayList<>();
+    BooleanBinding scrollerVisible;
 
     @Override
     public Node createContent() {
@@ -191,6 +192,7 @@ public class DataEditor implements Widget {
         BorderPane.setMargin(breadCrumbBar, new Insets(3,0,3,0));
         ScrollPane scrollPane = new ScrollPane();
         scrollPane.setContent(breadCrumbBar);
+        scrollPane.setHvalue(1.0);
         scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
         scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
         scrollPane.getStyleClass().add("transparent-scroll-pane");
@@ -202,10 +204,11 @@ public class DataEditor implements Widget {
         scroller.valueProperty().bindBidirectional(scrollPane.hvalueProperty());
         scroller.setPrefWidth(50);
         navigation.getChildren().add(scroller);
-//        scrollerVisible = Bindings.createBooleanBinding(() -> {
-//            return scrollPane.getBoundsInParent().getWidth()<breadCrumbBar.getWidth();
-//        },scrollPane.boundsInParentProperty());
-//        scroller.visibleProperty().bind(scrollerVisible);
+
+        BooleanBinding scrollerVisible = Bindings.createBooleanBinding(() -> scrollPane.getBoundsInParent().getWidth()<breadCrumbBar.getWidth(),scrollPane.boundsInParentProperty());
+        scroller.visibleProperty().bind(scrollerVisible);
+
+
         HBox.setHgrow(scrollPane,Priority.ALWAYS);
         return navigation;
     }
