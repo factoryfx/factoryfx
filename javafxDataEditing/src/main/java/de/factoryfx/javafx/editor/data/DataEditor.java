@@ -160,7 +160,10 @@ public class DataEditor implements Widget {
             }
             return breadCrumbButton;
         });
-        breadCrumbBar.setOnCrumbAction(event -> edit(event.getSelectedCrumb().getValue()));
+        breadCrumbBar.setOnCrumbAction(event -> {
+            edit(event.getSelectedCrumb().getValue());
+            breadCrumbBar.setSelectedCrumb(BreadCrumbBar.buildTreeModel(displayedEntities.toArray(new Data[0])));
+        });
         displayedEntities.addListener((ListChangeListener<Data>) c -> {
             breadCrumbBar.setSelectedCrumb(BreadCrumbBar.buildTreeModel(displayedEntities.toArray(new Data[0])));
         });
