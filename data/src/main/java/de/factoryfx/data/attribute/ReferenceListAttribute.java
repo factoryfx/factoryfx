@@ -8,6 +8,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
@@ -165,24 +166,24 @@ public class ReferenceListAttribute<T extends Data> extends Attribute<Observable
 
 
     private Optional<Function<Data,List<T>>> possibleValueProviderFromRoot=Optional.empty();
-    private Optional<Function<Data,T>> newValueProviderFromRoot=Optional.empty();
+    private Optional<Supplier<T>> newValueProvider =Optional.empty();
 
     public ReferenceListAttribute possibleValueProvider(Function<Data,List<T>> provider){
         possibleValueProviderFromRoot=Optional.of(provider);
         return this;
     }
 
-    public ReferenceListAttribute newValueProvider(Function<Data,T> newValueProvider){
-        newValueProviderFromRoot=Optional.of(newValueProvider);
+    public ReferenceListAttribute newValueProvider(Supplier<T> newValueProvider){
+        this.newValueProvider =Optional.of(newValueProvider);
         return this;
     }
 
     public void addNewFactory(Data root){
-        newValueProviderFromRoot.ifPresent(newFactoryFunction -> {
-            T newFactory = newFactoryFunction.apply(root);
+        newValueProvider.ifPresent(newFactoryFunction -> {
+            T newFactory = newFactoryFunction.get();
             get().add(newFactory);
         });
-        if (!newValueProviderFromRoot.isPresent()){
+        if (!newValueProvider.isPresent()){
             try {
                 get().add(clazz.newInstance());
             } catch (InstantiationException e) {
