@@ -13,6 +13,8 @@ public class StoredFactoryMetadata {
     public String baseVersionId;
 
 
+    public Integer dataModelVersion;
+
     @JsonCreator
     public StoredFactoryMetadata() {
         this.creationTime=LocalDateTime.now();

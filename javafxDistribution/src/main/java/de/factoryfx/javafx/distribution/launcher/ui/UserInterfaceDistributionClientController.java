@@ -23,6 +23,7 @@ import com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider;
 import com.google.common.base.Throwables;
 import com.google.common.hash.Hashing;
 import com.google.common.io.Files;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
@@ -30,6 +31,7 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.VBox;
 import org.glassfish.jersey.client.ClientConfig;
 import org.glassfish.jersey.client.filter.EncodingFilter;
 import org.glassfish.jersey.jackson.JacksonFeature;
@@ -50,6 +52,9 @@ public class UserInterfaceDistributionClientController {
 
     @FXML
     private TextField serverUrlInput;
+
+    @FXML
+    private VBox rootPane;
 
 
     public UserInterfaceDistributionClientController() {
@@ -98,14 +103,27 @@ public class UserInterfaceDistributionClientController {
             boolean needUpdate = Boolean.parseBoolean(response.readEntity(String.class));
 
             if (needUpdate) {
+                rootPane.setDisable(true);
+                new Thread(){
+                    @Override
+                    public void run() {
+                        super.run();
+                        WebTarget webResourceDownload = client.target(serverUrl + "/download/");
+                        Response responseDownload = webResourceDownload.request("application/zip").get();
+                        File tempDownloadFile = responseDownload.readEntity(File.class);
+                        File newFile = new File(guiFolder, GUI_ZIP);
+                        try {
+                            mkdir(guiFolder);
+                            Files.move(tempDownloadFile, newFile);
+                            unzip(newFile.getAbsolutePath(), newFile.getParent());
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
+                        }
+                        Platform.runLater(()->rootPane.setDisable(false));
+                    }
+                }.start();
+
 //                deleteFolder(guifolder); TODO required?
-                WebTarget webResourceDownload = client.target(serverUrl + "/download/");
-                Response responseDownload = webResourceDownload.request("application/zip").get();
-                File tempDownloadFile = responseDownload.readEntity(File.class);
-                File newFile = new File(guiFolder, GUI_ZIP);
-                mkdir(guiFolder);
-                Files.move(tempDownloadFile, newFile);
-                unzip(newFile.getAbsolutePath(), newFile.getParent());
             }
 
 
@@ -144,7 +162,7 @@ public class UserInterfaceDistributionClientController {
         ZipEntry entry = zipIn.getNextEntry();
         // iterates over entries in the zip file
         while (entry != null) {
-            String filePath = destDirectory + File.separator + entry.getName().replaceFirst("[a-zA-Z0-9_.-]+/","gui/");//workaround for build number remove firstroot dir
+            String filePath = destDirectory + File.separator + entry.getName();
             if (!entry.isDirectory()) {
                 // if the entry is a file, extracts it
                 extractFile(zipIn, filePath);
