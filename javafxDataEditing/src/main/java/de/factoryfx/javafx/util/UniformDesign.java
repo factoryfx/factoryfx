@@ -2,11 +2,25 @@ package de.factoryfx.javafx.util;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
 import java.util.Locale;
 
 import de.factoryfx.data.attribute.Attribute;
+import javafx.beans.InvalidationListener;
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+import javafx.scene.control.Label;
 import javafx.scene.control.Labeled;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.ToggleButton;
+import javafx.scene.layout.Border;
+import javafx.scene.layout.BorderStroke;
+import javafx.scene.layout.BorderStrokeStyle;
+import javafx.scene.layout.BorderWidths;
+import javafx.scene.layout.CornerRadii;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import org.controlsfx.glyphfont.FontAwesome;
 import org.controlsfx.glyphfont.Glyph;
@@ -81,6 +95,37 @@ public class UniformDesign {
         return attribute.metadata.labelText.getPreferred(Locale.getDefault());
     }
 
+    public VBox createListEditSummary(SimpleObjectProperty<? extends List> boundTo, VBox detailView) {
+        VBox root = new VBox();
+        detailView.setBorder(new Border(new BorderStroke(Color.GREY, BorderStrokeStyle.SOLID, CornerRadii.EMPTY, new BorderWidths(2))));
+        VBox.setMargin(detailView,new Insets(3,0,0,0));
+
+        ToggleButton expandButton=new ToggleButton();
+        expandButton.setOnAction(event -> {
+            if (expandButton.isSelected()){
+                root.getChildren().add(detailView);
+            } else {
+                root.getChildren().remove(detailView);
+            }
+        });
+        addIcon(expandButton, FontAwesome.Glyph.EXPAND);
+
+        HBox summary=new HBox(3);
+        summary.setAlignment(Pos.CENTER_LEFT);
+        Label label = new Label();
+        InvalidationListener listener = observable -> {
+            if (boundTo.get() == null) {
+                label.setText("<empty>");
+            } else {
+                label.setText("Items: "+boundTo.get().size());
+            }
+        };
+        boundTo.addListener(listener);
+        listener.invalidated(null);
+        summary.getChildren().addAll(expandButton, label);
+        root.getChildren().addAll(summary);
+        return root;
+    }
 
 
 //

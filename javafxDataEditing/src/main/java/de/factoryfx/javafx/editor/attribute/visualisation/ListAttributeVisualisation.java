@@ -18,7 +18,6 @@ import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.Separator;
-import javafx.scene.control.SplitPane;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
@@ -38,12 +37,18 @@ public class ListAttributeVisualisation<T> implements AttributeEditorVisualisati
         this.attributeEditor = attributeEditor;
     }
 
+
     @Override
     public Node createContent(SimpleObjectProperty<ObservableList<T>> boundTo) {
+        VBox detailView = createDetailView(boundTo);
+        return uniformDesign.createListEditSummary(boundTo, detailView);
+    }
+
+
+    private VBox createDetailView(SimpleObjectProperty<ObservableList<T>> boundTo) {
         TextField textField = new TextField();
         TypedTextFieldHelper.setupLongTextField(textField);
 //        textField.textProperty().bindBidirectional(boundTo, new LongStringConverter());
-
 
         TableView<T> tableView = new TableView<>();
         tableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
@@ -77,8 +82,6 @@ public class ListAttributeVisualisation<T> implements AttributeEditorVisualisati
         deleteButton.setOnAction(event -> boundTo.get().remove(tableView.getSelectionModel().getSelectedItem()));
         deleteButton.disableProperty().bind(tableView.getSelectionModel().selectedItemProperty().isNull());
 
-
-
         tableView.getSelectionModel().selectedItemProperty().addListener(observable -> {
             detailAttribute.set(tableView.getSelectionModel().getSelectedItem());
         });
@@ -108,7 +111,6 @@ public class ListAttributeVisualisation<T> implements AttributeEditorVisualisati
         HBox.setMargin(tableControlWidgetContent, new Insets(0,1,0,0));
         listControls.getChildren().add(tableControlWidgetContent);
 
-
         HBox editorWrapper= new HBox(3);
         editorWrapper.setAlignment(Pos.CENTER_LEFT);
         editorWrapper.setPadding(new Insets(3));
@@ -128,8 +130,7 @@ public class ListAttributeVisualisation<T> implements AttributeEditorVisualisati
 
 //        editorWrapper.disableProperty().edit(tableView.getSelectionModel().selectedItemProperty().isNull().and(content.focusedProperty().not()));
 
-        SplitPane splitPaneForBorder = new SplitPane();
-        splitPaneForBorder.getItems().add(vBox);
-        return splitPaneForBorder;
+        return vBox;
     }
+
 }

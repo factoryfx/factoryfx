@@ -43,7 +43,11 @@ public class ReferenceListAttributeVisualisation implements AttributeEditorVisua
 
     @Override
     public Node createContent(SimpleObjectProperty<ObservableList<Data>> boundTo) {
+        VBox detailView = createDetailView(boundTo);
+        return uniformDesign.createListEditSummary(boundTo, detailView);
+    }
 
+    private VBox createDetailView(SimpleObjectProperty<ObservableList<Data>> boundTo) {
         TableView<Data> tableView = new TableView<>();
         tableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         TableColumn<Data, String> test = new TableColumn<>("Data");
@@ -79,12 +83,9 @@ public class ReferenceListAttributeVisualisation implements AttributeEditorVisua
         boundTo.addListener(listener);
         listener.invalidated(null);
 
-
-
         Button showButton = new Button("", uniformDesign.createIcon(FontAwesome.Glyph.PENCIL));
         showButton.setOnAction(event -> dataEditor.edit(tableView.getSelectionModel().getSelectedItem()));
         showButton.disableProperty().bind(tableView.getSelectionModel().selectedItemProperty().isNull());
-
 
         Button selectButton = new Button("", uniformDesign.createIcon(FontAwesome.Glyph.SEARCH_PLUS));
         selectButton.setOnAction(event -> {
@@ -137,7 +138,6 @@ public class ReferenceListAttributeVisualisation implements AttributeEditorVisua
         HBox.setMargin(moveUpButton,new Insets(0,0,0,9));
         HBox.setMargin(moveDownButton,new Insets(0,9,0,0));
 
-
         TableControlWidget<Data> tableControlWidget = new TableControlWidget<>(tableView,uniformDesign);
         Node tableControlWidgetContent = tableControlWidget.createContent();
         HBox.setHgrow(tableControlWidgetContent, Priority.ALWAYS);
@@ -147,7 +147,6 @@ public class ReferenceListAttributeVisualisation implements AttributeEditorVisua
         VBox vbox = new VBox();
         vbox.getChildren().add(tableView);
         vbox.getChildren().add(buttons);
-
         return vbox;
     }
 }
