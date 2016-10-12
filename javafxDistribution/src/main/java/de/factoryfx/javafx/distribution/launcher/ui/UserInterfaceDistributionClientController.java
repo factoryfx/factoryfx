@@ -24,6 +24,7 @@ import com.google.common.base.Throwables;
 import com.google.common.hash.Hashing;
 import com.google.common.io.Files;
 import javafx.application.Platform;
+import javafx.beans.binding.Bindings;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
@@ -63,6 +64,17 @@ public class UserInterfaceDistributionClientController {
 
     @FXML
     void initialize() {
+        serverUrlList.disableProperty().bind(Bindings.size(serverUrlList.getItems()).isEqualTo(0));
+
+        Thread.setDefaultUncaughtExceptionHandler((t, e) -> {
+            Alert alter = new Alert(Alert.AlertType.ERROR);
+            alter.setContentText("Error");
+            TextArea textArea = new TextArea();
+            textArea.setText(Throwables.getStackTraceAsString(e));
+            alter.setGraphic(textArea);
+            alter.show();
+        });
+
         readServerList();
 
         startButton.setOnAction(event -> {
@@ -77,76 +89,65 @@ public class UserInterfaceDistributionClientController {
     }
 
     private void startGui() {
-        try {
-            String serverUrl=serverUrlInput.getText();
+        String serverUrl=serverUrlInput.getText();
 
-            JacksonFeature jacksonFeature = new JacksonFeature();
-            ClientConfig cc = new ClientConfig().register(jacksonFeature);
-            Client client = ClientBuilder.newClient(cc);
-            client.register(GZipEncoder.class);
-            client.register(EncodingFilter.class);
-            client.register(DeflateEncoder.class);
+        JacksonFeature jacksonFeature = new JacksonFeature();
+        ClientConfig cc = new ClientConfig().register(jacksonFeature);
+        Client client = ClientBuilder.newClient(cc);
+        client.register(GZipEncoder.class);
+        client.register(EncodingFilter.class);
+        client.register(DeflateEncoder.class);
 
-            progress.setProgress(-1);
+        progress.setProgress(-1);
 
-            File guiFolder = new File("./" + serverUrl.hashCode());
-            String fileHash = "";
-            if (guiFolder.exists()) {
+        File guiFolder = new File("./" + serverUrl.hashCode());
+        String fileHash = "";
+        if (guiFolder.exists()) {
+            try {
                 fileHash = Files.hash(new File(guiFolder, GUI_ZIP), Hashing.md5()).toString();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
             }
+        }
 
-            JacksonJaxbJsonProvider provider = new JacksonJaxbJsonProvider();
-            provider.setMapper(new ObjectMapper());
-            client.register(provider);
-            WebTarget webResource = client.target(serverUrl + "/download/checkVersion?" + "fileHash=" + fileHash);
-            Response response = webResource.request(MediaType.TEXT_PLAIN).get();
-            boolean needUpdate = Boolean.parseBoolean(response.readEntity(String.class));
+        JacksonJaxbJsonProvider provider = new JacksonJaxbJsonProvider();
+        provider.setMapper(new ObjectMapper());
+        client.register(provider);
+        WebTarget webResource = client.target(serverUrl + "/download/checkVersion?" + "fileHash=" + fileHash);
+        Response response = webResource.request(MediaType.TEXT_PLAIN).get();
+        boolean needUpdate = Boolean.parseBoolean(response.readEntity(String.class));
 
-            if (needUpdate) {
-                rootPane.setDisable(true);
-                new Thread(){
-                    @Override
-                    public void run() {
-                        super.run();
+
+        new Thread(){
+            @Override
+            public void run() {
+                try {
+                    if (needUpdate) {
                         WebTarget webResourceDownload = client.target(serverUrl + "/download/");
                         Response responseDownload = webResourceDownload.request("application/zip").get();
                         File tempDownloadFile = responseDownload.readEntity(File.class);
                         File newFile = new File(guiFolder, GUI_ZIP);
-                        try {
-                            mkdir(guiFolder);
-                            Files.move(tempDownloadFile, newFile);
-                            unzip(newFile.getAbsolutePath(), newFile.getParent());
-                        } catch (IOException e) {
-                            throw new RuntimeException(e);
-                        }
-                        Platform.runLater(()->rootPane.setDisable(false));
+                        mkdir(guiFolder);
+                        Files.move(tempDownloadFile, newFile);
+                        unzip(newFile.getAbsolutePath(), newFile.getParent());
                     }
-                }.start();
 
-//                deleteFolder(guifolder); TODO required?
+                    URL distributionServerURL = new URL(serverUrl);
+                    new ProcessBuilder(guiFolder.getAbsolutePath() + "/project.exe",distributionServerURL.toExternalForm()).directory(new File(guiFolder.getAbsolutePath(),"./")).inheritIO().start();
+
+                    if (!serverUrlList.getItems().contains(serverUrl)) {
+                        serverUrlList.getItems().add(serverUrl);
+                    }
+                    writeServerList();
+
+                    Platform.runLater(()->progress.setProgress(1));
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+
             }
+        }.start();
 
-
-//            new ProcessBuilder(guiFolder.getAbsolutePath() + "/gui/bin/UserInterface.bat").start();
-            URL distributionServerURL = new URL(serverUrl);
-            URL serverURL = new URL(distributionServerURL.getProtocol(),distributionServerURL.getHost(),8100,distributionServerURL.getPath());
-            new ProcessBuilder(guiFolder.getAbsolutePath() + "/project.exe",serverURL.toExternalForm()).directory(new File(guiFolder.getAbsolutePath(),"./gui/bin")).inheritIO().start();
-//                System.exit(0);
-
-            progress.setProgress(1);
-            if (!serverUrlList.getItems().contains(serverUrl)) {
-                serverUrlList.getItems().add(serverUrl);
-            }
-            writeServerList();
-        } catch (Exception e){
-            Alert alter = new Alert(Alert.AlertType.ERROR);
-            alter.setContentText("Error");
-            TextArea textArea = new TextArea();
-            textArea.setText(Throwables.getStackTraceAsString(e));
-            alter.setGraphic(textArea);
-            alter.show();
-            progress.setProgress(0);
-        }
     }
 
     private void mkdir(File folder) throws IOException {
