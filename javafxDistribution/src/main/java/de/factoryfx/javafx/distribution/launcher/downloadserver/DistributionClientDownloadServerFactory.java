@@ -10,7 +10,7 @@ import de.factoryfx.factory.LiveCycleController;
 public class DistributionClientDownloadServerFactory<V> extends FactoryBase<DistributionClientDownloadServer,V> {
 
     public DistributionClientDownloadServerFactory(){
-        setDisplayTextProvider(() -> host.get()+port.get());
+        setDisplayTextProvider(() -> "http://"+host.get()+"+"+port.get());
     }
 
     public final StringAttribute host = new StringAttribute(new AttributeMetadata().de("host").en("host"));
