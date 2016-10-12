@@ -1,5 +1,6 @@
 package de.factoryfx.javafx.editor.attribute.visualisation;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.function.Supplier;
 
@@ -102,6 +103,26 @@ public class ReferenceListAttributeVisualisation implements AttributeEditorVisua
         deleteButton.setOnAction(event -> boundTo.get().remove(tableView.getSelectionModel().getSelectedItem()));
         deleteButton.disableProperty().bind(tableView.getSelectionModel().selectedItemProperty().isNull());
 
+        Button moveUpButton = new Button();
+        uniformDesign.addIcon(moveUpButton,FontAwesome.Glyph.ANGLE_UP);
+        moveUpButton.disableProperty().bind(tableView.getSelectionModel().selectedItemProperty().isNull());
+        moveUpButton.setOnAction(event -> {
+            int selectedIndex = tableView.getSelectionModel().getSelectedIndex();
+            if (selectedIndex -1>=0){
+                Collections.swap(boundTo.get(), selectedIndex, selectedIndex -1);
+                tableView.getSelectionModel().select(selectedIndex -1);
+            }
+        });
+        Button moveDownButton = new Button();
+        uniformDesign.addIcon(moveDownButton,FontAwesome.Glyph.ANGLE_DOWN);
+        moveDownButton.disableProperty().bind(tableView.getSelectionModel().selectedItemProperty().isNull());
+        moveDownButton.setOnAction(event -> {
+            int selectedIndex = tableView.getSelectionModel().getSelectedIndex();
+            if (selectedIndex+1<tableView.getItems().size()){
+                Collections.swap(boundTo.get(), selectedIndex, selectedIndex +1);
+                tableView.getSelectionModel().select(selectedIndex +1);
+            }
+        });
 
         HBox buttons = new HBox();
         buttons.setAlignment(Pos.CENTER_LEFT);
@@ -110,6 +131,12 @@ public class ReferenceListAttributeVisualisation implements AttributeEditorVisua
         buttons.getChildren().add(selectButton);
         buttons.getChildren().add(adderButton);
         buttons.getChildren().add(deleteButton);
+        buttons.getChildren().add(moveUpButton);
+        buttons.getChildren().add(moveDownButton);
+
+        HBox.setMargin(moveUpButton,new Insets(0,0,0,9));
+        HBox.setMargin(moveDownButton,new Insets(0,9,0,0));
+
 
         TableControlWidget<Data> tableControlWidget = new TableControlWidget<>(tableView,uniformDesign);
         Node tableControlWidgetContent = tableControlWidget.createContent();
