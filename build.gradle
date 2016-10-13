@@ -150,13 +150,13 @@ project(':adminUiAngularjs') {
 
         compile project(":restutil")
         compile project(":applicationServer")
-        testCompile project(":development")
+        testCompile project(":utilfx")
         testCompile group: 'ch.qos.logback', name: 'logback-classic', version: '1.1.7'
     }
 
 }
 
-project(':development') {
+project(':utilfx') {
 
     dependencies {
         compile project(":factory")
@@ -180,7 +180,7 @@ project(':example') {
     dependencies {
         compile project(":adminUiAngularjs")
         compile project(":factory")
-        compile project(":development")
+        compile project(":utilfx")
         compile project(":applicationServer")
         compile group: 'ch.qos.logback', name: 'logback-classic', version: '1.1.7'
     }
@@ -227,7 +227,7 @@ project(':javafxDistribution') {
 project(':javafxDistributionExample') {
 
     dependencies {
-        compile project(":development")
+        compile project(":utilfx")
         compile project(":javafxDistribution")
     }
 

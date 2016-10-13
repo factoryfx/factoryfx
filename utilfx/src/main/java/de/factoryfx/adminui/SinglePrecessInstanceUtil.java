@@ -37,16 +37,32 @@ public class SinglePrecessInstanceUtil {
 
 	public static class KillMBeanImpl implements KillMXBean {
 
+		Runnable killAction;
+		public KillMBeanImpl(){
+			killAction= () -> {
+				System.exit(0);
+			};
+		}
+
+		public KillMBeanImpl(Runnable killAction){
+			this.killAction=killAction;
+		}
+
 		@Override
 		public void kill() {
-			System.exit(0);
+			killAction.run();
 		}
 	}
 	private static boolean created=false;
+
+
+	public static void enforceSingleProzessInstance(int port) {
+		enforceSingleProzessInstance(port,null);
+	}
 	/**
 	 * @param port e.g 1099
 	 */
-	public static void enforceSingleProzessInstance(int port) {
+	public static void enforceSingleProzessInstance(int port, Runnable killAction) {
 		if (created){
 			return;
 		}
@@ -79,7 +95,12 @@ public class SinglePrecessInstanceUtil {
 			                                       new JMXServiceURL( url), null, server );
 			connectorServer.start();
 
-			KillMBeanImpl maze = new KillMBeanImpl();
+			KillMBeanImpl maze;
+			if (killAction==null){
+				maze = new KillMBeanImpl();
+			} else {
+				maze = new KillMBeanImpl(killAction);
+			}
 			server.registerMBean( maze, name );
 		} catch (Exception e) {
 			throw new RuntimeException(e);
