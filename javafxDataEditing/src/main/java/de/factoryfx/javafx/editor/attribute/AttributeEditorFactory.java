@@ -55,7 +55,6 @@ public class AttributeEditorFactory {
         editorAssociations.add(editorAssociation);
     }
 
-    @SuppressWarnings("unchecked")
     public Optional<AttributeEditor<?>> getAttributeEditor(Attribute<?> attribute, DataEditor dataEditor){
 
         for (Function<Attribute<?>,Optional<AttributeEditor<?>>> editorAssociation: editorAssociations) {
@@ -77,6 +76,7 @@ public class AttributeEditorFactory {
         return Optional.empty();
     }
 
+    @SuppressWarnings("unchecked")
     private Optional<AttributeEditor<?>> getAttributeEditorReference(Attribute<?> attribute, DataEditor dataEditor) {
         if (Data.class==attribute.getAttributeType().dataType){
             ReferenceAttribute<?> referenceAttribute = (ReferenceAttribute<?>) attribute;
@@ -90,7 +90,7 @@ public class AttributeEditorFactory {
         return Optional.empty();
     }
 
-
+    @SuppressWarnings("unchecked")
     private Optional<AttributeEditor<?>> getAttributeEditorList(Attribute<?> attribute, DataEditor dataEditor) {
         if (ObservableList.class.isAssignableFrom(attribute.getAttributeType().dataType) && String.class==attribute.getAttributeType().listItemType){
             StringAttribute detailAttribute = new StringAttribute(new AttributeMetadata().de("Wert").en("Value"));
@@ -131,7 +131,7 @@ public class AttributeEditorFactory {
         return Optional.empty();
     }
 
-
+    @SuppressWarnings("unchecked")
     private Optional<AttributeEditor<?>> getAttributeEditorSimpleType(Attribute<?> attribute) {
         if (String.class==attribute.getAttributeType().dataType){
             return Optional.of(new AttributeEditor<>((Attribute<String>)attribute,new StringAttributeVisualisation()));

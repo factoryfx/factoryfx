@@ -12,7 +12,7 @@ public class LocaleAttributeVisualisation implements AttributeEditorVisualisatio
 
     @Override
     public Node createContent(SimpleObjectProperty<Locale> boundTo) {
-        ComboBox<Locale> comboBox=new ComboBox();
+        ComboBox<Locale> comboBox=new ComboBox<>();
         comboBox.getItems().addAll(DateFormat.getAvailableLocales());
         comboBox.valueProperty().bindBidirectional(boundTo);
         return comboBox;

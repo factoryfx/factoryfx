@@ -4,8 +4,8 @@ import java.util.logging.LogManager;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider;
-import de.factoryfx.javafx.distribution.server.rest.DownloadResource;
 import de.factoryfx.adminui.javafx.server.AllExceptionMapper;
+import de.factoryfx.javafx.distribution.server.rest.DownloadResource;
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.NetworkTrafficServerConnector;
@@ -14,15 +14,10 @@ import org.eclipse.jetty.server.handler.ErrorHandler;
 import org.eclipse.jetty.server.handler.HandlerCollection;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
-import org.glassfish.jersey.filter.LoggingFilter;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.servlet.ServletContainer;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class UserInterfaceDistributionServer {
-
-    private static final Logger logger = LoggerFactory.getLogger(UserInterfaceDistributionServer.class);
 
     private final DownloadResource downloadResource;
     private final String host;
@@ -68,7 +63,7 @@ public class UserInterfaceDistributionServer {
         provider.setMapper(mapper);
         resourceConfig.register(provider);
 
-        LoggingFilter loggingFilter = new LoggingFilter(java.util.logging.Logger.getLogger(LoggingFilter.class.getName()),true);
+        org.glassfish.jersey.logging.LoggingFeature loggingFilter = new org.glassfish.jersey.logging.LoggingFeature(java.util.logging.Logger.getLogger(UserInterfaceDistributionServer.class.getName()));
         resourceConfig.registerInstances(loggingFilter);
         LogManager.getLogManager().reset();
         return resourceConfig;

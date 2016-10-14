@@ -1,19 +1,20 @@
 package de.factoryfx.remoteserver;
 
-import de.factoryfx.data.merge.MergeDiff;
-import de.factoryfx.factory.FactoryBase;
-import de.factoryfx.factory.datastorage.FactoryAndStorageMetadata;
-import de.factoryfx.factory.datastorage.StoredFactoryMetadata;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.Collection;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.Invocation;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.Collection;
+
+import de.factoryfx.data.merge.MergeDiff;
+import de.factoryfx.factory.FactoryBase;
+import de.factoryfx.factory.datastorage.FactoryAndStorageMetadata;
+import de.factoryfx.factory.datastorage.StoredFactoryMetadata;
 
 public class AdminUiJavafxServerClient<V,T extends FactoryBase<?,V>> {
 
@@ -35,8 +36,9 @@ public class AdminUiJavafxServerClient<V,T extends FactoryBase<?,V>> {
         return post("updateCurrentFactory", update, MergeDiff.class);
     }
 
+    @SuppressWarnings("unchecked")
     public FactoryAndStorageMetadata<T> getCurrentFactory() {
-        FactoryAndStorageMetadata currentFactory = get("currentFactory", FactoryAndStorageMetadata.class);
+        FactoryAndStorageMetadata<T> currentFactory = get("currentFactory", FactoryAndStorageMetadata.class);
         currentFactory.root.reconstructMetadataDeepRoot();
         return currentFactory;
     }
@@ -60,6 +62,7 @@ public class AdminUiJavafxServerClient<V,T extends FactoryBase<?,V>> {
     }
 
 
+    @SuppressWarnings("unchecked")
     public V query(V visitor) {
         return post("query",visitor,(Class<? extends V>)visitor.getClass());
     }
