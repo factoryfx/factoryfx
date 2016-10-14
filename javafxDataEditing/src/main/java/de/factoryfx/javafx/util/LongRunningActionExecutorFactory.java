@@ -6,11 +6,6 @@ import de.factoryfx.factory.LiveCycleController;
 public class LongRunningActionExecutorFactory<V> extends FactoryBase<LongRunningActionExecutor,V> {
     @Override
     public LiveCycleController<LongRunningActionExecutor, V> createLifecycleController() {
-        return new LiveCycleController<LongRunningActionExecutor, V>() {
-            @Override
-            public LongRunningActionExecutor create() {
-                return null;
-            }
-        };
+        return () -> new LongRunningActionExecutor();
     }
 }
