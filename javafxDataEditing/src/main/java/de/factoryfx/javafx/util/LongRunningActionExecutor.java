@@ -11,10 +11,10 @@ import javafx.scene.layout.StackPane;
 import javafx.util.Duration;
 
 public class LongRunningActionExecutor {
-    private final StackPane target;
+    private final StackPane target=new StackPane();
 
-    public LongRunningActionExecutor(StackPane target) {
-        this.target = target;
+    public LongRunningActionExecutor() {
+
     }
 
     private Node createProgressIndicator() {
@@ -27,6 +27,10 @@ public class LongRunningActionExecutor {
         borderPane.setCenter(indicator);
         borderPane.setStyle("-fx-background-color: rgba(230,230,230,0.7);");
         return borderPane;
+    }
+
+    public StackPane getStackPane() {
+        return target;
     }
 
     //** execute with progress dialog in background */

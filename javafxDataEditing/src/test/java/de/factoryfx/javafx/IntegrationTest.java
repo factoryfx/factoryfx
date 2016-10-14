@@ -1,6 +1,7 @@
 package de.factoryfx.javafx;
 
 import de.factoryfx.javafx.stage.StageFactory;
+import de.factoryfx.javafx.util.LongRunningActionExecutorFactory;
 import de.factoryfx.javafx.util.UniformDesignFactory;
 import de.factoryfx.javafx.view.ViewDescriptionFactory;
 import de.factoryfx.javafx.view.ViewFactory;
@@ -34,6 +35,7 @@ public class IntegrationTest extends Application{
 
     @Override
     public void start(Stage primaryStage) throws Exception {
+        LongRunningActionExecutorFactory longRunningActionExecutorFactory = new  LongRunningActionExecutorFactory();
 
         UniformDesignFactory<Void> uniformDesignFactory = new UniformDesignFactory<>();
 
@@ -65,6 +67,7 @@ public class IntegrationTest extends Application{
         stageFactory.width.set(1920);
         stageFactory.height.set(1080);
         stageFactory.viewsDisplayWidget.set(viewsDisplayWidgetFactory);
+        stageFactory.longRunningActionExecutor.set(longRunningActionExecutorFactory);
 
         stageFactory.instance();
         stageFactory.start();

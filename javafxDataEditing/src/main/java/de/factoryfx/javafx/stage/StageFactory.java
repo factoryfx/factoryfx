@@ -7,6 +7,8 @@ import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.factory.LiveCycleController;
 import de.factoryfx.factory.atrribute.FactoryReferenceAttribute;
 import de.factoryfx.factory.atrribute.FactoryReferenceListAttribute;
+import de.factoryfx.javafx.util.LongRunningActionExecutor;
+import de.factoryfx.javafx.util.LongRunningActionExecutorFactory;
 import de.factoryfx.javafx.view.container.ViewsDisplayWidget;
 import de.factoryfx.javafx.view.container.ViewsDisplayWidgetFactory;
 import de.factoryfx.javafx.view.menu.ViewMenuFactory;
@@ -19,13 +21,15 @@ public class StageFactory<V> extends FactoryBase<BorderPaneStage,V> {
     public final FactoryReferenceAttribute<ViewsDisplayWidget,ViewsDisplayWidgetFactory<V>> viewsDisplayWidget = new FactoryReferenceAttribute<>(new AttributeMetadata().de("items").en("items"),ViewsDisplayWidgetFactory.class);
     public final IntegerAttribute width = new IntegerAttribute(new AttributeMetadata().de("width").en("width"));
     public final IntegerAttribute height = new IntegerAttribute(new AttributeMetadata().de("height").en("height"));
+    public final FactoryReferenceAttribute<LongRunningActionExecutor,LongRunningActionExecutorFactory<V>> longRunningActionExecutor = new FactoryReferenceAttribute<>(new AttributeMetadata().de("items").en("items"),LongRunningActionExecutorFactory.class);
+
 
     @Override
     public LiveCycleController<BorderPaneStage, V> createLifecycleController() {
         return new LiveCycleController<BorderPaneStage, V>() {
             @Override
             public BorderPaneStage create() {
-                return new BorderPaneStage(stage.get(),items.instances(),viewsDisplayWidget.instance(),width.get(),height.get());
+                return new BorderPaneStage(stage.get(),items.instances(),viewsDisplayWidget.instance(),width.get(),height.get(), longRunningActionExecutor.instance().getStackPane());
             }
 
             @Override
