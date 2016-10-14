@@ -121,7 +121,7 @@ public class HttpServer {
         SessionHandler sessionHandler = new SessionHandler();
         HashSessionManager sessionManager = new HashSessionManager();
         sessionManager.setMaxInactiveInterval(sessionTimeoutS);
-        sessionManager.setSessionCookie(sessionManager.getSessionCookie()+httpPort); //avoid session mixup for 2 server runnning as localhost
+        sessionManager.setSessionCookie(sessionManager.getSessionCookie()+httpPort); //avoid session mix up for 2 server running as localhost
         sessionHandler.setSessionManager(sessionManager);
 
 

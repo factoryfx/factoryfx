@@ -6,30 +6,38 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.Invocation;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider;
+import de.factoryfx.data.jackson.ObjectMapperBuilder;
 import de.factoryfx.data.merge.MergeDiff;
 import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.factory.datastorage.FactoryAndStorageMetadata;
 import de.factoryfx.factory.datastorage.StoredFactoryMetadata;
+import org.glassfish.jersey.client.ClientConfig;
+import org.glassfish.jersey.client.filter.EncodingFilter;
+import org.glassfish.jersey.jackson.JacksonFeature;
+import org.glassfish.jersey.message.DeflateEncoder;
+import org.glassfish.jersey.message.GZipEncoder;
 
-public class AdminUiJavafxServerClient<V,T extends FactoryBase<?,V>> {
+public class ApplicationServerRestClient<V,T extends FactoryBase<?,V>> {
 
     private final Client client;
     private final URI baseURI;
-    private final Class<? extends T> configurationRootClass;
+    private final Class<T> factoryRootClass;
 
-    public AdminUiJavafxServerClient(Client client, String host, int port, boolean ssl, Class<? extends T> configurationRootClass) {
-        this(client,buildURI(host, port, ssl),configurationRootClass);
+    public ApplicationServerRestClient(String host, int port, boolean ssl, Class<T> factoryRootClass) {
+        this(buildURI(host, port, ssl), factoryRootClass);
     }
 
-    public AdminUiJavafxServerClient(Client client, URI baseURI, Class<? extends T> configurationRootClass) {
-        this.client = client;
+    public ApplicationServerRestClient(URI baseURI, Class<T> factoryRootClass) {
+        this.client = createClient();
         this.baseURI = baseURI;
-        this.configurationRootClass = configurationRootClass;
+        this.factoryRootClass = factoryRootClass;
     }
 
     public MergeDiff updateCurrentFactory(FactoryAndStorageMetadata<T> update) {
@@ -45,7 +53,7 @@ public class AdminUiJavafxServerClient<V,T extends FactoryBase<?,V>> {
 
 
     public T getHistoryFactory(String id) {
-        return get("historyFactory", configurationRootClass).reconstructMetadataDeepRoot();
+        return get("historyFactory", factoryRootClass).reconstructMetadataDeepRoot();
     }
 
     static final Class<? extends ArrayList<StoredFactoryMetadata>> collectionOfStoredFactoryMetadataClass = new ArrayList<StoredFactoryMetadata>() {}.getClass();
@@ -99,6 +107,19 @@ public class AdminUiJavafxServerClient<V,T extends FactoryBase<?,V>> {
         } catch (URISyntaxException e) {
             throw new IllegalArgumentException("bad host name",e);
         }
+    }
+
+
+    public Client createClient() {
+        ClientConfig cc = new ClientConfig().register(new JacksonFeature());
+        Client client = ClientBuilder.newBuilder().withConfig(cc).build();
+        client.register(GZipEncoder.class);
+        client.register(EncodingFilter.class);
+        client.register(DeflateEncoder.class);
+        JacksonJaxbJsonProvider provider = new JacksonJaxbJsonProvider();
+        provider.setMapper(ObjectMapperBuilder.buildNew().getObjectMapper());
+        client.register(provider);
+        return client;
     }
 
 

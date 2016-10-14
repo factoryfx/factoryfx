@@ -1,4 +1,4 @@
-package de.factoryfx.adminui;
+package de.factoryfx.javafx.widget;
 
 public class FactoryTreeEditor{//<T extends FactoryBase<? extends LiveObject, T>> extends FactoryView<T> {
 //
