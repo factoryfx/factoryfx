@@ -6,6 +6,7 @@ import de.factoryfx.javafx.editor.attribute.AttributeEditorFactory;
 import de.factoryfx.javafx.editor.data.DataEditor;
 import de.factoryfx.javafx.editor.data.ExampleData1;
 import de.factoryfx.javafx.util.UniformDesign;
+import de.factoryfx.javafx.util.UniformDesignFactory;
 import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -26,7 +27,7 @@ public class MasterDetailWidgetTest  extends Application {
         ExampleData1 exampleData1 = new ExampleData1();
         exampleData1.stringAttribute.set("abc");
 
-        UniformDesign uniformDesign = new UniformDesign();
+        UniformDesign uniformDesign = new UniformDesignFactory<>().instance();
         DataEditor dataEditor = new DataEditor(new AttributeEditorFactory(uniformDesign,exampleData1),uniformDesign);
         dataEditor.edit(exampleData1);
 

@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Locale;
 
 import de.factoryfx.data.attribute.Attribute;
+import de.factoryfx.data.attribute.types.I18nAttribute;
+import de.factoryfx.data.util.LanguageText;
 import javafx.beans.InvalidationListener;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.geometry.Insets;
@@ -49,10 +51,6 @@ public class UniformDesign {
         this.borderColor = borderColor;
     }
 
-    public UniformDesign() {
-        this(Locale.ENGLISH,Color.web("#FF7979"),Color.web("#F0AD4E"),Color.web("#5BC0DE"),Color.web("#5CB85C"),Color.web("#5494CB"),Color.web("#B5B5B5"));
-    }
-
     public void addIcon(Labeled component, FontAwesome.Glyph icon){
         component.setGraphic(getFontAwesome().create(icon));
     }
@@ -63,7 +61,9 @@ public class UniformDesign {
 
 
     public void addIcon(MenuItem component, FontAwesome.Glyph icon){
-        component.setGraphic(getFontAwesome().create(icon));
+        if (icon!=null){
+            component.setGraphic(getFontAwesome().create(icon));
+        }
     }
 
     public Glyph createIcon(FontAwesome.Glyph icon){
@@ -92,13 +92,24 @@ public class UniformDesign {
     }
 
     public String getLabelText(Attribute<?> attribute){
-        return attribute.metadata.labelText.getPreferred(Locale.getDefault());
+        return attribute.metadata.labelText.getPreferred(locale);
+    }
+
+    public String getText(LanguageText languageText){
+        return languageText.getPreferred(locale);
+    }
+
+    public String getText(I18nAttribute attribute){
+        return attribute.get().getPreferred(locale);
     }
 
     public VBox createListEditSummary(SimpleObjectProperty<? extends List> boundTo, VBox detailView) {
         VBox root = new VBox();
         detailView.setBorder(new Border(new BorderStroke(Color.GREY, BorderStrokeStyle.SOLID, CornerRadii.EMPTY, new BorderWidths(2))));
         VBox.setMargin(detailView,new Insets(3,0,0,0));
+
+        Label icon = new Label();
+        addIcon(icon,FontAwesome.Glyph.LIST);
 
         ToggleButton expandButton=new ToggleButton();
         expandButton.setOnAction(event -> {
@@ -122,7 +133,7 @@ public class UniformDesign {
         };
         boundTo.addListener(listener);
         listener.invalidated(null);
-        summary.getChildren().addAll(expandButton, label);
+        summary.getChildren().addAll(icon,label,expandButton);
         root.getChildren().addAll(summary);
         return root;
     }

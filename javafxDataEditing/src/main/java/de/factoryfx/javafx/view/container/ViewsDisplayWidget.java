@@ -5,6 +5,7 @@ import java.util.List;
 
 import de.factoryfx.javafx.util.UniformDesign;
 import de.factoryfx.javafx.view.View;
+import de.factoryfx.javafx.widget.Widget;
 import javafx.beans.value.ChangeListener;
 import javafx.event.Event;
 import javafx.event.EventHandler;
@@ -23,34 +24,59 @@ import javafx.stage.Stage;
 import org.controlsfx.glyphfont.FontAwesome;
 import org.controlsfx.glyphfont.Glyph;
 
-public class TabPaneViewContainer extends ViewContainer {
-    private final TabPane component;
+public class ViewsDisplayWidget implements Widget {
+    private final TabPane tabpane;
     private final UniformDesign uniformDesign;
     private List<Stage> stages = new ArrayList<>();
 
-    public TabPaneViewContainer(TabPane component, UniformDesign uniformDesign) {
-        this.component = component;
+    public ViewsDisplayWidget(TabPane component, UniformDesign uniformDesign) {
+        this.tabpane = component;
         this.uniformDesign = uniformDesign;
     }
 
+
     @Override
-    protected void closeImpl(View view) {
+    public Node createContent() {
+        return tabpane;
+    }
+
+    public Node createExpandReplacement(final Stage stage) {
+        StackPane stackPane = new StackPane();
+        Button button = new Button("edit expanded Window");
+        button.setOnAction(event -> stage.toFront());
+        stackPane.getChildren().add(button);
+        return stackPane;
+    }
+
+
+    protected CloseListener onCloseListener;
+
+    public void close(View view) {
         Tab formTab = null;
-        for (Tab tab : component.getTabs()) {
+        for (Tab tab : tabpane.getTabs()) {
             if (tab.getContent() == view.getCachedContent()) {
                 formTab = tab;
             }
         }
         if (formTab != null) {
-            component.getTabs().remove(formTab);
+            tabpane.getTabs().remove(formTab);
+        }
+
+        if (onCloseListener != null) {
+            onCloseListener.closed(view);
         }
     }
 
-    @Override
-    public void showImpl(final View<?> view) {
+    /**
+     * called if view is closed
+     */
+    public void setOnCloseListener(CloseListener closeListener) {
+        onCloseListener = closeListener;
+    }
 
+    public void show(View view) {
         Tab formTab = null;
-        for (Tab tab : component.getTabs()) {
+        for (Tab tab : tabpane.getTabs()) {
             if (tab.getContent() == view.getCachedContent()) {
                 formTab = tab;
             }
@@ -67,7 +93,7 @@ public class TabPaneViewContainer extends ViewContainer {
         if (formTab == null) {
             formTab = new Tab();
             if (!existingExpanded) {
-                component.getTabs().add(formTab);
+                tabpane.getTabs().add(formTab);
             }
         }
         final Tab formTabFinal = formTab;
@@ -87,10 +113,10 @@ public class TabPaneViewContainer extends ViewContainer {
             Parent content = (Parent) formTabFinal.getContent();
             formTabFinal.setOnClosed(null);
             formTabFinal.setContent(new Region());
-            component.getTabs().remove(formTabFinal);
+            tabpane.getTabs().remove(formTabFinal);
             formTabFinal.setContent(createExpandReplacement(stage));
             Scene scene = new Scene(content, 1380, 850);
-            scene.getStylesheets().addAll(component.getScene().getStylesheets());
+            scene.getStylesheets().addAll(tabpane.getScene().getStylesheets());
             stages.add(stage);
             stage.setScene(scene);
             stage.show();
@@ -107,7 +133,7 @@ public class TabPaneViewContainer extends ViewContainer {
             });
 
         });
-        uniformDesign.addIcon(expand,FontAwesome.Glyph.EXPAND);
+        uniformDesign.addIcon(expand, FontAwesome.Glyph.EXPAND);
 
         contextMenu.getItems().addAll(expand);
         formTab.setContextMenu(contextMenu);
@@ -122,17 +148,14 @@ public class TabPaneViewContainer extends ViewContainer {
         view.icon.addListener(listener);
         listener.changed(view.icon, view.icon.get(), view.icon.get());
 
-        component.getSelectionModel().select(formTab);
+        tabpane.getSelectionModel().select(formTab);
 
         formTab.setOnClosed(eventEventHandler);
 
     }
 
-    public Node createExpandReplacement(final Stage stage) {
-        StackPane stackPane = new StackPane();
-        Button button = new Button("edit expanded Window");
-        button.setOnAction(event -> stage.toFront());
-        stackPane.getChildren().add(button);
-        return stackPane;
+    public interface CloseListener {
+        void closed(View view);
     }
+
 }

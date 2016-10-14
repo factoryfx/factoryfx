@@ -2,7 +2,7 @@ package de.factoryfx.javafx.view;
 
 import java.util.Optional;
 
-import de.factoryfx.javafx.view.container.ViewContainer;
+import de.factoryfx.javafx.view.container.ViewsDisplayWidget;
 import de.factoryfx.javafx.widget.CloseAwareWidget;
 import de.factoryfx.javafx.widget.Widget;
 import javafx.beans.property.SimpleObjectProperty;
@@ -10,21 +10,21 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.scene.Node;
 import org.controlsfx.glyphfont.Glyph;
 
-public class View<T extends Widget> implements Widget {
+public class View implements Widget {
 
     public final SimpleStringProperty title = new SimpleStringProperty();
     public final SimpleStringProperty dynamicAdditionalTitle = new SimpleStringProperty();
 
     public final SimpleObjectProperty<Glyph> icon = new SimpleObjectProperty<>();
-    public final T widget;
-    protected ViewContainer showViewStrategy;
+    public final Widget widget;
+    protected ViewsDisplayWidget viewsDisplayWidget;
     boolean isShowing;
     Node cachedContent;
     Optional<Runnable> closeListener = Optional.empty();
 
-    public View(String title, ViewContainer showViewStrategy, T widget) {
+    public View(String title, ViewsDisplayWidget viewsDisplayWidget, Widget widget) {
         this.title.set(title);
-        this.showViewStrategy = showViewStrategy;
+        this.viewsDisplayWidget = viewsDisplayWidget;
         this.widget = widget;
     }
 
@@ -33,7 +33,7 @@ public class View<T extends Widget> implements Widget {
             ((CloseAwareWidget) widget).closeNotifier();
         }
         isShowing = false;
-        showViewStrategy.close(this);
+        viewsDisplayWidget.close(this);
         closeListener.ifPresent(runnable -> runnable.run());
     }
 
@@ -49,10 +49,6 @@ public class View<T extends Widget> implements Widget {
         return cachedContent;
     }
 
-    public T getWidget() {
-        return widget;
-    }
-
     public boolean isShowing() {
         return isShowing;
     }
@@ -62,7 +58,7 @@ public class View<T extends Widget> implements Widget {
     }
 
     public void show() {
-        showViewStrategy.show(this);
+        viewsDisplayWidget.show(this);
         isShowing = true;
     }
 

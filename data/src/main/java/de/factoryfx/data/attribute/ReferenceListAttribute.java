@@ -42,8 +42,9 @@ public class ReferenceListAttribute<T extends Data> extends Attribute<Observable
         this.list = list.unwrap();
     }
 
-    public void add(T value) {
+    public boolean add(T value) {
         get().add(value);
+        return false;
     }
 
 

@@ -65,8 +65,8 @@ public class DataEditor implements Widget {
 
 
         GridPane grid = new GridPane();
-//        grid.setHgap(3);
-//        grid.setVgap(6);
+        grid.setHgap(3);
+        grid.setVgap(3);
         grid.setPadding(new Insets(3, 3, 3, 3));
 
         ColumnConstraints column1 = new ColumnConstraints();
@@ -85,7 +85,6 @@ public class DataEditor implements Widget {
             if (newValue!=null){
                 int row = 0;
                 for (Attribute<?> attribute: newValue.attributeList()) {
-                    //TOO locale configurable , uniformdesign?
                     addLabelContent(grid, row,uniformDesign.getLabelText(attribute));
 
                     Optional<AttributeEditor<?>> attributeEditor = attributeEditorFactory.getAttributeEditor(attribute,this);
@@ -205,7 +204,7 @@ public class DataEditor implements Widget {
         scroller.setPrefWidth(50);
         navigation.getChildren().add(scroller);
 
-        BooleanBinding scrollerVisible = Bindings.createBooleanBinding(() -> scrollPane.getBoundsInParent().getWidth()<breadCrumbBar.getWidth(),scrollPane.boundsInParentProperty());
+        scrollerVisible = Bindings.createBooleanBinding(() -> scrollPane.getBoundsInParent().getWidth()<breadCrumbBar.getWidth(),scrollPane.boundsInParentProperty());
         scroller.visibleProperty().bind(scrollerVisible);
 
 

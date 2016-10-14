@@ -1,6 +1,9 @@
 package de.factoryfx.data.jackson;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -11,6 +14,7 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import javafx.collections.ObservableList;
 import javafx.collections.ObservableMap;
 import javafx.collections.ObservableSet;
+import javafx.scene.paint.Color;
 
 public class ObjectMapperBuilder {
     private static SimpleObjectMapper simpleObjectMapper;
@@ -47,6 +51,16 @@ public class ObjectMapperBuilder {
         objectMapper.disable(SerializationFeature.FAIL_ON_EMPTY_BEANS);
 //            objectMapper.enableDefaultTyping();
 
+        objectMapper.addMixIn(Color.class, ColorMixInAnnotations.class);
+
         return new SimpleObjectMapper(objectMapper);
+    }
+
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    static class ColorMixInAnnotations{
+        @JsonCreator
+        ColorMixInAnnotations(@JsonProperty("red") double red, @JsonProperty("green") double green, @JsonProperty("blue") double blue, @JsonProperty("opacity") double opacity  ) {
+
+        }
     }
 }

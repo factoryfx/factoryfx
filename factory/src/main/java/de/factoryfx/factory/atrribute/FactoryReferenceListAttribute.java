@@ -25,6 +25,11 @@ public class FactoryReferenceListAttribute<L,T extends FactoryBase<L,?>> extends
         super(clazz, attributeMetadata);
     }
 
+    //Workaround for genrics (T with gernics params)
+    public FactoryReferenceListAttribute(AttributeMetadata attributeMetadata, Class clazz) {
+        super(clazz, attributeMetadata);
+    }
+
     public List<L> instances(){
         if (get()==null){
             return null;
@@ -34,5 +39,9 @@ public class FactoryReferenceListAttribute<L,T extends FactoryBase<L,?>> extends
             result.add(item.instance());
         }
         return result;
+    }
+
+    public boolean add(T data){
+        return get().add(data);
     }
 }

@@ -35,6 +35,8 @@ public class ExampleData1 extends Data {
     public final URIListAttribute uriListAttribute = new URIListAttribute(new AttributeMetadata().en("URIList"));
 
     public final LocalDateAttribute localDateAttribute = new LocalDateAttribute(new AttributeMetadata().en("local date"));
+    public final ColorAttribute colorAttribute=new ColorAttribute(new AttributeMetadata().en("colorAttribute").de("colorAttribute de"));
+    public final LocaleAttribute localeAttribute =new LocaleAttribute(new AttributeMetadata().en("colorAttribute").de("colorAttribute de"));
 
     String id= UUID.randomUUID().toString();
     @Override
