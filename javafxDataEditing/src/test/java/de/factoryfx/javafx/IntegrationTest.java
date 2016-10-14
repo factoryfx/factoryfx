@@ -1,6 +1,5 @@
 package de.factoryfx.javafx;
 
-import de.factoryfx.factory.LiveCycleController;
 import de.factoryfx.javafx.stage.StageFactory;
 import de.factoryfx.javafx.util.UniformDesignFactory;
 import de.factoryfx.javafx.view.ViewDescriptionFactory;
@@ -22,9 +21,10 @@ public class IntegrationTest extends Application{
     }
 
     public class ViewXWidgetFactory extends WidgetFactory<Void>{
+
         @Override
-        public LiveCycleController<Widget, Void> createLifecycleController() {
-            return () -> (Widget) () -> {
+        protected Widget createWidget() {
+            return () -> {
                 BorderPane borderPane = new BorderPane();
                 borderPane.setCenter(new Label("Hello World"));
                 return borderPane;
