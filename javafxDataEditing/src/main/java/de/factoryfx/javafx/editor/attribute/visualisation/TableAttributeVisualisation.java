@@ -78,9 +78,7 @@ public class TableAttributeVisualisation implements AttributeEditorVisualisation
         {
             Button addRow = new Button("");
             uniformDesign.addIcon(addRow, FontAwesome.Glyph.PLUS);
-            addRow.setOnAction(e -> {
-                boundTo.set(new TableAttribute.Table());
-            });
+            addRow.setOnAction(e -> boundTo.set(new TableAttribute.Table()));
             buttons.getChildren().add(addRow);
             addRow.disableProperty().bind(boundTo.isNotNull());
         }
@@ -89,9 +87,7 @@ public class TableAttributeVisualisation implements AttributeEditorVisualisation
             Button addRow = new Button();
             addRow.setTooltip(new Tooltip("add row"));
             uniformDesign.addIcon(addRow, FontAwesome.Glyph.PLUS);
-            addRow.setOnAction(e -> {
-                boundTo.set(boundTo.get().copy().addRow());
-            });
+            addRow.setOnAction(e -> boundTo.set(boundTo.get().copy().addRow()));
             addRow.disableProperty().bind(boundTo.isNull());
             buttons.getChildren().add(addRow);
         }
@@ -99,9 +95,7 @@ public class TableAttributeVisualisation implements AttributeEditorVisualisation
             Button deleteRow = new Button();
             deleteRow.setTooltip(new Tooltip("delete row"));
             uniformDesign.addDangerIcon(deleteRow, FontAwesome.Glyph.MINUS);
-            deleteRow.setOnAction(e -> {
-                boundTo.set(boundTo.get().copy().deleteRow());
-            });
+            deleteRow.setOnAction(e -> boundTo.set(boundTo.get().copy().deleteRow()));
             deleteRow.disableProperty().bind(boundTo.isNull());
             buttons.getChildren().add(deleteRow);
         }
@@ -111,9 +105,7 @@ public class TableAttributeVisualisation implements AttributeEditorVisualisation
             Button addColum = new Button();
             addColum.setTooltip(new Tooltip("add column"));
             uniformDesign.addIcon(addColum, FontAwesome.Glyph.PLUS);
-            addColum.setOnAction(e -> {
-                boundTo.set(boundTo.get().copy().addColumn());
-            });
+            addColum.setOnAction(e -> boundTo.set(boundTo.get().copy().addColumn()));
             addColum.disableProperty().bind(boundTo.isNull().or(tableHasColumns.not()));
             buttons.getChildren().add(addColum);
         }
@@ -121,9 +113,7 @@ public class TableAttributeVisualisation implements AttributeEditorVisualisation
             Button deleteColum = new Button();
             deleteColum.setTooltip(new Tooltip("delete column"));
             uniformDesign.addDangerIcon(deleteColum, FontAwesome.Glyph.MINUS);
-            deleteColum.setOnAction(e -> {
-                boundTo.set(boundTo.get().copy().deleteColumn());
-            });
+            deleteColum.setOnAction(e -> boundTo.set(boundTo.get().copy().deleteColumn()));
             deleteColum.disableProperty().bind(boundTo.isNull().or(tableHasColumns.not()));
             buttons.getChildren().add(deleteColum);
         }

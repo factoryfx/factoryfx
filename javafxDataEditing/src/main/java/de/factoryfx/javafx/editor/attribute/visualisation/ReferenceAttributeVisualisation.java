@@ -48,7 +48,10 @@ public class ReferenceAttributeVisualisation implements AttributeEditorVisualisa
 
         Button newButton = new Button();
         uniformDesign.addIcon(newButton,FontAwesome.Glyph.PLUS);
-        newButton.setOnAction(event -> emptyAdder.run());
+        newButton.setOnAction(event -> {
+            emptyAdder.run();
+            dataEditor.edit(boundTo.get());
+        });
 
         Button deleteButton = new Button();
         uniformDesign.addDangerIcon(deleteButton,FontAwesome.Glyph.TIMES);

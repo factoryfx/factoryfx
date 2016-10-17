@@ -36,6 +36,7 @@ public class TableAttribute extends ValueAttribute<TableAttribute.Table> {
             return this;
         }
 
+        @JsonIgnore
         public int getRowCount(){
             return rows.size();
         }
@@ -53,13 +54,15 @@ public class TableAttribute extends ValueAttribute<TableAttribute.Table> {
             return rows.get(row).columns.get(col);
         }
 
-        public boolean isEmpyt() {
+        @JsonIgnore
+        public boolean isEmpty() {
             return rows.isEmpty();
         }
 
         @JsonIgnore
-        public String setCellValue(int row, int col, String value){
-            return rows.get(row).columns.set(col,value);
+        public Table setCellValue(int row, int col, String value){
+            rows.get(row).columns.set(col,value);
+            return this;
         }
 
         public Table copy(){
@@ -83,6 +86,7 @@ public class TableAttribute extends ValueAttribute<TableAttribute.Table> {
             return this;
         }
 
+        @JsonIgnore
         public TableRow getLastRow(){
             return rows.get(rows.size()-1);
         }
@@ -138,4 +142,7 @@ public class TableAttribute extends ValueAttribute<TableAttribute.Table> {
         set(initialValue);
     }
 
+    public void copy(Table value){
+        set(value.copy());
+    }
 }

@@ -97,7 +97,10 @@ public class ReferenceListAttributeVisualisation implements AttributeEditorVisua
 
         Button adderButton = new Button();
         uniformDesign.addIcon(adderButton,FontAwesome.Glyph.PLUS);
-        adderButton.setOnAction(event -> emptyAdder.run());
+        adderButton.setOnAction(event -> {
+            emptyAdder.run();
+            dataEditor.edit(boundTo.get().get(boundTo.get().size()-1));
+        });
 
         Button deleteButton = new Button();
         uniformDesign.addDangerIcon(deleteButton,FontAwesome.Glyph.TIMES);
@@ -125,15 +128,24 @@ public class ReferenceListAttributeVisualisation implements AttributeEditorVisua
             }
         });
 
+        Button copyButton = new Button();
+        uniformDesign.addIcon(copyButton,FontAwesome.Glyph.COPY);
+        copyButton.disableProperty().bind(tableView.getSelectionModel().selectedItemProperty().isNull());
+        copyButton.setOnAction(event -> {
+            boundTo.get().add(tableView.getSelectionModel().getSelectedItem().copy());
+        });
+
         HBox buttons = new HBox();
         buttons.setAlignment(Pos.CENTER_LEFT);
         buttons.setSpacing(3);
         buttons.getChildren().add(showButton);
         buttons.getChildren().add(selectButton);
         buttons.getChildren().add(adderButton);
+        buttons.getChildren().add(copyButton);
         buttons.getChildren().add(deleteButton);
         buttons.getChildren().add(moveUpButton);
         buttons.getChildren().add(moveDownButton);
+
 
         HBox.setMargin(moveUpButton,new Insets(0,0,0,9));
         HBox.setMargin(moveDownButton,new Insets(0,9,0,0));

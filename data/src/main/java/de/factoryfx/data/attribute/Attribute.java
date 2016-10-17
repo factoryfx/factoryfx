@@ -48,6 +48,10 @@ public abstract class Attribute<T>{
 
     public abstract void set(T value);
 
+    public void copy(T value){
+        set(value);
+    }
+
     public List<ValidationError> validate() {
         List<ValidationError> validationErrors = new ArrayList<>();
         for (Validation<T> validation : validations) {

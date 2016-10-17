@@ -378,7 +378,7 @@ public abstract class Data {
                     value=referenceList;
                 }
 
-                copyAttribute.set(value);
+                copyAttribute.copy(value);
             });
             identityPreserver.put(result.getId(),result);
         }

@@ -13,6 +13,7 @@ import de.factoryfx.javafx.widget.Widget;
 import impl.org.controlsfx.skin.BreadCrumbBarSkin;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.BooleanBinding;
+import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ChangeListener;
@@ -45,6 +46,10 @@ public class DataEditor implements Widget {
     public DataEditor(AttributeEditorFactory attributeEditorFactory, UniformDesign uniformDesign) {
         this.attributeEditorFactory = attributeEditorFactory;
         this.uniformDesign = uniformDesign;
+    }
+
+    public ReadOnlyObjectProperty<Data> editData(){
+        return bound;
     }
 
     public void edit(Data newValue) {
@@ -119,6 +124,8 @@ public class DataEditor implements Widget {
         BorderPane rootPane = new BorderPane();
         rootPane.setTop(createNavigation());
         rootPane.setCenter(scrollPane);
+
+
 
         return rootPane;
     }
