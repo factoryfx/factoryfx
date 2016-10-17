@@ -62,6 +62,9 @@ public class DataTreeWidget implements CloseAwareWidget {
             tree.setRoot(treeItemRoot);
 
             for (TreeItem<Data> item : treeViewTraverser.breadthFirstTraversal(treeItemRoot)) {
+                item.setExpanded(true);
+            }
+            for (TreeItem<Data> item : treeViewTraverser.breadthFirstTraversal(treeItemRoot)) {
                 if (item.getValue() == newValue) {
                     tree.getSelectionModel().select(item);
                     break;
