@@ -44,7 +44,7 @@ public class ReferenceListAttributeVisualisation implements AttributeEditorVisua
     @Override
     public Node createContent(SimpleObjectProperty<ObservableList<Data>> boundTo) {
         VBox detailView = createDetailView(boundTo);
-        return uniformDesign.createListEditSummary(boundTo, detailView);
+        return uniformDesign.createExpandableListWrapper(boundTo, detailView);
     }
 
     private VBox createDetailView(SimpleObjectProperty<ObservableList<Data>> boundTo) {

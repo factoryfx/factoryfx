@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 import java.util.Locale;
+import java.util.function.Function;
 
 import de.factoryfx.data.attribute.Attribute;
 import de.factoryfx.data.attribute.types.I18nAttribute;
@@ -103,13 +104,15 @@ public class UniformDesign {
         return attribute.get().getPreferred(locale);
     }
 
-    public VBox createListEditSummary(SimpleObjectProperty<? extends List> boundTo, VBox detailView) {
+    public <T> VBox createExpandableEditorWrapper(SimpleObjectProperty<T> boundTo, VBox detailView, FontAwesome.Glyph icon, Function<T,String> summaryTextProvider) {
         VBox root = new VBox();
+
         detailView.setBorder(new Border(new BorderStroke(Color.GREY, BorderStrokeStyle.SOLID, CornerRadii.EMPTY, new BorderWidths(2))));
+        detailView.setPadding(new Insets(3));
         VBox.setMargin(detailView,new Insets(3,0,0,0));
 
-        Label icon = new Label();
-        addIcon(icon,FontAwesome.Glyph.LIST);
+        Label iconLabel = new Label();
+        addIcon(iconLabel,icon);
 
         ToggleButton expandButton=new ToggleButton();
         expandButton.setOnAction(event -> {
@@ -119,7 +122,7 @@ public class UniformDesign {
                 root.getChildren().remove(detailView);
             }
         });
-        addIcon(expandButton, FontAwesome.Glyph.EXPAND);
+        addIcon(expandButton, FontAwesome.Glyph.ANGLE_DOWN);
 
         HBox summary=new HBox(3);
         summary.setAlignment(Pos.CENTER_LEFT);
@@ -128,14 +131,18 @@ public class UniformDesign {
             if (boundTo.get() == null) {
                 label.setText("<empty>");
             } else {
-                label.setText("Items: "+boundTo.get().size());
+                label.setText(summaryTextProvider.apply(boundTo.get()));
             }
         };
         boundTo.addListener(listener);
         listener.invalidated(null);
-        summary.getChildren().addAll(icon,label,expandButton);
+        summary.getChildren().addAll(iconLabel,label,expandButton);
         root.getChildren().addAll(summary);
         return root;
+    }
+
+    public <T extends List> VBox createExpandableListWrapper(SimpleObjectProperty<T> boundTo, VBox detailView) {
+        return createExpandableEditorWrapper(boundTo,detailView,FontAwesome.Glyph.LIST, t -> "Items: "+boundTo.get().size());
     }
 
 

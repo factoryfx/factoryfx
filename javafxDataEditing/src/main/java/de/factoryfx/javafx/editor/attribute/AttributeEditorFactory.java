@@ -20,6 +20,7 @@ import de.factoryfx.data.attribute.types.DoubleAttribute;
 import de.factoryfx.data.attribute.types.IntegerAttribute;
 import de.factoryfx.data.attribute.types.LongAttribute;
 import de.factoryfx.data.attribute.types.StringAttribute;
+import de.factoryfx.data.attribute.types.TableAttribute;
 import de.factoryfx.data.attribute.types.URIAttribute;
 import de.factoryfx.javafx.editor.attribute.visualisation.BigDecimalAttributeVisualisation;
 import de.factoryfx.javafx.editor.attribute.visualisation.BooleanAttributeVisualisation;
@@ -34,6 +35,7 @@ import de.factoryfx.javafx.editor.attribute.visualisation.LongAttributeVisualisa
 import de.factoryfx.javafx.editor.attribute.visualisation.ReferenceAttributeVisualisation;
 import de.factoryfx.javafx.editor.attribute.visualisation.ReferenceListAttributeVisualisation;
 import de.factoryfx.javafx.editor.attribute.visualisation.StringAttributeVisualisation;
+import de.factoryfx.javafx.editor.attribute.visualisation.TableAttributeVisualisation;
 import de.factoryfx.javafx.editor.attribute.visualisation.URIAttributeVisualisation;
 import de.factoryfx.javafx.editor.data.DataEditor;
 import de.factoryfx.javafx.util.UniformDesign;
@@ -178,6 +180,11 @@ public class AttributeEditorFactory {
         if (Locale.class.isAssignableFrom(attribute.getAttributeType().dataType)) {
             return Optional.of(new AttributeEditor<>((Attribute<Locale>)attribute,new LocaleAttributeVisualisation()));
         }
+
+        if (TableAttribute.Table.class.isAssignableFrom(attribute.getAttributeType().dataType)) {
+            return Optional.of(new AttributeEditor<>((Attribute<TableAttribute.Table>)attribute,new TableAttributeVisualisation(uniformDesign)));
+        }
+
 
         return Optional.empty();
     }

@@ -41,7 +41,7 @@ public class ListAttributeVisualisation<T> implements AttributeEditorVisualisati
     @Override
     public Node createContent(SimpleObjectProperty<ObservableList<T>> boundTo) {
         VBox detailView = createDetailView(boundTo);
-        return uniformDesign.createListEditSummary(boundTo, detailView);
+        return uniformDesign.createExpandableListWrapper(boundTo, detailView);
     }
 
 
