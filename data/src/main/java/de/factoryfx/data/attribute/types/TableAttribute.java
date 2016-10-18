@@ -67,9 +67,11 @@ public class TableAttribute extends ValueAttribute<TableAttribute.Table> {
 
         public Table copy(){
             Table table = new Table();
+            table.setColumnHeaders(getColumnHeaders().toArray(new String[0]));
             for (TableRow tableRow: rows){
                 table.rows.add(tableRow.copy());
             }
+
             return table;
         }
 
@@ -80,7 +82,8 @@ public class TableAttribute extends ValueAttribute<TableAttribute.Table> {
                     tableRow.columns.add("");
                 }
             } else {
-                tableRow.columns.add("");
+                for (String s : getColumnHeaders())
+                    tableRow.columns.add("");
             }
             rows.add(tableRow);
             return this;
