@@ -11,10 +11,8 @@ import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 
 public class BorderPaneStage {
-    public final Stage stage;
 
-    public BorderPaneStage(Stage stage, List<Menu> menus, ViewsDisplayWidget instance, int width, int height, StackPane stackPane) {
-        this.stage = stage;
+    public BorderPaneStage(Stage stage, List<Menu> menus, ViewsDisplayWidget instance, int width, int height, StackPane stackPane, String cssResourceUrlExternalForm) {
 
 
 
@@ -25,6 +23,11 @@ public class BorderPaneStage {
         root.setTop(menuBar);
 
         stackPane.getChildren().add(root);
+
+        if (cssResourceUrlExternalForm.isEmpty()){
+            root.getStylesheets().add(cssResourceUrlExternalForm);
+        }
+
         stage.setScene(new Scene(stackPane,width,height));
 
 
