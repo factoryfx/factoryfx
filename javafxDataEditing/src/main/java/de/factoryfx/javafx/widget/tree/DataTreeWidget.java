@@ -4,6 +4,7 @@ import com.google.common.collect.TreeTraverser;
 import de.factoryfx.data.Data;
 import de.factoryfx.javafx.editor.data.DataEditor;
 import de.factoryfx.javafx.widget.CloseAwareWidget;
+import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.scene.Node;
 import javafx.scene.control.ScrollPane;
@@ -49,7 +50,7 @@ public class DataTreeWidget implements CloseAwareWidget {
             }
 
         });
-        tree.setRoot(addOrGetTreeItem(root));
+        tree.setRoot(constructTtree(root));
 
         tree.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue!=null){
@@ -58,18 +59,21 @@ public class DataTreeWidget implements CloseAwareWidget {
         });
 
         ChangeListener<Data> dataChangeListener = (observable, oldValue, newValue) -> {
-            TreeItem<Data> treeItemRoot = addOrGetTreeItem(root);
-            tree.setRoot(treeItemRoot);
+            Platform.runLater(() -> {//javafx bug workaround http://stackoverflow.com/questions/26343495/indexoutofboundsexception-while-updating-a-listview-in-javafx
+                TreeItem<Data> treeItemRoot = constructTtree(root);
+                tree.setRoot(treeItemRoot);
 
-            for (TreeItem<Data> item : treeViewTraverser.breadthFirstTraversal(treeItemRoot)) {
-                item.setExpanded(true);
-            }
-            for (TreeItem<Data> item : treeViewTraverser.breadthFirstTraversal(treeItemRoot)) {
-                if (item.getValue() == newValue) {
-                    tree.getSelectionModel().select(item);
-                    break;
+                for (TreeItem<Data> item : treeViewTraverser.breadthFirstTraversal(treeItemRoot)) {
+                    item.setExpanded(true);
                 }
-            }
+                for (TreeItem<Data> item : treeViewTraverser.breadthFirstTraversal(treeItemRoot)) {
+                    if (item.getValue() == newValue) {
+                        tree.getSelectionModel().select(item);
+                        break;
+                    }
+                }
+            });
+
         };
         dataEditor.editData().addListener(dataChangeListener);
         dataChangeListener.changed(dataEditor.editData(),dataEditor.editData().get(),dataEditor.editData().get());
@@ -87,10 +91,10 @@ public class DataTreeWidget implements CloseAwareWidget {
         }
     };
 
-    private TreeItem<Data> addOrGetTreeItem(Data data){
+    private TreeItem<Data> constructTtree(Data data){
         TreeItem<Data> dataTreeItem = new TreeItem<>(data);
         data.visitChildFactoriesFlat(child -> {
-            dataTreeItem.getChildren().add(addOrGetTreeItem(child));
+            dataTreeItem.getChildren().add(constructTtree(child));
         });
         return dataTreeItem;
     }

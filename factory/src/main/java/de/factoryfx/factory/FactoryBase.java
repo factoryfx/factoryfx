@@ -58,12 +58,17 @@ public abstract class FactoryBase<L,V> extends Data {
         if (!changedDeep() && createdLiveObject !=null) {//TODO is the createdLiveObject==null correct? is is used if new Factory is transitive added (Limitation of the mergerdiff)
             return createdLiveObject;
         } else{
+            LiveCycleController<L, V> lifecycleController = getLifecycleController();
+            if (lifecycleController==null){
+                throw new IllegalStateException("lifecycleController is null for:"+getClass());
+            }
+
             if (createdLiveObject==null){
-                createdLiveObject =getLifecycleController().create();
+                createdLiveObject = lifecycleController.create();
             } else {
                 L previousLiveObject = this.createdLiveObject;
-                this.createdLiveObject =getLifecycleController().reCreate(previousLiveObject);
-                getLifecycleController().destroy(previousLiveObject);//TODO check if this is the wrong destroy order (parent are destroyed before the children)
+                this.createdLiveObject = lifecycleController.reCreate(previousLiveObject);
+                lifecycleController.destroy(previousLiveObject);//TODO check if this is the wrong destroy order (parent are destroyed before the children)
             }
             changed=false;
             return createdLiveObject;
