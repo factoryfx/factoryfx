@@ -80,6 +80,9 @@ public class AttributeEditorFactory {
 
     @SuppressWarnings("unchecked")
     private Optional<AttributeEditor<?>> getAttributeEditorReference(Attribute<?> attribute, DataEditor dataEditor) {
+        if (attribute.getAttributeType().dataType == null)
+            return Optional.empty();
+
         if (Data.class==attribute.getAttributeType().dataType){
             ReferenceAttribute<?> referenceAttribute = (ReferenceAttribute<?>) attribute;
             return Optional.of(new AttributeEditor<>((Attribute<Data>)attribute,new ReferenceAttributeVisualisation(uniformDesign,dataEditor,()->referenceAttribute.addNewFactory(root),()->(List<Data>)referenceAttribute.possibleValues(root))));
@@ -94,6 +97,9 @@ public class AttributeEditorFactory {
 
     @SuppressWarnings("unchecked")
     private Optional<AttributeEditor<?>> getAttributeEditorList(Attribute<?> attribute, DataEditor dataEditor) {
+        if (attribute.getAttributeType().dataType == null)
+            return Optional.empty();
+
         if (ObservableList.class.isAssignableFrom(attribute.getAttributeType().dataType) && String.class==attribute.getAttributeType().listItemType){
             StringAttribute detailAttribute = new StringAttribute(new AttributeMetadata().de("Wert").en("Value"));
             AttributeEditor<String> attributeEditor = (AttributeEditor<String>) getAttributeEditor(detailAttribute,dataEditor).get();
