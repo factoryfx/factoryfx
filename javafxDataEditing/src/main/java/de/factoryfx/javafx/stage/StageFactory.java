@@ -3,7 +3,7 @@ package de.factoryfx.javafx.stage;
 import de.factoryfx.data.attribute.AttributeMetadata;
 import de.factoryfx.data.attribute.types.IntegerAttribute;
 import de.factoryfx.data.attribute.types.ObjectValueAttribute;
-import de.factoryfx.data.attribute.types.StringAttribute;
+import de.factoryfx.data.attribute.types.StringListAttribute;
 import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.factory.LiveCycleController;
 import de.factoryfx.factory.atrribute.FactoryReferenceAttribute;
@@ -23,7 +23,11 @@ public class StageFactory<V> extends FactoryBase<BorderPaneStage,V> {
     public final IntegerAttribute width = new IntegerAttribute(new AttributeMetadata().de("width").en("width"));
     public final IntegerAttribute height = new IntegerAttribute(new AttributeMetadata().de("height").en("height"));
     public final FactoryReferenceAttribute<LongRunningActionExecutor,LongRunningActionExecutorFactory<V>> longRunningActionExecutor = new FactoryReferenceAttribute<>(new AttributeMetadata().de("items").en("items"),LongRunningActionExecutorFactory.class);
-    public final StringAttribute cssResourceUrlExternalForm = new StringAttribute(new AttributeMetadata().de("cssResourceUrlExternalForm").en("cssResourceUrlExternalForm"));
+    public final StringListAttribute cssResourceUrlExternalForm = new StringListAttribute(new AttributeMetadata().de("cssResourceUrlExternalForm").en("cssResourceUrlExternalForm"));
+
+    public StageFactory(){
+        cssResourceUrlExternalForm.add(getClass().getResource("/de/factoryfx/javafx/css/app.css").toExternalForm());
+    }
 
     @Override
     public LiveCycleController<BorderPaneStage, V> createLifecycleController() {
