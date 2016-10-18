@@ -2,7 +2,7 @@ package de.factoryfx.javafx.distribution;
 
 import java.io.File;
 
-import de.factoryfx.adminui.SinglePrecessInstanceUtil;
+import de.factoryfx.server.SinglePrecessInstanceUtil;
 import de.factoryfx.javafx.distribution.launcher.ui.UserInterfaceDistributionClient;
 import de.factoryfx.javafx.distribution.server.UserInterfaceDistributionServer;
 import de.factoryfx.javafx.distribution.server.rest.DownloadResource;

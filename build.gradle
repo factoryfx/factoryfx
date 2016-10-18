@@ -83,7 +83,7 @@ project(':applicationServer') {
   }
 }
 
-project(':adminUiJavafxServer') {
+project(':applicationServerRest') {
     dependencies {
         compile project(":applicationServer")
         compile project(":restutil")
