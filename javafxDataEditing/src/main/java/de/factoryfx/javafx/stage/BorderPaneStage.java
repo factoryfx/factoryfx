@@ -2,6 +2,7 @@ package de.factoryfx.javafx.stage;
 
 import java.util.List;
 
+import com.google.common.base.Strings;
 import de.factoryfx.javafx.view.container.ViewsDisplayWidget;
 import javafx.scene.Scene;
 import javafx.scene.control.Menu;
@@ -24,7 +25,7 @@ public class BorderPaneStage {
 
         stackPane.getChildren().add(root);
 
-        if (cssResourceUrlExternalForm.isEmpty()){
+        if (!Strings.isNullOrEmpty(cssResourceUrlExternalForm)){
             root.getStylesheets().add(cssResourceUrlExternalForm);
         }
 
