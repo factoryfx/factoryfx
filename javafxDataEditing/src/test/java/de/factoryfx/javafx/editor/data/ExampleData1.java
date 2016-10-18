@@ -40,6 +40,12 @@ public class ExampleData1 extends Data {
     public final ColorAttribute colorAttribute=new ColorAttribute(new AttributeMetadata().en("colorAttribute").de("colorAttribute de"));
     public final LocaleAttribute localeAttribute =new LocaleAttribute(new AttributeMetadata().en("colorAttribute").de("colorAttribute de"));
 
+    public ExampleData1() {
+        TableAttribute.Table value = new TableAttribute.Table();
+        value.setColumnHeaders("Col1","Col2");
+        tableAttribute.set(value);
+    }
+
     String id= UUID.randomUUID().toString();
     @Override
     public Object getId() {
