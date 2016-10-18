@@ -135,6 +135,9 @@ public class AttributeEditorFactory {
 
     @SuppressWarnings("unchecked")
     private Optional<AttributeEditor<?>> getAttributeEditorSimpleType(Attribute<?> attribute) {
+        if (attribute.getAttributeType().dataType == null)
+            return Optional.empty();
+
         if (String.class==attribute.getAttributeType().dataType){
             return Optional.of(new AttributeEditor<>((Attribute<String>)attribute,new StringAttributeVisualisation()));
         }
