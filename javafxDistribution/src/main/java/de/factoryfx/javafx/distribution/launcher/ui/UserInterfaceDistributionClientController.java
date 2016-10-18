@@ -57,9 +57,9 @@ public class UserInterfaceDistributionClientController {
     @FXML
     private VBox rootPane;
 
-
-    public UserInterfaceDistributionClientController() {
-
+    private final String initialUrl;
+    public UserInterfaceDistributionClientController(String initialUrl) {
+        this.initialUrl = initialUrl;
     }
 
     @FXML
@@ -86,6 +86,11 @@ public class UserInterfaceDistributionClientController {
         serverUrlList.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             serverUrlInput.setText(newValue);
         });
+
+        if (serverUrlList.getItems().isEmpty()){
+            serverUrlInput.setText(initialUrl);
+        }
+
     }
 
     private void startGui() {
@@ -116,7 +121,7 @@ public class UserInterfaceDistributionClientController {
         WebTarget webResource = client.target(serverUrl + "/download/checkVersion?" + "fileHash=" + fileHash);
         Response response = webResource.request(MediaType.TEXT_PLAIN).get();
         boolean needUpdate = Boolean.parseBoolean(response.readEntity(String.class));
-
+        rootPane.setDisable(true);
 
         new Thread(){
             @Override
@@ -140,8 +145,12 @@ public class UserInterfaceDistributionClientController {
                     }
                     writeServerList();
 
-                    Platform.runLater(()->progress.setProgress(1));
+                    Platform.runLater(()->{
+                        progress.setProgress(1);
+                        rootPane.setDisable(false);
+                    });
                 } catch (IOException e) {
+                    Platform.runLater(()-> rootPane.setDisable(false));
                     throw new RuntimeException(e);
                 }
 

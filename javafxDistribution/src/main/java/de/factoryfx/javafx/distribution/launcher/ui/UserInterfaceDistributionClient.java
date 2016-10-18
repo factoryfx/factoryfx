@@ -7,16 +7,19 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
-public class UserInterfaceDistributionClient extends javafx.application.Application {
+public class UserInterfaceDistributionClient {
 
-    public static void main(String[] args) {
-        launch(args);
+    private final UserInterfaceDistributionClientController controller;
+    private final Stage stage;
+
+    public UserInterfaceDistributionClient(UserInterfaceDistributionClientController controller, Stage stage) {
+        this.controller = controller;
+        this.stage = stage;
     }
 
-    @Override
-    public void start(Stage primaryStage) throws Exception {
+    public void show() {
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/de/factoryfx/javafx/distribution/launcher/ui/UserInterfaceDistributionClientView.fxml"));
-        fxmlLoader.setController(new UserInterfaceDistributionClientController());
+        fxmlLoader.setController(controller);
         Parent root = null;
         try {
             root = fxmlLoader.load();
@@ -25,11 +28,11 @@ public class UserInterfaceDistributionClient extends javafx.application.Applicat
             throw new RuntimeException(exception);
         }
 
-        primaryStage.setTitle("Launcher");
+        stage.setTitle("Launcher");
 
-        primaryStage.setScene(new Scene(root));
-        primaryStage.show();
+        stage.setScene(new Scene(root));
+        stage.show();
 
-        primaryStage.setOnCloseRequest(event -> System.exit(0));
+        stage.setOnCloseRequest(event -> System.exit(0));
     }
 }
