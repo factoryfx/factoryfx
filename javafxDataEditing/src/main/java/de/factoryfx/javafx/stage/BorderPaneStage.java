@@ -24,10 +24,8 @@ public class BorderPaneStage {
 
         stackPane.getChildren().add(root);
 
-        if (cssResourceUrlExternalForm.isEmpty()){
-            for (String cssUrl: cssResourceUrlExternalForm){
-                root.getStylesheets().add(cssUrl);
-            }
+        for (String cssUrl: cssResourceUrlExternalForm){
+            root.getStylesheets().add(cssUrl);
         }
 
         stage.setScene(new Scene(stackPane,width,height));
