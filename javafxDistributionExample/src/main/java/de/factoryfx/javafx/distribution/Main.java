@@ -2,15 +2,22 @@ package de.factoryfx.javafx.distribution;
 
 import java.io.File;
 
-import de.factoryfx.server.SinglePrecessInstanceUtil;
 import de.factoryfx.javafx.distribution.launcher.ui.UserInterfaceDistributionClient;
+import de.factoryfx.javafx.distribution.launcher.ui.UserInterfaceDistributionClientController;
 import de.factoryfx.javafx.distribution.server.UserInterfaceDistributionServer;
 import de.factoryfx.javafx.distribution.server.rest.DownloadResource;
+import de.factoryfx.server.SinglePrecessInstanceUtil;
 import javafx.application.Application;
+import javafx.stage.Stage;
 
-public class Main {
+public class Main extends Application {
 
     public static void main(String[] args) {
+        Application.launch();
+    }
+
+    @Override
+    public void start(Stage primaryStage) throws Exception {
         SinglePrecessInstanceUtil.enforceSingleProzessInstance(12344);
 
         int port = 13678;
@@ -21,8 +28,7 @@ public class Main {
                 server.start();
             }
         }.start();
-        Application.launch(UserInterfaceDistributionClient.class);
 
-
+        new UserInterfaceDistributionClient(new UserInterfaceDistributionClientController("http://localhost:13678"),primaryStage).show();
     }
 }
