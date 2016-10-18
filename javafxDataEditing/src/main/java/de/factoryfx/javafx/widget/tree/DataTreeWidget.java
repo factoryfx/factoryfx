@@ -8,6 +8,7 @@ import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.scene.Node;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.control.SelectionMode;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
@@ -37,6 +38,7 @@ public class DataTreeWidget implements CloseAwareWidget {
 
     private Node createTree(){
         TreeView<Data> tree = new TreeView<>();
+        tree.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
         tree.setCellFactory(param -> new TextFieldTreeCell<Data>() {
             @Override
             public void updateItem(Data item, boolean empty) {
@@ -50,7 +52,7 @@ public class DataTreeWidget implements CloseAwareWidget {
             }
 
         });
-        tree.setRoot(constructTtree(root));
+        tree.setRoot(constructTree(root));
 
         tree.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue!=null){
@@ -60,16 +62,16 @@ public class DataTreeWidget implements CloseAwareWidget {
 
         ChangeListener<Data> dataChangeListener = (observable, oldValue, newValue) -> {
             Platform.runLater(() -> {//javafx bug workaround http://stackoverflow.com/questions/26343495/indexoutofboundsexception-while-updating-a-listview-in-javafx
-                TreeItem<Data> treeItemRoot = constructTtree(root);
+                TreeItem<Data> treeItemRoot = constructTree(root);
                 tree.setRoot(treeItemRoot);
 
                 for (TreeItem<Data> item : treeViewTraverser.breadthFirstTraversal(treeItemRoot)) {
                     item.setExpanded(true);
                 }
+                tree.getSelectionModel().clearSelection();
                 for (TreeItem<Data> item : treeViewTraverser.breadthFirstTraversal(treeItemRoot)) {
                     if (item.getValue() == newValue) {
                         tree.getSelectionModel().select(item);
-                        break;
                     }
                 }
             });
@@ -91,10 +93,10 @@ public class DataTreeWidget implements CloseAwareWidget {
         }
     };
 
-    private TreeItem<Data> constructTtree(Data data){
+    private TreeItem<Data> constructTree(Data data){
         TreeItem<Data> dataTreeItem = new TreeItem<>(data);
         data.visitChildFactoriesFlat(child -> {
-            dataTreeItem.getChildren().add(constructTtree(child));
+            dataTreeItem.getChildren().add(constructTree(child));
         });
         return dataTreeItem;
     }
