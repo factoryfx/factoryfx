@@ -3,6 +3,7 @@ package de.factoryfx.data.attribute.types;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -34,6 +35,10 @@ public class TableAttribute extends ValueAttribute<TableAttribute.Table> {
                 rows.remove(rows.size()-1);
             }
             return this;
+        }
+
+        public List<List<String>> getTableRows(){
+            return rows.stream().map(tableRow -> tableRow.columns).collect(Collectors.toList());
         }
 
         @JsonIgnore
