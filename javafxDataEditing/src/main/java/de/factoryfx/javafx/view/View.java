@@ -47,7 +47,7 @@ public class View implements Widget {
 //        if (cachedContent == null) {
 //            cachedContent = createContent();
 //        }
-        return cachedContent;
+        return createContent();
     }
 
     public boolean isShowing() {
