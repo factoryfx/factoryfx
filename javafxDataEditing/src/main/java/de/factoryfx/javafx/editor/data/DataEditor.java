@@ -222,7 +222,7 @@ public class DataEditor implements Widget {
     private Optional<Data> previousData(){
         int index = displayedEntities.indexOf(bound.get())-1;
         if (index>=0){
-            return Optional.of(displayedEntities.get(index));
+            return Optional.ofNullable(displayedEntities.get(index));
         }
         return Optional.empty();
     }
@@ -230,7 +230,7 @@ public class DataEditor implements Widget {
     private Optional<Data> nextData(){
         int index = displayedEntities.indexOf(bound.get())+1;
         if (index<displayedEntities.size()){
-            return Optional.of(displayedEntities.get(index));
+            return Optional.ofNullable(displayedEntities.get(index));
         }
         return Optional.empty();
     }
