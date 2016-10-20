@@ -43,9 +43,10 @@ public class View implements Widget {
     }
 
     public Node getCachedContent() {
-        if (cachedContent == null) {
-            cachedContent = createContent();
-        }
+        //TODO chache even good?
+//        if (cachedContent == null) {
+//            cachedContent = createContent();
+//        }
         return cachedContent;
     }
 
