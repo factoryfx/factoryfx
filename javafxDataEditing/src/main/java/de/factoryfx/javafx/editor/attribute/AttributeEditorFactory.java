@@ -35,6 +35,7 @@ import de.factoryfx.javafx.editor.attribute.visualisation.LongAttributeVisualisa
 import de.factoryfx.javafx.editor.attribute.visualisation.ReferenceAttributeVisualisation;
 import de.factoryfx.javafx.editor.attribute.visualisation.ReferenceListAttributeVisualisation;
 import de.factoryfx.javafx.editor.attribute.visualisation.StringAttributeVisualisation;
+import de.factoryfx.javafx.editor.attribute.visualisation.StringLongAttributeVisualisation;
 import de.factoryfx.javafx.editor.attribute.visualisation.TableAttributeVisualisation;
 import de.factoryfx.javafx.editor.attribute.visualisation.URIAttributeVisualisation;
 import de.factoryfx.javafx.editor.data.DataEditor;
@@ -145,7 +146,17 @@ public class AttributeEditorFactory {
             return Optional.empty();
 
         if (String.class==attribute.getAttributeType().dataType){
-            return Optional.of(new AttributeEditor<>((Attribute<String>)attribute,new StringAttributeVisualisation()));
+            StringAttribute stringAttribute = (StringAttribute) attribute;
+            if (!stringAttribute.isLongText()){
+                return Optional.of(new AttributeEditor<>(stringAttribute,new StringAttributeVisualisation()));
+            }
+        }
+
+        if (String.class==attribute.getAttributeType().dataType){
+            StringAttribute stringAttribute = (StringAttribute) attribute;
+            if (stringAttribute.isLongText()){
+                return Optional.of(new AttributeEditor<>(stringAttribute,new StringLongAttributeVisualisation()));
+            }
         }
 
         if (Integer.class==attribute.getAttributeType().dataType){
