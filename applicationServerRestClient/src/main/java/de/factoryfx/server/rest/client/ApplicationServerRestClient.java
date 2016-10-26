@@ -30,8 +30,8 @@ public class ApplicationServerRestClient<V,T extends FactoryBase<?,V>> {
     private final URI baseURI;
     private final Class<T> factoryRootClass;
 
-    public ApplicationServerRestClient(String host, int port, boolean ssl, Class<T> factoryRootClass) {
-        this(buildURI(host, port, ssl), factoryRootClass);
+    public ApplicationServerRestClient(String host, int port, String path,boolean ssl, Class<T> factoryRootClass) {
+        this(buildURI(host, port, ssl, path), factoryRootClass);
     }
 
     public ApplicationServerRestClient(URI baseURI, Class<T> factoryRootClass) {
@@ -101,9 +101,9 @@ public class ApplicationServerRestClient<V,T extends FactoryBase<?,V>> {
     }
 
 
-    private static URI buildURI(String host, int port, boolean ssl)  {
+    private static URI buildURI(String host, int port, boolean ssl, String path)  {
         try {
-            return new URI((ssl?"https":"http")+"://"+host+":"+port+"/adminui/");
+            return new URI((ssl?"https":"http")+"://"+host+":"+port+"/+"+path+"+/");
         } catch (URISyntaxException e) {
             throw new IllegalArgumentException("bad host name",e);
         }
