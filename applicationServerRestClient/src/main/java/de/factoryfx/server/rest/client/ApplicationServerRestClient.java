@@ -39,11 +39,11 @@ public class ApplicationServerRestClient<V,T extends FactoryBase<?,V>> {
     }
 
     public ApplicationServerRestClient(URI baseURI, Class<T> factoryRootClass, String httpAuthenticationUser, String httpAuthenticationPassword) {
-        this.client = createClient();
         this.baseURI = baseURI;
         this.factoryRootClass = factoryRootClass;
         this.httpAuthenticationUser=httpAuthenticationUser;
         this.httpAuthenticationPassword=httpAuthenticationPassword;
+        this.client = createClient();
     }
 
     public MergeDiff updateCurrentFactory(FactoryAndStorageMetadata<T> update) {
