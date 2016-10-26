@@ -125,15 +125,17 @@ public class ReferenceAttribute<T extends Data> extends Attribute<T> {
     private Optional<Supplier<T>> newValueProvider=Optional.empty();
 
     /**customise the list of selectable items*/
-    public ReferenceAttribute possibleValueProvider(Function<Data,List<T>> possibleValueProvider){
+    @SuppressWarnings("unchecked")
+    public <A extends ReferenceAttribute<T>> A possibleValueProvider(Function<Data,List<T>> possibleValueProvider){
         this.possibleValueProviderFromRoot =Optional.of(possibleValueProvider);
-        return this;
+        return (A)this;
     }
 
     /**customise how new values are created*/
-    public ReferenceAttribute newValueProvider(Supplier<T> newValueProvider){
+    @SuppressWarnings("unchecked")
+    public <A extends ReferenceAttribute<T>> A newValueProvider(Supplier<T> newValueProvider){
         this.newValueProvider =Optional.of(newValueProvider);
-        return this;
+        return (A)this;
     }
 
     public void addNewFactory(Data root){
