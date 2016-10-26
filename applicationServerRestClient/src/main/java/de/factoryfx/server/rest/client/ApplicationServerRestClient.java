@@ -122,7 +122,7 @@ public class ApplicationServerRestClient<V,T extends FactoryBase<?,V>> {
         client.register(GZipEncoder.class);
         client.register(EncodingFilter.class);
         client.register(DeflateEncoder.class);
-        if (!Strings.isNullOrEmpty(httpAuthenticationUser) && !Strings.isNullOrEmpty(httpAuthenticationUser) ){
+        if (!Strings.isNullOrEmpty(httpAuthenticationUser) && !Strings.isNullOrEmpty(httpAuthenticationPassword) ){
             client.register(HttpAuthenticationFeature.basic(httpAuthenticationUser, httpAuthenticationPassword));
         }
         JacksonJaxbJsonProvider provider = new JacksonJaxbJsonProvider();
