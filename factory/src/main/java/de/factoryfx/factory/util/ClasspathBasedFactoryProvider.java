@@ -1,4 +1,4 @@
-package de.factoryfx.server.angularjs.util;
+package de.factoryfx.factory.util;
 
 import java.io.IOException;
 import java.util.ArrayList;

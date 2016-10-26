@@ -16,7 +16,7 @@ import de.factoryfx.server.angularjs.factory.server.HttpServer;
 import de.factoryfx.server.angularjs.factory.server.HttpServerFactory;
 import de.factoryfx.server.angularjs.model.view.GuiView;
 import de.factoryfx.server.angularjs.model.view.WebGuiFactoryHeader;
-import de.factoryfx.server.angularjs.util.ClasspathBasedFactoryProvider;
+import de.factoryfx.factory.util.ClasspathBasedFactoryProvider;
 import de.factoryfx.data.util.LanguageText;
 import de.factoryfx.example.factory.OrderCollector;
 import de.factoryfx.example.factory.OrderCollectorToTables;

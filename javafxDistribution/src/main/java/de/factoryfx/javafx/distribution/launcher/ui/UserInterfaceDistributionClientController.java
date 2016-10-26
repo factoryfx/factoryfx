@@ -34,6 +34,7 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.VBox;
 import org.glassfish.jersey.client.ClientConfig;
+import org.glassfish.jersey.client.authentication.HttpAuthenticationFeature;
 import org.glassfish.jersey.client.filter.EncodingFilter;
 import org.glassfish.jersey.jackson.JacksonFeature;
 import org.glassfish.jersey.message.DeflateEncoder;
@@ -102,6 +103,8 @@ public class UserInterfaceDistributionClientController {
         client.register(GZipEncoder.class);
         client.register(EncodingFilter.class);
         client.register(DeflateEncoder.class);
+
+        client.register(HttpAuthenticationFeature.basic("abacus-sys", "Tr7EaW=,MhdLoC2wA"));
 
         progress.setProgress(-1);
 

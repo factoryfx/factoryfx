@@ -26,7 +26,7 @@ import de.factoryfx.server.angularjs.integration.example.ExampleLiveObjectA;
 import de.factoryfx.server.angularjs.integration.example.ExampleVisitor;
 import de.factoryfx.server.angularjs.integration.example.ViewCreator;
 import de.factoryfx.server.angularjs.integration.example.VisitorToTables;
-import de.factoryfx.server.angularjs.util.ClasspathBasedFactoryProvider;
+import de.factoryfx.factory.util.ClasspathBasedFactoryProvider;
 import de.factoryfx.factory.FactoryManager;
 import de.factoryfx.factory.datastorage.FactoryStorage;
 import de.factoryfx.server.ApplicationServer;
