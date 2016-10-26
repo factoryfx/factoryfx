@@ -1,6 +1,7 @@
 package de.factoryfx.javafx.view.container;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import de.factoryfx.javafx.util.UniformDesign;
@@ -51,15 +52,13 @@ public class ViewsDisplayWidget implements Widget {
 
     protected CloseListener onCloseListener;
 
+    private HashMap<View,Tab> viewToTab = new HashMap<>();
+
     public void close(View view) {
-        Tab formTab = null;
-        for (Tab tab : tabpane.getTabs()) {
-            if (tab.getContent() == view.getCachedContent()) {
-                formTab = tab;
-            }
-        }
-        if (formTab != null) {
-            tabpane.getTabs().remove(formTab);
+        Tab viewTab = viewToTab.get(view);
+        if (viewTab!=null){
+            tabpane.getTabs().remove(viewTab);
+            viewToTab.remove(view);
         }
 
         if (onCloseListener != null) {
@@ -75,26 +74,23 @@ public class ViewsDisplayWidget implements Widget {
     }
 
     public void show(View view) {
-        Tab formTab = null;
-        for (Tab tab : tabpane.getTabs()) {
-            if (tab.getContent() == view.getCachedContent()) {
-                formTab = tab;
-            }
-        }
+        Tab formTab = viewToTab.get(view);
 
-        boolean existingExpanded = false;
-        for (Stage stage : stages) {
-            if (stage.getScene().getRoot() == view.getCachedContent()) {
-                stage.toFront();
-                existingExpanded = true;
-            }
-        }
+        //TODO
+//        boolean existingExpanded = false;
+//        for (Stage stage : stages) {
+//            if (stage.getScene().getRoot() == view.getCachedContent()) {
+//                stage.toFront();
+//                existingExpanded = true;
+//            }
+//        }
 
         if (formTab == null) {
             formTab = new Tab();
-            if (!existingExpanded) {
+            viewToTab.put(view,formTab);
+//            if (!existingExpanded) {
                 tabpane.getTabs().add(formTab);
-            }
+//            }
         }
         final Tab formTabFinal = formTab;
 
@@ -139,7 +135,7 @@ public class ViewsDisplayWidget implements Widget {
         formTab.setContextMenu(contextMenu);
 
         formTab.textProperty().bind(view.title);
-        formTab.setContent(view.getCachedContent());
+        formTab.setContent(view.createContent());
         ChangeListener<Glyph> listener = (observable, oldValue, newValue) -> {
             if (newValue != null) {
                 formTabFinal.setGraphic(newValue);

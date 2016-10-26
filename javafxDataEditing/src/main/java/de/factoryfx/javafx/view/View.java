@@ -19,7 +19,6 @@ public class View implements Widget {
     public final Widget widget;
     protected ViewsDisplayWidget viewsDisplayWidget;
     boolean isShowing;
-    Node cachedContent;
     Optional<Runnable> closeListener = Optional.empty();
 
     public View(String title, ViewsDisplayWidget viewsDisplayWidget, Widget widget) {
@@ -40,14 +39,6 @@ public class View implements Widget {
     @Override
     public Node createContent() {
         return widget.createContent();
-    }
-
-    public Node getCachedContent() {
-        //TODO chache even good?
-//        if (cachedContent == null) {
-//            cachedContent = createContent();
-//        }
-        return createContent();
     }
 
     public boolean isShowing() {

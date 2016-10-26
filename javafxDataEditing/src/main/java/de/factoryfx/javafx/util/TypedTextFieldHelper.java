@@ -3,7 +3,6 @@ package de.factoryfx.javafx.util;
 import java.math.BigDecimal;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.time.chrono.IsoChronology;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
 import java.time.format.DateTimeParseException;
@@ -17,7 +16,6 @@ import javafx.scene.control.TextFormatter;
 
 public class TypedTextFieldHelper {
 
-    private static Consumer<String> stringConsumer;
 
     private static void setupTextField(TextField textField, Consumer<String> converter) {
         textField.setTextFormatter(new TextFormatter<>(change -> {
