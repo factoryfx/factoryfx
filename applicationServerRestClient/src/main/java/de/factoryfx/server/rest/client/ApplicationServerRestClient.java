@@ -109,7 +109,7 @@ public class ApplicationServerRestClient<V,T extends FactoryBase<?,V>> {
 
     private static URI buildURI(String host, int port, boolean ssl, String path)  {
         try {
-            return new URI((ssl?"https":"http")+"://"+host+":"+port+"/+"+path+"+/");
+            return new URI((ssl?"https":"http")+"://"+host+":"+port+"/"+path+"/");
         } catch (URISyntaxException e) {
             throw new IllegalArgumentException("bad host name",e);
         }
