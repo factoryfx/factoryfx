@@ -13,12 +13,14 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider;
+import com.google.common.base.Strings;
 import de.factoryfx.data.jackson.ObjectMapperBuilder;
 import de.factoryfx.data.merge.MergeDiff;
 import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.factory.datastorage.FactoryAndStorageMetadata;
 import de.factoryfx.factory.datastorage.StoredFactoryMetadata;
 import org.glassfish.jersey.client.ClientConfig;
+import org.glassfish.jersey.client.authentication.HttpAuthenticationFeature;
 import org.glassfish.jersey.client.filter.EncodingFilter;
 import org.glassfish.jersey.jackson.JacksonFeature;
 import org.glassfish.jersey.message.DeflateEncoder;
@@ -29,15 +31,19 @@ public class ApplicationServerRestClient<V,T extends FactoryBase<?,V>> {
     private final Client client;
     private final URI baseURI;
     private final Class<T> factoryRootClass;
+    private final String httpAuthenticationUser;
+    private final String httpAuthenticationPassword;
 
-    public ApplicationServerRestClient(String host, int port, String path,boolean ssl, Class<T> factoryRootClass) {
-        this(buildURI(host, port, ssl, path), factoryRootClass);
+    public ApplicationServerRestClient(String host, int port, String path,boolean ssl, Class<T> factoryRootClass, String httpAuthenticationUser, String httpAuthenticationPassword) {
+        this(buildURI(host, port, ssl, path), factoryRootClass,httpAuthenticationUser,httpAuthenticationPassword);
     }
 
-    public ApplicationServerRestClient(URI baseURI, Class<T> factoryRootClass) {
+    public ApplicationServerRestClient(URI baseURI, Class<T> factoryRootClass, String httpAuthenticationUser, String httpAuthenticationPassword) {
         this.client = createClient();
         this.baseURI = baseURI;
         this.factoryRootClass = factoryRootClass;
+        this.httpAuthenticationUser=httpAuthenticationUser;
+        this.httpAuthenticationPassword=httpAuthenticationPassword;
     }
 
     public MergeDiff updateCurrentFactory(FactoryAndStorageMetadata<T> update) {
@@ -116,6 +122,9 @@ public class ApplicationServerRestClient<V,T extends FactoryBase<?,V>> {
         client.register(GZipEncoder.class);
         client.register(EncodingFilter.class);
         client.register(DeflateEncoder.class);
+        if (!Strings.isNullOrEmpty(httpAuthenticationUser) && !Strings.isNullOrEmpty(httpAuthenticationUser) ){
+            client.register(HttpAuthenticationFeature.basic(httpAuthenticationUser, httpAuthenticationPassword));
+        }
         JacksonJaxbJsonProvider provider = new JacksonJaxbJsonProvider();
         provider.setMapper(ObjectMapperBuilder.buildNew().getObjectMapper());
         client.register(provider);

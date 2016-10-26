@@ -20,6 +20,7 @@ import javax.ws.rs.core.Response;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider;
+import com.google.common.base.Strings;
 import com.google.common.base.Throwables;
 import com.google.common.hash.Hashing;
 import com.google.common.io.Files;
@@ -59,8 +60,12 @@ public class UserInterfaceDistributionClientController {
     private VBox rootPane;
 
     private final String initialUrl;
-    public UserInterfaceDistributionClientController(String initialUrl) {
+    private final String  httpAuthenticationUser;
+    private final String httpAuthenticationPassword;
+    public UserInterfaceDistributionClientController(String initialUrl, String  httpAuthenticationUser,  String httpAuthenticationPassword) {
         this.initialUrl = initialUrl;
+        this.httpAuthenticationUser = httpAuthenticationUser;
+        this.httpAuthenticationPassword = httpAuthenticationPassword;
     }
 
     @FXML
@@ -104,7 +109,9 @@ public class UserInterfaceDistributionClientController {
         client.register(EncodingFilter.class);
         client.register(DeflateEncoder.class);
 
-        client.register(HttpAuthenticationFeature.basic("abacus-sys", "Tr7EaW=,MhdLoC2wA"));
+        if (!Strings.isNullOrEmpty(httpAuthenticationUser) && !Strings.isNullOrEmpty(httpAuthenticationUser) ){
+            client.register(HttpAuthenticationFeature.basic(httpAuthenticationUser, httpAuthenticationPassword));
+        }
 
         progress.setProgress(-1);
 

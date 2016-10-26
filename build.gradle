@@ -223,12 +223,3 @@ project(':javafxDistribution') {
     }
 
 }
-
-project(':javafxDistributionExample') {
-
-    dependencies {
-        compile project(":utilfx")
-        compile project(":javafxDistribution")
-    }
-
-}

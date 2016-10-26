@@ -7,7 +7,7 @@ public class UserInterfaceDistributionClientTest extends Application{
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        new UserInterfaceDistributionClient(new UserInterfaceDistributionClientController("https://intranet.scoop-gmbh.de/abacus/update"),primaryStage).show();
+        new UserInterfaceDistributionClient(new UserInterfaceDistributionClientController("https://????/???/???",null,null),primaryStage).show();
     }
 
     public static void main(String[] args) {
