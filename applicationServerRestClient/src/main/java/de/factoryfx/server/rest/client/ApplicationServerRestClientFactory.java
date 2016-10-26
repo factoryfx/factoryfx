@@ -1,6 +1,7 @@
 package de.factoryfx.server.rest.client;
 
 import de.factoryfx.data.attribute.AttributeMetadata;
+import de.factoryfx.data.attribute.types.BooleanAttribute;
 import de.factoryfx.data.attribute.types.IntegerAttribute;
 import de.factoryfx.data.attribute.types.ObjectValueAttribute;
 import de.factoryfx.data.attribute.types.StringAttribute;
@@ -8,6 +9,7 @@ import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.factory.LiveCycleController;
 
 public class ApplicationServerRestClientFactory<V,T extends FactoryBase<?,V>> extends FactoryBase<ApplicationServerRestClient<V,T>,V> {
+    public final BooleanAttribute ssl=new BooleanAttribute(new AttributeMetadata().labelText("protocol"));
     public final StringAttribute host=new StringAttribute(new AttributeMetadata().labelText("host"));
     public final IntegerAttribute port=new IntegerAttribute(new AttributeMetadata().labelText("port"));
     public final StringAttribute path=new StringAttribute(new AttributeMetadata().labelText("path")).defaultValue("adminui");
@@ -18,6 +20,6 @@ public class ApplicationServerRestClientFactory<V,T extends FactoryBase<?,V>> ex
 
     @Override
     public LiveCycleController<ApplicationServerRestClient<V,T>, V> createLifecycleController() {
-        return () -> new ApplicationServerRestClient<>(host.get(),port.get(),path.get(),false,factoryRootClass.get(),httpAuthenticationUser.get(),httpAuthenticationPassword.get());
+        return () -> new ApplicationServerRestClient<>(host.get(),port.get(),path.get(),ssl.get(),factoryRootClass.get(),httpAuthenticationUser.get(),httpAuthenticationPassword.get());
     }
 }
