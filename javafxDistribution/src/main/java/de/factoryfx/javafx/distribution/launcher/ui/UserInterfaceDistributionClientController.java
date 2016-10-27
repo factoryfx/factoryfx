@@ -62,10 +62,20 @@ public class UserInterfaceDistributionClientController {
     private final String initialUrl;
     private final String  httpAuthenticationUser;
     private final String httpAuthenticationPassword;
-    public UserInterfaceDistributionClientController(String initialUrl, String  httpAuthenticationUser,  String httpAuthenticationPassword) {
+    private final String exeName;
+
+    /**
+     *
+     * @param initialUrl
+     * @param exeName  e.g 'project' not include '.exe'
+     * @param httpAuthenticationUser
+     * @param httpAuthenticationPassword
+     */
+    public UserInterfaceDistributionClientController(String initialUrl,String exeName, String  httpAuthenticationUser,  String httpAuthenticationPassword) {
         this.initialUrl = initialUrl;
         this.httpAuthenticationUser = httpAuthenticationUser;
         this.httpAuthenticationPassword = httpAuthenticationPassword;
+        this.exeName = exeName;
     }
 
     @FXML
@@ -148,7 +158,7 @@ public class UserInterfaceDistributionClientController {
                     }
 
                     URL distributionServerURL = new URL(serverUrl);
-                    new ProcessBuilder(guiFolder.getAbsolutePath() + "/project.exe",distributionServerURL.toExternalForm()).directory(new File(guiFolder.getAbsolutePath(),"./")).inheritIO().start();
+                    new ProcessBuilder(guiFolder.getAbsolutePath() + "/"+exeName+".exe",distributionServerURL.toExternalForm()).directory(new File(guiFolder.getAbsolutePath(),"./")).inheritIO().start();
 
                     if (!serverUrlList.getItems().contains(serverUrl)) {
                         serverUrlList.getItems().add(serverUrl);
