@@ -83,12 +83,14 @@ public class UserInterfaceDistributionClientController {
         serverUrlList.disableProperty().bind(Bindings.size(serverUrlList.getItems()).isEqualTo(0));
 
         Thread.setDefaultUncaughtExceptionHandler((t, e) -> {
-            Alert alter = new Alert(Alert.AlertType.ERROR);
-            alter.setContentText("Error");
-            TextArea textArea = new TextArea();
-            textArea.setText(Throwables.getStackTraceAsString(e));
-            alter.setGraphic(textArea);
-            alter.show();
+            Platform.runLater(()->{
+                Alert alter = new Alert(Alert.AlertType.ERROR);
+                alter.setContentText("Error");
+                TextArea textArea = new TextArea();
+                textArea.setText(Throwables.getStackTraceAsString(e));
+                alter.setGraphic(textArea);
+                alter.show();
+            });
         });
 
         readServerList();
