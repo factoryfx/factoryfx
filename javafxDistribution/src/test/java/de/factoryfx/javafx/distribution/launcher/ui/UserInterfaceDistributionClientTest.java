@@ -7,7 +7,7 @@ public class UserInterfaceDistributionClientTest extends Application{
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        new UserInterfaceDistributionClient(new UserInterfaceDistributionClientController("https://????/???/???",null,null),primaryStage).show();
+        new UserInterfaceDistributionClient(new UserInterfaceDistributionClientController("https://????/???/???",null,null,null),primaryStage).show();
     }
 
     public static void main(String[] args) {
