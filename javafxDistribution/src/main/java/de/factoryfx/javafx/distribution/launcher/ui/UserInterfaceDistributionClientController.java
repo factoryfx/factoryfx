@@ -143,7 +143,7 @@ public class UserInterfaceDistributionClientController {
         boolean needUpdate = Boolean.parseBoolean(response.readEntity(String.class));
         rootPane.setDisable(true);
 
-        new Thread(){
+        new Thread("User Interface Download Thread"){
             @Override
             public void run() {
                 try {
