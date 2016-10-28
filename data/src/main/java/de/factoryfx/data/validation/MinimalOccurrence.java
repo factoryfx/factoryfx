@@ -1,10 +1,10 @@
 package de.factoryfx.data.validation;
 
-import de.factoryfx.data.Data;
-import de.factoryfx.data.attribute.ReferenceListAttribute;
 import de.factoryfx.data.util.LanguageText;
 
-public class MinimalOccurrence<R extends Data,T extends ReferenceListAttribute<R>> implements Validation<T> {
+import java.util.List;
+
+public class MinimalOccurrence<T,R extends List<T>> implements Validation<R> {
 
     private final int minimalOccurence;
 
@@ -18,7 +18,8 @@ public class MinimalOccurrence<R extends Data,T extends ReferenceListAttribute<R
     }
 
     @Override
-    public boolean validate(T value) {
-        return value != null && value.get().size() >= minimalOccurence;
+    public boolean validate(R value) {
+        return value != null && value.size() >= minimalOccurence;
     }
+
 }
