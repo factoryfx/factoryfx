@@ -16,20 +16,20 @@ public class View implements Widget {
     public final SimpleStringProperty dynamicAdditionalTitle = new SimpleStringProperty();
 
     public final SimpleObjectProperty<Glyph> icon = new SimpleObjectProperty<>();
-    public final Widget widget;
+    public final Widget viewContent;
     protected ViewsDisplayWidget viewsDisplayWidget;
     boolean isShowing;
     Optional<Runnable> closeListener = Optional.empty();
 
-    public View(String title, ViewsDisplayWidget viewsDisplayWidget, Widget widget) {
+    public View(String title, ViewsDisplayWidget viewsDisplayWidget, Widget viewContent) {
         this.title.set(title);
         this.viewsDisplayWidget = viewsDisplayWidget;
-        this.widget = widget;
+        this.viewContent = viewContent;
     }
 
     public void close() {
-        if (widget instanceof CloseAwareWidget) {
-            ((CloseAwareWidget) widget).closeNotifier();
+        if (viewContent instanceof CloseAwareWidget) {
+            ((CloseAwareWidget) viewContent).closeNotifier();
         }
         isShowing = false;
         viewsDisplayWidget.close(this);
@@ -38,7 +38,7 @@ public class View implements Widget {
 
     @Override
     public Node createContent() {
-        return widget.createContent();
+        return viewContent.createContent();
     }
 
     public boolean isShowing() {

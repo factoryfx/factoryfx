@@ -75,10 +75,10 @@ public class ReferenceAttribute<T extends Data> extends Attribute<T> {
 
     @Override
     public void set(T value) {
+        this.value=value;
         for (AttributeChangeListener<T> listener: listeners){
             listener.changed(this,value);
         }
-        this.value=value;
     }
 
     @JsonValue

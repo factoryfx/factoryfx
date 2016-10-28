@@ -66,12 +66,7 @@ public class ViewsDisplayWidget implements Widget {
         }
     }
 
-    /**
-     * called if view is closed
-     */
-    public void setOnCloseListener(CloseListener closeListener) {
-        onCloseListener = closeListener;
-    }
+
 
     public void show(View view) {
         Tab formTab = viewToTab.get(view);
