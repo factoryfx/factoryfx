@@ -62,6 +62,11 @@ public class DataEditor implements Widget {
         bound.set(newValue);
     }
 
+    public void resetHistory(){
+        displayedEntities.setAll(bound.get());
+
+    }
+
     List<AttributeEditor<?>> createdEditors=new ArrayList<>();
     BooleanBinding scrollerVisible;
 

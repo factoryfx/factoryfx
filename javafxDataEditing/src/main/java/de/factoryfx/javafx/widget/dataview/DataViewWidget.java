@@ -1,4 +1,4 @@
-package de.factoryfx.javafx.widget.masterdetail;
+package de.factoryfx.javafx.widget.dataview;
 
 import de.factoryfx.data.Data;
 import de.factoryfx.javafx.editor.data.DataEditor;
@@ -11,12 +11,12 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.layout.BorderPane;
 
-public class MasterDetailWidget implements CloseAwareWidget {
+public class DataViewWidget implements CloseAwareWidget {
     private final DataView dataView;
     private final DataEditor dataEditor;
     private double dividerPosition = 0.333;
 
-    public MasterDetailWidget(DataView dataView, DataEditor dataEditor) {
+    public DataViewWidget(DataView dataView, DataEditor dataEditor) {
         this.dataView = dataView;
         this.dataEditor = dataEditor;
     }
@@ -51,12 +51,13 @@ public class MasterDetailWidget implements CloseAwareWidget {
 
         tableView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             dataEditor.edit(newValue);
+            dataEditor.resetHistory();
         });
 
         return splitPane;
     }
 
-    public MasterDetailWidget setDividerPositions(double dividerPosition) {
+    public DataViewWidget setDividerPositions(double dividerPosition) {
         this.dividerPosition = dividerPosition;
         return this;
     }
