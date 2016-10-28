@@ -53,8 +53,10 @@ public class DataEditor implements Widget {
     }
 
     public void edit(Data newValue) {
+        Data current = bound.get();
         bound.set(newValue);
         if (!displayedEntities.contains(newValue)){
+            removeUpToCurrent(current);
             displayedEntities.add(newValue);
             if (displayedEntities.size()>HISTORY_LIMIT){
                 displayedEntities.remove(0);
@@ -66,6 +68,16 @@ public class DataEditor implements Widget {
         displayedEntities.setAll(bound.get());
 
     }
+
+    private void removeUpToCurrent(Data current) {
+        if (current == null)
+            return;
+        int idx = displayedEntities.indexOf(current);
+        if (idx >= 0) {
+            displayedEntities.remove(idx+1,displayedEntities.size());
+        }
+    }
+
 
     List<AttributeEditor<?>> createdEditors=new ArrayList<>();
     BooleanBinding scrollerVisible;
