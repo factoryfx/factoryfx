@@ -1,9 +1,10 @@
 package de.factoryfx.data.validation;
 
+import de.factoryfx.data.Data;
 import de.factoryfx.data.attribute.ReferenceListAttribute;
 import de.factoryfx.data.util.LanguageText;
 
-public class MinimalOccurrence<T extends ReferenceListAttribute> implements Validation<T> {
+public class MinimalOccurrence<R extends Data,T extends ReferenceListAttribute<R>> implements Validation<T> {
 
     private final int minimalOccurence;
 
