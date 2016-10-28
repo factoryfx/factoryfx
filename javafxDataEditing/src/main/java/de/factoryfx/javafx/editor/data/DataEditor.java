@@ -32,7 +32,6 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.RowConstraints;
-import javafx.scene.layout.StackPane;
 import org.controlsfx.control.BreadCrumbBar;
 import org.controlsfx.glyphfont.FontAwesome;
 
@@ -164,17 +163,13 @@ public class DataEditor implements Widget {
 
 
         ScrollPane scrollPaneBreadCrumbBar = new ScrollPane();
-        StackPane stackPane = new StackPane();
-        stackPane.getChildren().add(breadCrumbBar);
-        scrollPaneBreadCrumbBar.setContent(stackPane);
-        scrollPaneBreadCrumbBar.setFitToHeight(true);
+        scrollPaneBreadCrumbBar.setContent(breadCrumbBar);
         scrollPaneBreadCrumbBar.setHvalue(1.0);
         scrollPaneBreadCrumbBar.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
         scrollPaneBreadCrumbBar.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
         scrollPaneBreadCrumbBar.getStyleClass().add("transparent-scroll-pane");
-//        scrollPaneBreadCrumbBar.setPadding(new Insets(3,0,0,0));//workaround scrollpane fittoheight dont work in this cas
 
-        //hvalue to 1 cause its buggy
+        //force hvalue to 1 cause its buggy
         scrollPaneBreadCrumbBar.hvalueProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue!=null && newValue.doubleValue()<1.0){
                 scrollPaneBreadCrumbBar.setHvalue(1);
@@ -220,7 +215,7 @@ public class DataEditor implements Widget {
 
         HBox navigation = new HBox(3);
         navigation.getStyleClass().add("navigationhbox");
-        navigation.setAlignment(Pos.CENTER_LEFT);
+        navigation.setAlignment(Pos.TOP_LEFT);
         Button back = new Button("",uniformDesign.createIcon(FontAwesome.Glyph.CARET_LEFT).size(18));
         back.setOnAction(event -> back());
         BooleanBinding backDisabled = Bindings.createBooleanBinding(() -> !previousData().isPresent(),displayedEntities,bound);
@@ -246,6 +241,7 @@ public class DataEditor implements Widget {
 //        scrollerVisible = Bindings.createBooleanBinding(() -> scrollPaneBreadCrumbBar.getBoundsInParent().getWidth()<breadCrumbBar.getWidth(),scrollPaneBreadCrumbBar.boundsInParentProperty());
 //        scroller.visibleProperty().bind(scrollerVisible);
 
+        navigation.setPadding(new Insets(3,3,0,3));//workaround scrollpane fittoheight and  .setAlignment(Pos.TOP_LEFT); dont work in this cas
 
         HBox.setHgrow(scrollPaneBreadCrumbBar,Priority.ALWAYS);
         return navigation;

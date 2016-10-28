@@ -44,8 +44,8 @@ public class DataViewWidgetTest extends Application {
 
     public static void main(String[] args) {
 //        System.setProperty("glass.win.minHiDPI","1.5");
-        System.setProperty("glass.win.forceIntegerRenderScale", "false");
-        System.setProperty("glass.win.minHiDPI","1.0");
+//        System.setProperty("glass.win.forceIntegerRenderScale", "false");
+//        System.setProperty("glass.win.minHiDPI","1.0");
         Application.launch();
     }
 }
