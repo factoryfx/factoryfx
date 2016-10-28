@@ -49,3 +49,11 @@
     /*-fx-border-color: DANGER_COLOR;*/
     -fx-control-inner-background: derive(DANGER_COLOR,90%);
 }
+
+.transparent-scroll-pane > .viewport {
+    -fx-background-color: transparent;
+}
+
+.transparent-scroll-pane {
+    -fx-background-color: transparent;
+}

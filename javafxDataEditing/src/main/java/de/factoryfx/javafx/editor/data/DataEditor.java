@@ -26,13 +26,13 @@ import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
-import javafx.scene.control.Slider;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.RowConstraints;
+import javafx.scene.layout.StackPane;
 import org.controlsfx.control.BreadCrumbBar;
 import org.controlsfx.glyphfont.FontAwesome;
 
@@ -53,13 +53,13 @@ public class DataEditor implements Widget {
     }
 
     public void edit(Data newValue) {
+        bound.set(newValue);
         if (!displayedEntities.contains(newValue)){
             displayedEntities.add(newValue);
             if (displayedEntities.size()>HISTORY_LIMIT){
                 displayedEntities.remove(0);
             }
         }
-        bound.set(newValue);
     }
 
     public void resetHistory(){
@@ -161,28 +161,61 @@ public class DataEditor implements Widget {
     ObservableList<Data> displayedEntities= FXCollections.observableArrayList();
     private Node createNavigation(){
         BreadCrumbBarWidthFixed<Data> breadCrumbBar = new BreadCrumbBarWidthFixed<>();
+
+
+        ScrollPane scrollPaneBreadCrumbBar = new ScrollPane();
+        StackPane stackPane = new StackPane();
+        stackPane.getChildren().add(breadCrumbBar);
+        scrollPaneBreadCrumbBar.setContent(stackPane);
+        scrollPaneBreadCrumbBar.setFitToHeight(true);
+        scrollPaneBreadCrumbBar.setHvalue(1.0);
+        scrollPaneBreadCrumbBar.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+        scrollPaneBreadCrumbBar.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+        scrollPaneBreadCrumbBar.getStyleClass().add("transparent-scroll-pane");
+//        scrollPaneBreadCrumbBar.setPadding(new Insets(3,0,0,0));//workaround scrollpane fittoheight dont work in this cas
+
+        //hvalue to 1 cause its buggy
+        scrollPaneBreadCrumbBar.hvalueProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue!=null && newValue.doubleValue()<1.0){
+                scrollPaneBreadCrumbBar.setHvalue(1);
+            }
+        });
+
         breadCrumbBar.setCrumbFactory(param -> {
             BreadCrumbBarSkin.BreadCrumbButton breadCrumbButton = new BreadCrumbBarSkin.BreadCrumbButton("");
             if (param.getValue()!=null){
                 //TODO updatable binding
                 breadCrumbButton.textProperty().bind(new SimpleStringProperty(param.getValue().getDisplayText()));
             }
-            if (displayedEntities.size()-1==displayedEntities.indexOf(param.getValue())){
+            if (bound.get()==param.getValue()){
                 breadCrumbButton.setStyle("-fx-font-weight: bold;");
             }
             return breadCrumbButton;
         });
         breadCrumbBar.setOnCrumbAction(event -> {
             edit(event.getSelectedCrumb().getValue());
-            breadCrumbBar.setSelectedCrumb(BreadCrumbBar.buildTreeModel(displayedEntities.toArray(new Data[0])));
+//            breadCrumbBar.setSelectedCrumb(BreadCrumbBar.buildTreeModel(displayedEntities.toArray(new Data[0])));
         });
+
+        Runnable updateBreadCrumbBar= () -> {
+            List<Data> newhistory = new ArrayList<>();
+            for (Data data: displayedEntities){
+                newhistory.add(data);
+                if (data==bound.get()){
+                    break;
+                }
+            }
+
+            breadCrumbBar.setSelectedCrumb(BreadCrumbBar.buildTreeModel(newhistory.toArray(new Data[0])));
+            breadCrumbBar.layout();
+        };
         displayedEntities.addListener((ListChangeListener<Data>) c -> {
-            breadCrumbBar.setSelectedCrumb(BreadCrumbBar.buildTreeModel(displayedEntities.toArray(new Data[0])));
+            updateBreadCrumbBar.run();
+        });
+        bound.addListener(observable -> {
+            updateBreadCrumbBar.run();
         });
 
-
-
-        breadCrumbBar.setAutoNavigationEnabled(false);
 
 
         HBox navigation = new HBox(3);
@@ -200,27 +233,21 @@ public class DataEditor implements Widget {
         navigation.getChildren().add(next);
 
 
-        BorderPane.setMargin(breadCrumbBar, new Insets(3,0,3,0));
-        ScrollPane scrollPane = new ScrollPane();
-        scrollPane.setContent(breadCrumbBar);
-        scrollPane.setHvalue(1.0);
-        scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
-        scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
-        scrollPane.getStyleClass().add("transparent-scroll-pane");
-        scrollPane.setPadding(new Insets(3,0,0,0));//workaround scrollpane fittoheight dont work in this cas
-        navigation.getChildren().add(scrollPane);
-        Slider scroller = new Slider();
-        scroller.setMin(0);
-        scroller.setMax(1.0);
-        scroller.valueProperty().bindBidirectional(scrollPane.hvalueProperty());
-        scroller.setPrefWidth(50);
-        navigation.getChildren().add(scroller);
-
-        scrollerVisible = Bindings.createBooleanBinding(() -> scrollPane.getBoundsInParent().getWidth()<breadCrumbBar.getWidth(),scrollPane.boundsInParentProperty());
-        scroller.visibleProperty().bind(scrollerVisible);
+        navigation.getChildren().add(scrollPaneBreadCrumbBar);
+//        Slider scroller = new Slider();
+//        scroller.setMin(0);
+//        scroller.setMax(1.0);
+////        scroller.valueProperty().bindBidirectional(scrollPaneBreadCrumbBar.hvalueProperty());
+//        scroller.setPrefWidth(50);
+//        scroller.setValue(1.0);
+//        navigation.getChildren().add(scroller);
 
 
-        HBox.setHgrow(scrollPane,Priority.ALWAYS);
+//        scrollerVisible = Bindings.createBooleanBinding(() -> scrollPaneBreadCrumbBar.getBoundsInParent().getWidth()<breadCrumbBar.getWidth(),scrollPaneBreadCrumbBar.boundsInParentProperty());
+//        scroller.visibleProperty().bind(scrollerVisible);
+
+
+        HBox.setHgrow(scrollPaneBreadCrumbBar,Priority.ALWAYS);
         return navigation;
     }
 
