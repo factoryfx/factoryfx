@@ -7,6 +7,8 @@ import de.factoryfx.javafx.widget.CloseAwareWidget;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.scene.Node;
+import javafx.scene.control.ContextMenu;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.SplitPane;
@@ -65,9 +67,6 @@ public class DataTreeWidget implements CloseAwareWidget {
                 TreeItem<Data> treeItemRoot = constructTree(root);
                 tree.setRoot(treeItemRoot);
 
-                for (TreeItem<Data> item : treeViewTraverser.breadthFirstTraversal(treeItemRoot)) {
-                    item.setExpanded(true);
-                }
                 tree.getSelectionModel().clearSelection();
                 for (TreeItem<Data> item : treeViewTraverser.breadthFirstTraversal(treeItemRoot)) {
                     if (item.getValue() == newValue) {
@@ -83,6 +82,17 @@ public class DataTreeWidget implements CloseAwareWidget {
         ScrollPane scrollPane = new ScrollPane(tree);
         scrollPane.setFitToHeight(true);
         scrollPane.setFitToWidth(true);
+
+        ContextMenu contextMenu = new ContextMenu();
+        MenuItem menuItem = new MenuItem("expand all");
+        menuItem.setOnAction(event -> {
+            for (TreeItem<Data> item : treeViewTraverser.breadthFirstTraversal(tree.getRoot())) {
+                item.setExpanded(true);
+            }
+        });
+        contextMenu.getItems().addAll(menuItem);
+        tree.setContextMenu(contextMenu);
+
         return scrollPane;
     }
 

@@ -9,7 +9,7 @@ import de.factoryfx.data.attribute.ReferenceListAttribute;
 import de.factoryfx.data.jackson.ObservableListJacksonAbleWrapper;
 import de.factoryfx.factory.FactoryBase;
 
-public class FactoryReferenceListAttribute<L,T extends FactoryBase<L,?>> extends  ReferenceListAttribute<T>{
+public class FactoryReferenceListAttribute<L,T extends FactoryBase<? extends L,?>> extends  ReferenceListAttribute<T>{
 
     @JsonCreator
     protected FactoryReferenceListAttribute() {

@@ -83,6 +83,7 @@ public class UserInterfaceDistributionClientController {
         serverUrlList.disableProperty().bind(Bindings.size(serverUrlList.getItems()).isEqualTo(0));
 
         Thread.setDefaultUncaughtExceptionHandler((t, e) -> {
+            e.printStackTrace();
             Platform.runLater(()->{
                 Alert alter = new Alert(Alert.AlertType.ERROR);
                 alter.setContentText("Error");
@@ -120,7 +121,9 @@ public class UserInterfaceDistributionClientController {
         client.register(GZipEncoder.class);
         client.register(EncodingFilter.class);
         client.register(DeflateEncoder.class);
-
+        JacksonJaxbJsonProvider provider = new JacksonJaxbJsonProvider();
+        provider.setMapper(new ObjectMapper());
+        client.register(provider);
         if (!Strings.isNullOrEmpty(httpAuthenticationUser) && !Strings.isNullOrEmpty(httpAuthenticationPassword) ){
             client.register(HttpAuthenticationFeature.basic(httpAuthenticationUser, httpAuthenticationPassword));
         }
@@ -137,9 +140,7 @@ public class UserInterfaceDistributionClientController {
             }
         }
 
-        JacksonJaxbJsonProvider provider = new JacksonJaxbJsonProvider();
-        provider.setMapper(new ObjectMapper());
-        client.register(provider);
+
         WebTarget webResource = client.target(serverUrl + "/download/checkVersion?" + "fileHash=" + fileHash);
         Response response = webResource.request(MediaType.TEXT_PLAIN).get();
         boolean needUpdate = Boolean.parseBoolean(response.readEntity(String.class));
