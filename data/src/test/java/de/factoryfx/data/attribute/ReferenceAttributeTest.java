@@ -86,4 +86,22 @@ public class ReferenceAttributeTest {
         Assert.assertEquals(added,calls.get(0));
     }
 
+    @Test
+    public void test_listener(){
+        ReferenceAttribute<ExampleFactoryA> referenceAttribute=new ReferenceAttribute<>(ExampleFactoryA.class,new AttributeMetadata());
+
+        List<ExampleFactoryA> calls = new ArrayList<>();
+        List<ExampleFactoryA> callsAttributeGet = new ArrayList<>();
+        referenceAttribute.addListener((attribute, value) -> {
+            calls.add(value);
+            callsAttributeGet.add(attribute.get());
+        });
+        ExampleFactoryA exampleFactoryA = new ExampleFactoryA();
+        referenceAttribute.set(exampleFactoryA);
+        Assert.assertEquals(1,calls.size());
+        Assert.assertEquals(exampleFactoryA,calls.get(0));
+        Assert.assertEquals(exampleFactoryA,callsAttributeGet.get(0));
+
+    }
+
 }

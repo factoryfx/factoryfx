@@ -183,20 +183,26 @@ public class ReferenceListAttribute<T extends Data> extends Attribute<Observable
         return (A)this;
     }
 
-    public void addNewFactory(Data root){
-        newValueProvider.ifPresent(newFactoryFunction -> {
-            T newFactory = newFactoryFunction.get();
+    public T addNewFactory(Data root){
+        T addedFactory=null;
+        if (newValueProvider.isPresent()) {
+            T newFactory = newValueProvider.get().get();
             get().add(newFactory);
-        });
+            addedFactory = newFactory;
+        }
+
         if (!newValueProvider.isPresent()){
             try {
-                get().add(clazz.newInstance());
+                T newFactory = clazz.newInstance();
+                get().add(newFactory);
+                addedFactory = newFactory;
             } catch (InstantiationException e) {
                 throw new RuntimeException(e);
             } catch (IllegalAccessException e) {
                 throw new RuntimeException(e);
             }
         }
+        return addedFactory;
     }
 
     @SuppressWarnings("unchecked")
