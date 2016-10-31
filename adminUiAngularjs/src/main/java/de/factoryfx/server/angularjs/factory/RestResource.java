@@ -24,20 +24,12 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import de.factoryfx.server.angularjs.model.FactoryTypeInfoWrapper;
-import de.factoryfx.server.angularjs.model.WebGuiFactoryMetadata;
-import de.factoryfx.server.angularjs.model.WebGuiPossibleEntity;
-import de.factoryfx.server.angularjs.model.WebGuiUser;
-import de.factoryfx.server.angularjs.model.WebGuiValidationError;
-import de.factoryfx.server.angularjs.model.table.WebGuiTable;
-import de.factoryfx.server.angularjs.model.view.GuiView;
-import de.factoryfx.server.angularjs.model.view.ViewHeader;
-import de.factoryfx.server.angularjs.model.view.WebGuiView;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import de.factoryfx.data.Data;
 import de.factoryfx.data.attribute.Attribute;
 import de.factoryfx.data.attribute.ReferenceAttribute;
 import de.factoryfx.data.attribute.ReferenceListAttribute;
-import de.factoryfx.data.merge.FactoryMerger;
+import de.factoryfx.data.merge.DataMerger;
 import de.factoryfx.data.merge.MergeDiff;
 import de.factoryfx.data.merge.MergeResultEntry;
 import de.factoryfx.data.merge.MergeResultEntryInfo;
@@ -45,6 +37,16 @@ import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.factory.datastorage.FactoryAndStorageMetadata;
 import de.factoryfx.factory.datastorage.StoredFactoryMetadata;
 import de.factoryfx.server.ApplicationServer;
+import de.factoryfx.server.angularjs.model.FactoryTypeInfoWrapper;
+import de.factoryfx.server.angularjs.model.WebGuiFactoryMetadata;
+import de.factoryfx.server.angularjs.model.WebGuiMergeDiff;
+import de.factoryfx.server.angularjs.model.WebGuiPossibleEntity;
+import de.factoryfx.server.angularjs.model.WebGuiUser;
+import de.factoryfx.server.angularjs.model.WebGuiValidationError;
+import de.factoryfx.server.angularjs.model.table.WebGuiTable;
+import de.factoryfx.server.angularjs.model.view.GuiView;
+import de.factoryfx.server.angularjs.model.view.ViewHeader;
+import de.factoryfx.server.angularjs.model.view.WebGuiView;
 import de.factoryfx.user.User;
 import de.factoryfx.user.UserManagement;
 import difflib.Delta;
@@ -239,7 +241,9 @@ public class RestResource<L,V,T extends FactoryBase<L,V>> {
 
 
     public static class StageResponse {
-        public MergeDiff mergeDiff;
+        public WebGuiMergeDiff mergeDiff;
+        @JsonIgnore
+        public MergeDiff mergeDiffExt;
         public List<WebGuiValidationError> validationErrors=new ArrayList<>();
         public boolean deployed;
     }
@@ -247,8 +251,9 @@ public class RestResource<L,V,T extends FactoryBase<L,V>> {
     private StageResponse createStageResponse(){
         StageResponse response=new StageResponse();
         FactoryAndStorageMetadata<T> currentEditingFactoryRoot = getCurrentEditingFactory();
-        response.mergeDiff= applicationServer.simulateUpdateCurrentFactory(currentEditingFactoryRoot.root, currentEditingFactoryRoot.metadata.baseVersionId,getUserLocale());
 
+        response.mergeDiffExt=applicationServer.simulateUpdateCurrentFactory(currentEditingFactoryRoot.root, currentEditingFactoryRoot.metadata.baseVersionId);
+        response.mergeDiff=new WebGuiMergeDiff(response.mergeDiffExt,getUserLocale());
 
         for (Data factoryBase: currentEditingFactoryRoot.root.collectChildrenDeep()){
             factoryBase.validateFlat().stream().map(validationError -> new WebGuiValidationError(validationError,getUserLocale(),factoryBase)).forEach(w -> response.validationErrors.add(w));
@@ -272,10 +277,10 @@ public class RestResource<L,V,T extends FactoryBase<L,V>> {
         StageResponse response=createStageResponse();
 
 
-        if (response.mergeDiff.hasNoConflicts()){
+        if (response.mergeDiffExt.hasNoConflicts()){
             if (userManagement.authorisationRequired()){
                 User user = getUser();
-                for (MergeResultEntry<?> mergeInfo: response.mergeDiff.getMergeInfos()){
+                for (MergeResultEntry mergeInfo: response.mergeDiffExt.getMergeInfos()){
                     user.checkPermission(mergeInfo.requiredPermission);
                 }
             }
@@ -286,8 +291,9 @@ public class RestResource<L,V,T extends FactoryBase<L,V>> {
 
         if (response.validationErrors.isEmpty()){
             //TODO handle conflicts
-            response.mergeDiff=applicationServer.updateCurrentFactory(getCurrentEditingFactory(),getUserLocale());
-            if (response.mergeDiff.hasNoConflicts()){
+            response.mergeDiffExt=applicationServer.updateCurrentFactory(getCurrentEditingFactory());
+            response.mergeDiff=new WebGuiMergeDiff(response.mergeDiffExt,getUserLocale());
+            if (response.mergeDiffExt.hasNoConflicts()){
                 response.deployed=true;
                 sessionStorage.setCurrentEditingFactory(request,applicationServer.getPrepareNewFactory());
             }
@@ -423,7 +429,7 @@ public class RestResource<L,V,T extends FactoryBase<L,V>> {
             if (storedFactoryMetadata.id.equals(id)){
                 T historyFactory = applicationServer.getHistoryFactory(id);
                 T historyFactoryPrevious = applicationServer.getHistoryFactory(storedFactoryMetadata.baseVersionId);
-                return new FactoryMerger(historyFactoryPrevious,historyFactoryPrevious,historyFactory).createMergeResult();
+                return new DataMerger(historyFactoryPrevious,historyFactoryPrevious,historyFactory).createMergeResult();
             }
         }
 

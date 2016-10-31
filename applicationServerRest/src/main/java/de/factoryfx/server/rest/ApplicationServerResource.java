@@ -1,7 +1,6 @@
 package de.factoryfx.server.rest;
 
 import java.util.Collection;
-import java.util.Locale;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -25,14 +24,12 @@ public class ApplicationServerResource<L,V,T extends FactoryBase<L,V>> {
         this.applicationServer = applicationServer;
     }
 
-    static final Locale locale = Locale.US;
-
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @Path("updateCurrentFactory")
     public MergeDiff updateCurrentFactory(FactoryAndStorageMetadata<T> update) {
-        return  applicationServer.updateCurrentFactory(update, locale);
+        return  applicationServer.updateCurrentFactory(update);
     }
 
     @GET

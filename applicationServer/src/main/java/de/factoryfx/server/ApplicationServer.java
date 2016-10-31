@@ -1,7 +1,6 @@
 package de.factoryfx.server;
 
 import java.util.Collection;
-import java.util.Locale;
 
 import de.factoryfx.data.merge.MergeDiff;
 import de.factoryfx.factory.FactoryBase;
@@ -20,9 +19,9 @@ public class ApplicationServer<L,V,T extends FactoryBase<L,V>> {
         this.factoryStorage = factoryStorage;
     }
 
-    public MergeDiff updateCurrentFactory(FactoryAndStorageMetadata<T> update, Locale locale) {
+    public MergeDiff updateCurrentFactory(FactoryAndStorageMetadata<T> update) {
         T commonVersion = factoryStorage.getHistoryFactory(update.metadata.baseVersionId);
-        MergeDiff mergeDiff = factoryManager.update(commonVersion, update.root, locale);
+        MergeDiff mergeDiff = factoryManager.update(commonVersion, update.root);
         if (mergeDiff.hasNoConflicts()){
             FactoryAndStorageMetadata<T> copy = new FactoryAndStorageMetadata<T>(factoryManager.getCurrentFactory().copy(),update.metadata);
             factoryStorage.updateCurrentFactory(copy);
@@ -30,9 +29,9 @@ public class ApplicationServer<L,V,T extends FactoryBase<L,V>> {
         return mergeDiff;
     }
 
-    public MergeDiff simulateUpdateCurrentFactory(T updateFactory, String baseVersionId, Locale locale){
+    public MergeDiff simulateUpdateCurrentFactory(T updateFactory, String baseVersionId){
         T commonVersion = factoryStorage.getHistoryFactory(baseVersionId);
-        return factoryManager.simulateUpdate(commonVersion , updateFactory, locale);
+        return factoryManager.simulateUpdate(commonVersion , updateFactory);
     }
 
     public FactoryAndStorageMetadata<T> getCurrentFactory() {

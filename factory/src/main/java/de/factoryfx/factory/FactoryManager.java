@@ -2,12 +2,11 @@ package de.factoryfx.factory;
 
 import java.util.HashSet;
 import java.util.LinkedHashSet;
-import java.util.Locale;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import com.google.common.collect.TreeTraverser;
-import de.factoryfx.data.merge.FactoryMerger;
+import de.factoryfx.data.merge.DataMerger;
 import de.factoryfx.data.merge.MergeDiff;
 import de.factoryfx.data.merge.MergeResultEntry;
 
@@ -16,18 +15,17 @@ public class FactoryManager<L,V,T extends FactoryBase<L,V>> {
     private T currentFactory;
 
     @SuppressWarnings("unchecked")
-    public MergeDiff update(T commonVersion , T newVersion, Locale locale){
+    public MergeDiff update(T commonVersion , T newVersion){
         newVersion.loopDetector();
         LinkedHashSet<FactoryBase<?,?>> previousLiveObjects = stopFactoryProvider.apply(currentFactory);
 
-        FactoryMerger factoryMerger = new FactoryMerger(currentFactory, commonVersion, newVersion);
-        factoryMerger.setLocale(locale);
-        MergeDiff mergeDiff= factoryMerger.mergeIntoCurrent();
+        DataMerger dataMerger = new DataMerger(currentFactory, commonVersion, newVersion);
+        MergeDiff mergeDiff= dataMerger.mergeIntoCurrent();
         if (mergeDiff.hasNoConflicts()){
             for (FactoryBase<?,?> current : currentFactory.collectChildFactoriesDeep()){
                 current.unMarkChanged();
             }
-            for (MergeResultEntry<?> mergeResultEntry: mergeDiff.getMergeInfos()){
+            for (MergeResultEntry mergeResultEntry: mergeDiff.getMergeInfos()){
                 //TODO check cast required
                 ((FactoryBase<?,?>)mergeResultEntry.parent).markChanged();
             }
@@ -47,18 +45,12 @@ public class FactoryManager<L,V,T extends FactoryBase<L,V>> {
 
     /** get the merge result  but don't execute the merge and liveobjects Update*/
     @SuppressWarnings("unchecked")
-    public MergeDiff simulateUpdate(T commonVersion , T newVersion, Locale locale){
+    public MergeDiff simulateUpdate(T commonVersion , T newVersion){
         newVersion.loopDetector();
 
-        FactoryMerger factoryMerger = new FactoryMerger(currentFactory, commonVersion, newVersion);
-        factoryMerger.setLocale(locale);
-        return factoryMerger.createMergeResult();
+        DataMerger dataMerger = new DataMerger(currentFactory, commonVersion, newVersion);
+        return dataMerger.createMergeResult();
     }
-
-    public MergeDiff update(T commonVersion , T newVersion){
-        return update(commonVersion , newVersion,Locale.ENGLISH);
-    }
-
 
     private void updateLiveObjects(LinkedHashSet<FactoryBase<?,?>> previousFactories, LinkedHashSet<FactoryBase<?,?>> changedFactories , LinkedHashSet<FactoryBase<?,?>> newFactories){
         for (FactoryBase<?,?> previousLiveObject: previousFactories){

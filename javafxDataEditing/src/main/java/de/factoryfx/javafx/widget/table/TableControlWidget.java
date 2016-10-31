@@ -49,6 +49,8 @@ public class TableControlWidget<T> implements Widget {
         this.tableView = tableView;
         this.uniformDesign = uniformDesign;
 
+        tableView.setTableMenuButtonVisible(true);
+
         setupTableControls();
 
         tableView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);

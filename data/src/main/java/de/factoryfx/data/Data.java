@@ -7,7 +7,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -288,12 +287,12 @@ public abstract class Data {
     }
 
     @SuppressWarnings("unchecked")
-    public void merge(Optional<Data> originalValue, Optional<Data> newValue, MergeResult mergeResult, Locale locale) {
+    public void merge(Optional<Data> originalValue, Optional<Data> newValue, MergeResult mergeResult) {
 
         this.visitAttributesTripleFlat(originalValue, newValue, (currentAttribute, originalAttribute, newAttribute) -> {
             AttributeMergeHelper<?> attributeMergeHelper = currentAttribute.createMergeHelper();
             boolean hasNoConflict = attributeMergeHelper.hasNoConflict(originalAttribute, newAttribute);
-            MergeResultEntry<Data> mergeResultEntry = new MergeResultEntry<>(Data.this, currentAttribute, newAttribute,locale);
+            MergeResultEntry mergeResultEntry = new MergeResultEntry(Data.this, currentAttribute, newAttribute);
             if (hasNoConflict) {
                 if (newAttribute.isPresent()) {
                     if (attributeMergeHelper.isMergeable(originalAttribute, newAttribute)){

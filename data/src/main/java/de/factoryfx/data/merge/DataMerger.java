@@ -1,18 +1,17 @@
 package de.factoryfx.data.merge;
 
-import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 
 import de.factoryfx.data.Data;
 
-public class FactoryMerger {
+public class DataMerger {
 
     private final Data currentModel;
     private final Data originalModel;
     private final Data newModel;
 
-    public FactoryMerger(Data currentFactory, Data commonFactory, Data newFactory) {
+    public DataMerger(Data currentFactory, Data commonFactory, Data newFactory) {
         this.currentModel = currentFactory;
         this.originalModel = commonFactory;
         this.newModel = newFactory;
@@ -22,11 +21,6 @@ public class FactoryMerger {
         return createMergeResult(currentModel.collectChildFactoriesMap()).getMergeDiff();
     }
 
-    Locale locale=Locale.ENGLISH;
-    public FactoryMerger setLocale(Locale locale){
-        this.locale=locale;
-        return this;
-    }
 
     @SuppressWarnings("unchecked")
     private MergeResult createMergeResult(Map<Object, Data> currentMap) {
@@ -39,7 +33,7 @@ public class FactoryMerger {
             Data originalValue = originalMap.get(entry.getKey());
             Data newValue = newMap.get(entry.getKey());
 
-            entry.getValue().merge(Optional.ofNullable(originalValue), Optional.ofNullable(newValue), mergeResult,locale);
+            entry.getValue().merge(Optional.ofNullable(originalValue), Optional.ofNullable(newValue), mergeResult);
         }
         return mergeResult;
     }

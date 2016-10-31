@@ -21,9 +21,9 @@ public class MergeTest {
         originalModel.stringAttribute.set("1111111");
         ExampleFactoryA newModel = currentModel.copy();
         newModel.stringAttribute.set("1111111");
-        FactoryMerger factoryMerger = new FactoryMerger(currentModel, originalModel, newModel);
+        DataMerger dataMerger = new DataMerger(currentModel, originalModel, newModel);
 
-        MergeDiff mergeDiff= factoryMerger.mergeIntoCurrent();
+        MergeDiff mergeDiff= dataMerger.mergeIntoCurrent();
         Assert.assertTrue(mergeDiff.hasNoConflicts());
         Assert.assertEquals("1111111",currentModel.stringAttribute.get());
 
@@ -37,9 +37,9 @@ public class MergeTest {
         originalModel.stringAttribute.set("1111111");
         ExampleFactoryA newModel = currentModel.copy();
         newModel.stringAttribute.set("2222222");
-        FactoryMerger factoryMerger = new FactoryMerger(currentModel, originalModel, newModel);
+        DataMerger dataMerger = new DataMerger(currentModel, originalModel, newModel);
 
-        MergeDiff mergeDiff= factoryMerger.mergeIntoCurrent();
+        MergeDiff mergeDiff= dataMerger.mergeIntoCurrent();
         Assert.assertTrue(mergeDiff.hasNoConflicts());
         Assert.assertEquals("2222222",currentModel.stringAttribute.get());
 
@@ -53,9 +53,9 @@ public class MergeTest {
         originalModel.stringAttribute.set("1111111");
         ExampleFactoryA newModel = currentModel.copy();
         newModel.stringAttribute.set("1111111");
-        FactoryMerger factoryMerger = new FactoryMerger(currentModel, originalModel, newModel);
+        DataMerger dataMerger = new DataMerger(currentModel, originalModel, newModel);
 
-        MergeDiff mergeDiff= factoryMerger.mergeIntoCurrent();
+        MergeDiff mergeDiff= dataMerger.mergeIntoCurrent();
         Assert.assertTrue(mergeDiff.hasNoConflicts());
         Assert.assertEquals("333333333",currentModel.stringAttribute.get());
     }
@@ -69,9 +69,9 @@ public class MergeTest {
         originalModel.stringAttribute.set("1111111");
         ExampleFactoryA newModel = currentModel.copy();
         newModel.stringAttribute.set("2222222");
-        FactoryMerger factoryMerger = new FactoryMerger(currentModel, originalModel, newModel);
+        DataMerger dataMerger = new DataMerger(currentModel, originalModel, newModel);
 
-        MergeDiff mergeDiff= factoryMerger.mergeIntoCurrent();
+        MergeDiff mergeDiff= dataMerger.mergeIntoCurrent();
         Assert.assertEquals(1, mergeDiff.getConflictCount());
         Assert.assertEquals("333333333", currentModel.stringAttribute.get());
     }
@@ -90,9 +90,9 @@ public class MergeTest {
         newReference.stringAttribute.set("2");
         newModel.referenceAttribute.set(newReference);
 
-        FactoryMerger factoryMerger = new FactoryMerger(currentModel, originalModel, newModel);
+        DataMerger dataMerger = new DataMerger(currentModel, originalModel, newModel);
 
-        MergeDiff mergeDiff= factoryMerger.mergeIntoCurrent();
+        MergeDiff mergeDiff= dataMerger.mergeIntoCurrent();
         Assert.assertTrue(mergeDiff.hasNoConflicts());
         Assert.assertEquals("2", currentModel.referenceAttribute.get().stringAttribute.get());
 
@@ -106,9 +106,9 @@ public class MergeTest {
 
         ExampleFactoryA newModel = currentModel.copy();
         newModel.referenceAttribute.set(null);
-        FactoryMerger factoryMerger = new FactoryMerger(currentModel, originalModel, newModel);
+        DataMerger dataMerger = new DataMerger(currentModel, originalModel, newModel);
 
-        MergeDiff mergeDiff= factoryMerger.mergeIntoCurrent();
+        MergeDiff mergeDiff= dataMerger.mergeIntoCurrent();
         Assert.assertTrue(mergeDiff.hasNoConflicts());
         Assert.assertEquals(null, currentModel.referenceAttribute.get());
 
@@ -125,9 +125,9 @@ public class MergeTest {
 
         ExampleFactoryA newModel = currentModel.copy();
         newModel.referenceAttribute.set(null);
-        FactoryMerger factoryMerger = new FactoryMerger(currentModel, originalModel, newModel);
+        DataMerger dataMerger = new DataMerger(currentModel, originalModel, newModel);
 
-        MergeDiff mergeDiff= factoryMerger.mergeIntoCurrent();
+        MergeDiff mergeDiff= dataMerger.mergeIntoCurrent();
         Assert.assertEquals(1, mergeDiff.getConflictCount());
         Assert.assertEquals("qqqqqqqq", currentModel.referenceAttribute.get().stringAttribute.get());
     }
@@ -140,9 +140,9 @@ public class MergeTest {
         originalModel.stringAttribute.set("1111111");
         ExampleFactoryA newModel = currentModel.copy();
         newModel.stringAttribute.set("1111111");
-        FactoryMerger factoryMerger = new FactoryMerger(currentModel, originalModel, newModel);
+        DataMerger dataMerger = new DataMerger(currentModel, originalModel, newModel);
 
-        MergeDiff mergeDiff= factoryMerger.mergeIntoCurrent();
+        MergeDiff mergeDiff= dataMerger.mergeIntoCurrent();
         Assert.assertTrue(mergeDiff.hasNoConflicts());
         Assert.assertEquals(null, currentModel.stringAttribute.get());
     }
@@ -155,9 +155,9 @@ public class MergeTest {
         originalModel.stringAttribute.set("1111111");
         ExampleFactoryA newModel = currentModel.copy();
         newModel.stringAttribute.set("1111111qqqqqqqqq");
-        FactoryMerger factoryMerger = new FactoryMerger(currentModel, originalModel, newModel);
+        DataMerger dataMerger = new DataMerger(currentModel, originalModel, newModel);
 
-        MergeDiff mergeDiff= factoryMerger.mergeIntoCurrent();
+        MergeDiff mergeDiff= dataMerger.mergeIntoCurrent();
         Assert.assertEquals(1, mergeDiff.getConflictCount());
         Assert.assertEquals(null, currentModel.stringAttribute.get());
     }
@@ -171,9 +171,9 @@ public class MergeTest {
         originalModel.stringAttribute.set(null);
         ExampleFactoryA newModel = currentModel.copy();
         newModel.stringAttribute.set(null);
-        FactoryMerger factoryMerger = new FactoryMerger(currentModel, originalModel, newModel);
+        DataMerger dataMerger = new DataMerger(currentModel, originalModel, newModel);
 
-        MergeDiff mergeDiff= factoryMerger.mergeIntoCurrent();
+        MergeDiff mergeDiff= dataMerger.mergeIntoCurrent();
         Assert.assertTrue(mergeDiff.hasNoConflicts());
         Assert.assertEquals("1111111",currentModel.stringAttribute.get());
 
@@ -215,8 +215,8 @@ public class MergeTest {
 //            newModel.messageRoutingModel.get().allParticipants.add(identifiedParticipant2);
         }
 
-        FactoryMerger factoryMerger = new FactoryMerger(currentModel, originalModel, newModel);
-        MergeDiff mergeDiff= factoryMerger.mergeIntoCurrent();
+        DataMerger dataMerger = new DataMerger(currentModel, originalModel, newModel);
+        MergeDiff mergeDiff= dataMerger.mergeIntoCurrent();
         Assert.assertTrue(mergeDiff.hasNoConflicts());
         Assert.assertEquals(2, currentModel.referenceListAttribute.get().size());
         Assert.assertEquals("1111111111", currentModel.referenceListAttribute.get(0).stringAttribute.get());
@@ -255,8 +255,8 @@ public class MergeTest {
             newModel.referenceListAttribute.get().get(1).stringAttribute.set("444444444");
         }
 
-        FactoryMerger factoryMerger = new FactoryMerger(currentModel, originalModel, newModel);
-        MergeDiff mergeDiff= factoryMerger.mergeIntoCurrent();
+        DataMerger dataMerger = new DataMerger(currentModel, originalModel, newModel);
+        MergeDiff mergeDiff= dataMerger.mergeIntoCurrent();
         Assert.assertTrue(mergeDiff.hasNoConflicts());
         Assert.assertEquals(2, currentModel.referenceListAttribute.get().size());
         Assert.assertEquals("3333333333", currentModel.referenceListAttribute.get(0).stringAttribute.get());
@@ -294,8 +294,8 @@ public class MergeTest {
         currentModel.referenceListAttribute.get(0).stringAttribute.set("3333333333qqqqq");
         currentModel.referenceListAttribute.get(1).stringAttribute.set("444444444qqqq");
 
-        FactoryMerger factoryMerger = new FactoryMerger(currentModel, originalModel, newModel);
-        MergeDiff mergeDiff= factoryMerger.mergeIntoCurrent();
+        DataMerger dataMerger = new DataMerger(currentModel, originalModel, newModel);
+        MergeDiff mergeDiff= dataMerger.mergeIntoCurrent();
         Assert.assertEquals(2, mergeDiff.getConflictCount());
         Assert.assertEquals(2, currentModel.referenceListAttribute.get().size());
         Assert.assertEquals("3333333333qqqqq", currentModel.referenceListAttribute.get(0).stringAttribute.get());
@@ -331,8 +331,8 @@ public class MergeTest {
             }
         }
 
-        FactoryMerger factoryMerger = new FactoryMerger(currentModel, originalModel, newModel);
-        MergeDiff mergeDiff= factoryMerger.mergeIntoCurrent();
+        DataMerger dataMerger = new DataMerger(currentModel, originalModel, newModel);
+        MergeDiff mergeDiff= dataMerger.mergeIntoCurrent();
         Assert.assertTrue(mergeDiff.hasNoConflicts());
         Assert.assertEquals(3, currentModel.referenceListAttribute.size());
         Assert.assertEquals("1111111111", currentModel.referenceListAttribute.get(0).stringAttribute.get());
@@ -365,8 +365,8 @@ public class MergeTest {
             newModel.referenceListAttribute.get().clear();
         }
 
-        FactoryMerger factoryMerger = new FactoryMerger(currentModel, originalModel, newModel);
-        MergeDiff mergeDiff= factoryMerger.mergeIntoCurrent();
+        DataMerger dataMerger = new DataMerger(currentModel, originalModel, newModel);
+        MergeDiff mergeDiff= dataMerger.mergeIntoCurrent();
         Assert.assertTrue(mergeDiff.hasNoConflicts());
         Assert.assertEquals(0, currentModel.referenceListAttribute.get().size());
     }
@@ -400,8 +400,8 @@ public class MergeTest {
         exampleFactoryB.stringAttribute.set("333333333333");
         currentModel.referenceListAttribute.get().add(exampleFactoryB);
 
-        FactoryMerger factoryMerger = new FactoryMerger(currentModel, originalModel, newModel);
-        MergeDiff mergeDiff= factoryMerger.mergeIntoCurrent();
+        DataMerger dataMerger = new DataMerger(currentModel, originalModel, newModel);
+        MergeDiff mergeDiff= dataMerger.mergeIntoCurrent();
         Assert.assertTrue(mergeDiff.hasNoConflicts());
         Assert.assertEquals(3, currentModel.referenceListAttribute.get().size());
         Assert.assertEquals("1111111111", currentModel.referenceListAttribute.get().get(0).stringAttribute.get());
@@ -441,8 +441,8 @@ public class MergeTest {
             currentModel.referenceListAttribute.get().add(exampleFactoryB);
         }
 
-        FactoryMerger factoryMerger = new FactoryMerger(currentModel, originalModel, newModel);
-        MergeDiff mergeDiff= factoryMerger.mergeIntoCurrent();
+        DataMerger dataMerger = new DataMerger(currentModel, originalModel, newModel);
+        MergeDiff mergeDiff= dataMerger.mergeIntoCurrent();
         Assert.assertEquals(1, mergeDiff.getConflictCount());
         Assert.assertEquals(3, currentModel.referenceListAttribute.size());
         Assert.assertEquals("11111qqqqqqqqq", currentModel.referenceListAttribute.get(0).stringAttribute.get());
@@ -484,8 +484,8 @@ public class MergeTest {
             currentModel.referenceListAttribute.get().add(exampleFactoryB);
         }
 
-        FactoryMerger factoryMerger = new FactoryMerger(currentModel, originalModel, newModel);
-        MergeDiff mergeDiff= factoryMerger.mergeIntoCurrent();
+        DataMerger dataMerger = new DataMerger(currentModel, originalModel, newModel);
+        MergeDiff mergeDiff= dataMerger.mergeIntoCurrent();
         Assert.assertEquals(0, mergeDiff.getConflictCount());
         Assert.assertEquals(4, currentModel.referenceListAttribute.get().size());
         Assert.assertEquals(Arrays.asList("1","2","3","4"),currentModel.referenceListAttribute.get().stream().map(p->p.stringAttribute.get()).sorted().collect(Collectors.toList()));
@@ -512,8 +512,8 @@ public class MergeTest {
 
         }
 
-        FactoryMerger factoryMerger = new FactoryMerger(currentModel, originalModel, newModel);
-        MergeDiff mergeDiff = factoryMerger.mergeIntoCurrent();
+        DataMerger dataMerger = new DataMerger(currentModel, originalModel, newModel);
+        MergeDiff mergeDiff = dataMerger.mergeIntoCurrent();
         Assert.assertEquals(0, mergeDiff.getConflictCount());
 
         Assert.assertEquals(currentModel.referenceListAttribute.get(0), currentModel.referenceAttribute.get());
@@ -544,8 +544,8 @@ public class MergeTest {
             currentModel.referenceAttribute.set(value);
         }
 
-        FactoryMerger factoryMerger = new FactoryMerger(currentModel, originalModel, newModel);
-        MergeDiff mergeDiff = factoryMerger.mergeIntoCurrent();
+        DataMerger dataMerger = new DataMerger(currentModel, originalModel, newModel);
+        MergeDiff mergeDiff = dataMerger.mergeIntoCurrent();
         Assert.assertEquals(0, mergeDiff.getConflictCount());
 
         //assert still serializable;
@@ -560,9 +560,9 @@ public class MergeTest {
         originalModel.stringAttribute.set("1");
         ExampleFactoryA newModel = currentModel.copy();
         newModel.stringAttribute.set("3");
-        FactoryMerger factoryMerger = new FactoryMerger(currentModel, originalModel, newModel);
+        DataMerger dataMerger = new DataMerger(currentModel, originalModel, newModel);
 
-        MergeDiff mergeDiff= factoryMerger.mergeIntoCurrent();
+        MergeDiff mergeDiff= dataMerger.mergeIntoCurrent();
         Assert.assertTrue(mergeDiff.hasNoConflicts());
         Assert.assertEquals("3",currentModel.stringAttribute.get());
 
@@ -579,9 +579,9 @@ public class MergeTest {
         ExampleFactoryA newModel = currentModel.copy();
         newModel.stringAttribute.set("1");
 
-        FactoryMerger factoryMerger = new FactoryMerger(currentModel, originalModel, newModel);
+        DataMerger dataMerger = new DataMerger(currentModel, originalModel, newModel);
 
-        MergeDiff mergeDiff= factoryMerger.mergeIntoCurrent();
+        MergeDiff mergeDiff= dataMerger.mergeIntoCurrent();
         Assert.assertTrue(mergeDiff.hasNoConflicts());
         Assert.assertEquals("3",currentModel.stringAttribute.get());
 
@@ -599,9 +599,9 @@ public class MergeTest {
         ExampleFactoryA newModel = originalModel.copy();
 
 
-        FactoryMerger factoryMerger = new FactoryMerger(currentModel, originalModel, newModel);
+        DataMerger dataMerger = new DataMerger(currentModel, originalModel, newModel);
 
-        MergeDiff mergeDiff= factoryMerger.mergeIntoCurrent();
+        MergeDiff mergeDiff= dataMerger.mergeIntoCurrent();
         Assert.assertTrue(mergeDiff.hasNoConflicts());
         Assert.assertEquals(newValueInCurrent.getId(),currentModel.referenceAttribute.get().getId());
     }
@@ -619,9 +619,9 @@ public class MergeTest {
         ExampleFactoryA newModel = originalModel.copy();
 
 
-        FactoryMerger factoryMerger = new FactoryMerger(currentModel, originalModel, newModel);
+        DataMerger dataMerger = new DataMerger(currentModel, originalModel, newModel);
 
-        MergeDiff mergeDiff= factoryMerger.mergeIntoCurrent();
+        MergeDiff mergeDiff= dataMerger.mergeIntoCurrent();
         Assert.assertTrue(mergeDiff.hasNoConflicts());
         Assert.assertEquals(newValueInCurrent.getId(),currentModel.referenceListAttribute.get(0).getId());
     }
@@ -638,9 +638,9 @@ public class MergeTest {
         originalModel.referenceListAttribute.get().clear();
         originalModel.referenceListAttribute.add(new ExampleFactoryB());
 
-        FactoryMerger factoryMerger = new FactoryMerger(currentModel, originalModel, newModel);
+        DataMerger dataMerger = new DataMerger(currentModel, originalModel, newModel);
 
-        MergeDiff mergeDiff= factoryMerger.mergeIntoCurrent();
+        MergeDiff mergeDiff= dataMerger.mergeIntoCurrent();
         Assert.assertTrue(mergeDiff.hasNoConflicts());
         Assert.assertEquals(newValueInCurrent.getId(),currentModel.referenceListAttribute.get(0).getId());
     }
@@ -657,9 +657,9 @@ public class MergeTest {
         DataTest.ExampleObjectProperty newModel = currentModel.copy();
         newModel.objectValueAttribute.set(null);
 
-        FactoryMerger factoryMerger = new FactoryMerger(currentModel, originalModel, newModel);
+        DataMerger dataMerger = new DataMerger(currentModel, originalModel, newModel);
 
-        MergeDiff mergeDiff= factoryMerger.mergeIntoCurrent();
+        MergeDiff mergeDiff= dataMerger.mergeIntoCurrent();
         Assert.assertTrue(mergeDiff.hasNoConflicts());
         Assert.assertEquals("test2",currentModel.objectValueAttribute.get());
 
