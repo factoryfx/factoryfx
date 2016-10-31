@@ -1,15 +1,18 @@
 package de.factoryfx.factory.datastorage.filesystem;
 
+import static java.nio.file.Files.readAllBytes;
+
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.UUID;
 
-import de.factoryfx.data.jackson.ObjectMapperBuilder;
-import de.factoryfx.data.jackson.SimpleObjectMapper;
 import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.factory.datastorage.FactoryAndStorageMetadata;
+import de.factoryfx.factory.datastorage.FactorySerialisationManager;
 import de.factoryfx.factory.datastorage.FactoryStorage;
 import de.factoryfx.factory.datastorage.StoredFactoryMetadata;
 
@@ -19,10 +22,9 @@ public class FileSystemFactoryStorage<L,V,T extends FactoryBase<L,V>> implements
     private T initialFactory;
     private Path currentFactoryPath;
     private Path currentFactoryPathMetadata;
-    private final SimpleObjectMapper objectMapper=ObjectMapperBuilder.build();
-    private final Class<T> rootClass;
+    private final FactorySerialisationManager<T> factorySerialisationManager;
 
-    public FileSystemFactoryStorage(Path basePath, T defaultFactory, Class<T> rootClass, FileSystemFactoryStorageHistory<L,V,T> fileSystemFactoryStorageHistory){
+    public FileSystemFactoryStorage(Path basePath, T defaultFactory, FactorySerialisationManager<T> factorySerialisationManager, FileSystemFactoryStorageHistory<L,V,T> fileSystemFactoryStorageHistory){
         this.initialFactory=defaultFactory;
         if (!Files.exists(basePath)){
             throw new IllegalArgumentException("path don't exists:"+basePath);
@@ -30,11 +32,11 @@ public class FileSystemFactoryStorage<L,V,T extends FactoryBase<L,V>> implements
         currentFactoryPath= Paths.get(basePath.toString()+"/currentFactory.json");
         currentFactoryPathMetadata= Paths.get(basePath.toString()+"/currentFactory_metadata.json");
         this.fileSystemFactoryStorageHistory=fileSystemFactoryStorageHistory;
-        this.rootClass=rootClass;
+        this.factorySerialisationManager=factorySerialisationManager;
     }
 
-    public FileSystemFactoryStorage(Path basePath, T defaultFactory, Class<T> rootClass){
-        this(basePath,defaultFactory,rootClass,new FileSystemFactoryStorageHistory<>(basePath,rootClass));
+    public FileSystemFactoryStorage(Path basePath, T defaultFactory, FactorySerialisationManager<T> factorySerialisationManager){
+        this(basePath,defaultFactory,factorySerialisationManager,new FileSystemFactoryStorageHistory<>(basePath,factorySerialisationManager));
     }
 
 
@@ -50,13 +52,14 @@ public class FileSystemFactoryStorage<L,V,T extends FactoryBase<L,V>> implements
 
     @Override
     public FactoryAndStorageMetadata<T> getCurrentFactory() {
-        return new FactoryAndStorageMetadata<>(objectMapper.readValue(currentFactoryPath.toFile(),rootClass),objectMapper.readValue(currentFactoryPathMetadata.toFile(),StoredFactoryMetadata.class));
+        StoredFactoryMetadata storedFactoryMetadata = factorySerialisationManager.readStoredFactoryMetadata(readFile(currentFactoryPathMetadata));
+        return new FactoryAndStorageMetadata<>(factorySerialisationManager.read(readFile(currentFactoryPath),storedFactoryMetadata.dataModelVersion),storedFactoryMetadata);
     }
 
     @Override
     public void updateCurrentFactory(FactoryAndStorageMetadata<T> update) {
-        objectMapper.writeValue(currentFactoryPath.toFile(),update.root);
-        objectMapper.writeValue(currentFactoryPathMetadata.toFile(),update.metadata);
+        writeFile(currentFactoryPath,factorySerialisationManager.write(update.root));
+        writeFile(currentFactoryPathMetadata,factorySerialisationManager.writeStorageMetadata(update.metadata));
         fileSystemFactoryStorageHistory.updateHistory(update.metadata,update.root);
     }
 
@@ -73,8 +76,8 @@ public class FileSystemFactoryStorage<L,V,T extends FactoryBase<L,V>> implements
     public void loadInitialFactory() {
         fileSystemFactoryStorageHistory.initFromFileSystem();
         if (Files.exists(currentFactoryPath)){
-            objectMapper.readValue(currentFactoryPath.toFile(),rootClass);
-            objectMapper.readValue(currentFactoryPathMetadata.toFile(),StoredFactoryMetadata.class);
+//            objectMapper.readValue(currentFactoryPath.toFile(),rootClass);
+//            objectMapper.readValue(currentFactoryPathMetadata.toFile(),StoredFactoryMetadata.class);
         } else {
             StoredFactoryMetadata metadata = new StoredFactoryMetadata();
             String newId = UUID.randomUUID().toString();
@@ -84,6 +87,22 @@ public class FileSystemFactoryStorage<L,V,T extends FactoryBase<L,V>> implements
             FactoryAndStorageMetadata<T> initialFactoryAndStorageMetadata = new FactoryAndStorageMetadata<T>(
                     initialFactory,metadata);
             updateCurrentFactory(initialFactoryAndStorageMetadata);
+        }
+    }
+
+    private String readFile(Path path){
+        try {
+            return new String(readAllBytes(path), StandardCharsets.UTF_8);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private void writeFile(Path path, String content){
+        try {
+            Files.write(path,content.getBytes(StandardCharsets.UTF_8));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 }

@@ -2,8 +2,12 @@ package de.factoryfx.factory.datastorage.filesystem;
 
 import java.net.MalformedURLException;
 import java.nio.file.Paths;
+import java.util.Collections;
 import java.util.UUID;
 
+import de.factoryfx.factory.datastorage.FactorySerialisationManager;
+import de.factoryfx.factory.datastorage.JacksonDeSerialisation;
+import de.factoryfx.factory.datastorage.JacksonSerialisation;
 import de.factoryfx.factory.datastorage.StoredFactoryMetadata;
 import de.factoryfx.factory.testfactories.ExampleFactoryA;
 import de.factoryfx.factory.testfactories.ExampleLiveObjectA;
@@ -18,9 +22,15 @@ public class FileSystemFactoryStorageHistoryTest {
     public TemporaryFolder folder= new TemporaryFolder();
 
 
+    private FactorySerialisationManager<ExampleFactoryA> createSerialisation(){
+        int dataModelVersion = 1;
+        return new FactorySerialisationManager<>(dataModelVersion,new JacksonSerialisation<>(),new JacksonDeSerialisation<>(ExampleFactoryA.class, dataModelVersion), Collections.emptyList());
+    }
+
+
     @Test
     public void test_empty() throws MalformedURLException {
-        FileSystemFactoryStorageHistory<ExampleLiveObjectA,Void,ExampleFactoryA> fileSystemFactoryStorage = new FileSystemFactoryStorageHistory<>(Paths.get(folder.getRoot().toURI()),ExampleFactoryA.class);
+        FileSystemFactoryStorageHistory<ExampleLiveObjectA,Void,ExampleFactoryA> fileSystemFactoryStorage = new FileSystemFactoryStorageHistory<>(Paths.get(folder.getRoot().toURI()),createSerialisation());
         fileSystemFactoryStorage.initFromFileSystem();
 
         Assert.assertTrue(fileSystemFactoryStorage.getHistoryFactoryList().isEmpty());
@@ -28,7 +38,7 @@ public class FileSystemFactoryStorageHistoryTest {
 
     @Test
     public void test_add() throws MalformedURLException {
-        FileSystemFactoryStorageHistory<ExampleLiveObjectA,Void,ExampleFactoryA> fileSystemFactoryStorage = new FileSystemFactoryStorageHistory<>(Paths.get(folder.getRoot().toURI()),ExampleFactoryA.class);
+        FileSystemFactoryStorageHistory<ExampleLiveObjectA,Void,ExampleFactoryA> fileSystemFactoryStorage = new FileSystemFactoryStorageHistory<>(Paths.get(folder.getRoot().toURI()),createSerialisation());
         fileSystemFactoryStorage.initFromFileSystem();
 
         StoredFactoryMetadata metadata = new StoredFactoryMetadata();
@@ -40,7 +50,7 @@ public class FileSystemFactoryStorageHistoryTest {
 
     @Test
     public void test_multi_add() throws MalformedURLException {
-        FileSystemFactoryStorageHistory<ExampleLiveObjectA,Void,ExampleFactoryA> fileSystemFactoryStorage = new FileSystemFactoryStorageHistory<>(Paths.get(folder.getRoot().toURI()),ExampleFactoryA.class);
+        FileSystemFactoryStorageHistory<ExampleLiveObjectA,Void,ExampleFactoryA> fileSystemFactoryStorage = new FileSystemFactoryStorageHistory<>(Paths.get(folder.getRoot().toURI()),createSerialisation());
         fileSystemFactoryStorage.initFromFileSystem();
 
         {
@@ -66,7 +76,7 @@ public class FileSystemFactoryStorageHistoryTest {
 
     @Test
     public void test_restore() throws MalformedURLException {
-        FileSystemFactoryStorageHistory<ExampleLiveObjectA,Void,ExampleFactoryA> fileSystemFactoryStorage = new FileSystemFactoryStorageHistory<>(Paths.get(folder.getRoot().toURI()),ExampleFactoryA.class);
+        FileSystemFactoryStorageHistory<ExampleLiveObjectA,Void,ExampleFactoryA> fileSystemFactoryStorage = new FileSystemFactoryStorageHistory<>(Paths.get(folder.getRoot().toURI()),createSerialisation());
         fileSystemFactoryStorage.initFromFileSystem();
 
         StoredFactoryMetadata metadata = new StoredFactoryMetadata();
@@ -74,7 +84,7 @@ public class FileSystemFactoryStorageHistoryTest {
         fileSystemFactoryStorage.updateHistory(metadata,new ExampleFactoryA());
         Assert.assertEquals(1,fileSystemFactoryStorage.getHistoryFactoryList().size());
 
-        FileSystemFactoryStorageHistory<ExampleLiveObjectA,Void,ExampleFactoryA> restored = new FileSystemFactoryStorageHistory<>(Paths.get(folder.getRoot().toURI()),ExampleFactoryA.class);
+        FileSystemFactoryStorageHistory<ExampleLiveObjectA,Void,ExampleFactoryA> restored = new FileSystemFactoryStorageHistory<>(Paths.get(folder.getRoot().toURI()),createSerialisation());
         restored.initFromFileSystem();
         Assert.assertEquals(1,restored.getHistoryFactoryList().size());
     }

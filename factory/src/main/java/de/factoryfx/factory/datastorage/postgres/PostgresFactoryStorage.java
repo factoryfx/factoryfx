@@ -16,10 +16,9 @@ import java.util.UUID;
 import javax.sql.DataSource;
 
 import com.google.common.io.CharStreams;
-import de.factoryfx.data.jackson.ObjectMapperBuilder;
-import de.factoryfx.data.jackson.SimpleObjectMapper;
 import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.factory.datastorage.FactoryAndStorageMetadata;
+import de.factoryfx.factory.datastorage.FactorySerialisationManager;
 import de.factoryfx.factory.datastorage.FactoryStorage;
 import de.factoryfx.factory.datastorage.StoredFactoryMetadata;
 
@@ -27,17 +26,27 @@ public class PostgresFactoryStorage<L,V,T extends FactoryBase<L,V>> implements F
 
     private T initialFactory;
     private final DataSource dataSource;
-    private final SimpleObjectMapper objectMapper=ObjectMapperBuilder.build();
-    private final Class<T> rootClass;
+    private final FactorySerialisationManager<T> factorySerialisationManager;
 
-    public PostgresFactoryStorage(DataSource dataSource, T defaultFactory, Class<T> rootClass){
+    public PostgresFactoryStorage(DataSource dataSource, T defaultFactory, FactorySerialisationManager<T> factorySerialisationManager){
         this.dataSource     = dataSource;
         this.initialFactory = defaultFactory;
-        this.rootClass=rootClass;
+        this.factorySerialisationManager=factorySerialisationManager;
     }
 
     @Override
     public T getHistoryFactory(String id) {
+        int dataModelVersion=-99999;
+        for(StoredFactoryMetadata metaData: getHistoryFactoryList()){
+            if (metaData.id.equals(id)){
+                dataModelVersion=metaData.dataModelVersion;
+
+            }
+        }
+        if (dataModelVersion==-99999) {
+            throw new IllegalStateException("cant find id: "+id+" in history");
+        }
+
         try {
             try (Connection connection = dataSource.getConnection()) {
                 try (PreparedStatement pstmt = connection.prepareStatement("select cast (root as text) as root from configuration where id = ?")) {
@@ -45,7 +54,7 @@ public class PostgresFactoryStorage<L,V,T extends FactoryBase<L,V>> implements F
                     try (ResultSet rs = pstmt.executeQuery()) {
                         if (!rs.next())
                             throw new IllegalArgumentException("No factory with id '"+id+"' found");
-                        return objectMapper.readValue(rs.getString(1),rootClass);
+                        return factorySerialisationManager.read(rs.getString(1),dataModelVersion);
                     }
                 }
             }
@@ -62,7 +71,7 @@ public class PostgresFactoryStorage<L,V,T extends FactoryBase<L,V>> implements F
                     ArrayList<StoredFactoryMetadata> ret = new ArrayList<>();
                     try (ResultSet rs = pstmt.executeQuery()) {
                         while (rs.next()) {
-                           ret.add(objectMapper.readValue(rs.getString(1),StoredFactoryMetadata.class));
+                           ret.add(factorySerialisationManager.readStoredFactoryMetadata(rs.getString(1)));
                         }
                     }
                     return ret;
@@ -81,9 +90,12 @@ public class PostgresFactoryStorage<L,V,T extends FactoryBase<L,V>> implements F
                     try (ResultSet rs = pstmt.executeQuery()) {
                         if (!rs.next())
                             throw new RuntimeException("No current factory found");
+
+                        StoredFactoryMetadata storedFactoryMetadata = factorySerialisationManager.readStoredFactoryMetadata(rs.getString(2));
+
                         return new FactoryAndStorageMetadata<>(
-                                objectMapper.readValue(rs.getString(1),rootClass),
-                                objectMapper.readValue(rs.getString(2),StoredFactoryMetadata.class)
+                                factorySerialisationManager.read(rs.getString(1),storedFactoryMetadata.dataModelVersion),
+                                storedFactoryMetadata
                         );
                     }
                 }
@@ -126,7 +138,7 @@ public class PostgresFactoryStorage<L,V,T extends FactoryBase<L,V>> implements F
         }
         Timestamp createdAtTimestamp = new Timestamp(createdAt);
         try (PreparedStatement pstmtInsertConfigurationMetadata = connection.prepareStatement("insert into configurationmetadata (metadata, createdAt, id) values (cast (? as json), ?, ?)")) {
-            pstmtInsertConfigurationMetadata.setString(1,objectMapper.writeValueAsString(update.metadata));
+            pstmtInsertConfigurationMetadata.setString(1, factorySerialisationManager.writeStorageMetadata(update.metadata));
             pstmtInsertConfigurationMetadata.setTimestamp(2, createdAtTimestamp);
             pstmtInsertConfigurationMetadata.setString(3,update.metadata.id);
             pstmtInsertConfigurationMetadata.execute();
@@ -143,8 +155,8 @@ public class PostgresFactoryStorage<L,V,T extends FactoryBase<L,V>> implements F
     }
 
     private void setValues(FactoryAndStorageMetadata<T> update, Timestamp createdAtTimestamp, PreparedStatement pstmt) throws SQLException {
-        pstmt.setString(1, objectMapper.writeValueAsString(update.root));
-        pstmt.setString(2, objectMapper.writeValueAsString(update.metadata));
+        pstmt.setString(1, factorySerialisationManager.write(update.root));
+        pstmt.setString(2, factorySerialisationManager.writeStorageMetadata(update.metadata));
         pstmt.setTimestamp(3, createdAtTimestamp);
         pstmt.setString(4, update.metadata.id);
         pstmt.execute();

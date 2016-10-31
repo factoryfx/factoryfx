@@ -390,7 +390,7 @@ public class RestResource<L,V,T extends FactoryBase<L,V>> {
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    @Path("history")
+    @Path("history") //detail request for history
     public Collection<StoredFactoryMetadata> history(){
         List<StoredFactoryMetadata> historyFactoryList = new ArrayList<>(applicationServer.getHistoryFactoryList());
         Collections.sort(historyFactoryList, (o1, o2) -> Objects.compare(o1.creationTime, o2.creationTime, (o11, o21) -> o21.compareTo(o11)));

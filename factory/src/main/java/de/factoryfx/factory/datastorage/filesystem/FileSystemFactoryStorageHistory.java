@@ -1,6 +1,9 @@
 package de.factoryfx.factory.datastorage.filesystem;
 
+import static java.nio.file.Files.readAllBytes;
+
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -10,26 +13,38 @@ import java.util.TreeMap;
 import java.util.stream.Stream;
 
 import de.factoryfx.factory.FactoryBase;
+import de.factoryfx.factory.datastorage.FactorySerialisationManager;
 import de.factoryfx.factory.datastorage.StoredFactoryMetadata;
-import de.factoryfx.data.jackson.ObjectMapperBuilder;
 
 public class FileSystemFactoryStorageHistory<L,V,T extends FactoryBase<L,V>> {
     private Map<String,StoredFactoryMetadata> cache = new TreeMap<>();
     private Path historyDirectory;
-    private final Class<T> rootClass;
+    private final FactorySerialisationManager<T> factorySerialisationManager;
 
-    public FileSystemFactoryStorageHistory(Path basePath, Class<T> rootClass){
+    public FileSystemFactoryStorageHistory(Path basePath, FactorySerialisationManager<T> factorySerialisationManager){
+        this.factorySerialisationManager= factorySerialisationManager;
         historyDirectory= Paths.get(basePath.toString()+"/history/");
         if (!Files.exists(historyDirectory)){
             if (!historyDirectory.toFile().mkdirs()){
                 throw new IllegalStateException("Unable to create path"+historyDirectory.toFile().getAbsolutePath());
             }
         }
-        this.rootClass =rootClass;
     }
 
     public T getHistoryFactory(String id) {
-        return ObjectMapperBuilder.build().readValue(Paths.get(historyDirectory.toString()+id+".json").toFile(),rootClass);
+        int dataModelVersion=-99999;
+        for(StoredFactoryMetadata metaData: getHistoryFactoryList()){
+            if (metaData.id.equals(id)){
+                dataModelVersion=metaData.dataModelVersion;
+
+            }
+        }
+        if (dataModelVersion==-99999) {
+            throw new IllegalStateException("cant find id: "+id+" in history");
+        }
+
+
+        return factorySerialisationManager.read(readFile(Paths.get(historyDirectory.toString()+id+".json")),dataModelVersion);
     }
 
     public Collection<StoredFactoryMetadata> getHistoryFactoryList() {
@@ -41,7 +56,7 @@ public class FileSystemFactoryStorageHistory<L,V,T extends FactoryBase<L,V>> {
             try (Stream<Path> files = Files.walk(historyDirectory).filter(Files::isRegularFile)){
                 files.forEach(path -> {
                     if (path.toString().endsWith("_metadata.json")){
-                        StoredFactoryMetadata storedFactoryMetadata=ObjectMapperBuilder.build().readValue(path.toFile(),StoredFactoryMetadata.class);
+                        StoredFactoryMetadata storedFactoryMetadata=factorySerialisationManager.readStoredFactoryMetadata(readFile(path));
                         cache.put(storedFactoryMetadata.id,storedFactoryMetadata);
                     }
                 });
@@ -53,9 +68,26 @@ public class FileSystemFactoryStorageHistory<L,V,T extends FactoryBase<L,V>> {
 
     public void updateHistory(StoredFactoryMetadata metadata, T factoryRoot) {
         String id=metadata.id;
-        ObjectMapperBuilder.build().writeValue(Paths.get(historyDirectory.toString()+"/"+id+".json").toFile(),factoryRoot);
-        ObjectMapperBuilder.build().writeValue(Paths.get(historyDirectory.toString()+"/"+id+"_metadata.json").toFile(),metadata);
+
+        writeFile(Paths.get(historyDirectory.toString()+"/"+id+".json"),factorySerialisationManager.write(factoryRoot));
+        writeFile(Paths.get(historyDirectory.toString()+"/"+id+"_metadata.json"),factorySerialisationManager.writeStorageMetadata(metadata));
         cache.put(id,metadata);
 
+    }
+
+    private String readFile(Path path){
+        try {
+            return new String(readAllBytes(path), StandardCharsets.UTF_8);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private void writeFile(Path path, String content){
+        try {
+            Files.write(path,content.getBytes(StandardCharsets.UTF_8));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

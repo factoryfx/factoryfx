@@ -12,8 +12,8 @@ public class StoredFactoryMetadata {
     /**the base version on the server*/
     public String baseVersionId;
 
-
-    public Integer dataModelVersion;
+    //** version of the factory structure used for migration*/
+    public int dataModelVersion;
 
     @JsonCreator
     public StoredFactoryMetadata() {
