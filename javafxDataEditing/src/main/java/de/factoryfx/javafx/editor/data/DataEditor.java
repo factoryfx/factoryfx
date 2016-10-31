@@ -60,7 +60,22 @@ public class DataEditor implements Widget {
             if (displayedEntities.size()>HISTORY_LIMIT){
                 displayedEntities.remove(0);
             }
+        } else {
+            int indexOfCurrent = displayedEntities.indexOf(current);
+            int indexOfNewValue = displayedEntities.indexOf(newValue);
+            if (indexOfNewValue > indexOfCurrent) {
+                removeUpToCurrent(current);
+                displayedEntities.add(newValue);
+                if (displayedEntities.size()>HISTORY_LIMIT){
+                    displayedEntities.remove(0);
+                }
+            }
         }
+
+    }
+
+    public void editExisting(Data newValue) {
+        bound.set(newValue);
     }
 
     public void resetHistory(){
@@ -163,7 +178,7 @@ public class DataEditor implements Widget {
 
     private void addEditorContent(GridPane gridPane, int row, Node editorWidgetContent) {
         GridPane.setMargin(editorWidgetContent, new Insets(4, 0, 4, 0));
-       // TODO
+        // TODO
 //        label.setLabelFor(editorWidgetContent);
         gridPane.add(editorWidgetContent, 1, row);
     }
@@ -276,11 +291,11 @@ public class DataEditor implements Widget {
     }
 
     void back(){
-        previousData().ifPresent(this::edit);
+        previousData().ifPresent(this::editExisting);
     }
 
     void next(){
-        nextData().ifPresent(this::edit);
+        nextData().ifPresent(this::editExisting);
     }
 
 }
