@@ -19,6 +19,7 @@ public abstract class Attribute<T>{
     @JsonIgnore
     public final List<Validation<T>> validations = new ArrayList<>();
 
+
     @SuppressWarnings("unchecked")
     public <A extends Attribute<T>> A validation(Validation<T> validation){
         this.validations.add(validation);
@@ -103,4 +104,12 @@ public abstract class Attribute<T>{
     }
 
     public abstract AttributeTypeInfo getAttributeType();
+
+    public void prepareEditing(Data root, Data parent){
+        //nothing
+    }
+
+    public void endEditing() {
+        //nothing
+    }
 }

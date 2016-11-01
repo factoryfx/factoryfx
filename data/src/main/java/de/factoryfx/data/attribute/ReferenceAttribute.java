@@ -15,6 +15,9 @@ import de.factoryfx.data.merge.attribute.ReferenceMergeHelper;
 
 public class ReferenceAttribute<T extends Data> extends Attribute<T> {
 
+    private Data root;
+    private Data parent;
+
     private T value;
     private Optional<Class<T>> clazz;
 
@@ -138,7 +141,7 @@ public class ReferenceAttribute<T extends Data> extends Attribute<T> {
         return (A)this;
     }
 
-    public void addNewFactory(Data root){
+    public T addNewFactory(){
         newValueProvider.ifPresent(newFactoryFunction -> {
             T newFactory = newFactoryFunction.get();
             set(newFactory);
@@ -155,10 +158,14 @@ public class ReferenceAttribute<T extends Data> extends Attribute<T> {
             }
 
         }
+        getOptional().ifPresent(newValue -> newValue.visitAttributesFlat((attribute) -> {
+            attribute.prepareEditing(root,newValue);
+        }));
+        return get();
     }
 
     @SuppressWarnings("unchecked")
-    public List<T> possibleValues(Data root){
+    public List<T> possibleValues(){
         ArrayList<T> result = new ArrayList<>();
         possibleValueProviderFromRoot.ifPresent(factoryBaseListFunction -> {
             List<T> factories = factoryBaseListFunction.apply(root);
@@ -174,6 +181,11 @@ public class ReferenceAttribute<T extends Data> extends Attribute<T> {
             }
         }
         return result;
+    }
+
+    public void prepareEditing(Data root, Data parent){
+        this.root=root;
+        this.parent=parent;
     }
 
 }

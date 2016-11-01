@@ -55,7 +55,7 @@ public class ReferenceAttributeTest {
     public void test_add_new(){
         ReferenceAttribute<ExampleFactoryA> referenceAttribute=new ReferenceAttribute<>(ExampleFactoryA.class,new AttributeMetadata());
         Assert.assertNull(referenceAttribute.get());
-        referenceAttribute.addNewFactory(null);
+        referenceAttribute.addNewFactory();
         Assert.assertNotNull(referenceAttribute.get());
 
     }
@@ -68,7 +68,9 @@ public class ReferenceAttributeTest {
         ExampleFactoryA exampleFactoryA = new ExampleFactoryA();
         root.referenceAttribute.set(exampleFactoryA);
 
-        List<ExampleFactoryA> possibleFactories =referenceAttribute.possibleValues(root);
+        referenceAttribute.prepareEditing(root,null);
+
+        List<ExampleFactoryA> possibleFactories =referenceAttribute.possibleValues();
         Assert.assertEquals(1,possibleFactories.size());
         Assert.assertEquals(exampleFactoryA,possibleFactories.get(0));
 

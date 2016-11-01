@@ -8,7 +8,7 @@ import de.factoryfx.data.attribute.ValueAttribute;
 import de.factoryfx.data.jackson.ObjectValueAttributeDeserializer;
 import de.factoryfx.data.jackson.ObjectValueAttributeSerializer;
 import de.factoryfx.data.merge.attribute.AttributeMergeHelper;
-import de.factoryfx.data.merge.attribute.ObjectValueMergeHelper;
+import de.factoryfx.data.merge.attribute.NopMergeHelper;
 
 //**
 // *special case Attribute to pass object from outside in the application.
@@ -29,7 +29,7 @@ public class ObjectValueAttribute<T> extends ValueAttribute<T> {
 
     @Override
     public AttributeMergeHelper<?> createMergeHelper() {
-        return new ObjectValueMergeHelper<>(this);
+        return new NopMergeHelper<>();
     }
 
 }

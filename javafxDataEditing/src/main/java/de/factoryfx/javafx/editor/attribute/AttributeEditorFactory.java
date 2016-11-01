@@ -15,6 +15,8 @@ import de.factoryfx.data.attribute.Attribute;
 import de.factoryfx.data.attribute.AttributeMetadata;
 import de.factoryfx.data.attribute.ReferenceAttribute;
 import de.factoryfx.data.attribute.ReferenceListAttribute;
+import de.factoryfx.data.attribute.ViewListReferenceAttribute;
+import de.factoryfx.data.attribute.ViewReferenceAttribute;
 import de.factoryfx.data.attribute.types.BigDecimalAttribute;
 import de.factoryfx.data.attribute.types.DoubleAttribute;
 import de.factoryfx.data.attribute.types.IntegerAttribute;
@@ -38,6 +40,8 @@ import de.factoryfx.javafx.editor.attribute.visualisation.StringAttributeVisuali
 import de.factoryfx.javafx.editor.attribute.visualisation.StringLongAttributeVisualisation;
 import de.factoryfx.javafx.editor.attribute.visualisation.TableAttributeVisualisation;
 import de.factoryfx.javafx.editor.attribute.visualisation.URIAttributeVisualisation;
+import de.factoryfx.javafx.editor.attribute.visualisation.ViewListReferenceAttributeVisualisation;
+import de.factoryfx.javafx.editor.attribute.visualisation.ViewReferenceAttributeVisualisation;
 import de.factoryfx.javafx.editor.data.DataEditor;
 import de.factoryfx.javafx.util.UniformDesign;
 import javafx.collections.ObservableList;
@@ -46,11 +50,9 @@ import javafx.scene.paint.Color;
 public class AttributeEditorFactory {
 
     private final UniformDesign uniformDesign;
-    private final Data root;
 
-    public AttributeEditorFactory(UniformDesign uniformDesign, Data root) {
+    public AttributeEditorFactory(UniformDesign uniformDesign) {
         this.uniformDesign = uniformDesign;
-        this.root = root;
     }
 
     List<Function<Attribute<?>,Optional<AttributeEditor<?>>>> editorAssociations=new ArrayList<>();
@@ -73,9 +75,24 @@ public class AttributeEditorFactory {
         Optional<AttributeEditor<?>> detailAttribute = getAttributeEditorList(attribute, dataEditor);
         if (detailAttribute.isPresent()) return detailAttribute;
 
+        Optional<AttributeEditor<?>> viewAttribute = getViewAttribute(attribute, dataEditor);
+        if (viewAttribute.isPresent()) return viewAttribute;
+
         Optional<AttributeEditor<?>> referenceAttribute = getAttributeEditorReference(attribute, dataEditor);
         if (referenceAttribute.isPresent()) return referenceAttribute;
 
+        return Optional.empty();
+    }
+
+    @SuppressWarnings("unchecked")
+    private Optional<AttributeEditor<?>> getViewAttribute(Attribute<?> attribute, DataEditor dataEditor) {
+        if (attribute instanceof ViewReferenceAttribute){
+            return Optional.of(new AttributeEditor<>((Attribute<Data>)attribute,new ViewReferenceAttributeVisualisation(dataEditor, uniformDesign)));
+        }
+
+        if (attribute instanceof ViewListReferenceAttribute){
+            return Optional.of(new AttributeEditor<>((Attribute<List<Data>>)attribute,new ViewListReferenceAttributeVisualisation(dataEditor, uniformDesign)));
+        }
         return Optional.empty();
     }
 
@@ -86,12 +103,12 @@ public class AttributeEditorFactory {
 
         if (Data.class==attribute.getAttributeType().dataType){
             ReferenceAttribute<?> referenceAttribute = (ReferenceAttribute<?>) attribute;
-            return Optional.of(new AttributeEditor<>((Attribute<Data>)attribute,new ReferenceAttributeVisualisation(uniformDesign,dataEditor,()->referenceAttribute.addNewFactory(root),()->(List<Data>)referenceAttribute.possibleValues(root))));
+            return Optional.of(new AttributeEditor<>((Attribute<Data>)attribute,new ReferenceAttributeVisualisation(uniformDesign,dataEditor,()->referenceAttribute.addNewFactory(),()->(List<Data>)referenceAttribute.possibleValues())));
         }
 
         if (ObservableList.class.isAssignableFrom(attribute.getAttributeType().dataType) && Data.class.isAssignableFrom(attribute.getAttributeType().listItemType)){
             ReferenceListAttribute<?> referenceListAttribute = (ReferenceListAttribute<?>) attribute;
-            return Optional.of(new AttributeEditor<>((Attribute<ObservableList<Data>>)attribute,new ReferenceListAttributeVisualisation(uniformDesign, dataEditor, () -> referenceListAttribute.addNewFactory(root), ()->(List<Data>)referenceListAttribute.possibleValues(root))));
+            return Optional.of(new AttributeEditor<>((Attribute<ObservableList<Data>>)attribute,new ReferenceListAttributeVisualisation(uniformDesign, dataEditor, () -> referenceListAttribute.addNewFactory(), ()->(List<Data>)referenceListAttribute.possibleValues())));
         }
         return Optional.empty();
     }

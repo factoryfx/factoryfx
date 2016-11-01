@@ -11,7 +11,7 @@ public class DataEditorTest {
     @Test
     public void testBack() throws Exception {
         UniformDesign uniformDesign = new UniformDesignFactory<>().instance();
-        DataEditor dataEditor = new DataEditor(new AttributeEditorFactory(uniformDesign,new ExampleData1()),uniformDesign);
+        DataEditor dataEditor = new DataEditor(new AttributeEditorFactory(uniformDesign),uniformDesign);
 
 
         ExampleData1 exampleData1 = new ExampleData1();
@@ -41,7 +41,7 @@ public class DataEditorTest {
     @Test
     public void testBack_limit() throws Exception {
         UniformDesign uniformDesign = new UniformDesignFactory<>().instance();
-        DataEditor dataEditor = new DataEditor(new AttributeEditorFactory(uniformDesign,new ExampleData1()),uniformDesign);
+        DataEditor dataEditor = new DataEditor(new AttributeEditorFactory(uniformDesign),uniformDesign);
 
         for (int i=0;i<100;i++){
             dataEditor.edit(new ExampleData1());
@@ -54,7 +54,7 @@ public class DataEditorTest {
     @Test
     public void testForward() throws Exception {
         UniformDesign uniformDesign = new UniformDesignFactory<>().instance();
-        DataEditor dataEditor = new DataEditor(new AttributeEditorFactory(uniformDesign,new ExampleData1()),uniformDesign);
+        DataEditor dataEditor = new DataEditor(new AttributeEditorFactory(uniformDesign),uniformDesign);
 
 
         ExampleData1 exampleData1 = new ExampleData1();

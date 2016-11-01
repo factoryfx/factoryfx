@@ -7,6 +7,7 @@ import de.factoryfx.data.attribute.Attribute;
 import de.factoryfx.data.attribute.AttributeChangeListener;
 import de.factoryfx.data.validation.ValidationError;
 import de.factoryfx.javafx.widget.Widget;
+import javafx.application.Platform;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.geometry.Side;
@@ -34,23 +35,27 @@ public class AttributeEditor<T> implements Widget {
             }
         });
 
-        bound.set(boundAttribute.get());
         boundAttribute.addListener(attributeChangeListener);
+        attributeChangeListener.changed(boundAttribute,boundAttribute.get());
     }
 
     boolean setLoop=false;
     private AttributeChangeListener<T> attributeChangeListener = (attribute, value) -> {
-        setLoop=true;
-        if (value==bound.get()){
-            //workaround to force changelistener to trigger
-            //same ref doesn't mean the content didn't chnage e.g List
-            bound.set(null);
-            bound.set(value);
-        }
-        bound.set(value);
-        setLoop=false;
+        Platform.runLater(()-> {
 
-        validationResult.set(attribute.validate());
+            setLoop = true;
+            if (value == bound.get()) {
+                //workaround to force changelistener to trigger
+                //same reference doesn't mean the content didn't change e.g List
+                bound.set(null);
+                bound.set(value);
+            }
+            bound.set(value);
+            setLoop = false;
+
+            validationResult.set(attribute.validate());
+
+        });
     };
 
     Node content;

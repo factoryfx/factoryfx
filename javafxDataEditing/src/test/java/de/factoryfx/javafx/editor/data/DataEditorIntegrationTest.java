@@ -23,8 +23,10 @@ public class DataEditorIntegrationTest extends Application{
         exampleData1.stringAttribute.set("abc");
 
         UniformDesign uniformDesign = new UniformDesignFactory<>().instance();
-        DataEditor dataEditor = new DataEditor(new AttributeEditorFactory(uniformDesign,exampleData1),uniformDesign);
+        DataEditor dataEditor = new DataEditor(new AttributeEditorFactory(uniformDesign),uniformDesign);
         root.setCenter(dataEditor.createContent());
+
+        exampleData1.prepareEditing();
         dataEditor.edit(exampleData1);
 
         primaryStage.setScene(new Scene(root,1200,800));
@@ -41,6 +43,8 @@ public class DataEditorIntegrationTest extends Application{
     }
 
     public static void main(String[] args) {
+        Thread.setDefaultUncaughtExceptionHandler((t, e) -> e.printStackTrace());
+
         Application.launch();
     }
 }

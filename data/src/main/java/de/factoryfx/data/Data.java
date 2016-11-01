@@ -30,7 +30,6 @@ import javafx.collections.ObservableList;
 
 public abstract class Data {
 
-
     public abstract Object getId();
 
     public abstract void setId(Object object);
@@ -127,7 +126,7 @@ public abstract class Data {
         void accept(String attributeVariableName, Attribute<?> attribute);
     }
 
-    public <A> void visitAttributesFlat(AttributeVisitor consumer) {
+    public void visitAttributesFlat(AttributeVisitor consumer) {
         Field[] fields = getFields();
         for (Field field : fields) {
             try {
@@ -291,18 +290,21 @@ public abstract class Data {
 
         this.visitAttributesTripleFlat(originalValue, newValue, (currentAttribute, originalAttribute, newAttribute) -> {
             AttributeMergeHelper<?> attributeMergeHelper = currentAttribute.createMergeHelper();
-            boolean hasNoConflict = attributeMergeHelper.hasNoConflict(originalAttribute, newAttribute);
-            MergeResultEntry mergeResultEntry = new MergeResultEntry(Data.this, currentAttribute, newAttribute);
-            if (hasNoConflict) {
-                if (newAttribute.isPresent()) {
-                    if (attributeMergeHelper.isMergeable(originalAttribute, newAttribute)){
-                        mergeResult.addMergeExecutions(() -> attributeMergeHelper.merge(originalAttribute, newAttribute.get()));
-                        mergeResult.addMergeInfo(mergeResultEntry);
+            if (attributeMergeHelper.executeMerge()){
+                boolean hasNoConflict = attributeMergeHelper.hasNoConflict(originalAttribute, newAttribute);
+                MergeResultEntry mergeResultEntry = new MergeResultEntry(Data.this, currentAttribute, newAttribute);
+                if (hasNoConflict) {
+                    if (newAttribute.isPresent()) {
+                        if (attributeMergeHelper.isMergeable(originalAttribute, newAttribute)){
+                            mergeResult.addMergeExecutions(() -> attributeMergeHelper.merge(originalAttribute, newAttribute.get()));
+                            mergeResult.addMergeInfo(mergeResultEntry);
+                        }
                     }
+                } else {
+                    mergeResult.addConflictInfos(mergeResultEntry);
                 }
-            } else {
-                mergeResult.addConflictInfos(mergeResultEntry);
             }
+
         });
     }
 
@@ -384,6 +386,24 @@ public abstract class Data {
         return result;
     }
 
+    //use this method only for root
+    @SuppressWarnings("unchecked")
+    public <T extends Data> T  prepareEditing() {
+        for (Data data: collectChildrenDeep()){
+            data.visitAttributesFlat((attributeVariableName, attribute) -> {
+                attribute.prepareEditing(Data.this,data);
+            });
+        }
+        return (T)this;
+    }
 
+    public <T extends Data> T  endEditing() {
+        for (Data data: collectChildrenDeep()){
+            data.visitAttributesFlat((attributeVariableName, attribute) -> {
+                attribute.endEditing();
+            });
+        }
+        return (T)this;
+    }
 
 }

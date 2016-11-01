@@ -311,6 +311,8 @@ public class RestResource<L,V,T extends FactoryBase<L,V>> {
         List<WebGuiPossibleEntity> result = new ArrayList<>() ;
 
         T root = getCurrentEditingFactory().root;
+        root.prepareEditing();
+
         root.collectChildFactoriesMap().get(id).visitAttributesFlat((attributeVariableName, attribute) -> {
             if (attributeVariableName.equals(attributeName)){
 
@@ -322,13 +324,13 @@ public class RestResource<L,V,T extends FactoryBase<L,V>> {
 
                     @Override
                     public void reference(ReferenceAttribute<?> reference) {
-                        List<? extends Data> objects = reference.possibleValues(root);
+                        List<? extends Data> objects = reference.possibleValues();
                         objects.forEach(data -> result.add(new WebGuiPossibleEntity(data)));
                     }
 
                     @Override
                     public void referenceList(ReferenceListAttribute<?> referenceList) {
-                        List<? extends Data> objects = referenceList.possibleValues(root);
+                        List<? extends Data> objects = referenceList.possibleValues();
                         objects.forEach(data -> result.add(new WebGuiPossibleEntity(data)));
                     }
                 });
@@ -345,6 +347,8 @@ public class RestResource<L,V,T extends FactoryBase<L,V>> {
     public de.factoryfx.server.angularjs.model.WebGuiFactory addFactory(@QueryParam("id")String id, @QueryParam("attributeName")String attributeName){
 
         T root = getCurrentEditingFactory().root;
+        root.prepareEditing();
+
         Data factoryBase = root.collectChildFactoriesMap().get(id);
         factoryBase.visitAttributesFlat((attributeVariableName, attribute) -> {
             if (attributeVariableName.equals(attributeName)){
@@ -357,12 +361,12 @@ public class RestResource<L,V,T extends FactoryBase<L,V>> {
 
                     @Override
                     public void reference(ReferenceAttribute<?> reference) {
-                        reference.addNewFactory(root);
+                        reference.addNewFactory();
                     }
 
                     @Override
                     public void referenceList(ReferenceListAttribute<?> referenceList) {
-                        referenceList.addNewFactory(root);
+                        referenceList.addNewFactory();
                     }
                 });
 

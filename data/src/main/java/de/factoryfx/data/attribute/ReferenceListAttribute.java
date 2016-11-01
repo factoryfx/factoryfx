@@ -23,6 +23,9 @@ import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 
 public class ReferenceListAttribute<T extends Data> extends Attribute<ObservableList<T>> {
+    private Data root;
+    private Data parent;
+
     ObservableList<T> list = FXCollections.observableArrayList();
     private Class<T> clazz;
 
@@ -183,7 +186,7 @@ public class ReferenceListAttribute<T extends Data> extends Attribute<Observable
         return (A)this;
     }
 
-    public T addNewFactory(Data root){
+    public T addNewFactory(){
         T addedFactory=null;
         if (newValueProvider.isPresent()) {
             T newFactory = newValueProvider.get().get();
@@ -196,17 +199,22 @@ public class ReferenceListAttribute<T extends Data> extends Attribute<Observable
                 T newFactory = clazz.newInstance();
                 get().add(newFactory);
                 addedFactory = newFactory;
-            } catch (InstantiationException e) {
-                throw new RuntimeException(e);
-            } catch (IllegalAccessException e) {
+            } catch (InstantiationException | IllegalAccessException e) {
                 throw new RuntimeException(e);
             }
         }
+
+        for (Data data: get()){
+            data.visitAttributesFlat(attribute -> {
+                attribute.prepareEditing(root,data);
+            });
+        }
+
         return addedFactory;
     }
 
     @SuppressWarnings("unchecked")
-    public List<T> possibleValues(Data root){
+    public List<T> possibleValues(){
         ArrayList<T> result = new ArrayList<>();
         possibleValueProviderFromRoot.ifPresent(factoryBaseListFunction -> {
             List<T> factories = factoryBaseListFunction.apply(root);
@@ -220,6 +228,13 @@ public class ReferenceListAttribute<T extends Data> extends Attribute<Observable
             }
         }
         return result;
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public void prepareEditing(Data root, Data parent){
+        this.parent=parent;
+        this.root=root;;
     }
 
 }

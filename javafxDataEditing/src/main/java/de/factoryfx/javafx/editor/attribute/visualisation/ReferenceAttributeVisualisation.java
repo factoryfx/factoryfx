@@ -22,10 +22,10 @@ public class ReferenceAttributeVisualisation implements AttributeEditorVisualisa
 
     private final UniformDesign uniformDesign;
     private final DataEditor dataEditor;
-    private final Runnable emptyAdder;
+    private final Supplier<Data> emptyAdder;
     private final Supplier<List<Data>> possibleValuesProvider;
 
-    public ReferenceAttributeVisualisation(UniformDesign uniformDesign, DataEditor dataEditor, Runnable emptyAdder, Supplier<List<Data>> possibleValuesProvider) {
+    public ReferenceAttributeVisualisation(UniformDesign uniformDesign, DataEditor dataEditor, Supplier<Data> emptyAdder, Supplier<List<Data>> possibleValuesProvider) {
         this.uniformDesign = uniformDesign;
         this.dataEditor = dataEditor;
         this.emptyAdder = emptyAdder;
@@ -49,8 +49,7 @@ public class ReferenceAttributeVisualisation implements AttributeEditorVisualisa
         Button newButton = new Button();
         uniformDesign.addIcon(newButton,FontAwesome.Glyph.PLUS);
         newButton.setOnAction(event -> {
-            emptyAdder.run();
-            dataEditor.edit(boundTo.get());
+            dataEditor.edit(emptyAdder.get());
         });
 
         Button deleteButton = new Button();

@@ -20,9 +20,10 @@ public class DataViewWidgetTest extends Application {
 
         ExampleData1 exampleData1 = new ExampleData1();
         exampleData1.stringAttribute.set("abc");
+        exampleData1.prepareEditing();
 
         UniformDesign uniformDesign = new UniformDesignFactory<>().instance();
-        DataEditor dataEditor = new DataEditor(new AttributeEditorFactory(uniformDesign, exampleData1), uniformDesign);
+        DataEditor dataEditor = new DataEditor(new AttributeEditorFactory(uniformDesign), uniformDesign);
         dataEditor.edit(exampleData1);
 
         ObservableList<Data> dataList = FXCollections.observableArrayList();
