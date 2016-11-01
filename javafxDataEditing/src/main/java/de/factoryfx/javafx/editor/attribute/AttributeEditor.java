@@ -34,9 +34,6 @@ public class AttributeEditor<T> implements Widget {
                 boundAttribute.set(newValue1);
             }
         });
-
-        boundAttribute.addListener(attributeChangeListener);
-        attributeChangeListener.changed(boundAttribute,boundAttribute.get());
     }
 
     boolean setLoop=false;
@@ -61,6 +58,8 @@ public class AttributeEditor<T> implements Widget {
     Node content;
     @Override
     public Node createContent() {
+        boundAttribute.addListener(attributeChangeListener);
+        attributeChangeListener.changed(boundAttribute,boundAttribute.get());
         if (content==null){
             content = addValidationDecoration(attributeEditorVisualisation.createContent(bound));
         }
