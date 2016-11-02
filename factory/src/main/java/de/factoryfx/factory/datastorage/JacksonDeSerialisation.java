@@ -13,7 +13,7 @@ public class JacksonDeSerialisation<T extends FactoryBase<?,?>> implements Facto
     }
 
     @Override
-    public boolean canRead(String data, int dataModelVersion) {
+    public boolean canRead(int dataModelVersion) {
         return this.dataModelVersion==dataModelVersion;
     }
 
