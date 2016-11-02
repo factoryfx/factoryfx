@@ -238,10 +238,10 @@ public class ReferenceListAttribute<T extends Data> extends Attribute<Observable
         this.root=root;;
     }
 
-    private boolean userEditable;
+    private boolean userEditable=true;
     @SuppressWarnings("unchecked")
-    public <A extends ReferenceListAttribute<T>> A userEditable(boolean editable){
-        userEditable=editable;
+    public <A extends ReferenceListAttribute<T>> A userReadOnly(){
+        userEditable=false;
         return (A)this;
     }
 

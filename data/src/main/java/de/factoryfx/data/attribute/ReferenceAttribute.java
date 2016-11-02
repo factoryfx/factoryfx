@@ -189,10 +189,10 @@ public class ReferenceAttribute<T extends Data> extends Attribute<T> {
         this.parent=parent;
     }
 
-    private boolean userEditable;
+    private boolean userEditable=true;
     @SuppressWarnings("unchecked")
-    public <A extends ReferenceAttribute<T>> A userEditable(boolean editable){
-        userEditable=editable;
+    public <A extends ReferenceAttribute<T>> A userReadOnly(){
+        userEditable=false;
         return (A)this;
     }
 
