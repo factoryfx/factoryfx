@@ -42,7 +42,7 @@ public class ExampleData1 extends Data {
     public final ColorAttribute colorAttribute=new ColorAttribute(new AttributeMetadata().en("colorAttribute").de("colorAttribute de"));
     public final LocaleAttribute localeAttribute =new LocaleAttribute(new AttributeMetadata().en("colorAttribute").de("colorAttribute de"));
 
-    public final ReferenceAttribute<ExampleData2> referenceAttributereadonly = new ReferenceAttribute<>(ExampleData2.class,new AttributeMetadata().en("referenceAttributereadonly").de("referenceAttributereadonly de")).userEditable(false).defaultValue(new ExampleData2());
+    public final ReferenceAttribute<ExampleData2> referenceAttributereadonly = new ReferenceAttribute<>(ExampleData2.class,new AttributeMetadata().en("referenceAttributereadonly").de("referenceAttributereadonly de")).userReadOnly().defaultValue(new ExampleData2());
 
     public ExampleData1() {
         TableAttribute.Table value = new TableAttribute.Table();
