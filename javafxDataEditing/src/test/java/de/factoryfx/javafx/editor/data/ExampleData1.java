@@ -1,16 +1,36 @@
 package de.factoryfx.javafx.editor.data;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 import java.util.regex.Pattern;
 
 import de.factoryfx.data.Data;
+import de.factoryfx.data.attribute.Attribute;
 import de.factoryfx.data.attribute.AttributeMetadata;
 import de.factoryfx.data.attribute.ReferenceAttribute;
 import de.factoryfx.data.attribute.ReferenceListAttribute;
 import de.factoryfx.data.attribute.ValueListAttribute;
-import de.factoryfx.data.attribute.types.*;
+import de.factoryfx.data.attribute.types.BigDecimalAttribute;
+import de.factoryfx.data.attribute.types.BooleanAttribute;
+import de.factoryfx.data.attribute.types.ByteArrayAttribute;
+import de.factoryfx.data.attribute.types.ColorAttribute;
+import de.factoryfx.data.attribute.types.DoubleAttribute;
+import de.factoryfx.data.attribute.types.EnumAttribute;
+import de.factoryfx.data.attribute.types.I18nAttribute;
+import de.factoryfx.data.attribute.types.IntegerAttribute;
+import de.factoryfx.data.attribute.types.LocalDateAttribute;
+import de.factoryfx.data.attribute.types.LocaleAttribute;
+import de.factoryfx.data.attribute.types.LongAttribute;
+import de.factoryfx.data.attribute.types.StringAttribute;
+import de.factoryfx.data.attribute.types.StringListAttribute;
+import de.factoryfx.data.attribute.types.StringMapAttribute;
+import de.factoryfx.data.attribute.types.TableAttribute;
+import de.factoryfx.data.attribute.types.URIAttribute;
+import de.factoryfx.data.attribute.types.URIListAttribute;
 import de.factoryfx.data.validation.RegexValidation;
 import de.factoryfx.data.validation.StringRequired;
+import javafx.util.Pair;
 
 public class ExampleData1 extends Data {
 
@@ -44,6 +64,9 @@ public class ExampleData1 extends Data {
 
     public final ReferenceAttribute<ExampleData2> referenceAttributereadonly = new ReferenceAttribute<>(ExampleData2.class,new AttributeMetadata().en("referenceAttributereadonly").de("referenceAttributereadonly de")).userReadOnly().defaultValue(new ExampleData2());
 
+
+    public final StringAttribute specialAttribute=new StringAttribute(new AttributeMetadata().en("specialAttribute").de("specialAttribute de")).longText();
+
     public ExampleData1() {
         TableAttribute.Table value = new TableAttribute.Table();
         value.setColumnHeaders("Col1","Col2");
@@ -60,4 +83,15 @@ public class ExampleData1 extends Data {
     public void setId(Object object) {
         id=(String)object;
     }
+
+    @Override
+    public List<Pair<String,List<Attribute<?>>>> attributeListGrouped(){
+        List<Pair<String,List<Attribute<?>>>> groups = new ArrayList<>(super.attributeListGrouped());
+        groups.get(0).getValue().remove(specialAttribute);
+        ArrayList<Attribute<?>> group = new ArrayList<>();
+        group.add(specialAttribute);
+        groups.add(new Pair<>("Specialxyz",group));
+        return groups;
+    }
+
 }

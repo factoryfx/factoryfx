@@ -32,7 +32,7 @@ public class DataViewWidgetTest extends Application {
         dataList.addAll(new ExampleData1());
         dataList.addAll(new ExampleData1());
 
-        DataViewWidget dataViewWidget = new DataViewWidget(new DataView(dataList),dataEditor);
+        DataViewWidget dataViewWidget = new DataViewWidget(new DataView(dataList),dataEditor,uniformDesign);
 
         BorderPane root = new BorderPane();
         root.getStylesheets().add(getClass().getResource("/de/factoryfx/javafx/css/app.css").toExternalForm());

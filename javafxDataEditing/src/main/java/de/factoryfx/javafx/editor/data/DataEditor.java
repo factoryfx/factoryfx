@@ -25,13 +25,17 @@ import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.OverrunStyle;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.control.Tab;
+import javafx.scene.control.TabPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.RowConstraints;
+import javafx.util.Pair;
 import org.controlsfx.control.BreadCrumbBar;
 import org.controlsfx.glyphfont.FontAwesome;
 
@@ -98,20 +102,9 @@ public class DataEditor implements Widget {
 
     @Override
     public Node createContent() {
+        BorderPane result = new BorderPane();
 
-
-        GridPane grid = new GridPane();
-        grid.setHgap(3);
-        grid.setVgap(3);
-        grid.setPadding(new Insets(3, 3, 3, 3));
-
-        ColumnConstraints column1 = new ColumnConstraints();
-        column1.setHgrow(Priority.SOMETIMES);
-        column1.setMinWidth(100);
-        column1.setPrefWidth(200);
-        ColumnConstraints column2 = new ColumnConstraints();
-        column2.setHgrow(Priority.ALWAYS);
-        grid.getColumnConstraints().addAll(column1, column2);
+        GridPane grid = createGrid();
 
         ChangeListener<Data> dataChangeListener = (observable, oldValue, newValue) -> {
             grid.getChildren().clear();
@@ -119,27 +112,36 @@ public class DataEditor implements Widget {
             createdEditors.clear();
 
             if (newValue!=null){
-                int row = 0;
-                for (Attribute<?> attribute: newValue.attributeList()) {
-                    addLabelContent(grid, row,uniformDesign.getLabelText(attribute));
 
-                    Optional<AttributeEditor<?>> attributeEditor = attributeEditorFactory.getAttributeEditor(attribute,this);
-                    int rowFinal=row;
-                    if (attributeEditor.isPresent()){
-                        createdEditors.add(attributeEditor.get());
-                        addEditorContent(grid, rowFinal, attributeEditor.get().createContent());
-                    } else {
-                        addEditorContent(grid, rowFinal, new Label("unsupported attribute:"+attribute.getAttributeType().dataType+", "+attribute.getAttributeType().listItemType));
+                if (newValue.attributeListGrouped().size()==1){
+                    for (Pair<String,List<Attribute<?>>> attributeGroup: newValue.attributeListGrouped()) {
+                        fillGrid(grid, attributeGroup.getValue());
                     }
+                    result.setCenter(grid);
 
+                } else {
+                    TabPane tabPane = new TabPane();
+                    for (Pair<String,List<Attribute<?>>> attributeGroup: newValue.attributeListGrouped()) {
+                        Tab tab=new Tab(attributeGroup.getKey());
+                        if (attributeGroup.getValue().size()>1){
+                            GridPane tabgrid = createGrid();
+                            tab.setContent(tabgrid);
+                            fillGrid(tabgrid, attributeGroup.getValue());
+                        } else {
+                            Optional<AttributeEditor<?>> attributeEditor = attributeEditorFactory.getAttributeEditor(attributeGroup.getValue().get(0),this);
+                            if (attributeEditor.isPresent()){
+                                createdEditors.add(attributeEditor.get());
+                                tab.setContent(new BorderPane());
+                            }
+                        }
+                        tabPane.getTabs().add(tab);
+                    }
+                    result.setCenter(tabPane);
 
-
-                    RowConstraints rowConstraints = new RowConstraints();
-                    rowConstraints.setVgrow(Priority.ALWAYS);
-                    grid.getRowConstraints().add(rowConstraints);
-
-                    row++;
                 }
+
+
+
             }
 
         };
@@ -157,8 +159,45 @@ public class DataEditor implements Widget {
         rootPane.setCenter(scrollPane);
 
 
+        return result;
+    }
 
-        return rootPane;
+    private GridPane createGrid() {
+        GridPane grid = new GridPane();
+        grid.setHgap(3);
+        grid.setVgap(3);
+        grid.setPadding(new Insets(3, 3, 3, 3));
+
+        ColumnConstraints column1 = new ColumnConstraints();
+        column1.setHgrow(Priority.SOMETIMES);
+        column1.setMinWidth(100);
+        column1.setPrefWidth(200);
+        ColumnConstraints column2 = new ColumnConstraints();
+        column2.setHgrow(Priority.ALWAYS);
+        grid.getColumnConstraints().addAll(column1, column2);
+        return grid;
+    }
+
+    private void fillGrid(GridPane grid, List<Attribute<?>> attributeGroup) {
+        int row = 0;
+        for (Attribute<?> attribute: attributeGroup){
+            addLabelContent(grid, row,uniformDesign.getLabelText(attribute));
+
+            Optional<AttributeEditor<?>> attributeEditor = attributeEditorFactory.getAttributeEditor(attribute,this);
+            int rowFinal=row;
+            if (attributeEditor.isPresent()){
+                createdEditors.add(attributeEditor.get());
+                addEditorContent(grid, rowFinal, attributeEditor.get().createContent());
+            } else {
+                addEditorContent(grid, rowFinal, new Label("unsupported attribute:"+attribute.getAttributeType().dataType+", "+attribute.getAttributeType().listItemType));
+            }
+
+            RowConstraints rowConstraints = new RowConstraints();
+            rowConstraints.setVgrow(Priority.ALWAYS);
+            grid.getRowConstraints().add(rowConstraints);
+
+            row++;
+        }
     }
 
     private void addLabelContent(GridPane gridPane, int row,String text) {
@@ -172,6 +211,7 @@ public class DataEditor implements Widget {
 //            label.setGraphic(icon.get());
 //        }
         label.setWrapText(true);
+        label.setTextOverrun(OverrunStyle.CLIP);
         GridPane.setMargin(label, new Insets(0, 9, 0, 0));
         gridPane.add(label, 0, row);
     }

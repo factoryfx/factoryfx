@@ -172,7 +172,7 @@ public class AttributeEditorFactory {
         if (String.class==attribute.getAttributeType().dataType){
             StringAttribute stringAttribute = (StringAttribute) attribute;
             if (stringAttribute.isLongText()){
-                return Optional.of(new AttributeEditor<>(stringAttribute,new StringLongAttributeVisualisation()));
+                return Optional.of(new AttributeEditor<>(stringAttribute,new StringLongAttributeVisualisation(uniformDesign)));
             }
         }
 

@@ -3,6 +3,7 @@ package de.factoryfx.data;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -27,6 +28,7 @@ import de.factoryfx.data.merge.attribute.AttributeMergeHelper;
 import de.factoryfx.data.validation.ValidationError;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.util.Pair;
 
 public abstract class Data {
 
@@ -184,6 +186,15 @@ public abstract class Data {
             result.add(attribute);
         });
         return result;
+    }
+
+    //template method to support different tabs in datateditor
+    public List<Pair<String,List<Attribute<?>>>> attributeListGrouped(){
+        ArrayList<Attribute<?>> result = new ArrayList<>();
+        this.visitAttributesFlat((attributeVariableName, attribute) -> {
+            result.add(attribute);
+        });
+        return Arrays.asList(new Pair<>("Data",result));
     }
 
     public Map<Object,Data> collectChildFactoriesMap() {

@@ -2,7 +2,9 @@ package de.factoryfx.javafx.widget.dataview;
 
 import de.factoryfx.data.Data;
 import de.factoryfx.javafx.editor.data.DataEditor;
+import de.factoryfx.javafx.util.UniformDesign;
 import de.factoryfx.javafx.widget.CloseAwareWidget;
+import de.factoryfx.javafx.widget.table.TableControlWidget;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.geometry.Orientation;
 import javafx.scene.Node;
@@ -15,10 +17,12 @@ public class DataViewWidget implements CloseAwareWidget {
     private final DataView dataView;
     private final DataEditor dataEditor;
     private double dividerPosition = 0.333;
+    private final UniformDesign uniformDesign;
 
-    public DataViewWidget(DataView dataView, DataEditor dataEditor) {
+    public DataViewWidget(DataView dataView, DataEditor dataEditor, UniformDesign uniformDesign) {
         this.dataView = dataView;
         this.dataEditor = dataEditor;
+        this.uniformDesign = uniformDesign;
     }
 
     @Override
@@ -53,6 +57,11 @@ public class DataViewWidget implements CloseAwareWidget {
             dataEditor.edit(newValue);
             dataEditor.resetHistory();
         });
+
+
+        TableControlWidget tableControlWidget= new TableControlWidget<>(tableView, uniformDesign);
+        borderPaneWrapper.setBottom(tableControlWidget.createContent());
+
 
         return splitPane;
     }
