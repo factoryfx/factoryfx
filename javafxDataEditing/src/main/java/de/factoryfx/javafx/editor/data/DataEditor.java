@@ -142,7 +142,7 @@ public class DataEditor implements Widget {
                             Optional<AttributeEditor<?>> attributeEditor = attributeEditorFactory.getAttributeEditor(attributeGroup.getValue().get(0),this);
                             if (attributeEditor.isPresent()){
                                 createdEditors.add(attributeEditor.get());
-                                tab.setContent(new BorderPane());
+                                tab.setContent(attributeEditor.get().createContent());
                             }
                         }
                         tabPane.getTabs().add(tab);
