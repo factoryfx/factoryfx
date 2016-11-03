@@ -74,7 +74,7 @@ public class PostgresFactoryStorageTest {
 
     private FactorySerialisationManager<ExampleFactoryA> createSerialisation(){
         int dataModelVersion = 1;
-        return new FactorySerialisationManager<>(dataModelVersion,new JacksonSerialisation<>(),new JacksonDeSerialisation<>(ExampleFactoryA.class, dataModelVersion), Collections.emptyList());
+        return new FactorySerialisationManager<>(new JacksonSerialisation<>(dataModelVersion),new JacksonDeSerialisation<>(ExampleFactoryA.class, dataModelVersion), Collections.emptyList());
     }
 
     @Test

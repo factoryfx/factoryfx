@@ -9,6 +9,7 @@ import de.factoryfx.javafx.editor.data.DataEditor;
 import de.factoryfx.javafx.util.DataChoiceDialog;
 import de.factoryfx.javafx.util.UniformDesign;
 import javafx.beans.InvalidationListener;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
@@ -24,12 +25,14 @@ public class ReferenceAttributeVisualisation implements AttributeEditorVisualisa
     private final DataEditor dataEditor;
     private final Supplier<Data> emptyAdder;
     private final Supplier<List<Data>> possibleValuesProvider;
+    private final boolean isUserEditable;
 
-    public ReferenceAttributeVisualisation(UniformDesign uniformDesign, DataEditor dataEditor, Supplier<Data> emptyAdder, Supplier<List<Data>> possibleValuesProvider) {
+    public ReferenceAttributeVisualisation(UniformDesign uniformDesign, DataEditor dataEditor, Supplier<Data> emptyAdder, Supplier<List<Data>> possibleValuesProvider, boolean isUserEditable) {
         this.uniformDesign = uniformDesign;
         this.dataEditor = dataEditor;
         this.emptyAdder = emptyAdder;
         this.possibleValuesProvider = possibleValuesProvider;
+        this.isUserEditable = isUserEditable;
     }
 
     @Override
@@ -44,18 +47,19 @@ public class ReferenceAttributeVisualisation implements AttributeEditorVisualisa
         selectButton.setOnAction(event -> {
             boundTo.set(new DataChoiceDialog().show(possibleValuesProvider.get()));
         });
-
+        selectButton.setDisable(!isUserEditable);
 
         Button newButton = new Button();
         uniformDesign.addIcon(newButton,FontAwesome.Glyph.PLUS);
         newButton.setOnAction(event -> {
             dataEditor.edit(emptyAdder.get());
         });
+        newButton.setDisable(!isUserEditable);
 
         Button deleteButton = new Button();
         uniformDesign.addDangerIcon(deleteButton,FontAwesome.Glyph.TIMES);
         deleteButton.setOnAction(event -> boundTo.set(null));
-        deleteButton.disableProperty().bind(boundTo.isNull());
+        deleteButton.disableProperty().bind(boundTo.isNull().or(new SimpleBooleanProperty(!isUserEditable)));
 
         TextField textField = new TextField();
         InvalidationListener invalidationListener = observable -> {

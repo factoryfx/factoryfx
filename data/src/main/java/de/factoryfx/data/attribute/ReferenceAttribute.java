@@ -12,6 +12,7 @@ import com.fasterxml.jackson.annotation.JsonValue;
 import de.factoryfx.data.Data;
 import de.factoryfx.data.merge.attribute.AttributeMergeHelper;
 import de.factoryfx.data.merge.attribute.ReferenceMergeHelper;
+import jdk.nashorn.internal.ir.annotations.Ignore;
 
 public class ReferenceAttribute<T extends Data> extends Attribute<T> {
 
@@ -187,5 +188,18 @@ public class ReferenceAttribute<T extends Data> extends Attribute<T> {
         this.root=root;
         this.parent=parent;
     }
+
+    private boolean userEditable=true;
+    @SuppressWarnings("unchecked")
+    public <A extends ReferenceAttribute<T>> A userReadOnly(){
+        userEditable=false;
+        return (A)this;
+    }
+
+    @Ignore
+    public boolean isUserEditable(){
+        return userEditable;
+    }
+
 
 }

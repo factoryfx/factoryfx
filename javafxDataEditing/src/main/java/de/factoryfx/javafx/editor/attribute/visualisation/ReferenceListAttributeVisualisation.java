@@ -11,6 +11,7 @@ import de.factoryfx.javafx.util.DataChoiceDialog;
 import de.factoryfx.javafx.util.UniformDesign;
 import de.factoryfx.javafx.widget.table.TableControlWidget;
 import javafx.beans.InvalidationListener;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
@@ -33,12 +34,14 @@ public class ReferenceListAttributeVisualisation implements AttributeEditorVisua
     private final DataEditor dataEditor;
     private final Runnable emptyAdder;
     private final Supplier<List<Data>> possibleValuesProvider;
+    private final boolean isUserEditable;
 
-    public ReferenceListAttributeVisualisation(UniformDesign uniformDesign, DataEditor dataEditor, Runnable emptyAdder, Supplier<List<Data>> possibleValuesProvider) {
+    public ReferenceListAttributeVisualisation(UniformDesign uniformDesign, DataEditor dataEditor, Runnable emptyAdder, Supplier<List<Data>> possibleValuesProvider, boolean isUserEditable) {
         this.uniformDesign = uniformDesign;
         this.dataEditor = dataEditor;
         this.emptyAdder = emptyAdder;
         this.possibleValuesProvider = possibleValuesProvider;
+        this.isUserEditable = isUserEditable;
     }
 
     @Override
@@ -94,6 +97,7 @@ public class ReferenceListAttributeVisualisation implements AttributeEditorVisua
                 boundTo.get().add(toAdd);
             }
         });
+        selectButton.setDisable(!isUserEditable);
 
         Button adderButton = new Button();
         uniformDesign.addIcon(adderButton,FontAwesome.Glyph.PLUS);
@@ -101,11 +105,12 @@ public class ReferenceListAttributeVisualisation implements AttributeEditorVisua
             emptyAdder.run();
             dataEditor.edit(boundTo.get().get(boundTo.get().size()-1));
         });
+        adderButton.setDisable(!isUserEditable);
 
         Button deleteButton = new Button();
         uniformDesign.addDangerIcon(deleteButton,FontAwesome.Glyph.TIMES);
         deleteButton.setOnAction(event -> boundTo.get().remove(tableView.getSelectionModel().getSelectedItem()));
-        deleteButton.disableProperty().bind(tableView.getSelectionModel().selectedItemProperty().isNull());
+        deleteButton.disableProperty().bind(tableView.getSelectionModel().selectedItemProperty().isNull().or(new SimpleBooleanProperty(!isUserEditable)));
 
         Button moveUpButton = new Button();
         uniformDesign.addIcon(moveUpButton,FontAwesome.Glyph.ANGLE_UP);

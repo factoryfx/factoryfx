@@ -5,6 +5,12 @@ import de.factoryfx.factory.FactoryBase;
 
 public class JacksonSerialisation<T extends FactoryBase<?,?>> implements FactorySerialisation<T>{
 
+    private final int dataModelVersion;
+
+    public JacksonSerialisation(int dataModelVersion) {
+        this.dataModelVersion = dataModelVersion;
+    }
+
     @Override
     public String write(T root) {
         return ObjectMapperBuilder.build().writeValueAsString(root);
@@ -12,6 +18,7 @@ public class JacksonSerialisation<T extends FactoryBase<?,?>> implements Factory
 
     @Override
     public String writeStorageMetadata(StoredFactoryMetadata metadata) {
+        metadata.dataModelVersion=dataModelVersion;
         return ObjectMapperBuilder.build().writeValueAsString(metadata);
     }
 }
