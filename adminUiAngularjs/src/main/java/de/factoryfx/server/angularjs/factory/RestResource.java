@@ -311,7 +311,7 @@ public class RestResource<L,V,T extends FactoryBase<L,V>> {
         List<WebGuiPossibleEntity> result = new ArrayList<>() ;
 
         T root = getCurrentEditingFactory().root;
-        root.prepareEditing();
+        root.prepareRootEditing();
 
         root.collectChildFactoriesMap().get(id).visitAttributesFlat((attributeVariableName, attribute) -> {
             if (attributeVariableName.equals(attributeName)){
@@ -347,7 +347,7 @@ public class RestResource<L,V,T extends FactoryBase<L,V>> {
     public de.factoryfx.server.angularjs.model.WebGuiFactory addFactory(@QueryParam("id")String id, @QueryParam("attributeName")String attributeName){
 
         T root = getCurrentEditingFactory().root;
-        root.prepareEditing();
+        root.prepareRootEditing();
 
         Data factoryBase = root.collectChildFactoriesMap().get(id);
         factoryBase.visitAttributesFlat((attributeVariableName, attribute) -> {
