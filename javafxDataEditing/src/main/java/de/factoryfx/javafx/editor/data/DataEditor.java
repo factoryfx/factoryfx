@@ -100,24 +100,35 @@ public class DataEditor implements Widget {
     List<AttributeEditor<?>> createdEditors=new ArrayList<>();
     BooleanBinding scrollerVisible;
 
+    private Node wrapGrid(GridPane gridPane){
+        ScrollPane scrollPane = new ScrollPane(gridPane);
+        scrollPane.setFitToWidth(true);
+//        root.setFitToHeight(scrollPaneFitToHeight);
+        scrollPane.setStyle("-fx-background-color:transparent;");//hide border
+//        root.disableProperty().edit(disabledProperty());
+        return scrollPane;
+    }
+
+
     @Override
     public Node createContent() {
         BorderPane result = new BorderPane();
 
-        GridPane grid = createGrid();
+
 
         ChangeListener<Data> dataChangeListener = (observable, oldValue, newValue) -> {
-            grid.getChildren().clear();
+
             createdEditors.stream().forEach(AttributeEditor::unbind);
             createdEditors.clear();
 
             if (newValue!=null){
 
                 if (newValue.attributeListGrouped().size()==1){
+                    GridPane grid = createGrid();
                     for (Pair<String,List<Attribute<?>>> attributeGroup: newValue.attributeListGrouped()) {
                         fillGrid(grid, attributeGroup.getValue());
                     }
-                    result.setCenter(grid);
+                    result.setCenter(wrapGrid(grid));
 
                 } else {
                     TabPane tabPane = new TabPane();
@@ -125,7 +136,7 @@ public class DataEditor implements Widget {
                         Tab tab=new Tab(attributeGroup.getKey());
                         if (attributeGroup.getValue().size()>1){
                             GridPane tabgrid = createGrid();
-                            tab.setContent(tabgrid);
+                            tab.setContent(wrapGrid(tabgrid));
                             fillGrid(tabgrid, attributeGroup.getValue());
                         } else {
                             Optional<AttributeEditor<?>> attributeEditor = attributeEditorFactory.getAttributeEditor(attributeGroup.getValue().get(0),this);
@@ -148,17 +159,8 @@ public class DataEditor implements Widget {
         bound.addListener(dataChangeListener);
         dataChangeListener.changed(bound,bound.get(),bound.get());
 
-        ScrollPane scrollPane = new ScrollPane(grid);
-        scrollPane.setFitToWidth(true);
-//        root.setFitToHeight(scrollPaneFitToHeight);
-        scrollPane.setStyle("-fx-background-color:transparent;");//hide border
-//        root.disableProperty().edit(disabledProperty());
 
-        BorderPane rootPane = new BorderPane();
-        rootPane.setTop(createNavigation());
-        rootPane.setCenter(scrollPane);
-
-
+        result.setTop(createNavigation());
         return result;
     }
 
