@@ -44,7 +44,7 @@ public class ViewListReferenceAttributeTest {
             root.list.add(value);
         }
 
-        root.prepareEditing();
+        root.prepareRootEditing();
 
         Assert.assertEquals(1,viewExampleFactory.view.get().size());
         Assert.assertEquals("1",viewExampleFactory.view.get().get(0).stringAttribute.get());
@@ -69,7 +69,7 @@ public class ViewListReferenceAttributeTest {
             root.list.add(value);
         }
 
-        root.prepareEditing();
+        root.prepareRootEditing();
 
         Assert.assertEquals(0,viewExampleFactory.view.get().size());
     }
@@ -93,7 +93,7 @@ public class ViewListReferenceAttributeTest {
             root.list.add(value);
         }
 
-        root.prepareEditing();
+        root.prepareRootEditing();
 
         Assert.assertEquals(2,viewExampleFactory.view.get().size());
     }
@@ -118,7 +118,7 @@ public class ViewListReferenceAttributeTest {
             root.list.add(value);
         }
 
-        root.prepareEditing();
+        root.prepareRootEditing();
 
         ArrayList<String> calls=new ArrayList<>();
         viewExampleFactory.view.addListener((attribute, value1) -> {
@@ -173,7 +173,7 @@ public class ViewListReferenceAttributeTest {
             root.list.add(value);
         }
 
-        root.prepareEditing();
+        root.prepareRootEditing();
 
         ArrayList<String> calls=new ArrayList<>();
         viewExampleFactory.view.addListener((attribute, value1) -> calls.add("1"));

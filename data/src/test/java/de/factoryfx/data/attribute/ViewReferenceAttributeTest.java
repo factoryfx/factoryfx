@@ -42,7 +42,7 @@ public class ViewReferenceAttributeTest {
         ExampleFactoryA value = new ExampleFactoryA();
         root.exampleFactoryA.set(value);
 
-        root.prepareEditing();
+        root.prepareRootEditing();
 
         Assert.assertEquals(value,viewExampleFactory.view.get());
     }
@@ -57,7 +57,7 @@ public class ViewReferenceAttributeTest {
         ExampleFactoryA value = new ExampleFactoryA();
         root.exampleFactoryA.set(value);
 
-        root.prepareEditing();
+        root.prepareRootEditing();
 
         Assert.assertEquals(null,viewExampleFactory.view.get());
     }
@@ -73,7 +73,7 @@ public class ViewReferenceAttributeTest {
         value.stringAttribute.set("123");
         root.exampleFactoryA.set(value);
 
-        root.prepareEditing();
+        root.prepareRootEditing();
 
         ArrayList<String> calls=new ArrayList<>();
         viewExampleFactory.view.addListener((attribute, value1) -> {
@@ -119,7 +119,7 @@ public class ViewReferenceAttributeTest {
         value.stringAttribute.set("123");
         root.exampleFactoryA.set(value);
 
-        root.prepareEditing();
+        root.prepareRootEditing();
 
         ArrayList<String> calls=new ArrayList<>();
         viewExampleFactory.view.addListener((attribute, value1) -> calls.add(value1.stringAttribute.get()));

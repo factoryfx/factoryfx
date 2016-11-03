@@ -388,20 +388,30 @@ public abstract class Data {
 
     //use this method only for root
     @SuppressWarnings("unchecked")
-    public <T extends Data> T  prepareEditing() {
+    public <T extends Data> T prepareRootEditing() {
+        return (T)prepareEditing(this);
+    }
+
+    public boolean readyForEditing(){
+        return isReadyForEditing;
+    }
+
+    public <T extends Data> T endRootEditing() {
         for (Data data: collectChildrenDeep()){
             data.visitAttributesFlat((attributeVariableName, attribute) -> {
-                attribute.prepareEditing(Data.this,data);
+                attribute.endEditing();
             });
         }
         return (T)this;
     }
 
-    public <T extends Data> T  endEditing() {
+    private boolean isReadyForEditing;
+    public <T extends Data> T prepareEditing(Data root){
         for (Data data: collectChildrenDeep()){
             data.visitAttributesFlat((attributeVariableName, attribute) -> {
-                attribute.endEditing();
+                attribute.prepareEditing(root,data);
             });
+            data.isReadyForEditing=true;
         }
         return (T)this;
     }

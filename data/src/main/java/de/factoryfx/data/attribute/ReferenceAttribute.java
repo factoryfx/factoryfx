@@ -159,9 +159,7 @@ public class ReferenceAttribute<T extends Data> extends Attribute<T> {
             }
 
         }
-        getOptional().ifPresent(newValue -> newValue.visitAttributesFlat((attribute) -> {
-            attribute.prepareEditing(root,newValue);
-        }));
+        getOptional().ifPresent(data->data.prepareEditing(root));
         return get();
     }
 
@@ -191,6 +189,7 @@ public class ReferenceAttribute<T extends Data> extends Attribute<T> {
 
     private boolean userEditable=true;
     @SuppressWarnings("unchecked")
+    /** marks the reference as readonly for the user(user can still anviagte but change the refernce)*/
     public <A extends ReferenceAttribute<T>> A userReadOnly(){
         userEditable=false;
         return (A)this;

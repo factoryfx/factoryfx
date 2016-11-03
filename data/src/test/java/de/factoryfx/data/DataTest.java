@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Locale;
 
 import de.factoryfx.data.attribute.AttributeMetadata;
+import de.factoryfx.data.attribute.ReferenceAttribute;
 import de.factoryfx.data.attribute.types.ObjectValueAttribute;
 import de.factoryfx.data.attribute.types.StringAttribute;
 import de.factoryfx.data.jackson.ObjectMapperBuilder;
@@ -137,5 +138,25 @@ public class DataTest {
         System.out.println(expected);
         System.out.println(actual);
         Assert.assertEquals(expected, actual);
+    }
+
+    public static class ExampleWithDefaultParent extends IdData {
+        public final ReferenceAttribute<ExampleWithDefault> referenceAttribute = new ReferenceAttribute<>(ExampleWithDefault.class,new AttributeMetadata().labelText("ExampleA2"));
+    }
+
+    public static class ExampleWithDefault extends IdData {
+        public final ReferenceAttribute<ExampleFactoryB> referenceAttribute = new ReferenceAttribute<>(ExampleFactoryB.class,new AttributeMetadata().labelText("ExampleA2")).defaultValue(new ExampleFactoryB());
+    }
+    @Test
+    public void test_editing_nested_add(){
+        ExampleWithDefaultParent exampleWithDefaultParent = new ExampleWithDefaultParent();
+        exampleWithDefaultParent.prepareRootEditing();
+        Assert.assertTrue(exampleWithDefaultParent.readyForEditing());
+
+        exampleWithDefaultParent.referenceAttribute.addNewFactory();
+
+        Assert.assertTrue(exampleWithDefaultParent.readyForEditing());
+        Assert.assertTrue(exampleWithDefaultParent.referenceAttribute.get().readyForEditing());
+        Assert.assertTrue(exampleWithDefaultParent.referenceAttribute.get().referenceAttribute.get().readyForEditing());
     }
 }

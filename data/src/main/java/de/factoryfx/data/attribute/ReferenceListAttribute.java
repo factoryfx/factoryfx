@@ -206,9 +206,7 @@ public class ReferenceListAttribute<T extends Data> extends Attribute<Observable
         }
 
         for (Data data: get()){
-            data.visitAttributesFlat(attribute -> {
-                attribute.prepareEditing(root,data);
-            });
+            data.prepareEditing(root);
         }
 
         return addedFactory;
@@ -240,6 +238,7 @@ public class ReferenceListAttribute<T extends Data> extends Attribute<Observable
 
     private boolean userEditable=true;
     @SuppressWarnings("unchecked")
+    /** marks the reference as readonly for the user(user can still anviagte but change the refernce)*/
     public <A extends ReferenceListAttribute<T>> A userReadOnly(){
         userEditable=false;
         return (A)this;
@@ -249,6 +248,5 @@ public class ReferenceListAttribute<T extends Data> extends Attribute<Observable
     public boolean isUserEditable(){
         return userEditable;
     }
-
 
 }
