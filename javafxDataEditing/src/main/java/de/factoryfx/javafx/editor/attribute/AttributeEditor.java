@@ -27,6 +27,7 @@ public class AttributeEditor<T> implements Widget {
     public AttributeEditor(Attribute<T> boundAttribute, AttributeEditorVisualisation<T> attributeEditorVisualisation) {
         this.boundAttribute=boundAttribute;
         this.attributeEditorVisualisation=attributeEditorVisualisation;
+        this.bound.set(boundAttribute.get());
 
         bound.addListener((observable, oldValue, newValue1) -> {
             if (!setLoop){
