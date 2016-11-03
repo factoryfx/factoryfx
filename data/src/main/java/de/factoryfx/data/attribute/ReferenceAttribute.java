@@ -8,11 +8,11 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonValue;
 import de.factoryfx.data.Data;
 import de.factoryfx.data.merge.attribute.AttributeMergeHelper;
 import de.factoryfx.data.merge.attribute.ReferenceMergeHelper;
-import jdk.nashorn.internal.ir.annotations.Ignore;
 
 public class ReferenceAttribute<T extends Data> extends Attribute<T> {
 
@@ -195,7 +195,7 @@ public class ReferenceAttribute<T extends Data> extends Attribute<T> {
         return (A)this;
     }
 
-    @Ignore
+    @JsonIgnore
     public boolean isUserEditable(){
         return userEditable;
     }

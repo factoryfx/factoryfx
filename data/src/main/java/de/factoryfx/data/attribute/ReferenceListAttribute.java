@@ -21,7 +21,6 @@ import de.factoryfx.data.merge.attribute.ReferenceListMergeHelper;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
-import jdk.nashorn.internal.ir.annotations.Ignore;
 
 public class ReferenceListAttribute<T extends Data> extends Attribute<ObservableList<T>> {
     private Data root;
@@ -244,7 +243,7 @@ public class ReferenceListAttribute<T extends Data> extends Attribute<Observable
         return (A)this;
     }
 
-    @Ignore
+    @JsonIgnore
     public boolean isUserEditable(){
         return userEditable;
     }
