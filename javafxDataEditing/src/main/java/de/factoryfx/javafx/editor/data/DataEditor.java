@@ -25,7 +25,6 @@ import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.control.OverrunStyle;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
@@ -35,6 +34,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.RowConstraints;
+import javafx.scene.layout.StackPane;
 import javafx.util.Pair;
 import org.controlsfx.control.BreadCrumbBar;
 import org.controlsfx.glyphfont.FontAwesome;
@@ -87,6 +87,11 @@ public class DataEditor implements Widget {
 
     }
 
+    public void reset(){
+        displayedEntities.clear();
+        bound.set(null);
+    }
+
     private void removeUpToCurrent(Data current) {
         if (current == null)
             return;
@@ -120,8 +125,9 @@ public class DataEditor implements Widget {
 
             createdEditors.stream().forEach(AttributeEditor::unbind);
             createdEditors.clear();
-
-            if (newValue!=null){
+            if (newValue==null) {
+                result.setCenter(new Label("empty"));
+            } else {
 
                 if (newValue.attributeListGrouped().size()==1){
                     GridPane grid = createGrid();
@@ -166,8 +172,8 @@ public class DataEditor implements Widget {
 
     private GridPane createGrid() {
         GridPane grid = new GridPane();
-        grid.setHgap(3);
-        grid.setVgap(3);
+//        grid.setHgap(3);
+//        grid.setVgap(3);
         grid.setPadding(new Insets(3, 3, 3, 3));
 
         ColumnConstraints column1 = new ColumnConstraints();
@@ -183,15 +189,15 @@ public class DataEditor implements Widget {
     private void fillGrid(GridPane grid, List<Attribute<?>> attributeGroup) {
         int row = 0;
         for (Attribute<?> attribute: attributeGroup){
-            addLabelContent(grid, row,uniformDesign.getLabelText(attribute));
+            Label label = addLabelContent(grid, row,uniformDesign.getLabelText(attribute));
 
             Optional<AttributeEditor<?>> attributeEditor = attributeEditorFactory.getAttributeEditor(attribute,this);
             int rowFinal=row;
             if (attributeEditor.isPresent()){
                 createdEditors.add(attributeEditor.get());
-                addEditorContent(grid, rowFinal, attributeEditor.get().createContent());
+                addEditorContent(grid, rowFinal, attributeEditor.get().createContent(),label);
             } else {
-                addEditorContent(grid, rowFinal, new Label("unsupported attribute:"+attribute.getAttributeType().dataType+", "+attribute.getAttributeType().listItemType));
+                addEditorContent(grid, rowFinal, new Label("unsupported attribute:"+attribute.getAttributeType().dataType+", "+attribute.getAttributeType().listItemType),label);
             }
 
             RowConstraints rowConstraints = new RowConstraints();
@@ -200,9 +206,15 @@ public class DataEditor implements Widget {
 
             row++;
         }
+
+         for (RowConstraints rowConstraint: grid.getRowConstraints()){
+            rowConstraint.setMinHeight(36);
+         }
+
+
     }
 
-    private void addLabelContent(GridPane gridPane, int row,String text) {
+    private Label addLabelContent(GridPane gridPane, int row,String text) {
         String mnemonicLabelText=text;
         if (mnemonicLabelText!=null){
             mnemonicLabelText="_"+mnemonicLabelText;
@@ -213,16 +225,35 @@ public class DataEditor implements Widget {
 //            label.setGraphic(icon.get());
 //        }
         label.setWrapText(true);
-        label.setTextOverrun(OverrunStyle.CLIP);
+//        label.setTextOverrun(OverrunStyle.CLIP);
         GridPane.setMargin(label, new Insets(0, 9, 0, 0));
-        gridPane.add(label, 0, row);
-    }
+        StackPane pane = new StackPane();
+        pane.setPadding(new Insets(3,3,3,0));
+        pane.setAlignment(Pos.CENTER_LEFT);
+        pane.getChildren().add(label);
+        gridPane.add(pane, 0, row);
 
-    private void addEditorContent(GridPane gridPane, int row, Node editorWidgetContent) {
+        if (row%2==0) {
+            pane.setStyle("-fx-background-color: " + highlightBackground + ";");
+        }
+        return label;
+    }
+    final String highlightBackground = "#FCFCFC";
+
+    private void addEditorContent(GridPane gridPane, int row, Node editorWidgetContent, Label label) {
         GridPane.setMargin(editorWidgetContent, new Insets(4, 0, 4, 0));
-        // TODO
-//        label.setLabelFor(editorWidgetContent);
-        gridPane.add(editorWidgetContent, 1, row);
+        label.setLabelFor(editorWidgetContent);
+
+
+        StackPane pane = new StackPane();
+        pane.setAlignment(Pos.CENTER_LEFT);
+        pane.getChildren().add(editorWidgetContent);
+        pane.setPadding(new Insets(3,0,3,0));
+        gridPane.add(pane, 1, row);
+
+        if (row%2==0) {
+            pane.setStyle("-fx-background-color: "+ highlightBackground + ";");
+        }
     }
 
 
