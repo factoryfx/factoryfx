@@ -2,7 +2,6 @@ package de.factoryfx.javafx.widget.table;
 
 import java.text.DecimalFormat;
 
-import de.factoryfx.data.Data;
 import de.factoryfx.data.util.TextSearchSupport;
 import de.factoryfx.javafx.util.UniformDesign;
 import de.factoryfx.javafx.widget.Widget;
@@ -237,7 +236,7 @@ public class TableControlWidget<T> implements Widget {
                     return true;
                 }
                 if (data instanceof TextSearchSupport){
-                    ((TextSearchSupport)data).test(newValue);
+                    ((TextSearchSupport)data).matchSearchText(newValue);
                 }
 
                 return true;

@@ -430,7 +430,7 @@ public abstract class Data implements TextSearchSupport {
     }
 
     @Override
-    public boolean test(String text) {
+    public boolean matchSearchText(String text) {
         return Strings.isNullOrEmpty(text) || Strings.nullToEmpty(getDisplayText()).toLowerCase().contains(text.toLowerCase());
     }
 }
