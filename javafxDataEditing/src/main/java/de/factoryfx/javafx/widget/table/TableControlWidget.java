@@ -236,7 +236,7 @@ public class TableControlWidget<T> implements Widget {
                     return true;
                 }
                 if (data instanceof TextSearchSupport){
-                    ((TextSearchSupport)data).matchSearchText(newValue);
+                    return ((TextSearchSupport)data).matchSearchText(newValue);
                 }
 
                 return true;
