@@ -87,6 +87,11 @@ public class DataEditor implements Widget {
 
     }
 
+    public void reset(){
+        displayedEntities.clear();
+        bound.set(null);
+    }
+
     private void removeUpToCurrent(Data current) {
         if (current == null)
             return;
@@ -120,8 +125,9 @@ public class DataEditor implements Widget {
 
             createdEditors.stream().forEach(AttributeEditor::unbind);
             createdEditors.clear();
-
-            if (newValue!=null){
+            if (newValue==null) {
+                result.setCenter(new Label("empty"));
+            } else {
 
                 if (newValue.attributeListGrouped().size()==1){
                     GridPane grid = createGrid();
