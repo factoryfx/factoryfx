@@ -36,7 +36,7 @@ public class ExampleData1 extends Data {
 
     public final TableAttribute tableAttribute = new TableAttribute(new AttributeMetadata().en("tableAttribute").de("tableAttribute de"));
 
-    public final StringAttribute stringAttribute=new StringAttribute(new AttributeMetadata().en("StringAttribute").de("StringAttribute de")).validation(new StringRequired());
+    public final StringAttribute stringAttribute=new StringAttribute(new AttributeMetadata().en("StringAttribute gajsd jgsdajh gjasdja jhsadgjg ghf hgf hgfhff hgfhgf hf").de("StringAttribute de")).validation(new StringRequired());
     public final StringAttribute stringLongAttribute=new StringAttribute(new AttributeMetadata().en("Long StringAttribute").de("Long StringAttribute de")).longText().validation(new StringRequired());
 
     public final StringAttribute regexValidationNumber=new StringAttribute(new AttributeMetadata().en("regexValidationNumber").de("regexValidationNumber de")).validation(new RegexValidation(Pattern.compile("[0-9]*")));
