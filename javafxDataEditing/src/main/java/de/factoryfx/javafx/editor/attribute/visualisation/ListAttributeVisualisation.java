@@ -7,6 +7,7 @@ import de.factoryfx.javafx.editor.attribute.AttributeEditorVisualisation;
 import de.factoryfx.javafx.util.TypedTextFieldHelper;
 import de.factoryfx.javafx.util.UniformDesign;
 import de.factoryfx.javafx.widget.table.TableControlWidget;
+import javafx.application.Platform;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ChangeListener;
@@ -86,8 +87,10 @@ public class ListAttributeVisualisation<T> implements AttributeEditorVisualisati
             detailAttribute.set(tableView.getSelectionModel().getSelectedItem());
         });
         AttributeChangeListener<T> detailAttributeChangeListener = (attribute1, value) -> {
-            addButton.setDisable(value == null);
-            replaceButton.setDisable(value == null || tableView.getSelectionModel().getSelectedItem()==null);
+            Platform.runLater(() -> {
+                addButton.setDisable(value == null);
+                replaceButton.setDisable(value == null || tableView.getSelectionModel().getSelectedItem()==null);
+            });
         };
         detailAttribute.addListener(detailAttributeChangeListener);
         detailAttributeChangeListener.changed(detailAttribute,detailAttribute.get());

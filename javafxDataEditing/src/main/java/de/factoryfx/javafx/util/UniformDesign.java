@@ -23,6 +23,7 @@ import javafx.scene.layout.BorderStrokeStyle;
 import javafx.scene.layout.BorderWidths;
 import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import org.controlsfx.glyphfont.FontAwesome;
@@ -107,6 +108,7 @@ public class UniformDesign {
     public <T> VBox createExpandableEditorWrapper(SimpleObjectProperty<T> boundTo, VBox detailView, FontAwesome.Glyph icon, Function<T,String> summaryTextProvider) {
         VBox root = new VBox();
 
+        VBox.setVgrow(detailView, Priority.ALWAYS);
         detailView.setBorder(new Border(new BorderStroke(Color.GREY, BorderStrokeStyle.SOLID, CornerRadii.EMPTY, new BorderWidths(2))));
         detailView.setPadding(new Insets(3));
         VBox.setMargin(detailView,new Insets(3,0,0,0));
