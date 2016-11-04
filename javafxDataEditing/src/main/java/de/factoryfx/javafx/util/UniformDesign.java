@@ -136,7 +136,7 @@ public class UniformDesign {
         };
         boundTo.addListener(listener);
         listener.invalidated(null);
-        summary.getChildren().addAll(iconLabel,label,expandButton);
+        summary.getChildren().addAll(expandButton,iconLabel,label);
         root.getChildren().addAll(summary);
         return root;
     }
