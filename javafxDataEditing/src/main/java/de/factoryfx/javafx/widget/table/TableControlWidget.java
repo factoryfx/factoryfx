@@ -3,6 +3,7 @@ package de.factoryfx.javafx.widget.table;
 import java.text.DecimalFormat;
 
 import de.factoryfx.data.Data;
+import de.factoryfx.data.util.TextSearchSupport;
 import de.factoryfx.javafx.util.UniformDesign;
 import de.factoryfx.javafx.widget.Widget;
 import javafx.animation.FadeTransition;
@@ -235,9 +236,8 @@ public class TableControlWidget<T> implements Widget {
                 if (newValue==null || newValue.isEmpty()) {
                     return true;
                 }
-                if (data instanceof Data){
-                    String displayText = ((Data) data).getDisplayText().toLowerCase();
-                    return displayText.contains(newValue.toLowerCase());
+                if (data instanceof TextSearchSupport){
+                    ((TextSearchSupport)data).test(newValue);
                 }
 
                 return true;
