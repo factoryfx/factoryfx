@@ -18,19 +18,19 @@ import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import de.factoryfx.data.attribute.Attribute;
-import de.factoryfx.data.attribute.ReferenceAttribute;
-import de.factoryfx.data.attribute.ReferenceListAttribute;
+import com.google.common.base.Strings;
+import de.factoryfx.data.attribute.*;
 import de.factoryfx.data.attribute.types.ObjectValueAttribute;
 import de.factoryfx.data.merge.MergeResult;
 import de.factoryfx.data.merge.MergeResultEntry;
 import de.factoryfx.data.merge.attribute.AttributeMergeHelper;
+import de.factoryfx.data.util.TextSearchSupport;
 import de.factoryfx.data.validation.ValidationError;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.util.Pair;
 
-public abstract class Data {
+public abstract class Data implements TextSearchSupport {
 
     public abstract Object getId();
 
@@ -380,17 +380,19 @@ public abstract class Data {
             result = (T)newInstance();
             result.setId(this.getId());
             this.visitAttributesDualFlat(result, (thisAttribute, copyAttribute) -> {
-                Object value = thisAttribute.get();
-                if (value instanceof Data){
-                    value=((Data)value).copyDeep(level+1,maxLevel,identityPreserver);
-                }
-                if (thisAttribute instanceof ReferenceListAttribute){
-                    final ObservableList<Data> referenceList = FXCollections.observableArrayList();
-                    ((ReferenceListAttribute)thisAttribute).get().forEach(factory -> referenceList.add(((Data)factory).copyDeep(level+1,maxLevel,identityPreserver)));
-                    value=referenceList;
-                }
+                if (!(thisAttribute instanceof ViewReferenceAttribute || thisAttribute instanceof ViewListReferenceAttribute)) {
+                    Object value = thisAttribute.get();
+                    if (value instanceof Data) {
+                        value = ((Data) value).copyDeep(level + 1, maxLevel, identityPreserver);
+                    }
+                    if (thisAttribute instanceof ReferenceListAttribute) {
+                        final ObservableList<Data> referenceList = FXCollections.observableArrayList();
+                        ((ReferenceListAttribute) thisAttribute).get().forEach(factory -> referenceList.add(((Data) factory).copyDeep(level + 1, maxLevel, identityPreserver)));
+                        value = referenceList;
+                    }
 
-                copyAttribute.copy(value);
+                    copyAttribute.copy(value);
+                }
             });
             identityPreserver.put(result.getId(),result);
         }
@@ -427,4 +429,8 @@ public abstract class Data {
         return (T)this;
     }
 
+    @Override
+    public boolean matchSearchText(String text) {
+        return Strings.isNullOrEmpty(text) || Strings.nullToEmpty(getDisplayText()).toLowerCase().contains(text.toLowerCase());
+    }
 }
