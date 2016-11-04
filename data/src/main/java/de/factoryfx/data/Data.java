@@ -19,9 +19,7 @@ import java.util.stream.Stream;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.common.base.Strings;
-import de.factoryfx.data.attribute.Attribute;
-import de.factoryfx.data.attribute.ReferenceAttribute;
-import de.factoryfx.data.attribute.ReferenceListAttribute;
+import de.factoryfx.data.attribute.*;
 import de.factoryfx.data.attribute.types.ObjectValueAttribute;
 import de.factoryfx.data.merge.MergeResult;
 import de.factoryfx.data.merge.MergeResultEntry;
@@ -382,17 +380,19 @@ public abstract class Data implements TextSearchSupport {
             result = (T)newInstance();
             result.setId(this.getId());
             this.visitAttributesDualFlat(result, (thisAttribute, copyAttribute) -> {
-                Object value = thisAttribute.get();
-                if (value instanceof Data){
-                    value=((Data)value).copyDeep(level+1,maxLevel,identityPreserver);
-                }
-                if (thisAttribute instanceof ReferenceListAttribute){
-                    final ObservableList<Data> referenceList = FXCollections.observableArrayList();
-                    ((ReferenceListAttribute)thisAttribute).get().forEach(factory -> referenceList.add(((Data)factory).copyDeep(level+1,maxLevel,identityPreserver)));
-                    value=referenceList;
-                }
+                if (!(thisAttribute instanceof ViewReferenceAttribute || thisAttribute instanceof ViewListReferenceAttribute)) {
+                    Object value = thisAttribute.get();
+                    if (value instanceof Data) {
+                        value = ((Data) value).copyDeep(level + 1, maxLevel, identityPreserver);
+                    }
+                    if (thisAttribute instanceof ReferenceListAttribute) {
+                        final ObservableList<Data> referenceList = FXCollections.observableArrayList();
+                        ((ReferenceListAttribute) thisAttribute).get().forEach(factory -> referenceList.add(((Data) factory).copyDeep(level + 1, maxLevel, identityPreserver)));
+                        value = referenceList;
+                    }
 
-                copyAttribute.copy(value);
+                    copyAttribute.copy(value);
+                }
             });
             identityPreserver.put(result.getId(),result);
         }
