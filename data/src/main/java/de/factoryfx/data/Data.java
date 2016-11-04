@@ -380,19 +380,17 @@ public abstract class Data implements TextSearchSupport {
             result = (T)newInstance();
             result.setId(this.getId());
             this.visitAttributesDualFlat(result, (thisAttribute, copyAttribute) -> {
-                if (!(thisAttribute instanceof ViewReferenceAttribute || thisAttribute instanceof ViewListReferenceAttribute)) {
-                    Object value = thisAttribute.get();
-                    if (value instanceof Data) {
-                        value = ((Data) value).copyDeep(level + 1, maxLevel, identityPreserver);
-                    }
-                    if (thisAttribute instanceof ReferenceListAttribute) {
-                        final ObservableList<Data> referenceList = FXCollections.observableArrayList();
-                        ((ReferenceListAttribute) thisAttribute).get().forEach(factory -> referenceList.add(((Data) factory).copyDeep(level + 1, maxLevel, identityPreserver)));
-                        value = referenceList;
-                    }
-
-                    copyAttribute.copy(value);
+                Object value = thisAttribute.get();
+                if (value instanceof Data) {
+                    value = ((Data) value).copyDeep(level + 1, maxLevel, identityPreserver);
                 }
+                if (thisAttribute instanceof ReferenceListAttribute) {
+                    final ObservableList<Data> referenceList = FXCollections.observableArrayList();
+                    ((ReferenceListAttribute) thisAttribute).get().forEach(factory -> referenceList.add(((Data) factory).copyDeep(level + 1, maxLevel, identityPreserver)));
+                    value = referenceList;
+                }
+
+                copyAttribute.copy(value);
             });
             identityPreserver.put(result.getId(),result);
         }

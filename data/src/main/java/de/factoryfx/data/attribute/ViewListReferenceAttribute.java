@@ -1,10 +1,6 @@
 package de.factoryfx.data.attribute;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
@@ -41,7 +37,7 @@ public class ViewListReferenceAttribute <R extends Data, P extends Data, T exten
 
     @Override
     public List<T> get() {
-        return view.apply(root,parent);
+        return root==null? Collections.emptyList():view.apply(root,parent);
     }
 
     @Override
