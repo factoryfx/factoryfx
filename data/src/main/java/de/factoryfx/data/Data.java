@@ -182,14 +182,6 @@ public abstract class Data implements TextSearchSupport {
         }
     }
 
-    private List<Attribute<?>> attributeList(){
-        ArrayList<Attribute<?>> result = new ArrayList<>();
-        this.visitAttributesFlat((attributeVariableName, attribute) -> {
-            result.add(attribute);
-        });
-        return result;
-    }
-
     private Map<Object,Data> collectChildFactoriesMap() {
         HashSet<Data> factoryBases = new HashSet<>();
 //        factoryBases.add(this); TODO required?
@@ -428,20 +420,23 @@ public abstract class Data implements TextSearchSupport {
         return (T)this;
     }
 
-    private Supplier<List<Pair<String,List<Attribute<?>>>>> attributeListGroupedSupplier=()->{
-        ArrayList<Attribute<?>> result = new ArrayList<>();
-        visitAttributesFlat((attributeVariableName, attribute) -> {
-            result.add(attribute);
-        });
-        return Arrays.asList(new Pair<>("Data",result));
+    private Function<List<Attribute<?>>,List<Pair<String,List<Attribute<?>>>>> attributeListGroupedSupplier=(List<Attribute<?>> allAttributes)->{
+        return Arrays.asList(new Pair<>("Data",allAttributes));
     };
-    private void setAttributeListGroupedSupplier(Supplier<List<Pair<String,List<Attribute<?>>>>> attributeListGroupedSupplier){
+    private void setAttributeListGroupedSupplier(Function<List<Attribute<?>>,List<Pair<String,List<Attribute<?>>>>> attributeListGroupedSupplier){
         this.attributeListGroupedSupplier=attributeListGroupedSupplier;
     }
     private List<Pair<String,List<Attribute<?>>>> attributeListGrouped(){
-        return attributeListGroupedSupplier.get();
+        return attributeListGroupedSupplier.apply(attributeList());
     }
 
+    private List<Attribute<?>> attributeList(){
+        ArrayList<Attribute<?>> result = new ArrayList<>();
+        this.visitAttributesFlat((attributeVariableName, attribute) -> {
+            result.add(attribute);
+        });
+        return result;
+    }
 
     @Override
     public boolean matchSearchText(String text) {
@@ -464,7 +459,7 @@ public abstract class Data implements TextSearchSupport {
             data.setDisplayTextProvider(displayTextProvider);
         }
 
-        public void setAttributeListGroupedSupplier(Supplier<List<Pair<String,List<Attribute<?>>>>> attributeListGroupedSupplier){
+        public void setAttributeListGroupedSupplier(Function<List<Attribute<?>>,List<Pair<String,List<Attribute<?>>>>> attributeListGroupedSupplier){
             this.data.setAttributeListGroupedSupplier(attributeListGroupedSupplier);
         }
 

@@ -73,7 +73,7 @@ public class ExampleData1 extends Data {
         value.setColumnHeaders("Col1","Col2");
         tableAttribute.set(value);
 
-        config().setAttributeListGroupedSupplier(()->attributeListGrouped());
+        config().setAttributeListGroupedSupplier((List<Attribute<?>> defaultGroup)->attributeListGrouped(defaultGroup));
     }
 
     String id= UUID.randomUUID().toString();
@@ -88,11 +88,8 @@ public class ExampleData1 extends Data {
     }
 
 
-    private List<Pair<String,List<Attribute<?>>>> attributeListGrouped(){
-        List<Attribute<?>> result = new ArrayList<>();
-        internal().visitAttributesFlat((attributeVariableName, attribute) -> {
-            result.add(attribute);
-        });
+    private List<Pair<String,List<Attribute<?>>>> attributeListGrouped(List<Attribute<?>> defaultGroup ){
+        List<Attribute<?>> result = new ArrayList<>(defaultGroup);
 
         result.remove(specialAttribute);
         ArrayList<Attribute<?>> group = new ArrayList<>();
