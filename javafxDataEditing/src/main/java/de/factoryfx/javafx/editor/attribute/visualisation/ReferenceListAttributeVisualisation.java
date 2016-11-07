@@ -54,7 +54,7 @@ public class ReferenceListAttributeVisualisation implements AttributeEditorVisua
         TableView<Data> tableView = new TableView<>();
         tableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         TableColumn<Data, String> test = new TableColumn<>("Data");
-        test.setCellValueFactory(param -> new SimpleStringProperty(param.getValue().getDisplayText()));
+        test.setCellValueFactory(param -> new SimpleStringProperty(param.getValue().internal().getDisplayText()));
         tableView.getColumns().add(test);
         tableView.getStyleClass().add("hidden-tableview-headers");
         ObservableList<Data> items = FXCollections.observableArrayList();
@@ -137,7 +137,7 @@ public class ReferenceListAttributeVisualisation implements AttributeEditorVisua
         uniformDesign.addIcon(copyButton,FontAwesome.Glyph.COPY);
         copyButton.disableProperty().bind(tableView.getSelectionModel().selectedItemProperty().isNull());
         copyButton.setOnAction(event -> {
-            boundTo.get().add(tableView.getSelectionModel().getSelectedItem().copy());
+            boundTo.get().add(tableView.getSelectionModel().getSelectedItem().internal().copy());
         });
 
         HBox buttons = new HBox();

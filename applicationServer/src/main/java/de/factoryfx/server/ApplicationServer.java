@@ -23,7 +23,7 @@ public class ApplicationServer<L,V,T extends FactoryBase<L,V>> {
         T commonVersion = factoryStorage.getHistoryFactory(update.metadata.baseVersionId);
         MergeDiff mergeDiff = factoryManager.update(commonVersion, update.root);
         if (mergeDiff.hasNoConflicts()){
-            FactoryAndStorageMetadata<T> copy = new FactoryAndStorageMetadata<T>(factoryManager.getCurrentFactory().copy(),update.metadata);
+            FactoryAndStorageMetadata<T> copy = new FactoryAndStorageMetadata<T>(factoryManager.getCurrentFactory().internal().copy(),update.metadata);
             factoryStorage.updateCurrentFactory(copy);
         }
         return mergeDiff;

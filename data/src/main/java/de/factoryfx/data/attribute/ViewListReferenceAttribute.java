@@ -120,7 +120,7 @@ public class ViewListReferenceAttribute <R extends Data, P extends Data, T exten
         List<T> list = get();
         StringBuilder stringBuilder = new StringBuilder("List (number of entries: "+ list.size()+")\n");
         for (T item: list){
-            stringBuilder.append(item.getDisplayText());
+            stringBuilder.append(item.internal().getDisplayText());
             stringBuilder.append(",\n");
         }
         return stringBuilder.toString();

@@ -33,7 +33,7 @@ public class ViewReferenceAttributeVisualisation implements AttributeEditorVisua
     public Node createContent(SimpleObjectProperty<Data> boundTo) {
         stringBinding = Bindings.createStringBinding(() -> {
             if (boundTo.get()!=null){
-                return boundTo.get().getDisplayText();
+                return boundTo.get().internal().getDisplayText();
             }
             return "<empty>";
         },boundTo);

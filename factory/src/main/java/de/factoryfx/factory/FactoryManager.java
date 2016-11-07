@@ -74,7 +74,7 @@ public class FactoryManager<L,V,T extends FactoryBase<L,V>> {
     TreeTraverser<FactoryBase<?,?>> factoryTraverser = new TreeTraverser<FactoryBase<?,?>>() {
         @Override
         public Iterable<FactoryBase<?,?>> children(FactoryBase<?,?> factory) {
-            return factory.collectChildrenFlat();
+            return factory.internal().collectChildrenFlat();
         }
     };
     private Function<T,LinkedHashSet<FactoryBase<?,?>>> startFactoryProvider = root -> {

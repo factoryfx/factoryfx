@@ -27,7 +27,7 @@ public class DataTest {
         testModel.referenceAttribute.set(new ExampleFactoryB());
 
         ArrayList<String> calls = new ArrayList<>();
-        testModel.visitAttributesFlat(attribute -> calls.add(attribute.get().toString()));
+        testModel.internal().visitAttributesFlat(attribute -> calls.add(attribute.get().toString()));
         Assert.assertEquals(3,calls.size());
         Assert.assertEquals("xxxx",calls.get(0));
     }
@@ -57,7 +57,7 @@ public class DataTest {
         Assert.assertEquals(null,readed.referenceAttribute.get().stringAttribute);
         Assert.assertEquals(null,readed.referenceListAttribute.get(0).stringAttribute);
 
-        readed.reconstructMetadataDeepRoot();
+        readed.internal().reconstructMetadataDeepRoot();
 
         Assert.assertEquals("ExampleA1",readed.stringAttribute.metadata.labelText.getPreferred(Locale.ENGLISH));
         Assert.assertEquals("ExampleA2",readed.referenceAttribute.metadata.labelText.getPreferred(Locale.ENGLISH));
@@ -73,7 +73,7 @@ public class DataTest {
         ExampleFactoryB exampleFactoryB = new ExampleFactoryB();
         exampleFactoryA.referenceAttribute.set(exampleFactoryB);
 
-        List<Data> pathTo = exampleFactoryA.getPathTo(exampleFactoryB);
+        List<Data> pathTo = exampleFactoryA.internal().getPathTo(exampleFactoryB);
         Assert.assertEquals(1,pathTo.size());
         Assert.assertEquals(exampleFactoryA.getId(),pathTo.get(0).getId());
     }
@@ -99,7 +99,7 @@ public class DataTest {
         Assert.assertNotNull(exampleFactoryA.referenceAttribute.get());
         Assert.assertNotNull(exampleFactoryA.referenceAttribute.get().referenceAttributeC.get());
 
-        ExampleFactoryA copy =  exampleFactoryA.copyOneLevelDeep();
+        ExampleFactoryA copy =  exampleFactoryA.internal().copyOneLevelDeep();
 
         Assert.assertNotEquals(copy,exampleFactoryA);
         Assert.assertNotNull(copy.referenceAttribute.get());
@@ -115,7 +115,7 @@ public class DataTest {
         exampleFactoryA.referenceAttribute.set(exampleFactoryB);
         exampleFactoryA.referenceListAttribute.add(exampleFactoryB);
 
-        ExampleFactoryA copy =  exampleFactoryA.copyOneLevelDeep();
+        ExampleFactoryA copy =  exampleFactoryA.internal().copyOneLevelDeep();
 
         Assert.assertEquals(copy.referenceAttribute.get(),copy.referenceListAttribute.get().get(0));
     }
@@ -129,14 +129,12 @@ public class DataTest {
         exampleFactoryA.referenceAttribute.set(exampleFactoryB);
         exampleFactoryA.referenceListAttribute.add(new ExampleFactoryB());
 
-        ExampleFactoryA copy =  exampleFactoryA.copy();
+        ExampleFactoryA copy =  exampleFactoryA.internal().copy();
 
         SimpleObjectMapper mapper = ObjectMapperBuilder.build();
         String expected = mapper.writeValueAsString(mapper.copy(exampleFactoryA));
         String actual = mapper.writeValueAsString(copy);
 
-        System.out.println(expected);
-        System.out.println(actual);
         Assert.assertEquals(expected, actual);
     }
 
@@ -150,13 +148,43 @@ public class DataTest {
     @Test
     public void test_editing_nested_add(){
         ExampleWithDefaultParent exampleWithDefaultParent = new ExampleWithDefaultParent();
-        exampleWithDefaultParent.prepareRootEditing();
-        Assert.assertTrue(exampleWithDefaultParent.readyForEditing());
+        exampleWithDefaultParent.internal().prepareRootEditing();
+        Assert.assertTrue(exampleWithDefaultParent.internal().readyForEditing());
 
         exampleWithDefaultParent.referenceAttribute.addNewFactory();
 
-        Assert.assertTrue(exampleWithDefaultParent.readyForEditing());
-        Assert.assertTrue(exampleWithDefaultParent.referenceAttribute.get().readyForEditing());
-        Assert.assertTrue(exampleWithDefaultParent.referenceAttribute.get().referenceAttribute.get().readyForEditing());
+        Assert.assertTrue(exampleWithDefaultParent.internal().readyForEditing());
+        Assert.assertTrue(exampleWithDefaultParent.referenceAttribute.get().internal().readyForEditing());
+        Assert.assertTrue(exampleWithDefaultParent.referenceAttribute.get().referenceAttribute.get().internal().readyForEditing());
+    }
+
+
+    @Test
+    public void test_zero_copy(){
+        ExampleFactoryA exampleFactoryA = new ExampleFactoryA();
+        exampleFactoryA.stringAttribute.set("dfssfdsfdsfd");
+        exampleFactoryA.referenceAttribute.set(new ExampleFactoryB());
+        exampleFactoryA.referenceListAttribute.add(new ExampleFactoryB());
+
+        ExampleFactoryA copy =  exampleFactoryA.internal().copyZeroLevelDeep();
+
+
+        Assert.assertEquals("dfssfdsfdsfd", copy.stringAttribute.get());
+        Assert.assertEquals(null, copy.referenceAttribute.get());
+        Assert.assertTrue(copy.referenceListAttribute.get().isEmpty());
+    }
+
+    @Test
+    public void test_zero_copy_newIds(){
+        ExampleFactoryA exampleFactoryA = new ExampleFactoryA();
+        exampleFactoryA.stringAttribute.set("dfssfdsfdsfd");
+        exampleFactoryA.referenceAttribute.set(new ExampleFactoryB());
+        exampleFactoryA.referenceListAttribute.add(new ExampleFactoryB());
+
+        ExampleFactoryA copy =  exampleFactoryA.internal().copyZeroLevelDeep();
+        Assert.assertEquals(copy.getId(), exampleFactoryA.getId());
+
+        copy =  exampleFactoryA.internal().copyZeroLevelDeep(false);
+        Assert.assertNotEquals(copy.getId(), exampleFactoryA.getId());
     }
 }

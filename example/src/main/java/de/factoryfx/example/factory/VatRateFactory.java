@@ -9,7 +9,7 @@ import de.factoryfx.factory.LiveCycleController;
 public class VatRateFactory extends FactoryBase<VatRate, OrderCollector>{
 
     public VatRateFactory(){
-        setDisplayTextProvider(() -> "VatRate("+rate.get()+")");
+        config().setDisplayTextProvider(() -> "VatRate("+rate.get()+")");
     }
     public final DoubleAttribute rate= new DoubleAttribute(new AttributeMetadata().en("rate").addonText("%")).validation(new ObjectRequired<>());
 

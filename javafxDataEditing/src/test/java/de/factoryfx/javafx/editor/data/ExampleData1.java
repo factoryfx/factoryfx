@@ -1,6 +1,7 @@
 package de.factoryfx.javafx.editor.data;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 import java.util.regex.Pattern;
@@ -71,6 +72,8 @@ public class ExampleData1 extends Data {
         TableAttribute.Table value = new TableAttribute.Table();
         value.setColumnHeaders("Col1","Col2");
         tableAttribute.set(value);
+
+        config().setAttributeListGroupedSupplier(()->attributeListGrouped());
     }
 
     String id= UUID.randomUUID().toString();
@@ -84,14 +87,19 @@ public class ExampleData1 extends Data {
         id=(String)object;
     }
 
-    @Override
-    public List<Pair<String,List<Attribute<?>>>> attributeListGrouped(){
-        List<Pair<String,List<Attribute<?>>>> groups = new ArrayList<>(super.attributeListGrouped());
-        groups.get(0).getValue().remove(specialAttribute);
+
+    private List<Pair<String,List<Attribute<?>>>> attributeListGrouped(){
+        List<Attribute<?>> result = new ArrayList<>();
+        internal().visitAttributesFlat((attributeVariableName, attribute) -> {
+            result.add(attribute);
+        });
+
+        result.remove(specialAttribute);
         ArrayList<Attribute<?>> group = new ArrayList<>();
         group.add(specialAttribute);
-        groups.add(new Pair<>("Specialxyz",group));
-        return groups;
+        Pair<String, List<Attribute<?>>> defaultdata  = new Pair<>("Data", result);
+        Pair<String, List<Attribute<?>>> specialxyz = new Pair<>("Specialxyz", group);
+        return Arrays.asList(defaultdata, specialxyz);
     }
 
 }

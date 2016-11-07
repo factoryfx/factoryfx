@@ -20,11 +20,11 @@ public class AttributeTest {
     public void test_validation(){
         ExampleFactoryA exampleFactoryA = new ExampleFactoryA();
         exampleFactoryA.stringAttribute.set("");
-        List<ValidationError> validationErrors = exampleFactoryA.validateFlat();
+        List<ValidationError> validationErrors = exampleFactoryA.internal().validateFlat();
         Assert.assertEquals(1, validationErrors.size());
 
         exampleFactoryA.stringAttribute.set("ssfdfdsdf");
-        validationErrors = exampleFactoryA.validateFlat();
+        validationErrors = exampleFactoryA.internal().validateFlat();
         Assert.assertEquals(0, validationErrors.size());
     }
 

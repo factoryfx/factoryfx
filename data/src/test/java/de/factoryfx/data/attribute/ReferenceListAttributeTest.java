@@ -70,7 +70,7 @@ public class ReferenceListAttributeTest {
         ExampleReferenceListFactory exampleReferenceListFactory = new ExampleReferenceListFactory();
         ExampleFactoryA exampleFactoryA = new ExampleFactoryA();
         exampleReferenceListFactory.referenceListAttribute.add(exampleFactoryA);
-        exampleReferenceListFactory.prepareRootEditing();
+        exampleReferenceListFactory.internal().prepareRootEditing();
 
 
         List<ExampleFactoryA> possibleFactories = exampleReferenceListFactory.referenceListAttribute.possibleValues();

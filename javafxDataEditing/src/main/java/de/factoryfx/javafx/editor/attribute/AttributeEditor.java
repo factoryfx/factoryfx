@@ -2,6 +2,7 @@ package de.factoryfx.javafx.editor.attribute;
 
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import de.factoryfx.data.attribute.Attribute;
 import de.factoryfx.data.attribute.AttributeChangeListener;
@@ -45,8 +46,10 @@ public class AttributeEditor<T> implements Widget {
             if (value == bound.get()) {
                 //workaround to force changelistener to trigger
                 //same reference doesn't mean the content didn't change e.g List
-                bound.set(null);
-                bound.set(value);
+                if (value instanceof List || value instanceof Map){
+                    bound.set(null);
+                    bound.set(value);
+                }
             }
             bound.set(value);
             setLoop = false;

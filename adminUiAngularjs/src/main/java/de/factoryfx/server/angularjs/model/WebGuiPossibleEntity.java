@@ -9,7 +9,7 @@ public class WebGuiPossibleEntity {
     public Data factory;
 
     public WebGuiPossibleEntity(Data factoryBase){
-        displayText=factoryBase.getDisplayText();
+        displayText=factoryBase.internal().getDisplayText();
         factory=factoryBase;
     }
 }

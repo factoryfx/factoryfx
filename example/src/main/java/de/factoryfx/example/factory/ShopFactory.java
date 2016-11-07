@@ -11,7 +11,7 @@ import javafx.stage.Stage;
 public class ShopFactory extends FactoryBase<Shop,OrderCollector> {
 
     public ShopFactory(){
-        setDisplayTextProvider(()->"Shop");
+        config().setDisplayTextProvider(()->"Shop");
     }
 
     public final StringAttribute stageTitle = new StringAttribute(new AttributeMetadata().labelText("Stage title"));

@@ -43,7 +43,7 @@ public class ReferenceAttribute<T extends Data> extends Attribute<T> {
     @Override
     public void collectChildren(Set<Data> allModelEntities) {
         if (get() != null) {
-            get().collectModelEntitiesTo(allModelEntities);
+            get().internal().collectModelEntitiesTo(allModelEntities);
         }
     }
 
@@ -59,7 +59,7 @@ public class ReferenceAttribute<T extends Data> extends Attribute<T> {
         Data currentReferenceContent = get();
 
         if (currentReferenceContent != null) {
-            currentReferenceContent.fixDuplicateObjects(getCurrentEntity);
+            currentReferenceContent.internal().fixDuplicateObjects(getCurrentEntity);
             Optional<Data> existingOptional = getCurrentEntity.apply(currentReferenceContent.getId());
             if (existingOptional.isPresent()) {
                 set((T) existingOptional.get());
@@ -109,7 +109,7 @@ public class ReferenceAttribute<T extends Data> extends Attribute<T> {
     public String getDisplayText() {
         String referenceDisplayText = "empty";
         if (value!=null){
-            referenceDisplayText=value.getDisplayText();
+            referenceDisplayText=value.internal().getDisplayText();
         }
         return referenceDisplayText;
     }
@@ -171,7 +171,7 @@ public class ReferenceAttribute<T extends Data> extends Attribute<T> {
             factories.forEach(factory -> result.add(factory));
         });
         if (!possibleValueProviderFromRoot.isPresent()){
-            for (Data factory: root.collectChildrenDeep()){
+            for (Data factory: root.internal().collectChildrenDeep()){
                 if (clazz.isPresent()){
                     if (clazz.get().isAssignableFrom(factory.getClass())){
                         result.add((T) factory);

@@ -111,7 +111,7 @@ public abstract class FactoryBase<L,V> extends Data {
             return true;
         }
         changedDeep=false;
-        this.visitChildFactoriesFlat(factoryBase -> changedDeep = changedDeep || cast(factoryBase).changedDeep());
+        this.internal().visitChildFactoriesFlat(factoryBase -> changedDeep = changedDeep || cast(factoryBase).changedDeep());
         return changedDeep;
     }
 
@@ -119,7 +119,7 @@ public abstract class FactoryBase<L,V> extends Data {
     public void loopDetector(){
         loopProtector.enter();
         try {
-            this.visitChildFactoriesFlat(factory -> cast(factory).loopDetector());
+            this.internal().visitChildFactoriesFlat(factory -> cast(factory).loopDetector());
         } finally {
             loopProtector.exit();
         }
@@ -133,7 +133,7 @@ public abstract class FactoryBase<L,V> extends Data {
 
     @SuppressWarnings("unchecked")
     public Set<FactoryBase<?,V>> collectChildFactoriesDeep(){
-        return super.collectChildrenDeep().stream().map(this::cast).collect(Collectors.toSet());
+        return super.internal().collectChildrenDeep().stream().map(this::cast).collect(Collectors.toSet());
     }
 
     public void start(){

@@ -54,7 +54,7 @@ public class LayoutFactory extends FactoryBase<Layout,Void> {
     public LiveCycleController<Layout, Void> createLifecycleController() {
         return () -> {
             HashMap<String,String> messages=new HashMap<>();
-            visitAttributesFlat((attributeVariableName, attribute) -> {
+            internal().visitAttributesFlat((attributeVariableName, attribute) -> {
                 if (attribute instanceof I18nAttribute) {
                     messages.put(attributeVariableName,((I18nAttribute) attribute).get().getPreferred(Locale.ENGLISH));
                 }

@@ -66,7 +66,7 @@ public class ReferenceAttributeVisualisation implements AttributeEditorVisualisa
             if (boundTo.get() == null) {
                 textField.setText(null);
             } else {
-                textField.setText(boundTo.get().getDisplayText());
+                textField.setText(boundTo.get().internal().getDisplayText());
             }
         };
         invalidationListener.invalidated(boundTo);

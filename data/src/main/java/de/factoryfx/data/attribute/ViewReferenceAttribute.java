@@ -108,7 +108,7 @@ public class ViewReferenceAttribute<R extends Data, P extends Data, T extends Da
         String referenceDisplayText = "empty";
         T value = get();
         if (value !=null){
-            referenceDisplayText=value.getDisplayText();
+            referenceDisplayText=value.internal().getDisplayText();
         }
         return referenceDisplayText;
     }

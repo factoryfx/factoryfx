@@ -11,8 +11,8 @@ public class DataMergerMergerTest {
     public void test_diff_info(){
         ExampleFactoryA currentModel = new ExampleFactoryA();
         currentModel.stringAttribute.set("1111111");
-        ExampleFactoryA originalModel = currentModel.copy();
-        ExampleFactoryA newModel = currentModel.copy();
+        ExampleFactoryA originalModel = currentModel.internal().copy();
+        ExampleFactoryA newModel = currentModel.internal().copy();
         newModel.stringAttribute.set("2222222");
         DataMerger dataMerger = new DataMerger(currentModel, originalModel, newModel);
 
@@ -27,8 +27,8 @@ public class DataMergerMergerTest {
         ExampleFactoryA currentModel = new ExampleFactoryA();
         ExampleFactoryB exampleFactoryB = new ExampleFactoryB();
         currentModel.referenceAttribute.set(exampleFactoryB);
-        ExampleFactoryA originalModel = currentModel.copy();
-        ExampleFactoryA newModel = currentModel.copy();
+        ExampleFactoryA originalModel = currentModel.internal().copy();
+        ExampleFactoryA newModel = currentModel.internal().copy();
         newModel.referenceAttribute.set(null);
         DataMerger dataMerger = new DataMerger(currentModel, originalModel, newModel);
 
@@ -43,8 +43,8 @@ public class DataMergerMergerTest {
         ExampleFactoryA currentModel = new ExampleFactoryA();
         ExampleFactoryB exampleFactoryB = new ExampleFactoryB();
         currentModel.referenceAttribute.set(exampleFactoryB);
-        ExampleFactoryA originalModel = currentModel.copy();
-        ExampleFactoryA newModel = currentModel.copy();
+        ExampleFactoryA originalModel = currentModel.internal().copy();
+        ExampleFactoryA newModel = currentModel.internal().copy();
 
         newModel.referenceAttribute.set(null);
 

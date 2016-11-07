@@ -19,7 +19,7 @@ public class DataChoiceDialog {
         choiceDialog.getDialogPane().setContent(dataTableView);
         dataTableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         TableColumn<Data, String> test = new TableColumn<>("Data");
-        test.setCellValueFactory(param -> new SimpleStringProperty(param.getValue().getDisplayText()));
+        test.setCellValueFactory(param -> new SimpleStringProperty(param.getValue().internal().getDisplayText()));
         dataTableView.getColumns().add(test);
         dataTableView.getStyleClass().add("hidden-tableview-headers");
         ObservableList<Data> items = FXCollections.observableArrayList();

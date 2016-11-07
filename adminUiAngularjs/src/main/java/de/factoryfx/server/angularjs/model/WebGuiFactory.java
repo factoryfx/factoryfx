@@ -32,19 +32,19 @@ public class WebGuiFactory {
     public List<PathElement> path=new ArrayList<>();
 
     public WebGuiFactory(FactoryBase<?,?> factory, FactoryBase<?,?> root) {
-        this.factory = factory.copyOneLevelDeep();
+        this.factory = factory.internal().copyOneLevelDeep();
         this.type = factory.getClass().getName();
 
-        factory.visitAttributesFlat((attributeName, attribute) -> {
+        factory.internal().visitAttributesFlat((attributeName, attribute) -> {
             attribute.visit(factoryBase1 -> {
-                nestedFactoriesDisplayText.put(factoryBase1.getId().toString(), factoryBase1.getDisplayText());
+                nestedFactoriesDisplayText.put(factoryBase1.getId().toString(), factoryBase1.internal().getDisplayText());
             });
         });
 
-        displayText=factory.getDisplayText();
+        displayText=factory.internal().getDisplayText();
 
-        for (Data factoryBase: root.getPathTo(factory)){
-            path.add(new PathElement(factoryBase.getId().toString(),factoryBase.getDisplayText()));
+        for (Data factoryBase: root.internal().getPathTo(factory)){
+            path.add(new PathElement(factoryBase.getId().toString(),factoryBase.internal().getDisplayText()));
         }
     }
 

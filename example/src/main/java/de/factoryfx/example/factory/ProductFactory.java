@@ -20,6 +20,10 @@ public class ProductFactory extends FactoryBase<Product,OrderCollector> {
 
     @Override
     public LiveCycleController<Product, OrderCollector> createLifecycleController() {
+
+
+
+
         return () -> {
             return new Product(name.get(), price.get(), vatRate.instance());
         };

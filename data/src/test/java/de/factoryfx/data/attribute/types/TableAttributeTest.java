@@ -21,7 +21,7 @@ public class TableAttributeTest {
     @Test
     public void test_copy(){
         TestTableAttributeData org = new TestTableAttributeData();
-        TestTableAttributeData copy = org.copy();
+        TestTableAttributeData copy = org.internal().copy();
         Assert.assertNotEquals(org.attribute.get(),copy.attribute.get());
     }
 }

@@ -11,7 +11,7 @@ import de.factoryfx.javafx.distribution.server.rest.DownloadResource;
 
 public class UserInterfaceDistributionServerFactory<V> extends FactoryBase<UserInterfaceDistributionServer,V> {
     public UserInterfaceDistributionServerFactory(){
-        setDisplayTextProvider(() -> "http://"+host.get()+":"+port.get());
+        config().setDisplayTextProvider(() -> "http://"+host.get()+":"+port.get());
     }
 
     public final StringAttribute host = new StringAttribute(new AttributeMetadata().de("host").en("host"));

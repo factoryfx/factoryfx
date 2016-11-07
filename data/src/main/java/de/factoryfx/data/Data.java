@@ -19,7 +19,9 @@ import java.util.stream.Stream;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.common.base.Strings;
-import de.factoryfx.data.attribute.*;
+import de.factoryfx.data.attribute.Attribute;
+import de.factoryfx.data.attribute.ReferenceAttribute;
+import de.factoryfx.data.attribute.ReferenceListAttribute;
 import de.factoryfx.data.attribute.types.ObjectValueAttribute;
 import de.factoryfx.data.merge.MergeResult;
 import de.factoryfx.data.merge.MergeResultEntry;
@@ -82,7 +84,7 @@ public abstract class Data implements TextSearchSupport {
         void accept(A a, B b, C c);
     }
 
-    public void visitChildFactoriesFlat(Consumer<Data> consumer) {
+    private void visitChildFactoriesFlat(Consumer<Data> consumer) {
         visitAttributesFlat((attributeVariableName, attribute) -> {
             attribute.visit(new Attribute.AttributeVisitor() {
                 @Override
@@ -109,7 +111,7 @@ public abstract class Data implements TextSearchSupport {
     }
 
     @SuppressWarnings("unchecked")
-    public <A> void  visitAttributesDualFlat(Data modelBase, BiConsumer<Attribute<A>, Attribute<A>> consumer) {
+    private <A> void  visitAttributesDualFlat(Data modelBase, BiConsumer<Attribute<A>, Attribute<A>> consumer) {
         Field[] fields = getFields();
         for (Field field : fields) {
             try {
@@ -128,7 +130,7 @@ public abstract class Data implements TextSearchSupport {
         void accept(String attributeVariableName, Attribute<?> attribute);
     }
 
-    public void visitAttributesFlat(AttributeVisitor consumer) {
+    private void visitAttributesFlat(AttributeVisitor consumer) {
         Field[] fields = getFields();
         for (Field field : fields) {
             try {
@@ -142,7 +144,7 @@ public abstract class Data implements TextSearchSupport {
         }
     }
 
-    public void visitAttributesFlat(Consumer<Attribute<?>> consumer) {
+    private void visitAttributesFlat(Consumer<Attribute<?>> consumer) {
         Field[] fields = getFields();
         for (Field field : fields) {
             try {
@@ -156,7 +158,7 @@ public abstract class Data implements TextSearchSupport {
         }
     }
 
-    public void visitAttributesTripleFlat(Optional<?> modelBase1, Optional<?> modelBase2, TriConsumer<Attribute<?>, Optional<Attribute<?>>, Optional<Attribute<?>>> consumer) {
+    private void visitAttributesTripleFlat(Optional<?> modelBase1, Optional<?> modelBase2, TriConsumer<Attribute<?>, Optional<Attribute<?>>, Optional<Attribute<?>>> consumer) {
         Field[] fields = getFields();
         for (Field field : fields) {
             try {
@@ -180,7 +182,7 @@ public abstract class Data implements TextSearchSupport {
         }
     }
 
-    public List<Attribute<?>> attributeList(){
+    private List<Attribute<?>> attributeList(){
         ArrayList<Attribute<?>> result = new ArrayList<>();
         this.visitAttributesFlat((attributeVariableName, attribute) -> {
             result.add(attribute);
@@ -188,16 +190,7 @@ public abstract class Data implements TextSearchSupport {
         return result;
     }
 
-    //template method to support different tabs in datateditor
-    public List<Pair<String,List<Attribute<?>>>> attributeListGrouped(){
-        ArrayList<Attribute<?>> result = new ArrayList<>();
-        this.visitAttributesFlat((attributeVariableName, attribute) -> {
-            result.add(attribute);
-        });
-        return Arrays.asList(new Pair<>("Data",result));
-    }
-
-    public Map<Object,Data> collectChildFactoriesMap() {
+    private Map<Object,Data> collectChildFactoriesMap() {
         HashSet<Data> factoryBases = new HashSet<>();
 //        factoryBases.add(this); TODO required?
         collectModelEntitiesTo(factoryBases);
@@ -210,20 +203,20 @@ public abstract class Data implements TextSearchSupport {
     }
 
     @SuppressWarnings("unchecked")
-    public <T extends Data> Set<T> collectChildrenFlat() {
+    private <T extends Data> Set<T> collectChildrenFlat() {
         HashSet<T> result = new HashSet<>();
         this.visitChildFactoriesFlat(factoryBase -> result.add((T)factoryBase));
         return result;
     }
 
-    public Set<Data> collectChildrenDeep() {
+    private Set<Data> collectChildrenDeep() {
         HashSet<Data> factoryBases = new HashSet<>();
         collectModelEntitiesTo(factoryBases);
         return factoryBases;
     }
 
 
-    public void collectModelEntitiesTo(Set<Data> allModelEntities) {
+    private void collectModelEntitiesTo(Set<Data> allModelEntities) {
         if (allModelEntities.add(this)){
             visitAttributesFlat(attribute -> attribute.collectChildren(allModelEntities));
         }
@@ -235,7 +228,7 @@ public abstract class Data implements TextSearchSupport {
      * we create a copy which contains the metadata and than copy the meta data in teh original object
      */
     @SuppressWarnings("unchecked")
-    public <T extends Data> T reconstructMetadataDeepRoot() {
+    private <T extends Data> T reconstructMetadataDeepRoot() {
         Data copy = this.newInstance();
 
 
@@ -262,17 +255,22 @@ public abstract class Data implements TextSearchSupport {
         return (T)this;
     }
 
-
-    protected Data newInstance() {
+    Supplier<Data> newInstanceSupplier= () -> {
         try {
-            return getClass().newInstance();
+            return Data.this.getClass().newInstance();
         } catch (InstantiationException | IllegalAccessException e) {
             throw new RuntimeException(e);
         }
+    };
+    private void setNewInstanceSupplier(Supplier<Data> newInstanceSupplier){
+        this.newInstanceSupplier=newInstanceSupplier;
+    }
+    private Data newInstance() {
+        return newInstanceSupplier.get();
     }
 
     @SuppressWarnings("unchecked")
-    public void fixDuplicateObjects(Function<Object, Optional<Data>> getCurrentEntity) {
+    private void fixDuplicateObjects(Function<Object, Optional<Data>> getCurrentEntity) {
         visitAttributesFlat(attribute -> attribute.fixDuplicateObjects(getCurrentEntity));
     }
 
@@ -280,15 +278,16 @@ public abstract class Data implements TextSearchSupport {
 
     @JsonIgnore
     @SuppressWarnings("unchecked")
-    public String getDisplayText(){
+    private String getDisplayText(){
         return displayTextProvider.get();
     }
-    public void setDisplayTextProvider(Supplier<String> displayTextProvider){
+
+    private void setDisplayTextProvider(Supplier<String> displayTextProvider){
         this.displayTextProvider=displayTextProvider;
     }
 
     /** validate attributes without visiting child factories*/
-    public List<ValidationError> validateFlat(){
+    private List<ValidationError> validateFlat(){
         ArrayList<ValidationError> result = new ArrayList<>();
         visitAttributesFlat((attributeVariableName, attribute) -> {
             result.addAll(attribute.validate());
@@ -297,7 +296,7 @@ public abstract class Data implements TextSearchSupport {
     }
 
     @SuppressWarnings("unchecked")
-    public void merge(Optional<Data> originalValue, Optional<Data> newValue, MergeResult mergeResult) {
+    private void merge(Optional<Data> originalValue, Optional<Data> newValue, MergeResult mergeResult) {
 
         this.visitAttributesTripleFlat(originalValue, newValue, (currentAttribute, originalAttribute, newAttribute) -> {
             AttributeMergeHelper<?> attributeMergeHelper = currentAttribute.createMergeHelper();
@@ -320,7 +319,7 @@ public abstract class Data implements TextSearchSupport {
     }
 
 
-    public HashMap<Data, Data> getChildToParentMap(Set<Data> allModelEntities) {
+    private HashMap<Data, Data> getChildToParentMap(Set<Data> allModelEntities) {
         HashMap<Data, Data> result = new HashMap<>();
         for (Data factoryBase : allModelEntities) {
             factoryBase.visitAttributesFlat(attribute -> {
@@ -333,7 +332,7 @@ public abstract class Data implements TextSearchSupport {
     }
 
 
-    public List<Data> getMassPathTo(HashMap<Data, Data> childToParent, Data target) {
+    private List<Data> getMassPathTo(HashMap<Data, Data> childToParent, Data target) {
         List<Data> path = new ArrayList<>();
         Optional<Data> pathElement = Optional.ofNullable(childToParent.get(target));
         while (pathElement.isPresent()) {
@@ -344,18 +343,11 @@ public abstract class Data implements TextSearchSupport {
         return path;
     }
 
-    /**Slow. for multiple calls use getMassPathTo*/
-    public List<Data> getPathTo(Data target) {
-        return getMassPathTo(getChildToParentMap(collectChildrenDeep()), target);
-    }
-
-    @SuppressWarnings("unchecked")
-    public <T extends Data> T copy() {
-
-        T copy = copyDeep(0,Integer.MAX_VALUE,new HashMap<>());
+    private <T extends Data> T copy(boolean keepIds) {
+        T copy = copyDeep(0,Integer.MAX_VALUE,new HashMap<>(),keepIds);
 
         Map<Object, Data> stringFactoryBaseMap = this.collectChildFactoriesMap();
-        for (Data factory: copy.collectChildrenDeep()){
+        for (Data factory: copy.internal().collectChildrenDeep()){
             factory.visitAttributesDualFlat(stringFactoryBaseMap.get(factory.getId()),(copyAttribute, previousAttribute) -> {
                 if (copyAttribute instanceof ObjectValueAttribute){
                     ((Attribute)copyAttribute).set(((Attribute)previousAttribute).get());
@@ -365,49 +357,58 @@ public abstract class Data implements TextSearchSupport {
         return copy;
     }
 
+
     /**copy including one the references first level of nested references*/
-    public <T extends Data> T copyOneLevelDeep(){
-        return copyDeep(0,1,new HashMap<>());
+    private <T extends Data> T copyOneLevelDeep(boolean keepIds){
+        return copyDeep(0,1,new HashMap<>(),keepIds);
     }
 
+    /**copy without nested references, only value attributes are copied*/
+    private <T extends Data> T copyZeroLevelDeep(boolean keepIds){
+        return copyDeep(0,0,new HashMap<>(),keepIds);
+    }
+
+
     @SuppressWarnings("unchecked")
-    private <T extends Data> T copyDeep(final int level,final int maxLevel, HashMap<Object,Data> identityPreserver){
+    private <T extends Data> T copyDeep(final int level,final int maxLevel, HashMap<Object,Data> identityPreserver, boolean keepIds){
         if (level>maxLevel){
             return null;
         }
         T result= (T) identityPreserver.get(this.getId());
         if (result==null){
             result = (T)newInstance();
-            result.setId(this.getId());
+            if (keepIds){
+                result.setId(this.getId());
+            }
             this.visitAttributesDualFlat(result, (thisAttribute, copyAttribute) -> {
                 Object value = thisAttribute.get();
                 if (value instanceof Data) {
-                    value = ((Data) value).copyDeep(level + 1, maxLevel, identityPreserver);
+                    value = ((Data) value).copyDeep(level + 1, maxLevel, identityPreserver,keepIds);
                 }
                 if (thisAttribute instanceof ReferenceListAttribute) {
                     final ObservableList<Data> referenceList = FXCollections.observableArrayList();
-                    ((ReferenceListAttribute) thisAttribute).get().forEach(factory -> referenceList.add(((Data) factory).copyDeep(level + 1, maxLevel, identityPreserver)));
+                    ((ReferenceListAttribute) thisAttribute).get().forEach(factory -> {
+                        Data data = ((Data) factory).copyDeep(level + 1, maxLevel, identityPreserver,keepIds);
+                        if (data!=null){
+                            referenceList.add(data);
+                        }
+                    });
                     value = referenceList;
                 }
 
                 copyAttribute.copy(value);
             });
-            identityPreserver.put(result.getId(),result);
+            identityPreserver.put(this.getId(),result);
         }
         return result;
     }
 
-    //use this method only for root
-    @SuppressWarnings("unchecked")
-    public <T extends Data> T prepareRootEditing() {
-        return (T)prepareEditing(this);
-    }
 
-    public boolean readyForEditing(){
+    private boolean readyForEditing(){
         return isReadyForEditing;
     }
 
-    public <T extends Data> T endRootEditing() {
+    private <T extends Data> T endRootEditing() {
         for (Data data: collectChildrenDeep()){
             data.visitAttributesFlat((attributeVariableName, attribute) -> {
                 attribute.endEditing();
@@ -427,8 +428,182 @@ public abstract class Data implements TextSearchSupport {
         return (T)this;
     }
 
+    private Supplier<List<Pair<String,List<Attribute<?>>>>> attributeListGroupedSupplier=()->{
+        ArrayList<Attribute<?>> result = new ArrayList<>();
+        visitAttributesFlat((attributeVariableName, attribute) -> {
+            result.add(attribute);
+        });
+        return Arrays.asList(new Pair<>("Data",result));
+    };
+    private void setAttributeListGroupedSupplier(Supplier<List<Pair<String,List<Attribute<?>>>>> attributeListGroupedSupplier){
+        this.attributeListGroupedSupplier=attributeListGroupedSupplier;
+    }
+    private List<Pair<String,List<Attribute<?>>>> attributeListGrouped(){
+        return attributeListGroupedSupplier.get();
+    }
+
+
     @Override
     public boolean matchSearchText(String text) {
         return Strings.isNullOrEmpty(text) || Strings.nullToEmpty(getDisplayText()).toLowerCase().contains(text.toLowerCase());
+    }
+
+    DataConfiguration dataConfiguration = new DataConfiguration(this);
+    public DataConfiguration config(){
+        return dataConfiguration;
+    }
+
+    public static class DataConfiguration {
+        private final Data data;
+
+        public DataConfiguration(Data data) {
+            this.data = data;
+        }
+
+        public void setDisplayTextProvider(Supplier<String> displayTextProvider){
+            data.setDisplayTextProvider(displayTextProvider);
+        }
+
+        public void setAttributeListGroupedSupplier(Supplier<List<Pair<String,List<Attribute<?>>>>> attributeListGroupedSupplier){
+            this.data.setAttributeListGroupedSupplier(attributeListGroupedSupplier);
+        }
+
+        public void setNewInstanceSupplier(Supplier<Data> newInstanceSupplier){
+            this.data.setNewInstanceSupplier(newInstanceSupplier);
+        }
+    }
+
+
+    Internal internal = new Internal(this);
+    public Internal internal(){
+        return internal;
+    }
+
+    public static class Internal{
+        private final Data data;
+
+        public Internal(Data data) {
+            this.data = data;
+        }
+
+        public void visitChildFactoriesFlat(Consumer<Data> consumer) {
+            data.visitChildFactoriesFlat(consumer);
+        }
+
+        @SuppressWarnings("unchecked")
+        public <A> void  visitAttributesDualFlat(Data modelBase, BiConsumer<Attribute<A>, Attribute<A>> consumer) {
+            data.visitAttributesDualFlat(modelBase,consumer);
+        }
+
+        public void visitAttributesFlat(AttributeVisitor consumer) {
+            data.visitAttributesFlat(consumer);
+        }
+
+        public void visitAttributesFlat(Consumer<Attribute<?>> consumer) {
+            data.visitAttributesFlat(consumer);
+        }
+
+        public List<Pair<String,List<Attribute<?>>>> attributeListGrouped(){
+            return data.attributeListGrouped();
+        }
+
+        public Map<Object,Data> collectChildFactoriesMap() {
+            return data.collectChildFactoriesMap();
+        }
+
+        @SuppressWarnings("unchecked")
+        public <T extends Data> Set<T> collectChildrenFlat() {
+            return data.collectChildrenFlat();
+        }
+
+        public Set<Data> collectChildrenDeep() {
+            return data.collectChildrenDeep();
+        }
+
+
+        public void collectModelEntitiesTo(Set<Data> allModelEntities) {
+            data.collectModelEntitiesTo(allModelEntities);
+        }
+
+        @SuppressWarnings("unchecked")
+        public <T extends Data> T reconstructMetadataDeepRoot() {
+            return data.reconstructMetadataDeepRoot();
+        }
+
+
+        @SuppressWarnings("unchecked")
+        public void fixDuplicateObjects(Function<Object, Optional<Data>> getCurrentEntity) {
+            data.fixDuplicateObjects(getCurrentEntity);
+        }
+
+
+        @JsonIgnore
+        @SuppressWarnings("unchecked")
+        public String getDisplayText(){
+            return data.getDisplayText();
+        }
+
+        public List<ValidationError> validateFlat(){
+            return data.validateFlat();
+        }
+
+        @SuppressWarnings("unchecked")
+        public void merge(Optional<Data> originalValue, Optional<Data> newValue, MergeResult mergeResult) {
+            data.merge(originalValue,newValue,mergeResult);
+        }
+
+
+        public HashMap<Data, Data> getChildToParentMap(Set<Data> allModelEntities) {
+            return data.getChildToParentMap(allModelEntities);
+        }
+
+        public List<Data> getMassPathTo(HashMap<Data, Data> childToParent, Data target) {
+            return data.getMassPathTo(childToParent,target);
+        }
+
+        public List<Data> getPathTo(Data target) {
+            return data.getMassPathTo(getChildToParentMap(collectChildrenDeep()), target);
+        }
+
+        public <T extends Data> T copy() {
+            return  data.copy(true);
+        }
+
+        public <T extends Data> T copy(boolean keepIds) {
+            return data.copy(keepIds);
+        }
+
+        public <T extends Data> T copyOneLevelDeep(boolean keepIds){
+            return data.copyDeep(0,1,new HashMap<>(),keepIds);
+        }
+
+        public <T extends Data> T copyOneLevelDeep(){
+            return data.copyOneLevelDeep(true);
+        }
+
+        public <T extends Data> T copyZeroLevelDeep(boolean keepIds){
+            return data.copyDeep(0,0,new HashMap<>(),keepIds);
+        }
+
+        public <T extends Data> T copyZeroLevelDeep(){
+            return data.copyZeroLevelDeep(true);
+        }
+
+        @SuppressWarnings("unchecked")
+        public <T extends Data> T prepareRootEditing() {
+            return (T)data.prepareEditing(data);
+        }
+
+        public boolean readyForEditing(){
+            return data.readyForEditing();
+        }
+
+        public <T extends Data> T endRootEditing() {
+            return data.endRootEditing();
+        }
+
+        public <T extends Data> T prepareEditing(Data root){
+            return data.prepareEditing(root);
+        }
     }
 }

@@ -53,7 +53,7 @@ public class ReferenceListAttribute<T extends Data> extends Attribute<Observable
 
     @Override
     public void collectChildren(Set<Data> allModelEntities) {
-        list.forEach(entity -> entity.collectModelEntitiesTo(allModelEntities));
+        list.forEach(entity -> entity.internal().collectModelEntitiesTo(allModelEntities));
     }
 
     @Override
@@ -67,7 +67,7 @@ public class ReferenceListAttribute<T extends Data> extends Attribute<Observable
         List<T> currentToEditList = get();
 
         for (T entity : currentToEditList) {
-            entity.fixDuplicateObjects(getCurrentEntity);
+            entity.internal().fixDuplicateObjects(getCurrentEntity);
         }
 
         List<T> fixedList = new ArrayList<>();
@@ -151,7 +151,7 @@ public class ReferenceListAttribute<T extends Data> extends Attribute<Observable
     public String getDisplayText() {
         StringBuilder stringBuilder = new StringBuilder("List (number of entries: "+ list.size()+")\n");
         for (T item:  list){
-            stringBuilder.append(item.getDisplayText());
+            stringBuilder.append(item.internal().getDisplayText());
             stringBuilder.append(",\n");
         }
         return stringBuilder.toString();
@@ -219,7 +219,7 @@ public class ReferenceListAttribute<T extends Data> extends Attribute<Observable
             factories.forEach(factory -> result.add(factory));
         });
         if (!possibleValueProviderFromRoot.isPresent()){
-            for (Data factory: root.collectChildrenDeep()){
+            for (Data factory: root.internal().collectChildrenDeep()){
                 if (clazz.isAssignableFrom(factory.getClass())){
                     result.add((T) factory);
                 }

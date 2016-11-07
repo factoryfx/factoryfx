@@ -53,13 +53,13 @@ public class ApplicationServerRestClient<V,T extends FactoryBase<?,V>> {
     @SuppressWarnings("unchecked")
     public FactoryAndStorageMetadata<T> getCurrentFactory() {
         FactoryAndStorageMetadata<T> currentFactory = get("currentFactory", FactoryAndStorageMetadata.class);
-        currentFactory.root.reconstructMetadataDeepRoot();
+        currentFactory.root.internal().reconstructMetadataDeepRoot();
         return currentFactory;
     }
 
 
     public T getHistoryFactory(String id) {
-        return get("historyFactory", factoryRootClass).reconstructMetadataDeepRoot();
+        return get("historyFactory", factoryRootClass).internal().reconstructMetadataDeepRoot();
     }
 
     static final Class<? extends ArrayList<StoredFactoryMetadata>> collectionOfStoredFactoryMetadataClass = new ArrayList<StoredFactoryMetadata>() {}.getClass();

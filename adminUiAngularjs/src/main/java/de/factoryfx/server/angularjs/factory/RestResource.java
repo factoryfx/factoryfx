@@ -114,7 +114,7 @@ public class RestResource<L,V,T extends FactoryBase<L,V>> {
         FactoryBase<?,?> root = getCurrentEditingFactory().root;
 
         //TODO use map?
-        for (Data factory: root.collectChildrenDeep()){
+        for (Data factory: root.internal().collectChildrenDeep()){
             if (factory.getId().equals(id)){
                 return new de.factoryfx.server.angularjs.model.WebGuiFactory((FactoryBase<?,?>)factory,root);
             }
@@ -128,9 +128,9 @@ public class RestResource<L,V,T extends FactoryBase<L,V>> {
     @Path("factory")
     @SuppressWarnings("unchecked")
     public StageResponse save(FactoryTypeInfoWrapper newFactoryParam) {
-        FactoryBase<?,?> newFactory=newFactoryParam.factory.reconstructMetadataDeepRoot();
+        FactoryBase<?,?> newFactory=newFactoryParam.factory.internal().reconstructMetadataDeepRoot();
         FactoryBase<?,?> root = getCurrentEditingFactory().root;
-        Map<Object,Data>  map = root.collectChildFactoriesMap();
+        Map<Object,Data>  map = root.internal().collectChildFactoriesMap();
         Data existing = map.get(newFactory.getId());
 
         Function<Data,Data> existingOrNew= factoryBase -> {
@@ -144,7 +144,7 @@ public class RestResource<L,V,T extends FactoryBase<L,V>> {
 
         //TODO fix generics,casts
         //copy FactoryUpdate into existing
-        existing.visitAttributesDualFlat(newFactory, (thisAttribute, copyAttribute) -> {
+        existing.internal().visitAttributesDualFlat(newFactory, (thisAttribute, copyAttribute) -> {
             Object value = ((Attribute)copyAttribute).get();//The cast is necessary don't trust intellij
             if (value instanceof FactoryBase){
                 value=existingOrNew.apply((Data)value);
@@ -158,8 +158,8 @@ public class RestResource<L,V,T extends FactoryBase<L,V>> {
             ((Attribute)thisAttribute).set(value);
         });
 
-        Map<Object,Data>  map2 = root.collectChildFactoriesMap();
-        root.fixDuplicateObjects(id -> Optional.of(map2.get(id)));
+        Map<Object,Data>  map2 = root.internal().collectChildFactoriesMap();
+        root.internal().fixDuplicateObjects(id -> Optional.of(map2.get(id)));
 
         return createStageResponse();
     }
@@ -255,8 +255,8 @@ public class RestResource<L,V,T extends FactoryBase<L,V>> {
         response.mergeDiffExt=applicationServer.simulateUpdateCurrentFactory(currentEditingFactoryRoot.root, currentEditingFactoryRoot.metadata.baseVersionId);
         response.mergeDiff=new WebGuiMergeDiff(response.mergeDiffExt,getUserLocale());
 
-        for (Data factoryBase: currentEditingFactoryRoot.root.collectChildrenDeep()){
-            factoryBase.validateFlat().stream().map(validationError -> new WebGuiValidationError(validationError,getUserLocale(),factoryBase)).forEach(w -> response.validationErrors.add(w));
+        for (Data factoryBase: currentEditingFactoryRoot.root.internal().collectChildrenDeep()){
+            factoryBase.internal().validateFlat().stream().map(validationError -> new WebGuiValidationError(validationError,getUserLocale(),factoryBase)).forEach(w -> response.validationErrors.add(w));
         }
 
         return response;
@@ -311,9 +311,9 @@ public class RestResource<L,V,T extends FactoryBase<L,V>> {
         List<WebGuiPossibleEntity> result = new ArrayList<>() ;
 
         T root = getCurrentEditingFactory().root;
-        root.prepareRootEditing();
+        root.internal().prepareRootEditing();
 
-        root.collectChildFactoriesMap().get(id).visitAttributesFlat((attributeVariableName, attribute) -> {
+        root.internal().collectChildFactoriesMap().get(id).internal().visitAttributesFlat((attributeVariableName, attribute) -> {
             if (attributeVariableName.equals(attributeName)){
 
                 attribute.visit(new Attribute.AttributeVisitor() {
@@ -347,10 +347,10 @@ public class RestResource<L,V,T extends FactoryBase<L,V>> {
     public de.factoryfx.server.angularjs.model.WebGuiFactory addFactory(@QueryParam("id")String id, @QueryParam("attributeName")String attributeName){
 
         T root = getCurrentEditingFactory().root;
-        root.prepareRootEditing();
+        root.internal().prepareRootEditing();
 
-        Data factoryBase = root.collectChildFactoriesMap().get(id);
-        factoryBase.visitAttributesFlat((attributeVariableName, attribute) -> {
+        Data factoryBase = root.internal().collectChildFactoriesMap().get(id);
+        factoryBase.internal().visitAttributesFlat((attributeVariableName, attribute) -> {
             if (attributeVariableName.equals(attributeName)){
 
                 attribute.visit(new Attribute.AttributeVisitor() {

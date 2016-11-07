@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 
-import de.factoryfx.data.Data;
 import de.factoryfx.data.attribute.AttributeMetadata;
 import de.factoryfx.data.attribute.types.StringAttribute;
 import de.factoryfx.factory.atrribute.FactoryReferenceAttribute;
@@ -29,6 +28,7 @@ public class FactoryManagerLivecycleTest {
         private final LiveCycleControllerCallCounter liveCycleController;
         public ExampleFactoryA(LiveCycleControllerCallCounter liveCycleController){
             this.liveCycleController=liveCycleController;
+            config().setNewInstanceSupplier(()-> new ExampleFactoryA(liveCycleController));
         }
 
         public final StringAttribute stringAttribute= new StringAttribute(new AttributeMetadata().labelText("ExampleA1"));
@@ -39,11 +39,6 @@ public class FactoryManagerLivecycleTest {
             liveCycleController.exampleFactoryA=this;
             return liveCycleController;
         }
-
-        @Override
-        protected Data newInstance() {
-            return new ExampleFactoryA(liveCycleController);
-        }
     }
 
     public static class ExampleFactoryB extends FactoryBase<ExampleLiveObjectA,Void> {
@@ -51,6 +46,7 @@ public class FactoryManagerLivecycleTest {
         private final LiveCycleController<ExampleLiveObjectA, Void> liveCycleController;
         public ExampleFactoryB(LiveCycleController<ExampleLiveObjectA, Void> liveCycleController){
             this.liveCycleController=liveCycleController;
+            config().setNewInstanceSupplier(()-> new ExampleFactoryB(liveCycleController));
         }
 
         public final StringAttribute stringAttribute= new StringAttribute(new AttributeMetadata().labelText("ExampleB1"));
@@ -60,10 +56,6 @@ public class FactoryManagerLivecycleTest {
             return liveCycleController;
         }
 
-        @Override
-        protected Data newInstance() {
-            return new ExampleFactoryB(liveCycleController);
-        }
     }
 
     public static class LiveCycleControllerCallCounter implements LiveCycleController<ExampleLiveObjectA, Void>{
@@ -163,8 +155,8 @@ public class FactoryManagerLivecycleTest {
 
         factoryManager.start(exampleFactoryA);
 
-        ExampleFactoryA common = factoryManager.getCurrentFactory().copy();
-        ExampleFactoryA update = factoryManager.getCurrentFactory().copy();
+        ExampleFactoryA common = factoryManager.getCurrentFactory().internal().copy();
+        ExampleFactoryA update = factoryManager.getCurrentFactory().internal().copy();
         update.referenceAttribute.get().stringAttribute.set("changed");
 
         liveCycleControllerA.reset();

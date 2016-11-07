@@ -1,7 +1,12 @@
 package de.factoryfx.javafx.widget.tree;
 
+import java.util.function.Consumer;
+
 import com.google.common.collect.TreeTraverser;
 import de.factoryfx.data.Data;
+import de.factoryfx.data.attribute.Attribute;
+import de.factoryfx.data.attribute.ReferenceAttribute;
+import de.factoryfx.data.attribute.ReferenceListAttribute;
 import de.factoryfx.javafx.editor.data.DataEditor;
 import de.factoryfx.javafx.widget.CloseAwareWidget;
 import javafx.application.Platform;
@@ -46,7 +51,7 @@ public class DataTreeWidget implements CloseAwareWidget {
             public void updateItem(Data item, boolean empty) {
                 super.updateItem(item, empty);
                 if (item != null) {
-                    this.setText(item.getDisplayText());
+                    this.setText(item.internal().getDisplayText());
                 } else {
                     this.setText("");
                 }
@@ -105,7 +110,40 @@ public class DataTreeWidget implements CloseAwareWidget {
 
     private TreeItem<Data> constructTree(Data data){
         TreeItem<Data> dataTreeItem = new TreeItem<>(data);
-        data.visitChildFactoriesFlat(child -> {
+
+        data.internal().visitAttributesFlat(new Data.AttributeVisitor() {
+            @Override
+            public void accept(String attributeVariableName, Attribute<?> attribute) {
+                attribute.visit(new Attribute.AttributeVisitor() {
+                    @Override
+                    public void value(Attribute<?> value) {
+
+                    }
+
+                    @Override
+                    public void reference(ReferenceAttribute<?> reference) {
+                        dataTreeItem.getChildren().add(constructTree(reference.get()));
+                    }
+
+                    @Override
+                    public void referenceList(ReferenceListAttribute<?> referenceList) {
+                        TreeItem<Data> listDataTreeItem = new TreeItem<>(data);
+//                        listDataTreeItem
+//                                new type for data?
+                        dataTreeItem.getChildren().add(listDataTreeItem);
+                        referenceList.get().forEach(new Consumer<Data>() {
+                            @Override
+                            public void accept(Data data) {
+                                dataTreeItem.getChildren().add(constructTree(data));
+                            }
+                        });
+                    }
+                });
+            }
+        });
+
+
+        data.internal().visitChildFactoriesFlat(child -> {
             dataTreeItem.getChildren().add(constructTree(child));
         });
         return dataTreeItem;

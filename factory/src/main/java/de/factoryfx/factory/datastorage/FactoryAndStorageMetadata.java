@@ -15,6 +15,6 @@ public class FactoryAndStorageMetadata<T extends FactoryBase<?,?>> {
     }
 
     public FactoryAndStorageMetadata<T> copy(){
-        return new FactoryAndStorageMetadata<>(root.<T>copy(),metadata);
+        return new FactoryAndStorageMetadata<>(root.<T>internal().copy(),metadata);
     }
 }

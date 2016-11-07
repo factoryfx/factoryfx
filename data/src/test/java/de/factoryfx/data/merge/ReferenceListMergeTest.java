@@ -67,7 +67,7 @@ public class ReferenceListMergeTest extends MergeHelperTestBase{
         current.referenceListAttribute.add(newValue1);
         current.referenceListAttribute.add(newValue2);
 
-        ExampleFactoryA orginal = current.copy();
+        ExampleFactoryA orginal = current.internal().copy();
         ExampleFactoryB replacedValue = new ExampleFactoryB();
         current.referenceListAttribute.add(replacedValue);
 
@@ -112,8 +112,8 @@ public class ReferenceListMergeTest extends MergeHelperTestBase{
         current.referenceListAttribute.add(newValue2);
 
 
-        ExampleFactoryA orginal = current.copy();
-        ExampleFactoryA update = current.copy();
+        ExampleFactoryA orginal = current.internal().copy();
+        ExampleFactoryA update = current.internal().copy();
 
         ExampleFactoryB newValue3 = new ExampleFactoryB();
         current.referenceListAttribute.add(newValue3);

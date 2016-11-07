@@ -19,6 +19,7 @@ public class DataEditorIntegrationTest extends Application{
         root.getStylesheets().add(getClass().getResource("/de/factoryfx/javafx/css/app.css").toExternalForm());
 
 
+
         ExampleData1 exampleData1 = new ExampleData1();
         exampleData1.stringAttribute.set("abc");
 
@@ -26,7 +27,7 @@ public class DataEditorIntegrationTest extends Application{
         DataEditor dataEditor = new DataEditor(new AttributeEditorFactory(uniformDesign),uniformDesign);
         root.setCenter(dataEditor.createContent());
 
-        exampleData1.prepareRootEditing();
+        exampleData1.internal().prepareRootEditing();
         dataEditor.edit(exampleData1);
 
         primaryStage.setScene(new Scene(root,1200,800));

@@ -12,6 +12,6 @@ public class WebGuiFactoryHeader {
     }
 
     public WebGuiFactoryHeader(FactoryBase<?,?> factoryBase) {
-        this(factoryBase.getDisplayText(),factoryBase.getId());
+        this(factoryBase.internal().getDisplayText(),factoryBase.getId());
     }
 }

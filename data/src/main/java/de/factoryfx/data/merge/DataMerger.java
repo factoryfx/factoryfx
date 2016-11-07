@@ -18,7 +18,7 @@ public class DataMerger {
     }
 
     public MergeDiff createMergeResult() {
-        return createMergeResult(currentModel.collectChildFactoriesMap()).getMergeDiff();
+        return createMergeResult(currentModel.internal().collectChildFactoriesMap()).getMergeDiff();
     }
 
 
@@ -26,26 +26,26 @@ public class DataMerger {
     private MergeResult createMergeResult(Map<Object, Data> currentMap) {
         MergeResult mergeResult = new MergeResult();
 
-        Map<Object, Data> originalMap = originalModel.collectChildFactoriesMap();
-        Map<Object, Data> newMap = newModel.collectChildFactoriesMap();
+        Map<Object, Data> originalMap = originalModel.internal().collectChildFactoriesMap();
+        Map<Object, Data> newMap = newModel.internal().collectChildFactoriesMap();
 
         for (Map.Entry<Object, Data> entry : currentMap.entrySet()) {
             Data originalValue = originalMap.get(entry.getKey());
             Data newValue = newMap.get(entry.getKey());
 
-            entry.getValue().merge(Optional.ofNullable(originalValue), Optional.ofNullable(newValue), mergeResult);
+            entry.getValue().internal().merge(Optional.ofNullable(originalValue), Optional.ofNullable(newValue), mergeResult);
         }
         return mergeResult;
     }
 
     public MergeDiff mergeIntoCurrent() {
-        Map<Object, Data> currentMap = currentModel.collectChildFactoriesMap();
+        Map<Object, Data> currentMap = currentModel.internal().collectChildFactoriesMap();
         MergeResult mergeResult = createMergeResult(currentMap);
         MergeDiff mergeDiff = mergeResult.getMergeDiff();
 
         if (mergeDiff.hasNoConflicts()) {
             mergeResult.executeMerge();
-            currentModel.fixDuplicateObjects(s -> Optional.ofNullable(currentMap.get(s)));
+            currentModel.internal().fixDuplicateObjects(s -> Optional.ofNullable(currentMap.get(s)));
         }
         return mergeDiff;
     }

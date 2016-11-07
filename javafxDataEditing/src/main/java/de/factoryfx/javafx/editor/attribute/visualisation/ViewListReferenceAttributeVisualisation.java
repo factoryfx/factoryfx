@@ -42,7 +42,7 @@ public class ViewListReferenceAttributeVisualisation implements AttributeEditorV
         TableView<Data> tableView = new TableView<>();
         tableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         TableColumn<Data, String> test = new TableColumn<>("Data");
-        test.setCellValueFactory(param -> new SimpleStringProperty(param.getValue().getDisplayText()));
+        test.setCellValueFactory(param -> new SimpleStringProperty(param.getValue().internal().getDisplayText()));
         tableView.getColumns().add(test);
         tableView.getStyleClass().add("hidden-tableview-headers");
         ObservableList<Data> items = FXCollections.observableArrayList();

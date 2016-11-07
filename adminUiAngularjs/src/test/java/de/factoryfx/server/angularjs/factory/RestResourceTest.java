@@ -47,14 +47,14 @@ public class RestResourceTest {
         restResource.init();
 
 
-        ExampleFactoryA update = exampleFactoryA.copy();
+        ExampleFactoryA update = exampleFactoryA.internal().copy();
         ExampleFactoryB exampleFactoryB = new ExampleFactoryB();
 
         update.referenceListAttribute.add(exampleFactoryB);
         restResource.save(new FactoryTypeInfoWrapper(update));
 
 
-        exampleFactoryB.referenceAttribute.set(shared.copy());
+        exampleFactoryB.referenceAttribute.set(shared.internal().copy());
         restResource.save(new FactoryTypeInfoWrapper(update));
 
 

@@ -16,7 +16,7 @@ public class WebGuiValidationError {
         validationDescription=validationError.validationDescription.getPreferred(locale);
         attributeLabel=validationError.attributeLabel.getPreferred(locale);
         factoryId=factoryBase.getId().toString();
-        factoryDisplayText=factoryBase.getDisplayText();
+        factoryDisplayText=factoryBase.internal().getDisplayText();
 
     }
 }

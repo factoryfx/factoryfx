@@ -129,16 +129,16 @@ public class DataEditor implements Widget {
                 result.setCenter(new Label("empty"));
             } else {
 
-                if (newValue.attributeListGrouped().size()==1){
+                if (newValue.internal().attributeListGrouped().size()==1){
                     GridPane grid = createGrid();
-                    for (Pair<String,List<Attribute<?>>> attributeGroup: newValue.attributeListGrouped()) {
+                    for (Pair<String,List<Attribute<?>>> attributeGroup: newValue.internal().attributeListGrouped()) {
                         fillGrid(grid, attributeGroup.getValue());
                     }
                     result.setCenter(wrapGrid(grid));
 
                 } else {
                     TabPane tabPane = new TabPane();
-                    for (Pair<String,List<Attribute<?>>> attributeGroup: newValue.attributeListGrouped()) {
+                    for (Pair<String,List<Attribute<?>>> attributeGroup: newValue.internal().attributeListGrouped()) {
                         Tab tab=new Tab(attributeGroup.getKey());
                         if (attributeGroup.getValue().size()>1){
                             GridPane tabgrid = createGrid();
@@ -242,7 +242,7 @@ public class DataEditor implements Widget {
 
     private void addEditorContent(GridPane gridPane, int row, Node editorWidgetContent, Label label) {
         GridPane.setMargin(editorWidgetContent, new Insets(4, 0, 4, 0));
-        label.setLabelFor(editorWidgetContent);
+//        label.setLabelFor(editorWidgetContent);
 
 
         StackPane pane = new StackPane();
@@ -280,7 +280,7 @@ public class DataEditor implements Widget {
             BreadCrumbBarSkin.BreadCrumbButton breadCrumbButton = new BreadCrumbBarSkin.BreadCrumbButton("");
             if (param.getValue()!=null){
                 //TODO updatable binding
-                breadCrumbButton.textProperty().bind(new SimpleStringProperty(param.getValue().getDisplayText()));
+                breadCrumbButton.textProperty().bind(new SimpleStringProperty(param.getValue().internal().getDisplayText()));
             }
             if (bound.get()==param.getValue()){
                 breadCrumbButton.setStyle("-fx-font-weight: bold;");
