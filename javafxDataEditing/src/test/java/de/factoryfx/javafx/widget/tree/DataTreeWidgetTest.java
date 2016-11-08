@@ -28,7 +28,7 @@ public class DataTreeWidgetTest extends Application {
 
 
 
-        DataTreeWidget dataTreeWidget= new DataTreeWidget(dataEditor,exampleData1);
+        DataTreeWidget dataTreeWidget= new DataTreeWidget(dataEditor,exampleData1,new UniformDesignFactory<>().instance());
 
 
 

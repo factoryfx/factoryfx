@@ -1,13 +1,12 @@
 package de.factoryfx.javafx.widget.tree;
 
-import java.util.function.Consumer;
-
 import com.google.common.collect.TreeTraverser;
 import de.factoryfx.data.Data;
 import de.factoryfx.data.attribute.Attribute;
 import de.factoryfx.data.attribute.ReferenceAttribute;
 import de.factoryfx.data.attribute.ReferenceListAttribute;
 import de.factoryfx.javafx.editor.data.DataEditor;
+import de.factoryfx.javafx.util.UniformDesign;
 import de.factoryfx.javafx.widget.CloseAwareWidget;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
@@ -24,10 +23,12 @@ import javafx.scene.control.cell.TextFieldTreeCell;
 public class DataTreeWidget implements CloseAwareWidget {
     private final Data root;
     private final DataEditor dataEditor;
+    private final UniformDesign uniformDesign;
 
-    public DataTreeWidget(DataEditor dataEditor, Data root) {
+    public DataTreeWidget(DataEditor dataEditor, Data root, UniformDesign uniformDesign) {
         this.dataEditor=dataEditor;
         this.root = root;
+        this.uniformDesign = uniformDesign;
     }
 
     @Override
@@ -44,16 +45,14 @@ public class DataTreeWidget implements CloseAwareWidget {
     }
 
     private Node createTree(){
-        TreeView<Data> tree = new TreeView<>();
+        TreeView<TreeData> tree = new TreeView<>();
         tree.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
-        tree.setCellFactory(param -> new TextFieldTreeCell<Data>() {
+        tree.setCellFactory(param -> new TextFieldTreeCell<TreeData>() {
             @Override
-            public void updateItem(Data item, boolean empty) {
+            public void updateItem(TreeData item, boolean empty) {
                 super.updateItem(item, empty);
                 if (item != null) {
-                    this.setText(item.internal().getDisplayText());
-                } else {
-                    this.setText("<empty>");
+                    this.setText(item.getDisplayText());
                 }
                 //CellUtils.updateItem(this, getConverter(), hbox, getTreeItemGraphic(), textField);
             }
@@ -63,18 +62,18 @@ public class DataTreeWidget implements CloseAwareWidget {
 
         tree.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue!=null){
-                dataEditor.edit(newValue.getValue());
+                dataEditor.edit(newValue.getValue().getData());
             }
         });
 
         ChangeListener<Data> dataChangeListener = (observable, oldValue, newValue) -> {
             Platform.runLater(() -> {//javafx bug workaround http://stackoverflow.com/questions/26343495/indexoutofboundsexception-while-updating-a-listview-in-javafx
-                TreeItem<Data> treeItemRoot = constructTree(root);
+                TreeItem<TreeData> treeItemRoot = constructTree(root);
                 tree.setRoot(treeItemRoot);
 
                 tree.getSelectionModel().clearSelection();
-                for (TreeItem<Data> item : treeViewTraverser.breadthFirstTraversal(treeItemRoot)) {
-                    if (item.getValue() == newValue) {
+                for (TreeItem<TreeData> item : treeViewTraverser.breadthFirstTraversal(treeItemRoot)) {
+                    if (item.getValue().getData() == newValue) {
                         tree.getSelectionModel().select(item);
                     }
                 }
@@ -91,7 +90,7 @@ public class DataTreeWidget implements CloseAwareWidget {
         ContextMenu contextMenu = new ContextMenu();
         MenuItem menuItem = new MenuItem("expand all");
         menuItem.setOnAction(event -> {
-            for (TreeItem<Data> item : treeViewTraverser.breadthFirstTraversal(tree.getRoot())) {
+            for (TreeItem<TreeData> item : treeViewTraverser.breadthFirstTraversal(tree.getRoot())) {
                 item.setExpanded(true);
             }
         });
@@ -101,17 +100,16 @@ public class DataTreeWidget implements CloseAwareWidget {
         return scrollPane;
     }
 
-    TreeTraverser<TreeItem<Data>> treeViewTraverser = new TreeTraverser<TreeItem<Data>>() {
+    TreeTraverser<TreeItem<TreeData>> treeViewTraverser = new TreeTraverser<TreeItem<TreeData>>() {
         @Override
-        public Iterable<TreeItem<Data>> children(TreeItem<Data> data) {
+        public Iterable<TreeItem<TreeData>> children(TreeItem<TreeData> data) {
             return data.getChildren();
         }
     };
 
-    private TreeItem<Data> constructTree(Data data){
-        TreeItem<Data> dataTreeItem = new TreeItem<>(data);
-
+    private TreeItem<TreeData> constructTree(Data data){
         if (data!=null){
+            TreeItem<TreeData> dataTreeItem = new TreeItem<>(new TreeData(data,null));
             data.internal().visitAttributesFlat((attributeVariableName, attribute) -> {
                 attribute.visit(new Attribute.AttributeVisitor() {
                     @Override
@@ -121,33 +119,56 @@ public class DataTreeWidget implements CloseAwareWidget {
 
                     @Override
                     public void reference(ReferenceAttribute<?> reference) {
-                        dataTreeItem.getChildren().add(constructTree(reference.get()));
+                        TreeItem<TreeData> refDataTreeItem = new TreeItem<>(new TreeData(data,uniformDesign.getLabelText(reference)));
+                        dataTreeItem.getChildren().add(refDataTreeItem);
+
+                        final TreeItem<TreeData> treeItem = constructTree(reference.get());
+                        if (treeItem!=null){
+                            refDataTreeItem.getChildren().add(treeItem);
+                        }
                     }
 
                     @Override
                     public void referenceList(ReferenceListAttribute<?> referenceList) {
-//                        TreeItem<Data> listDataTreeItem = new TreeItem<>(data);
-//                        listDataTreeItem
-//                                new type for data?
-//                        dataTreeItem.getChildren().add(listDataTreeItem);
-                        referenceList.get().forEach(new Consumer<Data>() {
-                            @Override
-                            public void accept(Data data1) {
-                                dataTreeItem.getChildren().add(constructTree(data1));
+                        TreeItem<TreeData> listDataTreeItem = new TreeItem<>(new TreeData(data,uniformDesign.getLabelText(referenceList)));
+                        dataTreeItem.getChildren().add(listDataTreeItem);
+                        referenceList.get().forEach((data)-> {
+                            final TreeItem<TreeData> treeItem = constructTree(data);
+                            if (treeItem!=null){
+                                listDataTreeItem.getChildren().add(treeItem);
                             }
                         });
                     }
                 });
             });
+            return dataTreeItem;
+        }
+        return null;
+    }
+
+    public static class TreeData{
+        private final Data data;
+        private final String text;
+
+        public TreeData(Data data, String text) {
+            if (data==null){
+                System.out.println();
+            }
+            this.data = data;
+            this.text = text;
+        }
+
+        public String getDisplayText() {
+            if (text==null && data!=null){
+                return data.internal().getDisplayText();
+            }
+            return text;
         }
 
 
-
-        data.internal().visitChildFactoriesFlat(child -> {
-            dataTreeItem.getChildren().add(constructTree(child));
-        });
-        return dataTreeItem;
+        public Data getData(){
+            return data;
+        }
     }
-
 
 }
