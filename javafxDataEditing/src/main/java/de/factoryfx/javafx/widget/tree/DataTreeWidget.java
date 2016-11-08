@@ -43,6 +43,8 @@ public class DataTreeWidget implements CloseAwareWidget {
         splitPane.setDividerPosition(0,0.75);
         return splitPane;
     }
+    
+    boolean programmaticallySelect=false;
 
     private Node createTree(){
         TreeView<TreeData> tree = new TreeView<>();
@@ -61,7 +63,7 @@ public class DataTreeWidget implements CloseAwareWidget {
         tree.setRoot(constructTree(root));
 
         tree.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-            if (newValue!=null){
+            if (newValue!=null && !programmaticallySelect){
                 dataEditor.edit(newValue.getValue().getData());
             }
         });
@@ -73,9 +75,11 @@ public class DataTreeWidget implements CloseAwareWidget {
 
                 tree.getSelectionModel().clearSelection();
                 for (TreeItem<TreeData> item : treeViewTraverser.breadthFirstTraversal(treeItemRoot)) {
+                    programmaticallySelect=true;
                     if (item.getValue().match(newValue)) {
                         tree.getSelectionModel().select(item);
                     }
+                    programmaticallySelect=false;
                 }
             });
 

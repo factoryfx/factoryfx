@@ -20,5 +20,6 @@ public class FactoryViewListReferenceAttributeTest {
         });
 
         ObjectMapperBuilder.build().copy(attribute);
+        System.out.println(ObjectMapperBuilder.build().writeValueAsString(attribute));
     }
 }
