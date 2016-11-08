@@ -53,7 +53,7 @@ public class DataTreeWidget implements CloseAwareWidget {
                 if (item != null) {
                     this.setText(item.internal().getDisplayText());
                 } else {
-                    this.setText("");
+                    this.setText("<empty>");
                 }
                 //CellUtils.updateItem(this, getConverter(), hbox, getTreeItemGraphic(), textField);
             }
@@ -111,9 +111,8 @@ public class DataTreeWidget implements CloseAwareWidget {
     private TreeItem<Data> constructTree(Data data){
         TreeItem<Data> dataTreeItem = new TreeItem<>(data);
 
-        data.internal().visitAttributesFlat(new Data.AttributeVisitor() {
-            @Override
-            public void accept(String attributeVariableName, Attribute<?> attribute) {
+        if (data!=null){
+            data.internal().visitAttributesFlat((attributeVariableName, attribute) -> {
                 attribute.visit(new Attribute.AttributeVisitor() {
                     @Override
                     public void value(Attribute<?> value) {
@@ -127,20 +126,21 @@ public class DataTreeWidget implements CloseAwareWidget {
 
                     @Override
                     public void referenceList(ReferenceListAttribute<?> referenceList) {
-                        TreeItem<Data> listDataTreeItem = new TreeItem<>(data);
+//                        TreeItem<Data> listDataTreeItem = new TreeItem<>(data);
 //                        listDataTreeItem
 //                                new type for data?
-                        dataTreeItem.getChildren().add(listDataTreeItem);
+//                        dataTreeItem.getChildren().add(listDataTreeItem);
                         referenceList.get().forEach(new Consumer<Data>() {
                             @Override
-                            public void accept(Data data) {
-                                dataTreeItem.getChildren().add(constructTree(data));
+                            public void accept(Data data1) {
+                                dataTreeItem.getChildren().add(constructTree(data1));
                             }
                         });
                     }
                 });
-            }
-        });
+            });
+        }
+
 
 
         data.internal().visitChildFactoriesFlat(child -> {

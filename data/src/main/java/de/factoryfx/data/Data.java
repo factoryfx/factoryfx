@@ -26,13 +26,12 @@ import de.factoryfx.data.attribute.types.ObjectValueAttribute;
 import de.factoryfx.data.merge.MergeResult;
 import de.factoryfx.data.merge.MergeResultEntry;
 import de.factoryfx.data.merge.attribute.AttributeMergeHelper;
-import de.factoryfx.data.util.TextSearchSupport;
 import de.factoryfx.data.validation.ValidationError;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.util.Pair;
 
-public abstract class Data implements TextSearchSupport {
+public abstract class Data {
 
     public abstract Object getId();
 
@@ -410,7 +409,7 @@ public abstract class Data implements TextSearchSupport {
     }
 
     private boolean isReadyForEditing;
-    public <T extends Data> T prepareEditing(Data root){
+    private <T extends Data> T prepareEditing(Data root){
         for (Data data: collectChildrenDeep()){
             data.visitAttributesFlat((attributeVariableName, attribute) -> {
                 attribute.prepareEditing(root,data);
@@ -438,9 +437,16 @@ public abstract class Data implements TextSearchSupport {
         return result;
     }
 
-    @Override
-    public boolean matchSearchText(String text) {
-        return Strings.isNullOrEmpty(text) || Strings.nullToEmpty(getDisplayText()).toLowerCase().contains(text.toLowerCase());
+    private Function<String,Boolean> matchSearchTextFunction=text->{
+            return Strings.isNullOrEmpty(text) || Strings.nullToEmpty(getDisplayText()).toLowerCase().contains(text.toLowerCase());
+    };
+
+    private void setMatchSearchTextFunction(Function<String,Boolean> matchSearchTextFunction) {
+        this.matchSearchTextFunction=matchSearchTextFunction;
+    }
+
+    private boolean matchSearchText(String text) {
+        return matchSearchTextFunction.apply(text);
     }
 
     DataConfiguration dataConfiguration = new DataConfiguration(this);
@@ -466,10 +472,18 @@ public abstract class Data implements TextSearchSupport {
         public void setNewInstanceSupplier(Supplier<Data> newInstanceSupplier){
             this.data.setNewInstanceSupplier(newInstanceSupplier);
         }
+
+        public void setMatchSearchTextFunction(Function<String,Boolean> matchSearchTextFunction){
+            data.setMatchSearchTextFunction(matchSearchTextFunction);
+        }
     }
 
 
     Internal internal = new Internal(this);
+    /** <b>internal methods should be only used from the framework.</b>
+     *  They may change in the Future.
+     *  There is no fitting visibility in java therefore this workaround.
+     */
     public Internal internal(){
         return internal;
     }
@@ -481,11 +495,14 @@ public abstract class Data implements TextSearchSupport {
             this.data = data;
         }
 
+        public boolean matchSearchText(String newValue) {
+            return data.matchSearchText(newValue);
+        }
+
         public void visitChildFactoriesFlat(Consumer<Data> consumer) {
             data.visitChildFactoriesFlat(consumer);
         }
 
-        @SuppressWarnings("unchecked")
         public <A> void  visitAttributesDualFlat(Data modelBase, BiConsumer<Attribute<A>, Attribute<A>> consumer) {
             data.visitAttributesDualFlat(modelBase,consumer);
         }
@@ -506,7 +523,6 @@ public abstract class Data implements TextSearchSupport {
             return data.collectChildFactoriesMap();
         }
 
-        @SuppressWarnings("unchecked")
         public <T extends Data> Set<T> collectChildrenFlat() {
             return data.collectChildrenFlat();
         }
@@ -520,20 +536,15 @@ public abstract class Data implements TextSearchSupport {
             data.collectModelEntitiesTo(allModelEntities);
         }
 
-        @SuppressWarnings("unchecked")
         public <T extends Data> T reconstructMetadataDeepRoot() {
             return data.reconstructMetadataDeepRoot();
         }
 
 
-        @SuppressWarnings("unchecked")
         public void fixDuplicateObjects(Function<Object, Optional<Data>> getCurrentEntity) {
             data.fixDuplicateObjects(getCurrentEntity);
         }
 
-
-        @JsonIgnore
-        @SuppressWarnings("unchecked")
         public String getDisplayText(){
             return data.getDisplayText();
         }
@@ -542,11 +553,9 @@ public abstract class Data implements TextSearchSupport {
             return data.validateFlat();
         }
 
-        @SuppressWarnings("unchecked")
         public void merge(Optional<Data> originalValue, Optional<Data> newValue, MergeResult mergeResult) {
             data.merge(originalValue,newValue,mergeResult);
         }
-
 
         public HashMap<Data, Data> getChildToParentMap(Set<Data> allModelEntities) {
             return data.getChildToParentMap(allModelEntities);
@@ -584,7 +593,6 @@ public abstract class Data implements TextSearchSupport {
             return data.copyZeroLevelDeep(true);
         }
 
-        @SuppressWarnings("unchecked")
         public <T extends Data> T prepareRootEditing() {
             return (T)data.prepareEditing(data);
         }

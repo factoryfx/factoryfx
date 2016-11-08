@@ -205,7 +205,7 @@ public class ReferenceListAttribute<T extends Data> extends Attribute<Observable
         }
 
         for (Data data: get()){
-            data.prepareEditing(root);
+            data.internal().prepareEditing(root);
         }
 
         return addedFactory;
