@@ -73,7 +73,7 @@ public class DataTreeWidget implements CloseAwareWidget {
 
                 tree.getSelectionModel().clearSelection();
                 for (TreeItem<TreeData> item : treeViewTraverser.breadthFirstTraversal(treeItemRoot)) {
-                    if (item.getValue().getData() == newValue) {
+                    if (item.getValue().match(newValue)) {
                         tree.getSelectionModel().select(item);
                     }
                 }
@@ -168,6 +168,10 @@ public class DataTreeWidget implements CloseAwareWidget {
 
         public Data getData(){
             return data;
+        }
+
+        public boolean match(Data newValue) {
+            return text==null && newValue==data;
         }
     }
 
