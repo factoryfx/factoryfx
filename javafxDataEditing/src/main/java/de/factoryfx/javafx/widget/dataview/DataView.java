@@ -1,18 +1,26 @@
 package de.factoryfx.javafx.widget.dataview;
 
+import java.util.List;
+import java.util.function.Supplier;
+
 import de.factoryfx.data.Data;
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
 public class DataView {
 
-    ObservableList<Data> dataList;
+    private final ObservableList<Data> dataList= FXCollections.observableArrayList();
+    private final Supplier<List<Data>> listSupplier;
+    public DataView(Supplier<List<Data>> listSupplier) {
+        this.listSupplier = listSupplier;
+    }
 
-    //TO define observable to refresh list similar to bindings
-    public DataView(ObservableList<Data> dataList) {
-        this.dataList = dataList;
+    public void update(){
+        dataList.setAll(listSupplier.get());
     }
 
     public ObservableList<Data> dataList(){
+        update();
         return dataList;
     }
 
