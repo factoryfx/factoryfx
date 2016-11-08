@@ -5,14 +5,14 @@ import javafx.collections.ObservableList;
 
 public class DataView {
 
-    ObservableList<Data> dataList;
+    ObservableList<? extends Data> dataList;
 
     //TO define observable to refresh list similar to bindings
-    public DataView(ObservableList<Data> dataList) {
+    public DataView(ObservableList<? extends Data> dataList) {
         this.dataList = dataList;
     }
 
-    public ObservableList<Data> dataList(){
+    public ObservableList<? extends Data> dataList(){
         return dataList;
     }
 
