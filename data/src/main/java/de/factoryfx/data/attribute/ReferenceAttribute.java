@@ -159,7 +159,7 @@ public class ReferenceAttribute<T extends Data> extends Attribute<T> {
             }
 
         }
-        getOptional().ifPresent(data->data.internal().prepareEditing(root));
+        getOptional().ifPresent(data->data.internal().prepareUsage(root));
         return get();
     }
 

@@ -20,6 +20,7 @@ import java.util.stream.Stream;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.common.base.Strings;
 import de.factoryfx.data.attribute.Attribute;
+import de.factoryfx.data.attribute.AttributeChangeListener;
 import de.factoryfx.data.attribute.ReferenceAttribute;
 import de.factoryfx.data.attribute.ReferenceListAttribute;
 import de.factoryfx.data.attribute.types.ObjectValueAttribute;
@@ -27,6 +28,8 @@ import de.factoryfx.data.merge.MergeResult;
 import de.factoryfx.data.merge.MergeResultEntry;
 import de.factoryfx.data.merge.attribute.AttributeMergeHelper;
 import de.factoryfx.data.validation.ValidationError;
+import javafx.beans.property.ReadOnlyStringProperty;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.util.Pair;
@@ -34,6 +37,7 @@ import javafx.util.Pair;
 public abstract class Data {
 
     public abstract Object getId();
+
 
     public abstract void setId(Object object);
 
@@ -395,11 +399,11 @@ public abstract class Data {
     }
 
 
-    private boolean readyForEditing(){
+    private boolean readyForUsage(){
         return isReadyForEditing;
     }
 
-    private <T extends Data> T endRootEditing() {
+    private <T extends Data> T endUsage() {
         for (Data data: collectChildrenDeep()){
             data.visitAttributesFlat((attributeVariableName, attribute) -> {
                 attribute.endEditing();
@@ -409,7 +413,7 @@ public abstract class Data {
     }
 
     private boolean isReadyForEditing;
-    private <T extends Data> T prepareEditing(Data root){
+    private <T extends Data> T prepareUsage(Data root){
         for (Data data: collectChildrenDeep()){
             data.visitAttributesFlat((attributeVariableName, attribute) -> {
                 attribute.prepareEditing(root,data);
@@ -449,6 +453,26 @@ public abstract class Data {
         return matchSearchTextFunction.apply(text);
     }
 
+    private List<Attribute<?>> displayTextDependencies= Collections.emptyList();
+    public void setDisplayTextDependencies(List<Attribute<?>> displayTextDependencies) {
+        this.displayTextDependencies = displayTextDependencies;
+    }
+
+    private SimpleStringProperty simpleStringProperty=null;
+    @JsonIgnore
+    public ReadOnlyStringProperty getDisplayTextObservable() {
+        if (simpleStringProperty==null){
+            simpleStringProperty = new SimpleStringProperty();
+            simpleStringProperty.set(getDisplayText());
+            for (Attribute<?> attribute: displayTextDependencies){
+                attribute.addListener((AttributeChangeListener) (attributeParam, value) -> simpleStringProperty.set(getDisplayText()));
+            }
+        }
+        return simpleStringProperty;
+    }
+
+
+
     DataConfiguration dataConfiguration = new DataConfiguration(this);
     public DataConfiguration config(){
         return dataConfiguration;
@@ -475,6 +499,14 @@ public abstract class Data {
 
         public void setMatchSearchTextFunction(Function<String,Boolean> matchSearchTextFunction){
             data.setMatchSearchTextFunction(matchSearchTextFunction);
+        }
+
+        public void setDisplayTextDependencies(List<Attribute<?>> attributes){
+            data.setDisplayTextDependencies(attributes);
+        }
+
+        public void setDisplayTextDependencies(Attribute<?>... attributes){
+            data.setDisplayTextDependencies(Arrays.asList(attributes));
         }
     }
 
@@ -549,6 +581,10 @@ public abstract class Data {
             return data.getDisplayText();
         }
 
+        public ReadOnlyStringProperty getDisplayTextObservable(){
+            return data.getDisplayTextObservable();
+        }
+
         public List<ValidationError> validateFlat(){
             return data.validateFlat();
         }
@@ -593,20 +629,22 @@ public abstract class Data {
             return data.copyZeroLevelDeep(true);
         }
 
-        public <T extends Data> T prepareRootEditing() {
-            return (T)data.prepareEditing(data);
+        /** only call on root*/
+        public <T extends Data> T prepareUsage() {
+            return data.prepareUsage(data);
         }
 
-        public boolean readyForEditing(){
-            return data.readyForEditing();
+        /** only call on root*/
+        public <T extends Data> T endUsage() {
+            return data.endUsage();
         }
 
-        public <T extends Data> T endRootEditing() {
-            return data.endRootEditing();
+        public boolean readyForUsage(){
+            return data.readyForUsage();
         }
 
-        public <T extends Data> T prepareEditing(Data root){
-            return data.prepareEditing(root);
+        public <T extends Data> T prepareUsage(Data root){
+            return data.prepareUsage(root);
         }
     }
 }

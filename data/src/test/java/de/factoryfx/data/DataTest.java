@@ -148,14 +148,14 @@ public class DataTest {
     @Test
     public void test_editing_nested_add(){
         ExampleWithDefaultParent exampleWithDefaultParent = new ExampleWithDefaultParent();
-        exampleWithDefaultParent.internal().prepareRootEditing();
-        Assert.assertTrue(exampleWithDefaultParent.internal().readyForEditing());
+        exampleWithDefaultParent.internal().prepareUsage();
+        Assert.assertTrue(exampleWithDefaultParent.internal().readyForUsage());
 
         exampleWithDefaultParent.referenceAttribute.addNewFactory();
 
-        Assert.assertTrue(exampleWithDefaultParent.internal().readyForEditing());
-        Assert.assertTrue(exampleWithDefaultParent.referenceAttribute.get().internal().readyForEditing());
-        Assert.assertTrue(exampleWithDefaultParent.referenceAttribute.get().referenceAttribute.get().internal().readyForEditing());
+        Assert.assertTrue(exampleWithDefaultParent.internal().readyForUsage());
+        Assert.assertTrue(exampleWithDefaultParent.referenceAttribute.get().internal().readyForUsage());
+        Assert.assertTrue(exampleWithDefaultParent.referenceAttribute.get().referenceAttribute.get().internal().readyForUsage());
     }
 
 
@@ -186,5 +186,26 @@ public class DataTest {
 
         copy =  exampleFactoryA.internal().copyZeroLevelDeep(false);
         Assert.assertNotEquals(copy.getId(), exampleFactoryA.getId());
+    }
+
+
+
+    private class ExampleFactoryObservable extends IdData {
+        public final StringAttribute stringAttribute= new StringAttribute(new AttributeMetadata().labelText("ExampleA1"));
+        public ExampleFactoryObservable(){
+            config().setDisplayTextProvider(() -> stringAttribute.get());
+            config().setDisplayTextDependencies(stringAttribute);
+        }
+    }
+    @Test
+    public void test_displaytext_observable(){
+        ExampleFactoryObservable exampleFactory = new ExampleFactoryObservable();
+        exampleFactory.stringAttribute.set("1");
+
+        Assert.assertEquals("stable ref",exampleFactory.getDisplayTextObservable(),exampleFactory.getDisplayTextObservable());
+
+        Assert.assertEquals("1",exampleFactory.getDisplayTextObservable().get());
+        exampleFactory.stringAttribute.set("2");
+        Assert.assertEquals("2",exampleFactory.getDisplayTextObservable().get());
     }
 }

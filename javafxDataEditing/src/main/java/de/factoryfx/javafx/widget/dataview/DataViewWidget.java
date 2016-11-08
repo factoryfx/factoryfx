@@ -5,7 +5,6 @@ import de.factoryfx.javafx.editor.data.DataEditor;
 import de.factoryfx.javafx.util.UniformDesign;
 import de.factoryfx.javafx.widget.CloseAwareWidget;
 import de.factoryfx.javafx.widget.table.TableControlWidget;
-import javafx.beans.property.SimpleStringProperty;
 import javafx.geometry.Orientation;
 import javafx.scene.Node;
 import javafx.scene.control.SplitPane;
@@ -40,7 +39,7 @@ public class DataViewWidget implements CloseAwareWidget {
         tableView.setItems(dataView.dataList());
         tableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         TableColumn<Data, String> test = new TableColumn<>("Data");
-        test.setCellValueFactory(param -> new SimpleStringProperty(param.getValue().internal().getDisplayText()));
+        test.setCellValueFactory(param -> param.getValue().internal().getDisplayTextObservable());
         tableView.getColumns().add(test);
         tableView.getStyleClass().add("hidden-tableview-headers");
 

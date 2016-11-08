@@ -15,7 +15,6 @@ import javafx.beans.binding.Bindings;
 import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
@@ -279,8 +278,7 @@ public class DataEditor implements Widget {
         breadCrumbBar.setCrumbFactory(param -> {
             BreadCrumbBarSkin.BreadCrumbButton breadCrumbButton = new BreadCrumbBarSkin.BreadCrumbButton("");
             if (param.getValue()!=null){
-                //TODO updatable binding
-                breadCrumbButton.textProperty().bind(new SimpleStringProperty(param.getValue().internal().getDisplayText()));
+                breadCrumbButton.textProperty().bind(param.getValue().internal().getDisplayTextObservable());
             }
             if (bound.get()==param.getValue()){
                 breadCrumbButton.setStyle("-fx-font-weight: bold;");

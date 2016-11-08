@@ -27,7 +27,7 @@ public class DataEditorIntegrationTest extends Application{
         DataEditor dataEditor = new DataEditor(new AttributeEditorFactory(uniformDesign),uniformDesign);
         root.setCenter(dataEditor.createContent());
 
-        exampleData1.internal().prepareRootEditing();
+        exampleData1.internal().prepareUsage();
         dataEditor.edit(exampleData1);
 
         primaryStage.setScene(new Scene(root,1200,800));
