@@ -15,23 +15,35 @@ import org.junit.runners.Parameterized;
 @RunWith(Parameterized.class)
 public class FactoryValidatorTest {
 
-    @Parameterized.Parameters(name = "{index}:{0}")
+    @Parameterized.Parameters(name = "{index}:{1}")
     public static Iterable<Object[]> data1() throws IOException {
         List<Object[]> result = new ArrayList<>();
+        final FactoryStyleValidator factoryStyleValidator = new FactoryStyleValidator();
         for (Class<? extends FactoryBase> clazz: new ClasspathBasedFactoryProvider().get(ExampleFactoryA.class)){
-            result.add(new Object[]{clazz});
+
+            try {
+                final List<FactoryStyleValidation> factoryValidations = factoryStyleValidator.createFactoryValidations(clazz.newInstance());
+                for (FactoryStyleValidation factoryStyleValidation: factoryValidations){
+                    result.add(new Object[]{factoryStyleValidation,clazz.getName()+":"+factoryStyleValidation.getClass().getSimpleName()});
+                }
+            } catch (InstantiationException e) {
+                throw new RuntimeException(e);
+            } catch (IllegalAccessException e) {
+                throw new RuntimeException(e);
+            }
+//            result.add(new Object[]{clazz});
         }
 
         return result;
     }
 
-    Class<? extends FactoryBase> clazz;
-    public FactoryValidatorTest(Class<? extends FactoryBase> clazz){
-        this.clazz=clazz;
+    FactoryStyleValidation factoryStyleValidation;
+    public FactoryValidatorTest(FactoryStyleValidation factoryStyleValidation, String testname){
+        this.factoryStyleValidation=factoryStyleValidation;
     }
 
     @Test
     public void test() throws IllegalAccessException, InstantiationException {
-        Assert.assertEquals("",new FactoryStyleValidator().validateFactory(clazz.newInstance()).orElse(""));
+        Assert.assertEquals("",factoryStyleValidation.validateFactory().orElse(""));
     }
 }

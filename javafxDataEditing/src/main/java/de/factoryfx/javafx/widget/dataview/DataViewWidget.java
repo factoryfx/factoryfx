@@ -52,6 +52,7 @@ public class DataViewWidget implements CloseAwareWidget {
         splitPane.getItems().add(dataEditorWidget);
         splitPane.setDividerPositions(dividerPosition);
 
+        dataEditor.reset();
         tableView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             dataEditor.edit(newValue);
             dataEditor.resetHistory();

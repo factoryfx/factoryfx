@@ -1,48 +1,45 @@
 package de.factoryfx.factory.validator;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
-import java.util.Optional;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.BiFunction;
 
 import de.factoryfx.data.attribute.Attribute;
-import de.factoryfx.data.attribute.ReferenceAttribute;
-import de.factoryfx.data.attribute.ReferenceListAttribute;
 import de.factoryfx.factory.FactoryBase;
 
 public class FactoryStyleValidator {
 
+
+    private final BiFunction<FactoryBase<?, ?>, Field,List<FactoryStyleValidation>> validationAdder;
+
+    public FactoryStyleValidator(BiFunction<FactoryBase<?, ?>, Field, List<FactoryStyleValidation>> validationAdder) {
+        this.validationAdder = validationAdder;
+    }
+
+    public FactoryStyleValidator(){
+        this((factoryBase, field) -> {
+            final ArrayList<FactoryStyleValidation> factoryStyleValidations = new ArrayList<>();
+            factoryStyleValidations.add(new NoReferenceAttribute(factoryBase,field));
+            factoryStyleValidations.add(new NotNullAttributeValidation(factoryBase,field));
+            factoryStyleValidations.add(new PublicValidation(factoryBase,field));
+            factoryStyleValidations.add(new FinalValidation(factoryBase,field));
+            return factoryStyleValidations;
+        });
+    }
+
     /** test if the model is valid:
      * all Attributes are public
      * all Attributes not null after instantiation*/
-    public Optional<String> validateFactory(FactoryBase<?,?> factoryBase){
+    public List<FactoryStyleValidation> createFactoryValidations(FactoryBase<?,?> factoryBase){
+        final ArrayList<FactoryStyleValidation> result = new ArrayList<>();
         for (Field field: factoryBase.getClass().getDeclaredFields()){
 
             if (Attribute.class.isAssignableFrom(field.getType())){
-                if((field.getModifiers() & Modifier.PUBLIC) != java.lang.reflect.Modifier.PUBLIC) {
-                    return Optional.of("should be public: "+ factoryBase.getClass().getName()+"#"+field.getName());
-                }
-                if((field.getModifiers() & Modifier.FINAL) != java.lang.reflect.Modifier.FINAL) {
-                    return Optional.of("should be final: "+ factoryBase.getClass().getName()+"#"+field.getName());
-                }
-
-                if (ReferenceAttribute.class==field.getType()) {
-                    return Optional.of("should be FactoryReferenceAttribute: "+ factoryBase.getClass().getName()+"#"+field.getName());
-                }
-                if (ReferenceListAttribute.class==field.getType()) {
-                    return Optional.of("should be FactoryListReferenceAttribute: "+ factoryBase.getClass().getName()+"#"+field.getName());
-                }
-
-                try {
-                    if(field.get(factoryBase)==null) {
-                        return Optional.of("should be not null: "+ factoryBase.getClass().getName()+"#"+field.getName());
-                    }
-                } catch (IllegalAccessException e) {
-                    throw new RuntimeException(e);
-                }
-
+                result.addAll(validationAdder.apply(factoryBase,field));
             }
         }
-        return Optional.empty();
+        return result;
     }
 
 }
