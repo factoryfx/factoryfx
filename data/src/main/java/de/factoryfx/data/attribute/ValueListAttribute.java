@@ -49,9 +49,4 @@ public class ValueListAttribute<T> extends ValueAttribute<ObservableList<T>> {
         return new AttributeTypeInfo(ObservableList.class,null,null,itemType, AttributeTypeInfo.AttributeTypeCategory.COLLECTION,listNewItemEmptyValue);
     }
 
-    @Override
-    public boolean equals(Object o) {
-        return super.equals(o);
-    }
-
 }

@@ -248,9 +248,4 @@ public class ReferenceListAttribute<T extends Data> extends Attribute<Observable
         return userEditable;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        return super.equals(o);
-    }
-
 }

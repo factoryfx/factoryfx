@@ -2,7 +2,6 @@ package de.factoryfx.data.attribute;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
@@ -89,20 +88,4 @@ public class ValueAttribute<T> extends Attribute<T> {
         set(value);
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        ValueAttribute<?> that = (ValueAttribute<?>) o;
-        return Objects.equals(value, that.value);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(value);
-    }
 }
