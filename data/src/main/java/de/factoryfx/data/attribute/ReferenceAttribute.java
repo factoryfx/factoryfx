@@ -182,7 +182,8 @@ public class ReferenceAttribute<T extends Data> extends Attribute<T> {
         return result;
     }
 
-    public void prepareEditing(Data root, Data parent){
+    @Override
+    public void prepareUsage(Data root, Data parent){
         this.root=root;
         this.parent=parent;
     }
