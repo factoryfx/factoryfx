@@ -406,7 +406,7 @@ public abstract class Data {
     private <T extends Data> T endUsage() {
         for (Data data: collectChildrenDeep()){
             data.visitAttributesFlat((attributeVariableName, attribute) -> {
-                attribute.endEditing();
+                attribute.endUsage();
             });
         }
         return (T)this;
@@ -416,10 +416,16 @@ public abstract class Data {
     private <T extends Data> T prepareUsage(Data root){
         for (Data data: collectChildrenDeep()){
             data.visitAttributesFlat((attributeVariableName, attribute) -> {
-                attribute.prepareEditing(root,data);
+                attribute.prepareUsage(root,data);
             });
             data.isReadyForEditing=true;
         }
+        for (Data data: collectChildrenDeep()){
+            data.visitAttributesFlat((attributeVariableName, attribute) -> {
+                attribute.afterPreparedUsage(root);
+            });
+        }
+
         return (T)this;
     }
 

@@ -46,4 +46,9 @@ public class ValueSetAttribute<T> extends ValueAttribute<ObservableSet<T>> {
     public AttributeTypeInfo getAttributeType() {
         return new AttributeTypeInfo(ObservableSet.class,null,null,itemType, AttributeTypeInfo.AttributeTypeCategory.COLLECTION,emptyValue);
     }
+
+    @Override
+    public boolean equals(Object o) {
+        return super.equals(o);
+    }
 }

@@ -230,7 +230,7 @@ public class ReferenceListAttribute<T extends Data> extends Attribute<Observable
 
     @Override
     @SuppressWarnings("unchecked")
-    public void prepareEditing(Data root, Data parent){
+    public void prepareUsage(Data root, Data parent){
         this.parent=parent;
         this.root=root;;
     }
@@ -246,6 +246,11 @@ public class ReferenceListAttribute<T extends Data> extends Attribute<Observable
     @JsonIgnore
     public boolean isUserEditable(){
         return userEditable;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        return super.equals(o);
     }
 
 }

@@ -47,4 +47,9 @@ public class MapAttribute<K, V> extends ValueAttribute<ObservableMap<K,V>> {
         return new AttributeTypeInfo(ObservableMap.class,keyType,valueType, AttributeTypeInfo.AttributeTypeCategory.MAP);
     }
 
+    @Override
+    public boolean equals(Object o) {
+        return super.equals(o);
+    }
+
 }

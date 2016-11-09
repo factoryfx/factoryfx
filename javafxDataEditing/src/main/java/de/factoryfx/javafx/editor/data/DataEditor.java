@@ -102,7 +102,6 @@ public class DataEditor implements Widget {
 
 
     List<AttributeEditor<?>> createdEditors=new ArrayList<>();
-    BooleanBinding scrollerVisible;
 
     private Node wrapGrid(GridPane gridPane){
         ScrollPane scrollPane = new ScrollPane(gridPane);
@@ -327,17 +326,6 @@ public class DataEditor implements Widget {
 
 
         navigation.getChildren().add(scrollPaneBreadCrumbBar);
-//        Slider scroller = new Slider();
-//        scroller.setMin(0);
-//        scroller.setMax(1.0);
-////        scroller.valueProperty().bindBidirectional(scrollPaneBreadCrumbBar.hvalueProperty());
-//        scroller.setPrefWidth(50);
-//        scroller.setValue(1.0);
-//        navigation.getChildren().add(scroller);
-
-
-//        scrollerVisible = Bindings.createBooleanBinding(() -> scrollPaneBreadCrumbBar.getBoundsInParent().getWidth()<breadCrumbBar.getWidth(),scrollPaneBreadCrumbBar.boundsInParentProperty());
-//        scroller.visibleProperty().bind(scrollerVisible);
 
         navigation.setPadding(new Insets(3,3,0,3));//workaround scrollpane fittoheight and  .setAlignment(Pos.TOP_LEFT); dont work in this cas
 

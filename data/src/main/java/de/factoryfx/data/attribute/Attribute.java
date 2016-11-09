@@ -105,11 +105,16 @@ public abstract class Attribute<T>{
 
     public abstract AttributeTypeInfo getAttributeType();
 
-    public void prepareEditing(Data root, Data parent){
+    public void prepareUsage(Data root, Data parent){
         //nothing
     }
 
-    public void endEditing() {
+    //all elements is root are usable
+    public void afterPreparedUsage(Data root){
+        //nothing
+    }
+
+    public void endUsage() {
         //nothing
     }
 }

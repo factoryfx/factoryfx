@@ -126,13 +126,13 @@ public class ViewReferenceAttribute<R extends Data, P extends Data, T extends Da
 
     @Override
     @SuppressWarnings("unchecked")
-    public void prepareEditing(Data root, Data parent){
+    public void prepareUsage(Data root, Data parent){
         this.parent=(P)parent;
         this.root=(R)root;;
     }
 
     @Override
-    public void endEditing() {
+    public void endUsage() {
         if (dirtyTracking!=null) {
             dirtyTracking.stopTracking();
         }

@@ -200,5 +200,9 @@ public class ReferenceAttribute<T extends Data> extends Attribute<T> {
         return userEditable;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        return super.equals(o);
+    }
 
 }
