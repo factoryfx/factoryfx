@@ -60,7 +60,7 @@ public class ViewReferenceAttribute<R extends Data, P extends Data, T extends Da
                      (previousValue!=null && currentValue==null) ||
                      (previousValue!=null && currentValue!=null && !previousValue.getId().equals(currentValue.getId()))
                    ){
-                    for (AttributeChangeListener<T> listener: listeners){
+                    for (AttributeChangeListener<T> listener: new ArrayList<>(listeners)){
                         listener.changed(ViewReferenceAttribute.this,currentValue);
                     }
                 }
@@ -79,7 +79,7 @@ public class ViewReferenceAttribute<R extends Data, P extends Data, T extends Da
     }
     DirtyTrackingThread dirtyTracking;
 
-    List<AttributeChangeListener<T>> listeners= new ArrayList<>();
+    List<AttributeChangeListener<T>> listeners= Collections.synchronizedList(new ArrayList<>());
     @Override
     public void addListener(AttributeChangeListener<T> listener) {
         listeners.add(listener);

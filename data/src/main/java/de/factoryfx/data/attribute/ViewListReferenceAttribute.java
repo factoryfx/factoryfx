@@ -56,7 +56,7 @@ public class ViewListReferenceAttribute <R extends Data, P extends Data, T exten
                 if ((isEmpty(previousList) && !isEmpty(currentList)) ||
                     (!isEmpty(previousList) && isEmpty(currentList))){
 
-                    for (AttributeChangeListener<List<T>> listener: listeners){
+                    for (AttributeChangeListener<List<T>> listener: new ArrayList<>(listeners)){
                         listener.changed(ViewListReferenceAttribute.this,currentList);
                     }
                 }
@@ -71,7 +71,7 @@ public class ViewListReferenceAttribute <R extends Data, P extends Data, T exten
                         }
                     }
                     if (changed){
-                        for (AttributeChangeListener<List<T>> listener: listeners){
+                        for (AttributeChangeListener<List<T>> listener: new ArrayList<>(listeners)){
                             listener.changed(ViewListReferenceAttribute.this,currentList);
                         }
                     }
@@ -95,7 +95,7 @@ public class ViewListReferenceAttribute <R extends Data, P extends Data, T exten
     }
     DirtyTrackingThread dirtyTracking;
 
-    List<AttributeChangeListener<List<T>>> listeners= new ArrayList<>();
+    List<AttributeChangeListener<List<T>>> listeners= Collections.synchronizedList(new ArrayList<>());
     @Override
     public void addListener(AttributeChangeListener<List<T>> listener) {
         listeners.add(listener);
