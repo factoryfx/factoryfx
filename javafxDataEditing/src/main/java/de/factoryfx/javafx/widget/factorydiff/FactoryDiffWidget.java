@@ -4,9 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import de.factoryfx.data.Data;
-import de.factoryfx.data.merge.DataMerger;
-import de.factoryfx.data.merge.MergeDiff;
+import de.factoryfx.data.merge.MergeDiffInfo;
 import de.factoryfx.data.merge.MergeResultEntryInfo;
 import de.factoryfx.javafx.util.UniformDesign;
 import de.factoryfx.javafx.widget.Widget;
@@ -23,7 +21,6 @@ import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
-import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.SplitPane;
@@ -42,7 +39,7 @@ public class FactoryDiffWidget implements Widget {
         this.uniformDesign=uniformDesign;
     }
 
-    private final SimpleObjectProperty<MergeDiff> mergeDiff = new SimpleObjectProperty<>();
+    private final SimpleObjectProperty<MergeDiffInfo> mergeDiff = new SimpleObjectProperty<>();
 
 
     @Override
@@ -168,11 +165,11 @@ public class FactoryDiffWidget implements Widget {
 
 
         InvalidationListener invalidationListener = observable -> {
-            MergeDiff mergeDiff = this.mergeDiff.get();
+            MergeDiffInfo mergeDiff = this.mergeDiff.get();
             if (mergeDiff != null) {
                 diffList.clear();
-                diffList.addAll(mergeDiff.getMergeInfos().stream().map(mergeResultEntry -> mergeResultEntry.mergeResultEntryInfo).collect(Collectors.toList()));
-                diffList.addAll(mergeDiff.getConflictInfos().stream().map(mergeResultEntry -> mergeResultEntry.mergeResultEntryInfo).collect(Collectors.toList()));
+                diffList.addAll(mergeDiff.mergeInfos);
+                diffList.addAll(mergeDiff.conflictInfos);
                 diffTableView.getSelectionModel().selectFirst();
             }
         };
@@ -262,27 +259,8 @@ public class FactoryDiffWidget implements Widget {
         return vBox;
     }
 
-
-
-    public void updateMergeDiff(MergeDiff mergeDiff) {
+    public void updateMergeDiff(MergeDiffInfo mergeDiff) {
         this.mergeDiff.set(mergeDiff);
     }
 
-    public void showDiff(Data first, Data second){
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.getDialogPane().getStylesheets().add(getClass().getResource("/de/scoopsoftware/champ/gui/css/app.css").toExternalForm());
-        alert.setTitle("Changed data");
-        alert.setHeaderText("Changes");
-        alert.setContentText("Changed data");
-
-        DataMerger merger = new DataMerger(first, first, second);
-        this.updateMergeDiff(merger.createMergeResult());
-        alert.getDialogPane().setExpandableContent(this.createContent());
-        alert.getDialogPane().setExpanded(true);
-        alert.setResizable(true);
-        alert.getDialogPane().setPrefSize(1200, 800);
-
-        alert.showAndWait();
-
-    }
 }
