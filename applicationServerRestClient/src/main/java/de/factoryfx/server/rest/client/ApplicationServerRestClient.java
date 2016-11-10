@@ -15,7 +15,7 @@ import javax.ws.rs.core.Response;
 import com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider;
 import com.google.common.base.Strings;
 import de.factoryfx.data.jackson.ObjectMapperBuilder;
-import de.factoryfx.data.merge.MergeDiff;
+import de.factoryfx.data.merge.MergeDiffInfo;
 import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.factory.datastorage.FactoryAndStorageMetadata;
 import de.factoryfx.factory.datastorage.StoredFactoryMetadata;
@@ -46,8 +46,12 @@ public class ApplicationServerRestClient<V,T extends FactoryBase<?,V>> {
         this.client = createClient();
     }
 
-    public MergeDiff updateCurrentFactory(FactoryAndStorageMetadata<T> update) {
-        return post("updateCurrentFactory", update, MergeDiff.class);
+    public MergeDiffInfo updateCurrentFactory(FactoryAndStorageMetadata<T> update) {
+        return post("updateCurrentFactory", update, MergeDiffInfo.class);
+    }
+
+    public MergeDiffInfo simulateUpdateCurrentFactory(FactoryAndStorageMetadata<T> update) {
+        return post("simulateUpdateCurrentFactory", update, MergeDiffInfo.class);
     }
 
     @SuppressWarnings("unchecked")
