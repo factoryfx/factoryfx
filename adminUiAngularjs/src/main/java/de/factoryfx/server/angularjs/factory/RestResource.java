@@ -252,7 +252,7 @@ public class RestResource<L,V,T extends FactoryBase<L,V>> {
         StageResponse response=new StageResponse();
         FactoryAndStorageMetadata<T> currentEditingFactoryRoot = getCurrentEditingFactory();
 
-        response.mergeDiffExt=applicationServer.simulateUpdateCurrentFactory(currentEditingFactoryRoot.root, currentEditingFactoryRoot.metadata.baseVersionId);
+        response.mergeDiffExt=applicationServer.simulateUpdateCurrentFactory(currentEditingFactoryRoot);
         response.mergeDiff=new WebGuiMergeDiff(response.mergeDiffExt,getUserLocale());
 
         for (Data factoryBase: currentEditingFactoryRoot.root.internal().collectChildrenDeep()){

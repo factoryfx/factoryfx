@@ -29,9 +29,9 @@ public class ApplicationServer<L,V,T extends FactoryBase<L,V>> {
         return mergeDiff;
     }
 
-    public MergeDiff simulateUpdateCurrentFactory(T updateFactory, String baseVersionId){
-        T commonVersion = factoryStorage.getHistoryFactory(baseVersionId);
-        return factoryManager.simulateUpdate(commonVersion , updateFactory);
+    public MergeDiff simulateUpdateCurrentFactory(FactoryAndStorageMetadata<T> possibleUpdate){
+        T commonVersion = factoryStorage.getHistoryFactory(possibleUpdate.metadata.baseVersionId);
+        return factoryManager.simulateUpdate(commonVersion , possibleUpdate.root);
     }
 
     public FactoryAndStorageMetadata<T> getCurrentFactory() {

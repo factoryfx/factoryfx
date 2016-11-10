@@ -29,7 +29,19 @@ public class ApplicationServerResource<L,V,T extends FactoryBase<L,V>> {
     @Produces(MediaType.APPLICATION_JSON)
     @Path("updateCurrentFactory")
     public MergeDiff updateCurrentFactory(FactoryAndStorageMetadata<T> update) {
+        update.root.internal().reconstructMetadataDeepRoot();
+        update.root.internal().prepareUsage();
         return  applicationServer.updateCurrentFactory(update);
+    }
+
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("simulateUpdateCurrentFactory")
+    public MergeDiff simulateUpdateCurrentFactory(FactoryAndStorageMetadata<T> update) {
+        update.root.internal().reconstructMetadataDeepRoot();
+        update.root.internal().prepareUsage();
+        return  applicationServer.simulateUpdateCurrentFactory(update);
     }
 
     @GET
