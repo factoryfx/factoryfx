@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 
 import de.factoryfx.data.merge.MergeDiffInfo;
 import de.factoryfx.data.merge.MergeResultEntryInfo;
+import de.factoryfx.data.util.LanguageText;
 import de.factoryfx.javafx.util.UniformDesign;
 import de.factoryfx.javafx.widget.Widget;
 import de.factoryfx.javafx.widget.table.TableControlWidget;
@@ -35,6 +36,16 @@ import org.fxmisc.richtext.StyleClassedTextArea;
 
 public class FactoryDiffWidget implements Widget {
     private UniformDesign uniformDesign;
+    private LanguageText columnField=new LanguageText().en("field").de("Feld");
+    private LanguageText columnPrevious=new LanguageText().en("previous").de("Alt");
+    private LanguageText columnNew=new LanguageText().en("new").de("Neu");
+    private LanguageText titleDiff=new LanguageText().en("difference").de("Unterschied");
+    private LanguageText titlePrevious=new LanguageText().en("previous value ").de("Alter Wert");
+    private LanguageText titleNew=new LanguageText().en("new value").de("Neuer Wert");
+    private LanguageText noChangesFound=new LanguageText().en("No changes found").de("keine Änderungen gefunden");
+
+
+
     public FactoryDiffWidget(UniformDesign uniformDesign){
         this.uniformDesign=uniformDesign;
     }
@@ -63,7 +74,8 @@ public class FactoryDiffWidget implements Widget {
 
         SplitPane verticalSplitPane = new SplitPane();
         verticalSplitPane.setOrientation(Orientation.VERTICAL);
-        verticalSplitPane.getItems().add(addTitle(diffTableView,"Changes"));
+//        verticalSplitPane.getItems().add(addTitle(diffTableView,"Changes"));
+
 
         VBox diffBox = new VBox(3);
         VBox.setVgrow(diffDisplay, Priority.ALWAYS);
@@ -80,13 +92,11 @@ public class FactoryDiffWidget implements Widget {
         diffBox.getChildren().add(diffJumpButtons);
 
         SplitPane diffValuesPane = new SplitPane();
-        diffValuesPane.getItems().add(addTitle(previousValueDisplay,"Previous value"));
-        diffValuesPane.getItems().add(addTitle(diffBox,"Difference"));
-        diffValuesPane.getItems().add(addTitle(newValueDisplay,"New value"));
+        diffValuesPane.getItems().add(addTitle(previousValueDisplay,uniformDesign.getText(titlePrevious)));
+        diffValuesPane.getItems().add(addTitle(diffBox,uniformDesign.getText(titleDiff)));
+        diffValuesPane.getItems().add(addTitle(newValueDisplay,uniformDesign.getText(titleNew)));
         diffValuesPane.setDividerPositions(0.333,0.6666);
         verticalSplitPane.getItems().add(diffValuesPane);
-
-
 
         diffTableView.getSelectionModel().selectedItemProperty().addListener(observable -> {
             MergeResultEntryInfo diffItem=diffTableView.getSelectionModel().getSelectedItem();
@@ -185,22 +195,23 @@ public class FactoryDiffWidget implements Widget {
 
     private TableView<MergeResultEntryInfo> createDiffTableViewTable(){
         TableView<MergeResultEntryInfo> tableView = new TableView<>();
-        tableView.setPlaceholder(new Label("No changes found"));
+        tableView.setPlaceholder(new Label(uniformDesign.getText(noChangesFound)));
         {
-            TableColumn<MergeResultEntryInfo, String> filedColumn = new TableColumn<>("field");
-            filedColumn.setCellValueFactory(param -> new SimpleStringProperty(uniformDesign.getText(param.getValue().fieldDisplayText)));
-            tableView.getColumns().add(filedColumn);
+            TableColumn<MergeResultEntryInfo, String> fieldColumn = new TableColumn<>(uniformDesign.getText(columnField));
+            fieldColumn.setCellValueFactory(param -> new SimpleStringProperty(uniformDesign.getText(param.getValue().fieldDisplayText)));
+            tableView.getColumns().add(fieldColumn);
 
-            TableColumn<MergeResultEntryInfo, String> pathColumn = new TableColumn<>("previous");
-            pathColumn.setCellValueFactory(param -> new SimpleStringProperty(param.getValue().previousValueDisplayText));
-            tableView.getColumns().add(pathColumn);
+            TableColumn<MergeResultEntryInfo, String> previousColumn = new TableColumn<>(uniformDesign.getText(columnPrevious));
+            previousColumn.setCellValueFactory(param -> new SimpleStringProperty(param.getValue().previousValueDisplayText));
+            tableView.getColumns().add(previousColumn);
 
-            TableColumn<MergeResultEntryInfo, String> entityColumn = new TableColumn<>("new");
-//            entityColumn.getStyleClass().add("dividerColumn");
-            entityColumn.setCellValueFactory(param -> new SimpleStringProperty(param.getValue().newValueValueDisplayText));
-            tableView.getColumns().add(entityColumn);
+            TableColumn<MergeResultEntryInfo, String> newColumn = new TableColumn<>(uniformDesign.getText(columnNew));
+            newColumn.setCellValueFactory(param -> new SimpleStringProperty(param.getValue().newValueValueDisplayText));
+            tableView.getColumns().add(newColumn);
 
         }
+
+
 
 
         tableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);

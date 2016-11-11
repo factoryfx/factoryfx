@@ -20,4 +20,8 @@ public class MergeDiffInfo {
 
     }
 
+    public int getConflictCount() {
+        return conflictInfos.size();
+    }
+
 }
