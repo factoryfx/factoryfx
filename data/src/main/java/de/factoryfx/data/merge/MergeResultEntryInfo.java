@@ -10,19 +10,19 @@ public class MergeResultEntryInfo{
     public final String newValueValueDisplayText;
     public final LanguageText fieldDisplayText;
     public final String parentDisplayText;
-    public final boolean conflict;
+    public boolean conflict;
 
     @JsonCreator
     public MergeResultEntryInfo(
             @JsonProperty("previousValueDisplayText") String previousValueDisplayText,
             @JsonProperty("newValueValueDisplayText") String newValueValueDisplayText,
             @JsonProperty("fieldDisplayText")LanguageText fieldDisplayText,
-            @JsonProperty("parentDisplayText") String parentDisplayText,
-            @JsonProperty("conflict")  boolean conflict) {
+            @JsonProperty("parentDisplayText") String parentDisplayText) {
         this.previousValueDisplayText = previousValueDisplayText;
         this.newValueValueDisplayText = newValueValueDisplayText;
         this.fieldDisplayText = fieldDisplayText;
         this.parentDisplayText = parentDisplayText;
-        this.conflict = conflict;
     }
+
+
 }
