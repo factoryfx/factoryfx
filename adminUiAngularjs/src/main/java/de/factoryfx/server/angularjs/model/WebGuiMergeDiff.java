@@ -11,8 +11,8 @@ public class WebGuiMergeDiff {
     public final List<WebGuiMergeDiffInfo> conflictInfos;
 
     public WebGuiMergeDiff(MergeDiff mergeDiff, Locale locale){
-        mergeInfos = mergeDiff.getMergeInfos().stream().map(mergeResultEntry -> new WebGuiMergeDiffInfo(mergeResultEntry.mergeResultEntryInfo,locale)).collect(Collectors.toList());
-        conflictInfos = mergeDiff.getConflictInfos().stream().map(mergeResultEntry -> new WebGuiMergeDiffInfo(mergeResultEntry.mergeResultEntryInfo,locale)).collect(Collectors.toList());
+        mergeInfos = mergeDiff.getMergeInfos().stream().map(mergeResultEntry -> new WebGuiMergeDiffInfo(mergeResultEntry.createInfo(false),locale)).collect(Collectors.toList());
+        conflictInfos = mergeDiff.getConflictInfos().stream().map(mergeResultEntry -> new WebGuiMergeDiffInfo(mergeResultEntry.createInfo(true),locale)).collect(Collectors.toList());
 
     }
 

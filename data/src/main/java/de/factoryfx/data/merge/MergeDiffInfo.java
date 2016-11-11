@@ -12,8 +12,8 @@ public class MergeDiffInfo {
     public List<MergeResultEntryInfo> conflictInfos;
 
     public MergeDiffInfo(MergeDiff mergeDiff){
-        mergeInfos=mergeDiff.getMergeInfos().stream().map(m->m.mergeResultEntryInfo).collect(Collectors.toList());
-        conflictInfos=mergeDiff.getConflictInfos().stream().map(m->m.mergeResultEntryInfo).collect(Collectors.toList());
+        mergeInfos=mergeDiff.getMergeInfos().stream().map(m->m.createInfo(false)).collect(Collectors.toList());
+        conflictInfos=mergeDiff.getConflictInfos().stream().map(m->m.createInfo(true)).collect(Collectors.toList());
     }
 
     @JsonCreator

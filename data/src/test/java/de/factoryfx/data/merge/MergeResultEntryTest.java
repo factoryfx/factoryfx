@@ -12,7 +12,7 @@ public class MergeResultEntryTest {
 
     @Test
     public void json_serialisable(){
-        MergeResultEntryInfo  mergeResultEntry = new MergeResultEntryInfo("","", new LanguageText().en("sfdsf"), "");
+        MergeResultEntryInfo  mergeResultEntry = new MergeResultEntryInfo("","", new LanguageText().en("sfdsf"), "",false);
         MergeResultEntryInfo copy = ObjectMapperBuilder.build().copy(mergeResultEntry);//Test json serialisation
         Assert.assertEquals("sfdsf",copy.fieldDisplayText.getPreferred(Locale.ENGLISH));
     }

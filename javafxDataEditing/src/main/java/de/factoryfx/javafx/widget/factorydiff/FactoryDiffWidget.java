@@ -26,11 +26,13 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
+import javafx.util.Callback;
 import org.controlsfx.glyphfont.FontAwesome;
 import org.fxmisc.richtext.StyleClassedTextArea;
 
@@ -74,7 +76,7 @@ public class FactoryDiffWidget implements Widget {
 
         SplitPane verticalSplitPane = new SplitPane();
         verticalSplitPane.setOrientation(Orientation.VERTICAL);
-//        verticalSplitPane.getItems().add(addTitle(diffTableView,"Changes"));
+        verticalSplitPane.getItems().add(diffTableView);
 
 
         VBox diffBox = new VBox(3);
@@ -215,22 +217,22 @@ public class FactoryDiffWidget implements Widget {
 
 
         tableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
-//        tableView.setRowFactory(new Callback<TableView<MergeResultEntryInfo>, TableRow<MergeResultEntryInfo>>() {
-//            @Override
-//            public TableRow<MergeResultEntryInfo> call(TableView<MergeResultEntryInfo> param) {
-//                return new TableRow<MergeResultEntryInfo>(){
-//                    @Override
-//                    protected void updateItem(MergeResultEntryInfo mergeResultEntryWrapper, boolean empty){
-//                        super.updateItem(mergeResultEntryWrapper, empty);
-//                        if (mergeResultEntryWrapper!=null && mergeResultEntryWrapper.conflict) {
-//                            getStyleClass().add("conflictRow");
-//                        } else {
-//                            getStyleClass().remove("conflictRow");
-//                        }
-//                    }
-//                };
-//            }
-//        });
+        tableView.setRowFactory(new Callback<TableView<MergeResultEntryInfo>, TableRow<MergeResultEntryInfo>>() {
+            @Override
+            public TableRow<MergeResultEntryInfo> call(TableView<MergeResultEntryInfo> param) {
+                return new TableRow<MergeResultEntryInfo>(){
+                    @Override
+                    protected void updateItem(MergeResultEntryInfo mergeResultEntry, boolean empty){
+                        super.updateItem(mergeResultEntry, empty);
+                        if (mergeResultEntry!=null && mergeResultEntry.conflict) {
+                            getStyleClass().add("conflictRow");
+                        } else {
+                            getStyleClass().remove("conflictRow");
+                        }
+                    }
+                };
+            }
+        });
 
         tableView.fixedCellSizeProperty().set(24);
 
