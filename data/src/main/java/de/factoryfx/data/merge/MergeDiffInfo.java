@@ -22,8 +22,8 @@ public class MergeDiffInfo {
     }
 
     @JsonIgnore
-    public int getConflictCount() {
-        return conflictInfos.size();
+    public boolean hasNoConflicts() {
+        return conflictInfos.isEmpty();
     }
 
 }
