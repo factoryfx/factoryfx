@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 //JSON serializable
 public class MergeDiffInfo {
@@ -20,6 +21,7 @@ public class MergeDiffInfo {
 
     }
 
+    @JsonIgnore
     public int getConflictCount() {
         return conflictInfos.size();
     }
