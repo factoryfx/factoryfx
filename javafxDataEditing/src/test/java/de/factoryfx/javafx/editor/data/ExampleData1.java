@@ -12,23 +12,7 @@ import de.factoryfx.data.attribute.AttributeMetadata;
 import de.factoryfx.data.attribute.ReferenceAttribute;
 import de.factoryfx.data.attribute.ReferenceListAttribute;
 import de.factoryfx.data.attribute.ValueListAttribute;
-import de.factoryfx.data.attribute.types.BigDecimalAttribute;
-import de.factoryfx.data.attribute.types.BooleanAttribute;
-import de.factoryfx.data.attribute.types.ByteArrayAttribute;
-import de.factoryfx.data.attribute.types.ColorAttribute;
-import de.factoryfx.data.attribute.types.DoubleAttribute;
-import de.factoryfx.data.attribute.types.EnumAttribute;
-import de.factoryfx.data.attribute.types.I18nAttribute;
-import de.factoryfx.data.attribute.types.IntegerAttribute;
-import de.factoryfx.data.attribute.types.LocalDateAttribute;
-import de.factoryfx.data.attribute.types.LocaleAttribute;
-import de.factoryfx.data.attribute.types.LongAttribute;
-import de.factoryfx.data.attribute.types.StringAttribute;
-import de.factoryfx.data.attribute.types.StringListAttribute;
-import de.factoryfx.data.attribute.types.StringMapAttribute;
-import de.factoryfx.data.attribute.types.TableAttribute;
-import de.factoryfx.data.attribute.types.URIAttribute;
-import de.factoryfx.data.attribute.types.URIListAttribute;
+import de.factoryfx.data.attribute.types.*;
 import de.factoryfx.data.validation.RegexValidation;
 import de.factoryfx.data.validation.StringRequired;
 import javafx.util.Pair;
@@ -60,6 +44,7 @@ public class ExampleData1 extends Data {
     public final URIListAttribute uriListAttribute = new URIListAttribute(new AttributeMetadata().en("URIList"));
 
     public final LocalDateAttribute localDateAttribute = new LocalDateAttribute(new AttributeMetadata().en("local date"));
+    public final LocalDateTimeAttribute localDateTimeAttribute = new LocalDateTimeAttribute(new AttributeMetadata().en("local date time"));
     public final ColorAttribute colorAttribute=new ColorAttribute(new AttributeMetadata().en("colorAttribute").de("colorAttribute de"));
     public final LocaleAttribute localeAttribute =new LocaleAttribute(new AttributeMetadata().en("colorAttribute").de("colorAttribute de"));
 

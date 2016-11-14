@@ -3,6 +3,7 @@ package de.factoryfx.javafx.editor.attribute;
 import java.math.BigDecimal;
 import java.net.URI;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -24,24 +25,7 @@ import de.factoryfx.data.attribute.types.LongAttribute;
 import de.factoryfx.data.attribute.types.StringAttribute;
 import de.factoryfx.data.attribute.types.TableAttribute;
 import de.factoryfx.data.attribute.types.URIAttribute;
-import de.factoryfx.javafx.editor.attribute.visualisation.BigDecimalAttributeVisualisation;
-import de.factoryfx.javafx.editor.attribute.visualisation.BooleanAttributeVisualisation;
-import de.factoryfx.javafx.editor.attribute.visualisation.ColorAttributeVisualisation;
-import de.factoryfx.javafx.editor.attribute.visualisation.DoubleAttributeVisualisation;
-import de.factoryfx.javafx.editor.attribute.visualisation.EnumAttributeVisualisation;
-import de.factoryfx.javafx.editor.attribute.visualisation.IntegerAttributeVisualisation;
-import de.factoryfx.javafx.editor.attribute.visualisation.ListAttributeVisualisation;
-import de.factoryfx.javafx.editor.attribute.visualisation.LocalDateAttributeVisualisation;
-import de.factoryfx.javafx.editor.attribute.visualisation.LocaleAttributeVisualisation;
-import de.factoryfx.javafx.editor.attribute.visualisation.LongAttributeVisualisation;
-import de.factoryfx.javafx.editor.attribute.visualisation.ReferenceAttributeVisualisation;
-import de.factoryfx.javafx.editor.attribute.visualisation.ReferenceListAttributeVisualisation;
-import de.factoryfx.javafx.editor.attribute.visualisation.StringAttributeVisualisation;
-import de.factoryfx.javafx.editor.attribute.visualisation.StringLongAttributeVisualisation;
-import de.factoryfx.javafx.editor.attribute.visualisation.TableAttributeVisualisation;
-import de.factoryfx.javafx.editor.attribute.visualisation.URIAttributeVisualisation;
-import de.factoryfx.javafx.editor.attribute.visualisation.ViewListReferenceAttributeVisualisation;
-import de.factoryfx.javafx.editor.attribute.visualisation.ViewReferenceAttributeVisualisation;
+import de.factoryfx.javafx.editor.attribute.visualisation.*;
 import de.factoryfx.javafx.editor.data.DataEditor;
 import de.factoryfx.javafx.util.UniformDesign;
 import javafx.collections.ObservableList;
@@ -208,6 +192,10 @@ public class AttributeEditorFactory {
 
         if (LocalDate.class.isAssignableFrom(attribute.getAttributeType().dataType)) {
             return Optional.of(new AttributeEditor<>((Attribute<LocalDate>)attribute,new LocalDateAttributeVisualisation()));
+        }
+
+        if (LocalDateTime.class.isAssignableFrom(attribute.getAttributeType().dataType)) {
+            return Optional.of(new AttributeEditor<>((Attribute<LocalDateTime>)attribute,new LocalDateTimeAttributeVisualisation()));
         }
 
         if (Color.class.isAssignableFrom(attribute.getAttributeType().dataType)) {

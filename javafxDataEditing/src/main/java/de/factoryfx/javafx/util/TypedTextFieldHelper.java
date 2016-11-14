@@ -79,4 +79,18 @@ public class TypedTextFieldHelper {
         setupTextField(textField, Double::valueOf);
     }
 
+    static final DateTimeFormatter TIME_FORMAT = DateTimeFormatter.ISO_LOCAL_TIME;
+    public static void setupLocalTimeTextField(TextField textField) {
+        textField.textProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue!=null){
+                try {
+                    TIME_FORMAT.parse(newValue);
+                    textField.getStyleClass().removeIf(c->"error".equals(c));
+                } catch (DateTimeParseException e) {
+                    textField.getStyleClass().add("error");
+                }
+
+            }
+        });
+    }
 }
