@@ -1,7 +1,9 @@
 package de.factoryfx.server;
 
+import java.time.LocalDateTime;
 import java.util.Collection;
 
+import de.factoryfx.data.merge.DataMerger;
 import de.factoryfx.data.merge.MergeDiff;
 import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.factory.FactoryManager;
@@ -19,12 +21,19 @@ public class ApplicationServer<L,V,T extends FactoryBase<L,V>> {
         this.factoryStorage = factoryStorage;
     }
 
+    public MergeDiff getDiff(StoredFactoryMetadata storedFactoryMetadata) {
+        T historyFactory = getHistoryFactory(storedFactoryMetadata.id);
+        T historyFactoryPrevious = getHistoryFactory(storedFactoryMetadata.baseVersionId);
+        return new DataMerger(historyFactoryPrevious,historyFactoryPrevious,historyFactory).createMergeResult();
+    }
+
     public MergeDiff updateCurrentFactory(FactoryAndStorageMetadata<T> update) {
         T commonVersion = factoryStorage.getHistoryFactory(update.metadata.baseVersionId);
         commonVersion.internal().prepareUsage();
         MergeDiff mergeDiff = factoryManager.update(commonVersion, update.root);
         if (mergeDiff.hasNoConflicts()){
-            FactoryAndStorageMetadata<T> copy = new FactoryAndStorageMetadata<T>(factoryManager.getCurrentFactory().internal().copy(),update.metadata);
+            update.metadata.creationTime= LocalDateTime.now();
+            FactoryAndStorageMetadata<T> copy = new FactoryAndStorageMetadata<>(factoryManager.getCurrentFactory().internal().copy(),update.metadata);
             factoryStorage.updateCurrentFactory(copy);
         }
         return mergeDiff;

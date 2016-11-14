@@ -38,6 +38,7 @@ import org.fxmisc.richtext.StyleClassedTextArea;
 
 public class FactoryDiffWidget implements Widget {
     private UniformDesign uniformDesign;
+    private LanguageText columnFactory=new LanguageText().en("Factory").de("Factory");
     private LanguageText columnField=new LanguageText().en("field").de("Feld");
     private LanguageText columnPrevious=new LanguageText().en("previous").de("Alt");
     private LanguageText columnNew=new LanguageText().en("new").de("Neu");
@@ -199,6 +200,10 @@ public class FactoryDiffWidget implements Widget {
         TableView<MergeResultEntryInfo> tableView = new TableView<>();
         tableView.setPlaceholder(new Label(uniformDesign.getText(noChangesFound)));
         {
+            TableColumn<MergeResultEntryInfo, String> factoryColumn = new TableColumn<>(uniformDesign.getText(columnFactory));
+            factoryColumn.setCellValueFactory(param -> new SimpleStringProperty(param.getValue().parentDisplayText));
+            tableView.getColumns().add(factoryColumn);
+
             TableColumn<MergeResultEntryInfo, String> fieldColumn = new TableColumn<>(uniformDesign.getText(columnField));
             fieldColumn.setCellValueFactory(param -> new SimpleStringProperty(uniformDesign.getText(param.getValue().fieldDisplayText)));
             tableView.getColumns().add(fieldColumn);

@@ -8,6 +8,7 @@ public class StoredFactoryMetadata {
     public LocalDateTime creationTime;
     public String id;
     public String user;
+    public String comment;
 
     /**the base version on the server*/
     public String baseVersionId;

@@ -45,10 +45,11 @@ public class DataViewWidget implements CloseAwareWidget {
 
         BorderPane borderPaneWrapper = new BorderPane();
         borderPaneWrapper.setCenter(tableView);
+        SplitPane.setResizableWithParent(borderPaneWrapper, Boolean.FALSE);
         splitPane.getItems().add(borderPaneWrapper);
 
         Node dataEditorWidget = this.dataEditor.createContent();
-        SplitPane.setResizableWithParent(dataEditorWidget, Boolean.FALSE);
+        SplitPane.setResizableWithParent(dataEditorWidget, Boolean.TRUE);
         splitPane.getItems().add(dataEditorWidget);
         splitPane.setDividerPositions(dividerPosition);
 
@@ -61,6 +62,8 @@ public class DataViewWidget implements CloseAwareWidget {
 
         TableControlWidget tableControlWidget= new TableControlWidget<>(tableView, uniformDesign);
         borderPaneWrapper.setBottom(tableControlWidget.createContent());
+
+
 
 
         return splitPane;
