@@ -62,6 +62,14 @@ public class ApplicationServerRestClient<V,T extends FactoryBase<?,V>> {
     }
 
 
+    @SuppressWarnings("unchecked")
+    public FactoryAndStorageMetadata<T> prepareNewFactory() {
+        FactoryAndStorageMetadata<T> currentFactory = get("prepareNewFactory", FactoryAndStorageMetadata.class);
+        currentFactory.root.internal().reconstructMetadataDeepRoot();
+        return currentFactory;
+    }
+
+
     public T getHistoryFactory(String id) {
         return get("historyFactory", factoryRootClass).internal().reconstructMetadataDeepRoot();
     }

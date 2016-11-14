@@ -51,6 +51,12 @@ public class ApplicationServerResource<L,V,T extends FactoryBase<L,V>> {
         return applicationServer.getCurrentFactory();
     }
 
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("prepareNewFactory")
+    public FactoryAndStorageMetadata<T> prepareNewFactory() {
+        return applicationServer.getPrepareNewFactory();
+    }
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
