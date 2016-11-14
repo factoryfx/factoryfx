@@ -9,13 +9,19 @@ public class MergeResultEntry {
     public final Data parent;
     public String requiredPermission;
 
-    public MergeResultEntryInfo mergeResultEntryInfo;
+    private final MergeResultEntryInfo mergeResultEntryInfo;
 
     public MergeResultEntry(Data parent, Attribute<?> attribute, Optional<Attribute<?>> newAttribute) {
         this.parent=parent;
         this.requiredPermission=attribute.metadata.permisson;
 
+        //created here cause attribute ist updatted later
         mergeResultEntryInfo=new MergeResultEntryInfo(attribute.getDisplayText(), newAttribute.map((a)->a.getDisplayText()).orElse(""), attribute.metadata.labelText, parent.internal().getDisplayText());
+    }
+
+    public MergeResultEntryInfo createInfo(boolean conflict){
+        mergeResultEntryInfo.conflict=conflict;
+        return mergeResultEntryInfo;
     }
 
 

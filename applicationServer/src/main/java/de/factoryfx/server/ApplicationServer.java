@@ -21,6 +21,7 @@ public class ApplicationServer<L,V,T extends FactoryBase<L,V>> {
 
     public MergeDiff updateCurrentFactory(FactoryAndStorageMetadata<T> update) {
         T commonVersion = factoryStorage.getHistoryFactory(update.metadata.baseVersionId);
+        commonVersion.internal().prepareUsage();
         MergeDiff mergeDiff = factoryManager.update(commonVersion, update.root);
         if (mergeDiff.hasNoConflicts()){
             FactoryAndStorageMetadata<T> copy = new FactoryAndStorageMetadata<T>(factoryManager.getCurrentFactory().internal().copy(),update.metadata);
@@ -29,9 +30,10 @@ public class ApplicationServer<L,V,T extends FactoryBase<L,V>> {
         return mergeDiff;
     }
 
-    public MergeDiff simulateUpdateCurrentFactory(T updateFactory, String baseVersionId){
-        T commonVersion = factoryStorage.getHistoryFactory(baseVersionId);
-        return factoryManager.simulateUpdate(commonVersion , updateFactory);
+    public MergeDiff simulateUpdateCurrentFactory(FactoryAndStorageMetadata<T> possibleUpdate){
+        T commonVersion = factoryStorage.getHistoryFactory(possibleUpdate.metadata.baseVersionId);
+        commonVersion.internal().prepareUsage();
+        return factoryManager.simulateUpdate(commonVersion , possibleUpdate.root);
     }
 
     public FactoryAndStorageMetadata<T> getCurrentFactory() {
@@ -44,7 +46,9 @@ public class ApplicationServer<L,V,T extends FactoryBase<L,V>> {
     }
 
     public T getHistoryFactory(String id) {
-        return factoryStorage.getHistoryFactory(id);
+        final T historyFactory = factoryStorage.getHistoryFactory(id);
+        historyFactory.internal().prepareUsage();
+        return historyFactory;
     }
 
     public Collection<StoredFactoryMetadata> getHistoryFactoryList() {

@@ -10,6 +10,7 @@ public class MergeResultEntryInfo{
     public final String newValueValueDisplayText;
     public final LanguageText fieldDisplayText;
     public final String parentDisplayText;
+    public boolean conflict;
 
     @JsonCreator
     public MergeResultEntryInfo(
@@ -22,4 +23,6 @@ public class MergeResultEntryInfo{
         this.fieldDisplayText = fieldDisplayText;
         this.parentDisplayText = parentDisplayText;
     }
+
+
 }

@@ -9,7 +9,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
-import de.factoryfx.data.merge.MergeDiff;
+import de.factoryfx.data.merge.MergeDiffInfo;
 import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.factory.datastorage.FactoryAndStorageMetadata;
 import de.factoryfx.factory.datastorage.StoredFactoryMetadata;
@@ -28,8 +28,20 @@ public class ApplicationServerResource<L,V,T extends FactoryBase<L,V>> {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @Path("updateCurrentFactory")
-    public MergeDiff updateCurrentFactory(FactoryAndStorageMetadata<T> update) {
-        return  applicationServer.updateCurrentFactory(update);
+    public MergeDiffInfo updateCurrentFactory(FactoryAndStorageMetadata<T> update) {
+        update.root.internal().reconstructMetadataDeepRoot();
+        update.root.internal().prepareUsage();
+        return  new MergeDiffInfo(applicationServer.updateCurrentFactory(update));
+    }
+
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("simulateUpdateCurrentFactory")
+    public MergeDiffInfo simulateUpdateCurrentFactory(FactoryAndStorageMetadata<T> update) {
+        update.root.internal().reconstructMetadataDeepRoot();
+        update.root.internal().prepareUsage();
+        return new MergeDiffInfo(applicationServer.simulateUpdateCurrentFactory(update));
     }
 
     @GET

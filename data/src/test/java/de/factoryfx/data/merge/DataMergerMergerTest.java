@@ -18,8 +18,8 @@ public class DataMergerMergerTest {
 
         MergeDiff mergeDiff= dataMerger.mergeIntoCurrent();
         Assert.assertTrue(mergeDiff.hasNoConflicts());
-        Assert.assertEquals("2222222",mergeDiff.getMergeInfos().get(0).mergeResultEntryInfo.newValueValueDisplayText);
-        Assert.assertEquals("1111111",mergeDiff.getMergeInfos().get(0).mergeResultEntryInfo.previousValueDisplayText);
+        Assert.assertEquals("2222222",mergeDiff.getMergeInfos().get(0).createInfo(false).newValueValueDisplayText);
+        Assert.assertEquals("1111111",mergeDiff.getMergeInfos().get(0).createInfo(false).previousValueDisplayText);
     }
 
     @Test
@@ -34,8 +34,8 @@ public class DataMergerMergerTest {
 
         MergeDiff mergeDiff= dataMerger.mergeIntoCurrent();
         Assert.assertTrue(mergeDiff.hasNoConflicts());
-        Assert.assertEquals("empty",mergeDiff.getMergeInfos().get(0).mergeResultEntryInfo.newValueValueDisplayText);
-        Assert.assertTrue(mergeDiff.getMergeInfos().get(0).mergeResultEntryInfo.previousValueDisplayText.contains(exampleFactoryB.getId().toString()));
+        Assert.assertEquals("empty",mergeDiff.getMergeInfos().get(0).createInfo(false).newValueValueDisplayText);
+        Assert.assertTrue(mergeDiff.getMergeInfos().get(0).createInfo(false).previousValueDisplayText.contains(exampleFactoryB.getId().toString()));
     }
 
     @Test
