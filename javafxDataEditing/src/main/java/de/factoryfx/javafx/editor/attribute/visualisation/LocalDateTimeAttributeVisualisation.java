@@ -17,6 +17,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.util.Optional;
 
 public class LocalDateTimeAttributeVisualisation implements AttributeEditorVisualisation<LocalDateTime> {
 
@@ -37,6 +38,10 @@ public class LocalDateTimeAttributeVisualisation implements AttributeEditorVisua
         boundTo.addListener((observable, oldValue, newValue) -> {
             updateDatePicker(datePicker,newValue);
             updateTimeField(timeField,newValue);
+        });
+        Optional.ofNullable(boundTo.getValue()).ifPresent(newValue-> {
+            updateDatePicker(datePicker, newValue);
+            updateTimeField(timeField, newValue);
         });
         return controls;
     }
