@@ -202,10 +202,10 @@ public class DataTest {
         ExampleFactoryObservable exampleFactory = new ExampleFactoryObservable();
         exampleFactory.stringAttribute.set("1");
 
-        Assert.assertEquals("stable ref",exampleFactory.getDisplayTextObservable(),exampleFactory.getDisplayTextObservable());
+        Assert.assertEquals("stable ref",exampleFactory.internal().getDisplayTextObservable(),exampleFactory.internal().getDisplayTextObservable());
 
-        Assert.assertEquals("1",exampleFactory.getDisplayTextObservable().get());
+        Assert.assertEquals("1",exampleFactory.internal().getDisplayTextObservable().get());
         exampleFactory.stringAttribute.set("2");
-        Assert.assertEquals("2",exampleFactory.getDisplayTextObservable().get());
+        Assert.assertEquals("2",exampleFactory.internal().getDisplayTextObservable().get());
     }
 }

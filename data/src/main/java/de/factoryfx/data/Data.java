@@ -466,7 +466,7 @@ public abstract class Data {
 
     private SimpleStringProperty simpleStringProperty=null;
     @JsonIgnore
-    public ReadOnlyStringProperty getDisplayTextObservable() {
+    private ReadOnlyStringProperty getDisplayTextObservable() {
         if (simpleStringProperty==null){
             simpleStringProperty = new SimpleStringProperty();
             simpleStringProperty.set(getDisplayText());
