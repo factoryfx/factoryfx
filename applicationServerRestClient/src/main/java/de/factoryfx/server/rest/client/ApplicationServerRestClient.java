@@ -69,6 +69,10 @@ public class ApplicationServerRestClient<V,T extends FactoryBase<?,V>> {
         return currentFactory;
     }
 
+    public MergeDiffInfo getDiff(StoredFactoryMetadata historyEntry) {
+        return post("diff", historyEntry, MergeDiffInfo.class);
+    }
+
 
     public T getHistoryFactory(String id) {
         return get("historyFactory", factoryRootClass).internal().reconstructMetadataDeepRoot();

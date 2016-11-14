@@ -3,6 +3,7 @@ package de.factoryfx.server;
 import java.time.LocalDateTime;
 import java.util.Collection;
 
+import de.factoryfx.data.merge.DataMerger;
 import de.factoryfx.data.merge.MergeDiff;
 import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.factory.FactoryManager;
@@ -18,6 +19,12 @@ public class ApplicationServer<L,V,T extends FactoryBase<L,V>> {
     public ApplicationServer(FactoryManager<L,V,T> factoryManager, FactoryStorage<L,V,T> factoryStorage) {
         this.factoryManager = factoryManager;
         this.factoryStorage = factoryStorage;
+    }
+
+    public MergeDiff getDiff(StoredFactoryMetadata storedFactoryMetadata) {
+        T historyFactory = getHistoryFactory(storedFactoryMetadata.id);
+        T historyFactoryPrevious = getHistoryFactory(storedFactoryMetadata.baseVersionId);
+        return new DataMerger(historyFactoryPrevious,historyFactoryPrevious,historyFactory).createMergeResult();
     }
 
     public MergeDiff updateCurrentFactory(FactoryAndStorageMetadata<T> update) {

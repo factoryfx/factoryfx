@@ -44,6 +44,14 @@ public class ApplicationServerResource<L,V,T extends FactoryBase<L,V>> {
         return new MergeDiffInfo(applicationServer.simulateUpdateCurrentFactory(update));
     }
 
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("diff")
+    public MergeDiffInfo getDiff(StoredFactoryMetadata historyEntry) {
+        return new MergeDiffInfo(applicationServer.getDiff(historyEntry));
+    }
+
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("currentFactory")

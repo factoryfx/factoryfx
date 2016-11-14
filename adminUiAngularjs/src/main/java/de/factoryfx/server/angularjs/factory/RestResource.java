@@ -29,7 +29,6 @@ import de.factoryfx.data.Data;
 import de.factoryfx.data.attribute.Attribute;
 import de.factoryfx.data.attribute.ReferenceAttribute;
 import de.factoryfx.data.attribute.ReferenceListAttribute;
-import de.factoryfx.data.merge.DataMerger;
 import de.factoryfx.data.merge.MergeDiff;
 import de.factoryfx.data.merge.MergeResultEntry;
 import de.factoryfx.data.merge.MergeResultEntryInfo;
@@ -431,9 +430,7 @@ public class RestResource<L,V,T extends FactoryBase<L,V>> {
         applicationServer.getHistoryFactory(id);
         for(StoredFactoryMetadata storedFactoryMetadata: applicationServer.getHistoryFactoryList()){
             if (storedFactoryMetadata.id.equals(id)){
-                T historyFactory = applicationServer.getHistoryFactory(id);
-                T historyFactoryPrevious = applicationServer.getHistoryFactory(storedFactoryMetadata.baseVersionId);
-                return new DataMerger(historyFactoryPrevious,historyFactoryPrevious,historyFactory).createMergeResult();
+                return applicationServer.getDiff(storedFactoryMetadata);
             }
         }
 
