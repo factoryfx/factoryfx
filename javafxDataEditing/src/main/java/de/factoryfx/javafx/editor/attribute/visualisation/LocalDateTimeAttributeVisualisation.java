@@ -1,5 +1,12 @@
 package de.factoryfx.javafx.editor.attribute.visualisation;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+import java.util.Optional;
+
 import com.google.common.base.Strings;
 import de.factoryfx.javafx.editor.attribute.AttributeEditorVisualisation;
 import de.factoryfx.javafx.util.TypedTextFieldHelper;
@@ -8,16 +15,7 @@ import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.TextField;
-import javafx.scene.control.TextInputControl;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
-
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
-import java.util.Optional;
 
 public class LocalDateTimeAttributeVisualisation implements AttributeEditorVisualisation<LocalDateTime> {
 
@@ -84,7 +82,7 @@ public class LocalDateTimeAttributeVisualisation implements AttributeEditorVisua
                 return;
             }
             LocalDateTime current = boundTo.get();
-            if (current.toLocalTime().equals(newValue))
+            if (current.toLocalTime().equals(newLocalTime))
                 return;
             boundTo.set(LocalDateTime.of(current.toLocalDate(), newLocalTime));
         } catch (DateTimeParseException ignored) {
