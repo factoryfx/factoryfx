@@ -1,11 +1,9 @@
 package de.factoryfx.javafx.distribution.server;
 
-import java.util.logging.LogManager;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider;
-import de.factoryfx.server.rest.server.AllExceptionMapper;
 import de.factoryfx.javafx.distribution.server.rest.DownloadResource;
+import de.factoryfx.server.rest.server.AllExceptionMapper;
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.NetworkTrafficServerConnector;
@@ -65,7 +63,6 @@ public class UserInterfaceDistributionServer {
 
         org.glassfish.jersey.logging.LoggingFeature loggingFilter = new org.glassfish.jersey.logging.LoggingFeature(java.util.logging.Logger.getLogger(UserInterfaceDistributionServer.class.getName()));
         resourceConfig.registerInstances(loggingFilter);
-        LogManager.getLogManager().reset();
         return resourceConfig;
     }
 
