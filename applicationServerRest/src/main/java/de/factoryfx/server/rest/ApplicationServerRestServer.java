@@ -2,7 +2,6 @@ package de.factoryfx.server.rest;
 
 import java.util.Collection;
 import java.util.function.Function;
-import java.util.logging.LogManager;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider;
@@ -61,7 +60,6 @@ public class ApplicationServerRestServer {
 
         LoggingFeature loggingFilter = new LoggingFeature(java.util.logging.Logger.getLogger(LoggingFeature.class.getName()));
         resourceConfig.registerInstances(loggingFilter);
-        LogManager.getLogManager().reset();
         return resourceConfig;
     }
 
