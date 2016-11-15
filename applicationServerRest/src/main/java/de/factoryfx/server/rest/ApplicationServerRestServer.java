@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider;
 import de.factoryfx.data.jackson.ObjectMapperBuilder;
 import de.factoryfx.server.rest.server.AllExceptionMapper;
+import de.factoryfx.server.rest.server.DelegatingLoggingFilterLogger;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
@@ -58,7 +59,7 @@ public class ApplicationServerRestServer {
         provider.setMapper(mapper);
         resourceConfig.register(provider);
 
-        LoggingFeature loggingFilter = new LoggingFeature(java.util.logging.Logger.getLogger(LoggingFeature.class.getName()));
+        LoggingFeature loggingFilter = new LoggingFeature(new DelegatingLoggingFilterLogger());
         resourceConfig.registerInstances(loggingFilter);
         return resourceConfig;
     }
