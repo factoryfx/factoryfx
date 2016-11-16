@@ -211,6 +211,13 @@ public class ReferenceListAttribute<T extends Data> extends Attribute<Observable
         return addedFactory;
     }
 
+    public void addFactory(T addedFactory){
+        get().add(addedFactory);
+        for (Data data: get()){
+            data.internal().prepareUsage(root);
+        }
+    }
+
     @SuppressWarnings("unchecked")
     public List<T> possibleValues(){
         ArrayList<T> result = new ArrayList<>();

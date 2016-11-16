@@ -111,7 +111,7 @@ public abstract class FactoryBase<L,V> extends Data {
             return true;
         }
         changedDeep=false;
-        this.internal().visitChildFactoriesFlat(factoryBase -> changedDeep = changedDeep || cast(factoryBase).changedDeep());
+        this.internal().visitChildFactoriesFlat(factoryBase -> changedDeep = changedDeep || cast(factoryBase).map(FactoryBase::changedDeep).orElse(false));
         return changedDeep;
     }
 
@@ -119,7 +119,7 @@ public abstract class FactoryBase<L,V> extends Data {
     public void loopDetector(){
         loopProtector.enter();
         try {
-            this.internal().visitChildFactoriesFlat(factory -> cast(factory).loopDetector());
+            this.internal().visitChildFactoriesFlat(factory -> cast(factory).ifPresent(FactoryBase::loopDetector));
         } finally {
             loopProtector.exit();
         }
@@ -127,13 +127,15 @@ public abstract class FactoryBase<L,V> extends Data {
 
     //TODO this works as long als tree elements extends FactoryBase, how to enforce that?
     @SuppressWarnings("unchecked")
-    private FactoryBase<?,V> cast(Data data){
-        return (FactoryBase<?,V>)data;
+    private Optional<FactoryBase<?,V>> cast(Data data){
+        if (data instanceof FactoryBase)
+            return Optional.of((FactoryBase<?,V>)data);
+        return Optional.empty();
     }
 
     @SuppressWarnings("unchecked")
     public Set<FactoryBase<?,V>> collectChildFactoriesDeep(){
-        return super.internal().collectChildrenDeep().stream().map(this::cast).collect(Collectors.toSet());
+        return super.internal().collectChildrenDeep().stream().map(this::cast).filter(Optional::isPresent).map(Optional::get).collect(Collectors.toSet());
     }
 
     public void start(){
