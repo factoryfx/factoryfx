@@ -7,6 +7,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import com.google.common.collect.TreeTraverser;
+import de.factoryfx.data.Data;
 import de.factoryfx.data.merge.DataMerger;
 import de.factoryfx.data.merge.MergeDiff;
 import de.factoryfx.data.merge.MergeResultEntry;
@@ -75,9 +76,9 @@ public class FactoryManager<L,V,T extends FactoryBase<L,V>> {
     TreeTraverser<FactoryBase<?,?>> factoryTraverser = new TreeTraverser<FactoryBase<?,?>>() {
         @Override
         public Iterable<FactoryBase<?,?>> children(FactoryBase<?,?> factory) {
-            Set<FactoryBase<?, ?>> children = factory.internal().collectChildrenFlat();
+            Set<? extends Data> children = factory.internal().collectChildrenFlat();
             children.removeIf(c->!(c instanceof FactoryBase));
-            return children;
+            return (Set<FactoryBase<?,?>>)children;
         }
     };
     private Function<T,LinkedHashSet<FactoryBase<?,?>>> startFactoryProvider = root -> {
