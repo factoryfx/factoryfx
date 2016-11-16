@@ -2,6 +2,7 @@ package de.factoryfx.factory;
 
 import java.util.HashSet;
 import java.util.LinkedHashSet;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -74,7 +75,9 @@ public class FactoryManager<L,V,T extends FactoryBase<L,V>> {
     TreeTraverser<FactoryBase<?,?>> factoryTraverser = new TreeTraverser<FactoryBase<?,?>>() {
         @Override
         public Iterable<FactoryBase<?,?>> children(FactoryBase<?,?> factory) {
-            return factory.internal().collectChildrenFlat();
+            Set<FactoryBase<?, ?>> children = factory.internal().collectChildrenFlat();
+            children.removeIf(c->!(c instanceof FactoryBase));
+            return children;
         }
     };
     private Function<T,LinkedHashSet<FactoryBase<?,?>>> startFactoryProvider = root -> {
