@@ -68,7 +68,7 @@ public class LocalDateTimeAttributeVisualisation implements AttributeEditorVisua
             return;
         }
         LocalDate current = datePicker.getValue();
-        if (current.equals(newValue.toLocalDate()))
+        if (current != null && current.equals(newValue.toLocalDate()))
             return;
         datePicker.setValue(newValue.toLocalDate());
     }
