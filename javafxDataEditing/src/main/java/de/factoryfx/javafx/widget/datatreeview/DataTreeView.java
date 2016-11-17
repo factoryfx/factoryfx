@@ -1,6 +1,8 @@
 package de.factoryfx.javafx.widget.datatreeview;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -19,14 +21,18 @@ public class DataTreeView<T extends Data> {
         this.treeSupplier = treeSupplier;
     }
 
+    Optional<Consumer<TreeItem<Data>>> updateAction=Optional.empty();
+    public void setUpdateAction(Consumer<TreeItem<Data>> updateAction) {
+        this.updateAction= Optional.of(updateAction);
+    }
 
     public void update(){
         dataList.setAll(listSupplier.get());
+        updateAction.ifPresent(treeItemConsumer -> treeItemConsumer.accept(dataTree()));
     }
 
 
-    public TreeItem<Data> dataTree(){
-        update();
+    private TreeItem<Data> dataTree(){
         TreeItem<Data>  root = new TreeItem<>(null);
         dataList.forEach(item -> {
             final TreeItem<Data> treeItem = treeSupplier.apply(item);

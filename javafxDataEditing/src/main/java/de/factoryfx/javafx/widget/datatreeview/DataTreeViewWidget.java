@@ -1,5 +1,7 @@
 package de.factoryfx.javafx.widget.datatreeview;
 
+import java.util.function.Consumer;
+
 import de.factoryfx.data.Data;
 import de.factoryfx.javafx.editor.data.DataEditor;
 import de.factoryfx.javafx.util.UniformDesign;
@@ -8,6 +10,7 @@ import javafx.geometry.Orientation;
 import javafx.scene.Node;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.SplitPane;
+import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.control.cell.TextFieldTreeCell;
 
@@ -47,7 +50,6 @@ public class DataTreeViewWidget implements CloseAwareWidget {
             }
 
         });
-        tree.setRoot(dataTreeView.dataTree());
         tree.setShowRoot(false);
 
         SplitPane.setResizableWithParent(tree, Boolean.FALSE);
@@ -65,8 +67,13 @@ public class DataTreeViewWidget implements CloseAwareWidget {
         });
 
 
-
-
+        dataTreeView.setUpdateAction(new Consumer<TreeItem<Data>>() {
+            @Override
+            public void accept(TreeItem<Data> dataTreeItem) {
+                tree.setRoot(dataTreeItem);
+            }
+        });
+        dataTreeView.update();
 
         return splitPane;
     }
