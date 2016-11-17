@@ -11,7 +11,7 @@ import org.junit.Test;
 
 public class ViewReferenceAttributeTest {
 
-    public class ViewExampleFactory extends IdData{
+    public static class ViewExampleFactory extends IdData{
 
         public final ViewReferenceAttribute<ViewExampleFactoryRoot,ViewExampleFactory,ExampleFactoryA> view= new ViewReferenceAttribute<>(new AttributeMetadata(), new BiFunction<ViewExampleFactoryRoot, ViewExampleFactory, ExampleFactoryA>() {
             @Override
@@ -26,9 +26,10 @@ public class ViewReferenceAttributeTest {
         public final BooleanAttribute include= new BooleanAttribute(new AttributeMetadata());
     }
 
-    public class ViewExampleFactoryRoot extends IdData{
+    public static class ViewExampleFactoryRoot extends IdData{
         public final ReferenceAttribute<ViewExampleFactory> ref = new ReferenceAttribute<>(ViewExampleFactory.class,new AttributeMetadata());
         public final ReferenceAttribute<ExampleFactoryA> exampleFactoryA= new ReferenceAttribute<>(ExampleFactoryA.class,new AttributeMetadata());
+
     }
 
 
@@ -133,6 +134,20 @@ public class ViewReferenceAttributeTest {
         }
 
         Assert.assertEquals(0,calls.size());
+    }
+
+    @Test
+    public void test_copy(){
+        ViewExampleFactory viewExampleFactory=new ViewExampleFactory();
+        viewExampleFactory.include.set(true);
+
+        ViewExampleFactoryRoot root = new ViewExampleFactoryRoot();
+        root.ref.set(viewExampleFactory);
+        ExampleFactoryA value = new ExampleFactoryA();
+        root.exampleFactoryA.set(value);
+
+        root.internal().copy();
+
     }
 
 

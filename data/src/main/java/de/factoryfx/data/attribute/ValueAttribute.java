@@ -48,7 +48,10 @@ public class ValueAttribute<T> extends Attribute<T> {
         }
     }
 
-
+    @Override
+    public void copyTo(Attribute<T> copyAttribute, Function<Data, Data> dataCopyProvider) {
+        copyAttribute.set(get());
+    }
 
     protected List<AttributeChangeListener<T>> listeners= new ArrayList<>();
     @Override

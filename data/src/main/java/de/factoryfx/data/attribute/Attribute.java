@@ -49,9 +49,9 @@ public abstract class Attribute<T>{
 
     public abstract void set(T value);
 
-    public void copy(T value){
-        set(value);
-    }
+
+    public abstract void copyTo(Attribute<T> copyAttribute, Function<Data,Data> dataCopyProvider);
+
 
     public List<ValidationError> validate() {
         List<ValidationError> validationErrors = new ArrayList<>();

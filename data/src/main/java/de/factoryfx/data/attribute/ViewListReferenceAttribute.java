@@ -45,6 +45,11 @@ public class ViewListReferenceAttribute <R extends Data, P extends Data, T exten
         //nothing
     }
 
+    @Override
+    public void copyTo(Attribute<List<T>> copyAttribute, Function<Data, Data> dataCopyProvider) {
+        //nothing
+    }
+
     class DirtyTrackingThread extends Thread{
         volatile boolean tracking=true;
         List<T> previousList;

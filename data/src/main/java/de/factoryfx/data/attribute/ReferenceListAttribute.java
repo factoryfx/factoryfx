@@ -96,6 +96,17 @@ public class ReferenceListAttribute<T extends Data> extends Attribute<Observable
         this.list = value;
     }
 
+    @Override
+    @SuppressWarnings("unchecked")
+    public void copyTo(Attribute<ObservableList<T>> copyAttribute, Function<Data, Data> dataCopyProvider) {
+        for (T item: get()){
+            final T itemCopy = (T) dataCopyProvider.apply(item);
+            if (itemCopy!=null){
+                copyAttribute.get().add(itemCopy);
+            }
+        }
+    }
+
     public boolean contains(T value) {
         return get().contains(value);
     }

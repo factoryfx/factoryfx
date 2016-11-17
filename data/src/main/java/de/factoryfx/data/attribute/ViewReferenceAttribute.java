@@ -45,7 +45,10 @@ public class ViewReferenceAttribute<R extends Data, P extends Data, T extends Da
         //nothing
     }
 
-
+    @Override
+    public void copyTo(Attribute<T> copyAttribute, Function<Data, Data> dataCopyProvider) {
+        //nothing
+    }
 
     class DirtyTrackingThread extends Thread{
         volatile boolean tracking=true;

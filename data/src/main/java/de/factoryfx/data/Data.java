@@ -30,8 +30,6 @@ import de.factoryfx.data.merge.attribute.AttributeMergeHelper;
 import de.factoryfx.data.validation.ValidationError;
 import javafx.beans.property.ReadOnlyStringProperty;
 import javafx.beans.property.SimpleStringProperty;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.util.Pair;
 
 public abstract class Data {
@@ -365,7 +363,7 @@ public abstract class Data {
 
 
     @SuppressWarnings("unchecked")
-    private <T extends Data> T copyDeep(final int level,final int maxLevel, HashMap<Object,Data> identityPreserver, boolean keepIds){
+    private <T extends Data> T copyDeep(final int level, final int maxLevel, HashMap<Object,Data> identityPreserver, boolean keepIds){
         if (level>maxLevel){
             return null;
         }
@@ -376,22 +374,12 @@ public abstract class Data {
                 result.setId(this.getId());
             }
             this.visitAttributesDualFlat(result, (thisAttribute, copyAttribute) -> {
-                Object value = thisAttribute.get();
-                if (value instanceof Data) {
-                    value = ((Data) value).copyDeep(level + 1, maxLevel, identityPreserver,keepIds);
-                }
-                if (thisAttribute instanceof ReferenceListAttribute) {
-                    final ObservableList<Data> referenceList = FXCollections.observableArrayList();
-                    ((ReferenceListAttribute) thisAttribute).get().forEach(factory -> {
-                        Data data = ((Data) factory).copyDeep(level + 1, maxLevel, identityPreserver,keepIds);
-                        if (data!=null){
-                            referenceList.add(data);
-                        }
-                    });
-                    value = referenceList;
-                }
-
-                copyAttribute.copy(value);
+                thisAttribute.copyTo(copyAttribute,(data)->{
+                    if (data==null){
+                        return null;
+                    }
+                    return data.copyDeep(level + 1, maxLevel, identityPreserver,keepIds);
+                });
             });
             identityPreserver.put(this.getId(),result);
         }
