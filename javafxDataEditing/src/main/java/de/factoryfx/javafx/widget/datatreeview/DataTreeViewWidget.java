@@ -2,6 +2,7 @@ package de.factoryfx.javafx.widget.datatreeview;
 
 import java.util.function.Consumer;
 
+import com.google.common.collect.TreeTraverser;
 import de.factoryfx.data.Data;
 import de.factoryfx.javafx.editor.data.DataEditor;
 import de.factoryfx.javafx.util.UniformDesign;
@@ -73,6 +74,11 @@ public class DataTreeViewWidget implements CloseAwareWidget {
             @Override
             public void accept(TreeItem<Data> dataTreeItem) {
                 tree.setRoot(dataTreeItem);
+                for (TreeItem treeItem: treeTraverser.breadthFirstTraversal(dataTreeItem)){
+                    if (treeItem.getValue()==dataEditor.editData().get()){
+                        tree.getSelectionModel().select(treeItem);
+                    }
+                }
             }
         });
         dataTreeView.update();
@@ -80,8 +86,17 @@ public class DataTreeViewWidget implements CloseAwareWidget {
         return splitPane;
     }
 
+    TreeTraverser<TreeItem<Data>> treeTraverser = new TreeTraverser<TreeItem<Data>>() {
+        @Override
+        public Iterable<TreeItem<Data>> children(TreeItem<Data> data) {
+            return data.getChildren();
+        }
+    };
+
     public DataTreeViewWidget setDividerPositions(double dividerPosition) {
         this.dividerPosition = dividerPosition;
         return this;
     }
+
+
 }
