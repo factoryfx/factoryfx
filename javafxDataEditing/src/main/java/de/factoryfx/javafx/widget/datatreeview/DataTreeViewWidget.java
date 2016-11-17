@@ -62,8 +62,10 @@ public class DataTreeViewWidget implements CloseAwareWidget {
 
         dataEditor.reset();
         tree.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-            dataEditor.edit(newValue.getValue());
-            dataEditor.resetHistory();
+            if (newValue!=null){
+                dataEditor.edit(newValue.getValue());
+                dataEditor.resetHistory();
+            }
         });
 
 
