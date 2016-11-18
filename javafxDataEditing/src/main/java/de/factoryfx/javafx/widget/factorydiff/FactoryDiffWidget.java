@@ -38,7 +38,7 @@ import org.fxmisc.richtext.StyleClassedTextArea;
 
 public class FactoryDiffWidget implements Widget {
     private UniformDesign uniformDesign;
-    private LanguageText columnFactory=new LanguageText().en("Factory").de("Factory");
+    private LanguageText columnFactory=new LanguageText().en("data").de("Objekt");
     private LanguageText columnField=new LanguageText().en("field").de("Feld");
     private LanguageText columnPrevious=new LanguageText().en("previous").de("Alt");
     private LanguageText columnNew=new LanguageText().en("new").de("Neu");
@@ -54,7 +54,6 @@ public class FactoryDiffWidget implements Widget {
     }
 
     private final SimpleObjectProperty<MergeDiffInfo> mergeDiff = new SimpleObjectProperty<>();
-
 
     @Override
     public Node createContent() {
@@ -139,7 +138,9 @@ public class FactoryDiffWidget implements Widget {
 
                 diffDisplay.replaceText(diffString.toString());
                 for (StyleClassArea styleClassArea: styleChanges){
-                    diffDisplay.setStyleClass(styleClassArea.start,styleClassArea.end,styleClassArea.cssclass);
+                    if (styleClassArea.end<=diffString.toString().length()) {
+                        diffDisplay.setStyleClass(styleClassArea.start,styleClassArea.end,styleClassArea.cssclass);
+                    }
                 }
 
                 if (!patch.getDeltas().isEmpty()){
