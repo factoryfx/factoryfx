@@ -96,6 +96,8 @@ public class ValidationWidget implements Widget {
 //        SplitPane.setResizableWithParent(vBox, Boolean.TRUE);
         splitPane.getItems().add(vBox);
         splitPane.getItems().add(dataEditor.createContent());
+
+        splitPane.disableProperty().bind(isValid);
         return splitPane;
     }
 
