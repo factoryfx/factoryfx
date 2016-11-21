@@ -12,10 +12,10 @@ public class InMemoryUserManagement implements UserManagement {
     }
 
     @Override
-    public Optional<User> authenticate(String user, String password) {
+    public Optional<AuthorizedUser> authenticate(String user, String password) {
         for (User existinguser: users){
             if (existinguser.matchUser(user, password)){
-                return Optional.of(existinguser);
+                return Optional.of(existinguser.toAuthorizedUser());
             }
         }
 

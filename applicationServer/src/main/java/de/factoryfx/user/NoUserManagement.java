@@ -7,8 +7,8 @@ import java.util.UUID;
 public class NoUserManagement implements UserManagement {
 
     @Override
-    public Optional<User> authenticate(String user, String password) {
-        return Optional.of(new User(UUID.randomUUID().toString(),"", Locale.ENGLISH));
+    public Optional<AuthorizedUser> authenticate(String user, String password) {
+        return Optional.of(new AuthorizedUser(UUID.randomUUID().toString(), Locale.ENGLISH));
     }
 
     @Override

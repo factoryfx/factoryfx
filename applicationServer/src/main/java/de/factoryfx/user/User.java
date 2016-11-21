@@ -2,7 +2,6 @@ package de.factoryfx.user;
 
 import java.util.Arrays;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
@@ -16,7 +15,7 @@ public class User {
         return this.user.equals(user) && this.password.equals(password);
     }
 
-    public User(String user, String password, Locale locale, List<String> permissions) {
+    public User(String user, String password, Locale locale, Set<String> permissions) {
         this.user = user;
         this.password = password;
         this.locale = locale;
@@ -30,9 +29,7 @@ public class User {
         this.permissions.addAll(Arrays.asList(permissions));
     }
 
-    public void checkPermission(String permission){
-        if (permission!=null && !permissions.contains(permission)){
-            throw new IllegalStateException("permission required: "+permission);
-        }
+    public AuthorizedUser toAuthorizedUser() {
+        return new AuthorizedUser(user,locale,permissions);
     }
 }
