@@ -109,6 +109,8 @@ public class FactoryManager<L,V,T extends FactoryBase<L,V>> {
 
     @SuppressWarnings("unchecked")
     public void start(T newFactory){
+        newFactory.internal().prepareUsage();
+
         newFactory.loopDetector();
         currentFactory=newFactory;
 
