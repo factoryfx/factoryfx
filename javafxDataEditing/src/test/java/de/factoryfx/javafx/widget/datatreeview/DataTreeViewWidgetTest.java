@@ -14,6 +14,7 @@ import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.control.TreeItem;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
@@ -47,6 +48,9 @@ public class DataTreeViewWidgetTest extends Application{
         }
         dataList.addAll(new ExampleData1());
         dataList.addAll(new ExampleData1());
+        for (int i=0 ;i<100;i++){
+            dataList.addAll(new ExampleData1());
+        }
 
         DataTreeViewWidget dataViewWidget = new DataTreeViewWidget(new DataTreeView<>(() -> dataList, new Function<ExampleData1, TreeItem<Data>>() {
             @Override
@@ -62,6 +66,11 @@ public class DataTreeViewWidgetTest extends Application{
         root.getStylesheets().add(getClass().getResource("/de/factoryfx/javafx/css/app.css").toExternalForm());
         root.setCenter(dataViewWidget.createContent());
         primaryStage.setScene(new Scene(root, 1200, 800));
+
+        final Button clear = new Button("clear");
+        clear.setOnAction(event -> root.setCenter(null));
+        root.setBottom(clear);
+
 
         primaryStage.show();
 

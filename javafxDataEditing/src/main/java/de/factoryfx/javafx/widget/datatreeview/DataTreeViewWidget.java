@@ -5,6 +5,7 @@ import java.util.function.Consumer;
 import com.google.common.collect.TreeTraverser;
 import de.factoryfx.data.Data;
 import de.factoryfx.javafx.editor.data.DataEditor;
+import de.factoryfx.javafx.util.DataTextFieldTreeCell;
 import de.factoryfx.javafx.util.UniformDesign;
 import de.factoryfx.javafx.widget.CloseAwareWidget;
 import javafx.geometry.Orientation;
@@ -13,7 +14,6 @@ import javafx.scene.control.SelectionMode;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
-import javafx.scene.control.cell.TextFieldTreeCell;
 
 public class DataTreeViewWidget implements CloseAwareWidget {
     private final DataTreeView dataTreeView;
@@ -40,18 +40,9 @@ public class DataTreeViewWidget implements CloseAwareWidget {
 
         TreeView<Data> tree = new TreeView<>();
         tree.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
-        tree.setCellFactory(param -> new TextFieldTreeCell<Data>() {
-            @Override
-            public void updateItem(Data item, boolean empty) {
-                super.updateItem(item, empty);
-                if (item != null) {
-                    this.setText(item.internal().getDisplayText());
-                }
-                //CellUtils.updateItem(this, getConverter(), hbox, getTreeItemGraphic(), textField);
-            }
-
-        });
+        tree.setCellFactory(param -> new DataTextFieldTreeCell<>(data->data));
         tree.setShowRoot(false);
+
 
         SplitPane.setResizableWithParent(tree, Boolean.FALSE);
         splitPane.getItems().add(tree);
@@ -97,6 +88,5 @@ public class DataTreeViewWidget implements CloseAwareWidget {
         this.dividerPosition = dividerPosition;
         return this;
     }
-
 
 }

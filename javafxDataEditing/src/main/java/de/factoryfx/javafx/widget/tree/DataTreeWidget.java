@@ -6,6 +6,7 @@ import de.factoryfx.data.attribute.Attribute;
 import de.factoryfx.data.attribute.ReferenceAttribute;
 import de.factoryfx.data.attribute.ReferenceListAttribute;
 import de.factoryfx.javafx.editor.data.DataEditor;
+import de.factoryfx.javafx.util.DataTextFieldTreeCell;
 import de.factoryfx.javafx.util.UniformDesign;
 import de.factoryfx.javafx.widget.CloseAwareWidget;
 import javafx.application.Platform;
@@ -18,7 +19,6 @@ import javafx.scene.control.SelectionMode;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
-import javafx.scene.control.cell.TextFieldTreeCell;
 
 public class DataTreeWidget implements CloseAwareWidget {
     private final Data root;
@@ -49,17 +49,7 @@ public class DataTreeWidget implements CloseAwareWidget {
     private Node createTree(){
         TreeView<TreeData> tree = new TreeView<>();
         tree.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
-        tree.setCellFactory(param -> new TextFieldTreeCell<TreeData>() {
-            @Override
-            public void updateItem(TreeData item, boolean empty) {
-                super.updateItem(item, empty);
-                if (item != null) {
-                    this.setText(item.getDisplayText());
-                }
-                //CellUtils.updateItem(this, getConverter(), hbox, getTreeItemGraphic(), textField);
-            }
-
-        });
+        tree.setCellFactory(param -> new DataTextFieldTreeCell<>(TreeData::getData));
         tree.setRoot(constructTree(root));
 
         tree.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
