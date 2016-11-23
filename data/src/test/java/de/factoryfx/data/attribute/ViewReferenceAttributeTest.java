@@ -150,5 +150,18 @@ public class ViewReferenceAttributeTest {
 
     }
 
+    @Test
+    public void test_reconstructMetadataDeepRoot(){
+        ViewExampleFactory viewExampleFactory=new ViewExampleFactory();
+        viewExampleFactory.include.set(true);
+
+        ViewExampleFactoryRoot root = new ViewExampleFactoryRoot();
+        root.ref.set(viewExampleFactory);
+        ExampleFactoryA value = new ExampleFactoryA();
+        root.exampleFactoryA.set(value);
+
+        root.internal().reconstructMetadataDeepRoot();
+    }
+
 
 }

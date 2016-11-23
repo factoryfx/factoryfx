@@ -23,6 +23,8 @@ import de.factoryfx.data.attribute.Attribute;
 import de.factoryfx.data.attribute.AttributeChangeListener;
 import de.factoryfx.data.attribute.ReferenceAttribute;
 import de.factoryfx.data.attribute.ReferenceListAttribute;
+import de.factoryfx.data.attribute.ViewListReferenceAttribute;
+import de.factoryfx.data.attribute.ViewReferenceAttribute;
 import de.factoryfx.data.attribute.types.ObjectValueAttribute;
 import de.factoryfx.data.merge.MergeResult;
 import de.factoryfx.data.merge.MergeResultEntry;
@@ -231,7 +233,10 @@ public abstract class Data {
                 if (de.factoryfx.data.attribute.Attribute.class.isAssignableFrom(field.getType())){
                     Object value=null;
                     if (field.get(this)!=null){
-                        value= ((Attribute)field.get(this)).get();
+                        final Attribute attribute = (Attribute) field.get(this);
+                        if (!(attribute instanceof ViewReferenceAttribute) && !(attribute instanceof ViewListReferenceAttribute)){
+                            value= attribute.get();
+                        }
                     }
                     field.setAccessible(true);
                     field.set(this,field.get(copy));

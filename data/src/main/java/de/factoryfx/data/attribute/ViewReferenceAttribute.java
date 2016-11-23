@@ -39,7 +39,7 @@ public class ViewReferenceAttribute<R extends Data, P extends Data, T extends Da
 
     @Override
     public T get() {
-        return root == null? null:view.apply(root,parent);
+        return view.apply(root,parent);
     }
 
     @Override
