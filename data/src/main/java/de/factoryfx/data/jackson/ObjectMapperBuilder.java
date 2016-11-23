@@ -34,7 +34,7 @@ public class ObjectMapperBuilder {
         objectMapper.enable(DeserializationFeature.READ_ENUMS_USING_TO_STRING);
         objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
         objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
-        objectMapper.setSerializationInclusion(JsonInclude.Include.ALWAYS);
+//        objectMapper.setSerializationInclusion(JsonInclude.Include.ALWAYS);
 
         SimpleModule m = new SimpleModule();
         m.addAbstractTypeMapping(ObservableMap.class, ObservableMapJacksonAbleWrapper.class);

@@ -5,10 +5,12 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreType;
 import de.factoryfx.data.Data;
 import de.factoryfx.data.merge.attribute.AttributeMergeHelper;
 import de.factoryfx.data.merge.attribute.NopMergeHelper;
 
+@JsonIgnoreType
 public class ViewReferenceAttribute<R extends Data, P extends Data, T extends Data> extends Attribute<T> {
 
     private P parent;
