@@ -120,47 +120,48 @@ public class DataEditor implements Widget {
 
 
         ChangeListener<Data> dataChangeListener = (observable, oldValue, newValue) -> {
-            if (newValue!=bound.get()){
-                createdEditors.stream().forEach(AttributeEditor::unbind);
-                createdEditors.clear();
-                if (newValue!=null) {
-                    if (newValue.internal().attributeListGrouped().size()==1){
-                        GridPane grid = createGrid();
-                        for (Pair<String,List<Attribute<?>>> attributeGroup: newValue.internal().attributeListGrouped()) {
-                            fillGrid(grid, attributeGroup.getValue());
-                        }
-                        result.setCenter(wrapGrid(grid));
 
-                    } else {
-                        TabPane tabPane = new TabPane();
-                        for (Pair<String,List<Attribute<?>>> attributeGroup: newValue.internal().attributeListGrouped()) {
-                            Tab tab=new Tab(attributeGroup.getKey());
-                            if (attributeGroup.getValue().size()>1){
-                                GridPane tabgrid = createGrid();
-                                tab.setContent(wrapGrid(tabgrid));
-                                fillGrid(tabgrid, attributeGroup.getValue());
-                            } else {
-                                Optional<AttributeEditor<?>> attributeEditor = attributeEditorFactory.getAttributeEditor(attributeGroup.getValue().get(0),this);
-                                if (attributeEditor.isPresent()){
-                                    createdEditors.add(attributeEditor.get());
-                                    tab.setContent(attributeEditor.get().createContent());
-                                }
-                            }
-                            tabPane.getTabs().add(tab);
-                        }
-                        result.setCenter(tabPane);
-
-                    }
-                }
-
+            createdEditors.stream().forEach(AttributeEditor::unbind);
+            createdEditors.clear();
+            if (newValue==null) {
+                result.setCenter(new Label("empty"));
             } else {
-                if (newValue==null) {
-                    result.setCenter(new Label("empty"));
+
+                if (newValue.internal().attributeListGrouped().size()==1){
+                    GridPane grid = createGrid();
+                    for (Pair<String,List<Attribute<?>>> attributeGroup: newValue.internal().attributeListGrouped()) {
+                        fillGrid(grid, attributeGroup.getValue());
+                    }
+                    result.setCenter(wrapGrid(grid));
+
+                } else {
+                    TabPane tabPane = new TabPane();
+                    for (Pair<String,List<Attribute<?>>> attributeGroup: newValue.internal().attributeListGrouped()) {
+                        Tab tab=new Tab(attributeGroup.getKey());
+                        if (attributeGroup.getValue().size()>1){
+                            GridPane tabgrid = createGrid();
+                            tab.setContent(wrapGrid(tabgrid));
+                            fillGrid(tabgrid, attributeGroup.getValue());
+                        } else {
+                            Optional<AttributeEditor<?>> attributeEditor = attributeEditorFactory.getAttributeEditor(attributeGroup.getValue().get(0),this);
+                            if (attributeEditor.isPresent()){
+                                createdEditors.add(attributeEditor.get());
+                                tab.setContent(attributeEditor.get().createContent());
+                            }
+                        }
+                        tabPane.getTabs().add(tab);
+                    }
+                    result.setCenter(tabPane);
+
                 }
+
+
+
             }
+
         };
         bound.addListener(dataChangeListener);
-        dataChangeListener.changed(bound,null,bound.get());
+        dataChangeListener.changed(bound,bound.get(),bound.get());
 
 
         result.setTop(createNavigation());
