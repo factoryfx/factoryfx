@@ -123,10 +123,7 @@ public class DataEditor implements Widget {
             if (newValue!=bound.get()){
                 createdEditors.stream().forEach(AttributeEditor::unbind);
                 createdEditors.clear();
-                if (newValue==null) {
-                    result.setCenter(new Label("empty"));
-                } else {
-
+                if (newValue!=null) {
                     if (newValue.internal().attributeListGrouped().size()==1){
                         GridPane grid = createGrid();
                         for (Pair<String,List<Attribute<?>>> attributeGroup: newValue.internal().attributeListGrouped()) {
@@ -156,10 +153,14 @@ public class DataEditor implements Widget {
                     }
                 }
 
+            } else {
+                if (newValue==null) {
+                    result.setCenter(new Label("empty"));
+                }
             }
         };
         bound.addListener(dataChangeListener);
-        dataChangeListener.changed(bound,bound.get(),bound.get());
+        dataChangeListener.changed(bound,null,bound.get());
 
 
         result.setTop(createNavigation());
