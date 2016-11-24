@@ -91,4 +91,26 @@ public class ReferenceListAttributeTest {
         Assert.assertEquals(2,calls.size());
 //        Assert.assertEquals(value,calls.get(0));
     }
+
+    @Test
+    public void removeListener() throws Exception {
+        ReferenceListAttribute<ExampleFactoryA> attribute =new ReferenceListAttribute<>(ExampleFactoryA.class,new AttributeMetadata());
+
+        final AttributeChangeListener<ObservableList<ExampleFactoryA>> attributeChangeListener = (a, value) -> System.out.println(value);
+        attribute.addListener(attributeChangeListener);
+        Assert.assertEquals(1,attribute.listeners.size());
+        attribute.removeListener(attributeChangeListener);
+        Assert.assertTrue(attribute.listeners.size()==0);
+    }
+
+    @Test
+    public void removeWeakListener() throws Exception {
+        ReferenceListAttribute<ExampleFactoryA> attribute =new ReferenceListAttribute<>(ExampleFactoryA.class,new AttributeMetadata());
+
+        final AttributeChangeListener<ObservableList<ExampleFactoryA>> attributeChangeListener = (a, value) -> System.out.println(value);
+        attribute.addListener(new WeakAttributeChangeListener<>(attributeChangeListener));
+        Assert.assertTrue(attribute.listeners.size()==1);
+        attribute.removeListener(attributeChangeListener);
+        Assert.assertTrue(attribute.listeners.size()==0);
+    }
 }

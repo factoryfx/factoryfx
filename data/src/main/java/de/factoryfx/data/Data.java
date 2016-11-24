@@ -29,6 +29,8 @@ import de.factoryfx.data.attribute.types.ObjectValueAttribute;
 import de.factoryfx.data.merge.MergeResult;
 import de.factoryfx.data.merge.MergeResultEntry;
 import de.factoryfx.data.merge.attribute.AttributeMergeHelper;
+import de.factoryfx.data.validation.AttributeValidation;
+import de.factoryfx.data.validation.Validation;
 import de.factoryfx.data.validation.ValidationError;
 import javafx.beans.property.ReadOnlyStringProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -290,7 +292,23 @@ public abstract class Data {
         visitAttributesFlat((attributeVariableName, attribute) -> {
             result.addAll(attribute.validate());
         });
+
+        for (AttributeValidation validation: dataValidations){
+            validation.validate(this).ifPresent(new Consumer<ValidationError>() {
+                @Override
+                public void accept(ValidationError validationError) {
+                    result.add(validationError);
+                }
+            });
+        }
         return result;
+    }
+
+    List<AttributeValidation<?>> dataValidations = new ArrayList<>();
+    private <T> void addValidation(Validation<T> validation, Attribute<?>... dependencies){
+        for ( Attribute<?> dependency: dependencies){
+            dataValidations.add(new AttributeValidation(validation,dependency));
+        }
     }
 
     @SuppressWarnings("unchecked")
@@ -507,8 +525,12 @@ public abstract class Data {
         public void setDisplayTextDependencies(Attribute<?>... attributes){
             data.setDisplayTextDependencies(Arrays.asList(attributes));
         }
-    }
 
+        public <T> void addValidation(Validation<T> validation, Attribute<?>... dependencies){
+            data.addValidation(validation,dependencies);
+        }
+
+    }
 
     Internal internal = new Internal(this);
     /** <b>internal methods should be only used from the framework.</b>

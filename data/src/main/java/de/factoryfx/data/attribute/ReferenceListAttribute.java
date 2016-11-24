@@ -154,8 +154,19 @@ public class ReferenceListAttribute<T extends Data> extends Attribute<Observable
     }
     @Override
     public void removeListener(AttributeChangeListener<ObservableList<T>> listener) {
-        list.removeListener(listeners.get(listener));
+        ListChangeListener<T> listListenerToRemove = listeners.get(listener);
+        if (listListenerToRemove==null){
+            for (Map.Entry<AttributeChangeListener<ObservableList<T>>, ListChangeListener<T>> entry: listeners.entrySet()){
+                if (entry.getKey().unwrap()==listener){
+                    listListenerToRemove = entry.getValue();
+                    listeners.remove(entry.getKey());
+                    break;
+                }
+            }
+        }
+        list.removeListener(listListenerToRemove);
         listeners.remove(listener);
+//        listeners.remove(listener.unwrap());
     }
 
     @Override

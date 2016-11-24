@@ -3,6 +3,7 @@ package de.factoryfx.javafx.editor.attribute;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.function.Supplier;
 
 import de.factoryfx.data.attribute.Attribute;
 import de.factoryfx.data.attribute.AttributeChangeListener;
@@ -24,8 +25,9 @@ public class AttributeEditor<T> implements Widget {
     private SimpleObjectProperty<T> bound = new SimpleObjectProperty<>();
     private Attribute<T> boundAttribute;
     private SimpleObjectProperty<List<ValidationError>> validationResult=new SimpleObjectProperty<>();
+    private Supplier<List<ValidationError>> validation=null;
 
-    public AttributeEditor(Attribute<T> boundAttribute, AttributeEditorVisualisation<T> attributeEditorVisualisation) {
+    public AttributeEditor(Attribute<T> boundAttribute, AttributeEditorVisualisation<T> attributeEditorVisualisation, Supplier<List<ValidationError>> validation) {
         this.boundAttribute=boundAttribute;
         this.attributeEditorVisualisation=attributeEditorVisualisation;
         this.bound.set(boundAttribute.get());
@@ -36,6 +38,7 @@ public class AttributeEditor<T> implements Widget {
                 boundAttribute.set(newValue1);
             }
         });
+        this.validation= validation;
     }
 
     boolean setLoop=false;
@@ -54,10 +57,13 @@ public class AttributeEditor<T> implements Widget {
             bound.set(value);
             setLoop = false;
 
-            validationResult.set(attribute.validate());
-
         });
     };
+
+
+    public void reportValidation(List<ValidationError> attributeValidationErrors){
+        validationResult.set(attributeValidationErrors);
+    }
 
     Node content;
     @Override

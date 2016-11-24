@@ -1,11 +1,16 @@
 package de.factoryfx.javafx.editor.data;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Supplier;
 
 import de.factoryfx.data.Data;
 import de.factoryfx.data.attribute.Attribute;
+import de.factoryfx.data.attribute.AttributeChangeListener;
+import de.factoryfx.data.attribute.WeakAttributeChangeListener;
+import de.factoryfx.data.validation.ValidationError;
 import de.factoryfx.javafx.editor.attribute.AttributeEditor;
 import de.factoryfx.javafx.editor.attribute.AttributeEditorFactory;
 import de.factoryfx.javafx.util.UniformDesign;
@@ -45,6 +50,7 @@ public class DataEditor implements Widget {
     private final UniformDesign uniformDesign;
     SimpleObjectProperty<Data> bound = new SimpleObjectProperty<>();
     private ChangeListener<Data> dataChangeListener;
+    private AttributeChangeListener validationListener;
 
     public DataEditor(AttributeEditorFactory attributeEditorFactory, UniformDesign uniformDesign) {
         this.attributeEditorFactory = attributeEditorFactory;
@@ -102,7 +108,7 @@ public class DataEditor implements Widget {
     }
 
 
-    List<AttributeEditor<?>> createdEditors=new ArrayList<>();
+    HashMap<Attribute<?>,AttributeEditor<?>> createdEditors=new HashMap<>();
 
     private Node wrapGrid(GridPane gridPane){
         ScrollPane scrollPane = new ScrollPane(gridPane);
@@ -114,6 +120,15 @@ public class DataEditor implements Widget {
     }
 
 
+//    List<ValidationError> attributeValidationError = new ArrayList<>();
+//    for (ValidationError validationError: validation.get()){
+//        final Attribute<?> attributeItem = validationError.attribute;
+//        if (attribute==attributeItem){
+//            attributeValidationError.add(validationError);
+//        }
+//    }
+//    validationResult.set(attributeValidationError);
+
     @Override
     public Node createContent() {
         BorderPane result = new BorderPane();
@@ -124,43 +139,49 @@ public class DataEditor implements Widget {
 
         dataChangeListener = (observable, oldValue, newValue) -> {
 
-            createdEditors.stream().forEach(AttributeEditor::unbind);
+            createdEditors.entrySet().stream().forEach(entry -> entry.getValue().unbind());
             createdEditors.clear();
             if (newValue==null) {
                 result.setCenter(new Label("empty"));
             } else {
 
                 if (newValue.internal().attributeListGrouped().size()==1){
-                    GridPane grid = createGrid();
-                    for (Pair<String,List<Attribute<?>>> attributeGroup: newValue.internal().attributeListGrouped()) {
-                        fillGrid(grid, attributeGroup.getValue());
-                    }
-                    result.setCenter(wrapGrid(grid));
-
+                    result.setCenter(createAttributeGroupVisual(newValue.internal().attributeListGrouped().get(0).getValue(),() -> newValue.internal().validateFlat()));
                 } else {
                     TabPane tabPane = new TabPane();
                     for (Pair<String,List<Attribute<?>>> attributeGroup: newValue.internal().attributeListGrouped()) {
                         Tab tab=new Tab(attributeGroup.getKey());
-                        if (attributeGroup.getValue().size()>1){
-                            GridPane tabgrid = createGrid();
-                            tab.setContent(wrapGrid(tabgrid));
-                            fillGrid(tabgrid, attributeGroup.getValue());
-                        } else {
-                            Optional<AttributeEditor<?>> attributeEditor = attributeEditorFactory.getAttributeEditor(attributeGroup.getValue().get(0),this);
-                            if (attributeEditor.isPresent()){
-                                createdEditors.add(attributeEditor.get());
-                                tab.setContent(attributeEditor.get().createContent());
-                            }
-                        }
+                        tab.setContent(createAttributeGroupVisual(attributeGroup.getValue(),() -> newValue.internal().validateFlat()));
                         tabPane.getTabs().add(tab);
                     }
                     result.setCenter(tabPane);
-
                 }
 
+                if (validationListener!=null && oldValue!=null){
+                    oldValue.internal().visitAttributesFlat((attributeVariableName, attribute) -> {
+                        attribute.removeListener(validationListener);
+                    });
+                }
+                validationListener = (attribute1, value) -> {
+                    final List<ValidationError> validationErrors = newValue.internal().validateFlat();
+                    createdEditors.entrySet().stream().forEach(entry -> {
+                        List<ValidationError> attributeValidationError = new ArrayList<>();
+                        for (ValidationError validationError : validationErrors) {
+                            if (entry.getKey() == validationError.attribute) {
+                                attributeValidationError.add(validationError);
+                            }
+                        }
+                        entry.getValue().reportValidation(attributeValidationError);
+                    });
+                };
+                newValue.internal().visitAttributesFlat((attributeVariableName, attribute) -> {
+                    attribute.addListener(new WeakAttributeChangeListener<>(validationListener));
+                    validationListener.changed(attribute,attribute.get());
+                });
 
 
             }
+
 
         };
         bound.addListener(dataChangeListener);
@@ -172,48 +193,58 @@ public class DataEditor implements Widget {
         return result;
     }
 
-    private GridPane createGrid() {
-        GridPane grid = new GridPane();
+
+    private Node createAttributeGroupVisual(List<Attribute<?>> attributeGroup, Supplier<List<ValidationError>> validation) {
+        if (attributeGroup.size()==1){
+            final Attribute<?> attribute = attributeGroup.get(0);
+            Optional<AttributeEditor<?>> attributeEditor = attributeEditorFactory.getAttributeEditor(attribute, this, validation);
+            if (attributeEditor.isPresent()){
+                createdEditors.put(attribute,attributeEditor.get());
+                return attributeEditor.get().createContent();
+            } else {
+                return new Label("unsupported attribute:"+attribute.getAttributeType().dataType);
+            }
+        } else {
+            GridPane grid = new GridPane();
 //        grid.setHgap(3);
 //        grid.setVgap(3);
-        grid.setPadding(new Insets(3, 3, 3, 3));
+            grid.setPadding(new Insets(3, 3, 3, 3));
 
-        ColumnConstraints column1 = new ColumnConstraints();
-        column1.setHgrow(Priority.SOMETIMES);
-        column1.setMinWidth(100);
-        column1.setPrefWidth(200);
-        ColumnConstraints column2 = new ColumnConstraints();
-        column2.setHgrow(Priority.ALWAYS);
-        grid.getColumnConstraints().addAll(column1, column2);
-        return grid;
-    }
+            ColumnConstraints column1 = new ColumnConstraints();
+            column1.setHgrow(Priority.SOMETIMES);
+            column1.setMinWidth(100);
+            column1.setPrefWidth(200);
+            ColumnConstraints column2 = new ColumnConstraints();
+            column2.setHgrow(Priority.ALWAYS);
+            grid.getColumnConstraints().addAll(column1, column2);
 
-    private void fillGrid(GridPane grid, List<Attribute<?>> attributeGroup) {
-        int row = 0;
-        for (Attribute<?> attribute: attributeGroup){
-            Label label = addLabelContent(grid, row,uniformDesign.getLabelText(attribute));
 
-            Optional<AttributeEditor<?>> attributeEditor = attributeEditorFactory.getAttributeEditor(attribute,this);
-            int rowFinal=row;
-            if (attributeEditor.isPresent()){
-                createdEditors.add(attributeEditor.get());
-                addEditorContent(grid, rowFinal, attributeEditor.get().createContent(),label);
-            } else {
-                addEditorContent(grid, rowFinal, new Label("unsupported attribute:"+attribute.getAttributeType().dataType+", "+attribute.getAttributeType().listItemType),label);
+            int row = 0;
+            for (Attribute<?> attribute: attributeGroup){
+                Label label = addLabelContent(grid, row,uniformDesign.getLabelText(attribute));
+
+                Optional<AttributeEditor<?>> attributeEditor = attributeEditorFactory.getAttributeEditor(attribute,this,validation);
+                int rowFinal=row;
+                if (attributeEditor.isPresent()){
+                    createdEditors.put(attribute,attributeEditor.get());
+                    addEditorContent(grid, rowFinal, attributeEditor.get().createContent(),label);
+                } else {
+                    addEditorContent(grid, rowFinal, new Label("unsupported attribute:"+attribute.getAttributeType().dataType+", "+attribute.getAttributeType().listItemType),label);
+                }
+
+                RowConstraints rowConstraints = new RowConstraints();
+                rowConstraints.setVgrow(Priority.ALWAYS);
+                grid.getRowConstraints().add(rowConstraints);
+
+                row++;
             }
 
-            RowConstraints rowConstraints = new RowConstraints();
-            rowConstraints.setVgrow(Priority.ALWAYS);
-            grid.getRowConstraints().add(rowConstraints);
+            for (RowConstraints rowConstraint: grid.getRowConstraints()){
+                rowConstraint.setMinHeight(36);
+            }
 
-            row++;
+            return wrapGrid(grid);
         }
-
-         for (RowConstraints rowConstraint: grid.getRowConstraints()){
-            rowConstraint.setMinHeight(36);
-         }
-
-
     }
 
     private Label addLabelContent(GridPane gridPane, int row,String text) {
@@ -240,7 +271,7 @@ public class DataEditor implements Widget {
         }
         return label;
     }
-    final String highlightBackground = "#FCFCFC";
+    final static String highlightBackground = "#FCFCFC";
 
     private void addEditorContent(GridPane gridPane, int row, Node editorWidgetContent, Label label) {
         GridPane.setMargin(editorWidgetContent, new Insets(4, 0, 4, 0));

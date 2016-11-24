@@ -13,8 +13,10 @@ import de.factoryfx.data.attribute.ReferenceAttribute;
 import de.factoryfx.data.attribute.ReferenceListAttribute;
 import de.factoryfx.data.attribute.ValueListAttribute;
 import de.factoryfx.data.attribute.types.*;
+import de.factoryfx.data.util.LanguageText;
 import de.factoryfx.data.validation.RegexValidation;
 import de.factoryfx.data.validation.StringRequired;
+import de.factoryfx.data.validation.Validation;
 import javafx.util.Pair;
 
 public class ExampleData1 extends Data {
@@ -54,6 +56,25 @@ public class ExampleData1 extends Data {
     public final StringAttribute specialAttribute=new StringAttribute(new AttributeMetadata().en("specialAttribute").de("specialAttribute de")).longText();
 
     public ExampleData1() {
+        config().addValidation(new Validation<ExampleData1>() {
+            @Override
+            public LanguageText getValidationDescription() {
+                return new LanguageText().de("long = int");
+            }
+
+            @Override
+            public boolean validate(ExampleData1 value) {
+                if (value.integerAttribute.get()==null){
+                    return true;
+                }
+                if (value.longAttribute.get()==null){
+                    return true;
+                }
+                return value.integerAttribute.get().intValue()==value.longAttribute.get().longValue();
+            }
+        },integerAttribute,longAttribute);
+
+
         TableAttribute.Table value = new TableAttribute.Table();
         value.setColumnHeaders("Col1","Col2");
         tableAttribute.set(value);

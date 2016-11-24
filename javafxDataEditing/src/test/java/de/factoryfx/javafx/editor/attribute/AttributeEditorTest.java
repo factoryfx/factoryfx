@@ -1,6 +1,7 @@
 package de.factoryfx.javafx.editor.attribute;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 import de.factoryfx.data.attribute.AttributeMetadata;
 import de.factoryfx.data.attribute.types.StringAttribute;
@@ -28,7 +29,7 @@ public class AttributeEditorTest {
             boundTo.addListener(stringChangeListener);
             stringChangeListener.changed(boundTo,boundTo.get(),boundTo.get());
             return null;
-        });
+        },()-> Collections.emptyList());
         attributeEditor.createContent();
 
         Assert.assertEquals(1,calls.size());
@@ -49,7 +50,7 @@ public class AttributeEditorTest {
         AttributeEditor<String> attributeEditor = new AttributeEditor<>(stringAttribute,(boundTo) -> {
             boundTo.set("Welt");
             return null;
-        });
+        },()-> Collections.emptyList());
         attributeEditor.createContent();
 
         Assert.assertEquals("Welt",stringAttribute.get());

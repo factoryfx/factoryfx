@@ -119,7 +119,11 @@ public class ViewListReferenceAttribute <R extends Data, P extends Data, T exten
     }
     @Override
     public void removeListener(AttributeChangeListener<List<T>> listener) {
-        listeners.remove(listener);
+        for (AttributeChangeListener<List<T>> listenerItem: new ArrayList<>(listeners)){
+            if (listenerItem.unwrap()==listener){
+                listeners.remove(listenerItem);
+            }
+        }
         if (listeners.isEmpty()){
             dirtyTracking.stopTracking();
             dirtyTracking=null;

@@ -163,5 +163,44 @@ public class ViewReferenceAttributeTest {
         root.internal().reconstructMetadataDeepRoot();
     }
 
+    @Test
+    public void removeListener() throws Exception {
+        ViewReferenceAttribute<ViewExampleFactoryRoot,ViewExampleFactory,ExampleFactoryA> attribute= new ViewReferenceAttribute<>(new AttributeMetadata(), new BiFunction<ViewExampleFactoryRoot, ViewExampleFactory, ExampleFactoryA>() {
+            @Override
+            public ExampleFactoryA apply(ViewExampleFactoryRoot viewExampleFactoryRoot, ViewExampleFactory viewExampleFactory) {
+                if (viewExampleFactory.include.get()){
+                    return viewExampleFactoryRoot.exampleFactoryA.get();
+                }
+                return null;
+            }
+        });
+
+        final AttributeChangeListener<ExampleFactoryA> attributeChangeListener = (a, value) -> System.out.println(value);
+        attribute.addListener(attributeChangeListener);
+        Assert.assertTrue(attribute.listeners.size()==1);
+        attribute.removeListener(attributeChangeListener);
+        Assert.assertTrue(attribute.listeners.size()==0);
+    }
+
+    @Test
+    public void removeWeakListener() throws Exception {
+        ViewReferenceAttribute<ViewExampleFactoryRoot,ViewExampleFactory,ExampleFactoryA> attribute= new ViewReferenceAttribute<>(new AttributeMetadata(), new BiFunction<ViewExampleFactoryRoot, ViewExampleFactory, ExampleFactoryA>() {
+            @Override
+            public ExampleFactoryA apply(ViewExampleFactoryRoot viewExampleFactoryRoot, ViewExampleFactory viewExampleFactory) {
+                if (viewExampleFactory.include.get()){
+                    return viewExampleFactoryRoot.exampleFactoryA.get();
+                }
+                return null;
+            }
+        });
+
+        final AttributeChangeListener<ExampleFactoryA> attributeChangeListener = (a, value) -> System.out.println(value);
+        attribute.addListener(new WeakAttributeChangeListener<>(attributeChangeListener));
+        Assert.assertTrue(attribute.listeners.size()==1);
+        attribute.removeListener(attributeChangeListener);
+        Assert.assertTrue(attribute.listeners.size()==0);
+    }
+
+
 
 }

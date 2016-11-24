@@ -58,9 +58,14 @@ public class ValueAttribute<T> extends Attribute<T> {
     public void addListener(AttributeChangeListener<T> listener) {
         listeners.add(listener);
     }
+
     @Override
     public void removeListener(AttributeChangeListener<T> listener) {
-        listeners.remove(listener);
+        for (AttributeChangeListener<T> listenerItem: new ArrayList<>(listeners)){
+            if (listenerItem.unwrap()==listener){
+                listeners.remove(listenerItem);
+            }
+        }
     }
 
     @Override
