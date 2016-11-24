@@ -44,6 +44,7 @@ public class DataEditor implements Widget {
     private final AttributeEditorFactory attributeEditorFactory;
     private final UniformDesign uniformDesign;
     SimpleObjectProperty<Data> bound = new SimpleObjectProperty<>();
+    private ChangeListener<Data> dataChangeListener;
 
     public DataEditor(AttributeEditorFactory attributeEditorFactory, UniformDesign uniformDesign) {
         this.attributeEditorFactory = attributeEditorFactory;
@@ -117,9 +118,11 @@ public class DataEditor implements Widget {
     public Node createContent() {
         BorderPane result = new BorderPane();
 
+        if (dataChangeListener!=null) {
+            bound.removeListener(dataChangeListener);
+        }
 
-
-        ChangeListener<Data> dataChangeListener = (observable, oldValue, newValue) -> {
+        dataChangeListener = (observable, oldValue, newValue) -> {
 
             createdEditors.stream().forEach(AttributeEditor::unbind);
             createdEditors.clear();
@@ -162,6 +165,7 @@ public class DataEditor implements Widget {
         };
         bound.addListener(dataChangeListener);
         dataChangeListener.changed(bound,bound.get(),bound.get());
+
 
 
         result.setTop(createNavigation());
