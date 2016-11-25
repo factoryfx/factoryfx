@@ -1,7 +1,6 @@
 package de.factoryfx.javafx.editor.attribute.visualisation;
 
 import de.factoryfx.data.attribute.types.TableAttribute;
-import de.factoryfx.javafx.editor.attribute.AttributeEditorVisualisation;
 import de.factoryfx.javafx.util.UniformDesign;
 import javafx.beans.InvalidationListener;
 import javafx.beans.binding.Bindings;
@@ -10,7 +9,6 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Pos;
-import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.Tooltip;
@@ -23,22 +21,28 @@ import org.controlsfx.control.spreadsheet.SpreadsheetCellType;
 import org.controlsfx.control.spreadsheet.SpreadsheetView;
 import org.controlsfx.glyphfont.FontAwesome;
 
-public class TableAttributeVisualisation implements AttributeEditorVisualisation<TableAttribute.Table> {
+public class TableAttributeVisualisation extends ExpandableAttributeVisualisation<TableAttribute.Table> {
     private final UniformDesign uniformDesign;
     private BooleanBinding tableHasColumns;
 
     public TableAttributeVisualisation(UniformDesign uniformDesign){
+        super(uniformDesign);
         this.uniformDesign=uniformDesign;
     }
 
 
     @Override
-    public Node createContent(SimpleObjectProperty<TableAttribute.Table> boundTo) {
-        VBox detailView = createDetailView(boundTo);
-        return uniformDesign.createExpandableEditorWrapper(boundTo, detailView, FontAwesome.Glyph.TH, table -> table.getRowCount()+"x"+table.getColCount());
+    protected FontAwesome.Glyph getSummaryIcon() {
+        return FontAwesome.Glyph.TH;
     }
 
-    private VBox createDetailView(SimpleObjectProperty<TableAttribute.Table> boundTo) {
+    @Override
+    protected String getSummaryText(SimpleObjectProperty<TableAttribute.Table> boundTo) {
+        return boundTo.get().getRowCount()+"x"+boundTo.get().getColCount();
+    }
+
+    @Override
+    protected VBox createDetailView(SimpleObjectProperty<TableAttribute.Table> boundTo) {
         SpreadsheetView spreadsheetView = new SpreadsheetView();
 
         InvalidationListener listener = observable -> {

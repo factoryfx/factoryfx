@@ -7,4 +7,9 @@ import javafx.scene.Node;
 public interface AttributeEditorVisualisation<T> {
     /*only called once**/
     Node createContent(SimpleObjectProperty<T> boundTo);
+
+    default void expand(){
+        //nothing
+    }
+
 }

@@ -17,7 +17,6 @@ import de.factoryfx.data.merge.attribute.ReferenceMergeHelper;
 public class ReferenceAttribute<T extends Data> extends Attribute<T> {
 
     private Data root;
-    private Data parent;
 
     private T value;
     private Optional<Class<T>> clazz;
@@ -195,7 +194,6 @@ public class ReferenceAttribute<T extends Data> extends Attribute<T> {
     @Override
     public void prepareUsage(Data root, Data parent){
         this.root=root;
-        this.parent=parent;
     }
 
     private boolean userEditable=true;

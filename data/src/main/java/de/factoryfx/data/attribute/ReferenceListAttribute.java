@@ -24,7 +24,6 @@ import javafx.collections.ObservableList;
 
 public class ReferenceListAttribute<T extends Data> extends Attribute<ObservableList<T>> {
     private Data root;
-    private Data parent;
 
     ObservableList<T> list = FXCollections.observableArrayList();
     private Class<T> clazz;
@@ -260,7 +259,6 @@ public class ReferenceListAttribute<T extends Data> extends Attribute<Observable
     @Override
     @SuppressWarnings("unchecked")
     public void prepareUsage(Data root, Data parent){
-        this.parent=parent;
         this.root=root;;
     }
 

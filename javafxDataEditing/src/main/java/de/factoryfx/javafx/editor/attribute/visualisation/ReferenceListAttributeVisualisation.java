@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.function.Supplier;
 
 import de.factoryfx.data.Data;
-import de.factoryfx.javafx.editor.attribute.AttributeEditorVisualisation;
 import de.factoryfx.javafx.editor.data.DataEditor;
 import de.factoryfx.javafx.util.DataChoiceDialog;
 import de.factoryfx.javafx.util.UniformDesign;
@@ -28,7 +27,7 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import org.controlsfx.glyphfont.FontAwesome;
 
-public class ReferenceListAttributeVisualisation implements AttributeEditorVisualisation<ObservableList<Data>> {
+public class ReferenceListAttributeVisualisation extends ExpandableAttributeVisualisation<ObservableList<Data>> {
 
     private final UniformDesign uniformDesign;
     private final DataEditor dataEditor;
@@ -37,6 +36,7 @@ public class ReferenceListAttributeVisualisation implements AttributeEditorVisua
     private final boolean isUserEditable;
 
     public ReferenceListAttributeVisualisation(UniformDesign uniformDesign, DataEditor dataEditor, Runnable emptyAdder, Supplier<List<Data>> possibleValuesProvider, boolean isUserEditable) {
+        super(uniformDesign);
         this.uniformDesign = uniformDesign;
         this.dataEditor = dataEditor;
         this.emptyAdder = emptyAdder;
@@ -45,12 +45,17 @@ public class ReferenceListAttributeVisualisation implements AttributeEditorVisua
     }
 
     @Override
-    public Node createContent(SimpleObjectProperty<ObservableList<Data>> boundTo) {
-        VBox detailView = createDetailView(boundTo);
-        return uniformDesign.createExpandableListWrapper(boundTo, detailView);
+    protected FontAwesome.Glyph getSummaryIcon() {
+        return FontAwesome.Glyph.LIST;
     }
 
-    private VBox createDetailView(SimpleObjectProperty<ObservableList<Data>> boundTo) {
+    @Override
+    protected String getSummaryText(SimpleObjectProperty<ObservableList<Data>> boundTo) {
+        return "Items: "+boundTo.get().size();
+    }
+
+    @Override
+    protected VBox createDetailView(SimpleObjectProperty<ObservableList<Data>> boundTo) {
         TableView<Data> tableView = new TableView<>();
         tableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         TableColumn<Data, String> test = new TableColumn<>("Data");
