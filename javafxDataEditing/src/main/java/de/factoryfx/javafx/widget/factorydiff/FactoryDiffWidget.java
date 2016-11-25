@@ -2,6 +2,8 @@ package de.factoryfx.javafx.widget.factorydiff;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import de.factoryfx.data.merge.MergeDiffInfo;
@@ -104,23 +106,24 @@ public class FactoryDiffWidget implements Widget {
         diffTableView.getSelectionModel().selectedItemProperty().addListener(observable -> {
             MergeResultEntryInfo diffItem=diffTableView.getSelectionModel().getSelectedItem();
             if (diffItem!=null){
+                List<String> previousLines = convertToList(diffItem.previousValueDisplayText);
+                List<String> newLines = convertToList(diffItem.newValueValueDisplayText);
                 Patch<String> patch = DiffUtils.diff(
-                        convertToList(diffItem.previousValueDisplayText),
-                        convertToList(diffItem.newValueValueDisplayText)
+                        previousLines,
+                        newLines
                 );
-                String originalText=diffItem.previousValueDisplayText;
 
                 List<StyleClassArea> styleChanges= new ArrayList<>();
 
                 int previousOriginalPosition=0;
                 StringBuilder diffString = new StringBuilder();
-                String  lastOriginalStringDelta="";
+                //String  lastOriginalStringDelta="";
 
                 final List<Integer> diffPositions=new ArrayList<>();
                 for (Delta<String> delta: patch.getDeltas()) {
                     String originalStringDelta = delta.getOriginal().getLines().stream().collect(Collectors.joining());
                     String revisitedStringDelta = delta.getRevised().getLines().stream().collect(Collectors.joining());
-                    final String unchanged=originalText.substring(previousOriginalPosition,delta.getOriginal().getPosition()).replace(lastOriginalStringDelta,"");
+                    final String unchanged=previousLines.subList(previousOriginalPosition,delta.getOriginal().getPosition()).stream().collect(Collectors.joining());
 
                     diffString.append(unchanged);
                     diffPositions.add(diffString.toString().length());
@@ -130,12 +133,14 @@ public class FactoryDiffWidget implements Widget {
                     diffString.append(revisitedStringDelta);
                     styleChanges.add(new StyleClassArea(diffString.length()-revisitedStringDelta.length(), diffString.length(), "diffNew"));
 
-                    previousOriginalPosition=delta.getOriginal().getPosition();
-                    lastOriginalStringDelta=originalStringDelta;
+                    previousOriginalPosition=delta.getOriginal().getPosition()+delta.getOriginal().size();
+                    //lastOriginalStringDelta=originalStringDelta;
                 }
-                final String unchanged = originalText.substring(previousOriginalPosition, originalText.length()).replace(lastOriginalStringDelta,"");
-                diffString.append(unchanged);
-                styleChanges.add(new StyleClassArea(diffString.length()-unchanged.length(), diffString.length(), "diffUnchanged"));
+                if (previousOriginalPosition < previousLines.size()) {
+                    final String unchanged = previousLines.subList(previousOriginalPosition,previousLines.size()).stream().collect(Collectors.joining());
+                    diffString.append(unchanged);
+                    styleChanges.add(new StyleClassArea(diffString.length() - unchanged.length(), diffString.length(), "diffUnchanged"));
+                }
 
                 diffDisplay.replaceText(diffString.toString());
                 for (StyleClassArea styleClassArea: styleChanges){
@@ -258,10 +263,18 @@ public class FactoryDiffWidget implements Widget {
     }
 
     private List<String> convertToList(String value){
-        //Arrays.asList(value.split(""))  slower
-        ArrayList<String> result = new ArrayList<>(value.length());
-        for (int i = 0;i < value.length(); i++){
-            result.add(String.valueOf(value.charAt(i)));
+        Pattern wordAndWhitespace = Pattern.compile("\\s*[^\\s]+\\s*");
+        Pattern splitTrailingWhitespaces = Pattern.compile("(.+?)([\\s]+)",Pattern.DOTALL);
+        Matcher wordMatcher = wordAndWhitespace.matcher(value);
+        ArrayList<String> result = new ArrayList<>();
+        while (wordMatcher.find()) {
+            Matcher whitespaceMatcher = splitTrailingWhitespaces.matcher(wordMatcher.group());
+            if (whitespaceMatcher.matches()) {
+                result.add(whitespaceMatcher.group(1));
+                result.add(whitespaceMatcher.group(2));
+            } else {
+                result.add(wordMatcher.group());
+            }
         }
         return result;
     }
