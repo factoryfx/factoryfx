@@ -167,6 +167,7 @@ public class ReferenceListAttributeVisualisation extends ExpandableAttributeVisu
         buttons.getChildren().add(tableControlWidgetContent);
 
         VBox vbox = new VBox();
+        VBox.setVgrow(tableView,Priority.ALWAYS);
         vbox.getChildren().add(tableView);
         vbox.getChildren().add(buttons);
         return vbox;

@@ -34,8 +34,7 @@ public abstract class ExpandableAttributeVisualisation<T> implements AttributeEd
 
     @Override
     public Node createContent(SimpleObjectProperty<T> boundTo) {
-        VBox detailView = createDetailView(boundTo);
-        return createExpandableEditorWrapper(boundTo,detailView, getSummaryIcon(), t -> getSummaryText(boundTo));
+        return createExpandableEditorWrapper(boundTo, getSummaryIcon(), t -> getSummaryText(boundTo));
     }
     protected abstract FontAwesome.Glyph getSummaryIcon();
 
@@ -43,8 +42,10 @@ public abstract class ExpandableAttributeVisualisation<T> implements AttributeEd
 
     protected abstract VBox createDetailView(SimpleObjectProperty<T> boundTo);
 
-    public <T> VBox createExpandableEditorWrapper(SimpleObjectProperty<T> boundTo, VBox detailView, FontAwesome.Glyph icon, Function<T,String> summaryTextProvider) {
+    public VBox createExpandableEditorWrapper(SimpleObjectProperty<T> boundTo, FontAwesome.Glyph icon, Function<T,String> summaryTextProvider) {
         VBox root = new VBox();
+        VBox detailView = createDetailView(boundTo);
+
 
         VBox.setVgrow(detailView, Priority.ALWAYS);
         detailView.setBorder(new Border(new BorderStroke(Color.GREY, BorderStrokeStyle.SOLID, CornerRadii.EMPTY, new BorderWidths(2))));

@@ -78,6 +78,7 @@ public class ViewListReferenceAttributeVisualisation extends ExpandableAttribute
         HBox.setMargin(tableControlWidgetContent, new Insets(0,1,0,0));
 
         VBox vbox = new VBox();
+        VBox.setVgrow(tableView,Priority.ALWAYS);
         vbox.getChildren().add(tableView);
         vbox.getChildren().add(tableControlWidgetContent);
         return vbox;

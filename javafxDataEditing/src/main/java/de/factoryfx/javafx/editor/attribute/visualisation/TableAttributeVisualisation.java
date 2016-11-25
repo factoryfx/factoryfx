@@ -14,6 +14,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.Tooltip;
 import javafx.scene.input.Clipboard;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import org.controlsfx.control.spreadsheet.GridBase;
 import org.controlsfx.control.spreadsheet.SpreadsheetCell;
@@ -148,6 +149,7 @@ public class TableAttributeVisualisation extends ExpandableAttributeVisualisatio
             buttons.getChildren().add(excelButton);
         }
 
+        VBox.setVgrow(spreadsheetView, Priority.ALWAYS);
         root.getChildren().addAll(spreadsheetView,buttons);
         return root;
     }
