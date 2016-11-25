@@ -40,7 +40,7 @@ public class DataTreeViewWidget implements CloseAwareWidget {
 
         TreeView<Data> tree = new TreeView<>();
         tree.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
-        tree.setCellFactory(param -> new DataTextFieldTreeCell<>(data->data));
+        tree.setCellFactory(param -> new DataTextFieldTreeCell<>(data->data,null));
         tree.setShowRoot(false);
 
 

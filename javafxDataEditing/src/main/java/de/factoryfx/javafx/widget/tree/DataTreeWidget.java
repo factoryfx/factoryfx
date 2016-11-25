@@ -49,22 +49,24 @@ public class DataTreeWidget implements CloseAwareWidget {
     private Node createTree(){
         TreeView<TreeData> tree = new TreeView<>();
         tree.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
-        tree.setCellFactory(param -> new DataTextFieldTreeCell<>(TreeData::getData));
-        tree.setRoot(constructTree(root));
+        tree.setCellFactory(param -> new DataTextFieldTreeCell<>(TreeData::getData, TreeData::getDisplayText));
+        tree.setRoot(constructTreeFromRoot());
 
         tree.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-            if (newValue!=null && !programmaticallySelect){
+            if (newValue!=null && !programmaticallySelect && newValue.getValue()!=null && newValue.getValue().getData()!=null){
                 dataEditor.edit(newValue.getValue().getData());
             }
         });
 
         ChangeListener<Data> dataChangeListener = (observable, oldValue, newValue) -> {
             Platform.runLater(() -> {//javafx bug workaround http://stackoverflow.com/questions/26343495/indexoutofboundsexception-while-updating-a-listview-in-javafx
-                TreeItem<TreeData> treeItemRoot = constructTree(root);
-                tree.setRoot(treeItemRoot);
+                if (treeStructureChanged(root)){
+                    TreeItem<TreeData> treeItemRoot = constructTreeFromRoot();
+                    tree.setRoot(treeItemRoot);
+                }
 
                 tree.getSelectionModel().clearSelection();
-                for (TreeItem<TreeData> item : treeViewTraverser.breadthFirstTraversal(treeItemRoot)) {
+                for (TreeItem<TreeData> item : treeViewTraverser.breadthFirstTraversal(tree.getRoot())) {
                     programmaticallySelect=true;
                     if (item.getValue().match(newValue)) {
                         tree.getSelectionModel().select(item);
@@ -101,6 +103,20 @@ public class DataTreeWidget implements CloseAwareWidget {
         }
     };
 
+    long lastSize=0;
+    private boolean treeStructureChanged(Data root){
+        if (root!=null) {
+            return lastSize != root.internal().collectChildrenDeep().size();
+        }
+        return false;
+    }
+
+
+    private TreeItem<TreeData> constructTreeFromRoot(){
+        lastSize=root.internal().collectChildrenDeep().size();
+        return constructTree(root);
+    }
+
     private TreeItem<TreeData> constructTree(Data data){
         if (data!=null){
             TreeItem<TreeData> dataTreeItem = new TreeItem<>(new TreeData(data,null));
@@ -113,7 +129,7 @@ public class DataTreeWidget implements CloseAwareWidget {
 
                     @Override
                     public void reference(ReferenceAttribute<?> reference) {
-                        TreeItem<TreeData> refDataTreeItem = new TreeItem<>(new TreeData(data,uniformDesign.getLabelText(reference)));
+                        TreeItem<TreeData> refDataTreeItem = new TreeItem<>(new TreeData(null,uniformDesign.getLabelText(reference)));
                         dataTreeItem.getChildren().add(refDataTreeItem);
 
                         final TreeItem<TreeData> treeItem = constructTree(reference.get());
@@ -124,7 +140,7 @@ public class DataTreeWidget implements CloseAwareWidget {
 
                     @Override
                     public void referenceList(ReferenceListAttribute<?> referenceList) {
-                        TreeItem<TreeData> listDataTreeItem = new TreeItem<>(new TreeData(data,uniformDesign.getLabelText(referenceList)));
+                        TreeItem<TreeData> listDataTreeItem = new TreeItem<>(new TreeData(null,uniformDesign.getLabelText(referenceList)));
                         dataTreeItem.getChildren().add(listDataTreeItem);
                         referenceList.get().forEach((data)-> {
                             final TreeItem<TreeData> treeItem = constructTree(data);
