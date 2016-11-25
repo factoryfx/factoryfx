@@ -67,7 +67,7 @@ public abstract class FactoryBase<L,V> extends Data {
                 try {
                     createdLiveObject = lifecycleController.create();
                 } catch (NullPointerException npe){
-                    throw new NullPointerException(this.debugInfo());
+                    throw new RuntimeException(this.debugInfo(), npe);
                 }
             } else {
                 L previousLiveObject = this.createdLiveObject;
