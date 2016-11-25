@@ -58,6 +58,9 @@ public class AttributeEditor<T> implements Widget {
         });
     };
 
+    public void expand() {
+        attributeEditorVisualisation.expand();
+    }
 
     public void reportValidation(List<ValidationError> attributeValidationErrors){
         validationResult.set(attributeValidationErrors);

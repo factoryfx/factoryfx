@@ -3,7 +3,6 @@ package de.factoryfx.javafx.editor.attribute.visualisation;
 import de.factoryfx.data.attribute.Attribute;
 import de.factoryfx.data.attribute.AttributeChangeListener;
 import de.factoryfx.javafx.editor.attribute.AttributeEditor;
-import de.factoryfx.javafx.editor.attribute.AttributeEditorVisualisation;
 import de.factoryfx.javafx.util.TypedTextFieldHelper;
 import de.factoryfx.javafx.util.UniformDesign;
 import de.factoryfx.javafx.widget.table.TableControlWidget;
@@ -27,26 +26,30 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import org.controlsfx.glyphfont.FontAwesome;
 
-public class ListAttributeVisualisation<T> implements AttributeEditorVisualisation<ObservableList<T>> {
+public class ListAttributeVisualisation<T> extends  ExpandableAttributeVisualisation<ObservableList<T>> {
     private final UniformDesign uniformDesign;
     private final Attribute<T> detailAttribute;
     private final AttributeEditor<T> attributeEditor;
 
     public ListAttributeVisualisation(UniformDesign uniformDesign, Attribute<T> detailAttribute, AttributeEditor<T> attributeEditor) {
+        super(uniformDesign);
         this.uniformDesign = uniformDesign;
         this.detailAttribute = detailAttribute;
         this.attributeEditor = attributeEditor;
     }
 
-
     @Override
-    public Node createContent(SimpleObjectProperty<ObservableList<T>> boundTo) {
-        VBox detailView = createDetailView(boundTo);
-        return uniformDesign.createExpandableListWrapper(boundTo, detailView);
+    protected FontAwesome.Glyph getSummaryIcon() {
+        return FontAwesome.Glyph.LIST;
     }
 
+    @Override
+    protected String getSummaryText(SimpleObjectProperty<ObservableList<T>> boundTo) {
+        return "Items: "+boundTo.get().size();
+    }
 
-    private VBox createDetailView(SimpleObjectProperty<ObservableList<T>> boundTo) {
+    @Override
+    protected VBox createDetailView(SimpleObjectProperty<ObservableList<T>> boundTo) {
         TextField textField = new TextField();
         TypedTextFieldHelper.setupLongTextField(textField);
 //        textField.textProperty().bindBidirectional(boundTo, new LongStringConverter());

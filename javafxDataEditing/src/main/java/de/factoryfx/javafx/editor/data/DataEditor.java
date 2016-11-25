@@ -199,6 +199,7 @@ public class DataEditor implements Widget {
             final Attribute<?> attribute = attributeGroup.get(0);
             Optional<AttributeEditor<?>> attributeEditor = attributeEditorFactory.getAttributeEditor(attribute, this, validation);
             if (attributeEditor.isPresent()){
+                attributeEditor.get().expand();
                 createdEditors.put(attribute,attributeEditor.get());
                 return attributeEditor.get().createContent();
             } else {

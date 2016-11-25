@@ -3,7 +3,6 @@ package de.factoryfx.javafx.editor.attribute.visualisation;
 import java.util.List;
 
 import de.factoryfx.data.Data;
-import de.factoryfx.javafx.editor.attribute.AttributeEditorVisualisation;
 import de.factoryfx.javafx.editor.data.DataEditor;
 import de.factoryfx.javafx.util.UniformDesign;
 import de.factoryfx.javafx.widget.table.TableControlWidget;
@@ -20,25 +19,31 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
+import org.controlsfx.glyphfont.FontAwesome;
 
-public class ViewListReferenceAttributeVisualisation implements AttributeEditorVisualisation<List<Data>> {
+public class ViewListReferenceAttributeVisualisation extends ExpandableAttributeVisualisation<List<Data>> {
 
     private final DataEditor dataEditor;
     private final UniformDesign uniformDesign;
 
     public ViewListReferenceAttributeVisualisation(DataEditor dataEditor, UniformDesign uniformDesign) {
+        super(uniformDesign);
         this.dataEditor = dataEditor;
         this.uniformDesign = uniformDesign;
     }
 
     @Override
-    public Node createContent(SimpleObjectProperty<List<Data>> boundTo) {
-        VBox detailView = createDetailView(boundTo);
-        return uniformDesign.createExpandableListWrapper(boundTo, detailView);
+    protected FontAwesome.Glyph getSummaryIcon() {
+        return FontAwesome.Glyph.LIST;
     }
 
+    @Override
+    protected String getSummaryText(SimpleObjectProperty<List<Data>> boundTo) {
+        return "Items: "+boundTo.get().size();
+    }
 
-    private VBox createDetailView(SimpleObjectProperty<List<Data>> boundTo) {
+    @Override
+    protected VBox createDetailView(SimpleObjectProperty<List<Data>> boundTo) {
         TableView<Data> tableView = new TableView<>();
         tableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         TableColumn<Data, String> test = new TableColumn<>("Data");
@@ -73,6 +78,7 @@ public class ViewListReferenceAttributeVisualisation implements AttributeEditorV
         HBox.setMargin(tableControlWidgetContent, new Insets(0,1,0,0));
 
         VBox vbox = new VBox();
+        VBox.setVgrow(tableView,Priority.ALWAYS);
         vbox.getChildren().add(tableView);
         vbox.getChildren().add(tableControlWidgetContent);
         return vbox;
