@@ -5,17 +5,13 @@ import java.util.Optional;
 import de.factoryfx.javafx.view.container.ViewsDisplayWidget;
 import de.factoryfx.javafx.widget.CloseAwareWidget;
 import de.factoryfx.javafx.widget.Widget;
-import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.scene.Node;
-import org.controlsfx.glyphfont.Glyph;
 
 public class View implements Widget {
 
     public final SimpleStringProperty title = new SimpleStringProperty();
-    public final SimpleStringProperty dynamicAdditionalTitle = new SimpleStringProperty();
 
-    public final SimpleObjectProperty<Glyph> icon = new SimpleObjectProperty<>();
     public final Widget viewContent;
     protected ViewsDisplayWidget viewsDisplayWidget;
     boolean isShowing;
