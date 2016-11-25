@@ -49,15 +49,15 @@ public abstract class Attribute<T>{
 
     public abstract void set(T value);
 
-    public void copy(T value){
-        set(value);
-    }
+
+    public abstract void copyTo(Attribute<T> copyAttribute, Function<Data,Data> dataCopyProvider);
+
 
     public List<ValidationError> validate() {
         List<ValidationError> validationErrors = new ArrayList<>();
         for (Validation<T> validation : validations) {
             if (!validation.validate(get())){
-                validationErrors.add(new ValidationError(validation.getValidationDescription(),metadata.labelText));
+                validationErrors.add(new ValidationError(validation.getValidationDescription(),this));
             }
         }
         return validationErrors;
@@ -66,6 +66,7 @@ public abstract class Attribute<T>{
 
     public abstract void addListener(AttributeChangeListener<T> listener);
 
+    /** remove added Listener or Listener inside WeakAttributeChangeListener*/
     public abstract void removeListener(AttributeChangeListener<T> listener);
 
     @JsonIgnore

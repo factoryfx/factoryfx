@@ -4,6 +4,6 @@ import java.util.Optional;
 
 public interface UserManagement {
 
-    Optional<User> authenticate(String user, String password);
+    Optional<AuthorizedUser> authenticate(String user, String password);
     boolean authorisationRequired();
 }

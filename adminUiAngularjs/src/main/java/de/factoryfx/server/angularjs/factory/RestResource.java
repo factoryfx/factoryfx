@@ -46,7 +46,7 @@ import de.factoryfx.server.angularjs.model.table.WebGuiTable;
 import de.factoryfx.server.angularjs.model.view.GuiView;
 import de.factoryfx.server.angularjs.model.view.ViewHeader;
 import de.factoryfx.server.angularjs.model.view.WebGuiView;
-import de.factoryfx.user.User;
+import de.factoryfx.user.AuthorizedUser;
 import de.factoryfx.user.UserManagement;
 import difflib.Delta;
 import difflib.DiffUtils;
@@ -68,7 +68,7 @@ public class RestResource<L,V,T extends FactoryBase<L,V>> {
     private final SessionStorage sessionStorage;
 
     /**
-     *  @param applicationServer
+     * @param applicationServer
      * @param appFactoryClasses the factory class from application
      * @param locales
      * @param userManagement
@@ -173,7 +173,7 @@ public class RestResource<L,V,T extends FactoryBase<L,V>> {
     public LoginResponse login(WebGuiUser user) {
         LoginResponse loginResponse = new LoginResponse();
         loginResponse.successfully =false;
-        Optional<User> authenticatedUser = userManagement.authenticate(user.user, user.password);
+        Optional<AuthorizedUser> authenticatedUser = userManagement.authenticate(user.user, user.password);
         if (authenticatedUser.isPresent()){
             loginResponse.successfully =true;
             sessionStorage.loginUser(request,authenticatedUser.get());
@@ -215,7 +215,7 @@ public class RestResource<L,V,T extends FactoryBase<L,V>> {
         }
     }
 
-    private User getUser(){
+    private AuthorizedUser getUser(){
         return sessionStorage.getUser(request);
     }
 
@@ -278,7 +278,7 @@ public class RestResource<L,V,T extends FactoryBase<L,V>> {
 
         if (response.mergeDiffExt.hasNoConflicts()){
             if (userManagement.authorisationRequired()){
-                User user = getUser();
+                AuthorizedUser user = getUser();
                 for (MergeResultEntry mergeInfo: response.mergeDiffExt.getMergeInfos()){
                     user.checkPermission(mergeInfo.requiredPermission);
                 }

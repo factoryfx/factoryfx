@@ -4,11 +4,11 @@ import java.util.Locale;
 
 import org.junit.Test;
 
-public class UserTest {
+public class AuthorizedUserTest {
 
     @Test
     public void test_permission(){
-        User user = new User("us","pw", Locale.ENGLISH,"TEST_PERMISSION");
+        AuthorizedUser user = new AuthorizedUser("us",Locale.ENGLISH,"TEST_PERMISSION");
 
         user.checkPermission(null);
         //nothing
@@ -18,7 +18,7 @@ public class UserTest {
 
     @Test(expected = IllegalStateException.class)
     public void test_permission_missing(){
-        User user = new User("us","pw", Locale.ENGLISH,"TEST_PERMISSION");
+        AuthorizedUser user = new AuthorizedUser("us",Locale.ENGLISH,"TEST_PERMISSION");
 
         user.checkPermission("hgfdhghgdh");
     }

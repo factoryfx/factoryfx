@@ -85,6 +85,12 @@ public class ReferenceAttribute<T extends Data> extends Attribute<T> {
         }
     }
 
+    @Override
+    @SuppressWarnings("unchecked")
+    public void copyTo(Attribute<T> copyAttribute, Function<Data, Data> dataCopyProvider) {
+        copyAttribute.set((T) dataCopyProvider.apply(get()));
+    }
+
     @JsonValue
     T getValue() {
         return value;
@@ -102,7 +108,11 @@ public class ReferenceAttribute<T extends Data> extends Attribute<T> {
     }
     @Override
     public void removeListener(AttributeChangeListener<T> listener) {
-        listeners.remove(listener);
+        for (AttributeChangeListener<T> listenerItem: new ArrayList<>(listeners)){
+            if (listenerItem.unwrap()==listener){
+                listeners.remove(listenerItem);
+            }
+        }
     }
 
     @Override

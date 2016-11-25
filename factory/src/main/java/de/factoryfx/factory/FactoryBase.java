@@ -64,7 +64,11 @@ public abstract class FactoryBase<L,V> extends Data {
             }
 
             if (createdLiveObject==null){
-                createdLiveObject = lifecycleController.create();
+                try {
+                    createdLiveObject = lifecycleController.create();
+                } catch (NullPointerException npe){
+                    throw new NullPointerException(this.debugInfo());
+                }
             } else {
                 L previousLiveObject = this.createdLiveObject;
                 this.createdLiveObject = lifecycleController.reCreate(previousLiveObject);
@@ -148,6 +152,15 @@ public abstract class FactoryBase<L,V> extends Data {
 
     public void runtimeQuery(V visitor){
         getLifecycleController().runtimeQuery(visitor,createdLiveObject);
+    }
+
+    public String debugInfo(){
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append("Attributes:");
+        this.internal().visitAttributesFlat((attributeVariableName, attribute) -> {
+            stringBuilder.append(attributeVariableName+": "+attribute.get()+"\n");
+        });
+        return stringBuilder.toString();
     }
 
 }

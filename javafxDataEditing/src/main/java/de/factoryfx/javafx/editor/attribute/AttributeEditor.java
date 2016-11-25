@@ -25,6 +25,7 @@ public class AttributeEditor<T> implements Widget {
     private Attribute<T> boundAttribute;
     private SimpleObjectProperty<List<ValidationError>> validationResult=new SimpleObjectProperty<>();
 
+
     public AttributeEditor(Attribute<T> boundAttribute, AttributeEditorVisualisation<T> attributeEditorVisualisation) {
         this.boundAttribute=boundAttribute;
         this.attributeEditorVisualisation=attributeEditorVisualisation;
@@ -54,10 +55,13 @@ public class AttributeEditor<T> implements Widget {
             bound.set(value);
             setLoop = false;
 
-            validationResult.set(attribute.validate());
-
         });
     };
+
+
+    public void reportValidation(List<ValidationError> attributeValidationErrors){
+        validationResult.set(attributeValidationErrors);
+    }
 
     Node content;
     @Override

@@ -2,20 +2,20 @@ package de.factoryfx.server.angularjs.factory;
 
 import javax.servlet.http.HttpServletRequest;
 
-import de.factoryfx.server.angularjs.factory.server.AuthorizationRequestFilter;
 import de.factoryfx.factory.datastorage.FactoryAndStorageMetadata;
-import de.factoryfx.user.User;
+import de.factoryfx.server.angularjs.factory.server.AuthorizationRequestFilter;
+import de.factoryfx.user.AuthorizedUser;
 
 public class SessionStorage {
 
     private static final String CURRENT_EDITING_FACTORY_SESSION_KEY = "CurrentEditingFactory";
     private static final String USER = "USER_";
 
-    public User getUser(HttpServletRequest request) {
-        return (User) getAttribute(request,USER);
+    public AuthorizedUser getUser(HttpServletRequest request) {
+        return (AuthorizedUser) getAttribute(request,USER);
     }
 
-    public void loginUser(HttpServletRequest request,User user){
+    public void loginUser(HttpServletRequest request,AuthorizedUser user){
         setAttribute(request,AuthorizationRequestFilter.LOGIN_SESSION_KEY,true);
         setAttribute(request,USER,user);
     }

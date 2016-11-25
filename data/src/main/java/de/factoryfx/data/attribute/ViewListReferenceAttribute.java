@@ -1,15 +1,22 @@
 package de.factoryfx.data.attribute;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreType;
 import de.factoryfx.data.Data;
 import de.factoryfx.data.merge.attribute.AttributeMergeHelper;
 import de.factoryfx.data.merge.attribute.NopMergeHelper;
 import javafx.collections.ObservableList;
 
+@JsonIgnoreType
 public class ViewListReferenceAttribute <R extends Data, P extends Data, T extends Data> extends Attribute<List<T>> {
     private P parent;
     private R root;
@@ -37,11 +44,16 @@ public class ViewListReferenceAttribute <R extends Data, P extends Data, T exten
 
     @Override
     public List<T> get() {
-        return root==null? Collections.emptyList():view.apply(root,parent);
+        return view.apply(root,parent);
     }
 
     @Override
     public void set(List<T> value) {
+        //nothing
+    }
+
+    @Override
+    public void copyTo(Attribute<List<T>> copyAttribute, Function<Data, Data> dataCopyProvider) {
         //nothing
     }
 
@@ -107,7 +119,11 @@ public class ViewListReferenceAttribute <R extends Data, P extends Data, T exten
     }
     @Override
     public void removeListener(AttributeChangeListener<List<T>> listener) {
-        listeners.remove(listener);
+        for (AttributeChangeListener<List<T>> listenerItem: new ArrayList<>(listeners)){
+            if (listenerItem.unwrap()==listener){
+                listeners.remove(listenerItem);
+            }
+        }
         if (listeners.isEmpty()){
             dirtyTracking.stopTracking();
             dirtyTracking=null;

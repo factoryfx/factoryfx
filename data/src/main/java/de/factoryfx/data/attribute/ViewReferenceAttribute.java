@@ -5,10 +5,12 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreType;
 import de.factoryfx.data.Data;
 import de.factoryfx.data.merge.attribute.AttributeMergeHelper;
 import de.factoryfx.data.merge.attribute.NopMergeHelper;
 
+@JsonIgnoreType
 public class ViewReferenceAttribute<R extends Data, P extends Data, T extends Data> extends Attribute<T> {
 
     private P parent;
@@ -37,7 +39,7 @@ public class ViewReferenceAttribute<R extends Data, P extends Data, T extends Da
 
     @Override
     public T get() {
-        return root == null? null:view.apply(root,parent);
+        return view.apply(root,parent);
     }
 
     @Override
@@ -45,7 +47,10 @@ public class ViewReferenceAttribute<R extends Data, P extends Data, T extends Da
         //nothing
     }
 
-
+    @Override
+    public void copyTo(Attribute<T> copyAttribute, Function<Data, Data> dataCopyProvider) {
+        //nothing
+    }
 
     class DirtyTrackingThread extends Thread{
         volatile boolean tracking=true;
@@ -91,7 +96,11 @@ public class ViewReferenceAttribute<R extends Data, P extends Data, T extends Da
     }
     @Override
     public void removeListener(AttributeChangeListener<T> listener) {
-        listeners.remove(listener);
+        for (AttributeChangeListener<T> listenerItem: new ArrayList<>(listeners)){
+            if (listenerItem.unwrap()==listener){
+                listeners.remove(listenerItem);
+            }
+        }
         if (listeners.isEmpty()){
             dirtyTracking.stopTracking();
             dirtyTracking=null;

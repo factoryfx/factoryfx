@@ -4,6 +4,7 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiFunction;
+import java.util.function.Function;
 
 import de.factoryfx.data.attribute.Attribute;
 import de.factoryfx.factory.FactoryBase;
@@ -11,19 +12,25 @@ import de.factoryfx.factory.FactoryBase;
 public class FactoryStyleValidator {
 
 
-    private final BiFunction<FactoryBase<?, ?>, Field,List<FactoryStyleValidation>> validationAdder;
+    private final BiFunction<FactoryBase<?, ?>, Field,List<FactoryStyleValidation>> fieldValidationAdder;
+    private final Function<FactoryBase<?, ?>,List<FactoryStyleValidation>> factoryValidationAdder;
 
-    public FactoryStyleValidator(BiFunction<FactoryBase<?, ?>, Field, List<FactoryStyleValidation>> validationAdder) {
-        this.validationAdder = validationAdder;
+    public FactoryStyleValidator(BiFunction<FactoryBase<?, ?>, Field, List<FactoryStyleValidation>> validationAdder, Function<FactoryBase<?, ?>,List<FactoryStyleValidation>> factoryValidationAdder) {
+        this.fieldValidationAdder = validationAdder;
+        this.factoryValidationAdder = factoryValidationAdder;
     }
 
     public FactoryStyleValidator(){
         this((factoryBase, field) -> {
             final ArrayList<FactoryStyleValidation> factoryStyleValidations = new ArrayList<>();
-            factoryStyleValidations.add(new NoReferenceAttribute(factoryBase,field));
-            factoryStyleValidations.add(new NotNullAttributeValidation(factoryBase,field));
-            factoryStyleValidations.add(new PublicValidation(factoryBase,field));
-            factoryStyleValidations.add(new FinalValidation(factoryBase,field));
+            factoryStyleValidations.add(new NoReferenceAttribute(factoryBase, field));
+            factoryStyleValidations.add(new NotNullAttributeValidation(factoryBase, field));
+            factoryStyleValidations.add(new PublicValidation(factoryBase, field));
+            factoryStyleValidations.add(new FinalValidation(factoryBase, field));
+            return factoryStyleValidations;
+        }, factoryBase -> {
+            final ArrayList<FactoryStyleValidation> factoryStyleValidations = new ArrayList<>();
+            factoryStyleValidations.add(new NotNullLifecycle(factoryBase));
             return factoryStyleValidations;
         });
     }
@@ -36,9 +43,10 @@ public class FactoryStyleValidator {
         for (Field field: factoryBase.getClass().getDeclaredFields()){
 
             if (Attribute.class.isAssignableFrom(field.getType())){
-                result.addAll(validationAdder.apply(factoryBase,field));
+                result.addAll(fieldValidationAdder.apply(factoryBase,field));
             }
         }
+        result.addAll(factoryValidationAdder.apply(factoryBase));
         return result;
     }
 

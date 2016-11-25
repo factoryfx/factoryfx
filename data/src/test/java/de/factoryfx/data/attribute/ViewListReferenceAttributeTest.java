@@ -1,6 +1,7 @@
 package de.factoryfx.data.attribute;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import de.factoryfx.data.attribute.types.StringAttribute;
 import de.factoryfx.data.merge.testfactories.ExampleFactoryA;
@@ -9,7 +10,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 public class ViewListReferenceAttributeTest {
-    public class ViewListExampleFactory extends IdData {
+    public static class ViewListExampleFactory extends IdData {
 
         public final ViewListReferenceAttribute<ViewListExampleFactoryRoot,ViewListExampleFactory,ExampleFactoryA> view= new ViewListReferenceAttribute<>(new AttributeMetadata(), (ViewListExampleFactoryRoot viewExampleFactoryRoot, ViewListExampleFactory viewListExampleFactory)->{
                 return viewExampleFactoryRoot.list.get().filtered(exampleFactoryA -> exampleFactoryA.stringAttribute.get().equals(viewListExampleFactory.forFilter.get()));
@@ -19,7 +20,7 @@ public class ViewListReferenceAttributeTest {
         public final StringAttribute forFilter= new StringAttribute(new AttributeMetadata());
     }
 
-    public class ViewListExampleFactoryRoot extends IdData{
+    public static class ViewListExampleFactoryRoot extends IdData{
         public final ReferenceAttribute<ViewListExampleFactory> ref = new ReferenceAttribute<>(ViewListExampleFactory.class,new AttributeMetadata());
         public final ReferenceListAttribute<ExampleFactoryA> list= new ReferenceListAttribute<>(ExampleFactoryA.class,new AttributeMetadata());
     }
@@ -189,4 +190,51 @@ public class ViewListReferenceAttributeTest {
         Assert.assertEquals(0,calls.size());
     }
 
+    @Test
+    public void test_reconstructMetadataDeepRoot(){
+        ViewListExampleFactory viewExampleFactory=new ViewListExampleFactory();
+        viewExampleFactory.forFilter.set("1");
+
+        ViewListExampleFactoryRoot root = new ViewListExampleFactoryRoot();
+        root.ref.set(viewExampleFactory);
+
+        {
+            ExampleFactoryA value = new ExampleFactoryA();
+            value.stringAttribute.set("2");
+            root.list.add(value);
+        }
+        {
+            ExampleFactoryA value = new ExampleFactoryA();
+            value.stringAttribute.set("3");
+            root.list.add(value);
+        }
+
+        root.internal().reconstructMetadataDeepRoot();
+    }
+
+    @Test
+    public void removeListener() throws Exception {
+        ViewListReferenceAttribute<ViewListExampleFactoryRoot, ViewListExampleFactory, ExampleFactoryA> attribute = new ViewListReferenceAttribute<>(new AttributeMetadata(), (ViewListExampleFactoryRoot viewExampleFactoryRoot, ViewListExampleFactory viewListExampleFactory) -> {
+            return viewExampleFactoryRoot.list.get().filtered(exampleFactoryA -> exampleFactoryA.stringAttribute.get().equals(viewListExampleFactory.forFilter.get()));
+        });
+
+        final AttributeChangeListener<List<ExampleFactoryA>> attributeChangeListener = (a, value) -> System.out.println(value);
+        attribute.addListener(attributeChangeListener);
+        Assert.assertTrue(attribute.listeners.size()==1);
+        attribute.removeListener(attributeChangeListener);
+        Assert.assertTrue(attribute.listeners.size()==0);
+    }
+
+    @Test
+    public void removeWeakListener() throws Exception {
+        ViewListReferenceAttribute<ViewListExampleFactoryRoot, ViewListExampleFactory, ExampleFactoryA> attribute = new ViewListReferenceAttribute<>(new AttributeMetadata(), (ViewListExampleFactoryRoot viewExampleFactoryRoot, ViewListExampleFactory viewListExampleFactory) -> {
+            return viewExampleFactoryRoot.list.get().filtered(exampleFactoryA -> exampleFactoryA.stringAttribute.get().equals(viewListExampleFactory.forFilter.get()));
+        });
+
+        final AttributeChangeListener<List<ExampleFactoryA>> attributeChangeListener = (a, value) -> System.out.println(value);
+        attribute.addListener(new WeakAttributeChangeListener<>(attributeChangeListener));
+        Assert.assertTrue(attribute.listeners.size()==1);
+        attribute.removeListener(attributeChangeListener);
+        Assert.assertTrue(attribute.listeners.size()==0);
+    }
 }

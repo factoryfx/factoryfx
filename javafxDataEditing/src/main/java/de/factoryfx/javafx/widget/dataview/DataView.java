@@ -15,6 +15,7 @@ public class DataView {
         this.listSupplier = listSupplier;
     }
 
+
     public void update(){
         dataList.setAll(listSupplier.get());
     }

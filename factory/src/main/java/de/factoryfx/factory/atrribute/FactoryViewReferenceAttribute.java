@@ -9,7 +9,7 @@ import de.factoryfx.factory.FactoryBase;
 
 public class FactoryViewReferenceAttribute<R extends FactoryBase<?,?>, P extends FactoryBase<?,?>,L, T extends FactoryBase<L,?>> extends ViewReferenceAttribute<R,P,T> {
 
-    public FactoryViewReferenceAttribute(AttributeMetadata attributeMetadata, BiFunction view) {
+    public FactoryViewReferenceAttribute(AttributeMetadata attributeMetadata, BiFunction<R,P,T> view) {
         super(attributeMetadata, view);
     }
 

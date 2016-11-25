@@ -3,11 +3,14 @@ package de.factoryfx.data.attribute.types;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import de.factoryfx.data.Data;
+import de.factoryfx.data.attribute.Attribute;
 import de.factoryfx.data.attribute.AttributeMetadata;
 import de.factoryfx.data.attribute.ValueAttribute;
 
@@ -150,7 +153,8 @@ public class TableAttribute extends ValueAttribute<TableAttribute.Table> {
         set(initialValue);
     }
 
-    public void copy(Table value){
-        set(value.copy());
+    @Override
+    public void copyTo(Attribute<Table> copyAttribute, Function<Data,Data> dataCopyProvider){
+        copyAttribute.set(get().copy());
     }
 }

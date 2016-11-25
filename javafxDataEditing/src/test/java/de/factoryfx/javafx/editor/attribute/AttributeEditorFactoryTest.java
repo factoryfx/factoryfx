@@ -12,7 +12,7 @@ public class AttributeEditorFactoryTest {
     public void test_canEdit(){
         AttributeEditorFactory attributeEditor = new  AttributeEditorFactory(new UniformDesignFactory<>().instance());
 
-        Assert.assertNotNull(attributeEditor.getAttributeEditor(new StringAttribute(new AttributeMetadata()),null));
+        Assert.assertNotNull(attributeEditor.getAttributeEditor(new StringAttribute(new AttributeMetadata()),null,null));
     }
 
 }

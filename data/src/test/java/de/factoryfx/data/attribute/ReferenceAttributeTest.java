@@ -106,5 +106,27 @@ public class ReferenceAttributeTest {
 
     }
 
+    @Test
+    public void removeListener() throws Exception {
+        ReferenceAttribute<ExampleFactoryA> attribute=new ReferenceAttribute<>(ExampleFactoryA.class,new AttributeMetadata());
+
+        final AttributeChangeListener<ExampleFactoryA> attributeChangeListener = (a, value) -> System.out.println(value);
+        attribute.addListener(attributeChangeListener);
+        Assert.assertTrue(attribute.listeners.size()==1);
+        attribute.removeListener(attributeChangeListener);
+        Assert.assertTrue(attribute.listeners.size()==0);
+    }
+
+    @Test
+    public void removeWeakListener() throws Exception {
+        ReferenceAttribute<ExampleFactoryA> attribute=new ReferenceAttribute<>(ExampleFactoryA.class,new AttributeMetadata());
+
+        final AttributeChangeListener<ExampleFactoryA> attributeChangeListener = (a, value) -> System.out.println(value);
+        attribute.addListener(new WeakAttributeChangeListener<>(attributeChangeListener));
+        Assert.assertTrue(attribute.listeners.size()==1);
+        attribute.removeListener(attributeChangeListener);
+        Assert.assertTrue(attribute.listeners.size()==0);
+    }
+
 
 }

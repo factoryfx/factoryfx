@@ -23,15 +23,17 @@ import de.factoryfx.data.attribute.Attribute;
 import de.factoryfx.data.attribute.AttributeChangeListener;
 import de.factoryfx.data.attribute.ReferenceAttribute;
 import de.factoryfx.data.attribute.ReferenceListAttribute;
+import de.factoryfx.data.attribute.ViewListReferenceAttribute;
+import de.factoryfx.data.attribute.ViewReferenceAttribute;
 import de.factoryfx.data.attribute.types.ObjectValueAttribute;
 import de.factoryfx.data.merge.MergeResult;
 import de.factoryfx.data.merge.MergeResultEntry;
 import de.factoryfx.data.merge.attribute.AttributeMergeHelper;
+import de.factoryfx.data.validation.AttributeValidation;
+import de.factoryfx.data.validation.Validation;
 import de.factoryfx.data.validation.ValidationError;
 import javafx.beans.property.ReadOnlyStringProperty;
 import javafx.beans.property.SimpleStringProperty;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.util.Pair;
 
 public abstract class Data {
@@ -233,7 +235,10 @@ public abstract class Data {
                 if (de.factoryfx.data.attribute.Attribute.class.isAssignableFrom(field.getType())){
                     Object value=null;
                     if (field.get(this)!=null){
-                        value= ((Attribute)field.get(this)).get();
+                        final Attribute attribute = (Attribute) field.get(this);
+                        if (!(attribute instanceof ViewReferenceAttribute) && !(attribute instanceof ViewListReferenceAttribute)){
+                            value= attribute.get();
+                        }
                     }
                     field.setAccessible(true);
                     field.set(this,field.get(copy));
@@ -287,7 +292,23 @@ public abstract class Data {
         visitAttributesFlat((attributeVariableName, attribute) -> {
             result.addAll(attribute.validate());
         });
+
+        for (AttributeValidation validation: dataValidations){
+            validation.validate(this).ifPresent(new Consumer<ValidationError>() {
+                @Override
+                public void accept(ValidationError validationError) {
+                    result.add(validationError);
+                }
+            });
+        }
         return result;
+    }
+
+    List<AttributeValidation<?>> dataValidations = new ArrayList<>();
+    private <T> void addValidation(Validation<T> validation, Attribute<?>... dependencies){
+        for ( Attribute<?> dependency: dependencies){
+            dataValidations.add(new AttributeValidation(validation,dependency));
+        }
     }
 
     @SuppressWarnings("unchecked")
@@ -365,7 +386,7 @@ public abstract class Data {
 
 
     @SuppressWarnings("unchecked")
-    private <T extends Data> T copyDeep(final int level,final int maxLevel, HashMap<Object,Data> identityPreserver, boolean keepIds){
+    private <T extends Data> T copyDeep(final int level, final int maxLevel, HashMap<Object,Data> identityPreserver, boolean keepIds){
         if (level>maxLevel){
             return null;
         }
@@ -376,22 +397,12 @@ public abstract class Data {
                 result.setId(this.getId());
             }
             this.visitAttributesDualFlat(result, (thisAttribute, copyAttribute) -> {
-                Object value = thisAttribute.get();
-                if (value instanceof Data) {
-                    value = ((Data) value).copyDeep(level + 1, maxLevel, identityPreserver,keepIds);
-                }
-                if (thisAttribute instanceof ReferenceListAttribute) {
-                    final ObservableList<Data> referenceList = FXCollections.observableArrayList();
-                    ((ReferenceListAttribute) thisAttribute).get().forEach(factory -> {
-                        Data data = ((Data) factory).copyDeep(level + 1, maxLevel, identityPreserver,keepIds);
-                        if (data!=null){
-                            referenceList.add(data);
-                        }
-                    });
-                    value = referenceList;
-                }
-
-                copyAttribute.copy(value);
+                thisAttribute.copyTo(copyAttribute,(data)->{
+                    if (data==null){
+                        return null;
+                    }
+                    return data.copyDeep(level + 1, maxLevel, identityPreserver,keepIds);
+                });
             });
             identityPreserver.put(this.getId(),result);
         }
@@ -514,8 +525,12 @@ public abstract class Data {
         public void setDisplayTextDependencies(Attribute<?>... attributes){
             data.setDisplayTextDependencies(Arrays.asList(attributes));
         }
-    }
 
+        public <T> void addValidation(Validation<T> validation, Attribute<?>... dependencies){
+            data.addValidation(validation,dependencies);
+        }
+
+    }
 
     Internal internal = new Internal(this);
     /** <b>internal methods should be only used from the framework.</b>
