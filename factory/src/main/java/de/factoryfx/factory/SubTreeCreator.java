@@ -19,7 +19,9 @@ public class SubTreeCreator<L,V, R extends FactoryBase<?,V>, S extends FactoryBa
     }
 
     public L create(R rootFactory){
-        return subRootFactoryProvider.apply(rootFactory.internal().copy()).createLifecycleController().create();
+        final R copy = rootFactory.internal().copy();
+        copy.internal().prepareUsage();
+        return subRootFactoryProvider.apply(copy).createLifecycleController().create();
     }
 
 
