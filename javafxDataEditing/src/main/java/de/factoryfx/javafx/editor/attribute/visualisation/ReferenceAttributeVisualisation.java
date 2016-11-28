@@ -33,13 +33,15 @@ public class ReferenceAttributeVisualisation implements AttributeEditorVisualisa
     private final Supplier<Data> emptyAdder;
     private final Supplier<List<Data>> possibleValuesProvider;
     private final boolean isUserEditable;
+    private final boolean isUserSelectable;
 
-    public ReferenceAttributeVisualisation(UniformDesign uniformDesign, DataEditor dataEditor, Supplier<Data> emptyAdder, Supplier<List<Data>> possibleValuesProvider, boolean isUserEditable) {
+    public ReferenceAttributeVisualisation(UniformDesign uniformDesign, DataEditor dataEditor, Supplier<Data> emptyAdder, Supplier<List<Data>> possibleValuesProvider, boolean isUserEditable, boolean isUserSelectable) {
         this.uniformDesign = uniformDesign;
         this.dataEditor = dataEditor;
         this.emptyAdder = emptyAdder;
         this.possibleValuesProvider = possibleValuesProvider;
         this.isUserEditable = isUserEditable;
+        this.isUserSelectable = isUserSelectable;
     }
 
     @Override
@@ -54,7 +56,7 @@ public class ReferenceAttributeVisualisation implements AttributeEditorVisualisa
         selectButton.setOnAction(event -> {
             boundTo.set(new DataChoiceDialog().show(possibleValuesProvider.get(),selectButton.getScene().getWindow()));
         });
-        selectButton.setDisable(!isUserEditable);
+        selectButton.setDisable(!isUserEditable || !isUserSelectable);
 
         Button newButton = new Button();
         uniformDesign.addIcon(newButton,FontAwesome.Glyph.PLUS);

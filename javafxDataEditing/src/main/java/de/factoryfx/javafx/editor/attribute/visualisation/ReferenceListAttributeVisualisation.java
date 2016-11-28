@@ -41,14 +41,16 @@ public class ReferenceListAttributeVisualisation extends ExpandableAttributeVisu
     private final Runnable emptyAdder;
     private final Supplier<List<Data>> possibleValuesProvider;
     private final boolean isUserEditable;
+    private final boolean isUserSelectable;
 
-    public ReferenceListAttributeVisualisation(UniformDesign uniformDesign, DataEditor dataEditor, Runnable emptyAdder, Supplier<List<Data>> possibleValuesProvider, boolean isUserEditable) {
+    public ReferenceListAttributeVisualisation(UniformDesign uniformDesign, DataEditor dataEditor, Runnable emptyAdder, Supplier<List<Data>> possibleValuesProvider, boolean isUserEditable, boolean isUserSelectable) {
         super(uniformDesign);
         this.uniformDesign = uniformDesign;
         this.dataEditor = dataEditor;
         this.emptyAdder = emptyAdder;
         this.possibleValuesProvider = possibleValuesProvider;
         this.isUserEditable = isUserEditable;
+        this.isUserSelectable = isUserSelectable;
     }
 
     @Override
@@ -109,7 +111,7 @@ public class ReferenceListAttributeVisualisation extends ExpandableAttributeVisu
                 boundTo.get().add(toAdd);
             }
         });
-        selectButton.setDisable(!isUserEditable);
+        selectButton.setDisable(!isUserEditable || !isUserSelectable);
 
         Button adderButton = new Button();
         uniformDesign.addIcon(adderButton,FontAwesome.Glyph.PLUS);

@@ -210,4 +210,19 @@ public class ReferenceAttribute<T extends Data> extends Attribute<T> {
         return userEditable;
     }
 
+    private boolean userSelectable=true;
+    /**
+     * disable select for reference (slect dialog)
+     */
+    @SuppressWarnings("unchecked")
+    public <A extends ReferenceAttribute<T>> A userNotSelectable(){
+        userSelectable=false;
+        return (A)this;
+    }
+
+    @JsonIgnore
+    public boolean isUserSelectable(){
+        return userSelectable;
+    }
+
 }

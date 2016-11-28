@@ -264,8 +264,10 @@ public class ReferenceListAttribute<T extends Data> extends Attribute<Observable
     }
 
     private boolean userEditable=true;
+    /**
+     * marks the reference as readonly for the user(user can still navigate but not change the reference)
+     */
     @SuppressWarnings("unchecked")
-    /** marks the reference as readonly for the user(user can still anviagte but change the refernce)*/
     public <A extends ReferenceListAttribute<T>> A userReadOnly(){
         userEditable=false;
         return (A)this;
@@ -274,6 +276,21 @@ public class ReferenceListAttribute<T extends Data> extends Attribute<Observable
     @JsonIgnore
     public boolean isUserEditable(){
         return userEditable;
+    }
+
+    private boolean userSelectable=true;
+    /**
+     * disable select for reference (slect dialog)
+     */
+    @SuppressWarnings("unchecked")
+    public <A extends ReferenceListAttribute<T>> A userNotSelectable(){
+        userSelectable=false;
+        return (A)this;
+    }
+
+    @JsonIgnore
+    public boolean isUserSelectable(){
+        return userSelectable;
     }
 
 }
