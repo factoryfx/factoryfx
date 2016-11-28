@@ -8,6 +8,7 @@ import de.factoryfx.javafx.editor.data.DataEditor;
 import de.factoryfx.javafx.util.DataTextFieldTreeCell;
 import de.factoryfx.javafx.util.UniformDesign;
 import de.factoryfx.javafx.widget.CloseAwareWidget;
+import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.geometry.Orientation;
 import javafx.scene.Node;
 import javafx.scene.control.SelectionMode;
@@ -87,6 +88,10 @@ public class DataTreeViewWidget implements CloseAwareWidget {
     public DataTreeViewWidget setDividerPositions(double dividerPosition) {
         this.dividerPosition = dividerPosition;
         return this;
+    }
+
+    public ReadOnlyObjectProperty<Data> selectedItem(){
+        return dataEditor.editData();
     }
 
 }
