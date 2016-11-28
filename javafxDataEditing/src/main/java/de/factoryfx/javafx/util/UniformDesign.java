@@ -7,6 +7,7 @@ import java.util.Locale;
 import de.factoryfx.data.attribute.Attribute;
 import de.factoryfx.data.attribute.types.I18nAttribute;
 import de.factoryfx.data.util.LanguageText;
+import javafx.scene.control.Button;
 import javafx.scene.control.Labeled;
 import javafx.scene.control.MenuItem;
 import javafx.scene.paint.Color;
@@ -89,53 +90,36 @@ public class UniformDesign {
         return attribute.get().getPreferred(locale);
     }
 
+    public void setBackGroundColor(Button button, Color color) {
+        button.setStyle("-fx-base: " + toCssColor(color) + ";");
+    }
 
+    public void setDangerButton(Button button) {
+        setBackGroundColor(button,dangerColor);
+    }
 
-//    public <T extends List> VBox createExpandableListWrapper(SimpleObjectProperty<T> boundTo, VBox detailView) {
-//        return createExpandableEditorWrapper(boundTo,detailView,FontAwesome.Glyph.LIST, t -> "Items: "+boundTo.get().size());
-//    }
+    public void setWarningColor(Button button) {
+        setBackGroundColor(button,warningColor);
+    }
 
+    public void setInfoColor(Button button) {
+        setBackGroundColor(button,infoColor);
+    }
 
-//
-//    private static void clearButtonClasses(Button button) {
-//        button.getStyleClass().remove("dangerButton");
-//        button.getStyleClass().remove("warningButton");
-//        button.getStyleClass().remove("successButton");
-//        button.getStyleClass().remove("primaryButton");
-//    }
-//
-//    public static void setBackGroundColor(Button button, Color color) {
-//        button.setStyle("-fx-base: " + toCssColor(color) + ";");
-//    }
-//
-//    public static void setBackGroundColor(TableView<?> tableView, Color color) {
-//        tableView.setStyle("-fx-background-color: " + toCssColor(color) + ";");
-//    }
-//
-//    public static void setBackGroundColor(Pane pane, Color color) {
-//        pane.setStyle("-fx-background-color: " + toCssColor(color) + ";");
-//    }
-//
-//    public static void setDangerButton(Button button) {
-//        clearButtonClasses(button);
-//        button.getStyleClass().add("dangerButton");
-//    }
-//
-//    public static void setFontColor(Label label, Color color) {
-//        label.setTextFill(color);
-//    }
-//
-//    public static void setFontSize(Label label, int size) {
-//        label.setStyle("-fx-font-size: " + size + ";");
-//    }
-//
-//
-//    public static String toCssColor(Color color) {
-//        return "rgba(" +
-//                Math.round(255 * color.getRed()) + "," +
-//                Math.round(255 * color.getGreen()) + "," +
-//                Math.round(255 * color.getBlue()) + "," +
-//                color.getOpacity() +
-//                ")";
-//    }
+    public void setSuccessColor(Button button) {
+        setBackGroundColor(button,successColor);
+    }
+
+    public void setPrimaryColor(Button button) {
+        setBackGroundColor(button,primaryColor);
+    }
+
+    private String toCssColor(Color color) {
+        return "rgba(" +
+                Math.round(255 * color.getRed()) + "," +
+                Math.round(255 * color.getGreen()) + "," +
+                Math.round(255 * color.getBlue()) + "," +
+                color.getOpacity() +
+                ")";
+    }
 }
