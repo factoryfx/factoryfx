@@ -10,10 +10,12 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.stage.Window;
 
 public class DataChoiceDialog {
-    public Data show(List<Data> possibleValues){
+    public Data show(List<Data> possibleValues, Window owner){
         Dialog<Data> choiceDialog = new Dialog<>();
+        choiceDialog.initOwner(owner);
 
         TableView<Data> dataTableView = new TableView<>();
         choiceDialog.getDialogPane().setContent(dataTableView);

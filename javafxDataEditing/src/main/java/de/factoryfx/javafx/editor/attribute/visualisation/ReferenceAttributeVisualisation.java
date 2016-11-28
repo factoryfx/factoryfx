@@ -45,7 +45,7 @@ public class ReferenceAttributeVisualisation implements AttributeEditorVisualisa
         Button selectButton = new Button();
         uniformDesign.addIcon(selectButton,FontAwesome.Glyph.SEARCH_PLUS);
         selectButton.setOnAction(event -> {
-            boundTo.set(new DataChoiceDialog().show(possibleValuesProvider.get()));
+            boundTo.set(new DataChoiceDialog().show(possibleValuesProvider.get(),selectButton.getScene().getWindow()));
         });
         selectButton.setDisable(!isUserEditable);
 

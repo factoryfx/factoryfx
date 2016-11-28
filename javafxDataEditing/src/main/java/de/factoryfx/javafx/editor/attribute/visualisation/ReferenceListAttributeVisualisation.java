@@ -97,7 +97,7 @@ public class ReferenceListAttributeVisualisation extends ExpandableAttributeVisu
 
         Button selectButton = new Button("", uniformDesign.createIcon(FontAwesome.Glyph.SEARCH_PLUS));
         selectButton.setOnAction(event -> {
-            Data toAdd = new DataChoiceDialog().show(possibleValuesProvider.get());
+            Data toAdd = new DataChoiceDialog().show(possibleValuesProvider.get(),selectButton.getScene().getWindow());
             if (toAdd!=null){
                 boundTo.get().add(toAdd);
             }
