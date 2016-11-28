@@ -1,6 +1,7 @@
 package de.factoryfx.data.attribute;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -134,12 +135,12 @@ public class ReferenceAttribute<T extends Data> extends Attribute<T> {
     }
 
 
-    private Optional<Function<Data,List<T>>> possibleValueProviderFromRoot=Optional.empty();
+    private Optional<Function<Data,Collection<T>>> possibleValueProviderFromRoot=Optional.empty();
     private Optional<Supplier<T>> newValueProvider=Optional.empty();
 
     /**customise the list of selectable items*/
     @SuppressWarnings("unchecked")
-    public <A extends ReferenceAttribute<T>> A possibleValueProvider(Function<Data,List<T>> possibleValueProvider){
+    public <A extends ReferenceAttribute<T>> A possibleValueProvider(Function<Data,Collection<T>> possibleValueProvider){
         this.possibleValueProviderFromRoot =Optional.of(possibleValueProvider);
         return (A)this;
     }
@@ -176,7 +177,7 @@ public class ReferenceAttribute<T extends Data> extends Attribute<T> {
     public List<T> possibleValues(){
         ArrayList<T> result = new ArrayList<>();
         possibleValueProviderFromRoot.ifPresent(factoryBaseListFunction -> {
-            List<T> factories = factoryBaseListFunction.apply(root);
+            Collection<T> factories = factoryBaseListFunction.apply(root);
             factories.forEach(factory -> result.add(factory));
         });
         if (!possibleValueProviderFromRoot.isPresent()){
