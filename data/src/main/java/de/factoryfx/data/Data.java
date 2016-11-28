@@ -229,6 +229,9 @@ public abstract class Data {
         for (Data data: this.collectChildrenDeep()){
             Data copy = data.newInstance();
 
+            data.dataValidations=copy.dataValidations;
+            data.displayTextDependencies=copy.displayTextDependencies;
+
             Field[] fields = data.getFields();
             for (Field field : fields) {
                 try {

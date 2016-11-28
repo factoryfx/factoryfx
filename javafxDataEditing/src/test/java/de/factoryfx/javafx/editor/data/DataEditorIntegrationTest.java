@@ -27,17 +27,19 @@ public class DataEditorIntegrationTest extends Application{
         DataEditor dataEditor = new DataEditor(new AttributeEditorFactory(uniformDesign),uniformDesign);
         root.setCenter(dataEditor.createContent());
 
+        exampleData1= ObjectMapperBuilder.build().copy(exampleData1);
+
         exampleData1.internal().prepareUsage();
         dataEditor.edit(exampleData1);
 
         primaryStage.setScene(new Scene(root,1200,800));
 
-        Button syso = new Button("syso");
-        syso.setOnAction(event -> System.out.println(ObjectMapperBuilder.build().writeValueAsString(exampleData1)));
+//        Button syso = new Button("syso");
+//        syso.setOnAction(event -> System.out.println(ObjectMapperBuilder.build().writeValueAsString(exampleData1)));
         Button gc = new Button("gc");
         gc.setOnAction(event -> System.gc());
         HBox buttons = new HBox();
-        buttons.getChildren().add(syso);
+//        buttons.getChildren().add(syso);
         buttons.getChildren().add(gc);
         root.setBottom(buttons);
         primaryStage.show();

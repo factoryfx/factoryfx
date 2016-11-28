@@ -1,10 +1,12 @@
 package de.factoryfx.data;
 
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+import de.factoryfx.data.attribute.Attribute;
 import de.factoryfx.data.attribute.AttributeMetadata;
 import de.factoryfx.data.attribute.ReferenceAttribute;
 import de.factoryfx.data.attribute.types.ObjectValueAttribute;
@@ -15,6 +17,7 @@ import de.factoryfx.data.merge.testfactories.ExampleFactoryA;
 import de.factoryfx.data.merge.testfactories.ExampleFactoryB;
 import de.factoryfx.data.merge.testfactories.ExampleFactoryC;
 import de.factoryfx.data.merge.testfactories.IdData;
+import de.factoryfx.data.validation.AttributeValidation;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -64,6 +67,42 @@ public class DataTest {
         Assert.assertEquals("ExampleA3",readed.referenceListAttribute.metadata.labelText.getPreferred(Locale.ENGLISH));
         Assert.assertEquals("ExampleB1",readed.referenceAttribute.get().stringAttribute.metadata.labelText.getPreferred(Locale.ENGLISH));
         Assert.assertEquals("ExampleB1",readed.referenceListAttribute.get(0).stringAttribute.metadata.labelText.getPreferred(Locale.ENGLISH));
+    }
+
+
+    @Test
+    public void test_reconstructMetadataDeepRoot_displaytext() throws IllegalAccessException, NoSuchFieldException {
+        ExampleFactoryA exampleFactoryA = new ExampleFactoryA();
+        ExampleFactoryB exampleFactoryB = new ExampleFactoryB();
+        ExampleFactoryC exampleFactoryC = new ExampleFactoryC();
+        exampleFactoryB.referenceAttributeC.set(exampleFactoryC);
+        exampleFactoryA.referenceAttribute.set(exampleFactoryB);
+
+        exampleFactoryA.referenceListAttribute.add(new ExampleFactoryB());
+
+        SimpleObjectMapper mapper = ObjectMapperBuilder.build();
+        String string = mapper.writeValueAsString(exampleFactoryA);
+        ExampleFactoryA readed = null;
+        try {
+            readed = mapper.getObjectMapper().readValue(string,ExampleFactoryA.class);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        readed.internal().reconstructMetadataDeepRoot();
+
+
+        final Field displayTextDependencies = Data.class.getDeclaredField("displayTextDependencies");
+        displayTextDependencies.setAccessible(true);
+        final List<Attribute<?>> attributes = (List<Attribute<?>>) displayTextDependencies.get(readed);
+        Assert.assertEquals(1, attributes.size());
+        Assert.assertEquals(readed.stringAttribute, attributes.get(0));
+
+
+        final Field dataValidations = Data.class.getDeclaredField("dataValidations");
+        displayTextDependencies.setAccessible(true);
+        final List<AttributeValidation<?>> dataValidationsAttributes = (List<AttributeValidation<?>>) dataValidations.get(readed);
+        Assert.assertEquals(1, dataValidationsAttributes.size());
     }
 
 
