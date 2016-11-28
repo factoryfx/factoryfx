@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.function.Supplier;
 
 import de.factoryfx.data.Data;
+import de.factoryfx.data.util.LanguageText;
 import de.factoryfx.javafx.editor.attribute.AttributeEditorVisualisation;
 import de.factoryfx.javafx.editor.data.DataEditor;
 import de.factoryfx.javafx.util.DataChoiceDialog;
@@ -14,12 +15,18 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
+import javafx.scene.control.Tooltip;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import org.controlsfx.glyphfont.FontAwesome;
 
 public class ReferenceAttributeVisualisation implements AttributeEditorVisualisation<Data> {
+
+    private LanguageText selectText= new LanguageText().en("select").de("Auswählen");
+    private LanguageText addText= new LanguageText().en("add").de("Hinzufügen");
+    private LanguageText deleteText= new LanguageText().en("delete").de("Löschen");
+    private LanguageText editText= new LanguageText().en("edit").de("Editieren");
 
     private final UniformDesign uniformDesign;
     private final DataEditor dataEditor;
@@ -90,10 +97,16 @@ public class ReferenceAttributeVisualisation implements AttributeEditorVisualisa
         hBox.setSpacing(3);
 
         hBox.getChildren().add(textField);
+
         hBox.getChildren().add(showButton);
         hBox.getChildren().add(selectButton);
         hBox.getChildren().add(newButton);
         hBox.getChildren().add(deleteButton);
+
+        showButton.setTooltip(new Tooltip(uniformDesign.getText(editText)));
+        selectButton.setTooltip(new Tooltip(uniformDesign.getText(selectText)));
+        newButton.setTooltip(new Tooltip(uniformDesign.getText(addText)));
+        deleteButton.setTooltip(new Tooltip(uniformDesign.getText(deleteText)));
 
         return hBox;
     }

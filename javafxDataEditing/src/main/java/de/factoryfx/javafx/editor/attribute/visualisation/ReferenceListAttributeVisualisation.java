@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.function.Supplier;
 
 import de.factoryfx.data.Data;
+import de.factoryfx.data.util.LanguageText;
 import de.factoryfx.javafx.editor.data.DataEditor;
 import de.factoryfx.javafx.util.DataChoiceDialog;
 import de.factoryfx.javafx.util.UniformDesign;
@@ -21,6 +22,7 @@ import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.control.Tooltip;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
@@ -28,6 +30,11 @@ import javafx.scene.layout.VBox;
 import org.controlsfx.glyphfont.FontAwesome;
 
 public class ReferenceListAttributeVisualisation extends ExpandableAttributeVisualisation<ObservableList<Data>> {
+
+    private LanguageText selectText= new LanguageText().en("select").de("Auswählen");
+    private LanguageText addText= new LanguageText().en("add").de("Hinzufügen");
+    private LanguageText deleteText= new LanguageText().en("delete").de("Löschen");
+    private LanguageText editText= new LanguageText().en("edit").de("Editieren");
 
     private final UniformDesign uniformDesign;
     private final DataEditor dataEditor;
@@ -155,6 +162,11 @@ public class ReferenceListAttributeVisualisation extends ExpandableAttributeVisu
         buttons.getChildren().add(deleteButton);
         buttons.getChildren().add(moveUpButton);
         buttons.getChildren().add(moveDownButton);
+
+        showButton.setTooltip(new Tooltip(uniformDesign.getText(editText)));
+        selectButton.setTooltip(new Tooltip(uniformDesign.getText(selectText)));
+        adderButton.setTooltip(new Tooltip(uniformDesign.getText(addText)));
+        deleteButton.setTooltip(new Tooltip(uniformDesign.getText(deleteText)));
 
 
         HBox.setMargin(moveUpButton,new Insets(0,0,0,9));
