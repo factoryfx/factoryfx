@@ -208,7 +208,7 @@ public class DataEditor implements Widget {
         } else {
             GridPane grid = new GridPane();
 //        grid.setHgap(3);
-//        grid.setVgap(3);
+//             grid.setVgap(3);
             grid.setPadding(new Insets(3, 3, 3, 3));
 
             ColumnConstraints column1 = new ColumnConstraints();

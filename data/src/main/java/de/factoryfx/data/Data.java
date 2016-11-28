@@ -226,32 +226,31 @@ public abstract class Data {
      */
     @SuppressWarnings("unchecked")
     private <T extends Data> T reconstructMetadataDeepRoot() {
-        Data copy = this.newInstance();
+        for (Data data: this.collectChildrenDeep()){
+            Data copy = data.newInstance();
 
-
-        Field[] fields = getFields();
-        for (Field field : fields) {
-            try {
-                if (de.factoryfx.data.attribute.Attribute.class.isAssignableFrom(field.getType())){
-                    Object value=null;
-                    if (field.get(this)!=null){
-                        final Attribute attribute = (Attribute) field.get(this);
-                        if (!(attribute instanceof ViewReferenceAttribute) && !(attribute instanceof ViewListReferenceAttribute)){
-                            value= attribute.get();
+            Field[] fields = data.getFields();
+            for (Field field : fields) {
+                try {
+                    if (de.factoryfx.data.attribute.Attribute.class.isAssignableFrom(field.getType())){
+                        Object value=null;
+//                        field.setAccessible(true);
+                        if (field.get(data)!=null){
+                            final Attribute attribute = (Attribute) field.get(data);
+                            if (!(attribute instanceof ViewReferenceAttribute) && !(attribute instanceof ViewListReferenceAttribute)){
+                                value= attribute.get();
+                            }
                         }
-                    }
-                    field.setAccessible(true);
-                    field.set(this,field.get(copy));
+                        field.setAccessible(true);
+                        field.set(data,field.get(copy));
 
-                    ((Attribute)field.get(this)).set(value);
+                        ((Attribute)field.get(data)).set(value);
+                    }
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
                 }
-            } catch (Exception e) {
-                throw new RuntimeException(e);
             }
         }
-
-        this.visitChildFactoriesFlat(factoryBase -> factoryBase.reconstructMetadataDeepRoot());
-
         return (T)this;
     }
 

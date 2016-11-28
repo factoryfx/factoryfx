@@ -34,6 +34,10 @@ public class ExampleData2 extends Data {
 
 
 
+    public ExampleData2(){
+        config().setDisplayTextProvider(() -> stringAttribute.get());
+        config().setDisplayTextDependencies(stringAttribute);
+    }
 
 
 
