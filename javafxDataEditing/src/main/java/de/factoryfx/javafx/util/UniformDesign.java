@@ -38,27 +38,26 @@ public class UniformDesign {
         this.borderColor = borderColor;
     }
 
-    public void addIcon(Labeled component, FontAwesome.Glyph icon){
+    public void addIcon(Labeled component, FontAwesome.Glyph icon) {
         component.setGraphic(getFontAwesome().create(icon));
     }
 
-    public void addDangerIcon(Labeled component, FontAwesome.Glyph icon){
+    public void addDangerIcon(Labeled component, FontAwesome.Glyph icon) {
         component.setGraphic(getFontAwesome().create(icon).color(dangerColor));
     }
 
-
-    public void addIcon(MenuItem component, FontAwesome.Glyph icon){
-        if (icon!=null){
+    public void addIcon(MenuItem component, FontAwesome.Glyph icon) {
+        if (icon != null) {
             component.setGraphic(getFontAwesome().create(icon));
         }
     }
 
-    public Glyph createIcon(FontAwesome.Glyph icon){
+    public Glyph createIcon(FontAwesome.Glyph icon) {
         return getFontAwesome().create(icon);
     }
 
-    private GlyphFont getFontAwesome(){
-        if (fontAwesome==null){
+    private GlyphFont getFontAwesome() {
+        if (fontAwesome == null) {
             try (InputStream inputStream = UniformDesign.class.getResourceAsStream("/de/factoryfx/javafx/icon/fontawesome-webfont4_3.ttf")) {
                 GlyphFont font_awesome = new FontAwesome(inputStream);
                 GlyphFontRegistry.register(font_awesome);
@@ -70,23 +69,23 @@ public class UniformDesign {
         return fontAwesome;
     }
 
-    public Locale getLocale(){
+    public Locale getLocale() {
         return locale;
     }
 
-    public Locale get(){
+    public Locale get() {
         return locale;
     }
 
-    public String getLabelText(Attribute<?> attribute){
+    public String getLabelText(Attribute<?> attribute) {
         return attribute.metadata.labelText.getPreferred(locale);
     }
 
-    public String getText(LanguageText languageText){
+    public String getText(LanguageText languageText) {
         return languageText.getPreferred(locale);
     }
 
-    public String getText(I18nAttribute attribute){
+    public String getText(I18nAttribute attribute) {
         return attribute.get().getPreferred(locale);
     }
 
@@ -95,31 +94,27 @@ public class UniformDesign {
     }
 
     public void setDangerButton(Button button) {
-        setBackGroundColor(button,dangerColor);
+        button.getStyleClass().add("dangerButton");
     }
 
-    public void setWarningColor(Button button) {
-        setBackGroundColor(button,warningColor);
+    public void setWarningButton(Button button) {
+        button.getStyleClass().add("warningButton");
     }
 
-    public void setInfoColor(Button button) {
-        setBackGroundColor(button,infoColor);
+    public void setInfoButton(Button button) {
+        button.getStyleClass().add("infoButton");
     }
 
-    public void setSuccessColor(Button button) {
-        setBackGroundColor(button,successColor);
+    public void setSuccessButton(Button button) {
+        button.getStyleClass().add("successButton");
     }
 
-    public void setPrimaryColor(Button button) {
-        setBackGroundColor(button,primaryColor);
+    public void setPrimaryButton(Button button) {
+        button.getStyleClass().add("primaryButton");
     }
 
     private String toCssColor(Color color) {
-        return "rgba(" +
-                Math.round(255 * color.getRed()) + "," +
-                Math.round(255 * color.getGreen()) + "," +
-                Math.round(255 * color.getBlue()) + "," +
-                color.getOpacity() +
-                ")";
+        return "rgba(" + Math.round(255 * color.getRed()) + "," + Math.round(255 * color.getGreen()) + "," + Math.round(255 * color.getBlue()) + "," + color.getOpacity() + ")";
     }
+
 }

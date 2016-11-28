@@ -60,4 +60,27 @@
     -fx-font-weight: bold;
 }
 
+.primaryButton{
+     -fx-base: PRIMARY_COLOR;
+     -fx-text-fill: white;
+ }
 
+.dangerButton{
+    -fx-base: DANGER_COLOR;
+    -fx-text-fill: white;
+}
+
+.warningButton{
+    -fx-base: WARNING_COLOR;
+    -fx-text-fill: white;
+}
+
+.successButton{
+    -fx-base: SUCCESS_COLOR;
+    -fx-text-fill: white;
+}
+
+.infoButton{
+    -fx-base: INFO_COLOR;
+    /*-fx-text-fill: white;*/
+}
