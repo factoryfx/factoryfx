@@ -21,7 +21,7 @@ public class LocalDateTimeAttributeVisualisation implements AttributeEditorVisua
 
     @Override
     public Node createContent(SimpleObjectProperty<LocalDateTime> boundTo) {
-        HBox controls = new HBox();
+        HBox controls = new HBox(3);
         controls.setOpaqueInsets(new Insets(0,3,0,3));
         DatePicker datePicker = new DatePicker();
         datePicker.valueProperty().addListener((observable, oldValue, newValue) -> {

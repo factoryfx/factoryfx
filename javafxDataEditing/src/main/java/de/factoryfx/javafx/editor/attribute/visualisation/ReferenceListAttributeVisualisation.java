@@ -2,6 +2,7 @@ package de.factoryfx.javafx.editor.attribute.visualisation;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Supplier;
 
 import de.factoryfx.data.Data;
@@ -106,10 +107,8 @@ public class ReferenceListAttributeVisualisation extends ExpandableAttributeVisu
 
         Button selectButton = new Button("", uniformDesign.createIcon(FontAwesome.Glyph.SEARCH_PLUS));
         selectButton.setOnAction(event -> {
-            Data toAdd = new DataChoiceDialog().show(possibleValuesProvider.get(),selectButton.getScene().getWindow());
-            if (toAdd!=null){
-                boundTo.get().add(toAdd);
-            }
+            Optional<Data> toAdd = new DataChoiceDialog().show(possibleValuesProvider.get(),selectButton.getScene().getWindow(),uniformDesign);
+            toAdd.ifPresent(data -> boundTo.get().add(data));
         });
         selectButton.setDisable(!isUserEditable || !isUserSelectable);
 

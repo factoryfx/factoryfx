@@ -1,6 +1,7 @@
 package de.factoryfx.javafx.editor.attribute.visualisation;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Supplier;
 
 import de.factoryfx.data.Data;
@@ -54,7 +55,8 @@ public class ReferenceAttributeVisualisation implements AttributeEditorVisualisa
         Button selectButton = new Button();
         uniformDesign.addIcon(selectButton,FontAwesome.Glyph.SEARCH_PLUS);
         selectButton.setOnAction(event -> {
-            boundTo.set(new DataChoiceDialog().show(possibleValuesProvider.get(),selectButton.getScene().getWindow()));
+            final Optional<Data> toAdd = new DataChoiceDialog().show(possibleValuesProvider.get(), selectButton.getScene().getWindow(), uniformDesign);
+            toAdd.ifPresent(data -> boundTo.set(data));
         });
         selectButton.setDisable(!isUserEditable || !isUserSelectable);
 

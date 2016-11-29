@@ -13,7 +13,7 @@ import de.factoryfx.data.validation.StringRequired;
 
 public class ExampleData2 extends Data {
 
-    public final StringAttribute stringAttribute=new StringAttribute(new AttributeMetadata().en("StringAttribute").de("StringAttribute de")).validation(new StringRequired());
+    public final StringAttribute stringAttribute=new StringAttribute(new AttributeMetadata().en("StringAttribute").de("StringAttribute de")).validation(new StringRequired()).defaultValue("123");
 
 
 
