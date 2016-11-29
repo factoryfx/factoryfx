@@ -1,6 +1,6 @@
 package de.factoryfx.data.attribute;
 
 public enum CopySemantic {
-    COPY,
-    SELF
+    COPY, //data copy but new id
+    SELF  //same reference
 }

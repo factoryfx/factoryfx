@@ -98,13 +98,35 @@ public class ReferenceListAttribute<T extends Data> extends Attribute<Observable
 
     @Override
     @SuppressWarnings("unchecked")
-    public void copyTo(Attribute<ObservableList<T>> copyAttribute, Function<Data, Data> dataCopyProvider) {
+    public void copyTo(Attribute<ObservableList<T>> copyAttribute, Function<Data,Data> dataCopyProvider) {
         for (T item: get()){
             final T itemCopy = (T) dataCopyProvider.apply(item);
             if (itemCopy!=null){
                 copyAttribute.get().add(itemCopy);
             }
         }
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public void semanticCopyTo(Attribute<ObservableList<T>> copyAttribute, Function<Data,Data> dataCopyProvider) {
+        if (copySemantic==CopySemantic.SELF){
+            copyAttribute.set(get());
+        } else {
+            for (T item: get()){
+                final T itemCopy = (T) dataCopyProvider.apply(item);
+                if (itemCopy!=null){
+                    copyAttribute.get().add(itemCopy);
+                }
+            }
+        }
+    }
+
+    private CopySemantic copySemantic = CopySemantic.COPY;
+    @SuppressWarnings("unchecked")
+    public <A extends ReferenceListAttribute<T>> A setCopySemantic(CopySemantic copySemantic){
+        this.copySemantic=copySemantic;
+        return (A)this;
     }
 
     public boolean contains(T value) {

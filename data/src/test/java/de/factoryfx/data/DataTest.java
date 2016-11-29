@@ -8,6 +8,7 @@ import java.util.Locale;
 
 import de.factoryfx.data.attribute.Attribute;
 import de.factoryfx.data.attribute.AttributeMetadata;
+import de.factoryfx.data.attribute.CopySemantic;
 import de.factoryfx.data.attribute.ReferenceAttribute;
 import de.factoryfx.data.attribute.types.ObjectValueAttribute;
 import de.factoryfx.data.attribute.types.StringAttribute;
@@ -215,22 +216,6 @@ public class DataTest {
         Assert.assertTrue(copy.referenceListAttribute.get().isEmpty());
     }
 
-    @Test
-    public void test_zero_copy_newIds(){
-        ExampleFactoryA exampleFactoryA = new ExampleFactoryA();
-        exampleFactoryA.stringAttribute.set("dfssfdsfdsfd");
-        exampleFactoryA.referenceAttribute.set(new ExampleFactoryB());
-        exampleFactoryA.referenceListAttribute.add(new ExampleFactoryB());
-
-        ExampleFactoryA copy =  exampleFactoryA.internal().copyZeroLevelDeep();
-        Assert.assertEquals(copy.getId(), exampleFactoryA.getId());
-
-        copy =  exampleFactoryA.internal().copyZeroLevelDeep(false);
-        Assert.assertNotEquals(copy.getId(), exampleFactoryA.getId());
-    }
-
-
-
     private class ExampleFactoryObservable extends IdData {
         public final StringAttribute stringAttribute= new StringAttribute(new AttributeMetadata().labelText("ExampleA1"));
         public ExampleFactoryObservable(){
@@ -238,6 +223,7 @@ public class DataTest {
             config().setDisplayTextDependencies(stringAttribute);
         }
     }
+
     @Test
     public void test_displaytext_observable(){
         ExampleFactoryObservable exampleFactory = new ExampleFactoryObservable();
@@ -249,4 +235,48 @@ public class DataTest {
         exampleFactory.stringAttribute.set("2");
         Assert.assertEquals("2",exampleFactory.internal().getDisplayTextObservable().get());
     }
+
+    @Test
+    public void test_copy_objectProperty(){
+        ExampleObjectProperty exampleObjectProperty = new ExampleObjectProperty();
+        final String test = "Test";
+        exampleObjectProperty.objectValueAttribute.set(test);
+        ExampleObjectProperty copy = exampleObjectProperty.internal().copy();
+        Assert.assertTrue(copy.objectValueAttribute.get()==test);
+    }
+
+
+    @Test
+    public void test_copy_semantic_self(){
+        ExampleFactoryA exampleFactoryA = new ExampleFactoryA();
+        exampleFactoryA.stringAttribute.set("dfssfdsfdsfd");
+        exampleFactoryA.referenceAttribute.set(new ExampleFactoryB());
+        exampleFactoryA.referenceListAttribute.add(new ExampleFactoryB());
+
+        ExampleFactoryA copy =  exampleFactoryA.utility().semanticCopy();
+
+        Assert.assertEquals(exampleFactoryA.stringAttribute.get(), copy.stringAttribute.get());
+        Assert.assertEquals(exampleFactoryA.referenceAttribute.get(), copy.referenceAttribute.get());
+        Assert.assertEquals(exampleFactoryA.referenceListAttribute.get(), copy.referenceListAttribute.get());
+    }
+
+    @Test
+    public void test_copy_semantic_copy(){
+        ExampleFactoryA exampleFactoryA = new ExampleFactoryA();
+        exampleFactoryA.stringAttribute.set("dfssfdsfdsfd");
+        exampleFactoryA.referenceAttribute.set(new ExampleFactoryB());
+        exampleFactoryA.referenceListAttribute.add(new ExampleFactoryB());
+
+        exampleFactoryA.referenceAttribute.setCopySemantic(CopySemantic.COPY);
+        exampleFactoryA.referenceListAttribute.setCopySemantic(CopySemantic.COPY);
+
+        ExampleFactoryA copy =  exampleFactoryA.utility().semanticCopy();
+
+        Assert.assertEquals(exampleFactoryA.stringAttribute.get(), copy.stringAttribute.get());
+        Assert.assertNotEquals(exampleFactoryA.referenceAttribute.get(), copy.referenceAttribute.get());
+        Assert.assertNotEquals(exampleFactoryA.referenceAttribute.get().getId(), copy.referenceAttribute.get().getId());
+        Assert.assertNotEquals(exampleFactoryA.referenceListAttribute.get(), copy.referenceListAttribute.get());
+        Assert.assertNotEquals(exampleFactoryA.referenceAttribute.get().getId(), copy.referenceAttribute.get().getId());
+    }
+
 }

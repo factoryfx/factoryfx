@@ -32,4 +32,9 @@ public class ObjectValueAttribute<T> extends ValueAttribute<T> {
         return new NopMergeHelper<>();
     }
 
+//    @Override
+//    @SuppressWarnings("unchecked")
+//    public void copyTo(Attribute<T> copyAttribute, Function<Data, Data> dataCopyProvider) {
+//        copyAttribute.set((T) dataCopyProvider.apply(get()));
+//    }
 }

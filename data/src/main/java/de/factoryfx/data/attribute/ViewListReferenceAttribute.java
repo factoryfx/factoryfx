@@ -53,7 +53,12 @@ public class ViewListReferenceAttribute <R extends Data, P extends Data, T exten
     }
 
     @Override
-    public void copyTo(Attribute<List<T>> copyAttribute, Function<Data, Data> dataCopyProvider) {
+    public void copyTo(Attribute<List<T>> copyAttribute, Function<Data,Data> dataCopyProvider) {
+        //nothing
+    }
+
+    @Override
+    public void semanticCopyTo(Attribute<List<T>> copyAttribute, Function<Data,Data> dataCopyProvider) {
         //nothing
     }
 

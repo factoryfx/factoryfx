@@ -8,11 +8,11 @@ import org.junit.Test;
 public class ObjectValueAttributeTest {
 
     public static class NoJsonPropertiesObject{
-            //dummy for unseriliasable objetc
+            //dummy for not serializable objetc
     }
 
     public abstract class NoJsonPropertiesObjectAbstract {
-        //dummy for unseriliasable objetc
+        //dummy for not serializable objetc
         public String test="sfsfdsf";
     }
 

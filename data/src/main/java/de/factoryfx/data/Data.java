@@ -25,7 +25,6 @@ import de.factoryfx.data.attribute.ReferenceAttribute;
 import de.factoryfx.data.attribute.ReferenceListAttribute;
 import de.factoryfx.data.attribute.ViewListReferenceAttribute;
 import de.factoryfx.data.attribute.ViewReferenceAttribute;
-import de.factoryfx.data.attribute.types.ObjectValueAttribute;
 import de.factoryfx.data.merge.MergeResult;
 import de.factoryfx.data.merge.MergeResultEntry;
 import de.factoryfx.data.merge.attribute.AttributeMergeHelper;
@@ -361,49 +360,53 @@ public abstract class Data {
         return path;
     }
 
-    private <T extends Data> T copy(boolean keepIds) {
-        T copy = copyDeep(0,Integer.MAX_VALUE,new HashMap<>(),keepIds);
-
-        Map<Object, Data> stringFactoryBaseMap = this.collectChildFactoriesMap();
-        for (Data factory: copy.internal().collectChildrenDeep()){
-            factory.visitAttributesDualFlat(stringFactoryBaseMap.get(factory.getId()),(copyAttribute, previousAttribute) -> {
-                if (copyAttribute instanceof ObjectValueAttribute){
-                    ((Attribute)copyAttribute).set(((Attribute)previousAttribute).get());
-                }
-            });
-        }
-        return copy;
+    private <T extends Data> T copy() {
+        return copyDeep(0,Integer.MAX_VALUE,new HashMap<>());
     }
+
+    @SuppressWarnings("unchecked")
+    private <T extends Data> T semanticCopy() {
+        T result = (T)newInstance();
+//        result.setId(this.getId());
+        this.visitAttributesDualFlat(result, (thisAttribute, copyAttribute) -> {
+            thisAttribute.semanticCopyTo(copyAttribute,(data)->{
+                if (data==null){
+                    return null;
+                }
+                return data.semanticCopy();
+            });
+        });
+        return result;
+    }
+
 
 
     /**copy including one the references first level of nested references*/
-    private <T extends Data> T copyOneLevelDeep(boolean keepIds){
-        return copyDeep(0,1,new HashMap<>(),keepIds);
+    private <T extends Data> T copyOneLevelDeep(){
+        return copyDeep(0,1,new HashMap<>());
     }
 
     /**copy without nested references, only value attributes are copied*/
-    private <T extends Data> T copyZeroLevelDeep(boolean keepIds){
-        return copyDeep(0,0,new HashMap<>(),keepIds);
+    private <T extends Data> T copyZeroLevelDeep(){
+        return copyDeep(0,0,new HashMap<>());
     }
 
 
     @SuppressWarnings("unchecked")
-    private <T extends Data> T copyDeep(final int level, final int maxLevel, HashMap<Object,Data> identityPreserver, boolean keepIds){
+    private <T extends Data> T copyDeep(final int level, final int maxLevel, HashMap<Object,Data> identityPreserver){
         if (level>maxLevel){
             return null;
         }
         T result= (T) identityPreserver.get(this.getId());
         if (result==null){
             result = (T)newInstance();
-            if (keepIds){
-                result.setId(this.getId());
-            }
+            result.setId(this.getId());
             this.visitAttributesDualFlat(result, (thisAttribute, copyAttribute) -> {
                 thisAttribute.copyTo(copyAttribute,(data)->{
                     if (data==null){
                         return null;
                     }
-                    return data.copyDeep(level + 1, maxLevel, identityPreserver,keepIds);
+                    return data.copyDeep(level + 1, maxLevel, identityPreserver);
                 });
             });
             identityPreserver.put(this.getId(),result);
@@ -490,9 +493,29 @@ public abstract class Data {
         return simpleStringProperty;
     }
 
+    DataUtility dataUtility = new DataUtility(this);
+    /** public utility api */
+    public DataUtility utility(){
+        return dataUtility;
+    }
 
+    public static class DataUtility {
+        private final Data data;
+
+        public DataUtility(Data data) {
+            this.data = data;
+        }
+
+
+        /** semantic copy can be configured on the attributes, unlike internal copy which always create complete copy with same ids*/
+        public <T extends Data> T semanticCopy(){
+            return data.semanticCopy();
+        }
+
+    }
 
     DataConfiguration dataConfiguration = new DataConfiguration(this);
+    /** data configurations api */
     public DataConfiguration config(){
         return dataConfiguration;
     }
@@ -629,27 +652,15 @@ public abstract class Data {
         }
 
         public <T extends Data> T copy() {
-            return  data.copy(true);
-        }
-
-        public <T extends Data> T copy(boolean keepIds) {
-            return data.copy(keepIds);
-        }
-
-        public <T extends Data> T copyOneLevelDeep(boolean keepIds){
-            return data.copyDeep(0,1,new HashMap<>(),keepIds);
+            return  data.copy();
         }
 
         public <T extends Data> T copyOneLevelDeep(){
-            return data.copyOneLevelDeep(true);
-        }
-
-        public <T extends Data> T copyZeroLevelDeep(boolean keepIds){
-            return data.copyDeep(0,0,new HashMap<>(),keepIds);
+            return data.copyOneLevelDeep();
         }
 
         public <T extends Data> T copyZeroLevelDeep(){
-            return data.copyZeroLevelDeep(true);
+            return data.copyZeroLevelDeep();
         }
 
         /** only call on root*/

@@ -52,6 +52,7 @@ public abstract class Attribute<T>{
 
     public abstract void copyTo(Attribute<T> copyAttribute, Function<Data,Data> dataCopyProvider);
 
+    public abstract void semanticCopyTo(Attribute<T> copyAttribute, Function<Data,Data> dataCopyProvider);
 
     public List<ValidationError> validate() {
         List<ValidationError> validationErrors = new ArrayList<>();

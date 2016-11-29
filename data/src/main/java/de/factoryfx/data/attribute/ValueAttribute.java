@@ -48,9 +48,19 @@ public class ValueAttribute<T> extends Attribute<T> {
         }
     }
 
+    //override to change copy e.g mutable value
+    protected void copyTo(Attribute<T> copyAttribute){
+        copyAttribute.set(get());
+    }
+
     @Override
     public void copyTo(Attribute<T> copyAttribute, Function<Data, Data> dataCopyProvider) {
-        copyAttribute.set(get());
+        copyTo(copyAttribute);
+    }
+
+    @Override
+    public void semanticCopyTo(Attribute<T> copyAttribute, Function<Data, Data> dataCopyProvider) {
+        copyTo(copyAttribute);
     }
 
     protected List<AttributeChangeListener<T>> listeners= new ArrayList<>();

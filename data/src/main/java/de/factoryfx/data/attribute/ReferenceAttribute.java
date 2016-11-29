@@ -91,6 +91,22 @@ public class ReferenceAttribute<T extends Data> extends Attribute<T> {
         copyAttribute.set((T) dataCopyProvider.apply(get()));
     }
 
+    @Override
+    public void semanticCopyTo(Attribute<T> copyAttribute, Function<Data, Data> dataCopyProvider) {
+        if (copySemantic==CopySemantic.SELF){
+            copyAttribute.set(get());
+        } else {
+            copyAttribute.set((T) dataCopyProvider.apply(get()));
+        }
+    }
+
+    private CopySemantic copySemantic = CopySemantic.COPY;
+    @SuppressWarnings("unchecked")
+    public <A extends ReferenceAttribute<T>> A setCopySemantic(CopySemantic copySemantic){
+        this.copySemantic=copySemantic;
+        return (A)this;
+    }
+
     @JsonValue
     T getValue() {
         return value;
