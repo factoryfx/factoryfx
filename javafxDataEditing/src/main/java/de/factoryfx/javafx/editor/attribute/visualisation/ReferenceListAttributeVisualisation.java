@@ -36,6 +36,7 @@ public class ReferenceListAttributeVisualisation extends ExpandableAttributeVisu
     private LanguageText addText= new LanguageText().en("add").de("Hinzufügen");
     private LanguageText deleteText= new LanguageText().en("delete").de("Löschen");
     private LanguageText editText= new LanguageText().en("edit").de("Editieren");
+    private LanguageText copyText= new LanguageText().en("copy").de("Kopieren");
 
     private final UniformDesign uniformDesign;
     private final DataEditor dataEditor;
@@ -150,7 +151,7 @@ public class ReferenceListAttributeVisualisation extends ExpandableAttributeVisu
         uniformDesign.addIcon(copyButton,FontAwesome.Glyph.COPY);
         copyButton.disableProperty().bind(tableView.getSelectionModel().selectedItemProperty().isNull());
         copyButton.setOnAction(event -> {
-            boundTo.get().add(tableView.getSelectionModel().getSelectedItem().internal().copy());
+            boundTo.get().add(tableView.getSelectionModel().getSelectedItem().utility().semanticCopy());
         });
 
         HBox buttons = new HBox();
@@ -168,7 +169,7 @@ public class ReferenceListAttributeVisualisation extends ExpandableAttributeVisu
         selectButton.setTooltip(new Tooltip(uniformDesign.getText(selectText)));
         adderButton.setTooltip(new Tooltip(uniformDesign.getText(addText)));
         deleteButton.setTooltip(new Tooltip(uniformDesign.getText(deleteText)));
-
+        copyButton.setTooltip(new Tooltip(uniformDesign.getText(copyText)));
 
         HBox.setMargin(moveUpButton,new Insets(0,0,0,9));
         HBox.setMargin(moveDownButton,new Insets(0,9,0,0));
