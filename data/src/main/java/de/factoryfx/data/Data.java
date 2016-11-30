@@ -486,11 +486,30 @@ public abstract class Data {
         if (simpleStringProperty==null){
             simpleStringProperty = new SimpleStringProperty();
             simpleStringProperty.set(getDisplayText());
-            for (Attribute<?> attribute: displayTextDependencies){
-                attribute.addListener((AttributeChangeListener) (attributeParam, value) -> simpleStringProperty.set(getDisplayText()));
-            }
+            addDisplayTextListeners(this,(attributeParam, value) -> simpleStringProperty.set(getDisplayText()));
         }
         return simpleStringProperty;
+    }
+
+    @SuppressWarnings("unchecked")
+    private void addDisplayTextListeners(Data data, AttributeChangeListener attributeChangeListener){
+        for (Attribute<?> attribute: data.displayTextDependencies){
+            attribute.addListener(attributeChangeListener);
+            if (attribute instanceof ReferenceAttribute<?>){
+                Data nestedData= ((ReferenceAttribute)attribute).get();
+                if (nestedData!=null){
+                    addDisplayTextListeners(data,attributeChangeListener);
+                }
+            }
+            if (attribute instanceof ReferenceListAttribute<?>){
+                List<Data> nestedDatas= ((ReferenceListAttribute)attribute).get();
+                nestedDatas.forEach(nestedData -> {
+                    if (nestedData!=null){
+                        addDisplayTextListeners(nestedData,attributeChangeListener);
+                    }
+                });
+            }
+        }
     }
 
     DataUtility dataUtility = new DataUtility(this);
