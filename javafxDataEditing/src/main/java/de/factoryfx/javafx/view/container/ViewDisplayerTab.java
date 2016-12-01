@@ -19,6 +19,7 @@ public class ViewDisplayerTab implements ViewDisplayer {
 
     public void show(TabPane tabPane){
         tabPane.getTabs().add(tab);
+        tabPane.getSelectionModel().select(tab);
     }
 
     @Override
