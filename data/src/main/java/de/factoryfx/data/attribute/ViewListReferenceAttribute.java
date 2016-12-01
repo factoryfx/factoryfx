@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.BiFunction;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -14,6 +15,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreType;
 import de.factoryfx.data.Data;
 import de.factoryfx.data.merge.attribute.AttributeMergeHelper;
 import de.factoryfx.data.merge.attribute.NopMergeHelper;
+import javafx.application.Platform;
 import javafx.collections.ObservableList;
 
 @JsonIgnoreType
@@ -62,6 +64,16 @@ public class ViewListReferenceAttribute <R extends Data, P extends Data, T exten
         //nothing
     }
 
+    //** so we don't need to initialise javax toolkit*/
+    Consumer<Runnable> runlaterExecutor=(r)-> Platform.runLater(r);
+    void setRunlaterExecutorForTest(Consumer<Runnable> runlaterExecutor){
+        this.runlaterExecutor=runlaterExecutor;
+    }
+
+    public void runLater(Runnable runnable){
+        runlaterExecutor.accept(runnable);
+    }
+
     class DirtyTrackingThread extends Thread{
         volatile boolean tracking=true;
         List<T> previousList;
@@ -74,7 +86,7 @@ public class ViewListReferenceAttribute <R extends Data, P extends Data, T exten
                     (!isEmpty(previousList) && isEmpty(currentList))){
 
                     for (AttributeChangeListener<List<T>> listener: new ArrayList<>(listeners)){
-                        listener.changed(ViewListReferenceAttribute.this,currentList);
+                        runLater(()-> listener.changed(ViewListReferenceAttribute.this,currentList));
                     }
                 }
                 if (!isEmpty(previousList) && !isEmpty(currentList)) {

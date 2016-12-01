@@ -6,7 +6,7 @@ import java.util.function.Supplier;
 
 import de.factoryfx.data.Data;
 import de.factoryfx.data.util.LanguageText;
-import de.factoryfx.javafx.editor.attribute.AttributeEditorVisualisation;
+import de.factoryfx.javafx.editor.attribute.ImmutableAttributeEditorVisualisation;
 import de.factoryfx.javafx.editor.data.DataEditor;
 import de.factoryfx.javafx.util.DataChoiceDialog;
 import de.factoryfx.javafx.util.UniformDesign;
@@ -22,7 +22,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import org.controlsfx.glyphfont.FontAwesome;
 
-public class ReferenceAttributeVisualisation implements AttributeEditorVisualisation<Data> {
+public class ReferenceAttributeVisualisation extends ImmutableAttributeEditorVisualisation<Data> {
 
     private LanguageText selectText= new LanguageText().en("select").de("Auswählen");
     private LanguageText addText= new LanguageText().en("add").de("Hinzufügen");

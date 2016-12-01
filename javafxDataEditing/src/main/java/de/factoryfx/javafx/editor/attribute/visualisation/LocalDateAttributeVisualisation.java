@@ -2,12 +2,12 @@ package de.factoryfx.javafx.editor.attribute.visualisation;
 
 import java.time.LocalDate;
 
-import de.factoryfx.javafx.editor.attribute.AttributeEditorVisualisation;
+import de.factoryfx.javafx.editor.attribute.ImmutableAttributeEditorVisualisation;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.Node;
 import javafx.scene.control.DatePicker;
 
-public class LocalDateAttributeVisualisation implements AttributeEditorVisualisation<LocalDate> {
+public class LocalDateAttributeVisualisation extends ImmutableAttributeEditorVisualisation<LocalDate> {
 
     @Override
     public Node createContent(SimpleObjectProperty<LocalDate> boundTo) {

@@ -1,13 +1,15 @@
 package de.factoryfx.javafx.editor.attribute.visualisation;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.function.Consumer;
 
 import de.factoryfx.data.Data;
+import de.factoryfx.data.attribute.Attribute;
+import de.factoryfx.javafx.editor.attribute.AttributeEditorVisualisation;
 import de.factoryfx.javafx.editor.data.DataEditor;
 import de.factoryfx.javafx.util.UniformDesign;
 import de.factoryfx.javafx.widget.table.TableControlWidget;
-import javafx.beans.InvalidationListener;
-import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -19,31 +21,34 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
-import org.controlsfx.glyphfont.FontAwesome;
 
-public class ViewListReferenceAttributeVisualisation extends ExpandableAttributeVisualisation<List<Data>> {
+public class ViewListReferenceAttributeVisualisation implements AttributeEditorVisualisation<List<Data>> {
 
     private final DataEditor dataEditor;
     private final UniformDesign uniformDesign;
 
     public ViewListReferenceAttributeVisualisation(DataEditor dataEditor, UniformDesign uniformDesign) {
-        super(uniformDesign);
         this.dataEditor = dataEditor;
         this.uniformDesign = uniformDesign;
     }
 
+
+
+
     @Override
-    protected FontAwesome.Glyph getSummaryIcon() {
-        return FontAwesome.Glyph.LIST;
+    public void init(Attribute<List<Data>> boundAttribute) {
+        updater.ifPresent(listConsumer -> listConsumer.accept(boundAttribute.get()));
     }
 
     @Override
-    protected String getSummaryText(SimpleObjectProperty<List<Data>> boundTo) {
-        return "Items: "+boundTo.get().size();
+    public void attributeValueChanged(List<Data> newValue) {
+        updater.ifPresent(listConsumer -> listConsumer.accept(newValue));
     }
 
+    Optional<Consumer<List<Data>>> updater= Optional.empty();
+
     @Override
-    protected VBox createDetailView(SimpleObjectProperty<List<Data>> boundTo) {
+    public Node createContent() {
         TableView<Data> tableView = new TableView<>();
         tableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         TableColumn<Data, String> test = new TableColumn<>("Data");
@@ -60,17 +65,14 @@ public class ViewListReferenceAttributeVisualisation extends ExpandableAttribute
                 }
             }
         });
-        ;
-        InvalidationListener listener = observable -> {
-            if (boundTo.get() == null) {
+
+        updater=Optional.of(datas -> {
+            if (datas == null) {
                 items.clear();
             } else {
-                items.setAll(boundTo.get());
+                items.setAll(datas);
             }
-        };
-        boundTo.addListener(listener);
-        listener.invalidated(null);
-
+        });
 
         TableControlWidget<Data> tableControlWidget = new TableControlWidget<>(tableView,uniformDesign);
         Node tableControlWidgetContent = tableControlWidget.createContent();

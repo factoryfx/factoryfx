@@ -2,11 +2,11 @@ package de.factoryfx.javafx.editor.attribute.visualisation;
 
 import java.util.function.Function;
 
+import de.factoryfx.data.attribute.Attribute;
 import de.factoryfx.javafx.editor.attribute.AttributeEditorVisualisation;
 import de.factoryfx.javafx.util.UniformDesign;
-import javafx.beans.InvalidationListener;
 import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
@@ -18,38 +18,39 @@ import javafx.scene.layout.BorderStrokeStyle;
 import javafx.scene.layout.BorderWidths;
 import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import org.controlsfx.glyphfont.FontAwesome;
 
-public abstract class ExpandableAttributeVisualisation<T> implements AttributeEditorVisualisation<T> {
+public class ExpandableAttributeVisualisation<T> implements AttributeEditorVisualisation<T> {
 
     private final UniformDesign uniformDesign;
     private final SimpleBooleanProperty expanded = new SimpleBooleanProperty(false);
+    private final AttributeEditorVisualisation<T> attributeEditorVisualisation;
+    private final SimpleStringProperty title = new SimpleStringProperty();
+    private final Function<T,String> titleTextProvider;
+    private final FontAwesome.Glyph  icon;
 
-    public ExpandableAttributeVisualisation(UniformDesign uniformDesign) {
-        this.uniformDesign = uniformDesign;
+    public ExpandableAttributeVisualisation(AttributeEditorVisualisation<T> attributeEditorVisualisation, UniformDesign uniformDesign, Function<T,String> titleTextProvider, FontAwesome.Glyph icon) {
+        this.uniformDesign= uniformDesign;
+        this.attributeEditorVisualisation = attributeEditorVisualisation;
+        this.titleTextProvider = titleTextProvider;
+        this.icon = icon;
     }
 
-    @Override
-    public Node createContent(SimpleObjectProperty<T> boundTo) {
-        return createExpandableEditorWrapper(boundTo, getSummaryIcon(), t -> getSummaryText(boundTo));
-    }
-    protected abstract FontAwesome.Glyph getSummaryIcon();
 
-    protected abstract String getSummaryText(SimpleObjectProperty<T> boundTo);
-
-    protected abstract VBox createDetailView(SimpleObjectProperty<T> boundTo);
-
-    public VBox createExpandableEditorWrapper(SimpleObjectProperty<T> boundTo, FontAwesome.Glyph icon, Function<T,String> summaryTextProvider) {
+    public VBox createExpandableEditorWrapper() {
         VBox root = new VBox();
-        VBox detailView = createDetailView(boundTo);
+        Node detailView = attributeEditorVisualisation.createContent();
 
+        Pane detailViewWrapper=new Pane();
+        detailViewWrapper.getChildren().add(detailView);
 
         VBox.setVgrow(detailView, Priority.ALWAYS);
-        detailView.setBorder(new Border(new BorderStroke(Color.GREY, BorderStrokeStyle.SOLID, CornerRadii.EMPTY, new BorderWidths(2))));
-        detailView.setPadding(new Insets(3));
+        detailViewWrapper.setBorder(new Border(new BorderStroke(Color.GREY, BorderStrokeStyle.SOLID, CornerRadii.EMPTY, new BorderWidths(2))));
+        detailViewWrapper.setPadding(new Insets(3));
         VBox.setMargin(detailView,new Insets(3,0,0,0));
 
         Label iconLabel = new Label();
@@ -68,20 +69,33 @@ public abstract class ExpandableAttributeVisualisation<T> implements AttributeEd
         HBox summary=new HBox(3);
         summary.setAlignment(Pos.CENTER_LEFT);
         Label label = new Label();
-        InvalidationListener listener = observable -> {
-            if (boundTo.get() == null) {
-                label.setText("<empty>");
-            } else {
-                label.setText(summaryTextProvider.apply(boundTo.get()));
-            }
-        };
-        boundTo.addListener(listener);
-        listener.invalidated(null);
+        label.textProperty().bind(title);
         summary.getChildren().addAll(expandButton,iconLabel,label);
         root.getChildren().addAll(summary);
 
         expandButton.selectedProperty().bindBidirectional(expanded);
         return root;
+    }
+
+    @Override
+    public void init(Attribute<T> boundAttribute) {
+        attributeEditorVisualisation.init(boundAttribute);
+    }
+
+    @Override
+    public void attributeValueChanged(T newValue) {
+        if (newValue == null) {
+            title.set("<empty>");
+        } else {
+            title.set(titleTextProvider.apply(newValue));
+        }
+
+        attributeEditorVisualisation.attributeValueChanged(newValue);
+    }
+
+    @Override
+    public Node createContent() {
+        return createExpandableEditorWrapper();
     }
 
     @Override

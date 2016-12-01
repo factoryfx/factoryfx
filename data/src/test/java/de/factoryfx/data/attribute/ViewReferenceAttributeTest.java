@@ -66,6 +66,7 @@ public class ViewReferenceAttributeTest {
     @Test
     public void test_change_listener(){
         ViewExampleFactory viewExampleFactory=new ViewExampleFactory();
+        viewExampleFactory.view.setRunlaterExecutorForTest(runnable -> runnable.run());
         viewExampleFactory.include.set(false);
 
         ViewExampleFactoryRoot root = new ViewExampleFactoryRoot();

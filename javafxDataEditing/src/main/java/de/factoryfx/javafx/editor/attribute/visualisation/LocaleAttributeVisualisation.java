@@ -3,12 +3,12 @@ package de.factoryfx.javafx.editor.attribute.visualisation;
 import java.text.DateFormat;
 import java.util.Locale;
 
-import de.factoryfx.javafx.editor.attribute.AttributeEditorVisualisation;
+import de.factoryfx.javafx.editor.attribute.ImmutableAttributeEditorVisualisation;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.Node;
 import javafx.scene.control.ComboBox;
 
-public class LocaleAttributeVisualisation implements AttributeEditorVisualisation<Locale> {
+public class LocaleAttributeVisualisation extends ImmutableAttributeEditorVisualisation<Locale> {
 
     @Override
     public Node createContent(SimpleObjectProperty<Locale> boundTo) {

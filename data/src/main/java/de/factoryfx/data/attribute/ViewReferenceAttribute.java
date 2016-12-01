@@ -1,7 +1,12 @@
 package de.factoryfx.data.attribute;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 import java.util.function.BiFunction;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -9,6 +14,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreType;
 import de.factoryfx.data.Data;
 import de.factoryfx.data.merge.attribute.AttributeMergeHelper;
 import de.factoryfx.data.merge.attribute.NopMergeHelper;
+import javafx.application.Platform;
 
 @JsonIgnoreType
 public class ViewReferenceAttribute<R extends Data, P extends Data, T extends Data> extends Attribute<T> {
@@ -57,6 +63,17 @@ public class ViewReferenceAttribute<R extends Data, P extends Data, T extends Da
         //nothing
     }
 
+
+    //** so we don't need to initialise javax toolkit*/
+    Consumer<Runnable> runlaterExecutor=(r)-> Platform.runLater(r);
+    void setRunlaterExecutorForTest(Consumer<Runnable> runlaterExecutor){
+        this.runlaterExecutor=runlaterExecutor;
+    }
+
+    public void runLater(Runnable runnable){
+        runlaterExecutor.accept(runnable);
+    }
+
     class DirtyTrackingThread extends Thread{
         volatile boolean tracking=true;
         T previousValue;
@@ -71,7 +88,7 @@ public class ViewReferenceAttribute<R extends Data, P extends Data, T extends Da
                      (previousValue!=null && currentValue!=null && !previousValue.getId().equals(currentValue.getId()))
                    ){
                     for (AttributeChangeListener<T> listener: new ArrayList<>(listeners)){
-                        listener.changed(ViewReferenceAttribute.this,currentValue);
+                        runLater(()-> listener.changed(ViewReferenceAttribute.this,currentValue));
                     }
                 }
                 previousValue= currentValue;

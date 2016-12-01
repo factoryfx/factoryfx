@@ -103,6 +103,7 @@ public class ViewListReferenceAttributeTest {
     @Test
     public void test_change_listener(){
         ViewListExampleFactory viewExampleFactory=new ViewListExampleFactory();
+        viewExampleFactory.view.setRunlaterExecutorForTest(runnable -> runnable.run());
         viewExampleFactory.forFilter.set("1");
 
         ViewListExampleFactoryRoot root = new ViewListExampleFactoryRoot();

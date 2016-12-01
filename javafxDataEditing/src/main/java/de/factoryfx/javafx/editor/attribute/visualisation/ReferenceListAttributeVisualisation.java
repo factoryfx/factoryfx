@@ -11,9 +11,7 @@ import de.factoryfx.javafx.editor.data.DataEditor;
 import de.factoryfx.javafx.util.DataChoiceDialog;
 import de.factoryfx.javafx.util.UniformDesign;
 import de.factoryfx.javafx.widget.table.TableControlWidget;
-import javafx.beans.InvalidationListener;
 import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -30,7 +28,7 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import org.controlsfx.glyphfont.FontAwesome;
 
-public class ReferenceListAttributeVisualisation extends ExpandableAttributeVisualisation<ObservableList<Data>> {
+public class ReferenceListAttributeVisualisation extends ListAttributeVisualisation<Data> {
 
     private LanguageText selectText= new LanguageText().en("select").de("Auswählen");
     private LanguageText addText= new LanguageText().en("add").de("Hinzufügen");
@@ -46,7 +44,6 @@ public class ReferenceListAttributeVisualisation extends ExpandableAttributeVisu
     private final boolean isUserSelectable;
 
     public ReferenceListAttributeVisualisation(UniformDesign uniformDesign, DataEditor dataEditor, Runnable emptyAdder, Supplier<List<Data>> possibleValuesProvider, boolean isUserEditable, boolean isUserSelectable) {
-        super(uniformDesign);
         this.uniformDesign = uniformDesign;
         this.dataEditor = dataEditor;
         this.emptyAdder = emptyAdder;
@@ -56,17 +53,7 @@ public class ReferenceListAttributeVisualisation extends ExpandableAttributeVisu
     }
 
     @Override
-    protected FontAwesome.Glyph getSummaryIcon() {
-        return FontAwesome.Glyph.LIST;
-    }
-
-    @Override
-    protected String getSummaryText(SimpleObjectProperty<ObservableList<Data>> boundTo) {
-        return "Items: "+boundTo.get().size();
-    }
-
-    @Override
-    protected VBox createDetailView(SimpleObjectProperty<ObservableList<Data>> boundTo) {
+    public Node createContent() {
         TableView<Data> tableView = new TableView<>();
         tableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         TableColumn<Data, String> test = new TableColumn<>("Data");
@@ -84,23 +71,7 @@ public class ReferenceListAttributeVisualisation extends ExpandableAttributeVisu
             }
         });
 
-        //invalidation listener for boundTo don't work
-//        ListChangeListener<Data> dataListChangeListener = c -> {
-//            if (boundTo.get() == null) {
-//                tableView.setItems(null);
-//            } else {
-//                tableView.setItems(boundTo.get());
-//            }
-//        };
-        InvalidationListener listener = observable -> {
-            if (boundTo.get() == null) {
-                items.clear();
-            } else {
-                items.setAll(boundTo.get());
-            }
-        };
-        boundTo.addListener(listener);
-        listener.invalidated(null);
+        updater= Optional.of(t -> tableView.setItems(t));
 
         Button showButton = new Button("", uniformDesign.createIcon(FontAwesome.Glyph.PENCIL));
         showButton.setOnAction(event -> dataEditor.edit(tableView.getSelectionModel().getSelectedItem()));
@@ -109,7 +80,7 @@ public class ReferenceListAttributeVisualisation extends ExpandableAttributeVisu
         Button selectButton = new Button("", uniformDesign.createIcon(FontAwesome.Glyph.SEARCH_PLUS));
         selectButton.setOnAction(event -> {
             Optional<Data> toAdd = new DataChoiceDialog().show(possibleValuesProvider.get(),selectButton.getScene().getWindow(),uniformDesign);
-            toAdd.ifPresent(data -> boundTo.get().add(data));
+            toAdd.ifPresent(data -> boundToList.add(data));
         });
         selectButton.setDisable(!isUserEditable || !isUserSelectable);
 
@@ -117,13 +88,13 @@ public class ReferenceListAttributeVisualisation extends ExpandableAttributeVisu
         uniformDesign.addIcon(adderButton,FontAwesome.Glyph.PLUS);
         adderButton.setOnAction(event -> {
             emptyAdder.run();
-            dataEditor.edit(boundTo.get().get(boundTo.get().size()-1));
+            dataEditor.edit(boundToList.get(boundToList.size()-1));
         });
         adderButton.setDisable(!isUserEditable);
 
         Button deleteButton = new Button();
         uniformDesign.addDangerIcon(deleteButton,FontAwesome.Glyph.TIMES);
-        deleteButton.setOnAction(event -> boundTo.get().remove(tableView.getSelectionModel().getSelectedItem()));
+        deleteButton.setOnAction(event -> boundToList.remove(tableView.getSelectionModel().getSelectedItem()));
         deleteButton.disableProperty().bind(tableView.getSelectionModel().selectedItemProperty().isNull().or(new SimpleBooleanProperty(!isUserEditable)));
 
         Button moveUpButton = new Button();
@@ -132,7 +103,7 @@ public class ReferenceListAttributeVisualisation extends ExpandableAttributeVisu
         moveUpButton.setOnAction(event -> {
             int selectedIndex = tableView.getSelectionModel().getSelectedIndex();
             if (selectedIndex -1>=0){
-                Collections.swap(boundTo.get(), selectedIndex, selectedIndex -1);
+                Collections.swap(boundToList, selectedIndex, selectedIndex -1);
                 tableView.getSelectionModel().select(selectedIndex -1);
             }
         });
@@ -142,7 +113,7 @@ public class ReferenceListAttributeVisualisation extends ExpandableAttributeVisu
         moveDownButton.setOnAction(event -> {
             int selectedIndex = tableView.getSelectionModel().getSelectedIndex();
             if (selectedIndex+1<tableView.getItems().size()){
-                Collections.swap(boundTo.get(), selectedIndex, selectedIndex +1);
+                Collections.swap(boundToList, selectedIndex, selectedIndex +1);
                 tableView.getSelectionModel().select(selectedIndex +1);
             }
         });
@@ -151,7 +122,7 @@ public class ReferenceListAttributeVisualisation extends ExpandableAttributeVisu
         uniformDesign.addIcon(copyButton,FontAwesome.Glyph.COPY);
         copyButton.disableProperty().bind(tableView.getSelectionModel().selectedItemProperty().isNull());
         copyButton.setOnAction(event -> {
-            boundTo.get().add(tableView.getSelectionModel().getSelectedItem().utility().semanticCopy());
+            boundToList.add(tableView.getSelectionModel().getSelectedItem().utility().semanticCopy());
         });
 
         HBox buttons = new HBox();

@@ -21,8 +21,6 @@ import javafx.util.Pair;
 
 public class ExampleData1 extends Data {
 
-    public final TableAttribute tableAttribute = new TableAttribute(new AttributeMetadata().en("tableAttribute").de("tableAttribute de"));
-
     public final StringAttribute stringAttribute=new StringAttribute(new AttributeMetadata().en("StringAttribute gajsd jgsdajh gjasdja jhsadgjg ghf hgf hgfhff hgfhgf hf").de("StringAttribute de")).validation(new StringRequired()).defaultValue("blub");
     public final StringAttribute stringLongAttribute=new StringAttribute(new AttributeMetadata().en("Long StringAttribute").de("Long StringAttribute de")).longText().validation(new StringRequired());
 
@@ -75,9 +73,6 @@ public class ExampleData1 extends Data {
         },integerAttribute,longAttribute);
 
 
-        TableAttribute.Table value = new TableAttribute.Table();
-        value.setColumnHeaders("Col1","Col2");
-        tableAttribute.set(value);
 
         config().setAttributeListGroupedSupplier((List<Attribute<?>> defaultGroup)->attributeListGrouped(defaultGroup));
 

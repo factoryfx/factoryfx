@@ -2,13 +2,11 @@ package de.factoryfx.javafx.editor.attribute;
 
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 
 import de.factoryfx.data.attribute.Attribute;
 import de.factoryfx.data.attribute.AttributeChangeListener;
 import de.factoryfx.data.validation.ValidationError;
 import de.factoryfx.javafx.widget.Widget;
-import javafx.application.Platform;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.geometry.Side;
@@ -21,7 +19,6 @@ public class AttributeEditor<T> implements Widget {
 
     public final AttributeEditorVisualisation<T> attributeEditorVisualisation;
 
-    private SimpleObjectProperty<T> bound = new SimpleObjectProperty<>();
     private Attribute<T> boundAttribute;
     private SimpleObjectProperty<List<ValidationError>> validationResult=new SimpleObjectProperty<>();
 
@@ -29,33 +26,14 @@ public class AttributeEditor<T> implements Widget {
     public AttributeEditor(Attribute<T> boundAttribute, AttributeEditorVisualisation<T> attributeEditorVisualisation) {
         this.boundAttribute=boundAttribute;
         this.attributeEditorVisualisation=attributeEditorVisualisation;
-        this.bound.set(boundAttribute.get());
-
-        bound.addListener((observable, oldValue, newValue1) -> {
-            if (!setLoop){
-
-                boundAttribute.set(newValue1);
-            }
-        });
+        attributeEditorVisualisation.init(boundAttribute);
     }
 
-    boolean setLoop=false;
+
     private AttributeChangeListener<T> attributeChangeListener = (attribute, value) -> {
-        Platform.runLater(()-> {
-
-            setLoop = true;
-            if (value == bound.get()) {
-                //workaround to force changelistener to trigger
-                //same reference doesn't mean the content didn't change e.g List
-                if (value instanceof List || value instanceof Map){
-                    bound.set(null);
-                    bound.set(value);
-                }
-            }
-            bound.set(value);
-            setLoop = false;
-
-        });
+//        Platform.runLater(()-> {
+            AttributeEditor.this.attributeEditorVisualisation.attributeValueChanged(value);
+//        });
     };
 
     public void expand() {
@@ -72,7 +50,8 @@ public class AttributeEditor<T> implements Widget {
         boundAttribute.addListener(attributeChangeListener);
         attributeChangeListener.changed(boundAttribute,boundAttribute.get());
         if (content==null){
-            content = addValidationDecoration(attributeEditorVisualisation.createContent(bound));
+            content = addValidationDecoration(attributeEditorVisualisation.createContent());
+            attributeEditorVisualisation.attributeValueChanged(boundAttribute.get());
         }
         return content;
     }
