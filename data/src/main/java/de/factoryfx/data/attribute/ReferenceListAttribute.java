@@ -186,7 +186,9 @@ public class ReferenceListAttribute<T extends Data> extends Attribute<Observable
                 }
             }
         }
-        list.removeListener(listListenerToRemove);
+        //TODO: check this quick fix
+        if (listListenerToRemove != null && list != null)
+            list.removeListener(listListenerToRemove);
         listeners.remove(listener);
 //        listeners.remove(listener.unwrap());
     }
