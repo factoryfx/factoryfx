@@ -25,32 +25,37 @@ public class DataTreeViewWidgetTest extends Application{
 
         ExampleData1 exampleData1 = new ExampleData1();
         exampleData1.stringAttribute.set("abc");
-        exampleData1.internal().prepareUsage();
 
         UniformDesign uniformDesign = new UniformDesignFactory<>().instance();
         DataEditor dataEditor = new DataEditor(new AttributeEditorFactory(uniformDesign), uniformDesign);
         dataEditor.edit(exampleData1);
 
-        ObservableList<ExampleData1> dataList = FXCollections.observableArrayList();
-        dataList.addAll(exampleData1);
-        {
-            final ExampleData1 exampleData = new ExampleData1();
-            exampleData.referenceListAttribute.add(new ExampleData2());
-            exampleData.referenceListAttribute.add(new ExampleData2());
-            dataList.addAll(exampleData);
-        }
-        {
-            final ExampleData1 exampleData = new ExampleData1();
-            exampleData.referenceListAttribute.add(new ExampleData2());
-            exampleData.referenceListAttribute.add(new ExampleData2());
-            exampleData.referenceListAttribute.add(new ExampleData2());
-            dataList.addAll(exampleData);
-        }
-        dataList.addAll(new ExampleData1());
-        dataList.addAll(new ExampleData1());
         for (int i=0 ;i<100;i++){
-            dataList.addAll(new ExampleData1());
+            exampleData1.referenceListAttribute.add(new ExampleData2());
         }
+
+        ObservableList<ExampleData1> dataList = FXCollections.observableArrayList();
+        dataList.add(exampleData1);
+//        {
+//            final ExampleData1 exampleData = new ExampleData1();
+//            exampleData.referenceListAttribute.add(new ExampleData2());
+//            exampleData.referenceListAttribute.add(new ExampleData2());
+//            dataList.addAll(exampleData);
+//        }
+//        {
+//            final ExampleData1 exampleData = new ExampleData1();
+//            exampleData.referenceListAttribute.add(new ExampleData2());
+//            exampleData.referenceListAttribute.add(new ExampleData2());
+//            exampleData.referenceListAttribute.add(new ExampleData2());
+//            dataList.addAll(exampleData);
+//        }
+//        dataList.addAll(new ExampleData1());
+//        dataList.addAll(new ExampleData1());
+//        for (int i=0 ;i<100;i++){
+//            exampleData1.referenceListAttribute.add(new ExampleData2());
+//        }
+
+        exampleData1.internal().prepareUsage();
 
         DataTreeViewWidget dataViewWidget = new DataTreeViewWidget(new DataTreeView<>(() -> dataList, new Function<ExampleData1, TreeItem<Data>>() {
             @Override

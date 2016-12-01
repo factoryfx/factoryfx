@@ -113,4 +113,15 @@ public class ReferenceListAttributeTest {
         attribute.removeListener(attributeChangeListener);
         Assert.assertTrue(attribute.listeners.size()==0);
     }
+
+    @Test
+    public void removeWeakListener_after_gc() throws Exception {
+        ReferenceListAttribute<ExampleFactoryA> attribute =new ReferenceListAttribute<>(ExampleFactoryA.class,new AttributeMetadata());
+
+        final AttributeChangeListener<ObservableList<ExampleFactoryA>> attributeChangeListener = (a, value) -> System.out.println(value);
+        attribute.addListener(new WeakAttributeChangeListener<>(null));//null to simulate garbage collected weakref
+        Assert.assertTrue(attribute.listeners.size()==1);
+        attribute.removeListener(attributeChangeListener);
+        Assert.assertTrue(attribute.listeners.size()==0);
+    }
 }

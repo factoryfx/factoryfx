@@ -128,5 +128,16 @@ public class ReferenceAttributeTest {
         Assert.assertTrue(attribute.listeners.size()==0);
     }
 
+    @Test
+    public void removeWeakListener_after_gc() throws Exception {
+        ReferenceAttribute<ExampleFactoryA> attribute=new ReferenceAttribute<>(ExampleFactoryA.class,new AttributeMetadata());
+
+        final AttributeChangeListener<ExampleFactoryA> attributeChangeListener = (a, value) -> System.out.println(value);
+        attribute.addListener(new WeakAttributeChangeListener<>(null));
+        Assert.assertTrue(attribute.listeners.size()==1);
+        attribute.removeListener(attributeChangeListener);
+        Assert.assertTrue(attribute.listeners.size()==0);
+    }
+
 
 }

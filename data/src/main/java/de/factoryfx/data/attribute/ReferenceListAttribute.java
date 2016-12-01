@@ -2,9 +2,7 @@ package de.factoryfx.data.attribute;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
@@ -32,6 +30,12 @@ public class ReferenceListAttribute<T extends Data> extends Attribute<Observable
     public ReferenceListAttribute(Class<T> clazz, AttributeMetadata attributeMetadata) {
         super(attributeMetadata);
         this.clazz=clazz;
+
+        get().addListener((ListChangeListener<T>) c -> {
+            for (AttributeChangeListener<ObservableList<T>> listener: listeners){
+                listener.changed(ReferenceListAttribute.this,get());
+            }
+        });
     }
 
     @JsonCreator
@@ -167,28 +171,18 @@ public class ReferenceListAttribute<T extends Data> extends Attribute<Observable
         return get().stream();
     }
 
-    Map<AttributeChangeListener<ObservableList<T>>, ListChangeListener<T>> listeners= new HashMap<>();
+    List<AttributeChangeListener<ObservableList<T>>> listeners= new ArrayList<>();
     @Override
     public void addListener(AttributeChangeListener<ObservableList<T>> listener) {
-        ListChangeListener<T> listListener = change -> listener.changed(ReferenceListAttribute.this,get());
-        listeners.put(listener,listListener);
-        list.addListener(listListener);
+        listeners.add(listener);
     }
     @Override
     public void removeListener(AttributeChangeListener<ObservableList<T>> listener) {
-        ListChangeListener<T> listListenerToRemove = listeners.get(listener);
-        if (listListenerToRemove==null){
-            for (Map.Entry<AttributeChangeListener<ObservableList<T>>, ListChangeListener<T>> entry: listeners.entrySet()){
-                if (entry.getKey().unwrap()==listener){
-                    listListenerToRemove = entry.getValue();
-                    listeners.remove(entry.getKey());
-                    break;
-                }
+        for (AttributeChangeListener<ObservableList<T>> listenerItem: new ArrayList<>(listeners)){
+            if (listenerItem.unwrap()==listener || listenerItem.unwrap()==null){
+                listeners.remove(listenerItem);
             }
         }
-        list.removeListener(listListenerToRemove);
-        listeners.remove(listener);
-//        listeners.remove(listener.unwrap());
     }
 
     @Override

@@ -125,7 +125,7 @@ public class ReferenceAttribute<T extends Data> extends Attribute<T> {
     @Override
     public void removeListener(AttributeChangeListener<T> listener) {
         for (AttributeChangeListener<T> listenerItem: new ArrayList<>(listeners)){
-            if (listenerItem.unwrap()==listener){
+            if (listenerItem.unwrap()==listener ||  listenerItem.unwrap()==null){
                 listeners.remove(listenerItem);
             }
         }

@@ -30,5 +30,16 @@ public class ValueAttributeTest {
         Assert.assertTrue(valueAttribute.listeners.size()==0);
     }
 
+    @Test
+    public void removeWeakListener_after_gc() throws Exception {
+        ValueAttribute<String> valueAttribute = new ValueAttribute<>(new AttributeMetadata(),String.class);
+
+        final AttributeChangeListener<String> stringAttributeChangeListener = (attribute, value) -> System.out.println(value);
+        valueAttribute.addListener(new WeakAttributeChangeListener<>(null));
+        Assert.assertTrue(valueAttribute.listeners.size()==1);
+        valueAttribute.removeListener(stringAttributeChangeListener);
+        Assert.assertTrue(valueAttribute.listeners.size()==0);
+    }
+
 
 }
