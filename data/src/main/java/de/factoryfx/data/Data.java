@@ -498,7 +498,7 @@ public abstract class Data {
             if (attribute instanceof ReferenceAttribute<?>){
                 Data nestedData= ((ReferenceAttribute)attribute).get();
                 if (nestedData!=null){
-                    addDisplayTextListeners(data,attributeChangeListener);
+                    addDisplayTextListeners(nestedData,attributeChangeListener);
                 }
             }
             if (attribute instanceof ReferenceListAttribute<?>){
