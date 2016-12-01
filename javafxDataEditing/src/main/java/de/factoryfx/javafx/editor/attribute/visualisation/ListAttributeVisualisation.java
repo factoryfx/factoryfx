@@ -16,8 +16,8 @@ public abstract class ListAttributeVisualisation<T> implements AttributeEditorVi
         boundToList=boundAttribute.get();
     }
 
-    ObservableList<T> boundToList=null;
-    Optional<Consumer<ObservableList<T>>> updater= Optional.empty();
+    protected ObservableList<T> boundToList=null;
+    protected Optional<Consumer<ObservableList<T>>> updater= Optional.empty();
     ListChangeListener<T> listChangeListener;
     @Override
     public void attributeValueChanged(ObservableList<T> newValue) {
