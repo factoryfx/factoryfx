@@ -2,6 +2,7 @@ package de.factoryfx.data.attribute;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import de.factoryfx.data.attribute.types.StringAttribute;
 import de.factoryfx.data.merge.testfactories.ExampleFactoryA;
@@ -13,7 +14,7 @@ public class ViewListReferenceAttributeTest {
     public static class ViewListExampleFactory extends IdData {
 
         public final ViewListReferenceAttribute<ViewListExampleFactoryRoot,ViewListExampleFactory,ExampleFactoryA> view= new ViewListReferenceAttribute<>(new AttributeMetadata(), (ViewListExampleFactoryRoot viewExampleFactoryRoot, ViewListExampleFactory viewListExampleFactory)->{
-                return viewExampleFactoryRoot.list.get().filtered(exampleFactoryA -> exampleFactoryA.stringAttribute.get().equals(viewListExampleFactory.forFilter.get()));
+                return viewExampleFactoryRoot.list.get().stream().filter(exampleFactoryA -> exampleFactoryA.stringAttribute.get().equals(viewListExampleFactory.forFilter.get())).collect(Collectors.toList());
             }
         );
 
@@ -216,7 +217,7 @@ public class ViewListReferenceAttributeTest {
     @Test
     public void removeListener() throws Exception {
         ViewListReferenceAttribute<ViewListExampleFactoryRoot, ViewListExampleFactory, ExampleFactoryA> attribute = new ViewListReferenceAttribute<>(new AttributeMetadata(), (ViewListExampleFactoryRoot viewExampleFactoryRoot, ViewListExampleFactory viewListExampleFactory) -> {
-            return viewExampleFactoryRoot.list.get().filtered(exampleFactoryA -> exampleFactoryA.stringAttribute.get().equals(viewListExampleFactory.forFilter.get()));
+            return viewExampleFactoryRoot.list.get().stream().filter(exampleFactoryA -> exampleFactoryA.stringAttribute.get().equals(viewListExampleFactory.forFilter.get())).collect(Collectors.toList());
         });
 
         final AttributeChangeListener<List<ExampleFactoryA>> attributeChangeListener = (a, value) -> System.out.println(value);
@@ -229,7 +230,7 @@ public class ViewListReferenceAttributeTest {
     @Test
     public void removeWeakListener() throws Exception {
         ViewListReferenceAttribute<ViewListExampleFactoryRoot, ViewListExampleFactory, ExampleFactoryA> attribute = new ViewListReferenceAttribute<>(new AttributeMetadata(), (ViewListExampleFactoryRoot viewExampleFactoryRoot, ViewListExampleFactory viewListExampleFactory) -> {
-            return viewExampleFactoryRoot.list.get().filtered(exampleFactoryA -> exampleFactoryA.stringAttribute.get().equals(viewListExampleFactory.forFilter.get()));
+            return viewExampleFactoryRoot.list.filtered((exampleFactoryA -> exampleFactoryA.stringAttribute.get().equals(viewListExampleFactory.forFilter.get())));
         });
 
         final AttributeChangeListener<List<ExampleFactoryA>> attributeChangeListener = (a, value) -> System.out.println(value);

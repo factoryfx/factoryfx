@@ -1,10 +1,10 @@
 package de.factoryfx.data.attribute;
 
 import java.util.ArrayList;
+import java.util.Set;
 
 import de.factoryfx.data.jackson.ObjectMapperBuilder;
 import de.factoryfx.data.merge.testfactories.IdData;
-import javafx.collections.ObservableSet;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -37,7 +37,7 @@ public class SetAttributeTest {
     public void remove_Listener(){
         ExampleSetFactory exampleSetFactory = new ExampleSetFactory();
         ArrayList<String> calls= new ArrayList<>();
-        AttributeChangeListener<ObservableSet<String>> invalidationListener = (a,o) -> {
+        AttributeChangeListener<Set<String>> invalidationListener = (a, o) -> {
             calls.add("");
         };
         exampleSetFactory.setAttribute.addListener(invalidationListener);

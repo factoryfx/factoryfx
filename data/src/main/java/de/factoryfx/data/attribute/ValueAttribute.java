@@ -12,7 +12,7 @@ import de.factoryfx.data.merge.attribute.AttributeMergeHelper;
 
 public class ValueAttribute<T> extends Attribute<T> {
     //    @JsonProperty
-    private T value;
+    protected T value;
     private Class<T> dataType;
 
     public ValueAttribute(AttributeMetadata attributeMetadata, Class<T> dataType) {

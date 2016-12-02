@@ -1,7 +1,7 @@
 package de.factoryfx.javafx.editor.attribute.visualisation;
 
 import de.factoryfx.data.Data;
-import de.factoryfx.javafx.editor.attribute.ImmutableAttributeEditorVisualisation;
+import de.factoryfx.javafx.editor.attribute.ValueAttributeEditorVisualisation;
 import de.factoryfx.javafx.editor.data.DataEditor;
 import de.factoryfx.javafx.util.UniformDesign;
 import javafx.beans.binding.Bindings;
@@ -16,7 +16,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import org.controlsfx.glyphfont.FontAwesome;
 
-public class ViewReferenceAttributeVisualisation extends ImmutableAttributeEditorVisualisation<Data> {
+public class ViewReferenceAttributeVisualisation extends ValueAttributeEditorVisualisation<Data> {
 
     private final DataEditor dataEditor;
     private final UniformDesign uniformDesign;

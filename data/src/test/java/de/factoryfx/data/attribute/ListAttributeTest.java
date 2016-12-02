@@ -1,11 +1,11 @@
 package de.factoryfx.data.attribute;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import de.factoryfx.data.attribute.types.StringListAttribute;
 import de.factoryfx.data.jackson.ObjectMapperBuilder;
 import de.factoryfx.data.merge.testfactories.IdData;
-import javafx.collections.ObservableList;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -38,7 +38,7 @@ public class ListAttributeTest {
     public void remove_Listener(){
         ExampleListFactory exampleListFactory = new ExampleListFactory();
         ArrayList<String> calls= new ArrayList<>();
-        AttributeChangeListener<ObservableList<String>> invalidationListener = (a,o) -> {
+        AttributeChangeListener<List<String>> invalidationListener = (a, o) -> {
             calls.add("");
         };
         exampleListFactory.listAttribute.addListener(invalidationListener);

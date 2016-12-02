@@ -1,6 +1,7 @@
 package de.factoryfx.data.attribute;
 
 import java.util.HashSet;
+import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import de.factoryfx.data.jackson.ObservableSetJacksonAbleWrapper;
@@ -8,7 +9,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableSet;
 import javafx.collections.SetChangeListener;
 
-public class ValueSetAttribute<T> extends ValueAttribute<ObservableSet<T>> {
+public class ValueSetAttribute<T> extends ValueAttribute<Set<T>> {
     private final Class<T> itemType;
     private final T emptyValue;
 
@@ -16,10 +17,11 @@ public class ValueSetAttribute<T> extends ValueAttribute<ObservableSet<T>> {
         super(attributeMetadata,null);
         this.itemType = itemType;
         this.emptyValue = emptyValue;
-        set(FXCollections.observableSet(new HashSet<>()));
+        final ObservableSet<T> observableSet = FXCollections.observableSet(new HashSet<>());
+        value= observableSet;
 
-        get().addListener((SetChangeListener<T>) change -> {
-            for (AttributeChangeListener<ObservableSet<T>> listener: listeners){
+        observableSet.addListener((SetChangeListener<T>) change -> {
+            for (AttributeChangeListener<Set<T>> listener: listeners){
                 listener.changed(ValueSetAttribute.this,get());
             }
         });
@@ -45,5 +47,12 @@ public class ValueSetAttribute<T> extends ValueAttribute<ObservableSet<T>> {
     @Override
     public AttributeTypeInfo getAttributeType() {
         return new AttributeTypeInfo(ObservableSet.class,null,null,itemType, AttributeTypeInfo.AttributeTypeCategory.COLLECTION,emptyValue);
+    }
+
+    //** set list only take the list items not the list itself, (to simplify ChangeListeners)*/
+    @Override
+    public void set(Set<T> value) {
+        this.get().clear();
+        this.get().addAll(value);
     }
 }

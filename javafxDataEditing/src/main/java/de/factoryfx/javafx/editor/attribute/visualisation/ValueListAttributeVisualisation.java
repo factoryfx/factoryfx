@@ -1,10 +1,9 @@
 package de.factoryfx.javafx.editor.attribute.visualisation;
 
-import java.util.Optional;
-
 import de.factoryfx.data.attribute.Attribute;
 import de.factoryfx.data.attribute.AttributeChangeListener;
 import de.factoryfx.javafx.editor.attribute.AttributeEditor;
+import de.factoryfx.javafx.editor.attribute.ListAttributeEditorVisualisation;
 import de.factoryfx.javafx.util.TypedTextFieldHelper;
 import de.factoryfx.javafx.util.UniformDesign;
 import de.factoryfx.javafx.widget.table.TableControlWidget;
@@ -12,6 +11,7 @@ import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
@@ -26,7 +26,7 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import org.controlsfx.glyphfont.FontAwesome;
 
-public class ValueListAttributeVisualisation<T> extends ListAttributeVisualisation<T> {
+public class ValueListAttributeVisualisation<T> extends ListAttributeEditorVisualisation<T> {
     private final UniformDesign uniformDesign;
     private final Attribute<T> detailAttribute;
     private final AttributeEditor<T> attributeEditor;
@@ -37,14 +37,14 @@ public class ValueListAttributeVisualisation<T> extends ListAttributeVisualisati
         this.attributeEditor = attributeEditor;
     }
 
-
     @Override
-    public Node createContent() {
+    public Node createContent(ObservableList<T> attributeValue) {
         TextField textField = new TextField();
         TypedTextFieldHelper.setupLongTextField(textField);
 //        textField.textProperty().bindBidirectional(boundTo, new LongStringConverter());
 
         TableView<T> tableView = new TableView<>();
+        tableView.setItems(attributeValue);
         tableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         TableColumn<T, String> test = new TableColumn<>("test");
         test.setCellValueFactory(param -> new SimpleStringProperty(""+param.getValue()));
@@ -54,22 +54,21 @@ public class ValueListAttributeVisualisation<T> extends ListAttributeVisualisati
 //        tableInitializer.initTable(tableView);
 //        tableView.setItems(tableItems);
 
-        updater= Optional.of(t -> tableView.setItems(t));
 
         Button addButton=new Button("", uniformDesign.createIcon(FontAwesome.Glyph.PLUS));
         addButton.setOnAction(event -> {
-            boundToList.add(detailAttribute.get());
+            attributeValue.add(detailAttribute.get());
         });
 
         Button replaceButton=new Button("", uniformDesign.createIcon(FontAwesome.Glyph.EXCHANGE));
         replaceButton.setOnAction(event -> {
             int selectedIndex = tableView.getSelectionModel().getSelectedIndex();
-            boundToList.set(selectedIndex, detailAttribute.get());
+            attributeValue.set(selectedIndex, detailAttribute.get());
         });
 
         Button deleteButton = new Button("");
         uniformDesign.addDangerIcon(deleteButton,FontAwesome.Glyph.TIMES);
-        deleteButton.setOnAction(event -> boundToList.remove(tableView.getSelectionModel().getSelectedItem()));
+        deleteButton.setOnAction(event -> attributeValue.remove(tableView.getSelectionModel().getSelectedItem()));
         deleteButton.disableProperty().bind(tableView.getSelectionModel().selectedItemProperty().isNull());
 
         tableView.getSelectionModel().selectedItemProperty().addListener(observable -> {

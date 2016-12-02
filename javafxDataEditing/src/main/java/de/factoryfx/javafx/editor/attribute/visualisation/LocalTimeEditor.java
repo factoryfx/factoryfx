@@ -4,7 +4,7 @@ import java.time.LocalTime;
 import java.time.format.DateTimeParseException;
 
 import com.google.common.base.Strings;
-import de.factoryfx.javafx.editor.attribute.ImmutableAttributeEditorVisualisation;
+import de.factoryfx.javafx.editor.attribute.ValueAttributeEditorVisualisation;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.Node;
 import javafx.scene.control.ChoiceBox;
@@ -14,7 +14,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.util.converter.LocalTimeStringConverter;
 
-public class LocalTimeEditor extends ImmutableAttributeEditorVisualisation<LocalTime> {
+public class LocalTimeEditor extends ValueAttributeEditorVisualisation<LocalTime> {
 
     @Override
     public Node createContent(SimpleObjectProperty<LocalTime> boundTo) {

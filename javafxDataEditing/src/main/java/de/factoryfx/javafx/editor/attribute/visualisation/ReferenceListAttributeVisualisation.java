@@ -7,13 +7,13 @@ import java.util.function.Supplier;
 
 import de.factoryfx.data.Data;
 import de.factoryfx.data.util.LanguageText;
+import de.factoryfx.javafx.editor.attribute.ListAttributeEditorVisualisation;
 import de.factoryfx.javafx.editor.data.DataEditor;
 import de.factoryfx.javafx.util.DataChoiceDialog;
 import de.factoryfx.javafx.util.UniformDesign;
 import de.factoryfx.javafx.widget.table.TableControlWidget;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
-import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -28,7 +28,7 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import org.controlsfx.glyphfont.FontAwesome;
 
-public class ReferenceListAttributeVisualisation extends ListAttributeVisualisation<Data> {
+public class ReferenceListAttributeVisualisation extends ListAttributeEditorVisualisation<Data> {
 
     private LanguageText selectText= new LanguageText().en("select").de("Auswählen");
     private LanguageText addText= new LanguageText().en("add").de("Hinzufügen");
@@ -52,16 +52,16 @@ public class ReferenceListAttributeVisualisation extends ListAttributeVisualisat
         this.isUserSelectable = isUserSelectable;
     }
 
+
     @Override
-    public Node createContent() {
+    public Node createContent(ObservableList<Data> attributeValue) {
         TableView<Data> tableView = new TableView<>();
+        tableView.setItems(attributeValue);
         tableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         TableColumn<Data, String> test = new TableColumn<>("Data");
         test.setCellValueFactory(param -> new SimpleStringProperty(param.getValue().internal().getDisplayText()));
         tableView.getColumns().add(test);
         tableView.getStyleClass().add("hidden-tableview-headers");
-        ObservableList<Data> items = FXCollections.observableArrayList();
-        tableView.setItems(items);
 
         tableView.setOnMouseClicked(mouseEvent -> {
             if (mouseEvent.getButton().equals(MouseButton.PRIMARY)) {
@@ -71,7 +71,6 @@ public class ReferenceListAttributeVisualisation extends ListAttributeVisualisat
             }
         });
 
-        updater= Optional.of(t -> tableView.setItems(t));
 
         Button showButton = new Button("", uniformDesign.createIcon(FontAwesome.Glyph.PENCIL));
         showButton.setOnAction(event -> dataEditor.edit(tableView.getSelectionModel().getSelectedItem()));
@@ -80,7 +79,7 @@ public class ReferenceListAttributeVisualisation extends ListAttributeVisualisat
         Button selectButton = new Button("", uniformDesign.createIcon(FontAwesome.Glyph.SEARCH_PLUS));
         selectButton.setOnAction(event -> {
             Optional<Data> toAdd = new DataChoiceDialog().show(possibleValuesProvider.get(),selectButton.getScene().getWindow(),uniformDesign);
-            toAdd.ifPresent(data -> boundToList.add(data));
+            toAdd.ifPresent(data -> attributeValue.add(data));
         });
         selectButton.setDisable(!isUserEditable || !isUserSelectable);
 
@@ -88,13 +87,13 @@ public class ReferenceListAttributeVisualisation extends ListAttributeVisualisat
         uniformDesign.addIcon(adderButton,FontAwesome.Glyph.PLUS);
         adderButton.setOnAction(event -> {
             emptyAdder.run();
-            dataEditor.edit(boundToList.get(boundToList.size()-1));
+            dataEditor.edit(attributeValue.get(attributeValue.size()-1));
         });
         adderButton.setDisable(!isUserEditable);
 
         Button deleteButton = new Button();
         uniformDesign.addDangerIcon(deleteButton,FontAwesome.Glyph.TIMES);
-        deleteButton.setOnAction(event -> boundToList.remove(tableView.getSelectionModel().getSelectedItem()));
+        deleteButton.setOnAction(event -> attributeValue.remove(tableView.getSelectionModel().getSelectedItem()));
         deleteButton.disableProperty().bind(tableView.getSelectionModel().selectedItemProperty().isNull().or(new SimpleBooleanProperty(!isUserEditable)));
 
         Button moveUpButton = new Button();
@@ -103,7 +102,7 @@ public class ReferenceListAttributeVisualisation extends ListAttributeVisualisat
         moveUpButton.setOnAction(event -> {
             int selectedIndex = tableView.getSelectionModel().getSelectedIndex();
             if (selectedIndex -1>=0){
-                Collections.swap(boundToList, selectedIndex, selectedIndex -1);
+                Collections.swap(attributeValue, selectedIndex, selectedIndex -1);
                 tableView.getSelectionModel().select(selectedIndex -1);
             }
         });
@@ -113,7 +112,7 @@ public class ReferenceListAttributeVisualisation extends ListAttributeVisualisat
         moveDownButton.setOnAction(event -> {
             int selectedIndex = tableView.getSelectionModel().getSelectedIndex();
             if (selectedIndex+1<tableView.getItems().size()){
-                Collections.swap(boundToList, selectedIndex, selectedIndex +1);
+                Collections.swap(attributeValue, selectedIndex, selectedIndex +1);
                 tableView.getSelectionModel().select(selectedIndex +1);
             }
         });
@@ -122,7 +121,7 @@ public class ReferenceListAttributeVisualisation extends ListAttributeVisualisat
         uniformDesign.addIcon(copyButton,FontAwesome.Glyph.COPY);
         copyButton.disableProperty().bind(tableView.getSelectionModel().selectedItemProperty().isNull());
         copyButton.setOnAction(event -> {
-            boundToList.add(tableView.getSelectionModel().getSelectedItem().utility().semanticCopy());
+            attributeValue.add(tableView.getSelectionModel().getSelectedItem().utility().semanticCopy());
         });
 
         HBox buttons = new HBox();
