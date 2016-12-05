@@ -137,7 +137,7 @@ public abstract class FactoryBase<L,V> extends Data {
     }
 
     @SuppressWarnings("unchecked")
-    public Set<FactoryBase<?,V>> collectChildFactoriesDeep(){
+    Set<FactoryBase<?,V>> collectChildFactoriesDeep(){
         return super.internal().collectChildrenDeep().stream().map(this::cast).filter(Optional::isPresent).map(Optional::get).collect(Collectors.toSet());
     }
 

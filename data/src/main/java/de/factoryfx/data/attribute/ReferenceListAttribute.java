@@ -34,6 +34,13 @@ public class ReferenceListAttribute<T extends Data> extends Attribute<List<T>> {
         this.clazz=clazz;
 
         list.addListener((ListChangeListener<T>) c -> {
+            if (c.next()){
+                for (T newData: c.getAddedSubList()){
+                    if (root!=null) {
+                        newData.internal().prepareUsage(root);
+                    }
+                }
+            }
             for (AttributeChangeListener<List<T>> listener: listeners){
                 listener.changed(ReferenceListAttribute.this,get());
             }

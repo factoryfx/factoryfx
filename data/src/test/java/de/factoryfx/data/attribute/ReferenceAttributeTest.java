@@ -5,6 +5,7 @@ import java.util.List;
 
 import de.factoryfx.data.jackson.ObjectMapperBuilder;
 import de.factoryfx.data.merge.testfactories.ExampleFactoryA;
+import de.factoryfx.data.merge.testfactories.ExampleFactoryB;
 import de.factoryfx.data.merge.testfactories.IdData;
 import org.junit.Assert;
 import org.junit.Test;
@@ -137,6 +138,17 @@ public class ReferenceAttributeTest {
         Assert.assertTrue(attribute.listeners.size()==1);
         attribute.removeListener(attributeChangeListener);
         Assert.assertTrue(attribute.listeners.size()==0);
+    }
+
+    @Test
+    public void delegate_root_for_added() throws Exception {
+        ReferenceAttribute<ExampleFactoryA> attribute=new ReferenceAttribute<>(ExampleFactoryA.class,new AttributeMetadata());
+        attribute.prepareUsage(new ExampleFactoryB());
+
+        final ExampleFactoryA exampleFactoryA = new ExampleFactoryA();
+        Assert.assertFalse(exampleFactoryA.internal().readyForUsage());
+        attribute.set(exampleFactoryA);
+        Assert.assertTrue(exampleFactoryA.internal().readyForUsage());
     }
 
 

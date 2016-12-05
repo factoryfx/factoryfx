@@ -1,10 +1,12 @@
 package de.factoryfx.data.attribute;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import de.factoryfx.data.jackson.ObjectMapperBuilder;
 import de.factoryfx.data.merge.testfactories.ExampleFactoryA;
+import de.factoryfx.data.merge.testfactories.ExampleFactoryB;
 import de.factoryfx.data.merge.testfactories.IdData;
 import org.junit.Assert;
 import org.junit.Test;
@@ -123,4 +125,30 @@ public class ReferenceListAttributeTest {
         attribute.removeListener(attributeChangeListener);
         Assert.assertTrue(attribute.listeners.size()==0);
     }
+
+    @Test
+    public void delegate_root_for_added() throws Exception {
+        ReferenceListAttribute<ExampleFactoryA> attribute =new ReferenceListAttribute<>(ExampleFactoryA.class,new AttributeMetadata());
+        attribute.prepareUsage(new ExampleFactoryB());
+
+        final ExampleFactoryA exampleFactoryA = new ExampleFactoryA();
+        Assert.assertFalse(exampleFactoryA.internal().readyForUsage());
+        attribute.get().add(exampleFactoryA);
+        Assert.assertTrue(exampleFactoryA.internal().readyForUsage());
+    }
+
+    @Test
+    public void delegate_root_for_addAll() throws Exception {
+        ReferenceListAttribute<ExampleFactoryA> attribute =new ReferenceListAttribute<>(ExampleFactoryA.class,new AttributeMetadata());
+        attribute.prepareUsage(new ExampleFactoryB());
+
+        final ExampleFactoryA exampleFactoryA1 = new ExampleFactoryA();
+        final ExampleFactoryA exampleFactoryA2 = new ExampleFactoryA();
+        Assert.assertFalse(exampleFactoryA1.internal().readyForUsage());
+        Assert.assertFalse(exampleFactoryA2.internal().readyForUsage());
+        attribute.get().addAll(Arrays.asList(exampleFactoryA1,exampleFactoryA2));
+        Assert.assertTrue(exampleFactoryA1.internal().readyForUsage());
+        Assert.assertTrue(exampleFactoryA2.internal().readyForUsage());
+    }
+
 }

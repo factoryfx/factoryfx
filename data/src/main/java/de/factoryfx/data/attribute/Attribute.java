@@ -111,7 +111,7 @@ public abstract class Attribute<T>{
         //nothing
     }
 
-    //all elements is root are usable
+    //all elements prepared and root is usable
     public void afterPreparedUsage(Data root){
         //nothing
     }
