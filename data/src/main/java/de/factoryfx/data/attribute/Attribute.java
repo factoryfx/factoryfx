@@ -107,7 +107,7 @@ public abstract class Attribute<T>{
 
     public abstract AttributeTypeInfo getAttributeType();
 
-    public void prepareUsage(Data root, Data parent){
+    public void prepareUsage(Data root){
         //nothing
     }
 

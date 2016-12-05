@@ -1,15 +1,15 @@
 package de.factoryfx.factory.atrribute;
 
-import java.util.function.BiFunction;
+import java.util.function.Function;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import de.factoryfx.data.attribute.AttributeMetadata;
 import de.factoryfx.data.attribute.ViewReferenceAttribute;
 import de.factoryfx.factory.FactoryBase;
 
-public class FactoryViewReferenceAttribute<R extends FactoryBase<?,?>, P extends FactoryBase<?,?>,L, T extends FactoryBase<L,?>> extends ViewReferenceAttribute<R,P,T> {
+public class FactoryViewReferenceAttribute<R extends FactoryBase<?,?>,L, T extends FactoryBase<L,?>> extends ViewReferenceAttribute<R,T> {
 
-    public FactoryViewReferenceAttribute(AttributeMetadata attributeMetadata, BiFunction<R,P,T> view) {
+    public FactoryViewReferenceAttribute(AttributeMetadata attributeMetadata, Function<R,T> view) {
         super(attributeMetadata, view);
     }
 

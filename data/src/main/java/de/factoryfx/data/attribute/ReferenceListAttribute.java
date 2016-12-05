@@ -285,7 +285,7 @@ public class ReferenceListAttribute<T extends Data> extends Attribute<List<T>> {
 
     @Override
     @SuppressWarnings("unchecked")
-    public void prepareUsage(Data root, Data parent){
+    public void prepareUsage(Data root){
         this.root=root;;
     }
 

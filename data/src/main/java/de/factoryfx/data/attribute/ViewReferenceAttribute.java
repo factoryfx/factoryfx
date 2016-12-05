@@ -5,7 +5,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
@@ -17,13 +16,12 @@ import de.factoryfx.data.merge.attribute.NopMergeHelper;
 import javafx.application.Platform;
 
 @JsonIgnoreType
-public class ViewReferenceAttribute<R extends Data, P extends Data, T extends Data> extends Attribute<T> {
+public class ViewReferenceAttribute<R extends Data, T extends Data> extends Attribute<T> {
 
-    private P parent;
     private R root;
-    private final BiFunction<R,P,T> view;
+    private final Function<R,T> view;
 
-    public ViewReferenceAttribute(AttributeMetadata attributeMetadata, BiFunction<R,P,T> view) {
+    public ViewReferenceAttribute(AttributeMetadata attributeMetadata, Function<R,T> view) {
         super(attributeMetadata);
         this.view=view;
     }
@@ -45,7 +43,7 @@ public class ViewReferenceAttribute<R extends Data, P extends Data, T extends Da
 
     @Override
     public T get() {
-        return view.apply(root,parent);
+        return view.apply(root);
     }
 
     @Override
@@ -157,8 +155,7 @@ public class ViewReferenceAttribute<R extends Data, P extends Data, T extends Da
 
     @Override
     @SuppressWarnings("unchecked")
-    public void prepareUsage(Data root, Data parent){
-        this.parent=(P)parent;
+    public void prepareUsage(Data root){
         this.root=(R)root;;
     }
 

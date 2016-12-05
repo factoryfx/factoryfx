@@ -13,12 +13,12 @@ import org.junit.Test;
 public class ViewListReferenceAttributeTest {
     public static class ViewListExampleFactory extends IdData {
 
-        public final ViewListReferenceAttribute<ViewListExampleFactoryRoot,ViewListExampleFactory,ExampleFactoryA> view= new ViewListReferenceAttribute<>(new AttributeMetadata(), (ViewListExampleFactoryRoot viewExampleFactoryRoot, ViewListExampleFactory viewListExampleFactory)->{
-                return viewExampleFactoryRoot.list.get().stream().filter(exampleFactoryA -> exampleFactoryA.stringAttribute.get().equals(viewListExampleFactory.forFilter.get())).collect(Collectors.toList());
+        public final StringAttribute forFilter= new StringAttribute(new AttributeMetadata());
+        public final ViewListReferenceAttribute<ViewListExampleFactoryRoot,ExampleFactoryA> view= new ViewListReferenceAttribute<>(new AttributeMetadata(), (ViewListExampleFactoryRoot viewExampleFactoryRoot)->{
+                return viewExampleFactoryRoot.list.get().stream().filter(exampleFactoryA -> exampleFactoryA.stringAttribute.get().equals(forFilter.get())).collect(Collectors.toList());
             }
         );
 
-        public final StringAttribute forFilter= new StringAttribute(new AttributeMetadata());
     }
 
     public static class ViewListExampleFactoryRoot extends IdData{
@@ -216,8 +216,8 @@ public class ViewListReferenceAttributeTest {
 
     @Test
     public void removeListener() throws Exception {
-        ViewListReferenceAttribute<ViewListExampleFactoryRoot, ViewListExampleFactory, ExampleFactoryA> attribute = new ViewListReferenceAttribute<>(new AttributeMetadata(), (ViewListExampleFactoryRoot viewExampleFactoryRoot, ViewListExampleFactory viewListExampleFactory) -> {
-            return viewExampleFactoryRoot.list.get().stream().filter(exampleFactoryA -> exampleFactoryA.stringAttribute.get().equals(viewListExampleFactory.forFilter.get())).collect(Collectors.toList());
+        ViewListReferenceAttribute<ViewListExampleFactoryRoot, ExampleFactoryA> attribute = new ViewListReferenceAttribute<>(new AttributeMetadata(), (ViewListExampleFactoryRoot viewExampleFactoryRoot) -> {
+            return viewExampleFactoryRoot.list.filtered((exampleFactoryA -> exampleFactoryA.stringAttribute.get().equals("")));
         });
 
         final AttributeChangeListener<List<ExampleFactoryA>> attributeChangeListener = (a, value) -> System.out.println(value);
@@ -229,8 +229,8 @@ public class ViewListReferenceAttributeTest {
 
     @Test
     public void removeWeakListener() throws Exception {
-        ViewListReferenceAttribute<ViewListExampleFactoryRoot, ViewListExampleFactory, ExampleFactoryA> attribute = new ViewListReferenceAttribute<>(new AttributeMetadata(), (ViewListExampleFactoryRoot viewExampleFactoryRoot, ViewListExampleFactory viewListExampleFactory) -> {
-            return viewExampleFactoryRoot.list.filtered((exampleFactoryA -> exampleFactoryA.stringAttribute.get().equals(viewListExampleFactory.forFilter.get())));
+        ViewListReferenceAttribute<ViewListExampleFactoryRoot, ExampleFactoryA> attribute = new ViewListReferenceAttribute<>(new AttributeMetadata(), (ViewListExampleFactoryRoot viewExampleFactoryRoot) -> {
+            return viewExampleFactoryRoot.list.filtered((exampleFactoryA -> exampleFactoryA.stringAttribute.get().equals("")));
         });
 
         final AttributeChangeListener<List<ExampleFactoryA>> attributeChangeListener = (a, value) -> System.out.println(value);

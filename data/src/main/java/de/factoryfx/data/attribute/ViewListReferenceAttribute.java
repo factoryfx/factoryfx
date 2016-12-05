@@ -6,7 +6,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
@@ -19,12 +18,11 @@ import javafx.application.Platform;
 import javafx.collections.ObservableList;
 
 @JsonIgnoreType
-public class ViewListReferenceAttribute <R extends Data, P extends Data, T extends Data> extends Attribute<List<T>> {
-    private P parent;
+public class ViewListReferenceAttribute <R extends Data, T extends Data> extends Attribute<List<T>> {
     private R root;
-    private final BiFunction<R,P,List<T>> view;
+    private final Function<R,List<T>> view;
 
-    public ViewListReferenceAttribute(AttributeMetadata attributeMetadata, BiFunction<R,P,List<T>> view) {
+    public ViewListReferenceAttribute(AttributeMetadata attributeMetadata, Function<R,List<T>> view) {
         super(attributeMetadata);
         this.view=view;
     }
@@ -46,7 +44,7 @@ public class ViewListReferenceAttribute <R extends Data, P extends Data, T exten
 
     @Override
     public List<T> get() {
-        return view.apply(root,parent);
+        return view.apply(root);
     }
 
     @Override
@@ -172,8 +170,7 @@ public class ViewListReferenceAttribute <R extends Data, P extends Data, T exten
 
     @Override
     @SuppressWarnings("unchecked")
-    public void prepareUsage(Data root, Data parent){
-        this.parent=(P)parent;
+    public void prepareUsage(Data root){
         this.root=(R)root;;
     }
 

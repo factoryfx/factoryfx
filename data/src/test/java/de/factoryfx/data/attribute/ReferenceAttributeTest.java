@@ -68,7 +68,7 @@ public class ReferenceAttributeTest {
         ExampleFactoryA exampleFactoryA = new ExampleFactoryA();
         root.referenceAttribute.set(exampleFactoryA);
 
-        referenceAttribute.prepareUsage(root,null);
+        referenceAttribute.prepareUsage(root);
 
         List<ExampleFactoryA> possibleFactories =referenceAttribute.possibleValues();
         Assert.assertEquals(1,possibleFactories.size());

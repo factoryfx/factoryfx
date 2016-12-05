@@ -58,7 +58,7 @@ public class ReferenceListAttributeTest {
     @Test
     public void test_add_new(){
         ExampleReferenceListFactory exampleReferenceListFactory = new ExampleReferenceListFactory();
-        exampleReferenceListFactory.referenceListAttribute.prepareUsage(new ExampleReferenceListFactory(),null);
+        exampleReferenceListFactory.referenceListAttribute.prepareUsage(new ExampleReferenceListFactory());
         exampleReferenceListFactory.referenceListAttribute.addNewFactory();
         Assert.assertEquals(1,exampleReferenceListFactory.referenceListAttribute.size());
 
@@ -81,7 +81,7 @@ public class ReferenceListAttributeTest {
     @Test
     public void test_add_new_listener(){
         ReferenceListAttribute<ExampleFactoryA> referenceListAttribute =new ReferenceListAttribute<>(ExampleFactoryA.class,new AttributeMetadata());
-        referenceListAttribute.prepareUsage(new ExampleFactoryA(),null);
+        referenceListAttribute.prepareUsage(new ExampleFactoryA());
         List<ExampleFactoryA> calls=new ArrayList<>();
         referenceListAttribute.addListener((attribute, value) -> calls.add(value.get(0)));
         referenceListAttribute.addNewFactory();

@@ -1,7 +1,7 @@
 package de.factoryfx.data.attribute;
 
 import java.util.ArrayList;
-import java.util.function.BiFunction;
+import java.util.function.Function;
 
 import de.factoryfx.data.attribute.types.BooleanAttribute;
 import de.factoryfx.data.merge.testfactories.ExampleFactoryA;
@@ -13,10 +13,10 @@ public class ViewReferenceAttributeTest {
 
     public static class ViewExampleFactory extends IdData{
 
-        public final ViewReferenceAttribute<ViewExampleFactoryRoot,ViewExampleFactory,ExampleFactoryA> view= new ViewReferenceAttribute<>(new AttributeMetadata(), new BiFunction<ViewExampleFactoryRoot, ViewExampleFactory, ExampleFactoryA>() {
+        public final ViewReferenceAttribute<ViewExampleFactoryRoot,ExampleFactoryA> view= new ViewReferenceAttribute<>(new AttributeMetadata(), new Function<ViewExampleFactoryRoot, ExampleFactoryA>() {
             @Override
-            public ExampleFactoryA apply(ViewExampleFactoryRoot viewExampleFactoryRoot, ViewExampleFactory viewExampleFactory) {
-                if (viewExampleFactory.include.get()){
+            public ExampleFactoryA apply(ViewExampleFactoryRoot viewExampleFactoryRoot) {
+                if (include.get()){
                     return viewExampleFactoryRoot.exampleFactoryA.get();
                 }
                 return null;
@@ -166,13 +166,10 @@ public class ViewReferenceAttributeTest {
 
     @Test
     public void removeListener() throws Exception {
-        ViewReferenceAttribute<ViewExampleFactoryRoot,ViewExampleFactory,ExampleFactoryA> attribute= new ViewReferenceAttribute<>(new AttributeMetadata(), new BiFunction<ViewExampleFactoryRoot, ViewExampleFactory, ExampleFactoryA>() {
+        ViewReferenceAttribute<ViewExampleFactoryRoot,ExampleFactoryA> attribute= new ViewReferenceAttribute<>(new AttributeMetadata(), new Function<ViewExampleFactoryRoot, ExampleFactoryA>() {
             @Override
-            public ExampleFactoryA apply(ViewExampleFactoryRoot viewExampleFactoryRoot, ViewExampleFactory viewExampleFactory) {
-                if (viewExampleFactory.include.get()){
-                    return viewExampleFactoryRoot.exampleFactoryA.get();
-                }
-                return null;
+            public ExampleFactoryA apply(ViewExampleFactoryRoot viewExampleFactoryRoot) {
+                return viewExampleFactoryRoot.exampleFactoryA.get();
             }
         });
 
@@ -185,13 +182,10 @@ public class ViewReferenceAttributeTest {
 
     @Test
     public void removeWeakListener() throws Exception {
-        ViewReferenceAttribute<ViewExampleFactoryRoot,ViewExampleFactory,ExampleFactoryA> attribute= new ViewReferenceAttribute<>(new AttributeMetadata(), new BiFunction<ViewExampleFactoryRoot, ViewExampleFactory, ExampleFactoryA>() {
+        ViewReferenceAttribute<ViewExampleFactoryRoot,ExampleFactoryA> attribute= new ViewReferenceAttribute<>(new AttributeMetadata(), new Function<ViewExampleFactoryRoot, ExampleFactoryA>() {
             @Override
-            public ExampleFactoryA apply(ViewExampleFactoryRoot viewExampleFactoryRoot, ViewExampleFactory viewExampleFactory) {
-                if (viewExampleFactory.include.get()){
-                    return viewExampleFactoryRoot.exampleFactoryA.get();
-                }
-                return null;
+            public ExampleFactoryA apply(ViewExampleFactoryRoot viewExampleFactoryRoot) {
+                 return viewExampleFactoryRoot.exampleFactoryA.get();
             }
         });
 

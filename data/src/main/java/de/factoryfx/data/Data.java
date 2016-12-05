@@ -308,7 +308,7 @@ public abstract class Data {
     List<AttributeValidation<?>> dataValidations = new ArrayList<>();
     private <T> void addValidation(Validation<T> validation, Attribute<?>... dependencies){
         for ( Attribute<?> dependency: dependencies){
-            dataValidations.add(new AttributeValidation(validation,dependency));
+            dataValidations.add(new AttributeValidation<>(validation,dependency));
         }
     }
 
@@ -432,7 +432,7 @@ public abstract class Data {
     private <T extends Data> T prepareUsage(Data root){
         for (Data data: collectChildrenDeep()){
             data.visitAttributesFlat((attributeVariableName, attribute) -> {
-                attribute.prepareUsage(root,data);
+                attribute.prepareUsage(root);
             });
             data.isReadyForEditing=true;
         }

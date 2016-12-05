@@ -129,7 +129,6 @@ public abstract class FactoryBase<L,V> extends Data {
         }
     }
 
-    //TODO this works as long als tree elements extends FactoryBase, how to enforce that?
     @SuppressWarnings("unchecked")
     private Optional<FactoryBase<?,V>> cast(Data data){
         if (data instanceof FactoryBase)
