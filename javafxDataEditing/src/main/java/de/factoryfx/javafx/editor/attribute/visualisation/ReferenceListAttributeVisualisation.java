@@ -62,7 +62,7 @@ public class ReferenceListAttributeVisualisation extends ListAttributeEditorVisu
         HBox.setHgrow(tableControlWidgetContent, Priority.ALWAYS);
         HBox.setMargin(tableControlWidgetContent, new Insets(0,1,0,0));
 
-        final DataListEditWidget dataListEditWidget = new DataListEditWidget(attributeValue, tableView, dataEditor, uniformDesign, emptyAdder, possibleValuesProvider, isUserEditable, isUserSelectable);
+        final DataListEditWidget<Data> dataListEditWidget = new DataListEditWidget<>(attributeValue, tableView, dataEditor, uniformDesign, emptyAdder, possibleValuesProvider, isUserEditable, isUserSelectable);
         HBox buttons = (HBox)dataListEditWidget.createContent();
         buttons.getChildren().add(tableControlWidgetContent);
 

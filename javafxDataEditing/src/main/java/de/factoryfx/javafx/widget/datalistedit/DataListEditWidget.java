@@ -22,7 +22,7 @@ import javafx.scene.control.Tooltip;
 import javafx.scene.layout.HBox;
 import org.controlsfx.glyphfont.FontAwesome;
 
-public class DataListEditWidget implements Widget {
+public class DataListEditWidget<T extends Data> implements Widget {
 
     private LanguageText editText= new LanguageText().en("edit").de("Editieren");
     private LanguageText selectText= new LanguageText().en("select").de("Auswählen");
@@ -35,11 +35,11 @@ public class DataListEditWidget implements Widget {
     private final Supplier<List<Data>> possibleValuesProvider;
     private final boolean isUserEditable;
     private final boolean isUserSelectable;
-    private final ObservableList<Data> list;
-    private final TableView<Data> tableView;
+    private final ObservableList<T> list;
+    private final TableView<T> tableView;
     private final DataEditor dataEditor;
 
-    public DataListEditWidget(ObservableList<Data> list, TableView<Data> tableView, DataEditor dataEditor, UniformDesign uniformDesign, Runnable emptyAdder, Supplier<List<Data>> possibleValuesProvider, boolean isUserEditable, boolean isUserSelectable) {
+    public DataListEditWidget(ObservableList<T> list, TableView<T> tableView, DataEditor dataEditor, UniformDesign uniformDesign, Runnable emptyAdder, Supplier<List<Data>> possibleValuesProvider, boolean isUserEditable, boolean isUserSelectable) {
         this.uniformDesign = uniformDesign;
         this.emptyAdder = emptyAdder;
         this.possibleValuesProvider = possibleValuesProvider;
@@ -60,7 +60,7 @@ public class DataListEditWidget implements Widget {
         Button selectButton = new Button("", uniformDesign.createIcon(FontAwesome.Glyph.SEARCH_PLUS));
         selectButton.setOnAction(event -> {
             Optional<Data> toAdd = new DataChoiceDialog().show(possibleValuesProvider.get(),selectButton.getScene().getWindow(),uniformDesign);
-            toAdd.ifPresent(data -> list.add(data));
+            toAdd.ifPresent(data -> list.add((T) data));
         });
         selectButton.setDisable(!isUserEditable || !isUserSelectable);
 
