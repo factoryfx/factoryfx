@@ -414,7 +414,7 @@ public abstract class Data {
 
 
     private boolean readyForUsage(){
-        return isReadyForEditing;
+        return root!=null;
     }
 
     private <T extends Data> T endUsage() {
@@ -426,14 +426,12 @@ public abstract class Data {
         return (T)this;
     }
 
-    private boolean isReadyForEditing;
     <T extends Data> T prepareUsage(Data root){
-        this.root=root;
         for (Data data: collectChildrenDeep()){
+            data.root=root;
             data.visitAttributesFlat((attributeVariableName, attribute) -> {
                 attribute.prepareUsage(root);
             });
-            data.isReadyForEditing=true;
         }
         for (Data data: collectChildrenDeep()){
             data.visitAttributesFlat((attributeVariableName, attribute) -> {
