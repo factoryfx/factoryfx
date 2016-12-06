@@ -25,6 +25,12 @@ public class DataEditorIntegrationTest extends Application{
 
         UniformDesign uniformDesign = new UniformDesignFactory<>().instance();
         DataEditor dataEditor = new DataEditor(new AttributeEditorFactory(uniformDesign),uniformDesign);
+        dataEditor.setVisCustomizer((node, data) -> {
+            if (data instanceof ExampleData1) {
+                return ((ExampleData1)data).customize(node);
+            }
+            return node;
+        });
         root.setCenter(dataEditor.createContent());
 
         exampleData1= ObjectMapperBuilder.build().copy(exampleData1);

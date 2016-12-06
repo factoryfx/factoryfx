@@ -38,7 +38,7 @@ import javafx.scene.control.Button;
 import javafx.scene.layout.BorderPane;
 import javafx.util.Pair;
 
-public class ExampleData1 extends Data implements CustomDataEditor {
+public class ExampleData1 extends Data {
 
     public final StringAttribute stringAttribute=new StringAttribute(new AttributeMetadata().en("StringAttribute gajsd jgsdajh gjasdja jhsadgjg ghf hgf hgfhff hgfhgf hf").de("StringAttribute de")).validation(new StringRequired()).defaultValue("blub");
     public final StringAttribute stringLongAttribute=new StringAttribute(new AttributeMetadata().en("Long StringAttribute").de("Long StringAttribute de")).longText().validation(new StringRequired());
@@ -103,7 +103,6 @@ public class ExampleData1 extends Data implements CustomDataEditor {
 
     String id= UUID.randomUUID().toString();
 
-    @Override
     public Node customize(Node defaultVis) {
         final BorderPane borderPane = new BorderPane();
         borderPane.setCenter(defaultVis);

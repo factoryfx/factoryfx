@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.BiConsumer;
+import java.util.function.BiFunction;
 import java.util.function.Supplier;
 
 import de.factoryfx.data.Data;
@@ -130,6 +131,16 @@ public class DataEditor implements Widget {
 //    }
 //    validationResult.set(attributeValidationError);
 
+    BiFunction<Node,Data,Node> visCustomizer= (node, data) -> node;
+
+    public void setVisCustomizer(BiFunction<Node,Data,Node> visCustomizer){
+        this.visCustomizer=visCustomizer;
+    }
+
+    private Node customizeVis(Node defaultVis, Data data){
+        return visCustomizer.apply(defaultVis,data);
+    };
+
     @Override
     public Node createContent() {
         BorderPane result = new BorderPane();
@@ -139,11 +150,7 @@ public class DataEditor implements Widget {
         }
 
         BiConsumer<Node,Data> updateVis= (defaultVis, data) -> {
-            if (data instanceof CustomDataEditor){
-                result.setCenter(((CustomDataEditor)data).customize(defaultVis));
-            } else {
-                result.setCenter(defaultVis);
-            }
+            result.setCenter(customizeVis(defaultVis,data));
         };
 
         dataChangeListener = (observable, oldValue, newValue) -> {
