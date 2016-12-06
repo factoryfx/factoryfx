@@ -71,12 +71,12 @@ public class ReferenceListAttributeTest {
         ExampleReferenceListFactory exampleReferenceListFactory = new ExampleReferenceListFactory();
         ExampleFactoryA exampleFactoryA = new ExampleFactoryA();
         exampleReferenceListFactory.referenceListAttribute.add(exampleFactoryA);
-        exampleReferenceListFactory.internal().prepareUsage();
+        exampleReferenceListFactory = exampleReferenceListFactory.internal().prepareUsage();
 
 
         List<ExampleFactoryA> possibleFactories = exampleReferenceListFactory.referenceListAttribute.possibleValues();
         Assert.assertEquals(1,possibleFactories.size());
-        Assert.assertEquals(exampleFactoryA,possibleFactories.get(0));
+        Assert.assertEquals(exampleFactoryA.getId(),possibleFactories.get(0).getId());
 
     }
 
