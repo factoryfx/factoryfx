@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.BiConsumer;
 import java.util.function.Supplier;
 
 import de.factoryfx.data.Data;
@@ -137,6 +138,14 @@ public class DataEditor implements Widget {
             bound.removeListener(dataChangeListener);
         }
 
+        BiConsumer<Node,Data> updateVis= (defaultVis, data) -> {
+            if (data instanceof CustomDataEditor){
+                result.setCenter(((CustomDataEditor)data).customize(defaultVis));
+            } else {
+                result.setCenter(defaultVis);
+            }
+        };
+
         dataChangeListener = (observable, oldValue, newValue) -> {
 
             createdEditors.entrySet().stream().forEach(entry -> entry.getValue().unbind());
@@ -146,7 +155,8 @@ public class DataEditor implements Widget {
             } else {
 
                 if (newValue.internal().attributeListGrouped().size()==1){
-                    result.setCenter(createAttributeGroupVisual(newValue.internal().attributeListGrouped().get(0).getValue(),() -> newValue.internal().validateFlat()));
+                    final Node attributeGroupVisual = createAttributeGroupVisual(newValue.internal().attributeListGrouped().get(0).getValue(), () -> newValue.internal().validateFlat());
+                    updateVis.accept(attributeGroupVisual,newValue);
                 } else {
                     TabPane tabPane = new TabPane();
                     for (Pair<String,List<Attribute<?>>> attributeGroup: newValue.internal().attributeListGrouped()) {
@@ -154,7 +164,7 @@ public class DataEditor implements Widget {
                         tab.setContent(createAttributeGroupVisual(attributeGroup.getValue(),() -> newValue.internal().validateFlat()));
                         tabPane.getTabs().add(tab);
                     }
-                    result.setCenter(tabPane);
+                    updateVis.accept(tabPane,newValue);
                 }
 
                 if (validationListener!=null && oldValue!=null){
