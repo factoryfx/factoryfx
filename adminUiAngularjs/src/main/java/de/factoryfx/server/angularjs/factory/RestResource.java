@@ -127,7 +127,7 @@ public class RestResource<L,V,T extends FactoryBase<L,V>> {
     @Path("factory")
     @SuppressWarnings("unchecked")
     public StageResponse save(FactoryTypeInfoWrapper newFactoryParam) {
-        FactoryBase<?,?> newFactory=newFactoryParam.factory.internal().reconstructMetadataDeepRoot();
+        FactoryBase<?,?> newFactory=newFactoryParam.factory.internal().prepareUsage();
         FactoryBase<?,?> root = getCurrentEditingFactory().root;
         Map<Object,Data>  map = root.internal().collectChildFactoriesMap();
         Data existing = map.get(newFactory.getId());

@@ -211,7 +211,7 @@ public class ViewListReferenceAttributeTest {
             root.list.add(value);
         }
 
-        root.internal().reconstructMetadataDeepRoot();
+        root.internal().prepareUsage();
     }
 
     @Test

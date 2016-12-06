@@ -57,16 +57,14 @@ public class ApplicationServerRestClient<V,T extends FactoryBase<?,V>> {
     @SuppressWarnings("unchecked")
     public FactoryAndStorageMetadata<T> getCurrentFactory() {
         FactoryAndStorageMetadata<T> currentFactory = get("currentFactory", FactoryAndStorageMetadata.class);
-        currentFactory.root.internal().reconstructMetadataDeepRoot();
-        return currentFactory;
+        return new FactoryAndStorageMetadata<>(currentFactory.root.internal().prepareUsage(),currentFactory.metadata);
     }
 
 
     @SuppressWarnings("unchecked")
     public FactoryAndStorageMetadata<T> prepareNewFactory() {
         FactoryAndStorageMetadata<T> currentFactory = get("prepareNewFactory", FactoryAndStorageMetadata.class);
-        currentFactory.root.internal().reconstructMetadataDeepRoot();
-        return currentFactory;
+        return new FactoryAndStorageMetadata<>(currentFactory.root.internal().prepareUsage(),currentFactory.metadata);
     }
 
     public MergeDiffInfo getDiff(StoredFactoryMetadata historyEntry) {
@@ -75,7 +73,7 @@ public class ApplicationServerRestClient<V,T extends FactoryBase<?,V>> {
 
 
     public T getHistoryFactory(String id) {
-        return get("historyFactory", factoryRootClass).internal().reconstructMetadataDeepRoot();
+        return get("historyFactory", factoryRootClass).internal().prepareUsage();
     }
 
     static final Class<? extends ArrayList<StoredFactoryMetadata>> collectionOfStoredFactoryMetadataClass = new ArrayList<StoredFactoryMetadata>() {}.getClass();

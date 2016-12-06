@@ -18,7 +18,9 @@ import de.factoryfx.data.merge.testfactories.ExampleFactoryA;
 import de.factoryfx.data.merge.testfactories.ExampleFactoryB;
 import de.factoryfx.data.merge.testfactories.ExampleFactoryC;
 import de.factoryfx.data.merge.testfactories.IdData;
+import de.factoryfx.data.util.LanguageText;
 import de.factoryfx.data.validation.AttributeValidation;
+import de.factoryfx.data.validation.Validation;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -61,7 +63,7 @@ public class DataTest {
         Assert.assertEquals(null,readed.referenceAttribute.get().stringAttribute);
         Assert.assertEquals(null,readed.referenceListAttribute.get(0).stringAttribute);
 
-        readed.internal().reconstructMetadataDeepRoot();
+        readed = readed.internal().prepareUsage();
 
         Assert.assertEquals("ExampleA1",readed.stringAttribute.metadata.labelText.getPreferred(Locale.ENGLISH));
         Assert.assertEquals("ExampleA2",readed.referenceAttribute.metadata.labelText.getPreferred(Locale.ENGLISH));
@@ -70,6 +72,46 @@ public class DataTest {
         Assert.assertEquals("ExampleB1",readed.referenceListAttribute.get(0).stringAttribute.metadata.labelText.getPreferred(Locale.ENGLISH));
 
         Assert.assertEquals(exampleFactoryA.getId(),readed.getId());
+    }
+
+    public static class ExampleFactoryThis extends IdData {
+        ArrayList<String> calls=new ArrayList<>();
+        public final StringAttribute stringAttribute= new StringAttribute(new AttributeMetadata().labelText("ExampleA1")).validation(new Validation<String>() {
+            @Override
+            public LanguageText getValidationDescription() {
+                return null;
+            }
+
+            @Override
+            public boolean validate(String value) {
+                calls.add((String) ExampleFactoryThis.this.getId());
+                return false;
+            }
+        });
+
+        public ExampleFactoryThis(){
+            System.out.println();        }
+    }
+
+
+    @Test
+    public void test_reconstructMetadataDeepRoot_this() throws IOException {
+        ExampleFactoryThis exampleFactoryThis = new ExampleFactoryThis();
+
+        SimpleObjectMapper mapper = ObjectMapperBuilder.build();
+        String string = mapper.writeValueAsString(exampleFactoryThis);
+        ExampleFactoryThis readed = mapper.getObjectMapper().readValue(string,ExampleFactoryThis.class);
+
+        Assert.assertEquals(null,readed.stringAttribute);
+        Assert.assertEquals(0,readed.calls.size());
+
+        readed = readed.internal().prepareUsage();
+
+        readed.internal().validateFlat();
+
+        Assert.assertNotNull(readed.stringAttribute);
+        Assert.assertEquals(1,readed.calls.size());
+        Assert.assertEquals(readed.getId(),readed.calls.get(0));
     }
 
 
@@ -92,7 +134,7 @@ public class DataTest {
             throw new RuntimeException(e);
         }
 
-        readed.internal().reconstructMetadataDeepRoot();
+        readed = readed.internal().prepareUsage();
 
 
         final Field displayTextDependencies = Data.class.getDeclaredField("displayTextDependencies");

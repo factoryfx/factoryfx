@@ -23,8 +23,6 @@ import de.factoryfx.data.attribute.Attribute;
 import de.factoryfx.data.attribute.AttributeChangeListener;
 import de.factoryfx.data.attribute.ReferenceAttribute;
 import de.factoryfx.data.attribute.ReferenceListAttribute;
-import de.factoryfx.data.attribute.ViewListReferenceAttribute;
-import de.factoryfx.data.attribute.ViewReferenceAttribute;
 import de.factoryfx.data.merge.MergeResult;
 import de.factoryfx.data.merge.MergeResultEntry;
 import de.factoryfx.data.merge.attribute.AttributeMergeHelper;
@@ -221,39 +219,39 @@ public abstract class Data {
 
     /**
      * after deserialization from json only the value is present and metadata are missing
-     * we create a copy which contains the metadata and than copy the meta data in teh original object
+     * we create a copy which contains the metadata and than copy then transfer the value in the new  copy (which is what conveniently copy does)
      */
     @SuppressWarnings("unchecked")
     private <T extends Data> T reconstructMetadataDeepRoot() {
-        for (Data data: this.collectChildrenDeep()){
-            Data copy = data.newInstance();
-
-            data.dataValidations=copy.dataValidations;
-            data.displayTextDependencies=copy.displayTextDependencies;
-
-            Field[] fields = data.getFields();
-            for (Field field : fields) {
-                try {
-                    if (de.factoryfx.data.attribute.Attribute.class.isAssignableFrom(field.getType())){
-                        Object value=null;
+//        for (Data data: this.collectChildrenDeep()){
+//            Data copy = data.newInstance();
+//
+//            data.dataValidations=copy.dataValidations;
+//            data.displayTextDependencies=copy.displayTextDependencies;
+//
+//            Field[] fields = data.getFields();
+//            for (Field field : fields) {
+//                try {
+//                    if (de.factoryfx.data.attribute.Attribute.class.isAssignableFrom(field.getType())){
+//                        Object value=null;
+////                        field.setAccessible(true);
+//                        if (field.get(data)!=null){
+//                            final Attribute attribute = (Attribute) field.get(data);
+//                            if (!(attribute instanceof ViewReferenceAttribute) && !(attribute instanceof ViewListReferenceAttribute)){
+//                                value= attribute.get();
+//                            }
+//                        }
 //                        field.setAccessible(true);
-                        if (field.get(data)!=null){
-                            final Attribute attribute = (Attribute) field.get(data);
-                            if (!(attribute instanceof ViewReferenceAttribute) && !(attribute instanceof ViewListReferenceAttribute)){
-                                value= attribute.get();
-                            }
-                        }
-                        field.setAccessible(true);
-                        field.set(data,field.get(copy));
-
-                        ((Attribute)field.get(data)).set(value);
-                    }
-                } catch (Exception e) {
-                    throw new RuntimeException(e);
-                }
-            }
-        }
-        return (T)this;
+//                        field.set(data,field.get(copy));
+//
+//                        ((Attribute)field.get(data)).set(value);
+//                    }
+//                } catch (Exception e) {
+//                    throw new RuntimeException(e);
+//                }
+//            }
+//        }
+        return this.copy();
     }
 
     Supplier<Data> newInstanceSupplier= () -> {
@@ -429,7 +427,7 @@ public abstract class Data {
     }
 
     private boolean isReadyForEditing;
-    private <T extends Data> T prepareUsage(Data root){
+    <T extends Data> T prepareUsage(Data root){
         for (Data data: collectChildrenDeep()){
             data.visitAttributesFlat((attributeVariableName, attribute) -> {
                 attribute.prepareUsage(root);
@@ -443,6 +441,11 @@ public abstract class Data {
         }
 
         return (T)this;
+    }
+
+    private <T extends Data> T prepareUsage() {
+        T result = reconstructMetadataDeepRoot();
+        return result.prepareUsage(result);
     }
 
     private Function<List<Attribute<?>>,List<Pair<String,List<Attribute<?>>>>> attributeListGroupedSupplier=(List<Attribute<?>> allAttributes)->{
@@ -633,11 +636,6 @@ public abstract class Data {
             data.collectModelEntitiesTo(allModelEntities);
         }
 
-        public <T extends Data> T reconstructMetadataDeepRoot() {
-            return data.reconstructMetadataDeepRoot();
-        }
-
-
         public void fixDuplicateObjects(Function<Object, Optional<Data>> getCurrentEntity) {
             data.fixDuplicateObjects(getCurrentEntity);
         }
@@ -682,9 +680,10 @@ public abstract class Data {
             return data.copyZeroLevelDeep();
         }
 
-        /** only call on root*/
+        /** only call on root
+         * return usable copy */
         public <T extends Data> T prepareUsage() {
-            return data.prepareUsage(data);
+            return data.prepareUsage();
         }
 
         /** only call on root*/

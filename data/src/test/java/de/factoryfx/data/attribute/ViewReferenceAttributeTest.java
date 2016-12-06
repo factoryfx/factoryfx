@@ -161,7 +161,7 @@ public class ViewReferenceAttributeTest {
         ExampleFactoryA value = new ExampleFactoryA();
         root.exampleFactoryA.set(value);
 
-        root.internal().reconstructMetadataDeepRoot();
+        root.internal().prepareUsage();
     }
 
     @Test

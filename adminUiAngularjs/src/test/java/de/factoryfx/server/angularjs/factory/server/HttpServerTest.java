@@ -55,7 +55,7 @@ public class HttpServerTest {
         System.out.println(data);
 
         TestBigDecimal readed = objectMapper.readValue(data,TestBigDecimal.class);
-        readed.internal().reconstructMetadataDeepRoot();
+        readed = readed.internal().prepareUsage();
         Assert.assertEquals("12445.67",readed.value.get().toString());
 
 
@@ -74,7 +74,7 @@ public class HttpServerTest {
         System.out.println(data);
 
         TestLongDecimal readed = objectMapper.readValue(data,TestLongDecimal.class);
-        readed.internal().reconstructMetadataDeepRoot();
+        readed = readed.internal().prepareUsage();
         Assert.assertEquals("54564",readed.value.get().toString());
 
 
