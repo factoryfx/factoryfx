@@ -80,7 +80,7 @@ public class ReferenceAttribute<T extends Data> extends Attribute<T> {
     @Override
     public void set(T value) {
         this.value=value;
-        if (root!=null) {
+        if (root!=null && value!=null) {
             value.internal().prepareUsage(root);
         }
         for (AttributeChangeListener<T> listener: listeners){
