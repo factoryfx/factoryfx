@@ -17,11 +17,17 @@ public class DataViewWidget implements CloseAwareWidget {
     private final DataEditor dataEditor;
     private double dividerPosition = 0.333;
     private final UniformDesign uniformDesign;
+    private final TableView<Data> tableView;
 
-    public DataViewWidget(DataView dataView, DataEditor dataEditor, UniformDesign uniformDesign) {
+    public DataViewWidget(DataView dataView, DataEditor dataEditor, UniformDesign uniformDesign, TableView<Data> tableView) {
         this.dataView = dataView;
         this.dataEditor = dataEditor;
         this.uniformDesign = uniformDesign;
+        this.tableView = tableView;
+    }
+
+    public DataViewWidget(DataView dataView, DataEditor dataEditor, UniformDesign uniformDesign) {
+        this(dataView,dataEditor,uniformDesign,new TableView<>());
     }
 
     @Override
@@ -35,7 +41,6 @@ public class DataViewWidget implements CloseAwareWidget {
         SplitPane splitPane = new SplitPane();
         splitPane.setOrientation(Orientation.HORIZONTAL);
 
-        TableView<Data> tableView = new TableView<>();
         tableView.setItems(dataView.dataList());
         tableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         TableColumn<Data, String> test = new TableColumn<>("Data");
