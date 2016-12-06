@@ -46,10 +46,10 @@ public class ViewListReferenceAttributeTest {
             root.list.add(value);
         }
 
-        root.internal().prepareUsage();
+        root = root.internal().prepareUsage();
 
-        Assert.assertEquals(1,viewExampleFactory.view.get().size());
-        Assert.assertEquals("1",viewExampleFactory.view.get().get(0).stringAttribute.get());
+        Assert.assertEquals(1,root.ref.get().view.get().size());
+        Assert.assertEquals("1",root.ref.get().view.get().get(0).stringAttribute.get());
     }
 
     @Test
@@ -71,9 +71,9 @@ public class ViewListReferenceAttributeTest {
             root.list.add(value);
         }
 
-        root.internal().prepareUsage();
+        root = root.internal().prepareUsage();
 
-        Assert.assertEquals(0,viewExampleFactory.view.get().size());
+        Assert.assertEquals(0,root.ref.get().view.get().size());
     }
 
     @Test
@@ -95,16 +95,15 @@ public class ViewListReferenceAttributeTest {
             root.list.add(value);
         }
 
-        root.internal().prepareUsage();
+        root = root.internal().prepareUsage();
 
-        Assert.assertEquals(2,viewExampleFactory.view.get().size());
+        Assert.assertEquals(2,root.ref.get().view.get().size());
     }
 
 
     @Test
     public void test_change_listener(){
         ViewListExampleFactory viewExampleFactory=new ViewListExampleFactory();
-        viewExampleFactory.view.setRunlaterExecutorForTest(runnable -> runnable.run());
         viewExampleFactory.forFilter.set("1");
 
         ViewListExampleFactoryRoot root = new ViewListExampleFactoryRoot();
@@ -121,10 +120,11 @@ public class ViewListReferenceAttributeTest {
             root.list.add(value);
         }
 
-        root.internal().prepareUsage();
+        root = root.internal().prepareUsage();
+        root.ref.get().view.setRunlaterExecutorForTest(runnable -> runnable.run());
 
         ArrayList<String> calls=new ArrayList<>();
-        viewExampleFactory.view.addListener((attribute, value1) -> {
+        root.ref.get().view.addListener((attribute, value1) -> {
             if (!value1.isEmpty()){
                 calls.add("1");
             } else {
@@ -132,7 +132,7 @@ public class ViewListReferenceAttributeTest {
             }
         });
 
-        viewExampleFactory.forFilter.set("2");
+        root.ref.get().forFilter.set("2");
 
         try {
             Thread.sleep(500);
@@ -140,13 +140,13 @@ public class ViewListReferenceAttributeTest {
             throw new RuntimeException(e);
         }
 
-        Assert.assertEquals(1,viewExampleFactory.view.get().size());
+        Assert.assertEquals(1,root.ref.get().view.get().size());
         Assert.assertEquals(1,calls.size());
         Assert.assertEquals("1",calls.get(0));
 
 
         calls.clear();
-        viewExampleFactory.forFilter.set("1");
+        root.ref.get().forFilter.set("1");
         try {
             Thread.sleep(500);
         } catch (InterruptedException e) {

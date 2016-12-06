@@ -232,7 +232,7 @@ public class DataTest {
     @Test
     public void test_editing_nested_add(){
         ExampleWithDefaultParent exampleWithDefaultParent = new ExampleWithDefaultParent();
-        exampleWithDefaultParent.internal().prepareUsage();
+        exampleWithDefaultParent = exampleWithDefaultParent.internal().prepareUsage();
         Assert.assertTrue(exampleWithDefaultParent.internal().readyForUsage());
 
         exampleWithDefaultParent.referenceAttribute.addNewFactory();
