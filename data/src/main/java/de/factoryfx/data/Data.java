@@ -428,6 +428,7 @@ public abstract class Data {
 
     private boolean isReadyForEditing;
     <T extends Data> T prepareUsage(Data root){
+        this.root=root;
         for (Data data: collectChildrenDeep()){
             data.visitAttributesFlat((attributeVariableName, attribute) -> {
                 attribute.prepareUsage(root);
@@ -446,6 +447,11 @@ public abstract class Data {
     private <T extends Data> T prepareUsage() {
         T result = reconstructMetadataDeepRoot();
         return result.prepareUsage(result);
+    }
+
+    Data root;
+    private Data getRoot(){
+        return root;
     }
 
     private Function<List<Attribute<?>>,List<Pair<String,List<Attribute<?>>>>> attributeListGroupedSupplier=(List<Attribute<?>> allAttributes)->{
@@ -698,5 +704,10 @@ public abstract class Data {
         public <T extends Data> T prepareUsage(Data root){
             return data.prepareUsage(root);
         }
+
+        public Data getRoot(){
+            return data.getRoot();
+        }
+
     }
 }

@@ -2,6 +2,8 @@ package de.factoryfx.factory;
 
 import java.util.function.Function;
 
+import de.factoryfx.data.Data;
+
 /**
  * create subtree with liveobject to instantiate only part of the tree e.g for test or in the gui
  *
@@ -18,7 +20,10 @@ public class SubTreeCreator<L,V, R extends FactoryBase<?,V>, S extends FactoryBa
         this.subRootFactoryProvider = subRootFactoryProvider;
     }
 
-    public L create(R rootFactory){
+    @SuppressWarnings("unchecked")
+    public L create(Data data){
+        //TODO add generic root to data?
+        R rootFactory= (R) data.internal().getRoot();
         final R copy = rootFactory.internal().copy().internal().prepareUsage();
         return subRootFactoryProvider.apply(copy).createLifecycleController().create();
     }
