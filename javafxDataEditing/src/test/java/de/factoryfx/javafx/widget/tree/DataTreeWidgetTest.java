@@ -20,7 +20,7 @@ public class DataTreeWidgetTest extends Application {
 
         ExampleData1 exampleData1 = new ExampleData1();
         exampleData1.stringAttribute.set("abc");
-        exampleData1.internal().prepareUsage();
+        exampleData1 = exampleData1.internal().prepareUsage();
 
         UniformDesign uniformDesign = new UniformDesignFactory<>().instance();
         DataEditor dataEditor = new DataEditor(new AttributeEditorFactory(uniformDesign),uniformDesign);
