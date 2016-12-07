@@ -36,10 +36,10 @@ public class DataListEditWidget<T extends Data> implements Widget {
     private final boolean isUserEditable;
     private final boolean isUserSelectable;
     private final ObservableList<T> list;
-    private final TableView<Data> tableView;
+    private final TableView<T> tableView;
     private final DataEditor dataEditor;
 
-    public DataListEditWidget(ObservableList<T> list, TableView<Data> tableView, DataEditor dataEditor, UniformDesign uniformDesign, Runnable emptyAdder, Supplier<List<Data>> possibleValuesProvider, boolean isUserEditable, boolean isUserSelectable) {
+    public DataListEditWidget(ObservableList<T> list, TableView<T> tableView, DataEditor dataEditor, UniformDesign uniformDesign, Runnable emptyAdder, Supplier<List<Data>> possibleValuesProvider, boolean isUserEditable, boolean isUserSelectable) {
         this.uniformDesign = uniformDesign;
         this.emptyAdder = emptyAdder;
         this.possibleValuesProvider = possibleValuesProvider;
