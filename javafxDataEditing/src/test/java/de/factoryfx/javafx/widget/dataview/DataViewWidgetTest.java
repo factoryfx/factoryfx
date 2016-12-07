@@ -4,6 +4,7 @@ import de.factoryfx.data.Data;
 import de.factoryfx.javafx.editor.attribute.AttributeEditorFactory;
 import de.factoryfx.javafx.editor.data.DataEditor;
 import de.factoryfx.javafx.editor.data.ExampleData1;
+import de.factoryfx.javafx.editor.data.ExampleData2;
 import de.factoryfx.javafx.util.UniformDesign;
 import de.factoryfx.javafx.util.UniformDesignFactory;
 import javafx.application.Application;
@@ -32,7 +33,11 @@ public class DataViewWidgetTest extends Application {
         dataList.addAll(new ExampleData1());
         dataList.addAll(new ExampleData1());
 
-        DataViewWidget dataViewWidget = new DataViewWidget(new DataView(()->dataList),dataEditor,uniformDesign);
+        exampleData1.referenceListAttribute.add(new ExampleData2());
+        exampleData1.referenceListAttribute.add(new ExampleData2());
+
+        DataViewWidget<ExampleData2> dataViewWidget = new DataViewWidget<>(new ReferenceAttributeDataView<>(exampleData1.referenceListAttribute),dataEditor,uniformDesign);
+        DataViewWidget<Data> dataViewWidget2 = new DataViewWidget<>(new UpdatableDataView(()->dataList),dataEditor,uniformDesign);
 
         BorderPane root = new BorderPane();
         root.getStylesheets().add(getClass().getResource("/de/factoryfx/javafx/css/app.css").toExternalForm());

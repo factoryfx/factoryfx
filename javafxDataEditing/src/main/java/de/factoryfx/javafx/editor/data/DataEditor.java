@@ -139,7 +139,7 @@ public class DataEditor implements Widget {
 
     private Node customizeVis(Node defaultVis, Data data){
         return visCustomizer.apply(defaultVis,data);
-    };
+    }
 
     @Override
     public Node createContent() {

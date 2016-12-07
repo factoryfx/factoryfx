@@ -12,21 +12,21 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.layout.BorderPane;
 
-public class DataViewWidget implements CloseAwareWidget {
-    private final DataView dataView;
+public class DataViewWidget<T extends Data> implements CloseAwareWidget {
+    private final DataView<T> dataView;
     private final DataEditor dataEditor;
     private double dividerPosition = 0.333;
     private final UniformDesign uniformDesign;
-    private final TableView<Data> tableView;
+    private final TableView<T> tableView;
 
-    public DataViewWidget(DataView dataView, DataEditor dataEditor, UniformDesign uniformDesign, TableView<Data> tableView) {
+    public DataViewWidget(DataView<T> dataView, DataEditor dataEditor, UniformDesign uniformDesign, TableView<T> tableView) {
         this.dataView = dataView;
         this.dataEditor = dataEditor;
         this.uniformDesign = uniformDesign;
         this.tableView = tableView;
     }
 
-    public DataViewWidget(DataView dataView, DataEditor dataEditor, UniformDesign uniformDesign) {
+    public DataViewWidget(DataView<T> dataView, DataEditor dataEditor, UniformDesign uniformDesign) {
         this(dataView,dataEditor,uniformDesign,new TableView<>());
     }
 
@@ -43,7 +43,7 @@ public class DataViewWidget implements CloseAwareWidget {
 
         tableView.setItems(dataView.dataList());
         tableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
-        TableColumn<Data, String> test = new TableColumn<>("Data");
+        TableColumn<T, String> test = new TableColumn<>("Data");
         test.setCellValueFactory(param -> param.getValue().internal().getDisplayTextObservable());
         tableView.getColumns().add(test);
         tableView.getStyleClass().add("hidden-tableview-headers");
