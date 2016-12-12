@@ -41,6 +41,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.RowConstraints;
 import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 import javafx.util.Pair;
 import org.controlsfx.control.BreadCrumbBar;
 import org.controlsfx.glyphfont.FontAwesome;
@@ -218,7 +219,12 @@ public class DataEditor implements Widget {
             if (attributeEditor.isPresent()){
                 attributeEditor.get().expand();
                 createdEditors.put(attribute,attributeEditor.get());
-                return attributeEditor.get().createContent();
+                final Node content = attributeEditor.get().createContent();
+                final VBox vBox = new VBox(3);
+                vBox.setPadding(new Insets(3));
+                VBox.setVgrow(content,Priority.ALWAYS);
+                vBox.getChildren().addAll(new Label(uniformDesign.getLabelText(attribute)),content);
+                return vBox;
             } else {
                 return new Label("unsupported attribute:"+attribute.getAttributeType().dataType);
             }

@@ -90,8 +90,8 @@ public abstract class FactoryBase<L,V> extends Data {
 //        }
 //    }
 
+    /**intented for test only*/
     @JsonIgnore
-    //intented for test only
     protected Optional<L> getCreatedLiveObject(){
         return Optional.ofNullable(createdLiveObject);
     }
