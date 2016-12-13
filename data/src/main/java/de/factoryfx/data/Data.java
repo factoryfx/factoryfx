@@ -691,6 +691,14 @@ public abstract class Data {
             return data.readyForUsage();
         }
 
+        /**
+         * after serialisation or programmatically creation this mus be called first before using the object
+         * to:
+         * -fix jackson wrong deserialisation (metatadat ==null)
+         * -propagate root node  to all chileds (for validation etc)
+         *
+         * unfortunately we must create a copy and can't make the same object usable(which we tried but failed)
+         * */
         public <T extends Data> T prepareUsableCopy(Data root){
             return data.prepareUsage(root);
         }

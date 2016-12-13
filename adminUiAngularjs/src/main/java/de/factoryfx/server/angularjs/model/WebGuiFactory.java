@@ -43,7 +43,7 @@ public class WebGuiFactory {
 
         displayText=factory.internal().getDisplayText();
 
-        for (Data factoryBase: root.internal().getPathTo(factory)){
+        for (Data factoryBase: factory.internal().getPathFromRoot()){
             path.add(new PathElement(factoryBase.getId().toString(),factoryBase.internal().getDisplayText()));
         }
     }
