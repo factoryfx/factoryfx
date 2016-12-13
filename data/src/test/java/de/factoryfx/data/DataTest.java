@@ -63,7 +63,7 @@ public class DataTest {
         Assert.assertEquals(null,readed.referenceAttribute.get().stringAttribute);
         Assert.assertEquals(null,readed.referenceListAttribute.get(0).stringAttribute);
 
-        readed = readed.internal().prepareUsage();
+        readed = readed.internal().prepareUsableCopy();
 
         Assert.assertEquals("ExampleA1",readed.stringAttribute.metadata.labelText.getPreferred(Locale.ENGLISH));
         Assert.assertEquals("ExampleA2",readed.referenceAttribute.metadata.labelText.getPreferred(Locale.ENGLISH));
@@ -105,7 +105,7 @@ public class DataTest {
         Assert.assertEquals(null,readed.stringAttribute);
         Assert.assertEquals(0,readed.calls.size());
 
-        readed = readed.internal().prepareUsage();
+        readed = readed.internal().prepareUsableCopy();
 
         readed.internal().validateFlat();
 
@@ -134,7 +134,7 @@ public class DataTest {
             throw new RuntimeException(e);
         }
 
-        readed = readed.internal().prepareUsage();
+        readed = readed.internal().prepareUsableCopy();
 
 
         final Field displayTextDependencies = Data.class.getDeclaredField("displayTextDependencies");
@@ -152,12 +152,14 @@ public class DataTest {
 
 
     @Test
-    public void test_getPathTo(){
+    public void test_getPathFromRoot(){
         ExampleFactoryA exampleFactoryA = new ExampleFactoryA();
         ExampleFactoryB exampleFactoryB = new ExampleFactoryB();
         exampleFactoryA.referenceAttribute.set(exampleFactoryB);
+        exampleFactoryA=exampleFactoryA.internal().prepareUsableCopy();
+        Assert.assertNotNull(exampleFactoryA.internal().getRoot());
 
-        List<Data> pathTo = exampleFactoryA.internal().getPathTo(exampleFactoryB);
+        List<Data> pathTo = exampleFactoryA.referenceAttribute.get().internal().getPathFromRoot();
         Assert.assertEquals(1,pathTo.size());
         Assert.assertEquals(exampleFactoryA.getId(),pathTo.get(0).getId());
     }
@@ -232,7 +234,7 @@ public class DataTest {
     @Test
     public void test_editing_nested_add(){
         ExampleWithDefaultParent exampleWithDefaultParent = new ExampleWithDefaultParent();
-        exampleWithDefaultParent = exampleWithDefaultParent.internal().prepareUsage();
+        exampleWithDefaultParent = exampleWithDefaultParent.internal().prepareUsableCopy();
         Assert.assertTrue(exampleWithDefaultParent.internal().readyForUsage());
 
         exampleWithDefaultParent.referenceAttribute.addNewFactory();

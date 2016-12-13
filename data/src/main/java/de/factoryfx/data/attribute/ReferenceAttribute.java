@@ -81,7 +81,7 @@ public class ReferenceAttribute<T extends Data> extends Attribute<T> {
     public void set(T value) {
         this.value=value;
         if (root!=null && value!=null) {
-            value.internal().prepareUsage(root);
+            value.internal().prepareUsableCopy(root);
         }
         for (AttributeChangeListener<T> listener: listeners){
             listener.changed(this,value);
@@ -188,7 +188,7 @@ public class ReferenceAttribute<T extends Data> extends Attribute<T> {
             }
 
         }
-        getOptional().ifPresent(data->data.internal().prepareUsage(root));
+        getOptional().ifPresent(data->data.internal().prepareUsableCopy(root));
         return get();
     }
 

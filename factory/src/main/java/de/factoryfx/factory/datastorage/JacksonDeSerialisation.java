@@ -19,7 +19,7 @@ public class JacksonDeSerialisation<T extends FactoryBase<?,?>> implements Facto
 
     @Override
     public T read(String data) {
-        return ObjectMapperBuilder.build().readValue(data,rootClass).internal().prepareUsage();
+        return ObjectMapperBuilder.build().readValue(data,rootClass).internal().prepareUsableCopy();
     }
 
     @Override

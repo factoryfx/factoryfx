@@ -347,6 +347,7 @@ public abstract class Data {
     }
 
 
+
     private List<Data> getMassPathTo(HashMap<Data, Data> childToParent, Data target) {
         List<Data> path = new ArrayList<>();
         Optional<Data> pathElement = Optional.ofNullable(childToParent.get(target));
@@ -659,17 +660,8 @@ public abstract class Data {
         public void merge(Optional<Data> originalValue, Optional<Data> newValue, MergeResult mergeResult) {
             data.merge(originalValue,newValue,mergeResult);
         }
-
-        public HashMap<Data, Data> getChildToParentMap(Set<Data> allModelEntities) {
-            return data.getChildToParentMap(allModelEntities);
-        }
-
-        public List<Data> getMassPathTo(HashMap<Data, Data> childToParent, Data target) {
-            return data.getMassPathTo(childToParent,target);
-        }
-
-        public List<Data> getPathTo(Data target) {
-            return data.getMassPathTo(getChildToParentMap(collectChildrenDeep()), target);
+        public List<Data> getPathFromRoot() {
+            return data.root.getMassPathTo(data.root.getChildToParentMap(data.root.collectChildrenDeep()), data);
         }
 
         public <T extends Data> T copy() {
@@ -686,7 +678,7 @@ public abstract class Data {
 
         /** only call on root
          * return usable copy */
-        public <T extends Data> T prepareUsage() {
+        public <T extends Data> T prepareUsableCopy() {
             return data.prepareUsage();
         }
 
@@ -699,7 +691,7 @@ public abstract class Data {
             return data.readyForUsage();
         }
 
-        public <T extends Data> T prepareUsage(Data root){
+        public <T extends Data> T prepareUsableCopy(Data root){
             return data.prepareUsage(root);
         }
 
@@ -708,4 +700,6 @@ public abstract class Data {
         }
 
     }
+
+
 }

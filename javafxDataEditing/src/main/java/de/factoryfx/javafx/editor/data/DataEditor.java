@@ -93,7 +93,9 @@ public class DataEditor implements Widget {
 
     public void resetHistory(){
         displayedEntities.setAll(bound.get());
-
+    }
+    public void setHistory(List<Data> data){
+        displayedEntities.addAll(data);
     }
 
     public void reset(){

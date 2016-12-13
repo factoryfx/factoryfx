@@ -74,10 +74,11 @@ public class ValidationWidget implements Widget {
         tableView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue!=null){
                 dataEditor.edit(newValue.data);
+                dataEditor.setHistory(newValue.data.internal().getPathFromRoot());
             } else {
                 dataEditor.edit(null);
+                dataEditor.resetHistory();
             }
-            dataEditor.resetHistory();
         });
 
         VBox vBox = new VBox();
@@ -95,7 +96,8 @@ public class ValidationWidget implements Widget {
 
 //        SplitPane.setResizableWithParent(vBox, Boolean.TRUE);
         splitPane.getItems().add(vBox);
-        splitPane.getItems().add(dataEditor.createContent());
+
+        splitPane.getItems().add( dataEditor.createContent());
 
         splitPane.disableProperty().bind(isValid);
         return splitPane;

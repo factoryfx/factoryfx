@@ -24,7 +24,7 @@ public class SubTreeCreator<L,V, R extends FactoryBase<?,V>, S extends FactoryBa
     public L create(Data data){
         //TODO add generic root to data?
         R rootFactory= (R) data.internal().getRoot();
-        final R copy = rootFactory.internal().copy().internal().prepareUsage();
+        final R copy = rootFactory.internal().copy().internal().prepareUsableCopy();
         return subRootFactoryProvider.apply(copy).createLifecycleController().create();
     }
 

@@ -37,7 +37,7 @@ public class ReferenceListAttribute<T extends Data> extends Attribute<List<T>> {
             if (c.next()){
                 for (T newData: c.getAddedSubList()){
                     if (root!=null) {
-                        newData.internal().prepareUsage(root);
+                        newData.internal().prepareUsableCopy(root);
                     }
                 }
             }
@@ -260,7 +260,7 @@ public class ReferenceListAttribute<T extends Data> extends Attribute<List<T>> {
         }
 
         for (Data data: get()){
-            data.internal().prepareUsage(root);
+            data.internal().prepareUsableCopy(root);
         }
 
         return addedFactory;
@@ -269,7 +269,7 @@ public class ReferenceListAttribute<T extends Data> extends Attribute<List<T>> {
     public void addFactory(T addedFactory){
         get().add(addedFactory);
         for (Data data: get()){
-            data.internal().prepareUsage(root);
+            data.internal().prepareUsableCopy(root);
         }
     }
 

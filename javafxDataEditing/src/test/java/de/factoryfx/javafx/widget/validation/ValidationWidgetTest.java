@@ -20,7 +20,7 @@ public class ValidationWidgetTest extends Application {
 
         ExampleData1 exampleData1 = new ExampleData1();
         exampleData1.stringAttribute.set("abc");
-        exampleData1 = exampleData1.internal().prepareUsage();
+        exampleData1 = exampleData1.internal().prepareUsableCopy();
 
         UniformDesign uniformDesign = new UniformDesignFactory<>().instance();
         DataEditor dataEditor = new DataEditor(new AttributeEditorFactory(uniformDesign),uniformDesign);

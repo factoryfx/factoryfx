@@ -71,7 +71,7 @@ public class ReferenceListAttributeTest {
         ExampleReferenceListFactory exampleReferenceListFactory = new ExampleReferenceListFactory();
         ExampleFactoryA exampleFactoryA = new ExampleFactoryA();
         exampleReferenceListFactory.referenceListAttribute.add(exampleFactoryA);
-        exampleReferenceListFactory = exampleReferenceListFactory.internal().prepareUsage();
+        exampleReferenceListFactory = exampleReferenceListFactory.internal().prepareUsableCopy();
 
 
         List<ExampleFactoryA> possibleFactories = exampleReferenceListFactory.referenceListAttribute.possibleValues();

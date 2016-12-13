@@ -46,7 +46,7 @@ public class ViewListReferenceAttributeTest {
             root.list.add(value);
         }
 
-        root = root.internal().prepareUsage();
+        root = root.internal().prepareUsableCopy();
 
         Assert.assertEquals(1,root.ref.get().view.get().size());
         Assert.assertEquals("1",root.ref.get().view.get().get(0).stringAttribute.get());
@@ -71,7 +71,7 @@ public class ViewListReferenceAttributeTest {
             root.list.add(value);
         }
 
-        root = root.internal().prepareUsage();
+        root = root.internal().prepareUsableCopy();
 
         Assert.assertEquals(0,root.ref.get().view.get().size());
     }
@@ -95,7 +95,7 @@ public class ViewListReferenceAttributeTest {
             root.list.add(value);
         }
 
-        root = root.internal().prepareUsage();
+        root = root.internal().prepareUsableCopy();
 
         Assert.assertEquals(2,root.ref.get().view.get().size());
     }
@@ -120,7 +120,7 @@ public class ViewListReferenceAttributeTest {
             root.list.add(value);
         }
 
-        root = root.internal().prepareUsage();
+        root = root.internal().prepareUsableCopy();
         root.ref.get().view.setRunlaterExecutorForTest(runnable -> runnable.run());
 
         ArrayList<String> calls=new ArrayList<>();
@@ -176,7 +176,7 @@ public class ViewListReferenceAttributeTest {
             root.list.add(value);
         }
 
-        root.internal().prepareUsage();
+        root.internal().prepareUsableCopy();
 
         ArrayList<String> calls=new ArrayList<>();
         viewExampleFactory.view.addListener((attribute, value1) -> calls.add("1"));
@@ -211,7 +211,7 @@ public class ViewListReferenceAttributeTest {
             root.list.add(value);
         }
 
-        root.internal().prepareUsage();
+        root.internal().prepareUsableCopy();
     }
 
     @Test

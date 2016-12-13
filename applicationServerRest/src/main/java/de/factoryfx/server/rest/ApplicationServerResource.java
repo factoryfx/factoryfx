@@ -29,7 +29,7 @@ public class ApplicationServerResource<L,V,T extends FactoryBase<L,V>> {
     @Produces(MediaType.APPLICATION_JSON)
     @Path("updateCurrentFactory")
     public MergeDiffInfo updateCurrentFactory(FactoryAndStorageMetadata<T> update) {
-        return  new MergeDiffInfo(applicationServer.updateCurrentFactory(new FactoryAndStorageMetadata<>(update.root.internal().prepareUsage(),update.metadata)));
+        return  new MergeDiffInfo(applicationServer.updateCurrentFactory(new FactoryAndStorageMetadata<>(update.root.internal().prepareUsableCopy(),update.metadata)));
     }
 
     @POST
@@ -37,7 +37,7 @@ public class ApplicationServerResource<L,V,T extends FactoryBase<L,V>> {
     @Produces(MediaType.APPLICATION_JSON)
     @Path("simulateUpdateCurrentFactory")
     public MergeDiffInfo simulateUpdateCurrentFactory(FactoryAndStorageMetadata<T> update) {
-        return new MergeDiffInfo(applicationServer.simulateUpdateCurrentFactory(new FactoryAndStorageMetadata<>(update.root.internal().prepareUsage(),update.metadata)));
+        return new MergeDiffInfo(applicationServer.simulateUpdateCurrentFactory(new FactoryAndStorageMetadata<>(update.root.internal().prepareUsableCopy(),update.metadata)));
     }
 
     @POST
