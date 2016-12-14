@@ -38,7 +38,7 @@ public class FactoryManagerLivecycleTest {
             });
             configLiveCycle().setReCreator(exampleLiveObjectA -> {
                 reCreateCalls.add("created");
-                return exampleLiveObjectA;
+                return new ExampleLiveObjectA("",ref.instance());
             });
             configLiveCycle().setDestroyer(exampleLiveObjectA -> destroyCalls.add("created"));
             configLiveCycle().setStarter(exampleLiveObjectA -> startCalls.add("created"));
@@ -132,12 +132,11 @@ public class FactoryManagerLivecycleTest {
         exampleFactoryB.resetCounter();
         factoryManager.update(common,update);
 
-        //TODO Bug?
         Assert.assertEquals(1,exampleFactoryA.destroyCalls.size());
-//        Assert.assertEquals(1,exampleFactoryB.destroyCalls.size());
+        Assert.assertEquals(1,exampleFactoryB.destroyCalls.size());
 
         Assert.assertEquals(1,exampleFactoryA.reCreateCalls.size());
-//        Assert.assertEquals(1,exampleFactoryB.reCreateCalls.size());
+        Assert.assertEquals(1,exampleFactoryB.reCreateCalls.size());
 
         Assert.assertEquals(1,exampleFactoryA.startCalls.size());
         Assert.assertEquals(1,exampleFactoryB.startCalls.size());
