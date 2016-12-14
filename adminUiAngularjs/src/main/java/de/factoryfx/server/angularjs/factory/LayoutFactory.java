@@ -7,11 +7,10 @@ import de.factoryfx.data.attribute.AttributeMetadata;
 import de.factoryfx.data.attribute.types.ByteArrayAttribute;
 import de.factoryfx.data.attribute.types.I18nAttribute;
 import de.factoryfx.data.attribute.types.ObjectValueAttribute;
-import de.factoryfx.factory.FactoryBase;
-import de.factoryfx.factory.LiveCycleController;
+import de.factoryfx.factory.SimpleFactoryBase;
 import de.factoryfx.user.UserManagement;
 
-public class LayoutFactory extends FactoryBase<Layout,Void> {
+public class LayoutFactory extends SimpleFactoryBase<Layout,Void> {
     public final ObjectValueAttribute<UserManagement> userManagement = new ObjectValueAttribute<>(new AttributeMetadata().labelText("userManagement"));
 
     public final ByteArrayAttribute logoSmall = new ByteArrayAttribute(new AttributeMetadata().labelText("logoSmall"));
@@ -51,16 +50,14 @@ public class LayoutFactory extends FactoryBase<Layout,Void> {
     public final I18nAttribute validationFactoryTableColumn = new I18nAttribute(new AttributeMetadata().en("validationFactoryTableColumn")).en("Factory");
 
     @Override
-    public LiveCycleController<Layout, Void> createLifecycleController() {
-        return () -> {
-            HashMap<String,String> messages=new HashMap<>();
-            internal().visitAttributesFlat((attributeVariableName, attribute) -> {
-                if (attribute instanceof I18nAttribute) {
-                    messages.put(attributeVariableName,((I18nAttribute) attribute).get().getPreferred(Locale.ENGLISH));
-                }
-            });
+    public Layout createImpl() {
+        HashMap<String,String> messages=new HashMap<>();
+        internal().visitAttributesFlat((attributeVariableName, attribute) -> {
+            if (attribute instanceof I18nAttribute) {
+                messages.put(attributeVariableName,((I18nAttribute) attribute).get().getPreferred(Locale.ENGLISH));
+            }
+        });
 
-            return new Layout(messages, logoSmall.get(), logoLarge.get(), userManagement.get().authorisationRequired());
-        };
+        return new Layout(messages, logoSmall.get(), logoLarge.get(), userManagement.get().authorisationRequired());
     }
 }

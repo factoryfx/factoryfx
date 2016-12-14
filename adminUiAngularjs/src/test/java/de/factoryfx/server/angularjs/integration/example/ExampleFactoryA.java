@@ -2,7 +2,6 @@ package de.factoryfx.server.angularjs.integration.example;
 
 import java.util.regex.Pattern;
 
-import de.factoryfx.server.angularjs.integration.Permissions;
 import de.factoryfx.data.attribute.AttributeMetadata;
 import de.factoryfx.data.attribute.types.BigDecimalAttribute;
 import de.factoryfx.data.attribute.types.BooleanAttribute;
@@ -18,9 +17,9 @@ import de.factoryfx.data.attribute.types.StringMapAttribute;
 import de.factoryfx.data.validation.RegexValidation;
 import de.factoryfx.data.validation.StringRequired;
 import de.factoryfx.factory.FactoryBase;
-import de.factoryfx.factory.LiveCycleController;
 import de.factoryfx.factory.atrribute.FactoryReferenceAttribute;
 import de.factoryfx.factory.atrribute.FactoryReferenceListAttribute;
+import de.factoryfx.server.angularjs.integration.Permissions;
 
 public class ExampleFactoryA extends FactoryBase<ExampleLiveObjectA,ExampleVisitor> {
 
@@ -40,21 +39,11 @@ public class ExampleFactoryA extends FactoryBase<ExampleLiveObjectA,ExampleVisit
     public final FactoryReferenceAttribute<ExampleLiveObjectB,ExampleFactoryB> referenceAttribute = new FactoryReferenceAttribute<>(ExampleFactoryB.class,new AttributeMetadata().en("ReferenceAttribute").de("ReferenceAttribute de"));
     public final FactoryReferenceListAttribute<ExampleLiveObjectB,ExampleFactoryB> referenceListAttribute = new FactoryReferenceListAttribute<>(ExampleFactoryB.class,new AttributeMetadata().en("ReferenceListAttribute").de("ReferenceListAttribute de"));
 
-
-    @Override
-    public LiveCycleController<ExampleLiveObjectA, ExampleVisitor> createLifecycleController() {
-        return new LiveCycleController<ExampleLiveObjectA, ExampleVisitor>() {
-            @Override
-            public ExampleLiveObjectA create() {
-                return new ExampleLiveObjectA(referenceAttribute.instance(), referenceListAttribute.instances());
-            }
-
-
-            @Override
-            public void runtimeQuery(ExampleVisitor visitor, ExampleLiveObjectA exampleLiveObjectA) {
-                visitor.exampleDates.add(new ExampleData("a","b","c"));
-                visitor.exampleDates.add(new ExampleData("a2","b2","c2"));
-            };
-        };
+    public ExampleFactoryA(){
+        configLiveCycle().setCreator(() -> new ExampleLiveObjectA(referenceAttribute.instance(), referenceListAttribute.instances()));
+        configLiveCycle().setRuntimeQueryExecutor((visitor, exampleLiveObjectA) -> {
+            visitor.exampleDates.add(new ExampleData("a","b","c"));
+            visitor.exampleDates.add(new ExampleData("a2","b2","c2"));
+        });
     }
 }

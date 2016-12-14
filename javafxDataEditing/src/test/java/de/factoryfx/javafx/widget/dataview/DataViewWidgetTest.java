@@ -23,7 +23,7 @@ public class DataViewWidgetTest extends Application {
         exampleData1.stringAttribute.set("abc");
         exampleData1 = exampleData1.internal().prepareUsableCopy();
 
-        UniformDesign uniformDesign = new UniformDesignFactory<>().instance();
+        UniformDesign uniformDesign = new UniformDesignFactory<>().internalFactory().instance();
         DataEditor dataEditor = new DataEditor(new AttributeEditorFactory(uniformDesign), uniformDesign);
         dataEditor.edit(exampleData1);
 

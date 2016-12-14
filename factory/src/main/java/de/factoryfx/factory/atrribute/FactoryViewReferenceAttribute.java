@@ -23,7 +23,7 @@ public class FactoryViewReferenceAttribute<R extends FactoryBase<?,?>,L, T exten
         if (get() == null) {
             return null;
         }
-        return get().instance();
+        return get().internalFactory().instance();
     }
 
 }

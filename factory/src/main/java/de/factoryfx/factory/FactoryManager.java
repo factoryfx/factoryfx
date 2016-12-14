@@ -18,24 +18,24 @@ public class FactoryManager<L,V,T extends FactoryBase<L,V>> {
 
     @SuppressWarnings("unchecked")
     public MergeDiff update(T commonVersion , T newVersion){
-        newVersion.loopDetector();
+        newVersion.internalFactory().loopDetector();
         LinkedHashSet<FactoryBase<?,?>> previousLiveObjects = stopFactoryProvider.apply(currentFactory);
 
         DataMerger dataMerger = new DataMerger(currentFactory, commonVersion, newVersion);
         MergeDiff mergeDiff= dataMerger.mergeIntoCurrent();
         if (mergeDiff.hasNoConflicts()){
-            for (FactoryBase<?,?> current : currentFactory.collectChildFactoriesDeep()){
-                current.unMarkChanged();
+            for (FactoryBase<?,?> current : currentFactory.internalFactory().collectChildFactoriesDeep()){
+                current.internalFactory().unMarkChanged();
             }
             for (MergeResultEntry mergeResultEntry: mergeDiff.getMergeInfos()){
                 //TODO check cast required
-                ((FactoryBase<?,?>)mergeResultEntry.parent).markChanged();
+                ((FactoryBase<?,?>)mergeResultEntry.parent).internalFactory().markChanged();
             }
 
             LinkedHashSet<FactoryBase<?,?>> changedFactories = startFactoryProvider.apply(currentFactory)
                     .stream().filter(factoryBase -> factoryBase.changedDeep()).collect(Collectors.toCollection(LinkedHashSet::new));
 
-            currentFactory.instance();
+            currentFactory.internalFactory().instance();
 
 
             LinkedHashSet<FactoryBase<?,?>> newFactories = startFactoryProvider.apply(currentFactory);
@@ -48,7 +48,7 @@ public class FactoryManager<L,V,T extends FactoryBase<L,V>> {
     /** get the merge result  but don't execute the merge and liveobjects Update*/
     @SuppressWarnings("unchecked")
     public MergeDiff simulateUpdate(T commonVersion , T newVersion){
-        newVersion.loopDetector();
+        newVersion.internalFactory().loopDetector();
 
         DataMerger dataMerger = new DataMerger(currentFactory, commonVersion, newVersion);
         return dataMerger.createMergeResult();
@@ -57,17 +57,17 @@ public class FactoryManager<L,V,T extends FactoryBase<L,V>> {
     private void updateLiveObjects(LinkedHashSet<FactoryBase<?,?>> previousFactories, LinkedHashSet<FactoryBase<?,?>> changedFactories , LinkedHashSet<FactoryBase<?,?>> newFactories){
         for (FactoryBase<?,?> previousLiveObject: previousFactories){
             if (!newFactories.contains(previousLiveObject)){
-                previousLiveObject.destroy();
+                previousLiveObject.internalFactory().destroy();
             }
         }
 
         for (FactoryBase<?,?> newLiveObject: newFactories){
             if (changedFactories.contains(newLiveObject)){
-                newLiveObject.start();
+                newLiveObject.internalFactory().start();
                 continue;
             }
             if (!previousFactories.contains(newLiveObject)){
-                newLiveObject.start();
+                newLiveObject.internalFactory().start();
                 continue;
             }
         }
@@ -109,15 +109,15 @@ public class FactoryManager<L,V,T extends FactoryBase<L,V>> {
 
     @SuppressWarnings("unchecked")
     public void start(T newFactory){
-        newFactory.loopDetector();
+        newFactory.internalFactory().loopDetector();
         currentFactory=newFactory;
 
-        newFactory.instance();
+        newFactory.internalFactory().instance();
 
         HashSet<FactoryBase<?,?>> newLiveObjects = startFactoryProvider.apply(newFactory);
 
         for (FactoryBase<?,?> newLiveObject: newLiveObjects){
-            newLiveObject.start();
+            newLiveObject.internalFactory().start();
         }
     }
 
@@ -126,14 +126,14 @@ public class FactoryManager<L,V,T extends FactoryBase<L,V>> {
         HashSet<FactoryBase<?,?>> liveObjects = stopFactoryProvider.apply(currentFactory);
 
         for (FactoryBase<?,?> newLiveObject: liveObjects){
-            newLiveObject.destroy();
+            newLiveObject.internalFactory().destroy();
         }
     }
 
     @SuppressWarnings("unchecked")
     public V query(V visitor){
-        for (FactoryBase<?,V> factory: currentFactory.collectChildFactoriesDeep()){
-            factory.runtimeQuery(visitor);
+        for (FactoryBase<?,V> factory: currentFactory.internalFactory().collectChildFactoriesDeep()){
+            factory.internalFactory().runtimeQuery(visitor);
         }
         return visitor;
     }

@@ -5,7 +5,6 @@ import de.factoryfx.data.attribute.types.IntegerAttribute;
 import de.factoryfx.data.attribute.types.ObjectValueAttribute;
 import de.factoryfx.data.attribute.types.StringListAttribute;
 import de.factoryfx.factory.FactoryBase;
-import de.factoryfx.factory.LiveCycleController;
 import de.factoryfx.factory.atrribute.FactoryReferenceAttribute;
 import de.factoryfx.factory.atrribute.FactoryReferenceListAttribute;
 import de.factoryfx.javafx.util.LongRunningActionExecutor;
@@ -27,25 +26,15 @@ public class StageFactory<V> extends FactoryBase<BorderPaneStage,V> {
 
     public StageFactory(){
         cssResourceUrlExternalForm.add(getClass().getResource("/de/factoryfx/javafx/css/app.css").toExternalForm());
-    }
 
-    @Override
-    public LiveCycleController<BorderPaneStage, V> createLifecycleController() {
-        return new LiveCycleController<BorderPaneStage, V>() {
-            @Override
-            public BorderPaneStage create() {
-                return new BorderPaneStage(stage.get(),items.instances(),viewsDisplayWidget.instance(),width.get(),height.get(), longRunningActionExecutor.instance().getStackPane(),cssResourceUrlExternalForm.get());
-            }
-
-            @Override
-            public void start(BorderPaneStage newLiveObject) {
-                stage.get().show();
-            }
-
-            @Override
-            public void destroy(BorderPaneStage previousLiveObject) {
-                stage.get().hide();
-            };
-        };
+        configLiveCycle().setCreator(() -> {
+            return new BorderPaneStage(stage.get(),items.instances(),viewsDisplayWidget.instance(),width.get(),height.get(), longRunningActionExecutor.instance().getStackPane(),cssResourceUrlExternalForm.get());
+        });
+        configLiveCycle().setStarter((newLiveObject) -> {
+            stage.get().show();
+        });
+        configLiveCycle().setDestroyer((previousLiveObject) -> {
+            stage.get().hide();
+        });
     }
 }

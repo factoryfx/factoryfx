@@ -1,11 +1,10 @@
 package de.factoryfx.javafx.util;
 
-import de.factoryfx.factory.FactoryBase;
-import de.factoryfx.factory.LiveCycleController;
+import de.factoryfx.factory.SimpleFactoryBase;
 
-public class LongRunningActionExecutorFactory<V> extends FactoryBase<LongRunningActionExecutor,V> {
+public class LongRunningActionExecutorFactory<V> extends SimpleFactoryBase<LongRunningActionExecutor,V> {
     @Override
-    public LiveCycleController<LongRunningActionExecutor, V> createLifecycleController() {
-        return () -> new LongRunningActionExecutor();
+    public LongRunningActionExecutor createImpl() {
+        return new LongRunningActionExecutor();
     }
 }

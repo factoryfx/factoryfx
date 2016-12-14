@@ -14,8 +14,8 @@ public class DistributionClientDownloadServerTest {
         distributionClientDownloadServerFactory.port.set(43654);
         distributionClientDownloadServerFactory.host.set("localhost");
         distributionClientDownloadServerFactory.distributionClientBasePath.set("src/test/java/de/factoryfx/javafx/distribution/launcher/downloadserver");
-        distributionClientDownloadServerFactory.instance();
-        distributionClientDownloadServerFactory.start();
+        distributionClientDownloadServerFactory.internalFactory().instance();
+        distributionClientDownloadServerFactory.internalFactory().start();
 
         try {
             java.awt.Desktop.getDesktop().browse(new URI("http://localhost:43654/dummy.zip"));

@@ -14,7 +14,7 @@ public class FactoryBaseTest {
         exampleFactoryB.referenceAttribute.set(exampleFactoryA);
         exampleFactoryA.referenceAttribute.set(exampleFactoryB);
 
-        exampleFactoryA.loopDetector();
+        exampleFactoryA.internalFactory().loopDetector();
     }
 
     @Test
@@ -26,7 +26,7 @@ public class FactoryBaseTest {
 
         exampleFactoryA.referenceAttribute.set(exampleFactoryB);
 
-        exampleFactoryA.instance();
+        exampleFactoryA.internalFactory().instance();
 
         //TODO fix test
 //        HashMap<String, LiveObject> liveObjects = new HashMap<>();

@@ -1,20 +1,12 @@
 package de.factoryfx.javafx.widget;
 
-import de.factoryfx.factory.FactoryBase;
-import de.factoryfx.factory.LiveCycleController;
+import de.factoryfx.factory.SimpleFactoryBase;
 
-public abstract class WidgetFactory<V> extends FactoryBase<Widget,V> {
-
+public abstract class WidgetFactory<V> extends SimpleFactoryBase<Widget,V> {
 
     @Override
-    public LiveCycleController<Widget, V> createLifecycleController() {
-        return new LiveCycleController<Widget, V>() {
-            @Override
-            public Widget create() {
-                return createWidget();
-            }
-        };
+    public Widget createImpl() {
+        return createWidget();
     }
-
     protected abstract Widget createWidget() ;
 }

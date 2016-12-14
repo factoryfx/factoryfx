@@ -10,7 +10,7 @@ public class DataEditorTest {
 
     @Test
     public void testBack() throws Exception {
-        UniformDesign uniformDesign = new UniformDesignFactory<>().instance();
+        UniformDesign uniformDesign = new UniformDesignFactory<>().internalFactory().instance();
         DataEditor dataEditor = new DataEditor(new AttributeEditorFactory(uniformDesign),uniformDesign);
 
 
@@ -40,7 +40,7 @@ public class DataEditorTest {
 
     @Test
     public void testBack_limit() throws Exception {
-        UniformDesign uniformDesign = new UniformDesignFactory<>().instance();
+        UniformDesign uniformDesign = new UniformDesignFactory<>().internalFactory().instance();
         DataEditor dataEditor = new DataEditor(new AttributeEditorFactory(uniformDesign),uniformDesign);
 
         for (int i=0;i<100;i++){
@@ -53,7 +53,7 @@ public class DataEditorTest {
 
     @Test
     public void testForward() throws Exception {
-        UniformDesign uniformDesign = new UniformDesignFactory<>().instance();
+        UniformDesign uniformDesign = new UniformDesignFactory<>().internalFactory().instance();
         DataEditor dataEditor = new DataEditor(new AttributeEditorFactory(uniformDesign),uniformDesign);
 
 

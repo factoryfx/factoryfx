@@ -23,7 +23,7 @@ public class DataEditorIntegrationTest extends Application{
         ExampleData1 exampleData1 = new ExampleData1();
         exampleData1.stringAttribute.set("abc");
 
-        UniformDesign uniformDesign = new UniformDesignFactory<>().instance();
+        UniformDesign uniformDesign = new UniformDesignFactory<>().internalFactory().instance();
         DataEditor dataEditor = new DataEditor(new AttributeEditorFactory(uniformDesign),uniformDesign);
         dataEditor.setVisCustomizer((node, data) -> {
             if (data instanceof ExampleData1) {

@@ -5,11 +5,10 @@ import java.util.Locale;
 import de.factoryfx.data.attribute.AttributeMetadata;
 import de.factoryfx.data.attribute.types.ColorAttribute;
 import de.factoryfx.data.attribute.types.LocaleAttribute;
-import de.factoryfx.factory.FactoryBase;
-import de.factoryfx.factory.LiveCycleController;
+import de.factoryfx.factory.SimpleFactoryBase;
 import javafx.scene.paint.Color;
 
-public class UniformDesignFactory<V> extends FactoryBase<UniformDesign,V>{
+public class UniformDesignFactory<V> extends SimpleFactoryBase<UniformDesign,V> {
 
     public final LocaleAttribute locale=new LocaleAttribute(new AttributeMetadata().en("locale")).defaultValue(Locale.ENGLISH);
     public final ColorAttribute dangerColor=new ColorAttribute(new AttributeMetadata().en("dangerColor")).defaultValue(Color.web("#FF7979"));
@@ -20,15 +19,15 @@ public class UniformDesignFactory<V> extends FactoryBase<UniformDesign,V>{
     public final ColorAttribute borderColor=new ColorAttribute(new AttributeMetadata().en("borderColor")).defaultValue(Color.web("#B5B5B5"));
 
     @Override
-    public LiveCycleController<UniformDesign, V> createLifecycleController() {
-        return () -> new UniformDesign(
-                    locale.get(),
-                    dangerColor.get(),
-                    warningColor.get(),
-                    infoColor.get(),
-                    successColor.get(),
-                    primaryColor.get(),
-                    borderColor.get()
-        );
+    public UniformDesign createImpl() {
+        return new UniformDesign(
+                locale.get(),
+                dangerColor.get(),
+                warningColor.get(),
+                infoColor.get(),
+                successColor.get(),
+                primaryColor.get(),
+                borderColor.get());
     }
+
 }

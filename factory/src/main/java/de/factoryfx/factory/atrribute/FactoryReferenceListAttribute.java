@@ -37,7 +37,7 @@ public class FactoryReferenceListAttribute<L,T extends FactoryBase<? extends L,?
         }
         ArrayList<L> result = new ArrayList<>();
         for(T item: get()){
-            result.add(item.instance());
+            result.add(item.internalFactory().instance());
         }
         return result;
     }

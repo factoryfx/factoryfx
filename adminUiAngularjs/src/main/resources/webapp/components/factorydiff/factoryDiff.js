@@ -17,7 +17,7 @@ angular.module('factoryfxwebgui.directives')//re-open module definition
             guiModel: '=guiModel'
 
         },
-        templateUrl: 'components/factorydiff/factoryDiff.html',
+        templateUrl: 'components/factorydiff/factorydiff.html',
         replace: true,
 
         controller: ["$scope", "$resource", "$sce", function ($scope,$resource,$sce) {
