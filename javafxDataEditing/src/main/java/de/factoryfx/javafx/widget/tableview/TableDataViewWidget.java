@@ -1,5 +1,9 @@
 package de.factoryfx.javafx.widget.tableview;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Function;
+
 import de.factoryfx.data.Data;
 import de.factoryfx.javafx.editor.data.DataEditor;
 import de.factoryfx.javafx.util.UniformDesign;
@@ -10,13 +14,8 @@ import javafx.beans.value.ObservableValue;
 import javafx.geometry.Orientation;
 import javafx.scene.Node;
 import javafx.scene.control.SplitPane;
-import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.layout.BorderPane;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.function.Function;
 
 public class TableDataViewWidget<T extends Data> implements CloseAwareWidget {
 
@@ -33,14 +32,22 @@ public class TableDataViewWidget<T extends Data> implements CloseAwareWidget {
         this.columns = new ArrayList<>();
     }
 
-    public TableDataViewWidget<T> withColumn(String columnName, Function<T,ObservableValue<String>> cellValueFactory) {
-        columns.add(new TableDataColumnSpec<T>(columnName,cellValueFactory));
+    public TableDataViewWidget<T> withColumn(String columnName, Function<T,ObservableValue<String>> cellValueFactory, String cssColumnClass) {
+        columns.add(new TableDataColumnSpec<>(columnName,cellValueFactory,cssColumnClass));
         return this;
     }
 
-    public TableDataViewWidget<T> withStaticDataColumn(String columnName, Function<T,String> cellValueFactory) {
-        columns.add(new TableDataColumnSpec<T>(columnName, p->new SimpleStringProperty(cellValueFactory.apply(p))));
+    public TableDataViewWidget<T> withStaticDataColumn(String columnName, Function<T,String> cellValueFactory, String cssColumnClass) {
+        columns.add(new TableDataColumnSpec<>(columnName, p->new SimpleStringProperty(cellValueFactory.apply(p)),cssColumnClass));
         return this;
+    }
+
+    public TableDataViewWidget<T> withColumn(String columnName, Function<T,ObservableValue<String>> cellValueFactory) {
+        return withColumn(columnName,cellValueFactory,null);
+    }
+
+    public TableDataViewWidget<T> withStaticDataColumn(String columnName, Function<T,String> cellValueFactory) {
+        return withStaticDataColumn(columnName,cellValueFactory,null);
     }
 
     @Override
@@ -58,10 +65,8 @@ public class TableDataViewWidget<T extends Data> implements CloseAwareWidget {
         tableView.setItems(tableDataView.dataList());
         tableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         for (TableDataColumnSpec<T> col : columns) {
-            TableColumn<T, String> column = new TableColumn<>(col.columnName);
-            column.setCellValueFactory(param->col.cellValueProvider.apply(param.getValue()));
-            tableView.getColumns().add(column);
-      }
+            tableView.getColumns().add(col.create());
+        }
 
         BorderPane borderPaneWrapper = new BorderPane();
         borderPaneWrapper.setCenter(tableView);
