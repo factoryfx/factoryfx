@@ -1,22 +1,18 @@
 package de.factoryfx.factory.atrribute;
 
-import java.util.ArrayList;
-import java.util.function.BiFunction;
+import java.util.Arrays;
 
 import de.factoryfx.data.attribute.AttributeMetadata;
 import de.factoryfx.data.jackson.ObjectMapperBuilder;
+import de.factoryfx.factory.testfactories.ExampleFactoryA;
+import de.factoryfx.factory.testfactories.ExampleLiveObjectA;
 import org.junit.Test;
 
 public class FactoryViewListReferenceAttributeTest {
     @Test
     public void test_jon(){
-        FactoryViewListReferenceAttribute attribute = new FactoryViewListReferenceAttribute(new AttributeMetadata(), new BiFunction() {
-            @Override
-            public Object apply(Object o, Object o2) {
-                ArrayList<String> strings = new ArrayList<>();
-                strings.add("gfhgf");
-                return strings;
-            }
+        FactoryViewListReferenceAttribute<ExampleFactoryA,ExampleLiveObjectA,ExampleFactoryA> attribute = new FactoryViewListReferenceAttribute<>(new AttributeMetadata(), o -> {
+            return Arrays.asList(new ExampleFactoryA());
         });
 
         ObjectMapperBuilder.build().copy(attribute);

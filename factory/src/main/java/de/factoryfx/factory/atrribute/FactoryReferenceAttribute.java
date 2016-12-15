@@ -24,6 +24,6 @@ public class FactoryReferenceAttribute<L, T extends FactoryBase<L,?>> extends Re
         if (get()==null){
             return null;
         }
-        return get().instance();
+        return get().internalFactory().instance();
     }
 }

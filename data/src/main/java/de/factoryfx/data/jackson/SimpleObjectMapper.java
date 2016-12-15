@@ -30,7 +30,7 @@ public class SimpleObjectMapper {
         try {
             T value = function.read();
             if (value instanceof Data) {
-                return (T) ((Data) value).internal().reconstructMetadataDeepRoot();
+                return (T) ((Data) value).internal().prepareUsableCopy();
             }
             return value;
         } catch (IOException e) {

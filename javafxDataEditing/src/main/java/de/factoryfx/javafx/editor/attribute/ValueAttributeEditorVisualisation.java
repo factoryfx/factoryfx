@@ -5,7 +5,7 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.Node;
 
 
-public abstract class ImmutableAttributeEditorVisualisation<T> implements AttributeEditorVisualisation<T> {
+public abstract class ValueAttributeEditorVisualisation<T> implements AttributeEditorVisualisation<T> {
 
     private SimpleObjectProperty<T> attributeValue = new SimpleObjectProperty<>();
 

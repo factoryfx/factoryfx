@@ -11,14 +11,14 @@ import de.factoryfx.data.Data;
 import de.factoryfx.data.attribute.Attribute;
 import javafx.collections.ObservableList;
 
-public class ReferenceListMergeHelper<T extends Data> extends AttributeMergeHelper<ObservableList<T>> {
+public class ReferenceListMergeHelper<T extends Data> extends AttributeMergeHelper<List<T>> {
 
-    public ReferenceListMergeHelper(Attribute<ObservableList<T>> attribute) {
+    public ReferenceListMergeHelper(Attribute<List<T>> attribute) {
         super(attribute);
     }
 
     @Override
-    public boolean equalValuesTyped(ObservableList<T> valueList) {
+    public boolean equalValuesTyped(List<T> valueList) {
         List<T> currentList = attribute.get();
 
         if (valueList==null ){
@@ -36,7 +36,7 @@ public class ReferenceListMergeHelper<T extends Data> extends AttributeMergeHelp
     }
 
     @Override
-    public boolean hasNoConflictTyped(Optional<ObservableList<T>> originalValue, Optional<ObservableList<T>> newValue) {
+    public boolean hasNoConflictTyped(Optional<List<T>> originalValue, Optional<List<T>> newValue) {
         return true;
     }
 
@@ -58,7 +58,7 @@ public class ReferenceListMergeHelper<T extends Data> extends AttributeMergeHelp
     }
 
     @Override
-    public void mergeTyped(Optional<ObservableList<T>> originalValue, ObservableList<T> newValue) {
+    public void mergeTyped(Optional<List<T>> originalValue, List<T> newValue) {
         List<T> currentToEditList = attribute.get();
 
         List<T> currentList = new ArrayList<>(attribute.get());

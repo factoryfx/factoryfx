@@ -1,40 +1,26 @@
 package de.factoryfx.javafx.editor.attribute.visualisation;
 
-import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 import java.util.function.Supplier;
 
 import de.factoryfx.data.Data;
-import de.factoryfx.data.util.LanguageText;
+import de.factoryfx.javafx.editor.attribute.ListAttributeEditorVisualisation;
 import de.factoryfx.javafx.editor.data.DataEditor;
-import de.factoryfx.javafx.util.DataChoiceDialog;
 import de.factoryfx.javafx.util.UniformDesign;
+import de.factoryfx.javafx.widget.datalistedit.DataListEditWidget;
 import de.factoryfx.javafx.widget.table.TableControlWidget;
-import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
-import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
-import javafx.geometry.Pos;
 import javafx.scene.Node;
-import javafx.scene.control.Button;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
-import javafx.scene.control.Tooltip;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
-import org.controlsfx.glyphfont.FontAwesome;
 
-public class ReferenceListAttributeVisualisation extends ListAttributeVisualisation<Data> {
-
-    private LanguageText selectText= new LanguageText().en("select").de("Auswählen");
-    private LanguageText addText= new LanguageText().en("add").de("Hinzufügen");
-    private LanguageText deleteText= new LanguageText().en("delete").de("Löschen");
-    private LanguageText editText= new LanguageText().en("edit").de("Editieren");
-    private LanguageText copyText= new LanguageText().en("copy").de("Kopieren");
+public class ReferenceListAttributeVisualisation extends ListAttributeEditorVisualisation<Data> {
 
     private final UniformDesign uniformDesign;
     private final DataEditor dataEditor;
@@ -52,16 +38,16 @@ public class ReferenceListAttributeVisualisation extends ListAttributeVisualisat
         this.isUserSelectable = isUserSelectable;
     }
 
+
     @Override
-    public Node createContent() {
+    public Node createContent(ObservableList<Data> attributeValue) {
         TableView<Data> tableView = new TableView<>();
+        tableView.setItems(attributeValue);
         tableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         TableColumn<Data, String> test = new TableColumn<>("Data");
         test.setCellValueFactory(param -> new SimpleStringProperty(param.getValue().internal().getDisplayText()));
         tableView.getColumns().add(test);
         tableView.getStyleClass().add("hidden-tableview-headers");
-        ObservableList<Data> items = FXCollections.observableArrayList();
-        tableView.setItems(items);
 
         tableView.setOnMouseClicked(mouseEvent -> {
             if (mouseEvent.getButton().equals(MouseButton.PRIMARY)) {
@@ -71,84 +57,13 @@ public class ReferenceListAttributeVisualisation extends ListAttributeVisualisat
             }
         });
 
-        updater= Optional.of(t -> tableView.setItems(t));
-
-        Button showButton = new Button("", uniformDesign.createIcon(FontAwesome.Glyph.PENCIL));
-        showButton.setOnAction(event -> dataEditor.edit(tableView.getSelectionModel().getSelectedItem()));
-        showButton.disableProperty().bind(tableView.getSelectionModel().selectedItemProperty().isNull());
-
-        Button selectButton = new Button("", uniformDesign.createIcon(FontAwesome.Glyph.SEARCH_PLUS));
-        selectButton.setOnAction(event -> {
-            Optional<Data> toAdd = new DataChoiceDialog().show(possibleValuesProvider.get(),selectButton.getScene().getWindow(),uniformDesign);
-            toAdd.ifPresent(data -> boundToList.add(data));
-        });
-        selectButton.setDisable(!isUserEditable || !isUserSelectable);
-
-        Button adderButton = new Button();
-        uniformDesign.addIcon(adderButton,FontAwesome.Glyph.PLUS);
-        adderButton.setOnAction(event -> {
-            emptyAdder.run();
-            dataEditor.edit(boundToList.get(boundToList.size()-1));
-        });
-        adderButton.setDisable(!isUserEditable);
-
-        Button deleteButton = new Button();
-        uniformDesign.addDangerIcon(deleteButton,FontAwesome.Glyph.TIMES);
-        deleteButton.setOnAction(event -> boundToList.remove(tableView.getSelectionModel().getSelectedItem()));
-        deleteButton.disableProperty().bind(tableView.getSelectionModel().selectedItemProperty().isNull().or(new SimpleBooleanProperty(!isUserEditable)));
-
-        Button moveUpButton = new Button();
-        uniformDesign.addIcon(moveUpButton,FontAwesome.Glyph.ANGLE_UP);
-        moveUpButton.disableProperty().bind(tableView.getSelectionModel().selectedItemProperty().isNull());
-        moveUpButton.setOnAction(event -> {
-            int selectedIndex = tableView.getSelectionModel().getSelectedIndex();
-            if (selectedIndex -1>=0){
-                Collections.swap(boundToList, selectedIndex, selectedIndex -1);
-                tableView.getSelectionModel().select(selectedIndex -1);
-            }
-        });
-        Button moveDownButton = new Button();
-        uniformDesign.addIcon(moveDownButton,FontAwesome.Glyph.ANGLE_DOWN);
-        moveDownButton.disableProperty().bind(tableView.getSelectionModel().selectedItemProperty().isNull());
-        moveDownButton.setOnAction(event -> {
-            int selectedIndex = tableView.getSelectionModel().getSelectedIndex();
-            if (selectedIndex+1<tableView.getItems().size()){
-                Collections.swap(boundToList, selectedIndex, selectedIndex +1);
-                tableView.getSelectionModel().select(selectedIndex +1);
-            }
-        });
-
-        Button copyButton = new Button();
-        uniformDesign.addIcon(copyButton,FontAwesome.Glyph.COPY);
-        copyButton.disableProperty().bind(tableView.getSelectionModel().selectedItemProperty().isNull());
-        copyButton.setOnAction(event -> {
-            boundToList.add(tableView.getSelectionModel().getSelectedItem().utility().semanticCopy());
-        });
-
-        HBox buttons = new HBox();
-        buttons.setAlignment(Pos.CENTER_LEFT);
-        buttons.setSpacing(3);
-        buttons.getChildren().add(showButton);
-        buttons.getChildren().add(selectButton);
-        buttons.getChildren().add(adderButton);
-        buttons.getChildren().add(copyButton);
-        buttons.getChildren().add(deleteButton);
-        buttons.getChildren().add(moveUpButton);
-        buttons.getChildren().add(moveDownButton);
-
-        showButton.setTooltip(new Tooltip(uniformDesign.getText(editText)));
-        selectButton.setTooltip(new Tooltip(uniformDesign.getText(selectText)));
-        adderButton.setTooltip(new Tooltip(uniformDesign.getText(addText)));
-        deleteButton.setTooltip(new Tooltip(uniformDesign.getText(deleteText)));
-        copyButton.setTooltip(new Tooltip(uniformDesign.getText(copyText)));
-
-        HBox.setMargin(moveUpButton,new Insets(0,0,0,9));
-        HBox.setMargin(moveDownButton,new Insets(0,9,0,0));
-
         TableControlWidget<Data> tableControlWidget = new TableControlWidget<>(tableView,uniformDesign);
         Node tableControlWidgetContent = tableControlWidget.createContent();
         HBox.setHgrow(tableControlWidgetContent, Priority.ALWAYS);
         HBox.setMargin(tableControlWidgetContent, new Insets(0,1,0,0));
+
+        final DataListEditWidget<Data> dataListEditWidget = new DataListEditWidget<>(attributeValue, tableView, dataEditor, uniformDesign, emptyAdder, possibleValuesProvider, isUserEditable, isUserSelectable);
+        HBox buttons = (HBox)dataListEditWidget.createContent();
         buttons.getChildren().add(tableControlWidgetContent);
 
         VBox vbox = new VBox();

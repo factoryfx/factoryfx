@@ -96,7 +96,9 @@ public class AttributeEditorFactory {
         }
 
         if (attribute instanceof ViewListReferenceAttribute){
-            return Optional.of(new AttributeEditor<>((Attribute<List<Data>>)attribute,new ViewListReferenceAttributeVisualisation(dataEditor, uniformDesign)));
+            ViewListReferenceAttributeVisualisation viewListReferenceAttributeVisualisationnew = new ViewListReferenceAttributeVisualisation(dataEditor, uniformDesign);
+            ExpandableAttributeVisualisation<List<Data>> expandableAttributeVisualisation= new ExpandableAttributeVisualisation<>(viewListReferenceAttributeVisualisationnew,uniformDesign,(l)->"Items: "+l.size(),FontAwesome.Glyph.LIST);
+            return Optional.of(new AttributeEditor<>((Attribute<List<Data>>)attribute,expandableAttributeVisualisation));
         }
         return Optional.empty();
     }

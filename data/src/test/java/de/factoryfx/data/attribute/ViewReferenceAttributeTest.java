@@ -1,7 +1,7 @@
 package de.factoryfx.data.attribute;
 
 import java.util.ArrayList;
-import java.util.function.BiFunction;
+import java.util.function.Function;
 
 import de.factoryfx.data.attribute.types.BooleanAttribute;
 import de.factoryfx.data.merge.testfactories.ExampleFactoryA;
@@ -13,10 +13,10 @@ public class ViewReferenceAttributeTest {
 
     public static class ViewExampleFactory extends IdData{
 
-        public final ViewReferenceAttribute<ViewExampleFactoryRoot,ViewExampleFactory,ExampleFactoryA> view= new ViewReferenceAttribute<>(new AttributeMetadata(), new BiFunction<ViewExampleFactoryRoot, ViewExampleFactory, ExampleFactoryA>() {
+        public final ViewReferenceAttribute<ViewExampleFactoryRoot,ExampleFactoryA> view= new ViewReferenceAttribute<>(new AttributeMetadata(), new Function<ViewExampleFactoryRoot, ExampleFactoryA>() {
             @Override
-            public ExampleFactoryA apply(ViewExampleFactoryRoot viewExampleFactoryRoot, ViewExampleFactory viewExampleFactory) {
-                if (viewExampleFactory.include.get()){
+            public ExampleFactoryA apply(ViewExampleFactoryRoot viewExampleFactoryRoot) {
+                if (include.get()){
                     return viewExampleFactoryRoot.exampleFactoryA.get();
                 }
                 return null;
@@ -43,9 +43,9 @@ public class ViewReferenceAttributeTest {
         ExampleFactoryA value = new ExampleFactoryA();
         root.exampleFactoryA.set(value);
 
-        root.internal().prepareUsage();
+        root = root.internal().prepareUsableCopy();
 
-        Assert.assertEquals(value,viewExampleFactory.view.get());
+        Assert.assertEquals(value.getId(),root.ref.get().view.get().getId());
     }
 
     @Test
@@ -58,7 +58,7 @@ public class ViewReferenceAttributeTest {
         ExampleFactoryA value = new ExampleFactoryA();
         root.exampleFactoryA.set(value);
 
-        root.internal().prepareUsage();
+        root.internal().prepareUsableCopy();
 
         Assert.assertEquals(null,viewExampleFactory.view.get());
     }
@@ -66,7 +66,6 @@ public class ViewReferenceAttributeTest {
     @Test
     public void test_change_listener(){
         ViewExampleFactory viewExampleFactory=new ViewExampleFactory();
-        viewExampleFactory.view.setRunlaterExecutorForTest(runnable -> runnable.run());
         viewExampleFactory.include.set(false);
 
         ViewExampleFactoryRoot root = new ViewExampleFactoryRoot();
@@ -75,10 +74,11 @@ public class ViewReferenceAttributeTest {
         value.stringAttribute.set("123");
         root.exampleFactoryA.set(value);
 
-        root.internal().prepareUsage();
+        root = root.internal().prepareUsableCopy();
+        root.ref.get().view.setRunlaterExecutorForTest(runnable -> runnable.run());
 
         ArrayList<String> calls=new ArrayList<>();
-        viewExampleFactory.view.addListener((attribute, value1) -> {
+        root.ref.get().view.addListener((attribute, value1) -> {
             if (value1!=null){
                 calls.add(value1.stringAttribute.get());
             } else {
@@ -86,7 +86,7 @@ public class ViewReferenceAttributeTest {
             }
         });
 
-        viewExampleFactory.include.set(true);
+        root.ref.get().include.set(true);
 
         try {
             Thread.sleep(500);
@@ -99,7 +99,7 @@ public class ViewReferenceAttributeTest {
 
 
         calls.clear();
-        viewExampleFactory.include.set(false);
+        root.ref.get().include.set(false);
         try {
             Thread.sleep(500);
         } catch (InterruptedException e) {
@@ -121,7 +121,7 @@ public class ViewReferenceAttributeTest {
         value.stringAttribute.set("123");
         root.exampleFactoryA.set(value);
 
-        root.internal().prepareUsage();
+        root.internal().prepareUsableCopy();
 
         ArrayList<String> calls=new ArrayList<>();
         viewExampleFactory.view.addListener((attribute, value1) -> calls.add(value1.stringAttribute.get()));
@@ -161,18 +161,15 @@ public class ViewReferenceAttributeTest {
         ExampleFactoryA value = new ExampleFactoryA();
         root.exampleFactoryA.set(value);
 
-        root.internal().reconstructMetadataDeepRoot();
+        root.internal().prepareUsableCopy();
     }
 
     @Test
     public void removeListener() throws Exception {
-        ViewReferenceAttribute<ViewExampleFactoryRoot,ViewExampleFactory,ExampleFactoryA> attribute= new ViewReferenceAttribute<>(new AttributeMetadata(), new BiFunction<ViewExampleFactoryRoot, ViewExampleFactory, ExampleFactoryA>() {
+        ViewReferenceAttribute<ViewExampleFactoryRoot,ExampleFactoryA> attribute= new ViewReferenceAttribute<>(new AttributeMetadata(), new Function<ViewExampleFactoryRoot, ExampleFactoryA>() {
             @Override
-            public ExampleFactoryA apply(ViewExampleFactoryRoot viewExampleFactoryRoot, ViewExampleFactory viewExampleFactory) {
-                if (viewExampleFactory.include.get()){
-                    return viewExampleFactoryRoot.exampleFactoryA.get();
-                }
-                return null;
+            public ExampleFactoryA apply(ViewExampleFactoryRoot viewExampleFactoryRoot) {
+                return viewExampleFactoryRoot.exampleFactoryA.get();
             }
         });
 
@@ -185,13 +182,10 @@ public class ViewReferenceAttributeTest {
 
     @Test
     public void removeWeakListener() throws Exception {
-        ViewReferenceAttribute<ViewExampleFactoryRoot,ViewExampleFactory,ExampleFactoryA> attribute= new ViewReferenceAttribute<>(new AttributeMetadata(), new BiFunction<ViewExampleFactoryRoot, ViewExampleFactory, ExampleFactoryA>() {
+        ViewReferenceAttribute<ViewExampleFactoryRoot,ExampleFactoryA> attribute= new ViewReferenceAttribute<>(new AttributeMetadata(), new Function<ViewExampleFactoryRoot, ExampleFactoryA>() {
             @Override
-            public ExampleFactoryA apply(ViewExampleFactoryRoot viewExampleFactoryRoot, ViewExampleFactory viewExampleFactory) {
-                if (viewExampleFactory.include.get()){
-                    return viewExampleFactoryRoot.exampleFactoryA.get();
-                }
-                return null;
+            public ExampleFactoryA apply(ViewExampleFactoryRoot viewExampleFactoryRoot) {
+                 return viewExampleFactoryRoot.exampleFactoryA.get();
             }
         });
 

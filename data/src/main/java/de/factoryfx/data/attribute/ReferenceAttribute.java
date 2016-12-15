@@ -80,6 +80,9 @@ public class ReferenceAttribute<T extends Data> extends Attribute<T> {
     @Override
     public void set(T value) {
         this.value=value;
+        if (root!=null && value!=null) {
+            value.internal().prepareUsableCopy(root);
+        }
         for (AttributeChangeListener<T> listener: listeners){
             listener.changed(this,value);
         }
@@ -185,7 +188,7 @@ public class ReferenceAttribute<T extends Data> extends Attribute<T> {
             }
 
         }
-        getOptional().ifPresent(data->data.internal().prepareUsage(root));
+        getOptional().ifPresent(data->data.internal().prepareUsableCopy(root));
         return get();
     }
 
@@ -209,7 +212,7 @@ public class ReferenceAttribute<T extends Data> extends Attribute<T> {
     }
 
     @Override
-    public void prepareUsage(Data root, Data parent){
+    public void prepareUsage(Data root){
         this.root=root;
     }
 

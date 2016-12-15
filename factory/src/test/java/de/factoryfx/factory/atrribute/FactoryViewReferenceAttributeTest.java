@@ -1,6 +1,6 @@
 package de.factoryfx.factory.atrribute;
 
-import java.util.function.BiFunction;
+import java.util.function.Function;
 
 import de.factoryfx.data.attribute.AttributeMetadata;
 import de.factoryfx.data.jackson.ObjectMapperBuilder;
@@ -10,9 +10,9 @@ public class FactoryViewReferenceAttributeTest {
 
     @Test
     public void test_jon(){
-        FactoryViewReferenceAttribute attribute = new FactoryViewReferenceAttribute(new AttributeMetadata(), new BiFunction() {
+        FactoryViewReferenceAttribute attribute = new FactoryViewReferenceAttribute(new AttributeMetadata(), new Function() {
             @Override
-            public Object apply(Object o, Object o2) {
+            public Object apply(Object o) {
                 return "gfhgf";
             }
         });

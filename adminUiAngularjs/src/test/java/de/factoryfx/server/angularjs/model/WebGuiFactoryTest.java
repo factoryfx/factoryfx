@@ -17,7 +17,7 @@ public class WebGuiFactoryTest {
 
         exampleFactoryA.referenceListAttribute.add(exampleFactoryA.referenceAttribute.get());
 
-        System.out.println(new ObjectMapperBuilder().build().writeValueAsString(new WebGuiFactory(exampleFactoryA,exampleFactoryA)));
+        exampleFactoryA = exampleFactoryA.internal().prepareUsableCopy();
 
         //test json serialisation
         new ObjectMapperBuilder().build().copy(new WebGuiFactory(exampleFactoryA,exampleFactoryA));

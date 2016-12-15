@@ -1,23 +1,29 @@
 package de.factoryfx.data.attribute;
 
+import java.util.List;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
+
 import com.fasterxml.jackson.annotation.JsonCreator;
 import de.factoryfx.data.jackson.ObservableListJacksonAbleWrapper;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 
-public class ValueListAttribute<T> extends ValueAttribute<ObservableList<T>> {
+public class ValueListAttribute<T> extends ValueAttribute<List<T>> {
     private final Class<T> itemType;
     private final T listNewItemEmptyValue;
+    private ObservableList<T> observableValue;
 
     public ValueListAttribute(Class<T> itemType, AttributeMetadata attributeMetadata, T listNewItemEmptyValue) {
         super(attributeMetadata,null);
         this.itemType=itemType;
         this.listNewItemEmptyValue = listNewItemEmptyValue;
-        set(FXCollections.observableArrayList() );
+        observableValue = FXCollections.observableArrayList();
+        value=observableValue;
 
-        get().addListener((ListChangeListener<T>) c -> {
-            for (AttributeChangeListener<ObservableList<T>> listener: listeners){
+        observableValue.addListener((ListChangeListener<T>) c -> {
+            for (AttributeChangeListener<List<T>> listener: listeners){
                 listener.changed(ValueListAttribute.this,get());
             }
         });
@@ -47,6 +53,20 @@ public class ValueListAttribute<T> extends ValueAttribute<ObservableList<T>> {
     @Override
     public AttributeTypeInfo getAttributeType() {
         return new AttributeTypeInfo(ObservableList.class,null,null,itemType, AttributeTypeInfo.AttributeTypeCategory.COLLECTION,listNewItemEmptyValue);
+    }
+
+    //** set list only take the list items not the list itself, (to simplify ChangeListeners)*/
+    @Override
+    public void set(List<T> value) {
+        if (value==null){//workaround for jackson
+            observableValue.clear();
+        } else {
+            observableValue.setAll(value);
+        }
+    }
+
+    public List<T> filtered(Predicate<T> predicate) {
+        return get().stream().filter(predicate).collect(Collectors.toList());
     }
 
 }

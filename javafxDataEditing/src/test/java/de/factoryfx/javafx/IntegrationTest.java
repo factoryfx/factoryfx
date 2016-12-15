@@ -69,7 +69,7 @@ public class IntegrationTest extends Application{
         stageFactory.viewsDisplayWidget.set(viewsDisplayWidgetFactory);
         stageFactory.longRunningActionExecutor.set(longRunningActionExecutorFactory);
 
-        stageFactory.instance();
-        stageFactory.start();
+        stageFactory.internalFactory().instance();
+        stageFactory.internalFactory().start();
     }
 }

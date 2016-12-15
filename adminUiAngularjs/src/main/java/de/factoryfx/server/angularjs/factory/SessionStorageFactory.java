@@ -1,12 +1,12 @@
 package de.factoryfx.server.angularjs.factory;
 
-import de.factoryfx.factory.FactoryBase;
-import de.factoryfx.factory.LiveCycleController;
+import de.factoryfx.factory.SimpleFactoryBase;
 
-public class SessionStorageFactory extends FactoryBase<SessionStorage,Void> {
+public class SessionStorageFactory extends SimpleFactoryBase<SessionStorage,Void> {
 
     @Override
-    public LiveCycleController<SessionStorage, Void> createLifecycleController() {
-        return () -> new SessionStorage();
+    public SessionStorage createImpl() {
+        return new SessionStorage();
     }
+
 }

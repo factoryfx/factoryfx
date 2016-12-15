@@ -127,7 +127,7 @@ public class RestResource<L,V,T extends FactoryBase<L,V>> {
     @Path("factory")
     @SuppressWarnings("unchecked")
     public StageResponse save(FactoryTypeInfoWrapper newFactoryParam) {
-        FactoryBase<?,?> newFactory=newFactoryParam.factory.internal().reconstructMetadataDeepRoot();
+        FactoryBase<?,?> newFactory=newFactoryParam.factory.internal().prepareUsableCopy();
         FactoryBase<?,?> root = getCurrentEditingFactory().root;
         Map<Object,Data>  map = root.internal().collectChildFactoriesMap();
         Data existing = map.get(newFactory.getId());
@@ -310,7 +310,6 @@ public class RestResource<L,V,T extends FactoryBase<L,V>> {
         List<WebGuiPossibleEntity> result = new ArrayList<>() ;
 
         T root = getCurrentEditingFactory().root;
-        root.internal().prepareUsage();
 
         root.internal().collectChildFactoriesMap().get(id).internal().visitAttributesFlat((attributeVariableName, attribute) -> {
             if (attributeVariableName.equals(attributeName)){
@@ -346,7 +345,6 @@ public class RestResource<L,V,T extends FactoryBase<L,V>> {
     public de.factoryfx.server.angularjs.model.WebGuiFactory addFactory(@QueryParam("id")String id, @QueryParam("attributeName")String attributeName){
 
         T root = getCurrentEditingFactory().root;
-        root.internal().prepareUsage();
 
         Data factoryBase = root.internal().collectChildFactoriesMap().get(id);
         factoryBase.internal().visitAttributesFlat((attributeVariableName, attribute) -> {

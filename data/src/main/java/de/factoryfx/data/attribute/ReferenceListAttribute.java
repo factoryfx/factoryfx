@@ -7,7 +7,9 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
@@ -21,7 +23,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 
-public class ReferenceListAttribute<T extends Data> extends Attribute<ObservableList<T>> {
+public class ReferenceListAttribute<T extends Data> extends Attribute<List<T>> {
     private Data root;
 
     ObservableList<T> list = FXCollections.observableArrayList();
@@ -31,8 +33,15 @@ public class ReferenceListAttribute<T extends Data> extends Attribute<Observable
         super(attributeMetadata);
         this.clazz=clazz;
 
-        get().addListener((ListChangeListener<T>) c -> {
-            for (AttributeChangeListener<ObservableList<T>> listener: listeners){
+        list.addListener((ListChangeListener<T>) c -> {
+            if (c.next()){
+                for (T newData: c.getAddedSubList()){
+                    if (root!=null) {
+                        newData.internal().prepareUsableCopy(root);
+                    }
+                }
+            }
+            for (AttributeChangeListener<List<T>> listener: listeners){
                 listener.changed(ReferenceListAttribute.this,get());
             }
         });
@@ -89,20 +98,24 @@ public class ReferenceListAttribute<T extends Data> extends Attribute<Observable
     }
 
     @Override
-    public ObservableList<T> get() {
+    public List<T> get() {
         return list;
     }
 
 
-
+    //** set list only take the list items not the list itself, (to simplify ChangeListeners)*/
     @Override
-    public void set(ObservableList<T> value) {
-        this.list = value;
+    public void set(List<T> value) {
+        if (value==null){
+            this.list.clear();
+        } else {
+            this.list.setAll(value);
+        }
     }
 
     @Override
     @SuppressWarnings("unchecked")
-    public void copyTo(Attribute<ObservableList<T>> copyAttribute, Function<Data,Data> dataCopyProvider) {
+    public void copyTo(Attribute<List<T>> copyAttribute, Function<Data,Data> dataCopyProvider) {
         for (T item: get()){
             final T itemCopy = (T) dataCopyProvider.apply(item);
             if (itemCopy!=null){
@@ -113,7 +126,7 @@ public class ReferenceListAttribute<T extends Data> extends Attribute<Observable
 
     @Override
     @SuppressWarnings("unchecked")
-    public void semanticCopyTo(Attribute<ObservableList<T>> copyAttribute, Function<Data,Data> dataCopyProvider) {
+    public void semanticCopyTo(Attribute<List<T>> copyAttribute, Function<Data,Data> dataCopyProvider) {
         if (copySemantic==CopySemantic.SELF){
             copyAttribute.set(get());
         } else {
@@ -171,14 +184,18 @@ public class ReferenceListAttribute<T extends Data> extends Attribute<Observable
         return get().stream();
     }
 
-    List<AttributeChangeListener<ObservableList<T>>> listeners= new ArrayList<>();
+    public List<T> filtered(Predicate<T> predicate) {
+        return get().stream().filter(predicate).collect(Collectors.toList());
+    }
+
+    List<AttributeChangeListener<List<T>>> listeners= new ArrayList<>();
     @Override
-    public void addListener(AttributeChangeListener<ObservableList<T>> listener) {
+    public void addListener(AttributeChangeListener<List<T>> listener) {
         listeners.add(listener);
     }
     @Override
-    public void removeListener(AttributeChangeListener<ObservableList<T>> listener) {
-        for (AttributeChangeListener<ObservableList<T>> listenerItem: new ArrayList<>(listeners)){
+    public void removeListener(AttributeChangeListener<List<T>> listener) {
+        for (AttributeChangeListener<List<T>> listenerItem: new ArrayList<>(listeners)){
             if (listenerItem.unwrap()==listener || listenerItem.unwrap()==null){
                 listeners.remove(listenerItem);
             }
@@ -243,7 +260,7 @@ public class ReferenceListAttribute<T extends Data> extends Attribute<Observable
         }
 
         for (Data data: get()){
-            data.internal().prepareUsage(root);
+            data.internal().prepareUsableCopy(root);
         }
 
         return addedFactory;
@@ -252,7 +269,7 @@ public class ReferenceListAttribute<T extends Data> extends Attribute<Observable
     public void addFactory(T addedFactory){
         get().add(addedFactory);
         for (Data data: get()){
-            data.internal().prepareUsage(root);
+            data.internal().prepareUsableCopy(root);
         }
     }
 
@@ -275,7 +292,7 @@ public class ReferenceListAttribute<T extends Data> extends Attribute<Observable
 
     @Override
     @SuppressWarnings("unchecked")
-    public void prepareUsage(Data root, Data parent){
+    public void prepareUsage(Data root){
         this.root=root;;
     }
 

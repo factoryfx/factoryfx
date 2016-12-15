@@ -23,8 +23,6 @@ import de.factoryfx.data.attribute.Attribute;
 import de.factoryfx.data.attribute.AttributeChangeListener;
 import de.factoryfx.data.attribute.ReferenceAttribute;
 import de.factoryfx.data.attribute.ReferenceListAttribute;
-import de.factoryfx.data.attribute.ViewListReferenceAttribute;
-import de.factoryfx.data.attribute.ViewReferenceAttribute;
 import de.factoryfx.data.merge.MergeResult;
 import de.factoryfx.data.merge.MergeResultEntry;
 import de.factoryfx.data.merge.attribute.AttributeMergeHelper;
@@ -221,39 +219,39 @@ public abstract class Data {
 
     /**
      * after deserialization from json only the value is present and metadata are missing
-     * we create a copy which contains the metadata and than copy the meta data in teh original object
+     * we create a copy which contains the metadata and than copy then transfer the value in the new  copy (which is what conveniently copy does)
      */
     @SuppressWarnings("unchecked")
     private <T extends Data> T reconstructMetadataDeepRoot() {
-        for (Data data: this.collectChildrenDeep()){
-            Data copy = data.newInstance();
-
-            data.dataValidations=copy.dataValidations;
-            data.displayTextDependencies=copy.displayTextDependencies;
-
-            Field[] fields = data.getFields();
-            for (Field field : fields) {
-                try {
-                    if (de.factoryfx.data.attribute.Attribute.class.isAssignableFrom(field.getType())){
-                        Object value=null;
+//        for (Data data: this.collectChildrenDeep()){
+//            Data copy = data.newInstance();
+//
+//            data.dataValidations=copy.dataValidations;
+//            data.displayTextDependencies=copy.displayTextDependencies;
+//
+//            Field[] fields = data.getFields();
+//            for (Field field : fields) {
+//                try {
+//                    if (de.factoryfx.data.attribute.Attribute.class.isAssignableFrom(field.getType())){
+//                        Object value=null;
+////                        field.setAccessible(true);
+//                        if (field.get(data)!=null){
+//                            final Attribute attribute = (Attribute) field.get(data);
+//                            if (!(attribute instanceof ViewReferenceAttribute) && !(attribute instanceof ViewListReferenceAttribute)){
+//                                value= attribute.get();
+//                            }
+//                        }
 //                        field.setAccessible(true);
-                        if (field.get(data)!=null){
-                            final Attribute attribute = (Attribute) field.get(data);
-                            if (!(attribute instanceof ViewReferenceAttribute) && !(attribute instanceof ViewListReferenceAttribute)){
-                                value= attribute.get();
-                            }
-                        }
-                        field.setAccessible(true);
-                        field.set(data,field.get(copy));
-
-                        ((Attribute)field.get(data)).set(value);
-                    }
-                } catch (Exception e) {
-                    throw new RuntimeException(e);
-                }
-            }
-        }
-        return (T)this;
+//                        field.set(data,field.get(copy));
+//
+//                        ((Attribute)field.get(data)).set(value);
+//                    }
+//                } catch (Exception e) {
+//                    throw new RuntimeException(e);
+//                }
+//            }
+//        }
+        return this.copy();
     }
 
     Supplier<Data> newInstanceSupplier= () -> {
@@ -308,7 +306,7 @@ public abstract class Data {
     List<AttributeValidation<?>> dataValidations = new ArrayList<>();
     private <T> void addValidation(Validation<T> validation, Attribute<?>... dependencies){
         for ( Attribute<?> dependency: dependencies){
-            dataValidations.add(new AttributeValidation(validation,dependency));
+            dataValidations.add(new AttributeValidation<>(validation,dependency));
         }
     }
 
@@ -350,6 +348,7 @@ public abstract class Data {
         }
         return result;
     }
+
 
 
     private List<Data> getMassPathTo(HashMap<Data, Data> childToParent, Data target) {
@@ -419,7 +418,7 @@ public abstract class Data {
 
 
     private boolean readyForUsage(){
-        return isReadyForEditing;
+        return root!=null;
     }
 
     private <T extends Data> T endUsage() {
@@ -431,13 +430,12 @@ public abstract class Data {
         return (T)this;
     }
 
-    private boolean isReadyForEditing;
-    private <T extends Data> T prepareUsage(Data root){
+    <T extends Data> T prepareUsage(Data root){
         for (Data data: collectChildrenDeep()){
+            data.root=root;
             data.visitAttributesFlat((attributeVariableName, attribute) -> {
-                attribute.prepareUsage(root,data);
+                attribute.prepareUsage(root);
             });
-            data.isReadyForEditing=true;
         }
         for (Data data: collectChildrenDeep()){
             data.visitAttributesFlat((attributeVariableName, attribute) -> {
@@ -446,6 +444,16 @@ public abstract class Data {
         }
 
         return (T)this;
+    }
+
+    private <T extends Data> T prepareUsage() {
+        T result = reconstructMetadataDeepRoot();
+        return result.prepareUsage(result);
+    }
+
+    Data root;
+    private Data getRoot(){
+        return root;
     }
 
     private Function<List<Attribute<?>>,List<Pair<String,List<Attribute<?>>>>> attributeListGroupedSupplier=(List<Attribute<?>> allAttributes)->{
@@ -636,11 +644,6 @@ public abstract class Data {
             data.collectModelEntitiesTo(allModelEntities);
         }
 
-        public <T extends Data> T reconstructMetadataDeepRoot() {
-            return data.reconstructMetadataDeepRoot();
-        }
-
-
         public void fixDuplicateObjects(Function<Object, Optional<Data>> getCurrentEntity) {
             data.fixDuplicateObjects(getCurrentEntity);
         }
@@ -660,17 +663,8 @@ public abstract class Data {
         public void merge(Optional<Data> originalValue, Optional<Data> newValue, MergeResult mergeResult) {
             data.merge(originalValue,newValue,mergeResult);
         }
-
-        public HashMap<Data, Data> getChildToParentMap(Set<Data> allModelEntities) {
-            return data.getChildToParentMap(allModelEntities);
-        }
-
-        public List<Data> getMassPathTo(HashMap<Data, Data> childToParent, Data target) {
-            return data.getMassPathTo(childToParent,target);
-        }
-
-        public List<Data> getPathTo(Data target) {
-            return data.getMassPathTo(getChildToParentMap(collectChildrenDeep()), target);
+        public List<Data> getPathFromRoot() {
+            return data.root.getMassPathTo(data.root.getChildToParentMap(data.root.collectChildrenDeep()), data);
         }
 
         public <T extends Data> T copy() {
@@ -685,9 +679,10 @@ public abstract class Data {
             return data.copyZeroLevelDeep();
         }
 
-        /** only call on root*/
-        public <T extends Data> T prepareUsage() {
-            return data.prepareUsage(data);
+        /** only call on root
+         * return usable copy */
+        public <T extends Data> T prepareUsableCopy() {
+            return data.prepareUsage();
         }
 
         /** only call on root*/
@@ -699,8 +694,23 @@ public abstract class Data {
             return data.readyForUsage();
         }
 
-        public <T extends Data> T prepareUsage(Data root){
+        /**
+         * after serialisation or programmatically creation this mus be called first before using the object
+         * to:
+         * -fix jackson wrong deserialisation (metatadat ==null)
+         * -propagate root node  to all chileds (for validation etc)
+         *
+         * unfortunately we must create a copy and can't make the same object usable(which we tried but failed)
+         * */
+        public <T extends Data> T prepareUsableCopy(Data root){
             return data.prepareUsage(root);
         }
+
+        public Data getRoot(){
+            return data.getRoot();
+        }
+
     }
+
+
 }

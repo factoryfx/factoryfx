@@ -3,6 +3,10 @@ package de.factoryfx.factory;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
@@ -21,14 +25,14 @@ import de.factoryfx.data.Data;
  */
 public abstract class FactoryBase<L,V> extends Data {
 
-    public abstract LiveCycleController<L,V> createLifecycleController();
-    LiveCycleController<L, V> lifecycleController;
-    private LiveCycleController<L,V> getLifecycleController(){
-        if (lifecycleController==null){
-            lifecycleController = createLifecycleController();
-        }
-        return lifecycleController;
-    }
+//    public abstract LiveCycleController<L,V> createLifecycleController();
+//    LiveCycleController<L, V> lifecycleController;
+//    private LiveCycleController<L,V> getLifecycleController(){
+//        if (lifecycleController==null){
+//            lifecycleController = createLifecycleController();
+//        }
+//        return lifecycleController;
+//    }
 
     private String id;
 
@@ -54,25 +58,20 @@ public abstract class FactoryBase<L,V> extends Data {
 
 
     private L createdLiveObject;
-    public L instance() {
+    private L instance() {
         if (!changedDeep() && createdLiveObject !=null) {//TODO is the createdLiveObject==null correct? is is used if new Factory is transitive added (Limitation of the mergerdiff)
             return createdLiveObject;
         } else{
-            LiveCycleController<L, V> lifecycleController = getLifecycleController();
-            if (lifecycleController==null){
-                throw new IllegalStateException("lifecycleController is null for:"+getClass());
-            }
-
             if (createdLiveObject==null){
                 try {
-                    createdLiveObject = lifecycleController.create();
+                    createdLiveObject = create();
                 } catch (NullPointerException npe){
                     throw new RuntimeException(this.debugInfo(), npe);
                 }
             } else {
                 L previousLiveObject = this.createdLiveObject;
-                this.createdLiveObject = lifecycleController.reCreate(previousLiveObject);
-                lifecycleController.destroy(previousLiveObject);//TODO check if this is the wrong destroy order (parent are destroyed before the children)
+                this.createdLiveObject = reCreate(previousLiveObject);
+                destroy(previousLiveObject);//TODO check if this is the wrong destroy order (parent are destroyed before the children)
             }
             changed=false;
             return createdLiveObject;
@@ -90,8 +89,8 @@ public abstract class FactoryBase<L,V> extends Data {
 //        }
 //    }
 
+    /**intented for test only*/
     @JsonIgnore
-    //intented for test only
     protected Optional<L> getCreatedLiveObject(){
         return Optional.ofNullable(createdLiveObject);
     }
@@ -100,17 +99,17 @@ public abstract class FactoryBase<L,V> extends Data {
     private boolean changed=true;
 
     /**set from Merger used to determine which live Objects needs update*/
-    public void markChanged() {
+    private void markChanged() {
         changed=true;
     }
 
-    public void unMarkChanged() {
+    private void unMarkChanged() {
         changed=false;
     }
 
     @JsonIgnore
     private boolean changedDeep;
-    public boolean changedDeep(){
+    boolean changedDeep(){
         if (changed){
             return true;
         }
@@ -120,7 +119,7 @@ public abstract class FactoryBase<L,V> extends Data {
     }
 
     private LoopProtector loopProtector = new LoopProtector();
-    public void loopDetector(){
+    private void loopDetector(){
         loopProtector.enter();
         try {
             this.internal().visitChildFactoriesFlat(factory -> cast(factory).ifPresent(FactoryBase::loopDetector));
@@ -129,7 +128,6 @@ public abstract class FactoryBase<L,V> extends Data {
         }
     }
 
-    //TODO this works as long als tree elements extends FactoryBase, how to enforce that?
     @SuppressWarnings("unchecked")
     private Optional<FactoryBase<?,V>> cast(Data data){
         if (data instanceof FactoryBase)
@@ -138,29 +136,174 @@ public abstract class FactoryBase<L,V> extends Data {
     }
 
     @SuppressWarnings("unchecked")
-    public Set<FactoryBase<?,V>> collectChildFactoriesDeep(){
+    private Set<FactoryBase<?,V>> collectChildFactoriesDeep(){
         return super.internal().collectChildrenDeep().stream().map(this::cast).filter(Optional::isPresent).map(Optional::get).collect(Collectors.toSet());
     }
 
-    public void start(){
-        getLifecycleController().start(createdLiveObject);
-    }
 
-    public void destroy(){
-        getLifecycleController().destroy(createdLiveObject);
-    }
 
-    public void runtimeQuery(V visitor){
-        getLifecycleController().runtimeQuery(visitor,createdLiveObject);
-    }
-
-    public String debugInfo(){
+    private String debugInfo(){
         StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append("Attributes:");
+        stringBuilder.append("Attributes:\n");
         this.internal().visitAttributesFlat((attributeVariableName, attribute) -> {
             stringBuilder.append(attributeVariableName+": "+attribute.get()+"\n");
         });
         return stringBuilder.toString();
     }
 
+
+    L create(){
+        if (creator!=null){
+            return creator.get();
+        }
+        throw new IllegalStateException("no creator defined");
+    }
+
+    private L reCreate(L previousLiveObject) {
+        if (reCreatorWithPreviousLiveObject!=null){
+            return reCreatorWithPreviousLiveObject.apply(previousLiveObject);
+        }
+        return create();
+    }
+
+    private void start() {
+        if (starterWithNewLiveObject!=null){
+            starterWithNewLiveObject.accept(createdLiveObject);
+        }
+    }
+
+    private void destroy(L previousLiveObject) {
+        if (destroyerWithPreviousLiveObject!=null){
+            destroyerWithPreviousLiveObject.accept(previousLiveObject);
+        }
+    };
+
+    private void runtimeQuery(V visitor) {
+        if (executorWidthVisitorAndCurrentLiveObject!=null){
+            executorWidthVisitorAndCurrentLiveObject.accept(visitor,createdLiveObject);
+        }
+    };
+
+    FactoryInternal<L,V> factoryInternal = new FactoryInternal<>(this);
+    /** <b>internal methods should be only used from the framework.</b>
+     *  They may change in the Future.
+     *  There is no fitting visibility in java therefore this workaround.
+     */
+    public FactoryInternal<L,V> internalFactory(){
+        return factoryInternal;
+    }
+
+    public static class FactoryInternal<L,V> {
+        private final FactoryBase<L,V> factory;
+
+        public FactoryInternal(FactoryBase<L, V> factory) {
+            this.factory = factory;
+        }
+
+        /** create and prepare the liveObject*/
+        public L create(){
+            return factory.create();
+        }
+
+        /** start the liveObject e.g open a port*/
+        public void start() {
+            factory.start();
+        }
+
+        /** start the liveObject e.g open a port*/
+        public void destroy() {
+            factory.destroy(factory.createdLiveObject);
+        }
+
+        /** execute visitor to get runtime informations from the liveobject*/
+        public void runtimeQuery(V visitor) {
+            factory.runtimeQuery(visitor);
+        };
+
+        public L instance() {
+           return factory.instance();
+        }
+
+        public void markChanged() {
+            factory.markChanged();
+        }
+
+        public void unMarkChanged() {
+            factory.unMarkChanged();
+        }
+
+        public  void loopDetector() {
+            factory.loopDetector();
+        }
+
+        public Set<FactoryBase<?,V>> collectChildFactoriesDeep(){
+            return factory.collectChildFactoriesDeep();
+        }
+
+    }
+
+    Supplier<L> creator=null;
+    Function<L,L> reCreatorWithPreviousLiveObject=null;
+    Consumer<L> starterWithNewLiveObject=null;
+    Consumer<L> destroyerWithPreviousLiveObject=null;
+    BiConsumer<V,L> executorWidthVisitorAndCurrentLiveObject=null;
+    private void setCreator(Supplier<L> creator){
+        this.creator=creator;
+    }
+
+    private void setReCreator(Function<L,L> reCreatorWithPreviousLiveObject ) {
+        this.reCreatorWithPreviousLiveObject=reCreatorWithPreviousLiveObject;
+    }
+
+    private void setStarter(Consumer<L> starterWithNewLiveObject) {
+        this.starterWithNewLiveObject=starterWithNewLiveObject;
+    }
+
+    private void setDestroyer(Consumer<L> destroyerWithPreviousLiveObject) {
+        this.destroyerWithPreviousLiveObject=destroyerWithPreviousLiveObject;
+    }
+
+    private void setRuntimeQueryExecutor(BiConsumer<V,L> executorWidthVisitorAndCurrentLiveObject) {
+        this.executorWidthVisitorAndCurrentLiveObject=executorWidthVisitorAndCurrentLiveObject;
+    }
+
+    LiveCycleConfig<L,V> liveCycleConfig = new LiveCycleConfig<>(this);
+    /** live cycle configurations api */
+    public LiveCycleConfig<L,V> configLiveCycle(){
+        return liveCycleConfig;
+    }
+
+    public static class LiveCycleConfig<L,V> {
+        private final FactoryBase<L,V> factory;
+
+        public LiveCycleConfig(FactoryBase<L, V> factory) {
+            this.factory = factory;
+        }
+
+        /** create and prepare the liveObject*/
+        public void setCreator(Supplier<L> creator){
+            factory.setCreator(creator);
+        }
+
+        /**the factory data has changed therefore a new liveobject is needed.
+         * previousLiveObject can be used to reuse resources like conenction pools*/
+        public void setReCreator(Function<L,L> reCreatorWithPreviousLiveObject ) {
+            factory.setReCreator(reCreatorWithPreviousLiveObject);
+        }
+
+        /** start the liveObject e.g open a port*/
+        public void setStarter(Consumer<L> starterWithNewLiveObject) {
+            factory.setStarter(starterWithNewLiveObject);
+        }
+
+        /** free liveObject e.g close a port*/
+        public void setDestroyer(Consumer<L> destroyerWithPreviousLiveObject) {
+            factory.setDestroyer(destroyerWithPreviousLiveObject);
+        }
+
+        /** execute visitor to get runtime informations from the liveobject*/
+        public void setRuntimeQueryExecutor(BiConsumer<V,L> executorWidthVisitorAndCurrentLiveObject) {
+            factory.setRuntimeQueryExecutor(executorWidthVisitorAndCurrentLiveObject);
+        }
+    }
 }

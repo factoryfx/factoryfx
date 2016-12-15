@@ -8,7 +8,7 @@ import java.time.format.DateTimeParseException;
 import java.util.Optional;
 
 import com.google.common.base.Strings;
-import de.factoryfx.javafx.editor.attribute.ImmutableAttributeEditorVisualisation;
+import de.factoryfx.javafx.editor.attribute.ValueAttributeEditorVisualisation;
 import de.factoryfx.javafx.util.TypedTextFieldHelper;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.geometry.Insets;
@@ -17,7 +17,7 @@ import javafx.scene.control.DatePicker;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 
-public class LocalDateTimeAttributeVisualisation extends ImmutableAttributeEditorVisualisation<LocalDateTime> {
+public class LocalDateTimeAttributeVisualisation extends ValueAttributeEditorVisualisation<LocalDateTime> {
 
     @Override
     public Node createContent(SimpleObjectProperty<LocalDateTime> boundTo) {

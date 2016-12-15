@@ -30,7 +30,6 @@ public class FactoryStyleValidator {
             return factoryStyleValidations;
         }, factoryBase -> {
             final ArrayList<FactoryStyleValidation> factoryStyleValidations = new ArrayList<>();
-            factoryStyleValidations.add(new NotNullLifecycle(factoryBase));
             return factoryStyleValidations;
         });
     }

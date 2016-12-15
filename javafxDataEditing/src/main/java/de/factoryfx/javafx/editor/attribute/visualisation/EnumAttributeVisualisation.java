@@ -2,12 +2,12 @@ package de.factoryfx.javafx.editor.attribute.visualisation;
 
 import java.util.Collection;
 
-import de.factoryfx.javafx.editor.attribute.ImmutableAttributeEditorVisualisation;
+import de.factoryfx.javafx.editor.attribute.ValueAttributeEditorVisualisation;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.Node;
 import javafx.scene.control.ComboBox;
 
-public class EnumAttributeVisualisation extends ImmutableAttributeEditorVisualisation<Enum> {
+public class EnumAttributeVisualisation extends ValueAttributeEditorVisualisation<Enum> {
     private final Collection<Enum> possibleEnumConstants;
 
     public EnumAttributeVisualisation(Collection<Enum> possibleEnumConstants) {

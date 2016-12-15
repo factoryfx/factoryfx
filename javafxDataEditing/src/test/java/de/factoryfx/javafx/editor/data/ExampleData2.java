@@ -17,15 +17,15 @@ public class ExampleData2 extends Data {
 
 
 
-    public final ViewReferenceAttribute<ExampleData1,ExampleData2,ExampleData1> refview= new ViewReferenceAttribute<>(new AttributeMetadata().en("refview"), (ExampleData1 root, ExampleData2 parent)-> {
-            if ("1".equals(parent.stringAttribute.get())) {
+    public final ViewReferenceAttribute<ExampleData1,ExampleData1> refview= new ViewReferenceAttribute<>(new AttributeMetadata().en("refview"), (ExampleData1 root)-> {
+            if ("1".equals(stringAttribute.get())) {
                 return root;
             }
             return null;
         }).validation(new ObjectRequired<>());
 
-    public final ViewListReferenceAttribute<ExampleData1,ExampleData2,ExampleData1> listview= new ViewListReferenceAttribute<>(new AttributeMetadata().en("listview"), (ExampleData1 root, ExampleData2 parent)->{
-            if ("1".equals(parent.stringAttribute.get())){
+    public final ViewListReferenceAttribute<ExampleData1,ExampleData1> listview= new ViewListReferenceAttribute<>(new AttributeMetadata().en("listview"), (ExampleData1 root)->{
+            if ("1".equals(stringAttribute.get())){
                 return Arrays.asList(root);
             }
             return null;

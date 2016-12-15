@@ -1,11 +1,11 @@
 package de.factoryfx.javafx.editor.attribute.visualisation;
 
-import de.factoryfx.javafx.editor.attribute.ImmutableAttributeEditorVisualisation;
+import de.factoryfx.javafx.editor.attribute.ValueAttributeEditorVisualisation;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.Node;
 import javafx.scene.control.TextArea;
 
-public class StringLongAttributeVisualisation extends ImmutableAttributeEditorVisualisation<String> {
+public class StringLongAttributeVisualisation extends ValueAttributeEditorVisualisation<String> {
 
 
     @Override

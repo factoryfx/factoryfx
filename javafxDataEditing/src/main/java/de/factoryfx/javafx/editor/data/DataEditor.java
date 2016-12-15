@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.BiConsumer;
+import java.util.function.BiFunction;
 import java.util.function.Supplier;
 
 import de.factoryfx.data.Data;
@@ -39,6 +41,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.RowConstraints;
 import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 import javafx.util.Pair;
 import org.controlsfx.control.BreadCrumbBar;
 import org.controlsfx.glyphfont.FontAwesome;
@@ -90,7 +93,9 @@ public class DataEditor implements Widget {
 
     public void resetHistory(){
         displayedEntities.setAll(bound.get());
-
+    }
+    public void setHistory(List<Data> data){
+        displayedEntities.addAll(data);
     }
 
     public void reset(){
@@ -129,6 +134,16 @@ public class DataEditor implements Widget {
 //    }
 //    validationResult.set(attributeValidationError);
 
+    BiFunction<Node,Data,Node> visCustomizer= (node, data) -> node;
+
+    public void setVisCustomizer(BiFunction<Node,Data,Node> visCustomizer){
+        this.visCustomizer=visCustomizer;
+    }
+
+    private Node customizeVis(Node defaultVis, Data data){
+        return visCustomizer.apply(defaultVis,data);
+    }
+
     @Override
     public Node createContent() {
         BorderPane result = new BorderPane();
@@ -136,6 +151,10 @@ public class DataEditor implements Widget {
         if (dataChangeListener!=null) {
             bound.removeListener(dataChangeListener);
         }
+
+        BiConsumer<Node,Data> updateVis= (defaultVis, data) -> {
+            result.setCenter(customizeVis(defaultVis,data));
+        };
 
         dataChangeListener = (observable, oldValue, newValue) -> {
 
@@ -146,7 +165,8 @@ public class DataEditor implements Widget {
             } else {
 
                 if (newValue.internal().attributeListGrouped().size()==1){
-                    result.setCenter(createAttributeGroupVisual(newValue.internal().attributeListGrouped().get(0).getValue(),() -> newValue.internal().validateFlat()));
+                    final Node attributeGroupVisual = createAttributeGroupVisual(newValue.internal().attributeListGrouped().get(0).getValue(), () -> newValue.internal().validateFlat());
+                    updateVis.accept(attributeGroupVisual,newValue);
                 } else {
                     TabPane tabPane = new TabPane();
                     for (Pair<String,List<Attribute<?>>> attributeGroup: newValue.internal().attributeListGrouped()) {
@@ -154,7 +174,7 @@ public class DataEditor implements Widget {
                         tab.setContent(createAttributeGroupVisual(attributeGroup.getValue(),() -> newValue.internal().validateFlat()));
                         tabPane.getTabs().add(tab);
                     }
-                    result.setCenter(tabPane);
+                    updateVis.accept(tabPane,newValue);
                 }
 
                 if (validationListener!=null && oldValue!=null){
@@ -201,7 +221,12 @@ public class DataEditor implements Widget {
             if (attributeEditor.isPresent()){
                 attributeEditor.get().expand();
                 createdEditors.put(attribute,attributeEditor.get());
-                return attributeEditor.get().createContent();
+                final Node content = attributeEditor.get().createContent();
+                final VBox vBox = new VBox(3);
+                vBox.setPadding(new Insets(3));
+                VBox.setVgrow(content,Priority.ALWAYS);
+                vBox.getChildren().addAll(new Label(uniformDesign.getLabelText(attribute)),content);
+                return vBox;
             } else {
                 return new Label("unsupported attribute:"+attribute.getAttributeType().dataType);
             }

@@ -26,7 +26,7 @@ public class InMemoryFactoryStorage<L,V,T extends FactoryBase<L,V>> implements F
     @Override
     public T getHistoryFactory(String id) {
         FactoryAndStorageMetadata<T> data = storage.get(id);
-        return data.root.internal().copy();
+        return data.root.internal().copy().internal().prepareUsableCopy();
     }
 
     @Override
@@ -37,7 +37,7 @@ public class InMemoryFactoryStorage<L,V,T extends FactoryBase<L,V>> implements F
     @Override
     public FactoryAndStorageMetadata<T> getCurrentFactory() {
         FactoryAndStorageMetadata<T> result = storage.get(current);
-        return result.copy();
+        return new FactoryAndStorageMetadata<>(result.root.internal().prepareUsableCopy(),result.metadata);
     }
 
     @Override

@@ -4,16 +4,15 @@ import java.io.IOException;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import de.factoryfx.factory.FactoryBase;
-import de.factoryfx.factory.LiveCycleController;
+import de.factoryfx.factory.SimpleFactoryBase;
 import org.junit.Test;
 
 public class FactoryAndStorageMetadataTest {
 
-    static final class EmptyFactory extends FactoryBase<Void,Void> {
+    static final class EmptyFactory extends SimpleFactoryBase<Void,Void> {
 
         @Override
-        public LiveCycleController<Void, Void> createLifecycleController() {
+        public Void createImpl() {
             return null;
         }
     };
