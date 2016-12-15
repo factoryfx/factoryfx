@@ -313,27 +313,24 @@ public abstract class Data {
     @SuppressWarnings("unchecked")
     private void merge(Optional<Data> originalValue, Optional<Data> newValue, MergeResult mergeResult) {
 
-        //TODO: quick fix
-        if (newValue.isPresent() && originalValue.isPresent()) {
-            this.visitAttributesTripleFlat(originalValue, newValue, (currentAttribute, originalAttribute, newAttribute) -> {
-                AttributeMergeHelper<?> attributeMergeHelper = currentAttribute.createMergeHelper();
-                if (attributeMergeHelper.executeMerge()) {
-                    boolean hasNoConflict = attributeMergeHelper.hasNoConflict(originalAttribute, newAttribute);
-                    MergeResultEntry mergeResultEntry = new MergeResultEntry(Data.this, currentAttribute, newAttribute);
-                    if (hasNoConflict) {
-                        if (newAttribute.isPresent()) {
-                            if (attributeMergeHelper.isMergeable(originalAttribute, newAttribute)) {
-                                mergeResult.addMergeExecutions(() -> attributeMergeHelper.merge(originalAttribute, newAttribute.get()));
-                                mergeResult.addMergeInfo(mergeResultEntry);
-                            }
+        this.visitAttributesTripleFlat(originalValue, newValue, (currentAttribute, originalAttribute, newAttribute) -> {
+            AttributeMergeHelper<?> attributeMergeHelper = currentAttribute.createMergeHelper();
+            if (attributeMergeHelper.executeMerge()) {
+                boolean hasNoConflict = attributeMergeHelper.hasNoConflict(originalAttribute, newAttribute);
+                MergeResultEntry mergeResultEntry = new MergeResultEntry(Data.this, currentAttribute, newAttribute);
+                if (hasNoConflict) {
+                    if (newAttribute.isPresent()) {
+                        if (attributeMergeHelper.isMergeable(originalAttribute, newAttribute)) {
+                            mergeResult.addMergeExecutions(() -> attributeMergeHelper.merge(originalAttribute, newAttribute.get()));
+                            mergeResult.addMergeInfo(mergeResultEntry);
                         }
-                    } else {
-                        mergeResult.addConflictInfos(mergeResultEntry);
                     }
+                } else {
+                    mergeResult.addConflictInfos(mergeResultEntry);
                 }
+            }
 
-            });
-        }
+        });
     }
 
 

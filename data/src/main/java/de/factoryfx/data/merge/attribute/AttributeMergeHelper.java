@@ -78,7 +78,10 @@ public class AttributeMergeHelper<T> {
             newFieldValue = newValue.get();
         }
 
-        if (equal(newFieldValue, originalFieldValue)) {
+        if (newFieldValue == originalFieldValue)
+            return true;
+
+        if (newFieldValue != null && equal(newFieldValue, originalFieldValue)) {
             return true;
         }
         if (equal(currentFieldValue, originalFieldValue)) {
