@@ -23,7 +23,7 @@ public class ApplicationServer<L,V,T extends FactoryBase<L,V>> {
 
     public MergeDiff getDiff(StoredFactoryMetadata storedFactoryMetadata) {
         T historyFactory = getHistoryFactory(storedFactoryMetadata.id);
-        T historyFactoryPrevious = getHistoryFactory(storedFactoryMetadata.baseVersionId);
+        T historyFactoryPrevious = getPreviousHistoryFactory(storedFactoryMetadata.id);
         return new DataMerger(historyFactoryPrevious,historyFactoryPrevious,historyFactory).createMergeResult();
     }
 
@@ -54,6 +54,11 @@ public class ApplicationServer<L,V,T extends FactoryBase<L,V>> {
 
     public T getHistoryFactory(String id) {
         T historyFactory = factoryStorage.getHistoryFactory(id);
+        return historyFactory;
+    }
+
+    public T getPreviousHistoryFactory(String id) {
+        T historyFactory = factoryStorage.getPreviousHistoryFactory(id);
         return historyFactory;
     }
 
