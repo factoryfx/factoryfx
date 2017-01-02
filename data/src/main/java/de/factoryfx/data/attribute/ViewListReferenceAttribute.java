@@ -139,7 +139,7 @@ public class ViewListReferenceAttribute <R extends Data, T extends Data> extends
                 listeners.remove(listenerItem);
             }
         }
-        if (listeners.isEmpty()){
+        if (listeners.isEmpty() && dirtyTracking != null){
             dirtyTracking.stopTracking();
             dirtyTracking=null;
         }
