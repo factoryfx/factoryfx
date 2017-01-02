@@ -121,7 +121,7 @@ public class ViewReferenceAttribute<R extends Data, T extends Data> extends Attr
                 listeners.remove(listenerItem);
             }
         }
-        if (listeners.isEmpty()){
+        if (listeners.isEmpty() && dirtyTracking != null){
             dirtyTracking.stopTracking();
             dirtyTracking=null;
         }
