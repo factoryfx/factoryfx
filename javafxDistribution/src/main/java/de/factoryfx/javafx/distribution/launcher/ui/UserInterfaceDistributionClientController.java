@@ -5,10 +5,12 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -108,6 +110,8 @@ public class UserInterfaceDistributionClientController {
 
         if (serverUrlList.getItems().isEmpty()){
             serverUrlInput.setText(initialUrl);
+        } else {
+            serverUrlInput.setText(serverUrlList.getItems().get(0));
         }
 
     }
@@ -153,10 +157,14 @@ public class UserInterfaceDistributionClientController {
                     if (needUpdate) {
                         WebTarget webResourceDownload = client.target(serverUrl + "/download/");
                         Response responseDownload = webResourceDownload.request("application/zip").get();
-                        File tempDownloadFile = responseDownload.readEntity(File.class);
+
                         File newFile = new File(guiFolder, GUI_ZIP);
                         mkdir(guiFolder);
-                        Files.move(tempDownloadFile, newFile);
+
+                        try (InputStream in = responseDownload.readEntity(InputStream.class)) {
+                            java.nio.file.Files.copy(in, newFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+                        }
+
                         unzip(newFile.getAbsolutePath(), newFile.getParent());
                     }
 
@@ -164,7 +172,7 @@ public class UserInterfaceDistributionClientController {
                     new ProcessBuilder(guiFolder.getAbsolutePath() + "/"+exeName+".exe",distributionServerURL.toExternalForm()).directory(new File(guiFolder.getAbsolutePath(),"./")).inheritIO().start();
 
                     if (!serverUrlList.getItems().contains(serverUrl)) {
-                        serverUrlList.getItems().add(serverUrl);
+                        serverUrlList.getItems().add(0,serverUrl);
                     }
                     writeServerList();
 
