@@ -104,6 +104,8 @@ public class ReferenceAttribute<T extends Data> extends Attribute<T> {
     }
 
     private CopySemantic copySemantic = CopySemantic.COPY;
+
+    /** @see Data.DataUtility#semanticCopy() */
     @SuppressWarnings("unchecked")
     public <A extends ReferenceAttribute<T>> A setCopySemantic(CopySemantic copySemantic){
         this.copySemantic=copySemantic;

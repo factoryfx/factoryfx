@@ -1,6 +1,6 @@
 package de.factoryfx.factory.datastorage;
 
-//does nothing could be used for a consistent migration chain
+/**does nothing could be used for a consistent migration chain*/
 public class NopFactoryMigration implements FactoryMigration{
 
     private final int migrateTargetVersion;

@@ -6,6 +6,7 @@ import java.util.Collection;
 import de.factoryfx.data.merge.MergeDiffInfo;
 import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.factory.datastorage.FactoryAndStorageMetadata;
+import de.factoryfx.factory.datastorage.FactoryStorage;
 import de.factoryfx.factory.datastorage.StoredFactoryMetadata;
 
 public class ApplicationServerRestClient<V,T extends FactoryBase<?,V>> {
@@ -27,6 +28,8 @@ public class ApplicationServerRestClient<V,T extends FactoryBase<?,V>> {
         return restClient.post("simulateUpdateCurrentFactory", update, MergeDiffInfo.class);
     }
 
+
+    /** <b>don't use this if you want to change the factorydata.</b> use {@link #prepareNewFactory()} instead*/
     @SuppressWarnings("unchecked")
     public FactoryAndStorageMetadata<T> getCurrentFactory() {
         FactoryAndStorageMetadata<T> currentFactory = restClient.get("currentFactory", FactoryAndStorageMetadata.class);
@@ -34,6 +37,7 @@ public class ApplicationServerRestClient<V,T extends FactoryBase<?,V>> {
     }
 
 
+    /** @see FactoryStorage#getPrepareNewFactory() */
     @SuppressWarnings("unchecked")
     public FactoryAndStorageMetadata<T> prepareNewFactory() {
         FactoryAndStorageMetadata<T> currentFactory = restClient.get("prepareNewFactory", FactoryAndStorageMetadata.class);

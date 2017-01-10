@@ -128,7 +128,6 @@ public class FactorySerialisationManagerTest {
     }
 
 
-    @Test
     public void read_read_migration_missing_migration(){
         List<FactoryMigration> migrations = new ArrayList<>();
         migrations.add(new FactoryMigration() {
@@ -147,7 +146,7 @@ public class FactorySerialisationManagerTest {
                 return 2;
             }
         });
-
+        migrations.add(new NopFactoryMigration(2,5));
 
 
         JacksonDeSerialisation<ExampleFactoryA> deSerialisation = new JacksonDeSerialisation<>(ExampleFactoryA.class, 5);
