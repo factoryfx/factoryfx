@@ -11,6 +11,8 @@ import de.factoryfx.javafx.editor.data.DataEditor;
 import de.factoryfx.javafx.util.DataChoiceDialog;
 import de.factoryfx.javafx.util.UniformDesign;
 import de.factoryfx.javafx.widget.Widget;
+import javafx.beans.binding.Bindings;
+import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
@@ -38,6 +40,7 @@ public class DataListEditWidget<T extends Data> implements Widget {
     private final ObservableList<T> list;
     private final TableView<T> tableView;
     private final DataEditor dataEditor;
+    private final BooleanBinding multipleItemsSelected;
 
     public DataListEditWidget(ObservableList<T> list, TableView<T> tableView, DataEditor dataEditor, UniformDesign uniformDesign, Runnable emptyAdder, Supplier<List<Data>> possibleValuesProvider, boolean isUserEditable, boolean isUserSelectable) {
         this.uniformDesign = uniformDesign;
@@ -48,6 +51,7 @@ public class DataListEditWidget<T extends Data> implements Widget {
         this.list = list;
         this.tableView = tableView;
         this.dataEditor = dataEditor;
+        multipleItemsSelected = Bindings.createBooleanBinding(() -> tableView.getSelectionModel().getSelectedItems().size() > 1, tableView.getSelectionModel().getSelectedItems());
     }
 
 
@@ -55,7 +59,7 @@ public class DataListEditWidget<T extends Data> implements Widget {
     public Node createContent() {
         Button showButton = new Button("", uniformDesign.createIcon(FontAwesome.Glyph.PENCIL));
         showButton.setOnAction(event -> dataEditor.edit(tableView.getSelectionModel().getSelectedItem()));
-        showButton.disableProperty().bind(tableView.getSelectionModel().selectedItemProperty().isNull());
+        showButton.disableProperty().bind(tableView.getSelectionModel().selectedItemProperty().isNull().or(multipleItemsSelected));
 
         Button selectButton = new Button("", uniformDesign.createIcon(FontAwesome.Glyph.SEARCH_PLUS));
         selectButton.setOnAction(event -> {
@@ -74,12 +78,12 @@ public class DataListEditWidget<T extends Data> implements Widget {
 
         Button deleteButton = new Button();
         uniformDesign.addDangerIcon(deleteButton,FontAwesome.Glyph.TIMES);
-        deleteButton.setOnAction(event -> list.remove(tableView.getSelectionModel().getSelectedItem()));
+        deleteButton.setOnAction(event -> tableView.getSelectionModel().getSelectedItems().forEach(list::remove));
         deleteButton.disableProperty().bind(tableView.getSelectionModel().selectedItemProperty().isNull().or(new SimpleBooleanProperty(!isUserEditable)));
 
         Button moveUpButton = new Button();
         uniformDesign.addIcon(moveUpButton,FontAwesome.Glyph.ANGLE_UP);
-        moveUpButton.disableProperty().bind(tableView.getSelectionModel().selectedItemProperty().isNull());
+        moveUpButton.disableProperty().bind(tableView.getSelectionModel().selectedItemProperty().isNull().or(multipleItemsSelected));
         moveUpButton.setOnAction(event -> {
             int selectedIndex = tableView.getSelectionModel().getSelectedIndex();
             if (selectedIndex -1>=0){
@@ -89,7 +93,7 @@ public class DataListEditWidget<T extends Data> implements Widget {
         });
         Button moveDownButton = new Button();
         uniformDesign.addIcon(moveDownButton,FontAwesome.Glyph.ANGLE_DOWN);
-        moveDownButton.disableProperty().bind(tableView.getSelectionModel().selectedItemProperty().isNull());
+        moveDownButton.disableProperty().bind(tableView.getSelectionModel().selectedItemProperty().isNull().or(multipleItemsSelected));
         moveDownButton.setOnAction(event -> {
             int selectedIndex = tableView.getSelectionModel().getSelectedIndex();
             if (selectedIndex+1<tableView.getItems().size()){
@@ -100,7 +104,7 @@ public class DataListEditWidget<T extends Data> implements Widget {
 
         Button copyButton = new Button();
         uniformDesign.addIcon(copyButton,FontAwesome.Glyph.COPY);
-        copyButton.disableProperty().bind(tableView.getSelectionModel().selectedItemProperty().isNull());
+        copyButton.disableProperty().bind(tableView.getSelectionModel().selectedItemProperty().isNull().or(multipleItemsSelected));
         copyButton.setOnAction(event -> {
             list.add(tableView.getSelectionModel().getSelectedItem().utility().semanticCopy());
         });
