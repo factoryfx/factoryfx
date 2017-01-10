@@ -126,4 +126,35 @@ public class FactorySerialisationManagerTest {
         Assert.assertNotNull(result);
 
     }
+
+
+    @Test
+    public void read_read_migration_missing_migration(){
+        List<FactoryMigration> migrations = new ArrayList<>();
+        migrations.add(new FactoryMigration() {
+            @Override
+            public boolean canMigrate(int dataModelVersion) {
+                return dataModelVersion==1;
+            }
+
+            @Override
+            public String migrate(String data) {
+                return data;
+            }
+
+            @Override
+            public int migrateResultVersion() {
+                return 2;
+            }
+        });
+
+
+
+        JacksonDeSerialisation<ExampleFactoryA> deSerialisation = new JacksonDeSerialisation<>(ExampleFactoryA.class, 5);
+        JacksonSerialisation<ExampleFactoryA> serialisation = new JacksonSerialisation<>(5);
+        FactorySerialisationManager<ExampleFactoryA> manager = new FactorySerialisationManager<>(serialisation,deSerialisation, migrations);
+        ExampleFactoryA result = manager.read(ObjectMapperBuilder.build().writeValueAsString(new ExampleFactoryA()),1);
+        Assert.assertNotNull(result);
+
+    }
 }
