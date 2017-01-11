@@ -28,6 +28,7 @@ public class ApplicationServer<L,V,T extends FactoryBase<L,V>> {
     }
 
     public MergeDiff updateCurrentFactory(FactoryAndStorageMetadata<T> update) {
+        prepareFactory(update.root);
         T commonVersion = factoryStorage.getHistoryFactory(update.metadata.baseVersionId);
         MergeDiff mergeDiff = factoryManager.update(commonVersion, update.root);
         if (mergeDiff.hasNoConflicts()){
@@ -43,8 +44,8 @@ public class ApplicationServer<L,V,T extends FactoryBase<L,V>> {
         return factoryManager.simulateUpdate(commonVersion , possibleUpdate.root);
     }
 
-    public FactoryAndStorageMetadata<T> getCurrentFactory() {
-        return factoryStorage.getCurrentFactory();
+    public T getCurrentFactory() {
+        return factoryManager.getCurrentFactory();
     }
 
     /** creates a new factory which is ready for editing mainly assign the right ids*/
@@ -68,7 +69,17 @@ public class ApplicationServer<L,V,T extends FactoryBase<L,V>> {
 
     public void start() {
         factoryStorage.loadInitialFactory();
-        factoryManager.start(factoryStorage.getCurrentFactory().root);
+        final FactoryAndStorageMetadata<T> currentFactory = factoryStorage.getCurrentFactory();
+        prepareFactory(currentFactory.root);
+        factoryManager.start(currentFactory.root);
+    }
+
+    void prepareFactory(T root){
+        root.internal().collectChildrenDeep().forEach(data -> {
+            if (data instanceof ApplicationServerAwareFactory){
+                ((ApplicationServerAwareFactory)data).applicationServer.set(this);
+            }
+        });
     }
 
     public void stop() {

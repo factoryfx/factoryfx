@@ -6,20 +6,19 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import de.factoryfx.data.attribute.AttributeMetadata;
-import de.factoryfx.data.attribute.types.ObjectValueAttribute;
 import de.factoryfx.data.attribute.types.StringAttribute;
 import de.factoryfx.data.attribute.types.URIListAttribute;
 import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.server.ApplicationServer;
+import de.factoryfx.server.ApplicationServerAwareFactory;
 import org.eclipse.jetty.server.NetworkTrafficServerConnector;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
 
-public class ApplicationServerRestServerFactory<L,V,T extends FactoryBase<L,V>> extends FactoryBase<ApplicationServerRestServer,Void> {
+public class ApplicationServerRestServerFactory<L,V,T extends FactoryBase<L,V>> extends ApplicationServerAwareFactory<V,L,T,ApplicationServerRestServer> {
 
     public final URIListAttribute bindAddresses = new URIListAttribute(new AttributeMetadata().labelText("bindaddresses"));
     public final StringAttribute contentPath = new StringAttribute(new AttributeMetadata().labelText("context path")).defaultValue("/applicationServer/*");
-    public final ObjectValueAttribute<ApplicationServer<L,V,T>> applicationServer = new ObjectValueAttribute<>(new AttributeMetadata().labelText("application server"));
 
     public ApplicationServerRestServerFactory(){
         configLiveCycle().setCreator(() -> {

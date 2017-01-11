@@ -126,13 +126,16 @@ project(':factory') {
         compile group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jdk8', version: '2.8.3'
         compile group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jdk7', version: '2.6.7'
         compile group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jsr310', version: '2.8.3'
-        testCompile group: 'org.postgresql', name: 'postgresql', version: '9.4.1210.jre7'
-        testCompile 'ru.yandex.qatools.embed:postgresql-embedded:1.15'
-
     }
 }
 
-
+project(':postgresqlStorage') {
+    dependencies {
+        compile project(":factory")
+        compile group: 'org.postgresql', name: 'postgresql', version: '9.4.1210.jre7'
+        testCompile 'ru.yandex.qatools.embed:postgresql-embedded:1.15'
+    }
+}
 
 project(':adminUiAngularjs') {
 
@@ -151,17 +154,16 @@ project(':adminUiAngularjs') {
 
         compile project(":restutilServer")
         compile project(":applicationServer")
-        testCompile project(":utilfx")
+        testCompile project(":testutils")
         testCompile group: 'ch.qos.logback', name: 'logback-classic', version: '1.1.7'
     }
 
 }
 
-project(':utilfx') {
+project(':testutils') {
 
     dependencies {
-        compile project(":factory")
-        compile project(":applicationServer")
+
     }
 
 }
@@ -190,7 +192,7 @@ project(':example') {
     dependencies {
         compile project(":adminUiAngularjs")
         compile project(":factory")
-        compile project(":utilfx")
+        compile project(":testutils")
         compile project(":applicationServer")
         compile group: 'ch.qos.logback', name: 'logback-classic', version: '1.1.7'
     }

@@ -4,7 +4,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Locale;
 
-import de.factoryfx.server.InMemoryFactoryStorage;
+import de.factoryfx.factory.datastorage.inmemory.InMemoryFactoryStorage;
 import de.factoryfx.server.angularjs.integration.example.ExampleFactoryA;
 import de.factoryfx.server.angularjs.integration.example.ExampleFactoryB;
 import de.factoryfx.server.angularjs.integration.example.ExampleLiveObjectA;

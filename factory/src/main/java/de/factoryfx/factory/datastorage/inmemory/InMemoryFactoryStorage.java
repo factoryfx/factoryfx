@@ -1,4 +1,4 @@
-package de.factoryfx.server;
+package de.factoryfx.factory.datastorage.inmemory;
 
 import java.util.Collection;
 import java.util.Map;

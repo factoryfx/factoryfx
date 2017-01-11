@@ -25,7 +25,7 @@ public class FactoryReferenceListAttribute<L,T extends FactoryBase<? extends L,?
         super(clazz, attributeMetadata);
     }
 
-    //Workaround for genrics (T with generic params)
+    //Workaround for generics (T with generic params)
     @SuppressWarnings("unchecked")
     public FactoryReferenceListAttribute(AttributeMetadata attributeMetadata, Class clazz) {
         super(clazz, attributeMetadata);

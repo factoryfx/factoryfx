@@ -1,13 +1,17 @@
-package de.factoryfx.user;
+package de.factoryfx.user.persistent;
 
 import java.util.List;
 import java.util.Optional;
 
-public class InMemoryUserManagement implements UserManagement {
+import de.factoryfx.user.AuthorizedUser;
+import de.factoryfx.user.User;
+import de.factoryfx.user.UserManagement;
+
+public class  PersistentUserManagement implements UserManagement {
 
     private final List<User> users;
 
-    public InMemoryUserManagement(List<User> users) {
+    public PersistentUserManagement(List<User> users) {
         this.users = users;
     }
 
