@@ -7,6 +7,7 @@ import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.Invocation;
+import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
@@ -39,28 +40,43 @@ public class RestClient {
     }
 
     public <R> R post(String subPath, Object entity, Class<R> returnType) {
-        Response response = createRequest(subPath).post(Entity.json(entity));
-        checkResponseStatus(response);
+        final CreateRequestResult request = createRequest(subPath);
+        Response response = request.builder.post(Entity.json(entity));
+        checkResponseStatus(response,request.uri);
         return response.readEntity(returnType);
     }
 
     public <R> R get(String subPath, Class<R> returnType) {
-        Response response = createRequest(subPath).get();
-        checkResponseStatus(response);
+        final CreateRequestResult request = createRequest(subPath);
+        Response response = request.builder.get();
+        checkResponseStatus(response,request.uri);
         return response.readEntity(returnType);
     }
 
-    private void checkResponseStatus(Response response) {
-        if (response.getStatus() != 200)
-            throw new RuntimeException("Received http status code "+response.getStatus()+"\n"+response.readEntity(String.class));
+    private void checkResponseStatus(Response response, URI uri) {
+        if (response.getStatus() != 200) {
+            throw new RuntimeException("Received http status code " + response.getStatus() + "\n" +uri+"\n" + response.readEntity(String.class));
+        }
     }
 
-    private Invocation.Builder createRequest(String subPath) {
-        return client.target(baseURI.resolve(subPath)).request().accept(MediaType.APPLICATION_JSON_TYPE);
+    private static class CreateRequestResult{
+        private final Invocation.Builder builder;
+        private final URI uri;
+
+        private CreateRequestResult(Invocation.Builder builder, URI uri) {
+            this.builder = builder;
+            this.uri = uri;
+        }
+    }
+
+
+    private CreateRequestResult createRequest(String subPath) {
+        final WebTarget target = client.target(baseURI.resolve(subPath));
+        return new CreateRequestResult(target.request().accept(MediaType.APPLICATION_JSON_TYPE),target.getUri());
     }
 
     public Object get(String subPath) {
-        return createRequest(subPath).get().getEntity();
+        return createRequest(subPath).builder.get().getEntity();
     }
 
 

@@ -1,2 +1,2 @@
-include 'applicationServer', 'adminUiAngularjs', 'applicationServerRestClient', 'applicationServerRest', 'data', 'factory', 'testutils',
-        'example', 'restutilServer', 'restutilClient', 'javafxDataEditing', 'javafxDistribution', 'postgresqlStorage'
+include 'applicationServer', 'adminUiAngularjs', 'applicationServerRestClient', 'applicationServerRestServer', 'applicationServerRestCommon', 'applicationServerRestIntegrationTest',
+        'data', 'factory', 'testutils', 'example', 'restutilServer', 'restutilClient', 'javafxDataEditing', 'javafxDistribution', 'postgresqlStorage'

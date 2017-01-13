@@ -49,7 +49,7 @@ public class ApplicationServer<L,V,T extends FactoryBase<L,V>> {
     }
 
     /** creates a new factory which is ready for editing mainly assign the right ids*/
-    public FactoryAndStorageMetadata<T> getPrepareNewFactory() {
+    public FactoryAndStorageMetadata<T> prepareNewFactory() {
         return factoryStorage.getPrepareNewFactory();
     }
 

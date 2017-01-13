@@ -197,7 +197,7 @@ public class RestResource<L,V,T extends FactoryBase<L,V>> {
     @Path("loadCurrentFactory")
     public Response init(){
         if (!sessionStorage.hasCurrentEditingFactory(request)){
-            FactoryAndStorageMetadata<T> prepareNewFactory = applicationServer.getPrepareNewFactory();
+            FactoryAndStorageMetadata<T> prepareNewFactory = applicationServer.prepareNewFactory();
             prepareNewFactory.metadata.user=getUser().user;
             sessionStorage.setCurrentEditingFactory(request,prepareNewFactory);
         }
@@ -264,7 +264,7 @@ public class RestResource<L,V,T extends FactoryBase<L,V>> {
     @Produces(MediaType.APPLICATION_JSON)
     @Path("deployReset")
     public StageResponse deployReset(){
-        sessionStorage.setCurrentEditingFactory(request,applicationServer.getPrepareNewFactory());
+        sessionStorage.setCurrentEditingFactory(request,applicationServer.prepareNewFactory());
         return createStageResponse();
     }
 
@@ -294,7 +294,7 @@ public class RestResource<L,V,T extends FactoryBase<L,V>> {
             response.mergeDiff=new WebGuiMergeDiff(response.mergeDiffExt,getUserLocale());
             if (response.mergeDiffExt.hasNoConflicts()){
                 response.deployed=true;
-                sessionStorage.setCurrentEditingFactory(request,applicationServer.getPrepareNewFactory());
+                sessionStorage.setCurrentEditingFactory(request,applicationServer.prepareNewFactory());
             }
         }
 

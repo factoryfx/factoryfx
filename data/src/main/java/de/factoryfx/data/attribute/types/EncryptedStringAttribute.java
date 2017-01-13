@@ -75,7 +75,7 @@ public class EncryptedStringAttribute extends ValueAttribute<String> {
 
             Cipher AesCipher = Cipher.getInstance("AES");
             AesCipher.init(Cipher.DECRYPT_MODE, secKey);
-            return new String(AesCipher.doFinal(Base64.getDecoder().decode(get().getBytes(StandardCharsets.UTF_8))));
+            return new String(AesCipher.doFinal(Base64.getDecoder().decode(get().getBytes(StandardCharsets.UTF_8))),StandardCharsets.UTF_8);
         } catch (NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException | IllegalBlockSizeException | BadPaddingException e) {
             throw new RuntimeException(e);
         }

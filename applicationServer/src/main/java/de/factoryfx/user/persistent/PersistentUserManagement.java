@@ -7,7 +7,7 @@ import de.factoryfx.user.AuthorizedUser;
 import de.factoryfx.user.User;
 import de.factoryfx.user.UserManagement;
 
-public class  PersistentUserManagement implements UserManagement {
+public class PersistentUserManagement implements UserManagement {
 
     private final List<User> users;
 

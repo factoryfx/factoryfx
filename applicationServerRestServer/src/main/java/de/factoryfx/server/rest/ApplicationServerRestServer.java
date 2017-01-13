@@ -1,11 +1,12 @@
 package de.factoryfx.server.rest;
 
-import java.util.Collection;
+import java.util.List;
 import java.util.function.Function;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider;
 import de.factoryfx.data.jackson.ObjectMapperBuilder;
+import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.server.rest.server.AllExceptionMapper;
 import de.factoryfx.server.rest.server.DelegatingLoggingFilterLogger;
 import org.eclipse.jetty.server.Handler;
@@ -21,20 +22,19 @@ import org.glassfish.jersey.logging.LoggingFeature;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.servlet.ServletContainer;
 
-public class ApplicationServerRestServer {
+public class ApplicationServerRestServer<V,L,T extends FactoryBase<L,V>> {
 
     private final ApplicationServerResource factoryManagerResource;
     private final Server server;
 
-    public ApplicationServerRestServer(ApplicationServerResource factoryManagerResource,
-                                       Function<Server,Collection<ServerConnector>> connectorFactory, String contextPath) {
-        this.factoryManagerResource = factoryManagerResource;
+    public ApplicationServerRestServer(ApplicationServerResource applicationServerResource,
+                                       List<Function<Server,ServerConnector>> connectors, String contextPath) {
+        this.factoryManagerResource = applicationServerResource;
         server=new Server();
-        Collection<ServerConnector> connectors = connectorFactory.apply(server);
-        server.setConnectors(connectors.toArray(new ServerConnector[connectors.size()]));
+        connectors.forEach(serverServerConnectorFunction -> server.addConnector(serverServerConnectorFunction.apply(server)));
 
         ServletContextHandler contextHandler = new ServletContextHandler(ServletContextHandler.SESSIONS);
-        contextHandler.addServlet( new ServletHolder(new ServletContainer(jerseySetup(factoryManagerResource))), contextPath);
+        contextHandler.addServlet( new ServletHolder(new ServletContainer(jerseySetup(applicationServerResource))), contextPath);
 
         ErrorHandler errorHandler = new ErrorHandler();
         errorHandler.setShowStacks(true);

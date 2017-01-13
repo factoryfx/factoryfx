@@ -167,13 +167,13 @@ public abstract class FactoryBase<L,V> extends Data {
     }
 
     private void start() {
-        if (starterWithNewLiveObject!=null){
+        if (starterWithNewLiveObject!=null && createdLiveObject!=null){//createdLiveObject is null e.g. if object ist not instanced in the parent factory
             starterWithNewLiveObject.accept(createdLiveObject);
         }
     }
 
     private void destroy(L previousLiveObject) {
-        if (destroyerWithPreviousLiveObject!=null){
+        if (destroyerWithPreviousLiveObject!=null  && previousLiveObject!=null){
             destroyerWithPreviousLiveObject.accept(previousLiveObject);
         }
     };

@@ -10,9 +10,9 @@ public class EncryptedStringAttributeTest {
     public void encrypt_test(){
         EncryptedStringAttribute attribute = new EncryptedStringAttribute(new AttributeMetadata());
         String key=attribute.createKey();
-        attribute.encrypt("test123",key);
+        attribute.encrypt("test123üÄ",key);
 
-        Assert.assertEquals("test123",attribute.decrypt(key));
+        Assert.assertEquals("test123üÄ",attribute.decrypt(key));
     }
 
 }

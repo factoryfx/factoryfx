@@ -9,6 +9,9 @@ import de.factoryfx.factory.SimpleFactoryBase;
 import de.factoryfx.user.User;
 
 public class UserFactory<V> extends SimpleFactoryBase<User,V> {
+
+    public static String passwordKey;
+
     private static final AttributeMetadata NAME = new AttributeMetadata().en("name").de("Name");
     private static final AttributeMetadata PASSWORD = new AttributeMetadata().en("name").de("Name");
     private static final AttributeMetadata LOCLAE = new AttributeMetadata().en("locale").de("sprache");
@@ -21,6 +24,9 @@ public class UserFactory<V> extends SimpleFactoryBase<User,V> {
 
     @Override
     public User createImpl() {
-        return new User(name.get(),password.decrypt(System.getProperty("factoryfx.persistentUserManagement.key")),locale.get(),permissons.get());
+        if (passwordKey==null){
+            throw new IllegalStateException("missing passwordKey (you could create one with EncryptedStringAttribute), should be constant therefore don't create the key dynamic");
+        }
+        return new User(name.get(),password.decrypt(passwordKey),locale.get(),permissons.get());
     }
 }
