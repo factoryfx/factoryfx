@@ -127,7 +127,7 @@ public class ReferenceListAttributeTest {
     }
 
     @Test
-    public void delegate_root_for_added() throws Exception {
+    public void delegate_root_for_added() {
         ReferenceListAttribute<ExampleFactoryA> attribute =new ReferenceListAttribute<>(ExampleFactoryA.class,new AttributeMetadata());
         attribute.prepareUsage(new ExampleFactoryB());
 
@@ -138,7 +138,7 @@ public class ReferenceListAttributeTest {
     }
 
     @Test
-    public void delegate_root_for_addAll() throws Exception {
+    public void delegate_root_for_addAll(){
         ReferenceListAttribute<ExampleFactoryA> attribute =new ReferenceListAttribute<>(ExampleFactoryA.class,new AttributeMetadata());
         attribute.prepareUsage(new ExampleFactoryB());
 
@@ -151,4 +151,21 @@ public class ReferenceListAttributeTest {
         Assert.assertTrue(exampleFactoryA2.internal().readyForUsage());
     }
 
+    @Test
+    public void delegate_root_for_addAll_with_null(){
+        ReferenceListAttribute<ExampleFactoryA> attribute =new ReferenceListAttribute<>(ExampleFactoryA.class,new AttributeMetadata());
+        attribute.prepareUsage(new ExampleFactoryB());
+        attribute.get().add(null);
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void delegate_root_for_addAll_with_null_nested(){
+        ReferenceListAttribute<ExampleFactoryA> attribute =new ReferenceListAttribute<>(ExampleFactoryA.class,new AttributeMetadata());
+        attribute.prepareUsage(new ExampleFactoryB());
+
+        final ExampleFactoryA exampleFactoryA1 = new ExampleFactoryA();
+        exampleFactoryA1.referenceListAttribute.add(null);
+        attribute.get().add(exampleFactoryA1);
+        Assert.assertTrue(exampleFactoryA1.internal().readyForUsage());
+    }
 }

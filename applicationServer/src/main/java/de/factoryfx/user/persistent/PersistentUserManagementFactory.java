@@ -13,4 +13,9 @@ public class PersistentUserManagementFactory<V> extends UserManagementFactory<V>
     public PersistentUserManagement createImpl() {
         return new PersistentUserManagement(users.instances());
     }
+
+    public PersistentUserManagementFactory(){
+        config().setDisplayTextProvider(() -> "user management");
+    }
+
 }

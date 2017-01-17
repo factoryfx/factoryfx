@@ -29,4 +29,8 @@ public class UserFactory<V> extends SimpleFactoryBase<User,V> {
         }
         return new User(name.get(),password.decrypt(passwordKey),locale.get(),permissons.get());
     }
+
+    public UserFactory(){
+        config().setDisplayTextProvider(name::get);
+    }
 }

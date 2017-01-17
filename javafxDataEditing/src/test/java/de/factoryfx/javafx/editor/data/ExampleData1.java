@@ -17,6 +17,7 @@ import de.factoryfx.data.attribute.types.BooleanAttribute;
 import de.factoryfx.data.attribute.types.ByteArrayAttribute;
 import de.factoryfx.data.attribute.types.ColorAttribute;
 import de.factoryfx.data.attribute.types.DoubleAttribute;
+import de.factoryfx.data.attribute.types.EncryptedStringAttribute;
 import de.factoryfx.data.attribute.types.EnumAttribute;
 import de.factoryfx.data.attribute.types.I18nAttribute;
 import de.factoryfx.data.attribute.types.IntegerAttribute;
@@ -39,6 +40,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.util.Pair;
 
 public class ExampleData1 extends Data {
+    public final EncryptedStringAttribute encryptedStringAttribute=new EncryptedStringAttribute(new AttributeMetadata().en("encryptedStringAttribute").de("StringAttribute de"));
 
     public final StringAttribute stringAttribute=new StringAttribute(new AttributeMetadata().en("StringAttribute gajsd jgsdajh gjasdja jhsadgjg ghf hgf hgfhff hgfhgf hf").de("StringAttribute de")).validation(new StringRequired()).defaultValue("blub");
     public final StringAttribute stringLongAttribute=new StringAttribute(new AttributeMetadata().en("Long StringAttribute").de("Long StringAttribute de")).longText().validation(new StringRequired());

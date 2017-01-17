@@ -22,6 +22,7 @@ import de.factoryfx.data.attribute.ViewListReferenceAttribute;
 import de.factoryfx.data.attribute.ViewReferenceAttribute;
 import de.factoryfx.data.attribute.types.BigDecimalAttribute;
 import de.factoryfx.data.attribute.types.DoubleAttribute;
+import de.factoryfx.data.attribute.types.EncryptedStringAttribute;
 import de.factoryfx.data.attribute.types.IntegerAttribute;
 import de.factoryfx.data.attribute.types.LongAttribute;
 import de.factoryfx.data.attribute.types.StringAttribute;
@@ -31,6 +32,7 @@ import de.factoryfx.javafx.editor.attribute.visualisation.BigDecimalAttributeVis
 import de.factoryfx.javafx.editor.attribute.visualisation.BooleanAttributeVisualisation;
 import de.factoryfx.javafx.editor.attribute.visualisation.ColorAttributeVisualisation;
 import de.factoryfx.javafx.editor.attribute.visualisation.DoubleAttributeVisualisation;
+import de.factoryfx.javafx.editor.attribute.visualisation.EncryptedStringAttributeVisualisation;
 import de.factoryfx.javafx.editor.attribute.visualisation.EnumAttributeVisualisation;
 import de.factoryfx.javafx.editor.attribute.visualisation.ExpandableAttributeVisualisation;
 import de.factoryfx.javafx.editor.attribute.visualisation.IntegerAttributeVisualisation;
@@ -178,6 +180,13 @@ public class AttributeEditorFactory {
     private Optional<AttributeEditor<?>> getAttributeEditorSimpleType(Attribute<?> attribute, Supplier<List<ValidationError>> validation) {
         if (attribute.getAttributeType().dataType == null)
             return Optional.empty();
+
+        if (attribute instanceof EncryptedStringAttribute){
+            EncryptedStringAttribute stringAttribute = (EncryptedStringAttribute) attribute;
+            if (!stringAttribute.isLongText()){
+                return Optional.of(new AttributeEditor<>(stringAttribute,new EncryptedStringAttributeVisualisation()));
+            }
+        }
 
         if (String.class==attribute.getAttributeType().dataType){
             StringAttribute stringAttribute = (StringAttribute) attribute;

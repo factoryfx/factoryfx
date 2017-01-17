@@ -15,7 +15,7 @@ public class ApplicationServerRestServerFactory<V,L,T extends FactoryBase<L,V>> 
 
     public final StringAttribute contentPath = new StringAttribute(new AttributeMetadata().labelText("context path")).defaultValue("/applicationServer/*");
     public final FactoryReferenceAttribute<ApplicationServerResource,ApplicationServerResourceFactory<V,L,T>> applicationServerResource = new FactoryReferenceAttribute<>(new AttributeMetadata().labelText("resource"),ApplicationServerResourceFactory.class);
-    public final FactoryReferenceListAttribute<Function<Server,ServerConnector>,HttpServerConnectorFactory<V>> connectors = new FactoryReferenceListAttribute<>(new AttributeMetadata().labelText("resource"),HttpServerConnectorFactory.class);
+    public final FactoryReferenceListAttribute<Function<Server,ServerConnector>,HttpServerConnectorFactory<V>> connectors = new FactoryReferenceListAttribute<>(new AttributeMetadata().labelText("connectors"),HttpServerConnectorFactory.class);
 
     public ApplicationServerRestServerFactory(){
         configLiveCycle().setCreator(() -> {

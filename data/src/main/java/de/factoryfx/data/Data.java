@@ -427,7 +427,7 @@ public abstract class Data {
         return (T)this;
     }
 
-    <T extends Data> T prepareUsage(Data root){
+    <T extends Data> T propagateRoot(Data root){
         for (Data data: collectChildrenDeep()){
             data.root=root;
             data.visitAttributesFlat((attributeVariableName, attribute) -> {
@@ -445,7 +445,7 @@ public abstract class Data {
 
     private <T extends Data> T prepareUsage() {
         T result = reconstructMetadataDeepRoot();
-        return result.prepareUsage(result);
+        return result.propagateRoot(result);
     }
 
     Data root;
@@ -676,7 +676,15 @@ public abstract class Data {
             return data.copyZeroLevelDeep();
         }
 
-        /** only call on root
+        /**
+         * after serialisation or programmatically creation this mus be called first before using the object
+         * to:
+         * -fix jackson wrong deserialisation (metatadat ==null)
+         * -propagate root node  to all chileds (for validation etc)
+         *
+         * unfortunately we must create a copy and can't make the same object usable(which we tried but failed)
+         *
+         * only call on root
          * return usable copy */
         public <T extends Data> T prepareUsableCopy() {
             return data.prepareUsage();
@@ -691,16 +699,9 @@ public abstract class Data {
             return data.readyForUsage();
         }
 
-        /**
-         * after serialisation or programmatically creation this mus be called first before using the object
-         * to:
-         * -fix jackson wrong deserialisation (metatadat ==null)
-         * -propagate root node  to all chileds (for validation etc)
-         *
-         * unfortunately we must create a copy and can't make the same object usable(which we tried but failed)
-         * */
-        public <T extends Data> T prepareUsableCopy(Data root){
-            return data.prepareUsage(root);
+
+        public <T extends Data> T propagateRoot(Data root){
+            return data.propagateRoot(root);
         }
 
         public Data getRoot(){

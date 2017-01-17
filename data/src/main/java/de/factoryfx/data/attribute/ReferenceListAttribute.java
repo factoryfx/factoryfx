@@ -35,9 +35,12 @@ public class ReferenceListAttribute<T extends Data> extends Attribute<List<T>> {
 
         list.addListener((ListChangeListener<T>) c -> {
             if (c.next()){
-                for (T newData: c.getAddedSubList()){
+                for (T newData : c.getAddedSubList()) {
+                    if (newData == null) {
+                        throw new IllegalStateException("cant't add null to list");
+                    }
                     if (root!=null) {
-                        newData.internal().prepareUsableCopy(root);
+                        newData.internal().propagateRoot(root);
                     }
                 }
             }
@@ -59,10 +62,12 @@ public class ReferenceListAttribute<T extends Data> extends Attribute<List<T>> {
     }
 
     public boolean add(T value) {
+        if (value==null){
+            throw new IllegalStateException("cant't add null to list");
+        }
         get().add(value);
         return false;
     }
-
 
     @Override
     public void collectChildren(Set<Data> allModelEntities) {
@@ -260,7 +265,7 @@ public class ReferenceListAttribute<T extends Data> extends Attribute<List<T>> {
         }
 
         for (Data data: get()){
-            data.internal().prepareUsableCopy(root);
+            data.internal().propagateRoot(root);
         }
 
         return addedFactory;
@@ -269,7 +274,7 @@ public class ReferenceListAttribute<T extends Data> extends Attribute<List<T>> {
     public void addFactory(T addedFactory){
         get().add(addedFactory);
         for (Data data: get()){
-            data.internal().prepareUsableCopy(root);
+            data.internal().propagateRoot(root);
         }
     }
 
