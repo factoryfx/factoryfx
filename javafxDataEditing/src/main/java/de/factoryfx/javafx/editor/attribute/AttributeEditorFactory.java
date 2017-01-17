@@ -190,9 +190,9 @@ public class AttributeEditorFactory {
             return Optional.empty();
 
         if (attribute instanceof EncryptedStringAttribute){
-            EncryptedStringAttribute stringAttribute = (EncryptedStringAttribute) attribute;
-            if (!stringAttribute.isLongText()){
-                return Optional.of(new AttributeEditor<>(stringAttribute,new EncryptedStringAttributeVisualisation()));
+            EncryptedStringAttribute encryptedStringAttribute = (EncryptedStringAttribute) attribute;
+            if (!encryptedStringAttribute.isLongText()){
+                return Optional.of(new AttributeEditor<>(encryptedStringAttribute,new EncryptedStringAttributeVisualisation(encryptedStringAttribute)));
             }
         }
 
