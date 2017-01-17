@@ -9,7 +9,7 @@ import de.factoryfx.factory.SimpleFactoryBase;
 import de.factoryfx.user.User;
 
 public class UserFactory<V> extends SimpleFactoryBase<User,V> {
-
+    /**key is static and not be part of the factory to keep it secret*/
     public static String passwordKey;
 
     private static final AttributeMetadata NAME = new AttributeMetadata().en("name").de("Name");

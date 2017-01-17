@@ -322,13 +322,13 @@ public class RestResource<L,V,T extends FactoryBase<L,V>> {
 
                     @Override
                     public void reference(ReferenceAttribute<?> reference) {
-                        List<? extends Data> objects = reference.possibleValues();
+                        Collection<? extends Data> objects = reference.possibleValues();
                         objects.forEach(data -> result.add(new WebGuiPossibleEntity(data)));
                     }
 
                     @Override
                     public void referenceList(ReferenceListAttribute<?> referenceList) {
-                        List<? extends Data> objects = referenceList.possibleValues();
+                        Collection<? extends Data> objects = referenceList.possibleValues();
                         objects.forEach(data -> result.add(new WebGuiPossibleEntity(data)));
                     }
                 });

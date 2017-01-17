@@ -2,6 +2,7 @@ package de.factoryfx.data.attribute;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -279,11 +280,11 @@ public class ReferenceListAttribute<T extends Data> extends Attribute<List<T>> {
     }
 
     @SuppressWarnings("unchecked")
-    public List<T> possibleValues(){
-        ArrayList<T> result = new ArrayList<>();
+    public Collection<T> possibleValues(){
+        Set<T> result = new HashSet<T>();
         possibleValueProviderFromRoot.ifPresent(factoryBaseListFunction -> {
             Collection<T> factories = factoryBaseListFunction.apply(root);
-            factories.forEach(factory -> result.add(factory));
+            factories.forEach(result::add);
         });
         if (!possibleValueProviderFromRoot.isPresent()){
             for (Data factory: root.internal().collectChildrenDeep()){

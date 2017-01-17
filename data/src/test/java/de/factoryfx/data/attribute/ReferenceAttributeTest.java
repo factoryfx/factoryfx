@@ -1,6 +1,7 @@
 package de.factoryfx.data.attribute;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import de.factoryfx.data.jackson.ObjectMapperBuilder;
@@ -71,9 +72,9 @@ public class ReferenceAttributeTest {
 
         referenceAttribute.prepareUsage(root);
 
-        List<ExampleFactoryA> possibleFactories =referenceAttribute.possibleValues();
+        Collection<ExampleFactoryA> possibleFactories =referenceAttribute.possibleValues();
         Assert.assertEquals(1,possibleFactories.size());
-        Assert.assertEquals(exampleFactoryA,possibleFactories.get(0));
+        Assert.assertEquals(exampleFactoryA,new ArrayList<>(possibleFactories).get(0));
 
     }
 
