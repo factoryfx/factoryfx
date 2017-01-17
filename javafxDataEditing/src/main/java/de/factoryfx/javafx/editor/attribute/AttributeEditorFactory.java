@@ -67,7 +67,12 @@ public class AttributeEditorFactory {
         editorAssociations.add(editorAssociation);
     }
 
-    public Optional<AttributeEditor<?>> getAttributeEditor(Attribute<?> attribute, DataEditor dataEditor, Supplier<List<ValidationError>> validation){
+    private Optional<AttributeEditor<?>> getAttributeEditor(Attribute<?> attribute, DataEditor dataEditor, Supplier<List<ValidationError>> validation){
+       return this.getAttributeEditor(attribute,dataEditor,validation,null);
+    }
+
+
+    public Optional<AttributeEditor<?>> getAttributeEditor(Attribute<?> attribute, DataEditor dataEditor, Supplier<List<ValidationError>> validation, Data oldValue){
 
         for (Function<Attribute<?>,Optional<AttributeEditor<?>>> editorAssociation: editorAssociations) {
             Optional<AttributeEditor<?>> attributeEditor = editorAssociation.apply(attribute);
@@ -85,7 +90,7 @@ public class AttributeEditorFactory {
         Optional<AttributeEditor<?>> viewAttribute = getViewAttribute(attribute, dataEditor,validation);
         if (viewAttribute.isPresent()) return viewAttribute;
 
-        Optional<AttributeEditor<?>> referenceAttribute = getAttributeEditorReference(attribute, dataEditor,validation);
+        Optional<AttributeEditor<?>> referenceAttribute = getAttributeEditorReference(attribute, dataEditor,validation,oldValue);
         if (referenceAttribute.isPresent()) return referenceAttribute;
 
         return Optional.empty();
@@ -106,7 +111,7 @@ public class AttributeEditorFactory {
     }
 
     @SuppressWarnings("unchecked")
-    private Optional<AttributeEditor<?>> getAttributeEditorReference(Attribute<?> attribute, DataEditor dataEditor, Supplier<List<ValidationError>> validation) {
+    private Optional<AttributeEditor<?>> getAttributeEditorReference(Attribute<?> attribute, DataEditor dataEditor, Supplier<List<ValidationError>> validation, Data oldValue) {
         if (attribute.getAttributeType().dataType == null)
             return Optional.empty();
 
@@ -120,6 +125,9 @@ public class AttributeEditorFactory {
 
             final ReferenceListAttributeVisualisation referenceListAttributeVisualisation = new ReferenceListAttributeVisualisation(uniformDesign, dataEditor, () -> referenceListAttribute.addNewFactory(), () -> (List<Data>) referenceListAttribute.possibleValues(), referenceListAttribute.isUserEditable(), referenceListAttribute.isUserSelectable());
             ExpandableAttributeVisualisation<ObservableList<Data>> expandableAttributeVisualisation= new ExpandableAttributeVisualisation<>(referenceListAttributeVisualisation,uniformDesign,(l)->"Items: "+l.size(),FontAwesome.Glyph.LIST);
+            if (referenceListAttribute.get().contains(oldValue)){
+                expandableAttributeVisualisation.expand();
+            }
             return Optional.of(new AttributeEditor<>((Attribute<ObservableList<Data>>)attribute, expandableAttributeVisualisation));
         }
         return Optional.empty();

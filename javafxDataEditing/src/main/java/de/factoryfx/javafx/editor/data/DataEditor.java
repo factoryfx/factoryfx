@@ -165,13 +165,13 @@ public class DataEditor implements Widget {
             } else {
 
                 if (newValue.internal().attributeListGrouped().size()==1){
-                    final Node attributeGroupVisual = createAttributeGroupVisual(newValue.internal().attributeListGrouped().get(0).getValue(), () -> newValue.internal().validateFlat());
+                    final Node attributeGroupVisual = createAttributeGroupVisual(newValue.internal().attributeListGrouped().get(0).getValue(), () -> newValue.internal().validateFlat(),oldValue);
                     updateVis.accept(attributeGroupVisual,newValue);
                 } else {
                     TabPane tabPane = new TabPane();
                     for (Pair<String,List<Attribute<?>>> attributeGroup: newValue.internal().attributeListGrouped()) {
                         Tab tab=new Tab(attributeGroup.getKey());
-                        tab.setContent(createAttributeGroupVisual(attributeGroup.getValue(),() -> newValue.internal().validateFlat()));
+                        tab.setContent(createAttributeGroupVisual(attributeGroup.getValue(),() -> newValue.internal().validateFlat(),oldValue));
                         tabPane.getTabs().add(tab);
                     }
                     updateVis.accept(tabPane,newValue);
@@ -214,10 +214,10 @@ public class DataEditor implements Widget {
     }
 
 
-    private Node createAttributeGroupVisual(List<Attribute<?>> attributeGroup, Supplier<List<ValidationError>> validation) {
+    private Node createAttributeGroupVisual(List<Attribute<?>> attributeGroup, Supplier<List<ValidationError>> validation, Data oldValue) {
         if (attributeGroup.size()==1){
             final Attribute<?> attribute = attributeGroup.get(0);
-            Optional<AttributeEditor<?>> attributeEditor = attributeEditorFactory.getAttributeEditor(attribute, this, validation);
+            Optional<AttributeEditor<?>> attributeEditor = attributeEditorFactory.getAttributeEditor(attribute, this, validation, oldValue);
             if (attributeEditor.isPresent()){
                 attributeEditor.get().expand();
                 createdEditors.put(attribute,attributeEditor.get());
@@ -249,7 +249,7 @@ public class DataEditor implements Widget {
             for (Attribute<?> attribute: attributeGroup){
                 Label label = addLabelContent(grid, row,uniformDesign.getLabelText(attribute));
 
-                Optional<AttributeEditor<?>> attributeEditor = attributeEditorFactory.getAttributeEditor(attribute,this,validation);
+                Optional<AttributeEditor<?>> attributeEditor = attributeEditorFactory.getAttributeEditor(attribute,this,validation,oldValue);
                 int rowFinal=row;
                 if (attributeEditor.isPresent()){
                     createdEditors.put(attribute,attributeEditor.get());
