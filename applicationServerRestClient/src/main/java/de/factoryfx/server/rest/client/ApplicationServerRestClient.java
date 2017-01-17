@@ -2,6 +2,7 @@ package de.factoryfx.server.rest.client;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Locale;
 
 import de.factoryfx.data.merge.MergeDiffInfo;
 import de.factoryfx.factory.FactoryBase;
@@ -9,8 +10,8 @@ import de.factoryfx.factory.datastorage.FactoryAndStorageMetadata;
 import de.factoryfx.factory.datastorage.FactoryStorage;
 import de.factoryfx.factory.datastorage.StoredFactoryMetadata;
 import de.factoryfx.server.rest.CheckUserResponse;
-import de.factoryfx.server.rest.KeyResponse;
 import de.factoryfx.server.rest.UserAwareRequest;
+import de.factoryfx.server.rest.UserLocaleResponse;
 
 public class ApplicationServerRestClient<V,T extends FactoryBase<?,V>> {
 
@@ -67,8 +68,8 @@ public class ApplicationServerRestClient<V,T extends FactoryBase<?,V>> {
         return response.valid;
     }
 
-    public String getUserKey() {
-        KeyResponse response = restClient.post("userKey",new UserAwareRequest<>(user,passwordHash,null), KeyResponse.class);
-        return response.key;
+    public Locale getLocale() {
+        UserLocaleResponse response = restClient.post("userLocale",new UserAwareRequest<>(user,passwordHash,null), UserLocaleResponse.class);
+        return response.locale;
     }
 }

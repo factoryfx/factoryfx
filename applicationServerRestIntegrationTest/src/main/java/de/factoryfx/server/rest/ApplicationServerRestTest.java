@@ -43,7 +43,7 @@ public class ApplicationServerRestTest {
             final UserFactory<Void> user = new UserFactory<>();
             user.name.set("user123");
             user.password.encrypt("hash123",key);
-            user.locale.set(Locale.ENGLISH);
+            user.locale.set(Locale.GERMAN);
             userManagement.users.add(user);
             applicationServerResource.userManagement.set(userManagement);
 
@@ -81,7 +81,7 @@ public class ApplicationServerRestTest {
 
 
 //        System.out.println("qqqqqqqqqqqqq");
-//        System.out.println(applicationServerRestClient.checkUser());
+        System.out.println(applicationServerRestClient.getLocale());
 
     }
 

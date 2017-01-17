@@ -1,6 +1,7 @@
 package de.factoryfx.server.rest;
 
 import java.util.Collection;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.function.Predicate;
 
@@ -122,6 +123,19 @@ public class ApplicationServerResource {
             return new KeyResponse(UserFactory.passwordKey);
         } else {
             return new KeyResponse("");
+        }
+    }
+
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("userLocale")
+    public UserLocaleResponse getUserLoacle(UserAwareRequest<Void> request){
+        final Optional<AuthorizedUser> authenticate = authenticate(request);
+        if (authenticate.isPresent()){
+            return new UserLocaleResponse(authenticate.get().locale);
+        } else {
+            return new UserLocaleResponse(Locale.ENGLISH);
         }
     }
 }
