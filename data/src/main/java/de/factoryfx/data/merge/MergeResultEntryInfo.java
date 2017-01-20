@@ -24,5 +24,8 @@ public class MergeResultEntryInfo{
         this.parentDisplayText = parentDisplayText;
     }
 
-
+    @Override
+    public String toString() {
+        return "MergeResultEntryInfo{" + "previousValueDisplayText='" + previousValueDisplayText + '\'' + ", newValueValueDisplayText='" + newValueValueDisplayText + '\'' + ", fieldDisplayText=" + fieldDisplayText + ", parentDisplayText='" + parentDisplayText + '\'' + ", conflict=" + conflict + '}';
+    }
 }

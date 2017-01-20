@@ -1,6 +1,6 @@
 package de.factoryfx.javafx.util;
 
-import java.util.List;
+import java.util.Collection;
 import java.util.Optional;
 
 import de.factoryfx.data.Data;
@@ -19,7 +19,7 @@ public class DataChoiceDialog {
 
     private LanguageText title=new LanguageText().en("Select").de("Auswahl");
 
-    public Optional<Data> show(List<Data> possibleValues, Window owner, UniformDesign uniformDesign){
+    public Optional<Data> show(Collection<? extends Data> possibleValues, Window owner, UniformDesign uniformDesign){
         Dialog<Data> choiceDialog = new Dialog<>();
         choiceDialog.setTitle(uniformDesign.getText(title));
 

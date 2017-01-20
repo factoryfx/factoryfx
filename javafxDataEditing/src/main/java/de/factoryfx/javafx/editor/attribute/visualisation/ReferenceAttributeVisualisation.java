@@ -1,6 +1,6 @@
 package de.factoryfx.javafx.editor.attribute.visualisation;
 
-import java.util.List;
+import java.util.Collection;
 import java.util.Optional;
 import java.util.function.Supplier;
 
@@ -32,11 +32,11 @@ public class ReferenceAttributeVisualisation extends ValueAttributeEditorVisuali
     private final UniformDesign uniformDesign;
     private final DataEditor dataEditor;
     private final Supplier<Data> emptyAdder;
-    private final Supplier<List<Data>> possibleValuesProvider;
+    private final Supplier<Collection<? extends Data>> possibleValuesProvider;
     private final boolean isUserEditable;
     private final boolean isUserSelectable;
 
-    public ReferenceAttributeVisualisation(UniformDesign uniformDesign, DataEditor dataEditor, Supplier<Data> emptyAdder, Supplier<List<Data>> possibleValuesProvider, boolean isUserEditable, boolean isUserSelectable) {
+    public ReferenceAttributeVisualisation(UniformDesign uniformDesign, DataEditor dataEditor, Supplier<Data> emptyAdder, Supplier<Collection<? extends Data>> possibleValuesProvider, boolean isUserEditable, boolean isUserSelectable) {
         this.uniformDesign = uniformDesign;
         this.dataEditor = dataEditor;
         this.emptyAdder = emptyAdder;

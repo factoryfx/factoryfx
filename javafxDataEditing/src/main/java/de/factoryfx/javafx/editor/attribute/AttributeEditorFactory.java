@@ -117,7 +117,7 @@ public class AttributeEditorFactory {
 
         if (Data.class==attribute.getAttributeType().dataType){
             ReferenceAttribute<?> referenceAttribute = (ReferenceAttribute<?>) attribute;
-            return Optional.of(new AttributeEditor<>((Attribute<Data>)attribute,new ReferenceAttributeVisualisation(uniformDesign,dataEditor,()->referenceAttribute.addNewFactory(),()->(List<Data>)referenceAttribute.possibleValues(),referenceAttribute.isUserEditable(),referenceAttribute.isUserSelectable())));
+            return Optional.of(new AttributeEditor<>((Attribute<Data>)attribute,new ReferenceAttributeVisualisation(uniformDesign,dataEditor,()->referenceAttribute.addNewFactory(),()->referenceAttribute.possibleValues(),referenceAttribute.isUserEditable(),referenceAttribute.isUserSelectable())));
         }
 
         if (ObservableList.class.isAssignableFrom(attribute.getAttributeType().dataType) && Data.class.isAssignableFrom(attribute.getAttributeType().listItemType)){
