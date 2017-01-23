@@ -34,7 +34,7 @@ public class DataListEditWidget<T extends Data> implements Widget {
 
     private final UniformDesign uniformDesign;
     private final Runnable emptyAdder;
-    private final Supplier<Collection<Data>> possibleValuesProvider;
+    private final Supplier<Collection<? extends Data>> possibleValuesProvider;
     private final boolean isUserEditable;
     private final boolean isUserSelectable;
     private final ObservableList<T> list;
@@ -42,7 +42,7 @@ public class DataListEditWidget<T extends Data> implements Widget {
     private final DataEditor dataEditor;
     private final BooleanBinding multipleItemsSelected;
 
-    public DataListEditWidget(ObservableList<T> list, TableView<T> tableView, DataEditor dataEditor, UniformDesign uniformDesign, Runnable emptyAdder, Supplier<Collection<Data>> possibleValuesProvider, boolean isUserEditable, boolean isUserSelectable) {
+    public DataListEditWidget(ObservableList<T> list, TableView<T> tableView, DataEditor dataEditor, UniformDesign uniformDesign, Runnable emptyAdder, Supplier<Collection<? extends Data>> possibleValuesProvider, boolean isUserEditable, boolean isUserSelectable) {
         this.uniformDesign = uniformDesign;
         this.emptyAdder = emptyAdder;
         this.possibleValuesProvider = possibleValuesProvider;

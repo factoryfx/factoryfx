@@ -25,11 +25,11 @@ public class ReferenceListAttributeVisualisation extends ListAttributeEditorVisu
     private final UniformDesign uniformDesign;
     private final DataEditor dataEditor;
     private final Runnable emptyAdder;
-    private final Supplier<Collection<Data>> possibleValuesProvider;
+    private final Supplier<Collection<? extends Data>> possibleValuesProvider;
     private final boolean isUserEditable;
     private final boolean isUserSelectable;
 
-    public ReferenceListAttributeVisualisation(UniformDesign uniformDesign, DataEditor dataEditor, Runnable emptyAdder, Supplier<Collection<Data>> possibleValuesProvider, boolean isUserEditable, boolean isUserSelectable) {
+    public ReferenceListAttributeVisualisation(UniformDesign uniformDesign, DataEditor dataEditor, Runnable emptyAdder, Supplier<Collection<? extends Data>> possibleValuesProvider, boolean isUserEditable, boolean isUserSelectable) {
         this.uniformDesign = uniformDesign;
         this.dataEditor = dataEditor;
         this.emptyAdder = emptyAdder;
