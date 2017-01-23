@@ -32,7 +32,7 @@ public class ApplicationServerRestTest {
 
         new Thread(() -> {
             ApplicationServerRestServerFactory<Void, String, RootTestclazz> applicationServerRestServerFactory = new ApplicationServerRestServerFactory<>();
-            final HttpServerConnectorFactory httpServerConnectorFactory = new HttpServerConnectorFactory();
+            final HttpServerConnectorFactory<Void> httpServerConnectorFactory = new HttpServerConnectorFactory<>();
             httpServerConnectorFactory.port.set(34579);
             httpServerConnectorFactory.host.set("localhost");
             applicationServerRestServerFactory.connectors.add(httpServerConnectorFactory);

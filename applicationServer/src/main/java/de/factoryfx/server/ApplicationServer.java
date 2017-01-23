@@ -74,10 +74,11 @@ public class ApplicationServer<L,V,T extends FactoryBase<L,V>> {
         factoryManager.start(currentFactory.root);
     }
 
+    @SuppressWarnings("unchecked")
     void prepareFactory(T root){
         root.internal().collectChildrenDeep().forEach(data -> {
             if (data instanceof ApplicationServerAwareFactory){
-                ((ApplicationServerAwareFactory)data).applicationServer.set(this);
+                ((ApplicationServerAwareFactory<V,L,T,?>)data).applicationServer.set(this);
             }
         });
     }

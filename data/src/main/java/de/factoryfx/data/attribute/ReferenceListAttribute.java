@@ -71,18 +71,18 @@ public class ReferenceListAttribute<T extends Data> extends Attribute<List<T>> {
     }
 
     @Override
-    public void collectChildren(Set<Data> allModelEntities) {
+    public void internal_collectChildren(Set<Data> allModelEntities) {
         list.forEach(entity -> entity.internal().collectModelEntitiesTo(allModelEntities));
     }
 
     @Override
-    public AttributeMergeHelper<?> createMergeHelper() {
+    public AttributeMergeHelper<?> internal_createMergeHelper() {
         return new ReferenceListMergeHelper<>(this);
     }
 
     @Override
     @SuppressWarnings("unchecked")
-    public void fixDuplicateObjects(Function<Object, Optional<Data>> getCurrentEntity) {
+    public void internal_fixDuplicateObjects(Function<Object, Optional<Data>> getCurrentEntity) {
         List<T> currentToEditList = get();
 
         for (T entity : currentToEditList) {
@@ -121,7 +121,7 @@ public class ReferenceListAttribute<T extends Data> extends Attribute<List<T>> {
 
     @Override
     @SuppressWarnings("unchecked")
-    public void copyTo(Attribute<List<T>> copyAttribute, Function<Data,Data> dataCopyProvider) {
+    public void internal_copyTo(Attribute<List<T>> copyAttribute, Function<Data,Data> dataCopyProvider) {
         for (T item: get()){
             final T itemCopy = (T) dataCopyProvider.apply(item);
             if (itemCopy!=null){
@@ -132,7 +132,7 @@ public class ReferenceListAttribute<T extends Data> extends Attribute<List<T>> {
 
     @Override
     @SuppressWarnings("unchecked")
-    public void semanticCopyTo(Attribute<List<T>> copyAttribute, Function<Data,Data> dataCopyProvider) {
+    public void internal_semanticCopyTo(Attribute<List<T>> copyAttribute, Function<Data,Data> dataCopyProvider) {
         if (copySemantic==CopySemantic.SELF){
             copyAttribute.set(get());
         } else {
@@ -196,11 +196,11 @@ public class ReferenceListAttribute<T extends Data> extends Attribute<List<T>> {
 
     List<AttributeChangeListener<List<T>>> listeners= new ArrayList<>();
     @Override
-    public void addListener(AttributeChangeListener<List<T>> listener) {
+    public void internal_addListener(AttributeChangeListener<List<T>> listener) {
         listeners.add(listener);
     }
     @Override
-    public void removeListener(AttributeChangeListener<List<T>> listener) {
+    public void internal_removeListener(AttributeChangeListener<List<T>> listener) {
         for (AttributeChangeListener<List<T>> listenerItem: new ArrayList<>(listeners)){
             if (listenerItem.unwrap()==listener || listenerItem.unwrap()==null){
                 listeners.remove(listenerItem);
@@ -219,13 +219,13 @@ public class ReferenceListAttribute<T extends Data> extends Attribute<List<T>> {
     }
 
     @Override
-    public void visit(AttributeVisitor attributeVisitor) {
+    public void internal_visit(AttributeVisitor attributeVisitor) {
         attributeVisitor.referenceList(this);
     }
 
     @Override
     @JsonIgnore
-    public AttributeTypeInfo getAttributeType() {
+    public AttributeTypeInfo internal_getAttributeType() {
         return new AttributeTypeInfo(ObservableList.class,null,null,Data.class, AttributeTypeInfo.AttributeTypeCategory.REFERENCE_LIST, null);
     }
 
@@ -298,7 +298,7 @@ public class ReferenceListAttribute<T extends Data> extends Attribute<List<T>> {
 
     @Override
     @SuppressWarnings("unchecked")
-    public void prepareUsage(Data root){
+    public void internal_prepareUsage(Data root){
         this.root=root;;
     }
 

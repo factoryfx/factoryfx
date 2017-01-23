@@ -19,7 +19,7 @@ public class ListAttributeTest {
     public void testObservable(){
         ExampleListFactory exampleListFactory = new ExampleListFactory();
         ArrayList<String> calls= new ArrayList<>();
-        exampleListFactory.listAttribute.addListener((a,o)-> {
+        exampleListFactory.listAttribute.internal_addListener((a,o)-> {
             calls.add("");
         });
         exampleListFactory.listAttribute.get().add("7787");
@@ -41,12 +41,12 @@ public class ListAttributeTest {
         AttributeChangeListener<List<String>> invalidationListener = (a, o) -> {
             calls.add("");
         };
-        exampleListFactory.listAttribute.addListener(invalidationListener);
+        exampleListFactory.listAttribute.internal_addListener(invalidationListener);
         exampleListFactory.listAttribute.get().add("7787");
 
         Assert.assertEquals(1,calls.size());
 
-        exampleListFactory.listAttribute.removeListener(invalidationListener);
+        exampleListFactory.listAttribute.internal_removeListener(invalidationListener);
         exampleListFactory.listAttribute.get().add("7787");
         Assert.assertEquals(1,calls.size());
     }

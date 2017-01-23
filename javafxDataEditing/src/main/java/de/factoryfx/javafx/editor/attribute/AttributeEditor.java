@@ -47,7 +47,7 @@ public class AttributeEditor<T> implements Widget {
     Node content;
     @Override
     public Node createContent() {
-        boundAttribute.addListener(attributeChangeListener);
+        boundAttribute.internal_addListener(attributeChangeListener);
         attributeChangeListener.changed(boundAttribute,boundAttribute.get());
         if (content==null){
             content = addValidationDecoration(attributeEditorVisualisation.createContent());
@@ -58,7 +58,7 @@ public class AttributeEditor<T> implements Widget {
 
     public void unbind() {
         content=null;
-        boundAttribute.removeListener(attributeChangeListener);
+        boundAttribute.internal_removeListener(attributeChangeListener);
     }
 
     public Node addValidationDecoration(Node node) {

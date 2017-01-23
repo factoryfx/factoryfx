@@ -27,6 +27,7 @@ import javax.ws.rs.core.Response;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import de.factoryfx.data.Data;
 import de.factoryfx.data.attribute.Attribute;
+import de.factoryfx.data.attribute.AttributeVisitor;
 import de.factoryfx.data.attribute.ReferenceAttribute;
 import de.factoryfx.data.attribute.ReferenceListAttribute;
 import de.factoryfx.data.merge.MergeDiff;
@@ -314,7 +315,7 @@ public class RestResource<L,V,T extends FactoryBase<L,V>> {
         root.internal().collectChildFactoriesMap().get(id).internal().visitAttributesFlat((attributeVariableName, attribute) -> {
             if (attributeVariableName.equals(attributeName)){
 
-                attribute.visit(new Attribute.AttributeVisitor() {
+                attribute.internal_visit(new AttributeVisitor() {
                     @Override
                     public void value(Attribute<?> value) {
                         //nothing
@@ -350,7 +351,7 @@ public class RestResource<L,V,T extends FactoryBase<L,V>> {
         factoryBase.internal().visitAttributesFlat((attributeVariableName, attribute) -> {
             if (attributeVariableName.equals(attributeName)){
 
-                attribute.visit(new Attribute.AttributeVisitor() {
+                attribute.internal_visit(new AttributeVisitor() {
                     @Override
                     public void value(Attribute<?> value) {
                         //nothing

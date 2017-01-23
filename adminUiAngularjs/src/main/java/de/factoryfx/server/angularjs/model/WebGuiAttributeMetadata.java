@@ -5,8 +5,6 @@ import java.util.Locale;
 import de.factoryfx.data.attribute.Attribute;
 import de.factoryfx.data.attribute.AttributeMetadata;
 import de.factoryfx.data.attribute.AttributeTypeInfo;
-import de.factoryfx.data.validation.ObjectRequired;
-import de.factoryfx.data.validation.Validation;
 
 public class WebGuiAttributeMetadata {
     public final String labelText;
@@ -21,15 +19,8 @@ public class WebGuiAttributeMetadata {
     public WebGuiAttributeMetadata(AttributeMetadata attributeMetadata, Locale locale, Attribute<?> attribute){
         labelText=attributeMetadata.labelText.getPreferred(locale);
         addonText=attributeMetadata.addonText;
-        boolean required=false;
-        for (Validation<?> validation: attribute.validations){
-            if (validation instanceof ObjectRequired<?>) {
-                required = true;
-                break;
-            }
-        }
-        this.required=required;
-        AttributeTypeInfo attributeType = attribute.getAttributeType();
+        this.required=attribute.internal_required();
+        AttributeTypeInfo attributeType = attribute.internal_getAttributeType();
         this.attributeType = attributeType.attributeType.toString();
 
 

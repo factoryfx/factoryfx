@@ -78,7 +78,7 @@ public class ViewReferenceAttributeTest {
         root.ref.get().view.setRunlaterExecutorForTest(runnable -> runnable.run());
 
         ArrayList<String> calls=new ArrayList<>();
-        root.ref.get().view.addListener((attribute, value1) -> {
+        root.ref.get().view.internal_addListener((attribute, value1) -> {
             if (value1!=null){
                 calls.add(value1.stringAttribute.get());
             } else {
@@ -124,7 +124,7 @@ public class ViewReferenceAttributeTest {
         root.internal().prepareUsableCopy();
 
         ArrayList<String> calls=new ArrayList<>();
-        viewExampleFactory.view.addListener((attribute, value1) -> calls.add(value1.stringAttribute.get()));
+        viewExampleFactory.view.internal_addListener((attribute, value1) -> calls.add(value1.stringAttribute.get()));
 
         viewExampleFactory.include.set(false);
 
@@ -174,9 +174,9 @@ public class ViewReferenceAttributeTest {
         });
 
         final AttributeChangeListener<ExampleFactoryA> attributeChangeListener = (a, value) -> System.out.println(value);
-        attribute.addListener(attributeChangeListener);
+        attribute.internal_addListener(attributeChangeListener);
         Assert.assertTrue(attribute.listeners.size()==1);
-        attribute.removeListener(attributeChangeListener);
+        attribute.internal_removeListener(attributeChangeListener);
         Assert.assertTrue(attribute.listeners.size()==0);
     }
 
@@ -190,9 +190,9 @@ public class ViewReferenceAttributeTest {
         });
 
         final AttributeChangeListener<ExampleFactoryA> attributeChangeListener = (a, value) -> System.out.println(value);
-        attribute.addListener(new WeakAttributeChangeListener<>(attributeChangeListener));
+        attribute.internal_addListener(new WeakAttributeChangeListener<>(attributeChangeListener));
         Assert.assertTrue(attribute.listeners.size()==1);
-        attribute.removeListener(attributeChangeListener);
+        attribute.internal_removeListener(attributeChangeListener);
         Assert.assertTrue(attribute.listeners.size()==0);
     }
 

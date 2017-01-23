@@ -24,7 +24,7 @@ public class ReferenceListAttributeTest {
     public void testObservable(){
         ExampleReferenceListFactory exampleReferenceListFactory = new ExampleReferenceListFactory();
         ArrayList<String> calls= new ArrayList<>();
-        exampleReferenceListFactory.referenceListAttribute.addListener((a,o)-> {
+        exampleReferenceListFactory.referenceListAttribute.internal_addListener((a,o)-> {
             calls.add("");
         });
         exampleReferenceListFactory.referenceListAttribute.get().add(new ExampleFactoryA());
@@ -48,12 +48,12 @@ public class ReferenceListAttributeTest {
         AttributeChangeListener<List<ExampleFactoryA>> invalidationListener = (a,o) -> {
             calls.add("");
         };
-        exampleReferenceListFactory.referenceListAttribute.addListener(invalidationListener);
+        exampleReferenceListFactory.referenceListAttribute.internal_addListener(invalidationListener);
         exampleReferenceListFactory.referenceListAttribute.get().add(new ExampleFactoryA());
 
         Assert.assertEquals(1,calls.size());
 
-        exampleReferenceListFactory.referenceListAttribute.removeListener(invalidationListener);
+        exampleReferenceListFactory.referenceListAttribute.internal_removeListener(invalidationListener);
         exampleReferenceListFactory.referenceListAttribute.get().add(new ExampleFactoryA());
         Assert.assertEquals(1,calls.size());
     }
@@ -61,7 +61,7 @@ public class ReferenceListAttributeTest {
     @Test
     public void test_add_new(){
         ExampleReferenceListFactory exampleReferenceListFactory = new ExampleReferenceListFactory();
-        exampleReferenceListFactory.referenceListAttribute.prepareUsage(new ExampleReferenceListFactory());
+        exampleReferenceListFactory.referenceListAttribute.internal_prepareUsage(new ExampleReferenceListFactory());
         exampleReferenceListFactory.referenceListAttribute.addNewFactory();
         Assert.assertEquals(1,exampleReferenceListFactory.referenceListAttribute.size());
 
@@ -84,9 +84,9 @@ public class ReferenceListAttributeTest {
     @Test
     public void test_add_new_listener(){
         ReferenceListAttribute<ExampleFactoryA> referenceListAttribute =new ReferenceListAttribute<>(ExampleFactoryA.class,new AttributeMetadata());
-        referenceListAttribute.prepareUsage(new ExampleFactoryA());
+        referenceListAttribute.internal_prepareUsage(new ExampleFactoryA());
         List<ExampleFactoryA> calls=new ArrayList<>();
-        referenceListAttribute.addListener((attribute, value) -> calls.add(value.get(0)));
+        referenceListAttribute.internal_addListener((attribute, value) -> calls.add(value.get(0)));
         referenceListAttribute.addNewFactory();
         Assert.assertEquals(1,calls.size());
         referenceListAttribute.addNewFactory();
@@ -99,9 +99,9 @@ public class ReferenceListAttributeTest {
         ReferenceListAttribute<ExampleFactoryA> attribute =new ReferenceListAttribute<>(ExampleFactoryA.class,new AttributeMetadata());
 
         final AttributeChangeListener<List<ExampleFactoryA>> attributeChangeListener = (a, value) -> System.out.println(value);
-        attribute.addListener(attributeChangeListener);
+        attribute.internal_addListener(attributeChangeListener);
         Assert.assertEquals(1,attribute.listeners.size());
-        attribute.removeListener(attributeChangeListener);
+        attribute.internal_removeListener(attributeChangeListener);
         Assert.assertTrue(attribute.listeners.size()==0);
     }
 
@@ -110,9 +110,9 @@ public class ReferenceListAttributeTest {
         ReferenceListAttribute<ExampleFactoryA> attribute =new ReferenceListAttribute<>(ExampleFactoryA.class,new AttributeMetadata());
 
         final AttributeChangeListener<List<ExampleFactoryA>> attributeChangeListener = (a, value) -> System.out.println(value);
-        attribute.addListener(new WeakAttributeChangeListener<>(attributeChangeListener));
+        attribute.internal_addListener(new WeakAttributeChangeListener<>(attributeChangeListener));
         Assert.assertTrue(attribute.listeners.size()==1);
-        attribute.removeListener(attributeChangeListener);
+        attribute.internal_removeListener(attributeChangeListener);
         Assert.assertTrue(attribute.listeners.size()==0);
     }
 
@@ -121,16 +121,16 @@ public class ReferenceListAttributeTest {
         ReferenceListAttribute<ExampleFactoryA> attribute =new ReferenceListAttribute<>(ExampleFactoryA.class,new AttributeMetadata());
 
         final AttributeChangeListener<List<ExampleFactoryA>> attributeChangeListener = (a, value) -> System.out.println(value);
-        attribute.addListener(new WeakAttributeChangeListener<>(null));//null to simulate garbage collected weakref
+        attribute.internal_addListener(new WeakAttributeChangeListener<>(null));//null to simulate garbage collected weakref
         Assert.assertTrue(attribute.listeners.size()==1);
-        attribute.removeListener(attributeChangeListener);
+        attribute.internal_removeListener(attributeChangeListener);
         Assert.assertTrue(attribute.listeners.size()==0);
     }
 
     @Test
     public void delegate_root_for_added() {
         ReferenceListAttribute<ExampleFactoryA> attribute =new ReferenceListAttribute<>(ExampleFactoryA.class,new AttributeMetadata());
-        attribute.prepareUsage(new ExampleFactoryB());
+        attribute.internal_prepareUsage(new ExampleFactoryB());
 
         final ExampleFactoryA exampleFactoryA = new ExampleFactoryA();
         Assert.assertFalse(exampleFactoryA.internal().readyForUsage());
@@ -141,7 +141,7 @@ public class ReferenceListAttributeTest {
     @Test
     public void delegate_root_for_addAll(){
         ReferenceListAttribute<ExampleFactoryA> attribute =new ReferenceListAttribute<>(ExampleFactoryA.class,new AttributeMetadata());
-        attribute.prepareUsage(new ExampleFactoryB());
+        attribute.internal_prepareUsage(new ExampleFactoryB());
 
         final ExampleFactoryA exampleFactoryA1 = new ExampleFactoryA();
         final ExampleFactoryA exampleFactoryA2 = new ExampleFactoryA();
@@ -155,14 +155,14 @@ public class ReferenceListAttributeTest {
     @Test
     public void delegate_root_for_addAll_with_null(){
         ReferenceListAttribute<ExampleFactoryA> attribute =new ReferenceListAttribute<>(ExampleFactoryA.class,new AttributeMetadata());
-        attribute.prepareUsage(new ExampleFactoryB());
+        attribute.internal_prepareUsage(new ExampleFactoryB());
         attribute.get().add(null);
     }
 
     @Test(expected = IllegalStateException.class)
     public void delegate_root_for_addAll_with_null_nested(){
         ReferenceListAttribute<ExampleFactoryA> attribute =new ReferenceListAttribute<>(ExampleFactoryA.class,new AttributeMetadata());
-        attribute.prepareUsage(new ExampleFactoryB());
+        attribute.internal_prepareUsage(new ExampleFactoryB());
 
         final ExampleFactoryA exampleFactoryA1 = new ExampleFactoryA();
         exampleFactoryA1.referenceListAttribute.add(null);

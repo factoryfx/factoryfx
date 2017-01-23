@@ -80,7 +80,7 @@ public class ValueListAttributeVisualisation<T> extends ListAttributeEditorVisua
                 replaceButton.setDisable(value == null || tableView.getSelectionModel().getSelectedItem()==null);
             });
         };
-        detailAttribute.addListener(detailAttributeChangeListener);
+        detailAttribute.internal_addListener(detailAttributeChangeListener);
         detailAttributeChangeListener.changed(detailAttribute,detailAttribute.get());
 
         VBox vBox  = new VBox();

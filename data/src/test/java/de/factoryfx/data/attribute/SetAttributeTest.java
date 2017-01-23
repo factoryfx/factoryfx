@@ -18,7 +18,7 @@ public class SetAttributeTest {
     public void testObservable(){
         ExampleSetFactory exampleSetFactory = new ExampleSetFactory();
         ArrayList<String> calls= new ArrayList<>();
-        exampleSetFactory.setAttribute.addListener((a,o)-> {
+        exampleSetFactory.setAttribute.internal_addListener((a,o)-> {
             calls.add("");
         });
         exampleSetFactory.setAttribute.get().add("7787");
@@ -40,12 +40,12 @@ public class SetAttributeTest {
         AttributeChangeListener<Set<String>> invalidationListener = (a, o) -> {
             calls.add("");
         };
-        exampleSetFactory.setAttribute.addListener(invalidationListener);
+        exampleSetFactory.setAttribute.internal_addListener(invalidationListener);
         exampleSetFactory.setAttribute.get().add("7787");
 
         Assert.assertEquals(1,calls.size());
 
-        exampleSetFactory.setAttribute.removeListener(invalidationListener);
+        exampleSetFactory.setAttribute.internal_removeListener(invalidationListener);
         exampleSetFactory.setAttribute.get().add("7787");
         Assert.assertEquals(1,calls.size());
     }

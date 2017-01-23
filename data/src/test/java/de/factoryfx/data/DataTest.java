@@ -116,6 +116,7 @@ public class DataTest {
 
 
     @Test
+    @SuppressWarnings("unchecked")
     public void test_reconstructMetadataDeepRoot_displaytext() throws IllegalAccessException, NoSuchFieldException {
         ExampleFactoryA exampleFactoryA = new ExampleFactoryA();
         ExampleFactoryB exampleFactoryB = new ExampleFactoryB();

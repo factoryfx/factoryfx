@@ -28,17 +28,17 @@ public class ViewListReferenceAttribute <R extends Data, T extends Data> extends
     }
 
     @Override
-    public void collectChildren(Set<Data> allModelEntities) {
+    public void internal_collectChildren(Set<Data> allModelEntities) {
         //nothing
     }
 
     @Override
-    public AttributeMergeHelper<?> createMergeHelper() {
+    public AttributeMergeHelper<?> internal_createMergeHelper() {
         return new NopMergeHelper();
     }
 
     @Override
-    public void fixDuplicateObjects(Function<Object, Optional<Data>> getCurrentEntity) {
+    public void internal_fixDuplicateObjects(Function<Object, Optional<Data>> getCurrentEntity) {
         //nothing
     }
 
@@ -53,12 +53,12 @@ public class ViewListReferenceAttribute <R extends Data, T extends Data> extends
     }
 
     @Override
-    public void copyTo(Attribute<List<T>> copyAttribute, Function<Data,Data> dataCopyProvider) {
+    public void internal_copyTo(Attribute<List<T>> copyAttribute, Function<Data,Data> dataCopyProvider) {
         //nothing
     }
 
     @Override
-    public void semanticCopyTo(Attribute<List<T>> copyAttribute, Function<Data,Data> dataCopyProvider) {
+    public void internal_semanticCopyTo(Attribute<List<T>> copyAttribute, Function<Data,Data> dataCopyProvider) {
         //nothing
     }
 
@@ -124,7 +124,7 @@ public class ViewListReferenceAttribute <R extends Data, T extends Data> extends
 
     List<AttributeChangeListener<List<T>>> listeners= Collections.synchronizedList(new ArrayList<>());
     @Override
-    public void addListener(AttributeChangeListener<List<T>> listener) {
+    public void internal_addListener(AttributeChangeListener<List<T>> listener) {
         listeners.add(listener);
         if (dirtyTracking==null){
             dirtyTracking = new DirtyTrackingThread();
@@ -133,7 +133,7 @@ public class ViewListReferenceAttribute <R extends Data, T extends Data> extends
         }
     }
     @Override
-    public void removeListener(AttributeChangeListener<List<T>> listener) {
+    public void internal_removeListener(AttributeChangeListener<List<T>> listener) {
         for (AttributeChangeListener<List<T>> listenerItem: new ArrayList<>(listeners)){
             if (listenerItem.unwrap()==listener){
                 listeners.remove(listenerItem);
@@ -158,24 +158,24 @@ public class ViewListReferenceAttribute <R extends Data, T extends Data> extends
     }
 
     @Override
-    public void visit(AttributeVisitor attributeVisitor) {
+    public void internal_visit(AttributeVisitor attributeVisitor) {
         //nothing
     }
 
     @JsonIgnore
     @Override
-    public AttributeTypeInfo getAttributeType() {
+    public AttributeTypeInfo internal_getAttributeType() {
         return new AttributeTypeInfo(ObservableList.class,null,null,Data.class, AttributeTypeInfo.AttributeTypeCategory.REFERENCE_LIST, null);
     }
 
     @Override
     @SuppressWarnings("unchecked")
-    public void prepareUsage(Data root){
+    public void internal_prepareUsage(Data root){
         this.root=(R)root;;
     }
 
     @Override
-    public void endUsage() {
+    public void internal_endUsage() {
         if (dirtyTracking!=null) {
             dirtyTracking.stopTracking();
         }

@@ -13,9 +13,9 @@ public class ValueAttributeTest {
         ValueAttribute<String> valueAttribute = new ValueAttribute<>(new AttributeMetadata(),String.class);
 
         final AttributeChangeListener<String> stringAttributeChangeListener = (attribute, value) -> System.out.println(value);
-        valueAttribute.addListener(stringAttributeChangeListener);
+        valueAttribute.internal_addListener(stringAttributeChangeListener);
         Assert.assertTrue(valueAttribute.listeners.size()==1);
-        valueAttribute.removeListener(stringAttributeChangeListener);
+        valueAttribute.internal_removeListener(stringAttributeChangeListener);
         Assert.assertTrue(valueAttribute.listeners.size()==0);
     }
 
@@ -24,9 +24,9 @@ public class ValueAttributeTest {
         ValueAttribute<String> valueAttribute = new ValueAttribute<>(new AttributeMetadata(),String.class);
 
         final AttributeChangeListener<String> stringAttributeChangeListener = (attribute, value) -> System.out.println(value);
-        valueAttribute.addListener(new WeakAttributeChangeListener<>(stringAttributeChangeListener));
+        valueAttribute.internal_addListener(new WeakAttributeChangeListener<>(stringAttributeChangeListener));
         Assert.assertTrue(valueAttribute.listeners.size()==1);
-        valueAttribute.removeListener(stringAttributeChangeListener);
+        valueAttribute.internal_removeListener(stringAttributeChangeListener);
         Assert.assertTrue(valueAttribute.listeners.size()==0);
     }
 
@@ -35,9 +35,9 @@ public class ValueAttributeTest {
         ValueAttribute<String> valueAttribute = new ValueAttribute<>(new AttributeMetadata(),String.class);
 
         final AttributeChangeListener<String> stringAttributeChangeListener = (attribute, value) -> System.out.println(value);
-        valueAttribute.addListener(new WeakAttributeChangeListener<>(null));
+        valueAttribute.internal_addListener(new WeakAttributeChangeListener<>(null));
         Assert.assertTrue(valueAttribute.listeners.size()==1);
-        valueAttribute.removeListener(stringAttributeChangeListener);
+        valueAttribute.internal_removeListener(stringAttributeChangeListener);
         Assert.assertTrue(valueAttribute.listeners.size()==0);
     }
 

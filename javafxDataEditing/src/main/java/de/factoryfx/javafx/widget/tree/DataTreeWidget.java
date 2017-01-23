@@ -3,6 +3,7 @@ package de.factoryfx.javafx.widget.tree;
 import com.google.common.collect.TreeTraverser;
 import de.factoryfx.data.Data;
 import de.factoryfx.data.attribute.Attribute;
+import de.factoryfx.data.attribute.AttributeVisitor;
 import de.factoryfx.data.attribute.ReferenceAttribute;
 import de.factoryfx.data.attribute.ReferenceListAttribute;
 import de.factoryfx.javafx.editor.data.DataEditor;
@@ -121,7 +122,7 @@ public class DataTreeWidget implements CloseAwareWidget {
         if (data!=null){
             TreeItem<TreeData> dataTreeItem = new TreeItem<>(new TreeData(data,null));
             data.internal().visitAttributesFlat((attributeVariableName, attribute) -> {
-                attribute.visit(new Attribute.AttributeVisitor() {
+                attribute.internal_visit(new AttributeVisitor() {
                     @Override
                     public void value(Attribute<?> value) {
 

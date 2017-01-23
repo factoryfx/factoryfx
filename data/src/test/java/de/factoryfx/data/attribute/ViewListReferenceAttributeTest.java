@@ -124,7 +124,7 @@ public class ViewListReferenceAttributeTest {
         root.ref.get().view.setRunlaterExecutorForTest(runnable -> runnable.run());
 
         ArrayList<String> calls=new ArrayList<>();
-        root.ref.get().view.addListener((attribute, value1) -> {
+        root.ref.get().view.internal_addListener((attribute, value1) -> {
             if (!value1.isEmpty()){
                 calls.add("1");
             } else {
@@ -179,7 +179,7 @@ public class ViewListReferenceAttributeTest {
         root.internal().prepareUsableCopy();
 
         ArrayList<String> calls=new ArrayList<>();
-        viewExampleFactory.view.addListener((attribute, value1) -> calls.add("1"));
+        viewExampleFactory.view.internal_addListener((attribute, value1) -> calls.add("1"));
 
         viewExampleFactory.forFilter.set("1");
 
@@ -221,9 +221,9 @@ public class ViewListReferenceAttributeTest {
         });
 
         final AttributeChangeListener<List<ExampleFactoryA>> attributeChangeListener = (a, value) -> System.out.println(value);
-        attribute.addListener(attributeChangeListener);
+        attribute.internal_addListener(attributeChangeListener);
         Assert.assertTrue(attribute.listeners.size()==1);
-        attribute.removeListener(attributeChangeListener);
+        attribute.internal_removeListener(attributeChangeListener);
         Assert.assertTrue(attribute.listeners.size()==0);
     }
 
@@ -234,9 +234,9 @@ public class ViewListReferenceAttributeTest {
         });
 
         final AttributeChangeListener<List<ExampleFactoryA>> attributeChangeListener = (a, value) -> System.out.println(value);
-        attribute.addListener(new WeakAttributeChangeListener<>(attributeChangeListener));
+        attribute.internal_addListener(new WeakAttributeChangeListener<>(attributeChangeListener));
         Assert.assertTrue(attribute.listeners.size()==1);
-        attribute.removeListener(attributeChangeListener);
+        attribute.internal_removeListener(attributeChangeListener);
         Assert.assertTrue(attribute.listeners.size()==0);
     }
 }

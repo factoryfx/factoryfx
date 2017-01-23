@@ -43,7 +43,7 @@ public class MapAttribute<K, V> extends ValueAttribute<ObservableMap<K,V>> {
     }
 
     @Override
-    public AttributeTypeInfo getAttributeType() {
+    public AttributeTypeInfo internal_getAttributeType() {
         return new AttributeTypeInfo(ObservableMap.class,keyType,valueType, AttributeTypeInfo.AttributeTypeCategory.MAP);
     }
 

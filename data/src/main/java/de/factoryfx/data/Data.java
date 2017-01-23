@@ -88,7 +88,7 @@ public abstract class Data {
 
     private void visitChildFactoriesFlat(Consumer<Data> consumer) {
         visitAttributesFlat((attributeVariableName, attribute) -> {
-            attribute.visit(new Attribute.AttributeVisitor() {
+            attribute.internal_visit(new de.factoryfx.data.attribute.AttributeVisitor() {
                 @Override
                 public void value(Attribute<?> value) {
 
@@ -212,7 +212,7 @@ public abstract class Data {
 
     private void collectModelEntitiesTo(Set<Data> allModelEntities) {
         if (allModelEntities.add(this)){
-            visitAttributesFlat(attribute -> attribute.collectChildren(allModelEntities));
+            visitAttributesFlat(attribute -> attribute.internal_collectChildren(allModelEntities));
         }
     }
     
@@ -270,7 +270,7 @@ public abstract class Data {
 
     @SuppressWarnings("unchecked")
     private void fixDuplicateObjects(Function<Object, Optional<Data>> getCurrentEntity) {
-        visitAttributesFlat(attribute -> attribute.fixDuplicateObjects(getCurrentEntity));
+        visitAttributesFlat(attribute -> attribute.internal_fixDuplicateObjects(getCurrentEntity));
     }
 
     Supplier<String> displayTextProvider= () -> Data.this.getClass().getSimpleName()+":"+getId();
@@ -285,11 +285,12 @@ public abstract class Data {
         this.displayTextProvider=displayTextProvider;
     }
 
-    /** validate attributes without visiting child factories*/
+    /** internal_validate attributes without visiting child factories*/
+    @SuppressWarnings("unchecked")
     private List<ValidationError> validateFlat(){
         ArrayList<ValidationError> result = new ArrayList<>();
         visitAttributesFlat((attributeVariableName, attribute) -> {
-            result.addAll(attribute.validate());
+            result.addAll(attribute.internal_validate());
         });
 
         for (AttributeValidation validation: dataValidations){
@@ -314,7 +315,7 @@ public abstract class Data {
     private void merge(Optional<Data> originalValue, Optional<Data> newValue, MergeResult mergeResult) {
 
         this.visitAttributesTripleFlat(originalValue, newValue, (currentAttribute, originalAttribute, newAttribute) -> {
-            AttributeMergeHelper<?> attributeMergeHelper = currentAttribute.createMergeHelper();
+            AttributeMergeHelper<?> attributeMergeHelper = currentAttribute.internal_createMergeHelper();
             if (attributeMergeHelper.executeMerge()) {
                 boolean hasNoConflict = attributeMergeHelper.hasNoConflict(originalAttribute, newAttribute);
                 MergeResultEntry mergeResultEntry = new MergeResultEntry(Data.this, currentAttribute, newAttribute);
@@ -338,7 +339,7 @@ public abstract class Data {
         HashMap<Data, Data> result = new HashMap<>();
         for (Data factoryBase : allModelEntities) {
             factoryBase.visitAttributesFlat(attribute -> {
-                attribute.visit(nestedFactoryBase -> {
+                attribute.internal_visit(nestedFactoryBase -> {
                     result.put(nestedFactoryBase, factoryBase);
                 });
             });
@@ -368,7 +369,7 @@ public abstract class Data {
         T result = (T)newInstance();
 //        result.setId(this.getId());
         this.visitAttributesDualFlat(result, (thisAttribute, copyAttribute) -> {
-            thisAttribute.semanticCopyTo(copyAttribute,(data)->{
+            thisAttribute.internal_semanticCopyTo(copyAttribute,(data)->{
                 if (data==null){
                     return null;
                 }
@@ -401,7 +402,7 @@ public abstract class Data {
             result = (T)newInstance();
             result.setId(this.getId());
             this.visitAttributesDualFlat(result, (thisAttribute, copyAttribute) -> {
-                thisAttribute.copyTo(copyAttribute,(data)->{
+                thisAttribute.internal_copyTo(copyAttribute,(data)->{
                     if (data==null){
                         return null;
                     }
@@ -418,25 +419,27 @@ public abstract class Data {
         return root!=null;
     }
 
+    @SuppressWarnings("unchecked")
     private <T extends Data> T endUsage() {
         for (Data data: collectChildrenDeep()){
             data.visitAttributesFlat((attributeVariableName, attribute) -> {
-                attribute.endUsage();
+                attribute.internal_endUsage();
             });
         }
         return (T)this;
     }
 
+    @SuppressWarnings("unchecked")
     <T extends Data> T propagateRoot(Data root){
         for (Data data: collectChildrenDeep()){
             data.root=root;
             data.visitAttributesFlat((attributeVariableName, attribute) -> {
-                attribute.prepareUsage(root);
+                attribute.internal_prepareUsage(root);
             });
         }
         for (Data data: collectChildrenDeep()){
             data.visitAttributesFlat((attributeVariableName, attribute) -> {
-                attribute.afterPreparedUsage(root);
+                attribute.internal_afterPreparedUsage(root);
             });
         }
 
@@ -502,7 +505,7 @@ public abstract class Data {
     @SuppressWarnings("unchecked")
     private void addDisplayTextListeners(Data data, AttributeChangeListener attributeChangeListener){
         for (Attribute<?> attribute: data.displayTextDependencies){
-            attribute.addListener(attributeChangeListener);
+            attribute.internal_addListener(attributeChangeListener);
             if (attribute instanceof ReferenceAttribute<?>){
                 Data nestedData= ((ReferenceAttribute)attribute).get();
                 if (nestedData!=null){

@@ -9,6 +9,7 @@ import org.junit.Test;
 public class FactoryViewReferenceAttributeTest {
 
     @Test
+    @SuppressWarnings("unchecked")
     public void test_jon(){
         FactoryViewReferenceAttribute attribute = new FactoryViewReferenceAttribute(new AttributeMetadata(), new Function() {
             @Override

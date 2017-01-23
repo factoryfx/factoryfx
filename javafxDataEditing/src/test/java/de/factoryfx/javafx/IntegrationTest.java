@@ -35,7 +35,7 @@ public class IntegrationTest extends Application{
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        LongRunningActionExecutorFactory longRunningActionExecutorFactory = new  LongRunningActionExecutorFactory();
+        LongRunningActionExecutorFactory<Void> longRunningActionExecutorFactory = new  LongRunningActionExecutorFactory<>();
 
         UniformDesignFactory<Void> uniformDesignFactory = new UniformDesignFactory<>();
 

@@ -21,7 +21,7 @@ public class ReferenceAttributeTest {
     public void testObservable(){
         ReferenceAttribute<ExampleFactoryA> referenceAttribute=new ReferenceAttribute<>(ExampleFactoryA.class,new AttributeMetadata());
         ArrayList<String> calls= new ArrayList<>();
-        referenceAttribute.addListener((a,value) -> calls.add(""));
+        referenceAttribute.internal_addListener((a,value) -> calls.add(""));
         referenceAttribute.set(new ExampleFactoryA());
 
         Assert.assertEquals(1,calls.size());
@@ -43,12 +43,12 @@ public class ReferenceAttributeTest {
         AttributeChangeListener<ExampleFactoryA> invalidationListener = (a, o) -> {
             calls.add("");
         };
-        referenceAttribute.addListener(invalidationListener);
+        referenceAttribute.internal_addListener(invalidationListener);
         referenceAttribute.set(new ExampleFactoryA());
 
         Assert.assertEquals(1,calls.size());
 
-        referenceAttribute.removeListener(invalidationListener);
+        referenceAttribute.internal_removeListener(invalidationListener);
         referenceAttribute.set(new ExampleFactoryA());
         Assert.assertEquals(1,calls.size());
     }
@@ -70,7 +70,7 @@ public class ReferenceAttributeTest {
         ExampleFactoryA exampleFactoryA = new ExampleFactoryA();
         root.referenceAttribute.set(exampleFactoryA);
 
-        referenceAttribute.prepareUsage(root);
+        referenceAttribute.internal_prepareUsage(root);
 
         Collection<ExampleFactoryA> possibleFactories =referenceAttribute.possibleValues();
         Assert.assertEquals(1,possibleFactories.size());
@@ -82,7 +82,7 @@ public class ReferenceAttributeTest {
     public void test_Observable_first(){
         ReferenceAttribute<ExampleFactoryA> referenceAttribute=new ReferenceAttribute<>(ExampleFactoryA.class,new AttributeMetadata());
         ArrayList<Object> calls= new ArrayList<>();
-        referenceAttribute.addListener((a,value) -> calls.add(value));
+        referenceAttribute.internal_addListener((a,value) -> calls.add(value));
         ExampleFactoryA added = new ExampleFactoryA();
         referenceAttribute.set(added);
 
@@ -96,7 +96,7 @@ public class ReferenceAttributeTest {
 
         List<ExampleFactoryA> calls = new ArrayList<>();
         List<ExampleFactoryA> callsAttributeGet = new ArrayList<>();
-        referenceAttribute.addListener((attribute, value) -> {
+        referenceAttribute.internal_addListener((attribute, value) -> {
             calls.add(value);
             callsAttributeGet.add(attribute.get());
         });
@@ -113,9 +113,9 @@ public class ReferenceAttributeTest {
         ReferenceAttribute<ExampleFactoryA> attribute=new ReferenceAttribute<>(ExampleFactoryA.class,new AttributeMetadata());
 
         final AttributeChangeListener<ExampleFactoryA> attributeChangeListener = (a, value) -> System.out.println(value);
-        attribute.addListener(attributeChangeListener);
+        attribute.internal_addListener(attributeChangeListener);
         Assert.assertTrue(attribute.listeners.size()==1);
-        attribute.removeListener(attributeChangeListener);
+        attribute.internal_removeListener(attributeChangeListener);
         Assert.assertTrue(attribute.listeners.size()==0);
     }
 
@@ -124,9 +124,9 @@ public class ReferenceAttributeTest {
         ReferenceAttribute<ExampleFactoryA> attribute=new ReferenceAttribute<>(ExampleFactoryA.class,new AttributeMetadata());
 
         final AttributeChangeListener<ExampleFactoryA> attributeChangeListener = (a, value) -> System.out.println(value);
-        attribute.addListener(new WeakAttributeChangeListener<>(attributeChangeListener));
+        attribute.internal_addListener(new WeakAttributeChangeListener<>(attributeChangeListener));
         Assert.assertTrue(attribute.listeners.size()==1);
-        attribute.removeListener(attributeChangeListener);
+        attribute.internal_removeListener(attributeChangeListener);
         Assert.assertTrue(attribute.listeners.size()==0);
     }
 
@@ -135,16 +135,16 @@ public class ReferenceAttributeTest {
         ReferenceAttribute<ExampleFactoryA> attribute=new ReferenceAttribute<>(ExampleFactoryA.class,new AttributeMetadata());
 
         final AttributeChangeListener<ExampleFactoryA> attributeChangeListener = (a, value) -> System.out.println(value);
-        attribute.addListener(new WeakAttributeChangeListener<>(null));
+        attribute.internal_addListener(new WeakAttributeChangeListener<>(null));
         Assert.assertTrue(attribute.listeners.size()==1);
-        attribute.removeListener(attributeChangeListener);
+        attribute.internal_removeListener(attributeChangeListener);
         Assert.assertTrue(attribute.listeners.size()==0);
     }
 
     @Test
     public void delegate_root_for_added() throws Exception {
         ReferenceAttribute<ExampleFactoryA> attribute=new ReferenceAttribute<>(ExampleFactoryA.class,new AttributeMetadata());
-        attribute.prepareUsage(new ExampleFactoryB());
+        attribute.internal_prepareUsage(new ExampleFactoryB());
 
         final ExampleFactoryA exampleFactoryA = new ExampleFactoryA();
         Assert.assertFalse(exampleFactoryA.internal().readyForUsage());

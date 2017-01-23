@@ -73,6 +73,7 @@ public class FactoryManager<L,V,T extends FactoryBase<L,V>> {
         }
     }
 
+    @SuppressWarnings("unchecked")
     TreeTraverser<FactoryBase<?,?>> factoryTraverser = new TreeTraverser<FactoryBase<?,?>>() {
         @Override
         public Iterable<FactoryBase<?,?>> children(FactoryBase<?,?> factory) {

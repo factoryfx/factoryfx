@@ -52,7 +52,7 @@ public class WrappingValueAttributeTest {
         testA.name="abc";
         TestAWrapper testAWrapper=new TestAWrapper(testA);
 
-        Assert.assertEquals(String.class,testAWrapper.name.getAttributeType().dataType);
+        Assert.assertEquals(String.class,testAWrapper.name.internal_getAttributeType().dataType);
 
     }
 
@@ -63,7 +63,7 @@ public class WrappingValueAttributeTest {
         TestAWrapper testAWrapper=new TestAWrapper(testA);
 
         ArrayList<String> calls= new ArrayList<>();
-        testAWrapper.name.addListener((a,o)-> {
+        testAWrapper.name.internal_addListener((a,o)-> {
             calls.add("");
         });
 

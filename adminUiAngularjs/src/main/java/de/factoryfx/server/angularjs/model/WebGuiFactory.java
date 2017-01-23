@@ -36,7 +36,7 @@ public class WebGuiFactory {
         this.type = factory.getClass().getName();
 
         factory.internal().visitAttributesFlat((attributeName, attribute) -> {
-            attribute.visit(factoryBase1 -> {
+            attribute.internal_visit(factoryBase1 -> {
                 nestedFactoriesDisplayText.put(factoryBase1.getId().toString(), factoryBase1.internal().getDisplayText());
             });
         });

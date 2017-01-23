@@ -18,7 +18,7 @@ public class MapAttributeTest {
     public void testObservable(){
         ExampleMapFactory exampleMapFactory = new ExampleMapFactory();
         ArrayList<String> calls= new ArrayList<>();
-        exampleMapFactory.mapAttribute.addListener((a,o)-> {
+        exampleMapFactory.mapAttribute.internal_addListener((a,o)-> {
             calls.add("");
         });
         exampleMapFactory.mapAttribute.get().put("123","7787");

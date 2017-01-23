@@ -112,15 +112,15 @@ public class AttributeEditorFactory {
 
     @SuppressWarnings("unchecked")
     private Optional<AttributeEditor<?>> getAttributeEditorReference(Attribute<?> attribute, DataEditor dataEditor, Supplier<List<ValidationError>> validation, Data oldValue) {
-        if (attribute.getAttributeType().dataType == null)
+        if (attribute.internal_getAttributeType().dataType == null)
             return Optional.empty();
 
-        if (Data.class==attribute.getAttributeType().dataType){
+        if (Data.class==attribute.internal_getAttributeType().dataType){
             ReferenceAttribute<?> referenceAttribute = (ReferenceAttribute<?>) attribute;
             return Optional.of(new AttributeEditor<>((Attribute<Data>)attribute,new ReferenceAttributeVisualisation(uniformDesign,dataEditor,()->referenceAttribute.addNewFactory(),()->referenceAttribute.possibleValues(),referenceAttribute.isUserEditable(),referenceAttribute.isUserSelectable())));
         }
 
-        if (ObservableList.class.isAssignableFrom(attribute.getAttributeType().dataType) && Data.class.isAssignableFrom(attribute.getAttributeType().listItemType)){
+        if (ObservableList.class.isAssignableFrom(attribute.internal_getAttributeType().dataType) && Data.class.isAssignableFrom(attribute.internal_getAttributeType().listItemType)){
             ReferenceListAttribute<?> referenceListAttribute = (ReferenceListAttribute<?>) attribute;
 
             final ReferenceListAttributeVisualisation referenceListAttributeVisualisation = new ReferenceListAttributeVisualisation(uniformDesign, dataEditor, () -> referenceListAttribute.addNewFactory(), () -> (List<Data>) referenceListAttribute.possibleValues(), referenceListAttribute.isUserEditable(), referenceListAttribute.isUserSelectable());
@@ -139,10 +139,10 @@ public class AttributeEditorFactory {
 
     @SuppressWarnings("unchecked")
     private Optional<AttributeEditor<?>> getAttributeEditorList(Attribute<?> attribute, DataEditor dataEditor, Supplier<List<ValidationError>> validation) {
-        if (attribute.getAttributeType().dataType == null)
+        if (attribute.internal_getAttributeType().dataType == null)
             return Optional.empty();
 
-        if (ObservableList.class.isAssignableFrom(attribute.getAttributeType().dataType) && String.class==attribute.getAttributeType().listItemType){
+        if (ObservableList.class.isAssignableFrom(attribute.internal_getAttributeType().dataType) && String.class==attribute.internal_getAttributeType().listItemType){
             StringAttribute detailAttribute = new StringAttribute(new AttributeMetadata().de("Wert").en("Value"));
             AttributeEditor<String> attributeEditor = (AttributeEditor<String>) getAttributeEditor(detailAttribute,dataEditor,validation).get();
             return Optional.of(new AttributeEditor<>((Attribute<ObservableList<String>>)attribute, createExpandableValueListVis(detailAttribute, attributeEditor)));
@@ -151,31 +151,31 @@ public class AttributeEditorFactory {
 
 
 
-        if (ObservableList.class.isAssignableFrom(attribute.getAttributeType().dataType) && Integer.class==attribute.getAttributeType().listItemType){
+        if (ObservableList.class.isAssignableFrom(attribute.internal_getAttributeType().dataType) && Integer.class==attribute.internal_getAttributeType().listItemType){
             IntegerAttribute detailAttribute = new IntegerAttribute(new AttributeMetadata().de("Wert").en("Value"));
             AttributeEditor<Integer> attributeEditor = (AttributeEditor<Integer>) getAttributeEditor(detailAttribute,dataEditor,validation).get();
             return Optional.of(new AttributeEditor<>((Attribute<ObservableList<Integer>>)attribute, createExpandableValueListVis(detailAttribute, attributeEditor)));
         }
 
-        if (ObservableList.class.isAssignableFrom(attribute.getAttributeType().dataType) && Long.class==attribute.getAttributeType().listItemType){
+        if (ObservableList.class.isAssignableFrom(attribute.internal_getAttributeType().dataType) && Long.class==attribute.internal_getAttributeType().listItemType){
             LongAttribute detailAttribute = new LongAttribute(new AttributeMetadata().de("Wert").en("Value"));
             AttributeEditor<Long> attributeEditor = (AttributeEditor<Long>) getAttributeEditor(detailAttribute,dataEditor,validation).get();
             return Optional.of(new AttributeEditor<>((Attribute<ObservableList<Long>>)attribute, createExpandableValueListVis(detailAttribute, attributeEditor)));
         }
 
-        if (ObservableList.class.isAssignableFrom(attribute.getAttributeType().dataType) && BigDecimal.class==attribute.getAttributeType().listItemType){
+        if (ObservableList.class.isAssignableFrom(attribute.internal_getAttributeType().dataType) && BigDecimal.class==attribute.internal_getAttributeType().listItemType){
             BigDecimalAttribute detailAttribute = new BigDecimalAttribute(new AttributeMetadata().de("Wert").en("Value"));
             AttributeEditor<BigDecimal> attributeEditor = (AttributeEditor<BigDecimal>) getAttributeEditor(detailAttribute,dataEditor,validation).get();
             return Optional.of(new AttributeEditor<>((Attribute<ObservableList<BigDecimal>>)attribute, createExpandableValueListVis(detailAttribute, attributeEditor)));
         }
 
-        if (ObservableList.class.isAssignableFrom(attribute.getAttributeType().dataType) && Double.class==attribute.getAttributeType().listItemType){
+        if (ObservableList.class.isAssignableFrom(attribute.internal_getAttributeType().dataType) && Double.class==attribute.internal_getAttributeType().listItemType){
             DoubleAttribute detailAttribute = new DoubleAttribute(new AttributeMetadata().de("Wert").en("Value"));
             AttributeEditor<Double> attributeEditor = (AttributeEditor<Double>) getAttributeEditor(detailAttribute,dataEditor,validation).get();
             return Optional.of(new AttributeEditor<>((Attribute<ObservableList<Double>>)attribute, createExpandableValueListVis(detailAttribute, attributeEditor)));
         }
 
-        if (ObservableList.class.isAssignableFrom(attribute.getAttributeType().dataType) && URI.class==attribute.getAttributeType().listItemType){
+        if (ObservableList.class.isAssignableFrom(attribute.internal_getAttributeType().dataType) && URI.class==attribute.internal_getAttributeType().listItemType){
             URIAttribute detailAttribute = new URIAttribute(new AttributeMetadata().de("URI").en("URI"));
             AttributeEditor<URI> attributeEditor = (AttributeEditor<URI>) getAttributeEditor(detailAttribute,dataEditor,validation).get();
             return Optional.of(new AttributeEditor<>((Attribute<ObservableList<URI>>)attribute, createExpandableValueListVis(detailAttribute, attributeEditor)));
@@ -186,7 +186,7 @@ public class AttributeEditorFactory {
 
     @SuppressWarnings("unchecked")
     private Optional<AttributeEditor<?>> getAttributeEditorSimpleType(Attribute<?> attribute, Supplier<List<ValidationError>> validation) {
-        if (attribute.getAttributeType().dataType == null)
+        if (attribute.internal_getAttributeType().dataType == null)
             return Optional.empty();
 
         if (attribute instanceof EncryptedStringAttribute){
@@ -196,14 +196,14 @@ public class AttributeEditorFactory {
             }
         }
 
-        if (String.class==attribute.getAttributeType().dataType){
+        if (String.class==attribute.internal_getAttributeType().dataType){
             StringAttribute stringAttribute = (StringAttribute) attribute;
             if (!stringAttribute.isLongText()){
                 return Optional.of(new AttributeEditor<>(stringAttribute,new StringAttributeVisualisation()));
             }
         }
 
-        if (String.class==attribute.getAttributeType().dataType){
+        if (String.class==attribute.internal_getAttributeType().dataType){
             StringAttribute stringAttribute = (StringAttribute) attribute;
             if (stringAttribute.isLongText()){
                 return Optional.of(new AttributeEditor<>(stringAttribute,
@@ -211,49 +211,49 @@ public class AttributeEditorFactory {
             }
         }
 
-        if (Integer.class==attribute.getAttributeType().dataType){
+        if (Integer.class==attribute.internal_getAttributeType().dataType){
             return Optional.of(new AttributeEditor<>((Attribute<Integer>)attribute,new IntegerAttributeVisualisation()));
         }
 
-        if (Boolean.class==attribute.getAttributeType().dataType){
+        if (Boolean.class==attribute.internal_getAttributeType().dataType){
             return Optional.of(new AttributeEditor<>((Attribute<Boolean>)attribute,new BooleanAttributeVisualisation()));
         }
 
-        if (Enum.class.isAssignableFrom(attribute.getAttributeType().dataType)){
+        if (Enum.class.isAssignableFrom(attribute.internal_getAttributeType().dataType)){
             Attribute<Enum> enumAttribute = (Attribute<Enum>) attribute;
-            List<Enum> enumConstants = Arrays.asList((Enum[]) enumAttribute.getAttributeType().dataType.getEnumConstants());
+            List<Enum> enumConstants = Arrays.asList((Enum[]) enumAttribute.internal_getAttributeType().dataType.getEnumConstants());
             return Optional.of(new AttributeEditor<>(enumAttribute,new EnumAttributeVisualisation(enumConstants)));
         }
 
-        if (Long.class==attribute.getAttributeType().dataType){
+        if (Long.class==attribute.internal_getAttributeType().dataType){
             return Optional.of(new AttributeEditor<>((Attribute<Long>)attribute,new LongAttributeVisualisation()));
         }
 
-        if (BigDecimal.class==attribute.getAttributeType().dataType){
+        if (BigDecimal.class==attribute.internal_getAttributeType().dataType){
             return Optional.of(new AttributeEditor<>((Attribute<BigDecimal>)attribute,new BigDecimalAttributeVisualisation()));
         }
 
-        if (Double.class==attribute.getAttributeType().dataType){
+        if (Double.class==attribute.internal_getAttributeType().dataType){
             return Optional.of(new AttributeEditor<>((Attribute<Double>)attribute,new DoubleAttributeVisualisation()));
         }
 
-        if (URI.class.isAssignableFrom(attribute.getAttributeType().dataType)) {
+        if (URI.class.isAssignableFrom(attribute.internal_getAttributeType().dataType)) {
             return Optional.of(new AttributeEditor<>((Attribute<URI>)attribute,new URIAttributeVisualisation()));
         }
 
-        if (LocalDate.class.isAssignableFrom(attribute.getAttributeType().dataType)) {
+        if (LocalDate.class.isAssignableFrom(attribute.internal_getAttributeType().dataType)) {
             return Optional.of(new AttributeEditor<>((Attribute<LocalDate>)attribute,new LocalDateAttributeVisualisation()));
         }
 
-        if (LocalDateTime.class.isAssignableFrom(attribute.getAttributeType().dataType)) {
+        if (LocalDateTime.class.isAssignableFrom(attribute.internal_getAttributeType().dataType)) {
             return Optional.of(new AttributeEditor<>((Attribute<LocalDateTime>)attribute,new LocalDateTimeAttributeVisualisation()));
         }
 
-        if (Color.class.isAssignableFrom(attribute.getAttributeType().dataType)) {
+        if (Color.class.isAssignableFrom(attribute.internal_getAttributeType().dataType)) {
             return Optional.of(new AttributeEditor<>((Attribute<Color>)attribute,new ColorAttributeVisualisation()));
         }
 
-        if (Locale.class.isAssignableFrom(attribute.getAttributeType().dataType)) {
+        if (Locale.class.isAssignableFrom(attribute.internal_getAttributeType().dataType)) {
             return Optional.of(new AttributeEditor<>((Attribute<Locale>)attribute,new LocaleAttributeVisualisation()));
         }
 

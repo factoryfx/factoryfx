@@ -19,7 +19,7 @@ public class ByteArrayAttribute extends ValueAttribute<byte[]> {
     }
 
     @Override
-    public ByteArrayMergeHelper createMergeHelper() {
+    public ByteArrayMergeHelper internal_createMergeHelper() {
         return new ByteArrayMergeHelper(this);
     }
 

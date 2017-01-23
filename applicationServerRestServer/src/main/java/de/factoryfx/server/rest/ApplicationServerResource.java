@@ -12,6 +12,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
 import de.factoryfx.data.merge.MergeDiffInfo;
+import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.factory.datastorage.FactoryAndStorageMetadata;
 import de.factoryfx.factory.datastorage.StoredFactoryMetadata;
 import de.factoryfx.server.ApplicationServer;
@@ -20,13 +21,13 @@ import de.factoryfx.user.UserManagement;
 import de.factoryfx.user.persistent.UserFactory;
 
 @Path("/")
-public class ApplicationServerResource {
+public class ApplicationServerResource<V,L,T extends FactoryBase<L,V>> {
 
-    private final ApplicationServer applicationServer;
+    private final ApplicationServer<L,V,T> applicationServer;
     private final UserManagement userManagement;
     private final Predicate<Optional<AuthorizedUser>> authorizedKeyUserEvaluator;
 
-    public ApplicationServerResource(ApplicationServer applicationServer, UserManagement userManagement, Predicate<Optional<AuthorizedUser>> authorizedKeyUserEvaluator) {
+    public ApplicationServerResource(ApplicationServer<L,V,T> applicationServer, UserManagement userManagement, Predicate<Optional<AuthorizedUser>> authorizedKeyUserEvaluator) {
         this.applicationServer = applicationServer;
         this.userManagement = userManagement;
         this.authorizedKeyUserEvaluator = authorizedKeyUserEvaluator;
@@ -101,7 +102,7 @@ public class ApplicationServerResource {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @Path("query")
-    public Object query(UserAwareRequest<Object> request) {
+    public V query(UserAwareRequest<V> request) {
         authenticate(request);
         return applicationServer.query(request.request);
     }

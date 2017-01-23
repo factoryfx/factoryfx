@@ -145,6 +145,7 @@ public class DataEditor implements Widget {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public Node createContent() {
         BorderPane result = new BorderPane();
 
@@ -179,7 +180,7 @@ public class DataEditor implements Widget {
 
                 if (validationListener!=null && oldValue!=null){
                     oldValue.internal().visitAttributesFlat((attributeVariableName, attribute) -> {
-                        attribute.removeListener(validationListener);
+                        attribute.internal_removeListener(validationListener);
                     });
                 }
                 validationListener = (attribute1, value) -> {
@@ -195,7 +196,7 @@ public class DataEditor implements Widget {
                     });
                 };
                 newValue.internal().visitAttributesFlat((attributeVariableName, attribute) -> {
-                    attribute.addListener(new WeakAttributeChangeListener<>(validationListener));
+                    attribute.internal_addListener(new WeakAttributeChangeListener<>(validationListener));
                     validationListener.changed(attribute,attribute.get());
                 });
 
@@ -228,7 +229,7 @@ public class DataEditor implements Widget {
                 vBox.getChildren().addAll(new Label(uniformDesign.getLabelText(attribute)),content);
                 return vBox;
             } else {
-                return new Label("unsupported attribute:"+attribute.getAttributeType().dataType);
+                return new Label("unsupported attribute:"+attribute.internal_getAttributeType().dataType);
             }
         } else {
             GridPane grid = new GridPane();
@@ -255,7 +256,7 @@ public class DataEditor implements Widget {
                     createdEditors.put(attribute,attributeEditor.get());
                     addEditorContent(grid, rowFinal, attributeEditor.get().createContent(),label);
                 } else {
-                    addEditorContent(grid, rowFinal, new Label("unsupported attribute:"+attribute.getAttributeType().dataType+", "+attribute.getAttributeType().listItemType),label);
+                    addEditorContent(grid, rowFinal, new Label("unsupported attribute:"+attribute.internal_getAttributeType().dataType+", "+attribute.internal_getAttributeType().listItemType),label);
                 }
 
                 RowConstraints rowConstraints = new RowConstraints();

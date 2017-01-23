@@ -42,21 +42,21 @@ public class ReferenceAttribute<T extends Data> extends Attribute<T> {
     }
 
     @Override
-    public void collectChildren(Set<Data> allModelEntities) {
+    public void internal_collectChildren(Set<Data> allModelEntities) {
         if (get() != null) {
             get().internal().collectModelEntitiesTo(allModelEntities);
         }
     }
 
     @Override
-    public AttributeMergeHelper<?> createMergeHelper() {
+    public AttributeMergeHelper<?> internal_createMergeHelper() {
         return new ReferenceMergeHelper<>(this);
     }
 
 
     @Override
     @SuppressWarnings("unchecked")
-    public void fixDuplicateObjects(Function<Object, Optional<Data>> getCurrentEntity) {
+    public void internal_fixDuplicateObjects(Function<Object, Optional<Data>> getCurrentEntity) {
         Data currentReferenceContent = get();
 
         if (currentReferenceContent != null) {
@@ -91,12 +91,13 @@ public class ReferenceAttribute<T extends Data> extends Attribute<T> {
 
     @Override
     @SuppressWarnings("unchecked")
-    public void copyTo(Attribute<T> copyAttribute, Function<Data, Data> dataCopyProvider) {
+    public void internal_copyTo(Attribute<T> copyAttribute, Function<Data, Data> dataCopyProvider) {
         copyAttribute.set((T) dataCopyProvider.apply(get()));
     }
 
     @Override
-    public void semanticCopyTo(Attribute<T> copyAttribute, Function<Data, Data> dataCopyProvider) {
+    @SuppressWarnings("unchecked")
+    public void internal_semanticCopyTo(Attribute<T> copyAttribute, Function<Data, Data> dataCopyProvider) {
         if (copySemantic==CopySemantic.SELF){
             copyAttribute.set(get());
         } else {
@@ -125,11 +126,11 @@ public class ReferenceAttribute<T extends Data> extends Attribute<T> {
 
     List<AttributeChangeListener<T>> listeners= new ArrayList<>();
     @Override
-    public void addListener(AttributeChangeListener<T> listener) {
+    public void internal_addListener(AttributeChangeListener<T> listener) {
         listeners.add(listener);
     }
     @Override
-    public void removeListener(AttributeChangeListener<T> listener) {
+    public void internal_removeListener(AttributeChangeListener<T> listener) {
         for (AttributeChangeListener<T> listenerItem: new ArrayList<>(listeners)){
             if (listenerItem.unwrap()==listener ||  listenerItem.unwrap()==null){
                 listeners.remove(listenerItem);
@@ -147,12 +148,12 @@ public class ReferenceAttribute<T extends Data> extends Attribute<T> {
     }
 
     @Override
-    public void visit(AttributeVisitor attributeVisitor) {
+    public void internal_visit(AttributeVisitor attributeVisitor) {
         attributeVisitor.reference(this);
     }
 
     @Override
-    public AttributeTypeInfo getAttributeType() {
+    public AttributeTypeInfo internal_getAttributeType() {
         return new AttributeTypeInfo(Data.class,null,null, AttributeTypeInfo.AttributeTypeCategory.REFERENCE);
     }
 
@@ -215,7 +216,7 @@ public class ReferenceAttribute<T extends Data> extends Attribute<T> {
     }
 
     @Override
-    public void prepareUsage(Data root){
+    public void internal_prepareUsage(Data root){
         this.root=root;
     }
 

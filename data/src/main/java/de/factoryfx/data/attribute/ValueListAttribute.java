@@ -51,7 +51,7 @@ public class ValueListAttribute<T> extends ValueAttribute<List<T>> {
     }
 
     @Override
-    public AttributeTypeInfo getAttributeType() {
+    public AttributeTypeInfo internal_getAttributeType() {
         return new AttributeTypeInfo(ObservableList.class,null,null,itemType, AttributeTypeInfo.AttributeTypeCategory.COLLECTION,listNewItemEmptyValue);
     }
 

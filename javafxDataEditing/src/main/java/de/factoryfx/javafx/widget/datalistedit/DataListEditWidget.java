@@ -56,6 +56,7 @@ public class DataListEditWidget<T extends Data> implements Widget {
 
 
     @Override
+    @SuppressWarnings("unchecked")
     public Node createContent() {
         Button showButton = new Button("", uniformDesign.createIcon(FontAwesome.Glyph.PENCIL));
         showButton.setOnAction(event -> dataEditor.edit(tableView.getSelectionModel().getSelectedItem()));

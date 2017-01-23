@@ -24,7 +24,7 @@ public class ApplicationServerResourceFactory<V,L,T extends FactoryBase<L,V>> ex
             if (authorizedKeyUserEvaluator==null) {
                 authorizedKeyUserEvaluator=(u)->true;
             }
-            return new ApplicationServerResource(applicationServer.get(),userManagement.instance(), authorizedKeyUserEvaluator);
+            return new ApplicationServerResource<>(applicationServer.get(),userManagement.instance(), authorizedKeyUserEvaluator);
         });
 
         config().setDisplayTextProvider(()->"Resource");

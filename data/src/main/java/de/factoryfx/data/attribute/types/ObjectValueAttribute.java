@@ -28,13 +28,13 @@ public class ObjectValueAttribute<T> extends ValueAttribute<T> {
     }
 
     @Override
-    public AttributeMergeHelper<?> createMergeHelper() {
+    public AttributeMergeHelper<?> internal_createMergeHelper() {
         return new NopMergeHelper<>();
     }
 
 //    @Override
 //    @SuppressWarnings("unchecked")
-//    public void copyTo(Attribute<T> copyAttribute, Function<Data, Data> dataCopyProvider) {
+//    public void internal_copyTo(Attribute<T> copyAttribute, Function<Data, Data> dataCopyProvider) {
 //        copyAttribute.set((T) dataCopyProvider.apply(get()));
 //    }
 }

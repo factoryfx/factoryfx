@@ -21,17 +21,17 @@ public class ValueAttribute<T> extends Attribute<T> {
     }
 
     @Override
-    public void collectChildren(Set<Data> allModelEntities) {
+    public void internal_collectChildren(Set<Data> allModelEntities) {
         //nothing
     }
 
     @Override
-    public AttributeMergeHelper<?> createMergeHelper() {
+    public AttributeMergeHelper<?> internal_createMergeHelper() {
         return new AttributeMergeHelper<>(this);
     }
 
     @Override
-    public void fixDuplicateObjects(Function<Object, Optional<Data>> getCurrentEntity) {
+    public void internal_fixDuplicateObjects(Function<Object, Optional<Data>> getCurrentEntity) {
         //do nothing
     }
 
@@ -54,23 +54,23 @@ public class ValueAttribute<T> extends Attribute<T> {
     }
 
     @Override
-    public void copyTo(Attribute<T> copyAttribute, Function<Data, Data> dataCopyProvider) {
+    public void internal_copyTo(Attribute<T> copyAttribute, Function<Data, Data> dataCopyProvider) {
         copyTo(copyAttribute);
     }
 
     @Override
-    public void semanticCopyTo(Attribute<T> copyAttribute, Function<Data, Data> dataCopyProvider) {
+    public void internal_semanticCopyTo(Attribute<T> copyAttribute, Function<Data, Data> dataCopyProvider) {
         copyTo(copyAttribute);
     }
 
     protected List<AttributeChangeListener<T>> listeners= new ArrayList<>();
     @Override
-    public void addListener(AttributeChangeListener<T> listener) {
+    public void internal_addListener(AttributeChangeListener<T> listener) {
         listeners.add(listener);
     }
 
     @Override
-    public void removeListener(AttributeChangeListener<T> listener) {
+    public void internal_removeListener(AttributeChangeListener<T> listener) {
         for (AttributeChangeListener<T> listenerItem: new ArrayList<>(listeners)){
             if (listenerItem.unwrap()==listener || listenerItem.unwrap()==null){
                 listeners.remove(listenerItem);
@@ -87,12 +87,12 @@ public class ValueAttribute<T> extends Attribute<T> {
     }
 
     @Override
-    public void visit(AttributeVisitor attributeVisitor) {
+    public void internal_visit(AttributeVisitor attributeVisitor) {
         attributeVisitor.value(this);
     }
 
     @Override
-    public AttributeTypeInfo getAttributeType() {
+    public AttributeTypeInfo internal_getAttributeType() {
         return new AttributeTypeInfo(dataType);
     }
 

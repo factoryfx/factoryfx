@@ -45,7 +45,7 @@ public class ValueSetAttribute<T> extends ValueAttribute<Set<T>> {
     }
 
     @Override
-    public AttributeTypeInfo getAttributeType() {
+    public AttributeTypeInfo internal_getAttributeType() {
         return new AttributeTypeInfo(ObservableSet.class,null,null,itemType, AttributeTypeInfo.AttributeTypeCategory.COLLECTION,emptyValue);
     }
 

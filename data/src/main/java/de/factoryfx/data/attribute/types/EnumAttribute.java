@@ -20,7 +20,7 @@ public class EnumAttribute<T extends Enum<T>> extends ValueAttribute<T> {
     }
 
     @Override
-    public AttributeTypeInfo getAttributeType() {
+    public AttributeTypeInfo internal_getAttributeType() {
 
         return new AttributeTypeInfo(clazz,null,null,AttributeTypeInfo.AttributeTypeCategory.VALUE);
     }
