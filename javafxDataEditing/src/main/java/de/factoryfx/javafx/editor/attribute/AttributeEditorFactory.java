@@ -4,11 +4,7 @@ import java.math.BigDecimal;
 import java.net.URI;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Locale;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -123,7 +119,7 @@ public class AttributeEditorFactory {
         if (ObservableList.class.isAssignableFrom(attribute.internal_getAttributeType().dataType) && Data.class.isAssignableFrom(attribute.internal_getAttributeType().listItemType)){
             ReferenceListAttribute<?> referenceListAttribute = (ReferenceListAttribute<?>) attribute;
 
-            final ReferenceListAttributeVisualisation referenceListAttributeVisualisation = new ReferenceListAttributeVisualisation(uniformDesign, dataEditor, () -> referenceListAttribute.addNewFactory(), () -> (List<Data>) referenceListAttribute.possibleValues(), referenceListAttribute.isUserEditable(), referenceListAttribute.isUserSelectable());
+            final ReferenceListAttributeVisualisation referenceListAttributeVisualisation = new ReferenceListAttributeVisualisation(uniformDesign, dataEditor, () -> referenceListAttribute.addNewFactory(), () -> (Collection<Data>) referenceListAttribute.possibleValues(), referenceListAttribute.isUserEditable(), referenceListAttribute.isUserSelectable());
             ExpandableAttributeVisualisation<ObservableList<Data>> expandableAttributeVisualisation= new ExpandableAttributeVisualisation<>(referenceListAttributeVisualisation,uniformDesign,(l)->"Items: "+l.size(),FontAwesome.Glyph.LIST);
             if (referenceListAttribute.get().contains(oldValue)){
                 expandableAttributeVisualisation.expand();
