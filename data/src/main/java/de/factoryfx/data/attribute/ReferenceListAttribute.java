@@ -337,7 +337,7 @@ public class ReferenceListAttribute<T extends Data> extends Attribute<List<T>> {
      */
     @SuppressWarnings("unchecked")
     public <A extends ReferenceListAttribute<T>> A userNotCreateable(){
-        userSelectable=false;
+        userCreateable=false;
         return (A)this;
     }
 

@@ -254,7 +254,7 @@ public class ReferenceAttribute<T extends Data> extends Attribute<T> {
      */
     @SuppressWarnings("unchecked")
     public <A extends ReferenceAttribute<T>> A userNotCreateable(){
-        userSelectable=false;
+        userCreateable=false;
         return (A)this;
     }
 
