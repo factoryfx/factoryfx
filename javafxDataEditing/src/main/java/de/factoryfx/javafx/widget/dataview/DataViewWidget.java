@@ -74,6 +74,10 @@ public class DataViewWidget<T extends Data> implements CloseAwareWidget {
         return splitPane;
     }
 
+    public void edit(T data){
+        dataEditor.edit(data);
+    }
+
     public DataViewWidget setDividerPositions(double dividerPosition) {
         this.dividerPosition = dividerPosition;
         return this;
