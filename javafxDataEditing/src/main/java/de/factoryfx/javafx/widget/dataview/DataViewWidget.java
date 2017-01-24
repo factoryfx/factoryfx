@@ -75,7 +75,7 @@ public class DataViewWidget<T extends Data> implements CloseAwareWidget {
     }
 
     public void edit(T data){
-        dataEditor.edit(data);
+        tableView.getSelectionModel().select(data);
     }
 
     public DataViewWidget setDividerPositions(double dividerPosition) {
