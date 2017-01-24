@@ -41,8 +41,9 @@ public class DataListEditWidget<T extends Data> implements Widget {
     private final TableView<T> tableView;
     private final DataEditor dataEditor;
     private final BooleanBinding multipleItemsSelected;
+    private final boolean isUserCreateable;
 
-    public DataListEditWidget(ObservableList<T> list, TableView<T> tableView, DataEditor dataEditor, UniformDesign uniformDesign, Runnable emptyAdder, Supplier<Collection<? extends Data>> possibleValuesProvider, boolean isUserEditable, boolean isUserSelectable) {
+    public DataListEditWidget(ObservableList<T> list, TableView<T> tableView, DataEditor dataEditor, UniformDesign uniformDesign, Runnable emptyAdder, Supplier<Collection<? extends Data>> possibleValuesProvider, boolean isUserEditable, boolean isUserSelectable, boolean isUserCreateable) {
         this.uniformDesign = uniformDesign;
         this.emptyAdder = emptyAdder;
         this.possibleValuesProvider = possibleValuesProvider;
@@ -52,6 +53,7 @@ public class DataListEditWidget<T extends Data> implements Widget {
         this.tableView = tableView;
         this.dataEditor = dataEditor;
         multipleItemsSelected = Bindings.createBooleanBinding(() -> tableView.getSelectionModel().getSelectedItems().size() > 1, tableView.getSelectionModel().getSelectedItems());
+        this.isUserCreateable = isUserCreateable;
     }
 
 
@@ -75,7 +77,7 @@ public class DataListEditWidget<T extends Data> implements Widget {
             emptyAdder.run();
             dataEditor.edit(list.get(list.size()-1));
         });
-        adderButton.setDisable(!isUserEditable);
+        adderButton.setDisable(!isUserEditable || !isUserCreateable);
 
         Button deleteButton = new Button();
         uniformDesign.addDangerIcon(deleteButton,FontAwesome.Glyph.TIMES);

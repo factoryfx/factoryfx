@@ -222,20 +222,20 @@ public class ReferenceAttribute<T extends Data> extends Attribute<T> {
 
     private boolean userEditable=true;
     @SuppressWarnings("unchecked")
-    /** marks the reference as readonly for the user(user can still anviagte but change the refernce)*/
+    /** marks the reference as readonly for the user(user can still navigate the reference  but can not change the it)*/
     public <A extends ReferenceAttribute<T>> A userReadOnly(){
         userEditable=false;
         return (A)this;
     }
 
     @JsonIgnore
-    public boolean isUserEditable(){
+    public boolean internal_isUserEditable(){
         return userEditable;
     }
 
     private boolean userSelectable=true;
     /**
-     * disable select for reference (slect dialog)
+     * disable select for reference (select dialog)
      */
     @SuppressWarnings("unchecked")
     public <A extends ReferenceAttribute<T>> A userNotSelectable(){
@@ -244,8 +244,25 @@ public class ReferenceAttribute<T extends Data> extends Attribute<T> {
     }
 
     @JsonIgnore
-    public boolean isUserSelectable(){
+    public boolean internal_isUserSelectable(){
         return userSelectable;
+    }
+
+
+    /**
+     * disable new for reference
+     */
+    @SuppressWarnings("unchecked")
+    public <A extends ReferenceAttribute<T>> A userNotCreateable(){
+        userSelectable=false;
+        return (A)this;
+    }
+
+
+    private boolean userCreateable=true;
+    @JsonIgnore
+    public boolean internal_isUserCreateable(){
+        return userCreateable;
     }
 
 }

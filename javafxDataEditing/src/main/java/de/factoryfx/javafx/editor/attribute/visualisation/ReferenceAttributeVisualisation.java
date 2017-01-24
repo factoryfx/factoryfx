@@ -35,14 +35,16 @@ public class ReferenceAttributeVisualisation extends ValueAttributeEditorVisuali
     private final Supplier<Collection<? extends Data>> possibleValuesProvider;
     private final boolean isUserEditable;
     private final boolean isUserSelectable;
+    private final boolean isUserCreateable;
 
-    public ReferenceAttributeVisualisation(UniformDesign uniformDesign, DataEditor dataEditor, Supplier<Data> emptyAdder, Supplier<Collection<? extends Data>> possibleValuesProvider, boolean isUserEditable, boolean isUserSelectable) {
+    public ReferenceAttributeVisualisation(UniformDesign uniformDesign, DataEditor dataEditor, Supplier<Data> emptyAdder, Supplier<Collection<? extends Data>> possibleValuesProvider, boolean isUserEditable, boolean isUserSelectable, boolean isUserCreateable) {
         this.uniformDesign = uniformDesign;
         this.dataEditor = dataEditor;
         this.emptyAdder = emptyAdder;
         this.possibleValuesProvider = possibleValuesProvider;
         this.isUserEditable = isUserEditable;
         this.isUserSelectable = isUserSelectable;
+        this.isUserCreateable = isUserCreateable;
     }
 
     @Override
@@ -65,7 +67,7 @@ public class ReferenceAttributeVisualisation extends ValueAttributeEditorVisuali
         newButton.setOnAction(event -> {
             dataEditor.edit(emptyAdder.get());
         });
-        newButton.setDisable(!isUserEditable);
+        newButton.setDisable(!isUserEditable || !isUserCreateable);
 
         Button deleteButton = new Button();
         uniformDesign.addDangerIcon(deleteButton,FontAwesome.Glyph.TIMES);

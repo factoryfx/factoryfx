@@ -117,13 +117,13 @@ public class AttributeEditorFactory {
 
         if (Data.class==attribute.internal_getAttributeType().dataType){
             ReferenceAttribute<?> referenceAttribute = (ReferenceAttribute<?>) attribute;
-            return Optional.of(new AttributeEditor<>((Attribute<Data>)attribute,new ReferenceAttributeVisualisation(uniformDesign,dataEditor,()->referenceAttribute.addNewFactory(),()->referenceAttribute.possibleValues(),referenceAttribute.isUserEditable(),referenceAttribute.isUserSelectable())));
+            return Optional.of(new AttributeEditor<>((Attribute<Data>)attribute,new ReferenceAttributeVisualisation(uniformDesign,dataEditor,()->referenceAttribute.addNewFactory(),()->referenceAttribute.possibleValues(),referenceAttribute.internal_isUserEditable(),referenceAttribute.internal_isUserSelectable(),referenceAttribute.internal_isUserCreateable())));
         }
 
         if (ObservableList.class.isAssignableFrom(attribute.internal_getAttributeType().dataType) && Data.class.isAssignableFrom(attribute.internal_getAttributeType().listItemType)){
             ReferenceListAttribute<?> referenceListAttribute = (ReferenceListAttribute<?>) attribute;
 
-            final ReferenceListAttributeVisualisation referenceListAttributeVisualisation = new ReferenceListAttributeVisualisation(uniformDesign, dataEditor, () -> referenceListAttribute.addNewFactory(), () -> referenceListAttribute.possibleValues(), referenceListAttribute.isUserEditable(), referenceListAttribute.isUserSelectable());
+            final ReferenceListAttributeVisualisation referenceListAttributeVisualisation = new ReferenceListAttributeVisualisation(uniformDesign, dataEditor, () -> referenceListAttribute.addNewFactory(), () -> referenceListAttribute.possibleValues(), referenceListAttribute.internal_isUserEditable(), referenceListAttribute.internal_isUserSelectable(),referenceListAttribute.internal_isUserCreateable());
             ExpandableAttributeVisualisation<ObservableList<Data>> expandableAttributeVisualisation= new ExpandableAttributeVisualisation<>(referenceListAttributeVisualisation,uniformDesign,(l)->"Items: "+l.size(),FontAwesome.Glyph.LIST);
             if (referenceListAttribute.get().contains(oldValue)){
                 expandableAttributeVisualisation.expand();

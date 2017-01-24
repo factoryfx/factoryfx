@@ -313,7 +313,7 @@ public class ReferenceListAttribute<T extends Data> extends Attribute<List<T>> {
     }
 
     @JsonIgnore
-    public boolean isUserEditable(){
+    public boolean internal_isUserEditable(){
         return userEditable;
     }
 
@@ -328,8 +328,24 @@ public class ReferenceListAttribute<T extends Data> extends Attribute<List<T>> {
     }
 
     @JsonIgnore
-    public boolean isUserSelectable(){
+    public boolean internal_isUserSelectable(){
         return userSelectable;
+    }
+
+    /**
+     * disable new for reference
+     */
+    @SuppressWarnings("unchecked")
+    public <A extends ReferenceListAttribute<T>> A userNotCreateable(){
+        userSelectable=false;
+        return (A)this;
+    }
+
+
+    private boolean userCreateable=true;
+    @JsonIgnore
+    public boolean internal_isUserCreateable(){
+        return userCreateable;
     }
 
 }
