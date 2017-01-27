@@ -121,7 +121,7 @@ public class FactorySerialisationManagerTest {
 
         JacksonDeSerialisation<ExampleFactoryA> deSerialisation = new JacksonDeSerialisation<>(ExampleFactoryA.class, 1);
         JacksonSerialisation<ExampleFactoryA> serialisation = new JacksonSerialisation<>(1);
-        FactorySerialisationManager<ExampleFactoryA> manager = new FactorySerialisationManager<>(serialisation,deSerialisation, Collections.emptyList());
+        FactorySerialisationManager<ExampleFactoryA> manager = new FactorySerialisationManager<>(serialisation,deSerialisation, migrations);
         ExampleFactoryA result = manager.read(ObjectMapperBuilder.build().writeValueAsString(new ExampleFactoryA()),0);
         Assert.assertNotNull(result);
 

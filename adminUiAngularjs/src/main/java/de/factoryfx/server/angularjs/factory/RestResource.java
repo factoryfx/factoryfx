@@ -3,6 +3,7 @@ package de.factoryfx.server.angularjs.factory;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -55,7 +56,8 @@ import difflib.Patch;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
-@Path("/") /** path defined in {@link de.factoryfx.xtc.ticketproxy.configuration.ConfigurationServer}*/
+/** path defined in Server and not with the path annotation*/
+@Path("/")
 public class RestResource<L,V,T extends FactoryBase<L,V>> {
 
     private final ApplicationServer<L,V,T> applicationServer;
@@ -135,7 +137,7 @@ public class RestResource<L,V,T extends FactoryBase<L,V>> {
 
         Function<Data,Data> existingOrNew= factoryBase -> {
             Data result = map.get(factoryBase.getId());
-            if (factoryBase!=null && result==null){//new added nested factory
+            if (result==null){//new added nested factory
                 result=factoryBase;
             }
             return result;
@@ -395,7 +397,7 @@ public class RestResource<L,V,T extends FactoryBase<L,V>> {
     @Path("history") //detail request for history
     public Collection<StoredFactoryMetadata> history(){
         List<StoredFactoryMetadata> historyFactoryList = new ArrayList<>(applicationServer.getHistoryFactoryList());
-        Collections.sort(historyFactoryList, (o1, o2) -> Objects.compare(o1.creationTime, o2.creationTime, (o11, o21) -> o21.compareTo(o11)));
+        Collections.sort(historyFactoryList, (o1, o2) -> Objects.compare(o1.creationTime, o2.creationTime, Comparator.reverseOrder()));
         return historyFactoryList;
     }
 

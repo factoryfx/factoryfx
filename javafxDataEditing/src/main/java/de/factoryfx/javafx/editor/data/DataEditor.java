@@ -159,7 +159,7 @@ public class DataEditor implements Widget {
 
         dataChangeListener = (observable, oldValue, newValue) -> {
 
-            createdEditors.entrySet().stream().forEach(entry -> entry.getValue().unbind());
+            createdEditors.entrySet().forEach(entry -> entry.getValue().unbind());
             createdEditors.clear();
             if (newValue==null) {
                 result.setCenter(new Label("empty"));
@@ -185,7 +185,7 @@ public class DataEditor implements Widget {
                 }
                 validationListener = (attribute1, value) -> {
                     final List<ValidationError> validationErrors = newValue.internal().validateFlat();
-                    createdEditors.entrySet().stream().forEach(entry -> {
+                    createdEditors.entrySet().forEach(entry -> {
                         List<ValidationError> attributeValidationError = new ArrayList<>();
                         for (ValidationError validationError : validationErrors) {
                             if (entry.getKey() == validationError.attribute) {

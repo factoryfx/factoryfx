@@ -1,8 +1,9 @@
 package de.factoryfx.javafx.util;
 
-import java.math.BigDecimal;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.text.DecimalFormat;
+import java.text.ParsePosition;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
 import java.time.format.DateTimeParseException;
@@ -21,10 +22,10 @@ public class TypedTextFieldHelper {
         textField.setTextFormatter(new TextFormatter<>(change -> {
             try {
                 if (!Strings.isNullOrEmpty(change.getControlNewText())) {
-                    converter.accept(change.getControlNewText());
+                   converter.accept(change.getControlNewText());
                 }
                 return change;
-            } catch (IllegalArgumentException e) { //javafxbug https://bugs.openjdk.java.net/browse/JDK-8081700
+            } catch (Exception e) {
                 return null;
             }
         }));
@@ -71,8 +72,17 @@ public class TypedTextFieldHelper {
         setupTextField(textField, Integer::valueOf);
     }
 
-    public static void setupBigDecimalLongTextField(TextField textField) {
-        setupTextField(textField, BigDecimal::new);
+    public static void setupBigDecimalTextField(TextField textField, String decimalFormatPattern) {
+        setupTextField(textField, (value) -> {
+            String pattern = decimalFormatPattern;
+            DecimalFormat decimalFormat = new DecimalFormat(pattern);
+            decimalFormat.setParseBigDecimal(true);
+            ParsePosition pos = new ParsePosition(0);
+            decimalFormat.parse(value,pos);
+            if (pos.getIndex() != value.length() || pos.getErrorIndex() != -1) {
+                throw new IllegalStateException();
+            }
+        });
     }
 
     public static void setupDoubleTextField(TextField textField) {

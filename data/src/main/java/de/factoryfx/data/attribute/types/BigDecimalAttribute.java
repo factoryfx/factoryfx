@@ -8,6 +8,8 @@ import de.factoryfx.data.attribute.ValueAttribute;
 
 public class BigDecimalAttribute extends ValueAttribute<BigDecimal> {
 
+    private String decimalFormatPattern="#,#";
+
     @JsonCreator
     BigDecimalAttribute(BigDecimal value) {
         super(null,BigDecimal.class);
@@ -16,5 +18,13 @@ public class BigDecimalAttribute extends ValueAttribute<BigDecimal> {
 
     public BigDecimalAttribute(AttributeMetadata attributeMetadata) {
         super(attributeMetadata,BigDecimal.class);
+    }
+
+    public String internal_getDecimalFormatPattern() {
+        return decimalFormatPattern;
+    }
+
+    public void decimalFormatPatter(String decimalFormatPattern) {
+        this.decimalFormatPattern=decimalFormatPattern;
     }
 }

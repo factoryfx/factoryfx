@@ -229,8 +229,8 @@ public class AttributeEditorFactory {
             return Optional.of(new AttributeEditor<>((Attribute<Long>)attribute,new LongAttributeVisualisation()));
         }
 
-        if (BigDecimal.class==attribute.internal_getAttributeType().dataType){
-            return Optional.of(new AttributeEditor<>((Attribute<BigDecimal>)attribute,new BigDecimalAttributeVisualisation()));
+        if (BigDecimal.class==attribute.internal_getAttributeType().dataType && attribute instanceof BigDecimalAttribute){
+            return Optional.of(new AttributeEditor<>((Attribute<BigDecimal>)attribute,new BigDecimalAttributeVisualisation(((BigDecimalAttribute)attribute).internal_getDecimalFormatPattern())));
         }
 
         if (Double.class==attribute.internal_getAttributeType().dataType){

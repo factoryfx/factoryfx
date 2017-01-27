@@ -16,13 +16,13 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import de.factoryfx.data.Data;
 
+/**
+ * @param <L> liveobject created from this factory
+ * @param <V> runtime visitor
+ */
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonTypeInfo(use=JsonTypeInfo.Id.MINIMAL_CLASS, include=JsonTypeInfo.As.PROPERTY, property="@class")
-/**
- *  L liveobject created from this factory
- *  V runtime visitor
- */
 public abstract class FactoryBase<L,V> extends Data {
 
 //    public abstract LiveCycleController<L,V> createLifecycleController();
@@ -146,7 +146,7 @@ public abstract class FactoryBase<L,V> extends Data {
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append("Attributes:\n");
         this.internal().visitAttributesFlat((attributeVariableName, attribute) -> {
-            stringBuilder.append(attributeVariableName+": "+attribute.get()+"\n");
+            stringBuilder.append(attributeVariableName).append(": ").append(attribute.get()).append("\n");
         });
         return stringBuilder.toString();
     }

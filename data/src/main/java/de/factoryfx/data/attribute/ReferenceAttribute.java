@@ -62,9 +62,7 @@ public class ReferenceAttribute<T extends Data> extends Attribute<T> {
         if (currentReferenceContent != null) {
             currentReferenceContent.internal().fixDuplicateObjects(getCurrentEntity);
             Optional<Data> existingOptional = getCurrentEntity.apply(currentReferenceContent.getId());
-            if (existingOptional.isPresent()) {
-                set((T) existingOptional.get());
-            }
+            existingOptional.ifPresent(data -> set((T) data));
         }
     }
 
@@ -221,8 +219,8 @@ public class ReferenceAttribute<T extends Data> extends Attribute<T> {
     }
 
     private boolean userEditable=true;
-    @SuppressWarnings("unchecked")
     /** marks the reference as readonly for the user(user can still navigate the reference  but can not change the it)*/
+    @SuppressWarnings("unchecked")
     public <A extends ReferenceAttribute<T>> A userReadOnly(){
         userEditable=false;
         return (A)this;

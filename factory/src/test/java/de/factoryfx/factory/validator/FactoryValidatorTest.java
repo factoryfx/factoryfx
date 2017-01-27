@@ -26,9 +26,7 @@ public class FactoryValidatorTest {
                 for (FactoryStyleValidation factoryStyleValidation: factoryValidations){
                     result.add(new Object[]{factoryStyleValidation,clazz.getName()+":"+factoryStyleValidation.getClass().getSimpleName()});
                 }
-            } catch (InstantiationException e) {
-                throw new RuntimeException(e);
-            } catch (IllegalAccessException e) {
+            } catch (InstantiationException | IllegalAccessException e) {
                 throw new RuntimeException(e);
             }
 //            result.add(new Object[]{clazz});

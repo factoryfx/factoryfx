@@ -1,6 +1,7 @@
 package de.factoryfx.factory.datastorage;
 
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -14,9 +15,7 @@ public interface FactoryStorage<L,V,T extends FactoryBase<L,V>> {
         Collection<StoredFactoryMetadata> historyFactoryList = getHistoryFactoryList();
         if (historyFactoryList.isEmpty())
             return null;
-        List<StoredFactoryMetadata> metadata = historyFactoryList.stream().sorted((h1, h2)->{
-            return h1.creationTime.compareTo(h2.creationTime);
-        }).collect(Collectors.toList());
+        List<StoredFactoryMetadata> metadata = historyFactoryList.stream().sorted(Comparator.comparing(h -> h.creationTime)).collect(Collectors.toList());
         String lastId = metadata.get(0).id;
         for (StoredFactoryMetadata m : metadata) {
             if (m.id.equals(id))

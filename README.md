@@ -1,55 +1,43 @@
 # Factoryfx
 
-*Domain specificity Dependency Injection Framework for java.*
+*Data and Dependency Injection Framework for java.*
 
 ## Introduction
 
-Factoryfx is a lightweight Dependency Injection Framework.:
+Factoryfx is a lightweight Dependency Injection Framework that combines data and dependency injection.:
 
-when you manually use dependency injection you have 2 types of objects.
+dependency injection requires 2 types of objects.
 * business logic
-* Factory code which instantiate the business logic objects
+* factory code which instantiate the business logic objects
 explained here: https://www.youtube.com/watch?v=RlfLCWKxHJ0&index=3&list=PL693EFD059797C21E#t=30m
 
-Most dependency injection frameworks automate the Factory code.
-Instead of automating the creation process Factoryfx takes a different approach by focusing on an explicit defined lifecycle and end user ediable datastructure.
-Since the Factory is not automated you can edit metadata like validatio, labeltext and permissions directly to Model.
+Most dependency injection frameworks try to automate the Factory code.
+Instead of automating the creation process Factoryfx takes a different approach by focusing on an explicit defined lifecycle and end user editable datastructure.
+Since the Factory is not automated you can edit metadata like validation, labeltext and permissions directly to Model.
 
 ###Example
 ####Factory
 ```java
-public class ShopFactory extends FactoryBase<Shop,ShopFactory> {
-    public final StringAttribute shopTitle = new StringAttribute(new AttributeMetadata().labelText("stageTitle"));
+public class HelloWorldFactory extends SimpleFactoryBase<HelloWorld,Visitor> {
+    public final StringAttribute text = new StringAttribute(new AttributeMetadata().labelText("text"));
 
     @Override
-    protected Shop createImp(Optional<Shop> previousLiveObject) {
-        ...
-        return new Shop(stageTitle.get(), ...);
+    protected HelloWorld create() {
+        return new HelloWorld(text.get());
     }
 }
 ```
 ####Live Object
 ```java
-public class Shop  implements LiveObject<OrderCollector> {
-    private final String shopTitle;
+public class HelloWorld{
+    private final String text;
 
-    public Shop(String shopTitle, ...) {
-        this.stageTitle = stageTitle;
+    public Shop(String text) {
+        this.text = text;
     }
 
-    @Override
-    public void start() {
-        ...
-    }
-
-    @Override
-    public void stop() {
-        ...
-    }
-
-    @Override
-    public void accept(OrderCollector visitor) {
-        ...
+    public void print(){
+        System.out.println(text);
     }
 }
 ```

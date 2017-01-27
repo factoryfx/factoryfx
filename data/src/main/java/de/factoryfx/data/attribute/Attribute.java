@@ -71,17 +71,12 @@ public abstract class Attribute<T>{
 
             @Override
             public void reference(ReferenceAttribute<?> reference) {
-                reference.getOptional().ifPresent((factory)->nestedFactoriesVisitor.accept(factory));
+                reference.getOptional().ifPresent(nestedFactoriesVisitor::accept);
             }
 
             @Override
             public void referenceList(ReferenceListAttribute<?> referenceList) {
-                referenceList.get().forEach(new Consumer<Data>() {
-                    @Override
-                    public void accept(Data item) {
-                        nestedFactoriesVisitor.accept(item);
-                    }
-                });
+                referenceList.get().forEach(nestedFactoriesVisitor::accept);
             }
         });
     }

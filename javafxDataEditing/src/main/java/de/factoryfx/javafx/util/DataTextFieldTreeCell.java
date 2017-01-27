@@ -32,9 +32,7 @@ public class DataTextFieldTreeCell<T> extends TextFieldTreeCell<T> {
                 displayTextObservable.ifPresent(readOnlyStringProperty -> readOnlyStringProperty.removeListener(changeListener));
                 displayTextObservable= Optional.of(dataSupplier.apply(item).internal().getDisplayTextObservable());
                 changeListenerGarbageCollectionSave = (observable, oldValue, newValue) -> {
-                    if (item != null) {
-                        setText(dataSupplier.apply(item).internal().getDisplayText());
-                    }
+                    setText(dataSupplier.apply(item).internal().getDisplayText());
                 };
                 changeListener = new WeakChangeListener<>(changeListenerGarbageCollectionSave);
                 displayTextObservable.get().addListener(changeListener);

@@ -11,7 +11,7 @@ public class ClasspathBasedFactoryProvider {
 
     /**
      * @param basePackage base package for the factory to avoid scanning the whole classpath
-     * @return
+     * @return list of factories
      */
     @SuppressWarnings("unchecked")
     public List<Class<? extends FactoryBase>> get(String basePackage) {
@@ -39,7 +39,7 @@ public class ClasspathBasedFactoryProvider {
     /**
      *
      * @param root class in the root package for all Factories. {@link ClasspathBasedFactoryProvider#get(String)}
-     * @return
+     * @return list of factories
      */
     public List<Class<? extends FactoryBase>> get(Class<? extends FactoryBase> root){
         return get(root.getPackage().getName());
