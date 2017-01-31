@@ -1,5 +1,7 @@
 package de.factoryfx.data.validation;
 
+import java.util.Collection;
+
 import de.factoryfx.data.util.LanguageText;
 
 public class ObjectRequired<T> implements Validation<T> {
@@ -11,6 +13,9 @@ public class ObjectRequired<T> implements Validation<T> {
 
     @Override
     public boolean validate(T value) {
+        if (value instanceof Collection){
+            return !((Collection)value).isEmpty();
+        }
         return value != null;
     }
 }
