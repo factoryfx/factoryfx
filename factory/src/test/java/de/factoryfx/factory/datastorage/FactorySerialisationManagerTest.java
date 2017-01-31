@@ -156,4 +156,53 @@ public class FactorySerialisationManagerTest {
         Assert.assertNotNull(result);
 
     }
+
+    @Test
+    public void read_read_migration_nested_and_dependend(){
+        List<FactoryMigration> migrations = new ArrayList<>();
+        migrations.add(new FactoryMigration() {
+            @Override
+            public boolean canMigrate(int dataModelVersion) {
+                return dataModelVersion==1;
+            }
+
+            @Override
+            public String migrate(String data) {
+                return "1"+data;
+            }
+
+            @Override
+            public int migrateResultVersion() {
+                return 2;
+            }
+        });
+        migrations.add(new FactoryMigration() {
+            @Override
+            public boolean canMigrate(int dataModelVersion) {
+                return dataModelVersion==2;
+            }
+
+            @Override
+            public String migrate(String data) {
+                if (!data.startsWith("1")){//hack to simulate migration depending on previous migration
+                    throw new IllegalStateException();
+                }
+                return data.substring(1);
+            }
+
+            @Override
+            public int migrateResultVersion() {
+                return 3;
+            }
+        });
+
+
+
+        JacksonDeSerialisation<ExampleFactoryA> deSerialisation = new JacksonDeSerialisation<>(ExampleFactoryA.class, 3);
+        JacksonSerialisation<ExampleFactoryA> serialisation = new JacksonSerialisation<>(3);
+        FactorySerialisationManager<ExampleFactoryA> manager = new FactorySerialisationManager<>(serialisation,deSerialisation, migrations);
+        ExampleFactoryA result = manager.read(ObjectMapperBuilder.build().writeValueAsString(new ExampleFactoryA()),1);
+        Assert.assertNotNull(result);
+
+    }
 }
