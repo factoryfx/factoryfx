@@ -172,6 +172,7 @@ public class DataEditor implements Widget {
                     TabPane tabPane = new TabPane();
                     for (Pair<String,List<Attribute<?>>> attributeGroup: newValue.internal().attributeListGrouped()) {
                         Tab tab=new Tab(attributeGroup.getKey());
+                        tab.setClosable(false);
                         tab.setContent(createAttributeGroupVisual(attributeGroup.getValue(),() -> newValue.internal().validateFlat(),oldValue));
                         tabPane.getTabs().add(tab);
                     }
