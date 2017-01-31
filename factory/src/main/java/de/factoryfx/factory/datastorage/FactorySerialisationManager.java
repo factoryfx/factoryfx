@@ -33,7 +33,7 @@ public class FactorySerialisationManager<T extends FactoryBase<?,?>> {
             boolean foundMigration=false;
             for (FactoryMigration migration: factoryMigrations){
                 if (migration.canMigrate(migrateDataModelVersion)){
-                    migratedData = migration.migrate(data);
+                    migratedData = migration.migrate(migratedData);
                     migrateDataModelVersion = migration.migrateResultVersion();
                     foundMigration=true;
                     break;
