@@ -198,14 +198,14 @@ public class AttributeEditorFactory {
 
         if (String.class==attribute.internal_getAttributeType().dataType){
             StringAttribute stringAttribute = (StringAttribute) attribute;
-            if (!stringAttribute.isLongText()){
+            if (!stringAttribute.internal_isLongText()){
                 return Optional.of(new AttributeEditor<>(stringAttribute,new StringAttributeVisualisation()));
             }
         }
 
         if (String.class==attribute.internal_getAttributeType().dataType){
             StringAttribute stringAttribute = (StringAttribute) attribute;
-            if (stringAttribute.isLongText()){
+            if (stringAttribute.internal_isLongText()){
                 return Optional.of(new AttributeEditor<>(stringAttribute,
                         new ExpandableAttributeVisualisation<>(new StringLongAttributeVisualisation(),uniformDesign, (s)->Ascii.truncate(s,20,"..."),FontAwesome.Glyph.FONT )));
             }
