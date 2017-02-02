@@ -293,13 +293,8 @@ public abstract class Data {
             result.addAll(attribute.internal_validate());
         });
 
-        for (AttributeValidation validation: dataValidations){
-            validation.validate(this).ifPresent(new Consumer<ValidationError>() {
-                @Override
-                public void accept(ValidationError validationError) {
-                    result.add(validationError);
-                }
-            });
+        for (AttributeValidation<?> validation: dataValidations){
+            validation.validate(this).ifPresent(validationError -> result.add(validationError));
         }
         return result;
     }

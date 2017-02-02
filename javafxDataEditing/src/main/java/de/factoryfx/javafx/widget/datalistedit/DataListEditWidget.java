@@ -21,6 +21,8 @@ import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.TableView;
 import javafx.scene.control.Tooltip;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.HBox;
 import org.controlsfx.glyphfont.FontAwesome;
 
@@ -81,7 +83,7 @@ public class DataListEditWidget<T extends Data> implements Widget {
 
         Button deleteButton = new Button();
         uniformDesign.addDangerIcon(deleteButton,FontAwesome.Glyph.TIMES);
-        deleteButton.setOnAction(event -> tableView.getSelectionModel().getSelectedItems().forEach(list::remove));
+        deleteButton.setOnAction(event -> deleteSelected());
         deleteButton.disableProperty().bind(tableView.getSelectionModel().selectedItemProperty().isNull().or(new SimpleBooleanProperty(!isUserEditable)));
 
         Button moveUpButton = new Button();
@@ -132,7 +134,20 @@ public class DataListEditWidget<T extends Data> implements Widget {
         HBox.setMargin(moveUpButton,new Insets(0,0,0,9));
         HBox.setMargin(moveDownButton,new Insets(0,9,0,0));
 
+
+        tableView.addEventHandler(KeyEvent.KEY_PRESSED, event -> {
+            if (event.getCode()== KeyCode.DELETE){
+                deleteSelected();
+            }
+        });
         return buttons;
+    }
+
+    private void deleteSelected() {
+        tableView.getSelectionModel().getSelectedItems().forEach(list::remove);
+        if (tableView.getFocusModel().getFocusedItem()!=null){
+            list.remove(tableView.getFocusModel().getFocusedItem());
+        }
     }
 
 }

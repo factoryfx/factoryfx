@@ -280,13 +280,15 @@ public abstract class FactoryBase<L,V> extends Data {
             this.factory = factory;
         }
 
-        /** create and prepare the liveObject*/
+        /**create and prepare the liveObject*/
         public void setCreator(Supplier<L> creator){
             factory.setCreator(creator);
         }
 
-        /**the factory data has changed therefore a new liveobject is needed.
-         * previousLiveObject can be used to reuse resources like conenction pools*/
+        /**the factory data has changed therefore a new liveobject is needed.<br>
+         * previousLiveObject can be used to reuse resources like conenction pools.<br>
+         * passed old liveobject is never null
+         * */
         public void setReCreator(Function<L,L> reCreatorWithPreviousLiveObject ) {
             factory.setReCreator(reCreatorWithPreviousLiveObject);
         }
@@ -296,12 +298,12 @@ public abstract class FactoryBase<L,V> extends Data {
             factory.setStarter(starterWithNewLiveObject);
         }
 
-        /** free liveObject e.g close a port*/
+        /** finally free liveObject e.g close a port*/
         public void setDestroyer(Consumer<L> destroyerWithPreviousLiveObject) {
             factory.setDestroyer(destroyerWithPreviousLiveObject);
         }
 
-        /** execute visitor to get runtime informations from the liveobject*/
+        /**execute visitor to get runtime information from the liveobjects*/
         public void setRuntimeQueryExecutor(BiConsumer<V,L> executorWidthVisitorAndCurrentLiveObject) {
             factory.setRuntimeQueryExecutor(executorWidthVisitorAndCurrentLiveObject);
         }

@@ -2,6 +2,7 @@ package de.factoryfx.data.validation;
 
 import java.util.Optional;
 
+import de.factoryfx.data.Data;
 import de.factoryfx.data.attribute.Attribute;
 
 public class AttributeValidation<T> {
@@ -13,8 +14,9 @@ public class AttributeValidation<T> {
         this.attribute = attribute;
     }
 
-    public Optional<ValidationError> validate(T data) {
-        if (!validation.validate(data)){
+    @SuppressWarnings("unchecked")
+    public Optional<ValidationError> validate(Data data) {
+        if (!validation.validate((T)data)){
             return Optional.of(new ValidationError(validation.getValidationDescription(),attribute));
         }
         return Optional.empty();
