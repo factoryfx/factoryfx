@@ -1,5 +1,6 @@
 package de.factoryfx.factory;
 
+import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -89,7 +90,7 @@ public abstract class FactoryBase<L,V> extends Data {
 //        }
 //    }
 
-    /**intented for test only*/
+    /**intended only for testing*/
     @JsonIgnore
     protected Optional<L> getCreatedLiveObject(){
         return Optional.ofNullable(createdLiveObject);
@@ -107,16 +108,38 @@ public abstract class FactoryBase<L,V> extends Data {
         changed=false;
     }
 
-    @JsonIgnore
-    private boolean changedDeep;
+    private boolean isChanged() {
+        return changed;
+    }
+
     boolean changedDeep(){
         if (changed){
             return true;
         }
-        changedDeep=false;
-        this.internal().visitChildFactoriesFlat(factoryBase -> changedDeep = changedDeep || cast(factoryBase).map(FactoryBase::changedDeep).orElse(false));
-        return changedDeep;
+        HashSet<FactoryBase> children = new HashSet<>();
+        collectChildrenIncludingViews(this,children);
+
+        for (FactoryBase data: children){
+            if (data.isChanged()){
+                return true;
+            }
+        }
+        return false;
+//        changedDeep=false;
+//        this.internal().visitChildFactoriesAndViewsFlat(factoryBase -> changedDeep = changedDeep || cast(factoryBase).map(FactoryBase::changedDeep).orElse(false));
+//        return changedDeep;
     }
+
+    private void collectChildrenIncludingViews(FactoryBase dataInput, Set<FactoryBase> children){
+        dataInput.internal().visitChildFactoriesAndViewsFlat(data -> {
+            cast(data).ifPresent(factoryBase -> {
+                if (children.add(factoryBase)) {
+                    collectChildrenIncludingViews(factoryBase, children);
+                }
+            });
+        });
+    }
+
 
     private LoopProtector loopProtector = new LoopProtector();
     private void loopDetector(){
