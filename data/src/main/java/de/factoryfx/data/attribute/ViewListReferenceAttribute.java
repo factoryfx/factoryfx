@@ -99,7 +99,7 @@ public class ViewListReferenceAttribute <R extends Data, T extends Data> extends
                     }
                     if (changed){
                         for (AttributeChangeListener<List<T>> listener: new ArrayList<>(listeners)){
-                            listener.changed(ViewListReferenceAttribute.this,currentList);
+                            runLater(()->listener.changed(ViewListReferenceAttribute.this,currentList));
                         }
                     }
                 }
