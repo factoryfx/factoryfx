@@ -1,7 +1,9 @@
 package de.factoryfx.javafx.widget.datalistedit;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 import java.util.function.Supplier;
 
@@ -144,10 +146,8 @@ public class DataListEditWidget<T extends Data> implements Widget {
     }
 
     private void deleteSelected() {
-        tableView.getSelectionModel().getSelectedItems().forEach(list::remove);
-        if (tableView.getFocusModel().getFocusedItem()!=null){
-            list.remove(tableView.getFocusModel().getFocusedItem());
-        }
+        final List<T> selectedItems = new ArrayList<>(tableView.getSelectionModel().getSelectedItems());
+        selectedItems.forEach(list::remove);
     }
 
 }
