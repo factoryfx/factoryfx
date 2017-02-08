@@ -232,6 +232,7 @@ public abstract class Data {
         return result;
     }
 
+    /** collect set with all nested children and itself*/
     private Set<Data> collectChildrenDeep() {
         HashSet<Data> factoryBases = new HashSet<>();
         collectModelEntitiesTo(factoryBases);
@@ -459,13 +460,14 @@ public abstract class Data {
 
     @SuppressWarnings("unchecked")
     <T extends Data> T propagateRoot(Data root){
-        for (Data data: collectChildrenDeep()){
+        final Set<Data> childrenDeep = collectChildrenDeep();
+        for (Data data: childrenDeep){
             data.root=root;
             data.visitAttributesFlat((attributeVariableName, attribute) -> {
                 attribute.internal_prepareUsage(root);
             });
         }
-        for (Data data: collectChildrenDeep()){
+        for (Data data: childrenDeep){
             data.visitAttributesFlat((attributeVariableName, attribute) -> {
                 attribute.internal_afterPreparedUsage(root);
             });
