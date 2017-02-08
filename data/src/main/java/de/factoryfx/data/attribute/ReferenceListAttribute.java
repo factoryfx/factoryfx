@@ -41,7 +41,7 @@ public class ReferenceListAttribute<T extends Data> extends Attribute<List<T>> {
                     if (newData == null) {
                         throw new IllegalStateException("cant't add null to list");
                     }
-                    if (root!=null && !newData.internal().readyForUsage()) {
+                    if (root!=null && newData.internal().getRoot()!=root) {
                         newData.internal().propagateRoot(root);
                     }
                 }

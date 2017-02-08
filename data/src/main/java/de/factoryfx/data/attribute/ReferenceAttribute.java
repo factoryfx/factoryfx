@@ -78,7 +78,7 @@ public class ReferenceAttribute<T extends Data> extends Attribute<T> {
     @Override
     public void set(T value) {
         this.value=value;
-        if (root!=null && value!=null && !value.internal().readyForUsage()) {
+        if (root!=null && value!=null && value.internal().getRoot()!=root) {
             value.internal().propagateRoot(root);
         }
         for (AttributeChangeListener<T> listener: listeners){
