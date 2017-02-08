@@ -160,9 +160,7 @@ public class RestResource<L,V,T extends FactoryBase<L,V>> {
             ((Attribute)thisAttribute).set(value);
         });
 
-        Map<Object,Data>  map2 = root.internal().collectChildFactoriesMap();
-        root.internal().fixDuplicateObjects(id -> Optional.of(map2.get(id)));
-
+        root.internal().fixDuplicateObjects();
         return createStageResponse();
     }
 

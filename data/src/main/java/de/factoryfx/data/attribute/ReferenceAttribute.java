@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
@@ -56,13 +57,11 @@ public class ReferenceAttribute<T extends Data> extends Attribute<T> {
 
     @Override
     @SuppressWarnings("unchecked")
-    public void internal_fixDuplicateObjects(Function<Object, Optional<Data>> getCurrentEntity) {
+    public void internal_fixDuplicateObjects(Map<Object, Data> idToDataMap) {
         Data currentReferenceContent = get();
 
         if (currentReferenceContent != null) {
-            currentReferenceContent.internal().fixDuplicateObjects(getCurrentEntity);
-            Optional<Data> existingOptional = getCurrentEntity.apply(currentReferenceContent.getId());
-            existingOptional.ifPresent(data -> set((T) data));
+            set((T)idToDataMap.get(currentReferenceContent.getId()));
         }
     }
 

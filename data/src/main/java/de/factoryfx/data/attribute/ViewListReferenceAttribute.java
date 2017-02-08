@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Optional;
+import java.util.Map;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -38,7 +38,7 @@ public class ViewListReferenceAttribute <R extends Data, T extends Data> extends
     }
 
     @Override
-    public void internal_fixDuplicateObjects(Function<Object, Optional<Data>> getCurrentEntity) {
+    public void internal_fixDuplicateObjects(Map<Object, Data> idToDataMap) {
         //nothing
     }
 

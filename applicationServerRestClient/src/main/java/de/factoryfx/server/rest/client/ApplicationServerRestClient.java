@@ -50,7 +50,7 @@ public class ApplicationServerRestClient<V,T extends FactoryBase<?,V>> {
 
 
     public T getHistoryFactory(String id) {
-        return restClient.post("historyFactory",new UserAwareRequest<String>(user,passwordHash,id), factoryRootClass).internal().prepareUsableCopy();
+        return restClient.post("historyFactory",new UserAwareRequest<>(user,passwordHash,id), factoryRootClass).internal().prepareUsableCopy();
     }
 
     static final Class<? extends ArrayList<StoredFactoryMetadata>> collectionOfStoredFactoryMetadataClass = new ArrayList<StoredFactoryMetadata>() {}.getClass();

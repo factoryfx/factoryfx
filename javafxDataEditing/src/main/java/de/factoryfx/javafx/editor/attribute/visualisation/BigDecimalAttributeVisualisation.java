@@ -32,7 +32,7 @@ public class BigDecimalAttributeVisualisation extends ValueAttributeEditorVisual
         return textField;
     }
 
-    public class BigDecimalStringConverter extends StringConverter<BigDecimal> {
+    public static class BigDecimalStringConverter extends StringConverter<BigDecimal> {
         private final DecimalFormat decimalFormat;
 
         public BigDecimalStringConverter(DecimalFormat decimalFormat) {

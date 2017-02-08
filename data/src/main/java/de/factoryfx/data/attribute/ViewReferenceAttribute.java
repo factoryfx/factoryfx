@@ -3,6 +3,7 @@ package de.factoryfx.data.attribute;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
@@ -37,7 +38,7 @@ public class ViewReferenceAttribute<R extends Data, T extends Data> extends Attr
     }
 
     @Override
-    public void internal_fixDuplicateObjects(Function<Object, Optional<Data>> getCurrentEntity) {
+    public void internal_fixDuplicateObjects(Map<Object, Data> idToDataMap) {
         //nothing
     }
 

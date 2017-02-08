@@ -45,7 +45,7 @@ public class DataMerger {
 
         if (mergeDiff.hasNoConflicts()) {
             mergeResult.executeMerge();
-            currentModel.internal().fixDuplicateObjects(s -> Optional.ofNullable(currentMap.get(s)));
+            currentModel.internal().fixDuplicateObjects();
         }
         return mergeDiff;
     }

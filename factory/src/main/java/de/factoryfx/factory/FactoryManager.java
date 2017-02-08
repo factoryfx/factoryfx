@@ -45,7 +45,7 @@ public class FactoryManager<L,V,T extends FactoryBase<L,V>> {
     }
 
 
-    /** get the merge result  but don't execute the merge and liveobjects Update*/
+    /** get the merge result  but don't execute the merge and liveobjects update*/
     @SuppressWarnings("unchecked")
     public MergeDiff simulateUpdate(T commonVersion , T newVersion){
         newVersion.internalFactory().loopDetector();

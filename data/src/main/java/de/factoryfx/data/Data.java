@@ -298,8 +298,12 @@ public abstract class Data {
     }
 
     @SuppressWarnings("unchecked")
-    private void fixDuplicateObjects(Function<Object, Optional<Data>> getCurrentEntity) {
-        visitAttributesFlat(attribute -> attribute.internal_fixDuplicateObjects(getCurrentEntity));
+    private void fixDuplicateObjects() {
+        Map<Object, Data> idToDataMap = collectChildFactoriesMap();
+        final Set<Data> all = collectChildrenDeep();
+        for (Data data: all){
+            data.visitAttributesFlat(attribute -> attribute.internal_fixDuplicateObjects(idToDataMap));
+        }
     }
 
     Supplier<String> displayTextProvider= () -> Data.this.getClass().getSimpleName()+":"+getId();
@@ -672,8 +676,12 @@ public abstract class Data {
             data.collectModelEntitiesTo(allModelEntities);
         }
 
-        public void fixDuplicateObjects(Function<Object, Optional<Data>> getCurrentEntity) {
-            data.fixDuplicateObjects(getCurrentEntity);
+
+        /**fix all factories with same id should be same object
+         * only call on root
+         * */
+        public void fixDuplicateObjects() {
+            data.fixDuplicateObjects();
         }
 
         public String getDisplayText(){

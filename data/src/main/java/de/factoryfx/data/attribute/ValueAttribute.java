@@ -2,7 +2,7 @@ package de.factoryfx.data.attribute;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
+import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
 
@@ -31,7 +31,7 @@ public class ValueAttribute<T> extends Attribute<T> {
     }
 
     @Override
-    public void internal_fixDuplicateObjects(Function<Object, Optional<Data>> getCurrentEntity) {
+    public void internal_fixDuplicateObjects(Map<Object, Data> idToDataMap) {
         //do nothing
     }
 

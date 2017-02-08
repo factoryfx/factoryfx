@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
@@ -82,21 +83,12 @@ public class ReferenceListAttribute<T extends Data> extends Attribute<List<T>> {
 
     @Override
     @SuppressWarnings("unchecked")
-    public void internal_fixDuplicateObjects(Function<Object, Optional<Data>> getCurrentEntity) {
+    public void internal_fixDuplicateObjects(Map<Object, Data> idToDataMap) {
         List<T> currentToEditList = get();
-
-        for (T entity : currentToEditList) {
-            entity.internal().fixDuplicateObjects(getCurrentEntity);
-        }
 
         List<T> fixedList = new ArrayList<>();
         for (T entity : currentToEditList) {
-            Optional<Data> existingOptional = getCurrentEntity.apply(entity.getId());
-            if (existingOptional.isPresent()) {
-                fixedList.add((T) existingOptional.get());
-            } else {
-                fixedList.add(entity);
-            }
+            fixedList.add((T)idToDataMap.get(entity.getId()));
         }
         currentToEditList.clear();
         currentToEditList.addAll(fixedList);

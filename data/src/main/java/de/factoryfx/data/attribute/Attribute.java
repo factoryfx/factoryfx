@@ -2,7 +2,7 @@ package de.factoryfx.data.attribute;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
+import java.util.Map;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -30,9 +30,9 @@ public abstract class Attribute<T>{
     public abstract AttributeMergeHelper<?> internal_createMergeHelper();
 
     /*
-        see test {{@Link MergerTest#test_dublicate_ids_bug}} why this is needed
+        see test {{@Link MergeTest#test_duplicate_ids_bug}} why this is needed
     */
-    public abstract void internal_fixDuplicateObjects(Function<Object, Optional<Data>> getCurrentEntity);
+    public abstract void internal_fixDuplicateObjects(Map<Object, Data> idToDataMap);
 
     public abstract void internal_copyTo(Attribute<T> copyAttribute, Function<Data,Data> dataCopyProvider);
 
