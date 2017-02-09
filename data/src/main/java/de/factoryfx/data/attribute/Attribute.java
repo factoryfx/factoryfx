@@ -27,6 +27,12 @@ public abstract class Attribute<T>{
 
     public abstract void internal_collectChildren(Set<Data> allModelEntities);
 
+    public abstract boolean internal_match(T value);
+
+    /**
+     * merge logic delegate AttributeMergeHelper
+     * @return MergeHelper or null if no merging shoudl be executed
+     */
     public abstract AttributeMergeHelper<?> internal_createMergeHelper();
 
     /*

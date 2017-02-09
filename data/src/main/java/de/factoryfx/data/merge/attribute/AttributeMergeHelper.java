@@ -1,6 +1,5 @@
 package de.factoryfx.data.merge.attribute;
 
-import java.util.Objects;
 import java.util.Optional;
 
 import de.factoryfx.data.attribute.Attribute;
@@ -11,15 +10,6 @@ public class AttributeMergeHelper<T> {
 
     public AttributeMergeHelper(Attribute<T> attribute) {
         this.attribute = attribute;
-    }
-
-    protected boolean equal(T currentValueNeverNull, T newValueNeverNull) {
-        return Objects.equals(currentValueNeverNull, newValueNeverNull);
-    }
-
-
-    public boolean equalValuesTyped(T value) {
-        return equal(attribute.get(), value);
     }
 
     public void mergeTyped(Optional<T> originalValue, T newValue) {
@@ -33,13 +23,13 @@ public class AttributeMergeHelper<T> {
 
     @SuppressWarnings("unchecked")
     public boolean hasNoConflict(Optional<Attribute<?>> originalValue, Optional<Attribute<?>> newValue) {
-        Optional<T> originalValueTyped = Optional.empty();
+        Optional<Attribute<T>> originalValueTyped = Optional.empty();
         if (originalValue.isPresent()) {
-            originalValueTyped = Optional.ofNullable((T) originalValue.get().get());
+            originalValueTyped = Optional.of((Attribute<T>) originalValue.get());
         }
-        Optional<T> newValueTyped = Optional.empty();
+        Optional<Attribute<T>> newValueTyped = Optional.empty();
         if (newValue.isPresent()) {
-            newValueTyped = Optional.ofNullable((T) newValue.get().get());
+            newValueTyped = Optional.of((Attribute<T>) newValue.get());
         }
         return hasNoConflictTyped(originalValueTyped, newValueTyped);
     }
@@ -58,7 +48,7 @@ public class AttributeMergeHelper<T> {
             newValueTyped = (T)newValue.get().get();
         }
 
-        if (!equalValuesTyped(originalValueTyped) || equalValuesTyped(newValueTyped)) {
+        if (!attribute.internal_match(originalValueTyped) || attribute.internal_match(newValueTyped)) {
             return false ;
         }
 
@@ -66,28 +56,27 @@ public class AttributeMergeHelper<T> {
     }
 
 
-    public boolean hasNoConflictTyped(Optional<T> originalValue, Optional<T> newValue) {
-        T currentFieldValue = attribute.get();
+    private boolean hasNoConflictTyped(Optional<Attribute<T>> originalValue, Optional<Attribute<T>> newValue) {
         T originalFieldValue = null;
         T newFieldValue = null;
 
         if (originalValue.isPresent()) {
-            originalFieldValue = originalValue.get();
+            originalFieldValue = originalValue.get().get();
         }
         if (newValue.isPresent()) {
-            newFieldValue = newValue.get();
+            newFieldValue = newValue.get().get();
         }
 
         if (newFieldValue == originalFieldValue)
             return true;
 
-        if (newFieldValue != null && equal(newFieldValue, originalFieldValue)) {
+        if (newValue.isPresent() &&  newValue.get().internal_match(originalFieldValue)) {
             return true;
         }
-        if (equal(currentFieldValue, originalFieldValue)) {
+        if (attribute.internal_match(originalFieldValue)) {
             return true;
         }
-        if (equal(currentFieldValue, newFieldValue)) {
+        if (attribute.internal_match(newFieldValue)) {
             return true;
         }
         return false;

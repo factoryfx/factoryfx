@@ -3,6 +3,7 @@ package de.factoryfx.data.attribute;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.function.Function;
 
@@ -23,6 +24,11 @@ public class ValueAttribute<T> extends Attribute<T> {
     @Override
     public void internal_collectChildren(Set<Data> allModelEntities) {
         //nothing
+    }
+
+    @Override
+    public boolean internal_match(T value) {
+        return Objects.equals(this.value, value);
     }
 
     @Override

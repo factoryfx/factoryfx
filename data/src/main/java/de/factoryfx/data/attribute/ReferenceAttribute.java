@@ -15,7 +15,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonValue;
 import de.factoryfx.data.Data;
 import de.factoryfx.data.merge.attribute.AttributeMergeHelper;
-import de.factoryfx.data.merge.attribute.ReferenceMergeHelper;
 
 public class ReferenceAttribute<T extends Data> extends Attribute<T> {
 
@@ -50,8 +49,19 @@ public class ReferenceAttribute<T extends Data> extends Attribute<T> {
     }
 
     @Override
+    public boolean internal_match(T value) {
+        if (this.value == null && value == null) {
+            return true;
+        }
+        if (this.value == null || value == null) {
+            return false;
+        }
+        return this.value.getId().equals(value.getId());
+    }
+
+    @Override
     public AttributeMergeHelper<?> internal_createMergeHelper() {
-        return new ReferenceMergeHelper<>(this);
+        return new AttributeMergeHelper<>(this);
     }
 
 

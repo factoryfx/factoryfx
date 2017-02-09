@@ -346,7 +346,7 @@ public abstract class Data {
 
         this.visitAttributesTripleFlat(originalValue, newValue, (currentAttribute, originalAttribute, newAttribute) -> {
             AttributeMergeHelper<?> attributeMergeHelper = currentAttribute.internal_createMergeHelper();
-            if (attributeMergeHelper.executeMerge()) {
+            if (attributeMergeHelper!=null){
                 boolean hasNoConflict = attributeMergeHelper.hasNoConflict(originalAttribute, newAttribute);
                 if (hasNoConflict) {
                     if (newAttribute.isPresent()) {
@@ -361,7 +361,6 @@ public abstract class Data {
                     mergeResult.addConflictInfos(mergeResultEntry);
                 }
             }
-
         });
     }
 

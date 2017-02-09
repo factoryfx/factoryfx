@@ -18,7 +18,7 @@ public class FactoryManager<L,V,T extends FactoryBase<L,V>> {
     @SuppressWarnings("unchecked")
     public MergeDiff update(T commonVersion , T newVersion){
         newVersion.internalFactory().loopDetector();
-        LinkedHashSet<FactoryBase<?,?>> previousLiveObjects = stopFactoryProvider.apply(currentFactory);
+        LinkedHashSet<FactoryBase<?,?>> previousLiveObjects = destroyFactoryProvider.apply(currentFactory);
 
         DataMerger dataMerger = new DataMerger(currentFactory, commonVersion, newVersion);
         MergeDiff mergeDiff= dataMerger.mergeIntoCurrent();
@@ -75,20 +75,13 @@ public class FactoryManager<L,V,T extends FactoryBase<L,V>> {
         }
         return result;
     };
-    public void customizeStartOrder(Function<T,LinkedHashSet<FactoryBase<?,?>>> orderProvider){
-        startFactoryProvider =orderProvider;
-    }
-
-    private Function<T,LinkedHashSet<FactoryBase<?,?>>> stopFactoryProvider = root -> {
+    private Function<T,LinkedHashSet<FactoryBase<?,?>>> destroyFactoryProvider = root -> {
         LinkedHashSet<FactoryBase<?,?>> result = new LinkedHashSet<>();
         for (FactoryBase<?,?> factory : factoryTraverser.breadthFirstTraversal(root)) {
             result.add(factory);
         }
         return result;
     };
-    public void customizeStopOrder(Function<T,LinkedHashSet<FactoryBase<?,?>>> orderProvider){
-        stopFactoryProvider =orderProvider;
-    }
 
     public T getCurrentFactory(){
         return currentFactory;
@@ -110,7 +103,7 @@ public class FactoryManager<L,V,T extends FactoryBase<L,V>> {
 
     @SuppressWarnings("unchecked")
     public void stop(){
-        HashSet<FactoryBase<?,?>> liveObjects = stopFactoryProvider.apply(currentFactory);
+        HashSet<FactoryBase<?,?>> liveObjects = destroyFactoryProvider.apply(currentFactory);
 
         for (FactoryBase<?,?> newLiveObject: liveObjects){
             newLiveObject.internalFactory().destroy();

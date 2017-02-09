@@ -17,26 +17,9 @@ public class ReferenceListMergeHelper<T extends Data> extends AttributeMergeHelp
         super(attribute);
     }
 
-    @Override
-    public boolean equalValuesTyped(List<T> valueList) {
-        List<T> currentList = attribute.get();
-
-        if (valueList==null ){
-            return false;
-        }
-        if (currentList.size() != valueList.size()) {
-            return false;
-        }
-        for (int i = 0; i < currentList.size(); i++) {
-            if (!referenceEquals(currentList.get(i), valueList.get(i))) {
-                return false;
-            }
-        }
-        return true;
-    }
 
     @Override
-    public boolean hasNoConflictTyped(Optional<List<T>> originalValue, Optional<List<T>> newValue) {
+    public boolean hasNoConflict(Optional<Attribute<?>> originalValue, Optional<Attribute<?>> newValue)  {
         return true;
     }
 
@@ -47,11 +30,8 @@ public class ReferenceListMergeHelper<T extends Data> extends AttributeMergeHelp
         if (newValue.isPresent()) {
             newValueTyped = (ObservableList<T>)newValue.get().get();
         }
-//        ObservableList<T> originalValueTyped = null;
-//        if (originalValue.isPresent()) {
-//            originalValueTyped = (ObservableList<T>) originalValue.get().get();
-//        }
-        if (/*!equalValuesTyped(originalValueTyped) ||*/ equalValuesTyped(newValueTyped)) {
+
+        if (attribute.internal_match(newValueTyped)) {
             return false ;
         }
         return true;
@@ -107,14 +87,5 @@ public class ReferenceListMergeHelper<T extends Data> extends AttributeMergeHelp
 
     }
 
-    private boolean referenceEquals(Data ref1, Data ref2) {
-        if (ref1 == null && ref2 == null) {
-            return true;
-        }
-        if (ref1 == null || ref2 == null) {
-            return false;
-        }
-        return ref1.getId().equals(ref2.getId());
-    }
 
 }

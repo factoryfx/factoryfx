@@ -13,7 +13,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreType;
 import de.factoryfx.data.Data;
 import de.factoryfx.data.merge.attribute.AttributeMergeHelper;
-import de.factoryfx.data.merge.attribute.NopMergeHelper;
 import javafx.application.Platform;
 
 @JsonIgnoreType
@@ -33,8 +32,13 @@ public class ViewReferenceAttribute<R extends Data, T extends Data> extends Attr
     }
 
     @Override
+    public boolean internal_match(T value) {
+        return false;
+    }
+
+    @Override
     public AttributeMergeHelper<?> internal_createMergeHelper() {
-        return new NopMergeHelper();
+        return null; //no merge
     }
 
     @Override

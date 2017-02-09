@@ -1,11 +1,11 @@
 package de.factoryfx.data.attribute.types;
 
+import java.util.Arrays;
 import java.util.Base64;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import de.factoryfx.data.attribute.AttributeMetadata;
 import de.factoryfx.data.attribute.ValueAttribute;
-import de.factoryfx.data.merge.attribute.ByteArrayMergeHelper;
 
 public class ByteArrayAttribute extends ValueAttribute<byte[]> {
     public ByteArrayAttribute(AttributeMetadata attributeMetadata) {
@@ -19,16 +19,16 @@ public class ByteArrayAttribute extends ValueAttribute<byte[]> {
     }
 
     @Override
-    public ByteArrayMergeHelper internal_createMergeHelper() {
-        return new ByteArrayMergeHelper(this);
-    }
-
-    @Override
     public String getDisplayText() {
         if (get()!=null){
             return Base64.getEncoder().encodeToString(get());
         }
         return "<empty>";
+    }
+
+    @Override
+    public boolean internal_match(byte[] value) {
+        return Arrays.equals(get(), value);
     }
 
 
