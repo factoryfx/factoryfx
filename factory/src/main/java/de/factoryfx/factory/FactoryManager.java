@@ -4,7 +4,6 @@ import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
 import com.google.common.collect.TreeTraverser;
 import de.factoryfx.data.Data;
@@ -32,14 +31,13 @@ public class FactoryManager<L,V,T extends FactoryBase<L,V>> {
                 ((FactoryBase<?,?>)mergeResultEntry.parent).internalFactory().markChanged();
             }
 
-            LinkedHashSet<FactoryBase<?,?>> changedFactories = startFactoryProvider.apply(currentFactory)
-                    .stream().filter(factoryBase -> factoryBase.changedDeep()).collect(Collectors.toCollection(LinkedHashSet::new));
+            startFactoryProvider.apply(currentFactory).forEach(factoryBase -> factoryBase.internalFactory().start());
 
             currentFactory.internalFactory().instance();
 
 
             LinkedHashSet<FactoryBase<?,?>> newFactories = startFactoryProvider.apply(currentFactory);
-            updateLiveObjects(previousLiveObjects,changedFactories,newFactories);
+            cleanupRemovedFactories(previousLiveObjects,newFactories);
         }
         return mergeDiff;
     }
@@ -54,21 +52,10 @@ public class FactoryManager<L,V,T extends FactoryBase<L,V>> {
         return dataMerger.createMergeResult();
     }
 
-    private void updateLiveObjects(LinkedHashSet<FactoryBase<?,?>> previousFactories, LinkedHashSet<FactoryBase<?,?>> changedFactories , LinkedHashSet<FactoryBase<?,?>> newFactories){
+    private void cleanupRemovedFactories(LinkedHashSet<FactoryBase<?,?>> previousFactories, LinkedHashSet<FactoryBase<?,?>> newFactories){
         for (FactoryBase<?,?> previousLiveObject: previousFactories){
             if (!newFactories.contains(previousLiveObject)){
                 previousLiveObject.internalFactory().destroy();
-            }
-        }
-
-        for (FactoryBase<?,?> newLiveObject: newFactories){
-            if (changedFactories.contains(newLiveObject)){
-                newLiveObject.internalFactory().start();
-                continue;
-            }
-            if (!previousFactories.contains(newLiveObject)){
-                newLiveObject.internalFactory().start();
-                continue;
             }
         }
     }

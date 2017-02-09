@@ -57,8 +57,11 @@ public abstract class FactoryBase<L,V> extends Data {
     }
 
 
-
+    @JsonIgnore
     private L createdLiveObject;
+    @JsonIgnore
+    private boolean started=false;
+
     private L instance() {
         if (!changedDeep() && createdLiveObject !=null) {//TODO is the createdLiveObject==null correct? is is used if new Factory is transitive added (Limitation of the mergerdiff)
             return createdLiveObject;
@@ -72,6 +75,7 @@ public abstract class FactoryBase<L,V> extends Data {
             } else {
                 L previousLiveObject = this.createdLiveObject;
                 this.createdLiveObject = reCreate(previousLiveObject);
+                started=false;
                 destroy(previousLiveObject);//TODO check if this is the wrong destroy order (parent are destroyed before the children)
             }
             changed=false;
@@ -79,25 +83,35 @@ public abstract class FactoryBase<L,V> extends Data {
         }
     }
 
-//    protected abstract L createImp(Optional<L> previousLiveObject, LifecycleNotifier<V> lifecycle);
+    L create(){
+        if (creator!=null){
+            return creator.get();
+        }
+        throw new IllegalStateException("no creator defined");
+    }
 
-//    public void collectLiveObjects(Map<String,LiveObject> liveObjects){
-//
-//        this.visitChildFactoriesFlat(factory -> cast(factory).collectLiveObjects(liveObjects));
-//
-//        if (createdLiveObject!=null){
-//            liveObjects.put(getId(),createdLiveObject);
-//        }
-//    }
+    private L reCreate(L previousLiveObject) {
+        if (reCreatorWithPreviousLiveObject!=null){
+            return reCreatorWithPreviousLiveObject.apply(previousLiveObject);
+        }
+        return create();
+    }
 
-    /**intended only for testing*/
-    @JsonIgnore
-    protected Optional<L> getCreatedLiveObject(){
-        return Optional.ofNullable(createdLiveObject);
+    private void start() {
+        if (!started && starterWithNewLiveObject!=null && createdLiveObject!=null){//createdLiveObject is null e.g. if object ist not instanced in the parent factory
+            starterWithNewLiveObject.accept(createdLiveObject);
+            started=true;
+        }
+    }
+
+    private void destroy(L previousLiveObject) {
+        if (destroyerWithPreviousLiveObject!=null  && previousLiveObject!=null){
+            destroyerWithPreviousLiveObject.accept(previousLiveObject);
+        }
     }
 
     @JsonIgnore
-    private boolean changed=true;
+    private boolean changed=false;
 
     /**set from Merger used to determine which live Objects needs update*/
     private void markChanged() {
@@ -108,10 +122,6 @@ public abstract class FactoryBase<L,V> extends Data {
         changed=false;
     }
 
-    private boolean isChanged() {
-        return changed;
-    }
-
     boolean changedDeep(){
         if (changed){
             return true;
@@ -120,14 +130,11 @@ public abstract class FactoryBase<L,V> extends Data {
         collectChildrenIncludingViews(this,children);
 
         for (FactoryBase data: children){
-            if (data.isChanged()){
+            if (data.changed){
                 return true;
             }
         }
         return false;
-//        changedDeep=false;
-//        this.internal().visitChildFactoriesAndViewsFlat(factoryBase -> changedDeep = changedDeep || cast(factoryBase).map(FactoryBase::changedDeep).orElse(false));
-//        return changedDeep;
     }
 
     private void collectChildrenIncludingViews(FactoryBase dataInput, Set<FactoryBase> children){
@@ -174,32 +181,6 @@ public abstract class FactoryBase<L,V> extends Data {
         return stringBuilder.toString();
     }
 
-
-    L create(){
-        if (creator!=null){
-            return creator.get();
-        }
-        throw new IllegalStateException("no creator defined");
-    }
-
-    private L reCreate(L previousLiveObject) {
-        if (reCreatorWithPreviousLiveObject!=null){
-            return reCreatorWithPreviousLiveObject.apply(previousLiveObject);
-        }
-        return create();
-    }
-
-    private void start() {
-        if (starterWithNewLiveObject!=null && createdLiveObject!=null){//createdLiveObject is null e.g. if object ist not instanced in the parent factory
-            starterWithNewLiveObject.accept(createdLiveObject);
-        }
-    }
-
-    private void destroy(L previousLiveObject) {
-        if (destroyerWithPreviousLiveObject!=null  && previousLiveObject!=null){
-            destroyerWithPreviousLiveObject.accept(previousLiveObject);
-        }
-    };
 
     private void runtimeQuery(V visitor) {
         if (executorWidthVisitorAndCurrentLiveObject!=null){
@@ -309,7 +290,7 @@ public abstract class FactoryBase<L,V> extends Data {
         }
 
         /**the factory data has changed therefore a new liveobject is needed.<br>
-         * previousLiveObject can be used to reuse resources like conenction pools.<br>
+         * previousLiveObject can be used to reuse resources like connection pools etc.<br>
          * passed old liveobject is never null
          * */
         public void setReCreator(Function<L,L> reCreatorWithPreviousLiveObject ) {

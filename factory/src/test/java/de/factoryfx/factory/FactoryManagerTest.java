@@ -1,8 +1,11 @@
 package de.factoryfx.factory;
 
+import java.util.ArrayList;
+
 import de.factoryfx.factory.testfactories.ExampleFactoryA;
 import de.factoryfx.factory.testfactories.ExampleFactoryB;
 import de.factoryfx.factory.testfactories.ExampleLiveObjectA;
+import org.junit.Assert;
 import org.junit.Test;
 
 public class FactoryManagerTest {
@@ -11,14 +14,21 @@ public class FactoryManagerTest {
     public void test(){
         FactoryManager<ExampleLiveObjectA,Void,ExampleFactoryA> factoryManager = new FactoryManager<>();
 
-        ExampleFactoryA exampleFactoryA = new ExampleFactoryA();
-        ExampleFactoryB exampleFactoryB = new ExampleFactoryB();
-        exampleFactoryA.referenceAttribute.set(exampleFactoryB);
+        ArrayList<String> calls =new ArrayList<>();
 
+        ExampleFactoryA exampleFactoryA = new ExampleFactoryA();
+        exampleFactoryA.configLiveCycle().setStarter(exampleLiveObjectA -> calls.add("start exampleFactoryA"));
+        ExampleFactoryB exampleFactoryB = new ExampleFactoryB();
+        exampleFactoryB.configLiveCycle().setStarter(exampleLiveObjectA -> calls.add("start exampleFactoryB"));
+
+
+
+        exampleFactoryA.referenceAttribute.set(exampleFactoryB);
         factoryManager.start(exampleFactoryA);
 
-        exampleFactoryA.getCreatedLiveObject().isPresent();
-        exampleFactoryB.getCreatedLiveObject().isPresent();
+        Assert.assertEquals(2,calls.size());
+        Assert.assertEquals("start exampleFactoryB",calls.get(0));
+        Assert.assertEquals("start exampleFactoryA",calls.get(1));
     }
 
 }
