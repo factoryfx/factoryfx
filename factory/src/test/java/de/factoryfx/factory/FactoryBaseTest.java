@@ -1,8 +1,7 @@
 package de.factoryfx.factory;
 
-import java.util.function.Function;
-
 import de.factoryfx.data.attribute.AttributeMetadata;
+import de.factoryfx.data.attribute.types.StringAttribute;
 import de.factoryfx.factory.atrribute.FactoryReferenceAttribute;
 import de.factoryfx.factory.atrribute.FactoryViewReferenceAttribute;
 import de.factoryfx.factory.testfactories.ExampleFactoryA;
@@ -43,6 +42,7 @@ public class FactoryBaseTest {
 
     public static class ExampleFactoryAndViewRoot extends SimpleFactoryBase<Void,Void> {
         public final FactoryReferenceAttribute<Void,ExampleFactoryAndViewA> referenceAttribute = new FactoryReferenceAttribute<>(ExampleFactoryAndViewA.class,new AttributeMetadata().labelText("ExampleA2"));
+        public final FactoryReferenceAttribute<Void,XFactory> xFactory = new FactoryReferenceAttribute<>(XFactory.class,new AttributeMetadata().labelText("XFactory"));
 
         @Override
         public Void createImpl() {
@@ -51,12 +51,8 @@ public class FactoryBaseTest {
     }
 
     public static class ExampleFactoryAndViewA extends SimpleFactoryBase<Void,Void> {
-        public final FactoryViewReferenceAttribute<ExampleFactoryAndViewRoot,Void,ExampleFactoryAndViewA> referenceView = new FactoryViewReferenceAttribute<>(new AttributeMetadata().labelText("ExampleA2"), new Function<ExampleFactoryAndViewRoot, ExampleFactoryAndViewA>() {
-            @Override
-            public ExampleFactoryAndViewA apply(ExampleFactoryAndViewRoot root) {
-                return root.referenceAttribute.get();
-            }
-        });
+        public final FactoryViewReferenceAttribute<ExampleFactoryAndViewRoot,Void,XFactory> referenceView = new FactoryViewReferenceAttribute<>(new AttributeMetadata().labelText("ExampleA2"),
+                root -> root.xFactory.get());
 
         @Override
         public Void createImpl() {
@@ -65,15 +61,23 @@ public class FactoryBaseTest {
     }
 
 
+    public static class XFactory extends SimpleFactoryBase<Void,Void> {
+        public final StringAttribute bla=new StringAttribute(new AttributeMetadata());
+        @Override
+        public Void createImpl() {
+            return null;
+        }
+    }
 
 
     @Test
     public void test_changedDeep(){
         ExampleFactoryAndViewA exampleFactoryAndViewA = new ExampleFactoryAndViewA();
         ExampleFactoryAndViewRoot root = new ExampleFactoryAndViewRoot();
+        root.xFactory.set(new XFactory());
         root.referenceAttribute.set(exampleFactoryAndViewA);
+
         final ExampleFactoryAndViewRoot usableCopy = root.internal().prepareUsableCopy();
-        Assert.assertEquals(usableCopy.referenceAttribute.get(),usableCopy.referenceAttribute.get().referenceView.get());
 
         usableCopy.internalFactory().markChanged();
         Assert.assertTrue(usableCopy.changedDeep());
@@ -83,9 +87,10 @@ public class FactoryBaseTest {
     public void test_changedDeep_2(){
         ExampleFactoryAndViewA exampleFactoryAndViewA = new ExampleFactoryAndViewA();
         ExampleFactoryAndViewRoot root = new ExampleFactoryAndViewRoot();
+        root.xFactory.set(new XFactory());
         root.referenceAttribute.set(exampleFactoryAndViewA);
+
         final ExampleFactoryAndViewRoot usableCopy = root.internal().prepareUsableCopy();
-        Assert.assertEquals(usableCopy.referenceAttribute.get(),usableCopy.referenceAttribute.get().referenceView.get());
 
         usableCopy.referenceAttribute.get().internalFactory().markChanged();
         Assert.assertTrue(usableCopy.changedDeep());
@@ -95,11 +100,25 @@ public class FactoryBaseTest {
     public void test_changedDeep_3(){
         ExampleFactoryAndViewA exampleFactoryAndViewA = new ExampleFactoryAndViewA();
         ExampleFactoryAndViewRoot root = new ExampleFactoryAndViewRoot();
+        root.xFactory.set(new XFactory());
         root.referenceAttribute.set(exampleFactoryAndViewA);
+
         final ExampleFactoryAndViewRoot usableCopy = root.internal().prepareUsableCopy();
-        Assert.assertEquals(usableCopy.referenceAttribute.get(),usableCopy.referenceAttribute.get().referenceView.get());
 
         usableCopy.internalFactory().markChanged();
+        Assert.assertFalse(usableCopy.referenceAttribute.get().changedDeep());
+    }
+
+    @Test
+    public void test_changedDeep_changeded_view(){
+        ExampleFactoryAndViewA exampleFactoryAndViewA = new ExampleFactoryAndViewA();
+        ExampleFactoryAndViewRoot root = new ExampleFactoryAndViewRoot();
+        root.xFactory.set(new XFactory());
+        root.referenceAttribute.set(exampleFactoryAndViewA);
+
+        final ExampleFactoryAndViewRoot usableCopy = root.internal().prepareUsableCopy();
+
+        usableCopy.xFactory.get().internalFactory().markChanged();
         Assert.assertTrue(usableCopy.referenceAttribute.get().changedDeep());
     }
 

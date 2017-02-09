@@ -31,10 +31,9 @@ public class FactoryManager<L,V,T extends FactoryBase<L,V>> {
                 ((FactoryBase<?,?>)mergeResultEntry.parent).internalFactory().markChanged();
             }
 
-            startFactoryProvider.apply(currentFactory).forEach(factoryBase -> factoryBase.internalFactory().start());
-
             currentFactory.internalFactory().instance();
 
+            startFactoryProvider.apply(currentFactory).forEach(factoryBase -> factoryBase.internalFactory().start());
 
             LinkedHashSet<FactoryBase<?,?>> newFactories = startFactoryProvider.apply(currentFactory);
             cleanupRemovedFactories(previousLiveObjects,newFactories);

@@ -23,6 +23,7 @@ import de.factoryfx.data.attribute.Attribute;
 import de.factoryfx.data.attribute.AttributeChangeListener;
 import de.factoryfx.data.attribute.ReferenceAttribute;
 import de.factoryfx.data.attribute.ReferenceListAttribute;
+import de.factoryfx.data.attribute.ViewListReferenceAttribute;
 import de.factoryfx.data.attribute.ViewReferenceAttribute;
 import de.factoryfx.data.merge.MergeResult;
 import de.factoryfx.data.merge.MergeResultEntry;
@@ -133,10 +134,10 @@ public abstract class Data {
                 }
             });
             if (attribute instanceof ViewReferenceAttribute) {
-                ((ViewReferenceAttribute<?,?>)attribute).getOptional().ifPresent(o -> consumer.accept((Data)o));
+                ((ViewReferenceAttribute<?,?>)attribute).getOptional().ifPresent(consumer);
             }
-            if (attribute instanceof ViewReferenceAttribute) {
-                ((ViewReferenceAttribute<?,?>)attribute).getOptional().ifPresent(o -> consumer.accept((Data)o));
+            if (attribute instanceof ViewListReferenceAttribute) {
+                ((ViewListReferenceAttribute<?,?>)attribute).get().forEach(consumer);
             }
         });
     }
