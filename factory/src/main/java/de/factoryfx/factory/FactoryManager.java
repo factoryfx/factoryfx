@@ -31,6 +31,7 @@ public class FactoryManager<L,V,T extends FactoryBase<L,V>> {
                 ((FactoryBase<?,?>)mergeResultEntry.parent).internalFactory().markChanged();
             }
 
+            currentFactory.internalFactory().loopDetector();
             currentFactory.internalFactory().instance();
 
             startFactoryProvider.apply(currentFactory).forEach(factoryBase -> factoryBase.internalFactory().start());

@@ -16,11 +16,10 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import de.factoryfx.data.Data;
-import de.factoryfx.data.attribute.Attribute;
-import de.factoryfx.data.attribute.ReferenceAttribute;
-import de.factoryfx.data.attribute.ReferenceListAttribute;
 import de.factoryfx.data.attribute.ViewListReferenceAttribute;
 import de.factoryfx.data.attribute.ViewReferenceAttribute;
+import de.factoryfx.factory.atrribute.FactoryReferenceAttribute;
+import de.factoryfx.factory.atrribute.FactoryReferenceListAttribute;
 import de.factoryfx.factory.atrribute.FactoryViewListReferenceAttribute;
 import de.factoryfx.factory.atrribute.FactoryViewReferenceAttribute;
 
@@ -195,22 +194,12 @@ public abstract class FactoryBase<L,V> extends Data {
 
     private void visitChildFactoriesAndViewsFlat(Consumer<FactoryBase<?,V>> consumer) {
         this.internal().visitAttributesFlat((attributeVariableName, attribute) -> {
-            attribute.internal_visit(new de.factoryfx.data.attribute.AttributeVisitor() {
-                @Override
-                public void value(Attribute<?> value) {
-
-                }
-
-                @Override
-                public void reference(ReferenceAttribute<?> reference) {
-                    reference.getOptional().ifPresent(data -> cast(data).ifPresent(consumer::accept));
-                }
-
-                @Override
-                public void referenceList(ReferenceListAttribute<?> referenceList) {
-                    referenceList.forEach(data -> cast(data).ifPresent(consumer::accept));
-                }
-            });
+            if (attribute instanceof FactoryReferenceAttribute) {
+                ((FactoryReferenceAttribute<?,?>)attribute).getOptional().ifPresent(data -> cast(data).ifPresent(consumer::accept));
+            }
+            if (attribute instanceof FactoryReferenceListAttribute) {
+                ((FactoryReferenceListAttribute<?,?>)attribute).forEach(data -> cast(data).ifPresent(consumer::accept));
+            }
             if (attribute instanceof FactoryViewReferenceAttribute) {
                 ((ViewReferenceAttribute<?,?>)attribute).getOptional().ifPresent(data -> cast(data).ifPresent(consumer::accept));
             }
