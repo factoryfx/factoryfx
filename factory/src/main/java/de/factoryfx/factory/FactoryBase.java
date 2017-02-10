@@ -16,6 +16,13 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import de.factoryfx.data.Data;
+import de.factoryfx.data.attribute.Attribute;
+import de.factoryfx.data.attribute.ReferenceAttribute;
+import de.factoryfx.data.attribute.ReferenceListAttribute;
+import de.factoryfx.data.attribute.ViewListReferenceAttribute;
+import de.factoryfx.data.attribute.ViewReferenceAttribute;
+import de.factoryfx.factory.atrribute.FactoryViewListReferenceAttribute;
+import de.factoryfx.factory.atrribute.FactoryViewReferenceAttribute;
 
 /**
  * @param <L> liveobject created from this factory
@@ -126,10 +133,10 @@ public abstract class FactoryBase<L,V> extends Data {
         if (changed){
             return true;
         }
-        HashSet<FactoryBase> children = new HashSet<>();
+        HashSet<FactoryBase<?,V>> children = new HashSet<>();
         collectChildrenIncludingViews(this,children);
 
-        for (FactoryBase data: children){
+        for (FactoryBase<?,V> data: children){
             if (data.changed){
                 return true;
             }
@@ -137,13 +144,11 @@ public abstract class FactoryBase<L,V> extends Data {
         return false;
     }
 
-    private void collectChildrenIncludingViews(FactoryBase dataInput, Set<FactoryBase> children){
-        dataInput.internal().visitChildFactoriesAndViewsFlat(data -> {
-            cast(data).ifPresent(factoryBase -> {
-                if (children.add(factoryBase)) {
-                    collectChildrenIncludingViews(factoryBase, children);
-                }
-            });
+    private void collectChildrenIncludingViews(FactoryBase<?,V> dataInput, Set<FactoryBase<?,V>> children){
+        dataInput.internalFactory().visitChildFactoriesAndViewsFlat(factoryBase -> {
+            if (children.add(factoryBase)) {
+                collectChildrenIncludingViews(factoryBase, children);
+            }
         });
     }
 
@@ -152,7 +157,7 @@ public abstract class FactoryBase<L,V> extends Data {
     private void loopDetector(){
         loopProtector.enter();
         try {
-            this.internal().visitChildFactoriesFlat(factory -> cast(factory).ifPresent(FactoryBase::loopDetector));
+            this.internalFactory().visitChildFactoriesAndViewsFlat(factory -> cast(factory).ifPresent(FactoryBase::loopDetector));
         } finally {
             loopProtector.exit();
         }
@@ -186,7 +191,34 @@ public abstract class FactoryBase<L,V> extends Data {
         if (executorWidthVisitorAndCurrentLiveObject!=null){
             executorWidthVisitorAndCurrentLiveObject.accept(visitor,createdLiveObject);
         }
-    };
+    }
+
+    private void visitChildFactoriesAndViewsFlat(Consumer<FactoryBase<?,V>> consumer) {
+        this.internal().visitAttributesFlat((attributeVariableName, attribute) -> {
+            attribute.internal_visit(new de.factoryfx.data.attribute.AttributeVisitor() {
+                @Override
+                public void value(Attribute<?> value) {
+
+                }
+
+                @Override
+                public void reference(ReferenceAttribute<?> reference) {
+                    reference.getOptional().ifPresent(data -> cast(data).ifPresent(consumer::accept));
+                }
+
+                @Override
+                public void referenceList(ReferenceListAttribute<?> referenceList) {
+                    referenceList.forEach(data -> cast(data).ifPresent(consumer::accept));
+                }
+            });
+            if (attribute instanceof FactoryViewReferenceAttribute) {
+                ((ViewReferenceAttribute<?,?>)attribute).getOptional().ifPresent(data -> cast(data).ifPresent(consumer::accept));
+            }
+            if (attribute instanceof FactoryViewListReferenceAttribute) {
+                ((ViewListReferenceAttribute<?,?>)attribute).get().forEach(data -> cast(data).ifPresent(consumer::accept));
+            }
+        });
+    }
 
     FactoryInternal<L,V> factoryInternal = new FactoryInternal<>(this);
     /** <b>internal methods should be only used from the framework.</b>
@@ -223,6 +255,10 @@ public abstract class FactoryBase<L,V> extends Data {
         public void runtimeQuery(V visitor) {
             factory.runtimeQuery(visitor);
         };
+
+        public void visitChildFactoriesAndViewsFlat(Consumer<FactoryBase<?,V>> consumer) {
+            factory.visitChildFactoriesAndViewsFlat(consumer);
+        }
 
         public L instance() {
            return factory.instance();

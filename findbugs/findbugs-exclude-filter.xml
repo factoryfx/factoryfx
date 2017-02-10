@@ -59,6 +59,12 @@
         <Bug pattern="MS_SHOULD_BE_FINAL" />
     </Match>
 
+    <!-- false positive -->
+    <Match>
+        <Class name="de.factoryfx.javafx.widget.datalistedit.DataListEditWidget" />
+        <Bug pattern="UC_USELESS_OBJECT" />
+    </Match>
+
 
 
 </FindBugsFilter>

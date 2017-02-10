@@ -23,8 +23,6 @@ import de.factoryfx.data.attribute.Attribute;
 import de.factoryfx.data.attribute.AttributeChangeListener;
 import de.factoryfx.data.attribute.ReferenceAttribute;
 import de.factoryfx.data.attribute.ReferenceListAttribute;
-import de.factoryfx.data.attribute.ViewListReferenceAttribute;
-import de.factoryfx.data.attribute.ViewReferenceAttribute;
 import de.factoryfx.data.merge.MergeResult;
 import de.factoryfx.data.merge.MergeResultEntry;
 import de.factoryfx.data.merge.attribute.AttributeMergeHelper;
@@ -111,34 +109,6 @@ public abstract class Data {
                     });
                 }
             });
-        });
-    }
-
-    //TODO check if difference between necessary visitChildFactoriesFlat and visitChildFactoriesAndViewsFlat
-    private void visitChildFactoriesAndViewsFlat(Consumer<Data> consumer) {
-        visitAttributesFlat((attributeVariableName, attribute) -> {
-            attribute.internal_visit(new de.factoryfx.data.attribute.AttributeVisitor() {
-                @Override
-                public void value(Attribute<?> value) {
-
-                }
-
-                @Override
-                public void reference(ReferenceAttribute<?> reference) {
-                    reference.getOptional().ifPresent(consumer::accept);
-                }
-
-                @Override
-                public void referenceList(ReferenceListAttribute<?> referenceList) {
-                    referenceList.forEach((Consumer<Data>) consumer::accept);
-                }
-            });
-            if (attribute instanceof ViewReferenceAttribute) {
-                ((ViewReferenceAttribute<?,?>)attribute).getOptional().ifPresent(consumer);
-            }
-            if (attribute instanceof ViewListReferenceAttribute) {
-                ((ViewListReferenceAttribute<?,?>)attribute).get().forEach(consumer);
-            }
         });
     }
 
@@ -640,10 +610,6 @@ public abstract class Data {
 
         public void visitChildFactoriesFlat(Consumer<Data> consumer) {
             data.visitChildFactoriesFlat(consumer);
-        }
-
-        public void visitChildFactoriesAndViewsFlat(Consumer<Data> consumer) {
-            data.visitChildFactoriesAndViewsFlat(consumer);
         }
 
         public <A> void  visitAttributesDualFlat(Data modelBase, BiConsumer<Attribute<A>, Attribute<A>> consumer) {
