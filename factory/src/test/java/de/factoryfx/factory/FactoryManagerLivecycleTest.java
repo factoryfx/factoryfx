@@ -162,7 +162,7 @@ public class FactoryManagerLivecycleTest {
     }
 
     @Test
-    public void test_initial_viewlist_changed(){
+    public void test_initial_viewlist_added(){
         FactoryManager<ExampleLiveObjectA,Void,ExampleFactoryA> factoryManager = new FactoryManager<>();
 
         ExampleFactoryA exampleFactoryA = new ExampleFactoryA();
@@ -177,6 +177,38 @@ public class FactoryManagerLivecycleTest {
         ExampleFactoryA common = factoryManager.getCurrentFactory().internal().prepareUsableCopy();
         ExampleFactoryA update = factoryManager.getCurrentFactory().internal().prepareUsableCopy();
         update.refList.get().add(new ExampleFactoryC());
+
+        exampleFactoryA.resetCounter();
+        exampleFactoryB.resetCounter();
+        factoryManager.update(common,update);
+
+        Assert.assertEquals(1,exampleFactoryA.destroyCalls.size());
+        Assert.assertEquals(1,exampleFactoryB.destroyCalls.size());
+
+        Assert.assertEquals(1,exampleFactoryA.reCreateCalls.size());
+        Assert.assertEquals(1,exampleFactoryB.reCreateCalls.size());
+
+        Assert.assertEquals(1,exampleFactoryA.startCalls.size());
+        Assert.assertEquals(1,exampleFactoryB.startCalls.size());
+    }
+
+    @Test
+    public void test_initial_viewlist_removed(){
+        FactoryManager<ExampleLiveObjectA,Void,ExampleFactoryA> factoryManager = new FactoryManager<>();
+
+        ExampleFactoryA exampleFactoryA = new ExampleFactoryA();
+        ExampleFactoryB exampleFactoryB = new ExampleFactoryB();
+        exampleFactoryA.ref.set(exampleFactoryB);
+        exampleFactoryA.refList.get().add(new ExampleFactoryC());
+
+        exampleFactoryA = exampleFactoryA.internal().prepareUsableCopy();
+        exampleFactoryB = exampleFactoryA.ref.get();
+
+        factoryManager.start(exampleFactoryA);
+
+        ExampleFactoryA common = factoryManager.getCurrentFactory().internal().prepareUsableCopy();
+        ExampleFactoryA update = factoryManager.getCurrentFactory().internal().prepareUsableCopy();
+        update.refList.get().clear();
 
         exampleFactoryA.resetCounter();
         exampleFactoryB.resetCounter();

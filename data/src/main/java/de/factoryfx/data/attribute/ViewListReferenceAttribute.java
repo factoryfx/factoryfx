@@ -33,12 +33,34 @@ public class ViewListReferenceAttribute <R extends Data, T extends Data> extends
 
     @Override
     public boolean internal_match(List<T> value) {
-        return false;
+        final List<T> list = get();
+        if (value==null ){
+            return false;
+        }
+        if (list.size() != value.size()) {
+            return false;
+        }
+        for (int i = 0; i < list.size(); i++) {
+            if (!referenceEquals(list.get(i), value.get(i))) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private boolean referenceEquals(Data ref1, Data ref2) {
+        if (ref1 == null && ref2 == null) {
+            return true;
+        }
+        if (ref1 == null || ref2 == null) {
+            return false;
+        }
+        return ref1.getId().equals(ref2.getId());
     }
 
     @Override
     public AttributeMergeHelper<?> internal_createMergeHelper() {
-        return null; //no merge
+        return new AttributeMergeHelper<>(this);
     }
 
     @Override

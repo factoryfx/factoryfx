@@ -33,12 +33,19 @@ public class ViewReferenceAttribute<R extends Data, T extends Data> extends Attr
 
     @Override
     public boolean internal_match(T value) {
-        return false;
+        final T thisValue = this.get();
+        if (thisValue == null && value == null) {
+            return true;
+        }
+        if (thisValue == null || value == null) {
+            return false;
+        }
+        return thisValue.getId().equals(value.getId());
     }
 
     @Override
     public AttributeMergeHelper<?> internal_createMergeHelper() {
-        return null; //no merge
+        return new AttributeMergeHelper<>(this);
     }
 
     @Override
