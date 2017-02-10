@@ -18,7 +18,7 @@ public class FactoryManager<L,V,T extends FactoryBase<L,V>> {
     @SuppressWarnings("unchecked")
     public MergeDiff update(T commonVersion , T newVersion){
         newVersion.internalFactory().loopDetector();
-        LinkedHashSet<FactoryBase<?,?>> previousLiveObjects = destroyFactoryProvider.apply(currentFactory);
+        LinkedHashSet<FactoryBase<?,?>> previousFactories = destroyFactoryProvider.apply(currentFactory);
 
         DataMerger dataMerger = new DataMerger(currentFactory, commonVersion, newVersion);
         MergeDiff mergeDiff= dataMerger.mergeIntoCurrent();
@@ -30,14 +30,19 @@ public class FactoryManager<L,V,T extends FactoryBase<L,V>> {
                 //TODO check cast required
                 ((FactoryBase<?,?>)mergeResultEntry.parent).internalFactory().markChanged();
             }
+            Set<FactoryBase<?,V>> newFactories = currentFactory.internalFactory().collectChildFactoriesDeep();
+            for (FactoryBase<?,?> newFactory: newFactories){
+                if (!previousFactories.contains(newFactory)){
+                    ((FactoryBase<?,?>)newFactory).internalFactory().markChanged();
+                }
+            }
 
             currentFactory.internalFactory().loopDetector();
             currentFactory.internalFactory().instance();
 
             startFactoryProvider.apply(currentFactory).forEach(factoryBase -> factoryBase.internalFactory().start());
 
-            LinkedHashSet<FactoryBase<?,?>> newFactories = startFactoryProvider.apply(currentFactory);
-            cleanupRemovedFactories(previousLiveObjects,newFactories);
+            cleanupRemovedFactories(previousFactories,newFactories);
         }
         return mergeDiff;
     }
@@ -52,7 +57,7 @@ public class FactoryManager<L,V,T extends FactoryBase<L,V>> {
         return dataMerger.createMergeResult();
     }
 
-    private void cleanupRemovedFactories(LinkedHashSet<FactoryBase<?,?>> previousFactories, LinkedHashSet<FactoryBase<?,?>> newFactories){
+    private void cleanupRemovedFactories(LinkedHashSet<FactoryBase<?,?>> previousFactories, Set<FactoryBase<?,V>> newFactories){
         for (FactoryBase<?,?> previousLiveObject: previousFactories){
             if (!newFactories.contains(previousLiveObject)){
                 previousLiveObject.internalFactory().destroy();

@@ -3,6 +3,8 @@ package de.factoryfx.factory;
 import de.factoryfx.data.attribute.AttributeMetadata;
 import de.factoryfx.data.attribute.types.StringAttribute;
 import de.factoryfx.factory.atrribute.FactoryReferenceAttribute;
+import de.factoryfx.factory.atrribute.FactoryReferenceListAttribute;
+import de.factoryfx.factory.atrribute.FactoryViewListReferenceAttribute;
 import de.factoryfx.factory.atrribute.FactoryViewReferenceAttribute;
 import de.factoryfx.factory.testfactories.ExampleFactoryA;
 import de.factoryfx.factory.testfactories.ExampleFactoryB;
@@ -43,6 +45,7 @@ public class FactoryBaseTest {
     public static class ExampleFactoryAndViewRoot extends SimpleFactoryBase<Void,Void> {
         public final FactoryReferenceAttribute<Void,ExampleFactoryAndViewA> referenceAttribute = new FactoryReferenceAttribute<>(ExampleFactoryAndViewA.class,new AttributeMetadata().labelText("ExampleA2"));
         public final FactoryReferenceAttribute<Void,XFactory> xFactory = new FactoryReferenceAttribute<>(XFactory.class,new AttributeMetadata().labelText("XFactory"));
+        public final FactoryReferenceListAttribute<Void,XFactory> xFactoryList = new FactoryReferenceListAttribute<>(XFactory.class,new AttributeMetadata().labelText("XFactory"));
 
         @Override
         public Void createImpl() {
@@ -53,6 +56,8 @@ public class FactoryBaseTest {
     public static class ExampleFactoryAndViewA extends SimpleFactoryBase<Void,Void> {
         public final FactoryViewReferenceAttribute<ExampleFactoryAndViewRoot,Void,XFactory> referenceView = new FactoryViewReferenceAttribute<>(new AttributeMetadata().labelText("ExampleA2"),
                 root -> root.xFactory.get());
+        public final FactoryViewListReferenceAttribute<ExampleFactoryAndViewRoot,Void,XFactory> listView = new FactoryViewListReferenceAttribute<>(new AttributeMetadata().labelText("ExampleA2"),
+                root -> root.xFactoryList.get());
 
         @Override
         public Void createImpl() {
@@ -68,6 +73,7 @@ public class FactoryBaseTest {
             return null;
         }
     }
+
 
 
     @Test
@@ -122,4 +128,17 @@ public class FactoryBaseTest {
         Assert.assertTrue(usableCopy.referenceAttribute.get().changedDeep());
     }
 
+
+    @Test
+    public void test_changedDeep_viewlist(){
+        ExampleFactoryAndViewA exampleFactoryAndViewA = new ExampleFactoryAndViewA();
+        ExampleFactoryAndViewRoot root = new ExampleFactoryAndViewRoot();
+        root.xFactoryList.add(new XFactory());
+        root.referenceAttribute.set(exampleFactoryAndViewA);
+
+        final ExampleFactoryAndViewRoot usableCopy = root.internal().prepareUsableCopy();
+
+        usableCopy.xFactoryList.get().get(0).internalFactory().markChanged();
+        Assert.assertTrue(usableCopy.referenceAttribute.get().changedDeep());
+    }
 }

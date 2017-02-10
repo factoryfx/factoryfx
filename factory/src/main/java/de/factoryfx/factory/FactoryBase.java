@@ -32,15 +32,6 @@ import de.factoryfx.factory.atrribute.FactoryViewReferenceAttribute;
 @JsonTypeInfo(use=JsonTypeInfo.Id.MINIMAL_CLASS, include=JsonTypeInfo.As.PROPERTY, property="@class")
 public abstract class FactoryBase<L,V> extends Data {
 
-//    public abstract LiveCycleController<L,V> createLifecycleController();
-//    LiveCycleController<L, V> lifecycleController;
-//    private LiveCycleController<L,V> getLifecycleController(){
-//        if (lifecycleController==null){
-//            lifecycleController = createLifecycleController();
-//        }
-//        return lifecycleController;
-//    }
-
     private String id;
 
     public FactoryBase() {
@@ -69,7 +60,7 @@ public abstract class FactoryBase<L,V> extends Data {
     private boolean started=false;
 
     private L instance() {
-        if (!changedDeep() && createdLiveObject !=null) {//TODO is the createdLiveObject==null correct? is is used if new Factory is transitive added (Limitation of the mergerdiff)
+        if (!changedDeep() && createdLiveObject !=null) {
             return createdLiveObject;
         } else{
             if (createdLiveObject==null){
