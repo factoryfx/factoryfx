@@ -13,6 +13,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreType;
 import de.factoryfx.data.Data;
 import de.factoryfx.data.merge.attribute.AttributeMergeHelper;
+import de.factoryfx.data.merge.attribute.ViewMergeHelper;
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
 
@@ -60,7 +61,7 @@ public class ViewListReferenceAttribute <R extends Data, T extends Data> extends
 
     @Override
     public AttributeMergeHelper<?> internal_createMergeHelper() {
-        return new AttributeMergeHelper<>(this);
+        return new ViewMergeHelper<>(this);
     }
 
     @Override
