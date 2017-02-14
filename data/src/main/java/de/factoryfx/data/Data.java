@@ -316,7 +316,7 @@ public abstract class Data {
         for (AttributeValidation<?> validation: dataValidations){
             final Map<Attribute<?>, List<ValidationError>> validateresult = validation.validate(this);
             for (Map.Entry<Attribute<?>, List<ValidationError>> entry: validateresult.entrySet()){
-                result.get(entry).addAll(entry.getValue());
+                result.get(entry.getKey()).addAll(entry.getValue());
             }
         }
         return result;
