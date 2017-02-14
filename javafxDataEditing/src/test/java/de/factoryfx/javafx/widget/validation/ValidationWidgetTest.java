@@ -28,12 +28,12 @@ public class ValidationWidgetTest extends Application {
 
 
 
-        ValidationWidget dataTreeWidget= new ValidationWidget(exampleData1,dataEditor,new UniformDesignFactory<>().internalFactory().instance());
+        ValidationWidget validationWidget= new ValidationWidget(exampleData1,dataEditor,new UniformDesignFactory<>().internalFactory().instance());
 
 
         BorderPane root = new BorderPane();
         root.getStylesheets().add(getClass().getResource("/de/factoryfx/javafx/css/app.css").toExternalForm());
-        root.setCenter(dataTreeWidget.createContent());
+        root.setCenter(validationWidget.createContent());
         primaryStage.setScene(new Scene(root,1200,800));
 
         primaryStage.show();

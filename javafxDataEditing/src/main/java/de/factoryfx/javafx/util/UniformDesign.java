@@ -56,6 +56,14 @@ public class UniformDesign {
         return getFontAwesome().create(icon);
     }
 
+    public Glyph createIconSuccess(FontAwesome.Glyph icon) {
+        return getFontAwesome().create(icon).color(successColor);
+    }
+
+    public Glyph createIconDanger(FontAwesome.Glyph icon) {
+        return getFontAwesome().create(icon).color(dangerColor);
+    }
+
     private GlyphFont getFontAwesome() {
         if (fontAwesome == null) {
             try (InputStream inputStream = UniformDesign.class.getResourceAsStream("/de/factoryfx/javafx/icon/fontawesome-webfont4_3.ttf")) {

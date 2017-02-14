@@ -8,6 +8,7 @@ import de.factoryfx.data.validation.ValidationError;
 import de.factoryfx.javafx.editor.data.DataEditor;
 import de.factoryfx.javafx.util.UniformDesign;
 import de.factoryfx.javafx.widget.Widget;
+import javafx.beans.InvalidationListener;
 import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -15,9 +16,11 @@ import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
@@ -29,6 +32,7 @@ public class ValidationWidget implements Widget {
     private LanguageText columnField=new LanguageText().en("field").de("Feld");
     private LanguageText columnValidation=new LanguageText().en("validation").de("Validierung");
     private LanguageText refresh=new LanguageText().en("refresh").de("Aktualisieren");
+    private LanguageText noerror=new LanguageText().en("no errors found").de("Keine Fehler gefunden");
 
     private final Data root;
     private final UniformDesign uniformDesign;
@@ -100,7 +104,19 @@ public class ValidationWidget implements Widget {
         splitPane.getItems().add( dataEditor.createContent());
 
         splitPane.disableProperty().bind(isValid);
-        return splitPane;
+        final BorderPane borderPane = new BorderPane();
+        final InvalidationListener invalidationListener = observable -> {
+            if (!isValid.get()) {
+                borderPane.setCenter(splitPane);
+            } else {
+                final Label noErrorLabel = new Label(uniformDesign.getText(noerror));
+                noErrorLabel.setGraphic(uniformDesign.createIconSuccess(FontAwesome.Glyph.CHECK));
+                borderPane.setCenter(noErrorLabel);
+            }
+        };
+        isValid.addListener(invalidationListener);
+        invalidationListener.invalidated(isValid);
+        return borderPane;
     }
 
     private void validate(TableView<ValidationAndData> tableView){
