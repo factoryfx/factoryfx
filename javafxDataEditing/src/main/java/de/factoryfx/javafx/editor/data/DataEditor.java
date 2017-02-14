@@ -206,7 +206,6 @@ public class DataEditor implements Widget {
                 };
                 newValue.internal().visitAttributesFlat((attributeVariableName, attribute) -> {
                     attribute.internal_addListener(new WeakAttributeChangeListener<>(validationListener));
-                    validationListener.changed(attribute,attribute.get());
                 });
                 updateValidation(newValue);
 
