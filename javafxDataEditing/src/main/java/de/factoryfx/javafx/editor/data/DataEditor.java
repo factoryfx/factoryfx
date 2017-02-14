@@ -3,6 +3,7 @@ package de.factoryfx.javafx.editor.data;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
@@ -184,27 +185,42 @@ public class DataEditor implements Widget {
                         attribute.internal_removeListener(validationListener);
                     });
                 }
-                validationListener = (attribute1, value) -> {
-                    final List<ValidationError> validationErrors = newValue.internal().validateFlatForAttribute(attribute1);
+                validationListener = (attribute, value) -> {
+                    final Map<ValidationError,Attribute<?>> errorsToAttribute = newValue.internal().validateFlatForAttribute(attribute);
 
-                    //if child data has errors we want to show that as well
-                    List<Data> childrenData = new ArrayList<>();
-                    if (value instanceof Data){
-                        childrenData.add((Data)value);
+                    Map<Attribute<?>,List<ValidationError>> attributeToErrors= new HashMap<>();
+                    attributeToErrors.put(attribute,new ArrayList<>());
+                    for (Map.Entry<ValidationError,Attribute<?>> entry: errorsToAttribute.entrySet()){
+                        List<ValidationError> validationErrors = attributeToErrors.get(entry.getValue());
+                        if (validationErrors==null){
+                            validationErrors=new ArrayList<>();
+                            attributeToErrors.put(entry.getValue(),validationErrors);
+                        }
+                        validationErrors.add(entry.getKey());
                     }
-                    if (value instanceof List){
-                        ((List)value).forEach(data -> {
-                            if (data instanceof Data){
-                                childrenData.add((Data)data);
-                            }
-                        });
-                    }
-                    childrenData.forEach(data -> validationErrors.addAll(data.internal().validateFlat()));
 
-                    final AttributeEditor<?> attributeEditor = createdEditors.get(attribute1);
-                    if (attributeEditor!=null){
-                        attributeEditor.reportValidation(validationErrors);
+
+                    for (Map.Entry<Attribute<?>,List<ValidationError>> entry: attributeToErrors.entrySet()){
+                        final AttributeEditor<?> attributeEditor = createdEditors.get(entry.getKey());
+                        if (attributeEditor!=null){
+                            attributeEditor.reportValidation(entry.getValue());
+                        }
                     }
+
+//                    //if child data has errors we want to show that as well
+//                    List<Data> childrenData = new ArrayList<>();
+//                    if (value instanceof Data){
+//                        childrenData.add((Data)value);
+//                    }
+//                    if (value instanceof List){
+//                        ((List)value).forEach(data -> {
+//                            if (data instanceof Data){
+//                                childrenData.add((Data)data);
+//                            }
+//                        });
+//                    }
+//                    childrenData.forEach(data -> validationErrors.addAll(data.internal().validateFlat()));
+
 
                 };
                 newValue.internal().visitAttributesFlat((attributeVariableName, attribute) -> {

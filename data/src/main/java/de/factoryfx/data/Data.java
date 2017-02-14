@@ -293,25 +293,23 @@ public abstract class Data {
     /** validate attributes without visiting child factories*/
     @SuppressWarnings("unchecked")
     private List<ValidationError> validateFlat(){
-        return validateFlatForAttribute(null);
+        return new ArrayList<>(validateFlatForAttribute(null).keySet());
     }
 
     /** validate attributes without visiting child factories
      * @param attributeFor only execute validation for this attribute and dataValidations
      * @return
      */
-    private List<ValidationError> validateFlatForAttribute(Attribute<?> attributeFor){
-        ArrayList<ValidationError> result = new ArrayList<>();
+    private Map<ValidationError,Attribute<?>> validateFlatForAttribute(Attribute<?> attributeFor){
+        Map<ValidationError,Attribute<?>> result = new HashMap<>();
         visitAttributesFlat((attributeVariableName, attribute) -> {
             if (attributeFor==attribute || attributeFor==null){
-                result.addAll(attribute.internal_validate(this));
+                attribute.internal_validate(this).forEach(validationError -> result.put(validationError,attribute));
             }
         });
 
         for (AttributeValidation<?> validation: dataValidations){
-            if (validation.isValidationForAttribute(attributeFor)){
-                validation.validate(this).ifPresent(validationError -> result.add(validationError));
-            }
+            validation.validate(this).ifPresent(validationError -> result.putAll(validationError));
         }
         return result;
     }
@@ -677,7 +675,7 @@ public abstract class Data {
             return data.validateFlat();
         }
 
-        public List<ValidationError> validateFlatForAttribute(Attribute<?> attribute){
+        public Map<ValidationError,Attribute<?>> validateFlatForAttribute(Attribute<?> attribute){
             return data.validateFlatForAttribute(attribute);
         }
 

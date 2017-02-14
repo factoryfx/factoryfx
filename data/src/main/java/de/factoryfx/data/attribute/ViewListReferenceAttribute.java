@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.stream.Stream;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreType;
@@ -208,4 +209,9 @@ public class ViewListReferenceAttribute <R extends Data, T extends Data> extends
         }
         listeners.clear();
     }
+
+    public Stream<T> stream() {
+        return get().stream();
+    }
+
 }
