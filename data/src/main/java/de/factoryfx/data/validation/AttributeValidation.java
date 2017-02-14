@@ -1,8 +1,9 @@
 package de.factoryfx.data.validation;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 import de.factoryfx.data.Data;
 import de.factoryfx.data.attribute.Attribute;
@@ -17,15 +18,20 @@ public class AttributeValidation<T> {
     }
 
     @SuppressWarnings("unchecked")
-    public Optional<Map<ValidationError,Attribute<?>>> validate(Data data) {
+    public Map<Attribute<?>,List<ValidationError>> validate(Data data) {
         if (!validation.validate((T)data)){
-            Map<ValidationError,Attribute<?>> result = new HashMap<>();
+            Map<Attribute<?>,List<ValidationError>> result = new HashMap<>();
             for (Attribute<?> dependency: dependencies){
-                result.put(new ValidationError(validation.getValidationDescription(),dependency,data),dependency);
+                List<ValidationError> validationErrors = result.get(dependency);
+                if (validationErrors==null){
+                    validationErrors=new ArrayList<>();
+                    result.put(dependency,validationErrors);
+                }
+                validationErrors.add(new ValidationError(validation.getValidationDescription(),dependency,data));
             }
-            return Optional.of(result);
+            return result;
         }
-        return Optional.empty();
+        return new HashMap<>();
     }
 
 }

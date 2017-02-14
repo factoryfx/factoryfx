@@ -293,23 +293,31 @@ public abstract class Data {
     /** validate attributes without visiting child factories*/
     @SuppressWarnings("unchecked")
     private List<ValidationError> validateFlat(){
-        return new ArrayList<>(validateFlatForAttribute(null).keySet());
+        final ArrayList<ValidationError> result = new ArrayList<>();
+        final Map<Attribute<?>, List<ValidationError>> attributeListMap = validateFlatMapped();
+        for (Map.Entry<Attribute<?>, List<ValidationError>> entry: attributeListMap.entrySet()){
+            result.addAll(entry.getValue());
+        }
+
+        return result;
     }
 
     /** validate attributes without visiting child factories
-     * @param attributeFor only execute validation for this attribute and dataValidations
-     * @return
      */
-    private Map<ValidationError,Attribute<?>> validateFlatForAttribute(Attribute<?> attributeFor){
-        Map<ValidationError,Attribute<?>> result = new HashMap<>();
+    private Map<Attribute<?>,List<ValidationError>> validateFlatMapped(){
+        Map<Attribute<?>,List<ValidationError>> result= new HashMap<>();
+
         visitAttributesFlat((attributeVariableName, attribute) -> {
-            if (attributeFor==attribute || attributeFor==null){
-                attribute.internal_validate(this).forEach(validationError -> result.put(validationError,attribute));
-            }
+            final ArrayList<ValidationError> validationErrors = new ArrayList<>();
+            result.put(attribute, validationErrors);
+            validationErrors.addAll(attribute.internal_validate(this));
         });
 
         for (AttributeValidation<?> validation: dataValidations){
-            validation.validate(this).ifPresent(validationError -> result.putAll(validationError));
+            final Map<Attribute<?>, List<ValidationError>> validateresult = validation.validate(this);
+            for (Map.Entry<Attribute<?>, List<ValidationError>> entry: validateresult.entrySet()){
+                result.get(entry).addAll(entry.getValue());
+            }
         }
         return result;
     }
@@ -675,8 +683,8 @@ public abstract class Data {
             return data.validateFlat();
         }
 
-        public Map<ValidationError,Attribute<?>> validateFlatForAttribute(Attribute<?> attribute){
-            return data.validateFlatForAttribute(attribute);
+        public Map<Attribute<?>,List<ValidationError>> validateFlatMapped(){
+            return data.validateFlatMapped();
         }
 
         public void merge(Optional<Data> originalValue, Optional<Data> newValue, MergeResult mergeResult) {

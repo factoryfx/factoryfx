@@ -186,26 +186,7 @@ public class DataEditor implements Widget {
                     });
                 }
                 validationListener = (attribute, value) -> {
-                    final Map<ValidationError,Attribute<?>> errorsToAttribute = newValue.internal().validateFlatForAttribute(attribute);
-
-                    Map<Attribute<?>,List<ValidationError>> attributeToErrors= new HashMap<>();
-                    attributeToErrors.put(attribute,new ArrayList<>());
-                    for (Map.Entry<ValidationError,Attribute<?>> entry: errorsToAttribute.entrySet()){
-                        List<ValidationError> validationErrors = attributeToErrors.get(entry.getValue());
-                        if (validationErrors==null){
-                            validationErrors=new ArrayList<>();
-                            attributeToErrors.put(entry.getValue(),validationErrors);
-                        }
-                        validationErrors.add(entry.getKey());
-                    }
-
-
-                    for (Map.Entry<Attribute<?>,List<ValidationError>> entry: attributeToErrors.entrySet()){
-                        final AttributeEditor<?> attributeEditor = createdEditors.get(entry.getKey());
-                        if (attributeEditor!=null){
-                            attributeEditor.reportValidation(entry.getValue());
-                        }
-                    }
+                    updateValidation(newValue);
 
 //                    //if child data has errors we want to show that as well
 //                    List<Data> childrenData = new ArrayList<>();
@@ -227,7 +208,7 @@ public class DataEditor implements Widget {
                     attribute.internal_addListener(new WeakAttributeChangeListener<>(validationListener));
                     validationListener.changed(attribute,attribute.get());
                 });
-
+                updateValidation(newValue);
 
             }
 
@@ -242,6 +223,16 @@ public class DataEditor implements Widget {
         return result;
     }
 
+    private void updateValidation(Data newValue) {
+        final Map<Attribute<?>,List<ValidationError>> attributeToErrors = newValue.internal().validateFlatMapped();
+
+        for (Map.Entry<Attribute<?>,List<ValidationError>> entry: attributeToErrors.entrySet()){
+            final AttributeEditor<?> attributeEditor = createdEditors.get(entry.getKey());
+            if (attributeEditor!=null){
+                attributeEditor.reportValidation(entry.getValue());
+            }
+        }
+    }
 
     private Node createAttributeGroupVisual(List<Attribute<?>> attributeGroup, Supplier<List<ValidationError>> validation, Data oldValue) {
         if (attributeGroup.size()==1){
