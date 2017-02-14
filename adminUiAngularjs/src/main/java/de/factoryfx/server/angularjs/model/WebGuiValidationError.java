@@ -13,8 +13,8 @@ public class WebGuiValidationError {
     public final String factoryDisplayText;
 
     public WebGuiValidationError(ValidationError validationError, Locale locale, Data factoryBase){
-        validationDescription=validationError.validationDescription.getPreferred(locale);
-        attributeLabel=validationError.attributeLabel.getPreferred(locale);
+        validationDescription=validationError.validationDescription(languageText -> languageText.getPreferred(locale));
+        attributeLabel=validationError.attributeDescription(languageText -> languageText.getPreferred(locale));
         factoryId=factoryBase.getId().toString();
         factoryDisplayText=factoryBase.internal().getDisplayText();
 
