@@ -290,16 +290,28 @@ public abstract class Data {
         this.displayTextProvider=displayTextProvider;
     }
 
-    /** internal_validate attributes without visiting child factories*/
+    /** validate attributes without visiting child factories*/
     @SuppressWarnings("unchecked")
     private List<ValidationError> validateFlat(){
+        return validateFlatForAttribute(null);
+    }
+
+    /** validate attributes without visiting child factories
+     * @param attributeFor only execute validation for this attribute and dataValidations
+     * @return
+     */
+    private List<ValidationError> validateFlatForAttribute(Attribute<?> attributeFor){
         ArrayList<ValidationError> result = new ArrayList<>();
         visitAttributesFlat((attributeVariableName, attribute) -> {
-            result.addAll(attribute.internal_validate());
+            if (attributeFor==attribute || attributeFor==null){
+                result.addAll(attribute.internal_validate(this));
+            }
         });
 
         for (AttributeValidation<?> validation: dataValidations){
-            validation.validate(this).ifPresent(validationError -> result.add(validationError));
+            if (validation.isValidationForAttribute(attributeFor)){
+                validation.validate(this).ifPresent(validationError -> result.add(validationError));
+            }
         }
         return result;
     }
@@ -663,6 +675,10 @@ public abstract class Data {
 
         public List<ValidationError> validateFlat(){
             return data.validateFlat();
+        }
+
+        public List<ValidationError> validateFlatForAttribute(Attribute<?> attribute){
+            return data.validateFlatForAttribute(attribute);
         }
 
         public void merge(Optional<Data> originalValue, Optional<Data> newValue, MergeResult mergeResult) {

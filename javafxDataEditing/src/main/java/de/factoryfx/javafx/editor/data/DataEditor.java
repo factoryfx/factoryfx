@@ -185,16 +185,27 @@ public class DataEditor implements Widget {
                     });
                 }
                 validationListener = (attribute1, value) -> {
-                    final List<ValidationError> validationErrors = newValue.internal().validateFlat();
-                    createdEditors.entrySet().forEach(entry -> {
-                        List<ValidationError> attributeValidationError = new ArrayList<>();
-                        for (ValidationError validationError : validationErrors) {
-                            if (entry.getKey() == validationError.attribute) {
-                                attributeValidationError.add(validationError);
+                    final List<ValidationError> validationErrors = newValue.internal().validateFlatForAttribute(attribute1);
+
+                    //if child data has errors we want to show that as well
+                    List<Data> childrenData = new ArrayList<>();
+                    if (value instanceof Data){
+                        childrenData.add((Data)value);
+                    }
+                    if (value instanceof List){
+                        ((List)value).forEach(data -> {
+                            if (data instanceof Data){
+                                childrenData.add((Data)data);
                             }
-                        }
-                        entry.getValue().reportValidation(attributeValidationError);
-                    });
+                        });
+                    }
+                    childrenData.forEach(data -> validationErrors.addAll(data.internal().validateFlat()));
+
+                    final AttributeEditor<?> attributeEditor = createdEditors.get(attribute1);
+                    if (attributeEditor!=null){
+                        attributeEditor.reportValidation(validationErrors);
+                    }
+
                 };
                 newValue.internal().visitAttributesFlat((attributeVariableName, attribute) -> {
                     attribute.internal_addListener(new WeakAttributeChangeListener<>(validationListener));

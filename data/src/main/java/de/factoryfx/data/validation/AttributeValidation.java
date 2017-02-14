@@ -17,8 +17,12 @@ public class AttributeValidation<T> {
     @SuppressWarnings("unchecked")
     public Optional<ValidationError> validate(Data data) {
         if (!validation.validate((T)data)){
-            return Optional.of(new ValidationError(validation.getValidationDescription(),attribute));
+            return Optional.of(new ValidationError(validation.getValidationDescription(),attribute,data));
         }
         return Optional.empty();
+    }
+
+    public boolean isValidationForAttribute(Attribute<?> attributeFor){
+        return attributeFor==this.attribute;
     }
 }

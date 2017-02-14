@@ -1,14 +1,15 @@
 package de.factoryfx.javafx.editor.attribute;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
+import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 import de.factoryfx.data.attribute.Attribute;
 import de.factoryfx.data.attribute.AttributeChangeListener;
 import de.factoryfx.data.validation.ValidationError;
+import de.factoryfx.javafx.util.UniformDesign;
 import de.factoryfx.javafx.widget.Widget;
-import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.value.ChangeListener;
 import javafx.geometry.Side;
 import javafx.scene.Node;
 import javafx.scene.control.ContextMenu;
@@ -17,16 +18,18 @@ import javafx.scene.control.MenuItem;
 
 public class AttributeEditor<T> implements Widget {
 
-    public final AttributeEditorVisualisation<T> attributeEditorVisualisation;
+    private final AttributeEditorVisualisation<T> attributeEditorVisualisation;
+    private final Attribute<T> boundAttribute;
+    private final UniformDesign uniformDesign;
+    private Consumer<List<ValidationError>> validationUpdater;
+    private List<ValidationError> validationErrors=new ArrayList<>();
 
-    private Attribute<T> boundAttribute;
-    private SimpleObjectProperty<List<ValidationError>> validationResult=new SimpleObjectProperty<>();
 
-
-    public AttributeEditor(Attribute<T> boundAttribute, AttributeEditorVisualisation<T> attributeEditorVisualisation) {
+    public AttributeEditor(Attribute<T> boundAttribute, AttributeEditorVisualisation<T> attributeEditorVisualisation, UniformDesign uniformDesign) {
         this.boundAttribute=boundAttribute;
         this.attributeEditorVisualisation=attributeEditorVisualisation;
         attributeEditorVisualisation.init(boundAttribute);
+        this.uniformDesign = uniformDesign;
     }
 
 
@@ -41,7 +44,10 @@ public class AttributeEditor<T> implements Widget {
     }
 
     public void reportValidation(List<ValidationError> attributeValidationErrors){
-        validationResult.set(attributeValidationErrors);
+        validationErrors=attributeValidationErrors;
+        if (validationUpdater!=null){
+            validationUpdater.accept(attributeValidationErrors);
+        }
     }
 
     Node content;
@@ -73,43 +79,56 @@ public class AttributeEditor<T> implements Widget {
         menuItem.setGraphic(validationTest);
         validationPopupWorkaround.getItems().add(menuItem);
 
-        ChangeListener<List<ValidationError>> changeListener = (observable, oldValue, newValue) -> {
-            if (newValue!=null){
-                boolean isValid = true;
-                StringBuilder validationErrorText = new StringBuilder();
-                int counter = 1;
-                for (ValidationError validationError : newValue) {
+        validationUpdater = (validationErrors) -> {
+            boolean isValid = validationErrors.isEmpty();
+            StringBuilder validationErrorText = new StringBuilder();
+            int counter = 1;
+            for (ValidationError validationError : validationErrors) {
+                if (validationError.isErrorFor(boundAttribute)) {
                     validationErrorText.append(counter);
                     validationErrorText.append(": ");
-                    validationErrorText.append(validationError.validationDescription.getPreferred(Locale.getDefault()));
+                    validationErrorText.append(validationError.validationDescription(uniformDesign::getText));
                     validationErrorText.append("\n");
                     counter++;
-                    isValid=false;
-                }
-
-                if (!isValid && !node.isDisabled()) {
-                    validationTest.setText(validationErrorText.toString());
-                    menuItem.setGraphic(validationTest);
-                    if (node.getStyleClass().stream().noneMatch(c -> c.equals("error"))) node.getStyleClass().add("error");
-                    node.setOnMouseEntered(event -> {
-                        if (!validationPopupWorkaround.isShowing()) {
-                            validationPopupWorkaround.show(node, Side.BOTTOM, 0, 0);
-                        }
-                    });
-                    node.setOnMouseExited(event -> validationPopupWorkaround.hide());
-                    if (node.isFocused() && !validationPopupWorkaround.isShowing()) {
-                        validationPopupWorkaround.show(node, Side.BOTTOM, 0, 0);
-                    }
-                } else {
-                    node.getStyleClass().removeIf(c -> c.equals("error"));
-                    node.setOnMouseEntered(null);
-                    node.setOnMouseExited(null);
-                    validationPopupWorkaround.hide();
                 }
             }
+
+
+            final List<ValidationError> childErrors = validationErrors.stream().filter(e -> !e.isErrorFor(boundAttribute)).collect(Collectors.toList());
+            if (!childErrors.isEmpty()){
+                counter = 1;
+                validationErrorText.append("Fehler in Reference:\n");
+                for (ValidationError validationError : childErrors) {
+                    validationErrorText.append(counter);
+                    validationErrorText.append(": ");
+                    validationErrorText.append(validationError.validationDescriptionForChild(uniformDesign::getText));
+                    validationErrorText.append("\n");
+                    counter++;
+                }
+            }
+
+
+            if (!isValid && !node.isDisabled()) {
+                validationTest.setText(validationErrorText.toString());
+                menuItem.setGraphic(validationTest);
+                if (node.getStyleClass().stream().noneMatch(c -> c.equals("error"))) node.getStyleClass().add("error");
+                node.setOnMouseEntered(event -> {
+                    if (!validationPopupWorkaround.isShowing()) {
+                        validationPopupWorkaround.show(node, Side.BOTTOM, 0, 0);
+                    }
+                });
+                node.setOnMouseExited(event -> validationPopupWorkaround.hide());
+                if (node.isFocused() && !validationPopupWorkaround.isShowing()) {
+                    validationPopupWorkaround.show(node, Side.BOTTOM, 0, 0);
+                }
+            } else {
+                node.getStyleClass().removeIf(c -> c.equals("error"));
+                node.setOnMouseEntered(null);
+                node.setOnMouseExited(null);
+                validationPopupWorkaround.hide();
+            }
         };
-        validationResult.addListener(changeListener);
-        changeListener.changed(validationResult,null,validationResult.getValue());
+        validationUpdater.accept(validationErrors);
 
         return node;
     }

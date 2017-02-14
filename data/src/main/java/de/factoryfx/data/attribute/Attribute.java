@@ -44,11 +44,11 @@ public abstract class Attribute<T>{
 
     public abstract void internal_semanticCopyTo(Attribute<T> copyAttribute, Function<Data,Data> dataCopyProvider);
 
-    public List<ValidationError> internal_validate() {
+    public List<ValidationError> internal_validate(Data parent) {
         List<ValidationError> validationErrors = new ArrayList<>();
         for (Validation<T> validation : validations) {
             if (!validation.validate(get())){
-                validationErrors.add(new ValidationError(validation.getValidationDescription(),this));
+                validationErrors.add(new ValidationError(validation.getValidationDescription(),this,parent));
             }
         }
         return validationErrors;

@@ -62,12 +62,12 @@ public class ValidationWidget implements Widget {
         }
         {
             final TableColumn<ValidationAndData, String> column = new TableColumn<>(uniformDesign.getText(columnField));
-            column.setCellValueFactory(param -> new SimpleStringProperty(uniformDesign.getText(param.getValue().validationError.attributeLabel)));
+            column.setCellValueFactory(param -> new SimpleStringProperty(param.getValue().validationError.attributeDescription(uniformDesign::getText)));
             tableView.getColumns().add(column);
         }
         {
             final TableColumn<ValidationAndData, String> column = new TableColumn<>(uniformDesign.getText(columnValidation));
-            column.setCellValueFactory(param -> new SimpleStringProperty(uniformDesign.getText(param.getValue().validationError.validationDescription)));
+            column.setCellValueFactory(param -> new SimpleStringProperty(param.getValue().validationError.validationDescription(uniformDesign::getText)));
             tableView.getColumns().add(column);
         }
 
