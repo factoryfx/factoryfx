@@ -13,14 +13,14 @@ public class UserFactory<V> extends SimpleFactoryBase<User,V> {
     public static String passwordKey;
 
     private static final AttributeMetadata NAME = new AttributeMetadata().en("name").de("Name");
-    private static final AttributeMetadata PASSWORD = new AttributeMetadata().en("PASSWORD").de("Passwort");
+    private static final AttributeMetadata PASSWORD = new AttributeMetadata().en("password").de("Passwort");
     private static final AttributeMetadata LOCLAE = new AttributeMetadata().en("locale").de("Sprache");
-    private static final AttributeMetadata PERMISSONS = new AttributeMetadata().en("permissons").de("Rechte");
+    private static final AttributeMetadata PERMISSIONS = new AttributeMetadata().en("permissions").de("Rechte");
 
     public final StringAttribute name= new StringAttribute(NAME);
     public final EncryptedStringAttribute password= new EncryptedStringAttribute(PASSWORD);
     public final LocaleAttribute locale= new LocaleAttribute(LOCLAE);
-    public final StringListAttribute permissons= new StringListAttribute(PERMISSONS);
+    public final StringListAttribute permissons= new StringListAttribute(PERMISSIONS);
 
     @Override
     public User createImpl() {

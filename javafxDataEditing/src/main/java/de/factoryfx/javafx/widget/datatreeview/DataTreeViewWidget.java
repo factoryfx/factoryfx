@@ -64,6 +64,7 @@ public class DataTreeViewWidget implements CloseAwareWidget {
 
         dataTreeView.setUpdateAction(new Consumer<TreeItem<Data>>() {
             @Override
+            @SuppressWarnings("unchecked")
             public void accept(TreeItem<Data> dataTreeItem) {
                 tree.setRoot(dataTreeItem);
                 for (TreeItem treeItem: treeTraverser.breadthFirstTraversal(dataTreeItem)){

@@ -1,5 +1,8 @@
 package de.factoryfx.javafx.widget;
 
-public interface CloseAwareWidget extends Widget {
+import javafx.scene.Node;
+
+public interface CloseAwareWidget {
     void closeNotifier();
+    Node createContent();
 }

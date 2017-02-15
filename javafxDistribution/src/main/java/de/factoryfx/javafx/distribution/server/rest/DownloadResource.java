@@ -13,7 +13,8 @@ import javax.ws.rs.core.Response;
 import com.google.common.hash.Hashing;
 import com.google.common.io.Files;
 
-@Path("/") /** path defined in {@link de.scoopsoftware.xtc.ticketproxy.configuration.ConfigurationServer}*/
+/** path defined in server and not with annotation*/
+@Path("/")
 public class DownloadResource {
 
     final File guiZipFile;

@@ -7,7 +7,7 @@ import de.factoryfx.data.util.LanguageText;
 public class AttributeMetadata {
     public LanguageText labelText=new LanguageText();
     public String addonText;
-    public String permisson;
+    public String permission;
 
     public AttributeMetadata() {
 
@@ -39,7 +39,7 @@ public class AttributeMetadata {
     }
 
     public AttributeMetadata permission(String permission){
-        this.permisson= permission;
+        this.permission = permission;
         return this;
     }
 

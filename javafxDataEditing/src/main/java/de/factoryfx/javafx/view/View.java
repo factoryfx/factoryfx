@@ -3,7 +3,6 @@ package de.factoryfx.javafx.view;
 import java.util.Optional;
 
 import de.factoryfx.javafx.view.container.ViewsDisplayWidget;
-import de.factoryfx.javafx.widget.CloseAwareWidget;
 import de.factoryfx.javafx.widget.Widget;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.scene.Node;
@@ -24,9 +23,7 @@ public class View implements Widget {
     }
 
     public void close() {
-        if (viewContent instanceof CloseAwareWidget) {
-            ((CloseAwareWidget) viewContent).closeNotifier();
-        }
+        viewContent.closeNotifier();
         isShowing = false;
         viewsDisplayWidget.close(this);
         closeListener.ifPresent(runnable -> runnable.run());

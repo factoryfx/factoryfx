@@ -97,7 +97,7 @@ public class AttributeEditor<T> implements Widget {
             final List<ValidationError> childErrors = validationErrors.stream().filter(e -> !e.isErrorFor(boundAttribute)).collect(Collectors.toList());
             if (!childErrors.isEmpty()){
                 counter = 1;
-                validationErrorText.append("Fehler in Reference:\n");
+                validationErrorText.append("Error in Reference:\n");
                 for (ValidationError validationError : childErrors) {
                     validationErrorText.append(counter);
                     validationErrorText.append(": ");

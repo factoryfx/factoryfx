@@ -1,28 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
-<?import javafx.geometry.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
-<?import javafx.scene.web.*?>
-
+<?import javafx.geometry.Insets?><?import javafx.scene.control.Button?><?import javafx.scene.control.ComboBox?><?import javafx.scene.control.Label?><?import javafx.scene.control.ProgressBar?><?import javafx.scene.control.TextField?><?import javafx.scene.layout.StackPane?><?import javafx.scene.layout.VBox?>
 <VBox fx:id="rootPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" spacing="3.0" xmlns="http://javafx.com/javafx/null" xmlns:fx="http://javafx.com/fxml/1">
-   <children>
-      <Label text="Server url (e.g.: http://testserverhost:1234)" />
-      <TextField fx:id="serverUrlInput" prefHeight="31.0" prefWidth="542.0" />
-      <ComboBox fx:id="serverUrlList" maxWidth="1.7976931348623157E308" />
-      <StackPane>
-         <children>
-            <Button fx:id="startButton" mnemonicParsing="false" prefHeight="58.0" prefWidth="118.0" text="Start">
-               <StackPane.margin>
-                  <Insets bottom="9.0" top="9.0" />
-               </StackPane.margin>
-            </Button>
-         </children>
-      </StackPane>
-      <ProgressBar fx:id="progress" maxWidth="1.7976931348623157E308" progress="0.0" />
-   </children>
    <padding>
-      <Insets bottom="3.0" left="3.0" right="3.0" top="3.0" />
+      <Insets bottom="3.0" left="3.0" right="3.0" top="3.0"/>
    </padding>
+   <Label text="Server url (e.g.: http://testserverhost:1234)"/>
+   <TextField fx:id="serverUrlInput" prefHeight="31.0" prefWidth="542.0"/>
+   <ComboBox fx:id="serverUrlList" maxWidth="1.7976931348623157E308"/>
+   <StackPane>
+      <Button fx:id="startButton" mnemonicParsing="false" prefHeight="58.0" prefWidth="118.0" text="Start">
+         <StackPane.margin>
+            <Insets bottom="9.0" top="9.0"/>
+         </StackPane.margin>
+      </Button>
+   </StackPane>
+   <ProgressBar fx:id="progress" maxWidth="1.7976931348623157E308" progress="0.0"/>
 </VBox>

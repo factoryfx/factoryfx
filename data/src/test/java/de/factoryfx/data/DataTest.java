@@ -287,6 +287,7 @@ public class DataTest {
         final String test = "Test";
         exampleObjectProperty.objectValueAttribute.set(test);
         ExampleObjectProperty copy = exampleObjectProperty.internal().copy();
+        //that comparision ist correct (no equals)
         Assert.assertTrue(copy.objectValueAttribute.get()==test);
     }
 

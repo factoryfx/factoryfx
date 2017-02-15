@@ -18,7 +18,7 @@ public class TableDataColumnSpec<T extends Data> {
         this.cssColumnClass = cssColumnClass;
     }
 
-    public TableColumn create(){
+    public TableColumn<T,String> create(){
         TableColumn<T, String> column = new TableColumn<>(columnName);
         column.setCellValueFactory(param->cellValueProvider.apply(param.getValue()));
         if (cssColumnClass!=null){

@@ -234,7 +234,7 @@ public abstract class FactoryBase<L,V> extends Data {
         /** execute visitor to get runtime informations from the liveobject*/
         public void runtimeQuery(V visitor) {
             factory.runtimeQuery(visitor);
-        };
+        }
 
         public void visitChildFactoriesAndViewsFlat(Consumer<FactoryBase<?,V>> consumer) {
             factory.visitChildFactoriesAndViewsFlat(consumer);

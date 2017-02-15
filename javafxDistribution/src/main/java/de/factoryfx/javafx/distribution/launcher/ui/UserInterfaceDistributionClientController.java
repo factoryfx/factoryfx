@@ -68,12 +68,12 @@ public class UserInterfaceDistributionClientController {
 
     /**
      *
-     * @param initialUrl
+     * @param initialUrl initialUrl
      * @param exeName  e.g 'project' not include '.exe'
-     * @param httpAuthenticationUser
-     * @param httpAuthenticationPassword
+     * @param httpAuthenticationUser user
+     * @param httpAuthenticationPassword password
      */
-    public UserInterfaceDistributionClientController(String initialUrl,String exeName, String  httpAuthenticationUser,  String httpAuthenticationPassword) {
+    public UserInterfaceDistributionClientController(String initialUrl, String exeName, String  httpAuthenticationUser,  String httpAuthenticationPassword) {
         this.initialUrl = initialUrl;
         this.httpAuthenticationUser = httpAuthenticationUser;
         this.httpAuthenticationPassword = httpAuthenticationPassword;

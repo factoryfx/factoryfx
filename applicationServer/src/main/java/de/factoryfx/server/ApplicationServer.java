@@ -54,8 +54,7 @@ public class ApplicationServer<L,V,T extends FactoryBase<L,V>> {
     }
 
     public T getHistoryFactory(String id) {
-        T historyFactory = factoryStorage.getHistoryFactory(id);
-        return historyFactory;
+        return factoryStorage.getHistoryFactory(id);
     }
 
     public T getPreviousHistoryFactory(String id) {

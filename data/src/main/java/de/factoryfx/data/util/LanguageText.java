@@ -54,9 +54,10 @@ public class LanguageText {
     public String getPreferred(Locale locale) {
         String text = texts.get(locale);
         if (text==null){
-            for (Map.Entry<Locale,String> entry: texts.entrySet()){
-                return entry.getValue();
+            if (texts.isEmpty()){
+                return "";
             }
+            return texts.entrySet().iterator().next().getValue();
         }
         return text;
     }

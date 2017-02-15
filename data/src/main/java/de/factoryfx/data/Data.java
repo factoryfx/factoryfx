@@ -21,8 +21,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.common.base.Strings;
 import de.factoryfx.data.attribute.Attribute;
 import de.factoryfx.data.attribute.AttributeChangeListener;
-import de.factoryfx.data.attribute.ReferenceAttribute;
-import de.factoryfx.data.attribute.ReferenceListAttribute;
 import de.factoryfx.data.merge.MergeResult;
 import de.factoryfx.data.merge.MergeResultEntry;
 import de.factoryfx.data.merge.attribute.AttributeMergeHelper;
@@ -88,27 +86,7 @@ public abstract class Data {
 
     private void visitChildFactoriesFlat(Consumer<Data> consumer) {
         visitAttributesFlat((attributeVariableName, attribute) -> {
-            attribute.internal_visit(new de.factoryfx.data.attribute.AttributeVisitor() {
-                @Override
-                public void value(Attribute<?> value) {
-
-                }
-
-                @Override
-                public void reference(ReferenceAttribute<?> reference) {
-                    reference.getOptional().ifPresent((factoryBase)->consumer.accept(factoryBase));
-                }
-
-                @Override
-                public void referenceList(ReferenceListAttribute<?> referenceList) {
-                    referenceList.forEach(new Consumer<Data>() {
-                        @Override
-                        public void accept(Data factoryBase) {
-                            consumer.accept(factoryBase);
-                        }
-                    });
-                }
-            });
+            attribute.internal_visit(consumer);
         });
     }
 
@@ -147,17 +125,7 @@ public abstract class Data {
     }
 
     private void visitAttributesFlat(Consumer<Attribute<?>> consumer) {
-        Field[] fields = getFields();
-        for (Field field : fields) {
-            try {
-                Object fieldValue = field.get(this);
-                if (fieldValue instanceof Attribute) {
-                    consumer.accept((Attribute) fieldValue);
-                }
-            } catch (IllegalAccessException e) {
-                throw new RuntimeException(e);
-            }
-        }
+        this.visitAttributesFlat((attributeVariableName, attribute) -> consumer.accept(attribute));
     }
 
     private void visitAttributesTripleFlat(Optional<?> modelBase1, Optional<?> modelBase2, TriConsumer<Attribute<?>, Optional<Attribute<?>>, Optional<Attribute<?>>> consumer) {
@@ -222,40 +190,11 @@ public abstract class Data {
      * after deserialization from json only the value is present and metadata are missing
      * we create a copy which contains the metadata and than copy then transfer the value in the new  copy (which is what conveniently copy does)
      */
-    @SuppressWarnings("unchecked")
     private <T extends Data> T reconstructMetadataDeepRoot() {
-//        for (Data data: this.collectChildrenDeep()){
-//            Data copy = data.newInstance();
-//
-//            data.dataValidations=copy.dataValidations;
-//            data.displayTextDependencies=copy.displayTextDependencies;
-//
-//            Field[] fields = data.getFields();
-//            for (Field field : fields) {
-//                try {
-//                    if (de.factoryfx.data.attribute.Attribute.class.isAssignableFrom(field.getType())){
-//                        Object value=null;
-////                        field.setAccessible(true);
-//                        if (field.get(data)!=null){
-//                            final Attribute attribute = (Attribute) field.get(data);
-//                            if (!(attribute instanceof ViewReferenceAttribute) && !(attribute instanceof ViewListReferenceAttribute)){
-//                                value= attribute.get();
-//                            }
-//                        }
-//                        field.setAccessible(true);
-//                        field.set(data,field.get(copy));
-//
-//                        ((Attribute)field.get(data)).set(value);
-//                    }
-//                } catch (Exception e) {
-//                    throw new RuntimeException(e);
-//                }
-//            }
-//        }
         return this.copy();
     }
 
-    Supplier<Data> newInstanceSupplier= () -> {
+    private Supplier<Data> newInstanceSupplier= () -> {
         try {
             return Data.this.getClass().newInstance();
         } catch (InstantiationException | IllegalAccessException e) {
@@ -278,7 +217,7 @@ public abstract class Data {
         }
     }
 
-    Supplier<String> displayTextProvider= () -> Data.this.getClass().getSimpleName()+":"+getId();
+    private Supplier<String> displayTextProvider= () -> Data.this.getClass().getSimpleName()+":"+getId();
 
     @JsonIgnore
     @SuppressWarnings("unchecked")
@@ -314,15 +253,15 @@ public abstract class Data {
         });
 
         for (AttributeValidation<?> validation: dataValidations){
-            final Map<Attribute<?>, List<ValidationError>> validateresult = validation.validate(this);
-            for (Map.Entry<Attribute<?>, List<ValidationError>> entry: validateresult.entrySet()){
+            final Map<Attribute<?>, List<ValidationError>> validateResult = validation.validate(this);
+            for (Map.Entry<Attribute<?>, List<ValidationError>> entry: validateResult.entrySet()){
                 result.get(entry.getKey()).addAll(entry.getValue());
             }
         }
         return result;
     }
 
-    List<AttributeValidation<?>> dataValidations = new ArrayList<>();
+    final List<AttributeValidation<?>> dataValidations = new ArrayList<>();
     private <T> void addValidation(Validation<T> validation, Attribute<?>... dependencies){
         for ( Attribute<?> dependency: dependencies){
             dataValidations.add(new AttributeValidation<>(validation,dependency));
@@ -470,13 +409,13 @@ public abstract class Data {
         return result.propagateRoot(result);
     }
 
-    Data root;
+    private Data root;
     private Data getRoot(){
         return root;
     }
 
     private Function<List<Attribute<?>>,List<Pair<String,List<Attribute<?>>>>> attributeListGroupedSupplier=(List<Attribute<?>> allAttributes)->{
-        return Arrays.asList(new Pair<>("Data",allAttributes));
+        return Collections.singletonList(new Pair<>("Data", allAttributes));
     };
     private void setAttributeListGroupedSupplier(Function<List<Attribute<?>>,List<Pair<String,List<Attribute<?>>>>> attributeListGroupedSupplier){
         this.attributeListGroupedSupplier=attributeListGroupedSupplier;
@@ -506,7 +445,7 @@ public abstract class Data {
     }
 
     private List<Attribute<?>> displayTextDependencies= Collections.emptyList();
-    public void setDisplayTextDependencies(List<Attribute<?>> displayTextDependencies) {
+    private void setDisplayTextDependencies(List<Attribute<?>> displayTextDependencies) {
         this.displayTextDependencies = displayTextDependencies;
     }
 
@@ -525,24 +464,11 @@ public abstract class Data {
     private void addDisplayTextListeners(Data data, AttributeChangeListener attributeChangeListener){
         for (Attribute<?> attribute: data.displayTextDependencies){
             attribute.internal_addListener(attributeChangeListener);
-            if (attribute instanceof ReferenceAttribute<?>){
-                Data nestedData= ((ReferenceAttribute)attribute).get();
-                if (nestedData!=null){
-                    addDisplayTextListeners(nestedData,attributeChangeListener);
-                }
-            }
-            if (attribute instanceof ReferenceListAttribute<?>){
-                List<Data> nestedDatas= ((ReferenceListAttribute)attribute).get();
-                nestedDatas.forEach(nestedData -> {
-                    if (nestedData!=null){
-                        addDisplayTextListeners(nestedData,attributeChangeListener);
-                    }
-                });
-            }
+            attribute.internal_visit(data1 -> addDisplayTextListeners(data1,attributeChangeListener));
         }
     }
 
-    DataUtility dataUtility = new DataUtility(this);
+    private final DataUtility dataUtility = new DataUtility(this);
     /** public utility api */
     public DataUtility utility(){
         return dataUtility;
@@ -563,7 +489,7 @@ public abstract class Data {
 
     }
 
-    DataConfiguration dataConfiguration = new DataConfiguration(this);
+    private final DataConfiguration dataConfiguration = new DataConfiguration(this);
     /** data configurations api */
     public DataConfiguration config(){
         return dataConfiguration;
@@ -606,7 +532,7 @@ public abstract class Data {
 
     }
 
-    Internal internal = new Internal(this);
+    private final Internal internal = new Internal(this);
     /** <b>internal methods should be only used from the framework.</b>
      *  They may change in the Future.
      *  There is no fitting visibility in java therefore this workaround.
@@ -709,8 +635,8 @@ public abstract class Data {
         /**
          * after serialisation or programmatically creation this mus be called first before using the object
          * to:
-         * -fix jackson wrong deserialisation (metatadat ==null)
-         * -propagate root node  to all chileds (for validation etc)
+         * -fix jackson wrong deserialization (metadata ==null)
+         * -propagate root node to all children (for validation etc)
          *
          * unfortunately we must create a copy and can't make the same object usable(which we tried but failed)
          *

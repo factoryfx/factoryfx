@@ -55,9 +55,7 @@ public class DataChoiceDialog {
 
         choiceDialog.setGraphic(null);
 
-        choiceDialog.showAndWait();
-
-        if (ButtonType.OK.equals(choiceDialog.getResult())){
+        if (choiceDialog.showAndWait().isPresent()){
             return Optional.ofNullable(dataTableView.getSelectionModel().getSelectedItem());
         } else {
             return Optional.empty();

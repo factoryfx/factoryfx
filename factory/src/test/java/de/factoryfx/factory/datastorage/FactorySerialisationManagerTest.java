@@ -158,7 +158,7 @@ public class FactorySerialisationManagerTest {
     }
 
     @Test
-    public void read_read_migration_nested_and_dependend(){
+    public void read_read_migration_nested_and_dependent(){
         List<FactoryMigration> migrations = new ArrayList<>();
         migrations.add(new FactoryMigration() {
             @Override

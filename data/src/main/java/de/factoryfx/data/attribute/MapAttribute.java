@@ -36,7 +36,7 @@ public class MapAttribute<K, V> extends ValueAttribute<ObservableMap<K,V>> {
     public String getDisplayText() {
         StringBuilder stringBuilder = new StringBuilder("List (number of entries: "+ get().size()+")\n");
         for (Map.Entry<K,V> item:  get().entrySet()){
-            stringBuilder.append(item.getKey()+":"+item.getValue());
+            stringBuilder.append(item.getKey()).append(":").append(item.getValue());
             stringBuilder.append(",\n");
         }
         return stringBuilder.toString();

@@ -116,7 +116,7 @@ public class FactoryBaseTest {
     }
 
     @Test
-    public void test_changedDeep_changeded_view(){
+    public void test_changedDeep_changed_view(){
         ExampleFactoryAndViewA exampleFactoryAndViewA = new ExampleFactoryAndViewA();
         ExampleFactoryAndViewRoot root = new ExampleFactoryAndViewRoot();
         root.xFactory.set(new XFactory());

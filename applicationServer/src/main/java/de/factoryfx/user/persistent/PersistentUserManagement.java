@@ -17,9 +17,9 @@ public class PersistentUserManagement implements UserManagement {
 
     @Override
     public Optional<AuthorizedUser> authenticate(String user, String password) {
-        for (User existinguser: users){
-            if (existinguser.matchUser(user, password)){
-                return Optional.of(existinguser.toAuthorizedUser());
+        for (User existingUser: users){
+            if (existingUser.matchUser(user, password)){
+                return Optional.of(existingUser.toAuthorizedUser());
             }
         }
 

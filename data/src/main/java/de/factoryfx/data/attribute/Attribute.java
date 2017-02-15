@@ -31,7 +31,7 @@ public abstract class Attribute<T>{
 
     /**
      * merge logic delegate AttributeMergeHelper
-     * @return MergeHelper or null if no merging shoudl be executed
+     * @return MergeHelper or null if no merging should be executed
      */
     public abstract AttributeMergeHelper<?> internal_createMergeHelper();
 
@@ -55,11 +55,9 @@ public abstract class Attribute<T>{
     }
 
     public boolean internal_required() {
-        boolean required=false;
         for (Validation<?> validation: validations){
             if (validation instanceof ObjectRequired<?>) {
-                required = true;
-                break;
+                return true;
             }
         }
         return false;
@@ -68,7 +66,7 @@ public abstract class Attribute<T>{
 
     public abstract void internal_visit(AttributeVisitor attributeVisitor);
 
-    public void internal_visit(Consumer<Data> nestedFactoriesVisitor){
+    public void internal_visit(Consumer<Data> childFactoriesVisitor){
         internal_visit(new AttributeVisitor() {
             @Override
             public void value(Attribute<?> value) {
@@ -77,12 +75,12 @@ public abstract class Attribute<T>{
 
             @Override
             public void reference(ReferenceAttribute<?> reference) {
-                reference.getOptional().ifPresent(nestedFactoriesVisitor::accept);
+                reference.getOptional().ifPresent(childFactoriesVisitor::accept);
             }
 
             @Override
             public void referenceList(ReferenceListAttribute<?> referenceList) {
-                referenceList.get().forEach(nestedFactoriesVisitor::accept);
+                referenceList.get().forEach(childFactoriesVisitor::accept);
             }
         });
     }
