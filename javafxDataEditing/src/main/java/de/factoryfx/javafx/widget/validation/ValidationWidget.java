@@ -149,13 +149,13 @@ public class ValidationWidget implements Widget {
         for (Data data: this.root.internal().collectChildrenDeep()){
             TreeItem<ValidationAndData> dataItem = new TreeItem<>();
             dataItem.setExpanded(true);
-            dataItem.setValue(new ValidationAndData(null,data,data.internal().getPathFromRoot().stream().map(d->d.internal().getDisplayText()).collect(Collectors.joining("/"))));
             data.internal().validateFlat().forEach(validationError->{
                 validationErrors.add(validationError);
                 TreeItem<ValidationAndData> error =new TreeItem<>(new ValidationAndData(validationError,data,data.internal().getDisplayText()));
                 dataItem.getChildren().add(error);
             });
             if (!dataItem.getChildren().isEmpty()){
+                dataItem.setValue(new ValidationAndData(null,data,data.internal().getPathFromRoot().stream().map(d->d.internal().getDisplayText()).collect(Collectors.joining("/"))));
                 root.getChildren().add(dataItem);
             }
         }
