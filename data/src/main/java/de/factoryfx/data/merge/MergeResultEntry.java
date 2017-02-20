@@ -15,7 +15,7 @@ public class MergeResultEntry {
         this.parent=parent;
         this.requiredPermission=attribute.metadata.permission;
 
-        //created here cause attribute ist updatted later
+        //created here cause attribute ist updated later
         mergeResultEntryInfo=new MergeResultEntryInfo(attribute.getDisplayText(), newAttribute.map((a)->a.getDisplayText()).orElse(""), attribute.metadata.labelText, parent.internal().getDisplayText());
     }
 

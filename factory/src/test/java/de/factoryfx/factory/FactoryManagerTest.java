@@ -2,6 +2,7 @@ package de.factoryfx.factory;
 
 import java.util.ArrayList;
 
+import de.factoryfx.factory.exception.RethrowingFactoryExceptionHandler;
 import de.factoryfx.factory.testfactories.ExampleFactoryA;
 import de.factoryfx.factory.testfactories.ExampleFactoryB;
 import de.factoryfx.factory.testfactories.ExampleLiveObjectA;
@@ -12,7 +13,7 @@ public class FactoryManagerTest {
 
     @Test
     public void test(){
-        FactoryManager<ExampleLiveObjectA,Void,ExampleFactoryA> factoryManager = new FactoryManager<>();
+        FactoryManager<ExampleLiveObjectA,Void,ExampleFactoryA> factoryManager = new FactoryManager<>(new RethrowingFactoryExceptionHandler<Void>());
 
         ArrayList<String> calls =new ArrayList<>();
 

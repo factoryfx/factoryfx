@@ -1,6 +1,6 @@
 package de.factoryfx.factory;
 
-import java.util.HashSet;
+import java.util.ArrayDeque;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -58,26 +58,23 @@ public abstract class FactoryBase<L,V> extends Data {
     private L createdLiveObject;
     @JsonIgnore
     private boolean started=false;
+    @JsonIgnore
+    boolean needRecreation =false;
+
+    private L previousLiveObject;
 
     private L instance() {
-        if (!changedDeep() && createdLiveObject !=null) {
-            return createdLiveObject;
-        } else{
+        if (needRecreation){
+            previousLiveObject = this.createdLiveObject;
+            this.createdLiveObject = reCreate(previousLiveObject);
+            needRecreation=false;
+            started=false;
+        } else {
             if (createdLiveObject==null){
-                try {
-                    createdLiveObject = create();
-                } catch (NullPointerException npe){
-                    throw new RuntimeException(this.debugInfo(), npe);
-                }
-            } else {
-                L previousLiveObject = this.createdLiveObject;
-                this.createdLiveObject = reCreate(previousLiveObject);
-                started=false;
-                destroy(previousLiveObject);//TODO check if this is the wrong destroy order (parent are destroyed before the children)
+                createdLiveObject = create();
             }
-            changed=false;
-            return createdLiveObject;
         }
+        return createdLiveObject;
     }
 
     L create(){
@@ -101,47 +98,29 @@ public abstract class FactoryBase<L,V> extends Data {
         }
     }
 
-    private void destroy(L previousLiveObject) {
-        if (destroyerWithPreviousLiveObject!=null  && previousLiveObject!=null){
+    private void destroy(Set<FactoryBase<?,V>> previousFactories) {
+        if (!previousFactories.contains(this) && destroyerWithPreviousLiveObject!=null){
+            destroyerWithPreviousLiveObject.accept(createdLiveObject);
+        }
+        if (previousLiveObject!=null && destroyerWithPreviousLiveObject!=null){
             destroyerWithPreviousLiveObject.accept(previousLiveObject);
         }
+        previousLiveObject=null;
     }
 
-    @JsonIgnore
-    private boolean changed=false;
+    private void determineRecreationNeed(Set<FactoryBase<?,?>> changedFactories, ArrayDeque<FactoryBase<?,?>> path){
+        path.push(this);
 
-    /**set from Merger used to determine which live Objects needs update*/
-    private void markChanged() {
-        changed=true;
-    }
-
-    private void unMarkChanged() {
-        changed=false;
-    }
-
-    boolean changedDeep(){
-        if (changed){
-            return true;
-        }
-        HashSet<FactoryBase<?,V>> children = new HashSet<>();
-        collectChildrenIncludingViews(this,children);
-
-        for (FactoryBase<?,V> data: children){
-            if (data.changed){
-                return true;
+        needRecreation =changedFactories.contains(this) || createdLiveObject==null;  //null means newly added
+        if (needRecreation){
+            for (FactoryBase factoryBase: path){
+                factoryBase.needRecreation =true;
             }
         }
-        return false;
-    }
 
-    private void collectChildrenIncludingViews(FactoryBase<?,V> dataInput, Set<FactoryBase<?,V>> children){
-        dataInput.internalFactory().visitChildFactoriesAndViewsFlat(factoryBase -> {
-            if (children.add(factoryBase)) {
-                collectChildrenIncludingViews(factoryBase, children);
-            }
-        });
+        visitChildFactoriesAndViewsFlat(vFactoryBase -> vFactoryBase.determineRecreationNeed(changedFactories,path));
+        path.pop();
     }
-
 
     private LoopProtector loopProtector = new LoopProtector();
     private void loopDetector(){
@@ -165,13 +144,18 @@ public abstract class FactoryBase<L,V> extends Data {
         return super.internal().collectChildrenDeep().stream().map(this::cast).filter(Optional::isPresent).map(Optional::get).collect(Collectors.toSet());
     }
 
+    private Set<FactoryBase<?,V>> collectChildrenFactoriesFlat() {
+        return super.internal().collectChildrenFlat().stream().map(this::cast).filter(Optional::isPresent).map(Optional::get).collect(Collectors.toSet());
+    }
+
+
 
 
     private String debugInfo(){
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append("Attributes:\n");
         this.internal().visitAttributesFlat((attributeVariableName, attribute) -> {
-            stringBuilder.append(attributeVariableName).append(": ").append(attribute.get()).append("\n");
+            stringBuilder.append(attributeVariableName).append(": ").append(attribute.getDisplayText()).append("\n");
         });
         return stringBuilder.toString();
     }
@@ -216,19 +200,24 @@ public abstract class FactoryBase<L,V> extends Data {
             this.factory = factory;
         }
 
-        /** create and prepare the liveObject*/
+        /** create and prepare the liveobject*/
         public L create(){
             return factory.create();
         }
 
-        /** start the liveObject e.g open a port*/
+        /**determine which live objects needs recreation*/
+        public void determineRecreationNeed(Set<FactoryBase<?,?>> changedFactories) {
+            factory.determineRecreationNeed(changedFactories,new ArrayDeque<>());
+        }
+
+        /** start the liveOobject e.g open a port*/
         public void start() {
             factory.start();
         }
 
         /** start the liveObject e.g open a port*/
-        public void destroy() {
-            factory.destroy(factory.createdLiveObject);
+        public void destroy(Set<FactoryBase<?,V>> previousFactories) {
+            factory.destroy(previousFactories);
         }
 
         /** execute visitor to get runtime informations from the liveobject*/
@@ -244,14 +233,6 @@ public abstract class FactoryBase<L,V> extends Data {
            return factory.instance();
         }
 
-        public void markChanged() {
-            factory.markChanged();
-        }
-
-        public void unMarkChanged() {
-            factory.unMarkChanged();
-        }
-
         public  void loopDetector() {
             factory.loopDetector();
         }
@@ -259,6 +240,15 @@ public abstract class FactoryBase<L,V> extends Data {
         public Set<FactoryBase<?,V>> collectChildFactoriesDeep(){
             return factory.collectChildFactoriesDeep();
         }
+
+        public Set<FactoryBase<?,V>> collectChildrenFactoriesFlat() {
+            return factory.collectChildrenFactoriesFlat();
+        }
+
+        public String debugInfo() {
+            return factory.debugInfo();
+        }
+
 
     }
 
@@ -288,7 +278,17 @@ public abstract class FactoryBase<L,V> extends Data {
     }
 
     LiveCycleConfig<L,V> liveCycleConfig = new LiveCycleConfig<>(this);
-    /** live cycle configurations api */
+
+    /** live cycle configurations api
+     *
+     * Update Order
+     * 1. recreate for changed, create for new
+     * 2. destroy removed, updated
+     * 3. start new
+     *
+     * The goal is to keep the time between destroy and start as short as possible cause that's essentially the application downtime.
+     * Therefore slow operation should be executed in create.
+     * */
     public LiveCycleConfig<L,V> configLiveCycle(){
         return liveCycleConfig;
     }

@@ -8,6 +8,7 @@ import java.util.UUID;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
+import de.factoryfx.factory.exception.RethrowingFactoryExceptionHandler;
 import de.factoryfx.server.angularjs.factory.server.HttpServer;
 import de.factoryfx.server.angularjs.factory.server.HttpServerFactory;
 import de.factoryfx.server.angularjs.factory.LayoutFactory;
@@ -41,7 +42,7 @@ public class WebGuiApplicationCreator<L,V,T extends FactoryBase<L,V>> {
     }
 
     public ApplicationServer<HttpServer,Void,HttpServerFactory<L, V, T>> createApplication(FactoryStorage<HttpServer,Void,HttpServerFactory<L, V, T>>  factoryStorage){
-        return new ApplicationServer<>(new FactoryManager<>(), factoryStorage);
+        return new ApplicationServer<>(new FactoryManager<>(new RethrowingFactoryExceptionHandler<>()), factoryStorage);
     }
 
     public HttpServerFactory<L,V,T> createDefaultFactory() {

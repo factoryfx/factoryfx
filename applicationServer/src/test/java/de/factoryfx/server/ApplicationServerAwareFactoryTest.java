@@ -5,6 +5,7 @@ import de.factoryfx.factory.FactoryManager;
 import de.factoryfx.factory.SimpleFactoryBase;
 import de.factoryfx.factory.atrribute.FactoryReferenceAttribute;
 import de.factoryfx.factory.datastorage.inmemory.InMemoryFactoryStorage;
+import de.factoryfx.factory.exception.RethrowingFactoryExceptionHandler;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -17,7 +18,7 @@ public class ApplicationServerAwareFactoryTest {
         rootTestclazz.ref.set(value);
         Assert.assertNull(value.applicationServer.get());
 
-        ApplicationServer<String,Void,RootTestclazz> applicationServer = new ApplicationServer<>(new FactoryManager<>(), new InMemoryFactoryStorage<>(rootTestclazz));
+        ApplicationServer<String,Void,RootTestclazz> applicationServer = new ApplicationServer<>(new FactoryManager<>(new RethrowingFactoryExceptionHandler<>()), new InMemoryFactoryStorage<>(rootTestclazz));
         applicationServer.start();
 
         Assert.assertEquals(applicationServer,applicationServer.getCurrentFactory().ref.get().applicationServer.get());

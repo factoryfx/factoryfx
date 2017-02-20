@@ -57,14 +57,11 @@ public class DataTreeViewWidgetTest extends Application{
 
         exampleData1 = exampleData1.internal().prepareUsableCopy();
 
-        DataTreeViewWidget dataViewWidget = new DataTreeViewWidget(new DataTreeView<>(() -> dataList, new Function<ExampleData1, TreeItem<Data>>() {
-            @Override
-            public TreeItem<Data> apply(ExampleData1 item) {
-                final TreeItem<Data> dataTreeItem = new TreeItem<>(item);
-                dataTreeItem.getChildren().addAll(item.referenceListAttribute.get().stream().map((Function<ExampleData2, TreeItem<Data>>) TreeItem::new).collect(Collectors.toList()));
-                dataTreeItem.setExpanded(true);
-                return dataTreeItem;
-            }
+        DataTreeViewWidget<ExampleData1> dataViewWidget = new DataTreeViewWidget<>(new DataTreeView<>(() -> dataList, item -> {
+            final TreeItem<Data> dataTreeItem = new TreeItem<>(item);
+            dataTreeItem.getChildren().addAll(item.referenceListAttribute.get().stream().map((Function<ExampleData2, TreeItem<Data>>) TreeItem::new).collect(Collectors.toList()));
+            dataTreeItem.setExpanded(true);
+            return dataTreeItem;
         }),dataEditor,uniformDesign);
 
         BorderPane root = new BorderPane();

@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.Locale;
 
 import de.factoryfx.factory.datastorage.inmemory.InMemoryFactoryStorage;
+import de.factoryfx.factory.exception.RethrowingFactoryExceptionHandler;
 import de.factoryfx.server.angularjs.integration.example.ExampleFactoryA;
 import de.factoryfx.server.angularjs.integration.example.ExampleFactoryB;
 import de.factoryfx.server.angularjs.integration.example.ExampleLiveObjectA;
@@ -28,7 +29,7 @@ public class RestResourceTest {
         existingListEntry.referenceAttribute.set(shared);
         exampleFactoryA.referenceListAttribute.add(existingListEntry);
 
-        ApplicationServer<ExampleLiveObjectA, ExampleVisitor, ExampleFactoryA> defaultApplicationServer = new ApplicationServer<>(new FactoryManager<>(), new InMemoryFactoryStorage<>(exampleFactoryA));
+        ApplicationServer<ExampleLiveObjectA, ExampleVisitor, ExampleFactoryA> defaultApplicationServer = new ApplicationServer<>(new FactoryManager<>(new RethrowingFactoryExceptionHandler<>()), new InMemoryFactoryStorage<>(exampleFactoryA));
         defaultApplicationServer.start();
 
         RestResource<ExampleLiveObjectA, ExampleVisitor,ExampleFactoryA> restResource = new RestResource<>(layout,

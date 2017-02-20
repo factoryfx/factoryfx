@@ -1,7 +1,5 @@
 package de.factoryfx.javafx.widget.datatreeview;
 
-import java.util.function.Consumer;
-
 import com.google.common.collect.TreeTraverser;
 import de.factoryfx.data.Data;
 import de.factoryfx.javafx.editor.data.DataEditor;
@@ -16,13 +14,13 @@ import javafx.scene.control.SplitPane;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 
-public class DataTreeViewWidget implements CloseAwareWidget {
-    private final DataTreeView dataTreeView;
+public class DataTreeViewWidget<T extends Data> implements CloseAwareWidget {
+    private final DataTreeView<T> dataTreeView;
     private final DataEditor dataEditor;
     private double dividerPosition = 0.333;
     private final UniformDesign uniformDesign;
 
-    public DataTreeViewWidget(DataTreeView dataTreeView, DataEditor dataEditor, UniformDesign uniformDesign) {
+    public DataTreeViewWidget(DataTreeView<T> dataTreeView, DataEditor dataEditor, UniformDesign uniformDesign) {
         this.dataTreeView = dataTreeView;
         this.dataEditor = dataEditor;
         this.uniformDesign = uniformDesign;
@@ -62,15 +60,11 @@ public class DataTreeViewWidget implements CloseAwareWidget {
         });
 
 
-        dataTreeView.setUpdateAction(new Consumer<TreeItem<Data>>() {
-            @Override
-            @SuppressWarnings("unchecked")
-            public void accept(TreeItem<Data> dataTreeItem) {
-                tree.setRoot(dataTreeItem);
-                for (TreeItem treeItem: treeTraverser.breadthFirstTraversal(dataTreeItem)){
-                    if (treeItem.getValue()==dataEditor.editData().get()){
-                        tree.getSelectionModel().select(treeItem);
-                    }
+        dataTreeView.setUpdateAction(dataTreeItem -> {
+            tree.setRoot(dataTreeItem);
+            for (TreeItem<Data> treeItem: treeTraverser.breadthFirstTraversal(dataTreeItem)){
+                if (treeItem.getValue()==dataEditor.editData().get()){
+                    tree.getSelectionModel().select(treeItem);
                 }
             }
         });

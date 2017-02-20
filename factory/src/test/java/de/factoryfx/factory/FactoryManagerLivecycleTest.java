@@ -8,6 +8,7 @@ import de.factoryfx.data.attribute.types.StringAttribute;
 import de.factoryfx.factory.atrribute.FactoryReferenceAttribute;
 import de.factoryfx.factory.atrribute.FactoryReferenceListAttribute;
 import de.factoryfx.factory.atrribute.FactoryViewListReferenceAttribute;
+import de.factoryfx.factory.exception.RethrowingFactoryExceptionHandler;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -36,11 +37,11 @@ public class FactoryManagerLivecycleTest {
         public ExampleFactoryA(){
             configLiveCycle().setCreator(() -> {
                 createCalls.add("created");
-                return new ExampleLiveObjectA("",ref.instance());
+                return new ExampleLiveObjectA("",null);
             });
             configLiveCycle().setReCreator(exampleLiveObjectA -> {
                 reCreateCalls.add("created");
-                return new ExampleLiveObjectA("",ref.instance());
+                return new ExampleLiveObjectA("",null);
             });
             configLiveCycle().setDestroyer(exampleLiveObjectA -> destroyCalls.add("created"));
             configLiveCycle().setStarter(exampleLiveObjectA -> startCalls.add("created"));
@@ -86,15 +87,20 @@ public class FactoryManagerLivecycleTest {
         }
     }
 
-    public static class ExampleFactoryC extends FactoryBase<ExampleLiveObjectA,Void> {
+    public static class ExampleFactoryC extends SimpleFactoryBase<ExampleLiveObjectA,Void> {
 
         public StringAttribute stringAttribute=new StringAttribute(new AttributeMetadata());
+
+        @Override
+        public ExampleLiveObjectA createImpl() {
+            return new ExampleLiveObjectA("",null);
+        }
     }
 
 
     @Test
     public void test_initial_start(){
-        FactoryManager<ExampleLiveObjectA,Void,ExampleFactoryA> factoryManager = new FactoryManager<>();
+        FactoryManager<ExampleLiveObjectA,Void,ExampleFactoryA> factoryManager = new FactoryManager<>(new RethrowingFactoryExceptionHandler<Void>());
 
         ExampleFactoryA exampleFactoryA = new ExampleFactoryA();
         ExampleFactoryB exampleFactoryB = new ExampleFactoryB();
@@ -114,7 +120,7 @@ public class FactoryManagerLivecycleTest {
 
     @Test
     public void test_initial_destroy(){
-        FactoryManager<ExampleLiveObjectA,Void,ExampleFactoryA> factoryManager = new FactoryManager<>();
+        FactoryManager<ExampleLiveObjectA,Void,ExampleFactoryA> factoryManager = new FactoryManager<>(new RethrowingFactoryExceptionHandler<Void>());
 
         ExampleFactoryA exampleFactoryA = new ExampleFactoryA();
         ExampleFactoryB exampleFactoryB = new ExampleFactoryB();
@@ -132,7 +138,7 @@ public class FactoryManagerLivecycleTest {
 
     @Test
     public void test_initial_changed(){
-        FactoryManager<ExampleLiveObjectA,Void,ExampleFactoryA> factoryManager = new FactoryManager<>();
+        FactoryManager<ExampleLiveObjectA,Void,ExampleFactoryA> factoryManager = new FactoryManager<>(new RethrowingFactoryExceptionHandler<Void>());
 
         ExampleFactoryA exampleFactoryA = new ExampleFactoryA();
         ExampleFactoryB exampleFactoryB = new ExampleFactoryB();
@@ -163,7 +169,7 @@ public class FactoryManagerLivecycleTest {
 
     @Test
     public void test_initial_viewlist_added(){
-        FactoryManager<ExampleLiveObjectA,Void,ExampleFactoryA> factoryManager = new FactoryManager<>();
+        FactoryManager<ExampleLiveObjectA,Void,ExampleFactoryA> factoryManager = new FactoryManager<>(new RethrowingFactoryExceptionHandler<Void>());
 
         ExampleFactoryA exampleFactoryA = new ExampleFactoryA();
         ExampleFactoryB exampleFactoryB = new ExampleFactoryB();
@@ -194,7 +200,7 @@ public class FactoryManagerLivecycleTest {
 
     @Test
     public void test_initial_viewlist_removed(){
-        FactoryManager<ExampleLiveObjectA,Void,ExampleFactoryA> factoryManager = new FactoryManager<>();
+        FactoryManager<ExampleLiveObjectA,Void,ExampleFactoryA> factoryManager = new FactoryManager<>(new RethrowingFactoryExceptionHandler<Void>());
 
         ExampleFactoryA exampleFactoryA = new ExampleFactoryA();
         ExampleFactoryB exampleFactoryB = new ExampleFactoryB();

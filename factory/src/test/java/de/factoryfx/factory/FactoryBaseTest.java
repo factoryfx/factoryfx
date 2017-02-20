@@ -1,5 +1,9 @@
 package de.factoryfx.factory;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+
 import de.factoryfx.data.attribute.AttributeMetadata;
 import de.factoryfx.data.attribute.types.StringAttribute;
 import de.factoryfx.factory.atrribute.FactoryReferenceAttribute;
@@ -42,103 +46,167 @@ public class FactoryBaseTest {
 //        Assert.assertEquals(3,liveObjects.entrySet().size());
     }
 
-    public static class ExampleFactoryAndViewRoot extends SimpleFactoryBase<Void,Void> {
-        public final FactoryReferenceAttribute<Void,ExampleFactoryAndViewA> referenceAttribute = new FactoryReferenceAttribute<>(ExampleFactoryAndViewA.class,new AttributeMetadata().labelText("ExampleA2"));
-        public final FactoryReferenceAttribute<Void,XFactory> xFactory = new FactoryReferenceAttribute<>(XFactory.class,new AttributeMetadata().labelText("XFactory"));
-        public final FactoryReferenceListAttribute<Void,XFactory> xFactoryList = new FactoryReferenceListAttribute<>(XFactory.class,new AttributeMetadata().labelText("XFactory"));
+    public static class XRoot extends SimpleFactoryBase<String,Void> {
+        public final FactoryReferenceAttribute<String,ExampleFactoryAndViewA> referenceAttribute = new FactoryReferenceAttribute<>(ExampleFactoryAndViewA.class,new AttributeMetadata().labelText("ExampleA2"));
+        public final FactoryReferenceAttribute<String,XFactory> xFactory = new FactoryReferenceAttribute<>(XFactory.class,new AttributeMetadata().labelText("XFactory"));
+        public final FactoryReferenceAttribute<String,XFactory> xFactory2 = new FactoryReferenceAttribute<>(XFactory.class,new AttributeMetadata().labelText("XFactory"));
+        public final FactoryReferenceListAttribute<String,XFactory> xFactoryList = new FactoryReferenceListAttribute<>(XFactory.class,new AttributeMetadata().labelText("XFactory"));
 
         @Override
-        public Void createImpl() {
-            return null;
+        public String createImpl() {
+            referenceAttribute.instance();
+            xFactory.instance();
+            xFactory2.instance();
+            xFactoryList.instances();
+            return "1";
         }
     }
 
-    public static class ExampleFactoryAndViewA extends SimpleFactoryBase<Void,Void> {
-        public final FactoryViewReferenceAttribute<ExampleFactoryAndViewRoot,Void,XFactory> referenceView = new FactoryViewReferenceAttribute<>(new AttributeMetadata().labelText("ExampleA2"),
+    public static class ExampleFactoryAndViewA extends SimpleFactoryBase<String,Void> {
+        public final FactoryViewReferenceAttribute<XRoot,String,XFactory> referenceView = new FactoryViewReferenceAttribute<>(new AttributeMetadata().labelText("ExampleA2"),
                 root -> root.xFactory.get());
-        public final FactoryViewListReferenceAttribute<ExampleFactoryAndViewRoot,Void,XFactory> listView = new FactoryViewListReferenceAttribute<>(new AttributeMetadata().labelText("ExampleA2"),
+        public final FactoryViewListReferenceAttribute<XRoot,String,XFactory> listView = new FactoryViewListReferenceAttribute<>(new AttributeMetadata().labelText("ExampleA2"),
                 root -> root.xFactoryList.get());
 
         @Override
-        public Void createImpl() {
-            return null;
+        public String createImpl() {
+            referenceView.instance();
+            listView.instances();
+            return "2";
         }
     }
 
 
-    public static class XFactory extends SimpleFactoryBase<Void,Void> {
+    public static class XFactory extends SimpleFactoryBase<String,Void> {
         public final StringAttribute bla=new StringAttribute(new AttributeMetadata());
+
+        public List<String> createCalls=new ArrayList<>();
+
         @Override
-        public Void createImpl() {
-            return null;
+        public String createImpl() {
+            createCalls.add("call");
+            return "3";
         }
     }
 
 
 
     @Test
-    public void test_changedDeep(){
+    public void test_determineRecreationNeed(){
         ExampleFactoryAndViewA exampleFactoryAndViewA = new ExampleFactoryAndViewA();
-        ExampleFactoryAndViewRoot root = new ExampleFactoryAndViewRoot();
+        XRoot root = new XRoot();
         root.xFactory.set(new XFactory());
         root.referenceAttribute.set(exampleFactoryAndViewA);
 
-        final ExampleFactoryAndViewRoot usableCopy = root.internal().prepareUsableCopy();
+        final XRoot usableCopy = root.internal().prepareUsableCopy();
+        usableCopy.internalFactory().instance();
 
-        usableCopy.internalFactory().markChanged();
-        Assert.assertTrue(usableCopy.changedDeep());
+
+        HashSet<FactoryBase<?,?>> changed =new HashSet<>();
+        changed.add(usableCopy);
+        usableCopy.internalFactory().determineRecreationNeed(changed);
+        Assert.assertTrue(usableCopy.needRecreation);
+        Assert.assertFalse(usableCopy.xFactory.get().needRecreation);
+        Assert.assertFalse(usableCopy.referenceAttribute.get().needRecreation);
     }
 
     @Test
-    public void test_changedDeep_2(){
+    public void test_determineRecreationNeed_2(){
         ExampleFactoryAndViewA exampleFactoryAndViewA = new ExampleFactoryAndViewA();
-        ExampleFactoryAndViewRoot root = new ExampleFactoryAndViewRoot();
+        XRoot root = new XRoot();
         root.xFactory.set(new XFactory());
         root.referenceAttribute.set(exampleFactoryAndViewA);
 
-        final ExampleFactoryAndViewRoot usableCopy = root.internal().prepareUsableCopy();
+        final XRoot usableCopy = root.internal().prepareUsableCopy();
+        usableCopy.internalFactory().instance();
 
-        usableCopy.referenceAttribute.get().internalFactory().markChanged();
-        Assert.assertTrue(usableCopy.changedDeep());
+        HashSet<FactoryBase<?,?>> changed =new HashSet<>();
+        changed.add(usableCopy.referenceAttribute.get());
+        usableCopy.internalFactory().determineRecreationNeed(changed);
+        Assert.assertTrue(usableCopy.needRecreation);
+        Assert.assertFalse(usableCopy.xFactory.get().needRecreation);
+        Assert.assertTrue(usableCopy.referenceAttribute.get().needRecreation);
     }
 
     @Test
     public void test_changedDeep_3(){
         ExampleFactoryAndViewA exampleFactoryAndViewA = new ExampleFactoryAndViewA();
-        ExampleFactoryAndViewRoot root = new ExampleFactoryAndViewRoot();
+        XRoot root = new XRoot();
         root.xFactory.set(new XFactory());
         root.referenceAttribute.set(exampleFactoryAndViewA);
 
-        final ExampleFactoryAndViewRoot usableCopy = root.internal().prepareUsableCopy();
+        final XRoot usableCopy = root.internal().prepareUsableCopy();
+        usableCopy.internalFactory().instance();
 
-        usableCopy.internalFactory().markChanged();
-        Assert.assertFalse(usableCopy.referenceAttribute.get().changedDeep());
+        HashSet<FactoryBase<?,?>> changed =new HashSet<>();
+        changed.add(usableCopy.referenceAttribute.get());
+        changed.add(usableCopy.xFactory.get());
+
+        usableCopy.internalFactory().determineRecreationNeed(changed);
+        Assert.assertTrue(usableCopy.needRecreation);
+        Assert.assertTrue(usableCopy.xFactory.get().needRecreation);
+        Assert.assertTrue(usableCopy.referenceAttribute.get().needRecreation);
     }
 
     @Test
     public void test_changedDeep_changed_view(){
         ExampleFactoryAndViewA exampleFactoryAndViewA = new ExampleFactoryAndViewA();
-        ExampleFactoryAndViewRoot root = new ExampleFactoryAndViewRoot();
+        XRoot root = new XRoot();
         root.xFactory.set(new XFactory());
         root.referenceAttribute.set(exampleFactoryAndViewA);
 
-        final ExampleFactoryAndViewRoot usableCopy = root.internal().prepareUsableCopy();
+        final XRoot usableCopy = root.internal().prepareUsableCopy();
+        usableCopy.internalFactory().instance();
 
-        usableCopy.xFactory.get().internalFactory().markChanged();
-        Assert.assertTrue(usableCopy.referenceAttribute.get().changedDeep());
+        HashSet<FactoryBase<?,?>> changed =new HashSet<>();
+        changed.add(usableCopy.xFactory.get());
+
+        usableCopy.internalFactory().determineRecreationNeed(changed);
+        Assert.assertTrue(usableCopy.needRecreation);
+        Assert.assertTrue(usableCopy.xFactory.get().needRecreation);
+        Assert.assertTrue(usableCopy.referenceAttribute.get().needRecreation);
     }
 
 
     @Test
     public void test_changedDeep_viewlist(){
         ExampleFactoryAndViewA exampleFactoryAndViewA = new ExampleFactoryAndViewA();
-        ExampleFactoryAndViewRoot root = new ExampleFactoryAndViewRoot();
+        XRoot root = new XRoot();
         root.xFactoryList.add(new XFactory());
         root.referenceAttribute.set(exampleFactoryAndViewA);
 
-        final ExampleFactoryAndViewRoot usableCopy = root.internal().prepareUsableCopy();
+        final XRoot usableCopy = root.internal().prepareUsableCopy();
+        usableCopy.internalFactory().instance();
 
-        usableCopy.xFactoryList.get().get(0).internalFactory().markChanged();
-        Assert.assertTrue(usableCopy.referenceAttribute.get().changedDeep());
+        HashSet<FactoryBase<?,?>> changed =new HashSet<>();
+        changed.add(usableCopy.xFactoryList.get().get(0));
+
+        usableCopy.internalFactory().determineRecreationNeed(changed);
+        Assert.assertTrue(usableCopy.needRecreation);
+        Assert.assertTrue(usableCopy.xFactoryList.get(0).needRecreation);
+        Assert.assertTrue(usableCopy.referenceAttribute.get().needRecreation);
+    }
+
+
+    @Test
+    public void test_determineRecreationNeed_recreate_only_once(){
+        XRoot root = new XRoot();
+        root.xFactory.set(new XFactory());
+        root.xFactory2.set(root.xFactory.get());
+
+        final XRoot usableCopy = root.internal().prepareUsableCopy();
+        usableCopy.internalFactory().instance();
+
+
+        HashSet<FactoryBase<?,?>> changed =new HashSet<>();
+        changed.add(usableCopy.xFactory.get());
+        usableCopy.internalFactory().determineRecreationNeed(changed);
+        Assert.assertTrue(usableCopy.needRecreation);
+        Assert.assertTrue(usableCopy.xFactory.get().needRecreation);
+
+        usableCopy.xFactory.get().createCalls.clear();
+        usableCopy.internalFactory().instance();
+        Assert.assertEquals(1,usableCopy.xFactory.get().createCalls.size());
+
     }
 }

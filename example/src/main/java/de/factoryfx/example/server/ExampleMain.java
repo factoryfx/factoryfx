@@ -8,15 +8,6 @@ import java.util.stream.Collectors;
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
 import com.google.common.io.ByteStreams;
-import de.factoryfx.factory.datastorage.inmemory.InMemoryFactoryStorage;
-import de.factoryfx.server.SinglePrecessInstanceUtil;
-import de.factoryfx.server.WebAppViewer;
-import de.factoryfx.server.angularjs.WebGuiApplicationCreator;
-import de.factoryfx.server.angularjs.factory.server.HttpServer;
-import de.factoryfx.server.angularjs.factory.server.HttpServerFactory;
-import de.factoryfx.server.angularjs.model.view.GuiView;
-import de.factoryfx.server.angularjs.model.view.WebGuiFactoryHeader;
-import de.factoryfx.factory.util.ClasspathBasedFactoryProvider;
 import de.factoryfx.data.util.LanguageText;
 import de.factoryfx.example.factory.OrderCollector;
 import de.factoryfx.example.factory.OrderCollectorToTables;
@@ -26,7 +17,18 @@ import de.factoryfx.example.factory.ShopFactory;
 import de.factoryfx.example.factory.VatRateFactory;
 import de.factoryfx.example.factory.netherlands.NetherlandsCarProductFactory;
 import de.factoryfx.factory.FactoryManager;
+import de.factoryfx.factory.datastorage.inmemory.InMemoryFactoryStorage;
+import de.factoryfx.factory.exception.AllOrNothingFactoryExceptionHandler;
+import de.factoryfx.factory.exception.LoggingFactoryExceptionHandler;
+import de.factoryfx.factory.util.ClasspathBasedFactoryProvider;
 import de.factoryfx.server.ApplicationServer;
+import de.factoryfx.server.SinglePrecessInstanceUtil;
+import de.factoryfx.server.WebAppViewer;
+import de.factoryfx.server.angularjs.WebGuiApplicationCreator;
+import de.factoryfx.server.angularjs.factory.server.HttpServer;
+import de.factoryfx.server.angularjs.factory.server.HttpServerFactory;
+import de.factoryfx.server.angularjs.model.view.GuiView;
+import de.factoryfx.server.angularjs.model.view.WebGuiFactoryHeader;
 import de.factoryfx.user.NoUserManagement;
 import javafx.application.Application;
 import javafx.stage.Stage;
@@ -40,7 +42,7 @@ public class ExampleMain extends Application {
         new WebAppViewer(primaryStage, () -> {
             ShopFactory shopFactory = getNetherlandsShopFactory();
 
-            ApplicationServer<Shop, OrderCollector, ShopFactory> applicationServer = new ApplicationServer<>(new FactoryManager<>(), new InMemoryFactoryStorage<>(shopFactory));
+            ApplicationServer<Shop, OrderCollector, ShopFactory> applicationServer = new ApplicationServer<>(new FactoryManager<>(new LoggingFactoryExceptionHandler<>(new AllOrNothingFactoryExceptionHandler<>())), new InMemoryFactoryStorage<>(shopFactory));
             applicationServer.start();
 
             WebGuiApplicationCreator<Shop, OrderCollector, ShopFactory> webGuiApplicationCreator=new WebGuiApplicationCreator<>(

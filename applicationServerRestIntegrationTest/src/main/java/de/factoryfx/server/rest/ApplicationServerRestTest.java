@@ -11,6 +11,7 @@ import de.factoryfx.factory.SimpleFactoryBase;
 import de.factoryfx.factory.atrribute.FactoryReferenceAttribute;
 import de.factoryfx.factory.datastorage.StoredFactoryMetadata;
 import de.factoryfx.factory.datastorage.inmemory.InMemoryFactoryStorage;
+import de.factoryfx.factory.exception.RethrowingFactoryExceptionHandler;
 import de.factoryfx.server.ApplicationServer;
 import de.factoryfx.server.rest.client.ApplicationServerRestClient;
 import de.factoryfx.server.rest.client.ApplicationServerRestClientFactory;
@@ -49,7 +50,7 @@ public class ApplicationServerRestTest {
 
             final RootTestclazz rootTestclazz = new RootTestclazz();
             rootTestclazz.applicationServerRestServer.set(applicationServerRestServerFactory);
-            ApplicationServer<String,Void,RootTestclazz> applicationServer = new ApplicationServer<>(new FactoryManager<>(), new InMemoryFactoryStorage<>(rootTestclazz));
+            ApplicationServer<String,Void,RootTestclazz> applicationServer = new ApplicationServer<>(new FactoryManager<>(new RethrowingFactoryExceptionHandler<>()), new InMemoryFactoryStorage<>(rootTestclazz));
             applicationServer.start();
         }).start();
 

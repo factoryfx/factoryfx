@@ -12,6 +12,7 @@ import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
 import com.google.common.io.ByteStreams;
 import de.factoryfx.factory.datastorage.inmemory.InMemoryFactoryStorage;
+import de.factoryfx.factory.exception.RethrowingFactoryExceptionHandler;
 import de.factoryfx.server.SinglePrecessInstanceUtil;
 import de.factoryfx.server.WebAppViewer;
 import de.factoryfx.server.angularjs.WebGuiApplicationCreator;
@@ -62,7 +63,7 @@ public class WebGuiTest extends Application{
             }
             exampleFactoryA.referenceListAttribute.add(exampleFactoryA.referenceAttribute.get());
 
-            ApplicationServer<ExampleLiveObjectA, ExampleVisitor, ExampleFactoryA> exampleApplicationServer = new ApplicationServer<>(new FactoryManager<>(), new InMemoryFactoryStorage<>(exampleFactoryA));
+            ApplicationServer<ExampleLiveObjectA, ExampleVisitor, ExampleFactoryA> exampleApplicationServer = new ApplicationServer<>(new FactoryManager<>(new RethrowingFactoryExceptionHandler<>()), new InMemoryFactoryStorage<>(exampleFactoryA));
             exampleApplicationServer.start();
 
             {
