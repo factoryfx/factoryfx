@@ -16,21 +16,21 @@ public class LoggingFactoryExceptionHandler<V> implements FactoryExceptionHandle
 
     @Override
     public void createOrRecreateException(Exception e, FactoryBase<?,V> factory, ExceptionResponseAction exceptionResponse){
-        log(e,factory);
+        log(e,factory,"createOrRecreate");
         delegate.createOrRecreateException(e,factory,exceptionResponse);
     }
     @Override
     public void startException(Exception e, FactoryBase<?,V> factory, ExceptionResponseAction exceptionResponse) {
-        log(e,factory);
+        log(e,factory,"start");
         delegate.startException(e,factory,exceptionResponse);
     }
     @Override
     public void destroyException(Exception e, FactoryBase<?,V> factory, ExceptionResponseAction exceptionResponse) {
-        log(e,factory);
+        log(e,factory,"destroy");
         delegate.destroyException(e,factory,exceptionResponse);
     }
 
-    private void log(Exception e, FactoryBase<?,V> factory) {
-        logger.error(factory.internalFactory().debugInfo(), e);
+    private void log(Exception e, FactoryBase<?,V> factory,String text) {
+        logger.error("\nException during "+text+" for factory:\n"+factory.internalFactory().debugInfo(), e);
     }
 }

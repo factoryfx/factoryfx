@@ -81,7 +81,7 @@ public abstract class FactoryBase<L,V> extends Data {
         if (creator!=null){
             return creator.get();
         }
-        throw new IllegalStateException("no creator defined");
+        throw new IllegalStateException("no creator defined: "+getClass());
     }
 
     private L reCreate(L previousLiveObject) {
@@ -153,11 +153,13 @@ public abstract class FactoryBase<L,V> extends Data {
 
     private String debugInfo(){
         StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append("Attributes:\n");
+        stringBuilder.append("ID:\n  ");
+        stringBuilder.append(getId());
+        stringBuilder.append("\nAttributes:\n");
         this.internal().visitAttributesFlat((attributeVariableName, attribute) -> {
-            stringBuilder.append(attributeVariableName).append(": ").append(attribute.getDisplayText()).append("\n");
+            stringBuilder.append("  ").append(attributeVariableName).append(": ").append(attribute.getDisplayText()).append("\n");
         });
-        return stringBuilder.toString();
+        return stringBuilder.toString().trim();
     }
 
 

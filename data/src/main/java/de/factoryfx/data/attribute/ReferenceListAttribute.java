@@ -228,11 +228,19 @@ public class ReferenceListAttribute<T extends Data> extends Attribute<List<T>> {
 
     @Override
     public String getDisplayText() {
-        StringBuilder stringBuilder = new StringBuilder("List (number of entries: "+ list.size()+")\n");
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append("[");
+        stringBuilder.append(list.size());
+        stringBuilder.append("][");
+        int counter=0;
         for (T item:  list){
             stringBuilder.append(item.internal().getDisplayText());
-            stringBuilder.append(",\n");
+            if (counter<list.size()-1){
+                stringBuilder.append(", ");
+            }
+            counter++;
         }
+        stringBuilder.append("]");
         return stringBuilder.toString();
     }
 

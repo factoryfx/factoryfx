@@ -5,6 +5,7 @@ import de.factoryfx.data.attribute.types.StringAttribute;
 import de.factoryfx.example.server.OrderStorage;
 import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.factory.atrribute.FactoryReferenceListAttribute;
+import javafx.stage.Stage;
 
 public class ShopFactory extends FactoryBase<Shop,OrderCollector> {
 
@@ -12,8 +13,7 @@ public class ShopFactory extends FactoryBase<Shop,OrderCollector> {
         config().setDisplayTextProvider(()->"Shop");
 
         configLiveCycle().setCreator(() -> {
-            throw new NullPointerException();
-//            return new Shop(stageTitle.get(), products.instances(),new Stage(), new OrderStorage());
+            return new Shop(stageTitle.get(), products.instances(),new Stage(), new OrderStorage());
         });
         configLiveCycle().setReCreator((previousLiveObject) -> new Shop(stageTitle.get(), products.instances(),previousLiveObject.getStage(), new OrderStorage()));
         configLiveCycle().setStarter(newLiveObject -> newLiveObject.start());

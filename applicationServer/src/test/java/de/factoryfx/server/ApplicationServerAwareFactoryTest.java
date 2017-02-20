@@ -26,7 +26,9 @@ public class ApplicationServerAwareFactoryTest {
     }
 
     public static class ApplicationServerAwareFactoryTestclazz extends ApplicationServerAwareFactory<Void, String, RootTestclazz, String>{
-
+        public ApplicationServerAwareFactoryTestclazz(){
+            this.configLiveCycle().setCreator(() -> "");
+        }
     }
 
     public static class RootTestclazz extends SimpleFactoryBase<String,Void>{
