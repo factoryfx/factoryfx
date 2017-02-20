@@ -6,6 +6,7 @@ import de.factoryfx.javafx.view.container.ViewsDisplayWidget;
 import de.factoryfx.javafx.widget.Widget;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.scene.Node;
+import javafx.scene.control.ScrollPane;
 
 public class View implements Widget {
 
@@ -31,7 +32,7 @@ public class View implements Widget {
 
     @Override
     public Node createContent() {
-        return viewContent.createContent();
+        return new ScrollPane(viewContent.createContent());
     }
 
     public boolean isShowing() {

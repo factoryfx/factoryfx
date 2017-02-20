@@ -19,6 +19,7 @@ import javafx.geometry.Orientation;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeTableColumn;
@@ -121,7 +122,7 @@ public class ValidationWidget implements Widget {
 //        SplitPane.setResizableWithParent(vBox, Boolean.TRUE);
         splitPane.getItems().add(vBox);
 
-        splitPane.getItems().add( dataEditor.createContent());
+        splitPane.getItems().add(new ScrollPane(dataEditor.createContent()));
 
         splitPane.disableProperty().bind(isValid);
         final BorderPane borderPane = new BorderPane();
