@@ -8,7 +8,7 @@ import de.factoryfx.data.merge.testfactories.IdData;
 import org.junit.Assert;
 import org.junit.Test;
 
-public class MapAttributeTest {
+public class ValueMapAttributeTest {
 
     public static class ExampleMapFactory extends IdData {
         public StringMapAttribute mapAttribute=new StringMapAttribute(new AttributeMetadata());

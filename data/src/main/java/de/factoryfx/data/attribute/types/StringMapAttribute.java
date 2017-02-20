@@ -2,10 +2,10 @@ package de.factoryfx.data.attribute.types;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import de.factoryfx.data.attribute.AttributeMetadata;
-import de.factoryfx.data.attribute.MapAttribute;
+import de.factoryfx.data.attribute.ValueMapAttribute;
 import de.factoryfx.data.jackson.ObservableMapJacksonAbleWrapper;
 
-public class StringMapAttribute extends MapAttribute<String,String> {
+public class StringMapAttribute extends ValueMapAttribute<String,String> {
 
     public StringMapAttribute(AttributeMetadata attributeMetadata) {
         super(attributeMetadata, String.class, String.class);

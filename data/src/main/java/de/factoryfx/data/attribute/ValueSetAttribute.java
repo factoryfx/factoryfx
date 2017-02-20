@@ -36,12 +36,7 @@ public class ValueSetAttribute<T> extends ValueAttribute<Set<T>> {
 
     @Override
     public String getDisplayText() {
-        StringBuilder stringBuilder = new StringBuilder("Set (number of entries: "+ get().size()+")\n");
-        for (T item:  get()){
-            stringBuilder.append(item);
-            stringBuilder.append(",\n");
-        }
-        return stringBuilder.toString();
+        return new CollectionAttributeUtil<>(get(), item -> item.toString()).getDisplayText();
     }
 
     @Override

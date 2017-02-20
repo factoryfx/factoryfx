@@ -42,12 +42,7 @@ public class ValueListAttribute<T> extends ValueAttribute<List<T>> {
 
     @Override
     public String getDisplayText() {
-        StringBuilder stringBuilder = new StringBuilder("List (number of entries: "+ get().size()+")\n");
-        for (T item:  get()){
-            stringBuilder.append(item);
-            stringBuilder.append(",\n");
-        }
-        return stringBuilder.toString();
+        return new CollectionAttributeUtil<>(get(), t -> t.toString()).getDisplayText();
     }
 
     @Override

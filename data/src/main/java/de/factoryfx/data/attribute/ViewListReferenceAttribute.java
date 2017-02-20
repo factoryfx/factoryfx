@@ -176,14 +176,9 @@ public class ViewListReferenceAttribute <R extends Data, T extends Data> extends
 
     @Override
     public String getDisplayText() {
-        List<T> list = get();
-        StringBuilder stringBuilder = new StringBuilder("List (number of entries: "+ list.size()+")\n");
-        for (T item: list){
-            stringBuilder.append(item.internal().getDisplayText());
-            stringBuilder.append(",\n");
-        }
-        return stringBuilder.toString();
+        return new CollectionAttributeUtil<>(get(), t -> t.internal().getDisplayText()).getDisplayText();
     }
+
 
     @Override
     public void internal_visit(AttributeVisitor attributeVisitor) {
