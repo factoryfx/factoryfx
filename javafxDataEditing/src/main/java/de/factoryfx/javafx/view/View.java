@@ -32,7 +32,10 @@ public class View implements Widget {
 
     @Override
     public Node createContent() {
-        return new ScrollPane(viewContent.createContent());
+        final ScrollPane scrollPane = new ScrollPane(viewContent.createContent());
+        scrollPane.setFitToWidth(true);
+        scrollPane.setFitToHeight(true);
+        return scrollPane;
     }
 
     public boolean isShowing() {

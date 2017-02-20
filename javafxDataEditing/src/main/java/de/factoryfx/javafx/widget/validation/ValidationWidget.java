@@ -122,7 +122,10 @@ public class ValidationWidget implements Widget {
 //        SplitPane.setResizableWithParent(vBox, Boolean.TRUE);
         splitPane.getItems().add(vBox);
 
-        splitPane.getItems().add(new ScrollPane(dataEditor.createContent()));
+        final ScrollPane scrollPane = new ScrollPane(dataEditor.createContent());
+        scrollPane.setFitToWidth(true);
+        scrollPane.setFitToHeight(true);
+        splitPane.getItems().add(scrollPane);
 
         splitPane.disableProperty().bind(isValid);
         final BorderPane borderPane = new BorderPane();
