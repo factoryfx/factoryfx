@@ -238,6 +238,9 @@ public class TableControlWidget<T> implements Widget {
                 if (data instanceof Data){
                     return ((Data)data).internal().matchSearchText(newValue);
                 }
+                if (data instanceof String){
+                    return ((String) data).contains(newValue);
+                }
 
                 return true;
             });
