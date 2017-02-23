@@ -144,7 +144,6 @@ public class ValidationWidget implements Widget {
     }
 
     private void validate(TreeTableView<ValidationAndData> tableView){
-        Data selected= dataEditor.editData().get();
         final TreeItem<ValidationAndData> root = new TreeItem<>();
         tableView.setRoot(root);
         tableView.setShowRoot(false);
@@ -169,11 +168,6 @@ public class ValidationWidget implements Widget {
         }
         tableView.getSelectionModel().clearSelection();
         dataEditor.reset();
-//        validationErrors.forEach(validationAndData -> {
-//            if (validationAndData.data==selected){
-//                tableView.getSelectionModel().select(validationAndData);
-//            }
-//        });
         isValid.set(validationErrors.isEmpty());
     }
 
