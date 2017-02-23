@@ -18,23 +18,10 @@ import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
-import javafx.scene.control.CheckMenuItem;
-import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
-import javafx.scene.control.MenuItem;
-import javafx.scene.control.SelectionMode;
 import javafx.scene.control.Separator;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TablePosition;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
-import javafx.scene.input.Clipboard;
-import javafx.scene.input.ClipboardContent;
-import javafx.scene.input.DataFormat;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyCodeCombination;
-import javafx.scene.input.KeyCombination;
-import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.util.Duration;
@@ -44,93 +31,29 @@ public class TableControlWidget<T> implements Widget {
     private final TableView<T> tableView;
     TextField filterField;
     private final UniformDesign uniformDesign;
+    private final TableMenu<T> tableMenu;
 
-    public TableControlWidget(TableView<T> tableView, UniformDesign uniformDesign) {
+    public TableControlWidget(TableView<T> tableView, TableMenu<T> tableMenu,  UniformDesign uniformDesign) {
+        this.tableMenu=tableMenu;
         this.tableView = tableView;
         this.uniformDesign = uniformDesign;
 
-        tableView.setTableMenuButtonVisible(true);
-
         setupTableControls();
-
-        tableView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
-        MenuItem item = new MenuItem("Copy cell");
-        item.setOnAction(event -> {
-            copyTableCell(tableView);
-        });
-        item.setAccelerator(new KeyCodeCombination(KeyCode.C, KeyCombination.CONTROL_DOWN));//don't work on ContextMenu but keep is for the display text
-        KeyCodeCombination keyCodeCombination = new KeyCodeCombination(KeyCode.C, KeyCombination.CONTROL_DOWN);
-        this.tableView.addEventFilter(KeyEvent.KEY_RELEASED, event -> {
-            if (keyCodeCombination.match(event)) {
-                copyTableCell(tableView);
-            }
-        });
-
-        MenuItem export = new MenuItem("Copy table (csv)");
-        export.setOnAction(event -> {
-            exportTable(tableView);
-        });
-
-        CheckMenuItem toggleVisible = new CheckMenuItem("Filter visible");
-        toggleVisible.selectedProperty().bindBidirectional(target.visibleProperty());
-
-        ContextMenu menu = new ContextMenu();
-        menu.getItems().add(item);
-        menu.getItems().add(export);
-        menu.getItems().add(toggleVisible);
-        tableView.setContextMenu(menu);
+        tableMenu.addMenu(tableView);
     }
+
+    public TableControlWidget(TableView<T> tableView, UniformDesign uniformDesign) {
+        this(tableView,new TableMenu<>(uniformDesign),uniformDesign);
+    }
+
 
     public void clearFilter() {
         filterField.clear();
     }
 
-    private void copyTableCell(final TableView<?> tableView) {
-        StringBuilder clipboardString = new StringBuilder();
-        for (TablePosition<?, ?> tablePosition : tableView.getSelectionModel().getSelectedCells()) {
-            Object cell = tableView.getColumns().get(tablePosition.getColumn()).getCellData(tablePosition.getRow());
-            clipboardString.append(cell);
-        }
-        final ClipboardContent content = new ClipboardContent();
-        content.putString(clipboardString.toString());
-        Clipboard.getSystemClipboard().setContent(content);
-    }
-
     @Override
     public Node createContent() {
         return target;
-    }
-
-    private String escapeCsvString(String s) {
-        return "\"" +
-                s.replace("\"", "\"\"") +
-                "\"";
-    }
-
-    private void exportTable(final TableView<?> tableView) {
-        StringBuilder clipboardString = new StringBuilder();
-
-        for (TableColumn<?, ?> column : tableView.getColumns()) {
-            clipboardString.append(escapeCsvString(column.getText())).append("\t");
-        }
-        clipboardString.append("\n");
-
-        for (int i = 0; i < tableView.getItems().size(); i++) {
-            for (TableColumn<?, ?> column : tableView.getColumns()) {
-                Object cellData = column.getCellData(i);
-                String data = "";
-                if (cellData != null) {
-                    data = cellData.toString();
-                }
-                clipboardString.append(escapeCsvString(data)).append("\t");
-            }
-            clipboardString.append("\n");
-        }
-
-        final ClipboardContent content = new ClipboardContent();
-        content.put(DataFormat.PLAIN_TEXT, clipboardString.toString());
-        Clipboard.getSystemClipboard().setContent(content);
-
     }
 
     public TableControlWidget hide() {

@@ -318,7 +318,7 @@ public abstract class Data {
     }
 
     private <T extends Data> T copy() {
-        return copyDeep(0,Integer.MAX_VALUE,new HashMap<>());
+        return (T)copyDeep(0,Integer.MAX_VALUE,new HashMap<>());
     }
 
     @SuppressWarnings("unchecked")
@@ -336,27 +336,25 @@ public abstract class Data {
         return result;
     }
 
-
-
     /**copy including one the references first level of nested references*/
+    @SuppressWarnings("unchecked")
     private <T extends Data> T copyOneLevelDeep(){
-        return copyDeep(0,1,new HashMap<>());
+        return (T)copyDeep(0,1,new HashMap<>());
     }
 
     /**copy without nested references, only value attributes are copied*/
+    @SuppressWarnings("unchecked")
     private <T extends Data> T copyZeroLevelDeep(){
-        return copyDeep(0,0,new HashMap<>());
+        return (T)copyDeep(0,0,new HashMap<>());
     }
 
-
-    @SuppressWarnings("unchecked")
-    private <T extends Data> T copyDeep(final int level, final int maxLevel, HashMap<Object,Data> identityPreserver){
+    private Data copyDeep(final int level, final int maxLevel, HashMap<Object,Data> identityPreserver){
         if (level>maxLevel){
             return null;
         }
-        T result= (T) identityPreserver.get(this.getId());
+        Data result= identityPreserver.get(this.getId());
         if (result==null){
-            result = (T)newInstance();
+            result = newInstance();
             result.setId(this.getId());
             this.visitAttributesDualFlat(result, (thisAttribute, copyAttribute) -> {
                 thisAttribute.internal_copyTo(copyAttribute,(data)->{
@@ -501,31 +499,55 @@ public abstract class Data {
         public DataConfiguration(Data data) {
             this.data = data;
         }
-
+        /**
+         *  short readable text describing the factory
+         *  */
         public void setDisplayTextProvider(Supplier<String> displayTextProvider){
             data.setDisplayTextProvider(displayTextProvider);
         }
 
+        /**
+         *  grouped iteration over attributes e.g. used in gui editor where each group is a new Tab
+         *  */
         public void setAttributeListGroupedSupplier(Function<List<Attribute<?>>,List<Pair<String,List<Attribute<?>>>>> attributeListGroupedSupplier){
             this.data.setAttributeListGroupedSupplier(attributeListGroupedSupplier);
         }
 
+        /**
+         *  new Instance configuration default in over reflection over default constructor
+         *  used for copies
+         *  */
         public void setNewInstanceSupplier(Supplier<Data> newInstanceSupplier){
             this.data.setNewInstanceSupplier(newInstanceSupplier);
         }
 
+        /**
+         *  define match logic for freetext search e.g. in tables
+         *  */
         public void setMatchSearchTextFunction(Function<String,Boolean> matchSearchTextFunction){
             data.setMatchSearchTextFunction(matchSearchTextFunction);
         }
 
+        /**
+         *  @see  #setDisplayTextDependencies(Attribute[])
+         *  */
         public void setDisplayTextDependencies(List<Attribute<?>> attributes){
             data.setDisplayTextDependencies(attributes);
         }
 
+        /** set the attributes that affect the displaytext<br>
+         *  used for live update in gui
+         *  */
         public void setDisplayTextDependencies(Attribute<?>... attributes){
             data.setDisplayTextDependencies(Arrays.asList(attributes));
         }
 
+        /**
+         * data validation
+         * @param validation
+         * @param dependencies
+         * @param <T>
+         */
         public <T> void addValidation(Validation<T> validation, Attribute<?>... dependencies){
             data.addValidation(validation,dependencies);
         }
