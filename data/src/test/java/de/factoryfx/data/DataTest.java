@@ -39,7 +39,7 @@ public class DataTest {
     }
 
     @Test
-    public void test_reconstructMetadataDeepRoot(){
+    public void test_reconstructMetadataDeepRoot() throws Exception{
         ExampleFactoryA exampleFactoryA = new ExampleFactoryA();
         ExampleFactoryB exampleFactoryB = new ExampleFactoryB();
         ExampleFactoryC exampleFactoryC = new ExampleFactoryC();
@@ -50,12 +50,8 @@ public class DataTest {
 
         SimpleObjectMapper mapper = ObjectMapperBuilder.build();
         String string = mapper.writeValueAsString(exampleFactoryA);
-        ExampleFactoryA readed = null;
-        try {
-            readed = mapper.getObjectMapper().readValue(string,ExampleFactoryA.class);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        ExampleFactoryA readed = ObjectMapperBuilder.buildNewObjectMapper().readValue(string,ExampleFactoryA.class);
+
 
         Assert.assertEquals(null,readed.stringAttribute);
         Assert.assertEquals(null,readed.referenceAttribute.metadata);
@@ -100,7 +96,7 @@ public class DataTest {
 
         SimpleObjectMapper mapper = ObjectMapperBuilder.build();
         String string = mapper.writeValueAsString(exampleFactoryThis);
-        ExampleFactoryThis readed = mapper.getObjectMapper().readValue(string,ExampleFactoryThis.class);
+        ExampleFactoryThis readed = ObjectMapperBuilder.buildNewObjectMapper().readValue(string,ExampleFactoryThis.class);
 
         Assert.assertEquals(null,readed.stringAttribute);
         Assert.assertEquals(0,readed.calls.size());
@@ -117,7 +113,7 @@ public class DataTest {
 
     @Test
     @SuppressWarnings("unchecked")
-    public void test_reconstructMetadataDeepRoot_displaytext() throws IllegalAccessException, NoSuchFieldException {
+    public void test_reconstructMetadataDeepRoot_displaytext() throws Exception {
         ExampleFactoryA exampleFactoryA = new ExampleFactoryA();
         ExampleFactoryB exampleFactoryB = new ExampleFactoryB();
         ExampleFactoryC exampleFactoryC = new ExampleFactoryC();
@@ -128,12 +124,7 @@ public class DataTest {
 
         SimpleObjectMapper mapper = ObjectMapperBuilder.build();
         String string = mapper.writeValueAsString(exampleFactoryA);
-        ExampleFactoryA readed = null;
-        try {
-            readed = mapper.getObjectMapper().readValue(string,ExampleFactoryA.class);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        ExampleFactoryA readed = ObjectMapperBuilder.buildNewObjectMapper().readValue(string,ExampleFactoryA.class);
 
         readed = readed.internal().prepareUsableCopy();
 

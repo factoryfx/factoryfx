@@ -6,7 +6,6 @@ import java.util.List;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import de.factoryfx.data.attribute.AttributeMetadata;
 import de.factoryfx.data.attribute.ReferenceListAttribute;
-import de.factoryfx.data.jackson.ObservableListJacksonAbleWrapper;
 import de.factoryfx.factory.FactoryBase;
 
 public class FactoryReferenceListAttribute<L,T extends FactoryBase<? extends L,?>> extends  ReferenceListAttribute<T>{
@@ -14,11 +13,6 @@ public class FactoryReferenceListAttribute<L,T extends FactoryBase<? extends L,?
     @JsonCreator
     protected FactoryReferenceListAttribute() {
         super();
-    }
-
-    @JsonCreator
-    protected FactoryReferenceListAttribute(ObservableListJacksonAbleWrapper<T> list) {
-        super(list);
     }
 
     public FactoryReferenceListAttribute(Class<T> clazz, AttributeMetadata attributeMetadata) {

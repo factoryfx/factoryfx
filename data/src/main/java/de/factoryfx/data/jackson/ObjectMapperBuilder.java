@@ -23,7 +23,7 @@ public class ObjectMapperBuilder {
         return simpleObjectMapper;
     }
 
-    public ObjectMapper buildNewObjectMapper() {
+    public static ObjectMapper buildNewObjectMapper() {
         return setupMapper();
     }
 

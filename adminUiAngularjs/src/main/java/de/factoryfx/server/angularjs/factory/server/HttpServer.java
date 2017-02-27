@@ -84,7 +84,7 @@ public class HttpServer {
     }
 
     ObjectMapper getObjectMapper() {
-        ObjectMapper objectMapper = ObjectMapperBuilder.buildNew().getObjectMapper();
+        ObjectMapper objectMapper = ObjectMapperBuilder.buildNewObjectMapper();
 //        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         SimpleModule module = new SimpleModule();
         module.addSerializer(BigDecimal.class, new ToStringSerializer());

@@ -65,7 +65,7 @@ public class ApplicationServerRestServer<V,L,T extends FactoryBase<L,V>> {
     }
 
     private ObjectMapper createObjectMapper() {
-        return ObjectMapperBuilder.buildNew().getObjectMapper();
+        return ObjectMapperBuilder.buildNewObjectMapper();
     }
 
     public void start() throws Error {

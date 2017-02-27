@@ -99,7 +99,7 @@ public class RestClient {
             client.register(HttpAuthenticationFeature.basic(httpAuthenticationUser, httpAuthenticationPassword));
         }
         JacksonJaxbJsonProvider provider = new JacksonJaxbJsonProvider();
-        provider.setMapper(ObjectMapperBuilder.buildNew().getObjectMapper());
+        provider.setMapper(ObjectMapperBuilder.buildNewObjectMapper());
         client.register(provider);
         return client;
     }
