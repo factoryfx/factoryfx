@@ -21,10 +21,6 @@ public class SimpleObjectMapper {
         return readValue(jsonString, (Class<T>) value.getClass());
     }
 
-    public ObjectMapper getObjectMapper() {
-        return objectMapper;
-    }
-
     @SuppressWarnings("unchecked")
     private <T> T readInternal(ReaderFunction<T> function) {
         try {

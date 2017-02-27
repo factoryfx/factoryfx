@@ -1,12 +1,11 @@
 package de.factoryfx.data.attribute.types;
 
+import java.net.URI;
+import java.net.URISyntaxException;
+
 import com.fasterxml.jackson.annotation.JsonCreator;
 import de.factoryfx.data.attribute.AttributeMetadata;
 import de.factoryfx.data.attribute.ValueListAttribute;
-import de.factoryfx.data.jackson.ObservableListJacksonAbleWrapper;
-
-import java.net.URI;
-import java.net.URISyntaxException;
 
 public class URIListAttribute extends ValueListAttribute<URI> {
 
@@ -24,8 +23,7 @@ public class URIListAttribute extends ValueListAttribute<URI> {
     }
 
     @JsonCreator
-    URIListAttribute(ObservableListJacksonAbleWrapper<URI> list) {
+    URIListAttribute() {
         super(null,null,null);
-        set(list.unwrap());
     }
 }

@@ -1,15 +1,16 @@
 package de.factoryfx.data.attribute;
 
+import java.util.Collection;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
-import de.factoryfx.data.jackson.ObservableSetJacksonAbleWrapper;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableSet;
 import javafx.collections.SetChangeListener;
 
-public class ValueSetAttribute<T> extends ValueAttribute<Set<T>> {
+public class ValueSetAttribute<T> extends ValueAttribute<Set<T>> implements Set<T> {
     private final Class<T> itemType;
     private final T emptyValue;
 
@@ -29,9 +30,8 @@ public class ValueSetAttribute<T> extends ValueAttribute<Set<T>> {
 
 
     @JsonCreator
-    ValueSetAttribute(ObservableSetJacksonAbleWrapper<T> setCollection) {
+    protected ValueSetAttribute() {
         this(null,null,null);
-        set(setCollection.unwrap());
     }
 
     @Override
@@ -49,5 +49,70 @@ public class ValueSetAttribute<T> extends ValueAttribute<Set<T>> {
     public void set(Set<T> value) {
         this.get().clear();
         this.get().addAll(value);
+    }
+
+    @Override
+    public int size() {
+        return get().size();
+    }
+
+    @Override
+    public boolean isEmpty() {
+        return get().isEmpty();
+    }
+
+    @Override
+    public boolean contains(Object o) {
+        return get().contains(o);
+    }
+
+    @Override
+    public Iterator<T> iterator() {
+        return get().iterator();
+    }
+
+    @Override
+    public Object[] toArray() {
+        return get().toArray();
+    }
+
+    @Override
+    public <T1> T1[] toArray(T1[] a) {
+        return get().toArray(a);
+    }
+
+    @Override
+    public boolean add(T t) {
+        return get().add(t);
+    }
+
+    @Override
+    public boolean remove(Object o) {
+        return get().remove(o);
+    }
+
+    @Override
+    public boolean containsAll(Collection<?> c) {
+        return get().containsAll(c);
+    }
+
+    @Override
+    public boolean addAll(Collection<? extends T> c) {
+        return get().addAll(c);
+    }
+
+    @Override
+    public boolean retainAll(Collection<?> c) {
+        return get().retainAll(c);
+    }
+
+    @Override
+    public boolean removeAll(Collection<?> c) {
+        return get().removeAll(c);
+    }
+
+    @Override
+    public void clear() {
+        get().clear();
     }
 }

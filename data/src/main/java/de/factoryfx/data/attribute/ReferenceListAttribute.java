@@ -19,9 +19,7 @@ import java.util.stream.Stream;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import de.factoryfx.data.Data;
-import de.factoryfx.data.jackson.ObservableListJacksonAbleWrapper;
 import de.factoryfx.data.merge.attribute.AttributeMergeHelper;
 import de.factoryfx.data.merge.attribute.ReferenceListMergeHelper;
 import javafx.collections.FXCollections;
@@ -60,11 +58,7 @@ public class ReferenceListAttribute<T extends Data> extends Attribute<List<T>> i
         super(null);
     }
 
-    @JsonCreator
-    protected ReferenceListAttribute(ObservableListJacksonAbleWrapper<T> list) {
-        super(null);
-        this.list = list.unwrap();
-    }
+
 
     @Override
     public void internal_collectChildren(Set<Data> allModelEntities) {
@@ -163,17 +157,6 @@ public class ReferenceListAttribute<T extends Data> extends Attribute<List<T>> i
         this.copySemantic=copySemantic;
         return (A)this;
     }
-
-    @JsonProperty
-    ObservableList<T> getList() {
-        return list;
-    }
-
-    @JsonProperty
-    void setList(ObservableList<T> list) {
-        this.list = ((ObservableListJacksonAbleWrapper<T>)list).unwrap();
-    }
-
 
 
     public List<T> filtered(Predicate<T> predicate) {

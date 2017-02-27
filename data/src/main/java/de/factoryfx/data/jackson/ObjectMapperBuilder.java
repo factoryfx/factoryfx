@@ -11,9 +11,6 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.datatype.jdk7.Jdk7Module;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import javafx.collections.ObservableList;
-import javafx.collections.ObservableMap;
-import javafx.collections.ObservableSet;
 import javafx.scene.paint.Color;
 
 public class ObjectMapperBuilder {
@@ -26,8 +23,15 @@ public class ObjectMapperBuilder {
         return simpleObjectMapper;
     }
 
-    public static SimpleObjectMapper buildNew() {
+    public ObjectMapper buildNewObjectMapper() {
+        return setupMapper();
+    }
 
+    public static SimpleObjectMapper buildNew() {
+        return new SimpleObjectMapper(setupMapper());
+    }
+
+    private static ObjectMapper setupMapper() {
         ObjectMapper objectMapper = new ObjectMapper();
 
         objectMapper.enable(SerializationFeature.WRITE_ENUMS_USING_TO_STRING);
@@ -37,9 +41,6 @@ public class ObjectMapperBuilder {
 //        objectMapper.setSerializationInclusion(JsonInclude.Include.ALWAYS);
 
         SimpleModule m = new SimpleModule();
-        m.addAbstractTypeMapping(ObservableMap.class, ObservableMapJacksonAbleWrapper.class);
-        m.addAbstractTypeMapping(ObservableList.class, ObservableListJacksonAbleWrapper.class);
-        m.addAbstractTypeMapping(ObservableSet.class, ObservableSetJacksonAbleWrapper.class);
         objectMapper.registerModule(m);
 
         objectMapper.registerModule(new JavaTimeModule());
@@ -52,8 +53,7 @@ public class ObjectMapperBuilder {
 //            objectMapper.enableDefaultTyping();
 
         objectMapper.addMixIn(Color.class, ColorMixInAnnotations.class);
-
-        return new SimpleObjectMapper(objectMapper);
+        return objectMapper;
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)

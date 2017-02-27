@@ -7,7 +7,6 @@ import java.util.stream.Collectors;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import de.factoryfx.data.attribute.AttributeMetadata;
 import de.factoryfx.data.attribute.ValueListAttribute;
-import de.factoryfx.data.jackson.ObservableListJacksonAbleWrapper;
 
 public class StringListAttribute extends ValueListAttribute<String> {
 
@@ -16,9 +15,8 @@ public class StringListAttribute extends ValueListAttribute<String> {
     }
 
     @JsonCreator
-    StringListAttribute(ObservableListJacksonAbleWrapper<String> list) {
+    StringListAttribute() {
         super(null,null,null);
-        set(list.unwrap());
     }
 
     public List<String> asUnmodifiableList() {

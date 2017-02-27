@@ -1,15 +1,16 @@
-package de.factoryfx.data.attribute;
+package de.factoryfx.data.attribute.types;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import de.factoryfx.data.attribute.types.StringListAttribute;
+import de.factoryfx.data.attribute.AttributeChangeListener;
+import de.factoryfx.data.attribute.AttributeMetadata;
 import de.factoryfx.data.jackson.ObjectMapperBuilder;
 import de.factoryfx.data.merge.testfactories.IdData;
 import org.junit.Assert;
 import org.junit.Test;
 
-public class ListAttributeTest {
+public class StringListAttributeTest {
 
     public static class ExampleListFactory extends IdData {
         public StringListAttribute listAttribute =new StringListAttribute(new AttributeMetadata());

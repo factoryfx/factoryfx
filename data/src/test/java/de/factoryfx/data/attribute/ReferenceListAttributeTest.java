@@ -33,12 +33,20 @@ public class ReferenceListAttributeTest {
     }
 
     @Test
-    public void test_json(){
+    public void test_json() {
         ExampleReferenceListFactory exampleReferenceListFactory = new ExampleReferenceListFactory();
-        ExampleFactoryA exampleFactoryA = new ExampleFactoryA();
-        exampleFactoryA.stringAttribute.set("sadsasd");
-        exampleReferenceListFactory.referenceListAttribute.get().add(exampleFactoryA);
+        {
+            ExampleFactoryA exampleFactoryA = new ExampleFactoryA();
+            exampleFactoryA.stringAttribute.set("sadsasd");
+            exampleReferenceListFactory.referenceListAttribute.get().add(exampleFactoryA);
+        }
+        {
+            ExampleFactoryA exampleFactoryA = new ExampleFactoryA();
+            exampleFactoryA.stringAttribute.set("sadsasd");
+            exampleReferenceListFactory.referenceListAttribute.get().add(exampleFactoryA);
+        }
         ObjectMapperBuilder.build().copy(exampleReferenceListFactory);
+        System.out.println(ObjectMapperBuilder.build().writeValueAsString(exampleReferenceListFactory));
     }
 
     @Test
