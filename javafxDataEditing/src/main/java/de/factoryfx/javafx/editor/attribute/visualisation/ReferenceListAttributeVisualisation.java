@@ -1,8 +1,5 @@
 package de.factoryfx.javafx.editor.attribute.visualisation;
 
-import java.util.Collection;
-import java.util.function.Supplier;
-
 import de.factoryfx.data.Data;
 import de.factoryfx.javafx.editor.attribute.ListAttributeEditorVisualisation;
 import de.factoryfx.javafx.editor.data.DataEditor;
@@ -24,26 +21,19 @@ public class ReferenceListAttributeVisualisation extends ListAttributeEditorVisu
 
     private final UniformDesign uniformDesign;
     private final DataEditor dataEditor;
-    private final Runnable emptyAdder;
-    private final Supplier<Collection<? extends Data>> possibleValuesProvider;
-    private final boolean isUserEditable;
-    private final boolean isUserSelectable;
-    private final boolean isUserCreateable;
+    private final DataListEditWidget<Data> dataListEditWidget;
+    private final TableView<Data> tableView;
 
-    public ReferenceListAttributeVisualisation(UniformDesign uniformDesign, DataEditor dataEditor, Runnable emptyAdder, Supplier<Collection<? extends Data>> possibleValuesProvider, boolean isUserEditable, boolean isUserSelectable, boolean isUserCreateable) {
+    public ReferenceListAttributeVisualisation(UniformDesign uniformDesign, DataEditor dataEditor, TableView<Data> tableView, DataListEditWidget<Data> dataListEditWidget) {
         this.uniformDesign = uniformDesign;
         this.dataEditor = dataEditor;
-        this.emptyAdder = emptyAdder;
-        this.possibleValuesProvider = possibleValuesProvider;
-        this.isUserEditable = isUserEditable;
-        this.isUserSelectable = isUserSelectable;
-        this.isUserCreateable = isUserCreateable;
+        this.dataListEditWidget = dataListEditWidget;
+        this.tableView = tableView;
     }
 
 
     @Override
     public Node createContent(ObservableList<Data> attributeValue) {
-        TableView<Data> tableView = new TableView<>();
         tableView.setItems(attributeValue);
         tableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         TableColumn<Data, String> test = new TableColumn<>("Data");
@@ -64,7 +54,6 @@ public class ReferenceListAttributeVisualisation extends ListAttributeEditorVisu
         HBox.setHgrow(tableControlWidgetContent, Priority.ALWAYS);
         HBox.setMargin(tableControlWidgetContent, new Insets(0,1,0,0));
 
-        final DataListEditWidget<Data> dataListEditWidget = new DataListEditWidget<>(attributeValue, tableView, dataEditor, uniformDesign, emptyAdder, possibleValuesProvider, isUserEditable, isUserSelectable,isUserCreateable);
         HBox buttons = (HBox)dataListEditWidget.createContent();
         buttons.getChildren().add(tableControlWidgetContent);
 

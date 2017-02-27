@@ -3,10 +3,13 @@ package de.factoryfx.data.attribute;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.Spliterator;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -25,7 +28,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 
-public class ReferenceListAttribute<T extends Data> extends Attribute<List<T>> {
+public class ReferenceListAttribute<T extends Data> extends Attribute<List<T>> implements Collection<T> {
     private Data root;
 
     ObservableList<T> list = FXCollections.observableArrayList();
@@ -61,14 +64,6 @@ public class ReferenceListAttribute<T extends Data> extends Attribute<List<T>> {
     protected ReferenceListAttribute(ObservableListJacksonAbleWrapper<T> list) {
         super(null);
         this.list = list.unwrap();
-    }
-
-    public boolean add(T value) {
-        if (value==null){
-            throw new IllegalStateException("cant't add null to list");
-        }
-        get().add(value);
-        return false;
     }
 
     @Override
@@ -149,13 +144,12 @@ public class ReferenceListAttribute<T extends Data> extends Attribute<List<T>> {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
-    public void internal_semanticCopyTo(Attribute<List<T>> copyAttribute, Function<Data,Data> dataCopyProvider) {
+    public void internal_semanticCopyTo(Attribute<List<T>> copyAttribute) {
         if (copySemantic==CopySemantic.SELF){
             copyAttribute.set(get());
         } else {
             for (T item: get()){
-                final T itemCopy = (T) dataCopyProvider.apply(item);
+                final T itemCopy = item.internal().copy();
                 if (itemCopy!=null){
                     copyAttribute.get().add(itemCopy);
                 }
@@ -170,18 +164,6 @@ public class ReferenceListAttribute<T extends Data> extends Attribute<List<T>> {
         return (A)this;
     }
 
-    public boolean contains(T value) {
-        return get().contains(value);
-    }
-
-    public void forEach(Consumer<? super T> action) {
-        get().forEach(action);
-    }
-
-    public T get(int i) {
-        return list.get(i);
-    }
-
     @JsonProperty
     ObservableList<T> getList() {
         return list;
@@ -192,27 +174,13 @@ public class ReferenceListAttribute<T extends Data> extends Attribute<List<T>> {
         this.list = ((ObservableListJacksonAbleWrapper<T>)list).unwrap();
     }
 
-    public void remove(T value) {
-        get().remove(value);
-    }
 
-    public void set(int i, T value) {
-        get().set(i, value);
-    }
-
-    public int size() {
-        return get().size();
-    }
-
-    public Stream<T> stream() {
-        return get().stream();
-    }
 
     public List<T> filtered(Predicate<T> predicate) {
         return get().stream().filter(predicate).collect(Collectors.toList());
     }
 
-    List<AttributeChangeListener<List<T>>> listeners= new ArrayList<>();
+    final List<AttributeChangeListener<List<T>>> listeners= new ArrayList<>();
     @Override
     public void internal_addListener(AttributeChangeListener<List<T>> listener) {
         listeners.add(listener);
@@ -245,6 +213,7 @@ public class ReferenceListAttribute<T extends Data> extends Attribute<List<T>> {
 
     private Optional<Function<Data,Collection<T>>> possibleValueProviderFromRoot=Optional.empty();
     private Optional<Supplier<T>> newValueProvider =Optional.empty();
+    private Optional<BiConsumer<T,Object>> additionalDeleteAction = Optional.empty();
 
     /**customise the list of selectable items*/
     @SuppressWarnings("unchecked")
@@ -260,7 +229,7 @@ public class ReferenceListAttribute<T extends Data> extends Attribute<List<T>> {
         return (A)this;
     }
 
-    public T addNewFactory(){
+    public T internal_addNewFactory(){
         T addedFactory=null;
         if (newValueProvider.isPresent()) {
             T newFactory = newValueProvider.get().get();
@@ -285,16 +254,26 @@ public class ReferenceListAttribute<T extends Data> extends Attribute<List<T>> {
         return addedFactory;
     }
 
-    public void addFactory(T addedFactory){
-        get().add(addedFactory);
-        for (Data data: get()){
-            data.internal().propagateRoot(root);
-        }
+    /**
+     * action after delete e.g delete the factory also in other lists
+     * @param additionalDeleteAction deleted value, root
+     * @return
+     */
+    @SuppressWarnings("unchecked")
+    public <A extends ReferenceListAttribute<T>> A additionalDeleteAction(BiConsumer<T,Object> additionalDeleteAction){
+        this.additionalDeleteAction =Optional.of(additionalDeleteAction);
+        return (A)this;
+    }
+
+    public void internal_deleteFactory(T factory){
+        T removedFactory=null;
+        list.remove(factory);
+        additionalDeleteAction.ifPresent(bc -> bc.accept(factory, root));
     }
 
     @SuppressWarnings("unchecked")
-    public Collection<T> possibleValues(){
-        Set<T> result = new HashSet<T>();
+    public Collection<T> internal_possibleValues(){
+        Set<T> result = new HashSet<>();
         possibleValueProviderFromRoot.ifPresent(factoryBaseListFunction -> {
             Collection<T> factories = factoryBaseListFunction.apply(root);
             factories.forEach(result::add);
@@ -312,7 +291,7 @@ public class ReferenceListAttribute<T extends Data> extends Attribute<List<T>> {
     @Override
     @SuppressWarnings("unchecked")
     public void internal_prepareUsage(Data root){
-        this.root=root;;
+        this.root=root;
     }
 
     private boolean userEditable=true;
@@ -349,16 +328,118 @@ public class ReferenceListAttribute<T extends Data> extends Attribute<List<T>> {
      * disable new for reference
      */
     @SuppressWarnings("unchecked")
-    public <A extends ReferenceListAttribute<T>> A userNotCreateable(){
-        userCreateable=false;
+    public <A extends ReferenceListAttribute<T>> A userNotCreatable(){
+        userCreatable =false;
         return (A)this;
     }
 
 
-    private boolean userCreateable=true;
+    private boolean userCreatable =true;
     @JsonIgnore
-    public boolean internal_isUserCreateable(){
-        return userCreateable;
+    public boolean internal_isUserCreatable(){
+        return userCreatable;
+    }
+
+    @Override
+    public boolean isEmpty() {
+        return list.isEmpty();
+    }
+
+    @Override
+    public boolean contains(Object o) {
+        return list.contains(0);
+    }
+
+    @Override
+    public Iterator<T> iterator() {
+        return list.iterator();
+    }
+
+    @Override
+    public Object[] toArray() {
+        return list.toArray();
+    }
+
+    @Override
+    public <T1> T1[] toArray(T1[] a) {
+        return list.toArray(a);
+    }
+
+    @Override
+    public Stream<T> stream() {
+        return list.stream();
+    }
+
+    @Override
+    public Stream<T> parallelStream() {
+        return list.parallelStream();
+    }
+
+    @Override
+    public boolean remove(Object o) {
+        return list.remove(o);
+    }
+
+    @Override
+    public boolean containsAll(Collection<?> c) {
+        return list.contains(c);
+    }
+
+    @Override
+    public boolean addAll(Collection<? extends T> c) {
+        return list.addAll(c);
+    }
+
+    @Override
+    public boolean removeAll(Collection<?> c) {
+        return list.removeAll(c);
+    }
+
+    @Override
+    public boolean removeIf(Predicate<? super T> filter) {
+        return list.removeIf(filter);
+    }
+
+    @Override
+    public boolean retainAll(Collection<?> c) {
+        return list.retainAll(c);
+    }
+
+    @Override
+    public void clear() {
+        list.clear();
+    }
+
+    @Override
+    public Spliterator<T> spliterator() {
+        return list.spliterator();
+    }
+
+    @Override
+    public void forEach(Consumer<? super T> action) {
+        get().forEach(action);
+    }
+
+    @Override
+    public int size() {
+        return get().size();
+    }
+
+    @Override
+    public boolean add(T value) {
+        if (value==null){
+            throw new IllegalStateException("cant't add null to list");
+        }
+        get().add(value);
+        return false;
+    }
+
+    public T get(int i) {
+        return list.get(i);
+    }
+
+    public void set(int i, T value) {
+        get().set(i, value);
     }
 
 }

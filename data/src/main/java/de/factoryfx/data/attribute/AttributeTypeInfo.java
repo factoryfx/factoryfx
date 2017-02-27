@@ -25,7 +25,7 @@ public class AttributeTypeInfo {
         this(dataType,null,null,null,AttributeTypeCategory.VALUE,null);
     }
 
-    public static enum AttributeTypeCategory{
+    public enum AttributeTypeCategory{
         VALUE,MAP,COLLECTION,REFERENCE,REFERENCE_LIST
     }
 

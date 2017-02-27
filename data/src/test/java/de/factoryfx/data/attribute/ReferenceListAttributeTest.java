@@ -62,7 +62,7 @@ public class ReferenceListAttributeTest {
     public void test_add_new(){
         ExampleReferenceListFactory exampleReferenceListFactory = new ExampleReferenceListFactory();
         exampleReferenceListFactory.referenceListAttribute.internal_prepareUsage(new ExampleReferenceListFactory());
-        exampleReferenceListFactory.referenceListAttribute.addNewFactory();
+        exampleReferenceListFactory.referenceListAttribute.internal_addNewFactory();
         Assert.assertEquals(1,exampleReferenceListFactory.referenceListAttribute.size());
 
     }
@@ -75,7 +75,7 @@ public class ReferenceListAttributeTest {
         exampleReferenceListFactory = exampleReferenceListFactory.internal().prepareUsableCopy();
 
 
-        Collection<ExampleFactoryA> possibleFactories = exampleReferenceListFactory.referenceListAttribute.possibleValues();
+        Collection<ExampleFactoryA> possibleFactories = exampleReferenceListFactory.referenceListAttribute.internal_possibleValues();
         Assert.assertEquals(1,possibleFactories.size());
         Assert.assertEquals(exampleFactoryA.getId(),new ArrayList<>(possibleFactories).get(0).getId());
 
@@ -87,9 +87,9 @@ public class ReferenceListAttributeTest {
         referenceListAttribute.internal_prepareUsage(new ExampleFactoryA());
         List<ExampleFactoryA> calls=new ArrayList<>();
         referenceListAttribute.internal_addListener((attribute, value) -> calls.add(value.get(0)));
-        referenceListAttribute.addNewFactory();
+        referenceListAttribute.internal_addNewFactory();
         Assert.assertEquals(1,calls.size());
-        referenceListAttribute.addNewFactory();
+        referenceListAttribute.internal_addNewFactory();
         Assert.assertEquals(2,calls.size());
 //        Assert.assertEquals(value,calls.get(0));
     }

@@ -50,7 +50,9 @@ import de.factoryfx.javafx.editor.attribute.visualisation.ViewListReferenceAttri
 import de.factoryfx.javafx.editor.attribute.visualisation.ViewReferenceAttributeVisualisation;
 import de.factoryfx.javafx.editor.data.DataEditor;
 import de.factoryfx.javafx.util.UniformDesign;
+import de.factoryfx.javafx.widget.datalistedit.DataListEditWidget;
 import javafx.collections.ObservableList;
+import javafx.scene.control.TableView;
 import javafx.scene.paint.Color;
 import org.controlsfx.glyphfont.FontAwesome;
 
@@ -117,13 +119,14 @@ public class AttributeEditorFactory {
 
         if (Data.class==attribute.internal_getAttributeType().dataType){
             ReferenceAttribute<?> referenceAttribute = (ReferenceAttribute<?>) attribute;
-            return Optional.of(new AttributeEditor<>((Attribute<Data>)attribute,new ReferenceAttributeVisualisation(uniformDesign,dataEditor,()->referenceAttribute.addNewFactory(),()->referenceAttribute.possibleValues(),referenceAttribute.internal_isUserEditable(),referenceAttribute.internal_isUserSelectable(),referenceAttribute.internal_isUserCreateable()),uniformDesign));
+            return Optional.of(new AttributeEditor<>((Attribute<Data>)attribute,new ReferenceAttributeVisualisation(uniformDesign,dataEditor,()->referenceAttribute.internal_addNewFactory(),()->referenceAttribute.internal_possibleValues(),()->referenceAttribute.internal_deleteFactory(), referenceAttribute.internal_isUserEditable(),referenceAttribute.internal_isUserSelectable(),referenceAttribute.internal_isUserCreatable()),uniformDesign));
         }
 
         if (ObservableList.class.isAssignableFrom(attribute.internal_getAttributeType().dataType) && Data.class.isAssignableFrom(attribute.internal_getAttributeType().listItemType)){
-            ReferenceListAttribute<?> referenceListAttribute = (ReferenceListAttribute<?>) attribute;
+            ReferenceListAttribute<Data> referenceListAttribute = (ReferenceListAttribute<Data>) attribute;
 
-            final ReferenceListAttributeVisualisation referenceListAttributeVisualisation = new ReferenceListAttributeVisualisation(uniformDesign, dataEditor, () -> referenceListAttribute.addNewFactory(), () -> referenceListAttribute.possibleValues(), referenceListAttribute.internal_isUserEditable(), referenceListAttribute.internal_isUserSelectable(),referenceListAttribute.internal_isUserCreateable());
+            final TableView<Data> dataTableView = new TableView<>();
+            final ReferenceListAttributeVisualisation referenceListAttributeVisualisation = new ReferenceListAttributeVisualisation(uniformDesign, dataEditor, dataTableView, new DataListEditWidget<>(referenceListAttribute.get(), dataTableView, dataEditor,uniformDesign,referenceListAttribute));
             ExpandableAttributeVisualisation<ObservableList<Data>> expandableAttributeVisualisation= new ExpandableAttributeVisualisation<>(referenceListAttributeVisualisation,uniformDesign,(l)->"Items: "+l.size(),FontAwesome.Glyph.LIST);
             if (referenceListAttribute.get().contains(oldValue)){
                 expandableAttributeVisualisation.expand();

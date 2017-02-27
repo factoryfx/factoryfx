@@ -70,12 +70,12 @@ public class ViewReferenceAttribute<R extends Data, T extends Data> extends Attr
     }
 
     @Override
-    public void internal_semanticCopyTo(Attribute<T> copyAttribute, Function<Data,Data> dataCopyProvider) {
+    public void internal_semanticCopyTo(Attribute<T> copyAttribute) {
         //nothing
     }
 
 
-    //** so we don't need to initialise javax toolkit*/
+    //** so we don't need to initialise javax toolkit in test*/
     Consumer<Runnable> runlaterExecutor=(r)-> Platform.runLater(r);
     void setRunlaterExecutorForTest(Consumer<Runnable> runlaterExecutor){
         this.runlaterExecutor=runlaterExecutor;
@@ -117,7 +117,7 @@ public class ViewReferenceAttribute<R extends Data, T extends Data> extends Attr
     }
     DirtyTrackingThread dirtyTracking;
 
-    List<AttributeChangeListener<T>> listeners= Collections.synchronizedList(new ArrayList<>());
+    final List<AttributeChangeListener<T>> listeners= Collections.synchronizedList(new ArrayList<>());
     @Override
     public void internal_addListener(AttributeChangeListener<T> listener) {
         listeners.add(listener);
@@ -169,7 +169,7 @@ public class ViewReferenceAttribute<R extends Data, T extends Data> extends Attr
     @Override
     @SuppressWarnings("unchecked")
     public void internal_prepareUsage(Data root){
-        this.root=(R)root;;
+        this.root=(R)root;
     }
 
     @Override

@@ -14,7 +14,7 @@ import de.factoryfx.data.merge.attribute.AttributeMergeHelper;
 public class ValueAttribute<T> extends Attribute<T> {
     //    @JsonProperty
     protected T value;
-    private Class<T> dataType;
+    private final Class<T> dataType;
 
     public ValueAttribute(AttributeMetadata attributeMetadata, Class<T> dataType) {
         super(attributeMetadata);
@@ -65,11 +65,11 @@ public class ValueAttribute<T> extends Attribute<T> {
     }
 
     @Override
-    public void internal_semanticCopyTo(Attribute<T> copyAttribute, Function<Data, Data> dataCopyProvider) {
+    public void internal_semanticCopyTo(Attribute<T> copyAttribute) {
         copyTo(copyAttribute);
     }
 
-    protected List<AttributeChangeListener<T>> listeners= new ArrayList<>();
+    protected final List<AttributeChangeListener<T>> listeners= new ArrayList<>();
     @Override
     public void internal_addListener(AttributeChangeListener<T> listener) {
         listeners.add(listener);

@@ -5,9 +5,11 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.BiConsumer;
 import java.util.function.Supplier;
 
 import de.factoryfx.data.Data;
+import de.factoryfx.data.attribute.ReferenceListAttribute;
 import de.factoryfx.data.util.LanguageText;
 import de.factoryfx.javafx.editor.data.DataEditor;
 import de.factoryfx.javafx.util.DataChoiceDialog;
@@ -16,7 +18,6 @@ import de.factoryfx.javafx.widget.Widget;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.SimpleBooleanProperty;
-import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
@@ -41,13 +42,14 @@ public class DataListEditWidget<T extends Data> implements Widget {
     private final Supplier<Collection<? extends Data>> possibleValuesProvider;
     private final boolean isUserEditable;
     private final boolean isUserSelectable;
-    private final ObservableList<T> list;
+    private final List<T> list;
     private final TableView<T> tableView;
     private final DataEditor dataEditor;
     private final BooleanBinding multipleItemsSelected;
     private final boolean isUserCreateable;
+    private final BiConsumer<T,List<T>> deleter;
 
-    public DataListEditWidget(ObservableList<T> list, TableView<T> tableView, DataEditor dataEditor, UniformDesign uniformDesign, Runnable emptyAdder, Supplier<Collection<? extends Data>> possibleValuesProvider, boolean isUserEditable, boolean isUserSelectable, boolean isUserCreateable) {
+    public DataListEditWidget(List<T> list, TableView<T> tableView, DataEditor dataEditor, UniformDesign uniformDesign, Runnable emptyAdder, Supplier<Collection<? extends Data>> possibleValuesProvider, BiConsumer<T,List<T>> deleter , boolean isUserEditable, boolean isUserSelectable, boolean isUserCreateable) {
         this.uniformDesign = uniformDesign;
         this.emptyAdder = emptyAdder;
         this.possibleValuesProvider = possibleValuesProvider;
@@ -58,6 +60,13 @@ public class DataListEditWidget<T extends Data> implements Widget {
         this.dataEditor = dataEditor;
         multipleItemsSelected = Bindings.createBooleanBinding(() -> tableView.getSelectionModel().getSelectedItems().size() > 1, tableView.getSelectionModel().getSelectedItems());
         this.isUserCreateable = isUserCreateable;
+        this.deleter=deleter;
+    }
+
+    public DataListEditWidget(List<T> list, TableView<T> tableView, DataEditor dataEditor, UniformDesign uniformDesign, ReferenceListAttribute<T> referenceListAttribute) {
+        this(list, tableView, dataEditor, uniformDesign,
+                referenceListAttribute::internal_addNewFactory, referenceListAttribute::internal_possibleValues, (t, ts) -> referenceListAttribute.internal_deleteFactory(t),
+                referenceListAttribute.internal_isUserEditable(), referenceListAttribute.internal_isUserSelectable(), referenceListAttribute.internal_isUserCreatable());
     }
 
 
@@ -103,7 +112,7 @@ public class DataListEditWidget<T extends Data> implements Widget {
         moveDownButton.disableProperty().bind(tableView.getSelectionModel().selectedItemProperty().isNull().or(multipleItemsSelected));
         moveDownButton.setOnAction(event -> {
             int selectedIndex = tableView.getSelectionModel().getSelectedIndex();
-            if (selectedIndex+1<tableView.getItems().size()){
+            if (selectedIndex+1<list.size()){
                 Collections.swap(list, selectedIndex, selectedIndex +1);
                 tableView.getSelectionModel().select(selectedIndex +1);
             }

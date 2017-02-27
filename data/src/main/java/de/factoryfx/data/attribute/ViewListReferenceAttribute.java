@@ -86,7 +86,7 @@ public class ViewListReferenceAttribute <R extends Data, T extends Data> extends
     }
 
     @Override
-    public void internal_semanticCopyTo(Attribute<List<T>> copyAttribute, Function<Data,Data> dataCopyProvider) {
+    public void internal_semanticCopyTo(Attribute<List<T>> copyAttribute) {
         //nothing
     }
 
@@ -150,7 +150,7 @@ public class ViewListReferenceAttribute <R extends Data, T extends Data> extends
     }
     DirtyTrackingThread dirtyTracking;
 
-    List<AttributeChangeListener<List<T>>> listeners= Collections.synchronizedList(new ArrayList<>());
+    final List<AttributeChangeListener<List<T>>> listeners= Collections.synchronizedList(new ArrayList<>());
     @Override
     public void internal_addListener(AttributeChangeListener<List<T>> listener) {
         listeners.add(listener);
@@ -194,7 +194,7 @@ public class ViewListReferenceAttribute <R extends Data, T extends Data> extends
     @Override
     @SuppressWarnings("unchecked")
     public void internal_prepareUsage(Data root){
-        this.root=(R)root;;
+        this.root=(R)root;
     }
 
     @Override

@@ -5,7 +5,7 @@ import java.util.Locale;
 import de.factoryfx.data.util.LanguageText;
 
 public class AttributeMetadata {
-    public LanguageText labelText=new LanguageText();
+    public final LanguageText labelText=new LanguageText();
     public String addonText;
     public String permission;
 

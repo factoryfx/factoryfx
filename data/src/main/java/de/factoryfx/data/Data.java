@@ -326,12 +326,7 @@ public abstract class Data {
         T result = (T)newInstance();
 //        result.setId(this.getId());
         this.visitAttributesDualFlat(result, (thisAttribute, copyAttribute) -> {
-            thisAttribute.internal_semanticCopyTo(copyAttribute,(data)->{
-                if (data==null){
-                    return null;
-                }
-                return data.semanticCopy();
-            });
+            thisAttribute.internal_semanticCopyTo(copyAttribute);
         });
         return result;
     }
@@ -572,6 +567,10 @@ public abstract class Data {
 
         public boolean matchSearchText(String newValue) {
             return data.matchSearchText(newValue);
+        }
+
+        public <T extends Data> T semanticCopy() {
+            return data.semanticCopy();
         }
 
         public void visitChildFactoriesFlat(Consumer<Data> consumer) {

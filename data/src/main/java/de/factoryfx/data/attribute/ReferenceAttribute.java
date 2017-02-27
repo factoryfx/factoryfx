@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -103,13 +104,15 @@ public class ReferenceAttribute<T extends Data> extends Attribute<T> {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
-    public void internal_semanticCopyTo(Attribute<T> copyAttribute, Function<Data, Data> dataCopyProvider) {
-        if (copySemantic==CopySemantic.SELF){
-            copyAttribute.set(get());
-        } else {
-            copyAttribute.set((T) dataCopyProvider.apply(get()));
+    public void internal_semanticCopyTo(Attribute<T> copyAttribute) {
+        if (get()!=null){
+            if (copySemantic==CopySemantic.SELF){
+                copyAttribute.set(get());
+            } else {
+                copyAttribute.set(get().internal().semanticCopy());
+            }
         }
+
     }
 
     private CopySemantic copySemantic = CopySemantic.COPY;
@@ -167,6 +170,7 @@ public class ReferenceAttribute<T extends Data> extends Attribute<T> {
 
     private Optional<Function<Data,Collection<T>>> possibleValueProviderFromRoot=Optional.empty();
     private Optional<Supplier<T>> newValueProvider=Optional.empty();
+    private Optional<BiConsumer<T,Object>> additionalDeleteAction = Optional.empty();
 
     /**customise the list of selectable items*/
     @SuppressWarnings("unchecked")
@@ -182,7 +186,24 @@ public class ReferenceAttribute<T extends Data> extends Attribute<T> {
         return (A)this;
     }
 
-    public T addNewFactory(){
+    /**
+     * action after delete e.g delete the factory also in other lists
+     * @param additionalDeleteAction deleted value, root
+     * @return
+     */
+    @SuppressWarnings("unchecked")
+    public <A extends ReferenceAttribute<T>> A additionalDeleteAction(BiConsumer<T,Object> additionalDeleteAction){
+        this.additionalDeleteAction =Optional.of(additionalDeleteAction);
+        return (A)this;
+    }
+
+    public void internal_deleteFactory(){
+        T removedFactory=get();
+        set(null);
+        additionalDeleteAction.ifPresent(bc -> bc.accept(removedFactory, root));
+    }
+
+    public T internal_addNewFactory(){
         newValueProvider.ifPresent(newFactoryFunction -> {
             T newFactory = newFactoryFunction.get();
             set(newFactory);
@@ -204,7 +225,7 @@ public class ReferenceAttribute<T extends Data> extends Attribute<T> {
     }
 
     @SuppressWarnings("unchecked")
-    public Collection<T> possibleValues(){
+    public Collection<T> internal_possibleValues(){
         Set<T> result = new HashSet<>();
         possibleValueProviderFromRoot.ifPresent(factoryBaseListFunction -> {
             Collection<T> factories = factoryBaseListFunction.apply(root);
@@ -260,16 +281,16 @@ public class ReferenceAttribute<T extends Data> extends Attribute<T> {
      * disable new for reference
      */
     @SuppressWarnings("unchecked")
-    public <A extends ReferenceAttribute<T>> A userNotCreateable(){
-        userCreateable=false;
+    public <A extends ReferenceAttribute<T>> A userNotCreatable(){
+        userCreatable =false;
         return (A)this;
     }
 
 
-    private boolean userCreateable=true;
+    private boolean userCreatable =true;
     @JsonIgnore
-    public boolean internal_isUserCreateable(){
-        return userCreateable;
+    public boolean internal_isUserCreatable(){
+        return userCreatable;
     }
 
 }

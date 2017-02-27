@@ -42,7 +42,7 @@ public abstract class Attribute<T>{
 
     public abstract void internal_copyTo(Attribute<T> copyAttribute, Function<Data,Data> dataCopyProvider);
 
-    public abstract void internal_semanticCopyTo(Attribute<T> copyAttribute, Function<Data,Data> dataCopyProvider);
+    public abstract void internal_semanticCopyTo(Attribute<T> copyAttribute);
 
     public List<ValidationError> internal_validate(Data parent) {
         List<ValidationError> validationErrors = new ArrayList<>();
@@ -91,7 +91,7 @@ public abstract class Attribute<T>{
         //nothing
     }
 
-    //all elements prepared and root is usable
+    /**all elements prepared and root is usable*/
     public void internal_afterPreparedUsage(Data root){
         //nothing
     }

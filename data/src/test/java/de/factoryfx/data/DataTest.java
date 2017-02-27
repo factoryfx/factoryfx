@@ -238,7 +238,7 @@ public class DataTest {
         exampleWithDefaultParent = exampleWithDefaultParent.internal().prepareUsableCopy();
         Assert.assertTrue(exampleWithDefaultParent.internal().readyForUsage());
 
-        exampleWithDefaultParent.referenceAttribute.addNewFactory();
+        exampleWithDefaultParent.referenceAttribute.internal_addNewFactory();
 
         Assert.assertTrue(exampleWithDefaultParent.internal().readyForUsage());
         Assert.assertTrue(exampleWithDefaultParent.referenceAttribute.get().internal().readyForUsage());

@@ -13,7 +13,7 @@ import javafx.collections.ObservableList;
 public class ValueListAttribute<T> extends ValueAttribute<List<T>> {
     private final Class<T> itemType;
     private final T listNewItemEmptyValue;
-    private ObservableList<T> observableValue;
+    private final ObservableList<T> observableValue;
 
     public ValueListAttribute(Class<T> itemType, AttributeMetadata attributeMetadata, T listNewItemEmptyValue) {
         super(attributeMetadata,null);
