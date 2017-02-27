@@ -330,7 +330,7 @@ public class ReferenceListAttribute<T extends Data> extends Attribute<List<T>> i
 
     @Override
     public boolean contains(Object o) {
-        return list.contains(0);
+        return list.contains(o);
     }
 
     @Override
