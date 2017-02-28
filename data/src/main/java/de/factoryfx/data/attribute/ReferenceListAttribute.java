@@ -249,7 +249,6 @@ public class ReferenceListAttribute<T extends Data> extends Attribute<List<T>> i
     }
 
     public void internal_deleteFactory(T factory){
-        T removedFactory=null;
         list.remove(factory);
         additionalDeleteAction.ifPresent(bc -> bc.accept(factory, root));
     }

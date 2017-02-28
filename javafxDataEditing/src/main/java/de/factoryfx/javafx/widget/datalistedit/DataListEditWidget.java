@@ -178,7 +178,7 @@ public class DataListEditWidget<T extends Data> implements Widget {
         }
         if (reallyDelete){
             final List<T> selectedItems = new ArrayList<>(tableView.getSelectionModel().getSelectedItems());
-            selectedItems.forEach(list::remove);
+            selectedItems.forEach(t -> deleter.accept(t,list));
         }
     }
 
