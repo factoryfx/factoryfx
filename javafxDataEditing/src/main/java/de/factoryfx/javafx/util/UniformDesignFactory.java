@@ -3,6 +3,7 @@ package de.factoryfx.javafx.util;
 import java.util.Locale;
 
 import de.factoryfx.data.attribute.AttributeMetadata;
+import de.factoryfx.data.attribute.types.BooleanAttribute;
 import de.factoryfx.data.attribute.types.ColorAttribute;
 import de.factoryfx.data.attribute.types.LocaleAttribute;
 import de.factoryfx.factory.SimpleFactoryBase;
@@ -17,6 +18,7 @@ public class UniformDesignFactory<V> extends SimpleFactoryBase<UniformDesign,V> 
     public final ColorAttribute successColor=new ColorAttribute(new AttributeMetadata().en("successColor")).defaultValue(Color.web("#5CB85C"));
     public final ColorAttribute primaryColor=new ColorAttribute(new AttributeMetadata().en("primaryColor")).defaultValue(Color.web("#5494CB"));
     public final ColorAttribute borderColor=new ColorAttribute(new AttributeMetadata().en("borderColor")).defaultValue(Color.web("#B5B5B5"));
+    public final BooleanAttribute askBeforeDelete = new BooleanAttribute(new AttributeMetadata().en("askBeforeDelete")).defaultValue(false);
 
     @Override
     public UniformDesign createImpl() {
@@ -27,7 +29,8 @@ public class UniformDesignFactory<V> extends SimpleFactoryBase<UniformDesign,V> 
                 infoColor.get(),
                 successColor.get(),
                 primaryColor.get(),
-                borderColor.get());
+                borderColor.get(),
+                askBeforeDelete.get());
     }
 
 }

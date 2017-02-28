@@ -28,7 +28,11 @@ public class UniformDesign {
     private final Color borderColor;
     private final Locale locale;
 
-    public UniformDesign(Locale locale, Color dangerColor, Color warningColor, Color infoColor, Color successColor, Color primaryColor, Color borderColor) {
+
+    //usually its bad usability to annoy user with confirmation dialogs
+    private final boolean askBeforeDelete;
+
+    public UniformDesign(Locale locale, Color dangerColor, Color warningColor, Color infoColor, Color successColor, Color primaryColor, Color borderColor, boolean askBeforeDelete) {
         this.locale = locale;
         this.dangerColor = dangerColor;
         this.warningColor = warningColor;
@@ -36,6 +40,7 @@ public class UniformDesign {
         this.successColor = successColor;
         this.primaryColor = primaryColor;
         this.borderColor = borderColor;
+        this.askBeforeDelete = askBeforeDelete;
     }
 
     public void addIcon(Labeled component, FontAwesome.Glyph icon) {
@@ -123,6 +128,10 @@ public class UniformDesign {
 
     private String toCssColor(Color color) {
         return "rgba(" + Math.round(255 * color.getRed()) + "," + Math.round(255 * color.getGreen()) + "," + Math.round(255 * color.getBlue()) + "," + color.getOpacity() + ")";
+    }
+
+    public boolean isAskBeforeDelete() {
+        return askBeforeDelete;
     }
 
 }
