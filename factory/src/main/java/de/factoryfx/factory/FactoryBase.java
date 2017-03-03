@@ -60,7 +60,8 @@ public abstract class FactoryBase<L,V> extends Data {
             if (createdLiveObject==null){
                 createdLiveObject = create();
             } else {
-                loggedAction(FactoryLogEntryEventType.REUSE,()->{});
+                //TODO make this configurable
+//                loggedAction(FactoryLogEntryEventType.REUSE,()->{});
             }
         }
         return createdLiveObject;
@@ -228,7 +229,11 @@ public abstract class FactoryBase<L,V> extends Data {
         }
 
         public FactoryLogEntry createFactoryLogEntry() {
-            return factory.createFactoryLogEntry();
+            return factory.createFactoryLogEntry(false);
+        }
+
+        public FactoryLogEntry createFactoryLogEntryFlat(){
+            return factory.createFactoryLogEntry(true);
         }
 
         /**determine which live objects needs recreation*/
@@ -282,8 +287,10 @@ public abstract class FactoryBase<L,V> extends Data {
 
     }
 
-    private FactoryLogEntry createFactoryLogEntry() {
-        this.internalFactory().collectChildrenFactoriesFlat().forEach(child -> factoryLogEntry.children.add(child.createFactoryLogEntry()));
+    private FactoryLogEntry createFactoryLogEntry(boolean flat) {
+        if (!flat){
+            this.internalFactory().collectChildrenFactoriesFlat().forEach(child -> factoryLogEntry.children.add(child.createFactoryLogEntry(flat)));
+        }
         return factoryLogEntry;
     }
 

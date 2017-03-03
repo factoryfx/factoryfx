@@ -1,8 +1,11 @@
 package de.factoryfx.factory;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import com.google.common.collect.TreeTraverser;
 import de.factoryfx.data.merge.DataMerger;
@@ -30,9 +33,12 @@ public class FactoryManager<L,V,T extends FactoryBase<L,V>> {
 
         DataMerger dataMerger = new DataMerger(currentFactoryRoot, commonVersion, newVersion);
         MergeDiff mergeDiff= dataMerger.mergeIntoCurrent();
+        long duration=0;
+        List<FactoryBase<?,V>> removed = new ArrayList<>();
         if (mergeDiff.hasNoConflicts()){
             currentFactoryRoot.internalFactory().loopDetector();
 
+            long start=System.nanoTime();
             Set<FactoryBase<?,?>> changedFactories = new HashSet<>();
             for (MergeResultEntry mergeResultEntry: mergeDiff.getMergeInfos()){
                 if (mergeResultEntry.parent instanceof FactoryBase) {
@@ -44,11 +50,25 @@ public class FactoryManager<L,V,T extends FactoryBase<L,V>> {
             final LinkedHashSet<FactoryBase<?, V>> factoriesInCreateAndStartOrder = getFactoriesInCreateAndStartOrder(currentFactoryRoot);
             factoriesInCreateAndStartOrder.forEach(this::createWithExceptionHandling);
 
-            destroyFactories(previousFactories, currentFactoryRoot.internalFactory().collectChildFactoriesDeep());
+            final Set<FactoryBase<?, V>> newFactories = currentFactoryRoot.internalFactory().collectChildFactoriesDeep();
+            destroyFactories(previousFactories, newFactories);
 
             factoriesInCreateAndStartOrder.forEach(this::startWithExceptionHandling);
+            duration=System.nanoTime()-start;
+            removed=getRemovedFactories(previousFactories,newFactories);
         }
-        return new FactoryLog(currentFactoryRoot.internalFactory().createFactoryLogEntry(),new MergeDiffInfo(mergeDiff));
+
+        return new FactoryLog(currentFactoryRoot.internalFactory().createFactoryLogEntry(), removed.stream().map(r->r.internalFactory().createFactoryLogEntryFlat()).collect(Collectors.toList()),new MergeDiffInfo(mergeDiff),duration);
+    }
+
+    public List<FactoryBase<?,V>> getRemovedFactories(Set<FactoryBase<?,V>> previousFactories, Set<FactoryBase<?,V>> newFactories){
+        final ArrayList<FactoryBase<?, V>> result = new ArrayList<>();
+        previousFactories.forEach(previous -> {
+            if (!newFactories.contains(previous)){
+                result.add(previous);
+            }
+        });
+        return result;
     }
 
     /** get the merge result  but don't execute the merge and liveObjects updates*/
