@@ -4,7 +4,6 @@ import java.util.ArrayDeque;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
-import java.util.UUID;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -32,27 +31,9 @@ import de.factoryfx.factory.log.FactoryLogEntryEventType;
 @JsonTypeInfo(use=JsonTypeInfo.Id.MINIMAL_CLASS, include=JsonTypeInfo.As.PROPERTY, property="@class")
 public abstract class FactoryBase<L,V> extends Data {
 
-    private String id;
-
     public FactoryBase() {
 
     }
-
-    @Override
-    public String getId() {
-        if (id == null) {
-            id = UUID.randomUUID().toString();
-        }
-        return id;
-    }
-
-    public void setId(String value) {
-        id = value;
-    }
-    public void setId(Object value) {
-        id = (String)value;
-    }
-
 
     @JsonIgnore
     private L createdLiveObject;

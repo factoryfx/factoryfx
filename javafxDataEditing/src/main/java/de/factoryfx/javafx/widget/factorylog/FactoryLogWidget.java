@@ -2,7 +2,6 @@ package de.factoryfx.javafx.widget.factorylog;
 
 import java.util.function.Consumer;
 
-import de.factoryfx.data.util.LanguageText;
 import de.factoryfx.factory.log.FactoryLogEntry;
 import de.factoryfx.factory.log.FactoryLogEntryEvent;
 import de.factoryfx.factory.log.FactoryLogEntryEventType;
@@ -19,16 +18,6 @@ import org.controlsfx.glyphfont.FontAwesome;
 
 public class FactoryLogWidget implements Widget {
     private UniformDesign uniformDesign;
-    private LanguageText columnFactory=new LanguageText().en("data").de("Objekt");
-    private LanguageText columnField=new LanguageText().en("field").de("Feld");
-    private LanguageText columnPrevious=new LanguageText().en("previous").de("Alt");
-    private LanguageText columnNew=new LanguageText().en("new").de("Neu");
-    private LanguageText titleDiff=new LanguageText().en("difference").de("Unterschied");
-    private LanguageText titlePrevious=new LanguageText().en("previous value ").de("Alter Wert");
-    private LanguageText titleNew=new LanguageText().en("new value").de("Neuer Wert");
-    private LanguageText noChangesFound=new LanguageText().en("No changes found").de("keine Änderungen gefunden");
-
-
 
     public FactoryLogWidget(UniformDesign uniformDesign){
         this.uniformDesign=uniformDesign;

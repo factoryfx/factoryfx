@@ -1,14 +1,14 @@
 package de.factoryfx.data.merge;
 
+import de.factoryfx.data.Data;
 import de.factoryfx.data.attribute.AttributeMetadata;
 import de.factoryfx.data.attribute.types.StringAttribute;
-import de.factoryfx.data.merge.testfactories.IdData;
 import org.junit.Assert;
 import org.junit.Test;
 
 public class StringMergeTest extends MergeHelperTestBase {
 
-    public static class StringTestPojo extends IdData {
+    public static class StringTestPojo extends Data {
         public final StringAttribute stringA=new StringAttribute(new AttributeMetadata());
         public final StringAttribute stringB=new StringAttribute(new AttributeMetadata());
     }

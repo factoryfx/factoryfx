@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.UUID;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -34,11 +35,19 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.util.Pair;
 
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
-public abstract class Data {
+public class Data {
 
-    public abstract Object getId();
+    private String id;
+    public String getId() {
+        if (id == null) {
+            id = UUID.randomUUID().toString();
+        }
+        return id;
+    }
 
-    public abstract void setId(Object object);
+    public void setId(String value) {
+        id = value;
+    }
 
     @JsonIgnore
     private static final Map<Class<?>, Field[]> fields = new HashMap<>();

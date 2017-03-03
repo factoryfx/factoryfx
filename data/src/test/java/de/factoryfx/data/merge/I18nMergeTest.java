@@ -2,15 +2,15 @@ package de.factoryfx.data.merge;
 
 import java.util.Locale;
 
+import de.factoryfx.data.Data;
 import de.factoryfx.data.attribute.AttributeMetadata;
 import de.factoryfx.data.attribute.types.I18nAttribute;
-import de.factoryfx.data.merge.testfactories.IdData;
 import org.junit.Assert;
 import org.junit.Test;
 
 public class I18nMergeTest extends MergeHelperTestBase {
 
-    public static class I18nAttributeTestPojo extends IdData {
+    public static class I18nAttributeTestPojo extends Data {
         public final I18nAttribute attribute=new I18nAttribute(new AttributeMetadata());
     }
 

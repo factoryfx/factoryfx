@@ -4,14 +4,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import de.factoryfx.data.Data;
 import de.factoryfx.data.attribute.types.StringAttribute;
 import de.factoryfx.data.merge.testfactories.ExampleFactoryA;
-import de.factoryfx.data.merge.testfactories.IdData;
 import org.junit.Assert;
 import org.junit.Test;
 
 public class ViewListReferenceAttributeTest {
-    public static class ViewListExampleFactory extends IdData {
+    public static class ViewListExampleFactory extends Data {
 
         public final StringAttribute forFilter= new StringAttribute(new AttributeMetadata());
         public final ViewListReferenceAttribute<ViewListExampleFactoryRoot,ExampleFactoryA> view= new ViewListReferenceAttribute<>(new AttributeMetadata(), (ViewListExampleFactoryRoot viewExampleFactoryRoot)->{
@@ -21,7 +21,7 @@ public class ViewListReferenceAttributeTest {
 
     }
 
-    public static class ViewListExampleFactoryRoot extends IdData{
+    public static class ViewListExampleFactoryRoot extends Data{
         public final ReferenceAttribute<ViewListExampleFactory> ref = new ReferenceAttribute<>(ViewListExampleFactory.class,new AttributeMetadata());
         public final ReferenceListAttribute<ExampleFactoryA> list= new ReferenceListAttribute<>(ExampleFactoryA.class,new AttributeMetadata());
     }

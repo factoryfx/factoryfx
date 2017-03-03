@@ -3,14 +3,14 @@ package de.factoryfx.data.attribute;
 import java.util.ArrayList;
 import java.util.Set;
 
+import de.factoryfx.data.Data;
 import de.factoryfx.data.jackson.ObjectMapperBuilder;
-import de.factoryfx.data.merge.testfactories.IdData;
 import org.junit.Assert;
 import org.junit.Test;
 
 public class SetAttributeTest {
 
-    public static class ExampleSetFactory extends IdData {
+    public static class ExampleSetFactory extends Data {
         public ValueSetAttribute<String> setAttribute =new ValueSetAttribute<>(new AttributeMetadata(),String.class,"empty");
     }
 

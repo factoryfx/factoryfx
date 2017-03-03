@@ -1,14 +1,14 @@
 package de.factoryfx.data.merge;
 
+import de.factoryfx.data.Data;
 import de.factoryfx.data.attribute.AttributeMetadata;
 import de.factoryfx.data.attribute.types.StringMapAttribute;
-import de.factoryfx.data.merge.testfactories.IdData;
 import org.junit.Assert;
 import org.junit.Test;
 
 public class MapMergeTest extends MergeHelperTestBase{
 
-    public static class MapExampleFactory extends IdData {
+    public static class MapExampleFactory extends Data {
         public final StringMapAttribute mapAttribute =new StringMapAttribute(new AttributeMetadata());
 
     }

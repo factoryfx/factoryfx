@@ -2,15 +2,15 @@ package de.factoryfx.data.attribute;
 
 import java.util.ArrayList;
 
+import de.factoryfx.data.Data;
 import de.factoryfx.data.attribute.types.StringMapAttribute;
 import de.factoryfx.data.jackson.ObjectMapperBuilder;
-import de.factoryfx.data.merge.testfactories.IdData;
 import org.junit.Assert;
 import org.junit.Test;
 
 public class ValueMapAttributeTest {
 
-    public static class ExampleMapFactory extends IdData {
+    public static class ExampleMapFactory extends Data {
         public StringMapAttribute mapAttribute=new StringMapAttribute(new AttributeMetadata());
     }
 
