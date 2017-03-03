@@ -13,7 +13,7 @@ public class FactoryLogEntry {
     public final List<FactoryLogEntryEvent> events;
 
     @JsonCreator
-    protected FactoryLogEntry(@JsonProperty("displayText")String displayText, @JsonProperty("children")List<FactoryLogEntry> children, @JsonProperty("events")List<FactoryLogEntryEvent> items) {
+    public FactoryLogEntry(@JsonProperty("displayText")String displayText, @JsonProperty("children")List<FactoryLogEntry> children, @JsonProperty("events")List<FactoryLogEntryEvent> items) {
         this.displayText = displayText;
         this.children = children;
         this.events = items;
