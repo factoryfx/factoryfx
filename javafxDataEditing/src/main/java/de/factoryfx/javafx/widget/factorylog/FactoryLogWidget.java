@@ -75,7 +75,7 @@ public class FactoryLogWidget implements Widget {
         FontAwesome.Glyph getIcon();
     }
 
-    public class FactoryLogWidgetTreeDataFactory implements FactoryLogWidgetTreeData {
+    public static class FactoryLogWidgetTreeDataFactory implements FactoryLogWidgetTreeData {
         private final FactoryLogEntry factory;
 
         public FactoryLogWidgetTreeDataFactory(FactoryLogEntry factory) {
@@ -91,7 +91,7 @@ public class FactoryLogWidget implements Widget {
         }
     }
 
-    public class FactoryLogWidgetTreeDataEvent implements FactoryLogWidgetTreeData {
+    public static class FactoryLogWidgetTreeDataEvent implements FactoryLogWidgetTreeData {
         private final FactoryLogEntryEvent event;
 
         public FactoryLogWidgetTreeDataEvent(FactoryLogEntryEvent event) {

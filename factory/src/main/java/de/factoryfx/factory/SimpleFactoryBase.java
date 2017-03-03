@@ -1,5 +1,7 @@
 package de.factoryfx.factory;
 
+import de.factoryfx.factory.log.FactoryLogEntryEventType;
+
 public abstract class SimpleFactoryBase<L,V> extends FactoryBase<L,V>{
 
     public abstract L createImpl();
@@ -9,7 +11,7 @@ public abstract class SimpleFactoryBase<L,V> extends FactoryBase<L,V>{
         if (creator!=null){
             return creator.get();
         }
-        return createImpl();
+        return loggedAction(FactoryLogEntryEventType.CREATE, this::createImpl);
     }
 
 }

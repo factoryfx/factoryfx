@@ -68,7 +68,7 @@ public abstract class FactoryBase<L,V> extends Data {
         return createdLiveObject;
     }
 
-    private <U> U loggedAction(FactoryLogEntryEventType type, Supplier<U> action){
+    <U> U loggedAction(FactoryLogEntryEventType type, Supplier<U> action){
         long start=System.nanoTime();
         U result = action.get();
         factoryLogEntry.events.add(new FactoryLogEntryEvent(type,System.nanoTime()-start));
@@ -131,7 +131,7 @@ public abstract class FactoryBase<L,V> extends Data {
             }
         }
 
-        visitChildFactoriesAndViewsFlat(vFactoryBase -> vFactoryBase.determineRecreationNeed(changedFactories,path));
+        visitChildFactoriesAndViewsFlat(child -> child.determineRecreationNeed(changedFactories,path));
         path.pop();
     }
 
