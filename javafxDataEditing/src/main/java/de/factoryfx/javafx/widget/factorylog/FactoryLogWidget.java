@@ -38,7 +38,9 @@ public class FactoryLogWidget implements Widget {
         final BorderPane borderPane = new BorderPane();
         factoryLogEntryRootUpdater= root -> {
             TreeView<FactoryLogWidgetTreeData> treeView = new TreeView<>();
-            treeView.setRoot(createLogTree(root));
+            if (root!=null){
+                treeView.setRoot(createLogTree(root));
+            }
             treeView.setCellFactory(new Callback<TreeView<FactoryLogWidgetTreeData>, TreeCell<FactoryLogWidgetTreeData>>() {
                 @Override
                 public TreeCell<FactoryLogWidgetTreeData> call(TreeView<FactoryLogWidgetTreeData> param) {
