@@ -2,6 +2,7 @@ package de.factoryfx.factory;
 
 import java.util.ArrayDeque;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.BiConsumer;
@@ -290,6 +291,10 @@ public abstract class FactoryBase<L,V> extends Data {
     private FactoryLogEntry createFactoryLogEntry(boolean flat) {
         if (!flat){
             this.internalFactory().collectChildrenFactoriesFlat().forEach(child -> factoryLogEntry.children.add(child.createFactoryLogEntry(flat)));
+            factoryLogEntry.children.removeIf(Objects::isNull);
+        }
+        if (factoryLogEntry.events.isEmpty()){
+            return null;
         }
         return factoryLogEntry;
     }
