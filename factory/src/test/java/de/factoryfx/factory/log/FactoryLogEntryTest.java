@@ -9,5 +9,6 @@ public class FactoryLogEntryTest {
     public void test_json(){
         FactoryLogEntry factoryLogEntry = new FactoryLogEntry(new ExampleFactoryA());
         ObjectMapperBuilder.build().copy(factoryLogEntry);
+        System.out.println(ObjectMapperBuilder.build().writeValueAsString(factoryLogEntry));
     }
 }
