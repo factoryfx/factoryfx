@@ -17,10 +17,10 @@ public class FactoryLogWidgetTest extends Application {
     public void start(Stage primaryStage) throws Exception {
 
         FactoryLogWidget factoryLogWidget= new FactoryLogWidget(new UniformDesignFactory<>().internalFactory().instance());
-        final FactoryLogEntry factoryLogEntry = new FactoryLogEntry("FactoryX",new ArrayList<>(),new ArrayList<>());
+        final FactoryLogEntry factoryLogEntry = new FactoryLogEntry("1","FactoryX",new ArrayList<>(),new ArrayList<>());
         factoryLogEntry.events.add(new FactoryLogEntryEvent(FactoryLogEntryEventType.CREATE,21323));
         factoryLogEntry.events.add(new FactoryLogEntryEvent(FactoryLogEntryEventType.START,5646546));
-        final FactoryLogEntry child = new FactoryLogEntry("FactoryY",new ArrayList<>(),new ArrayList<>());
+        final FactoryLogEntry child = new FactoryLogEntry("2","FactoryY",new ArrayList<>(),new ArrayList<>());
         child.events.add(new FactoryLogEntryEvent(FactoryLogEntryEventType.CREATE,21323));
         child.events.add(new FactoryLogEntryEvent(FactoryLogEntryEventType.START,5646546));
         factoryLogEntry.children.add(child);
