@@ -37,6 +37,7 @@ import de.factoryfx.data.merge.MergeResultEntryInfo;
 import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.factory.datastorage.FactoryAndStorageMetadata;
 import de.factoryfx.factory.datastorage.StoredFactoryMetadata;
+import de.factoryfx.factory.log.FactoryLog;
 import de.factoryfx.server.ApplicationServer;
 import de.factoryfx.server.angularjs.model.FactoryTypeInfoWrapper;
 import de.factoryfx.server.angularjs.model.WebGuiFactoryMetadata;
@@ -291,7 +292,8 @@ public class RestResource<L,V,T extends FactoryBase<L,V>> {
 
         if (response.validationErrors.isEmpty()){
             //TODO handle conflicts
-            response.mergeDiffExt=applicationServer.updateCurrentFactory(getCurrentEditingFactory());
+            final FactoryLog factoryLog = applicationServer.updateCurrentFactory(getCurrentEditingFactory());
+            //FIXME schould use mergeinfo from factoryLog
             response.mergeDiff=new WebGuiMergeDiff(response.mergeDiffExt,getUserLocale());
             if (response.mergeDiffExt.hasNoConflicts()){
                 response.deployed=true;

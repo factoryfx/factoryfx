@@ -15,6 +15,7 @@ import de.factoryfx.data.merge.MergeDiffInfo;
 import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.factory.datastorage.FactoryAndStorageMetadata;
 import de.factoryfx.factory.datastorage.StoredFactoryMetadata;
+import de.factoryfx.factory.log.FactoryLog;
 import de.factoryfx.server.ApplicationServer;
 import de.factoryfx.user.AuthorizedUser;
 import de.factoryfx.user.UserManagement;
@@ -48,9 +49,9 @@ public class ApplicationServerResource<V,L,T extends FactoryBase<L,V>> {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @Path("updateCurrentFactory")
-    public MergeDiffInfo updateCurrentFactory(UserAwareRequest<FactoryAndStorageMetadata> update) {
+    public FactoryLog updateCurrentFactory(UserAwareRequest<FactoryAndStorageMetadata> update) {
         authenticate(update);
-        return new MergeDiffInfo(applicationServer.updateCurrentFactory(new FactoryAndStorageMetadata<>(update.request.root.internal().prepareUsableCopy(),update.request.metadata)));
+        return applicationServer.updateCurrentFactory(new FactoryAndStorageMetadata<>(update.request.root.internal().prepareUsableCopy(),update.request.metadata));
     }
 
     @POST

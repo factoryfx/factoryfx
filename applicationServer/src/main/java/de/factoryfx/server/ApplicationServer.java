@@ -10,7 +10,7 @@ import de.factoryfx.factory.FactoryManager;
 import de.factoryfx.factory.datastorage.FactoryAndStorageMetadata;
 import de.factoryfx.factory.datastorage.FactoryStorage;
 import de.factoryfx.factory.datastorage.StoredFactoryMetadata;
-
+import de.factoryfx.factory.log.FactoryLog;
 
 public class ApplicationServer<L,V,T extends FactoryBase<L,V>> {
     private final FactoryManager<L,V,T> factoryManager;
@@ -27,25 +27,21 @@ public class ApplicationServer<L,V,T extends FactoryBase<L,V>> {
         return new DataMerger(historyFactoryPrevious,historyFactoryPrevious,historyFactory).createMergeResult();
     }
 
-    public MergeDiff updateCurrentFactory(FactoryAndStorageMetadata<T> update) {
+    public FactoryLog updateCurrentFactory(FactoryAndStorageMetadata<T> update) {
         prepareFactory(update.root);
         T commonVersion = factoryStorage.getHistoryFactory(update.metadata.baseVersionId);
-        MergeDiff mergeDiff = factoryManager.update(commonVersion, update.root);
-        if (mergeDiff.hasNoConflicts()){
+        FactoryLog factoryLog = factoryManager.update(commonVersion, update.root);
+        if (factoryLog.mergeDiffInfo.hasNoConflicts()){
             update.metadata.creationTime= LocalDateTime.now();
             FactoryAndStorageMetadata<T> copy = new FactoryAndStorageMetadata<>(factoryManager.getCurrentFactory().internal().copy(),update.metadata);
             factoryStorage.updateCurrentFactory(copy);
         }
-        return mergeDiff;
+        return factoryLog;
     }
 
     public MergeDiff simulateUpdateCurrentFactory(FactoryAndStorageMetadata<T> possibleUpdate){
         T commonVersion = factoryStorage.getHistoryFactory(possibleUpdate.metadata.baseVersionId);
         return factoryManager.simulateUpdate(commonVersion , possibleUpdate.root);
-    }
-
-    public T getCurrentFactory() {
-        return factoryManager.getCurrentFactory();
     }
 
     /** creates a new factory update which is ready for editing mainly assign the right ids*/
