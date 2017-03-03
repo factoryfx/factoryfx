@@ -293,9 +293,9 @@ public abstract class FactoryBase<L,V> extends Data {
             this.internalFactory().collectChildrenFactoriesFlat().forEach(child -> factoryLogEntry.children.add(child.createFactoryLogEntry(flat)));
             factoryLogEntry.children.removeIf(Objects::isNull);
         }
-        if (factoryLogEntry.events.isEmpty()){
-            return null;
-        }
+//        if (factoryLogEntry.events.isEmpty()){
+//            return null;
+//        }
         return factoryLogEntry;
     }
 
