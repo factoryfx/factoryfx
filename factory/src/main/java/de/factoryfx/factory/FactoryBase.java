@@ -290,7 +290,11 @@ public abstract class FactoryBase<L,V> extends Data {
 
     private FactoryLogEntry createFactoryLogEntry(boolean flat) {
         if (!flat){
-            this.internalFactory().collectChildrenFactoriesFlat().forEach(child -> factoryLogEntry.children.add(child.createFactoryLogEntry(flat)));
+            this.internalFactory().collectChildrenFactoriesFlat().forEach(child -> {
+                if (factoryLogEntry.hasEvents()){
+                    factoryLogEntry.children.add(child.createFactoryLogEntry(flat));
+                }
+            });
             factoryLogEntry.children.removeIf(Objects::isNull);
         }
 //        if (factoryLogEntry.events.isEmpty()){

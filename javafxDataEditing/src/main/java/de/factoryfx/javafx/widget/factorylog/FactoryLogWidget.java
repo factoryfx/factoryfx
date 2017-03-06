@@ -87,7 +87,7 @@ public class FactoryLogWidget implements Widget {
         }
 
         public FontAwesome.Glyph getIcon(){
-            return FontAwesome.Glyph.ANGLE_DOUBLE_RIGHT;
+            return FontAwesome.Glyph.SQUARE_ALT;
         }
     }
 

@@ -26,4 +26,13 @@ public class FactoryLogEntry {
     public FactoryLogEntry(FactoryBase<?,?> factoryBase) {
         this(factoryBase.internal().getDisplayText(),new ArrayList<>(),new ArrayList<>());
     }
+
+    public boolean hasEvents(){
+        for (FactoryLogEntry child: children){
+            if (child.hasEvents()){
+                return true;
+            }
+        }
+        return !events.isEmpty();
+    }
 }
