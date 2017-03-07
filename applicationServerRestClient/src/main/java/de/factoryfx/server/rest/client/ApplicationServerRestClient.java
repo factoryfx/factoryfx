@@ -9,7 +9,7 @@ import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.factory.datastorage.FactoryAndStorageMetadata;
 import de.factoryfx.factory.datastorage.FactoryStorage;
 import de.factoryfx.factory.datastorage.StoredFactoryMetadata;
-import de.factoryfx.factory.log.FactoryLog;
+import de.factoryfx.factory.log.FactoryUpdateLog;
 import de.factoryfx.server.rest.CheckUserResponse;
 import de.factoryfx.server.rest.UserAwareRequest;
 import de.factoryfx.server.rest.UserLocaleResponse;
@@ -30,8 +30,8 @@ public class ApplicationServerRestClient<V,T extends FactoryBase<?,V>> {
         this.passwordHash=passwordHash;
     }
 
-    public FactoryLog updateCurrentFactory(FactoryAndStorageMetadata<T> update) {
-        return restClient.post("updateCurrentFactory", new UserAwareRequest<>(user,passwordHash,update), FactoryLog.class);
+    public FactoryUpdateLog updateCurrentFactory(FactoryAndStorageMetadata<T> update) {
+        return restClient.post("updateCurrentFactory", new UserAwareRequest<>(user,passwordHash,update), FactoryUpdateLog.class);
     }
 
     public MergeDiffInfo simulateUpdateCurrentFactory(FactoryAndStorageMetadata<T> update) {

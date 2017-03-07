@@ -289,18 +289,16 @@ public abstract class FactoryBase<L,V> extends Data {
     }
 
     private FactoryLogEntry createFactoryLogEntry(boolean flat) {
-        if (!flat){
-            this.internalFactory().collectChildrenFactoriesFlat().forEach(child -> {
-                if (factoryLogEntry.hasEvents()){
+        if (factoryLogEntry.hasEvents()){
+            if (!flat){
+                this.internalFactory().collectChildrenFactoriesFlat().forEach(child -> {
                     factoryLogEntry.children.add(child.createFactoryLogEntry(flat));
-                }
-            });
-            factoryLogEntry.children.removeIf(Objects::isNull);
+                });
+                factoryLogEntry.children.removeIf(Objects::isNull);
+            }
+            return factoryLogEntry;
         }
-//        if (factoryLogEntry.events.isEmpty()){
-//            return null;
-//        }
-        return factoryLogEntry;
+        return null;
     }
 
     Supplier<L> creator=null;

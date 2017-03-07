@@ -5,12 +5,13 @@ import java.util.Collection;
 
 import de.factoryfx.data.merge.DataMerger;
 import de.factoryfx.data.merge.MergeDiff;
+import de.factoryfx.data.merge.MergeDiffInfo;
 import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.factory.FactoryManager;
 import de.factoryfx.factory.datastorage.FactoryAndStorageMetadata;
 import de.factoryfx.factory.datastorage.FactoryStorage;
 import de.factoryfx.factory.datastorage.StoredFactoryMetadata;
-import de.factoryfx.factory.log.FactoryLog;
+import de.factoryfx.factory.log.FactoryUpdateLog;
 
 public class ApplicationServer<L,V,T extends FactoryBase<L,V>> {
     private final FactoryManager<L,V,T> factoryManager;
@@ -27,10 +28,10 @@ public class ApplicationServer<L,V,T extends FactoryBase<L,V>> {
         return new DataMerger(historyFactoryPrevious,historyFactoryPrevious,historyFactory).createMergeResult();
     }
 
-    public FactoryLog updateCurrentFactory(FactoryAndStorageMetadata<T> update) {
+    public FactoryUpdateLog updateCurrentFactory(FactoryAndStorageMetadata<T> update) {
         prepareFactory(update.root);
         T commonVersion = factoryStorage.getHistoryFactory(update.metadata.baseVersionId);
-        FactoryLog factoryLog = factoryManager.update(commonVersion, update.root);
+        FactoryUpdateLog factoryLog = factoryManager.update(commonVersion, update.root);
         if (factoryLog.mergeDiffInfo.hasNoConflicts()){
             update.metadata.creationTime= LocalDateTime.now();
             FactoryAndStorageMetadata<T> copy = new FactoryAndStorageMetadata<>(factoryManager.getCurrentFactory().internal().copy(),update.metadata);
@@ -39,9 +40,9 @@ public class ApplicationServer<L,V,T extends FactoryBase<L,V>> {
         return factoryLog;
     }
 
-    public MergeDiff simulateUpdateCurrentFactory(FactoryAndStorageMetadata<T> possibleUpdate){
+    public MergeDiffInfo simulateUpdateCurrentFactory(FactoryAndStorageMetadata<T> possibleUpdate){
         T commonVersion = factoryStorage.getHistoryFactory(possibleUpdate.metadata.baseVersionId);
-        return factoryManager.simulateUpdate(commonVersion , possibleUpdate.root);
+        return new MergeDiffInfo(factoryManager.simulateUpdate(commonVersion , possibleUpdate.root));
     }
 
     /** creates a new factory update which is ready for editing mainly assign the right ids*/

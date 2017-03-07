@@ -14,7 +14,7 @@ import de.factoryfx.data.merge.MergeDiffInfo;
 import de.factoryfx.data.merge.MergeResultEntry;
 import de.factoryfx.factory.exception.ExceptionResponseAction;
 import de.factoryfx.factory.exception.FactoryExceptionHandler;
-import de.factoryfx.factory.log.FactoryLog;
+import de.factoryfx.factory.log.FactoryUpdateLog;
 
 public class FactoryManager<L,V,T extends FactoryBase<L,V>> {
 
@@ -26,7 +26,7 @@ public class FactoryManager<L,V,T extends FactoryBase<L,V>> {
     }
 
     @SuppressWarnings("unchecked")
-    public FactoryLog update(T commonVersion , T newVersion){
+    public FactoryUpdateLog update(T commonVersion , T newVersion){
         newVersion.internalFactory().loopDetector();
         LinkedHashSet<FactoryBase<?,V>> previousFactories = getFactoriesInDestroyOrder(currentFactoryRoot);
         previousFactories.forEach((f)->f.internalFactory().resetLog());
@@ -58,7 +58,7 @@ public class FactoryManager<L,V,T extends FactoryBase<L,V>> {
             removed=getRemovedFactories(previousFactories,newFactories);
         }
 
-        return new FactoryLog(currentFactoryRoot.internalFactory().createFactoryLogEntry(), removed.stream().map(r->r.internalFactory().createFactoryLogEntryFlat()).collect(Collectors.toList()),new MergeDiffInfo(mergeDiff),duration);
+        return new FactoryUpdateLog(currentFactoryRoot.internalFactory().createFactoryLogEntry(), removed.stream().map(r->r.internalFactory().createFactoryLogEntryFlat()).collect(Collectors.toSet()),new MergeDiffInfo(mergeDiff),duration);
     }
 
     public List<FactoryBase<?,V>> getRemovedFactories(Set<FactoryBase<?,V>> previousFactories, Set<FactoryBase<?,V>> newFactories){

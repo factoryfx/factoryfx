@@ -1,7 +1,9 @@
 package de.factoryfx.factory.log;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
@@ -34,5 +36,17 @@ public class FactoryLogEntry {
             }
         }
         return !events.isEmpty();
+    }
+
+    public Set<FactoryLogEntry> getListDeep(){
+        final HashSet<FactoryLogEntry> items = new HashSet<>();
+        collectToDeep(items);
+        return items;
+    }
+
+    private void collectToDeep(Set<FactoryLogEntry> items){
+        if (items.add(this)){
+            children.forEach(child -> child.collectToDeep(items));
+        }
     }
 }

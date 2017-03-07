@@ -32,12 +32,12 @@ import de.factoryfx.data.attribute.AttributeVisitor;
 import de.factoryfx.data.attribute.ReferenceAttribute;
 import de.factoryfx.data.attribute.ReferenceListAttribute;
 import de.factoryfx.data.merge.MergeDiff;
-import de.factoryfx.data.merge.MergeResultEntry;
+import de.factoryfx.data.merge.MergeDiffInfo;
 import de.factoryfx.data.merge.MergeResultEntryInfo;
 import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.factory.datastorage.FactoryAndStorageMetadata;
 import de.factoryfx.factory.datastorage.StoredFactoryMetadata;
-import de.factoryfx.factory.log.FactoryLog;
+import de.factoryfx.factory.log.FactoryUpdateLog;
 import de.factoryfx.server.ApplicationServer;
 import de.factoryfx.server.angularjs.model.FactoryTypeInfoWrapper;
 import de.factoryfx.server.angularjs.model.WebGuiFactoryMetadata;
@@ -244,7 +244,7 @@ public class RestResource<L,V,T extends FactoryBase<L,V>> {
     public static class StageResponse {
         public WebGuiMergeDiff mergeDiff;
         @JsonIgnore
-        public MergeDiff mergeDiffExt;
+        public MergeDiffInfo mergeDiffInfo;
         public List<WebGuiValidationError> validationErrors=new ArrayList<>();
         public boolean deployed;
     }
@@ -253,8 +253,8 @@ public class RestResource<L,V,T extends FactoryBase<L,V>> {
         StageResponse response=new StageResponse();
         FactoryAndStorageMetadata<T> currentEditingFactoryRoot = getCurrentEditingFactory();
 
-        response.mergeDiffExt=applicationServer.simulateUpdateCurrentFactory(currentEditingFactoryRoot);
-        response.mergeDiff=new WebGuiMergeDiff(response.mergeDiffExt,getUserLocale());
+        response.mergeDiffInfo=applicationServer.simulateUpdateCurrentFactory(currentEditingFactoryRoot);
+        response.mergeDiff=new WebGuiMergeDiff(response.mergeDiffInfo,getUserLocale());
 
         for (Data factoryBase: currentEditingFactoryRoot.root.internal().collectChildrenDeep()){
             factoryBase.internal().validateFlat().stream().map(validationError -> new WebGuiValidationError(validationError,getUserLocale(),factoryBase)).forEach(w -> response.validationErrors.add(w));
@@ -278,12 +278,13 @@ public class RestResource<L,V,T extends FactoryBase<L,V>> {
         StageResponse response=createStageResponse();
 
 
-        if (response.mergeDiffExt.hasNoConflicts()){
+        if (response.mergeDiffInfo.hasNoConflicts()){
             if (userManagement.authorisationRequired()){
-                AuthorizedUser user = getUser();
-                for (MergeResultEntry mergeInfo: response.mergeDiffExt.getMergeInfos()){
-                    user.checkPermission(mergeInfo.requiredPermission);
-                }
+                //TODO user AuthorizedUser check probably in another class for reuse with rich client
+//                AuthorizedUser user = getUser();
+//                for (MergeResultEntry mergeInfo: response.mergeDiffInfo){
+//                    user.checkPermission(mergeInfo.requiredPermission);
+//                }
             }
         } else {
             //TODO
@@ -292,10 +293,9 @@ public class RestResource<L,V,T extends FactoryBase<L,V>> {
 
         if (response.validationErrors.isEmpty()){
             //TODO handle conflicts
-            final FactoryLog factoryLog = applicationServer.updateCurrentFactory(getCurrentEditingFactory());
-            //FIXME schould use mergeinfo from factoryLog
-            response.mergeDiff=new WebGuiMergeDiff(response.mergeDiffExt,getUserLocale());
-            if (response.mergeDiffExt.hasNoConflicts()){
+            final FactoryUpdateLog factoryLog = applicationServer.updateCurrentFactory(getCurrentEditingFactory());
+            response.mergeDiff=new WebGuiMergeDiff(factoryLog.mergeDiffInfo,getUserLocale());
+            if (response.mergeDiffInfo.hasNoConflicts()){
                 response.deployed=true;
                 sessionStorage.setCurrentEditingFactory(request,applicationServer.prepareNewFactory());
             }
