@@ -60,7 +60,7 @@ public class ApplicationServerResource<V,L,T extends FactoryBase<L,V>> {
     @Path("simulateUpdateCurrentFactory")
     public MergeDiffInfo simulateUpdateCurrentFactory(UserAwareRequest<FactoryAndStorageMetadata> request) {
         authenticate(request);
-        return new MergeDiffInfo(applicationServer.simulateUpdateCurrentFactory(new FactoryAndStorageMetadata<>(request.request.root.internal().prepareUsableCopy(),request.request.metadata)));
+        return applicationServer.simulateUpdateCurrentFactory(new FactoryAndStorageMetadata<>(request.request.root.internal().prepareUsableCopy(),request.request.metadata));
     }
 
     @POST
