@@ -513,6 +513,30 @@ public class Data {
         }
 
         /**
+         * short readable text describing the factory
+         * @param displayTextProvider
+         * @param dependencies
+         */
+        public void setDisplayTextProvider(Supplier<String> displayTextProvider, Attribute<?>... dependencies){
+            data.setDisplayTextProvider(displayTextProvider);
+            data.setDisplayTextDependencies(Arrays.asList(dependencies));
+        }
+
+        /**
+         *  @see  #setDisplayTextDependencies(Attribute[])
+         *  */
+        public void setDisplayTextDependencies(List<Attribute<?>> attributes){
+            data.setDisplayTextDependencies(attributes);
+        }
+
+        /** set the attributes that affect the displaytext<br>
+         *  used for live update in gui
+         *  */
+        public void setDisplayTextDependencies(Attribute<?>... attributes){
+            data.setDisplayTextDependencies(Arrays.asList(attributes));
+        }
+
+        /**
          *  grouped iteration over attributes e.g. used in gui editor where each group is a new Tab
          *  */
         public void setAttributeListGroupedSupplier(Function<List<Attribute<?>>,List<Pair<String,List<Attribute<?>>>>> attributeListGroupedSupplier){
@@ -534,19 +558,6 @@ public class Data {
             data.setMatchSearchTextFunction(matchSearchTextFunction);
         }
 
-        /**
-         *  @see  #setDisplayTextDependencies(Attribute[])
-         *  */
-        public void setDisplayTextDependencies(List<Attribute<?>> attributes){
-            data.setDisplayTextDependencies(attributes);
-        }
-
-        /** set the attributes that affect the displaytext<br>
-         *  used for live update in gui
-         *  */
-        public void setDisplayTextDependencies(Attribute<?>... attributes){
-            data.setDisplayTextDependencies(Arrays.asList(attributes));
-        }
 
         /**
          * data validation

@@ -295,7 +295,7 @@ public class RestResource<L,V,T extends FactoryBase<L,V>> {
             //TODO handle conflicts
             final FactoryUpdateLog factoryLog = applicationServer.updateCurrentFactory(getCurrentEditingFactory());
             response.mergeDiff=new WebGuiMergeDiff(factoryLog.mergeDiffInfo,getUserLocale());
-            if (response.mergeDiffInfo.hasNoConflicts()){
+            if (factoryLog.mergeDiffInfo.hasNoConflicts()){
                 response.deployed=true;
                 sessionStorage.setCurrentEditingFactory(request,applicationServer.prepareNewFactory());
             }
