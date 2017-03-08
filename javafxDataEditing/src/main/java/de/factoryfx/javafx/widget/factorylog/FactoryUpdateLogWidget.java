@@ -70,7 +70,9 @@ public class FactoryUpdateLogWidget implements Widget {
 
             final Tab tableTab = new Tab("Updated Table");
             tableTab.setContent(treeView);
-            tableTab.setContent(createTable(factoryLog.root.getListDeep()));
+            if (factoryLog.root!=null){
+                tableTab.setContent(createTable(factoryLog.root.getListDeep()));
+            }
             tabPane.getTabs().add(tableTab);
 
             final Tab removedTab = new Tab("Removed");
