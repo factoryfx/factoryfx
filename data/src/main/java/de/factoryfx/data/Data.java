@@ -12,6 +12,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -50,44 +51,28 @@ public class Data {
     }
 
     @JsonIgnore
-    private static final Map<Class<?>, Field[]> fields = new HashMap<>();
+    private static final Map<Class<?>, Field[]> fields = new ConcurrentHashMap<>();
     @JsonIgnore
     private Field[] instanceFields;
 
-    public Data() {
-        initFieldsCache();
-    }
-
     @JsonIgnore
     private Field[] getFields() {
+        if (instanceFields==null) {
+            final List<Field> fieldsOrdered = getFieldsOrdered(getClass());
+            instanceFields = fieldsOrdered.toArray(new Field[fieldsOrdered.size()]);
+            fields.put(getClass(), instanceFields);
+        }
         return instanceFields;
     }
 
-    private void initFieldsCache() {
-        synchronized (fields) {
-            Field[] f = fields.get(getClass());
-            if (f == null) {
-                f = getFieldsOrdered(getClass());
-                ArrayList<Field> removeStatic = new ArrayList<>();
-                for (Field ff : f) {
-                    if (!Modifier.isStatic(ff.getModifiers())) {
-                        removeStatic.add(ff);
-                    }
-                }
-                fields.put(getClass(), removeStatic.toArray(new Field[removeStatic.size()]));
-            }
-            instanceFields = f;
-        }
-    }
-
-    private Field[] getFieldsOrdered(Class<?> clazz) {
-        if (clazz == Object.class)
-            return new Field[0];
+    private List<Field> getFieldsOrdered(Class<?> clazz) {
         ArrayList<Field> fields = new ArrayList<>();
         Class<?> parent = clazz.getSuperclass();
-        Stream.of(getFieldsOrdered(parent)).forEach(fields::add);
-        Stream.of(clazz.getDeclaredFields()).filter(f->Modifier.isPublic(f.getModifiers())).forEach(fields::add);
-        return fields.toArray(new Field[fields.size()]);
+        if (parent!=null){// skip Object
+            fields.addAll(getFieldsOrdered(parent));
+        }
+        Stream.of(clazz.getDeclaredFields()).filter(f->Modifier.isPublic(f.getModifiers())).filter(f->!Modifier.isStatic(f.getModifiers())).forEach(fields::add);
+        return fields;
     }
 
     @FunctionalInterface
@@ -99,21 +84,6 @@ public class Data {
         visitAttributesFlat((attributeVariableName, attribute) -> {
             attribute.internal_visit(consumer);
         });
-    }
-
-    @SuppressWarnings("unchecked")
-    private <A> void  visitAttributesDualFlat(Data modelBase, BiConsumer<Attribute<A>, Attribute<A>> consumer) {
-        Field[] fields = getFields();
-        for (Field field : fields) {
-            try {
-                Object fieldValue = field.get(this);
-                if (fieldValue instanceof Attribute) {
-                    consumer.accept((Attribute<A>) field.get(this), (Attribute<A>) field.get(modelBase));
-                }
-            } catch (IllegalAccessException e) {
-                throw new RuntimeException(e);
-            }
-        }
     }
 
     @FunctionalInterface
@@ -139,7 +109,22 @@ public class Data {
         this.visitAttributesFlat((attributeVariableName, attribute) -> consumer.accept(attribute));
     }
 
-    private void visitAttributesTripleFlat(Optional<?> modelBase1, Optional<?> modelBase2, TriConsumer<Attribute<?>, Optional<Attribute<?>>, Optional<Attribute<?>>> consumer) {
+    @SuppressWarnings("unchecked")
+    private <A> void  visitAttributesDualFlat(Data data, BiConsumer<Attribute<A>, Attribute<A>> consumer) {
+        Field[] fields = getFields();
+        for (Field field : fields) {
+            try {
+                Object fieldValue = field.get(this);
+                if (fieldValue instanceof Attribute) {
+                    consumer.accept((Attribute<A>) field.get(this), (Attribute<A>) field.get(data));
+                }
+            } catch (IllegalAccessException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
+    private void visitAttributesTripleFlat(Optional<?> data1, Optional<?> data2, TriConsumer<Attribute<?>, Optional<Attribute<?>>, Optional<Attribute<?>>> consumer) {
         Field[] fields = getFields();
         for (Field field : fields) {
             try {
@@ -148,12 +133,12 @@ public class Data {
                 if (fieldValue instanceof Attribute) {
 
                     Attribute<?> value1 = null;
-                    if (modelBase1.isPresent()) {
-                        value1 = (Attribute<?>) field.get(modelBase1.get());
+                    if (data1.isPresent()) {
+                        value1 = (Attribute<?>) field.get(data1.get());
                     }
                     Attribute<?> value2 = null;
-                    if (modelBase2.isPresent()) {
-                        value2 = (Attribute<?>) field.get(modelBase2.get());
+                    if (data2.isPresent()) {
+                        value2 = (Attribute<?>) field.get(data2.get());
                     }
                     consumer.accept((Attribute<?>) field.get(this), Optional.ofNullable(value1), Optional.ofNullable(value2));
                 }
@@ -328,6 +313,7 @@ public class Data {
         return path;
     }
 
+    @SuppressWarnings("unchecked")
     private <T extends Data> T copy() {
         return (T)copyDeep(0,Integer.MAX_VALUE,new HashMap<>());
     }
