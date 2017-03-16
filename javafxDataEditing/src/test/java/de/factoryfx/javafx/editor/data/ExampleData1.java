@@ -112,15 +112,6 @@ public class ExampleData1 extends Data {
         return borderPane;
     }
 
-    @Override
-    public Object getId() {
-        return id;
-    }
-
-    @Override
-    public void setId(Object object) {
-        id=(String)object;
-    }
 
 
     private List<Pair<String,List<Attribute<?>>>> attributeListGrouped(List<Attribute<?>> defaultGroup ){

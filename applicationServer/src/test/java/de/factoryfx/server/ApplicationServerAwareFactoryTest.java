@@ -18,10 +18,11 @@ public class ApplicationServerAwareFactoryTest {
         rootTestclazz.ref.set(value);
         Assert.assertNull(value.applicationServer.get());
 
-        ApplicationServer<String,Void,RootTestclazz> applicationServer = new ApplicationServer<>(new FactoryManager<>(new RethrowingFactoryExceptionHandler<>()), new InMemoryFactoryStorage<>(rootTestclazz));
+        final FactoryManager<String, Void, RootTestclazz> factoryManager = new FactoryManager<>(new RethrowingFactoryExceptionHandler<>());
+        ApplicationServer<String,Void,RootTestclazz> applicationServer = new ApplicationServer<>(factoryManager, new InMemoryFactoryStorage<>(rootTestclazz));
         applicationServer.start();
 
-        Assert.assertEquals(applicationServer,applicationServer.getCurrentFactory().ref.get().applicationServer.get());
+        Assert.assertEquals(applicationServer,factoryManager.getCurrentFactory().ref.get().applicationServer.get());
 
     }
 

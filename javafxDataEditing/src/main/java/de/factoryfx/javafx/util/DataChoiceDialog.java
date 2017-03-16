@@ -20,7 +20,7 @@ public class DataChoiceDialog {
     private LanguageText title=new LanguageText().en("Select").de("Auswahl");
 
     public Optional<Data> show(Collection<? extends Data> possibleValues, Window owner, UniformDesign uniformDesign){
-        Dialog<Data> choiceDialog = new Dialog<>();
+        Dialog<ButtonType> choiceDialog = new Dialog<>();
         choiceDialog.setTitle(uniformDesign.getText(title));
 
         choiceDialog.initOwner(owner);
@@ -55,7 +55,8 @@ public class DataChoiceDialog {
 
         choiceDialog.setGraphic(null);
 
-        if (choiceDialog.showAndWait().isPresent()){
+        final Optional<ButtonType> dialogResult = choiceDialog.showAndWait();
+        if (dialogResult.get() == ButtonType.OK){
             return Optional.ofNullable(dataTableView.getSelectionModel().getSelectedItem());
         } else {
             return Optional.empty();

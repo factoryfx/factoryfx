@@ -15,31 +15,10 @@ public class HttpServerTest {
 
     public static class TestBigDecimal extends Data {
         public final BigDecimalAttribute value = new BigDecimalAttribute(new AttributeMetadata());
-
-        @Override
-        public Object getId() {
-            return 1;
-        }
-
-        @Override
-        public void setId(Object object) {
-
-        }
-
     }
 
     public static class TestLongDecimal extends Data {
         public final LongAttribute value = new LongAttribute(new AttributeMetadata());
-
-        @Override
-        public Object getId() {
-            return 2;
-        }
-
-        @Override
-        public void setId(Object object) {
-
-        }
     }
 
 

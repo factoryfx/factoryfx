@@ -3,15 +3,15 @@ package de.factoryfx.data.attribute;
 import java.util.ArrayList;
 import java.util.function.Function;
 
+import de.factoryfx.data.Data;
 import de.factoryfx.data.attribute.types.BooleanAttribute;
 import de.factoryfx.data.merge.testfactories.ExampleFactoryA;
-import de.factoryfx.data.merge.testfactories.IdData;
 import org.junit.Assert;
 import org.junit.Test;
 
 public class ViewReferenceAttributeTest {
 
-    public static class ViewExampleFactory extends IdData{
+    public static class ViewExampleFactory extends Data {
 
         public final ViewReferenceAttribute<ViewExampleFactoryRoot,ExampleFactoryA> view= new ViewReferenceAttribute<>(new AttributeMetadata(), new Function<ViewExampleFactoryRoot, ExampleFactoryA>() {
             @Override
@@ -26,7 +26,7 @@ public class ViewReferenceAttributeTest {
         public final BooleanAttribute include= new BooleanAttribute(new AttributeMetadata());
     }
 
-    public static class ViewExampleFactoryRoot extends IdData{
+    public static class ViewExampleFactoryRoot extends Data{
         public final ReferenceAttribute<ViewExampleFactory> ref = new ReferenceAttribute<>(ViewExampleFactory.class,new AttributeMetadata());
         public final ReferenceAttribute<ExampleFactoryA> exampleFactoryA= new ReferenceAttribute<>(ExampleFactoryA.class,new AttributeMetadata());
 

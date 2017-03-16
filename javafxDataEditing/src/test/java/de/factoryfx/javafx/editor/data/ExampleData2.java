@@ -1,7 +1,6 @@
 package de.factoryfx.javafx.editor.data;
 
 import java.util.Arrays;
-import java.util.UUID;
 
 import de.factoryfx.data.Data;
 import de.factoryfx.data.attribute.AttributeMetadata;
@@ -39,16 +38,4 @@ public class ExampleData2 extends Data {
         config().setDisplayTextDependencies(stringAttribute);
     }
 
-
-
-    String id= UUID.randomUUID().toString();
-    @Override
-    public Object getId() {
-        return id;
-    }
-
-    @Override
-    public void setId(Object id) {
-        this.id=(String)id;
-    }
 }

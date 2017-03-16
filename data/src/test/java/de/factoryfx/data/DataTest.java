@@ -17,7 +17,6 @@ import de.factoryfx.data.jackson.SimpleObjectMapper;
 import de.factoryfx.data.merge.testfactories.ExampleFactoryA;
 import de.factoryfx.data.merge.testfactories.ExampleFactoryB;
 import de.factoryfx.data.merge.testfactories.ExampleFactoryC;
-import de.factoryfx.data.merge.testfactories.IdData;
 import de.factoryfx.data.util.LanguageText;
 import de.factoryfx.data.validation.AttributeValidation;
 import de.factoryfx.data.validation.Validation;
@@ -70,7 +69,7 @@ public class DataTest {
         Assert.assertEquals(exampleFactoryA.getId(),readed.getId());
     }
 
-    public static class ExampleFactoryThis extends IdData {
+    public static class ExampleFactoryThis extends Data {
         ArrayList<String> calls=new ArrayList<>();
         public final StringAttribute stringAttribute= new StringAttribute(new AttributeMetadata().labelText("ExampleA1")).validation(new Validation<String>() {
             @Override
@@ -157,7 +156,7 @@ public class DataTest {
     }
 
 
-    public static class ExampleObjectProperty extends IdData {
+    public static class ExampleObjectProperty extends Data {
         public final StringAttribute stringAttribute= new StringAttribute(new AttributeMetadata().labelText("stringAttribute"));
         public final ObjectValueAttribute<String> objectValueAttribute= new ObjectValueAttribute<>(new AttributeMetadata().labelText("objectValueAttribute"));
     }
@@ -216,11 +215,11 @@ public class DataTest {
         Assert.assertEquals(expected, actual);
     }
 
-    public static class ExampleWithDefaultParent extends IdData {
+    public static class ExampleWithDefaultParent extends Data {
         public final ReferenceAttribute<ExampleWithDefault> referenceAttribute = new ReferenceAttribute<>(ExampleWithDefault.class,new AttributeMetadata().labelText("ExampleA2"));
     }
 
-    public static class ExampleWithDefault extends IdData {
+    public static class ExampleWithDefault extends Data {
         public final ReferenceAttribute<ExampleFactoryB> referenceAttribute = new ReferenceAttribute<>(ExampleFactoryB.class,new AttributeMetadata().labelText("ExampleA2")).defaultValue(new ExampleFactoryB());
     }
     @Test
@@ -252,7 +251,7 @@ public class DataTest {
         Assert.assertTrue(copy.referenceListAttribute.get().isEmpty());
     }
 
-    private class ExampleFactoryObservable extends IdData {
+    private class ExampleFactoryObservable extends Data {
         public final StringAttribute stringAttribute= new StringAttribute(new AttributeMetadata().labelText("ExampleA1"));
         public ExampleFactoryObservable(){
             config().setDisplayTextProvider(() -> stringAttribute.get());

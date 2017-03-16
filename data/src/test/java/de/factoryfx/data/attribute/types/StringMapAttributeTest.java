@@ -1,12 +1,12 @@
 package de.factoryfx.data.attribute.types;
 
+import de.factoryfx.data.Data;
 import de.factoryfx.data.attribute.AttributeMetadata;
 import de.factoryfx.data.jackson.ObjectMapperBuilder;
-import de.factoryfx.data.merge.testfactories.IdData;
 import org.junit.Test;
 
 public class StringMapAttributeTest {
-    public static class ExampleMapFactory extends IdData {
+    public static class ExampleMapFactory extends Data {
         public StringMapAttribute mapAttribute =new StringMapAttribute(new AttributeMetadata());
     }
 

@@ -21,7 +21,9 @@ import javafx.beans.property.SimpleBooleanProperty;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.TableView;
 import javafx.scene.control.Tooltip;
 import javafx.scene.input.KeyCode;
@@ -36,6 +38,11 @@ public class DataListEditWidget<T extends Data> implements Widget {
     private LanguageText addText= new LanguageText().en("add").de("Hinzufügen");
     private LanguageText deleteText= new LanguageText().en("delete").de("Löschen");
     private LanguageText copyText= new LanguageText().en("copy").de("Kopieren");
+
+    private LanguageText deleteConfirmationTitle= new LanguageText().en("Delte").de("Löschen");
+    private LanguageText deleteConfirmationHeader= new LanguageText().en("delete item").de("Eintrag löschen");
+    private LanguageText deleteConfirmationContent= new LanguageText().en("delete item?").de("Soll der Eintrag gelöscht werden?");
+
 
     private final UniformDesign uniformDesign;
     private final Runnable emptyAdder;
@@ -155,8 +162,24 @@ public class DataListEditWidget<T extends Data> implements Widget {
     }
 
     private void deleteSelected() {
-        final List<T> selectedItems = new ArrayList<>(tableView.getSelectionModel().getSelectedItems());
-        selectedItems.forEach(list::remove);
+        boolean reallyDelete=true;
+        if (uniformDesign.isAskBeforeDelete()){
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+            alert.setTitle(uniformDesign.getText(deleteConfirmationTitle));
+            alert.setHeaderText(uniformDesign.getText(deleteConfirmationHeader));
+            alert.setContentText(uniformDesign.getText(deleteConfirmationContent));
+
+            Optional<ButtonType> result = alert.showAndWait();
+            if (result.get() == ButtonType.OK){
+                reallyDelete=true;
+            } else {
+                reallyDelete=false;
+            }
+        }
+        if (reallyDelete){
+            final List<T> selectedItems = new ArrayList<>(tableView.getSelectionModel().getSelectedItems());
+            selectedItems.forEach(t -> deleter.accept(t,list));
+        }
     }
 
 }

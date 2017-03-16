@@ -31,6 +31,6 @@ public class UserFactory<V> extends SimpleFactoryBase<User,V> {
     }
 
     public UserFactory(){
-        config().setDisplayTextProvider(name::get);
+        config().setDisplayTextProvider(name::get,name);
     }
 }

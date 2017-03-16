@@ -23,15 +23,15 @@ public class WrappingValueAttributeTest {
         final WrappingValueAttribute<String> name;
 
 
-        @Override
-        public Object getId() {
-            return 1;
-        }
-
-        @Override
-        public void setId(Object object) {
-
-        }
+//        @Override
+//        public Object getId() {
+//            return 1;
+//        }
+//
+//        @Override
+//        public void setId(Object object) {
+//
+//        }
     }
 
     @Test

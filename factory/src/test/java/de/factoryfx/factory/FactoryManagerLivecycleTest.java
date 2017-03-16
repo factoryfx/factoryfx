@@ -230,4 +230,5 @@ public class FactoryManagerLivecycleTest {
         Assert.assertEquals(1,exampleFactoryB.startCalls.size());
     }
 
+
 }

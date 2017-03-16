@@ -1,20 +1,18 @@
 package de.factoryfx.factory;
 
 import java.util.ArrayDeque;
+import java.util.HashSet;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
-import java.util.UUID;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
 
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import de.factoryfx.data.Data;
 import de.factoryfx.data.attribute.ViewListReferenceAttribute;
 import de.factoryfx.data.attribute.ViewReferenceAttribute;
@@ -22,37 +20,21 @@ import de.factoryfx.factory.atrribute.FactoryReferenceAttribute;
 import de.factoryfx.factory.atrribute.FactoryReferenceListAttribute;
 import de.factoryfx.factory.atrribute.FactoryViewListReferenceAttribute;
 import de.factoryfx.factory.atrribute.FactoryViewReferenceAttribute;
+import de.factoryfx.factory.log.FactoryLogEntry;
+import de.factoryfx.factory.log.FactoryLogEntryEvent;
+import de.factoryfx.factory.log.FactoryLogEntryEventType;
 
 /**
  * @param <L> liveobject created from this factory
  * @param <V> runtime visitor
  */
-@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonTypeInfo(use=JsonTypeInfo.Id.MINIMAL_CLASS, include=JsonTypeInfo.As.PROPERTY, property="@class")
 public abstract class FactoryBase<L,V> extends Data {
 
-    private String id;
-
     public FactoryBase() {
 
     }
-
-    @Override
-    public String getId() {
-        if (id == null) {
-            id = UUID.randomUUID().toString();
-        }
-        return id;
-    }
-
-    public void setId(String value) {
-        id = value;
-    }
-    public void setId(Object value) {
-        id = (String)value;
-    }
-
 
     @JsonIgnore
     private L createdLiveObject;
@@ -60,8 +42,14 @@ public abstract class FactoryBase<L,V> extends Data {
     private boolean started=false;
     @JsonIgnore
     boolean needRecreation =false;
-
+    @JsonIgnore
+    private FactoryLogEntry factoryLogEntry=new FactoryLogEntry(this);
+    @JsonIgnore
     private L previousLiveObject;
+
+    private void resetLog() {
+        factoryLogEntry=new FactoryLogEntry(this);
+    }
 
     private L instance() {
         if (needRecreation){
@@ -72,38 +60,63 @@ public abstract class FactoryBase<L,V> extends Data {
         } else {
             if (createdLiveObject==null){
                 createdLiveObject = create();
+            } else {
+                //TODO make this configurable
+//                loggedAction(FactoryLogEntryEventType.REUSE,()->{});
             }
         }
         return createdLiveObject;
     }
 
+    <U> U loggedAction(FactoryLogEntryEventType type, Supplier<U> action){
+        long start=System.nanoTime();
+        U result = action.get();
+        factoryLogEntry.events.add(new FactoryLogEntryEvent(type,System.nanoTime()-start));
+        return result;
+    }
+
+    private void loggedAction(FactoryLogEntryEventType type, Runnable action){
+        loggedAction(type, (Supplier<Void>) () -> {
+            action.run();;
+            return null;
+        });
+    }
+
     L create(){
-        if (creator!=null){
-            return creator.get();
+        if (creator==null){
+            throw new IllegalStateException("no creator defined: "+getClass());
         }
-        throw new IllegalStateException("no creator defined: "+getClass());
+        return loggedAction(FactoryLogEntryEventType.CREATE, ()-> creator.get());
     }
 
     private L reCreate(L previousLiveObject) {
         if (reCreatorWithPreviousLiveObject!=null){
-            return reCreatorWithPreviousLiveObject.apply(previousLiveObject);
+        return loggedAction(FactoryLogEntryEventType.RECREATE, ()-> {
+                return reCreatorWithPreviousLiveObject.apply(previousLiveObject);
+            });
         }
         return create();
     }
 
     private void start() {
         if (!started && starterWithNewLiveObject!=null && createdLiveObject!=null){//createdLiveObject is null e.g. if object ist not instanced in the parent factory
-            starterWithNewLiveObject.accept(createdLiveObject);
-            started=true;
+            loggedAction(FactoryLogEntryEventType.START, ()-> {
+                starterWithNewLiveObject.accept(createdLiveObject);
+                started=true;
+            });
         }
     }
 
     private void destroy(Set<FactoryBase<?,V>> previousFactories) {
         if (!previousFactories.contains(this) && destroyerWithPreviousLiveObject!=null){
-            destroyerWithPreviousLiveObject.accept(createdLiveObject);
+            loggedAction(FactoryLogEntryEventType.DESTROY, ()-> {
+                destroyerWithPreviousLiveObject.accept(createdLiveObject);
+            });
         }
         if (previousLiveObject!=null && destroyerWithPreviousLiveObject!=null){
-            destroyerWithPreviousLiveObject.accept(previousLiveObject);
+            loggedAction(FactoryLogEntryEventType.DESTROY, ()-> {
+                destroyerWithPreviousLiveObject.accept(previousLiveObject);
+            });
         }
         previousLiveObject=null;
     }
@@ -118,15 +131,15 @@ public abstract class FactoryBase<L,V> extends Data {
             }
         }
 
-        visitChildFactoriesAndViewsFlat(vFactoryBase -> vFactoryBase.determineRecreationNeed(changedFactories,path));
+        visitChildFactoriesAndViewsFlat(child -> child.determineRecreationNeed(changedFactories,path));
         path.pop();
     }
 
-    private LoopProtector loopProtector = new LoopProtector();
+    private final LoopProtector loopProtector = new LoopProtector();
     private void loopDetector(){
         loopProtector.enter();
         try {
-            this.internalFactory().visitChildFactoriesAndViewsFlat(factory -> cast(factory).ifPresent(FactoryBase::loopDetector));
+            this.internalFactory().visitChildFactoriesAndViewsFlat(FactoryBase::loopDetector);
         } finally {
             loopProtector.exit();
         }
@@ -139,13 +152,22 @@ public abstract class FactoryBase<L,V> extends Data {
         return Optional.empty();
     }
 
-    @SuppressWarnings("unchecked")
     private Set<FactoryBase<?,V>> collectChildFactoriesDeep(){
-        return super.internal().collectChildrenDeep().stream().map(this::cast).filter(Optional::isPresent).map(Optional::get).collect(Collectors.toSet());
+        final HashSet<FactoryBase<?, V>> result = new HashSet<>();
+        collectChildFactoriesDeep(this,result);
+        return result;
+    }
+
+    private void collectChildFactoriesDeep(FactoryBase<?,V> factory, Set<FactoryBase<?, V>> result){
+        if (result.add(factory)){
+            factory.visitChildFactoriesAndViewsFlat(child -> collectChildFactoriesDeep(child,result));
+        }
     }
 
     private Set<FactoryBase<?,V>> collectChildrenFactoriesFlat() {
-        return super.internal().collectChildrenFlat().stream().map(this::cast).filter(Optional::isPresent).map(Optional::get).collect(Collectors.toSet());
+        HashSet<FactoryBase<?,V>> result = new HashSet<>();
+        this.visitChildFactoriesAndViewsFlat(result::add);
+        return result;
     }
 
 
@@ -172,21 +194,21 @@ public abstract class FactoryBase<L,V> extends Data {
     private void visitChildFactoriesAndViewsFlat(Consumer<FactoryBase<?,V>> consumer) {
         this.internal().visitAttributesFlat((attributeVariableName, attribute) -> {
             if (attribute instanceof FactoryReferenceAttribute) {
-                ((FactoryReferenceAttribute<?,?>)attribute).getOptional().ifPresent(data -> cast(data).ifPresent(consumer::accept));
+                ((FactoryReferenceAttribute<?,?>)attribute).getOptional().ifPresent(data -> cast(data).ifPresent(consumer));
             }
             if (attribute instanceof FactoryReferenceListAttribute) {
-                ((FactoryReferenceListAttribute<?,?>)attribute).forEach(data -> cast(data).ifPresent(consumer::accept));
+                ((FactoryReferenceListAttribute<?,?>)attribute).forEach(data -> cast(data).ifPresent(consumer));
             }
             if (attribute instanceof FactoryViewReferenceAttribute) {
-                ((ViewReferenceAttribute<?,?>)attribute).getOptional().ifPresent(data -> cast(data).ifPresent(consumer::accept));
+                ((ViewReferenceAttribute<?,?>)attribute).getOptional().ifPresent(data -> cast(data).ifPresent(consumer));
             }
             if (attribute instanceof FactoryViewListReferenceAttribute) {
-                ((ViewListReferenceAttribute<?,?>)attribute).get().forEach(data -> cast(data).ifPresent(consumer::accept));
+                ((ViewListReferenceAttribute<?,?>)attribute).get().forEach(data -> cast(data).ifPresent(consumer));
             }
         });
     }
 
-    FactoryInternal<L,V> factoryInternal = new FactoryInternal<>(this);
+    final FactoryInternal<L,V> factoryInternal = new FactoryInternal<>(this);
     /** <b>internal methods should be only used from the framework.</b>
      *  They may change in the Future.
      *  There is no fitting visibility in java therefore this workaround.
@@ -207,12 +229,24 @@ public abstract class FactoryBase<L,V> extends Data {
             return factory.create();
         }
 
+        public FactoryLogEntry createFactoryLogEntry() {
+            return factory.createFactoryLogEntry(false);
+        }
+
+        public FactoryLogEntry createFactoryLogEntryFlat(){
+            return factory.createFactoryLogEntry(true);
+        }
+
         /**determine which live objects needs recreation*/
         public void determineRecreationNeed(Set<FactoryBase<?,?>> changedFactories) {
             factory.determineRecreationNeed(changedFactories,new ArrayDeque<>());
         }
 
-        /** start the liveOobject e.g open a port*/
+        public void resetLog() {
+            factory.resetLog();
+        }
+
+        /** start the liveObject e.g open a port*/
         public void start() {
             factory.start();
         }
@@ -222,7 +256,7 @@ public abstract class FactoryBase<L,V> extends Data {
             factory.destroy(previousFactories);
         }
 
-        /** execute visitor to get runtime informations from the liveobject*/
+        /** execute visitor to get runtime information from the liveobject*/
         public void runtimeQuery(V visitor) {
             factory.runtimeQuery(visitor);
         }
@@ -254,6 +288,19 @@ public abstract class FactoryBase<L,V> extends Data {
 
     }
 
+    private FactoryLogEntry createFactoryLogEntry(boolean flat) {
+        if (factoryLogEntry.hasEvents()){
+            if (!flat){
+                this.internalFactory().collectChildrenFactoriesFlat().forEach(child -> {
+                    factoryLogEntry.children.add(child.createFactoryLogEntry(flat));
+                });
+                factoryLogEntry.children.removeIf(Objects::isNull);
+            }
+            return factoryLogEntry;
+        }
+        return null;
+    }
+
     Supplier<L> creator=null;
     Function<L,L> reCreatorWithPreviousLiveObject=null;
     Consumer<L> starterWithNewLiveObject=null;
@@ -279,7 +326,7 @@ public abstract class FactoryBase<L,V> extends Data {
         this.executorWidthVisitorAndCurrentLiveObject=executorWidthVisitorAndCurrentLiveObject;
     }
 
-    LiveCycleConfig<L,V> liveCycleConfig = new LiveCycleConfig<>(this);
+    final LiveCycleConfig<L,V> liveCycleConfig = new LiveCycleConfig<>(this);
 
     /** live cycle configurations api
      *
@@ -325,7 +372,7 @@ public abstract class FactoryBase<L,V> extends Data {
             factory.setDestroyer(destroyerWithPreviousLiveObject);
         }
 
-        /**execute visitor to get runtime information from the liveobjects*/
+        /**execute visitor to get runtime information from the liveObjects*/
         public void setRuntimeQueryExecutor(BiConsumer<V,L> executorWidthVisitorAndCurrentLiveObject) {
             factory.setRuntimeQueryExecutor(executorWidthVisitorAndCurrentLiveObject);
         }

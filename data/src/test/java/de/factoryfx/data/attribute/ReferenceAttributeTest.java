@@ -4,16 +4,16 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import de.factoryfx.data.Data;
 import de.factoryfx.data.jackson.ObjectMapperBuilder;
 import de.factoryfx.data.merge.testfactories.ExampleFactoryA;
 import de.factoryfx.data.merge.testfactories.ExampleFactoryB;
-import de.factoryfx.data.merge.testfactories.IdData;
 import org.junit.Assert;
 import org.junit.Test;
 
 public class ReferenceAttributeTest {
 
-    public static class ExampleReferenceFactory extends IdData {
+    public static class ExampleReferenceFactory extends Data {
         public ReferenceAttribute<ExampleFactoryA> referenceAttribute =new ReferenceAttribute<>(ExampleFactoryA.class,new AttributeMetadata());
     }
 

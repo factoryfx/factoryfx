@@ -1,14 +1,14 @@
 package de.factoryfx.data.merge;
 
+import de.factoryfx.data.Data;
 import de.factoryfx.data.attribute.AttributeMetadata;
 import de.factoryfx.data.attribute.types.ByteArrayAttribute;
-import de.factoryfx.data.merge.testfactories.IdData;
 import org.junit.Assert;
 import org.junit.Test;
 
 public class ByteArrayMergeTest extends MergeHelperTestBase {
 
-    public static class StringTestPojo extends IdData {
+    public static class StringTestPojo extends Data {
         public final ByteArrayAttribute byteArrayAttribute=new ByteArrayAttribute(new AttributeMetadata());
 
     }
