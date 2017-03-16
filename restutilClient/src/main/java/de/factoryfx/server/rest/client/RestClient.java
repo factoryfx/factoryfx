@@ -55,7 +55,7 @@ public class RestClient {
 
     private void checkResponseStatus(Response response, URI uri) {
         if (response.getStatus() != 200) {
-            throw new RuntimeException("Received http status code " + response.getStatus() + "\n" +uri+"\n" + response.readEntity(String.class));
+            throw new HttpStatusException(response.getStatus(),"Received http status code " + response.getStatus() + "\n" +uri+"\n" + response.readEntity(String.class));
         }
     }
 
