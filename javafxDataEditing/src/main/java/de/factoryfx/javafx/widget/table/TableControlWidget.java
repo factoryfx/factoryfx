@@ -6,6 +6,7 @@ import de.factoryfx.data.Data;
 import de.factoryfx.javafx.util.UniformDesign;
 import de.factoryfx.javafx.widget.Widget;
 import javafx.animation.FadeTransition;
+import javafx.application.Platform;
 import javafx.beans.InvalidationListener;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ChangeListener;
@@ -142,6 +143,9 @@ public class TableControlWidget<T> implements Widget {
         };
         tableView.focusedProperty().addListener(focusChangeListener);
         filterField.focusedProperty().addListener(focusChangeListener);
+
+        //workaround for bug http://stackoverflow.com/questions/37423748/javafx-tablecolumns-headers-not-aligned-with-cells-due-to-vertical-scrollbar
+        Platform.runLater(() -> tableView.refresh());
 
     }
 
