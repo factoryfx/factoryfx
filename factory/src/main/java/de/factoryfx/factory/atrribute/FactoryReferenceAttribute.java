@@ -5,7 +5,7 @@ import de.factoryfx.data.attribute.AttributeMetadata;
 import de.factoryfx.data.attribute.ReferenceAttribute;
 import de.factoryfx.factory.FactoryBase;
 
-public class FactoryReferenceAttribute<L, T extends FactoryBase<L,?>> extends ReferenceAttribute<T> {
+public class FactoryReferenceAttribute<L, T extends FactoryBase<? extends L,?>> extends ReferenceAttribute<T> {
 
     @JsonCreator
     protected FactoryReferenceAttribute(T value) {
