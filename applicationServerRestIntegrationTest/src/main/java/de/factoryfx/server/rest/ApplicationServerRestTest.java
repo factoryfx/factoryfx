@@ -17,6 +17,8 @@ import de.factoryfx.server.rest.client.ApplicationServerRestClient;
 import de.factoryfx.server.rest.client.ApplicationServerRestClientFactory;
 import de.factoryfx.server.rest.client.RestClientFactory;
 import de.factoryfx.server.rest.server.HttpServerConnectorFactory;
+import de.factoryfx.server.rest.server.JettyServer;
+import de.factoryfx.server.rest.server.JettyServerFactory;
 import de.factoryfx.user.persistent.PersistentUserManagementFactory;
 import de.factoryfx.user.persistent.UserFactory;
 
@@ -32,14 +34,13 @@ public class ApplicationServerRestTest {
 //        ObjectMapperBuilder.build().getObjectMapper().registerSubtypes(UserManagementFactory.class);
 
         new Thread(() -> {
-            ApplicationServerRestServerFactory<Void, String, RootTestclazz> applicationServerRestServerFactory = new ApplicationServerRestServerFactory<>();
+            JettyServerFactory<Void> jettyServer = new JettyServerFactory<>();
             final HttpServerConnectorFactory<Void> httpServerConnectorFactory = new HttpServerConnectorFactory<>();
             httpServerConnectorFactory.port.set(34579);
             httpServerConnectorFactory.host.set("localhost");
-            applicationServerRestServerFactory.connectors.add(httpServerConnectorFactory);
+            jettyServer.connectors.add(httpServerConnectorFactory);
             final ApplicationServerResourceFactory<Void, String, RootTestclazz> applicationServerResource = new ApplicationServerResourceFactory<>();
-            applicationServerRestServerFactory.applicationServerResource.set(applicationServerResource);
-            applicationServerRestServerFactory.contentPath.set("/applicationServer/*");
+            jettyServer.resources.add(applicationServerResource);
             final PersistentUserManagementFactory<Void> userManagement = new PersistentUserManagementFactory<>();
             final UserFactory<Void> user = new UserFactory<>();
             user.name.set("user123");
@@ -49,7 +50,7 @@ public class ApplicationServerRestTest {
             applicationServerResource.userManagement.set(userManagement);
 
             final RootTestclazz rootTestclazz = new RootTestclazz();
-            rootTestclazz.applicationServerRestServer.set(applicationServerRestServerFactory);
+            rootTestclazz.jettyServer.set(jettyServer);
             ApplicationServer<String,Void,RootTestclazz> applicationServer = new ApplicationServer<>(new FactoryManager<>(new RethrowingFactoryExceptionHandler<>()), new InMemoryFactoryStorage<>(rootTestclazz));
             applicationServer.start();
         }).start();
@@ -88,12 +89,11 @@ public class ApplicationServerRestTest {
 
 
     public static class RootTestclazz extends SimpleFactoryBase<String,Void> {
-
-        public final FactoryReferenceAttribute<ApplicationServerRestServer<Void, String, RootTestclazz>,ApplicationServerRestServerFactory<Void, String, RootTestclazz>> applicationServerRestServer = new FactoryReferenceAttribute<>(new AttributeMetadata(),ApplicationServerRestServerFactory.class);
+        public final FactoryReferenceAttribute<JettyServer,JettyServerFactory<Void>> jettyServer = new FactoryReferenceAttribute<>(new AttributeMetadata(),JettyServerFactory.class);
 
         @Override
         public String createImpl() {
-            applicationServerRestServer.instance();
+            jettyServer.instance();
             return "";
         }
     }

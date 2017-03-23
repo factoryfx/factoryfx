@@ -2,6 +2,7 @@ package de.factoryfx.factory;
 
 import java.util.ArrayDeque;
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
@@ -13,6 +14,7 @@ import java.util.function.Supplier;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.google.common.base.Throwables;
 import de.factoryfx.data.Data;
 import de.factoryfx.data.attribute.ViewListReferenceAttribute;
 import de.factoryfx.data.attribute.ViewReferenceAttribute;
@@ -174,14 +176,18 @@ public abstract class FactoryBase<L,V> extends Data {
 
 
     private String debugInfo(){
-        StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append("ID:\n  ");
-        stringBuilder.append(getId());
-        stringBuilder.append("\nAttributes:\n");
-        this.internal().visitAttributesFlat((attributeVariableName, attribute) -> {
-            stringBuilder.append("  ").append(attributeVariableName).append(": ").append(attribute.getDisplayText()).append("\n");
-        });
-        return stringBuilder.toString().trim();
+        try {
+            StringBuilder stringBuilder = new StringBuilder();
+            stringBuilder.append("ID:\n  ");
+            stringBuilder.append(getId());
+            stringBuilder.append("\nAttributes:\n");
+            this.internal().visitAttributesFlat(attribute -> {
+                stringBuilder.append("  ").append(attribute.metadata.labelText.getPreferred(Locale.ENGLISH)).append(": ").append(attribute.getDisplayText()).append("\n");
+            });
+            return stringBuilder.toString().trim();
+        } catch (Exception e) {
+            return "can't create debuginfo text cause:\n"+ Throwables.getStackTraceAsString(e);
+        }
     }
 
 
@@ -192,7 +198,7 @@ public abstract class FactoryBase<L,V> extends Data {
     }
 
     private void visitChildFactoriesAndViewsFlat(Consumer<FactoryBase<?,V>> consumer) {
-        this.internal().visitAttributesFlat((attributeVariableName, attribute) -> {
+        this.internal().visitAttributesFlat(attribute -> {
             if (attribute instanceof FactoryReferenceAttribute) {
                 ((FactoryReferenceAttribute<?,?>)attribute).getOptional().ifPresent(data -> cast(data).ifPresent(consumer));
             }

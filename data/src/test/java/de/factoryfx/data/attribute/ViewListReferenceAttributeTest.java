@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 
 import de.factoryfx.data.Data;
 import de.factoryfx.data.attribute.types.StringAttribute;
+import de.factoryfx.data.jackson.ObjectMapperBuilder;
 import de.factoryfx.data.merge.testfactories.ExampleFactoryA;
 import org.junit.Assert;
 import org.junit.Test;
@@ -50,6 +51,30 @@ public class ViewListReferenceAttributeTest {
 
         Assert.assertEquals(1,root.ref.get().view.get().size());
         Assert.assertEquals("1",root.ref.get().view.get().get(0).stringAttribute.get());
+    }
+
+    @Test
+    public void test_json(){
+        ViewListExampleFactory viewExampleFactory=new ViewListExampleFactory();
+        viewExampleFactory.forFilter.set("1");
+
+        ViewListExampleFactoryRoot root = new ViewListExampleFactoryRoot();
+        root.ref.set(viewExampleFactory);
+
+        {
+            ExampleFactoryA value = new ExampleFactoryA();
+            value.stringAttribute.set("1");
+            root.list.add(value);
+        }
+        {
+            ExampleFactoryA value = new ExampleFactoryA();
+            value.stringAttribute.set("2");
+            root.list.add(value);
+        }
+
+        root = root.internal().prepareUsableCopy();
+        final String valueAsString = ObjectMapperBuilder.build().writeValueAsString(root);
+        Assert.assertFalse(valueAsString.contains("view"));
     }
 
     @Test

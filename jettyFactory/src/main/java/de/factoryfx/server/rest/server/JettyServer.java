@@ -1,53 +1,51 @@
-package de.factoryfx.javafx.distribution.server;
+package de.factoryfx.server.rest.server;
+
+import java.util.List;
+import java.util.function.Function;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider;
-import de.factoryfx.javafx.distribution.server.rest.DownloadResource;
-import de.factoryfx.server.rest.server.AllExceptionMapper;
-import org.eclipse.jetty.server.Connector;
+import de.factoryfx.data.jackson.ObjectMapperBuilder;
 import org.eclipse.jetty.server.Handler;
-import org.eclipse.jetty.server.NetworkTrafficServerConnector;
-import org.eclipse.jetty.server.handler.DefaultHandler;
+import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.server.handler.ErrorHandler;
 import org.eclipse.jetty.server.handler.HandlerCollection;
+import org.eclipse.jetty.server.handler.gzip.GzipHandler;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.servlet.ServletContainer;
 
-public class UserInterfaceDistributionServer {
+public class JettyServer {
 
-    private final DownloadResource downloadResource;
-    private final String host;
-    private final int port;
     private final org.eclipse.jetty.server.Server server;
-    private final NetworkTrafficServerConnector connector;
 
-    public UserInterfaceDistributionServer(String host, int port, DownloadResource downloadResource) {
-        this.downloadResource = downloadResource;
-        this.host = host;
-        this.port = port;
-
+    public JettyServer(List<Function<Server,ServerConnector>> connectors, List<Object> resources) {
         server=new org.eclipse.jetty.server.Server();
-
-        connector = new NetworkTrafficServerConnector(server);
-        connector.setPort(port);
-        connector.setHost(host);
-
-        server.setConnectors(new Connector[]{connector});
-
+        connectors.forEach(serverServerConnectorFunction -> server.addConnector(serverServerConnectorFunction.apply(server)));
 
         ServletContextHandler contextHandler = new ServletContextHandler(ServletContextHandler.SESSIONS);
-        contextHandler.addServlet( new ServletHolder(new ServletContainer(jerseySetup(downloadResource))), "/download/*");
+
+        resources.forEach(jerseyResource -> contextHandler.addServlet( new ServletHolder(new ServletContainer(jerseySetup(jerseyResource))), "/*"));
 
         ErrorHandler errorHandler = new ErrorHandler();
         errorHandler.setShowStacks(true);
         contextHandler.setErrorHandler(errorHandler);
 
+        GzipHandler gzipHandler = new GzipHandler();
+//            HashSet<String> mimeTypes = new HashSet<>();
+//            mimeTypes.add("text/html");
+//            mimeTypes.add("text/plain");
+//            mimeTypes.add("text/css");
+//            mimeTypes.add("application/x-javascript");
+//            mimeTypes.add("application/json");
+        gzipHandler.setMinGzipSize(0);
 
         HandlerCollection handlers = new HandlerCollection();
-        handlers.setHandlers(new Handler[] {contextHandler, new DefaultHandler() });
-        server.setHandler(handlers);
+        handlers.setHandlers(new Handler[]{contextHandler, contextHandler});
+        gzipHandler.setHandler(handlers);
+        server.setHandler(gzipHandler);
     }
 
     private ResourceConfig jerseySetup(Object resource) {
@@ -55,15 +53,19 @@ public class UserInterfaceDistributionServer {
         resourceConfig.register(resource);
         resourceConfig.register(new AllExceptionMapper());
 
-        ObjectMapper mapper = new ObjectMapper();
+        ObjectMapper mapper = createObjectMapper();
 
         JacksonJaxbJsonProvider provider = new JacksonJaxbJsonProvider();
         provider.setMapper(mapper);
         resourceConfig.register(provider);
 
-        org.glassfish.jersey.logging.LoggingFeature loggingFilter = new org.glassfish.jersey.logging.LoggingFeature(java.util.logging.Logger.getLogger(UserInterfaceDistributionServer.class.getName()));
+        org.glassfish.jersey.logging.LoggingFeature loggingFilter = new org.glassfish.jersey.logging.LoggingFeature(java.util.logging.Logger.getLogger(JettyServerFactory.class.getName()));
         resourceConfig.registerInstances(loggingFilter);
         return resourceConfig;
+    }
+
+    private ObjectMapper createObjectMapper() {
+        return ObjectMapperBuilder.buildNewObjectMapper();
     }
 
     public void start() throws Error {

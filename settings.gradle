@@ -1,2 +1,2 @@
 include 'applicationServer', 'adminUiAngularjs', 'applicationServerRestClient', 'applicationServerRestServer', 'applicationServerRestCommon', 'applicationServerRestIntegrationTest',
-        'data', 'factory', 'testutils', 'example', 'restutilServer', 'restutilClient', 'javafxDataEditing', 'javafxDistribution', 'postgresqlStorage'
+        'data', 'factory', 'testutils', 'example', 'jettyFactory', 'restutilClient', 'javafxDataEditing', 'javafxDistribution', 'postgresqlStorage'

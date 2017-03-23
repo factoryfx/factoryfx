@@ -166,7 +166,7 @@ public class TableControlWidget<T> implements Widget {
                     return ((Data)data).internal().matchSearchText(newValue);
                 }
                 if (data instanceof String){
-                    return ((String) data).contains(newValue);
+                    return ((String) data).toLowerCase().contains(newValue.toLowerCase());
                 }
 
                 return true;

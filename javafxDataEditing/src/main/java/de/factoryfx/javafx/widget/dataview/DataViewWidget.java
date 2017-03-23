@@ -16,6 +16,7 @@ public class DataViewWidget<T extends Data> implements CloseAwareWidget {
     private final DataView<T> dataView;
     private final DataEditor dataEditor;
     private double dividerPosition = 0.333;
+    private Orientation orientation=Orientation.HORIZONTAL;
     private final UniformDesign uniformDesign;
     private final TableView<T> tableView;
 
@@ -39,7 +40,7 @@ public class DataViewWidget<T extends Data> implements CloseAwareWidget {
     public Node createContent() {
 //        MasterDetailPane pane = new MasterDetailPane();
         SplitPane splitPane = new SplitPane();
-        splitPane.setOrientation(Orientation.HORIZONTAL);
+        splitPane.setOrientation(orientation);
 
         tableView.setItems(dataView.dataList());
         tableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
@@ -80,6 +81,11 @@ public class DataViewWidget<T extends Data> implements CloseAwareWidget {
 
     public DataViewWidget setDividerPositions(double dividerPosition) {
         this.dividerPosition = dividerPosition;
+        return this;
+    }
+
+    public DataViewWidget setOrientation(Orientation orientation) {
+        this.orientation = orientation;
         return this;
     }
 }

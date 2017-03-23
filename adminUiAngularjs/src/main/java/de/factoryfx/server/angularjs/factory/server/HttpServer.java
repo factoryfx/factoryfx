@@ -11,18 +11,16 @@ import com.fasterxml.jackson.databind.introspect.ObjectIdInfo;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider;
+import de.factoryfx.data.jackson.ObjectMapperBuilder;
 import de.factoryfx.server.angularjs.factory.RestResource;
 import de.factoryfx.server.angularjs.factory.server.resourcehandler.ConfigurableResourceHandler;
 import de.factoryfx.server.rest.server.AllExceptionMapper;
-import de.factoryfx.data.jackson.ObjectMapperBuilder;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.NetworkTrafficServerConnector;
 import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.server.handler.ErrorHandler;
 import org.eclipse.jetty.server.handler.HandlerCollection;
 import org.eclipse.jetty.server.handler.gzip.GzipHandler;
-import org.eclipse.jetty.server.session.HashSessionIdManager;
-import org.eclipse.jetty.server.session.HashSessionManager;
 import org.eclipse.jetty.server.session.SessionHandler;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
@@ -108,8 +106,8 @@ public class HttpServer {
         System.setProperty("java.net.preferIPv4Stack", "true");//TODO optional?
 
         server = new org.eclipse.jetty.server.Server();
-        HashSessionIdManager sessionIdManager = new HashSessionIdManager();
-        server.setSessionIdManager(sessionIdManager);
+//        HashSessionIdManager sessionIdManager = new HashSessionIdManager();
+//        server.setSessionIdManager(sessionIdManager);
 
         connector = new NetworkTrafficServerConnector(server);
         connector.setPort(httpPort);
@@ -119,10 +117,10 @@ public class HttpServer {
 
         ServletContextHandler contextHandler = new ServletContextHandler();
         SessionHandler sessionHandler = new SessionHandler();
-        HashSessionManager sessionManager = new HashSessionManager();
-        sessionManager.setMaxInactiveInterval(sessionTimeoutS);
-        sessionManager.setSessionCookie(sessionManager.getSessionCookie()+httpPort); //avoid session mix up for 2 server running as localhost
-        sessionHandler.setSessionManager(sessionManager);
+//        HashSessionManager sessionManager = new HashSessionManager();
+//        sessionManager.setMaxInactiveInterval(sessionTimeoutS);
+//        sessionManager.setSessionCookie(sessionManager.getSessionCookie()+httpPort); //avoid session mix up for 2 server running as localhost
+//        sessionHandler.setSessionManager(sessionManager);
 
 
         contextHandler.setSessionHandler(sessionHandler);

@@ -21,8 +21,8 @@ import de.factoryfx.user.AuthorizedUser;
 import de.factoryfx.user.UserManagement;
 import de.factoryfx.user.persistent.UserFactory;
 
-@Path("/")
-public class ApplicationServerResource<V,L,T extends FactoryBase<L,V>> {
+@Path("/applicationServer")
+public class ApplicationServerResource<V,L,T extends FactoryBase<L,V>>  {
 
     private final ApplicationServer<L,V,T> applicationServer;
     private final UserManagement userManagement;
