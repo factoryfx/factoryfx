@@ -274,13 +274,14 @@ public class Data {
                 if (hasNoConflict) {
                     if (newAttribute.isPresent()) {
                         if (attributeMergeHelper.isMergeable(originalAttribute, newAttribute)) {
-                            MergeResultEntry mergeResultEntry = new MergeResultEntry(Data.this, currentAttribute, newAttribute);
+                            MergeResultEntry mergeResultEntry = new MergeResultEntry(Data.this.internal.getDisplayText(),currentAttribute, newAttribute);
                             mergeResult.addMergeExecutions(() -> attributeMergeHelper.merge(originalAttribute, newAttribute.get()));
                             mergeResult.addMergeInfo(mergeResultEntry);
+                            mergeResult.addChangedData(Data.this);
                         }
                     }
                 } else {
-                    MergeResultEntry mergeResultEntry = new MergeResultEntry(Data.this, currentAttribute, newAttribute);
+                    MergeResultEntry mergeResultEntry = new MergeResultEntry(Data.this.internal.getDisplayText(), currentAttribute, newAttribute);
                     mergeResult.addConflictInfos(mergeResultEntry);
                 }
             }

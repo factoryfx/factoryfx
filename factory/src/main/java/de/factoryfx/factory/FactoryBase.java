@@ -123,17 +123,17 @@ public abstract class FactoryBase<L,V> extends Data {
         previousLiveObject=null;
     }
 
-    private void determineRecreationNeed(Set<FactoryBase<?,?>> changedFactories, ArrayDeque<FactoryBase<?,?>> path){
+    private void determineRecreationNeed(Set<Data> changedData, Set<Data> removedData, ArrayDeque<FactoryBase<?,?>> path){
         path.push(this);
 
-        needRecreation =changedFactories.contains(this) || createdLiveObject==null;  //null means newly added
+        needRecreation =changedData.contains(this) || removedData.contains(this) || createdLiveObject==null;  //null means newly added
         if (needRecreation){
             for (FactoryBase factoryBase: path){
                 factoryBase.needRecreation =true;
             }
         }
 
-        visitChildFactoriesAndViewsFlat(child -> child.determineRecreationNeed(changedFactories,path));
+        visitChildFactoriesAndViewsFlat(child -> child.determineRecreationNeed(changedData,removedData,path));
         path.pop();
     }
 
@@ -244,8 +244,8 @@ public abstract class FactoryBase<L,V> extends Data {
         }
 
         /**determine which live objects needs recreation*/
-        public void determineRecreationNeed(Set<FactoryBase<?,?>> changedFactories) {
-            factory.determineRecreationNeed(changedFactories,new ArrayDeque<>());
+        public void determineRecreationNeed(Set<Data> changedData, Set<Data> removedData) {
+            factory.determineRecreationNeed(changedData,removedData,new ArrayDeque<>());
         }
 
         public void resetLog() {

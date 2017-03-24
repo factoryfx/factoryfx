@@ -315,4 +315,25 @@ public class DataTest {
         Assert.assertNotEquals(exampleFactoryA.referenceAttribute.get().getId(), copy.referenceAttribute.get().getId());
     }
 
+    @Test
+    public void test_iterate_performance(){
+        ExampleFactoryA exampleFactoryA = new ExampleFactoryA();
+        exampleFactoryA.stringAttribute.set("dfssfdsfdsfd");
+        exampleFactoryA.referenceAttribute.set(new ExampleFactoryB());
+        exampleFactoryA.referenceListAttribute.add(new ExampleFactoryB());
+
+        int[] forceExecution=new int[]{0};
+
+        final long start = System.currentTimeMillis();
+        for (int i=0;i<100000000;i++){
+            exampleFactoryA.internal().visitAttributesFlat((attributeVariableName, attribute) -> {
+                forceExecution[0]++;
+            });
+        };
+
+        System.out.println(forceExecution[0]);
+        System.out.println("time: "+(System.currentTimeMillis()-start));
+
+    }
+
 }

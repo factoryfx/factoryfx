@@ -16,11 +16,6 @@ public class AttributeMergeHelper<T> {
         attribute.set(newValue);
     }
 
-    /**to support AttributeMergeHelper that do nothing*/
-    public boolean executeMerge(){
-        return true;
-    }
-
     @SuppressWarnings("unchecked")
     public boolean hasNoConflict(Optional<Attribute<?>> originalValue, Optional<Attribute<?>> newValue) {
         Optional<Attribute<T>> originalValueTyped = Optional.empty();
