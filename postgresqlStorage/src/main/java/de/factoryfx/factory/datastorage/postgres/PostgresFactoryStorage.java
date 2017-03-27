@@ -179,15 +179,21 @@ public class PostgresFactoryStorage<L,V,T extends FactoryBase<L,V>> implements F
                 try (ResultSet checkTablesExist = connection.getMetaData().getTables(connection.getCatalog(),connection.getSchema(),"currentconfiguration",null)) {
                     if (!checkTablesExist.next()) {
                         createTables(connection);
-                        if (initialFactory != null) {
-                            StoredFactoryMetadata metadata = new StoredFactoryMetadata();
-                            String newId = UUID.randomUUID().toString();
-                            metadata.id=newId;
-                            metadata.baseVersionId= newId;
-                            metadata.user="System";
-                            FactoryAndStorageMetadata<T> initialFactoryAndStorageMetadata = new FactoryAndStorageMetadata<T>(
-                                    initialFactory,metadata);
-                            updateCurrentFactory(connection,initialFactoryAndStorageMetadata);
+                        connection.commit();
+                    }
+                    if (initialFactory != null) {
+                        try (PreparedStatement pstmt = connection.prepareStatement("select 1 from currentconfiguration")) {
+                            ResultSet rs = pstmt.executeQuery();
+                            if (!rs.next()) {
+                                StoredFactoryMetadata metadata = new StoredFactoryMetadata();
+                                String newId = UUID.randomUUID().toString();
+                                metadata.id=newId;
+                                metadata.baseVersionId= newId;
+                                metadata.user="System";
+                                FactoryAndStorageMetadata<T> initialFactoryAndStorageMetadata = new FactoryAndStorageMetadata<T>(
+                                        initialFactory,metadata);
+                                updateCurrentFactory(connection,initialFactoryAndStorageMetadata);
+                            }
                         }
                         connection.commit();
                     }
