@@ -23,13 +23,13 @@ public class DataMerger {
 
 
     @SuppressWarnings("unchecked")
-    private MergeResult createMergeResult(Map<Object, Data> currentMap) {
+    private MergeResult createMergeResult(Map<String, Data> currentMap) {
         MergeResult mergeResult = new MergeResult();
 
-        Map<Object, Data> originalMap = originalModel.internal().collectChildFactoriesMap();
-        Map<Object, Data> newMap = newModel.internal().collectChildFactoriesMap();
+        Map<String, Data> originalMap = originalModel.internal().collectChildFactoriesMap();
+        Map<String, Data> newMap = newModel.internal().collectChildFactoriesMap();
 
-        for (Map.Entry<Object, Data> entry : currentMap.entrySet()) {
+        for (Map.Entry<String, Data> entry : currentMap.entrySet()) {
             Data originalValue = originalMap.get(entry.getKey());
             Data newValue = newMap.get(entry.getKey());
 
@@ -39,7 +39,7 @@ public class DataMerger {
     }
 
     public MergeDiff mergeIntoCurrent() {
-        Map<Object, Data> currentMap = currentModel.internal().collectChildFactoriesMap();
+        Map<String, Data> currentMap = currentModel.internal().collectChildFactoriesMap();
         MergeResult mergeResult = createMergeResult(currentMap);
         MergeDiff mergeDiff = mergeResult.getMergeDiff();
 

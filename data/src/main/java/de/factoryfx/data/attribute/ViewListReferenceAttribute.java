@@ -65,7 +65,7 @@ public class ViewListReferenceAttribute <R extends Data, T extends Data> extends
     }
 
     @Override
-    public void internal_fixDuplicateObjects(Map<Object, Data> idToDataMap) {
+    public void internal_fixDuplicateObjects(Map<String, Data> idToDataMap) {
         //nothing
     }
 

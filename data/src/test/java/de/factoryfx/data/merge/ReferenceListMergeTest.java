@@ -129,5 +129,21 @@ public class ReferenceListMergeTest extends MergeHelperTestBase{
         Assert.assertTrue(current.referenceListAttribute.stream().map(bTest -> bTest.getId()).collect(Collectors.toList()).contains(newValue4.getId()));
     }
 
+    @Test
+    public void test_no_change_should_merge_nothing(){
+        ExampleFactoryA current = new ExampleFactoryA();
+        ExampleFactoryB newValue1 = new ExampleFactoryB();
+        ExampleFactoryB newValue2 = new ExampleFactoryB();
+        current.referenceListAttribute.add(newValue1);
+        current.referenceListAttribute.add(newValue2);
 
+
+        ExampleFactoryA orginal = current.internal().copy();
+        ExampleFactoryA update = current.internal().copy();
+
+        final MergeDiff merge = merge(current, orginal, update);
+        Assert.assertTrue(merge.hasNoConflicts());
+        Assert.assertEquals(2, current.referenceListAttribute.size());
+        Assert.assertEquals(0, merge.getMergeInfos().size());
+    }
 }

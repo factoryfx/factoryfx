@@ -38,9 +38,14 @@ public abstract class Attribute<T>{
     /*
         see test {{@Link MergeTest#test_duplicate_ids_bug}} why this is needed
     */
-    public abstract void internal_fixDuplicateObjects(Map<Object, Data> idToDataMap);
+    public abstract void internal_fixDuplicateObjects(Map<String, Data> idToDataMap);
 
     public abstract void internal_copyTo(Attribute<T> copyAttribute, Function<Data,Data> dataCopyProvider);
+
+    @SuppressWarnings("unchecked")
+    public boolean internal_match(Attribute<?> attribute) {
+        return internal_match((T) attribute.get());
+    }
 
     public abstract void internal_semanticCopyTo(Attribute<T> copyAttribute);
 

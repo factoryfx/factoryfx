@@ -49,7 +49,7 @@ public class ViewReferenceAttribute<R extends Data, T extends Data> extends Attr
     }
 
     @Override
-    public void internal_fixDuplicateObjects(Map<Object, Data> idToDataMap) {
+    public void internal_fixDuplicateObjects(Map<String, Data> idToDataMap) {
         //nothing
     }
 

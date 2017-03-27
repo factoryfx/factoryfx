@@ -14,20 +14,25 @@ import org.junit.Test;
 
 public class FactoryManagerLivecycleTest {
 
-    public static class  ExampleLiveObjectA{
+    public static class DummyLifeObejct {
         public final String string;
-        public final ExampleLiveObjectA ref;
+        public final DummyLifeObejct ref;
 
-        public ExampleLiveObjectA(String string, ExampleLiveObjectA ref) {
+        public DummyLifeObejct(String string, DummyLifeObejct ref) {
             this.string = string;
             this.ref = ref;
         }
     }
 
 
-    public static class ExampleFactoryA extends FactoryBase<ExampleLiveObjectA,Void> {
-        public final FactoryReferenceAttribute<ExampleLiveObjectA,ExampleFactoryB> ref = new FactoryReferenceAttribute<>(ExampleFactoryB.class,new AttributeMetadata());
-        public final FactoryReferenceListAttribute<ExampleLiveObjectA,ExampleFactoryC> refList = new FactoryReferenceListAttribute<>(ExampleFactoryC.class,new AttributeMetadata());
+    public static class ExampleFactoryA extends FactoryBase<DummyLifeObejct,Void> {
+        public final FactoryReferenceAttribute<DummyLifeObejct,ExampleFactoryB> ref = new FactoryReferenceAttribute<>(ExampleFactoryB.class,new AttributeMetadata());
+        public final FactoryReferenceListAttribute<DummyLifeObejct,ExampleFactoryC> refList = new FactoryReferenceListAttribute<>(ExampleFactoryC.class,new AttributeMetadata());
+        public final FactoryReferenceAttribute<DummyLifeObejct,ExampleFactoryC> refC = new FactoryReferenceAttribute<>(ExampleFactoryC.class,new AttributeMetadata());
+
+        public final FactoryReferenceAttribute<DummyLifeObejct,ExampleFactoryA> refA = new FactoryReferenceAttribute<>(ExampleFactoryA.class,new AttributeMetadata());
+
+
 
         public List<String> createCalls= new ArrayList<>();
         public List<String> reCreateCalls= new ArrayList<>();
@@ -37,14 +42,14 @@ public class FactoryManagerLivecycleTest {
         public ExampleFactoryA(){
             configLiveCycle().setCreator(() -> {
                 createCalls.add("created");
-                return new ExampleLiveObjectA("",null);
+                return new DummyLifeObejct("",null);
             });
-            configLiveCycle().setReCreator(exampleLiveObjectA -> {
+            configLiveCycle().setReCreator(dummyLifeObejct -> {
                 reCreateCalls.add("created");
-                return new ExampleLiveObjectA("",null);
+                return new DummyLifeObejct("",null);
             });
-            configLiveCycle().setDestroyer(exampleLiveObjectA -> destroyCalls.add("created"));
-            configLiveCycle().setStarter(exampleLiveObjectA -> startCalls.add("created"));
+            configLiveCycle().setDestroyer(dummyLifeObejct -> destroyCalls.add("created"));
+            configLiveCycle().setStarter(dummyLifeObejct -> startCalls.add("created"));
         }
 
         public void resetCounter(){
@@ -55,9 +60,9 @@ public class FactoryManagerLivecycleTest {
         }
     }
 
-    public static class ExampleFactoryB extends FactoryBase<ExampleLiveObjectA,Void> {
+    public static class ExampleFactoryB extends FactoryBase<DummyLifeObejct,Void> {
 
-        public final FactoryViewListReferenceAttribute<ExampleFactoryA,ExampleLiveObjectA,ExampleFactoryC> listView = new FactoryViewListReferenceAttribute<>(new AttributeMetadata().labelText("ExampleA2"),
+        public final FactoryViewListReferenceAttribute<ExampleFactoryA,DummyLifeObejct,ExampleFactoryC> listView = new FactoryViewListReferenceAttribute<>(new AttributeMetadata().labelText("ExampleA2"),
                 root -> root.refList.get());
 
         public List<String> createCalls= new ArrayList<>();
@@ -69,14 +74,14 @@ public class FactoryManagerLivecycleTest {
         public ExampleFactoryB(){
             configLiveCycle().setCreator(() -> {
                 createCalls.add("created");
-                return new ExampleLiveObjectA("",null);
+                return new DummyLifeObejct("",null);
             });
-            configLiveCycle().setReCreator(exampleLiveObjectA -> {
+            configLiveCycle().setReCreator(dummyLifeObejct -> {
                 reCreateCalls.add("created");
-                return exampleLiveObjectA;
+                return dummyLifeObejct;
             });
-            configLiveCycle().setDestroyer(exampleLiveObjectA -> destroyCalls.add("created"));
-            configLiveCycle().setStarter(exampleLiveObjectA -> startCalls.add("created"));
+            configLiveCycle().setDestroyer(dummyLifeObejct -> destroyCalls.add("created"));
+            configLiveCycle().setStarter(dummyLifeObejct -> startCalls.add("created"));
         }
 
         public void resetCounter(){
@@ -87,20 +92,20 @@ public class FactoryManagerLivecycleTest {
         }
     }
 
-    public static class ExampleFactoryC extends SimpleFactoryBase<ExampleLiveObjectA,Void> {
+    public static class ExampleFactoryC extends SimpleFactoryBase<DummyLifeObejct,Void> {
 
         public StringAttribute stringAttribute=new StringAttribute(new AttributeMetadata());
 
         @Override
-        public ExampleLiveObjectA createImpl() {
-            return new ExampleLiveObjectA("",null);
+        public DummyLifeObejct createImpl() {
+            return new DummyLifeObejct("",null);
         }
     }
 
 
     @Test
     public void test_initial_start(){
-        FactoryManager<ExampleLiveObjectA,Void,ExampleFactoryA> factoryManager = new FactoryManager<>(new RethrowingFactoryExceptionHandler<Void>());
+        FactoryManager<DummyLifeObejct,Void,ExampleFactoryA> factoryManager = new FactoryManager<>(new RethrowingFactoryExceptionHandler<Void>());
 
         ExampleFactoryA exampleFactoryA = new ExampleFactoryA();
         ExampleFactoryB exampleFactoryB = new ExampleFactoryB();
@@ -120,7 +125,7 @@ public class FactoryManagerLivecycleTest {
 
     @Test
     public void test_initial_destroy(){
-        FactoryManager<ExampleLiveObjectA,Void,ExampleFactoryA> factoryManager = new FactoryManager<>(new RethrowingFactoryExceptionHandler<Void>());
+        FactoryManager<DummyLifeObejct,Void,ExampleFactoryA> factoryManager = new FactoryManager<>(new RethrowingFactoryExceptionHandler<Void>());
 
         ExampleFactoryA exampleFactoryA = new ExampleFactoryA();
         ExampleFactoryB exampleFactoryB = new ExampleFactoryB();
@@ -138,7 +143,7 @@ public class FactoryManagerLivecycleTest {
 
     @Test
     public void test_initial_changed(){
-        FactoryManager<ExampleLiveObjectA,Void,ExampleFactoryA> factoryManager = new FactoryManager<>(new RethrowingFactoryExceptionHandler<Void>());
+        FactoryManager<DummyLifeObejct,Void,ExampleFactoryA> factoryManager = new FactoryManager<>(new RethrowingFactoryExceptionHandler<Void>());
 
         ExampleFactoryA exampleFactoryA = new ExampleFactoryA();
         ExampleFactoryB exampleFactoryB = new ExampleFactoryB();
@@ -169,7 +174,7 @@ public class FactoryManagerLivecycleTest {
 
     @Test
     public void test_initial_viewlist_added(){
-        FactoryManager<ExampleLiveObjectA,Void,ExampleFactoryA> factoryManager = new FactoryManager<>(new RethrowingFactoryExceptionHandler<Void>());
+        FactoryManager<DummyLifeObejct,Void,ExampleFactoryA> factoryManager = new FactoryManager<>(new RethrowingFactoryExceptionHandler<Void>());
 
         ExampleFactoryA exampleFactoryA = new ExampleFactoryA();
         ExampleFactoryB exampleFactoryB = new ExampleFactoryB();
@@ -200,7 +205,7 @@ public class FactoryManagerLivecycleTest {
 
     @Test
     public void test_initial_viewlist_removed(){
-        FactoryManager<ExampleLiveObjectA,Void,ExampleFactoryA> factoryManager = new FactoryManager<>(new RethrowingFactoryExceptionHandler<Void>());
+        FactoryManager<DummyLifeObejct,Void,ExampleFactoryA> factoryManager = new FactoryManager<>(new RethrowingFactoryExceptionHandler<Void>());
 
         ExampleFactoryA exampleFactoryA = new ExampleFactoryA();
         ExampleFactoryB exampleFactoryB = new ExampleFactoryB();
@@ -231,4 +236,60 @@ public class FactoryManagerLivecycleTest {
     }
 
 
+    @Test
+    public void test_changed_list_only(){
+        FactoryManager<DummyLifeObejct,Void,ExampleFactoryA> factoryManager = new FactoryManager<>(new RethrowingFactoryExceptionHandler<Void>());
+
+        ExampleFactoryA exampleFactoryA = new ExampleFactoryA();
+        exampleFactoryA.refList.add(new ExampleFactoryC());
+
+        exampleFactoryA = exampleFactoryA.internal().prepareUsableCopy();
+
+        factoryManager.start(exampleFactoryA);
+
+        ExampleFactoryA common = factoryManager.getCurrentFactory().internal().prepareUsableCopy();
+        ExampleFactoryA update = factoryManager.getCurrentFactory().internal().prepareUsableCopy();
+        update.refList.clear();
+
+        exampleFactoryA.resetCounter();
+        factoryManager.update(common,update);
+
+        Assert.assertEquals(1,exampleFactoryA.destroyCalls.size());
+
+        Assert.assertEquals(1,exampleFactoryA.reCreateCalls.size());
+
+        Assert.assertEquals(1,exampleFactoryA.startCalls.size());
+    }
+
+
+
+    @Test
+    public void test_changed_list_only__no_changes(){
+        FactoryManager<DummyLifeObejct,Void,ExampleFactoryA> factoryManager = new FactoryManager<>(new RethrowingFactoryExceptionHandler<Void>());
+
+        ExampleFactoryA root = new ExampleFactoryA();
+        ExampleFactoryA exampleFactoryA = new ExampleFactoryA();
+        root.refA.set(exampleFactoryA);
+        exampleFactoryA.refList.add(new ExampleFactoryC());
+
+        root = root.internal().prepareUsableCopy();
+        exampleFactoryA = root.refA.get();
+
+        factoryManager.start(exampleFactoryA);
+
+        ExampleFactoryA common = factoryManager.getCurrentFactory().internal().prepareUsableCopy();
+        ExampleFactoryA update = factoryManager.getCurrentFactory().internal().prepareUsableCopy();
+//        update.refC.set(update.refList.get(0));
+//        update.refList.remove(0);
+
+
+        exampleFactoryA.resetCounter();
+        factoryManager.update(common,update);
+
+        Assert.assertEquals(0,exampleFactoryA.destroyCalls.size());
+
+        Assert.assertEquals(0,exampleFactoryA.reCreateCalls.size());
+
+        Assert.assertEquals(0,exampleFactoryA.startCalls.size());
+    }
 }

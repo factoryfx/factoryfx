@@ -133,7 +133,7 @@ public class RestResource<L,V,T extends FactoryBase<L,V>> {
     public StageResponse save(FactoryTypeInfoWrapper newFactoryParam) {
         FactoryBase<?,?> newFactory=newFactoryParam.factory.internal().prepareUsableCopy();
         FactoryBase<?,?> root = getCurrentEditingFactory().root;
-        Map<Object,Data>  map = root.internal().collectChildFactoriesMap();
+        Map<String,Data>  map = root.internal().collectChildFactoriesMap();
         Data existing = map.get(newFactory.getId());
 
         Function<Data,Data> existingOrNew= factoryBase -> {

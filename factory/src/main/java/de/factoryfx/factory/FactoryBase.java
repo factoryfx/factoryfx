@@ -1,6 +1,7 @@
 package de.factoryfx.factory;
 
 import java.util.ArrayDeque;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Objects;
@@ -123,17 +124,17 @@ public abstract class FactoryBase<L,V> extends Data {
         previousLiveObject=null;
     }
 
-    private void determineRecreationNeed(Set<Data> changedData, Set<Data> removedData, ArrayDeque<FactoryBase<?,?>> path){
+    private void determineRecreationNeed(Set<Data> changedData, ArrayDeque<FactoryBase<?,?>> path){
         path.push(this);
 
-        needRecreation =changedData.contains(this) || removedData.contains(this) || createdLiveObject==null;  //null means newly added
+        needRecreation =changedData.contains(this) || createdLiveObject==null;  //null means newly added
         if (needRecreation){
             for (FactoryBase factoryBase: path){
                 factoryBase.needRecreation =true;
             }
         }
 
-        visitChildFactoriesAndViewsFlat(child -> child.determineRecreationNeed(changedData,removedData,path));
+        visitChildFactoriesAndViewsFlat(child -> child.determineRecreationNeed(changedData,path));
         path.pop();
     }
 
@@ -244,8 +245,8 @@ public abstract class FactoryBase<L,V> extends Data {
         }
 
         /**determine which live objects needs recreation*/
-        public void determineRecreationNeed(Set<Data> changedData, Set<Data> removedData) {
-            factory.determineRecreationNeed(changedData,removedData,new ArrayDeque<>());
+        public void determineRecreationNeed(Set<Data> changedData) {
+            factory.determineRecreationNeed(changedData,new ArrayDeque<>());
         }
 
         public void resetLog() {
@@ -281,6 +282,15 @@ public abstract class FactoryBase<L,V> extends Data {
 
         public Set<FactoryBase<?,V>> collectChildFactoriesDeep(){
             return factory.collectChildFactoriesDeep();
+        }
+
+        public HashMap<String,FactoryBase<?,V>> collectChildFactoriesDeepMap(){
+            final Set<FactoryBase<?, V>> factoryBases = factory.collectChildFactoriesDeep();
+            HashMap<String, FactoryBase<?, V>> result = new HashMap<>();
+            for (FactoryBase<?, V> factory: factoryBases){
+                result.put(factory.getId(),factory);
+            }
+            return result;
         }
 
         public Set<FactoryBase<?,V>> collectChildrenFactoriesFlat() {

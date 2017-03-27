@@ -105,7 +105,7 @@ public class FactoryBaseTest {
 
         HashSet<Data> changed =new HashSet<>();
         changed.add(usableCopy);
-        usableCopy.internalFactory().determineRecreationNeed(changed,new HashSet<>());
+        usableCopy.internalFactory().determineRecreationNeed(changed);
         Assert.assertTrue(usableCopy.needRecreation);
         Assert.assertFalse(usableCopy.xFactory.get().needRecreation);
         Assert.assertFalse(usableCopy.referenceAttribute.get().needRecreation);
@@ -123,7 +123,7 @@ public class FactoryBaseTest {
 
         HashSet<Data> changed =new HashSet<>();
         changed.add(usableCopy.referenceAttribute.get());
-        usableCopy.internalFactory().determineRecreationNeed(changed,new HashSet<>());
+        usableCopy.internalFactory().determineRecreationNeed(changed);
         Assert.assertTrue(usableCopy.needRecreation);
         Assert.assertFalse(usableCopy.xFactory.get().needRecreation);
         Assert.assertTrue(usableCopy.referenceAttribute.get().needRecreation);
@@ -143,7 +143,7 @@ public class FactoryBaseTest {
         changed.add(usableCopy.referenceAttribute.get());
         changed.add(usableCopy.xFactory.get());
 
-        usableCopy.internalFactory().determineRecreationNeed(changed,new HashSet<>());
+        usableCopy.internalFactory().determineRecreationNeed(changed);
         Assert.assertTrue(usableCopy.needRecreation);
         Assert.assertTrue(usableCopy.xFactory.get().needRecreation);
         Assert.assertTrue(usableCopy.referenceAttribute.get().needRecreation);
@@ -162,7 +162,7 @@ public class FactoryBaseTest {
         HashSet<Data> changed =new HashSet<>();
         changed.add(usableCopy.xFactory.get());
 
-        usableCopy.internalFactory().determineRecreationNeed(changed,new HashSet<>());
+        usableCopy.internalFactory().determineRecreationNeed(changed);
         Assert.assertTrue(usableCopy.needRecreation);
         Assert.assertTrue(usableCopy.xFactory.get().needRecreation);
         Assert.assertTrue(usableCopy.referenceAttribute.get().needRecreation);
@@ -182,7 +182,7 @@ public class FactoryBaseTest {
         HashSet<Data> changed =new HashSet<>();
         changed.add(usableCopy.xFactoryList.get().get(0));
 
-        usableCopy.internalFactory().determineRecreationNeed(changed,new HashSet<>());
+        usableCopy.internalFactory().determineRecreationNeed(changed);
         Assert.assertTrue(usableCopy.needRecreation);
         Assert.assertTrue(usableCopy.xFactoryList.get(0).needRecreation);
         Assert.assertTrue(usableCopy.referenceAttribute.get().needRecreation);
@@ -201,7 +201,7 @@ public class FactoryBaseTest {
 
         HashSet<Data> changed =new HashSet<>();
         changed.add(usableCopy.xFactory.get());
-        usableCopy.internalFactory().determineRecreationNeed(changed,new HashSet<>());
+        usableCopy.internalFactory().determineRecreationNeed(changed);
         Assert.assertTrue(usableCopy.needRecreation);
         Assert.assertTrue(usableCopy.xFactory.get().needRecreation);
 

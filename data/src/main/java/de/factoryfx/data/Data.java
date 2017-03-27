@@ -148,12 +148,12 @@ public class Data {
         }
     }
 
-    private Map<Object,Data> collectChildFactoriesMap() {
+    private Map<String,Data> collectChildFactoriesMap() {
         HashSet<Data> factoryBases = new HashSet<>();
 //        factoryBases.add(this); TODO required?
         collectModelEntitiesTo(factoryBases);
 
-        HashMap<Object, Data> result = new HashMap<>();
+        HashMap<String, Data> result = new HashMap<>();
         for (Data factory: factoryBases){
             result.put(factory.getId(),factory);
         }
@@ -206,7 +206,7 @@ public class Data {
 
     @SuppressWarnings("unchecked")
     private void fixDuplicateObjects() {
-        Map<Object, Data> idToDataMap = collectChildFactoriesMap();
+        Map<String, Data> idToDataMap = collectChildFactoriesMap();
         final Set<Data> all = collectChildrenDeep();
         for (Data data: all){
             data.visitAttributesFlat(attribute -> attribute.internal_fixDuplicateObjects(idToDataMap));
@@ -277,7 +277,6 @@ public class Data {
                             MergeResultEntry mergeResultEntry = new MergeResultEntry(Data.this.internal.getDisplayText(),currentAttribute, newAttribute);
                             mergeResult.addMergeExecutions(() -> attributeMergeHelper.merge(originalAttribute, newAttribute.get()));
                             mergeResult.addMergeInfo(mergeResultEntry);
-                            mergeResult.addChangedData(Data.this);
                         }
                     }
                 } else {
@@ -602,7 +601,7 @@ public class Data {
             return data.attributeListGrouped();
         }
 
-        public Map<Object,Data> collectChildFactoriesMap() {
+        public Map<String,Data> collectChildFactoriesMap() {
             return data.collectChildFactoriesMap();
         }
 

@@ -1,11 +1,11 @@
 package de.factoryfx.factory;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import com.google.common.collect.TreeTraverser;
@@ -32,6 +32,8 @@ public class FactoryManager<L,V,T extends FactoryBase<L,V>> {
         LinkedHashSet<FactoryBase<?,V>> previousFactories = getFactoriesInDestroyOrder(currentFactoryRoot);
         previousFactories.forEach((f)->f.internalFactory().resetLog());
 
+        T previousFactoryCopyRoot = currentFactoryRoot.internal().copy();
+
         DataMerger dataMerger = new DataMerger(currentFactoryRoot, commonVersion, newVersion);
         MergeDiff mergeDiff= dataMerger.mergeIntoCurrent();
         long totalUpdateDuration=0;
@@ -41,7 +43,7 @@ public class FactoryManager<L,V,T extends FactoryBase<L,V>> {
             final Set<FactoryBase<?, V>> newFactories = currentFactoryRoot.internalFactory().collectChildFactoriesDeep();
 
             long start=System.nanoTime();
-            currentFactoryRoot.internalFactory().determineRecreationNeed(mergeDiff.getChangedData(),getRemovedData(previousFactories,newFactories));
+            currentFactoryRoot.internalFactory().determineRecreationNeed(getChangedFactories(previousFactoryCopyRoot));
 
             final LinkedHashSet<FactoryBase<?, V>> factoriesInCreateAndStartOrder = getFactoriesInCreateAndStartOrder(currentFactoryRoot);
             factoriesInCreateAndStartOrder.forEach(this::createWithExceptionHandling);
@@ -56,17 +58,21 @@ public class FactoryManager<L,V,T extends FactoryBase<L,V>> {
         return new FactoryUpdateLog(currentFactoryRoot.internalFactory().createFactoryLogEntry(), removed.stream().map(r->r.internalFactory().createFactoryLogEntryFlat()).collect(Collectors.toSet()),new MergeDiffInfo(mergeDiff),totalUpdateDuration);
     }
 
-    private Set<Data> getRemovedData(Set<FactoryBase<?,V>> previousFactories, Set<FactoryBase<?, V>> newFactories){
-        final HashSet<Data> removed = new HashSet<>();
-        previousFactories.forEach(new Consumer<FactoryBase<?, V>>() {
-            @Override
-            public void accept(FactoryBase<?, V> previousFactory) {
-                if (newFactories.contains(previousFactory)){
-                    removed.add(previousFactory);
-                }
+    private Set<Data> getChangedFactories(T previousFactoryCopyRoot){
+        final HashSet<Data> result = new HashSet<>();
+        final T previousFactoryCopyRootUsable = previousFactoryCopyRoot.internal().prepareUsableCopy();
+        final HashMap<String, FactoryBase<?, V>> previousFactories = previousFactoryCopyRootUsable.internalFactory().collectChildFactoriesDeepMap();
+        for (Data data: currentFactoryRoot.internalFactory().collectChildFactoriesDeep()){
+            final FactoryBase<?, V> previousFactory = previousFactories.get(data.getId());
+            if (previousFactory!=null){
+                data.internal().visitAttributesDualFlat(previousFactory, (currentAttribute, previousAttribute) -> {
+                    if (!currentAttribute.internal_match(previousAttribute)){
+                        result.add(data);
+                    }
+                });
             }
-        });
-        return removed;
+        }
+        return result;
     }
 
     public List<FactoryBase<?,V>> getRemovedFactories(Set<FactoryBase<?,V>> previousFactories, Set<FactoryBase<?,V>> newFactories){

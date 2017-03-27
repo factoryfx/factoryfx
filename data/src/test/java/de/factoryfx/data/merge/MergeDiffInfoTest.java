@@ -1,7 +1,6 @@
 package de.factoryfx.data.merge;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.Optional;
 
 import de.factoryfx.data.attribute.AttributeMetadata;
@@ -15,7 +14,7 @@ public class MergeDiffInfoTest {
     public void test_json(){
         final ArrayList<MergeResultEntry> mergeInfos = new ArrayList<>();
         mergeInfos.add(new MergeResultEntry("jgj",new StringAttribute(new AttributeMetadata()), Optional.empty()));
-        MergeDiff mergeDiff=new MergeDiff(mergeInfos,new ArrayList<>(),new HashSet<>());
+        MergeDiff mergeDiff=new MergeDiff(mergeInfos,new ArrayList<>());
 
         ObjectMapperBuilder.build().copy(new MergeDiffInfo(mergeDiff));
     }

@@ -97,7 +97,7 @@ public class ReferenceListAttribute<T extends Data> extends Attribute<List<T>> i
 
     @Override
     @SuppressWarnings("unchecked")
-    public void internal_fixDuplicateObjects(Map<Object, Data> idToDataMap) {
+    public void internal_fixDuplicateObjects(Map<String, Data> idToDataMap) {
         List<T> currentToEditList = get();
 
         List<T> fixedList = new ArrayList<>();

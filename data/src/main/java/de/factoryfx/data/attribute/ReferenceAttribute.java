@@ -67,7 +67,7 @@ public class ReferenceAttribute<T extends Data> extends Attribute<T> {
 
     @Override
     @SuppressWarnings("unchecked")
-    public void internal_fixDuplicateObjects(Map<Object, Data> idToDataMap) {
+    public void internal_fixDuplicateObjects(Map<String, Data> idToDataMap) {
         Data currentReferenceContent = get();
 
         if (currentReferenceContent != null) {

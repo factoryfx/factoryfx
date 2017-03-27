@@ -37,7 +37,7 @@ public class ValueAttribute<T> extends Attribute<T> {
     }
 
     @Override
-    public void internal_fixDuplicateObjects(Map<Object, Data> idToDataMap) {
+    public void internal_fixDuplicateObjects(Map<String, Data> idToDataMap) {
         //do nothing
     }
 
