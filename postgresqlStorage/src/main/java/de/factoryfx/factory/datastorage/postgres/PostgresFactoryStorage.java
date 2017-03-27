@@ -204,7 +204,7 @@ public class PostgresFactoryStorage<L,V,T extends FactoryBase<L,V>> implements F
         }
     }
 
-    private void createTables(Connection connection) throws SQLException, IOException {
+    void createTables(Connection connection) throws SQLException, IOException {
         try (Statement stmt = connection.createStatement()) {
             stmt.execute(CharStreams.toString(new InputStreamReader(getClass().getResourceAsStream("createConfigurationtables.sql"), StandardCharsets.UTF_8)));
         }
