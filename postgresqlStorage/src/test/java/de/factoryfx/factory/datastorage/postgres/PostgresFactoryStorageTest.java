@@ -94,6 +94,26 @@ public class PostgresFactoryStorageTest {
     }
 
     @Test
+    public void test_init_no_existing_factory_but_schema() throws SQLException, IOException {
+        PostgresFactoryStorage<ExampleLiveObjectA,Void, ExampleFactoryA> postgresFactoryStorage = new PostgresFactoryStorage<>(postgresDatasource, new ExampleFactoryA(),createSerialisation());
+        try (Connection con = postgresDatasource.getConnection()) {
+            postgresFactoryStorage.createTables(con);
+            con.commit();
+        }
+        postgresFactoryStorage.loadInitialFactory();
+        try (Connection con = postgresDatasource.getConnection()) {
+            for (String sql : Arrays.asList("select * from currentconfiguration"
+                    ,"select * from configurationmetadata"
+                    ,"select * from configuration")) {
+                PreparedStatement pstmt = con.prepareStatement(sql);
+                try (ResultSet rs = pstmt.executeQuery()) {
+                    Assert.assertTrue(rs.next());
+                }
+            }
+        }
+    }
+
+    @Test
     public void test_init_existing_factory() throws SQLException {
         PostgresFactoryStorage<ExampleLiveObjectA,Void, ExampleFactoryA> postgresFactoryStorage = new PostgresFactoryStorage<>(postgresDatasource, new ExampleFactoryA(),createSerialisation());
         postgresFactoryStorage.loadInitialFactory();
