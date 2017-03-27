@@ -13,8 +13,7 @@ import javax.ws.rs.core.Response;
 import com.google.common.hash.Hashing;
 import com.google.common.io.Files;
 
-/** path defined in server and not with annotation*/
-@Path("/")
+@Path("/download")
 public class DownloadResource {
 
     final File guiZipFile;

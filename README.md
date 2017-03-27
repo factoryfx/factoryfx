@@ -9,10 +9,10 @@ Factoryfx is a lightweight Dependency Injection Framework that combines data and
 dependency injection requires 2 types of objects.
 * business logic
 * factory code which instantiate the business logic objects
-explained here: https://www.youtube.com/watch?v=RlfLCWKxHJ0&index=3&list=PL693EFD059797C21E#t=30m
 
 Most dependency injection frameworks try to automate the Factory code.
-Instead of automating the creation process Factoryfx takes a different approach by focusing on an explicit defined lifecycle and end user editable datastructure.
+thats makes it hard to pass configuration data into the application.
+Instead of automating the creation process Factoryfx takes a different approach by focusing on an explicit defined lifecycle and end user editable data structure.
 Since the Factory is not automated you can edit metadata like validation, labeltext and permissions directly to Model.
 
 ###Example
@@ -41,7 +41,7 @@ public class HelloWorld{
     }
 }
 ```
-Why do we need 2 classes? There are 2 conflicting requirements. The Model should be editable but the aruntime should have immutable attributes .
+Why do we need 2 classes? There are 2 conflicting requirements. The Model should be editable but the runtime should have immutable attributes .
 That's why the ShopFactory have the shopTitle Attribute with Label text and so on. And the shop liveobject simply have a final shopTitle String field.
 
 ###Why domain specificity?

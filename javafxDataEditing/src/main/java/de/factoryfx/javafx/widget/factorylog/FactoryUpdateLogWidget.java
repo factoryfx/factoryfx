@@ -104,7 +104,7 @@ public class FactoryUpdateLogWidget implements Widget {
             typ.setCellValueFactory(param -> new SimpleStringProperty(getTypeText(param.getValue(),type)));
             tableView.getColumns().add(typ);
         }
-        TableControlWidget tableControlWidget = new TableControlWidget(tableView,uniformDesign);
+        TableControlWidget<FactoryLogEntry> tableControlWidget = new TableControlWidget<>(tableView,uniformDesign);
         BorderPane borderPane = new BorderPane();
         borderPane.setCenter(tableView);
         borderPane.setBottom(tableControlWidget.createContent());

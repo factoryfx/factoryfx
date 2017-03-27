@@ -52,7 +52,6 @@ public class DataMergerMergerTest {
 
         MergeDiff mergeDiff= dataMerger.mergeIntoCurrent();
         Assert.assertTrue(mergeDiff.hasNoConflicts());
-        Assert.assertEquals(currentModel,mergeDiff.getMergeInfos().get(0).parent);
     }
 
 }

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
+import de.factoryfx.data.Data;
 import de.factoryfx.data.attribute.AttributeMetadata;
 import de.factoryfx.data.attribute.types.StringAttribute;
 import de.factoryfx.factory.atrribute.FactoryReferenceAttribute;
@@ -102,9 +103,9 @@ public class FactoryBaseTest {
         usableCopy.internalFactory().instance();
 
 
-        HashSet<FactoryBase<?,?>> changed =new HashSet<>();
+        HashSet<Data> changed =new HashSet<>();
         changed.add(usableCopy);
-        usableCopy.internalFactory().determineRecreationNeed(changed);
+        usableCopy.internalFactory().determineRecreationNeed(changed,new HashSet<>());
         Assert.assertTrue(usableCopy.needRecreation);
         Assert.assertFalse(usableCopy.xFactory.get().needRecreation);
         Assert.assertFalse(usableCopy.referenceAttribute.get().needRecreation);
@@ -120,9 +121,9 @@ public class FactoryBaseTest {
         final XRoot usableCopy = root.internal().prepareUsableCopy();
         usableCopy.internalFactory().instance();
 
-        HashSet<FactoryBase<?,?>> changed =new HashSet<>();
+        HashSet<Data> changed =new HashSet<>();
         changed.add(usableCopy.referenceAttribute.get());
-        usableCopy.internalFactory().determineRecreationNeed(changed);
+        usableCopy.internalFactory().determineRecreationNeed(changed,new HashSet<>());
         Assert.assertTrue(usableCopy.needRecreation);
         Assert.assertFalse(usableCopy.xFactory.get().needRecreation);
         Assert.assertTrue(usableCopy.referenceAttribute.get().needRecreation);
@@ -138,11 +139,11 @@ public class FactoryBaseTest {
         final XRoot usableCopy = root.internal().prepareUsableCopy();
         usableCopy.internalFactory().instance();
 
-        HashSet<FactoryBase<?,?>> changed =new HashSet<>();
+        HashSet<Data> changed =new HashSet<>();
         changed.add(usableCopy.referenceAttribute.get());
         changed.add(usableCopy.xFactory.get());
 
-        usableCopy.internalFactory().determineRecreationNeed(changed);
+        usableCopy.internalFactory().determineRecreationNeed(changed,new HashSet<>());
         Assert.assertTrue(usableCopy.needRecreation);
         Assert.assertTrue(usableCopy.xFactory.get().needRecreation);
         Assert.assertTrue(usableCopy.referenceAttribute.get().needRecreation);
@@ -158,10 +159,10 @@ public class FactoryBaseTest {
         final XRoot usableCopy = root.internal().prepareUsableCopy();
         usableCopy.internalFactory().instance();
 
-        HashSet<FactoryBase<?,?>> changed =new HashSet<>();
+        HashSet<Data> changed =new HashSet<>();
         changed.add(usableCopy.xFactory.get());
 
-        usableCopy.internalFactory().determineRecreationNeed(changed);
+        usableCopy.internalFactory().determineRecreationNeed(changed,new HashSet<>());
         Assert.assertTrue(usableCopy.needRecreation);
         Assert.assertTrue(usableCopy.xFactory.get().needRecreation);
         Assert.assertTrue(usableCopy.referenceAttribute.get().needRecreation);
@@ -178,10 +179,10 @@ public class FactoryBaseTest {
         final XRoot usableCopy = root.internal().prepareUsableCopy();
         usableCopy.internalFactory().instance();
 
-        HashSet<FactoryBase<?,?>> changed =new HashSet<>();
+        HashSet<Data> changed =new HashSet<>();
         changed.add(usableCopy.xFactoryList.get().get(0));
 
-        usableCopy.internalFactory().determineRecreationNeed(changed);
+        usableCopy.internalFactory().determineRecreationNeed(changed,new HashSet<>());
         Assert.assertTrue(usableCopy.needRecreation);
         Assert.assertTrue(usableCopy.xFactoryList.get(0).needRecreation);
         Assert.assertTrue(usableCopy.referenceAttribute.get().needRecreation);
@@ -198,9 +199,9 @@ public class FactoryBaseTest {
         usableCopy.internalFactory().instance();
 
 
-        HashSet<FactoryBase<?,?>> changed =new HashSet<>();
+        HashSet<Data> changed =new HashSet<>();
         changed.add(usableCopy.xFactory.get());
-        usableCopy.internalFactory().determineRecreationNeed(changed);
+        usableCopy.internalFactory().determineRecreationNeed(changed,new HashSet<>());
         Assert.assertTrue(usableCopy.needRecreation);
         Assert.assertTrue(usableCopy.xFactory.get().needRecreation);
 

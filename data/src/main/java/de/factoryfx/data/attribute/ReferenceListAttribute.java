@@ -13,7 +13,6 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -195,7 +194,7 @@ public class ReferenceListAttribute<T extends Data> extends Attribute<List<T>> i
 
 
     private Optional<Function<Data,Collection<T>>> possibleValueProviderFromRoot=Optional.empty();
-    private Optional<Supplier<T>> newValueProvider =Optional.empty();
+    private Optional<Function<Data,T>> newValueProvider =Optional.empty();
     private Optional<BiConsumer<T,Object>> additionalDeleteAction = Optional.empty();
 
     /**customise the list of selectable items*/
@@ -207,15 +206,15 @@ public class ReferenceListAttribute<T extends Data> extends Attribute<List<T>> i
 
     /**customise how new values are created*/
     @SuppressWarnings("unchecked")
-    public <A extends ReferenceListAttribute<T>> A newValueProvider(Supplier<T> newValueProvider){
-        this.newValueProvider =Optional.of(newValueProvider);
+    public <A extends ReferenceListAttribute<T>> A newValueProvider(Function<Data,T> newValueProviderFromRoot){
+        this.newValueProvider =Optional.of(newValueProviderFromRoot);
         return (A)this;
     }
 
     public T internal_addNewFactory(){
         T addedFactory=null;
         if (newValueProvider.isPresent()) {
-            T newFactory = newValueProvider.get().get();
+            T newFactory = newValueProvider.get().apply(root);
             get().add(newFactory);
             addedFactory = newFactory;
         }

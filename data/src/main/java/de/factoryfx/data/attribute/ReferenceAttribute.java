@@ -9,7 +9,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
-import java.util.function.Supplier;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -169,7 +168,7 @@ public class ReferenceAttribute<T extends Data> extends Attribute<T> {
 
 
     private Optional<Function<Data,Collection<T>>> possibleValueProviderFromRoot=Optional.empty();
-    private Optional<Supplier<T>> newValueProvider=Optional.empty();
+    private Optional<Function<Data,T>> newValueProvider=Optional.empty();
     private Optional<BiConsumer<T,Object>> additionalDeleteAction = Optional.empty();
 
     /**customise the list of selectable items*/
@@ -181,8 +180,8 @@ public class ReferenceAttribute<T extends Data> extends Attribute<T> {
 
     /**customise how new values are created*/
     @SuppressWarnings("unchecked")
-    public <A extends ReferenceAttribute<T>> A newValueProvider(Supplier<T> newValueProvider){
-        this.newValueProvider =Optional.of(newValueProvider);
+    public <A extends ReferenceAttribute<T>> A newValueProvider(Function<Data,T> newValueProviderFromRoot){
+        this.newValueProvider =Optional.of(newValueProviderFromRoot);
         return (A)this;
     }
 
@@ -205,7 +204,7 @@ public class ReferenceAttribute<T extends Data> extends Attribute<T> {
 
     public T internal_addNewFactory(){
         newValueProvider.ifPresent(newFactoryFunction -> {
-            T newFactory = newFactoryFunction.get();
+            T newFactory = newFactoryFunction.apply(root);
             set(newFactory);
         });
         if (!newValueProvider.isPresent()){
