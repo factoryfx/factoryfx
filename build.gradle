@@ -223,14 +223,20 @@ project(':javafxDataEditing') {
 
 
 
-project(':javafxDistribution') {
+project(':javafxDistributionServer') {
 
     dependencies {
         compile project(":jettyFactory")
-        compile project(":restutilClient")
-
         compile project(":factory")
+        compile 'org.slf4j:slf4j-api:1.7.12'
+    }
 
+}
+
+project(':javafxDistributionClient') {
+
+    dependencies {
+        compile project(":restutilClient")
         compile 'org.slf4j:slf4j-api:1.7.12'
     }
 

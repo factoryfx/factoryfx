@@ -26,6 +26,7 @@ import com.google.common.base.Strings;
 import com.google.common.base.Throwables;
 import com.google.common.hash.Hashing;
 import com.google.common.io.Files;
+import de.factoryfx.server.rest.client.HttpStatusException;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.fxml.FXML;
@@ -144,9 +145,12 @@ public class UserInterfaceDistributionClientController {
             }
         }
 
-
-        WebTarget webResource = client.target(serverUrl + "/download/checkVersion?" + "fileHash=" + fileHash);
+        String checkVersionUri = serverUrl + "/download/checkVersion?" + "fileHash=" + fileHash;
+        WebTarget webResource = client.target(checkVersionUri);
         Response response = webResource.request(MediaType.TEXT_PLAIN).get();
+        if (response.getStatus() != 200) {
+            throw new HttpStatusException(response.getStatus(),"Received http status code " + response.getStatus() + "\n" +checkVersionUri+"\n" + response.readEntity(String.class));
+        }
         boolean needUpdate = Boolean.parseBoolean(response.readEntity(String.class));
         rootPane.setDisable(true);
 

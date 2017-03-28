@@ -17,7 +17,7 @@ public class DistributionClientDownloadServerFactory<V> extends FactoryBase<Dist
     public DistributionClientDownloadServerFactory() {
         config().setDisplayTextProvider(() -> "http://"+host.get()+":"+port.get());
 
-        configLiveCycle().setCreator(() -> new DistributionClientDownloadServer<V>(host.get(),port.get(),distributionClientBasePath.get(),directoriesListed.get()));
+        configLiveCycle().setCreator(() -> new DistributionClientDownloadServer(host.get(),port.get(),distributionClientBasePath.get(),directoriesListed.get()));
 
         configLiveCycle().setStarter(newLiveObject -> newLiveObject.start());
         configLiveCycle().setDestroyer(previousLiveObject -> previousLiveObject.stop());

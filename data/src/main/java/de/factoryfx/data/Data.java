@@ -128,18 +128,6 @@ public class Data {
         for (int i = 0; i< thisAttributes.size(); i++){
             consumer.accept((Attribute<A>) thisAttributes.get(i).attribute, (Attribute<A>) dataAttributes.get(i).attribute);
         }
-
-//                Field[] fields = getFields();
-//        for (Field field : fields) {
-//            try {
-//                Object fieldValue = field.get(this);
-//                if (fieldValue instanceof Attribute) {
-//                    consumer.accept((Attribute<A>) field.get(this), (Attribute<A>) field.get(data));
-//                }
-//            } catch (IllegalAccessException e) {
-//                throw new RuntimeException(e);
-//            }
-//        }
     }
 
     private void visitAttributesTripleFlat(Optional<? extends Data> data1, Optional<? extends Data> data2, TriConsumer<Attribute<?>, Optional<Attribute<?>>, Optional<Attribute<?>>> consumer) {
@@ -173,33 +161,6 @@ public class Data {
                 consumer.accept(thisAttributes.get(i).attribute, Optional.empty(), Optional.empty());
             }
         }
-
-
-
-//
-//        Field[] fields = getFields();
-//        for (Field field : fields) {
-//            try {
-////                fields[f].setAccessible(true);
-//                Object fieldValue = field.get(this);
-//                if (fieldValue instanceof Attribute) {
-//
-//                    Attribute<?> value1 = null;
-//                    if (data1.isPresent()) {
-//                        value1 = (Attribute<?>) field.get(data1.get());
-//                    }
-//                    Attribute<?> value2 = null;
-//                    if (data2.isPresent()) {
-//                        value2 = (Attribute<?>) field.get(data2.get());
-//                    }
-////                    if (data1.isPresent() && data2.isPresent()){
-//                        consumer.accept((Attribute<?>) field.get(this), Optional.ofNullable(value1), Optional.ofNullable(value2));
-////                    }
-//                }
-//            } catch (IllegalAccessException e) {
-//                throw new RuntimeException(e);
-//            }
-//        }
     }
 
     private Map<String,Data> collectChildFactoriesMap() {
@@ -629,6 +590,8 @@ public class Data {
             this.data = data;
         }
 
+
+
         public boolean matchSearchText(String newValue) {
             return data.matchSearchText(newValue);
         }
@@ -707,6 +670,13 @@ public class Data {
 
         public <T extends Data> T copy() {
             return  data.copy();
+        }
+
+        /* copy root and propagate root to all children*/
+        public <T extends Data> T copyRoot() {
+            final T copyRoot = data.copy();
+            propagateRoot(copyRoot);
+            return copyRoot;
         }
 
         public <T extends Data> T copyOneLevelDeep(){

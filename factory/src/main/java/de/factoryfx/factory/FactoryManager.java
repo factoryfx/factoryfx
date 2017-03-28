@@ -32,7 +32,7 @@ public class FactoryManager<L,V,T extends FactoryBase<L,V>> {
         LinkedHashSet<FactoryBase<?,V>> previousFactories = getFactoriesInDestroyOrder(currentFactoryRoot);
         previousFactories.forEach((f)->f.internalFactory().resetLog());
 
-        T previousFactoryCopyRoot = currentFactoryRoot.internal().copy();
+        T previousFactoryCopyRoot = currentFactoryRoot.internal().copyRoot();
 
         DataMerger dataMerger = new DataMerger(currentFactoryRoot, commonVersion, newVersion);
         MergeDiff mergeDiff= dataMerger.mergeIntoCurrent();
@@ -61,7 +61,7 @@ public class FactoryManager<L,V,T extends FactoryBase<L,V>> {
     private Set<Data> getChangedFactories(T previousFactoryCopyRoot){
         //one might think that the merger could do the change detection but that don't work for views and separation of concern is better anyway
         final HashSet<Data> result = new HashSet<>();
-        final T previousFactoryCopyRootUsable = previousFactoryCopyRoot.internal().prepareUsableCopy();
+        final T previousFactoryCopyRootUsable = previousFactoryCopyRoot;
         final HashMap<String, FactoryBase<?, V>> previousFactories = previousFactoryCopyRootUsable.internalFactory().collectChildFactoriesDeepMap();
         for (Data data: currentFactoryRoot.internalFactory().collectChildFactoriesDeep()){
             final FactoryBase<?, V> previousFactory = previousFactories.get(data.getId());
