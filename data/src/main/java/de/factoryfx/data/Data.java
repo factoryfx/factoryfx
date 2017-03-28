@@ -52,11 +52,10 @@ public class Data {
 
     @JsonIgnore
     private static final Map<Class<?>, Field[]> fields = new ConcurrentHashMap<>();
-    @JsonIgnore
-    private Field[] instanceFields;
 
     @JsonIgnore
     private Field[] getFields() {
+        Field[] instanceFields = fields.get(getClass());
         if (instanceFields==null) {
             final List<Field> fieldsOrdered = getFieldsOrdered(getClass());
             instanceFields = fieldsOrdered.toArray(new Field[fieldsOrdered.size()]);
@@ -91,17 +90,30 @@ public class Data {
         void accept(String attributeVariableName, Attribute<?> attribute);
     }
 
-    private void visitAttributesFlat(AttributeVisitor consumer) {
-        Field[] fields = getFields();
-        for (Field field : fields) {
-            try {
-                Object fieldValue = field.get(this);
-                if (fieldValue instanceof Attribute) {
-                    consumer.accept(field.getName(),(Attribute) fieldValue);
+    List<AttributeAndName> attributes;
+
+    List<AttributeAndName> getAttributes(){
+        if (attributes==null) {
+            attributes = new ArrayList<>();
+
+            Field[] fields = getFields();
+            for (Field field : fields) {
+                try {
+                    Object fieldValue = field.get(this);
+                    if (Attribute.class.isAssignableFrom(field.getType())) {
+                        attributes.add(new AttributeAndName((Attribute) fieldValue,field.getName()));
+                    }
+                } catch (IllegalAccessException e) {
+                    throw new RuntimeException(e);
                 }
-            } catch (IllegalAccessException e) {
-                throw new RuntimeException(e);
             }
+        }
+        return attributes;
+    }
+
+    private void visitAttributesFlat(AttributeVisitor consumer) {
+        for (AttributeAndName attribute: getAttributes()){
+            consumer.accept(attribute.name,attribute.attribute);
         }
     }
 
@@ -111,41 +123,83 @@ public class Data {
 
     @SuppressWarnings("unchecked")
     private <A> void  visitAttributesDualFlat(Data data, BiConsumer<Attribute<A>, Attribute<A>> consumer) {
-        Field[] fields = getFields();
-        for (Field field : fields) {
-            try {
-                Object fieldValue = field.get(this);
-                if (fieldValue instanceof Attribute) {
-                    consumer.accept((Attribute<A>) field.get(this), (Attribute<A>) field.get(data));
-                }
-            } catch (IllegalAccessException e) {
-                throw new RuntimeException(e);
-            }
+        final List<AttributeAndName> thisAttributes = getAttributes();
+        final List<AttributeAndName> dataAttributes = data.getAttributes();
+        for (int i = 0; i< thisAttributes.size(); i++){
+            consumer.accept((Attribute<A>) thisAttributes.get(i).attribute, (Attribute<A>) dataAttributes.get(i).attribute);
         }
+
+//                Field[] fields = getFields();
+//        for (Field field : fields) {
+//            try {
+//                Object fieldValue = field.get(this);
+//                if (fieldValue instanceof Attribute) {
+//                    consumer.accept((Attribute<A>) field.get(this), (Attribute<A>) field.get(data));
+//                }
+//            } catch (IllegalAccessException e) {
+//                throw new RuntimeException(e);
+//            }
+//        }
     }
 
-    private void visitAttributesTripleFlat(Optional<?> data1, Optional<?> data2, TriConsumer<Attribute<?>, Optional<Attribute<?>>, Optional<Attribute<?>>> consumer) {
-        Field[] fields = getFields();
-        for (Field field : fields) {
-            try {
-//                fields[f].setAccessible(true);
-                Object fieldValue = field.get(this);
-                if (fieldValue instanceof Attribute) {
+    private void visitAttributesTripleFlat(Optional<? extends Data> data1, Optional<? extends Data> data2, TriConsumer<Attribute<?>, Optional<Attribute<?>>, Optional<Attribute<?>>> consumer) {
+        final List<AttributeAndName> thisAttributes = getAttributes();
 
-                    Attribute<?> value1 = null;
-                    if (data1.isPresent()) {
-                        value1 = (Attribute<?>) field.get(data1.get());
-                    }
-                    Attribute<?> value2 = null;
-                    if (data2.isPresent()) {
-                        value2 = (Attribute<?>) field.get(data2.get());
-                    }
-                    consumer.accept((Attribute<?>) field.get(this), Optional.ofNullable(value1), Optional.ofNullable(value2));
-                }
-            } catch (IllegalAccessException e) {
-                throw new RuntimeException(e);
+        if (data1.isPresent() && data2.isPresent()){
+            final List<AttributeAndName> data1Attributes = data1.get().getAttributes();
+            final List<AttributeAndName> data2Attributes = data2.get().getAttributes();
+
+            for (int i = 0; i< thisAttributes.size(); i++){
+                consumer.accept(thisAttributes.get(i).attribute, Optional.ofNullable(data1Attributes.get(i).attribute), Optional.ofNullable(data2Attributes.get(i).attribute));
             }
         }
+
+        if (data1.isPresent() && !data2.isPresent()){
+            final List<AttributeAndName> data1Attributes = data1.get().getAttributes();
+            for (int i = 0; i< thisAttributes.size(); i++){
+                consumer.accept(thisAttributes.get(i).attribute, Optional.ofNullable(data1Attributes.get(i).attribute), Optional.empty());
+            }
+        }
+
+        if (!data1.isPresent() && data2.isPresent()){
+            final List<AttributeAndName> data2Attributes = data2.get().getAttributes();
+            for (int i = 0; i< thisAttributes.size(); i++){
+                consumer.accept(thisAttributes.get(i).attribute, Optional.empty(), Optional.ofNullable(data2Attributes.get(i).attribute));
+            }
+        }
+
+        if (!data1.isPresent() && !data2.isPresent()){
+            for (int i = 0; i< thisAttributes.size(); i++){
+                consumer.accept(thisAttributes.get(i).attribute, Optional.empty(), Optional.empty());
+            }
+        }
+
+
+
+//
+//        Field[] fields = getFields();
+//        for (Field field : fields) {
+//            try {
+////                fields[f].setAccessible(true);
+//                Object fieldValue = field.get(this);
+//                if (fieldValue instanceof Attribute) {
+//
+//                    Attribute<?> value1 = null;
+//                    if (data1.isPresent()) {
+//                        value1 = (Attribute<?>) field.get(data1.get());
+//                    }
+//                    Attribute<?> value2 = null;
+//                    if (data2.isPresent()) {
+//                        value2 = (Attribute<?>) field.get(data2.get());
+//                    }
+////                    if (data1.isPresent() && data2.isPresent()){
+//                        consumer.accept((Attribute<?>) field.get(this), Optional.ofNullable(value1), Optional.ofNullable(value2));
+////                    }
+//                }
+//            } catch (IllegalAccessException e) {
+//                throw new RuntimeException(e);
+//            }
+//        }
     }
 
     private Map<String,Data> collectChildFactoriesMap() {
@@ -349,12 +403,14 @@ public class Data {
             result = newInstance();
             result.setId(this.getId());
             this.visitAttributesDualFlat(result, (thisAttribute, copyAttribute) -> {
-                thisAttribute.internal_copyTo(copyAttribute,(data)->{
-                    if (data==null){
-                        return null;
-                    }
-                    return data.copyDeep(level + 1, maxLevel, identityPreserver);
-                });
+                if (thisAttribute!=null){
+                    thisAttribute.internal_copyTo(copyAttribute,(data)->{
+                        if (data==null){
+                            return null;
+                        }
+                        return data.copyDeep(level + 1, maxLevel, identityPreserver);
+                    });
+                }
             });
             identityPreserver.put(this.getId(),result);
         }

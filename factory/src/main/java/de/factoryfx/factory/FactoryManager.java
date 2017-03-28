@@ -59,6 +59,7 @@ public class FactoryManager<L,V,T extends FactoryBase<L,V>> {
     }
 
     private Set<Data> getChangedFactories(T previousFactoryCopyRoot){
+        //one might think that the merger could do the change detection but that don't work for views and separation of concern is better anyway
         final HashSet<Data> result = new HashSet<>();
         final T previousFactoryCopyRootUsable = previousFactoryCopyRoot.internal().prepareUsableCopy();
         final HashMap<String, FactoryBase<?, V>> previousFactories = previousFactoryCopyRootUsable.internalFactory().collectChildFactoriesDeepMap();

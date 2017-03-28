@@ -45,7 +45,7 @@ public class ViewReferenceAttribute<R extends Data, T extends Data> extends Attr
 
     @Override
     public AttributeMergeHelper<?> internal_createMergeHelper() {
-        return null;//new ViewMergeHelper<>(this);
+        return null;
     }
 
     @Override
