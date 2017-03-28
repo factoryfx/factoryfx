@@ -675,7 +675,7 @@ public class Data {
         /* copy root and propagate root to all children*/
         public <T extends Data> T copyRoot() {
             final T copyRoot = data.copy();
-            propagateRoot(copyRoot);
+            copyRoot.internal().propagateRoot(copyRoot);
             return copyRoot;
         }
 
