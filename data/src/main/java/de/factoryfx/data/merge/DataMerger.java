@@ -33,7 +33,21 @@ public class DataMerger {
             Data originalValue = originalMap.get(entry.getKey());
             Data newValue = newMap.get(entry.getKey());
 
-            entry.getValue().internal().merge(Optional.ofNullable(originalValue), Optional.ofNullable(newValue), mergeResult);
+            if (newValue==null && originalValue!=null){
+                //check for conflict for removed object
+                entry.getValue().internal().visitAttributesDualFlat(originalValue, (currentAttribute, originalAttribute) -> {
+                    if (!currentAttribute.internal_match(originalAttribute)){
+                        mergeResult.addConflictInfos(new MergeResultEntry(entry.getValue().internal().getDisplayText(),currentAttribute, Optional.empty()));
+                    }
+                });
+            }
+
+            if (originalValue!=null && newValue!=null){
+                entry.getValue().internal().merge(originalValue, newValue, mergeResult);
+            }
+
+
+
         }
         return mergeResult;
     }

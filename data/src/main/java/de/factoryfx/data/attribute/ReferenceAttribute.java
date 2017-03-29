@@ -188,7 +188,7 @@ public class ReferenceAttribute<T extends Data> extends Attribute<T> {
     /**
      * action after delete e.g delete the factory also in other lists
      * @param additionalDeleteAction deleted value, root
-     * @return
+     * @return this
      */
     @SuppressWarnings("unchecked")
     public <A extends ReferenceAttribute<T>> A additionalDeleteAction(BiConsumer<T,Object> additionalDeleteAction){

@@ -4,8 +4,8 @@ import de.factoryfx.data.util.LanguageText;
 
 public interface Validation<T> {
 
-    public LanguageText getValidationDescription();
+    LanguageText getValidationDescription();
 
-    public boolean validate(T value);
+    boolean validate(T value);
 
 }

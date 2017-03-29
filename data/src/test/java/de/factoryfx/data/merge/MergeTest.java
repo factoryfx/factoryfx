@@ -115,6 +115,25 @@ public class MergeTest {
     }
 
     @Test
+    public void test_merge_reference_delete_2(){
+        ExampleFactoryA currentModel = new ExampleFactoryA();
+        currentModel.referenceAttribute.set(new ExampleFactoryB());
+        currentModel.referenceAttribute.get().stringAttribute.set("qqqqqqqq");
+
+        ExampleFactoryA originalModel = currentModel.internal().copy();
+        originalModel.referenceAttribute.get().stringAttribute.set("qqqqqqqq");
+
+        ExampleFactoryA newModel = currentModel.internal().copy();
+        newModel.referenceAttribute.set(null);
+        DataMerger dataMerger = new DataMerger(currentModel, originalModel, newModel);
+
+        MergeDiff mergeDiff= dataMerger.mergeIntoCurrent();
+        Assert.assertEquals(0, mergeDiff.getConflictCount());
+        Assert.assertEquals(null, currentModel.referenceAttribute.get());
+    }
+
+
+    @Test
     public void test_merge_reference_delete_with_conflict(){
         ExampleFactoryA currentModel = new ExampleFactoryA();
         currentModel.referenceAttribute.set(new ExampleFactoryB());

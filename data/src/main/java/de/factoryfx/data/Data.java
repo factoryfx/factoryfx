@@ -130,42 +130,19 @@ public class Data {
         }
     }
 
-    private void visitAttributesTripleFlat(Optional<? extends Data> data1, Optional<? extends Data> data2, TriConsumer<Attribute<?>, Optional<Attribute<?>>, Optional<Attribute<?>>> consumer) {
+    private void visitAttributesTripleFlat(Data data1, Data data2, TriConsumer<Attribute<?>, Attribute<?>, Attribute<?>> consumer) {
         final List<AttributeAndName> thisAttributes = getAttributes();
 
-        if (data1.isPresent() && data2.isPresent()){
-            final List<AttributeAndName> data1Attributes = data1.get().getAttributes();
-            final List<AttributeAndName> data2Attributes = data2.get().getAttributes();
+        final List<AttributeAndName> data1Attributes = data1.getAttributes();
+        final List<AttributeAndName> data2Attributes = data2.getAttributes();
 
-            for (int i = 0; i< thisAttributes.size(); i++){
-                consumer.accept(thisAttributes.get(i).attribute, Optional.ofNullable(data1Attributes.get(i).attribute), Optional.ofNullable(data2Attributes.get(i).attribute));
-            }
-        }
-
-        if (data1.isPresent() && !data2.isPresent()){
-            final List<AttributeAndName> data1Attributes = data1.get().getAttributes();
-            for (int i = 0; i< thisAttributes.size(); i++){
-                consumer.accept(thisAttributes.get(i).attribute, Optional.ofNullable(data1Attributes.get(i).attribute), Optional.empty());
-            }
-        }
-
-        if (!data1.isPresent() && data2.isPresent()){
-            final List<AttributeAndName> data2Attributes = data2.get().getAttributes();
-            for (int i = 0; i< thisAttributes.size(); i++){
-                consumer.accept(thisAttributes.get(i).attribute, Optional.empty(), Optional.ofNullable(data2Attributes.get(i).attribute));
-            }
-        }
-
-        if (!data1.isPresent() && !data2.isPresent()){
-            for (int i = 0; i< thisAttributes.size(); i++){
-                consumer.accept(thisAttributes.get(i).attribute, Optional.empty(), Optional.empty());
-            }
+        for (int i = 0; i< thisAttributes.size(); i++){
+            consumer.accept(thisAttributes.get(i).attribute, data1Attributes.get(i).attribute, data2Attributes.get(i).attribute);
         }
     }
 
     private Map<String,Data> collectChildFactoriesMap() {
         HashSet<Data> factoryBases = new HashSet<>();
-//        factoryBases.add(this); TODO required?
         collectModelEntitiesTo(factoryBases);
 
         HashMap<String, Data> result = new HashMap<>();
@@ -280,28 +257,24 @@ public class Data {
     }
 
     @SuppressWarnings("unchecked")
-    private void merge(Optional<Data> originalValue, Optional<Data> newValue, MergeResult mergeResult) {
-
+    private void merge(Data originalValue, Data newValue, MergeResult mergeResult) {
         this.visitAttributesTripleFlat(originalValue, newValue, (currentAttribute, originalAttribute, newAttribute) -> {
             AttributeMergeHelper<?> attributeMergeHelper = currentAttribute.internal_createMergeHelper();
             if (attributeMergeHelper!=null){
-                boolean hasNoConflict = attributeMergeHelper.hasNoConflict(originalAttribute, newAttribute);
-                if (hasNoConflict) {
-                    if (newAttribute.isPresent()) {
-                        if (attributeMergeHelper.isMergeable(originalAttribute, newAttribute)) {
-                            MergeResultEntry mergeResultEntry = new MergeResultEntry(Data.this.internal.getDisplayText(),currentAttribute, newAttribute);
-                            mergeResult.addMergeExecutions(() -> attributeMergeHelper.merge(originalAttribute, newAttribute.get()));
-                            mergeResult.addMergeInfo(mergeResultEntry);
-                        }
-                    }
-                } else {
-                    MergeResultEntry mergeResultEntry = new MergeResultEntry(Data.this.internal.getDisplayText(), currentAttribute, newAttribute);
+                boolean hasConflict = attributeMergeHelper.hasConflict(originalAttribute, newAttribute);
+                if (hasConflict) {
+                    MergeResultEntry mergeResultEntry = new MergeResultEntry(Data.this.internal.getDisplayText(), currentAttribute, Optional.of(newAttribute));
                     mergeResult.addConflictInfos(mergeResultEntry);
+                } else {
+                    if (attributeMergeHelper.isMergeable(originalAttribute, newAttribute)) {
+                        MergeResultEntry mergeResultEntry = new MergeResultEntry(Data.this.internal.getDisplayText(),currentAttribute, Optional.of(newAttribute));
+                        mergeResult.addMergeExecutions(() -> attributeMergeHelper.merge(originalAttribute, newAttribute));
+                        mergeResult.addMergeInfo(mergeResultEntry);
+                    }
                 }
             }
         });
     }
-
 
     private HashMap<Data, Data> getChildToParentMap(Set<Data> allModelEntities) {
         HashMap<Data, Data> result = new HashMap<>();
@@ -314,8 +287,6 @@ public class Data {
         }
         return result;
     }
-
-
 
     private List<Data> getMassPathTo(HashMap<Data, Data> childToParent, Data target) {
         List<Data> path = new ArrayList<>();
@@ -517,8 +488,8 @@ public class Data {
 
         /**
          * short readable text describing the factory
-         * @param displayTextProvider
-         * @param dependencies
+         * @param displayTextProvider custom displayText function
+         * @param dependencies attributes which affect the displaytext
          */
         public void setDisplayTextProvider(Supplier<String> displayTextProvider, Attribute<?>... dependencies){
             data.setDisplayTextProvider(displayTextProvider);
@@ -564,9 +535,9 @@ public class Data {
 
         /**
          * data validation
-         * @param validation
-         * @param dependencies
-         * @param <T>
+         * @param validation validation function
+         * @param dependencies attributes which affect the validation
+         * @param <T> this
          */
         public <T> void addValidation(Validation<T> validation, Attribute<?>... dependencies){
             data.addValidation(validation,dependencies);
@@ -661,7 +632,7 @@ public class Data {
             return data.validateFlatMapped();
         }
 
-        public void merge(Optional<Data> originalValue, Optional<Data> newValue, MergeResult mergeResult) {
+        public void merge(Data originalValue, Data newValue, MergeResult mergeResult) {
             data.merge(originalValue,newValue,mergeResult);
         }
         public List<Data> getPathFromRoot() {
