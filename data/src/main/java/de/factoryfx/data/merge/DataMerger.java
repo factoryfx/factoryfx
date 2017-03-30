@@ -1,7 +1,7 @@
 package de.factoryfx.data.merge;
 
 import java.util.Map;
-import java.util.Optional;
+import java.util.function.Function;
 
 import de.factoryfx.data.Data;
 
@@ -17,13 +17,12 @@ public class DataMerger {
         this.newModel = newFactory;
     }
 
-    public MergeDiff createMergeResult() {
-        return createMergeResult(currentModel.internal().collectChildFactoriesMap()).getMergeDiff();
+    public MergeDiffInfo createMergeResult(Function<String,Boolean> permissionChecker) {
+        return createMergeResult(currentModel.internal().collectChildFactoriesMap(),permissionChecker).getMergeDiff();
     }
 
-
     @SuppressWarnings("unchecked")
-    private MergeResult createMergeResult(Map<String, Data> currentMap) {
+    private MergeResult createMergeResult(Map<String, Data> currentMap, Function<String,Boolean> permissionChecker) {
         MergeResult mergeResult = new MergeResult();
 
         Map<String, Data> originalMap = originalModel.internal().collectChildFactoriesMap();
@@ -37,27 +36,24 @@ public class DataMerger {
                 //check for conflict for removed object
                 entry.getValue().internal().visitAttributesDualFlat(originalValue, (currentAttribute, originalAttribute) -> {
                     if (!currentAttribute.internal_match(originalAttribute)){
-                        mergeResult.addConflictInfos(new MergeResultEntry(entry.getValue().internal().getDisplayText(),currentAttribute, Optional.empty()));
+                        mergeResult.addConflictInfo(new AttributeDiffInfo(entry.getValue().internal().getDisplayText(),currentAttribute));
                     }
                 });
             }
 
             if (originalValue!=null && newValue!=null){
-                entry.getValue().internal().merge(originalValue, newValue, mergeResult);
+                entry.getValue().internal().merge(originalValue, newValue, mergeResult, permissionChecker);
             }
-
-
-
         }
         return mergeResult;
     }
 
-    public MergeDiff mergeIntoCurrent() {
+    public MergeDiffInfo mergeIntoCurrent(Function<String,Boolean> permissionChecker) {
         Map<String, Data> currentMap = currentModel.internal().collectChildFactoriesMap();
-        MergeResult mergeResult = createMergeResult(currentMap);
-        MergeDiff mergeDiff = mergeResult.getMergeDiff();
+        MergeResult mergeResult = createMergeResult(currentMap,permissionChecker);
+        MergeDiffInfo mergeDiff = mergeResult.getMergeDiff();
 
-        if (mergeDiff.hasNoConflicts()) {
+        if (mergeDiff.hasNoConflicts() && mergeDiff.hasNoPermissionViolation()) {
             mergeResult.executeMerge();
             currentModel.internal().fixDuplicateObjects();
         }

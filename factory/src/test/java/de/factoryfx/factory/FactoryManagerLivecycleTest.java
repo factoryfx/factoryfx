@@ -160,7 +160,7 @@ public class FactoryManagerLivecycleTest {
 
         exampleFactoryA.resetCounter();
         exampleFactoryB.resetCounter();
-        factoryManager.update(common,update);
+        factoryManager.update(common,update,(permission)->true);
 
         Assert.assertEquals(1,exampleFactoryA.destroyCalls.size());
         Assert.assertEquals(1,exampleFactoryB.destroyCalls.size());
@@ -191,7 +191,7 @@ public class FactoryManagerLivecycleTest {
 
         exampleFactoryA.resetCounter();
         exampleFactoryB.resetCounter();
-        factoryManager.update(common,update);
+        factoryManager.update(common,update,(permission)->true);
 
         Assert.assertEquals(1,exampleFactoryA.destroyCalls.size());
         Assert.assertEquals(1,exampleFactoryB.destroyCalls.size());
@@ -223,7 +223,7 @@ public class FactoryManagerLivecycleTest {
 
         exampleFactoryA.resetCounter();
         exampleFactoryB.resetCounter();
-        factoryManager.update(common,update);
+        factoryManager.update(common,update,(permission)->true);
 
         Assert.assertEquals(1,exampleFactoryA.destroyCalls.size());
         Assert.assertEquals(1,exampleFactoryB.destroyCalls.size());
@@ -252,7 +252,7 @@ public class FactoryManagerLivecycleTest {
         update.refList.clear();
 
         exampleFactoryA.resetCounter();
-        factoryManager.update(common,update);
+        factoryManager.update(common,update,(permission)->true);
 
         Assert.assertEquals(1,exampleFactoryA.destroyCalls.size());
 
@@ -284,7 +284,7 @@ public class FactoryManagerLivecycleTest {
 
 
         exampleFactoryA.resetCounter();
-        factoryManager.update(common,update);
+        factoryManager.update(common,update,(permission)->true);
 
         Assert.assertEquals(0,exampleFactoryA.destroyCalls.size());
 

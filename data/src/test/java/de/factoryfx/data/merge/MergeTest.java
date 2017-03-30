@@ -23,7 +23,7 @@ public class MergeTest {
         newModel.stringAttribute.set("1111111");
         DataMerger dataMerger = new DataMerger(currentModel, originalModel, newModel);
 
-        MergeDiff mergeDiff= dataMerger.mergeIntoCurrent();
+        MergeDiffInfo mergeDiff= dataMerger.mergeIntoCurrent((permission)->true);
         Assert.assertTrue(mergeDiff.hasNoConflicts());
         Assert.assertEquals("1111111",currentModel.stringAttribute.get());
 
@@ -39,7 +39,7 @@ public class MergeTest {
         newModel.stringAttribute.set("2222222");
         DataMerger dataMerger = new DataMerger(currentModel, originalModel, newModel);
 
-        MergeDiff mergeDiff= dataMerger.mergeIntoCurrent();
+        MergeDiffInfo mergeDiff= dataMerger.mergeIntoCurrent((permission)->true);
         Assert.assertTrue(mergeDiff.hasNoConflicts());
         Assert.assertEquals("2222222",currentModel.stringAttribute.get());
 
@@ -55,7 +55,7 @@ public class MergeTest {
         newModel.stringAttribute.set("1111111");
         DataMerger dataMerger = new DataMerger(currentModel, originalModel, newModel);
 
-        MergeDiff mergeDiff= dataMerger.mergeIntoCurrent();
+        MergeDiffInfo mergeDiff= dataMerger.mergeIntoCurrent((permission)->true);
         Assert.assertTrue(mergeDiff.hasNoConflicts());
         Assert.assertEquals("333333333",currentModel.stringAttribute.get());
     }
@@ -71,7 +71,7 @@ public class MergeTest {
         newModel.stringAttribute.set("2222222");
         DataMerger dataMerger = new DataMerger(currentModel, originalModel, newModel);
 
-        MergeDiff mergeDiff= dataMerger.mergeIntoCurrent();
+        MergeDiffInfo mergeDiff= dataMerger.mergeIntoCurrent((permission)->true);
         Assert.assertEquals(1, mergeDiff.getConflictCount());
         Assert.assertEquals("333333333", currentModel.stringAttribute.get());
     }
@@ -92,7 +92,7 @@ public class MergeTest {
 
         DataMerger dataMerger = new DataMerger(currentModel, originalModel, newModel);
 
-        MergeDiff mergeDiff= dataMerger.mergeIntoCurrent();
+        MergeDiffInfo mergeDiff= dataMerger.mergeIntoCurrent((permission)->true);
         Assert.assertTrue(mergeDiff.hasNoConflicts());
         Assert.assertEquals("2", currentModel.referenceAttribute.get().stringAttribute.get());
 
@@ -108,7 +108,7 @@ public class MergeTest {
         newModel.referenceAttribute.set(null);
         DataMerger dataMerger = new DataMerger(currentModel, originalModel, newModel);
 
-        MergeDiff mergeDiff= dataMerger.mergeIntoCurrent();
+        MergeDiffInfo mergeDiff= dataMerger.mergeIntoCurrent((permission)->true);
         Assert.assertTrue(mergeDiff.hasNoConflicts());
         Assert.assertEquals(null, currentModel.referenceAttribute.get());
 
@@ -127,7 +127,7 @@ public class MergeTest {
         newModel.referenceAttribute.set(null);
         DataMerger dataMerger = new DataMerger(currentModel, originalModel, newModel);
 
-        MergeDiff mergeDiff= dataMerger.mergeIntoCurrent();
+        MergeDiffInfo mergeDiff= dataMerger.mergeIntoCurrent((permission)->true);
         Assert.assertEquals(0, mergeDiff.getConflictCount());
         Assert.assertEquals(null, currentModel.referenceAttribute.get());
     }
@@ -146,7 +146,7 @@ public class MergeTest {
         newModel.referenceAttribute.set(null);
         DataMerger dataMerger = new DataMerger(currentModel, originalModel, newModel);
 
-        MergeDiff mergeDiff= dataMerger.mergeIntoCurrent();
+        MergeDiffInfo mergeDiff= dataMerger.mergeIntoCurrent((permission)->true);
         Assert.assertEquals(1, mergeDiff.getConflictCount());
         Assert.assertEquals("qqqqqqqq", currentModel.referenceAttribute.get().stringAttribute.get());
     }
@@ -161,7 +161,7 @@ public class MergeTest {
         newModel.stringAttribute.set("1111111");
         DataMerger dataMerger = new DataMerger(currentModel, originalModel, newModel);
 
-        MergeDiff mergeDiff= dataMerger.mergeIntoCurrent();
+        MergeDiffInfo mergeDiff= dataMerger.mergeIntoCurrent((permission)->true);
         Assert.assertTrue(mergeDiff.hasNoConflicts());
         Assert.assertEquals(null, currentModel.stringAttribute.get());
     }
@@ -176,7 +176,7 @@ public class MergeTest {
         newModel.stringAttribute.set("1111111qqqqqqqqq");
         DataMerger dataMerger = new DataMerger(currentModel, originalModel, newModel);
 
-        MergeDiff mergeDiff= dataMerger.mergeIntoCurrent();
+        MergeDiffInfo mergeDiff= dataMerger.mergeIntoCurrent((permission)->true);
         Assert.assertEquals(1, mergeDiff.getConflictCount());
         Assert.assertEquals(null, currentModel.stringAttribute.get());
     }
@@ -192,7 +192,7 @@ public class MergeTest {
         newModel.stringAttribute.set(null);
         DataMerger dataMerger = new DataMerger(currentModel, originalModel, newModel);
 
-        MergeDiff mergeDiff= dataMerger.mergeIntoCurrent();
+        MergeDiffInfo mergeDiff= dataMerger.mergeIntoCurrent((permission)->true);
         Assert.assertTrue(mergeDiff.hasNoConflicts());
         Assert.assertEquals("1111111",currentModel.stringAttribute.get());
 
@@ -235,7 +235,7 @@ public class MergeTest {
         }
 
         DataMerger dataMerger = new DataMerger(currentModel, originalModel, newModel);
-        MergeDiff mergeDiff= dataMerger.mergeIntoCurrent();
+        MergeDiffInfo mergeDiff= dataMerger.mergeIntoCurrent((permission)->true);
         Assert.assertTrue(mergeDiff.hasNoConflicts());
         Assert.assertEquals(2, currentModel.referenceListAttribute.get().size());
         Assert.assertEquals("1111111111", currentModel.referenceListAttribute.get(0).stringAttribute.get());
@@ -275,7 +275,7 @@ public class MergeTest {
         }
 
         DataMerger dataMerger = new DataMerger(currentModel, originalModel, newModel);
-        MergeDiff mergeDiff= dataMerger.mergeIntoCurrent();
+        MergeDiffInfo mergeDiff= dataMerger.mergeIntoCurrent((permission)->true);
         Assert.assertTrue(mergeDiff.hasNoConflicts());
         Assert.assertEquals(2, currentModel.referenceListAttribute.get().size());
         Assert.assertEquals("3333333333", currentModel.referenceListAttribute.get(0).stringAttribute.get());
@@ -314,7 +314,7 @@ public class MergeTest {
         currentModel.referenceListAttribute.get(1).stringAttribute.set("444444444qqqq");
 
         DataMerger dataMerger = new DataMerger(currentModel, originalModel, newModel);
-        MergeDiff mergeDiff= dataMerger.mergeIntoCurrent();
+        MergeDiffInfo mergeDiff= dataMerger.mergeIntoCurrent((permission)->true);
         Assert.assertEquals(2, mergeDiff.getConflictCount());
         Assert.assertEquals(2, currentModel.referenceListAttribute.get().size());
         Assert.assertEquals("3333333333qqqqq", currentModel.referenceListAttribute.get(0).stringAttribute.get());
@@ -351,7 +351,7 @@ public class MergeTest {
         }
 
         DataMerger dataMerger = new DataMerger(currentModel, originalModel, newModel);
-        MergeDiff mergeDiff= dataMerger.mergeIntoCurrent();
+        MergeDiffInfo mergeDiff= dataMerger.mergeIntoCurrent((permission)->true);
         Assert.assertTrue(mergeDiff.hasNoConflicts());
         Assert.assertEquals(3, currentModel.referenceListAttribute.size());
         Assert.assertEquals("1111111111", currentModel.referenceListAttribute.get(0).stringAttribute.get());
@@ -385,7 +385,7 @@ public class MergeTest {
         }
 
         DataMerger dataMerger = new DataMerger(currentModel, originalModel, newModel);
-        MergeDiff mergeDiff= dataMerger.mergeIntoCurrent();
+        MergeDiffInfo mergeDiff= dataMerger.mergeIntoCurrent((permission)->true);
         Assert.assertTrue(mergeDiff.hasNoConflicts());
         Assert.assertEquals(0, currentModel.referenceListAttribute.get().size());
     }
@@ -420,7 +420,7 @@ public class MergeTest {
         currentModel.referenceListAttribute.get().add(exampleFactoryB);
 
         DataMerger dataMerger = new DataMerger(currentModel, originalModel, newModel);
-        MergeDiff mergeDiff= dataMerger.mergeIntoCurrent();
+        MergeDiffInfo mergeDiff= dataMerger.mergeIntoCurrent((permission)->true);
         Assert.assertTrue(mergeDiff.hasNoConflicts());
         Assert.assertEquals(3, currentModel.referenceListAttribute.get().size());
         Assert.assertEquals("1111111111", currentModel.referenceListAttribute.get().get(0).stringAttribute.get());
@@ -461,7 +461,7 @@ public class MergeTest {
         }
 
         DataMerger dataMerger = new DataMerger(currentModel, originalModel, newModel);
-        MergeDiff mergeDiff= dataMerger.mergeIntoCurrent();
+        MergeDiffInfo mergeDiff= dataMerger.mergeIntoCurrent((permission)->true);
         Assert.assertEquals(1, mergeDiff.getConflictCount());
         Assert.assertEquals(3, currentModel.referenceListAttribute.size());
         Assert.assertEquals("11111qqqqqqqqq", currentModel.referenceListAttribute.get(0).stringAttribute.get());
@@ -504,7 +504,7 @@ public class MergeTest {
         }
 
         DataMerger dataMerger = new DataMerger(currentModel, originalModel, newModel);
-        MergeDiff mergeDiff= dataMerger.mergeIntoCurrent();
+        MergeDiffInfo mergeDiff= dataMerger.mergeIntoCurrent((permission)->true);
         Assert.assertEquals(0, mergeDiff.getConflictCount());
         Assert.assertEquals(4, currentModel.referenceListAttribute.get().size());
         Assert.assertEquals(Arrays.asList("1","2","3","4"),currentModel.referenceListAttribute.get().stream().map(p->p.stringAttribute.get()).sorted().collect(Collectors.toList()));
@@ -532,7 +532,7 @@ public class MergeTest {
         }
 
         DataMerger dataMerger = new DataMerger(currentModel, originalModel, newModel);
-        MergeDiff mergeDiff = dataMerger.mergeIntoCurrent();
+        MergeDiffInfo mergeDiff = dataMerger.mergeIntoCurrent((permission)->true);
         Assert.assertEquals(0, mergeDiff.getConflictCount());
 
         Assert.assertEquals(currentModel.referenceListAttribute.get(0), currentModel.referenceAttribute.get());
@@ -564,7 +564,7 @@ public class MergeTest {
         }
 
         DataMerger dataMerger = new DataMerger(currentModel, originalModel, newModel);
-        MergeDiff mergeDiff = dataMerger.mergeIntoCurrent();
+        MergeDiffInfo mergeDiff = dataMerger.mergeIntoCurrent((permission)->true);
         Assert.assertEquals(0, mergeDiff.getConflictCount());
 
         //assert still serializable;
@@ -581,7 +581,7 @@ public class MergeTest {
         newModel.stringAttribute.set("3");
         DataMerger dataMerger = new DataMerger(currentModel, originalModel, newModel);
 
-        MergeDiff mergeDiff= dataMerger.mergeIntoCurrent();
+        MergeDiffInfo mergeDiff= dataMerger.mergeIntoCurrent((permission)->true);
         Assert.assertTrue(mergeDiff.hasNoConflicts());
         Assert.assertEquals("3",currentModel.stringAttribute.get());
 
@@ -600,7 +600,7 @@ public class MergeTest {
 
         DataMerger dataMerger = new DataMerger(currentModel, originalModel, newModel);
 
-        MergeDiff mergeDiff= dataMerger.mergeIntoCurrent();
+        MergeDiffInfo mergeDiff= dataMerger.mergeIntoCurrent((permission)->true);
         Assert.assertTrue(mergeDiff.hasNoConflicts());
         Assert.assertEquals("3",currentModel.stringAttribute.get());
 
@@ -620,7 +620,7 @@ public class MergeTest {
 
         DataMerger dataMerger = new DataMerger(currentModel, originalModel, newModel);
 
-        MergeDiff mergeDiff= dataMerger.mergeIntoCurrent();
+        MergeDiffInfo mergeDiff= dataMerger.mergeIntoCurrent((permission)->true);
         Assert.assertTrue(mergeDiff.hasNoConflicts());
         Assert.assertEquals(newValueInCurrent.getId(),currentModel.referenceAttribute.get().getId());
     }
@@ -640,7 +640,7 @@ public class MergeTest {
 
         DataMerger dataMerger = new DataMerger(currentModel, originalModel, newModel);
 
-        MergeDiff mergeDiff= dataMerger.mergeIntoCurrent();
+        MergeDiffInfo mergeDiff= dataMerger.mergeIntoCurrent((permission)->true);
         Assert.assertTrue(mergeDiff.hasNoConflicts());
         Assert.assertEquals(newValueInCurrent.getId(),currentModel.referenceListAttribute.get(0).getId());
     }
@@ -659,7 +659,7 @@ public class MergeTest {
 
         DataMerger dataMerger = new DataMerger(currentModel, originalModel, newModel);
 
-        MergeDiff mergeDiff= dataMerger.mergeIntoCurrent();
+        MergeDiffInfo mergeDiff= dataMerger.mergeIntoCurrent((permission)->true);
         Assert.assertTrue(mergeDiff.hasNoConflicts());
         Assert.assertEquals(newValueInCurrent.getId(),currentModel.referenceListAttribute.get(0).getId());
     }
@@ -678,7 +678,7 @@ public class MergeTest {
 
         DataMerger dataMerger = new DataMerger(currentModel, originalModel, newModel);
 
-        MergeDiff mergeDiff= dataMerger.mergeIntoCurrent();
+        MergeDiffInfo mergeDiff= dataMerger.mergeIntoCurrent((permission)->true);
         Assert.assertTrue(mergeDiff.hasNoConflicts());
         Assert.assertEquals("test2",currentModel.objectValueAttribute.get());
 

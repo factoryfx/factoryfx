@@ -2,9 +2,9 @@ package de.factoryfx.server;
 
 import java.time.LocalDateTime;
 import java.util.Collection;
+import java.util.function.Function;
 
 import de.factoryfx.data.merge.DataMerger;
-import de.factoryfx.data.merge.MergeDiff;
 import de.factoryfx.data.merge.MergeDiffInfo;
 import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.factory.FactoryManager;
@@ -22,17 +22,17 @@ public class ApplicationServer<L,V,T extends FactoryBase<L,V>> {
         this.factoryStorage = factoryStorage;
     }
 
-    public MergeDiff getDiff(StoredFactoryMetadata storedFactoryMetadata) {
+    public MergeDiffInfo getDiffToPreviousVersion(StoredFactoryMetadata storedFactoryMetadata) {
         T historyFactory = getHistoryFactory(storedFactoryMetadata.id);
         T historyFactoryPrevious = getPreviousHistoryFactory(storedFactoryMetadata.id);
-        return new DataMerger(historyFactoryPrevious,historyFactoryPrevious,historyFactory).createMergeResult();
+        return new DataMerger(historyFactoryPrevious,historyFactoryPrevious,historyFactory).createMergeResult((permission)->true);
     }
 
-    public FactoryUpdateLog updateCurrentFactory(FactoryAndStorageMetadata<T> update) {
+    public FactoryUpdateLog updateCurrentFactory(FactoryAndStorageMetadata<T> update, Function<String,Boolean> permissionChecker) {
         prepareFactory(update.root);
         T commonVersion = factoryStorage.getHistoryFactory(update.metadata.baseVersionId);
-        FactoryUpdateLog factoryLog = factoryManager.update(commonVersion, update.root);
-        if (factoryLog.mergeDiffInfo.hasNoConflicts()){
+        FactoryUpdateLog factoryLog = factoryManager.update(commonVersion, update.root, permissionChecker);
+        if (factoryLog.mergeDiffInfo.successfullyMerged()){
             update.metadata.creationTime= LocalDateTime.now();
             FactoryAndStorageMetadata<T> copy = new FactoryAndStorageMetadata<>(factoryManager.getCurrentFactory().internal().copy(),update.metadata);
             factoryStorage.updateCurrentFactory(copy);
@@ -42,7 +42,7 @@ public class ApplicationServer<L,V,T extends FactoryBase<L,V>> {
 
     public MergeDiffInfo simulateUpdateCurrentFactory(FactoryAndStorageMetadata<T> possibleUpdate){
         T commonVersion = factoryStorage.getHistoryFactory(possibleUpdate.metadata.baseVersionId);
-        return new MergeDiffInfo(factoryManager.simulateUpdate(commonVersion , possibleUpdate.root));
+        return factoryManager.simulateUpdate(commonVersion , possibleUpdate.root);
     }
 
     /** creates a new factory update which is ready for editing mainly assign the right ids*/

@@ -28,4 +28,11 @@ public class AuthorizedUser {
             throw new IllegalStateException("permission required: "+permission);
         }
     }
+
+    public boolean checkPermissionValid(String permission){
+        if (permission!=null && !permissions.contains(permission)){
+            return false;
+        }
+        return true;
+    }
 }

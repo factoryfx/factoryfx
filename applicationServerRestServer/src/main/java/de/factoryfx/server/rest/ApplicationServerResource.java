@@ -3,6 +3,7 @@ package de.factoryfx.server.rest;
 import java.util.Collection;
 import java.util.Locale;
 import java.util.Optional;
+import java.util.function.Function;
 import java.util.function.Predicate;
 
 import javax.ws.rs.Consumes;
@@ -50,8 +51,12 @@ public class ApplicationServerResource<V,L,T extends FactoryBase<L,V>>  {
     @Produces(MediaType.APPLICATION_JSON)
     @Path("updateCurrentFactory")
     public FactoryUpdateLog updateCurrentFactory(UserAwareRequest<FactoryAndStorageMetadata> update) {
-        authenticate(update);
-        return applicationServer.updateCurrentFactory(new FactoryAndStorageMetadata<>(update.request.root.internal().prepareUsableCopy(),update.request.metadata));
+        final Optional<AuthorizedUser> authenticate = authenticate(update);
+        Function<String,Boolean> permissionChecker = (permission)->true;
+        if (authenticate.isPresent()){
+            permissionChecker = (permission)->authenticate.get().checkPermissionValid(permission);
+        }
+        return applicationServer.updateCurrentFactory(new FactoryAndStorageMetadata<>(update.request.root.internal().prepareUsableCopy(),update.request.metadata),permissionChecker);
     }
 
     @POST
@@ -69,7 +74,7 @@ public class ApplicationServerResource<V,L,T extends FactoryBase<L,V>>  {
     @Path("diff")
     public MergeDiffInfo getDiff(UserAwareRequest<StoredFactoryMetadata> request) {
         authenticate(request);
-        return new MergeDiffInfo(applicationServer.getDiff(request.request));
+        return applicationServer.getDiffToPreviousVersion(request.request);
     }
 
     @POST

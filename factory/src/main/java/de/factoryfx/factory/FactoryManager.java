@@ -6,12 +6,12 @@ import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import com.google.common.collect.TreeTraverser;
 import de.factoryfx.data.Data;
 import de.factoryfx.data.merge.DataMerger;
-import de.factoryfx.data.merge.MergeDiff;
 import de.factoryfx.data.merge.MergeDiffInfo;
 import de.factoryfx.factory.exception.ExceptionResponseAction;
 import de.factoryfx.factory.exception.FactoryExceptionHandler;
@@ -27,7 +27,7 @@ public class FactoryManager<L,V,T extends FactoryBase<L,V>> {
     }
 
     @SuppressWarnings("unchecked")
-    public FactoryUpdateLog update(T commonVersion , T newVersion){
+    public FactoryUpdateLog update(T commonVersion , T newVersion, Function<String,Boolean> permissionChecker){
         newVersion.internalFactory().loopDetector();
         LinkedHashSet<FactoryBase<?,V>> previousFactories = getFactoriesInDestroyOrder(currentFactoryRoot);
         previousFactories.forEach((f)->f.internalFactory().resetLog());
@@ -35,10 +35,10 @@ public class FactoryManager<L,V,T extends FactoryBase<L,V>> {
         T previousFactoryCopyRoot = currentFactoryRoot.internal().copyRoot();
 
         DataMerger dataMerger = new DataMerger(currentFactoryRoot, commonVersion, newVersion);
-        MergeDiff mergeDiff= dataMerger.mergeIntoCurrent();
+        MergeDiffInfo mergeDiff= dataMerger.mergeIntoCurrent(permissionChecker);
         long totalUpdateDuration=0;
         List<FactoryBase<?,V>> removed = new ArrayList<>();
-        if (mergeDiff.hasNoConflicts()){
+        if (mergeDiff.successfullyMerged()){
             currentFactoryRoot.internalFactory().loopDetector();
             final Set<FactoryBase<?, V>> newFactories = currentFactoryRoot.internalFactory().collectChildFactoriesDeep();
 
@@ -55,7 +55,7 @@ public class FactoryManager<L,V,T extends FactoryBase<L,V>> {
             removed=getRemovedFactories(previousFactories,newFactories);
         }
 
-        return new FactoryUpdateLog(currentFactoryRoot.internalFactory().createFactoryLogEntry(), removed.stream().map(r->r.internalFactory().createFactoryLogEntryFlat()).collect(Collectors.toSet()),new MergeDiffInfo(mergeDiff),totalUpdateDuration);
+        return new FactoryUpdateLog(currentFactoryRoot.internalFactory().createFactoryLogEntry(), removed.stream().map(r->r.internalFactory().createFactoryLogEntryFlat()).collect(Collectors.toSet()),mergeDiff,totalUpdateDuration);
     }
 
     private Set<Data> getChangedFactories(T previousFactoryCopyRoot){
@@ -87,11 +87,11 @@ public class FactoryManager<L,V,T extends FactoryBase<L,V>> {
 
     /** get the merge result  but don't execute the merge and liveObjects updates*/
     @SuppressWarnings("unchecked")
-    public MergeDiff simulateUpdate(T commonVersion , T newVersion){
+    public MergeDiffInfo simulateUpdate(T commonVersion , T newVersion){
         newVersion.internalFactory().loopDetector();
 
         DataMerger dataMerger = new DataMerger(currentFactoryRoot, commonVersion, newVersion);
-        return dataMerger.createMergeResult();
+        return dataMerger.createMergeResult((permission)->true);
     }
 
     private void destroyFactories(LinkedHashSet<FactoryBase<?,V>> previousFactories, Set<FactoryBase<?,V>> newFactories){

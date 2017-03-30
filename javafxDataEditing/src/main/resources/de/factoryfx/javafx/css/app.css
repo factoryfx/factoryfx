@@ -30,6 +30,17 @@
     /*-fx-border-color:red;*/
 }
 
+.permissionViolationRow{
+    -fx-background-color: #ff8991;
+    -fx-font-weight: bold;
+    /*-fx-background: red ;*/
+    /*-fx-alignment:CENTER-RIGHT;*/
+    /*-fx-border-width: .5px;*/
+    /*-fx-border-style: solid;*/
+    /*-fx-border-color:red;*/
+}
+
+
 /*.table-view {*/
     /*-fx-font-size: 12px;*/
 /*}*/

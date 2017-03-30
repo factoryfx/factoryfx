@@ -4,11 +4,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MergeResult {
-    final List<MergeResultEntry> mergeInfos = new ArrayList<>();
-    final List<MergeResultEntry> conflictInfos = new ArrayList<>();
+    final List<AttributeDiffInfo> mergeInfos = new ArrayList<>();
+    final List<AttributeDiffInfo> conflictInfos = new ArrayList<>();
+    final List<AttributeDiffInfo> mergePermissionViolations = new ArrayList<>();
+
     final List<Runnable> mergeExecutions = new ArrayList<>();
 
-    public void addConflictInfos(MergeResultEntry conflictInfo) {
+    public void addConflictInfo(AttributeDiffInfo conflictInfo) {
         conflictInfos.add(conflictInfo);
     }
 
@@ -16,15 +18,12 @@ public class MergeResult {
         mergeExecutions.add(mergeAction);
     }
 
-    public void addMergeInfo(MergeResultEntry mergeInfo) {
+    public void addMergeInfo(AttributeDiffInfo mergeInfo) {
         mergeInfos.add(mergeInfo);
     }
 
-    public List<MergeResultEntry> allResults() {
-        ArrayList<MergeResultEntry> mergeResultEntries = new ArrayList<>();
-        mergeResultEntries.addAll(mergeInfos);
-        mergeResultEntries.addAll(conflictInfos);
-        return mergeResultEntries;
+    public void addPermissionViolationInfo(AttributeDiffInfo permissionViolation) {
+        mergePermissionViolations.add(permissionViolation);
     }
 
     public void executeMerge() {
@@ -33,8 +32,8 @@ public class MergeResult {
         }
     }
 
-    public MergeDiff getMergeDiff() {
-        return new MergeDiff(mergeInfos, conflictInfos);
+    public MergeDiffInfo getMergeDiff() {
+        return new MergeDiffInfo(mergeInfos, conflictInfos, mergePermissionViolations);
     }
 
 }

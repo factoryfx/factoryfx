@@ -31,9 +31,8 @@ import de.factoryfx.data.attribute.Attribute;
 import de.factoryfx.data.attribute.AttributeVisitor;
 import de.factoryfx.data.attribute.ReferenceAttribute;
 import de.factoryfx.data.attribute.ReferenceListAttribute;
-import de.factoryfx.data.merge.MergeDiff;
+import de.factoryfx.data.merge.AttributeDiffInfo;
 import de.factoryfx.data.merge.MergeDiffInfo;
-import de.factoryfx.data.merge.MergeResultEntryInfo;
 import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.factory.datastorage.FactoryAndStorageMetadata;
 import de.factoryfx.factory.datastorage.StoredFactoryMetadata;
@@ -292,8 +291,8 @@ public class RestResource<L,V,T extends FactoryBase<L,V>> {
 
 
         if (response.validationErrors.isEmpty()){
-            //TODO handle conflicts
-            final FactoryUpdateLog factoryLog = applicationServer.updateCurrentFactory(getCurrentEditingFactory());
+            //TODO handle conflicts and permissions
+            final FactoryUpdateLog factoryLog = applicationServer.updateCurrentFactory(getCurrentEditingFactory(),(permission)->true);
             response.mergeDiff=new WebGuiMergeDiff(factoryLog.mergeDiffInfo,getUserLocale());
             if (factoryLog.mergeDiffInfo.hasNoConflicts()){
                 response.deployed=true;
@@ -427,11 +426,11 @@ public class RestResource<L,V,T extends FactoryBase<L,V>> {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("diff")
-    public MergeDiff getDiff(@QueryParam("id")String id) {
+    public MergeDiffInfo getDiff(@QueryParam("id")String id) {
         applicationServer.getHistoryFactory(id);
         for(StoredFactoryMetadata storedFactoryMetadata: applicationServer.getHistoryFactoryList()){
             if (storedFactoryMetadata.id.equals(id)){
-                return applicationServer.getDiff(storedFactoryMetadata);
+                return applicationServer.getDiffToPreviousVersion(storedFactoryMetadata);
             }
         }
 
@@ -449,7 +448,7 @@ public class RestResource<L,V,T extends FactoryBase<L,V>> {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @Path("diffdetail")
-    public DiffDetailResponse getDiffDetail(MergeResultEntryInfo info) {
+    public DiffDetailResponse getDiffDetail(AttributeDiffInfo info) {
         Patch<String> patch = DiffUtils.diff(
                 convertToList(info.previousValueDisplayText),
                 convertToList(info.newValueValueDisplayText)

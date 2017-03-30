@@ -6,8 +6,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import de.factoryfx.data.merge.AttributeDiffInfo;
 import de.factoryfx.data.merge.MergeDiffInfo;
-import de.factoryfx.data.merge.MergeResultEntryInfo;
 import de.factoryfx.data.util.LanguageText;
 import de.factoryfx.javafx.util.UniformDesign;
 import de.factoryfx.javafx.widget.Widget;
@@ -34,7 +34,6 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
-import javafx.util.Callback;
 import org.controlsfx.glyphfont.FontAwesome;
 import org.fxmisc.richtext.StyleClassedTextArea;
 
@@ -69,8 +68,8 @@ public class FactoryDiffWidget implements Widget {
         diffDisplay.getStyleClass().add("diffTextField");
         diffDisplay.setEditable(false);
 
-        TableView<MergeResultEntryInfo> diffTableView = createDiffTableViewTable();
-        final ObservableList<MergeResultEntryInfo> diffList= FXCollections.observableArrayList();
+        TableView<AttributeDiffInfoExtended> diffTableView = createDiffTableViewTable();
+        final ObservableList<AttributeDiffInfoExtended> diffList= FXCollections.observableArrayList();
         diffTableView.setItems(diffList);
 
 
@@ -103,7 +102,7 @@ public class FactoryDiffWidget implements Widget {
         verticalSplitPane.getItems().add(diffValuesPane);
 
         diffTableView.getSelectionModel().selectedItemProperty().addListener(observable -> {
-            MergeResultEntryInfo diffItem=diffTableView.getSelectionModel().getSelectedItem();
+            AttributeDiffInfo diffItem=diffTableView.getSelectionModel().getSelectedItem().attributeDiffInfo;
             if (diffItem!=null){
                 List<String> previousLines = convertToList(diffItem.previousValueDisplayText);
                 List<String> newLines = convertToList(diffItem.newValueValueDisplayText);
@@ -187,8 +186,9 @@ public class FactoryDiffWidget implements Widget {
             MergeDiffInfo mergeDiff = this.mergeDiff.get();
             if (mergeDiff != null) {
                 diffList.clear();
-                diffList.addAll(mergeDiff.mergeInfos);
-                diffList.addAll(mergeDiff.conflictInfos);
+                diffList.addAll(mergeDiff.mergeInfos.stream().map(info->new AttributeDiffInfoExtended(true,false,false, info)).collect(Collectors.toList()));
+                diffList.addAll(mergeDiff.conflictInfos.stream().map(info->new AttributeDiffInfoExtended(false,true,false, info)).collect(Collectors.toList()));
+                diffList.addAll(mergeDiff.permissionViolations.stream().map(info->new AttributeDiffInfoExtended(false,false,true, info)).collect(Collectors.toList()));
                 diffTableView.getSelectionModel().selectFirst();
             }
         };
@@ -202,24 +202,24 @@ public class FactoryDiffWidget implements Widget {
 
     int diffPosition;
 
-    private TableView<MergeResultEntryInfo> createDiffTableViewTable(){
-        TableView<MergeResultEntryInfo> tableView = new TableView<>();
+    private TableView<AttributeDiffInfoExtended> createDiffTableViewTable(){
+        TableView<AttributeDiffInfoExtended> tableView = new TableView<>();
         tableView.setPlaceholder(new Label(uniformDesign.getText(noChangesFound)));
         {
-            TableColumn<MergeResultEntryInfo, String> factoryColumn = new TableColumn<>(uniformDesign.getText(columnFactory));
-            factoryColumn.setCellValueFactory(param -> new SimpleStringProperty(param.getValue().parentDisplayText));
+            TableColumn<AttributeDiffInfoExtended, String> factoryColumn = new TableColumn<>(uniformDesign.getText(columnFactory));
+            factoryColumn.setCellValueFactory(param -> new SimpleStringProperty(param.getValue().attributeDiffInfo.parentDisplayText));
             tableView.getColumns().add(factoryColumn);
 
-            TableColumn<MergeResultEntryInfo, String> fieldColumn = new TableColumn<>(uniformDesign.getText(columnField));
-            fieldColumn.setCellValueFactory(param -> new SimpleStringProperty(uniformDesign.getText(param.getValue().fieldDisplayText)));
+            TableColumn<AttributeDiffInfoExtended, String> fieldColumn = new TableColumn<>(uniformDesign.getText(columnField));
+            fieldColumn.setCellValueFactory(param -> new SimpleStringProperty(uniformDesign.getText(param.getValue().attributeDiffInfo.fieldDisplayText)));
             tableView.getColumns().add(fieldColumn);
 
-            TableColumn<MergeResultEntryInfo, String> previousColumn = new TableColumn<>(uniformDesign.getText(columnPrevious));
-            previousColumn.setCellValueFactory(param -> new SimpleStringProperty(param.getValue().previousValueDisplayText));
+            TableColumn<AttributeDiffInfoExtended, String> previousColumn = new TableColumn<>(uniformDesign.getText(columnPrevious));
+            previousColumn.setCellValueFactory(param -> new SimpleStringProperty(param.getValue().attributeDiffInfo.previousValueDisplayText));
             tableView.getColumns().add(previousColumn);
 
-            TableColumn<MergeResultEntryInfo, String> newColumn = new TableColumn<>(uniformDesign.getText(columnNew));
-            newColumn.setCellValueFactory(param -> new SimpleStringProperty(param.getValue().newValueValueDisplayText));
+            TableColumn<AttributeDiffInfoExtended, String> newColumn = new TableColumn<>(uniformDesign.getText(columnNew));
+            newColumn.setCellValueFactory(param -> new SimpleStringProperty(param.getValue().attributeDiffInfo.newValueValueDisplayText));
             tableView.getColumns().add(newColumn);
 
         }
@@ -228,20 +228,20 @@ public class FactoryDiffWidget implements Widget {
 
 
         tableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
-        tableView.setRowFactory(new Callback<TableView<MergeResultEntryInfo>, TableRow<MergeResultEntryInfo>>() {
+        tableView.setRowFactory((param) -> new TableRow<AttributeDiffInfoExtended>() {
             @Override
-            public TableRow<MergeResultEntryInfo> call(TableView<MergeResultEntryInfo> param) {
-                return new TableRow<MergeResultEntryInfo>(){
-                    @Override
-                    protected void updateItem(MergeResultEntryInfo mergeResultEntry, boolean empty){
-                        super.updateItem(mergeResultEntry, empty);
-                        if (mergeResultEntry!=null && mergeResultEntry.conflict) {
-                            getStyleClass().add("conflictRow");
-                        } else {
-                            getStyleClass().remove("conflictRow");
-                        }
-                    }
-                };
+            protected void updateItem(AttributeDiffInfoExtended mergeResultEntry, boolean empty) {
+                super.updateItem(mergeResultEntry, empty);
+                if (mergeResultEntry != null && mergeResultEntry.conflict) {
+                    getStyleClass().add("conflictRow");
+                } else {
+                    getStyleClass().remove("conflictRow");
+                }
+                if (mergeResultEntry != null && mergeResultEntry.violation) {
+                    getStyleClass().add("permissionViolationRow");
+                } else {
+                    getStyleClass().remove("permissionViolationRow");
+                }
             }
         });
 

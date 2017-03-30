@@ -3,7 +3,6 @@ package de.factoryfx.javafx.widget.factorylog;
 import java.util.ArrayList;
 import java.util.HashSet;
 
-import de.factoryfx.data.merge.MergeDiff;
 import de.factoryfx.data.merge.MergeDiffInfo;
 import de.factoryfx.factory.log.FactoryUpdateLog;
 import de.factoryfx.factory.log.FactoryLogEntry;
@@ -34,7 +33,7 @@ public class FactoryLogWidgetTest extends Application {
         removed.add(factoryLogEntry);
         removed.add(child);
 
-        FactoryUpdateLog factoryLog= new FactoryUpdateLog(factoryLogEntry, removed, new MergeDiffInfo(Mockito.mock(MergeDiff.class)),56575);
+        FactoryUpdateLog factoryLog= new FactoryUpdateLog(factoryLogEntry, removed, Mockito.mock(MergeDiffInfo.class),56575);
         factoryUpdateLogWidget.updateLog(factoryLog);
 
         BorderPane root = new BorderPane();

@@ -141,9 +141,9 @@ public class ReferenceListMergeTest extends MergeHelperTestBase{
         ExampleFactoryA orginal = current.internal().copy();
         ExampleFactoryA update = current.internal().copy();
 
-        final MergeDiff merge = merge(current, orginal, update);
+        final MergeDiffInfo merge = merge(current, orginal, update);
         Assert.assertTrue(merge.hasNoConflicts());
         Assert.assertEquals(2, current.referenceListAttribute.size());
-        Assert.assertEquals(0, merge.getMergeInfos().size());
+        Assert.assertEquals(0, merge.mergeInfos.size());
     }
 }

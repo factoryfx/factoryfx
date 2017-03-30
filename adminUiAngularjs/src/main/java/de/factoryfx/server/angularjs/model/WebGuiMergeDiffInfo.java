@@ -2,7 +2,7 @@ package de.factoryfx.server.angularjs.model;
 
 import java.util.Locale;
 
-import de.factoryfx.data.merge.MergeResultEntryInfo;
+import de.factoryfx.data.merge.AttributeDiffInfo;
 
 public class WebGuiMergeDiffInfo {
     public final String previousValueDisplayText;
@@ -11,7 +11,7 @@ public class WebGuiMergeDiffInfo {
     public final String parentDisplayText;
 
 
-    public WebGuiMergeDiffInfo(MergeResultEntryInfo info, Locale locale){
+    public WebGuiMergeDiffInfo(AttributeDiffInfo info, Locale locale){
         previousValueDisplayText=info.previousValueDisplayText;
         newValueValueDisplayText=info.newValueValueDisplayText;
         fieldDisplayText=info.fieldDisplayText.getPreferred(locale);

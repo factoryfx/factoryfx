@@ -1,5 +1,8 @@
 package de.factoryfx.data.merge;
 
+import de.factoryfx.data.Data;
+import de.factoryfx.data.attribute.AttributeMetadata;
+import de.factoryfx.data.attribute.types.StringAttribute;
 import de.factoryfx.data.merge.testfactories.ExampleFactoryA;
 import de.factoryfx.data.merge.testfactories.ExampleFactoryB;
 import org.junit.Assert;
@@ -16,10 +19,10 @@ public class DataMergerMergerTest {
         newModel.stringAttribute.set("2222222");
         DataMerger dataMerger = new DataMerger(currentModel, originalModel, newModel);
 
-        MergeDiff mergeDiff= dataMerger.mergeIntoCurrent();
+        MergeDiffInfo mergeDiff= dataMerger.mergeIntoCurrent((permission)->true);
         Assert.assertTrue(mergeDiff.hasNoConflicts());
-        Assert.assertEquals("2222222",mergeDiff.getMergeInfos().get(0).createInfo(false).newValueValueDisplayText);
-        Assert.assertEquals("1111111",mergeDiff.getMergeInfos().get(0).createInfo(false).previousValueDisplayText);
+        Assert.assertEquals("2222222",mergeDiff.mergeInfos.get(0).newValueValueDisplayText);
+        Assert.assertEquals("1111111",mergeDiff.mergeInfos.get(0).previousValueDisplayText);
     }
 
     @Test
@@ -32,10 +35,10 @@ public class DataMergerMergerTest {
         newModel.referenceAttribute.set(null);
         DataMerger dataMerger = new DataMerger(currentModel, originalModel, newModel);
 
-        MergeDiff mergeDiff= dataMerger.mergeIntoCurrent();
+        MergeDiffInfo mergeDiff= dataMerger.mergeIntoCurrent((permission)->true);
         Assert.assertTrue(mergeDiff.hasNoConflicts());
-        Assert.assertEquals("empty",mergeDiff.getMergeInfos().get(0).createInfo(false).newValueValueDisplayText);
-        Assert.assertTrue(mergeDiff.getMergeInfos().get(0).createInfo(false).previousValueDisplayText.contains(exampleFactoryB.getId().toString()));
+        Assert.assertEquals("empty",mergeDiff.mergeInfos.get(0).newValueValueDisplayText);
+        Assert.assertTrue(mergeDiff.mergeInfos.get(0).previousValueDisplayText.contains(exampleFactoryB.getId().toString()));
     }
 
     @Test
@@ -50,8 +53,41 @@ public class DataMergerMergerTest {
 
         DataMerger dataMerger = new DataMerger(currentModel, originalModel, newModel);
 
-        MergeDiff mergeDiff= dataMerger.mergeIntoCurrent();
+        MergeDiffInfo mergeDiff= dataMerger.mergeIntoCurrent((permission)->true);
         Assert.assertTrue(mergeDiff.hasNoConflicts());
+    }
+
+    public static class ExampleFactoryPermission extends Data {
+        public final StringAttribute stringAttribute= new StringAttribute(new AttributeMetadata().labelText("ExampleA1").permission("permissionX"));
+    }
+
+    @Test
+    public void test_permission_violation(){
+        ExampleFactoryPermission currentModel = new ExampleFactoryPermission();
+        currentModel.stringAttribute.set("123");
+        ExampleFactoryPermission originalModel = currentModel.internal().copy();
+        ExampleFactoryPermission newModel = currentModel.internal().copy();
+        newModel.stringAttribute.set("XXX");
+
+        DataMerger dataMerger = new DataMerger(currentModel, originalModel, newModel);
+        MergeDiffInfo mergeDiff= dataMerger.mergeIntoCurrent((permission)->false);
+
+        Assert.assertFalse(mergeDiff.hasNoPermissionViolation());
+        Assert.assertFalse(mergeDiff.successfullyMerged());
+    }
+
+    @Test
+    public void test_permission_no_violation(){
+        ExampleFactoryPermission currentModel = new ExampleFactoryPermission();
+        currentModel.stringAttribute.set("123");
+        ExampleFactoryPermission originalModel = currentModel.internal().copy();
+        ExampleFactoryPermission newModel = currentModel.internal().copy();
+        newModel.stringAttribute.set("XXX");
+
+        DataMerger dataMerger = new DataMerger(currentModel, originalModel, newModel);
+        MergeDiffInfo mergeDiff= dataMerger.mergeIntoCurrent((permission)->true);
+        Assert.assertTrue(mergeDiff.hasNoPermissionViolation());
+        Assert.assertTrue(mergeDiff.successfullyMerged());
     }
 
 }

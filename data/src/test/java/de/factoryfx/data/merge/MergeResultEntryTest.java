@@ -12,8 +12,8 @@ public class MergeResultEntryTest {
 
     @Test
     public void json_serialisable(){
-        MergeResultEntryInfo  mergeResultEntry = new MergeResultEntryInfo("","", new LanguageText().en("sfdsf"), "");
-        MergeResultEntryInfo copy = ObjectMapperBuilder.build().copy(mergeResultEntry);//Test json serialisation
+        AttributeDiffInfo mergeResultEntry = new AttributeDiffInfo("","", new LanguageText().en("sfdsf"), "");
+        AttributeDiffInfo copy = ObjectMapperBuilder.build().copy(mergeResultEntry);//Test json serialisation
         Assert.assertEquals("sfdsf",copy.fieldDisplayText.getPreferred(Locale.ENGLISH));
     }
 }

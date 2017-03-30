@@ -1,24 +1,30 @@
 package de.factoryfx.data.merge;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 //JSON serializable
 public class MergeDiffInfo {
-    public List<MergeResultEntryInfo> mergeInfos;
-    public List<MergeResultEntryInfo> conflictInfos;
-
-    public MergeDiffInfo(MergeDiff mergeDiff){
-        mergeInfos=mergeDiff.getMergeInfos().stream().map(m->m.createInfo(false)).collect(Collectors.toList());
-        conflictInfos=mergeDiff.getConflictInfos().stream().map(m->m.createInfo(true)).collect(Collectors.toList());
-    }
+    public final List<AttributeDiffInfo> mergeInfos;
+    public final List<AttributeDiffInfo> conflictInfos;
+    public final List<AttributeDiffInfo> permissionViolations;
 
     @JsonCreator
-    MergeDiffInfo(){
+    public MergeDiffInfo(
+            @JsonProperty("mergeInfos")List<AttributeDiffInfo> mergeInfos,
+            @JsonProperty("conflictInfos")List<AttributeDiffInfo> conflictInfos,
+            @JsonProperty("permissionViolations")List<AttributeDiffInfo> permissionViolations){
+        this.mergeInfos=mergeInfos;
+        this.conflictInfos=conflictInfos;
+        this.permissionViolations = permissionViolations;
+    }
 
+    @JsonIgnore
+    public int getConflictCount() {
+        return conflictInfos.size();
     }
 
     @JsonIgnore
@@ -26,4 +32,13 @@ public class MergeDiffInfo {
         return conflictInfos.isEmpty();
     }
 
+    @JsonIgnore
+    public boolean hasNoPermissionViolation() {
+        return permissionViolations.isEmpty();
+    }
+
+    @JsonIgnore
+    public boolean successfullyMerged() {
+        return hasNoConflicts() && hasNoPermissionViolation();
+    }
 }

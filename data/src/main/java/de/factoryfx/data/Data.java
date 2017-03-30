@@ -25,8 +25,8 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.google.common.base.Strings;
 import de.factoryfx.data.attribute.Attribute;
 import de.factoryfx.data.attribute.AttributeChangeListener;
+import de.factoryfx.data.merge.AttributeDiffInfo;
 import de.factoryfx.data.merge.MergeResult;
-import de.factoryfx.data.merge.MergeResultEntry;
 import de.factoryfx.data.merge.attribute.AttributeMergeHelper;
 import de.factoryfx.data.validation.AttributeValidation;
 import de.factoryfx.data.validation.Validation;
@@ -257,19 +257,22 @@ public class Data {
     }
 
     @SuppressWarnings("unchecked")
-    private void merge(Data originalValue, Data newValue, MergeResult mergeResult) {
+    private void merge(Data originalValue, Data newValue, MergeResult mergeResult, Function<String,Boolean> permissionChecker) {
         this.visitAttributesTripleFlat(originalValue, newValue, (currentAttribute, originalAttribute, newAttribute) -> {
             AttributeMergeHelper<?> attributeMergeHelper = currentAttribute.internal_createMergeHelper();
             if (attributeMergeHelper!=null){
-                boolean hasConflict = attributeMergeHelper.hasConflict(originalAttribute, newAttribute);
-                if (hasConflict) {
-                    MergeResultEntry mergeResultEntry = new MergeResultEntry(Data.this.internal.getDisplayText(), currentAttribute, Optional.of(newAttribute));
-                    mergeResult.addConflictInfos(mergeResultEntry);
+                final AttributeDiffInfo attributeDiffInfo = new AttributeDiffInfo(Data.this.internal.getDisplayText(), currentAttribute, newAttribute);
+                if (attributeMergeHelper.hasConflict(originalAttribute, newAttribute)) {
+                    mergeResult.addConflictInfo(attributeDiffInfo);
                 } else {
                     if (attributeMergeHelper.isMergeable(originalAttribute, newAttribute)) {
-                        MergeResultEntry mergeResultEntry = new MergeResultEntry(Data.this.internal.getDisplayText(),currentAttribute, Optional.of(newAttribute));
-                        mergeResult.addMergeExecutions(() -> attributeMergeHelper.merge(originalAttribute, newAttribute));
-                        mergeResult.addMergeInfo(mergeResultEntry);
+                        final String permission = currentAttribute.metadata.permission;
+                        if (permission==null || permissionChecker.apply(permission)){
+                            mergeResult.addMergeInfo(attributeDiffInfo);
+                            mergeResult.addMergeExecutions(() -> attributeMergeHelper.merge(originalAttribute, newAttribute));
+                        } else {
+                            mergeResult.addPermissionViolationInfo(attributeDiffInfo);
+                        }
                     }
                 }
             }
@@ -632,8 +635,8 @@ public class Data {
             return data.validateFlatMapped();
         }
 
-        public void merge(Data originalValue, Data newValue, MergeResult mergeResult) {
-            data.merge(originalValue,newValue,mergeResult);
+        public void merge(Data originalValue, Data newValue, MergeResult mergeResult, Function<String,Boolean> permissionChecker) {
+            data.merge(originalValue,newValue,mergeResult,permissionChecker);
         }
         public List<Data> getPathFromRoot() {
             return data.root.getMassPathTo(data.root.getChildToParentMap(data.root.collectChildrenDeep()), data);
