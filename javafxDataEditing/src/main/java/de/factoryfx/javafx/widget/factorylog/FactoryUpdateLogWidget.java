@@ -1,5 +1,6 @@
 package de.factoryfx.javafx.widget.factorylog;
 
+import java.util.Objects;
 import java.util.Set;
 import java.util.function.Consumer;
 
@@ -92,6 +93,7 @@ public class FactoryUpdateLogWidget implements Widget {
     }
 
     private Node createTable(Set<FactoryLogEntry>  items){
+        items.removeIf(Objects::isNull);
         final TableView<FactoryLogEntry> tableView = new TableView<>();
         tableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         tableView.getItems().addAll(items);
