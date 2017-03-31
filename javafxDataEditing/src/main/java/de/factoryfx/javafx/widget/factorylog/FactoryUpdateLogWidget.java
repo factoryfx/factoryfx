@@ -98,12 +98,12 @@ public class FactoryUpdateLogWidget implements Widget {
         tableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         tableView.getItems().addAll(items);
         final TableColumn<FactoryLogEntry, String> name = new TableColumn<>("Factory");
-        name.setCellValueFactory(param -> new SimpleStringProperty(param == null || param.getValue() == null?"":param.getValue().displayText));
+        name.setCellValueFactory(param -> new SimpleStringProperty(param.getValue().displayText));
         tableView.getColumns().add(name);
 
         for (FactoryLogEntryEventType type: FactoryLogEntryEventType.values()){
             final TableColumn<FactoryLogEntry, String> typ = new TableColumn<>(type.toString());
-            typ.setCellValueFactory(param -> new SimpleStringProperty(param == null?"":getTypeText(param.getValue(),type)));
+            typ.setCellValueFactory(param -> new SimpleStringProperty(getTypeText(param.getValue(),type)));
             tableView.getColumns().add(typ);
         }
         TableControlWidget<FactoryLogEntry> tableControlWidget = new TableControlWidget<>(tableView,uniformDesign);
