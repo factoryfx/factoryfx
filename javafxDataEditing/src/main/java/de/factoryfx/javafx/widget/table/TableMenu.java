@@ -1,5 +1,10 @@
 package de.factoryfx.javafx.widget.table;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.StandardOpenOption;
+
 import de.factoryfx.javafx.util.UniformDesign;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
@@ -14,6 +19,8 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.input.KeyEvent;
+import javafx.stage.FileChooser;
+import javafx.stage.Window;
 import org.controlsfx.glyphfont.FontAwesome;
 
 public class TableMenu<T> {
@@ -42,12 +49,18 @@ public class TableMenu<T> {
 
         MenuItem export = new MenuItem("Copy table (csv)",uniformDesign.createIcon(FontAwesome.Glyph.TABLE));
         export.setOnAction(event -> {
-            exportTable(tableView);
+            exportTableToClipboard(createCsvFromTable(tableView));
+        });
+
+        MenuItem fileExport = new MenuItem("Save table (csv)",uniformDesign.createIcon(FontAwesome.Glyph.FILE));
+        fileExport.setOnAction(event -> {
+            exportTableToFile(createCsvFromTable(tableView),tableView.getScene().getWindow());
         });
 
         ContextMenu menu = new ContextMenu();
         menu.getItems().add(item);
         menu.getItems().add(export);
+        menu.getItems().add(fileExport);
         tableView.setContextMenu(menu);
         return tableView;
     }
@@ -69,13 +82,33 @@ public class TableMenu<T> {
                 "\"";
     }
 
-    private void exportTable(final TableView<?> tableView) {
-        StringBuilder clipboardString = new StringBuilder();
+    private void exportTableToClipboard(String csvString) {
+        final ClipboardContent content = new ClipboardContent();
+        content.put(DataFormat.PLAIN_TEXT, csvString);
+        Clipboard.getSystemClipboard().setContent(content);
+    }
+
+    private void exportTableToFile(String csvString, Window ownerWindow) {
+        FileChooser fileChooser = new FileChooser();
+        FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("CSV files (*.csv)", "*.csv");
+        fileChooser.getExtensionFilters().add(extFilter);
+        File file = fileChooser.showSaveDialog(ownerWindow);
+        if(file != null){
+            try {
+                Files.write( file.toPath(), csvString.getBytes(), StandardOpenOption.CREATE);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
+    private String createCsvFromTable(TableView<?> tableView) {
+        StringBuilder result = new StringBuilder();
 
         for (TableColumn<?, ?> column : tableView.getColumns()) {
-            clipboardString.append(escapeCsvString(column.getText())).append("\t");
+            result.append(escapeCsvString(column.getText())).append("\t");
         }
-        clipboardString.append("\n");
+        result.append("\n");
 
         for (int i = 0; i < tableView.getItems().size(); i++) {
             for (TableColumn<?, ?> column : tableView.getColumns()) {
@@ -84,16 +117,11 @@ public class TableMenu<T> {
                 if (cellData != null) {
                     data = cellData.toString();
                 }
-                clipboardString.append(escapeCsvString(data)).append("\t");
+                result.append(escapeCsvString(data)).append("\t");
             }
-            clipboardString.append("\n");
+            result.append("\n");
         }
-
-        final ClipboardContent content = new ClipboardContent();
-        content.put(DataFormat.PLAIN_TEXT, clipboardString.toString());
-        Clipboard.getSystemClipboard().setContent(content);
-
+        return result.toString();
     }
-
 
 }

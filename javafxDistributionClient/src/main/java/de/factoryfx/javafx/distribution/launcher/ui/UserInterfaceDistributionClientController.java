@@ -149,6 +149,7 @@ public class UserInterfaceDistributionClientController {
         WebTarget webResource = client.target(checkVersionUri);
         Response response = webResource.request(MediaType.TEXT_PLAIN).get();
         if (response.getStatus() != 200) {
+            progress.setProgress(0);
             throw new HttpStatusException(response.getStatus(),"Received http status code " + response.getStatus() + "\n" +checkVersionUri+"\n" + response.readEntity(String.class));
         }
         boolean needUpdate = Boolean.parseBoolean(response.readEntity(String.class));

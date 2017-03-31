@@ -70,6 +70,8 @@ public class RestResource<L,V,T extends FactoryBase<L,V>> {
     private final List<GuiView<?>> views;
     private final SessionStorage sessionStorage;
 
+    //TODO use application server resource for user managment etc
+
     /**
      * @param applicationServer
      * @param appFactoryClasses the factory class from application
