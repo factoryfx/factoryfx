@@ -101,7 +101,7 @@ public class FactoryUpdateLogWidget implements Widget {
 
         for (FactoryLogEntryEventType type: FactoryLogEntryEventType.values()){
             final TableColumn<FactoryLogEntry, String> typ = new TableColumn<>(type.toString());
-            typ.setCellValueFactory(param -> new SimpleStringProperty(getTypeText(param.getValue(),type)));
+            typ.setCellValueFactory(param -> new SimpleStringProperty(param == null?"":getTypeText(param.getValue(),type)));
             tableView.getColumns().add(typ);
         }
         TableControlWidget<FactoryLogEntry> tableControlWidget = new TableControlWidget<>(tableView,uniformDesign);
