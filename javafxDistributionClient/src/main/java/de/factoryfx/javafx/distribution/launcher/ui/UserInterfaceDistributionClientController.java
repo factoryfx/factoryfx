@@ -187,6 +187,7 @@ public class UserInterfaceDistributionClientController {
                     });
                 } catch (IOException e) {
                     Platform.runLater(()-> rootPane.setDisable(false));
+                    progress.setProgress(0);
                     throw new RuntimeException(e);
                 }
 
