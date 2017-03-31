@@ -2,6 +2,7 @@ package de.factoryfx.javafx.widget.table;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
 
@@ -95,7 +96,7 @@ public class TableMenu<T> {
         File file = fileChooser.showSaveDialog(ownerWindow);
         if(file != null){
             try {
-                Files.write( file.toPath(), csvString.getBytes(), StandardOpenOption.CREATE);
+                Files.write( file.toPath(), csvString.getBytes(StandardCharsets.UTF_8), StandardOpenOption.CREATE);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
