@@ -87,11 +87,11 @@ public class FactoryManager<L,V,T extends FactoryBase<L,V>> {
 
     /** get the merge result  but don't execute the merge and liveObjects updates*/
     @SuppressWarnings("unchecked")
-    public MergeDiffInfo simulateUpdate(T commonVersion , T newVersion){
+    public MergeDiffInfo simulateUpdate(T commonVersion , T newVersion,  Function<String, Boolean> permissionChecker){
         newVersion.internalFactory().loopDetector();
 
         DataMerger dataMerger = new DataMerger(currentFactoryRoot, commonVersion, newVersion);
-        return dataMerger.createMergeResult((permission)->true);
+        return dataMerger.createMergeResult(permissionChecker);
     }
 
     private void destroyFactories(LinkedHashSet<FactoryBase<?,V>> previousFactories, Set<FactoryBase<?,V>> newFactories){

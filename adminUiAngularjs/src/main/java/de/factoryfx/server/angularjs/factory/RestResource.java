@@ -254,7 +254,8 @@ public class RestResource<L,V,T extends FactoryBase<L,V>> {
         StageResponse response=new StageResponse();
         FactoryAndStorageMetadata<T> currentEditingFactoryRoot = getCurrentEditingFactory();
 
-        response.mergeDiffInfo=applicationServer.simulateUpdateCurrentFactory(currentEditingFactoryRoot);
+        //TODO permission check
+        response.mergeDiffInfo=applicationServer.simulateUpdateCurrentFactory(currentEditingFactoryRoot, (permission)->true);
         response.mergeDiff=new WebGuiMergeDiff(response.mergeDiffInfo,getUserLocale());
 
         for (Data factoryBase: currentEditingFactoryRoot.root.internal().collectChildrenDeep()){

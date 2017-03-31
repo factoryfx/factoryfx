@@ -29,6 +29,7 @@ import javafx.scene.control.Tooltip;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.HBox;
+import javafx.stage.Window;
 import org.controlsfx.glyphfont.FontAwesome;
 
 public class DataListEditWidget<T extends Data> implements Widget {
@@ -101,7 +102,7 @@ public class DataListEditWidget<T extends Data> implements Widget {
 
         Button deleteButton = new Button();
         uniformDesign.addDangerIcon(deleteButton,FontAwesome.Glyph.TIMES);
-        deleteButton.setOnAction(event -> deleteSelected());
+        deleteButton.setOnAction(event -> deleteSelected(deleteButton.getScene().getWindow()));
         deleteButton.disableProperty().bind(tableView.getSelectionModel().selectedItemProperty().isNull().or(new SimpleBooleanProperty(!isUserEditable)));
 
         Button moveUpButton = new Button();
@@ -155,16 +156,17 @@ public class DataListEditWidget<T extends Data> implements Widget {
 
         tableView.addEventHandler(KeyEvent.KEY_PRESSED, event -> {
             if (event.getCode()== KeyCode.DELETE){
-                deleteSelected();
+                deleteSelected(tableView.getScene().getWindow());
             }
         });
         return buttons;
     }
 
-    private void deleteSelected() {
+    private void deleteSelected(Window owner) {
         boolean reallyDelete=true;
         if (uniformDesign.isAskBeforeDelete()){
             Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+            alert.initOwner(owner);
             alert.setTitle(uniformDesign.getText(deleteConfirmationTitle));
             alert.setHeaderText(uniformDesign.getText(deleteConfirmationHeader));
             alert.setContentText(uniformDesign.getText(deleteConfirmationContent));

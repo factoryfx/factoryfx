@@ -40,9 +40,9 @@ public class ApplicationServer<L,V,T extends FactoryBase<L,V>> {
         return factoryLog;
     }
 
-    public MergeDiffInfo simulateUpdateCurrentFactory(FactoryAndStorageMetadata<T> possibleUpdate){
+    public MergeDiffInfo simulateUpdateCurrentFactory(FactoryAndStorageMetadata<T> possibleUpdate,  Function<String, Boolean> permissionChecker){
         T commonVersion = factoryStorage.getHistoryFactory(possibleUpdate.metadata.baseVersionId);
-        return factoryManager.simulateUpdate(commonVersion , possibleUpdate.root);
+        return factoryManager.simulateUpdate(commonVersion , possibleUpdate.root, permissionChecker);
     }
 
     /** creates a new factory update which is ready for editing mainly assign the right ids*/

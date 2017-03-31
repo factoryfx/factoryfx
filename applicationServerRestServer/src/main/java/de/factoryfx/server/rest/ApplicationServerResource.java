@@ -51,12 +51,17 @@ public class ApplicationServerResource<V,L,T extends FactoryBase<L,V>>  {
     @Produces(MediaType.APPLICATION_JSON)
     @Path("updateCurrentFactory")
     public FactoryUpdateLog updateCurrentFactory(UserAwareRequest<FactoryAndStorageMetadata> update) {
-        final Optional<AuthorizedUser> authenticate = authenticate(update);
+        Function<String, Boolean> permissionChecker = authenticateAndGetPermissionChecker(update);
+        return applicationServer.updateCurrentFactory(new FactoryAndStorageMetadata<>(update.request.root.internal().prepareUsableCopy(),update.request.metadata),permissionChecker);
+    }
+
+    private Function<String, Boolean> authenticateAndGetPermissionChecker(UserAwareRequest<?> request) {
+        final Optional<AuthorizedUser> authenticate = authenticate(request);
         Function<String,Boolean> permissionChecker = (permission)->true;
         if (authenticate.isPresent()){
             permissionChecker = (permission)->authenticate.get().checkPermissionValid(permission);
         }
-        return applicationServer.updateCurrentFactory(new FactoryAndStorageMetadata<>(update.request.root.internal().prepareUsableCopy(),update.request.metadata),permissionChecker);
+        return permissionChecker;
     }
 
     @POST
@@ -64,8 +69,8 @@ public class ApplicationServerResource<V,L,T extends FactoryBase<L,V>>  {
     @Produces(MediaType.APPLICATION_JSON)
     @Path("simulateUpdateCurrentFactory")
     public MergeDiffInfo simulateUpdateCurrentFactory(UserAwareRequest<FactoryAndStorageMetadata> request) {
-        authenticate(request);
-        return applicationServer.simulateUpdateCurrentFactory(new FactoryAndStorageMetadata<>(request.request.root.internal().prepareUsableCopy(),request.request.metadata));
+        Function<String, Boolean> permissionChecker = authenticateAndGetPermissionChecker(request);
+        return applicationServer.simulateUpdateCurrentFactory(new FactoryAndStorageMetadata<>(request.request.root.internal().prepareUsableCopy(),request.request.metadata),permissionChecker);
     }
 
     @POST
