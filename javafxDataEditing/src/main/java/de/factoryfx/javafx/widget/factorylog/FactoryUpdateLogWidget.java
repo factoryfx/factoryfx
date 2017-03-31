@@ -96,7 +96,7 @@ public class FactoryUpdateLogWidget implements Widget {
         tableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         tableView.getItems().addAll(items);
         final TableColumn<FactoryLogEntry, String> name = new TableColumn<>("Factory");
-        name.setCellValueFactory(param -> new SimpleStringProperty(param.getValue().displayText));
+        name.setCellValueFactory(param -> new SimpleStringProperty(param == null || param.getValue() == null?"":param.getValue().displayText));
         tableView.getColumns().add(name);
 
         for (FactoryLogEntryEventType type: FactoryLogEntryEventType.values()){
