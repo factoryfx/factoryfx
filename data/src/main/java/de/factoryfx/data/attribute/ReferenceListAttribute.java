@@ -142,7 +142,7 @@ public class ReferenceListAttribute<T extends Data> extends Attribute<List<T>> i
             copyAttribute.set(get());
         } else {
             for (T item: get()){
-                final T itemCopy = item.internal().copy();
+                final T itemCopy = item.internal().semanticCopy();
                 if (itemCopy!=null){
                     copyAttribute.get().add(itemCopy);
                 }

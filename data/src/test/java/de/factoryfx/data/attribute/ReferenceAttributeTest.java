@@ -153,4 +153,26 @@ public class ReferenceAttributeTest {
     }
 
 
+    @Test
+    public void test_semanticcopy_self(){
+        ReferenceAttribute<ExampleFactoryA> attributeFrom =new ReferenceAttribute<>(ExampleFactoryA.class,new AttributeMetadata());
+        attributeFrom.setCopySemantic(CopySemantic.SELF);
+        attributeFrom.set(new ExampleFactoryA());
+        ReferenceAttribute<ExampleFactoryA> attributeTo =new ReferenceAttribute<>(ExampleFactoryA.class,new AttributeMetadata());
+        attributeFrom.internal_semanticCopyTo(attributeTo);
+        Assert.assertTrue("same reference",attributeFrom.get()==attributeTo.get());
+    }
+
+    @Test
+    public void test_semanticcopy_copy(){
+        ReferenceAttribute<ExampleFactoryA> attributeFrom =new ReferenceAttribute<>(ExampleFactoryA.class,new AttributeMetadata());
+        attributeFrom.setCopySemantic(CopySemantic.COPY);
+        attributeFrom.set(new ExampleFactoryA());
+        ReferenceAttribute<ExampleFactoryA> attributeTo =new ReferenceAttribute<>(ExampleFactoryA.class,new AttributeMetadata());
+        attributeFrom.internal_semanticCopyTo(attributeTo);
+        Assert.assertTrue("not same reference",attributeFrom.get()!=attributeTo.get());
+        Assert.assertNotEquals(attributeFrom.get().getId(),attributeTo.get().getId());
+    }
+
+
 }

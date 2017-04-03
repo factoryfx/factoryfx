@@ -314,6 +314,7 @@ public class Data {
         this.visitAttributesDualFlat(result, (thisAttribute, copyAttribute) -> {
             thisAttribute.internal_semanticCopyTo(copyAttribute);
         });
+        this.fixDuplicateObjects();
         return result;
     }
 

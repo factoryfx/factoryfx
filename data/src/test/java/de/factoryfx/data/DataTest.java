@@ -319,6 +319,38 @@ public class DataTest {
         Assert.assertNotEquals(exampleFactoryA.referenceAttribute.get().getId(), copy.referenceAttribute.get().getId());
     }
 
+    @Test
+    public void test_copy_semantic_copy_json_id_unique(){
+        ExampleFactoryA exampleFactoryA = new ExampleFactoryA();
+        exampleFactoryA.referenceListAttribute.add(new ExampleFactoryB());
+
+        exampleFactoryA.referenceAttribute.setCopySemantic(CopySemantic.COPY);
+        exampleFactoryA.referenceListAttribute.setCopySemantic(CopySemantic.COPY);
+
+        ExampleFactoryB copy =  exampleFactoryA.referenceListAttribute.get(0).utility().semanticCopy();
+        exampleFactoryA.referenceListAttribute.add(copy);
+
+        ObjectMapperBuilder.build().copy(exampleFactoryA);
+    }
+
+    @Test
+    public void test_copy_semantic_copy_json_id_unique_2(){
+        ExampleFactoryA factoryA = new ExampleFactoryA();
+        final ExampleFactoryB factoryB = new ExampleFactoryB();
+        factoryB.referenceAttributeC.set(new ExampleFactoryC());
+        factoryA.referenceListAttribute.add(factoryB);
+
+        factoryB.referenceAttributeC.setCopySemantic(CopySemantic.SELF);
+        factoryA.referenceAttribute.setCopySemantic(CopySemantic.SELF);
+        factoryA.referenceListAttribute.setCopySemantic(CopySemantic.SELF);
+
+        ExampleFactoryB copy =  factoryA.referenceListAttribute.get(0).utility().semanticCopy();
+        factoryA.referenceListAttribute.add(copy);
+
+        Assert.assertEquals(2, factoryA.referenceListAttribute.size());
+        ObjectMapperBuilder.build().copy(factoryA);
+    }
+
     @Ignore
     @Test
     public void test_iterate_performance(){
