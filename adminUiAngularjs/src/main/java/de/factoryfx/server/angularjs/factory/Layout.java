@@ -17,7 +17,7 @@ public class Layout {
         this.messages =messages;
     }
 //    public Layout(de.factoryfx.development.factory.WebGuiFactory webGuiFactory, Locale locale, UserManagement userManagement){
-//        title= webGuiFactory.title.getPreferred(locale);
+//        title= webGuiFactory.title.internal_getPreferred(locale);
 //        logoLarge= webGuiFactory.logoLarge.get();
 //        logoSmall= webGuiFactory.logoSmall.get();
 //        factoryEditorModel = new WebGuiFactoryEditorModel(webGuiFactory.editorModel.get(),locale);

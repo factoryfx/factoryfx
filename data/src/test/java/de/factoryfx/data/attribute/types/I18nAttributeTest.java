@@ -14,8 +14,8 @@ public class I18nAttributeTest {
     public void test_json(){
         I18nAttribute attribute= new I18nAttribute(new AttributeMetadata()).defaultValue(new LanguageText().en("eeeeeeeeeee").de("ddddddddddd"));
         I18nAttribute copy= ObjectMapperBuilder.build().copy(attribute);
-        Assert.assertEquals("eeeeeeeeeee",copy.get().getPreferred(Locale.ENGLISH));
-        Assert.assertEquals("ddddddddddd",copy.get().getPreferred(Locale.GERMAN));
+        Assert.assertEquals("eeeeeeeeeee",copy.get().internal_getPreferred(Locale.ENGLISH));
+        Assert.assertEquals("ddddddddddd",copy.get().internal_getPreferred(Locale.GERMAN));
     }
 
 }

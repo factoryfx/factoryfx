@@ -54,7 +54,7 @@ public class LayoutFactory extends SimpleFactoryBase<Layout,Void> {
         HashMap<String,String> messages=new HashMap<>();
         internal().visitAttributesFlat((attributeVariableName, attribute) -> {
             if (attribute instanceof I18nAttribute) {
-                messages.put(attributeVariableName,((I18nAttribute) attribute).get().getPreferred(Locale.ENGLISH));
+                messages.put(attributeVariableName,((I18nAttribute) attribute).get().internal_getPreferred(Locale.ENGLISH));
             }
         });
 

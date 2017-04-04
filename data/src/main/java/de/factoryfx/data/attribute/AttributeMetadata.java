@@ -19,22 +19,22 @@ public class AttributeMetadata {
 
 
     public AttributeMetadata labelText(String labelText){
-        this.labelText.put(Locale.ENGLISH,labelText);
+        this.labelText.internal_put(Locale.ENGLISH,labelText);
         return this;
     }
 
     public AttributeMetadata labelText(String labelText, Locale locale){
-        this.labelText.put(locale,labelText);
+        this.labelText.internal_put(locale,labelText);
         return this;
     }
 
     public AttributeMetadata de(String labelText){
-        this.labelText.put(Locale.GERMAN,labelText);
+        this.labelText.internal_put(Locale.GERMAN,labelText);
         return this;
     }
 
     public AttributeMetadata en(String labelText){
-        this.labelText.put(Locale.ENGLISH,labelText);
+        this.labelText.internal_put(Locale.ENGLISH,labelText);
         return this;
     }
 

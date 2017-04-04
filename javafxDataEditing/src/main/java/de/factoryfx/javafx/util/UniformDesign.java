@@ -91,15 +91,15 @@ public class UniformDesign {
     }
 
     public String getLabelText(Attribute<?> attribute) {
-        return attribute.metadata.labelText.getPreferred(locale);
+        return attribute.metadata.labelText.internal_getPreferred(locale);
     }
 
     public String getText(LanguageText languageText) {
-        return languageText.getPreferred(locale);
+        return languageText.internal_getPreferred(locale);
     }
 
     public String getText(I18nAttribute attribute) {
-        return attribute.get().getPreferred(locale);
+        return attribute.get().internal_getPreferred(locale);
     }
 
     public void setBackGroundColor(Button button, Color color) {

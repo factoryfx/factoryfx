@@ -192,7 +192,7 @@ public class Data {
     private void setNewInstanceSupplier(Supplier<Data> newInstanceSupplier){
         this.newInstanceSupplier=newInstanceSupplier;
     }
-    private Data newInstance() {
+    Data newInstance() {
         return newInstanceSupplier.get();
     }
 

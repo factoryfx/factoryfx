@@ -5,14 +5,18 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.Supplier;
 
 import de.factoryfx.data.Data;
+import de.factoryfx.data.DynamicData;
 import de.factoryfx.data.attribute.Attribute;
 import de.factoryfx.data.attribute.AttributeChangeListener;
+import de.factoryfx.data.attribute.AttributeMetadata;
 import de.factoryfx.data.attribute.WeakAttributeChangeListener;
+import de.factoryfx.data.attribute.types.StringAttribute;
 import de.factoryfx.data.validation.ValidationError;
 import de.factoryfx.javafx.editor.attribute.AttributeEditor;
 import de.factoryfx.javafx.editor.attribute.AttributeEditorFactory;
@@ -35,6 +39,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
@@ -145,6 +150,26 @@ public class DataEditor implements Widget {
         return visCustomizer.apply(defaultVis,data);
     }
 
+    private Node addDynamicDataEditor(Node defaultVis, DynamicData data){
+        final HBox editRow = new HBox(3);
+        editRow.setAlignment(Pos.CENTER_LEFT);
+        editRow.getChildren().add(new Label("Label"));
+        final TextField textField = new TextField();
+        editRow.getChildren().add(textField);
+        final Button add = new Button("add Attribute");
+        add.setOnAction(event -> {
+            data.addAttribute(new StringAttribute(new AttributeMetadata().labelText(textField.getText())));
+            dataChangeListener.changed(null,data,data);
+            data.setId(UUID.randomUUID().toString());//cause type has changed
+        });
+        editRow.getChildren().add(add);
+
+        final BorderPane borderPane = new BorderPane();
+        borderPane.setCenter(defaultVis);
+        borderPane.setBottom(editRow);;
+        return borderPane;
+    }
+
     @Override
     @SuppressWarnings("unchecked")
     public Node createContent() {
@@ -155,6 +180,9 @@ public class DataEditor implements Widget {
         }
 
         BiConsumer<Node,Data> updateVis= (defaultVis, data) -> {
+            if (data instanceof DynamicData){
+                defaultVis = addDynamicDataEditor(defaultVis,(DynamicData)data);
+            }
             result.setCenter(customizeVis(defaultVis,data));
         };
 

@@ -20,7 +20,6 @@ public abstract class Attribute<T>{
     @JsonIgnore
     private final List<Validation<T>> validations = new ArrayList<>();
 
-
     public Attribute(AttributeMetadata attributeMetadata) {
         this.metadata=attributeMetadata;
     }

@@ -61,11 +61,11 @@ public class DataTest {
 
         readed = readed.internal().prepareUsableCopy();
 
-        Assert.assertEquals("ExampleA1",readed.stringAttribute.metadata.labelText.getPreferred(Locale.ENGLISH));
-        Assert.assertEquals("ExampleA2",readed.referenceAttribute.metadata.labelText.getPreferred(Locale.ENGLISH));
-        Assert.assertEquals("ExampleA3",readed.referenceListAttribute.metadata.labelText.getPreferred(Locale.ENGLISH));
-        Assert.assertEquals("ExampleB1",readed.referenceAttribute.get().stringAttribute.metadata.labelText.getPreferred(Locale.ENGLISH));
-        Assert.assertEquals("ExampleB1",readed.referenceListAttribute.get(0).stringAttribute.metadata.labelText.getPreferred(Locale.ENGLISH));
+        Assert.assertEquals("ExampleA1",readed.stringAttribute.metadata.labelText.internal_getPreferred(Locale.ENGLISH));
+        Assert.assertEquals("ExampleA2",readed.referenceAttribute.metadata.labelText.internal_getPreferred(Locale.ENGLISH));
+        Assert.assertEquals("ExampleA3",readed.referenceListAttribute.metadata.labelText.internal_getPreferred(Locale.ENGLISH));
+        Assert.assertEquals("ExampleB1",readed.referenceAttribute.get().stringAttribute.metadata.labelText.internal_getPreferred(Locale.ENGLISH));
+        Assert.assertEquals("ExampleB1",readed.referenceListAttribute.get(0).stringAttribute.metadata.labelText.internal_getPreferred(Locale.ENGLISH));
 
         Assert.assertEquals(exampleFactoryA.getId(),readed.getId());
     }

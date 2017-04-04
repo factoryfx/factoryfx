@@ -57,6 +57,6 @@ public class I18nAttribute extends ValueAttribute<LanguageText> {
 
 
     public String getPreferred(Locale locale) {
-        return get().getPreferred(locale);
+        return get().internal_getPreferred(locale);
     }
 }

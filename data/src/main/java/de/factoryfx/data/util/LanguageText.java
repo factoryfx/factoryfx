@@ -17,41 +17,45 @@ public class LanguageText {
 
 
     public LanguageText en(String text) {
-        put(Locale.ENGLISH,text);
+        internal_put(Locale.ENGLISH,text);
         return this;
     }
 
     public LanguageText de(String text) {
-        put(Locale.GERMAN,text);
+        internal_put(Locale.GERMAN,text);
         return this;
     }
 
     public LanguageText es(String text) {
-        put(new Locale("es", "ES"),text);
+        internal_put(new Locale("es", "ES"),text);
         return this;
     }
 
     public LanguageText fr(String text) {
-        put(Locale.FRANCE,text);
+        internal_put(Locale.FRANCE,text);
         return this;
     }
 
     public LanguageText it(String text) {
-        put(Locale.ITALIAN,text);
+        internal_put(Locale.ITALIAN,text);
         return this;
     }
 
     public LanguageText pt(String text) {
-        put(new Locale("pt", "PT"),text);
+        internal_put(new Locale("pt", "PT"),text);
         return this;
     }
 
-    public String getText(Locale locale) {
+    public void internal_set(LanguageText label) {
+        label.texts=new HashMap<>(label.texts);
+    }
+
+    public String internal_getText(Locale locale) {
         return texts.get(locale);
     }
 
     /** get the text in the locale if possible else return the text in a random(probably only english) locale or null if no text avaible*/
-    public String getPreferred(Locale locale) {
+    public String internal_getPreferred(Locale locale) {
         String text = texts.get(locale);
         if (text==null){
             if (texts.isEmpty()){
@@ -62,7 +66,7 @@ public class LanguageText {
         return text;
     }
 
-    public LanguageText put(Locale locale, String text) {
+    public LanguageText internal_put(Locale locale, String text) {
         texts.put(locale, text);
         return this;
     }

@@ -7,6 +7,7 @@ import java.util.UUID;
 import java.util.regex.Pattern;
 
 import de.factoryfx.data.Data;
+import de.factoryfx.data.DynamicData;
 import de.factoryfx.data.attribute.Attribute;
 import de.factoryfx.data.attribute.AttributeMetadata;
 import de.factoryfx.data.attribute.ReferenceAttribute;
@@ -40,6 +41,8 @@ import javafx.scene.layout.BorderPane;
 import javafx.util.Pair;
 
 public class ExampleData1 extends Data {
+    public final ReferenceAttribute<DynamicData> dynamicDataAttribute = new ReferenceAttribute<>(DynamicData.class,new AttributeMetadata().en("dynamicDataAttribute").de("dynamicDataAttribute de"));
+
     public final EncryptedStringAttribute encryptedStringAttribute=new EncryptedStringAttribute(new AttributeMetadata().en("encryptedStringAttribute").de("StringAttribute de"));
 
     public final StringAttribute stringAttribute=new StringAttribute(new AttributeMetadata().en("StringAttribute gajsd jgsdajh gjasdja jhsadgjg ghf hgf hgfhff hgfhgf hf").de("StringAttribute de")).validation(new StringRequired()).defaultValue("blub");

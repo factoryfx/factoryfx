@@ -20,10 +20,10 @@ public class GuiView<T extends FactoryBase> {
 
     @SuppressWarnings("unchecked")//TODO fix generics
     public WebGuiView createWebGuiView(FactoryBase root, Locale locale){
-        return new WebGuiView(id,title.getPreferred(locale),viewDataFromRootProvider.apply((T)root));
+        return new WebGuiView(id,title.internal_getPreferred(locale),viewDataFromRootProvider.apply((T)root));
     }
 
     public ViewHeader createHeader(Locale locale){
-        return new ViewHeader(id,title.getPreferred(locale));
+        return new ViewHeader(id,title.internal_getPreferred(locale));
     }
 }

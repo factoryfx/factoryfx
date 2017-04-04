@@ -14,7 +14,7 @@ public class WebGuiMergeDiffInfo {
     public WebGuiMergeDiffInfo(AttributeDiffInfo info, Locale locale){
         previousValueDisplayText=info.previousValueDisplayText;
         newValueValueDisplayText=info.newValueValueDisplayText;
-        fieldDisplayText=info.fieldDisplayText.getPreferred(locale);
+        fieldDisplayText=info.fieldDisplayText.internal_getPreferred(locale);
         parentDisplayText=info.previousValueDisplayText;
     }
 }
