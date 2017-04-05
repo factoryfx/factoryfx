@@ -16,7 +16,7 @@ public class FactoryEditViewFactory<V,R extends FactoryBase<?,V>> extends Widget
     public final FactoryReferenceAttribute<FactoryEditManager, FactoryEditManagerFactory<V,R>> factoryEditManager = new FactoryReferenceAttribute<>((new AttributeMetadata()).de("uniformDesign").en("uniformDesign"),FactoryEditManagerFactory.class);
     public final FactoryReferenceAttribute<LongRunningActionExecutor, LongRunningActionExecutorFactory<Void>> longRunningActionExecutor = new FactoryReferenceAttribute<>((new AttributeMetadata()).de("items").en("items"), LongRunningActionExecutorFactory.class);
     public final FactoryReferenceAttribute<UniformDesign, UniformDesignFactory<Void>> uniformDesign = new FactoryReferenceAttribute<>((new AttributeMetadata()).de("uniformDesign").en("uniformDesign"), UniformDesignFactory.class);
-    public final FactoryReferenceAttribute<DataEditor,? extends SimpleFactoryBase<DataEditor,Void>> dataEditorFactory = new FactoryReferenceAttribute<>(new AttributeMetadata(),SimpleFactoryBase.class);
+    public final FactoryReferenceAttribute<DataEditor,? super SimpleFactoryBase<DataEditor,Void>> dataEditorFactory = new FactoryReferenceAttribute<>(new AttributeMetadata(),SimpleFactoryBase.class);
 
     public final FactoryReferenceAttribute<FactoryAwareWidget,FactoryAwareWidgetFactory> contentWidgetFactory = new FactoryReferenceAttribute<>(FactoryAwareWidgetFactory.class,new AttributeMetadata());
 
