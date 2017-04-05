@@ -14,11 +14,11 @@ import com.google.common.hash.Hashing;
 import com.google.common.io.Files;
 
 @Path("/download")
-public class DownloadResource {
+public class ApplicationDownloadResource {
 
     final File guiZipFile;
 
-    public DownloadResource(File guiZipFile) {
+    public ApplicationDownloadResource(File guiZipFile) {
         this.guiZipFile = guiZipFile;
     }
 
