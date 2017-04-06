@@ -21,6 +21,7 @@ public class ValueAttribute<T> extends Attribute<T> {
         this.dataType=dataType;
     }
 
+
     @Override
     public void internal_collectChildren(Set<Data> allModelEntities) {
         //nothing
@@ -111,5 +112,6 @@ public class ValueAttribute<T> extends Attribute<T> {
     protected void setValue(T value) {
         set(value);
     }
+
 
 }
