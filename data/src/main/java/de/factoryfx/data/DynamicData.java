@@ -3,9 +3,11 @@ package de.factoryfx.data;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.UUID;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.google.common.base.Strings;
 import com.sun.javafx.collections.ObservableListWrapper;
 import de.factoryfx.data.attribute.Attribute;
 import de.factoryfx.data.attribute.AttributeMetadata;
@@ -76,6 +78,9 @@ public class DynamicData extends Data{
     }
 
     public String toIdentifier(String value) {//TODO for js?
+        if (Strings.isNullOrEmpty(value)) {
+            return UUID.randomUUID().toString();
+        }
         StringBuilder result = new StringBuilder();
         if(!Character.isJavaIdentifierStart(value.charAt(0))) {
             result.append("_");
