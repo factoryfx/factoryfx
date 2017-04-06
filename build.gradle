@@ -242,3 +242,19 @@ project(':javafxDistributionClient') {
     }
 
 }
+
+project(':javascript') {
+    dependencies {
+        compile project(":data")
+        compile group: 'com.google.javascript', name: 'closure-compiler', version: 'v20170218'
+    }
+}
+
+project(':javascriptDataEditing') {
+    dependencies {
+        compile project(":javascript")
+        compile project(":javafxDataEditing")
+        compile group: 'com.google.javascript', name: 'closure-compiler', version: 'v20170218'
+    }
+}
+
