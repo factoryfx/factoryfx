@@ -2,7 +2,7 @@ package de.factoryfx.data;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
+import java.util.Locale;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -72,7 +72,22 @@ public class DynamicData extends Data{
 
 
     public void addAttribute(ValueAttribute<?> attribute){
-        dynamicDataAttributeAndNames.add(new AttributeAndName(attribute, UUID.randomUUID().toString()));
+        dynamicDataAttributeAndNames.add(new AttributeAndName(attribute, toIdentifier(attribute.metadata.labelText.internal_getPreferred(Locale.ENGLISH))));
+    }
+
+    public String toIdentifier(String value) {//TODO for js?
+        StringBuilder result = new StringBuilder();
+        if(!Character.isJavaIdentifierStart(value.charAt(0))) {
+            result.append("_");
+        }
+        for (char c : value.toCharArray()) {
+            if(!Character.isJavaIdentifierPart(c)) {
+                result.append("_");
+            } else {
+                result.append(c);
+            }
+        }
+        return result.toString();
     }
 
 }

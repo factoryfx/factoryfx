@@ -15,8 +15,14 @@ import de.factoryfx.data.DynamicData;
 import de.factoryfx.data.attribute.Attribute;
 import de.factoryfx.data.attribute.AttributeChangeListener;
 import de.factoryfx.data.attribute.AttributeMetadata;
+import de.factoryfx.data.attribute.ValueAttribute;
 import de.factoryfx.data.attribute.WeakAttributeChangeListener;
+import de.factoryfx.data.attribute.types.BigDecimalAttribute;
+import de.factoryfx.data.attribute.types.IntegerAttribute;
+import de.factoryfx.data.attribute.types.LocalDateAttribute;
+import de.factoryfx.data.attribute.types.LongAttribute;
 import de.factoryfx.data.attribute.types.StringAttribute;
+import de.factoryfx.data.attribute.types.StringListAttribute;
 import de.factoryfx.data.validation.ValidationError;
 import de.factoryfx.javafx.editor.attribute.AttributeEditor;
 import de.factoryfx.javafx.editor.attribute.AttributeEditorFactory;
@@ -35,6 +41,7 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
+import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Tab;
@@ -49,6 +56,7 @@ import javafx.scene.layout.RowConstraints;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.util.Pair;
+import javafx.util.StringConverter;
 import org.controlsfx.control.BreadCrumbBar;
 import org.controlsfx.glyphfont.FontAwesome;
 
@@ -150,19 +158,50 @@ public class DataEditor implements Widget {
         return visCustomizer.apply(defaultVis,data);
     }
 
+    private static class ValueAttributeCreator{
+        public final String name;
+        public final Supplier<ValueAttribute<?>> attributeCreator;
+
+        private ValueAttributeCreator(String name, Supplier<ValueAttribute<?>> attributeCreator) {
+            this.name = name;
+            this.attributeCreator = attributeCreator;
+        }
+    }
+
     private Node addDynamicDataEditor(Node defaultVis, DynamicData data){
         final HBox editRow = new HBox(3);
         editRow.setAlignment(Pos.CENTER_LEFT);
         editRow.getChildren().add(new Label("Label"));
         final TextField textField = new TextField();
         editRow.getChildren().add(textField);
-        final Button add = new Button("add Attribute");
-        add.setOnAction(event -> {
-            data.addAttribute(new StringAttribute(new AttributeMetadata().labelText(textField.getText())));
+
+        editRow.getChildren().add(new Label("Type"));
+        final ChoiceBox<ValueAttributeCreator> typeChooser = new ChoiceBox<>();
+        typeChooser.getItems().addAll(new ValueAttributeCreator("String",()->new StringAttribute(new AttributeMetadata().labelText(textField.getText()))));
+        typeChooser.getItems().addAll(new ValueAttributeCreator("Integer",()->new IntegerAttribute(new AttributeMetadata().labelText(textField.getText()))));
+        typeChooser.getItems().addAll(new ValueAttributeCreator("Long",()->new LongAttribute(new AttributeMetadata().labelText(textField.getText()))));
+        typeChooser.getItems().addAll(new ValueAttributeCreator("Stringlist",()->new StringListAttribute(new AttributeMetadata().labelText(textField.getText()))));
+        typeChooser.getItems().addAll(new ValueAttributeCreator("Bigdecimal",()->new BigDecimalAttribute(new AttributeMetadata().labelText(textField.getText()))));
+        typeChooser.getItems().addAll(new ValueAttributeCreator("LocalDate",()->new LocalDateAttribute(new AttributeMetadata().labelText(textField.getText()))));
+        typeChooser.setConverter(new StringConverter<ValueAttributeCreator>() {
+            @Override
+            public String toString(ValueAttributeCreator object) {
+                return object.name;
+            }
+            @Override
+            public ValueAttributeCreator fromString(String string) {return null;}
+        });
+        editRow.getChildren().add(typeChooser);
+
+        final Button addButton = new Button("add");
+        addButton.setOnAction(event -> {
+            data.addAttribute(typeChooser.getValue().attributeCreator.get());
             dataChangeListener.changed(null,data,data);
             data.setId(UUID.randomUUID().toString());//cause type has changed
         });
-        editRow.getChildren().add(add);
+
+        addButton.disableProperty().bind(textField.textProperty().isEmpty().or(typeChooser.valueProperty().isNull()));
+        editRow.getChildren().add(addButton);
 
         final BorderPane borderPane = new BorderPane();
         borderPane.setCenter(defaultVis);
