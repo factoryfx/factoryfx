@@ -6,11 +6,9 @@ import java.util.function.Function;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider;
 import de.factoryfx.data.jackson.ObjectMapperBuilder;
-import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.server.handler.ErrorHandler;
-import org.eclipse.jetty.server.handler.HandlerCollection;
 import org.eclipse.jetty.server.handler.gzip.GzipHandler;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
@@ -25,10 +23,9 @@ public class JettyServer {
         server=new org.eclipse.jetty.server.Server();
         connectors.forEach(serverServerConnectorFunction -> server.addConnector(serverServerConnectorFunction.apply(server)));
 
+
         ServletContextHandler contextHandler = new ServletContextHandler(ServletContextHandler.SESSIONS);
-
-        resources.forEach(jerseyResource -> contextHandler.addServlet( new ServletHolder(new ServletContainer(jerseySetup(jerseyResource))), "/*"));
-
+        contextHandler.addServlet( new ServletHolder(new ServletContainer(jerseySetup(resources))), "/*");
         ErrorHandler errorHandler = new ErrorHandler();
         errorHandler.setShowStacks(true);
         contextHandler.setErrorHandler(errorHandler);
@@ -42,15 +39,14 @@ public class JettyServer {
 //            mimeTypes.add("application/json");
         gzipHandler.setMinGzipSize(0);
 
-        HandlerCollection handlers = new HandlerCollection();
-        handlers.setHandlers(new Handler[]{contextHandler, contextHandler});
-        gzipHandler.setHandler(handlers);
+        gzipHandler.setHandler(contextHandler);
         server.setHandler(gzipHandler);
     }
 
-    private ResourceConfig jerseySetup(Object resource) {
+    private ResourceConfig jerseySetup(List<Object>  resource) {
         ResourceConfig resourceConfig = new ResourceConfig();
-        resourceConfig.register(resource);
+//        resourceConfig.register(resource);
+        resource.forEach(resourceConfig::register);
         resourceConfig.register(new AllExceptionMapper());
 
         ObjectMapper mapper = createObjectMapper();
