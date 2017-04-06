@@ -23,7 +23,7 @@ public class ErrorsAndWarningsAssistant extends AssistantBase<Javascript<?>,List
 
     @Override
     protected List<JSError> process(Javascript<?> input) {
-        if (input == null && Strings.isNullOrEmpty(input.getCode()))
+        if (input == null || Strings.isNullOrEmpty(input.getCode()))
             return Collections.emptyList();
         return new ErrorsAndWarningsCompiler().createErrorsAndWarnings(externalSources,input);
     }
