@@ -6,6 +6,7 @@ import java.util.function.Function;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider;
 import de.factoryfx.data.jackson.ObjectMapperBuilder;
+import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.server.handler.ErrorHandler;
@@ -24,18 +25,13 @@ public class JettyServer {
         server=new org.eclipse.jetty.server.Server();
         connectors.forEach(serverServerConnectorFunction -> server.addConnector(serverServerConnectorFunction.apply(server)));
 
+        ServletContextHandler contextHandler = new ServletContextHandler(ServletContextHandler.SESSIONS);
 
-        HandlerCollection handlers = new HandlerCollection();
+        resources.forEach(jerseyResource -> contextHandler.addServlet( new ServletHolder(new ServletContainer(jerseySetup(jerseyResource))), "/*"));
+
         ErrorHandler errorHandler = new ErrorHandler();
         errorHandler.setShowStacks(true);
-        handlers.addHandler(errorHandler);
-
-        resources.forEach(jerseyResource -> {
-            final ServletContextHandler contextHandler = new ServletContextHandler(ServletContextHandler.SESSIONS);
-            handlers.addHandler(contextHandler);
-            contextHandler.addServlet( new ServletHolder(new ServletContainer(jerseySetup(jerseyResource))), "/*");
-        });
-
+        contextHandler.setErrorHandler(errorHandler);
 
         GzipHandler gzipHandler = new GzipHandler();
 //            HashSet<String> mimeTypes = new HashSet<>();
@@ -46,7 +42,8 @@ public class JettyServer {
 //            mimeTypes.add("application/json");
         gzipHandler.setMinGzipSize(0);
 
-
+        HandlerCollection handlers = new HandlerCollection();
+        handlers.setHandlers(new Handler[]{contextHandler, contextHandler});
         gzipHandler.setHandler(handlers);
         server.setHandler(gzipHandler);
     }
