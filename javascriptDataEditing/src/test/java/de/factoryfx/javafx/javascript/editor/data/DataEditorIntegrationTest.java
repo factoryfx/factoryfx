@@ -24,7 +24,6 @@ public class DataEditorIntegrationTest extends Application{
     @Override
     public void start(Stage primaryStage) throws Exception {
         BorderPane root = new BorderPane();
-        root.getStylesheets().add(JavascriptVisual.class.getResource("jsstyle.css").toExternalForm());
         root.getStylesheets().add(getClass().getResource("/de/factoryfx/javafx/css/app.css").toExternalForm());
 
 
