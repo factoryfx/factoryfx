@@ -27,7 +27,7 @@ public class DynamicData extends Data{
     @Override
     Data newInstance() {
         try {
-            final DynamicData result = new DynamicData();
+            final DynamicData result = ((DynamicData)super.newInstance());
 
             for (AttributeAndName attributeAndName: dynamicDataAttributeAndNames){
                 final Attribute attribute = createAttribute(attributeAndName.attribute.getClass());

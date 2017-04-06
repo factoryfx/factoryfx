@@ -86,4 +86,20 @@ public class DynamicDataTest {
         Assert.assertEquals("2",currentModel.getAttributes().get(0).attribute.get());
 
     }
+
+
+    public static class DynamicDataExample1 extends Data{
+        public final ReferenceAttribute<DynamicDataExample2> referenceAttribute1 = new ReferenceAttribute<>(DynamicDataExample2.class,new AttributeMetadata());
+    }
+
+    public static class DynamicDataExample2 extends DynamicData{
+        public final StringAttribute stringAttribute = new StringAttribute(new AttributeMetadata());
+    }
+
+    @Test
+    public void test_prepare(){
+        DynamicDataExample1 dynamicDataExample1 = new DynamicDataExample1();
+        dynamicDataExample1.internal().prepareUsableCopy();
+
+    }
 }
