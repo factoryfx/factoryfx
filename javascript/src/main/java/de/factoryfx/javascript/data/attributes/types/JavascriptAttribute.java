@@ -100,7 +100,7 @@ public class JavascriptAttribute<A> extends ValueAttribute<Javascript<A>> {
                 String newHeader = createHeader();
                 String oldHeader = currentValue.getHeaderCode();
                 if (!Objects.equals(newHeader,oldHeader)) {
-                    set(currentValue.copyWithNewHeaderCode(newHeader));
+                    runLater(()->set(currentValue.copyWithNewHeaderCode(newHeader)));
                 }
                 try {
                     Thread.sleep(1000);
