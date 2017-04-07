@@ -16,7 +16,7 @@ public class ContentAssistPopupSkin implements Skin<AutoCompletePopup<String>> {
 
     private final AutoCompletePopup<String> control;
     private final ListView<String> suggestionList;
-    final int LIST_CELL_HEIGHT = 24;
+    final static int LIST_CELL_HEIGHT = 24;
 
     public ContentAssistPopupSkin(AutoCompletePopup<String> control){
         this.control = control;
