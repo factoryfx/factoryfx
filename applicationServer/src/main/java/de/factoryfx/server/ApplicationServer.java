@@ -28,11 +28,13 @@ public class ApplicationServer<L,V,T extends FactoryBase<L,V>> {
         return new DataMerger(historyFactoryPrevious,historyFactoryPrevious,historyFactory).createMergeResult((permission)->true);
     }
 
-    public /*FactoryUpdateLog*/ void revertTo(StoredFactoryMetadata storedFactoryMetadata) {
+    public FactoryUpdateLog revertTo(StoredFactoryMetadata storedFactoryMetadata, String user) {
         T historyFactory = getHistoryFactory(storedFactoryMetadata.id);
         FactoryAndStorageMetadata<T> current = prepareNewFactory();
-        current = new FactoryAndStorageMetadata<T>(historyFactory,current.metadata);
-        updateCurrentFactory(current,s->true);
+        current.metadata.comment="revert";
+        current.metadata.user=user;
+        current = new FactoryAndStorageMetadata<>(historyFactory,current.metadata);
+        return updateCurrentFactory(current,s->true);
     }
 
     public FactoryUpdateLog updateCurrentFactory(FactoryAndStorageMetadata<T> update, Function<String,Boolean> permissionChecker) {

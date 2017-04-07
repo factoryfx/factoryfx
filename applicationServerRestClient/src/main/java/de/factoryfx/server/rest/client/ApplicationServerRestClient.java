@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Locale;
 
-import javax.ws.rs.core.Response;
-
 import de.factoryfx.data.merge.MergeDiffInfo;
 import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.factory.datastorage.FactoryAndStorageMetadata;
@@ -76,7 +74,7 @@ public class ApplicationServerRestClient<V,T extends FactoryBase<?,V>> {
         return response.locale;
     }
 
-    public void revert(StoredFactoryMetadata historyFactory) {
-        restClient.post("revert",new UserAwareRequest<>(user,passwordHash,historyFactory), Response.class);
+    public FactoryUpdateLog revert(StoredFactoryMetadata historyFactory) {
+        return restClient.post("revert",new UserAwareRequest<>(user,passwordHash,historyFactory), FactoryUpdateLog.class);
     }
 }

@@ -11,7 +11,6 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
 
 import de.factoryfx.data.merge.MergeDiffInfo;
 import de.factoryfx.factory.FactoryBase;
@@ -60,10 +59,9 @@ public class ApplicationServerResource<V,L,T extends FactoryBase<L,V>>  {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @Path("revert")
-    public Response revert(UserAwareRequest<StoredFactoryMetadata> historyFactory) {
+    public FactoryUpdateLog revert(UserAwareRequest<StoredFactoryMetadata> historyFactory) {
         authenticate(historyFactory);
-        applicationServer.revertTo(historyFactory.request);
-        return Response.ok().build();
+        return applicationServer.revertTo(historyFactory.request,historyFactory.user);
     }
 
     private Function<String, Boolean> authenticateAndGetPermissionChecker(UserAwareRequest<?> request) {
