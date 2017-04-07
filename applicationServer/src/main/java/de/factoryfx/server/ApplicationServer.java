@@ -30,13 +30,9 @@ public class ApplicationServer<L,V,T extends FactoryBase<L,V>> {
 
     public /*FactoryUpdateLog*/ void revertTo(StoredFactoryMetadata storedFactoryMetadata) {
         T historyFactory = getHistoryFactory(storedFactoryMetadata.id);
-
-        factoryManager.stop();
-        factoryManager.start(historyFactory);
-
-        FactoryAndStorageMetadata<T> prepareNewFactory = factoryStorage.getPrepareNewFactory();
-        prepareNewFactory= new FactoryAndStorageMetadata<>(historyFactory.internal().copy(),prepareNewFactory.metadata);
-        factoryStorage.updateCurrentFactory(prepareNewFactory);
+        FactoryAndStorageMetadata<T> current = prepareNewFactory();
+        current = new FactoryAndStorageMetadata<T>(historyFactory,current.metadata);
+        updateCurrentFactory(current,s->true);
     }
 
     public FactoryUpdateLog updateCurrentFactory(FactoryAndStorageMetadata<T> update, Function<String,Boolean> permissionChecker) {
