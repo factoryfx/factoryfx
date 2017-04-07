@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import de.factoryfx.data.attribute.Attribute;
+import de.factoryfx.data.attribute.AttributeMetadata;
 import de.factoryfx.data.util.LanguageText;
 
 public class DynamicDataAttribute extends Data{
@@ -19,5 +20,13 @@ public class DynamicDataAttribute extends Data{
         this.attributeClass = attributeClass;
         this.label = label;
         this.name = name;
+    }
+
+    public Attribute createAttribute()  {
+        try {
+            return attributeClass.getConstructor(AttributeMetadata.class).newInstance(new AttributeMetadata());
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 }

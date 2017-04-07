@@ -49,6 +49,11 @@ public class ReferenceAttribute<T extends Data> extends Attribute<T> {
     }
 
     @Override
+    public Attribute<T> internal_copy() {
+       return new ReferenceAttribute<T>(clazz.get(),metadata);
+    }
+
+    @Override
     public boolean internal_match(T value) {
         if (this.value == null && value == null) {
             return true;

@@ -65,6 +65,11 @@ public class ReferenceListAttribute<T extends Data> extends Attribute<List<T>> i
     }
 
     @Override
+    public Attribute<List<T>> internal_copy() {
+        return new ReferenceListAttribute<>(clazz,metadata);
+    }
+
+    @Override
     public boolean internal_match(List<T> value) {
         if (value==null ){
             return false;

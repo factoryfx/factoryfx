@@ -26,6 +26,8 @@ public abstract class Attribute<T>{
 
     public abstract void internal_collectChildren(Set<Data> allModelEntities);
 
+    public abstract Attribute<T> internal_copy();
+
     public abstract boolean internal_match(T value);
 
     /**

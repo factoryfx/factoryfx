@@ -8,6 +8,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -21,10 +22,14 @@ import java.util.stream.Stream;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.google.common.base.Strings;
+import com.sun.javafx.collections.ObservableListWrapper;
 import de.factoryfx.data.attribute.Attribute;
 import de.factoryfx.data.attribute.AttributeChangeListener;
+import de.factoryfx.data.attribute.AttributeMetadata;
+import de.factoryfx.data.attribute.ValueAttribute;
 import de.factoryfx.data.merge.AttributeDiffInfo;
 import de.factoryfx.data.merge.MergeResult;
 import de.factoryfx.data.merge.attribute.AttributeMergeHelper;
@@ -39,6 +44,8 @@ import javafx.util.Pair;
 public class Data {
 
     private String id;
+    private boolean dynamic;
+
     public String getId() {
         if (id == null) {
             id = UUID.randomUUID().toString();
@@ -108,7 +115,78 @@ public class Data {
                 }
             }
         }
+        dynamicDataAttributeAndNames.forEach(attributeAndName -> {//TODO performance?
+            if (!attributes.contains(attributeAndName)){
+                attributes.add(attributeAndName);
+            }
+        });
         return attributes;
+    }
+
+    @JsonIgnore
+    List<AttributeAndName> dynamicDataAttributeAndNames=new ArrayList<>();
+
+
+    @JsonProperty
+    public List<DynamicDataAttribute> getDynamicDataAttributes(){
+        if (!dynamicAttributeData){
+            return null;
+        }
+        final ArrayList<DynamicDataAttribute> result = new ArrayList<>();
+        for (AttributeAndName attributeAndName: dynamicDataAttributeAndNames){
+            Object value = attributeAndName.attribute.get();
+            if (value instanceof ObservableListWrapper){
+                value=new ArrayList<>((ObservableListWrapper)value);
+            }
+            result.add(new DynamicDataAttribute(value,attributeAndName.attribute.getClass(),attributeAndName.attribute.metadata.labelText,attributeAndName.name));
+        }
+        return result;
+    }
+
+    @JsonProperty
+    public void setDynamicDataAttributes(List<DynamicDataAttribute> dynamicDataAttributes){
+        if (!dynamicAttributeData){
+            return;
+        }
+        for (DynamicDataAttribute dynamicDataAttribute: dynamicDataAttributes){
+            final Attribute attribute = dynamicDataAttribute.createAttribute();
+            attribute.set(dynamicDataAttribute.value);
+            attribute.metadata.labelText.internal_set(dynamicDataAttribute.label);
+            dynamicDataAttributeAndNames.add(new AttributeAndName(attribute,dynamicDataAttribute.name));
+        }
+    }
+
+    boolean dynamicAttributeData;
+    private void setDynamic() {
+        dynamicAttributeData=true;
+    }
+
+
+    public boolean isDynamic() {
+        return dynamicAttributeData;
+    }
+
+
+    private void addAttribute(ValueAttribute<?> attribute){
+        dynamicDataAttributeAndNames.add(new AttributeAndName(attribute, toIdentifier(attribute.metadata.labelText.internal_getPreferred(Locale.ENGLISH))));
+    }
+
+    public String toIdentifier(String value) {//TODO for js?
+        if (Strings.isNullOrEmpty(value)) {
+            return UUID.randomUUID().toString();
+        }
+        StringBuilder result = new StringBuilder();
+        if(!Character.isJavaIdentifierStart(value.charAt(0))) {
+            result.append("_");
+        }
+        for (char c : value.toCharArray()) {
+            if(!Character.isJavaIdentifierPart(c)) {
+                result.append("_");
+            } else {
+                result.append(c);
+            }
+        }
+        return result.toString();
     }
 
     private void visitAttributesFlat(AttributeVisitor consumer) {
@@ -182,18 +260,27 @@ public class Data {
         return this.copy();
     }
 
-    private Supplier<Data> newInstanceSupplier= () -> {
-        try {
-            return Data.this.getClass().newInstance();
-        } catch (InstantiationException | IllegalAccessException e) {
-            throw new RuntimeException(e);
-        }
-    };
+    private Supplier<Data> newInstanceSupplier=null;
     private void setNewInstanceSupplier(Supplier<Data> newInstanceSupplier){
         this.newInstanceSupplier=newInstanceSupplier;
     }
     Data newInstance() {
-        return newInstanceSupplier.get();
+        final Data result;
+        if (newInstanceSupplier!=null){
+            result=newInstanceSupplier.get();
+        } else {
+            try {
+                result = Data.this.getClass().newInstance();
+            } catch (InstantiationException | IllegalAccessException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        for (AttributeAndName attributeAndName: dynamicDataAttributeAndNames){
+            final Attribute attribute = attributeAndName.attribute.internal_copy();
+            result.dynamicDataAttributeAndNames.add(new AttributeAndName(attribute,attributeAndName.name));
+        }
+        return result;
     }
 
     @SuppressWarnings("unchecked")
@@ -694,6 +781,33 @@ public class Data {
             return data.getRoot();
         }
 
+    }
+
+    private final DynamicAttributesConfiguration dynamicAttributesConfiguration = new DynamicAttributesConfiguration(this);
+    /** data configurations api */
+    public DynamicAttributesConfiguration dynamic(){
+        return dynamicAttributesConfiguration;
+    }
+
+    public static class DynamicAttributesConfiguration {
+        private final Data data;
+
+        public DynamicAttributesConfiguration(Data data) {
+            this.data = data;
+        }
+
+        public void addAttribute(ValueAttribute<?> attribute){
+             data.addAttribute(attribute);
+        }
+
+        public boolean isDynamic() {
+            return data.isDynamic();
+        }
+
+        /** enable dynamic Attributes*/
+        public void setDynamic(){
+            data.setDynamic();
+        }
     }
 
 

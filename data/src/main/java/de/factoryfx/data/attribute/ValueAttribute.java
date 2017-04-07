@@ -28,6 +28,18 @@ public class ValueAttribute<T> extends Attribute<T> {
     }
 
     @Override
+    public Attribute<T> internal_copy() {
+        try {
+            //TODO fix that reflection
+            Attribute<T> result = getClass().getConstructor(AttributeMetadata.class).newInstance(new AttributeMetadata());
+            result.metadata.labelText.internal_set(metadata.labelText);
+            return result;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
     public boolean internal_match(T value) {
         return Objects.equals(this.value, value);
     }

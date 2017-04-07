@@ -7,7 +7,6 @@ import java.util.UUID;
 import java.util.regex.Pattern;
 
 import de.factoryfx.data.Data;
-import de.factoryfx.data.DynamicData;
 import de.factoryfx.data.attribute.Attribute;
 import de.factoryfx.data.attribute.AttributeMetadata;
 import de.factoryfx.data.attribute.ReferenceAttribute;

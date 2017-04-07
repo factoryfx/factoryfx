@@ -33,6 +33,11 @@ public class ViewListReferenceAttribute <R extends Data, T extends Data> extends
     }
 
     @Override
+    public Attribute<List<T>> internal_copy() {
+        return new ViewListReferenceAttribute<>(metadata,view);
+    }
+
+    @Override
     public boolean internal_match(List<T> value) {
         final List<T> list = get();
         if (value==null ){

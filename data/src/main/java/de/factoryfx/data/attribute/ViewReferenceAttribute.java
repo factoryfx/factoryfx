@@ -32,6 +32,11 @@ public class ViewReferenceAttribute<R extends Data, T extends Data> extends Attr
     }
 
     @Override
+    public Attribute<T> internal_copy() {
+        return new ViewReferenceAttribute<>(metadata,view);
+    }
+
+    @Override
     public boolean internal_match(T value) {
         final T thisValue = this.get();
         if (thisValue == null && value == null) {
