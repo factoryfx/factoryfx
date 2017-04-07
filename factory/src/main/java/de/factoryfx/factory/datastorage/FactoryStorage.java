@@ -33,7 +33,7 @@ public interface FactoryStorage<L,V,T extends FactoryBase<L,V>> {
     FactoryAndStorageMetadata<T> getPrepareNewFactory();
 
     /** updateCurrentFactory and history*/
-    void updateCurrentFactory(FactoryAndStorageMetadata<T> update);
+    void  updateCurrentFactory(FactoryAndStorageMetadata<T> update);
 
     /**at Application start load current Factory*/
     void loadInitialFactory();
