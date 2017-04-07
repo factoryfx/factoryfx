@@ -19,7 +19,7 @@ public class Javascript<A> {
         this("","");
     }
 
-    private Javascript(String code, String headerCode) {
+    public Javascript(String code, String headerCode) {
         this.code = code;
         this.headerCode = headerCode;
     }

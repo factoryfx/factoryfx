@@ -8,4 +8,9 @@ public class Proposal {
     public Proposal(String insertString) {
         this.insertString = insertString;
     }
+
+    @Override
+    public String toString() {
+        return insertString;
+    }
 }

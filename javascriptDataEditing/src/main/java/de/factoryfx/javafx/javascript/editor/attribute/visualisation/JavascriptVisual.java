@@ -4,6 +4,7 @@ import com.google.javascript.jscomp.CheckLevel;
 import com.google.javascript.jscomp.JSError;
 import com.google.javascript.jscomp.SourceFile;
 import de.factoryfx.javascript.data.attributes.types.Javascript;
+import impl.org.controlsfx.skin.AutoCompletePopup;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ChangeListener;
@@ -45,11 +46,12 @@ public class JavascriptVisual {
 
         final CodeArea codeArea = new CodeArea();
         final ListView<JSError> errorsAndWarnings = new ListView<>();
-        final ContextMenu popup = new ContextMenu();
+        final ContentAssistPopup popup = new ContentAssistPopup();
         final ChangeListener<Javascript> onUpdateScript;
         NavigableMap<Integer, List<Proposal>> currentProposals;
 
         RootNode(List<SourceFile> externs, SimpleObjectProperty<Javascript> boundTo) {
+            this.getStylesheets().add(getClass().getResource("jsstyle.css").toExternalForm());
             List<SourceFile> externalSources = new ArrayList<>();
             externalSources.addAll(externs);
             this.contentAssistant = new ContentAssistant(externalSources, new WeakReference<>(processProoposals));
@@ -63,6 +65,7 @@ public class JavascriptVisual {
             };
             boundTo.addListener(new WeakChangeListener<>(onUpdateScript));
             codeArea.onKeyPressedProperty().set(this::handleKeys);
+            codeArea.onKeyReleasedProperty().set(this::handleKeys);
             codeArea.setPopupWindow(popup);
             if (boundTo.get() != null)
                 codeArea.insertText(0,boundTo.get().getCode());
@@ -135,53 +138,54 @@ public class JavascriptVisual {
         }
 
         private void handleKeys(KeyEvent keyEvent) {
-            if (keyEvent.isControlDown() && keyEvent.getCode() == KeyCode.SPACE ) {
-                if (currentProposals == null || currentProposals.isEmpty())
-                    return;
-                List<Proposal> proposals = currentProposals.floorEntry(codeArea.getCaretPosition()).getValue();
-                String text = codeArea.getText();
-                int pos = codeArea.getCaretPosition();
-                int pos2 = pos;
-                while (pos > 0 && Character.isJavaIdentifierPart(text.charAt(pos-1))) {
-                    --pos;
-                }
-                String prefix = text.substring(pos,pos2);
-                while (pos2 < text.length() && Character.isJavaIdentifierPart(text.charAt(pos2))) {
-                    ++pos2;
-                }
-                ArrayList<Proposal> copy = new ArrayList<>(proposals);
-                Collections.sort(copy,(p1,p2)->{
-                    boolean s1 = p1.insertString.startsWith(prefix);
-                    boolean s2 = p2.insertString.startsWith(prefix);
-                    if (s1) {
-                        if (s2)
-                            return 0;
-                        return -1;
-                    }
-                    if (s2)
-                        return 1;
-                    return 0;
-                });
-                if (copy.isEmpty())
-                    popup.hide();
-                else {
-                    final int from = pos;
-                    final int to = pos2;
-                    popup.getItems().clear();
-                    Function<Proposal, MenuItem> createMenuItem = s -> {
-                        MenuItem item = new MenuItem(s.insertString);
-                        item.onActionProperty().set(e -> {
-                            codeArea.replaceText(from, to, s.insertString);
-                        });
-                        return item;
-                    };
-                    if (proposals.size() > 10) {
-                        popup.getItems().addAll(copy.stream().limit(9).map(createMenuItem).collect(Collectors.toList()));
-                        popup.getItems().addAll(new MenuItem("..."));
-                    } else {
-                        popup.getItems().addAll(copy.stream().map(createMenuItem).collect(Collectors.toList()));
-                    }
+            if (keyEvent.getEventType() == KeyEvent.KEY_PRESSED && keyEvent.isControlDown() && keyEvent.getCode() == KeyCode.SPACE ) {
+                if (!popup.isShowing()) {
                     popup.show(this.sceneProperty().get().getWindow());
+                    updateProposals();
+                }
+            }
+            if (popup.isShowing()) {
+                if ( keyEvent.getEventType() == KeyEvent.KEY_RELEASED &&
+                     keyEvent.getCode() != KeyCode.UP &&
+                     keyEvent.getCode() != KeyCode.DOWN) {
+                    updateProposals();
+                }
+                if (popup.getSuggestions().isEmpty())
+                    popup.hide();
+            }
+        }
+
+        private void updateProposals() {
+            if (currentProposals == null || currentProposals.isEmpty())
+                return;
+            List<Proposal> proposals = currentProposals.floorEntry(codeArea.getCaretPosition()).getValue();
+            String text = codeArea.getText();
+            int pos = codeArea.getCaretPosition();
+            int pos2 = pos;
+            while (pos > 0 && Character.isJavaIdentifierPart(text.charAt(pos-1))) {
+                --pos;
+            }
+            String prefix = text.substring(pos,pos2);
+            while (pos2 < text.length() && Character.isJavaIdentifierPart(text.charAt(pos2))) {
+                ++pos2;
+            }
+            ArrayList<Proposal> copy = new ArrayList<>(proposals);
+            final int from = pos;
+            final int to = pos2;
+            Consumer<String> applySuggestion = s -> {
+                codeArea.replaceText(from, to, s);
+            };
+            popup.onSuggestionProperty().setValue(v->{
+                applySuggestion.accept(v.getSuggestion());
+                popup.hide();
+            });
+            popup.getSuggestions().clear();
+            List<String> suggestions = copy.stream().map(s -> s.insertString).collect(Collectors.toList());
+            popup.getSuggestions().addAll(suggestions);
+            popup.unselect();
+            for (int idx = 0; idx < suggestions.size(); ++idx) {
+                if (suggestions.get(idx).startsWith(prefix)) {
+                    popup.selectItem(suggestions.get(idx));
                 }
             }
         }
@@ -244,5 +248,20 @@ public class JavascriptVisual {
         return new RootNode(externs,boundTo);
     }
 
+    static final class ContentAssistPopup extends AutoCompletePopup<String> {
+
+        public void selectItem(String item) {
+            ((ContentAssistPopupSkin)getSkin()).selectItem(item);
+        }
+
+        @Override
+        protected Skin<?> createDefaultSkin() {
+            return new ContentAssistPopupSkin(this);
+        }
+
+        public void unselect() {
+            ((ContentAssistPopupSkin)getSkin()).unselect();
+        }
+    }
 
 }

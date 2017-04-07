@@ -29,9 +29,10 @@ public class ContentAssist {
         try {
             final Compiler compiler = createCompiler();
             ArrayList<SourceFile> internalSource = new ArrayList<>();
-            internalSource.add(SourceFile.fromCode("declaration",text.getHeaderCode()));
             internalSource.add(SourceFile.fromCode("intern", text.getCode()));
-            compiler.compile(externalSources,
+            ArrayList<SourceFile> externalSource = new ArrayList<>(externalSources);
+            externalSource.add(SourceFile.fromCode("decl",text.getHeaderCode()));
+            compiler.compile(externalSource,
                     internalSource, creataCompilerOptions());
 
             Node root = compiler.getRoot();
@@ -134,7 +135,7 @@ public class ContentAssist {
     }
 
     private boolean isFromProjectSources(StaticSourceFile v) {
-        return "extern".equals(v.getName()) || v.getName().startsWith("library");
+        return "extern".equals(v.getName()) || v.getName().equals("decl");
     }
 
     private void createVarProposals(String code, Node inspectedNode, Map<Integer, List<Proposal>> proposals, ArrayList<Var> internalVars, ArrayList<Var> externalVars) {
@@ -147,6 +148,15 @@ public class ContentAssist {
                 internalVars.stream().filter(v->v.getNameNode().getSourceOffset() < inspectedNode.getSourceOffset())
                         .forEach(visibleVars::add);
                 externalVars.stream()
+                        .sorted((v1,v2)->{
+                            boolean decl1 = isFromDeclarations(v1.getNameNode());
+                            boolean decl2 = isFromDeclarations(v1.getNameNode());
+                            if (decl1 == decl2)
+                                return 0;
+                            if (decl1)
+                                return -1;
+                            return 1;
+                        })
                         .forEach(visibleVars::add);
                 Collections.sort(visibleVars,this::compareTypeQuality);
                 int idx = skipWhitespaceBefore(code, currentNode);
@@ -583,7 +593,11 @@ public class ContentAssist {
 
 
     private boolean isIntern(Node node) {
-        return "intern".equals(node.getSourceFileName());
+        return !node.isFromExterns();
+    }
+
+    private boolean isFromDeclarations(Node node) {
+        return "decl".equals(node.getSourceFileName());
     }
 
 
