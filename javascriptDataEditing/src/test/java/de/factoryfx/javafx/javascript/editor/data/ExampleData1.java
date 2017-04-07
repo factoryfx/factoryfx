@@ -1,17 +1,11 @@
 package de.factoryfx.javafx.javascript.editor.data;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 import java.util.UUID;
 import java.util.regex.Pattern;
 
 import de.factoryfx.data.Data;
-import de.factoryfx.data.DynamicData;
-import de.factoryfx.data.attribute.Attribute;
 import de.factoryfx.data.attribute.AttributeMetadata;
 import de.factoryfx.data.attribute.ReferenceAttribute;
-import de.factoryfx.data.attribute.ReferenceListAttribute;
 import de.factoryfx.data.attribute.ValueListAttribute;
 import de.factoryfx.data.attribute.types.BigDecimalAttribute;
 import de.factoryfx.data.attribute.types.BooleanAttribute;
@@ -19,7 +13,6 @@ import de.factoryfx.data.attribute.types.ByteArrayAttribute;
 import de.factoryfx.data.attribute.types.ColorAttribute;
 import de.factoryfx.data.attribute.types.DoubleAttribute;
 import de.factoryfx.data.attribute.types.EncryptedStringAttribute;
-import de.factoryfx.data.attribute.types.EnumAttribute;
 import de.factoryfx.data.attribute.types.I18nAttribute;
 import de.factoryfx.data.attribute.types.IntegerAttribute;
 import de.factoryfx.data.attribute.types.LocalDateAttribute;
@@ -35,10 +28,6 @@ import de.factoryfx.data.util.LanguageText;
 import de.factoryfx.data.validation.RegexValidation;
 import de.factoryfx.data.validation.StringRequired;
 import de.factoryfx.data.validation.Validation;
-import javafx.scene.Node;
-import javafx.scene.control.Button;
-import javafx.scene.layout.BorderPane;
-import javafx.util.Pair;
 
 public class ExampleData1 extends Data {
     public final ReferenceAttribute<DynamicData> dynamicDataAttribute = new ReferenceAttribute<>(DynamicData.class,new AttributeMetadata().en("dynamicDataAttribute").de("dynamicDataAttribute de"));
