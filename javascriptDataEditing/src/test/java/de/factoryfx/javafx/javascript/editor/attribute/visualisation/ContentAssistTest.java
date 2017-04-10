@@ -10,7 +10,7 @@ public class ContentAssistTest {
 
     @Test
     public void printAssist() {
-        Javascript js = new Javascript(" { }","/** @constant @readonly */ var x = {}");
+        Javascript js = new Javascript(" { }","/** @constant @readonly */ var x = {}","");
         new ContentAssist().findProposals(Externs.get(),js).forEach((i,p)->{
             System.out.println(i+"/"+p);
         });
