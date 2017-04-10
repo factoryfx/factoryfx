@@ -24,7 +24,7 @@ public class Javascript<A> {
     private final PrimitivePool primitivePool = new PrimitivePool();
 
     @JsonCreator
-    public Javascript(@JsonProperty("code") String code) {
+    public Javascript(String code) {
         this(code,"","");
     }
 
