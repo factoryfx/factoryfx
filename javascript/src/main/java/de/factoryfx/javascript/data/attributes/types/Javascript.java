@@ -2,6 +2,7 @@ package de.factoryfx.javascript.data.attributes.types;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonValue;
 import javafx.util.Pair;
 
@@ -12,23 +13,29 @@ import java.util.function.Function;
 public class Javascript<A> {
 
     private final String code;
+
+    @JsonIgnore
     private final String headerCode;
+
+    @JsonIgnore
+    private final String declarationCode;
 
     @JsonIgnore
     private final PrimitivePool primitivePool = new PrimitivePool();
 
     @JsonCreator
-    public Javascript(String code) {
-        this(code,"");
+    public Javascript(@JsonProperty("code") String code) {
+        this(code,"","");
     }
 
     public Javascript() {
-        this("","");
+        this("","","");
     }
 
-    public Javascript(String code, String headerCode) {
+    public Javascript(String code, String headerCode, String declarationCode) {
         this.code = code;
         this.headerCode = headerCode;
+        this.declarationCode = declarationCode;
     }
 
     public boolean match(Javascript<A> o) {
@@ -60,12 +67,17 @@ public class Javascript<A> {
 
 
     public Javascript copyWithNewHeaderCode(String headerCode) {
-        Javascript copy = new Javascript(code,headerCode);
+        Javascript copy = new Javascript(code,headerCode,declarationCode);
         return copy;
     }
 
     public Javascript copyWithNewCode(String newCode) {
-        Javascript copy = new Javascript(newCode,headerCode);
+        Javascript copy = new Javascript(newCode,headerCode,declarationCode);
+        return copy;
+    }
+
+    public Javascript copyWithNewDeclarationCode(String declarationCode) {
+        Javascript copy = new Javascript(code,headerCode,declarationCode);
         return copy;
     }
 
