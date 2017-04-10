@@ -86,6 +86,10 @@ public class Javascript<A> {
         return headerCode;
     }
 
+    public String getDeclarationCode() {
+        return declarationCode;
+    }
+
     final class PrimitivePool {
 
         LinkedBlockingDeque<ScriptExecutor> executors = new LinkedBlockingDeque<>();

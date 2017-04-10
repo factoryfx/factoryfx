@@ -28,7 +28,10 @@ public class JavascriptAttribute<A> extends ValueAttribute<Javascript<A>> {
         super(attributeMetadata, (Class<Javascript<A>>)Javascript.class.asSubclass(Javascript.class));
         this.data = data;
         this.apiClass = apiClass;
-        set(new Javascript<A>());
+        DeclareJavaInput createDecl = new DeclareJavaInput();
+        createDecl.declareVariable("api",apiClass);
+        Javascript<A> javascript = new Javascript<>().copyWithNewDeclarationCode(createDecl.sourceScript());
+        super.set(javascript);
     }
 
     @JsonCreator
@@ -36,7 +39,7 @@ public class JavascriptAttribute<A> extends ValueAttribute<Javascript<A>> {
         super(null, (Class<Javascript<A>>)Javascript.class.asSubclass(Javascript.class));
         data = null;
         this.apiClass = null;
-        set(initialValue);
+        super.set(initialValue);
     }
 
     @Override
@@ -64,6 +67,16 @@ public class JavascriptAttribute<A> extends ValueAttribute<Javascript<A>> {
     @Override
     public void internal_copyTo(Attribute<Javascript<A>> copyAttribute, Function<Data, Data> dataCopyProvider) {
         copyAttribute.set(get().copy());
+    }
+
+    @Override
+    public void set(Javascript<A> value) {
+        super.set(this.value.copyWithNewCode(value.getCode()));
+    }
+
+    private void replace(Javascript<A> value) {
+        System.out.println(value.getHeaderCode());
+        super.set(value);
     }
 
     public List<SourceFile> getExterns() {
@@ -100,7 +113,7 @@ public class JavascriptAttribute<A> extends ValueAttribute<Javascript<A>> {
                 String newHeader = createHeader();
                 String oldHeader = currentValue.getHeaderCode();
                 if (!Objects.equals(newHeader,oldHeader)) {
-                    runLater(()->set(currentValue.copyWithNewHeaderCode(newHeader)));
+                    runLater(()->replace(currentValue.copyWithNewHeaderCode(newHeader)));
                 }
                 try {
                     Thread.sleep(1000);

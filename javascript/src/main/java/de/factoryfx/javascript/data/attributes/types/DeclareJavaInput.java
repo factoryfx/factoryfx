@@ -1,7 +1,6 @@
-package de.factoryfx.javafx.javascript.editor.attribute.visualisation;
+package de.factoryfx.javascript.data.attributes.types;
 
 import com.google.javascript.jscomp.parsing.parser.Keywords;
-import de.factoryfx.javascript.data.attributes.types.JSDoc;
 
 import javax.annotation.Nullable;
 import java.lang.reflect.*;

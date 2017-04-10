@@ -32,6 +32,7 @@ public class ContentAssist {
             internalSource.add(SourceFile.fromCode("intern", text.getCode()));
             ArrayList<SourceFile> externalSource = new ArrayList<>(externalSources);
             externalSource.add(SourceFile.fromCode("decl",text.getHeaderCode()));
+            externalSource.add(SourceFile.fromCode("apiDecl",text.getDeclarationCode()));
             compiler.compile(externalSource,
                     internalSource, creataCompilerOptions());
 
