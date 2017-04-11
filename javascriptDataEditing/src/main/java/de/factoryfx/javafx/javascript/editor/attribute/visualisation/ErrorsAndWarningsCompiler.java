@@ -24,6 +24,7 @@ public class ErrorsAndWarningsCompiler {
                 ArrayList<SourceFile> externals = new ArrayList<>();
                 externals.addAll(externalSources);
                 externals.add(SourceFile.fromCode("declarations",code.getHeaderCode()));
+                externals.add(SourceFile.fromCode("apiDecl",code.getDeclarationCode()));
                 ArrayList<SourceFile> internalSource = new ArrayList<>();
                 internalSource.add(SourceFile.fromCode("intern", code.getCode()));
                 Result res = compiler.compile(externals, internalSource, createCompilerOptions());

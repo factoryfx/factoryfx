@@ -54,8 +54,14 @@ public class DataEditorIntegrationTest extends Application{
 
         Button gc = new Button("gc");
         gc.setOnAction(event -> System.gc());
+
+        Button exec = new Button("execute");
+        ExampleJavascript pExampleJavascript = exampleJavascript;
+        exec.setOnAction(event -> pExampleJavascript.specialAttribute.get().execute(System.out));
+
         HBox buttons = new HBox();
         buttons.getChildren().add(gc);
+        buttons.getChildren().add(exec);
         root.setBottom(buttons);
         primaryStage.show();
     }

@@ -6,6 +6,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.javascript.jscomp.SourceFile;
 import de.factoryfx.data.Data;
+import de.factoryfx.data.DynamicDataAttribute;
 import de.factoryfx.data.attribute.*;
 import javafx.application.Platform;
 
@@ -28,7 +29,10 @@ public class JavascriptAttribute<A> extends ValueAttribute<Javascript<A>> {
         super(attributeMetadata, (Class<Javascript<A>>)Javascript.class.asSubclass(Javascript.class));
         this.data = data;
         this.apiClass = apiClass;
-        set(new Javascript<A>());
+        DeclareJavaInput createDecl = new DeclareJavaInput();
+        createDecl.declareVariable("api",apiClass);
+        Javascript<A> javascript = new Javascript<>().copyWithNewDeclarationCode(createDecl.sourceScript());
+        super.set(javascript);
     }
 
     @JsonCreator
@@ -36,7 +40,7 @@ public class JavascriptAttribute<A> extends ValueAttribute<Javascript<A>> {
         super(null, (Class<Javascript<A>>)Javascript.class.asSubclass(Javascript.class));
         data = null;
         this.apiClass = null;
-        set(initialValue);
+        super.set(initialValue);
     }
 
     @Override
@@ -64,6 +68,15 @@ public class JavascriptAttribute<A> extends ValueAttribute<Javascript<A>> {
     @Override
     public void internal_copyTo(Attribute<Javascript<A>> copyAttribute, Function<Data, Data> dataCopyProvider) {
         copyAttribute.set(get().copy());
+    }
+
+    @Override
+    public void set(Javascript<A> value) {
+        super.set(this.value.copyWithNewCode(value.getCode()));
+    }
+
+    private void replace(Javascript<A> value) {
+        super.set(value);
     }
 
     public List<SourceFile> getExterns() {
@@ -100,7 +113,7 @@ public class JavascriptAttribute<A> extends ValueAttribute<Javascript<A>> {
                 String newHeader = createHeader();
                 String oldHeader = currentValue.getHeaderCode();
                 if (!Objects.equals(newHeader,oldHeader)) {
-                    runLater(()->set(currentValue.copyWithNewHeaderCode(newHeader)));
+                    runLater(()->replace(currentValue.copyWithNewHeaderCode(newHeader)));
                 }
                 try {
                     Thread.sleep(1000);
@@ -157,22 +170,8 @@ public class JavascriptAttribute<A> extends ValueAttribute<Javascript<A>> {
         int initialLen = sb.length();
         for (Data d : l) {
             if (d != null) {
-                sb.append("{");
-                ObjectMapper mapper = new ObjectMapper();
-                int oldLen = sb.length();
-                d.internal().visitAttributesFlat((name, attribute) -> {
-                    try {
-                        sb.append("\"" + name + "\" : ");
-                        sb.append(mapper.writeValueAsString(attribute.get()));
-                        sb.append(",");
-                    } catch (JsonProcessingException e) {
-                        throw new RuntimeException(e);
-                    }
-                });
-                if (sb.length() > oldLen) {
-                    sb.setLength(sb.length() - 1);
-                }
-                sb.append("},");
+                writeData(sb, d);
+                sb.append(',');
             } else {
                 sb.append("null,");
             };
@@ -188,6 +187,31 @@ public class JavascriptAttribute<A> extends ValueAttribute<Javascript<A>> {
         return sb.toString();
     }
 
+    private void writeData(StringBuilder sb, Data d) {
+        sb.append("{");
+        ObjectMapper mapper = new ObjectMapper();
+        int oldLen = sb.length();
+        d.internal().visitAttributesFlat((name, attribute) -> {
+            try {
+                Object value = attribute.get();
+
+                sb.append("\"" + name + "\" : ");
+                if (value instanceof Data) {
+                    writeData(sb,(Data)value);
+                } else {
+                    sb.append(mapper.writeValueAsString(value));
+                }
+                sb.append(",");
+
+            } catch (JsonProcessingException e) {
+                throw new RuntimeException(e);
+            }
+        });
+        if (sb.length() > oldLen) {
+            sb.setLength(sb.length() - 1);
+        }
+        sb.append("}");
+    }
 
 
 }

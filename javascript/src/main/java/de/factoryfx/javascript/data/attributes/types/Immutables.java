@@ -1,4 +1,4 @@
-package de.factoryfx.javafx.javascript.editor.attribute.visualisation;
+package de.factoryfx.javascript.data.attributes.types;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
