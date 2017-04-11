@@ -1,11 +1,12 @@
 package de.factoryfx.javafx.javascript.editor.data;
 
+import java.util.Optional;
+
 import de.factoryfx.data.jackson.ObjectMapperBuilder;
 import de.factoryfx.javafx.editor.attribute.AttributeEditor;
 import de.factoryfx.javafx.editor.attribute.AttributeEditorFactory;
 import de.factoryfx.javafx.editor.data.DataEditor;
 import de.factoryfx.javafx.javascript.editor.attribute.visualisation.JavascriptAttributeVisualisation;
-import de.factoryfx.javafx.javascript.editor.attribute.visualisation.JavascriptVisual;
 import de.factoryfx.javafx.util.UniformDesign;
 import de.factoryfx.javafx.util.UniformDesignFactory;
 import de.factoryfx.javascript.data.attributes.types.Javascript;
@@ -17,9 +18,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 
-import java.util.Optional;
-
-public class DataEditorIntegrationTest extends Application{
+public class JavascriptAttributeIntegrationTest extends Application{
 
     @Override
     public void start(Stage primaryStage) throws Exception {

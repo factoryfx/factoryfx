@@ -1,5 +1,17 @@
 package de.factoryfx.javafx.javascript.editor.attribute.visualisation;
 
+import java.lang.ref.WeakReference;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.NavigableMap;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Supplier;
+import java.util.stream.Collectors;
+
 import com.google.javascript.jscomp.CheckLevel;
 import com.google.javascript.jscomp.JSError;
 import com.google.javascript.jscomp.SourceFile;
@@ -12,20 +24,16 @@ import javafx.beans.value.WeakChangeListener;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
 import javafx.scene.Node;
-import javafx.scene.control.*;
+import javafx.scene.control.ListCell;
+import javafx.scene.control.ListView;
+import javafx.scene.control.Skin;
+import javafx.scene.control.SplitPane;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.StackPane;
 import org.fxmisc.richtext.CodeArea;
 import org.fxmisc.richtext.LineNumberFactory;
 import org.fxmisc.richtext.StyleSpansBuilder;
-
-import java.lang.ref.WeakReference;
-import java.util.*;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.function.Supplier;
-import java.util.stream.Collectors;
 
 public class JavascriptVisual {
 
@@ -180,7 +188,22 @@ public class JavascriptVisual {
                 popup.hide();
             });
             popup.getSuggestions().clear();
-            List<String> suggestions = copy.stream().map(s -> s.insertString).collect(Collectors.toList());
+
+            //TODO list is just workaround, finde better way with closure compiler
+            List<String> garbageSuggestions = new ArrayList<>();
+            garbageSuggestions.add("hasOwnProperty()");
+            garbageSuggestions.add("isPrototypeOf()");
+            garbageSuggestions.add("propertyIsEnumerable()");
+            garbageSuggestions.add("toJSON()");
+            garbageSuggestions.add("toLocaleString()");
+            garbageSuggestions.add("toSource()");
+            garbageSuggestions.add("toString()");
+            garbageSuggestions.add("unwatch()");
+            garbageSuggestions.add("valueOf()");
+            garbageSuggestions.add("watch()");
+            garbageSuggestions.add("constructor");
+            List<String> suggestions = copy.stream().map(s -> s.insertString).filter(s -> !garbageSuggestions.contains(s)).collect(Collectors.toList());
+
             popup.getSuggestions().addAll(suggestions);
             popup.unselect();
             for (int idx = 0; idx < suggestions.size(); ++idx) {
