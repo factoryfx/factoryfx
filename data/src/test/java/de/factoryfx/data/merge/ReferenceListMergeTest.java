@@ -5,6 +5,7 @@ import java.util.stream.Collectors;
 import de.factoryfx.data.merge.testfactories.ExampleFactoryA;
 import de.factoryfx.data.merge.testfactories.ExampleFactoryB;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class ReferenceListMergeTest extends MergeHelperTestBase{
@@ -103,6 +104,7 @@ public class ReferenceListMergeTest extends MergeHelperTestBase{
         Assert.assertEquals(newValue2, current.referenceListAttribute.get(1));
     }
 
+    @Ignore
     @Test
     public void test_both_added(){
         ExampleFactoryA current = new ExampleFactoryA();
@@ -145,5 +147,29 @@ public class ReferenceListMergeTest extends MergeHelperTestBase{
         Assert.assertTrue(merge.hasNoConflicts());
         Assert.assertEquals(2, current.referenceListAttribute.size());
         Assert.assertEquals(0, merge.mergeInfos.size());
+    }
+
+    @Test
+    public void test_order_changed(){
+        ExampleFactoryA current = new ExampleFactoryA();
+        ExampleFactoryB newValue1 = new ExampleFactoryB();
+        ExampleFactoryB newValue2 = new ExampleFactoryB();
+        current.referenceListAttribute.add(newValue1);
+        current.referenceListAttribute.add(newValue2);
+
+        ExampleFactoryA orginal = current.internal().copy();
+
+        ExampleFactoryA update = current.internal().copy();
+        final ExampleFactoryB first = update.referenceListAttribute.get(0);
+        final ExampleFactoryB second = update.referenceListAttribute.get(1);
+        update.referenceListAttribute.clear();
+        update.referenceListAttribute.add(second);
+        update.referenceListAttribute.add(first);
+
+        final MergeDiffInfo merge = merge(current, orginal, update);
+        Assert.assertTrue(merge(current, orginal, update).hasNoConflicts());
+        Assert.assertEquals(2, current.referenceListAttribute.size());
+        Assert.assertEquals(newValue2.getId(), current.referenceListAttribute.get(0).getId());
+        Assert.assertEquals(newValue1.getId(), current.referenceListAttribute.get(1).getId());
     }
 }

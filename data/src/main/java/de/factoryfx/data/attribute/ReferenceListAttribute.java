@@ -20,7 +20,6 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import de.factoryfx.data.Data;
 import de.factoryfx.data.merge.attribute.AttributeMergeHelper;
-import de.factoryfx.data.merge.attribute.ReferenceListMergeHelper;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
@@ -97,7 +96,7 @@ public class ReferenceListAttribute<T extends Data> extends Attribute<List<T>> i
 
     @Override
     public AttributeMergeHelper<?> internal_createMergeHelper() {
-        return new ReferenceListMergeHelper<>(this);
+        return new AttributeMergeHelper<>(this);
     }
 
     @Override

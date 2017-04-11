@@ -180,7 +180,7 @@ public class DataEditor implements Widget {
         typeChooser.getItems().addAll(new ValueAttributeCreator("Integer",()->new IntegerAttribute(new AttributeMetadata().labelText(textField.getText()))));
         typeChooser.getItems().addAll(new ValueAttributeCreator("Long",()->new LongAttribute(new AttributeMetadata().labelText(textField.getText()))));
         typeChooser.getItems().addAll(new ValueAttributeCreator("Stringlist",()->new StringListAttribute(new AttributeMetadata().labelText(textField.getText()))));
-        typeChooser.getItems().addAll(new ValueAttributeCreator("Bigdecimal",()->new BigDecimalAttribute(new AttributeMetadata().labelText(textField.getText()))));
+        typeChooser.getItems().addAll(new ValueAttributeCreator("BigDecimal",()->new BigDecimalAttribute(new AttributeMetadata().labelText(textField.getText()))));
         typeChooser.getItems().addAll(new ValueAttributeCreator("LocalDate",()->new LocalDateAttribute(new AttributeMetadata().labelText(textField.getText()))));
         typeChooser.setConverter(new StringConverter<ValueAttributeCreator>() {
             @Override
