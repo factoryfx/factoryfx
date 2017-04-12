@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.NavigableMap;
 import java.util.function.Consumer;
 import java.util.function.Function;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import com.google.javascript.jscomp.CheckLevel;
@@ -37,8 +36,7 @@ import org.fxmisc.richtext.StyleSpansBuilder;
 
 public class JavascriptVisual {
 
-    public JavascriptVisual(List<SourceFile> externs, Supplier<String> additionalJavascript) {
-        this.additionalJavascript = additionalJavascript;
+    public JavascriptVisual(List<SourceFile> externs) {
         this.externs = externs;
     }
 
@@ -265,7 +263,6 @@ public class JavascriptVisual {
     }
 
     private final List<SourceFile> externs;
-    private final Supplier<String> additionalJavascript;
 
     public Node createContent(SimpleObjectProperty<Javascript> boundTo) {
         return new RootNode(externs,boundTo);
