@@ -471,7 +471,6 @@ public class DataTest {
         MergeDiffInfo mergeDiff= dataMerger.mergeIntoCurrent((permission)->true);
         Assert.assertTrue(mergeDiff.hasNoConflicts());
         Assert.assertEquals("2",currentModel.getAttributes().get(0).attribute.get());
-
     }
 
 
@@ -489,4 +488,20 @@ public class DataTest {
         dynamicDataExample1.internal().prepareUsableCopy();
 
     }
+
+    @Test
+    public void test_dynamic_metadata_serlisation(){
+        DynamicData dynamicData = new DynamicData();
+        final StringAttribute stringAttribute = new StringAttribute(new AttributeMetadata().en("labelx"));
+        stringAttribute.set("fdg");
+        dynamicData.dynamic().addAttribute(stringAttribute);
+
+        Assert.assertEquals("labelx", dynamicData.getAttributes().get(0).attribute.metadata.labelText.internal_getText(Locale.ENGLISH));
+        Data copy = ObjectMapperBuilder.build().copy(dynamicData);
+        System.out.println(ObjectMapperBuilder.build().writeValueAsString(dynamicData));
+
+        Assert.assertEquals(1, copy.getAttributes().size());
+        Assert.assertEquals("labelx", copy.getAttributes().get(0).attribute.metadata.labelText.internal_getText(Locale.ENGLISH));
+    }
+
 }

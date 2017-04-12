@@ -1,31 +1,34 @@
 package de.factoryfx.javascript.data.attributes.types;
 
+import java.util.List;
+import java.util.Objects;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Supplier;
+
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.javascript.jscomp.SourceFile;
 import de.factoryfx.data.Data;
-import de.factoryfx.data.DynamicDataAttribute;
-import de.factoryfx.data.attribute.*;
+import de.factoryfx.data.attribute.Attribute;
+import de.factoryfx.data.attribute.AttributeChangeListener;
+import de.factoryfx.data.attribute.AttributeMetadata;
+import de.factoryfx.data.attribute.ValueAttribute;
 import javafx.application.Platform;
-
-import java.util.*;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.function.Supplier;
 
 public class JavascriptAttribute<A> extends ValueAttribute<Javascript<A>> {
 
     @JsonIgnore
-    public final Supplier<List<Data>> data;
+    public final Supplier<List<? extends Data>> data;
     @JsonIgnore
     public final Class<A> apiClass;
     @JsonIgnore
-    private final Function<List<Data>,String> headerCreator = l->defaultCreateHeader(l);
+    private final Function<List<? extends Data>,String> headerCreator = l->defaultCreateHeader(l);
 
 
-    public JavascriptAttribute(AttributeMetadata attributeMetadata, Supplier<List<Data>> data, Class<A> apiClass) {
+    public JavascriptAttribute(AttributeMetadata attributeMetadata, Supplier<List<? extends Data>> data, Class<A> apiClass) {
         super(attributeMetadata, (Class<Javascript<A>>)Javascript.class.asSubclass(Javascript.class));
         this.data = data;
         this.apiClass = apiClass;
@@ -160,7 +163,7 @@ public class JavascriptAttribute<A> extends ValueAttribute<Javascript<A>> {
         return headerCreator.apply(data.get());
     }
 
-    protected String defaultCreateHeader(List<Data> l) {
+    protected String defaultCreateHeader(List<? extends Data> l) {
         StringBuilder sb = new StringBuilder();
         if (l.size() == 1) {
             sb.append("var data = ");

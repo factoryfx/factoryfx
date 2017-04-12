@@ -46,8 +46,8 @@ public class LanguageText {
         return this;
     }
 
-    public void internal_set(LanguageText label) {
-        label.texts=new HashMap<>(label.texts);
+    public void internal_set(LanguageText languageText) {
+        texts=new HashMap<>(languageText.texts);
     }
 
     public String internal_getText(Locale locale) {
