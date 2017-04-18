@@ -18,6 +18,7 @@ import de.factoryfx.javafx.widget.Widget;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
@@ -129,13 +130,15 @@ public class DataListEditWidget<T extends Data> implements Widget {
         uniformDesign.addIcon(sortButton,FontAwesome.Glyph.SORT_ALPHA_ASC);
         sortButton.setOnAction(event -> {
             ArrayList<T> datas = new ArrayList<T>();
-            datas.addAll(tableView.getItems());
+            ObservableList<T> items = tableView.getItems();
+            datas.addAll(items);
             datas.sort((d1,d2)->{
                 String s1 = Optional.ofNullable(d1.internal().getDisplayText()).orElse("");
                 String s2 = Optional.ofNullable(d1.internal().getDisplayText()).orElse("");
                 return s1.compareTo(s2);
             });
-            tableView.getItems().setAll(datas);
+            items.clear();
+            items.addAll(datas);
         });
 
         Button copyButton = new Button();
