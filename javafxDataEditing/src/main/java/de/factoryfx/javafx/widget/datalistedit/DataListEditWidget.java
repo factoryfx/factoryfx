@@ -125,6 +125,15 @@ public class DataListEditWidget<T extends Data> implements Widget {
                 tableView.getSelectionModel().select(selectedIndex +1);
             }
         });
+        Button sortButton = new Button();
+        uniformDesign.addIcon(sortButton,FontAwesome.Glyph.SORT_ALPHA_ASC);
+        sortButton.setOnAction(event -> {
+            tableView.getItems().sort((d1,d2)->{
+                String s1 = Optional.ofNullable(d1.internal().getDisplayText()).orElse("");
+                String s2 = Optional.ofNullable(d1.internal().getDisplayText()).orElse("");
+                return s1.compareTo(s2);
+            });
+        });
 
         Button copyButton = new Button();
         uniformDesign.addIcon(copyButton,FontAwesome.Glyph.COPY);
@@ -143,6 +152,7 @@ public class DataListEditWidget<T extends Data> implements Widget {
         buttons.getChildren().add(deleteButton);
         buttons.getChildren().add(moveUpButton);
         buttons.getChildren().add(moveDownButton);
+        buttons.getChildren().add(sortButton);
 
         showButton.setTooltip(new Tooltip(uniformDesign.getText(editText)));
         selectButton.setTooltip(new Tooltip(uniformDesign.getText(selectText)));
