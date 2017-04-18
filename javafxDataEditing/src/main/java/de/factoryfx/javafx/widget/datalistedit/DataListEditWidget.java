@@ -129,16 +129,11 @@ public class DataListEditWidget<T extends Data> implements Widget {
         Button sortButton = new Button();
         uniformDesign.addIcon(sortButton,FontAwesome.Glyph.SORT_ALPHA_ASC);
         sortButton.setOnAction(event -> {
-            ArrayList<T> datas = new ArrayList<T>();
-            ObservableList<T> items = tableView.getItems();
-            datas.addAll(items);
-            datas.sort((d1,d2)->{
+            list.sort((d1,d2)->{
                 String s1 = Optional.ofNullable(d1.internal().getDisplayText()).orElse("");
                 String s2 = Optional.ofNullable(d1.internal().getDisplayText()).orElse("");
                 return s1.compareTo(s2);
             });
-            items.clear();
-            items.addAll(datas);
         });
 
         Button copyButton = new Button();
