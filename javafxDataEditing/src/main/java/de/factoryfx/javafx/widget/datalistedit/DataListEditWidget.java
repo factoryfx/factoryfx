@@ -131,7 +131,7 @@ public class DataListEditWidget<T extends Data> implements Widget {
         sortButton.setOnAction(event -> {
             list.sort((d1,d2)->{
                 String s1 = Optional.ofNullable(d1.internal().getDisplayText()).orElse("");
-                String s2 = Optional.ofNullable(d1.internal().getDisplayText()).orElse("");
+                String s2 = Optional.ofNullable(d2.internal().getDisplayText()).orElse("");
                 return s1.compareTo(s2);
             });
         });
