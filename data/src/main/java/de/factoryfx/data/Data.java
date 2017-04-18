@@ -28,7 +28,6 @@ import com.google.common.base.Strings;
 import com.sun.javafx.collections.ObservableListWrapper;
 import de.factoryfx.data.attribute.Attribute;
 import de.factoryfx.data.attribute.AttributeChangeListener;
-import de.factoryfx.data.attribute.AttributeMetadata;
 import de.factoryfx.data.attribute.ValueAttribute;
 import de.factoryfx.data.merge.AttributeDiffInfo;
 import de.factoryfx.data.merge.MergeResult;
@@ -161,7 +160,7 @@ public class Data {
         dynamicAttributeData=true;
     }
 
-
+    @JsonIgnore
     public boolean isDynamic() {
         return dynamicAttributeData;
     }

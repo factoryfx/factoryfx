@@ -16,7 +16,7 @@ public class JavascriptAttributeVisualisation extends ValueAttributeEditorVisual
 
     @Override
     public Node createContent(SimpleObjectProperty<Javascript> boundTo) {
-        JavascriptVisual visual = new JavascriptVisual(attribute.getExterns(), attribute.getDeclarationsSupplier());
+        JavascriptVisual visual = new JavascriptVisual(attribute.internal_getExterns());
         return visual.createContent(boundTo);
     }
 

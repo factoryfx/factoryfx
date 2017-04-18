@@ -1,14 +1,16 @@
 package de.factoryfx.javascript.data.attributes.types;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
+import java.util.concurrent.LinkedBlockingDeque;
+
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonValue;
 import javafx.util.Pair;
-
-import java.util.*;
-import java.util.concurrent.LinkedBlockingDeque;
-import java.util.function.Function;
 
 public class Javascript<A> {
 
@@ -21,7 +23,7 @@ public class Javascript<A> {
     private final String declarationCode;
 
     @JsonIgnore
-    private final PrimitivePool primitivePool = new PrimitivePool();
+    private final ScriptExecutorCache scriptExecutorCache = new ScriptExecutorCache();
 
     @JsonCreator
     public Javascript(String code) {
@@ -43,8 +45,7 @@ public class Javascript<A> {
             return true;
         if (o == null)
             return false;
-        return Objects.equals(code, o.code)
-                && Objects.equals(headerCode, o.headerCode);
+        return Objects.equals(code, o.code) && Objects.equals(headerCode, o.headerCode);
     }
 
     @JsonValue
@@ -52,32 +53,16 @@ public class Javascript<A> {
         return code;
     }
 
-    public Javascript copy() {
-        return new Javascript(code);
-    }
-
     public void execute(A api) {
-        primitivePool.withExecutor(e->{
-            Map<String,Object> map = new HashMap<>();
-            map.put("api", api);
-            e.execute(map);
-            return null;
-        });
-    }
-
-
-    public Javascript copyWithNewHeaderCode(String headerCode) {
-        Javascript copy = new Javascript(code,headerCode,declarationCode);
-        return copy;
+        final ScriptExecutor scriptExecutor = scriptExecutorCache.take();
+        Map<String,Object> map = new HashMap<>();
+        map.put("api", api);
+        scriptExecutor.execute(map);
+        scriptExecutorCache.putBack(scriptExecutor);
     }
 
     public Javascript copyWithNewCode(String newCode) {
         Javascript copy = new Javascript(newCode,headerCode,declarationCode);
-        return copy;
-    }
-
-    public Javascript copyWithNewDeclarationCode(String declarationCode) {
-        Javascript copy = new Javascript(code,headerCode,declarationCode);
         return copy;
     }
 
@@ -90,18 +75,22 @@ public class Javascript<A> {
         return declarationCode;
     }
 
-    final class PrimitivePool {
-
+    /** optimisation for multithreading */
+    final class ScriptExecutorCache {
         LinkedBlockingDeque<ScriptExecutor> executors = new LinkedBlockingDeque<>();
 
-        public Object withExecutor(Function<ScriptExecutor,Object> executor) {
-            ScriptExecutor ex = Optional.ofNullable(executors.pollFirst()).orElseGet(()->createExecutor());
-            try {
-                return executor.apply(ex);
-            } finally {
-                executors.push(ex);
+        public ScriptExecutor take(){
+            final ScriptExecutor executor = executors.pollFirst();
+            if (executor==null){
+                return createExecutor();
             }
+            return executor;
         }
+
+        public void putBack(ScriptExecutor scriptExecutor){
+            executors.push(scriptExecutor);
+        }
+
 
         private ScriptExecutor createExecutor() {
             return new ScriptExecutor(Arrays.asList(new Pair<>("header",headerCode)), "rule", code, Collections.emptyMap());
