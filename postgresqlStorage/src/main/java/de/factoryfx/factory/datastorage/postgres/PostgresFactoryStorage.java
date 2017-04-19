@@ -109,6 +109,7 @@ public class PostgresFactoryStorage<L,V,T extends FactoryBase<L,V>> implements F
     public void updateCurrentFactory(FactoryAndStorageMetadata<T> update) {
         try {
             try (Connection connection = dataSource.getConnection()) {
+                update.metadata.id = createNewId();
                 updateCurrentFactory(connection, update);
                 connection.commit();
             }
@@ -166,9 +167,13 @@ public class PostgresFactoryStorage<L,V,T extends FactoryBase<L,V>> implements F
     @Override
     public FactoryAndStorageMetadata<T> getPrepareNewFactory(){
         StoredFactoryMetadata metadata = new StoredFactoryMetadata();
-        metadata.id=UUID.randomUUID().toString();
+        metadata.id= createNewId();
         metadata.baseVersionId=getCurrentFactory().metadata.id;
         return new FactoryAndStorageMetadata<>(getCurrentFactory().root,metadata);
+    }
+
+    private String createNewId() {
+        return UUID.randomUUID().toString();
     }
 
 
@@ -186,7 +191,7 @@ public class PostgresFactoryStorage<L,V,T extends FactoryBase<L,V>> implements F
                             ResultSet rs = pstmt.executeQuery();
                             if (!rs.next()) {
                                 StoredFactoryMetadata metadata = new StoredFactoryMetadata();
-                                String newId = UUID.randomUUID().toString();
+                                String newId = createNewId();
                                 metadata.id=newId;
                                 metadata.baseVersionId= newId;
                                 metadata.user="System";
