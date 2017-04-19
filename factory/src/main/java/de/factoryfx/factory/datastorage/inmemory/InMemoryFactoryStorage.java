@@ -1,5 +1,6 @@
 package de.factoryfx.factory.datastorage.inmemory;
 
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.Map;
 import java.util.TreeMap;
@@ -7,13 +8,15 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import de.factoryfx.factory.FactoryBase;
-import de.factoryfx.factory.datastorage.FactoryAndStorageMetadata;
+import de.factoryfx.factory.datastorage.FactoryAndNewMetadata;
+import de.factoryfx.factory.datastorage.FactoryAndStoredMetadata;
 import de.factoryfx.factory.datastorage.FactoryStorage;
+import de.factoryfx.factory.datastorage.NewFactoryMetadata;
 import de.factoryfx.factory.datastorage.StoredFactoryMetadata;
 
 
 public class InMemoryFactoryStorage<L,V,T extends FactoryBase<L,V>> implements FactoryStorage<L,V,T> {
-    private Map<String,FactoryAndStorageMetadata<T>> storage = new TreeMap<>();
+    private Map<String,FactoryAndStoredMetadata<T>> storage = new TreeMap<>();
     private String current;
     private T initialFactory;
 
@@ -25,7 +28,7 @@ public class InMemoryFactoryStorage<L,V,T extends FactoryBase<L,V>> implements F
 
     @Override
     public T getHistoryFactory(String id) {
-        FactoryAndStorageMetadata<T> data = storage.get(id);
+        FactoryAndStoredMetadata<T> data = storage.get(id);
         return data.root.internal().copyRoot();
     }
 
@@ -35,23 +38,31 @@ public class InMemoryFactoryStorage<L,V,T extends FactoryBase<L,V>> implements F
     }
 
     @Override
-    public FactoryAndStorageMetadata<T> getCurrentFactory() {
-        FactoryAndStorageMetadata<T> result = storage.get(current);
-        return new FactoryAndStorageMetadata<>(result.root.internal().prepareUsableCopy(),result.metadata);
+    public FactoryAndStoredMetadata<T> getCurrentFactory() {
+        FactoryAndStoredMetadata<T> result = storage.get(current);
+        return new FactoryAndStoredMetadata<>(result.root.internal().prepareUsableCopy(),result.metadata);
     }
 
     @Override
-    public void updateCurrentFactory(FactoryAndStorageMetadata<T> update) {
-        storage.put(update.metadata.id, update);
-        current=update.metadata.id;
+    public void updateCurrentFactory(FactoryAndNewMetadata<T> update, String user, String comment) {
+        final StoredFactoryMetadata storedFactoryMetadata = new StoredFactoryMetadata();
+        storedFactoryMetadata.creationTime=LocalDateTime.now();
+        storedFactoryMetadata.id= UUID.randomUUID().toString();
+        storedFactoryMetadata.user=comment;
+        storedFactoryMetadata.comment=comment;
+        storedFactoryMetadata.baseVersionId=update.metadata.baseVersionId;
+        storedFactoryMetadata.dataModelVersion=update.metadata.dataModelVersion;
+
+        final FactoryAndStoredMetadata<T> updateData = new FactoryAndStoredMetadata<>(update.root, storedFactoryMetadata);
+        storage.put(updateData.metadata.id, updateData);
+        current=updateData.metadata.id;
     }
 
     @Override
-    public FactoryAndStorageMetadata<T> getPrepareNewFactory(){
-        StoredFactoryMetadata metadata = new StoredFactoryMetadata();
-        metadata.id=UUID.randomUUID().toString();
+    public FactoryAndNewMetadata<T> getPrepareNewFactory(){
+        NewFactoryMetadata metadata = new NewFactoryMetadata();
         metadata.baseVersionId=current;
-        return new FactoryAndStorageMetadata<>(getCurrentFactory().root,metadata);
+        return new FactoryAndNewMetadata<>(getCurrentFactory().root,metadata);
     }
 
     @Override
@@ -61,6 +72,6 @@ public class InMemoryFactoryStorage<L,V,T extends FactoryBase<L,V>> implements F
         metadata.id=current;
         metadata.baseVersionId=current;
         metadata.user="System";
-        storage.put(current,new FactoryAndStorageMetadata<>(initialFactory, metadata));
+        storage.put(current,new FactoryAndStoredMetadata<>(initialFactory, metadata));
     }
 }

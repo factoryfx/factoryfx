@@ -5,7 +5,7 @@ import java.net.MalformedURLException;
 import de.factoryfx.data.attribute.AttributeMetadata;
 import de.factoryfx.data.attribute.types.StringAttribute;
 import de.factoryfx.factory.SimpleFactoryBase;
-import de.factoryfx.factory.datastorage.FactoryAndStorageMetadata;
+import de.factoryfx.factory.datastorage.FactoryAndNewMetadata;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -46,8 +46,8 @@ public class InMemoryFactoryStorageTest {
 
         Assert.assertEquals(1,fileSystemFactoryStorage.getHistoryFactoryList().size());
 
-        FactoryAndStorageMetadata<Dummy> preparedNewFactory = fileSystemFactoryStorage.getPrepareNewFactory();
-        fileSystemFactoryStorage.updateCurrentFactory(preparedNewFactory);
+        FactoryAndNewMetadata<Dummy> preparedNewFactory = fileSystemFactoryStorage.getPrepareNewFactory();
+        fileSystemFactoryStorage.updateCurrentFactory(preparedNewFactory,"","");
 
 
         Assert.assertEquals(2,fileSystemFactoryStorage.getHistoryFactoryList().size());

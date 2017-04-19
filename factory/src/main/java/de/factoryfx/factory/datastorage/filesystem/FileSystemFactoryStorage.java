@@ -7,13 +7,16 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.UUID;
 
 import de.factoryfx.factory.FactoryBase;
-import de.factoryfx.factory.datastorage.FactoryAndStorageMetadata;
+import de.factoryfx.factory.datastorage.FactoryAndNewMetadata;
+import de.factoryfx.factory.datastorage.FactoryAndStoredMetadata;
 import de.factoryfx.factory.datastorage.FactorySerialisationManager;
 import de.factoryfx.factory.datastorage.FactoryStorage;
+import de.factoryfx.factory.datastorage.NewFactoryMetadata;
 import de.factoryfx.factory.datastorage.StoredFactoryMetadata;
 
 public class FileSystemFactoryStorage<L,V,T extends FactoryBase<L,V>> implements FactoryStorage<L,V,T> {
@@ -51,24 +54,33 @@ public class FileSystemFactoryStorage<L,V,T extends FactoryBase<L,V>> implements
     }
 
     @Override
-    public FactoryAndStorageMetadata<T> getCurrentFactory() {
+    public FactoryAndStoredMetadata<T> getCurrentFactory() {
         StoredFactoryMetadata storedFactoryMetadata = factorySerialisationManager.readStoredFactoryMetadata(readFile(currentFactoryPathMetadata));
-        return new FactoryAndStorageMetadata<>(factorySerialisationManager.read(readFile(currentFactoryPath),storedFactoryMetadata.dataModelVersion),storedFactoryMetadata);
+        return new FactoryAndStoredMetadata<>(factorySerialisationManager.read(readFile(currentFactoryPath),storedFactoryMetadata.dataModelVersion),storedFactoryMetadata);
     }
 
     @Override
-    public void updateCurrentFactory(FactoryAndStorageMetadata<T> update) {
-        writeFile(currentFactoryPath,factorySerialisationManager.write(update.root));
-        writeFile(currentFactoryPathMetadata,factorySerialisationManager.writeStorageMetadata(update.metadata));
-        fileSystemFactoryStorageHistory.updateHistory(update.metadata,update.root);
+    public void updateCurrentFactory(FactoryAndNewMetadata<T> update, String user, String comment) {
+        final StoredFactoryMetadata storedFactoryMetadata = new StoredFactoryMetadata();
+        storedFactoryMetadata.creationTime= LocalDateTime.now();
+        storedFactoryMetadata.id= UUID.randomUUID().toString();
+        storedFactoryMetadata.user=comment;
+        storedFactoryMetadata.comment=comment;
+        storedFactoryMetadata.baseVersionId=update.metadata.baseVersionId;
+        storedFactoryMetadata.dataModelVersion=update.metadata.dataModelVersion;
+        final FactoryAndStoredMetadata<T> updateData = new FactoryAndStoredMetadata<>(update.root, storedFactoryMetadata);
+
+        writeFile(currentFactoryPath,factorySerialisationManager.write(updateData.root));
+        writeFile(currentFactoryPathMetadata,factorySerialisationManager.writeStorageMetadata(updateData.metadata));
+        fileSystemFactoryStorageHistory.updateHistory(updateData.metadata,updateData.root);
     }
 
     @Override
-    public FactoryAndStorageMetadata<T> getPrepareNewFactory(){
-        StoredFactoryMetadata metadata = new StoredFactoryMetadata();
-        metadata.id=UUID.randomUUID().toString();
+    public FactoryAndNewMetadata<T> getPrepareNewFactory(){
+        NewFactoryMetadata metadata = new NewFactoryMetadata();
         metadata.baseVersionId=getCurrentFactory().metadata.id;
-        return new FactoryAndStorageMetadata<>(getCurrentFactory().root,metadata);
+        factorySerialisationManager.prepareNewFactoryMetadata(metadata);
+        return new FactoryAndNewMetadata<>(getCurrentFactory().root,metadata);
     }
 
 
@@ -79,14 +91,10 @@ public class FileSystemFactoryStorage<L,V,T extends FactoryBase<L,V>> implements
 //            objectMapper.readValue(currentFactoryPath.toFile(),rootClass);
 //            objectMapper.readValue(currentFactoryPathMetadata.toFile(),StoredFactoryMetadata.class);
         } else {
-            StoredFactoryMetadata metadata = new StoredFactoryMetadata();
-            String newId = UUID.randomUUID().toString();
-            metadata.id=newId;
-            metadata.baseVersionId= newId;
-            metadata.user="System";
-            FactoryAndStorageMetadata<T> initialFactoryAndStorageMetadata = new FactoryAndStorageMetadata<T>(
-                    initialFactory,metadata);
-            updateCurrentFactory(initialFactoryAndStorageMetadata);
+            NewFactoryMetadata metadata = new NewFactoryMetadata();
+            metadata.baseVersionId= UUID.randomUUID().toString();
+            FactoryAndNewMetadata<T> initialFactoryAndStorageMetadata = new FactoryAndNewMetadata<>(initialFactory,metadata);
+            updateCurrentFactory(initialFactoryAndStorageMetadata,"System","initial factory");
         }
     }
 

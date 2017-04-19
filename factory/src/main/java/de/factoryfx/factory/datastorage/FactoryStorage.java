@@ -27,13 +27,13 @@ public interface FactoryStorage<L,V,T extends FactoryBase<L,V>> {
 
     Collection<StoredFactoryMetadata> getHistoryFactoryList();
 
-    FactoryAndStorageMetadata<T> getCurrentFactory();
+    FactoryAndStoredMetadata<T> getCurrentFactory();
 
-    /** prepare a new Factory which could we an update. mainly give it a new valid Id and the correct baseVersionId*/
-    FactoryAndStorageMetadata<T> getPrepareNewFactory();
+    /** prepare a new Factory which could we an update. mainly give it the correct baseVersionId*/
+    FactoryAndNewMetadata<T> getPrepareNewFactory();
 
     /** updateCurrentFactory and history*/
-    void  updateCurrentFactory(FactoryAndStorageMetadata<T> update);
+    void  updateCurrentFactory(FactoryAndNewMetadata<T> update, String user, String comment);
 
     /**at Application start load current Factory*/
     void loadInitialFactory();

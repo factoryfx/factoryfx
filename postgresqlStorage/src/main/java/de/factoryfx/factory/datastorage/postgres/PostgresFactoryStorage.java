@@ -9,6 +9,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.UUID;
@@ -17,9 +18,11 @@ import javax.sql.DataSource;
 
 import com.google.common.io.CharStreams;
 import de.factoryfx.factory.FactoryBase;
-import de.factoryfx.factory.datastorage.FactoryAndStorageMetadata;
+import de.factoryfx.factory.datastorage.FactoryAndNewMetadata;
+import de.factoryfx.factory.datastorage.FactoryAndStoredMetadata;
 import de.factoryfx.factory.datastorage.FactorySerialisationManager;
 import de.factoryfx.factory.datastorage.FactoryStorage;
+import de.factoryfx.factory.datastorage.NewFactoryMetadata;
 import de.factoryfx.factory.datastorage.StoredFactoryMetadata;
 
 public class PostgresFactoryStorage<L,V,T extends FactoryBase<L,V>> implements FactoryStorage<L,V,T> {
@@ -83,7 +86,7 @@ public class PostgresFactoryStorage<L,V,T extends FactoryBase<L,V>> implements F
     }
 
     @Override
-    public FactoryAndStorageMetadata<T> getCurrentFactory() {
+    public FactoryAndStoredMetadata<T> getCurrentFactory() {
         try {
             try (Connection connection = dataSource.getConnection()) {
                 try (PreparedStatement pstmt = connection.prepareStatement("select cast (root as text) as root, cast (metadata as text) as metadata from currentconfiguration")) {
@@ -93,7 +96,7 @@ public class PostgresFactoryStorage<L,V,T extends FactoryBase<L,V>> implements F
 
                         StoredFactoryMetadata storedFactoryMetadata = factorySerialisationManager.readStoredFactoryMetadata(rs.getString(2));
 
-                        return new FactoryAndStorageMetadata<>(
+                        return new FactoryAndStoredMetadata<>(
                                 factorySerialisationManager.read(rs.getString(1),storedFactoryMetadata.dataModelVersion),
                                 storedFactoryMetadata
                         );
@@ -106,11 +109,19 @@ public class PostgresFactoryStorage<L,V,T extends FactoryBase<L,V>> implements F
     }
 
     @Override
-    public void updateCurrentFactory(FactoryAndStorageMetadata<T> update) {
+    public void updateCurrentFactory(FactoryAndNewMetadata<T> update, String user, String comment) {
+        final StoredFactoryMetadata storedFactoryMetadata = new StoredFactoryMetadata();
+        storedFactoryMetadata.creationTime= LocalDateTime.now();
+        storedFactoryMetadata.id= createNewId();
+        storedFactoryMetadata.user=comment;
+        storedFactoryMetadata.comment=comment;
+        storedFactoryMetadata.baseVersionId=update.metadata.baseVersionId;
+        storedFactoryMetadata.dataModelVersion=update.metadata.dataModelVersion;
+        final FactoryAndStoredMetadata<T> updateData = new FactoryAndStoredMetadata<>(update.root, storedFactoryMetadata);
+
         try {
             try (Connection connection = dataSource.getConnection()) {
-                update.metadata.id = createNewId();
-                updateCurrentFactory(connection, update);
+                updateCurrentFactory(connection, updateData);
                 connection.commit();
             }
         } catch (SQLException e) {
@@ -118,7 +129,7 @@ public class PostgresFactoryStorage<L,V,T extends FactoryBase<L,V>> implements F
         }
     }
 
-    private void updateCurrentFactory(Connection connection, FactoryAndStorageMetadata<T> update) throws SQLException {
+    private void updateCurrentFactory(Connection connection, FactoryAndStoredMetadata<T> update) throws SQLException {
         try (PreparedStatement pstmtlockConfiguration = connection.prepareStatement("lock table currentconfiguration in exclusive mode")) {
             pstmtlockConfiguration.execute();
         }
@@ -155,7 +166,7 @@ public class PostgresFactoryStorage<L,V,T extends FactoryBase<L,V>> implements F
         }
     }
 
-    private void setValues(FactoryAndStorageMetadata<T> update, Timestamp createdAtTimestamp, PreparedStatement pstmt) throws SQLException {
+    private void setValues(FactoryAndStoredMetadata<T> update, Timestamp createdAtTimestamp, PreparedStatement pstmt) throws SQLException {
         pstmt.setString(1, factorySerialisationManager.write(update.root));
         pstmt.setString(2, factorySerialisationManager.writeStorageMetadata(update.metadata));
         pstmt.setTimestamp(3, createdAtTimestamp);
@@ -165,11 +176,11 @@ public class PostgresFactoryStorage<L,V,T extends FactoryBase<L,V>> implements F
 
 
     @Override
-    public FactoryAndStorageMetadata<T> getPrepareNewFactory(){
-        StoredFactoryMetadata metadata = new StoredFactoryMetadata();
-        metadata.id= createNewId();
+    public FactoryAndNewMetadata<T> getPrepareNewFactory(){
+        NewFactoryMetadata metadata = new NewFactoryMetadata();
         metadata.baseVersionId=getCurrentFactory().metadata.id;
-        return new FactoryAndStorageMetadata<>(getCurrentFactory().root,metadata);
+        factorySerialisationManager.prepareNewFactoryMetadata(metadata);
+        return new FactoryAndNewMetadata<>(getCurrentFactory().root,metadata);
     }
 
     private String createNewId() {
@@ -195,7 +206,7 @@ public class PostgresFactoryStorage<L,V,T extends FactoryBase<L,V>> implements F
                                 metadata.id=newId;
                                 metadata.baseVersionId= newId;
                                 metadata.user="System";
-                                FactoryAndStorageMetadata<T> initialFactoryAndStorageMetadata = new FactoryAndStorageMetadata<T>(
+                                FactoryAndStoredMetadata<T> initialFactoryAndStorageMetadata = new FactoryAndStoredMetadata<T>(
                                         initialFactory,metadata);
                                 updateCurrentFactory(connection,initialFactoryAndStorageMetadata);
                             }

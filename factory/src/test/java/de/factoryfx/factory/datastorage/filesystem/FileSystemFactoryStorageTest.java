@@ -5,13 +5,12 @@ import java.net.MalformedURLException;
 import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.UUID;
 
-import de.factoryfx.factory.datastorage.FactoryAndStorageMetadata;
+import de.factoryfx.factory.datastorage.FactoryAndNewMetadata;
 import de.factoryfx.factory.datastorage.FactorySerialisationManager;
 import de.factoryfx.factory.datastorage.JacksonDeSerialisation;
 import de.factoryfx.factory.datastorage.JacksonSerialisation;
-import de.factoryfx.factory.datastorage.StoredFactoryMetadata;
+import de.factoryfx.factory.datastorage.NewFactoryMetadata;
 import de.factoryfx.factory.testfactories.ExampleFactoryA;
 import de.factoryfx.factory.testfactories.ExampleLiveObjectA;
 import org.junit.Assert;
@@ -26,7 +25,7 @@ public class FileSystemFactoryStorageTest {
 
     private FactorySerialisationManager<ExampleFactoryA> createSerialisation(){
         int dataModelVersion = 1;
-        return new FactorySerialisationManager<>(new JacksonSerialisation<>(dataModelVersion),new JacksonDeSerialisation<>(ExampleFactoryA.class, dataModelVersion), Collections.emptyList());
+        return new FactorySerialisationManager<>(new JacksonSerialisation<>(dataModelVersion),new JacksonDeSerialisation<>(ExampleFactoryA.class, dataModelVersion), Collections.emptyList(),1);
     }
 
 
@@ -56,10 +55,9 @@ public class FileSystemFactoryStorageTest {
         fileSystemFactoryStorage.loadInitialFactory();
         String id=fileSystemFactoryStorage.getCurrentFactory().metadata.id;
 
-        StoredFactoryMetadata metadata = new StoredFactoryMetadata();
-        metadata.id = UUID.randomUUID().toString();
-        FactoryAndStorageMetadata<ExampleFactoryA> update = new FactoryAndStorageMetadata<>(new ExampleFactoryA(), metadata);
-        fileSystemFactoryStorage.updateCurrentFactory(update);
+        NewFactoryMetadata metadata = new NewFactoryMetadata();
+        FactoryAndNewMetadata<ExampleFactoryA> update = new FactoryAndNewMetadata<>(new ExampleFactoryA(), metadata);
+        fileSystemFactoryStorage.updateCurrentFactory(update,"","");
         Assert.assertNotEquals(id,fileSystemFactoryStorage.getCurrentFactory().metadata.id);
         Assert.assertEquals(2,fileSystemFactoryStorage.getHistoryFactoryList().size());
 

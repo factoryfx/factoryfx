@@ -8,9 +8,9 @@ import java.util.Optional;
 import de.factoryfx.data.jackson.ObjectMapperBuilder;
 import de.factoryfx.data.merge.MergeDiffInfo;
 import de.factoryfx.factory.FactoryBase;
-import de.factoryfx.factory.datastorage.FactoryAndStorageMetadata;
+import de.factoryfx.factory.datastorage.FactoryAndNewMetadata;
 import de.factoryfx.factory.datastorage.FactorySerialisationManager;
-import de.factoryfx.factory.datastorage.StoredFactoryMetadata;
+import de.factoryfx.factory.datastorage.NewFactoryMetadata;
 import de.factoryfx.factory.log.FactoryUpdateLog;
 import de.factoryfx.server.rest.client.ApplicationServerRestClient;
 import javafx.application.Platform;
@@ -33,16 +33,16 @@ public class FactoryEditManager<V,R extends FactoryBase<?,V>> {
         listeners.remove(listener);
     }
 
-    Optional<FactoryAndStorageMetadata<R>> loadedRoot = Optional.empty();
+    Optional<FactoryAndNewMetadata<R>> loadedRoot = Optional.empty();
     public void load(){
-        FactoryAndStorageMetadata<R> currentFactory = client.prepareNewFactory();
+        FactoryAndNewMetadata<R> currentFactory = client.prepareNewFactory();
         Optional<R> previousRoot=getLoadedFactory();
         loadedRoot = Optional.of(currentFactory);
 
         updateNotify(currentFactory, previousRoot);
     }
 
-    private void updateNotify(FactoryAndStorageMetadata<R> currentFactory, Optional<R> previousRoot) {
+    private void updateNotify(FactoryAndNewMetadata<R> currentFactory, Optional<R> previousRoot) {
         Platform.runLater(() -> {
             for (FactoryRootChangeListener listener: listeners){
                 listener.update(previousRoot,currentFactory.root);
@@ -62,9 +62,8 @@ public class FactoryEditManager<V,R extends FactoryBase<?,V>> {
     }
 
     public FactoryUpdateLog save(String comment) {
-        final FactoryAndStorageMetadata<R> update = loadedRoot.get();
-        update.metadata.comment=comment;
-        final FactoryUpdateLog factoryLog = client.updateCurrentFactory(update);
+        final FactoryAndNewMetadata<R> update = loadedRoot.get();
+        final FactoryUpdateLog factoryLog = client.updateCurrentFactory(update,comment);
         load();//to edit the newly merged data
         return factoryLog;
     }
@@ -82,17 +81,17 @@ public class FactoryEditManager<V,R extends FactoryBase<?,V>> {
         final FactoryAndStringifyedStorageMetadata value = ObjectMapperBuilder.build().readValue(target.toFile(), FactoryAndStringifyedStorageMetadata.class);
         R serverFactory = factorySerialisationManager.read(value.root, value.metadata.dataModelVersion);
         serverFactory = serverFactory.internal().prepareUsableCopy();
-        loadedRoot=Optional.of(new FactoryAndStorageMetadata<>(serverFactory,value.metadata));
+        loadedRoot=Optional.of(new FactoryAndNewMetadata<>(serverFactory,value.metadata));
         updateNotify(loadedRoot.get(), previousRoot);
     }
 
     private static class FactoryAndStringifyedStorageMetadata{
         public String root;
-        public StoredFactoryMetadata metadata;
+        public NewFactoryMetadata metadata;
     }
 
     public MergeDiffInfo simulateUpdateCurrentFactory() {
-        final FactoryAndStorageMetadata<R> update = loadedRoot.get();
+        final FactoryAndNewMetadata<R> update = loadedRoot.get();
         final MergeDiffInfo mergeDiffInfo = client.simulateUpdateCurrentFactory(update);
         return mergeDiffInfo;
     }

@@ -4,6 +4,9 @@ import java.time.LocalDateTime;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 
+/**
+ * metadata for a stored historical factory
+ */
 public class StoredFactoryMetadata {
     public LocalDateTime creationTime;
     public String id;

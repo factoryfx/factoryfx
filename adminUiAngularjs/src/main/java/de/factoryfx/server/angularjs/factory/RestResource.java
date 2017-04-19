@@ -34,7 +34,7 @@ import de.factoryfx.data.attribute.ReferenceListAttribute;
 import de.factoryfx.data.merge.AttributeDiffInfo;
 import de.factoryfx.data.merge.MergeDiffInfo;
 import de.factoryfx.factory.FactoryBase;
-import de.factoryfx.factory.datastorage.FactoryAndStorageMetadata;
+import de.factoryfx.factory.datastorage.FactoryAndNewMetadata;
 import de.factoryfx.factory.datastorage.StoredFactoryMetadata;
 import de.factoryfx.factory.log.FactoryUpdateLog;
 import de.factoryfx.server.ApplicationServer;
@@ -190,8 +190,8 @@ public class RestResource<L,V,T extends FactoryBase<L,V>> {
     HttpServletRequest request;
 
     @SuppressWarnings("unchecked")
-    private FactoryAndStorageMetadata<T> getCurrentEditingFactory(){
-        return (FactoryAndStorageMetadata<T>)sessionStorage.getCurrentEditingFactory(request);
+    private FactoryAndNewMetadata<T> getCurrentEditingFactory(){
+        return (FactoryAndNewMetadata<T>)sessionStorage.getCurrentEditingFactory(request);
 
     }
 
@@ -200,8 +200,7 @@ public class RestResource<L,V,T extends FactoryBase<L,V>> {
     @Path("loadCurrentFactory")
     public Response init(){
         if (!sessionStorage.hasCurrentEditingFactory(request)){
-            FactoryAndStorageMetadata<T> prepareNewFactory = applicationServer.prepareNewFactory();
-            prepareNewFactory.metadata.user=getUser().user;
+            FactoryAndNewMetadata<T> prepareNewFactory = applicationServer.prepareNewFactory();
             sessionStorage.setCurrentEditingFactory(request,prepareNewFactory);
         }
         return Response.ok().entity("ok").build();
@@ -252,7 +251,7 @@ public class RestResource<L,V,T extends FactoryBase<L,V>> {
 
     private StageResponse createStageResponse(){
         StageResponse response=new StageResponse();
-        FactoryAndStorageMetadata<T> currentEditingFactoryRoot = getCurrentEditingFactory();
+        FactoryAndNewMetadata<T> currentEditingFactoryRoot = getCurrentEditingFactory();
 
         //TODO permission check
         response.mergeDiffInfo=applicationServer.simulateUpdateCurrentFactory(currentEditingFactoryRoot, (permission)->true);
@@ -294,8 +293,8 @@ public class RestResource<L,V,T extends FactoryBase<L,V>> {
 
 
         if (response.validationErrors.isEmpty()){
-            //TODO handle conflicts and permissions
-            final FactoryUpdateLog factoryLog = applicationServer.updateCurrentFactory(getCurrentEditingFactory(),(permission)->true);
+            //TODO handle conflicts and permissions, comment
+            final FactoryUpdateLog factoryLog = applicationServer.updateCurrentFactory(getCurrentEditingFactory(),getUser().user,"",(permission)->true);
             response.mergeDiff=new WebGuiMergeDiff(factoryLog.mergeDiffInfo,getUserLocale());
             if (factoryLog.mergeDiffInfo.hasNoConflicts()){
                 response.deployed=true;

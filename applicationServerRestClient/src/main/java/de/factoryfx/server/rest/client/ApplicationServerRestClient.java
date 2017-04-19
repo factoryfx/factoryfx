@@ -6,11 +6,12 @@ import java.util.Locale;
 
 import de.factoryfx.data.merge.MergeDiffInfo;
 import de.factoryfx.factory.FactoryBase;
-import de.factoryfx.factory.datastorage.FactoryAndStorageMetadata;
+import de.factoryfx.factory.datastorage.FactoryAndNewMetadata;
 import de.factoryfx.factory.datastorage.FactoryStorage;
 import de.factoryfx.factory.datastorage.StoredFactoryMetadata;
 import de.factoryfx.factory.log.FactoryUpdateLog;
 import de.factoryfx.server.rest.CheckUserResponse;
+import de.factoryfx.server.rest.UpdateCurrentFactoryRequest;
 import de.factoryfx.server.rest.UserAwareRequest;
 import de.factoryfx.server.rest.UserLocaleResponse;
 
@@ -30,19 +31,22 @@ public class ApplicationServerRestClient<V,T extends FactoryBase<?,V>> {
         this.passwordHash=passwordHash;
     }
 
-    public FactoryUpdateLog updateCurrentFactory(FactoryAndStorageMetadata<T> update) {
-        return restClient.post("updateCurrentFactory", new UserAwareRequest<>(user,passwordHash,update), FactoryUpdateLog.class);
+    public FactoryUpdateLog updateCurrentFactory(FactoryAndNewMetadata<T> update, String comment) {
+        final UpdateCurrentFactoryRequest updateCurrentFactoryRequest = new UpdateCurrentFactoryRequest();
+        updateCurrentFactoryRequest.comment=comment;
+        updateCurrentFactoryRequest.factoryUpdate=update;
+        return restClient.post("updateCurrentFactory", new UserAwareRequest<>(user,passwordHash,updateCurrentFactoryRequest), FactoryUpdateLog.class);
     }
 
-    public MergeDiffInfo simulateUpdateCurrentFactory(FactoryAndStorageMetadata<T> update) {
+    public MergeDiffInfo simulateUpdateCurrentFactory(FactoryAndNewMetadata<T> update) {
         return restClient.post("simulateUpdateCurrentFactory", new UserAwareRequest<>(user,passwordHash,update), MergeDiffInfo.class);
     }
 
     /** @see FactoryStorage#getPrepareNewFactory() */
     @SuppressWarnings("unchecked")
-    public FactoryAndStorageMetadata<T> prepareNewFactory() {
-        FactoryAndStorageMetadata<T> currentFactory = restClient.post("prepareNewFactory",new UserAwareRequest<Void>(user,passwordHash,null), FactoryAndStorageMetadata.class);
-        return new FactoryAndStorageMetadata<>(currentFactory.root.internal().prepareUsableCopy(),currentFactory.metadata);
+    public FactoryAndNewMetadata<T> prepareNewFactory() {
+        FactoryAndNewMetadata<T> currentFactory = restClient.post("prepareNewFactory",new UserAwareRequest<Void>(user,passwordHash,null), FactoryAndNewMetadata.class);
+        return new FactoryAndNewMetadata<>(currentFactory.root.internal().prepareUsableCopy(),currentFactory.metadata);
     }
 
     public MergeDiffInfo getDiff(StoredFactoryMetadata historyEntry) {

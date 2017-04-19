@@ -108,6 +108,7 @@ project(':applicationServerRestClient') {
 
 project(':applicationServerRestCommon') {
     dependencies {
+        compile project(":factory")
         compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.8.3'
     }
 }

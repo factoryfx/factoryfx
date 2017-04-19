@@ -2,7 +2,7 @@ package de.factoryfx.server.angularjs.factory;
 
 import javax.servlet.http.HttpServletRequest;
 
-import de.factoryfx.factory.datastorage.FactoryAndStorageMetadata;
+import de.factoryfx.factory.datastorage.FactoryAndNewMetadata;
 import de.factoryfx.server.angularjs.factory.server.AuthorizationRequestFilter;
 import de.factoryfx.user.AuthorizedUser;
 
@@ -21,11 +21,11 @@ public class SessionStorage {
     }
 
     @SuppressWarnings("unchecked")
-    public FactoryAndStorageMetadata<?> getCurrentEditingFactory(HttpServletRequest request){
-        return (FactoryAndStorageMetadata<?>) getAttribute(request,CURRENT_EDITING_FACTORY_SESSION_KEY);
+    public FactoryAndNewMetadata<?> getCurrentEditingFactory(HttpServletRequest request){
+        return (FactoryAndNewMetadata<?>) getAttribute(request,CURRENT_EDITING_FACTORY_SESSION_KEY);
     }
 
-    public void setCurrentEditingFactory(HttpServletRequest request, FactoryAndStorageMetadata<?> factory){
+    public void setCurrentEditingFactory(HttpServletRequest request, FactoryAndNewMetadata<?> factory){
         setAttribute(request,CURRENT_EDITING_FACTORY_SESSION_KEY, factory);
     }
 

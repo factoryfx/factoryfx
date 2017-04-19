@@ -8,15 +8,14 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.UUID;
 
 import javax.sql.DataSource;
 
-import de.factoryfx.factory.datastorage.FactoryAndStorageMetadata;
+import de.factoryfx.factory.datastorage.FactoryAndNewMetadata;
 import de.factoryfx.factory.datastorage.FactorySerialisationManager;
 import de.factoryfx.factory.datastorage.JacksonDeSerialisation;
 import de.factoryfx.factory.datastorage.JacksonSerialisation;
-import de.factoryfx.factory.datastorage.StoredFactoryMetadata;
+import de.factoryfx.factory.datastorage.NewFactoryMetadata;
 import de.factoryfx.factory.testfactories.ExampleFactoryA;
 import de.factoryfx.factory.testfactories.ExampleLiveObjectA;
 import org.junit.AfterClass;
@@ -74,7 +73,7 @@ public class PostgresFactoryStorageTest {
 
     private FactorySerialisationManager<ExampleFactoryA> createSerialisation(){
         int dataModelVersion = 1;
-        return new FactorySerialisationManager<>(new JacksonSerialisation<>(dataModelVersion),new JacksonDeSerialisation<>(ExampleFactoryA.class, dataModelVersion), Collections.emptyList());
+        return new FactorySerialisationManager<>(new JacksonSerialisation<>(dataModelVersion),new JacksonDeSerialisation<>(ExampleFactoryA.class, dataModelVersion), Collections.emptyList(),1);
     }
 
     @Test
@@ -130,9 +129,8 @@ public class PostgresFactoryStorageTest {
         postgresFactoryStorage.loadInitialFactory();
         String id=postgresFactoryStorage.getCurrentFactory().metadata.id;
 
-        FactoryAndStorageMetadata<ExampleFactoryA> update = new FactoryAndStorageMetadata<>(new ExampleFactoryA(),new StoredFactoryMetadata());
-        update.metadata.id = UUID.randomUUID().toString();
-        postgresFactoryStorage.updateCurrentFactory(update);
+        FactoryAndNewMetadata<ExampleFactoryA> update = new FactoryAndNewMetadata<>(new ExampleFactoryA(),new NewFactoryMetadata());
+        postgresFactoryStorage.updateCurrentFactory(update,"","");
         Assert.assertNotEquals(id,postgresFactoryStorage.getCurrentFactory().metadata.id);
         Assert.assertEquals(2,postgresFactoryStorage.getHistoryFactoryList().size());
         Assert.assertEquals(id,new ArrayList<>(postgresFactoryStorage.getHistoryFactoryList()).get(0).id);
@@ -167,21 +165,18 @@ public class PostgresFactoryStorageTest {
         postgresFactoryStorage.loadInitialFactory();
 
         {
-            StoredFactoryMetadata metadata = new StoredFactoryMetadata();
-            metadata.id = UUID.randomUUID().toString();
-            postgresFactoryStorage.updateCurrentFactory(new FactoryAndStorageMetadata<>(new ExampleFactoryA(),metadata));
+            NewFactoryMetadata metadata = new NewFactoryMetadata();
+            postgresFactoryStorage.updateCurrentFactory(new FactoryAndNewMetadata<>(new ExampleFactoryA(),metadata),"","");
         }
 
         {
-            StoredFactoryMetadata metadata = new StoredFactoryMetadata();
-            metadata.id = UUID.randomUUID().toString();
-            postgresFactoryStorage.updateCurrentFactory(new FactoryAndStorageMetadata<>(new ExampleFactoryA(),metadata));
+            NewFactoryMetadata metadata = new NewFactoryMetadata();
+            postgresFactoryStorage.updateCurrentFactory(new FactoryAndNewMetadata<>(new ExampleFactoryA(),metadata),"","");
         }
 
         {
-            StoredFactoryMetadata metadata = new StoredFactoryMetadata();
-            metadata.id = UUID.randomUUID().toString();
-            postgresFactoryStorage.updateCurrentFactory(new FactoryAndStorageMetadata<>(new ExampleFactoryA(),metadata));
+            NewFactoryMetadata metadata = new NewFactoryMetadata();
+            postgresFactoryStorage.updateCurrentFactory(new FactoryAndNewMetadata<>(new ExampleFactoryA(),metadata),"","");
         }
 
         Assert.assertEquals(4,postgresFactoryStorage.getHistoryFactoryList().size());
@@ -192,9 +187,8 @@ public class PostgresFactoryStorageTest {
         PostgresFactoryStorage<ExampleLiveObjectA,Void, ExampleFactoryA> postgresFactoryStorage = new PostgresFactoryStorage<>(postgresDatasource,new ExampleFactoryA(),createSerialisation());
         postgresFactoryStorage.loadInitialFactory();
 
-        StoredFactoryMetadata metadata = new StoredFactoryMetadata();
-        metadata.id= UUID.randomUUID().toString();
-        postgresFactoryStorage.updateCurrentFactory(new FactoryAndStorageMetadata<>(new ExampleFactoryA(),metadata));
+        NewFactoryMetadata metadata = new NewFactoryMetadata();
+        postgresFactoryStorage.updateCurrentFactory(new FactoryAndNewMetadata<>(new ExampleFactoryA(),metadata),"","");
         Assert.assertEquals(2,postgresFactoryStorage.getHistoryFactoryList().size());
 
         PostgresFactoryStorage<ExampleLiveObjectA,Void, ExampleFactoryA> restored = new PostgresFactoryStorage<>(postgresDatasource,new ExampleFactoryA(), createSerialisation());

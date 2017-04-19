@@ -8,11 +8,13 @@ public class FactorySerialisationManager<T extends FactoryBase<?,?>> {
     private final FactorySerialisation<T> defaultFactorySerialisation;
     private final FactoryDeSerialisation<T> defaultFactoryDeSerialisation;
     private final List<FactoryMigration> factoryMigrations;
+    private final int dataModelVersion;
 
-    public FactorySerialisationManager(FactorySerialisation<T> defaultFactorySerialisation, FactoryDeSerialisation<T> defaultFactoryDeSerialisation, List<FactoryMigration> factoryMigrations) {
+    public FactorySerialisationManager(FactorySerialisation<T> defaultFactorySerialisation, FactoryDeSerialisation<T> defaultFactoryDeSerialisation, List<FactoryMigration> factoryMigrations, int dataModelVersion) {
         this.defaultFactoryDeSerialisation = defaultFactoryDeSerialisation;
         this.defaultFactorySerialisation = defaultFactorySerialisation;
         this.factoryMigrations = factoryMigrations;
+        this.dataModelVersion=dataModelVersion;
     }
 
     public String write(T root) {
@@ -48,6 +50,11 @@ public class FactorySerialisationManager<T extends FactoryBase<?,?>> {
 
     public StoredFactoryMetadata readStoredFactoryMetadata(String data) {
         return defaultFactoryDeSerialisation.readStorageMetadata(data);
+    }
+
+    public NewFactoryMetadata prepareNewFactoryMetadata(NewFactoryMetadata newFactoryMetadata){
+        newFactoryMetadata.dataModelVersion=dataModelVersion;
+        return newFactoryMetadata;
     }
 
 }

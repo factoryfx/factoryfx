@@ -14,7 +14,8 @@ import javax.ws.rs.core.MediaType;
 
 import de.factoryfx.data.merge.MergeDiffInfo;
 import de.factoryfx.factory.FactoryBase;
-import de.factoryfx.factory.datastorage.FactoryAndStorageMetadata;
+import de.factoryfx.factory.datastorage.FactoryAndNewMetadata;
+import de.factoryfx.factory.datastorage.FactoryAndStoredMetadata;
 import de.factoryfx.factory.datastorage.StoredFactoryMetadata;
 import de.factoryfx.factory.log.FactoryUpdateLog;
 import de.factoryfx.server.ApplicationServer;
@@ -50,9 +51,9 @@ public class ApplicationServerResource<V,L,T extends FactoryBase<L,V>>  {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @Path("updateCurrentFactory")
-    public FactoryUpdateLog updateCurrentFactory(UserAwareRequest<FactoryAndStorageMetadata> update) {
+    public FactoryUpdateLog updateCurrentFactory(UserAwareRequest<UpdateCurrentFactoryRequest> update) {
         Function<String, Boolean> permissionChecker = authenticateAndGetPermissionChecker(update);
-        return applicationServer.updateCurrentFactory(new FactoryAndStorageMetadata<>(update.request.root.internal().prepareUsableCopy(),update.request.metadata),permissionChecker);
+        return applicationServer.updateCurrentFactory(new FactoryAndNewMetadata<>(update.request.factoryUpdate.root.internal().prepareUsableCopy(),update.request.factoryUpdate.metadata),update.user,update.request.comment,permissionChecker);
     }
 
     @POST
@@ -77,9 +78,9 @@ public class ApplicationServerResource<V,L,T extends FactoryBase<L,V>>  {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @Path("simulateUpdateCurrentFactory")
-    public MergeDiffInfo simulateUpdateCurrentFactory(UserAwareRequest<FactoryAndStorageMetadata> request) {
+    public MergeDiffInfo simulateUpdateCurrentFactory(UserAwareRequest<FactoryAndNewMetadata> request) {
         Function<String, Boolean> permissionChecker = authenticateAndGetPermissionChecker(request);
-        return applicationServer.simulateUpdateCurrentFactory(new FactoryAndStorageMetadata<>(request.request.root.internal().prepareUsableCopy(),request.request.metadata),permissionChecker);
+        return applicationServer.simulateUpdateCurrentFactory(new FactoryAndNewMetadata<>(request.request.root.internal().prepareUsableCopy(),request.request.metadata),permissionChecker);
     }
 
     @POST
@@ -95,7 +96,7 @@ public class ApplicationServerResource<V,L,T extends FactoryBase<L,V>>  {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @Path("prepareNewFactory")
-    public FactoryAndStorageMetadata prepareNewFactory(UserAwareRequest<Void> request) {
+    public FactoryAndNewMetadata prepareNewFactory(UserAwareRequest<Void> request) {
         authenticate(request);
         return applicationServer.prepareNewFactory();
     }
