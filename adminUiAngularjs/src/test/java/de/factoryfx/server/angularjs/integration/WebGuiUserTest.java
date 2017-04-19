@@ -5,7 +5,7 @@ import java.util.Locale;
 
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
-import de.factoryfx.server.SinglePrecessInstanceUtil;
+import de.factoryfx.server.SingleProcessInstanceUtil;
 import de.factoryfx.user.User;
 import de.factoryfx.user.UserManagement;
 import de.factoryfx.user.persistent.PersistentUserManagement;
@@ -23,7 +23,7 @@ public class WebGuiUserTest extends WebGuiTest{
         Logger root = (Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
         root.setLevel(Level.INFO);
 
-        SinglePrecessInstanceUtil.enforceSingleProzessInstance(37453);
+        SingleProcessInstanceUtil.enforceSingleProcessInstance(37453);
         Application.launch(args);
     }
 

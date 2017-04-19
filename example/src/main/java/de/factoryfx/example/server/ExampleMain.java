@@ -22,7 +22,7 @@ import de.factoryfx.factory.exception.AllOrNothingFactoryExceptionHandler;
 import de.factoryfx.factory.exception.LoggingFactoryExceptionHandler;
 import de.factoryfx.factory.util.ClasspathBasedFactoryProvider;
 import de.factoryfx.server.ApplicationServer;
-import de.factoryfx.server.SinglePrecessInstanceUtil;
+import de.factoryfx.server.SingleProcessInstanceUtil;
 import de.factoryfx.server.WebAppViewer;
 import de.factoryfx.server.angularjs.WebGuiApplicationCreator;
 import de.factoryfx.server.angularjs.factory.server.HttpServer;
@@ -116,7 +116,7 @@ public class ExampleMain extends Application {
         Logger root = (Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
         root.setLevel(Level.INFO);
 
-        SinglePrecessInstanceUtil.enforceSingleProzessInstance(37453);
+        SingleProcessInstanceUtil.enforceSingleProcessInstance(37453);
         Application.launch();
     }
 

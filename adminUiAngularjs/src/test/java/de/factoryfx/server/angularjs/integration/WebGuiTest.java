@@ -13,7 +13,7 @@ import ch.qos.logback.classic.Logger;
 import com.google.common.io.ByteStreams;
 import de.factoryfx.factory.datastorage.inmemory.InMemoryFactoryStorage;
 import de.factoryfx.factory.exception.RethrowingFactoryExceptionHandler;
-import de.factoryfx.server.SinglePrecessInstanceUtil;
+import de.factoryfx.server.SingleProcessInstanceUtil;
 import de.factoryfx.server.WebAppViewer;
 import de.factoryfx.server.angularjs.WebGuiApplicationCreator;
 import de.factoryfx.server.angularjs.factory.SessionStorageFactory;
@@ -109,7 +109,7 @@ public class WebGuiTest extends Application{
         Logger root = (Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
         root.setLevel(Level.INFO);
 
-        SinglePrecessInstanceUtil.enforceSingleProzessInstance(37453);
+        SingleProcessInstanceUtil.enforceSingleProcessInstance(37453);
         Application.launch(args);
     }
 

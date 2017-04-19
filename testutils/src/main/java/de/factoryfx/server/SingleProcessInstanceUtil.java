@@ -29,7 +29,8 @@ import javax.management.remote.JMXConnectorServer;
 import javax.management.remote.JMXConnectorServerFactory;
 import javax.management.remote.JMXServiceURL;
 
-public class SinglePrecessInstanceUtil {
+/**utility class to ensure that only one instance of the application is started*/
+public class SingleProcessInstanceUtil {
 
 	public interface KillMXBean {
 		void kill();
@@ -56,13 +57,13 @@ public class SinglePrecessInstanceUtil {
 	private static boolean created=false;
 
 
-	public static void enforceSingleProzessInstance(int port) {
-		enforceSingleProzessInstance(port,null);
+	public static void enforceSingleProcessInstance(int port) {
+		enforceSingleProcessInstance(port,null);
 	}
 	/**
 	 * @param port e.g 1099
 	 */
-	public static void enforceSingleProzessInstance(int port, Runnable killAction) {
+	public static void enforceSingleProcessInstance(int port, Runnable killAction) {
 		if (created){
 			return;
 		}
