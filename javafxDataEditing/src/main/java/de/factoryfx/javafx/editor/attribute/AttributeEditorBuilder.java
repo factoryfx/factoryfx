@@ -8,7 +8,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
-import java.util.function.Function;
+import java.util.function.BiFunction;
 import java.util.function.Supplier;
 
 import com.google.common.base.Ascii;
@@ -58,9 +58,9 @@ import org.controlsfx.glyphfont.FontAwesome;
 public class AttributeEditorBuilder {
 
     private final UniformDesign uniformDesign;
-    private final List<Function<Attribute<?>,Optional<AttributeEditor<?>>>> editorAssociations;
+    private final List<BiFunction<UniformDesign,Attribute<?>,Optional<AttributeEditor<?>>>> editorAssociations;
 
-    public AttributeEditorBuilder(UniformDesign uniformDesign, List<Function<Attribute<?>,Optional<AttributeEditor<?>>>> editorAssociations) {
+    public AttributeEditorBuilder(UniformDesign uniformDesign, List<BiFunction<UniformDesign,Attribute<?>,Optional<AttributeEditor<?>>>> editorAssociations) {
         this.uniformDesign = uniformDesign;
         this.editorAssociations = editorAssociations;
     }
@@ -74,8 +74,8 @@ public class AttributeEditorBuilder {
 
     public Optional<AttributeEditor<?>> getAttributeEditor(Attribute<?> attribute, DataEditor dataEditor, Supplier<List<ValidationError>> validation, Data oldValue){
 
-        for (Function<Attribute<?>,Optional<AttributeEditor<?>>> editorAssociation: editorAssociations) {
-            Optional<AttributeEditor<?>> attributeEditor = editorAssociation.apply(attribute);
+        for (BiFunction<UniformDesign,Attribute<?>,Optional<AttributeEditor<?>>> editorAssociation: editorAssociations) {
+            Optional<AttributeEditor<?>> attributeEditor = editorAssociation.apply(uniformDesign,attribute);
             if (attributeEditor.isPresent()) {
                 return attributeEditor;
             }
