@@ -72,22 +72,22 @@ public class AttributeJsonWrapper {
 
     @SuppressWarnings("unchecked")
     private Attribute instantiateAttribute()  {
-        if (attributeClass==ReferenceAttribute.class){
+        if (ReferenceAttribute.class.isAssignableFrom(attributeClass)){
             return new ReferenceAttribute(new AttributeMetadata(),referenceClass);
         }
-        if (attributeClass==ReferenceListAttribute.class){
+        if (ReferenceListAttribute.class.isAssignableFrom(attributeClass)){
             return new ReferenceListAttribute(new AttributeMetadata(),referenceClass);
         }
-        if (attributeClass==EnumAttribute.class){
+        if (EnumAttribute.class.isAssignableFrom(attributeClass)){
             return new EnumAttribute(enumClazz,new AttributeMetadata());
         }
-        if (attributeClass.isAssignableFrom(ValueListAttribute.class)){
+        if (ValueListAttribute.class.isAssignableFrom(attributeClass)){
             return new ValueListAttribute(collectionClazz,new AttributeMetadata());
         }
-        if (attributeClass.isAssignableFrom(ValueSetAttribute.class)){
+        if (ValueSetAttribute.class.isAssignableFrom(attributeClass)){
             return new ValueSetAttribute(collectionClazz,new AttributeMetadata());
         }
-        if (attributeClass.isAssignableFrom(ValueMapAttribute.class)){
+        if (ValueMapAttribute.class.isAssignableFrom(attributeClass)){
             return new ValueMapAttribute(new AttributeMetadata(),mapKeyType,mapValueType);
         }
 
