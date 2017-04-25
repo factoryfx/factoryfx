@@ -6,11 +6,11 @@ import de.factoryfx.javafx.UniformDesignBuilder;
 import org.junit.Assert;
 import org.junit.Test;
 
-public class AttributeEditorFactoryTest {
+public class AttributeEditorBuilderTest {
 
     @Test
     public void test_canEdit(){
-        AttributeEditorFactory attributeEditor = new  AttributeEditorFactory(UniformDesignBuilder.build());
+        AttributeEditorBuilder attributeEditor = new AttributeEditorBuilder(UniformDesignBuilder.build());
 
         Assert.assertNotNull(attributeEditor.getAttributeEditor(new StringAttribute(new AttributeMetadata()),null,null,null));
     }

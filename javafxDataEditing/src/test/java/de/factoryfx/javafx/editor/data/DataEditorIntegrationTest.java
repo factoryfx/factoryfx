@@ -2,7 +2,7 @@ package de.factoryfx.javafx.editor.data;
 
 import de.factoryfx.data.jackson.ObjectMapperBuilder;
 import de.factoryfx.javafx.UniformDesignBuilder;
-import de.factoryfx.javafx.editor.attribute.AttributeEditorFactory;
+import de.factoryfx.javafx.editor.attribute.AttributeEditorBuilder;
 import de.factoryfx.javafx.util.UniformDesign;
 import javafx.application.Application;
 import javafx.scene.Scene;
@@ -24,7 +24,7 @@ public class DataEditorIntegrationTest extends Application{
         exampleData1.stringAttribute.set("abc");
 
         UniformDesign uniformDesign = UniformDesignBuilder.build();
-        DataEditor dataEditor = new DataEditor(new AttributeEditorFactory(uniformDesign),uniformDesign);
+        DataEditor dataEditor = new DataEditor(new AttributeEditorBuilder(uniformDesign),uniformDesign);
         dataEditor.setVisCustomizer((node, data) -> {
             if (data instanceof ExampleData1) {
                 return ((ExampleData1)data).customize(node);

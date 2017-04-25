@@ -2,7 +2,7 @@ package de.factoryfx.javafx.widget.factorydiff;
 
 import de.factoryfx.data.merge.DataMerger;
 import de.factoryfx.javafx.UniformDesignBuilder;
-import de.factoryfx.javafx.editor.attribute.AttributeEditorFactory;
+import de.factoryfx.javafx.editor.attribute.AttributeEditorBuilder;
 import de.factoryfx.javafx.editor.data.DataEditor;
 import de.factoryfx.javafx.editor.data.ExampleData1;
 import de.factoryfx.javafx.editor.data.ExampleData2;
@@ -22,7 +22,7 @@ public class FactoryDiffWidgetTest extends Application {
         exampleData1 = exampleData1.internal().prepareUsableCopy();
 
         UniformDesign uniformDesign = UniformDesignBuilder.build();
-        DataEditor dataEditor = new DataEditor(new AttributeEditorFactory(uniformDesign), uniformDesign);
+        DataEditor dataEditor = new DataEditor(new AttributeEditorBuilder(uniformDesign), uniformDesign);
         dataEditor.edit(exampleData1);
 
 
@@ -34,7 +34,7 @@ public class FactoryDiffWidgetTest extends Application {
         newData.referenceListAttribute.add(new ExampleData2());
         DataMerger dataMerger = new DataMerger(exampleData1,exampleData1.internal().copy(), newData);
 
-        FactoryDiffWidget factoryDiffWidget = new FactoryDiffWidget(uniformDesign,new AttributeEditorFactory(uniformDesign));
+        FactoryDiffWidget factoryDiffWidget = new FactoryDiffWidget(uniformDesign,new AttributeEditorBuilder(uniformDesign));
         factoryDiffWidget.updateMergeDiff(dataMerger.mergeIntoCurrent((p)->true));
 
         BorderPane root = new BorderPane();

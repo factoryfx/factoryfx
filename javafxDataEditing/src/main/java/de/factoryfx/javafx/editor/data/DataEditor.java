@@ -26,7 +26,7 @@ import de.factoryfx.data.attribute.types.StringListAttribute;
 import de.factoryfx.data.merge.AttributeDiffInfo;
 import de.factoryfx.data.validation.ValidationError;
 import de.factoryfx.javafx.editor.attribute.AttributeEditor;
-import de.factoryfx.javafx.editor.attribute.AttributeEditorFactory;
+import de.factoryfx.javafx.editor.attribute.AttributeEditorBuilder;
 import de.factoryfx.javafx.util.UniformDesign;
 import de.factoryfx.javafx.widget.Widget;
 import impl.org.controlsfx.skin.BreadCrumbBarSkin;
@@ -68,20 +68,20 @@ import org.controlsfx.glyphfont.FontAwesome;
 public class DataEditor implements Widget {
     static final int HISTORY_LIMIT = 20;
 
-    private final AttributeEditorFactory attributeEditorFactory;
+    private final AttributeEditorBuilder attributeEditorBuilder;
     private final UniformDesign uniformDesign;
     SimpleObjectProperty<Data> bound = new SimpleObjectProperty<>();
     private ChangeListener<Data> dataChangeListener;
     private AttributeChangeListener validationListener;
     private Function<String,List<AttributeDiffInfo>> historyProvider;
 
-    public DataEditor(AttributeEditorFactory attributeEditorFactory, Function<String,List<AttributeDiffInfo>> historyProvider, UniformDesign uniformDesign) {
-        this.attributeEditorFactory = attributeEditorFactory;
+    public DataEditor(AttributeEditorBuilder attributeEditorBuilder, Function<String,List<AttributeDiffInfo>> historyProvider, UniformDesign uniformDesign) {
+        this.attributeEditorBuilder = attributeEditorBuilder;
         this.uniformDesign = uniformDesign;
     }
 
-    public DataEditor(AttributeEditorFactory attributeEditorFactory, UniformDesign uniformDesign) {
-        this(attributeEditorFactory,null,uniformDesign);
+    public DataEditor(AttributeEditorBuilder attributeEditorBuilder, UniformDesign uniformDesign) {
+        this(attributeEditorBuilder,null,uniformDesign);
     }
 
     public ReadOnlyObjectProperty<Data> editData(){
@@ -313,7 +313,7 @@ public class DataEditor implements Widget {
     private Node createAttributeGroupVisual(List<Attribute<?>> attributeGroup, Supplier<List<ValidationError>> validation, Data oldValue) {
         if (attributeGroup.size()==1){
             final Attribute<?> attribute = attributeGroup.get(0);
-            Optional<AttributeEditor<?>> attributeEditor = attributeEditorFactory.getAttributeEditor(attribute, this, validation, oldValue);
+            Optional<AttributeEditor<?>> attributeEditor = attributeEditorBuilder.getAttributeEditor(attribute, this, validation, oldValue);
             if (attributeEditor.isPresent()){
                 attributeEditor.get().expand();
                 createdEditors.put(attribute,attributeEditor.get());
@@ -345,7 +345,7 @@ public class DataEditor implements Widget {
             for (Attribute<?> attribute: attributeGroup){
                 Label label = addLabelContent(grid, row,uniformDesign.getLabelText(attribute));
 
-                Optional<AttributeEditor<?>> attributeEditor = attributeEditorFactory.getAttributeEditor(attribute,this,validation,oldValue);
+                Optional<AttributeEditor<?>> attributeEditor = attributeEditorBuilder.getAttributeEditor(attribute,this,validation,oldValue);
                 int rowFinal=row;
                 if (attributeEditor.isPresent()){
                     createdEditors.put(attribute,attributeEditor.get());

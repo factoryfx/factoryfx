@@ -1,7 +1,8 @@
-package de.factoryfx.javafx.view.factoryviewmanager;
+package de.factoryfx.javafx.widget.diffdialog;
 
 import de.factoryfx.data.merge.MergeDiffInfo;
 import de.factoryfx.factory.log.FactoryUpdateLog;
+import de.factoryfx.javafx.editor.attribute.AttributeEditorBuilder;
 import de.factoryfx.javafx.util.UniformDesign;
 import de.factoryfx.javafx.widget.factorydiff.FactoryDiffWidget;
 import de.factoryfx.javafx.widget.factorylog.FactoryUpdateLogWidget;
@@ -14,10 +15,18 @@ import javafx.scene.control.TabPane;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Window;
 
-public class DiffDialog {
+public class DiffDialogBuilder {
 
-    public void createDiffDialog(MergeDiffInfo mergeDiff, UniformDesign uniformDesign, String title, Window owner) {
-        final FactoryDiffWidget factoryDiffWidget = new FactoryDiffWidget(uniformDesign,null);
+    private final UniformDesign uniformDesign;
+    private final AttributeEditorBuilder attributeEditorBuilder;
+
+    public DiffDialogBuilder(UniformDesign uniformDesign, AttributeEditorBuilder attributeEditorBuilder) {
+        this.uniformDesign = uniformDesign;
+        this.attributeEditorBuilder = attributeEditorBuilder;
+    }
+
+    public void createDiffDialog(MergeDiffInfo mergeDiff, String title, Window owner) {
+        final FactoryDiffWidget factoryDiffWidget = new FactoryDiffWidget(uniformDesign,attributeEditorBuilder);
         factoryDiffWidget.updateMergeDiff(mergeDiff);
 
 
@@ -51,8 +60,8 @@ public class DiffDialog {
         dialog.showAndWait();
     }
 
-    public void createDiffDialog(FactoryUpdateLog factoryLog, UniformDesign uniformDesign, String title, Window owner){
-        final FactoryDiffWidget factoryDiffWidget = new FactoryDiffWidget(uniformDesign,null);
+    public void createDiffDialog(FactoryUpdateLog factoryLog, String title, Window owner){
+        final FactoryDiffWidget factoryDiffWidget = new FactoryDiffWidget(uniformDesign,attributeEditorBuilder);
         factoryDiffWidget.updateMergeDiff(factoryLog.mergeDiffInfo);
 
         final FactoryUpdateLogWidget factoryLogWidget = new FactoryUpdateLogWidget(uniformDesign);

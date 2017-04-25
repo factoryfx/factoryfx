@@ -13,6 +13,7 @@ import de.factoryfx.factory.log.FactoryUpdateLog;
 import de.factoryfx.javafx.editor.data.DataEditor;
 import de.factoryfx.javafx.util.UniformDesign;
 import de.factoryfx.javafx.widget.Widget;
+import de.factoryfx.javafx.widget.diffdialog.DiffDialogBuilder;
 import de.factoryfx.javafx.widget.validation.ValidationWidget;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
@@ -42,13 +43,15 @@ public class FactoryEditView<V,R extends FactoryBase<?,V>> implements Widget, Fa
     private final UniformDesign uniformDesign;
     private final DataEditor dataEditor;
     private BorderPane borderPane;
+    private final DiffDialogBuilder diffDialogBuilder;
 
-    public FactoryEditView(de.factoryfx.javafx.util.LongRunningActionExecutor longRunningActionExecutor, FactoryEditManager factoryManager, FactoryAwareWidget content, UniformDesign uniformDesign, DataEditor dataEditor) {
+    public FactoryEditView(de.factoryfx.javafx.util.LongRunningActionExecutor longRunningActionExecutor, FactoryEditManager factoryManager, FactoryAwareWidget content, UniformDesign uniformDesign, DataEditor dataEditor, DiffDialogBuilder diffDialogBuilder) {
         this.LongRunningActionExecutor = longRunningActionExecutor;
         this.factoryManager = factoryManager;
         this.content = content;
         this.uniformDesign = uniformDesign;
         this.dataEditor = dataEditor;
+        this.diffDialogBuilder = diffDialogBuilder;
     }
 
     @Override
@@ -73,7 +76,7 @@ public class FactoryEditView<V,R extends FactoryBase<?,V>> implements Widget, Fa
                     LongRunningActionExecutor.execute(() -> {
                         final FactoryUpdateLog factoryLog = factoryManager.save(comment);
                         Platform.runLater(() -> {
-                            new DiffDialog().createDiffDialog(factoryLog, uniformDesign, "Gespeicherte Änderungen",save.getScene().getWindow());
+                            diffDialogBuilder.createDiffDialog(factoryLog, "Gespeicherte Änderungen",save.getScene().getWindow());
                         });
                     });
                 }
@@ -88,7 +91,7 @@ public class FactoryEditView<V,R extends FactoryBase<?,V>> implements Widget, Fa
                 LongRunningActionExecutor.execute(() -> {
                     final MergeDiffInfo mergeDiff = factoryManager.simulateUpdateCurrentFactory();
                     Platform.runLater(() -> {
-                        new DiffDialog().createDiffDialog(mergeDiff, uniformDesign, "ungespeicherte Änderungen",check.getScene().getWindow());
+                        diffDialogBuilder.createDiffDialog(mergeDiff, "ungespeicherte Änderungen",check.getScene().getWindow());
                     });
                 });
             });

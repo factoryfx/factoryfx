@@ -5,7 +5,7 @@ import java.util.Optional;
 
 import de.factoryfx.data.jackson.ObjectMapperBuilder;
 import de.factoryfx.javafx.editor.attribute.AttributeEditor;
-import de.factoryfx.javafx.editor.attribute.AttributeEditorFactory;
+import de.factoryfx.javafx.editor.attribute.AttributeEditorBuilder;
 import de.factoryfx.javafx.editor.data.DataEditor;
 import de.factoryfx.javafx.javascript.editor.attribute.visualisation.JavascriptAttributeVisualisation;
 import de.factoryfx.javafx.util.UniformDesign;
@@ -31,8 +31,8 @@ public class JavascriptAttributeIntegrationTest extends Application{
         ExampleJavascript exampleJavascript = new ExampleJavascript();
 
         UniformDesign uniformDesign = new UniformDesign(Locale.ENGLISH, Color.web("#FF7979"),Color.web("#F0AD4E"),Color.web("#5BC0DE"),Color.web("#5CB85C"),Color.web("#5494CB"),Color.web("#B5B5B5"),false);;
-        AttributeEditorFactory attributeEditorFactory = new AttributeEditorFactory(uniformDesign);
-        attributeEditorFactory.addEditorAssociation(a->{
+        AttributeEditorBuilder attributeEditorBuilder = new AttributeEditorBuilder(uniformDesign);
+        attributeEditorBuilder.addEditorAssociation(a->{
             if (Javascript.class==a.internal_getAttributeType().dataType){
                 JavascriptAttribute javascriptAttribute = (JavascriptAttribute) a;
                 return Optional.of(new AttributeEditor<>(javascriptAttribute,new JavascriptAttributeVisualisation(javascriptAttribute),uniformDesign));
@@ -42,7 +42,7 @@ public class JavascriptAttributeIntegrationTest extends Application{
         });
 
 
-        DataEditor dataEditor = new DataEditor(attributeEditorFactory,uniformDesign);
+        DataEditor dataEditor = new DataEditor(attributeEditorBuilder,uniformDesign);
         root.setCenter(dataEditor.createContent());
 
         exampleJavascript= ObjectMapperBuilder.build().copy(exampleJavascript);

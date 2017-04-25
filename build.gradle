@@ -147,7 +147,9 @@ project(':postgresqlStorage') {
         compile project(":factory")
         compile group: 'org.postgresql', name: 'postgresql', version: '9.4.1210.jre7'
         testCompile 'ru.yandex.qatools.embed:postgresql-embedded:1.15'
+        testCompile project(":testfactories")
     }
+
 }
 
 project(':adminUiAngularjs') {

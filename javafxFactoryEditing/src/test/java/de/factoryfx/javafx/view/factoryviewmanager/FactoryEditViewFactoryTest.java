@@ -9,7 +9,7 @@ public class FactoryEditViewFactoryTest {
 
     @Test
     public void test_generics(){
-        FactoryEditViewFactory<String,FactoryBase<?,String>> factoryEditViewFactory = new FactoryEditViewFactory<>();
+        FactoryEditViewFactory<Void,FactoryBase<?,Void>> factoryEditViewFactory = new FactoryEditViewFactory<>();
         factoryEditViewFactory.dataEditorFactory.set(new SimpleFactoryBase<DataEditor,Void>(){
             @Override
             public DataEditor createImpl() {

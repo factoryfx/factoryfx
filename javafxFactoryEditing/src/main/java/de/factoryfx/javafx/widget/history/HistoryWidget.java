@@ -12,7 +12,7 @@ import de.factoryfx.factory.datastorage.StoredFactoryMetadata;
 import de.factoryfx.factory.log.FactoryUpdateLog;
 import de.factoryfx.javafx.util.LongRunningActionExecutor;
 import de.factoryfx.javafx.util.UniformDesign;
-import de.factoryfx.javafx.view.factoryviewmanager.DiffDialog;
+import de.factoryfx.javafx.widget.diffdialog.DiffDialogBuilder;
 import de.factoryfx.javafx.widget.Widget;
 import de.factoryfx.javafx.widget.table.TableControlWidget;
 import de.factoryfx.server.rest.client.ApplicationServerRestClient;
@@ -36,11 +36,13 @@ public class HistoryWidget<V,T extends FactoryBase<?,V>> implements Widget {
     private final LongRunningActionExecutor longRunningActionExecutor;
     private final ApplicationServerRestClient<V, T> restClient;
     private Consumer<List<StoredFactoryMetadata>> tableUpdater;
+    private final DiffDialogBuilder diffDialogBuilder;
 
-    public HistoryWidget(UniformDesign uniformDesign, LongRunningActionExecutor longRunningActionExecutor, ApplicationServerRestClient<V, T> restClient) {
+    public HistoryWidget(UniformDesign uniformDesign, LongRunningActionExecutor longRunningActionExecutor, ApplicationServerRestClient<V, T> restClient, DiffDialogBuilder diffDialogBuilder) {
         this.uniformDesign=uniformDesign;
         this.longRunningActionExecutor = longRunningActionExecutor;
         this.restClient= restClient;
+        this.diffDialogBuilder = diffDialogBuilder;
     }
 
 
@@ -114,12 +116,12 @@ public class HistoryWidget<V,T extends FactoryBase<?,V>> implements Widget {
 
     private void showDiff(TableView<StoredFactoryMetadata> tableView) {
         final MergeDiffInfo diff = restClient.getDiff(tableView.getSelectionModel().getSelectedItem());
-        Platform.runLater(() -> new DiffDialog().createDiffDialog(diff,uniformDesign,"Änderungen",tableView.getScene().getWindow()));
+        Platform.runLater(() -> diffDialogBuilder.createDiffDialog(diff,"Änderungen",tableView.getScene().getWindow()));
     }
 
     private void revert(TableView<StoredFactoryMetadata> tableView) {
         final FactoryUpdateLog factoryUpdateLog = restClient.revert(tableView.getSelectionModel().getSelectedItem());
-        Platform.runLater(() -> new DiffDialog().createDiffDialog(factoryUpdateLog,uniformDesign,"Änderungen",tableView.getScene().getWindow()));
+        Platform.runLater(() -> diffDialogBuilder.createDiffDialog(factoryUpdateLog,"Änderungen",tableView.getScene().getWindow()));
         update();
     }
 

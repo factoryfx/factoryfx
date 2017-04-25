@@ -12,7 +12,7 @@ import de.factoryfx.data.merge.AttributeDiffInfo;
 import de.factoryfx.data.merge.MergeDiffInfo;
 import de.factoryfx.data.util.LanguageText;
 import de.factoryfx.javafx.editor.attribute.AttributeEditor;
-import de.factoryfx.javafx.editor.attribute.AttributeEditorFactory;
+import de.factoryfx.javafx.editor.attribute.AttributeEditorBuilder;
 import de.factoryfx.javafx.util.UniformDesign;
 import de.factoryfx.javafx.widget.Widget;
 import de.factoryfx.javafx.widget.table.TableControlWidget;
@@ -52,11 +52,11 @@ public class FactoryDiffWidget implements Widget {
     private LanguageText titleNew=new LanguageText().en("new value").de("Neuer Wert");
     private LanguageText noChangesFound=new LanguageText().en("No changes found").de("keine Änderungen gefunden");
 
-    private final AttributeEditorFactory attributeEditorFactory;
+    private final AttributeEditorBuilder attributeEditorBuilder;
 
-    public FactoryDiffWidget(UniformDesign uniformDesign, AttributeEditorFactory attributeEditorFactory){
+    public FactoryDiffWidget(UniformDesign uniformDesign, AttributeEditorBuilder attributeEditorBuilder){
         this.uniformDesign=uniformDesign;
-        this.attributeEditorFactory=attributeEditorFactory;
+        this.attributeEditorBuilder = attributeEditorBuilder;
     }
 
     private final SimpleObjectProperty<MergeDiffInfo> mergeDiff = new SimpleObjectProperty<>();
@@ -179,12 +179,12 @@ public class FactoryDiffWidget implements Widget {
                     }
                 });
 
-                final Optional<AttributeEditor<?>> previousAttributeEditor = attributeEditorFactory.getAttributeEditor(diffItem.previousValueDisplayText.createAttribute(), null, null, null);
+                final Optional<AttributeEditor<?>> previousAttributeEditor = attributeEditorBuilder.getAttributeEditor(diffItem.previousValueDisplayText.createAttribute(), null, null, null);
                 previousAttributeEditor.get().expand();
                 previousValueDisplay.setCenter(previousAttributeEditor.get().createContent());
 
                 if (diffItem.newValueValueDisplayText.isPresent()){
-                    final Optional<AttributeEditor<?>> newAttributeEditor = attributeEditorFactory.getAttributeEditor(diffItem.newValueValueDisplayText.get().createAttribute(), null, null, null);
+                    final Optional<AttributeEditor<?>> newAttributeEditor = attributeEditorBuilder.getAttributeEditor(diffItem.newValueValueDisplayText.get().createAttribute(), null, null, null);
                     newAttributeEditor.get().expand();
                     newValueDisplay.setCenter(newAttributeEditor.get().createContent());
                 } else {

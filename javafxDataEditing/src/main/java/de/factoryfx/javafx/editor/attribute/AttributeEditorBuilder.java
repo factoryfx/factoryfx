@@ -56,11 +56,11 @@ import javafx.scene.control.TableView;
 import javafx.scene.paint.Color;
 import org.controlsfx.glyphfont.FontAwesome;
 
-public class AttributeEditorFactory {
+public class AttributeEditorBuilder {
 
     private final UniformDesign uniformDesign;
 
-    public AttributeEditorFactory(UniformDesign uniformDesign) {
+    public AttributeEditorBuilder(UniformDesign uniformDesign) {
         this.uniformDesign = uniformDesign;
     }
 
