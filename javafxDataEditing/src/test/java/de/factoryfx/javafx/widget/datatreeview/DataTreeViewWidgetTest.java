@@ -1,5 +1,6 @@
 package de.factoryfx.javafx.widget.datatreeview;
 
+import java.util.ArrayList;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -27,7 +28,7 @@ public class DataTreeViewWidgetTest extends Application{
         exampleData1.stringAttribute.set("abc");
 
         UniformDesign uniformDesign = UniformDesignBuilder.build();
-        DataEditor dataEditor = new DataEditor(new AttributeEditorBuilder(uniformDesign), uniformDesign);
+        DataEditor dataEditor = new DataEditor(new AttributeEditorBuilder(uniformDesign,new ArrayList<>()), uniformDesign);
         dataEditor.edit(exampleData1);
 
         for (int i=0 ;i<100;i++){

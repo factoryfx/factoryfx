@@ -1,5 +1,7 @@
 package de.factoryfx.javafx.editor.data;
 
+import java.util.ArrayList;
+
 import de.factoryfx.javafx.UniformDesignBuilder;
 import de.factoryfx.javafx.editor.attribute.AttributeEditorBuilder;
 import de.factoryfx.javafx.util.UniformDesign;
@@ -11,7 +13,7 @@ public class DataEditorTest {
     @Test
     public void testBack() throws Exception {
         UniformDesign uniformDesign = UniformDesignBuilder.build();
-        DataEditor dataEditor = new DataEditor(new AttributeEditorBuilder(uniformDesign),uniformDesign);
+        DataEditor dataEditor = new DataEditor(new AttributeEditorBuilder(uniformDesign,new ArrayList<>()),uniformDesign);
 
 
         ExampleData1 exampleData1 = new ExampleData1();
@@ -41,7 +43,7 @@ public class DataEditorTest {
     @Test
     public void testBack_limit() throws Exception {
         UniformDesign uniformDesign = UniformDesignBuilder.build();
-        DataEditor dataEditor = new DataEditor(new AttributeEditorBuilder(uniformDesign),uniformDesign);
+        DataEditor dataEditor = new DataEditor(new AttributeEditorBuilder(uniformDesign,new ArrayList<>()),uniformDesign);
 
         for (int i=0;i<100;i++){
             dataEditor.edit(new ExampleData1());
@@ -54,7 +56,7 @@ public class DataEditorTest {
     @Test
     public void testForward() throws Exception {
         UniformDesign uniformDesign = UniformDesignBuilder.build();
-        DataEditor dataEditor = new DataEditor(new AttributeEditorBuilder(uniformDesign),uniformDesign);
+        DataEditor dataEditor = new DataEditor(new AttributeEditorBuilder(uniformDesign,new ArrayList<>()),uniformDesign);
 
 
         ExampleData1 exampleData1 = new ExampleData1();

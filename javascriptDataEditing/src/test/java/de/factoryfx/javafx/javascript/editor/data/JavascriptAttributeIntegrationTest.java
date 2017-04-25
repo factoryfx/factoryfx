@@ -1,8 +1,11 @@
 package de.factoryfx.javafx.javascript.editor.data;
 
+import java.util.ArrayList;
 import java.util.Locale;
 import java.util.Optional;
+import java.util.function.Function;
 
+import de.factoryfx.data.attribute.Attribute;
 import de.factoryfx.data.jackson.ObjectMapperBuilder;
 import de.factoryfx.javafx.editor.attribute.AttributeEditor;
 import de.factoryfx.javafx.editor.attribute.AttributeEditorBuilder;
@@ -31,8 +34,9 @@ public class JavascriptAttributeIntegrationTest extends Application{
         ExampleJavascript exampleJavascript = new ExampleJavascript();
 
         UniformDesign uniformDesign = new UniformDesign(Locale.ENGLISH, Color.web("#FF7979"),Color.web("#F0AD4E"),Color.web("#5BC0DE"),Color.web("#5CB85C"),Color.web("#5494CB"),Color.web("#B5B5B5"),false);;
-        AttributeEditorBuilder attributeEditorBuilder = new AttributeEditorBuilder(uniformDesign);
-        attributeEditorBuilder.addEditorAssociation(a->{
+
+        final ArrayList<Function<Attribute<?>, Optional<AttributeEditor<?>>>> editorAssociations = new ArrayList<>();
+        editorAssociations.add(a->{
             if (Javascript.class==a.internal_getAttributeType().dataType){
                 JavascriptAttribute javascriptAttribute = (JavascriptAttribute) a;
                 return Optional.of(new AttributeEditor<>(javascriptAttribute,new JavascriptAttributeVisualisation(javascriptAttribute),uniformDesign));
@@ -40,6 +44,7 @@ public class JavascriptAttributeIntegrationTest extends Application{
 
             return Optional.empty();
         });
+        AttributeEditorBuilder attributeEditorBuilder = new AttributeEditorBuilder(uniformDesign, editorAssociations);
 
 
         DataEditor dataEditor = new DataEditor(attributeEditorBuilder,uniformDesign);

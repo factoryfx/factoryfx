@@ -1,5 +1,7 @@
 package de.factoryfx.javafx.widget.dataview;
 
+import java.util.ArrayList;
+
 import de.factoryfx.data.Data;
 import de.factoryfx.javafx.UniformDesignBuilder;
 import de.factoryfx.javafx.editor.attribute.AttributeEditorBuilder;
@@ -24,7 +26,7 @@ public class DataViewWidgetTest extends Application {
         exampleData1 = exampleData1.internal().prepareUsableCopy();
 
         UniformDesign uniformDesign = UniformDesignBuilder.build();
-        DataEditor dataEditor = new DataEditor(new AttributeEditorBuilder(uniformDesign), uniformDesign);
+        DataEditor dataEditor = new DataEditor(new AttributeEditorBuilder(uniformDesign,new ArrayList<>()), uniformDesign);
         dataEditor.edit(exampleData1);
 
         ObservableList<Data> dataList = FXCollections.observableArrayList();
