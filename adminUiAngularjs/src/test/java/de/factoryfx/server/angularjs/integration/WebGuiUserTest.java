@@ -5,7 +5,7 @@ import java.util.Locale;
 
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
-import de.factoryfx.server.SingleProcessInstanceUtil;
+import de.factoryfx.testutils.SingleProcessInstanceUtil;
 import de.factoryfx.user.User;
 import de.factoryfx.user.UserManagement;
 import de.factoryfx.user.persistent.PersistentUserManagement;
