@@ -1,19 +1,26 @@
 package de.factoryfx.data.attribute;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.sun.javafx.collections.ObservableListWrapper;
 import de.factoryfx.data.AttributeAndName;
 import de.factoryfx.data.attribute.types.EnumAttribute;
 import de.factoryfx.data.util.LanguageText;
+import javafx.collections.ObservableList;
+import javafx.collections.ObservableMap;
+import javafx.collections.ObservableSet;
 
 /** wraps attribute so its serializable/deserializable in json
  *  used e.g for dynamic attributes*/
 public class AttributeJsonWrapper {
     @JsonProperty
+    @JsonTypeInfo(use=JsonTypeInfo.Id.CLASS, include=JsonTypeInfo.As.PROPERTY, property="@clazz")
     Object value;
     @JsonProperty
     final LanguageText label;
@@ -34,7 +41,7 @@ public class AttributeJsonWrapper {
 
     @SuppressWarnings("unchecked")
     public AttributeJsonWrapper(Attribute<?> attribute, String name) {
-        this.value = attribute.internal_copy().get(); //internal_copy() as workaround for mutable values like list
+        this.value = getValue(attribute);
         this.label = attribute.metadata.labelText;
         this.name = name;
         this.attributeClass= attribute.getClass();
@@ -49,8 +56,23 @@ public class AttributeJsonWrapper {
         }
     }
 
+    private Object getValue(Attribute<?> attribute) {
+        //internal_copy() as workaround for mutable values like list
+        Object value = attribute.internal_copy().get();
+        if (value instanceof  ObservableList){
+            return new ArrayList<>((ObservableList)value);
+        }
+        if (value instanceof ObservableSet){
+            return new HashSet<>((ObservableSet)value);
+        }
+        if (value instanceof ObservableMap){
+            return new HashMap<>((ObservableMap)value);
+        }
+        return value;
+    }
+
     @JsonCreator
-    protected AttributeJsonWrapper(@JsonProperty("value")Object value, @JsonProperty("label")LanguageText label, @JsonProperty("name")String name,
+    protected AttributeJsonWrapper(@JsonProperty("value")Object value,  @JsonProperty("label")LanguageText label, @JsonProperty("name")String name,
                                    @JsonProperty("clazz")Class<? extends Attribute> attributeClass, @JsonProperty("referenceClass")Class<?> referenceClass,
                                    @JsonProperty("enumClazz")Class<?> enumClazz,  @JsonProperty("collectionClazz")Class<?> collectionClazz,
                                    @JsonProperty("mapKeyType")Class<?> mapKeyType,  @JsonProperty("mapValueType")Class<?>mapValueType) {

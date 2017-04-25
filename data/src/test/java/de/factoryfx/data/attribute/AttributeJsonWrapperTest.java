@@ -5,10 +5,12 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 
 import com.google.common.reflect.ClassPath;
 import de.factoryfx.data.attribute.types.EnumAttribute;
 import de.factoryfx.data.attribute.types.WrappingValueAttribute;
+import de.factoryfx.data.jackson.ObjectMapperBuilder;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -44,7 +46,12 @@ public class AttributeJsonWrapperTest {
                         continue;
                     }
                     if (clazz==ValueSetAttribute.class){
-                        result.add(new Attribute[]{new ValueSetAttribute(String.class,new AttributeMetadata())});
+                        final ValueSetAttribute valueSetAttribute = new ValueSetAttribute(String.class, new AttributeMetadata());
+                        final HashSet<Object> hashSet = new HashSet<>();
+                        hashSet.add("dfssfd");
+                        valueSetAttribute.set(hashSet);
+                        result.add(new Attribute[]{valueSetAttribute});
+
                         continue;
                     }
 
@@ -84,9 +91,16 @@ public class AttributeJsonWrapperTest {
         final Attribute attribute = new AttributeJsonWrapper(this.attribute, "").createAttribute();
     }
 
-//    @Test
-//    public void test_copy() {
-//        attribute.internal_copy();
-//    }
+    @Test
+    public void test_copy() {
+        attribute.internal_copy();
+    }
+
+    @Test
+    public void test_json() {
+        final AttributeJsonWrapper copy = ObjectMapperBuilder.build().copy(new AttributeJsonWrapper(this.attribute, ""));
+        copy.createAttribute().get();
+        System.out.println( ObjectMapperBuilder.build().writeValueAsString(new AttributeJsonWrapper(this.attribute, "")));
+    }
 
 }
