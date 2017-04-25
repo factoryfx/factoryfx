@@ -33,6 +33,7 @@ public class ValueAttribute<T> extends Attribute<T> {
             //TODO fix that reflection
             Attribute<T> result = getClass().getConstructor(AttributeMetadata.class).newInstance(new AttributeMetadata());
             result.metadata.labelText.internal_set(metadata.labelText);
+            result.set(get());
             return result;
         } catch (Exception e) {
             throw new RuntimeException(e);

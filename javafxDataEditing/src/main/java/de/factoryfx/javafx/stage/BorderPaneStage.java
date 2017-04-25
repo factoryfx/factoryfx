@@ -2,7 +2,7 @@ package de.factoryfx.javafx.stage;
 
 import java.util.List;
 
-import de.factoryfx.javafx.view.container.ViewsDisplayWidget;
+import de.factoryfx.javafx.widget.Widget;
 import javafx.scene.Scene;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
@@ -12,7 +12,7 @@ import javafx.stage.Stage;
 
 public class BorderPaneStage {
 
-    public BorderPaneStage(Stage stage, List<Menu> menus, ViewsDisplayWidget instance, int width, int height, StackPane stackPane, List<String> cssResourceUrlExternalForm) {
+    public BorderPaneStage(Stage stage, List<Menu> menus, Widget instance, int width, int height, StackPane stackPane, List<String> cssResourceUrlExternalForm) {
 
 
 

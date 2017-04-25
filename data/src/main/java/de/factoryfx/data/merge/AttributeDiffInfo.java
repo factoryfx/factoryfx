@@ -1,41 +1,40 @@
 package de.factoryfx.data.merge;
 
+import java.util.Optional;
+
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import de.factoryfx.data.Data;
 import de.factoryfx.data.attribute.Attribute;
-import de.factoryfx.data.util.LanguageText;
+import de.factoryfx.data.attribute.AttributeJsonWrapper;
 
 //just the infotext used in gui
 public class AttributeDiffInfo {
-    public final String previousValueDisplayText;
-    public final String newValueValueDisplayText;
-    public final LanguageText fieldDisplayText;
+    public final AttributeJsonWrapper previousValueDisplayText;
+    public final Optional<AttributeJsonWrapper> newValueValueDisplayText;
     public final String parentDisplayText;
+    public final String parentId;
 
     @JsonCreator
     public AttributeDiffInfo(
-            @JsonProperty("previousValueDisplayText") String previousValueDisplayText,
-            @JsonProperty("newValueValueDisplayText") String newValueValueDisplayText,
-            @JsonProperty("fieldDisplayText")LanguageText fieldDisplayText,
-            @JsonProperty("parentDisplayText") String parentDisplayText) {
+            @JsonProperty("previousValueDisplayText") AttributeJsonWrapper previousValueDisplayText,
+            @JsonProperty("newValueValueDisplayText") AttributeJsonWrapper newValueValueDisplayText,
+            @JsonProperty("parentDisplayText") String parentDisplayText,
+            @JsonProperty("parentId") String parentId) {
         this.previousValueDisplayText = previousValueDisplayText;
-        this.newValueValueDisplayText = newValueValueDisplayText;
-        this.fieldDisplayText = fieldDisplayText;
+        this.newValueValueDisplayText = Optional.ofNullable(newValueValueDisplayText);
         this.parentDisplayText = parentDisplayText;
+        this.parentId = parentId;
     }
 
-    public AttributeDiffInfo(String parentDisplayText, Attribute<?> attribute, Attribute<?> newAttributeDisplayText) {
+    public AttributeDiffInfo(Data parent, Attribute<?> attribute, Attribute<?> newAttributeDisplayText) {
         //created here cause attribute ist updated later
-        this(attribute.getDisplayText(), newAttributeDisplayText.getDisplayText(), attribute.metadata.labelText, parentDisplayText);
+        this(new AttributeJsonWrapper(attribute,""), new AttributeJsonWrapper(newAttributeDisplayText,""), parent.internal().getDisplayText(),parent.getId());
     }
 
-    public AttributeDiffInfo(String parentDisplayText, Attribute<?> attribute) {
+    public AttributeDiffInfo(Data parent, Attribute<?> attribute) {
         //created here cause attribute ist updated later
-        this(attribute.getDisplayText(), "removed", attribute.metadata.labelText, parentDisplayText);
+        this(new AttributeJsonWrapper(attribute,""), null, parent.internal().getDisplayText(),parent.getId());
     }
 
-    @Override
-    public String toString() {
-        return "MergeResultEntryInfo{" + "previousValueDisplayText='" + previousValueDisplayText + '\'' + ", newValueValueDisplayText='" + newValueValueDisplayText + '\'' + ", fieldDisplayText=" + fieldDisplayText + ", parentDisplayText='" + parentDisplayText + '}';
-    }
 }

@@ -5,6 +5,9 @@ import java.util.Locale;
 import de.factoryfx.data.attribute.Attribute;
 import de.factoryfx.data.attribute.AttributeMetadata;
 import de.factoryfx.data.attribute.AttributeTypeInfo;
+import de.factoryfx.data.attribute.types.DoubleAttribute;
+import de.factoryfx.data.attribute.types.IntegerAttribute;
+import de.factoryfx.data.attribute.types.StringAttribute;
 
 public class WebGuiAttributeMetadata {
     public final String labelText;
@@ -14,7 +17,7 @@ public class WebGuiAttributeMetadata {
     public final WebGuiDataType dataType;
     public final WebGuiDataType listItemType;
     public final WebGuiDataType mapValueType;
-    public final Object listItemEmptyValue;
+    public Object listItemEmptyValue;
 
     public WebGuiAttributeMetadata(AttributeMetadata attributeMetadata, Locale locale, Attribute<?> attribute){
         labelText=attributeMetadata.labelText.internal_getPreferred(locale);
@@ -26,7 +29,17 @@ public class WebGuiAttributeMetadata {
 
         dataType =new WebGuiDataType(attributeType.dataType);
         listItemType =new WebGuiDataType(attributeType.listItemType);
-        listItemEmptyValue=attributeType.listItemEmptyValue;
+
+        //TODO remove empty value add im html, instead same logic as in javafx, first edit value than add it
+        if (attribute instanceof StringAttribute){
+            listItemEmptyValue= "empty";
+        }
+        if (attribute instanceof IntegerAttribute){
+            listItemEmptyValue= 0;
+        }
+        if (attribute instanceof DoubleAttribute){
+            listItemEmptyValue= 0;
+        }
         mapValueType=new WebGuiDataType(attributeType.mapValueType);
 
     }

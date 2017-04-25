@@ -12,12 +12,10 @@ import javafx.collections.SetChangeListener;
 
 public class ValueSetAttribute<T> extends ValueAttribute<Set<T>> implements Set<T> {
     private final Class<T> itemType;
-    private final T emptyValue;
 
-    public ValueSetAttribute(AttributeMetadata attributeMetadata, Class<T> itemType, T emptyValue) {
+    public ValueSetAttribute(Class<T> itemType, AttributeMetadata attributeMetadata) {
         super(attributeMetadata,null);
         this.itemType = itemType;
-        this.emptyValue = emptyValue;
         final ObservableSet<T> observableSet = FXCollections.observableSet(new HashSet<>());
         value= observableSet;
 
@@ -28,10 +26,16 @@ public class ValueSetAttribute<T> extends ValueAttribute<Set<T>> implements Set<
         });
     }
 
+    @Override
+    public Attribute<Set<T>> internal_copy() {
+        final ValueSetAttribute<T> result = new ValueSetAttribute<>(itemType, metadata);
+        result.addAll(get());
+        return result;
+    }
 
     @JsonCreator
     protected ValueSetAttribute() {
-        this(null,null,null);
+        this(null,null);
     }
 
     @Override
@@ -41,7 +45,7 @@ public class ValueSetAttribute<T> extends ValueAttribute<Set<T>> implements Set<
 
     @Override
     public AttributeTypeInfo internal_getAttributeType() {
-        return new AttributeTypeInfo(ObservableSet.class,null,null,itemType, AttributeTypeInfo.AttributeTypeCategory.COLLECTION,emptyValue);
+        return new AttributeTypeInfo(ObservableSet.class,null,null,itemType, AttributeTypeInfo.AttributeTypeCategory.COLLECTION);
     }
 
     //** set list only take the list items not the list itself, (to simplify ChangeListeners)*/

@@ -8,6 +8,7 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 import de.factoryfx.data.Data;
@@ -22,6 +23,7 @@ import de.factoryfx.data.attribute.types.LocalDateAttribute;
 import de.factoryfx.data.attribute.types.LongAttribute;
 import de.factoryfx.data.attribute.types.StringAttribute;
 import de.factoryfx.data.attribute.types.StringListAttribute;
+import de.factoryfx.data.merge.AttributeDiffInfo;
 import de.factoryfx.data.validation.ValidationError;
 import de.factoryfx.javafx.editor.attribute.AttributeEditor;
 import de.factoryfx.javafx.editor.attribute.AttributeEditorFactory;
@@ -36,12 +38,16 @@ import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.MenuButton;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
@@ -67,10 +73,15 @@ public class DataEditor implements Widget {
     SimpleObjectProperty<Data> bound = new SimpleObjectProperty<>();
     private ChangeListener<Data> dataChangeListener;
     private AttributeChangeListener validationListener;
+    private Function<String,List<AttributeDiffInfo>> historyProvider;
 
-    public DataEditor(AttributeEditorFactory attributeEditorFactory, UniformDesign uniformDesign) {
+    public DataEditor(AttributeEditorFactory attributeEditorFactory, Function<String,List<AttributeDiffInfo>> historyProvider, UniformDesign uniformDesign) {
         this.attributeEditorFactory = attributeEditorFactory;
         this.uniformDesign = uniformDesign;
+    }
+
+    public DataEditor(AttributeEditorFactory attributeEditorFactory, UniformDesign uniformDesign) {
+        this(attributeEditorFactory,null,uniformDesign);
     }
 
     public ReadOnlyObjectProperty<Data> editData(){
@@ -467,6 +478,20 @@ public class DataEditor implements Widget {
         BooleanBinding nextDisabled = Bindings.createBooleanBinding(() -> !nextData().isPresent(),displayedEntities,bound);
         next.disableProperty().bind(nextDisabled);
         next.setOnAction(event -> next());
+
+        MenuButton menu = new MenuButton("",uniformDesign.createIcon(FontAwesome.Glyph.NAVICON).size(18));
+        menu.disableProperty().bind(editData().isNull());
+        final MenuItem menuItem = new MenuItem("Data History");
+        menuItem.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                showFactoryHistory(editData().get().getId());
+            }
+        });
+        menu.getItems().add(menuItem);
+        if (historyProvider!=null){
+            navigation.getChildren().add(menu);
+        }
         navigation.getChildren().add(back);
         navigation.getChildren().add(next);
 
@@ -477,6 +502,10 @@ public class DataEditor implements Widget {
 
         HBox.setHgrow(scrollPaneBreadCrumbBar,Priority.ALWAYS);
         return navigation;
+    }
+
+    private void showFactoryHistory(String id) {
+//        new DiffDialog().
     }
 
     private Optional<Data> previousData(){

@@ -2,8 +2,10 @@ package de.factoryfx.server.rest.client;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Locale;
 
+import de.factoryfx.data.merge.AttributeDiffInfo;
 import de.factoryfx.data.merge.MergeDiffInfo;
 import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.factory.datastorage.FactoryAndNewMetadata;
@@ -11,6 +13,7 @@ import de.factoryfx.factory.datastorage.FactoryStorage;
 import de.factoryfx.factory.datastorage.StoredFactoryMetadata;
 import de.factoryfx.factory.log.FactoryUpdateLog;
 import de.factoryfx.server.rest.CheckUserResponse;
+import de.factoryfx.server.rest.DiffForFactoryResponse;
 import de.factoryfx.server.rest.UpdateCurrentFactoryRequest;
 import de.factoryfx.server.rest.UserAwareRequest;
 import de.factoryfx.server.rest.UserLocaleResponse;
@@ -81,4 +84,9 @@ public class ApplicationServerRestClient<V,T extends FactoryBase<?,V>> {
     public FactoryUpdateLog revert(StoredFactoryMetadata historyFactory) {
         return restClient.post("revert",new UserAwareRequest<>(user,passwordHash,historyFactory), FactoryUpdateLog.class);
     }
+
+    public List<AttributeDiffInfo> diffForFactory(String factoryId) {
+        return restClient.post("diffForFactory",new UserAwareRequest<>(user,passwordHash,factoryId), DiffForFactoryResponse.class).diffs;
+    }
+
 }

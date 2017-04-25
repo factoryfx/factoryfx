@@ -17,7 +17,7 @@ import javafx.stage.Window;
 public class DiffDialog {
 
     public void createDiffDialog(MergeDiffInfo mergeDiff, UniformDesign uniformDesign, String title, Window owner) {
-        final FactoryDiffWidget factoryDiffWidget = new FactoryDiffWidget(uniformDesign);
+        final FactoryDiffWidget factoryDiffWidget = new FactoryDiffWidget(uniformDesign,null);
         factoryDiffWidget.updateMergeDiff(mergeDiff);
 
 
@@ -52,7 +52,7 @@ public class DiffDialog {
     }
 
     public void createDiffDialog(FactoryUpdateLog factoryLog, UniformDesign uniformDesign, String title, Window owner){
-        final FactoryDiffWidget factoryDiffWidget = new FactoryDiffWidget(uniformDesign);
+        final FactoryDiffWidget factoryDiffWidget = new FactoryDiffWidget(uniformDesign,null);
         factoryDiffWidget.updateMergeDiff(factoryLog.mergeDiffInfo);
 
         final FactoryUpdateLogWidget factoryLogWidget = new FactoryUpdateLogWidget(uniformDesign);

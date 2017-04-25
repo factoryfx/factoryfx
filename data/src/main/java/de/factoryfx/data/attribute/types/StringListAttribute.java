@@ -11,12 +11,12 @@ import de.factoryfx.data.attribute.ValueListAttribute;
 public class StringListAttribute extends ValueListAttribute<String> {
 
     public StringListAttribute(AttributeMetadata attributeMetadata) {
-        super(String.class,attributeMetadata,"empty");
+        super(String.class,attributeMetadata);
     }
 
     @JsonCreator
     StringListAttribute() {
-        super(null,null,null);
+        super(null,null);
     }
 
     public List<String> asUnmodifiableList() {

@@ -38,7 +38,7 @@ public class DataMergerMergerTest {
         MergeDiffInfo mergeDiff= dataMerger.mergeIntoCurrent((permission)->true);
         Assert.assertTrue(mergeDiff.hasNoConflicts());
         Assert.assertEquals("empty",mergeDiff.mergeInfos.get(0).newValueValueDisplayText);
-        Assert.assertTrue(mergeDiff.mergeInfos.get(0).previousValueDisplayText.contains(exampleFactoryB.getId().toString()));
+        Assert.assertTrue(((String)mergeDiff.mergeInfos.get(0).previousValueDisplayText.createAttribute().get()).contains(exampleFactoryB.getId().toString()));
     }
 
     @Test

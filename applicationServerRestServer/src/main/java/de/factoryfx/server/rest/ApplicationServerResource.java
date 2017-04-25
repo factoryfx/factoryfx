@@ -15,7 +15,6 @@ import javax.ws.rs.core.MediaType;
 import de.factoryfx.data.merge.MergeDiffInfo;
 import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.factory.datastorage.FactoryAndNewMetadata;
-import de.factoryfx.factory.datastorage.FactoryAndStoredMetadata;
 import de.factoryfx.factory.datastorage.StoredFactoryMetadata;
 import de.factoryfx.factory.log.FactoryUpdateLog;
 import de.factoryfx.server.ApplicationServer;
@@ -152,7 +151,7 @@ public class ApplicationServerResource<V,L,T extends FactoryBase<L,V>>  {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @Path("userLocale")
-    public UserLocaleResponse getUserLoacle(UserAwareRequest<Void> request){
+    public UserLocaleResponse getUserLocale(UserAwareRequest<Void> request){
         final Optional<AuthorizedUser> authenticate = authenticate(request);
         if (authenticate.isPresent()){
             return new UserLocaleResponse(authenticate.get().locale);
@@ -160,4 +159,17 @@ public class ApplicationServerResource<V,L,T extends FactoryBase<L,V>>  {
             return new UserLocaleResponse(Locale.ENGLISH);
         }
     }
+
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("diffForFactory")
+    public DiffForFactoryResponse getDiffForFactory(UserAwareRequest<String> request){
+        authenticate(request);
+        final DiffForFactoryResponse diffForFactoryResponse = new DiffForFactoryResponse();
+        diffForFactoryResponse.diffs=applicationServer.getDiffForFactory(request.request);
+        return diffForFactoryResponse;
+
+    }
+
 }

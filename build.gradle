@@ -215,8 +215,7 @@ project(':example') {
 project(':javafxDataEditing') {
 
     dependencies {
-        compile project(":factory")
-        compile project(":applicationServerRestClient")
+        compile project(":data")
         compile group: 'ch.qos.logback', name: 'logback-classic', version: '1.1.7'
         compile group: 'org.controlsfx', name: 'controlsfx', version: '8.40.12'
         compile group: 'org.fxmisc.richtext', name: 'richtextfx', version: '0.6.10'
@@ -225,7 +224,15 @@ project(':javafxDataEditing') {
 
 }
 
+project(':javafxFactoryEditing') {
 
+    dependencies {
+        compile project(":factory")
+        compile project(":applicationServerRestClient")
+        compile project(":javafxDataEditing");
+    }
+
+}
 
 project(':javafxDistributionServer') {
 

@@ -7,12 +7,12 @@ import de.factoryfx.data.attribute.ValueSetAttribute;
 public class StringSetAttribute extends ValueSetAttribute<String> {
 
     public StringSetAttribute(AttributeMetadata attributeMetadata) {
-        super(attributeMetadata, String.class, "empty");
+        super(String.class,attributeMetadata);
     }
 
     @JsonCreator
     StringSetAttribute() {
-        super(null,null,null);
+        super(null,null);
     }
 
 }

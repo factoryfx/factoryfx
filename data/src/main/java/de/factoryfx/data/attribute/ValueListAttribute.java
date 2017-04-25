@@ -13,13 +13,11 @@ import javafx.collections.ObservableList;
 
 public class ValueListAttribute<T> extends ValueAttribute<List<T>> implements Collection<T> {
     private final Class<T> itemType;
-    private final T listNewItemEmptyValue;
     private final ObservableList<T> observableValue;
 
-    public ValueListAttribute(Class<T> itemType, AttributeMetadata attributeMetadata, T listNewItemEmptyValue) {
+    public ValueListAttribute(Class<T> itemType, AttributeMetadata attributeMetadata) {
         super(attributeMetadata,null);
         this.itemType=itemType;
-        this.listNewItemEmptyValue = listNewItemEmptyValue;
         observableValue = FXCollections.observableArrayList();
         value=observableValue;
 
@@ -30,9 +28,16 @@ public class ValueListAttribute<T> extends ValueAttribute<List<T>> implements Co
         });
     }
 
+    @Override
+    public Attribute<List<T>> internal_copy() {
+        final ValueListAttribute<T> result = new ValueListAttribute<>(itemType, metadata);
+        result.addAll(get());
+        return result;
+    }
+
     @JsonCreator
     protected ValueListAttribute() {
-        this(null,null,null);
+        this(null,null);
     }
 
     @Override
@@ -42,7 +47,7 @@ public class ValueListAttribute<T> extends ValueAttribute<List<T>> implements Co
 
     @Override
     public AttributeTypeInfo internal_getAttributeType() {
-        return new AttributeTypeInfo(ObservableList.class,null,null,itemType, AttributeTypeInfo.AttributeTypeCategory.COLLECTION,listNewItemEmptyValue);
+        return new AttributeTypeInfo(ObservableList.class,null,null,itemType, AttributeTypeInfo.AttributeTypeCategory.COLLECTION);
     }
 
     //** set list only take the list items not the list itself, (to simplify ChangeListeners)*/
@@ -123,4 +128,6 @@ public class ValueListAttribute<T> extends ValueAttribute<List<T>> implements Co
     public void clear() {
         get().clear();
     }
+
+
 }

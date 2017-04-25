@@ -1,10 +1,10 @@
 package de.factoryfx.javafx.widget.validation;
 
+import de.factoryfx.javafx.UniformDesignBuilder;
 import de.factoryfx.javafx.editor.attribute.AttributeEditorFactory;
 import de.factoryfx.javafx.editor.data.DataEditor;
 import de.factoryfx.javafx.editor.data.ExampleData1;
 import de.factoryfx.javafx.util.UniformDesign;
-import de.factoryfx.javafx.util.UniformDesignFactory;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.layout.BorderPane;
@@ -22,13 +22,13 @@ public class ValidationWidgetTest extends Application {
         exampleData1.stringAttribute.set("abc");
         exampleData1 = exampleData1.internal().prepareUsableCopy();
 
-        UniformDesign uniformDesign = new UniformDesignFactory<>().internalFactory().instance();
+        UniformDesign uniformDesign = UniformDesignBuilder.build();
         DataEditor dataEditor = new DataEditor(new AttributeEditorFactory(uniformDesign),uniformDesign);
         dataEditor.edit(exampleData1);
 
 
 
-        ValidationWidget validationWidget= new ValidationWidget(exampleData1,dataEditor,new UniformDesignFactory<>().internalFactory().instance());
+        ValidationWidget validationWidget= new ValidationWidget(exampleData1,dataEditor,UniformDesignBuilder.build());
 
 
         BorderPane root = new BorderPane();

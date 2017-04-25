@@ -21,7 +21,7 @@ public class ReferenceAttribute<T extends Data> extends Attribute<T> {
     private Data root;
 
     private T value;
-    private Optional<Class<T>> clazz;
+    private Class<T> clazz;
 
     @JsonCreator
     protected ReferenceAttribute(T value) {
@@ -31,14 +31,14 @@ public class ReferenceAttribute<T extends Data> extends Attribute<T> {
 
     public ReferenceAttribute(Class<T> clazz, AttributeMetadata attributeMetadata) {
         super(attributeMetadata);
-        this.clazz=Optional.ofNullable(clazz);
+        this.clazz=clazz;
     }
 
     @SuppressWarnings("unchecked")
     //workaround for generic parameter ReferenceAttribute<Example<V>> webGuiResource=new ReferenceAttribute(Example<V>)
     public ReferenceAttribute(AttributeMetadata attributeMetadata, Class clazz) {
         super(attributeMetadata);
-        this.clazz=Optional.ofNullable(clazz);
+        this.clazz=clazz;
     }
 
     @Override
@@ -50,7 +50,9 @@ public class ReferenceAttribute<T extends Data> extends Attribute<T> {
 
     @Override
     public Attribute<T> internal_copy() {
-       return new ReferenceAttribute<T>(clazz.get(),metadata);
+        final ReferenceAttribute<T> result = new ReferenceAttribute<>(clazz, metadata);
+        result.set(get());
+        return result;
     }
 
     @Override
@@ -213,16 +215,11 @@ public class ReferenceAttribute<T extends Data> extends Attribute<T> {
             set(newFactory);
         });
         if (!newValueProvider.isPresent()){
-            if (clazz.isPresent()){
-                try {
-                    set(clazz.get().newInstance());
-                } catch (InstantiationException | IllegalAccessException e) {
-                    throw new RuntimeException(e);
-                }
-            } else {
-                set(null);
+            try {
+                set(clazz.newInstance());
+            } catch (InstantiationException | IllegalAccessException e) {
+                throw new RuntimeException(e);
             }
-
         }
         getOptional().ifPresent(data->data.internal().propagateRoot(root));
         return get();
@@ -237,14 +234,17 @@ public class ReferenceAttribute<T extends Data> extends Attribute<T> {
         });
         if (!possibleValueProviderFromRoot.isPresent()){
             for (Data factory: root.internal().collectChildrenDeep()){
-                if (clazz.isPresent()){
-                    if (clazz.get().isAssignableFrom(factory.getClass())){
-                        result.add((T) factory);
-                    }
+                if (clazz.isAssignableFrom(factory.getClass())){
+                    result.add((T) factory);
                 }
             }
         }
         return result;
+    }
+
+
+    public Class<T> internal_getReferenceClass(){
+        return this.clazz;
     }
 
     @Override

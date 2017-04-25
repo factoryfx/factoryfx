@@ -55,7 +55,7 @@ public class ExampleData1 extends Data {
     public final IntegerAttribute integerAttribute=new IntegerAttribute(new AttributeMetadata().en("IntegerAttribute").de("IntegerAttribute de"));
     public final LongAttribute longAttribute=new LongAttribute(new AttributeMetadata().en("LongAttribute").de("LongAttribute de"));
     public final StringListAttribute valueListAttribute=new StringListAttribute(new AttributeMetadata().en("ValueListAttribute").de("ValueListAttribute de"));
-    public final ValueListAttribute<Integer> integerListAttribute=new ValueListAttribute<>(Integer.class,new AttributeMetadata().en("ValueListAttribute").de("ValueListAttribute de"),0);
+    public final ValueListAttribute<Integer> integerListAttribute=new ValueListAttribute<>(Integer.class,new AttributeMetadata().en("ValueListAttribute").de("ValueListAttribute de"));
     public final StringMapAttribute mapAttribute=new StringMapAttribute(new AttributeMetadata().en("MapAttribute").de("MapAttribute de"));
     public final I18nAttribute i18nAttribute=new I18nAttribute(new AttributeMetadata().en("i18nAttribute").de("i18nAttribute de")).en("envalue").de("devalue");
     public final ByteArrayAttribute byteArrayAttribute=new ByteArrayAttribute(new AttributeMetadata().en("byteArrayAttribute").de("byteArrayAttribute de"));

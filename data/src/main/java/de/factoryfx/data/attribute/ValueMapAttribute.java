@@ -10,6 +10,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.MapChangeListener;
 import javafx.collections.ObservableMap;
 
+//TODO remove ObservableMap same as list
 public class ValueMapAttribute<K, V> extends ValueAttribute<ObservableMap<K,V>> implements Map<K,V> {
     private final Class<K> keyType;
     private final Class<V> valueType;
@@ -25,6 +26,13 @@ public class ValueMapAttribute<K, V> extends ValueAttribute<ObservableMap<K,V>> 
                 listener.changed(ValueMapAttribute.this,get());
             }
         });
+    }
+
+    @Override
+    public Attribute<ObservableMap<K,V>> internal_copy() {
+        final ValueMapAttribute<K, V> result = new ValueMapAttribute<>(metadata, keyType, valueType);
+        result.putAll(result.get());
+        return result;
     }
 
     @JsonCreator

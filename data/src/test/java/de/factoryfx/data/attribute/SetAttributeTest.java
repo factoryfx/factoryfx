@@ -11,7 +11,7 @@ import org.junit.Test;
 public class SetAttributeTest {
 
     public static class ExampleSetFactory extends Data {
-        public ValueSetAttribute<String> setAttribute =new ValueSetAttribute<>(new AttributeMetadata(),String.class,"empty");
+        public ValueSetAttribute<String> setAttribute =new ValueSetAttribute<>(String.class,new AttributeMetadata());
     }
 
     @Test

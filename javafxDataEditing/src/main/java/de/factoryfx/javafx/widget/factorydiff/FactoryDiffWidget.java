@@ -2,13 +2,17 @@ package de.factoryfx.javafx.widget.factorydiff;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import de.factoryfx.data.attribute.AttributeJsonWrapper;
 import de.factoryfx.data.merge.AttributeDiffInfo;
 import de.factoryfx.data.merge.MergeDiffInfo;
 import de.factoryfx.data.util.LanguageText;
+import de.factoryfx.javafx.editor.attribute.AttributeEditor;
+import de.factoryfx.javafx.editor.attribute.AttributeEditorFactory;
 import de.factoryfx.javafx.util.UniformDesign;
 import de.factoryfx.javafx.widget.Widget;
 import de.factoryfx.javafx.widget.table.TableControlWidget;
@@ -48,21 +52,20 @@ public class FactoryDiffWidget implements Widget {
     private LanguageText titleNew=new LanguageText().en("new value").de("Neuer Wert");
     private LanguageText noChangesFound=new LanguageText().en("No changes found").de("keine Änderungen gefunden");
 
+    private final AttributeEditorFactory attributeEditorFactory;
 
-
-    public FactoryDiffWidget(UniformDesign uniformDesign){
+    public FactoryDiffWidget(UniformDesign uniformDesign, AttributeEditorFactory attributeEditorFactory){
         this.uniformDesign=uniformDesign;
+        this.attributeEditorFactory=attributeEditorFactory;
     }
 
     private final SimpleObjectProperty<MergeDiffInfo> mergeDiff = new SimpleObjectProperty<>();
 
     @Override
     public Node createContent() {
-        StyleClassedTextArea previousValueDisplay = new StyleClassedTextArea ();
-        previousValueDisplay.setEditable(false);
+        BorderPane previousValueDisplay = new BorderPane ();
         previousValueDisplay.setOpacity(0.6);
-        StyleClassedTextArea newValueDisplay = new StyleClassedTextArea ();
-        newValueDisplay.setEditable(false);
+        BorderPane newValueDisplay = new BorderPane ();
         newValueDisplay.setOpacity(0.6);
         StyleClassedTextArea diffDisplay = new StyleClassedTextArea ();
         diffDisplay.getStyleClass().add("diffTextField");
@@ -104,8 +107,8 @@ public class FactoryDiffWidget implements Widget {
         diffTableView.getSelectionModel().selectedItemProperty().addListener(observable -> {
             AttributeDiffInfo diffItem=diffTableView.getSelectionModel().getSelectedItem().attributeDiffInfo;
             if (diffItem!=null){
-                List<String> previousLines = convertToList(diffItem.previousValueDisplayText);
-                List<String> newLines = convertToList(diffItem.newValueValueDisplayText);
+                List<String> previousLines = convertToList(diffItem.previousValueDisplayText.getDisplayText());
+                List<String> newLines = convertToList(diffItem.newValueValueDisplayText.map(AttributeJsonWrapper::getDisplayText).orElse("removed"));
                 Patch<String> patch = DiffUtils.diff(
                         previousLines,
                         newLines
@@ -176,8 +179,20 @@ public class FactoryDiffWidget implements Widget {
                     }
                 });
 
-                previousValueDisplay.replaceText(diffItem.previousValueDisplayText);
-                newValueDisplay.replaceText(diffItem.newValueValueDisplayText);
+                final Optional<AttributeEditor<?>> previousAttributeEditor = attributeEditorFactory.getAttributeEditor(diffItem.previousValueDisplayText.createAttribute(), null, null, null);
+                previousAttributeEditor.get().expand();
+                previousValueDisplay.setCenter(previousAttributeEditor.get().createContent());
+
+                if (diffItem.newValueValueDisplayText.isPresent()){
+                    final Optional<AttributeEditor<?>> newAttributeEditor = attributeEditorFactory.getAttributeEditor(diffItem.newValueValueDisplayText.get().createAttribute(), null, null, null);
+                    newAttributeEditor.get().expand();
+                    newValueDisplay.setCenter(newAttributeEditor.get().createContent());
+                } else {
+                    newValueDisplay.setCenter(null);
+                }
+
+//                previousValueDisplay.replaceText(diffItem.previousValueDisplayText);
+//                newValueDisplay.replaceText(diffItem.newValueValueDisplayText);
             }
         });
 
@@ -211,15 +226,15 @@ public class FactoryDiffWidget implements Widget {
             tableView.getColumns().add(factoryColumn);
 
             TableColumn<AttributeDiffInfoExtended, String> fieldColumn = new TableColumn<>(uniformDesign.getText(columnField));
-            fieldColumn.setCellValueFactory(param -> new SimpleStringProperty(uniformDesign.getText(param.getValue().attributeDiffInfo.fieldDisplayText)));
+            fieldColumn.setCellValueFactory(param -> new SimpleStringProperty(uniformDesign.getText(param.getValue().attributeDiffInfo.previousValueDisplayText.createAttribute().metadata.labelText)));
             tableView.getColumns().add(fieldColumn);
 
             TableColumn<AttributeDiffInfoExtended, String> previousColumn = new TableColumn<>(uniformDesign.getText(columnPrevious));
-            previousColumn.setCellValueFactory(param -> new SimpleStringProperty(param.getValue().attributeDiffInfo.previousValueDisplayText));
+            previousColumn.setCellValueFactory(param -> new SimpleStringProperty(param.getValue().attributeDiffInfo.previousValueDisplayText.getDisplayText()));
             tableView.getColumns().add(previousColumn);
 
             TableColumn<AttributeDiffInfoExtended, String> newColumn = new TableColumn<>(uniformDesign.getText(columnNew));
-            newColumn.setCellValueFactory(param -> new SimpleStringProperty(param.getValue().attributeDiffInfo.newValueValueDisplayText));
+            newColumn.setCellValueFactory(param -> new SimpleStringProperty(param.getValue().attributeDiffInfo.newValueValueDisplayText.map(AttributeJsonWrapper::getDisplayText).orElse("removed")));
             tableView.getColumns().add(newColumn);
 
         }

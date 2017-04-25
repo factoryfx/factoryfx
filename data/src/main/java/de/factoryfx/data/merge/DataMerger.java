@@ -36,7 +36,7 @@ public class DataMerger {
                 //check for conflict for removed object
                 entry.getValue().internal().visitAttributesDualFlat(originalValue, (currentAttribute, originalAttribute) -> {
                     if (!currentAttribute.internal_match(originalAttribute)){
-                        mergeResult.addConflictInfo(new AttributeDiffInfo(entry.getValue().internal().getDisplayText(),currentAttribute));
+                        mergeResult.addConflictInfo(new AttributeDiffInfo(entry.getValue(),currentAttribute));
                     }
                 });
             }

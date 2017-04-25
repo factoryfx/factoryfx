@@ -13,26 +13,26 @@ public class ApplicationServerAwareFactoryTest {
 
     @Test
     public void test(){
-        final RootTestclazz rootTestclazz = new RootTestclazz();
+        final RootTestClazz rootTestclazz = new RootTestClazz();
         final ApplicationServerAwareFactoryTestclazz value = new ApplicationServerAwareFactoryTestclazz();
         rootTestclazz.ref.set(value);
         Assert.assertNull(value.applicationServer.get());
 
-        final FactoryManager<String, Void, RootTestclazz> factoryManager = new FactoryManager<>(new RethrowingFactoryExceptionHandler<>());
-        ApplicationServer<String,Void,RootTestclazz> applicationServer = new ApplicationServer<>(factoryManager, new InMemoryFactoryStorage<>(rootTestclazz));
+        final FactoryManager<String, Void, RootTestClazz> factoryManager = new FactoryManager<>(new RethrowingFactoryExceptionHandler<>());
+        ApplicationServer<String,Void,RootTestClazz> applicationServer = new ApplicationServer<>(factoryManager, new InMemoryFactoryStorage<>(rootTestclazz));
         applicationServer.start();
 
         Assert.assertEquals(applicationServer,factoryManager.getCurrentFactory().ref.get().applicationServer.get());
 
     }
 
-    public static class ApplicationServerAwareFactoryTestclazz extends ApplicationServerAwareFactory<Void, String, RootTestclazz, String>{
+    public static class ApplicationServerAwareFactoryTestclazz extends ApplicationServerAwareFactory<Void, String, RootTestClazz, String>{
         public ApplicationServerAwareFactoryTestclazz(){
             this.configLiveCycle().setCreator(() -> "");
         }
     }
 
-    public static class RootTestclazz extends SimpleFactoryBase<String,Void>{
+    public static class RootTestClazz extends SimpleFactoryBase<String,Void>{
 
         public final FactoryReferenceAttribute<String,ApplicationServerAwareFactoryTestclazz> ref = new FactoryReferenceAttribute<>(ApplicationServerAwareFactoryTestclazz.class,new AttributeMetadata());
 
@@ -41,4 +41,6 @@ public class ApplicationServerAwareFactoryTest {
             return "";
         }
     }
+
+
 }

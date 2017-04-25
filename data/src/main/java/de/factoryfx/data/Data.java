@@ -25,9 +25,9 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.google.common.base.Strings;
-import com.sun.javafx.collections.ObservableListWrapper;
 import de.factoryfx.data.attribute.Attribute;
 import de.factoryfx.data.attribute.AttributeChangeListener;
+import de.factoryfx.data.attribute.AttributeJsonWrapper;
 import de.factoryfx.data.attribute.ValueAttribute;
 import de.factoryfx.data.merge.AttributeDiffInfo;
 import de.factoryfx.data.merge.MergeResult;
@@ -127,31 +127,24 @@ public class Data {
 
 
     @JsonProperty
-    public List<DynamicDataAttribute> getDynamicDataAttributes(){
+    public List<AttributeJsonWrapper> getDynamicDataAttributes(){
         if (!dynamicAttributeData){
             return null;
         }
-        final ArrayList<DynamicDataAttribute> result = new ArrayList<>();
+        final ArrayList<AttributeJsonWrapper> result = new ArrayList<>();
         for (AttributeAndName attributeAndName: dynamicDataAttributeAndNames){
-            Object value = attributeAndName.attribute.get();
-            if (value instanceof ObservableListWrapper){
-                value=new ArrayList<>((ObservableListWrapper)value);
-            }
-            result.add(new DynamicDataAttribute(value,attributeAndName.attribute.getClass(),attributeAndName.attribute.metadata.labelText,attributeAndName.name));
+            result.add(new AttributeJsonWrapper(attributeAndName.attribute,attributeAndName.name));
         }
         return result;
     }
 
     @JsonProperty
-    public void setDynamicDataAttributes(List<DynamicDataAttribute> dynamicDataAttributes){
+    public void setDynamicDataAttributes(List<AttributeJsonWrapper> dynamicDataAttributes){
         if (!dynamicAttributeData){
             return;
         }
-        for (DynamicDataAttribute dynamicDataAttribute: dynamicDataAttributes){
-            final Attribute attribute = dynamicDataAttribute.createAttribute();
-            attribute.set(dynamicDataAttribute.value);
-            attribute.metadata.labelText.internal_set(dynamicDataAttribute.label);
-            dynamicDataAttributeAndNames.add(new AttributeAndName(attribute,dynamicDataAttribute.name));
+        for (AttributeJsonWrapper dynamicDataAttribute: dynamicDataAttributes){
+            dynamicDataAttributeAndNames.add(dynamicDataAttribute.createAttributeAndName());
         }
     }
 
@@ -170,7 +163,7 @@ public class Data {
         dynamicDataAttributeAndNames.add(new AttributeAndName(attribute, toIdentifier(attribute.metadata.labelText.internal_getPreferred(Locale.ENGLISH))));
     }
 
-    public String toIdentifier(String value) {//TODO for js?
+    private String toIdentifier(String value) {//TODO for js?
         if (Strings.isNullOrEmpty(value)) {
             return UUID.randomUUID().toString();
         }
@@ -347,7 +340,7 @@ public class Data {
         this.visitAttributesTripleFlat(originalValue, newValue, (currentAttribute, originalAttribute, newAttribute) -> {
             AttributeMergeHelper<?> attributeMergeHelper = currentAttribute.internal_createMergeHelper();
             if (attributeMergeHelper!=null){
-                final AttributeDiffInfo attributeDiffInfo = new AttributeDiffInfo(Data.this.internal.getDisplayText(), currentAttribute, newAttribute);
+                final AttributeDiffInfo attributeDiffInfo = new AttributeDiffInfo(Data.this, currentAttribute, newAttribute);
                 if (attributeMergeHelper.hasConflict(originalAttribute, newAttribute)) {
                     mergeResult.addConflictInfo(attributeDiffInfo);
                 } else {

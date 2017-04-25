@@ -2,8 +2,10 @@ package de.factoryfx.data.merge;
 
 import java.util.Locale;
 
+import de.factoryfx.data.attribute.AttributeJsonWrapper;
+import de.factoryfx.data.attribute.AttributeMetadata;
+import de.factoryfx.data.attribute.types.StringAttribute;
 import de.factoryfx.data.jackson.ObjectMapperBuilder;
-import de.factoryfx.data.util.LanguageText;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -12,8 +14,10 @@ public class MergeResultEntryTest {
 
     @Test
     public void json_serialisable(){
-        AttributeDiffInfo mergeResultEntry = new AttributeDiffInfo("","", new LanguageText().en("sfdsf"), "");
+        AttributeDiffInfo mergeResultEntry = new AttributeDiffInfo(
+                new AttributeJsonWrapper(new StringAttribute(new AttributeMetadata().en("sfdsf")),""),
+                new AttributeJsonWrapper(new StringAttribute(new AttributeMetadata()),""), "","");
         AttributeDiffInfo copy = ObjectMapperBuilder.build().copy(mergeResultEntry);//Test json serialisation
-        Assert.assertEquals("sfdsf",copy.fieldDisplayText.internal_getPreferred(Locale.ENGLISH));
+        Assert.assertEquals("sfdsf",copy.previousValueDisplayText.createAttribute().metadata.labelText.internal_getPreferred(Locale.ENGLISH));
     }
 }

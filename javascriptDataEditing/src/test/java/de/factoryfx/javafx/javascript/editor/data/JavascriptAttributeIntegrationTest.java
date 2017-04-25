@@ -1,5 +1,6 @@
 package de.factoryfx.javafx.javascript.editor.data;
 
+import java.util.Locale;
 import java.util.Optional;
 
 import de.factoryfx.data.jackson.ObjectMapperBuilder;
@@ -8,7 +9,6 @@ import de.factoryfx.javafx.editor.attribute.AttributeEditorFactory;
 import de.factoryfx.javafx.editor.data.DataEditor;
 import de.factoryfx.javafx.javascript.editor.attribute.visualisation.JavascriptAttributeVisualisation;
 import de.factoryfx.javafx.util.UniformDesign;
-import de.factoryfx.javafx.util.UniformDesignFactory;
 import de.factoryfx.javascript.data.attributes.types.Javascript;
 import de.factoryfx.javascript.data.attributes.types.JavascriptAttribute;
 import javafx.application.Application;
@@ -16,6 +16,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
 public class JavascriptAttributeIntegrationTest extends Application{
@@ -29,7 +30,7 @@ public class JavascriptAttributeIntegrationTest extends Application{
 
         ExampleJavascript exampleJavascript = new ExampleJavascript();
 
-        UniformDesign uniformDesign = new UniformDesignFactory<>().internalFactory().instance();
+        UniformDesign uniformDesign = new UniformDesign(Locale.ENGLISH, Color.web("#FF7979"),Color.web("#F0AD4E"),Color.web("#5BC0DE"),Color.web("#5CB85C"),Color.web("#5494CB"),Color.web("#B5B5B5"),false);;
         AttributeEditorFactory attributeEditorFactory = new AttributeEditorFactory(uniformDesign);
         attributeEditorFactory.addEditorAssociation(a->{
             if (Javascript.class==a.internal_getAttributeType().dataType){

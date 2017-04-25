@@ -1,8 +1,14 @@
 package de.factoryfx.server;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
+import de.factoryfx.data.merge.AttributeDiffInfo;
 import de.factoryfx.data.merge.DataMerger;
 import de.factoryfx.data.merge.MergeDiffInfo;
 import de.factoryfx.factory.FactoryBase;
@@ -33,6 +39,25 @@ public class ApplicationServer<L,V,T extends FactoryBase<L,V>> {
         FactoryAndNewMetadata<T> current = prepareNewFactory();
         current = new FactoryAndNewMetadata<>(historyFactory,current.metadata);
         return updateCurrentFactory(current,user,"revert",s->true);
+    }
+
+    public List<AttributeDiffInfo> getDiffForFactory(String factoryId) {
+        final ArrayList<AttributeDiffInfo> result = new ArrayList<>();
+        final List<StoredFactoryMetadata> historyFactoryList = factoryStorage.getHistoryFactoryList().stream().sorted(Comparator.comparing(o -> o.creationTime)).collect(Collectors.toList());
+        Collections.reverse(historyFactoryList);
+        for (StoredFactoryMetadata storedFactoryMetadata: historyFactoryList){
+            T historyFactory = getHistoryFactory(storedFactoryMetadata.id);
+            T historyFactoryPrevious = getPreviousHistoryFactory(storedFactoryMetadata.id);
+            final MergeDiffInfo mergeResult = new DataMerger(historyFactoryPrevious, historyFactoryPrevious, historyFactory).createMergeResult((permission) -> true);
+            mergeResult.mergeInfos.forEach(attributeDiffInfo -> {
+                if (attributeDiffInfo.parentId.equals(factoryId)) {
+                    result.add(attributeDiffInfo);
+
+                }
+
+            });
+        }
+        return result;
     }
 
     public FactoryUpdateLog updateCurrentFactory(FactoryAndNewMetadata<T> update, String user, String comment, Function<String,Boolean> permissionChecker) {

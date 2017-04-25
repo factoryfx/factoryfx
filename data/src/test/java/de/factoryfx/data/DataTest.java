@@ -412,7 +412,7 @@ public class DataTest {
         stringAttribute.set("fdg");
         dynamicData.dynamic().addAttribute(stringAttribute);
         dynamicData.dynamic().addAttribute(new IntegerAttribute(new AttributeMetadata()));
-
+        System.out.println(ObjectMapperBuilder.build().writeValueAsString(dynamicData));
         Data copy = ObjectMapperBuilder.build().copy(dynamicData);
         Assert.assertEquals(2, copy.getAttributes().size());
     }

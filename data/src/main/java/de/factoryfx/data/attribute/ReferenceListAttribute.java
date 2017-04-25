@@ -51,6 +51,13 @@ public class ReferenceListAttribute<T extends Data> extends Attribute<List<T>> i
         });
     }
 
+    @SuppressWarnings("unchecked")
+    //workaround for generic parameter ReferenceListAttribute<Example<V>> webGuiResource=new ReferenceAttribute(Example<V>)
+    public ReferenceListAttribute(AttributeMetadata attributeMetadata, Class clazz) {
+        super(attributeMetadata);
+        this.clazz=clazz;
+    }
+
     @JsonCreator
     protected ReferenceListAttribute() {
         super(null);
@@ -65,7 +72,9 @@ public class ReferenceListAttribute<T extends Data> extends Attribute<List<T>> i
 
     @Override
     public Attribute<List<T>> internal_copy() {
-        return new ReferenceListAttribute<>(clazz,metadata);
+        final ReferenceListAttribute<T> result = new ReferenceListAttribute<>(clazz, metadata);
+        result.set(get());
+        return result;
     }
 
     @Override
@@ -193,7 +202,7 @@ public class ReferenceListAttribute<T extends Data> extends Attribute<List<T>> i
     @Override
     @JsonIgnore
     public AttributeTypeInfo internal_getAttributeType() {
-        return new AttributeTypeInfo(ObservableList.class,null,null,Data.class, AttributeTypeInfo.AttributeTypeCategory.REFERENCE_LIST, null);
+        return new AttributeTypeInfo(ObservableList.class,null,null,Data.class, AttributeTypeInfo.AttributeTypeCategory.REFERENCE_LIST);
     }
 
 
@@ -238,6 +247,10 @@ public class ReferenceListAttribute<T extends Data> extends Attribute<List<T>> i
         }
 
         return addedFactory;
+    }
+
+    public Class<T> internal_getReferenceClass(){
+        return clazz;
     }
 
     /**
