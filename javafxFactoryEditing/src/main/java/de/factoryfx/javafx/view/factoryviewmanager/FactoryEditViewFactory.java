@@ -19,11 +19,8 @@ public class FactoryEditViewFactory<V,R extends FactoryBase<?,V>> extends Widget
     public final FactoryReferenceAttribute<LongRunningActionExecutor, LongRunningActionExecutorFactory<V>> longRunningActionExecutor = new FactoryReferenceAttribute<>((new AttributeMetadata()).de("items").en("items"), LongRunningActionExecutorFactory.class);
     public final FactoryReferenceAttribute<UniformDesign, UniformDesignFactory<V>> uniformDesign = new FactoryReferenceAttribute<>((new AttributeMetadata()).de("uniformDesign").en("uniformDesign"), UniformDesignFactory.class);
     public final FactoryReferenceAttribute<DataEditor,? super SimpleFactoryBase<DataEditor,V>> dataEditorFactory = new FactoryReferenceAttribute<>(new AttributeMetadata(),SimpleFactoryBase.class);
-
     public final FactoryReferenceAttribute<FactoryAwareWidget,FactoryAwareWidgetFactory> contentWidgetFactory = new FactoryReferenceAttribute<>(FactoryAwareWidgetFactory.class,new AttributeMetadata());
-
     public final FactoryReferenceAttribute<DiffDialogBuilder,DiffDialogBuilderFactory<V>> diffDialogBuilder = new FactoryReferenceAttribute<>(new AttributeMetadata(),DiffDialogBuilderFactory.class);
-
 
     @Override
     protected Widget createWidget() {

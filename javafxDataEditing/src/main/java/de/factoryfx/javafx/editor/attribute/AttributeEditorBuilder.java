@@ -4,7 +4,6 @@ import java.math.BigDecimal;
 import java.net.URI;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
@@ -59,15 +58,14 @@ import org.controlsfx.glyphfont.FontAwesome;
 public class AttributeEditorBuilder {
 
     private final UniformDesign uniformDesign;
+    private final List<Function<Attribute<?>,Optional<AttributeEditor<?>>>> editorAssociations;
 
-    public AttributeEditorBuilder(UniformDesign uniformDesign) {
+    public AttributeEditorBuilder(UniformDesign uniformDesign, List<Function<Attribute<?>,Optional<AttributeEditor<?>>>> editorAssociations) {
         this.uniformDesign = uniformDesign;
+        this.editorAssociations = editorAssociations;
     }
 
-    List<Function<Attribute<?>,Optional<AttributeEditor<?>>>> editorAssociations=new ArrayList<>();
-    public void addEditorAssociation(Function<Attribute<?>,Optional<AttributeEditor<?>>> editorAssociation){
-        editorAssociations.add(editorAssociation);
-    }
+
 
     private Optional<AttributeEditor<?>> getAttributeEditor(Attribute<?> attribute, DataEditor dataEditor, Supplier<List<ValidationError>> validation){
        return this.getAttributeEditor(attribute,dataEditor,validation,null);
