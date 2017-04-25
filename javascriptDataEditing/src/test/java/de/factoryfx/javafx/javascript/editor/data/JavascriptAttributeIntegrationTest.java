@@ -3,7 +3,7 @@ package de.factoryfx.javafx.javascript.editor.data;
 import java.util.ArrayList;
 import java.util.Locale;
 import java.util.Optional;
-import java.util.function.Function;
+import java.util.function.BiFunction;
 
 import de.factoryfx.data.attribute.Attribute;
 import de.factoryfx.data.jackson.ObjectMapperBuilder;
@@ -33,10 +33,9 @@ public class JavascriptAttributeIntegrationTest extends Application{
 
         ExampleJavascript exampleJavascript = new ExampleJavascript();
 
-        UniformDesign uniformDesign = new UniformDesign(Locale.ENGLISH, Color.web("#FF7979"),Color.web("#F0AD4E"),Color.web("#5BC0DE"),Color.web("#5CB85C"),Color.web("#5494CB"),Color.web("#B5B5B5"),false);;
 
-        final ArrayList<Function<Attribute<?>, Optional<AttributeEditor<?>>>> editorAssociations = new ArrayList<>();
-        editorAssociations.add(a->{
+        final ArrayList<BiFunction<UniformDesign,Attribute<?>, Optional<AttributeEditor<?>>>> editorAssociations = new ArrayList<>();
+        editorAssociations.add((uniformDesign, a)->{
             if (Javascript.class==a.internal_getAttributeType().dataType){
                 JavascriptAttribute javascriptAttribute = (JavascriptAttribute) a;
                 return Optional.of(new AttributeEditor<>(javascriptAttribute,new JavascriptAttributeVisualisation(javascriptAttribute),uniformDesign));
@@ -44,6 +43,7 @@ public class JavascriptAttributeIntegrationTest extends Application{
 
             return Optional.empty();
         });
+        UniformDesign uniformDesign = new UniformDesign(Locale.ENGLISH, Color.web("#FF7979"),Color.web("#F0AD4E"),Color.web("#5BC0DE"),Color.web("#5CB85C"),Color.web("#5494CB"),Color.web("#B5B5B5"),false);;
         AttributeEditorBuilder attributeEditorBuilder = new AttributeEditorBuilder(uniformDesign, editorAssociations);
 
 
