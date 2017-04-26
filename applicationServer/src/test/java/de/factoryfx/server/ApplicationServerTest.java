@@ -20,6 +20,7 @@ public class ApplicationServerTest {
         final ExampleFactoryA root = new ExampleFactoryA();
         final InMemoryFactoryStorage<ExampleLiveObjectA, Void, ExampleFactoryA> memoryFactoryStorage = new InMemoryFactoryStorage<>(root);
         memoryFactoryStorage.loadInitialFactory();
+        Thread.sleep(2);//avoid same timestamp
         {
             final FactoryAndNewMetadata<ExampleFactoryA> prepareNewFactory = memoryFactoryStorage.getPrepareNewFactory();
             prepareNewFactory.root.stringAttribute.set("change1");
@@ -37,6 +38,7 @@ public class ApplicationServerTest {
             prepareNewFactory.root.stringAttribute.set("change3");
             memoryFactoryStorage.updateCurrentFactory(prepareNewFactory, "user", "comment3");
         }
+        Thread.sleep(2);//avoid same timestamp
 
         ApplicationServer<ExampleLiveObjectA,Void,ExampleFactoryA> applicationServer = new ApplicationServer<>(Mockito.mock(FactoryManager.class), memoryFactoryStorage);
 
@@ -53,6 +55,7 @@ public class ApplicationServerTest {
         root.referenceAttribute.set(new ExampleFactoryB());
         final InMemoryFactoryStorage<ExampleLiveObjectA, Void, ExampleFactoryA> memoryFactoryStorage = new InMemoryFactoryStorage<>(root);
         memoryFactoryStorage.loadInitialFactory();
+        Thread.sleep(2);//avoid same timestamp
         {
             final FactoryAndNewMetadata<ExampleFactoryA> prepareNewFactory = memoryFactoryStorage.getPrepareNewFactory();
             prepareNewFactory.root.stringAttribute.set("change1");
@@ -70,13 +73,13 @@ public class ApplicationServerTest {
             root.referenceAttribute.get().stringAttribute.set("different change");
             memoryFactoryStorage.updateCurrentFactory(prepareNewFactory, "user", "comment2");
         }
-
         Thread.sleep(2);//avoid same timestamp
         {
             final FactoryAndNewMetadata<ExampleFactoryA> prepareNewFactory = memoryFactoryStorage.getPrepareNewFactory();
             prepareNewFactory.root.stringAttribute.set("change3");
             memoryFactoryStorage.updateCurrentFactory(prepareNewFactory, "user", "comment3");
         }
+        Thread.sleep(2);//avoid same timestamp
 
         ApplicationServer<ExampleLiveObjectA,Void,ExampleFactoryA> applicationServer = new ApplicationServer<>(Mockito.mock(FactoryManager.class), memoryFactoryStorage);
 
@@ -84,7 +87,11 @@ public class ApplicationServerTest {
         Assert.assertEquals(3,diff.size());
         Assert.assertEquals("change3",diff.get(0).newValueValueDisplayText.get().getDisplayText());
         Assert.assertEquals("change2",diff.get(1).newValueValueDisplayText.get().getDisplayText());
-        Assert.assertEquals("change1",diff.get(2).newValueValueDisplayText.get().getDisplayText());
+        final String displayText = diff.get(2).newValueValueDisplayText.get().getDisplayText();
+        if (!"change1".equals(displayText)){
+            System.out.println("ssfd");
+        }
+        Assert.assertEquals("change1", displayText);
     }
 
 }

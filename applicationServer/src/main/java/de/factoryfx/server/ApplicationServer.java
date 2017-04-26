@@ -43,7 +43,7 @@ public class ApplicationServer<L,V,T extends FactoryBase<L,V>> {
 
     public List<AttributeDiffInfo> getDiffForFactory(String factoryId) {
         final ArrayList<AttributeDiffInfo> result = new ArrayList<>();
-        final List<StoredFactoryMetadata> historyFactoryList = factoryStorage.getHistoryFactoryList().stream().sorted(Comparator.comparing(o -> o.creationTime)).collect(Collectors.toList());
+        final List<StoredFactoryMetadata> historyFactoryList = new ArrayList<>(factoryStorage.getHistoryFactoryList()).stream().sorted(Comparator.comparing(o -> o.creationTime)).collect(Collectors.toList());
         Collections.reverse(historyFactoryList);
         for (StoredFactoryMetadata storedFactoryMetadata: historyFactoryList){
             T historyFactory = getHistoryFactory(storedFactoryMetadata.id);
