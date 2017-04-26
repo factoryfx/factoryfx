@@ -95,3 +95,24 @@
     -fx-base: INFO_COLOR;
     /*-fx-text-fill: white;*/
 }
+
+*.dontChangeOpacityIfdisabled:disabled > * {
+    -fx-opacity: 1.0 ;
+    /*-fx-background-color: red;*/
+}
+.dontChangeOpacityIfdisabled .text-field:disabled {
+    -fx-opacity: 1.0 ;
+}
+
+.dontChangeOpacityIfdisabled .table-view:disabled {
+    -fx-opacity: 1.0 ;
+}
+.dontChangeOpacityIfdisabled .label:disabled {
+    -fx-opacity: 1.0 ;
+}
+
+
+
+/*.combo-box:disabled, .combo-box:disabled > * {*/
+    /*-fx-opacity: 1.0 ;*/
+/*}*/

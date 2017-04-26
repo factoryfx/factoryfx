@@ -164,12 +164,13 @@ public class FactoryEditView<V,R extends FactoryBase<?,V>> implements Widget, Fa
                 }
             });
             toolBar.getItems().add(loadFromFile);
+            toolBar.getItems().add(new Separator());
         }
 
         {
-            final Button factoryHistory = new Button("History");
+            final Button factoryHistory = new Button("");
             factoryHistory.setTooltip(new Tooltip("Factory History"));
-            uniformDesign.addIcon(factoryHistory, FontAwesome.Glyph.ARCHIVE);
+            uniformDesign.addIcon(factoryHistory, FontAwesome.Glyph.HISTORY);
             factoryHistory.setOnAction(event -> {
 
                 LongRunningActionExecutor.execute(() -> {
