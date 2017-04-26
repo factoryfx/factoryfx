@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Optional;
 
 import de.factoryfx.data.jackson.ObjectMapperBuilder;
+import de.factoryfx.data.merge.AttributeDiffInfo;
 import de.factoryfx.data.merge.MergeDiffInfo;
 import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.factory.datastorage.FactoryAndNewMetadata;
@@ -23,6 +24,10 @@ public class FactoryEditManager<V,R extends FactoryBase<?,V>> {
     public FactoryEditManager(ApplicationServerRestClient<V, R> client, FactorySerialisationManager<R> factorySerialisationManager) {
         this.client = client;
         this.factorySerialisationManager = factorySerialisationManager;
+    }
+
+    public List<AttributeDiffInfo> getSingleFactoryHistory(String id) {
+        return client.getSingleFactoryHistory(id);
     }
 
     public void registerListener(FactoryRootChangeListener listener){

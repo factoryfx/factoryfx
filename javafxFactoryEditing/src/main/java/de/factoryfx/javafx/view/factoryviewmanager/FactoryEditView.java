@@ -3,19 +3,23 @@ package de.factoryfx.javafx.view.factoryviewmanager;
 import static javafx.scene.control.Alert.AlertType.CONFIRMATION;
 
 import java.io.File;
+import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
 
 import de.factoryfx.data.Data;
+import de.factoryfx.data.merge.AttributeDiffInfo;
 import de.factoryfx.data.merge.MergeDiffInfo;
 import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.factory.log.FactoryUpdateLog;
 import de.factoryfx.javafx.editor.data.DataEditor;
+import de.factoryfx.javafx.util.LongRunningActionExecutor;
 import de.factoryfx.javafx.util.UniformDesign;
 import de.factoryfx.javafx.widget.Widget;
 import de.factoryfx.javafx.widget.diffdialog.DiffDialogBuilder;
 import de.factoryfx.javafx.widget.validation.ValidationWidget;
 import javafx.application.Platform;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.control.Alert;
@@ -37,21 +41,23 @@ import org.controlsfx.glyphfont.FontAwesome;
  */
 public class FactoryEditView<V,R extends FactoryBase<?,V>> implements Widget, FactoryRootChangeListener<R> {
 
-    private final de.factoryfx.javafx.util.LongRunningActionExecutor LongRunningActionExecutor;
+    private final LongRunningActionExecutor LongRunningActionExecutor;
     private final FactoryEditManager<V,R> factoryManager;
     private final FactoryAwareWidget content;
     private final UniformDesign uniformDesign;
     private final DataEditor dataEditor;
     private BorderPane borderPane;
     private final DiffDialogBuilder diffDialogBuilder;
+    private final SimpleObjectProperty<Data> selectedFactory;
 
-    public FactoryEditView(de.factoryfx.javafx.util.LongRunningActionExecutor longRunningActionExecutor, FactoryEditManager factoryManager, FactoryAwareWidget content, UniformDesign uniformDesign, DataEditor dataEditor, DiffDialogBuilder diffDialogBuilder) {
+    public FactoryEditView(LongRunningActionExecutor longRunningActionExecutor, FactoryEditManager factoryManager, FactoryAwareWidget content, UniformDesign uniformDesign, DataEditor dataEditor, DiffDialogBuilder diffDialogBuilder) {
         this.LongRunningActionExecutor = longRunningActionExecutor;
         this.factoryManager = factoryManager;
         this.content = content;
         this.uniformDesign = uniformDesign;
         this.dataEditor = dataEditor;
         this.diffDialogBuilder = diffDialogBuilder;
+        this.selectedFactory = content.selectedFactory();
     }
 
     @Override
@@ -160,6 +166,25 @@ public class FactoryEditView<V,R extends FactoryBase<?,V>> implements Widget, Fa
             toolBar.getItems().add(loadFromFile);
         }
 
+        {
+            final Button factoryHistory = new Button("History");
+            factoryHistory.setTooltip(new Tooltip("Factory History"));
+            uniformDesign.addIcon(factoryHistory, FontAwesome.Glyph.ARCHIVE);
+            factoryHistory.setOnAction(event -> {
+
+                LongRunningActionExecutor.execute(() -> {
+                    LongRunningActionExecutor.execute(() -> {
+                        final List<AttributeDiffInfo> diff = factoryManager.getSingleFactoryHistory(selectedFactory.get().getId());
+                        Platform.runLater(() -> {
+                            diffDialogBuilder.createDiffDialog(diff, "Änderungen",factoryHistory.getScene().getWindow());
+                        });
+                    });
+                    factoryManager.reset();
+                });
+            });
+            factoryHistory.disableProperty().bind(selectedFactory.isNull());
+            toolBar.getItems().add(factoryHistory);
+        }
 
 
         borderPane.setTop(toolBar);

@@ -1,5 +1,8 @@
 package de.factoryfx.javafx.widget.diffdialog;
 
+import java.util.List;
+
+import de.factoryfx.data.merge.AttributeDiffInfo;
 import de.factoryfx.data.merge.MergeDiffInfo;
 import de.factoryfx.factory.log.FactoryUpdateLog;
 import de.factoryfx.javafx.editor.attribute.AttributeEditorBuilder;
@@ -24,6 +27,34 @@ public class DiffDialogBuilder {
         this.uniformDesign = uniformDesign;
         this.attributeEditorBuilder = attributeEditorBuilder;
     }
+
+    public void createDiffDialog(List<AttributeDiffInfo> diffs, String title, Window owner) {
+        final FactoryDiffWidget factoryDiffWidget = new FactoryDiffWidget(uniformDesign,attributeEditorBuilder);
+        factoryDiffWidget.updateMergeDiff(diffs);
+
+
+        Dialog<Void> dialog = new Dialog<>();
+        dialog.initOwner(owner);
+        dialog.setTitle(title);
+        dialog.setHeaderText(title);
+
+        ButtonType loginButtonType = new ButtonType("OK", ButtonBar.ButtonData.OK_DONE);
+        dialog.getDialogPane().getButtonTypes().addAll(loginButtonType/*, ButtonType.CANCEL*/);
+
+        final BorderPane pane = new BorderPane();
+        final Node diffWidgetContent = factoryDiffWidget.createContent();
+
+        pane.setCenter(diffWidgetContent);
+        pane.setPrefWidth(1000);
+        pane.setPrefHeight(750);
+        dialog.getDialogPane().setContent(pane);
+        dialog.setResizable(true);
+
+        dialog.getDialogPane().getStylesheets().add(getClass().getResource("/de/factoryfx/javafx/css/app.css").toExternalForm());
+
+        dialog.showAndWait();
+    }
+
 
     public void createDiffDialog(MergeDiffInfo mergeDiff, String title, Window owner) {
         final FactoryDiffWidget factoryDiffWidget = new FactoryDiffWidget(uniformDesign,attributeEditorBuilder);

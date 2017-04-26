@@ -3,6 +3,7 @@ package de.factoryfx.javafx.widget.factorydiff;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Consumer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -19,8 +20,6 @@ import de.factoryfx.javafx.widget.table.TableControlWidget;
 import difflib.Delta;
 import difflib.DiffUtils;
 import difflib.Patch;
-import javafx.beans.InvalidationListener;
-import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -59,29 +58,28 @@ public class FactoryDiffWidget implements Widget {
         this.attributeEditorBuilder = attributeEditorBuilder;
     }
 
-    private final SimpleObjectProperty<MergeDiffInfo> mergeDiff = new SimpleObjectProperty<>();
+    private List<AttributeDiffInfoExtended> diff=new ArrayList<>();
+    private Consumer<List<AttributeDiffInfoExtended>> diffListUpdater;
 
     @Override
     public Node createContent() {
-        BorderPane previousValueDisplay = new BorderPane ();
+        BorderPane previousValueDisplay = new BorderPane();
         previousValueDisplay.setOpacity(0.6);
-        BorderPane newValueDisplay = new BorderPane ();
+        BorderPane newValueDisplay = new BorderPane();
         newValueDisplay.setOpacity(0.6);
-        StyleClassedTextArea diffDisplay = new StyleClassedTextArea ();
+        StyleClassedTextArea diffDisplay = new StyleClassedTextArea();
         diffDisplay.getStyleClass().add("diffTextField");
         diffDisplay.setEditable(false);
 
         TableView<AttributeDiffInfoExtended> diffTableView = createDiffTableViewTable();
-        final ObservableList<AttributeDiffInfoExtended> diffList= FXCollections.observableArrayList();
+        final ObservableList<AttributeDiffInfoExtended> diffList = FXCollections.observableArrayList();
         diffTableView.setItems(diffList);
-
 
         BorderPane borderPane = new BorderPane();
 
         SplitPane verticalSplitPane = new SplitPane();
         verticalSplitPane.setOrientation(Orientation.VERTICAL);
         verticalSplitPane.getItems().add(diffTableView);
-
 
         VBox diffBox = new VBox(3);
         VBox.setVgrow(diffDisplay, Priority.ALWAYS);
@@ -90,90 +88,87 @@ public class FactoryDiffWidget implements Widget {
         diffJumpButtons.setAlignment(Pos.CENTER);
         diffJumpButtons.setPadding(new Insets(3));
         Button up = new Button();
-        uniformDesign.addIcon(up,FontAwesome.Glyph.CHEVRON_CIRCLE_UP);
+        uniformDesign.addIcon(up, FontAwesome.Glyph.CHEVRON_CIRCLE_UP);
         diffJumpButtons.getChildren().add(up);
         Button down = new Button();
-        uniformDesign.addIcon(down,FontAwesome.Glyph.CHEVRON_CIRCLE_DOWN);
+        uniformDesign.addIcon(down, FontAwesome.Glyph.CHEVRON_CIRCLE_DOWN);
         diffJumpButtons.getChildren().add(down);
         diffBox.getChildren().add(diffJumpButtons);
 
         SplitPane diffValuesPane = new SplitPane();
-        diffValuesPane.getItems().add(addTitle(previousValueDisplay,uniformDesign.getText(titlePrevious)));
-        diffValuesPane.getItems().add(addTitle(diffBox,uniformDesign.getText(titleDiff)));
-        diffValuesPane.getItems().add(addTitle(newValueDisplay,uniformDesign.getText(titleNew)));
-        diffValuesPane.setDividerPositions(0.333,0.6666);
+        diffValuesPane.getItems().add(addTitle(previousValueDisplay, uniformDesign.getText(titlePrevious)));
+        diffValuesPane.getItems().add(addTitle(diffBox, uniformDesign.getText(titleDiff)));
+        diffValuesPane.getItems().add(addTitle(newValueDisplay, uniformDesign.getText(titleNew)));
+        diffValuesPane.setDividerPositions(0.333, 0.6666);
         verticalSplitPane.getItems().add(diffValuesPane);
 
         diffTableView.getSelectionModel().selectedItemProperty().addListener(observable -> {
-            AttributeDiffInfo diffItem=diffTableView.getSelectionModel().getSelectedItem().attributeDiffInfo;
-            if (diffItem!=null){
+            AttributeDiffInfo diffItem = diffTableView.getSelectionModel().getSelectedItem().attributeDiffInfo;
+            if (diffItem != null) {
                 List<String> previousLines = convertToList(diffItem.previousValueDisplayText.getDisplayText());
                 List<String> newLines = convertToList(diffItem.newValueValueDisplayText.map(AttributeJsonWrapper::getDisplayText).orElse("removed"));
-                Patch<String> patch = DiffUtils.diff(
-                        previousLines,
-                        newLines
-                );
+                Patch<String> patch = DiffUtils.diff(previousLines, newLines);
 
-                List<StyleClassArea> styleChanges= new ArrayList<>();
+                List<StyleClassArea> styleChanges = new ArrayList<>();
 
-                int previousOriginalPosition=0;
+                int previousOriginalPosition = 0;
                 StringBuilder diffString = new StringBuilder();
                 //String  lastOriginalStringDelta="";
 
-                final List<Integer> diffPositions=new ArrayList<>();
-                for (Delta<String> delta: patch.getDeltas()) {
+                final List<Integer> diffPositions = new ArrayList<>();
+                for (Delta<String> delta : patch.getDeltas()) {
                     String originalStringDelta = delta.getOriginal().getLines().stream().collect(Collectors.joining());
                     String revisitedStringDelta = delta.getRevised().getLines().stream().collect(Collectors.joining());
-                    final String unchanged=previousLines.subList(previousOriginalPosition,delta.getOriginal().getPosition()).stream().collect(Collectors.joining());
+                    final String unchanged = previousLines.subList(previousOriginalPosition, delta.getOriginal().getPosition()).stream().collect(Collectors.joining());
 
                     diffString.append(unchanged);
                     diffPositions.add(diffString.toString().length());
-                    styleChanges.add(new StyleClassArea(diffString.length()-unchanged.length(), diffString.length(), "diffUnchanged"));
+                    styleChanges.add(new StyleClassArea(diffString.length() - unchanged.length(), diffString.length(), "diffUnchanged"));
                     diffString.append(originalStringDelta);
-                    styleChanges.add(new StyleClassArea(diffString.length()-originalStringDelta.length(), diffString.length(), "diffOld"));
+                    styleChanges.add(new StyleClassArea(diffString.length() - originalStringDelta.length(), diffString.length(), "diffOld"));
                     diffString.append(revisitedStringDelta);
-                    styleChanges.add(new StyleClassArea(diffString.length()-revisitedStringDelta.length(), diffString.length(), "diffNew"));
+                    styleChanges.add(new StyleClassArea(diffString.length() - revisitedStringDelta.length(), diffString.length(), "diffNew"));
 
-                    previousOriginalPosition=delta.getOriginal().getPosition()+delta.getOriginal().size();
+                    previousOriginalPosition = delta.getOriginal().getPosition() + delta.getOriginal().size();
                     //lastOriginalStringDelta=originalStringDelta;
                 }
                 if (previousOriginalPosition < previousLines.size()) {
-                    final String unchanged = previousLines.subList(previousOriginalPosition,previousLines.size()).stream().collect(Collectors.joining());
+                    final String unchanged = previousLines.subList(previousOriginalPosition, previousLines.size()).stream().collect(Collectors.joining());
                     diffString.append(unchanged);
                     styleChanges.add(new StyleClassArea(diffString.length() - unchanged.length(), diffString.length(), "diffUnchanged"));
                 }
 
                 diffDisplay.replaceText(diffString.toString());
-                for (StyleClassArea styleClassArea: styleChanges){
-                    if (styleClassArea.end<=diffString.toString().length()) {
-                        diffDisplay.setStyleClass(styleClassArea.start,styleClassArea.end,styleClassArea.cssclass);
+                for (StyleClassArea styleClassArea : styleChanges) {
+                    if (styleClassArea.end <= diffString.toString().length()) {
+                        diffDisplay.setStyleClass(styleClassArea.start, styleClassArea.end, styleClassArea.cssclass);
                     }
                 }
 
-                if (!patch.getDeltas().isEmpty()){
-                    int firstChange=patch.getDeltas().get(0).getOriginal().getPosition();
+                if (!patch.getDeltas().isEmpty()) {
+                    int firstChange = patch.getDeltas().get(0).getOriginal().getPosition();
                     diffDisplay.positionCaret(firstChange);
                     diffDisplay.selectRange(firstChange, firstChange);
                 }
 
-                diffPosition=0;
-                if (!diffPositions.isEmpty()){
-                    diffPosition=diffPositions.get(0);
+                diffPosition = 0;
+                if (!diffPositions.isEmpty()) {
+                    diffPosition = diffPositions.get(0);
                 }
                 up.setOnAction(event -> {
-                    for (Integer pos: diffPositions){
-                        if (pos<diffPosition){
-                            diffDisplay.selectRange(pos,pos);
-                            diffPosition=pos;
+                    for (Integer pos : diffPositions) {
+                        if (pos < diffPosition) {
+                            diffDisplay.selectRange(pos, pos);
+                            diffPosition = pos;
                             break;
                         }
                     }
                 });
                 down.setOnAction(event -> {
-                    for (Integer pos: diffPositions){
-                        if (pos>diffPosition){
-                            diffDisplay.selectRange(pos,pos);
-                            diffPosition=pos;
+                    for (Integer pos : diffPositions) {
+                        if (pos > diffPosition) {
+                            diffDisplay.selectRange(pos, pos);
+                            diffPosition = pos;
                             break;
                         }
                     }
@@ -181,12 +176,16 @@ public class FactoryDiffWidget implements Widget {
 
                 final Optional<AttributeEditor<?>> previousAttributeEditor = attributeEditorBuilder.getAttributeEditor(diffItem.previousValueDisplayText.createAttribute(), null, null, null);
                 previousAttributeEditor.get().expand();
-                previousValueDisplay.setCenter(previousAttributeEditor.get().createContent());
+                final Node previousAttributeEditorContent = previousAttributeEditor.get().createContent();
+                previousAttributeEditorContent.setDisable(true);
+                previousValueDisplay.setCenter(previousAttributeEditorContent);
 
-                if (diffItem.newValueValueDisplayText.isPresent()){
+                if (diffItem.newValueValueDisplayText.isPresent()) {
                     final Optional<AttributeEditor<?>> newAttributeEditor = attributeEditorBuilder.getAttributeEditor(diffItem.newValueValueDisplayText.get().createAttribute(), null, null, null);
                     newAttributeEditor.get().expand();
-                    newValueDisplay.setCenter(newAttributeEditor.get().createContent());
+                    final Node content = newAttributeEditor.get().createContent();
+                    content.setDisable(true);
+                    newValueDisplay.setCenter(content);
                 } else {
                     newValueDisplay.setCenter(null);
                 }
@@ -196,21 +195,11 @@ public class FactoryDiffWidget implements Widget {
             }
         });
 
-
-        InvalidationListener invalidationListener = observable -> {
-            MergeDiffInfo mergeDiff = this.mergeDiff.get();
-            if (mergeDiff != null) {
-                diffList.clear();
-                diffList.addAll(mergeDiff.mergeInfos.stream().map(info->new AttributeDiffInfoExtended(true,false,false, info)).collect(Collectors.toList()));
-                diffList.addAll(mergeDiff.conflictInfos.stream().map(info->new AttributeDiffInfoExtended(false,true,false, info)).collect(Collectors.toList()));
-                diffList.addAll(mergeDiff.permissionViolations.stream().map(info->new AttributeDiffInfoExtended(false,false,true, info)).collect(Collectors.toList()));
-                diffTableView.getSelectionModel().selectFirst();
-            }
+        diffListUpdater = attributeDiffInfoExtendeds -> {
+            diffList.setAll(attributeDiffInfoExtendeds);
+            diffTableView.getSelectionModel().selectFirst();
         };
-        mergeDiff.addListener(invalidationListener);
-        invalidationListener.invalidated(mergeDiff);
-
-
+        diffListUpdater.accept(diff);
         borderPane.setCenter(verticalSplitPane);
         return borderPane;
     }
@@ -306,8 +295,21 @@ public class FactoryDiffWidget implements Widget {
         return vBox;
     }
 
+    public void updateMergeDiff(List<AttributeDiffInfo> diffList) {
+        this.diff=(diffList.stream().map(i->new AttributeDiffInfoExtended(true,false,false,i)).collect(Collectors.toList()));
+        if (diffListUpdater!=null){
+            diffListUpdater.accept(diff);
+        }
+    }
+
     public void updateMergeDiff(MergeDiffInfo mergeDiff) {
-        this.mergeDiff.set(mergeDiff);
+        diff = new ArrayList<>();
+        diff.addAll(mergeDiff.mergeInfos.stream().map(info->new AttributeDiffInfoExtended(true,false,false, info)).collect(Collectors.toList()));
+        diff.addAll(mergeDiff.conflictInfos.stream().map(info->new AttributeDiffInfoExtended(false,true,false, info)).collect(Collectors.toList()));
+        diff.addAll(mergeDiff.permissionViolations.stream().map(info->new AttributeDiffInfoExtended(false,false,true, info)).collect(Collectors.toList()));
+        if (diffListUpdater!=null){
+            diffListUpdater.accept(diff);
+        }
     }
 
 }

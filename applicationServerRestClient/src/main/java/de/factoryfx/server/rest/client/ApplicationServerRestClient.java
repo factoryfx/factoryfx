@@ -85,7 +85,7 @@ public class ApplicationServerRestClient<V,T extends FactoryBase<?,V>> {
         return restClient.post("revert",new UserAwareRequest<>(user,passwordHash,historyFactory), FactoryUpdateLog.class);
     }
 
-    public List<AttributeDiffInfo> diffForFactory(String factoryId) {
+    public List<AttributeDiffInfo> getSingleFactoryHistory(String factoryId) {
         return restClient.post("diffForFactory",new UserAwareRequest<>(user,passwordHash,factoryId), DiffForFactoryResponse.class).diffs;
     }
 
