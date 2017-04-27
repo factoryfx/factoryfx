@@ -61,7 +61,7 @@
             <div class="row" style="margin-top: 3px;">
                 <div class="col-md-11">
                     <div ng-repeat="(language, value) in $parent.model.texts">
-                        <div class="input-group input-group-sm"">
+                        <div class="input-group input-group-sm">
                           <span class="input-group-addon" >{{language}}</span>
                           <input ng-model-options="{ debounce: 200 }" type="text" class="form-control" ng-model="$parent.model.texts[language]">
                         </div>

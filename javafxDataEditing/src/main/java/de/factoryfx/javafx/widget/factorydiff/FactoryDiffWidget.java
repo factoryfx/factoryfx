@@ -161,8 +161,6 @@ public class FactoryDiffWidget implements Widget {
         return borderPane;
     }
 
-    int diffPosition;
-
     private TableView<AttributeDiffInfoExtended> createDiffTableViewTable(){
         TableView<AttributeDiffInfoExtended> tableView = new TableView<>();
         tableView.setPlaceholder(new Label(uniformDesign.getText(noChangesFound)));
