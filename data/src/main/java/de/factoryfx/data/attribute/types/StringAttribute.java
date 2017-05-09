@@ -20,10 +20,18 @@ public class StringAttribute extends ValueAttribute<String> {
 
     @JsonIgnore
     private boolean longText=false;
+    @JsonIgnore
+    private boolean defaultExpanded =false;
     /**hint for data editing, for long text textarea instead of textfield is used*/
     @JsonIgnore
     public StringAttribute longText(){
         longText=true;
+        return this;
+    }
+
+    @JsonIgnore
+    public StringAttribute defaultExpanded(boolean defaultExpanded){
+        this.defaultExpanded=defaultExpanded;
         return this;
     }
 
@@ -34,5 +42,10 @@ public class StringAttribute extends ValueAttribute<String> {
     @JsonIgnore
     public boolean internal_isLongText(){
         return longText;
+    }
+
+    @JsonIgnore
+    public boolean internal_isDefaultExpanded(){
+        return defaultExpanded;
     }
 }

@@ -208,7 +208,7 @@ public class AttributeEditorBuilder {
             StringAttribute stringAttribute = (StringAttribute) attribute;
             if (stringAttribute.internal_isLongText()){
                 return Optional.of(new AttributeEditor<>(stringAttribute,
-                        new ExpandableAttributeVisualisation<>(new StringLongAttributeVisualisation(),uniformDesign, (s)->Ascii.truncate(s,20,"..."),FontAwesome.Glyph.FONT ),uniformDesign));
+                        new ExpandableAttributeVisualisation<>(new StringLongAttributeVisualisation(),uniformDesign, (s)->Ascii.truncate(s,20,"..."),FontAwesome.Glyph.FONT,stringAttribute.internal_isDefaultExpanded() ),uniformDesign));
             }
         }
 

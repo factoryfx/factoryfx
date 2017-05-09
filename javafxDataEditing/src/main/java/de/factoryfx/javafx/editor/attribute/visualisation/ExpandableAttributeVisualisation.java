@@ -34,10 +34,15 @@ public class ExpandableAttributeVisualisation<T> implements AttributeEditorVisua
     private final FontAwesome.Glyph  icon;
 
     public ExpandableAttributeVisualisation(AttributeEditorVisualisation<T> attributeEditorVisualisation, UniformDesign uniformDesign, Function<T,String> titleTextProvider, FontAwesome.Glyph icon) {
+        this(attributeEditorVisualisation,uniformDesign,titleTextProvider,icon,false);
+    }
+
+    public ExpandableAttributeVisualisation(AttributeEditorVisualisation<T> attributeEditorVisualisation, UniformDesign uniformDesign, Function<T,String> titleTextProvider, FontAwesome.Glyph icon, boolean expanded) {
         this.uniformDesign= uniformDesign;
         this.attributeEditorVisualisation = attributeEditorVisualisation;
         this.titleTextProvider = titleTextProvider;
         this.icon = icon;
+        this.expanded.set(expanded);
     }
 
 
