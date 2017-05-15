@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -41,20 +42,19 @@ public class ApplicationServer<L,V,T extends FactoryBase<L,V>> {
         return updateCurrentFactory(current,user,"revert",s->true);
     }
 
-    public List<AttributeDiffInfo> getDiffForFactory(String factoryId) {
+    /**list all changes made in specific factory*/
+    public List<AttributeDiffInfo> getDiffHistoryForFactory(String factoryId) {
         final ArrayList<AttributeDiffInfo> result = new ArrayList<>();
         final List<StoredFactoryMetadata> historyFactoryList = new ArrayList<>(factoryStorage.getHistoryFactoryList()).stream().sorted(Comparator.comparing(o -> o.creationTime)).collect(Collectors.toList());
         Collections.reverse(historyFactoryList);
-        for (StoredFactoryMetadata storedFactoryMetadata: historyFactoryList){
-            T historyFactory = getHistoryFactory(storedFactoryMetadata.id);
-            T historyFactoryPrevious = getPreviousHistoryFactory(storedFactoryMetadata.id);
+        for (int i=0;i<historyFactoryList.size()-1;i++){
+            T historyFactory = getHistoryFactory(historyFactoryList.get(i).id);
+            T historyFactoryPrevious = getHistoryFactory(historyFactoryList.get(i+1).id);
             final MergeDiffInfo mergeResult = new DataMerger(historyFactoryPrevious, historyFactoryPrevious, historyFactory).createMergeResult((permission) -> true);
             mergeResult.mergeInfos.forEach(attributeDiffInfo -> {
                 if (attributeDiffInfo.parentId.equals(factoryId)) {
                     result.add(attributeDiffInfo);
-
                 }
-
             });
         }
         return result;
@@ -85,9 +85,8 @@ public class ApplicationServer<L,V,T extends FactoryBase<L,V>> {
         return factoryStorage.getHistoryFactory(id);
     }
 
-    public T getPreviousHistoryFactory(String id) {
-        T historyFactory = factoryStorage.getPreviousHistoryFactory(id);
-        return historyFactory;
+    private T getPreviousHistoryFactory(String id) {
+        return factoryStorage.getPreviousHistoryFactory(id);
     }
 
     public Collection<StoredFactoryMetadata> getHistoryFactoryList() {

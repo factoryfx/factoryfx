@@ -10,20 +10,29 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import com.google.common.collect.TreeTraverser;
+import com.sun.net.httpserver.HttpServer;
 import de.factoryfx.data.Data;
 import de.factoryfx.data.merge.DataMerger;
 import de.factoryfx.data.merge.MergeDiffInfo;
+import de.factoryfx.factory.exception.AllOrNothingFactoryExceptionHandler;
 import de.factoryfx.factory.exception.ExceptionResponseAction;
 import de.factoryfx.factory.exception.FactoryExceptionHandler;
 import de.factoryfx.factory.log.FactoryUpdateLog;
+import org.slf4j.LoggerFactory;
 
 public class FactoryManager<L,V,T extends FactoryBase<L,V>> {
+
+    private static final org.slf4j.Logger logger = LoggerFactory.getLogger(FactoryManager.class);
 
     private T currentFactoryRoot;
     private final FactoryExceptionHandler<V> factoryExceptionHandler;
 
+
     public FactoryManager(FactoryExceptionHandler<V> factoryExceptionHandler) {
         this.factoryExceptionHandler = factoryExceptionHandler;
+        if (factoryExceptionHandler instanceof AllOrNothingFactoryExceptionHandler){
+            logger.warn("only AllOrNothingFactoryExceptionHandler is set therefore no exception will be logged. Usually this setup is wrong and the handler should be wrapped with LoggingFactoryExceptionHandler");
+        }
     }
 
     @SuppressWarnings("unchecked")

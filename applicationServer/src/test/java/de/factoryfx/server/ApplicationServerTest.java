@@ -42,7 +42,7 @@ public class ApplicationServerTest {
 
         ApplicationServer<ExampleLiveObjectA,Void,ExampleFactoryA> applicationServer = new ApplicationServer<>(Mockito.mock(FactoryManager.class), memoryFactoryStorage);
 
-        final List<AttributeDiffInfo> diff = applicationServer.getDiffForFactory(root.getId());
+        final List<AttributeDiffInfo> diff = applicationServer.getDiffHistoryForFactory(root.getId());
         Assert.assertEquals(3,diff.size());
         Assert.assertEquals("change3",diff.get(0).newValueValueDisplayText.get().getDisplayText());
         Assert.assertEquals("change2",diff.get(1).newValueValueDisplayText.get().getDisplayText());
@@ -83,7 +83,7 @@ public class ApplicationServerTest {
 
         ApplicationServer<ExampleLiveObjectA,Void,ExampleFactoryA> applicationServer = new ApplicationServer<>(Mockito.mock(FactoryManager.class), memoryFactoryStorage);
 
-        final List<AttributeDiffInfo> diff = applicationServer.getDiffForFactory(root.getId());
+        final List<AttributeDiffInfo> diff = applicationServer.getDiffHistoryForFactory(root.getId());
         Assert.assertEquals(3,diff.size());
         Assert.assertEquals("change3",diff.get(0).newValueValueDisplayText.get().getDisplayText());
         Assert.assertEquals("change2",diff.get(1).newValueValueDisplayText.get().getDisplayText());

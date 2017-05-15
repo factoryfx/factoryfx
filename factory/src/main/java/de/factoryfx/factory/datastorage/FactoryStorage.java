@@ -15,12 +15,11 @@ public interface FactoryStorage<L,V,T extends FactoryBase<L,V>> {
         Collection<StoredFactoryMetadata> historyFactoryList = getHistoryFactoryList();
         if (historyFactoryList.isEmpty())
             return null;
-        List<StoredFactoryMetadata> metadata = historyFactoryList.stream().sorted(Comparator.comparing(h -> h.creationTime)).collect(Collectors.toList());
-        String lastId = metadata.get(0).id;
-        for (StoredFactoryMetadata m : metadata) {
-            if (m.id.equals(id))
-                return getHistoryFactory(lastId);
-            lastId = m.id;
+        List<StoredFactoryMetadata> historyFactoryListSorted = historyFactoryList.stream().sorted(Comparator.comparing(h -> h.creationTime)).collect(Collectors.toList());
+        for (int i=0;i<historyFactoryListSorted.size();i++) {
+            if (historyFactoryListSorted.get(i).id.equals(id) && i-1>=0) {
+                return getHistoryFactory(historyFactoryListSorted.get(i - 1).id);
+            }
         }
         return null;
     }

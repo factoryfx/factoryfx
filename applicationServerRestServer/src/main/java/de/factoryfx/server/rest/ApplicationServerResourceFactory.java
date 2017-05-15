@@ -9,6 +9,7 @@ import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.factory.atrribute.FactoryReferenceAttribute;
 import de.factoryfx.server.ApplicationServerAwareFactory;
 import de.factoryfx.user.AuthorizedUser;
+import de.factoryfx.user.NoUserManagement;
 import de.factoryfx.user.UserManagement;
 import de.factoryfx.user.persistent.PersistentUserManagementFactory;
 
@@ -24,7 +25,11 @@ public class ApplicationServerResourceFactory<V,L,T extends FactoryBase<L,V>> ex
             if (authorizedKeyUserEvaluator==null) {
                 authorizedKeyUserEvaluator=(u)->true;
             }
-            return new ApplicationServerResource<>(applicationServer.get(),userManagement.instance(), authorizedKeyUserEvaluator);
+            UserManagement userManagementInstance = userManagement.instance();
+            if (userManagementInstance==null) {
+                userManagementInstance=new NoUserManagement();
+            }
+            return new ApplicationServerResource<>(applicationServer.get(), userManagementInstance, authorizedKeyUserEvaluator);
         });
 
         config().setDisplayTextProvider(()->"Resource");

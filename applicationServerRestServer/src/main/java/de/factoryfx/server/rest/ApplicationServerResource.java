@@ -164,10 +164,10 @@ public class ApplicationServerResource<V,L,T extends FactoryBase<L,V>>  {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @Path("diffForFactory")
-    public DiffForFactoryResponse getDiffForFactory(UserAwareRequest<String> request){
+    public DiffForFactoryResponse getDiffHistoryForFactory(UserAwareRequest<String> request){
         authenticate(request);
         final DiffForFactoryResponse diffForFactoryResponse = new DiffForFactoryResponse();
-        diffForFactoryResponse.diffs=applicationServer.getDiffForFactory(request.request);
+        diffForFactoryResponse.diffs=applicationServer.getDiffHistoryForFactory(request.request);
         return diffForFactoryResponse;
 
     }
