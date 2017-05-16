@@ -22,7 +22,7 @@ public class TableMenuTest extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        TableMenu tableMenu = new TableMenu(UniformDesignBuilder.build());
+        TableMenu<ExampleItem> tableMenu = new TableMenu<>(UniformDesignBuilder.build());
         TreeTableView<ExampleItem> treeTableView = new TreeTableView<>();
         {
             TreeTableColumn<ExampleItem, String> column = new TreeTableColumn<>();
@@ -38,6 +38,7 @@ public class TableMenuTest extends Application {
 
         TreeItem<ExampleItem> root = new TreeItem<>(new ExampleItem("root", ""));
         treeTableView.setRoot(root);
+        treeTableView.setShowRoot(false);
         root.getChildren().add((new TreeItem<>(new ExampleItem("1t1","1t2"))));
         root.getChildren().add((new TreeItem<>(new ExampleItem("2t1","2t2"))));
         root.getChildren().add((new TreeItem<>(new ExampleItem("3t1","3t2"))));

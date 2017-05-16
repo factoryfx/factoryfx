@@ -45,7 +45,6 @@ public class FactoryDiffWidget implements Widget {
     private LanguageText columnField=new LanguageText().en("field").de("Feld");
     private LanguageText columnPrevious=new LanguageText().en("previous").de("Alt");
     private LanguageText columnNew=new LanguageText().en("new").de("Neu");
-    private LanguageText titleDiff=new LanguageText().en("difference").de("Unterschied");
     private LanguageText titlePrevious=new LanguageText().en("previous value ").de("Alter Wert");
     private LanguageText titleNew=new LanguageText().en("new value").de("Neuer Wert");
     private LanguageText noChangesFound=new LanguageText().en("No changes found").de("keine Änderungen gefunden");
