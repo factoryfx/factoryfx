@@ -20,6 +20,6 @@ public class RootFactory extends SimpleFactoryBase<Root,ServletContextAwareVisit
 
     @Override
     public Root createImpl() {
-        return new Root(null);
+        return new Root();
     }
 }

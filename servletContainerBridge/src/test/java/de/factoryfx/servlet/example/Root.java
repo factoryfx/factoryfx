@@ -20,7 +20,7 @@ import java.util.List;
  */
 public class Root {
 
-    public Root(ApplicationServerRestServletBridge instance) {
+    public Root() {
 
     }
 }
