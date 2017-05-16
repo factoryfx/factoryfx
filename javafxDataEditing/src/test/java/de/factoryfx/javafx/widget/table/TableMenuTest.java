@@ -39,9 +39,9 @@ public class TableMenuTest extends Application {
         TreeItem<ExampleItem> root = new TreeItem<>(new ExampleItem("root", ""));
         treeTableView.setRoot(root);
         treeTableView.setShowRoot(false);
-        root.getChildren().add((new TreeItem<>(new ExampleItem("1t1","1t2"))));
-        root.getChildren().add((new TreeItem<>(new ExampleItem("2t1","2t2"))));
-        root.getChildren().add((new TreeItem<>(new ExampleItem("3t1","3t2"))));
+        root.getChildren().add(new TreeItem<>(new ExampleItem("1t1","1t2")));
+        root.getChildren().add(new TreeItem<>(new ExampleItem("2t1","2t2")));
+        root.getChildren().add(new TreeItem<>(new ExampleItem("3t1","3t2")));
 
         primaryStage.setScene(new Scene(treeTableView,1200,800));
         primaryStage.show();

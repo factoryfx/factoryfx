@@ -31,7 +31,7 @@ public class FileSystemFactoryStorageTest {
 
     @Test
     public void test_init_no_existing_factory() throws MalformedURLException {
-        FileSystemFactoryStorage<ExampleLiveObjectA,Void,ExampleFactoryA> fileSystemFactoryStorage = new FileSystemFactoryStorage<>(Paths.get(folder.getRoot().toURI()), new ExampleFactoryA(),createSerialisation());
+        FileSystemFactoryStorage<Void,ExampleLiveObjectA,ExampleFactoryA> fileSystemFactoryStorage = new FileSystemFactoryStorage<>(Paths.get(folder.getRoot().toURI()), new ExampleFactoryA(),createSerialisation());
         fileSystemFactoryStorage.loadInitialFactory();
 
         Assert.assertTrue(new File(folder.getRoot().getAbsolutePath()+"/currentFactory.json").exists());
@@ -39,19 +39,19 @@ public class FileSystemFactoryStorageTest {
 
     @Test
     public void test_init_existing_factory() throws MalformedURLException {
-        FileSystemFactoryStorage<ExampleLiveObjectA,Void,ExampleFactoryA> fileSystemFactoryStorage = new FileSystemFactoryStorage<>(Paths.get(folder.getRoot().toURI()), new ExampleFactoryA(),createSerialisation());
+        FileSystemFactoryStorage<Void,ExampleLiveObjectA,ExampleFactoryA> fileSystemFactoryStorage = new FileSystemFactoryStorage<>(Paths.get(folder.getRoot().toURI()), new ExampleFactoryA(),createSerialisation());
         fileSystemFactoryStorage.loadInitialFactory();
         String id=fileSystemFactoryStorage.getCurrentFactory().metadata.id;
         Assert.assertTrue(new File(folder.getRoot().getAbsolutePath()+"/currentFactory.json").exists());
 
-        FileSystemFactoryStorage<ExampleLiveObjectA,Void,ExampleFactoryA> restored = new FileSystemFactoryStorage<>(Paths.get(folder.getRoot().toURI()),null,createSerialisation());
+        FileSystemFactoryStorage<Void,ExampleLiveObjectA,ExampleFactoryA> restored = new FileSystemFactoryStorage<>(Paths.get(folder.getRoot().toURI()),null,createSerialisation());
         restored.loadInitialFactory();
         Assert.assertEquals(id,restored.getCurrentFactory().metadata.id);
     }
 
     @Test
     public void test_update() throws MalformedURLException {
-        FileSystemFactoryStorage<ExampleLiveObjectA,Void,ExampleFactoryA> fileSystemFactoryStorage = new FileSystemFactoryStorage<>(Paths.get(folder.getRoot().toURI()), new ExampleFactoryA(),createSerialisation());
+        FileSystemFactoryStorage<Void,ExampleLiveObjectA,ExampleFactoryA> fileSystemFactoryStorage = new FileSystemFactoryStorage<>(Paths.get(folder.getRoot().toURI()), new ExampleFactoryA(),createSerialisation());
         fileSystemFactoryStorage.loadInitialFactory();
         String id=fileSystemFactoryStorage.getCurrentFactory().metadata.id;
 

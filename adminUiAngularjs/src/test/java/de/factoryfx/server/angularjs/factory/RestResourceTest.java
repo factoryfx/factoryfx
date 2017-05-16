@@ -29,10 +29,10 @@ public class RestResourceTest {
         existingListEntry.referenceAttribute.set(shared);
         exampleFactoryA.referenceListAttribute.add(existingListEntry);
 
-        ApplicationServer<ExampleLiveObjectA, ExampleVisitor, ExampleFactoryA> defaultApplicationServer = new ApplicationServer<>(new FactoryManager<>(new RethrowingFactoryExceptionHandler<>()), new InMemoryFactoryStorage<>(exampleFactoryA));
+        ApplicationServer<ExampleVisitor, ExampleLiveObjectA, ExampleFactoryA> defaultApplicationServer = new ApplicationServer<>(new FactoryManager<>(new RethrowingFactoryExceptionHandler<>()), new InMemoryFactoryStorage<>(exampleFactoryA));
         defaultApplicationServer.start();
 
-        RestResource<ExampleLiveObjectA, ExampleVisitor,ExampleFactoryA> restResource = new RestResource<>(layout,
+        RestResource<ExampleVisitor,ExampleLiveObjectA,ExampleFactoryA> restResource = new RestResource<>(layout,
                 defaultApplicationServer,
                 Arrays.asList(ExampleFactoryA.class, ExampleFactoryB.class),
                 Arrays.asList(Locale.ENGLISH),

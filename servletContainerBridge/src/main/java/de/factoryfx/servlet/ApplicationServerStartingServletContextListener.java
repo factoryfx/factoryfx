@@ -16,7 +16,7 @@ public abstract class ApplicationServerStartingServletContextListener<V extends 
     public void contextInitialized(ServletContextEvent sce) {
         ServletContext context = sce.getServletContext();
 
-        ApplicationServer<L,V,T>  applicationServer = createFactoryFxApplicationServer();
+        ApplicationServer<V,L,T>  applicationServer = createFactoryFxApplicationServer();
 
         applicationServer.start();
         applicationServer.query((V)new ServletContextAwareVisitor(context));
@@ -26,5 +26,5 @@ public abstract class ApplicationServerStartingServletContextListener<V extends 
     public void contextDestroyed(ServletContextEvent sce) {
     }
 
-    protected abstract ApplicationServer<L,V,T> createFactoryFxApplicationServer();
+    protected abstract ApplicationServer<V,L,T> createFactoryFxApplicationServer();
 }

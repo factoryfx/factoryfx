@@ -20,11 +20,18 @@ import de.factoryfx.factory.exception.FactoryExceptionHandler;
 import de.factoryfx.factory.log.FactoryUpdateLog;
 import org.slf4j.LoggerFactory;
 
-public class FactoryManager<L,V,T extends FactoryBase<L,V>> {
+/**
+ * Manage application lifecycle (start,stop,update)
+ *
+ * @param <V> Visitor
+ * @param <L> Root liveobject
+ * @param <R> Root
+ */
+public class FactoryManager<V,L,R extends FactoryBase<L,V>> {
 
     private static final org.slf4j.Logger logger = LoggerFactory.getLogger(FactoryManager.class);
 
-    private T currentFactoryRoot;
+    private R currentFactoryRoot;
     private final FactoryExceptionHandler<V> factoryExceptionHandler;
 
 
@@ -36,12 +43,12 @@ public class FactoryManager<L,V,T extends FactoryBase<L,V>> {
     }
 
     @SuppressWarnings("unchecked")
-    public FactoryUpdateLog update(T commonVersion , T newVersion, Function<String,Boolean> permissionChecker){
+    public FactoryUpdateLog update(R commonVersion , R newVersion, Function<String,Boolean> permissionChecker){
         newVersion.internalFactory().loopDetector();
         LinkedHashSet<FactoryBase<?,V>> previousFactories = getFactoriesInDestroyOrder(currentFactoryRoot);
         previousFactories.forEach((f)->f.internalFactory().resetLog());
 
-        T previousFactoryCopyRoot = currentFactoryRoot.internal().copyRoot();
+        R previousFactoryCopyRoot = currentFactoryRoot.internal().copyRoot();
 
         DataMerger dataMerger = new DataMerger(currentFactoryRoot, commonVersion, newVersion);
         MergeDiffInfo mergeDiff= dataMerger.mergeIntoCurrent(permissionChecker);
@@ -67,7 +74,7 @@ public class FactoryManager<L,V,T extends FactoryBase<L,V>> {
         return new FactoryUpdateLog(currentFactoryRoot.internalFactory().createFactoryLogEntry(), removed.stream().map(r->r.internalFactory().createFactoryLogEntryFlat()).collect(Collectors.toSet()),mergeDiff,totalUpdateDuration);
     }
 
-    private Set<Data> getChangedFactories(T previousFactoryCopyRoot){
+    private Set<Data> getChangedFactories(R previousFactoryCopyRoot){
         //one might think that the merger could do the change detection but that don't work for views and separation of concern is better anyway
         final HashSet<Data> result = new HashSet<>();
         final HashMap<String, FactoryBase<?, V>> previousFactories = previousFactoryCopyRoot.internalFactory().collectChildFactoriesDeepMap();
@@ -96,7 +103,7 @@ public class FactoryManager<L,V,T extends FactoryBase<L,V>> {
 
     /** get the merge result  but don't execute the merge and liveObjects updates*/
     @SuppressWarnings("unchecked")
-    public MergeDiffInfo simulateUpdate(T commonVersion , T newVersion,  Function<String, Boolean> permissionChecker){
+    public MergeDiffInfo simulateUpdate(R commonVersion , R newVersion,  Function<String, Boolean> permissionChecker){
         newVersion.internalFactory().loopDetector();
 
         DataMerger dataMerger = new DataMerger(currentFactoryRoot, commonVersion, newVersion);
@@ -115,14 +122,14 @@ public class FactoryManager<L,V,T extends FactoryBase<L,V>> {
             return factory.internalFactory().collectChildrenFactoriesFlat();
         }
     };
-    private LinkedHashSet<FactoryBase<?,V>> getFactoriesInCreateAndStartOrder(T root){
+    private LinkedHashSet<FactoryBase<?,V>> getFactoriesInCreateAndStartOrder(R root){
         LinkedHashSet<FactoryBase<?,V>> result = new LinkedHashSet<>();
         for (FactoryBase<?,V> factory : factoryTraverser.postOrderTraversal(root)) {
             result.add(factory);
         }
         return result;
     }
-    private LinkedHashSet<FactoryBase<?,V>> getFactoriesInDestroyOrder(T root){
+    private LinkedHashSet<FactoryBase<?,V>> getFactoriesInDestroyOrder(R root){
         LinkedHashSet<FactoryBase<?,V>> result = new LinkedHashSet<>();
         for (FactoryBase<?,V> factory : factoryTraverser.breadthFirstTraversal(root)) {
             result.add(factory);
@@ -130,12 +137,12 @@ public class FactoryManager<L,V,T extends FactoryBase<L,V>> {
         return result;
     }
 
-    public T getCurrentFactory(){
+    public R getCurrentFactory(){
         return currentFactoryRoot;
     }
 
     @SuppressWarnings("unchecked")
-    public void start(T newFactory){
+    public void start(R newFactory){
         newFactory.internalFactory().loopDetector();
         currentFactoryRoot =newFactory;
 

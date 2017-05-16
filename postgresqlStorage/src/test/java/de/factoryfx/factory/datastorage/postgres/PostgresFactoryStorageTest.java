@@ -78,7 +78,7 @@ public class PostgresFactoryStorageTest {
 
     @Test
     public void test_init_no_existing_factory() throws SQLException {
-        PostgresFactoryStorage<ExampleLiveObjectA,Void, ExampleFactoryA> postgresFactoryStorage = new PostgresFactoryStorage<>(postgresDatasource, new ExampleFactoryA(),createSerialisation());
+        PostgresFactoryStorage<Void,ExampleLiveObjectA, ExampleFactoryA> postgresFactoryStorage = new PostgresFactoryStorage<>(postgresDatasource, new ExampleFactoryA(),createSerialisation());
         postgresFactoryStorage.loadInitialFactory();
         try (Connection con = postgresDatasource.getConnection()) {
             for (String sql : Arrays.asList("select * from currentconfiguration"
@@ -94,7 +94,7 @@ public class PostgresFactoryStorageTest {
 
     @Test
     public void test_init_no_existing_factory_but_schema() throws SQLException, IOException {
-        PostgresFactoryStorage<ExampleLiveObjectA,Void, ExampleFactoryA> postgresFactoryStorage = new PostgresFactoryStorage<>(postgresDatasource, new ExampleFactoryA(),createSerialisation());
+        PostgresFactoryStorage<Void,ExampleLiveObjectA, ExampleFactoryA> postgresFactoryStorage = new PostgresFactoryStorage<>(postgresDatasource, new ExampleFactoryA(),createSerialisation());
         try (Connection con = postgresDatasource.getConnection()) {
             postgresFactoryStorage.createTables(con);
             con.commit();
@@ -114,18 +114,18 @@ public class PostgresFactoryStorageTest {
 
     @Test
     public void test_init_existing_factory() throws SQLException {
-        PostgresFactoryStorage<ExampleLiveObjectA,Void, ExampleFactoryA> postgresFactoryStorage = new PostgresFactoryStorage<>(postgresDatasource, new ExampleFactoryA(),createSerialisation());
+        PostgresFactoryStorage<Void,ExampleLiveObjectA, ExampleFactoryA> postgresFactoryStorage = new PostgresFactoryStorage<>(postgresDatasource, new ExampleFactoryA(),createSerialisation());
         postgresFactoryStorage.loadInitialFactory();
         String id=postgresFactoryStorage.getCurrentFactory().metadata.id;
 
-        PostgresFactoryStorage<ExampleLiveObjectA,Void, ExampleFactoryA> restored = new PostgresFactoryStorage<>(postgresDatasource, null,createSerialisation());
+        PostgresFactoryStorage<Void,ExampleLiveObjectA, ExampleFactoryA> restored = new PostgresFactoryStorage<>(postgresDatasource, null,createSerialisation());
         restored.loadInitialFactory();
         Assert.assertEquals(id,restored.getCurrentFactory().metadata.id);
     }
 
     @Test
     public void test_update() throws SQLException {
-        PostgresFactoryStorage<ExampleLiveObjectA,Void, ExampleFactoryA> postgresFactoryStorage = new PostgresFactoryStorage<>(postgresDatasource, new ExampleFactoryA(),createSerialisation());
+        PostgresFactoryStorage<Void,ExampleLiveObjectA, ExampleFactoryA> postgresFactoryStorage = new PostgresFactoryStorage<>(postgresDatasource, new ExampleFactoryA(),createSerialisation());
         postgresFactoryStorage.loadInitialFactory();
         String id=postgresFactoryStorage.getCurrentFactory().metadata.id;
 
@@ -153,7 +153,7 @@ public class PostgresFactoryStorageTest {
 
     @Test
     public void test_initial_history() throws SQLException {
-        PostgresFactoryStorage<ExampleLiveObjectA,Void, ExampleFactoryA> postgresFactoryStorage = new PostgresFactoryStorage<>(postgresDatasource,new ExampleFactoryA(),createSerialisation());
+        PostgresFactoryStorage<Void,ExampleLiveObjectA, ExampleFactoryA> postgresFactoryStorage = new PostgresFactoryStorage<>(postgresDatasource,new ExampleFactoryA(),createSerialisation());
         postgresFactoryStorage.loadInitialFactory();
 
         Assert.assertEquals(1,postgresFactoryStorage.getHistoryFactoryList().size());
@@ -161,7 +161,7 @@ public class PostgresFactoryStorageTest {
 
     @Test
     public void test_multi_add() throws SQLException {
-        PostgresFactoryStorage<ExampleLiveObjectA,Void, ExampleFactoryA> postgresFactoryStorage = new PostgresFactoryStorage<>(postgresDatasource,new ExampleFactoryA(),createSerialisation());
+        PostgresFactoryStorage<Void,ExampleLiveObjectA, ExampleFactoryA> postgresFactoryStorage = new PostgresFactoryStorage<>(postgresDatasource,new ExampleFactoryA(),createSerialisation());
         postgresFactoryStorage.loadInitialFactory();
 
         {
@@ -184,14 +184,14 @@ public class PostgresFactoryStorageTest {
 
     @Test
     public void test_restore() throws SQLException {
-        PostgresFactoryStorage<ExampleLiveObjectA,Void, ExampleFactoryA> postgresFactoryStorage = new PostgresFactoryStorage<>(postgresDatasource,new ExampleFactoryA(),createSerialisation());
+        PostgresFactoryStorage<Void, ExampleLiveObjectA, ExampleFactoryA> postgresFactoryStorage = new PostgresFactoryStorage<>(postgresDatasource,new ExampleFactoryA(),createSerialisation());
         postgresFactoryStorage.loadInitialFactory();
 
         NewFactoryMetadata metadata = new NewFactoryMetadata();
         postgresFactoryStorage.updateCurrentFactory(new FactoryAndNewMetadata<>(new ExampleFactoryA(),metadata),"","");
         Assert.assertEquals(2,postgresFactoryStorage.getHistoryFactoryList().size());
 
-        PostgresFactoryStorage<ExampleLiveObjectA,Void, ExampleFactoryA> restored = new PostgresFactoryStorage<>(postgresDatasource,new ExampleFactoryA(), createSerialisation());
+        PostgresFactoryStorage<Void, ExampleLiveObjectA, ExampleFactoryA> restored = new PostgresFactoryStorage<>(postgresDatasource,new ExampleFactoryA(), createSerialisation());
         restored.loadInitialFactory();
         Assert.assertEquals(2,restored.getHistoryFactoryList().size());
     }

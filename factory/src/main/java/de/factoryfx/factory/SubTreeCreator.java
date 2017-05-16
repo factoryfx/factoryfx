@@ -12,7 +12,7 @@ import de.factoryfx.data.Data;
  * @param <R> root
  * @param <S> subroot
  */
-public class SubTreeCreator<L,V, R extends FactoryBase<?,V>, S extends FactoryBase<L,V>> {
+public class SubTreeCreator<V,L, R extends FactoryBase<?,V>, S extends FactoryBase<L,V>> {
 
     private final Function<R,S> subRootFactoryProvider;
 

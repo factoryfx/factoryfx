@@ -13,6 +13,6 @@ import de.factoryfx.factory.FactoryBase;
  */
 public abstract class ApplicationServerAwareFactory<V,RL, R extends FactoryBase<RL,V>, FL> extends FactoryBase<FL,V> {
 
-    public final ObjectValueAttribute<ApplicationServer<RL,V, R>> applicationServer = new ObjectValueAttribute<>(new AttributeMetadata().labelText("application server"));
+    public final ObjectValueAttribute<ApplicationServer<V, RL, R>> applicationServer = new ObjectValueAttribute<>(new AttributeMetadata().labelText("application server"));
 
 }

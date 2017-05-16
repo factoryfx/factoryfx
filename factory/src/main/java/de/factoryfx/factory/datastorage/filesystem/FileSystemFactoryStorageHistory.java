@@ -16,12 +16,12 @@ import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.factory.datastorage.FactorySerialisationManager;
 import de.factoryfx.factory.datastorage.StoredFactoryMetadata;
 
-public class FileSystemFactoryStorageHistory<L,V,T extends FactoryBase<L,V>> {
+public class FileSystemFactoryStorageHistory<V,L,R extends FactoryBase<L,V>> {
     private Map<String,StoredFactoryMetadata> cache = new TreeMap<>();
     private Path historyDirectory;
-    private final FactorySerialisationManager<T> factorySerialisationManager;
+    private final FactorySerialisationManager<R> factorySerialisationManager;
 
-    public FileSystemFactoryStorageHistory(Path basePath, FactorySerialisationManager<T> factorySerialisationManager){
+    public FileSystemFactoryStorageHistory(Path basePath, FactorySerialisationManager<R> factorySerialisationManager){
         this.factorySerialisationManager= factorySerialisationManager;
         historyDirectory= Paths.get(basePath.toString()+"/history/");
         if (!Files.exists(historyDirectory)){
@@ -31,7 +31,7 @@ public class FileSystemFactoryStorageHistory<L,V,T extends FactoryBase<L,V>> {
         }
     }
 
-    public T getHistoryFactory(String id) {
+    public R getHistoryFactory(String id) {
         int dataModelVersion=-99999;
         for(StoredFactoryMetadata metaData: getHistoryFactoryList()){
             if (metaData.id.equals(id)){
@@ -66,7 +66,7 @@ public class FileSystemFactoryStorageHistory<L,V,T extends FactoryBase<L,V>> {
         }
     }
 
-    public void updateHistory(StoredFactoryMetadata metadata, T factoryRoot) {
+    public void updateHistory(StoredFactoryMetadata metadata, R factoryRoot) {
         String id=metadata.id;
 
         writeFile(Paths.get(historyDirectory.toString()+"/"+id+".json"),factorySerialisationManager.write(factoryRoot));

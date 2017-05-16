@@ -18,7 +18,7 @@ public class ApplicationServerTest {
     @Test
     public void test_getDiffForFactory_simple() throws Exception {
         final ExampleFactoryA root = new ExampleFactoryA();
-        final InMemoryFactoryStorage<ExampleLiveObjectA, Void, ExampleFactoryA> memoryFactoryStorage = new InMemoryFactoryStorage<>(root);
+        final InMemoryFactoryStorage<Void, ExampleLiveObjectA, ExampleFactoryA> memoryFactoryStorage = new InMemoryFactoryStorage<>(root);
         memoryFactoryStorage.loadInitialFactory();
         Thread.sleep(2);//avoid same timestamp
         {
@@ -40,7 +40,7 @@ public class ApplicationServerTest {
         }
         Thread.sleep(2);//avoid same timestamp
 
-        ApplicationServer<ExampleLiveObjectA,Void,ExampleFactoryA> applicationServer = new ApplicationServer<>(Mockito.mock(FactoryManager.class), memoryFactoryStorage);
+        ApplicationServer<Void,ExampleLiveObjectA,ExampleFactoryA> applicationServer = new ApplicationServer<>(Mockito.mock(FactoryManager.class), memoryFactoryStorage);
 
         final List<AttributeDiffInfo> diff = applicationServer.getDiffHistoryForFactory(root.getId());
         Assert.assertEquals(3,diff.size());
@@ -53,7 +53,7 @@ public class ApplicationServerTest {
     public void test_getDiffForFactory_other_change() throws Exception {
         final ExampleFactoryA root = new ExampleFactoryA();
         root.referenceAttribute.set(new ExampleFactoryB());
-        final InMemoryFactoryStorage<ExampleLiveObjectA, Void, ExampleFactoryA> memoryFactoryStorage = new InMemoryFactoryStorage<>(root);
+        final InMemoryFactoryStorage<Void, ExampleLiveObjectA, ExampleFactoryA> memoryFactoryStorage = new InMemoryFactoryStorage<>(root);
         memoryFactoryStorage.loadInitialFactory();
         Thread.sleep(2);//avoid same timestamp
         {
@@ -81,7 +81,7 @@ public class ApplicationServerTest {
         }
         Thread.sleep(2);//avoid same timestamp
 
-        ApplicationServer<ExampleLiveObjectA,Void,ExampleFactoryA> applicationServer = new ApplicationServer<>(Mockito.mock(FactoryManager.class), memoryFactoryStorage);
+        ApplicationServer<Void,ExampleLiveObjectA,ExampleFactoryA> applicationServer = new ApplicationServer<>(Mockito.mock(FactoryManager.class), memoryFactoryStorage);
 
         final List<AttributeDiffInfo> diff = applicationServer.getDiffHistoryForFactory(root.getId());
         Assert.assertEquals(3,diff.size());

@@ -57,7 +57,7 @@ public class TableControlWidget<T> implements Widget {
         return target;
     }
 
-    public TableControlWidget hide() {
+    public TableControlWidget<T> hide() {
         target.visibleProperty().set(false);
         return this;
     }

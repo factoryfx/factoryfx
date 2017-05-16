@@ -11,7 +11,7 @@ import de.factoryfx.servlet.example.RootFactory;
 
 public class FactoryfxServletContextListenerImpl extends ApplicationServerStartingServletContextListener<ServletContextAwareVisitor,Root,RootFactory> {
     @Override
-    protected ApplicationServer<Root, ServletContextAwareVisitor, RootFactory> createFactoryFxApplicationServer() {
+    protected ApplicationServer<ServletContextAwareVisitor, Root, RootFactory> createFactoryFxApplicationServer() {
         RootFactory rootFactory = new RootFactory();
         rootFactory.stringAttribute.set("blub");
         ApplicationServerResourceFactory<ServletContextAwareVisitor, Root, RootFactory> applicationServerResourceFactory = new ApplicationServerResourceFactory<>();

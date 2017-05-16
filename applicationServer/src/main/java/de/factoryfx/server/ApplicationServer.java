@@ -5,7 +5,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -20,24 +19,31 @@ import de.factoryfx.factory.datastorage.FactoryStorage;
 import de.factoryfx.factory.datastorage.StoredFactoryMetadata;
 import de.factoryfx.factory.log.FactoryUpdateLog;
 
-public class ApplicationServer<L,V,T extends FactoryBase<L,V>> {
-    private final FactoryManager<L,V,T> factoryManager;
-    private final FactoryStorage<L,V,T> factoryStorage;
+/**
+ * starting point for factoryfx application
+ *
+ * @param <V> Visitor
+ * @param <L> Root live object
+ * @param <R> Root
+ */
+public class ApplicationServer<V,L,R extends FactoryBase<L,V>> {
+    private final FactoryManager<V,L,R> factoryManager;
+    private final FactoryStorage<V,L,R> factoryStorage;
 
-    public ApplicationServer(FactoryManager<L,V,T> factoryManager, FactoryStorage<L,V,T> factoryStorage) {
+    public ApplicationServer(FactoryManager<V,L,R> factoryManager, FactoryStorage<V,L,R> factoryStorage) {
         this.factoryManager = factoryManager;
         this.factoryStorage = factoryStorage;
     }
 
     public MergeDiffInfo getDiffToPreviousVersion(StoredFactoryMetadata storedFactoryMetadata) {
-        T historyFactory = getHistoryFactory(storedFactoryMetadata.id);
-        T historyFactoryPrevious = getPreviousHistoryFactory(storedFactoryMetadata.id);
+        R historyFactory = getHistoryFactory(storedFactoryMetadata.id);
+        R historyFactoryPrevious = getPreviousHistoryFactory(storedFactoryMetadata.id);
         return new DataMerger(historyFactoryPrevious,historyFactoryPrevious,historyFactory).createMergeResult((permission)->true);
     }
 
     public FactoryUpdateLog revertTo(StoredFactoryMetadata storedFactoryMetadata, String user) {
-        T historyFactory = getHistoryFactory(storedFactoryMetadata.id);
-        FactoryAndNewMetadata<T> current = prepareNewFactory();
+        R historyFactory = getHistoryFactory(storedFactoryMetadata.id);
+        FactoryAndNewMetadata<R> current = prepareNewFactory();
         current = new FactoryAndNewMetadata<>(historyFactory,current.metadata);
         return updateCurrentFactory(current,user,"revert",s->true);
     }
@@ -48,8 +54,8 @@ public class ApplicationServer<L,V,T extends FactoryBase<L,V>> {
         final List<StoredFactoryMetadata> historyFactoryList = new ArrayList<>(factoryStorage.getHistoryFactoryList()).stream().sorted(Comparator.comparing(o -> o.creationTime)).collect(Collectors.toList());
         Collections.reverse(historyFactoryList);
         for (int i=0;i<historyFactoryList.size()-1;i++){
-            T historyFactory = getHistoryFactory(historyFactoryList.get(i).id);
-            T historyFactoryPrevious = getHistoryFactory(historyFactoryList.get(i+1).id);
+            R historyFactory = getHistoryFactory(historyFactoryList.get(i).id);
+            R historyFactoryPrevious = getHistoryFactory(historyFactoryList.get(i+1).id);
             final MergeDiffInfo mergeResult = new DataMerger(historyFactoryPrevious, historyFactoryPrevious, historyFactory).createMergeResult((permission) -> true);
             mergeResult.mergeInfos.forEach(attributeDiffInfo -> {
                 if (attributeDiffInfo.parentId.equals(factoryId)) {
@@ -60,32 +66,32 @@ public class ApplicationServer<L,V,T extends FactoryBase<L,V>> {
         return result;
     }
 
-    public FactoryUpdateLog updateCurrentFactory(FactoryAndNewMetadata<T> update, String user, String comment, Function<String,Boolean> permissionChecker) {
+    public FactoryUpdateLog updateCurrentFactory(FactoryAndNewMetadata<R> update, String user, String comment, Function<String,Boolean> permissionChecker) {
         prepareFactory(update.root);
-        T commonVersion = factoryStorage.getHistoryFactory(update.metadata.baseVersionId);
+        R commonVersion = factoryStorage.getHistoryFactory(update.metadata.baseVersionId);
         FactoryUpdateLog factoryLog = factoryManager.update(commonVersion, update.root, permissionChecker);
         if (factoryLog.mergeDiffInfo.successfullyMerged()){
-            FactoryAndNewMetadata<T> copy = new FactoryAndNewMetadata<>(factoryManager.getCurrentFactory().internal().copy(),update.metadata);
+            FactoryAndNewMetadata<R> copy = new FactoryAndNewMetadata<>(factoryManager.getCurrentFactory().internal().copy(),update.metadata);
             factoryStorage.updateCurrentFactory(copy,user,comment);
         }
         return factoryLog;
     }
 
-    public MergeDiffInfo simulateUpdateCurrentFactory(FactoryAndNewMetadata<T> possibleUpdate, Function<String, Boolean> permissionChecker){
-        T commonVersion = factoryStorage.getHistoryFactory(possibleUpdate.metadata.baseVersionId);
+    public MergeDiffInfo simulateUpdateCurrentFactory(FactoryAndNewMetadata<R> possibleUpdate, Function<String, Boolean> permissionChecker){
+        R commonVersion = factoryStorage.getHistoryFactory(possibleUpdate.metadata.baseVersionId);
         return factoryManager.simulateUpdate(commonVersion , possibleUpdate.root, permissionChecker);
     }
 
     /** creates a new factory update which is ready for editing mainly assign the right ids*/
-    public FactoryAndNewMetadata<T> prepareNewFactory() {
+    public FactoryAndNewMetadata<R> prepareNewFactory() {
         return factoryStorage.getPrepareNewFactory();
     }
 
-    public T getHistoryFactory(String id) {
+    public R getHistoryFactory(String id) {
         return factoryStorage.getHistoryFactory(id);
     }
 
-    private T getPreviousHistoryFactory(String id) {
+    private R getPreviousHistoryFactory(String id) {
         return factoryStorage.getPreviousHistoryFactory(id);
     }
 
@@ -95,16 +101,16 @@ public class ApplicationServer<L,V,T extends FactoryBase<L,V>> {
 
     public void start() {
         factoryStorage.loadInitialFactory();
-        final FactoryAndStoredMetadata<T> currentFactory = factoryStorage.getCurrentFactory();
+        final FactoryAndStoredMetadata<R> currentFactory = factoryStorage.getCurrentFactory();
         prepareFactory(currentFactory.root);
         factoryManager.start(currentFactory.root);
     }
 
     @SuppressWarnings("unchecked")
-    void prepareFactory(T root){
+    void prepareFactory(R root){
         root.internal().collectChildrenDeep().forEach(data -> {
             if (data instanceof ApplicationServerAwareFactory){
-                ((ApplicationServerAwareFactory<V,L,T,?>)data).applicationServer.set(this);
+                ((ApplicationServerAwareFactory<V,L, R,?>)data).applicationServer.set(this);
             }
         });
     }

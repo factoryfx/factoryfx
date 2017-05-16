@@ -13,7 +13,7 @@ public class FactoryManagerTest {
 
     @Test
     public void test(){
-        FactoryManager<ExampleLiveObjectA,Void,ExampleFactoryA> factoryManager = new FactoryManager<>(new RethrowingFactoryExceptionHandler<Void>());
+        FactoryManager<Void,ExampleLiveObjectA,ExampleFactoryA> factoryManager = new FactoryManager<>(new RethrowingFactoryExceptionHandler<Void>());
 
         ArrayList<String> calls =new ArrayList<>();
 

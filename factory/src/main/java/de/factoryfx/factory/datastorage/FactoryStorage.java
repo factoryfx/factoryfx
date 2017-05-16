@@ -7,11 +7,18 @@ import java.util.stream.Collectors;
 
 import de.factoryfx.factory.FactoryBase;
 
-public interface FactoryStorage<L,V,T extends FactoryBase<L,V>> {
+/**
+ * storage/load and history for factories
+ *
+ * @param <V> Visitor
+ * @param <L> Root liveobject
+ * @param <R> Root
+ */
+public interface FactoryStorage<V,L,R extends FactoryBase<L,V>> {
 
-    T getHistoryFactory(String id);
+    R getHistoryFactory(String id);
 
-    default T getPreviousHistoryFactory(String id) {
+    default R getPreviousHistoryFactory(String id) {
         Collection<StoredFactoryMetadata> historyFactoryList = getHistoryFactoryList();
         if (historyFactoryList.isEmpty())
             return null;
@@ -26,13 +33,13 @@ public interface FactoryStorage<L,V,T extends FactoryBase<L,V>> {
 
     Collection<StoredFactoryMetadata> getHistoryFactoryList();
 
-    FactoryAndStoredMetadata<T> getCurrentFactory();
+    FactoryAndStoredMetadata<R> getCurrentFactory();
 
     /** prepare a new Factory which could we an update. mainly give it the correct baseVersionId*/
-    FactoryAndNewMetadata<T> getPrepareNewFactory();
+    FactoryAndNewMetadata<R> getPrepareNewFactory();
 
     /** updateCurrentFactory and history*/
-    void  updateCurrentFactory(FactoryAndNewMetadata<T> update, String user, String comment);
+    void  updateCurrentFactory(FactoryAndNewMetadata<R> update, String user, String comment);
 
     /**at Application start load current Factory*/
     void loadInitialFactory();

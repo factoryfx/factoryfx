@@ -51,7 +51,7 @@ public class ApplicationServerRestTest {
 
             final RootTestclazz rootTestclazz = new RootTestclazz();
             rootTestclazz.jettyServer.set(jettyServer);
-            ApplicationServer<String,Void,RootTestclazz> applicationServer = new ApplicationServer<>(new FactoryManager<>(new RethrowingFactoryExceptionHandler<>()), new InMemoryFactoryStorage<>(rootTestclazz));
+            ApplicationServer<Void,String,RootTestclazz> applicationServer = new ApplicationServer<>(new FactoryManager<>(new RethrowingFactoryExceptionHandler<>()), new InMemoryFactoryStorage<>(rootTestclazz));
             applicationServer.start();
         }).start();
 

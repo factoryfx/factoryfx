@@ -24,7 +24,7 @@ public class FactoryStorageTest {
     public void test_getPreviousHistoryFactory() throws InterruptedException {
         ExampleFactoryA exampleFactoryA = new ExampleFactoryA();
         exampleFactoryA.stringAttribute.set("1");
-        final InMemoryFactoryStorage<ExampleLiveObjectA, Void, ExampleFactoryA> factoryStorage = new InMemoryFactoryStorage<>(exampleFactoryA);
+        final InMemoryFactoryStorage<Void, ExampleLiveObjectA, ExampleFactoryA> factoryStorage = new InMemoryFactoryStorage<>(exampleFactoryA);
         factoryStorage.loadInitialFactory();
 
         Thread.sleep(2);//avoid same timestamp
