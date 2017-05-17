@@ -27,6 +27,7 @@ public class JavascriptAttribute<A> extends ValueAttribute<Javascript<A>> {
     @JsonIgnore
     private final Function<List<? extends Data>,String> headerCreator = l->defaultCreateHeader(l);
 
+    @SuppressWarnings("unchecked")
     public JavascriptAttribute(AttributeMetadata attributeMetadata, Supplier<List<? extends Data>> data, Class<A> apiClass) {
         super(attributeMetadata, (Class<Javascript<A>>)Javascript.class.asSubclass(Javascript.class));
         this.data = data;
@@ -35,6 +36,7 @@ public class JavascriptAttribute<A> extends ValueAttribute<Javascript<A>> {
     }
 
     @JsonCreator
+    @SuppressWarnings("unchecked")
     protected JavascriptAttribute(Javascript<A> initialValue) {
         super(null, (Class<Javascript<A>>)Javascript.class.asSubclass(Javascript.class));
         set(initialValue);
@@ -88,7 +90,7 @@ public class JavascriptAttribute<A> extends ValueAttribute<Javascript<A>> {
                 sb.append(',');
             } else {
                 sb.append("null,");
-            };
+            }
         }
         if (sb.length() > initialLen) {
             sb.setLength(sb.length()-1);

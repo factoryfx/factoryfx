@@ -4,6 +4,6 @@ import java.util.Optional;
 
 public interface FactoryStyleValidation {
 
-    public Optional<String> validateFactory();
+    Optional<String> validateFactory();
 
 }

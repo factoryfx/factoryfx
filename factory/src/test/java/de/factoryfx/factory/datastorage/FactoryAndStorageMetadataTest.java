@@ -15,7 +15,7 @@ public class FactoryAndStorageMetadataTest {
         public Void createImpl() {
             return null;
         }
-    };
+    }
 
     @Test
     public void testJsonSerialization() throws IOException {

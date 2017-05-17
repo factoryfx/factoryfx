@@ -5,5 +5,5 @@ import javafx.collections.ObservableList;
 
 public interface DataView<T extends Data> {
 
-    public ObservableList<T> dataList();
+    ObservableList<T> dataList();
 }

@@ -43,7 +43,7 @@ public class JavascriptAttributeIntegrationTest extends Application{
 
             return Optional.empty();
         });
-        UniformDesign uniformDesign = new UniformDesign(Locale.ENGLISH, Color.web("#FF7979"),Color.web("#F0AD4E"),Color.web("#5BC0DE"),Color.web("#5CB85C"),Color.web("#5494CB"),Color.web("#B5B5B5"),false);;
+        UniformDesign uniformDesign = new UniformDesign(Locale.ENGLISH, Color.web("#FF7979"),Color.web("#F0AD4E"),Color.web("#5BC0DE"),Color.web("#5CB85C"),Color.web("#5494CB"),Color.web("#B5B5B5"),false);
         AttributeEditorBuilder attributeEditorBuilder = new AttributeEditorBuilder(uniformDesign, editorAssociations);
 
 

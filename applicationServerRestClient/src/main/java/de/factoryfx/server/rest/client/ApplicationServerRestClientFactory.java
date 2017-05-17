@@ -11,7 +11,7 @@ public class ApplicationServerRestClientFactory<V,T extends FactoryBase<?,V>> ex
     public final FactoryReferenceAttribute<RestClient,RestClientFactory<V>> restClient= new FactoryReferenceAttribute<>(new AttributeMetadata().en("rest client"),RestClientFactory.class);
     public final ObjectValueAttribute<Class<T>> factoryRootClass = new ObjectValueAttribute<>(new AttributeMetadata().en("factoryRootClass"));
     public final StringAttribute user = new StringAttribute(new AttributeMetadata().en("user"));
-    public final StringAttribute passwordHash = new StringAttribute(new AttributeMetadata().en("passwordHash"));;
+    public final StringAttribute passwordHash = new StringAttribute(new AttributeMetadata().en("passwordHash"));
 
     @Override
     public ApplicationServerRestClient<V, T> createImpl() {

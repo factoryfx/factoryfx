@@ -392,7 +392,7 @@ public class DataTest {
         for (int i=0;i<100000;i++){
             final Data copy = exampleFactoryA.internal().copy();
             forceExecution[0]++;
-        };
+        }
         System.out.println(forceExecution[0]);
         System.out.println("time: "+(System.currentTimeMillis()-start));
 

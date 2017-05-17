@@ -11,6 +11,7 @@ import com.google.common.reflect.ClassPath;
 import de.factoryfx.data.attribute.types.EnumAttribute;
 import de.factoryfx.data.attribute.types.WrappingValueAttribute;
 import de.factoryfx.data.jackson.ObjectMapperBuilder;
+import de.factoryfx.data.merge.testfactories.ExampleFactoryA;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -30,7 +31,10 @@ public class AttributeJsonWrapperTest {
                         continue;
                     }
                     if (clazz==ReferenceListAttribute.class){
-                        result.add(new Attribute[]{new ReferenceListAttribute(new AttributeMetadata(),Object.class)});
+                        ReferenceListAttribute referenceListAttribute= new ReferenceListAttribute(new AttributeMetadata(),AttributeTest.ExampleFactoryA.class);
+                        referenceListAttribute.add(new ExampleFactoryA());
+                        result.add(new Attribute[]{referenceListAttribute});
+
                         continue;
                     }
                     if (clazz==EnumAttribute.class){

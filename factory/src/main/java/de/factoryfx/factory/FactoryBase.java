@@ -80,7 +80,7 @@ public abstract class FactoryBase<L,V> extends Data {
 
     private void loggedAction(FactoryLogEntryEventType type, Runnable action){
         loggedAction(type, (Supplier<Void>) () -> {
-            action.run();;
+            action.run();
             return null;
         });
     }

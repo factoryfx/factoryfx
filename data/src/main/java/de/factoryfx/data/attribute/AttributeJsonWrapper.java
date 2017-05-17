@@ -3,6 +3,7 @@ package de.factoryfx.data.attribute;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -10,6 +11,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.sun.javafx.collections.ObservableListWrapper;
 import de.factoryfx.data.AttributeAndName;
+import de.factoryfx.data.Data;
 import de.factoryfx.data.attribute.types.EnumAttribute;
 import de.factoryfx.data.util.LanguageText;
 import javafx.collections.ObservableList;
@@ -22,6 +24,9 @@ public class AttributeJsonWrapper {
     @JsonProperty
     @JsonTypeInfo(use=JsonTypeInfo.Id.CLASS, include=JsonTypeInfo.As.PROPERTY, property="@clazz")
     Object value;
+    @JsonProperty
+    @JsonTypeInfo(use=JsonTypeInfo.Id.CLASS, include=JsonTypeInfo.As.PROPERTY, property="@clazz")
+    List<Data> valueList;//special case for referencelists
     @JsonProperty
     final LanguageText label;
     @JsonProperty
@@ -50,13 +55,20 @@ public class AttributeJsonWrapper {
         }
         if (attribute instanceof ReferenceListAttribute){
             referenceClass = ((ReferenceListAttribute)attribute).internal_getReferenceClass();
+            value=null;
+            valueList=((ReferenceListAttribute)attribute).get();
         }
         if (attribute instanceof EnumAttribute){
             enumClazz = ((EnumAttribute)attribute).internal_getEnumClass();
         }
     }
 
+    @SuppressWarnings("unchecked")
     private Object getValue(Attribute<?> attribute) {
+        if (valueList!=null){
+            return valueList;
+        }
+
         //internal_copy() as workaround for mutable values like list
         Object value = attribute.internal_copy().get();
         if (value instanceof  ObservableList){
@@ -72,11 +84,12 @@ public class AttributeJsonWrapper {
     }
 
     @JsonCreator
-    protected AttributeJsonWrapper(@JsonProperty("value")Object value,  @JsonProperty("label")LanguageText label, @JsonProperty("name")String name,
+    protected AttributeJsonWrapper(@JsonProperty("value")Object value, @JsonProperty("valueList")List<Data> valueList, @JsonProperty("label")LanguageText label, @JsonProperty("name")String name,
                                    @JsonProperty("clazz")Class<? extends Attribute> attributeClass, @JsonProperty("referenceClass")Class<?> referenceClass,
                                    @JsonProperty("enumClazz")Class<?> enumClazz,  @JsonProperty("collectionClazz")Class<?> collectionClazz,
                                    @JsonProperty("mapKeyType")Class<?> mapKeyType,  @JsonProperty("mapValueType")Class<?>mapValueType) {
         this.value = value;
+        this.valueList=valueList;
         this.label = label;
         this.name = name;
         this.attributeClass=attributeClass;
@@ -123,6 +136,10 @@ public class AttributeJsonWrapper {
 
     @SuppressWarnings("unchecked")
     private Attribute setValue(Attribute attribute){
+        if (valueList !=null){
+            attribute.set(valueList);
+            return attribute;
+        }
         if (value instanceof ObservableListWrapper){
             value=new ArrayList<>((ObservableListWrapper)value);
         }

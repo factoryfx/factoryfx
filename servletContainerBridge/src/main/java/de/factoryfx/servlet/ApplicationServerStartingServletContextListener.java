@@ -11,20 +11,21 @@ import java.util.function.Consumer;
 
 
 //@WebListener
-public abstract class ApplicationServerStartingServletContextListener<V extends ServletContextAwareVisitor,L ,T extends FactoryBase<L,V>> implements ServletContextListener {
+public abstract class ApplicationServerStartingServletContextListener implements ServletContextListener {
+
+    private ApplicationServer<? super ServletContextAwareVisitor, ?, ? extends FactoryBase<?, ? super ServletContextAwareVisitor>> applicationServer;
+
     @Override
     public void contextInitialized(ServletContextEvent sce) {
         ServletContext context = sce.getServletContext();
-
-        ApplicationServer<V,L,T>  applicationServer = createFactoryFxApplicationServer();
-
+        applicationServer = createFactoryFxApplicationServer();
         applicationServer.start();
-        applicationServer.query((V)new ServletContextAwareVisitor(context));
+        applicationServer.query(new ServletContextAwareVisitor(context));
     }
 
     @Override
     public void contextDestroyed(ServletContextEvent sce) {
     }
 
-    protected abstract ApplicationServer<V,L,T> createFactoryFxApplicationServer();
+    protected abstract ApplicationServer<? super ServletContextAwareVisitor,?,? extends FactoryBase<?,? super ServletContextAwareVisitor>> createFactoryFxApplicationServer();
 }

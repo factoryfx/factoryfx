@@ -8,7 +8,7 @@ import javafx.scene.Node;
 
 public class JavascriptAttributeVisualisation extends ValueAttributeEditorVisualisation<Javascript> {
 
-    private final JavascriptAttribute attribute;
+    private final JavascriptAttribute<?> attribute;
 
     public JavascriptAttributeVisualisation(JavascriptAttribute attribute) {
         this.attribute = attribute;

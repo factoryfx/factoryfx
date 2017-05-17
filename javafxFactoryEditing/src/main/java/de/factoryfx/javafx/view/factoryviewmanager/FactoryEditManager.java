@@ -49,7 +49,7 @@ public class FactoryEditManager<V,R extends FactoryBase<?,V>> {
 
     private void updateNotify(FactoryAndNewMetadata<R> currentFactory, Optional<R> previousRoot) {
         Platform.runLater(() -> {
-            for (FactoryRootChangeListener listener: listeners){
+            for (FactoryRootChangeListener<R> listener: listeners){
                 listener.update(previousRoot,currentFactory.root);
             }
         });

@@ -204,7 +204,7 @@ public class DataEditor implements Widget {
 
         final BorderPane borderPane = new BorderPane();
         borderPane.setCenter(defaultVis);
-        borderPane.setBottom(editRow);;
+        borderPane.setBottom(editRow);
         return borderPane;
     }
 

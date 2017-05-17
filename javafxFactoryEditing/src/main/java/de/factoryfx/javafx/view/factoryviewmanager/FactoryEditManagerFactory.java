@@ -22,8 +22,8 @@ public class FactoryEditManagerFactory<V,R  extends FactoryBase<?,V>> extends Si
 
 
     @Override
-    public FactoryEditManager createImpl() {
-        return new FactoryEditManager(restClient.instance(),factorySerialisationManager.get());
+    public FactoryEditManager<V,R> createImpl() {
+        return new FactoryEditManager<>(restClient.instance(),factorySerialisationManager.get());
     }
 
 

@@ -1,5 +1,6 @@
 package de.factoryfx.servlet;
 
+import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.factory.FactoryManager;
 import de.factoryfx.factory.datastorage.inmemory.InMemoryFactoryStorage;
 import de.factoryfx.factory.exception.AllOrNothingFactoryExceptionHandler;
@@ -9,9 +10,9 @@ import de.factoryfx.server.rest.ApplicationServerResourceFactory;
 import de.factoryfx.servlet.example.Root;
 import de.factoryfx.servlet.example.RootFactory;
 
-public class FactoryfxServletContextListenerImpl extends ApplicationServerStartingServletContextListener<ServletContextAwareVisitor,Root,RootFactory> {
+public class FactoryfxServletContextListenerImpl extends ApplicationServerStartingServletContextListener {
     @Override
-    protected ApplicationServer<ServletContextAwareVisitor, Root, RootFactory> createFactoryFxApplicationServer() {
+    protected ApplicationServer<? super ServletContextAwareVisitor, ?, ? extends FactoryBase<?, ? super ServletContextAwareVisitor>> createFactoryFxApplicationServer() {
         RootFactory rootFactory = new RootFactory();
         rootFactory.stringAttribute.set("blub");
         ApplicationServerResourceFactory<ServletContextAwareVisitor, Root, RootFactory> applicationServerResourceFactory = new ApplicationServerResourceFactory<>();
