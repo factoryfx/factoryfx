@@ -11,17 +11,19 @@ import org.junit.Assert;
 import org.junit.Test;
 
 public class AttributeTest {
-
+    public class ValidationExampleFactory extends Data {
+        public final StringAttribute stringAttribute= new StringAttribute(new AttributeMetadata().labelText("ExampleA1")).validation(new StringRequired());
+    }
 
     @Test
     public void test_validation(){
-        ExampleFactoryA exampleFactoryA = new ExampleFactoryA();
-        exampleFactoryA.stringAttribute.set("");
-        List<ValidationError> validationErrors = exampleFactoryA.internal().validateFlat();
+        ValidationExampleFactory validationExampleFactory = new ValidationExampleFactory();
+        validationExampleFactory.stringAttribute.set("");
+        List<ValidationError> validationErrors = validationExampleFactory.internal().validateFlat();
         Assert.assertEquals(1, validationErrors.size());
 
-        exampleFactoryA.stringAttribute.set("ssfdfdsdf");
-        validationErrors = exampleFactoryA.internal().validateFlat();
+        validationExampleFactory.stringAttribute.set("ssfdfdsdf");
+        validationErrors = validationExampleFactory.internal().validateFlat();
         Assert.assertEquals(0, validationErrors.size());
     }
 
