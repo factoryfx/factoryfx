@@ -16,6 +16,7 @@ import org.mockito.Mockito;
 public class ApplicationServerTest {
 
     @Test
+    @SuppressWarnings("unchecked")
     public void test_getDiffForFactory_simple() throws Exception {
         final ExampleFactoryA root = new ExampleFactoryA();
         final InMemoryFactoryStorage<Void, ExampleLiveObjectA, ExampleFactoryA> memoryFactoryStorage = new InMemoryFactoryStorage<>(root);
@@ -50,6 +51,7 @@ public class ApplicationServerTest {
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     public void test_getDiffForFactory_other_change() throws Exception {
         final ExampleFactoryA root = new ExampleFactoryA();
         root.referenceAttribute.set(new ExampleFactoryB());

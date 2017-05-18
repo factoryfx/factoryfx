@@ -6,8 +6,6 @@ import de.factoryfx.server.ApplicationServer;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
-import javax.servlet.annotation.WebListener;
-import java.util.function.Consumer;
 
 
 //@WebListener

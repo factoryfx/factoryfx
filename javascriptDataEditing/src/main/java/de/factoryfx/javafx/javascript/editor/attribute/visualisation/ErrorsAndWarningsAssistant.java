@@ -6,11 +6,9 @@ import com.google.javascript.jscomp.SourceFile;
 import de.factoryfx.javascript.data.attributes.types.Javascript;
 
 import java.lang.ref.WeakReference;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.Consumer;
-import java.util.function.Supplier;
 
 public class ErrorsAndWarningsAssistant extends AssistantBase<Javascript<?>,List<JSError>> {
 

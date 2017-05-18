@@ -25,6 +25,7 @@ import javafx.stage.Stage;
 public class JavascriptAttributeIntegrationTest extends Application{
 
     @Override
+    @SuppressWarnings("unchecked")
     public void start(Stage primaryStage) throws Exception {
         BorderPane root = new BorderPane();
         root.getStylesheets().add(getClass().getResource("/de/factoryfx/javafx/css/app.css").toExternalForm());

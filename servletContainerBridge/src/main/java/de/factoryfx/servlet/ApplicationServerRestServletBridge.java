@@ -12,6 +12,7 @@ import org.glassfish.jersey.servlet.ServletContainer;
 
 import javax.servlet.ServletContext;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 public class ApplicationServerRestServletBridge {
@@ -47,10 +48,10 @@ public class ApplicationServerRestServletBridge {
 
     public void addInitialServlet(ServletContext servletContext) {
         if (updateableServlet==null){
-            this.updateableServlet = new UpdateableServlet(new ServletContainer(createJerseyRestResource(Arrays.asList(resource))));
+            this.updateableServlet = new UpdateableServlet(new ServletContainer(createJerseyRestResource(Collections.singletonList(resource))));
             servletContext.addServlet("fdgd", this.updateableServlet).addMapping("/*");
         } else {
-            updateableServlet.update(new ServletContainer(createJerseyRestResource(Arrays.asList(resource))));
+            updateableServlet.update(new ServletContainer(createJerseyRestResource(Collections.singletonList(resource))));
         }
     }
 }

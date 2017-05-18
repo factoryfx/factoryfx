@@ -93,7 +93,7 @@ public class Javascript<A> {
 
 
         private ScriptExecutor createExecutor() {
-            return new ScriptExecutor(Arrays.asList(new Pair<>("header",headerCode)), "rule", code, Collections.emptyMap());
+            return new ScriptExecutor(Collections.singletonList(new Pair<>("header", headerCode)), "rule", code, Collections.emptyMap());
         }
 
 

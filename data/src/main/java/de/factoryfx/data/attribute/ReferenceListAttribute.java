@@ -380,7 +380,7 @@ public class ReferenceListAttribute<T extends Data> extends Attribute<List<T>> i
 
     @Override
     public boolean containsAll(Collection<?> c) {
-        return list.contains(c);
+        return list.containsAll(c);
     }
 
     @Override

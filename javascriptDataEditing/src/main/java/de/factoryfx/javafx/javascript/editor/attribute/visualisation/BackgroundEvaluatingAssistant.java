@@ -15,7 +15,7 @@ public class BackgroundEvaluatingAssistant<I> {
 
     private ComputationTask<I> thread;
     private BlockingQueue<I> inputQueue = new ArrayBlockingQueue<>(1);
-    private Object lock = new Object();
+    private final Object lock = new Object();
 
     public BackgroundEvaluatingAssistant() {
         this.thread = new ComputationTask<I>(inputQueue, i->{});

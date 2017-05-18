@@ -50,7 +50,7 @@ public class FactoryEditView<V,R extends FactoryBase<?,V>> implements Widget, Fa
     private final DiffDialogBuilder diffDialogBuilder;
     private final SimpleObjectProperty<Data> selectedFactory;
 
-    public FactoryEditView(LongRunningActionExecutor longRunningActionExecutor, FactoryEditManager<V,R> factoryManager, FactoryAwareWidget content, UniformDesign uniformDesign, DataEditor dataEditor, DiffDialogBuilder diffDialogBuilder) {
+    public FactoryEditView(LongRunningActionExecutor longRunningActionExecutor, FactoryEditManager<V,R> factoryManager, FactoryAwareWidget<R> content, UniformDesign uniformDesign, DataEditor dataEditor, DiffDialogBuilder diffDialogBuilder) {
         this.LongRunningActionExecutor = longRunningActionExecutor;
         this.factoryManager = factoryManager;
         this.content = content;

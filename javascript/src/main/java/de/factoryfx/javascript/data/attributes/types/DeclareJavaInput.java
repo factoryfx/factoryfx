@@ -252,7 +252,7 @@ public class DeclareJavaInput {
     }
 
     private boolean jsNameClash(String name) {
-        return Arrays.asList("Iterator").contains(name);
+        return Collections.singletonList("Iterator").contains(name);
     }
 
     public String jsDocAnnotationFor(Class<?> aClass) {

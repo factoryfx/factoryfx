@@ -35,34 +35,31 @@ public class LongRunningActionExecutor {
 
     //** execute with progress dialog in background */
     public void execute(final Runnable runnable, final String text) {
-        Thread th = new Thread() {
-            @Override
-            public void run() {
-                final Node progressIndicator = createProgressIndicator();
-                final Label label = new Label(text);
-                try {
-                    Platform.runLater(() -> {
-                        target.getChildren().add(progressIndicator);
-                        FadeTransition ft = new FadeTransition(Duration.millis(500), progressIndicator);
-                        ft.setFromValue(0);
-                        ft.setToValue(1);
-                        ft.play();
-                        label.setWrapText(true);
-                        target.getChildren().add(label);
-                    });
-                    runnable.run();
-                } catch (Exception exception){
-                    Thread.getDefaultUncaughtExceptionHandler().uncaughtException(Thread.currentThread(),exception);
-                } finally {
-                    Platform.runLater(() -> {
-                        target.getChildren().remove(progressIndicator);
-                        target.getChildren().remove(label);
-                    });
-                }
+        Thread backgroundThread = new Thread(() -> {
+            final Node progressIndicator = createProgressIndicator();
+            final Label label = new Label(text);
+            try {
+                Platform.runLater(() -> {
+                    target.getChildren().add(progressIndicator);
+                    FadeTransition ft = new FadeTransition(Duration.millis(500), progressIndicator);
+                    ft.setFromValue(0);
+                    ft.setToValue(1);
+                    ft.play();
+                    label.setWrapText(true);
+                    target.getChildren().add(label);
+                });
+                runnable.run();
+            } catch (Exception exception){
+                Thread.getDefaultUncaughtExceptionHandler().uncaughtException(Thread.currentThread(),exception);
+            } finally {
+                Platform.runLater(() -> {
+                    target.getChildren().remove(progressIndicator);
+                    target.getChildren().remove(label);
+                });
             }
-        };
-        th.setDaemon(true);
-        th.start();
+        });
+        backgroundThread.setDaemon(true);
+        backgroundThread.start();
     }
 
     public void execute(final Runnable runnable) {

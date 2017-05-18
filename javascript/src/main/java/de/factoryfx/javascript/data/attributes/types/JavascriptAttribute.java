@@ -111,7 +111,7 @@ public class JavascriptAttribute<A> extends ValueAttribute<Javascript<A>> {
             try {
                 Object value = attribute.get();
 
-                sb.append("\"" + name + "\" : ");
+                sb.append("\"").append(name).append("\" : ");
                 if (value instanceof Data) {
                     writeData(sb,(Data)value);
                 } else {

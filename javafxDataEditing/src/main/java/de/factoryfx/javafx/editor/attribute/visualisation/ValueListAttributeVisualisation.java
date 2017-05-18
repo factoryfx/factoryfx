@@ -107,13 +107,7 @@ public class ValueListAttributeVisualisation<T> extends ListAttributeEditorVisua
         editorWrapper.setPadding(new Insets(3));
         editorWrapper.getChildren().add(new Label(uniformDesign.getLabelText(detailAttribute)));
         Node content = attributeEditor.createContent();
-//        content.disableProperty().bind(tableView.getSelectionModel().selectedItemProperty().isNull());
-        tableView.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<T>() {
-            @Override
-            public void changed(ObservableValue<? extends T> observable, T oldValue, T newValue) {
-                System.out.println(newValue);
-            }
-        });
+
         HBox.setHgrow(content,Priority.ALWAYS);
         editorWrapper.getChildren().addAll(content,addButton,replaceButton);
         vBox.getChildren().add(new Separator());

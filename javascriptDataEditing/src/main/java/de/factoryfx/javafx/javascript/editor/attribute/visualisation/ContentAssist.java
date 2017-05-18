@@ -151,7 +151,7 @@ public class ContentAssist {
                 externalVars.stream()
                         .sorted((v1,v2)->{
                             boolean decl1 = isFromDeclarations(v1.getNameNode());
-                            boolean decl2 = isFromDeclarations(v1.getNameNode());
+                            boolean decl2 = isFromDeclarations(v2.getNameNode());
                             if (decl1 == decl2)
                                 return 0;
                             if (decl1)
@@ -241,7 +241,7 @@ public class ContentAssist {
         if (firstChild != null && firstChild.getJSType() != null && firstChild.getJSType() instanceof FunctionType) {
             FunctionType ft = (FunctionType)firstChild.getJSType();
             int paramNum = 0;
-            parameterLoop: for (Node paramterNode : ft.getParameters()) {
+            for (Node paramterNode : ft.getParameters()) {
                 ++paramNum;
                 ArrayList<Var> filteredVars = new ArrayList<>();
                 JSType parameterNodeType = fixNullType(paramterNode.getJSType());
@@ -257,7 +257,7 @@ public class ContentAssist {
                     proposals.put(argumentNode.getSourceOffset(), proposalList);
                 } else {
                     proposals.put(inspectedNode.getSourceOffset()+inspectedNode.getLength()-1, proposalList);
-                    break parameterLoop;
+                    break;
                 }
             }
         } else {

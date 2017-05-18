@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.NavigableMap;
 import java.util.function.Consumer;
-import java.util.function.Supplier;
 
 public class ContentAssistant extends AssistantBase<Javascript<?>,NavigableMap<Integer, List<Proposal>>> {
 

@@ -2,9 +2,6 @@ package de.factoryfx.servlet;
 
 import javax.servlet.*;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.Consumer;
 
 /**
  * workaround for servlet limitation, you can't dynamically add/remove servlet if the context is started.

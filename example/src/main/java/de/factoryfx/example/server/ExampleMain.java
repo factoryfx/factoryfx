@@ -3,6 +3,7 @@ package de.factoryfx.example.server;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.stream.Collectors;
 
 import ch.qos.logback.classic.Level;
@@ -22,13 +23,13 @@ import de.factoryfx.factory.exception.AllOrNothingFactoryExceptionHandler;
 import de.factoryfx.factory.exception.LoggingFactoryExceptionHandler;
 import de.factoryfx.factory.util.ClasspathBasedFactoryProvider;
 import de.factoryfx.server.ApplicationServer;
-import de.factoryfx.server.WebAppViewer;
 import de.factoryfx.server.angularjs.WebGuiApplicationCreator;
 import de.factoryfx.server.angularjs.factory.server.HttpServer;
 import de.factoryfx.server.angularjs.factory.server.HttpServerFactory;
 import de.factoryfx.server.angularjs.model.view.GuiView;
 import de.factoryfx.server.angularjs.model.view.WebGuiFactoryHeader;
 import de.factoryfx.testutils.SingleProcessInstanceUtil;
+import de.factoryfx.testutils.WebAppViewer;
 import de.factoryfx.user.NoUserManagement;
 import javafx.application.Application;
 import javafx.stage.Stage;
@@ -50,7 +51,7 @@ public class ExampleMain extends Application {
                     new ClasspathBasedFactoryProvider().get(ShopFactory.class),
                     new NoUserManagement(),
                     OrderCollector::new,new OrderCollectorToTables(),
-                    Arrays.asList(new GuiView<>("sgjhfgdsj", new LanguageText().en("Products"), shopFactory1 -> shopFactory1.products.stream().map(WebGuiFactoryHeader::new).collect(Collectors.toList())))
+                    Collections.singletonList(new GuiView<>("sgjhfgdsj", new LanguageText().en("Products"), shopFactory1 -> shopFactory1.products.stream().map(WebGuiFactoryHeader::new).collect(Collectors.toList())))
             );
             HttpServerFactory<OrderCollector, Shop, ShopFactory> defaultFactory = webGuiApplicationCreator.createDefaultFactory();
             try (InputStream inputStream = WebGuiApplicationCreator.class.getResourceAsStream("/logo/logo.png")) {

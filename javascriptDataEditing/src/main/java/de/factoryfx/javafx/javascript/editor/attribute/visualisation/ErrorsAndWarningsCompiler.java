@@ -9,9 +9,9 @@ import java.io.PrintStream;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.function.Predicate;
-import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 public class ErrorsAndWarningsCompiler {
@@ -36,9 +36,9 @@ public class ErrorsAndWarningsCompiler {
                 return warningsAndErrors;
             } catch (RuntimeException r) {
                 try {
-                    return Arrays.asList(JSError.make(DiagnosticType.error("ERR_COMPILE_FAILURE", "Cannot compile due to exception: " + Throwables.getStackTraceAsString(r))));
+                    return Collections.singletonList(JSError.make(DiagnosticType.error("ERR_COMPILE_FAILURE", "Cannot compile due to exception: " + Throwables.getStackTraceAsString(r))));
                 } catch (RuntimeException re) {
-                    return Arrays.asList(JSError.make(DiagnosticType.error("ERR_COMPILE_FAILURE", "Cannot compile due to exception: " + r.getMessage().replaceAll("[\\{\\}]",""))));
+                    return Collections.singletonList(JSError.make(DiagnosticType.error("ERR_COMPILE_FAILURE", "Cannot compile due to exception: " + r.getMessage().replaceAll("[\\{\\}]", ""))));
                 }
             }
         } catch (UnsupportedEncodingException e) {

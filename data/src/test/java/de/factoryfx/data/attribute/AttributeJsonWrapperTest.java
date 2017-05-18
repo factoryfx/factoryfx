@@ -18,6 +18,9 @@ import org.junit.runners.Parameterized;
 
 @RunWith(Parameterized.class)
 public class AttributeJsonWrapperTest {
+    private enum ExampleEnum{
+        EXAMPLE
+    }
 
     @Parameterized.Parameters(name = "{index}: {0}")
     public static Collection<Object[]> data() throws IOException, IllegalAccessException, InstantiationException, NoSuchMethodException, InvocationTargetException {
@@ -31,27 +34,27 @@ public class AttributeJsonWrapperTest {
                         continue;
                     }
                     if (clazz==ReferenceListAttribute.class){
-                        ReferenceListAttribute referenceListAttribute= new ReferenceListAttribute(new AttributeMetadata(),AttributeTest.ExampleFactoryA.class);
+                        ReferenceListAttribute<ExampleFactoryA> referenceListAttribute= new ReferenceListAttribute<>(new AttributeMetadata(),ExampleFactoryA.class);
                         referenceListAttribute.add(new ExampleFactoryA());
                         result.add(new Attribute[]{referenceListAttribute});
 
                         continue;
                     }
                     if (clazz==EnumAttribute.class){
-                        result.add(new Attribute[]{new EnumAttribute(Enum.class,new AttributeMetadata())});
+                        result.add(new Attribute[]{new EnumAttribute<>(ExampleEnum.class,new AttributeMetadata())});
                         continue;
                     }
                     if (clazz==ValueListAttribute.class){
-                        result.add(new Attribute[]{new ValueListAttribute(String.class,new AttributeMetadata())});
+                        result.add(new Attribute[]{new ValueListAttribute<>(String.class,new AttributeMetadata())});
                         continue;
                     }
                     if (clazz==ValueMapAttribute.class){
-                        result.add(new Attribute[]{new ValueMapAttribute(new AttributeMetadata(),String.class,String.class)});
+                        result.add(new Attribute[]{new ValueMapAttribute<>(new AttributeMetadata(),String.class,String.class)});
                         continue;
                     }
                     if (clazz==ValueSetAttribute.class){
-                        final ValueSetAttribute valueSetAttribute = new ValueSetAttribute(String.class, new AttributeMetadata());
-                        final HashSet<Object> hashSet = new HashSet<>();
+                        final ValueSetAttribute<String> valueSetAttribute = new ValueSetAttribute<>(String.class, new AttributeMetadata());
+                        final HashSet<String> hashSet = new HashSet<>();
                         hashSet.add("dfssfd");
                         valueSetAttribute.set(hashSet);
                         result.add(new Attribute[]{valueSetAttribute});

@@ -18,7 +18,7 @@ import javafx.application.Platform;
 
 public class FactoryEditManager<V,R extends FactoryBase<?,V>> {
     private final ApplicationServerRestClient<V,R> client;
-    private final List<FactoryRootChangeListener> listeners= new ArrayList<>();
+    private final List<FactoryRootChangeListener<R>> listeners= new ArrayList<>();
     private final FactorySerialisationManager<R> factorySerialisationManager;
 
     public FactoryEditManager(ApplicationServerRestClient<V, R> client, FactorySerialisationManager<R> factorySerialisationManager) {
@@ -30,7 +30,7 @@ public class FactoryEditManager<V,R extends FactoryBase<?,V>> {
         return client.getSingleFactoryHistory(id);
     }
 
-    public void registerListener(FactoryRootChangeListener listener){
+    public void registerListener(FactoryRootChangeListener<R> listener){
         listeners.add(listener);
     }
 

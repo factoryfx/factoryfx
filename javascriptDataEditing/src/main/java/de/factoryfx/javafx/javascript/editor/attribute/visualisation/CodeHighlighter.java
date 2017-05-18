@@ -28,12 +28,7 @@ public class CodeHighlighter {
         if (text == null)
             return Collections.emptyList();
         ArrayList<Span> spans = new ArrayList<>();
-        Scanner.CommentRecorder rec = new Scanner.CommentRecorder() {
-            @Override
-            public void recordComment(Comment.Type type, SourceRange range, String value) {
-                spans.add(new Span(range.start.offset,range.end.offset-range.start.offset, JsTokenType.COMMENT));
-            }
-        };
+        Scanner.CommentRecorder rec = (type, range, value) -> spans.add(new Span(range.start.offset,range.end.offset-range.start.offset, JsTokenType.COMMENT));
         Scanner scanner = new Scanner(NO_ERROR_REPORTER,rec, new com.google.javascript.jscomp.parsing.parser.SourceFile("intern",text));
         while (scanner.peekToken().type != TokenType.END_OF_FILE) {
             Token currentToken = scanner.nextToken();

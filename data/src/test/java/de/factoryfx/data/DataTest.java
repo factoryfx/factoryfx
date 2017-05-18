@@ -418,6 +418,7 @@ public class DataTest {
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     public void test_json_list(){
         DynamicData dynamicData = new DynamicData();
         final StringListAttribute stringListAttribute = new StringListAttribute(new AttributeMetadata());

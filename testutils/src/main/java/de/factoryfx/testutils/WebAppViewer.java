@@ -1,4 +1,4 @@
-package de.factoryfx.server;
+package de.factoryfx.testutils;
 
 import java.io.IOException;
 import java.net.URISyntaxException;

@@ -28,6 +28,7 @@ public class ValueAttribute<T> extends Attribute<T> {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public Attribute<T> internal_copy() {
         try {
             //TODO fix that reflection

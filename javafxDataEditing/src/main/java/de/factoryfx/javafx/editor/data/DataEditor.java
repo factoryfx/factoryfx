@@ -226,7 +226,7 @@ public class DataEditor implements Widget {
 
         dataChangeListener = (observable, oldValue, newValue) -> {
 
-            createdEditors.entrySet().forEach(entry -> entry.getValue().unbind());
+            createdEditors.forEach((key, value1) -> value1.unbind());
             createdEditors.clear();
             if (newValue==null) {
                 result.setCenter(new Label("empty"));
