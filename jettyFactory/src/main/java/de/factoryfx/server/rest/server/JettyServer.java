@@ -1,6 +1,8 @@
 package de.factoryfx.server.rest.server;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Function;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -18,14 +20,21 @@ import org.glassfish.jersey.servlet.ServletContainer;
 public class JettyServer {
 
     private final org.eclipse.jetty.server.Server server;
+    private final Set<HttpServerConnectorCreator> currentConnectors = new HashSet<>();
+    private final UpdateableServlet rootServlet;
+    private boolean disposed = false;
 
-    public JettyServer(List<Function<Server,ServerConnector>> connectors, List<Object> resources) {
+    public JettyServer(List<HttpServerConnectorCreator> connectors, List<Object> resources) {
         server=new org.eclipse.jetty.server.Server();
-        connectors.forEach(serverServerConnectorFunction -> server.addConnector(serverServerConnectorFunction.apply(server)));
+        currentConnectors.addAll(connectors);
+        for (HttpServerConnectorCreator creator : currentConnectors) {
+            creator.addToServer(server);
+        }
 
-
+        rootServlet = new UpdateableServlet(new ServletContainer(jerseySetup(resources)));
+        ServletHolder holder = new ServletHolder(rootServlet);
         ServletContextHandler contextHandler = new ServletContextHandler(ServletContextHandler.SESSIONS);
-        contextHandler.addServlet( new ServletHolder(new ServletContainer(jerseySetup(resources))), "/*");
+        contextHandler.addServlet( holder, "/*");
         ErrorHandler errorHandler = new ErrorHandler();
         errorHandler.setShowStacks(true);
         contextHandler.setErrorHandler(errorHandler);
@@ -73,6 +82,8 @@ public class JettyServer {
     }
 
     public void stop() {
+        if (disposed)
+            return;
         try {
             server.stop();
         } catch (Exception e) {
@@ -80,5 +91,32 @@ public class JettyServer {
         }
     }
 
+    private JettyServer(JettyServer priorServer) {
+        this.rootServlet = priorServer.rootServlet;
+        this.currentConnectors.addAll(priorServer.currentConnectors);
+        this.server = priorServer.server;
+        priorServer.disposed = true;
+    }
+
+
+    public JettyServer recreate(List<HttpServerConnectorCreator> connectors, List<Object> resources) {
+        JettyServer newServer = new JettyServer(this);
+        newServer._recreate(connectors,resources);
+        return newServer;
+    }
+
+    private void _recreate(List<HttpServerConnectorCreator> connectors, List<Object> resources) {
+        Set<HttpServerConnectorCreator> oldConnectors = new HashSet<>(currentConnectors);
+        oldConnectors.removeAll(connectors);
+        for (HttpServerConnectorCreator creator : oldConnectors) {
+            creator.removeFromServer(server);
+        }
+        currentConnectors.clear();
+        currentConnectors.addAll(connectors);
+        for (HttpServerConnectorCreator currentConnector : currentConnectors) {
+            currentConnector.addToServer(server);
+        }
+        rootServlet.update(new ServletContainer(jerseySetup(resources)));
+    }
 
 }

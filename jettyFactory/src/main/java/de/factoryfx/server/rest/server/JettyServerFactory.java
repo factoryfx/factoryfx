@@ -12,12 +12,13 @@ public class JettyServerFactory<V> extends FactoryBase<JettyServer,V> {
 
     /** jersey resource class with Annotations*/
     public final FactoryReferenceListAttribute<Object,FactoryBase<?,V>> resources = new FactoryReferenceListAttribute<>(new AttributeMetadata().labelText("resource"),Object.class);
-    public final FactoryReferenceListAttribute<Function<Server,ServerConnector>,HttpServerConnectorFactory<V>> connectors = new FactoryReferenceListAttribute<>(new AttributeMetadata().labelText("connectors"),HttpServerConnectorFactory.class);
+    public final FactoryReferenceListAttribute<HttpServerConnectorCreator,HttpServerConnectorFactory<V>> connectors = new FactoryReferenceListAttribute<>(new AttributeMetadata().labelText("connectors"),HttpServerConnectorFactory.class);
 
     public JettyServerFactory(){
         configLiveCycle().setCreator(() -> {
             return new JettyServer(connectors.instances(), resources.instances());
         });
+        configLiveCycle().setReCreator(currentLiveObject->currentLiveObject.recreate(connectors.instances(),resources.instances()));
 
         configLiveCycle().setStarter(newLiveObject -> newLiveObject.start());
         configLiveCycle().setDestroyer(previousLiveObject -> previousLiveObject.stop());

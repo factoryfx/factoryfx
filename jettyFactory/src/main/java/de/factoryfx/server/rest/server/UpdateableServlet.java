@@ -1,4 +1,4 @@
-package de.factoryfx.servlet;
+package de.factoryfx.server.rest.server;
 
 import javax.servlet.*;
 import java.io.IOException;
