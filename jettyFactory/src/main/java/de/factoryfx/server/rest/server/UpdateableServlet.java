@@ -8,14 +8,14 @@ import java.io.IOException;
  */
 public class UpdateableServlet implements Servlet {
 
-    private Servlet servlet;
+    private volatile Servlet servlet;
 
     public UpdateableServlet(Servlet servlet) {
         this.servlet = servlet;
 
     }
 
-    public synchronized void update(Servlet servlet){
+    public void update(Servlet servlet){
         try {
             servlet.init(this.servlet.getServletConfig());
         } catch (ServletException e) {
@@ -26,12 +26,12 @@ public class UpdateableServlet implements Servlet {
 
 
     @Override
-    public synchronized void init(ServletConfig config) throws ServletException {
+    public void init(ServletConfig config) throws ServletException {
         servlet.init(config);
     }
 
     @Override
-    public synchronized ServletConfig getServletConfig() {
+    public ServletConfig getServletConfig() {
         return servlet.getServletConfig();
     }
 
@@ -41,12 +41,12 @@ public class UpdateableServlet implements Servlet {
     }
 
     @Override
-    public synchronized String getServletInfo() {
+    public String getServletInfo() {
         return servlet.getServletInfo();
     }
 
     @Override
-    public synchronized void destroy() {
+    public void destroy() {
         servlet.destroy();
     }
 }
