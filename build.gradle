@@ -296,6 +296,8 @@ project(':docu') {
     dependencies {
         compile project(":factory")
         compile project(":applicationServer")
+        compile project(":jettyFactory")
+        compile project(":restutilClient")
         compile group: 'ch.qos.logback', name: 'logback-classic', version: '1.1.7'
     }
 
