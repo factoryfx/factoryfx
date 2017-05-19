@@ -1,3 +1,3 @@
 include 'applicationServer', 'adminUiAngularjs', 'applicationServerRestClient', 'applicationServerRestServer', 'applicationServerRestCommon', 'applicationServerRestIntegrationTest',
         'data', 'factory', 'testutils', 'example', 'jettyFactory', 'restutilClient', 'javafxDataEditing', 'javafxDistributionClient', 'javafxDistributionServer', 'postgresqlStorage',
-        'javascript', 'javascriptDataEditing', 'javafxFactoryEditing', 'testfactories', 'servletContainerBridge'
+        'javascript', 'javascriptDataEditing', 'javafxFactoryEditing', 'testfactories', 'servletContainerBridge', 'docu'

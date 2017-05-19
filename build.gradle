@@ -290,3 +290,14 @@ project(':servletContainerBridge'){
         testCompile project(":applicationServerRestClient")
     }
 }
+
+project(':docu') {
+
+    dependencies {
+        compile project(":factory")
+        compile project(":applicationServer")
+        compile group: 'ch.qos.logback', name: 'logback-classic', version: '1.1.7'
+    }
+
+}
+
