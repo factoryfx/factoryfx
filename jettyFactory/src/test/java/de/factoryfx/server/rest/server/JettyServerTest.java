@@ -40,6 +40,7 @@ public class JettyServerTest {
         RestClient restClient = new RestClient("localhost",8005,"",false,null,null);
         System.out.println(restClient.get("Resource1",String.class));
         System.out.println(restClient.get("Resource2",String.class));
+        jettyServer.stop();
     }
 
     @Path("/Resource")
@@ -66,8 +67,9 @@ public class JettyServerTest {
 
         RestClient restClient = new RestClient("localhost",8005,"",false,null,null);
         Assert.assertEquals("Hello",restClient.get("Resource",String.class));
-        jettyServer.recreate(connectors,Arrays.asList(new Resource("World")));
+        jettyServer = jettyServer.recreate(connectors,Arrays.asList(new Resource("World")));
         Assert.assertEquals("World",restClient.get("Resource",String.class));
+        jettyServer.stop();
 
     }
 
@@ -103,6 +105,7 @@ public class JettyServerTest {
             restClient8006.get("Resource",String.class);
             Assert.fail("Expectected exception");
         } catch (Exception expected) {}
+        jettyServer.stop();
 
     }
 

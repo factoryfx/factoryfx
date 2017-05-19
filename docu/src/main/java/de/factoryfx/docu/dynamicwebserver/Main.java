@@ -46,7 +46,7 @@ public class Main {
             JettyServerFactory<Void> editableJettyServer = editableConfig.root;
             editableJettyServer.resources.clear();
             editableJettyServer.resources.add(createNewWebResourceReturningCreationTimestamp());
-            applicationServer.updateCurrentFactory(editableConfig,"user","password",s->true);
+            applicationServer.updateCurrentFactory(editableConfig,"user","commit",s->true);
             Thread.sleep(1100);
         }
         continuouslyQueryWebserver.interrupt();
