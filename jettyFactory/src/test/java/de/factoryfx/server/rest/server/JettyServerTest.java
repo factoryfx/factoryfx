@@ -1,8 +1,13 @@
 package de.factoryfx.server.rest.server;
 
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -105,6 +110,56 @@ public class JettyServerTest {
             restClient8006.get("Resource",String.class);
             Assert.fail("Expectected exception");
         } catch (Exception expected) {}
+        jettyServer.stop();
+
+    }
+
+
+    @Path("/Resource")
+    public static class LateResponse {
+
+        public LateResponse() {
+
+        }
+
+        @GET()
+        public Response get() throws InterruptedException {
+            System.out.println("IN");
+            try {
+                Thread.sleep(500);
+                return Response.ok("RESPONSE").build();
+            } finally {
+                System.out.println("Out");
+            }
+        }
+    }
+
+
+    @Test
+    public void test_lateResponse() throws InterruptedException, ExecutionException, TimeoutException {
+        List<HttpServerConnectorCreator> connectors= new ArrayList<>();
+        connectors.add(new HttpServerConnectorCreator("localhost",8005));
+        JettyServer jettyServer = new JettyServer(connectors, Arrays.asList(new LateResponse()));
+        jettyServer.start();
+//        Thread.sleep(1000);
+        RestClient restClient = new RestClient("localhost",8005,"",false,null,null);
+        CompletableFuture<String> lateResponse = new CompletableFuture<>();
+        new Thread() {
+            public void run() {
+                try {
+                    lateResponse.complete(restClient.get("Resource", String.class));
+                } catch (Exception ex) {
+                    lateResponse.completeExceptionally(ex);
+                }
+            }
+        }.start();
+        Thread.sleep(200);
+        jettyServer = jettyServer.recreate(connectors,new ArrayList<>());
+        try {
+            restClient.get("Resource",String.class);
+            Assert.fail("Expected exception");
+        } catch (Exception expected) {}
+        Assert.assertEquals("RESPONSE",lateResponse.get(500, TimeUnit.MILLISECONDS));
         jettyServer.stop();
 
     }
