@@ -19,7 +19,7 @@ public class HttpServerConnectorCreator {
         for (Connector connector : server.getConnectors()) {
             if (connector instanceof NetworkTrafficServerConnector) {
                 NetworkTrafficServerConnector serverConnector = (NetworkTrafficServerConnector)connector;
-                if (serverConnector.getPort() == port && serverConnector.getHost() == host)
+                if (serverConnector.getPort() == port && serverConnector.getHost().equals(host))
                     return;
             }
         }
@@ -28,6 +28,13 @@ public class HttpServerConnectorCreator {
         connector.setReuseAddress(true);
         connector.setHost(host);
         server.addConnector(connector);
+        if (server.isStarted()) {
+            try {
+                connector.start();
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        }
     }
 
     @Override
@@ -52,8 +59,15 @@ public class HttpServerConnectorCreator {
         for (Connector connector : server.getConnectors()) {
             if (connector instanceof NetworkTrafficServerConnector) {
                 NetworkTrafficServerConnector serverConnector = (NetworkTrafficServerConnector)connector;
-                if (serverConnector.getPort() == port && serverConnector.getHost() == host) {
+                if (serverConnector.getPort() == port && serverConnector.getHost().equals(host)) {
                     server.removeConnector(serverConnector);
+                    if (server.isStarted()) {
+                        try {
+                            serverConnector.stop();
+                        } catch (Exception e) {
+                            throw new RuntimeException(e);
+                        }
+                    }
                 }
             }
         }

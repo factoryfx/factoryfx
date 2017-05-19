@@ -71,4 +71,39 @@ public class JettyServerTest {
 
     }
 
+    @Test
+    public void test_addRemoveConnector() throws InterruptedException {
+
+        List<HttpServerConnectorCreator> connectors= new ArrayList<>();
+        connectors.add(new HttpServerConnectorCreator("localhost",8005));
+        List<HttpServerConnectorCreator> moreConnectors= new ArrayList<>();
+        moreConnectors.add(new HttpServerConnectorCreator("localhost",8005));
+        moreConnectors.add(new HttpServerConnectorCreator("localhost",8006));
+        List<Object> resources = Arrays.asList(new Resource("Hello"));
+
+        JettyServer jettyServer = new JettyServer(connectors, resources);
+        jettyServer.start();
+//        Thread.sleep(1000);
+
+        RestClient restClient8005 = new RestClient("localhost",8005,"",false,null,null);
+        RestClient restClient8006 = new RestClient("localhost",8006,"",false,null,null);
+        Assert.assertEquals("Hello",restClient8005.get("Resource",String.class));
+        try {
+            restClient8006.get("Resource",String.class);
+            Assert.fail("Expectected exception");
+        } catch (Exception expected) {}
+
+        jettyServer = jettyServer.recreate(moreConnectors,resources);
+        Assert.assertEquals("Hello",restClient8005.get("Resource",String.class));
+        Assert.assertEquals("Hello",restClient8006.get("Resource",String.class));
+
+        jettyServer = jettyServer.recreate(connectors,resources);
+        Assert.assertEquals("Hello",restClient8005.get("Resource",String.class));
+        try {
+            restClient8006.get("Resource",String.class);
+            Assert.fail("Expectected exception");
+        } catch (Exception expected) {}
+
+    }
+
 }
