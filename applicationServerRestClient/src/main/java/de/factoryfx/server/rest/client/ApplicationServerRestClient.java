@@ -1,10 +1,9 @@
 package de.factoryfx.server.rest.client;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Locale;
+import java.util.*;
+import java.util.stream.Stream;
 
+import de.factoryfx.data.Data;
 import de.factoryfx.data.merge.AttributeDiffInfo;
 import de.factoryfx.data.merge.MergeDiffInfo;
 import de.factoryfx.factory.FactoryBase;
@@ -53,7 +52,20 @@ public class ApplicationServerRestClient<V,T extends FactoryBase<?,V>> {
     }
 
     public MergeDiffInfo getDiff(StoredFactoryMetadata historyEntry) {
-        return restClient.post("diff", new UserAwareRequest<>(user,passwordHash,historyEntry), MergeDiffInfo.class);
+        MergeDiffInfo diff = restClient.post("diff", new UserAwareRequest<>(user, passwordHash, historyEntry), MergeDiffInfo.class);
+        Stream.concat(Stream.concat(diff.conflictInfos.stream(),diff.mergeInfos.stream()),diff.permissionViolations.stream()).forEach(
+                i->{
+                    i.previousValueDisplayText.valueList().ifPresent(v->{
+                        v.forEach(d->patchIds(d));
+                    });
+                }
+        );
+        return diff;
+    }
+
+    private void patchIds(Data d) {
+        d.setId(UUID.randomUUID().toString());
+        d.internal().collectChildrenDeep().forEach(x->x.setId(UUID.randomUUID().toString()));
     }
 
 

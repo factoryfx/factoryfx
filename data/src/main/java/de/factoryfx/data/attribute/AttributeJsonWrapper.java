@@ -1,9 +1,6 @@
 package de.factoryfx.data.attribute;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
+import java.util.*;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -159,4 +156,10 @@ public class AttributeJsonWrapper {
     public String getDisplayText(){
         return createAttribute().getDisplayText();
     }
+
+    @JsonIgnore
+    public Optional<List<Data>> valueList() {
+        return Optional.ofNullable(valueList);
+    }
+
 }
