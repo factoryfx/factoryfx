@@ -29,6 +29,7 @@ public class DataMergerMergerTest {
     public void test_diff_info_null(){
         ExampleFactoryA currentModel = new ExampleFactoryA();
         ExampleFactoryB exampleFactoryB = new ExampleFactoryB();
+        exampleFactoryB.stringAttribute.set("Factory to be deleted");
         currentModel.referenceAttribute.set(exampleFactoryB);
         ExampleFactoryA originalModel = currentModel.internal().copy();
         ExampleFactoryA newModel = currentModel.internal().copy();
@@ -38,7 +39,7 @@ public class DataMergerMergerTest {
         MergeDiffInfo mergeDiff= dataMerger.mergeIntoCurrent((permission)->true);
         Assert.assertTrue(mergeDiff.hasNoConflicts());
         Assert.assertEquals("empty",mergeDiff.mergeInfos.get(0).newValueValueDisplayText.get().createAttribute().getDisplayText());
-        Assert.assertTrue((((ExampleFactoryB)mergeDiff.mergeInfos.get(0).previousValueDisplayText.createAttribute().get()).getId()).contains(exampleFactoryB.getId().toString()));
+        Assert.assertTrue((((ExampleFactoryB)mergeDiff.mergeInfos.get(0).previousValueDisplayText.createAttribute().get()).stringAttribute.get()).equals("Factory to be deleted"));
     }
 
     @Test

@@ -3,8 +3,10 @@ package de.factoryfx.server.rest;
 import java.util.Collection;
 import java.util.Locale;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.stream.Stream;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
@@ -12,6 +14,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
+import de.factoryfx.data.Data;
 import de.factoryfx.data.merge.MergeDiffInfo;
 import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.factory.datastorage.FactoryAndNewMetadata;
@@ -52,7 +55,8 @@ public class ApplicationServerResource<V,L,T extends FactoryBase<L,V>>  {
     @Path("updateCurrentFactory")
     public FactoryUpdateLog updateCurrentFactory(UserAwareRequest<UpdateCurrentFactoryRequest> update) {
         Function<String, Boolean> permissionChecker = authenticateAndGetPermissionChecker(update);
-        return applicationServer.updateCurrentFactory(new FactoryAndNewMetadata<>(update.request.factoryUpdate.root.internal().prepareUsableCopy(),update.request.factoryUpdate.metadata),update.user,update.request.comment,permissionChecker);
+        FactoryUpdateLog factoryUpdateLog = applicationServer.updateCurrentFactory(new FactoryAndNewMetadata<>(update.request.factoryUpdate.root.internal().prepareUsableCopy(), update.request.factoryUpdate.metadata), update.user, update.request.comment, permissionChecker);
+        return factoryUpdateLog;
     }
 
     @POST
@@ -79,7 +83,8 @@ public class ApplicationServerResource<V,L,T extends FactoryBase<L,V>>  {
     @Path("simulateUpdateCurrentFactory")
     public MergeDiffInfo simulateUpdateCurrentFactory(UserAwareRequest<FactoryAndNewMetadata> request) {
         Function<String, Boolean> permissionChecker = authenticateAndGetPermissionChecker(request);
-        return applicationServer.simulateUpdateCurrentFactory(new FactoryAndNewMetadata<>(request.request.root.internal().prepareUsableCopy(),request.request.metadata),permissionChecker);
+        MergeDiffInfo diff = applicationServer.simulateUpdateCurrentFactory(new FactoryAndNewMetadata<>(request.request.root.internal().prepareUsableCopy(), request.request.metadata), permissionChecker);
+        return diff;
     }
 
     @POST
@@ -88,8 +93,12 @@ public class ApplicationServerResource<V,L,T extends FactoryBase<L,V>>  {
     @Path("diff")
     public MergeDiffInfo getDiff(UserAwareRequest<StoredFactoryMetadata> request) {
         authenticate(request);
-        return applicationServer.getDiffToPreviousVersion(request.request);
+        MergeDiffInfo diff = applicationServer.getDiffToPreviousVersion(request.request);
+        return diff;
+
     }
+
+
 
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
