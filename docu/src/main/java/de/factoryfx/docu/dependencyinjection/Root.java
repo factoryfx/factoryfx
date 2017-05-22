@@ -1,4 +1,4 @@
-package de.factoryfx.docu.dependency;
+package de.factoryfx.docu.dependencyinjection;
 
 public class Root {
     private final Dependency dependency;
