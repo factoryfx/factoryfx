@@ -5,7 +5,10 @@ import java.util.List;
 import de.factoryfx.data.merge.AttributeDiffInfo;
 import de.factoryfx.factory.FactoryManager;
 import de.factoryfx.factory.datastorage.FactoryAndNewMetadata;
+import de.factoryfx.factory.datastorage.FactoryAndStoredMetadata;
 import de.factoryfx.factory.datastorage.inmemory.InMemoryFactoryStorage;
+import de.factoryfx.factory.exception.RethrowingFactoryExceptionHandler;
+import de.factoryfx.factory.log.FactoryUpdateLog;
 import de.factoryfx.factory.testfactories.ExampleFactoryA;
 import de.factoryfx.factory.testfactories.ExampleFactoryB;
 import de.factoryfx.factory.testfactories.ExampleLiveObjectA;
@@ -94,6 +97,24 @@ public class ApplicationServerTest {
             System.out.println("ssfd");
         }
         Assert.assertEquals("change1", displayText);
+    }
+
+    @Test
+    public void testUpdateReferenceList() {
+        final ExampleFactoryA root = new ExampleFactoryA();
+        root.referenceListAttribute.add(new ExampleFactoryB());
+        final InMemoryFactoryStorage<Void, ExampleLiveObjectA, ExampleFactoryA> memoryFactoryStorage = new InMemoryFactoryStorage<>(root);
+        memoryFactoryStorage.loadInitialFactory();
+        ApplicationServer<Void,ExampleLiveObjectA,ExampleFactoryA> applicationServer = new ApplicationServer<>(new FactoryManager<>(new RethrowingFactoryExceptionHandler<>()), memoryFactoryStorage);
+        applicationServer.start();
+        FactoryAndNewMetadata<ExampleFactoryA> editableFactory = applicationServer.prepareNewFactory();
+        editableFactory.root.referenceListAttribute.add(new ExampleFactoryB());
+        FactoryUpdateLog log = applicationServer.updateCurrentFactory(editableFactory,"","", x->true);
+        AttributeDiffInfo theDiff = log.mergeDiffInfo.mergeInfos.get(0);
+        String dt = theDiff.previousValueDisplayText.getDisplayText();
+        String dtNew = theDiff.newValueValueDisplayText.get().getDisplayText();
+        Assert.assertNotEquals(dt,dtNew);
+
     }
 
 }

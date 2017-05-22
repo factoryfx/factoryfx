@@ -53,7 +53,7 @@ public class AttributeJsonWrapper {
         if (attribute instanceof ReferenceListAttribute){
             referenceClass = ((ReferenceListAttribute)attribute).internal_getReferenceClass();
             value=null;
-            valueList=((ReferenceListAttribute)attribute).get();
+            valueList=new ArrayList<>(((ReferenceListAttribute)attribute).get());
         }
         if (attribute instanceof EnumAttribute){
             enumClazz = ((EnumAttribute)attribute).internal_getEnumClass();
