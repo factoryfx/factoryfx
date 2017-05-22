@@ -56,7 +56,6 @@ public class ApplicationServerResource<V,L,T extends FactoryBase<L,V>>  {
     public FactoryUpdateLog updateCurrentFactory(UserAwareRequest<UpdateCurrentFactoryRequest> update) {
         Function<String, Boolean> permissionChecker = authenticateAndGetPermissionChecker(update);
         FactoryUpdateLog factoryUpdateLog = applicationServer.updateCurrentFactory(new FactoryAndNewMetadata<>(update.request.factoryUpdate.root.internal().prepareUsableCopy(), update.request.factoryUpdate.metadata), update.user, update.request.comment, permissionChecker);
-        fixIdClashes(factoryUpdateLog.mergeDiffInfo);
         return factoryUpdateLog;
     }
 
@@ -85,7 +84,6 @@ public class ApplicationServerResource<V,L,T extends FactoryBase<L,V>>  {
     public MergeDiffInfo simulateUpdateCurrentFactory(UserAwareRequest<FactoryAndNewMetadata> request) {
         Function<String, Boolean> permissionChecker = authenticateAndGetPermissionChecker(request);
         MergeDiffInfo diff = applicationServer.simulateUpdateCurrentFactory(new FactoryAndNewMetadata<>(request.request.root.internal().prepareUsableCopy(), request.request.metadata), permissionChecker);
-        fixIdClashes(diff);
         return diff;
     }
 
@@ -96,27 +94,8 @@ public class ApplicationServerResource<V,L,T extends FactoryBase<L,V>>  {
     public MergeDiffInfo getDiff(UserAwareRequest<StoredFactoryMetadata> request) {
         authenticate(request);
         MergeDiffInfo diff = applicationServer.getDiffToPreviousVersion(request.request);
-        fixIdClashes(diff);
         return diff;
 
-    }
-
-    private void fixIdClashes(MergeDiffInfo diff) {
-        Stream.concat(Stream.concat(diff.conflictInfos.stream(),diff.mergeInfos.stream()),diff.permissionViolations.stream()).forEach(
-                i->{
-                    i.previousValueDisplayText.valueList().ifPresent(v->{
-                        v.forEach(d->patchIds(d));
-                    });
-                    i.newValueValueDisplayText.flatMap(nv->nv.valueList()).ifPresent(v->{
-                        v.forEach(d->patchIds(d));
-                    });
-                }
-        );
-    }
-
-    private void patchIds(Data d) {
-        d.setId(UUID.randomUUID().toString());
-        d.internal().collectChildrenDeep().forEach(x->x.setId(UUID.randomUUID().toString()));
     }
 
 

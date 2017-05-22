@@ -117,4 +117,28 @@ public class ApplicationServerTest {
 
     }
 
+    @Test
+    public void testUpdateReferenceListTwice() throws InterruptedException {
+        final ExampleFactoryA root = new ExampleFactoryA();
+        root.referenceListAttribute.add(new ExampleFactoryB());
+        final InMemoryFactoryStorage<Void, ExampleLiveObjectA, ExampleFactoryA> memoryFactoryStorage = new InMemoryFactoryStorage<>(root);
+        memoryFactoryStorage.loadInitialFactory();
+        ApplicationServer<Void,ExampleLiveObjectA,ExampleFactoryA> applicationServer = new ApplicationServer<>(new FactoryManager<>(new RethrowingFactoryExceptionHandler<>()), memoryFactoryStorage);
+        applicationServer.start();
+        FactoryAndNewMetadata<ExampleFactoryA> editableFactory = applicationServer.prepareNewFactory();
+        Thread.sleep(10);
+        editableFactory.root.referenceListAttribute.add(new ExampleFactoryB());
+        FactoryUpdateLog log = applicationServer.updateCurrentFactory(editableFactory,"","", x->true);
+        editableFactory = applicationServer.prepareNewFactory();
+        Thread.sleep(10);
+        editableFactory.root.referenceListAttribute.add(new ExampleFactoryB());
+        log = applicationServer.updateCurrentFactory(editableFactory,"","", x->true);
+        Assert.assertTrue(log.mergeDiffInfo.hasNoConflicts());
+        editableFactory = applicationServer.prepareNewFactory();
+        Thread.sleep(10);
+        editableFactory.root.referenceListAttribute.remove(editableFactory.root.referenceListAttribute.get(0));
+        log = applicationServer.updateCurrentFactory(editableFactory,"","", x->true);
+        Assert.assertTrue(log.mergeDiffInfo.hasNoConflicts());
+    }
+
 }

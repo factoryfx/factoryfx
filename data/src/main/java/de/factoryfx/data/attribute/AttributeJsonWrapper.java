@@ -1,6 +1,7 @@
 package de.factoryfx.data.attribute;
 
 import java.util.*;
+import java.util.stream.Stream;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -10,6 +11,7 @@ import com.sun.javafx.collections.ObservableListWrapper;
 import de.factoryfx.data.AttributeAndName;
 import de.factoryfx.data.Data;
 import de.factoryfx.data.attribute.types.EnumAttribute;
+import de.factoryfx.data.merge.MergeDiffInfo;
 import de.factoryfx.data.util.LanguageText;
 import javafx.collections.ObservableList;
 import javafx.collections.ObservableMap;
@@ -50,10 +52,19 @@ public class AttributeJsonWrapper {
         if (attribute instanceof ReferenceAttribute){
             referenceClass = ((ReferenceAttribute)attribute).internal_getReferenceClass();
         }
+        if (this.value instanceof Data) {
+            this.value = ((Data) this.value).internal().copy();
+            patchIds((Data)this.value);
+        }
         if (attribute instanceof ReferenceListAttribute){
             referenceClass = ((ReferenceListAttribute)attribute).internal_getReferenceClass();
             value=null;
             valueList=new ArrayList<>(((ReferenceListAttribute)attribute).get());
+            valueList.replaceAll(d->{
+                Data theCopy = d.internal().copy();
+                patchIds(theCopy);
+                return theCopy;
+            });
         }
         if (attribute instanceof EnumAttribute){
             enumClazz = ((EnumAttribute)attribute).internal_getEnumClass();
@@ -161,5 +172,11 @@ public class AttributeJsonWrapper {
     public Optional<List<Data>> valueList() {
         return Optional.ofNullable(valueList);
     }
+
+    private void patchIds(Data d) {
+        d.setId(UUID.randomUUID().toString());
+        d.internal().collectChildrenDeep().forEach(x->x.setId(UUID.randomUUID().toString()));
+    }
+
 
 }
