@@ -3,8 +3,10 @@ package de.factoryfx.server.rest;
 import java.util.Collection;
 import java.util.Locale;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.stream.Stream;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
@@ -12,6 +14,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
+import de.factoryfx.data.Data;
 import de.factoryfx.data.merge.MergeDiffInfo;
 import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.factory.datastorage.FactoryAndNewMetadata;
@@ -79,7 +82,9 @@ public class ApplicationServerResource<V,L,T extends FactoryBase<L,V>>  {
     @Path("simulateUpdateCurrentFactory")
     public MergeDiffInfo simulateUpdateCurrentFactory(UserAwareRequest<FactoryAndNewMetadata> request) {
         Function<String, Boolean> permissionChecker = authenticateAndGetPermissionChecker(request);
-        return applicationServer.simulateUpdateCurrentFactory(new FactoryAndNewMetadata<>(request.request.root.internal().prepareUsableCopy(),request.request.metadata),permissionChecker);
+        MergeDiffInfo diff = applicationServer.simulateUpdateCurrentFactory(new FactoryAndNewMetadata<>(request.request.root.internal().prepareUsableCopy(), request.request.metadata), permissionChecker);
+        fixIdClashes(diff);
+        return diff;
     }
 
     @POST
@@ -88,8 +93,28 @@ public class ApplicationServerResource<V,L,T extends FactoryBase<L,V>>  {
     @Path("diff")
     public MergeDiffInfo getDiff(UserAwareRequest<StoredFactoryMetadata> request) {
         authenticate(request);
-        return applicationServer.getDiffToPreviousVersion(request.request);
+        MergeDiffInfo diff = applicationServer.getDiffToPreviousVersion(request.request);
+        fixIdClashes(diff);
+        return diff;
+
     }
+
+    private void fixIdClashes(MergeDiffInfo diff) {
+        Stream.concat(Stream.concat(diff.conflictInfos.stream(),diff.mergeInfos.stream()),diff.permissionViolations.stream()).forEach(
+                i->{
+                    i.previousValueDisplayText.valueList().ifPresent(v->{
+                        v.forEach(d->patchIds(d));
+                    });
+                }
+        );
+    }
+
+    private void patchIds(Data d) {
+        d.setId(UUID.randomUUID().toString());
+        d.internal().collectChildrenDeep().forEach(x->x.setId(UUID.randomUUID().toString()));
+    }
+
+
 
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
