@@ -55,7 +55,9 @@ public class ApplicationServerResource<V,L,T extends FactoryBase<L,V>>  {
     @Path("updateCurrentFactory")
     public FactoryUpdateLog updateCurrentFactory(UserAwareRequest<UpdateCurrentFactoryRequest> update) {
         Function<String, Boolean> permissionChecker = authenticateAndGetPermissionChecker(update);
-        return applicationServer.updateCurrentFactory(new FactoryAndNewMetadata<>(update.request.factoryUpdate.root.internal().prepareUsableCopy(),update.request.factoryUpdate.metadata),update.user,update.request.comment,permissionChecker);
+        FactoryUpdateLog factoryUpdateLog = applicationServer.updateCurrentFactory(new FactoryAndNewMetadata<>(update.request.factoryUpdate.root.internal().prepareUsableCopy(), update.request.factoryUpdate.metadata), update.user, update.request.comment, permissionChecker);
+        fixIdClashes(factoryUpdateLog.mergeDiffInfo);
+        return factoryUpdateLog;
     }
 
     @POST
@@ -103,6 +105,9 @@ public class ApplicationServerResource<V,L,T extends FactoryBase<L,V>>  {
         Stream.concat(Stream.concat(diff.conflictInfos.stream(),diff.mergeInfos.stream()),diff.permissionViolations.stream()).forEach(
                 i->{
                     i.previousValueDisplayText.valueList().ifPresent(v->{
+                        v.forEach(d->patchIds(d));
+                    });
+                    i.newValueValueDisplayText.flatMap(nv->nv.valueList()).ifPresent(v->{
                         v.forEach(d->patchIds(d));
                     });
                 }
