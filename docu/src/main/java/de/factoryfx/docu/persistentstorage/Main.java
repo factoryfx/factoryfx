@@ -62,7 +62,7 @@ public class Main {
         applicationServer.stop();
         ApplicationServer<Void,Root, RootFactory> newApplicationServer = new ApplicationServer<>(new FactoryManager<>(new RethrowingFactoryExceptionHandler<>()),postgresFactoryStorage);
         newApplicationServer.start();
-        //output is 2 again update is saved
+        //output is 2 again from the saved update
 
 
 
