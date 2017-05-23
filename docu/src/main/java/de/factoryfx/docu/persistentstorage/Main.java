@@ -26,7 +26,7 @@ import java.util.ArrayList;
 public class Main {
 
     public static void main(String[] args) throws IOException {
-        //embedded postgrees db
+        //embedded postgres db
         PostgresProcess postgresProcess;
         PostgresStarter<PostgresExecutable, PostgresProcess> runtime = PostgresStarter.getDefaultInstance();
         final PostgresConfig config = PostgresConfig.defaultWithDbName("test","testuser","testpw");
@@ -53,7 +53,6 @@ public class Main {
         applicationServer.start();
         //output is 1 from initial factory
 
-        long updateStart=System.currentTimeMillis();
         FactoryAndNewMetadata<RootFactory> update = applicationServer.prepareNewFactory();
         update.root.stringAttribute.set("2");
         applicationServer.updateCurrentFactory(update, "", "", s -> true);
@@ -67,7 +66,6 @@ public class Main {
 
 
         System.out.println("\n\n\n\n\n\n\n\n");
-
         postgresProcess.stop();
 
 
