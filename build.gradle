@@ -298,6 +298,8 @@ project(':docu') {
         compile project(":applicationServer")
         compile project(":jettyFactory")
         compile project(":restutilClient")
+        compile project(':postgresqlStorage');
+        compile 'ru.yandex.qatools.embed:postgresql-embedded:1.15'
         compile group: 'ch.qos.logback', name: 'logback-classic', version: '1.1.7'
     }
 
