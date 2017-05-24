@@ -57,6 +57,8 @@ public class JettyServer {
 //        resourceConfig.register(resource);
         resource.forEach(resourceConfig::register);
         resourceConfig.register(new AllExceptionMapper());
+        resourceConfig.register(Soap11Provider.class);
+        resourceConfig.register(Soap12Provider.class);
 
         ObjectMapper mapper = createObjectMapper();
 
