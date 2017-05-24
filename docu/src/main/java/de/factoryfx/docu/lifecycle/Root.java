@@ -1,6 +1,5 @@
 package de.factoryfx.docu.lifecycle;
 
-import de.factoryfx.docu.dependency.Dependency;
 
 public class Root {
 

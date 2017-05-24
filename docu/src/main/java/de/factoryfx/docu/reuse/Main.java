@@ -8,7 +8,6 @@ import de.factoryfx.server.ApplicationServer;
 
 import java.util.function.Function;
 
-/** example how to reuse a resource that is expensive to create usually that could be something like a connection pool or socket connection  */
 public class Main {
 
     public static void main(String[] args) {

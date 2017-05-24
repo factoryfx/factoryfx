@@ -1,4 +1,4 @@
-package de.factoryfx.docu.dependency;
+package de.factoryfx.docu.dependencyinjection;
 
 import de.factoryfx.data.attribute.AttributeMetadata;
 import de.factoryfx.factory.SimpleFactoryBase;

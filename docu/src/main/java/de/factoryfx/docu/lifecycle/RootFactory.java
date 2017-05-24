@@ -1,8 +1,6 @@
 package de.factoryfx.docu.lifecycle;
 
 import de.factoryfx.data.attribute.AttributeMetadata;
-import de.factoryfx.docu.dependency.Dependency;
-import de.factoryfx.docu.dependency.DependencyFactory;
 import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.factory.SimpleFactoryBase;
 import de.factoryfx.factory.atrribute.FactoryReferenceAttribute;
