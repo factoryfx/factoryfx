@@ -271,10 +271,15 @@ public class ReferenceListAttribute<T extends Data> extends Attribute<List<T>> i
 
     @SuppressWarnings("unchecked")
     public Collection<T> internal_possibleValues(){
-        Set<T> result = new HashSet<>();
+        Set<T> removeDuplicats = new HashSet<>();
+        List<T> result = new ArrayList<>();
         possibleValueProviderFromRoot.ifPresent(factoryBaseListFunction -> {
             Collection<T> factories = factoryBaseListFunction.apply(root);
-            factories.forEach(result::add);
+            factories.forEach(f->{
+                if (removeDuplicats.add(f)) {
+                    result.add(f);
+                }
+            });
         });
         if (!possibleValueProviderFromRoot.isPresent()){
             for (Data factory: root.internal().collectChildrenDeep()){
