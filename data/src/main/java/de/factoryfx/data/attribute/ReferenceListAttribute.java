@@ -284,7 +284,9 @@ public class ReferenceListAttribute<T extends Data> extends Attribute<List<T>> i
         if (!possibleValueProviderFromRoot.isPresent()){
             for (Data factory: root.internal().collectChildrenDeep()){
                 if (clazz.isAssignableFrom(factory.getClass())){
-                    result.add((T) factory);
+                    if (removeDuplicats.add((T)factory)) {
+                        result.add((T) factory);
+                    }
                 }
             }
         }
