@@ -145,11 +145,6 @@ public class AttributeEditorBuilder {
     }
 
 
-    private Optional<AttributeEditor<?>> getAttributeEditor(Attribute<?> attribute, DataEditor dataEditor, Supplier<List<ValidationError>> validation){
-       return this.getAttributeEditor(attribute,dataEditor,validation,null);
-    }
-
-
     public Optional<AttributeEditor<?>> getAttributeEditor(Attribute<?> attribute, DataEditor dataEditor, Supplier<List<ValidationError>> validation, Data oldValue){
 
         if (attribute instanceof ValueListAttribute<?>){
@@ -157,19 +152,8 @@ public class AttributeEditorBuilder {
             return builder.map(singleAttributeEditorBuilder -> singleAttributeEditorBuilder.createValueListEditor(attribute));
         }
 
-//        if (attribute instanceof ValueAttribute<?>){
         Optional<SingleAttributeEditorBuilder<?>> builder = singleAttributeEditorBuilders.stream().filter(a -> a.isEditorFor(attribute)).findAny();
         return builder.map(singleAttributeEditorBuilder -> singleAttributeEditorBuilder.createEditor(attribute, dataEditor, oldValue));
-//        }
-
-//        Optional<AttributeEditor<?>> viewAttribute = getViewAttribute(attribute, dataEditor,validation);
-//        if (viewAttribute.isPresent()) return viewAttribute;
-
-//        Optional<AttributeEditor<?>> referenceAttribute = getAttributeEditorReference(attribute, dataEditor,validation,oldValue);
-//        if (referenceAttribute.isPresent()) return referenceAttribute;
-
-//        return Optional.empty();
     }
-
 
 }

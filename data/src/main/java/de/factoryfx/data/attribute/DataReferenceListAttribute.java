@@ -15,8 +15,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class DataReferenceListAttribute<T extends Data> extends ReferenceListAttribute<T,DataReferenceListAttribute<T>> {
-    ObservableList<T> list = FXCollections.observableArrayList();
-
     /**
      * @see ReferenceBaseAttribute#ReferenceBaseAttribute(Class ,AttributeMetadata)
      * */
