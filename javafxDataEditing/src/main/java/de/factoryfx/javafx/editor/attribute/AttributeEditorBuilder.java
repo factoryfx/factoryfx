@@ -124,7 +124,7 @@ public class AttributeEditorBuilder {
             return expandableAttributeVisualisation;
         }));
 
-        result.add(new DataSingleAttributeEditorBuilder<Data,DataReferenceAttribute<Data>>(uniformDesign,(a)->a instanceof ReferenceAttribute,(attribute, dataEditor, previousData)->{
+        result.add(new DataSingleAttributeEditorBuilder<Data,ReferenceAttribute<Data,?>>(uniformDesign,(a)->a instanceof ReferenceAttribute,(attribute, dataEditor, previousData)->{
             return new ReferenceAttributeVisualisation(uniformDesign,dataEditor, attribute::internal_addNewFactory, attribute::internal_possibleValues, attribute::internal_deleteFactory, attribute.internal_isUserEditable(),attribute.internal_isUserSelectable(),attribute.internal_isUserCreatable());
         }));
         result.add(new DataSingleAttributeEditorBuilder<List<Data>,ReferenceListAttribute<Data,?>>(uniformDesign,(a)->a instanceof ReferenceListAttribute,(attribute, dataEditor,previousData)->{

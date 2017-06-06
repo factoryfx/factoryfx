@@ -23,6 +23,12 @@ public class EncryptedStringAttribute extends ImmutableValueAttribute<EncryptedS
         set(initialValue);
     }
 
+    @JsonCreator
+    EncryptedStringAttribute(String initialValue) {
+        super(null, EncryptedString.class);
+        set(new EncryptedString(initialValue));
+    }
+
     @JsonIgnore
     private boolean longText = false;
 
