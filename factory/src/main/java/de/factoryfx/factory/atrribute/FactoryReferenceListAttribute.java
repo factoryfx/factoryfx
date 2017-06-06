@@ -21,6 +21,8 @@ public class FactoryReferenceListAttribute<L,T extends FactoryBase<? extends L,?
 
     public FactoryReferenceListAttribute(Class<T> clazz, AttributeMetadata attributeMetadata) {
         super(clazz, attributeMetadata);
+        this.clazz=clazz;
+        this.attributeMetadata=attributeMetadata;
     }
 
     //Workaround for generics (T with generic params)
