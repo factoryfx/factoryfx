@@ -6,10 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-import de.factoryfx.data.attribute.Attribute;
-import de.factoryfx.data.attribute.AttributeMetadata;
-import de.factoryfx.data.attribute.CopySemantic;
-import de.factoryfx.data.attribute.ReferenceAttribute;
+import de.factoryfx.data.attribute.*;
 import de.factoryfx.data.attribute.primitive.IntegerAttribute;
 import de.factoryfx.data.attribute.types.ObjectValueAttribute;
 import de.factoryfx.data.attribute.types.StringAttribute;
@@ -193,11 +190,11 @@ public class DataTest {
     }
 
     public static class ExampleWithDefaultParent extends Data {
-        public final ReferenceAttribute<ExampleWithDefault> referenceAttribute = new ReferenceAttribute<>(ExampleWithDefault.class,new AttributeMetadata().labelText("ExampleA2"));
+        public final DataReferenceAttribute<ExampleWithDefault> referenceAttribute = new DataReferenceAttribute<>(ExampleWithDefault.class,new AttributeMetadata().labelText("ExampleA2"));
     }
 
     public static class ExampleWithDefault extends Data {
-        public final ReferenceAttribute<ExampleFactoryB> referenceAttribute = new ReferenceAttribute<>(ExampleFactoryB.class,new AttributeMetadata().labelText("ExampleA2")).defaultValue(new ExampleFactoryB());
+        public final DataReferenceAttribute<ExampleFactoryB> referenceAttribute = new DataReferenceAttribute<>(ExampleFactoryB.class,new AttributeMetadata().labelText("ExampleA2")).defaultValue(new ExampleFactoryB());
     }
     @Test
     public void test_editing_nested_add(){
@@ -406,7 +403,7 @@ public class DataTest {
     @Test
     public void test_json_ref(){
         DynamicData dynamicData = new DynamicData();
-        final ReferenceAttribute<ExampleFactoryA> referenceAttribute = new ReferenceAttribute<>(ExampleFactoryA.class,new AttributeMetadata());
+        final DataReferenceAttribute<ExampleFactoryA> referenceAttribute = new DataReferenceAttribute<>(ExampleFactoryA.class,new AttributeMetadata());
         final ExampleFactoryA exampleFactoryA = new ExampleFactoryA();
         referenceAttribute.set(exampleFactoryA);
 
@@ -445,7 +442,7 @@ public class DataTest {
 
 
     public static class DynamicDataExample1 extends DynamicData{
-        public final ReferenceAttribute<DynamicDataExample2> referenceAttribute1 = new ReferenceAttribute<>(DynamicDataExample2.class,new AttributeMetadata());
+        public final DataReferenceAttribute<DynamicDataExample2> referenceAttribute1 = new DataReferenceAttribute<>(DynamicDataExample2.class,new AttributeMetadata());
     }
 
     public static class DynamicDataExample2 extends DynamicData{

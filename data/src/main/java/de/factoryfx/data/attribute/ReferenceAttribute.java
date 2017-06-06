@@ -10,7 +10,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 import de.factoryfx.data.Data;
 
-public class ReferenceAttribute<T extends Data> extends ReferenceBaseAttribute<T,T,ReferenceAttribute<T>> {
+public abstract class ReferenceAttribute<T extends Data, A extends ReferenceBaseAttribute<T,T,A>> extends ReferenceBaseAttribute<T,T,A> {
 
     private T value;
 
@@ -40,13 +40,6 @@ public class ReferenceAttribute<T extends Data> extends ReferenceBaseAttribute<T
         if (get() != null) {
             get().internal().collectModelEntitiesTo(allModelEntities);
         }
-    }
-
-    @Override
-    public Attribute<T> internal_copy() {
-        final ReferenceAttribute<T> result = new ReferenceAttribute<>(containingFactoryClass, metadata);
-        result.set(get());
-        return result;
     }
 
     @Override
@@ -108,15 +101,6 @@ public class ReferenceAttribute<T extends Data> extends ReferenceBaseAttribute<T
             }
         }
 
-    }
-
-    private CopySemantic copySemantic = CopySemantic.COPY;
-
-    /** @see Data.DataUtility#semanticCopy() */
-    @SuppressWarnings("unchecked")
-    public <A extends ReferenceAttribute<T>> A setCopySemantic(CopySemantic copySemantic){
-        this.copySemantic=copySemantic;
-        return (A)this;
     }
 
     @JsonValue

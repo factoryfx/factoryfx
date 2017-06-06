@@ -71,7 +71,7 @@ public class DataListEditWidget<T extends Data> implements Widget {
         this.deleter=deleter;
     }
 
-    public DataListEditWidget(List<T> list, TableView<T> tableView, DataEditor dataEditor, UniformDesign uniformDesign, ReferenceListAttribute<T> referenceListAttribute) {
+    public DataListEditWidget(List<T> list, TableView<T> tableView, DataEditor dataEditor, UniformDesign uniformDesign, ReferenceListAttribute<T,?> referenceListAttribute) {
         this(list, tableView, dataEditor, uniformDesign,
                 referenceListAttribute::internal_addNewFactory, referenceListAttribute::internal_possibleValues, (t, ts) -> referenceListAttribute.internal_deleteFactory(t),
                 referenceListAttribute.internal_isUserEditable(), referenceListAttribute.internal_isUserSelectable(), referenceListAttribute.internal_isUserCreatable());

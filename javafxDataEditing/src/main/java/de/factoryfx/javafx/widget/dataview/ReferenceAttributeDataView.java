@@ -6,9 +6,9 @@ import javafx.collections.ObservableList;
 
 public class ReferenceAttributeDataView<T extends Data> implements DataView<T>{
 
-    private final ReferenceListAttribute<T> refList;
+    private final ReferenceListAttribute<T,?> refList;
 
-    public ReferenceAttributeDataView(ReferenceListAttribute<T> refList) {
+    public ReferenceAttributeDataView(ReferenceListAttribute<T,?> refList) {
         this.refList=refList;
     }
 

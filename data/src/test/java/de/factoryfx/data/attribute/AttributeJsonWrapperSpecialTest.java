@@ -22,7 +22,7 @@ public class AttributeJsonWrapperSpecialTest {
 
     @Test
     public void test_ref_List() {
-        ReferenceListAttribute<ExampleFactoryA> referenceListAttribute= new ReferenceListAttribute<>(new AttributeMetadata(),ExampleFactoryA.class);
+        DataReferenceListAttribute<ExampleFactoryA> referenceListAttribute= new DataReferenceListAttribute<>(new AttributeMetadata(),ExampleFactoryA.class);
         ExampleFactoryA value = new ExampleFactoryA();
         value.stringAttribute.set("XXX");
         referenceListAttribute.add(value);

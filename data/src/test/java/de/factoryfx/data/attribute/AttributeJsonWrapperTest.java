@@ -29,12 +29,12 @@ public class AttributeJsonWrapperTest {
             if (classInfo.getName().startsWith(Attribute.class.getPackage().getName())) {
                 Class<?> clazz = classInfo.load();
                 if (Attribute.class.isAssignableFrom(clazz) && !Modifier.isAbstract(clazz.getModifiers())) {
-                    if (clazz==ReferenceAttribute.class){
-                        result.add(new Attribute[]{new ReferenceAttribute(new AttributeMetadata(),Object.class)});
+                    if (clazz==DataReferenceAttribute.class){
+                        result.add(new Attribute[]{new DataReferenceAttribute(new AttributeMetadata(),Object.class)});
                         continue;
                     }
-                    if (clazz==ReferenceListAttribute.class){
-                        ReferenceListAttribute<ExampleFactoryA> referenceListAttribute= new ReferenceListAttribute<>(new AttributeMetadata(),ExampleFactoryA.class);
+                    if (clazz==DataReferenceListAttribute.class){
+                        DataReferenceListAttribute<ExampleFactoryA> referenceListAttribute= new DataReferenceListAttribute<>(new AttributeMetadata(),ExampleFactoryA.class);
                         referenceListAttribute.add(new ExampleFactoryA());
                         result.add(new Attribute[]{referenceListAttribute});
 

@@ -107,12 +107,12 @@ public abstract class Attribute<T>{
             }
 
             @Override
-            public void reference(ReferenceAttribute<?> reference) {
+            public void reference(ReferenceAttribute<?,?> reference) {
                 reference.getOptional().ifPresent(childFactoriesVisitor::accept);
             }
 
             @Override
-            public void referenceList(ReferenceListAttribute<?> referenceList) {
+            public void referenceList(ReferenceListAttribute<?,?> referenceList) {
                 referenceList.get().forEach(childFactoriesVisitor::accept);
             }
         });

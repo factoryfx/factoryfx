@@ -325,13 +325,13 @@ public class RestResource<V,L,T extends FactoryBase<L,V>> {
                     }
 
                     @Override
-                    public void reference(ReferenceAttribute<?> reference) {
+                    public void reference(ReferenceAttribute<?,?> reference) {
                         Collection<? extends Data> objects = reference.internal_possibleValues();
                         objects.forEach(data -> result.add(new WebGuiPossibleEntity(data)));
                     }
 
                     @Override
-                    public void referenceList(ReferenceListAttribute<?> referenceList) {
+                    public void referenceList(ReferenceListAttribute<?,?> referenceList) {
                         Collection<? extends Data> objects = referenceList.internal_possibleValues();
                         objects.forEach(data -> result.add(new WebGuiPossibleEntity(data)));
                     }
@@ -361,12 +361,12 @@ public class RestResource<V,L,T extends FactoryBase<L,V>> {
                     }
 
                     @Override
-                    public void reference(ReferenceAttribute<?> reference) {
+                    public void reference(ReferenceAttribute<?,?> reference) {
                         reference.internal_addNewFactory();
                     }
 
                     @Override
-                    public void referenceList(ReferenceListAttribute<?> referenceList) {
+                    public void referenceList(ReferenceListAttribute<?,?> referenceList) {
                         referenceList.internal_addNewFactory();
                     }
                 });

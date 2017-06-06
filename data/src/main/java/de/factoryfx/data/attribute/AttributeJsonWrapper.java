@@ -114,10 +114,10 @@ public class AttributeJsonWrapper {
     @SuppressWarnings("unchecked")
     private Attribute instantiateAttribute()  {
         if (ReferenceAttribute.class.isAssignableFrom(attributeClass)){
-            return new ReferenceAttribute(new AttributeMetadata(),referenceClass);
+            return new DataReferenceAttribute(new AttributeMetadata(),referenceClass);
         }
         if (ReferenceListAttribute.class.isAssignableFrom(attributeClass)){
-            return new ReferenceListAttribute(new AttributeMetadata(),referenceClass);
+            return new DataReferenceListAttribute(new AttributeMetadata(),referenceClass);
         }
         if (EnumAttribute.class.isAssignableFrom(attributeClass)){
             return new EnumAttribute(enumClazz,new AttributeMetadata());

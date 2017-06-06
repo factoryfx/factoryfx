@@ -129,7 +129,7 @@ public class DataTreeWidget implements CloseAwareWidget {
                     }
 
                     @Override
-                    public void reference(ReferenceAttribute<?> reference) {
+                    public void reference(ReferenceAttribute<?,?> reference) {
                         TreeItem<TreeData> refDataTreeItem = new TreeItem<>(new TreeData(null,uniformDesign.getLabelText(reference)));
                         dataTreeItem.getChildren().add(refDataTreeItem);
 
@@ -140,7 +140,7 @@ public class DataTreeWidget implements CloseAwareWidget {
                     }
 
                     @Override
-                    public void referenceList(ReferenceListAttribute<?> referenceList) {
+                    public void referenceList(ReferenceListAttribute<?,?> referenceList) {
                         TreeItem<TreeData> listDataTreeItem = new TreeItem<>(new TreeData(null,uniformDesign.getLabelText(referenceList)));
                         dataTreeItem.getChildren().add(listDataTreeItem);
                         referenceList.get().forEach((data)-> {

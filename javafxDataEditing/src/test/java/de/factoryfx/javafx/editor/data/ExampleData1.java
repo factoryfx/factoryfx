@@ -7,11 +7,7 @@ import java.util.UUID;
 import java.util.regex.Pattern;
 
 import de.factoryfx.data.Data;
-import de.factoryfx.data.attribute.Attribute;
-import de.factoryfx.data.attribute.AttributeMetadata;
-import de.factoryfx.data.attribute.ReferenceAttribute;
-import de.factoryfx.data.attribute.ReferenceListAttribute;
-import de.factoryfx.data.attribute.ValueListAttribute;
+import de.factoryfx.data.attribute.*;
 import de.factoryfx.data.attribute.types.BigDecimalAttribute;
 import de.factoryfx.data.attribute.primitive.BooleanAttribute;
 import de.factoryfx.data.attribute.types.ByteArrayAttribute;
@@ -40,7 +36,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.util.Pair;
 
 public class ExampleData1 extends Data {
-    public final ReferenceAttribute<DynamicData> dynamicDataAttribute = new ReferenceAttribute<>(DynamicData.class,new AttributeMetadata().en("dynamicDataAttribute").de("dynamicDataAttribute de"));
+    public final DataReferenceAttribute<DynamicData> dynamicDataAttribute = new DataReferenceAttribute<>(DynamicData.class,new AttributeMetadata().en("dynamicDataAttribute").de("dynamicDataAttribute de"));
 
     public final EncryptedStringAttribute encryptedStringAttribute=new EncryptedStringAttribute(new AttributeMetadata().en("encryptedStringAttribute").de("StringAttribute de"));
 
@@ -60,8 +56,8 @@ public class ExampleData1 extends Data {
     public final I18nAttribute i18nAttribute=new I18nAttribute(new AttributeMetadata().en("i18nAttribute").de("i18nAttribute de")).en("envalue").de("devalue");
     public final ByteArrayAttribute byteArrayAttribute=new ByteArrayAttribute(new AttributeMetadata().en("byteArrayAttribute").de("byteArrayAttribute de"));
 
-    public final ReferenceAttribute<ExampleData2> referenceAttribute = new ReferenceAttribute<>(ExampleData2.class,new AttributeMetadata().en("ReferenceAttribute").de("ReferenceAttribute de"));
-    public final ReferenceListAttribute<ExampleData2> referenceListAttribute = new ReferenceListAttribute<>(ExampleData2.class,new AttributeMetadata().en("ReferenceListAttribute").de("ReferenceListAttribute de"));
+    public final DataReferenceAttribute<ExampleData2> referenceAttribute = new DataReferenceAttribute<>(ExampleData2.class,new AttributeMetadata().en("ReferenceAttribute").de("ReferenceAttribute de"));
+    public final DataReferenceListAttribute<ExampleData2> referenceListAttribute = new DataReferenceListAttribute<>(ExampleData2.class,new AttributeMetadata().en("ReferenceListAttribute").de("ReferenceListAttribute de"));
 
     public final URIAttribute uriAttribute = new URIAttribute(new AttributeMetadata().en("URI"));
     public final URIListAttribute uriListAttribute = new URIListAttribute(new AttributeMetadata().en("URIList"));
@@ -71,7 +67,7 @@ public class ExampleData1 extends Data {
     public final ColorAttribute colorAttribute=new ColorAttribute(new AttributeMetadata().en("colorAttribute").de("colorAttribute de"));
     public final LocaleAttribute localeAttribute =new LocaleAttribute(new AttributeMetadata().en("colorAttribute").de("colorAttribute de"));
 
-    public final ReferenceAttribute<ExampleData2> referenceAttributereadonly = new ReferenceAttribute<>(ExampleData2.class,new AttributeMetadata().en("referenceAttributereadonly").de("referenceAttributereadonly de")).userReadOnly().defaultValue(new ExampleData2());
+    public final DataReferenceAttribute<ExampleData2> referenceAttributereadonly = new DataReferenceAttribute<>(ExampleData2.class,new AttributeMetadata().en("referenceAttributereadonly").de("referenceAttributereadonly de")).userReadOnly().defaultValue(new ExampleData2());
 
 
     public final StringAttribute specialAttribute=new StringAttribute(new AttributeMetadata().en("specialAttribute").de("specialAttribute de")).longText();

@@ -27,8 +27,8 @@ public class ViewReferenceAttributeTest {
     }
 
     public static class ViewExampleFactoryRoot extends Data{
-        public final ReferenceAttribute<ViewExampleFactory> ref = new ReferenceAttribute<>(ViewExampleFactory.class,new AttributeMetadata());
-        public final ReferenceAttribute<ExampleFactoryA> exampleFactoryA= new ReferenceAttribute<>(ExampleFactoryA.class,new AttributeMetadata());
+        public final DataReferenceAttribute<ViewExampleFactory> ref = new DataReferenceAttribute<>(ViewExampleFactory.class,new AttributeMetadata());
+        public final DataReferenceAttribute<ExampleFactoryA> exampleFactoryA= new DataReferenceAttribute<>(ExampleFactoryA.class,new AttributeMetadata());
 
     }
 

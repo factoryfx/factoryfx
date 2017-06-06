@@ -133,4 +133,14 @@ public abstract class ReferenceBaseAttribute<T extends Data, U, A extends Refere
     public boolean internal_isUserCreatable(){
         return userCreatable;
     }
+
+    protected CopySemantic copySemantic = CopySemantic.COPY;
+
+    /** @see Data.DataUtility#semanticCopy() */
+    @SuppressWarnings("unchecked")
+    public A setCopySemantic(CopySemantic copySemantic){
+        this.copySemantic=copySemantic;
+        return (A)this;
+    }
+
 }

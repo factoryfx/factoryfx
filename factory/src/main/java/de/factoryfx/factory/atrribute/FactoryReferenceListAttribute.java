@@ -4,11 +4,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import de.factoryfx.data.attribute.Attribute;
 import de.factoryfx.data.attribute.AttributeMetadata;
 import de.factoryfx.data.attribute.ReferenceListAttribute;
 import de.factoryfx.factory.FactoryBase;
 
-public class FactoryReferenceListAttribute<L,T extends FactoryBase<? extends L,?>> extends  ReferenceListAttribute<T>{
+public class FactoryReferenceListAttribute<L,T extends FactoryBase<? extends L,?>> extends  ReferenceListAttribute<T,FactoryReferenceListAttribute<L,T>>{
+
+    private Class<T> clazz;
+    private AttributeMetadata attributeMetadata;
 
     @JsonCreator
     protected FactoryReferenceListAttribute() {
@@ -41,4 +45,8 @@ public class FactoryReferenceListAttribute<L,T extends FactoryBase<? extends L,?
     }
 
 
+    @Override
+    public Attribute<List<T>> internal_copy() {
+        return new FactoryReferenceListAttribute(clazz,attributeMetadata);
+    }
 }

@@ -23,8 +23,8 @@ public class ViewListReferenceAttributeTest {
     }
 
     public static class ViewListExampleFactoryRoot extends Data{
-        public final ReferenceAttribute<ViewListExampleFactory> ref = new ReferenceAttribute<>(ViewListExampleFactory.class,new AttributeMetadata());
-        public final ReferenceListAttribute<ExampleFactoryA> list= new ReferenceListAttribute<>(ExampleFactoryA.class,new AttributeMetadata());
+        public final DataReferenceAttribute<ViewListExampleFactory> ref = new DataReferenceAttribute<>(ViewListExampleFactory.class,new AttributeMetadata());
+        public final DataReferenceListAttribute<ExampleFactoryA> list= new DataReferenceListAttribute<>(ExampleFactoryA.class,new AttributeMetadata());
     }
 
 

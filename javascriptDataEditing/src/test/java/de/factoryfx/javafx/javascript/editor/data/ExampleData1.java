@@ -5,6 +5,7 @@ import java.util.regex.Pattern;
 
 import de.factoryfx.data.Data;
 import de.factoryfx.data.attribute.AttributeMetadata;
+import de.factoryfx.data.attribute.DataReferenceAttribute;
 import de.factoryfx.data.attribute.ReferenceAttribute;
 import de.factoryfx.data.attribute.ValueListAttribute;
 import de.factoryfx.data.attribute.types.BigDecimalAttribute;
@@ -30,7 +31,7 @@ import de.factoryfx.data.validation.StringRequired;
 import de.factoryfx.data.validation.Validation;
 
 public class ExampleData1 extends Data {
-    public final ReferenceAttribute<DynamicData> dynamicDataAttribute = new ReferenceAttribute<>(DynamicData.class,new AttributeMetadata().en("dynamicDataAttribute").de("dynamicDataAttribute de"));
+    public final DataReferenceAttribute<DynamicData> dynamicDataAttribute = new DataReferenceAttribute<>(DynamicData.class,new AttributeMetadata().en("dynamicDataAttribute").de("dynamicDataAttribute de"));
 
     public final EncryptedStringAttribute encryptedStringAttribute=new EncryptedStringAttribute(new AttributeMetadata().en("encryptedStringAttribute").de("StringAttribute de"));
 

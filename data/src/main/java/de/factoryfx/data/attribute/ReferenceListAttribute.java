@@ -20,7 +20,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 
-public class ReferenceListAttribute<T extends Data> extends ReferenceBaseAttribute<T,List<T>,ReferenceListAttribute<T>> implements Collection<T> {
+public abstract class ReferenceListAttribute<T extends Data,A extends ReferenceBaseAttribute<T,List<T>,A>> extends ReferenceBaseAttribute<T,List<T>,A> implements Collection<T> {
     ObservableList<T> list = FXCollections.observableArrayList();
 
     /**
@@ -64,13 +64,6 @@ public class ReferenceListAttribute<T extends Data> extends ReferenceBaseAttribu
     @Override
     public void internal_collectChildren(Set<Data> allModelEntities) {
         list.forEach(entity -> entity.internal().collectModelEntitiesTo(allModelEntities));
-    }
-
-    @Override
-    public Attribute<List<T>> internal_copy() {
-        final ReferenceListAttribute<T> result = new ReferenceListAttribute<>(containingFactoryClass, metadata);
-        result.set(get());
-        return result;
     }
 
     @Override
@@ -153,14 +146,6 @@ public class ReferenceListAttribute<T extends Data> extends ReferenceBaseAttribu
             }
         }
     }
-
-    private CopySemantic copySemantic = CopySemantic.COPY;
-    @SuppressWarnings("unchecked")
-    public <A extends ReferenceListAttribute<T>> A setCopySemantic(CopySemantic copySemantic){
-        this.copySemantic=copySemantic;
-        return (A)this;
-    }
-
 
     public List<T> filtered(Predicate<T> predicate) {
         return get().stream().filter(predicate).collect(Collectors.toList());
