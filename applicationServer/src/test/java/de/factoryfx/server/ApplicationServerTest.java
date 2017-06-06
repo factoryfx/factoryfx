@@ -5,7 +5,6 @@ import java.util.List;
 import de.factoryfx.data.merge.AttributeDiffInfo;
 import de.factoryfx.factory.FactoryManager;
 import de.factoryfx.factory.datastorage.FactoryAndNewMetadata;
-import de.factoryfx.factory.datastorage.FactoryAndStoredMetadata;
 import de.factoryfx.factory.datastorage.inmemory.InMemoryFactoryStorage;
 import de.factoryfx.factory.exception.RethrowingFactoryExceptionHandler;
 import de.factoryfx.factory.log.FactoryUpdateLog;
@@ -48,9 +47,9 @@ public class ApplicationServerTest {
 
         final List<AttributeDiffInfo> diff = applicationServer.getDiffHistoryForFactory(root.getId());
         Assert.assertEquals(3,diff.size());
-        Assert.assertEquals("change3",diff.get(0).newValueValueDisplayText.get().getDisplayText());
-        Assert.assertEquals("change2",diff.get(1).newValueValueDisplayText.get().getDisplayText());
-        Assert.assertEquals("change1",diff.get(2).newValueValueDisplayText.get().getDisplayText());
+        Assert.assertEquals("change3",diff.get(0).getNewAttributeDisplayText());
+        Assert.assertEquals("change2",diff.get(1).getNewAttributeDisplayText());
+        Assert.assertEquals("change1",diff.get(2).getNewAttributeDisplayText());
     }
 
     @Test
@@ -90,9 +89,9 @@ public class ApplicationServerTest {
 
         final List<AttributeDiffInfo> diff = applicationServer.getDiffHistoryForFactory(root.getId());
         Assert.assertEquals(3,diff.size());
-        Assert.assertEquals("change3",diff.get(0).newValueValueDisplayText.get().getDisplayText());
-        Assert.assertEquals("change2",diff.get(1).newValueValueDisplayText.get().getDisplayText());
-        final String displayText = diff.get(2).newValueValueDisplayText.get().getDisplayText();
+        Assert.assertEquals("change3",diff.get(0).getNewAttributeDisplayText());
+        Assert.assertEquals("change2",diff.get(1).getNewAttributeDisplayText());
+        final String displayText = diff.get(2).getNewAttributeDisplayText();
         if (!"change1".equals(displayText)){
             System.out.println("ssfd");
         }
@@ -111,8 +110,8 @@ public class ApplicationServerTest {
         editableFactory.root.referenceListAttribute.add(new ExampleFactoryB());
         FactoryUpdateLog log = applicationServer.updateCurrentFactory(editableFactory,"","", x->true);
         AttributeDiffInfo theDiff = log.mergeDiffInfo.mergeInfos.get(0);
-        String dt = theDiff.previousValueDisplayText.getDisplayText();
-        String dtNew = theDiff.newValueValueDisplayText.get().getDisplayText();
+        String dt = theDiff.getPreviousAttributeDisplayText();
+        String dtNew = theDiff.getNewAttributeDisplayText();
         Assert.assertNotEquals(dt,dtNew);
 
     }

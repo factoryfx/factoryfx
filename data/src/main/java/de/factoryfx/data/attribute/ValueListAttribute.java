@@ -11,7 +11,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 
-public class ValueListAttribute<T> extends ValueAttribute<List<T>> implements Collection<T> {
+public class ValueListAttribute<T> extends ImmutableValueAttribute<List<T>> implements Collection<T> {
     private final Class<T> itemType;
     private final ObservableList<T> observableValue;
 
@@ -28,16 +28,24 @@ public class ValueListAttribute<T> extends ValueAttribute<List<T>> implements Co
         });
     }
 
+    /**
+     *
+     * @param attributeMetadata AttributeMetadata
+     * @param itemType generics workaound, if itemType is generic the correct constructor don't wrok
+     */
+    @SuppressWarnings("unchecked")
+    public ValueListAttribute(AttributeMetadata attributeMetadata,Class itemType) {
+        this((Class<T>)itemType,attributeMetadata);
+    }
+
     @Override
-    public Attribute<List<T>> internal_copy() {
-        final ValueListAttribute<T> result = new ValueListAttribute<>(itemType, metadata);
-        result.addAll(get());
-        return result;
+    protected Attribute<List<T>> createNewEmptyInstance() {
+        return new ValueListAttribute<>(itemType, metadata);
     }
 
     @JsonCreator
     protected ValueListAttribute() {
-        this(null,null);
+        this(null,(AttributeMetadata)null);
     }
 
     @Override

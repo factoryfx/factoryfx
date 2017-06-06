@@ -63,9 +63,6 @@ public abstract class FactoryBase<L,V> extends Data {
         } else {
             if (createdLiveObject==null){
                 createdLiveObject = create();
-            } else {
-                //TODO make this configurable
-//                loggedAction(FactoryLogEntryEventType.REUSE,()->{});
             }
         }
         return createdLiveObject;
@@ -183,7 +180,7 @@ public abstract class FactoryBase<L,V> extends Data {
             stringBuilder.append(getId());
             stringBuilder.append("\nAttributes:\n");
             this.internal().visitAttributesFlat(attribute -> {
-                stringBuilder.append("  ").append(attribute.metadata.labelText.internal_getPreferred(Locale.ENGLISH)).append(": ").append(attribute.getDisplayText()).append("\n");
+                stringBuilder.append("  ").append(attribute.getPreferredLabelText(Locale.ENGLISH)).append(": ").append(attribute.getDisplayText()).append("\n");
             });
             return stringBuilder.toString().trim();
         } catch (Exception e) {

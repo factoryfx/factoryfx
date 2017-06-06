@@ -1,35 +1,33 @@
 package de.factoryfx.javafx.editor.attribute.visualisation;
 
 import com.google.common.base.Strings;
-import de.factoryfx.data.attribute.types.EncryptedStringAttribute;
+import de.factoryfx.data.attribute.types.EncryptedString;
 import de.factoryfx.javafx.editor.attribute.ValueAttributeEditorVisualisation;
 import de.factoryfx.javafx.util.UniformDesign;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
-import javafx.scene.control.Button;
-import javafx.scene.control.CustomMenuItem;
-import javafx.scene.control.Label;
-import javafx.scene.control.MenuButton;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import org.controlsfx.glyphfont.FontAwesome;
 
-public class EncryptedStringAttributeVisualisation extends ValueAttributeEditorVisualisation<String> {
+import java.util.function.Supplier;
 
-    private final EncryptedStringAttribute encryptedStringAttribute;
+public class EncryptedStringAttributeVisualisation extends ValueAttributeEditorVisualisation<EncryptedString> {
+
+    private final Supplier<String> keyCreator;
     private final UniformDesign uniformDesign;
-    public EncryptedStringAttributeVisualisation(EncryptedStringAttribute encryptedStringAttribute, UniformDesign uniformDesign) {
-        this.encryptedStringAttribute=encryptedStringAttribute;
+    public EncryptedStringAttributeVisualisation(Supplier<String> keyCreator, UniformDesign uniformDesign) {
+        this.keyCreator=keyCreator;
         this.uniformDesign = uniformDesign;
     }
 
     @Override
-    public Node createContent(SimpleObjectProperty<String> boundTo) {
+    public Node createContent(SimpleObjectProperty<EncryptedString> boundTo) {
         TextField textField = new TextField();
-        textField.textProperty().bindBidirectional(boundTo);
+        boundTo.addListener((observable, oldValue, newValue) -> textField.setText(newValue.getEncryptedString()));
         textField.setEditable(false);
 
         TextField keyField = new TextField();
@@ -41,14 +39,13 @@ public class EncryptedStringAttributeVisualisation extends ValueAttributeEditorV
         popup.getChildren().add(keyGenButton);
         customMenuItem.setContent(popup);
         popupButton.getItems().add(customMenuItem);
-        keyGenButton.setOnAction(event -> keyField.setText(encryptedStringAttribute.createKey()));
+        keyGenButton.setOnAction(event -> keyField.setText(keyCreator.get()));
 
         TextField newValue = new TextField();
         newValue.disableProperty().bind(keyField.textProperty().isEmpty());
         newValue.textProperty().addListener((observable, oldValue, newValue1) -> {
             if (!Strings.isNullOrEmpty(keyField.getText())){
-                encryptedStringAttribute.encrypt(newValue1,keyField.getText());
-                boundTo.set(encryptedStringAttribute.get());
+                boundTo.set(new EncryptedString(newValue1,keyField.getText()));
             }
         });
 

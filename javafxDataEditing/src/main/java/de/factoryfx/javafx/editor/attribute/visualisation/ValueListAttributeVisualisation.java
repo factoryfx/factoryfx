@@ -9,8 +9,6 @@ import de.factoryfx.javafx.util.UniformDesign;
 import de.factoryfx.javafx.widget.table.TableControlWidget;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -26,6 +24,8 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import org.controlsfx.glyphfont.FontAwesome;
 
+import java.util.List;
+
 public class ValueListAttributeVisualisation<T> extends ListAttributeEditorVisualisation<T> {
     private final UniformDesign uniformDesign;
     private final Attribute<T> detailAttribute;
@@ -38,13 +38,13 @@ public class ValueListAttributeVisualisation<T> extends ListAttributeEditorVisua
     }
 
     @Override
-    public Node createContent(ObservableList<T> attributeValue) {
+    public Node createContent(List<T> attributeValue) {
         TextField textField = new TextField();
         TypedTextFieldHelper.setupLongTextField(textField);
 //        textField.textProperty().bindBidirectional(boundTo, new LongStringConverter());
 
         TableView<T> tableView = new TableView<>();
-        tableView.setItems(attributeValue);
+        tableView.setItems((ObservableList<T>)attributeValue);
         tableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         TableColumn<T, String> test = new TableColumn<>("test");
         test.setCellValueFactory(param -> new SimpleStringProperty(""+param.getValue()));

@@ -1,7 +1,7 @@
 package de.factoryfx.example.factory.netherlands;
 
 import de.factoryfx.data.attribute.AttributeMetadata;
-import de.factoryfx.data.attribute.types.DoubleAttribute;
+import de.factoryfx.data.attribute.primitive.DoubleAttribute;
 import de.factoryfx.example.factory.Product;
 import de.factoryfx.example.factory.ProductFactory;
 

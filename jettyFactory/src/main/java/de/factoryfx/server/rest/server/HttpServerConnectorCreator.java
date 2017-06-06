@@ -3,7 +3,6 @@ package de.factoryfx.server.rest.server;
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.NetworkTrafficServerConnector;
 import org.eclipse.jetty.server.Server;
-import org.eclipse.jetty.server.ServerConnector;
 
 public class HttpServerConnectorCreator {
 

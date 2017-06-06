@@ -28,7 +28,6 @@ import javax.ws.rs.core.Response;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import de.factoryfx.data.Data;
 import de.factoryfx.data.attribute.Attribute;
-import de.factoryfx.data.attribute.AttributeJsonWrapper;
 import de.factoryfx.data.attribute.AttributeVisitor;
 import de.factoryfx.data.attribute.ReferenceAttribute;
 import de.factoryfx.data.attribute.ReferenceListAttribute;
@@ -453,10 +452,10 @@ public class RestResource<V,L,T extends FactoryBase<L,V>> {
     @Path("diffdetail")
     public DiffDetailResponse getDiffDetail(AttributeDiffInfo info) {
         Patch<String> patch = DiffUtils.diff(
-                convertToList(info.previousValueDisplayText.createAttribute().getDisplayText()),
-                convertToList(info.newValueValueDisplayText.map(AttributeJsonWrapper::getDisplayText).orElse("removed"))
+                convertToList(info.getPreviousAttributeDisplayText()),
+                convertToList(info.getNewAttributeDisplayText())
         );
-        String originalText=info.previousValueDisplayText.createAttribute().getDisplayText();
+        String originalText=info.getPreviousAttributeDisplayText();
 
 
         int previousOriginalPosition=0;

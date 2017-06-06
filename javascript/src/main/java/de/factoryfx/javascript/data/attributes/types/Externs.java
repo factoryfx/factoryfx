@@ -19,7 +19,7 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 
 public class Externs {
 
-    static final List<SourceFile> externs;
+    private static final List<SourceFile> externs;
     static {
         try {
             InputStream input = Compiler.class.getResourceAsStream("/externs.zip");
@@ -29,7 +29,7 @@ public class Externs {
             ZipInputStream zip = new ZipInputStream(input);
             String envPrefix = CompilerOptions.Environment.CUSTOM.toString().toLowerCase() + "/";
             Map<String, SourceFile> mapFromExternsZip = new HashMap<>();
-            for (ZipEntry entry = null; (entry = zip.getNextEntry()) != null; ) {
+            for (ZipEntry entry; (entry = zip.getNextEntry()) != null; ) {
                 String filename = entry.getName();
 
                 if (filename.contains("/")) {

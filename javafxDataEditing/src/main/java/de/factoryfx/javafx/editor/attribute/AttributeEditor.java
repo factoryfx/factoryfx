@@ -33,7 +33,7 @@ public class AttributeEditor<T> implements Widget {
     }
 
 
-    private AttributeChangeListener<T> attributeChangeListener = (attribute, value) -> {
+    private final AttributeChangeListener<T> attributeChangeListener = (attribute, value) -> {
 //        Platform.runLater(()-> {
             AttributeEditor.this.attributeEditorVisualisation.attributeValueChanged(value);
 //        });

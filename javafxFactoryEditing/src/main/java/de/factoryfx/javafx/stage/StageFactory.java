@@ -1,7 +1,7 @@
 package de.factoryfx.javafx.stage;
 
 import de.factoryfx.data.attribute.AttributeMetadata;
-import de.factoryfx.data.attribute.types.IntegerAttribute;
+import de.factoryfx.data.attribute.primitive.IntegerAttribute;
 import de.factoryfx.data.attribute.types.ObjectValueAttribute;
 import de.factoryfx.data.attribute.types.StringListAttribute;
 import de.factoryfx.factory.FactoryBase;

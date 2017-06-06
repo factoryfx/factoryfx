@@ -97,7 +97,6 @@ public class FactoryEditManager<V,R extends FactoryBase<?,V>> {
 
     public MergeDiffInfo simulateUpdateCurrentFactory() {
         final FactoryAndNewMetadata<R> update = loadedRoot.get();
-        final MergeDiffInfo mergeDiffInfo = client.simulateUpdateCurrentFactory(update);
-        return mergeDiffInfo;
+        return client.simulateUpdateCurrentFactory(update);
     }
 }

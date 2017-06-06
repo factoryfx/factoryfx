@@ -13,7 +13,6 @@ import java.util.stream.Stream;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreType;
 import de.factoryfx.data.Data;
-import de.factoryfx.data.merge.attribute.AttributeMergeHelper;
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
 
@@ -65,18 +64,17 @@ public class ViewListReferenceAttribute <R extends Data, T extends Data> extends
     }
 
     @Override
-    public AttributeMergeHelper<?> internal_createMergeHelper() {
-        return null;
-    }
-
-    @Override
     public void internal_fixDuplicateObjects(Map<String, Data> idToDataMap) {
         //nothing
     }
 
     @Override
     public List<T> get() {
-        return view.apply(root);
+        List<T> result = view.apply(root);
+        if (result==null){
+            return new ArrayList<>();
+        }
+        return result;
     }
 
     @Override
@@ -211,6 +209,11 @@ public class ViewListReferenceAttribute <R extends Data, T extends Data> extends
 
     public Stream<T> stream() {
         return get().stream();
+    }
+
+    @Override
+    public boolean ignoreForMerging() {
+        return true;
     }
 
 }

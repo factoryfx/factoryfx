@@ -1,4 +1,4 @@
-package de.factoryfx.server.rest.server;
+package de.factoryfx.server.rest.server.soap;
 
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;

@@ -6,7 +6,7 @@ import de.factoryfx.javascript.data.attributes.types.Javascript;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.Node;
 
-public class JavascriptAttributeVisualisation extends ValueAttributeEditorVisualisation<Javascript> {
+public class JavascriptAttributeVisualisation extends ValueAttributeEditorVisualisation<Javascript<?>> {
 
     private final JavascriptAttribute<?> attribute;
 
@@ -15,7 +15,7 @@ public class JavascriptAttributeVisualisation extends ValueAttributeEditorVisual
     }
 
     @Override
-    public Node createContent(SimpleObjectProperty<Javascript> boundTo) {
+    public Node createContent(SimpleObjectProperty<Javascript<?>> boundTo) {
         JavascriptVisual visual = new JavascriptVisual(attribute.internal_getExterns());
         return visual.createContent(boundTo);
     }

@@ -91,7 +91,7 @@ public class UniformDesign {
     }
 
     public String getLabelText(Attribute<?> attribute) {
-        return attribute.metadata.labelText.internal_getPreferred(locale);
+        return attribute.getPreferredLabelText(locale);
     }
 
     public String getText(LanguageText languageText) {

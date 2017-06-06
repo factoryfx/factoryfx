@@ -56,7 +56,7 @@ public class JavascriptVisual {
         final ChangeListener<Javascript> onUpdateScript;
         NavigableMap<Integer, List<Proposal>> currentProposals;
 
-        RootNode(List<SourceFile> externs, SimpleObjectProperty<Javascript> boundTo) {
+        RootNode(List<SourceFile> externs, SimpleObjectProperty<Javascript<?>> boundTo) {
             this.getStylesheets().add(getClass().getResource("jsstyle.css").toExternalForm());
             List<SourceFile> externalSources = new ArrayList<>();
             externalSources.addAll(externs);
@@ -204,9 +204,9 @@ public class JavascriptVisual {
 
             popup.getSuggestions().addAll(suggestions);
             popup.unselect();
-            for (int idx = 0; idx < suggestions.size(); ++idx) {
-                if (suggestions.get(idx).startsWith(prefix)) {
-                    popup.selectItem(suggestions.get(idx));
+            for (String suggestion : suggestions) {
+                if (suggestion.startsWith(prefix)) {
+                    popup.selectItem(suggestion);
                 }
             }
         }
@@ -264,7 +264,7 @@ public class JavascriptVisual {
 
     private final List<SourceFile> externs;
 
-    public Node createContent(SimpleObjectProperty<Javascript> boundTo) {
+    public Node createContent(SimpleObjectProperty<Javascript<?>> boundTo) {
         return new RootNode(externs,boundTo);
     }
 

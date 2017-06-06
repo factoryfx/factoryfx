@@ -5,6 +5,7 @@ import java.util.Locale;
 
 import ch.qos.logback.classic.Level;
 import de.factoryfx.data.attribute.AttributeMetadata;
+import de.factoryfx.data.attribute.types.EncryptedString;
 import de.factoryfx.data.attribute.types.EncryptedStringAttribute;
 import de.factoryfx.factory.FactoryManager;
 import de.factoryfx.factory.SimpleFactoryBase;
@@ -44,7 +45,7 @@ public class ApplicationServerRestTest {
             final PersistentUserManagementFactory<Void> userManagement = new PersistentUserManagementFactory<>();
             final UserFactory<Void> user = new UserFactory<>();
             user.name.set("user123");
-            user.password.encrypt("hash123",key);
+            user.password.set(new EncryptedString("hash123",key));
             user.locale.set(Locale.GERMAN);
             userManagement.users.add(user);
             applicationServerResource.userManagement.set(userManagement);

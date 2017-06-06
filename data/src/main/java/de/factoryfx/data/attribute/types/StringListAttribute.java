@@ -16,7 +16,7 @@ public class StringListAttribute extends ValueListAttribute<String> {
 
     @JsonCreator
     StringListAttribute() {
-        super(null,null);
+        super(null,(AttributeMetadata)null);
     }
 
     public List<String> asUnmodifiableList() {

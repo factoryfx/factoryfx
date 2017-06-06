@@ -1,14 +1,15 @@
 package de.factoryfx.javafx.javascript.editor.data;
 
-import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
-import java.util.Optional;
-import java.util.function.BiFunction;
 
+import de.factoryfx.data.Data;
 import de.factoryfx.data.attribute.Attribute;
 import de.factoryfx.data.jackson.ObjectMapperBuilder;
 import de.factoryfx.javafx.editor.attribute.AttributeEditor;
 import de.factoryfx.javafx.editor.attribute.AttributeEditorBuilder;
+import de.factoryfx.javafx.editor.attribute.builder.SimpleSingleAttributeEditorBuilder;
+import de.factoryfx.javafx.editor.attribute.builder.SingleAttributeEditorBuilder;
 import de.factoryfx.javafx.editor.data.DataEditor;
 import de.factoryfx.javafx.javascript.editor.attribute.visualisation.JavascriptAttributeVisualisation;
 import de.factoryfx.javafx.util.UniformDesign;
@@ -35,17 +36,33 @@ public class JavascriptAttributeIntegrationTest extends Application{
         ExampleJavascript exampleJavascript = new ExampleJavascript();
 
 
-        final ArrayList<BiFunction<UniformDesign,Attribute<?>, Optional<AttributeEditor<?>>>> editorAssociations = new ArrayList<>();
-        editorAssociations.add((uniformDesign, a)->{
-            if (Javascript.class==a.internal_getAttributeType().dataType){
-                JavascriptAttribute javascriptAttribute = (JavascriptAttribute) a;
-                return Optional.of(new AttributeEditor<>(javascriptAttribute,new JavascriptAttributeVisualisation(javascriptAttribute),uniformDesign));
+
+        UniformDesign uniformDesign = new UniformDesign(Locale.ENGLISH, Color.web("#FF7979"),Color.web("#F0AD4E"),Color.web("#5BC0DE"),Color.web("#5CB85C"),Color.web("#5494CB"),Color.web("#B5B5B5"),false);
+
+        List<SingleAttributeEditorBuilder<?>> singleAttributeEditorBuilders = AttributeEditorBuilder.createDefaultSingleAttributeEditorBuilders(uniformDesign);
+        SingleAttributeEditorBuilder editorBuilder = new SingleAttributeEditorBuilder<Javascript<?>>() {
+            @Override
+            public AttributeEditor createEditor(Attribute<?> attribute, DataEditor dataEditor, Data previousData) {
+                return new AttributeEditor(attribute, new JavascriptAttributeVisualisation((JavascriptAttribute<?>) attribute), uniformDesign);
             }
 
-            return Optional.empty();
-        });
-        UniformDesign uniformDesign = new UniformDesign(Locale.ENGLISH, Color.web("#FF7979"),Color.web("#F0AD4E"),Color.web("#5BC0DE"),Color.web("#5CB85C"),Color.web("#5494CB"),Color.web("#B5B5B5"),false);
-        AttributeEditorBuilder attributeEditorBuilder = new AttributeEditorBuilder(uniformDesign, editorAssociations);
+            @Override
+            public AttributeEditor<List<Javascript<?>>> createValueListEditor(Attribute<?> attribute) {
+                return null;
+            }
+
+            @Override
+            public boolean isEditorFor(Attribute<?> attribute) {
+                return JavascriptAttribute.class == attribute.getClass();
+            }
+
+            @Override
+            public boolean isListItemEditorFor(Attribute<?> attribute) {
+                return false;
+            }
+        };
+        singleAttributeEditorBuilders.add(editorBuilder);
+        AttributeEditorBuilder attributeEditorBuilder = new AttributeEditorBuilder(uniformDesign, singleAttributeEditorBuilders);
 
 
         DataEditor dataEditor = new DataEditor(attributeEditorBuilder,uniformDesign);

@@ -4,9 +4,13 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import de.factoryfx.data.attribute.Attribute;
 import de.factoryfx.data.attribute.AttributeMetadata;
 import de.factoryfx.data.attribute.AttributeTypeInfo;
-import de.factoryfx.data.attribute.ValueAttribute;
+import de.factoryfx.data.attribute.ImmutableValueAttribute;
 
-public class EnumAttribute<T extends Enum<T>> extends ValueAttribute<T> {
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+public class EnumAttribute<T extends Enum<T>> extends ImmutableValueAttribute<T> {
 
     @JsonCreator
     EnumAttribute(T value) {
@@ -33,7 +37,18 @@ public class EnumAttribute<T extends Enum<T>> extends ValueAttribute<T> {
         return result;
     }
 
+    @Override
+    protected Attribute<T> createNewEmptyInstance() {
+        return new EnumAttribute<>(clazz,metadata);
+    }
+
     public Class<T> internal_getEnumClass() {
         return clazz;
     }
+
+
+    public List<Enum> internal_possibleEnumValues() {
+        return new ArrayList<>(Arrays.asList(clazz.getEnumConstants()));
+    }
+
 }

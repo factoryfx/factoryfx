@@ -72,7 +72,7 @@ public class Shop {
     }
 
     public void stop() {
-        Platform.runLater(() -> stage.hide());
+        Platform.runLater(stage::hide);
 
     }
 

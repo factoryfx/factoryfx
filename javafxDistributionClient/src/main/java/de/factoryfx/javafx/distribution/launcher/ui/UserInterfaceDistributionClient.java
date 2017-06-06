@@ -18,21 +18,17 @@ public class UserInterfaceDistributionClient {
     }
 
     public void show() {
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/de/factoryfx/javafx/distribution/launcher/ui/UserInterfaceDistributionClientView.fxml"));
-        fxmlLoader.setController(controller);
-        Parent root = null;
         try {
-            root = fxmlLoader.load();
+            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/de/factoryfx/javafx/distribution/launcher/ui/UserInterfaceDistributionClientView.fxml"));
+            fxmlLoader.setController(controller);
+
+            Parent root = fxmlLoader.load();
+            stage.setTitle("Launcher");
+            stage.setScene(new Scene(root));
+            stage.show();
+            stage.setOnCloseRequest(event -> System.exit(0));
         } catch (IOException exception) {
-            exception.printStackTrace();
             throw new RuntimeException(exception);
         }
-
-        stage.setTitle("Launcher");
-
-        stage.setScene(new Scene(root));
-        stage.show();
-
-        stage.setOnCloseRequest(event -> System.exit(0));
     }
 }

@@ -26,7 +26,7 @@ public class DataEditorIntegrationTest extends Application{
         exampleData1.stringAttribute.set("abc");
 
         UniformDesign uniformDesign = UniformDesignBuilder.build();
-        DataEditor dataEditor = new DataEditor(new AttributeEditorBuilder(uniformDesign,new ArrayList<>()),uniformDesign);
+        DataEditor dataEditor = new DataEditor(new AttributeEditorBuilder(uniformDesign),uniformDesign);
         dataEditor.setVisCustomizer((node, data) -> {
             if (data instanceof ExampleData1) {
                 return ((ExampleData1)data).customize(node);

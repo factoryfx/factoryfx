@@ -21,8 +21,8 @@ public class DataMergerMergerTest {
 
         MergeDiffInfo mergeDiff= dataMerger.mergeIntoCurrent((permission)->true);
         Assert.assertTrue(mergeDiff.hasNoConflicts());
-        Assert.assertEquals("2222222",mergeDiff.mergeInfos.get(0).newValueValueDisplayText.get().createAttribute().getDisplayText());
-        Assert.assertEquals("1111111",mergeDiff.mergeInfos.get(0).previousValueDisplayText.createAttribute().getDisplayText());
+        Assert.assertEquals("2222222",mergeDiff.mergeInfos.get(0).getNewAttributeDisplayText());
+        Assert.assertEquals("1111111",mergeDiff.mergeInfos.get(0).getPreviousAttributeDisplayText());
     }
 
     @Test
@@ -38,8 +38,8 @@ public class DataMergerMergerTest {
 
         MergeDiffInfo mergeDiff= dataMerger.mergeIntoCurrent((permission)->true);
         Assert.assertTrue(mergeDiff.hasNoConflicts());
-        Assert.assertEquals("empty",mergeDiff.mergeInfos.get(0).newValueValueDisplayText.get().createAttribute().getDisplayText());
-        Assert.assertTrue((((ExampleFactoryB)mergeDiff.mergeInfos.get(0).previousValueDisplayText.createAttribute().get()).stringAttribute.get()).equals("Factory to be deleted"));
+        Assert.assertEquals("empty",mergeDiff.mergeInfos.get(0).getNewAttributeDisplayText());
+        Assert.assertTrue((((ExampleFactoryB)mergeDiff.mergeInfos.get(0).createPreviousAttribute().get()).stringAttribute.get()).equals("Factory to be deleted"));
     }
 
     @Test

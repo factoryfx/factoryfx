@@ -29,8 +29,7 @@ public class FactoryStyleValidator {
             factoryStyleValidations.add(new FinalValidation(factoryBase, field));
             return factoryStyleValidations;
         }, factoryBase -> {
-            final ArrayList<FactoryStyleValidation> factoryStyleValidations = new ArrayList<>();
-            return factoryStyleValidations;
+            return new ArrayList<>();
         });
     }
 

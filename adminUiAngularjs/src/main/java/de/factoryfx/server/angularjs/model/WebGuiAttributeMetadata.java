@@ -3,10 +3,9 @@ package de.factoryfx.server.angularjs.model;
 import java.util.Locale;
 
 import de.factoryfx.data.attribute.Attribute;
-import de.factoryfx.data.attribute.AttributeMetadata;
 import de.factoryfx.data.attribute.AttributeTypeInfo;
-import de.factoryfx.data.attribute.types.DoubleAttribute;
-import de.factoryfx.data.attribute.types.IntegerAttribute;
+import de.factoryfx.data.attribute.primitive.DoubleAttribute;
+import de.factoryfx.data.attribute.primitive.IntegerAttribute;
 import de.factoryfx.data.attribute.types.StringAttribute;
 
 public class WebGuiAttributeMetadata {
@@ -19,9 +18,9 @@ public class WebGuiAttributeMetadata {
     public final WebGuiDataType mapValueType;
     public Object listItemEmptyValue;
 
-    public WebGuiAttributeMetadata(AttributeMetadata attributeMetadata, Locale locale, Attribute<?> attribute){
-        labelText=attributeMetadata.labelText.internal_getPreferred(locale);
-        addonText=attributeMetadata.addonText;
+    public WebGuiAttributeMetadata(Attribute attribute, Locale locale){
+        labelText=attribute.getPreferredLabelText(locale);
+        addonText=attribute.getPreferredAddonText(locale);
         this.required=attribute.internal_required();
         AttributeTypeInfo attributeType = attribute.internal_getAttributeType();
         this.attributeType = attributeType.attributeType.toString();

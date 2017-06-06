@@ -14,6 +14,6 @@ public class URIListAttribute extends ValueListAttribute<URI> {
 
     @JsonCreator
     URIListAttribute() {
-        super(null,null);
+        super(null,(AttributeMetadata)null);
     }
 }

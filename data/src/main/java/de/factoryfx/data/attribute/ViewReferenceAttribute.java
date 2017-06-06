@@ -12,7 +12,6 @@ import java.util.function.Function;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreType;
 import de.factoryfx.data.Data;
-import de.factoryfx.data.merge.attribute.AttributeMergeHelper;
 import javafx.application.Platform;
 
 @JsonIgnoreType
@@ -46,11 +45,6 @@ public class ViewReferenceAttribute<R extends Data, T extends Data> extends Attr
             return false;
         }
         return thisValue.getId().equals(value.getId());
-    }
-
-    @Override
-    public AttributeMergeHelper<?> internal_createMergeHelper() {
-        return null;
     }
 
     @Override
@@ -182,5 +176,10 @@ public class ViewReferenceAttribute<R extends Data, T extends Data> extends Attr
             dirtyTracking.stopTracking();
         }
         listeners.clear();
+    }
+
+    @Override
+    public boolean ignoreForMerging() {
+        return true;
     }
 }

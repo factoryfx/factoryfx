@@ -71,7 +71,7 @@ public class SelectDataDialog<T> implements Widget {
         VBox vBox = new VBox();
         VBox.setVgrow(tableView, Priority.ALWAYS);
         vBox.getChildren().add(tableView);
-        TableControlWidget<T> tableControlWidget = new TableControlWidget<T>(tableView, uniformDesign);
+        TableControlWidget<T> tableControlWidget = new TableControlWidget<>(tableView, uniformDesign);
         Node tableControlWidgetContent = tableControlWidget.createContent();
         VBox.setMargin(tableControlWidgetContent, new Insets(3, 0, 3, 0));
 

@@ -65,6 +65,13 @@
         <Bug pattern="UC_USELESS_OBJECT" />
     </Match>
 
+    <!-- yes the servlet is mutable that's the point of the class -->
+    <Match>
+        <Class name="de.factoryfx.servlet.UpdateableServlet" />
+        <Bug pattern="MSF_MUTABLE_SERVLET_FIELD" />
+    </Match>
+
+
 
 
 </FindBugsFilter>

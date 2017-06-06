@@ -4,10 +4,11 @@ import java.util.Arrays;
 import java.util.Base64;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import de.factoryfx.data.attribute.Attribute;
 import de.factoryfx.data.attribute.AttributeMetadata;
-import de.factoryfx.data.attribute.ValueAttribute;
+import de.factoryfx.data.attribute.ImmutableValueAttribute;
 
-public class ByteArrayAttribute extends ValueAttribute<byte[]> {
+public class ByteArrayAttribute extends ImmutableValueAttribute<byte[]> {
     public ByteArrayAttribute(AttributeMetadata attributeMetadata) {
         super(attributeMetadata, byte[].class);
     }
@@ -24,6 +25,11 @@ public class ByteArrayAttribute extends ValueAttribute<byte[]> {
             return Base64.getEncoder().encodeToString(get());
         }
         return "<empty>";
+    }
+
+    @Override
+    protected Attribute<byte[]> createNewEmptyInstance() {
+        return new ByteArrayAttribute(metadata);
     }
 
     @Override

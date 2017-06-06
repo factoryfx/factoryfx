@@ -1,22 +1,19 @@
 package de.factoryfx.data.attribute;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import de.factoryfx.data.Data;
-import de.factoryfx.data.merge.attribute.AttributeMergeHelper;
+import de.factoryfx.data.util.LanguageText;
 import de.factoryfx.data.validation.ObjectRequired;
 import de.factoryfx.data.validation.Validation;
 import de.factoryfx.data.validation.ValidationError;
 
 public abstract class Attribute<T>{
     @JsonIgnore
-    public final AttributeMetadata metadata;
+    protected final AttributeMetadata metadata;
     @JsonIgnore
     private final List<Validation<T>> validations = new ArrayList<>();
 
@@ -30,11 +27,41 @@ public abstract class Attribute<T>{
 
     public abstract boolean internal_match(T value);
 
+    public boolean ignoreForMerging() {
+        return false;
+    }
+
     /**
      * merge logic delegate AttributeMergeHelper
      * @return MergeHelper or null if no merging should be executed
      */
-    public abstract AttributeMergeHelper<?> internal_createMergeHelper();
+    public boolean hasMergeConflict(Attribute<?> originalAttribute, Attribute<?> newAttribute) {
+        if (newAttribute.internal_match(originalAttribute)) {
+            return false;
+        }
+        if (internal_match(originalAttribute)) {
+            return false;
+        }
+        if (internal_match(newAttribute)) {
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * check if merge should be executed e.g. not if values ar equals
+     * */
+    public boolean isMergeable(Attribute<?> originalAttribute, Attribute<?> newAttribute) {
+        if (!internal_match(originalAttribute) || internal_match(newAttribute)) {
+            return false ;
+        }
+        return true;
+    }
+
+    @SuppressWarnings("unchecked")
+    public void merge(Attribute<?> newValue) {
+        set((T) newValue.get());
+    }
 
     /*
         see test {{@Link MergeTest#test_duplicate_ids_bug}} why this is needed
@@ -129,5 +156,28 @@ public abstract class Attribute<T>{
         this.validations.add(validation);
         return (A)this;
     }
+
+    public String getPreferredLabelText(Locale locale){
+        return metadata.labelText.internal_getPreferred(locale);
+    }
+
+    public String getPreferredLabelText(Function<LanguageText,String> languageTextEvaluator){
+        return languageTextEvaluator.apply(metadata.labelText);
+    }
+
+    public String getPreferredAddonText(Locale locale){
+        return metadata.addonText.internal_getPreferred(locale);
+    }
+
+    public boolean hasWritePermission(Function<String,Boolean> permissionChecker){
+        final String permission = metadata.permission;
+        if (permission==null || permissionChecker.apply(permission)){
+            return true;
+        }
+        return false;
+    }
+
+
+
 
 }

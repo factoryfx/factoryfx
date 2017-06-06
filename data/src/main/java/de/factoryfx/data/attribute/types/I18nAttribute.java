@@ -3,11 +3,12 @@ package de.factoryfx.data.attribute.types;
 import java.util.Locale;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import de.factoryfx.data.attribute.Attribute;
 import de.factoryfx.data.attribute.AttributeMetadata;
-import de.factoryfx.data.attribute.ValueAttribute;
+import de.factoryfx.data.attribute.ImmutableValueAttribute;
 import de.factoryfx.data.util.LanguageText;
 
-public class I18nAttribute extends ValueAttribute<LanguageText> {
+public class I18nAttribute extends ImmutableValueAttribute<LanguageText> {
     public I18nAttribute(AttributeMetadata attributeMetadata) {
         super(attributeMetadata, LanguageText.class);
     }
@@ -58,5 +59,10 @@ public class I18nAttribute extends ValueAttribute<LanguageText> {
 
     public String getPreferred(Locale locale) {
         return get().internal_getPreferred(locale);
+    }
+
+    @Override
+    protected Attribute<LanguageText> createNewEmptyInstance() {
+        return new I18nAttribute(metadata);
     }
 }

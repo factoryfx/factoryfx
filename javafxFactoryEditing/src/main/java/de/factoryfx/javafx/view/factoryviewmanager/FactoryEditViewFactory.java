@@ -24,6 +24,6 @@ public class FactoryEditViewFactory<V,R extends FactoryBase<?,V>> extends Widget
 
     @Override
     protected Widget createWidget() {
-        return new FactoryEditView<V,R>(longRunningActionExecutor.instance(),factoryEditManager.instance(), contentWidgetFactory.instance() ,uniformDesign.instance(),dataEditorFactory.instance(),diffDialogBuilder.instance());
+        return new FactoryEditView<>(longRunningActionExecutor.instance(), factoryEditManager.instance(), contentWidgetFactory.instance(), uniformDesign.instance(), dataEditorFactory.instance(), diffDialogBuilder.instance());
     }
 }

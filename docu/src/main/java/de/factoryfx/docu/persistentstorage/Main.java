@@ -5,7 +5,6 @@ import de.factoryfx.factory.datastorage.FactoryAndNewMetadata;
 import de.factoryfx.factory.datastorage.FactorySerialisationManager;
 import de.factoryfx.factory.datastorage.JacksonDeSerialisation;
 import de.factoryfx.factory.datastorage.JacksonSerialisation;
-import de.factoryfx.factory.datastorage.inmemory.InMemoryFactoryStorage;
 import de.factoryfx.factory.datastorage.postgres.DisableAutocommitDatasource;
 import de.factoryfx.factory.datastorage.postgres.PostgresFactoryStorage;
 import de.factoryfx.factory.exception.RethrowingFactoryExceptionHandler;
@@ -17,10 +16,7 @@ import ru.yandex.qatools.embed.postgresql.PostgresProcess;
 import ru.yandex.qatools.embed.postgresql.PostgresStarter;
 import ru.yandex.qatools.embed.postgresql.config.PostgresConfig;
 
-import javax.sql.DataSource;
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.ArrayList;
 
 public class Main {

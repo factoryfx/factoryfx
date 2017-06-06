@@ -15,9 +15,9 @@ public class ScriptExecutor {
 
     private static final String NASHORN_SCRIPT_FILE_NAME = "javax.script.filename";
 
-    final NashornScriptEngine scriptEngine;
-    final SimpleBindings bindings;
-    final CompiledScript compiledScript;
+    private final NashornScriptEngine scriptEngine;
+    private final SimpleBindings bindings;
+    private final CompiledScript compiledScript;
 
     public ScriptExecutor(Collection<Pair<String, String>> libraries, String scriptName, String scriptCode, Map<String,Object> globalObjects) {
         scriptEngine = (NashornScriptEngine)new NashornScriptEngineFactory().getScriptEngine();

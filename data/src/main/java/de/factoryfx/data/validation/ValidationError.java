@@ -26,11 +26,11 @@ public class ValidationError {
     }
 
     public String validationDescriptionForChild(Function<LanguageText,String> languageTextEvaluator){
-        return parent.internal().getDisplayText()+" | "+ languageTextEvaluator.apply(attribute.metadata.labelText)+" | "+languageTextEvaluator.apply(validationDescription);
+        return parent.internal().getDisplayText()+" | "+ attribute.getPreferredLabelText(languageTextEvaluator)+" | "+languageTextEvaluator.apply(validationDescription);
     }
 
     public String attributeDescription(Function<LanguageText,String> languageTextEvaluator){
-        return languageTextEvaluator.apply(attribute.metadata.labelText);
+        return attribute.getPreferredLabelText(languageTextEvaluator);
     }
 
 }

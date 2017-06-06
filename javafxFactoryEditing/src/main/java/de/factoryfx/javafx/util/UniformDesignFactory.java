@@ -3,7 +3,7 @@ package de.factoryfx.javafx.util;
 import java.util.Locale;
 
 import de.factoryfx.data.attribute.AttributeMetadata;
-import de.factoryfx.data.attribute.types.BooleanAttribute;
+import de.factoryfx.data.attribute.primitive.BooleanAttribute;
 import de.factoryfx.data.attribute.types.ColorAttribute;
 import de.factoryfx.data.attribute.types.LocaleAttribute;
 import de.factoryfx.factory.SimpleFactoryBase;

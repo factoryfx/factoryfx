@@ -11,7 +11,6 @@ import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.servlet.ServletContainer;
 
 import javax.servlet.ServletContext;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 

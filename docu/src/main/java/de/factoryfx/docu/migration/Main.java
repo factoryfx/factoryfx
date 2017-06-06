@@ -3,16 +3,13 @@ package de.factoryfx.docu.migration;
 import de.factoryfx.factory.FactoryManager;
 import de.factoryfx.factory.datastorage.*;
 import de.factoryfx.factory.datastorage.filesystem.FileSystemFactoryStorage;
-import de.factoryfx.factory.datastorage.inmemory.InMemoryFactoryStorage;
 import de.factoryfx.factory.exception.RethrowingFactoryExceptionHandler;
 import de.factoryfx.server.ApplicationServer;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.function.Function;
 
 public class Main {
 

@@ -4,13 +4,13 @@ import java.util.regex.Pattern;
 
 import de.factoryfx.data.attribute.AttributeMetadata;
 import de.factoryfx.data.attribute.types.BigDecimalAttribute;
-import de.factoryfx.data.attribute.types.BooleanAttribute;
+import de.factoryfx.data.attribute.primitive.BooleanAttribute;
 import de.factoryfx.data.attribute.types.ByteArrayAttribute;
-import de.factoryfx.data.attribute.types.DoubleAttribute;
+import de.factoryfx.data.attribute.primitive.DoubleAttribute;
 import de.factoryfx.data.attribute.types.EnumAttribute;
 import de.factoryfx.data.attribute.types.I18nAttribute;
-import de.factoryfx.data.attribute.types.IntegerAttribute;
-import de.factoryfx.data.attribute.types.LongAttribute;
+import de.factoryfx.data.attribute.primitive.IntegerAttribute;
+import de.factoryfx.data.attribute.primitive.LongAttribute;
 import de.factoryfx.data.attribute.types.StringAttribute;
 import de.factoryfx.data.attribute.types.StringListAttribute;
 import de.factoryfx.data.attribute.types.StringMapAttribute;

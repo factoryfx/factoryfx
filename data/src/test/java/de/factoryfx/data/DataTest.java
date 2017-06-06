@@ -10,7 +10,7 @@ import de.factoryfx.data.attribute.Attribute;
 import de.factoryfx.data.attribute.AttributeMetadata;
 import de.factoryfx.data.attribute.CopySemantic;
 import de.factoryfx.data.attribute.ReferenceAttribute;
-import de.factoryfx.data.attribute.types.IntegerAttribute;
+import de.factoryfx.data.attribute.primitive.IntegerAttribute;
 import de.factoryfx.data.attribute.types.ObjectValueAttribute;
 import de.factoryfx.data.attribute.types.StringAttribute;
 import de.factoryfx.data.attribute.types.StringListAttribute;
@@ -42,37 +42,6 @@ public class DataTest {
         Assert.assertEquals("xxxx",calls.get(0));
     }
 
-    @Test
-    public void test_reconstructMetadataDeepRoot() throws Exception{
-        ExampleFactoryA exampleFactoryA = new ExampleFactoryA();
-        ExampleFactoryB exampleFactoryB = new ExampleFactoryB();
-        ExampleFactoryC exampleFactoryC = new ExampleFactoryC();
-        exampleFactoryB.referenceAttributeC.set(exampleFactoryC);
-        exampleFactoryA.referenceAttribute.set(exampleFactoryB);
-
-        exampleFactoryA.referenceListAttribute.add(new ExampleFactoryB());
-
-        SimpleObjectMapper mapper = ObjectMapperBuilder.build();
-        String string = mapper.writeValueAsString(exampleFactoryA);
-        ExampleFactoryA readed = ObjectMapperBuilder.buildNewObjectMapper().readValue(string,ExampleFactoryA.class);
-
-
-        Assert.assertEquals(null,readed.stringAttribute);
-        Assert.assertEquals(null,readed.referenceAttribute.metadata);
-        Assert.assertEquals(null,readed.referenceListAttribute.metadata);
-        Assert.assertEquals(null,readed.referenceAttribute.get().stringAttribute);
-        Assert.assertEquals(null,readed.referenceListAttribute.get(0).stringAttribute);
-
-        readed = readed.internal().prepareUsableCopy();
-
-        Assert.assertEquals("ExampleA1",readed.stringAttribute.metadata.labelText.internal_getPreferred(Locale.ENGLISH));
-        Assert.assertEquals("ExampleA2",readed.referenceAttribute.metadata.labelText.internal_getPreferred(Locale.ENGLISH));
-        Assert.assertEquals("ExampleA3",readed.referenceListAttribute.metadata.labelText.internal_getPreferred(Locale.ENGLISH));
-        Assert.assertEquals("ExampleB1",readed.referenceAttribute.get().stringAttribute.metadata.labelText.internal_getPreferred(Locale.ENGLISH));
-        Assert.assertEquals("ExampleB1",readed.referenceListAttribute.get(0).stringAttribute.metadata.labelText.internal_getPreferred(Locale.ENGLISH));
-
-        Assert.assertEquals(exampleFactoryA.getId(),readed.getId());
-    }
 
     public static class ExampleFactoryThis extends Data {
         ArrayList<String> calls=new ArrayList<>();
@@ -497,12 +466,12 @@ public class DataTest {
         stringAttribute.set("fdg");
         dynamicData.dynamic().addAttribute(stringAttribute);
 
-        Assert.assertEquals("labelx", dynamicData.getAttributes().get(0).attribute.metadata.labelText.internal_getText(Locale.ENGLISH));
+        Assert.assertEquals("labelx", dynamicData.getAttributes().get(0).attribute.getPreferredLabelText(Locale.ENGLISH));
         Data copy = ObjectMapperBuilder.build().copy(dynamicData);
         System.out.println(ObjectMapperBuilder.build().writeValueAsString(dynamicData));
 
         Assert.assertEquals(1, copy.getAttributes().size());
-        Assert.assertEquals("labelx", copy.getAttributes().get(0).attribute.metadata.labelText.internal_getText(Locale.ENGLISH));
+        Assert.assertEquals("labelx", copy.getAttributes().get(0).attribute.getPreferredLabelText(Locale.ENGLISH));
     }
 
 }

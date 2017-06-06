@@ -58,7 +58,7 @@ public class ApplicationServer<V,L,R extends FactoryBase<L,V>> {
             R historyFactoryPrevious = getHistoryFactory(historyFactoryList.get(i+1).id);
             final MergeDiffInfo mergeResult = new DataMerger(historyFactoryPrevious, historyFactoryPrevious, historyFactory).createMergeResult((permission) -> true);
             mergeResult.mergeInfos.forEach(attributeDiffInfo -> {
-                if (attributeDiffInfo.parentId.equals(factoryId)) {
+                if (attributeDiffInfo.isFromFactory(factoryId)) {
                     result.add(attributeDiffInfo);
                 }
             });

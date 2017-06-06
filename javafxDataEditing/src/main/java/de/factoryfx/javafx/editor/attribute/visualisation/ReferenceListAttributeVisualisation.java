@@ -17,6 +17,8 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 
+import java.util.List;
+
 public class ReferenceListAttributeVisualisation extends ListAttributeEditorVisualisation<Data> {
 
     private final UniformDesign uniformDesign;
@@ -33,8 +35,8 @@ public class ReferenceListAttributeVisualisation extends ListAttributeEditorVisu
 
 
     @Override
-    public Node createContent(ObservableList<Data> attributeValue) {
-        tableView.setItems(attributeValue);
+    public Node createContent(List<Data> attributeValue) {
+        tableView.setItems((ObservableList<Data>) attributeValue);
         tableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         TableColumn<Data, String> test = new TableColumn<>("Data");
         test.setCellValueFactory(param -> new SimpleStringProperty(param.getValue().internal().getDisplayText()));

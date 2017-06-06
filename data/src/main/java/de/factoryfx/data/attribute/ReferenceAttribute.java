@@ -1,44 +1,38 @@
 package de.factoryfx.data.attribute;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.function.BiConsumer;
 import java.util.function.Function;
-
 import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonValue;
 import de.factoryfx.data.Data;
-import de.factoryfx.data.merge.attribute.AttributeMergeHelper;
 
-public class ReferenceAttribute<T extends Data> extends Attribute<T> {
-
-    private Data root;
+public class ReferenceAttribute<T extends Data> extends ReferenceBaseAttribute<T,T,ReferenceAttribute<T>> {
 
     private T value;
-    private Class<T> clazz;
 
     @JsonCreator
     protected ReferenceAttribute(T value) {
-        super(null);
+        super(null,(AttributeMetadata)null);
         set(value);
     }
 
+    /**
+     * @see ReferenceBaseAttribute#ReferenceBaseAttribute(Class ,AttributeMetadata)
+     * */
     public ReferenceAttribute(Class<T> clazz, AttributeMetadata attributeMetadata) {
-        super(attributeMetadata);
-        this.clazz=clazz;
+        super(clazz,attributeMetadata);
     }
 
+    /**
+     * @see ReferenceBaseAttribute#ReferenceBaseAttribute(AttributeMetadata,Class)
+     * */
     @SuppressWarnings("unchecked")
-    //workaround for generic parameter ReferenceAttribute<Example<V>> webGuiResource=new ReferenceAttribute(Example<V>)
     public ReferenceAttribute(AttributeMetadata attributeMetadata, Class clazz) {
-        super(attributeMetadata);
-        this.clazz=clazz;
+        super(attributeMetadata,clazz);
     }
 
     @Override
@@ -50,7 +44,7 @@ public class ReferenceAttribute<T extends Data> extends Attribute<T> {
 
     @Override
     public Attribute<T> internal_copy() {
-        final ReferenceAttribute<T> result = new ReferenceAttribute<>(clazz, metadata);
+        final ReferenceAttribute<T> result = new ReferenceAttribute<>(containingFactoryClass, metadata);
         result.set(get());
         return result;
     }
@@ -64,11 +58,6 @@ public class ReferenceAttribute<T extends Data> extends Attribute<T> {
             return false;
         }
         return this.value.getId().equals(value.getId());
-    }
-
-    @Override
-    public AttributeMergeHelper<?> internal_createMergeHelper() {
-        return new AttributeMergeHelper<>(this);
     }
 
 
@@ -174,127 +163,31 @@ public class ReferenceAttribute<T extends Data> extends Attribute<T> {
     }
 
 
-    private Optional<Function<Data,Collection<T>>> possibleValueProviderFromRoot=Optional.empty();
-    private Optional<Function<Data,T>> newValueProvider=Optional.empty();
-    private Optional<BiConsumer<T,Object>> additionalDeleteAction = Optional.empty();
-
-    /**customise the list of selectable items*/
-    @SuppressWarnings("unchecked")
-    public <A extends ReferenceAttribute<T>> A possibleValueProvider(Function<Data,Collection<T>> possibleValueProvider){
-        this.possibleValueProviderFromRoot =Optional.of(possibleValueProvider);
-        return (A)this;
-    }
-
-    /**customise how new values are created*/
-    @SuppressWarnings("unchecked")
-    public <A extends ReferenceAttribute<T>> A newValueProvider(Function<Data,T> newValueProviderFromRoot){
-        this.newValueProvider =Optional.of(newValueProviderFromRoot);
-        return (A)this;
-    }
-
-    /**
-     * action after delete e.g delete the factory also in other lists
-     * @param additionalDeleteAction deleted value, root
-     * @return this
-     */
-    @SuppressWarnings("unchecked")
-    public <A extends ReferenceAttribute<T>> A additionalDeleteAction(BiConsumer<T,Object> additionalDeleteAction){
-        this.additionalDeleteAction =Optional.of(additionalDeleteAction);
-        return (A)this;
-    }
-
     public void internal_deleteFactory(){
         T removedFactory=get();
         set(null);
-        additionalDeleteAction.ifPresent(bc -> bc.accept(removedFactory, root));
+        if (additionalDeleteAction!=null){
+            additionalDeleteAction.accept(removedFactory, root);
+        }
     }
 
     public T internal_addNewFactory(){
-        newValueProvider.ifPresent(newFactoryFunction -> {
-            T newFactory = newFactoryFunction.apply(root);
-            set(newFactory);
-        });
-        if (!newValueProvider.isPresent()){
+        if (newValueProvider==null){
             try {
-                set(clazz.newInstance());
+                set(containingFactoryClass.newInstance());
             } catch (InstantiationException | IllegalAccessException e) {
                 throw new RuntimeException(e);
             }
+        } else {
+            T newFactory = newValueProvider.apply(root);
+            set(newFactory);
         }
         getOptional().ifPresent(data->data.internal().propagateRoot(root));
         return get();
     }
 
-    @SuppressWarnings("unchecked")
-    public Collection<T> internal_possibleValues(){
-        Set<T> result = new HashSet<>();
-        possibleValueProviderFromRoot.ifPresent(factoryBaseListFunction -> {
-            Collection<T> factories = factoryBaseListFunction.apply(root);
-            factories.forEach(result::add);
-        });
-        if (!possibleValueProviderFromRoot.isPresent()){
-            for (Data factory: root.internal().collectChildrenDeep()){
-                if (clazz.isAssignableFrom(factory.getClass())){
-                    result.add((T) factory);
-                }
-            }
-        }
-        return result;
-    }
-
-
     public Class<T> internal_getReferenceClass(){
-        return this.clazz;
-    }
-
-    @Override
-    public void internal_prepareUsage(Data root){
-        this.root=root;
-    }
-
-    private boolean userEditable=true;
-    /** marks the reference as readonly for the user(user can still navigate the reference  but can not change the it)*/
-    @SuppressWarnings("unchecked")
-    public <A extends ReferenceAttribute<T>> A userReadOnly(){
-        userEditable=false;
-        return (A)this;
-    }
-
-    @JsonIgnore
-    public boolean internal_isUserEditable(){
-        return userEditable;
-    }
-
-    private boolean userSelectable=true;
-    /**
-     * disable select for reference (select dialog)
-     */
-    @SuppressWarnings("unchecked")
-    public <A extends ReferenceAttribute<T>> A userNotSelectable(){
-        userSelectable=false;
-        return (A)this;
-    }
-
-    @JsonIgnore
-    public boolean internal_isUserSelectable(){
-        return userSelectable;
-    }
-
-
-    /**
-     * disable new for reference
-     */
-    @SuppressWarnings("unchecked")
-    public <A extends ReferenceAttribute<T>> A userNotCreatable(){
-        userCreatable =false;
-        return (A)this;
-    }
-
-
-    private boolean userCreatable =true;
-    @JsonIgnore
-    public boolean internal_isUserCreatable(){
-        return userCreatable;
+        return this.containingFactoryClass;
     }
 
 }

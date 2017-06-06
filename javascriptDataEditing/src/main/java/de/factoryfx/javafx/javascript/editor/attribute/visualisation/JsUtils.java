@@ -23,9 +23,8 @@ public class JsUtils {
     public static ArrayList<SourceFile> copySourceFiles(Collection<SourceFile> externalSources) {
         ArrayList<SourceFile> sourceFileCopy = new ArrayList<>();
         externalSources.forEach(sf->{
-            SourceFile sourceFile = null;
             try {
-                sourceFile = SourceFile.fromCode(sf.getName(),sf.getCode());
+                SourceFile sourceFile = SourceFile.fromCode(sf.getName(),sf.getCode());
                 sourceFileCopy.add(sourceFile);
             } catch (IOException e) {
                 throw new RuntimeException(e);

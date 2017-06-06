@@ -7,7 +7,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import de.factoryfx.data.Data;
 import de.factoryfx.data.attribute.AttributeMetadata;
 import de.factoryfx.data.attribute.types.BigDecimalAttribute;
-import de.factoryfx.data.attribute.types.LongAttribute;
+import de.factoryfx.data.attribute.primitive.LongAttribute;
 import org.junit.Assert;
 import org.junit.Test;
 

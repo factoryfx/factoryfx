@@ -145,7 +145,7 @@ public class TableControlWidget<T> implements Widget {
         filterField.focusedProperty().addListener(focusChangeListener);
 
         //workaround for bug http://stackoverflow.com/questions/37423748/javafx-tablecolumns-headers-not-aligned-with-cells-due-to-vertical-scrollbar
-        Platform.runLater(() -> tableView.refresh());
+        Platform.runLater(tableView::refresh);
 
     }
 

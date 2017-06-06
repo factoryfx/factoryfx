@@ -16,8 +16,8 @@ public class ShopFactory extends FactoryBase<Shop,OrderCollector> {
             return new Shop(stageTitle.get(), products.instances(),new Stage(), new OrderStorage());
         });
         configLiveCycle().setReCreator((previousLiveObject) -> new Shop(stageTitle.get(), products.instances(),previousLiveObject.getStage(), new OrderStorage()));
-        configLiveCycle().setStarter(newLiveObject -> newLiveObject.start());
-        configLiveCycle().setDestroyer(previousLiveObject -> previousLiveObject.stop());
+        configLiveCycle().setStarter(Shop::start);
+        configLiveCycle().setDestroyer(Shop::stop);
         configLiveCycle().setRuntimeQueryExecutor((visitor,currentLiveObject) -> currentLiveObject.accept(visitor));
     }
 

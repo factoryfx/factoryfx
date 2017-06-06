@@ -1,8 +1,6 @@
 package de.factoryfx.docu.dynamicwebserver;
 
 import ch.qos.logback.classic.Level;
-import de.factoryfx.docu.lifecycle.Root;
-import de.factoryfx.docu.lifecycle.RootFactory;
 import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.factory.FactoryManager;
 import de.factoryfx.factory.datastorage.FactoryAndNewMetadata;
@@ -16,7 +14,6 @@ import de.factoryfx.server.rest.server.JettyServerFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatterBuilder;
 

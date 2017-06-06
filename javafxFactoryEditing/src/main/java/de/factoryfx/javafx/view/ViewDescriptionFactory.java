@@ -1,7 +1,7 @@
 package de.factoryfx.javafx.view;
 
 import de.factoryfx.data.attribute.AttributeMetadata;
-import de.factoryfx.data.attribute.ValueAttribute;
+import de.factoryfx.data.attribute.types.EnumAttribute;
 import de.factoryfx.data.attribute.types.I18nAttribute;
 import de.factoryfx.factory.SimpleFactoryBase;
 import de.factoryfx.factory.atrribute.FactoryReferenceAttribute;
@@ -11,7 +11,7 @@ import org.controlsfx.glyphfont.FontAwesome;
 
 public class ViewDescriptionFactory<V> extends SimpleFactoryBase<ViewDescription,V> {
     public final I18nAttribute text = new I18nAttribute(new AttributeMetadata().de("text").en("text"));
-    public final ValueAttribute<FontAwesome.Glyph> icon = new ValueAttribute<>(new AttributeMetadata().de("icon").en("icon"),FontAwesome.Glyph.class);
+    EnumAttribute<FontAwesome.Glyph> icon = new EnumAttribute<>(FontAwesome.Glyph.class,new AttributeMetadata().de("icon").en("icon"));
     public final FactoryReferenceAttribute<UniformDesign,UniformDesignFactory<V>> uniformDesign = new FactoryReferenceAttribute<>(new AttributeMetadata().de("uniformDesign").en("uniformDesign"),UniformDesignFactory.class);
 
     @Override

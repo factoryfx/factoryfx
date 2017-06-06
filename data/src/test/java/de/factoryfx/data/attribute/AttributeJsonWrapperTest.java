@@ -66,7 +66,7 @@ public class AttributeJsonWrapperTest {
                         //not supported
                         continue;
                     }
-                    if (clazz==ValueAttribute.class){
+                    if (clazz==ImmutableValueAttribute.class){
                         //not supported
                         continue;
                     }

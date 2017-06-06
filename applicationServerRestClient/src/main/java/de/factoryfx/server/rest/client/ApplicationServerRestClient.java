@@ -1,9 +1,7 @@
 package de.factoryfx.server.rest.client;
 
 import java.util.*;
-import java.util.stream.Stream;
 
-import de.factoryfx.data.Data;
 import de.factoryfx.data.merge.AttributeDiffInfo;
 import de.factoryfx.data.merge.MergeDiffInfo;
 import de.factoryfx.factory.FactoryBase;
@@ -52,8 +50,7 @@ public class ApplicationServerRestClient<V,T extends FactoryBase<?,V>> {
     }
 
     public MergeDiffInfo getDiff(StoredFactoryMetadata historyEntry) {
-        MergeDiffInfo diff = restClient.post("diff", new UserAwareRequest<>(user, passwordHash, historyEntry), MergeDiffInfo.class);
-        return diff;
+        return restClient.post("diff", new UserAwareRequest<>(user, passwordHash, historyEntry), MergeDiffInfo.class);
     }
 
 

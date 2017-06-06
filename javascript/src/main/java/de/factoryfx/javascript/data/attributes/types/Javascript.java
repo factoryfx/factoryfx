@@ -1,6 +1,5 @@
 package de.factoryfx.javascript.data.attributes.types;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -61,9 +60,8 @@ public class Javascript<A> {
         scriptExecutorCache.putBack(scriptExecutor);
     }
 
-    public Javascript copyWithNewCode(String newCode) {
-        Javascript copy = new Javascript(newCode,headerCode,declarationCode);
-        return copy;
+    public Javascript<?> copyWithNewCode(String newCode) {
+        return new Javascript<>(newCode,headerCode,declarationCode);
     }
 
 
@@ -77,7 +75,7 @@ public class Javascript<A> {
 
     /** optimisation for multithreading */
     final class ScriptExecutorCache {
-        LinkedBlockingDeque<ScriptExecutor> executors = new LinkedBlockingDeque<>();
+        final LinkedBlockingDeque<ScriptExecutor> executors = new LinkedBlockingDeque<>();
 
         public ScriptExecutor take(){
             final ScriptExecutor executor = executors.pollFirst();

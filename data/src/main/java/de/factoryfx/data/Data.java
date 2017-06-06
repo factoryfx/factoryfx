@@ -28,10 +28,9 @@ import com.google.common.base.Strings;
 import de.factoryfx.data.attribute.Attribute;
 import de.factoryfx.data.attribute.AttributeChangeListener;
 import de.factoryfx.data.attribute.AttributeJsonWrapper;
-import de.factoryfx.data.attribute.ValueAttribute;
+import de.factoryfx.data.attribute.ImmutableValueAttribute;
 import de.factoryfx.data.merge.AttributeDiffInfo;
 import de.factoryfx.data.merge.MergeResult;
-import de.factoryfx.data.merge.attribute.AttributeMergeHelper;
 import de.factoryfx.data.validation.AttributeValidation;
 import de.factoryfx.data.validation.Validation;
 import de.factoryfx.data.validation.ValidationError;
@@ -159,8 +158,8 @@ public class Data {
     }
 
 
-    private void addAttribute(ValueAttribute<?> attribute){
-        dynamicDataAttributeAndNames.add(new AttributeAndName(attribute, toIdentifier(attribute.metadata.labelText.internal_getPreferred(Locale.ENGLISH))));
+    private void addAttribute(ImmutableValueAttribute<?> attribute){
+        dynamicDataAttributeAndNames.add(new AttributeAndName(attribute, toIdentifier(attribute.getPreferredLabelText(Locale.ENGLISH))));
     }
 
     private String toIdentifier(String value) {//TODO for js?
@@ -338,17 +337,15 @@ public class Data {
     @SuppressWarnings("unchecked")
     private void merge(Data originalValue, Data newValue, MergeResult mergeResult, Function<String,Boolean> permissionChecker) {
         this.visitAttributesTripleFlat(originalValue, newValue, (currentAttribute, originalAttribute, newAttribute) -> {
-            AttributeMergeHelper<?> attributeMergeHelper = currentAttribute.internal_createMergeHelper();
-            if (attributeMergeHelper!=null){
-                final AttributeDiffInfo attributeDiffInfo = new AttributeDiffInfo(Data.this, currentAttribute, newAttribute);
-                if (attributeMergeHelper.hasConflict(originalAttribute, newAttribute)) {
-                    mergeResult.addConflictInfo(attributeDiffInfo);
+            if (!currentAttribute.ignoreForMerging()){
+                if (currentAttribute.hasMergeConflict(originalAttribute, newAttribute)) {
+                    mergeResult.addConflictInfo(new AttributeDiffInfo(Data.this, currentAttribute, newAttribute));
                 } else {
-                    if (attributeMergeHelper.isMergeable(originalAttribute, newAttribute)) {
-                        final String permission = currentAttribute.metadata.permission;
-                        if (permission==null || permissionChecker.apply(permission)){
+                    if (currentAttribute.isMergeable(originalAttribute, newAttribute)) {
+                        final AttributeDiffInfo attributeDiffInfo = new AttributeDiffInfo(Data.this, currentAttribute, newAttribute);
+                        if (currentAttribute.hasWritePermission(permissionChecker)){
                             mergeResult.addMergeInfo(attributeDiffInfo);
-                            mergeResult.addMergeExecutions(() -> attributeMergeHelper.merge(originalAttribute, newAttribute));
+                            mergeResult.addMergeExecutions(() -> currentAttribute.merge(newAttribute));
                         } else {
                             mergeResult.addPermissionViolationInfo(attributeDiffInfo);
                         }
@@ -390,9 +387,7 @@ public class Data {
     private <T extends Data> T semanticCopy() {
         T result = (T)newInstance();
 //        result.setId(this.getId());
-        this.visitAttributesDualFlat(result, (thisAttribute, copyAttribute) -> {
-            thisAttribute.internal_semanticCopyTo(copyAttribute);
-        });
+        this.visitAttributesDualFlat(result, Attribute::internal_semanticCopyTo);
         this.fixDuplicateObjects();
         return result;
     }
@@ -788,7 +783,7 @@ public class Data {
             this.data = data;
         }
 
-        public void addAttribute(ValueAttribute<?> attribute){
+        public void addAttribute(ImmutableValueAttribute<?> attribute){
              data.addAttribute(attribute);
         }
 

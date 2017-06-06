@@ -1,7 +1,6 @@
 package de.factoryfx.data.attribute;
 
 import java.util.*;
-import java.util.stream.Stream;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -11,7 +10,6 @@ import com.sun.javafx.collections.ObservableListWrapper;
 import de.factoryfx.data.AttributeAndName;
 import de.factoryfx.data.Data;
 import de.factoryfx.data.attribute.types.EnumAttribute;
-import de.factoryfx.data.merge.MergeDiffInfo;
 import de.factoryfx.data.util.LanguageText;
 import javafx.collections.ObservableList;
 import javafx.collections.ObservableMap;
@@ -135,8 +133,7 @@ public class AttributeJsonWrapper {
         }
 
         try {
-            final Attribute attribute = attributeClass.getConstructor(AttributeMetadata.class).newInstance(new AttributeMetadata());
-            return attribute;
+            return attributeClass.getConstructor(AttributeMetadata.class).newInstance(new AttributeMetadata());
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

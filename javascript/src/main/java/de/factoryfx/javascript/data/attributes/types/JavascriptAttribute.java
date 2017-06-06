@@ -15,10 +15,10 @@ import de.factoryfx.data.Data;
 import de.factoryfx.data.attribute.Attribute;
 import de.factoryfx.data.attribute.AttributeChangeListener;
 import de.factoryfx.data.attribute.AttributeMetadata;
-import de.factoryfx.data.attribute.ValueAttribute;
+import de.factoryfx.data.attribute.ImmutableValueAttribute;
 import javafx.application.Platform;
 
-public class JavascriptAttribute<A> extends ValueAttribute<Javascript<A>> {
+public class JavascriptAttribute<A> extends ImmutableValueAttribute<Javascript<A>> {
 
     @JsonIgnore
     private final Supplier<List<? extends Data>> data;
@@ -32,7 +32,7 @@ public class JavascriptAttribute<A> extends ValueAttribute<Javascript<A>> {
         super(attributeMetadata, (Class<Javascript<A>>)Javascript.class.asSubclass(Javascript.class));
         this.data = data;
         this.apiClass = apiClass;
-        set(new Javascript<A>("",createHeader(),createHeaderApi()));
+        set(new Javascript<>("",createHeader(),createHeaderApi()));
     }
 
     @JsonCreator
@@ -46,8 +46,15 @@ public class JavascriptAttribute<A> extends ValueAttribute<Javascript<A>> {
 
 
     @Override
+    protected Attribute<Javascript<A>> createNewEmptyInstance() {
+        return new JavascriptAttribute<>(metadata,data,apiClass);
+    }
+
+    @Override
     public boolean internal_match(Javascript<A> value) {
-        if ((this.value == null) != (value == null))
+        if (this.value == null && value == null)
+            return true;
+        if (this.value== null)
             return false;
         return Objects.equals(this.value.getCode(), value.getCode());
     }
@@ -140,7 +147,7 @@ public class JavascriptAttribute<A> extends ValueAttribute<Javascript<A>> {
     }
 
     //** so we don't need to initialise javax toolkit in test*/
-    Consumer<Runnable> runlaterExecutor=(r)-> Platform.runLater(r);
+    private Consumer<Runnable> runlaterExecutor=(r)-> Platform.runLater(r);
     void setRunlaterExecutorForTest(Consumer<Runnable> runlaterExecutor){
         this.runlaterExecutor=runlaterExecutor;
     }
@@ -174,7 +181,7 @@ public class JavascriptAttribute<A> extends ValueAttribute<Javascript<A>> {
         }
     }
 
-    DirtyTrackingThread dirtyTracking;
+    private DirtyTrackingThread dirtyTracking;
 
     @Override
     public void internal_addListener(AttributeChangeListener<Javascript<A>> listener) {

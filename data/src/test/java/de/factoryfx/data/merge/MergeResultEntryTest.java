@@ -18,6 +18,6 @@ public class MergeResultEntryTest {
                 new AttributeJsonWrapper(new StringAttribute(new AttributeMetadata().en("sfdsf")),""),
                 new AttributeJsonWrapper(new StringAttribute(new AttributeMetadata()),""), "","");
         AttributeDiffInfo copy = ObjectMapperBuilder.build().copy(mergeResultEntry);//Test json serialisation
-        Assert.assertEquals("sfdsf",copy.previousValueDisplayText.createAttribute().metadata.labelText.internal_getPreferred(Locale.ENGLISH));
+        Assert.assertEquals("sfdsf",copy.createPreviousAttribute().getPreferredLabelText(Locale.ENGLISH));
     }
 }

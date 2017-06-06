@@ -8,7 +8,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import de.factoryfx.data.attribute.AttributeJsonWrapper;
 import de.factoryfx.data.merge.AttributeDiffInfo;
 import de.factoryfx.data.merge.MergeDiffInfo;
 import de.factoryfx.data.util.LanguageText;
@@ -137,12 +136,12 @@ public class FactoryDiffWidget implements Widget {
         diffTableView.getSelectionModel().selectedItemProperty().addListener(observable -> {
             AttributeDiffInfo diffItem = diffTableView.getSelectionModel().getSelectedItem().attributeDiffInfo;
             if (diffItem != null) {
-                final Optional<AttributeEditor<?>> previousAttributeEditor = attributeEditorBuilder.getAttributeEditor(diffItem.previousValueDisplayText.createAttribute(), null, null, null);
+                final Optional<AttributeEditor<?>> previousAttributeEditor = attributeEditorBuilder.getAttributeEditor(diffItem.createPreviousAttribute(), null, null, null);
                 previousAttributeEditor.get().expand();
                 previousValueDisplay.setCenter(previousAttributeEditor.get().createContent());
 
-                if (diffItem.newValueValueDisplayText.isPresent()) {
-                    final Optional<AttributeEditor<?>> newAttributeEditor = attributeEditorBuilder.getAttributeEditor(diffItem.newValueValueDisplayText.get().createAttribute(), null, null, null);
+                if (diffItem.isNewAttributePresent()) {
+                    final Optional<AttributeEditor<?>> newAttributeEditor = attributeEditorBuilder.getAttributeEditor(diffItem.createNewAttributeDisplayAttribute(), null, null, null);
                     newAttributeEditor.get().expand();
                     newValueDisplay.setCenter(newAttributeEditor.get().createContent());
                 } else {
@@ -165,19 +164,19 @@ public class FactoryDiffWidget implements Widget {
         tableView.setPlaceholder(new Label(uniformDesign.getText(noChangesFound)));
         {
             TableColumn<AttributeDiffInfoExtended, String> factoryColumn = new TableColumn<>(uniformDesign.getText(columnFactory));
-            factoryColumn.setCellValueFactory(param -> new SimpleStringProperty(param.getValue().attributeDiffInfo.parentDisplayText));
+            factoryColumn.setCellValueFactory(param -> new SimpleStringProperty(param.getValue().attributeDiffInfo.parentDisplayText()));
             tableView.getColumns().add(factoryColumn);
 
             TableColumn<AttributeDiffInfoExtended, String> fieldColumn = new TableColumn<>(uniformDesign.getText(columnField));
-            fieldColumn.setCellValueFactory(param -> new SimpleStringProperty(uniformDesign.getText(param.getValue().attributeDiffInfo.previousValueDisplayText.createAttribute().metadata.labelText)));
+            fieldColumn.setCellValueFactory(param -> new SimpleStringProperty(uniformDesign.getLabelText(param.getValue().attributeDiffInfo.createPreviousAttribute())));
             tableView.getColumns().add(fieldColumn);
 
             TableColumn<AttributeDiffInfoExtended, String> previousColumn = new TableColumn<>(uniformDesign.getText(columnPrevious));
-            previousColumn.setCellValueFactory(param -> new SimpleStringProperty(param.getValue().attributeDiffInfo.previousValueDisplayText.getDisplayText()));
+            previousColumn.setCellValueFactory(param -> new SimpleStringProperty(param.getValue().attributeDiffInfo.getPreviousAttributeDisplayText()));
             tableView.getColumns().add(previousColumn);
 
             TableColumn<AttributeDiffInfoExtended, String> newColumn = new TableColumn<>(uniformDesign.getText(columnNew));
-            newColumn.setCellValueFactory(param -> new SimpleStringProperty(param.getValue().attributeDiffInfo.newValueValueDisplayText.map(AttributeJsonWrapper::getDisplayText).orElse("removed")));
+            newColumn.setCellValueFactory(param -> new SimpleStringProperty(param.getValue().attributeDiffInfo.getNewAttributeDisplayText()));
             tableView.getColumns().add(newColumn);
 
         }

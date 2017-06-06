@@ -18,7 +18,8 @@ public class BackgroundEvaluatingAssistant<I> {
     private final Object lock = new Object();
 
     public BackgroundEvaluatingAssistant() {
-        this.thread = new ComputationTask<I>(inputQueue, i->{});
+        this.thread = new ComputationTask<>(inputQueue, i -> {
+        });
     }
 
     public void update(I input) {
@@ -31,13 +32,14 @@ public class BackgroundEvaluatingAssistant<I> {
 
     public void start(Consumer<I> processor) {
         synchronized (lock) {
-            this.thread = new ComputationTask<I>(inputQueue,processor);
+            this.thread = new ComputationTask<>(inputQueue, processor);
         }
     }
 
     public void stop() {
         synchronized (lock) {
-            this.thread = new ComputationTask<I>(inputQueue, i->{});
+            this.thread = new ComputationTask<>(inputQueue, i -> {
+            });
         }
     }
 

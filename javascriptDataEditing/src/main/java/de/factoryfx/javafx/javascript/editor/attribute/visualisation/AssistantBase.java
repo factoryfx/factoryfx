@@ -19,9 +19,7 @@ public abstract class AssistantBase<I,R> implements Consumer<I> {
                 return;
             }
             R result = process(input);
-            Platform.runLater(() -> {
-                fConsumer.accept(result);
-            });
+            Platform.runLater(() -> fConsumer.accept(result));
         });
 
     }

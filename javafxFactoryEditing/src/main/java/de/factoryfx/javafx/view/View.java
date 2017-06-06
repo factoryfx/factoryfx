@@ -27,7 +27,7 @@ public class View implements Widget {
         viewContent.closeNotifier();
         isShowing = false;
         viewsDisplayWidget.close(this);
-        closeListener.ifPresent(runnable -> runnable.run());
+        closeListener.ifPresent(Runnable::run);
     }
 
     @Override

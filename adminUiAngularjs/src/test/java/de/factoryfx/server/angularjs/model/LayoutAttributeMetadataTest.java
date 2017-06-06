@@ -13,7 +13,7 @@ public class LayoutAttributeMetadataTest {
 
     @Test
     public void test_enum(){
-        WebGuiAttributeMetadata webGuiAttributeMetadata = new WebGuiAttributeMetadata(new AttributeMetadata(), Locale.ENGLISH,new EnumAttribute<>(ExampleEnum.class,new AttributeMetadata()));
+        WebGuiAttributeMetadata webGuiAttributeMetadata = new WebGuiAttributeMetadata(new EnumAttribute<>(ExampleEnum.class,new AttributeMetadata()), Locale.ENGLISH);
         Assert.assertEquals(3, webGuiAttributeMetadata.dataType.enumValues.size());
         Assert.assertEquals("EXAMPLE_1", webGuiAttributeMetadata.dataType.enumValues.get(0));
         Assert.assertEquals("EXAMPLE_2", webGuiAttributeMetadata.dataType.enumValues.get(1));

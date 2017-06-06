@@ -74,8 +74,7 @@ public class TypedTextFieldHelper {
 
     public static void setupBigDecimalTextField(TextField textField, String decimalFormatPattern) {
         setupTextField(textField, (value) -> {
-            String pattern = decimalFormatPattern;
-            DecimalFormat decimalFormat = new DecimalFormat(pattern);
+            DecimalFormat decimalFormat = new DecimalFormat(decimalFormatPattern);
             decimalFormat.setParseBigDecimal(true);
             ParsePosition pos = new ParsePosition(0);
             decimalFormat.parse(value,pos);

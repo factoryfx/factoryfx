@@ -3,10 +3,11 @@ package de.factoryfx.data.attribute.types;
 import java.net.URI;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import de.factoryfx.data.attribute.Attribute;
 import de.factoryfx.data.attribute.AttributeMetadata;
-import de.factoryfx.data.attribute.ValueAttribute;
+import de.factoryfx.data.attribute.ImmutableValueAttribute;
 
-public class URIAttribute extends ValueAttribute<URI> {
+public class URIAttribute extends ImmutableValueAttribute<URI> {
 
     public URIAttribute(AttributeMetadata attributeMetadata) {
         super(attributeMetadata,URI.class);
@@ -18,4 +19,8 @@ public class URIAttribute extends ValueAttribute<URI> {
         set(initialValue);
     }
 
+    @Override
+    protected Attribute<URI> createNewEmptyInstance() {
+        return new URIAttribute(metadata);
+    }
 }

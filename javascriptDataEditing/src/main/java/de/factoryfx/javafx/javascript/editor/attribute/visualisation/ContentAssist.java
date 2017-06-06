@@ -217,8 +217,7 @@ public class ContentAssist {
             ArrayList<Var> visibleVars = new ArrayList<>();
             internalVars.stream().filter(v->v.getNameNode().getSourceOffset() < inspectedNode.getSourceOffset())
                     .forEach(visibleVars::add);
-            externalVars.stream()
-                    .forEach(visibleVars::add);
+            visibleVars.addAll(externalVars);
             JSType functionType = currentNode.getJSType();
             Optional<JSType> functionReturnType = Optional.ofNullable(functionType).filter(f->functionType instanceof FunctionType)
                     .map(f->(FunctionType)f).flatMap(ft->Optional.ofNullable(ft.getReturnType()));
@@ -236,8 +235,7 @@ public class ContentAssist {
         ArrayList<Var> visiableVars = new ArrayList<>();
         internalVars.stream().filter(v->v.getNameNode().getSourceOffset() < inspectedNode.getSourceOffset())
                 .forEach(visiableVars::add);
-        externalVars.stream()
-                .forEach(visiableVars::add);
+        visiableVars.addAll(externalVars);
         if (firstChild != null && firstChild.getJSType() != null && firstChild.getJSType() instanceof FunctionType) {
             FunctionType ft = (FunctionType)firstChild.getJSType();
             int paramNum = 0;
@@ -536,8 +534,7 @@ public class ContentAssist {
             rhsType.toMaybeFunctionType().getParameters().forEach(n->arguments.add(n.getJSType()));
             return lhsType.toMaybeFunctionType().acceptsArguments(arguments);
         }
-        boolean canCast = canCastTo(rhsType,lhsType);
-        return canCast;
+        return canCastTo(rhsType,lhsType);
     }
 
     boolean canCastTo(JSType rhsType, JSType lhsType) {
@@ -585,7 +582,7 @@ public class ContentAssist {
         try {
             Compiler closureCompiler  = new Compiler(new PrintStream(new DiscardOutputStream(), false, "UTF-8"));
             closureCompiler.disableThreads();
-            closureCompiler.setLoggingLevel(Level.INFO);
+            Compiler.setLoggingLevel(Level.INFO);
             return closureCompiler;
         } catch (UnsupportedEncodingException e) {
             throw new RuntimeException(e);

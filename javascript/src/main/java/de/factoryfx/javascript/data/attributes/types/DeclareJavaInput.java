@@ -62,7 +62,7 @@ public class DeclareJavaInput {
                 source.append(" * @extends ").append(c.getSimpleName()).append("\n");
             }
         });
-        source.append(" */\nfunction "+ className +"() {}\n");
+        source.append(" */\nfunction ").append(className).append("() {}\n");
         HashSet<Class<?>> reachableClasses = new HashSet<>();
         for (Field f : clazz.getFields()) {
             if (f.getDeclaringClass() == Object.class || !allowTypeReference(f.getType()))
@@ -137,7 +137,7 @@ public class DeclareJavaInput {
             if (!ellipsis) {
                 source.append("/**\n");
                 if (jsDoc != null)
-                    source.append(" * "+jsDoc.value()+"\n");
+                    source.append(" * ").append(jsDoc.value()).append("\n");
                 else {
                     source.append(declareReturn.apply(method));
                 }
@@ -148,7 +148,7 @@ public class DeclareJavaInput {
                         boolean isNullable = parameter.isAnnotationPresent(Nullable.class);
                         JSDoc jsParam = parameter.getAnnotation(JSDoc.class);
                         if (jsParam != null) {
-                            source.append(" /** @type "+jsParam.value()+" */ ");
+                            source.append(" /** @type ").append(jsParam.value()).append(" */ ");
                         } else {
                             Class<?> closestType = getClosestType(parameter.getType()).orElse(parameter.getType());
                             reachableClasses.add(closestType);
@@ -174,7 +174,7 @@ public class DeclareJavaInput {
             } else {
                 source.append("/**\n");
                 if (jsDoc != null)
-                    source.append(" * "+jsDoc.value()+"\n");
+                    source.append(" * ").append(jsDoc.value()).append("\n");
                 else {
                     source.append(" * @param {...*} params\n");
                 }

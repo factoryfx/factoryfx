@@ -2,14 +2,11 @@ package de.factoryfx.data.attribute;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 import java.util.Spliterator;
-import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -19,20 +16,18 @@ import java.util.stream.Stream;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import de.factoryfx.data.Data;
-import de.factoryfx.data.merge.attribute.AttributeMergeHelper;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 
-public class ReferenceListAttribute<T extends Data> extends Attribute<List<T>> implements Collection<T> {
-    private Data root;
-
+public class ReferenceListAttribute<T extends Data> extends ReferenceBaseAttribute<T,List<T>,ReferenceListAttribute<T>> implements Collection<T> {
     ObservableList<T> list = FXCollections.observableArrayList();
-    private Class<T> clazz;
 
-    public ReferenceListAttribute(Class<T> clazz, AttributeMetadata attributeMetadata) {
-        super(attributeMetadata);
-        this.clazz=clazz;
+    /**
+     * @see ReferenceBaseAttribute#ReferenceBaseAttribute(Class ,AttributeMetadata)
+     * */
+    public ReferenceListAttribute(Class<T> containingFactoryClass, AttributeMetadata attributeMetadata) {
+        super(containingFactoryClass,attributeMetadata);
 
         list.addListener((ListChangeListener<T>) c -> {
             if (c.next()){
@@ -51,16 +46,17 @@ public class ReferenceListAttribute<T extends Data> extends Attribute<List<T>> i
         });
     }
 
+    /**
+     * @see ReferenceBaseAttribute#ReferenceBaseAttribute(AttributeMetadata,Class)
+     * */
     @SuppressWarnings("unchecked")
-    //workaround for generic parameter ReferenceListAttribute<Example<V>> webGuiResource=new ReferenceAttribute(Example<V>)
     public ReferenceListAttribute(AttributeMetadata attributeMetadata, Class clazz) {
-        super(attributeMetadata);
-        this.clazz=clazz;
+        super(attributeMetadata,clazz);
     }
 
     @JsonCreator
     protected ReferenceListAttribute() {
-        super(null);
+        super(null,(AttributeMetadata)null);
     }
 
 
@@ -72,7 +68,7 @@ public class ReferenceListAttribute<T extends Data> extends Attribute<List<T>> i
 
     @Override
     public Attribute<List<T>> internal_copy() {
-        final ReferenceListAttribute<T> result = new ReferenceListAttribute<>(clazz, metadata);
+        final ReferenceListAttribute<T> result = new ReferenceListAttribute<>(containingFactoryClass, metadata);
         result.set(get());
         return result;
     }
@@ -104,11 +100,6 @@ public class ReferenceListAttribute<T extends Data> extends Attribute<List<T>> i
     }
 
     @Override
-    public AttributeMergeHelper<?> internal_createMergeHelper() {
-        return new AttributeMergeHelper<>(this);
-    }
-
-    @Override
     @SuppressWarnings("unchecked")
     public void internal_fixDuplicateObjects(Map<String, Data> idToDataMap) {
         List<T> currentToEditList = get();
@@ -128,7 +119,7 @@ public class ReferenceListAttribute<T extends Data> extends Attribute<List<T>> i
     }
 
 
-    //** set list only take the list items not the list itself, (to simplify ChangeListeners)*/
+    /** set list only take the list items not the list itself, (to simplify ChangeListeners)*/
     @Override
     public void set(List<T> value) {
         if (value==null){
@@ -206,143 +197,36 @@ public class ReferenceListAttribute<T extends Data> extends Attribute<List<T>> i
     }
 
 
-    private Optional<Function<Data,Collection<T>>> possibleValueProviderFromRoot=Optional.empty();
-    private Optional<Function<Data,T>> newValueProvider =Optional.empty();
-    private Optional<BiConsumer<T,Object>> additionalDeleteAction = Optional.empty();
-
-    /**customise the list of selectable items*/
-    @SuppressWarnings("unchecked")
-    public <A extends ReferenceListAttribute<T>> A possibleValueProvider(Function<Data,Collection<T>> provider){
-        possibleValueProviderFromRoot=Optional.of(provider);
-        return (A)this;
-    }
-
-    /**customise how new values are created*/
-    @SuppressWarnings("unchecked")
-    public <A extends ReferenceListAttribute<T>> A newValueProvider(Function<Data,T> newValueProviderFromRoot){
-        this.newValueProvider =Optional.of(newValueProviderFromRoot);
-        return (A)this;
-    }
 
     public T internal_addNewFactory(){
-        T addedFactory=null;
-        if (newValueProvider.isPresent()) {
-            T newFactory = newValueProvider.get().apply(root);
+        T addedFactory;
+        if (newValueProvider!=null) {
+            T newFactory = newValueProvider.apply(root);
             get().add(newFactory);
             addedFactory = newFactory;
-        }
-
-        if (!newValueProvider.isPresent()){
+        } else {
             try {
-                T newFactory = clazz.newInstance();
+                T newFactory = containingFactoryClass.newInstance();
                 get().add(newFactory);
                 addedFactory = newFactory;
             } catch (InstantiationException | IllegalAccessException e) {
                 throw new RuntimeException(e);
             }
         }
-
-        for (Data data: get()){
-            data.internal().propagateRoot(root);
-        }
-
+        addedFactory.internal().propagateRoot(root);
         return addedFactory;
     }
 
     public Class<T> internal_getReferenceClass(){
-        return clazz;
+        return containingFactoryClass;
     }
 
-    /**
-     * action after delete e.g delete the factory also in other lists
-     * @param additionalDeleteAction deleted value, root
-     * @return this
-     */
-    @SuppressWarnings("unchecked")
-    public <A extends ReferenceListAttribute<T>> A additionalDeleteAction(BiConsumer<T,Object> additionalDeleteAction){
-        this.additionalDeleteAction =Optional.of(additionalDeleteAction);
-        return (A)this;
-    }
 
     public void internal_deleteFactory(T factory){
         list.remove(factory);
-        additionalDeleteAction.ifPresent(bc -> bc.accept(factory, root));
-    }
-
-    @SuppressWarnings("unchecked")
-    public Collection<T> internal_possibleValues(){
-        Set<T> removeDuplicats = new HashSet<>();
-        List<T> result = new ArrayList<>();
-        possibleValueProviderFromRoot.ifPresent(factoryBaseListFunction -> {
-            Collection<T> factories = factoryBaseListFunction.apply(root);
-            factories.forEach(f->{
-                if (removeDuplicats.add(f)) {
-                    result.add(f);
-                }
-            });
-        });
-        if (!possibleValueProviderFromRoot.isPresent()){
-            for (Data factory: root.internal().collectChildrenDeep()){
-                if (clazz.isAssignableFrom(factory.getClass())){
-                    if (removeDuplicats.add((T)factory)) {
-                        result.add((T) factory);
-                    }
-                }
-            }
+        if (additionalDeleteAction!=null){
+            additionalDeleteAction.accept(factory, root);
         }
-        return result;
-    }
-
-    @Override
-    @SuppressWarnings("unchecked")
-    public void internal_prepareUsage(Data root){
-        this.root=root;
-    }
-
-    private boolean userEditable=true;
-    /**
-     * marks the reference as readonly for the user(user can still navigate but not change the reference)
-     */
-    @SuppressWarnings("unchecked")
-    public <A extends ReferenceListAttribute<T>> A userReadOnly(){
-        userEditable=false;
-        return (A)this;
-    }
-
-    @JsonIgnore
-    public boolean internal_isUserEditable(){
-        return userEditable;
-    }
-
-    private boolean userSelectable=true;
-    /**
-     * disable select for reference (slect dialog)
-     */
-    @SuppressWarnings("unchecked")
-    public <A extends ReferenceListAttribute<T>> A userNotSelectable(){
-        userSelectable=false;
-        return (A)this;
-    }
-
-    @JsonIgnore
-    public boolean internal_isUserSelectable(){
-        return userSelectable;
-    }
-
-    /**
-     * disable new for reference
-     */
-    @SuppressWarnings("unchecked")
-    public <A extends ReferenceListAttribute<T>> A userNotCreatable(){
-        userCreatable =false;
-        return (A)this;
-    }
-
-
-    private boolean userCreatable =true;
-    @JsonIgnore
-    public boolean internal_isUserCreatable(){
-        return userCreatable;
     }
 
     @Override

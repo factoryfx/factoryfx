@@ -6,8 +6,6 @@ import de.factoryfx.factory.datastorage.inmemory.InMemoryFactoryStorage;
 import de.factoryfx.factory.exception.RethrowingFactoryExceptionHandler;
 import de.factoryfx.server.ApplicationServer;
 
-import java.util.function.Function;
-
 public class Main {
 
     public static void main(String[] args) {

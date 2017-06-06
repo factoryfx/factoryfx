@@ -1,7 +1,7 @@
 package de.factoryfx.example.factory;
 
 import de.factoryfx.data.attribute.AttributeMetadata;
-import de.factoryfx.data.attribute.types.IntegerAttribute;
+import de.factoryfx.data.attribute.primitive.IntegerAttribute;
 import de.factoryfx.data.attribute.types.StringAttribute;
 import de.factoryfx.data.validation.ObjectRequired;
 import de.factoryfx.data.validation.StringRequired;

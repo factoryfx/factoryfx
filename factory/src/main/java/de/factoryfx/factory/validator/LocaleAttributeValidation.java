@@ -21,7 +21,7 @@ public class LocaleAttributeValidation implements FactoryStyleValidation {
     @Override
     public Optional<String> validateFactory() {
         try {
-            if (((Attribute<?>) attributeField.get(factoryBase)).metadata.labelText.internal_getText(locale) == null) {
+            if (((Attribute<?>) attributeField.get(factoryBase)).getPreferredLabelText(locale) == null) {
                 return Optional.of("locale: '" + locale + "' should be set: " + factoryBase.getClass().getName() + "#" + attributeField.getName());
             }
         } catch (IllegalAccessException e) {

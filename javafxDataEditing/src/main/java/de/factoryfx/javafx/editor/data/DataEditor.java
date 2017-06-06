@@ -11,15 +11,12 @@ import java.util.function.BiFunction;
 import java.util.function.Supplier;
 
 import de.factoryfx.data.Data;
-import de.factoryfx.data.attribute.Attribute;
-import de.factoryfx.data.attribute.AttributeChangeListener;
-import de.factoryfx.data.attribute.AttributeMetadata;
-import de.factoryfx.data.attribute.ValueAttribute;
-import de.factoryfx.data.attribute.WeakAttributeChangeListener;
+import de.factoryfx.data.attribute.*;
+import de.factoryfx.data.attribute.ImmutableValueAttribute;
 import de.factoryfx.data.attribute.types.BigDecimalAttribute;
-import de.factoryfx.data.attribute.types.IntegerAttribute;
+import de.factoryfx.data.attribute.primitive.IntegerAttribute;
 import de.factoryfx.data.attribute.types.LocalDateAttribute;
-import de.factoryfx.data.attribute.types.LongAttribute;
+import de.factoryfx.data.attribute.primitive.LongAttribute;
 import de.factoryfx.data.attribute.types.StringAttribute;
 import de.factoryfx.data.attribute.types.StringListAttribute;
 import de.factoryfx.data.validation.ValidationError;
@@ -159,9 +156,9 @@ public class DataEditor implements Widget {
 
     private static class ValueAttributeCreator{
         public final String name;
-        public final Supplier<ValueAttribute<?>> attributeCreator;
+        public final Supplier<ImmutableValueAttribute<?>> attributeCreator;
 
-        private ValueAttributeCreator(String name, Supplier<ValueAttribute<?>> attributeCreator) {
+        private ValueAttributeCreator(String name, Supplier<ImmutableValueAttribute<?>> attributeCreator) {
             this.name = name;
             this.attributeCreator = attributeCreator;
         }

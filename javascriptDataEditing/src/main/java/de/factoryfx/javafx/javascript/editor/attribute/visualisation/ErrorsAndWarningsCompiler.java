@@ -8,7 +8,6 @@ import de.factoryfx.javascript.data.attributes.types.Javascript;
 import java.io.PrintStream;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.Predicate;

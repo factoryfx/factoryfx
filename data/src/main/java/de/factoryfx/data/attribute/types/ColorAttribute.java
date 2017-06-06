@@ -1,11 +1,12 @@
 package de.factoryfx.data.attribute.types;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import de.factoryfx.data.attribute.Attribute;
 import de.factoryfx.data.attribute.AttributeMetadata;
-import de.factoryfx.data.attribute.ValueAttribute;
+import de.factoryfx.data.attribute.ImmutableValueAttribute;
 import javafx.scene.paint.Color;
 
-public class ColorAttribute extends ValueAttribute<Color> {
+public class ColorAttribute extends ImmutableValueAttribute<Color> {
 
     public ColorAttribute(AttributeMetadata attributeMetadata) {
         super(attributeMetadata,Color.class);
@@ -17,4 +18,8 @@ public class ColorAttribute extends ValueAttribute<Color> {
         set(initialValue);
     }
 
+    @Override
+    protected Attribute<Color> createNewEmptyInstance() {
+        return new ColorAttribute(metadata);
+    }
 }

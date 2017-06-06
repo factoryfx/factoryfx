@@ -1,18 +1,19 @@
 package de.factoryfx.javafx.editor.attribute;
 
 import de.factoryfx.data.attribute.Attribute;
-import javafx.collections.ObservableList;
 import javafx.scene.Node;
 
-public abstract class ListAttributeEditorVisualisation<T> implements AttributeEditorVisualisation<ObservableList<T>> {
-    protected ObservableList<T> attributeValue;
+import java.util.List;
+
+public abstract class ListAttributeEditorVisualisation<T> implements AttributeEditorVisualisation<List<T>> {
+    protected List<T> attributeValue;
     @Override
-    public void init(Attribute<ObservableList<T>> boundAttribute) {
+    public void init(Attribute<List<T>> boundAttribute) {
         this.attributeValue=boundAttribute.get();
     }
 
     @Override
-    public void attributeValueChanged(ObservableList<T> newValue) {
+    public void attributeValueChanged(List<T> newValue) {
         //nothing
     }
 
@@ -22,6 +23,6 @@ public abstract class ListAttributeEditorVisualisation<T> implements AttributeEd
     }
 
 
-    public abstract Node createContent(ObservableList<T> attributeValue);
+    public abstract Node createContent(List<T> attributeValue);
 
 }

@@ -10,7 +10,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableSet;
 import javafx.collections.SetChangeListener;
 
-public class ValueSetAttribute<T> extends ValueAttribute<Set<T>> implements Set<T> {
+public class ValueSetAttribute<T> extends ImmutableValueAttribute<Set<T>> implements Set<T> {
     private final Class<T> itemType;
 
     public ValueSetAttribute(Class<T> itemType, AttributeMetadata attributeMetadata) {
@@ -27,10 +27,8 @@ public class ValueSetAttribute<T> extends ValueAttribute<Set<T>> implements Set<
     }
 
     @Override
-    public Attribute<Set<T>> internal_copy() {
-        final ValueSetAttribute<T> result = new ValueSetAttribute<>(itemType, metadata);
-        result.addAll(get());
-        return result;
+    protected Attribute<Set<T>> createNewEmptyInstance() {
+        return new ValueSetAttribute<>(itemType, metadata);
     }
 
     @JsonCreator

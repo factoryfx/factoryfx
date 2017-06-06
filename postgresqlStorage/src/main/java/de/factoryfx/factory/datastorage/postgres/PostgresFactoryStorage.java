@@ -206,8 +206,8 @@ public class PostgresFactoryStorage<V,L,T extends FactoryBase<L,V>> implements F
                                 metadata.id=newId;
                                 metadata.baseVersionId= newId;
                                 metadata.user="System";
-                                FactoryAndStoredMetadata<T> initialFactoryAndStorageMetadata = new FactoryAndStoredMetadata<T>(
-                                        initialFactory,metadata);
+                                FactoryAndStoredMetadata<T> initialFactoryAndStorageMetadata = new FactoryAndStoredMetadata<>(
+                                        initialFactory, metadata);
                                 updateCurrentFactory(connection,initialFactoryAndStorageMetadata);
                             }
                         }
