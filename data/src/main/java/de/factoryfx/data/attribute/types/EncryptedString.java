@@ -10,7 +10,7 @@ import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
 
-public class EncryptedString {
+public class EncryptedString implements Comparable<EncryptedString> {
     private final String encryptedString;
 
     @JsonCreator
@@ -46,5 +46,40 @@ public class EncryptedString {
 
     public String getEncryptedString(){
         return encryptedString;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        EncryptedString that = (EncryptedString) o;
+
+        return encryptedString != null ? encryptedString.equals(that.encryptedString) : that.encryptedString == null;
+    }
+
+    @Override
+    public int hashCode() {
+        return encryptedString != null ? encryptedString.hashCode() : 0;
+    }
+
+    @Override
+    public int compareTo(EncryptedString o) {
+        if (this == o) return 0;
+        if (o == null)
+            return 1;
+        int cmp = getClass().getName().compareTo(o.getClass().getName());
+        if (cmp != 0)
+            return cmp;
+
+        EncryptedString that = (EncryptedString) o;
+        if (encryptedString == null) {
+            if (that.encryptedString == null)
+                return 0;
+            return -1;
+        }
+        if (that.encryptedString == null)
+            return 1;
+        return this.encryptedString.compareTo(that.encryptedString);
     }
 }
