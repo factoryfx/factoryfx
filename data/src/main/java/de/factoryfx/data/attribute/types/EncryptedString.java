@@ -64,22 +64,21 @@ public class EncryptedString implements Comparable<EncryptedString> {
     }
 
     @Override
-    public int compareTo(EncryptedString o) {
-        if (this == o) return 0;
-        if (o == null)
+    public int compareTo(EncryptedString other) {
+        if (this == other) return 0;
+        if (other == null)
             return 1;
-        int cmp = getClass().getName().compareTo(o.getClass().getName());
+        int cmp = getClass().getName().compareTo(other.getClass().getName());
         if (cmp != 0)
             return cmp;
 
-        EncryptedString that = (EncryptedString) o;
         if (encryptedString == null) {
-            if (that.encryptedString == null)
+            if (other.encryptedString == null)
                 return 0;
             return -1;
         }
-        if (that.encryptedString == null)
+        if (other.encryptedString == null)
             return 1;
-        return this.encryptedString.compareTo(that.encryptedString);
+        return this.encryptedString.compareTo(other.encryptedString);
     }
 }
