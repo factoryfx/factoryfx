@@ -1,10 +1,11 @@
 package de.factoryfx.data.attribute;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonValue;
 import de.factoryfx.data.Data;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.function.Function;
 
 public class DataReferenceAttribute<T extends Data> extends ReferenceAttribute<T,DataReferenceAttribute<T>> {
@@ -12,28 +13,50 @@ public class DataReferenceAttribute<T extends Data> extends ReferenceAttribute<T
 
     @JsonCreator
     protected DataReferenceAttribute(T value) {
-        super(null,(AttributeMetadata)null);
-        set(value);
+        super(value);
     }
 
-    /**
-     * @see ReferenceBaseAttribute#ReferenceBaseAttribute(Class ,AttributeMetadata)
-     * */
-    public DataReferenceAttribute(Class<T> clazz, AttributeMetadata attributeMetadata) {
-        super(clazz,attributeMetadata);
+    public DataReferenceAttribute(Class<T> clazz) {
+        super();
+        setup(clazz);
     }
 
-    /**
-     * @see ReferenceBaseAttribute#ReferenceBaseAttribute(AttributeMetadata,Class)
-     * */
-    @SuppressWarnings("unchecked")
-    public DataReferenceAttribute(AttributeMetadata attributeMetadata, Class clazz) {
-        super(attributeMetadata,clazz);
+    public DataReferenceAttribute<T> setup(Class<T> clazz){
+        this.possibleValueProvider(data -> {
+            Set<T> result = new HashSet<>();
+            for (Data factory: root.internal().collectChildrenDeep()){
+                if (clazz.isAssignableFrom(factory.getClass())){
+                    result.add((T) factory);
+                }
+            }
+            return result;
+        });
+        this.newValueProvider(data -> {
+            try {
+                return clazz.newInstance();
+            } catch (InstantiationException | IllegalAccessException e) {
+                throw new RuntimeException(e);
+            }
+        });
+        return this;
     }
+
+
+    public DataReferenceAttribute() {
+        super();
+    }
+
+//    /**
+//     * @see ReferenceBaseAttribute#ReferenceBaseAttribute(AttributeMetadata,Class)
+//     * */
+//    @SuppressWarnings("unchecked")
+//    public DataReferenceAttribute(AttributeMetadata attributeMetadata, Class clazz) {
+//        super(attributeMetadata,clazz);
+//    }
 
     @Override
-    public Attribute<T> internal_copy() {
-        final DataReferenceAttribute<T> result = new DataReferenceAttribute<>(containingFactoryClass, metadata);
+    public DataReferenceAttribute<T> internal_copy() {
+        final DataReferenceAttribute<T> result = new DataReferenceAttribute<>();
         result.set(get());
         return result;
     }

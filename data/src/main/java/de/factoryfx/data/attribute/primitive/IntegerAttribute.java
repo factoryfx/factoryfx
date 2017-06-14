@@ -2,23 +2,22 @@ package de.factoryfx.data.attribute.primitive;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import de.factoryfx.data.attribute.Attribute;
-import de.factoryfx.data.attribute.AttributeMetadata;
 import de.factoryfx.data.attribute.ImmutableValueAttribute;
 
-public class IntegerAttribute extends ImmutableValueAttribute<Integer> {
+public class IntegerAttribute extends ImmutableValueAttribute<Integer,IntegerAttribute> {
 
     @JsonCreator
     IntegerAttribute(Integer value) {
-        super(null,Integer.class);
+        super(Integer.class);
         set(value);
     }
 
-    public IntegerAttribute(AttributeMetadata attributeMetadata) {
-        super(attributeMetadata,Integer.class);
+    public IntegerAttribute() {
+        super(Integer.class);
     }
 
     @Override
-    protected Attribute<Integer> createNewEmptyInstance() {
-        return new IntegerAttribute(metadata);
+    protected IntegerAttribute createNewEmptyInstance() {
+        return new IntegerAttribute();
     }
 }

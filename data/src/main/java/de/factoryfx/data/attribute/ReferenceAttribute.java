@@ -11,28 +11,17 @@ import com.fasterxml.jackson.annotation.JsonValue;
 import de.factoryfx.data.Data;
 
 public abstract class ReferenceAttribute<T extends Data, A extends ReferenceBaseAttribute<T,T,A>> extends ReferenceBaseAttribute<T,T,A> {
-
     private T value;
 
     @JsonCreator
     protected ReferenceAttribute(T value) {
-        super(null,(AttributeMetadata)null);
+        super();
         set(value);
     }
 
-    /**
-     * @see ReferenceBaseAttribute#ReferenceBaseAttribute(Class ,AttributeMetadata)
-     * */
-    public ReferenceAttribute(Class<T> clazz, AttributeMetadata attributeMetadata) {
-        super(clazz,attributeMetadata);
-    }
-
-    /**
-     * @see ReferenceBaseAttribute#ReferenceBaseAttribute(AttributeMetadata,Class)
-     * */
-    @SuppressWarnings("unchecked")
-    public ReferenceAttribute(AttributeMetadata attributeMetadata, Class clazz) {
-        super(attributeMetadata,clazz);
+    @JsonCreator
+    protected ReferenceAttribute() {
+        super();
     }
 
     @Override
@@ -80,19 +69,19 @@ public abstract class ReferenceAttribute<T extends Data, A extends ReferenceBase
         if (root!=null && value!=null && value.internal().getRoot()!=root) {
             value.internal().propagateRoot(root);
         }
-        for (AttributeChangeListener<T> listener: listeners){
+        for (AttributeChangeListener<T,A> listener: listeners){
             listener.changed(this,value);
         }
     }
 
     @Override
     @SuppressWarnings("unchecked")
-    public void internal_copyTo(Attribute<T> copyAttribute, Function<Data, Data> dataCopyProvider) {
+    public void internal_copyTo(A copyAttribute, Function<Data, Data> dataCopyProvider) {
         copyAttribute.set((T) dataCopyProvider.apply(get()));
     }
 
     @Override
-    public void internal_semanticCopyTo(Attribute<T> copyAttribute) {
+    public void internal_semanticCopyTo(A copyAttribute) {
         if (get()!=null){
             if (copySemantic==CopySemantic.SELF){
                 copyAttribute.set(get());
@@ -113,14 +102,14 @@ public abstract class ReferenceAttribute<T extends Data, A extends ReferenceBase
         this.value = value;
     }
 
-    List<AttributeChangeListener<T>> listeners= new ArrayList<>();
+    List<AttributeChangeListener<T,A>> listeners= new ArrayList<>();
     @Override
-    public void internal_addListener(AttributeChangeListener<T> listener) {
+    public void internal_addListener(AttributeChangeListener<T,A> listener) {
         listeners.add(listener);
     }
     @Override
-    public void internal_removeListener(AttributeChangeListener<T> listener) {
-        for (AttributeChangeListener<T> listenerItem: new ArrayList<>(listeners)){
+    public void internal_removeListener(AttributeChangeListener<T,A> listener) {
+        for (AttributeChangeListener<T,A> listenerItem: new ArrayList<>(listeners)){
             if (listenerItem.unwrap()==listener ||  listenerItem.unwrap()==null){
                 listeners.remove(listenerItem);
             }
@@ -157,11 +146,11 @@ public abstract class ReferenceAttribute<T extends Data, A extends ReferenceBase
 
     public T internal_addNewFactory(){
         if (newValueProvider==null){
-            try {
-                set(containingFactoryClass.newInstance());
-            } catch (InstantiationException | IllegalAccessException e) {
-                throw new RuntimeException(e);
-            }
+//            try {
+//                set(containingFactoryClass.newInstance());
+//            } catch (InstantiationException | IllegalAccessException e) {
+//                throw new RuntimeException(e);
+//            }
         } else {
             T newFactory = newValueProvider.apply(root);
             set(newFactory);
@@ -170,8 +159,12 @@ public abstract class ReferenceAttribute<T extends Data, A extends ReferenceBase
         return get();
     }
 
-    public Class<T> internal_getReferenceClass(){
-        return this.containingFactoryClass;
+
+    @Override
+    public void writeValueToJsonWrapper(AttributeJsonWrapper attributeJsonWrapper) {
+        attributeJsonWrapper.value=get();
+        attributeJsonWrapper.patchIds(this.value);
+//        attributeJsonWrapper.referenceClass=clazz;
     }
 
 }

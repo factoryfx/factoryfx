@@ -11,13 +11,13 @@ import com.fasterxml.jackson.annotation.JsonValue;
 import de.factoryfx.data.Data;
 
 /** base class for Attributes with immutable value(for Changelistener)*/
-public abstract class ImmutableValueAttribute<T> extends Attribute<T> {
+public abstract class ImmutableValueAttribute<T,A extends Attribute<T,A>> extends Attribute<T,A> {
     //    @JsonProperty
     protected T value;
     private final Class<T> dataType;
 
-    public ImmutableValueAttribute(AttributeMetadata attributeMetadata, Class<T> dataType) {
-        super(attributeMetadata);
+    public ImmutableValueAttribute(Class<T> dataType) {
+        super();
         this.dataType=dataType;
     }
 
@@ -29,10 +29,10 @@ public abstract class ImmutableValueAttribute<T> extends Attribute<T> {
 
     @Override
     @SuppressWarnings("unchecked")
-    public Attribute<T> internal_copy() {
+    public A internal_copy() {
         try {
-            Attribute<T> result = createNewEmptyInstance();
-            result.set(get());
+            A result = createNewEmptyInstance();
+            result.takeContentFromAttribute((A)this);
             return result;
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -40,7 +40,7 @@ public abstract class ImmutableValueAttribute<T> extends Attribute<T> {
     }
 
     /** new instance with same metadata but empty/no value*/
-    protected abstract Attribute<T> createNewEmptyInstance();
+    protected abstract A createNewEmptyInstance();
 
     @Override
     public boolean internal_match(T value) {
@@ -60,35 +60,37 @@ public abstract class ImmutableValueAttribute<T> extends Attribute<T> {
     @Override
     public void set(T value) {
         this.value = value;
-        for (AttributeChangeListener<T> listener: listeners){
+        for (AttributeChangeListener<T,A> listener: listeners){
             listener.changed(this,value);
         }
     }
 
     //override to change copy e.g mutable value
-    protected void copyTo(Attribute<T> copyAttribute){
+    protected void copyTo(Attribute<T,A> copyAttribute){
         copyAttribute.set(get());
     }
 
     @Override
-    public void internal_copyTo(Attribute<T> copyAttribute, Function<Data, Data> dataCopyProvider) {
+    public void internal_copyTo(A copyAttribute, Function<Data, Data> dataCopyProvider) {
         copyTo(copyAttribute);
     }
 
     @Override
-    public void internal_semanticCopyTo(Attribute<T> copyAttribute) {
+    public void internal_semanticCopyTo(A copyAttribute) {
         copyTo(copyAttribute);
     }
 
-    protected final List<AttributeChangeListener<T>> listeners= new ArrayList<>();
+    protected final List<AttributeChangeListener<T,A>> listeners= new ArrayList<>();
+
     @Override
-    public void internal_addListener(AttributeChangeListener<T> listener) {
-        listeners.add(listener);
+    @SuppressWarnings("unchecked")
+    public void internal_addListener(AttributeChangeListener<T,A> listener) {
+        listeners.add((AttributeChangeListener<T, A>) listener);
     }
 
     @Override
-    public void internal_removeListener(AttributeChangeListener<T> listener) {
-        for (AttributeChangeListener<T> listenerItem: new ArrayList<>(listeners)){
+    public void internal_removeListener(AttributeChangeListener<T,A> listener) {
+        for (AttributeChangeListener<T,A> listenerItem: new ArrayList<>(listeners)){
             if (listenerItem.unwrap()==listener || listenerItem.unwrap()==null){
                 listeners.remove(listenerItem);
             }
@@ -123,5 +125,8 @@ public abstract class ImmutableValueAttribute<T> extends Attribute<T> {
         set(value);
     }
 
-
+    @Override
+    public void writeValueToJsonWrapper(AttributeJsonWrapper attributeJsonWrapper) {
+        attributeJsonWrapper.value=get();
+    }
 }

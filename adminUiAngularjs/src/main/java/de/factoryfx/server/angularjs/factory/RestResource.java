@@ -320,7 +320,7 @@ public class RestResource<V,L,T extends FactoryBase<L,V>> {
 
                 attribute.internal_visit(new AttributeVisitor() {
                     @Override
-                    public void value(Attribute<?> value) {
+                    public void value(Attribute<?,?> value) {
                         //nothing
                     }
 
@@ -356,7 +356,7 @@ public class RestResource<V,L,T extends FactoryBase<L,V>> {
 
                 attribute.internal_visit(new AttributeVisitor() {
                     @Override
-                    public void value(Attribute<?> value) {
+                    public void value(Attribute<?,?> value) {
                         //nothing
                     }
 

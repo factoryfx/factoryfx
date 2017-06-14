@@ -1,6 +1,5 @@
 package de.factoryfx.server;
 
-import de.factoryfx.data.attribute.AttributeMetadata;
 import de.factoryfx.factory.FactoryManager;
 import de.factoryfx.factory.SimpleFactoryBase;
 import de.factoryfx.factory.atrribute.FactoryReferenceAttribute;
@@ -34,7 +33,7 @@ public class ApplicationServerAwareFactoryTest {
 
     public static class RootTestClazz extends SimpleFactoryBase<String,Void>{
 
-        public final FactoryReferenceAttribute<String,ApplicationServerAwareFactoryTestclazz> ref = new FactoryReferenceAttribute<>(ApplicationServerAwareFactoryTestclazz.class,new AttributeMetadata());
+        public final FactoryReferenceAttribute<String,ApplicationServerAwareFactoryTestclazz> ref = new FactoryReferenceAttribute<>(ApplicationServerAwareFactoryTestclazz.class);
 
         @Override
         public String createImpl() {

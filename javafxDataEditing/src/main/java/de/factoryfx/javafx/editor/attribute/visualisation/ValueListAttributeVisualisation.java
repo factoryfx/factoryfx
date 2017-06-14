@@ -28,10 +28,10 @@ import java.util.List;
 
 public class ValueListAttributeVisualisation<T> extends ListAttributeEditorVisualisation<T> {
     private final UniformDesign uniformDesign;
-    private final Attribute<T> detailAttribute;
-    private final AttributeEditor<T> attributeEditor;
+    private final Attribute<T,?> detailAttribute;
+    private final AttributeEditor<T,?> attributeEditor;
 
-    public ValueListAttributeVisualisation(UniformDesign uniformDesign, Attribute<T> detailAttribute, AttributeEditor<T> attributeEditor) {
+    public ValueListAttributeVisualisation(UniformDesign uniformDesign, Attribute<T,?> detailAttribute, AttributeEditor<T,?> attributeEditor) {
         this.uniformDesign = uniformDesign;
         this.detailAttribute = detailAttribute;
         this.attributeEditor = attributeEditor;
@@ -74,7 +74,7 @@ public class ValueListAttributeVisualisation<T> extends ListAttributeEditorVisua
         tableView.getSelectionModel().selectedItemProperty().addListener(observable -> {
             detailAttribute.set(tableView.getSelectionModel().getSelectedItem());
         });
-        AttributeChangeListener<T> detailAttributeChangeListener = (attribute1, value) -> {
+        AttributeChangeListener detailAttributeChangeListener = (attribute1, value) -> {
             Platform.runLater(() -> {
                 addButton.setDisable(value == null);
                 replaceButton.setDisable(value == null || tableView.getSelectionModel().getSelectedItem()==null);

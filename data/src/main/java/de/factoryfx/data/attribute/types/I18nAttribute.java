@@ -4,18 +4,17 @@ import java.util.Locale;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import de.factoryfx.data.attribute.Attribute;
-import de.factoryfx.data.attribute.AttributeMetadata;
 import de.factoryfx.data.attribute.ImmutableValueAttribute;
 import de.factoryfx.data.util.LanguageText;
 
-public class I18nAttribute extends ImmutableValueAttribute<LanguageText> {
-    public I18nAttribute(AttributeMetadata attributeMetadata) {
-        super(attributeMetadata, LanguageText.class);
+public class I18nAttribute extends ImmutableValueAttribute<LanguageText,I18nAttribute> {
+    public I18nAttribute() {
+        super(LanguageText.class);
     }
 
     @JsonCreator
     I18nAttribute(LanguageText value) {
-        super(null,null);
+        super(null);
         set(value);
     }
 
@@ -62,7 +61,7 @@ public class I18nAttribute extends ImmutableValueAttribute<LanguageText> {
     }
 
     @Override
-    protected Attribute<LanguageText> createNewEmptyInstance() {
-        return new I18nAttribute(metadata);
+    protected I18nAttribute createNewEmptyInstance() {
+        return new I18nAttribute();
     }
 }

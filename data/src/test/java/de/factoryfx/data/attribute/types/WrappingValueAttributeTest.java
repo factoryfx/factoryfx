@@ -3,7 +3,6 @@ package de.factoryfx.data.attribute.types;
 import java.util.ArrayList;
 
 import de.factoryfx.data.Data;
-import de.factoryfx.data.attribute.AttributeMetadata;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -17,7 +16,7 @@ public class WrappingValueAttributeTest {
 
         public TestAWrapper(TestA testA) {
             this.testA = testA;
-            name=new WrappingValueAttribute<>(new AttributeMetadata(), String.class, ( ) -> testA.name, (name) -> testA.name= name);
+            name=new WrappingValueAttribute<>(String.class, ( ) -> testA.name, (name) -> testA.name= name);
         }
 
         final WrappingValueAttribute<String> name;

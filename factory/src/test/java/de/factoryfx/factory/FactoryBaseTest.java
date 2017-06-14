@@ -5,7 +5,6 @@ import java.util.HashSet;
 import java.util.List;
 
 import de.factoryfx.data.Data;
-import de.factoryfx.data.attribute.AttributeMetadata;
 import de.factoryfx.data.attribute.types.StringAttribute;
 import de.factoryfx.factory.atrribute.FactoryReferenceAttribute;
 import de.factoryfx.factory.atrribute.FactoryReferenceListAttribute;
@@ -48,10 +47,10 @@ public class FactoryBaseTest {
     }
 
     public static class XRoot extends SimpleFactoryBase<String,Void> {
-        public final FactoryReferenceAttribute<String,ExampleFactoryAndViewA> referenceAttribute = new FactoryReferenceAttribute<>(ExampleFactoryAndViewA.class,new AttributeMetadata().labelText("ExampleA2"));
-        public final FactoryReferenceAttribute<String,XFactory> xFactory = new FactoryReferenceAttribute<>(XFactory.class,new AttributeMetadata().labelText("XFactory"));
-        public final FactoryReferenceAttribute<String,XFactory> xFactory2 = new FactoryReferenceAttribute<>(XFactory.class,new AttributeMetadata().labelText("XFactory"));
-        public final FactoryReferenceListAttribute<String,XFactory> xFactoryList = new FactoryReferenceListAttribute<>(XFactory.class,new AttributeMetadata().labelText("XFactory"));
+        public final FactoryReferenceAttribute<String,ExampleFactoryAndViewA> referenceAttribute = new FactoryReferenceAttribute<String,ExampleFactoryAndViewA>(ExampleFactoryAndViewA.class).labelText("ExampleA2");
+        public final FactoryReferenceAttribute<String,XFactory> xFactory = new FactoryReferenceAttribute<String,XFactory>(XFactory.class).labelText("XFactory");
+        public final FactoryReferenceAttribute<String,XFactory> xFactory2 = new FactoryReferenceAttribute<String,XFactory>(XFactory.class).labelText("XFactory");
+        public final FactoryReferenceListAttribute<String,XFactory> xFactoryList = new FactoryReferenceListAttribute<String,XFactory>(XFactory.class).labelText("XFactory");
 
         @Override
         public String createImpl() {
@@ -64,10 +63,10 @@ public class FactoryBaseTest {
     }
 
     public static class ExampleFactoryAndViewA extends SimpleFactoryBase<String,Void> {
-        public final FactoryViewReferenceAttribute<XRoot,String,XFactory> referenceView = new FactoryViewReferenceAttribute<>(new AttributeMetadata().labelText("ExampleA2"),
-                root -> root.xFactory.get());
-        public final FactoryViewListReferenceAttribute<XRoot,String,XFactory> listView = new FactoryViewListReferenceAttribute<>(new AttributeMetadata().labelText("ExampleA2"),
-                root -> root.xFactoryList.get());
+        public final FactoryViewReferenceAttribute<XRoot,String,XFactory> referenceView = new FactoryViewReferenceAttribute<XRoot,String,XFactory>(
+                root -> root.xFactory.get()).labelText("ExampleA2");
+        public final FactoryViewListReferenceAttribute<XRoot,String,XFactory> listView = new FactoryViewListReferenceAttribute<XRoot,String,XFactory>(
+                root -> root.xFactoryList.get()).labelText("ExampleA2");
 
         @Override
         public String createImpl() {
@@ -79,7 +78,7 @@ public class FactoryBaseTest {
 
 
     public static class XFactory extends SimpleFactoryBase<String,Void> {
-        public final StringAttribute bla=new StringAttribute(new AttributeMetadata());
+        public final StringAttribute bla=new StringAttribute();
 
         public List<String> createCalls=new ArrayList<>();
 

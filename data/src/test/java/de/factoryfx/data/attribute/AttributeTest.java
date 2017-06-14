@@ -17,7 +17,7 @@ import org.junit.Test;
 
 public class AttributeTest {
     public class ValidationExampleFactory extends Data {
-        public final StringAttribute stringAttribute= new StringAttribute(new AttributeMetadata().labelText("ExampleA1")).validation(new StringRequired());
+        public final StringAttribute stringAttribute= new StringAttribute().labelText("ExampleA1").validation(new StringRequired());
     }
 
     @Test
@@ -48,18 +48,18 @@ public class AttributeTest {
 
 
         Assert.assertEquals(null,readed.stringAttribute);
-        Assert.assertEquals(null,readed.referenceAttribute.metadata);
-        Assert.assertEquals(null,readed.referenceListAttribute.metadata);
+        Assert.assertEquals(null,readed.referenceAttribute.en);
+        Assert.assertEquals(null,readed.referenceListAttribute.en);
         Assert.assertEquals(null,readed.referenceAttribute.get().stringAttribute);
         Assert.assertEquals(null,readed.referenceListAttribute.get(0).stringAttribute);
 
         readed = readed.internal().prepareUsableCopy();
 
-        Assert.assertEquals("ExampleA1",readed.stringAttribute.metadata.labelText.internal_getPreferred(Locale.ENGLISH));
-        Assert.assertEquals("ExampleA2",readed.referenceAttribute.metadata.labelText.internal_getPreferred(Locale.ENGLISH));
-        Assert.assertEquals("ExampleA3",readed.referenceListAttribute.metadata.labelText.internal_getPreferred(Locale.ENGLISH));
-        Assert.assertEquals("ExampleB1",readed.referenceAttribute.get().stringAttribute.metadata.labelText.internal_getPreferred(Locale.ENGLISH));
-        Assert.assertEquals("ExampleB1",readed.referenceListAttribute.get(0).stringAttribute.metadata.labelText.internal_getPreferred(Locale.ENGLISH));
+        Assert.assertEquals("ExampleA1",readed.stringAttribute.internal_getPreferredLabelText(Locale.ENGLISH));
+        Assert.assertEquals("ExampleA2",readed.referenceAttribute.internal_getPreferredLabelText(Locale.ENGLISH));
+        Assert.assertEquals("ExampleA3",readed.referenceListAttribute.internal_getPreferredLabelText(Locale.ENGLISH));
+        Assert.assertEquals("ExampleB1",readed.referenceAttribute.get().stringAttribute.internal_getPreferredLabelText(Locale.ENGLISH));
+        Assert.assertEquals("ExampleB1",readed.referenceListAttribute.get(0).stringAttribute.internal_getPreferredLabelText(Locale.ENGLISH));
 
         Assert.assertEquals(exampleFactoryA.getId(),readed.getId());
     }

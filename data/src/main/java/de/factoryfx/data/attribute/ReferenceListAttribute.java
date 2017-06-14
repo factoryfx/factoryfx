@@ -23,11 +23,9 @@ import javafx.collections.ObservableList;
 public abstract class ReferenceListAttribute<T extends Data,A extends ReferenceBaseAttribute<T,List<T>,A>> extends ReferenceBaseAttribute<T,List<T>,A> implements Collection<T> {
     ObservableList<T> list = FXCollections.observableArrayList();
 
-    /**
-     * @see ReferenceBaseAttribute#ReferenceBaseAttribute(Class ,AttributeMetadata)
-     * */
-    public ReferenceListAttribute(Class<T> containingFactoryClass, AttributeMetadata attributeMetadata) {
-        super(containingFactoryClass,attributeMetadata);
+
+    public ReferenceListAttribute() {
+        super();
 
         list.addListener((ListChangeListener<T>) c -> {
             if (c.next()){
@@ -40,24 +38,24 @@ public abstract class ReferenceListAttribute<T extends Data,A extends ReferenceB
                     }
                 }
             }
-            for (AttributeChangeListener<List<T>> listener: listeners){
+            for (AttributeChangeListener<List<T>,A> listener: listeners){
                 listener.changed(ReferenceListAttribute.this,get());
             }
         });
     }
 
-    /**
-     * @see ReferenceBaseAttribute#ReferenceBaseAttribute(AttributeMetadata,Class)
-     * */
-    @SuppressWarnings("unchecked")
-    public ReferenceListAttribute(AttributeMetadata attributeMetadata, Class clazz) {
-        super(attributeMetadata,clazz);
-    }
+//    /**
+//     * @see ReferenceBaseAttribute#ReferenceBaseAttribute(AttributeMetadata,Class)
+//     * */
+//    @SuppressWarnings("unchecked")
+//    public ReferenceListAttribute(AttributeMetadata attributeMetadata, Class clazz) {
+//        super(attributeMetadata,clazz);
+//    }
 
-    @JsonCreator
-    protected ReferenceListAttribute() {
-        super(null,(AttributeMetadata)null);
-    }
+//    @JsonCreator
+//    protected ReferenceListAttribute() {
+//        super();
+//    }
 
 
 
@@ -124,7 +122,7 @@ public abstract class ReferenceListAttribute<T extends Data,A extends ReferenceB
 
     @Override
     @SuppressWarnings("unchecked")
-    public void internal_copyTo(Attribute<List<T>> copyAttribute, Function<Data,Data> dataCopyProvider) {
+    public void internal_copyTo(A copyAttribute, Function<Data,Data> dataCopyProvider) {
         for (T item: get()){
             final T itemCopy = (T) dataCopyProvider.apply(item);
             if (itemCopy!=null){
@@ -134,7 +132,7 @@ public abstract class ReferenceListAttribute<T extends Data,A extends ReferenceB
     }
 
     @Override
-    public void internal_semanticCopyTo(Attribute<List<T>> copyAttribute) {
+    public void internal_semanticCopyTo(A copyAttribute) {
         if (copySemantic==CopySemantic.SELF){
             copyAttribute.set(get());
         } else {
@@ -151,14 +149,14 @@ public abstract class ReferenceListAttribute<T extends Data,A extends ReferenceB
         return get().stream().filter(predicate).collect(Collectors.toList());
     }
 
-    final List<AttributeChangeListener<List<T>>> listeners= new ArrayList<>();
+    final List<AttributeChangeListener<List<T>,A>> listeners= new ArrayList<>();
     @Override
-    public void internal_addListener(AttributeChangeListener<List<T>> listener) {
+    public void internal_addListener(AttributeChangeListener<List<T>,A> listener) {
         listeners.add(listener);
     }
     @Override
-    public void internal_removeListener(AttributeChangeListener<List<T>> listener) {
-        for (AttributeChangeListener<List<T>> listenerItem: new ArrayList<>(listeners)){
+    public void internal_removeListener(AttributeChangeListener<List<T>,A> listener) {
+        for (AttributeChangeListener<List<T>,A> listenerItem: new ArrayList<>(listeners)){
             if (listenerItem.unwrap()==listener || listenerItem.unwrap()==null){
                 listeners.remove(listenerItem);
             }
@@ -190,28 +188,34 @@ public abstract class ReferenceListAttribute<T extends Data,A extends ReferenceB
             get().add(newFactory);
             addedFactory = newFactory;
         } else {
-            try {
-                T newFactory = containingFactoryClass.newInstance();
-                get().add(newFactory);
-                addedFactory = newFactory;
-            } catch (InstantiationException | IllegalAccessException e) {
-                throw new RuntimeException(e);
-            }
+//            try {
+//                T newFactory = containingFactoryClass.newInstance();
+//                get().add(newFactory);
+//                addedFactory = newFactory;
+//            } catch (InstantiationException | IllegalAccessException e) {
+//                throw new RuntimeException(e);
+//            }
         }
-        addedFactory.internal().propagateRoot(root);
-        return addedFactory;
+//        addedFactory.internal().propagateRoot(root);
+        return null;
     }
-
-    public Class<T> internal_getReferenceClass(){
-        return containingFactoryClass;
-    }
-
 
     public void internal_deleteFactory(T factory){
         list.remove(factory);
         if (additionalDeleteAction!=null){
             additionalDeleteAction.accept(factory, root);
         }
+    }
+
+    @Override
+    public void writeValueToJsonWrapper(AttributeJsonWrapper attributeJsonWrapper) {
+        attributeJsonWrapper.valueList=new ArrayList<>(get());
+        attributeJsonWrapper.valueList.replaceAll(d->{
+            Data theCopy = d.internal().copy();
+            attributeJsonWrapper.patchIds(theCopy);
+            return theCopy;
+        });
+//        attributeJsonWrapper.referenceClass=clazz;
     }
 
     @Override

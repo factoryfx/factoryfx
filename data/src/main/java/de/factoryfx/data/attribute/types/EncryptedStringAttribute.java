@@ -1,31 +1,33 @@
 package de.factoryfx.data.attribute.types;
 
+import java.nio.charset.StandardCharsets;
+import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
 
-import javax.crypto.KeyGenerator;
+import javax.crypto.*;
+import javax.crypto.spec.SecretKeySpec;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import de.factoryfx.data.attribute.Attribute;
-import de.factoryfx.data.attribute.AttributeMetadata;
 import de.factoryfx.data.attribute.ImmutableValueAttribute;
 
-public class EncryptedStringAttribute extends ImmutableValueAttribute<EncryptedString> {
+public class EncryptedStringAttribute extends ImmutableValueAttribute<EncryptedString,EncryptedStringAttribute> {
 
-    public EncryptedStringAttribute(AttributeMetadata attributeMetadata) {
-        super(attributeMetadata, EncryptedString.class);
+    public EncryptedStringAttribute() {
+        super(EncryptedString.class);
     }
 
     @JsonCreator
     EncryptedStringAttribute(EncryptedString initialValue) {
-        super(null, EncryptedString.class);
+        super(EncryptedString.class);
         set(initialValue);
     }
 
     @JsonCreator
     EncryptedStringAttribute(String initialValue) {
-        super(null, EncryptedString.class);
+        super(EncryptedString.class);
         set(new EncryptedString(initialValue));
     }
 
@@ -62,8 +64,22 @@ public class EncryptedStringAttribute extends ImmutableValueAttribute<EncryptedS
     }
 
     @Override
-    protected Attribute<EncryptedString> createNewEmptyInstance() {
-        return new EncryptedStringAttribute(metadata);
+    protected EncryptedStringAttribute createNewEmptyInstance() {
+        return new EncryptedStringAttribute();
+    }
+
+    public boolean isValidKey(String key) {
+        try {
+            byte[] decodedKey = Base64.getDecoder().decode(key);
+            SecretKey secKey = new SecretKeySpec(decodedKey, 0, decodedKey.length, "AES");
+
+            Cipher AesCipher = Cipher.getInstance("AES");
+            AesCipher.init(Cipher.ENCRYPT_MODE, secKey);
+            Base64.getEncoder().encodeToString(AesCipher.doFinal("test".getBytes(StandardCharsets.UTF_8)));
+        } catch (NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException | BadPaddingException | IllegalBlockSizeException | IllegalArgumentException e) {
+            return false;
+        }
+        return true;
     }
 }
 

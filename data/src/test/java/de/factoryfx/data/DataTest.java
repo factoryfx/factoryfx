@@ -42,7 +42,7 @@ public class DataTest {
 
     public static class ExampleFactoryThis extends Data {
         ArrayList<String> calls=new ArrayList<>();
-        public final StringAttribute stringAttribute= new StringAttribute(new AttributeMetadata().labelText("ExampleA1")).validation(new Validation<String>() {
+        public final StringAttribute stringAttribute= new StringAttribute().labelText("ExampleA1").validation(new Validation<String>() {
             @Override
             public LanguageText getValidationDescription() {
                 return null;
@@ -101,7 +101,7 @@ public class DataTest {
 
         final Field displayTextDependencies = Data.class.getDeclaredField("displayTextDependencies");
         displayTextDependencies.setAccessible(true);
-        final List<Attribute<?>> attributes = (List<Attribute<?>>) displayTextDependencies.get(readed);
+        final List<Attribute<?,?>> attributes = (List<Attribute<?,?>>) displayTextDependencies.get(readed);
         Assert.assertEquals(1, attributes.size());
         Assert.assertEquals(readed.stringAttribute, attributes.get(0));
 
@@ -128,8 +128,8 @@ public class DataTest {
 
 
     public static class ExampleObjectProperty extends Data {
-        public final StringAttribute stringAttribute= new StringAttribute(new AttributeMetadata().labelText("stringAttribute"));
-        public final ObjectValueAttribute<String> objectValueAttribute= new ObjectValueAttribute<>(new AttributeMetadata().labelText("objectValueAttribute"));
+        public final StringAttribute stringAttribute= new StringAttribute().labelText("stringAttribute");
+        public final ObjectValueAttribute<String> objectValueAttribute= new ObjectValueAttribute<String>().labelText("objectValueAttribute");
     }
 
     @Test
@@ -190,11 +190,11 @@ public class DataTest {
     }
 
     public static class ExampleWithDefaultParent extends Data {
-        public final DataReferenceAttribute<ExampleWithDefault> referenceAttribute = new DataReferenceAttribute<>(ExampleWithDefault.class,new AttributeMetadata().labelText("ExampleA2"));
+        public final DataReferenceAttribute<ExampleWithDefault> referenceAttribute = new DataReferenceAttribute<>(ExampleWithDefault.class).labelText("ExampleA2");
     }
 
     public static class ExampleWithDefault extends Data {
-        public final DataReferenceAttribute<ExampleFactoryB> referenceAttribute = new DataReferenceAttribute<>(ExampleFactoryB.class,new AttributeMetadata().labelText("ExampleA2")).defaultValue(new ExampleFactoryB());
+        public final DataReferenceAttribute<ExampleFactoryB> referenceAttribute = new DataReferenceAttribute<>(ExampleFactoryB.class).labelText("ExampleA2").defaultValue(new ExampleFactoryB());
     }
     @Test
     public void test_editing_nested_add(){
@@ -226,7 +226,7 @@ public class DataTest {
     }
 
     private class ExampleFactoryObservable extends Data {
-        public final StringAttribute stringAttribute= new StringAttribute(new AttributeMetadata().labelText("ExampleA1"));
+        public final StringAttribute stringAttribute= new StringAttribute().labelText("ExampleA1");
         public ExampleFactoryObservable(){
             config().setDisplayTextProvider(() -> stringAttribute.get());
             config().setDisplayTextDependencies(stringAttribute);
@@ -374,10 +374,10 @@ public class DataTest {
     @Test
     public void test_json(){
         DynamicData dynamicData = new DynamicData();
-        final StringAttribute stringAttribute = new StringAttribute(new AttributeMetadata());
+        final StringAttribute stringAttribute = new StringAttribute();
         stringAttribute.set("fdg");
         dynamicData.dynamic().addAttribute(stringAttribute);
-        dynamicData.dynamic().addAttribute(new IntegerAttribute(new AttributeMetadata()));
+        dynamicData.dynamic().addAttribute(new IntegerAttribute());
         System.out.println(ObjectMapperBuilder.build().writeValueAsString(dynamicData));
         Data copy = ObjectMapperBuilder.build().copy(dynamicData);
         Assert.assertEquals(2, copy.getAttributes().size());
@@ -387,7 +387,7 @@ public class DataTest {
     @SuppressWarnings("unchecked")
     public void test_json_list(){
         DynamicData dynamicData = new DynamicData();
-        final StringListAttribute stringListAttribute = new StringListAttribute(new AttributeMetadata());
+        final StringListAttribute stringListAttribute = new StringListAttribute();
         stringListAttribute.add("1");
         stringListAttribute.add("2");
         dynamicData.dynamic().addAttribute(stringListAttribute);
@@ -403,7 +403,7 @@ public class DataTest {
     @Test
     public void test_json_ref(){
         DynamicData dynamicData = new DynamicData();
-        final DataReferenceAttribute<ExampleFactoryA> referenceAttribute = new DataReferenceAttribute<>(ExampleFactoryA.class,new AttributeMetadata());
+        final DataReferenceAttribute<ExampleFactoryA> referenceAttribute = new DataReferenceAttribute<>(ExampleFactoryA.class);
         final ExampleFactoryA exampleFactoryA = new ExampleFactoryA();
         referenceAttribute.set(exampleFactoryA);
 
@@ -420,7 +420,7 @@ public class DataTest {
     public void test_merge(){
         DynamicData currentModel = new DynamicData();
         {
-            final StringAttribute stringAttribute = new StringAttribute(new AttributeMetadata());
+            final StringAttribute stringAttribute = new StringAttribute();
             stringAttribute.set("1");
             currentModel.dynamic().addAttribute(stringAttribute);
         }
@@ -442,11 +442,11 @@ public class DataTest {
 
 
     public static class DynamicDataExample1 extends DynamicData{
-        public final DataReferenceAttribute<DynamicDataExample2> referenceAttribute1 = new DataReferenceAttribute<>(DynamicDataExample2.class,new AttributeMetadata());
+        public final DataReferenceAttribute<DynamicDataExample2> referenceAttribute1 = new DataReferenceAttribute<>(DynamicDataExample2.class);
     }
 
     public static class DynamicDataExample2 extends DynamicData{
-        public final StringAttribute stringAttribute = new StringAttribute(new AttributeMetadata());
+        public final StringAttribute stringAttribute = new StringAttribute();
     }
 
     @Test
@@ -457,18 +457,18 @@ public class DataTest {
     }
 
     @Test
-    public void test_dynamic_metadata_serlisation(){
+    public void test_dynamic_metadata_serialisation(){
         DynamicData dynamicData = new DynamicData();
-        final StringAttribute stringAttribute = new StringAttribute(new AttributeMetadata().en("labelx"));
+        final StringAttribute stringAttribute = new StringAttribute().de("dsdfsdf").en("labelx");
         stringAttribute.set("fdg");
         dynamicData.dynamic().addAttribute(stringAttribute);
 
-        Assert.assertEquals("labelx", dynamicData.getAttributes().get(0).attribute.getPreferredLabelText(Locale.ENGLISH));
+        Assert.assertEquals("labelx", dynamicData.getAttributes().get(0).attribute.internal_getPreferredLabelText(Locale.ENGLISH));
         Data copy = ObjectMapperBuilder.build().copy(dynamicData);
-        System.out.println(ObjectMapperBuilder.build().writeValueAsString(dynamicData));
+//        System.out.println(ObjectMapperBuilder.build().writeValueAsString(copy));
 
         Assert.assertEquals(1, copy.getAttributes().size());
-        Assert.assertEquals("labelx", copy.getAttributes().get(0).attribute.getPreferredLabelText(Locale.ENGLISH));
+        Assert.assertEquals("labelx", copy.getAttributes().get(0).attribute.internal_getPreferredLabelText(Locale.ENGLISH));
     }
 
 }

@@ -25,7 +25,7 @@ public class DataTreeWidgetTest extends Application {
         exampleData1 = exampleData1.internal().prepareUsableCopy();
 
         UniformDesign uniformDesign = UniformDesignBuilder.build();
-        DataEditor dataEditor = new DataEditor(new AttributeEditorBuilder(uniformDesign,new ArrayList<>()),uniformDesign);
+        DataEditor dataEditor = new DataEditor(new AttributeEditorBuilder(new ArrayList<>()),uniformDesign);
         dataEditor.edit(exampleData1);
 
 

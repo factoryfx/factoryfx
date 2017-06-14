@@ -5,7 +5,6 @@ import java.util.Collections;
 import java.util.List;
 
 import de.factoryfx.data.Data;
-import de.factoryfx.data.attribute.AttributeMetadata;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -14,14 +13,14 @@ public class JavascriptAttributeTest {
     @Test
     public void test_get_update_header() throws InterruptedException {
         Data data = new Data();
-        JavascriptAttribute<Object> javascriptAttributeTest = new JavascriptAttribute<>(new AttributeMetadata(), () -> Collections.singletonList(data),Object.class);
+        JavascriptAttribute<Object> javascriptAttributeTest = new JavascriptAttribute<>(() -> Collections.singletonList(data),Object.class);
         Assert.assertEquals("var data = {};",javascriptAttributeTest.get().getHeaderCode().trim());
     }
 
     @Test
     public void test_listeners() throws InterruptedException {
         Data data = new Data();
-        JavascriptAttribute<Object> javascriptAttributeTest = new JavascriptAttribute<>(new AttributeMetadata(), () -> Collections.singletonList(data),Object.class);
+        JavascriptAttribute<Object> javascriptAttributeTest = new JavascriptAttribute<>(() -> Collections.singletonList(data),Object.class);
         javascriptAttributeTest.setRunlaterExecutorForTest(runnable -> runnable.run());
         List<String> calls = new ArrayList<>();
         javascriptAttributeTest.internal_addListener((attribute, value) -> {
@@ -37,7 +36,7 @@ public class JavascriptAttributeTest {
     @Test
     public void test_listeners_multiple() throws InterruptedException {
         Data data = new Data();
-        JavascriptAttribute<Object> javascriptAttributeTest = new JavascriptAttribute<>(new AttributeMetadata(), () -> Collections.singletonList(data),Object.class);
+        JavascriptAttribute<Object> javascriptAttributeTest = new JavascriptAttribute<>(() -> Collections.singletonList(data),Object.class);
         javascriptAttributeTest.setRunlaterExecutorForTest(runnable -> runnable.run());
         List<String> calls = new ArrayList<>();
         javascriptAttributeTest.internal_addListener((attribute, value) -> {

@@ -30,34 +30,34 @@ public class AttributeJsonWrapperTest {
                 Class<?> clazz = classInfo.load();
                 if (Attribute.class.isAssignableFrom(clazz) && !Modifier.isAbstract(clazz.getModifiers())) {
                     if (clazz==DataReferenceAttribute.class){
-                        result.add(new Attribute[]{new DataReferenceAttribute(new AttributeMetadata(),Object.class)});
+                        result.add(new Attribute[]{new DataReferenceAttribute(Object.class)});
                         continue;
                     }
                     if (clazz==DataReferenceListAttribute.class){
-                        DataReferenceListAttribute<ExampleFactoryA> referenceListAttribute= new DataReferenceListAttribute<>(new AttributeMetadata(),ExampleFactoryA.class);
+                        DataReferenceListAttribute<ExampleFactoryA> referenceListAttribute= new DataReferenceListAttribute<>(ExampleFactoryA.class);
                         referenceListAttribute.add(new ExampleFactoryA());
                         result.add(new Attribute[]{referenceListAttribute});
 
                         continue;
                     }
                     if (clazz==EnumAttribute.class){
-                        result.add(new Attribute[]{new EnumAttribute<>(ExampleEnum.class,new AttributeMetadata())});
+                        result.add(new Attribute[]{new EnumAttribute<>(ExampleEnum.class)});
                         continue;
                     }
                     if (clazz==ValueListAttribute.class){
-                        result.add(new Attribute[]{new ValueListAttribute<>(String.class,new AttributeMetadata())});
+//                        result.add(new Attribute[]{new ValueListAttribute<>(String.class)});
                         continue;
                     }
                     if (clazz==ValueMapAttribute.class){
-                        result.add(new Attribute[]{new ValueMapAttribute<>(new AttributeMetadata(),String.class,String.class)});
+//                        result.add(new Attribute[]{new ValueMapAttribute<>(String.class,String.class)});
                         continue;
                     }
                     if (clazz==ValueSetAttribute.class){
-                        final ValueSetAttribute<String> valueSetAttribute = new ValueSetAttribute<>(String.class, new AttributeMetadata());
-                        final HashSet<String> hashSet = new HashSet<>();
-                        hashSet.add("dfssfd");
-                        valueSetAttribute.set(hashSet);
-                        result.add(new Attribute[]{valueSetAttribute});
+//                        final ValueSetAttribute<String> valueSetAttribute = new ValueSetAttribute<>(String.class);
+//                        final HashSet<String> hashSet = new HashSet<>();
+//                        hashSet.add("dfssfd");
+//                        valueSetAttribute.set(hashSet);
+//                        result.add(new Attribute[]{valueSetAttribute});
 
                         continue;
                     }
@@ -78,7 +78,15 @@ public class AttributeJsonWrapperTest {
                         //not supported
                         continue;
                     }
-                    result.add(new Attribute[]{(Attribute) clazz.getConstructor(AttributeMetadata.class).newInstance(new AttributeMetadata())});
+                    if (clazz==DataViewListReferenceAttribute.class){
+                        //not supported
+                        continue;
+                    }
+                    if (clazz==DataViewReferenceAttribute.class){
+                        //not supported
+                        continue;
+                    }
+                    result.add(new Attribute[]{(Attribute) clazz.getConstructor().newInstance()});
                 }
             }
         }

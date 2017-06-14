@@ -136,12 +136,12 @@ public class FactoryDiffWidget implements Widget {
         diffTableView.getSelectionModel().selectedItemProperty().addListener(observable -> {
             AttributeDiffInfo diffItem = diffTableView.getSelectionModel().getSelectedItem().attributeDiffInfo;
             if (diffItem != null) {
-                final Optional<AttributeEditor<?>> previousAttributeEditor = attributeEditorBuilder.getAttributeEditor(diffItem.createPreviousAttribute(), null, null, null);
+                final Optional<AttributeEditor<?,?>> previousAttributeEditor = attributeEditorBuilder.getAttributeEditor(diffItem.createPreviousAttribute(), null, null, null);
                 previousAttributeEditor.get().expand();
                 previousValueDisplay.setCenter(previousAttributeEditor.get().createContent());
 
                 if (diffItem.isNewAttributePresent()) {
-                    final Optional<AttributeEditor<?>> newAttributeEditor = attributeEditorBuilder.getAttributeEditor(diffItem.createNewAttributeDisplayAttribute(), null, null, null);
+                    final Optional<AttributeEditor<?,?>> newAttributeEditor = attributeEditorBuilder.getAttributeEditor(diffItem.createNewAttributeDisplayAttribute(), null, null, null);
                     newAttributeEditor.get().expand();
                     newValueDisplay.setCenter(newAttributeEditor.get().createContent());
                 } else {

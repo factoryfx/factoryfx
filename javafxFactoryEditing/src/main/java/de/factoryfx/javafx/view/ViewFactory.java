@@ -1,6 +1,5 @@
 package de.factoryfx.javafx.view;
 
-import de.factoryfx.data.attribute.AttributeMetadata;
 import de.factoryfx.factory.SimpleFactoryBase;
 import de.factoryfx.factory.atrribute.FactoryReferenceAttribute;
 import de.factoryfx.javafx.view.container.ViewsDisplayWidget;
@@ -9,9 +8,9 @@ import de.factoryfx.javafx.widget.Widget;
 import de.factoryfx.javafx.widget.WidgetFactory;
 
 public class ViewFactory<V> extends SimpleFactoryBase<View,V> {
-    public final FactoryReferenceAttribute<ViewDescription,ViewDescriptionFactory<V>> viewDescription = new FactoryReferenceAttribute<>(new AttributeMetadata().de("view").en("view"),ViewDescriptionFactory.class);
-    public final FactoryReferenceAttribute<ViewsDisplayWidget,ViewsDisplayWidgetFactory<V>> viewsDisplayWidget = new FactoryReferenceAttribute<>(new AttributeMetadata().de("view").en("view"),ViewsDisplayWidgetFactory.class);
-    public final FactoryReferenceAttribute<Widget,WidgetFactory<V>> widget = new FactoryReferenceAttribute<>(new AttributeMetadata().de("view").en("view"),WidgetFactory.class);
+    public final FactoryReferenceAttribute<ViewDescription,ViewDescriptionFactory<V>> viewDescription = new FactoryReferenceAttribute<ViewDescription,ViewDescriptionFactory<V>>().setupUnsafe(ViewDescriptionFactory.class).de("view").en("view");
+    public final FactoryReferenceAttribute<ViewsDisplayWidget,ViewsDisplayWidgetFactory<V>> viewsDisplayWidget = new FactoryReferenceAttribute<ViewsDisplayWidget,ViewsDisplayWidgetFactory<V>>().setupUnsafe(ViewsDisplayWidgetFactory.class).de("view").en("view");
+    public final FactoryReferenceAttribute<Widget,WidgetFactory<V>> widget = new FactoryReferenceAttribute<Widget,WidgetFactory<V>>().setupUnsafe(WidgetFactory.class).de("view").en("view");
 
     @Override
     public View createImpl() {

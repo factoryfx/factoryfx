@@ -2,25 +2,24 @@ package de.factoryfx.data.attribute.types;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import de.factoryfx.data.attribute.Attribute;
-import de.factoryfx.data.attribute.AttributeMetadata;
 import de.factoryfx.data.attribute.ImmutableValueAttribute;
 
 import java.time.LocalDate;
 
-public class LocalDateAttribute extends ImmutableValueAttribute<LocalDate> {
+public class LocalDateAttribute extends ImmutableValueAttribute<LocalDate,LocalDateAttribute> {
 
-    public LocalDateAttribute(AttributeMetadata attributeMetadata) {
-        super(attributeMetadata,LocalDate.class);
+    public LocalDateAttribute() {
+        super(LocalDate.class);
     }
 
     @JsonCreator
     LocalDateAttribute(LocalDate initialValue) {
-        super(null,LocalDate.class);
+        super(LocalDate.class);
         set(initialValue);
     }
 
     @Override
-    protected Attribute<LocalDate> createNewEmptyInstance() {
-        return new LocalDateAttribute(metadata);
+    protected LocalDateAttribute createNewEmptyInstance() {
+        return new LocalDateAttribute();
     }
 }

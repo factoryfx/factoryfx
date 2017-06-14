@@ -8,7 +8,7 @@ import java.util.List;
 public abstract class ListAttributeEditorVisualisation<T> implements AttributeEditorVisualisation<List<T>> {
     protected List<T> attributeValue;
     @Override
-    public void init(Attribute<List<T>> boundAttribute) {
+    public void init(Attribute<List<T>,?> boundAttribute) {
         this.attributeValue=boundAttribute.get();
     }
 

@@ -10,20 +10,20 @@ import de.factoryfx.data.util.LanguageText;
 import de.factoryfx.data.validation.ObjectRequired;
 import de.factoryfx.data.validation.Validation;
 import de.factoryfx.data.validation.ValidationError;
+import org.w3c.dom.Attr;
 
-public abstract class Attribute<T>{
-    @JsonIgnore
-    protected final AttributeMetadata metadata;
+public abstract class Attribute<T,A extends Attribute<T,A>>{
+
     @JsonIgnore
     private final List<Validation<T>> validations = new ArrayList<>();
 
-    public Attribute(AttributeMetadata attributeMetadata) {
-        this.metadata=attributeMetadata;
+    public Attribute() {
+
     }
 
     public abstract void internal_collectChildren(Set<Data> allModelEntities);
 
-    public abstract Attribute<T> internal_copy();
+    public abstract Attribute<T,A> internal_copy();
 
     public abstract boolean internal_match(T value);
 
@@ -35,7 +35,7 @@ public abstract class Attribute<T>{
      * merge logic delegate AttributeMergeHelper
      * @return MergeHelper or null if no merging should be executed
      */
-    public boolean hasMergeConflict(Attribute<?> originalAttribute, Attribute<?> newAttribute) {
+    public boolean hasMergeConflict(Attribute<?,?> originalAttribute, Attribute<?,?> newAttribute) {
         if (newAttribute.internal_match(originalAttribute)) {
             return false;
         }
@@ -51,7 +51,7 @@ public abstract class Attribute<T>{
     /**
      * check if merge should be executed e.g. not if values ar equals
      * */
-    public boolean isMergeable(Attribute<?> originalAttribute, Attribute<?> newAttribute) {
+    public boolean isMergeable(Attribute<?,?> originalAttribute, Attribute<?,?> newAttribute) {
         if (!internal_match(originalAttribute) || internal_match(newAttribute)) {
             return false ;
         }
@@ -59,7 +59,7 @@ public abstract class Attribute<T>{
     }
 
     @SuppressWarnings("unchecked")
-    public void merge(Attribute<?> newValue) {
+    public void merge(Attribute<?,?> newValue) {
         set((T) newValue.get());
     }
 
@@ -68,14 +68,24 @@ public abstract class Attribute<T>{
     */
     public abstract void internal_fixDuplicateObjects(Map<String, Data> idToDataMap);
 
-    public abstract void internal_copyTo(Attribute<T> copyAttribute, Function<Data,Data> dataCopyProvider);
+    public abstract void internal_copyTo(A copyAttribute, Function<Data,Data> dataCopyProvider);
 
     @SuppressWarnings("unchecked")
-    public boolean internal_match(Attribute<?> attribute) {
+    public void internal_copyToUnsafe(Attribute<?,?> copyAttribute, Function<Data,Data> dataCopyProvider){
+        internal_copyTo((A)copyAttribute,dataCopyProvider);
+    }
+
+    @SuppressWarnings("unchecked")
+    public boolean internal_match(Attribute<?,?> attribute) {
         return internal_match((T) attribute.get());
     }
 
-    public abstract void internal_semanticCopyTo(Attribute<T> copyAttribute);
+    public abstract void internal_semanticCopyTo(A copyAttribute);
+
+    @SuppressWarnings("unchecked")
+    public void internal_semanticCopyToUnsafe(Attribute<?,?> copyAttribute){
+        internal_semanticCopyTo((A)copyAttribute);
+    };
 
     public List<ValidationError> internal_validate(Data parent) {
         List<ValidationError> validationErrors = new ArrayList<>();
@@ -102,7 +112,7 @@ public abstract class Attribute<T>{
     public void internal_visit(Consumer<Data> childFactoriesVisitor){
         internal_visit(new AttributeVisitor() {
             @Override
-            public void value(Attribute<?> value) {
+            public void value(Attribute<?,?> value) {
 
             }
 
@@ -133,13 +143,13 @@ public abstract class Attribute<T>{
         //nothing
     }
 
-    public abstract void internal_addListener(AttributeChangeListener<T> listener);
+    public abstract void internal_addListener(AttributeChangeListener<T,A> listener);
 
     /** remove added Listener or Listener inside WeakAttributeChangeListener*/
-    public abstract void internal_removeListener(AttributeChangeListener<T> listener);
+    public abstract void internal_removeListener(AttributeChangeListener<T,A> listener);
 
     @SuppressWarnings("unchecked")
-    public <A extends Attribute<T>> A defaultValue(T defaultValue) {
+    public A defaultValue(T defaultValue) {
         set(defaultValue);
         return (A)this;
     }
@@ -152,29 +162,165 @@ public abstract class Attribute<T>{
     public abstract String getDisplayText();
 
     @SuppressWarnings("unchecked")
-    public <A extends Attribute<T>> A validation(Validation<T> validation){
+    public A validation(Validation<T> validation){
         this.validations.add(validation);
         return (A)this;
     }
-
-    public String getPreferredLabelText(Locale locale){
-        return metadata.labelText.internal_getPreferred(locale);
-    }
-
-    public String getPreferredLabelText(Function<LanguageText,String> languageTextEvaluator){
-        return languageTextEvaluator.apply(metadata.labelText);
-    }
-
-    public String getPreferredAddonText(Locale locale){
-        return metadata.addonText.internal_getPreferred(locale);
-    }
-
-    public boolean hasWritePermission(Function<String,Boolean> permissionChecker){
-        final String permission = metadata.permission;
-        if (permission==null || permissionChecker.apply(permission)){
-            return true;
+    private static final Locale PORTUGUESE =new Locale("pt", "PT");
+    private static final Locale SPANISH=new Locale("es", "ES");
+    public String internal_getPreferredLabelText(Locale locale){
+        if (en!=null && locale==Locale.ENGLISH){
+            return en;
         }
-        return false;
+        if (de!=null && locale==Locale.GERMAN){
+            return de;
+        }
+        if (es!=null && locale.equals(SPANISH)){
+            return es;
+        }
+        if (fr!=null && locale==Locale.FRANCE){
+            return fr;
+        }
+        if (it!=null && locale==Locale.ITALIAN){
+            return it;
+        }
+        if (pt!=null && locale.equals(PORTUGUESE)){
+            return pt;
+        }
+
+        if (en!=null){
+            return en;
+        }
+        if (de!=null){
+            return de;
+        }
+        if (es!=null){
+            return es;
+        }
+        if (fr!=null){
+            return fr;
+        }
+        if (it!=null){
+            return it;
+        }
+        if (pt!=null){
+            return pt;
+        }
+
+        return "";
+    }
+
+    public String internal_getAddonText(){
+        return addonText;
+    }
+
+    public boolean internal_hasWritePermission(Function<String,Boolean> permissionChecker){
+        return permission == null || permissionChecker.apply(permission);
+    }
+
+    @JsonIgnore
+    private String permission;
+    public A permission(String permission){
+        this.permission = permission;
+        return (A)this;
+    }
+
+    @JsonIgnore
+    private String addonText;
+
+    /**
+     * add-on text for the attribute, text that is displayed an the right side of the input usually used for units,%,currency symbol etc
+     */
+    public A addonText(String addonText){
+        this.addonText=addonText;
+        return (A)this;
+    }
+
+
+    @SuppressWarnings("unchecked")
+    public A labelText(String text){
+        en=text;
+        return (A)this;
+    }
+
+    public A labelText(String labelText, Locale locale){
+//        this.labelText.internal_put(locale,labelText);
+        return (A)this;
+    }
+
+    //stored i single fields to avoids object bloat
+    @JsonIgnore
+    String en;
+    @JsonIgnore
+    String de;
+    @JsonIgnore
+    String es;
+    @JsonIgnore
+    String fr;
+    @JsonIgnore
+    String it;
+    @JsonIgnore
+    String pt;
+    public A en(String text) {
+        en=text;
+        return (A)this;
+    }
+
+    public A de(String text) {
+        de=text;
+        return (A)this;
+    }
+
+    public A es(String text) {
+        es=text;
+        return (A)this;
+    }
+
+    public A fr(String text) {
+        fr=text;
+        return (A)this;
+    }
+
+    public A it(String text) {
+        it=text;
+        return (A)this;
+    }
+
+    public A pt(String text) {
+        pt=text;
+        return (A)this;
+    }
+
+
+    public void writeToJsonWrapper(AttributeJsonWrapper attributeJsonWrapper){
+        attributeJsonWrapper.en=this.en;
+        attributeJsonWrapper.de=this.de;
+        attributeJsonWrapper.es=this.es;
+        attributeJsonWrapper.fr=this.fr;
+        attributeJsonWrapper.it=this.it;
+        attributeJsonWrapper.pt=this.pt;
+        writeValueToJsonWrapper(attributeJsonWrapper);
+    }
+
+    public abstract void writeValueToJsonWrapper(AttributeJsonWrapper attributeJsonWrapper);
+
+    public void readFromJsonWrapper(AttributeJsonWrapper attributeJsonWrapper){
+        this.en=attributeJsonWrapper.en;
+        this.de=attributeJsonWrapper.de;
+        this.es=attributeJsonWrapper.es;
+        this.fr=attributeJsonWrapper.fr;
+        this.it=attributeJsonWrapper.it;
+        this.pt=attributeJsonWrapper.pt;
+    }
+
+    public void takeContentFromAttribute(A attribute){
+        this.en=attribute.en;
+        this.de=attribute.de;
+        this.es=attribute.es;
+        this.fr=attribute.fr;
+        this.it=attribute.it;
+        this.pt=attribute.pt;
+        set(get());
     }
 
 

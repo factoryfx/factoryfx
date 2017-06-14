@@ -11,9 +11,9 @@ public class ImmutableValueAttributeTest {
 
     @Test
     public void removeListener() throws Exception {
-        ImmutableValueAttribute<String> valueAttribute = new StringAttribute(new AttributeMetadata());
+        ImmutableValueAttribute<String,StringAttribute> valueAttribute = new StringAttribute();
 
-        final AttributeChangeListener<String> stringAttributeChangeListener = (attribute, value) -> System.out.println(value);
+        final AttributeChangeListener<String,StringAttribute> stringAttributeChangeListener = (attribute, value) -> System.out.println(value);
         valueAttribute.internal_addListener(stringAttributeChangeListener);
         Assert.assertTrue(valueAttribute.listeners.size()==1);
         valueAttribute.internal_removeListener(stringAttributeChangeListener);
@@ -22,9 +22,9 @@ public class ImmutableValueAttributeTest {
 
     @Test
     public void removeWeakListener() throws Exception {
-        ImmutableValueAttribute<String> valueAttribute = new StringAttribute(new AttributeMetadata());
+        ImmutableValueAttribute<String,StringAttribute> valueAttribute = new StringAttribute();
 
-        final AttributeChangeListener<String> stringAttributeChangeListener = (attribute, value) -> System.out.println(value);
+        final AttributeChangeListener<String,StringAttribute> stringAttributeChangeListener = (attribute, value) -> System.out.println(value);
         valueAttribute.internal_addListener(new WeakAttributeChangeListener<>(stringAttributeChangeListener));
         Assert.assertTrue(valueAttribute.listeners.size()==1);
         valueAttribute.internal_removeListener(stringAttributeChangeListener);
@@ -33,9 +33,9 @@ public class ImmutableValueAttributeTest {
 
     @Test
     public void removeWeakListener_after_gc() throws Exception {
-        ImmutableValueAttribute<String> valueAttribute = new StringAttribute(new AttributeMetadata());
+        ImmutableValueAttribute<String,StringAttribute> valueAttribute = new StringAttribute();
 
-        final AttributeChangeListener<String> stringAttributeChangeListener = (attribute, value) -> System.out.println(value);
+        final AttributeChangeListener<String,StringAttribute> stringAttributeChangeListener = (attribute, value) -> System.out.println(value);
         valueAttribute.internal_addListener(new WeakAttributeChangeListener<>(null));
         Assert.assertTrue(valueAttribute.listeners.size()==1);
         valueAttribute.internal_removeListener(stringAttributeChangeListener);

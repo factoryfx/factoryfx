@@ -76,7 +76,7 @@ public class ValidationWidget implements Widget {
             column.setCellValueFactory(param -> {
                 String initialValue = "";
                 if (param.getValue().getValue().validationError!=null){
-                    initialValue = param.getValue().getValue().validationError.attributeDescription(uniformDesign::getText);
+                    initialValue = param.getValue().getValue().validationError.attributeDescription(uniformDesign.getLocale());
                 }
                 return new SimpleStringProperty(initialValue);
             });

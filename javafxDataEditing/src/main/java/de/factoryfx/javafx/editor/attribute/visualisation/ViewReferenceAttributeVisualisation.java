@@ -57,7 +57,7 @@ public class ViewReferenceAttributeVisualisation extends ValueAttributeEditorVis
         editButton.disableProperty().bind(boundTo.isNull());
 
         HBox hBox =new HBox(3);
-        hBox.setAlignment(Pos.CENTER_LEFT);
+        hBox.setAlignment(Pos.TOP_LEFT);
         HBox.setHgrow(textField, Priority.ALWAYS);
         hBox.getChildren().addAll(textField, editButton);
         return hBox;

@@ -2,29 +2,28 @@ package de.factoryfx.data.attribute.primitive;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import de.factoryfx.data.attribute.Attribute;
-import de.factoryfx.data.attribute.AttributeMetadata;
 import de.factoryfx.data.attribute.ImmutableValueAttribute;
 
-public class LongAttribute extends ImmutableValueAttribute<Long> {
+public class LongAttribute extends ImmutableValueAttribute<Long,LongAttribute> {
 
     @JsonCreator
     LongAttribute(Long value) {
-        super(null,Long.class);
+        super(Long.class);
         set(value);
     }
 
     @JsonCreator
     LongAttribute(String value) {
-        super(null,Long.class);
+        super(Long.class);
         set(Long.parseLong(value));
     }
 
-    public LongAttribute(AttributeMetadata attributeMetadata) {
-        super(attributeMetadata,Long.class);
+    public LongAttribute() {
+        super(Long.class);
     }
 
     @Override
-    protected Attribute<Long> createNewEmptyInstance() {
-        return new LongAttribute(metadata);
+    protected LongAttribute createNewEmptyInstance() {
+        return new LongAttribute();
     }
 }

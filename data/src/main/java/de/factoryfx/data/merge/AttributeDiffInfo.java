@@ -30,12 +30,12 @@ public class AttributeDiffInfo {
         this.parentId = parentId;
     }
 
-    public AttributeDiffInfo(Data parent, Attribute<?> attribute, Attribute<?> newAttributeDisplayText) {
+    public AttributeDiffInfo(Data parent, Attribute<?,?> attribute, Attribute<?,?> newAttributeDisplayText) {
         //created here cause attribute ist updated later
         this(new AttributeJsonWrapper(attribute,""), new AttributeJsonWrapper(newAttributeDisplayText,""), parent.internal().getDisplayText(),parent.getId());
     }
 
-    public AttributeDiffInfo(Data parent, Attribute<?> attribute) {
+    public AttributeDiffInfo(Data parent, Attribute<?,?> attribute) {
         //created here cause attribute ist updated later
         this(new AttributeJsonWrapper(attribute,""), null, parent.internal().getDisplayText(),parent.getId());
     }

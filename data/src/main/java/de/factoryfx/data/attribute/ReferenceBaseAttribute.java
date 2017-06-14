@@ -9,31 +9,27 @@ import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 
-public abstract class ReferenceBaseAttribute<T extends Data, U, A extends ReferenceBaseAttribute<T,U,A>> extends Attribute<U> {
+/** Base for Reference attributes, with common api  */
+public abstract class ReferenceBaseAttribute<T extends Data, U, A extends ReferenceBaseAttribute<T,U,A>> extends Attribute<U,A> {
 
     protected Data root;
-    protected Class<T> containingFactoryClass;
+//    protected Class<T> containingFactoryClass;
 
 
-    /**
-     *
-     * @param containingFactoryClass  class off the factory in this Attribute, workaround for java generics Type Erasure
-     * @param attributeMetadata AttributeMetadata
-     */
-    public ReferenceBaseAttribute(Class<T> containingFactoryClass, AttributeMetadata attributeMetadata) {
-        super(attributeMetadata);
-        this.containingFactoryClass = containingFactoryClass;
+
+    public ReferenceBaseAttribute() {
+        super();
     }
 
-    /**
-     * @param attributeMetadata AttributeMetadata
-     * @param containingFactoryClass class off the factory in this Attribute, workaround for java generics Type Erasure.<br>( workaround for generic parameter ReferenceAttribute<Example<V>> webGuiResource=new ReferenceAttribute(Example<V>) )
-     */
-    @SuppressWarnings("unchecked")
-    public ReferenceBaseAttribute(AttributeMetadata attributeMetadata, Class containingFactoryClass) {
-        super(attributeMetadata);
-        this.containingFactoryClass = containingFactoryClass;
-    }
+//    /**
+//     * @param attributeMetadata AttributeMetadata
+//     * @param containingFactoryClass class off the factory in this Attribute, workaround for java generics Type Erasure.<br>( workaround for generic parameter ReferenceAttribute<Example<V>> webGuiResource=new ReferenceAttribute(Example<V>) )
+//     */
+//    @SuppressWarnings("unchecked")
+//    public ReferenceBaseAttribute(AttributeMetadata attributeMetadata, Class containingFactoryClass) {
+//        super(attributeMetadata);
+//        this.containingFactoryClass = containingFactoryClass;
+//    }
 
     private Function<Data,Collection<T>> possibleValueProviderFromRoot;
 
@@ -49,9 +45,9 @@ public abstract class ReferenceBaseAttribute<T extends Data, U, A extends Refere
         if (possibleValueProviderFromRoot==null){
             Set<T> result = new HashSet<>();
             for (Data factory: root.internal().collectChildrenDeep()){
-                if (containingFactoryClass.isAssignableFrom(factory.getClass())){
-                    result.add((T) factory);
-                }
+//                if (containingFactoryClass.isAssignableFrom(factory.getClass())){
+//                    result.add((T) factory);
+//                }
             }
             return result;
         } else {

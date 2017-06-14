@@ -3,7 +3,6 @@ package de.factoryfx.factory;
 import java.util.ArrayList;
 import java.util.List;
 
-import de.factoryfx.data.attribute.AttributeMetadata;
 import de.factoryfx.data.attribute.types.StringAttribute;
 import de.factoryfx.factory.atrribute.FactoryReferenceAttribute;
 import de.factoryfx.factory.atrribute.FactoryReferenceListAttribute;
@@ -26,11 +25,11 @@ public class FactoryManagerLivecycleTest {
 
 
     public static class ExampleFactoryA extends FactoryBase<DummyLifeObejct,Void> {
-        public final FactoryReferenceAttribute<DummyLifeObejct,ExampleFactoryB> ref = new FactoryReferenceAttribute<>(ExampleFactoryB.class,new AttributeMetadata());
-        public final FactoryReferenceListAttribute<DummyLifeObejct,ExampleFactoryC> refList = new FactoryReferenceListAttribute<>(ExampleFactoryC.class,new AttributeMetadata());
-        public final FactoryReferenceAttribute<DummyLifeObejct,ExampleFactoryC> refC = new FactoryReferenceAttribute<>(ExampleFactoryC.class,new AttributeMetadata());
+        public final FactoryReferenceAttribute<DummyLifeObejct,ExampleFactoryB> ref = new FactoryReferenceAttribute<>(ExampleFactoryB.class);
+        public final FactoryReferenceListAttribute<DummyLifeObejct,ExampleFactoryC> refList = new FactoryReferenceListAttribute<>(ExampleFactoryC.class);
+        public final FactoryReferenceAttribute<DummyLifeObejct,ExampleFactoryC> refC = new FactoryReferenceAttribute<>(ExampleFactoryC.class);
 
-        public final FactoryReferenceAttribute<DummyLifeObejct,ExampleFactoryA> refA = new FactoryReferenceAttribute<>(ExampleFactoryA.class,new AttributeMetadata());
+        public final FactoryReferenceAttribute<DummyLifeObejct,ExampleFactoryA> refA = new FactoryReferenceAttribute<>(ExampleFactoryA.class);
 
 
 
@@ -62,14 +61,14 @@ public class FactoryManagerLivecycleTest {
 
     public static class ExampleFactoryB extends FactoryBase<DummyLifeObejct,Void> {
 
-        public final FactoryViewListReferenceAttribute<ExampleFactoryA,DummyLifeObejct,ExampleFactoryC> listView = new FactoryViewListReferenceAttribute<>(new AttributeMetadata().labelText("ExampleA2"),
-                root -> root.refList.get());
+        public final FactoryViewListReferenceAttribute<ExampleFactoryA,DummyLifeObejct,ExampleFactoryC> listView = new FactoryViewListReferenceAttribute<ExampleFactoryA,DummyLifeObejct,ExampleFactoryC>(
+                root -> root.refList.get()).labelText("ExampleA2");
 
         public List<String> createCalls= new ArrayList<>();
         public List<String> reCreateCalls= new ArrayList<>();
         public List<String> startCalls= new ArrayList<>();
         public List<String> destroyCalls= new ArrayList<>();
-        public StringAttribute stringAttribute=new StringAttribute(new AttributeMetadata());
+        public StringAttribute stringAttribute=new StringAttribute();
 
         public ExampleFactoryB(){
             configLiveCycle().setCreator(() -> {
@@ -94,7 +93,7 @@ public class FactoryManagerLivecycleTest {
 
     public static class ExampleFactoryC extends SimpleFactoryBase<DummyLifeObejct,Void> {
 
-        public StringAttribute stringAttribute=new StringAttribute(new AttributeMetadata());
+        public StringAttribute stringAttribute=new StringAttribute();
 
         @Override
         public DummyLifeObejct createImpl() {

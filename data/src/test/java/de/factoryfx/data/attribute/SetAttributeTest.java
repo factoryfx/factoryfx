@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Set;
 
 import de.factoryfx.data.Data;
+import de.factoryfx.data.attribute.types.StringSetAttribute;
 import de.factoryfx.data.jackson.ObjectMapperBuilder;
 import org.junit.Assert;
 import org.junit.Test;
@@ -11,7 +12,7 @@ import org.junit.Test;
 public class SetAttributeTest {
 
     public static class ExampleSetFactory extends Data {
-        public ValueSetAttribute<String> setAttribute =new ValueSetAttribute<>(String.class,new AttributeMetadata());
+        public StringSetAttribute setAttribute =new StringSetAttribute();
     }
 
     @Test
@@ -37,7 +38,7 @@ public class SetAttributeTest {
     public void remove_Listener(){
         ExampleSetFactory exampleSetFactory = new ExampleSetFactory();
         ArrayList<String> calls= new ArrayList<>();
-        AttributeChangeListener<Set<String>> invalidationListener = (a, o) -> {
+        AttributeChangeListener<Set<String>,StringSetAttribute> invalidationListener = (a, o) -> {
             calls.add("");
         };
         exampleSetFactory.setAttribute.internal_addListener(invalidationListener);

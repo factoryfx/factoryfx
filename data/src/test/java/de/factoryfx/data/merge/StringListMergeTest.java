@@ -1,7 +1,6 @@
 package de.factoryfx.data.merge;
 
 import de.factoryfx.data.Data;
-import de.factoryfx.data.attribute.AttributeMetadata;
 import de.factoryfx.data.attribute.types.StringListAttribute;
 import org.junit.Assert;
 import org.junit.Test;
@@ -9,7 +8,7 @@ import org.junit.Test;
 public class StringListMergeTest extends MergeHelperTestBase {
 
     public static class StringListTest extends Data {
-        public final StringListAttribute refB= new StringListAttribute(new AttributeMetadata());
+        public final StringListAttribute refB= new StringListAttribute();
 
     }
 

@@ -1,13 +1,13 @@
 package de.factoryfx.user.persistent;
 
-import de.factoryfx.data.attribute.AttributeMetadata;
 import de.factoryfx.factory.atrribute.FactoryReferenceListAttribute;
 import de.factoryfx.user.User;
 import de.factoryfx.user.UserManagementFactory;
 
-public class PersistentUserManagementFactory<V> extends UserManagementFactory<V> {
+import java.util.function.Predicate;
 
-    public final FactoryReferenceListAttribute<User,UserFactory<V>> users = new FactoryReferenceListAttribute<>(new AttributeMetadata().en("users").de("Benutzer"),UserFactory.class);
+public class PersistentUserManagementFactory<V> extends UserManagementFactory<V> {
+    public final FactoryReferenceListAttribute<User,UserFactory<V>> users = new FactoryReferenceListAttribute<User,UserFactory<V>>().setupUnsafe(UserFactory.class).en("users").de("Benutzer");
 
     @Override
     public PersistentUserManagement createImpl() {

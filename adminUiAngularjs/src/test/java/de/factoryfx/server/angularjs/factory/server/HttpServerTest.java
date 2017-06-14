@@ -5,7 +5,6 @@ import java.math.BigDecimal;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.factoryfx.data.Data;
-import de.factoryfx.data.attribute.AttributeMetadata;
 import de.factoryfx.data.attribute.types.BigDecimalAttribute;
 import de.factoryfx.data.attribute.primitive.LongAttribute;
 import org.junit.Assert;
@@ -14,11 +13,11 @@ import org.junit.Test;
 public class HttpServerTest {
 
     public static class TestBigDecimal extends Data {
-        public final BigDecimalAttribute value = new BigDecimalAttribute(new AttributeMetadata());
+        public final BigDecimalAttribute value = new BigDecimalAttribute();
     }
 
     public static class TestLongDecimal extends Data {
-        public final LongAttribute value = new LongAttribute(new AttributeMetadata());
+        public final LongAttribute value = new LongAttribute();
     }
 
 

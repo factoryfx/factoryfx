@@ -4,6 +4,7 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Consumer;
 
 import de.factoryfx.data.jackson.ObjectMapperBuilder;
 import de.factoryfx.data.merge.AttributeDiffInfo;
@@ -48,12 +49,16 @@ public class FactoryEditManager<V,R extends FactoryBase<?,V>> {
     }
 
     private void updateNotify(FactoryAndNewMetadata<R> currentFactory, Optional<R> previousRoot) {
-        Platform.runLater(() -> {
+        runLaterExecuter.accept(() -> {
             for (FactoryRootChangeListener<R> listener: listeners){
                 listener.update(previousRoot,currentFactory.root);
             }
         });
     }
+
+    //for testablility, avoid Toolkit not initialized
+    Consumer<Runnable> runLaterExecuter= Platform::runLater;
+
 
     public Optional<R> getLoadedFactory(){
         if (loadedRoot.isPresent()){

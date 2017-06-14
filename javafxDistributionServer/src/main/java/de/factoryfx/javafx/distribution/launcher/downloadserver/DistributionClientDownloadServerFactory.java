@@ -1,6 +1,5 @@
 package de.factoryfx.javafx.distribution.launcher.downloadserver;
 
-import de.factoryfx.data.attribute.AttributeMetadata;
 import de.factoryfx.data.attribute.primitive.BooleanAttribute;
 import de.factoryfx.data.attribute.primitive.IntegerAttribute;
 import de.factoryfx.data.attribute.types.StringAttribute;
@@ -9,10 +8,10 @@ import de.factoryfx.factory.FactoryBase;
 public class DistributionClientDownloadServerFactory<V> extends FactoryBase<DistributionClientDownloadServer,V> {
 
 
-    public final StringAttribute host = new StringAttribute(new AttributeMetadata().de("host").en("host"));
-    public final IntegerAttribute port = new IntegerAttribute(new AttributeMetadata().de("port").en("port"));
-    public final StringAttribute distributionClientBasePath = new StringAttribute(new AttributeMetadata().labelText("distributionClientBasePath"));
-    public final BooleanAttribute directoriesListed = new BooleanAttribute(new AttributeMetadata().labelText("directoriesListed"));
+    public final StringAttribute host = new StringAttribute().de("host").en("host");
+    public final IntegerAttribute port = new IntegerAttribute().de("port").en("port");
+    public final StringAttribute distributionClientBasePath = new StringAttribute().labelText("distributionClientBasePath");
+    public final BooleanAttribute directoriesListed = new BooleanAttribute().labelText("directoriesListed");
 
     public DistributionClientDownloadServerFactory() {
         config().setDisplayTextProvider(() -> "http://"+host.get()+":"+port.get());

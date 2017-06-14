@@ -17,8 +17,6 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.google.common.base.Throwables;
 import de.factoryfx.data.Data;
-import de.factoryfx.data.attribute.ViewListReferenceAttribute;
-import de.factoryfx.data.attribute.ViewReferenceAttribute;
 import de.factoryfx.factory.atrribute.FactoryReferenceAttribute;
 import de.factoryfx.factory.atrribute.FactoryReferenceListAttribute;
 import de.factoryfx.factory.atrribute.FactoryViewListReferenceAttribute;
@@ -180,7 +178,7 @@ public abstract class FactoryBase<L,V> extends Data {
             stringBuilder.append(getId());
             stringBuilder.append("\nAttributes:\n");
             this.internal().visitAttributesFlat(attribute -> {
-                stringBuilder.append("  ").append(attribute.getPreferredLabelText(Locale.ENGLISH)).append(": ").append(attribute.getDisplayText()).append("\n");
+                stringBuilder.append("  ").append(attribute.internal_getPreferredLabelText(Locale.ENGLISH)).append(": ").append(attribute.getDisplayText()).append("\n");
             });
             return stringBuilder.toString().trim();
         } catch (Exception e) {
@@ -204,10 +202,10 @@ public abstract class FactoryBase<L,V> extends Data {
                 ((FactoryReferenceListAttribute<?,?>)attribute).forEach(data -> cast(data).ifPresent(consumer));
             }
             if (attribute instanceof FactoryViewReferenceAttribute) {
-                ((ViewReferenceAttribute<?,?>)attribute).getOptional().ifPresent(data -> cast(data).ifPresent(consumer));
+                ((FactoryViewReferenceAttribute<?,?,?>)attribute).getOptional().ifPresent(data -> cast(data).ifPresent(consumer));
             }
             if (attribute instanceof FactoryViewListReferenceAttribute) {
-                ((ViewListReferenceAttribute<?,?>)attribute).get().forEach(data -> cast(data).ifPresent(consumer));
+                ((FactoryViewListReferenceAttribute<?,?,?>)attribute).get().forEach(data -> cast(data).ifPresent(consumer));
             }
         });
     }

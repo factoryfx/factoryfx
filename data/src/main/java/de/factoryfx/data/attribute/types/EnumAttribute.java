@@ -2,7 +2,7 @@ package de.factoryfx.data.attribute.types;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import de.factoryfx.data.attribute.Attribute;
-import de.factoryfx.data.attribute.AttributeMetadata;
+import de.factoryfx.data.attribute.AttributeJsonWrapper;
 import de.factoryfx.data.attribute.AttributeTypeInfo;
 import de.factoryfx.data.attribute.ImmutableValueAttribute;
 
@@ -10,17 +10,17 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class EnumAttribute<T extends Enum<T>> extends ImmutableValueAttribute<T> {
+public class EnumAttribute<T extends Enum<T>> extends ImmutableValueAttribute<T,EnumAttribute<T>> {
 
     @JsonCreator
     EnumAttribute(T value) {
-        super(null,null);
+        super(null);
         set(value);
     }
     private Class<T> clazz;
 
-    public EnumAttribute(Class<T> clazz, AttributeMetadata attributeMetadata) {
-        super(attributeMetadata,clazz);
+    public EnumAttribute(Class<T> clazz) {
+        super(clazz);
         this.clazz=clazz;
     }
 
@@ -31,15 +31,15 @@ public class EnumAttribute<T extends Enum<T>> extends ImmutableValueAttribute<T>
     }
 
     @Override
-    public Attribute<T> internal_copy() {
-        final EnumAttribute<T> result = new EnumAttribute<>(clazz, metadata);
+    public EnumAttribute<T> internal_copy() {
+        final EnumAttribute<T> result = new EnumAttribute<>(clazz);
         result.set(get());
         return result;
     }
 
     @Override
-    protected Attribute<T> createNewEmptyInstance() {
-        return new EnumAttribute<>(clazz,metadata);
+    protected EnumAttribute<T> createNewEmptyInstance() {
+        return new EnumAttribute<>(clazz);
     }
 
     public Class<T> internal_getEnumClass() {
@@ -51,4 +51,9 @@ public class EnumAttribute<T extends Enum<T>> extends ImmutableValueAttribute<T>
         return new ArrayList<>(Arrays.asList(clazz.getEnumConstants()));
     }
 
+    @Override
+    public void writeToJsonWrapper(AttributeJsonWrapper attributeJsonWrapper) {
+        super.writeToJsonWrapper(attributeJsonWrapper);
+        attributeJsonWrapper.enumClazz = clazz;
+    }
 }

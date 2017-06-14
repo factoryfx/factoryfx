@@ -15,24 +15,19 @@ import de.factoryfx.data.Data;
 import javafx.application.Platform;
 
 @JsonIgnoreType
-public class ViewReferenceAttribute<R extends Data, T extends Data> extends Attribute<T> {
+public abstract class ViewReferenceAttribute<R extends Data, T extends Data,A extends Attribute<T,A>> extends Attribute<T,A> {
 
     private R root;
-    private final Function<R,T> view;
+    protected final Function<R,T> view;
 
-    public ViewReferenceAttribute(AttributeMetadata attributeMetadata, Function<R,T> view) {
-        super(attributeMetadata);
+    public ViewReferenceAttribute(Function<R,T> view) {
+        super();
         this.view=view;
     }
 
     @Override
     public void internal_collectChildren(Set<Data> allModelEntities) {
         //nothing
-    }
-
-    @Override
-    public Attribute<T> internal_copy() {
-        return new ViewReferenceAttribute<>(metadata,view);
     }
 
     @Override
@@ -63,12 +58,12 @@ public class ViewReferenceAttribute<R extends Data, T extends Data> extends Attr
     }
 
     @Override
-    public void internal_copyTo(Attribute<T> copyAttribute, Function<Data,Data> dataCopyProvider) {
+    public void internal_copyTo(A copyAttribute, Function<Data,Data> dataCopyProvider) {
         //nothing
     }
 
     @Override
-    public void internal_semanticCopyTo(Attribute<T> copyAttribute) {
+    public void internal_semanticCopyTo(A copyAttribute) {
         //nothing
     }
 
@@ -96,7 +91,7 @@ public class ViewReferenceAttribute<R extends Data, T extends Data> extends Attr
                      (previousValue!=null && currentValue==null) ||
                      (previousValue!=null && currentValue!=null && !previousValue.getId().equals(currentValue.getId()))
                    ){
-                    for (AttributeChangeListener<T> listener: new ArrayList<>(listeners)){
+                    for (AttributeChangeListener<T,A> listener: new ArrayList<>(listeners)){
                         runLater(()-> listener.changed(ViewReferenceAttribute.this,currentValue));
                     }
                 }
@@ -115,9 +110,10 @@ public class ViewReferenceAttribute<R extends Data, T extends Data> extends Attr
     }
     DirtyTrackingThread dirtyTracking;
 
-    final List<AttributeChangeListener<T>> listeners= Collections.synchronizedList(new ArrayList<>());
+    final List<AttributeChangeListener<T,A>> listeners= Collections.synchronizedList(new ArrayList<>());
     @Override
-    public void internal_addListener(AttributeChangeListener<T> listener) {
+    @SuppressWarnings("unchecked")
+    public void internal_addListener(AttributeChangeListener<T,A> listener) {
         listeners.add(listener);
         if (dirtyTracking==null){
             dirtyTracking = new DirtyTrackingThread();
@@ -126,8 +122,8 @@ public class ViewReferenceAttribute<R extends Data, T extends Data> extends Attr
         }
     }
     @Override
-    public void internal_removeListener(AttributeChangeListener<T> listener) {
-        for (AttributeChangeListener<T> listenerItem: new ArrayList<>(listeners)){
+    public void internal_removeListener(AttributeChangeListener<T,A> listener) {
+        for (AttributeChangeListener<T,A> listenerItem: new ArrayList<>(listeners)){
             if (listenerItem.unwrap()==listener){
                 listeners.remove(listenerItem);
             }
@@ -181,5 +177,10 @@ public class ViewReferenceAttribute<R extends Data, T extends Data> extends Attr
     @Override
     public boolean ignoreForMerging() {
         return true;
+    }
+
+    @Override
+    public void writeValueToJsonWrapper(AttributeJsonWrapper attributeJsonWrapper) {
+        //nothing
     }
 }

@@ -11,7 +11,7 @@ import org.junit.Test;
 public class ValueMapAttributeTest {
 
     public static class ExampleMapFactory extends Data {
-        public StringMapAttribute mapAttribute=new StringMapAttribute(new AttributeMetadata());
+        public StringMapAttribute mapAttribute=new StringMapAttribute();
     }
 
     @Test
