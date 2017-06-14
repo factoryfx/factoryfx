@@ -339,17 +339,19 @@ public abstract class FactoryBase<L,V> extends Data {
 
     final LiveCycleConfig<L,V> liveCycleConfig = new LiveCycleConfig<>(this);
 
-    /** live cycle configurations api
-     *
-     * Update Order
-     * 1. recreate for changed, create for new
-     * 2. destroy removed, updated
-     * 3. start new
-     *
+    /** live cycle configurations api<br>
+     *<br>
+     * Update Order<br>
+     * 1. recreate for changed, create for new<br>
+     * 2. destroy removed, updated<br>
+     * 3. start new<br>
+     *<br>
      * The goal is to keep the time between destroy and start as short as possible cause that's essentially the application downtime.
-     * Therefore slow operation should be executed in create.
+     * Therefore slow operation should be executed in create.<br>
+     *<br>
+     * should be used in the default constructor
      * */
-    public LiveCycleConfig<L,V> configLiveCycle(){
+    protected LiveCycleConfig<L,V> configLiveCycle(){
         return liveCycleConfig;
     }
 

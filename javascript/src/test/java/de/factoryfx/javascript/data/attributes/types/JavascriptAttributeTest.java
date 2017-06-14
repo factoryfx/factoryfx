@@ -29,7 +29,7 @@ public class JavascriptAttributeTest {
         javascriptAttributeTest.set(new Javascript<>("XXX"));
         Thread.sleep(2100);
 
-        Assert.assertEquals(2,calls.size()); //TODO should be 1 call
+        Assert.assertEquals(1,calls.size());
         Assert.assertEquals("XXX",calls.get(0));
     }
 

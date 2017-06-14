@@ -546,8 +546,8 @@ public class Data {
     }
 
     private final DataConfiguration dataConfiguration = new DataConfiguration(this);
-    /** data configurations api */
-    public DataConfiguration config(){
+    /** data configurations api. Should be used in the default constructor */
+    protected DataConfiguration config(){
         return dataConfiguration;
     }
 
