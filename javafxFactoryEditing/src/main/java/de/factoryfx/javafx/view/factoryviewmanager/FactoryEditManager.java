@@ -74,7 +74,9 @@ public class FactoryEditManager<V,R extends FactoryBase<?,V>> {
     public FactoryUpdateLog save(String comment) {
         final FactoryAndNewMetadata<R> update = loadedRoot.get();
         final FactoryUpdateLog factoryLog = client.updateCurrentFactory(update,comment);
-        load();//to edit the newly merged data
+        if (factoryLog.mergeDiffInfo.successfullyMerged()) {
+            load();//to edit the newly merged data
+        }
         return factoryLog;
     }
 
