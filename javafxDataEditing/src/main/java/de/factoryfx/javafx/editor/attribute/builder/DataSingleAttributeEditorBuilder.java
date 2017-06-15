@@ -35,7 +35,7 @@ public class DataSingleAttributeEditorBuilder<T,A extends Attribute<T,A>> implem
     @Override
     @SuppressWarnings("unchecked")
     public AttributeEditor<T,?> createEditor(Attribute<?,?> attribute, DataEditor dataEditor, Data previousData) {
-        return new AttributeEditor((Attribute<T,A>)attribute,attributeEditorVisualisationCreator.create((A)attribute,dataEditor,previousData),uniformDesign);
+        return new AttributeEditor<T,A>((A)attribute,attributeEditorVisualisationCreator.create((A)attribute,dataEditor,previousData),uniformDesign);
     }
 
     @Override

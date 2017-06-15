@@ -76,16 +76,40 @@ public class AttributeEditorBuilder {
             return expandableAttributeVisualisation;
         }));
 
-//        result.add(new DataSingleAttributeEditorBuilder(uniformDesign,(a)->a instanceof ReferenceAttribute,(attribute, dataEditor, previousData)-> new ReferenceAttributeVisualisation(uniformDesign,dataEditor, attribute::internal_addNewFactory, attribute::internal_possibleValues, attribute::internal_deleteFactory, attribute.internal_isUserEditable(),attribute.internal_isUserSelectable(),attribute.internal_isUserCreatable())));
-//        result.add(new DataSingleAttributeEditorBuilder<List<Data>,ReferenceListAttribute>(uniformDesign,(a)->a instanceof ReferenceListAttribute,(attribute, dataEditor,previousData)->{
-//            final TableView<Data> dataTableView = new TableView<>();
-//            final ReferenceListAttributeVisualisation referenceListAttributeVisualisation = new ReferenceListAttributeVisualisation(uniformDesign, dataEditor, dataTableView, new DataListEditWidget<>(attribute.get(), dataTableView, dataEditor,uniformDesign,attribute));
-//            ExpandableAttributeVisualisation<List<Data>> expandableAttributeVisualisation= new ExpandableAttributeVisualisation<>(referenceListAttributeVisualisation,uniformDesign,(l)->"Items: "+l.size(),FontAwesome.Glyph.LIST);
-//            if (attribute.get().contains(previousData)){
-//                expandableAttributeVisualisation.expand();
-//            }
-//            return expandableAttributeVisualisation;
-//        }));
+        result.add(new SingleAttributeEditorBuilder<Data>(){
+            @Override
+            public boolean isEditorFor(Attribute<?, ?> attribute) {
+                return attribute instanceof ReferenceAttribute;
+            }
+
+            @Override
+            public AttributeEditor<Data, ?> createEditor(Attribute<?, ?> attribute, DataEditor dataEditor, Data previousData) {
+                ReferenceAttribute referenceAttribute = (ReferenceAttribute) attribute;
+                return new AttributeEditor<>(referenceAttribute,new ReferenceAttributeVisualisation(uniformDesign,dataEditor, referenceAttribute::internal_addNewFactory, referenceAttribute::internal_possibleValues, referenceAttribute::internal_deleteFactory, referenceAttribute.internal_isUserEditable(),referenceAttribute.internal_isUserSelectable(),referenceAttribute.internal_isUserCreatable()),uniformDesign);
+
+            }
+        });
+
+        result.add(new SingleAttributeEditorBuilder<List<Data>>(){
+            @Override
+            public boolean isEditorFor(Attribute<?, ?> attribute) {
+                return attribute instanceof ReferenceListAttribute;
+            }
+
+            @Override
+            public AttributeEditor<List<Data>, ?> createEditor(Attribute<?, ?> attribute, DataEditor dataEditor, Data previousData) {
+                ReferenceListAttribute referenceListAttribute = (ReferenceListAttribute)attribute;
+                final TableView<Data> dataTableView = new TableView<>();
+                final ReferenceListAttributeVisualisation referenceListAttributeVisualisation = new ReferenceListAttributeVisualisation(uniformDesign, dataEditor, dataTableView, new DataListEditWidget<>(referenceListAttribute.get(), dataTableView, dataEditor,uniformDesign,referenceListAttribute));
+                ExpandableAttributeVisualisation<List<Data>> expandableAttributeVisualisation= new ExpandableAttributeVisualisation<>(referenceListAttributeVisualisation,uniformDesign,(l)->"Items: "+l.size(),FontAwesome.Glyph.LIST);
+                if (referenceListAttribute.get().contains(previousData)){
+                    expandableAttributeVisualisation.expand();
+                }
+                return new AttributeEditor<>(referenceListAttribute,expandableAttributeVisualisation,uniformDesign);
+
+            }
+        });
+
 
         return result;
     }
