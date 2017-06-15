@@ -3,7 +3,8 @@ package de.factoryfx.javafx.editor.data;
 import java.util.Arrays;
 
 import de.factoryfx.data.Data;
-import de.factoryfx.data.attribute.AttributeMetadata;
+import de.factoryfx.data.attribute.DataViewListReferenceAttribute;
+import de.factoryfx.data.attribute.DataViewReferenceAttribute;
 import de.factoryfx.data.attribute.ViewListReferenceAttribute;
 import de.factoryfx.data.attribute.ViewReferenceAttribute;
 import de.factoryfx.data.attribute.types.StringAttribute;
@@ -12,23 +13,23 @@ import de.factoryfx.data.validation.StringRequired;
 
 public class ExampleData2 extends Data {
 
-    public final StringAttribute stringAttribute=new StringAttribute(new AttributeMetadata().en("StringAttribute").de("StringAttribute de")).validation(new StringRequired()).defaultValue("123");
+    public final StringAttribute stringAttribute=new StringAttribute().en("StringAttribute").de("StringAttribute de").validation(new StringRequired()).defaultValue("123");
 
 
 
-    public final ViewReferenceAttribute<ExampleData1,ExampleData1> refview= new ViewReferenceAttribute<>(new AttributeMetadata().en("refview"), (ExampleData1 root)-> {
+    public final DataViewReferenceAttribute<ExampleData1,ExampleData1> refview= new DataViewReferenceAttribute<>((ExampleData1 root)-> {
             if ("1".equals(stringAttribute.get())) {
                 return root;
             }
             return null;
-        }).validation(new ObjectRequired<>());
+        }).validation(new ObjectRequired<>()).en("refview");
 
-    public final ViewListReferenceAttribute<ExampleData1,ExampleData1> listview= new ViewListReferenceAttribute<>(new AttributeMetadata().en("listview"), (ExampleData1 root)->{
+    public final DataViewListReferenceAttribute<ExampleData1,ExampleData1> listview= new DataViewListReferenceAttribute<>((ExampleData1 root)->{
             if ("1".equals(stringAttribute.get())){
                 return Arrays.asList(root);
             }
             return null;
-        }).validation(new ObjectRequired<>());
+        }).validation(new ObjectRequired<>()).en("listview");
 
 
 

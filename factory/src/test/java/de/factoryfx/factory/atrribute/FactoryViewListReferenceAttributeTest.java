@@ -2,7 +2,6 @@ package de.factoryfx.factory.atrribute;
 
 import java.util.Arrays;
 
-import de.factoryfx.data.attribute.AttributeMetadata;
 import de.factoryfx.data.jackson.ObjectMapperBuilder;
 import de.factoryfx.factory.testfactories.ExampleFactoryA;
 import de.factoryfx.factory.testfactories.ExampleLiveObjectA;
@@ -11,7 +10,7 @@ import org.junit.Test;
 public class FactoryViewListReferenceAttributeTest {
     @Test
     public void test_jon(){
-        FactoryViewListReferenceAttribute<ExampleFactoryA,ExampleLiveObjectA,ExampleFactoryA> attribute = new FactoryViewListReferenceAttribute<>(new AttributeMetadata(), o -> {
+        FactoryViewListReferenceAttribute<ExampleFactoryA,ExampleLiveObjectA,ExampleFactoryA> attribute = new FactoryViewListReferenceAttribute<>( o -> {
             return Arrays.asList(new ExampleFactoryA());
         });
 

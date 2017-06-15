@@ -1,26 +1,28 @@
 package de.factoryfx.data.attribute.primitive;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import de.factoryfx.data.Data;
 import de.factoryfx.data.attribute.Attribute;
-import de.factoryfx.data.attribute.AttributeMetadata;
 import de.factoryfx.data.attribute.ImmutableValueAttribute;
 
-public class BooleanAttribute extends ImmutableValueAttribute<Boolean> {
+import java.util.function.Function;
 
-    public BooleanAttribute(AttributeMetadata attributeMetadata) {
-        super(attributeMetadata,Boolean.class);
+public class BooleanAttribute extends ImmutableValueAttribute<Boolean,BooleanAttribute> {
+
+    public BooleanAttribute() {
+        super(Boolean.class);
         set(Boolean.FALSE);
     }
 
     @JsonCreator
     BooleanAttribute(Boolean value) {
-        super(null,Boolean.class);
+        super(Boolean.class);
         set(value);
     }
 
     @Override
-    protected Attribute<Boolean> createNewEmptyInstance() {
-        return new BooleanAttribute(metadata);
+    protected BooleanAttribute createNewEmptyInstance() {
+        return new BooleanAttribute();
     }
 
     @Override

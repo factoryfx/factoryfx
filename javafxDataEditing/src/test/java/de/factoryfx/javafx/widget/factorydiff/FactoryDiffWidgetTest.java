@@ -24,7 +24,7 @@ public class FactoryDiffWidgetTest extends Application {
         exampleData1 = exampleData1.internal().prepareUsableCopy();
 
         UniformDesign uniformDesign = UniformDesignBuilder.build();
-        DataEditor dataEditor = new DataEditor(new AttributeEditorBuilder(uniformDesign,new ArrayList<>()), uniformDesign);
+        DataEditor dataEditor = new DataEditor(new AttributeEditorBuilder(new ArrayList<>()), uniformDesign);
         dataEditor.edit(exampleData1);
 
 
@@ -36,7 +36,7 @@ public class FactoryDiffWidgetTest extends Application {
         newData.referenceListAttribute.add(new ExampleData2());
         DataMerger dataMerger = new DataMerger(exampleData1,exampleData1.internal().copy(), newData);
 
-        FactoryDiffWidget factoryDiffWidget = new FactoryDiffWidget(uniformDesign,new AttributeEditorBuilder(uniformDesign,new ArrayList<>()));
+        FactoryDiffWidget factoryDiffWidget = new FactoryDiffWidget(uniformDesign,new AttributeEditorBuilder(new ArrayList<>()));
         factoryDiffWidget.updateMergeDiff(dataMerger.mergeIntoCurrent((p)->true));
 
         BorderPane root = new BorderPane();

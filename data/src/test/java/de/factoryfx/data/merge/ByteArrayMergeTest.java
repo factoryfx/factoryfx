@@ -1,7 +1,6 @@
 package de.factoryfx.data.merge;
 
 import de.factoryfx.data.Data;
-import de.factoryfx.data.attribute.AttributeMetadata;
 import de.factoryfx.data.attribute.types.ByteArrayAttribute;
 import org.junit.Assert;
 import org.junit.Test;
@@ -9,7 +8,7 @@ import org.junit.Test;
 public class ByteArrayMergeTest extends MergeHelperTestBase {
 
     public static class StringTestPojo extends Data {
-        public final ByteArrayAttribute byteArrayAttribute=new ByteArrayAttribute(new AttributeMetadata());
+        public final ByteArrayAttribute byteArrayAttribute=new ByteArrayAttribute();
 
     }
 

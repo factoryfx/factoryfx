@@ -82,9 +82,9 @@ public class ContentAssist {
                     internalVars.add(s);
             }
         });
-        Collections.sort(externalVars,(v1,v2)->{
-            boolean ext1 = Optional.ofNullable(v1.getSourceFile()).map(v-> isFromProjectSources(v)).orElse(false);
-            boolean ext2 = Optional.ofNullable(v2.getSourceFile()).map(v-> isFromProjectSources(v)).orElse(false);
+        externalVars.sort((v1, v2) -> {
+            boolean ext1 = Optional.ofNullable(v1.getSourceFile()).map(v -> isFromProjectSources(v)).orElse(false);
+            boolean ext2 = Optional.ofNullable(v2.getSourceFile()).map(v -> isFromProjectSources(v)).orElse(false);
             if (ext1) {
                 if (ext2) {
                     return compareJsType(v1, v2);
@@ -95,8 +95,8 @@ public class ContentAssist {
                 return 1;
             return compareJsType(v1, v2);
         });
-        Collections.sort(internalVars,(v1,v2)->{
-            return compareJsType(v1,v2);
+        internalVars.sort((v1, v2) -> {
+            return compareJsType(v1, v2);
         });
         if (inspectedNode.getToken() == com.google.javascript.rhino.Token.SCRIPT) {
             List<Proposal> ret = createScriptProposals(externalVars);
@@ -159,7 +159,7 @@ public class ContentAssist {
                             return 1;
                         })
                         .forEach(visibleVars::add);
-                Collections.sort(visibleVars,this::compareTypeQuality);
+                visibleVars.sort(this::compareTypeQuality);
                 int idx = skipWhitespaceBefore(code, currentNode);
                 proposals.put(idx,visibleVars.stream().map(v->new Proposal(v.getName())).collect(Collectors.toList()));
             }
@@ -193,7 +193,7 @@ public class ContentAssist {
         externalVars.stream()
                 .filter(v1->canCastTo(v1.getNameNode().getJSType(),returnType))
                 .forEach(visibleVars::add);
-        Collections.sort(visibleVars,this::compareTypeQuality);
+        visibleVars.sort(this::compareTypeQuality);
         int idx = skipWhitespaceBefore(code, currentNode);
         proposals.put(idx,visibleVars.stream().map(v->new Proposal(v.getName())).collect(Collectors.toList()));
     }
@@ -225,7 +225,7 @@ public class ContentAssist {
                 visibleVars.removeIf(v->v.getNameNode().getJSType() == null);
                 visibleVars.removeIf(v->!canCastTo(v.getNameNode().getJSType(),ret));
             });
-            Collections.sort(visibleVars,this::compareTypeQuality);
+            visibleVars.sort(this::compareTypeQuality);
             proposals.put(inspectedNode.getSourceOffset()+ Token.RETURN.name().length()+1,visibleVars.stream().map(v->new Proposal(v.getName())).collect(Collectors.toList()));
         }
     }
@@ -245,7 +245,7 @@ public class ContentAssist {
                 JSType parameterNodeType = fixNullType(paramterNode.getJSType());
                 visiableVars.stream().filter(v -> noTypeFound(v) || viableAssignment(v.getNameNode().getJSType(), parameterNodeType)).forEach(filteredVars::add);
                 Node argumentNode = inspectedNode.getChildCount() > paramNum?inspectedNode.getChildAtIndex(paramNum):null;
-                Collections.sort(filteredVars, this::compareTypeQuality);
+                filteredVars.sort(this::compareTypeQuality);
                 ArrayList<Proposal> proposalList = new ArrayList<>(filteredVars.stream().map(v -> new Proposal(v.getName())).collect(Collectors.toList()));
                 if (parameterNodeType.isFunctionType() && (argumentNode == null || !argumentNode.getJSType().isFunctionType())) {
                     String newFunction = createFunctionDeclaration(parameterNodeType.toMaybeFunctionType());

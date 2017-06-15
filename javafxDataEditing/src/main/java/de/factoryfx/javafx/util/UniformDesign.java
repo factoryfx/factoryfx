@@ -90,8 +90,8 @@ public class UniformDesign {
         return locale;
     }
 
-    public String getLabelText(Attribute<?> attribute) {
-        return attribute.getPreferredLabelText(locale);
+    public String getLabelText(Attribute<?,?> attribute) {
+        return attribute.internal_getPreferredLabelText(locale);
     }
 
     public String getText(LanguageText languageText) {

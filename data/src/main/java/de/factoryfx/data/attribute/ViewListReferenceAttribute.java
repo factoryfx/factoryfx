@@ -17,23 +17,18 @@ import javafx.application.Platform;
 import javafx.collections.ObservableList;
 
 @JsonIgnoreType
-public class ViewListReferenceAttribute <R extends Data, T extends Data> extends Attribute<List<T>> {
+public abstract class ViewListReferenceAttribute <R extends Data, T extends Data, A extends Attribute<List<T>,A>> extends Attribute<List<T>,A> {
     private R root;
-    private final Function<R,List<T>> view;
+    protected final Function<R,List<T>> view;
 
-    public ViewListReferenceAttribute(AttributeMetadata attributeMetadata, Function<R,List<T>> view) {
-        super(attributeMetadata);
+    public ViewListReferenceAttribute(Function<R,List<T>> view) {
+        super();
         this.view=view;
     }
 
     @Override
     public void internal_collectChildren(Set<Data> allModelEntities) {
         //nothing
-    }
-
-    @Override
-    public Attribute<List<T>> internal_copy() {
-        return new ViewListReferenceAttribute<>(metadata,view);
     }
 
     @Override
@@ -83,12 +78,12 @@ public class ViewListReferenceAttribute <R extends Data, T extends Data> extends
     }
 
     @Override
-    public void internal_copyTo(Attribute<List<T>> copyAttribute, Function<Data,Data> dataCopyProvider) {
+    public void internal_copyTo(A copyAttribute, Function<Data,Data> dataCopyProvider) {
         //nothing
     }
 
     @Override
-    public void internal_semanticCopyTo(Attribute<List<T>> copyAttribute) {
+    public void internal_semanticCopyTo(A copyAttribute) {
         //nothing
     }
 
@@ -113,7 +108,7 @@ public class ViewListReferenceAttribute <R extends Data, T extends Data> extends
                 if ((isEmpty(previousList) && !isEmpty(currentList)) ||
                     (!isEmpty(previousList) && isEmpty(currentList))){
 
-                    for (AttributeChangeListener<List<T>> listener: new ArrayList<>(listeners)){
+                    for (AttributeChangeListener<List<T>,A> listener: new ArrayList<>(listeners)){
                         runLater(()-> listener.changed(ViewListReferenceAttribute.this,currentList));
                     }
                 }
@@ -128,7 +123,7 @@ public class ViewListReferenceAttribute <R extends Data, T extends Data> extends
                         }
                     }
                     if (changed){
-                        for (AttributeChangeListener<List<T>> listener: new ArrayList<>(listeners)){
+                        for (AttributeChangeListener<List<T>,A> listener: new ArrayList<>(listeners)){
                             runLater(()->listener.changed(ViewListReferenceAttribute.this,currentList));
                         }
                     }
@@ -152,9 +147,10 @@ public class ViewListReferenceAttribute <R extends Data, T extends Data> extends
     }
     DirtyTrackingThread dirtyTracking;
 
-    final List<AttributeChangeListener<List<T>>> listeners= Collections.synchronizedList(new ArrayList<>());
+    final List<AttributeChangeListener<List<T>,A>> listeners= Collections.synchronizedList(new ArrayList<>());
     @Override
-    public void internal_addListener(AttributeChangeListener<List<T>> listener) {
+    @SuppressWarnings("unchecked")
+    public void internal_addListener(AttributeChangeListener<List<T>,A> listener) {
         listeners.add(listener);
         if (dirtyTracking==null){
             dirtyTracking = new DirtyTrackingThread();
@@ -163,8 +159,8 @@ public class ViewListReferenceAttribute <R extends Data, T extends Data> extends
         }
     }
     @Override
-    public void internal_removeListener(AttributeChangeListener<List<T>> listener) {
-        for (AttributeChangeListener<List<T>> listenerItem: new ArrayList<>(listeners)){
+    public void internal_removeListener(AttributeChangeListener<List<T>,A> listener) {
+        for (AttributeChangeListener<List<T>,A> listenerItem: new ArrayList<>(listeners)){
             if (listenerItem.unwrap()==listener){
                 listeners.remove(listenerItem);
             }
@@ -216,4 +212,9 @@ public class ViewListReferenceAttribute <R extends Data, T extends Data> extends
         return true;
     }
 
+
+    @Override
+    public void writeValueToJsonWrapper(AttributeJsonWrapper attributeJsonWrapper) {
+        //nothing
+    }
 }

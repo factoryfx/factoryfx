@@ -1,5 +1,6 @@
 package de.factoryfx.data.attribute;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -11,41 +12,36 @@ import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 
-public class ValueListAttribute<T> extends ImmutableValueAttribute<List<T>> implements Collection<T> {
+public abstract class ValueListAttribute<T, A extends Attribute<List<T>,A>> extends ImmutableValueAttribute<List<T>,A> implements Collection<T> {
     private final Class<T> itemType;
     private final ObservableList<T> observableValue;
 
-    public ValueListAttribute(Class<T> itemType, AttributeMetadata attributeMetadata) {
-        super(attributeMetadata,null);
+    public ValueListAttribute(Class<T> itemType) {
+        super(null);
         this.itemType=itemType;
         observableValue = FXCollections.observableArrayList();
         value=observableValue;
 
         observableValue.addListener((ListChangeListener<T>) c -> {
-            for (AttributeChangeListener<List<T>> listener: listeners){
+            for (AttributeChangeListener<List<T>,A> listener: listeners){
                 listener.changed(ValueListAttribute.this,get());
             }
         });
     }
 
-    /**
-     *
-     * @param attributeMetadata AttributeMetadata
-     * @param itemType generics workaound, if itemType is generic the correct constructor don't wrok
-     */
-    @SuppressWarnings("unchecked")
-    public ValueListAttribute(AttributeMetadata attributeMetadata,Class itemType) {
-        this((Class<T>)itemType,attributeMetadata);
-    }
-
-    @Override
-    protected Attribute<List<T>> createNewEmptyInstance() {
-        return new ValueListAttribute<>(itemType, metadata);
-    }
+//    /**
+//     *
+//     * @param attributeMetadata AttributeMetadata
+//     * @param itemType generics workaound, if itemType is generic the correct constructor don't wrok
+//     */
+//    @SuppressWarnings("unchecked")
+//    public ValueListAttribute(AttributeMetadata attributeMetadata,Class itemType) {
+//        this((Class<T>)itemType,attributeMetadata);
+//    }
 
     @JsonCreator
     protected ValueListAttribute() {
-        this(null,(AttributeMetadata)null);
+        this(null);
     }
 
     @Override
@@ -137,5 +133,8 @@ public class ValueListAttribute<T> extends ImmutableValueAttribute<List<T>> impl
         get().clear();
     }
 
-
+    @Override
+    public void writeValueToJsonWrapper(AttributeJsonWrapper attributeJsonWrapper) {
+        attributeJsonWrapper.value=new ArrayList<>(get());
+    }
 }

@@ -1,18 +1,20 @@
 package de.factoryfx.data.attribute.types;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
-import de.factoryfx.data.attribute.AttributeMetadata;
+import de.factoryfx.data.attribute.Attribute;
 import de.factoryfx.data.attribute.ValueSetAttribute;
 
-public class StringSetAttribute extends ValueSetAttribute<String> {
+import java.util.Set;
 
-    public StringSetAttribute(AttributeMetadata attributeMetadata) {
-        super(String.class,attributeMetadata);
-    }
-
+public class StringSetAttribute extends ValueSetAttribute<String,StringSetAttribute> {
     @JsonCreator
-    StringSetAttribute() {
-        super(null,null);
+    public StringSetAttribute() {
+        super(String.class);
     }
 
+
+    @Override
+    protected StringSetAttribute createNewEmptyInstance() {
+        return new StringSetAttribute();
+    }
 }

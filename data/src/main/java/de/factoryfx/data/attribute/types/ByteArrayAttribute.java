@@ -5,17 +5,16 @@ import java.util.Base64;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import de.factoryfx.data.attribute.Attribute;
-import de.factoryfx.data.attribute.AttributeMetadata;
 import de.factoryfx.data.attribute.ImmutableValueAttribute;
 
-public class ByteArrayAttribute extends ImmutableValueAttribute<byte[]> {
-    public ByteArrayAttribute(AttributeMetadata attributeMetadata) {
-        super(attributeMetadata, byte[].class);
+public class ByteArrayAttribute extends ImmutableValueAttribute<byte[],ByteArrayAttribute> {
+    public ByteArrayAttribute() {
+        super(byte[].class);
     }
 
     @JsonCreator
     ByteArrayAttribute(byte[] value) {
-        super(null,null);
+        super(null);
         set(value);
     }
 
@@ -28,8 +27,8 @@ public class ByteArrayAttribute extends ImmutableValueAttribute<byte[]> {
     }
 
     @Override
-    protected Attribute<byte[]> createNewEmptyInstance() {
-        return new ByteArrayAttribute(metadata);
+    protected ByteArrayAttribute createNewEmptyInstance() {
+        return new ByteArrayAttribute();
     }
 
     @Override

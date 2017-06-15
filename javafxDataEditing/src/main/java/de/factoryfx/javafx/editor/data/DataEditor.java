@@ -12,7 +12,6 @@ import java.util.function.Supplier;
 
 import de.factoryfx.data.Data;
 import de.factoryfx.data.attribute.*;
-import de.factoryfx.data.attribute.ImmutableValueAttribute;
 import de.factoryfx.data.attribute.types.BigDecimalAttribute;
 import de.factoryfx.data.attribute.primitive.IntegerAttribute;
 import de.factoryfx.data.attribute.types.LocalDateAttribute;
@@ -64,6 +63,7 @@ public class DataEditor implements Widget {
     SimpleObjectProperty<Data> bound = new SimpleObjectProperty<>();
     private ChangeListener<Data> dataChangeListener;
     private AttributeChangeListener validationListener;
+    ObservableList<Data> displayedEntities= FXCollections.observableArrayList();
 
     public DataEditor(AttributeEditorBuilder attributeEditorBuilder, UniformDesign uniformDesign) {
         this.attributeEditorBuilder = attributeEditorBuilder;
@@ -123,7 +123,7 @@ public class DataEditor implements Widget {
     }
 
 
-    HashMap<Attribute<?>,AttributeEditor<?>> createdEditors=new HashMap<>();
+    HashMap<Attribute<?,?>,AttributeEditor<?,?>> createdEditors=new HashMap<>();
 
     private Node wrapGrid(GridPane gridPane){
         ScrollPane scrollPane = new ScrollPane(gridPane);
@@ -156,9 +156,9 @@ public class DataEditor implements Widget {
 
     private static class ValueAttributeCreator{
         public final String name;
-        public final Supplier<ImmutableValueAttribute<?>> attributeCreator;
+        public final Supplier<ImmutableValueAttribute<?,?>> attributeCreator;
 
-        private ValueAttributeCreator(String name, Supplier<ImmutableValueAttribute<?>> attributeCreator) {
+        private ValueAttributeCreator(String name, Supplier<ImmutableValueAttribute<?,?>> attributeCreator) {
             this.name = name;
             this.attributeCreator = attributeCreator;
         }
@@ -173,12 +173,12 @@ public class DataEditor implements Widget {
 
         editRow.getChildren().add(new Label("Type"));
         final ChoiceBox<ValueAttributeCreator> typeChooser = new ChoiceBox<>();
-        typeChooser.getItems().addAll(new ValueAttributeCreator("String",()->new StringAttribute(new AttributeMetadata().labelText(textField.getText()))));
-        typeChooser.getItems().addAll(new ValueAttributeCreator("Integer",()->new IntegerAttribute(new AttributeMetadata().labelText(textField.getText()))));
-        typeChooser.getItems().addAll(new ValueAttributeCreator("Long",()->new LongAttribute(new AttributeMetadata().labelText(textField.getText()))));
-        typeChooser.getItems().addAll(new ValueAttributeCreator("Stringlist",()->new StringListAttribute(new AttributeMetadata().labelText(textField.getText()))));
-        typeChooser.getItems().addAll(new ValueAttributeCreator("BigDecimal",()->new BigDecimalAttribute(new AttributeMetadata().labelText(textField.getText()))));
-        typeChooser.getItems().addAll(new ValueAttributeCreator("LocalDate",()->new LocalDateAttribute(new AttributeMetadata().labelText(textField.getText()))));
+        typeChooser.getItems().addAll(new ValueAttributeCreator("String",()->new StringAttribute().labelText(textField.getText())));
+        typeChooser.getItems().addAll(new ValueAttributeCreator("Integer",()->new IntegerAttribute().labelText(textField.getText())));
+        typeChooser.getItems().addAll(new ValueAttributeCreator("Long",()->new LongAttribute().labelText(textField.getText())));
+        typeChooser.getItems().addAll(new ValueAttributeCreator("Stringlist",()->new StringListAttribute().labelText(textField.getText())));
+        typeChooser.getItems().addAll(new ValueAttributeCreator("BigDecimal",()->new BigDecimalAttribute().labelText(textField.getText())));
+        typeChooser.getItems().addAll(new ValueAttributeCreator("LocalDate",()->new LocalDateAttribute().labelText(textField.getText())));
         typeChooser.setConverter(new StringConverter<ValueAttributeCreator>() {
             @Override
             public String toString(ValueAttributeCreator object) {
@@ -234,7 +234,7 @@ public class DataEditor implements Widget {
                     updateVis.accept(attributeGroupVisual,newValue);
                 } else {
                     TabPane tabPane = new TabPane();
-                    for (Pair<String,List<Attribute<?>>> attributeGroup: newValue.internal().attributeListGrouped()) {
+                    for (Pair<String,List<Attribute<?,?>>> attributeGroup: newValue.internal().attributeListGrouped()) {
                         Tab tab=new Tab(attributeGroup.getKey());
                         tab.setClosable(false);
                         tab.setContent(createAttributeGroupVisual(attributeGroup.getValue(),() -> newValue.internal().validateFlat(),oldValue));
@@ -286,20 +286,20 @@ public class DataEditor implements Widget {
     }
 
     private void updateValidation(Data newValue) {
-        final Map<Attribute<?>,List<ValidationError>> attributeToErrors = newValue.internal().validateFlatMapped();
+        final Map<Attribute<?,?>,List<ValidationError>> attributeToErrors = newValue.internal().validateFlatMapped();
 
-        for (Map.Entry<Attribute<?>,List<ValidationError>> entry: attributeToErrors.entrySet()){
-            final AttributeEditor<?> attributeEditor = createdEditors.get(entry.getKey());
+        for (Map.Entry<Attribute<?,?>,List<ValidationError>> entry: attributeToErrors.entrySet()){
+            final AttributeEditor<?,?> attributeEditor = createdEditors.get(entry.getKey());
             if (attributeEditor!=null){
                 attributeEditor.reportValidation(entry.getValue());
             }
         }
     }
 
-    private Node createAttributeGroupVisual(List<Attribute<?>> attributeGroup, Supplier<List<ValidationError>> validation, Data oldValue) {
+    private Node createAttributeGroupVisual(List<Attribute<?,?>> attributeGroup, Supplier<List<ValidationError>> validation, Data oldValue) {
         if (attributeGroup.size()==1){
-            final Attribute<?> attribute = attributeGroup.get(0);
-            Optional<AttributeEditor<?>> attributeEditor = attributeEditorBuilder.getAttributeEditor(attribute, this, validation, oldValue);
+            final Attribute<?,?> attribute = attributeGroup.get(0);
+            Optional<AttributeEditor<?,?>> attributeEditor = attributeEditorBuilder.getAttributeEditor(attribute, this, validation, oldValue);
             if (attributeEditor.isPresent()){
                 attributeEditor.get().expand();
                 createdEditors.put(attribute,attributeEditor.get());
@@ -328,10 +328,10 @@ public class DataEditor implements Widget {
 
 
             int row = 0;
-            for (Attribute<?> attribute: attributeGroup){
+            for (Attribute<?,?> attribute: attributeGroup){
                 Label label = addLabelContent(grid, row,uniformDesign.getLabelText(attribute));
 
-                Optional<AttributeEditor<?>> attributeEditor = attributeEditorBuilder.getAttributeEditor(attribute,this,validation,oldValue);
+                Optional<AttributeEditor<?,?>> attributeEditor = attributeEditorBuilder.getAttributeEditor(attribute,this,validation,oldValue);
                 int rowFinal=row;
                 if (attributeEditor.isPresent()){
                     createdEditors.put(attribute,attributeEditor.get());
@@ -397,8 +397,6 @@ public class DataEditor implements Widget {
         }
     }
 
-
-    ObservableList<Data> displayedEntities= FXCollections.observableArrayList();
     private Node createNavigation(){
         BreadCrumbBarWidthFixed<Data> breadCrumbBar = new BreadCrumbBarWidthFixed<>();
 

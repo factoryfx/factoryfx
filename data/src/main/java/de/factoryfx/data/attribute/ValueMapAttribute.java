@@ -1,9 +1,6 @@
 package de.factoryfx.data.attribute;
 
-import java.util.Collection;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeMap;
+import java.util.*;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import javafx.collections.FXCollections;
@@ -11,38 +8,40 @@ import javafx.collections.MapChangeListener;
 import javafx.collections.ObservableMap;
 
 //TODO remove ObservableMap same as list
-public class ValueMapAttribute<K, V> extends ImmutableValueAttribute<ObservableMap<K,V>> implements Map<K,V> {
+public abstract class ValueMapAttribute<K, V, A extends ValueMapAttribute<K,V,A>> extends ImmutableValueAttribute<ObservableMap<K,V>,A> implements Map<K,V> {
     private final Class<K> keyType;
     private final Class<V> valueType;
 
-    public ValueMapAttribute(AttributeMetadata attributeMetadata, Class<K> keyType, Class<V> valueType) {
-        super(attributeMetadata,null);
+    public ValueMapAttribute(Class<K> keyType, Class<V> valueType) {
+        super(null);
         this.keyType=keyType;
         this.valueType=valueType;
         set(FXCollections.observableMap(new TreeMap<>()));
 
         get().addListener((MapChangeListener<K, V>) change -> {
-            for (AttributeChangeListener<ObservableMap<K,V>> listener: listeners){
+            for (AttributeChangeListener<ObservableMap<K,V>,A> listener: listeners){
                 listener.changed(ValueMapAttribute.this,get());
             }
         });
     }
 
     @Override
-    public Attribute<ObservableMap<K,V>> internal_copy() {
-        final ValueMapAttribute<K, V> result = new ValueMapAttribute<>(metadata, keyType, valueType);
+    @SuppressWarnings("unchecked")//TODO make method abstarct
+    public A internal_copy() {
+        final A result = createNewEmptyInstance();
         result.putAll(result.get());
         return result;
     }
 
     @Override
-    protected Attribute<ObservableMap<K, V>> createNewEmptyInstance() {
-        return new ValueMapAttribute<>(metadata, keyType, valueType);
+    public void writeValueToJsonWrapper(AttributeJsonWrapper attributeJsonWrapper) {
+        attributeJsonWrapper.value=new TreeMap<>(get());
     }
+
 
     @JsonCreator
     protected ValueMapAttribute() {
-        this(null,null,null);
+        this(null,null);
     }
 
     @Override

@@ -14,7 +14,7 @@ public class WebGuiValidationError {
 
     public WebGuiValidationError(ValidationError validationError, Locale locale, Data factoryBase){
         validationDescription=validationError.validationDescription(languageText -> languageText.internal_getPreferred(locale));
-        attributeLabel=validationError.attributeDescription(languageText -> languageText.internal_getPreferred(locale));
+        attributeLabel=validationError.attributeDescription(locale);
         factoryId=factoryBase.getId().toString();
         factoryDisplayText=factoryBase.internal().getDisplayText();
 

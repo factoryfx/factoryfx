@@ -11,6 +11,6 @@ import de.factoryfx.data.attribute.types.ObjectValueAttribute;
 public class ObjectValueAttributeDeserializer extends JsonDeserializer {
     @Override
     public ObjectValueAttribute deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException {
-        return new ObjectValueAttribute(null);
+        return new ObjectValueAttribute();
     }
 }

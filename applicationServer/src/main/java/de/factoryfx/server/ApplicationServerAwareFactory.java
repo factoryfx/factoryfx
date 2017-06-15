@@ -1,6 +1,5 @@
 package de.factoryfx.server;
 
-import de.factoryfx.data.attribute.AttributeMetadata;
 import de.factoryfx.data.attribute.types.ObjectValueAttribute;
 import de.factoryfx.factory.FactoryBase;
 
@@ -13,6 +12,6 @@ import de.factoryfx.factory.FactoryBase;
  */
 public abstract class ApplicationServerAwareFactory<V,RL, R extends FactoryBase<RL,V>, FL> extends FactoryBase<FL,V> {
 
-    public final ObjectValueAttribute<ApplicationServer<V, RL, R>> applicationServer = new ObjectValueAttribute<>(new AttributeMetadata().labelText("application server"));
+    public final ObjectValueAttribute<ApplicationServer<V, RL, R>> applicationServer = new ObjectValueAttribute<ApplicationServer<V, RL, R>>().labelText("application server");
 
 }

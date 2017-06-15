@@ -1,6 +1,5 @@
 package de.factoryfx.javafx.stage;
 
-import de.factoryfx.data.attribute.AttributeMetadata;
 import de.factoryfx.data.attribute.primitive.IntegerAttribute;
 import de.factoryfx.data.attribute.types.ObjectValueAttribute;
 import de.factoryfx.data.attribute.types.StringListAttribute;
@@ -16,13 +15,13 @@ import javafx.scene.control.Menu;
 import javafx.stage.Stage;
 
 public class StageFactory<V> extends FactoryBase<BorderPaneStage,V> {
-    public final ObjectValueAttribute<Stage> stage = new ObjectValueAttribute<>(new AttributeMetadata().en("main stage"));
-    public final FactoryReferenceListAttribute<Menu,ViewMenuFactory<V>> items = new FactoryReferenceListAttribute<>(new AttributeMetadata().de("items").en("items"),ViewMenuFactory.class);
-    public final FactoryReferenceAttribute<ViewsDisplayWidget,ViewsDisplayWidgetFactory<V>> viewsDisplayWidget = new FactoryReferenceAttribute<>(new AttributeMetadata().de("items").en("items"),ViewsDisplayWidgetFactory.class);
-    public final IntegerAttribute width = new IntegerAttribute(new AttributeMetadata().de("width").en("width"));
-    public final IntegerAttribute height = new IntegerAttribute(new AttributeMetadata().de("height").en("height"));
-    public final FactoryReferenceAttribute<LongRunningActionExecutor,LongRunningActionExecutorFactory<V>> longRunningActionExecutor = new FactoryReferenceAttribute<>(new AttributeMetadata().de("items").en("items"),LongRunningActionExecutorFactory.class);
-    public final StringListAttribute cssResourceUrlExternalForm = new StringListAttribute(new AttributeMetadata().de("cssResourceUrlExternalForm").en("cssResourceUrlExternalForm"));
+    public final ObjectValueAttribute<Stage> stage = new ObjectValueAttribute<Stage>().en("main stage");
+    public final FactoryReferenceListAttribute<Menu,ViewMenuFactory<V>> items = new FactoryReferenceListAttribute<Menu,ViewMenuFactory<V>>().de("items").en("items");
+    public final FactoryReferenceAttribute<ViewsDisplayWidget,ViewsDisplayWidgetFactory<V>> viewsDisplayWidget = new FactoryReferenceAttribute<ViewsDisplayWidget,ViewsDisplayWidgetFactory<V>>().de("items").en("items");
+    public final IntegerAttribute width = new IntegerAttribute().de("width").en("width");
+    public final IntegerAttribute height = new IntegerAttribute().de("height").en("height");
+    public final FactoryReferenceAttribute<LongRunningActionExecutor,LongRunningActionExecutorFactory<V>> longRunningActionExecutor = new FactoryReferenceAttribute<LongRunningActionExecutor,LongRunningActionExecutorFactory<V>>().de("items").en("items");
+    public final StringListAttribute cssResourceUrlExternalForm = new StringListAttribute().de("cssResourceUrlExternalForm").en("cssResourceUrlExternalForm");
 
     public StageFactory(){
         cssResourceUrlExternalForm.add(getClass().getResource("/de/factoryfx/javafx/css/app.css").toExternalForm());

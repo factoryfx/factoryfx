@@ -5,24 +5,23 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
-import de.factoryfx.data.attribute.AttributeMetadata;
+import de.factoryfx.data.attribute.Attribute;
 import de.factoryfx.data.attribute.ValueListAttribute;
 
-public class StringListAttribute extends ValueListAttribute<String> {
-
-    public StringListAttribute(AttributeMetadata attributeMetadata) {
-        super(String.class,attributeMetadata);
-    }
-
+public class StringListAttribute extends ValueListAttribute<String,StringListAttribute> {
     @JsonCreator
-    StringListAttribute() {
-        super(null,(AttributeMetadata)null);
+    public StringListAttribute() {
+        super(String.class);
     }
+
 
     public List<String> asUnmodifiableList() {
         return Collections.unmodifiableList(get().stream().collect(Collectors.toList()));
     }
 
 
-
+    @Override
+    protected StringListAttribute createNewEmptyInstance() {
+        return new StringListAttribute();
+    }
 }

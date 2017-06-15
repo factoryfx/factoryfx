@@ -14,8 +14,8 @@ import org.junit.Test;
 public class ViewListReferenceAttributeTest {
     public static class ViewListExampleFactory extends Data {
 
-        public final StringAttribute forFilter= new StringAttribute(new AttributeMetadata());
-        public final ViewListReferenceAttribute<ViewListExampleFactoryRoot,ExampleFactoryA> view= new ViewListReferenceAttribute<>(new AttributeMetadata(), (ViewListExampleFactoryRoot viewExampleFactoryRoot)->{
+        public final StringAttribute forFilter= new StringAttribute();
+        public final DataViewListReferenceAttribute<ViewListExampleFactoryRoot,ExampleFactoryA> view= new DataViewListReferenceAttribute<>( (ViewListExampleFactoryRoot viewExampleFactoryRoot)->{
                 return viewExampleFactoryRoot.list.get().stream().filter(exampleFactoryA -> exampleFactoryA.stringAttribute.get().equals(forFilter.get())).collect(Collectors.toList());
             }
         );
@@ -23,8 +23,8 @@ public class ViewListReferenceAttributeTest {
     }
 
     public static class ViewListExampleFactoryRoot extends Data{
-        public final DataReferenceAttribute<ViewListExampleFactory> ref = new DataReferenceAttribute<>(ViewListExampleFactory.class,new AttributeMetadata());
-        public final DataReferenceListAttribute<ExampleFactoryA> list= new DataReferenceListAttribute<>(ExampleFactoryA.class,new AttributeMetadata());
+        public final DataReferenceAttribute<ViewListExampleFactory> ref = new DataReferenceAttribute<>(ViewListExampleFactory.class);
+        public final DataReferenceListAttribute<ExampleFactoryA> list= new DataReferenceListAttribute<>(ExampleFactoryA.class);
     }
 
 
@@ -241,11 +241,11 @@ public class ViewListReferenceAttributeTest {
 
     @Test
     public void removeListener() throws Exception {
-        ViewListReferenceAttribute<ViewListExampleFactoryRoot, ExampleFactoryA> attribute = new ViewListReferenceAttribute<>(new AttributeMetadata(), (ViewListExampleFactoryRoot viewExampleFactoryRoot) -> {
+        DataViewListReferenceAttribute<ViewListExampleFactoryRoot, ExampleFactoryA> attribute = new DataViewListReferenceAttribute<>((ViewListExampleFactoryRoot viewExampleFactoryRoot) -> {
             return viewExampleFactoryRoot.list.filtered((exampleFactoryA -> exampleFactoryA.stringAttribute.get().equals("")));
         });
 
-        final AttributeChangeListener<List<ExampleFactoryA>> attributeChangeListener = (a, value) -> System.out.println(value);
+        final AttributeChangeListener<List<ExampleFactoryA>,DataViewListReferenceAttribute<ViewListExampleFactoryRoot, ExampleFactoryA>> attributeChangeListener = (a, value) -> System.out.println(value);
         attribute.internal_addListener(attributeChangeListener);
         Assert.assertTrue(attribute.listeners.size()==1);
         attribute.internal_removeListener(attributeChangeListener);
@@ -254,11 +254,11 @@ public class ViewListReferenceAttributeTest {
 
     @Test
     public void removeWeakListener() throws Exception {
-        ViewListReferenceAttribute<ViewListExampleFactoryRoot, ExampleFactoryA> attribute = new ViewListReferenceAttribute<>(new AttributeMetadata(), (ViewListExampleFactoryRoot viewExampleFactoryRoot) -> {
+        DataViewListReferenceAttribute<ViewListExampleFactoryRoot, ExampleFactoryA> attribute = new DataViewListReferenceAttribute<>((ViewListExampleFactoryRoot viewExampleFactoryRoot) -> {
             return viewExampleFactoryRoot.list.filtered((exampleFactoryA -> exampleFactoryA.stringAttribute.get().equals("")));
         });
 
-        final AttributeChangeListener<List<ExampleFactoryA>> attributeChangeListener = (a, value) -> System.out.println(value);
+        final AttributeChangeListener<List<ExampleFactoryA>,DataViewListReferenceAttribute<ViewListExampleFactoryRoot, ExampleFactoryA>> attributeChangeListener = (a, value) -> System.out.println(value);
         attribute.internal_addListener(new WeakAttributeChangeListener<>(attributeChangeListener));
         Assert.assertTrue(attribute.listeners.size()==1);
         attribute.internal_removeListener(attributeChangeListener);

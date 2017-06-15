@@ -5,19 +5,24 @@ import java.util.List;
 import java.util.function.Function;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
-import de.factoryfx.data.attribute.AttributeMetadata;
+import de.factoryfx.data.attribute.Attribute;
 import de.factoryfx.data.attribute.ViewListReferenceAttribute;
 import de.factoryfx.factory.FactoryBase;
 
-public class FactoryViewListReferenceAttribute<R extends FactoryBase<?,?>,L, T extends FactoryBase<L,?>> extends ViewListReferenceAttribute<R,T> {
+public class FactoryViewListReferenceAttribute<R extends FactoryBase<?,?>,L, T extends FactoryBase<L,?>> extends ViewListReferenceAttribute<R,T,FactoryViewListReferenceAttribute<R,L,T>> {
 
-    public FactoryViewListReferenceAttribute(AttributeMetadata attributeMetadata, Function<R, List<T>> view) {
-        super(attributeMetadata, view);
+    public FactoryViewListReferenceAttribute(Function<R, List<T>> view) {
+        super(view);
     }
 
     @JsonCreator
     FactoryViewListReferenceAttribute() {
-        super(null, null);
+        super(null);
+    }
+
+    @Override
+    public Attribute<List<T>, FactoryViewListReferenceAttribute<R, L, T>> internal_copy() {
+        return new FactoryViewListReferenceAttribute<>(view);
     }
 
     public List<L> instances(){

@@ -1,39 +1,31 @@
 package de.factoryfx.data.attribute;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Set;
+import java.util.*;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableSet;
 import javafx.collections.SetChangeListener;
 
-public class ValueSetAttribute<T> extends ImmutableValueAttribute<Set<T>> implements Set<T> {
+public abstract class ValueSetAttribute<T,A extends Attribute<Set<T>,A>> extends ImmutableValueAttribute<Set<T>,A> implements Set<T> {
     private final Class<T> itemType;
 
-    public ValueSetAttribute(Class<T> itemType, AttributeMetadata attributeMetadata) {
-        super(attributeMetadata,null);
+    public ValueSetAttribute(Class<T> itemType) {
+        super(null);
         this.itemType = itemType;
         final ObservableSet<T> observableSet = FXCollections.observableSet(new HashSet<>());
         value= observableSet;
 
         observableSet.addListener((SetChangeListener<T>) change -> {
-            for (AttributeChangeListener<Set<T>> listener: listeners){
+            for (AttributeChangeListener<Set<T>,A> listener: listeners){
                 listener.changed(ValueSetAttribute.this,get());
             }
         });
     }
 
-    @Override
-    protected Attribute<Set<T>> createNewEmptyInstance() {
-        return new ValueSetAttribute<>(itemType, metadata);
-    }
-
     @JsonCreator
     protected ValueSetAttribute() {
-        this(null,null);
+        this(null);
     }
 
     @Override
@@ -44,6 +36,11 @@ public class ValueSetAttribute<T> extends ImmutableValueAttribute<Set<T>> implem
     @Override
     public AttributeTypeInfo internal_getAttributeType() {
         return new AttributeTypeInfo(ObservableSet.class,null,null,itemType, AttributeTypeInfo.AttributeTypeCategory.COLLECTION);
+    }
+
+    @Override
+    public void writeValueToJsonWrapper(AttributeJsonWrapper attributeJsonWrapper) {
+        attributeJsonWrapper.value=new HashSet<>(get());
     }
 
     //** set list only take the list items not the list itself, (to simplify ChangeListeners)*/

@@ -2,28 +2,27 @@ package de.factoryfx.data.attribute.primitive;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import de.factoryfx.data.attribute.Attribute;
-import de.factoryfx.data.attribute.AttributeMetadata;
 import de.factoryfx.data.attribute.ImmutableValueAttribute;
 
-public class DoubleAttribute extends ImmutableValueAttribute<Double> {
+public class DoubleAttribute extends ImmutableValueAttribute<Double,DoubleAttribute> {
 
     @JsonCreator
     DoubleAttribute(Double value) {
-        super(null,Double.class);
+        super(Double.class);
         set(value);
     }
 
     @JsonCreator
     DoubleAttribute(Long value) {
-        super(null,Double.class);
+        super(Double.class);
         set(value.doubleValue());
     }
-    public DoubleAttribute(AttributeMetadata attributeMetadata) {
-        super(attributeMetadata,Double.class);
+    public DoubleAttribute() {
+        super(Double.class);
     }
 
     @Override
-    protected Attribute<Double> createNewEmptyInstance() {
-        return new DoubleAttribute(metadata);
+    protected DoubleAttribute createNewEmptyInstance() {
+        return new DoubleAttribute();
     }
 }

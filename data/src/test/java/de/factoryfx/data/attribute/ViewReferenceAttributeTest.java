@@ -13,7 +13,7 @@ public class ViewReferenceAttributeTest {
 
     public static class ViewExampleFactory extends Data {
 
-        public final ViewReferenceAttribute<ViewExampleFactoryRoot,ExampleFactoryA> view= new ViewReferenceAttribute<>(new AttributeMetadata(), new Function<ViewExampleFactoryRoot, ExampleFactoryA>() {
+        public final DataViewReferenceAttribute<ViewExampleFactoryRoot,ExampleFactoryA> view= new DataViewReferenceAttribute<>(new Function<ViewExampleFactoryRoot, ExampleFactoryA>() {
             @Override
             public ExampleFactoryA apply(ViewExampleFactoryRoot viewExampleFactoryRoot) {
                 if (include.get()){
@@ -23,12 +23,12 @@ public class ViewReferenceAttributeTest {
             }
         });
 
-        public final BooleanAttribute include= new BooleanAttribute(new AttributeMetadata());
+        public final BooleanAttribute include= new BooleanAttribute();
     }
 
     public static class ViewExampleFactoryRoot extends Data{
-        public final DataReferenceAttribute<ViewExampleFactory> ref = new DataReferenceAttribute<>(ViewExampleFactory.class,new AttributeMetadata());
-        public final DataReferenceAttribute<ExampleFactoryA> exampleFactoryA= new DataReferenceAttribute<>(ExampleFactoryA.class,new AttributeMetadata());
+        public final DataReferenceAttribute<ViewExampleFactory> ref = new DataReferenceAttribute<>(ViewExampleFactory.class);
+        public final DataReferenceAttribute<ExampleFactoryA> exampleFactoryA= new DataReferenceAttribute<>(ExampleFactoryA.class);
 
     }
 
@@ -166,14 +166,14 @@ public class ViewReferenceAttributeTest {
 
     @Test
     public void removeListener() throws Exception {
-        ViewReferenceAttribute<ViewExampleFactoryRoot,ExampleFactoryA> attribute= new ViewReferenceAttribute<>(new AttributeMetadata(), new Function<ViewExampleFactoryRoot, ExampleFactoryA>() {
+        DataViewReferenceAttribute<ViewExampleFactoryRoot,ExampleFactoryA> attribute= new DataViewReferenceAttribute<>(new Function<ViewExampleFactoryRoot, ExampleFactoryA>() {
             @Override
             public ExampleFactoryA apply(ViewExampleFactoryRoot viewExampleFactoryRoot) {
                 return viewExampleFactoryRoot.exampleFactoryA.get();
             }
         });
 
-        final AttributeChangeListener<ExampleFactoryA> attributeChangeListener = (a, value) -> System.out.println(value);
+        final AttributeChangeListener<ExampleFactoryA,DataViewReferenceAttribute<ViewExampleFactoryRoot,ExampleFactoryA>> attributeChangeListener = (a, value) -> System.out.println(value);
         attribute.internal_addListener(attributeChangeListener);
         Assert.assertTrue(attribute.listeners.size()==1);
         attribute.internal_removeListener(attributeChangeListener);
@@ -182,14 +182,14 @@ public class ViewReferenceAttributeTest {
 
     @Test
     public void removeWeakListener() throws Exception {
-        ViewReferenceAttribute<ViewExampleFactoryRoot,ExampleFactoryA> attribute= new ViewReferenceAttribute<>(new AttributeMetadata(), new Function<ViewExampleFactoryRoot, ExampleFactoryA>() {
+        DataViewReferenceAttribute<ViewExampleFactoryRoot,ExampleFactoryA> attribute= new DataViewReferenceAttribute<>(new Function<ViewExampleFactoryRoot, ExampleFactoryA>() {
             @Override
             public ExampleFactoryA apply(ViewExampleFactoryRoot viewExampleFactoryRoot) {
                  return viewExampleFactoryRoot.exampleFactoryA.get();
             }
         });
 
-        final AttributeChangeListener<ExampleFactoryA> attributeChangeListener = (a, value) -> System.out.println(value);
+        final AttributeChangeListener<ExampleFactoryA,DataViewReferenceAttribute<ViewExampleFactoryRoot,ExampleFactoryA>> attributeChangeListener = (a, value) -> System.out.println(value);
         attribute.internal_addListener(new WeakAttributeChangeListener<>(attributeChangeListener));
         Assert.assertTrue(attribute.listeners.size()==1);
         attribute.internal_removeListener(attributeChangeListener);

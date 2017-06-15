@@ -4,21 +4,20 @@ import java.math.BigDecimal;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import de.factoryfx.data.attribute.Attribute;
-import de.factoryfx.data.attribute.AttributeMetadata;
 import de.factoryfx.data.attribute.ImmutableValueAttribute;
 
-public class BigDecimalAttribute extends ImmutableValueAttribute<BigDecimal> {
+public class BigDecimalAttribute extends ImmutableValueAttribute<BigDecimal,BigDecimalAttribute> {
 
     private String decimalFormatPattern="#,#";
 
     @JsonCreator
     BigDecimalAttribute(BigDecimal value) {
-        super(null,BigDecimal.class);
+        super(BigDecimal.class);
         set(value);
     }
 
-    public BigDecimalAttribute(AttributeMetadata attributeMetadata) {
-        super(attributeMetadata,BigDecimal.class);
+    public BigDecimalAttribute() {
+        super(BigDecimal.class);
     }
 
     public String internal_getDecimalFormatPattern() {
@@ -30,7 +29,7 @@ public class BigDecimalAttribute extends ImmutableValueAttribute<BigDecimal> {
     }
 
     @Override
-    protected Attribute<BigDecimal> createNewEmptyInstance() {
-        return new BigDecimalAttribute(metadata);
+    protected BigDecimalAttribute createNewEmptyInstance() {
+        return new BigDecimalAttribute();
     }
 }

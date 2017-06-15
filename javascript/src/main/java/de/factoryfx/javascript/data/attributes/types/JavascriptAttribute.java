@@ -14,11 +14,10 @@ import com.google.javascript.jscomp.SourceFile;
 import de.factoryfx.data.Data;
 import de.factoryfx.data.attribute.Attribute;
 import de.factoryfx.data.attribute.AttributeChangeListener;
-import de.factoryfx.data.attribute.AttributeMetadata;
 import de.factoryfx.data.attribute.ImmutableValueAttribute;
 import javafx.application.Platform;
 
-public class JavascriptAttribute<A> extends ImmutableValueAttribute<Javascript<A>> {
+public class JavascriptAttribute<A> extends ImmutableValueAttribute<Javascript<A>,JavascriptAttribute<A>> {
 
     @JsonIgnore
     private final Supplier<List<? extends Data>> data;
@@ -28,8 +27,8 @@ public class JavascriptAttribute<A> extends ImmutableValueAttribute<Javascript<A
     private final Function<List<? extends Data>,String> headerCreator = l->defaultCreateHeader(l);
 
     @SuppressWarnings("unchecked")
-    public JavascriptAttribute(AttributeMetadata attributeMetadata, Supplier<List<? extends Data>> data, Class<A> apiClass) {
-        super(attributeMetadata, (Class<Javascript<A>>)Javascript.class.asSubclass(Javascript.class));
+    public JavascriptAttribute(Supplier<List<? extends Data>> data, Class<A> apiClass) {
+        super((Class<Javascript<A>>)Javascript.class.asSubclass(Javascript.class));
         this.data = data;
         this.apiClass = apiClass;
         set(new Javascript<>("",createHeader(),createHeaderApi()));
@@ -38,7 +37,7 @@ public class JavascriptAttribute<A> extends ImmutableValueAttribute<Javascript<A
     @JsonCreator
     @SuppressWarnings("unchecked")
     protected JavascriptAttribute(Javascript<A> initialValue) {
-        super(null, (Class<Javascript<A>>)Javascript.class.asSubclass(Javascript.class));
+        super((Class<Javascript<A>>)Javascript.class.asSubclass(Javascript.class));
         set(initialValue);
         apiClass = null;
         data = null;
@@ -46,8 +45,8 @@ public class JavascriptAttribute<A> extends ImmutableValueAttribute<Javascript<A
 
 
     @Override
-    protected Attribute<Javascript<A>> createNewEmptyInstance() {
-        return new JavascriptAttribute<>(metadata,data,apiClass);
+    protected JavascriptAttribute<A> createNewEmptyInstance() {
+        return new JavascriptAttribute<>(data,apiClass);
     }
 
     @Override
@@ -60,7 +59,7 @@ public class JavascriptAttribute<A> extends ImmutableValueAttribute<Javascript<A
     }
 
     @Override
-    public void internal_copyTo(Attribute<Javascript<A>> copyAttribute, Function<Data, Data> dataCopyProvider) {
+    public void internal_copyTo(JavascriptAttribute<A> copyAttribute, Function<Data, Data> dataCopyProvider) {
         if (copyAttribute.get()==null){
             copyAttribute.set(new Javascript<>());
         } else {
@@ -183,8 +182,8 @@ public class JavascriptAttribute<A> extends ImmutableValueAttribute<Javascript<A
 
     private DirtyTrackingThread dirtyTracking;
 
-    @Override
-    public void internal_addListener(AttributeChangeListener<Javascript<A>> listener) {
+//    @Override
+    public void internal_addListener(AttributeChangeListener<Javascript<A>,JavascriptAttribute<A>> listener,boolean x) {
         super.internal_addListener(listener);
         if (dirtyTracking==null){
             dirtyTracking = new DirtyTrackingThread();
@@ -193,7 +192,7 @@ public class JavascriptAttribute<A> extends ImmutableValueAttribute<Javascript<A
         }
     }
     @Override
-    public void internal_removeListener(AttributeChangeListener<Javascript<A>> listener) {
+    public void internal_removeListener(AttributeChangeListener<Javascript<A>,JavascriptAttribute<A>> listener) {
         super.internal_removeListener(listener);
         if (listeners.isEmpty() && dirtyTracking != null){
             dirtyTracking.stopTracking();

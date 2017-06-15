@@ -83,7 +83,7 @@ public class ExpandableAttributeVisualisation<T> implements AttributeEditorVisua
     }
 
     @Override
-    public void init(Attribute<T> boundAttribute) {
+    public void init(Attribute<T,?> boundAttribute) {
         attributeEditorVisualisation.init(boundAttribute);
     }
 

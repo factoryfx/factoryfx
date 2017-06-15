@@ -1,19 +1,20 @@
 package de.factoryfx.data.attribute.types;
 
 import java.net.URI;
+import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
-import de.factoryfx.data.attribute.AttributeMetadata;
+import de.factoryfx.data.attribute.Attribute;
 import de.factoryfx.data.attribute.ValueListAttribute;
 
-public class URIListAttribute extends ValueListAttribute<URI> {
-
-    public URIListAttribute(AttributeMetadata attributeMetadata) {
-        super(URI.class,attributeMetadata);
+public class URIListAttribute extends ValueListAttribute<URI,URIListAttribute> {
+    @JsonCreator
+    public URIListAttribute() {
+        super(URI.class);
     }
 
-    @JsonCreator
-    URIListAttribute() {
-        super(null,(AttributeMetadata)null);
+    @Override
+    protected URIListAttribute createNewEmptyInstance() {
+        return new URIListAttribute();
     }
 }

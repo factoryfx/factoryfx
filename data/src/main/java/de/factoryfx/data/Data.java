@@ -92,7 +92,7 @@ public class Data {
 
     @FunctionalInterface
     public interface AttributeVisitor{
-        void accept(String attributeVariableName, Attribute<?> attribute);
+        void accept(String attributeVariableName, Attribute<?,?> attribute);
     }
 
     List<AttributeAndName> attributes;
@@ -158,8 +158,8 @@ public class Data {
     }
 
 
-    private void addAttribute(ImmutableValueAttribute<?> attribute){
-        dynamicDataAttributeAndNames.add(new AttributeAndName(attribute, toIdentifier(attribute.getPreferredLabelText(Locale.ENGLISH))));
+    private void addAttribute(ImmutableValueAttribute<?,?> attribute){
+        dynamicDataAttributeAndNames.add(new AttributeAndName(attribute, toIdentifier(attribute.internal_getPreferredLabelText(Locale.ENGLISH))));
     }
 
     private String toIdentifier(String value) {//TODO for js?
@@ -186,20 +186,20 @@ public class Data {
         }
     }
 
-    private void visitAttributesFlat(Consumer<Attribute<?>> consumer) {
+    private void visitAttributesFlat(Consumer<Attribute<?,?>> consumer) {
         this.visitAttributesFlat((attributeVariableName, attribute) -> consumer.accept(attribute));
     }
 
     @SuppressWarnings("unchecked")
-    private <A> void  visitAttributesDualFlat(Data data, BiConsumer<Attribute<A>, Attribute<A>> consumer) {
+    private void visitAttributesDualFlat(Data data, BiConsumer<Attribute<?,?>, Attribute<?,?>> consumer) {
         final List<AttributeAndName> thisAttributes = getAttributes();
         final List<AttributeAndName> dataAttributes = data.getAttributes();
         for (int i = 0; i< thisAttributes.size(); i++){
-            consumer.accept((Attribute<A>) thisAttributes.get(i).attribute, (Attribute<A>) dataAttributes.get(i).attribute);
+            consumer.accept(thisAttributes.get(i).attribute, dataAttributes.get(i).attribute);
         }
     }
 
-    private void visitAttributesTripleFlat(Data data1, Data data2, TriConsumer<Attribute<?>, Attribute<?>, Attribute<?>> consumer) {
+    private void visitAttributesTripleFlat(Data data1, Data data2, TriConsumer<Attribute<?,?>, Attribute<?,?>, Attribute<?,?>> consumer) {
         final List<AttributeAndName> thisAttributes = getAttributes();
 
         final List<AttributeAndName> data1Attributes = data1.getAttributes();
@@ -299,8 +299,8 @@ public class Data {
     @SuppressWarnings("unchecked")
     private List<ValidationError> validateFlat(){
         final ArrayList<ValidationError> result = new ArrayList<>();
-        final Map<Attribute<?>, List<ValidationError>> attributeListMap = validateFlatMapped();
-        for (Map.Entry<Attribute<?>, List<ValidationError>> entry: attributeListMap.entrySet()){
+        final Map<Attribute<?,?>, List<ValidationError>> attributeListMap = validateFlatMapped();
+        for (Map.Entry<Attribute<?,?>, List<ValidationError>> entry: attributeListMap.entrySet()){
             result.addAll(entry.getValue());
         }
 
@@ -309,8 +309,8 @@ public class Data {
 
     /** validate attributes without visiting child factories
      */
-    private Map<Attribute<?>,List<ValidationError>> validateFlatMapped(){
-        Map<Attribute<?>,List<ValidationError>> result= new HashMap<>();
+    private Map<Attribute<?,?>,List<ValidationError>> validateFlatMapped(){
+        Map<Attribute<?,?>,List<ValidationError>> result= new HashMap<>();
 
         visitAttributesFlat((attributeVariableName, attribute) -> {
             final ArrayList<ValidationError> validationErrors = new ArrayList<>();
@@ -319,8 +319,8 @@ public class Data {
         });
 
         for (AttributeValidation<?> validation: dataValidations){
-            final Map<Attribute<?>, List<ValidationError>> validateResult = validation.validate(this);
-            for (Map.Entry<Attribute<?>, List<ValidationError>> entry: validateResult.entrySet()){
+            final Map<Attribute<?,?>, List<ValidationError>> validateResult = validation.validate(this);
+            for (Map.Entry<Attribute<?,?>, List<ValidationError>> entry: validateResult.entrySet()){
                 result.get(entry.getKey()).addAll(entry.getValue());
             }
         }
@@ -328,8 +328,8 @@ public class Data {
     }
 
     final List<AttributeValidation<?>> dataValidations = new ArrayList<>();
-    private <T> void addValidation(Validation<T> validation, Attribute<?>... dependencies){
-        for ( Attribute<?> dependency: dependencies){
+    private <T> void addValidation(Validation<T> validation, Attribute<?,?>... dependencies){
+        for ( Attribute<?,?> dependency: dependencies){
             dataValidations.add(new AttributeValidation<>(validation,dependency));
         }
     }
@@ -343,7 +343,7 @@ public class Data {
                 } else {
                     if (currentAttribute.isMergeable(originalAttribute, newAttribute)) {
                         final AttributeDiffInfo attributeDiffInfo = new AttributeDiffInfo(Data.this, currentAttribute, newAttribute);
-                        if (currentAttribute.hasWritePermission(permissionChecker)){
+                        if (currentAttribute.internal_hasWritePermission(permissionChecker)){
                             mergeResult.addMergeInfo(attributeDiffInfo);
                             mergeResult.addMergeExecutions(() -> currentAttribute.merge(newAttribute));
                         } else {
@@ -387,7 +387,7 @@ public class Data {
     private <T extends Data> T semanticCopy() {
         T result = (T)newInstance();
 //        result.setId(this.getId());
-        this.visitAttributesDualFlat(result, Attribute::internal_semanticCopyTo);
+        this.visitAttributesDualFlat(result, Attribute::internal_semanticCopyToUnsafe);
         this.fixDuplicateObjects();
         return result;
     }
@@ -414,7 +414,7 @@ public class Data {
             result.setId(this.getId());
             this.visitAttributesDualFlat(result, (thisAttribute, copyAttribute) -> {
                 if (thisAttribute!=null){
-                    thisAttribute.internal_copyTo(copyAttribute,(data)->{
+                    thisAttribute.internal_copyToUnsafe(copyAttribute,(data)->{
                         if (data==null){
                             return null;
                         }
@@ -470,18 +470,18 @@ public class Data {
         return root;
     }
 
-    private Function<List<Attribute<?>>,List<Pair<String,List<Attribute<?>>>>> attributeListGroupedSupplier=(List<Attribute<?>> allAttributes)->{
+    private Function<List<Attribute<?,?>>,List<Pair<String,List<Attribute<?,?>>>>> attributeListGroupedSupplier=(List<Attribute<?,?>> allAttributes)->{
         return Collections.singletonList(new Pair<>("Data", allAttributes));
     };
-    private void setAttributeListGroupedSupplier(Function<List<Attribute<?>>,List<Pair<String,List<Attribute<?>>>>> attributeListGroupedSupplier){
+    private void setAttributeListGroupedSupplier(Function<List<Attribute<?,?>>,List<Pair<String,List<Attribute<?,?>>>>> attributeListGroupedSupplier){
         this.attributeListGroupedSupplier=attributeListGroupedSupplier;
     }
-    private List<Pair<String,List<Attribute<?>>>> attributeListGrouped(){
+    private List<Pair<String,List<Attribute<?,?>>>> attributeListGrouped(){
         return attributeListGroupedSupplier.apply(attributeList());
     }
 
-    private List<Attribute<?>> attributeList(){
-        ArrayList<Attribute<?>> result = new ArrayList<>();
+    private List<Attribute<?,?>> attributeList(){
+        ArrayList<Attribute<?,?>> result = new ArrayList<>();
         this.visitAttributesFlat((attributeVariableName, attribute) -> {
             result.add(attribute);
         });
@@ -500,8 +500,8 @@ public class Data {
         return matchSearchTextFunction.apply(text);
     }
 
-    private List<Attribute<?>> displayTextDependencies= Collections.emptyList();
-    private void setDisplayTextDependencies(List<Attribute<?>> displayTextDependencies) {
+    private List<Attribute<?,?>> displayTextDependencies= Collections.emptyList();
+    private void setDisplayTextDependencies(List<Attribute<?,?>> displayTextDependencies) {
         this.displayTextDependencies = displayTextDependencies;
     }
 
@@ -518,7 +518,7 @@ public class Data {
 
     @SuppressWarnings("unchecked")
     private void addDisplayTextListeners(Data data, AttributeChangeListener attributeChangeListener){
-        for (Attribute<?> attribute: data.displayTextDependencies){
+        for (Attribute<?,?> attribute: data.displayTextDependencies){
             attribute.internal_addListener(attributeChangeListener);
             attribute.internal_visit(data1 -> addDisplayTextListeners(data1,attributeChangeListener));
         }
@@ -546,8 +546,8 @@ public class Data {
     }
 
     private final DataConfiguration dataConfiguration = new DataConfiguration(this);
-    /** data configurations api */
-    public DataConfiguration config(){
+    /** data configurations api. Should be used in the default constructor */
+    protected DataConfiguration config(){
         return dataConfiguration;
     }
 
@@ -569,7 +569,7 @@ public class Data {
          * @param displayTextProvider custom displayText function
          * @param dependencies attributes which affect the displaytext
          */
-        public void setDisplayTextProvider(Supplier<String> displayTextProvider, Attribute<?>... dependencies){
+        public void setDisplayTextProvider(Supplier<String> displayTextProvider, Attribute<?,?>... dependencies){
             data.setDisplayTextProvider(displayTextProvider);
             data.setDisplayTextDependencies(Arrays.asList(dependencies));
         }
@@ -577,21 +577,21 @@ public class Data {
         /**
          *  @see  #setDisplayTextDependencies(Attribute[])
          *  */
-        public void setDisplayTextDependencies(List<Attribute<?>> attributes){
+        public void setDisplayTextDependencies(List<Attribute<?,?>> attributes){
             data.setDisplayTextDependencies(attributes);
         }
 
         /** set the attributes that affect the displaytext<br>
          *  used for live update in gui
          *  */
-        public void setDisplayTextDependencies(Attribute<?>... attributes){
+        public void setDisplayTextDependencies(Attribute<?,?>... attributes){
             data.setDisplayTextDependencies(Arrays.asList(attributes));
         }
 
         /**
          *  grouped iteration over attributes e.g. used in gui editor where each group is a new Tab
          *  */
-        public void setAttributeListGroupedSupplier(Function<List<Attribute<?>>,List<Pair<String,List<Attribute<?>>>>> attributeListGroupedSupplier){
+        public void setAttributeListGroupedSupplier(Function<List<Attribute<?,?>>,List<Pair<String,List<Attribute<?,?>>>>> attributeListGroupedSupplier){
             this.data.setAttributeListGroupedSupplier(attributeListGroupedSupplier);
         }
 
@@ -617,7 +617,7 @@ public class Data {
          * @param dependencies attributes which affect the validation
          * @param <T> this
          */
-        public <T> void addValidation(Validation<T> validation, Attribute<?>... dependencies){
+        public <T> void addValidation(Validation<T> validation, Attribute<?,?>... dependencies){
             data.addValidation(validation,dependencies);
         }
 
@@ -653,7 +653,7 @@ public class Data {
             data.visitChildFactoriesFlat(consumer);
         }
 
-        public <A> void  visitAttributesDualFlat(Data modelBase, BiConsumer<Attribute<A>, Attribute<A>> consumer) {
+        public void visitAttributesDualFlat(Data modelBase, BiConsumer<Attribute<?,?>, Attribute<?,?>> consumer) {
             data.visitAttributesDualFlat(modelBase,consumer);
         }
 
@@ -661,11 +661,11 @@ public class Data {
             data.visitAttributesFlat(consumer);
         }
 
-        public void visitAttributesFlat(Consumer<Attribute<?>> consumer) {
+        public void visitAttributesFlat(Consumer<Attribute<?,?>> consumer) {
             data.visitAttributesFlat(consumer);
         }
 
-        public List<Pair<String,List<Attribute<?>>>> attributeListGrouped(){
+        public List<Pair<String,List<Attribute<?,?>>>> attributeListGrouped(){
             return data.attributeListGrouped();
         }
 
@@ -706,7 +706,7 @@ public class Data {
             return data.validateFlat();
         }
 
-        public Map<Attribute<?>,List<ValidationError>> validateFlatMapped(){
+        public Map<Attribute<?,?>,List<ValidationError>> validateFlatMapped(){
             return data.validateFlatMapped();
         }
 
@@ -783,7 +783,7 @@ public class Data {
             this.data = data;
         }
 
-        public void addAttribute(ImmutableValueAttribute<?> attribute){
+        public void addAttribute(ImmutableValueAttribute<?,?> attribute){
              data.addAttribute(attribute);
         }
 

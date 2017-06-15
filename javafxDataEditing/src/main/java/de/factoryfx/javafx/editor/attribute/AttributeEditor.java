@@ -16,16 +16,16 @@ import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
 
-public class AttributeEditor<T> implements Widget {
+public class AttributeEditor<T,A extends Attribute<T,A>> implements Widget {
 
     private final AttributeEditorVisualisation<T> attributeEditorVisualisation;
-    private final Attribute<T> boundAttribute;
+    private final A boundAttribute;
     private final UniformDesign uniformDesign;
     private Consumer<List<ValidationError>> validationUpdater;
     private List<ValidationError> validationErrors=new ArrayList<>();
 
 
-    public AttributeEditor(Attribute<T> boundAttribute, AttributeEditorVisualisation<T> attributeEditorVisualisation, UniformDesign uniformDesign) {
+    public AttributeEditor(A boundAttribute, AttributeEditorVisualisation<T> attributeEditorVisualisation, UniformDesign uniformDesign) {
         this.boundAttribute=boundAttribute;
         this.attributeEditorVisualisation=attributeEditorVisualisation;
         attributeEditorVisualisation.init(boundAttribute);
@@ -33,7 +33,7 @@ public class AttributeEditor<T> implements Widget {
     }
 
 
-    private final AttributeChangeListener<T> attributeChangeListener = (attribute, value) -> {
+    private final AttributeChangeListener<T,A> attributeChangeListener = (attribute, value) -> {
 //        Platform.runLater(()-> {
             AttributeEditor.this.attributeEditorVisualisation.attributeValueChanged(value);
 //        });
@@ -101,7 +101,7 @@ public class AttributeEditor<T> implements Widget {
                 for (ValidationError validationError : childErrors) {
                     validationErrorText.append(counter);
                     validationErrorText.append(": ");
-                    validationErrorText.append(validationError.validationDescriptionForChild(uniformDesign::getText));
+                    validationErrorText.append(validationError.validationDescriptionForChild(uniformDesign.getLocale()));
                     validationErrorText.append("\n");
                     counter++;
                 }

@@ -42,27 +42,27 @@ public class JavascriptAttributeIntegrationTest extends Application{
         List<SingleAttributeEditorBuilder<?>> singleAttributeEditorBuilders = AttributeEditorBuilder.createDefaultSingleAttributeEditorBuilders(uniformDesign);
         SingleAttributeEditorBuilder editorBuilder = new SingleAttributeEditorBuilder<Javascript<?>>() {
             @Override
-            public AttributeEditor createEditor(Attribute<?> attribute, DataEditor dataEditor, Data previousData) {
-                return new AttributeEditor(attribute, new JavascriptAttributeVisualisation((JavascriptAttribute<?>) attribute), uniformDesign);
+            public boolean isListItemEditorFor(Attribute<?, ?> attribute) {
+                return false;
             }
 
             @Override
-            public AttributeEditor<List<Javascript<?>>> createValueListEditor(Attribute<?> attribute) {
-                return null;
-            }
-
-            @Override
-            public boolean isEditorFor(Attribute<?> attribute) {
+            public boolean isEditorFor(Attribute<?, ?> attribute) {
                 return JavascriptAttribute.class == attribute.getClass();
             }
 
             @Override
-            public boolean isListItemEditorFor(Attribute<?> attribute) {
-                return false;
+            public AttributeEditor createEditor(Attribute<?,?> attribute, DataEditor dataEditor, Data previousData) {
+                return new AttributeEditor(attribute, new JavascriptAttributeVisualisation((JavascriptAttribute<?>) attribute), uniformDesign);
+            }
+
+            @Override
+            public AttributeEditor<List<Javascript<?>>, ?> createValueListEditor(Attribute<?, ?> attribute) {
+                return null;
             }
         };
         singleAttributeEditorBuilders.add(editorBuilder);
-        AttributeEditorBuilder attributeEditorBuilder = new AttributeEditorBuilder(uniformDesign, singleAttributeEditorBuilders);
+        AttributeEditorBuilder attributeEditorBuilder = new AttributeEditorBuilder(singleAttributeEditorBuilders);
 
 
         DataEditor dataEditor = new DataEditor(attributeEditorBuilder,uniformDesign);

@@ -12,7 +12,7 @@ public abstract class ValueAttributeEditorVisualisation<T> implements AttributeE
 
     boolean setLoop=false;
     @Override
-    public void init(Attribute<T> boundAttribute) {
+    public void init(Attribute<T,?> boundAttribute) {
         this.attributeValue.set(boundAttribute.get());
 
         attributeValue.addListener((observable, oldValue, newValue1) -> {

@@ -7,9 +7,9 @@ import de.factoryfx.data.util.LanguageText;
 import de.factoryfx.data.validation.Validation;
 
 public class ExampleFactoryA extends Data {
-    public final StringAttribute stringAttribute= new StringAttribute(new AttributeMetadata().labelText("ExampleA1"));
-    public final DataReferenceAttribute<ExampleFactoryB> referenceAttribute = new DataReferenceAttribute<>(ExampleFactoryB.class,new AttributeMetadata().labelText("ExampleA2")).setCopySemantic(CopySemantic.SELF);
-    public final DataReferenceListAttribute<ExampleFactoryB> referenceListAttribute = new DataReferenceListAttribute<>(ExampleFactoryB.class,new AttributeMetadata().labelText("ExampleA3")).setCopySemantic(CopySemantic.SELF);
+    public final StringAttribute stringAttribute= new StringAttribute().labelText("ExampleA1");
+    public final DataReferenceAttribute<ExampleFactoryB> referenceAttribute = new DataReferenceAttribute<>(ExampleFactoryB.class).setCopySemantic(CopySemantic.SELF).labelText("ExampleA2");
+    public final DataReferenceListAttribute<ExampleFactoryB> referenceListAttribute = new DataReferenceListAttribute<>(ExampleFactoryB.class).setCopySemantic(CopySemantic.SELF).labelText("ExampleA3");
 
     public ExampleFactoryA(){
         config().setDisplayTextProvider(() -> stringAttribute.get());

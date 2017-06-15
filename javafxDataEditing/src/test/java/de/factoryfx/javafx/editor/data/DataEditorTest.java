@@ -13,7 +13,7 @@ public class DataEditorTest {
     @Test
     public void testBack() throws Exception {
         UniformDesign uniformDesign = UniformDesignBuilder.build();
-        DataEditor dataEditor = new DataEditor(new AttributeEditorBuilder(uniformDesign,new ArrayList<>()),uniformDesign);
+        DataEditor dataEditor = new DataEditor(new AttributeEditorBuilder(new ArrayList<>()),uniformDesign);
 
 
         ExampleData1 exampleData1 = new ExampleData1();
@@ -43,7 +43,7 @@ public class DataEditorTest {
     @Test
     public void testBack_limit() throws Exception {
         UniformDesign uniformDesign = UniformDesignBuilder.build();
-        DataEditor dataEditor = new DataEditor(new AttributeEditorBuilder(uniformDesign,new ArrayList<>()),uniformDesign);
+        DataEditor dataEditor = new DataEditor(new AttributeEditorBuilder(new ArrayList<>()),uniformDesign);
 
         for (int i=0;i<100;i++){
             dataEditor.edit(new ExampleData1());
@@ -56,7 +56,7 @@ public class DataEditorTest {
     @Test
     public void testForward() throws Exception {
         UniformDesign uniformDesign = UniformDesignBuilder.build();
-        DataEditor dataEditor = new DataEditor(new AttributeEditorBuilder(uniformDesign,new ArrayList<>()),uniformDesign);
+        DataEditor dataEditor = new DataEditor(new AttributeEditorBuilder(new ArrayList<>()),uniformDesign);
 
 
         ExampleData1 exampleData1 = new ExampleData1();

@@ -25,15 +25,13 @@ public class AttributeJsonWrapper {
     @JsonTypeInfo(use=JsonTypeInfo.Id.CLASS, include=JsonTypeInfo.As.PROPERTY, property="@clazz")
     List<Data> valueList;//special case for referencelists
     @JsonProperty
-    final LanguageText label;
-    @JsonProperty
     final String name;
     @JsonProperty
     final Class<? extends Attribute> attributeClass;
     @JsonProperty
     Class<?> referenceClass;
     @JsonProperty
-    Class<?> enumClazz;
+    public Class<?> enumClazz;
     @JsonProperty
     Class<?> collectionClazz;
     @JsonProperty
@@ -41,36 +39,29 @@ public class AttributeJsonWrapper {
     @JsonProperty
     Class<?> mapValueType;
 
+
+    @JsonProperty
+    String en;
+    @JsonProperty
+    String de;
+    @JsonProperty
+    String es;
+    @JsonProperty
+    String fr;
+    @JsonProperty
+    String it;
+    @JsonProperty
+    String pt;
+
     @SuppressWarnings("unchecked")
-    public AttributeJsonWrapper(Attribute<?> attribute, String name) {
-        this.value = getValue(attribute);
-        this.label = attribute.metadata.labelText;
+    public AttributeJsonWrapper(Attribute<?,?> attribute, String name) {
         this.name = name;
         this.attributeClass= attribute.getClass();
-        if (attribute instanceof ReferenceAttribute){
-            referenceClass = ((ReferenceAttribute)attribute).internal_getReferenceClass();
-        }
-        if (this.value instanceof Data) {
-            this.value = ((Data) this.value).internal().copy();
-            patchIds((Data)this.value);
-        }
-        if (attribute instanceof ReferenceListAttribute){
-            referenceClass = ((ReferenceListAttribute)attribute).internal_getReferenceClass();
-            value=null;
-            valueList=new ArrayList<>(((ReferenceListAttribute)attribute).get());
-            valueList.replaceAll(d->{
-                Data theCopy = d.internal().copy();
-                patchIds(theCopy);
-                return theCopy;
-            });
-        }
-        if (attribute instanceof EnumAttribute){
-            enumClazz = ((EnumAttribute)attribute).internal_getEnumClass();
-        }
+        attribute.writeToJsonWrapper(this);
     }
 
     @SuppressWarnings("unchecked")
-    private Object getValue(Attribute<?> attribute) {
+    private Object getValue(Attribute<?,?> attribute) {
         if (valueList!=null){
             return valueList;
         }
@@ -90,13 +81,13 @@ public class AttributeJsonWrapper {
     }
 
     @JsonCreator
-    protected AttributeJsonWrapper(@JsonProperty("value")Object value, @JsonProperty("valueList")List<Data> valueList, @JsonProperty("label")LanguageText label, @JsonProperty("name")String name,
+    protected AttributeJsonWrapper(@JsonProperty("value")Object value, @JsonProperty("valueList")List<Data> valueList, @JsonProperty("name")String name,
                                    @JsonProperty("clazz")Class<? extends Attribute> attributeClass, @JsonProperty("referenceClass")Class<?> referenceClass,
                                    @JsonProperty("enumClazz")Class<?> enumClazz,  @JsonProperty("collectionClazz")Class<?> collectionClazz,
-                                   @JsonProperty("mapKeyType")Class<?> mapKeyType,  @JsonProperty("mapValueType")Class<?>mapValueType) {
+                                   @JsonProperty("mapKeyType")Class<?> mapKeyType,  @JsonProperty("mapValueType")Class<?>mapValueType,
+                                   @JsonProperty("en")String en, @JsonProperty("de")String de, @JsonProperty("es")String es, @JsonProperty("fr")String fr, @JsonProperty("it")String it, @JsonProperty("pt")String pt) {
         this.value = value;
         this.valueList=valueList;
-        this.label = label;
         this.name = name;
         this.attributeClass=attributeClass;
         this.referenceClass = referenceClass;
@@ -104,6 +95,13 @@ public class AttributeJsonWrapper {
         this.collectionClazz = collectionClazz;
         this.mapKeyType = mapKeyType;
         this.mapValueType = mapValueType;
+
+        this.en=en;
+        this.de=de;
+        this.es=es;
+        this.fr=fr;
+        this.it=it;
+        this.pt=pt;
     }
 
     @SuppressWarnings("unchecked")
@@ -114,26 +112,27 @@ public class AttributeJsonWrapper {
     @SuppressWarnings("unchecked")
     private Attribute instantiateAttribute()  {
         if (ReferenceAttribute.class.isAssignableFrom(attributeClass)){
-            return new DataReferenceAttribute(new AttributeMetadata(),referenceClass);
+            return new DataReferenceAttribute();
         }
         if (ReferenceListAttribute.class.isAssignableFrom(attributeClass)){
-            return new DataReferenceListAttribute(new AttributeMetadata(),referenceClass);
+            return new DataReferenceListAttribute();
         }
         if (EnumAttribute.class.isAssignableFrom(attributeClass)){
-            return new EnumAttribute(enumClazz,new AttributeMetadata());
+            return new EnumAttribute(enumClazz);
         }
-        if (ValueListAttribute.class.isAssignableFrom(attributeClass)){
-            return new ValueListAttribute(collectionClazz,new AttributeMetadata());
-        }
-        if (ValueSetAttribute.class.isAssignableFrom(attributeClass)){
-            return new ValueSetAttribute(collectionClazz,new AttributeMetadata());
-        }
-        if (ValueMapAttribute.class.isAssignableFrom(attributeClass)){
-            return new ValueMapAttribute(new AttributeMetadata(),mapKeyType,mapValueType);
-        }
+//TODO
+//        if (ValueListAttribute.class.isAssignableFrom(attributeClass)){
+//            return new ValueListAttribute(collectionClazz);
+//        }
+//        if (ValueSetAttribute.class.isAssignableFrom(attributeClass)){
+//            return new ValueSetAttribute(collectionClazz);
+//        }
+//        if (ValueMapAttribute.class.isAssignableFrom(attributeClass)){
+//            return new ValueMapAttribute(mapKeyType,mapValueType);
+//        }
 
         try {
-            return attributeClass.getConstructor(AttributeMetadata.class).newInstance(new AttributeMetadata());
+            return attributeClass.getConstructor().newInstance();
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -153,7 +152,9 @@ public class AttributeJsonWrapper {
     }
 
     private Attribute setMetadataData(Attribute attribute){
-        attribute.metadata.labelText.internal_set(label);
+        //TODO
+//        attribute.metadata.labelText.internal_set(label);
+        attribute.readFromJsonWrapper(this);
         return attribute;
     }
 
@@ -170,7 +171,8 @@ public class AttributeJsonWrapper {
         return Optional.ofNullable(valueList);
     }
 
-    private void patchIds(Data d) {
+    void patchIds(Data d) {
+        if (d==null) return;
         d.setId(UUID.randomUUID().toString());
         d.internal().collectChildrenDeep().forEach(x->x.setId(UUID.randomUUID().toString()));
     }

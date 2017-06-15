@@ -1,6 +1,5 @@
 package de.factoryfx.javafx.view.menu;
 
-import de.factoryfx.data.attribute.AttributeMetadata;
 import de.factoryfx.factory.SimpleFactoryBase;
 import de.factoryfx.factory.atrribute.FactoryReferenceAttribute;
 import de.factoryfx.javafx.util.UniformDesign;
@@ -13,9 +12,9 @@ import javafx.scene.control.MenuItem;
 
 public class ViewMenuItemFactory<V> extends SimpleFactoryBase<MenuItem,V> {
 
-    public final FactoryReferenceAttribute<ViewDescription,ViewDescriptionFactory<V>> viewDescription = new FactoryReferenceAttribute<>(new AttributeMetadata().de("viewDescription").en("viewDescription"),ViewDescriptionFactory.class);
-    public final FactoryReferenceAttribute<View,ViewFactory<V>> view = new FactoryReferenceAttribute<>(new AttributeMetadata().de("view").en("view"),ViewFactory.class);
-    public final FactoryReferenceAttribute<UniformDesign,UniformDesignFactory<V>> uniformDesign = new FactoryReferenceAttribute<>(new AttributeMetadata().de("uniformDesign").en("uniformDesign"),UniformDesignFactory.class);
+    public final FactoryReferenceAttribute<ViewDescription,ViewDescriptionFactory<V>> viewDescription = new FactoryReferenceAttribute<ViewDescription,ViewDescriptionFactory<V>>().setupUnsafe(ViewDescriptionFactory.class).de("viewDescription").en("viewDescription");
+    public final FactoryReferenceAttribute<View,ViewFactory<V>> view = new FactoryReferenceAttribute<View,ViewFactory<V>>().setupUnsafe(ViewFactory.class).de("view").en("view");
+    public final FactoryReferenceAttribute<UniformDesign,UniformDesignFactory<V>> uniformDesign = new FactoryReferenceAttribute<UniformDesign,UniformDesignFactory<V>>().setupUnsafe(UniformDesignFactory.class).de("uniformDesign").en("uniformDesign");
 
     @Override
     public MenuItem createImpl() {

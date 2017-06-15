@@ -1,7 +1,6 @@
 package de.factoryfx.data.merge;
 
 import de.factoryfx.data.Data;
-import de.factoryfx.data.attribute.AttributeMetadata;
 import de.factoryfx.data.attribute.types.StringAttribute;
 import de.factoryfx.data.merge.testfactories.ExampleFactoryA;
 import de.factoryfx.data.merge.testfactories.ExampleFactoryB;
@@ -59,7 +58,7 @@ public class DataMergerMergerTest {
     }
 
     public static class ExampleFactoryPermission extends Data {
-        public final StringAttribute stringAttribute= new StringAttribute(new AttributeMetadata().labelText("ExampleA1").permission("permissionX"));
+        public final StringAttribute stringAttribute= new StringAttribute().labelText("ExampleA1").permission("permissionX");
     }
 
     @Test

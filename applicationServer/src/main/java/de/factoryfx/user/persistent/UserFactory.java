@@ -1,6 +1,5 @@
 package de.factoryfx.user.persistent;
 
-import de.factoryfx.data.attribute.AttributeMetadata;
 import de.factoryfx.data.attribute.types.EncryptedStringAttribute;
 import de.factoryfx.data.attribute.types.LocaleAttribute;
 import de.factoryfx.data.attribute.types.StringAttribute;
@@ -12,15 +11,10 @@ public class UserFactory<V> extends SimpleFactoryBase<User,V> {
     /**key is static and not be part of the factory to keep it secret*/
     public static String passwordKey;
 
-    private static final AttributeMetadata NAME = new AttributeMetadata().en("name").de("Name");
-    private static final AttributeMetadata PASSWORD = new AttributeMetadata().en("password").de("Passwort");
-    private static final AttributeMetadata LOCLAE = new AttributeMetadata().en("locale").de("Sprache");
-    private static final AttributeMetadata PERMISSIONS = new AttributeMetadata().en("permissions").de("Rechte");
-
-    public final StringAttribute name= new StringAttribute(NAME);
-    public final EncryptedStringAttribute password= new EncryptedStringAttribute(PASSWORD);
-    public final LocaleAttribute locale= new LocaleAttribute(LOCLAE);
-    public final StringListAttribute permissons= new StringListAttribute(PERMISSIONS);
+    public final StringAttribute name= new StringAttribute().en("name").de("Name");
+    public final EncryptedStringAttribute password= new EncryptedStringAttribute().en("password").de("Passwort");
+    public final LocaleAttribute locale= new LocaleAttribute().en("locale").de("Sprache");
+    public final StringListAttribute permissons= new StringListAttribute().en("permissions").de("Rechte");
 
     @Override
     public User createImpl() {

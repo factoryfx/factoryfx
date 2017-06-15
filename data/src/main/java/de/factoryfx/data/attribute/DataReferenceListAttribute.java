@@ -1,45 +1,48 @@
 package de.factoryfx.data.attribute;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import de.factoryfx.data.Data;
-import javafx.collections.FXCollections;
-import javafx.collections.ListChangeListener;
-import javafx.collections.ObservableList;
 
 import java.util.*;
-import java.util.function.Consumer;
 import java.util.function.Function;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class DataReferenceListAttribute<T extends Data> extends ReferenceListAttribute<T,DataReferenceListAttribute<T>> {
-    /**
-     * @see ReferenceBaseAttribute#ReferenceBaseAttribute(Class ,AttributeMetadata)
-     * */
-    public DataReferenceListAttribute(Class<T> containingFactoryClass, AttributeMetadata attributeMetadata) {
-        super(containingFactoryClass,attributeMetadata);
+
+    public DataReferenceListAttribute() {
+        super();
     }
 
-    /**
-     * @see ReferenceBaseAttribute#ReferenceBaseAttribute(AttributeMetadata,Class)
-     * */
-    @SuppressWarnings("unchecked")
-    public DataReferenceListAttribute(AttributeMetadata attributeMetadata, Class clazz) {
-        super(attributeMetadata,clazz);
-    }
-
-    @JsonCreator
-    protected DataReferenceListAttribute() {
-        super(null,(AttributeMetadata)null);
+    public DataReferenceListAttribute(Class<T> clazz) {
+        super();
+        setup(clazz);
     }
 
     @Override
-    public Attribute<List<T>> internal_copy() {
-        final DataReferenceListAttribute<T> result = new DataReferenceListAttribute<>(containingFactoryClass, metadata);
+    public DataReferenceListAttribute<T> internal_copy() {
+        final DataReferenceListAttribute<T> result = new DataReferenceListAttribute<>();
         result.set(get());
         return result;
+    }
+
+
+    public DataReferenceListAttribute<T> setup(Class<T> clazz){
+        this.possibleValueProvider(data -> {
+            Set<T> result = new HashSet<>();
+            for (Data factory: root.internal().collectChildrenDeep()){
+                if (clazz.isAssignableFrom(factory.getClass())){
+                    result.add((T) factory);
+                }
+            }
+            return result;
+        });
+        this.newValueProvider(data -> {
+            try {
+                return clazz.newInstance();
+            } catch (InstantiationException | IllegalAccessException e) {
+                throw new RuntimeException(e);
+            }
+        });
+        return this;
     }
 
 }

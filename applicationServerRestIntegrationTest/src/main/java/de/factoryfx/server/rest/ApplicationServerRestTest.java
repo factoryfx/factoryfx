@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Locale;
 
 import ch.qos.logback.classic.Level;
-import de.factoryfx.data.attribute.AttributeMetadata;
 import de.factoryfx.data.attribute.types.EncryptedString;
 import de.factoryfx.data.attribute.types.EncryptedStringAttribute;
 import de.factoryfx.factory.FactoryManager;
@@ -26,7 +25,7 @@ import de.factoryfx.user.persistent.UserFactory;
 public class ApplicationServerRestTest {
 
     public static void main(String[] args) {
-        String key  = new EncryptedStringAttribute(null).createKey();
+        String key  = new EncryptedStringAttribute().createKey();
         UserFactory.passwordKey=key;
 
         ch.qos.logback.classic.Logger root = (ch.qos.logback.classic.Logger) org.slf4j.LoggerFactory.getLogger(ch.qos.logback.classic.Logger.ROOT_LOGGER_NAME);
@@ -90,7 +89,7 @@ public class ApplicationServerRestTest {
 
 
     public static class RootTestclazz extends SimpleFactoryBase<String,Void> {
-        public final FactoryReferenceAttribute<JettyServer,JettyServerFactory<Void>> jettyServer = new FactoryReferenceAttribute<>(new AttributeMetadata(),JettyServerFactory.class);
+        public final FactoryReferenceAttribute<JettyServer,JettyServerFactory<Void>> jettyServer = new FactoryReferenceAttribute<>();
 
         @Override
         public String createImpl() {

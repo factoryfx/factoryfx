@@ -19,8 +19,8 @@ public class WebGuiAttributeMetadata {
     public Object listItemEmptyValue;
 
     public WebGuiAttributeMetadata(Attribute attribute, Locale locale){
-        labelText=attribute.getPreferredLabelText(locale);
-        addonText=attribute.getPreferredAddonText(locale);
+        labelText=attribute.internal_getPreferredLabelText(locale);
+        addonText=attribute.internal_getAddonText();
         this.required=attribute.internal_required();
         AttributeTypeInfo attributeType = attribute.internal_getAttributeType();
         this.attributeType = attributeType.attributeType.toString();

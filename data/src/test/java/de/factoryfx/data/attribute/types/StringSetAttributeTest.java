@@ -1,13 +1,12 @@
 package de.factoryfx.data.attribute.types;
 
 import de.factoryfx.data.Data;
-import de.factoryfx.data.attribute.AttributeMetadata;
 import de.factoryfx.data.jackson.ObjectMapperBuilder;
 import org.junit.Test;
 
 public class StringSetAttributeTest {
     public static class ExampleSetFactory extends Data {
-        public StringSetAttribute setAttribute =new StringSetAttribute(new AttributeMetadata());
+        public StringSetAttribute setAttribute =new StringSetAttribute();
     }
 
     @Test

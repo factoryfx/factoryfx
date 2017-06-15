@@ -28,7 +28,7 @@ public class DataTreeViewWidgetTest extends Application{
         exampleData1.stringAttribute.set("abc");
 
         UniformDesign uniformDesign = UniformDesignBuilder.build();
-        DataEditor dataEditor = new DataEditor(new AttributeEditorBuilder(uniformDesign,new ArrayList<>()), uniformDesign);
+        DataEditor dataEditor = new DataEditor(new AttributeEditorBuilder(new ArrayList<>()), uniformDesign);
         dataEditor.edit(exampleData1);
 
         for (int i=0 ;i<100;i++){
@@ -60,7 +60,7 @@ public class DataTreeViewWidgetTest extends Application{
 
         DataTreeViewWidget<ExampleData1> dataViewWidget = new DataTreeViewWidget<>(new DataTreeView<>(() -> dataList, item -> {
             final TreeItem<Data> dataTreeItem = new TreeItem<>(item);
-            dataTreeItem.getChildren().addAll(item.referenceListAttribute.get().stream().map((Function<ExampleData2, TreeItem<Data>>) TreeItem::new).collect(Collectors.toList()));
+            dataTreeItem.getChildren().addAll(item.referenceListAttribute.get().stream().map((Function<ExampleData2, TreeItem<Data>>) value -> new TreeItem<>(value)).collect(Collectors.toList()));
             dataTreeItem.setExpanded(true);
             return dataTreeItem;
         }),dataEditor,uniformDesign);

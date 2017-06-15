@@ -4,18 +4,17 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.common.base.Strings;
 import de.factoryfx.data.attribute.Attribute;
-import de.factoryfx.data.attribute.AttributeMetadata;
 import de.factoryfx.data.attribute.ImmutableValueAttribute;
 
-public class StringAttribute extends ImmutableValueAttribute<String> {
+public class StringAttribute extends ImmutableValueAttribute<String,StringAttribute> {
 
-    public StringAttribute(AttributeMetadata attributeMetadata) {
-        super(attributeMetadata,String.class);
+    public StringAttribute() {
+        super(String.class);
     }
 
     @JsonCreator
     StringAttribute(String initialValue) {
-        super(null,String.class);
+        super(String.class);
         set(initialValue);
     }
 
@@ -51,7 +50,8 @@ public class StringAttribute extends ImmutableValueAttribute<String> {
     }
 
     @Override
-    protected Attribute<String> createNewEmptyInstance() {
-        return new StringAttribute(metadata);
+    protected StringAttribute createNewEmptyInstance() {
+
+        return new StringAttribute();
     }
 }

@@ -124,7 +124,7 @@ public class DataTreeWidget implements CloseAwareWidget {
             data.internal().visitAttributesFlat(attribute -> {
                 attribute.internal_visit(new AttributeVisitor() {
                     @Override
-                    public void value(Attribute<?> value) {
+                    public void value(Attribute<?,?> value) {
 
                     }
 

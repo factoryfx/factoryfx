@@ -12,16 +12,16 @@ public class AttributeValidation<T> {
     private final Validation<T> validation;
     private final Attribute[] dependencies;
 
-    public AttributeValidation(Validation<T> validation, Attribute<?>... dependencies) {
+    public AttributeValidation(Validation<T> validation, Attribute<?,?>... dependencies) {
         this.validation = validation;
         this.dependencies = dependencies;
     }
 
     @SuppressWarnings("unchecked")
-    public Map<Attribute<?>,List<ValidationError>> validate(Data data) {
+    public Map<Attribute<?,?>,List<ValidationError>> validate(Data data) {
         if (!validation.validate((T)data)){
-            Map<Attribute<?>,List<ValidationError>> result = new HashMap<>();
-            for (Attribute<?> dependency: dependencies){
+            Map<Attribute<?,?>,List<ValidationError>> result = new HashMap<>();
+            for (Attribute<?,?> dependency: dependencies){
                 List<ValidationError> validationErrors = result.computeIfAbsent(dependency, k -> new ArrayList<>());
                 validationErrors.add(new ValidationError(validation.getValidationDescription(),dependency,data));
             }

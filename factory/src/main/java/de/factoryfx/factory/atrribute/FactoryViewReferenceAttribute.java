@@ -3,19 +3,24 @@ package de.factoryfx.factory.atrribute;
 import java.util.function.Function;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
-import de.factoryfx.data.attribute.AttributeMetadata;
+import de.factoryfx.data.attribute.Attribute;
 import de.factoryfx.data.attribute.ViewReferenceAttribute;
 import de.factoryfx.factory.FactoryBase;
 
-public class FactoryViewReferenceAttribute<R extends FactoryBase<?,?>,L, T extends FactoryBase<L,?>> extends ViewReferenceAttribute<R,T> {
+public class FactoryViewReferenceAttribute<R extends FactoryBase<?,?>,L, T extends FactoryBase<L,?>> extends ViewReferenceAttribute<R,T,FactoryViewReferenceAttribute<R,L,T>> {
 
-    public FactoryViewReferenceAttribute(AttributeMetadata attributeMetadata, Function<R,T> view) {
-        super(attributeMetadata, view);
+    public FactoryViewReferenceAttribute(Function<R,T> view) {
+        super(view);
     }
 
     @JsonCreator
     FactoryViewReferenceAttribute() {
-        super(null, null);
+        super(null);
+    }
+
+    @Override
+    public Attribute<T, FactoryViewReferenceAttribute<R, L, T>> internal_copy() {
+        return new FactoryViewReferenceAttribute<>();
     }
 
 

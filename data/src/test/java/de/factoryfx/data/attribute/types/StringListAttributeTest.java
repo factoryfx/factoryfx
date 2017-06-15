@@ -5,7 +5,6 @@ import java.util.List;
 
 import de.factoryfx.data.Data;
 import de.factoryfx.data.attribute.AttributeChangeListener;
-import de.factoryfx.data.attribute.AttributeMetadata;
 import de.factoryfx.data.jackson.ObjectMapperBuilder;
 import org.junit.Assert;
 import org.junit.Test;
@@ -13,7 +12,7 @@ import org.junit.Test;
 public class StringListAttributeTest {
 
     public static class ExampleListFactory extends Data {
-        public StringListAttribute listAttribute =new StringListAttribute(new AttributeMetadata());
+        public StringListAttribute listAttribute =new StringListAttribute();
     }
 
     @Test
@@ -39,7 +38,7 @@ public class StringListAttributeTest {
     public void remove_Listener(){
         ExampleListFactory exampleListFactory = new ExampleListFactory();
         ArrayList<String> calls= new ArrayList<>();
-        AttributeChangeListener<List<String>> invalidationListener = (a, o) -> {
+        AttributeChangeListener<List<String>,StringListAttribute> invalidationListener = (a, o) -> {
             calls.add("");
         };
         exampleListFactory.listAttribute.internal_addListener(invalidationListener);

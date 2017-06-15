@@ -36,7 +36,7 @@ public class ViewListReferenceAttributeVisualisation implements AttributeEditorV
 
 
     @Override
-    public void init(Attribute<List<Data>> boundAttribute) {
+    public void init(Attribute<List<Data>,?> boundAttribute) {
         updater.ifPresent(listConsumer -> listConsumer.accept(boundAttribute.get()));
     }
 
