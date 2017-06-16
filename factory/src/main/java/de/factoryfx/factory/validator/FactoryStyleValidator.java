@@ -23,7 +23,7 @@ public class FactoryStyleValidator {
     public FactoryStyleValidator(){
         this((factoryBase, field) -> {
             final ArrayList<FactoryStyleValidation> factoryStyleValidations = new ArrayList<>();
-            factoryStyleValidations.add(new NoReferenceAttribute(factoryBase, field));
+            factoryStyleValidations.add(new OnlyAttribute(factoryBase, field));
             factoryStyleValidations.add(new NotNullAttributeValidation(factoryBase, field));
             factoryStyleValidations.add(new PublicValidation(factoryBase, field));
             factoryStyleValidations.add(new FinalValidation(factoryBase, field));
@@ -40,9 +40,9 @@ public class FactoryStyleValidator {
         final ArrayList<FactoryStyleValidation> result = new ArrayList<>();
         for (Field field: factoryBase.getClass().getDeclaredFields()){
 
-            if (Attribute.class.isAssignableFrom(field.getType())){
+//            if (Attribute.class.isAssignableFrom(field.getType())){
                 result.addAll(fieldValidationAdder.apply(factoryBase,field));
-            }
+//            }
         }
         result.addAll(factoryValidationAdder.apply(factoryBase));
         return result;

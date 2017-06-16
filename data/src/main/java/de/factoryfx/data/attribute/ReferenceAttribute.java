@@ -155,7 +155,6 @@ public abstract class ReferenceAttribute<T extends Data, A extends ReferenceBase
             T newFactory = newValueProvider.apply(root);
             set(newFactory);
         }
-        getOptional().ifPresent(data->data.internal().propagateRoot(root));
         return get();
     }
 
