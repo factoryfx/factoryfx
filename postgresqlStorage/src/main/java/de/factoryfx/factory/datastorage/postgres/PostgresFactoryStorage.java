@@ -113,7 +113,7 @@ public class PostgresFactoryStorage<V,L,T extends FactoryBase<L,V>> implements F
         final StoredFactoryMetadata storedFactoryMetadata = new StoredFactoryMetadata();
         storedFactoryMetadata.creationTime= LocalDateTime.now();
         storedFactoryMetadata.id= createNewId();
-        storedFactoryMetadata.user=comment;
+        storedFactoryMetadata.user=user;
         storedFactoryMetadata.comment=comment;
         storedFactoryMetadata.baseVersionId=update.metadata.baseVersionId;
         storedFactoryMetadata.dataModelVersion=update.metadata.dataModelVersion;
