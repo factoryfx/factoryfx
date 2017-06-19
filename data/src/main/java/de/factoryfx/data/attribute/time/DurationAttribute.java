@@ -6,9 +6,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 
 import de.factoryfx.data.attribute.ImmutableValueAttribute;
 
-/**
- * Created by mhavlik on 16.06.17.
- */
+
 public class DurationAttribute extends ImmutableValueAttribute<Duration,DurationAttribute> {
 
     public DurationAttribute() {
