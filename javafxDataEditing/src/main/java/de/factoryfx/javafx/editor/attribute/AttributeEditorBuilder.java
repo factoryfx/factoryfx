@@ -2,32 +2,77 @@ package de.factoryfx.javafx.editor.attribute;
 
 import java.math.BigDecimal;
 import java.net.URI;
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+import java.util.Optional;
 import java.util.function.Supplier;
 
+import javafx.scene.control.TableView;
+import javafx.scene.paint.Color;
+
+import org.controlsfx.glyphfont.FontAwesome;
+
 import com.google.common.base.Ascii;
+
 import de.factoryfx.data.Data;
-import de.factoryfx.data.attribute.*;
+import de.factoryfx.data.attribute.Attribute;
+import de.factoryfx.data.attribute.ReferenceAttribute;
+import de.factoryfx.data.attribute.ReferenceListAttribute;
+import de.factoryfx.data.attribute.ValueListAttribute;
+import de.factoryfx.data.attribute.ViewListReferenceAttribute;
+import de.factoryfx.data.attribute.ViewReferenceAttribute;
 import de.factoryfx.data.attribute.primitive.BooleanAttribute;
 import de.factoryfx.data.attribute.primitive.DoubleAttribute;
 import de.factoryfx.data.attribute.primitive.IntegerAttribute;
 import de.factoryfx.data.attribute.primitive.LongAttribute;
-import de.factoryfx.data.attribute.types.*;
+import de.factoryfx.data.attribute.types.BigDecimalAttribute;
+import de.factoryfx.data.attribute.types.ColorAttribute;
+import de.factoryfx.data.attribute.time.DurationAttribute;
+import de.factoryfx.data.attribute.types.EncryptedString;
+import de.factoryfx.data.attribute.types.EncryptedStringAttribute;
+import de.factoryfx.data.attribute.types.EnumAttribute;
+import de.factoryfx.data.attribute.types.I18nAttribute;
+import de.factoryfx.data.attribute.time.LocalDateAttribute;
+import de.factoryfx.data.attribute.time.LocalDateTimeAttribute;
+import de.factoryfx.data.attribute.types.LocaleAttribute;
+import de.factoryfx.data.attribute.types.ObjectValueAttribute;
+import de.factoryfx.data.attribute.types.StringAttribute;
+import de.factoryfx.data.attribute.types.URIAttribute;
 import de.factoryfx.data.util.LanguageText;
 import de.factoryfx.data.validation.ValidationError;
 import de.factoryfx.javafx.editor.attribute.builder.DataSingleAttributeEditorBuilder;
 import de.factoryfx.javafx.editor.attribute.builder.NoListSingleAttributeEditorBuilder;
 import de.factoryfx.javafx.editor.attribute.builder.SimpleSingleAttributeEditorBuilder;
 import de.factoryfx.javafx.editor.attribute.builder.SingleAttributeEditorBuilder;
-import de.factoryfx.javafx.editor.attribute.visualisation.*;
+import de.factoryfx.javafx.editor.attribute.visualisation.BigDecimalAttributeVisualisation;
+import de.factoryfx.javafx.editor.attribute.visualisation.BooleanAttributeVisualisation;
+import de.factoryfx.javafx.editor.attribute.visualisation.ColorAttributeVisualisation;
+import de.factoryfx.javafx.editor.attribute.visualisation.DoubleAttributeVisualisation;
+import de.factoryfx.javafx.editor.attribute.visualisation.DurationAttributeVisualisation;
+import de.factoryfx.javafx.editor.attribute.visualisation.EncryptedStringAttributeVisualisation;
+import de.factoryfx.javafx.editor.attribute.visualisation.EnumAttributeVisualisation;
+import de.factoryfx.javafx.editor.attribute.visualisation.ExpandableAttributeVisualisation;
+import de.factoryfx.javafx.editor.attribute.visualisation.I18nAttributeVisualisation;
+import de.factoryfx.javafx.editor.attribute.visualisation.IntegerAttributeVisualisation;
+import de.factoryfx.javafx.editor.attribute.visualisation.LocalDateAttributeVisualisation;
+import de.factoryfx.javafx.editor.attribute.visualisation.LocalDateTimeAttributeVisualisation;
+import de.factoryfx.javafx.editor.attribute.visualisation.LocaleAttributeVisualisation;
+import de.factoryfx.javafx.editor.attribute.visualisation.LongAttributeVisualisation;
+import de.factoryfx.javafx.editor.attribute.visualisation.ObjectValueAttributeVisualisation;
+import de.factoryfx.javafx.editor.attribute.visualisation.ReferenceAttributeVisualisation;
+import de.factoryfx.javafx.editor.attribute.visualisation.ReferenceListAttributeVisualisation;
+import de.factoryfx.javafx.editor.attribute.visualisation.StringAttributeVisualisation;
+import de.factoryfx.javafx.editor.attribute.visualisation.StringLongAttributeVisualisation;
+import de.factoryfx.javafx.editor.attribute.visualisation.URIAttributeVisualisation;
+import de.factoryfx.javafx.editor.attribute.visualisation.ViewListReferenceAttributeVisualisation;
+import de.factoryfx.javafx.editor.attribute.visualisation.ViewReferenceAttributeVisualisation;
 import de.factoryfx.javafx.editor.data.DataEditor;
 import de.factoryfx.javafx.util.UniformDesign;
 import de.factoryfx.javafx.widget.datalistedit.DataListEditWidget;
-import javafx.scene.control.TableView;
-import javafx.scene.paint.Color;
-import org.controlsfx.glyphfont.FontAwesome;
 
 public class AttributeEditorBuilder {
 
@@ -58,6 +103,7 @@ public class AttributeEditorBuilder {
         result.add(new SimpleSingleAttributeEditorBuilder<>(uniformDesign,LocalDateTimeAttribute.class,LocalDateTime.class,(attribute)-> new LocalDateTimeAttributeVisualisation(),()->new LocalDateTimeAttribute()));
         result.add(new SimpleSingleAttributeEditorBuilder<>(uniformDesign,LocaleAttribute.class,Locale.class,(attribute)-> new LocaleAttributeVisualisation(),()->new LocaleAttribute()));
         result.add(new SimpleSingleAttributeEditorBuilder<>(uniformDesign,LongAttribute.class,Long.class,(attribute)-> new LongAttributeVisualisation(),()->new LongAttribute()));
+        result.add(new SimpleSingleAttributeEditorBuilder<>(uniformDesign, DurationAttribute.class, Duration.class, (attribute)-> new DurationAttributeVisualisation(), ()->new DurationAttribute()));
         result.add(new SimpleSingleAttributeEditorBuilder<>(uniformDesign,StringAttribute.class,String.class,(attribute)->{
             if (attribute.internal_isLongText()){
                 return new ExpandableAttributeVisualisation<>(new StringLongAttributeVisualisation(),uniformDesign, (s)->Ascii.truncate(s,20,"..."),FontAwesome.Glyph.FONT,attribute.internal_isDefaultExpanded() );
