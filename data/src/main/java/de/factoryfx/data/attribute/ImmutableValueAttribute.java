@@ -129,4 +129,10 @@ public abstract class ImmutableValueAttribute<T,A extends Attribute<T,A>> extend
     public void writeValueToJsonWrapper(AttributeJsonWrapper attributeJsonWrapper) {
         attributeJsonWrapper.value=get();
     }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    protected void readValueFromJsonWrapper(AttributeJsonWrapper attributeJsonWrapper) {
+        set((T) attributeJsonWrapper.value);
+    }
 }

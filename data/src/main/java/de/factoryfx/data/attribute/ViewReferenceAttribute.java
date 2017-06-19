@@ -180,7 +180,12 @@ public abstract class ViewReferenceAttribute<R extends Data, T extends Data,A ex
     }
 
     @Override
-    public void writeValueToJsonWrapper(AttributeJsonWrapper attributeJsonWrapper) {
+    protected void writeValueToJsonWrapper(AttributeJsonWrapper attributeJsonWrapper) {
+        //nothing
+    }
+
+    @Override
+    protected void readValueFromJsonWrapper(AttributeJsonWrapper attributeJsonWrapper) {
         //nothing
     }
 }

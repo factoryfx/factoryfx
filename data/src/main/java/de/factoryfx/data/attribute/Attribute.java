@@ -6,11 +6,9 @@ import java.util.function.Function;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import de.factoryfx.data.Data;
-import de.factoryfx.data.util.LanguageText;
 import de.factoryfx.data.validation.ObjectRequired;
 import de.factoryfx.data.validation.Validation;
 import de.factoryfx.data.validation.ValidationError;
-import org.w3c.dom.Attr;
 
 public abstract class Attribute<T,A extends Attribute<T,A>>{
 
@@ -292,7 +290,7 @@ public abstract class Attribute<T,A extends Attribute<T,A>>{
     }
 
 
-    public void writeToJsonWrapper(AttributeJsonWrapper attributeJsonWrapper){
+    public void internal_writeToJsonWrapper(AttributeJsonWrapper attributeJsonWrapper){
         attributeJsonWrapper.en=this.en;
         attributeJsonWrapper.de=this.de;
         attributeJsonWrapper.es=this.es;
@@ -302,16 +300,19 @@ public abstract class Attribute<T,A extends Attribute<T,A>>{
         writeValueToJsonWrapper(attributeJsonWrapper);
     }
 
-    public abstract void writeValueToJsonWrapper(AttributeJsonWrapper attributeJsonWrapper);
+    protected abstract void writeValueToJsonWrapper(AttributeJsonWrapper attributeJsonWrapper);
 
-    public void readFromJsonWrapper(AttributeJsonWrapper attributeJsonWrapper){
+    public void internal_readFromJsonWrapper(AttributeJsonWrapper attributeJsonWrapper){
         this.en=attributeJsonWrapper.en;
         this.de=attributeJsonWrapper.de;
         this.es=attributeJsonWrapper.es;
         this.fr=attributeJsonWrapper.fr;
         this.it=attributeJsonWrapper.it;
         this.pt=attributeJsonWrapper.pt;
+        readValueFromJsonWrapper(attributeJsonWrapper);
     }
+
+    protected abstract void readValueFromJsonWrapper(AttributeJsonWrapper attributeJsonWrapper);
 
     public void takeContentFromAttribute(A attribute){
         this.en=attribute.en;
