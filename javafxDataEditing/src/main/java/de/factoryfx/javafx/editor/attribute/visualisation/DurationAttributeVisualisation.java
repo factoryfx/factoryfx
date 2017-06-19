@@ -48,7 +48,7 @@ public class DurationAttributeVisualisation extends ValueAttributeEditorVisualis
 
     private void setDuration(SimpleObjectProperty<Duration> boundTo, TextField textField, ComboBox<ChronoUnit> comboBox) {
         if (!Strings.isNullOrEmpty(textField.getText()) &&  comboBox.getValue() != null) {
-            boundTo.set(Duration.of(Long.valueOf(textField.getCharacters().toString()), comboBox.getValue()));
+            boundTo.set(Duration.of(Long.parseLong(textField.getText()), comboBox.getValue()));
         }
     }
 }
