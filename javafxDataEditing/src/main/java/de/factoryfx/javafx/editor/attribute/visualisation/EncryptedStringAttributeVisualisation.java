@@ -35,7 +35,6 @@ public class EncryptedStringAttributeVisualisation extends ValueAttributeEditorV
     @Override
     public Node createContent(SimpleObjectProperty<EncryptedString> boundTo) {
         TextField encryptedTextField = new TextField();
-        boundTo.addListener((observable, oldValue, newValue) -> encryptedTextField.setText(newValue.getEncryptedString()));
         encryptedTextField.setEditable(false);
 
         TextField keyField = new TextField();
@@ -50,11 +49,16 @@ public class EncryptedStringAttributeVisualisation extends ValueAttributeEditorV
         keyGenButton.setOnAction(event -> keyField.setText(keyCreator.get()));
 
         TextField decryptedTextField = new TextField();
-        boundTo.addListener((observable, oldValue, newValue) -> {
-            if (!keyField.getText().isEmpty()){
+        ChangeListener<EncryptedString> encryptedStringChangeListener = (observable, oldValue, newValue) -> {
+            if (newValue!=null){
+                encryptedTextField.setText(newValue.getEncryptedString());
+            }
+            if (!keyField.getText().isEmpty()) {
                 decryptedTextField.setText(newValue.decrypt(keyField.getText()));
             }
-        });
+        };
+        boundTo.addListener(encryptedStringChangeListener);
+        encryptedStringChangeListener.changed(boundTo,boundTo.get(),boundTo.get());
         decryptedTextField.setEditable(false);
 
         TextField newValueTextField = new TextField();
