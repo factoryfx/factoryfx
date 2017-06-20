@@ -41,7 +41,7 @@ public class FactoryStyleValidator {
         final ArrayList<FactoryStyleValidation> result = new ArrayList<>();
         for (Field field: factoryBase.getClass().getDeclaredFields()){
 
-            if (!field.getName().equals("$assertionsDisabled)")){//When the compiler finds an assertion in a class, it adds a generated static final field named $assertionsDisabled to the class.
+            if (!field.getName().equals("$assertionsDisabled")){//When the compiler finds an assertion in a class, it adds a generated static final field named $assertionsDisabled to the class.
                 result.addAll(fieldValidationAdder.apply(factoryBase,field));
             }
         }
