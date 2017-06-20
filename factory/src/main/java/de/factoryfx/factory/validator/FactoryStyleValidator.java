@@ -8,6 +8,7 @@ import java.util.function.Function;
 
 import de.factoryfx.data.attribute.Attribute;
 import de.factoryfx.factory.FactoryBase;
+import javafx.beans.binding.When;
 
 public class FactoryStyleValidator {
 
@@ -40,7 +41,11 @@ public class FactoryStyleValidator {
         final ArrayList<FactoryStyleValidation> result = new ArrayList<>();
         for (Field field: factoryBase.getClass().getDeclaredFields()){
 
+            if (!field.getName().equals("$assertionsDisabled)")){//When the compiler finds an assertion in a class, it adds a generated static final field named $assertionsDisabled to the class.
+                result.addAll(fieldValidationAdder.apply(factoryBase,field));
+            }
 //            if (Attribute.class.isAssignableFrom(field.getType())){
+
                 result.addAll(fieldValidationAdder.apply(factoryBase,field));
 //            }
         }
