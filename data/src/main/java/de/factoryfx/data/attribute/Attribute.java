@@ -167,19 +167,19 @@ public abstract class Attribute<T,A extends Attribute<T,A>>{
     private static final Locale PORTUGUESE =new Locale("pt", "PT");
     private static final Locale SPANISH=new Locale("es", "ES");
     public String internal_getPreferredLabelText(Locale locale){
-        if (en!=null && locale==Locale.ENGLISH){
+        if (en!=null && locale.equals(Locale.ENGLISH)){
             return en;
         }
-        if (de!=null && locale==Locale.GERMAN){
+        if (de!=null && locale.equals(Locale.GERMAN)){
             return de;
         }
         if (es!=null && locale.equals(SPANISH)){
             return es;
         }
-        if (fr!=null && locale==Locale.FRANCE){
+        if (fr!=null && locale.equals(Locale.FRANCE)){
             return fr;
         }
-        if (it!=null && locale==Locale.ITALIAN){
+        if (it!=null && locale.equals(Locale.ITALIAN)){
             return it;
         }
         if (pt!=null && locale.equals(PORTUGUESE)){
