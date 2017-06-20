@@ -44,10 +44,6 @@ public class FactoryStyleValidator {
             if (!field.getName().equals("$assertionsDisabled)")){//When the compiler finds an assertion in a class, it adds a generated static final field named $assertionsDisabled to the class.
                 result.addAll(fieldValidationAdder.apply(factoryBase,field));
             }
-//            if (Attribute.class.isAssignableFrom(field.getType())){
-
-                result.addAll(fieldValidationAdder.apply(factoryBase,field));
-//            }
         }
         result.addAll(factoryValidationAdder.apply(factoryBase));
         return result;
