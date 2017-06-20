@@ -2,6 +2,7 @@ package de.factoryfx.javafx.editor.attribute.visualisation;
 
 import com.google.common.base.Strings;
 import de.factoryfx.data.attribute.types.EncryptedString;
+import de.factoryfx.data.util.LanguageText;
 import de.factoryfx.javafx.editor.attribute.ValueAttributeEditorVisualisation;
 import de.factoryfx.javafx.util.UniformDesign;
 import javafx.beans.binding.Bindings;
@@ -20,6 +21,11 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 public class EncryptedStringAttributeVisualisation extends ValueAttributeEditorVisualisation<EncryptedString> {
+
+    private final LanguageText keyText = new LanguageText().en("Key").de("Schlüssel");
+    private final LanguageText encryptedText = new LanguageText().en("Encrypted").de("Verschlüsselt");
+    private final LanguageText decryptedText = new LanguageText().en("Decrypted").de("Entschlüsselt");
+    private final LanguageText newText = new LanguageText().en("New value").de("Neuer wert");
 
     private final Supplier<String> keyCreator;
     private final UniformDesign uniformDesign;
@@ -90,7 +96,7 @@ public class EncryptedStringAttributeVisualisation extends ValueAttributeEditorV
         hBox.setAlignment(Pos.CENTER_LEFT);
         HBox.setHgrow(encryptedTextField, Priority.ALWAYS);
         HBox.setHgrow(decryptedTextField, Priority.ALWAYS);
-        hBox.getChildren().addAll(new Label("Encrypted"),encryptedTextField,new Label("Decrypted"),decryptedTextField,new Label("Key"), keyField, new Label("New value"), newValueTextField, popupButton);
+        hBox.getChildren().addAll(new Label(uniformDesign.getText(encryptedText)),encryptedTextField,new Label(uniformDesign.getText(decryptedText)),decryptedTextField,new Label(uniformDesign.getText(keyText)), keyField, new Label(uniformDesign.getText(newText)), newValueTextField, popupButton);
         return hBox;
     }
 }
