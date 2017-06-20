@@ -5,10 +5,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import com.fasterxml.jackson.annotation.*;
 import de.factoryfx.factory.FactoryBase;
 
 @JsonIdentityInfo(generator = ObjectIdGenerators.IntSequenceGenerator.class)
@@ -38,6 +35,7 @@ public class FactoryLogEntry {
         return !events.isEmpty();
     }
 
+    @JsonIgnore
     public Set<FactoryLogEntry> getListDeep(){
         final HashSet<FactoryLogEntry> items = new HashSet<>();
         collectToDeep(items);
