@@ -22,7 +22,10 @@ import de.factoryfx.user.AuthorizedUser;
 import de.factoryfx.user.UserManagement;
 import de.factoryfx.user.persistent.UserFactory;
 
-@Path("/adminui")
+
+//https://stackoverflow.com/questions/17000193/can-we-have-more-than-one-path-annotation-for-same-rest-method
+//2 Paths for compatibility
+@Path("{parameter: adminui|applicationServer}")
 public class ApplicationServerResource<V,L,T extends FactoryBase<L,V>>  {
 
     private final ApplicationServer<V,L,T> applicationServer;
