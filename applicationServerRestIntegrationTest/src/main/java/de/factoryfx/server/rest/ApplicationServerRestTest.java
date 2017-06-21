@@ -68,7 +68,7 @@ public class ApplicationServerRestTest {
         final RestClientFactory<Void> restClient = new RestClientFactory<>();
         restClient.port.set(34579);
         restClient.host.set("localhost");
-        restClient.path.set("applicationServer");
+        restClient.path.set("adminui");
         applicationServerRestClientFactory.restClient.set(restClient);
         applicationServerRestClientFactory.user.set("user123");
         applicationServerRestClientFactory.passwordHash.set("hash123");

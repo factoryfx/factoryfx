@@ -22,7 +22,7 @@ import de.factoryfx.user.AuthorizedUser;
 import de.factoryfx.user.UserManagement;
 import de.factoryfx.user.persistent.UserFactory;
 
-@Path("/applicationServer")
+@Path("/adminui")
 public class ApplicationServerResource<V,L,T extends FactoryBase<L,V>>  {
 
     private final ApplicationServer<V,L,T> applicationServer;
