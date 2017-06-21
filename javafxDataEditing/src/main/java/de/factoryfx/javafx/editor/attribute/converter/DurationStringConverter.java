@@ -29,7 +29,7 @@ public class DurationStringConverter extends StringConverter<Duration> {
     public Duration fromString(String string) {
         Matcher m = Pattern.compile("(\\d+)h:(\\d{2})m:(\\d{2})s").matcher(string);
         if(!m.matches()) return null;
-        return Duration.ofSeconds(Long.valueOf(m.group(1))*3600+ Long.valueOf(m.group(2)) * 60 + Long.valueOf(m.group(3)));
+        return Duration.ofSeconds(Long.parseLong(m.group(1))*3600+ Long.parseLong(m.group(2)) * 60 + Long.parseLong(m.group(3)));
     }
 
 }
