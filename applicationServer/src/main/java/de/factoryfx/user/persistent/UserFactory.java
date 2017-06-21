@@ -1,17 +1,19 @@
 package de.factoryfx.user.persistent;
 
 import de.factoryfx.data.attribute.types.*;
+import de.factoryfx.data.validation.ObjectRequired;
+import de.factoryfx.data.validation.StringRequired;
 import de.factoryfx.factory.SimpleFactoryBase;
 import de.factoryfx.user.User;
 
 import java.util.function.Function;
 
 public class UserFactory<V> extends SimpleFactoryBase<User,V> {
-    /**key is static and not be part of the factory to keep it secret*/
+    /**key is static and not part of the factory to keep the key secret*/
     public static String passwordKey;
 
-    public final StringAttribute name= new StringAttribute().en("name").de("Name");
-    public final PasswordAttribute password= new PasswordAttribute().en("password").de("Passwort").hash(s -> new PasswordHash().hash(s));
+    public final StringAttribute name= new StringAttribute().en("name").de("Name").validation(new StringRequired());
+    public final PasswordAttribute password= new PasswordAttribute().en("password").de("Passwort").hash(s -> new PasswordHash().hash(s)).validation(new ObjectRequired<>());
     public final LocaleAttribute locale= new LocaleAttribute().en("locale").de("Sprache");
     public final StringListAttribute permissons= new StringListAttribute().en("permissions").de("Rechte");
 
