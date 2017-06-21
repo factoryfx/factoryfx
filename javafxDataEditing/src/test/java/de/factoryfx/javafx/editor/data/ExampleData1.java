@@ -27,8 +27,8 @@ import javafx.scene.layout.BorderPane;
 import javafx.util.Pair;
 
 public class ExampleData1 extends Data {
+    public final PasswordAttribute passwordAttribute = new PasswordAttribute().en("PasswordAttribute").de("PasswordAttribute de");
     public final DurationAttribute durationAttribute = new DurationAttribute().en("durationAttribute").de("durationAttribute de");
-
     public final DataReferenceAttribute<DynamicData> dynamicDataAttribute = new DataReferenceAttribute<DynamicData>().setup(DynamicData.class).en("dynamicDataAttribute").de("dynamicDataAttribute de");
 
     public final EncryptedStringAttribute encryptedStringAttribute=new EncryptedStringAttribute().en("encryptedStringAttribute").de("StringAttribute de");

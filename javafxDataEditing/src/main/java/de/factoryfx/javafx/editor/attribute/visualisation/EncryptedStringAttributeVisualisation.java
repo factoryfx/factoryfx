@@ -25,7 +25,7 @@ public class EncryptedStringAttributeVisualisation extends ValueAttributeEditorV
     private final LanguageText keyText = new LanguageText().en("Key").de("Schlüssel");
     private final LanguageText encryptedText = new LanguageText().en("Encrypted").de("Verschlüsselt");
     private final LanguageText decryptedText = new LanguageText().en("Decrypted").de("Entschlüsselt");
-    private final LanguageText newText = new LanguageText().en("New value").de("Neuer wert");
+    private final LanguageText newText = new LanguageText().en("New value").de("Neuer Wert");
 
     private final Supplier<String> keyCreator;
     private final UniformDesign uniformDesign;

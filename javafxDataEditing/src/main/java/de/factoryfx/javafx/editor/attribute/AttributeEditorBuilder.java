@@ -11,6 +11,8 @@ import java.util.Locale;
 import java.util.Optional;
 import java.util.function.Supplier;
 
+import de.factoryfx.data.attribute.types.*;
+import de.factoryfx.javafx.editor.attribute.visualisation.*;
 import javafx.scene.control.TableView;
 import javafx.scene.paint.Color;
 
@@ -29,47 +31,15 @@ import de.factoryfx.data.attribute.primitive.BooleanAttribute;
 import de.factoryfx.data.attribute.primitive.DoubleAttribute;
 import de.factoryfx.data.attribute.primitive.IntegerAttribute;
 import de.factoryfx.data.attribute.primitive.LongAttribute;
-import de.factoryfx.data.attribute.types.BigDecimalAttribute;
-import de.factoryfx.data.attribute.types.ColorAttribute;
 import de.factoryfx.data.attribute.time.DurationAttribute;
-import de.factoryfx.data.attribute.types.EncryptedString;
-import de.factoryfx.data.attribute.types.EncryptedStringAttribute;
-import de.factoryfx.data.attribute.types.EnumAttribute;
-import de.factoryfx.data.attribute.types.I18nAttribute;
 import de.factoryfx.data.attribute.time.LocalDateAttribute;
 import de.factoryfx.data.attribute.time.LocalDateTimeAttribute;
-import de.factoryfx.data.attribute.types.LocaleAttribute;
-import de.factoryfx.data.attribute.types.ObjectValueAttribute;
-import de.factoryfx.data.attribute.types.StringAttribute;
-import de.factoryfx.data.attribute.types.URIAttribute;
 import de.factoryfx.data.util.LanguageText;
 import de.factoryfx.data.validation.ValidationError;
 import de.factoryfx.javafx.editor.attribute.builder.DataSingleAttributeEditorBuilder;
 import de.factoryfx.javafx.editor.attribute.builder.NoListSingleAttributeEditorBuilder;
 import de.factoryfx.javafx.editor.attribute.builder.SimpleSingleAttributeEditorBuilder;
 import de.factoryfx.javafx.editor.attribute.builder.SingleAttributeEditorBuilder;
-import de.factoryfx.javafx.editor.attribute.visualisation.BigDecimalAttributeVisualisation;
-import de.factoryfx.javafx.editor.attribute.visualisation.BooleanAttributeVisualisation;
-import de.factoryfx.javafx.editor.attribute.visualisation.ColorAttributeVisualisation;
-import de.factoryfx.javafx.editor.attribute.visualisation.DoubleAttributeVisualisation;
-import de.factoryfx.javafx.editor.attribute.visualisation.DurationAttributeVisualisation;
-import de.factoryfx.javafx.editor.attribute.visualisation.EncryptedStringAttributeVisualisation;
-import de.factoryfx.javafx.editor.attribute.visualisation.EnumAttributeVisualisation;
-import de.factoryfx.javafx.editor.attribute.visualisation.ExpandableAttributeVisualisation;
-import de.factoryfx.javafx.editor.attribute.visualisation.I18nAttributeVisualisation;
-import de.factoryfx.javafx.editor.attribute.visualisation.IntegerAttributeVisualisation;
-import de.factoryfx.javafx.editor.attribute.visualisation.LocalDateAttributeVisualisation;
-import de.factoryfx.javafx.editor.attribute.visualisation.LocalDateTimeAttributeVisualisation;
-import de.factoryfx.javafx.editor.attribute.visualisation.LocaleAttributeVisualisation;
-import de.factoryfx.javafx.editor.attribute.visualisation.LongAttributeVisualisation;
-import de.factoryfx.javafx.editor.attribute.visualisation.ObjectValueAttributeVisualisation;
-import de.factoryfx.javafx.editor.attribute.visualisation.ReferenceAttributeVisualisation;
-import de.factoryfx.javafx.editor.attribute.visualisation.ReferenceListAttributeVisualisation;
-import de.factoryfx.javafx.editor.attribute.visualisation.StringAttributeVisualisation;
-import de.factoryfx.javafx.editor.attribute.visualisation.StringLongAttributeVisualisation;
-import de.factoryfx.javafx.editor.attribute.visualisation.URIAttributeVisualisation;
-import de.factoryfx.javafx.editor.attribute.visualisation.ViewListReferenceAttributeVisualisation;
-import de.factoryfx.javafx.editor.attribute.visualisation.ViewReferenceAttributeVisualisation;
 import de.factoryfx.javafx.editor.data.DataEditor;
 import de.factoryfx.javafx.util.UniformDesign;
 import de.factoryfx.javafx.widget.datalistedit.DataListEditWidget;
@@ -84,6 +54,21 @@ public class AttributeEditorBuilder {
 
     public static List<SingleAttributeEditorBuilder<?>> createDefaultSingleAttributeEditorBuilders(UniformDesign uniformDesign){
         ArrayList<SingleAttributeEditorBuilder<?>> result = new ArrayList<>();
+
+        result.add(new SingleAttributeEditorBuilder<EncryptedString>(){
+            @Override
+            public boolean isEditorFor(Attribute<?, ?> attribute) {
+                return attribute instanceof PasswordAttribute;
+            }
+
+            @Override
+            public AttributeEditor<EncryptedString, ?> createEditor(Attribute<?, ?> attribute, DataEditor dataEditor, Data previousData) {
+                PasswordAttribute passwordAttributeVisualisation = (PasswordAttribute) attribute;
+                return new AttributeEditor<>(passwordAttributeVisualisation,new PasswordAttributeVisualisation(passwordAttributeVisualisation::internal_hash, passwordAttributeVisualisation::internal_isValidKey,uniformDesign),uniformDesign);
+
+            }
+        });
+
         result.add(new SimpleSingleAttributeEditorBuilder<>(uniformDesign,BigDecimalAttribute.class,BigDecimal.class,(attribute)-> new BigDecimalAttributeVisualisation(attribute.internal_getDecimalFormatPattern()),()->new BigDecimalAttribute()));
         result.add(new SimpleSingleAttributeEditorBuilder<>(uniformDesign,BooleanAttribute.class,Boolean.class,(attribute)-> new BooleanAttributeVisualisation(),()->new BooleanAttribute()));
 //        result.add(new SimpleSingleAttributeEditorBuilder<>(ByteArrayAttribute.class,byte[].class,(attribute)->{
