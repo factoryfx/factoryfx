@@ -8,6 +8,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import de.factoryfx.data.Data;
+import de.factoryfx.data.attribute.Attribute;
 import de.factoryfx.data.merge.AttributeDiffInfo;
 import de.factoryfx.data.merge.MergeDiffInfo;
 import de.factoryfx.data.util.LanguageText;
@@ -134,14 +136,19 @@ public class FactoryDiffWidget implements Widget {
         verticalSplitPane.getItems().add(vBox);
 
         diffTableView.getSelectionModel().selectedItemProperty().addListener(observable -> {
+            Data root = diffTableView.getSelectionModel().getSelectedItem().root;
             AttributeDiffInfo diffItem = diffTableView.getSelectionModel().getSelectedItem().attributeDiffInfo;
             if (diffItem != null) {
-                final Optional<AttributeEditor<?,?>> previousAttributeEditor = attributeEditorBuilder.getAttributeEditor(diffItem.createPreviousAttribute(), null, null, null);
+                Attribute previousAttribute = diffItem.createPreviousAttribute();
+                previousAttribute.internal_prepareUsage(root);
+                final Optional<AttributeEditor<?,?>> previousAttributeEditor = attributeEditorBuilder.getAttributeEditor(previousAttribute, null, null, null);
                 previousAttributeEditor.get().expand();
                 previousValueDisplay.setCenter(previousAttributeEditor.get().createContent());
 
                 if (diffItem.isNewAttributePresent()) {
-                    final Optional<AttributeEditor<?,?>> newAttributeEditor = attributeEditorBuilder.getAttributeEditor(diffItem.createNewAttributeDisplayAttribute(), null, null, null);
+                    Attribute newAttributeDisplayAttribute = diffItem.createNewAttributeDisplayAttribute();
+                    newAttributeDisplayAttribute.internal_prepareUsage(root);
+                    final Optional<AttributeEditor<?,?>> newAttributeEditor = attributeEditorBuilder.getAttributeEditor(newAttributeDisplayAttribute, null, null, null);
                     newAttributeEditor.get().expand();
                     newValueDisplay.setCenter(newAttributeEditor.get().createContent());
                 } else {
@@ -249,17 +256,17 @@ public class FactoryDiffWidget implements Widget {
     }
 
     public void updateMergeDiff(List<AttributeDiffInfo> diffList) {
-        this.diff=(diffList.stream().map(i->new AttributeDiffInfoExtended(true,false,false,i)).collect(Collectors.toList()));
+        this.diff=(diffList.stream().map(i->new AttributeDiffInfoExtended(true,false,false,i,null)).collect(Collectors.toList()));
         if (diffListUpdater!=null){
             diffListUpdater.accept(diff);
         }
     }
 
-    public void updateMergeDiff(MergeDiffInfo mergeDiff) {
+    public void updateMergeDiff(Data root, MergeDiffInfo mergeDiff) {
         diff = new ArrayList<>();
-        diff.addAll(mergeDiff.mergeInfos.stream().map(info->new AttributeDiffInfoExtended(true,false,false, info)).collect(Collectors.toList()));
-        diff.addAll(mergeDiff.conflictInfos.stream().map(info->new AttributeDiffInfoExtended(false,true,false, info)).collect(Collectors.toList()));
-        diff.addAll(mergeDiff.permissionViolations.stream().map(info->new AttributeDiffInfoExtended(false,false,true, info)).collect(Collectors.toList()));
+        diff.addAll(mergeDiff.mergeInfos.stream().map(info->new AttributeDiffInfoExtended(true,false,false, info,root)).collect(Collectors.toList()));
+        diff.addAll(mergeDiff.conflictInfos.stream().map(info->new AttributeDiffInfoExtended(false,true,false, info,root)).collect(Collectors.toList()));
+        diff.addAll(mergeDiff.permissionViolations.stream().map(info->new AttributeDiffInfoExtended(false,false,true, info,root)).collect(Collectors.toList()));
         if (diffListUpdater!=null){
             diffListUpdater.accept(diff);
         }

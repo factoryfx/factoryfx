@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
+import de.factoryfx.data.Data;
 import de.factoryfx.data.merge.MergeDiffInfo;
 import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.factory.datastorage.StoredFactoryMetadata;
@@ -116,12 +117,14 @@ public class HistoryWidget<V,T extends FactoryBase<?,V>> implements Widget {
 
     private void showDiff(TableView<StoredFactoryMetadata> tableView) {
         final MergeDiffInfo diff = restClient.getDiff(tableView.getSelectionModel().getSelectedItem());
-        Platform.runLater(() -> diffDialogBuilder.createDiffDialog(diff,"Änderungen",tableView.getScene().getWindow()));
+        Data root = restClient.getHistoryFactory(tableView.getSelectionModel().getSelectedItem().id);
+        Platform.runLater(() -> diffDialogBuilder.createDiffDialog(root,diff,"Änderungen",tableView.getScene().getWindow()));
     }
 
     private void revert(TableView<StoredFactoryMetadata> tableView) {
         final FactoryUpdateLog factoryUpdateLog = restClient.revert(tableView.getSelectionModel().getSelectedItem());
-        Platform.runLater(() -> diffDialogBuilder.createDiffDialog(factoryUpdateLog,"Änderungen",tableView.getScene().getWindow()));
+        Data root = restClient.getHistoryFactory(tableView.getSelectionModel().getSelectedItem().id);
+        Platform.runLater(() -> diffDialogBuilder.createDiffDialog(root,factoryUpdateLog,"Änderungen",tableView.getScene().getWindow()));
         update();
     }
 

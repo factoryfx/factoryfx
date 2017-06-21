@@ -19,30 +19,30 @@ public class FactoryDiffWidgetTest extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
 
-        ExampleData1 exampleData1 = new ExampleData1();
-        exampleData1.stringAttribute.set("abc");
-        exampleData1 = exampleData1.internal().prepareUsableCopy();
+        ExampleData1 root = new ExampleData1();
+        root.stringAttribute.set("abc");
+        root = root.internal().prepareUsableCopy();
 
         UniformDesign uniformDesign = UniformDesignBuilder.build();
         DataEditor dataEditor = new DataEditor(new AttributeEditorBuilder(new ArrayList<>()), uniformDesign);
-        dataEditor.edit(exampleData1);
+        dataEditor.edit(root);
 
 
-        exampleData1.referenceListAttribute.add(new ExampleData2());
-        exampleData1.referenceListAttribute.add(new ExampleData2());
+        root.referenceListAttribute.add(new ExampleData2());
+        root.referenceListAttribute.add(new ExampleData2());
 
-        final ExampleData1 newData = exampleData1.internal().copy();
+        final ExampleData1 newData = root.internal().copy();
         newData.stringAttribute.set("4545544554545");
         newData.referenceListAttribute.add(new ExampleData2());
-        DataMerger dataMerger = new DataMerger(exampleData1,exampleData1.internal().copy(), newData);
+        DataMerger dataMerger = new DataMerger(root,root.internal().copy(), newData);
 
-        FactoryDiffWidget factoryDiffWidget = new FactoryDiffWidget(uniformDesign,new AttributeEditorBuilder(new ArrayList<>()));
-        factoryDiffWidget.updateMergeDiff(dataMerger.mergeIntoCurrent((p)->true));
+        FactoryDiffWidget factoryDiffWidget = new FactoryDiffWidget(uniformDesign,new AttributeEditorBuilder(AttributeEditorBuilder.createDefaultSingleAttributeEditorBuilders(uniformDesign)));
+        factoryDiffWidget.updateMergeDiff(root,dataMerger.mergeIntoCurrent((p)->true));
 
-        BorderPane root = new BorderPane();
-        root.getStylesheets().add(getClass().getResource("/de/factoryfx/javafx/css/app.css").toExternalForm());
-        root.setCenter(factoryDiffWidget.createContent());
-        primaryStage.setScene(new Scene(root, 1200, 800));
+        BorderPane rootPane = new BorderPane();
+        rootPane.getStylesheets().add(getClass().getResource("/de/factoryfx/javafx/css/app.css").toExternalForm());
+        rootPane.setCenter(factoryDiffWidget.createContent());
+        primaryStage.setScene(new Scene(rootPane, 1200, 800));
 
         primaryStage.show();
 
