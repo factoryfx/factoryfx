@@ -10,9 +10,11 @@ import de.factoryfx.data.jackson.ObjectMapperBuilder;
 
 //JSON serializable
 public class MergeDiffInfo {
-
+    @JsonProperty
     private final String previousRoot;
+    @JsonProperty
     private final String newRoot;
+    @JsonProperty
     private final Class<? extends Data> rootClazz;
 
     public final List<AttributeDiffInfo> mergeInfos;
