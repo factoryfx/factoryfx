@@ -109,7 +109,7 @@ public class AttributeJsonWrapper {
     public String getDisplayText(){
         try {
             return createAttribute().getDisplayText();
-        } catch (ClassCastException ce) {
+        } catch (RuntimeException ce) {
             return "nicht verfügbar";
         }
     }
