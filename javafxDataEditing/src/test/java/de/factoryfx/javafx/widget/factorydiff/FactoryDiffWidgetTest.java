@@ -37,7 +37,7 @@ public class FactoryDiffWidgetTest extends Application {
         DataMerger dataMerger = new DataMerger(root,root.internal().copy(), newData);
 
         FactoryDiffWidget factoryDiffWidget = new FactoryDiffWidget(uniformDesign,new AttributeEditorBuilder(AttributeEditorBuilder.createDefaultSingleAttributeEditorBuilders(uniformDesign)));
-        factoryDiffWidget.updateMergeDiff(root,newData,dataMerger.mergeIntoCurrent((p)->true));
+        factoryDiffWidget.updateMergeDiff(dataMerger.mergeIntoCurrent((p)->true));
 
         BorderPane rootPane = new BorderPane();
         rootPane.getStylesheets().add(getClass().getResource("/de/factoryfx/javafx/css/app.css").toExternalForm());

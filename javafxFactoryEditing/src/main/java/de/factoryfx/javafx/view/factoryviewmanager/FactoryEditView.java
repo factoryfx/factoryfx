@@ -82,7 +82,7 @@ public class FactoryEditView<V,R extends FactoryBase<?,V>> implements Widget, Fa
                     LongRunningActionExecutor.execute(() -> {
                         final FactoryUpdateLog factoryLog = factoryManager.save(comment);
                         Platform.runLater(() -> {
-                            diffDialogBuilder.createDiffDialog(factoryManager.getLoadedFactory().get(), factoryLog, "Gespeicherte Änderungen",save.getScene().getWindow());
+                            diffDialogBuilder.createDiffDialog(factoryLog, "Gespeicherte Änderungen",save.getScene().getWindow());
                         });
                     });
                 }

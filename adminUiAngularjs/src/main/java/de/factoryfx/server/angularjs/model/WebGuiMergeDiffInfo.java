@@ -12,9 +12,10 @@ public class WebGuiMergeDiffInfo {
 
 
     public WebGuiMergeDiffInfo(AttributeDiffInfo info, Locale locale){
-        previousValueDisplayText=info.getPreviousAttributeDisplayText();
-        newValueValueDisplayText=info.getNewAttributeDisplayText();
-        fieldDisplayText=info.createPreviousAttribute().internal_getPreferredLabelText(locale);
-        parentDisplayText=info.getPreviousAttributeDisplayText();
+        //TODO
+        previousValueDisplayText="";//info.getPreviousAttributeDisplayText();
+        newValueValueDisplayText="";//info.getNewAttributeDisplayText();
+        fieldDisplayText="";//info.createPreviousAttribute().internal_getPreferredLabelText(locale);
+        parentDisplayText="";//info.getPreviousAttributeDisplayText();
     }
 }

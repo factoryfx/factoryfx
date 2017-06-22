@@ -148,7 +148,7 @@ public class RestResource<V,L,T extends FactoryBase<L,V>> {
 
         //TODO fix generics,casts
         //copy FactoryUpdate into existing
-        existing.internal().visitAttributesDualFlat(newFactory, (thisAttribute, copyAttribute) -> {
+        existing.internal().visitAttributesDualFlat(newFactory, (name, thisAttribute, copyAttribute) -> {
             Object value = ((Attribute)copyAttribute).get();//The cast is necessary don't trust intellij
             if (value instanceof FactoryBase){
                 value=existingOrNew.apply((Data)value);
@@ -452,10 +452,11 @@ public class RestResource<V,L,T extends FactoryBase<L,V>> {
     @Path("diffdetail")
     public DiffDetailResponse getDiffDetail(AttributeDiffInfo info) {
         Patch<String> patch = DiffUtils.diff(
-                convertToList(info.getPreviousAttributeDisplayText()),
-                convertToList(info.getNewAttributeDisplayText())
+                //TODO
+                convertToList(""/*info.getPreviousAttributeDisplayText()*/),
+                convertToList(""/*info.getNewAttributeDisplayText()*/)
         );
-        String originalText=info.getPreviousAttributeDisplayText();
+        String originalText=""/*info.getPreviousAttributeDisplayText()*/;
 
 
         int previousOriginalPosition=0;

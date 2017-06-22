@@ -136,29 +136,20 @@ public class FactoryDiffWidget implements Widget {
         verticalSplitPane.getItems().add(vBox);
 
         diffTableView.getSelectionModel().selectedItemProperty().addListener(observable -> {
-            Data root = diffTableView.getSelectionModel().getSelectedItem().root;
+            Data previousRoot = diffTableView.getSelectionModel().getSelectedItem().previousRoot;
+            Data newRoot = diffTableView.getSelectionModel().getSelectedItem().newRoot;
             AttributeDiffInfo diffItem = diffTableView.getSelectionModel().getSelectedItem().attributeDiffInfo;
             if (diffItem != null) {
-                try {
-                    Attribute previousAttribute = diffItem.createPreviousAttribute();
-                    previousAttribute.internal_prepareUsage(root);
-                    final Optional<AttributeEditor<?, ?>> previousAttributeEditor = attributeEditorBuilder.getAttributeEditor(previousAttribute, null, null, null);
-                    previousAttributeEditor.get().expand();
-                    previousValueDisplay.setCenter(previousAttributeEditor.get().createContent());
-                } catch (RuntimeException re) {
-                    previousValueDisplay.setCenter(new Label("nicht verfügbar"));
-                }
+                Attribute<?,?> previousAttribute = diffItem.getAttribute(previousRoot);
+                final Optional<AttributeEditor<?,?>> previousAttributeEditor = attributeEditorBuilder.getAttributeEditor(previousAttribute, null, null, null);
+                previousAttributeEditor.get().expand();
+                previousValueDisplay.setCenter(previousAttributeEditor.get().createContent());
 
-                if (diffItem.isNewAttributePresent()) {
-                    try {
-                        Attribute newAttributeDisplayAttribute = diffItem.createNewAttributeDisplayAttribute();
-                        newAttributeDisplayAttribute.internal_prepareUsage(root);
-                        final Optional<AttributeEditor<?,?>> newAttributeEditor = attributeEditorBuilder.getAttributeEditor(newAttributeDisplayAttribute, null, null, null);
-                        newAttributeEditor.get().expand();
-                        newValueDisplay.setCenter(newAttributeEditor.get().createContent());
-                    } catch (RuntimeException re) {
-                        newValueDisplay.setCenter(new Label("nicht verfügbar"));
-                    }
+                Attribute<?,?> newAttribute = diffItem.getAttribute(newRoot);
+                if (newAttribute!=null) {
+                    final Optional<AttributeEditor<?,?>> newAttributeEditor = attributeEditorBuilder.getAttributeEditor(newAttribute, null, null, null);
+                    newAttributeEditor.get().expand();
+                    newValueDisplay.setCenter(newAttributeEditor.get().createContent());
                 } else {
                     newValueDisplay.setCenter(null);
                 }
@@ -179,19 +170,28 @@ public class FactoryDiffWidget implements Widget {
         tableView.setPlaceholder(new Label(uniformDesign.getText(noChangesFound)));
         {
             TableColumn<AttributeDiffInfoExtended, String> factoryColumn = new TableColumn<>(uniformDesign.getText(columnFactory));
-            factoryColumn.setCellValueFactory(param -> new SimpleStringProperty(param.getValue().attributeDiffInfo.parentDisplayText()));
+            factoryColumn.setCellValueFactory(param -> new SimpleStringProperty(param.getValue().parentDisplayText()));
             tableView.getColumns().add(factoryColumn);
 
             TableColumn<AttributeDiffInfoExtended, String> fieldColumn = new TableColumn<>(uniformDesign.getText(columnField));
-            fieldColumn.setCellValueFactory(param -> new SimpleStringProperty(getLabelText(param)));
+            fieldColumn.setCellValueFactory(param -> {
+                try {
+                    String labelText = uniformDesign.getLabelText(param.getValue().createPreviousAttribute());
+
+                    return new SimpleStringProperty(labelText);
+                } catch(Exception e){
+                    e.printStackTrace();
+                    return null;
+                }
+            });
             tableView.getColumns().add(fieldColumn);
 
             TableColumn<AttributeDiffInfoExtended, String> previousColumn = new TableColumn<>(uniformDesign.getText(columnPrevious));
-            previousColumn.setCellValueFactory(param -> new SimpleStringProperty(param.getValue().attributeDiffInfo.getPreviousAttributeDisplayText()));
+            previousColumn.setCellValueFactory(param -> new SimpleStringProperty(param.getValue().getPreviousAttributeDisplayText()));
             tableView.getColumns().add(previousColumn);
 
             TableColumn<AttributeDiffInfoExtended, String> newColumn = new TableColumn<>(uniformDesign.getText(columnNew));
-            newColumn.setCellValueFactory(param -> new SimpleStringProperty(param.getValue().attributeDiffInfo.getNewAttributeDisplayText()));
+            newColumn.setCellValueFactory(param -> new SimpleStringProperty(param.getValue().getNewAttributeDisplayText()));
             tableView.getColumns().add(newColumn);
 
         }
@@ -221,14 +221,6 @@ public class FactoryDiffWidget implements Widget {
 
         new TableControlWidget<>(tableView,uniformDesign).hide();
         return tableView;
-    }
-
-    private String getLabelText(TableColumn.CellDataFeatures<AttributeDiffInfoExtended, String> param) {
-        try {
-            return uniformDesign.getLabelText(param.getValue().attributeDiffInfo.createPreviousAttribute());
-        } catch (RuntimeException re) {
-            return "nicht verfügbar";
-        }
     }
 
     private static class StyleClassArea{
@@ -271,18 +263,20 @@ public class FactoryDiffWidget implements Widget {
         return vBox;
     }
 
-    public void updateMergeDiff(List<AttributeDiffInfo> diffList) {
-        this.diff=(diffList.stream().map(i->new AttributeDiffInfoExtended(true,false,false,i,null)).collect(Collectors.toList()));
-        if (diffListUpdater!=null){
-            diffListUpdater.accept(diff);
-        }
-    }
+//    public void updateMergeDiff(Data previousRoot, Data newRoot, List<AttributeDiffInfo> diffList) {
+//        this.diff=(diffList.stream().map(i->new AttributeDiffInfoExtended(true,false,false,i,previousRoot,newRoot)).collect(Collectors.toList()));
+//        if (diffListUpdater!=null){
+//            diffListUpdater.accept(diff);
+//        }
+//    }
 
-    public void updateMergeDiff(Data root, MergeDiffInfo mergeDiff) {
+    public void updateMergeDiff(MergeDiffInfo mergeDiff) {
+        Data previousRoot=mergeDiff.getPreviousRootData();
+        Data newRoot=mergeDiff.getNewRootData();
         diff = new ArrayList<>();
-        diff.addAll(mergeDiff.mergeInfos.stream().map(info->new AttributeDiffInfoExtended(true,false,false, info,root)).collect(Collectors.toList()));
-        diff.addAll(mergeDiff.conflictInfos.stream().map(info->new AttributeDiffInfoExtended(false,true,false, info,root)).collect(Collectors.toList()));
-        diff.addAll(mergeDiff.permissionViolations.stream().map(info->new AttributeDiffInfoExtended(false,false,true, info,root)).collect(Collectors.toList()));
+        diff.addAll(mergeDiff.mergeInfos.stream().map(info->new AttributeDiffInfoExtended(true,false,false, info,previousRoot,newRoot)).collect(Collectors.toList()));
+        diff.addAll(mergeDiff.conflictInfos.stream().map(info->new AttributeDiffInfoExtended(false,true,false, info,previousRoot,newRoot)).collect(Collectors.toList()));
+        diff.addAll(mergeDiff.permissionViolations.stream().map(info->new AttributeDiffInfoExtended(false,false,true, info,previousRoot,newRoot)).collect(Collectors.toList()));
         if (diffListUpdater!=null){
             diffListUpdater.accept(diff);
         }

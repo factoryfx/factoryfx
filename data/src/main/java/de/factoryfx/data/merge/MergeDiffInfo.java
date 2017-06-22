@@ -20,13 +20,19 @@ public class MergeDiffInfo {
     public final List<AttributeDiffInfo> permissionViolations;
 
     @JsonCreator
-    public MergeDiffInfo(@JsonProperty("mergeInfos") List<AttributeDiffInfo> mergeInfos, @JsonProperty("conflictInfos") List<AttributeDiffInfo> conflictInfos, @JsonProperty("permissionViolations") List<AttributeDiffInfo> permissionViolations, @JsonProperty("previousRoot") String previousRoot, @JsonProperty("newRoot") String newRoot, Class<? extends Data> rootClazz){
+    public MergeDiffInfo(
+            @JsonProperty("mergeInfos")List<AttributeDiffInfo> mergeInfos,
+            @JsonProperty("conflictInfos")List<AttributeDiffInfo> conflictInfos,
+            @JsonProperty("permissionViolations")List<AttributeDiffInfo> permissionViolations,
+            @JsonProperty("previousRoot")String previousRoot,
+            @JsonProperty("newRoot")String newRoot,
+            @JsonProperty("rootClazz")Class<? extends Data> rootClazz){
         this.mergeInfos=mergeInfos;
         this.conflictInfos=conflictInfos;
         this.permissionViolations = permissionViolations;
         this.previousRoot=previousRoot;
         this.newRoot=newRoot;
-        this.rootClazz = rootClazz;
+        this.rootClazz=rootClazz;
     }
 
     public MergeDiffInfo(
@@ -40,6 +46,7 @@ public class MergeDiffInfo {
         this.permissionViolations = permissionViolations;
         this.previousRoot=ObjectMapperBuilder.build().writeValueAsString(previousRoot);
         this.newRoot=ObjectMapperBuilder.build().writeValueAsString(newRoot);
+        rootClazz=previousRoot.getClass();
     }
 
 
@@ -64,12 +71,12 @@ public class MergeDiffInfo {
     }
 
     @JsonIgnore
-    public Data getPreviousRootData(Class<? extends Data> rootClazz) {
+    public Data getPreviousRootData() {
         return ObjectMapperBuilder.build().readValue(previousRoot,rootClazz);
     }
 
     @JsonIgnore
-    public Data getNewRootData(Class<? extends Data> rootClazz) {
+    public Data getNewRootData() {
         return ObjectMapperBuilder.build().readValue(newRoot,rootClazz);
     }
 }

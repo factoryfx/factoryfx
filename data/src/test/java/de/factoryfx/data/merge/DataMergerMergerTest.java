@@ -20,8 +20,8 @@ public class DataMergerMergerTest {
 
         MergeDiffInfo mergeDiff= dataMerger.mergeIntoCurrent((permission)->true);
         Assert.assertTrue(mergeDiff.hasNoConflicts());
-        Assert.assertEquals("1111111",mergeDiff.mergeInfos.get(0).getAttributeDisplayText(mergeDiff.getPreviousRootData(ExampleFactoryA.class)));
-        Assert.assertEquals("2222222",mergeDiff.mergeInfos.get(0).getAttributeDisplayText(mergeDiff.getNewRootData(ExampleFactoryA.class)));
+        Assert.assertEquals("1111111",mergeDiff.mergeInfos.get(0).getAttributeDisplayText(mergeDiff.getPreviousRootData()));
+        Assert.assertEquals("2222222",mergeDiff.mergeInfos.get(0).getAttributeDisplayText(mergeDiff.getNewRootData()));
     }
 
     @Test
@@ -37,8 +37,8 @@ public class DataMergerMergerTest {
 
         MergeDiffInfo mergeDiff= dataMerger.mergeIntoCurrent((permission)->true);
         Assert.assertTrue(mergeDiff.hasNoConflicts());
-        Assert.assertTrue((((ExampleFactoryB)mergeDiff.mergeInfos.get(0).getAttribute(mergeDiff.getPreviousRootData(ExampleFactoryA.class)).get()).stringAttribute.get()).equals("Factory to be deleted"));
-        Assert.assertEquals("empty",mergeDiff.mergeInfos.get(0).getAttributeDisplayText(mergeDiff.getNewRootData(ExampleFactoryA.class)));
+        Assert.assertTrue((((ExampleFactoryB)mergeDiff.mergeInfos.get(0).getAttribute(mergeDiff.getPreviousRootData()).get()).stringAttribute.get()).equals("Factory to be deleted"));
+        Assert.assertEquals("empty",mergeDiff.mergeInfos.get(0).getAttributeDisplayText(mergeDiff.getNewRootData()));
     }
 
     @Test

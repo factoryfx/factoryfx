@@ -92,9 +92,9 @@ public class DiffDialogBuilder {
         dialog.showAndWait();
     }
 
-    public void createDiffDialog(Data root, FactoryUpdateLog factoryLog, String title, Window owner){
+    public void createDiffDialog(FactoryUpdateLog factoryLog, String title, Window owner){
         final FactoryDiffWidget factoryDiffWidget = new FactoryDiffWidget(uniformDesign,attributeEditorBuilder);
-        factoryDiffWidget.updateMergeDiff(root,factoryLog.mergeDiffInfo);
+        factoryDiffWidget.updateMergeDiff(factoryLog.mergeDiffInfo);
 
         final FactoryUpdateLogWidget factoryLogWidget = new FactoryUpdateLogWidget(uniformDesign);
         factoryLogWidget.updateLog(factoryLog);
