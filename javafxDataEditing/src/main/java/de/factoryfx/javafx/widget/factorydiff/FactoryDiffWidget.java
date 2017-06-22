@@ -175,7 +175,7 @@ public class FactoryDiffWidget implements Widget {
             tableView.getColumns().add(factoryColumn);
 
             TableColumn<AttributeDiffInfoExtended, String> fieldColumn = new TableColumn<>(uniformDesign.getText(columnField));
-            fieldColumn.setCellValueFactory(param -> new SimpleStringProperty(uniformDesign.getLabelText(param.getValue().attributeDiffInfo.createPreviousAttribute())));
+            fieldColumn.setCellValueFactory(param -> new SimpleStringProperty(getLabelText(param)));
             tableView.getColumns().add(fieldColumn);
 
             TableColumn<AttributeDiffInfoExtended, String> previousColumn = new TableColumn<>(uniformDesign.getText(columnPrevious));
@@ -213,6 +213,14 @@ public class FactoryDiffWidget implements Widget {
 
         new TableControlWidget<>(tableView,uniformDesign).hide();
         return tableView;
+    }
+
+    private String getLabelText(TableColumn.CellDataFeatures<AttributeDiffInfoExtended, String> param) {
+        try {
+            return uniformDesign.getLabelText(param.getValue().attributeDiffInfo.createPreviousAttribute());
+        } catch (RuntimeException re) {
+            return "nicht verfügbar";
+        }
     }
 
     private static class StyleClassArea{
