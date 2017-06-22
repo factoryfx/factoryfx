@@ -1,84 +1,64 @@
 package de.factoryfx.data.attribute;
 
+import java.lang.reflect.Constructor;
 import java.util.*;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import com.sun.javafx.collections.ObservableListWrapper;
 import de.factoryfx.data.AttributeAndName;
 import de.factoryfx.data.Data;
-import de.factoryfx.data.attribute.types.EnumAttribute;
-import de.factoryfx.data.util.LanguageText;
-import javafx.collections.ObservableList;
-import javafx.collections.ObservableMap;
-import javafx.collections.ObservableSet;
 
 /** wraps attribute so its serializable/deserializable in json
  *  used e.g for dynamic attributes*/
 public class AttributeJsonWrapper {
     @JsonProperty
     @JsonTypeInfo(use=JsonTypeInfo.Id.CLASS, include=JsonTypeInfo.As.PROPERTY, property="@clazz")
-    Object value;
+    public Object value;
     @JsonProperty
     @JsonTypeInfo(use=JsonTypeInfo.Id.CLASS, include=JsonTypeInfo.As.PROPERTY, property="@clazz")
-    List<Data> valueList;//special case for referencelists
+    public List<Data> valueList;//special case for referencelists
     @JsonProperty
-    final String name;
+    public final String name;
     @JsonProperty
-    final Class<? extends Attribute> attributeClass;
+    public final Class<? extends Attribute> attributeClass;
     @JsonProperty
     Class<?> referenceClass;
     @JsonProperty
     public Class<?> enumClazz;
     @JsonProperty
-    Class<?> collectionClazz;
+    public Class<?> collectionClazz;
     @JsonProperty
-    Class<?> mapKeyType;
+    public Class<?> mapKeyType;
     @JsonProperty
-    Class<?> mapValueType;
+    public Class<?> mapValueType;
 
 
     @JsonProperty
-    String en;
+    public String en;
     @JsonProperty
-    String de;
+    public String de;
     @JsonProperty
-    String es;
+    public String es;
     @JsonProperty
-    String fr;
+    public String fr;
     @JsonProperty
-    String it;
+    public String it;
     @JsonProperty
-    String pt;
+    public String pt;
+
+    @JsonProperty
+    @JsonTypeInfo(use=JsonTypeInfo.Id.CLASS, include=JsonTypeInfo.As.PROPERTY, property="@clazz")
+    public Object various;
 
     @SuppressWarnings("unchecked")
     public AttributeJsonWrapper(Attribute<?,?> attribute, String name) {
         this.name = name;
         this.attributeClass= attribute.getClass();
-        attribute.writeToJsonWrapper(this);
+        attribute.internal_writeToJsonWrapper(this);
     }
 
-    @SuppressWarnings("unchecked")
-    private Object getValue(Attribute<?,?> attribute) {
-        if (valueList!=null){
-            return valueList;
-        }
-
-        //internal_copy() as workaround for mutable values like list
-        Object value = attribute.internal_copy().get();
-        if (value instanceof  ObservableList){
-            return new ArrayList<>((ObservableList)value);
-        }
-        if (value instanceof ObservableSet){
-            return new HashSet<>((ObservableSet)value);
-        }
-        if (value instanceof ObservableMap){
-            return new HashMap<>((ObservableMap)value);
-        }
-        return value;
-    }
 
     @JsonCreator
     protected AttributeJsonWrapper(@JsonProperty("value")Object value, @JsonProperty("valueList")List<Data> valueList, @JsonProperty("name")String name,
@@ -106,56 +86,20 @@ public class AttributeJsonWrapper {
 
     @SuppressWarnings("unchecked")
     public Attribute createAttribute()  {
-        return setValue(setMetadataData(instantiateAttribute()));
+        return instantiateAttribute();
     }
 
     @SuppressWarnings("unchecked")
     private Attribute instantiateAttribute()  {
-        if (ReferenceAttribute.class.isAssignableFrom(attributeClass)){
-            return new DataReferenceAttribute();
-        }
-        if (ReferenceListAttribute.class.isAssignableFrom(attributeClass)){
-            return new DataReferenceListAttribute();
-        }
-        if (EnumAttribute.class.isAssignableFrom(attributeClass)){
-            return new EnumAttribute(enumClazz);
-        }
-//TODO
-//        if (ValueListAttribute.class.isAssignableFrom(attributeClass)){
-//            return new ValueListAttribute(collectionClazz);
-//        }
-//        if (ValueSetAttribute.class.isAssignableFrom(attributeClass)){
-//            return new ValueSetAttribute(collectionClazz);
-//        }
-//        if (ValueMapAttribute.class.isAssignableFrom(attributeClass)){
-//            return new ValueMapAttribute(mapKeyType,mapValueType);
-//        }
-
         try {
-            return attributeClass.getConstructor().newInstance();
+            Constructor<?> constructor= attributeClass.getDeclaredConstructor();
+            constructor.setAccessible(true);
+            Attribute attribute = (Attribute) constructor.newInstance();
+            attribute.internal_readFromJsonWrapper(this);
+            return attribute;
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-    }
-
-    @SuppressWarnings("unchecked")
-    private Attribute setValue(Attribute attribute){
-        if (valueList !=null){
-            attribute.set(valueList);
-            return attribute;
-        }
-        if (value instanceof ObservableListWrapper){
-            value=new ArrayList<>((ObservableListWrapper)value);
-        }
-        attribute.set(value);
-        return attribute;
-    }
-
-    private Attribute setMetadataData(Attribute attribute){
-        //TODO
-//        attribute.metadata.labelText.internal_set(label);
-        attribute.readFromJsonWrapper(this);
-        return attribute;
     }
 
     public AttributeAndName createAttributeAndName(){
@@ -168,11 +112,6 @@ public class AttributeJsonWrapper {
         } catch (ClassCastException ce) {
             return "nicht verfügbar";
         }
-    }
-
-    @JsonIgnore
-    public Optional<List<Data>> valueList() {
-        return Optional.ofNullable(valueList);
     }
 
     void patchIds(Data d) {

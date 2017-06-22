@@ -4,6 +4,7 @@ import java.lang.reflect.Field;
 import java.util.Locale;
 import java.util.Optional;
 
+import com.google.common.base.Strings;
 import de.factoryfx.data.attribute.Attribute;
 import de.factoryfx.factory.FactoryBase;
 
@@ -21,7 +22,7 @@ public class LocaleAttributeValidation implements FactoryStyleValidation {
     @Override
     public Optional<String> validateFactory() {
         try {
-            if (((Attribute<?,?>) attributeField.get(factoryBase)).internal_getPreferredLabelText(locale) == null) {
+            if (Strings.isNullOrEmpty(((Attribute<?, ?>) attributeField.get(factoryBase)).internal_getPreferredLabelText(locale))) {
                 return Optional.of("locale: '" + locale + "' should be set: " + factoryBase.getClass().getName() + "#" + attributeField.getName());
             }
         } catch (IllegalAccessException e) {

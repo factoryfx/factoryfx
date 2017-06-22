@@ -9,24 +9,14 @@ import java.util.regex.Pattern;
 import de.factoryfx.data.Data;
 import de.factoryfx.data.attribute.*;
 import de.factoryfx.data.attribute.primitive.list.IntegerListAttribute;
-import de.factoryfx.data.attribute.types.BigDecimalAttribute;
+import de.factoryfx.data.attribute.time.DurationAttribute;
+import de.factoryfx.data.attribute.time.LocalDateAttribute;
+import de.factoryfx.data.attribute.time.LocalDateTimeAttribute;
+import de.factoryfx.data.attribute.types.*;
 import de.factoryfx.data.attribute.primitive.BooleanAttribute;
-import de.factoryfx.data.attribute.types.ByteArrayAttribute;
-import de.factoryfx.data.attribute.types.ColorAttribute;
 import de.factoryfx.data.attribute.primitive.DoubleAttribute;
-import de.factoryfx.data.attribute.types.EncryptedStringAttribute;
-import de.factoryfx.data.attribute.types.EnumAttribute;
-import de.factoryfx.data.attribute.types.I18nAttribute;
 import de.factoryfx.data.attribute.primitive.IntegerAttribute;
-import de.factoryfx.data.attribute.types.LocalDateAttribute;
-import de.factoryfx.data.attribute.types.LocalDateTimeAttribute;
-import de.factoryfx.data.attribute.types.LocaleAttribute;
 import de.factoryfx.data.attribute.primitive.LongAttribute;
-import de.factoryfx.data.attribute.types.StringAttribute;
-import de.factoryfx.data.attribute.types.StringListAttribute;
-import de.factoryfx.data.attribute.types.StringMapAttribute;
-import de.factoryfx.data.attribute.types.URIAttribute;
-import de.factoryfx.data.attribute.types.URIListAttribute;
 import de.factoryfx.data.util.LanguageText;
 import de.factoryfx.data.validation.RegexValidation;
 import de.factoryfx.data.validation.StringRequired;
@@ -37,6 +27,8 @@ import javafx.scene.layout.BorderPane;
 import javafx.util.Pair;
 
 public class ExampleData1 extends Data {
+    public final PasswordAttribute passwordAttribute = new PasswordAttribute().en("PasswordAttribute").de("PasswordAttribute de");
+    public final DurationAttribute durationAttribute = new DurationAttribute().en("durationAttribute").de("durationAttribute de");
     public final DataReferenceAttribute<DynamicData> dynamicDataAttribute = new DataReferenceAttribute<DynamicData>().setup(DynamicData.class).en("dynamicDataAttribute").de("dynamicDataAttribute de");
 
     public final EncryptedStringAttribute encryptedStringAttribute=new EncryptedStringAttribute().en("encryptedStringAttribute").de("StringAttribute de");

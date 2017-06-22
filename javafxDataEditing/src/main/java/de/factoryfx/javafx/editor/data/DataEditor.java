@@ -14,7 +14,7 @@ import de.factoryfx.data.Data;
 import de.factoryfx.data.attribute.*;
 import de.factoryfx.data.attribute.types.BigDecimalAttribute;
 import de.factoryfx.data.attribute.primitive.IntegerAttribute;
-import de.factoryfx.data.attribute.types.LocalDateAttribute;
+import de.factoryfx.data.attribute.time.LocalDateAttribute;
 import de.factoryfx.data.attribute.primitive.LongAttribute;
 import de.factoryfx.data.attribute.types.StringAttribute;
 import de.factoryfx.data.attribute.types.StringListAttribute;

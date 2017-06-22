@@ -219,6 +219,15 @@ public abstract class ReferenceListAttribute<T extends Data,A extends ReferenceB
     }
 
     @Override
+    @SuppressWarnings("unchecked")
+    protected void readValueFromJsonWrapper(AttributeJsonWrapper attributeJsonWrapper) {
+        List<Data> valueList = attributeJsonWrapper.valueList;
+        ArrayList<T> newList = new ArrayList<>();
+        valueList.forEach(data -> newList.add((T)data));
+        set(newList);
+    }
+
+    @Override
     public boolean isEmpty() {
         return list.isEmpty();
     }

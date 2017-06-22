@@ -2,32 +2,47 @@ package de.factoryfx.javafx.editor.attribute;
 
 import java.math.BigDecimal;
 import java.net.URI;
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+import java.util.Optional;
 import java.util.function.Supplier;
 
+import de.factoryfx.data.attribute.types.*;
+import de.factoryfx.javafx.editor.attribute.visualisation.*;
+import javafx.scene.control.TableView;
+import javafx.scene.paint.Color;
+
+import org.controlsfx.glyphfont.FontAwesome;
+
 import com.google.common.base.Ascii;
+
 import de.factoryfx.data.Data;
-import de.factoryfx.data.attribute.*;
+import de.factoryfx.data.attribute.Attribute;
+import de.factoryfx.data.attribute.ReferenceAttribute;
+import de.factoryfx.data.attribute.ReferenceListAttribute;
+import de.factoryfx.data.attribute.ValueListAttribute;
+import de.factoryfx.data.attribute.ViewListReferenceAttribute;
+import de.factoryfx.data.attribute.ViewReferenceAttribute;
 import de.factoryfx.data.attribute.primitive.BooleanAttribute;
 import de.factoryfx.data.attribute.primitive.DoubleAttribute;
 import de.factoryfx.data.attribute.primitive.IntegerAttribute;
 import de.factoryfx.data.attribute.primitive.LongAttribute;
-import de.factoryfx.data.attribute.types.*;
+import de.factoryfx.data.attribute.time.DurationAttribute;
+import de.factoryfx.data.attribute.time.LocalDateAttribute;
+import de.factoryfx.data.attribute.time.LocalDateTimeAttribute;
 import de.factoryfx.data.util.LanguageText;
 import de.factoryfx.data.validation.ValidationError;
 import de.factoryfx.javafx.editor.attribute.builder.DataSingleAttributeEditorBuilder;
 import de.factoryfx.javafx.editor.attribute.builder.NoListSingleAttributeEditorBuilder;
 import de.factoryfx.javafx.editor.attribute.builder.SimpleSingleAttributeEditorBuilder;
 import de.factoryfx.javafx.editor.attribute.builder.SingleAttributeEditorBuilder;
-import de.factoryfx.javafx.editor.attribute.visualisation.*;
 import de.factoryfx.javafx.editor.data.DataEditor;
 import de.factoryfx.javafx.util.UniformDesign;
 import de.factoryfx.javafx.widget.datalistedit.DataListEditWidget;
-import javafx.scene.control.TableView;
-import javafx.scene.paint.Color;
-import org.controlsfx.glyphfont.FontAwesome;
 
 public class AttributeEditorBuilder {
 
@@ -39,6 +54,21 @@ public class AttributeEditorBuilder {
 
     public static List<SingleAttributeEditorBuilder<?>> createDefaultSingleAttributeEditorBuilders(UniformDesign uniformDesign){
         ArrayList<SingleAttributeEditorBuilder<?>> result = new ArrayList<>();
+
+        result.add(new SingleAttributeEditorBuilder<EncryptedString>(){
+            @Override
+            public boolean isEditorFor(Attribute<?, ?> attribute) {
+                return attribute instanceof PasswordAttribute;
+            }
+
+            @Override
+            public AttributeEditor<EncryptedString, ?> createEditor(Attribute<?, ?> attribute, DataEditor dataEditor, Data previousData) {
+                PasswordAttribute passwordAttributeVisualisation = (PasswordAttribute) attribute;
+                return new AttributeEditor<>(passwordAttributeVisualisation,new PasswordAttributeVisualisation(passwordAttributeVisualisation::internal_hash, passwordAttributeVisualisation::internal_isValidKey,uniformDesign),uniformDesign);
+
+            }
+        });
+
         result.add(new SimpleSingleAttributeEditorBuilder<>(uniformDesign,BigDecimalAttribute.class,BigDecimal.class,(attribute)-> new BigDecimalAttributeVisualisation(attribute.internal_getDecimalFormatPattern()),()->new BigDecimalAttribute()));
         result.add(new SimpleSingleAttributeEditorBuilder<>(uniformDesign,BooleanAttribute.class,Boolean.class,(attribute)-> new BooleanAttributeVisualisation(),()->new BooleanAttribute()));
 //        result.add(new SimpleSingleAttributeEditorBuilder<>(ByteArrayAttribute.class,byte[].class,(attribute)->{
@@ -58,6 +88,7 @@ public class AttributeEditorBuilder {
         result.add(new SimpleSingleAttributeEditorBuilder<>(uniformDesign,LocalDateTimeAttribute.class,LocalDateTime.class,(attribute)-> new LocalDateTimeAttributeVisualisation(),()->new LocalDateTimeAttribute()));
         result.add(new SimpleSingleAttributeEditorBuilder<>(uniformDesign,LocaleAttribute.class,Locale.class,(attribute)-> new LocaleAttributeVisualisation(),()->new LocaleAttribute()));
         result.add(new SimpleSingleAttributeEditorBuilder<>(uniformDesign,LongAttribute.class,Long.class,(attribute)-> new LongAttributeVisualisation(),()->new LongAttribute()));
+        result.add(new SimpleSingleAttributeEditorBuilder<>(uniformDesign, DurationAttribute.class, Duration.class, (attribute)-> new DurationAttributeVisualisation(), ()->new DurationAttribute()));
         result.add(new SimpleSingleAttributeEditorBuilder<>(uniformDesign,StringAttribute.class,String.class,(attribute)->{
             if (attribute.internal_isLongText()){
                 return new ExpandableAttributeVisualisation<>(new StringLongAttributeVisualisation(),uniformDesign, (s)->Ascii.truncate(s,20,"..."),FontAwesome.Glyph.FONT,attribute.internal_isDefaultExpanded() );
@@ -76,16 +107,40 @@ public class AttributeEditorBuilder {
             return expandableAttributeVisualisation;
         }));
 
-//        result.add(new DataSingleAttributeEditorBuilder(uniformDesign,(a)->a instanceof ReferenceAttribute,(attribute, dataEditor, previousData)-> new ReferenceAttributeVisualisation(uniformDesign,dataEditor, attribute::internal_addNewFactory, attribute::internal_possibleValues, attribute::internal_deleteFactory, attribute.internal_isUserEditable(),attribute.internal_isUserSelectable(),attribute.internal_isUserCreatable())));
-//        result.add(new DataSingleAttributeEditorBuilder<List<Data>,ReferenceListAttribute>(uniformDesign,(a)->a instanceof ReferenceListAttribute,(attribute, dataEditor,previousData)->{
-//            final TableView<Data> dataTableView = new TableView<>();
-//            final ReferenceListAttributeVisualisation referenceListAttributeVisualisation = new ReferenceListAttributeVisualisation(uniformDesign, dataEditor, dataTableView, new DataListEditWidget<>(attribute.get(), dataTableView, dataEditor,uniformDesign,attribute));
-//            ExpandableAttributeVisualisation<List<Data>> expandableAttributeVisualisation= new ExpandableAttributeVisualisation<>(referenceListAttributeVisualisation,uniformDesign,(l)->"Items: "+l.size(),FontAwesome.Glyph.LIST);
-//            if (attribute.get().contains(previousData)){
-//                expandableAttributeVisualisation.expand();
-//            }
-//            return expandableAttributeVisualisation;
-//        }));
+        result.add(new SingleAttributeEditorBuilder<Data>(){
+            @Override
+            public boolean isEditorFor(Attribute<?, ?> attribute) {
+                return attribute instanceof ReferenceAttribute;
+            }
+
+            @Override
+            public AttributeEditor<Data, ?> createEditor(Attribute<?, ?> attribute, DataEditor dataEditor, Data previousData) {
+                ReferenceAttribute referenceAttribute = (ReferenceAttribute) attribute;
+                return new AttributeEditor<>(referenceAttribute,new ReferenceAttributeVisualisation(uniformDesign,dataEditor, referenceAttribute::internal_addNewFactory, referenceAttribute::internal_possibleValues, referenceAttribute::internal_deleteFactory, referenceAttribute.internal_isUserEditable(),referenceAttribute.internal_isUserSelectable(),referenceAttribute.internal_isUserCreatable()),uniformDesign);
+
+            }
+        });
+
+        result.add(new SingleAttributeEditorBuilder<List<Data>>(){
+            @Override
+            public boolean isEditorFor(Attribute<?, ?> attribute) {
+                return attribute instanceof ReferenceListAttribute;
+            }
+
+            @Override
+            public AttributeEditor<List<Data>, ?> createEditor(Attribute<?, ?> attribute, DataEditor dataEditor, Data previousData) {
+                ReferenceListAttribute referenceListAttribute = (ReferenceListAttribute)attribute;
+                final TableView<Data> dataTableView = new TableView<>();
+                final ReferenceListAttributeVisualisation referenceListAttributeVisualisation = new ReferenceListAttributeVisualisation(uniformDesign, dataEditor, dataTableView, new DataListEditWidget<>(referenceListAttribute.get(), dataTableView, dataEditor,uniformDesign,referenceListAttribute));
+                ExpandableAttributeVisualisation<List<Data>> expandableAttributeVisualisation= new ExpandableAttributeVisualisation<>(referenceListAttributeVisualisation,uniformDesign,(l)->"Items: "+l.size(),FontAwesome.Glyph.LIST);
+                if (referenceListAttribute.get().contains(previousData)){
+                    expandableAttributeVisualisation.expand();
+                }
+                return new AttributeEditor<>(referenceListAttribute,expandableAttributeVisualisation,uniformDesign);
+
+            }
+        });
+
 
         return result;
     }

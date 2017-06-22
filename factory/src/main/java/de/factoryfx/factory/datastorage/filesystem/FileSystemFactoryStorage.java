@@ -64,7 +64,7 @@ public class FileSystemFactoryStorage<V,L,R extends FactoryBase<L,V>> implements
         final StoredFactoryMetadata storedFactoryMetadata = new StoredFactoryMetadata();
         storedFactoryMetadata.creationTime= LocalDateTime.now();
         storedFactoryMetadata.id= UUID.randomUUID().toString();
-        storedFactoryMetadata.user=comment;
+        storedFactoryMetadata.user=user;
         storedFactoryMetadata.comment=comment;
         storedFactoryMetadata.baseVersionId=update.metadata.baseVersionId;
         storedFactoryMetadata.dataModelVersion=update.metadata.dataModelVersion;

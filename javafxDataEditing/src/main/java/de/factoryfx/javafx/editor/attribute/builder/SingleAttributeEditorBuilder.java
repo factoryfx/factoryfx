@@ -8,8 +8,12 @@ import de.factoryfx.javafx.editor.data.DataEditor;
 import java.util.List;
 
 public interface SingleAttributeEditorBuilder<T> {
-    boolean isListItemEditorFor(Attribute<?,?> attribute);
+    default boolean isListItemEditorFor(Attribute<?,?> attribute){
+        return false;
+    }
     boolean isEditorFor(Attribute<?,?> attribute);
     AttributeEditor<T,?> createEditor(Attribute<?,?> attribute, DataEditor dataEditor, Data previousData);
-    AttributeEditor<List<T>,?> createValueListEditor(Attribute<?,?> attribute);
+    default AttributeEditor<List<T>,?> createValueListEditor(Attribute<?,?> attribute){
+        return null;
+    }
 }

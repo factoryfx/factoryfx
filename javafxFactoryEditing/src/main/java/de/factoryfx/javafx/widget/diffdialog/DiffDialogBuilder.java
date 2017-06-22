@@ -2,6 +2,7 @@ package de.factoryfx.javafx.widget.diffdialog;
 
 import java.util.List;
 
+import de.factoryfx.data.Data;
 import de.factoryfx.data.merge.AttributeDiffInfo;
 import de.factoryfx.data.merge.MergeDiffInfo;
 import de.factoryfx.factory.log.FactoryUpdateLog;
@@ -56,9 +57,9 @@ public class DiffDialogBuilder {
     }
 
 
-    public void createDiffDialog(MergeDiffInfo mergeDiff, String title, Window owner) {
+    public void createDiffDialog(Data root, MergeDiffInfo mergeDiff, String title, Window owner) {
         final FactoryDiffWidget factoryDiffWidget = new FactoryDiffWidget(uniformDesign,attributeEditorBuilder);
-        factoryDiffWidget.updateMergeDiff(mergeDiff);
+        factoryDiffWidget.updateMergeDiff(root,mergeDiff);
 
 
         Dialog<Void> dialog = new Dialog<>();
@@ -91,9 +92,9 @@ public class DiffDialogBuilder {
         dialog.showAndWait();
     }
 
-    public void createDiffDialog(FactoryUpdateLog factoryLog, String title, Window owner){
+    public void createDiffDialog(Data root, FactoryUpdateLog factoryLog, String title, Window owner){
         final FactoryDiffWidget factoryDiffWidget = new FactoryDiffWidget(uniformDesign,attributeEditorBuilder);
-        factoryDiffWidget.updateMergeDiff(factoryLog.mergeDiffInfo);
+        factoryDiffWidget.updateMergeDiff(root,factoryLog.mergeDiffInfo);
 
         final FactoryUpdateLogWidget factoryLogWidget = new FactoryUpdateLogWidget(uniformDesign);
         factoryLogWidget.updateLog(factoryLog);
