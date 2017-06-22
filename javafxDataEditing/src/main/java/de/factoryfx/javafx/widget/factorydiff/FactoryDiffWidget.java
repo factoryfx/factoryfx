@@ -139,18 +139,26 @@ public class FactoryDiffWidget implements Widget {
             Data root = diffTableView.getSelectionModel().getSelectedItem().root;
             AttributeDiffInfo diffItem = diffTableView.getSelectionModel().getSelectedItem().attributeDiffInfo;
             if (diffItem != null) {
-                Attribute previousAttribute = diffItem.createPreviousAttribute();
-                previousAttribute.internal_prepareUsage(root);
-                final Optional<AttributeEditor<?,?>> previousAttributeEditor = attributeEditorBuilder.getAttributeEditor(previousAttribute, null, null, null);
-                previousAttributeEditor.get().expand();
-                previousValueDisplay.setCenter(previousAttributeEditor.get().createContent());
+                try {
+                    Attribute previousAttribute = diffItem.createPreviousAttribute();
+                    previousAttribute.internal_prepareUsage(root);
+                    final Optional<AttributeEditor<?, ?>> previousAttributeEditor = attributeEditorBuilder.getAttributeEditor(previousAttribute, null, null, null);
+                    previousAttributeEditor.get().expand();
+                    previousValueDisplay.setCenter(previousAttributeEditor.get().createContent());
+                } catch (RuntimeException re) {
+                    previousValueDisplay.setCenter(new Label("nicht verfügbar"));
+                }
 
                 if (diffItem.isNewAttributePresent()) {
-                    Attribute newAttributeDisplayAttribute = diffItem.createNewAttributeDisplayAttribute();
-                    newAttributeDisplayAttribute.internal_prepareUsage(root);
-                    final Optional<AttributeEditor<?,?>> newAttributeEditor = attributeEditorBuilder.getAttributeEditor(newAttributeDisplayAttribute, null, null, null);
-                    newAttributeEditor.get().expand();
-                    newValueDisplay.setCenter(newAttributeEditor.get().createContent());
+                    try {
+                        Attribute newAttributeDisplayAttribute = diffItem.createNewAttributeDisplayAttribute();
+                        newAttributeDisplayAttribute.internal_prepareUsage(root);
+                        final Optional<AttributeEditor<?,?>> newAttributeEditor = attributeEditorBuilder.getAttributeEditor(newAttributeDisplayAttribute, null, null, null);
+                        newAttributeEditor.get().expand();
+                        newValueDisplay.setCenter(newAttributeEditor.get().createContent());
+                    } catch (RuntimeException re) {
+                        newValueDisplay.setCenter(new Label("nicht verfügbar"));
+                    }
                 } else {
                     newValueDisplay.setCenter(null);
                 }
