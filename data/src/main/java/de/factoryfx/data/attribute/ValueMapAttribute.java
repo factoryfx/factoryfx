@@ -33,12 +33,6 @@ public abstract class ValueMapAttribute<K, V, A extends ValueMapAttribute<K,V,A>
         return result;
     }
 
-    @Override
-    public void writeValueToJsonWrapper(AttributeJsonWrapper attributeJsonWrapper) {
-        attributeJsonWrapper.value=new TreeMap<>(get());
-    }
-
-
     @JsonCreator
     protected ValueMapAttribute() {
         this(null,null);

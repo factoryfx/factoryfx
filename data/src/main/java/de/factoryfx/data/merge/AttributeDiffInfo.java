@@ -5,76 +5,63 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import de.factoryfx.data.Data;
 import de.factoryfx.data.attribute.Attribute;
-import de.factoryfx.data.attribute.AttributeJsonWrapper;
+import de.factoryfx.data.attribute.AttributeVisitor;
+import de.factoryfx.data.attribute.ReferenceAttribute;
+import de.factoryfx.data.attribute.ReferenceListAttribute;
 
 //just the infotext used in gui
 public class AttributeDiffInfo {
     @JsonProperty
-    private final AttributeJsonWrapper previousValueDisplayText;
+    private final String attributeName;
     @JsonProperty
-    private final AttributeJsonWrapper newAttribute;
-    @JsonProperty
-    private final String parentDisplayText;
-    @JsonProperty
-    private final String parentId;
+    private final String dataId;
 
     @JsonCreator
     public AttributeDiffInfo(
-            @JsonProperty("previousValueDisplayText") AttributeJsonWrapper previousValueDisplayText,
-            @JsonProperty("newAttribute") AttributeJsonWrapper newAttribute,
-            @JsonProperty("parentDisplayText") String parentDisplayText,
-            @JsonProperty("parentId") String parentId) {
-        this.previousValueDisplayText = previousValueDisplayText;
-        this.newAttribute = newAttribute;
-        this.parentDisplayText = parentDisplayText;
-        this.parentId = parentId;
+            @JsonProperty("attributeName") String attributeName,
+            @JsonProperty("parentId") String dataId) {
+        this.attributeName = attributeName;
+        this.dataId = dataId;
     }
 
-    public AttributeDiffInfo(Data parent, Attribute<?,?> attribute, Attribute<?,?> newAttributeDisplayText) {
-        //created here cause attribute ist updated later
-        this(new AttributeJsonWrapper(attribute,""), new AttributeJsonWrapper(newAttributeDisplayText,""), parent.internal().getDisplayText(),parent.getId());
-    }
-
-    public AttributeDiffInfo(Data parent, Attribute<?,?> attribute) {
-        //created here cause attribute ist updated later
-        this(new AttributeJsonWrapper(attribute,""), null, parent.internal().getDisplayText(),parent.getId());
-    }
 
     @JsonIgnore
-    public String getNewAttributeDisplayText(){
-        if (isNewAttributePresent()){
-            return newAttribute.getDisplayText();
+    public String getAttributeDisplayText(Data root){
+        Attribute<?,?> attribute = getAttribute(root);
+        if (attribute!=null){
+            return attribute.getDisplayText();
         }
-        return "removed";
+        return "empty";
     }
 
     @JsonIgnore
-    public boolean isNewAttributePresent(){
-        return newAttribute!=null;
+    public Attribute<?,?> getAttribute(Data root){
+        Data data = root.internal().collectChildFactoriesMap().get(dataId);
+        if (data!=null) {
+            Attribute<?,?>[] result= new Attribute<?,?>[1];
+            data.internal().visitAttributesFlat((attributeVariableName, attribute) -> {
+                if (attributeVariableName.equals(attributeName)){
+                    result[0]=attribute;
+                }
+            });
+            return result[0];
+        }
+        return null;
     }
 
-    public Attribute createNewAttributeDisplayAttribute(){
-        return newAttribute.createAttribute();
-    }
-
-    @JsonIgnore
-    public String getPreviousAttributeDisplayText(){
-       return previousValueDisplayText.getDisplayText();
-    }
-
-    @JsonIgnore
-    public Attribute createPreviousAttribute(){
-        return previousValueDisplayText.createAttribute();
-    }
 
     @JsonIgnore
     public boolean isFromFactory(String factoryId){
-        return parentId.equals(factoryId);
+        return dataId.equals(factoryId);
     }
 
     @JsonIgnore
-    public String parentDisplayText(){
-        return parentDisplayText;
+    public String parentDisplayText(Data root){
+        Data data = root.internal().collectChildFactoriesMap().get(dataId);
+        if (data!=null) {
+            return data.internal().getDisplayText();
+        }
+        return "";
     }
 
 }

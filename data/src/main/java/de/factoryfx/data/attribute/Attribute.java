@@ -289,31 +289,6 @@ public abstract class Attribute<T,A extends Attribute<T,A>>{
         return (A)this;
     }
 
-
-    public void internal_writeToJsonWrapper(AttributeJsonWrapper attributeJsonWrapper){
-        attributeJsonWrapper.en=this.en;
-        attributeJsonWrapper.de=this.de;
-        attributeJsonWrapper.es=this.es;
-        attributeJsonWrapper.fr=this.fr;
-        attributeJsonWrapper.it=this.it;
-        attributeJsonWrapper.pt=this.pt;
-        writeValueToJsonWrapper(attributeJsonWrapper);
-    }
-
-    protected abstract void writeValueToJsonWrapper(AttributeJsonWrapper attributeJsonWrapper);
-
-    public void internal_readFromJsonWrapper(AttributeJsonWrapper attributeJsonWrapper){
-        this.en=attributeJsonWrapper.en;
-        this.de=attributeJsonWrapper.de;
-        this.es=attributeJsonWrapper.es;
-        this.fr=attributeJsonWrapper.fr;
-        this.it=attributeJsonWrapper.it;
-        this.pt=attributeJsonWrapper.pt;
-        readValueFromJsonWrapper(attributeJsonWrapper);
-    }
-
-    protected abstract void readValueFromJsonWrapper(AttributeJsonWrapper attributeJsonWrapper);
-
     public void takeContentFromAttribute(A attribute){
         this.en=attribute.en;
         this.de=attribute.de;

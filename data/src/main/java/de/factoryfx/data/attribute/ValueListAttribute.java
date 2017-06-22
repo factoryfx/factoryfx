@@ -133,8 +133,4 @@ public abstract class ValueListAttribute<T, A extends Attribute<List<T>,A>> exte
         get().clear();
     }
 
-    @Override
-    public void writeValueToJsonWrapper(AttributeJsonWrapper attributeJsonWrapper) {
-        attributeJsonWrapper.value=new ArrayList<>(get());
-    }
 }

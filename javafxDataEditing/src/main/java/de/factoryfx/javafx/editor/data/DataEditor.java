@@ -164,47 +164,6 @@ public class DataEditor implements Widget {
         }
     }
 
-    private Node addDynamicDataEditor(Node defaultVis, Data data){
-        final HBox editRow = new HBox(3);
-        editRow.setAlignment(Pos.CENTER_LEFT);
-        editRow.getChildren().add(new Label("Label"));
-        final TextField textField = new TextField();
-        editRow.getChildren().add(textField);
-
-        editRow.getChildren().add(new Label("Type"));
-        final ChoiceBox<ValueAttributeCreator> typeChooser = new ChoiceBox<>();
-        typeChooser.getItems().addAll(new ValueAttributeCreator("String",()->new StringAttribute().labelText(textField.getText())));
-        typeChooser.getItems().addAll(new ValueAttributeCreator("Integer",()->new IntegerAttribute().labelText(textField.getText())));
-        typeChooser.getItems().addAll(new ValueAttributeCreator("Long",()->new LongAttribute().labelText(textField.getText())));
-        typeChooser.getItems().addAll(new ValueAttributeCreator("Stringlist",()->new StringListAttribute().labelText(textField.getText())));
-        typeChooser.getItems().addAll(new ValueAttributeCreator("BigDecimal",()->new BigDecimalAttribute().labelText(textField.getText())));
-        typeChooser.getItems().addAll(new ValueAttributeCreator("LocalDate",()->new LocalDateAttribute().labelText(textField.getText())));
-        typeChooser.setConverter(new StringConverter<ValueAttributeCreator>() {
-            @Override
-            public String toString(ValueAttributeCreator object) {
-                return object.name;
-            }
-            @Override
-            public ValueAttributeCreator fromString(String string) {return null;}
-        });
-        editRow.getChildren().add(typeChooser);
-
-        final Button addButton = new Button("add");
-        addButton.setOnAction(event -> {
-            data.dynamic().addAttribute(typeChooser.getValue().attributeCreator.get());
-            dataChangeListener.changed(null,data,data);
-            data.setId(UUID.randomUUID().toString());//cause type has changed
-        });
-
-        addButton.disableProperty().bind(textField.textProperty().isEmpty().or(typeChooser.valueProperty().isNull()));
-        editRow.getChildren().add(addButton);
-
-        final BorderPane borderPane = new BorderPane();
-        borderPane.setCenter(defaultVis);
-        borderPane.setBottom(editRow);
-        return borderPane;
-    }
-
     @Override
     @SuppressWarnings("unchecked")
     public Node createContent() {
@@ -215,9 +174,6 @@ public class DataEditor implements Widget {
         }
 
         BiConsumer<Node,Data> updateVis= (defaultVis, data) -> {
-            if (data.dynamic().isDynamic()){
-                defaultVis = addDynamicDataEditor(defaultVis,data);
-            }
             result.setCenter(customizeVis(defaultVis,data));
         };
 

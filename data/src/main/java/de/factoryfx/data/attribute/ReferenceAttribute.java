@@ -157,18 +157,4 @@ public abstract class ReferenceAttribute<T extends Data, A extends ReferenceBase
         }
         return get();
     }
-
-
-    @Override
-    public void writeValueToJsonWrapper(AttributeJsonWrapper attributeJsonWrapper) {
-        attributeJsonWrapper.value=get();
-        attributeJsonWrapper.patchIds(this.value);
-//        attributeJsonWrapper.referenceClass=clazz;
-    }
-
-    @Override
-    @SuppressWarnings("unchecked")
-    protected void readValueFromJsonWrapper(AttributeJsonWrapper attributeJsonWrapper) {
-        set((T) attributeJsonWrapper.value);
-    }
 }

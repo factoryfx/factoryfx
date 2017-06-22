@@ -80,7 +80,7 @@ public class FactoryManager<V,L,R extends FactoryBase<L,V>> {
         for (Data data: currentFactoryRoot.internalFactory().collectChildFactoriesDeep()){
             final FactoryBase<?, V> previousFactory = previousFactories.get(data.getId());
             if (previousFactory!=null){
-                data.internal().visitAttributesDualFlat(previousFactory, (currentAttribute, previousAttribute) -> {
+                data.internal().visitAttributesDualFlat(previousFactory, (name, currentAttribute, previousAttribute) -> {
                     if (!currentAttribute.internal_match(previousAttribute)){
                         result.add(data);
                     }
@@ -106,7 +106,7 @@ public class FactoryManager<V,L,R extends FactoryBase<L,V>> {
         newVersion.internalFactory().loopDetector();
 
         DataMerger dataMerger = new DataMerger(currentFactoryRoot, commonVersion, newVersion);
-        return dataMerger.createMergeResult(permissionChecker);
+        return dataMerger.createMergeResult(permissionChecker).getMergeDiff();
     }
 
     private void destroyFactories(LinkedHashSet<FactoryBase<?,V>> previousFactories, Set<FactoryBase<?,V>> newFactories){

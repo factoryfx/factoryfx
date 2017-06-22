@@ -27,7 +27,7 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.google.common.base.Strings;
 import de.factoryfx.data.attribute.Attribute;
 import de.factoryfx.data.attribute.AttributeChangeListener;
-import de.factoryfx.data.attribute.AttributeJsonWrapper;
+import de.factoryfx.data.attribute.AttributeVisitor;
 import de.factoryfx.data.attribute.ImmutableValueAttribute;
 import de.factoryfx.data.merge.AttributeDiffInfo;
 import de.factoryfx.data.merge.MergeResult;
@@ -42,7 +42,6 @@ import javafx.util.Pair;
 public class Data {
 
     private String id;
-    private boolean dynamic;
 
     public String getId() {
         if (id == null) {
@@ -80,19 +79,24 @@ public class Data {
     }
 
     @FunctionalInterface
-    interface TriConsumer<A, B, C> {
-        void accept(A a, B b, C c);
+    public interface TriAttributeVisitor {
+        void accept(String attributeName, Attribute<?,?> attribute1, Attribute<?,?> attribute2, Attribute<?,?> attribute3);
+    }
+
+    @FunctionalInterface
+    public interface BiAttributeVisitor {
+        void accept(String attributeName, Attribute<?,?> attribute1, Attribute<?,?> attribute2);
+    }
+
+    @FunctionalInterface
+    public interface AttributeVisitor{
+        void accept(String attributeVariableName, Attribute<?,?> attribute);
     }
 
     private void visitChildFactoriesFlat(Consumer<Data> consumer) {
         visitAttributesFlat((attributeVariableName, attribute) -> {
             attribute.internal_visit(consumer);
         });
-    }
-
-    @FunctionalInterface
-    public interface AttributeVisitor{
-        void accept(String attributeVariableName, Attribute<?,?> attribute);
     }
 
     List<AttributeAndName> attributes;
@@ -113,54 +117,9 @@ public class Data {
                 }
             }
         }
-        dynamicDataAttributeAndNames.forEach(attributeAndName -> {//TODO performance?
-            if (!attributes.contains(attributeAndName)){
-                attributes.add(attributeAndName);
-            }
-        });
         return attributes;
     }
 
-    @JsonIgnore
-    List<AttributeAndName> dynamicDataAttributeAndNames=new ArrayList<>();
-
-
-    @JsonProperty
-    public List<AttributeJsonWrapper> getDynamicDataAttributes(){
-        if (!dynamicAttributeData){
-            return null;
-        }
-        final ArrayList<AttributeJsonWrapper> result = new ArrayList<>();
-        for (AttributeAndName attributeAndName: dynamicDataAttributeAndNames){
-            result.add(new AttributeJsonWrapper(attributeAndName.attribute,attributeAndName.name));
-        }
-        return result;
-    }
-
-    @JsonProperty
-    public void setDynamicDataAttributes(List<AttributeJsonWrapper> dynamicDataAttributes){
-        if (!dynamicAttributeData){
-            return;
-        }
-        for (AttributeJsonWrapper dynamicDataAttribute: dynamicDataAttributes){
-            dynamicDataAttributeAndNames.add(dynamicDataAttribute.createAttributeAndName());
-        }
-    }
-
-    boolean dynamicAttributeData;
-    private void setDynamic() {
-        dynamicAttributeData=true;
-    }
-
-    @JsonIgnore
-    public boolean isDynamic() {
-        return dynamicAttributeData;
-    }
-
-
-    private void addAttribute(ImmutableValueAttribute<?,?> attribute){
-        dynamicDataAttributeAndNames.add(new AttributeAndName(attribute, toIdentifier(attribute.internal_getPreferredLabelText(Locale.ENGLISH))));
-    }
 
     private String toIdentifier(String value) {//TODO for js?
         if (Strings.isNullOrEmpty(value)) {
@@ -191,22 +150,22 @@ public class Data {
     }
 
     @SuppressWarnings("unchecked")
-    private void visitAttributesDualFlat(Data data, BiConsumer<Attribute<?,?>, Attribute<?,?>> consumer) {
+    private void visitAttributesDualFlat(Data data, BiAttributeVisitor consumer) {
         final List<AttributeAndName> thisAttributes = getAttributes();
         final List<AttributeAndName> dataAttributes = data.getAttributes();
         for (int i = 0; i< thisAttributes.size(); i++){
-            consumer.accept(thisAttributes.get(i).attribute, dataAttributes.get(i).attribute);
+            consumer.accept(thisAttributes.get(i).name,thisAttributes.get(i).attribute, dataAttributes.get(i).attribute);
         }
     }
 
-    private void visitAttributesTripleFlat(Data data1, Data data2, TriConsumer<Attribute<?,?>, Attribute<?,?>, Attribute<?,?>> consumer) {
+    private void visitAttributesTripleFlat(Data data1, Data data2, TriAttributeVisitor consumer) {
         final List<AttributeAndName> thisAttributes = getAttributes();
 
         final List<AttributeAndName> data1Attributes = data1.getAttributes();
         final List<AttributeAndName> data2Attributes = data2.getAttributes();
 
         for (int i = 0; i< thisAttributes.size(); i++){
-            consumer.accept(thisAttributes.get(i).attribute, data1Attributes.get(i).attribute, data2Attributes.get(i).attribute);
+            consumer.accept(thisAttributes.get(i).name,  thisAttributes.get(i).attribute, data1Attributes.get(i).attribute, data2Attributes.get(i).attribute);
         }
     }
 
@@ -265,11 +224,6 @@ public class Data {
             } catch (InstantiationException | IllegalAccessException e) {
                 throw new RuntimeException(e);
             }
-        }
-
-        for (AttributeAndName attributeAndName: dynamicDataAttributeAndNames){
-            final Attribute attribute = attributeAndName.attribute.internal_copy();
-            result.dynamicDataAttributeAndNames.add(new AttributeAndName(attribute,attributeAndName.name));
         }
         return result;
     }
@@ -336,13 +290,13 @@ public class Data {
 
     @SuppressWarnings("unchecked")
     private void merge(Data originalValue, Data newValue, MergeResult mergeResult, Function<String,Boolean> permissionChecker) {
-        this.visitAttributesTripleFlat(originalValue, newValue, (currentAttribute, originalAttribute, newAttribute) -> {
+        this.visitAttributesTripleFlat(originalValue, newValue, (attributeName, currentAttribute, originalAttribute, newAttribute) -> {
             if (!currentAttribute.ignoreForMerging()){
                 if (currentAttribute.hasMergeConflict(originalAttribute, newAttribute)) {
-                    mergeResult.addConflictInfo(new AttributeDiffInfo(Data.this, currentAttribute, newAttribute));
+                    mergeResult.addConflictInfo(new AttributeDiffInfo(Data.this.getId(), attributeName));
                 } else {
                     if (currentAttribute.isMergeable(originalAttribute, newAttribute)) {
-                        final AttributeDiffInfo attributeDiffInfo = new AttributeDiffInfo(Data.this, currentAttribute, newAttribute);
+                        final AttributeDiffInfo attributeDiffInfo = new AttributeDiffInfo(attributeName,Data.this.getId());
                         if (currentAttribute.internal_hasWritePermission(permissionChecker)){
                             mergeResult.addMergeInfo(attributeDiffInfo);
                             mergeResult.addMergeExecutions(() -> currentAttribute.merge(newAttribute));
@@ -387,7 +341,8 @@ public class Data {
     private <T extends Data> T semanticCopy() {
         T result = (T)newInstance();
 //        result.setId(this.getId());
-        this.visitAttributesDualFlat(result, Attribute::internal_semanticCopyToUnsafe);
+        this.visitAttributesDualFlat(result, (attributeName, attribute1, attribute2) -> attribute1.internal_semanticCopyToUnsafe(attribute2));
+
         this.fixDuplicateObjects();
         return result;
     }
@@ -412,7 +367,7 @@ public class Data {
         if (result==null){
             result = newInstance();
             result.setId(this.getId());
-            this.visitAttributesDualFlat(result, (thisAttribute, copyAttribute) -> {
+            this.visitAttributesDualFlat(result, (name, thisAttribute, copyAttribute) -> {
                 if (thisAttribute!=null){
                     thisAttribute.internal_copyToUnsafe(copyAttribute,(data)->{
                         if (data==null){
@@ -653,7 +608,7 @@ public class Data {
             data.visitChildFactoriesFlat(consumer);
         }
 
-        public void visitAttributesDualFlat(Data modelBase, BiConsumer<Attribute<?,?>, Attribute<?,?>> consumer) {
+        public void visitAttributesDualFlat(Data modelBase, BiAttributeVisitor consumer) {
             data.visitAttributesDualFlat(modelBase,consumer);
         }
 
@@ -769,33 +724,5 @@ public class Data {
         }
 
     }
-
-    private final DynamicAttributesConfiguration dynamicAttributesConfiguration = new DynamicAttributesConfiguration(this);
-    /** data configurations api */
-    public DynamicAttributesConfiguration dynamic(){
-        return dynamicAttributesConfiguration;
-    }
-
-    public static class DynamicAttributesConfiguration {
-        private final Data data;
-
-        public DynamicAttributesConfiguration(Data data) {
-            this.data = data;
-        }
-
-        public void addAttribute(ImmutableValueAttribute<?,?> attribute){
-             data.addAttribute(attribute);
-        }
-
-        public boolean isDynamic() {
-            return data.isDynamic();
-        }
-
-        /** enable dynamic Attributes*/
-        public void setDynamic(){
-            data.setDynamic();
-        }
-    }
-
 
 }

@@ -1,7 +1,6 @@
 package de.factoryfx.data.attribute.types;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
-import de.factoryfx.data.attribute.AttributeJsonWrapper;
 import de.factoryfx.data.attribute.AttributeTypeInfo;
 import de.factoryfx.data.attribute.ImmutableValueAttribute;
 
@@ -54,16 +53,4 @@ public class EnumAttribute<T extends Enum<T>> extends ImmutableValueAttribute<T,
         return new ArrayList<>(Arrays.asList(clazz.getEnumConstants()));
     }
 
-    @Override
-    public void internal_writeToJsonWrapper(AttributeJsonWrapper attributeJsonWrapper) {
-        super.internal_writeToJsonWrapper(attributeJsonWrapper);
-        attributeJsonWrapper.enumClazz = clazz;
-    }
-
-    @Override
-    @SuppressWarnings("unchecked")
-    public void internal_readFromJsonWrapper(AttributeJsonWrapper attributeJsonWrapper) {
-        super.internal_readFromJsonWrapper(attributeJsonWrapper);
-        clazz= (Class<T>) attributeJsonWrapper.enumClazz;
-    }
 }

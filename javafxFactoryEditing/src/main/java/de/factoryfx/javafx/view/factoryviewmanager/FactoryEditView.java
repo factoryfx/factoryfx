@@ -97,7 +97,7 @@ public class FactoryEditView<V,R extends FactoryBase<?,V>> implements Widget, Fa
                 LongRunningActionExecutor.execute(() -> {
                     final MergeDiffInfo mergeDiff = factoryManager.simulateUpdateCurrentFactory();
                     Platform.runLater(() -> {
-                        diffDialogBuilder.createDiffDialog(factoryManager.getLoadedFactory().get(),mergeDiff, "ungespeicherte Änderungen",check.getScene().getWindow());
+                        diffDialogBuilder.createDiffDialog(mergeDiff, "ungespeicherte Änderungen",check.getScene().getWindow());
                     });
                 });
             });
@@ -177,7 +177,7 @@ public class FactoryEditView<V,R extends FactoryBase<?,V>> implements Widget, Fa
                     LongRunningActionExecutor.execute(() -> {
                         final List<AttributeDiffInfo> diff = factoryManager.getSingleFactoryHistory(selectedFactory.get().getId());
                         Platform.runLater(() -> {
-                            diffDialogBuilder.createDiffDialog(diff, "Änderungen",factoryHistory.getScene().getWindow());
+//                            diffDialogBuilder.createDiffDialog(diff, "Änderungen",factoryHistory.getScene().getWindow());
                         });
                     });
                     factoryManager.reset();

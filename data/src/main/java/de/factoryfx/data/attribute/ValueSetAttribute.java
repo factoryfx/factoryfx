@@ -38,11 +38,6 @@ public abstract class ValueSetAttribute<T,A extends Attribute<Set<T>,A>> extends
         return new AttributeTypeInfo(ObservableSet.class,null,null,itemType, AttributeTypeInfo.AttributeTypeCategory.COLLECTION);
     }
 
-    @Override
-    public void writeValueToJsonWrapper(AttributeJsonWrapper attributeJsonWrapper) {
-        attributeJsonWrapper.value=new HashSet<>(get());
-    }
-
     //** set list only take the list items not the list itself, (to simplify ChangeListeners)*/
     @Override
     public void set(Set<T> value) {

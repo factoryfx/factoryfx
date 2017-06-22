@@ -208,26 +208,6 @@ public abstract class ReferenceListAttribute<T extends Data,A extends ReferenceB
     }
 
     @Override
-    public void writeValueToJsonWrapper(AttributeJsonWrapper attributeJsonWrapper) {
-        attributeJsonWrapper.valueList=new ArrayList<>(get());
-        attributeJsonWrapper.valueList.replaceAll(d->{
-            Data theCopy = d.internal().copy();
-            attributeJsonWrapper.patchIds(theCopy);
-            return theCopy;
-        });
-//        attributeJsonWrapper.referenceClass=clazz;
-    }
-
-    @Override
-    @SuppressWarnings("unchecked")
-    protected void readValueFromJsonWrapper(AttributeJsonWrapper attributeJsonWrapper) {
-        List<Data> valueList = attributeJsonWrapper.valueList;
-        ArrayList<T> newList = new ArrayList<>();
-        valueList.forEach(data -> newList.add((T)data));
-        set(newList);
-    }
-
-    @Override
     public boolean isEmpty() {
         return list.isEmpty();
     }

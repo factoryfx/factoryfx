@@ -38,7 +38,7 @@ public class ApplicationServer<V,L,R extends FactoryBase<L,V>> {
     public MergeDiffInfo getDiffToPreviousVersion(StoredFactoryMetadata storedFactoryMetadata) {
         R historyFactory = getHistoryFactory(storedFactoryMetadata.id);
         R historyFactoryPrevious = getPreviousHistoryFactory(storedFactoryMetadata.id);
-        return new DataMerger(historyFactoryPrevious,historyFactoryPrevious,historyFactory).createMergeResult((permission)->true);
+        return new DataMerger(historyFactoryPrevious,historyFactoryPrevious,historyFactory).createMergeResult((permission)->true).getMergeDiff();
     }
 
     public FactoryUpdateLog revertTo(StoredFactoryMetadata storedFactoryMetadata, String user) {
@@ -51,18 +51,18 @@ public class ApplicationServer<V,L,R extends FactoryBase<L,V>> {
     /**list all changes made in specific factory*/
     public List<AttributeDiffInfo> getDiffHistoryForFactory(String factoryId) {
         final ArrayList<AttributeDiffInfo> result = new ArrayList<>();
-        final List<StoredFactoryMetadata> historyFactoryList = new ArrayList<>(factoryStorage.getHistoryFactoryList()).stream().sorted(Comparator.comparing(o -> o.creationTime)).collect(Collectors.toList());
-        Collections.reverse(historyFactoryList);
-        for (int i=0;i<historyFactoryList.size()-1;i++){
-            R historyFactory = getHistoryFactory(historyFactoryList.get(i).id);
-            R historyFactoryPrevious = getHistoryFactory(historyFactoryList.get(i+1).id);
-            final MergeDiffInfo mergeResult = new DataMerger(historyFactoryPrevious, historyFactoryPrevious, historyFactory).createMergeResult((permission) -> true);
-            mergeResult.mergeInfos.forEach(attributeDiffInfo -> {
-                if (attributeDiffInfo.isFromFactory(factoryId)) {
-                    result.add(attributeDiffInfo);
-                }
-            });
-        }
+//        final List<StoredFactoryMetadata> historyFactoryList = new ArrayList<>(factoryStorage.getHistoryFactoryList()).stream().sorted(Comparator.comparing(o -> o.creationTime)).collect(Collectors.toList());
+//        Collections.reverse(historyFactoryList);
+//        for (int i=0;i<historyFactoryList.size()-1;i++){
+//            R historyFactory = getHistoryFactory(historyFactoryList.get(i).id);
+//            R historyFactoryPrevious = getHistoryFactory(historyFactoryList.get(i+1).id);
+//            final MergeDiffInfo mergeResult = new DataMerger(historyFactoryPrevious, historyFactoryPrevious, historyFactory).createMergeResult((permission) -> true).getMergeDiff();
+//            mergeResult.mergeInfos.forEach(attributeDiffInfo -> {
+//                if (attributeDiffInfo.isFromFactory(factoryId)) {
+//                    result.add(attributeDiffInfo);
+//                }
+//            });
+//        }
         return result;
     }
 

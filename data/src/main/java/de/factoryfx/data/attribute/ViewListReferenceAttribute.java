@@ -212,14 +212,4 @@ public abstract class ViewListReferenceAttribute <R extends Data, T extends Data
         return true;
     }
 
-
-    @Override
-    protected void writeValueToJsonWrapper(AttributeJsonWrapper attributeJsonWrapper) {
-        //nothing
-    }
-
-    @Override
-    protected void readValueFromJsonWrapper(AttributeJsonWrapper attributeJsonWrapper) {
-        //nothing
-    }
 }
