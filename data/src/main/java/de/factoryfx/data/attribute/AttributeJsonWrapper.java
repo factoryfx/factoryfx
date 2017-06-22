@@ -163,7 +163,11 @@ public class AttributeJsonWrapper {
     }
     @JsonIgnore
     public String getDisplayText(){
-        return createAttribute().getDisplayText();
+        try {
+            return createAttribute().getDisplayText();
+        } catch (ClassCastException ce) {
+            return "nicht verfügbar";
+        }
     }
 
     @JsonIgnore
