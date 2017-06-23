@@ -7,7 +7,6 @@ import de.factoryfx.data.attribute.ImmutableValueAttribute;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.function.Predicate;
 
 public class EnumAttribute<T extends Enum<T>> extends ImmutableValueAttribute<EnumAttribute.EnumWrapper<T>,EnumAttribute<T>> {
 
@@ -32,8 +31,8 @@ public class EnumAttribute<T extends Enum<T>> extends ImmutableValueAttribute<En
         return new AttributeTypeInfo(clazz,null,null,AttributeTypeInfo.AttributeTypeCategory.VALUE);
     }
 
-    public List<Enum> internal_possibleEnumValues() {
-        return new ArrayList<>(Arrays.asList(clazz.getEnumConstants()));
+    public List<Enum<T>> internal_possibleEnumValues() {
+        return new ArrayList<Enum<T>>(Arrays.asList(clazz.getEnumConstants()));
     }
 
     public T getEnum() {
@@ -41,7 +40,12 @@ public class EnumAttribute<T extends Enum<T>> extends ImmutableValueAttribute<En
     }
 
     @SuppressWarnings("unchecked")
-    EnumAttribute<T> defaultEnum(T anEnum){
+    public void setEnum( T enumn) {
+        set(new EnumWrapper<T>(enumn, (Class<T>) enumn.getClass()));
+    }
+
+    @SuppressWarnings("unchecked")
+    public EnumAttribute<T> defaultEnum(T anEnum){
         set(new EnumWrapper<T>(anEnum, (Class<T>) anEnum.getClass()));
         return this;
     }
@@ -62,8 +66,8 @@ public class EnumAttribute<T extends Enum<T>> extends ImmutableValueAttribute<En
         }
 
         @JsonCreator
-        protected EnumWrapper(@JsonProperty("enumField")String enumField, @JsonProperty("enumClass")Class enumClass) {
-            this.enumClass= (Class<T>) enumClass;
+        protected EnumWrapper(@JsonProperty("enumField")String enumField, @JsonProperty("enumClass")Class<T> enumClass) {
+            this.enumClass= enumClass;
             this.enumField = Arrays.stream(this.enumClass.getEnumConstants()).filter(t -> t.name().equals(enumField)).findAny().orElseGet(null);
         }
 
