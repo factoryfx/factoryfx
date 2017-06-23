@@ -12,12 +12,15 @@ import javafx.util.StringConverter;
 public class LocaleAttributeVisualisation extends ValueAttributeEditorVisualisation<Locale> {
 
     @Override
-    public Node createContent(SimpleObjectProperty<Locale> boundTo) {
+    public Node createVisualisation(SimpleObjectProperty<Locale> boundTo, boolean readonly) {
         ComboBox<Locale> comboBox=new ComboBox<>();
         comboBox.setConverter(new StringConverter<Locale>() {
             @Override
             public String toString(Locale locale) {
-                return locale.getDisplayName();
+                if (locale!=null){
+                    return locale.getDisplayName();
+                }
+                return "";
             }
 
             @Override
@@ -27,6 +30,8 @@ public class LocaleAttributeVisualisation extends ValueAttributeEditorVisualisat
         });
         comboBox.getItems().addAll(DateFormat.getAvailableLocales());
         comboBox.valueProperty().bindBidirectional(boundTo);
+
+        comboBox.setEditable(!readonly);
         return comboBox;
     }
 }

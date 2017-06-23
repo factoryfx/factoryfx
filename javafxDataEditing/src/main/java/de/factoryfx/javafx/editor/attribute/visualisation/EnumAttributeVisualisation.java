@@ -16,11 +16,12 @@ public class EnumAttributeVisualisation extends ValueAttributeEditorVisualisatio
 
     @Override
     @SuppressWarnings("unchecked")
-    public Node createContent(SimpleObjectProperty<Enum> boundTo) {
+    public Node createVisualisation(SimpleObjectProperty<Enum> boundTo, boolean readonly) {
         ComboBox<Enum> comboBox = new ComboBox<>();
         comboBox.setEditable(false);
         comboBox.getItems().addAll(possibleEnumConstants);
         comboBox.valueProperty().bindBidirectional(boundTo);
+        comboBox.setEditable(!readonly);
         return comboBox;
     }
 }

@@ -257,6 +257,7 @@ public class DataEditor implements Widget {
             final Attribute<?,?> attribute = attributeGroup.get(0);
             Optional<AttributeEditor<?,?>> attributeEditor = attributeEditorBuilder.getAttributeEditor(attribute, this, validation, oldValue);
             if (attributeEditor.isPresent()){
+                attributeEditor.get().setReadOnly();
                 attributeEditor.get().expand();
                 createdEditors.put(attribute,attributeEditor.get());
                 final Node content = attributeEditor.get().createContent();
@@ -290,6 +291,7 @@ public class DataEditor implements Widget {
                 Optional<AttributeEditor<?,?>> attributeEditor = attributeEditorBuilder.getAttributeEditor(attribute,this,validation,oldValue);
                 int rowFinal=row;
                 if (attributeEditor.isPresent()){
+                    attributeEditor.get().setReadOnly();
                     createdEditors.put(attribute,attributeEditor.get());
                     addEditorContent(grid, rowFinal, attributeEditor.get().createContent(),label);
                 } else {

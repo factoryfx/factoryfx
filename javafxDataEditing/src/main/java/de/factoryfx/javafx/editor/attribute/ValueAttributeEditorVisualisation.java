@@ -30,10 +30,14 @@ public abstract class ValueAttributeEditorVisualisation<T> implements AttributeE
     }
 
     @Override
-    public Node createContent() {
-        return createContent(attributeValue);
+    public Node createVisualisation() {
+        return createVisualisation(attributeValue,false);
     }
 
+    @Override
+    public Node createReadOnlyVisualisation() {
+        return createVisualisation(attributeValue,true);
+    }
 
-    public abstract Node createContent(SimpleObjectProperty<T> attributeValue);
+    public abstract Node createVisualisation(SimpleObjectProperty<T> attributeValue, boolean readonly);
 }

@@ -10,10 +10,11 @@ import javafx.util.converter.LongStringConverter;
 public class LongAttributeVisualisation extends ValueAttributeEditorVisualisation<Long> {
 
     @Override
-    public Node createContent(SimpleObjectProperty<Long> boundTo) {
+    public Node createVisualisation(SimpleObjectProperty<Long> boundTo, boolean readonly) {
         TextField textField = new TextField();
         TypedTextFieldHelper.setupLongTextField(textField);
         textField.textProperty().bindBidirectional(boundTo, new LongStringConverter());
+        textField.setEditable(!readonly);
         return textField;
     }
 }

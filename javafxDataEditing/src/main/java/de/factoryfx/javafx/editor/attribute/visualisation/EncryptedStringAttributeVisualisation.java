@@ -39,7 +39,7 @@ public class EncryptedStringAttributeVisualisation extends ValueAttributeEditorV
     }
 
     @Override
-    public Node createContent(SimpleObjectProperty<EncryptedString> boundTo) {
+    public Node createVisualisation(SimpleObjectProperty<EncryptedString> boundTo, boolean readonly) {
         TextField encryptedTextField = new TextField();
         encryptedTextField.setEditable(false);
 
@@ -97,6 +97,8 @@ public class EncryptedStringAttributeVisualisation extends ValueAttributeEditorV
         HBox.setHgrow(encryptedTextField, Priority.ALWAYS);
         HBox.setHgrow(decryptedTextField, Priority.ALWAYS);
         hBox.getChildren().addAll(new Label(uniformDesign.getText(encryptedText)),encryptedTextField,new Label(uniformDesign.getText(decryptedText)),decryptedTextField,new Label(uniformDesign.getText(keyText)), keyField, new Label(uniformDesign.getText(newText)), newValueTextField, popupButton);
+
+        hBox.setDisable(readonly);
         return hBox;
     }
 }

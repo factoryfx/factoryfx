@@ -30,7 +30,7 @@ public class ViewReferenceAttributeVisualisation extends ValueAttributeEditorVis
     }
 
     @Override
-    public Node createContent(SimpleObjectProperty<Data> boundTo) {
+    public Node createVisualisation(SimpleObjectProperty<Data> boundTo, boolean readonly) {
         stringBinding = Bindings.createStringBinding(() -> {
             if (boundTo.get()!=null){
                 return boundTo.get().internal().getDisplayText();

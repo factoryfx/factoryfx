@@ -43,7 +43,7 @@ public class DiffDialogBuilder {
 //        dialog.getDialogPane().getButtonTypes().addAll(loginButtonType/*, ButtonType.CANCEL*/);
 //
 //        final BorderPane pane = new BorderPane();
-//        final Node diffWidgetContent = factoryDiffWidget.createContent();
+//        final Node diffWidgetContent = factoryDiffWidget.createVisualisation();
 //
 //        pane.setCenter(diffWidgetContent);
 //        pane.setPrefWidth(1000);

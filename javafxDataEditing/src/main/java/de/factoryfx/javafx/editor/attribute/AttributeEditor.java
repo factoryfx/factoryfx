@@ -23,7 +23,7 @@ public class AttributeEditor<T,A extends Attribute<T,A>> implements Widget {
     private final UniformDesign uniformDesign;
     private Consumer<List<ValidationError>> validationUpdater;
     private List<ValidationError> validationErrors=new ArrayList<>();
-
+    private boolean readonly=false;
 
     public AttributeEditor(A boundAttribute, AttributeEditorVisualisation<T> attributeEditorVisualisation, UniformDesign uniformDesign) {
         this.boundAttribute=boundAttribute;
@@ -31,7 +31,6 @@ public class AttributeEditor<T,A extends Attribute<T,A>> implements Widget {
         attributeEditorVisualisation.init(boundAttribute);
         this.uniformDesign = uniformDesign;
     }
-
 
     private final AttributeChangeListener<T,A> attributeChangeListener = (attribute, value) -> {
 //        Platform.runLater(()-> {
@@ -56,7 +55,14 @@ public class AttributeEditor<T,A extends Attribute<T,A>> implements Widget {
         boundAttribute.internal_addListener(attributeChangeListener);
         attributeChangeListener.changed(boundAttribute,boundAttribute.get());
         if (content==null){
-            content = addValidationDecoration(attributeEditorVisualisation.createContent());
+            Node visualisation;
+            if (readonly){
+                visualisation = attributeEditorVisualisation.createReadOnlyVisualisation();
+            } else {
+                visualisation = attributeEditorVisualisation.createVisualisation();
+            }
+
+            content = addValidationDecoration(visualisation);
             attributeEditorVisualisation.attributeValueChanged(boundAttribute.get());
         }
         return content;
@@ -131,5 +137,9 @@ public class AttributeEditor<T,A extends Attribute<T,A>> implements Widget {
         validationUpdater.accept(validationErrors);
 
         return node;
+    }
+
+    public void setReadOnly() {
+        this.readonly=true;
     }
 }

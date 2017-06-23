@@ -10,9 +10,10 @@ import javafx.scene.control.DatePicker;
 public class LocalDateAttributeVisualisation extends ValueAttributeEditorVisualisation<LocalDate> {
 
     @Override
-    public Node createContent(SimpleObjectProperty<LocalDate> boundTo) {
+    public Node createVisualisation(SimpleObjectProperty<LocalDate> boundTo, boolean readonly) {
         DatePicker datePicker = new DatePicker();
         datePicker.valueProperty().bindBidirectional(boundTo);
+        datePicker.setEditable(!readonly);
         return datePicker;
     }
 }

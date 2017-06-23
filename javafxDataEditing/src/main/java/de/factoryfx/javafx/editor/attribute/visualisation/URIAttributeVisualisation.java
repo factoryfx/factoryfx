@@ -12,10 +12,11 @@ import javafx.scene.control.TextField;
 public class URIAttributeVisualisation extends ValueAttributeEditorVisualisation<URI> {
 
     @Override
-    public Node createContent(SimpleObjectProperty<URI> boundTo) {
+    public Node createVisualisation(SimpleObjectProperty<URI> boundTo, boolean readonly) {
         TextField textField = new TextField();
         TypedTextFieldHelper.setupURITextField(textField);
         textField.textProperty().bindBidirectional(boundTo, new URIStringConverter());
+        textField.setEditable(!readonly);
         return textField;
     }
 }

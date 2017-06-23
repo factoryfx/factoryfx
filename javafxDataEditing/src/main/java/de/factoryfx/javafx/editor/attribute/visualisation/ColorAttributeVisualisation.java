@@ -9,9 +9,10 @@ import javafx.scene.paint.Color;
 public class ColorAttributeVisualisation extends ValueAttributeEditorVisualisation<Color> {
 
     @Override
-    public Node createContent(SimpleObjectProperty<Color> boundTo) {
+    public Node createVisualisation(SimpleObjectProperty<Color> boundTo, boolean readonly) {
         ColorPicker colorPicker = new ColorPicker();
         colorPicker.valueProperty().bindBidirectional(boundTo);
+        colorPicker.setDisable(readonly);
         return colorPicker;
     }
 }

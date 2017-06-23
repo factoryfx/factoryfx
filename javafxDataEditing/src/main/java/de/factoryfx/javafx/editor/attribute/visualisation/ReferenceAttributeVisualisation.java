@@ -50,7 +50,7 @@ public class ReferenceAttributeVisualisation extends ValueAttributeEditorVisuali
     }
 
     @Override
-    public Node createContent(SimpleObjectProperty<Data> boundTo) {
+    public Node createVisualisation(SimpleObjectProperty<Data> boundTo, boolean readonly) {
         Button showButton = new Button("", uniformDesign.createIcon(FontAwesome.Glyph.PENCIL));
         showButton.setOnAction(event -> dataEditor.edit(boundTo.get()));
         showButton.disableProperty().bind(boundTo.isNull());
@@ -62,19 +62,19 @@ public class ReferenceAttributeVisualisation extends ValueAttributeEditorVisuali
             final Optional<Data> toAdd = new DataChoiceDialog().show(possibleValuesProvider.get(), selectButton.getScene().getWindow(), uniformDesign);
             toAdd.ifPresent(data -> boundTo.set(data));
         });
-        selectButton.setDisable(!isUserEditable || !isUserSelectable);
+        selectButton.setDisable(!isUserEditable || !isUserSelectable || readonly);
 
         Button newButton = new Button();
         uniformDesign.addIcon(newButton,FontAwesome.Glyph.PLUS);
         newButton.setOnAction(event -> {
             dataEditor.edit(emptyAdder.get());
         });
-        newButton.setDisable(!isUserEditable || !isUserCreateable);
+        newButton.setDisable(!isUserEditable || !isUserCreateable || readonly);
 
         Button deleteButton = new Button();
         uniformDesign.addDangerIcon(deleteButton,FontAwesome.Glyph.TIMES);
         deleteButton.setOnAction(event -> remover.run());
-        deleteButton.disableProperty().bind(boundTo.isNull().or(new SimpleBooleanProperty(!isUserEditable)));
+        deleteButton.disableProperty().bind(boundTo.isNull().or(new SimpleBooleanProperty(!isUserEditable)).or(new SimpleBooleanProperty(readonly)));
 
         TextField textField = new TextField();
         InvalidationListener invalidationListener = observable -> {
@@ -115,6 +115,8 @@ public class ReferenceAttributeVisualisation extends ValueAttributeEditorVisuali
         selectButton.setTooltip(new Tooltip(uniformDesign.getText(selectText)));
         newButton.setTooltip(new Tooltip(uniformDesign.getText(addText)));
         deleteButton.setTooltip(new Tooltip(uniformDesign.getText(deleteText)));
+
+
 
         return hBox;
     }

@@ -21,7 +21,7 @@ import de.factoryfx.javafx.util.TypedTextFieldHelper;
 public class DurationAttributeVisualisation extends ValueAttributeEditorVisualisation<Duration> {
 
     @Override
-    public Node createContent(SimpleObjectProperty<Duration> boundTo) {
+    public Node createVisualisation(SimpleObjectProperty<Duration> boundTo, boolean readonly) {
 
         HBox hBox = new HBox(3);
         hBox.setAlignment(Pos.CENTER_LEFT);
@@ -47,6 +47,9 @@ public class DurationAttributeVisualisation extends ValueAttributeEditorVisualis
         textField.textProperty().addListener((observable, oldValue, newValue) -> setDuration(boundTo, textField, comboBox));
 
         hBox.getChildren().addAll(label, comboBox, textField);
+
+        comboBox.setEditable(!readonly);
+        textField.setEditable(!readonly);
         return hBox;
     }
 

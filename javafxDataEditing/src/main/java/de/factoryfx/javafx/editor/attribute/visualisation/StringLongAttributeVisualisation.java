@@ -9,9 +9,10 @@ public class StringLongAttributeVisualisation extends ValueAttributeEditorVisual
 
 
     @Override
-    public Node createContent(SimpleObjectProperty<String> attributeValue) {
-        TextArea textField = new TextArea();
-        textField.textProperty().bindBidirectional(attributeValue);
-        return textField;
+    public Node createVisualisation(SimpleObjectProperty<String> attributeValue, boolean readonly) {
+        TextArea textArea = new TextArea();
+        textArea.textProperty().bindBidirectional(attributeValue);
+        textArea.setEditable(!readonly);
+        return textArea;
     }
 }

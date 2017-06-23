@@ -8,7 +8,7 @@ import javafx.scene.control.Label;
 
 public class ObjectValueAttributeVisualisation extends ValueAttributeEditorVisualisation<Object> {
     @Override
-    public Node createContent(SimpleObjectProperty<Object> boundTo) {
+    public Node createVisualisation(SimpleObjectProperty<Object> boundTo, boolean readonly) {
         Label label = new Label();
         label.textProperty().bind(StringBinding.stringExpression(boundTo));
         return label;

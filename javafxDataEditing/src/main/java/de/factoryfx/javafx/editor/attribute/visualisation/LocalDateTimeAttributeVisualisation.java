@@ -20,7 +20,7 @@ import javafx.scene.layout.HBox;
 public class LocalDateTimeAttributeVisualisation extends ValueAttributeEditorVisualisation<LocalDateTime> {
 
     @Override
-    public Node createContent(SimpleObjectProperty<LocalDateTime> boundTo) {
+    public Node createVisualisation(SimpleObjectProperty<LocalDateTime> boundTo, boolean readonly) {
         HBox controls = new HBox(3);
         controls.setOpaqueInsets(new Insets(0,3,0,3));
         DatePicker datePicker = new DatePicker();
@@ -41,6 +41,9 @@ public class LocalDateTimeAttributeVisualisation extends ValueAttributeEditorVis
             updateDatePicker(datePicker, newValue);
             updateTimeField(timeField, newValue);
         });
+
+        datePicker.setEditable(!readonly);
+        timeField.setEditable(!readonly);
         return controls;
     }
 

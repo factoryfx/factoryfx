@@ -63,9 +63,9 @@ public class FactoryDiffWidget implements Widget {
     @Override
     public Node createContent() {
         BorderPane previousValueDisplay = new BorderPane();
-        previousValueDisplay.setOpacity(0.6);
+//        previousValueDisplay.setOpacity(0.6);
         BorderPane newValueDisplay = new BorderPane();
-        newValueDisplay.setOpacity(0.6);
+//        newValueDisplay.setOpacity(0.6);
         StyleClassedTextArea diffDisplay = new StyleClassedTextArea();
         diffDisplay.getStyleClass().add("diffTextField");
         diffDisplay.setEditable(false);
@@ -110,11 +110,11 @@ public class FactoryDiffWidget implements Widget {
         slider.setMax(1);
         slider.setMaxWidth(200);
         newNode.opacityProperty().bind(slider.valueProperty());
-        newNode.setDisable(true);
-        newNode.getStyleClass().add("dontChangeOpacityIfdisabled");
+//        newNode.setDisable(true);
+//        newNode.getStyleClass().add("dontChangeOpacityIfdisabled");
         previousNode.opacityProperty().bind(slider.valueProperty().add(-1).multiply(-1));
-        previousNode.setDisable(true);
-        previousNode.getStyleClass().add("dontChangeOpacityIfdisabled");
+//        previousNode.setDisable(true);
+//        previousNode.getStyleClass().add("dontChangeOpacityIfdisabled");
 
         HBox sliderPane = new HBox(3);
         sliderPane.setPadding(new Insets(3));
@@ -142,12 +142,14 @@ public class FactoryDiffWidget implements Widget {
             if (diffItem != null) {
                 Attribute<?,?> previousAttribute = diffItem.getAttribute(previousRoot);
                 final Optional<AttributeEditor<?,?>> previousAttributeEditor = attributeEditorBuilder.getAttributeEditor(previousAttribute, null, null, null);
+                previousAttributeEditor.get().setReadOnly();
                 previousAttributeEditor.get().expand();
                 previousValueDisplay.setCenter(previousAttributeEditor.get().createContent());
 
                 Attribute<?,?> newAttribute = diffItem.getAttribute(newRoot);
                 if (newAttribute!=null) {
                     final Optional<AttributeEditor<?,?>> newAttributeEditor = attributeEditorBuilder.getAttributeEditor(newAttribute, null, null, null);
+                    newAttributeEditor.get().setReadOnly();
                     newAttributeEditor.get().expand();
                     newValueDisplay.setCenter(newAttributeEditor.get().createContent());
                 } else {

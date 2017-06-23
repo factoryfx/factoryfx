@@ -40,7 +40,7 @@ public class PasswordAttributeVisualisation extends ValueAttributeEditorVisualis
     }
 
     @Override
-    public Node createContent(SimpleObjectProperty<EncryptedString> boundTo) {
+    public Node createVisualisation(SimpleObjectProperty<EncryptedString> boundTo, boolean readonly) {
         GridPane grid = new GridPane();
         grid.setAlignment(Pos.CENTER_LEFT);
         grid.setHgap(3);
@@ -80,6 +80,9 @@ public class PasswordAttributeVisualisation extends ValueAttributeEditorVisualis
         };
         validKey.addListener(booleanChangeListener);
         booleanChangeListener.changed(validKey,validKey.get(),validKey.get());
+
+        passwordKey.setEditable(!readonly);
+        passwordNew.setEditable(!readonly);
         return grid;
     }
 }

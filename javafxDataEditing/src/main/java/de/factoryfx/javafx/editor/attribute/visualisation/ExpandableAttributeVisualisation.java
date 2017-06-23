@@ -46,9 +46,14 @@ public class ExpandableAttributeVisualisation<T> implements AttributeEditorVisua
     }
 
 
-    public VBox createExpandableEditorWrapper() {
+    public VBox createExpandableEditorWrapper(boolean readonly) {
         VBox root = new VBox();
-        Node detailView = attributeEditorVisualisation.createContent();
+        Node detailView;
+        if (readonly){
+            detailView = attributeEditorVisualisation.createReadOnlyVisualisation();
+        } else {
+            detailView = attributeEditorVisualisation.createVisualisation();
+        }
 
         Pane detailViewWrapper=new Pane();
         detailViewWrapper.getChildren().add(detailView);
@@ -99,8 +104,13 @@ public class ExpandableAttributeVisualisation<T> implements AttributeEditorVisua
     }
 
     @Override
-    public Node createContent() {
-        return createExpandableEditorWrapper();
+    public Node createVisualisation() {
+        return createExpandableEditorWrapper(false);
+    }
+
+    @Override
+    public Node createReadOnlyVisualisation() {
+        return createExpandableEditorWrapper(true);
     }
 
     @Override

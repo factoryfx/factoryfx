@@ -20,7 +20,7 @@ public class AttributeEditorTest {
 //            stringChangeListener.changed(boundTo,boundTo.get(),boundTo.get());
 //            return null;
 //        });
-//        attributeEditor.createContent();
+//        attributeEditor.createVisualisation();
 //
 //        Assert.assertEquals(1,calls.size());
 //        Assert.assertEquals("Hallo",calls.get(0));
@@ -41,7 +41,7 @@ public class AttributeEditorTest {
 //            boundTo.set("Welt");
 //            return null;
 //        });
-//        attributeEditor.createContent();
+//        attributeEditor.createVisualisation();
 //
 //        Assert.assertEquals("Welt",stringAttribute.get());
 //    }

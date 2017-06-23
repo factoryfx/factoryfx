@@ -48,7 +48,7 @@ public class ViewListReferenceAttributeVisualisation implements AttributeEditorV
     Optional<Consumer<List<Data>>> updater= Optional.empty();
 
     @Override
-    public Node createContent() {
+    public Node createVisualisation() {
         TableView<Data> tableView = new TableView<>();
         tableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         TableColumn<Data, String> test = new TableColumn<>("Data");

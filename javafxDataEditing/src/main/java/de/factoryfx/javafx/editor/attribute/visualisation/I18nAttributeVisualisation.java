@@ -20,7 +20,7 @@ import java.util.Locale;
 public class I18nAttributeVisualisation extends ValueAttributeEditorVisualisation<LanguageText> {
 
     @Override
-    public Node createContent(SimpleObjectProperty<LanguageText> boundTo) {
+    public Node createVisualisation(SimpleObjectProperty<LanguageText> boundTo, boolean readonly) {
         HBox hBox = new HBox();
         TextField diplayTextfiled = new TextField();
         diplayTextfiled.setEditable(false);
@@ -61,6 +61,8 @@ public class I18nAttributeVisualisation extends ValueAttributeEditorVisualisatio
 
         hBox.getChildren().add(button);
         hBox.getChildren().add(diplayTextfiled);
+
+        hBox.setDisable(readonly);
         return hBox;
     }
 }

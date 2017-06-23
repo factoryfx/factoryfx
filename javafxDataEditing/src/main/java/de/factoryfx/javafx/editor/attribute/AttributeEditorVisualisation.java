@@ -3,15 +3,25 @@ package de.factoryfx.javafx.editor.attribute;
 import de.factoryfx.data.attribute.Attribute;
 import javafx.scene.Node;
 
+/** also see {@link ValueAttributeEditorVisualisation} **/
 public interface AttributeEditorVisualisation<T> {
-    //to support mutable types. Same reference doesn't mean the content didn't change e.g List
 
     void init(Attribute<T,?> boundAttribute);
 
     void attributeValueChanged(T newValue);
-    /*only called once**/
-    Node createContent();
 
+    /*the javafx visualisation**/
+    Node createVisualisation();
+
+    /**readonly visualisation*/
+    default Node createReadOnlyVisualisation(){
+        Node visualisation = createVisualisation();
+        visualisation.setDisable(true);
+        return visualisation;
+    }
+
+    /**set the initial state to expanded<br>
+     * some attributes have expanded and compact visualisation*/
     default void expand(){
         //nothing
     }

@@ -24,6 +24,8 @@ public class MergeDiffInfoTest {
         MergeDiffInfo copy = ObjectMapperBuilder.build().copy(mergeDiff);
         Assert.assertEquals("1111111",((ExampleFactoryA)copy.getPreviousRootData()).stringAttribute.get());
         Assert.assertEquals("2222222",((ExampleFactoryA)copy.getNewRootData()).stringAttribute.get());
+        Assert.assertNotNull(((ExampleFactoryA)copy.getNewRootData()).internal().getRoot());
+
 
     }
 

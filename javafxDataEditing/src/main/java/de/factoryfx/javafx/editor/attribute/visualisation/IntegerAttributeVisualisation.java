@@ -10,10 +10,11 @@ import javafx.util.converter.IntegerStringConverter;
 public class IntegerAttributeVisualisation extends ValueAttributeEditorVisualisation<Integer> {
 
     @Override
-    public Node createContent(SimpleObjectProperty<Integer> boundTo) {
+    public Node createVisualisation(SimpleObjectProperty<Integer> boundTo, boolean readonly) {
         TextField textField = new TextField();
         TypedTextFieldHelper.setupIntegerTextField(textField);
         textField.textProperty().bindBidirectional(boundTo, new IntegerStringConverter());
+        textField.setEditable(!readonly);
         return textField;
     }
 }

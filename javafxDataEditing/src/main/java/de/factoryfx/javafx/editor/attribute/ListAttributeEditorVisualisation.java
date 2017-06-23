@@ -18,7 +18,7 @@ public abstract class ListAttributeEditorVisualisation<T> implements AttributeEd
     }
 
     @Override
-    public Node createContent() {
+    public Node createVisualisation() {
         return createContent(attributeValue);
     }
 

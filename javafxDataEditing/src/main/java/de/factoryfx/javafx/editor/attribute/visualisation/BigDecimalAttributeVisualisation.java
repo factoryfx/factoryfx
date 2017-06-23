@@ -20,7 +20,7 @@ public class BigDecimalAttributeVisualisation extends ValueAttributeEditorVisual
     }
 
     @Override
-    public Node createContent(SimpleObjectProperty<BigDecimal> boundTo) {
+    public Node createVisualisation(SimpleObjectProperty<BigDecimal> boundTo, boolean readonly) {
         TextField textField = new TextField();
         TypedTextFieldHelper.setupBigDecimalTextField(textField,decimalFormatPattern);
 
@@ -29,6 +29,7 @@ public class BigDecimalAttributeVisualisation extends ValueAttributeEditorVisual
         DecimalFormat decimalFormat = new DecimalFormat(decimalFormatPattern);
         decimalFormat.setParseBigDecimal(true);
         textField.textProperty().bindBidirectional(boundTo, new BigDecimalStringConverter(decimalFormat));
+        textField.setEditable(!readonly);
         return textField;
     }
 

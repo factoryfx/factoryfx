@@ -8,9 +8,10 @@ import javafx.scene.control.TextField;
 public class StringAttributeVisualisation extends ValueAttributeEditorVisualisation<String> {
 
     @Override
-    public Node createContent(SimpleObjectProperty<String> boundTo) {
+    public Node createVisualisation(SimpleObjectProperty<String> boundTo, boolean readonly) {
         TextField textField = new TextField();
         textField.textProperty().bindBidirectional(boundTo);
+        textField.setEditable(!readonly);
         return textField;
     }
 }
