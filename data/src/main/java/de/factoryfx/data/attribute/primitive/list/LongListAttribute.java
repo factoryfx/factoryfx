@@ -10,9 +10,4 @@ public class LongListAttribute extends ValueListAttribute<Long,LongListAttribute
         super(Long.class);
     }
 
-
-    @Override
-    protected LongListAttribute createNewEmptyInstance() {
-        return new LongListAttribute();
-    }
 }

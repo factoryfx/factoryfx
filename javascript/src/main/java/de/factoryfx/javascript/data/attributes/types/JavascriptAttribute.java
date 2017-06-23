@@ -45,11 +45,6 @@ public class JavascriptAttribute<A> extends ImmutableValueAttribute<Javascript<A
 
 
     @Override
-    protected JavascriptAttribute<A> createNewEmptyInstance() {
-        return new JavascriptAttribute<>(data,apiClass);
-    }
-
-    @Override
     public boolean internal_match(Javascript<A> value) {
         if (this.value == null && value == null)
             return true;

@@ -10,9 +10,4 @@ public class FloatListAttribute extends ValueListAttribute<Float,FloatListAttrib
         super(Float.class);
     }
 
-
-    @Override
-    protected FloatListAttribute createNewEmptyInstance() {
-        return new FloatListAttribute();
-    }
 }

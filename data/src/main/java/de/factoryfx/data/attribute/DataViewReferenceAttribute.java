@@ -22,10 +22,5 @@ public class DataViewReferenceAttribute<R extends Data, T extends Data> extends 
         super(null);
     }
 
-    @Override
-    public Attribute<T, DataViewReferenceAttribute<R, T>> internal_copy() {
-        return new DataViewReferenceAttribute<>(view);
-    }
-
 
 }

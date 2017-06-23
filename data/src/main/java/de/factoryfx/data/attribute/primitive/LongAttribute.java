@@ -22,8 +22,4 @@ public class LongAttribute extends ImmutableValueAttribute<Long,LongAttribute> {
         super(Long.class);
     }
 
-    @Override
-    protected LongAttribute createNewEmptyInstance() {
-        return new LongAttribute();
-    }
 }

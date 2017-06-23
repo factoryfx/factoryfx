@@ -12,12 +12,7 @@ import java.util.Base64;
 import java.util.function.Function;
 
 public class PasswordAttribute extends ImmutableValueAttribute<EncryptedString, PasswordAttribute> {
-    @Override
-    protected PasswordAttribute createNewEmptyInstance() {
-        return new PasswordAttribute();
-    }
-
-
+    
     public PasswordAttribute() {
         super(EncryptedString.class);
     }

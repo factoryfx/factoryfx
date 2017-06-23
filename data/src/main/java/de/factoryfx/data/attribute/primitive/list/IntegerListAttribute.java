@@ -11,8 +11,4 @@ public class IntegerListAttribute extends ValueListAttribute<Integer,IntegerList
     }
 
 
-    @Override
-    protected IntegerListAttribute createNewEmptyInstance() {
-        return new IntegerListAttribute();
-    }
 }

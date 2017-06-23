@@ -10,9 +10,4 @@ public class ByteListAttribute extends ValueListAttribute<Byte,ByteListAttribute
         super(Byte.class);
     }
 
-
-    @Override
-    protected ByteListAttribute createNewEmptyInstance() {
-        return new ByteListAttribute();
-    }
 }

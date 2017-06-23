@@ -27,11 +27,6 @@ public class ByteArrayAttribute extends ImmutableValueAttribute<byte[],ByteArray
     }
 
     @Override
-    protected ByteArrayAttribute createNewEmptyInstance() {
-        return new ByteArrayAttribute();
-    }
-
-    @Override
     public boolean internal_match(byte[] value) {
         return Arrays.equals(get(), value);
     }

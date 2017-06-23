@@ -20,10 +20,6 @@ public class BooleanAttribute extends ImmutableValueAttribute<Boolean,BooleanAtt
         set(value);
     }
 
-    @Override
-    protected BooleanAttribute createNewEmptyInstance() {
-        return new BooleanAttribute();
-    }
 
     @Override
     public Boolean get() {

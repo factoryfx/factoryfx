@@ -16,8 +16,4 @@ public class CharAttribute extends ImmutableValueAttribute<Character,CharAttribu
         super(Character.class);
     }
 
-    @Override
-    protected CharAttribute createNewEmptyInstance() {
-        return new CharAttribute();
-    }
 }

@@ -21,8 +21,4 @@ public class DoubleAttribute extends ImmutableValueAttribute<Double,DoubleAttrib
         super(Double.class);
     }
 
-    @Override
-    protected DoubleAttribute createNewEmptyInstance() {
-        return new DoubleAttribute();
-    }
 }

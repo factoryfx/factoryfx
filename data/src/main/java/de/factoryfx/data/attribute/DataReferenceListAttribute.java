@@ -17,13 +17,6 @@ public class DataReferenceListAttribute<T extends Data> extends ReferenceListAtt
         setup(clazz);
     }
 
-    @Override
-    public DataReferenceListAttribute<T> internal_copy() {
-        final DataReferenceListAttribute<T> result = new DataReferenceListAttribute<>();
-        result.set(get());
-        return result;
-    }
-
 
     public DataReferenceListAttribute<T> setup(Class<T> clazz){
         this.possibleValueProvider(data -> {

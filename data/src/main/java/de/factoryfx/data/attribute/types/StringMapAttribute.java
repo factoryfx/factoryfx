@@ -9,8 +9,4 @@ public class StringMapAttribute extends ValueMapAttribute<String,String,StringMa
         super(String.class, String.class);
     }
 
-    @Override
-    protected StringMapAttribute createNewEmptyInstance() {
-        return new StringMapAttribute();
-    }
 }

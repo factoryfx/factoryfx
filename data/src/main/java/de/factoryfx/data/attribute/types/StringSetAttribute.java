@@ -12,9 +12,4 @@ public class StringSetAttribute extends ValueSetAttribute<String,StringSetAttrib
         super(String.class);
     }
 
-
-    @Override
-    protected StringSetAttribute createNewEmptyInstance() {
-        return new StringSetAttribute();
-    }
 }

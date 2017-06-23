@@ -60,8 +60,5 @@ public class I18nAttribute extends ImmutableValueAttribute<LanguageText,I18nAttr
         return get().internal_getPreferred(locale);
     }
 
-    @Override
-    protected I18nAttribute createNewEmptyInstance() {
-        return new I18nAttribute();
-    }
+
 }

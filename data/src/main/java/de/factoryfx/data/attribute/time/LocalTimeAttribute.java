@@ -18,8 +18,4 @@ public class LocalTimeAttribute extends ImmutableValueAttribute<LocalTime,LocalT
         set(initialValue);
     }
 
-    @Override
-    protected LocalTimeAttribute createNewEmptyInstance() {
-        return new LocalTimeAttribute();
-    }
 }

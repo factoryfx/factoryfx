@@ -16,8 +16,4 @@ public class ByteAttribute extends ImmutableValueAttribute<Byte,ByteAttribute> {
         super(Byte.class);
     }
 
-    @Override
-    protected ByteAttribute createNewEmptyInstance() {
-        return new ByteAttribute();
-    }
 }

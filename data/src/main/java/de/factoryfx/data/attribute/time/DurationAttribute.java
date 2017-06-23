@@ -19,8 +19,4 @@ public class DurationAttribute extends ImmutableValueAttribute<Duration,Duration
         set(initialValue);
     }
 
-    @Override
-    protected DurationAttribute createNewEmptyInstance() {
-        return new DurationAttribute();
-    }
 }

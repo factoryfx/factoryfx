@@ -16,8 +16,4 @@ public class IntegerAttribute extends ImmutableValueAttribute<Integer,IntegerAtt
         super(Integer.class);
     }
 
-    @Override
-    protected IntegerAttribute createNewEmptyInstance() {
-        return new IntegerAttribute();
-    }
 }

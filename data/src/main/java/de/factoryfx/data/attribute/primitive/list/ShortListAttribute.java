@@ -10,9 +10,4 @@ public class ShortListAttribute extends ValueListAttribute<Short,ShortListAttrib
         super(Short.class);
     }
 
-
-    @Override
-    protected ShortListAttribute createNewEmptyInstance() {
-        return new ShortListAttribute();
-    }
 }

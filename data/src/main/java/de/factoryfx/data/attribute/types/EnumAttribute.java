@@ -32,18 +32,6 @@ public class EnumAttribute<T extends Enum<T>> extends ImmutableValueAttribute<T,
         return new AttributeTypeInfo(clazz,null,null,AttributeTypeInfo.AttributeTypeCategory.VALUE);
     }
 
-    @Override
-    public EnumAttribute<T> internal_copy() {
-        final EnumAttribute<T> result = new EnumAttribute<>(clazz);
-        result.set(get());
-        return result;
-    }
-
-    @Override
-    protected EnumAttribute<T> createNewEmptyInstance() {
-        return new EnumAttribute<>(clazz);
-    }
-
     public Class<T> internal_getEnumClass() {
         return clazz;
     }

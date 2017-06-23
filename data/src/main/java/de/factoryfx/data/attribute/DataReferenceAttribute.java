@@ -46,19 +46,6 @@ public class DataReferenceAttribute<T extends Data> extends ReferenceAttribute<T
         super();
     }
 
-//    /**
-//     * @see ReferenceBaseAttribute#ReferenceBaseAttribute(AttributeMetadata,Class)
-//     * */
-//    @SuppressWarnings("unchecked")
-//    public DataReferenceAttribute(AttributeMetadata attributeMetadata, Class clazz) {
-//        super(attributeMetadata,clazz);
-//    }
 
-    @Override
-    public DataReferenceAttribute<T> internal_copy() {
-        final DataReferenceAttribute<T> result = new DataReferenceAttribute<>();
-        result.set(get());
-        return result;
-    }
 
 }

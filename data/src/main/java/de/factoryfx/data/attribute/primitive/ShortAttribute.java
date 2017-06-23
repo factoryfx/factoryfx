@@ -16,8 +16,4 @@ public class ShortAttribute extends ImmutableValueAttribute<Short,ShortAttribute
         super(Short.class);
     }
 
-    @Override
-    protected ShortAttribute createNewEmptyInstance() {
-        return new ShortAttribute();
-    }
 }

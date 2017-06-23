@@ -28,8 +28,4 @@ public class BigDecimalAttribute extends ImmutableValueAttribute<BigDecimal,BigD
         this.decimalFormatPattern=decimalFormatPattern;
     }
 
-    @Override
-    protected BigDecimalAttribute createNewEmptyInstance() {
-        return new BigDecimalAttribute();
-    }
 }

@@ -10,9 +10,4 @@ public class DoubleListAttribute extends ValueListAttribute<Double,DoubleListAtt
         super(Double.class);
     }
 
-
-    @Override
-    protected DoubleListAttribute createNewEmptyInstance() {
-        return new DoubleListAttribute();
-    }
 }

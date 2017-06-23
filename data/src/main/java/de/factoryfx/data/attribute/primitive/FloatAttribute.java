@@ -21,8 +21,4 @@ public class FloatAttribute extends ImmutableValueAttribute<Float,FloatAttribute
         super(Float.class);
     }
 
-    @Override
-    protected FloatAttribute createNewEmptyInstance() {
-        return new FloatAttribute();
-    }
 }

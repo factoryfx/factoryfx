@@ -20,10 +20,6 @@ public class FactoryViewListReferenceAttribute<R extends FactoryBase<?,?>,L, T e
         super(null);
     }
 
-    @Override
-    public Attribute<List<T>, FactoryViewListReferenceAttribute<R, L, T>> internal_copy() {
-        return new FactoryViewListReferenceAttribute<>(view);
-    }
 
     public List<L> instances(){
         if (get()==null){

@@ -49,9 +49,5 @@ public class StringAttribute extends ImmutableValueAttribute<String,StringAttrib
         return defaultExpanded;
     }
 
-    @Override
-    protected StringAttribute createNewEmptyInstance() {
 
-        return new StringAttribute();
-    }
 }

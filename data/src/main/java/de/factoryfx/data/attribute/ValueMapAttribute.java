@@ -25,13 +25,6 @@ public abstract class ValueMapAttribute<K, V, A extends ValueMapAttribute<K,V,A>
         });
     }
 
-    @Override
-    @SuppressWarnings("unchecked")//TODO make method abstarct
-    public A internal_copy() {
-        final A result = createNewEmptyInstance();
-        result.putAll(result.get());
-        return result;
-    }
 
     @JsonCreator
     protected ValueMapAttribute() {

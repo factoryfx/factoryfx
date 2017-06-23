@@ -18,8 +18,4 @@ public class LocaleAttribute  extends ImmutableValueAttribute<Locale,LocaleAttri
         set(initialValue);
     }
 
-    @Override
-    protected LocaleAttribute createNewEmptyInstance() {
-        return new LocaleAttribute();
-    }
 }

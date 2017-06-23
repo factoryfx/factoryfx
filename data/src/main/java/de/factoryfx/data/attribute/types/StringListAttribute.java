@@ -19,9 +19,4 @@ public class StringListAttribute extends ValueListAttribute<String,StringListAtt
         return Collections.unmodifiableList(get().stream().collect(Collectors.toList()));
     }
 
-
-    @Override
-    protected StringListAttribute createNewEmptyInstance() {
-        return new StringListAttribute();
-    }
 }

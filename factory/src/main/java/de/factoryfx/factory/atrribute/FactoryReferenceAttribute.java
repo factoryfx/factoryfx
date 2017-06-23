@@ -38,12 +38,6 @@ public class FactoryReferenceAttribute<L, T extends FactoryBase<? extends L,?>> 
         return get().internalFactory().instance();
     }
 
-    @Override
-    public FactoryReferenceAttribute<L,T> internal_copy() {
-        return new FactoryReferenceAttribute<>();
-    }
-
-
     @SuppressWarnings("unchecked")
     public FactoryReferenceAttribute<L,T> setupUnsafe(Class clazz){
         return setup((Class<T>)clazz);

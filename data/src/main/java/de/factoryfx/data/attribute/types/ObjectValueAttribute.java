@@ -25,10 +25,6 @@ public class ObjectValueAttribute<T> extends ImmutableValueAttribute<T,ObjectVal
         super(null);
     }
 
-    @Override
-    protected ObjectValueAttribute<T> createNewEmptyInstance() {
-        return new ObjectValueAttribute<>();
-    }
 
     @Override
     public boolean ignoreForMerging() {

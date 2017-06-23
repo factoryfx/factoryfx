@@ -10,9 +10,4 @@ public class CharListAttribute extends ValueListAttribute<Character,CharListAttr
         super(Character.class);
     }
 
-
-    @Override
-    protected CharListAttribute createNewEmptyInstance() {
-        return new CharListAttribute();
-    }
 }

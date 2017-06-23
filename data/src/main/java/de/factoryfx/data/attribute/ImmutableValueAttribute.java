@@ -28,21 +28,6 @@ public abstract class ImmutableValueAttribute<T,A extends Attribute<T,A>> extend
     }
 
     @Override
-    @SuppressWarnings("unchecked")
-    public A internal_copy() {
-        try {
-            A result = createNewEmptyInstance();
-            result.takeContentFromAttribute((A)this);
-            return result;
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    /** new instance with same metadata but empty/no value*/
-    protected abstract A createNewEmptyInstance();
-
-    @Override
     public boolean internal_match(T value) {
         return Objects.equals(this.value, value);
     }

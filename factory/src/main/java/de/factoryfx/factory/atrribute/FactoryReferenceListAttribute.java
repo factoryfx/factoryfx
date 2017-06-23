@@ -40,11 +40,6 @@ public class FactoryReferenceListAttribute<L,T extends FactoryBase<? extends L,?
     }
 
 
-    @Override
-    public FactoryReferenceListAttribute<L,T> internal_copy() {
-        return new FactoryReferenceListAttribute<>();
-    }
-
     @SuppressWarnings("unchecked")
     public FactoryReferenceListAttribute<L,T> setupUnsafe(Class clazz){
         return setup((Class<T>)clazz);

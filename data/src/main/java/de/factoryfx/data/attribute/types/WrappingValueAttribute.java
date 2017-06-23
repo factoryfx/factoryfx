@@ -20,11 +20,6 @@ public class WrappingValueAttribute<V> extends ImmutableValueAttribute<V,Wrappin
     }
 
     @Override
-    protected WrappingValueAttribute<V> createNewEmptyInstance() {
-        return new WrappingValueAttribute<>(dataType,getFunction,setFunction);
-    }
-
-    @Override
     public V get() {
         return getFunction.get();
     }

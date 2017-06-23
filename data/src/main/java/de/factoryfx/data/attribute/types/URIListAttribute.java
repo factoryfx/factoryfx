@@ -13,8 +13,4 @@ public class URIListAttribute extends ValueListAttribute<URI,URIListAttribute> {
         super(URI.class);
     }
 
-    @Override
-    protected URIListAttribute createNewEmptyInstance() {
-        return new URIListAttribute();
-    }
 }

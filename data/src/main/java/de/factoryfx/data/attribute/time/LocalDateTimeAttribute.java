@@ -17,8 +17,4 @@ public class LocalDateTimeAttribute extends ImmutableValueAttribute<LocalDateTim
         set(initialValue);
     }
 
-    @Override
-    protected LocalDateTimeAttribute createNewEmptyInstance() {
-        return new LocalDateTimeAttribute();
-    }
 }

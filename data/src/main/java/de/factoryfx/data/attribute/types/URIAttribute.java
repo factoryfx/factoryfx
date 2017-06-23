@@ -18,8 +18,4 @@ public class URIAttribute extends ImmutableValueAttribute<URI,URIAttribute> {
         set(initialValue);
     }
 
-    @Override
-    protected URIAttribute createNewEmptyInstance() {
-        return new URIAttribute();
-    }
 }

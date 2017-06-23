@@ -63,11 +63,6 @@ public class EncryptedStringAttribute extends ImmutableValueAttribute<EncryptedS
         return get().decrypt(key);
     }
 
-    @Override
-    protected EncryptedStringAttribute createNewEmptyInstance() {
-        return new EncryptedStringAttribute();
-    }
-
     public boolean isValidKey(String key) {
         try {
             byte[] decodedKey = Base64.getDecoder().decode(key);

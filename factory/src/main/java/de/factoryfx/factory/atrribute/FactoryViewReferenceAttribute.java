@@ -18,11 +18,6 @@ public class FactoryViewReferenceAttribute<R extends FactoryBase<?,?>,L, T exten
         super(null);
     }
 
-    @Override
-    public Attribute<T, FactoryViewReferenceAttribute<R, L, T>> internal_copy() {
-        return new FactoryViewReferenceAttribute<>();
-    }
-
 
     public L instance() {
         if (get() == null) {

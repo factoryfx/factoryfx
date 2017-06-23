@@ -21,8 +21,6 @@ public abstract class Attribute<T,A extends Attribute<T,A>>{
 
     public abstract void internal_collectChildren(Set<Data> allModelEntities);
 
-    public abstract Attribute<T,A> internal_copy();
-
     public abstract boolean internal_match(T value);
 
     public boolean ignoreForMerging() {
@@ -287,16 +285,6 @@ public abstract class Attribute<T,A extends Attribute<T,A>>{
     public A pt(String text) {
         pt=text;
         return (A)this;
-    }
-
-    public void takeContentFromAttribute(A attribute){
-        this.en=attribute.en;
-        this.de=attribute.de;
-        this.es=attribute.es;
-        this.fr=attribute.fr;
-        this.it=attribute.it;
-        this.pt=attribute.pt;
-        set(get());
     }
 
 

@@ -17,8 +17,4 @@ public class ColorAttribute extends ImmutableValueAttribute<Color,ColorAttribute
         set(initialValue);
     }
 
-    @Override
-    protected ColorAttribute createNewEmptyInstance() {
-        return new ColorAttribute();
-    }
 }
