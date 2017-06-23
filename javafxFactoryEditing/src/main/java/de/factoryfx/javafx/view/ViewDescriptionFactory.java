@@ -15,6 +15,6 @@ public class ViewDescriptionFactory<V> extends SimpleFactoryBase<ViewDescription
 
     @Override
     public ViewDescription createImpl() {
-        return new ViewDescription(uniformDesign.instance().getText(text),icon.get());
+        return new ViewDescription(uniformDesign.instance().getText(text),icon.getEnum());
     }
 }

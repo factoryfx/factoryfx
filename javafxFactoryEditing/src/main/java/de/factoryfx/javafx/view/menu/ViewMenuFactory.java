@@ -28,7 +28,7 @@ public class ViewMenuFactory<V> extends SimpleFactoryBase<Menu,V> {
         Menu menu = new Menu();
         menu.setMnemonicParsing(true);
         menu.setText(uniformDesign.instance().getText(text));
-        uniformDesign.instance().addIcon(menu,icon.get());
+        uniformDesign.instance().addIcon(menu,icon.getEnum());
 
         menu.getItems().addAll(items.instances());
         return menu;

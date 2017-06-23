@@ -30,7 +30,7 @@ public abstract class ValueSetAttribute<T,A extends Attribute<Set<T>,A>> extends
 
     @Override
     public String getDisplayText() {
-        return new CollectionAttributeUtil<>(get(), item -> item.toString()).getDisplayText();
+        return new CollectionAttributeUtil<>(get(), Object::toString).getDisplayText();
     }
 
     @Override

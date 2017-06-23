@@ -5,9 +5,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import de.factoryfx.data.Data;
 import de.factoryfx.data.attribute.Attribute;
-import de.factoryfx.data.attribute.AttributeVisitor;
-import de.factoryfx.data.attribute.ReferenceAttribute;
-import de.factoryfx.data.attribute.ReferenceListAttribute;
 
 //just the infotext used in gui
 public class AttributeDiffInfo {

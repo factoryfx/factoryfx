@@ -18,7 +18,7 @@ public class DistributionClientDownloadServerFactory<V> extends FactoryBase<Dist
 
         configLiveCycle().setCreator(() -> new DistributionClientDownloadServer(host.get(),port.get(),distributionClientBasePath.get(),directoriesListed.get()));
 
-        configLiveCycle().setStarter(newLiveObject -> newLiveObject.start());
-        configLiveCycle().setDestroyer(previousLiveObject -> previousLiveObject.stop());
+        configLiveCycle().setStarter(DistributionClientDownloadServer::start);
+        configLiveCycle().setDestroyer(DistributionClientDownloadServer::stop);
     }
 }

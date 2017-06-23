@@ -115,6 +115,7 @@ public class FactoryDiffWidget implements Widget {
 
         VBox vBox=new VBox();
         vBox.getChildren().add(sliderPane);
+        VBox.setVgrow(diffValuesPane,Priority.ALWAYS);
         vBox.getChildren().add(diffValuesPane);
         verticalSplitPane.getItems().add(vBox);
 

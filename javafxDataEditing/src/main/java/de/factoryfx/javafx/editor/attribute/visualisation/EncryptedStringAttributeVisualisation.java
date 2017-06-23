@@ -58,9 +58,9 @@ public class EncryptedStringAttributeVisualisation extends ValueAttributeEditorV
         ChangeListener<EncryptedString> encryptedStringChangeListener = (observable, oldValue, newValue) -> {
             if (newValue!=null){
                 encryptedTextField.setText(newValue.getEncryptedString());
-            }
-            if (!keyField.getText().isEmpty()) {
-                decryptedTextField.setText(newValue.decrypt(keyField.getText()));
+                if (!keyField.getText().isEmpty()) {
+                    decryptedTextField.setText(newValue.decrypt(keyField.getText()));
+                }
             }
         };
         boundTo.addListener(encryptedStringChangeListener);
