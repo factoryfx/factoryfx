@@ -40,7 +40,7 @@ public class EnumAttribute<T extends Enum<T>> extends ImmutableValueAttribute<En
     }
 
     @SuppressWarnings("unchecked")
-    public void setEnum( T enumn) {
+    public void setEnum(T enumn) {
         set(new EnumWrapper<T>(enumn, (Class<T>) enumn.getClass()));
     }
 
