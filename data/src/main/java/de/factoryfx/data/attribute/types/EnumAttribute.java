@@ -10,8 +10,6 @@ import java.util.List;
 
 public class EnumAttribute<T extends Enum<T>> extends ImmutableValueAttribute<EnumAttribute.EnumWrapper<T>,EnumAttribute<T>> {
 
-    private T anEnum;
-
     @JsonCreator
     EnumAttribute(EnumWrapper<T> value) {
         super(null);
@@ -63,6 +61,12 @@ public class EnumAttribute<T extends Enum<T>> extends ImmutableValueAttribute<En
         public EnumWrapper(T enumField, Class<T> enumClass) {
             this.enumField = enumField;
             this.enumClass=enumClass;
+        }
+
+        //TODO remove only for quickfix compatibility
+        public EnumWrapper(String garbage) {
+            enumField=null;
+            enumClass=null;
         }
 
         @JsonCreator
