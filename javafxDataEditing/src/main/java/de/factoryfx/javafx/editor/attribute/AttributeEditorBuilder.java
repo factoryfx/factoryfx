@@ -80,8 +80,6 @@ public class AttributeEditorBuilder {
         result.add(new SimpleSingleAttributeEditorBuilder<>(uniformDesign,DoubleAttribute.class,Double.class,(attribute)-> new DoubleAttributeVisualisation(),()->new DoubleAttribute()));
         result.add(new SimpleSingleAttributeEditorBuilder<>(uniformDesign,EncryptedStringAttribute.class,EncryptedString.class,(attribute)-> new EncryptedStringAttributeVisualisation(attribute::createKey, attribute::isValidKey,uniformDesign),()->new EncryptedStringAttribute()));
 
-
-        result.add(new NoListSingleAttributeEditorBuilder<Object,ObjectValueAttribute<?>>(uniformDesign,(attribute)->attribute instanceof ObjectValueAttribute,(attribute)->new ObjectValueAttributeVisualisation()));
         result.add(new NoListSingleAttributeEditorBuilder<Enum,EnumAttribute<?>>(uniformDesign,(attribute)->attribute instanceof EnumAttribute,(attribute)->new EnumAttributeVisualisation(attribute.internal_possibleEnumValues())));
 
         result.add(new SimpleSingleAttributeEditorBuilder<>(uniformDesign,I18nAttribute.class,LanguageText.class,(attribute)-> new I18nAttributeVisualisation(),()->new I18nAttribute()));
@@ -145,19 +143,19 @@ public class AttributeEditorBuilder {
             }
         });
 
-
+        result.add(new NoListSingleAttributeEditorBuilder<>(uniformDesign,(attribute)->true,(attribute)->new DefaultValueAttributeVisualisation()));
         return result;
     }
 
-    public Optional<AttributeEditor<?,?>> getAttributeEditor(Attribute<?,?> attribute, DataEditor dataEditor, Supplier<List<ValidationError>> validation, Data oldValue){
+    public AttributeEditor<?,?> getAttributeEditor(Attribute<?,?> attribute, DataEditor dataEditor, Supplier<List<ValidationError>> validation, Data oldValue){
 
         if (attribute instanceof ValueListAttribute<?,?>){
-            Optional<SingleAttributeEditorBuilder<?>> builder = singleAttributeEditorBuilders.stream().filter(a -> a.isListItemEditorFor(attribute)).findAny();
-            return builder.map(singleAttributeEditorBuilder -> singleAttributeEditorBuilder.createValueListEditor(attribute));
+            SingleAttributeEditorBuilder<?> builder = singleAttributeEditorBuilders.stream().filter(a -> a.isListItemEditorFor(attribute)).findAny().orElse(null);
+            return builder.createValueListEditor(attribute);
         }
 
-        Optional<SingleAttributeEditorBuilder<?>> builder = singleAttributeEditorBuilders.stream().filter(a -> a.isEditorFor(attribute)).findAny();
-        return builder.map(singleAttributeEditorBuilder -> singleAttributeEditorBuilder.createEditor(attribute, dataEditor, oldValue));
+        SingleAttributeEditorBuilder<?> builder = singleAttributeEditorBuilders.stream().filter(a -> a.isEditorFor(attribute)).findAny().orElse(null);
+        return builder.createEditor(attribute, dataEditor, oldValue);
     }
 
 }

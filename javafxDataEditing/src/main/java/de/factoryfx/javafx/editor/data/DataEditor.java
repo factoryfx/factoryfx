@@ -255,20 +255,17 @@ public class DataEditor implements Widget {
     private Node createAttributeGroupVisual(List<Attribute<?,?>> attributeGroup, Supplier<List<ValidationError>> validation, Data oldValue) {
         if (attributeGroup.size()==1){
             final Attribute<?,?> attribute = attributeGroup.get(0);
-            Optional<AttributeEditor<?,?>> attributeEditor = attributeEditorBuilder.getAttributeEditor(attribute, this, validation, oldValue);
-            if (attributeEditor.isPresent()){
-                attributeEditor.get().setReadOnly();
-                attributeEditor.get().expand();
-                createdEditors.put(attribute,attributeEditor.get());
-                final Node content = attributeEditor.get().createContent();
-                final VBox vBox = new VBox(3);
-                vBox.setPadding(new Insets(3));
-                VBox.setVgrow(content,Priority.ALWAYS);
-                vBox.getChildren().addAll(new Label(uniformDesign.getLabelText(attribute)),content);
-                return vBox;
-            } else {
-                return new Label("unsupported attribute:"+attribute.internal_getAttributeType().dataType);
-            }
+            AttributeEditor<?,?> attributeEditor = attributeEditorBuilder.getAttributeEditor(attribute, this, validation, oldValue);
+//                attributeEditor.get().setReadOnly();
+            attributeEditor.expand();
+            createdEditors.put(attribute,attributeEditor);
+            final Node content = attributeEditor.createContent();
+            final VBox vBox = new VBox(3);
+            vBox.setPadding(new Insets(3));
+            VBox.setVgrow(content,Priority.ALWAYS);
+            vBox.getChildren().addAll(new Label(uniformDesign.getLabelText(attribute)),content);
+            return vBox;
+
         } else {
             GridPane grid = new GridPane();
 //        grid.setHgap(3);
@@ -288,15 +285,11 @@ public class DataEditor implements Widget {
             for (Attribute<?,?> attribute: attributeGroup){
                 Label label = addLabelContent(grid, row,uniformDesign.getLabelText(attribute));
 
-                Optional<AttributeEditor<?,?>> attributeEditor = attributeEditorBuilder.getAttributeEditor(attribute,this,validation,oldValue);
+                AttributeEditor<?,?> attributeEditor = attributeEditorBuilder.getAttributeEditor(attribute,this,validation,oldValue);
                 int rowFinal=row;
-                if (attributeEditor.isPresent()){
-                    attributeEditor.get().setReadOnly();
-                    createdEditors.put(attribute,attributeEditor.get());
-                    addEditorContent(grid, rowFinal, attributeEditor.get().createContent(),label);
-                } else {
-                    addEditorContent(grid, rowFinal, new Label("unsupported attribute:"+attribute.internal_getAttributeType().dataType+", "+attribute.internal_getAttributeType().listItemType),label);
-                }
+//                    attributeEditor.get().setReadOnly();
+                createdEditors.put(attribute,attributeEditor);
+                addEditorContent(grid, rowFinal, attributeEditor.createContent(),label);
 
                 RowConstraints rowConstraints = new RowConstraints();
                 rowConstraints.setVgrow(Priority.ALWAYS);

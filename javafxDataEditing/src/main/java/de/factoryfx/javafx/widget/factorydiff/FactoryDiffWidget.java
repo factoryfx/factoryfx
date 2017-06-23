@@ -135,23 +135,29 @@ public class FactoryDiffWidget implements Widget {
         vBox.getChildren().add(diffValuesPane);
         verticalSplitPane.getItems().add(vBox);
 
+        List<AttributeEditor<?,?>> createdEditor=new ArrayList<>();
         diffTableView.getSelectionModel().selectedItemProperty().addListener(observable -> {
             Data previousRoot = diffTableView.getSelectionModel().getSelectedItem().previousRoot;
             Data newRoot = diffTableView.getSelectionModel().getSelectedItem().newRoot;
             AttributeDiffInfo diffItem = diffTableView.getSelectionModel().getSelectedItem().attributeDiffInfo;
             if (diffItem != null) {
+                createdEditor.forEach(AttributeEditor::unbind);
+                createdEditor.clear();
+
                 Attribute<?,?> previousAttribute = diffItem.getAttribute(previousRoot);
-                final Optional<AttributeEditor<?,?>> previousAttributeEditor = attributeEditorBuilder.getAttributeEditor(previousAttribute, null, null, null);
-                previousAttributeEditor.get().setReadOnly();
-                previousAttributeEditor.get().expand();
-                previousValueDisplay.setCenter(previousAttributeEditor.get().createContent());
+                final AttributeEditor<?,?> previousAttributeEditor = attributeEditorBuilder.getAttributeEditor(previousAttribute, null, null, null);
+                createdEditor.add(previousAttributeEditor);
+                previousAttributeEditor.setReadOnly();
+                previousAttributeEditor.expand();
+                previousValueDisplay.setCenter(previousAttributeEditor.createContent());
 
                 Attribute<?,?> newAttribute = diffItem.getAttribute(newRoot);
                 if (newAttribute!=null) {
-                    final Optional<AttributeEditor<?,?>> newAttributeEditor = attributeEditorBuilder.getAttributeEditor(newAttribute, null, null, null);
-                    newAttributeEditor.get().setReadOnly();
-                    newAttributeEditor.get().expand();
-                    newValueDisplay.setCenter(newAttributeEditor.get().createContent());
+                    final AttributeEditor<?,?> newAttributeEditor = attributeEditorBuilder.getAttributeEditor(newAttribute, null, null, null);
+                    createdEditor.add(newAttributeEditor);
+                    newAttributeEditor.setReadOnly();
+                    newAttributeEditor.expand();
+                    newValueDisplay.setCenter(newAttributeEditor.createContent());
                 } else {
                     newValueDisplay.setCenter(null);
                 }
