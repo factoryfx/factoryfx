@@ -73,7 +73,7 @@ public class EnumAttribute<T extends Enum<T>> extends ImmutableValueAttribute<En
         @JsonCreator
         protected EnumWrapper(@JsonProperty("enumField")String enumField, @JsonProperty("enumClass")Class<T> enumClass) {
             this.enumClass= enumClass;
-            this.enumField = Arrays.stream(this.enumClass.getEnumConstants()).filter(t -> t.name().equals(enumField)).findAny().orElseGet(null);
+            this.enumField = enumClass==null?null:Arrays.stream(this.enumClass.getEnumConstants()).filter(t -> t.name().equals(enumField)).findAny().orElseGet(null);
         }
 
         @Override
