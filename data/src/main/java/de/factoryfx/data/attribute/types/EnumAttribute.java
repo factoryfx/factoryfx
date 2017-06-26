@@ -7,6 +7,7 @@ import de.factoryfx.data.attribute.ImmutableValueAttribute;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 public class EnumAttribute<T extends Enum<T>> extends ImmutableValueAttribute<EnumAttribute.EnumWrapper<T>,EnumAttribute<T>> {
 
@@ -34,7 +35,7 @@ public class EnumAttribute<T extends Enum<T>> extends ImmutableValueAttribute<En
     }
 
     public T getEnum() {
-        return get().enumField;
+        return Optional.ofNullable(get()).map(e->e.enumField).orElse(null);
     }
 
     @SuppressWarnings("unchecked")
