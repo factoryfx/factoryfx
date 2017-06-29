@@ -15,7 +15,6 @@ import javafx.scene.layout.Priority;
 import com.google.common.base.Strings;
 
 import de.factoryfx.javafx.editor.attribute.ValueAttributeEditorVisualisation;
-import de.factoryfx.javafx.editor.attribute.converter.ChronoUnitStringConverter;
 import de.factoryfx.javafx.editor.attribute.converter.DurationStringConverter;
 import de.factoryfx.javafx.util.TypedTextFieldHelper;
 
@@ -33,7 +32,6 @@ public class DurationAttributeVisualisation extends ValueAttributeEditorVisualis
         ComboBox<ChronoUnit> comboBox = new ComboBox<>();
         comboBox.setEditable(false);
         comboBox.getItems().addAll(ChronoUnit.values());
-        comboBox.setConverter(new ChronoUnitStringConverter());
 
         TextField textField = new TextField();
         TypedTextFieldHelper.setupLongTextField(textField);
@@ -50,7 +48,7 @@ public class DurationAttributeVisualisation extends ValueAttributeEditorVisualis
 
         hBox.getChildren().addAll(label, comboBox, textField);
 
-        comboBox.setEditable(!readonly);
+        comboBox.setDisable(readonly);
         textField.setEditable(!readonly);
         return hBox;
     }
