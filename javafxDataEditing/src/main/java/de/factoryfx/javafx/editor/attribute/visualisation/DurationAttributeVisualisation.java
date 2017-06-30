@@ -48,7 +48,7 @@ public class DurationAttributeVisualisation extends ValueAttributeEditorVisualis
 
         hBox.getChildren().addAll(label, comboBox, textField);
 
-        comboBox.setEditable(!readonly);
+        comboBox.setDisable(readonly);
         textField.setEditable(!readonly);
         return hBox;
     }

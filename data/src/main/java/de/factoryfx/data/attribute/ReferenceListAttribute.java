@@ -182,7 +182,7 @@ public abstract class ReferenceListAttribute<T extends Data,A extends ReferenceB
 
 
     public T internal_addNewFactory(){
-        T addedFactory;
+        T addedFactory = null;
         if (newValueProvider!=null) {
             T newFactory = newValueProvider.apply(root);
             get().add(newFactory);
@@ -197,7 +197,7 @@ public abstract class ReferenceListAttribute<T extends Data,A extends ReferenceB
 //            }
         }
 //        addedFactory.internal().propagateRoot(root);
-        return null;
+        return addedFactory;
     }
 
     public void internal_deleteFactory(T factory){
