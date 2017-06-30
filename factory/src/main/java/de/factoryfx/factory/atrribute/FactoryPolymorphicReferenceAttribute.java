@@ -35,10 +35,15 @@ public class FactoryPolymorphicReferenceAttribute<L> extends ReferenceAttribute<
         return get().internalFactory().instance();
     }
 
-    /**workaround: if possibleFactoriesClasses has generi param notmal setup mthod doesn't work */
+    /**workaround: if possibleFactoriesClasses has generic parameter the normal setup method doesn't work */
     @SuppressWarnings("unchecked")
     @SafeVarargs
     public final FactoryPolymorphicReferenceAttribute<L> setupUnsafe(Class liveObjectClass, Class... possibleFactoriesClasses){
+        for (Class clazz: possibleFactoriesClasses){
+            if (!FactoryBase.class.isAssignableFrom(clazz)){
+                throw new IllegalArgumentException("parameter must be a factory: "+clazz);
+            }
+        }
         return setup(liveObjectClass,possibleFactoriesClasses);
     }
 

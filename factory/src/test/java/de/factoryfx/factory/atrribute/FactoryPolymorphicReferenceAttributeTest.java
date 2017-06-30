@@ -48,4 +48,14 @@ public class FactoryPolymorphicReferenceAttributeTest {
         Assert.assertEquals(OutPrinterFactory.class,new ArrayList<>(referenceFactory.reference.internal_createNewPossibleValues()).get(1).getClass());
     }
 
+    @Test(expected=IllegalArgumentException.class)
+    public void test_setupUnsafe_validation(){
+        new FactoryPolymorphicReferenceAttribute<Printer>().setupUnsafe(Printer.class,String.class);
+    }
+
+    @Test
+    public void test_setupUnsafe_validation_happy_case(){
+        new FactoryPolymorphicReferenceAttribute<Printer>().setupUnsafe(Printer.class,ErrorPrinterFactory.class);
+    }
+
 }
