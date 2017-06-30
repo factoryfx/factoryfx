@@ -13,4 +13,12 @@ public class LocaleAttributeTest {
         LocaleAttribute copy= ObjectMapperBuilder.build().copy(attribute);
         Assert.assertEquals(Locale.FRANCE,copy.get());
     }
+
+    @Test
+    public void test_copy(){
+        LocaleAttribute attribute= new LocaleAttribute().defaultValue(Locale.FRANCE);
+        LocaleAttribute copy= new LocaleAttribute();
+        attribute.internal_copyTo(copy,null);
+        Assert.assertEquals(Locale.FRANCE,copy.get());
+    }
 }

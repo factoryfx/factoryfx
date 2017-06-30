@@ -202,7 +202,9 @@ public class DataTest {
         exampleWithDefaultParent = exampleWithDefaultParent.internal().prepareUsableCopy();
         Assert.assertTrue(exampleWithDefaultParent.internal().readyForUsage());
 
-        exampleWithDefaultParent.referenceAttribute.internal_addNewFactory();
+        List<ExampleWithDefault> exampleWithDefaults = exampleWithDefaultParent.referenceAttribute.internal_createNewPossibleValues();
+        ExampleWithDefault exampleWithDefault = exampleWithDefaults.get(0);
+        exampleWithDefaultParent.referenceAttribute.set(exampleWithDefault);
 
         Assert.assertTrue(exampleWithDefaultParent.internal().readyForUsage());
         Assert.assertTrue(exampleWithDefaultParent.referenceAttribute.get().internal().readyForUsage());

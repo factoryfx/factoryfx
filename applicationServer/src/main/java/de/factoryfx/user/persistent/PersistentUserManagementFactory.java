@@ -1,12 +1,13 @@
 package de.factoryfx.user.persistent;
 
+import de.factoryfx.factory.PolymorphicFactory;
+import de.factoryfx.factory.PolymorphicFactoryBase;
+import de.factoryfx.factory.SimpleFactoryBase;
 import de.factoryfx.factory.atrribute.FactoryReferenceListAttribute;
 import de.factoryfx.user.User;
-import de.factoryfx.user.UserManagementFactory;
+import de.factoryfx.user.UserManagement;
 
-import java.util.function.Predicate;
-
-public class PersistentUserManagementFactory<V> extends UserManagementFactory<V> {
+public class PersistentUserManagementFactory<V> extends PolymorphicFactoryBase<UserManagement,V>  {
     public final FactoryReferenceListAttribute<User,UserFactory<V>> users = new FactoryReferenceListAttribute<User,UserFactory<V>>().setupUnsafe(UserFactory.class).en("users").de("Benutzer");
 
     @Override
@@ -18,4 +19,8 @@ public class PersistentUserManagementFactory<V> extends UserManagementFactory<V>
         config().setDisplayTextProvider(() -> "user management");
     }
 
+    @Override
+    public Class<UserManagement> getLiveObjectClass() {
+        return UserManagement.class;
+    }
 }

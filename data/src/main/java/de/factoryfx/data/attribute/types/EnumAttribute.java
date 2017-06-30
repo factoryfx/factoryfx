@@ -63,7 +63,7 @@ public class EnumAttribute<T extends Enum<T>> extends ImmutableValueAttribute<En
             this.enumClass=enumClass;
         }
 
-        //TODO remove only for quickfix compatibility
+        //TODO remove, used only for quickfix compatibility
         public EnumWrapper(String garbage) {
             enumField=null;
             enumClass=null;

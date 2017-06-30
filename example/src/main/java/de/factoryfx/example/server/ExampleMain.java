@@ -29,7 +29,7 @@ import de.factoryfx.server.angularjs.model.view.GuiView;
 import de.factoryfx.server.angularjs.model.view.WebGuiFactoryHeader;
 import de.factoryfx.testutils.SingleProcessInstanceUtil;
 import de.factoryfx.testutils.WebAppViewer;
-import de.factoryfx.user.NoUserManagement;
+import de.factoryfx.user.nop.NoUserManagement;
 import javafx.application.Application;
 import javafx.stage.Stage;
 import org.slf4j.LoggerFactory;

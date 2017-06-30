@@ -213,7 +213,11 @@ public class RestResource<V,L,T extends FactoryBase<L,V>> {
         if (request.getSession(false)==null){
             return request.getLocale();
         } else  {
-            return getUser().locale;
+            Locale locale = getUser().locale;
+            if (locale==null){
+                return Locale.ENGLISH;
+            }
+            return locale;
         }
     }
 
@@ -362,7 +366,7 @@ public class RestResource<V,L,T extends FactoryBase<L,V>> {
 
                     @Override
                     public void reference(ReferenceAttribute<?,?> reference) {
-                        reference.internal_addNewFactory();
+//                        reference.internal_addNewFactory();
                     }
 
                     @Override
@@ -440,7 +444,7 @@ public class RestResource<V,L,T extends FactoryBase<L,V>> {
     }
 
     public static class DiffDetailResponse{
-        public String text;//text/plain dont work well with angulrajs
+        public String text;//text/plain don't work well with angularjs
 
         public DiffDetailResponse(String text) {
             this.text = text;

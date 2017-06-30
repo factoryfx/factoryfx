@@ -21,12 +21,17 @@ import de.factoryfx.data.util.LanguageText;
 import de.factoryfx.data.validation.RegexValidation;
 import de.factoryfx.data.validation.StringRequired;
 import de.factoryfx.data.validation.Validation;
+import de.factoryfx.factory.atrribute.FactoryPolymorphicReferenceAttribute;
+import de.factoryfx.factory.testfactories.poly.ErrorPrinterFactory;
+import de.factoryfx.factory.testfactories.poly.OutPrinterFactory;
+import de.factoryfx.factory.testfactories.poly.Printer;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.layout.BorderPane;
 import javafx.util.Pair;
 
 public class ExampleData1 extends Data {
+    public final FactoryPolymorphicReferenceAttribute<Printer> reference = new FactoryPolymorphicReferenceAttribute<Printer>().setup(Printer.class,ErrorPrinterFactory.class,OutPrinterFactory.class).labelText("poly");
     public final PasswordAttribute passwordAttribute = new PasswordAttribute().en("PasswordAttribute").de("PasswordAttribute de");
     public final DurationAttribute durationAttribute = new DurationAttribute().en("durationAttribute").de("durationAttribute de");
 

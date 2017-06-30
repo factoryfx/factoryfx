@@ -31,7 +31,7 @@ import de.factoryfx.server.angularjs.integration.example.ViewCreator;
 import de.factoryfx.server.angularjs.integration.example.VisitorToTables;
 import de.factoryfx.testutils.SingleProcessInstanceUtil;
 import de.factoryfx.testutils.WebAppViewer;
-import de.factoryfx.user.NoUserManagement;
+import de.factoryfx.user.nop.NoUserManagement;
 import de.factoryfx.user.UserManagement;
 import javafx.application.Application;
 import javafx.stage.Stage;

@@ -3,9 +3,7 @@ package de.factoryfx.data.attribute;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import de.factoryfx.data.Data;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 
@@ -42,17 +40,10 @@ public abstract class ReferenceBaseAttribute<T extends Data, U, A extends Refere
 
     @SuppressWarnings("unchecked")
     public Collection<T> internal_possibleValues(){
-        if (possibleValueProviderFromRoot==null){
-            Set<T> result = new HashSet<>();
-            for (Data factory: root.internal().collectChildrenDeep()){
-//                if (containingFactoryClass.isAssignableFrom(factory.getClass())){
-//                    result.add((T) factory);
-//                }
-            }
-            return result;
-        } else {
+        if (possibleValueProviderFromRoot!=null){
             return possibleValueProviderFromRoot.apply(root);
         }
+        return new ArrayList<>();
     }
 
     @Override
@@ -69,6 +60,18 @@ public abstract class ReferenceBaseAttribute<T extends Data, U, A extends Refere
     @SuppressWarnings("unchecked")
     public A newValueProvider(Function<Data,T> newValueProviderFromRoot){
         this.newValueProvider =newValueProviderFromRoot;
+        return (A)this;
+    }
+
+    Function<Data,List<T>> newValuesProvider;
+    /**
+     * customise how new values are created
+     * @param newValuesProvider value, root
+     * @return the new added factory
+     */
+    @SuppressWarnings("unchecked")
+    public A newValuesProvider(Function<Data,List<T>> newValuesProvider){
+        this.newValuesProvider = newValuesProvider;
         return (A)this;
     }
 

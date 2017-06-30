@@ -14,7 +14,7 @@ import de.factoryfx.server.angularjs.model.FactoryTypeInfoWrapper;
 import de.factoryfx.server.angularjs.model.WebGuiUser;
 import de.factoryfx.factory.FactoryManager;
 import de.factoryfx.server.ApplicationServer;
-import de.factoryfx.user.NoUserManagement;
+import de.factoryfx.user.nop.NoUserManagement;
 import org.junit.Test;
 
 public class RestResourceTest {

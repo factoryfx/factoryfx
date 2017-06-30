@@ -17,10 +17,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.google.common.base.Throwables;
 import de.factoryfx.data.Data;
-import de.factoryfx.factory.atrribute.FactoryReferenceAttribute;
-import de.factoryfx.factory.atrribute.FactoryReferenceListAttribute;
-import de.factoryfx.factory.atrribute.FactoryViewListReferenceAttribute;
-import de.factoryfx.factory.atrribute.FactoryViewReferenceAttribute;
+import de.factoryfx.factory.atrribute.*;
 import de.factoryfx.factory.log.FactoryLogEntry;
 import de.factoryfx.factory.log.FactoryLogEntryEvent;
 import de.factoryfx.factory.log.FactoryLogEntryEventType;
@@ -207,6 +204,10 @@ public abstract class FactoryBase<L,V> extends Data {
             if (attribute instanceof FactoryViewListReferenceAttribute) {
                 ((FactoryViewListReferenceAttribute<?,?,?>)attribute).get().forEach(data -> cast(data).ifPresent(consumer));
             }
+            if (attribute instanceof FactoryPolymorphicReferenceAttribute) {
+                ((FactoryPolymorphicReferenceAttribute<?>)attribute).getOptional().ifPresent(data -> cast(data).ifPresent(consumer));
+            }
+
         });
     }
 

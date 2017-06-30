@@ -57,7 +57,8 @@ public class ReferenceAttributeTest {
     public void test_add_new(){
         DataReferenceAttribute<ExampleFactoryA> referenceAttribute=new DataReferenceAttribute<>(ExampleFactoryA.class);
         Assert.assertNull(referenceAttribute.get());
-        referenceAttribute.internal_addNewFactory();
+        List<ExampleFactoryA> exampleFactoryAS = referenceAttribute.internal_createNewPossibleValues();
+        referenceAttribute.set(exampleFactoryAS.get(0));
         Assert.assertNotNull(referenceAttribute.get());
 
     }

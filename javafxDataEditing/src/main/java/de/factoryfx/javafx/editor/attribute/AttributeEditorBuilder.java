@@ -122,7 +122,7 @@ public class AttributeEditorBuilder {
             @Override
             public AttributeEditor<Data, ?> createEditor(Attribute<?, ?> attribute, DataEditor dataEditor, Data previousData) {
                 ReferenceAttribute referenceAttribute = (ReferenceAttribute) attribute;
-                return new AttributeEditor<>(referenceAttribute,new ReferenceAttributeVisualisation(uniformDesign,dataEditor, referenceAttribute::internal_addNewFactory, referenceAttribute::internal_possibleValues, referenceAttribute::internal_deleteFactory, referenceAttribute.internal_isUserEditable(),referenceAttribute.internal_isUserSelectable(),referenceAttribute.internal_isUserCreatable()),uniformDesign);
+                return new AttributeEditor<>(referenceAttribute,new ReferenceAttributeVisualisation(uniformDesign,dataEditor, referenceAttribute::internal_createNewPossibleValues,referenceAttribute::set, referenceAttribute::internal_possibleValues, referenceAttribute::internal_deleteFactory, referenceAttribute.internal_isUserEditable(),referenceAttribute.internal_isUserSelectable(),referenceAttribute.internal_isUserCreatable()),uniformDesign);
 
             }
         });

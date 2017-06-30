@@ -1,10 +1,6 @@
 package de.factoryfx.data.attribute;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Function;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
@@ -144,17 +140,13 @@ public abstract class ReferenceAttribute<T extends Data, A extends ReferenceBase
         }
     }
 
-    public T internal_addNewFactory(){
-        if (newValueProvider==null){
-//            try {
-//                set(containingFactoryClass.newInstance());
-//            } catch (InstantiationException | IllegalAccessException e) {
-//                throw new RuntimeException(e);
-//            }
-        } else {
-            T newFactory = newValueProvider.apply(root);
-            set(newFactory);
+    public List<T> internal_createNewPossibleValues(){
+        if (newValuesProvider!=null) {
+            return newValuesProvider.apply(root);
         }
-        return get();
+        if (newValueProvider!=null) {
+            return Collections.singletonList(newValueProvider.apply(root));
+        }
+        return new ArrayList<>();
     }
 }
