@@ -1,9 +1,12 @@
 package de.factoryfx.factory;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import de.factoryfx.factory.log.FactoryLogEntryEventType;
 
 import java.lang.reflect.ParameterizedType;
 
+@JsonTypeInfo(use=JsonTypeInfo.Id.CLASS, include=JsonTypeInfo.As.PROPERTY, property="@class")
 public abstract class PolymorphicFactoryBase<L,V> extends FactoryBase<L,V> implements PolymorphicFactory<L>{
 
     public abstract L createImpl();
@@ -18,6 +21,7 @@ public abstract class PolymorphicFactoryBase<L,V> extends FactoryBase<L,V> imple
 
     @Override
     @SuppressWarnings("unchecked")
+    @JsonIgnore
     public Class<L> getLiveObjectClass() {
         return (Class<L>) ((ParameterizedType) getClass()
                 .getGenericSuperclass()).getActualTypeArguments()[0];

@@ -13,9 +13,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class FactoryPolymorphicReferenceAttributeTest {
+
     @Test
     public void test_json(){
-        FactoryPolymorphicReferenceAttribute attribute = new FactoryPolymorphicReferenceAttribute();
+        FactoryPolymorphicReferenceAttribute<Printer> attribute = new FactoryPolymorphicReferenceAttribute<>();
+        attribute.set(new ErrorPrinterFactory());
         ObjectMapperBuilder.build().copy(attribute);
     }
 

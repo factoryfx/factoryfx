@@ -10,8 +10,4 @@ public class ErrorPrinterFactory extends PolymorphicFactoryBase<Printer,Void> {
         return new ErrorPrinter();
     }
 
-    @Override
-    public Class<Printer> getLiveObjectClass() {
-        return Printer.class;
-    }
 }
