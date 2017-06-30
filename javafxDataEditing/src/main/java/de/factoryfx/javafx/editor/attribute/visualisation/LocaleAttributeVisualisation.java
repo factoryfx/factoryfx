@@ -31,7 +31,7 @@ public class LocaleAttributeVisualisation extends ValueAttributeEditorVisualisat
         comboBox.getItems().addAll(DateFormat.getAvailableLocales());
         comboBox.valueProperty().bindBidirectional(boundTo);
 
-        comboBox.setEditable(!readonly);
+        comboBox.setDisable(readonly);
         return comboBox;
     }
 }

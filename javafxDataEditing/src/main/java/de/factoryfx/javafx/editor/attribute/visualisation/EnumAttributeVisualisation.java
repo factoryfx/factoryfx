@@ -21,7 +21,7 @@ public class EnumAttributeVisualisation extends ValueAttributeEditorVisualisatio
         comboBox.setEditable(false);
         comboBox.getItems().addAll(possibleEnumConstants);
         comboBox.valueProperty().bindBidirectional(boundTo);
-        comboBox.setEditable(!readonly);
+        comboBox.setDisable(readonly);
         return comboBox;
     }
 }
