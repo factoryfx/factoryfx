@@ -6,7 +6,7 @@ import de.factoryfx.factory.log.FactoryLogEntryEventType;
 
 import java.lang.reflect.ParameterizedType;
 
-@JsonTypeInfo(use=JsonTypeInfo.Id.CLASS, include=JsonTypeInfo.As.PROPERTY, property="@class")
+@JsonTypeInfo(use=JsonTypeInfo.Id.CLASS, include=JsonTypeInfo.As.PROPERTY, property="@class") //minimal class doesn't work
 public abstract class PolymorphicFactoryBase<L,V> extends FactoryBase<L,V> implements PolymorphicFactory<L>{
 
     public abstract L createImpl();
