@@ -59,10 +59,9 @@ public class FactoryDiffWidget implements Widget {
     @Override
     public Node createContent() {
         BorderPane previousValueDisplay = new BorderPane();
-//        previousValueDisplay.setOpacity(0.6);
+        previousValueDisplay.getStyleClass().add("dontChangeOpacityIfdisabled");
         BorderPane newValueDisplay = new BorderPane();
-//        newValueDisplay.setOpacity(0.6);
-
+        newValueDisplay.getStyleClass().add("dontChangeOpacityIfdisabled");
 
         TableView<AttributeDiffInfoExtended> diffTableView = createDiffTableViewTable();
 //        diffTableView.setFixedCellSize(30.0);

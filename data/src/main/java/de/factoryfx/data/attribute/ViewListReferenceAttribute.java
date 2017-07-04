@@ -87,7 +87,7 @@ public abstract class ViewListReferenceAttribute <R extends Data, T extends Data
         //nothing
     }
 
-    //** so we don't need to initialise javax toolkit*/
+    //** so we don't need to initialise javax toolkit for tests*/
     Consumer<Runnable> runlaterExecutor=(r)-> Platform.runLater(r);
     void setRunlaterExecutorForTest(Consumer<Runnable> runlaterExecutor){
         this.runlaterExecutor=runlaterExecutor;

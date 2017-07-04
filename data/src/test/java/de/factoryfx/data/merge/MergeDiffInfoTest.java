@@ -1,30 +1,28 @@
 package de.factoryfx.data.merge;
 
 import de.factoryfx.data.jackson.ObjectMapperBuilder;
-import de.factoryfx.data.merge.testfactories.ExampleFactoryA;
+import de.factoryfx.data.merge.testfactories.ExampleDataA;
 import org.junit.Assert;
 import org.junit.Test;
-
-import static org.junit.Assert.*;
 
 public class MergeDiffInfoTest {
 
     @Test
     public void test_json(){
-        ExampleFactoryA currentModel = new ExampleFactoryA();
+        ExampleDataA currentModel = new ExampleDataA();
         currentModel.stringAttribute.set("1111111");
-        ExampleFactoryA originalModel = currentModel.internal().copy();
+        ExampleDataA originalModel = currentModel.internal().copy();
         originalModel.stringAttribute.set("1111111");
-        ExampleFactoryA newModel = currentModel.internal().copy();
+        ExampleDataA newModel = currentModel.internal().copy();
         newModel.stringAttribute.set("2222222");
         DataMerger dataMerger = new DataMerger(currentModel, originalModel, newModel);
 
         MergeDiffInfo mergeDiff= dataMerger.mergeIntoCurrent((permission)->true);
 
         MergeDiffInfo copy = ObjectMapperBuilder.build().copy(mergeDiff);
-        Assert.assertEquals("1111111",((ExampleFactoryA)copy.getPreviousRootData()).stringAttribute.get());
-        Assert.assertEquals("2222222",((ExampleFactoryA)copy.getNewRootData()).stringAttribute.get());
-        Assert.assertNotNull(((ExampleFactoryA)copy.getNewRootData()).internal().getRoot());
+        Assert.assertEquals("1111111",((ExampleDataA)copy.getPreviousRootData()).stringAttribute.get());
+        Assert.assertEquals("2222222",((ExampleDataA)copy.getNewRootData()).stringAttribute.get());
+        Assert.assertNotNull(((ExampleDataA)copy.getNewRootData()).internal().getRoot());
 
 
     }

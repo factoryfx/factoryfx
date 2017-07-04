@@ -24,12 +24,12 @@ public class FactoryManagerLivecycleTest {
     }
 
 
-    public static class ExampleFactoryA extends FactoryBase<DummyLifeObejct,Void> {
-        public final FactoryReferenceAttribute<DummyLifeObejct,ExampleFactoryB> ref = new FactoryReferenceAttribute<>(ExampleFactoryB.class);
-        public final FactoryReferenceListAttribute<DummyLifeObejct,ExampleFactoryC> refList = new FactoryReferenceListAttribute<>(ExampleFactoryC.class);
-        public final FactoryReferenceAttribute<DummyLifeObejct,ExampleFactoryC> refC = new FactoryReferenceAttribute<>(ExampleFactoryC.class);
+    public static class LivecycleFactoryA extends FactoryBase<DummyLifeObejct,Void> {
+        public final FactoryReferenceAttribute<DummyLifeObejct,LivecycleFactoryB> ref = new FactoryReferenceAttribute<>(LivecycleFactoryB.class);
+        public final FactoryReferenceListAttribute<DummyLifeObejct,LivecycleFactoryC> refList = new FactoryReferenceListAttribute<>(LivecycleFactoryC.class);
+        public final FactoryReferenceAttribute<DummyLifeObejct,LivecycleFactoryC> refC = new FactoryReferenceAttribute<>(LivecycleFactoryC.class);
 
-        public final FactoryReferenceAttribute<DummyLifeObejct,ExampleFactoryA> refA = new FactoryReferenceAttribute<>(ExampleFactoryA.class);
+        public final FactoryReferenceAttribute<DummyLifeObejct,LivecycleFactoryA> refA = new FactoryReferenceAttribute<>(LivecycleFactoryA.class);
 
 
 
@@ -38,7 +38,7 @@ public class FactoryManagerLivecycleTest {
         public List<String> startCalls= new ArrayList<>();
         public List<String> destroyCalls= new ArrayList<>();
 
-        public ExampleFactoryA(){
+        public LivecycleFactoryA(){
             configLiveCycle().setCreator(() -> {
                 createCalls.add("created");
                 return new DummyLifeObejct("",null);
@@ -59,9 +59,9 @@ public class FactoryManagerLivecycleTest {
         }
     }
 
-    public static class ExampleFactoryB extends FactoryBase<DummyLifeObejct,Void> {
+    public static class LivecycleFactoryB extends FactoryBase<DummyLifeObejct,Void> {
 
-        public final FactoryViewListReferenceAttribute<ExampleFactoryA,DummyLifeObejct,ExampleFactoryC> listView = new FactoryViewListReferenceAttribute<ExampleFactoryA,DummyLifeObejct,ExampleFactoryC>(
+        public final FactoryViewListReferenceAttribute<LivecycleFactoryA,DummyLifeObejct,LivecycleFactoryC> listView = new FactoryViewListReferenceAttribute<LivecycleFactoryA,DummyLifeObejct,LivecycleFactoryC>(
                 root -> root.refList.get()).labelText("ExampleA2");
 
         public List<String> createCalls= new ArrayList<>();
@@ -70,7 +70,7 @@ public class FactoryManagerLivecycleTest {
         public List<String> destroyCalls= new ArrayList<>();
         public StringAttribute stringAttribute=new StringAttribute();
 
-        public ExampleFactoryB(){
+        public LivecycleFactoryB(){
             configLiveCycle().setCreator(() -> {
                 createCalls.add("created");
                 return new DummyLifeObejct("",null);
@@ -91,7 +91,7 @@ public class FactoryManagerLivecycleTest {
         }
     }
 
-    public static class ExampleFactoryC extends SimpleFactoryBase<DummyLifeObejct,Void> {
+    public static class LivecycleFactoryC extends SimpleFactoryBase<DummyLifeObejct,Void> {
 
         public StringAttribute stringAttribute=new StringAttribute();
 
@@ -104,10 +104,10 @@ public class FactoryManagerLivecycleTest {
 
     @Test
     public void test_initial_start(){
-        FactoryManager<Void,DummyLifeObejct,ExampleFactoryA> factoryManager = new FactoryManager<>(new RethrowingFactoryExceptionHandler<Void>());
+        FactoryManager<Void,DummyLifeObejct,LivecycleFactoryA> factoryManager = new FactoryManager<>(new RethrowingFactoryExceptionHandler<Void>());
 
-        ExampleFactoryA exampleFactoryA = new ExampleFactoryA();
-        ExampleFactoryB exampleFactoryB = new ExampleFactoryB();
+        LivecycleFactoryA exampleFactoryA = new LivecycleFactoryA();
+        LivecycleFactoryB exampleFactoryB = new LivecycleFactoryB();
         exampleFactoryA.ref.set(exampleFactoryB);
 
         exampleFactoryA = exampleFactoryA.internal().prepareUsableCopy();
@@ -124,10 +124,10 @@ public class FactoryManagerLivecycleTest {
 
     @Test
     public void test_initial_destroy(){
-        FactoryManager<Void,DummyLifeObejct,ExampleFactoryA> factoryManager = new FactoryManager<>(new RethrowingFactoryExceptionHandler<Void>());
+        FactoryManager<Void,DummyLifeObejct,LivecycleFactoryA> factoryManager = new FactoryManager<>(new RethrowingFactoryExceptionHandler<Void>());
 
-        ExampleFactoryA exampleFactoryA = new ExampleFactoryA();
-        ExampleFactoryB exampleFactoryB = new ExampleFactoryB();
+        LivecycleFactoryA exampleFactoryA = new LivecycleFactoryA();
+        LivecycleFactoryB exampleFactoryB = new LivecycleFactoryB();
         exampleFactoryA.ref.set(exampleFactoryB);
 
         exampleFactoryA = exampleFactoryA.internal().prepareUsableCopy();
@@ -142,10 +142,10 @@ public class FactoryManagerLivecycleTest {
 
     @Test
     public void test_initial_changed(){
-        FactoryManager<Void,DummyLifeObejct,ExampleFactoryA> factoryManager = new FactoryManager<>(new RethrowingFactoryExceptionHandler<Void>());
+        FactoryManager<Void,DummyLifeObejct,LivecycleFactoryA> factoryManager = new FactoryManager<>(new RethrowingFactoryExceptionHandler<Void>());
 
-        ExampleFactoryA exampleFactoryA = new ExampleFactoryA();
-        ExampleFactoryB exampleFactoryB = new ExampleFactoryB();
+        LivecycleFactoryA exampleFactoryA = new LivecycleFactoryA();
+        LivecycleFactoryB exampleFactoryB = new LivecycleFactoryB();
         exampleFactoryA.ref.set(exampleFactoryB);
 
         exampleFactoryA = exampleFactoryA.internal().prepareUsableCopy();
@@ -153,8 +153,8 @@ public class FactoryManagerLivecycleTest {
 
         factoryManager.start(exampleFactoryA);
 
-        ExampleFactoryA common = factoryManager.getCurrentFactory().internal().prepareUsableCopy();
-        ExampleFactoryA update = factoryManager.getCurrentFactory().internal().prepareUsableCopy();
+        LivecycleFactoryA common = factoryManager.getCurrentFactory().internal().prepareUsableCopy();
+        LivecycleFactoryA update = factoryManager.getCurrentFactory().internal().prepareUsableCopy();
         update.ref.get().stringAttribute.set("changed");
 
         exampleFactoryA.resetCounter();
@@ -173,10 +173,10 @@ public class FactoryManagerLivecycleTest {
 
     @Test
     public void test_initial_viewlist_added(){
-        FactoryManager<Void,DummyLifeObejct,ExampleFactoryA> factoryManager = new FactoryManager<>(new RethrowingFactoryExceptionHandler<Void>());
+        FactoryManager<Void,DummyLifeObejct,LivecycleFactoryA> factoryManager = new FactoryManager<>(new RethrowingFactoryExceptionHandler<Void>());
 
-        ExampleFactoryA exampleFactoryA = new ExampleFactoryA();
-        ExampleFactoryB exampleFactoryB = new ExampleFactoryB();
+        LivecycleFactoryA exampleFactoryA = new LivecycleFactoryA();
+        LivecycleFactoryB exampleFactoryB = new LivecycleFactoryB();
         exampleFactoryA.ref.set(exampleFactoryB);
 
         exampleFactoryA = exampleFactoryA.internal().prepareUsableCopy();
@@ -184,9 +184,9 @@ public class FactoryManagerLivecycleTest {
 
         factoryManager.start(exampleFactoryA);
 
-        ExampleFactoryA common = factoryManager.getCurrentFactory().internal().prepareUsableCopy();
-        ExampleFactoryA update = factoryManager.getCurrentFactory().internal().prepareUsableCopy();
-        update.refList.get().add(new ExampleFactoryC());
+        LivecycleFactoryA common = factoryManager.getCurrentFactory().internal().prepareUsableCopy();
+        LivecycleFactoryA update = factoryManager.getCurrentFactory().internal().prepareUsableCopy();
+        update.refList.get().add(new LivecycleFactoryC());
 
         exampleFactoryA.resetCounter();
         exampleFactoryB.resetCounter();
@@ -204,20 +204,20 @@ public class FactoryManagerLivecycleTest {
 
     @Test
     public void test_initial_viewlist_removed(){
-        FactoryManager<Void,DummyLifeObejct,ExampleFactoryA> factoryManager = new FactoryManager<>(new RethrowingFactoryExceptionHandler<Void>());
+        FactoryManager<Void,DummyLifeObejct,LivecycleFactoryA> factoryManager = new FactoryManager<>(new RethrowingFactoryExceptionHandler<Void>());
 
-        ExampleFactoryA exampleFactoryA = new ExampleFactoryA();
-        ExampleFactoryB exampleFactoryB = new ExampleFactoryB();
+        LivecycleFactoryA exampleFactoryA = new LivecycleFactoryA();
+        LivecycleFactoryB exampleFactoryB = new LivecycleFactoryB();
         exampleFactoryA.ref.set(exampleFactoryB);
-        exampleFactoryA.refList.get().add(new ExampleFactoryC());
+        exampleFactoryA.refList.get().add(new LivecycleFactoryC());
 
         exampleFactoryA = exampleFactoryA.internal().prepareUsableCopy();
         exampleFactoryB = exampleFactoryA.ref.get();
 
         factoryManager.start(exampleFactoryA);
 
-        ExampleFactoryA common = factoryManager.getCurrentFactory().internal().prepareUsableCopy();
-        ExampleFactoryA update = factoryManager.getCurrentFactory().internal().prepareUsableCopy();
+        LivecycleFactoryA common = factoryManager.getCurrentFactory().internal().prepareUsableCopy();
+        LivecycleFactoryA update = factoryManager.getCurrentFactory().internal().prepareUsableCopy();
         update.refList.get().clear();
 
         exampleFactoryA.resetCounter();
@@ -237,17 +237,17 @@ public class FactoryManagerLivecycleTest {
 
     @Test
     public void test_changed_list_only(){
-        FactoryManager<Void,DummyLifeObejct,ExampleFactoryA> factoryManager = new FactoryManager<>(new RethrowingFactoryExceptionHandler<Void>());
+        FactoryManager<Void,DummyLifeObejct,LivecycleFactoryA> factoryManager = new FactoryManager<>(new RethrowingFactoryExceptionHandler<Void>());
 
-        ExampleFactoryA exampleFactoryA = new ExampleFactoryA();
-        exampleFactoryA.refList.add(new ExampleFactoryC());
+        LivecycleFactoryA exampleFactoryA = new LivecycleFactoryA();
+        exampleFactoryA.refList.add(new LivecycleFactoryC());
 
         exampleFactoryA = exampleFactoryA.internal().prepareUsableCopy();
 
         factoryManager.start(exampleFactoryA);
 
-        ExampleFactoryA common = factoryManager.getCurrentFactory().internal().prepareUsableCopy();
-        ExampleFactoryA update = factoryManager.getCurrentFactory().internal().prepareUsableCopy();
+        LivecycleFactoryA common = factoryManager.getCurrentFactory().internal().prepareUsableCopy();
+        LivecycleFactoryA update = factoryManager.getCurrentFactory().internal().prepareUsableCopy();
         update.refList.clear();
 
         exampleFactoryA.resetCounter();
@@ -264,20 +264,20 @@ public class FactoryManagerLivecycleTest {
 
     @Test
     public void test_changed_list_only__no_changes(){
-        FactoryManager<Void,DummyLifeObejct,ExampleFactoryA> factoryManager = new FactoryManager<>(new RethrowingFactoryExceptionHandler<Void>());
+        FactoryManager<Void,DummyLifeObejct,LivecycleFactoryA> factoryManager = new FactoryManager<>(new RethrowingFactoryExceptionHandler<Void>());
 
-        ExampleFactoryA root = new ExampleFactoryA();
-        ExampleFactoryA exampleFactoryA = new ExampleFactoryA();
+        LivecycleFactoryA root = new LivecycleFactoryA();
+        LivecycleFactoryA exampleFactoryA = new LivecycleFactoryA();
         root.refA.set(exampleFactoryA);
-        exampleFactoryA.refList.add(new ExampleFactoryC());
+        exampleFactoryA.refList.add(new LivecycleFactoryC());
 
         root = root.internal().prepareUsableCopy();
         exampleFactoryA = root.refA.get();
 
         factoryManager.start(exampleFactoryA);
 
-        ExampleFactoryA common = factoryManager.getCurrentFactory().internal().prepareUsableCopy();
-        ExampleFactoryA update = factoryManager.getCurrentFactory().internal().prepareUsableCopy();
+        LivecycleFactoryA common = factoryManager.getCurrentFactory().internal().prepareUsableCopy();
+        LivecycleFactoryA update = factoryManager.getCurrentFactory().internal().prepareUsableCopy();
 //        update.refC.set(update.refList.get(0));
 //        update.refList.remove(0);
 

@@ -7,15 +7,15 @@ import java.util.List;
 
 import de.factoryfx.data.Data;
 import de.factoryfx.data.jackson.ObjectMapperBuilder;
-import de.factoryfx.data.merge.testfactories.ExampleFactoryA;
-import de.factoryfx.data.merge.testfactories.ExampleFactoryB;
+import de.factoryfx.data.merge.testfactories.ExampleDataA;
+import de.factoryfx.data.merge.testfactories.ExampleDataB;
 import org.junit.Assert;
 import org.junit.Test;
 
 public class ReferenceListAttributeTest {
 
     public static class ExampleReferenceListFactory extends Data {
-        public DataReferenceListAttribute<ExampleFactoryA> referenceListAttribute =new DataReferenceListAttribute<>(ExampleFactoryA.class);
+        public DataReferenceListAttribute<ExampleDataA> referenceListAttribute =new DataReferenceListAttribute<>(ExampleDataA.class);
 
 
     }
@@ -27,7 +27,7 @@ public class ReferenceListAttributeTest {
         exampleReferenceListFactory.referenceListAttribute.internal_addListener((a,o)-> {
             calls.add("");
         });
-        exampleReferenceListFactory.referenceListAttribute.get().add(new ExampleFactoryA());
+        exampleReferenceListFactory.referenceListAttribute.get().add(new ExampleDataA());
 
         Assert.assertEquals(1,calls.size());
     }
@@ -36,12 +36,12 @@ public class ReferenceListAttributeTest {
     public void test_json() {
         ExampleReferenceListFactory exampleReferenceListFactory = new ExampleReferenceListFactory();
         {
-            ExampleFactoryA exampleFactoryA = new ExampleFactoryA();
+            ExampleDataA exampleFactoryA = new ExampleDataA();
             exampleFactoryA.stringAttribute.set("sadsasd");
             exampleReferenceListFactory.referenceListAttribute.get().add(exampleFactoryA);
         }
         {
-            ExampleFactoryA exampleFactoryA = new ExampleFactoryA();
+            ExampleDataA exampleFactoryA = new ExampleDataA();
             exampleFactoryA.stringAttribute.set("sadsasd");
             exampleReferenceListFactory.referenceListAttribute.get().add(exampleFactoryA);
         }
@@ -53,16 +53,16 @@ public class ReferenceListAttributeTest {
     public void remove_Listener(){
         ExampleReferenceListFactory exampleReferenceListFactory = new ExampleReferenceListFactory();
         ArrayList<String> calls= new ArrayList<>();
-        AttributeChangeListener<List<ExampleFactoryA>,DataReferenceListAttribute<ExampleFactoryA>> invalidationListener = (a,o) -> {
+        AttributeChangeListener<List<ExampleDataA>,DataReferenceListAttribute<ExampleDataA>> invalidationListener = (a, o) -> {
             calls.add("");
         };
         exampleReferenceListFactory.referenceListAttribute.internal_addListener(invalidationListener);
-        exampleReferenceListFactory.referenceListAttribute.get().add(new ExampleFactoryA());
+        exampleReferenceListFactory.referenceListAttribute.get().add(new ExampleDataA());
 
         Assert.assertEquals(1,calls.size());
 
         exampleReferenceListFactory.referenceListAttribute.internal_removeListener(invalidationListener);
-        exampleReferenceListFactory.referenceListAttribute.get().add(new ExampleFactoryA());
+        exampleReferenceListFactory.referenceListAttribute.get().add(new ExampleDataA());
         Assert.assertEquals(1,calls.size());
     }
 
@@ -78,12 +78,12 @@ public class ReferenceListAttributeTest {
     @Test
     public void test_possible_values(){
         ExampleReferenceListFactory exampleReferenceListFactory = new ExampleReferenceListFactory();
-        ExampleFactoryA exampleFactoryA = new ExampleFactoryA();
+        ExampleDataA exampleFactoryA = new ExampleDataA();
         exampleReferenceListFactory.referenceListAttribute.add(exampleFactoryA);
         exampleReferenceListFactory = exampleReferenceListFactory.internal().prepareUsableCopy();
 
 
-        Collection<ExampleFactoryA> possibleFactories = exampleReferenceListFactory.referenceListAttribute.internal_possibleValues();
+        Collection<ExampleDataA> possibleFactories = exampleReferenceListFactory.referenceListAttribute.internal_possibleValues();
         Assert.assertEquals(1,possibleFactories.size());
         Assert.assertEquals(exampleFactoryA.getId(),new ArrayList<>(possibleFactories).get(0).getId());
 
@@ -91,9 +91,9 @@ public class ReferenceListAttributeTest {
 
     @Test
     public void test_add_new_listener(){
-        DataReferenceListAttribute<ExampleFactoryA> referenceListAttribute =new DataReferenceListAttribute<>(ExampleFactoryA.class);
-        referenceListAttribute.internal_prepareUsage(new ExampleFactoryA());
-        List<ExampleFactoryA> calls=new ArrayList<>();
+        DataReferenceListAttribute<ExampleDataA> referenceListAttribute =new DataReferenceListAttribute<>(ExampleDataA.class);
+        referenceListAttribute.internal_prepareUsage(new ExampleDataA());
+        List<ExampleDataA> calls=new ArrayList<>();
         referenceListAttribute.internal_addListener((attribute, value) -> calls.add(value.get(0)));
         referenceListAttribute.internal_addNewFactory();
         Assert.assertEquals(1,calls.size());
@@ -104,9 +104,9 @@ public class ReferenceListAttributeTest {
 
     @Test
     public void removeListener() throws Exception {
-        DataReferenceListAttribute<ExampleFactoryA> attribute =new DataReferenceListAttribute<>(ExampleFactoryA.class);
+        DataReferenceListAttribute<ExampleDataA> attribute =new DataReferenceListAttribute<>(ExampleDataA.class);
 
-        final AttributeChangeListener<List<ExampleFactoryA>,DataReferenceListAttribute<ExampleFactoryA>> attributeChangeListener = (a, value) -> System.out.println(value);
+        final AttributeChangeListener<List<ExampleDataA>,DataReferenceListAttribute<ExampleDataA>> attributeChangeListener = (a, value) -> System.out.println(value);
         attribute.internal_addListener(attributeChangeListener);
         Assert.assertEquals(1,attribute.listeners.size());
         attribute.internal_removeListener(attributeChangeListener);
@@ -115,9 +115,9 @@ public class ReferenceListAttributeTest {
 
     @Test
     public void removeWeakListener() throws Exception {
-        DataReferenceListAttribute<ExampleFactoryA> attribute =new DataReferenceListAttribute<>(ExampleFactoryA.class);
+        DataReferenceListAttribute<ExampleDataA> attribute =new DataReferenceListAttribute<>(ExampleDataA.class);
 
-        final AttributeChangeListener<List<ExampleFactoryA>,DataReferenceListAttribute<ExampleFactoryA>> attributeChangeListener = (a, value) -> System.out.println(value);
+        final AttributeChangeListener<List<ExampleDataA>,DataReferenceListAttribute<ExampleDataA>> attributeChangeListener = (a, value) -> System.out.println(value);
         attribute.internal_addListener(new WeakAttributeChangeListener<>(attributeChangeListener));
         Assert.assertTrue(attribute.listeners.size()==1);
         attribute.internal_removeListener(attributeChangeListener);
@@ -126,9 +126,9 @@ public class ReferenceListAttributeTest {
 
     @Test
     public void removeWeakListener_after_gc() throws Exception {
-        DataReferenceListAttribute<ExampleFactoryA> attribute =new DataReferenceListAttribute<>(ExampleFactoryA.class);
+        DataReferenceListAttribute<ExampleDataA> attribute =new DataReferenceListAttribute<>(ExampleDataA.class);
 
-        final AttributeChangeListener<List<ExampleFactoryA>,DataReferenceListAttribute<ExampleFactoryA>> attributeChangeListener = (a, value) -> System.out.println(value);
+        final AttributeChangeListener<List<ExampleDataA>,DataReferenceListAttribute<ExampleDataA>> attributeChangeListener = (a, value) -> System.out.println(value);
         attribute.internal_addListener(new WeakAttributeChangeListener<>(null));//null to simulate garbage collected weakref
         Assert.assertTrue(attribute.listeners.size()==1);
         attribute.internal_removeListener(attributeChangeListener);
@@ -137,10 +137,10 @@ public class ReferenceListAttributeTest {
 
     @Test
     public void delegate_root_for_added() {
-        DataReferenceListAttribute<ExampleFactoryA> attribute =new DataReferenceListAttribute<>(ExampleFactoryA.class);
-        attribute.internal_prepareUsage(new ExampleFactoryB());
+        DataReferenceListAttribute<ExampleDataA> attribute =new DataReferenceListAttribute<>(ExampleDataA.class);
+        attribute.internal_prepareUsage(new ExampleDataB());
 
-        final ExampleFactoryA exampleFactoryA = new ExampleFactoryA();
+        final ExampleDataA exampleFactoryA = new ExampleDataA();
         Assert.assertFalse(exampleFactoryA.internal().readyForUsage());
         attribute.get().add(exampleFactoryA);
         Assert.assertTrue(exampleFactoryA.internal().readyForUsage());
@@ -148,11 +148,11 @@ public class ReferenceListAttributeTest {
 
     @Test
     public void delegate_root_for_addAll(){
-        DataReferenceListAttribute<ExampleFactoryA> attribute =new DataReferenceListAttribute<>(ExampleFactoryA.class);
-        attribute.internal_prepareUsage(new ExampleFactoryB());
+        DataReferenceListAttribute<ExampleDataA> attribute =new DataReferenceListAttribute<>(ExampleDataA.class);
+        attribute.internal_prepareUsage(new ExampleDataB());
 
-        final ExampleFactoryA exampleFactoryA1 = new ExampleFactoryA();
-        final ExampleFactoryA exampleFactoryA2 = new ExampleFactoryA();
+        final ExampleDataA exampleFactoryA1 = new ExampleDataA();
+        final ExampleDataA exampleFactoryA2 = new ExampleDataA();
         Assert.assertFalse(exampleFactoryA1.internal().readyForUsage());
         Assert.assertFalse(exampleFactoryA2.internal().readyForUsage());
         attribute.get().addAll(Arrays.asList(exampleFactoryA1,exampleFactoryA2));
@@ -162,17 +162,17 @@ public class ReferenceListAttributeTest {
 
     @Test
     public void delegate_root_for_addAll_with_null(){
-        DataReferenceListAttribute<ExampleFactoryA> attribute =new DataReferenceListAttribute<>(ExampleFactoryA.class);
-        attribute.internal_prepareUsage(new ExampleFactoryB());
+        DataReferenceListAttribute<ExampleDataA> attribute =new DataReferenceListAttribute<>(ExampleDataA.class);
+        attribute.internal_prepareUsage(new ExampleDataB());
         attribute.get().add(null);
     }
 
     @Test(expected = IllegalStateException.class)
     public void delegate_root_for_addAll_with_null_nested(){
-        DataReferenceListAttribute<ExampleFactoryA> attribute =new DataReferenceListAttribute<>(ExampleFactoryA.class);
-        attribute.internal_prepareUsage(new ExampleFactoryB());
+        DataReferenceListAttribute<ExampleDataA> attribute =new DataReferenceListAttribute<>(ExampleDataA.class);
+        attribute.internal_prepareUsage(new ExampleDataB());
 
-        final ExampleFactoryA exampleFactoryA1 = new ExampleFactoryA();
+        final ExampleDataA exampleFactoryA1 = new ExampleDataA();
         exampleFactoryA1.referenceListAttribute.add(null);
         attribute.get().add(exampleFactoryA1);
         Assert.assertTrue(exampleFactoryA1.internal().readyForUsage());
@@ -180,20 +180,20 @@ public class ReferenceListAttributeTest {
 
     @Test
     public void test_semanticcopy_self(){
-        DataReferenceListAttribute<ExampleFactoryA> attributeFrom =new DataReferenceListAttribute<>(ExampleFactoryA.class);
+        DataReferenceListAttribute<ExampleDataA> attributeFrom =new DataReferenceListAttribute<>(ExampleDataA.class);
         attributeFrom.setCopySemantic(CopySemantic.SELF);
-        attributeFrom.add(new ExampleFactoryA());
-        DataReferenceListAttribute<ExampleFactoryA> attributeTo =new DataReferenceListAttribute<>(ExampleFactoryA.class);
+        attributeFrom.add(new ExampleDataA());
+        DataReferenceListAttribute<ExampleDataA> attributeTo =new DataReferenceListAttribute<>(ExampleDataA.class);
         attributeFrom.internal_semanticCopyTo(attributeTo);
         Assert.assertTrue("same reference",attributeFrom.get(0)==attributeTo.get(0));
     }
 
     @Test
     public void test_semanticcopy_copy(){
-        DataReferenceListAttribute<ExampleFactoryA> attributeFrom =new DataReferenceListAttribute<>(ExampleFactoryA.class);
+        DataReferenceListAttribute<ExampleDataA> attributeFrom =new DataReferenceListAttribute<>(ExampleDataA.class);
         attributeFrom.setCopySemantic(CopySemantic.COPY);
-        attributeFrom.add(new ExampleFactoryA());
-        DataReferenceListAttribute<ExampleFactoryA> attributeTo =new DataReferenceListAttribute<>(ExampleFactoryA.class);
+        attributeFrom.add(new ExampleDataA());
+        DataReferenceListAttribute<ExampleDataA> attributeTo =new DataReferenceListAttribute<>(ExampleDataA.class);
         attributeFrom.internal_semanticCopyTo(attributeTo);
         Assert.assertTrue("not same reference",attributeFrom.get(0)!=attributeTo.get(0));
         Assert.assertNotEquals(attributeFrom.get(0).getId(),attributeTo.get(0).getId());

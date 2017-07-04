@@ -5,7 +5,7 @@ import java.util.function.Function;
 
 import de.factoryfx.data.Data;
 import de.factoryfx.data.attribute.primitive.BooleanAttribute;
-import de.factoryfx.data.merge.testfactories.ExampleFactoryA;
+import de.factoryfx.data.merge.testfactories.ExampleDataA;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -13,9 +13,9 @@ public class ViewReferenceAttributeTest {
 
     public static class ViewExampleFactory extends Data {
 
-        public final DataViewReferenceAttribute<ViewExampleFactoryRoot,ExampleFactoryA> view= new DataViewReferenceAttribute<>(new Function<ViewExampleFactoryRoot, ExampleFactoryA>() {
+        public final DataViewReferenceAttribute<ViewExampleFactoryRoot,ExampleDataA> view= new DataViewReferenceAttribute<>(new Function<ViewExampleFactoryRoot, ExampleDataA>() {
             @Override
-            public ExampleFactoryA apply(ViewExampleFactoryRoot viewExampleFactoryRoot) {
+            public ExampleDataA apply(ViewExampleFactoryRoot viewExampleFactoryRoot) {
                 if (include.get()){
                     return viewExampleFactoryRoot.exampleFactoryA.get();
                 }
@@ -28,7 +28,7 @@ public class ViewReferenceAttributeTest {
 
     public static class ViewExampleFactoryRoot extends Data{
         public final DataReferenceAttribute<ViewExampleFactory> ref = new DataReferenceAttribute<>(ViewExampleFactory.class);
-        public final DataReferenceAttribute<ExampleFactoryA> exampleFactoryA= new DataReferenceAttribute<>(ExampleFactoryA.class);
+        public final DataReferenceAttribute<ExampleDataA> exampleFactoryA= new DataReferenceAttribute<>(ExampleDataA.class);
 
     }
 
@@ -40,7 +40,7 @@ public class ViewReferenceAttributeTest {
 
         ViewExampleFactoryRoot root = new ViewExampleFactoryRoot();
         root.ref.set(viewExampleFactory);
-        ExampleFactoryA value = new ExampleFactoryA();
+        ExampleDataA value = new ExampleDataA();
         root.exampleFactoryA.set(value);
 
         root = root.internal().prepareUsableCopy();
@@ -55,7 +55,7 @@ public class ViewReferenceAttributeTest {
 
         ViewExampleFactoryRoot root = new ViewExampleFactoryRoot();
         root.ref.set(viewExampleFactory);
-        ExampleFactoryA value = new ExampleFactoryA();
+        ExampleDataA value = new ExampleDataA();
         root.exampleFactoryA.set(value);
 
         root.internal().prepareUsableCopy();
@@ -70,7 +70,7 @@ public class ViewReferenceAttributeTest {
 
         ViewExampleFactoryRoot root = new ViewExampleFactoryRoot();
         root.ref.set(viewExampleFactory);
-        ExampleFactoryA value = new ExampleFactoryA();
+        ExampleDataA value = new ExampleDataA();
         value.stringAttribute.set("123");
         root.exampleFactoryA.set(value);
 
@@ -117,7 +117,7 @@ public class ViewReferenceAttributeTest {
 
         ViewExampleFactoryRoot root = new ViewExampleFactoryRoot();
         root.ref.set(viewExampleFactory);
-        ExampleFactoryA value = new ExampleFactoryA();
+        ExampleDataA value = new ExampleDataA();
         value.stringAttribute.set("123");
         root.exampleFactoryA.set(value);
 
@@ -144,7 +144,7 @@ public class ViewReferenceAttributeTest {
 
         ViewExampleFactoryRoot root = new ViewExampleFactoryRoot();
         root.ref.set(viewExampleFactory);
-        ExampleFactoryA value = new ExampleFactoryA();
+        ExampleDataA value = new ExampleDataA();
         root.exampleFactoryA.set(value);
 
         root.internal().copy();
@@ -158,7 +158,7 @@ public class ViewReferenceAttributeTest {
 
         ViewExampleFactoryRoot root = new ViewExampleFactoryRoot();
         root.ref.set(viewExampleFactory);
-        ExampleFactoryA value = new ExampleFactoryA();
+        ExampleDataA value = new ExampleDataA();
         root.exampleFactoryA.set(value);
 
         root.internal().prepareUsableCopy();
@@ -166,14 +166,14 @@ public class ViewReferenceAttributeTest {
 
     @Test
     public void removeListener() throws Exception {
-        DataViewReferenceAttribute<ViewExampleFactoryRoot,ExampleFactoryA> attribute= new DataViewReferenceAttribute<>(new Function<ViewExampleFactoryRoot, ExampleFactoryA>() {
+        DataViewReferenceAttribute<ViewExampleFactoryRoot,ExampleDataA> attribute= new DataViewReferenceAttribute<>(new Function<ViewExampleFactoryRoot, ExampleDataA>() {
             @Override
-            public ExampleFactoryA apply(ViewExampleFactoryRoot viewExampleFactoryRoot) {
+            public ExampleDataA apply(ViewExampleFactoryRoot viewExampleFactoryRoot) {
                 return viewExampleFactoryRoot.exampleFactoryA.get();
             }
         });
 
-        final AttributeChangeListener<ExampleFactoryA,DataViewReferenceAttribute<ViewExampleFactoryRoot,ExampleFactoryA>> attributeChangeListener = (a, value) -> System.out.println(value);
+        final AttributeChangeListener<ExampleDataA,DataViewReferenceAttribute<ViewExampleFactoryRoot,ExampleDataA>> attributeChangeListener = (a, value) -> System.out.println(value);
         attribute.internal_addListener(attributeChangeListener);
         Assert.assertTrue(attribute.listeners.size()==1);
         attribute.internal_removeListener(attributeChangeListener);
@@ -182,14 +182,14 @@ public class ViewReferenceAttributeTest {
 
     @Test
     public void removeWeakListener() throws Exception {
-        DataViewReferenceAttribute<ViewExampleFactoryRoot,ExampleFactoryA> attribute= new DataViewReferenceAttribute<>(new Function<ViewExampleFactoryRoot, ExampleFactoryA>() {
+        DataViewReferenceAttribute<ViewExampleFactoryRoot,ExampleDataA> attribute= new DataViewReferenceAttribute<>(new Function<ViewExampleFactoryRoot, ExampleDataA>() {
             @Override
-            public ExampleFactoryA apply(ViewExampleFactoryRoot viewExampleFactoryRoot) {
+            public ExampleDataA apply(ViewExampleFactoryRoot viewExampleFactoryRoot) {
                  return viewExampleFactoryRoot.exampleFactoryA.get();
             }
         });
 
-        final AttributeChangeListener<ExampleFactoryA,DataViewReferenceAttribute<ViewExampleFactoryRoot,ExampleFactoryA>> attributeChangeListener = (a, value) -> System.out.println(value);
+        final AttributeChangeListener<ExampleDataA,DataViewReferenceAttribute<ViewExampleFactoryRoot,ExampleDataA>> attributeChangeListener = (a, value) -> System.out.println(value);
         attribute.internal_addListener(new WeakAttributeChangeListener<>(attributeChangeListener));
         Assert.assertTrue(attribute.listeners.size()==1);
         attribute.internal_removeListener(attributeChangeListener);

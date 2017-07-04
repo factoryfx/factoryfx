@@ -4,9 +4,9 @@ import java.util.Arrays;
 import java.util.stream.Collectors;
 
 import de.factoryfx.data.DataTest;
-import de.factoryfx.data.merge.testfactories.ExampleFactoryA;
-import de.factoryfx.data.merge.testfactories.ExampleFactoryB;
-import de.factoryfx.data.merge.testfactories.ExampleFactoryC;
+import de.factoryfx.data.merge.testfactories.ExampleDataA;
+import de.factoryfx.data.merge.testfactories.ExampleDataB;
+import de.factoryfx.data.merge.testfactories.ExampleDataC;
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -16,11 +16,11 @@ public class MergeTest {
 
     @Test
     public void test_merge_no_change(){
-        ExampleFactoryA currentModel = new ExampleFactoryA();
+        ExampleDataA currentModel = new ExampleDataA();
         currentModel.stringAttribute.set("1111111");
-        ExampleFactoryA originalModel = currentModel.internal().copy();
+        ExampleDataA originalModel = currentModel.internal().copy();
         originalModel.stringAttribute.set("1111111");
-        ExampleFactoryA newModel = currentModel.internal().copy();
+        ExampleDataA newModel = currentModel.internal().copy();
         newModel.stringAttribute.set("1111111");
         DataMerger dataMerger = new DataMerger(currentModel, originalModel, newModel);
 
@@ -32,11 +32,11 @@ public class MergeTest {
 
     @Test
     public void test_merge_no_conflict(){
-        ExampleFactoryA currentModel = new ExampleFactoryA();
+        ExampleDataA currentModel = new ExampleDataA();
         currentModel.stringAttribute.set("1111111");
-        ExampleFactoryA originalModel = currentModel.internal().copy();
+        ExampleDataA originalModel = currentModel.internal().copy();
         originalModel.stringAttribute.set("1111111");
-        ExampleFactoryA newModel = currentModel.internal().copy();
+        ExampleDataA newModel = currentModel.internal().copy();
         newModel.stringAttribute.set("2222222");
         DataMerger dataMerger = new DataMerger(currentModel, originalModel, newModel);
 
@@ -48,11 +48,11 @@ public class MergeTest {
 
     @Test
     public void test_merge_only_local_chnage(){
-        ExampleFactoryA currentModel = new ExampleFactoryA();
+        ExampleDataA currentModel = new ExampleDataA();
         currentModel.stringAttribute.set("333333333");
-        ExampleFactoryA originalModel = currentModel.internal().copy();
+        ExampleDataA originalModel = currentModel.internal().copy();
         originalModel.stringAttribute.set("1111111");
-        ExampleFactoryA newModel = currentModel.internal().copy();
+        ExampleDataA newModel = currentModel.internal().copy();
         newModel.stringAttribute.set("1111111");
         DataMerger dataMerger = new DataMerger(currentModel, originalModel, newModel);
 
@@ -64,11 +64,11 @@ public class MergeTest {
 
     @Test
     public void test_merge_conflict(){
-        ExampleFactoryA currentModel = new ExampleFactoryA();
+        ExampleDataA currentModel = new ExampleDataA();
         currentModel.stringAttribute.set("333333333");
-        ExampleFactoryA originalModel = currentModel.internal().copy();
+        ExampleDataA originalModel = currentModel.internal().copy();
         originalModel.stringAttribute.set("1111111");
-        ExampleFactoryA newModel = currentModel.internal().copy();
+        ExampleDataA newModel = currentModel.internal().copy();
         newModel.stringAttribute.set("2222222");
         DataMerger dataMerger = new DataMerger(currentModel, originalModel, newModel);
 
@@ -79,15 +79,15 @@ public class MergeTest {
 
     @Test
     public void test_merge_reference_change(){
-        ExampleFactoryA currentModel = new ExampleFactoryA();
-        ExampleFactoryB oldReference = new ExampleFactoryB();
+        ExampleDataA currentModel = new ExampleDataA();
+        ExampleDataB oldReference = new ExampleDataB();
         oldReference.stringAttribute.set("1");
         currentModel.referenceAttribute.set(oldReference);
 
-        ExampleFactoryA originalModel = currentModel.internal().copy();
+        ExampleDataA originalModel = currentModel.internal().copy();
 
-        ExampleFactoryA newModel = currentModel.internal().copy();
-        ExampleFactoryB newReference = new ExampleFactoryB();
+        ExampleDataA newModel = currentModel.internal().copy();
+        ExampleDataB newReference = new ExampleDataB();
         newReference.stringAttribute.set("2");
         newModel.referenceAttribute.set(newReference);
 
@@ -101,11 +101,11 @@ public class MergeTest {
 
     @Test
     public void test_merge_reference_delete(){
-        ExampleFactoryA currentModel = new ExampleFactoryA();
-        currentModel.referenceAttribute.set(new ExampleFactoryB());
-        ExampleFactoryA originalModel = currentModel.internal().copy();
+        ExampleDataA currentModel = new ExampleDataA();
+        currentModel.referenceAttribute.set(new ExampleDataB());
+        ExampleDataA originalModel = currentModel.internal().copy();
 
-        ExampleFactoryA newModel = currentModel.internal().copy();
+        ExampleDataA newModel = currentModel.internal().copy();
         newModel.referenceAttribute.set(null);
         DataMerger dataMerger = new DataMerger(currentModel, originalModel, newModel);
 
@@ -117,14 +117,14 @@ public class MergeTest {
 
     @Test
     public void test_merge_reference_delete_2(){
-        ExampleFactoryA currentModel = new ExampleFactoryA();
-        currentModel.referenceAttribute.set(new ExampleFactoryB());
+        ExampleDataA currentModel = new ExampleDataA();
+        currentModel.referenceAttribute.set(new ExampleDataB());
         currentModel.referenceAttribute.get().stringAttribute.set("qqqqqqqq");
 
-        ExampleFactoryA originalModel = currentModel.internal().copy();
+        ExampleDataA originalModel = currentModel.internal().copy();
         originalModel.referenceAttribute.get().stringAttribute.set("qqqqqqqq");
 
-        ExampleFactoryA newModel = currentModel.internal().copy();
+        ExampleDataA newModel = currentModel.internal().copy();
         newModel.referenceAttribute.set(null);
         DataMerger dataMerger = new DataMerger(currentModel, originalModel, newModel);
 
@@ -136,14 +136,14 @@ public class MergeTest {
 
     @Test
     public void test_merge_reference_delete_with_conflict(){
-        ExampleFactoryA currentModel = new ExampleFactoryA();
-        currentModel.referenceAttribute.set(new ExampleFactoryB());
+        ExampleDataA currentModel = new ExampleDataA();
+        currentModel.referenceAttribute.set(new ExampleDataB());
         currentModel.referenceAttribute.get().stringAttribute.set("qqqqqqqq");
 
-        ExampleFactoryA originalModel = currentModel.internal().copy();
+        ExampleDataA originalModel = currentModel.internal().copy();
         originalModel.referenceAttribute.get().stringAttribute.set("1111111");
 
-        ExampleFactoryA newModel = currentModel.internal().copy();
+        ExampleDataA newModel = currentModel.internal().copy();
         newModel.referenceAttribute.set(null);
         DataMerger dataMerger = new DataMerger(currentModel, originalModel, newModel);
 
@@ -154,11 +154,11 @@ public class MergeTest {
 
     @Test
     public void test_merge_reference_delete_in_current(){
-        ExampleFactoryA currentModel = new ExampleFactoryA();
+        ExampleDataA currentModel = new ExampleDataA();
         currentModel.stringAttribute.set(null);
-        ExampleFactoryA originalModel = currentModel.internal().copy();
+        ExampleDataA originalModel = currentModel.internal().copy();
         originalModel.stringAttribute.set("1111111");
-        ExampleFactoryA newModel = currentModel.internal().copy();
+        ExampleDataA newModel = currentModel.internal().copy();
         newModel.stringAttribute.set("1111111");
         DataMerger dataMerger = new DataMerger(currentModel, originalModel, newModel);
 
@@ -169,11 +169,11 @@ public class MergeTest {
 
     @Test
     public void test_merge_reference_delete_in_current_conflict(){
-        ExampleFactoryA currentModel = new ExampleFactoryA();
+        ExampleDataA currentModel = new ExampleDataA();
         currentModel.stringAttribute.set(null);
-        ExampleFactoryA originalModel = currentModel.internal().copy();
+        ExampleDataA originalModel = currentModel.internal().copy();
         originalModel.stringAttribute.set("1111111");
-        ExampleFactoryA newModel = currentModel.internal().copy();
+        ExampleDataA newModel = currentModel.internal().copy();
         newModel.stringAttribute.set("1111111qqqqqqqqq");
         DataMerger dataMerger = new DataMerger(currentModel, originalModel, newModel);
 
@@ -185,11 +185,11 @@ public class MergeTest {
 
     @Test
     public void test_merge_new(){
-        ExampleFactoryA currentModel = new ExampleFactoryA();
+        ExampleDataA currentModel = new ExampleDataA();
         currentModel.stringAttribute.set("1111111");
-        ExampleFactoryA originalModel = currentModel.internal().copy();
+        ExampleDataA originalModel = currentModel.internal().copy();
         originalModel.stringAttribute.set(null);
-        ExampleFactoryA newModel = currentModel.internal().copy();
+        ExampleDataA newModel = currentModel.internal().copy();
         newModel.stringAttribute.set(null);
         DataMerger dataMerger = new DataMerger(currentModel, originalModel, newModel);
 
@@ -201,21 +201,21 @@ public class MergeTest {
 
     @Test
     public void test_merge_list_no_change(){
-        ExampleFactoryA currentModel = new ExampleFactoryA();
+        ExampleDataA currentModel = new ExampleDataA();
         {
             {
-                ExampleFactoryB exampleFactoryB = new ExampleFactoryB();
+                ExampleDataB exampleFactoryB = new ExampleDataB();
                 exampleFactoryB.stringAttribute.set("1111111111");
                 currentModel.referenceListAttribute.get().add(exampleFactoryB);
             }
             {
-                ExampleFactoryB exampleFactoryB = new ExampleFactoryB();
+                ExampleDataB exampleFactoryB = new ExampleDataB();
                 exampleFactoryB.stringAttribute.set("2222222222");
                 currentModel.referenceListAttribute.get().add(exampleFactoryB);
             }
         }
 
-        ExampleFactoryA originalModel = currentModel.internal().copy();
+        ExampleDataA originalModel = currentModel.internal().copy();
         {
 //            IdentifiedParticipant identifiedParticipant1 = createIdentifiedParticipant();
 //            identifiedParticipant1.pima.set("1111111111");
@@ -225,7 +225,7 @@ public class MergeTest {
 //            originalModel.messageRoutingModel.get().allParticipants.add(identifiedParticipant2);
         }
 
-        ExampleFactoryA newModel = currentModel.internal().copy();
+        ExampleDataA newModel = currentModel.internal().copy();
         {
 //            IdentifiedParticipant identifiedParticipant1 = createIdentifiedParticipant();
 //            identifiedParticipant1.pima.set("1111111111");
@@ -245,21 +245,21 @@ public class MergeTest {
 
     @Test
     public void test_merge_list_update_no_conflict(){
-        ExampleFactoryA currentModel = new ExampleFactoryA();
+        ExampleDataA currentModel = new ExampleDataA();
         {
             {
-                ExampleFactoryB exampleFactoryB = new ExampleFactoryB();
+                ExampleDataB exampleFactoryB = new ExampleDataB();
                 exampleFactoryB.stringAttribute.set("1111111111");
                 currentModel.referenceListAttribute.get().add(exampleFactoryB);
             }
             {
-                ExampleFactoryB exampleFactoryB = new ExampleFactoryB();
+                ExampleDataB exampleFactoryB = new ExampleDataB();
                 exampleFactoryB.stringAttribute.set("2222222222");
                 currentModel.referenceListAttribute.get().add(exampleFactoryB);
             }
         }
 
-        ExampleFactoryA originalModel = currentModel.internal().copy();
+        ExampleDataA originalModel = currentModel.internal().copy();
         {
 //            IdentifiedParticipant identifiedParticipant1 = createIdentifiedParticipant();
 //            identifiedParticipant1.pima.set("1111111111");
@@ -269,7 +269,7 @@ public class MergeTest {
 //            originalModel.messageRoutingModel.get().allParticipants.add(identifiedParticipant2);
         }
 
-        ExampleFactoryA newModel = currentModel.internal().copy();
+        ExampleDataA newModel = currentModel.internal().copy();
         {
             newModel.referenceListAttribute.get().get(0).stringAttribute.set("3333333333");
             newModel.referenceListAttribute.get().get(1).stringAttribute.set("444444444");
@@ -285,26 +285,26 @@ public class MergeTest {
 
     @Test
     public void test_merge_list_update_conflict(){
-        ExampleFactoryA currentModel = new ExampleFactoryA();
+        ExampleDataA currentModel = new ExampleDataA();
         {
             {
-                ExampleFactoryB exampleFactoryB = new ExampleFactoryB();
+                ExampleDataB exampleFactoryB = new ExampleDataB();
                 exampleFactoryB.stringAttribute.set("1111111111");
                 currentModel.referenceListAttribute.get().add(exampleFactoryB);
             }
             {
-                ExampleFactoryB exampleFactoryB = new ExampleFactoryB();
+                ExampleDataB exampleFactoryB = new ExampleDataB();
                 exampleFactoryB.stringAttribute.set("2222222222");
                 currentModel.referenceListAttribute.get().add(exampleFactoryB);
             }
         }
 
-        ExampleFactoryA originalModel = currentModel.internal().copy();
+        ExampleDataA originalModel = currentModel.internal().copy();
         {
 
         }
 
-        ExampleFactoryA newModel = currentModel.internal().copy();
+        ExampleDataA newModel = currentModel.internal().copy();
         {
             newModel.referenceListAttribute.get(0).stringAttribute.set("3333333");
             newModel.referenceListAttribute.get(1).stringAttribute.set("44444444");
@@ -324,28 +324,28 @@ public class MergeTest {
 
     @Test
     public void test_merge_list_update_no_conflict_new_item(){
-        ExampleFactoryA currentModel = new ExampleFactoryA();
+        ExampleDataA currentModel = new ExampleDataA();
         {
             {
-                ExampleFactoryB exampleFactoryB = new ExampleFactoryB();
+                ExampleDataB exampleFactoryB = new ExampleDataB();
                 exampleFactoryB.stringAttribute.set("1111111111");
                 currentModel.referenceListAttribute.get().add(exampleFactoryB);
             }
             {
-                ExampleFactoryB exampleFactoryB = new ExampleFactoryB();
+                ExampleDataB exampleFactoryB = new ExampleDataB();
                 exampleFactoryB.stringAttribute.set("2222222222");
                 currentModel.referenceListAttribute.get().add(exampleFactoryB);
             }
         }
 
-        ExampleFactoryA originalModel = currentModel.internal().copy();
+        ExampleDataA originalModel = currentModel.internal().copy();
         {
         }
 
-        ExampleFactoryA newModel = currentModel.internal().copy();
+        ExampleDataA newModel = currentModel.internal().copy();
         {
             {
-                ExampleFactoryB exampleFactoryB = new ExampleFactoryB();
+                ExampleDataB exampleFactoryB = new ExampleDataB();
                 exampleFactoryB.stringAttribute.set("33333333333");
                 newModel.referenceListAttribute.get().add(exampleFactoryB);
             }
@@ -362,25 +362,25 @@ public class MergeTest {
 
     @Test
     public void test_merge_list_update_no_conflict_delete_item(){
-        ExampleFactoryA currentModel = new ExampleFactoryA();
+        ExampleDataA currentModel = new ExampleDataA();
         {
             {
-                ExampleFactoryB exampleFactoryB = new ExampleFactoryB();
+                ExampleDataB exampleFactoryB = new ExampleDataB();
                 exampleFactoryB.stringAttribute.set("1111111111");
                 currentModel.referenceListAttribute.get().add(exampleFactoryB);
             }
             {
-                ExampleFactoryB exampleFactoryB = new ExampleFactoryB();
+                ExampleDataB exampleFactoryB = new ExampleDataB();
                 exampleFactoryB.stringAttribute.set("2222222222");
                 currentModel.referenceListAttribute.get().add(exampleFactoryB);
             }
         }
 
-        ExampleFactoryA originalModel = currentModel.internal().copy();
+        ExampleDataA originalModel = currentModel.internal().copy();
         {
         }
 
-        ExampleFactoryA newModel = currentModel.internal().copy();
+        ExampleDataA newModel = currentModel.internal().copy();
         {
             newModel.referenceListAttribute.get().clear();
         }
@@ -393,30 +393,30 @@ public class MergeTest {
 
     @Test
     public void test_merge_list_add_item_current(){
-        ExampleFactoryA currentModel = new ExampleFactoryA();
+        ExampleDataA currentModel = new ExampleDataA();
         {
             {
-                ExampleFactoryB exampleFactoryB = new ExampleFactoryB();
+                ExampleDataB exampleFactoryB = new ExampleDataB();
                 exampleFactoryB.stringAttribute.set("1111111111");
                 currentModel.referenceListAttribute.get().add(exampleFactoryB);
             }
             {
-                ExampleFactoryB exampleFactoryB = new ExampleFactoryB();
+                ExampleDataB exampleFactoryB = new ExampleDataB();
                 exampleFactoryB.stringAttribute.set("2222222222");
                 currentModel.referenceListAttribute.get().add(exampleFactoryB);
             }
         }
 
-        ExampleFactoryA originalModel = currentModel.internal().copy();
+        ExampleDataA originalModel = currentModel.internal().copy();
         {
         }
 
-        ExampleFactoryA newModel = currentModel.internal().copy();
+        ExampleDataA newModel = currentModel.internal().copy();
         {
 
         }
 
-        ExampleFactoryB exampleFactoryB = new ExampleFactoryB();
+        ExampleDataB exampleFactoryB = new ExampleDataB();
         exampleFactoryB.stringAttribute.set("333333333333");
         currentModel.referenceListAttribute.get().add(exampleFactoryB);
 
@@ -431,32 +431,32 @@ public class MergeTest {
 
     @Test
     public void test_merge_list_add_item_current_conflict(){
-        ExampleFactoryA currentModel = new ExampleFactoryA();
+        ExampleDataA currentModel = new ExampleDataA();
         {
             {
-                ExampleFactoryB exampleFactoryB = new ExampleFactoryB();
+                ExampleDataB exampleFactoryB = new ExampleDataB();
                 exampleFactoryB.stringAttribute.set("1111111111");
                 currentModel.referenceListAttribute.get().add(exampleFactoryB);
             }
             {
-                ExampleFactoryB exampleFactoryB = new ExampleFactoryB();
+                ExampleDataB exampleFactoryB = new ExampleDataB();
                 exampleFactoryB.stringAttribute.set("2222222222");
                 currentModel.referenceListAttribute.get().add(exampleFactoryB);
             }
         }
 
-        ExampleFactoryA originalModel = currentModel.internal().copy();
+        ExampleDataA originalModel = currentModel.internal().copy();
         {
         }
 
-        ExampleFactoryA newModel = currentModel.internal().copy();
+        ExampleDataA newModel = currentModel.internal().copy();
         {
             newModel.referenceListAttribute.get(0).stringAttribute.set("33333333");
         }
 
         currentModel.referenceListAttribute.get(0).stringAttribute.set("11111qqqqqqqqq"); //conflict
         {
-            ExampleFactoryB exampleFactoryB = new ExampleFactoryB();
+            ExampleDataB exampleFactoryB = new ExampleDataB();
             exampleFactoryB.stringAttribute.set("4444444444444");
             currentModel.referenceListAttribute.get().add(exampleFactoryB);
         }
@@ -473,34 +473,34 @@ public class MergeTest {
     @Ignore
     @Test
     public void test_merge_list_both_added(){
-        ExampleFactoryA currentModel = new ExampleFactoryA();
+        ExampleDataA currentModel = new ExampleDataA();
         {
             {
-                ExampleFactoryB exampleFactoryB = new ExampleFactoryB();
+                ExampleDataB exampleFactoryB = new ExampleDataB();
                 exampleFactoryB.stringAttribute.set("1");
                 currentModel.referenceListAttribute.get().add(exampleFactoryB);
             }
             {
-                ExampleFactoryB exampleFactoryB = new ExampleFactoryB();
+                ExampleDataB exampleFactoryB = new ExampleDataB();
                 exampleFactoryB.stringAttribute.set("2");
                 currentModel.referenceListAttribute.get().add(exampleFactoryB);
             }
         }
 
-        ExampleFactoryA originalModel = currentModel.internal().copy();
+        ExampleDataA originalModel = currentModel.internal().copy();
         {
         }
 
-        ExampleFactoryA newModel = currentModel.internal().copy();
+        ExampleDataA newModel = currentModel.internal().copy();
         {
             {
-                ExampleFactoryB exampleFactoryB = new ExampleFactoryB();
+                ExampleDataB exampleFactoryB = new ExampleDataB();
                 exampleFactoryB.stringAttribute.set("3");
                 newModel.referenceListAttribute.get().add(exampleFactoryB);
             }
         }
         {
-            ExampleFactoryB exampleFactoryB = new ExampleFactoryB();
+            ExampleDataB exampleFactoryB = new ExampleDataB();
             exampleFactoryB.stringAttribute.set("4");
             currentModel.referenceListAttribute.get().add(exampleFactoryB);
         }
@@ -515,19 +515,19 @@ public class MergeTest {
 
     @Test
     public void test_duplicate_ids_bug() {
-        ExampleFactoryA currentModel = new ExampleFactoryA();
+        ExampleDataA currentModel = new ExampleDataA();
         {
-            ExampleFactoryB exampleFactoryB = new ExampleFactoryB();
+            ExampleDataB exampleFactoryB = new ExampleDataB();
             currentModel.referenceListAttribute.add(exampleFactoryB);
             currentModel.referenceAttribute.set(exampleFactoryB);
         }
 
-        ExampleFactoryA originalModel = currentModel.internal().copy();
+        ExampleDataA originalModel = currentModel.internal().copy();
         {
 
         }
 
-        ExampleFactoryA newModel = currentModel.internal().copy();
+        ExampleDataA newModel = currentModel.internal().copy();
         {
             currentModel.referenceAttribute.set(currentModel.referenceAttribute.get().internal().copy());
 
@@ -544,23 +544,23 @@ public class MergeTest {
 
     @Test
     public void test_duplicate_ids_bug__nested_added_same_id() {
-        ExampleFactoryA currentModel = new ExampleFactoryA();
+        ExampleDataA currentModel = new ExampleDataA();
         {
-            ExampleFactoryB exampleFactoryB = new ExampleFactoryB();
+            ExampleDataB exampleFactoryB = new ExampleDataB();
             currentModel.referenceListAttribute.add(exampleFactoryB);
             currentModel.referenceAttribute.set(exampleFactoryB);
 
-            exampleFactoryB.referenceAttributeC.set(new ExampleFactoryC());
+            exampleFactoryB.referenceAttributeC.set(new ExampleDataC());
         }
 
-        ExampleFactoryA originalModel = currentModel.internal().copy();
+        ExampleDataA originalModel = currentModel.internal().copy();
         {
 
         }
 
-        ExampleFactoryA newModel = currentModel.internal().copy();
+        ExampleDataA newModel = currentModel.internal().copy();
         {
-            ExampleFactoryB value = new ExampleFactoryB();
+            ExampleDataB value = new ExampleDataB();
             value.referenceAttributeC.set(currentModel.referenceAttribute.get().referenceAttributeC.get().internal().copy());
             currentModel.referenceAttribute.set(value);
         }
@@ -575,11 +575,11 @@ public class MergeTest {
 
     @Test
     public void test_merge_conflict_but_resolvable_cause_set_to_same_value(){
-        ExampleFactoryA currentModel = new ExampleFactoryA();
+        ExampleDataA currentModel = new ExampleDataA();
         currentModel.stringAttribute.set("3");
-        ExampleFactoryA originalModel = currentModel.internal().copy();
+        ExampleDataA originalModel = currentModel.internal().copy();
         originalModel.stringAttribute.set("1");
-        ExampleFactoryA newModel = currentModel.internal().copy();
+        ExampleDataA newModel = currentModel.internal().copy();
         newModel.stringAttribute.set("3");
         DataMerger dataMerger = new DataMerger(currentModel, originalModel, newModel);
 
@@ -591,13 +591,13 @@ public class MergeTest {
 
     @Test
     public void test_no_change_different_current(){
-        ExampleFactoryA currentModel = new ExampleFactoryA();
+        ExampleDataA currentModel = new ExampleDataA();
         currentModel.stringAttribute.set("3");
 
-        ExampleFactoryA originalModel = currentModel.internal().copy();
+        ExampleDataA originalModel = currentModel.internal().copy();
         originalModel.stringAttribute.set("1");
 
-        ExampleFactoryA newModel = currentModel.internal().copy();
+        ExampleDataA newModel = currentModel.internal().copy();
         newModel.stringAttribute.set("1");
 
         DataMerger dataMerger = new DataMerger(currentModel, originalModel, newModel);
@@ -610,14 +610,14 @@ public class MergeTest {
 
     @Test
     public void test_no_change_different_current_reference(){
-        ExampleFactoryA currentModel = new ExampleFactoryA();
-        ExampleFactoryB newValueInCurrent = new ExampleFactoryB();
+        ExampleDataA currentModel = new ExampleDataA();
+        ExampleDataB newValueInCurrent = new ExampleDataB();
         currentModel.referenceAttribute.set(newValueInCurrent);
 
-        ExampleFactoryA originalModel = currentModel.internal().copy();
-        originalModel.referenceAttribute.set(new ExampleFactoryB());
+        ExampleDataA originalModel = currentModel.internal().copy();
+        originalModel.referenceAttribute.set(new ExampleDataB());
 
-        ExampleFactoryA newModel = originalModel.internal().copy();
+        ExampleDataA newModel = originalModel.internal().copy();
 
 
         DataMerger dataMerger = new DataMerger(currentModel, originalModel, newModel);
@@ -629,15 +629,15 @@ public class MergeTest {
 
     @Test
     public void test_no_change_different_current_referencelist(){
-        ExampleFactoryA currentModel = new ExampleFactoryA();
-        ExampleFactoryB newValueInCurrent = new ExampleFactoryB();
+        ExampleDataA currentModel = new ExampleDataA();
+        ExampleDataB newValueInCurrent = new ExampleDataB();
         currentModel.referenceListAttribute.add(newValueInCurrent);
 
-        ExampleFactoryA originalModel = currentModel.internal().copy();
+        ExampleDataA originalModel = currentModel.internal().copy();
         originalModel.referenceListAttribute.get().clear();
-        originalModel.referenceListAttribute.add(new ExampleFactoryB());
+        originalModel.referenceListAttribute.add(new ExampleDataB());
 
-        ExampleFactoryA newModel = originalModel.internal().copy();
+        ExampleDataA newModel = originalModel.internal().copy();
 
 
         DataMerger dataMerger = new DataMerger(currentModel, originalModel, newModel);
@@ -649,15 +649,15 @@ public class MergeTest {
 
     @Test
     public void test_reflist_noconflict(){
-        ExampleFactoryA currentModel = new ExampleFactoryA();
-        ExampleFactoryB newValueInCurrent = new ExampleFactoryB();
+        ExampleDataA currentModel = new ExampleDataA();
+        ExampleDataB newValueInCurrent = new ExampleDataB();
         currentModel.referenceListAttribute.add(newValueInCurrent);
 
-        ExampleFactoryA originalModel = currentModel.internal().copy();
+        ExampleDataA originalModel = currentModel.internal().copy();
 
-        ExampleFactoryA newModel = currentModel.internal().copy();
+        ExampleDataA newModel = currentModel.internal().copy();
         originalModel.referenceListAttribute.get().clear();
-        originalModel.referenceListAttribute.add(new ExampleFactoryB());
+        originalModel.referenceListAttribute.add(new ExampleDataB());
 
         DataMerger dataMerger = new DataMerger(currentModel, originalModel, newModel);
 
@@ -670,7 +670,7 @@ public class MergeTest {
     @Test
     public void test_copy_withObjectValue(){
         DataTest.ExampleObjectProperty currentModel = new DataTest.ExampleObjectProperty();
-        ExampleFactoryB newValueInCurrent = new ExampleFactoryB();
+        ExampleDataB newValueInCurrent = new ExampleDataB();
         currentModel.objectValueAttribute.set("test2");
 
         DataTest.ExampleObjectProperty originalModel = currentModel.internal().copy();

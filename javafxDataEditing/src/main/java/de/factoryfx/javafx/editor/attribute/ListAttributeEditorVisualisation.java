@@ -19,10 +19,14 @@ public abstract class ListAttributeEditorVisualisation<T> implements AttributeEd
 
     @Override
     public Node createVisualisation() {
-        return createContent(attributeValue);
+        return createContent(attributeValue,false);
     }
 
+    @Override
+    public Node createReadOnlyVisualisation() {
+        return createContent(attributeValue,true);
+    }
 
-    public abstract Node createContent(List<T> attributeValue);
+    public abstract Node createContent(List<T> attributeValue, boolean readonly);
 
 }

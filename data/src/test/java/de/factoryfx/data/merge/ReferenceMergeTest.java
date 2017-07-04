@@ -1,7 +1,7 @@
 package de.factoryfx.data.merge;
 
-import de.factoryfx.data.merge.testfactories.ExampleFactoryA;
-import de.factoryfx.data.merge.testfactories.ExampleFactoryB;
+import de.factoryfx.data.merge.testfactories.ExampleDataA;
+import de.factoryfx.data.merge.testfactories.ExampleDataB;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -10,11 +10,11 @@ public class ReferenceMergeTest extends MergeHelperTestBase{
 
     @Test
     public void test_same(){
-        ExampleFactoryA current = new ExampleFactoryA();
-        ExampleFactoryB newValue = new ExampleFactoryB();
+        ExampleDataA current = new ExampleDataA();
+        ExampleDataB newValue = new ExampleDataB();
         current.referenceAttribute.set(newValue);
 
-        ExampleFactoryA newVersion = new ExampleFactoryA();
+        ExampleDataA newVersion = new ExampleDataA();
         newVersion.referenceAttribute.set(newValue);
 
         Assert.assertTrue( this.merge(current, current, newVersion).hasNoConflicts());
@@ -23,12 +23,12 @@ public class ReferenceMergeTest extends MergeHelperTestBase{
 
     @Test
     public void test_merge_change(){
-        ExampleFactoryA current = new ExampleFactoryA();
-        ExampleFactoryB newValue = new ExampleFactoryB();
+        ExampleDataA current = new ExampleDataA();
+        ExampleDataB newValue = new ExampleDataB();
         current.referenceAttribute.set(newValue);
 
-        ExampleFactoryA newVersion = new ExampleFactoryA();
-        ExampleFactoryB newValue2 = new ExampleFactoryB();
+        ExampleDataA newVersion = new ExampleDataA();
+        ExampleDataB newValue2 = new ExampleDataB();
         newVersion.referenceAttribute.set(newValue2);
 
         Assert.assertTrue(merge(current, current, newVersion).hasNoConflicts());
@@ -37,11 +37,11 @@ public class ReferenceMergeTest extends MergeHelperTestBase{
 
     @Test
     public void test_delte(){
-        ExampleFactoryA current = new ExampleFactoryA();
-        ExampleFactoryB newValue = new ExampleFactoryB();
+        ExampleDataA current = new ExampleDataA();
+        ExampleDataB newValue = new ExampleDataB();
         current.referenceAttribute.set(newValue);
 
-        ExampleFactoryA newVersion = new ExampleFactoryA();
+        ExampleDataA newVersion = new ExampleDataA();
         newVersion.referenceAttribute.set(null);
 
         Assert.assertTrue(merge(current, current, newVersion).hasNoConflicts());

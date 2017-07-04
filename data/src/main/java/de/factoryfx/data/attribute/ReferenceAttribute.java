@@ -149,4 +149,18 @@ public abstract class ReferenceAttribute<T extends Data, A extends ReferenceBase
         }
         return new ArrayList<>();
     }
+
+    boolean defaultValueUsed;
+    @SuppressWarnings("unchecked")
+    public A defaultValue(T defaultValue) {
+        defaultValueUsed=true;
+        return super.defaultValue(defaultValue);
+    }
+    //**attributes with a default value can not be set to null(deleted)*/
+    public boolean internal_isUserDeletable(){
+        return !defaultValueUsed;
+    }
+
+
+
 }

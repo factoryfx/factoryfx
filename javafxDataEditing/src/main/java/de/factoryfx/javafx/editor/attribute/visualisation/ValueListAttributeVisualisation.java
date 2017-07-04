@@ -38,7 +38,7 @@ public class ValueListAttributeVisualisation<T> extends ListAttributeEditorVisua
     }
 
     @Override
-    public Node createContent(List<T> attributeValue) {
+    public Node createContent(List<T> attributeValue, boolean readonly) {
         TextField textField = new TextField();
         TypedTextFieldHelper.setupLongTextField(textField);
 //        textField.textProperty().bindBidirectional(boundTo, new LongStringConverter());
@@ -112,6 +112,8 @@ public class ValueListAttributeVisualisation<T> extends ListAttributeEditorVisua
         editorWrapper.getChildren().addAll(content,addButton,replaceButton);
         vBox.getChildren().add(new Separator());
         vBox.getChildren().add(editorWrapper);
+
+        listControls.setDisable(readonly);
 
 //        editorWrapper.disableProperty().edit(tableView.getSelectionModel().selectedItemProperty().isNull().and(content.focusedProperty().not()));
         return vBox;

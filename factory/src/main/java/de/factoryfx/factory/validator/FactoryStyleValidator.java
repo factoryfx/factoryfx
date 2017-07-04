@@ -6,9 +6,7 @@ import java.util.List;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
-import de.factoryfx.data.attribute.Attribute;
 import de.factoryfx.factory.FactoryBase;
-import javafx.beans.binding.When;
 
 public class FactoryStyleValidator {
 
@@ -29,9 +27,7 @@ public class FactoryStyleValidator {
             factoryStyleValidations.add(new PublicValidation(factoryBase, field));
             factoryStyleValidations.add(new FinalValidation(factoryBase, field));
             return factoryStyleValidations;
-        }, factoryBase -> {
-            return new ArrayList<>();
-        });
+        }, factoryBase -> new ArrayList<>());
     }
 
     /** test if the model is valid:

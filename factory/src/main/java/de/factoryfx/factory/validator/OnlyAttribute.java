@@ -4,8 +4,6 @@ import java.lang.reflect.Field;
 import java.util.Optional;
 
 import de.factoryfx.data.attribute.Attribute;
-import de.factoryfx.data.attribute.ReferenceAttribute;
-import de.factoryfx.data.attribute.ReferenceListAttribute;
 import de.factoryfx.factory.FactoryBase;
 
 public class OnlyAttribute implements FactoryStyleValidation {

@@ -35,7 +35,7 @@ public class ReferenceListAttributeVisualisation extends ListAttributeEditorVisu
 
 
     @Override
-    public Node createContent(List<Data> attributeValue) {
+    public Node createContent(List<Data> attributeValue, boolean readonly) {
         tableView.setItems((ObservableList<Data>) attributeValue);
         tableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         TableColumn<Data, String> test = new TableColumn<>("Data");
@@ -63,6 +63,10 @@ public class ReferenceListAttributeVisualisation extends ListAttributeEditorVisu
         VBox.setVgrow(tableView,Priority.ALWAYS);
         vbox.getChildren().add(tableView);
         vbox.getChildren().add(buttons);
+
+        buttons.setDisable(readonly);
         return vbox;
     }
+
+
 }

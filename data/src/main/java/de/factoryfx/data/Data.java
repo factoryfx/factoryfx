@@ -400,6 +400,8 @@ public class Data {
             data.visitAttributesFlat((attributeVariableName, attribute) -> {
                 attribute.internal_prepareUsage(root);
             });
+
+            data.visitChildFactoriesFlat(child -> child.parent=data);
         }
         for (Data data: childrenDeep){
             data.visitAttributesFlat((attributeVariableName, attribute) -> {
@@ -410,9 +412,14 @@ public class Data {
         return (T)this;
     }
 
-    private <T extends Data> T prepareUsage() {
+    private <T extends Data> T prepareUsableCopy() {
         T result = reconstructMetadataDeepRoot();
         return result.propagateRoot(result);
+    }
+
+    private Data parent;
+    private Data getParent(){
+        return parent;
     }
 
     private Data root;
@@ -697,7 +704,7 @@ public class Data {
          * only call on root
          * return usable copy */
         public <T extends Data> T prepareUsableCopy() {
-            return data.prepareUsage();
+            return data.prepareUsableCopy();
         }
 
         /** only call on root*/
@@ -718,6 +725,9 @@ public class Data {
             return data.getRoot();
         }
 
+        public Data getParent(){
+            return data.getParent();
+        }
     }
 
 }

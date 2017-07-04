@@ -7,9 +7,9 @@ import de.factoryfx.data.Data;
 import de.factoryfx.data.attribute.types.StringAttribute;
 import de.factoryfx.data.jackson.ObjectMapperBuilder;
 import de.factoryfx.data.jackson.SimpleObjectMapper;
-import de.factoryfx.data.merge.testfactories.ExampleFactoryA;
-import de.factoryfx.data.merge.testfactories.ExampleFactoryB;
-import de.factoryfx.data.merge.testfactories.ExampleFactoryC;
+import de.factoryfx.data.merge.testfactories.ExampleDataA;
+import de.factoryfx.data.merge.testfactories.ExampleDataB;
+import de.factoryfx.data.merge.testfactories.ExampleDataC;
 import de.factoryfx.data.validation.StringRequired;
 import de.factoryfx.data.validation.ValidationError;
 import org.junit.Assert;
@@ -34,17 +34,17 @@ public class AttributeTest {
 
     @Test
     public void test_reconstructMetadataDeepRoot() throws Exception{
-        ExampleFactoryA exampleFactoryA = new ExampleFactoryA();
-        ExampleFactoryB exampleFactoryB = new ExampleFactoryB();
-        ExampleFactoryC exampleFactoryC = new ExampleFactoryC();
+        ExampleDataA exampleFactoryA = new ExampleDataA();
+        ExampleDataB exampleFactoryB = new ExampleDataB();
+        ExampleDataC exampleFactoryC = new ExampleDataC();
         exampleFactoryB.referenceAttributeC.set(exampleFactoryC);
         exampleFactoryA.referenceAttribute.set(exampleFactoryB);
 
-        exampleFactoryA.referenceListAttribute.add(new ExampleFactoryB());
+        exampleFactoryA.referenceListAttribute.add(new ExampleDataB());
 
         SimpleObjectMapper mapper = ObjectMapperBuilder.build();
         String string = mapper.writeValueAsString(exampleFactoryA);
-        ExampleFactoryA readed = ObjectMapperBuilder.buildNewObjectMapper().readValue(string,ExampleFactoryA.class);
+        ExampleDataA readed = ObjectMapperBuilder.buildNewObjectMapper().readValue(string,ExampleDataA.class);
 
 
         Assert.assertEquals(null,readed.stringAttribute);

@@ -1,14 +1,9 @@
 package de.factoryfx.factory.atrribute;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
+import java.util.function.Predicate;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
 import de.factoryfx.data.Data;
-import de.factoryfx.data.attribute.Attribute;
-import de.factoryfx.data.attribute.DataReferenceListAttribute;
 import de.factoryfx.data.attribute.ReferenceListAttribute;
 import de.factoryfx.factory.FactoryBase;
 
@@ -25,14 +20,16 @@ public class FactoryReferenceListAttribute<L,T extends FactoryBase<? extends L,?
     }
 
     public List<L> instances(){
-        if (get()==null){
-            return null;
-        }
         ArrayList<L> result = new ArrayList<>();
         for(T item: get()){
             result.add(item.internalFactory().instance());
         }
         return result;
+    }
+
+    public L instance(Predicate<T> filter){
+        Optional<T> any = get().stream().filter(filter).findAny();
+        return any.map(t -> t.internalFactory().instance()).orElse(null);
     }
 
     public boolean add(T data){
@@ -45,6 +42,7 @@ public class FactoryReferenceListAttribute<L,T extends FactoryBase<? extends L,?
         return setup((Class<T>)clazz);
     }
 
+    @SuppressWarnings("unchecked")
     public FactoryReferenceListAttribute<L,T> setup(Class<T> clazz){
         this.possibleValueProvider(data -> {
             Set<T> result = new HashSet<>();

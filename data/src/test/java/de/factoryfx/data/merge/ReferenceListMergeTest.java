@@ -2,8 +2,8 @@ package de.factoryfx.data.merge;
 
 import java.util.stream.Collectors;
 
-import de.factoryfx.data.merge.testfactories.ExampleFactoryA;
-import de.factoryfx.data.merge.testfactories.ExampleFactoryB;
+import de.factoryfx.data.merge.testfactories.ExampleDataA;
+import de.factoryfx.data.merge.testfactories.ExampleDataB;
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -12,19 +12,19 @@ public class ReferenceListMergeTest extends MergeHelperTestBase{
 
     @Test
     public void test_same(){
-        ExampleFactoryA current = new ExampleFactoryA();
-        ExampleFactoryB newValue1 = new ExampleFactoryB();
+        ExampleDataA current = new ExampleDataA();
+        ExampleDataB newValue1 = new ExampleDataB();
         newValue1.stringAttribute.set("1111");
-        ExampleFactoryB newValue2 = new ExampleFactoryB();
+        ExampleDataB newValue2 = new ExampleDataB();
         newValue2.stringAttribute.set("2222");
-        ExampleFactoryB newValue3 = new ExampleFactoryB();
+        ExampleDataB newValue3 = new ExampleDataB();
         newValue3.stringAttribute.set("2222");
         current.referenceListAttribute.add(newValue1);
         current.referenceListAttribute.add(newValue2);
         current.referenceListAttribute.add(newValue3);
 
 
-        ExampleFactoryA aTest2 = new ExampleFactoryA();
+        ExampleDataA aTest2 = new ExampleDataA();
         aTest2.referenceListAttribute.add(newValue1);
         aTest2.referenceListAttribute.add(newValue2);
         aTest2.referenceListAttribute.add(newValue3);
@@ -38,19 +38,19 @@ public class ReferenceListMergeTest extends MergeHelperTestBase{
 
     @Test
     public void test_1_new_addedt(){
-        ExampleFactoryA current = new ExampleFactoryA();
-        ExampleFactoryB newValue1 = new ExampleFactoryB();
-        ExampleFactoryB newValue2 = new ExampleFactoryB();
-        ExampleFactoryB newValue3 = new ExampleFactoryB();
+        ExampleDataA current = new ExampleDataA();
+        ExampleDataB newValue1 = new ExampleDataB();
+        ExampleDataB newValue2 = new ExampleDataB();
+        ExampleDataB newValue3 = new ExampleDataB();
         current.referenceListAttribute.add(newValue1);
         current.referenceListAttribute.add(newValue2);
         current.referenceListAttribute.add(newValue3);
 
 
-        ExampleFactoryA aTest2 = new ExampleFactoryA();
+        ExampleDataA aTest2 = new ExampleDataA();
         aTest2.referenceListAttribute.add(newValue1);
         aTest2.referenceListAttribute.add(newValue2);
-        ExampleFactoryB replacedValue = new ExampleFactoryB();
+        ExampleDataB replacedValue = new ExampleDataB();
         aTest2.referenceListAttribute.add(replacedValue);
 
         Assert.assertTrue(merge(current, current, aTest2).hasNoConflicts());
@@ -62,17 +62,17 @@ public class ReferenceListMergeTest extends MergeHelperTestBase{
 
     @Test
     public void test_1_current_added(){
-        ExampleFactoryA current = new ExampleFactoryA();
-        ExampleFactoryB newValue1 = new ExampleFactoryB();
-        ExampleFactoryB newValue2 = new ExampleFactoryB();
+        ExampleDataA current = new ExampleDataA();
+        ExampleDataB newValue1 = new ExampleDataB();
+        ExampleDataB newValue2 = new ExampleDataB();
         current.referenceListAttribute.add(newValue1);
         current.referenceListAttribute.add(newValue2);
 
-        ExampleFactoryA orginal = current.internal().copy();
-        ExampleFactoryB replacedValue = new ExampleFactoryB();
+        ExampleDataA orginal = current.internal().copy();
+        ExampleDataB replacedValue = new ExampleDataB();
         current.referenceListAttribute.add(replacedValue);
 
-        ExampleFactoryA aTest2 = new ExampleFactoryA();
+        ExampleDataA aTest2 = new ExampleDataA();
         aTest2.referenceListAttribute.add(newValue1);
         aTest2.referenceListAttribute.add(newValue2);
 
@@ -85,16 +85,16 @@ public class ReferenceListMergeTest extends MergeHelperTestBase{
 
     @Test
     public void test_delete(){
-        ExampleFactoryA current = new ExampleFactoryA();
-        ExampleFactoryB newValue1 = new ExampleFactoryB();
-        ExampleFactoryB newValue2 = new ExampleFactoryB();
-        ExampleFactoryB newValue3 = new ExampleFactoryB();
+        ExampleDataA current = new ExampleDataA();
+        ExampleDataB newValue1 = new ExampleDataB();
+        ExampleDataB newValue2 = new ExampleDataB();
+        ExampleDataB newValue3 = new ExampleDataB();
         current.referenceListAttribute.add(newValue1);
         current.referenceListAttribute.add(newValue2);
         current.referenceListAttribute.add(newValue3);
 
 
-        ExampleFactoryA aTest2 = new ExampleFactoryA();
+        ExampleDataA aTest2 = new ExampleDataA();
         aTest2.referenceListAttribute.add(newValue1);
         aTest2.referenceListAttribute.add(newValue2);
 
@@ -107,20 +107,20 @@ public class ReferenceListMergeTest extends MergeHelperTestBase{
     @Ignore
     @Test
     public void test_both_added(){
-        ExampleFactoryA current = new ExampleFactoryA();
-        ExampleFactoryB newValue1 = new ExampleFactoryB();
-        ExampleFactoryB newValue2 = new ExampleFactoryB();
+        ExampleDataA current = new ExampleDataA();
+        ExampleDataB newValue1 = new ExampleDataB();
+        ExampleDataB newValue2 = new ExampleDataB();
         current.referenceListAttribute.add(newValue1);
         current.referenceListAttribute.add(newValue2);
 
 
-        ExampleFactoryA orginal = current.internal().copy();
-        ExampleFactoryA update = current.internal().copy();
+        ExampleDataA orginal = current.internal().copy();
+        ExampleDataA update = current.internal().copy();
 
-        ExampleFactoryB newValue3 = new ExampleFactoryB();
+        ExampleDataB newValue3 = new ExampleDataB();
         current.referenceListAttribute.add(newValue3);
 
-        ExampleFactoryB newValue4 = new ExampleFactoryB();
+        ExampleDataB newValue4 = new ExampleDataB();
         update.referenceListAttribute.add(newValue4);
 
         Assert.assertTrue(merge(current, orginal, update).hasNoConflicts());
@@ -133,15 +133,15 @@ public class ReferenceListMergeTest extends MergeHelperTestBase{
 
     @Test
     public void test_no_change_should_merge_nothing(){
-        ExampleFactoryA current = new ExampleFactoryA();
-        ExampleFactoryB newValue1 = new ExampleFactoryB();
-        ExampleFactoryB newValue2 = new ExampleFactoryB();
+        ExampleDataA current = new ExampleDataA();
+        ExampleDataB newValue1 = new ExampleDataB();
+        ExampleDataB newValue2 = new ExampleDataB();
         current.referenceListAttribute.add(newValue1);
         current.referenceListAttribute.add(newValue2);
 
 
-        ExampleFactoryA orginal = current.internal().copy();
-        ExampleFactoryA update = current.internal().copy();
+        ExampleDataA orginal = current.internal().copy();
+        ExampleDataA update = current.internal().copy();
 
         final MergeDiffInfo merge = merge(current, orginal, update);
         Assert.assertTrue(merge.hasNoConflicts());
@@ -151,17 +151,17 @@ public class ReferenceListMergeTest extends MergeHelperTestBase{
 
     @Test
     public void test_order_changed(){
-        ExampleFactoryA current = new ExampleFactoryA();
-        ExampleFactoryB newValue1 = new ExampleFactoryB();
-        ExampleFactoryB newValue2 = new ExampleFactoryB();
+        ExampleDataA current = new ExampleDataA();
+        ExampleDataB newValue1 = new ExampleDataB();
+        ExampleDataB newValue2 = new ExampleDataB();
         current.referenceListAttribute.add(newValue1);
         current.referenceListAttribute.add(newValue2);
 
-        ExampleFactoryA orginal = current.internal().copy();
+        ExampleDataA orginal = current.internal().copy();
 
-        ExampleFactoryA update = current.internal().copy();
-        final ExampleFactoryB first = update.referenceListAttribute.get(0);
-        final ExampleFactoryB second = update.referenceListAttribute.get(1);
+        ExampleDataA update = current.internal().copy();
+        final ExampleDataB first = update.referenceListAttribute.get(0);
+        final ExampleDataB second = update.referenceListAttribute.get(1);
         update.referenceListAttribute.clear();
         update.referenceListAttribute.add(second);
         update.referenceListAttribute.add(first);

@@ -122,7 +122,19 @@ public class AttributeEditorBuilder {
             @Override
             public AttributeEditor<Data, ?> createEditor(Attribute<?, ?> attribute, DataEditor dataEditor, Data previousData) {
                 ReferenceAttribute referenceAttribute = (ReferenceAttribute) attribute;
-                return new AttributeEditor<>(referenceAttribute,new ReferenceAttributeVisualisation(uniformDesign,dataEditor, referenceAttribute::internal_createNewPossibleValues,referenceAttribute::set, referenceAttribute::internal_possibleValues, referenceAttribute::internal_deleteFactory, referenceAttribute.internal_isUserEditable(),referenceAttribute.internal_isUserSelectable(),referenceAttribute.internal_isUserCreatable()),uniformDesign);
+                return new AttributeEditor<>(referenceAttribute,
+                        new ReferenceAttributeVisualisation(
+                            uniformDesign,
+                            dataEditor,
+                            referenceAttribute::internal_createNewPossibleValues,
+                            referenceAttribute::set,
+                            referenceAttribute::internal_possibleValues,
+                            referenceAttribute::internal_deleteFactory,
+                            referenceAttribute.internal_isUserEditable(),
+                            referenceAttribute.internal_isUserSelectable(),
+                            referenceAttribute.internal_isUserCreatable(),
+                            referenceAttribute.internal_isUserDeletable()),
+                        uniformDesign);
 
             }
         });
@@ -134,10 +146,11 @@ public class AttributeEditorBuilder {
             }
 
             @Override
+            @SuppressWarnings("unchecked")
             public AttributeEditor<List<Data>, ?> createEditor(Attribute<?, ?> attribute, DataEditor dataEditor, Data previousData) {
                 ReferenceListAttribute referenceListAttribute = (ReferenceListAttribute)attribute;
                 final TableView<Data> dataTableView = new TableView<>();
-                final ReferenceListAttributeVisualisation referenceListAttributeVisualisation = new ReferenceListAttributeVisualisation(uniformDesign, dataEditor, dataTableView, new DataListEditWidget<>(referenceListAttribute.get(), dataTableView, dataEditor,uniformDesign,referenceListAttribute));
+                final ReferenceListAttributeVisualisation referenceListAttributeVisualisation = new ReferenceListAttributeVisualisation(uniformDesign, dataEditor, dataTableView, new DataListEditWidget<Data>(referenceListAttribute.get(), dataTableView, dataEditor,uniformDesign,referenceListAttribute));
                 ExpandableAttributeVisualisation<List<Data>> expandableAttributeVisualisation= new ExpandableAttributeVisualisation<>(referenceListAttributeVisualisation,uniformDesign,(l)->"Items: "+l.size(),FontAwesome.Glyph.LIST);
                 if (referenceListAttribute.get().contains(previousData)){
                     expandableAttributeVisualisation.expand();

@@ -2,8 +2,8 @@ package de.factoryfx.data.merge;
 
 import de.factoryfx.data.Data;
 import de.factoryfx.data.attribute.types.StringAttribute;
-import de.factoryfx.data.merge.testfactories.ExampleFactoryA;
-import de.factoryfx.data.merge.testfactories.ExampleFactoryB;
+import de.factoryfx.data.merge.testfactories.ExampleDataA;
+import de.factoryfx.data.merge.testfactories.ExampleDataB;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -11,10 +11,10 @@ public class DataMergerMergerTest {
 
     @Test
     public void test_diff_info(){
-        ExampleFactoryA currentModel = new ExampleFactoryA();
+        ExampleDataA currentModel = new ExampleDataA();
         currentModel.stringAttribute.set("1111111");
-        ExampleFactoryA originalModel = currentModel.internal().copy();
-        ExampleFactoryA newModel = currentModel.internal().copy();
+        ExampleDataA originalModel = currentModel.internal().copy();
+        ExampleDataA newModel = currentModel.internal().copy();
         newModel.stringAttribute.set("2222222");
         DataMerger dataMerger = new DataMerger(currentModel, originalModel, newModel);
 
@@ -26,28 +26,28 @@ public class DataMergerMergerTest {
 
     @Test
     public void test_diff_info_null(){
-        ExampleFactoryA currentModel = new ExampleFactoryA();
-        ExampleFactoryB exampleFactoryB = new ExampleFactoryB();
+        ExampleDataA currentModel = new ExampleDataA();
+        ExampleDataB exampleFactoryB = new ExampleDataB();
         exampleFactoryB.stringAttribute.set("Factory to be deleted");
         currentModel.referenceAttribute.set(exampleFactoryB);
-        ExampleFactoryA originalModel = currentModel.internal().copy();
-        ExampleFactoryA newModel = currentModel.internal().copy();
+        ExampleDataA originalModel = currentModel.internal().copy();
+        ExampleDataA newModel = currentModel.internal().copy();
         newModel.referenceAttribute.set(null);
         DataMerger dataMerger = new DataMerger(currentModel, originalModel, newModel);
 
         MergeDiffInfo mergeDiff= dataMerger.mergeIntoCurrent((permission)->true);
         Assert.assertTrue(mergeDiff.hasNoConflicts());
-        Assert.assertTrue((((ExampleFactoryB)mergeDiff.mergeInfos.get(0).getAttribute(mergeDiff.getPreviousRootData()).get()).stringAttribute.get()).equals("Factory to be deleted"));
+        Assert.assertTrue((((ExampleDataB)mergeDiff.mergeInfos.get(0).getAttribute(mergeDiff.getPreviousRootData()).get()).stringAttribute.get()).equals("Factory to be deleted"));
         Assert.assertEquals("empty",mergeDiff.mergeInfos.get(0).getAttributeDisplayText(mergeDiff.getNewRootData()));
     }
 
     @Test
     public void test_diff_info_mergediff_for_root(){
-        ExampleFactoryA currentModel = new ExampleFactoryA();
-        ExampleFactoryB exampleFactoryB = new ExampleFactoryB();
+        ExampleDataA currentModel = new ExampleDataA();
+        ExampleDataB exampleFactoryB = new ExampleDataB();
         currentModel.referenceAttribute.set(exampleFactoryB);
-        ExampleFactoryA originalModel = currentModel.internal().copy();
-        ExampleFactoryA newModel = currentModel.internal().copy();
+        ExampleDataA originalModel = currentModel.internal().copy();
+        ExampleDataA newModel = currentModel.internal().copy();
 
         newModel.referenceAttribute.set(null);
 

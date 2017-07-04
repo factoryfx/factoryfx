@@ -4,20 +4,15 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 import de.factoryfx.data.attribute.*;
-import de.factoryfx.data.attribute.primitive.IntegerAttribute;
 import de.factoryfx.data.attribute.types.ObjectValueAttribute;
 import de.factoryfx.data.attribute.types.StringAttribute;
-import de.factoryfx.data.attribute.types.StringListAttribute;
 import de.factoryfx.data.jackson.ObjectMapperBuilder;
 import de.factoryfx.data.jackson.SimpleObjectMapper;
-import de.factoryfx.data.merge.DataMerger;
-import de.factoryfx.data.merge.MergeDiffInfo;
-import de.factoryfx.data.merge.testfactories.ExampleFactoryA;
-import de.factoryfx.data.merge.testfactories.ExampleFactoryB;
-import de.factoryfx.data.merge.testfactories.ExampleFactoryC;
+import de.factoryfx.data.merge.testfactories.ExampleDataA;
+import de.factoryfx.data.merge.testfactories.ExampleDataB;
+import de.factoryfx.data.merge.testfactories.ExampleDataC;
 import de.factoryfx.data.util.LanguageText;
 import de.factoryfx.data.validation.AttributeValidation;
 import de.factoryfx.data.validation.Validation;
@@ -29,9 +24,9 @@ public class DataTest {
 
     @Test
     public void test_visitAttributes(){
-        ExampleFactoryA testModel = new ExampleFactoryA();
+        ExampleDataA testModel = new ExampleDataA();
         testModel.stringAttribute.set("xxxx");
-        testModel.referenceAttribute.set(new ExampleFactoryB());
+        testModel.referenceAttribute.set(new ExampleDataB());
 
         ArrayList<String> calls = new ArrayList<>();
         testModel.internal().visitAttributesFlat(attribute -> calls.add(attribute.get().toString()));
@@ -84,17 +79,17 @@ public class DataTest {
     @Test
     @SuppressWarnings("unchecked")
     public void test_reconstructMetadataDeepRoot_displaytext() throws Exception {
-        ExampleFactoryA exampleFactoryA = new ExampleFactoryA();
-        ExampleFactoryB exampleFactoryB = new ExampleFactoryB();
-        ExampleFactoryC exampleFactoryC = new ExampleFactoryC();
+        ExampleDataA exampleFactoryA = new ExampleDataA();
+        ExampleDataB exampleFactoryB = new ExampleDataB();
+        ExampleDataC exampleFactoryC = new ExampleDataC();
         exampleFactoryB.referenceAttributeC.set(exampleFactoryC);
         exampleFactoryA.referenceAttribute.set(exampleFactoryB);
 
-        exampleFactoryA.referenceListAttribute.add(new ExampleFactoryB());
+        exampleFactoryA.referenceListAttribute.add(new ExampleDataB());
 
         SimpleObjectMapper mapper = ObjectMapperBuilder.build();
         String string = mapper.writeValueAsString(exampleFactoryA);
-        ExampleFactoryA readed = ObjectMapperBuilder.buildNewObjectMapper().readValue(string,ExampleFactoryA.class);
+        ExampleDataA readed = ObjectMapperBuilder.buildNewObjectMapper().readValue(string,ExampleDataA.class);
 
         readed = readed.internal().prepareUsableCopy();
 
@@ -115,8 +110,8 @@ public class DataTest {
 
     @Test
     public void test_getPathFromRoot(){
-        ExampleFactoryA exampleFactoryA = new ExampleFactoryA();
-        ExampleFactoryB exampleFactoryB = new ExampleFactoryB();
+        ExampleDataA exampleFactoryA = new ExampleDataA();
+        ExampleDataB exampleFactoryB = new ExampleDataB();
         exampleFactoryA.referenceAttribute.set(exampleFactoryB);
         exampleFactoryA=exampleFactoryA.internal().prepareUsableCopy();
         Assert.assertNotNull(exampleFactoryA.internal().getRoot());
@@ -134,20 +129,20 @@ public class DataTest {
 
     @Test
     public void test_copyOneLevelDeep(){
-        ExampleFactoryA exampleFactoryA = new ExampleFactoryA();
-        ExampleFactoryB exampleFactoryB = new ExampleFactoryB();
+        ExampleDataA exampleFactoryA = new ExampleDataA();
+        ExampleDataB exampleFactoryB = new ExampleDataB();
         exampleFactoryA.referenceAttribute.set(exampleFactoryB);
-        ExampleFactoryC exampleFactoryC = new ExampleFactoryC();
+        ExampleDataC exampleFactoryC = new ExampleDataC();
         exampleFactoryB.referenceAttributeC.set(exampleFactoryC);
 
-        ExampleFactoryB factoryB = new ExampleFactoryB();
-        factoryB.referenceAttributeC.set(new ExampleFactoryC());
+        ExampleDataB factoryB = new ExampleDataB();
+        factoryB.referenceAttributeC.set(new ExampleDataC());
         exampleFactoryA.referenceListAttribute.add(factoryB);
 
         Assert.assertNotNull(exampleFactoryA.referenceAttribute.get());
         Assert.assertNotNull(exampleFactoryA.referenceAttribute.get().referenceAttributeC.get());
 
-        ExampleFactoryA copy =  exampleFactoryA.internal().copyOneLevelDeep();
+        ExampleDataA copy =  exampleFactoryA.internal().copyOneLevelDeep();
 
         Assert.assertNotEquals(copy,exampleFactoryA);
         Assert.assertNotNull(copy.referenceAttribute.get());
@@ -157,29 +152,29 @@ public class DataTest {
 
     @Test
     public void test_copyOneLevelDeep_doubleref(){
-        ExampleFactoryA exampleFactoryA = new ExampleFactoryA();
-        ExampleFactoryB exampleFactoryB = new ExampleFactoryB();
+        ExampleDataA exampleFactoryA = new ExampleDataA();
+        ExampleDataB exampleFactoryB = new ExampleDataB();
 
         exampleFactoryA.referenceAttribute.set(exampleFactoryB);
         exampleFactoryA.referenceListAttribute.add(exampleFactoryB);
 
-        ExampleFactoryA copy =  exampleFactoryA.internal().copyOneLevelDeep();
+        ExampleDataA copy =  exampleFactoryA.internal().copyOneLevelDeep();
 
         Assert.assertEquals(copy.referenceAttribute.get(),copy.referenceListAttribute.get().get(0));
     }
 
     @Test
     public void test_copy(){
-        ExampleFactoryA exampleFactoryA = new ExampleFactoryA();
-        ExampleFactoryB exampleFactoryB = new ExampleFactoryB();
+        ExampleDataA exampleFactoryA = new ExampleDataA();
+        ExampleDataB exampleFactoryB = new ExampleDataB();
         exampleFactoryB.stringAttribute.set("dfssfdsfdsfd");
 
         exampleFactoryA.referenceAttribute.set(exampleFactoryB);
-        exampleFactoryA.referenceListAttribute.add(new ExampleFactoryB());
+        exampleFactoryA.referenceListAttribute.add(new ExampleDataB());
 
         exampleFactoryA = exampleFactoryA.internal().prepareUsableCopy();
 
-        ExampleFactoryA copy =  exampleFactoryA.internal().copy();
+        ExampleDataA copy =  exampleFactoryA.internal().copy();
 
         SimpleObjectMapper mapper = ObjectMapperBuilder.build();
         final Data expectedData = mapper.copy(exampleFactoryA);
@@ -194,7 +189,7 @@ public class DataTest {
     }
 
     public static class ExampleWithDefault extends Data {
-        public final DataReferenceAttribute<ExampleFactoryB> referenceAttribute = new DataReferenceAttribute<>(ExampleFactoryB.class).labelText("ExampleA2").defaultValue(new ExampleFactoryB());
+        public final DataReferenceAttribute<ExampleDataB> referenceAttribute = new DataReferenceAttribute<>(ExampleDataB.class).labelText("ExampleA2").defaultValue(new ExampleDataB());
     }
     @Test
     public void test_editing_nested_add(){
@@ -214,12 +209,12 @@ public class DataTest {
 
     @Test
     public void test_zero_copy(){
-        ExampleFactoryA exampleFactoryA = new ExampleFactoryA();
+        ExampleDataA exampleFactoryA = new ExampleDataA();
         exampleFactoryA.stringAttribute.set("dfssfdsfdsfd");
-        exampleFactoryA.referenceAttribute.set(new ExampleFactoryB());
-        exampleFactoryA.referenceListAttribute.add(new ExampleFactoryB());
+        exampleFactoryA.referenceAttribute.set(new ExampleDataB());
+        exampleFactoryA.referenceListAttribute.add(new ExampleDataB());
 
-        ExampleFactoryA copy =  exampleFactoryA.internal().copyZeroLevelDeep();
+        ExampleDataA copy =  exampleFactoryA.internal().copyZeroLevelDeep();
 
 
         Assert.assertEquals("dfssfdsfdsfd", copy.stringAttribute.get());
@@ -260,12 +255,12 @@ public class DataTest {
 
     @Test
     public void test_copy_semantic_self(){
-        ExampleFactoryA exampleFactoryA = new ExampleFactoryA();
+        ExampleDataA exampleFactoryA = new ExampleDataA();
         exampleFactoryA.stringAttribute.set("dfssfdsfdsfd");
-        exampleFactoryA.referenceAttribute.set(new ExampleFactoryB());
-        exampleFactoryA.referenceListAttribute.add(new ExampleFactoryB());
+        exampleFactoryA.referenceAttribute.set(new ExampleDataB());
+        exampleFactoryA.referenceListAttribute.add(new ExampleDataB());
 
-        ExampleFactoryA copy =  exampleFactoryA.utility().semanticCopy();
+        ExampleDataA copy =  exampleFactoryA.utility().semanticCopy();
 
         Assert.assertEquals(exampleFactoryA.stringAttribute.get(), copy.stringAttribute.get());
         Assert.assertEquals(exampleFactoryA.referenceAttribute.get(), copy.referenceAttribute.get());
@@ -274,15 +269,15 @@ public class DataTest {
 
     @Test
     public void test_copy_semantic_copy(){
-        ExampleFactoryA exampleFactoryA = new ExampleFactoryA();
+        ExampleDataA exampleFactoryA = new ExampleDataA();
         exampleFactoryA.stringAttribute.set("dfssfdsfdsfd");
-        exampleFactoryA.referenceAttribute.set(new ExampleFactoryB());
-        exampleFactoryA.referenceListAttribute.add(new ExampleFactoryB());
+        exampleFactoryA.referenceAttribute.set(new ExampleDataB());
+        exampleFactoryA.referenceListAttribute.add(new ExampleDataB());
 
         exampleFactoryA.referenceAttribute.setCopySemantic(CopySemantic.COPY);
         exampleFactoryA.referenceListAttribute.setCopySemantic(CopySemantic.COPY);
 
-        ExampleFactoryA copy =  exampleFactoryA.utility().semanticCopy();
+        ExampleDataA copy =  exampleFactoryA.utility().semanticCopy();
 
         Assert.assertEquals(exampleFactoryA.stringAttribute.get(), copy.stringAttribute.get());
         Assert.assertNotEquals(exampleFactoryA.referenceAttribute.get(), copy.referenceAttribute.get());
@@ -293,13 +288,13 @@ public class DataTest {
 
     @Test
     public void test_copy_semantic_copy_json_id_unique(){
-        ExampleFactoryA exampleFactoryA = new ExampleFactoryA();
-        exampleFactoryA.referenceListAttribute.add(new ExampleFactoryB());
+        ExampleDataA exampleFactoryA = new ExampleDataA();
+        exampleFactoryA.referenceListAttribute.add(new ExampleDataB());
 
         exampleFactoryA.referenceAttribute.setCopySemantic(CopySemantic.COPY);
         exampleFactoryA.referenceListAttribute.setCopySemantic(CopySemantic.COPY);
 
-        ExampleFactoryB copy =  exampleFactoryA.referenceListAttribute.get(0).utility().semanticCopy();
+        ExampleDataB copy =  exampleFactoryA.referenceListAttribute.get(0).utility().semanticCopy();
         exampleFactoryA.referenceListAttribute.add(copy);
 
         ObjectMapperBuilder.build().copy(exampleFactoryA);
@@ -307,16 +302,16 @@ public class DataTest {
 
     @Test
     public void test_copy_semantic_copy_json_id_unique_2(){
-        ExampleFactoryA factoryA = new ExampleFactoryA();
-        final ExampleFactoryB factoryB = new ExampleFactoryB();
-        factoryB.referenceAttributeC.set(new ExampleFactoryC());
+        ExampleDataA factoryA = new ExampleDataA();
+        final ExampleDataB factoryB = new ExampleDataB();
+        factoryB.referenceAttributeC.set(new ExampleDataC());
         factoryA.referenceListAttribute.add(factoryB);
 
         factoryB.referenceAttributeC.setCopySemantic(CopySemantic.SELF);
         factoryA.referenceAttribute.setCopySemantic(CopySemantic.SELF);
         factoryA.referenceListAttribute.setCopySemantic(CopySemantic.SELF);
 
-        ExampleFactoryB copy =  factoryA.referenceListAttribute.get(0).utility().semanticCopy();
+        ExampleDataB copy =  factoryA.referenceListAttribute.get(0).utility().semanticCopy();
         factoryA.referenceListAttribute.add(copy);
 
         Assert.assertEquals(2, factoryA.referenceListAttribute.size());
@@ -326,10 +321,10 @@ public class DataTest {
     @Ignore
     @Test
     public void test_iterate_performance(){
-        ExampleFactoryA exampleFactoryA = new ExampleFactoryA();
+        ExampleDataA exampleFactoryA = new ExampleDataA();
         exampleFactoryA.stringAttribute.set("dfssfdsfdsfd");
-        exampleFactoryA.referenceAttribute.set(new ExampleFactoryB());
-        exampleFactoryA.referenceListAttribute.add(new ExampleFactoryB());
+        exampleFactoryA.referenceAttribute.set(new ExampleDataB());
+        exampleFactoryA.referenceListAttribute.add(new ExampleDataB());
 
         int[] forceExecution=new int[]{0};
 
@@ -349,10 +344,10 @@ public class DataTest {
     @Ignore
     @Test
     public void test_copy_performance(){
-        ExampleFactoryA exampleFactoryA = new ExampleFactoryA();
+        ExampleDataA exampleFactoryA = new ExampleDataA();
         exampleFactoryA.stringAttribute.set("dfssfdsfdsfd");
-        exampleFactoryA.referenceAttribute.set(new ExampleFactoryB());
-        exampleFactoryA.referenceListAttribute.add(new ExampleFactoryB());
+        exampleFactoryA.referenceAttribute.set(new ExampleDataB());
+        exampleFactoryA.referenceListAttribute.add(new ExampleDataB());
 
         int[] forceExecution=new int[]{0};
 
@@ -363,6 +358,24 @@ public class DataTest {
         }
         System.out.println(forceExecution[0]);
         System.out.println("time: "+(System.currentTimeMillis()-start));
+
+    }
+
+    @Test
+    public void test_parent_navigation(){
+        ExampleDataA dataA = new ExampleDataA();
+        ExampleDataB dataB = new ExampleDataB();
+        ExampleDataC dataC = new ExampleDataC();
+
+        dataA.referenceAttribute.set(dataB);
+        dataB.referenceAttributeC.set(dataC);
+
+        dataA = dataA.internal().prepareUsableCopy();
+        dataB = dataA.referenceAttribute.get();
+        dataC = dataB.referenceAttributeC.get();
+
+        Assert.assertEquals(dataB,dataC.internal().getParent());
+        Assert.assertEquals(dataA,dataB.internal().getParent());
 
     }
 

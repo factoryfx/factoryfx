@@ -7,7 +7,7 @@ import java.util.stream.Collectors;
 import de.factoryfx.data.Data;
 import de.factoryfx.data.attribute.types.StringAttribute;
 import de.factoryfx.data.jackson.ObjectMapperBuilder;
-import de.factoryfx.data.merge.testfactories.ExampleFactoryA;
+import de.factoryfx.data.merge.testfactories.ExampleDataA;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -15,7 +15,7 @@ public class ViewListReferenceAttributeTest {
     public static class ViewListExampleFactory extends Data {
 
         public final StringAttribute forFilter= new StringAttribute();
-        public final DataViewListReferenceAttribute<ViewListExampleFactoryRoot,ExampleFactoryA> view= new DataViewListReferenceAttribute<>( (ViewListExampleFactoryRoot viewExampleFactoryRoot)->{
+        public final DataViewListReferenceAttribute<ViewListExampleFactoryRoot,ExampleDataA> view= new DataViewListReferenceAttribute<>( (ViewListExampleFactoryRoot viewExampleFactoryRoot)->{
                 return viewExampleFactoryRoot.list.get().stream().filter(exampleFactoryA -> exampleFactoryA.stringAttribute.get().equals(forFilter.get())).collect(Collectors.toList());
             }
         );
@@ -24,7 +24,7 @@ public class ViewListReferenceAttributeTest {
 
     public static class ViewListExampleFactoryRoot extends Data{
         public final DataReferenceAttribute<ViewListExampleFactory> ref = new DataReferenceAttribute<>(ViewListExampleFactory.class);
-        public final DataReferenceListAttribute<ExampleFactoryA> list= new DataReferenceListAttribute<>(ExampleFactoryA.class);
+        public final DataReferenceListAttribute<ExampleDataA> list= new DataReferenceListAttribute<>(ExampleDataA.class);
     }
 
 
@@ -37,12 +37,12 @@ public class ViewListReferenceAttributeTest {
         root.ref.set(viewExampleFactory);
 
         {
-            ExampleFactoryA value = new ExampleFactoryA();
+            ExampleDataA value = new ExampleDataA();
             value.stringAttribute.set("1");
             root.list.add(value);
         }
         {
-            ExampleFactoryA value = new ExampleFactoryA();
+            ExampleDataA value = new ExampleDataA();
             value.stringAttribute.set("2");
             root.list.add(value);
         }
@@ -62,12 +62,12 @@ public class ViewListReferenceAttributeTest {
         root.ref.set(viewExampleFactory);
 
         {
-            ExampleFactoryA value = new ExampleFactoryA();
+            ExampleDataA value = new ExampleDataA();
             value.stringAttribute.set("1");
             root.list.add(value);
         }
         {
-            ExampleFactoryA value = new ExampleFactoryA();
+            ExampleDataA value = new ExampleDataA();
             value.stringAttribute.set("2");
             root.list.add(value);
         }
@@ -86,12 +86,12 @@ public class ViewListReferenceAttributeTest {
         root.ref.set(viewExampleFactory);
 
         {
-            ExampleFactoryA value = new ExampleFactoryA();
+            ExampleDataA value = new ExampleDataA();
             value.stringAttribute.set("2");
             root.list.add(value);
         }
         {
-            ExampleFactoryA value = new ExampleFactoryA();
+            ExampleDataA value = new ExampleDataA();
             value.stringAttribute.set("3");
             root.list.add(value);
         }
@@ -110,12 +110,12 @@ public class ViewListReferenceAttributeTest {
         root.ref.set(viewExampleFactory);
 
         {
-            ExampleFactoryA value = new ExampleFactoryA();
+            ExampleDataA value = new ExampleDataA();
             value.stringAttribute.set("1");
             root.list.add(value);
         }
         {
-            ExampleFactoryA value = new ExampleFactoryA();
+            ExampleDataA value = new ExampleDataA();
             value.stringAttribute.set("1");
             root.list.add(value);
         }
@@ -135,12 +135,12 @@ public class ViewListReferenceAttributeTest {
         root.ref.set(viewExampleFactory);
 
         {
-            ExampleFactoryA value = new ExampleFactoryA();
+            ExampleDataA value = new ExampleDataA();
             value.stringAttribute.set("2");
             root.list.add(value);
         }
         {
-            ExampleFactoryA value = new ExampleFactoryA();
+            ExampleDataA value = new ExampleDataA();
             value.stringAttribute.set("3");
             root.list.add(value);
         }
@@ -191,12 +191,12 @@ public class ViewListReferenceAttributeTest {
         root.ref.set(viewExampleFactory);
 
         {
-            ExampleFactoryA value = new ExampleFactoryA();
+            ExampleDataA value = new ExampleDataA();
             value.stringAttribute.set("2");
             root.list.add(value);
         }
         {
-            ExampleFactoryA value = new ExampleFactoryA();
+            ExampleDataA value = new ExampleDataA();
             value.stringAttribute.set("3");
             root.list.add(value);
         }
@@ -226,12 +226,12 @@ public class ViewListReferenceAttributeTest {
         root.ref.set(viewExampleFactory);
 
         {
-            ExampleFactoryA value = new ExampleFactoryA();
+            ExampleDataA value = new ExampleDataA();
             value.stringAttribute.set("2");
             root.list.add(value);
         }
         {
-            ExampleFactoryA value = new ExampleFactoryA();
+            ExampleDataA value = new ExampleDataA();
             value.stringAttribute.set("3");
             root.list.add(value);
         }
@@ -241,11 +241,11 @@ public class ViewListReferenceAttributeTest {
 
     @Test
     public void removeListener() throws Exception {
-        DataViewListReferenceAttribute<ViewListExampleFactoryRoot, ExampleFactoryA> attribute = new DataViewListReferenceAttribute<>((ViewListExampleFactoryRoot viewExampleFactoryRoot) -> {
+        DataViewListReferenceAttribute<ViewListExampleFactoryRoot, ExampleDataA> attribute = new DataViewListReferenceAttribute<>((ViewListExampleFactoryRoot viewExampleFactoryRoot) -> {
             return viewExampleFactoryRoot.list.filtered((exampleFactoryA -> exampleFactoryA.stringAttribute.get().equals("")));
         });
 
-        final AttributeChangeListener<List<ExampleFactoryA>,DataViewListReferenceAttribute<ViewListExampleFactoryRoot, ExampleFactoryA>> attributeChangeListener = (a, value) -> System.out.println(value);
+        final AttributeChangeListener<List<ExampleDataA>,DataViewListReferenceAttribute<ViewListExampleFactoryRoot, ExampleDataA>> attributeChangeListener = (a, value) -> System.out.println(value);
         attribute.internal_addListener(attributeChangeListener);
         Assert.assertTrue(attribute.listeners.size()==1);
         attribute.internal_removeListener(attributeChangeListener);
@@ -254,11 +254,11 @@ public class ViewListReferenceAttributeTest {
 
     @Test
     public void removeWeakListener() throws Exception {
-        DataViewListReferenceAttribute<ViewListExampleFactoryRoot, ExampleFactoryA> attribute = new DataViewListReferenceAttribute<>((ViewListExampleFactoryRoot viewExampleFactoryRoot) -> {
+        DataViewListReferenceAttribute<ViewListExampleFactoryRoot, ExampleDataA> attribute = new DataViewListReferenceAttribute<>((ViewListExampleFactoryRoot viewExampleFactoryRoot) -> {
             return viewExampleFactoryRoot.list.filtered((exampleFactoryA -> exampleFactoryA.stringAttribute.get().equals("")));
         });
 
-        final AttributeChangeListener<List<ExampleFactoryA>,DataViewListReferenceAttribute<ViewListExampleFactoryRoot, ExampleFactoryA>> attributeChangeListener = (a, value) -> System.out.println(value);
+        final AttributeChangeListener<List<ExampleDataA>,DataViewListReferenceAttribute<ViewListExampleFactoryRoot, ExampleDataA>> attributeChangeListener = (a, value) -> System.out.println(value);
         attribute.internal_addListener(new WeakAttributeChangeListener<>(attributeChangeListener));
         Assert.assertTrue(attribute.listeners.size()==1);
         attribute.internal_removeListener(attributeChangeListener);

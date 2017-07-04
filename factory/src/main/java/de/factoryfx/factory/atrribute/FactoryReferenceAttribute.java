@@ -2,8 +2,6 @@ package de.factoryfx.factory.atrribute;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import de.factoryfx.data.Data;
-import de.factoryfx.data.attribute.Attribute;
-import de.factoryfx.data.attribute.DataReferenceAttribute;
 import de.factoryfx.data.attribute.ReferenceAttribute;
 import de.factoryfx.factory.FactoryBase;
 
@@ -43,6 +41,7 @@ public class FactoryReferenceAttribute<L, T extends FactoryBase<? extends L,?>> 
         return setup((Class<T>)clazz);
     }
 
+    @SuppressWarnings("unchecked")
     public FactoryReferenceAttribute<L,T> setup(Class<T> clazz){
         this.possibleValueProvider(data -> {
             Set<T> result = new HashSet<>();

@@ -96,18 +96,10 @@
     /*-fx-text-fill: white;*/
 }
 
-*.dontChangeOpacityIfdisabled:disabled > * {
-    -fx-opacity: 1.0 ;
-    /*-fx-background-color: red;*/
-}
-.dontChangeOpacityIfdisabled .text-field:disabled {
+.dontChangeOpacityIfdisabled .combo-box:disabled {
     -fx-opacity: 1.0 ;
 }
-
-.dontChangeOpacityIfdisabled .table-view:disabled {
-    -fx-opacity: 1.0 ;
-}
-.dontChangeOpacityIfdisabled .label:disabled {
+.dontChangeOpacityIfdisabled .combo-box:disabled {
     -fx-opacity: 1.0 ;
 }
 
