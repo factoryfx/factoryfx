@@ -43,7 +43,6 @@ public class FactoryManager<V,L,R extends FactoryBase<L,V>> {
 
     @SuppressWarnings("unchecked")
     public FactoryUpdateLog update(R commonVersion , R newVersion, Function<String,Boolean> permissionChecker){
-        newVersion.internalFactory().loopDetector();
         LinkedHashSet<FactoryBase<?,V>> previousFactories = getFactoriesInDestroyOrder(currentFactoryRoot);
         previousFactories.forEach((f)->f.internalFactory().resetLog());
 
@@ -54,7 +53,6 @@ public class FactoryManager<V,L,R extends FactoryBase<L,V>> {
         long totalUpdateDuration=0;
         List<FactoryBase<?,V>> removed = new ArrayList<>();
         if (mergeDiff.successfullyMerged()){
-            currentFactoryRoot.internalFactory().loopDetector();
             final Set<FactoryBase<?, V>> newFactories = currentFactoryRoot.internalFactory().collectChildFactoriesDeep();
 
             long start=System.nanoTime();

@@ -121,7 +121,7 @@ public class DataTreeWidget implements CloseAwareWidget {
     private TreeItem<TreeData> constructTree(Data data){
         if (data!=null){
             TreeItem<TreeData> dataTreeItem = new TreeItem<>(new TreeData(data,null));
-            data.internal().visitAttributesFlat(attribute -> {
+            data.internal().visitAttributesFlat((attributeVariableName, attribute) -> {
                 attribute.internal_visit(new AttributeVisitor() {
                     @Override
                     public void value(Attribute<?,?> value) {

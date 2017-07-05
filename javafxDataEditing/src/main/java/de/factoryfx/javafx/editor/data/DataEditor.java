@@ -200,7 +200,7 @@ public class DataEditor implements Widget {
                 }
 
                 if (validationListener!=null && oldValue!=null){
-                    oldValue.internal().visitAttributesFlat(attribute -> {
+                    oldValue.internal().visitAttributesFlat((attributeVariableName, attribute) -> {
                         attribute.internal_removeListener(validationListener);
                     });
                 }
@@ -223,7 +223,7 @@ public class DataEditor implements Widget {
 
 
                 };
-                newValue.internal().visitAttributesFlat(attribute -> {
+                newValue.internal().visitAttributesFlat((attributeVariableName, attribute) -> {
                     attribute.internal_addListener(new WeakAttributeChangeListener<>(validationListener));
                 });
                 updateValidation(newValue);

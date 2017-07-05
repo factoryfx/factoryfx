@@ -115,33 +115,10 @@ public class Data {
         return attributes;
     }
 
-
-    private String toIdentifier(String value) {//TODO for js?
-        if (Strings.isNullOrEmpty(value)) {
-            return UUID.randomUUID().toString();
-        }
-        StringBuilder result = new StringBuilder();
-        if(!Character.isJavaIdentifierStart(value.charAt(0))) {
-            result.append("_");
-        }
-        for (char c : value.toCharArray()) {
-            if(!Character.isJavaIdentifierPart(c)) {
-                result.append("_");
-            } else {
-                result.append(c);
-            }
-        }
-        return result.toString();
-    }
-
     private void visitAttributesFlat(AttributeVisitor consumer) {
         for (AttributeAndName attribute: getAttributes()){
             consumer.accept(attribute.name,attribute.attribute);
         }
-    }
-
-    private void visitAttributesFlat(Consumer<Attribute<?,?>> consumer) {
-        this.visitAttributesFlat((attributeVariableName, attribute) -> consumer.accept(attribute));
     }
 
     @SuppressWarnings("unchecked")
@@ -164,7 +141,7 @@ public class Data {
         }
     }
 
-    private Map<String,Data> collectChildFactoriesMap() {
+    private Map<String,Data> collectChildDataMap() {
         HashSet<Data> factoryBases = new HashSet<>();
         collectModelEntitiesTo(factoryBases);
 
@@ -192,7 +169,7 @@ public class Data {
 
     private void collectModelEntitiesTo(Set<Data> allModelEntities) {
         if (allModelEntities.add(this)){
-            visitAttributesFlat(attribute -> attribute.internal_collectChildren(allModelEntities));
+            visitAttributesFlat((attributeVariableName, attribute) -> attribute.internal_collectChildren(allModelEntities));
         }
     }
     
@@ -225,10 +202,10 @@ public class Data {
 
     @SuppressWarnings("unchecked")
     private void fixDuplicateObjects() {
-        Map<String, Data> idToDataMap = collectChildFactoriesMap();
+        Map<String, Data> idToDataMap = collectChildDataMap();
         final Set<Data> all = collectChildrenDeep();
         for (Data data: all){
-            data.visitAttributesFlat(attribute -> attribute.internal_fixDuplicateObjects(idToDataMap));
+            data.visitAttributesFlat((attributeVariableName, attribute) -> attribute.internal_fixDuplicateObjects(idToDataMap));
         }
     }
 
@@ -307,7 +284,7 @@ public class Data {
     private HashMap<Data, Data> getChildToParentMap(Set<Data> allModelEntities) {
         HashMap<Data, Data> result = new HashMap<>();
         for (Data factoryBase : allModelEntities) {
-            factoryBase.visitAttributesFlat(attribute -> {
+            factoryBase.visitAttributesFlat((attributeVariableName, attribute) -> {
                 attribute.internal_visit(nestedFactoryBase -> {
                     result.put(nestedFactoryBase, factoryBase);
                 });
@@ -606,10 +583,6 @@ public class Data {
             return data.semanticCopy();
         }
 
-        public void visitChildFactoriesFlat(Consumer<Data> consumer) {
-            data.visitChildFactoriesFlat(consumer);
-        }
-
         public void visitAttributesDualFlat(Data modelBase, BiAttributeVisitor consumer) {
             data.visitAttributesDualFlat(modelBase,consumer);
         }
@@ -618,20 +591,18 @@ public class Data {
             data.visitAttributesFlat(consumer);
         }
 
-        public void visitAttributesFlat(Consumer<Attribute<?,?>> consumer) {
-            data.visitAttributesFlat(consumer);
+        public List<AttributeAndName> getAttributes() {
+            return data.getAttributes();
         }
+
+
 
         public List<Pair<String,List<Attribute<?,?>>>> attributeListGrouped(){
             return data.attributeListGrouped();
         }
 
-        public Map<String,Data> collectChildFactoriesMap() {
-            return data.collectChildFactoriesMap();
-        }
-
-        public <T extends Data> Set<T> collectChildrenFlat() {
-            return data.collectChildrenFlat();
+        public Map<String,Data> collectChildDataMap() {
+            return data.collectChildDataMap();
         }
 
         public Set<Data> collectChildrenDeep() {

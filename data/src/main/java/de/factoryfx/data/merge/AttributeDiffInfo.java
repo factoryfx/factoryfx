@@ -33,7 +33,7 @@ public class AttributeDiffInfo {
 
     @JsonIgnore
     public Attribute<?,?> getAttribute(Data root){
-        Data data = root.internal().collectChildFactoriesMap().get(dataId);
+        Data data = root.internal().collectChildDataMap().get(dataId);
         if (data!=null) {
             Attribute<?,?>[] result= new Attribute<?,?>[1];
             data.internal().visitAttributesFlat((attributeVariableName, attribute) -> {
@@ -54,7 +54,7 @@ public class AttributeDiffInfo {
 
     @JsonIgnore
     public String parentDisplayText(Data root){
-        Data data = root.internal().collectChildFactoriesMap().get(dataId);
+        Data data = root.internal().collectChildDataMap().get(dataId);
         if (data!=null) {
             return data.internal().getDisplayText();
         }

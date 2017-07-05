@@ -1,12 +1,6 @@
 package de.factoryfx.factory;
 
-import java.util.ArrayDeque;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Locale;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -16,7 +10,9 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.google.common.base.Throwables;
+import de.factoryfx.data.AttributeAndName;
 import de.factoryfx.data.Data;
+import de.factoryfx.data.attribute.Attribute;
 import de.factoryfx.factory.atrribute.*;
 import de.factoryfx.factory.log.FactoryLogEntry;
 import de.factoryfx.factory.log.FactoryLogEntryEvent;
@@ -130,21 +126,8 @@ public abstract class FactoryBase<L,V> extends Data {
         path.pop();
     }
 
-    private final LoopProtector loopProtector = new LoopProtector();
     private void loopDetector(){
-        loopProtector.enter();
-        try {
-            this.internalFactory().visitChildFactoriesAndViewsFlat(FactoryBase::loopDetector);
-        } finally {
-            loopProtector.exit();
-        }
-    }
-
-    @SuppressWarnings("unchecked")
-    private Optional<FactoryBase<?,V>> cast(Data data){
-        if (data instanceof FactoryBase)
-            return Optional.of((FactoryBase<?,V>)data);
-        return Optional.empty();
+        collectChildFactoriesDeep();
     }
 
     private Set<FactoryBase<?,V>> collectChildFactoriesDeep(){
@@ -156,6 +139,8 @@ public abstract class FactoryBase<L,V> extends Data {
     private void collectChildFactoriesDeep(FactoryBase<?,V> factory, Set<FactoryBase<?, V>> result){
         if (result.add(factory)){
             factory.visitChildFactoriesAndViewsFlat(child -> collectChildFactoriesDeep(child,result));
+        } else {
+            throw new IllegalStateException("Factories contains a cycle, circular dependencies are not supported cause it indicates a design flaw.");
         }
     }
 
@@ -165,16 +150,13 @@ public abstract class FactoryBase<L,V> extends Data {
         return result;
     }
 
-
-
-
     private String debugInfo(){
         try {
             StringBuilder stringBuilder = new StringBuilder();
             stringBuilder.append("ID:\n  ");
             stringBuilder.append(getId());
             stringBuilder.append("\nAttributes:\n");
-            this.internal().visitAttributesFlat(attribute -> {
+            this.internal().visitAttributesFlat((attributeVariableName, attribute) -> {
                 stringBuilder.append("  ").append(attribute.internal_getPreferredLabelText(Locale.ENGLISH)).append(": ").append(attribute.getDisplayText()).append("\n");
             });
             return stringBuilder.toString().trim();
@@ -190,25 +172,42 @@ public abstract class FactoryBase<L,V> extends Data {
         }
     }
 
+    @SuppressWarnings("unchecked")
     private void visitChildFactoriesAndViewsFlat(Consumer<FactoryBase<?,V>> consumer) {
-        this.internal().visitAttributesFlat(attribute -> {
+        for (AttributeAndName attributeAndName: this.internal().getAttributes()){
+            Attribute<?,?> attribute=attributeAndName.attribute;
             if (attribute instanceof FactoryReferenceAttribute) {
-                ((FactoryReferenceAttribute<?,?>)attribute).getOptional().ifPresent(data -> cast(data).ifPresent(consumer));
+                FactoryBase<?, V> factory = (FactoryBase<?, V>)attribute.get();
+                if (factory!=null){
+                    consumer.accept(factory);
+                }
             }
             if (attribute instanceof FactoryReferenceListAttribute) {
-                ((FactoryReferenceListAttribute<?,?>)attribute).forEach(data -> cast(data).ifPresent(consumer));
+                List<?> factories = ((FactoryReferenceListAttribute<?, ?>) attribute).get();
+                for (Object factory: factories){
+                    consumer.accept((FactoryBase<?, V>)factory);
+                }
             }
             if (attribute instanceof FactoryViewReferenceAttribute) {
-                ((FactoryViewReferenceAttribute<?,?,?>)attribute).getOptional().ifPresent(data -> cast(data).ifPresent(consumer));
+                FactoryBase<?, V> factory = (FactoryBase<?, V>)attribute.get();
+                if (factory!=null){
+                    consumer.accept(factory);
+                }
             }
             if (attribute instanceof FactoryViewListReferenceAttribute) {
-                ((FactoryViewListReferenceAttribute<?,?,?>)attribute).get().forEach(data -> cast(data).ifPresent(consumer));
+                List<?> factories = ((FactoryViewListReferenceAttribute<?, ?, ?>) attribute).get();
+                for (Object factory: factories){
+                    consumer.accept((FactoryBase<?, V>)factory);
+                }
             }
             if (attribute instanceof FactoryPolymorphicReferenceAttribute) {
-                ((FactoryPolymorphicReferenceAttribute<?>)attribute).getOptional().ifPresent(data -> cast(data).ifPresent(consumer));
+                FactoryBase<?, V> factory = (FactoryBase<?, V>)attribute.get();
+                if (factory!=null){
+                    consumer.accept(factory);
+                }
             }
 
-        });
+        }
     }
 
     final FactoryInternal<L,V> factoryInternal = new FactoryInternal<>(this);

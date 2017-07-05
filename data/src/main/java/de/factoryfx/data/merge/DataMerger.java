@@ -21,9 +21,9 @@ public class DataMerger {
     public MergeResult createMergeResult(Function<String,Boolean> permissionChecker) {
         MergeResult mergeResult = new MergeResult(currentData.internal().copy(), newData.internal().copy());
 
-        Map<String, Data> originalMap = commonData.internal().collectChildFactoriesMap();
-        Map<String, Data> currentMap = currentData.internal().collectChildFactoriesMap();
-        Map<String, Data> newMap = newData.internal().collectChildFactoriesMap();
+        Map<String, Data> originalMap = commonData.internal().collectChildDataMap();
+        Map<String, Data> currentMap = currentData.internal().collectChildDataMap();
+        Map<String, Data> newMap = newData.internal().collectChildDataMap();
 
         for (Map.Entry<String, Data> entry : currentMap.entrySet()) {
             Data originalValue = originalMap.get(entry.getKey());

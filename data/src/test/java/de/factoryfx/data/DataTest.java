@@ -29,7 +29,7 @@ public class DataTest {
         testModel.referenceAttribute.set(new ExampleDataB());
 
         ArrayList<String> calls = new ArrayList<>();
-        testModel.internal().visitAttributesFlat(attribute -> calls.add(attribute.get().toString()));
+        testModel.internal().visitAttributesFlat((attributeVariableName, attribute) -> calls.add(attribute.get().toString()));
         Assert.assertEquals(3,calls.size());
         Assert.assertEquals("xxxx",calls.get(0));
     }

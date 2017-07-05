@@ -134,7 +134,7 @@ public class RestResource<V,L,T extends FactoryBase<L,V>> {
     public StageResponse save(FactoryTypeInfoWrapper newFactoryParam) {
         FactoryBase<?,?> newFactory=newFactoryParam.factory.internal().prepareUsableCopy();
         FactoryBase<?,?> root = getCurrentEditingFactory().root;
-        Map<String,Data>  map = root.internal().collectChildFactoriesMap();
+        Map<String,Data>  map = root.internal().collectChildDataMap();
         Data existing = map.get(newFactory.getId());
 
         Function<Data,Data> existingOrNew= factoryBase -> {
@@ -319,7 +319,7 @@ public class RestResource<V,L,T extends FactoryBase<L,V>> {
 
         T root = getCurrentEditingFactory().root;
 
-        root.internal().collectChildFactoriesMap().get(id).internal().visitAttributesFlat((attributeVariableName, attribute) -> {
+        root.internal().collectChildDataMap().get(id).internal().visitAttributesFlat((attributeVariableName, attribute) -> {
             if (attributeVariableName.equals(attributeName)){
 
                 attribute.internal_visit(new AttributeVisitor() {
@@ -354,7 +354,7 @@ public class RestResource<V,L,T extends FactoryBase<L,V>> {
 
         T root = getCurrentEditingFactory().root;
 
-        Data factoryBase = root.internal().collectChildFactoriesMap().get(id);
+        Data factoryBase = root.internal().collectChildDataMap().get(id);
         factoryBase.internal().visitAttributesFlat((attributeVariableName, attribute) -> {
             if (attributeVariableName.equals(attributeName)){
 
