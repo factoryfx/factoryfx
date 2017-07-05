@@ -125,7 +125,11 @@ public class FactoryBase<L,V> extends Data implements Iterable<FactoryBase<?, V>
             }
         }
 
-        visitChildFactoriesAndViewsFlat(child -> child.determineRecreationNeed(changedData,path));
+        visitChildFactoriesAndViewsFlat(child -> {
+            if (!child.needRecreation){
+                child.determineRecreationNeed(changedData,path);
+            }
+        });
         path.pop();
     }
 

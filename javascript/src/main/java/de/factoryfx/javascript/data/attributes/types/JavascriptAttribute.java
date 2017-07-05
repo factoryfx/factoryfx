@@ -177,8 +177,8 @@ public class JavascriptAttribute<A> extends ImmutableValueAttribute<Javascript<A
 
     private DirtyTrackingThread dirtyTracking;
 
-//    @Override
-    public void internal_addListener(AttributeChangeListener<Javascript<A>,JavascriptAttribute<A>> listener,boolean x) {
+    @Override
+    public void internal_addListener(AttributeChangeListener<Javascript<A>,JavascriptAttribute<A>> listener) {
         super.internal_addListener(listener);
         if (dirtyTracking==null){
             dirtyTracking = new DirtyTrackingThread();
@@ -189,7 +189,7 @@ public class JavascriptAttribute<A> extends ImmutableValueAttribute<Javascript<A
     @Override
     public void internal_removeListener(AttributeChangeListener<Javascript<A>,JavascriptAttribute<A>> listener) {
         super.internal_removeListener(listener);
-        if (listeners.isEmpty() && dirtyTracking != null){
+        if (listenersEmpty() && dirtyTracking != null){
             dirtyTracking.stopTracking();
             dirtyTracking=null;
         }

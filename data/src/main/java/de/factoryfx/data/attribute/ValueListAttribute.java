@@ -23,9 +23,7 @@ public class ValueListAttribute<T, A extends Attribute<List<T>,A>> extends Immut
         value=observableValue;
 
         observableValue.addListener((ListChangeListener<T>) c -> {
-            for (AttributeChangeListener<List<T>,A> listener: listeners){
-                listener.changed(ValueListAttribute.this,get());
-            }
+            updateListeners(get());
         });
     }
 

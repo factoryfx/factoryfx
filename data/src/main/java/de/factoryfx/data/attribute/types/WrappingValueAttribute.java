@@ -27,8 +27,6 @@ public class WrappingValueAttribute<V> extends ImmutableValueAttribute<V,Wrappin
     @Override
     public void set(V value) {
         setFunction.accept(value);
-        for (AttributeChangeListener<V,WrappingValueAttribute<V>> listener: listeners){
-            listener.changed(this,value);
-        }
+        updateListeners(value);
     }
 }

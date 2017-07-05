@@ -13,7 +13,7 @@ import de.factoryfx.data.validation.ValidationError;
 public abstract class Attribute<T,A extends Attribute<T,A>>{
 
     @JsonIgnore
-    private final List<Validation<T>> validations = new ArrayList<>();
+    private List<Validation<T>> validations;
 
     public Attribute() {
 
@@ -85,6 +85,9 @@ public abstract class Attribute<T,A extends Attribute<T,A>>{
 
     public List<ValidationError> internal_validate(Data parent) {
         List<ValidationError> validationErrors = new ArrayList<>();
+        if (validations==null){
+            return validationErrors;
+        }
         for (Validation<T> validation : validations) {
             if (!validation.validate(get())){
                 validationErrors.add(new ValidationError(validation.getValidationDescription(),this,parent));
@@ -94,6 +97,9 @@ public abstract class Attribute<T,A extends Attribute<T,A>>{
     }
 
     public boolean internal_required() {
+        if (validations==null){
+            return false;
+        }
         for (Validation<?> validation: validations){
             if (validation instanceof ObjectRequired<?>) {
                 return true;
@@ -159,6 +165,9 @@ public abstract class Attribute<T,A extends Attribute<T,A>>{
 
     @SuppressWarnings("unchecked")
     public A validation(Validation<T> validation){
+        if (validations==null){
+            validations=new ArrayList<>();
+        }
         this.validations.add(validation);
         return (A)this;
     }

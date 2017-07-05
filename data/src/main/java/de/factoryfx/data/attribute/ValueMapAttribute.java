@@ -19,9 +19,7 @@ public abstract class ValueMapAttribute<K, V, A extends ValueMapAttribute<K,V,A>
         set(FXCollections.observableMap(new TreeMap<>()));
 
         get().addListener((MapChangeListener<K, V>) change -> {
-            for (AttributeChangeListener<ObservableMap<K,V>,A> listener: listeners){
-                listener.changed(ValueMapAttribute.this,get());
-            }
+            updateListeners(get());
         });
     }
 

@@ -45,9 +45,25 @@ public abstract class ImmutableValueAttribute<T,A extends Attribute<T,A>> extend
     @Override
     public void set(T value) {
         this.value = value;
+        updateListeners(value);
+    }
+
+    List<AttributeChangeListener<T,A>> listeners;
+
+    protected void updateListeners(T value){
+        if (listeners==null){
+            return;
+        }
         for (AttributeChangeListener<T,A> listener: listeners){
             listener.changed(this,value);
         }
+    }
+
+    protected boolean listenersEmpty(){
+        if (listeners==null){
+            return true;
+        }
+        return listeners.isEmpty();
     }
 
     //override to change copy e.g mutable value
@@ -65,16 +81,19 @@ public abstract class ImmutableValueAttribute<T,A extends Attribute<T,A>> extend
         copyTo(copyAttribute);
     }
 
-    protected final List<AttributeChangeListener<T,A>> listeners= new ArrayList<>();
-
     @Override
-    @SuppressWarnings("unchecked")
     public void internal_addListener(AttributeChangeListener<T,A> listener) {
-        listeners.add((AttributeChangeListener<T, A>) listener);
+        if (listeners==null){
+            listeners=new ArrayList<>();
+        }
+        listeners.add(listener);
     }
 
     @Override
     public void internal_removeListener(AttributeChangeListener<T,A> listener) {
+        if (listeners==null){
+            return;
+        }
         for (AttributeChangeListener<T,A> listenerItem: new ArrayList<>(listeners)){
             if (listenerItem.unwrap()==listener || listenerItem.unwrap()==null){
                 listeners.remove(listenerItem);

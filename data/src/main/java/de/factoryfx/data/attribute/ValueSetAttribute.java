@@ -17,9 +17,7 @@ public abstract class ValueSetAttribute<T,A extends Attribute<Set<T>,A>> extends
         value= observableSet;
 
         observableSet.addListener((SetChangeListener<T>) change -> {
-            for (AttributeChangeListener<Set<T>,A> listener: listeners){
-                listener.changed(ValueSetAttribute.this,get());
-            }
+            updateListeners(get());
         });
     }
 
