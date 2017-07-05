@@ -1,11 +1,6 @@
 package de.factoryfx.factory;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -116,7 +111,7 @@ public class FactoryManager<V,L,R extends FactoryBase<L,V>> {
     private final TreeTraverser<FactoryBase<?,V>> factoryTraverser = new TreeTraverser<FactoryBase<?,V>>() {
         @Override
         public Iterable<FactoryBase<?,V>> children(FactoryBase<?,V> factory) {
-            return factory.internalFactory().collectChildrenFactoriesFlat();
+            return factory;
         }
     };
     private LinkedHashSet<FactoryBase<?,V>> getFactoriesInCreateAndStartOrder(R root){

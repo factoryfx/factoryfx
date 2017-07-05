@@ -24,7 +24,7 @@ import de.factoryfx.factory.log.FactoryLogEntryEventType;
  */
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonTypeInfo(use=JsonTypeInfo.Id.MINIMAL_CLASS, include=JsonTypeInfo.As.PROPERTY, property="@class")
-public abstract class FactoryBase<L,V> extends Data {
+public class FactoryBase<L,V> extends Data implements Iterable<FactoryBase<?, V>>{
 
     public FactoryBase() {
 
@@ -148,10 +148,15 @@ public abstract class FactoryBase<L,V> extends Data {
         }
     }
 
-    private Set<FactoryBase<?,V>> collectChildrenFactoriesFlat() {
-        HashSet<FactoryBase<?,V>> result = new HashSet<>();
+    private List<FactoryBase<?,V>> collectChildrenFactoriesFlat() {
+        List<FactoryBase<?,V>> result = new ArrayList<>();
         this.visitChildFactoriesAndViewsFlat(result::add);
         return result;
+    }
+
+    @Override
+    public Iterator<FactoryBase<?, V>> iterator() {
+        return collectChildrenFactoriesFlat().iterator();
     }
 
     private String debugInfo(){
@@ -292,7 +297,7 @@ public abstract class FactoryBase<L,V> extends Data {
             return result;
         }
 
-        public Set<FactoryBase<?,V>> collectChildrenFactoriesFlat() {
+        public List<FactoryBase<?,V>> collectChildrenFactoriesFlat() {
             return factory.collectChildrenFactoriesFlat();
         }
 
