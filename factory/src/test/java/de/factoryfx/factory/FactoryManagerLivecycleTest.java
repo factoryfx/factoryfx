@@ -3,7 +3,9 @@ package de.factoryfx.factory;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import de.factoryfx.data.attribute.types.StringAttribute;
+import de.factoryfx.data.jackson.ObjectMapperBuilder;
 import de.factoryfx.factory.atrribute.FactoryReferenceAttribute;
 import de.factoryfx.factory.atrribute.FactoryReferenceListAttribute;
 import de.factoryfx.factory.atrribute.FactoryViewListReferenceAttribute;
@@ -190,6 +192,10 @@ public class FactoryManagerLivecycleTest {
 
         exampleFactoryA.resetCounter();
         exampleFactoryB.resetCounter();
+
+        System.out.println(ObjectMapperBuilder.build().writeValueAsString(update));
+
+
         factoryManager.update(common,update,(permission)->true);
 
         Assert.assertEquals(1,exampleFactoryA.destroyCalls.size());

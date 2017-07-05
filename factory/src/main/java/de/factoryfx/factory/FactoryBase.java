@@ -132,15 +132,19 @@ public abstract class FactoryBase<L,V> extends Data {
 
     private Set<FactoryBase<?,V>> collectChildFactoriesDeep(){
         final HashSet<FactoryBase<?, V>> result = new HashSet<>();
-        collectChildFactoriesDeep(this,result);
+        collectChildFactoriesDeep(this,result,new HashSet<>());
         return result;
     }
 
-    private void collectChildFactoriesDeep(FactoryBase<?,V> factory, Set<FactoryBase<?, V>> result){
+    private void collectChildFactoriesDeep(FactoryBase<?,V> factory, Set<FactoryBase<?, V>> result, Set<FactoryBase<?, V>> stack){
         if (result.add(factory)){
-            factory.visitChildFactoriesAndViewsFlat(child -> collectChildFactoriesDeep(child,result));
+            stack.add(factory);
+            factory.visitChildFactoriesAndViewsFlat(child -> collectChildFactoriesDeep(child,result,stack));
+            stack.remove(factory);
         } else {
-            throw new IllegalStateException("Factories contains a cycle, circular dependencies are not supported cause it indicates a design flaw.");
+            if (stack.contains(factory)){
+                throw new IllegalStateException("Factories contains a cycle, circular dependencies are not supported cause it indicates a design flaw.");
+            }
         }
     }
 

@@ -29,6 +29,22 @@ public class FactoryBaseTest {
     }
 
     @Test
+    public void create_loop_test_doppelte_added_but_no_circle(){
+        ExampleFactoryA exampleFactoryA = new ExampleFactoryA();
+        ExampleFactoryB exampleFactoryB = new ExampleFactoryB();
+        exampleFactoryA.referenceAttribute.set(exampleFactoryB);
+
+        ExampleFactoryB exampleFactoryB2 = new ExampleFactoryB();
+        ExampleFactoryC exampleFactoryC = new ExampleFactoryC();
+        exampleFactoryB2.referenceAttributeC.set(exampleFactoryC);
+        exampleFactoryA.referenceListAttribute.add(exampleFactoryB2);
+
+        exampleFactoryC.referenceAttribute.set(exampleFactoryB);
+
+        exampleFactoryA.internalFactory().loopDetector();
+    }
+
+    @Test
     public void test_collect_Live_Objects(){
         ExampleFactoryA exampleFactoryA = new ExampleFactoryA();
         ExampleFactoryB exampleFactoryB = new ExampleFactoryB();
