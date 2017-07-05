@@ -113,9 +113,6 @@ public class FactoryBase<L,V> extends Data implements Iterable<FactoryBase<?, V>
     }
 
     private void determineRecreationNeed(Set<Data> changedData, ArrayDeque<FactoryBase<?,?>> path){
-        if (needRecreation){
-            return;//already checked
-        }
         path.push(this);
 
         needRecreation =changedData.contains(this) || createdLiveObject==null;  //null means newly added
@@ -126,9 +123,7 @@ public class FactoryBase<L,V> extends Data implements Iterable<FactoryBase<?, V>
         }
 
         visitChildFactoriesAndViewsFlat(child -> {
-            if (!child.needRecreation){
-                child.determineRecreationNeed(changedData,path);
-            }
+             child.determineRecreationNeed(changedData,path);
         });
         path.pop();
     }
@@ -157,6 +152,7 @@ public class FactoryBase<L,V> extends Data implements Iterable<FactoryBase<?, V>
 
     private List<FactoryBase<?,V>> collectChildrenFactoriesFlat() {
         List<FactoryBase<?,V>> result = new ArrayList<>();
+        this.visited=false;
         this.visitChildFactoriesAndViewsFlat(result::add);
         return result;
     }
@@ -188,8 +184,18 @@ public class FactoryBase<L,V> extends Data implements Iterable<FactoryBase<?, V>
         }
     }
 
+    private boolean visited;
+    //to avoid visit factories multiple times through views
+    private void prepareIterationRun(){
+        visited=false;
+    }
+
     @SuppressWarnings("unchecked")
     private void visitChildFactoriesAndViewsFlat(Consumer<FactoryBase<?,V>> consumer) {
+        if (visited){
+            return;
+        }
+        visited=true;
         for (AttributeAndName attributeAndName: this.internal().getAttributes()){
             Attribute<?,?> attribute=attributeAndName.attribute;
             if (attribute instanceof FactoryReferenceAttribute) {
@@ -226,6 +232,14 @@ public class FactoryBase<L,V> extends Data implements Iterable<FactoryBase<?, V>
         }
     }
 
+    private void prepareIterationRunFromRoot(){
+        internal().collectChildrenDeep().forEach(f -> {
+            if (f instanceof FactoryBase){
+                ((FactoryBase)f).prepareIterationRun();
+            }
+        });//intentional collectChildrenDeep (and not not collectFactoryChildrenDeep ) cause it's fastest iteration over all real data entities
+    }
+
     final FactoryInternal<L,V> factoryInternal = new FactoryInternal<>(this);
     /** <b>internal methods should be only used from the framework.</b>
      *  They may change in the Future.
@@ -256,7 +270,8 @@ public class FactoryBase<L,V> extends Data implements Iterable<FactoryBase<?, V>
         }
 
         /**determine which live objects needs recreation*/
-        public void determineRecreationNeed(Set<Data> changedData) {
+        public void determineRecreationNeedFromRoot(Set<Data> changedData) {
+            factory.prepareIterationRunFromRoot();
             factory.determineRecreationNeed(changedData,new ArrayDeque<>());
         }
 
@@ -279,10 +294,6 @@ public class FactoryBase<L,V> extends Data implements Iterable<FactoryBase<?, V>
             factory.runtimeQuery(visitor);
         }
 
-        public void visitChildFactoriesAndViewsFlat(Consumer<FactoryBase<?,V>> consumer) {
-            factory.visitChildFactoriesAndViewsFlat(consumer);
-        }
-
         public L instance() {
            return factory.instance();
         }
@@ -291,12 +302,13 @@ public class FactoryBase<L,V> extends Data implements Iterable<FactoryBase<?, V>
             factory.loopDetector();
         }
 
-        public Set<FactoryBase<?,V>> collectChildFactoriesDeep(){
+        public Set<FactoryBase<?,V>> collectChildFactoriesDeepFromRoot(){
+            factory.prepareIterationRunFromRoot();
             return factory.collectChildFactoriesDeep();
         }
 
-        public HashMap<String,FactoryBase<?,V>> collectChildFactoriesDeepMap(){
-            final Set<FactoryBase<?, V>> factoryBases = factory.collectChildFactoriesDeep();
+        public HashMap<String,FactoryBase<?,V>> collectChildFactoriesDeepMapFromRoot(){
+            final Set<FactoryBase<?, V>> factoryBases = collectChildFactoriesDeepFromRoot();
             HashMap<String, FactoryBase<?, V>> result = new HashMap<>();
             for (FactoryBase<?, V> factory: factoryBases){
                 result.put(factory.getId(),factory);

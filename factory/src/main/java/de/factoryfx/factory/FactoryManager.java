@@ -48,10 +48,10 @@ public class FactoryManager<V,L,R extends FactoryBase<L,V>> {
         long totalUpdateDuration=0;
         List<FactoryBase<?,V>> removed = new ArrayList<>();
         if (mergeDiff.successfullyMerged()){
-            final Set<FactoryBase<?, V>> newFactories = currentFactoryRoot.internalFactory().collectChildFactoriesDeep();
+            final Set<FactoryBase<?, V>> newFactories = currentFactoryRoot.internalFactory().collectChildFactoriesDeepFromRoot();
 
             long start=System.nanoTime();
-            currentFactoryRoot.internalFactory().determineRecreationNeed(getChangedFactories(previousFactoryCopyRoot));
+            currentFactoryRoot.internalFactory().determineRecreationNeedFromRoot(getChangedFactories(previousFactoryCopyRoot));
 
             final LinkedHashSet<FactoryBase<?, V>> factoriesInCreateAndStartOrder = getFactoriesInCreateAndStartOrder(currentFactoryRoot);
             factoriesInCreateAndStartOrder.forEach(this::createWithExceptionHandling);
@@ -69,8 +69,8 @@ public class FactoryManager<V,L,R extends FactoryBase<L,V>> {
     private Set<Data> getChangedFactories(R previousFactoryCopyRoot){
         //one might think that the merger could do the change detection but that don't work for views and separation of concern is better anyway
         final HashSet<Data> result = new HashSet<>();
-        final HashMap<String, FactoryBase<?, V>> previousFactories = previousFactoryCopyRoot.internalFactory().collectChildFactoriesDeepMap();
-        for (Data data: currentFactoryRoot.internalFactory().collectChildFactoriesDeep()){
+        final HashMap<String, FactoryBase<?, V>> previousFactories = previousFactoryCopyRoot.internalFactory().collectChildFactoriesDeepMapFromRoot();
+        for (Data data: currentFactoryRoot.internalFactory().collectChildFactoriesDeepFromRoot()){
             final FactoryBase<?, V> previousFactory = previousFactories.get(data.getId());
             if (previousFactory!=null){
                 data.internal().visitAttributesDualFlat(previousFactory, (name, currentAttribute, previousAttribute) -> {
@@ -157,7 +157,7 @@ public class FactoryManager<V,L,R extends FactoryBase<L,V>> {
 
     @SuppressWarnings("unchecked")
     public V query(V visitor){
-        for (FactoryBase<?,V> factory: currentFactoryRoot.internalFactory().collectChildFactoriesDeep()){
+        for (FactoryBase<?,V> factory: currentFactoryRoot.internalFactory().collectChildFactoriesDeepFromRoot()){
             factory.internalFactory().runtimeQuery(visitor);
         }
         return visitor;
