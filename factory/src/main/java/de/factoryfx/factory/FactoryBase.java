@@ -113,6 +113,9 @@ public class FactoryBase<L,V> extends Data implements Iterable<FactoryBase<?, V>
     }
 
     private void determineRecreationNeed(Set<Data> changedData, ArrayDeque<FactoryBase<?,?>> path){
+        if (needRecreation){
+            return;//already checked
+        }
         path.push(this);
 
         needRecreation =changedData.contains(this) || createdLiveObject==null;  //null means newly added
