@@ -162,7 +162,7 @@ public class RestResource<V,L,T extends FactoryBase<L,V>> {
             ((Attribute)thisAttribute).set(value);
         });
 
-        root.internal().fixDuplicateObjects();
+        root.internal().fixDuplicateData();
         return createStageResponse();
     }
 

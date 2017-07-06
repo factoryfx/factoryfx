@@ -23,7 +23,7 @@ public abstract class Attribute<T,A extends Attribute<T,A>>{
 
     public abstract boolean internal_match(T value);
 
-    public boolean ignoreForMerging() {
+    public boolean internal_ignoreForMerging() {
         return false;
     }
 
@@ -31,7 +31,7 @@ public abstract class Attribute<T,A extends Attribute<T,A>>{
      * merge logic delegate AttributeMergeHelper
      * @return MergeHelper or null if no merging should be executed
      */
-    public boolean hasMergeConflict(Attribute<?,?> originalAttribute, Attribute<?,?> newAttribute) {
+    public boolean internal_hasMergeConflict(Attribute<?,?> originalAttribute, Attribute<?,?> newAttribute) {
         if (newAttribute.internal_match(originalAttribute)) {
             return false;
         }
@@ -47,7 +47,7 @@ public abstract class Attribute<T,A extends Attribute<T,A>>{
     /**
      * check if merge should be executed e.g. not if values ar equals
      * */
-    public boolean isMergeable(Attribute<?,?> originalAttribute, Attribute<?,?> newAttribute) {
+    public boolean internal_isMergeable(Attribute<?,?> originalAttribute, Attribute<?,?> newAttribute) {
         if (!internal_match(originalAttribute) || internal_match(newAttribute)) {
             return false ;
         }
@@ -55,7 +55,7 @@ public abstract class Attribute<T,A extends Attribute<T,A>>{
     }
 
     @SuppressWarnings("unchecked")
-    public void merge(Attribute<?,?> newValue) {
+    public void internal_merge(Attribute<?,?> newValue) {
         set((T) newValue.get());
     }
 

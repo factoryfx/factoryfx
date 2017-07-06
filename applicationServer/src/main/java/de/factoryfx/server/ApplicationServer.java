@@ -38,7 +38,7 @@ public class ApplicationServer<V,L,R extends FactoryBase<L,V>> {
     public MergeDiffInfo getDiffToPreviousVersion(StoredFactoryMetadata storedFactoryMetadata) {
         R historyFactory = getHistoryFactory(storedFactoryMetadata.id);
         R historyFactoryPrevious = getPreviousHistoryFactory(storedFactoryMetadata.id);
-        return new DataMerger(historyFactoryPrevious,historyFactoryPrevious,historyFactory).createMergeResult((permission)->true).getMergeDiff();
+        return new DataMerger(historyFactoryPrevious,historyFactoryPrevious,historyFactory).createMergeResult((permission)->true).executeMerge();
     }
 
     public FactoryUpdateLog revertTo(StoredFactoryMetadata storedFactoryMetadata, String user) {

@@ -175,7 +175,7 @@ public abstract class ViewReferenceAttribute<R extends Data, T extends Data,A ex
     }
 
     @Override
-    public boolean ignoreForMerging() {
+    public boolean internal_ignoreForMerging() {
         return true;
     }
 

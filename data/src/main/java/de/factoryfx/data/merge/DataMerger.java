@@ -19,7 +19,7 @@ public class DataMerger {
 
     @SuppressWarnings("unchecked")
     public MergeResult createMergeResult(Function<String,Boolean> permissionChecker) {
-        MergeResult mergeResult = new MergeResult(currentData.internal().copy(), newData.internal().copy());
+        MergeResult mergeResult = new MergeResult(currentData);
 
         Map<String, Data> originalMap = commonData.internal().collectChildDataMap();
         Map<String, Data> currentMap = currentData.internal().collectChildDataMap();
@@ -46,13 +46,6 @@ public class DataMerger {
     }
 
     public MergeDiffInfo mergeIntoCurrent(Function<String,Boolean> permissionChecker) {
-        MergeResult mergeResult = createMergeResult(permissionChecker);
-        MergeDiffInfo mergeDiff = mergeResult.getMergeDiff();
-
-        if (mergeDiff.hasNoConflicts() && mergeDiff.hasNoPermissionViolation()) {
-            mergeResult.executeMerge();
-            currentData.internal().fixDuplicateObjects();
-        }
-        return mergeDiff;
+        return createMergeResult(permissionChecker).executeMerge();
     }
 }

@@ -252,15 +252,15 @@ public class Data {
     @SuppressWarnings("unchecked")
     private void merge(Data originalValue, Data newValue, MergeResult mergeResult, Function<String,Boolean> permissionChecker) {
         this.visitAttributesTripleFlat(originalValue, newValue, (attributeName, currentAttribute, originalAttribute, newAttribute) -> {
-            if (!currentAttribute.ignoreForMerging()){
-                if (currentAttribute.hasMergeConflict(originalAttribute, newAttribute)) {
+            if (!currentAttribute.internal_ignoreForMerging()){
+                if (currentAttribute.internal_hasMergeConflict(originalAttribute, newAttribute)) {
                     mergeResult.addConflictInfo(new AttributeDiffInfo(Data.this.getId(), attributeName));
                 } else {
-                    if (currentAttribute.isMergeable(originalAttribute, newAttribute)) {
+                    if (currentAttribute.internal_isMergeable(originalAttribute, newAttribute)) {
                         final AttributeDiffInfo attributeDiffInfo = new AttributeDiffInfo(attributeName,Data.this.getId());
                         if (currentAttribute.internal_hasWritePermission(permissionChecker)){
                             mergeResult.addMergeInfo(attributeDiffInfo);
-                            mergeResult.addMergeExecutions(() -> currentAttribute.merge(newAttribute));
+                            mergeResult.addMergeExecutions(() -> currentAttribute.internal_merge(newAttribute));
                         } else {
                             mergeResult.addPermissionViolationInfo(attributeDiffInfo);
                         }
@@ -604,10 +604,10 @@ public class Data {
         }
 
 
-        /**fix all factories with same id should be same object
+        /**fix all data with same id should be same object
          * only call on root
          * */
-        public void fixDuplicateObjects() {
+        public void fixDuplicateData() {
             data.fixDuplicateObjects();
         }
 

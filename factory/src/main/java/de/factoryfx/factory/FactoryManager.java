@@ -98,8 +98,8 @@ public class FactoryManager<V,L,R extends FactoryBase<L,V>> {
     public MergeDiffInfo simulateUpdate(R commonVersion , R newVersion,  Function<String, Boolean> permissionChecker){
         newVersion.internalFactory().loopDetector();
 
-        DataMerger dataMerger = new DataMerger(currentFactoryRoot, commonVersion, newVersion);
-        return dataMerger.createMergeResult(permissionChecker).getMergeDiff();
+        DataMerger dataMerger = new DataMerger(currentFactoryRoot.internal().copy(), commonVersion, newVersion);
+        return dataMerger.createMergeResult(permissionChecker).executeMerge();
     }
 
     private void destroyFactories(LinkedHashSet<FactoryBase<?,V>> previousFactories, Set<FactoryBase<?,V>> newFactories){

@@ -27,7 +27,7 @@ public class ObjectValueAttribute<T> extends ImmutableValueAttribute<T,ObjectVal
 
 
     @Override
-    public boolean ignoreForMerging() {
+    public boolean internal_ignoreForMerging() {
         return true;
     }
 

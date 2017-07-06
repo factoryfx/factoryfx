@@ -38,8 +38,10 @@ public abstract class ReferenceListAttribute<T extends Data,A extends ReferenceB
                     }
                 }
             }
-            for (AttributeChangeListener<List<T>,A> listener: listeners){
-                listener.changed(ReferenceListAttribute.this,get());
+            if (listeners!=null) {
+                for (AttributeChangeListener<List<T>, A> listener : listeners) {
+                    listener.changed(ReferenceListAttribute.this, get());
+                }
             }
         });
     }
@@ -149,16 +151,21 @@ public abstract class ReferenceListAttribute<T extends Data,A extends ReferenceB
         return get().stream().filter(predicate).collect(Collectors.toList());
     }
 
-    final List<AttributeChangeListener<List<T>,A>> listeners= new ArrayList<>();
+    List<AttributeChangeListener<List<T>,A>> listeners;
     @Override
     public void internal_addListener(AttributeChangeListener<List<T>,A> listener) {
+        if (listeners==null){
+            listeners=new ArrayList<>();
+        }
         listeners.add(listener);
     }
     @Override
     public void internal_removeListener(AttributeChangeListener<List<T>,A> listener) {
-        for (AttributeChangeListener<List<T>,A> listenerItem: new ArrayList<>(listeners)){
-            if (listenerItem.unwrap()==listener || listenerItem.unwrap()==null){
-                listeners.remove(listenerItem);
+        if (listeners!=null){
+            for (AttributeChangeListener<List<T>,A> listenerItem: new ArrayList<>(listeners)){
+                if (listenerItem.unwrap()==listener || listenerItem.unwrap()==null){
+                    listeners.remove(listenerItem);
+                }
             }
         }
     }

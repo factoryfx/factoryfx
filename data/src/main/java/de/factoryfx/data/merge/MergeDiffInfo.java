@@ -37,21 +37,6 @@ public class MergeDiffInfo {
         this.rootClazz=rootClazz;
     }
 
-    public MergeDiffInfo(
-            List<AttributeDiffInfo> mergeInfos,
-            List<AttributeDiffInfo> conflictInfos,
-            List<AttributeDiffInfo> permissionViolations,
-            Data previousRoot,
-            Data newRoot){
-        this.mergeInfos=mergeInfos;
-        this.conflictInfos=conflictInfos;
-        this.permissionViolations = permissionViolations;
-        this.previousRoot=ObjectMapperBuilder.build().writeValueAsString(previousRoot);
-        this.newRoot=ObjectMapperBuilder.build().writeValueAsString(newRoot);
-        rootClazz=previousRoot.getClass();
-    }
-
-
     @JsonIgnore
     public int getConflictCount() {
         return conflictInfos.size();

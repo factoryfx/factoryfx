@@ -65,8 +65,10 @@ public abstract class ReferenceAttribute<T extends Data, A extends ReferenceBase
         if (root!=null && value!=null && value.internal().getRoot()!=root) {
             value.internal().propagateRoot(root);
         }
-        for (AttributeChangeListener<T,A> listener: listeners){
-            listener.changed(this,value);
+        if (listeners!=null) {
+            for (AttributeChangeListener<T, A> listener : listeners) {
+                listener.changed(this, value);
+            }
         }
     }
 
@@ -98,16 +100,21 @@ public abstract class ReferenceAttribute<T extends Data, A extends ReferenceBase
         this.value = value;
     }
 
-    List<AttributeChangeListener<T,A>> listeners= new ArrayList<>();
+    List<AttributeChangeListener<T,A>> listeners;
     @Override
     public void internal_addListener(AttributeChangeListener<T,A> listener) {
+        if (listeners==null){
+            listeners= new ArrayList<>();
+        }
         listeners.add(listener);
     }
     @Override
     public void internal_removeListener(AttributeChangeListener<T,A> listener) {
-        for (AttributeChangeListener<T,A> listenerItem: new ArrayList<>(listeners)){
-            if (listenerItem.unwrap()==listener ||  listenerItem.unwrap()==null){
-                listeners.remove(listenerItem);
+        if (listeners!=null){
+            for (AttributeChangeListener<T,A> listenerItem: new ArrayList<>(listeners)){
+                if (listenerItem.unwrap()==listener ||  listenerItem.unwrap()==null){
+                    listeners.remove(listenerItem);
+                }
             }
         }
     }

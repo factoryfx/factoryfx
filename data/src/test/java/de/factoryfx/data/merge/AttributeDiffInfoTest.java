@@ -12,7 +12,9 @@ public class AttributeDiffInfoTest {
     public void test_json(){
         final ArrayList<AttributeDiffInfo> mergeInfos = new ArrayList<>();
         mergeInfos.add(new AttributeDiffInfo("jgj","id"));
-        MergeDiffInfo mergeDiff=new MergeDiffInfo(mergeInfos,new ArrayList<>(),new ArrayList<>(),new ExampleDataA(),new ExampleDataA());
+        MergeDiffInfo mergeDiff=new MergeDiffInfo(mergeInfos,new ArrayList<>(),new ArrayList<>()
+                ,ObjectMapperBuilder.build().writeValueAsString(new ExampleDataA())
+                ,ObjectMapperBuilder.build().writeValueAsString(new ExampleDataA()),ExampleDataA.class);
 
         ObjectMapperBuilder.build().copy(mergeDiff);
     }

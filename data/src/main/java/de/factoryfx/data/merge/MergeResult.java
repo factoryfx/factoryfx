@@ -1,13 +1,14 @@
 package de.factoryfx.data.merge;
 
 import de.factoryfx.data.Data;
+import de.factoryfx.data.jackson.ObjectMapperBuilder;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class MergeResult {
-    final Data previousRoot;
-    final Data newRoot;
+    final String previousRoot;
+    final Data currentRoot;
 
     final List<AttributeDiffInfo> mergeInfos = new ArrayList<>();
     final List<AttributeDiffInfo> conflictInfos = new ArrayList<>();
@@ -15,9 +16,9 @@ public class MergeResult {
 
     final List<Runnable> mergeExecutions = new ArrayList<>();
 
-    public MergeResult(Data previousRoot, Data newRoot) {
-        this.previousRoot = previousRoot;
-        this.newRoot = newRoot;
+    public MergeResult(Data currentRoot) {
+        this.previousRoot = ObjectMapperBuilder.build().writeValueAsString(currentRoot);
+        this.currentRoot = currentRoot;
     }
 
     public void addConflictInfo(AttributeDiffInfo conflictInfo) {
@@ -36,14 +37,23 @@ public class MergeResult {
         mergePermissionViolations.add(permissionViolation);
     }
 
-    public void executeMerge() {
-        for (Runnable mergeAction : mergeExecutions) {
-            mergeAction.run();
+    public MergeDiffInfo executeMerge() {
+        if (hasNoConflicts() && hasNoPermissionViolation()){
+            for (Runnable mergeAction : mergeExecutions) {
+                mergeAction.run();
+            }
+            currentRoot.internal().fixDuplicateData();
         }
+        return new MergeDiffInfo(mergeInfos, conflictInfos, mergePermissionViolations,previousRoot,ObjectMapperBuilder.build().writeValueAsString(currentRoot),currentRoot.getClass());
+
     }
 
-    public MergeDiffInfo getMergeDiff() {
-        return new MergeDiffInfo(mergeInfos, conflictInfos, mergePermissionViolations,previousRoot,newRoot);
+    private boolean hasNoPermissionViolation() {
+        return mergePermissionViolations.isEmpty();
+    }
+
+    private boolean hasNoConflicts() {
+        return conflictInfos.isEmpty();
     }
 
 }

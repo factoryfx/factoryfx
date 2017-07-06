@@ -208,7 +208,7 @@ public abstract class ViewListReferenceAttribute <R extends Data, T extends Data
     }
 
     @Override
-    public boolean ignoreForMerging() {
+    public boolean internal_ignoreForMerging() {
         return true;
     }
 
