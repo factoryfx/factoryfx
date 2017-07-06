@@ -122,7 +122,6 @@ public class FactoryBase<L,V> extends Data implements Iterable<FactoryBase<?, V>
 
     boolean reRecreationChecked;
     private void determineRecreationNeed(Set<Data> changedData, ArrayDeque<FactoryBase<?,?>> path){
-        reRecreationChecked=true;
         path.push(this);
 
         needRecreation =changedData.contains(this) || createdLiveObject==null;  //null means newly added
@@ -132,7 +131,9 @@ public class FactoryBase<L,V> extends Data implements Iterable<FactoryBase<?, V>
             }
         }
 
-        if (reRecreationChecked){
+        if (!reRecreationChecked){
+            reRecreationChecked=true;
+
             visited = false;
             visitChildFactoriesAndViewsFlat(child -> {
                 child.visited = false;
