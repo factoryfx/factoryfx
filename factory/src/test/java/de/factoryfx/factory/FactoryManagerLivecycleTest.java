@@ -63,6 +63,8 @@ public class FactoryManagerLivecycleTest {
 
     public static class LivecycleFactoryB extends FactoryBase<DummyLifeObejct,Void> {
 
+        public final FactoryReferenceAttribute<DummyLifeObejct,LivecycleFactoryC> refC = new FactoryReferenceAttribute<>(LivecycleFactoryC.class);
+
         public final FactoryViewListReferenceAttribute<LivecycleFactoryA,DummyLifeObejct,LivecycleFactoryC> listView = new FactoryViewListReferenceAttribute<LivecycleFactoryA,DummyLifeObejct,LivecycleFactoryC>(
                 root -> root.refList.get()).labelText("ExampleA2");
 
@@ -140,6 +142,37 @@ public class FactoryManagerLivecycleTest {
 
         Assert.assertEquals(1,exampleFactoryA.destroyCalls.size());
         Assert.assertEquals(1,exampleFactoryB.destroyCalls.size());
+    }
+
+    @Test
+    public void test_initial_changed_doouble_used(){
+        FactoryManager<Void,DummyLifeObejct,LivecycleFactoryA> factoryManager = new FactoryManager<>(new RethrowingFactoryExceptionHandler<Void>());
+
+        LivecycleFactoryA exampleFactoryA = new LivecycleFactoryA();
+        LivecycleFactoryB exampleFactoryB = new LivecycleFactoryB();
+        LivecycleFactoryC exampleFactoryC = new LivecycleFactoryC();
+
+
+        exampleFactoryA.ref.set(exampleFactoryB);
+        exampleFactoryB.refC.set(exampleFactoryC);
+        exampleFactoryA.refC.set(exampleFactoryC);
+
+        exampleFactoryA = exampleFactoryA.internal().prepareUsableCopy();
+        exampleFactoryB = exampleFactoryA.ref.get();
+//        exampleFactoryC = exampleFactoryA.refC.get();
+
+        factoryManager.start(exampleFactoryA);
+
+        LivecycleFactoryA common = factoryManager.getCurrentFactory().internal().prepareUsableCopy();
+        LivecycleFactoryA update = factoryManager.getCurrentFactory().internal().prepareUsableCopy();
+        update.refC.get().stringAttribute.set("changed");
+
+        exampleFactoryA.resetCounter();
+        exampleFactoryB.resetCounter();
+        factoryManager.update(common,update,(permission)->true);
+
+        Assert.assertEquals(1,exampleFactoryA.reCreateCalls.size());
+        Assert.assertEquals(1,exampleFactoryB.reCreateCalls.size());
     }
 
     @Test

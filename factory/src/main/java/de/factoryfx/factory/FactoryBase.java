@@ -120,7 +120,9 @@ public class FactoryBase<L,V> extends Data implements Iterable<FactoryBase<?, V>
         previousLiveObject=null;
     }
 
+    boolean reRecreationChecked;
     private void determineRecreationNeed(Set<Data> changedData, ArrayDeque<FactoryBase<?,?>> path){
+        reRecreationChecked=true;
         path.push(this);
 
         needRecreation =changedData.contains(this) || createdLiveObject==null;  //null means newly added
@@ -130,12 +132,17 @@ public class FactoryBase<L,V> extends Data implements Iterable<FactoryBase<?, V>
             }
         }
 
-        visitChildFactoriesAndViewsFlat(child -> {
-            child.visited = false;
-            child.determineRecreationNeed(changedData,path);
-        });
+        if (reRecreationChecked){
+            visited = false;
+            visitChildFactoriesAndViewsFlat(child -> {
+                child.visited = false;
+                child.determineRecreationNeed(changedData,path);
+            });
+        }
         path.pop();
     }
+
+
 
     private void loopDetector(){
         collectChildFactoriesDeep();
@@ -248,6 +255,14 @@ public class FactoryBase<L,V> extends Data implements Iterable<FactoryBase<?, V>
         });//intentional collectChildrenDeep (and not not collectFactoryChildrenDeep ) cause it's fastest iteration over all real data entities
     }
 
+    private void  prepareRecreationCheck(){
+        internal().collectChildrenDeep().forEach(f -> {
+            if (f instanceof FactoryBase){
+                ((FactoryBase)f).reRecreationChecked=false;
+            }
+        });
+    }
+
     private FactoryLogEntry createFactoryLogEntry(boolean flat) {
         FactoryLogEntry factoryLogEntry = this.getFactoryLogEntry();
         if (factoryLogEntry.hasEvents()){
@@ -295,7 +310,7 @@ public class FactoryBase<L,V> extends Data implements Iterable<FactoryBase<?, V>
 
         /**determine which live objects needs recreation*/
         public void determineRecreationNeedFromRoot(Set<Data> changedData) {
-            factory.prepareIterationRunFromRoot();
+            factory.prepareRecreationCheck();
             factory.determineRecreationNeed(changedData,new ArrayDeque<>());
         }
 
