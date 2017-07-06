@@ -1,9 +1,5 @@
 package de.factoryfx.javafx.widget.validation;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
-
 import de.factoryfx.data.Data;
 import de.factoryfx.data.util.LanguageText;
 import de.factoryfx.data.validation.ValidationError;
@@ -17,18 +13,17 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
 import javafx.scene.Node;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.ScrollPane;
-import javafx.scene.control.SplitPane;
-import javafx.scene.control.TreeItem;
-import javafx.scene.control.TreeTableColumn;
-import javafx.scene.control.TreeTableView;
+import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import org.controlsfx.glyphfont.FontAwesome;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class ValidationWidget implements Widget {
 
@@ -85,11 +80,11 @@ public class ValidationWidget implements Widget {
         {
             final TreeTableColumn<ValidationAndData, String> column = new TreeTableColumn<>(uniformDesign.getText(columnValidation));
             column.setCellValueFactory(param -> {
-                        String initialValue = "";
-                        if (param.getValue().getValue().validationError!=null){
-                            initialValue = param.getValue().getValue().validationError.validationDescription(uniformDesign::getText);
-                        }
-                        return new SimpleStringProperty(initialValue);
+                String initialValue = "";
+                if (param.getValue().getValue().validationError!=null){
+                    initialValue = param.getValue().getValue().validationError.validationDescription(uniformDesign::getText);
+                }
+                return new SimpleStringProperty(initialValue);
             });
             tableView.getColumns().add(column);
         }
@@ -147,6 +142,7 @@ public class ValidationWidget implements Widget {
         final TreeItem<ValidationAndData> root = new TreeItem<>();
         tableView.setRoot(root);
         tableView.setShowRoot(false);
+        HashMap<Data,Data> child2parent = this.root.internal().getChildToParentMap();
 
         List<ValidationError> validationErrors= new ArrayList<>();
         for (Data data: this.root.internal().collectChildrenDeep()){
@@ -158,7 +154,7 @@ public class ValidationWidget implements Widget {
                 dataItem.getChildren().add(error);
             });
             if (!dataItem.getChildren().isEmpty()){
-                dataItem.setValue(new ValidationAndData(null,data,data.internal().getPathFromRoot().stream().map(d->d.internal().getDisplayText()).collect(Collectors.joining("/"))));
+                dataItem.setValue(new ValidationAndData(null,data,data.internal().getPathFromRoot(child2parent).stream().map(d->d.internal().getDisplayText()).collect(Collectors.joining("/"))));
                 root.getChildren().add(dataItem);
             }
         }

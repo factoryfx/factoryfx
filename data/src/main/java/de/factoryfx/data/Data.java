@@ -1,23 +1,5 @@
 package de.factoryfx.data;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.function.Supplier;
-import java.util.stream.Stream;
-
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
@@ -32,6 +14,15 @@ import de.factoryfx.data.validation.ValidationError;
 import javafx.beans.property.ReadOnlyStringProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.util.Pair;
+
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Supplier;
+import java.util.stream.Stream;
 
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class Data {
@@ -172,7 +163,7 @@ public class Data {
             visitAttributesFlat((attributeVariableName, attribute) -> attribute.internal_collectChildren(allModelEntities));
         }
     }
-    
+
 
     /**
      * after deserialization from json only the value is present and metadata are missing
@@ -423,7 +414,7 @@ public class Data {
     }
 
     private Function<String,Boolean> matchSearchTextFunction=text->{
-            return Strings.isNullOrEmpty(text) || Strings.nullToEmpty(getDisplayText()).toLowerCase().contains(text.toLowerCase());
+        return Strings.isNullOrEmpty(text) || Strings.nullToEmpty(getDisplayText()).toLowerCase().contains(text.toLowerCase());
     };
 
     private void setMatchSearchTextFunction(Function<String,Boolean> matchSearchTextFunction) {
@@ -645,6 +636,10 @@ public class Data {
             return data.root.getMassPathTo(data.root.getChildToParentMap(data.root.collectChildrenDeep()), data);
         }
 
+        public List<Data> getPathFromRoot(HashMap<Data, Data> childToParentMap) {
+            return data.root.getMassPathTo(childToParentMap, data);
+        }
+
         public <T extends Data> T copy() {
             return  data.copy();
         }
@@ -698,6 +693,10 @@ public class Data {
 
         public Data getParent(){
             return data.getParent();
+        }
+
+        public HashMap<Data, Data> getChildToParentMap() {
+            return data.getChildToParentMap(data.root.collectChildrenDeep());
         }
     }
 
