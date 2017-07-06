@@ -108,22 +108,17 @@ public class FactoryManager<V,L,R extends FactoryBase<L,V>> {
         }
     }
 
-    private final TreeTraverser<FactoryBase<?,V>> factoryTraverser = new TreeTraverser<FactoryBase<?,V>>() {
-        @Override
-        public Iterable<FactoryBase<?,V>> children(FactoryBase<?,V> factory) {
-            return factory;
-        }
-    };
+
     private LinkedHashSet<FactoryBase<?,V>> getFactoriesInCreateAndStartOrder(R root){
         LinkedHashSet<FactoryBase<?,V>> result = new LinkedHashSet<>();
-        for (FactoryBase<?,V> factory : factoryTraverser.postOrderTraversal(root)) {
+        for (FactoryBase<?,V> factory : root.internalFactory().postOrderTraversalFromRoot()) {
             result.add(factory);
         }
         return result;
     }
     private LinkedHashSet<FactoryBase<?,V>> getFactoriesInDestroyOrder(R root){
         LinkedHashSet<FactoryBase<?,V>> result = new LinkedHashSet<>();
-        for (FactoryBase<?,V> factory : factoryTraverser.breadthFirstTraversal(root)) {
+        for (FactoryBase<?,V> factory : root.internalFactory().breadthFirstTraversalFromRoot()) {
             result.add(factory);
         }
         return result;

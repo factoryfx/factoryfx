@@ -10,6 +10,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.google.common.base.Throwables;
+import com.google.common.collect.TreeTraverser;
 import de.factoryfx.data.AttributeAndName;
 import de.factoryfx.data.Data;
 import de.factoryfx.data.attribute.Attribute;
@@ -152,7 +153,6 @@ public class FactoryBase<L,V> extends Data implements Iterable<FactoryBase<?, V>
 
     private List<FactoryBase<?,V>> collectChildrenFactoriesFlat() {
         List<FactoryBase<?,V>> result = new ArrayList<>();
-        this.visited=false;
         this.visitChildFactoriesAndViewsFlat(result::add);
         return result;
     }
@@ -240,6 +240,20 @@ public class FactoryBase<L,V> extends Data implements Iterable<FactoryBase<?, V>
         });//intentional collectChildrenDeep (and not not collectFactoryChildrenDeep ) cause it's fastest iteration over all real data entities
     }
 
+    private FactoryLogEntry createFactoryLogEntry(boolean flat) {
+        if (factoryLogEntry.hasEvents()){
+            if (!flat){
+                this.collectChildrenFactoriesFlat().forEach(child -> {
+                    factoryLogEntry.children.add(child.createFactoryLogEntry(flat));
+                });
+                factoryLogEntry.children.removeIf(Objects::isNull);
+            }
+            return factoryLogEntry;
+        }
+        return null;
+    }
+
+
     final FactoryInternal<L,V> factoryInternal = new FactoryInternal<>(this);
     /** <b>internal methods should be only used from the framework.</b>
      *  They may change in the Future.
@@ -262,6 +276,7 @@ public class FactoryBase<L,V> extends Data implements Iterable<FactoryBase<?, V>
         }
 
         public FactoryLogEntry createFactoryLogEntry() {
+            factory.prepareIterationRunFromRoot();
             return factory.createFactoryLogEntry(false);
         }
 
@@ -307,6 +322,18 @@ public class FactoryBase<L,V> extends Data implements Iterable<FactoryBase<?, V>
             return factory.collectChildFactoriesDeep();
         }
 
+        public Iterable<FactoryBase<?,V>> breadthFirstTraversalFromRoot(){
+            factory.prepareIterationRunFromRoot();
+            final TreeTraverser<FactoryBase<?,V>> factoryTraverser = new FactoryTreeTraverser<>();
+            return factoryTraverser.breadthFirstTraversal(factory);
+        }
+
+        public Iterable<FactoryBase<?,V>> postOrderTraversalFromRoot(){
+            factory.prepareIterationRunFromRoot();
+            final TreeTraverser<FactoryBase<?,V>> factoryTraverser = new FactoryTreeTraverser<>();
+            return factoryTraverser.postOrderTraversal(factory);
+        }
+
         public HashMap<String,FactoryBase<?,V>> collectChildFactoriesDeepMapFromRoot(){
             final Set<FactoryBase<?, V>> factoryBases = collectChildFactoriesDeepFromRoot();
             HashMap<String, FactoryBase<?, V>> result = new HashMap<>();
@@ -316,28 +343,11 @@ public class FactoryBase<L,V> extends Data implements Iterable<FactoryBase<?, V>
             return result;
         }
 
-        public List<FactoryBase<?,V>> collectChildrenFactoriesFlat() {
-            return factory.collectChildrenFactoriesFlat();
-        }
-
         public String debugInfo() {
             return factory.debugInfo();
         }
 
 
-    }
-
-    private FactoryLogEntry createFactoryLogEntry(boolean flat) {
-        if (factoryLogEntry.hasEvents()){
-            if (!flat){
-                this.internalFactory().collectChildrenFactoriesFlat().forEach(child -> {
-                    factoryLogEntry.children.add(child.createFactoryLogEntry(flat));
-                });
-                factoryLogEntry.children.removeIf(Objects::isNull);
-            }
-            return factoryLogEntry;
-        }
-        return null;
     }
 
     Supplier<L> creator=null;
