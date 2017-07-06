@@ -38,12 +38,19 @@ public class FactoryBase<L,V> extends Data implements Iterable<FactoryBase<?, V>
     @JsonIgnore
     boolean needRecreation =false;
     @JsonIgnore
-    private FactoryLogEntry factoryLogEntry=new FactoryLogEntry(this);
+    private FactoryLogEntry factoryLogEntry;
     @JsonIgnore
     private L previousLiveObject;
 
     private void resetLog() {
         factoryLogEntry=new FactoryLogEntry(this);
+    }
+
+    private FactoryLogEntry getFactoryLogEntry(){
+        if (factoryLogEntry==null){
+            factoryLogEntry=new FactoryLogEntry(this);
+        }
+        return factoryLogEntry;
     }
 
     private L instance() {
@@ -63,7 +70,7 @@ public class FactoryBase<L,V> extends Data implements Iterable<FactoryBase<?, V>
     <U> U loggedAction(FactoryLogEntryEventType type, Supplier<U> action){
         long start=System.nanoTime();
         U result = action.get();
-        factoryLogEntry.events.add(new FactoryLogEntryEvent(type,System.nanoTime()-start));
+        getFactoryLogEntry().events.add(new FactoryLogEntryEvent(type,System.nanoTime()-start));
         return result;
     }
 
@@ -241,6 +248,7 @@ public class FactoryBase<L,V> extends Data implements Iterable<FactoryBase<?, V>
     }
 
     private FactoryLogEntry createFactoryLogEntry(boolean flat) {
+        FactoryLogEntry factoryLogEntry = this.getFactoryLogEntry();
         if (factoryLogEntry.hasEvents()){
             if (!flat){
                 this.collectChildrenFactoriesFlat().forEach(child -> {

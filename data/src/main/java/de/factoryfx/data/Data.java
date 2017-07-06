@@ -143,13 +143,6 @@ public class Data {
         return result;
     }
 
-    @SuppressWarnings("unchecked")
-    private <T extends Data> Set<T> collectChildrenFlat() {
-        HashSet<T> result = new HashSet<>();
-        this.visitChildFactoriesFlat(factoryBase -> result.add((T)factoryBase));
-        return result;
-    }
-
     /** collect set with all nested children and itself*/
     private Set<Data> collectChildrenDeep() {
         HashSet<Data> factoryBases = new HashSet<>();
