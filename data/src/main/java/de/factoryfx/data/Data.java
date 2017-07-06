@@ -228,17 +228,22 @@ public class Data {
             validationErrors.addAll(attribute.internal_validate(this));
         });
 
-        for (AttributeValidation<?> validation: dataValidations){
-            final Map<Attribute<?,?>, List<ValidationError>> validateResult = validation.validate(this);
-            for (Map.Entry<Attribute<?,?>, List<ValidationError>> entry: validateResult.entrySet()){
-                result.get(entry.getKey()).addAll(entry.getValue());
+        if (dataValidations!=null){
+            for (AttributeValidation<?> validation: dataValidations){
+                final Map<Attribute<?,?>, List<ValidationError>> validateResult = validation.validate(this);
+                for (Map.Entry<Attribute<?,?>, List<ValidationError>> entry: validateResult.entrySet()){
+                    result.get(entry.getKey()).addAll(entry.getValue());
+                }
             }
         }
         return result;
     }
 
-    final List<AttributeValidation<?>> dataValidations = new ArrayList<>();
+    private List<AttributeValidation<?>> dataValidations;
     private <T> void addValidation(Validation<T> validation, Attribute<?,?>... dependencies){
+        if (dataValidations==null){
+            dataValidations = new ArrayList<>();
+        }
         for ( Attribute<?,?> dependency: dependencies){
             dataValidations.add(new AttributeValidation<>(validation,dependency));
         }
