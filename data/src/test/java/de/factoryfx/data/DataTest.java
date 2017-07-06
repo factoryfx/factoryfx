@@ -102,6 +102,7 @@ public class DataTest {
 
 
         final Field dataValidations = Data.class.getDeclaredField("dataValidations");
+        dataValidations.setAccessible(true);
         displayTextDependencies.setAccessible(true);
         final List<AttributeValidation<?>> dataValidationsAttributes = (List<AttributeValidation<?>>) dataValidations.get(readed);
         Assert.assertEquals(1, dataValidationsAttributes.size());
