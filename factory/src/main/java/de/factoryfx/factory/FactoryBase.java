@@ -90,7 +90,7 @@ public class FactoryBase<L,V> extends Data implements Iterable<FactoryBase<?, V>
 
     private L reCreate(L previousLiveObject) {
         if (reCreatorWithPreviousLiveObject!=null){
-        return loggedAction(FactoryLogEntryEventType.RECREATE, ()-> {
+            return loggedAction(FactoryLogEntryEventType.RECREATE, ()-> {
                 return reCreatorWithPreviousLiveObject.apply(previousLiveObject);
             });
         }
@@ -131,7 +131,8 @@ public class FactoryBase<L,V> extends Data implements Iterable<FactoryBase<?, V>
         }
 
         visitChildFactoriesAndViewsFlat(child -> {
-             child.determineRecreationNeed(changedData,path);
+            child.visited = false;
+            child.determineRecreationNeed(changedData,path);
         });
         path.pop();
     }
@@ -318,7 +319,7 @@ public class FactoryBase<L,V> extends Data implements Iterable<FactoryBase<?, V>
         }
 
         public L instance() {
-           return factory.instance();
+            return factory.instance();
         }
 
         public  void loopDetector() {
