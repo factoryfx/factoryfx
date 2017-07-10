@@ -1,6 +1,7 @@
 package de.factoryfx.data.attribute;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.google.common.util.concurrent.MoreExecutors;
 import de.factoryfx.data.Data;
 
 import java.util.*;
@@ -40,6 +41,9 @@ public abstract class ReferenceBaseAttribute<T extends Data, U, A extends Refere
 
     @SuppressWarnings("unchecked")
     public Collection<T> internal_possibleValues(){
+        if (clazz!=null && possibleValueProviderFromRoot==null){
+            possibleValueProviderFromRoot=new DefaultPossibleValueProvider<>(clazz);
+        }
         if (possibleValueProviderFromRoot!=null){
             return possibleValueProviderFromRoot.apply(root);
         }
@@ -51,7 +55,7 @@ public abstract class ReferenceBaseAttribute<T extends Data, U, A extends Refere
         this.root=root;
     }
 
-    protected Function<Data,T> newValueProvider;
+    private Function<Data,T> newValueProvider;
     /**
      * customise how new values are created
      * @param newValueProviderFromRoot value, root
@@ -61,6 +65,13 @@ public abstract class ReferenceBaseAttribute<T extends Data, U, A extends Refere
     public A newValueProvider(Function<Data,T> newValueProviderFromRoot){
         this.newValueProvider =newValueProviderFromRoot;
         return (A)this;
+    }
+
+    protected Function<Data,T> getNewValueProvider(){
+        if (clazz!=null && newValueProvider==null){
+            newValueProvider=new DefaultNewValueProvider<>(clazz);
+        }
+        return newValueProvider;
     }
 
     Function<Data,List<T>> newValuesProvider;
@@ -142,9 +153,11 @@ public abstract class ReferenceBaseAttribute<T extends Data, U, A extends Refere
         return (A)this;
     }
 
+    private Class<T> clazz;
     /**setup value selection and new value adding for user editing*/
     @SuppressWarnings("unchecked")
     protected A setup(Class<T> clazz){
+        this.clazz=clazz;//lazy creation for performance
         this.possibleValueProvider(new DefaultPossibleValueProvider<>(clazz));
         this.newValueProvider(new DefaultNewValueProvider<>(clazz));
         return (A)this;

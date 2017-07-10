@@ -151,8 +151,8 @@ public abstract class ReferenceAttribute<T extends Data, A extends ReferenceBase
         if (newValuesProvider!=null) {
             return newValuesProvider.apply(root);
         }
-        if (newValueProvider!=null) {
-            return Collections.singletonList(newValueProvider.apply(root));
+        if (getNewValueProvider()!=null) {
+            return Collections.singletonList(getNewValueProvider().apply(root));
         }
         return new ArrayList<>();
     }

@@ -172,24 +172,13 @@ public abstract class ReferenceListAttribute<T extends Data,A extends ReferenceB
         return new AttributeTypeInfo(ObservableList.class,null,null,Data.class, AttributeTypeInfo.AttributeTypeCategory.REFERENCE_LIST);
     }
 
-
-
     public T internal_addNewFactory(){
         T addedFactory = null;
-        if (newValueProvider!=null) {
-            T newFactory = newValueProvider.apply(root);
+        if (getNewValueProvider()!=null) {
+            T newFactory = getNewValueProvider().apply(root);
             get().add(newFactory);
             addedFactory = newFactory;
-        } else {
-//            try {
-//                T newFactory = containingFactoryClass.newInstance();
-//                get().add(newFactory);
-//                addedFactory = newFactory;
-//            } catch (InstantiationException | IllegalAccessException e) {
-//                throw new RuntimeException(e);
-//            }
         }
-//        addedFactory.internal().propagateRoot(root);
         return addedFactory;
     }
 
