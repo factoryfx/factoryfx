@@ -17,25 +17,13 @@ public class DataReferenceListAttribute<T extends Data> extends ReferenceListAtt
         setup(clazz);
     }
 
-
-    public DataReferenceListAttribute<T> setup(Class<T> clazz){
-        this.possibleValueProvider(data -> {
-            Set<T> result = new HashSet<>();
-            for (Data factory: root.internal().collectChildrenDeep()){
-                if (clazz.isAssignableFrom(factory.getClass())){
-                    result.add((T) factory);
-                }
-            }
-            return result;
-        });
-        this.newValueProvider(data -> {
-            try {
-                return clazz.newInstance();
-            } catch (InstantiationException | IllegalAccessException e) {
-                throw new RuntimeException(e);
-            }
-        });
-        return this;
+    @Override
+    public DataReferenceListAttribute<T> setup(Class<T> clazz) {
+        return super.setup(clazz);
     }
 
+    @Override
+    public DataReferenceListAttribute<T> setupUnsafe(Class clazz) {
+        return super.setupUnsafe(clazz);
+    }
 }

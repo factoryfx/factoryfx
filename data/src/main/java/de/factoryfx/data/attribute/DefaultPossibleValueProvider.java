@@ -1,14 +1,13 @@
-package de.factoryfx.factory.atrribute;
+package de.factoryfx.data.attribute;
 
 import de.factoryfx.data.Data;
-import de.factoryfx.factory.FactoryBase;
 
 import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.function.Function;
 
-public class DefaultPossibleValueProvider<L, T extends FactoryBase<? extends L,?>> implements Function<Data, Collection<T>> {
+public class DefaultPossibleValueProvider<L, T extends Data> implements Function<Data, Collection<T>> {
 
     private final Class<T> clazz;
 

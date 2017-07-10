@@ -3,48 +3,52 @@ package de.factoryfx.factory.atrribute;
 import java.util.*;
 import java.util.function.Predicate;
 
-import de.factoryfx.data.Data;
+import de.factoryfx.data.attribute.DefaultNewValueProvider;
+import de.factoryfx.data.attribute.DefaultPossibleValueProvider;
 import de.factoryfx.data.attribute.ReferenceListAttribute;
 import de.factoryfx.factory.FactoryBase;
 
-public class FactoryReferenceListAttribute<L,T extends FactoryBase<? extends L,?>> extends  ReferenceListAttribute<T,FactoryReferenceListAttribute<L,T>>{
+/**
+ * Attribute with factory
+ * @param <L> liveobject created form the factory
+ * @param <F> factory
+ */
+public class FactoryReferenceListAttribute<L, F extends FactoryBase<? extends L,?>> extends  ReferenceListAttribute<F,FactoryReferenceListAttribute<L, F>>{
 
 
     public FactoryReferenceListAttribute() {
         super();
     }
 
-    public FactoryReferenceListAttribute(Class<T> clazz) {
+    public FactoryReferenceListAttribute(Class<F> clazz) {
         super();
         setup(clazz);
     }
 
     public List<L> instances(){
         ArrayList<L> result = new ArrayList<>();
-        for(T item: get()){
+        for(F item: get()){
             result.add(item.internalFactory().instance());
         }
         return result;
     }
 
-    public L instance(Predicate<T> filter){
-        Optional<T> any = get().stream().filter(filter).findAny();
+    public L instance(Predicate<F> filter){
+        Optional<F> any = get().stream().filter(filter).findAny();
         return any.map(t -> t.internalFactory().instance()).orElse(null);
     }
 
-    public boolean add(T data){
+    public boolean add(F data){
         return get().add(data);
     }
 
-
-    @SuppressWarnings("unchecked")
-    public FactoryReferenceListAttribute<L,T> setupUnsafe(Class clazz){
-        return setup((Class<T>)clazz);
+    @Override
+    public FactoryReferenceListAttribute<L, F> setupUnsafe(Class clazz) {
+        return super.setupUnsafe(clazz);
     }
 
-    public FactoryReferenceListAttribute<L,T> setup(Class<T> clazz){
-        this.possibleValueProvider(new DefaultPossibleValueProvider<>(clazz));
-        this.newValueProvider(new DefaultNewValueProvider<>(clazz));
-        return this;
+    @Override
+    public FactoryReferenceListAttribute<L, F> setup(Class<F> clazz) {
+        return super.setup(clazz);
     }
 }

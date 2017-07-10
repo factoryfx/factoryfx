@@ -2,8 +2,8 @@ package de.factoryfx.factory.parametrized;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import de.factoryfx.data.attribute.ReferenceAttribute;
-import de.factoryfx.factory.atrribute.DefaultNewValueProvider;
-import de.factoryfx.factory.atrribute.DefaultPossibleValueProvider;
+import de.factoryfx.data.attribute.DefaultNewValueProvider;
+import de.factoryfx.data.attribute.DefaultPossibleValueProvider;
 
 public class ParametrizedObjectCreatorAttribute<P, L, F extends ParametrizedObjectCreatorFactory<P,L,?>> extends ReferenceAttribute<F,ParametrizedObjectCreatorAttribute<P, L, F>> {
 
@@ -33,15 +33,16 @@ public class ParametrizedObjectCreatorAttribute<P, L, F extends ParametrizedObje
         return get().internalFactory().instance();
     }
 
-    @SuppressWarnings("unchecked")
+    @Override
     public ParametrizedObjectCreatorAttribute<P,L,F> setupUnsafe(Class clazz){
-        return setup((Class<F>)clazz);
+        return super.setupUnsafe(clazz);
     }
 
+    @Override
     public ParametrizedObjectCreatorAttribute<P,L,F> setup(Class<F> clazz){
-        this.possibleValueProvider(new DefaultPossibleValueProvider<>(clazz));
-        this.newValueProvider(new DefaultNewValueProvider<>(clazz));
-        return this;
+        return super.setup(clazz);
     }
+
+
 
 }

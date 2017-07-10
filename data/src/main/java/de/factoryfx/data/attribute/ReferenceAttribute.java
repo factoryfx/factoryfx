@@ -168,6 +168,4 @@ public abstract class ReferenceAttribute<T extends Data, A extends ReferenceBase
         return !defaultValueUsed;
     }
 
-
-
 }

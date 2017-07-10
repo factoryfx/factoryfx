@@ -1,23 +1,22 @@
 package de.factoryfx.factory.atrribute;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
-import de.factoryfx.data.Data;
 import de.factoryfx.data.attribute.ReferenceAttribute;
 import de.factoryfx.factory.FactoryBase;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.function.Function;
-
-public class FactoryReferenceAttribute<L, T extends FactoryBase<? extends L,?>> extends ReferenceAttribute<T,FactoryReferenceAttribute<L,T>> {
+/**
+ * Attribute with factory
+ * @param <L> liveobject created form the factory
+ * @param <F> factory
+ */
+public class FactoryReferenceAttribute<L, F extends FactoryBase<? extends L,?>> extends ReferenceAttribute<F,FactoryReferenceAttribute<L, F>> {
 
     @JsonCreator
-    protected FactoryReferenceAttribute(T value) {
+    protected FactoryReferenceAttribute(F value) {
         super(value);
     }
 
-    public FactoryReferenceAttribute(Class<T> clazz) {
+    public FactoryReferenceAttribute(Class<F> clazz) {
         super();
         setup(clazz);
     }
@@ -33,15 +32,14 @@ public class FactoryReferenceAttribute<L, T extends FactoryBase<? extends L,?>> 
         return get().internalFactory().instance();
     }
 
-    @SuppressWarnings("unchecked")
-    public FactoryReferenceAttribute<L,T> setupUnsafe(Class clazz){
-        return setup((Class<T>)clazz);
+    @Override
+    public FactoryReferenceAttribute<L, F> setupUnsafe(Class clazz){
+        return super.setupUnsafe(clazz);
     }
 
-    public FactoryReferenceAttribute<L,T> setup(Class<T> clazz){
-        this.possibleValueProvider(new DefaultPossibleValueProvider<>(clazz));
-        this.newValueProvider(new DefaultNewValueProvider<>(clazz));
-        return this;
+    @Override
+    public FactoryReferenceAttribute<L, F> setup(Class<F> clazz){
+        return super.setup(clazz);
     }
 
 }

@@ -21,31 +21,17 @@ public class DataReferenceAttribute<T extends Data> extends ReferenceAttribute<T
         setup(clazz);
     }
 
-    public DataReferenceAttribute<T> setup(Class<T> clazz){
-        this.possibleValueProvider(data -> {
-            Set<T> result = new HashSet<>();
-            for (Data factory: root.internal().collectChildrenDeep()){
-                if (clazz.isAssignableFrom(factory.getClass())){
-                    result.add((T) factory);
-                }
-            }
-            return result;
-        });
-        this.newValueProvider(data -> {
-            try {
-                return clazz.newInstance();
-            } catch (InstantiationException | IllegalAccessException e) {
-                throw new RuntimeException(e);
-            }
-        });
-        return this;
-    }
-
-
     public DataReferenceAttribute() {
         super();
     }
 
+    @Override
+    public DataReferenceAttribute<T> setup(Class<T> clazz){
+        return super.setup(clazz);
+    }
 
-
+    @Override
+    public DataReferenceAttribute<T> setupUnsafe(Class clazz) {
+        return super.setupUnsafe(clazz);
+    }
 }

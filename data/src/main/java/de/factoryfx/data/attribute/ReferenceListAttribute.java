@@ -46,20 +46,6 @@ public abstract class ReferenceListAttribute<T extends Data,A extends ReferenceB
         });
     }
 
-//    /**
-//     * @see ReferenceBaseAttribute#ReferenceBaseAttribute(AttributeMetadata,Class)
-//     * */
-//    @SuppressWarnings("unchecked")
-//    public ReferenceListAttribute(AttributeMetadata attributeMetadata, Class clazz) {
-//        super(attributeMetadata,clazz);
-//    }
-
-//    @JsonCreator
-//    protected ReferenceListAttribute() {
-//        super();
-//    }
-
-
 
     @Override
     public void internal_collectChildren(Set<Data> allModelEntities) {

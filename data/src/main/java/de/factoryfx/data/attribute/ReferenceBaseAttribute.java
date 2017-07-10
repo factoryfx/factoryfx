@@ -142,4 +142,20 @@ public abstract class ReferenceBaseAttribute<T extends Data, U, A extends Refere
         return (A)this;
     }
 
+    /**setup value selection and new value adding for user editing*/
+    @SuppressWarnings("unchecked")
+    protected A setup(Class<T> clazz){
+        this.possibleValueProvider(new DefaultPossibleValueProvider<>(clazz));
+        this.newValueProvider(new DefaultNewValueProvider<>(clazz));
+        return (A)this;
+    }
+
+    /** workaround for nested generic parameter e.g.: Class<TypA<TypB>>  <br>
+     * if possible use {@link #setup} instead
+     */
+    @SuppressWarnings("unchecked")
+    protected A setupUnsafe(Class clazz){
+        return setup((Class<T>)clazz);
+    }
+
 }
