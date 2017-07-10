@@ -20,5 +20,8 @@ public class ParametrizedObjectCreatorAttribute<P, L, T extends ParametrizedObje
         super();
     }
 
+    public L create(P p){
+        return instance().create(p);
+    }
 
 }

@@ -2,7 +2,9 @@ package de.factoryfx.factory.atrribute;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Function;
+import java.util.function.Predicate;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import de.factoryfx.data.attribute.ViewListReferenceAttribute;
@@ -35,6 +37,9 @@ public class FactoryViewListReferenceAttribute<R extends FactoryBase<?,?>,L, T e
         return get().add(data);
     }
 
-
+    public L instance(Predicate<T> filter){
+        Optional<T> any = get().stream().filter(filter).findAny();
+        return any.map(t -> t.internalFactory().instance()).orElse(null);
+    }
 }
 
