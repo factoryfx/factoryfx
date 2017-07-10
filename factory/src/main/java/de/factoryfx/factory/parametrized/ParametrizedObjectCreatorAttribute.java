@@ -1,22 +1,19 @@
 package de.factoryfx.factory.parametrized;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
-import de.factoryfx.data.Data;
-import de.factoryfx.data.validation.Validation;
-import de.factoryfx.factory.atrribute.FactoryReferenceAttribute;
+import de.factoryfx.data.attribute.ReferenceAttribute;
+import de.factoryfx.factory.atrribute.DefaultNewValueProvider;
+import de.factoryfx.factory.atrribute.DefaultPossibleValueProvider;
 
-import java.util.Collection;
-import java.util.function.Function;
-
-public class ParametrizedObjectCreatorAttribute<P, L, T extends ParametrizedObjectCreatorFactory<P,L,?>> extends FactoryReferenceAttribute<ParametrizedObjectCreator<P,L>,T> {
+public class ParametrizedObjectCreatorAttribute<P, L, F extends ParametrizedObjectCreatorFactory<P,L,?>> extends ReferenceAttribute<F,ParametrizedObjectCreatorAttribute<P, L, F>> {
 
     @JsonCreator
-    protected ParametrizedObjectCreatorAttribute(T value) {
+    protected ParametrizedObjectCreatorAttribute(F value) {
         super(value);
     }
 
 
-    public ParametrizedObjectCreatorAttribute(Class<T> clazz) {
+    public ParametrizedObjectCreatorAttribute(Class<F> clazz) {
         super();
         setup(clazz);
     }
@@ -29,33 +26,22 @@ public class ParametrizedObjectCreatorAttribute<P, L, T extends ParametrizedObje
         return instance().create(p);
     }
 
-    @Override
-    public ParametrizedObjectCreatorAttribute<P, L, T> labelText(String text) {
-        super.labelText(text);
+    public ParametrizedObjectCreator<P,L> instance(){
+        if (get()==null){
+            return null;
+        }
+        return get().internalFactory().instance();
+    }
+
+    @SuppressWarnings("unchecked")
+    public ParametrizedObjectCreatorAttribute<P,L,F> setupUnsafe(Class clazz){
+        return setup((Class<F>)clazz);
+    }
+
+    public ParametrizedObjectCreatorAttribute<P,L,F> setup(Class<F> clazz){
+        this.possibleValueProvider(new DefaultPossibleValueProvider<>(clazz));
+        this.newValueProvider(new DefaultNewValueProvider<>(clazz));
         return this;
     }
 
-    @Override
-    public ParametrizedObjectCreatorAttribute<P, L, T> de(String text) {
-        super.de(text);
-        return this;
-    }
-
-    @Override
-    public ParametrizedObjectCreatorAttribute<P, L, T> en(String text) {
-        super.en(text);
-        return this;
-    }
-
-    @Override
-    public ParametrizedObjectCreatorAttribute<P, L, T> validation(Validation<T> validation) {
-        super.validation(validation);
-        return this;
-    }
-
-    @Override
-    public ParametrizedObjectCreatorAttribute<P, L, T> possibleValueProvider(Function<Data, Collection<T>> provider) {
-        super.possibleValueProvider(provider);
-        return this;
-    }
 }

@@ -18,6 +18,7 @@ import de.factoryfx.factory.atrribute.*;
 import de.factoryfx.factory.log.FactoryLogEntry;
 import de.factoryfx.factory.log.FactoryLogEntryEvent;
 import de.factoryfx.factory.log.FactoryLogEntryEventType;
+import de.factoryfx.factory.parametrized.ParametrizedObjectCreatorAttribute;
 
 /**
  * @param <L> liveobject created from this factory
@@ -244,6 +245,13 @@ public class FactoryBase<L,V> extends Data implements Iterable<FactoryBase<?, V>
                     consumer.accept(factory);
                 }
             }
+            if (attribute instanceof ParametrizedObjectCreatorAttribute) {
+                FactoryBase<?, V> factory = (FactoryBase<?, V>)attribute.get();
+                if (factory!=null){
+                    consumer.accept(factory);
+                }
+            }
+
 
         }
     }

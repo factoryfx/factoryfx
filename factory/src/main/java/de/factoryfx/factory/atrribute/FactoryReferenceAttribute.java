@@ -5,20 +5,17 @@ import de.factoryfx.data.Data;
 import de.factoryfx.data.attribute.ReferenceAttribute;
 import de.factoryfx.factory.FactoryBase;
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.function.Function;
 
 public class FactoryReferenceAttribute<L, T extends FactoryBase<? extends L,?>> extends ReferenceAttribute<T,FactoryReferenceAttribute<L,T>> {
-
 
     @JsonCreator
     protected FactoryReferenceAttribute(T value) {
         super(value);
     }
-//
-//    protected FactoryReferenceAttribute() {
-//        super(value);
-//    }
 
     public FactoryReferenceAttribute(Class<T> clazz) {
         super();
@@ -41,27 +38,10 @@ public class FactoryReferenceAttribute<L, T extends FactoryBase<? extends L,?>> 
         return setup((Class<T>)clazz);
     }
 
-    @SuppressWarnings("unchecked")
     public FactoryReferenceAttribute<L,T> setup(Class<T> clazz){
-        this.possibleValueProvider(data -> {
-            Set<T> result = new HashSet<>();
-            for (Data factory: root.internal().collectChildrenDeep()){
-                if (clazz.isAssignableFrom(factory.getClass())){
-                    result.add((T) factory);
-                }
-            }
-            return result;
-        });
-        this.newValueProvider(data -> {
-            try {
-                return clazz.newInstance();
-            } catch (InstantiationException | IllegalAccessException e) {
-                throw new RuntimeException(e);
-            }
-        });
+        this.possibleValueProvider(new DefaultPossibleValueProvider<>(clazz));
+        this.newValueProvider(new DefaultNewValueProvider<>(clazz));
         return this;
     }
-
-
 
 }

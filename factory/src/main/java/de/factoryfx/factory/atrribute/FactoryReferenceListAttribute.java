@@ -42,24 +42,9 @@ public class FactoryReferenceListAttribute<L,T extends FactoryBase<? extends L,?
         return setup((Class<T>)clazz);
     }
 
-    @SuppressWarnings("unchecked")
     public FactoryReferenceListAttribute<L,T> setup(Class<T> clazz){
-        this.possibleValueProvider(data -> {
-            Set<T> result = new HashSet<>();
-            for (Data factory: root.internal().collectChildrenDeep()){
-                if (clazz.isAssignableFrom(factory.getClass())){
-                    result.add((T) factory);
-                }
-            }
-            return result;
-        });
-        this.newValueProvider(data -> {
-            try {
-                return clazz.newInstance();
-            } catch (InstantiationException | IllegalAccessException e) {
-                throw new RuntimeException(e);
-            }
-        });
+        this.possibleValueProvider(new DefaultPossibleValueProvider<>(clazz));
+        this.newValueProvider(new DefaultNewValueProvider<>(clazz));
         return this;
     }
 }
