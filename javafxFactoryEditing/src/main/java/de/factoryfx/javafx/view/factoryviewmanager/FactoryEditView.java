@@ -115,6 +115,7 @@ public class FactoryEditView<V,R extends FactoryBase<?,V>> implements Widget, Fa
                 alert.setTitle("Änderungen löschen");
                 alert.setHeaderText("Änderungen löschen");
                 alert.setContentText("Alle Änderungen werden verworfen");
+                alert.initOwner(resetButton.getScene().getWindow());
 
                 Optional<ButtonType> result = alert.showAndWait();
                 if (result.get() == ButtonType.OK){
