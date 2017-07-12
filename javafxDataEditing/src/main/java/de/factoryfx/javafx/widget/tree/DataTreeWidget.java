@@ -143,7 +143,7 @@ public class DataTreeWidget implements CloseAwareWidget {
                     public void referenceList(ReferenceListAttribute<?,?> referenceList) {
                         TreeItem<TreeData> listDataTreeItem = new TreeItem<>(new TreeData(null,uniformDesign.getLabelText(referenceList)));
                         dataTreeItem.getChildren().add(listDataTreeItem);
-                        referenceList.get().forEach((data)-> {
+                        referenceList.forEach((data)-> {
                             final TreeItem<TreeData> treeItem = constructTree(data);
                             if (treeItem!=null){
                                 listDataTreeItem.getChildren().add(treeItem);

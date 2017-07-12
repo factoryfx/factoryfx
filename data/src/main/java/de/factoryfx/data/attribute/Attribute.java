@@ -125,7 +125,7 @@ public abstract class Attribute<T,A extends Attribute<T,A>>{
 
             @Override
             public void referenceList(ReferenceListAttribute<?,?> referenceList) {
-                referenceList.get().forEach(childFactoriesVisitor::accept);
+                referenceList.forEach(childFactoriesVisitor::accept);
             }
         });
     }

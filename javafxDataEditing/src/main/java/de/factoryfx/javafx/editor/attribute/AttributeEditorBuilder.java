@@ -152,7 +152,7 @@ public class AttributeEditorBuilder {
                 final TableView<Data> dataTableView = new TableView<>();
                 final ReferenceListAttributeVisualisation referenceListAttributeVisualisation = new ReferenceListAttributeVisualisation(uniformDesign, dataEditor, dataTableView, new DataListEditWidget<Data>(referenceListAttribute.get(), dataTableView, dataEditor,uniformDesign,referenceListAttribute));
                 ExpandableAttributeVisualisation<List<Data>> expandableAttributeVisualisation= new ExpandableAttributeVisualisation<>(referenceListAttributeVisualisation,uniformDesign,(l)->"Items: "+l.size(),FontAwesome.Glyph.LIST);
-                if (referenceListAttribute.get().contains(previousData)){
+                if (referenceListAttribute.contains(previousData)){
                     expandableAttributeVisualisation.expand();
                 }
                 return new AttributeEditor<>(referenceListAttribute,expandableAttributeVisualisation,uniformDesign);

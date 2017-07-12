@@ -38,10 +38,6 @@ public class FactoryReferenceListAttribute<L, F extends FactoryBase<? extends L,
         return any.map(t -> t.internalFactory().instance()).orElse(null);
     }
 
-    public boolean add(F data){
-        return get().add(data);
-    }
-
     @Override
     public FactoryReferenceListAttribute<L, F> setupUnsafe(Class clazz) {
         return super.setupUnsafe(clazz);

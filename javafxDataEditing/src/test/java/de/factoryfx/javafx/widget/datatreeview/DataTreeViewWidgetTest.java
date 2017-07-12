@@ -60,7 +60,7 @@ public class DataTreeViewWidgetTest extends Application{
 
         DataTreeViewWidget<ExampleData1> dataViewWidget = new DataTreeViewWidget<>(new DataTreeView<>(() -> dataList, item -> {
             final TreeItem<Data> dataTreeItem = new TreeItem<>(item);
-            dataTreeItem.getChildren().addAll(item.referenceListAttribute.get().stream().map((Function<ExampleData2, TreeItem<Data>>) value -> new TreeItem<>(value)).collect(Collectors.toList()));
+            dataTreeItem.getChildren().addAll(item.referenceListAttribute.stream().map((Function<ExampleData2, TreeItem<Data>>) value -> new TreeItem<>(value)).collect(Collectors.toList()));
             dataTreeItem.setExpanded(true);
             return dataTreeItem;
         }),dataEditor,uniformDesign);

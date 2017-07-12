@@ -28,7 +28,7 @@ public class Main {
         HttpServerConnectorFactory<Void> serverConnectorFactory = new HttpServerConnectorFactory<>();
         serverConnectorFactory.host.set("localhost");
         serverConnectorFactory.port.set(8005);
-        jettyServer.connectors.get().add(serverConnectorFactory);
+        jettyServer.connectors.add(serverConnectorFactory);
 
         jettyServer.resources.add(createNewWebResourceReturningCreationTimestamp());
 

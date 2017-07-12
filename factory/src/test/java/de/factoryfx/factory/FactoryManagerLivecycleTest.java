@@ -66,7 +66,7 @@ public class FactoryManagerLivecycleTest {
         public final FactoryReferenceAttribute<DummyLifeObejct,LivecycleFactoryC> refC = new FactoryReferenceAttribute<>(LivecycleFactoryC.class);
 
         public final FactoryViewListReferenceAttribute<LivecycleFactoryA,DummyLifeObejct,LivecycleFactoryC> listView = new FactoryViewListReferenceAttribute<LivecycleFactoryA,DummyLifeObejct,LivecycleFactoryC>(
-                root -> root.refList.get()).labelText("ExampleA2");
+                root -> root.refList).labelText("ExampleA2");
 
         public List<String> createCalls= new ArrayList<>();
         public List<String> reCreateCalls= new ArrayList<>();

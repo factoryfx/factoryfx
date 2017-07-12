@@ -155,7 +155,7 @@ public class RestResource<V,L,T extends FactoryBase<L,V>> {
             }
             if (copyAttribute instanceof ReferenceListAttribute){
                 final ObservableList<Data> referenceList = FXCollections.observableArrayList();
-                ((ReferenceListAttribute)copyAttribute).get().forEach(factory -> referenceList.add(existingOrNew.apply((Data)factory)));
+                ((ReferenceListAttribute)copyAttribute).forEach(factory -> referenceList.add(existingOrNew.apply((Data)factory)));
                 value=referenceList;
             }
 

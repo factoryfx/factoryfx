@@ -13,7 +13,7 @@ public class ViewCreator {
     public List<GuiView<ExampleFactoryA>> create(){
         ArrayList<GuiView<ExampleFactoryA>> result = new ArrayList<>();
         result.add(new GuiView<>("dfhgrdtrst", new LanguageText().en("view1").de("view1"),
-                exampleFactoryA -> exampleFactoryA.referenceListAttribute.get().stream().map(WebGuiFactoryHeader::new).collect(Collectors.toList())));
+                exampleFactoryA -> exampleFactoryA.referenceListAttribute.stream().map(WebGuiFactoryHeader::new).collect(Collectors.toList())));
         return result;
     }
 }
