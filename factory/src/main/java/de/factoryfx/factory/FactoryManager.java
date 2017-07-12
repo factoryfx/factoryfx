@@ -6,6 +6,8 @@ import java.util.stream.Collectors;
 
 import com.google.common.collect.TreeTraverser;
 import de.factoryfx.data.Data;
+import de.factoryfx.data.attribute.DataViewListReferenceAttribute;
+import de.factoryfx.data.attribute.DataViewReferenceAttribute;
 import de.factoryfx.data.merge.DataMerger;
 import de.factoryfx.data.merge.MergeDiffInfo;
 import de.factoryfx.factory.exception.AllOrNothingFactoryExceptionHandler;
@@ -74,8 +76,10 @@ public class FactoryManager<V,L,R extends FactoryBase<L,V>> {
             final FactoryBase<?, V> previousFactory = previousFactories.get(data.getId());
             if (previousFactory!=null){
                 data.internal().visitAttributesDualFlat(previousFactory, (name, currentAttribute, previousAttribute) -> {
-                    if (!currentAttribute.internal_match(previousAttribute)){
-                        result.add(data);
+                    if (!(currentAttribute instanceof DataViewReferenceAttribute) && !(currentAttribute instanceof DataViewListReferenceAttribute)){//Data views have no function no need to check
+                        if (!currentAttribute.internal_match(previousAttribute)){
+                            result.add(data);
+                        }
                     }
                 });
             }
