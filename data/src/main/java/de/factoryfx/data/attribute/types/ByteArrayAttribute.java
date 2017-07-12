@@ -4,7 +4,6 @@ import java.util.Arrays;
 import java.util.Base64;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
-import de.factoryfx.data.attribute.Attribute;
 import de.factoryfx.data.attribute.ImmutableValueAttribute;
 
 public class ByteArrayAttribute extends ImmutableValueAttribute<byte[],ByteArrayAttribute> {

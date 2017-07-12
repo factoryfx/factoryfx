@@ -1,49 +1,21 @@
 package de.factoryfx.data.attribute;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.Spliterator;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import de.factoryfx.data.Data;
-import javafx.collections.FXCollections;
-import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 
-public abstract class ReferenceListAttribute<T extends Data,A extends ReferenceBaseAttribute<T,List<T>,A>> extends ReferenceBaseAttribute<T,List<T>,A> implements Collection<T> {
-    ObservableList<T> list = FXCollections.observableArrayList();
-
+public abstract class ReferenceListAttribute<T extends Data,A extends ReferenceBaseAttribute<T,List<T>,A>> extends ReferenceBaseAttribute<T,List<T>,A> implements List<T> {
+    List<T> list = new ArrayList<>();
 
     public ReferenceListAttribute() {
         super();
-
-        list.addListener((ListChangeListener<T>) c -> {
-            if (c.next()){
-                for (T newData : c.getAddedSubList()) {
-                    if (newData == null) {
-                        throw new IllegalStateException("cant't add null to list");
-                    }
-                    if (root!=null && newData.internal().getRoot()!=root) {
-                        newData.internal().propagateRoot(root);
-                    }
-                }
-            }
-            if (listeners!=null) {
-                for (AttributeChangeListener<List<T>, A> listener : listeners) {
-                    listener.changed(ReferenceListAttribute.this, get());
-                }
-            }
-        });
     }
 
 
@@ -94,7 +66,7 @@ public abstract class ReferenceListAttribute<T extends Data,A extends ReferenceB
 
     @Override
     public List<T> get() {
-        return list;
+        return this;
     }
 
 
@@ -102,9 +74,14 @@ public abstract class ReferenceListAttribute<T extends Data,A extends ReferenceB
     @Override
     public void set(List<T> value) {
         if (value==null){
-            this.list.clear();
+            if (!list.isEmpty()){
+                this.list.clear();
+                afterModify();
+            }
         } else {
-            this.list.setAll(value);
+            this.list.clear();
+            this.list.addAll(value);
+            afterAdd(value);
         }
     }
 
@@ -183,9 +160,34 @@ public abstract class ReferenceListAttribute<T extends Data,A extends ReferenceB
     }
 
     public void internal_deleteFactory(T factory){
-        list.remove(factory);
+        remove(factory);
         if (additionalDeleteAction!=null){
             additionalDeleteAction.accept(factory, root);
+        }
+    }
+
+    private void afterAdd(T added){
+        if (added == null) {
+            throw new IllegalStateException("cant't add null to list");
+        }
+        if (root!=null && added.internal().getRoot()!=root) {
+            added.internal().propagateRoot(root);
+        }
+
+        afterModify();
+    }
+
+    private void afterModify(){
+        if (listeners!=null) {
+            for (AttributeChangeListener<List<T>, A> listener : listeners) {
+                listener.changed(ReferenceListAttribute.this, get());
+            }
+        }
+    }
+
+    private void afterAdd(Collection<? extends T> added){
+        for (T add: added){
+            afterAdd(add);
         }
     }
 
@@ -226,7 +228,9 @@ public abstract class ReferenceListAttribute<T extends Data,A extends ReferenceB
 
     @Override
     public boolean remove(Object o) {
-        return list.remove(o);
+        boolean remove = list.remove(o);
+        afterModify();
+        return remove;
     }
 
     @Override
@@ -236,17 +240,30 @@ public abstract class ReferenceListAttribute<T extends Data,A extends ReferenceB
 
     @Override
     public boolean addAll(Collection<? extends T> c) {
-        return list.addAll(c);
+        boolean result = list.addAll(c);
+        afterAdd(c);
+        return result;
+    }
+
+    @Override
+    public boolean addAll(int index, Collection<? extends T> c) {
+        boolean result = list.addAll(index, c);
+        afterAdd(c);
+        return result;
     }
 
     @Override
     public boolean removeAll(Collection<?> c) {
-        return list.removeAll(c);
+        boolean result = list.removeAll(c);
+        afterModify();
+        return result;
     }
 
     @Override
     public boolean removeIf(Predicate<? super T> filter) {
-        return list.removeIf(filter);
+        boolean result = false;
+        afterModify();
+        return result;
     }
 
     @Override
@@ -257,6 +274,57 @@ public abstract class ReferenceListAttribute<T extends Data,A extends ReferenceB
     @Override
     public void clear() {
         list.clear();
+        afterModify();
+    }
+
+    @Override
+    public T get(int index) {
+        return list.get(index);
+    }
+
+    @Override
+    public T set(int index, T element) {
+        T set = list.set(index, element);
+        afterAdd(element);
+        return set;
+    }
+
+    @Override
+    public void add(int index, T element) {
+        list.add(index,element);
+        afterAdd(element);
+    }
+
+    @Override
+    public T remove(int index) {
+        T remove = list.remove(index);
+        afterModify();
+        return remove;
+    }
+
+    @Override
+    public int indexOf(Object o) {
+        return list.indexOf(o);
+    }
+
+    @Override
+    public int lastIndexOf(Object o) {
+        return list.lastIndexOf(o);
+    }
+
+    @Override
+    public ListIterator<T> listIterator() {
+        return list.listIterator();
+    }
+
+    @Override
+    public ListIterator<T> listIterator(int index) {
+        return list.listIterator(index);
+    }
+
+    @Override
+    public List<T> subList(int fromIndex, int toIndex) {
+        return list.subList(fromIndex,toIndex);
     }
 
     @Override
@@ -266,29 +334,20 @@ public abstract class ReferenceListAttribute<T extends Data,A extends ReferenceB
 
     @Override
     public void forEach(Consumer<? super T> action) {
-        get().forEach(action);
+        list.forEach(action);
     }
 
     @Override
     public int size() {
-        return get().size();
+        return list.size();
     }
 
     @Override
     public boolean add(T value) {
-        if (value==null){
-            throw new IllegalStateException("cant't add null to list");
-        }
-        get().add(value);
+        list.add(value);
+        afterAdd(value);
         return false;
     }
 
-    public T get(int i) {
-        return list.get(i);
-    }
-
-    public void set(int i, T value) {
-        get().set(i, value);
-    }
 
 }

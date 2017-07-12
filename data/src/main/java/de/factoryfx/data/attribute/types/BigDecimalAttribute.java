@@ -3,7 +3,6 @@ package de.factoryfx.data.attribute.types;
 import java.math.BigDecimal;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
-import de.factoryfx.data.attribute.Attribute;
 import de.factoryfx.data.attribute.ImmutableValueAttribute;
 
 public class BigDecimalAttribute extends ImmutableValueAttribute<BigDecimal,BigDecimalAttribute> {

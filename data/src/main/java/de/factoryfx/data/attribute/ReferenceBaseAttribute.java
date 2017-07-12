@@ -1,7 +1,6 @@
 package de.factoryfx.data.attribute;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.google.common.util.concurrent.MoreExecutors;
 import de.factoryfx.data.Data;
 
 import java.util.*;

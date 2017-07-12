@@ -160,7 +160,7 @@ public class ReferenceListAttributeTest {
         Assert.assertTrue(exampleFactoryA2.internal().readyForUsage());
     }
 
-    @Test
+    @Test(expected = IllegalStateException.class)
     public void delegate_root_for_addAll_with_null(){
         DataReferenceListAttribute<ExampleDataA> attribute =new DataReferenceListAttribute<>(ExampleDataA.class);
         attribute.internal_prepareUsage(new ExampleDataB());

@@ -1,13 +1,9 @@
 package de.factoryfx.data.attribute;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreType;
 import de.factoryfx.data.Data;
-import javafx.application.Platform;
 
-import java.util.*;
-import java.util.function.Consumer;
 import java.util.function.Function;
 
 @JsonIgnoreType

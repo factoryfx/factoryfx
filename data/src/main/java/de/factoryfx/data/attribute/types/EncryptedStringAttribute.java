@@ -10,7 +10,6 @@ import javax.crypto.spec.SecretKeySpec;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import de.factoryfx.data.attribute.Attribute;
 import de.factoryfx.data.attribute.ImmutableValueAttribute;
 
 public class EncryptedStringAttribute extends ImmutableValueAttribute<EncryptedString,EncryptedStringAttribute> {

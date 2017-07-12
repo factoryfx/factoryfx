@@ -1,7 +1,6 @@
 package de.factoryfx.data.attribute.primitive;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
-import de.factoryfx.data.attribute.Attribute;
 import de.factoryfx.data.attribute.ImmutableValueAttribute;
 
 public class DoubleAttribute extends ImmutableValueAttribute<Double,DoubleAttribute> {

@@ -1,6 +1,7 @@
 package de.factoryfx.javafx.editor.attribute.visualisation;
 
 import de.factoryfx.data.Data;
+import de.factoryfx.data.attribute.ReferenceListAttribute;
 import de.factoryfx.javafx.editor.attribute.ListAttributeEditorVisualisation;
 import de.factoryfx.javafx.editor.data.DataEditor;
 import de.factoryfx.javafx.util.UniformDesign;
@@ -35,8 +36,9 @@ public class ReferenceListAttributeVisualisation extends ListAttributeEditorVisu
 
 
     @Override
-    public Node createContent(List<Data> attributeValue, boolean readonly) {
-        tableView.setItems((ObservableList<Data>) attributeValue);
+    public Node createContent(ObservableList<Data> attributeValue, boolean readonly) {
+        tableView.setItems(attributeValue);
+
         tableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         TableColumn<Data, String> test = new TableColumn<>("Data");
         test.setCellValueFactory(param -> new SimpleStringProperty(param.getValue().internal().getDisplayText()));

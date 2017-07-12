@@ -38,13 +38,13 @@ public class ValueListAttributeVisualisation<T> extends ListAttributeEditorVisua
     }
 
     @Override
-    public Node createContent(List<T> attributeValue, boolean readonly) {
+    public Node createContent(ObservableList<T> attributeValue, boolean readonly) {
         TextField textField = new TextField();
         TypedTextFieldHelper.setupLongTextField(textField);
 //        textField.textProperty().bindBidirectional(boundTo, new LongStringConverter());
 
         TableView<T> tableView = new TableView<>();
-        tableView.setItems((ObservableList<T>)attributeValue);
+        tableView.setItems(attributeValue);
         tableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         TableColumn<T, String> test = new TableColumn<>("test");
         test.setCellValueFactory(param -> new SimpleStringProperty(""+param.getValue()));

@@ -1,10 +1,6 @@
 package de.factoryfx.data.attribute;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
 import de.factoryfx.data.Data;
-
-import java.util.*;
-import java.util.function.Function;
 
 public class DataReferenceListAttribute<T extends Data> extends ReferenceListAttribute<T,DataReferenceListAttribute<T>> {
 

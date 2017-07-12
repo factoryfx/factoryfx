@@ -3,7 +3,6 @@ package de.factoryfx.data.attribute.types;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.common.base.Strings;
-import de.factoryfx.data.attribute.Attribute;
 import de.factoryfx.data.attribute.ImmutableValueAttribute;
 
 public class StringAttribute extends ImmutableValueAttribute<String,StringAttribute> {

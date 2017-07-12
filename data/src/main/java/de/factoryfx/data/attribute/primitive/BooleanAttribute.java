@@ -1,11 +1,7 @@
 package de.factoryfx.data.attribute.primitive;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
-import de.factoryfx.data.Data;
-import de.factoryfx.data.attribute.Attribute;
 import de.factoryfx.data.attribute.ImmutableValueAttribute;
-
-import java.util.function.Function;
 
 public class BooleanAttribute extends ImmutableValueAttribute<Boolean,BooleanAttribute> {
 

@@ -1,12 +1,12 @@
 package de.factoryfx.data.validation;
 
 import java.util.HashSet;
+import java.util.List;
 
 import de.factoryfx.data.Data;
 import de.factoryfx.data.util.LanguageText;
-import javafx.collections.ObservableList;
 
-public class UniqueList<T extends Data> implements Validation<ObservableList<T>> {
+public class UniqueList<T extends Data> implements Validation<List<T>> {
 
     @Override
     public LanguageText getValidationDescription() {
@@ -14,7 +14,7 @@ public class UniqueList<T extends Data> implements Validation<ObservableList<T>>
     }
 
     @Override
-    public boolean validate(ObservableList<T> list) {
+    public boolean validate(List<T> list) {
         HashSet<Object> set = new HashSet<>();
         for (T item : list) {
             if (!set.add(item.getId())) {

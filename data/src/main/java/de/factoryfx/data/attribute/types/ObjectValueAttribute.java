@@ -3,7 +3,6 @@ package de.factoryfx.data.attribute.types;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import de.factoryfx.data.attribute.Attribute;
 import de.factoryfx.data.attribute.ImmutableValueAttribute;
 import de.factoryfx.data.jackson.ObjectValueAttributeDeserializer;
 import de.factoryfx.data.jackson.ObjectValueAttributeSerializer;

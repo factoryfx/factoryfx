@@ -16,6 +16,7 @@ public class DefaultPossibleValueProvider<L, T extends Data> implements Function
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public Collection<T> apply(Data root) {
         Set<T> result = new LinkedHashSet<>();
         for (Data factory : root.internal().collectChildrenDeep()) {

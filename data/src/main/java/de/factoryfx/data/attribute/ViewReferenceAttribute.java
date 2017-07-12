@@ -69,13 +69,17 @@ public abstract class ViewReferenceAttribute<R extends Data, T extends Data,A ex
 
 
     //** so we don't need to initialise javax toolkit in test*/
-    Consumer<Runnable> runlaterExecutor=(r)-> Platform.runLater(r);
+    Consumer<Runnable> runlaterExecutor;
     void setRunlaterExecutorForTest(Consumer<Runnable> runlaterExecutor){
         this.runlaterExecutor=runlaterExecutor;
     }
 
     public void runLater(Runnable runnable){
-        runlaterExecutor.accept(runnable);
+        if (runlaterExecutor==null) {
+            Platform.runLater(runnable);
+        } else {
+            runlaterExecutor.accept(runnable);
+        }
     }
 
     class DirtyTrackingThread extends Thread{
@@ -110,10 +114,13 @@ public abstract class ViewReferenceAttribute<R extends Data, T extends Data,A ex
     }
     DirtyTrackingThread dirtyTracking;
 
-    final List<AttributeChangeListener<T,A>> listeners= Collections.synchronizedList(new ArrayList<>());
+    List<AttributeChangeListener<T,A>> listeners;
     @Override
     @SuppressWarnings("unchecked")
     public void internal_addListener(AttributeChangeListener<T,A> listener) {
+        if (listeners==null){
+            listeners= Collections.synchronizedList(new ArrayList<>());
+        }
         listeners.add(listener);
         if (dirtyTracking==null){
             dirtyTracking = new DirtyTrackingThread();
@@ -123,14 +130,16 @@ public abstract class ViewReferenceAttribute<R extends Data, T extends Data,A ex
     }
     @Override
     public void internal_removeListener(AttributeChangeListener<T,A> listener) {
-        for (AttributeChangeListener<T,A> listenerItem: new ArrayList<>(listeners)){
-            if (listenerItem.unwrap()==listener){
-                listeners.remove(listenerItem);
+        if (listeners!=null){
+            for (AttributeChangeListener<T,A> listenerItem: new ArrayList<>(listeners)){
+                if (listenerItem.unwrap()==listener){
+                    listeners.remove(listenerItem);
+                }
             }
-        }
-        if (listeners.isEmpty() && dirtyTracking != null){
-            dirtyTracking.stopTracking();
-            dirtyTracking=null;
+            if (listeners.isEmpty() && dirtyTracking != null){
+                dirtyTracking.stopTracking();
+                dirtyTracking=null;
+            }
         }
     }
 
@@ -171,7 +180,9 @@ public abstract class ViewReferenceAttribute<R extends Data, T extends Data,A ex
         if (dirtyTracking!=null) {
             dirtyTracking.stopTracking();
         }
-        listeners.clear();
+        if (listeners!=null){
+            listeners.clear();
+        }
     }
 
     @Override

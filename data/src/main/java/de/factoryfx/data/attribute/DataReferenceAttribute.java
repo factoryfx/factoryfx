@@ -3,11 +3,6 @@ package de.factoryfx.data.attribute;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import de.factoryfx.data.Data;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.function.Function;
-
 public class DataReferenceAttribute<T extends Data> extends ReferenceAttribute<T,DataReferenceAttribute<T>> {
 
 

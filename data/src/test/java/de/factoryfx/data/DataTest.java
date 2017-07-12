@@ -265,7 +265,7 @@ public class DataTest {
 
         Assert.assertEquals(exampleFactoryA.stringAttribute.get(), copy.stringAttribute.get());
         Assert.assertEquals(exampleFactoryA.referenceAttribute.get(), copy.referenceAttribute.get());
-        Assert.assertEquals(exampleFactoryA.referenceListAttribute.get(), copy.referenceListAttribute.get());
+        Assert.assertEquals(exampleFactoryA.referenceListAttribute.get(0), copy.referenceListAttribute.get(0));
     }
 
     @Test

@@ -81,7 +81,7 @@ public abstract class Attribute<T,A extends Attribute<T,A>>{
     @SuppressWarnings("unchecked")
     public void internal_semanticCopyToUnsafe(Attribute<?,?> copyAttribute){
         internal_semanticCopyTo((A)copyAttribute);
-    };
+    }
 
     public List<ValidationError> internal_validate(Data parent) {
         List<ValidationError> validationErrors = new ArrayList<>();
@@ -225,6 +225,8 @@ public abstract class Attribute<T,A extends Attribute<T,A>>{
 
     @JsonIgnore
     private String permission;
+
+    @SuppressWarnings("unchecked")
     public A permission(String permission){
         this.permission = permission;
         return (A)this;
@@ -236,6 +238,7 @@ public abstract class Attribute<T,A extends Attribute<T,A>>{
     /**
      * add-on text for the attribute, text that is displayed an the right side of the input usually used for units,%,currency symbol etc
      */
+    @SuppressWarnings("unchecked")
     public A addonText(String addonText){
         this.addonText=addonText;
         return (A)this;
@@ -248,6 +251,7 @@ public abstract class Attribute<T,A extends Attribute<T,A>>{
         return (A)this;
     }
 
+    @SuppressWarnings("unchecked")
     public A labelText(String labelText, Locale locale){
 //        this.labelText.internal_put(locale,labelText);
         return (A)this;
@@ -266,31 +270,37 @@ public abstract class Attribute<T,A extends Attribute<T,A>>{
     String it;
     @JsonIgnore
     String pt;
+
+    @SuppressWarnings("unchecked")
     public A en(String text) {
         en=text;
         return (A)this;
     }
-
+    @SuppressWarnings("unchecked")
     public A de(String text) {
         de=text;
         return (A)this;
     }
 
+    @SuppressWarnings("unchecked")
     public A es(String text) {
         es=text;
         return (A)this;
     }
 
+    @SuppressWarnings("unchecked")
     public A fr(String text) {
         fr=text;
         return (A)this;
     }
 
+    @SuppressWarnings("unchecked")
     public A it(String text) {
         it=text;
         return (A)this;
     }
 
+    @SuppressWarnings("unchecked")
     public A pt(String text) {
         pt=text;
         return (A)this;

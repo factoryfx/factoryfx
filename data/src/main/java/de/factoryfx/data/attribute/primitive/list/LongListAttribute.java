@@ -1,7 +1,6 @@
 package de.factoryfx.data.attribute.primitive.list;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
-import de.factoryfx.data.attribute.ImmutableValueAttribute;
 import de.factoryfx.data.attribute.ValueListAttribute;
 
 public class LongListAttribute extends ValueListAttribute<Long,LongListAttribute> {

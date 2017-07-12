@@ -3,7 +3,6 @@ package de.factoryfx.data.attribute.time;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import de.factoryfx.data.attribute.ImmutableValueAttribute;
 
-import java.time.Duration;
 import java.time.LocalTime;
 
 public class LocalTimeAttribute extends ImmutableValueAttribute<LocalTime,LocalTimeAttribute> {
