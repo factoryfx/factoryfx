@@ -92,7 +92,6 @@ public class FactoryEditManager<V,R extends FactoryBase<?,V>> {
         Optional<R> previousRoot=getLoadedFactory();
         final FactoryAndStringifyedStorageMetadata value = ObjectMapperBuilder.build().readValue(target.toFile(), FactoryAndStringifyedStorageMetadata.class);
         R serverFactory = factorySerialisationManager.read(value.root, value.metadata.dataModelVersion);
-        serverFactory = serverFactory.internal().prepareUsableCopy();
         loadedRoot=Optional.of(new FactoryAndNewMetadata<>(serverFactory,value.metadata));
         updateNotify(loadedRoot.get(), previousRoot);
     }

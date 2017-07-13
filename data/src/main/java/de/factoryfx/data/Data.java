@@ -4,8 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.google.common.base.Strings;
-import de.factoryfx.data.attribute.Attribute;
-import de.factoryfx.data.attribute.AttributeChangeListener;
+import de.factoryfx.data.attribute.*;
 import de.factoryfx.data.merge.AttributeDiffInfo;
 import de.factoryfx.data.merge.MergeResult;
 import de.factoryfx.data.validation.AttributeValidation;
@@ -295,7 +294,13 @@ public class Data {
 
     @SuppressWarnings("unchecked")
     private <T extends Data> T copy() {
-        return (T)copyDeep(0,Integer.MAX_VALUE,new HashMap<>());
+        Map<Object, Data> identityPreserver = new LinkedHashMap<>();//LinkedHashMap cause faster iteration(cost slower insert)
+        ArrayList<Attribute<?, ?>> newAttributes = new ArrayList<>();
+        Data copy = copyDeep(0, Integer.MAX_VALUE, identityPreserver, null, null, newAttributes);
+        if (copy!=null){
+            copy.propagateRoot(identityPreserver.values(),newAttributes,copy);
+        }
+        return (T) copy;
     }
 
     @SuppressWarnings("unchecked")
@@ -311,16 +316,28 @@ public class Data {
     /**copy including one the references first level of nested references*/
     @SuppressWarnings("unchecked")
     private <T extends Data> T copyOneLevelDeep(){
-        return (T)copyDeep(0,1,new HashMap<>());
+        Map<Object, Data> identityPreserver = new LinkedHashMap<>();
+        ArrayList<Attribute<?, ?>> newAttributes = new ArrayList<>();
+        Data copy = copyDeep(0, 1, identityPreserver, null, null, newAttributes);
+        if (copy!=null){
+            copy.propagateRoot(identityPreserver.values(),newAttributes,copy);
+        }
+        return (T) copy;
     }
 
     /**copy without nested references, only value attributes are copied*/
     @SuppressWarnings("unchecked")
     private <T extends Data> T copyZeroLevelDeep(){
-        return (T)copyDeep(0,0,new HashMap<>());
+        Map<Object, Data> identityPreserver = new LinkedHashMap<>();
+        ArrayList<Attribute<?, ?>> newAttributes = new ArrayList<>();
+        Data copy = copyDeep(0, 0, identityPreserver, null, null, newAttributes);
+        if (copy!=null){
+            copy.propagateRoot(identityPreserver.values(),newAttributes,copy);
+        }
+        return (T) copy;
     }
 
-    private Data copyDeep(final int level, final int maxLevel, HashMap<Object,Data> identityPreserver){
+    private Data copyDeep(final int level, final int maxLevel, Map<Object,Data> identityPreserver, Data root, Data parent, List<Attribute<?,?>> newAttributes){
         if (level>maxLevel){
             return null;
         }
@@ -328,16 +345,61 @@ public class Data {
         if (result==null){
             result = newInstance();
             result.setId(this.getId());
+            if (root==null){
+                root=result;
+            }
+            result.parent=parent;
+
+            final Data finalRoot=root;
+            final Data finalCopy=result;
             this.visitAttributesDualFlat(result, (name, thisAttribute, copyAttribute) -> {
                 if (thisAttribute!=null){
+                    newAttributes.add(copyAttribute);
                     thisAttribute.internal_copyToUnsafe(copyAttribute,(data)->{
                         if (data==null){
                             return null;
                         }
-                        return data.copyDeep(level + 1, maxLevel, identityPreserver);
+                        return data.copyDeep(level + 1, maxLevel, identityPreserver,finalRoot,finalCopy,newAttributes);
                     });
                 }
             });
+
+//            final List<AttributeAndName> thisAttributes = getAttributes();
+//            final List<AttributeAndName> dataAttributes = result.getAttributes();
+//
+//            for (int i = 0; i< thisAttributes.size(); i++){
+//                Attribute<?,?> thisAttribute=thisAttributes.get(i).attribute;
+//                Attribute<?,?> copyAttribute=dataAttributes.get(i).attribute;
+//                if (thisAttribute==null) {
+//                    continue;
+//                }
+//                newAttributes.add(copyAttribute);
+//                if (thisAttribute instanceof ReferenceAttribute){
+//                    Data referenceData = ((ReferenceAttribute)thisAttribute).get();
+//                    if (referenceData!=null){
+//                        Data copy = identityPreserver.get(referenceData.getId());
+//                        if (copy==null){
+//                            copy = referenceData.copyDeep(level + 1, maxLevel, identityPreserver,root,result,newAttributes);
+//                        }
+//                        ((ReferenceAttribute<Data, ?>)copyAttribute).set(copy);
+//                    }
+//                } else {
+//                    if (thisAttribute instanceof ReferenceListAttribute){
+//                        for (Data data: (ReferenceListAttribute<Data,?>)thisAttribute){
+//                            Data copy = identityPreserver.get(data.getId());
+//                            if (copy==null){
+//                                copy = data.copyDeep(level + 1, maxLevel, identityPreserver,root,result,newAttributes);
+//                            }
+//                            if (copy!=null){
+//                                ((ReferenceListAttribute<Data, ?>)copyAttribute).add(copy);
+//                            }
+//                        }
+//                    } else {
+//                        thisAttribute.internal_copyToUnsafe(copyAttribute,null);
+//                    }
+//                }
+//            }
+
             identityPreserver.put(this.getId(),result);
         }
         return result;
@@ -358,29 +420,34 @@ public class Data {
         return (T)this;
     }
 
+    private <T extends Data> T propagateRoot(Collection<Data> dataCollection, Collection<Attribute<?,?>> attributes,Data root){
+        for (Data data: dataCollection){
+            data.root=root;
+        }
+        for (Attribute<?,?> attribute: attributes){
+            attribute.internal_prepareUsage(root);
+        }
+        for (Attribute<?,?> attribute: attributes){
+            attribute.internal_afterPreparedUsage(root);
+        }
+        return (T)this;
+    }
+
     @SuppressWarnings("unchecked")
     <T extends Data> T propagateRoot(Data root){
         final Set<Data> childrenDeep = collectChildrenDeep();
-        for (Data data: childrenDeep){
-            data.root=root;
-            data.visitAttributesFlat((attributeVariableName, attribute) -> {
-                attribute.internal_prepareUsage(root);
-            });
-
-            data.visitChildFactoriesFlat(child -> child.parent=data);
-        }
+        final ArrayList<Attribute<?,?>> attributes=new ArrayList<>();
         for (Data data: childrenDeep){
             data.visitAttributesFlat((attributeVariableName, attribute) -> {
-                attribute.internal_afterPreparedUsage(root);
+                attributes.add(attribute);
             });
         }
-
+        propagateRoot(childrenDeep,attributes,root);
         return (T)this;
     }
 
     private <T extends Data> T prepareUsableCopy() {
-        T result = reconstructMetadataDeepRoot();
-        return result.propagateRoot(result);
+        return reconstructMetadataDeepRoot();
     }
 
     private Data parent;
@@ -642,10 +709,9 @@ public class Data {
             return  data.copy();
         }
 
-        /* copy root and propagate root to all children*/
-        public <T extends Data> T copyRoot() {
+        /** copy a root data element*/
+        public <T extends Data> T copyFromRoot() {
             final T copyRoot = data.copy();
-            copyRoot.internal().propagateRoot(copyRoot);
             return copyRoot;
         }
 
@@ -689,6 +755,7 @@ public class Data {
             return data.getRoot();
         }
 
+        //TODO parent should be a list?
         public Data getParent(){
             return data.getParent();
         }

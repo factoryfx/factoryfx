@@ -14,7 +14,4 @@ public class FactoryAndNewMetadata<T extends FactoryBase<?,?>> {
         this.metadata = metadata;
     }
 
-    public FactoryAndNewMetadata<T> copy(){
-        return new FactoryAndNewMetadata<>(root.<T>internal().copy(),metadata);
-    }
 }

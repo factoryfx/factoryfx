@@ -2,11 +2,8 @@ package de.factoryfx.server;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
 import de.factoryfx.data.merge.AttributeDiffInfo;
 import de.factoryfx.data.merge.DataMerger;
@@ -71,7 +68,7 @@ public class ApplicationServer<V,L,R extends FactoryBase<L,V>> {
         R commonVersion = factoryStorage.getHistoryFactory(update.metadata.baseVersionId);
         FactoryUpdateLog factoryLog = factoryManager.update(commonVersion, update.root, permissionChecker);
         if (factoryLog.mergeDiffInfo.successfullyMerged()){
-            FactoryAndNewMetadata<R> copy = new FactoryAndNewMetadata<>(factoryManager.getCurrentFactory().internal().copy(),update.metadata);
+            FactoryAndNewMetadata<R> copy = new FactoryAndNewMetadata<>(factoryManager.getCurrentFactory().internal().copyFromRoot(),update.metadata);
             factoryStorage.updateCurrentFactory(copy,user,comment);
         }
         return factoryLog;

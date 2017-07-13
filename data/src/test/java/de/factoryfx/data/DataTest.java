@@ -342,25 +342,6 @@ public class DataTest {
 
     }
 
-    @Ignore
-    @Test
-    public void test_copy_performance(){
-        ExampleDataA exampleFactoryA = new ExampleDataA();
-        exampleFactoryA.stringAttribute.set("dfssfdsfdsfd");
-        exampleFactoryA.referenceAttribute.set(new ExampleDataB());
-        exampleFactoryA.referenceListAttribute.add(new ExampleDataB());
-
-        int[] forceExecution=new int[]{0};
-
-        final long start = System.currentTimeMillis();
-        for (int i=0;i<100000;i++){
-            final Data copy = exampleFactoryA.internal().copy();
-            forceExecution[0]++;
-        }
-        System.out.println(forceExecution[0]);
-        System.out.println("time: "+(System.currentTimeMillis()-start));
-
-    }
 
     @Test
     public void test_parent_navigation(){

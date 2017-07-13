@@ -157,8 +157,6 @@ public abstract class ReferenceBaseAttribute<T extends Data, U, A extends Refere
     @SuppressWarnings("unchecked")
     protected A setup(Class<T> clazz){
         this.clazz=clazz;//lazy creation for performance
-        this.possibleValueProvider(new DefaultPossibleValueProvider<>(clazz));
-        this.newValueProvider(new DefaultNewValueProvider<>(clazz));
         return (A)this;
     }
 

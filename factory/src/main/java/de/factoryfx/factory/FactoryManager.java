@@ -4,7 +4,6 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import com.google.common.collect.TreeTraverser;
 import de.factoryfx.data.Data;
 import de.factoryfx.data.attribute.DataViewListReferenceAttribute;
 import de.factoryfx.data.attribute.DataViewReferenceAttribute;
@@ -43,7 +42,7 @@ public class FactoryManager<V,L,R extends FactoryBase<L,V>> {
         LinkedHashSet<FactoryBase<?,V>> previousFactories = getFactoriesInDestroyOrder(currentFactoryRoot);
         previousFactories.forEach((f)->f.internalFactory().resetLog());
 
-        R previousFactoryCopyRoot = currentFactoryRoot.internal().copyRoot();
+        R previousFactoryCopyRoot = currentFactoryRoot.internal().copyFromRoot();
 
         DataMerger dataMerger = new DataMerger(currentFactoryRoot, commonVersion, newVersion);
         MergeDiffInfo mergeDiff= dataMerger.mergeIntoCurrent(permissionChecker);
@@ -102,7 +101,7 @@ public class FactoryManager<V,L,R extends FactoryBase<L,V>> {
     public MergeDiffInfo simulateUpdate(R commonVersion , R newVersion,  Function<String, Boolean> permissionChecker){
         newVersion.internalFactory().loopDetector();
 
-        DataMerger dataMerger = new DataMerger(currentFactoryRoot.internal().copy(), commonVersion, newVersion);
+        DataMerger dataMerger = new DataMerger(currentFactoryRoot.internal().copyFromRoot(), commonVersion, newVersion);
         return dataMerger.createMergeResult(permissionChecker).executeMerge();
     }
 
