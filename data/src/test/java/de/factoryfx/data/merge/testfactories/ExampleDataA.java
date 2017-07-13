@@ -5,6 +5,7 @@ import de.factoryfx.data.attribute.*;
 import de.factoryfx.data.attribute.types.StringAttribute;
 import de.factoryfx.data.util.LanguageText;
 import de.factoryfx.data.validation.Validation;
+import de.factoryfx.data.validation.ValidationResult;
 
 public class ExampleDataA extends Data {
     public final StringAttribute stringAttribute= new StringAttribute().labelText("ExampleA1");
@@ -17,13 +18,8 @@ public class ExampleDataA extends Data {
 
         config().addValidation(new Validation<Object>() {
             @Override
-            public LanguageText getValidationDescription() {
-                return null;
-            }
-
-            @Override
-            public boolean validate(Object value) {
-                return false;
+            public ValidationResult validate(Object value) {
+                return new ValidationResult(false,new LanguageText());
             }
         }, stringAttribute);
     }

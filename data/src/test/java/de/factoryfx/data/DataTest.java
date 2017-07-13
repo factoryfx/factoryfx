@@ -16,6 +16,7 @@ import de.factoryfx.data.merge.testfactories.ExampleDataC;
 import de.factoryfx.data.util.LanguageText;
 import de.factoryfx.data.validation.AttributeValidation;
 import de.factoryfx.data.validation.Validation;
+import de.factoryfx.data.validation.ValidationResult;
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -39,14 +40,9 @@ public class DataTest {
         ArrayList<String> calls=new ArrayList<>();
         public final StringAttribute stringAttribute= new StringAttribute().labelText("ExampleA1").validation(new Validation<String>() {
             @Override
-            public LanguageText getValidationDescription() {
-                return null;
-            }
-
-            @Override
-            public boolean validate(String value) {
+            public ValidationResult validate(String value) {
                 calls.add((String) ExampleFactoryThis.this.getId());
-                return false;
+                return new ValidationResult(false,new LanguageText());
             }
         });
 

@@ -7,9 +7,9 @@ public class StringRequiredTest {
 
     @Test
     public void test(){
-        Assert.assertTrue(new StringRequired().validate("rsfrsfdsfd"));
-        Assert.assertFalse(new StringRequired().validate(""));
-        Assert.assertFalse(new StringRequired().validate(null));
+        Assert.assertFalse(new StringRequired().validate("rsfrsfdsfd").validationFailed());
+        Assert.assertTrue(new StringRequired().validate("").validationFailed());
+        Assert.assertTrue(new StringRequired().validate(null).validationFailed());
     }
 
 }

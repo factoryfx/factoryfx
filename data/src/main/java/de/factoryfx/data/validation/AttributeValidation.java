@@ -19,11 +19,12 @@ public class AttributeValidation<T> {
 
     @SuppressWarnings("unchecked")
     public Map<Attribute<?,?>,List<ValidationError>> validate(Data data) {
-        if (!validation.validate((T)data)){
+        ValidationResult validationResult = validation.validate((T) data);
+        if (validationResult.validationFailed()){
             Map<Attribute<?,?>,List<ValidationError>> result = new HashMap<>();
             for (Attribute<?,?> dependency: dependencies){
                 List<ValidationError> validationErrors = result.computeIfAbsent(dependency, k -> new ArrayList<>());
-                validationErrors.add(new ValidationError(validation.getValidationDescription(),dependency,data));
+                validationErrors.add(validationResult.createValidationError(dependency,data));
             }
             return result;
         }

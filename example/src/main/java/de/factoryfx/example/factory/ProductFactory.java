@@ -12,7 +12,7 @@ public class ProductFactory extends SimpleFactoryBase<Product,OrderCollector> {
 //        this.setDisplayTextProvider(() -> name.get());
 //    }
 
-    public final StringAttribute name = new StringAttribute().en("Name").de("Name").validation(new StringRequired());
+    public final StringAttribute name = new StringAttribute().en("Name").de("Name").validation(StringRequired.VALIDATION);
     public final IntegerAttribute price = new IntegerAttribute().labelText("Price").addonText("EUR").validation(new ObjectRequired<>());
     public final FactoryReferenceAttribute<VatRate,VatRateFactory> vatRate = new FactoryReferenceAttribute<>(VatRateFactory.class).labelText("VatRate").validation(new ObjectRequired<>());
 

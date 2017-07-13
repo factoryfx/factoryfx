@@ -3,6 +3,7 @@ package de.factoryfx.user.persistent;
 import de.factoryfx.data.Data;
 import de.factoryfx.data.util.LanguageText;
 import de.factoryfx.data.validation.Validation;
+import de.factoryfx.data.validation.ValidationResult;
 import de.factoryfx.factory.PolymorphicFactory;
 import de.factoryfx.factory.PolymorphicFactoryBase;
 import de.factoryfx.factory.SimpleFactoryBase;
@@ -26,19 +27,17 @@ public class PersistentUserManagementFactory<V> extends PolymorphicFactoryBase<U
         config().setDisplayTextProvider(() -> "user management");
 
         users.validation(new Validation<List<UserFactory<V>>>() {
+
             @Override
-            public LanguageText getValidationDescription() {
-                return new LanguageText().en("user name is not unique");
-            }
-            @Override
-            public boolean validate(List<UserFactory<V>> value) {
+            public ValidationResult validate(List<UserFactory<V>> value) {
                 HashSet<String> set = new HashSet<>();
+                LanguageText en = new LanguageText().en("user name is not unique");
                 for (UserFactory user : users) {
                     if (!set.add(user.name.get())) {
-                        return false;
+                        return new ValidationResult(true, en);
                     }
                 }
-                return true;
+                return new ValidationResult(false, en);
             }
         });
     }

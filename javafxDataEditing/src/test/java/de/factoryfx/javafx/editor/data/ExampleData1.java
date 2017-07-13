@@ -21,6 +21,7 @@ import de.factoryfx.data.util.LanguageText;
 import de.factoryfx.data.validation.RegexValidation;
 import de.factoryfx.data.validation.StringRequired;
 import de.factoryfx.data.validation.Validation;
+import de.factoryfx.data.validation.ValidationResult;
 import de.factoryfx.factory.atrribute.FactoryPolymorphicReferenceAttribute;
 import de.factoryfx.factory.testfactories.poly.ErrorPrinterFactory;
 import de.factoryfx.factory.testfactories.poly.OutPrinterFactory;
@@ -37,7 +38,7 @@ public class ExampleData1 extends Data {
 
     public final EncryptedStringAttribute encryptedStringAttribute=new EncryptedStringAttribute().en("encryptedStringAttribute").de("StringAttribute de");
 
-    public final StringAttribute stringAttribute=new StringAttribute().en("StringAttribute gajsd jgsdajh gjasdja jhsadgjg ghf hgf hgfhff hgfhgf hf").de("StringAttribute de").validation(new StringRequired()).defaultValue("blub");
+    public final StringAttribute stringAttribute=new StringAttribute().en("StringAttribute gajsd jgsdajh gjasdja jhsadgjg ghf hgf hgfhff hgfhgf hf").de("StringAttribute de").validation(StringRequired.VALIDATION).defaultValue("blub");
     public final StringAttribute stringLongAttribute=new StringAttribute().longText().defaultExpanded(true).validation(new StringRequired()).en("Long StringAttribute").de("Long StringAttribute de");
 
     public final StringAttribute regexValidationNumber=new StringAttribute().en("regexValidationNumber").de("regexValidationNumber de").validation(new RegexValidation(Pattern.compile("[0-9]*")));
@@ -72,19 +73,14 @@ public class ExampleData1 extends Data {
     public ExampleData1() {
         config().addValidation(new Validation<ExampleData1>() {
             @Override
-            public LanguageText getValidationDescription() {
-                return new LanguageText().de("long = int");
-            }
-
-            @Override
-            public boolean validate(ExampleData1 value) {
+            public ValidationResult validate(ExampleData1 value) {
                 if (value.integerAttribute.get()==null){
-                    return true;
+                    return new ValidationResult(false,new LanguageText().de("long = int"));
                 }
                 if (value.longAttribute.get()==null){
-                    return true;
+                    return new ValidationResult(false,new LanguageText().de("long = int"));
                 }
-                return value.integerAttribute.get().intValue()==value.longAttribute.get().longValue();
+                return new ValidationResult(value.integerAttribute.get().intValue()!=value.longAttribute.get().longValue(),new LanguageText().de("long = int"));
             }
         },integerAttribute,longAttribute);
 

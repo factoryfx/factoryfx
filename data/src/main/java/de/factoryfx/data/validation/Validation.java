@@ -2,10 +2,9 @@ package de.factoryfx.data.validation;
 
 import de.factoryfx.data.util.LanguageText;
 
+import java.util.Optional;
+
+@FunctionalInterface
 public interface Validation<T> {
-
-    LanguageText getValidationDescription();
-
-    boolean validate(T value);
-
+    ValidationResult validate(T value);
 }

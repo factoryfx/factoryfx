@@ -9,6 +9,7 @@ import de.factoryfx.data.Data;
 import de.factoryfx.data.validation.ObjectRequired;
 import de.factoryfx.data.validation.Validation;
 import de.factoryfx.data.validation.ValidationError;
+import de.factoryfx.data.validation.ValidationResult;
 
 public abstract class Attribute<T,A extends Attribute<T,A>>{
 
@@ -89,8 +90,9 @@ public abstract class Attribute<T,A extends Attribute<T,A>>{
             return validationErrors;
         }
         for (Validation<T> validation : validations) {
-            if (!validation.validate(get())){
-                validationErrors.add(new ValidationError(validation.getValidationDescription(),this,parent));
+            ValidationResult validationResult = validation.validate(get());
+            if (validationResult.validationFailed()){
+                validationErrors.add(validationResult.createValidationError(this,parent));
             }
         }
         return validationErrors;

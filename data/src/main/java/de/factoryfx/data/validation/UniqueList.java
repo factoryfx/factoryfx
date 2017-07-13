@@ -9,18 +9,14 @@ import de.factoryfx.data.util.LanguageText;
 public class UniqueList<T extends Data> implements Validation<List<T>> {
 
     @Override
-    public LanguageText getValidationDescription() {
-        return new LanguageText().en("List contains dublicates entries");
-    }
-
-    @Override
-    public boolean validate(List<T> list) {
+    public ValidationResult validate(List<T> list) {
+        boolean error=false;
         HashSet<Object> set = new HashSet<>();
         for (T item : list) {
             if (!set.add(item.getId())) {
-                return false;
+                error = true;
             }
         }
-        return true;
+        return new ValidationResult(error,new LanguageText().en("List contains dublicates entries"));
     }
 }

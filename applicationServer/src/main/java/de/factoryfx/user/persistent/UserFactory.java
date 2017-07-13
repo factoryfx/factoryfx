@@ -12,7 +12,7 @@ public class UserFactory<V> extends SimpleFactoryBase<User,V> {
     /**key is static and not part of the factory to keep the key secret*/
     public static String passwordKey;
 
-    public final StringAttribute name= new StringAttribute().en("name").de("Name").validation(new StringRequired());
+    public final StringAttribute name= new StringAttribute().en("name").de("Name").validation(StringRequired.VALIDATION);
     public final PasswordAttribute password= new PasswordAttribute().en("password").de("Passwort").hash(s -> new PasswordHash().hash(s)).validation(new ObjectRequired<>());
     public final LocaleAttribute locale= new LocaleAttribute().en("locale").de("Sprache");
     public final StringListAttribute permissons= new StringListAttribute().en("permissions").de("Rechte");

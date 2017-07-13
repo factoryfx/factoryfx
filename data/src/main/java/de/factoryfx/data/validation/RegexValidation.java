@@ -12,12 +12,8 @@ public class RegexValidation implements Validation<String> {
     }
 
     @Override
-    public LanguageText getValidationDescription() {
-        return new LanguageText().en("Input match pattern '" + pattern.pattern() + "'");
-    }
-
-    @Override
-    public boolean validate(String value) {
-        return Optional.ofNullable(value).map(ss -> pattern.matcher(ss).matches()).orElse(true);
+    public ValidationResult validate(String value) {
+        boolean error = Optional.ofNullable(value).map(ss -> pattern.matcher(ss).matches()).orElse(true);
+        return new ValidationResult(error,new LanguageText().en("Input match pattern '" + pattern.pattern() + "'"));
     }
 }

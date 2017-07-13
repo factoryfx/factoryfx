@@ -22,7 +22,7 @@ import de.factoryfx.server.angularjs.integration.Permissions;
 
 public class ExampleFactoryA extends FactoryBase<ExampleLiveObjectA,ExampleVisitor> {
 
-    public final StringAttribute stringAttribute=new StringAttribute().en("StringAttribute").de("StringAttribute de").permission(Permissions.PERMISSON_X).validation(new StringRequired());
+    public final StringAttribute stringAttribute=new StringAttribute().en("StringAttribute").de("StringAttribute de").permission(Permissions.PERMISSON_X).validation(StringRequired.VALIDATION);
     public final StringAttribute regexValidationNumber=new StringAttribute().en("regexValidationNumber").de("regexValidationNumber de").permission(Permissions.PERMISSON_X).validation(new RegexValidation(Pattern.compile("[0-9]*")));
     public final BigDecimalAttribute bigDecimalAttribute=new BigDecimalAttribute().en("BigDecimalAttribute").de("BigDecimalAttribute de").addonText("EUR");
     public final BooleanAttribute booleanAttribute=new BooleanAttribute().en("BooleanAttribute").de("BooleanAttribute de");

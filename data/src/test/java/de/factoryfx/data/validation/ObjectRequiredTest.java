@@ -10,10 +10,10 @@ public class ObjectRequiredTest {
 
     @Test
     public void test_list(){
-        Assert.assertFalse(new ObjectRequired<List<String>>().validate(new ArrayList<>()));
+        Assert.assertTrue(new ObjectRequired<List<String>>().validate(new ArrayList<>()).validationFailed());
         final ArrayList<String> values = new ArrayList<>();
         values.add("1213");
-        Assert.assertTrue(new ObjectRequired<List<String>>().validate(values));
+        Assert.assertFalse(new ObjectRequired<List<String>>().validate(values).validationFailed());
     }
 
 }
