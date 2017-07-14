@@ -1,7 +1,6 @@
 package de.factoryfx.javafx.editor.attribute.visualisation;
 
 import de.factoryfx.data.Data;
-import de.factoryfx.data.attribute.ReferenceListAttribute;
 import de.factoryfx.javafx.editor.attribute.ListAttributeEditorVisualisation;
 import de.factoryfx.javafx.editor.data.DataEditor;
 import de.factoryfx.javafx.util.UniformDesign;
@@ -19,6 +18,7 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 
 import java.util.List;
+import java.util.function.Consumer;
 
 public class ReferenceListAttributeVisualisation extends ListAttributeEditorVisualisation<Data> {
 
@@ -36,8 +36,8 @@ public class ReferenceListAttributeVisualisation extends ListAttributeEditorVisu
 
 
     @Override
-    public Node createContent(ObservableList<Data> attributeValue, boolean readonly) {
-        tableView.setItems(attributeValue);
+    public Node createContent(ObservableList<Data> readOnlyList, Consumer<Consumer<List<Data>>> listModifyingAction, boolean readonly) {
+        tableView.setItems(readOnlyList);
 
         tableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         TableColumn<Data, String> test = new TableColumn<>("Data");

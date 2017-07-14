@@ -5,7 +5,6 @@ import de.factoryfx.data.attribute.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
-import java.util.Collection;
 import java.util.List;
 
 public class ReferenceAttributeDataView<T extends Data, A extends ReferenceBaseAttribute<T,List<T>,A>> implements DataView<T>{

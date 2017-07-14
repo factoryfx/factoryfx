@@ -6,8 +6,6 @@ import de.factoryfx.data.validation.StringRequired;
 import de.factoryfx.factory.SimpleFactoryBase;
 import de.factoryfx.user.User;
 
-import java.util.function.Function;
-
 public class UserFactory<V> extends SimpleFactoryBase<User,V> {
     /**key is static and not part of the factory to keep the key secret*/
     public static String passwordKey;

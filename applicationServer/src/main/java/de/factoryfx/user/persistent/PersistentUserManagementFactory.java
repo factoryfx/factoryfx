@@ -1,16 +1,12 @@
 package de.factoryfx.user.persistent;
 
-import de.factoryfx.data.Data;
 import de.factoryfx.data.util.LanguageText;
 import de.factoryfx.data.validation.Validation;
 import de.factoryfx.data.validation.ValidationResult;
-import de.factoryfx.factory.PolymorphicFactory;
 import de.factoryfx.factory.PolymorphicFactoryBase;
-import de.factoryfx.factory.SimpleFactoryBase;
 import de.factoryfx.factory.atrribute.FactoryReferenceListAttribute;
 import de.factoryfx.user.User;
 import de.factoryfx.user.UserManagement;
-import javafx.collections.ObservableList;
 
 import java.util.HashSet;
 import java.util.List;

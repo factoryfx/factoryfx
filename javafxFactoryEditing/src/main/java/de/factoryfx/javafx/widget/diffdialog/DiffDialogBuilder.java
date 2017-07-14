@@ -1,9 +1,5 @@
 package de.factoryfx.javafx.widget.diffdialog;
 
-import java.util.List;
-
-import de.factoryfx.data.Data;
-import de.factoryfx.data.merge.AttributeDiffInfo;
 import de.factoryfx.data.merge.MergeDiffInfo;
 import de.factoryfx.factory.log.FactoryUpdateLog;
 import de.factoryfx.javafx.editor.attribute.AttributeEditorBuilder;

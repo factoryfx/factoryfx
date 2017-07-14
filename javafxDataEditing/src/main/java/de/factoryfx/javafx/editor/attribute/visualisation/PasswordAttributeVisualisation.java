@@ -9,19 +9,12 @@ import javafx.beans.binding.Bindings;
 import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ChangeListener;
-import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Priority;
-import javafx.scene.layout.VBox;
-import org.controlsfx.glyphfont.FontAwesome;
 
 import java.util.function.Function;
-import java.util.function.Supplier;
 
 public class PasswordAttributeVisualisation extends ValueAttributeEditorVisualisation<EncryptedString> {
 

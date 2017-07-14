@@ -2,8 +2,6 @@ package de.factoryfx.factory.parametrized;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import de.factoryfx.data.attribute.ReferenceAttribute;
-import de.factoryfx.data.attribute.DefaultNewValueProvider;
-import de.factoryfx.data.attribute.DefaultPossibleValueProvider;
 
 public class ParametrizedObjectCreatorAttribute<P, L, F extends ParametrizedObjectCreatorFactory<P,L,?>> extends ReferenceAttribute<F,ParametrizedObjectCreatorAttribute<P, L, F>> {
 

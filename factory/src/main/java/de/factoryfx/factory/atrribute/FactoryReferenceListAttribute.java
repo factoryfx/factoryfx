@@ -3,8 +3,6 @@ package de.factoryfx.factory.atrribute;
 import java.util.*;
 import java.util.function.Predicate;
 
-import de.factoryfx.data.attribute.DefaultNewValueProvider;
-import de.factoryfx.data.attribute.DefaultPossibleValueProvider;
 import de.factoryfx.data.attribute.ReferenceListAttribute;
 import de.factoryfx.factory.FactoryBase;
 

@@ -65,7 +65,7 @@ public class SimpleSingleAttributeEditorBuilder<T,A extends Attribute<T,A>> impl
                 uniformDesign,
                 (l) -> "Items: " + ((Collection)l).size(),
                 FontAwesome.Glyph.LIST);
-        return new AttributeEditor((Attribute<?, ?>) attribute, listExpandableAttributeVisualisation,uniformDesign);
+        return new AttributeEditor(attribute, listExpandableAttributeVisualisation,uniformDesign);
     }
 
 }

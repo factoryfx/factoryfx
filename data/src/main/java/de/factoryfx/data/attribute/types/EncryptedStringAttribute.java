@@ -62,18 +62,24 @@ public class EncryptedStringAttribute extends ImmutableValueAttribute<EncryptedS
         return get().decrypt(key);
     }
 
-    public boolean isValidKey(String key) {
-        try {
-            byte[] decodedKey = Base64.getDecoder().decode(key);
-            SecretKey secKey = new SecretKeySpec(decodedKey, 0, decodedKey.length, "AES");
+    public boolean internal_isValidKey(String key) {
+        return new KeyValidator().validate(key);
+    }
 
-            Cipher AesCipher = Cipher.getInstance("AES");
-            AesCipher.init(Cipher.ENCRYPT_MODE, secKey);
-            Base64.getEncoder().encodeToString(AesCipher.doFinal("test".getBytes(StandardCharsets.UTF_8)));
-        } catch (NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException | BadPaddingException | IllegalBlockSizeException | IllegalArgumentException e) {
-            return false;
+    public static class KeyValidator {
+        public boolean validate(String key) {
+            try {
+                byte[] decodedKey = Base64.getDecoder().decode(key);
+                SecretKey secKey = new SecretKeySpec(decodedKey, 0, decodedKey.length, "AES");
+
+                Cipher AesCipher = Cipher.getInstance("AES");
+                AesCipher.init(Cipher.ENCRYPT_MODE, secKey);
+                Base64.getEncoder().encodeToString(AesCipher.doFinal("test".getBytes(StandardCharsets.UTF_8)));
+            } catch (NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException | BadPaddingException | IllegalBlockSizeException | IllegalArgumentException e) {
+                return false;
+            }
+            return true;
         }
-        return true;
     }
 }
 

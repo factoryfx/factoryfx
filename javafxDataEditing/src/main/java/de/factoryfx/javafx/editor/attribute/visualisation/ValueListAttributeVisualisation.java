@@ -25,6 +25,8 @@ import javafx.scene.layout.VBox;
 import org.controlsfx.glyphfont.FontAwesome;
 
 import java.util.List;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 public class ValueListAttributeVisualisation<T> extends ListAttributeEditorVisualisation<T> {
     private final UniformDesign uniformDesign;
@@ -38,13 +40,14 @@ public class ValueListAttributeVisualisation<T> extends ListAttributeEditorVisua
     }
 
     @Override
-    public Node createContent(ObservableList<T> attributeValue, boolean readonly) {
+    @SuppressWarnings("unchecked")
+    public Node createContent(ObservableList<T> readOnlyList, Consumer<Consumer<List<T>>> listModifyingAction, boolean readonly) {
         TextField textField = new TextField();
         TypedTextFieldHelper.setupLongTextField(textField);
 //        textField.textProperty().bindBidirectional(boundTo, new LongStringConverter());
 
         TableView<T> tableView = new TableView<>();
-        tableView.setItems(attributeValue);
+        tableView.setItems(readOnlyList);
         tableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         TableColumn<T, String> test = new TableColumn<>("test");
         test.setCellValueFactory(param -> new SimpleStringProperty(""+param.getValue()));
@@ -57,18 +60,20 @@ public class ValueListAttributeVisualisation<T> extends ListAttributeEditorVisua
 
         Button addButton=new Button("", uniformDesign.createIcon(FontAwesome.Glyph.PLUS));
         addButton.setOnAction(event -> {
-            attributeValue.add(detailAttribute.get());
+            listModifyingAction.accept(list -> list.add(detailAttribute.get()));
         });
 
         Button replaceButton=new Button("", uniformDesign.createIcon(FontAwesome.Glyph.EXCHANGE));
         replaceButton.setOnAction(event -> {
             int selectedIndex = tableView.getSelectionModel().getSelectedIndex();
-            attributeValue.set(selectedIndex, detailAttribute.get());
+            listModifyingAction.accept(list -> list.set(selectedIndex, detailAttribute.get()));
         });
 
         Button deleteButton = new Button("");
         uniformDesign.addDangerIcon(deleteButton,FontAwesome.Glyph.TIMES);
-        deleteButton.setOnAction(event -> attributeValue.remove(tableView.getSelectionModel().getSelectedItem()));
+        deleteButton.setOnAction(event -> {
+            listModifyingAction.accept(list -> list.remove(tableView.getSelectionModel().getSelectedItem()));
+        });
         deleteButton.disableProperty().bind(tableView.getSelectionModel().selectedItemProperty().isNull());
 
         tableView.getSelectionModel().selectedItemProperty().addListener(observable -> {

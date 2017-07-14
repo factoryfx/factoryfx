@@ -420,6 +420,7 @@ public class Data {
         return (T)this;
     }
 
+    @SuppressWarnings("unchecked")
     private <T extends Data> T propagateRoot(Collection<Data> dataCollection, Collection<Attribute<?,?>> attributes,Data root){
         for (Data data: dataCollection){
             data.root=root;
@@ -711,8 +712,7 @@ public class Data {
 
         /** copy a root data element*/
         public <T extends Data> T copyFromRoot() {
-            final T copyRoot = data.copy();
-            return copyRoot;
+            return data.copy();
         }
 
         public <T extends Data> T copyOneLevelDeep(){

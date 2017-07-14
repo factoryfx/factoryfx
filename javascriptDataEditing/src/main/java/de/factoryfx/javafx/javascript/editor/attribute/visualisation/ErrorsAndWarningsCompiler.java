@@ -37,7 +37,7 @@ public class ErrorsAndWarningsCompiler {
                 try {
                     return Collections.singletonList(JSError.make(DiagnosticType.error("ERR_COMPILE_FAILURE", "Cannot compile due to exception: " + Throwables.getStackTraceAsString(r))));
                 } catch (RuntimeException re) {
-                    return Collections.singletonList(JSError.make(DiagnosticType.error("ERR_COMPILE_FAILURE", "Cannot compile due to exception: " + r.getMessage().replaceAll("[\\{\\}]", ""))));
+                    return Collections.singletonList(JSError.make(DiagnosticType.error("ERR_COMPILE_FAILURE", "Cannot compile due to exception: " + r.getMessage().replaceAll("[{}]", ""))));
                 }
             }
         } catch (UnsupportedEncodingException e) {

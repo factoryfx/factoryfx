@@ -16,6 +16,7 @@ public class FactoryReferenceAttribute<L, F extends FactoryBase<? extends L,?>> 
         super(value);
     }
 
+
     public FactoryReferenceAttribute(Class<F> clazz) {
         super();
         setup(clazz);

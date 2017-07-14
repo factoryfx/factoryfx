@@ -49,13 +49,13 @@ public class FactoryPolymorphicReferenceAttribute<L> extends ReferenceAttribute<
 
     /**
      * setup for select and new value editing
-     * @param liveObjectClass
-     * @param possibleFactoriesClasses
-     * @return
+     * @param liveObjectClass type of liveobject
+     * @param possibleFactoriesClasses posiible factories that crate the liveobject, PolymorphicFactory<L> would be correct but doesn't work
+     * @return self
      */
     @SuppressWarnings("unchecked")
     @SafeVarargs
-    public final FactoryPolymorphicReferenceAttribute<L> setup(Class<L> liveObjectClass, Class<? extends PolymorphicFactory<?>>... possibleFactoriesClasses){/*PolymorphicFactory<L> would be correct but doesn't work*/
+    public final FactoryPolymorphicReferenceAttribute<L> setup(Class<L> liveObjectClass, Class<? extends PolymorphicFactory<?>>... possibleFactoriesClasses){
         this.possibleValueProvider(data -> {
             Set<FactoryBase<L, ?>> result = new HashSet<>();
             for (Data factory: root.internal().collectChildrenDeep()){

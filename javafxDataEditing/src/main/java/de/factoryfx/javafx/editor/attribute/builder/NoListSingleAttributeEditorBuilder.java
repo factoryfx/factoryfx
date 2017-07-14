@@ -34,7 +34,7 @@ public class NoListSingleAttributeEditorBuilder<T,A extends Attribute<?,?>> impl
     @Override
     @SuppressWarnings("unchecked")
     public AttributeEditor<T,?> createEditor(Attribute<?,?> attribute, DataEditor dataEditor, Data previousData) {
-        return new AttributeEditor((Attribute<T,?>) attribute,attributeEditorVisualisation.apply((A)attribute),uniformDesign);
+        return new AttributeEditor(attribute,attributeEditorVisualisation.apply((A)attribute),uniformDesign);
     }
     @Override
     public AttributeEditor<List<T>,?> createValueListEditor(Attribute<?,?> attribute) {
