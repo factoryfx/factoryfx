@@ -353,8 +353,8 @@ public class Data {
             final Data finalRoot=root;
             final Data finalCopy=result;
             this.visitAttributesDualFlat(result, (name, thisAttribute, copyAttribute) -> {
+                newAttributes.add(copyAttribute);
                 if (thisAttribute!=null){
-                    newAttributes.add(copyAttribute);
                     thisAttribute.internal_copyToUnsafe(copyAttribute,(data)->{
                         if (data==null){
                             return null;
