@@ -321,26 +321,15 @@ public class RestResource<V,L,T extends FactoryBase<L,V>> {
 
         root.internal().collectChildDataMap().get(id).internal().visitAttributesFlat((attributeVariableName, attribute) -> {
             if (attributeVariableName.equals(attributeName)){
-
-                attribute.internal_visit(new AttributeVisitor() {
-                    @Override
-                    public void value(Attribute<?,?> value) {
-                        //nothing
-                    }
-
-                    @Override
-                    public void reference(ReferenceAttribute<?,?> reference) {
-                        Collection<? extends Data> objects = reference.internal_possibleValues();
-                        objects.forEach(data -> result.add(new WebGuiPossibleEntity(data)));
-                    }
-
-                    @Override
-                    public void referenceList(ReferenceListAttribute<?,?> referenceList) {
-                        Collection<? extends Data> objects = referenceList.internal_possibleValues();
-                        objects.forEach(data -> result.add(new WebGuiPossibleEntity(data)));
-                    }
-                });
-
+                if (attribute instanceof ReferenceListAttribute){
+                    ((ReferenceListAttribute)attribute).internal_addNewFactory();
+                    Collection<? extends Data> objects = ((ReferenceListAttribute)attribute).internal_possibleValues();
+                    objects.forEach(data -> result.add(new WebGuiPossibleEntity(data)));
+                }
+                if (attribute instanceof ReferenceAttribute){
+                    Collection<? extends Data> objects = ((ReferenceAttribute)attribute).internal_possibleValues();
+                    objects.forEach(data -> result.add(new WebGuiPossibleEntity(data)));
+                }
             }
         });
         return result;
@@ -357,23 +346,13 @@ public class RestResource<V,L,T extends FactoryBase<L,V>> {
         Data factoryBase = root.internal().collectChildDataMap().get(id);
         factoryBase.internal().visitAttributesFlat((attributeVariableName, attribute) -> {
             if (attributeVariableName.equals(attributeName)){
+                if (attribute instanceof ReferenceListAttribute){
+                    ((ReferenceListAttribute)attribute).internal_addNewFactory();
+                }
+                if (attribute instanceof ReferenceAttribute){
+//                    ((ReferenceAttribute)attribute).internal_addNewFactory();
+                }
 
-                attribute.internal_visit(new AttributeVisitor() {
-                    @Override
-                    public void value(Attribute<?,?> value) {
-                        //nothing
-                    }
-
-                    @Override
-                    public void reference(ReferenceAttribute<?,?> reference) {
-//                        reference.internal_addNewFactory();
-                    }
-
-                    @Override
-                    public void referenceList(ReferenceListAttribute<?,?> referenceList) {
-                        referenceList.internal_addNewFactory();
-                    }
-                });
 
             }
         });

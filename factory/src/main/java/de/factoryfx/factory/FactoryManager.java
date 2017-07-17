@@ -140,6 +140,11 @@ public class FactoryManager<V,L,R extends FactoryBase<L,V>> {
         factoriesInCreateAndStartOrder.forEach(this::createWithExceptionHandling);
         factoriesInCreateAndStartOrder.forEach(this::startWithExceptionHandling);
 
+        StringBuilder stringBuilder = new StringBuilder("\n");
+        currentFactoryRoot.internalFactory().createFactoryLogEntry().toString(stringBuilder,0);
+        logger.info(stringBuilder.toString());
+
+
 //        FactoryLog factoryLog = new FactoryLog(currentFactoryRoot.internalFactory().createFactoryLogEntry(),null);
 //        System.out.println(ObjectMapperBuilder.build().writeValueAsString(factoryLog));
     }

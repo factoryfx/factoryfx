@@ -78,63 +78,55 @@ public class Data {
         void accept(String attributeVariableName, Attribute<?,?> attribute);
     }
 
-    private void visitChildFactoriesFlat(Consumer<Data> consumer) {
-        visitAttributesFlat((attributeVariableName, attribute) -> {
-            attribute.internal_visit(consumer);
-        });
-    }
-
-    List<AttributeAndName> attributes;
-
-    List<AttributeAndName> getAttributes(){
-        if (attributes==null) {
-            attributes = new ArrayList<>();
-
-            Field[] fields = getFields();
-            for (Field field : fields) {
-                try {
-                    Object fieldValue = field.get(this);
-                    if (Attribute.class.isAssignableFrom(field.getType())) {
-                        attributes.add(new AttributeAndName((Attribute) fieldValue,field.getName()));
-                    }
-                } catch (IllegalAccessException e) {
-                    throw new RuntimeException(e);
-                }
-            }
-        }
-        return attributes;
-    }
-
     private void visitAttributesFlat(AttributeVisitor consumer) {
-        for (AttributeAndName attribute: getAttributes()){
-            consumer.accept(attribute.name,attribute.attribute);
+//        for (AttributeAndName attribute: getAttributes()){
+//            consumer.accept(attribute.name,attribute.attribute);
+//        }
+
+        Field[] fields = getFields();
+        for (Field field : fields) {
+            try {
+                Object fieldValue = field.get(this);
+                if (fieldValue instanceof Attribute) {
+                    consumer.accept(field.getName(),(Attribute<?,?>) field.get(this));
+                }
+            } catch (IllegalAccessException e) {
+                throw new RuntimeException(e);
+            }
         }
     }
 
     @SuppressWarnings("unchecked")
     private void visitAttributesDualFlat(Data data, BiAttributeVisitor consumer) {
-        final List<AttributeAndName> thisAttributes = getAttributes();
-        final List<AttributeAndName> dataAttributes = data.getAttributes();
-        for (int i = 0; i< thisAttributes.size(); i++){
-            consumer.accept(thisAttributes.get(i).name,thisAttributes.get(i).attribute, dataAttributes.get(i).attribute);
+        Field[] fields = getFields();
+        for (Field field : fields) {
+            try {
+                Object fieldValue = field.get(this);
+                if (fieldValue instanceof Attribute) {
+                    consumer.accept(field.getName(),(Attribute<?,?>) field.get(this), (Attribute<?,?>) field.get(data));
+                }
+            } catch (IllegalAccessException e) {
+                throw new RuntimeException(e);
+            }
         }
     }
 
     private void visitAttributesTripleFlat(Data data1, Data data2, TriAttributeVisitor consumer) {
-        final List<AttributeAndName> thisAttributes = getAttributes();
-
-        final List<AttributeAndName> data1Attributes = data1.getAttributes();
-        final List<AttributeAndName> data2Attributes = data2.getAttributes();
-
-        for (int i = 0; i< thisAttributes.size(); i++){
-            consumer.accept(thisAttributes.get(i).name,  thisAttributes.get(i).attribute, data1Attributes.get(i).attribute, data2Attributes.get(i).attribute);
+        Field[] fields = getFields();
+        for (Field field : fields) {
+            try {
+                Object fieldValue = field.get(this);
+                if (fieldValue instanceof Attribute) {
+                    consumer.accept(field.getName(),(Attribute<?,?>) field.get(this), (Attribute<?,?>) field.get(data1), (Attribute<?,?>) field.get(data2));
+                }
+            } catch (IllegalAccessException e) {
+                throw new RuntimeException(e);
+            }
         }
     }
 
     private Map<String,Data> collectChildDataMap() {
-        HashSet<Data> factoryBases = new HashSet<>();
-        collectModelEntitiesTo(factoryBases);
-
+        List<Data> factoryBases = collectChildrenDeep();
         HashMap<String, Data> result = new HashMap<>();
         for (Data factory: factoryBases){
             result.put(factory.getId(),factory);
@@ -143,16 +135,22 @@ public class Data {
     }
 
     /** collect set with all nested children and itself*/
-    private Set<Data> collectChildrenDeep() {
-        HashSet<Data> factoryBases = new HashSet<>();
-        collectModelEntitiesTo(factoryBases);
-        return factoryBases;
+    private List<Data> collectChildrenDeep() {
+        ArrayList<Data> dataList = new ArrayList<>();
+        collectModelEntitiesTo(dataList);
+        dataList.forEach(d->d.collected=false);
+        return dataList;
     }
 
 
-    private void collectModelEntitiesTo(Set<Data> allModelEntities) {
-        if (allModelEntities.add(this)){
-            visitAttributesFlat((attributeVariableName, attribute) -> attribute.internal_collectChildren(allModelEntities));
+    boolean collected=false;
+    void collectModelEntitiesTo(List<Data> allModelEntities) {
+        if (!collected){
+            allModelEntities.add(this);
+            collected=true;
+            visitAttributesFlat((attributeVariableName, attribute) -> {
+                attribute.internal_visit(data -> data.collectModelEntitiesTo(allModelEntities));
+            });
         }
     }
 
@@ -186,17 +184,20 @@ public class Data {
     @SuppressWarnings("unchecked")
     private void fixDuplicateObjects() {
         Map<String, Data> idToDataMap = collectChildDataMap();
-        final Set<Data> all = collectChildrenDeep();
+        final List<Data> all = collectChildrenDeep();
         for (Data data: all){
             data.visitAttributesFlat((attributeVariableName, attribute) -> attribute.internal_fixDuplicateObjects(idToDataMap));
         }
     }
 
-    private Supplier<String> displayTextProvider= () -> Data.this.getClass().getSimpleName()+":"+getId();
+    private Supplier<String> displayTextProvider;
 
     @JsonIgnore
     @SuppressWarnings("unchecked")
     private String getDisplayText(){
+        if (displayTextProvider==null){
+            return Data.this.getClass().getSimpleName()+":"+getId();
+        }
         return displayTextProvider.get();
     }
 
@@ -269,7 +270,7 @@ public class Data {
         });
     }
 
-    private HashMap<Data, Data> getChildToParentMap(Set<Data> allModelEntities) {
+    private HashMap<Data, Data> getChildToParentMap(List<Data> allModelEntities) {
         HashMap<Data, Data> result = new HashMap<>();
         for (Data factoryBase : allModelEntities) {
             factoryBase.visitAttributesFlat((attributeVariableName, attribute) -> {
@@ -293,17 +294,6 @@ public class Data {
     }
 
     @SuppressWarnings("unchecked")
-    private <T extends Data> T copy() {
-        Map<Object, Data> identityPreserver = new LinkedHashMap<>();//LinkedHashMap cause faster iteration(cost slower insert)
-        ArrayList<Attribute<?, ?>> newAttributes = new ArrayList<>();
-        Data copy = copyDeep(0, Integer.MAX_VALUE, identityPreserver, null, null, newAttributes);
-        if (copy!=null){
-            copy.propagateRoot(identityPreserver.values(),newAttributes,copy);
-        }
-        return (T) copy;
-    }
-
-    @SuppressWarnings("unchecked")
     private <T extends Data> T semanticCopy() {
         T result = (T)newInstance();
 //        result.setId(this.getId());
@@ -314,34 +304,38 @@ public class Data {
     }
 
     /**copy including one the references first level of nested references*/
-    @SuppressWarnings("unchecked")
     private <T extends Data> T copyOneLevelDeep(){
-        Map<Object, Data> identityPreserver = new LinkedHashMap<>();
-        ArrayList<Attribute<?, ?>> newAttributes = new ArrayList<>();
-        Data copy = copyDeep(0, 1, identityPreserver, null, null, newAttributes);
-        if (copy!=null){
-            copy.propagateRoot(identityPreserver.values(),newAttributes,copy);
-        }
-        return (T) copy;
+        return copy(1);
     }
 
     /**copy without nested references, only value attributes are copied*/
-    @SuppressWarnings("unchecked")
     private <T extends Data> T copyZeroLevelDeep(){
-        Map<Object, Data> identityPreserver = new LinkedHashMap<>();
+        return copy(0);
+    }
+
+    private <T extends Data> T copy() {
+        return copy(Integer.MAX_VALUE);
+    }
+
+
+    @SuppressWarnings("unchecked")
+    private <T extends Data> T copy(int level) {
         ArrayList<Attribute<?, ?>> newAttributes = new ArrayList<>();
-        Data copy = copyDeep(0, 0, identityPreserver, null, null, newAttributes);
+        ArrayList<Data> oldData = new ArrayList<>();
+        Data copy = copyDeep(0, level, null, null, newAttributes,oldData);
         if (copy!=null){
-            copy.propagateRoot(identityPreserver.values(),newAttributes,copy);
+            copy.propagateRoot(Collections.emptyList(),Collections.emptyList(),newAttributes,copy);
         }
+        oldData.forEach(d->d.copy=null);
         return (T) copy;
     }
 
-    private Data copyDeep(final int level, final int maxLevel, Map<Object,Data> identityPreserver, Data root, Data parent, List<Attribute<?,?>> newAttributes){
+    private Data copy;
+    private Data copyDeep(final int level, final int maxLevel, Data root, Data parent, List<Attribute<?,?>> newAttributes, List<Data> oldData){
         if (level>maxLevel){
             return null;
         }
-        Data result= identityPreserver.get(this.getId());
+        Data result= copy;
         if (result==null){
             result = newInstance();
             result.setId(this.getId());
@@ -354,53 +348,20 @@ public class Data {
             final Data finalCopy=result;
             this.visitAttributesDualFlat(result, (name, thisAttribute, copyAttribute) -> {
                 newAttributes.add(copyAttribute);
-                if (thisAttribute!=null){
+                copyAttribute.internal_prepareUsage(finalRoot);
+                if (thisAttribute!=null){//cause jackson decided it's a good idea to override the final field with null
                     thisAttribute.internal_copyToUnsafe(copyAttribute,(data)->{
                         if (data==null){
                             return null;
                         }
-                        return data.copyDeep(level + 1, maxLevel, identityPreserver,finalRoot,finalCopy,newAttributes);
+                        return data.copyDeep(level + 1, maxLevel,finalRoot,finalCopy,newAttributes,oldData);
                     });
                 }
             });
 
-//            final List<AttributeAndName> thisAttributes = getAttributes();
-//            final List<AttributeAndName> dataAttributes = result.getAttributes();
-//
-//            for (int i = 0; i< thisAttributes.size(); i++){
-//                Attribute<?,?> thisAttribute=thisAttributes.get(i).attribute;
-//                Attribute<?,?> copyAttribute=dataAttributes.get(i).attribute;
-//                if (thisAttribute==null) {
-//                    continue;
-//                }
-//                newAttributes.add(copyAttribute);
-//                if (thisAttribute instanceof ReferenceAttribute){
-//                    Data referenceData = ((ReferenceAttribute)thisAttribute).get();
-//                    if (referenceData!=null){
-//                        Data copy = identityPreserver.get(referenceData.getId());
-//                        if (copy==null){
-//                            copy = referenceData.copyDeep(level + 1, maxLevel, identityPreserver,root,result,newAttributes);
-//                        }
-//                        ((ReferenceAttribute<Data, ?>)copyAttribute).set(copy);
-//                    }
-//                } else {
-//                    if (thisAttribute instanceof ReferenceListAttribute){
-//                        for (Data data: (ReferenceListAttribute<Data,?>)thisAttribute){
-//                            Data copy = identityPreserver.get(data.getId());
-//                            if (copy==null){
-//                                copy = data.copyDeep(level + 1, maxLevel, identityPreserver,root,result,newAttributes);
-//                            }
-//                            if (copy!=null){
-//                                ((ReferenceListAttribute<Data, ?>)copyAttribute).add(copy);
-//                            }
-//                        }
-//                    } else {
-//                        thisAttribute.internal_copyToUnsafe(copyAttribute,null);
-//                    }
-//                }
-//            }
-
-            identityPreserver.put(this.getId(),result);
+            oldData.add(this);
+            result.root=root;
+            copy=result;
         }
         return result;
     }
@@ -421,14 +382,14 @@ public class Data {
     }
 
     @SuppressWarnings("unchecked")
-    private <T extends Data> T propagateRoot(Collection<Data> dataCollection, Collection<Attribute<?,?>> attributes,Data root){
+    private <T extends Data> T propagateRoot(Collection<Data> dataCollection, Collection<Attribute<?,?>> newAttributesForInitialise, Collection<Attribute<?,?>> newAttributesForAfterInitialise   ,Data root){
         for (Data data: dataCollection){
             data.root=root;
         }
-        for (Attribute<?,?> attribute: attributes){
+        for (Attribute<?,?> attribute: newAttributesForInitialise){
             attribute.internal_prepareUsage(root);
         }
-        for (Attribute<?,?> attribute: attributes){
+        for (Attribute<?,?> attribute: newAttributesForAfterInitialise){
             attribute.internal_afterPreparedUsage(root);
         }
         return (T)this;
@@ -436,14 +397,14 @@ public class Data {
 
     @SuppressWarnings("unchecked")
     <T extends Data> T propagateRoot(Data root){
-        final Set<Data> childrenDeep = collectChildrenDeep();
+        final List<Data> childrenDeep = collectChildrenDeep();
         final ArrayList<Attribute<?,?>> attributes=new ArrayList<>();
         for (Data data: childrenDeep){
             data.visitAttributesFlat((attributeVariableName, attribute) -> {
                 attributes.add(attribute);
             });
         }
-        propagateRoot(childrenDeep,attributes,root);
+        propagateRoot(childrenDeep,attributes,attributes,root);
         return (T)this;
     }
 
@@ -461,13 +422,14 @@ public class Data {
         return root;
     }
 
-    private Function<List<Attribute<?,?>>,List<Pair<String,List<Attribute<?,?>>>>> attributeListGroupedSupplier=(List<Attribute<?,?>> allAttributes)->{
-        return Collections.singletonList(new Pair<>("Data", allAttributes));
-    };
-    private void setAttributeListGroupedSupplier(Function<List<Attribute<?,?>>,List<Pair<String,List<Attribute<?,?>>>>> attributeListGroupedSupplier){
+    private Function<List<Attribute<?,?>>,List<AttributeGroup>> attributeListGroupedSupplier;
+    private void setAttributeListGroupedSupplier(Function<List<Attribute<?,?>>,List<AttributeGroup>> attributeListGroupedSupplier){
         this.attributeListGroupedSupplier=attributeListGroupedSupplier;
     }
-    private List<Pair<String,List<Attribute<?,?>>>> attributeListGrouped(){
+    private List<AttributeGroup> attributeListGrouped(){
+        if (attributeListGroupedSupplier==null){
+            return Collections.singletonList(new AttributeGroup("Data", attributeList()));
+        }
         return attributeListGroupedSupplier.apply(attributeList());
     }
 
@@ -479,15 +441,16 @@ public class Data {
         return result;
     }
 
-    private Function<String,Boolean> matchSearchTextFunction=text->{
-        return Strings.isNullOrEmpty(text) || Strings.nullToEmpty(getDisplayText()).toLowerCase().contains(text.toLowerCase());
-    };
+    private Function<String,Boolean> matchSearchTextFunction;
 
     private void setMatchSearchTextFunction(Function<String,Boolean> matchSearchTextFunction) {
         this.matchSearchTextFunction=matchSearchTextFunction;
     }
 
     private boolean matchSearchText(String text) {
+        if (matchSearchTextFunction==null){
+            return Strings.isNullOrEmpty(text) || Strings.nullToEmpty(getDisplayText()).toLowerCase().contains(text.toLowerCase());
+        }
         return matchSearchTextFunction.apply(text);
     }
 
@@ -515,9 +478,12 @@ public class Data {
         }
     }
 
-    private final DataUtility dataUtility = new DataUtility(this);
+    private DataUtility dataUtility;
     /** public utility api */
     public DataUtility utility(){
+        if (dataUtility==null){
+            dataUtility = new DataUtility(this);
+        }
         return dataUtility;
     }
 
@@ -582,7 +548,7 @@ public class Data {
         /**
          *  grouped iteration over attributes e.g. used in gui editor where each group is a new Tab
          *  */
-        public void setAttributeListGroupedSupplier(Function<List<Attribute<?,?>>,List<Pair<String,List<Attribute<?,?>>>>> attributeListGroupedSupplier){
+        public void setAttributeListGroupedSupplier(Function<List<Attribute<?,?>>,List<AttributeGroup>> attributeListGroupedSupplier){
             this.data.setAttributeListGroupedSupplier(attributeListGroupedSupplier);
         }
 
@@ -630,8 +596,6 @@ public class Data {
             this.data = data;
         }
 
-
-
         public boolean matchSearchText(String newValue) {
             return data.matchSearchText(newValue);
         }
@@ -648,13 +612,8 @@ public class Data {
             data.visitAttributesFlat(consumer);
         }
 
-        public List<AttributeAndName> getAttributes() {
-            return data.getAttributes();
-        }
 
-
-
-        public List<Pair<String,List<Attribute<?,?>>>> attributeListGrouped(){
+        public List<AttributeGroup> attributeListGrouped(){
             return data.attributeListGrouped();
         }
 
@@ -662,12 +621,12 @@ public class Data {
             return data.collectChildDataMap();
         }
 
-        public Set<Data> collectChildrenDeep() {
+        public List<Data> collectChildrenDeep() {
             return data.collectChildrenDeep();
         }
 
 
-        public void collectModelEntitiesTo(Set<Data> allModelEntities) {
+        public void collectModelEntitiesTo(List<Data> allModelEntities) {
             data.collectModelEntitiesTo(allModelEntities);
         }
 

@@ -11,7 +11,6 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.google.common.base.Throwables;
 import com.google.common.collect.TreeTraverser;
-import de.factoryfx.data.AttributeAndName;
 import de.factoryfx.data.Data;
 import de.factoryfx.data.attribute.Attribute;
 import de.factoryfx.factory.atrribute.*;
@@ -213,8 +212,8 @@ public class FactoryBase<L,V> extends Data implements Iterable<FactoryBase<?, V>
             return;
         }
         visited=true;
-        for (AttributeAndName attributeAndName: this.internal().getAttributes()){
-            Attribute<?,?> attribute=attributeAndName.attribute;
+
+        this.internal().visitAttributesFlat((attributeVariableName, attribute) -> {
             if (attribute instanceof FactoryReferenceAttribute) {
                 FactoryBase<?, V> factory = (FactoryBase<?, V>)attribute.get();
                 if (factory!=null){
@@ -251,9 +250,8 @@ public class FactoryBase<L,V> extends Data implements Iterable<FactoryBase<?, V>
                     consumer.accept(factory);
                 }
             }
+        });
 
-
-        }
     }
 
     private void prepareIterationRunFromRoot(){

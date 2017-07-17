@@ -176,14 +176,15 @@ public class DataEditor implements Widget {
             } else {
 
                 if (newValue.internal().attributeListGrouped().size()==1){
-                    final Node attributeGroupVisual = createAttributeGroupVisual(newValue.internal().attributeListGrouped().get(0).getValue(), () -> newValue.internal().validateFlat(),oldValue);
+                    final Node attributeGroupVisual = createAttributeGroupVisual(newValue.internal().attributeListGrouped().get(0).group, () -> newValue.internal().validateFlat(),oldValue);
                     updateVis.accept(attributeGroupVisual,newValue);
                 } else {
                     TabPane tabPane = new TabPane();
-                    for (Pair<String,List<Attribute<?,?>>> attributeGroup: newValue.internal().attributeListGrouped()) {
-                        Tab tab=new Tab(attributeGroup.getKey());
+                    for (AttributeGroup attributeGroup: newValue.internal().attributeListGrouped()) {
+
+                        Tab tab=new Tab(uniformDesign.getText(attributeGroup.title));
                         tab.setClosable(false);
-                        tab.setContent(createAttributeGroupVisual(attributeGroup.getValue(),() -> newValue.internal().validateFlat(),oldValue));
+                        tab.setContent(createAttributeGroupVisual(attributeGroup.group,() -> newValue.internal().validateFlat(),oldValue));
                         tabPane.getTabs().add(tab);
                     }
                     updateVis.accept(tabPane,newValue);

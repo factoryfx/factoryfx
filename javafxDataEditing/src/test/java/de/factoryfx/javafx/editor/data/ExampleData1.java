@@ -93,9 +93,6 @@ public class ExampleData1 extends Data {
     }
 
 
-
-    String id= UUID.randomUUID().toString();
-
     public Node customize(Node defaultVis) {
         final BorderPane borderPane = new BorderPane();
         borderPane.setCenter(defaultVis);
@@ -105,14 +102,14 @@ public class ExampleData1 extends Data {
 
 
 
-    private List<Pair<String,List<Attribute<?,?>>>> attributeListGrouped(List<Attribute<?,?>> defaultGroup ){
+    private List<AttributeGroup> attributeListGrouped(List<Attribute<?,?>> defaultGroup ){
         List<Attribute<?,?>> result = new ArrayList<>(defaultGroup);
 
         result.remove(specialAttribute);
         ArrayList<Attribute<?,?>> group = new ArrayList<>();
         group.add(specialAttribute);
-        Pair<String, List<Attribute<?,?>>> defaultdata  = new Pair<>("Data", result);
-        Pair<String, List<Attribute<?,?>>> specialxyz = new Pair<>("Specialxyz", group);
+        AttributeGroup defaultdata  = new AttributeGroup("Data", result);
+        AttributeGroup specialxyz = new AttributeGroup("Specialxyz", group);
         return Arrays.asList(defaultdata, specialxyz);
     }
 

@@ -21,6 +21,8 @@ import javafx.scene.control.SplitPane;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 
+import java.util.function.Consumer;
+
 public class DataTreeWidget implements CloseAwareWidget {
     private final Data root;
     private final DataEditor dataEditor;
@@ -122,35 +124,16 @@ public class DataTreeWidget implements CloseAwareWidget {
         if (data!=null){
             TreeItem<TreeData> dataTreeItem = new TreeItem<>(new TreeData(data,null));
             data.internal().visitAttributesFlat((attributeVariableName, attribute) -> {
-                attribute.internal_visit(new AttributeVisitor() {
-                    @Override
-                    public void value(Attribute<?,?> value) {
+                attribute.internal_visit(data1 -> {
+                    TreeItem<TreeData> refDataTreeItem = new TreeItem<>(new TreeData(null,uniformDesign.getLabelText(attribute)));
+                    dataTreeItem.getChildren().add(refDataTreeItem);
 
-                    }
-
-                    @Override
-                    public void reference(ReferenceAttribute<?,?> reference) {
-                        TreeItem<TreeData> refDataTreeItem = new TreeItem<>(new TreeData(null,uniformDesign.getLabelText(reference)));
-                        dataTreeItem.getChildren().add(refDataTreeItem);
-
-                        final TreeItem<TreeData> treeItem = constructTree(reference.get());
-                        if (treeItem!=null){
-                            refDataTreeItem.getChildren().add(treeItem);
-                        }
-                    }
-
-                    @Override
-                    public void referenceList(ReferenceListAttribute<?,?> referenceList) {
-                        TreeItem<TreeData> listDataTreeItem = new TreeItem<>(new TreeData(null,uniformDesign.getLabelText(referenceList)));
-                        dataTreeItem.getChildren().add(listDataTreeItem);
-                        referenceList.forEach((data)-> {
-                            final TreeItem<TreeData> treeItem = constructTree(data);
-                            if (treeItem!=null){
-                                listDataTreeItem.getChildren().add(treeItem);
-                            }
-                        });
+                    final TreeItem<TreeData> treeItem = constructTree(data1);
+                    if (treeItem!=null){
+                        refDataTreeItem.getChildren().add(treeItem);
                     }
                 });
+
             });
             return dataTreeItem;
         }

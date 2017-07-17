@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.annotation.*;
 import de.factoryfx.factory.FactoryBase;
@@ -46,5 +47,18 @@ public class FactoryLogEntry {
         if (items.add(this)){
             children.forEach(child -> child.collectToDeep(items));
         }
+    }
+
+    public void toString(StringBuilder stringBuilder,long deep){
+        for (int i=0;i<deep;i++){
+            stringBuilder.append("  ");
+        }
+        stringBuilder.append(events.stream().map(e->(e.type+" "+e.durationNs+"ns")).collect(Collectors.joining(", ")));
+        stringBuilder.append(" ");
+        stringBuilder.append(displayText);
+        stringBuilder.append("\n");
+        children.forEach(child -> {
+            child.toString(stringBuilder,deep+1);
+        });
     }
 }

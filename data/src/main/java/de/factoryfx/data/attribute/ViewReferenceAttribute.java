@@ -26,11 +26,6 @@ public abstract class ViewReferenceAttribute<R extends Data, T extends Data,A ex
     }
 
     @Override
-    public void internal_collectChildren(Set<Data> allModelEntities) {
-        //nothing
-    }
-
-    @Override
     public boolean internal_match(T value) {
         final T thisValue = this.get();
         if (thisValue == null && value == null) {
@@ -157,12 +152,7 @@ public abstract class ViewReferenceAttribute<R extends Data, T extends Data,A ex
         }
         return referenceDisplayText;
     }
-
-    @Override
-    public void internal_visit(AttributeVisitor attributeVisitor) {
-        //nothing
-    }
-
+    
     @JsonIgnore
     @Override
     public AttributeTypeInfo internal_getAttributeType() {

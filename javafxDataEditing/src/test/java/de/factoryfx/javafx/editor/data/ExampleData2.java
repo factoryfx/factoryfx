@@ -15,8 +15,6 @@ public class ExampleData2 extends Data {
 
     public final StringAttribute stringAttribute=new StringAttribute().en("StringAttribute").de("StringAttribute de").validation(StringRequired.VALIDATION).defaultValue("123");
 
-
-
     public final DataViewReferenceAttribute<ExampleData1,ExampleData1> refview= new DataViewReferenceAttribute<>((ExampleData1 root)-> {
             if ("1".equals(stringAttribute.get())) {
                 return root;
@@ -30,8 +28,6 @@ public class ExampleData2 extends Data {
             }
             return null;
         }).validation(new ObjectRequired<>()).en("listview");
-
-
 
 
     public ExampleData2(){

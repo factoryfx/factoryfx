@@ -27,11 +27,6 @@ public abstract class ViewListReferenceAttribute <R extends Data, T extends Data
     }
 
     @Override
-    public void internal_collectChildren(Set<Data> allModelEntities) {
-        //nothing
-    }
-
-    @Override
     public boolean internal_match(List<T> value) {
         final List<T> list = get();
         if (value==null ){
@@ -187,11 +182,6 @@ public abstract class ViewListReferenceAttribute <R extends Data, T extends Data
         return new CollectionAttributeUtil<>(get(), t -> t.internal().getDisplayText()).getDisplayText();
     }
 
-
-    @Override
-    public void internal_visit(AttributeVisitor attributeVisitor) {
-        //nothing
-    }
 
     @JsonIgnore
     @Override

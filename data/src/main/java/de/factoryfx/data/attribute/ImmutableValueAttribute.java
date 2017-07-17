@@ -21,12 +21,6 @@ public abstract class ImmutableValueAttribute<T,A extends Attribute<T,A>> extend
         this.dataType=dataType;
     }
 
-
-    @Override
-    public void internal_collectChildren(Set<Data> allModelEntities) {
-        //nothing
-    }
-
     @Override
     public boolean internal_match(T value) {
         return Objects.equals(this.value, value);
@@ -109,11 +103,6 @@ public abstract class ImmutableValueAttribute<T,A extends Attribute<T,A>> extend
             return value.toString();
         }
         return "<empty>";
-    }
-
-    @Override
-    public void internal_visit(AttributeVisitor attributeVisitor) {
-        attributeVisitor.value(this);
     }
 
     @Override

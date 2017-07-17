@@ -18,12 +18,6 @@ public abstract class ReferenceListAttribute<T extends Data,A extends ReferenceB
         super();
     }
 
-
-    @Override
-    public void internal_collectChildren(Set<Data> allModelEntities) {
-        list.forEach(entity -> entity.internal().collectModelEntitiesTo(allModelEntities));
-    }
-
     @Override
     public boolean internal_match(List<T> value) {
         if (value==null ){
@@ -138,10 +132,6 @@ public abstract class ReferenceListAttribute<T extends Data,A extends ReferenceB
         return new CollectionAttributeUtil<>(get(), t -> t.internal().getDisplayText()).getDisplayText();
     }
 
-    @Override
-    public void internal_visit(AttributeVisitor attributeVisitor) {
-        attributeVisitor.referenceList(this);
-    }
 
     @Override
     @JsonIgnore

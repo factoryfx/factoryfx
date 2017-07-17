@@ -21,13 +21,6 @@ public abstract class ReferenceAttribute<T extends Data, A extends ReferenceBase
     }
 
     @Override
-    public void internal_collectChildren(Set<Data> allModelEntities) {
-        if (get() != null) {
-            get().internal().collectModelEntitiesTo(allModelEntities);
-        }
-    }
-
-    @Override
     public boolean internal_match(T value) {
         if (this.value == null && value == null) {
             return true;
@@ -126,11 +119,6 @@ public abstract class ReferenceAttribute<T extends Data, A extends ReferenceBase
             referenceDisplayText=value.internal().getDisplayText();
         }
         return referenceDisplayText;
-    }
-
-    @Override
-    public void internal_visit(AttributeVisitor attributeVisitor) {
-        attributeVisitor.reference(this);
     }
 
     @Override

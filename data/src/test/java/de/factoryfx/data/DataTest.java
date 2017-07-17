@@ -315,30 +315,6 @@ public class DataTest {
         ObjectMapperBuilder.build().copy(factoryA);
     }
 
-    @Ignore
-    @Test
-    public void test_iterate_performance(){
-        ExampleDataA exampleFactoryA = new ExampleDataA();
-        exampleFactoryA.stringAttribute.set("dfssfdsfdsfd");
-        exampleFactoryA.referenceAttribute.set(new ExampleDataB());
-        exampleFactoryA.referenceListAttribute.add(new ExampleDataB());
-
-        int[] forceExecution=new int[]{0};
-
-        final long start = System.currentTimeMillis();
-        final Data.AttributeVisitor attributeVisitor = (attributeVariableName, attribute) -> {
-            forceExecution[0]++;
-        };
-        for (int i=0;i<100000000;i++){
-            exampleFactoryA.internal().visitAttributesFlat(attributeVisitor);
-        }
-
-        System.out.println(forceExecution[0]);
-        System.out.println("time: "+(System.currentTimeMillis()-start));
-
-    }
-
-
     @Test
     public void test_parent_navigation(){
         ExampleDataA dataA = new ExampleDataA();

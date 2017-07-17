@@ -20,8 +20,6 @@ public abstract class Attribute<T,A extends Attribute<T,A>>{
 
     }
 
-    public abstract void internal_collectChildren(Set<Data> allModelEntities);
-
     public abstract boolean internal_match(T value);
 
     public boolean internal_ignoreForMerging() {
@@ -111,25 +109,17 @@ public abstract class Attribute<T,A extends Attribute<T,A>>{
     }
 
 
-    public abstract void internal_visit(AttributeVisitor attributeVisitor);
-
     public void internal_visit(Consumer<Data> childFactoriesVisitor){
-        internal_visit(new AttributeVisitor() {
-            @Override
-            public void value(Attribute<?,?> value) {
 
+        if (this instanceof ReferenceAttribute) {
+            Data data=((ReferenceAttribute<?,?>)this).get();
+            if (data!=null){
+                childFactoriesVisitor.accept(data);
             }
-
-            @Override
-            public void reference(ReferenceAttribute<?,?> reference) {
-                reference.getOptional().ifPresent(childFactoriesVisitor::accept);
-            }
-
-            @Override
-            public void referenceList(ReferenceListAttribute<?,?> referenceList) {
-                referenceList.forEach(childFactoriesVisitor::accept);
-            }
-        });
+        }
+        if (this instanceof ReferenceListAttribute) {
+            ((ReferenceListAttribute<?,?>)this).forEach(childFactoriesVisitor);
+        }
     }
 
     public abstract AttributeTypeInfo internal_getAttributeType();
@@ -259,7 +249,7 @@ public abstract class Attribute<T,A extends Attribute<T,A>>{
         return (A)this;
     }
 
-    //stored i single fields to avoids object bloat
+    //stored in single fields to avoids object bloat
     @JsonIgnore
     String en;
     @JsonIgnore
