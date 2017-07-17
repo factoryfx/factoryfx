@@ -58,7 +58,11 @@ public class FactoryLogEntry {
         stringBuilder.append(displayText);
         stringBuilder.append("\n");
         children.forEach(child -> {
-            child.toString(stringBuilder,deep+1);
+            if (deep<4){
+                child.toString(stringBuilder,deep+1);
+            } else {
+                stringBuilder.append("...");
+            }
         });
     }
 }
