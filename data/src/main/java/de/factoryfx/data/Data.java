@@ -123,9 +123,9 @@ public class Data {
     }
 
     private Map<String,Data> collectChildDataMap() {
-        List<Data> factoryBases = collectChildrenDeep();
+        List<Data> dataList = collectChildrenDeep();
         HashMap<String, Data> result = new HashMap<>();
-        for (Data factory: factoryBases){
+        for (Data factory: dataList){
             result.put(factory.getId(),factory);
         }
         return result;
@@ -475,6 +475,11 @@ public class Data {
         }
     }
 
+
+    private boolean hasCustomDisplayText(){
+        return displayTextProvider!=null;
+    }
+
     private DataUtility dataUtility;
     /** public utility api */
     public DataUtility utility(){
@@ -718,6 +723,10 @@ public class Data {
 
         public HashMap<Data, Data> getChildToParentMap() {
             return data.getChildToParentMap(data.root.collectChildrenDeep());
+        }
+
+        public boolean hasCustomDisplayText(){
+            return data.hasCustomDisplayText();
         }
     }
 

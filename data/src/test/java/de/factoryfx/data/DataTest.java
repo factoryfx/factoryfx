@@ -177,8 +177,51 @@ public class DataTest {
         final Data expectedData = mapper.copy(exampleFactoryA);
         String expected = mapper.writeValueAsString(expectedData);
         String actual = mapper.writeValueAsString(copy);
-//
-//        Assert.assertEquals(expected, actual);
+
+        Assert.assertEquals(expected, actual);
+    }
+
+    @Test
+    public void test_copy_root_after_jackson(){
+        ExampleDataA exampleFactoryA = new ExampleDataA();
+        ExampleDataB exampleFactoryB = new ExampleDataB();
+        exampleFactoryB.stringAttribute.set("dfssfdsfdsfd");
+
+        exampleFactoryA.referenceAttribute.set(null);
+        exampleFactoryA.referenceListAttribute.add(new ExampleDataB());
+        exampleFactoryA = exampleFactoryA.internal().prepareUsableCopy();
+
+
+        ExampleDataA copy  =ObjectMapperBuilder.build().copy(exampleFactoryA);
+        //also include jackson cause into copy test,(strange jackson behaviour for final fields)
+        //ObjectMapperBuilder internally call internal().copy
+
+        Assert.assertEquals(copy, copy.internal().getRoot());
+        copy.internal().visitAttributesFlat((attributeVariableName, attribute) -> {
+            Field root = getField(attribute.getClass(),"root");
+            if (root!=null){
+                try {
+                    root.setAccessible(true);
+                    Assert.assertEquals(copy, root.get(attribute));
+                } catch ( IllegalAccessException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        });
+
+    }
+
+    private static Field getField(Class<?> cls, String fieldName) {
+        for (Class<?> c = cls; c != null; c = c.getSuperclass()) {
+            try {
+                final Field field = c.getDeclaredField(fieldName);
+                field.setAccessible(true);
+                return field;
+            } catch (Exception e) {
+                //do nothing
+            }
+        }
+        return null;
     }
 
     public static class ExampleWithDefaultParent extends Data {

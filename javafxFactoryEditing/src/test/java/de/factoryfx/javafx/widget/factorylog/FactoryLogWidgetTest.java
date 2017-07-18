@@ -8,6 +8,7 @@ import de.factoryfx.factory.log.FactoryUpdateLog;
 import de.factoryfx.factory.log.FactoryLogEntry;
 import de.factoryfx.factory.log.FactoryLogEntryEvent;
 import de.factoryfx.factory.log.FactoryLogEntryEventType;
+import de.factoryfx.factory.testfactories.ExampleFactoryA;
 import de.factoryfx.javafx.util.UniformDesignFactory;
 import javafx.application.Application;
 import javafx.scene.Scene;
@@ -21,10 +22,10 @@ public class FactoryLogWidgetTest extends Application {
     public void start(Stage primaryStage) throws Exception {
 
         FactoryUpdateLogWidget factoryUpdateLogWidget = new FactoryUpdateLogWidget(new UniformDesignFactory<>().internalFactory().instance());
-        final FactoryLogEntry factoryLogEntry = new FactoryLogEntry("FactoryX",new ArrayList<>(),new ArrayList<>());
+        final FactoryLogEntry factoryLogEntry = new FactoryLogEntry(ExampleFactoryA.class, "FactoryX",new ArrayList<>(),new ArrayList<>(), id);
         factoryLogEntry.events.add(new FactoryLogEntryEvent(FactoryLogEntryEventType.CREATE,21323));
         factoryLogEntry.events.add(new FactoryLogEntryEvent(FactoryLogEntryEventType.START,5646546));
-        final FactoryLogEntry child = new FactoryLogEntry("FactoryY",new ArrayList<>(),new ArrayList<>());
+        final FactoryLogEntry child = new FactoryLogEntry(ExampleFactoryA.class, "FactoryY",new ArrayList<>(),new ArrayList<>(), id);
         child.events.add(new FactoryLogEntryEvent(FactoryLogEntryEventType.CREATE,3434343));
         child.events.add(new FactoryLogEntryEvent(FactoryLogEntryEventType.START,987768878));
         factoryLogEntry.children.add(child);

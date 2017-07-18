@@ -98,7 +98,7 @@ public class FactoryUpdateLogWidget implements Widget {
         tableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         tableView.getItems().addAll(items);
         final TableColumn<FactoryLogEntry, String> name = new TableColumn<>("Factory");
-        name.setCellValueFactory(param -> new SimpleStringProperty(param.getValue().displayText));
+        name.setCellValueFactory(param -> new SimpleStringProperty(param.getValue().getFactoryDescription()));
         tableView.getColumns().add(name);
 
         for (FactoryLogEntryEventType type: FactoryLogEntryEventType.values()){
@@ -143,7 +143,7 @@ public class FactoryUpdateLogWidget implements Widget {
         }
 
         public String getText(){
-            return factory.displayText;
+            return factory.getFactoryDescription();
         }
 
         public FontAwesome.Glyph getIcon(){

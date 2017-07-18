@@ -284,7 +284,6 @@ public class FactoryBase<L,V> extends Data implements Iterable<FactoryBase<?, V>
         return null;
     }
 
-
     final FactoryInternal<L,V> factoryInternal = new FactoryInternal<>(this);
     /** <b>internal methods should be only used from the framework.</b>
      *  They may change in the Future.
