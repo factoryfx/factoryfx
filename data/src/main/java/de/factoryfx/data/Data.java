@@ -86,8 +86,7 @@ public class Data {
         Field[] fields = getFields();
         for (Field field : fields) {
             try {
-                Object fieldValue = field.get(this);
-                if (fieldValue instanceof Attribute) {
+                if (Attribute.class.isAssignableFrom(field.getType())) {
                     consumer.accept(field.getName(),(Attribute<?,?>) field.get(this));
                 }
             } catch (IllegalAccessException e) {
@@ -101,8 +100,7 @@ public class Data {
         Field[] fields = getFields();
         for (Field field : fields) {
             try {
-                Object fieldValue = field.get(this);
-                if (fieldValue instanceof Attribute) {
+                if (Attribute.class.isAssignableFrom(field.getType())) {
                     consumer.accept(field.getName(),(Attribute<?,?>) field.get(this), (Attribute<?,?>) field.get(data));
                 }
             } catch (IllegalAccessException e) {
@@ -115,8 +113,7 @@ public class Data {
         Field[] fields = getFields();
         for (Field field : fields) {
             try {
-                Object fieldValue = field.get(this);
-                if (fieldValue instanceof Attribute) {
+                if (Attribute.class.isAssignableFrom(field.getType())) {
                     consumer.accept(field.getName(),(Attribute<?,?>) field.get(this), (Attribute<?,?>) field.get(data1), (Attribute<?,?>) field.get(data2));
                 }
             } catch (IllegalAccessException e) {
