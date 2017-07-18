@@ -1,6 +1,7 @@
 package de.factoryfx.factory.log;
 
 import java.util.*;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.annotation.*;
@@ -22,10 +23,10 @@ public class FactoryLogEntry {
         this.events = items;
         this.id = id;
     }
-    private static Random random =new Random();
+
     @SuppressWarnings("unchecked")
     public FactoryLogEntry(FactoryBase<?,?> factoryBase) {
-        this((Class<? extends FactoryBase<?, ?>>) factoryBase.getClass(), factoryBase.internal().hasCustomDisplayText()?factoryBase.internal().getDisplayText():"",new ArrayList<>(),new ArrayList<>(), Math.abs(random.nextLong()));
+        this((Class<? extends FactoryBase<?, ?>>) factoryBase.getClass(), factoryBase.internal().hasCustomDisplayText()?factoryBase.internal().getDisplayText():"",new ArrayList<>(),new ArrayList<>(), ThreadLocalRandom.current().nextLong(Long.MAX_VALUE));
     }
 
     public boolean hasEvents(){
