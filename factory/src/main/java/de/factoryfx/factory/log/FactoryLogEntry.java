@@ -50,6 +50,7 @@ public class FactoryLogEntry {
         }
     }
 
+    @JsonIgnore
     public String getFactoryDescription(){
         String result = factoryClass.getSimpleName();
         if (!displayText.isEmpty()) {
