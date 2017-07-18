@@ -22,10 +22,10 @@ public class FactoryLogWidgetTest extends Application {
     public void start(Stage primaryStage) throws Exception {
 
         FactoryUpdateLogWidget factoryUpdateLogWidget = new FactoryUpdateLogWidget(new UniformDesignFactory<>().internalFactory().instance());
-        final FactoryLogEntry factoryLogEntry = new FactoryLogEntry(ExampleFactoryA.class, "FactoryX",new ArrayList<>(),new ArrayList<>(), id);
+        final FactoryLogEntry factoryLogEntry = new FactoryLogEntry(ExampleFactoryA.class, "FactoryX",new ArrayList<>(),new ArrayList<>(), 0);
         factoryLogEntry.events.add(new FactoryLogEntryEvent(FactoryLogEntryEventType.CREATE,21323));
         factoryLogEntry.events.add(new FactoryLogEntryEvent(FactoryLogEntryEventType.START,5646546));
-        final FactoryLogEntry child = new FactoryLogEntry(ExampleFactoryA.class, "FactoryY",new ArrayList<>(),new ArrayList<>(), id);
+        final FactoryLogEntry child = new FactoryLogEntry(ExampleFactoryA.class, "FactoryY",new ArrayList<>(),new ArrayList<>(), 1);
         child.events.add(new FactoryLogEntryEvent(FactoryLogEntryEventType.CREATE,3434343));
         child.events.add(new FactoryLogEntryEvent(FactoryLogEntryEventType.START,987768878));
         factoryLogEntry.children.add(child);
