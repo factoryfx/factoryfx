@@ -59,31 +59,38 @@ public class FactoryLogEntry {
         }
         return result;
     }
-
-    public void toString(StringBuilder stringBuilder, long deep, Set<FactoryLogEntry> printed, String prefix, boolean isTail){
+    private static final int PRINTED_COUNTER_LIMIT=500;
+    private static class PrintedCounter{
+        private int printedCounter;
+        public void inc(){
+            printedCounter++;
+        }
+        public boolean limitReached(){
+            return printedCounter >= PRINTED_COUNTER_LIMIT;
+        }
+    }
+    public void toString(StringBuilder stringBuilder, long deep, Set<FactoryLogEntry> printed, String prefix, boolean isTail, PrintedCounter printedCounter){
+        if (printedCounter.limitReached()) {
+            return;
+        }
         if (deep>0){
             stringBuilder.append(prefix).append(isTail ? "└── " : "├── ");
         }
-
-//        if (deep > 4) {
-//            stringBuilder.append("...\n");
-//            return;
-//        }
         if (!printed.add(this)){
             stringBuilder.append("@").append(this.id).append("\n");
             return;
         }
-
+        printedCounter.inc();
 
         stringBuilder.append(getFactoryDescription());
         stringBuilder.append(": ");
         stringBuilder.append(events.stream().map(e -> (e.type + " " + e.durationNs + "ns")).collect(Collectors.joining(", ")));
-        stringBuilder.append(", "+this.id);
+        stringBuilder.append(", +").append(this.id);
         stringBuilder.append("\n");
 
         int counter=0;
         for (FactoryLogEntry child: children){
-            child.toString(stringBuilder, deep+1, printed, prefix + (isTail ? "    " : "│   "), counter==children.size()-1);
+            child.toString(stringBuilder, deep+1, printed, prefix + (isTail ? "    " : "│   "), counter==children.size()-1,printedCounter);
             counter++;
         }
 
@@ -93,7 +100,12 @@ public class FactoryLogEntry {
         StringBuilder stringBuilder = new StringBuilder("\n");
         stringBuilder.append("Application Started:\n");
 //        stringBuilder.append("total start duration: " + (totalDurationNs / 1000000.0) + "ms"+"\n");
-        toString(stringBuilder,0,new HashSet<>(),"", true);
+        PrintedCounter printedCounter=new PrintedCounter();
+        toString(stringBuilder,0,new HashSet<>(),"", true,printedCounter);
+        if (printedCounter.limitReached()){
+            stringBuilder.append("... (aborted after "+PRINTED_COUNTER_LIMIT+" factories)");
+        }
+
         return stringBuilder.toString();
     }
 
