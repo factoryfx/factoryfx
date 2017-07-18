@@ -141,10 +141,6 @@ public class FactoryManager<V,L,R extends FactoryBase<L,V>> {
         factoriesInCreateAndStartOrder.forEach(this::startWithExceptionHandling);
 
         logger.info(currentFactoryRoot.internalFactory().createFactoryLogEntry().toStringFromRoot());
-
-
-//        FactoryLog factoryLog = new FactoryLog(currentFactoryRoot.internalFactory().createFactoryLogEntry(),null);
-//        System.out.println(ObjectMapperBuilder.build().writeValueAsString(factoryLog));
     }
 
     @SuppressWarnings("unchecked")

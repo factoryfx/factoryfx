@@ -65,10 +65,10 @@ public class FactoryLogEntry {
             stringBuilder.append(prefix).append(isTail ? "└── " : "├── ");
         }
 
-        if (deep > 3) {
-            stringBuilder.append("...\n");
-            return;
-        }
+//        if (deep > 4) {
+//            stringBuilder.append("...\n");
+//            return;
+//        }
         if (!printed.add(this)){
             stringBuilder.append("@").append(this.id).append("\n");
             return;
@@ -83,12 +83,7 @@ public class FactoryLogEntry {
 
         int counter=0;
         for (FactoryLogEntry child: children){
-            if (deep < 2) {
-                child.toString(stringBuilder, deep+1, printed, prefix + (isTail ? "    " : "│   "), counter==children.size()-1);
-            } else {
-                stringBuilder.append(prefix).append(isTail ? "└── " : "├── ");
-                stringBuilder.append("...\n");
-            }
+            child.toString(stringBuilder, deep+1, printed, prefix + (isTail ? "    " : "│   "), counter==children.size()-1);
             counter++;
         }
 
