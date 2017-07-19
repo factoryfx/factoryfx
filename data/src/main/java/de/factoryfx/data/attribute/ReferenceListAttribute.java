@@ -251,7 +251,7 @@ public abstract class ReferenceListAttribute<T extends Data,A extends ReferenceB
 
     @Override
     public boolean removeIf(Predicate<? super T> filter) {
-        boolean result = false;
+        boolean result = list.removeIf(filter);
         afterModify();
         return result;
     }
