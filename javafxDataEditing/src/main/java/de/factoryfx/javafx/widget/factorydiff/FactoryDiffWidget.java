@@ -129,11 +129,13 @@ public class FactoryDiffWidget implements Widget {
                 createdEditor.clear();
 
                 Attribute<?,?> previousAttribute = diffItem.getAttribute(previousRoot);
-                final AttributeEditor<?,?> previousAttributeEditor = attributeEditorBuilder.getAttributeEditor(previousAttribute, null, null, null);
-                createdEditor.add(previousAttributeEditor);
-                previousAttributeEditor.setReadOnly();
-                previousAttributeEditor.expand();
-                previousValueDisplay.setCenter(previousAttributeEditor.createContent());
+                if (previousAttribute!=null) {
+                    final AttributeEditor<?, ?> previousAttributeEditor = attributeEditorBuilder.getAttributeEditor(previousAttribute, null, null, null);
+                    createdEditor.add(previousAttributeEditor);
+                    previousAttributeEditor.setReadOnly();
+                    previousAttributeEditor.expand();
+                    previousValueDisplay.setCenter(previousAttributeEditor.createContent());
+                }
 
                 Attribute<?,?> newAttribute = diffItem.getAttribute(newRoot);
                 if (newAttribute!=null) {
