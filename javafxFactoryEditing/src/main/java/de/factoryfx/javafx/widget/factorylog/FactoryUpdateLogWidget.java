@@ -48,7 +48,7 @@ public class FactoryUpdateLogWidget implements Widget {
         factoryLogRootUpdater= root -> {
             TreeView<FactoryLogWidgetTreeData> treeView = new TreeView<>();
             if (factoryLog.root!=null){
-                treeView.setRoot(createLogTree(factoryLog.root));
+                treeView.setRoot(createLogTree(factoryLog.root, System.currentTimeMillis()+5000));
             }
             treeView.setCellFactory(param-> {
                 return new TextFieldTreeCell<FactoryLogWidgetTreeData>(){
@@ -122,11 +122,13 @@ public class FactoryUpdateLogWidget implements Widget {
         return null;
     }
 
-    private TreeItem<FactoryLogWidgetTreeData> createLogTree(FactoryLogEntry factoryLogEntry) {
+    private TreeItem<FactoryLogWidgetTreeData> createLogTree(FactoryLogEntry factoryLogEntry, long abortOnCurrentTimeMillis) {
         final TreeItem<FactoryLogWidgetTreeData> factoryLogEntryTreeItem = new TreeItem<>(new FactoryLogWidgetTreeDataFactory(factoryLogEntry));
         factoryLogEntryTreeItem.setExpanded(true);
-        factoryLogEntry.events.forEach(event -> factoryLogEntryTreeItem.getChildren().add(new TreeItem<>(new FactoryLogWidgetTreeDataEvent(event))));
-        factoryLogEntry.children.forEach(child -> factoryLogEntryTreeItem.getChildren().add(createLogTree(child)));
+        if (System.currentTimeMillis() < abortOnCurrentTimeMillis) {
+            factoryLogEntry.events.forEach(event -> factoryLogEntryTreeItem.getChildren().add(new TreeItem<>(new FactoryLogWidgetTreeDataEvent(event))));
+            factoryLogEntry.children.forEach(child -> factoryLogEntryTreeItem.getChildren().add(createLogTree(child, abortOnCurrentTimeMillis)));
+        }
         return factoryLogEntryTreeItem;
     }
 
