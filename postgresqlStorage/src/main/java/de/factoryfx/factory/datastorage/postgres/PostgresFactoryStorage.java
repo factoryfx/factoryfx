@@ -27,7 +27,7 @@ import de.factoryfx.factory.datastorage.StoredFactoryMetadata;
 
 public class PostgresFactoryStorage<V,L,T extends FactoryBase<L,V>> implements FactoryStorage<V,L,T> {
 
-    private T initialFactory;
+    private final T initialFactory;
     private final DataSource dataSource;
     private final FactorySerialisationManager<T> factorySerialisationManager;
 

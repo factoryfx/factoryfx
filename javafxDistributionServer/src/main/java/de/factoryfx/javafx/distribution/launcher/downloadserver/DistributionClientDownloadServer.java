@@ -10,7 +10,7 @@ import org.eclipse.jetty.server.handler.HandlerCollection;
 import org.eclipse.jetty.server.handler.ResourceHandler;
 import org.eclipse.jetty.util.resource.Resource;
 
-//TODO refactor to use jersey resource so itsusable in single jetty server
+//TODO refactor to use jersey resource so it's usable in single jetty server
 public class DistributionClientDownloadServer  {
 
     private final org.eclipse.jetty.server.Server server;

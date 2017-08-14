@@ -160,7 +160,7 @@ public abstract class ReferenceBaseAttribute<T extends Data, U, A extends Refere
         return (A)this;
     }
 
-    /** workaround for nested generic parameter e.g.: Class<TypA<TypB>>  <br>
+    /** workaround for nested generic parameter e.g.: Class&lt;TypA&lt;TypB&gt;&gt;  <br>
      * if possible use {@link #setup} instead
      */
     @SuppressWarnings("unchecked")

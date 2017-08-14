@@ -42,7 +42,11 @@ public class ApplicationServerRestClient<V,T extends FactoryBase<?,V>> {
         return restClient.post("simulateUpdateCurrentFactory", new UserAwareRequest<>(user,passwordHash,update), MergeDiffInfo.class);
     }
 
-    /** @see FactoryStorage#getPrepareNewFactory() */
+    /**
+     * @see FactoryStorage#getPrepareNewFactory()
+     *
+     * @return new factory for editing, server assign new id for the update
+     */
     @SuppressWarnings("unchecked")
     public FactoryAndNewMetadata<T> prepareNewFactory() {
         FactoryAndNewMetadata<T> currentFactory = restClient.post("prepareNewFactory",new UserAwareRequest<Void>(user,passwordHash,null), FactoryAndNewMetadata.class);

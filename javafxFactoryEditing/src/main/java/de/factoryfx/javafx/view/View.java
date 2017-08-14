@@ -5,17 +5,18 @@ import java.util.Optional;
 import de.factoryfx.javafx.view.container.ViewsDisplayWidget;
 import de.factoryfx.javafx.widget.Widget;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.value.ObservableValue;
 import javafx.scene.Node;
 import javafx.scene.control.ScrollPane;
 
 public class View implements Widget {
 
-    public final SimpleStringProperty title = new SimpleStringProperty();
+    private final SimpleStringProperty title = new SimpleStringProperty();
 
-    public final Widget viewContent;
-    protected ViewsDisplayWidget viewsDisplayWidget;
-    boolean isShowing;
-    Optional<Runnable> closeListener = Optional.empty();
+    private final Widget viewContent;
+    private ViewsDisplayWidget viewsDisplayWidget;
+    private boolean isShowing;
+    private Optional<Runnable> closeListener = Optional.empty();
 
     public View(String title, ViewsDisplayWidget viewsDisplayWidget, Widget viewContent) {
         this.title.set(title);
@@ -51,4 +52,7 @@ public class View implements Widget {
         isShowing = true;
     }
 
+    public ObservableValue<? extends String> titleProperty() {
+        return title;
+    }
 }

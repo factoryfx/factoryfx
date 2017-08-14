@@ -76,7 +76,7 @@ public class ReferenceAttributeVisualisation extends ValueAttributeEditorVisuali
         Button newButton = new Button();
         uniformDesign.addIcon(newButton,FontAwesome.Glyph.PLUS);
         newButton.setOnAction(event -> {
-            addNewRefernce(newButton.getScene().getWindow());
+            addNewReference(newButton.getScene().getWindow());
         });
         newButton.setDisable(!isUserEditable || !isUserCreateable || readonly);
 
@@ -130,7 +130,7 @@ public class ReferenceAttributeVisualisation extends ValueAttributeEditorVisuali
         return hBox;
     }
 
-    private void addNewRefernce(Window owner) {
+    private void addNewReference(Window owner) {
         List<Data> newData = newValueProvider.get();
         if (!newData.isEmpty()){
             if (newData.size()==1){

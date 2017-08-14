@@ -18,6 +18,78 @@ task wrapper(type: Wrapper) {
 subprojects {
     apply plugin: 'java'
     apply plugin: 'findbugs'
+
+    apply plugin: 'maven'
+    apply plugin: 'signing'
+
+    task javadocJar(type: Jar) {
+        classifier = 'javadoc'
+        from javadoc
+    }
+
+    javadoc {
+        failOnError = false
+    }
+
+    task sourcesJar(type: Jar) {
+        classifier = 'sources'
+        from sourceSets.main.allSource
+    }
+
+    artifacts {
+        archives javadocJar, sourcesJar
+    }
+    signing {
+        sign configurations.archives
+    }
+
+    group = 'io.github.factoryfx'
+    version = '0.4'
+
+    uploadArchives {
+        repositories {
+            mavenDeployer {
+                beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+
+                repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
+                    authentication(userName: ossrhUsername, password: ossrhPassword)
+                }
+
+                snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
+                    authentication(userName: ossrhUsername, password: ossrhPassword)
+                }
+
+                pom.project {
+                    name 'factoryfx'
+                    packaging 'jar'
+                    // optionally artifactId can be defined here
+                    description 'factoryfx dependency injection framework'
+                    url 'http://factoryfx.github.io/factoryfx'
+
+                    scm {
+                        connection 'scm:git@github.com:factoryfx/factoryfx.git'
+                        developerConnection 'scm:git@github.com:factoryfx/factoryfx.git'
+                        url 'scm:git@github.com:factoryfx/factoryfx.git'
+                    }
+
+                    licenses {
+                        license {
+                            name 'The Apache License, Version 2.0'
+                            url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                        }
+                    }
+
+                    developers {
+                        developer {
+                            id 'hbrackmann'
+                            name 'Henning Brackmann'
+                        }
+                    }
+                }
+            }
+        }
+    }
+
 	
     repositories {
         mavenCentral()
@@ -39,11 +111,10 @@ subprojects {
         excludeFilter = file("$rootProject.projectDir/findbugs/findbugs-exclude-filter.xml")
     }
 
-    apply plugin: 'maven-publish'
 
-    task sourceJar(type: Jar) {
-        from sourceSets.main.allJava
-    }
+    //that is the new publish plugin that doesn't work with maven central
+    //https://github.com/gradle/gradle/issues/1165
+    apply plugin: 'maven-publish'
 
     publishing {
 
@@ -68,8 +139,7 @@ subprojects {
         }
     }
 
-    group = 'de.scoopsoftware.factoryfx'
-    version = '0.4'
+
 
 
 }
@@ -167,7 +237,7 @@ project(':adminUiAngularjs') {
 }
 
 project(':testutils') {
-
+    uploadArchives.enabled = false
     dependencies {
 
     }
@@ -202,7 +272,7 @@ project(':restutilClient') {
 
 
 project(':example') {
-
+    uploadArchives.enabled = false
     dependencies {
         compile project(":adminUiAngularjs")
         compile project(":factory")
@@ -272,6 +342,7 @@ project(':javascriptDataEditing') {
 }
 
 project(':testfactories') {
+    uploadArchives.enabled = false
     dependencies {
         compile project(":factory")
     }
@@ -294,7 +365,7 @@ project(':servletContainerBridge'){
 }
 
 project(':docu') {
-
+    uploadArchives.enabled = false
     dependencies {
         compile project(":factory")
         compile project(":applicationServer")

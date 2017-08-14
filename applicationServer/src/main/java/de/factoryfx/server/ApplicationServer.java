@@ -45,7 +45,10 @@ public class ApplicationServer<V,L,R extends FactoryBase<L,V>> {
         return updateCurrentFactory(current,user,"revert",s->true);
     }
 
-    /**list all changes made in specific factory*/
+    /**
+     * @param factoryId the id
+     * @return list all changes made in specific factory
+     */
     public List<AttributeDiffInfo> getDiffHistoryForFactory(String factoryId) {
         final ArrayList<AttributeDiffInfo> result = new ArrayList<>();
 //        final List<StoredFactoryMetadata> historyFactoryList = new ArrayList<>(factoryStorage.getHistoryFactoryList()).stream().sorted(Comparator.comparing(o -> o.creationTime)).collect(Collectors.toList());
@@ -79,7 +82,9 @@ public class ApplicationServer<V,L,R extends FactoryBase<L,V>> {
         return factoryManager.simulateUpdate(commonVersion , possibleUpdate.root, permissionChecker);
     }
 
-    /** creates a new factory update which is ready for editing mainly assign the right ids*/
+    /**
+     * @return creates a new factory update which is ready for editing mainly assign the right ids
+     * */
     public FactoryAndNewMetadata<R> prepareNewFactory() {
         return factoryStorage.getPrepareNewFactory();
     }

@@ -60,9 +60,7 @@ public class Shop {
             TextField customerName = new TextField();
             buyPane.getChildren().add(customerName);
             Button buy = new Button("buy");
-            buy.setOnAction(event -> {
-                orderStorage.storeOrder(new OrderStorage.Order(customerName.getText(),productTableView.getSelectionModel().getSelectedItem().getName()));
-            });
+            buy.setOnAction(event -> orderStorage.storeOrder(new OrderStorage.Order(customerName.getText(),productTableView.getSelectionModel().getSelectedItem().getName())));
             buy.disableProperty().bind(productTableView.getSelectionModel().selectedItemProperty().isNull().or(customerName.textProperty().isEmpty()));
             buyPane.getChildren().add(buy);
             root.setBottom(buyPane);

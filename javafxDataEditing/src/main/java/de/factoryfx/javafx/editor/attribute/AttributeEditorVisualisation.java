@@ -13,7 +13,10 @@ public interface AttributeEditorVisualisation<T> {
     /*the javafx visualisation**/
     Node createVisualisation();
 
-    /**readonly visualisation*/
+    /**
+     * readonly visualisation
+     * @return javafx node
+     * */
     default Node createReadOnlyVisualisation(){
         Node visualisation = createVisualisation();
         visualisation.setDisable(true);

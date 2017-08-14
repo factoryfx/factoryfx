@@ -41,8 +41,8 @@ public class EnumAttribute<T extends Enum<T>> extends ImmutableValueAttribute<En
     }
 
     @SuppressWarnings("unchecked")
-    public void setEnum(T enumn) {
-        set(new EnumWrapper<>(enumn, (Class<T>) enumn.getClass()));
+    public void setEnum(T enumValue) {
+        set(new EnumWrapper<>(enumValue, (Class<T>) enumValue.getClass()));
     }
 
     @SuppressWarnings("unchecked")

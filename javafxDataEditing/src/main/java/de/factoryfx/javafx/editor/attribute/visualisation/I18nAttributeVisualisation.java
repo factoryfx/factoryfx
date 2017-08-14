@@ -22,15 +22,10 @@ public class I18nAttributeVisualisation extends ValueAttributeEditorVisualisatio
     @Override
     public Node createVisualisation(SimpleObjectProperty<LanguageText> boundTo, boolean readonly) {
         HBox hBox = new HBox();
-        TextField diplayTextfiled = new TextField();
-        diplayTextfiled.setEditable(false);
+        TextField displayTextfiled = new TextField();
+        displayTextfiled.setEditable(false);
 
-        boundTo.addListener(new ChangeListener<LanguageText>() {
-            @Override
-            public void changed(ObservableValue<? extends LanguageText> observable, LanguageText oldValue, LanguageText newValue) {
-                diplayTextfiled.setText(newValue.toString());
-            }
-        });
+        boundTo.addListener((observable, oldValue, newValue) -> displayTextfiled.setText(newValue.toString()));
 
         ComboBox<Locale> comboBox=new ComboBox<>();
         comboBox.setConverter(new StringConverter<Locale>() {
@@ -50,17 +45,12 @@ public class I18nAttributeVisualisation extends ValueAttributeEditorVisualisatio
 
 
         Button button = new Button("set");
-        button.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                boundTo.set(new LanguageText().en(textfiled.getText()));
-            }
-        });
+        button.setOnAction(event -> boundTo.set(new LanguageText().en(textfiled.getText())));
 
 
 
         hBox.getChildren().add(button);
-        hBox.getChildren().add(diplayTextfiled);
+        hBox.getChildren().add(displayTextfiled);
 
         hBox.setDisable(readonly);
         return hBox;

@@ -73,11 +73,16 @@ public class RestResource<V,L,T extends FactoryBase<L,V>> {
     //TODO use application server resource for user managment etc
 
     /**
-     * @param applicationServer
+     *
+     * @param layout layout
+     * @param applicationServer applicationServer
      * @param appFactoryClasses the factory class from application
-     * @param locales
-     * @param userManagement
-     * @param sessionStorage
+     * @param locales locales
+     * @param userManagement userManagement
+     * @param emptyVisitorCreator emptyVisitorCreator
+     * @param dashboardTablesProvider dashboardTablesProvider
+     * @param views views
+     * @param sessionStorage sessionStorage
      */
     public RestResource(Layout layout, ApplicationServer<V,L,T> applicationServer, List<Class<? extends FactoryBase>> appFactoryClasses, List<Locale> locales, UserManagement userManagement, Supplier<V> emptyVisitorCreator, Function<V, List<WebGuiTable>> dashboardTablesProvider, List<GuiView<?>> views, SessionStorage sessionStorage) {
         this.applicationServer = applicationServer;

@@ -77,15 +77,14 @@ public class FactoryEditView<V,R extends FactoryBase<?,V>> implements Widget, Fa
             save.setOnAction(event -> {
                 Optional<String> result = showCommitDialog(factoryManager.getLoadedFactory().get(),dataEditor,uniformDesign);
 
-                if (result.isPresent()) {
-                    String comment = result.get();
+                result.ifPresent(comment -> {
                     LongRunningActionExecutor.execute(() -> {
                         final FactoryUpdateLog factoryLog = factoryManager.save(comment);
                         Platform.runLater(() -> {
-                            diffDialogBuilder.createDiffDialog(factoryLog, "Gespeicherte Änderungen",save.getScene().getWindow());
+                            diffDialogBuilder.createDiffDialog(factoryLog, "Gespeicherte Änderungen", save.getScene().getWindow());
                         });
                     });
-                }
+                });
             });
             uniformDesign.addIcon(save, FontAwesome.Glyph.SAVE);
             toolBar.getItems().add(save);

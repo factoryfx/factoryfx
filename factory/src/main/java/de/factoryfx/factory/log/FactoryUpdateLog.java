@@ -10,7 +10,7 @@ public class FactoryUpdateLog {
     public final FactoryLogEntry root;
     public final Set<FactoryLogEntry> removedFactoryLogs;
     public final MergeDiffInfo mergeDiffInfo;
-    /**duration for factory update mostly the time from create/destory/etc */
+    /**duration for factory update mostly the time from create/destroy/etc */
     public final long totalDurationNs;
 
     @JsonCreator

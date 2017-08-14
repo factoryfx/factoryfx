@@ -7,7 +7,7 @@ import de.factoryfx.data.Data;
 import java.util.function.Function;
 
 /**
- * DataView view are just additional information and navigation help, they have no effect on the datainjection <br/>
+ * DataView view are just additional information and navigation help, they have no effect on the data injection <br>
  * They should be never used as constructor parameter<br/>
  * see also: <strong>Factory</strong>ViewReferenceAttribute
  */

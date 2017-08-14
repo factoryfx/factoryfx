@@ -10,13 +10,11 @@ public class JettyServerFactory<V> extends FactoryBase<JettyServer,V> {
     public final FactoryReferenceListAttribute<HttpServerConnectorCreator,HttpServerConnectorFactory<V>> connectors = (FactoryReferenceListAttribute)new FactoryReferenceListAttribute<>(HttpServerConnectorFactory.class).labelText("connectors");
 
     public JettyServerFactory(){
-        configLiveCycle().setCreator(() -> {
-            return new JettyServer(connectors.instances(), resources.instances());
-        });
+        configLiveCycle().setCreator(() -> new JettyServer(connectors.instances(), resources.instances()));
         configLiveCycle().setReCreator(currentLiveObject->currentLiveObject.recreate(connectors.instances(),resources.instances()));
 
-        configLiveCycle().setStarter(newLiveObject -> newLiveObject.start());
-        configLiveCycle().setDestroyer(previousLiveObject -> previousLiveObject.stop());
+        configLiveCycle().setStarter(JettyServer::start);
+        configLiveCycle().setDestroyer(JettyServer::stop);
 
         config().setDisplayTextProvider(() -> "ApplicationServerRestServer");
     }

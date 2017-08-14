@@ -2,7 +2,6 @@ package de.factoryfx.data.attribute;
 
 import de.factoryfx.data.util.LanguageText;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class AttributeGroup {

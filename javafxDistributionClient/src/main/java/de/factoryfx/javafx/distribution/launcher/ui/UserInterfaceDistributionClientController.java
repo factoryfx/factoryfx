@@ -233,21 +233,6 @@ public class UserInterfaceDistributionClientController {
         bos.close();
     }
 
-
-    public static void deleteFolder(File folder) {
-        File[] files = folder.listFiles();
-        if(files!=null) { //some JVMs return null for empty dirs
-            for(File f: files) {
-                if(f.isDirectory()) {
-                    deleteFolder(f);
-                } else {
-                    f.delete();
-                }
-            }
-        }
-        folder.delete();
-    }
-
     private void readServerList() {
         File file = new File("./serverList.txt");
         if (file.exists()){

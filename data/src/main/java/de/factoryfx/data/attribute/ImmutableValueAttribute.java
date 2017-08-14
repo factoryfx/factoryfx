@@ -4,13 +4,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Set;
 import java.util.function.Function;
 
 import com.fasterxml.jackson.annotation.JsonValue;
 import de.factoryfx.data.Data;
 
-/** base class for Attributes with immutable value(for Changelistener)*/
+/** base class for Attributes with immutable value(for ChangeListener)*/
 public abstract class ImmutableValueAttribute<T,A extends Attribute<T,A>> extends Attribute<T,A> {
     //    @JsonProperty
     protected T value;

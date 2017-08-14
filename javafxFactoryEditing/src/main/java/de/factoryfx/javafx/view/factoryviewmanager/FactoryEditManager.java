@@ -61,10 +61,7 @@ public class FactoryEditManager<V,R extends FactoryBase<?,V>> {
 
 
     public Optional<R> getLoadedFactory(){
-        if (loadedRoot.isPresent()){
-            return  Optional.of(loadedRoot.get().root);
-        }
-        return Optional.empty();
+        return loadedRoot.map(rFactoryAndNewMetadata -> rFactoryAndNewMetadata.root);
     }
 
     public void reset() {

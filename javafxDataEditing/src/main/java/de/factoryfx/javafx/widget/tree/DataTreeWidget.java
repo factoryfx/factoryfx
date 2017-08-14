@@ -2,10 +2,6 @@ package de.factoryfx.javafx.widget.tree;
 
 import com.google.common.collect.TreeTraverser;
 import de.factoryfx.data.Data;
-import de.factoryfx.data.attribute.Attribute;
-import de.factoryfx.data.attribute.AttributeVisitor;
-import de.factoryfx.data.attribute.ReferenceAttribute;
-import de.factoryfx.data.attribute.ReferenceListAttribute;
 import de.factoryfx.javafx.editor.data.DataEditor;
 import de.factoryfx.javafx.util.DataTextFieldTreeCell;
 import de.factoryfx.javafx.util.UniformDesign;
@@ -20,8 +16,6 @@ import javafx.scene.control.SelectionMode;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
-
-import java.util.function.Consumer;
 
 public class DataTreeWidget implements CloseAwareWidget {
     private final Data root;

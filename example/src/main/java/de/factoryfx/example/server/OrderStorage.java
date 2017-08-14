@@ -5,8 +5,8 @@ import java.util.List;
 
 public class OrderStorage {
     public static class Order{
-        public String customerName;
-        public String productName;
+        public final String customerName;
+        public final String productName;
 
         public Order(String customerName, String productName) {
             this.customerName = customerName;
@@ -14,7 +14,7 @@ public class OrderStorage {
         }
     }
 
-    List<Order> orders = new ArrayList<>();
+    private final List<Order> orders = new ArrayList<>();
 
     public void storeOrder(Order order){
         orders.add(order);

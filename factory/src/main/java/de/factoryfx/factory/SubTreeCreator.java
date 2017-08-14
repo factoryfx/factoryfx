@@ -10,7 +10,7 @@ import de.factoryfx.data.Data;
  * @param <L> create Live object
  * @param <V> visitor
  * @param <R> root
- * @param <S> subroot
+ * @param <S> sub root
  */
 public class SubTreeCreator<V,L, R extends FactoryBase<?,V>, S extends FactoryBase<L,V>> {
 

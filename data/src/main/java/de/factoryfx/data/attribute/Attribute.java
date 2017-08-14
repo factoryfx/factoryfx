@@ -26,9 +26,12 @@ public abstract class Attribute<T,A extends Attribute<T,A>>{
         return false;
     }
 
+
     /**
-     * merge logic delegate AttributeMergeHelper
-     * @return MergeHelper or null if no merging should be executed
+     *
+     * @param originalAttribute originalAttribute
+     * @param newAttribute newAttribute
+     * @return true if merge conflict
      */
     public boolean internal_hasMergeConflict(Attribute<?,?> originalAttribute, Attribute<?,?> newAttribute) {
         if (newAttribute.internal_match(originalAttribute)) {
@@ -45,6 +48,9 @@ public abstract class Attribute<T,A extends Attribute<T,A>>{
 
     /**
      * check if merge should be executed e.g. not if values ar equals
+     * @param newAttribute
+     * @param originalAttribute
+     * @return true if merge should be executed
      * */
     public boolean internal_isMergeable(Attribute<?,?> originalAttribute, Attribute<?,?> newAttribute) {
         if (!internal_match(originalAttribute) || internal_match(newAttribute)) {
@@ -128,7 +134,10 @@ public abstract class Attribute<T,A extends Attribute<T,A>>{
         //nothing
     }
 
-    /**all elements prepared and root is usable*/
+    /**
+     * all elements prepared and root is usable
+     * @param root factory root
+     * */
     public void internal_afterPreparedUsage(Data root){
         //nothing
     }
@@ -139,7 +148,10 @@ public abstract class Attribute<T,A extends Attribute<T,A>>{
 
     public abstract void internal_addListener(AttributeChangeListener<T,A> listener);
 
-    /** remove added Listener or Listener inside WeakAttributeChangeListener*/
+    /**
+     * remove added Listener or Listener inside WeakAttributeChangeListener
+     * @param listener listener
+     * */
     public abstract void internal_removeListener(AttributeChangeListener<T,A> listener);
 
     @SuppressWarnings("unchecked")

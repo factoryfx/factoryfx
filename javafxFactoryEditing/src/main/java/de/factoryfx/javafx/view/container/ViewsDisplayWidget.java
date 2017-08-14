@@ -86,7 +86,7 @@ public class ViewsDisplayWidget implements Widget {
             contextMenu.getItems().addAll(expand);
             tab.setContextMenu(contextMenu);
 
-            tab.textProperty().bind(view.title);
+            tab.textProperty().bind(view.titleProperty());
             tab.setContent(view.createContent());
 
             tab.setOnClosed(event -> view.close());

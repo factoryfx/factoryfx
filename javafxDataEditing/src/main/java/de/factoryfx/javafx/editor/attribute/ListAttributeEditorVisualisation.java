@@ -2,7 +2,6 @@ package de.factoryfx.javafx.editor.attribute;
 
 import de.factoryfx.data.attribute.*;
 import javafx.collections.FXCollections;
-import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.scene.Node;
 
@@ -53,7 +52,7 @@ public abstract class ListAttributeEditorVisualisation<T> implements AttributeEd
      * @param readOnlyList changes to list do not update the attribute
      * @param listModifyingAction use to modify list, don't change the readOnlyList directly
      * @param readonly flag for readonly mode
-     * @return
+     * @return javafx node
      */
     public abstract Node createContent(ObservableList<T> readOnlyList, Consumer<Consumer<List<T>>> listModifyingAction, boolean readonly);
 

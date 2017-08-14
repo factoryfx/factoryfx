@@ -6,7 +6,7 @@ import java.util.List;
 import de.factoryfx.example.server.OrderStorage;
 
 public class OrderCollector {
-    private List<OrderStorage.Order> orders=new ArrayList<>();
+    private final List<OrderStorage.Order> orders=new ArrayList<>();
 
     public void addOrders(List<OrderStorage.Order> orders){
         this.orders.addAll(orders);

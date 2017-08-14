@@ -17,6 +17,6 @@ public class UniqueList<T extends Data> implements Validation<List<T>> {
                 error = true;
             }
         }
-        return new ValidationResult(error,new LanguageText().en("List contains dublicates entries"));
+        return new ValidationResult(error,new LanguageText().en("List contains duplicates entries"));
     }
 }

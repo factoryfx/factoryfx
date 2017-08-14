@@ -11,9 +11,7 @@ public class ShopFactory extends FactoryBase<Shop,OrderCollector> {
     public ShopFactory(){
         config().setDisplayTextProvider(()->"Shop");
 
-        configLiveCycle().setCreator(() -> {
-            return new Shop(stageTitle.get(), products.instances(),new Stage(), new OrderStorage());
-        });
+        configLiveCycle().setCreator(() -> new Shop(stageTitle.get(), products.instances(),new Stage(), new OrderStorage()));
         configLiveCycle().setReCreator((previousLiveObject) -> new Shop(stageTitle.get(), products.instances(),previousLiveObject.getStage(), new OrderStorage()));
         configLiveCycle().setStarter(Shop::start);
         configLiveCycle().setDestroyer(Shop::stop);

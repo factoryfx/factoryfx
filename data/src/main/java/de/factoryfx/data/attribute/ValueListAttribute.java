@@ -29,7 +29,7 @@ public class ValueListAttribute<T, A extends Attribute<List<T>,A>> extends Immut
 //    /**
 //     *
 //     * @param attributeMetadata AttributeMetadata
-//     * @param itemType generics workaound, if itemType is generic the correct constructor don't wrok
+//     * @param itemType generics workaround, if itemType is generic the correct constructor don't work
 //     */
 //    @SuppressWarnings("unchecked")
 //    public ValueListAttribute(AttributeMetadata attributeMetadata,Class itemType) {

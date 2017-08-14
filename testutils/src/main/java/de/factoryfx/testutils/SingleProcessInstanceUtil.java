@@ -47,6 +47,7 @@ public class SingleProcessInstanceUtil {
 	}
 	/**
 	 * @param port e.g 1099
+	 * @param killAction kill the old process, null (default) is system exit
 	 */
 	public static void enforceSingleProcessInstance(int port, Runnable killAction) {
 		if (created){

@@ -103,7 +103,7 @@ public class FactoryLogEntry {
         PrintedCounter printedCounter=new PrintedCounter();
         toString(stringBuilder,0,new HashSet<>(),"", true,printedCounter);
         if (printedCounter.limitReached()){
-            stringBuilder.append("... (aborted after "+PRINTED_COUNTER_LIMIT+" factories)");
+            stringBuilder.append("... (aborted log after "+PRINTED_COUNTER_LIMIT+" factories)");
         }
 
         return stringBuilder.toString();

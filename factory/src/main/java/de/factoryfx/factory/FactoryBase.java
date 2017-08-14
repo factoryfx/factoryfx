@@ -12,7 +12,6 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.google.common.base.Throwables;
 import com.google.common.collect.TreeTraverser;
 import de.factoryfx.data.Data;
-import de.factoryfx.data.attribute.Attribute;
 import de.factoryfx.factory.atrribute.*;
 import de.factoryfx.factory.log.FactoryLogEntry;
 import de.factoryfx.factory.log.FactoryLogEntryEvent;
@@ -314,7 +313,10 @@ public class FactoryBase<L,V> extends Data implements Iterable<FactoryBase<?, V>
             return factory.createFactoryLogEntry(true);
         }
 
-        /**determine which live objects needs recreation*/
+        /**
+         * determine which live objects needs recreation
+         * @param changedData
+         * */
         public void determineRecreationNeedFromRoot(Set<Data> changedData) {
             factory.prepareRecreationCheck();
             factory.determineRecreationNeed(changedData,new ArrayDeque<>());
@@ -329,12 +331,18 @@ public class FactoryBase<L,V> extends Data implements Iterable<FactoryBase<?, V>
             factory.start();
         }
 
-        /** start the liveObject e.g open a port*/
+        /**
+         * start the liveObject e.g open a port
+         * @param previousFactories previousFactories
+         * */
         public void destroy(Set<FactoryBase<?,V>> previousFactories) {
             factory.destroy(previousFactories);
         }
 
-        /** execute visitor to get runtime information from the liveobject*/
+        /**
+         * execute visitor to get runtime information from the liveobject
+         * @param visitor visitor
+         * */
         public void runtimeQuery(V visitor) {
             factory.runtimeQuery(visitor);
         }
@@ -418,6 +426,8 @@ public class FactoryBase<L,V> extends Data implements Iterable<FactoryBase<?, V>
      * Therefore slow operation should be executed in create.<br>
      *<br>
      * should be used in the default constructor
+     *
+     * @return configuration api
      * */
     protected LiveCycleConfig<L,V> configLiveCycle(){
         return liveCycleConfig;

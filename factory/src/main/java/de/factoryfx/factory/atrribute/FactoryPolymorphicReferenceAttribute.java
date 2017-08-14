@@ -35,7 +35,13 @@ public class FactoryPolymorphicReferenceAttribute<L> extends ReferenceAttribute<
         return get().internalFactory().instance();
     }
 
-    /**workaround: if possibleFactoriesClasses has generic parameter the normal setup method doesn't work */
+
+    /**
+     * workaround: if possibleFactoriesClasses has generic parameter the normal setup method doesn't work
+     * @param liveObjectClass liveObjectClass
+     * @param possibleFactoriesClasses possibleFactoriesClasses
+     * @return self
+     */
     @SuppressWarnings("unchecked")
     @SafeVarargs
     public final FactoryPolymorphicReferenceAttribute<L> setupUnsafe(Class liveObjectClass, Class... possibleFactoriesClasses){
@@ -50,7 +56,7 @@ public class FactoryPolymorphicReferenceAttribute<L> extends ReferenceAttribute<
     /**
      * setup for select and new value editing
      * @param liveObjectClass type of liveobject
-     * @param possibleFactoriesClasses posiible factories that crate the liveobject, PolymorphicFactory<L> would be correct but doesn't work
+     * @param possibleFactoriesClasses possible factories that crate the liveobject, PolymorphicFactory&lt;L&gt; would be correct but doesn't work
      * @return self
      */
     @SuppressWarnings("unchecked")

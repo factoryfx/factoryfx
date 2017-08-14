@@ -12,13 +12,11 @@ import de.factoryfx.data.validation.Validation;
 import de.factoryfx.data.validation.ValidationError;
 import javafx.beans.property.ReadOnlyStringProperty;
 import javafx.beans.property.SimpleStringProperty;
-import javafx.util.Pair;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
@@ -526,7 +524,7 @@ public class Data {
         /**
          * short readable text describing the factory
          * @param displayTextProvider custom displayText function
-         * @param dependencies attributes which affect the displaytext
+         * @param dependencies attributes which affect the display text
          */
         public void setDisplayTextProvider(Supplier<String> displayTextProvider, Attribute<?,?>... dependencies){
             data.setDisplayTextProvider(displayTextProvider);
@@ -540,7 +538,7 @@ public class Data {
             data.setDisplayTextDependencies(attributes);
         }
 
-        /** set the attributes that affect the displaytext<br>
+        /** set the attributes that affect the display text<br>
          *  used for live update in gui
          *  */
         public void setDisplayTextDependencies(Attribute<?,?>... attributes){
@@ -563,7 +561,7 @@ public class Data {
         }
 
         /**
-         *  define match logic for freetext search e.g. in tables
+         *  define match logic for full-text search e.g. in tables
          *  */
         public void setMatchSearchTextFunction(Function<String,Boolean> matchSearchTextFunction){
             data.setMatchSearchTextFunction(matchSearchTextFunction);
