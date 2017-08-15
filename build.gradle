@@ -53,7 +53,10 @@ subprojects {
         // we put the key to build/secring.gpg where it will be picked up by the uploadArchives task of the nexus plugin
 
         task fetchSecretKeyRingFile << {
-            def fileTarget ="build/secring.gpg";
+            def fileTarget ="build/secring.gpg"
+            def secretKeyRingFileSourceURL =System.getProperty("secretKeyRingFileSourceURL")
+            def secretKeyRingFileSourceURLAuthUsername =System.getProperty("secretKeyRingFileSourceURLAuthUsername")
+            def secretKeyRingFileSourceURLAuthPassword =System.getProperty("secretKeyRingFileSourceURLAuthPassword")
             System.setProperty("signing.secretKeyRingFile",fileTarget)
             file(fileTarget).getParentFile().mkdirs()
             ant.get(src: secretKeyRingFileSourceURL, dest: fileTarget, username: secretKeyRingFileSourceURLAuthUsername, password: secretKeyRingFileSourceURLAuthPassword)
