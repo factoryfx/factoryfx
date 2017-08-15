@@ -21,7 +21,9 @@ public class StringAttribute extends ImmutableValueAttribute<String,StringAttrib
     private boolean longText=false;
     @JsonIgnore
     private boolean defaultExpanded =false;
-    /**hint for data editing, for long text textarea instead of textfield is used*/
+    /**hint for data editing, for long text textarea instead of textfield is used
+     * @return self
+     * */
     @JsonIgnore
     public StringAttribute longText(){
         longText=true;

@@ -15,7 +15,7 @@ public class StringListAttribute extends ValueListAttribute<String,StringListAtt
 
 
     public List<String> asUnmodifiableList() {
-        return Collections.unmodifiableList(get().stream().collect(Collectors.toList()));
+        return Collections.unmodifiableList(get());
     }
 
 }

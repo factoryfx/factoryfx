@@ -6,8 +6,8 @@ import de.factoryfx.factory.atrribute.FactoryReferenceListAttribute;
 public class JettyServerFactory<V> extends FactoryBase<JettyServer,V> {
 
     /** jersey resource class with Annotations*/
-    public final FactoryReferenceListAttribute<Object,FactoryBase<?,V>> resources = (FactoryReferenceListAttribute)new FactoryReferenceListAttribute<>(FactoryBase.class).labelText("resource");
-    public final FactoryReferenceListAttribute<HttpServerConnectorCreator,HttpServerConnectorFactory<V>> connectors = (FactoryReferenceListAttribute)new FactoryReferenceListAttribute<>(HttpServerConnectorFactory.class).labelText("connectors");
+    public final FactoryReferenceListAttribute<Object,FactoryBase<?,V>> resources = new FactoryReferenceListAttribute<Object,FactoryBase<?,V>>().setupUnsafe(FactoryBase.class).labelText("resource");
+    public final FactoryReferenceListAttribute<HttpServerConnectorCreator,HttpServerConnectorFactory<V>> connectors = new FactoryReferenceListAttribute<HttpServerConnectorCreator,HttpServerConnectorFactory<V>>().setupUnsafe(HttpServerConnectorFactory.class).labelText("connectors");
 
     public JettyServerFactory(){
         configLiveCycle().setCreator(() -> new JettyServer(connectors.instances(), resources.instances()));

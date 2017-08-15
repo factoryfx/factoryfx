@@ -130,20 +130,14 @@ public class FactoryDiffWidget implements Widget {
 
                 Attribute<?,?> previousAttribute = diffItem.getAttribute(previousRoot);
                 if (previousAttribute!=null) {
-                    final AttributeEditor<?, ?> previousAttributeEditor = attributeEditorBuilder.getAttributeEditor(previousAttribute, null, null, null);
-                    createdEditor.add(previousAttributeEditor);
-                    previousAttributeEditor.setReadOnly();
-                    previousAttributeEditor.expand();
-                    previousValueDisplay.setCenter(previousAttributeEditor.createContent());
+                    previousValueDisplay.setCenter(createEditor(previousAttribute,createdEditor));
+                }else {
+                    previousValueDisplay.setCenter(null);
                 }
 
                 Attribute<?,?> newAttribute = diffItem.getAttribute(newRoot);
                 if (newAttribute!=null) {
-                    final AttributeEditor<?,?> newAttributeEditor = attributeEditorBuilder.getAttributeEditor(newAttribute, null, null, null);
-                    createdEditor.add(newAttributeEditor);
-                    newAttributeEditor.setReadOnly();
-                    newAttributeEditor.expand();
-                    newValueDisplay.setCenter(newAttributeEditor.createContent());
+                    newValueDisplay.setCenter(createEditor(newAttribute,createdEditor));
                 } else {
                     newValueDisplay.setCenter(null);
                 }
@@ -160,6 +154,14 @@ public class FactoryDiffWidget implements Widget {
         diffListUpdater.accept(diff);
         borderPane.setCenter(verticalSplitPane);
         return borderPane;
+    }
+
+    private Node createEditor(Attribute<?,?> attribute, List<AttributeEditor<?,?>> createdEditor){
+        final AttributeEditor<?, ?> previousAttributeEditor = attributeEditorBuilder.getAttributeEditor(attribute, null, null, null);
+        createdEditor.add(previousAttributeEditor);
+        previousAttributeEditor.setReadOnly();
+        previousAttributeEditor.expand();
+        return previousAttributeEditor.createContent();
     }
 
     private TableView<AttributeDiffInfoExtended> createDiffTableViewTable(){

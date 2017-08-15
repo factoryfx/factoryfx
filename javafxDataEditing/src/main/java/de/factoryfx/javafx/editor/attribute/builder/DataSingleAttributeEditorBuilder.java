@@ -45,8 +45,8 @@ public class DataSingleAttributeEditorBuilder<T,A extends Attribute<T,A>> implem
     }
 
     @FunctionalInterface
-    public static interface AttributeEditorVisualisationCreator<T,A extends Attribute<T,?>> {
-        public AttributeEditorVisualisation<T> create(A attribute,DataEditor dataEditor, Data previousData);
+    public interface AttributeEditorVisualisationCreator<T,A extends Attribute<T,?>> {
+        AttributeEditorVisualisation<T> create(A attribute, DataEditor dataEditor, Data previousData);
     }
 
 }

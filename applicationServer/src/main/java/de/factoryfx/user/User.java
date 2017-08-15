@@ -7,10 +7,10 @@ import java.util.Locale;
 import java.util.Set;
 
 public class User {
-    public String user;
-    public String password;
-    public Locale locale;
-    public Set<String> permissions=new HashSet<>();
+    private final String user;
+    private final String password;
+    private final Locale locale;
+    private final Set<String> permissions=new HashSet<>();
 
 
     public boolean matchUser(String user, String password){

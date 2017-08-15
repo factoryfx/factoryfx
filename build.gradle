@@ -46,6 +46,24 @@ subprojects {
     group = 'io.github.factoryfx'
     version = '0.4'
 
+    if (project.hasProperty('secretKeyRingFileSourceURL')) {
+        //workaround  to get key  file to the plugin
+
+        // task to fetch the GPG key to sign the JAR archives
+        // we put the key to build/secring.gpg where it will be picked up by the uploadArchives task of the nexus plugin
+
+        task fetchSecretKeyRingFile << {
+            def fileTarget ="build/secring.gpg";
+            System.setProperty("signing.secretKeyRingFile",fileTarget)
+            file(fileTarget).getParentFile().mkdirs()
+            ant.get(src: secretKeyRingFileSourceURL, dest: fileTarget, username: secretKeyRingFileSourceURLAuthUsername, password: secretKeyRingFileSourceURLAuthPassword)
+        }
+        afterEvaluate {
+            // always fetch the GPG key before signing archives
+            tasks.signArchives.dependsOn fetchSecretKeyRingFile
+        }
+    }
+
     uploadArchives {
         repositories {
             mavenDeployer {

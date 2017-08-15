@@ -73,18 +73,18 @@ public class ExampleMain extends Application {
         VatRateFactory vatRate =new VatRateFactory();
         vatRate.rate.set(0.19);
         {
-            ProductFactory productFactory = new ProductFactory();
-            productFactory.name.set("Car");
-            productFactory.price.set(5);
-            productFactory.vatRate.set(vatRate);
-            shopFactory.products.add(productFactory);
+            ProductFactory carFactory = new ProductFactory();
+            carFactory.vatRate.set(vatRate);
+            carFactory.name.set("Car");
+            carFactory.price.set(5);
+            shopFactory.products.add(carFactory);
         }
         {
-            ProductFactory productFactory = new ProductFactory();
-            productFactory.name.set("Bike");
-            productFactory.price.set(10);
-            productFactory.vatRate.set(vatRate);
-            shopFactory.products.add(productFactory);
+            ProductFactory bikeFactory = new ProductFactory();
+            bikeFactory.vatRate.set(vatRate);
+            bikeFactory.name.set("Bike");
+            bikeFactory.price.set(10);
+            shopFactory.products.add(bikeFactory);
         }
         return shopFactory;
     }

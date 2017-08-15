@@ -7,19 +7,20 @@ import java.util.Locale;
 import java.util.Set;
 
 public class AuthorizedUser {
-    public String user;
-    public Locale locale;
-    public Collection<String> permissions=new HashSet<>();
+    private final String user;
+    private final Locale locale;
+    private final Collection<String> permissions;
 
     public AuthorizedUser(String user, Locale locale, Set<String> permissions) {
         this.user = user;
         this.locale = locale;
-        this.permissions.addAll(permissions);
+        this.permissions=permissions;
     }
 
     public AuthorizedUser(String user, Locale locale, String... permissions) {
         this.user = user;
         this.locale = locale;
+        this.permissions = new HashSet<>();
         this.permissions.addAll(Arrays.asList(permissions));
     }
 
@@ -34,5 +35,13 @@ public class AuthorizedUser {
             return false;
         }
         return true;
+    }
+
+    public Locale getLocale() {
+        return locale;
+    }
+
+    public String getUserName() {
+        return user;
     }
 }

@@ -366,14 +366,13 @@ public class Data {
         return root!=null;
     }
 
-    @SuppressWarnings("unchecked")
-    private <T extends Data> T endUsage() {
+
+    private void endUsage() {
         for (Data data: collectChildrenDeep()){
             data.visitAttributesFlat((attributeVariableName, attribute) -> {
                 attribute.internal_endUsage();
             });
         }
-        return (T)this;
     }
 
     @SuppressWarnings("unchecked")
@@ -479,7 +478,9 @@ public class Data {
     }
 
     private DataUtility dataUtility;
-    /** public utility api */
+    /**public utility api
+     * @return the api
+     */
     public DataUtility utility(){
         if (dataUtility==null){
             dataUtility = new DataUtility(this);
@@ -515,8 +516,9 @@ public class Data {
             this.data = data;
         }
         /**
-         *  short readable text describing the factory
-         *  */
+         * short readable text describing the factory
+         * @param displayTextProvider displayTextProvider
+         */
         public void setDisplayTextProvider(Supplier<String> displayTextProvider){
             data.setDisplayTextProvider(displayTextProvider);
         }
@@ -532,22 +534,27 @@ public class Data {
         }
 
         /**
-         *  @see  #setDisplayTextDependencies(Attribute[])
-         *  */
+         * @see  #setDisplayTextDependencies(Attribute[])
+         * @param attributes the attributes affecting the display text
+         */
         public void setDisplayTextDependencies(List<Attribute<?,?>> attributes){
             data.setDisplayTextDependencies(attributes);
         }
 
         /** set the attributes that affect the display text<br>
          *  used for live update in gui
-         *  */
+         *
+         * @param attributes the attributes affecting the display text
+         * */
         public void setDisplayTextDependencies(Attribute<?,?>... attributes){
             data.setDisplayTextDependencies(Arrays.asList(attributes));
         }
 
         /**
          *  grouped iteration over attributes e.g. used in gui editor where each group is a new Tab
-         *  */
+         *
+         * @param attributeListGroupedSupplier function with parameter containing all attributes
+         * */
         public void setAttributeListGroupedSupplier(Function<List<Attribute<?,?>>,List<AttributeGroup>> attributeListGroupedSupplier){
             this.data.setAttributeListGroupedSupplier(attributeListGroupedSupplier);
         }
@@ -555,14 +562,18 @@ public class Data {
         /**
          *  new Instance configuration default in over reflection over default constructor
          *  used for copies
-         *  */
+         *
+         * @param newInstanceSupplier newInstanceSupplier
+         * */
         public void setNewInstanceSupplier(Supplier<Data> newInstanceSupplier){
             this.data.setNewInstanceSupplier(newInstanceSupplier);
         }
 
         /**
          *  define match logic for full-text search e.g. in tables
-         *  */
+         *
+         * @param matchSearchTextFunction matchSearchTextFunction
+         * */
         public void setMatchSearchTextFunction(Function<String,Boolean> matchSearchTextFunction){
             data.setMatchSearchTextFunction(matchSearchTextFunction);
         }
@@ -584,6 +595,7 @@ public class Data {
     /** <b>internal methods should be only used from the framework.</b>
      *  They may change in the Future.
      *  There is no fitting visibility in java therefore this workaround.
+     * @return the internal api
      */
     public Internal internal(){
         return internal;
@@ -669,7 +681,8 @@ public class Data {
             return  data.copy();
         }
 
-        /** copy a root data element*/
+        /** copy a root data element
+         * @return root copy*/
         public <T extends Data> T copyFromRoot() {
             return data.copy();
         }
@@ -691,14 +704,14 @@ public class Data {
          * unfortunately we must create a copy and can't make the same object usable(which we tried but failed)
          *
          * only call on root
-         * return usable copy */
+         * @return usable copy*/
         public <T extends Data> T prepareUsableCopy() {
             return data.prepareUsableCopy();
         }
 
         /** only call on root*/
-        public <T extends Data> T endUsage() {
-            return data.endUsage();
+        public void endUsage() {
+            data.endUsage();
         }
 
         public boolean readyForUsage(){

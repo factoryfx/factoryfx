@@ -91,7 +91,7 @@ public class JavascriptVisual {
                             " : " + (e.getCharno() != -1 ? String.valueOf(e.getCharno()+1) : "(unknown column)");
                 };
                 cell.itemProperty().addListener((a,b,newValue)->{
-                    cell.getStyleClass().removeIf(c->Arrays.asList(CheckLevel.values()).stream().anyMatch(l->l.name().equals(c)));
+                    cell.getStyleClass().removeIf(c-> Arrays.stream(CheckLevel.values()).anyMatch(l->l.name().equals(c)));
                     if (newValue != null) {
                         cell.getStyleClass().add(newValue.getType().level.name());
                         cell.setText(toText.apply(newValue).replaceAll("\\s+"," "));

@@ -96,7 +96,11 @@ public class FactoryManager<V,L,R extends FactoryBase<L,V>> {
         return result;
     }
 
-    /** get the merge result  but don't execute the merge and liveObjects updates*/
+    /** get the merge result  but don't execute the merge and liveObjects updates
+     * @param commonVersion commonVersion
+     * @param newVersion newVersion
+     * @param permissionChecker permissionChecker
+     * @return MergeDiffInfo*/
     @SuppressWarnings("unchecked")
     public MergeDiffInfo simulateUpdate(R commonVersion , R newVersion,  Function<String, Boolean> permissionChecker){
         newVersion.internalFactory().loopDetector();

@@ -6,9 +6,6 @@ import java.util.regex.Pattern;
 
 import javafx.util.StringConverter;
 
-/**
- * Created by mhavlik on 16.06.17.
- */
 public class DurationStringConverter extends StringConverter<Duration> {
     @Override
     public String toString(Duration duration) {

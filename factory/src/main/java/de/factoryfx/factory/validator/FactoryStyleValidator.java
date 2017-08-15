@@ -32,7 +32,10 @@ public class FactoryStyleValidator {
 
     /** test if the model is valid:
      * all Attributes are public
-     * all Attributes not null after instantiation*/
+     * all Attributes not null after instantiation
+     * @param factoryBase factoryBase
+     * @return validations
+     * */
     public List<FactoryStyleValidation> createFactoryValidations(FactoryBase<?,?> factoryBase){
         final ArrayList<FactoryStyleValidation> result = new ArrayList<>();
         for (Field field: factoryBase.getClass().getDeclaredFields()){

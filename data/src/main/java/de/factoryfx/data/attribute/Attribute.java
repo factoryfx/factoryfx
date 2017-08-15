@@ -48,8 +48,8 @@ public abstract class Attribute<T,A extends Attribute<T,A>>{
 
     /**
      * check if merge should be executed e.g. not if values ar equals
-     * @param newAttribute
-     * @param originalAttribute
+     * @param originalAttribute originalAttribute from common version
+     * @param newAttribute newAttribute from update
      * @return true if merge should be executed
      * */
     public boolean internal_isMergeable(Attribute<?,?> originalAttribute, Attribute<?,?> newAttribute) {
@@ -241,6 +241,9 @@ public abstract class Attribute<T,A extends Attribute<T,A>>{
 
     /**
      * add-on text for the attribute, text that is displayed an the right side of the input usually used for units,%,currency symbol etc
+     *
+     * @param addonText the text
+     * @return self attribute
      */
     @SuppressWarnings("unchecked")
     public A addonText(String addonText){

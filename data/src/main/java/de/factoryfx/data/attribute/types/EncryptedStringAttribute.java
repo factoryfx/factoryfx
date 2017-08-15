@@ -35,6 +35,7 @@ public class EncryptedStringAttribute extends ImmutableValueAttribute<EncryptedS
 
     /**
      * for long text textarea instead of textfield is used for editing
+     * @return self
      */
     @JsonIgnore
     public EncryptedStringAttribute longText() {

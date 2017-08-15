@@ -31,7 +31,9 @@ public abstract class ReferenceBaseAttribute<T extends Data, U, A extends Refere
 
     private Function<Data,Collection<T>> possibleValueProviderFromRoot;
 
-    /**customise the list of selectable items*/
+    /**customise the list of selectable items
+     * @param provider provider
+     * @return self*/
     @SuppressWarnings("unchecked")
     public A possibleValueProvider(Function<Data,Collection<T>> provider){
         possibleValueProviderFromRoot=provider;
@@ -89,7 +91,7 @@ public abstract class ReferenceBaseAttribute<T extends Data, U, A extends Refere
     /**
      * action after delete, e.g delete the factory also in other lists
      * @param additionalDeleteAction deleted value, root
-     * @return this
+     * @return self
      */
     @SuppressWarnings("unchecked")
     public A additionalDeleteAction(BiConsumer<T,Data> additionalDeleteAction){
@@ -100,6 +102,7 @@ public abstract class ReferenceBaseAttribute<T extends Data, U, A extends Refere
     private boolean userEditable=true;
     /**
      * marks the reference as readonly for the user(user can still navigate but not change the reference)
+     * @return self
      */
     @SuppressWarnings("unchecked")
     public A userReadOnly(){
@@ -115,6 +118,7 @@ public abstract class ReferenceBaseAttribute<T extends Data, U, A extends Refere
     private boolean userSelectable=true;
     /**
      * disable select for reference, used in gui to disable the select button so that the user can't select new factories in this attribute
+     * @return self
      */
     @SuppressWarnings("unchecked")
     public A userNotSelectable(){
@@ -131,6 +135,7 @@ public abstract class ReferenceBaseAttribute<T extends Data, U, A extends Refere
     private boolean userCreatable =true;
     /**
      * disable new for reference, used in gui to disable the new button so that the user can't create new factories in this attribute
+     * @return self
      */
     @SuppressWarnings("unchecked")
     public A userNotCreatable(){
@@ -145,7 +150,11 @@ public abstract class ReferenceBaseAttribute<T extends Data, U, A extends Refere
 
     protected CopySemantic copySemantic = CopySemantic.COPY;
 
-    /** @see Data.DataUtility#semanticCopy() */
+    /**
+     * @see Data.DataUtility#semanticCopy()
+     *
+     * @param copySemantic copySemantic
+     * @return self*/
     @SuppressWarnings("unchecked")
     public A setCopySemantic(CopySemantic copySemantic){
         this.copySemantic=copySemantic;
@@ -153,7 +162,9 @@ public abstract class ReferenceBaseAttribute<T extends Data, U, A extends Refere
     }
 
     private Class<T> clazz;
-    /**setup value selection and new value adding for user editing*/
+    /**setup value selection and new value adding for user editing
+     * @param clazz class
+     * @return sdelf*/
     @SuppressWarnings("unchecked")
     protected A setup(Class<T> clazz){
         this.clazz=clazz;//lazy creation for performance
@@ -162,6 +173,8 @@ public abstract class ReferenceBaseAttribute<T extends Data, U, A extends Refere
 
     /** workaround for nested generic parameter e.g.: Class&lt;TypA&lt;TypB&gt;&gt;  <br>
      * if possible use {@link #setup} instead
+     * @param clazz class
+     * @return self
      */
     @SuppressWarnings("unchecked")
     protected A setupUnsafe(Class clazz){

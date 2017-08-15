@@ -57,6 +57,7 @@ public class LanguageText {
     /**
      * get the text in the locale if possible else return the text in a random(probably only english) locale or null if no text available
      * @param locale locale
+     * @return text
      * */
     public String internal_getPreferred(Locale locale) {
         String text = texts.get(locale);

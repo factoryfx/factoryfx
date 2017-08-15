@@ -159,7 +159,7 @@ public class ApplicationServerResource<V,L,T extends FactoryBase<L,V>>  {
     @Path("userLocale")
     public UserLocaleResponse getUserLocale(UserAwareRequest<Void> request){
         final Optional<AuthorizedUser> authenticate = authenticate(request);
-        return authenticate.map(authorizedUser -> new UserLocaleResponse(authorizedUser.locale)).orElseGet(() -> new UserLocaleResponse(Locale.ENGLISH));
+        return authenticate.map(authorizedUser -> new UserLocaleResponse(authorizedUser.getLocale())).orElseGet(() -> new UserLocaleResponse(Locale.ENGLISH));
     }
 
     @POST

@@ -218,7 +218,7 @@ public class RestResource<V,L,T extends FactoryBase<L,V>> {
         if (request.getSession(false)==null){
             return request.getLocale();
         } else  {
-            Locale locale = getUser().locale;
+            Locale locale = getUser().getLocale();
             if (locale==null){
                 return Locale.ENGLISH;
             }
@@ -303,7 +303,7 @@ public class RestResource<V,L,T extends FactoryBase<L,V>> {
 
         if (response.validationErrors.isEmpty()){
             //TODO handle conflicts and permissions, comment
-            final FactoryUpdateLog factoryLog = applicationServer.updateCurrentFactory(getCurrentEditingFactory(),getUser().user,"",(permission)->true);
+            final FactoryUpdateLog factoryLog = applicationServer.updateCurrentFactory(getCurrentEditingFactory(),getUser().getUserName(),"",(permission)->true);
             response.mergeDiff=new WebGuiMergeDiff(factoryLog.mergeDiffInfo,getUserLocale());
             if (factoryLog.mergeDiffInfo.hasNoConflicts()){
                 response.deployed=true;

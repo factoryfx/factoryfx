@@ -287,6 +287,7 @@ public class FactoryBase<L,V> extends Data implements Iterable<FactoryBase<?, V>
     /** <b>internal methods should be only used from the framework.</b>
      *  They may change in the Future.
      *  There is no fitting visibility in java therefore this workaround.
+     * @return internal factory api
      */
     public FactoryInternal<L,V> internalFactory(){
         return factoryInternal;
@@ -299,7 +300,8 @@ public class FactoryBase<L,V> extends Data implements Iterable<FactoryBase<?, V>
             this.factory = factory;
         }
 
-        /** create and prepare the liveobject*/
+        /** create and prepare the liveobject
+         * @return liveobject*/
         public L create(){
             return factory.create();
         }
@@ -315,7 +317,7 @@ public class FactoryBase<L,V> extends Data implements Iterable<FactoryBase<?, V>
 
         /**
          * determine which live objects needs recreation
-         * @param changedData
+         * @param changedData changedData
          * */
         public void determineRecreationNeedFromRoot(Set<Data> changedData) {
             factory.prepareRecreationCheck();
@@ -440,7 +442,8 @@ public class FactoryBase<L,V> extends Data implements Iterable<FactoryBase<?, V>
             this.factory = factory;
         }
 
-        /**create and prepare the liveObject*/
+        /**create and prepare the liveObject
+         * @param creator creator*/
         public void setCreator(Supplier<L> creator){
             factory.setCreator(creator);
         }
@@ -448,22 +451,26 @@ public class FactoryBase<L,V> extends Data implements Iterable<FactoryBase<?, V>
         /**the factory data has changed therefore a new liveobject is needed.<br>
          * previousLiveObject can be used to reuse resources like connection pools etc.<br>
          * passed old liveobject is never null
-         * */
+         *
+         * @param reCreatorWithPreviousLiveObject reCreatorWithPreviousLiveObject*/
         public void setReCreator(Function<L,L> reCreatorWithPreviousLiveObject ) {
             factory.setReCreator(reCreatorWithPreviousLiveObject);
         }
 
-        /** start the liveObject e.g open a port*/
+        /** start the liveObject e.g open a port
+         * @param starterWithNewLiveObject starterWithNewLiveObject*/
         public void setStarter(Consumer<L> starterWithNewLiveObject) {
             factory.setStarter(starterWithNewLiveObject);
         }
 
-        /** finally free liveObject e.g close a port*/
+        /** finally free liveObject e.g close a port
+         * @param destroyerWithPreviousLiveObject destroyerWithPreviousLiveObject*/
         public void setDestroyer(Consumer<L> destroyerWithPreviousLiveObject) {
             factory.setDestroyer(destroyerWithPreviousLiveObject);
         }
 
-        /**execute visitor to get runtime information from the liveObjects*/
+        /**execute visitor to get runtime information from the liveObjects
+         * @param executorWidthVisitorAndCurrentLiveObject executorWidthVisitorAndCurrentLiveObject*/
         public void setRuntimeQueryExecutor(BiConsumer<V,L> executorWidthVisitorAndCurrentLiveObject) {
             factory.setRuntimeQueryExecutor(executorWidthVisitorAndCurrentLiveObject);
         }
