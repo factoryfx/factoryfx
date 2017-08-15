@@ -54,10 +54,10 @@ subprojects {
 
         task fetchSecretKeyRingFile << {
             def fileTarget ="build/secring.gpg"
-            def secretKeyRingFileSourceURL =System.getProperty("secretKeyRingFileSourceURL")
-            def secretKeyRingFileSourceURLAuthUsername =System.getProperty("secretKeyRingFileSourceURLAuthUsername")
-            def secretKeyRingFileSourceURLAuthPassword =System.getProperty("secretKeyRingFileSourceURLAuthPassword")
-            System.setProperty("signing.secretKeyRingFile",fileTarget)
+            def secretKeyRingFileSourceURL =project.getProperty("secretKeyRingFileSourceURL")
+            def secretKeyRingFileSourceURLAuthUsername =project.getProperty("secretKeyRingFileSourceURLAuthUsername")
+            def secretKeyRingFileSourceURLAuthPassword =project.getProperty("secretKeyRingFileSourceURLAuthPassword")
+            project.setProperty("signing.secretKeyRingFile",fileTarget)
             file(fileTarget).getParentFile().mkdirs()
             ant.get(src: secretKeyRingFileSourceURL, dest: fileTarget, username: secretKeyRingFileSourceURLAuthUsername, password: secretKeyRingFileSourceURLAuthPassword)
         }
