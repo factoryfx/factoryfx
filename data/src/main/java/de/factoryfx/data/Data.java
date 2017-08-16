@@ -497,7 +497,10 @@ public class Data {
 
 
         /** semantic copy can be configured on the attributes, unlike internal copy which always create complete copy with same ids
-         * @return self*/
+         *
+         * @param <T> type
+         * @return self
+         */
         public <T extends Data> T semanticCopy(){
             return data.semanticCopy();
         }
@@ -684,8 +687,9 @@ public class Data {
         }
 
         /** copy a root data element
+         * @param <T> type
          * @return root copy
-         * */
+         */
         public <T extends Data> T copyFromRoot() {
             return data.copy();
         }

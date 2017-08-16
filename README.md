@@ -92,7 +92,7 @@ At least development and test. Difference with implemented with polymorphism.
 
 ## Examples
 
-[datainjection](docu/src/main/java/de/factoryfx/docu/datainjection)
+[datainjection](docu/src/main/java/de/factoryfx/docu/datainjection/usecase.md)
 
 
 ## Contribute
