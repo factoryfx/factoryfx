@@ -496,7 +496,8 @@ public class Data {
         }
 
 
-        /** semantic copy can be configured on the attributes, unlike internal copy which always create complete copy with same ids*/
+        /** semantic copy can be configured on the attributes, unlike internal copy which always create complete copy with same ids
+         * @return self*/
         public <T extends Data> T semanticCopy(){
             return data.semanticCopy();
         }
@@ -504,7 +505,8 @@ public class Data {
     }
 
     private final DataConfiguration dataConfiguration = new DataConfiguration(this);
-    /** data configurations api. Should be used in the default constructor */
+    /** data configurations api. Should be used in the default constructor
+     * @return the configuration api*/
     protected DataConfiguration config(){
         return dataConfiguration;
     }
@@ -682,7 +684,8 @@ public class Data {
         }
 
         /** copy a root data element
-         * @return root copy*/
+         * @return root copy
+         * */
         public <T extends Data> T copyFromRoot() {
             return data.copy();
         }
@@ -704,7 +707,8 @@ public class Data {
          * unfortunately we must create a copy and can't make the same object usable(which we tried but failed)
          *
          * only call on root
-         * @return usable copy*/
+         * @return usable copy
+         * */
         public <T extends Data> T prepareUsableCopy() {
             return data.prepareUsableCopy();
         }
