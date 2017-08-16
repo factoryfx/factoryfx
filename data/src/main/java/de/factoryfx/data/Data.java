@@ -699,16 +699,18 @@ public class Data {
         }
 
         /**
-         * after serialisation or programmatically creation this mus be called first before using the object
-         * to:
-         * -fix jackson wrong deserialization (metadata ==null)
-         * -propagate root node to all children (for validation etc)
-         *
-         * unfortunately we must create a copy and can't make the same object usable(which we tried but failed)
-         *
-         * only call on root
+         * after serialisation or programmatically creation this mus be called first before using the object<br>
+         * to:<br>
+         * -fix jackson wrong deserialization (metadata ==null)<br>
+         * -propagate root node to all children (for validation etc)<br>
+         *<br>
+         * unfortunately we must create a copy and can't make the same object usable(which we tried but failed)<br>
+         *<br>
+         * only call on root<br>
+         *<br>
+         * @param <T> type
          * @return usable copy
-         * */
+         */
         public <T extends Data> T prepareUsableCopy() {
             return data.prepareUsableCopy();
         }
@@ -723,6 +725,12 @@ public class Data {
         }
 
 
+        /**
+         *
+         * @param root root
+         * @param <T> type
+         * @return root
+         */
         public <T extends Data> T propagateRoot(Data root){
             return data.propagateRoot(root);
         }

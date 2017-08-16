@@ -1,7 +1,4 @@
-//the botched properties are all workaround for the strange pluginapi
-def keyFileTarget ="build/secring.gpg"
-System.setProperty("signing.secretKeyRingFile",keyFileTarget)
-System.setProperty("signing.keyId","8699BB07")
+
 
 
 
@@ -19,7 +16,6 @@ task wrapper(type: Wrapper) {
 
 
 subprojects {
-
     apply plugin: 'java'
     apply plugin: 'findbugs'
 
@@ -57,11 +53,13 @@ subprojects {
         // we put the key to build/secring.gpg where it will be picked up by the uploadArchives task of the nexus plugin
 
         task fetchSecretKeyRingFile << {
+            def fileTarget ="build/secring.gpg"
             def secretKeyRingFileSourceURL =project.getProperty("secretKeyRingFileSourceURL")
             def secretKeyRingFileSourceURLAuthUsername =project.getProperty("secretKeyRingFileSourceURLAuthUsername")
             def secretKeyRingFileSourceURLAuthPassword =project.getProperty("secretKeyRingFileSourceURLAuthPassword")
-            file(keyFileTarget).getParentFile().mkdirs()
-            ant.get(src: secretKeyRingFileSourceURL, dest: keyFileTarget, username: secretKeyRingFileSourceURLAuthUsername, password: secretKeyRingFileSourceURLAuthPassword)
+            project.setProperty("signing.secretKeyRingFile",fileTarget)
+            file(fileTarget).getParentFile().mkdirs()
+            ant.get(src: secretKeyRingFileSourceURL, dest: fileTarget, username: secretKeyRingFileSourceURLAuthUsername, password: secretKeyRingFileSourceURLAuthPassword)
         }
         afterEvaluate {
             // always fetch the GPG key before signing archives
@@ -113,12 +111,12 @@ subprojects {
         }
     }
 
-	
+
     repositories {
         mavenCentral()
     }
-	
-	sourceCompatibility = 1.8
+
+    sourceCompatibility = 1.8
 
     dependencies {
         compile group: 'org.slf4j', name: 'slf4j-api', version: '1.7.21'
@@ -170,11 +168,11 @@ subprojects {
 
 
 project(':applicationServer') {
-  dependencies {
-      compile project(":factory")
-      testCompile project(":testfactories")
+    dependencies {
+        compile project(":factory")
+        testCompile project(":testfactories")
 
-  }
+    }
 }
 
 project(':applicationServerRestServer') {
