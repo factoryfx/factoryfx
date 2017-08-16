@@ -4,18 +4,16 @@
 
 ## Introduction
 
-Factoryfx is a lightweight Dependency Injection Framework that combines data and dependency injection.:
+Factoryfx is a lightweight Dependency Injection Framework that extends dependency injection with data injection
 
-dependency injection requires 2 types of objects.
-* business logic
-* factory code which instantiate the business logic objects
+## Setup
 
-Most dependency injection frameworks try to automate the Factory code.
-thats makes it hard to pass configuration data into the application.
-Instead of automating the creation process Factoryfx takes a different approach by focusing on an explicit defined lifecycle and end user editable data structure.
-Since the Factory is not automated you can edit metadata like validation, labeltext and permissions directly to model.
+| Group ID            | Artifact ID | Version |
+| :-----------------: | :---------: | :-----: |
+| io.github.factoryfx | factory  | 0.4  |
 
-## Example
+
+## Basic example
 ### Factory
 ```java
 public class HelloWorldFactory extends SimpleFactoryBase<HelloWorld,Visitor> {
@@ -41,62 +39,74 @@ public class HelloWorld{
     }
 }
 ```
-Why do we need 2 classes? There are 2 conflicting requirements. The Model should be editable but the runtime should have immutable attributes .
-That's why the ShopFactory have the shopTitle Attribute with Label text and so on. And the shop liveobject simply have a final shopTitle String field.
+## Motivation
 
-## Dependency injection
-[datainjection](docu/src/main/java/de/factoryfx/docu/dependencyinjection)
+### Background
+Dependency injection requires 2 types of objects.
+* business logic
+* factory code which instantiate the business logic objects
 
+Most existing dependency injection frameworks try to automate the Factory code.
+They scan the classpath and create business object tree.
 
+There are a few drawback with that approach:
+* a complete automation is not possible. You need additional information with annotations e.g to exclude classes/exclude from instantiation or polymorphism.
+* Annotations are not part of the typesystem and lack tooling
+* Classpath scanning and reflection cause confusing stacktraces
+* slow startup
 
-## Data injection
-[datainjection](docu/src/main/java/de/factoryfx/docu/datainjection)
+### Alternative
+Instead of annotations factoryfx use normal java code for the factories. 
+The user creates factories following a simple structure convention. The factories provides the dependencies and lifecycle control.
 
-### Why domain specificity?
-* configuration data
-* editable with gui
-* no extra format /language
-
-##### Advantages:
+Creating the factories manually offer the following advantages:
+#### Advantages:
 * no reflection magic means easy to debug and no surprises at runtime
-* configuration included in the factories
-* validates at compile-time
-* easy Multitenancy support
-*
+* validation at compile-time
+* easy lifecycle control
 
-### Configuration Data
-With factoryfx you can add user editable data to the factories.
-Typical configuration data are ports, hostname, ssl certificates but why not add even more data? Data which are typical in the database.
-if you look at typical database you 2 types of data.
 
+### Data injection
+The major advantage of factoryfx is data injection.
+
+In many java application most data a stored inside a database. With that architecture it is hard to implement data encapsulation which is one of the main feature of oop.
+Often you will end up with data only classes and other classes that implements business logic based on the data classes. That will result in a procedural design.
+That will cause problems since java is a oop language. 
+* performance problems
+* requires caching
+
+#### Which kind of data is suitable for injection?
+##### Database
+Since the framework loads all data into the memory the limit is the available RAM.
+Typically a database contains few large tables (e.g more than 100000 rows) and many small tables (e.g less than 10000 rows).
+The small tables are good candidates for data injection.
 * basic data e.g Products in a simple shop
 * mass data e.g. Orders shop
-
-#### Data integrity
-Copy Data as default fits great to nosql databases.
-
 ![Alt text](docu/comparison.png "Optional Title")
+##### Configuration Data
+Typical configuration data are ports, hostname, ssl certificates Data which are typical in the database.
 
-### Multitenancy
+## Lifecycle control
 
-At least development and test. Difference with implemented with polymorphism.
 
 ## User interface
 
 
-## Setup
+## Documentation
 
-| Group ID            | Artifact ID | Version |
-| :-----------------: | :---------: | :-----: |
-| io.github.factoryfx | factory  | 0.4  |
+* [datainjection](docu/src/main/java/de/factoryfx/docu/datainjection/usecase.md)
+* [dependencyinjection](docu/src/main/java/de/factoryfx/docu/dependencyinjection/usecase.md)
+* [dynamicwebserver](docu/src/main/java/de/factoryfx/docu/dynamicwebserver/usecase.md)
+* [lifecycle](docu/src/main/java/de/factoryfx/docu/lifecycle/usecase.md)
+* [migration](docu/src/main/java/de/factoryfx/docu/migration/usecase.md)
+* [parametrized](docu/src/main/java/de/factoryfx/docu/parametrized/usecase.md)
+* [persistentstorage](docu/src/main/java/de/factoryfx/docu/persistentstorage/usecase.md)
+* [polymorphism](docu/src/main/java/de/factoryfx/docu/polymorphism/usecase.md)
+* [reuse](docu/src/main/java/de/factoryfx/docu/reuse/usecase.md)
 
-## Examples
+## Example
 
-[datainjection](docu/src/main/java/de/factoryfx/docu/datainjection/usecase.md)
-
-
-## Contribute
-
+[code](https://github.com/factoryfx/factoryfx/tree/master/docu/src/main/java/de/factoryfx/docu/datainjection)
 
 ## License
 
