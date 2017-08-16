@@ -1,4 +1,6 @@
-
+//the botched properties are all workaround for the strange pluginapi
+def keyFileTarget ="build/secring.gpg"
+System.setProperty("signing.secretKeyRingFile",keyFileTarget)
 
 
 
@@ -16,6 +18,7 @@ task wrapper(type: Wrapper) {
 
 
 subprojects {
+
     apply plugin: 'java'
     apply plugin: 'findbugs'
 
@@ -46,8 +49,6 @@ subprojects {
     group = 'io.github.factoryfx'
     version = '0.4'
 
-    def fileTarget ="build/secring.gpg"
-    project.setProperty("signing.secretKeyRingFile",fileTarget)
     if (project.hasProperty('secretKeyRingFileSourceURL')) {
         //workaround  to get key  file to the plugin
 
@@ -59,8 +60,8 @@ subprojects {
             def secretKeyRingFileSourceURLAuthUsername =project.getProperty("secretKeyRingFileSourceURLAuthUsername")
             def secretKeyRingFileSourceURLAuthPassword =project.getProperty("secretKeyRingFileSourceURLAuthPassword")
             project.setProperty("signing.keyId","8699BB07")
-            file(fileTarget).getParentFile().mkdirs()
-            ant.get(src: secretKeyRingFileSourceURL, dest: fileTarget, username: secretKeyRingFileSourceURLAuthUsername, password: secretKeyRingFileSourceURLAuthPassword)
+            file(keyFileTarget).getParentFile().mkdirs()
+            ant.get(src: secretKeyRingFileSourceURL, dest: keyFileTarget, username: secretKeyRingFileSourceURLAuthUsername, password: secretKeyRingFileSourceURLAuthPassword)
         }
         afterEvaluate {
             // always fetch the GPG key before signing archives
