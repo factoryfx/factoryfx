@@ -17,6 +17,7 @@ import de.factoryfx.javafx.editor.attribute.AttributeEditorBuilder;
 import de.factoryfx.javafx.util.UniformDesign;
 import de.factoryfx.javafx.widget.Widget;
 import impl.org.controlsfx.skin.BreadCrumbBarSkin;
+import javafx.beans.InvalidationListener;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.ReadOnlyObjectProperty;
@@ -53,6 +54,7 @@ public class DataEditor implements Widget {
     private ChangeListener<Data> dataChangeListener;
     private AttributeChangeListener validationListener;
     ObservableList<Data> displayedEntities= FXCollections.observableArrayList();
+    private InvalidationListener breadCrumbInvalidationListener;
 
     public DataEditor(AttributeEditorBuilder attributeEditorBuilder, UniformDesign uniformDesign) {
         this.attributeEditorBuilder = attributeEditorBuilder;
@@ -386,9 +388,13 @@ public class DataEditor implements Widget {
         displayedEntities.addListener((ListChangeListener<Data>) c -> {
             updateBreadCrumbBar.run();
         });
-        bound.addListener(observable -> {
+        if (breadCrumbInvalidationListener != null) {
+            bound.removeListener(breadCrumbInvalidationListener);
+        }
+        breadCrumbInvalidationListener = observable -> {
             updateBreadCrumbBar.run();
-        });
+        };
+        bound.addListener(breadCrumbInvalidationListener);
 
 
 
