@@ -170,6 +170,11 @@ public class DataEditor implements Widget {
 
             createdEditors.forEach((key, value1) -> value1.unbind());
             createdEditors.clear();
+            if (validationListener!=null && oldValue!=null){
+                oldValue.internal().visitAttributesFlat((attributeVariableName, attribute) -> {
+                    attribute.internal_removeListener(validationListener);
+                });
+            }
             if (newValue==null) {
                 result.setCenter(new Label("empty"));
             } else {
@@ -189,11 +194,6 @@ public class DataEditor implements Widget {
                     updateVis.accept(tabPane,newValue);
                 }
 
-                if (validationListener!=null && oldValue!=null){
-                    oldValue.internal().visitAttributesFlat((attributeVariableName, attribute) -> {
-                        attribute.internal_removeListener(validationListener);
-                    });
-                }
                 validationListener = (attribute, value) -> {
                     updateValidation(newValue);
 
