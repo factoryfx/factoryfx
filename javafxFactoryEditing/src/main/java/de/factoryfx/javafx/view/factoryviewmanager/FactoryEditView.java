@@ -208,7 +208,7 @@ public class FactoryEditView<V,R extends FactoryBase<?,V>> implements Widget, Fa
         }
 
         factoryUpdater=serverFactory -> {
-            borderPane.setCenter(content.init(serverFactory));
+            borderPane.setCenter(content.update(serverFactory));
         };
 
         return borderPane;
