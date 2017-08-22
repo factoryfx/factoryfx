@@ -39,6 +39,7 @@ public class DataViewWidget<T extends Data> implements CloseAwareWidget {
     @Override
     public Node createContent() {
 //        MasterDetailPane pane = new MasterDetailPane();
+        dataEditor.reset();
         SplitPane splitPane = new SplitPane();
         splitPane.setOrientation(orientation);
 
@@ -59,7 +60,6 @@ public class DataViewWidget<T extends Data> implements CloseAwareWidget {
         splitPane.getItems().add(dataEditorWidget);
         splitPane.setDividerPositions(dividerPosition);
 
-        dataEditor.reset();
         tableView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             dataEditor.edit(newValue);
             dataEditor.resetHistory();
