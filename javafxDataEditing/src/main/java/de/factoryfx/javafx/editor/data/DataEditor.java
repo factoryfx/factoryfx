@@ -186,30 +186,23 @@ public class DataEditor implements Widget {
         return visCustomizer.apply(defaultVis,data);
     }
 
-    private static class ValueAttributeCreator{
-        public final String name;
-        public final Supplier<ImmutableValueAttribute<?,?>> attributeCreator;
-
-        private ValueAttributeCreator(String name, Supplier<ImmutableValueAttribute<?,?>> attributeCreator) {
-            this.name = name;
-            this.attributeCreator = attributeCreator;
-        }
-    }
-
     @Override
     @SuppressWarnings("unchecked")
     public Node createContent() {
         BorderPane result = new BorderPane();
 
-        if (dataChangeListener!=null) {
-            bound.removeListener(dataChangeListener);
-        }
+        dataChangeListener = createDataChangeListener(result);
+        bound.addListener(dataChangeListener);
+        dataChangeListener.changed(bound,bound.get(),bound.get());
 
-        BiConsumer<Node,Data> updateVis= (defaultVis, data) -> {
-            result.setCenter(customizeVis(defaultVis,data));
-        };
 
-        dataChangeListener = (observable, oldValue, newValue) -> {
+
+        result.setTop(createNavigation());
+        return result;
+    }
+
+    private ChangeListener<Data> createDataChangeListener(BorderPane result) {
+        return (observable, oldValue, newValue) -> {
 
             createdEditors.forEach((key, value1) -> value1.unbind());
             createdEditors.clear();
@@ -224,7 +217,7 @@ public class DataEditor implements Widget {
 
                 if (newValue.internal().attributeListGrouped().size()==1){
                     final Node attributeGroupVisual = createAttributeGroupVisual(newValue.internal().attributeListGrouped().get(0).group, () -> newValue.internal().validateFlat(),oldValue);
-                    updateVis.accept(attributeGroupVisual,newValue);
+                    result.setCenter(customizeVis(attributeGroupVisual,newValue));
                 } else {
                     TabPane tabPane = new TabPane();
                     for (AttributeGroup attributeGroup: newValue.internal().attributeListGrouped()) {
@@ -234,7 +227,7 @@ public class DataEditor implements Widget {
                         tab.setContent(createAttributeGroupVisual(attributeGroup.group,() -> newValue.internal().validateFlat(),oldValue));
                         tabPane.getTabs().add(tab);
                     }
-                    updateVis.accept(tabPane,newValue);
+                    result.setCenter(customizeVis(tabPane,newValue));
                 }
 
                 validationListener = (attribute, value) -> {
@@ -265,13 +258,6 @@ public class DataEditor implements Widget {
 
 
         };
-        bound.addListener(dataChangeListener);
-        dataChangeListener.changed(bound,bound.get(),bound.get());
-
-
-
-        result.setTop(createNavigation());
-        return result;
     }
 
     private void updateValidation(Data newValue) {
