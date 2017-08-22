@@ -92,6 +92,7 @@ public class DataEditor implements Widget {
     ResettableSimpleObjectProperty bound = new ResettableSimpleObjectProperty();
     private ChangeListener<Data> dataChangeListener;
     private AttributeChangeListener validationListener;
+    private InvalidationListener breadCrumbInvalidationListener;
     ObservableList<Data> displayedEntities= FXCollections.observableArrayList();
 
     public DataEditor(AttributeEditorBuilder attributeEditorBuilder, UniformDesign uniformDesign) {
@@ -143,6 +144,9 @@ public class DataEditor implements Widget {
         bound.reset();
         if (dataChangeListener != null)
             bound.addListener(dataChangeListener);
+        if (breadCrumbInvalidationListener != null) {
+            bound.addListener(breadCrumbInvalidationListener);
+        }
     }
 
     private void removeUpToCurrent(Data current) {
@@ -191,11 +195,11 @@ public class DataEditor implements Widget {
     public Node createContent() {
         BorderPane result = new BorderPane();
 
+        if (dataChangeListener != null)
+            bound.removeListener(dataChangeListener);
         dataChangeListener = createDataChangeListener(result);
         bound.addListener(dataChangeListener);
         dataChangeListener.changed(bound,bound.get(),bound.get());
-
-
 
         result.setTop(createNavigation());
         return result;
@@ -401,25 +405,18 @@ public class DataEditor implements Widget {
         });
 
         Runnable updateBreadCrumbBar= () -> {
-            List<Data> newhistory = new ArrayList<>();
-            for (Data data: displayedEntities){
-                newhistory.add(data);
-                if (data==bound.get()){
-                    break;
-                }
-            }
-
-            breadCrumbBar.setSelectedCrumb(BreadCrumbBar.buildTreeModel(newhistory.toArray(new Data[0])));
-            breadCrumbBar.layout();
+            updateBreadCrumbBar(breadCrumbBar);
         };
         displayedEntities.addListener((ListChangeListener<Data>) c -> {
             updateBreadCrumbBar.run();
         });
-        InvalidationListener breadCrumbInvalidationListener = observable -> {
+        if (breadCrumbInvalidationListener != null) {
+            bound.removeListener(breadCrumbInvalidationListener);
+        }
+        breadCrumbInvalidationListener = observable -> {
             updateBreadCrumbBar.run();
         };
         bound.addListener(breadCrumbInvalidationListener);
-
 
 
         HBox navigation = new HBox(3);
@@ -444,6 +441,19 @@ public class DataEditor implements Widget {
 
         HBox.setHgrow(scrollPaneBreadCrumbBar,Priority.ALWAYS);
         return navigation;
+    }
+
+    private void updateBreadCrumbBar(BreadCrumbBarWidthFixed<Data> breadCrumbBar) {
+        List<Data> newhistory = new ArrayList<>();
+        for (Data data: displayedEntities){
+            newhistory.add(data);
+            if (data==bound.get()){
+                break;
+            }
+        }
+
+        breadCrumbBar.setSelectedCrumb(BreadCrumbBar.buildTreeModel(newhistory.toArray(new Data[0])));
+        breadCrumbBar.layout();
     }
 
     private void showFactoryHistory(String id) {
