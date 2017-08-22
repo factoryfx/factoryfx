@@ -138,9 +138,9 @@ public class DataEditor implements Widget {
     }
 
     public void reset(){
+        bound.set(null);
         displayedEntities= FXCollections.observableArrayList();
         bound.reset();
-        bound.set(null);
         if (dataChangeListener != null)
             bound.addListener(dataChangeListener);
     }
