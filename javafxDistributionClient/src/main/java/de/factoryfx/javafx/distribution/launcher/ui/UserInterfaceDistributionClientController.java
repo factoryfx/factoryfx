@@ -118,6 +118,7 @@ public class UserInterfaceDistributionClientController {
 
     }
 
+    @SuppressWarnings("deprecation")
     private void startGui() {
         String serverUrl=serverUrlInput.getText();
 
@@ -140,7 +141,7 @@ public class UserInterfaceDistributionClientController {
         String fileHash = "";
         if (guiFolder.exists()) {
             try {
-                fileHash = Files.hash(new File(guiFolder, GUI_ZIP), Hashing.md5()).toString();
+                fileHash = Files.asByteSource(new File(guiFolder, GUI_ZIP)).hash(Hashing.md5()).toString();
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }

@@ -1,5 +1,7 @@
 package de.factoryfx.javafx.widget.factorylog;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.function.Consumer;
@@ -48,19 +50,17 @@ public class FactoryUpdateLogWidget implements Widget {
         factoryLogRootUpdater= root -> {
             TreeView<FactoryLogWidgetTreeData> treeView = new TreeView<>();
             if (factoryLog.root!=null){
-                treeView.setRoot(createLogTree(factoryLog.root, System.currentTimeMillis()+5000));
+                treeView.setRoot(createLogTree(factoryLog.root, System.currentTimeMillis()+5000,new HashMap<>()));
             }
-            treeView.setCellFactory(param-> {
-                return new TextFieldTreeCell<FactoryLogWidgetTreeData>(){
-                    @Override
-                    public void updateItem(FactoryLogWidgetTreeData item, boolean empty) {
-                        super.updateItem(item, empty);
-                        if (!empty) {
-                            setText(item.getText());
-                            setGraphic(uniformDesign.createIcon(item.getIcon()));
-                        }
+            treeView.setCellFactory(param-> new TextFieldTreeCell<FactoryLogWidgetTreeData>(){
+                @Override
+                public void updateItem(FactoryLogWidgetTreeData item, boolean empty) {
+                    super.updateItem(item, empty);
+                    if (!empty) {
+                        setText(item.getText());
+                        setGraphic(uniformDesign.createIcon(item.getIcon()));
                     }
-                };
+                }
             });
             final TabPane tabPane = new TabPane();
             tabPane.getStyleClass().add("floating");
@@ -82,7 +82,7 @@ public class FactoryUpdateLogWidget implements Widget {
             tabPane.getTabs().add(removedTab);
 
             borderPane.setCenter(tabPane);
-            final Label totalDuarion = new Label("total duration: " + (factoryLog.totalDurationNs / 1000000.0) + "ms");
+            final Label totalDuarion = new Label("total update duration: " + (factoryLog.totalDurationNs / 1000000.0) + "ms");
             BorderPane.setMargin(totalDuarion,new Insets(3));
             borderPane.setTop(totalDuarion);
         };
@@ -122,12 +122,16 @@ public class FactoryUpdateLogWidget implements Widget {
         return null;
     }
 
-    private TreeItem<FactoryLogWidgetTreeData> createLogTree(FactoryLogEntry factoryLogEntry, long abortOnCurrentTimeMillis) {
+    private TreeItem<FactoryLogWidgetTreeData> createLogTree(FactoryLogEntry factoryLogEntry, long abortOnCurrentTimeMillis, Map<FactoryLogEntry, TreeItem<FactoryLogWidgetTreeData>> createdTreeItems) {
+        if (createdTreeItems.containsKey(factoryLogEntry)){
+            return createdTreeItems.get(factoryLogEntry);
+        }
         final TreeItem<FactoryLogWidgetTreeData> factoryLogEntryTreeItem = new TreeItem<>(new FactoryLogWidgetTreeDataFactory(factoryLogEntry));
+        createdTreeItems.put(factoryLogEntry,factoryLogEntryTreeItem);
         factoryLogEntryTreeItem.setExpanded(true);
         if (System.currentTimeMillis() < abortOnCurrentTimeMillis) {
             factoryLogEntry.events.forEach(event -> factoryLogEntryTreeItem.getChildren().add(new TreeItem<>(new FactoryLogWidgetTreeDataEvent(event))));
-            factoryLogEntry.children.forEach(child -> factoryLogEntryTreeItem.getChildren().add(createLogTree(child, abortOnCurrentTimeMillis)));
+            factoryLogEntry.children.forEach(child -> factoryLogEntryTreeItem.getChildren().add(createLogTree(child, abortOnCurrentTimeMillis,createdTreeItems)));
         }
         return factoryLogEntryTreeItem;
     }

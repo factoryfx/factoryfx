@@ -23,6 +23,7 @@ public class FactoryEditManagerTest {
     public TemporaryFolder tmpFolder = new TemporaryFolder();
 
     @Test
+    @SuppressWarnings("unchecked")
     public void test_export_import() throws IOException {
         FactorySerialisationManager<ExampleFactoryA> serialisationManager = new FactorySerialisationManager<>(new JacksonSerialisation<>(1),new JacksonDeSerialisation<>(ExampleFactoryA.class, 1), new ArrayList<>(),1);
         ApplicationServerRestClient<Void,ExampleFactoryA> client = Mockito.mock(ApplicationServerRestClient.class);

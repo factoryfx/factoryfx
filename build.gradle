@@ -44,7 +44,7 @@ subprojects {
     }
 
     group = 'io.github.factoryfx'
-    version = '0.4'
+    version = '0.5'
 
     if (project.hasProperty('secretKeyRingFileSourceURL')) {
         //workaround  to get key  file to the plugin
@@ -120,7 +120,7 @@ subprojects {
 
     dependencies {
         compile group: 'org.slf4j', name: 'slf4j-api', version: '1.7.21'
-        compile group: 'com.google.guava', name: 'guava', version: '19.0'
+        compile group: 'com.google.guava', name: 'guava', version: '23.0'
         testCompile group: 'junit', name: 'junit', version: '4.12'
         testCompile group: 'org.mockito', name: 'mockito-all', version: '1.9.5'
     }
@@ -224,9 +224,6 @@ project(':data') {
 project(':factory') {
     dependencies {
         compile project(":data")
-        compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.8.8'
-        compile group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jdk8', version: '2.8.8'
-        compile group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jsr310', version: '2.8.8'
         testCompile project(":testfactories")
     }
 }
@@ -395,6 +392,18 @@ project(':docu') {
         compile project(':postgresqlStorage');
         compile 'ru.yandex.qatools.embed:postgresql-embedded:1.15'
         compile group: 'ch.qos.logback', name: 'logback-classic', version: '1.1.7'
+    }
+
+}
+
+project(':vuejsFactoryEditing') {
+
+    dependencies {
+        compile project(":jettyFactory")
+        compile project(":applicationServer")
+        testCompile project(":testutils")
+        testCompile project(":testfactories")
+        testCompile group: 'ch.qos.logback', name: 'logback-classic', version: '1.1.7'
     }
 
 }

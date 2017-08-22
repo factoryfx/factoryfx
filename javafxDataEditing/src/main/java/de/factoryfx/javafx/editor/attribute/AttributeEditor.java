@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 
 import de.factoryfx.data.attribute.Attribute;
 import de.factoryfx.data.attribute.AttributeChangeListener;
+import de.factoryfx.data.attribute.WeakAttributeChangeListener;
 import de.factoryfx.data.validation.ValidationError;
 import de.factoryfx.javafx.util.UniformDesign;
 import de.factoryfx.javafx.widget.Widget;
@@ -49,29 +50,25 @@ public class AttributeEditor<T,A extends Attribute<T,A>> implements Widget {
         }
     }
 
-    Node content;
+
     @Override
     public Node createContent() {
-        boundAttribute.internal_addListener(attributeChangeListener);
+        Node content;
+        boundAttribute.internal_addListener(new WeakAttributeChangeListener<>(attributeChangeListener));
         attributeChangeListener.changed(boundAttribute,boundAttribute.get());
-        if (content==null){
-            Node visualisation;
-            if (readonly){
-                visualisation = attributeEditorVisualisation.createReadOnlyVisualisation();
-            } else {
-                visualisation = attributeEditorVisualisation.createVisualisation();
-            }
 
-            content = addValidationDecoration(visualisation);
-            attributeEditorVisualisation.attributeValueChanged(boundAttribute.get());
+        Node visualisation;
+        if (readonly){
+            visualisation = attributeEditorVisualisation.createReadOnlyVisualisation();
+        } else {
+            visualisation = attributeEditorVisualisation.createVisualisation();
         }
+
+        content = addValidationDecoration(visualisation);
+        attributeEditorVisualisation.attributeValueChanged(boundAttribute.get());
         return content;
     }
 
-    public void unbind() {
-        content=null;
-        boundAttribute.internal_removeListener(attributeChangeListener);
-    }
 
     public Node addValidationDecoration(Node node) {
 

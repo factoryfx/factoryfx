@@ -118,26 +118,23 @@ public class FactoryDiffWidget implements Widget {
         vBox.getChildren().add(diffValuesPane);
         verticalSplitPane.getItems().add(vBox);
 
-        List<AttributeEditor<?,?>> createdEditor=new ArrayList<>();
         diffTableView.getSelectionModel().selectedItemProperty().addListener(observable -> {
             AttributeDiffInfoExtended selectedItem = diffTableView.getSelectionModel().getSelectedItem();
             if (selectedItem != null) {
                 Data previousRoot = selectedItem.previousRoot;
                 Data newRoot = selectedItem.newRoot;
                 AttributeDiffInfo diffItem = selectedItem.attributeDiffInfo;
-                createdEditor.forEach(AttributeEditor::unbind);
-                createdEditor.clear();
 
                 Attribute<?,?> previousAttribute = diffItem.getAttribute(previousRoot);
                 if (previousAttribute!=null) {
-                    previousValueDisplay.setCenter(createEditor(previousAttribute,createdEditor));
+                    previousValueDisplay.setCenter(createEditor(previousAttribute));
                 }else {
                     previousValueDisplay.setCenter(null);
                 }
 
                 Attribute<?,?> newAttribute = diffItem.getAttribute(newRoot);
                 if (newAttribute!=null) {
-                    newValueDisplay.setCenter(createEditor(newAttribute,createdEditor));
+                    newValueDisplay.setCenter(createEditor(newAttribute));
                 } else {
                     newValueDisplay.setCenter(null);
                 }
@@ -156,9 +153,8 @@ public class FactoryDiffWidget implements Widget {
         return borderPane;
     }
 
-    private Node createEditor(Attribute<?,?> attribute, List<AttributeEditor<?,?>> createdEditor){
+    private Node createEditor(Attribute<?,?> attribute){
         final AttributeEditor<?, ?> previousAttributeEditor = attributeEditorBuilder.getAttributeEditor(attribute, null, null, null);
-        createdEditor.add(previousAttributeEditor);
         previousAttributeEditor.setReadOnly();
         previousAttributeEditor.expand();
         return previousAttributeEditor.createContent();

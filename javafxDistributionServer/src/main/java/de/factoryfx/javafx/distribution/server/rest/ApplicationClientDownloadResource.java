@@ -26,9 +26,10 @@ public class ApplicationClientDownloadResource {
         return guiZipFile;
     }
 
+    @SuppressWarnings("deprecation")// can't easily change Hashing function
     public boolean needUpdate(String fileHash) {
         try {
-            String md5FileHash = Files.hash(guiZipFile, Hashing.md5()).toString();
+            String md5FileHash = Files.asByteSource(guiZipFile).hash(Hashing.md5()).toString();
             return !md5FileHash.equals(fileHash);
         } catch (IOException e) {
             throw new RuntimeException(e);

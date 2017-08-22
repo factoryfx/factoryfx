@@ -92,15 +92,12 @@ public class ExampleData1 extends Data {
         config().setDisplayTextDependencies(stringAttribute);
     }
 
-
     public Node customize(Node defaultVis) {
         final BorderPane borderPane = new BorderPane();
         borderPane.setCenter(defaultVis);
-        borderPane.setBottom(new Button("random button"));
+        borderPane.setBottom(new Button("random button als example for custom vis"));
         return borderPane;
     }
-
-
 
     private List<AttributeGroup> attributeListGrouped(List<Attribute<?,?>> defaultGroup ){
         List<Attribute<?,?>> result = new ArrayList<>(defaultGroup);

@@ -1,5 +1,6 @@
 package de.factoryfx.data.validation;
 
+
 import com.google.common.base.Strings;
 
 public class StringRequired extends ObjectRequired<String> {

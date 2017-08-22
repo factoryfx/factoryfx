@@ -12,12 +12,32 @@ Factoryfx is a lightweight Dependency Injection Framework that extends dependenc
 | :-----------------: | :---------: | :-----: |
 | io.github.factoryfx | factory  | 0.4  |
 
+##### minimal server
+```groovy
+compile(group: 'io.github.factoryfx', name: 'factory', version: factoryfxVersion)
+```
+
+##### postgres storage with javafx gui
+###### server
+```groovy
+compile(group: 'io.github.factoryfx', name: 'factory', version: factoryfxVersion)
+compile(group: 'io.github.factoryfx', name: 'javafxDistributionServer', version: factoryfxVersion)
+compile(group: 'io.github.factoryfx', name: 'applicationServer', version: factoryfxVersion)
+compile(group: 'io.github.factoryfx', name: 'applicationServerRestServer', version: factoryfxVersion)
+compile(group: 'io.github.factoryfx', name: 'postgresqlStorage', version: factoryfxVersion)
+```
+###### client
+```groovy
+compile(group: 'io.github.factoryfx', name: 'factory', version: factoryfxVersion)
+compile(group: 'io.github.factoryfx', name: 'javafxFactoryEditing', version: factoryfxVersion)
+compile(group: 'io.github.factoryfx', name: 'applicationServerRestClient', version: factoryfxVersion)
+```
 
 ## Basic example
 ### Factory
 ```java
 public class HelloWorldFactory extends SimpleFactoryBase<HelloWorld,Visitor> {
-    public final StringAttribute text = new StringAttribute(new AttributeMetadata().labelText("text"));
+    public final StringAttribute text = new StringAttribute().labelText("text");
 
     @Override
     protected HelloWorld create() {
@@ -87,6 +107,17 @@ The small tables are good candidates for data injection.
 Typical configuration data are ports, hostname, ssl certificates Data which are typical in the database.
 
 ## Lifecycle control
+Dat update steps:
+1. read the complete current configuration
+2. data changes
+3. update new the complete configuration
+
+The framework always works with the complete configuration and no data record.
+The advantage is easy cross validation over data records and complete historization.
+The major disadvantages are addressed by the framework as well.
+
+* server only execute delta update for the changes live objects
+* expensive resources like sockets or database pools can be reused
 
 
 ## User interface
@@ -106,7 +137,7 @@ Typical configuration data are ports, hostname, ssl certificates Data which are 
 
 ## Example
 
-[code](https://github.com/factoryfx/factoryfx/tree/master/docu/src/main/java/de/factoryfx/docu/datainjection)
+[code](https://github.com/factoryfx/factoryfx/tree/master/example/src/main/java/de/factoryfx/example)
 
 ## License
 
