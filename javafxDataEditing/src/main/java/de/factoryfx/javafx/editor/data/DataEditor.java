@@ -58,6 +58,7 @@ public class DataEditor implements Widget {
         public void addListener(ChangeListener<? super Data> listener) {
             synchronized (changeListeners) {
                 changeListeners.add(new WeakReference<>(listener));
+                changeListeners.removeIf(l->l.get() == null);
             }
             super.addListener(listener);
         }
@@ -66,6 +67,7 @@ public class DataEditor implements Widget {
         public void addListener(InvalidationListener listener) {
             synchronized (invalidateListeners) {
                 invalidateListeners.add(new WeakReference<>(listener));
+                invalidateListeners.removeIf(l->l.get() == null);
             }
             super.addListener(listener);
         }
