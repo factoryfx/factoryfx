@@ -34,6 +34,8 @@ public class DataTreeViewWidget<T extends Data> implements CloseAwareWidget {
     @Override
     public Node createContent() {
 //        MasterDetailPane pane = new MasterDetailPane();
+        dataEditor.reset();
+
         SplitPane splitPane = new SplitPane();
         splitPane.setOrientation(Orientation.HORIZONTAL);
 
@@ -51,7 +53,6 @@ public class DataTreeViewWidget<T extends Data> implements CloseAwareWidget {
         splitPane.getItems().add(dataEditorWidget);
         splitPane.setDividerPositions(dividerPosition);
 
-        dataEditor.reset();
         tree.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue!=null){
                 dataEditor.edit(newValue.getValue());
