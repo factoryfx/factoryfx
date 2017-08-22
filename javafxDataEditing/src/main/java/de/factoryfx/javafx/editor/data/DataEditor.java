@@ -1,5 +1,6 @@
 package de.factoryfx.javafx.editor.data;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -50,11 +51,48 @@ public class DataEditor implements Widget {
 
     private final AttributeEditorBuilder attributeEditorBuilder;
     private final UniformDesign uniformDesign;
-    SimpleObjectProperty<Data> bound = new SimpleObjectProperty<>();
+    static class ResettableSimpleObjectProperty extends SimpleObjectProperty<Data> {
+        final List<WeakReference<ChangeListener<? super Data>>> changeListeners = new ArrayList<>();
+        final List<WeakReference<InvalidationListener>> invalidateListeners = new ArrayList<>();
+        @Override
+        public void addListener(ChangeListener<? super Data> listener) {
+            synchronized (changeListeners) {
+                changeListeners.add(new WeakReference<>(listener));
+            }
+            super.addListener(listener);
+        }
+
+        @Override
+        public void addListener(InvalidationListener listener) {
+            synchronized (invalidateListeners) {
+                invalidateListeners.add(new WeakReference<>(listener));
+            }
+            super.addListener(listener);
+        }
+        public void reset() {
+            synchronized (changeListeners) {
+                for (WeakReference<ChangeListener<? super Data>> l : changeListeners) {
+                    ChangeListener cl = l.get();
+                    if (cl != null)
+                        removeListener(cl);
+                }
+                changeListeners.clear();
+            }
+            synchronized (invalidateListeners) {
+                for (WeakReference<InvalidationListener> l : invalidateListeners) {
+                    InvalidationListener il = l.get();
+                    if (il != null)
+                        removeListener(il);
+                }
+                invalidateListeners.clear();
+            }
+        }
+
+    }
+    ResettableSimpleObjectProperty bound = new ResettableSimpleObjectProperty();
     private ChangeListener<Data> dataChangeListener;
     private AttributeChangeListener validationListener;
     ObservableList<Data> displayedEntities= FXCollections.observableArrayList();
-    private InvalidationListener breadCrumbInvalidationListener;
 
     public DataEditor(AttributeEditorBuilder attributeEditorBuilder, UniformDesign uniformDesign) {
         this.attributeEditorBuilder = attributeEditorBuilder;
@@ -101,10 +139,7 @@ public class DataEditor implements Widget {
 
     public void reset(){
         displayedEntities= FXCollections.observableArrayList();
-        if (breadCrumbInvalidationListener != null) {
-            bound.removeListener(breadCrumbInvalidationListener);
-            breadCrumbInvalidationListener = null;
-        }
+        bound.reset();
         bound.set(null);
     }
 
@@ -392,10 +427,7 @@ public class DataEditor implements Widget {
         displayedEntities.addListener((ListChangeListener<Data>) c -> {
             updateBreadCrumbBar.run();
         });
-        if (breadCrumbInvalidationListener != null) {
-            bound.removeListener(breadCrumbInvalidationListener);
-        }
-        breadCrumbInvalidationListener = observable -> {
+        InvalidationListener breadCrumbInvalidationListener = observable -> {
             updateBreadCrumbBar.run();
         };
         bound.addListener(breadCrumbInvalidationListener);
