@@ -101,6 +101,10 @@ public class DataEditor implements Widget {
 
     public void reset(){
         displayedEntities= FXCollections.observableArrayList();
+        if (breadCrumbInvalidationListener != null) {
+            bound.removeListener(breadCrumbInvalidationListener);
+            breadCrumbInvalidationListener = null;
+        }
         bound.set(null);
     }
 
