@@ -141,6 +141,8 @@ public class DataEditor implements Widget {
         displayedEntities= FXCollections.observableArrayList();
         bound.reset();
         bound.set(null);
+        if (dataChangeListener != null)
+            bound.addListener(dataChangeListener);
     }
 
     private void removeUpToCurrent(Data current) {
