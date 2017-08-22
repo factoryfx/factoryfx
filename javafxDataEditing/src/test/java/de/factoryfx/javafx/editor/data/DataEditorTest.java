@@ -104,7 +104,7 @@ public class DataEditorTest {
         Assert.assertEquals(value,dataEditor.dataEditorState.displayedEntities.get(1));
 
         dataEditor.edit(root);
-        Assert.assertEquals(1,dataEditor.dataEditorState.displayedEntities.size());
+        Assert.assertEquals(2,dataEditor.dataEditorState.displayedEntities.size());
         Assert.assertEquals(root,dataEditor.dataEditorState.displayedEntities.get(0));
 
     }
@@ -123,7 +123,7 @@ public class DataEditorTest {
         dataEditor.edit(root);
         dataEditor.edit(value1);
         dataEditor.back();
-        Assert.assertEquals(1,dataEditor.dataEditorState.displayedEntities.size());
+        Assert.assertEquals(2,dataEditor.dataEditorState.displayedEntities.size());
         Assert.assertEquals(root,dataEditor.dataEditorState.displayedEntities.get(0));
 
         dataEditor.edit(value2);
