@@ -89,6 +89,7 @@ public class DataEditor implements Widget {
     }
 
     public void reset(){
+        editData.set(null);
         updateState(dataEditorState.reset());
     }
 

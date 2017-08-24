@@ -46,8 +46,8 @@ public class DataEditorStateVisualisation extends BorderPane {
         };
 
         Data previousValue=null;
-        if (!displayedEntities.isEmpty()){
-            displayedEntities.get(displayedEntities.size()-1);
+        if (displayedEntities.size()>1){
+            previousValue=displayedEntities.get(displayedEntities.size()-2);
         }
         setCenter(createEditor(currentData,previousValue));
         setTop(createNavigation(displayedEntities,currentData,previousData,nextData));
@@ -131,15 +131,15 @@ public class DataEditorStateVisualisation extends BorderPane {
         });
 
 
-        List<Data> newhistory = new ArrayList<>();
-        for (Data data: displayedEntities){
-            newhistory.add(data);
-            if (data==currentData){
-                break;
-            }
-        }
+//        List<Data> newhistory = new ArrayList<>();
+//        for (Data data: displayedEntities){
+//            newhistory.add(data);
+//            if (data==currentData){
+//                break;
+//            }
+//        }
 
-        breadCrumbBar.setSelectedCrumb(BreadCrumbBar.buildTreeModel(newhistory.toArray(new Data[0])));
+        breadCrumbBar.setSelectedCrumb(BreadCrumbBar.buildTreeModel(displayedEntities.toArray(new Data[0])));
         breadCrumbBar.layout();
 
 

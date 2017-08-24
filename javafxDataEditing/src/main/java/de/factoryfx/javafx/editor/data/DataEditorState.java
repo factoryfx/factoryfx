@@ -5,10 +5,7 @@ import de.factoryfx.javafx.editor.attribute.AttributeEditorBuilder;
 import de.factoryfx.javafx.util.UniformDesign;
 import javafx.scene.Node;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.BiFunction;
 
 public class DataEditorState {
@@ -34,7 +31,7 @@ public class DataEditorState {
     }
 
     public DataEditorState resetHistory() {
-        return new DataEditorState(currentData,new ArrayList<>(),attributeEditorBuilder,uniformDesign,dataEditor, visCustomizer);
+        return new DataEditorState(currentData,new ArrayList<>(Collections.singletonList(currentData)),attributeEditorBuilder,uniformDesign,dataEditor, visCustomizer);
     }
 
     public DataEditorState withHistory(List<Data> data) {
