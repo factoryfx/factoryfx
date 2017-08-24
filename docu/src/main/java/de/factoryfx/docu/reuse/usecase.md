@@ -1,4 +1,4 @@
-#Factory update/Server restart
+# Factory update/Server restart
 For every factory update the framework creates a new server.
 That could be a problem if the creation takes a long time e.g for socket connection, db connections pools, threadpools etc
 

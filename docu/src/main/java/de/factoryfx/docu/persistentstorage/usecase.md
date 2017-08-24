@@ -1,4 +1,4 @@
-#Persistentstorage
+# Persistentstorage
 Update to factories should be permanently stored.
 
 Most other examples use InMemoryFactoryStorage which does not permanently store data changes.
