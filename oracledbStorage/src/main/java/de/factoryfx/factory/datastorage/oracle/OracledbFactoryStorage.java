@@ -23,7 +23,7 @@ public class OracledbFactoryStorage<V,L,R extends FactoryBase<L,V>> implements F
 
         try (Connection connection= connectionSupplier.get()){
             try (Statement statement = connection.createStatement()){
-                String sql = "CREATE TABLE IF NOT EXISTS FACTORY_CURRENT " +
+                String sql = "CREATE TABLE FACTORY_CURRENT " +
                         "(id VARCHAR(255) not NULL, " +
                         " factory BLOB, " +
                         " factoryMetadata BLOB, " +
@@ -33,7 +33,9 @@ public class OracledbFactoryStorage<V,L,R extends FactoryBase<L,V>> implements F
             }
 
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            //oracle don't know IF NOT EXISTS
+            //workaround ignore exception
+//            throw new RuntimeException(e);
         }
     }
 

@@ -26,7 +26,7 @@ public class DatabaseTest {
             Class.forName("org.h2.Driver");
             connectionSupplier= () -> {
                 try {
-                    return DriverManager.getConnection("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1", "sa", "");
+                    return DriverManager.getConnection("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;MODE=Oracle", "sa", "");
                 } catch (SQLException e) {
                     throw new RuntimeException(e);
                 }

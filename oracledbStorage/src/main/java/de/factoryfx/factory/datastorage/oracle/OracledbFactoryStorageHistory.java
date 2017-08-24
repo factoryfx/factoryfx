@@ -20,7 +20,7 @@ public class OracledbFactoryStorageHistory<V,L,R extends FactoryBase<L,V>> {
 
         try (Connection connection= connectionSupplier.get()){
             try (Statement statement = connection.createStatement()){
-                String sql = "CREATE TABLE IF NOT EXISTS FACTORY_HISTORY " +
+                String sql = "CREATE TABLE FACTORY_HISTORY " +
                         "(id VARCHAR(255) not NULL, " +
                         " factory BLOB, " +
                         " factoryMetadata BLOB, " +
@@ -30,7 +30,9 @@ public class OracledbFactoryStorageHistory<V,L,R extends FactoryBase<L,V>> {
             }
 
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            //oracle don't know IF NOT EXISTS
+            //workaround ignore exception
+//            throw new RuntimeException(e);
         }
     }
 
