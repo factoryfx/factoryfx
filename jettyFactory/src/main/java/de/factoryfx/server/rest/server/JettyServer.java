@@ -1,15 +1,21 @@
 package de.factoryfx.server.rest.server;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Consumer;
+import java.util.function.Function;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider;
 import de.factoryfx.data.jackson.ObjectMapperBuilder;
 import de.factoryfx.server.rest.server.soap.Soap11Provider;
 import de.factoryfx.server.rest.server.soap.Soap12Provider;
+import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.handler.ErrorHandler;
+import org.eclipse.jetty.server.handler.HandlerCollection;
+import org.eclipse.jetty.server.handler.HandlerList;
 import org.eclipse.jetty.server.handler.gzip.GzipHandler;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
@@ -48,7 +54,15 @@ public class JettyServer {
         gzipHandler.setMinGzipSize(0);
 
         gzipHandler.setHandler(contextHandler);
-        server.setHandler(gzipHandler);
+
+        HandlerCollection handlers = new HandlerList();
+        additionalHandlers().forEach(handler -> handlers.addHandler(handler));
+        handlers.addHandler(gzipHandler);
+        server.setHandler(handlers);
+    }
+
+    protected List<Handler> additionalHandlers(){
+        return new ArrayList<>();
     }
 
     private ResourceConfig jerseySetup(List<Object>  resource) {

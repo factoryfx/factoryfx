@@ -238,6 +238,16 @@ project(':postgresqlStorage') {
 
 }
 
+project(':oracledbStorage') {
+    dependencies {
+        compile project(":factory")
+        //still no oracle driver in mvn central
+        testCompile group: 'com.h2database', name: 'h2', version: '1.4.196'
+        testCompile project(":testfactories")
+    }
+
+}
+
 project(':adminUiAngularjs') {
 
     dependencies {
@@ -390,6 +400,7 @@ project(':docu') {
         compile project(":jettyFactory")
         compile project(":restutilClient")
         compile project(':postgresqlStorage');
+        compile group: 'io.dropwizard.metrics', name: 'metrics-jetty9', version: '3.2.4'
         compile 'ru.yandex.qatools.embed:postgresql-embedded:1.15'
         compile group: 'ch.qos.logback', name: 'logback-classic', version: '1.1.7'
     }

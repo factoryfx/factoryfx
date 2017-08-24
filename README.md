@@ -101,8 +101,9 @@ Since the framework loads all data into the memory the limit is the available RA
 Typically a database contains few large tables (e.g more than 100000 rows) and many small tables (e.g less than 10000 rows).
 The small tables are good candidates for data injection.
 * basic data e.g Products in a simple shop
-* mass data e.g. Orders shop
-![Alt text](docu/comparison.png "Optional Title")
+* mass data e.g. Orders shop 
+![Alt text](docu/comparison.png "Optional Title") 
+
 ##### Configuration Data
 Typical configuration data are ports, hostname, ssl certificates Data which are typical in the database.
 
@@ -134,6 +135,8 @@ The major disadvantages are addressed by the framework as well.
 * [persistentstorage](docu/src/main/java/de/factoryfx/docu/persistentstorage/usecase.md)
 * [polymorphism](docu/src/main/java/de/factoryfx/docu/polymorphism/usecase.md)
 * [reuse](docu/src/main/java/de/factoryfx/docu/reuse/usecase.md)
+* [monitoring](docu/src/main/java/de/factoryfx/docu/monitoring/usecase.md)
+
 
 ## Example
 

@@ -1,7 +1,11 @@
 package de.factoryfx.server.rest.server;
 
+import de.factoryfx.data.attribute.types.ObjectValueAttribute;
 import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.factory.atrribute.FactoryReferenceListAttribute;
+import org.eclipse.jetty.server.Handler;
+
+import java.util.function.Function;
 
 public class JettyServerFactory<V> extends FactoryBase<JettyServer,V> {
 
