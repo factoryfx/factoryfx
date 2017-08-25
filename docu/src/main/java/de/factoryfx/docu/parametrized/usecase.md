@@ -4,4 +4,4 @@ The missing parameter could be part of a request or loaded from the database.
 
 ![alt text](diagramm.png)
 
-[code](https://github.com/factoryfx/factoryfx/tree/master/docu/src/main/java/de/factoryfx/docu/parametrized)
+[**code**](https://github.com/factoryfx/factoryfx/tree/master/docu/src/main/java/de/factoryfx/docu/parametrized)

@@ -140,7 +140,7 @@ The major disadvantages are addressed by the framework as well.
 
 ## Example
 
-[code](https://github.com/factoryfx/factoryfx/tree/master/example/src/main/java/de/factoryfx/example)
+[**code**](https://github.com/factoryfx/factoryfx/tree/master/example/src/main/java/de/factoryfx/example)
 
 ## License
 

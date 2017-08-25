@@ -2,13 +2,24 @@ package de.factoryfx.factory.datastorage.oracle;
 
 import java.io.ByteArrayInputStream;
 import java.nio.charset.StandardCharsets;
+import java.sql.Blob;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class JdbcUtil {
     public static void writeStringToBlob(String value, PreparedStatement preparedStatement, int index){
         try {
             preparedStatement.setBinaryStream(index, new ByteArrayInputStream(value.getBytes(StandardCharsets.UTF_8)), value.length());
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static String readStringToBlob(ResultSet resultSet, String columnLabel){
+        try {
+            Blob factoryBlob  = resultSet.getBlob(columnLabel);
+            return new String(factoryBlob.getBytes(1L, (int) factoryBlob.length()), StandardCharsets.UTF_8);
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }

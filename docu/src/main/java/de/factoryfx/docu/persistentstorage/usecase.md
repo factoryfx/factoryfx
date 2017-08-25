@@ -5,4 +5,4 @@ Most other examples use InMemoryFactoryStorage which does not permanently store 
 Its usefully for testing or small projects but usually you want to safely store changes.
 This example use the PostgresFactoryStorage.
 
-[code](https://github.com/factoryfx/factoryfx/tree/master/docu/src/main/java/de/factoryfx/docu/persistentstorage)
+[**code**](https://github.com/factoryfx/factoryfx/tree/master/docu/src/main/java/de/factoryfx/docu/persistentstorage)

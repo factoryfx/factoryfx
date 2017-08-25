@@ -3,6 +3,7 @@ package de.factoryfx.factory.datastorage.oracle;
 import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.factory.datastorage.*;
 
+import java.nio.charset.StandardCharsets;
 import java.sql.*;
 import java.time.LocalDateTime;
 import java.util.Collection;
@@ -60,12 +61,9 @@ public class OracledbFactoryStorage<V,L,R extends FactoryBase<L,V>> implements F
                 String sql = "SELECT * FROM FACTORY_CURRENT";
 
                 ResultSet resultSet =statement.executeQuery(sql);
-                while(resultSet.next()){
-                    Blob factoryMetadataBlob  = resultSet.getBlob("factoryMetadata");
-                    StoredFactoryMetadata factoryMetadata = factorySerialisationManager.readStoredFactoryMetadata(new String(factoryMetadataBlob.getBytes(1L, (int) factoryMetadataBlob.length())));
-
-                    Blob factoryBlob  = resultSet.getBlob("factory");
-                    return new FactoryAndStoredMetadata<>(factorySerialisationManager.read(new String(factoryBlob.getBytes(1L, (int) factoryBlob.length())),factoryMetadata.dataModelVersion),factoryMetadata);
+                if(resultSet.next()){
+                    StoredFactoryMetadata factoryMetadata = factorySerialisationManager.readStoredFactoryMetadata(JdbcUtil.readStringToBlob(resultSet,"factoryMetadata"));
+                    return new FactoryAndStoredMetadata<>(factorySerialisationManager.read(JdbcUtil.readStringToBlob(resultSet,"factory"),factoryMetadata.dataModelVersion),factoryMetadata);
                 }
             }
         } catch (SQLException e) {

@@ -43,12 +43,9 @@ public class OracledbFactoryStorageHistory<V,L,R extends FactoryBase<L,V>> {
                 String sql = "SELECT * FROM FACTORY_HISTORY WHERE id="+id;
 
                 ResultSet resultSet =statement.executeQuery(sql);
-                while(resultSet.next()){
-                    Blob factoryMetadataBlob  = resultSet.getBlob("factoryMetadata");
-                    StoredFactoryMetadata factoryMetadata = factorySerialisationManager.readStoredFactoryMetadata(new String(factoryMetadataBlob.getBytes(1L, (int) factoryMetadataBlob.length())));
-
-                    Blob factoryBlob  = resultSet.getBlob("factory");
-                    return  factorySerialisationManager.read(new String(factoryBlob.getBytes(1L, (int) factoryBlob.length())),factoryMetadata.dataModelVersion);
+                if(resultSet.next()){
+                    StoredFactoryMetadata factoryMetadata = factorySerialisationManager.readStoredFactoryMetadata(JdbcUtil.readStringToBlob(resultSet,"factoryMetadata"));
+                    return  factorySerialisationManager.read(JdbcUtil.readStringToBlob(resultSet,"factory"),factoryMetadata.dataModelVersion);
                 }
             }
         } catch (SQLException e) {
@@ -66,7 +63,7 @@ public class OracledbFactoryStorageHistory<V,L,R extends FactoryBase<L,V>> {
                 String sql = "SELECT * FROM FACTORY_HISTORY";
 
                 ResultSet resultSet =statement.executeQuery(sql);
-                while(resultSet.next()){
+                if(resultSet.next()){
                     Blob factoryMetadataBlob  = resultSet.getBlob("factoryMetadata");
                     StoredFactoryMetadata factoryMetadata = factorySerialisationManager.readStoredFactoryMetadata(new String(factoryMetadataBlob.getBytes(1L, (int) factoryMetadataBlob.length())));
                     result.add(factoryMetadata);

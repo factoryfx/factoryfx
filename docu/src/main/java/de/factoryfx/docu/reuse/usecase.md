@@ -6,4 +6,4 @@ Therefore the framework offer 2 solutions.
 * The framework automatically only recreates the parts that are changed.
 * You can pass resource from the old server to the new server and reuse them
 
-[code](https://github.com/factoryfx/factoryfx/tree/master/docu/src/main/java/de/factoryfx/docu/polymorphism)
+[**code**](https://github.com/factoryfx/factoryfx/tree/master/docu/src/main/java/de/factoryfx/docu/polymorphism)
