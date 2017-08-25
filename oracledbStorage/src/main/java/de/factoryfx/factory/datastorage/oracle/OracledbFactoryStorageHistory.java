@@ -62,12 +62,13 @@ public class OracledbFactoryStorageHistory<V,L,R extends FactoryBase<L,V>> {
             try (Statement statement = connection.createStatement()){
                 String sql = "SELECT * FROM FACTORY_HISTORY";
 
-                ResultSet resultSet =statement.executeQuery(sql);
-                while(resultSet.next()){
-                    Blob factoryMetadataBlob  = resultSet.getBlob("factoryMetadata");
-                    StoredFactoryMetadata factoryMetadata = factorySerialisationManager.readStoredFactoryMetadata(new String(factoryMetadataBlob.getBytes(1L, (int) factoryMetadataBlob.length())));
-                    result.add(factoryMetadata);
+                try (ResultSet resultSet =statement.executeQuery(sql)) {
+                    while (resultSet.next()) {
+                        result.add(factorySerialisationManager.readStoredFactoryMetadata(JdbcUtil.readStringToBlob(resultSet, "factoryMetadata")));
+                    }
                 }
+
+
             }
 
         } catch (SQLException e) {

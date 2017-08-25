@@ -71,6 +71,17 @@
         <Bug pattern="MSF_MUTABLE_SERVLET_FIELD" />
     </Match>
 
+    <Match>
+        <Class name="de.factoryfx.factory.datastorage.oracle.OracledbFactoryStorageHistory" />
+        <Bug pattern="OBL_UNSATISFIED_OBLIGATION" />
+    </Match>
+
+    <Match>
+        <Class name="de.factoryfx.factory.datastorage.oracle.OracledbFactoryStorage" />
+        <Bug pattern="OBL_UNSATISFIED_OBLIGATION" />
+    </Match>
+
+
 
 
 
