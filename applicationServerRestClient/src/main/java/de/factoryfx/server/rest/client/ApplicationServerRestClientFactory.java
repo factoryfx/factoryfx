@@ -6,14 +6,21 @@ import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.factory.SimpleFactoryBase;
 import de.factoryfx.factory.atrribute.FactoryReferenceAttribute;
 
-public class ApplicationServerRestClientFactory<V,T extends FactoryBase<?,V>> extends SimpleFactoryBase<ApplicationServerRestClient<V,T>,V> {
-    public final FactoryReferenceAttribute<RestClient,RestClientFactory<V>> restClient= new FactoryReferenceAttribute<RestClient,RestClientFactory<V>>().setupUnsafe(RestClientFactory.class);//.en("rest client");
-    public final ObjectValueAttribute<Class<T>> factoryRootClass = new ObjectValueAttribute<>();//.en("factoryRootClass");
+/**
+ *
+ * @param <V> Visitor client
+ * @param <R>  Root client
+ * @param <VS> Visitor server
+ * @param <RS> Root Server
+ */
+public class ApplicationServerRestClientFactory<V, R extends FactoryBase<?,V>,VS, RS extends FactoryBase<?,VS>> extends SimpleFactoryBase<ApplicationServerRestClient<VS, RS>,V> {
+    public final FactoryReferenceAttribute<RestClient,RestClientFactory<VS>> restClient= new FactoryReferenceAttribute<RestClient,RestClientFactory<VS>>().setupUnsafe(RestClientFactory.class);//.en("rest client");
+    public final ObjectValueAttribute<Class<RS>> factoryRootClass = new ObjectValueAttribute<>();//.en("factoryRootClass");
     public final StringAttribute user = new StringAttribute().en("user");
     public final StringAttribute passwordHash = new StringAttribute().en("passwordHash");
 
     @Override
-    public ApplicationServerRestClient<V, T> createImpl() {
+    public ApplicationServerRestClient<VS, RS> createImpl() {
         return new ApplicationServerRestClient<>(restClient.instance(),factoryRootClass.get(),user.get(),passwordHash.get());
     }
 
