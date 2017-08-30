@@ -38,7 +38,7 @@ public class FactoryBuilderTest {
         });
 
 
-        ExampleFactoryA root = factoryBuilder.build();
+        ExampleFactoryA root = factoryBuilder.buildTree();
 
 
         System.out.println(ObjectMapperBuilder.build().writeValueAsString(root));
@@ -61,7 +61,7 @@ public class FactoryBuilderTest {
             return factory;
         });
 
-        ExampleFactoryA root = factoryBuilder.build();
+        ExampleFactoryA root = factoryBuilder.buildTree();
 
         System.out.println(ObjectMapperBuilder.build().writeValueAsString(root));
     }
@@ -93,7 +93,7 @@ public class FactoryBuilderTest {
             return factory;
         });
 
-        FactoryTestA root = factoryBuilder.build();
+        FactoryTestA root = factoryBuilder.buildTree();
         Assert.assertEquals(root.referenceAttribute1.get(),root.referenceAttribute2.get());
     }
 
@@ -113,7 +113,7 @@ public class FactoryBuilderTest {
             return factory;
         });
 
-        FactoryTestA root = factoryBuilder.build();
+        FactoryTestA root = factoryBuilder.buildTree();
         Assert.assertNotEquals(root.referenceAttribute1.get(),root.referenceAttribute2.get());
 
     }

@@ -26,7 +26,11 @@ public class FactoryBuilder<V, L, R extends FactoryBase<L,V>> {
         addFactory(clazz,scope,new DefaultCreator<>(clazz));
     }
 
-    public R build(){
+    public R buildTree(){
         return factoryContext.get(root);
+    }
+
+    public <L, F extends FactoryBase<L,V>> F buildSubTree(Class<F> factoryClazz){
+        return factoryContext.get(factoryClazz);
     }
 }
