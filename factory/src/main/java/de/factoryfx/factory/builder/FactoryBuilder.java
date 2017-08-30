@@ -14,8 +14,12 @@ public class FactoryBuilder<V, L, R extends FactoryBase<L,V>> {
     }
 
 
-    public <L, F extends FactoryBase<L,V>> void addFactory(Class<F> clazz, Scope scope, Function<SimpleFactoryContext<V>, F> creator){
-        factoryContext.addFactoryCreator(new FactoryCreator<>(clazz,scope,creator));
+    public <L, F extends FactoryBase<L,V>> void addFactory(Class<F> clazz, Scope scope, Function<FactoryContext<V>, F> creator){
+        factoryContext.addFactoryCreator(new FactoryCreator<>(clazz,"",scope,creator));
+    }
+
+    public <L, F extends FactoryBase<L,V>> void addFactory(Class<F> clazz, String name, Scope scope, Function<FactoryContext<V>, F> creator){
+        addFactory(clazz,"",scope,creator);
     }
 
     public <L, F extends FactoryBase<L,V>> void addFactory(Class<F> clazz, Scope scope){
@@ -23,6 +27,6 @@ public class FactoryBuilder<V, L, R extends FactoryBase<L,V>> {
     }
 
     public R build(){
-        return factoryContext.get(root,new HashSet<>());
+        return factoryContext.get(root);
     }
 }

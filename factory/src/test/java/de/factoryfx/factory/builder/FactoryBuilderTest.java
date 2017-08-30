@@ -28,12 +28,12 @@ public class FactoryBuilderTest {
         factoryBuilder.addFactory(ExampleFactoryB.class, Scope.PROTOTYPE, context -> {
             ExampleFactoryB factory = new ExampleFactoryB();
             factory.referenceAttributeC.set(context.get(ExampleFactoryC.class));
-            factory.referenceAttribute.set(context.get(ExampleFactoryA.class));
+//            factory.referenceAttribute.set(context.get(ExampleFactoryA.class));
             return factory;
         });
         factoryBuilder.addFactory(ExampleFactoryC.class, Scope.PROTOTYPE, context -> {
             ExampleFactoryC factory = new ExampleFactoryC();
-            factory.referenceAttribute.set(context.get(ExampleFactoryB.class));
+//            factory.referenceAttribute.set(context.get(ExampleFactoryB.class));
             return factory;
         });
 
@@ -49,8 +49,17 @@ public class FactoryBuilderTest {
         FactoryBuilder<Void,ExampleLiveObjectA,ExampleFactoryA> factoryBuilder = new FactoryBuilder<>(ExampleFactoryA.class);
 
         factoryBuilder.addFactory(ExampleFactoryA.class, Scope.PROTOTYPE);
-        factoryBuilder.addFactory(ExampleFactoryB.class, Scope.PROTOTYPE);
-        factoryBuilder.addFactory(ExampleFactoryC.class, Scope.PROTOTYPE);
+        factoryBuilder.addFactory(ExampleFactoryB.class, Scope.PROTOTYPE, context -> {
+            ExampleFactoryB factory = new ExampleFactoryB();
+            factory.referenceAttributeC.set(context.get(ExampleFactoryC.class));
+//            factory.referenceAttribute.set(context.get(ExampleFactoryA.class));
+            return factory;
+        });
+        factoryBuilder.addFactory(ExampleFactoryC.class, Scope.PROTOTYPE, context -> {
+            ExampleFactoryC factory = new ExampleFactoryC();
+//            factory.referenceAttribute.set(context.get(ExampleFactoryB.class));
+            return factory;
+        });
 
         ExampleFactoryA root = factoryBuilder.build();
 

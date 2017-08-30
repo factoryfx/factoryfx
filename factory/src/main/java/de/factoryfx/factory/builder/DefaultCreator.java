@@ -8,7 +8,7 @@ import de.factoryfx.factory.atrribute.FactoryReferenceListAttribute;
 
 import java.util.function.Function;
 
-public class DefaultCreator<V,F extends FactoryBase<?,V>> implements Function<SimpleFactoryContext<V>, F> {
+public class DefaultCreator<V,F extends FactoryBase<?,V>> implements Function<FactoryContext<V>, F> {
     private final Class<F> clazz;
 
     public DefaultCreator(Class<F> clazz) {
@@ -17,7 +17,7 @@ public class DefaultCreator<V,F extends FactoryBase<?,V>> implements Function<Si
 
 
     @Override
-    public F apply(SimpleFactoryContext<V> context) {
+    public F apply(FactoryContext<V> context) {
         try {
             F result = clazz.newInstance();
             result.internal().visitAttributesFlat((attributeVariableName, attribute) -> {
