@@ -6,6 +6,7 @@ import java.util.Locale;
 import ch.qos.logback.classic.Level;
 import de.factoryfx.data.attribute.types.EncryptedString;
 import de.factoryfx.data.attribute.types.EncryptedStringAttribute;
+import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.factory.FactoryManager;
 import de.factoryfx.factory.SimpleFactoryBase;
 import de.factoryfx.factory.atrribute.FactoryReferenceAttribute;
@@ -64,7 +65,7 @@ public class ApplicationServerRestTest {
 
 
 
-        ApplicationServerRestClientFactory<Void, RootTestclazz> applicationServerRestClientFactory = new ApplicationServerRestClientFactory<>();
+        ApplicationServerRestClientFactory<Void, FactoryBase<Void,Void>, Void, RootTestclazz> applicationServerRestClientFactory = new ApplicationServerRestClientFactory<>();
         final RestClientFactory<Void> restClient = new RestClientFactory<>();
         restClient.port.set(34579);
         restClient.host.set("localhost");
