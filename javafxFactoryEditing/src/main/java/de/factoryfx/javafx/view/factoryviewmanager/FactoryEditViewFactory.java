@@ -13,12 +13,19 @@ import de.factoryfx.javafx.widget.WidgetFactory;
 import de.factoryfx.javafx.widget.diffdialog.DiffDialogBuilder;
 import de.factoryfx.javafx.widget.diffdialog.DiffDialogBuilderFactory;
 
-public class FactoryEditViewFactory<V,R extends FactoryBase<?,V>> extends WidgetFactory<V> {
-    public final FactoryReferenceAttribute<FactoryEditManager<V,R>, FactoryEditManagerFactory<V,R>> factoryEditManager = new FactoryReferenceAttribute<FactoryEditManager<V,R>, FactoryEditManagerFactory<V,R>>().setupUnsafe(FactoryEditManagerFactory.class).de("uniformDesign").en("uniformDesign");
+/**
+ *
+ * @param <V> client visitor
+ * @param <R> client root
+ * @param <VS> server visitor
+ * @param <RS> server root
+ */
+public class FactoryEditViewFactory<V,R extends FactoryBase<?,V>, VS,RS extends FactoryBase<?,VS>> extends WidgetFactory<V> {
+    public final FactoryReferenceAttribute<FactoryEditManager<VS,RS>, FactoryEditManagerFactory<V,R,VS,RS>> factoryEditManager = new FactoryReferenceAttribute<FactoryEditManager<VS,RS>, FactoryEditManagerFactory<V,R,VS,RS>>().setupUnsafe(FactoryEditManagerFactory.class).de("uniformDesign").en("uniformDesign");
     public final FactoryReferenceAttribute<LongRunningActionExecutor, LongRunningActionExecutorFactory<V>> longRunningActionExecutor = new FactoryReferenceAttribute<LongRunningActionExecutor, LongRunningActionExecutorFactory<V>>().setupUnsafe(LongRunningActionExecutorFactory.class).de("items").en("items");
     public final FactoryReferenceAttribute<UniformDesign, UniformDesignFactory<V>> uniformDesign = new FactoryReferenceAttribute<UniformDesign, UniformDesignFactory<V>>().setupUnsafe(UniformDesignFactory.class).de("uniformDesign").en("uniformDesign");
     public final FactoryPolymorphicReferenceAttribute<DataEditor> dataEditorFactory = new FactoryPolymorphicReferenceAttribute<>();
-    public final FactoryReferenceAttribute<FactoryAwareWidget<R>,FactoryAwareWidgetFactory<V,R>> contentWidgetFactory = new FactoryReferenceAttribute<FactoryAwareWidget<R>,FactoryAwareWidgetFactory<V,R>>().setupUnsafe(FactoryAwareWidgetFactory.class);
+    public final FactoryReferenceAttribute<FactoryAwareWidget<RS>,FactoryAwareWidgetFactory<VS,RS>> contentWidgetFactory = new FactoryReferenceAttribute<FactoryAwareWidget<RS>,FactoryAwareWidgetFactory<VS,RS>>().setupUnsafe(FactoryAwareWidgetFactory.class);
     public final FactoryReferenceAttribute<DiffDialogBuilder,DiffDialogBuilderFactory<V>> diffDialogBuilder = new FactoryReferenceAttribute<DiffDialogBuilder,DiffDialogBuilderFactory<V>>().setupUnsafe(DiffDialogBuilderFactory.class);
 
     @Override
