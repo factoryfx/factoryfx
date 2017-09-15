@@ -606,7 +606,7 @@ public class Data {
         return internal;
     }
 
-    public static class Internal{
+    public static class Internal implements SearchTextMatchable {
         private final Data data;
 
         public Internal(Data data) {
