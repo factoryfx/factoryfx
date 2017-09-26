@@ -4,6 +4,7 @@ import java.text.DecimalFormat;
 
 import com.google.common.base.Strings;
 import de.factoryfx.data.Data;
+import de.factoryfx.data.SearchTextMatchable;
 import de.factoryfx.javafx.util.UniformDesign;
 import de.factoryfx.javafx.widget.Widget;
 import javafx.animation.FadeTransition;
@@ -167,6 +168,9 @@ public class TableControlWidget<T> implements Widget {
                 }
                 if (data instanceof String){
                     return ((String) data).toLowerCase().contains(newValue.toLowerCase());
+                }
+                if (data instanceof SearchTextMatchable) {
+                    return ((SearchTextMatchable)data).matchSearchText(newValue);
                 }
 
                 return true;
