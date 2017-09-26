@@ -2,6 +2,7 @@ package de.factoryfx.javafx.javascript.editor.data;
 
 import java.util.List;
 import java.util.Locale;
+import java.util.function.Consumer;
 
 import de.factoryfx.data.Data;
 import de.factoryfx.data.attribute.Attribute;
@@ -52,7 +53,7 @@ public class JavascriptAttributeIntegrationTest extends Application{
             }
 
             @Override
-            public AttributeEditor createEditor(Attribute<?,?> attribute, DataEditor dataEditor, Data previousData) {
+            public AttributeEditor createEditor(Attribute<?,?> attribute, Consumer<Data> navgigateTo, Data previousData) {
                 return new AttributeEditor(attribute, new JavascriptAttributeVisualisation((JavascriptAttribute<?>) attribute), uniformDesign);
             }
 
