@@ -8,6 +8,7 @@ import de.factoryfx.javafx.editor.data.DataEditor;
 import de.factoryfx.javafx.util.UniformDesign;
 
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 public class NoListSingleAttributeEditorBuilder<T,A extends Attribute<?,?>> implements SingleAttributeEditorBuilder<T> {
@@ -33,7 +34,7 @@ public class NoListSingleAttributeEditorBuilder<T,A extends Attribute<?,?>> impl
 
     @Override
     @SuppressWarnings("unchecked")
-    public AttributeEditor<T,?> createEditor(Attribute<?,?> attribute, DataEditor dataEditor, Data previousData) {
+    public AttributeEditor<T,?> createEditor(Attribute<?,?> attribute, Consumer<Data> navigateToData, Data previousData) {
         return new AttributeEditor(attribute,attributeEditorVisualisation.apply((A)attribute),uniformDesign);
     }
     @Override

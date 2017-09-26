@@ -9,11 +9,13 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import de.factoryfx.data.attribute.time.LocalTimeAttribute;
 import de.factoryfx.data.attribute.types.*;
 import de.factoryfx.javafx.editor.attribute.visualisation.*;
+import de.factoryfx.javafx.widget.datalistedit.ReferenceListAttributeEditWidget;
 import javafx.scene.control.TableView;
 import javafx.scene.paint.Color;
 
@@ -43,7 +45,6 @@ import de.factoryfx.javafx.editor.attribute.builder.SimpleSingleAttributeEditorB
 import de.factoryfx.javafx.editor.attribute.builder.SingleAttributeEditorBuilder;
 import de.factoryfx.javafx.editor.data.DataEditor;
 import de.factoryfx.javafx.util.UniformDesign;
-import de.factoryfx.javafx.widget.datalistedit.DataListEditWidget;
 
 public class AttributeEditorBuilder {
 
@@ -64,7 +65,7 @@ public class AttributeEditorBuilder {
             }
 
             @Override
-            public AttributeEditor<EncryptedString, ?> createEditor(Attribute<?, ?> attribute, DataEditor dataEditor, Data previousData) {
+            public AttributeEditor<EncryptedString, ?> createEditor(Attribute<?, ?> attribute, Consumer<Data> navigateToData, Data previousData) {
                 PasswordAttribute passwordAttributeVisualisation = (PasswordAttribute) attribute;
                 return new AttributeEditor<>(passwordAttributeVisualisation,new PasswordAttributeVisualisation(passwordAttributeVisualisation::internal_hash, passwordAttributeVisualisation::internal_isValidKey,uniformDesign),uniformDesign);
 
@@ -103,9 +104,9 @@ public class AttributeEditorBuilder {
             }
         },()->new StringAttribute()));
         result.add(new SimpleSingleAttributeEditorBuilder<>(uniformDesign,URIAttribute.class,URI.class,(attribute)-> new URIAttributeVisualisation(),()->new URIAttribute()));
-        result.add(new DataSingleAttributeEditorBuilder(uniformDesign,(a)->a instanceof ViewReferenceAttribute,(attribute, dataEditor, previousData)-> new ViewReferenceAttributeVisualisation(dataEditor, uniformDesign)));
-        result.add(new DataSingleAttributeEditorBuilder(uniformDesign,(a)->a instanceof ViewListReferenceAttribute,(attribute, dataEditor, previousData)->{
-            ViewListReferenceAttributeVisualisation visualisation = new ViewListReferenceAttributeVisualisation(dataEditor, uniformDesign);
+        result.add(new DataSingleAttributeEditorBuilder(uniformDesign,(a)->a instanceof ViewReferenceAttribute,(attribute, navigateToData, previousData)-> new ViewReferenceAttributeVisualisation(navigateToData, uniformDesign)));
+        result.add(new DataSingleAttributeEditorBuilder(uniformDesign,(a)->a instanceof ViewListReferenceAttribute,(attribute, navigateToData, previousData)->{
+            ViewListReferenceAttributeVisualisation visualisation = new ViewListReferenceAttributeVisualisation(navigateToData, uniformDesign);
             ExpandableAttributeVisualisation<List<Data>> expandableAttributeVisualisation= new ExpandableAttributeVisualisation<>(visualisation,uniformDesign,(l)->"Items: "+l.size(),FontAwesome.Glyph.LIST);
             if (((ViewListReferenceAttribute)attribute).get().contains(previousData)){
                 expandableAttributeVisualisation.expand();
@@ -120,12 +121,12 @@ public class AttributeEditorBuilder {
             }
 
             @Override
-            public AttributeEditor<Data, ?> createEditor(Attribute<?, ?> attribute, DataEditor dataEditor, Data previousData) {
+            public AttributeEditor<Data, ?> createEditor(Attribute<?, ?> attribute, Consumer<Data> navigateToData, Data previousData) {
                 ReferenceAttribute referenceAttribute = (ReferenceAttribute) attribute;
                 return new AttributeEditor<>(referenceAttribute,
                         new ReferenceAttributeVisualisation(
                             uniformDesign,
-                            dataEditor,
+                            navigateToData,
                             referenceAttribute::internal_createNewPossibleValues,
                             referenceAttribute::set,
                             referenceAttribute::internal_possibleValues,
@@ -147,10 +148,10 @@ public class AttributeEditorBuilder {
 
             @Override
             @SuppressWarnings("unchecked")
-            public AttributeEditor<List<Data>, ?> createEditor(Attribute<?, ?> attribute, DataEditor dataEditor, Data previousData) {
+            public AttributeEditor<List<Data>, ?> createEditor(Attribute<?, ?> attribute, Consumer<Data> navigateToData, Data previousData) {
                 ReferenceListAttribute referenceListAttribute = (ReferenceListAttribute)attribute;
                 final TableView<Data> dataTableView = new TableView<>();
-                final ReferenceListAttributeVisualisation referenceListAttributeVisualisation = new ReferenceListAttributeVisualisation(uniformDesign, dataEditor, dataTableView, new DataListEditWidget<Data>(referenceListAttribute.get(), dataTableView, dataEditor,uniformDesign,referenceListAttribute));
+                final ReferenceListAttributeVisualisation referenceListAttributeVisualisation = new ReferenceListAttributeVisualisation(uniformDesign, navigateToData, dataTableView, new ReferenceListAttributeEditWidget<Data>(dataTableView, navigateToData,uniformDesign,referenceListAttribute));
                 ExpandableAttributeVisualisation<List<Data>> expandableAttributeVisualisation= new ExpandableAttributeVisualisation<>(referenceListAttributeVisualisation,uniformDesign,(l)->"Items: "+l.size(),FontAwesome.Glyph.LIST);
                 if (referenceListAttribute.contains(previousData)){
                     expandableAttributeVisualisation.expand();
@@ -164,7 +165,7 @@ public class AttributeEditorBuilder {
         return result;
     }
 
-    public AttributeEditor<?,?> getAttributeEditor(Attribute<?,?> attribute, DataEditor dataEditor, Supplier<List<ValidationError>> validation, Data oldValue){
+    public AttributeEditor<?,?> getAttributeEditor(Attribute<?,?> attribute, Consumer<Data> navigateToData, Data oldValue){
 
         if (attribute instanceof ValueListAttribute<?,?>){
             SingleAttributeEditorBuilder<?> builder = singleAttributeEditorBuilders.stream().filter(a -> a.isListItemEditorFor(attribute)).findAny().orElse(null);
@@ -172,7 +173,7 @@ public class AttributeEditorBuilder {
         }
 
         SingleAttributeEditorBuilder<?> builder = singleAttributeEditorBuilders.stream().filter(a -> a.isEditorFor(attribute)).findAny().orElse(null);
-        return builder.createEditor(attribute, dataEditor, oldValue);
+        return builder.createEditor(attribute, navigateToData, oldValue);
     }
 
 }

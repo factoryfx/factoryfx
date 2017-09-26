@@ -8,6 +8,7 @@ import de.factoryfx.javafx.editor.data.DataEditor;
 import de.factoryfx.javafx.util.UniformDesign;
 
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 public class DataSingleAttributeEditorBuilder<T,A extends Attribute<T,A>> implements SingleAttributeEditorBuilder<T> {
@@ -34,8 +35,8 @@ public class DataSingleAttributeEditorBuilder<T,A extends Attribute<T,A>> implem
 
     @Override
     @SuppressWarnings("unchecked")
-    public AttributeEditor<T,?> createEditor(Attribute<?,?> attribute, DataEditor dataEditor, Data previousData) {
-        return new AttributeEditor<>((A)attribute,attributeEditorVisualisationCreator.create((A)attribute,dataEditor,previousData),uniformDesign);
+    public AttributeEditor<T,?> createEditor(Attribute<?,?> attribute, Consumer<Data> navigateToData, Data previousData) {
+        return new AttributeEditor<>((A)attribute,attributeEditorVisualisationCreator.create((A)attribute,navigateToData,previousData),uniformDesign);
     }
 
     @Override
@@ -46,7 +47,7 @@ public class DataSingleAttributeEditorBuilder<T,A extends Attribute<T,A>> implem
 
     @FunctionalInterface
     public interface AttributeEditorVisualisationCreator<T,A extends Attribute<T,?>> {
-        AttributeEditorVisualisation<T> create(A attribute, DataEditor dataEditor, Data previousData);
+        AttributeEditorVisualisation<T> create(A attribute, Consumer<Data> navigateToData, Data previousData);
     }
 
 }

@@ -34,7 +34,7 @@ public class ReferenceAttributeVisualisation extends ValueAttributeEditorVisuali
     private LanguageText editText= new LanguageText().en("edit").de("Editieren");
 
     private final UniformDesign uniformDesign;
-    private final DataEditor dataEditor;
+    private final Consumer<Data> navigateToData;
     private final Supplier<List<Data>> newValueProvider;
     private final Supplier<Collection<? extends Data>> possibleValuesProvider;
     private final boolean isUserEditable;
@@ -45,9 +45,9 @@ public class ReferenceAttributeVisualisation extends ValueAttributeEditorVisuali
     private final Consumer<Data> referenceSetter;
 
 
-    public ReferenceAttributeVisualisation(UniformDesign uniformDesign, DataEditor dataEditor, Supplier<List<Data>> newValueProvider, Consumer<Data> referenceSetter, Supplier<Collection<? extends Data>> possibleValuesProvider, Runnable remover, boolean isUserEditable, boolean isUserSelectable, boolean isUserCreateable, boolean isUserDeletable) {
+    public ReferenceAttributeVisualisation(UniformDesign uniformDesign, Consumer<Data> navigateToData, Supplier<List<Data>> newValueProvider, Consumer<Data> referenceSetter, Supplier<Collection<? extends Data>> possibleValuesProvider, Runnable remover, boolean isUserEditable, boolean isUserSelectable, boolean isUserCreateable, boolean isUserDeletable) {
         this.uniformDesign = uniformDesign;
-        this.dataEditor = dataEditor;
+        this.navigateToData = navigateToData;
         this.newValueProvider = newValueProvider;
         this.possibleValuesProvider = possibleValuesProvider;
         this.isUserEditable = isUserEditable;
@@ -61,7 +61,7 @@ public class ReferenceAttributeVisualisation extends ValueAttributeEditorVisuali
     @Override
     public Node createVisualisation(SimpleObjectProperty<Data> boundTo, boolean readonly) {
         Button showButton = new Button("", uniformDesign.createIcon(FontAwesome.Glyph.PENCIL));
-        showButton.setOnAction(event -> dataEditor.edit(boundTo.get()));
+        showButton.setOnAction(event -> navigateToData.accept(boundTo.get()));
         showButton.disableProperty().bind(boundTo.isNull());
 
 
@@ -104,7 +104,7 @@ public class ReferenceAttributeVisualisation extends ValueAttributeEditorVisuali
         textField.setOnMouseClicked(mouseEvent -> {
             if (mouseEvent.getButton().equals(MouseButton.PRIMARY)) {
                 if (mouseEvent.getClickCount() == 2 && boundTo.get()!=null) {
-                    dataEditor.edit(boundTo.get());
+                    navigateToData.accept(boundTo.get());
                 }
             }
         });
@@ -135,11 +135,11 @@ public class ReferenceAttributeVisualisation extends ValueAttributeEditorVisuali
         if (!newData.isEmpty()){
             if (newData.size()==1){
                 referenceSetter.accept(newData.get(0));
-                dataEditor.edit(newData.get(0));
+                navigateToData.accept(newData.get(0));
             } else {
                 new SelectDataDialog(newData,uniformDesign).show(owner, data -> {
                     referenceSetter.accept(data);
-                    dataEditor.edit(data);
+                    navigateToData.accept(data);
                 });
             }
         }

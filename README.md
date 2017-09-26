@@ -10,7 +10,7 @@ Factoryfx is a lightweight Dependency Injection Framework that extends dependenc
 
 | Group ID            | Artifact ID | Version |
 | :-----------------: | :---------: | :-----: |
-| io.github.factoryfx | factory  | 0.4  |
+| io.github.factoryfx | factory  | 0.5.2  |
 
 ##### minimal server
 ```groovy
@@ -108,7 +108,7 @@ The small tables are good candidates for data injection.
 Typical configuration data are ports, hostname, ssl certificates Data which are typical in the database.
 
 ## Lifecycle control
-Dat update steps:
+Data update steps:
 1. read the complete current configuration
 2. data changes
 3. update new the complete configuration

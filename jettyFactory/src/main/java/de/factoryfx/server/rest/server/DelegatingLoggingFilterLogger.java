@@ -5,7 +5,11 @@ import java.util.logging.Logger;
 
 import org.slf4j.LoggerFactory;
 
-//extending from logger is a workaround cause LoggingFilter is final
+/**
+ * jersey use java util for logging this class will bridge to slf4j
+ *
+ * (preferred over the jultoslf bridge cause no global install required, not loglevel setup)
+ */
 public class DelegatingLoggingFilterLogger extends Logger {
 
     private static final org.slf4j.Logger logger = LoggerFactory.getLogger(DelegatingLoggingFilterLogger.class);

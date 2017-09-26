@@ -1,43 +1,53 @@
+package io.github.factoryfx.vuejs;
+
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
+import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.factory.FactoryManager;
-import de.factoryfx.factory.datastorage.FactoryStorage;
+import de.factoryfx.factory.builder.FactoryTreeBuilder;
+import de.factoryfx.factory.builder.Scope;
 import de.factoryfx.factory.datastorage.inmemory.InMemoryFactoryStorage;
 import de.factoryfx.factory.exception.RethrowingFactoryExceptionHandler;
-import de.factoryfx.factory.testfactories.ExampleFactoryA;
-import de.factoryfx.factory.testfactories.ExampleFactoryB;
-import de.factoryfx.factory.testfactories.ExampleLiveObjectA;
-import de.factoryfx.factory.util.ClasspathBasedFactoryProvider;
 import de.factoryfx.server.ApplicationServer;
+import de.factoryfx.server.rest.ApplicationServerResourceFactory;
+import de.factoryfx.server.rest.server.HttpServerConnectorFactory;
+import de.factoryfx.server.rest.server.JettyServerFactory;
 import de.factoryfx.testutils.SingleProcessInstanceUtil;
 import de.factoryfx.testutils.WebAppViewer;
 import de.factoryfx.user.UserManagement;
 import de.factoryfx.user.nop.NoUserManagement;
+import de.factoryfx.user.nop.NoUserManagementFactory;
 import javafx.application.Application;
 import javafx.stage.Stage;
 import org.slf4j.LoggerFactory;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Paths;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.UUID;
 
 public class WebGuiTest extends Application{
 
     @Override
     public void start(Stage primaryStage) throws Exception {
         new WebAppViewer(primaryStage, () -> {
-            ExampleFactoryA exampleFactoryA = new ExampleFactoryA();
-            exampleFactoryA.stringAttribute.set("balblub");
-            ExampleFactoryB exampleFactoryB = new ExampleFactoryB();
-            exampleFactoryB.stringAttribute.set("BBBBBBBBBBBBBBBB");
-            exampleFactoryA.referenceAttribute.set(exampleFactoryB);
+
+            FactoryTreeBuilder<Void,VuejsTestServer,VuejsTestServerFactory> factoryTreeBuilder = new FactoryTreeBuilder<>(VuejsTestServerFactory.class);
+            factoryTreeBuilder.addFactory(VuejsTestServerFactory.class, Scope.SINGLETON);
+            factoryTreeBuilder.addFactory(JettyServerFactory.class, Scope.SINGLETON, context -> {
+                JettyServerFactory<Void> serverFactory = new JettyServerFactory<>();
+                serverFactory.resources.add(new ProjectFileStructureServingResourceFactory());
+                HttpServerConnectorFactory<Void> connectorFactory = new HttpServerConnectorFactory<>();
+                connectorFactory.host.set("localhost");
+                connectorFactory.port.set(8087);
+                serverFactory.connectors.add(connectorFactory);
+
+                ApplicationServerResourceFactory<Void, Object, FactoryBase<Object, Void>> applicationServerResourceFactory = new ApplicationServerResourceFactory<>();
+                applicationServerResourceFactory.userManagement.set(new NoUserManagementFactory());
+                serverFactory.resources.add(applicationServerResourceFactory);
+
+                return serverFactory;
+            });
 
 
-            ApplicationServer<Void, ExampleLiveObjectA, ExampleFactoryA> exampleApplicationServer = new ApplicationServer<>(new FactoryManager<>(new RethrowingFactoryExceptionHandler<>()), new InMemoryFactoryStorage<>(exampleFactoryA));
+
+
+            ApplicationServer<Void, VuejsTestServer, VuejsTestServerFactory> exampleApplicationServer = new ApplicationServer<>(new FactoryManager<>(new RethrowingFactoryExceptionHandler<>()), new InMemoryFactoryStorage<>(factoryTreeBuilder.buildTree()));
             exampleApplicationServer.start();
 
             {
@@ -72,7 +82,7 @@ public class WebGuiTest extends Application{
 
             }
 
-        },"http://localhost:8087/#/login","http://localhost:8089/#/login");
+        },"http://localhost:8087");
     }
 
     protected UserManagement getUserManagement() {

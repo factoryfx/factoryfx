@@ -2,6 +2,7 @@ package de.factoryfx.javafx.widget.table;
 
 import java.text.DecimalFormat;
 
+import com.google.common.base.Strings;
 import de.factoryfx.data.Data;
 import de.factoryfx.javafx.util.UniformDesign;
 import de.factoryfx.javafx.widget.Widget;
@@ -115,10 +116,10 @@ public class TableControlWidget<T> implements Widget {
         target.setAlignment(Pos.CENTER_LEFT);
         target.setPadding(new Insets(2));
 
-        target.setOpacity(0.35);
 
         int fadeTransitionDuration = 350;
         double minFadeValue = 0.20;
+        target.setOpacity(minFadeValue);
         ChangeListener<Boolean> focusChangeListener = (observable, oldValue, newValue) -> {
             target.getStyleClass().remove("selectedTableViewControl");
             if (newValue) {
@@ -132,8 +133,7 @@ public class TableControlWidget<T> implements Widget {
                     ft.play();
                 }
             } else {
-                if (!filterField.focusedProperty().get() && !tableView.focusedProperty().get()) {
-                    target.getStyleClass().remove("selectedTableViewControl");
+                if (!filterField.focusedProperty().get() && !tableView.focusedProperty().get() && Strings.isNullOrEmpty(filterField.getText())) {
                     FadeTransition ft = new FadeTransition(Duration.millis(fadeTransitionDuration), target);
                     ft.setFromValue(1.0);
                     ft.setToValue(minFadeValue);

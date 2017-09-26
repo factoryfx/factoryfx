@@ -154,7 +154,7 @@ public class FactoryDiffWidget implements Widget {
     }
 
     private Node createEditor(Attribute<?,?> attribute){
-        final AttributeEditor<?, ?> previousAttributeEditor = attributeEditorBuilder.getAttributeEditor(attribute, null, null, null);
+        final AttributeEditor<?, ?> previousAttributeEditor = attributeEditorBuilder.getAttributeEditor(attribute, null, null);
         previousAttributeEditor.setReadOnly();
         previousAttributeEditor.expand();
         return previousAttributeEditor.createContent();

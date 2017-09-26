@@ -8,6 +8,7 @@ import javafx.scene.Node;
 import java.util.*;
 import java.util.function.BiFunction;
 
+//immutable editor state
 public class DataEditorState {
     public static final int HISTORY_LIMIT = 20;
     final List<Data> displayedEntities;

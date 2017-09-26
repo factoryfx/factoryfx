@@ -3,16 +3,11 @@ package de.factoryfx.javafx.widget.table;
 import de.factoryfx.javafx.UniformDesignBuilder;
 import javafx.application.Application;
 import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.value.ObservableValue;
 import javafx.scene.Scene;
-import javafx.scene.control.CheckBoxTreeItem;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeTableColumn;
 import javafx.scene.control.TreeTableView;
-import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
-import javafx.util.Callback;
-import org.junit.Test;
 
 public class TableMenuTest extends Application {
 

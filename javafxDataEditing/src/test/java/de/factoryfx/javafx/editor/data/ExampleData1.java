@@ -3,7 +3,6 @@ package de.factoryfx.javafx.editor.data;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.UUID;
 import java.util.regex.Pattern;
 
 import de.factoryfx.data.Data;
@@ -29,7 +28,6 @@ import de.factoryfx.factory.testfactories.poly.Printer;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.layout.BorderPane;
-import javafx.util.Pair;
 
 public class ExampleData1 extends Data {
     public final FactoryPolymorphicReferenceAttribute<Printer> reference = new FactoryPolymorphicReferenceAttribute<Printer>().setup(Printer.class,ErrorPrinterFactory.class,OutPrinterFactory.class).labelText("poly");

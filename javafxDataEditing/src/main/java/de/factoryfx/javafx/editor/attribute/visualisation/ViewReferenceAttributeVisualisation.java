@@ -16,16 +16,18 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import org.controlsfx.glyphfont.FontAwesome;
 
+import java.util.function.Consumer;
+
 public class ViewReferenceAttributeVisualisation extends ValueAttributeEditorVisualisation<Data> {
 
-    private final DataEditor dataEditor;
+    private final Consumer<Data> navigateToData;
     private final UniformDesign uniformDesign;
 
 
     private StringBinding stringBinding;
 
-    public ViewReferenceAttributeVisualisation(DataEditor dataEditor, UniformDesign uniformDesign) {
-        this.dataEditor = dataEditor;
+    public ViewReferenceAttributeVisualisation(Consumer<Data> navigateToData, UniformDesign uniformDesign) {
+        this.navigateToData = navigateToData;
         this.uniformDesign = uniformDesign;
     }
 
@@ -44,7 +46,7 @@ public class ViewReferenceAttributeVisualisation extends ValueAttributeEditorVis
         textField.setOnMouseClicked(mouseEvent -> {
             if (mouseEvent.getButton().equals(MouseButton.PRIMARY)) {
                 if (mouseEvent.getClickCount() == 2 && boundTo.get()!=null) {
-                    dataEditor.edit(boundTo.get());
+                    navigateToData.accept(boundTo.get());
                 }
             }
         });
@@ -52,7 +54,7 @@ public class ViewReferenceAttributeVisualisation extends ValueAttributeEditorVis
         Button editButton = new Button();
         uniformDesign.addIcon(editButton, FontAwesome.Glyph.EDIT);
         editButton.setOnAction(event -> {
-            dataEditor.edit(boundTo.get());
+            navigateToData.accept(boundTo.get());
         });
         editButton.disableProperty().bind(boundTo.isNull());
 

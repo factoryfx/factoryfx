@@ -1,7 +1,5 @@
 package de.factoryfx.javafx.editor.data;
 
-import java.util.ArrayList;
-
 import de.factoryfx.data.jackson.ObjectMapperBuilder;
 import de.factoryfx.javafx.UniformDesignBuilder;
 import de.factoryfx.javafx.editor.attribute.AttributeEditorBuilder;

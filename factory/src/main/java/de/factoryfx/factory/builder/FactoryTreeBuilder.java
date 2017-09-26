@@ -5,12 +5,13 @@ import de.factoryfx.factory.FactoryBase;
 import java.util.HashSet;
 import java.util.function.Function;
 
-public class FactoryBuilder<V, L, R extends FactoryBase<L,V>> {
+/** utility class to build a factory hierarchy*/
+public class FactoryTreeBuilder<V, L, R extends FactoryBase<L,V>> {
     private final FactoryContext<V> factoryContext = new FactoryContext<>();
-    private final Class<R> root;
+    private final Class<R> rootClass;
 
-    public FactoryBuilder(Class<R> root) {
-        this.root = root;
+    public FactoryTreeBuilder(Class<R> rootClass) {
+        this.rootClass = rootClass;
     }
 
 
@@ -28,7 +29,11 @@ public class FactoryBuilder<V, L, R extends FactoryBase<L,V>> {
     }
 
     public R buildTree(){
-        return factoryContext.get(root);
+        R factoryBases = factoryContext.get(rootClass);
+        if (factoryBases==null){
+            throw new IllegalStateException("FactoryCreator missing for root class"+ rootClass);
+        }
+        return factoryBases;
     }
 
     public <L, F extends FactoryBase<L,V>> F buildSubTree(Class<F> factoryClazz){

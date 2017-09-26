@@ -12,6 +12,7 @@ import org.controlsfx.glyphfont.FontAwesome;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
@@ -48,7 +49,7 @@ public class SimpleSingleAttributeEditorBuilder<T,A extends Attribute<T,A>> impl
 
     @Override
     @SuppressWarnings("unchecked")
-    public AttributeEditor<T,A> createEditor(Attribute<?,?> attribute, DataEditor dataEditor, Data previousData) {
+    public AttributeEditor<T,A> createEditor(Attribute<?,?> attribute, Consumer<Data> navigateToData, Data previousData) {
         A attributeTyped = (A) attribute;
         return new AttributeEditor<>(attributeTyped, attributeEditorVisualisationCreator.apply(attributeTyped), uniformDesign);
     }

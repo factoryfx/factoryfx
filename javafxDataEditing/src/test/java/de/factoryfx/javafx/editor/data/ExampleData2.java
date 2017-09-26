@@ -1,12 +1,11 @@
 package de.factoryfx.javafx.editor.data;
 
 import java.util.Arrays;
+import java.util.Collections;
 
 import de.factoryfx.data.Data;
 import de.factoryfx.data.attribute.DataViewListReferenceAttribute;
 import de.factoryfx.data.attribute.DataViewReferenceAttribute;
-import de.factoryfx.data.attribute.ViewListReferenceAttribute;
-import de.factoryfx.data.attribute.ViewReferenceAttribute;
 import de.factoryfx.data.attribute.types.StringAttribute;
 import de.factoryfx.data.validation.ObjectRequired;
 import de.factoryfx.data.validation.StringRequired;
@@ -24,7 +23,7 @@ public class ExampleData2 extends Data {
 
     public final DataViewListReferenceAttribute<ExampleData1,ExampleData1> listview= new DataViewListReferenceAttribute<>((ExampleData1 root)->{
             if ("1".equals(stringAttribute.get())){
-                return Arrays.asList(root);
+                return Collections.singletonList(root);
             }
             return null;
         }).validation(new ObjectRequired<>()).en("listview");

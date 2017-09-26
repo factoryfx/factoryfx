@@ -1,7 +1,5 @@
 package de.factoryfx.javafx.widget.dataview;
 
-import java.util.ArrayList;
-
 import de.factoryfx.data.Data;
 import de.factoryfx.javafx.UniformDesignBuilder;
 import de.factoryfx.javafx.editor.attribute.AttributeEditorBuilder;

@@ -24,12 +24,14 @@ public class DefaultCreator<V,F extends FactoryBase<?,V>> implements Function<Fa
                 if (attribute instanceof FactoryReferenceAttribute){
                     FactoryReferenceAttribute factoryReferenceAttribute = (FactoryReferenceAttribute) attribute;
                     Class<? extends FactoryBase> clazz = factoryReferenceAttribute.internal_getReferenceClass();
+                    validateAttributeClass(attributeVariableName, clazz);
                     FactoryBase factoryBase = context.get(clazz);
                     factoryReferenceAttribute.set(factoryBase);
                 }
                 if (attribute instanceof FactoryReferenceListAttribute){
                     FactoryReferenceListAttribute factoryReferenceAttribute = (FactoryReferenceListAttribute) attribute;
                     Class<? extends FactoryBase> clazz = factoryReferenceAttribute.internal_getReferenceClass();
+                    validateAttributeClass(attributeVariableName, clazz);
                     factoryReferenceAttribute.set(context.getList(clazz));
                 }
             });
@@ -38,6 +40,12 @@ public class DefaultCreator<V,F extends FactoryBase<?,V>> implements Function<Fa
             throw new RuntimeException(e);
         } catch (IllegalAccessException e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    protected void validateAttributeClass(String attributeVariableName, Class<? extends FactoryBase> clazz) {
+        if (clazz==null){
+            throw new IllegalStateException("cant build Factory "+this.clazz+". Attribute: '"+attributeVariableName+"' missing clazz info(setup method)");
         }
     }
 }

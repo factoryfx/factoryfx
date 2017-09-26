@@ -4,7 +4,7 @@ import de.factoryfx.data.Data;
 import de.factoryfx.javafx.editor.attribute.ListAttributeEditorVisualisation;
 import de.factoryfx.javafx.editor.data.DataEditor;
 import de.factoryfx.javafx.util.UniformDesign;
-import de.factoryfx.javafx.widget.datalistedit.DataListEditWidget;
+import de.factoryfx.javafx.widget.datalistedit.ReferenceListAttributeEditWidget;
 import de.factoryfx.javafx.widget.table.TableControlWidget;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.ObservableList;
@@ -23,13 +23,13 @@ import java.util.function.Consumer;
 public class ReferenceListAttributeVisualisation extends ListAttributeEditorVisualisation<Data> {
 
     private final UniformDesign uniformDesign;
-    private final DataEditor dataEditor;
-    private final DataListEditWidget<Data> dataListEditWidget;
+    private final Consumer<Data> navigateToData;
+    private final ReferenceListAttributeEditWidget<Data> dataListEditWidget;
     private final TableView<Data> tableView;
 
-    public ReferenceListAttributeVisualisation(UniformDesign uniformDesign, DataEditor dataEditor, TableView<Data> tableView, DataListEditWidget<Data> dataListEditWidget) {
+    public ReferenceListAttributeVisualisation(UniformDesign uniformDesign, Consumer<Data> navigateToData, TableView<Data> tableView, ReferenceListAttributeEditWidget<Data> dataListEditWidget) {
         this.uniformDesign = uniformDesign;
-        this.dataEditor = dataEditor;
+        this.navigateToData = navigateToData;
         this.dataListEditWidget = dataListEditWidget;
         this.tableView = tableView;
     }
@@ -48,7 +48,7 @@ public class ReferenceListAttributeVisualisation extends ListAttributeEditorVisu
         tableView.setOnMouseClicked(mouseEvent -> {
             if (mouseEvent.getButton().equals(MouseButton.PRIMARY)) {
                 if (mouseEvent.getClickCount() == 2 && tableView.getSelectionModel().getSelectedItem()!=null) {
-                    dataEditor.edit(tableView.getSelectionModel().getSelectedItem());
+                    navigateToData.accept(tableView.getSelectionModel().getSelectedItem());
                 }
             }
         });

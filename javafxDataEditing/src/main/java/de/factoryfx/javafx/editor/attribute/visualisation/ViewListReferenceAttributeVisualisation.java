@@ -24,11 +24,11 @@ import javafx.scene.layout.VBox;
 
 public class ViewListReferenceAttributeVisualisation implements AttributeEditorVisualisation<List<Data>> {
 
-    private final DataEditor dataEditor;
+    private final Consumer<Data> navigateToData;
     private final UniformDesign uniformDesign;
 
-    public ViewListReferenceAttributeVisualisation(DataEditor dataEditor, UniformDesign uniformDesign) {
-        this.dataEditor = dataEditor;
+    public ViewListReferenceAttributeVisualisation(Consumer<Data> navigateToData, UniformDesign uniformDesign) {
+        this.navigateToData = navigateToData;
         this.uniformDesign = uniformDesign;
     }
 
@@ -61,7 +61,7 @@ public class ViewListReferenceAttributeVisualisation implements AttributeEditorV
         tableView.setOnMouseClicked(mouseEvent -> {
             if (mouseEvent.getButton().equals(MouseButton.PRIMARY)) {
                 if (mouseEvent.getClickCount() == 2 && tableView.getSelectionModel().getSelectedItem()!=null) {
-                    dataEditor.edit(tableView.getSelectionModel().getSelectedItem());
+                    navigateToData.accept(tableView.getSelectionModel().getSelectedItem());
                 }
             }
         });

@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider;
@@ -79,8 +81,7 @@ public class JettyServer {
         provider.setMapper(mapper);
         resourceConfig.register(provider);
 
-        org.glassfish.jersey.logging.LoggingFeature loggingFilter = new org.glassfish.jersey.logging.LoggingFeature(java.util.logging.Logger.getLogger(JettyServerFactory.class.getName()));
-        resourceConfig.registerInstances(loggingFilter);
+        resourceConfig.registerInstances(new DelegatingLoggingFilterLogger());
         return resourceConfig;
     }
 

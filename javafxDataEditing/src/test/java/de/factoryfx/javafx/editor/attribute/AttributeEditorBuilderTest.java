@@ -11,7 +11,7 @@ public class AttributeEditorBuilderTest {
     public void test_canEdit(){
         AttributeEditorBuilder attributeEditor = new AttributeEditorBuilder(AttributeEditorBuilder.createDefaultSingleAttributeEditorBuilders(UniformDesignBuilder.build()));
 
-        Assert.assertNotNull(attributeEditor.getAttributeEditor(new StringAttribute(),null,null,null));
+        Assert.assertNotNull(attributeEditor.getAttributeEditor(new StringAttribute(),null,null));
     }
 
 }

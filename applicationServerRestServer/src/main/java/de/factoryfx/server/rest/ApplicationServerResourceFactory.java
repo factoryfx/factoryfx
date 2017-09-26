@@ -15,7 +15,6 @@ import de.factoryfx.user.persistent.PersistentUserManagementFactory;
 
 public class ApplicationServerResourceFactory<V,L,T extends FactoryBase<L,V>> extends ApplicationServerAwareFactory<V,L,T,ApplicationServerResource> {
 
-    ///TODO should be UserManagementFactory but doesn't work witch jackson
     public final FactoryPolymorphicReferenceAttribute<UserManagement> userManagement = new FactoryPolymorphicReferenceAttribute<UserManagement>().setupUnsafe(UserManagement.class, NoUserManagementFactory.class, PersistentUserManagementFactory.class).labelText("resource");
     public final ObjectValueAttribute<Predicate<Optional<AuthorizedUser>>> authorizedKeyUserEvaluator= new ObjectValueAttribute<Predicate<Optional<AuthorizedUser>>>().labelText("authorizedKeyUserEvaluator");
 
