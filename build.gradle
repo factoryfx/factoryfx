@@ -408,7 +408,7 @@ project(':docu') {
 }
 
 project(':vuejsFactoryEditing') {
-
+    uploadArchives.enabled = false
     dependencies {
         compile project(":jettyFactory")
         compile project(":applicationServer")

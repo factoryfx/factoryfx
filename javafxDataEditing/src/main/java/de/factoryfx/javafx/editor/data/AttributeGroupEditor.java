@@ -10,11 +10,14 @@ import de.factoryfx.javafx.editor.attribute.AttributeEditor;
 import de.factoryfx.javafx.editor.attribute.AttributeEditorBuilder;
 import de.factoryfx.javafx.util.UniformDesign;
 import de.factoryfx.javafx.widget.Widget;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
-import javafx.scene.control.Label;
-import javafx.scene.control.ScrollPane;
+import javafx.scene.control.*;
+import javafx.scene.input.Clipboard;
+import javafx.scene.input.ClipboardContent;
 import javafx.scene.layout.*;
 
 import java.util.ArrayList;
@@ -81,7 +84,7 @@ public class AttributeGroupEditor implements Widget {
             final VBox vBox = new VBox(3);
             vBox.setPadding(new Insets(3));
             VBox.setVgrow(content, Priority.ALWAYS);
-            vBox.getChildren().addAll(new Label(uniformDesign.getLabelText(attribute)),content);
+            vBox.getChildren().addAll(addCopyMenu(new Label(uniformDesign.getLabelText(attribute))),content);
 
             if (allValidations!=null) {
                 validateAll();
@@ -104,6 +107,7 @@ public class AttributeGroupEditor implements Widget {
             int row = 0;
             for (Attribute<?,?> attribute: attributeGroup){
                 Label label = addLabelContent(grid, row,uniformDesign.getLabelText(attribute));
+                addCopyMenu(label);
                 AttributeEditor<?,?> attributeEditor = attributeEditorBuilder.getAttributeEditor(attribute,navigateToData,oldValue);
                 addAttributeValidation(attribute, attributeEditor);
 
@@ -126,6 +130,21 @@ public class AttributeGroupEditor implements Widget {
             }
             return wrapGrid(grid);
         }
+    }
+
+    private Label addCopyMenu(Label label) {
+        ContextMenu contextMenu = new ContextMenu();
+        MenuItem copyItem = new MenuItem("copy");
+        copyItem.setOnAction(event -> {
+            final Clipboard clipboard = Clipboard.getSystemClipboard();
+            final ClipboardContent content = new ClipboardContent();
+            content.putString(label.getText().replaceFirst("_",""));
+            clipboard.setContent(content);
+        });
+        contextMenu.getItems().add(copyItem);
+        label.setContextMenu(contextMenu);
+
+        return label;
     }
 
     private Map<Attribute<?, ?>,AttributeEditor<?, ?>> attributeToEditor = new HashMap<>();
