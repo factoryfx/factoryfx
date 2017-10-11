@@ -81,6 +81,12 @@
         <Bug pattern="OBL_UNSATISFIED_OBLIGATION" />
     </Match>
 
+    <Match>
+        <Class name="de.factoryfx.javafx.widget.datalistedit.ReferenceListAttributeEditWidget" />
+        <Bug pattern="UC_USELESS_OBJECT" />
+    </Match>
+
+
 
 
 
