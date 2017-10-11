@@ -43,7 +43,7 @@ public class EnumAttribute<T extends Enum<T>> extends ImmutableValueAttribute<En
 
     /**
      * the default set value method
-     * @param enumValue
+     * @param enumValue value
      */
     @SuppressWarnings("unchecked")
     public void setEnum(T enumValue) {
@@ -58,7 +58,7 @@ public class EnumAttribute<T extends Enum<T>> extends ImmutableValueAttribute<En
 
     /***
      * use {@link #setEnum} instead (workaround for enums json serialisation)
-     * @param value
+     * @param value wrapper for workaround
      */
     @Override
     public void set(EnumWrapper<T> value) {
