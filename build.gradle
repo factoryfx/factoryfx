@@ -206,6 +206,7 @@ project(':applicationServerRestCommon') {
 }
 
 project(':applicationServerRestIntegrationTest') {
+    uploadArchives.enabled = false
     dependencies {
         compile project(":applicationServerRestServer")
         compile project(":applicationServerRestClient")
