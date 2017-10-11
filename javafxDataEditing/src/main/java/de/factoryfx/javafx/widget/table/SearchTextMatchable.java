@@ -1,4 +1,4 @@
-package de.factoryfx.data;
+package de.factoryfx.javafx.widget.table;
 
 import java.util.Optional;
 

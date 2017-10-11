@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 import de.factoryfx.data.attribute.time.LocalTimeAttribute;
 import de.factoryfx.data.attribute.types.*;
@@ -81,10 +82,10 @@ public class AttributeEditorBuilder {
         result.add(new SimpleSingleAttributeEditorBuilder<>(uniformDesign,DoubleAttribute.class,Double.class,(attribute)-> new DoubleAttributeVisualisation(),()->new DoubleAttribute()));
         result.add(new SimpleSingleAttributeEditorBuilder<>(uniformDesign,EncryptedStringAttribute.class,EncryptedString.class,(attribute)-> new EncryptedStringAttributeVisualisation(attribute::createKey, attribute::internal_isValidKey,uniformDesign),()->new EncryptedStringAttribute()));
 
-        result.add(new NoListSingleAttributeEditorBuilder<Enum,EnumAttribute<?>>(uniformDesign,(attribute)->attribute instanceof EnumAttribute,(attribute)->{
-            ArrayList<Enum> possibleEnumConstants = new ArrayList<>();
-            possibleEnumConstants.addAll(attribute.internal_possibleEnumValues());
-            return new EnumAttributeVisualisation(possibleEnumConstants);
+        result.add(new NoListSingleAttributeEditorBuilder<EnumAttribute.EnumWrapper,EnumAttribute<?>>(uniformDesign,(attribute)->attribute instanceof EnumAttribute,(attribute)->{
+            ArrayList<EnumAttribute.EnumWrapper> possibleEnumConstants = new ArrayList<>();
+            possibleEnumConstants.addAll(attribute.internal_possibleEnumValues().stream().map(e->new EnumAttribute.EnumWrapper(e)).collect(Collectors.toList()));
+            return new EnumAttributeVisualisation(uniformDesign,possibleEnumConstants);
         }));
 
         result.add(new SimpleSingleAttributeEditorBuilder<>(uniformDesign,I18nAttribute.class,LanguageText.class,(attribute)-> new I18nAttributeVisualisation(),()->new I18nAttribute()));

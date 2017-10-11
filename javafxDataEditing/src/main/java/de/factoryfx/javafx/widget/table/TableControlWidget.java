@@ -4,7 +4,6 @@ import java.text.DecimalFormat;
 
 import com.google.common.base.Strings;
 import de.factoryfx.data.Data;
-import de.factoryfx.data.SearchTextMatchable;
 import de.factoryfx.javafx.util.UniformDesign;
 import de.factoryfx.javafx.widget.Widget;
 import javafx.animation.FadeTransition;

@@ -8,6 +8,7 @@ import java.util.Optional;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import de.factoryfx.data.attribute.Attribute;
 import de.factoryfx.data.attribute.AttributeTypeInfo;
 import de.factoryfx.data.attribute.ImmutableValueAttribute;
 
@@ -40,17 +41,39 @@ public class EnumAttribute<T extends Enum<T>> extends ImmutableValueAttribute<En
         return Optional.ofNullable(get()).map(e->e.enumField).orElse(null);
     }
 
+    /**
+     * the default set value method
+     * @param enumValue
+     */
     @SuppressWarnings("unchecked")
     public void setEnum(T enumValue) {
-        set(new EnumWrapper<>(enumValue, (Class<T>) enumValue.getClass()));
+        set(new EnumWrapper<>(enumValue));
     }
 
     @SuppressWarnings("unchecked")
     public EnumAttribute<T> defaultEnum(T anEnum){
-        set(new EnumWrapper<>(anEnum, (Class<T>) anEnum.getClass()));
+        set(new EnumWrapper<>(anEnum));
         return this;
     }
 
+    /***
+     * use {@link #setEnum} instead (workaround for enums json serialisation)
+     * @param value
+     */
+    @Override
+    public void set(EnumWrapper<T> value) {
+        super.set(value);
+    }
+
+    public void set(T anEnum) {
+        set(new EnumWrapper<>(anEnum));
+    }
+
+//    @Override
+//    @SuppressWarnings("unchecked")
+//    public void internal_merge(Attribute<?,?> newValue) {
+//        setEnum((EnumAttribute<T>)newValue).getEnum());
+//    }
 
     //Workaround for bug https://github.com/FasterXML/jackson-databind/issues/937
     //@JsonValue doesn't work with JsonTypeInfo
@@ -61,9 +84,15 @@ public class EnumAttribute<T extends Enum<T>> extends ImmutableValueAttribute<En
         private final Class<T> enumClass;
 
 
-        public EnumWrapper(T enumField, Class<T> enumClass) {
+//        public EnumWrapper(Enum<?> enumField) {
+//            this.enumField = (T) enumField;
+//            this.enumClass= (Class<T>) enumField.getClass();
+//        }
+
+        @SuppressWarnings("unchecked")
+        public EnumWrapper(T enumField) {
             this.enumField = enumField;
-            this.enumClass=enumClass;
+            this.enumClass= (Class<T>) enumField.getClass();
         }
 
         //TODO remove, used only for quickfix compatibility
