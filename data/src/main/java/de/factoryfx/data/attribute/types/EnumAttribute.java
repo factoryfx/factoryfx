@@ -69,11 +69,14 @@ public class EnumAttribute<T extends Enum<T>> extends ImmutableValueAttribute<En
         set(new EnumWrapper<>(anEnum));
     }
 
-//    @Override
-//    @SuppressWarnings("unchecked")
-//    public void internal_merge(Attribute<?,?> newValue) {
-//        setEnum((EnumAttribute<T>)newValue).getEnum());
-//    }
+    /***
+     * use {@link #getEnum} instead (workaround for enums json serialisation)
+     * @return wrapper
+     */
+    @Override
+    public EnumWrapper<T> get() {
+        return super.get();
+    }
 
     //Workaround for bug https://github.com/FasterXML/jackson-databind/issues/937
     //@JsonValue doesn't work with JsonTypeInfo
