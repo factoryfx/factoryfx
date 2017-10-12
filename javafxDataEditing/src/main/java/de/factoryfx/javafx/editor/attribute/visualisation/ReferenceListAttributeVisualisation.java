@@ -6,7 +6,10 @@ import de.factoryfx.javafx.editor.data.DataEditor;
 import de.factoryfx.javafx.util.UniformDesign;
 import de.factoryfx.javafx.widget.datalistedit.ReferenceListAttributeEditWidget;
 import de.factoryfx.javafx.widget.table.TableControlWidget;
+import javafx.beans.binding.Bindings;
+import javafx.beans.binding.DoubleBinding;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
@@ -26,6 +29,7 @@ public class ReferenceListAttributeVisualisation extends ListAttributeEditorVisu
     private final Consumer<Data> navigateToData;
     private final ReferenceListAttributeEditWidget<Data> dataListEditWidget;
     private final TableView<Data> tableView;
+    private DoubleBinding heightBinding;
 
     public ReferenceListAttributeVisualisation(UniformDesign uniformDesign, Consumer<Data> navigateToData, TableView<Data> tableView, ReferenceListAttributeEditWidget<Data> dataListEditWidget) {
         this.uniformDesign = uniformDesign;
@@ -44,6 +48,9 @@ public class ReferenceListAttributeVisualisation extends ListAttributeEditorVisu
         test.setCellValueFactory(param -> new SimpleStringProperty(param.getValue().internal().getDisplayText()));
         tableView.getColumns().add(test);
         tableView.getStyleClass().add("hidden-tableview-headers");
+        heightBinding = Bindings.createDoubleBinding(() ->
+                readOnlyList.size() < 4 ? 74d : 243d, readOnlyList);
+        tableView.prefHeightProperty().bind(heightBinding);
 
         tableView.setOnMouseClicked(mouseEvent -> {
             if (mouseEvent.getButton().equals(MouseButton.PRIMARY)) {
