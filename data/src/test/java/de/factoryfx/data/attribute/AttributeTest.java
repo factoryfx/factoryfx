@@ -64,4 +64,11 @@ public class AttributeTest {
         Assert.assertEquals(exampleFactoryA.getId(),readed.getId());
     }
 
+    @Test
+    public void test_labelText(){
+        StringAttribute stringAttribute = new StringAttribute();
+        stringAttribute.labelText("test1",Locale.KOREA);
+        Assert.assertEquals("test1",stringAttribute.internal_getPreferredLabelText(Locale.KOREA));
+    }
+
 }

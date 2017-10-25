@@ -178,6 +178,10 @@ public abstract class Attribute<T,A extends Attribute<T,A>>{
     private static final Locale PORTUGUESE =new Locale("pt", "PT");
     private static final Locale SPANISH=new Locale("es", "ES");
     public String internal_getPreferredLabelText(Locale locale){
+        if (locale.equals(this.customLocale)){
+            return customLocaleText;
+        }
+
         if (en!=null && locale.equals(Locale.ENGLISH)){
             return en;
         }
@@ -258,9 +262,17 @@ public abstract class Attribute<T,A extends Attribute<T,A>>{
         return (A)this;
     }
 
+    /**
+     * Set text with custom locale
+     * currently only one additional text/local is supported
+     * @param labelText text
+     * @param locale locale of the text
+     * @return self
+     */
     @SuppressWarnings("unchecked")
     public A labelText(String labelText, Locale locale){
-//        this.labelText.internal_put(locale,labelText);
+        this.customLocale=locale;
+        this.customLocaleText=labelText;
         return (A)this;
     }
 
@@ -277,6 +289,9 @@ public abstract class Attribute<T,A extends Attribute<T,A>>{
     String it;
     @JsonIgnore
     String pt;
+
+    Locale customLocale;
+    String customLocaleText;
 
     @SuppressWarnings("unchecked")
     public A en(String text) {
