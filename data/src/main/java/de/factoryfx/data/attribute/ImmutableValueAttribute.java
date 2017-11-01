@@ -119,4 +119,14 @@ public abstract class ImmutableValueAttribute<T,A extends Attribute<T,A>> extend
         set(value);
     }
 
+    /** alternative to equals on value, typesafe , less verbose, without worrying about hidden contracts
+     * @param value compare value
+     */
+    public boolean match(T value){
+        if (get()!=null){
+            return get().equals(value);
+        }
+        return false;
+    }
+
 }

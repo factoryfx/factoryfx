@@ -42,5 +42,11 @@ public class ImmutableValueAttributeTest {
         Assert.assertTrue(valueAttribute.listeners.size()==0);
     }
 
+    @Test
+    public void test_match() throws Exception {
+        StringAttribute stringAttribute = new StringAttribute();
+        stringAttribute.set("123");
+        Assert.assertTrue(stringAttribute.match("123"));
+    }
 
 }
