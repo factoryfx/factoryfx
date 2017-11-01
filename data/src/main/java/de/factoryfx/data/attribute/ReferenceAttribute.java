@@ -21,7 +21,7 @@ public abstract class ReferenceAttribute<T extends Data, A extends ReferenceBase
     }
 
     @Override
-    public boolean internal_match(T value) {
+    public boolean internal_mergeMatch(T value) {
         if (this.value == null && value == null) {
             return true;
         }

@@ -25,7 +25,7 @@ public abstract class ViewReferenceAttribute<R extends Data, T extends Data,A ex
     }
 
     @Override
-    public boolean internal_match(T value) {
+    public boolean internal_mergeMatch(T value) {
         final T thisValue = this.get();
         if (thisValue == null && value == null) {
             return true;

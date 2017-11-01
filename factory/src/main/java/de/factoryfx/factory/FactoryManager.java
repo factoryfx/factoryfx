@@ -76,7 +76,7 @@ public class FactoryManager<V,L,R extends FactoryBase<L,V>> {
             if (previousFactory!=null){
                 data.internal().visitAttributesDualFlat(previousFactory, (name, currentAttribute, previousAttribute) -> {
                     if (!(currentAttribute instanceof DataViewReferenceAttribute) && !(currentAttribute instanceof DataViewListReferenceAttribute)){//Data views have no function no need to check
-                        if (!currentAttribute.internal_match(previousAttribute)){
+                        if (!currentAttribute.internal_mergeMatch(previousAttribute)){
                             result.add(data);
                         }
                     }

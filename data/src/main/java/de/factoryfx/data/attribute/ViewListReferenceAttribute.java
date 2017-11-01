@@ -26,7 +26,7 @@ public abstract class ViewListReferenceAttribute <R extends Data, T extends Data
     }
 
     @Override
-    public boolean internal_match(List<T> value) {
+    public boolean internal_mergeMatch(List<T> value) {
         final List<T> list = get();
         if (value==null ){
             return false;

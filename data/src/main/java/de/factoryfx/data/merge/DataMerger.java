@@ -33,7 +33,7 @@ public class DataMerger {
                 //check for conflict for removed object
                 entry.getValue().internal().visitAttributesDualFlat(originalValue, (name, currentAttribute, originalAttribute) -> {
                     if (!currentAttribute.internal_ignoreForMerging()){
-                        if (!currentAttribute.internal_match(originalAttribute)){
+                        if (!currentAttribute.internal_mergeMatch(originalAttribute)){
                             mergeResult.addConflictInfo(new AttributeDiffInfo(name,entry.getValue().getId()));
                         }
                     }

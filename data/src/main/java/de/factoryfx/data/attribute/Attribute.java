@@ -20,7 +20,7 @@ public abstract class Attribute<T,A extends Attribute<T,A>>{
 
     }
 
-    public abstract boolean internal_match(T value);
+    public abstract boolean internal_mergeMatch(T value);
 
     public boolean internal_ignoreForMerging() {
         return false;
@@ -34,13 +34,13 @@ public abstract class Attribute<T,A extends Attribute<T,A>>{
      * @return true if merge conflict
      */
     public boolean internal_hasMergeConflict(Attribute<?,?> originalAttribute, Attribute<?,?> newAttribute) {
-        if (newAttribute.internal_match(originalAttribute)) {
+        if (newAttribute.internal_mergeMatch(originalAttribute)) {
             return false;
         }
-        if (internal_match(originalAttribute)) {
+        if (internal_mergeMatch(originalAttribute)) {
             return false;
         }
-        if (internal_match(newAttribute)) {
+        if (internal_mergeMatch(newAttribute)) {
             return false;
         }
         return true;
@@ -53,7 +53,7 @@ public abstract class Attribute<T,A extends Attribute<T,A>>{
      * @return true if merge should be executed
      * */
     public boolean internal_isMergeable(Attribute<?,?> originalAttribute, Attribute<?,?> newAttribute) {
-        if (!internal_match(originalAttribute) || internal_match(newAttribute)) {
+        if (!internal_mergeMatch(originalAttribute) || internal_mergeMatch(newAttribute)) {
             return false ;
         }
         return true;
@@ -77,8 +77,8 @@ public abstract class Attribute<T,A extends Attribute<T,A>>{
     }
 
     @SuppressWarnings("unchecked")
-    public boolean internal_match(Attribute<?,?> attribute) {
-        return internal_match((T) attribute.get());
+    public boolean internal_mergeMatch(Attribute<?,?> attribute) {
+        return internal_mergeMatch((T) attribute.get());
     }
 
     public abstract void internal_semanticCopyTo(A copyAttribute);

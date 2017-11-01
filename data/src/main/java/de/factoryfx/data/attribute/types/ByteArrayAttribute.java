@@ -26,7 +26,7 @@ public class ByteArrayAttribute extends ImmutableValueAttribute<byte[],ByteArray
     }
 
     @Override
-    public boolean internal_match(byte[] value) {
+    public boolean internal_mergeMatch(byte[] value) {
         return Arrays.equals(get(), value);
     }
 

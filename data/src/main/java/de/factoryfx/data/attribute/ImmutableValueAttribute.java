@@ -21,7 +21,7 @@ public abstract class ImmutableValueAttribute<T,A extends Attribute<T,A>> extend
     }
 
     @Override
-    public boolean internal_match(T value) {
+    public boolean internal_mergeMatch(T value) {
         return Objects.equals(this.value, value);
     }
 
@@ -125,7 +125,7 @@ public abstract class ImmutableValueAttribute<T,A extends Attribute<T,A>> extend
      */
     public boolean match(T value){
         if (get()!=null){
-            return get().equals(value);
+            return internal_mergeMatch(value);
         }
         return false;
     }

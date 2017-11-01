@@ -19,7 +19,7 @@ public abstract class ReferenceListAttribute<T extends Data,A extends ReferenceB
     }
 
     @Override
-    public boolean internal_match(List<T> value) {
+    public boolean internal_mergeMatch(List<T> value) {
         if (value==null ){
             return false;
         }
