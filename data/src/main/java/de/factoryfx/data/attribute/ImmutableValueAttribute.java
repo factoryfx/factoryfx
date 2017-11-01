@@ -121,6 +121,7 @@ public abstract class ImmutableValueAttribute<T,A extends Attribute<T,A>> extend
 
     /** alternative to equals on value, typesafe , less verbose, without worrying about hidden contracts
      * @param value compare value
+     * @return true if equals
      */
     public boolean match(T value){
         if (get()!=null){
@@ -131,6 +132,7 @@ public abstract class ImmutableValueAttribute<T,A extends Attribute<T,A>> extend
 
     /**see: {@link #match},
      * @param attribute compare attribute
+     * @return true if equals
      */
     public boolean match(A attribute){
         return match(attribute.get());
