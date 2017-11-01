@@ -49,4 +49,13 @@ public class ImmutableValueAttributeTest {
         Assert.assertTrue(stringAttribute.match("123"));
     }
 
+    @Test
+    public void test_match_attribute() throws Exception {
+        StringAttribute stringAttribute = new StringAttribute();
+        stringAttribute.set("123");
+
+        StringAttribute stringAttribute2 = new StringAttribute();
+        stringAttribute2.set("123");
+        Assert.assertTrue(stringAttribute.match(stringAttribute2));
+    }
 }

@@ -129,4 +129,11 @@ public abstract class ImmutableValueAttribute<T,A extends Attribute<T,A>> extend
         return false;
     }
 
+    /**see: {@link #match},
+     * @param attribute compare attribute
+     */
+    public boolean match(A attribute){
+        return match(attribute.get());
+    }
+
 }
