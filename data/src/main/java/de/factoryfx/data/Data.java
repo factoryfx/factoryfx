@@ -26,15 +26,25 @@ public class Data {
 
     private String id;
 
+    private Supplier<String> idSupplier;
     public String getId() {
         if (id == null) {
-            id = UUID.randomUUID().toString();
+            if (idSupplier != null) {
+                id = idSupplier.get();
+            } else {
+                id = UUID.randomUUID().toString();
+            }
         }
         return id;
     }
 
     public void setId(String value) {
         id = value;
+    }
+
+
+    private void setIdSupplier(Supplier<String> idSupplier){
+        this.idSupplier=idSupplier;
     }
 
     @JsonIgnore
@@ -592,6 +602,15 @@ public class Data {
          */
         public <T> void addValidation(Validation<T> validation, Attribute<?,?>... dependencies){
             data.addValidation(validation,dependencies);
+        }
+
+        /**
+         * use id derived from attributes instead of uuid
+         *
+         * @param customIdSupplier id supplier
+         */
+        public void attributeId(Supplier<String> customIdSupplier){
+            data.setIdSupplier(customIdSupplier);
         }
 
     }

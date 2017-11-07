@@ -10,6 +10,7 @@ import de.factoryfx.data.validation.ObjectRequired;
 import de.factoryfx.data.validation.Validation;
 import de.factoryfx.data.validation.ValidationError;
 import de.factoryfx.data.validation.ValidationResult;
+import javafx.scene.control.Tooltip;
 
 public abstract class Attribute<T,A extends Attribute<T,A>>{
 
@@ -328,6 +329,37 @@ public abstract class Attribute<T,A extends Attribute<T,A>>{
         return (A)this;
     }
 
+    @JsonIgnore
+    String tooltipEn;
+    @JsonIgnore
+    String tooltipDe;
+
+    public A tooltipEn(String tooltip){
+        tooltipEn=tooltip;
+        return (A)this;
+    }
+
+    public A tooltipDe(String tooltip){
+        tooltipDe=tooltip;
+        return (A)this;
+    }
+
+    public String internal_getPreferredTooltipText(Locale locale){
+        if (tooltipEn!=null && locale.equals(Locale.ENGLISH)){
+            return tooltipEn;
+        }
+        if (tooltipDe!=null && locale.equals(Locale.GERMAN)){
+            return tooltipDe;
+        }
+
+        if (tooltipEn!=null){
+            return tooltipEn;
+        }
+        if (tooltipDe!=null){
+            return tooltipDe;
+        }
+        return "";
+    }
 
 
 

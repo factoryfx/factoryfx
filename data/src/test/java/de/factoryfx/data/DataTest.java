@@ -4,7 +4,9 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Supplier;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import de.factoryfx.data.attribute.*;
 import de.factoryfx.data.attribute.types.ObjectValueAttribute;
 import de.factoryfx.data.attribute.types.StringAttribute;
@@ -376,5 +378,29 @@ public class DataTest {
 
     }
 
+
+    public static class ExampleDataCustomId extends Data {
+        public final StringAttribute stringAttribute= new StringAttribute().labelText("ExampleA1");
+
+        public ExampleDataCustomId(){
+            config().attributeId(() -> stringAttribute.get());
+        }
+
+    }
+
+    @Test
+    public void test_customId(){
+        ExampleDataCustomId exampleDataCustomId = new ExampleDataCustomId();
+        exampleDataCustomId.stringAttribute.set("blabla");
+        Assert.assertEquals("blabla",exampleDataCustomId.getId());
+    }
+
+    @Test
+    public void test_customId_after_json(){
+        ExampleDataCustomId exampleDataCustomId = new ExampleDataCustomId();
+        exampleDataCustomId.stringAttribute.set("blabla");
+        ExampleDataCustomId copy = ObjectMapperBuilder.build().copy(exampleDataCustomId);
+        Assert.assertEquals("blabla",copy.getId());
+    }
 
 }

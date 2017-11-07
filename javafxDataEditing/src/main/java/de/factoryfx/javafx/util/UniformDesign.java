@@ -94,6 +94,10 @@ public class UniformDesign {
         return attribute.internal_getPreferredLabelText(locale);
     }
 
+    public String getTooltipText(Attribute<?,?> attribute) {
+        return attribute.internal_getPreferredTooltipText(locale);
+    }
+
     public String getText(LanguageText languageText) {
         return languageText.internal_getPreferred(locale);
     }

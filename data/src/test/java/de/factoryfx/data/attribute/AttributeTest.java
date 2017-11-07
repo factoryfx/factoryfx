@@ -71,4 +71,15 @@ public class AttributeTest {
         Assert.assertEquals("test1",stringAttribute.internal_getPreferredLabelText(Locale.KOREA));
     }
 
+    @Test
+    public void test_tooltipText_de(){
+        StringAttribute stringAttribute = new StringAttribute().tooltipDe("hallo");
+        Assert.assertEquals("hallo",stringAttribute.internal_getPreferredTooltipText(Locale.GERMAN));
+    }
+
+    @Test
+    public void test_tooltipText_en(){
+        StringAttribute stringAttribute = new StringAttribute().tooltipEn("hi");
+        Assert.assertEquals("hi",stringAttribute.internal_getPreferredTooltipText(Locale.ENGLISH));
+    }
 }

@@ -1,5 +1,6 @@
 package de.factoryfx.javafx.editor.data;
 
+import com.google.common.base.Strings;
 import de.factoryfx.data.Data;
 import de.factoryfx.data.attribute.Attribute;
 import de.factoryfx.data.attribute.AttributeChangeListener;
@@ -106,7 +107,7 @@ public class AttributeGroupEditor implements Widget {
 
             int row = 0;
             for (Attribute<?,?> attribute: attributeGroup){
-                Label label = addLabelContent(grid, row,uniformDesign.getLabelText(attribute));
+                Label label = addLabelContent(grid, row,attribute);
                 addCopyMenu(label);
                 AttributeEditor<?,?> attributeEditor = attributeEditorBuilder.getAttributeEditor(attribute,navigateToData,oldValue);
                 addAttributeValidation(attribute, attributeEditor);
@@ -188,8 +189,10 @@ public class AttributeGroupEditor implements Widget {
         if (row%2==0) {
             pane.setStyle("-fx-background-color: "+ highlightBackground + ";");
         }
-    }    private Label addLabelContent(GridPane gridPane, int row,String text) {
-        String mnemonicLabelText=text;
+    }
+
+    private Label addLabelContent(GridPane gridPane, int row, Attribute<?,?> attribute) {
+        String mnemonicLabelText=uniformDesign.getLabelText(attribute);
         if (mnemonicLabelText!=null){
             mnemonicLabelText="_"+mnemonicLabelText;
         }
@@ -207,6 +210,11 @@ public class AttributeGroupEditor implements Widget {
         if (row%2==0) {
             pane.setStyle("-fx-background-color: " + highlightBackground + ";");
         }
+        String tooltip=uniformDesign.getTooltipText(attribute);
+        if (!Strings.isNullOrEmpty(tooltip)) {
+            label.setTooltip(new Tooltip(tooltip));
+        }
+
         return label;
     }
     final static String highlightBackground = "#FCFCFC";
