@@ -13,7 +13,9 @@ import de.factoryfx.data.validation.ValidationError;
 import javafx.beans.property.ReadOnlyStringProperty;
 import javafx.beans.property.SimpleStringProperty;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -178,8 +180,10 @@ public class Data {
             result=newInstanceSupplier.get();
         } else {
             try {
-                result = Data.this.getClass().newInstance();
-            } catch (InstantiationException | IllegalAccessException e) {
+                Constructor constructor = Data.this.getClass().getDeclaredConstructor(new Class[0]);
+                constructor.setAccessible(true);
+                result = (Data) constructor.newInstance(new Object[0]);
+            } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
                 throw new RuntimeException(e);
             }
         }
