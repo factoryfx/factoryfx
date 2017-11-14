@@ -40,7 +40,7 @@ public class OracledbFactoryStorageHistory<V,L,R extends FactoryBase<L,V>> {
 
         try (Connection connection= connectionSupplier.get()){
             try (Statement statement = connection.createStatement()){
-                String sql = "SELECT * FROM FACTORY_HISTORY WHERE id="+id;
+                String sql = "SELECT * FROM FACTORY_HISTORY WHERE id='"+id+"'";
 
                 ResultSet resultSet =statement.executeQuery(sql);
                 if(resultSet.next()){
