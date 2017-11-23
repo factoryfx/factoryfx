@@ -18,12 +18,7 @@ import javax.sql.DataSource;
 
 import com.google.common.io.CharStreams;
 import de.factoryfx.factory.FactoryBase;
-import de.factoryfx.factory.datastorage.FactoryAndNewMetadata;
-import de.factoryfx.factory.datastorage.FactoryAndStoredMetadata;
-import de.factoryfx.factory.datastorage.FactorySerialisationManager;
-import de.factoryfx.factory.datastorage.FactoryStorage;
-import de.factoryfx.factory.datastorage.NewFactoryMetadata;
-import de.factoryfx.factory.datastorage.StoredFactoryMetadata;
+import de.factoryfx.factory.datastorage.*;
 
 public class PostgresFactoryStorage<V,L,T extends FactoryBase<L,V>> implements FactoryStorage<V,L,T> {
 
@@ -225,4 +220,103 @@ public class PostgresFactoryStorage<V,L,T extends FactoryBase<L,V>> implements F
             stmt.execute(CharStreams.toString(new InputStreamReader(getClass().getResourceAsStream("createConfigurationtables.sql"), StandardCharsets.UTF_8)));
         }
     }
+
+    @Override
+    public Collection<ScheduledFactoryMetadata> getFutureFactoryList() {
+        try {
+            try (Connection connection = dataSource.getConnection(); PreparedStatement pstmt = connection.prepareStatement("select cast (metadata as text) as metadata from futureconfigurationmetadata")) {
+                    ArrayList<ScheduledFactoryMetadata> ret = new ArrayList<>();
+                    try (ResultSet rs = pstmt.executeQuery()) {
+                        while (rs.next()) {
+                            ret.add(factorySerialisationManager.readScheduledFactoryMetadata(rs.getString(1)));
+                        }
+                    }
+                    return ret;
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Cannot read future factories",e);
+        }
+    }
+
+    @Override
+    public void deleteFutureFactory(String id) {
+        try (Connection connection = this.dataSource.getConnection();
+             PreparedStatement pstmtDeleteMetadata =
+                         connection.prepareStatement("delete from futureconfigurationmetadata where id = ?");
+              PreparedStatement pstmtDeleteConfiguration = connection.prepareStatement("delete from futureconfiguration where id = ?")
+            ) {
+            pstmtDeleteMetadata.setString(1,id);
+            pstmtDeleteMetadata.executeUpdate();
+            pstmtDeleteConfiguration.setString(1,id);
+            pstmtDeleteConfiguration.executeUpdate();
+            connection.commit();
+        } catch (SQLException e) {
+            throw new RuntimeException("Cannot delete future factory",e);
+        }
+    }
+
+    public T getFutureFactory(String id) {
+        int dataModelVersion=-99999;
+        for(ScheduledFactoryMetadata metaData: getFutureFactoryList()){
+            if (metaData.id.equals(id)){
+                dataModelVersion=metaData.dataModelVersion;
+            }
+        }
+        if (dataModelVersion==-99999) {
+            throw new IllegalStateException("cant find id: "+id+" in history");
+        }
+
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement pstmt = connection.prepareStatement("select cast (root as text) as root from futureconfiguration where id = ?")) {
+                pstmt.setString(1,id);
+                try (ResultSet rs = pstmt.executeQuery()) {
+                    if (!rs.next())
+                        throw new IllegalArgumentException("No factory with id '"+id+"' found");
+                    return factorySerialisationManager.read(rs.getString(1),dataModelVersion);
+                }
+        } catch (SQLException e) {
+            throw new RuntimeException("Cannot read future factory",e);
+        }
+    }
+
+    @Override
+    public void addFutureFactory(FactoryAndNewMetadata<T> update, String user, String comment, LocalDateTime scheduled) {
+        final ScheduledFactoryMetadata storedFactoryMetadata = new ScheduledFactoryMetadata();
+        storedFactoryMetadata.creationTime= LocalDateTime.now();
+        storedFactoryMetadata.id= createNewId();
+        storedFactoryMetadata.user=user;
+        storedFactoryMetadata.comment=comment;
+        storedFactoryMetadata.baseVersionId=update.metadata.baseVersionId;
+        storedFactoryMetadata.dataModelVersion=update.metadata.dataModelVersion;
+        storedFactoryMetadata.scheduled = scheduled;
+        update.root.setId(storedFactoryMetadata.id);
+        final FactoryAndScheduledMetadata<T> updateData = new FactoryAndScheduledMetadata<>(update.root, storedFactoryMetadata);
+
+        try (Connection connection = this.dataSource.getConnection()) {
+            long createdAt = System.currentTimeMillis();
+            Timestamp createdAtTimestamp = new Timestamp(createdAt);
+            try (PreparedStatement pstmtInsertConfigurationMetadata = connection.prepareStatement("insert into futureconfigurationmetadata (metadata, createdAt, id) values (cast (? as json), ?, ?)")) {
+                pstmtInsertConfigurationMetadata.setString(1, factorySerialisationManager.writeScheduledMetadata(storedFactoryMetadata));
+                pstmtInsertConfigurationMetadata.setTimestamp(2, createdAtTimestamp);
+                pstmtInsertConfigurationMetadata.setString(3,storedFactoryMetadata.id);
+                pstmtInsertConfigurationMetadata.execute();
+            }
+
+            try (PreparedStatement pstmtInsertConfiguration = connection.prepareStatement("insert into futureconfiguration (root, metadata, createdAt, id) values (cast (? as json), cast (? as json), ?, ?)")) {
+                pstmtInsertConfiguration.setString(1, factorySerialisationManager.write(update.root));
+                pstmtInsertConfiguration.setString(2, factorySerialisationManager.writeScheduledMetadata(updateData.metadata));
+                pstmtInsertConfiguration.setTimestamp(3, createdAtTimestamp);
+                pstmtInsertConfiguration.setString(4, storedFactoryMetadata.id);
+                pstmtInsertConfiguration.execute();
+            }
+
+            connection.commit();
+
+        } catch (SQLException e) {
+            throw new RuntimeException("Cannot add future factory",e);
+        }
+    }
+
+
+
 }

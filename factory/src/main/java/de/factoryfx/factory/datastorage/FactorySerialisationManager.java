@@ -25,6 +25,10 @@ public class FactorySerialisationManager<T extends FactoryBase<?,?>> {
         return defaultFactorySerialisation.writeStorageMetadata(metadata);
     }
 
+    public String writeScheduledMetadata(ScheduledFactoryMetadata metadata) {
+        return defaultFactorySerialisation.writeScheduledMetadata(metadata);
+    }
+
     public T read(String data, int dataModelVersion) {
         if (defaultFactoryDeSerialisation.canRead(dataModelVersion)){
             return defaultFactoryDeSerialisation.read(data);
