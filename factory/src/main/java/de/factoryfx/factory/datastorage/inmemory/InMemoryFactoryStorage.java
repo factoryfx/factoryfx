@@ -1,10 +1,7 @@
 package de.factoryfx.factory.datastorage.inmemory;
 
 import java.time.LocalDateTime;
-import java.util.Collection;
-import java.util.Map;
-import java.util.TreeMap;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import de.factoryfx.factory.FactoryBase;
@@ -17,6 +14,7 @@ import de.factoryfx.factory.datastorage.StoredFactoryMetadata;
 
 public class InMemoryFactoryStorage<V,L,T extends FactoryBase<L,V>> implements FactoryStorage<V,L,T> {
     private Map<String,FactoryAndStoredMetadata<T>> storage = new TreeMap<>();
+    private Map<String,FactoryAndStoredMetadata<T>> future = new TreeMap<>();
     private String current;
     private T initialFactory;
 
@@ -74,4 +72,31 @@ public class InMemoryFactoryStorage<V,L,T extends FactoryBase<L,V>> implements F
         metadata.user="System";
         storage.put(current,new FactoryAndStoredMetadata<>(initialFactory, metadata));
     }
+
+    @Override
+    public Collection<StoredFactoryMetadata> getFutureFactoryList() {
+        return future.values().stream()/*.filter(factory -> !factory.metadata.id.equals(current))*/.map(item -> item.metadata).collect(Collectors.toList());
+    }
+
+    @Override
+    public void deleteFutureFactory(String id) {
+        future.remove(id);
+    }
+
+    @Override
+    public void addFutureFactory(FactoryAndNewMetadata<T> update, String user, String comment, LocalDateTime scheduled) {
+        final StoredFactoryMetadata storedFactoryMetadata = new StoredFactoryMetadata();
+        storedFactoryMetadata.creationTime=LocalDateTime.now();
+        storedFactoryMetadata.id= UUID.randomUUID().toString();
+        storedFactoryMetadata.user=user;
+        storedFactoryMetadata.comment=comment;
+        storedFactoryMetadata.baseVersionId=update.metadata.baseVersionId;
+        storedFactoryMetadata.dataModelVersion=update.metadata.dataModelVersion;
+        storedFactoryMetadata.scheduled = scheduled;
+
+        final FactoryAndStoredMetadata<T> updateData = new FactoryAndStoredMetadata<>(update.root, storedFactoryMetadata);
+        storage.put(updateData.metadata.id, updateData);
+        current=updateData.metadata.id;
+    }
+
 }

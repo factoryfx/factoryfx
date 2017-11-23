@@ -1,6 +1,8 @@
 package de.factoryfx.factory.datastorage;
 
+import java.time.LocalDateTime;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -32,6 +34,19 @@ public interface FactoryStorage<V,L,R extends FactoryBase<L,V>> {
     }
 
     Collection<StoredFactoryMetadata> getHistoryFactoryList();
+
+    default Collection<StoredFactoryMetadata> getFutureFactoryList() {
+        return Collections.emptyList();
+    }
+
+    default void deleteFutureFactory(String id) {
+        throw new UnsupportedOperationException();
+    }
+
+    default void addFutureFactory(FactoryAndNewMetadata<R> update, String user, String comment, LocalDateTime scheduled) {
+        throw new UnsupportedOperationException();
+    }
+
 
     FactoryAndStoredMetadata<R> getCurrentFactory();
 
