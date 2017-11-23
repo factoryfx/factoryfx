@@ -5,17 +5,15 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 
 import javax.sql.DataSource;
 
-import de.factoryfx.factory.datastorage.FactoryAndNewMetadata;
-import de.factoryfx.factory.datastorage.FactorySerialisationManager;
-import de.factoryfx.factory.datastorage.JacksonDeSerialisation;
-import de.factoryfx.factory.datastorage.JacksonSerialisation;
-import de.factoryfx.factory.datastorage.NewFactoryMetadata;
+import de.factoryfx.factory.datastorage.*;
 import de.factoryfx.factory.testfactories.ExampleFactoryA;
 import de.factoryfx.factory.testfactories.ExampleLiveObjectA;
 import org.junit.AfterClass;
@@ -195,6 +193,33 @@ public class PostgresFactoryStorageTest {
         restored.loadInitialFactory();
         Assert.assertEquals(2,restored.getHistoryFactoryList().size());
     }
+
+    @Test
+    public void test_future() throws SQLException {
+        PostgresFactoryStorage<Void,ExampleLiveObjectA, ExampleFactoryA> postgresFactoryStorage = new PostgresFactoryStorage<>(postgresDatasource,new ExampleFactoryA(),createSerialisation());
+        postgresFactoryStorage.loadInitialFactory();
+
+        {
+            NewFactoryMetadata metadata = new NewFactoryMetadata();
+            postgresFactoryStorage.addFutureFactory(new FactoryAndNewMetadata<>(new ExampleFactoryA(),metadata),"","", LocalDateTime.now());
+            Collection<ScheduledFactoryMetadata> list = postgresFactoryStorage.getFutureFactoryList();
+            Assert.assertEquals(1,list.size());
+            String id = list.iterator().next().id;
+            ExampleFactoryA v = postgresFactoryStorage.getFutureFactory(id);
+            Assert.assertEquals(id,v.getId());
+            metadata = new NewFactoryMetadata();
+            postgresFactoryStorage.addFutureFactory(new FactoryAndNewMetadata<>(new ExampleFactoryA(),metadata),"","", LocalDateTime.now());
+            list = postgresFactoryStorage.getFutureFactoryList();
+            Assert.assertEquals(2,list.size());
+            postgresFactoryStorage.deleteFutureFactory(list.iterator().next().id);
+            list = postgresFactoryStorage.getFutureFactoryList();
+            Assert.assertEquals(1,list.size());
+
+        }
+
+
+    }
+
 
 }
 
