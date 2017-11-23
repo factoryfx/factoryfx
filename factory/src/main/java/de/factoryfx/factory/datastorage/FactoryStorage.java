@@ -43,6 +43,10 @@ public interface FactoryStorage<V,L,R extends FactoryBase<L,V>> {
         throw new UnsupportedOperationException();
     }
 
+    default R getFutureFactory(String id) {
+        throw new UnsupportedOperationException();
+    }
+
     default void addFutureFactory(FactoryAndNewMetadata<R> update, String user, String comment, LocalDateTime scheduled) {
         throw new UnsupportedOperationException();
     }

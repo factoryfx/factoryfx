@@ -79,9 +79,14 @@ public class InMemoryFactoryStorage<V,L,T extends FactoryBase<L,V>> implements F
         future.remove(id);
     }
 
+    public T getFutureFactory(String id) {
+        FactoryAndScheduledMetadata<T> data = future.get(id);
+        return data.root.internal().copyFromRoot();
+    }
+
     @Override
     public void addFutureFactory(FactoryAndNewMetadata<T> update, String user, String comment, LocalDateTime scheduled) {
-        final StoredFactoryMetadata storedFactoryMetadata = new StoredFactoryMetadata();
+        final ScheduledFactoryMetadata storedFactoryMetadata = new ScheduledFactoryMetadata();
         storedFactoryMetadata.creationTime=LocalDateTime.now();
         storedFactoryMetadata.id= UUID.randomUUID().toString();
         storedFactoryMetadata.user=user;
@@ -90,8 +95,8 @@ public class InMemoryFactoryStorage<V,L,T extends FactoryBase<L,V>> implements F
         storedFactoryMetadata.dataModelVersion=update.metadata.dataModelVersion;
         storedFactoryMetadata.scheduled = scheduled;
 
-        final FactoryAndStoredMetadata<T> updateData = new FactoryAndStoredMetadata<>(update.root, storedFactoryMetadata);
-        storage.put(updateData.metadata.id, updateData);
+        final FactoryAndScheduledMetadata<T> updateData = new FactoryAndScheduledMetadata<>(update.root, storedFactoryMetadata);
+        future.put(updateData.metadata.id, updateData);
         current=updateData.metadata.id;
     }
 

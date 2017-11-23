@@ -3,12 +3,14 @@ package de.factoryfx.factory.datastorage;
 import java.time.LocalDateTime;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 /**
  * metadata for a stored historical factory
  */
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
+@JsonIgnoreProperties("scheduled")
 public class StoredFactoryMetadata {
     public LocalDateTime creationTime;
     public String id;
@@ -20,9 +22,6 @@ public class StoredFactoryMetadata {
 
     /** version of the factory structure used for migration*/
     public int dataModelVersion;
-
-    /** for scheduled update: date and time of planned activation of this configuration */
-    public LocalDateTime scheduled;
 
     @JsonCreator
     public StoredFactoryMetadata() {

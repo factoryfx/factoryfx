@@ -6,4 +6,5 @@ public interface FactoryDeSerialisation<T extends FactoryBase<?,?>> {
     boolean canRead(int dataModelVersion);
     T read(String data);
     StoredFactoryMetadata readStorageMetadata(String data);
+    ScheduledFactoryMetadata readScheduledMetadata(String data);
 }

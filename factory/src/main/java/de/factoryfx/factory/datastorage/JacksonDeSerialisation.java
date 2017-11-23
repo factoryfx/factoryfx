@@ -26,4 +26,9 @@ public class JacksonDeSerialisation<T extends FactoryBase<?,?>> implements Facto
     public StoredFactoryMetadata readStorageMetadata(String data) {
         return ObjectMapperBuilder.build().readValue(data,StoredFactoryMetadata.class);
     }
+
+    @Override
+    public ScheduledFactoryMetadata readScheduledMetadata(String data) {
+        return ObjectMapperBuilder.build().readValue(data,ScheduledFactoryMetadata.class);
+    }
 }
