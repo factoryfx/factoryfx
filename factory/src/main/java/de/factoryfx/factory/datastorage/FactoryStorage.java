@@ -35,7 +35,7 @@ public interface FactoryStorage<V,L,R extends FactoryBase<L,V>> {
 
     Collection<StoredFactoryMetadata> getHistoryFactoryList();
 
-    default Collection<StoredFactoryMetadata> getFutureFactoryList() {
+    default Collection<ScheduledFactoryMetadata> getFutureFactoryList() {
         return Collections.emptyList();
     }
 

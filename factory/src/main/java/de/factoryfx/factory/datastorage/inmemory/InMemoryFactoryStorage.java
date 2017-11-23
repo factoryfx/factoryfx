@@ -5,16 +5,12 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import de.factoryfx.factory.FactoryBase;
-import de.factoryfx.factory.datastorage.FactoryAndNewMetadata;
-import de.factoryfx.factory.datastorage.FactoryAndStoredMetadata;
-import de.factoryfx.factory.datastorage.FactoryStorage;
-import de.factoryfx.factory.datastorage.NewFactoryMetadata;
-import de.factoryfx.factory.datastorage.StoredFactoryMetadata;
+import de.factoryfx.factory.datastorage.*;
 
 
 public class InMemoryFactoryStorage<V,L,T extends FactoryBase<L,V>> implements FactoryStorage<V,L,T> {
     private Map<String,FactoryAndStoredMetadata<T>> storage = new TreeMap<>();
-    private Map<String,FactoryAndStoredMetadata<T>> future = new TreeMap<>();
+    private Map<String,FactoryAndScheduledMetadata<T>> future = new TreeMap<>();
     private String current;
     private T initialFactory;
 
@@ -74,7 +70,7 @@ public class InMemoryFactoryStorage<V,L,T extends FactoryBase<L,V>> implements F
     }
 
     @Override
-    public Collection<StoredFactoryMetadata> getFutureFactoryList() {
+    public Collection<ScheduledFactoryMetadata> getFutureFactoryList() {
         return future.values().stream()/*.filter(factory -> !factory.metadata.id.equals(current))*/.map(item -> item.metadata).collect(Collectors.toList());
     }
 
