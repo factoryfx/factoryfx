@@ -3,24 +3,26 @@ package de.factoryfx.factory.datastorage.oracle;
 import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.factory.datastorage.*;
 
-import java.nio.charset.StandardCharsets;
 import java.sql.*;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.UUID;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 public class OracledbFactoryStorage<V,L,R extends FactoryBase<L,V>> implements FactoryStorage<V,L, R> {
     private final OracledbFactoryStorageHistory<V,L, R> oracledbFactoryStorageHistory;
+    private final OracledbFactoryStorageFuture<V,L, R> oracledbFactoryStorageFuture;
     private final R initialFactory;
     private final FactorySerialisationManager<R> factorySerialisationManager;
     private final Supplier< Connection > connectionSupplier;
 
-    public OracledbFactoryStorage(Supplier< Connection > connectionSupplier, R defaultFactory, FactorySerialisationManager<R> factorySerialisationManager, OracledbFactoryStorageHistory<V,L, R> oracledbFactoryStorageHistory){
+    public OracledbFactoryStorage(Supplier<Connection> connectionSupplier, R defaultFactory, FactorySerialisationManager<R> factorySerialisationManager, OracledbFactoryStorageHistory<V, L, R> oracledbFactoryStorageHistory, OracledbFactoryStorageFuture<V, L, R> oracledbFactoryStorageFuture){
         this.initialFactory=defaultFactory;
         this.connectionSupplier = connectionSupplier;
         this.factorySerialisationManager= factorySerialisationManager;
         this.oracledbFactoryStorageHistory = oracledbFactoryStorageHistory;
+        this.oracledbFactoryStorageFuture = oracledbFactoryStorageFuture;
 
         try (Connection connection= connectionSupplier.get()){
             try (Statement statement = connection.createStatement()){
@@ -41,7 +43,8 @@ public class OracledbFactoryStorage<V,L,R extends FactoryBase<L,V>> implements F
     }
 
     public OracledbFactoryStorage(Supplier< Connection > connectionSupplier, R defaultFactory, FactorySerialisationManager<R> factorySerialisationManager){
-        this(connectionSupplier,defaultFactory,factorySerialisationManager,new OracledbFactoryStorageHistory<>(connectionSupplier,factorySerialisationManager));
+        this(connectionSupplier,defaultFactory,factorySerialisationManager,new OracledbFactoryStorageHistory<>(connectionSupplier,factorySerialisationManager),
+                new OracledbFactoryStorageFuture<>(connectionSupplier,factorySerialisationManager));
     }
 
     @Override
@@ -118,6 +121,34 @@ public class OracledbFactoryStorage<V,L,R extends FactoryBase<L,V>> implements F
         }
     }
 
+    @Override
+    public Collection<ScheduledFactoryMetadata> getFutureFactoryList() {
+        return oracledbFactoryStorageFuture.getFutureFactoryList();
+    }
+
+    @Override
+    public void deleteFutureFactory(String id) {
+        oracledbFactoryStorageFuture.deleteFutureFactory(id);
+    }
+
+    public R getFutureFactory(String id) {
+        return oracledbFactoryStorageFuture.getFutureFactory(id);
+    }
+
+    @Override
+    public void addFutureFactory(FactoryAndNewMetadata<R> update, String user, String comment, LocalDateTime scheduled) {
+        final ScheduledFactoryMetadata storedFactoryMetadata = new ScheduledFactoryMetadata();
+        storedFactoryMetadata.creationTime=LocalDateTime.now();
+        storedFactoryMetadata.id= UUID.randomUUID().toString();
+        storedFactoryMetadata.user=user;
+        storedFactoryMetadata.comment=comment;
+        storedFactoryMetadata.baseVersionId=update.metadata.baseVersionId;
+        storedFactoryMetadata.dataModelVersion=update.metadata.dataModelVersion;
+        storedFactoryMetadata.scheduled = scheduled;
+
+        final FactoryAndScheduledMetadata<R> updateData = new FactoryAndScheduledMetadata<>(update.root, storedFactoryMetadata);
+        oracledbFactoryStorageFuture.addFuture(storedFactoryMetadata,update.root);
+    }
 
 
 
