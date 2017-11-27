@@ -1,8 +1,8 @@
 package de.factoryfx.factory.datastorage.oracle;
 
-import de.factoryfx.factory.datastorage.FactorySerialisationManager;
-import de.factoryfx.factory.datastorage.JacksonDeSerialisation;
-import de.factoryfx.factory.datastorage.JacksonSerialisation;
+import de.factoryfx.data.storage.DataSerialisationManager;
+import de.factoryfx.data.storage.JacksonDeSerialisation;
+import de.factoryfx.data.storage.JacksonSerialisation;
 import de.factoryfx.factory.testfactories.ExampleFactoryA;
 import org.h2.tools.Server;
 import org.junit.After;
@@ -46,9 +46,9 @@ public class DatabaseTest {
     }
 
 
-    protected FactorySerialisationManager<ExampleFactoryA> createSerialisation(){
+    protected DataSerialisationManager<ExampleFactoryA> createSerialisation(){
         int dataModelVersion = 1;
-        return new FactorySerialisationManager<>(new JacksonSerialisation<>(dataModelVersion),new JacksonDeSerialisation<>(ExampleFactoryA.class, dataModelVersion), Collections.emptyList(),1);
+        return new DataSerialisationManager<>(new JacksonSerialisation<>(dataModelVersion),new JacksonDeSerialisation<>(ExampleFactoryA.class, dataModelVersion), Collections.emptyList(),1);
     }
 
 }

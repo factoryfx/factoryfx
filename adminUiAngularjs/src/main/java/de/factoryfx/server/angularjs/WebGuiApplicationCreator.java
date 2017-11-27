@@ -20,7 +20,7 @@ import de.factoryfx.server.angularjs.factory.server.resourcehandler.ClasspathMin
 import de.factoryfx.server.angularjs.factory.server.resourcehandler.ConfigurableResourceHandler;
 import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.factory.FactoryManager;
-import de.factoryfx.factory.datastorage.FactoryStorage;
+import de.factoryfx.data.storage.DataStorage;
 import de.factoryfx.server.ApplicationServer;
 import de.factoryfx.user.UserManagement;
 
@@ -41,8 +41,8 @@ public class WebGuiApplicationCreator<V,L,T extends FactoryBase<L,V>> {
         this.guiViews = guiViews;
     }
 
-    public ApplicationServer<Void,HttpServer,HttpServerFactory<V, L, T>> createApplication(FactoryStorage<Void,HttpServer,HttpServerFactory<V, L, T>>  factoryStorage){
-        return new ApplicationServer<>(new FactoryManager<>(new RethrowingFactoryExceptionHandler<>()), factoryStorage);
+    public ApplicationServer<Void,HttpServer,HttpServerFactory<V, L, T>> createApplication(DataStorage<HttpServerFactory<V, L, T>> dataStorage){
+        return new ApplicationServer<>(new FactoryManager<>(new RethrowingFactoryExceptionHandler<>()), dataStorage);
     }
 
     public HttpServerFactory<V,L,T> createDefaultFactory() {

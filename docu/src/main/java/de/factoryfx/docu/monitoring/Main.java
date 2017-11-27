@@ -3,7 +3,7 @@ package de.factoryfx.docu.monitoring;
 import com.google.common.base.Charsets;
 import com.google.common.io.CharStreams;
 import de.factoryfx.factory.FactoryManager;
-import de.factoryfx.factory.datastorage.inmemory.InMemoryFactoryStorage;
+import de.factoryfx.data.storage.inmemory.InMemoryDataStorage;
 import de.factoryfx.factory.exception.RethrowingFactoryExceptionHandler;
 import de.factoryfx.server.ApplicationServer;
 import de.factoryfx.server.rest.server.HttpServerConnectorFactory;
@@ -25,7 +25,7 @@ public class Main {
         rootFactory.server.set(jettyServer);
         jettyServer.resources.add(new SimpleResourceFactory());
 
-        ApplicationServer<ServerVisitor,Root,RootFactory> applicationServer = new ApplicationServer<>(new FactoryManager<>(new RethrowingFactoryExceptionHandler<>()),new InMemoryFactoryStorage<>(rootFactory));
+        ApplicationServer<ServerVisitor,Root,RootFactory> applicationServer = new ApplicationServer<>(new FactoryManager<>(new RethrowingFactoryExceptionHandler<>()),new InMemoryDataStorage<>(rootFactory));
         applicationServer.start();
 
         //execute some random request as example

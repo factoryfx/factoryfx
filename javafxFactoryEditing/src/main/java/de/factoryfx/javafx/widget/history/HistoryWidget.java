@@ -8,7 +8,7 @@ import java.util.stream.Collectors;
 
 import de.factoryfx.data.merge.MergeDiffInfo;
 import de.factoryfx.factory.FactoryBase;
-import de.factoryfx.factory.datastorage.StoredFactoryMetadata;
+import de.factoryfx.data.storage.StoredDataMetadata;
 import de.factoryfx.factory.log.FactoryUpdateLog;
 import de.factoryfx.javafx.util.LongRunningActionExecutor;
 import de.factoryfx.javafx.util.UniformDesign;
@@ -30,15 +30,15 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.util.Callback;
 
-public class HistoryWidget<V,T extends FactoryBase<?,V>> implements Widget {
+public class HistoryWidget<V, R extends FactoryBase<?,V>> implements Widget {
 
     private final UniformDesign uniformDesign;
     private final LongRunningActionExecutor longRunningActionExecutor;
-    private final ApplicationServerRestClient<V, T> restClient;
-    private Consumer<List<StoredFactoryMetadata>> tableUpdater;
+    private final ApplicationServerRestClient<V, R> restClient;
+    private Consumer<List<StoredDataMetadata>> tableUpdater;
     private final DiffDialogBuilder diffDialogBuilder;
 
-    public HistoryWidget(UniformDesign uniformDesign, LongRunningActionExecutor longRunningActionExecutor, ApplicationServerRestClient<V, T> restClient, DiffDialogBuilder diffDialogBuilder) {
+    public HistoryWidget(UniformDesign uniformDesign, LongRunningActionExecutor longRunningActionExecutor, ApplicationServerRestClient<V, R> restClient, DiffDialogBuilder diffDialogBuilder) {
         this.uniformDesign=uniformDesign;
         this.longRunningActionExecutor = longRunningActionExecutor;
         this.restClient= restClient;
@@ -48,26 +48,26 @@ public class HistoryWidget<V,T extends FactoryBase<?,V>> implements Widget {
 
     @Override
     public Node createContent() {
-        TableView<StoredFactoryMetadata> tableView = new TableView<>();
+        TableView<StoredDataMetadata> tableView = new TableView<>();
         tableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
-        final ObservableList<StoredFactoryMetadata> items = FXCollections.observableArrayList();
+        final ObservableList<StoredDataMetadata> items = FXCollections.observableArrayList();
         tableView.setItems(items);
 
-        final TableColumn<StoredFactoryMetadata, String> creationTimeCol = new TableColumn<>("Datum");
-        creationTimeCol.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<StoredFactoryMetadata, String>, ObservableValue<String>>() {
+        final TableColumn<StoredDataMetadata, String> creationTimeCol = new TableColumn<>("Datum");
+        creationTimeCol.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<StoredDataMetadata, String>, ObservableValue<String>>() {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
             @Override
-            public ObservableValue<String> call(TableColumn.CellDataFeatures<StoredFactoryMetadata, String> param) {
+            public ObservableValue<String> call(TableColumn.CellDataFeatures<StoredDataMetadata, String> param) {
                 return new SimpleStringProperty(param.getValue().creationTime.format(formatter));
             }
         });
         tableView.getColumns().add(creationTimeCol);
 
-        final TableColumn<StoredFactoryMetadata, String> commentCol = new TableColumn<>("Kommentar");
+        final TableColumn<StoredDataMetadata, String> commentCol = new TableColumn<>("Kommentar");
         commentCol.setCellValueFactory(param -> new SimpleStringProperty(param.getValue().comment));
         tableView.getColumns().add(commentCol);
 
-        final TableColumn<StoredFactoryMetadata, String> userCol = new TableColumn<>("Benutzer");
+        final TableColumn<StoredDataMetadata, String> userCol = new TableColumn<>("Benutzer");
         userCol.setCellValueFactory(param -> new SimpleStringProperty(param.getValue().user));
         tableView.getColumns().add(userCol);
 
@@ -109,17 +109,17 @@ public class HistoryWidget<V,T extends FactoryBase<?,V>> implements Widget {
 
     private void update() {
         longRunningActionExecutor.execute(() -> {
-            final Collection<StoredFactoryMetadata> historyFactoryList = restClient.getHistoryFactoryList();
+            final Collection<StoredDataMetadata> historyFactoryList = restClient.getHistoryFactoryList();
             Platform.runLater(() -> tableUpdater.accept(historyFactoryList.stream().sorted((o1, o2) -> o2.creationTime.compareTo(o1.creationTime)).collect(Collectors.toList())));
         });
     }
 
-    private void showDiff(TableView<StoredFactoryMetadata> tableView) {
-        final MergeDiffInfo diff = restClient.getDiff(tableView.getSelectionModel().getSelectedItem());
+    private void showDiff(TableView<StoredDataMetadata> tableView) {
+        final MergeDiffInfo<R> diff = restClient.getDiff(tableView.getSelectionModel().getSelectedItem());
         Platform.runLater(() -> diffDialogBuilder.createDiffDialog(diff,"Änderungen",tableView.getScene().getWindow()));
     }
 
-    private void revert(TableView<StoredFactoryMetadata> tableView) {
+    private void revert(TableView<StoredDataMetadata> tableView) {
         final FactoryUpdateLog factoryUpdateLog = restClient.revert(tableView.getSelectionModel().getSelectedItem());
         Platform.runLater(() -> diffDialogBuilder.createDiffDialog(factoryUpdateLog,"Änderungen",tableView.getScene().getWindow()));
         update();

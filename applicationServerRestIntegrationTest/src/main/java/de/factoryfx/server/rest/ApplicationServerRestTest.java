@@ -10,8 +10,8 @@ import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.factory.FactoryManager;
 import de.factoryfx.factory.SimpleFactoryBase;
 import de.factoryfx.factory.atrribute.FactoryReferenceAttribute;
-import de.factoryfx.factory.datastorage.StoredFactoryMetadata;
-import de.factoryfx.factory.datastorage.inmemory.InMemoryFactoryStorage;
+import de.factoryfx.data.storage.StoredDataMetadata;
+import de.factoryfx.data.storage.inmemory.InMemoryDataStorage;
 import de.factoryfx.factory.exception.RethrowingFactoryExceptionHandler;
 import de.factoryfx.server.ApplicationServer;
 import de.factoryfx.server.rest.client.ApplicationServerRestClient;
@@ -52,7 +52,7 @@ public class ApplicationServerRestTest {
 
             final RootTestclazz rootTestclazz = new RootTestclazz();
             rootTestclazz.jettyServer.set(jettyServer);
-            ApplicationServer<Void,String,RootTestclazz> applicationServer = new ApplicationServer<>(new FactoryManager<>(new RethrowingFactoryExceptionHandler<>()), new InMemoryFactoryStorage<>(rootTestclazz));
+            ApplicationServer<Void,String,RootTestclazz> applicationServer = new ApplicationServer<>(new FactoryManager<>(new RethrowingFactoryExceptionHandler<>()), new InMemoryDataStorage<>(rootTestclazz));
             applicationServer.start();
         }).start();
 
@@ -79,7 +79,7 @@ public class ApplicationServerRestTest {
         applicationServerRestClient.prepareNewFactory();
 
 
-        final ArrayList<StoredFactoryMetadata> historyFactoryList = new ArrayList<>(applicationServerRestClient.getHistoryFactoryList());
+        final ArrayList<StoredDataMetadata> historyFactoryList = new ArrayList<>(applicationServerRestClient.getHistoryFactoryList());
         applicationServerRestClient.getHistoryFactory(historyFactoryList.get(0).id);
 
 

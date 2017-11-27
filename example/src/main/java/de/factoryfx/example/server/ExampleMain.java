@@ -17,7 +17,7 @@ import de.factoryfx.example.factory.ShopFactory;
 import de.factoryfx.example.factory.VatRateFactory;
 import de.factoryfx.example.factory.netherlands.NetherlandsCarProductFactory;
 import de.factoryfx.factory.FactoryManager;
-import de.factoryfx.factory.datastorage.inmemory.InMemoryFactoryStorage;
+import de.factoryfx.data.storage.inmemory.InMemoryDataStorage;
 import de.factoryfx.factory.exception.AllOrNothingFactoryExceptionHandler;
 import de.factoryfx.factory.exception.LoggingFactoryExceptionHandler;
 import de.factoryfx.factory.util.ClasspathBasedFactoryProvider;
@@ -42,7 +42,7 @@ public class ExampleMain extends Application {
         new WebAppViewer(primaryStage, () -> {
             ShopFactory shopFactory = getNetherlandsShopFactory();
 
-            ApplicationServer<OrderCollector, Shop, ShopFactory> applicationServer = new ApplicationServer<>(new FactoryManager<>(new LoggingFactoryExceptionHandler<>(new AllOrNothingFactoryExceptionHandler<>())), new InMemoryFactoryStorage<>(shopFactory));
+            ApplicationServer<OrderCollector, Shop, ShopFactory> applicationServer = new ApplicationServer<>(new FactoryManager<>(new LoggingFactoryExceptionHandler<>(new AllOrNothingFactoryExceptionHandler<>())), new InMemoryDataStorage<>(shopFactory));
             applicationServer.start();
 
             WebGuiApplicationCreator<OrderCollector, Shop, ShopFactory> webGuiApplicationCreator=new WebGuiApplicationCreator<>(
@@ -59,7 +59,7 @@ public class ExampleMain extends Application {
                 throw new RuntimeException(e);
 
             }
-            ApplicationServer<Void, HttpServer, HttpServerFactory<OrderCollector, Shop, ShopFactory>> shopApplication = webGuiApplicationCreator.createApplication(new InMemoryFactoryStorage<>(defaultFactory));
+            ApplicationServer<Void, HttpServer, HttpServerFactory<OrderCollector, Shop, ShopFactory>> shopApplication = webGuiApplicationCreator.createApplication(new InMemoryDataStorage<>(defaultFactory));
             shopApplication.start();
 
         },"http://localhost:8089/#/login");

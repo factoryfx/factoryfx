@@ -14,8 +14,8 @@ import javax.ws.rs.core.MediaType;
 
 import de.factoryfx.data.merge.MergeDiffInfo;
 import de.factoryfx.factory.FactoryBase;
-import de.factoryfx.factory.datastorage.FactoryAndNewMetadata;
-import de.factoryfx.factory.datastorage.StoredFactoryMetadata;
+import de.factoryfx.data.storage.DataAndNewMetadata;
+import de.factoryfx.data.storage.StoredDataMetadata;
 import de.factoryfx.factory.log.FactoryUpdateLog;
 import de.factoryfx.server.ApplicationServer;
 import de.factoryfx.user.AuthorizedUser;
@@ -55,14 +55,14 @@ public class ApplicationServerResource<V,L,T extends FactoryBase<L,V>>  {
     @Path("updateCurrentFactory")
     public FactoryUpdateLog updateCurrentFactory(UserAwareRequest<UpdateCurrentFactoryRequest> update) {
         Function<String, Boolean> permissionChecker = authenticateAndGetPermissionChecker(update);
-        return applicationServer.updateCurrentFactory(new FactoryAndNewMetadata<>(update.request.factoryUpdate.root.internal().prepareUsableCopy(), update.request.factoryUpdate.metadata), update.user, update.request.comment, permissionChecker);
+        return applicationServer.updateCurrentFactory(new DataAndNewMetadata<>(update.request.factoryUpdate.root.internal().prepareUsableCopy(), update.request.factoryUpdate.metadata), update.user, update.request.comment, permissionChecker);
     }
 
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @Path("revert")
-    public FactoryUpdateLog revert(UserAwareRequest<StoredFactoryMetadata> historyFactory) {
+    public FactoryUpdateLog revert(UserAwareRequest<StoredDataMetadata> historyFactory) {
         authenticate(historyFactory);
         return applicationServer.revertTo(historyFactory.request,historyFactory.user);
     }
@@ -80,16 +80,16 @@ public class ApplicationServerResource<V,L,T extends FactoryBase<L,V>>  {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @Path("simulateUpdateCurrentFactory")
-    public MergeDiffInfo simulateUpdateCurrentFactory(UserAwareRequest<FactoryAndNewMetadata> request) {
+    public MergeDiffInfo simulateUpdateCurrentFactory(UserAwareRequest<DataAndNewMetadata> request) {
         Function<String, Boolean> permissionChecker = authenticateAndGetPermissionChecker(request);
-        return applicationServer.simulateUpdateCurrentFactory(new FactoryAndNewMetadata<>(request.request.root.internal().prepareUsableCopy(), request.request.metadata), permissionChecker);
+        return applicationServer.simulateUpdateCurrentFactory(new DataAndNewMetadata<>(request.request.root.internal().prepareUsableCopy(), request.request.metadata), permissionChecker);
     }
 
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @Path("diff")
-    public MergeDiffInfo getDiff(UserAwareRequest<StoredFactoryMetadata> request) {
+    public MergeDiffInfo getDiff(UserAwareRequest<StoredDataMetadata> request) {
         authenticate(request);
         return applicationServer.getDiffToPreviousVersion(request.request);
 
@@ -101,7 +101,7 @@ public class ApplicationServerResource<V,L,T extends FactoryBase<L,V>>  {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @Path("prepareNewFactory")
-    public FactoryAndNewMetadata prepareNewFactory(UserAwareRequest<Void> request) {
+    public DataAndNewMetadata prepareNewFactory(UserAwareRequest<Void> request) {
         authenticate(request);
         return applicationServer.prepareNewFactory();
     }
@@ -119,7 +119,7 @@ public class ApplicationServerResource<V,L,T extends FactoryBase<L,V>>  {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @Path("historyFactoryList")
-    public Collection<StoredFactoryMetadata> getHistoryFactoryList(UserAwareRequest<Void> request) {
+    public Collection<StoredDataMetadata> getHistoryFactoryList(UserAwareRequest<Void> request) {
         authenticate(request);
         return applicationServer.getHistoryFactoryList();
     }

@@ -4,7 +4,7 @@ import de.factoryfx.data.attribute.types.ObjectValueAttribute;
 import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.factory.SimpleFactoryBase;
 import de.factoryfx.factory.atrribute.FactoryReferenceAttribute;
-import de.factoryfx.factory.datastorage.FactorySerialisationManager;
+import de.factoryfx.data.storage.DataSerialisationManager;
 import de.factoryfx.server.rest.client.ApplicationServerRestClient;
 import de.factoryfx.server.rest.client.ApplicationServerRestClientFactory;
 
@@ -19,7 +19,7 @@ public class FactoryEditManagerFactory<V,R  extends FactoryBase<?,V>,VS,RS  exte
 
     public final FactoryReferenceAttribute<ApplicationServerRestClient<VS,RS>,ApplicationServerRestClientFactory<V,R,VS,RS>> restClient = new FactoryReferenceAttribute<ApplicationServerRestClient<VS,RS>,ApplicationServerRestClientFactory<V,R,VS,RS>>().setupUnsafe(ApplicationServerRestClientFactory.class);
     //TODO refactor to FactoryReferenceAttribute?
-    public final ObjectValueAttribute<FactorySerialisationManager<RS>> factorySerialisationManager = new ObjectValueAttribute<>();
+    public final ObjectValueAttribute<DataSerialisationManager<RS>> factorySerialisationManager = new ObjectValueAttribute<>();
 
 
     @Override

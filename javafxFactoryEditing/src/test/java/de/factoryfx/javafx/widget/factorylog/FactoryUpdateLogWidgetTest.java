@@ -3,6 +3,7 @@ package de.factoryfx.javafx.widget.factorylog;
 import java.util.ArrayList;
 import java.util.HashSet;
 
+import de.factoryfx.data.Data;
 import de.factoryfx.data.merge.MergeDiffInfo;
 import de.factoryfx.factory.log.FactoryUpdateLog;
 import de.factoryfx.factory.log.FactoryLogEntry;
@@ -18,6 +19,7 @@ import org.mockito.Mockito;
 
 public class FactoryUpdateLogWidgetTest extends Application {
 
+    @SuppressWarnings("unchecked")
     @Override
     public void start(Stage primaryStage) throws Exception {
 
@@ -35,7 +37,7 @@ public class FactoryUpdateLogWidgetTest extends Application {
         removed.add(factoryLogEntry);
         removed.add(child);
 
-        FactoryUpdateLog factoryLog= new FactoryUpdateLog(factoryLogEntry, removed, Mockito.mock(MergeDiffInfo.class),56575);
+        FactoryUpdateLog<Data> factoryLog= new FactoryUpdateLog<>(factoryLogEntry, removed, Mockito.mock(MergeDiffInfo.class),56575);
         factoryUpdateLogWidget.updateLog(factoryLog);
 
         BorderPane root = new BorderPane();

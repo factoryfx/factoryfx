@@ -5,9 +5,9 @@ import java.util.*;
 import de.factoryfx.data.merge.AttributeDiffInfo;
 import de.factoryfx.data.merge.MergeDiffInfo;
 import de.factoryfx.factory.FactoryBase;
-import de.factoryfx.factory.datastorage.FactoryAndNewMetadata;
-import de.factoryfx.factory.datastorage.FactoryStorage;
-import de.factoryfx.factory.datastorage.StoredFactoryMetadata;
+import de.factoryfx.data.storage.DataAndNewMetadata;
+import de.factoryfx.data.storage.DataStorage;
+import de.factoryfx.data.storage.StoredDataMetadata;
 import de.factoryfx.factory.log.FactoryUpdateLog;
 import de.factoryfx.server.rest.CheckUserResponse;
 import de.factoryfx.server.rest.DiffForFactoryResponse;
@@ -15,55 +15,57 @@ import de.factoryfx.server.rest.UpdateCurrentFactoryRequest;
 import de.factoryfx.server.rest.UserAwareRequest;
 import de.factoryfx.server.rest.UserLocaleResponse;
 
-public class ApplicationServerRestClient<V,T extends FactoryBase<?,V>> {
+public class ApplicationServerRestClient<V, R extends FactoryBase<?,V>> {
 
 
-    private final Class<T> factoryRootClass;
+    private final Class<R> factoryRootClass;
     private final RestClient restClient;
     private final String user;
     private final String passwordHash;
 
 
-    public ApplicationServerRestClient(RestClient restClient, Class<T> factoryRootClass, String user, String passwordHash) {
+    public ApplicationServerRestClient(RestClient restClient, Class<R> factoryRootClass, String user, String passwordHash) {
         this.restClient = restClient;
         this.factoryRootClass = factoryRootClass;
         this.user=user;
         this.passwordHash=passwordHash;
     }
 
-    public FactoryUpdateLog updateCurrentFactory(FactoryAndNewMetadata<T> update, String comment) {
+    public FactoryUpdateLog updateCurrentFactory(DataAndNewMetadata<R> update, String comment) {
         final UpdateCurrentFactoryRequest updateCurrentFactoryRequest = new UpdateCurrentFactoryRequest();
         updateCurrentFactoryRequest.comment=comment;
         updateCurrentFactoryRequest.factoryUpdate=update;
         return restClient.post("updateCurrentFactory", new UserAwareRequest<>(user,passwordHash,updateCurrentFactoryRequest), FactoryUpdateLog.class);
     }
 
-    public MergeDiffInfo simulateUpdateCurrentFactory(FactoryAndNewMetadata<T> update) {
+    @SuppressWarnings("unchecked")
+    public MergeDiffInfo<R> simulateUpdateCurrentFactory(DataAndNewMetadata<R> update) {
         return restClient.post("simulateUpdateCurrentFactory", new UserAwareRequest<>(user,passwordHash,update), MergeDiffInfo.class);
     }
 
     /**
-     * @see FactoryStorage#getPrepareNewFactory()
+     * @see DataStorage#getPrepareNewFactory()
      *
      * @return new factory for editing, server assign new id for the update
      */
     @SuppressWarnings("unchecked")
-    public FactoryAndNewMetadata<T> prepareNewFactory() {
-        FactoryAndNewMetadata<T> currentFactory = restClient.post("prepareNewFactory",new UserAwareRequest<Void>(user,passwordHash,null), FactoryAndNewMetadata.class);
-        return new FactoryAndNewMetadata<>(currentFactory.root.internal().prepareUsableCopy(),currentFactory.metadata);
+    public DataAndNewMetadata<R> prepareNewFactory() {
+        DataAndNewMetadata<R> currentFactory = restClient.post("prepareNewFactory",new UserAwareRequest<Void>(user,passwordHash,null), DataAndNewMetadata.class);
+        return new DataAndNewMetadata<>(currentFactory.root.internal().prepareUsableCopy(),currentFactory.metadata);
     }
 
-    public MergeDiffInfo getDiff(StoredFactoryMetadata historyEntry) {
+    @SuppressWarnings("unchecked")
+    public MergeDiffInfo<R> getDiff(StoredDataMetadata historyEntry) {
         return restClient.post("diff", new UserAwareRequest<>(user, passwordHash, historyEntry), MergeDiffInfo.class);
     }
 
 
-    public T getHistoryFactory(String id) {
+    public R getHistoryFactory(String id) {
         return restClient.post("historyFactory",new UserAwareRequest<>(user,passwordHash,id), factoryRootClass).internal().prepareUsableCopy();
     }
 
-    static final Class<? extends ArrayList<StoredFactoryMetadata>> collectionOfStoredFactoryMetadataClass = new ArrayList<StoredFactoryMetadata>() {}.getClass();
-    public Collection<StoredFactoryMetadata> getHistoryFactoryList() {
+    static final Class<? extends ArrayList<StoredDataMetadata>> collectionOfStoredFactoryMetadataClass = new ArrayList<StoredDataMetadata>() {}.getClass();
+    public Collection<StoredDataMetadata> getHistoryFactoryList() {
         return restClient.post("historyFactoryList",new UserAwareRequest<Void>(user,passwordHash,null), collectionOfStoredFactoryMetadataClass);
     }
 
@@ -82,7 +84,7 @@ public class ApplicationServerRestClient<V,T extends FactoryBase<?,V>> {
         return response.locale;
     }
 
-    public FactoryUpdateLog revert(StoredFactoryMetadata historyFactory) {
+    public FactoryUpdateLog revert(StoredDataMetadata historyFactory) {
         return restClient.post("revert",new UserAwareRequest<>(user,passwordHash,historyFactory), FactoryUpdateLog.class);
     }
 

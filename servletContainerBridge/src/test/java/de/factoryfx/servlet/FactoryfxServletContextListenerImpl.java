@@ -2,7 +2,7 @@ package de.factoryfx.servlet;
 
 import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.factory.FactoryManager;
-import de.factoryfx.factory.datastorage.inmemory.InMemoryFactoryStorage;
+import de.factoryfx.data.storage.inmemory.InMemoryDataStorage;
 import de.factoryfx.factory.exception.AllOrNothingFactoryExceptionHandler;
 import de.factoryfx.factory.exception.LoggingFactoryExceptionHandler;
 import de.factoryfx.server.ApplicationServer;
@@ -19,6 +19,6 @@ public class FactoryfxServletContextListenerImpl extends ApplicationServerStarti
         ApplicationServerRestServletBridgeFactory<Root, RootFactory> bridgeFactory = new ApplicationServerRestServletBridgeFactory<>();
         bridgeFactory.applicationServerResource.set(applicationServerResourceFactory);
         rootFactory.applicationServerRestBridge.set(bridgeFactory);
-        return new ApplicationServer<>(new FactoryManager<>(new LoggingFactoryExceptionHandler<>(new AllOrNothingFactoryExceptionHandler<>())),new InMemoryFactoryStorage<>(rootFactory));
+        return new ApplicationServer<>(new FactoryManager<>(new LoggingFactoryExceptionHandler<>(new AllOrNothingFactoryExceptionHandler<>())),new InMemoryDataStorage<>(rootFactory));
     }
 }

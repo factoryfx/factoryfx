@@ -3,8 +3,8 @@ package de.factoryfx.docu.dynamicwebserver;
 import ch.qos.logback.classic.Level;
 import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.factory.FactoryManager;
-import de.factoryfx.factory.datastorage.FactoryAndNewMetadata;
-import de.factoryfx.factory.datastorage.inmemory.InMemoryFactoryStorage;
+import de.factoryfx.data.storage.DataAndNewMetadata;
+import de.factoryfx.data.storage.inmemory.InMemoryDataStorage;
 import de.factoryfx.factory.exception.RethrowingFactoryExceptionHandler;
 import de.factoryfx.server.ApplicationServer;
 import de.factoryfx.server.rest.client.RestClient;
@@ -34,12 +34,12 @@ public class Main {
 
 
         ApplicationServer<Void,JettyServer,JettyServerFactory<Void>> applicationServer
-                = new ApplicationServer<>(new FactoryManager<>(new RethrowingFactoryExceptionHandler<>()),new InMemoryFactoryStorage<>(jettyServer));
+                = new ApplicationServer<>(new FactoryManager<>(new RethrowingFactoryExceptionHandler<>()),new InMemoryDataStorage<>(jettyServer));
         applicationServer.start();
 
         Thread continuouslyQueryWebserver = startQueryServerThread();
         for (int i = 0; i < 10; ++i) {
-            FactoryAndNewMetadata<JettyServerFactory<Void>> editableConfig = applicationServer.prepareNewFactory();
+            DataAndNewMetadata<JettyServerFactory<Void>> editableConfig = applicationServer.prepareNewFactory();
             JettyServerFactory<Void> editableJettyServer = editableConfig.root;
             editableJettyServer.resources.clear();
             editableJettyServer.resources.add(createNewWebResourceReturningCreationTimestamp());

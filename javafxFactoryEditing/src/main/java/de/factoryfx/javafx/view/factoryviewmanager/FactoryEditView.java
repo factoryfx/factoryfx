@@ -94,7 +94,7 @@ public class FactoryEditView<V,R extends FactoryBase<?,V>> implements Widget, Fa
             check.setTooltip(new Tooltip("Änderungen anzeigen aber nicht speichern"));
             check.setOnAction(event -> {
                 LongRunningActionExecutor.execute(() -> {
-                    final MergeDiffInfo mergeDiff = factoryManager.simulateUpdateCurrentFactory();
+                    final MergeDiffInfo<R> mergeDiff = factoryManager.simulateUpdateCurrentFactory();
                     Platform.runLater(() -> {
                         diffDialogBuilder.createDiffDialog(mergeDiff, "ungespeicherte Änderungen",check.getScene().getWindow());
                     });

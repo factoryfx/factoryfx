@@ -1,8 +1,8 @@
 package de.factoryfx.docu.reuse;
 
 import de.factoryfx.factory.FactoryManager;
-import de.factoryfx.factory.datastorage.FactoryAndNewMetadata;
-import de.factoryfx.factory.datastorage.inmemory.InMemoryFactoryStorage;
+import de.factoryfx.data.storage.DataAndNewMetadata;
+import de.factoryfx.data.storage.inmemory.InMemoryDataStorage;
 import de.factoryfx.factory.exception.RethrowingFactoryExceptionHandler;
 import de.factoryfx.server.ApplicationServer;
 
@@ -13,14 +13,14 @@ public class Main {
         root.stringAttribute.set("1");
 
         long start=System.currentTimeMillis();
-        ApplicationServer<Void,Root,RootFactory> applicationServer = new ApplicationServer<>(new FactoryManager<>(new RethrowingFactoryExceptionHandler<>()),new InMemoryFactoryStorage<>(root));
+        ApplicationServer<Void,Root,RootFactory> applicationServer = new ApplicationServer<>(new FactoryManager<>(new RethrowingFactoryExceptionHandler<>()),new InMemoryDataStorage<>(root));
         applicationServer.start();
 
         //over 5000ms most time for the ExpensiveResource
         System.out.println(System.currentTimeMillis()-start);
 
         long updateStart=System.currentTimeMillis();
-        FactoryAndNewMetadata<RootFactory> update = applicationServer.prepareNewFactory();
+        DataAndNewMetadata<RootFactory> update = applicationServer.prepareNewFactory();
         update.root.stringAttribute.set("2");
         applicationServer.updateCurrentFactory(update, "", "", s -> true);
 

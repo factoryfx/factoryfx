@@ -12,8 +12,8 @@ import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
 import com.google.common.io.ByteStreams;
 import de.factoryfx.factory.FactoryManager;
-import de.factoryfx.factory.datastorage.FactoryStorage;
-import de.factoryfx.factory.datastorage.inmemory.InMemoryFactoryStorage;
+import de.factoryfx.data.storage.DataStorage;
+import de.factoryfx.data.storage.inmemory.InMemoryDataStorage;
 import de.factoryfx.factory.exception.RethrowingFactoryExceptionHandler;
 import de.factoryfx.factory.util.ClasspathBasedFactoryProvider;
 import de.factoryfx.server.ApplicationServer;
@@ -63,7 +63,7 @@ public class WebGuiTest extends Application{
             }
             exampleFactoryA.referenceListAttribute.add(exampleFactoryA.referenceAttribute.get());
 
-            ApplicationServer<ExampleVisitor, ExampleLiveObjectA, ExampleFactoryA> exampleApplicationServer = new ApplicationServer<>(new FactoryManager<>(new RethrowingFactoryExceptionHandler<>()), new InMemoryFactoryStorage<>(exampleFactoryA));
+            ApplicationServer<ExampleVisitor, ExampleLiveObjectA, ExampleFactoryA> exampleApplicationServer = new ApplicationServer<>(new FactoryManager<>(new RethrowingFactoryExceptionHandler<>()), new InMemoryDataStorage<>(exampleFactoryA));
             exampleApplicationServer.start();
 
             {
@@ -84,15 +84,15 @@ public class WebGuiTest extends Application{
                     }
                 }
                 defaultFactory.resourceHandler.set(new ConfigurableResourceHandler(new FilesystemFileContentProvider(Paths.get("./src/main/resources/webapp"), "body {background-color: inherited;}".getBytes(StandardCharsets.UTF_8)), () -> UUID.randomUUID().toString()));
-                FactoryStorage<Void,HttpServer,HttpServerFactory<ExampleVisitor, ExampleLiveObjectA, ExampleFactoryA>> lvtInMemoryFactoryStorage = new InMemoryFactoryStorage<>(defaultFactory);
-                ApplicationServer<Void,HttpServer,HttpServerFactory<ExampleVisitor, ExampleLiveObjectA, ExampleFactoryA>> exampleServer = webGuiApplicationCreator.createApplication(lvtInMemoryFactoryStorage);
+                DataStorage<HttpServerFactory<ExampleVisitor, ExampleLiveObjectA, ExampleFactoryA>> lvtInMemoryDataStorage = new InMemoryDataStorage<>(defaultFactory);
+                ApplicationServer<Void,HttpServer,HttpServerFactory<ExampleVisitor, ExampleLiveObjectA, ExampleFactoryA>> exampleServer = webGuiApplicationCreator.createApplication(lvtInMemoryDataStorage);
                 exampleServer.start();
 
                 {
                     WebGuiApplicationCreator<Void,HttpServer,HttpServerFactory<ExampleVisitor, ExampleLiveObjectA, ExampleFactoryA>> selfServerCreator = new WebGuiApplicationCreator<>(exampleServer, new ClasspathBasedFactoryProvider().get(SessionStorageFactory.class), new NoUserManagement(), null, null, Collections.emptyList());
                     HttpServerFactory<Void,HttpServer,HttpServerFactory<ExampleVisitor, ExampleLiveObjectA, ExampleFactoryA>> selfDefaultFactory = selfServerCreator.createDefaultFactory();
                     selfDefaultFactory.port.set(8087);
-                    ApplicationServer<Void, HttpServer, HttpServerFactory<Void, HttpServer, HttpServerFactory<ExampleVisitor, ExampleLiveObjectA, ExampleFactoryA>>> selfServer = selfServerCreator.createApplication(new InMemoryFactoryStorage<>(selfDefaultFactory));
+                    ApplicationServer<Void, HttpServer, HttpServerFactory<Void, HttpServer, HttpServerFactory<ExampleVisitor, ExampleLiveObjectA, ExampleFactoryA>>> selfServer = selfServerCreator.createApplication(new InMemoryDataStorage<>(selfDefaultFactory));
                     selfServer.start();
                 }
 

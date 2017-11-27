@@ -53,7 +53,7 @@ public class DiffDialogBuilder {
 //    }
 
 
-    public void createDiffDialog(MergeDiffInfo mergeDiff, String title, Window owner) {
+    public void createDiffDialog(MergeDiffInfo<?> mergeDiff, String title, Window owner) {
         final FactoryDiffWidget factoryDiffWidget = new FactoryDiffWidget(uniformDesign,attributeEditorBuilder);
         factoryDiffWidget.updateMergeDiff(mergeDiff);
 

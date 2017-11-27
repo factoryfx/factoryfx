@@ -15,7 +15,7 @@ public class MergeDiffInfoTest {
         originalModel.stringAttribute.set("1111111");
         ExampleDataA newModel = currentModel.internal().copy();
         newModel.stringAttribute.set("2222222");
-        DataMerger dataMerger = new DataMerger(currentModel, originalModel, newModel);
+        DataMerger<ExampleDataA> dataMerger = new DataMerger<>(currentModel, originalModel, newModel);
 
         MergeDiffInfo mergeDiff= dataMerger.mergeIntoCurrent((permission)->true);
 

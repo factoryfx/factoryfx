@@ -35,7 +35,7 @@ public class FactoryUpdateLogWidget implements Widget {
     }
 
     private Consumer<FactoryUpdateLog> factoryLogRootUpdater;
-    FactoryUpdateLog factoryLog;
+    FactoryUpdateLog<?> factoryLog;
 
     public void updateLog(FactoryUpdateLog factoryLog) {
         this.factoryLog=factoryLog;

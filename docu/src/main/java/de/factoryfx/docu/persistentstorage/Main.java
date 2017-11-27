@@ -1,12 +1,12 @@
 package de.factoryfx.docu.persistentstorage;
 
 import de.factoryfx.factory.FactoryManager;
-import de.factoryfx.factory.datastorage.FactoryAndNewMetadata;
-import de.factoryfx.factory.datastorage.FactorySerialisationManager;
-import de.factoryfx.factory.datastorage.JacksonDeSerialisation;
-import de.factoryfx.factory.datastorage.JacksonSerialisation;
+import de.factoryfx.data.storage.DataAndNewMetadata;
+import de.factoryfx.data.storage.DataSerialisationManager;
+import de.factoryfx.data.storage.JacksonDeSerialisation;
+import de.factoryfx.data.storage.JacksonSerialisation;
 import de.factoryfx.factory.datastorage.postgres.DisableAutocommitDatasource;
-import de.factoryfx.factory.datastorage.postgres.PostgresFactoryStorage;
+import de.factoryfx.factory.datastorage.postgres.PostgresDataStorage;
 import de.factoryfx.factory.exception.RethrowingFactoryExceptionHandler;
 import de.factoryfx.server.ApplicationServer;
 import org.postgresql.jdbc.AutoSave;
@@ -41,15 +41,15 @@ public class Main {
 
         RootFactory root = new RootFactory();
         root.stringAttribute.set("1");
-        FactorySerialisationManager<RootFactory> serialisationManager = new FactorySerialisationManager<>(new JacksonSerialisation<>(1),new JacksonDeSerialisation<>(RootFactory.class,1),new ArrayList<>(),1);
-        PostgresFactoryStorage<Void,Root, RootFactory> postgresFactoryStorage = new PostgresFactoryStorage<>(datasource, root, serialisationManager);
+        DataSerialisationManager<RootFactory> serialisationManager = new DataSerialisationManager<>(new JacksonSerialisation<>(1),new JacksonDeSerialisation<>(RootFactory.class,1),new ArrayList<>(),1);
+        PostgresDataStorage<RootFactory> postgresFactoryStorage = new PostgresDataStorage<>(datasource, root, serialisationManager);
 
 
         ApplicationServer<Void,Root, RootFactory> applicationServer = new ApplicationServer<>(new FactoryManager<>(new RethrowingFactoryExceptionHandler<>()),postgresFactoryStorage);
         applicationServer.start();
         //output is 1 from initial factory
 
-        FactoryAndNewMetadata<RootFactory> update = applicationServer.prepareNewFactory();
+        DataAndNewMetadata<RootFactory> update = applicationServer.prepareNewFactory();
         update.root.stringAttribute.set("2");
         applicationServer.updateCurrentFactory(update, "", "", s -> true);
         //output is 2 from initial factory

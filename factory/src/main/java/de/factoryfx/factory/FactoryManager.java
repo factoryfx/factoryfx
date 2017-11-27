@@ -38,14 +38,14 @@ public class FactoryManager<V,L,R extends FactoryBase<L,V>> {
     }
 
     @SuppressWarnings("unchecked")
-    public FactoryUpdateLog update(R commonVersion , R newVersion, Function<String,Boolean> permissionChecker){
+    public FactoryUpdateLog<R> update(R commonVersion , R newVersion, Function<String,Boolean> permissionChecker){
         LinkedHashSet<FactoryBase<?,V>> previousFactories = getFactoriesInDestroyOrder(currentFactoryRoot);
         previousFactories.forEach((f)->f.internalFactory().resetLog());
 
         R previousFactoryCopyRoot = currentFactoryRoot.internal().copyFromRoot();
 
-        DataMerger dataMerger = new DataMerger(currentFactoryRoot, commonVersion, newVersion);
-        MergeDiffInfo mergeDiff= dataMerger.mergeIntoCurrent(permissionChecker);
+        DataMerger<R> dataMerger = new DataMerger<R>(currentFactoryRoot, commonVersion, newVersion);
+        MergeDiffInfo<R> mergeDiff= dataMerger.mergeIntoCurrent(permissionChecker);
         long totalUpdateDuration=0;
         List<FactoryBase<?,V>> removed = new ArrayList<>();
         if (mergeDiff.successfullyMerged()){
@@ -64,7 +64,7 @@ public class FactoryManager<V,L,R extends FactoryBase<L,V>> {
             removed=getRemovedFactories(previousFactories,newFactories);
         }
 
-        return new FactoryUpdateLog(currentFactoryRoot.internalFactory().createFactoryLogEntry(), removed.stream().map(r->r.internalFactory().createFactoryLogEntryFlat()).collect(Collectors.toSet()),mergeDiff,totalUpdateDuration);
+        return new FactoryUpdateLog<>(currentFactoryRoot.internalFactory().createFactoryLogEntry(), removed.stream().map(r->r.internalFactory().createFactoryLogEntryFlat()).collect(Collectors.toSet()),mergeDiff,totalUpdateDuration);
     }
 
     private Set<Data> getChangedFactories(R previousFactoryCopyRoot){
@@ -105,7 +105,7 @@ public class FactoryManager<V,L,R extends FactoryBase<L,V>> {
     public MergeDiffInfo simulateUpdate(R commonVersion , R newVersion,  Function<String, Boolean> permissionChecker){
         newVersion.internalFactory().loopDetector();
 
-        DataMerger dataMerger = new DataMerger(currentFactoryRoot.internal().copyFromRoot(), commonVersion, newVersion);
+        DataMerger<R> dataMerger = new DataMerger<>(currentFactoryRoot.internal().copyFromRoot(), commonVersion, newVersion);
         return dataMerger.createMergeResult(permissionChecker).executeMerge();
     }
 

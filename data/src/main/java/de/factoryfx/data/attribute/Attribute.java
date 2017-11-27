@@ -334,11 +334,13 @@ public abstract class Attribute<T,A extends Attribute<T,A>>{
     @JsonIgnore
     String tooltipDe;
 
+    @SuppressWarnings("unchecked")
     public A tooltipEn(String tooltip){
         tooltipEn=tooltip;
         return (A)this;
     }
 
+    @SuppressWarnings("unchecked")
     public A tooltipDe(String tooltip){
         tooltipDe=tooltip;
         return (A)this;

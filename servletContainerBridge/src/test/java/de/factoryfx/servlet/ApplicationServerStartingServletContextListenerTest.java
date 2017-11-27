@@ -1,6 +1,6 @@
 package de.factoryfx.servlet;
 
-import de.factoryfx.factory.datastorage.FactoryAndNewMetadata;
+import de.factoryfx.data.storage.DataAndNewMetadata;
 import de.factoryfx.server.rest.client.ApplicationServerRestClient;
 import de.factoryfx.server.rest.client.RestClient;
 import de.factoryfx.servlet.example.RootFactory;
@@ -8,10 +8,6 @@ import org.eclipse.jetty.server.NetworkTrafficServerConnector;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.webapp.WebAppContext;
-
-import java.io.File;
-
-import static org.junit.Assert.*;
 
 /**
  * Created by hbrackmann on 15.05.2017.
@@ -47,14 +43,14 @@ public class ApplicationServerStartingServletContextListenerTest {
         ApplicationServerRestClient<ServletContextAwareVisitor, RootFactory> applicationServerRestClient = new ApplicationServerRestClient<>(restClient, RootFactory.class, "", "");
 
         {
-            FactoryAndNewMetadata<RootFactory> rootFactoryFactoryAndNewMetadata = applicationServerRestClient.prepareNewFactory();
+            DataAndNewMetadata<RootFactory> rootFactoryFactoryAndNewMetadata = applicationServerRestClient.prepareNewFactory();
             rootFactoryFactoryAndNewMetadata.root.stringAttribute.set("XXX111");
             System.out.print(rootFactoryFactoryAndNewMetadata.root.stringAttribute.get());
             applicationServerRestClient.updateCurrentFactory(rootFactoryFactoryAndNewMetadata, "comment1");
         }
 
         {
-            FactoryAndNewMetadata<RootFactory> rootFactoryFactoryAndNewMetadata = applicationServerRestClient.prepareNewFactory();
+            DataAndNewMetadata<RootFactory> rootFactoryFactoryAndNewMetadata = applicationServerRestClient.prepareNewFactory();
             rootFactoryFactoryAndNewMetadata.root.stringAttribute.set("XXX222");
             System.out.print(rootFactoryFactoryAndNewMetadata.root.stringAttribute.get());
             applicationServerRestClient.updateCurrentFactory(rootFactoryFactoryAndNewMetadata, "comment2");

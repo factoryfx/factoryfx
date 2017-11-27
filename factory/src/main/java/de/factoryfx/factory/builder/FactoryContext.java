@@ -11,6 +11,7 @@ public class FactoryContext<V> {
 
     private List<FactoryCreator<V,?,?>> factoryCreators = new ArrayList<>();
 
+    @SuppressWarnings("unchecked")
     public <L, F extends FactoryBase<L,V>> F get(Predicate<FactoryCreator<V,?,?>> filter){
         Optional<FactoryCreator<V,?,?>> any = factoryCreators.stream().filter(filter).findAny();
         if (any.isPresent()){

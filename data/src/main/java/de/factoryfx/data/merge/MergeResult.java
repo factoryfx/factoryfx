@@ -2,13 +2,14 @@ package de.factoryfx.data.merge;
 
 import de.factoryfx.data.Data;
 import de.factoryfx.data.jackson.ObjectMapperBuilder;
+import de.factoryfx.data.jackson.SimpleObjectMapper;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class MergeResult {
-    final String previousRoot;
-    final Data currentRoot;
+public class MergeResult<R extends Data> {
+    final R previousRoot;
+    final R currentRoot;
 
     final List<AttributeDiffInfo> mergeInfos = new ArrayList<>();
     final List<AttributeDiffInfo> conflictInfos = new ArrayList<>();
@@ -16,8 +17,8 @@ public class MergeResult {
 
     final List<Runnable> mergeExecutions = new ArrayList<>();
 
-    public MergeResult(Data currentRoot) {
-        this.previousRoot = ObjectMapperBuilder.build().writeValueAsString(currentRoot);
+    public MergeResult(R currentRoot) {
+        this.previousRoot = currentRoot.internal().copy();
         this.currentRoot = currentRoot;
     }
 
@@ -37,14 +38,15 @@ public class MergeResult {
         mergePermissionViolations.add(permissionViolation);
     }
 
-    public MergeDiffInfo executeMerge() {
+    @SuppressWarnings("unchecked")
+    public MergeDiffInfo<R> executeMerge() {
         if (hasNoConflicts() && hasNoPermissionViolation()){
             for (Runnable mergeAction : mergeExecutions) {
                 mergeAction.run();
             }
             currentRoot.internal().fixDuplicateData();
         }
-        return new MergeDiffInfo(mergeInfos, conflictInfos, mergePermissionViolations,previousRoot,ObjectMapperBuilder.build().writeValueAsString(currentRoot),currentRoot.getClass());
+        return new MergeDiffInfo<R>(mergeInfos, conflictInfos, mergePermissionViolations, previousRoot, currentRoot, (Class<R>) currentRoot.getClass());
 
     }
 

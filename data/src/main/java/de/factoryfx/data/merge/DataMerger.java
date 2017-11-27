@@ -5,20 +5,20 @@ import java.util.function.Function;
 
 import de.factoryfx.data.Data;
 
-public class DataMerger {
+public class DataMerger<R extends Data> {
 
-    private final Data commonData;
-    private final Data currentData;
-    private final Data newData;
+    private final R commonData;
+    private final R currentData;
+    private final R newData;
 
-    public DataMerger(Data currentData, Data commonData, Data newData) {
+    public DataMerger(R currentData, R commonData, R newData) {
         this.commonData = commonData;
         this.currentData = currentData;
         this.newData = newData;
     }
 
     @SuppressWarnings("unchecked")
-    public MergeResult createMergeResult(Function<String,Boolean> permissionChecker) {
+    public MergeResult<R> createMergeResult(Function<String,Boolean> permissionChecker) {
         MergeResult mergeResult = new MergeResult(currentData);
 
         Map<String, Data> originalMap = commonData.internal().collectChildDataMap();
@@ -47,7 +47,7 @@ public class DataMerger {
         return mergeResult;
     }
 
-    public MergeDiffInfo mergeIntoCurrent(Function<String,Boolean> permissionChecker) {
+    public MergeDiffInfo<R> mergeIntoCurrent(Function<String,Boolean> permissionChecker) {
         return createMergeResult(permissionChecker).executeMerge();
     }
 }

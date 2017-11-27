@@ -16,6 +16,7 @@ public class DefaultCreator<V,F extends FactoryBase<?,V>> implements Function<Fa
     }
 
 
+    @SuppressWarnings("unchecked")
     @Override
     public F apply(FactoryContext<V> context) {
         try {

@@ -1,20 +1,5 @@
 package de.factoryfx.server;
 
-import java.util.List;
-
-import de.factoryfx.data.merge.AttributeDiffInfo;
-import de.factoryfx.factory.FactoryManager;
-import de.factoryfx.factory.datastorage.FactoryAndNewMetadata;
-import de.factoryfx.factory.datastorage.inmemory.InMemoryFactoryStorage;
-import de.factoryfx.factory.exception.RethrowingFactoryExceptionHandler;
-import de.factoryfx.factory.log.FactoryUpdateLog;
-import de.factoryfx.factory.testfactories.ExampleFactoryA;
-import de.factoryfx.factory.testfactories.ExampleFactoryB;
-import de.factoryfx.factory.testfactories.ExampleLiveObjectA;
-import org.junit.Assert;
-import org.junit.Test;
-import org.mockito.Mockito;
-
 public class ApplicationServerTest {
 
     //TODO

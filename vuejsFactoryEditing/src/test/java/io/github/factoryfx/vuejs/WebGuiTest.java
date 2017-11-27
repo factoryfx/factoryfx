@@ -6,7 +6,7 @@ import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.factory.FactoryManager;
 import de.factoryfx.factory.builder.FactoryTreeBuilder;
 import de.factoryfx.factory.builder.Scope;
-import de.factoryfx.factory.datastorage.inmemory.InMemoryFactoryStorage;
+import de.factoryfx.data.storage.inmemory.InMemoryDataStorage;
 import de.factoryfx.factory.exception.RethrowingFactoryExceptionHandler;
 import de.factoryfx.server.ApplicationServer;
 import de.factoryfx.server.rest.ApplicationServerResourceFactory;
@@ -47,7 +47,7 @@ public class WebGuiTest extends Application{
 
 
 
-            ApplicationServer<Void, VuejsTestServer, VuejsTestServerFactory> exampleApplicationServer = new ApplicationServer<>(new FactoryManager<>(new RethrowingFactoryExceptionHandler<>()), new InMemoryFactoryStorage<>(factoryTreeBuilder.buildTree()));
+            ApplicationServer<Void, VuejsTestServer, VuejsTestServerFactory> exampleApplicationServer = new ApplicationServer<>(new FactoryManager<>(new RethrowingFactoryExceptionHandler<>()), new InMemoryDataStorage<>(factoryTreeBuilder.buildTree()));
             exampleApplicationServer.start();
 
             {

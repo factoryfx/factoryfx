@@ -1,8 +1,8 @@
 package de.factoryfx.server.rest;
 
-import de.factoryfx.factory.datastorage.FactoryAndNewMetadata;
+import de.factoryfx.data.storage.DataAndNewMetadata;
 
 public class UpdateCurrentFactoryRequest {
-    public FactoryAndNewMetadata factoryUpdate;
+    public DataAndNewMetadata factoryUpdate;
     public String comment;
 }

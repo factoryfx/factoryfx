@@ -28,14 +28,13 @@ import javax.ws.rs.core.Response;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import de.factoryfx.data.Data;
 import de.factoryfx.data.attribute.Attribute;
-import de.factoryfx.data.attribute.AttributeVisitor;
 import de.factoryfx.data.attribute.ReferenceAttribute;
 import de.factoryfx.data.attribute.ReferenceListAttribute;
 import de.factoryfx.data.merge.AttributeDiffInfo;
 import de.factoryfx.data.merge.MergeDiffInfo;
 import de.factoryfx.factory.FactoryBase;
-import de.factoryfx.factory.datastorage.FactoryAndNewMetadata;
-import de.factoryfx.factory.datastorage.StoredFactoryMetadata;
+import de.factoryfx.data.storage.DataAndNewMetadata;
+import de.factoryfx.data.storage.StoredDataMetadata;
 import de.factoryfx.factory.log.FactoryUpdateLog;
 import de.factoryfx.server.ApplicationServer;
 import de.factoryfx.server.angularjs.model.FactoryTypeInfoWrapper;
@@ -58,9 +57,9 @@ import javafx.collections.ObservableList;
 
 /** path defined in Server and not with the path annotation*/
 @Path("/")
-public class RestResource<V,L,T extends FactoryBase<L,V>> {
+public class RestResource<V,L, R extends FactoryBase<L,V>> {
 
-    private final ApplicationServer<V,L,T> applicationServer;
+    private final ApplicationServer<V,L,R> applicationServer;
     private final List<Class<? extends FactoryBase>> appFactoryClasses;
     private final List<Locale> locales;
     private final Layout webGuiLayout;
@@ -84,7 +83,7 @@ public class RestResource<V,L,T extends FactoryBase<L,V>> {
      * @param views views
      * @param sessionStorage sessionStorage
      */
-    public RestResource(Layout layout, ApplicationServer<V,L,T> applicationServer, List<Class<? extends FactoryBase>> appFactoryClasses, List<Locale> locales, UserManagement userManagement, Supplier<V> emptyVisitorCreator, Function<V, List<WebGuiTable>> dashboardTablesProvider, List<GuiView<?>> views, SessionStorage sessionStorage) {
+    public RestResource(Layout layout, ApplicationServer<V,L, R> applicationServer, List<Class<? extends FactoryBase>> appFactoryClasses, List<Locale> locales, UserManagement userManagement, Supplier<V> emptyVisitorCreator, Function<V, List<WebGuiTable>> dashboardTablesProvider, List<GuiView<?>> views, SessionStorage sessionStorage) {
         this.applicationServer = applicationServer;
         this.appFactoryClasses = appFactoryClasses;
         this.locales = locales;
@@ -195,8 +194,8 @@ public class RestResource<V,L,T extends FactoryBase<L,V>> {
     HttpServletRequest request;
 
     @SuppressWarnings("unchecked")
-    private FactoryAndNewMetadata<T> getCurrentEditingFactory(){
-        return (FactoryAndNewMetadata<T>)sessionStorage.getCurrentEditingFactory(request);
+    private DataAndNewMetadata<R> getCurrentEditingFactory(){
+        return (DataAndNewMetadata<R>)sessionStorage.getCurrentEditingFactory(request);
 
     }
 
@@ -205,7 +204,7 @@ public class RestResource<V,L,T extends FactoryBase<L,V>> {
     @Path("loadCurrentFactory")
     public Response init(){
         if (!sessionStorage.hasCurrentEditingFactory(request)){
-            FactoryAndNewMetadata<T> prepareNewFactory = applicationServer.prepareNewFactory();
+            DataAndNewMetadata<R> prepareNewFactory = applicationServer.prepareNewFactory();
             sessionStorage.setCurrentEditingFactory(request,prepareNewFactory);
         }
         return Response.ok().entity("ok").build();
@@ -260,7 +259,7 @@ public class RestResource<V,L,T extends FactoryBase<L,V>> {
 
     private StageResponse createStageResponse(){
         StageResponse response=new StageResponse();
-        FactoryAndNewMetadata<T> currentEditingFactoryRoot = getCurrentEditingFactory();
+        DataAndNewMetadata<R> currentEditingFactoryRoot = getCurrentEditingFactory();
 
         //TODO permission check
         response.mergeDiffInfo=applicationServer.simulateUpdateCurrentFactory(currentEditingFactoryRoot, (permission)->true);
@@ -322,7 +321,7 @@ public class RestResource<V,L,T extends FactoryBase<L,V>> {
     public List<WebGuiPossibleEntity> possibleValues(@QueryParam("id")String id, @QueryParam("attributeName")String attributeName){
         List<WebGuiPossibleEntity> result = new ArrayList<>() ;
 
-        T root = getCurrentEditingFactory().root;
+        R root = getCurrentEditingFactory().root;
 
         root.internal().collectChildDataMap().get(id).internal().visitAttributesFlat((attributeVariableName, attribute) -> {
             if (attributeVariableName.equals(attributeName)){
@@ -346,7 +345,7 @@ public class RestResource<V,L,T extends FactoryBase<L,V>> {
     @SuppressWarnings("unchecked")
     public de.factoryfx.server.angularjs.model.WebGuiFactory addFactory(@QueryParam("id")String id, @QueryParam("attributeName")String attributeName){
 
-        T root = getCurrentEditingFactory().root;
+        R root = getCurrentEditingFactory().root;
 
         Data factoryBase = root.internal().collectChildDataMap().get(id);
         factoryBase.internal().visitAttributesFlat((attributeVariableName, attribute) -> {
@@ -384,8 +383,8 @@ public class RestResource<V,L,T extends FactoryBase<L,V>> {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("history") //detail request for history
-    public Collection<StoredFactoryMetadata> history(){
-        List<StoredFactoryMetadata> historyFactoryList = new ArrayList<>(applicationServer.getHistoryFactoryList());
+    public Collection<StoredDataMetadata> history(){
+        List<StoredDataMetadata> historyFactoryList = new ArrayList<>(applicationServer.getHistoryFactoryList());
         Collections.sort(historyFactoryList, (o1, o2) -> Objects.compare(o1.creationTime, o2.creationTime, Comparator.reverseOrder()));
         return historyFactoryList;
     }
@@ -416,11 +415,11 @@ public class RestResource<V,L,T extends FactoryBase<L,V>> {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("diff")
-    public MergeDiffInfo getDiff(@QueryParam("id")String id) {
+    public MergeDiffInfo<R> getDiff(@QueryParam("id")String id) {
         applicationServer.getHistoryFactory(id);
-        for(StoredFactoryMetadata storedFactoryMetadata: applicationServer.getHistoryFactoryList()){
-            if (storedFactoryMetadata.id.equals(id)){
-                return applicationServer.getDiffToPreviousVersion(storedFactoryMetadata);
+        for(StoredDataMetadata storedDataMetadata : applicationServer.getHistoryFactoryList()){
+            if (storedDataMetadata.id.equals(id)){
+                return applicationServer.getDiffToPreviousVersion(storedDataMetadata);
             }
         }
 

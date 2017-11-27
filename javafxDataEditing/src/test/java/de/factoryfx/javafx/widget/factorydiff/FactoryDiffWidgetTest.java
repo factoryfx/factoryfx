@@ -34,7 +34,7 @@ public class FactoryDiffWidgetTest extends Application {
         final ExampleData1 newData = root.internal().copyFromRoot();
         newData.stringAttribute.set("4545544554545");
         newData.referenceListAttribute.add(new ExampleData2());
-        DataMerger dataMerger = new DataMerger(root,root.internal().copyFromRoot(), newData);
+        DataMerger<ExampleData1> dataMerger = new DataMerger<>(root,root.internal().copyFromRoot(), newData);
 
         FactoryDiffWidget factoryDiffWidget = new FactoryDiffWidget(uniformDesign,new AttributeEditorBuilder(AttributeEditorBuilder.createDefaultSingleAttributeEditorBuilders(uniformDesign)));
         factoryDiffWidget.updateMergeDiff(dataMerger.mergeIntoCurrent((p)->true));

@@ -1,8 +1,8 @@
 package de.factoryfx.docu.migration;
 
+import de.factoryfx.data.storage.*;
 import de.factoryfx.factory.FactoryManager;
-import de.factoryfx.factory.datastorage.*;
-import de.factoryfx.factory.datastorage.filesystem.FileSystemFactoryStorage;
+import de.factoryfx.data.storage.filesystem.FileSystemDataStorage;
 import de.factoryfx.factory.exception.RethrowingFactoryExceptionHandler;
 import de.factoryfx.server.ApplicationServer;
 
@@ -19,13 +19,13 @@ public class Main {
 
         //for every incompatible change the dataModelVersion must be adjusted and the migration added to the list
         int dataModelVersion = 2;
-        List<FactoryMigration> factoryMigrations = new ArrayList<>();
-        factoryMigrations.add(new SimpleFactoryMigration(1, 2, old -> {
+        List<DataMigration> dataMigrations = new ArrayList<>();
+        dataMigrations.add(new SimpleDataMigration(1, 2, old -> {
             return old;//do nothing it's just simple example
         }));
 
-        FactorySerialisationManager<RootFactory> serialisationManager = new FactorySerialisationManager<>(new JacksonSerialisation<>(dataModelVersion),new JacksonDeSerialisation<>(RootFactory.class, dataModelVersion), factoryMigrations,dataModelVersion);
-        FileSystemFactoryStorage<Void, Root, RootFactory> fileSystemFactoryStorage = new FileSystemFactoryStorage<>(Files.createTempDirectory("tempfiles"), rootFactory, serialisationManager);
+        DataSerialisationManager<RootFactory> serialisationManager = new DataSerialisationManager<>(new JacksonSerialisation<>(dataModelVersion),new JacksonDeSerialisation<>(RootFactory.class, dataModelVersion), dataMigrations,dataModelVersion);
+        FileSystemDataStorage<RootFactory> fileSystemFactoryStorage = new FileSystemDataStorage<>(Files.createTempDirectory("tempfiles"), rootFactory, serialisationManager);
 
         ApplicationServer<Void,Root,RootFactory> applicationServer = new ApplicationServer<>(new FactoryManager<>(new RethrowingFactoryExceptionHandler<>()), fileSystemFactoryStorage);
         applicationServer.start();

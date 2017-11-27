@@ -228,7 +228,7 @@ public class FactoryDiffWidget implements Widget {
         vBox.getChildren().add(node);
         return vBox;
     }
-    public void updateMergeDiff(MergeDiffInfo mergeDiff) {
+    public void updateMergeDiff(MergeDiffInfo<?> mergeDiff) {
         Data previousRoot=mergeDiff.getPreviousRootData();
         Data newRoot=mergeDiff.getNewRootData();
         diff = new ArrayList<>();
