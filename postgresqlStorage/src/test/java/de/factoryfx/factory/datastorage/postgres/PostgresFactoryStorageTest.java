@@ -140,6 +140,8 @@ public class PostgresFactoryStorageTest {
         try (Connection con = postgresDatasource.getConnection()) {
             for (String sql : Arrays.asList("drop table currentconfiguration"
                     ,"drop table configurationmetadata"
+                    ,"drop table futureconfigurationmetadata"
+                    ,"drop table futureconfiguration"
                     ,"drop table configuration")) {
                 PreparedStatement pstmt = con.prepareStatement(sql);
                 pstmt.execute();
