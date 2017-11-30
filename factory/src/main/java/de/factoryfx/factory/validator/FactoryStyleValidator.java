@@ -26,6 +26,7 @@ public class FactoryStyleValidator {
             factoryStyleValidations.add(new NotNullAttributeValidation(factoryBase, field));
             factoryStyleValidations.add(new PublicValidation(factoryBase, field));
             factoryStyleValidations.add(new FinalValidation(factoryBase, field));
+            factoryStyleValidations.add(new NoIdAsAttributeName(field));
             return factoryStyleValidations;
         }, factoryBase -> new ArrayList<>());
     }

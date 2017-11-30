@@ -351,7 +351,6 @@ public class Data {
             if (root==null){
                 root=result;
             }
-            result.parent=parent;
 
             final Data finalRoot=root;
             final Data finalCopy=result;
@@ -371,6 +370,9 @@ public class Data {
             oldData.add(this);
             result.root=root;
             copy=result;
+        }
+        if (parent!=null){
+            result.parents.add(parent);
         }
         return result;
     }
@@ -420,9 +422,10 @@ public class Data {
         return reconstructMetadataDeepRoot();
     }
 
-    private Data parent;
-    private Data getParent(){
-        return parent;
+    private Set<Data> parents=new HashSet<>();
+
+    private Set<Data> getParents(){
+        return parents;
     }
 
     private Data root;
@@ -766,9 +769,14 @@ public class Data {
             return data.getRoot();
         }
 
-        //TODO parent should be a list?
+        /** use getParents instead*/
+        @Deprecated
         public Data getParent(){
-            return data.getParent();
+            return data.getParents().iterator().next();
+        }
+
+        public Set<Data> getParents(){
+            return data.getParents();
         }
 
         public HashMap<Data, Data> getChildToParentMap() {

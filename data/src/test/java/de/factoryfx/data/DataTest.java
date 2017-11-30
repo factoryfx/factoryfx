@@ -403,4 +403,46 @@ public class DataTest {
         Assert.assertEquals("blabla",copy.getId());
     }
 
+    public static class ExampleWithId extends Data {
+        public final StringAttribute id = new StringAttribute();
+    }
+
+    @Test
+    public void test_json_and_id_attributename(){
+        ExampleWithId exampleWithId = new ExampleWithId();
+        exampleWithId.id.set("blabla");
+        ExampleWithId copy = ObjectMapperBuilder.build().copy(exampleWithId);
+        Assert.assertNotEquals("blabla",copy.getId());
+    }
+
+
+    public static class ExampleParentsA extends Data {
+        public final DataReferenceAttribute<ExampleParentsB> exampleParentsB = new DataReferenceAttribute<>();
+        public final DataReferenceAttribute<ExampleParentsC> exampleParentsC = new DataReferenceAttribute<>();
+    }
+
+    public static class ExampleParentsB extends Data {
+        public final DataReferenceAttribute<ExampleParentsC> exampleParentsC = new DataReferenceAttribute<>();
+    }
+
+    public static class ExampleParentsC extends Data {
+        public final StringAttribute any = new StringAttribute();
+    }
+
+    @Test
+    public void test_multiple_parents(){
+        ExampleParentsA exampleParentsA = new ExampleParentsA();
+        ExampleParentsB exampleParentsB = new ExampleParentsB();
+        exampleParentsA.exampleParentsB.set(exampleParentsB);
+
+        ExampleParentsC exampleParentsC = new ExampleParentsC();
+        exampleParentsB.exampleParentsC.set(exampleParentsC);
+        exampleParentsA.exampleParentsC.set(exampleParentsC);
+
+        //Assert.assertEquals(2,exampleParentsC.internal().getParents().size());
+        exampleParentsA = exampleParentsA.internal().prepareUsableCopy();
+        Assert.assertEquals(2,exampleParentsA.exampleParentsB.get().exampleParentsC.get().internal().getParents().size());
+    }
+
+
 }
