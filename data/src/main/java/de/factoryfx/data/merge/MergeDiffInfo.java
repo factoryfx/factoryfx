@@ -53,7 +53,7 @@ public class MergeDiffInfo<R extends Data> {
         this.rootClazz = rootClazz;
     }
 
-    public String getPreviousRoot() {
+    public String getPreviousRoot() {//workaround for duplicated ids
         return ObjectMapperBuilder.build().writeValueAsString(previousRoot);
     }
 

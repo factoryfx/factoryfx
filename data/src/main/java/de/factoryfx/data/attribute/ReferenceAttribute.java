@@ -123,7 +123,7 @@ public abstract class ReferenceAttribute<T extends Data, A extends ReferenceBase
 
     @Override
     public AttributeTypeInfo internal_getAttributeType() {
-        return new AttributeTypeInfo(Data.class,null,null, AttributeTypeInfo.AttributeTypeCategory.REFERENCE);
+        return new AttributeTypeInfo(internal_getReferenceClass(),null,null, AttributeTypeInfo.AttributeTypeCategory.REFERENCE);
     }
 
 
