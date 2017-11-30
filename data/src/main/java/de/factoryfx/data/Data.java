@@ -772,6 +772,9 @@ public class Data {
         /** use getParents instead*/
         @Deprecated
         public Data getParent(){
+            if (data.getParents().isEmpty()){
+                return null;
+            }
             return data.getParents().iterator().next();
         }
 
