@@ -19,7 +19,9 @@ public class URIAttribute extends ImmutableValueAttribute<URI,URIAttribute> {
         set(initialValue);
     }
 
-    /** workaround for checked exception */
+    /** workaround for checked exception
+     * @param uri uri as string
+     * */
     @JsonIgnore
     public void setUnchecked(String uri){
         try {

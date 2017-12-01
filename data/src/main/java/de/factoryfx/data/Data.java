@@ -793,7 +793,8 @@ public class Data {
             return data.getRoot();
         }
 
-        /** use getParents instead*/
+        /** use getParents instead
+         * @return parent*/
         @Deprecated
         public Data getParent(){
             if (data.getParents().isEmpty()){
