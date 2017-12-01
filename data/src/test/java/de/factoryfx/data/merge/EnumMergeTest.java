@@ -23,9 +23,11 @@ public class EnumMergeTest extends MergeHelperTestBase {
     public void test_merge_change(){
         EnumMergeTestPojo aTest1 = new EnumMergeTestPojo();
         aTest1.attribute.setEnum(TestEnum.A);
+        aTest1=aTest1.internal().prepareUsableCopy();
 
         EnumMergeTestPojo aTest2 = new EnumMergeTestPojo();
         aTest2.attribute.setEnum(TestEnum.B);
+        aTest2=aTest2.internal().prepareUsableCopy();
 
         Assert.assertEquals(TestEnum.A,aTest1.attribute.getEnum());
         Assert.assertTrue(merge(aTest1, aTest1, aTest2).hasNoConflicts());

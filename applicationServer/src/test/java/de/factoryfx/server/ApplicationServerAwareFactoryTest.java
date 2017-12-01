@@ -12,9 +12,10 @@ public class ApplicationServerAwareFactoryTest {
 
     @Test
     public void test(){
-        final RootTestClazz rootTestclazz = new RootTestClazz();
+        RootTestClazz rootTestclazz = new RootTestClazz();
         final ApplicationServerAwareFactoryTestclazz value = new ApplicationServerAwareFactoryTestclazz();
         rootTestclazz.ref.set(value);
+        rootTestclazz = rootTestclazz.internal().prepareUsableCopy();
         Assert.assertNull(value.applicationServer.get());
 
         final FactoryManager<Void, String, RootTestClazz> factoryManager = new FactoryManager<>(new RethrowingFactoryExceptionHandler<>());

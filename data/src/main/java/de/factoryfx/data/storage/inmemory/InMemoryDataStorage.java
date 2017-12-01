@@ -15,6 +15,9 @@ public class InMemoryDataStorage<R extends Data> implements DataStorage<R> {
     private R initialFactory;
 
     public InMemoryDataStorage(R initialFactory){
+        if (!initialFactory.internal().isUsable()){
+            throw new IllegalStateException("currentData is not a usableCopy use prepareUsableCopy()");
+        }
         this.initialFactory=initialFactory;
     }
 
@@ -34,7 +37,7 @@ public class InMemoryDataStorage<R extends Data> implements DataStorage<R> {
     @Override
     public DataAndStoredMetadata<R> getCurrentFactory() {
         DataAndStoredMetadata<R> result = storage.get(current);
-        return new DataAndStoredMetadata<>(result.root.internal().prepareUsableCopy(),result.metadata);
+        return new DataAndStoredMetadata<>(result.root.internal().copy(),result.metadata);
     }
 
     @Override

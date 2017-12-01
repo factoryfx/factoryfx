@@ -13,6 +13,8 @@ public class DataMergerMergerTest {
     public void test_diff_info(){
         ExampleDataA currentModel = new ExampleDataA();
         currentModel.stringAttribute.set("1111111");
+
+        currentModel=currentModel.internal().prepareUsableCopy();
         ExampleDataA originalModel = currentModel.internal().copy();
         ExampleDataA newModel = currentModel.internal().copy();
         newModel.stringAttribute.set("2222222");
@@ -30,6 +32,8 @@ public class DataMergerMergerTest {
         ExampleDataB exampleFactoryB = new ExampleDataB();
         exampleFactoryB.stringAttribute.set("Factory to be deleted");
         currentModel.referenceAttribute.set(exampleFactoryB);
+
+        currentModel=currentModel.internal().prepareUsableCopy();
         ExampleDataA originalModel = currentModel.internal().copy();
         ExampleDataA newModel = currentModel.internal().copy();
         newModel.referenceAttribute.set(null);
@@ -47,6 +51,9 @@ public class DataMergerMergerTest {
         ExampleDataA currentModel = new ExampleDataA();
         ExampleDataB exampleFactoryB = new ExampleDataB();
         currentModel.referenceAttribute.set(exampleFactoryB);
+        currentModel=currentModel.internal().prepareUsableCopy();
+        currentModel=currentModel.internal().prepareUsableCopy();
+
         ExampleDataA originalModel = currentModel.internal().copy();
         ExampleDataA newModel = currentModel.internal().copy();
 
@@ -66,6 +73,7 @@ public class DataMergerMergerTest {
     public void test_permission_violation(){
         ExampleFactoryPermission currentModel = new ExampleFactoryPermission();
         currentModel.stringAttribute.set("123");
+        currentModel=currentModel.internal().prepareUsableCopy();
         ExampleFactoryPermission originalModel = currentModel.internal().copy();
         ExampleFactoryPermission newModel = currentModel.internal().copy();
         newModel.stringAttribute.set("XXX");
@@ -81,6 +89,7 @@ public class DataMergerMergerTest {
     public void test_permission_no_violation(){
         ExampleFactoryPermission currentModel = new ExampleFactoryPermission();
         currentModel.stringAttribute.set("123");
+        currentModel=currentModel.internal().prepareUsableCopy();
         ExampleFactoryPermission originalModel = currentModel.internal().copy();
         ExampleFactoryPermission newModel = currentModel.internal().copy();
         newModel.stringAttribute.set("XXX");

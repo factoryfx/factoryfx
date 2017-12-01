@@ -28,6 +28,8 @@ public class RestResourceTest {
         ExampleFactoryA shared = new ExampleFactoryA();
         existingListEntry.referenceAttribute.set(shared);
         exampleFactoryA.referenceListAttribute.add(existingListEntry);
+        exampleFactoryA = exampleFactoryA.internal().prepareUsableCopy();
+        shared=exampleFactoryA.referenceListAttribute.get().get(0).referenceAttribute.get();
 
         ApplicationServer<ExampleVisitor, ExampleLiveObjectA, ExampleFactoryA> defaultApplicationServer = new ApplicationServer<>(new FactoryManager<>(new RethrowingFactoryExceptionHandler<>()), new InMemoryDataStorage<>(exampleFactoryA));
         defaultApplicationServer.start();

@@ -163,8 +163,8 @@ public class FactoryManagerLivecycleTest {
 
         factoryManager.start(exampleFactoryA);
 
-        LivecycleFactoryA common = factoryManager.getCurrentFactory().internal().prepareUsableCopy();
-        LivecycleFactoryA update = factoryManager.getCurrentFactory().internal().prepareUsableCopy();
+        LivecycleFactoryA common = factoryManager.getCurrentFactory().internal().copy();
+        LivecycleFactoryA update = factoryManager.getCurrentFactory().internal().copy();
         update.refC.get().stringAttribute.set("changed");
 
         exampleFactoryA.resetCounter();
@@ -188,8 +188,8 @@ public class FactoryManagerLivecycleTest {
 
         factoryManager.start(exampleFactoryA);
 
-        LivecycleFactoryA common = factoryManager.getCurrentFactory().internal().prepareUsableCopy();
-        LivecycleFactoryA update = factoryManager.getCurrentFactory().internal().prepareUsableCopy();
+        LivecycleFactoryA common = factoryManager.getCurrentFactory().internal().copy();
+        LivecycleFactoryA update = factoryManager.getCurrentFactory().internal().copy();
         update.ref.get().stringAttribute.set("changed");
 
         exampleFactoryA.resetCounter();
@@ -255,8 +255,8 @@ public class FactoryManagerLivecycleTest {
 
         factoryManager.start(exampleFactoryA);
 
-        LivecycleFactoryA common = factoryManager.getCurrentFactory().internal().prepareUsableCopy();
-        LivecycleFactoryA update = factoryManager.getCurrentFactory().internal().prepareUsableCopy();
+        LivecycleFactoryA common = factoryManager.getCurrentFactory().internal().copy();
+        LivecycleFactoryA update = factoryManager.getCurrentFactory().internal().copy();
         update.refList.get().clear();
 
         exampleFactoryA.resetCounter();
@@ -285,8 +285,8 @@ public class FactoryManagerLivecycleTest {
 
         factoryManager.start(exampleFactoryA);
 
-        LivecycleFactoryA common = factoryManager.getCurrentFactory().internal().prepareUsableCopy();
-        LivecycleFactoryA update = factoryManager.getCurrentFactory().internal().prepareUsableCopy();
+        LivecycleFactoryA common = factoryManager.getCurrentFactory().internal().copy();
+        LivecycleFactoryA update = factoryManager.getCurrentFactory().internal().copy();
         update.refList.clear();
 
         exampleFactoryA.resetCounter();

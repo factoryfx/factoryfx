@@ -19,6 +19,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
@@ -348,6 +349,7 @@ public class Data {
         if (result==null){
             result = newInstance();
             result.id=this.id;
+            result.isUsable=true;//only possible to created copies form usable data therefore copy is always usable
             if (root==null){
                 root=result;
             }
@@ -420,6 +422,14 @@ public class Data {
 
     private <T extends Data> T prepareUsableCopy() {
         return reconstructMetadataDeepRoot();
+    }
+    private boolean isUsable=false;
+    @JsonIgnore
+    private boolean isUsable(){
+        return isUsable;
+    }
+    private void setUsable(){
+        isUsable=true;
     }
 
     private Set<Data> parents=new HashSet<>();
@@ -709,7 +719,10 @@ public class Data {
         }
 
         public <T extends Data> T copy() {
-            return  data.copy();
+            if (!this.isUsable()){
+                throw new IllegalStateException("currentData is not a usableCopy use prepareUsableCopy()");
+            }
+            return data.copy();
         }
 
         /** copy a root data element
@@ -741,8 +754,19 @@ public class Data {
          * @param <T> type
          * @return usable copy
          */
+        @SuppressWarnings("unchecked")
         public <T extends Data> T prepareUsableCopy() {
-            return data.prepareUsableCopy();
+
+            if (data.isUsable()){
+                return (T)data;
+            }
+            T usableCopy = data.prepareUsableCopy();
+            //init ids, id couldt depend on parents, usablecopy must have init ids else a copy is broken;
+            for (Data child : usableCopy.internal().collectChildrenDeep()) {
+                child.getId();
+                child.setUsable();
+            }
+            return usableCopy;
         }
 
         /** only call on root*/
@@ -788,6 +812,10 @@ public class Data {
 
         public boolean hasCustomDisplayText(){
             return data.hasCustomDisplayText();
+        }
+
+        public boolean isUsable() {
+            return data.isUsable();
         }
     }
 

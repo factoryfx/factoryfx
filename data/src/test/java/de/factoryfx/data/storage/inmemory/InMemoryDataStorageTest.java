@@ -21,7 +21,9 @@ public class InMemoryDataStorageTest {
 
     @Test
     public void test_init() throws MalformedURLException {
-        InMemoryDataStorage<Dummy> fileSystemFactoryStorage = new InMemoryDataStorage<>(new Dummy());
+        Dummy dummy = new Dummy();
+        dummy = dummy.internal().prepareUsableCopy();
+        InMemoryDataStorage<Dummy> fileSystemFactoryStorage = new InMemoryDataStorage<>(dummy);
         fileSystemFactoryStorage.loadInitialFactory();
 
         Assert.assertNotNull(fileSystemFactoryStorage.getCurrentFactory());
@@ -29,7 +31,9 @@ public class InMemoryDataStorageTest {
 
     @Test
     public void test_update() throws MalformedURLException {
-        InMemoryDataStorage<Dummy> fileSystemFactoryStorage = new InMemoryDataStorage<>(new Dummy());
+        Dummy dummy = new Dummy();
+        dummy = dummy.internal().prepareUsableCopy();
+        InMemoryDataStorage<Dummy> fileSystemFactoryStorage = new InMemoryDataStorage<>(dummy);
         fileSystemFactoryStorage.loadInitialFactory();
 
         Assert.assertEquals(1,fileSystemFactoryStorage.getHistoryFactoryList().size());
