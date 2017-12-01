@@ -347,7 +347,7 @@ public class Data {
         Data result= copy;
         if (result==null){
             result = newInstance();
-            result.setId(this.getId());
+            result.id=this.id;
             if (root==null){
                 root=result;
             }
