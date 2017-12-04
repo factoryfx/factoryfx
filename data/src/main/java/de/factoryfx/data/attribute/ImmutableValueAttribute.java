@@ -138,4 +138,18 @@ public abstract class ImmutableValueAttribute<T,A extends Attribute<T,A>> extend
         return match(attribute.get());
     }
 
+    public boolean internal_isUserReadOnly() {
+        return userReadOnly;
+    }
+
+    private boolean userReadOnly=false;
+    /**
+     * marks the attribute as readonly for the user
+     * @return self
+     */
+    @SuppressWarnings("unchecked")
+    public A userReadOnly(){
+        userReadOnly=true;
+        return (A)this;
+    }
 }
