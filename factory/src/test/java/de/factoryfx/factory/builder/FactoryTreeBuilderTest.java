@@ -60,7 +60,7 @@ public class FactoryTreeBuilderTest {
         System.out.println(ObjectMapperBuilder.build().writeValueAsString(root));
     }
 
-    private static class FactoryTestA extends SimpleFactoryBase<Void,Void> {
+    public static class FactoryTestA extends SimpleFactoryBase<Void,Void> {
 
         public final FactoryReferenceAttribute<ExampleLiveObjectB,ExampleFactoryB> referenceAttribute1 = new FactoryReferenceAttribute<>(ExampleFactoryB.class).labelText("ExampleA2");
         public final FactoryReferenceAttribute<ExampleLiveObjectB,ExampleFactoryB> referenceAttribute2 = new FactoryReferenceAttribute<>(ExampleFactoryB.class).labelText("ExampleA2");
