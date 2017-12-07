@@ -161,7 +161,7 @@ public abstract class ReferenceListAttribute<T extends Data,A extends ReferenceB
             throw new IllegalStateException("cant't add null to list");
         }
         if (root!=null && added.internal().getRoot()!=root) {
-            added.internal().propagateRoot(root);
+            added.internal().propagateRootAndParent(root,parent);
         }
 
         afterModify();

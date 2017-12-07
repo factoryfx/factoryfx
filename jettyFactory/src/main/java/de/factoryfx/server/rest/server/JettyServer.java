@@ -81,7 +81,8 @@ public class JettyServer {
         provider.setMapper(mapper);
         resourceConfig.register(provider);
 
-        resourceConfig.registerInstances(new DelegatingLoggingFilterLogger());
+        org.glassfish.jersey.logging.LoggingFeature loggingFilter = new org.glassfish.jersey.logging.LoggingFeature(new DelegatingLoggingFilterLogger());
+        resourceConfig.registerInstances(loggingFilter);
         return resourceConfig;
     }
 

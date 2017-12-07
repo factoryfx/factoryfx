@@ -33,7 +33,7 @@ public class FactoryTreeBuilder<V, L, R extends FactoryBase<L,V>> {
         if (factoryBases==null){
             throw new IllegalStateException("FactoryCreator missing for root class"+ rootClass);
         }
-        return factoryBases;
+        return factoryBases.internal().prepareUsableCopy();
     }
 
     public <L, F extends FactoryBase<L,V>> F buildSubTree(Class<F> factoryClazz){

@@ -12,15 +12,9 @@ public class DataMerger<R extends Data> {
     private final R newData;
 
     public DataMerger(R currentData, R commonData, R newData) {
-        if (!currentData.internal().isUsable()){
-            throw new IllegalStateException("currentData is not a usableCopy use prepareUsableCopy()");
-        }
-        if (!commonData.internal().isUsable()){
-            throw new IllegalStateException("currentData is not a usableCopy use prepareUsableCopy()");
-        }
-        if (!newData.internal().isUsable()){
-            throw new IllegalStateException("currentData is not a usableCopy use prepareUsableCopy()");
-        }
+        currentData.internal().checkUsable();
+        commonData.internal().checkUsable();
+        newData.internal().checkUsable();
         this.commonData = commonData;
         this.currentData = currentData;
         this.newData = newData;

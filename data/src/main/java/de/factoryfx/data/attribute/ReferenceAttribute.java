@@ -55,8 +55,8 @@ public abstract class ReferenceAttribute<T extends Data, A extends ReferenceBase
     @Override
     public void set(T value) {
         this.value=value;
-        if (root!=null && value!=null && value.internal().getRoot()!=root) {
-            value.internal().propagateRoot(root);
+        if (root!=null && value!=null) {
+            value.internal().propagateRootAndParent(root,this.parent);
         }
         if (listeners!=null) {
             for (AttributeChangeListener<T, A> listener : listeners) {

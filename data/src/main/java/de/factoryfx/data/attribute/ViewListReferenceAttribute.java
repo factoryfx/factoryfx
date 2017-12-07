@@ -190,7 +190,7 @@ public abstract class ViewListReferenceAttribute <R extends Data, T extends Data
 
     @Override
     @SuppressWarnings("unchecked")
-    public void internal_prepareUsage(Data root){
+    public void internal_prepareUsage(Data root, Data parent){
         this.root=(R)root;
     }
 

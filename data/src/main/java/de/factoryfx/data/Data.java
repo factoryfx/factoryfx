@@ -12,6 +12,7 @@ import de.factoryfx.data.validation.Validation;
 import de.factoryfx.data.validation.ValidationError;
 import javafx.beans.property.ReadOnlyStringProperty;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.scene.Parent;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -19,7 +20,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
@@ -334,7 +334,7 @@ public class Data {
         ArrayList<Data> oldData = new ArrayList<>();
         Data copy = copyDeep(0, level, null, null, newAttributes,oldData);
         if (copy!=null){
-            copy.propagateRoot(Collections.emptyList(),Collections.emptyList(),newAttributes,copy);
+            copy.afterPreparedUsage(newAttributes,copy);
         }
         oldData.forEach(d->d.copy=null);
         return (T) copy;
@@ -358,7 +358,7 @@ public class Data {
             final Data finalCopy=result;
             this.visitAttributesDualFlat(result, (name, thisAttribute, copyAttribute) -> {
                 newAttributes.add(copyAttribute);
-                copyAttribute.internal_prepareUsage(finalRoot);
+                copyAttribute.internal_prepareUsage(finalRoot,finalCopy);
                 if (thisAttribute!=null){//cause jackson decided it's a good idea to override the final field with null
                     thisAttribute.internal_copyToUnsafe(copyAttribute,(data)->{
                         if (data==null){
@@ -394,13 +394,8 @@ public class Data {
     }
 
     @SuppressWarnings("unchecked")
-    private <T extends Data> T propagateRoot(Collection<Data> dataCollection, Collection<Attribute<?,?>> newAttributesForInitialise, Collection<Attribute<?,?>> newAttributesForAfterInitialise   ,Data root){
-        for (Data data: dataCollection){
-            data.root=root;
-        }
-        for (Attribute<?,?> attribute: newAttributesForInitialise){
-            attribute.internal_prepareUsage(root);
-        }
+    private <T extends Data> T afterPreparedUsage(Collection<Attribute<?,?>> newAttributesForAfterInitialise, Data root){
+
         for (Attribute<?,?> attribute: newAttributesForAfterInitialise){
             attribute.internal_afterPreparedUsage(root);
         }
@@ -408,15 +403,18 @@ public class Data {
     }
 
     @SuppressWarnings("unchecked")
-    <T extends Data> T propagateRoot(Data root){
+    <T extends Data> T propagateRootAndParent(Data root, Data parent){
+        this.parents.add(parent);
         final List<Data> childrenDeep = collectChildrenDeep();
         final ArrayList<Attribute<?,?>> attributes=new ArrayList<>();
         for (Data data: childrenDeep){
+            data.root=root;
             data.visitAttributesFlat((attributeVariableName, attribute) -> {
-                attributes.add(attribute);
+                attribute.internal_prepareUsage(root,data);
             });
         }
-        propagateRoot(childrenDeep,attributes,attributes,root);
+
+        afterPreparedUsage(attributes,root);
         return (T)this;
     }
 
@@ -719,9 +717,7 @@ public class Data {
         }
 
         public <T extends Data> T copy() {
-            if (!this.isUsable()){
-                throw new IllegalStateException("currentData is not a usableCopy use prepareUsableCopy()");
-            }
+            this.checkUsable();
             return data.copy();
         }
 
@@ -745,7 +741,8 @@ public class Data {
          * after serialisation or programmatically creation this mus be called first before using the object<br>
          * to:<br>
          * -fix jackson wrong deserialization (metadata ==null)<br>
-         * -propagate root node to all children (for validation etc)<br>
+         * -propagate root/parent node to all children (for validation etc)<br>
+         * -init ids
          *<br>
          * unfortunately we must create a copy and can't make the same object usable(which we tried but failed)<br>
          *<br>
@@ -785,8 +782,8 @@ public class Data {
          * @param <T> type
          * @return root
          */
-        public <T extends Data> T propagateRoot(Data root){
-            return data.propagateRoot(root);
+        public <T extends Data> T propagateRootAndParent(Data root, Data parent){
+            return data.propagateRootAndParent(root,parent);
         }
 
         public Data getRoot(){
@@ -818,6 +815,16 @@ public class Data {
         public boolean isUsable() {
             return data.isUsable();
         }
+
+        /**
+         * see {@link #prepareUsableCopy }
+         */
+        public void checkUsable() {
+            if (!isUsable()){
+                throw new IllegalStateException("currentData is not a usableCopy use prepareUsableCopy();\n  data=data.internal().prepareUsableCopy();");
+            }
+        }
+
     }
 
 }

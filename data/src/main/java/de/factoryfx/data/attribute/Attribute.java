@@ -131,7 +131,12 @@ public abstract class Attribute<T,A extends Attribute<T,A>>{
 
     public abstract AttributeTypeInfo internal_getAttributeType();
 
-    public void internal_prepareUsage(Data root){
+    /**
+     *
+     * @param root factory tree root
+     * @param parent data that contains the attribute
+     */
+    public void internal_prepareUsage(Data root, Data parent){
         //nothing
     }
 

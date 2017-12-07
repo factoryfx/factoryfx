@@ -11,6 +11,7 @@ import java.util.function.Function;
 public abstract class ReferenceBaseAttribute<T extends Data, U, A extends ReferenceBaseAttribute<T,U,A>> extends Attribute<U,A> {
 
     protected Data root;
+    protected Data parent;
 //    protected Class<T> containingFactoryClass;
 
 
@@ -52,8 +53,9 @@ public abstract class ReferenceBaseAttribute<T extends Data, U, A extends Refere
     }
 
     @Override
-    public void internal_prepareUsage(Data root){
+    public void internal_prepareUsage(Data root, Data parent){
         this.root=root;
+        this.parent=parent;
     }
 
     private Function<Data,T> newValueProvider;
