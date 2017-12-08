@@ -23,6 +23,7 @@ import org.slf4j.LoggerFactory;
 
 public class WebGuiTest extends Application{
 
+    @SuppressWarnings("unchecked")
     @Override
     public void start(Stage primaryStage) throws Exception {
         new WebAppViewer(primaryStage, () -> {

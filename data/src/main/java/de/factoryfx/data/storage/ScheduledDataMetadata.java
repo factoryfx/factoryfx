@@ -18,4 +18,11 @@ public class ScheduledDataMetadata extends StoredDataMetadata {
     public ScheduledDataMetadata() {
         super();
     }
+
+
+    public ScheduledDataMetadata(NewDataMetadata storedDataMetadata, LocalDateTime scheduled) {
+        this.baseVersionId=storedDataMetadata.baseVersionId;
+        this.dataModelVersion=storedDataMetadata.dataModelVersion;
+        this.scheduled=scheduled;
+    }
 }

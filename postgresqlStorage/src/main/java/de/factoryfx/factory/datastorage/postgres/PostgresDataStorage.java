@@ -279,17 +279,17 @@ public class PostgresDataStorage<R extends Data> implements DataStorage<R> {
     }
 
     @Override
-    public void addFutureFactory(DataAndNewMetadata<R> update, String user, String comment, LocalDateTime scheduled) {
+    public void addFutureFactory(DataAndScheduledMetadata<R> futureUpdate, String user, String comment) {
         final ScheduledDataMetadata storedFactoryMetadata = new ScheduledDataMetadata();
         storedFactoryMetadata.creationTime= LocalDateTime.now();
         storedFactoryMetadata.id= createNewId();
         storedFactoryMetadata.user=user;
         storedFactoryMetadata.comment=comment;
-        storedFactoryMetadata.baseVersionId=update.metadata.baseVersionId;
-        storedFactoryMetadata.dataModelVersion=update.metadata.dataModelVersion;
-        storedFactoryMetadata.scheduled = scheduled;
-        update.root.setId(storedFactoryMetadata.id);
-        final DataAndScheduledMetadata<R> updateData = new DataAndScheduledMetadata<>(update.root, storedFactoryMetadata);
+        storedFactoryMetadata.baseVersionId=futureUpdate.metadata.baseVersionId;
+        storedFactoryMetadata.dataModelVersion=futureUpdate.metadata.dataModelVersion;
+        storedFactoryMetadata.scheduled = futureUpdate.metadata.scheduled;
+        futureUpdate.root.setId(storedFactoryMetadata.id);
+        final DataAndScheduledMetadata<R> updateData = new DataAndScheduledMetadata<>(futureUpdate.root, storedFactoryMetadata);
 
         try (Connection connection = this.dataSource.getConnection()) {
             long createdAt = System.currentTimeMillis();
@@ -302,7 +302,7 @@ public class PostgresDataStorage<R extends Data> implements DataStorage<R> {
             }
 
             try (PreparedStatement pstmtInsertConfiguration = connection.prepareStatement("insert into futureconfiguration (root, metadata, createdAt, id) values (cast (? as json), cast (? as json), ?, ?)")) {
-                pstmtInsertConfiguration.setString(1, dataSerialisationManager.write(update.root));
+                pstmtInsertConfiguration.setString(1, dataSerialisationManager.write(futureUpdate.root));
                 pstmtInsertConfiguration.setString(2, dataSerialisationManager.writeScheduledMetadata(updateData.metadata));
                 pstmtInsertConfiguration.setTimestamp(3, createdAtTimestamp);
                 pstmtInsertConfiguration.setString(4, storedFactoryMetadata.id);

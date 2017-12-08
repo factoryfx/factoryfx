@@ -62,10 +62,11 @@ public class OracledbDataStorage<R extends Data> implements DataStorage<R> {
             try (Statement statement = connection.createStatement()){
                 String sql = "SELECT * FROM FACTORY_CURRENT";
 
-                ResultSet resultSet =statement.executeQuery(sql);
-                if(resultSet.next()){
-                    StoredDataMetadata factoryMetadata = dataSerialisationManager.readStoredFactoryMetadata(JdbcUtil.readStringToBlob(resultSet,"factoryMetadata"));
-                    return new DataAndStoredMetadata<>(dataSerialisationManager.read(JdbcUtil.readStringToBlob(resultSet,"factory"),factoryMetadata.dataModelVersion),factoryMetadata);
+                try (ResultSet resultSet =statement.executeQuery(sql)){
+                    if(resultSet.next()){
+                        StoredDataMetadata factoryMetadata = dataSerialisationManager.readStoredFactoryMetadata(JdbcUtil.readStringToBlob(resultSet,"factoryMetadata"));
+                        return new DataAndStoredMetadata<>(dataSerialisationManager.read(JdbcUtil.readStringToBlob(resultSet,"factory"),factoryMetadata.dataModelVersion),factoryMetadata);
+                    }
                 }
             }
         } catch (SQLException e) {
@@ -135,18 +136,17 @@ public class OracledbDataStorage<R extends Data> implements DataStorage<R> {
     }
 
     @Override
-    public void addFutureFactory(DataAndNewMetadata<R> update, String user, String comment, LocalDateTime scheduled) {
+    public void addFutureFactory(DataAndScheduledMetadata<R> futureUpdate, String user, String comment) {
         final ScheduledDataMetadata storedFactoryMetadata = new ScheduledDataMetadata();
         storedFactoryMetadata.creationTime=LocalDateTime.now();
         storedFactoryMetadata.id= UUID.randomUUID().toString();
         storedFactoryMetadata.user=user;
         storedFactoryMetadata.comment=comment;
-        storedFactoryMetadata.baseVersionId=update.metadata.baseVersionId;
-        storedFactoryMetadata.dataModelVersion=update.metadata.dataModelVersion;
-        storedFactoryMetadata.scheduled = scheduled;
+        storedFactoryMetadata.baseVersionId=futureUpdate.metadata.baseVersionId;
+        storedFactoryMetadata.dataModelVersion=futureUpdate.metadata.dataModelVersion;
+        storedFactoryMetadata.scheduled = futureUpdate.metadata.scheduled;
 
-        final DataAndScheduledMetadata<R> updateData = new DataAndScheduledMetadata<>(update.root, storedFactoryMetadata);
-        oracledbFactoryStorageFuture.addFuture(storedFactoryMetadata,update.root);
+        oracledbFactoryStorageFuture.addFuture(storedFactoryMetadata,futureUpdate.root);
     }
 
 

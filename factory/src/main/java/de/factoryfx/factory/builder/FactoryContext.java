@@ -34,6 +34,7 @@ public class FactoryContext<V> {
     }
 
 
+    @SuppressWarnings("unchecked")
     public <L, F extends FactoryBase<L,V>> List<F> getList(Class<F> clazz) {
         ArrayList<F> result = new ArrayList<>();
         factoryCreators.stream().filter(fc -> fc.match(clazz)).forEach(vFactoryCreator -> result.add((F) vFactoryCreator.create(FactoryContext.this)));

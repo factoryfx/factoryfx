@@ -201,15 +201,17 @@ public class PostgresDataStorageTest {
         postgresFactoryStorage.loadInitialFactory();
 
         {
-            NewDataMetadata metadata = new NewDataMetadata();
-            postgresFactoryStorage.addFutureFactory(new DataAndNewMetadata<>(new ExampleFactoryA(),metadata),"","", LocalDateTime.now());
+            ScheduledDataMetadata metadata = new ScheduledDataMetadata();
+            metadata.scheduled=LocalDateTime.now();
+            postgresFactoryStorage.addFutureFactory(new DataAndScheduledMetadata<>(new ExampleFactoryA(),metadata),"","");
             Collection<ScheduledDataMetadata> list = postgresFactoryStorage.getFutureFactoryList();
             Assert.assertEquals(1,list.size());
             String id = list.iterator().next().id;
             ExampleFactoryA v = postgresFactoryStorage.getFutureFactory(id);
             Assert.assertEquals(id,v.getId());
-            metadata = new NewDataMetadata();
-            postgresFactoryStorage.addFutureFactory(new DataAndNewMetadata<>(new ExampleFactoryA(),metadata),"","", LocalDateTime.now());
+            metadata = new ScheduledDataMetadata();
+            metadata.scheduled=LocalDateTime.now();
+            postgresFactoryStorage.addFutureFactory(new DataAndScheduledMetadata<>(new ExampleFactoryA(),metadata),"","");
             list = postgresFactoryStorage.getFutureFactoryList();
             Assert.assertEquals(2,list.size());
             postgresFactoryStorage.deleteFutureFactory(list.iterator().next().id);
