@@ -10,7 +10,6 @@ import com.fasterxml.jackson.annotation.JsonInclude;
  * metadata for a stored historical factory
  */
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
-@JsonIgnoreProperties("scheduled")
 public class StoredDataMetadata {
     public LocalDateTime creationTime;
     public String id;
