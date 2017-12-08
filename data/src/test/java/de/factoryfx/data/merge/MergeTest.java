@@ -760,13 +760,14 @@ public class MergeTest {
 
         ExampleDataA newModel = currentModel.internal().copy();
         newModel.referenceAttribute.set(new ExampleDataB());
-        Assert.assertNotNull(newModel.referenceAttribute.get().internal().getParent());
+        Assert.assertTrue(newModel.referenceAttribute.get().internal().getParents().size()>0);
 
         DataMerger<ExampleDataA> dataMerger = new DataMerger<>(currentModel, originalModel, newModel);
 
         MergeDiffInfo mergeDiff= dataMerger.mergeIntoCurrent((permission)->true);
         Assert.assertTrue(mergeDiff.hasNoConflicts());
-        Assert.assertEquals(currentModel,currentModel.referenceAttribute.get().internal().getParent());
+        Assert.assertEquals(1,newModel.referenceAttribute.get().internal().getParents().size());
+        Assert.assertEquals(currentModel,currentModel.referenceAttribute.get().internal().getParents().iterator().next());
     }
 
 }

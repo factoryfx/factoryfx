@@ -192,11 +192,19 @@ public class Data {
     }
 
     @SuppressWarnings("unchecked")
-    private void fixDuplicateObjects() {
+    private Set<Data> fixDuplicateObjects() {
         Map<String, Data> idToDataMap = collectChildDataMap();
-        final List<Data> all = collectChildrenDeep();
+        final Set<Data> all = new HashSet<>(idToDataMap.values());
         for (Data data: all){
             data.visitAttributesFlat((attributeVariableName, attribute) -> attribute.internal_fixDuplicateObjects(idToDataMap));
+        }
+        return all;
+    }
+
+    //remove parents that are not in the mereg resul
+    private void cleanUpParents(Set<Data> all) {
+        for (Data data: all){
+            data.parents.removeIf(parent -> !all.contains(parent));
         }
     }
 
@@ -687,6 +695,16 @@ public class Data {
          * */
         public void fixDuplicateData() {
             data.fixDuplicateObjects();
+        }
+
+        /**
+         * -fix all data with same id should be same object
+         * -remove parents taht are no not tin the tree
+         * only call on root
+         * */
+        public void fixDuplicatesAndParents() {
+            Set<Data> data = this.data.fixDuplicateObjects();
+            this.data.cleanUpParents(data);
         }
 
         public String getDisplayText(){

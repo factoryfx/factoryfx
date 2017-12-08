@@ -44,7 +44,7 @@ public class FactoryManager<V,L,R extends FactoryBase<L,V>> {
 
         R previousFactoryCopyRoot = currentFactoryRoot.internal().copyFromRoot();
 
-        DataMerger<R> dataMerger = new DataMerger<R>(currentFactoryRoot, commonVersion, newVersion);
+        DataMerger<R> dataMerger = new DataMerger<>(currentFactoryRoot, commonVersion, newVersion);
         MergeDiffInfo<R> mergeDiff= dataMerger.mergeIntoCurrent(permissionChecker);
         long totalUpdateDuration=0;
         List<FactoryBase<?,V>> removed = new ArrayList<>();

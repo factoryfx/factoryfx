@@ -44,7 +44,7 @@ public class MergeResult<R extends Data> {
             for (Runnable mergeAction : mergeExecutions) {
                 mergeAction.run();
             }
-            currentRoot.internal().fixDuplicateData();
+            currentRoot.internal().fixDuplicatesAndParents();
         }
         return new MergeDiffInfo<R>(mergeInfos, conflictInfos, mergePermissionViolations, previousRoot, currentRoot, (Class<R>) currentRoot.getClass());
 
