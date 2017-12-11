@@ -184,6 +184,9 @@ public abstract class ReferenceBaseAttribute<T extends Data, U, A extends Refere
      */
     @SuppressWarnings("unchecked")
     protected A setupUnsafe(Class clazz){
+        if (!Data.class.isAssignableFrom(clazz)){
+            throw new IllegalArgumentException(clazz+" is no data class, maybe mixed up with liveobject class");
+        }
         return setup((Class<T>)clazz);
     }
 

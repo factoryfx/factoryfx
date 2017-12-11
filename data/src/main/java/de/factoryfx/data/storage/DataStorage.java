@@ -45,7 +45,15 @@ public interface DataStorage<R extends Data> {
         throw new UnsupportedOperationException();
     }
 
-    default void addFutureFactory(DataAndScheduledMetadata<R> futureUpdate, String user, String comment) {
+    /**
+
+     * @param futureFactory futureFactory
+     * @param futureFactoryMetadata futureFactoryMetadata
+     * @param user user
+     * @param comment comment
+     * @return the added factory metadata
+     */
+    default ScheduledDataMetadata addFutureFactory(R futureFactory, NewScheduledDataMetadata futureFactoryMetadata, String user, String comment) {
         throw new UnsupportedOperationException();
     }
 

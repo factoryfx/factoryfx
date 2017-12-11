@@ -7,6 +7,7 @@ import de.factoryfx.data.Data;
 import de.factoryfx.data.attribute.types.StringAttribute;
 import de.factoryfx.data.storage.DataAndNewMetadata;
 import de.factoryfx.data.storage.DataAndScheduledMetadata;
+import de.factoryfx.data.storage.NewScheduledDataMetadata;
 import de.factoryfx.data.storage.ScheduledDataMetadata;
 import org.junit.Assert;
 import org.junit.Test;
@@ -58,9 +59,7 @@ public class InMemoryDataStorageTest {
         Assert.assertEquals(1,fileSystemFactoryStorage.getHistoryFactoryList().size());
 
         DataAndNewMetadata<Dummy> current = fileSystemFactoryStorage.getPrepareNewFactory();
-        ScheduledDataMetadata metadata = new ScheduledDataMetadata(current.metadata, LocalDateTime.now());
-        DataAndScheduledMetadata<Dummy> future = new DataAndScheduledMetadata<>(current.root, metadata);
-        fileSystemFactoryStorage.addFutureFactory(future,"","");
+        fileSystemFactoryStorage.addFutureFactory(current.root,new NewScheduledDataMetadata(current.metadata,LocalDateTime.now()),"","");
 
 
         Assert.assertEquals(1,fileSystemFactoryStorage.getFutureFactoryList().size());

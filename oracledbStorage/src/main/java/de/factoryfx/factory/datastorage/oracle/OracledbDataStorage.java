@@ -136,17 +136,18 @@ public class OracledbDataStorage<R extends Data> implements DataStorage<R> {
     }
 
     @Override
-    public void addFutureFactory(DataAndScheduledMetadata<R> futureUpdate, String user, String comment) {
+    public ScheduledDataMetadata addFutureFactory(R futureFactory, NewScheduledDataMetadata futureFactoryMetadata, String user, String comment) {
         final ScheduledDataMetadata storedFactoryMetadata = new ScheduledDataMetadata();
         storedFactoryMetadata.creationTime=LocalDateTime.now();
         storedFactoryMetadata.id= UUID.randomUUID().toString();
         storedFactoryMetadata.user=user;
         storedFactoryMetadata.comment=comment;
-        storedFactoryMetadata.baseVersionId=futureUpdate.metadata.baseVersionId;
-        storedFactoryMetadata.dataModelVersion=futureUpdate.metadata.dataModelVersion;
-        storedFactoryMetadata.scheduled = futureUpdate.metadata.scheduled;
+        storedFactoryMetadata.baseVersionId=futureFactoryMetadata.newDataMetadata.baseVersionId;
+        storedFactoryMetadata.dataModelVersion=futureFactoryMetadata.newDataMetadata.dataModelVersion;
+        storedFactoryMetadata.scheduled = futureFactoryMetadata.scheduled;
 
-        oracledbFactoryStorageFuture.addFuture(storedFactoryMetadata,futureUpdate.root);
+        oracledbFactoryStorageFuture.addFuture(storedFactoryMetadata,futureFactory);
+        return storedFactoryMetadata;
     }
 
 
