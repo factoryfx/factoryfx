@@ -42,10 +42,11 @@ public class OracledbFactoryStorageFuture<R extends Data> {
             try (Statement statement = connection.createStatement()){
                 String sql = "SELECT * FROM FACTORY_FUTURE WHERE id='"+id+"'";
 
-                ResultSet resultSet =statement.executeQuery(sql);
-                if(resultSet.next()){
-                    ScheduledDataMetadata factoryMetadata = dataSerialisationManager.readScheduledFactoryMetadata(JdbcUtil.readStringToBlob(resultSet,"factoryMetadata"));
-                    return  dataSerialisationManager.read(JdbcUtil.readStringToBlob(resultSet,"factory"),factoryMetadata.dataModelVersion);
+                try (ResultSet resultSet =statement.executeQuery(sql)) {
+                    if (resultSet.next()) {
+                        ScheduledDataMetadata factoryMetadata = dataSerialisationManager.readScheduledFactoryMetadata(JdbcUtil.readStringToBlob(resultSet, "factoryMetadata"));
+                        return dataSerialisationManager.read(JdbcUtil.readStringToBlob(resultSet, "factory"), factoryMetadata.dataModelVersion);
+                    }
                 }
             }
         } catch (SQLException e) {
