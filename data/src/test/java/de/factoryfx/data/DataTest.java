@@ -480,4 +480,24 @@ public class DataTest {
 
 
     }
+
+    @Test
+    public void createProduct_parent(){
+        ExampleDataA current= new ExampleDataA();
+        current=current.internal().prepareUsableCopy();
+
+
+        ExampleDataA update = current.internal().copy();
+
+        ExampleDataB exampleDataB = new ExampleDataB();
+        exampleDataB.referenceAttributeC.set(new ExampleDataC());
+        update.referenceListAttribute.add(exampleDataB);
+
+        update = update.internal().prepareUsableCopy();
+
+        Assert.assertEquals(1,update.referenceListAttribute.get(0).internal().getParents().size());
+        Assert.assertEquals(1,update.referenceListAttribute.get(0).referenceAttributeC.get().internal().getParents().size());
+
+
+    }
 }
