@@ -12,6 +12,7 @@ import de.factoryfx.data.attribute.types.ObjectValueAttribute;
 import de.factoryfx.data.attribute.types.StringAttribute;
 import de.factoryfx.data.jackson.ObjectMapperBuilder;
 import de.factoryfx.data.jackson.SimpleObjectMapper;
+import de.factoryfx.data.merge.DataMerger;
 import de.factoryfx.data.merge.testfactories.ExampleDataA;
 import de.factoryfx.data.merge.testfactories.ExampleDataB;
 import de.factoryfx.data.merge.testfactories.ExampleDataC;
@@ -445,7 +446,38 @@ public class DataTest {
         Assert.assertEquals(2,exampleParentsA.exampleParentsB.get().exampleParentsC.get().internal().getParents().size());
     }
 
-    //tODO fore nested add and parent in nested adds set
+
+    @Test
+    public void test_parents_list_nested(){
+        ExampleDataA exampleDataA = new ExampleDataA();
+        ExampleDataB exampleDataB = new ExampleDataB();
+        exampleDataB.referenceAttributeC.set(new ExampleDataC());
+        exampleDataA.referenceListAttribute.add(exampleDataB);
+
+        exampleDataA = exampleDataA.internal().prepareUsableCopy();
+        Assert.assertEquals(1,exampleDataA.referenceListAttribute.get(0).internal().getParents().size());
+        Assert.assertEquals(1,exampleDataA.referenceListAttribute.get(0).referenceAttributeC.get().internal().getParents().size());
+    }
+
+    @Test
+    public void test_parents_list_nested_merge(){
+        ExampleDataA current= new ExampleDataA();
+        current = current.internal().prepareUsableCopy();
+
+        ExampleDataA update = current.internal().copy();
+
+        ExampleDataB exampleDataB = new ExampleDataB();
+        exampleDataB.referenceAttributeC.set(new ExampleDataC());
+        update.referenceListAttribute.add(exampleDataB);
+
+        update = update.internal().prepareUsableCopy();
 
 
+        new DataMerger<>(current,current,update).mergeIntoCurrent((p)->true);
+
+        Assert.assertEquals(1,current.referenceListAttribute.get(0).internal().getParents().size());
+        Assert.assertEquals(1,current.referenceListAttribute.get(0).referenceAttributeC.get().internal().getParents().size());
+
+
+    }
 }

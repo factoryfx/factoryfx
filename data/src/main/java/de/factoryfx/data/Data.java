@@ -771,10 +771,6 @@ public class Data {
          */
         @SuppressWarnings("unchecked")
         public <T extends Data> T prepareUsableCopy() {
-
-            if (data.isUsable()){
-                return (T)data;
-            }
             T usableCopy = data.prepareUsableCopy();
             //init ids, id couldt depend on parents, usablecopy must have init ids else a copy is broken;
             for (Data child : usableCopy.internal().collectChildrenDeep()) {
