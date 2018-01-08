@@ -41,11 +41,11 @@ public class Main {
 
         RootFactory root = new RootFactory();
         root.stringAttribute.set("1");
-        DataSerialisationManager<RootFactory> serialisationManager = new DataSerialisationManager<>(new JacksonSerialisation<>(1),new JacksonDeSerialisation<>(RootFactory.class,1),new ArrayList<>(),1);
-        PostgresDataStorage<RootFactory> postgresFactoryStorage = new PostgresDataStorage<>(datasource, root, serialisationManager);
+        DataSerialisationManager<RootFactory,Void> serialisationManager = new DataSerialisationManager<>(new JacksonSerialisation<>(1),new JacksonDeSerialisation<>(RootFactory.class,1),new ArrayList<>(),1);
+        PostgresDataStorage<RootFactory,Void> postgresFactoryStorage = new PostgresDataStorage<>(datasource, root, serialisationManager);
 
 
-        ApplicationServer<Void,Root, RootFactory> applicationServer = new ApplicationServer<>(new FactoryManager<>(new RethrowingFactoryExceptionHandler<>()),postgresFactoryStorage);
+        ApplicationServer<Void,Root, RootFactory,Void> applicationServer = new ApplicationServer<>(new FactoryManager<>(new RethrowingFactoryExceptionHandler<>()),postgresFactoryStorage);
         applicationServer.start();
         //output is 1 from initial factory
 
@@ -55,7 +55,7 @@ public class Main {
         //output is 2 from initial factory
 
         applicationServer.stop();
-        ApplicationServer<Void,Root, RootFactory> newApplicationServer = new ApplicationServer<>(new FactoryManager<>(new RethrowingFactoryExceptionHandler<>()),postgresFactoryStorage);
+        ApplicationServer<Void,Root, RootFactory,Void> newApplicationServer = new ApplicationServer<>(new FactoryManager<>(new RethrowingFactoryExceptionHandler<>()),postgresFactoryStorage);
         newApplicationServer.start();
         //output is 2 again from the saved update
 

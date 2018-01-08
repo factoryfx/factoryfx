@@ -33,7 +33,7 @@ public class Main {
         jettyServer.resources.add(createNewWebResourceReturningCreationTimestamp());
 
 
-        ApplicationServer<Void,JettyServer,JettyServerFactory<Void>> applicationServer
+        ApplicationServer<Void,JettyServer,JettyServerFactory<Void>,Void> applicationServer
                 = new ApplicationServer<>(new FactoryManager<>(new RethrowingFactoryExceptionHandler<>()),new InMemoryDataStorage<>(jettyServer));
         applicationServer.start();
 

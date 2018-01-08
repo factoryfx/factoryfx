@@ -31,10 +31,10 @@ public class RestResourceTest {
         exampleFactoryA = exampleFactoryA.internal().prepareUsableCopy();
         shared=exampleFactoryA.referenceListAttribute.get().get(0).referenceAttribute.get();
 
-        ApplicationServer<ExampleVisitor, ExampleLiveObjectA, ExampleFactoryA> defaultApplicationServer = new ApplicationServer<>(new FactoryManager<>(new RethrowingFactoryExceptionHandler<>()), new InMemoryDataStorage<>(exampleFactoryA));
+        ApplicationServer<ExampleVisitor, ExampleLiveObjectA, ExampleFactoryA,Void> defaultApplicationServer = new ApplicationServer<>(new FactoryManager<>(new RethrowingFactoryExceptionHandler<>()), new InMemoryDataStorage<>(exampleFactoryA));
         defaultApplicationServer.start();
 
-        RestResource<ExampleVisitor,ExampleLiveObjectA,ExampleFactoryA> restResource = new RestResource<>(layout,
+        RestResource<ExampleVisitor,ExampleLiveObjectA,ExampleFactoryA,Void> restResource = new RestResource<>(layout,
                 defaultApplicationServer,
                 Arrays.asList(ExampleFactoryA.class, ExampleFactoryB.class),
                 Arrays.asList(Locale.ENGLISH),

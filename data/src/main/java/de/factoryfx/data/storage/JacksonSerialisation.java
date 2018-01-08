@@ -1,9 +1,10 @@
 package de.factoryfx.data.storage;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import de.factoryfx.data.Data;
 import de.factoryfx.data.jackson.ObjectMapperBuilder;
 
-public class JacksonSerialisation<R extends Data> implements DataSerialisation<R> {
+public class JacksonSerialisation<R extends Data, S> implements DataSerialisation<R,S> {
 
     private final int dataModelVersion;
 
@@ -17,8 +18,15 @@ public class JacksonSerialisation<R extends Data> implements DataSerialisation<R
     }
 
     @Override
-    public String writeStorageMetadata(StoredDataMetadata metadata) {
-        metadata.dataModelVersion=dataModelVersion;
-        return ObjectMapperBuilder.build().writeValueAsString(metadata);
+    public String writeStorageMetadata(StoredDataMetadata<S> metadata) {
+        return ObjectMapperBuilder.build().writeValueAsString(new StoredDataMetadata<S>(
+                metadata.creationTime,
+                metadata.id,
+                metadata.user,
+                metadata.comment,
+                metadata.baseVersionId,
+                dataModelVersion,
+                metadata.changeSummary
+        ));
     }
 }

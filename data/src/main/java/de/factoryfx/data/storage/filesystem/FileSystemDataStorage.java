@@ -12,22 +12,19 @@ import java.util.Collection;
 import java.util.UUID;
 
 import de.factoryfx.data.Data;
-import de.factoryfx.data.storage.DataAndNewMetadata;
-import de.factoryfx.data.storage.DataAndStoredMetadata;
-import de.factoryfx.data.storage.DataSerialisationManager;
-import de.factoryfx.data.storage.DataStorage;
-import de.factoryfx.data.storage.NewDataMetadata;
-import de.factoryfx.data.storage.StoredDataMetadata;
+import de.factoryfx.data.merge.MergeDiffInfo;
+import de.factoryfx.data.storage.*;
 
-public class FileSystemDataStorage<R extends Data> implements DataStorage<R> {
-    private final FileSystemFactoryStorageHistory<R> fileSystemFactoryStorageHistory;
+public class FileSystemDataStorage<R extends Data,S> implements DataStorage<R,S> {
+    private final FileSystemFactoryStorageHistory<R,S> fileSystemFactoryStorageHistory;
 
     private R initialFactory;
     private Path currentFactoryPath;
     private Path currentFactoryPathMetadata;
-    private final DataSerialisationManager<R> dataSerialisationManager;
+    private final DataSerialisationManager<R,S> dataSerialisationManager;
+    private final ChangeSummaryCreator<R,S> changeSummaryCreator;
 
-    public FileSystemDataStorage(Path basePath, R defaultFactory, DataSerialisationManager<R> dataSerialisationManager, FileSystemFactoryStorageHistory<R> fileSystemFactoryStorageHistory){
+    public FileSystemDataStorage(Path basePath, R defaultFactory, DataSerialisationManager<R,S> dataSerialisationManager, FileSystemFactoryStorageHistory<R,S> fileSystemFactoryStorageHistory, ChangeSummaryCreator<R,S> changeSummaryCreator){
         this.initialFactory=defaultFactory;
         if (!Files.exists(basePath)){
             throw new IllegalArgumentException("path don't exists:"+basePath);
@@ -36,12 +33,16 @@ public class FileSystemDataStorage<R extends Data> implements DataStorage<R> {
         currentFactoryPathMetadata= Paths.get(basePath.toString()+"/currentFactory_metadata.json");
         this.fileSystemFactoryStorageHistory=fileSystemFactoryStorageHistory;
         this.dataSerialisationManager = dataSerialisationManager;
+        this.changeSummaryCreator=changeSummaryCreator;
     }
 
-    public FileSystemDataStorage(Path basePath, R defaultFactory, DataSerialisationManager<R> dataSerialisationManager){
-        this(basePath,defaultFactory, dataSerialisationManager,new FileSystemFactoryStorageHistory<>(basePath, dataSerialisationManager));
+    public FileSystemDataStorage(Path basePath, R defaultFactory, DataSerialisationManager<R,S> dataSerialisationManager){
+        this(basePath,defaultFactory, dataSerialisationManager,new FileSystemFactoryStorageHistory<>(basePath, dataSerialisationManager),(d)->null);
     }
 
+    public FileSystemDataStorage(Path basePath, R defaultFactory, DataSerialisationManager<R,S> dataSerialisationManager, ChangeSummaryCreator<R,S> changeSummaryCreator){
+        this(basePath,defaultFactory, dataSerialisationManager,new FileSystemFactoryStorageHistory<>(basePath, dataSerialisationManager),changeSummaryCreator);
+    }
 
     @Override
     public R getHistoryFactory(String id) {
@@ -49,26 +50,32 @@ public class FileSystemDataStorage<R extends Data> implements DataStorage<R> {
     }
 
     @Override
-    public Collection<StoredDataMetadata> getHistoryFactoryList() {
+    public Collection<StoredDataMetadata<S>> getHistoryFactoryList() {
         return fileSystemFactoryStorageHistory.getHistoryFactoryList();
     }
 
     @Override
-    public DataAndStoredMetadata<R> getCurrentFactory() {
-        StoredDataMetadata storedDataMetadata = dataSerialisationManager.readStoredFactoryMetadata(readFile(currentFactoryPathMetadata));
+    public DataAndStoredMetadata<R,S> getCurrentFactory() {
+        StoredDataMetadata<S> storedDataMetadata = dataSerialisationManager.readStoredFactoryMetadata(readFile(currentFactoryPathMetadata));
         return new DataAndStoredMetadata<>(dataSerialisationManager.read(readFile(currentFactoryPath), storedDataMetadata.dataModelVersion), storedDataMetadata);
     }
 
     @Override
-    public void updateCurrentFactory(DataAndNewMetadata<R> update, String user, String comment) {
-        final StoredDataMetadata storedDataMetadata = new StoredDataMetadata();
-        storedDataMetadata.creationTime= LocalDateTime.now();
-        storedDataMetadata.id= UUID.randomUUID().toString();
-        storedDataMetadata.user=user;
-        storedDataMetadata.comment=comment;
-        storedDataMetadata.baseVersionId=update.metadata.baseVersionId;
-        storedDataMetadata.dataModelVersion=update.metadata.dataModelVersion;
-        final DataAndStoredMetadata<R> updateData = new DataAndStoredMetadata<>(update.root, storedDataMetadata);
+    public void updateCurrentFactory(DataAndNewMetadata<R> update, String user, String comment, MergeDiffInfo<R> mergeDiff) {
+        S changeSummary = null;
+        if (mergeDiff!=null){
+            changeSummary=changeSummaryCreator.createChangeSummary(mergeDiff);
+        }
+        final StoredDataMetadata<S> storedDataMetadata = new StoredDataMetadata<>(
+                LocalDateTime.now(),
+                UUID.randomUUID().toString(),
+                user,
+                comment,
+                update.metadata.baseVersionId,
+                update.metadata.dataModelVersion, changeSummary
+        );
+
+        final DataAndStoredMetadata<R,S> updateData = new DataAndStoredMetadata<>(update.root, storedDataMetadata);
 
         writeFile(currentFactoryPath, dataSerialisationManager.write(updateData.root));
         writeFile(currentFactoryPathMetadata, dataSerialisationManager.writeStorageMetadata(updateData.metadata));
@@ -94,7 +101,7 @@ public class FileSystemDataStorage<R extends Data> implements DataStorage<R> {
             NewDataMetadata metadata = new NewDataMetadata();
             metadata.baseVersionId= UUID.randomUUID().toString();
             DataAndNewMetadata<R> initialFactoryAndStorageMetadata = new DataAndNewMetadata<>(initialFactory,metadata);
-            updateCurrentFactory(initialFactoryAndStorageMetadata,"System","initial factory");
+            updateCurrentFactory(initialFactoryAndStorageMetadata,"System","initial factory",null);
         }
     }
 

@@ -11,7 +11,7 @@ public class Main {
         RootFactory root = new RootFactory();
         root.dependency.set(new DependencyFactory());
 
-        ApplicationServer<Void,Root,RootFactory> applicationServer = new ApplicationServer<>(new FactoryManager<>(new RethrowingFactoryExceptionHandler<>()),new InMemoryDataStorage<>(root));
+        ApplicationServer<Void,Root,RootFactory,Void> applicationServer = new ApplicationServer<>(new FactoryManager<>(new RethrowingFactoryExceptionHandler<>()),new InMemoryDataStorage<>(root));
         applicationServer.start();
 
     }

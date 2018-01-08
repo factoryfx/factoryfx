@@ -3,32 +3,41 @@ package de.factoryfx.data.storage;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.time.LocalDateTime;
-import java.time.ZoneOffset;
 import java.time.temporal.ChronoUnit;
 import java.util.concurrent.Delayed;
 import java.util.concurrent.TimeUnit;
 
 /**
  * metadata for a future data
+ *
+ * implements Delayed to make it's easy usable width a DelayQueue
  */
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
-public class ScheduledDataMetadata extends StoredDataMetadata implements Delayed{
+public class ScheduledDataMetadata<T> extends StoredDataMetadata<T> implements Delayed{
 
     /** for scheduled update: date and time of planned activation of this configuration */
-    public LocalDateTime scheduled;
+    public final LocalDateTime scheduled;
 
     @JsonCreator
-    public ScheduledDataMetadata() {
-        super();
+    public ScheduledDataMetadata(
+            @JsonProperty("creationTime")LocalDateTime creationTime,
+            @JsonProperty("id")String id,
+            @JsonProperty("user")String user,
+            @JsonProperty("comment")String comment,
+            @JsonProperty("baseVersionId")String baseVersionId,
+            @JsonProperty("dataModelVersion")int dataModelVersion,
+            @JsonProperty("changeSummary")T changeSummary,
+            @JsonProperty("scheduled")LocalDateTime scheduled ) {
+        super(creationTime, id, user, comment, baseVersionId, dataModelVersion, changeSummary);
+        this.scheduled=scheduled;
     }
 
 
     public ScheduledDataMetadata(NewDataMetadata storedDataMetadata, LocalDateTime scheduled) {
-        this.baseVersionId=storedDataMetadata.baseVersionId;
-        this.dataModelVersion=storedDataMetadata.dataModelVersion;
-        this.scheduled=scheduled;
+        this(null, "", "", "", storedDataMetadata.baseVersionId, storedDataMetadata.dataModelVersion, null, scheduled);
     }
 
     @JsonIgnore
@@ -45,6 +54,7 @@ public class ScheduledDataMetadata extends StoredDataMetadata implements Delayed
 
 
     private ChronoUnit convert(TimeUnit unit) {
+        //TODO if java 9 replace with TimeUnit.toChronoUnit()
         if (unit == null) {
             return null;
         }

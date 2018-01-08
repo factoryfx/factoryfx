@@ -68,14 +68,14 @@ public class PostgresDataStorageTest {
     }
 
 
-    private DataSerialisationManager<ExampleFactoryA> createSerialisation(){
+    private DataSerialisationManager<ExampleFactoryA,Void> createSerialisation(){
         int dataModelVersion = 1;
         return new DataSerialisationManager<>(new JacksonSerialisation<>(dataModelVersion),new JacksonDeSerialisation<>(ExampleFactoryA.class, dataModelVersion), Collections.emptyList(),1);
     }
 
     @Test
     public void test_init_no_existing_factory() throws SQLException {
-        PostgresDataStorage<ExampleFactoryA> postgresFactoryStorage = new PostgresDataStorage<>(postgresDatasource, new ExampleFactoryA(),createSerialisation());
+        PostgresDataStorage<ExampleFactoryA,Void> postgresFactoryStorage = new PostgresDataStorage<>(postgresDatasource, new ExampleFactoryA(),createSerialisation());
         postgresFactoryStorage.loadInitialFactory();
         try (Connection con = postgresDatasource.getConnection()) {
             for (String sql : Arrays.asList("select * from currentconfiguration"
@@ -91,7 +91,7 @@ public class PostgresDataStorageTest {
 
     @Test
     public void test_init_no_existing_factory_but_schema() throws SQLException, IOException {
-        PostgresDataStorage<ExampleFactoryA> postgresFactoryStorage = new PostgresDataStorage<>(postgresDatasource, new ExampleFactoryA(),createSerialisation());
+        PostgresDataStorage<ExampleFactoryA,Void> postgresFactoryStorage = new PostgresDataStorage<>(postgresDatasource, new ExampleFactoryA(),createSerialisation());
         try (Connection con = postgresDatasource.getConnection()) {
             postgresFactoryStorage.createTables(con);
             con.commit();
@@ -111,23 +111,23 @@ public class PostgresDataStorageTest {
 
     @Test
     public void test_init_existing_factory() throws SQLException {
-        PostgresDataStorage<ExampleFactoryA> postgresFactoryStorage = new PostgresDataStorage<>(postgresDatasource, new ExampleFactoryA(),createSerialisation());
+        PostgresDataStorage<ExampleFactoryA,Void> postgresFactoryStorage = new PostgresDataStorage<>(postgresDatasource, new ExampleFactoryA(),createSerialisation());
         postgresFactoryStorage.loadInitialFactory();
         String id=postgresFactoryStorage.getCurrentFactory().metadata.id;
 
-        PostgresDataStorage<ExampleFactoryA> restored = new PostgresDataStorage<>(postgresDatasource, null,createSerialisation());
+        PostgresDataStorage<ExampleFactoryA,Void> restored = new PostgresDataStorage<>(postgresDatasource, null,createSerialisation());
         restored.loadInitialFactory();
         Assert.assertEquals(id,restored.getCurrentFactory().metadata.id);
     }
 
     @Test
     public void test_update() throws SQLException {
-        PostgresDataStorage<ExampleFactoryA> postgresFactoryStorage = new PostgresDataStorage<>(postgresDatasource, new ExampleFactoryA(),createSerialisation());
+        PostgresDataStorage<ExampleFactoryA,Void> postgresFactoryStorage = new PostgresDataStorage<>(postgresDatasource, new ExampleFactoryA(),createSerialisation());
         postgresFactoryStorage.loadInitialFactory();
         String id=postgresFactoryStorage.getCurrentFactory().metadata.id;
 
         DataAndNewMetadata<ExampleFactoryA> update = new DataAndNewMetadata<>(new ExampleFactoryA(),new NewDataMetadata());
-        postgresFactoryStorage.updateCurrentFactory(update,"","");
+        postgresFactoryStorage.updateCurrentFactory(update,"","",null);
         Assert.assertNotEquals(id,postgresFactoryStorage.getCurrentFactory().metadata.id);
         Assert.assertEquals(2,postgresFactoryStorage.getHistoryFactoryList().size());
         Assert.assertEquals(id,new ArrayList<>(postgresFactoryStorage.getHistoryFactoryList()).get(0).id);
@@ -152,7 +152,7 @@ public class PostgresDataStorageTest {
 
     @Test
     public void test_initial_history() throws SQLException {
-        PostgresDataStorage<ExampleFactoryA> postgresFactoryStorage = new PostgresDataStorage<>(postgresDatasource,new ExampleFactoryA(),createSerialisation());
+        PostgresDataStorage<ExampleFactoryA,Void> postgresFactoryStorage = new PostgresDataStorage<>(postgresDatasource,new ExampleFactoryA(),createSerialisation());
         postgresFactoryStorage.loadInitialFactory();
 
         Assert.assertEquals(1,postgresFactoryStorage.getHistoryFactoryList().size());
@@ -160,22 +160,22 @@ public class PostgresDataStorageTest {
 
     @Test
     public void test_multi_add() throws SQLException {
-        PostgresDataStorage<ExampleFactoryA> postgresFactoryStorage = new PostgresDataStorage<>(postgresDatasource,new ExampleFactoryA(),createSerialisation());
+        PostgresDataStorage<ExampleFactoryA,Void> postgresFactoryStorage = new PostgresDataStorage<>(postgresDatasource,new ExampleFactoryA(),createSerialisation());
         postgresFactoryStorage.loadInitialFactory();
 
         {
             NewDataMetadata metadata = new NewDataMetadata();
-            postgresFactoryStorage.updateCurrentFactory(new DataAndNewMetadata<>(new ExampleFactoryA(),metadata),"","");
+            postgresFactoryStorage.updateCurrentFactory(new DataAndNewMetadata<>(new ExampleFactoryA(),metadata),"","",null);
         }
 
         {
             NewDataMetadata metadata = new NewDataMetadata();
-            postgresFactoryStorage.updateCurrentFactory(new DataAndNewMetadata<>(new ExampleFactoryA(),metadata),"","");
+            postgresFactoryStorage.updateCurrentFactory(new DataAndNewMetadata<>(new ExampleFactoryA(),metadata),"","",null);
         }
 
         {
             NewDataMetadata metadata = new NewDataMetadata();
-            postgresFactoryStorage.updateCurrentFactory(new DataAndNewMetadata<>(new ExampleFactoryA(),metadata),"","");
+            postgresFactoryStorage.updateCurrentFactory(new DataAndNewMetadata<>(new ExampleFactoryA(),metadata),"","",null);
         }
 
         Assert.assertEquals(4,postgresFactoryStorage.getHistoryFactoryList().size());
@@ -183,32 +183,32 @@ public class PostgresDataStorageTest {
 
     @Test
     public void test_restore() throws SQLException {
-        PostgresDataStorage<ExampleFactoryA> postgresFactoryStorage = new PostgresDataStorage<>(postgresDatasource,new ExampleFactoryA(),createSerialisation());
+        PostgresDataStorage<ExampleFactoryA,Void> postgresFactoryStorage = new PostgresDataStorage<>(postgresDatasource,new ExampleFactoryA(),createSerialisation());
         postgresFactoryStorage.loadInitialFactory();
 
         NewDataMetadata metadata = new NewDataMetadata();
-        postgresFactoryStorage.updateCurrentFactory(new DataAndNewMetadata<>(new ExampleFactoryA(),metadata),"","");
+        postgresFactoryStorage.updateCurrentFactory(new DataAndNewMetadata<>(new ExampleFactoryA(),metadata),"","",null);
         Assert.assertEquals(2,postgresFactoryStorage.getHistoryFactoryList().size());
 
-        PostgresDataStorage<ExampleFactoryA> restored = new PostgresDataStorage<>(postgresDatasource,new ExampleFactoryA(), createSerialisation());
+        PostgresDataStorage<ExampleFactoryA,Void> restored = new PostgresDataStorage<>(postgresDatasource,new ExampleFactoryA(), createSerialisation());
         restored.loadInitialFactory();
         Assert.assertEquals(2,restored.getHistoryFactoryList().size());
     }
 
     @Test
     public void test_future() throws SQLException {
-        PostgresDataStorage<ExampleFactoryA> postgresFactoryStorage = new PostgresDataStorage<>(postgresDatasource,new ExampleFactoryA(),createSerialisation());
+        PostgresDataStorage<ExampleFactoryA,Void> postgresFactoryStorage = new PostgresDataStorage<>(postgresDatasource,new ExampleFactoryA(),createSerialisation());
         postgresFactoryStorage.loadInitialFactory();
 
         {
             NewScheduledDataMetadata metadata = new NewScheduledDataMetadata(new NewDataMetadata(),LocalDateTime.now());
-            ScheduledDataMetadata scheduledDataMetadata = postgresFactoryStorage.addFutureFactory(new ExampleFactoryA(), metadata, "", "");
-            Collection<ScheduledDataMetadata> list = postgresFactoryStorage.getFutureFactoryList();
+            ScheduledDataMetadata scheduledDataMetadata = postgresFactoryStorage.addFutureFactory(new ExampleFactoryA(), metadata, "", "",null);
+            Collection<ScheduledDataMetadata<Void>> list = postgresFactoryStorage.getFutureFactoryList();
             Assert.assertEquals(1,list.size());
             String id = list.iterator().next().id;
             Assert.assertEquals(id,scheduledDataMetadata.id);
             metadata = new NewScheduledDataMetadata(new NewDataMetadata(),LocalDateTime.now());
-            postgresFactoryStorage.addFutureFactory(new ExampleFactoryA(),metadata,"","");
+            postgresFactoryStorage.addFutureFactory(new ExampleFactoryA(),metadata,"","",null);
             list = postgresFactoryStorage.getFutureFactoryList();
             Assert.assertEquals(2,list.size());
             postgresFactoryStorage.deleteFutureFactory(list.iterator().next().id);

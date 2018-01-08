@@ -8,14 +8,18 @@ import org.junit.Test;
 
 public class StoredDataMetadataTest {
 
+    private static class SummaryDummy{
+        public long diffCounter=1;
+    }
+
+
     @Test
     public void test_json(){
-        StoredDataMetadata value=new StoredDataMetadata();
-        final LocalDateTime now = LocalDateTime.now();
-        value.creationTime= now;
-        value.baseVersionId="sdfgstrg";
-        final StoredDataMetadata copy = ObjectMapperBuilder.build().copy(value);
+        LocalDateTime now = LocalDateTime.now();
+        StoredDataMetadata<SummaryDummy> value=new StoredDataMetadata<>(now, "", "", "", "sdfgstrg",0, new SummaryDummy());
+        final StoredDataMetadata<SummaryDummy> copy = ObjectMapperBuilder.build().copy(value);
         Assert.assertEquals(now,copy.creationTime);
+        Assert.assertEquals(1,copy.changeSummary.diffCounter);
     }
 
 }

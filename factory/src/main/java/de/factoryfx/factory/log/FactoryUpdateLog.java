@@ -15,7 +15,11 @@ public class FactoryUpdateLog<R extends Data> {
     public final long totalDurationNs;
 
     @JsonCreator
-    public FactoryUpdateLog(@JsonProperty("root")FactoryLogEntry factoryLogEntry, @JsonProperty("removedFactoryLogs")Set<FactoryLogEntry> removedFactoryLogs, @JsonProperty("mergeDiffInfo")MergeDiffInfo<R> mergeDiffInfo, @JsonProperty("totalDurationNs")long totalDurationNs) {
+    public FactoryUpdateLog(
+            @JsonProperty("root")FactoryLogEntry factoryLogEntry,
+            @JsonProperty("removedFactoryLogs")Set<FactoryLogEntry> removedFactoryLogs,
+            @JsonProperty("mergeDiffInfo")MergeDiffInfo<R> mergeDiffInfo,
+            @JsonProperty("totalDurationNs")long totalDurationNs) {
         this.root = factoryLogEntry;
         this.mergeDiffInfo = mergeDiffInfo;
         this.totalDurationNs = totalDurationNs;

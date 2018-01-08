@@ -39,10 +39,10 @@ import org.controlsfx.glyphfont.FontAwesome;
  *
  * @param <R> server root
  */
-public class FactoryEditView<V,R extends FactoryBase<?,V>> implements Widget, FactoryRootChangeListener<R> {
+public class FactoryEditView<V,R extends FactoryBase<?,V>,S> implements Widget, FactoryRootChangeListener<R> {
 
     private final LongRunningActionExecutor LongRunningActionExecutor;
-    private final FactoryEditManager<V,R> factoryManager;
+    private final FactoryEditManager<V,R,S> factoryManager;
     private final FactoryAwareWidget<R> content;
     private final UniformDesign uniformDesign;
     private final DataEditor dataEditor;
@@ -50,7 +50,7 @@ public class FactoryEditView<V,R extends FactoryBase<?,V>> implements Widget, Fa
     private final DiffDialogBuilder diffDialogBuilder;
     private final SimpleObjectProperty<Data> selectedFactory;
 
-    public FactoryEditView(LongRunningActionExecutor longRunningActionExecutor, FactoryEditManager<V,R> factoryManager, FactoryAwareWidget<R> content, UniformDesign uniformDesign, DataEditor dataEditor, DiffDialogBuilder diffDialogBuilder) {
+    public FactoryEditView(LongRunningActionExecutor longRunningActionExecutor, FactoryEditManager<V,R,S> factoryManager, FactoryAwareWidget<R> content, UniformDesign uniformDesign, DataEditor dataEditor, DiffDialogBuilder diffDialogBuilder) {
         this.LongRunningActionExecutor = longRunningActionExecutor;
         this.factoryManager = factoryManager;
         this.content = content;

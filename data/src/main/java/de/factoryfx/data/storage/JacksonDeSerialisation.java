@@ -3,7 +3,7 @@ package de.factoryfx.data.storage;
 import de.factoryfx.data.Data;
 import de.factoryfx.data.jackson.ObjectMapperBuilder;
 
-public class JacksonDeSerialisation<R extends Data> implements DataDeSerialisation<R> {
+public class JacksonDeSerialisation<R extends Data,S> implements DataDeSerialisation<R,S> {
     private final Class<R> rootClass;
     private final int dataModelVersion;
 
@@ -22,13 +22,15 @@ public class JacksonDeSerialisation<R extends Data> implements DataDeSerialisati
         return ObjectMapperBuilder.build().readValue(data,rootClass).internal().prepareUsableCopy();
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    public StoredDataMetadata readStorageMetadata(String data) {
+    public StoredDataMetadata<S> readStorageMetadata(String data) {
         return ObjectMapperBuilder.build().readValue(data,StoredDataMetadata.class);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    public ScheduledDataMetadata readScheduledMetadata(String data) {
+    public ScheduledDataMetadata<S> readScheduledMetadata(String data) {
         return ObjectMapperBuilder.build().readValue(data,ScheduledDataMetadata.class);
     }
 }

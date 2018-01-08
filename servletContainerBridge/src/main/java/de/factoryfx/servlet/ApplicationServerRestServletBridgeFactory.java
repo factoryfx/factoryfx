@@ -5,9 +5,9 @@ import de.factoryfx.factory.atrribute.FactoryReferenceAttribute;
 import de.factoryfx.server.rest.ApplicationServerResource;
 import de.factoryfx.server.rest.ApplicationServerResourceFactory;
 
-public class ApplicationServerRestServletBridgeFactory<RL,R extends FactoryBase<RL,ServletContextAwareVisitor>> extends FactoryBase<ApplicationServerRestServletBridge,ServletContextAwareVisitor> {
+public class ApplicationServerRestServletBridgeFactory<RL,R extends FactoryBase<RL,ServletContextAwareVisitor>,S> extends FactoryBase<ApplicationServerRestServletBridge,ServletContextAwareVisitor> {
 
-    public final FactoryReferenceAttribute<ApplicationServerResource,ApplicationServerResourceFactory<ServletContextAwareVisitor,RL,R>> applicationServerResource = new FactoryReferenceAttribute<ApplicationServerResource,ApplicationServerResourceFactory<ServletContextAwareVisitor,RL,R>>().setupUnsafe(ApplicationServerResourceFactory.class);
+    public final FactoryReferenceAttribute<ApplicationServerResource,ApplicationServerResourceFactory<ServletContextAwareVisitor,RL,R,S>> applicationServerResource = new FactoryReferenceAttribute<ApplicationServerResource,ApplicationServerResourceFactory<ServletContextAwareVisitor,RL,R,S>>().setupUnsafe(ApplicationServerResourceFactory.class);
 
     public ApplicationServerRestServletBridgeFactory() {
         configLiveCycle().setCreator(() -> new ApplicationServerRestServletBridge(applicationServerResource.instance(),null));

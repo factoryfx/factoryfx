@@ -9,12 +9,12 @@ import de.factoryfx.server.angularjs.factory.RestResource;
 import de.factoryfx.server.angularjs.factory.RestResourceFactory;
 import de.factoryfx.server.angularjs.factory.server.resourcehandler.ConfigurableResourceHandler;
 
-public class HttpServerFactory<V,L, R extends FactoryBase<L,V>> extends FactoryBase<HttpServer,Void> {
+public class HttpServerFactory<V,L, R extends FactoryBase<L,V>,S> extends FactoryBase<HttpServer,Void> {
 
     public final StringAttribute host=new StringAttribute().labelText("host");
     public final IntegerAttribute port=new IntegerAttribute().labelText("port");
     public final IntegerAttribute sessionTimeoutS=new IntegerAttribute().labelText("sessionTimeout").addonText("s");
-    public final FactoryReferenceAttribute<RestResource,RestResourceFactory<V,L, R>> webGuiResource=new FactoryReferenceAttribute<RestResource,RestResourceFactory<V,L, R>>().labelText("RestResource");
+    public final FactoryReferenceAttribute<RestResource,RestResourceFactory<V,L, R,S>> webGuiResource=new FactoryReferenceAttribute<RestResource,RestResourceFactory<V,L, R,S>>().labelText("RestResource");
     public final ObjectValueAttribute<ConfigurableResourceHandler> resourceHandler=new ObjectValueAttribute<ConfigurableResourceHandler>().labelText("resourceHandler");
 
     public HttpServerFactory(){

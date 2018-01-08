@@ -18,18 +18,25 @@ import javax.sql.DataSource;
 
 import com.google.common.io.CharStreams;
 import de.factoryfx.data.Data;
+import de.factoryfx.data.merge.MergeDiffInfo;
 import de.factoryfx.data.storage.*;
 
-public class PostgresDataStorage<R extends Data> implements DataStorage<R> {
+public class PostgresDataStorage<R extends Data, S> implements DataStorage<R, S> {
 
     private final R initialFactory;
     private final DataSource dataSource;
-    private final DataSerialisationManager<R> dataSerialisationManager;
+    private final DataSerialisationManager<R,S> dataSerialisationManager;
+    private final ChangeSummaryCreator<R,S> changeSummaryCreator;
 
-    public PostgresDataStorage(DataSource dataSource, R defaultFactory, DataSerialisationManager<R> dataSerialisationManager){
+    public PostgresDataStorage(DataSource dataSource, R defaultFactory, DataSerialisationManager<R,S> dataSerialisationManager, ChangeSummaryCreator<R,S> changeSummaryCreator){
         this.dataSource     = dataSource;
         this.initialFactory = defaultFactory;
         this.dataSerialisationManager = dataSerialisationManager;
+        this.changeSummaryCreator=changeSummaryCreator;
+    }
+
+    public PostgresDataStorage(DataSource dataSource, R defaultFactory, DataSerialisationManager<R,S> dataSerialisationManager){
+        this(dataSource, defaultFactory, dataSerialisationManager, (d)->null);
     }
 
     @Override
@@ -62,11 +69,11 @@ public class PostgresDataStorage<R extends Data> implements DataStorage<R> {
     }
 
     @Override
-    public Collection<StoredDataMetadata> getHistoryFactoryList() {
+    public Collection<StoredDataMetadata<S>> getHistoryFactoryList() {
         try {
             try (Connection connection = dataSource.getConnection()) {
                 try (PreparedStatement pstmt = connection.prepareStatement("select cast (metadata as text) as metadata from configuration")) {
-                    ArrayList<StoredDataMetadata> ret = new ArrayList<>();
+                    ArrayList<StoredDataMetadata<S>> ret = new ArrayList<>();
                     try (ResultSet rs = pstmt.executeQuery()) {
                         while (rs.next()) {
                            ret.add(dataSerialisationManager.readStoredFactoryMetadata(rs.getString(1)));
@@ -81,7 +88,7 @@ public class PostgresDataStorage<R extends Data> implements DataStorage<R> {
     }
 
     @Override
-    public DataAndStoredMetadata<R> getCurrentFactory() {
+    public DataAndStoredMetadata<R,S> getCurrentFactory() {
         try {
             try (Connection connection = dataSource.getConnection()) {
                 try (PreparedStatement pstmt = connection.prepareStatement("select cast (root as text) as root, cast (metadata as text) as metadata from currentconfiguration")) {
@@ -89,7 +96,7 @@ public class PostgresDataStorage<R extends Data> implements DataStorage<R> {
                         if (!rs.next())
                             throw new RuntimeException("No current factory found");
 
-                        StoredDataMetadata storedDataMetadata = dataSerialisationManager.readStoredFactoryMetadata(rs.getString(2));
+                        StoredDataMetadata<S> storedDataMetadata = dataSerialisationManager.readStoredFactoryMetadata(rs.getString(2));
 
                         return new DataAndStoredMetadata<>(
                                 dataSerialisationManager.read(rs.getString(1), storedDataMetadata.dataModelVersion), storedDataMetadata
@@ -103,15 +110,17 @@ public class PostgresDataStorage<R extends Data> implements DataStorage<R> {
     }
 
     @Override
-    public void updateCurrentFactory(DataAndNewMetadata<R> update, String user, String comment) {
-        final StoredDataMetadata storedDataMetadata = new StoredDataMetadata();
-        storedDataMetadata.creationTime= LocalDateTime.now();
-        storedDataMetadata.id= createNewId();
-        storedDataMetadata.user=user;
-        storedDataMetadata.comment=comment;
-        storedDataMetadata.baseVersionId=update.metadata.baseVersionId;
-        storedDataMetadata.dataModelVersion=update.metadata.dataModelVersion;
-        final DataAndStoredMetadata<R> updateData = new DataAndStoredMetadata<>(update.root, storedDataMetadata);
+    public void updateCurrentFactory(DataAndNewMetadata<R> update, String user, String comment, MergeDiffInfo<R> mergeDiffInfo) {
+        final StoredDataMetadata<S> storedDataMetadata = new StoredDataMetadata<>(
+            LocalDateTime.now(),
+            createNewId(),
+            user,
+            comment,
+            update.metadata.baseVersionId,
+            update.metadata.dataModelVersion,
+            changeSummaryCreator.createChangeSummary(mergeDiffInfo)
+        );
+        final DataAndStoredMetadata<R,S> updateData = new DataAndStoredMetadata<>(update.root, storedDataMetadata);
 
         try {
             try (Connection connection = dataSource.getConnection()) {
@@ -123,7 +132,7 @@ public class PostgresDataStorage<R extends Data> implements DataStorage<R> {
         }
     }
 
-    private void updateCurrentFactory(Connection connection, DataAndStoredMetadata<R> update) throws SQLException {
+    private void updateCurrentFactory(Connection connection, DataAndStoredMetadata<R,S> update) throws SQLException {
         try (PreparedStatement pstmtlockConfiguration = connection.prepareStatement("lock table currentconfiguration in exclusive mode")) {
             pstmtlockConfiguration.execute();
         }
@@ -160,7 +169,7 @@ public class PostgresDataStorage<R extends Data> implements DataStorage<R> {
         }
     }
 
-    private void setValues(DataAndStoredMetadata<R> update, Timestamp createdAtTimestamp, PreparedStatement pstmt) throws SQLException {
+    private void setValues(DataAndStoredMetadata<R,S> update, Timestamp createdAtTimestamp, PreparedStatement pstmt) throws SQLException {
         pstmt.setString(1, dataSerialisationManager.write(update.root));
         pstmt.setString(2, dataSerialisationManager.writeStorageMetadata(update.metadata));
         pstmt.setTimestamp(3, createdAtTimestamp);
@@ -195,12 +204,15 @@ public class PostgresDataStorage<R extends Data> implements DataStorage<R> {
                         try (PreparedStatement pstmt = connection.prepareStatement("select 1 from currentconfiguration")) {
                             ResultSet rs = pstmt.executeQuery();
                             if (!rs.next()) {
-                                StoredDataMetadata metadata = new StoredDataMetadata();
-                                String newId = createNewId();
-                                metadata.id=newId;
-                                metadata.baseVersionId= newId;
-                                metadata.user="System";
-                                DataAndStoredMetadata<R> initialFactoryAndStorageMetadata = new DataAndStoredMetadata<>(
+                                StoredDataMetadata<S> metadata = new StoredDataMetadata<>(
+                                        createNewId(),
+                                        "System",
+                                        "initial",
+                                        "",
+                                        0,
+                                        null
+                                );
+                                DataAndStoredMetadata<R,S> initialFactoryAndStorageMetadata = new DataAndStoredMetadata<>(
                                         initialFactory, metadata);
                                 updateCurrentFactory(connection,initialFactoryAndStorageMetadata);
                             }
@@ -221,10 +233,10 @@ public class PostgresDataStorage<R extends Data> implements DataStorage<R> {
     }
 
     @Override
-    public Collection<ScheduledDataMetadata> getFutureFactoryList() {
+    public Collection<ScheduledDataMetadata<S>> getFutureFactoryList() {
         try {
             try (Connection connection = dataSource.getConnection(); PreparedStatement pstmt = connection.prepareStatement("select cast (metadata as text) as metadata from futureconfigurationmetadata")) {
-                    ArrayList<ScheduledDataMetadata> ret = new ArrayList<>();
+                    ArrayList<ScheduledDataMetadata<S>> ret = new ArrayList<>();
                     try (ResultSet rs = pstmt.executeQuery()) {
                         while (rs.next()) {
                             ret.add(dataSerialisationManager.readScheduledFactoryMetadata(rs.getString(1)));
@@ -279,16 +291,18 @@ public class PostgresDataStorage<R extends Data> implements DataStorage<R> {
     }
 
     @Override
-    public ScheduledDataMetadata addFutureFactory(R futureFactory, NewScheduledDataMetadata futureFactoryMetadata, String user, String comment) {
-        final ScheduledDataMetadata storedFactoryMetadata = new ScheduledDataMetadata();
-        storedFactoryMetadata.creationTime= LocalDateTime.now();
-        storedFactoryMetadata.id= createNewId();
-        storedFactoryMetadata.user=user;
-        storedFactoryMetadata.comment=comment;
-        storedFactoryMetadata.baseVersionId=futureFactoryMetadata.newDataMetadata.baseVersionId;
-        storedFactoryMetadata.dataModelVersion=futureFactoryMetadata.newDataMetadata.dataModelVersion;
-        storedFactoryMetadata.scheduled = futureFactoryMetadata.scheduled;
-        final DataAndScheduledMetadata<R> updateData = new DataAndScheduledMetadata<>(futureFactory, storedFactoryMetadata);
+    public ScheduledDataMetadata<S> addFutureFactory(R futureFactory, NewScheduledDataMetadata futureFactoryMetadata, String user, String comment, MergeDiffInfo<R> mergeDiffInfo) {
+        final ScheduledDataMetadata<S> storedFactoryMetadata = new ScheduledDataMetadata<>(
+                LocalDateTime.now(),
+                createNewId(),
+                user,
+                comment,
+                futureFactoryMetadata.newDataMetadata.baseVersionId,
+                futureFactoryMetadata.newDataMetadata.dataModelVersion,
+                this.changeSummaryCreator.createFutureChangeSummary(mergeDiffInfo),
+                futureFactoryMetadata.scheduled
+        );
+        final DataAndScheduledMetadata<R,S> updateData = new DataAndScheduledMetadata<>(futureFactory, storedFactoryMetadata);
 
         try (Connection connection = this.dataSource.getConnection()) {
             long createdAt = System.currentTimeMillis();

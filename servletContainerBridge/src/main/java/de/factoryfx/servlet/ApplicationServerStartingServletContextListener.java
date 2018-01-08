@@ -11,7 +11,7 @@ import javax.servlet.ServletContextListener;
 //@WebListener
 public abstract class ApplicationServerStartingServletContextListener implements ServletContextListener {
 
-    private ApplicationServer<? super ServletContextAwareVisitor, ?, ? extends FactoryBase<?, ? super ServletContextAwareVisitor>> applicationServer;
+    private ApplicationServer<? super ServletContextAwareVisitor, ?, ? extends FactoryBase<?, ? super ServletContextAwareVisitor>,?> applicationServer;
 
     @Override
     public void contextInitialized(ServletContextEvent sce) {
@@ -25,5 +25,5 @@ public abstract class ApplicationServerStartingServletContextListener implements
     public void contextDestroyed(ServletContextEvent sce) {
     }
 
-    protected abstract ApplicationServer<? super ServletContextAwareVisitor,?,? extends FactoryBase<?,? super ServletContextAwareVisitor>> createFactoryFxApplicationServer();
+    protected abstract ApplicationServer<? super ServletContextAwareVisitor,?,? extends FactoryBase<?,? super ServletContextAwareVisitor>,?> createFactoryFxApplicationServer();
 }

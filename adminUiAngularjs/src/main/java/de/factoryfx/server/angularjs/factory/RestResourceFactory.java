@@ -14,9 +14,9 @@ import de.factoryfx.server.angularjs.model.table.WebGuiTable;
 import de.factoryfx.server.angularjs.model.view.GuiView;
 import de.factoryfx.user.UserManagement;
 
-public class RestResourceFactory<V,L,T extends FactoryBase<L,V>> extends SimpleFactoryBase<RestResource,Void> {
+public class RestResourceFactory<V,L,T extends FactoryBase<L,V>,S> extends SimpleFactoryBase<RestResource,Void> {
     public final FactoryReferenceAttribute<Layout,LayoutFactory> layout=new FactoryReferenceAttribute<>(LayoutFactory.class).labelText("Layout");
-    public final ObjectValueAttribute<ApplicationServer<V,L,T>> applicationServer=new ObjectValueAttribute<ApplicationServer<V,L,T>>().labelText("applicationServer");
+    public final ObjectValueAttribute<ApplicationServer<V,L,T,S>> applicationServer=new ObjectValueAttribute<ApplicationServer<V,L,T,S>>().labelText("applicationServer");
     public final ObjectValueAttribute<List<Class<? extends FactoryBase>>> appFactoryClasses = new ObjectValueAttribute<List<Class<? extends FactoryBase>>>().labelText("appFactoryClasses");
     public final ObjectValueAttribute<List<Locale>> locales = new ObjectValueAttribute<List<Locale>>().labelText("locales");
     public final ObjectValueAttribute<UserManagement> userManagement=new ObjectValueAttribute<UserManagement>().labelText("userManagement");

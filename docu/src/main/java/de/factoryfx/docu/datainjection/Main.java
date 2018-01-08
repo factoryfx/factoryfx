@@ -11,7 +11,7 @@ public class Main {
         RootFactory rootFactory = new RootFactory();
         rootFactory.text.set("HelloWorld");
 
-        ApplicationServer<Void,Root,RootFactory> applicationServer = new ApplicationServer<>(new FactoryManager<>(new RethrowingFactoryExceptionHandler<>()),new InMemoryDataStorage<>(rootFactory));
+        ApplicationServer<Void,Root,RootFactory,Void> applicationServer = new ApplicationServer<>(new FactoryManager<>(new RethrowingFactoryExceptionHandler<>()),new InMemoryDataStorage<>(rootFactory));
         applicationServer.start();
 
     }

@@ -1,6 +1,7 @@
 package de.factoryfx.factory.datastorage.oracle;
 
 import de.factoryfx.data.Data;
+import de.factoryfx.data.merge.MergeDiffInfo;
 import de.factoryfx.data.storage.*;
 
 import java.sql.*;
@@ -9,19 +10,21 @@ import java.util.Collection;
 import java.util.UUID;
 import java.util.function.Supplier;
 
-public class OracledbDataStorage<R extends Data> implements DataStorage<R> {
-    private final OracledbFactoryStorageHistory<R> oracledbFactoryStorageHistory;
-    private final OracledbFactoryStorageFuture<R> oracledbFactoryStorageFuture;
+public class OracledbDataStorage<R extends Data,S> implements DataStorage<R,S> {
+    private final OracledbFactoryStorageHistory<R,S> oracledbFactoryStorageHistory;
+    private final OracledbFactoryStorageFuture<R,S> oracledbFactoryStorageFuture;
     private final R initialFactory;
-    private final DataSerialisationManager<R> dataSerialisationManager;
+    private final DataSerialisationManager<R,S> dataSerialisationManager;
     private final Supplier< Connection > connectionSupplier;
+    private final ChangeSummaryCreator<R,S> changeSummaryCreator;
 
-    public OracledbDataStorage(Supplier<Connection> connectionSupplier, R defaultFactory, DataSerialisationManager<R> dataSerialisationManager, OracledbFactoryStorageHistory<R> oracledbFactoryStorageHistory, OracledbFactoryStorageFuture<R> oracledbFactoryStorageFuture){
+    public OracledbDataStorage(Supplier<Connection> connectionSupplier, R defaultFactory, DataSerialisationManager<R,S> dataSerialisationManager, OracledbFactoryStorageHistory<R,S> oracledbFactoryStorageHistory, OracledbFactoryStorageFuture<R,S> oracledbFactoryStorageFuture, ChangeSummaryCreator<R,S> changeSummaryCreator ){
         this.initialFactory=defaultFactory;
         this.connectionSupplier = connectionSupplier;
         this.dataSerialisationManager = dataSerialisationManager;
         this.oracledbFactoryStorageHistory = oracledbFactoryStorageHistory;
         this.oracledbFactoryStorageFuture = oracledbFactoryStorageFuture;
+        this.changeSummaryCreator=changeSummaryCreator;
 
         try (Connection connection= connectionSupplier.get()){
             try (Statement statement = connection.createStatement()){
@@ -41,7 +44,18 @@ public class OracledbDataStorage<R extends Data> implements DataStorage<R> {
         }
     }
 
-    public OracledbDataStorage(Supplier< Connection > connectionSupplier, R defaultFactory, DataSerialisationManager<R> dataSerialisationManager){
+    public OracledbDataStorage(Supplier<Connection> connectionSupplier, R defaultFactory, DataSerialisationManager<R,S> dataSerialisationManager, OracledbFactoryStorageHistory<R,S> oracledbFactoryStorageHistory, OracledbFactoryStorageFuture<R,S> oracledbFactoryStorageFuture){
+        this(
+            connectionSupplier,
+            defaultFactory,
+            dataSerialisationManager,
+            oracledbFactoryStorageHistory,
+            oracledbFactoryStorageFuture,
+            (d)->null
+        );
+
+    }
+    public OracledbDataStorage(Supplier< Connection > connectionSupplier, R defaultFactory, DataSerialisationManager<R,S> dataSerialisationManager){
         this(connectionSupplier,defaultFactory, dataSerialisationManager,new OracledbFactoryStorageHistory<>(connectionSupplier, dataSerialisationManager),
                 new OracledbFactoryStorageFuture<>(connectionSupplier, dataSerialisationManager));
     }
@@ -52,19 +66,19 @@ public class OracledbDataStorage<R extends Data> implements DataStorage<R> {
     }
 
     @Override
-    public Collection<StoredDataMetadata> getHistoryFactoryList() {
+    public Collection<StoredDataMetadata<S>> getHistoryFactoryList() {
         return oracledbFactoryStorageHistory.getHistoryFactoryList();
     }
 
     @Override
-    public DataAndStoredMetadata<R> getCurrentFactory() {
+    public DataAndStoredMetadata<R,S> getCurrentFactory() {
         try (Connection connection= connectionSupplier.get()){
             try (Statement statement = connection.createStatement()){
                 String sql = "SELECT * FROM FACTORY_CURRENT";
 
                 try (ResultSet resultSet =statement.executeQuery(sql)){
                     if(resultSet.next()){
-                        StoredDataMetadata factoryMetadata = dataSerialisationManager.readStoredFactoryMetadata(JdbcUtil.readStringToBlob(resultSet,"factoryMetadata"));
+                        StoredDataMetadata<S> factoryMetadata = dataSerialisationManager.readStoredFactoryMetadata(JdbcUtil.readStringToBlob(resultSet,"factoryMetadata"));
                         return new DataAndStoredMetadata<>(dataSerialisationManager.read(JdbcUtil.readStringToBlob(resultSet,"factory"),factoryMetadata.dataModelVersion),factoryMetadata);
                     }
                 }
@@ -76,14 +90,19 @@ public class OracledbDataStorage<R extends Data> implements DataStorage<R> {
     }
 
     @Override
-    public void updateCurrentFactory(DataAndNewMetadata<R> update, String user, String comment) {
-        final StoredDataMetadata storedDataMetadata = new StoredDataMetadata();
-        storedDataMetadata.creationTime= LocalDateTime.now();
-        storedDataMetadata.id= UUID.randomUUID().toString();
-        storedDataMetadata.user=user;
-        storedDataMetadata.comment=comment;
-        storedDataMetadata.baseVersionId=update.metadata.baseVersionId;
-        storedDataMetadata.dataModelVersion=update.metadata.dataModelVersion;
+    public void updateCurrentFactory(DataAndNewMetadata<R> update, String user, String comment, MergeDiffInfo<R> mergeDiffInfo) {
+        S changeSummary = null;
+        if (mergeDiffInfo!=null){
+            this.changeSummaryCreator.createChangeSummary(mergeDiffInfo);
+        }
+        final StoredDataMetadata<S> storedDataMetadata = new StoredDataMetadata<>(
+            LocalDateTime.now(),
+            UUID.randomUUID().toString(),
+            user,
+            comment,
+            update.metadata.baseVersionId,
+            update.metadata.dataModelVersion, changeSummary
+        );
 
         try (Connection connection= connectionSupplier.get()){
             try (PreparedStatement preparedStatement = connection.prepareStatement("TRUNCATE TABLE FACTORY_CURRENT")){
@@ -112,17 +131,17 @@ public class OracledbDataStorage<R extends Data> implements DataStorage<R> {
 
     @Override
     public void loadInitialFactory() {
-        DataAndStoredMetadata<R> currentFactory= getCurrentFactory();
+        DataAndStoredMetadata<R,S> currentFactory= getCurrentFactory();
         if (currentFactory==null){
             NewDataMetadata metadata = new NewDataMetadata();
             metadata.baseVersionId= UUID.randomUUID().toString();
             DataAndNewMetadata<R> initialFactoryAndStorageMetadata = new DataAndNewMetadata<>(initialFactory,metadata);
-            updateCurrentFactory(initialFactoryAndStorageMetadata,"System","initial factory");
+            updateCurrentFactory(initialFactoryAndStorageMetadata,"System","initial factory",null);
         }
     }
 
     @Override
-    public Collection<ScheduledDataMetadata> getFutureFactoryList() {
+    public Collection<ScheduledDataMetadata<S>> getFutureFactoryList() {
         return oracledbFactoryStorageFuture.getFutureFactoryList();
     }
 
@@ -136,15 +155,17 @@ public class OracledbDataStorage<R extends Data> implements DataStorage<R> {
     }
 
     @Override
-    public ScheduledDataMetadata addFutureFactory(R futureFactory, NewScheduledDataMetadata futureFactoryMetadata, String user, String comment) {
-        final ScheduledDataMetadata storedFactoryMetadata = new ScheduledDataMetadata();
-        storedFactoryMetadata.creationTime=LocalDateTime.now();
-        storedFactoryMetadata.id= UUID.randomUUID().toString();
-        storedFactoryMetadata.user=user;
-        storedFactoryMetadata.comment=comment;
-        storedFactoryMetadata.baseVersionId=futureFactoryMetadata.newDataMetadata.baseVersionId;
-        storedFactoryMetadata.dataModelVersion=futureFactoryMetadata.newDataMetadata.dataModelVersion;
-        storedFactoryMetadata.scheduled = futureFactoryMetadata.scheduled;
+    public ScheduledDataMetadata<S> addFutureFactory(R futureFactory, NewScheduledDataMetadata futureFactoryMetadata, String user, String comment, MergeDiffInfo<R> mergeDiffInfo) {
+        final ScheduledDataMetadata<S> storedFactoryMetadata = new ScheduledDataMetadata<>(
+            LocalDateTime.now(),
+            UUID.randomUUID().toString(),
+            user,
+            comment,
+            futureFactoryMetadata.newDataMetadata.baseVersionId,
+            futureFactoryMetadata.newDataMetadata.dataModelVersion,
+            this.changeSummaryCreator.createFutureChangeSummary(mergeDiffInfo),
+            futureFactoryMetadata.scheduled
+        );
 
         oracledbFactoryStorageFuture.addFuture(storedFactoryMetadata,futureFactory);
         return storedFactoryMetadata;

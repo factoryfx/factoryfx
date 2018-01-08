@@ -25,7 +25,7 @@ public class Main {
         rootFactory.server.set(jettyServer);
         jettyServer.resources.add(new SimpleResourceFactory());
 
-        ApplicationServer<ServerVisitor,Root,RootFactory> applicationServer = new ApplicationServer<>(new FactoryManager<>(new RethrowingFactoryExceptionHandler<>()),new InMemoryDataStorage<>(rootFactory));
+        ApplicationServer<ServerVisitor,Root,RootFactory,Void> applicationServer = new ApplicationServer<>(new FactoryManager<>(new RethrowingFactoryExceptionHandler<>()),new InMemoryDataStorage<>(rootFactory));
         applicationServer.start();
 
         //execute some random request as example

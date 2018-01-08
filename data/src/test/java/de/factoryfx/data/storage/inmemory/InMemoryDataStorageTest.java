@@ -27,7 +27,7 @@ public class InMemoryDataStorageTest {
     public void test_init() throws MalformedURLException {
         Dummy dummy = new Dummy();
         dummy = dummy.internal().prepareUsableCopy();
-        InMemoryDataStorage<Dummy> fileSystemFactoryStorage = new InMemoryDataStorage<>(dummy);
+        InMemoryDataStorage<Dummy,Void> fileSystemFactoryStorage = new InMemoryDataStorage<>(dummy);
         fileSystemFactoryStorage.loadInitialFactory();
 
         Assert.assertNotNull(fileSystemFactoryStorage.getCurrentFactory());
@@ -37,13 +37,13 @@ public class InMemoryDataStorageTest {
     public void test_update() throws MalformedURLException {
         Dummy dummy = new Dummy();
         dummy = dummy.internal().prepareUsableCopy();
-        InMemoryDataStorage<Dummy> fileSystemFactoryStorage = new InMemoryDataStorage<>(dummy);
+        InMemoryDataStorage<Dummy,Void> fileSystemFactoryStorage = new InMemoryDataStorage<>(dummy);
         fileSystemFactoryStorage.loadInitialFactory();
 
         Assert.assertEquals(1,fileSystemFactoryStorage.getHistoryFactoryList().size());
 
         DataAndNewMetadata<Dummy> preparedNewFactory = fileSystemFactoryStorage.getPrepareNewFactory();
-        fileSystemFactoryStorage.updateCurrentFactory(preparedNewFactory,"","");
+        fileSystemFactoryStorage.updateCurrentFactory(preparedNewFactory,"","",null);
 
 
         Assert.assertEquals(2,fileSystemFactoryStorage.getHistoryFactoryList().size());
@@ -53,13 +53,13 @@ public class InMemoryDataStorageTest {
     public void test_addFuture()  {
         Dummy dummy = new Dummy();
         dummy = dummy.internal().prepareUsableCopy();
-        InMemoryDataStorage<Dummy> fileSystemFactoryStorage = new InMemoryDataStorage<>(dummy);
+        InMemoryDataStorage<Dummy,Void> fileSystemFactoryStorage = new InMemoryDataStorage<>(dummy);
         fileSystemFactoryStorage.loadInitialFactory();
 
         Assert.assertEquals(1,fileSystemFactoryStorage.getHistoryFactoryList().size());
 
         DataAndNewMetadata<Dummy> current = fileSystemFactoryStorage.getPrepareNewFactory();
-        fileSystemFactoryStorage.addFutureFactory(current.root,new NewScheduledDataMetadata(current.metadata,LocalDateTime.now()),"","");
+        fileSystemFactoryStorage.addFutureFactory(current.root,new NewScheduledDataMetadata(current.metadata,LocalDateTime.now()),"","",null);
 
 
         Assert.assertEquals(1,fileSystemFactoryStorage.getFutureFactoryList().size());

@@ -17,12 +17,12 @@ import de.factoryfx.factory.log.FactoryUpdateLog;
 import de.factoryfx.server.rest.client.ApplicationServerRestClient;
 import javafx.application.Platform;
 
-public class FactoryEditManager<V,R extends FactoryBase<?,V>> {
+public class FactoryEditManager<V,R extends FactoryBase<?,V>,S> {
     private final ApplicationServerRestClient<V,R> client;
     private final List<FactoryRootChangeListener<R>> listeners= new ArrayList<>();
-    private final DataSerialisationManager<R> dataSerialisationManager;
+    private final DataSerialisationManager<R,S> dataSerialisationManager;
 
-    public FactoryEditManager(ApplicationServerRestClient<V, R> client, DataSerialisationManager<R> dataSerialisationManager) {
+    public FactoryEditManager(ApplicationServerRestClient<V, R> client, DataSerialisationManager<R,S> dataSerialisationManager) {
         this.client = client;
         this.dataSerialisationManager = dataSerialisationManager;
     }

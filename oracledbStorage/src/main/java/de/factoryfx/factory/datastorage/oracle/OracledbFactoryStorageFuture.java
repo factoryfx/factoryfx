@@ -9,12 +9,12 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.function.Supplier;
 
-public class OracledbFactoryStorageFuture<R extends Data> {
+public class OracledbFactoryStorageFuture<R extends Data,S> {
 
-    private final DataSerialisationManager<R> dataSerialisationManager;
+    private final DataSerialisationManager<R,S> dataSerialisationManager;
     private final Supplier<Connection> connectionSupplier;
 
-    public OracledbFactoryStorageFuture(Supplier<Connection> connectionSupplier, DataSerialisationManager<R> dataSerialisationManager){
+    public OracledbFactoryStorageFuture(Supplier<Connection> connectionSupplier, DataSerialisationManager<R,S> dataSerialisationManager){
         this.connectionSupplier = connectionSupplier;
         this.dataSerialisationManager = dataSerialisationManager;
 
@@ -57,8 +57,8 @@ public class OracledbFactoryStorageFuture<R extends Data> {
         return null;
     }
 
-    public Collection<ScheduledDataMetadata> getFutureFactoryList() {
-        ArrayList<ScheduledDataMetadata> result = new ArrayList<>();
+    public Collection<ScheduledDataMetadata<S>> getFutureFactoryList() {
+        ArrayList<ScheduledDataMetadata<S>> result = new ArrayList<>();
         try (Connection connection= connectionSupplier.get()){
             try (Statement statement = connection.createStatement()){
                 String sql = "SELECT * FROM FACTORY_FUTURE";
@@ -78,7 +78,7 @@ public class OracledbFactoryStorageFuture<R extends Data> {
         return result;
     }
 
-    public void addFuture(ScheduledDataMetadata metadata, R factoryRoot) {
+    public void addFuture(ScheduledDataMetadata<S> metadata, R factoryRoot) {
         String id=metadata.id;
 
         try (Connection connection= connectionSupplier.get()){

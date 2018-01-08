@@ -24,10 +24,10 @@ public class Main {
             return old;//do nothing it's just simple example
         }));
 
-        DataSerialisationManager<RootFactory> serialisationManager = new DataSerialisationManager<>(new JacksonSerialisation<>(dataModelVersion),new JacksonDeSerialisation<>(RootFactory.class, dataModelVersion), dataMigrations,dataModelVersion);
-        FileSystemDataStorage<RootFactory> fileSystemFactoryStorage = new FileSystemDataStorage<>(Files.createTempDirectory("tempfiles"), rootFactory, serialisationManager);
+        DataSerialisationManager<RootFactory,Void> serialisationManager = new DataSerialisationManager<>(new JacksonSerialisation<>(dataModelVersion),new JacksonDeSerialisation<>(RootFactory.class, dataModelVersion), dataMigrations,dataModelVersion);
+        FileSystemDataStorage<RootFactory,Void> fileSystemFactoryStorage = new FileSystemDataStorage<>(Files.createTempDirectory("tempfiles"), rootFactory, serialisationManager);
 
-        ApplicationServer<Void,Root,RootFactory> applicationServer = new ApplicationServer<>(new FactoryManager<>(new RethrowingFactoryExceptionHandler<>()), fileSystemFactoryStorage);
+        ApplicationServer<Void,Root,RootFactory,Void> applicationServer = new ApplicationServer<>(new FactoryManager<>(new RethrowingFactoryExceptionHandler<>()), fileSystemFactoryStorage);
         applicationServer.start();
 
     }

@@ -46,7 +46,7 @@ public class DatabaseTest {
     }
 
 
-    protected DataSerialisationManager<ExampleFactoryA> createSerialisation(){
+    protected DataSerialisationManager<ExampleFactoryA,Void> createSerialisation(){
         int dataModelVersion = 1;
         return new DataSerialisationManager<>(new JacksonSerialisation<>(dataModelVersion),new JacksonDeSerialisation<>(ExampleFactoryA.class, dataModelVersion), Collections.emptyList(),1);
     }

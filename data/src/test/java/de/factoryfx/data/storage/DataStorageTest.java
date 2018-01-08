@@ -20,21 +20,21 @@ public class DataStorageTest {
         exampleFactoryA.stringAttribute.set("1");
         exampleFactoryA = exampleFactoryA.internal().prepareUsableCopy();
 
-        final InMemoryDataStorage<ExampleDataA> factoryStorage = new InMemoryDataStorage<>(exampleFactoryA);
+        final InMemoryDataStorage<ExampleDataA,Void> factoryStorage = new InMemoryDataStorage<>(exampleFactoryA);
         factoryStorage.loadInitialFactory();
 
         Thread.sleep(2);//avoid same timestamp
         {
             DataAndNewMetadata<ExampleDataA> preparedNewFactory = factoryStorage.getPrepareNewFactory();
             preparedNewFactory.root.stringAttribute.set("2");
-            factoryStorage.updateCurrentFactory(preparedNewFactory, "", "");
+            factoryStorage.updateCurrentFactory(preparedNewFactory, "", "",null);
         }
         Thread.sleep(2);//avoid same timestamp
 
         {
             DataAndNewMetadata<ExampleDataA> preparedNewFactory = factoryStorage.getPrepareNewFactory();
             preparedNewFactory.root.stringAttribute.set("3");
-            factoryStorage.updateCurrentFactory(preparedNewFactory, "", "");
+            factoryStorage.updateCurrentFactory(preparedNewFactory, "", "",null);
         }
         Thread.sleep(2);//avoid same timestamp
 

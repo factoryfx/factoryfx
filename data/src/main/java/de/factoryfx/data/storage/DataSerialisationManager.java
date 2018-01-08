@@ -8,13 +8,13 @@ import java.util.List;
  *
  * @param <R> root
  */
-public class DataSerialisationManager<R extends Data> {
-    private final DataSerialisation<R> defaultDataSerialisation;
-    private final DataDeSerialisation<R> defaultDataDeSerialisation;
+public class DataSerialisationManager<R extends Data,S> {
+    private final DataSerialisation<R,S> defaultDataSerialisation;
+    private final DataDeSerialisation<R,S> defaultDataDeSerialisation;
     private final List<DataMigration> dataMigrations;
     private final int dataModelVersion;
 
-    public DataSerialisationManager(DataSerialisation<R> defaultDataSerialisation, DataDeSerialisation<R> defaultDataDeSerialisation, List<DataMigration> dataMigrations, int dataModelVersion) {
+    public DataSerialisationManager(DataSerialisation<R,S> defaultDataSerialisation, DataDeSerialisation<R,S> defaultDataDeSerialisation, List<DataMigration> dataMigrations, int dataModelVersion) {
         this.defaultDataDeSerialisation = defaultDataDeSerialisation;
         this.defaultDataSerialisation = defaultDataSerialisation;
         this.dataMigrations = dataMigrations;
@@ -25,11 +25,11 @@ public class DataSerialisationManager<R extends Data> {
         return defaultDataSerialisation.write(root);
     }
 
-    public String writeStorageMetadata(StoredDataMetadata metadata) {
+    public String writeStorageMetadata(StoredDataMetadata<S> metadata) {
         return defaultDataSerialisation.writeStorageMetadata(metadata);
     }
 
-    public String writeScheduledMetadata(ScheduledDataMetadata metadata) {
+    public String writeScheduledMetadata(ScheduledDataMetadata<S> metadata) {
         return defaultDataSerialisation.writeScheduledMetadata(metadata);
     }
 
@@ -56,11 +56,11 @@ public class DataSerialisationManager<R extends Data> {
         return defaultDataDeSerialisation.read(migratedData);
     }
 
-    public StoredDataMetadata readStoredFactoryMetadata(String data) {
+    public StoredDataMetadata<S> readStoredFactoryMetadata(String data) {
         return defaultDataDeSerialisation.readStorageMetadata(data);
     }
 
-    public ScheduledDataMetadata readScheduledFactoryMetadata(String data) {
+    public ScheduledDataMetadata<S> readScheduledFactoryMetadata(String data) {
         return defaultDataDeSerialisation.readScheduledMetadata(data);
     }
 

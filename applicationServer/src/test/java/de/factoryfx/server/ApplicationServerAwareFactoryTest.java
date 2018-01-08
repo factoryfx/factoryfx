@@ -19,14 +19,14 @@ public class ApplicationServerAwareFactoryTest {
         Assert.assertNull(value.applicationServer.get());
 
         final FactoryManager<Void, String, RootTestClazz> factoryManager = new FactoryManager<>(new RethrowingFactoryExceptionHandler<>());
-        ApplicationServer<Void,String,RootTestClazz> applicationServer = new ApplicationServer<>(factoryManager, new InMemoryDataStorage<>(rootTestclazz));
+        ApplicationServer<Void,String,RootTestClazz,Void> applicationServer = new ApplicationServer<>(factoryManager, new InMemoryDataStorage<>(rootTestclazz));
         applicationServer.start();
 
         Assert.assertEquals(applicationServer,factoryManager.getCurrentFactory().ref.get().applicationServer.get());
 
     }
 
-    public static class ApplicationServerAwareFactoryTestclazz extends ApplicationServerAwareFactory<Void, String, RootTestClazz, String>{
+    public static class ApplicationServerAwareFactoryTestclazz extends ApplicationServerAwareFactory<Void, String, RootTestClazz, String,Void>{
         public ApplicationServerAwareFactoryTestclazz(){
             this.configLiveCycle().setCreator(() -> "");
         }

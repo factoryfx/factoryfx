@@ -16,12 +16,12 @@ import de.factoryfx.data.Data;
 import de.factoryfx.data.storage.DataSerialisationManager;
 import de.factoryfx.data.storage.StoredDataMetadata;
 
-public class FileSystemFactoryStorageHistory<R extends Data> {
-    private Map<String,StoredDataMetadata> cache = new TreeMap<>();
-    private Path historyDirectory;
-    private final DataSerialisationManager<R> dataSerialisationManager;
+public class FileSystemFactoryStorageHistory<R extends Data,S> {
+    private final Map<String,StoredDataMetadata<S>> cache = new TreeMap<>();
+    private final Path historyDirectory;
+    private final DataSerialisationManager<R,S> dataSerialisationManager;
 
-    public FileSystemFactoryStorageHistory(Path basePath, DataSerialisationManager<R> dataSerialisationManager){
+    public FileSystemFactoryStorageHistory(Path basePath, DataSerialisationManager<R,S> dataSerialisationManager){
         this.dataSerialisationManager = dataSerialisationManager;
         historyDirectory= Paths.get(basePath.toString()+"/history/");
         if (!Files.exists(historyDirectory)){
@@ -47,7 +47,7 @@ public class FileSystemFactoryStorageHistory<R extends Data> {
         return dataSerialisationManager.read(readFile(Paths.get(historyDirectory.toString()+id+".json")),dataModelVersion);
     }
 
-    public Collection<StoredDataMetadata> getHistoryFactoryList() {
+    public Collection<StoredDataMetadata<S>> getHistoryFactoryList() {
         return cache.values();
     }
 
@@ -56,7 +56,7 @@ public class FileSystemFactoryStorageHistory<R extends Data> {
             try (Stream<Path> files = Files.walk(historyDirectory).filter(Files::isRegularFile)){
                 files.forEach(path -> {
                     if (path.toString().endsWith("_metadata.json")){
-                        StoredDataMetadata storedDataMetadata = dataSerialisationManager.readStoredFactoryMetadata(readFile(path));
+                        StoredDataMetadata<S> storedDataMetadata = dataSerialisationManager.readStoredFactoryMetadata(readFile(path));
                         cache.put(storedDataMetadata.id, storedDataMetadata);
                     }
                 });
@@ -66,7 +66,7 @@ public class FileSystemFactoryStorageHistory<R extends Data> {
         }
     }
 
-    public void updateHistory(StoredDataMetadata metadata, R factoryRoot) {
+    public void updateHistory(StoredDataMetadata<S> metadata, R factoryRoot) {
         String id=metadata.id;
 
         writeFile(Paths.get(historyDirectory.toString()+"/"+id+".json"), dataSerialisationManager.write(factoryRoot));

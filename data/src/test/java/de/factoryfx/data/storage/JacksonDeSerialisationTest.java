@@ -9,7 +9,7 @@ public class JacksonDeSerialisationTest {
 
     @Test
     public void test_canRead(){
-        JacksonDeSerialisation<ExampleDataA> jacksonDeSerialisation = new JacksonDeSerialisation<>(ExampleDataA.class,1);
+        JacksonDeSerialisation<ExampleDataA,Void> jacksonDeSerialisation = new JacksonDeSerialisation<>(ExampleDataA.class,1);
         Assert.assertTrue(jacksonDeSerialisation.canRead(1));
 
     }
@@ -17,7 +17,7 @@ public class JacksonDeSerialisationTest {
     @Test
     public void test_canRead_invalid(){
 
-        JacksonDeSerialisation<ExampleDataA> jacksonDeSerialisation = new JacksonDeSerialisation<>(ExampleDataA.class,1);
+        JacksonDeSerialisation<ExampleDataA,Void> jacksonDeSerialisation = new JacksonDeSerialisation<>(ExampleDataA.class,1);
         Assert.assertFalse(jacksonDeSerialisation.canRead(2));
 
     }

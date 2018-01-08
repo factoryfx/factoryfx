@@ -40,7 +40,7 @@ public class ApplicationServerRestTest {
             httpServerConnectorFactory.port.set(34579);
             httpServerConnectorFactory.host.set("localhost");
             jettyServer.connectors.add(httpServerConnectorFactory);
-            final ApplicationServerResourceFactory<Void, String, RootTestclazz> applicationServerResource = new ApplicationServerResourceFactory<>();
+            final ApplicationServerResourceFactory<Void, String, RootTestclazz,Void> applicationServerResource = new ApplicationServerResourceFactory<>();
             jettyServer.resources.add(applicationServerResource);
             final PersistentUserManagementFactory<Void> userManagement = new PersistentUserManagementFactory<>();
             final UserFactory<Void> user = new UserFactory<>();
@@ -52,7 +52,7 @@ public class ApplicationServerRestTest {
 
             final RootTestclazz rootTestclazz = new RootTestclazz();
             rootTestclazz.jettyServer.set(jettyServer);
-            ApplicationServer<Void,String,RootTestclazz> applicationServer = new ApplicationServer<>(new FactoryManager<>(new RethrowingFactoryExceptionHandler<>()), new InMemoryDataStorage<>(rootTestclazz));
+            ApplicationServer<Void,String,RootTestclazz,Void> applicationServer = new ApplicationServer<>(new FactoryManager<>(new RethrowingFactoryExceptionHandler<>()), new InMemoryDataStorage<>(rootTestclazz));
             applicationServer.start();
         }).start();
 

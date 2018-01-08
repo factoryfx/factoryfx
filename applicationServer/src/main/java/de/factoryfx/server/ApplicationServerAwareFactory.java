@@ -10,8 +10,8 @@ import de.factoryfx.factory.FactoryBase;
  * @param <R> root
  * @param <FL> factory live object
  */
-public abstract class ApplicationServerAwareFactory<V,RL, R extends FactoryBase<RL,V>, FL> extends FactoryBase<FL,V> {
+public abstract class ApplicationServerAwareFactory<V,RL, R extends FactoryBase<RL,V>, FL,S> extends FactoryBase<FL,V> {
 
-    public final ObjectValueAttribute<ApplicationServer<V, RL, R>> applicationServer = new ObjectValueAttribute<ApplicationServer<V, RL, R>>().labelText("application server");
+    public final ObjectValueAttribute<ApplicationServer<V, RL, R,S>> applicationServer = new ObjectValueAttribute<ApplicationServer<V, RL, R,S>>().labelText("application server");
 
 }

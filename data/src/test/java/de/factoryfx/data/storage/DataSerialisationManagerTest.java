@@ -13,9 +13,9 @@ public class DataSerialisationManagerTest {
 
     @Test
     public void read_read(){
-        JacksonDeSerialisation<ExampleDataA> deSerialisation = new JacksonDeSerialisation<>(ExampleDataA.class, 1);
-        JacksonSerialisation<ExampleDataA> serialisation = new JacksonSerialisation<>(1);
-        DataSerialisationManager<ExampleDataA> manager = new DataSerialisationManager<>(serialisation,deSerialisation, Collections.emptyList(),1);
+        JacksonDeSerialisation<ExampleDataA,Void> deSerialisation = new JacksonDeSerialisation<>(ExampleDataA.class, 1);
+        JacksonSerialisation<ExampleDataA,Void> serialisation = new JacksonSerialisation<>(1);
+        DataSerialisationManager<ExampleDataA,Void> manager = new DataSerialisationManager<>(serialisation,deSerialisation, Collections.emptyList(),1);
         ExampleDataA result = manager.read(ObjectMapperBuilder.build().writeValueAsString(new ExampleDataA()),1);
         Assert.assertNotNull(result);
 
@@ -45,9 +45,9 @@ public class DataSerialisationManagerTest {
 
 
 
-        JacksonDeSerialisation<ExampleDataA> deSerialisation = new JacksonDeSerialisation<>(ExampleDataA.class, 2);
-        JacksonSerialisation<ExampleDataA> serialisation = new JacksonSerialisation<>(2);
-        DataSerialisationManager<ExampleDataA> manager = new DataSerialisationManager<>(serialisation,deSerialisation, migrations,1);
+        JacksonDeSerialisation<ExampleDataA,Void> deSerialisation = new JacksonDeSerialisation<>(ExampleDataA.class, 2);
+        JacksonSerialisation<ExampleDataA,Void> serialisation = new JacksonSerialisation<>(2);
+        DataSerialisationManager<ExampleDataA,Void> manager = new DataSerialisationManager<>(serialisation,deSerialisation, migrations,1);
         ExampleDataA result = manager.read(ObjectMapperBuilder.build().writeValueAsString(new ExampleDataA()),1);
         Assert.assertNotNull(result);
 
@@ -91,9 +91,9 @@ public class DataSerialisationManagerTest {
 
 
 
-        JacksonDeSerialisation<ExampleDataA> deSerialisation = new JacksonDeSerialisation<>(ExampleDataA.class, 3);
-        JacksonSerialisation<ExampleDataA> serialisation = new JacksonSerialisation<>(3);
-        DataSerialisationManager<ExampleDataA> manager = new DataSerialisationManager<>(serialisation,deSerialisation, migrations,1);
+        JacksonDeSerialisation<ExampleDataA,Void> deSerialisation = new JacksonDeSerialisation<>(ExampleDataA.class, 3);
+        JacksonSerialisation<ExampleDataA,Void> serialisation = new JacksonSerialisation<>(3);
+        DataSerialisationManager<ExampleDataA,Void> manager = new DataSerialisationManager<>(serialisation,deSerialisation, migrations,1);
         ExampleDataA result = manager.read(ObjectMapperBuilder.build().writeValueAsString(new ExampleDataA()),1);
         Assert.assertNotNull(result);
 
@@ -119,9 +119,9 @@ public class DataSerialisationManagerTest {
             }
         });
 
-        JacksonDeSerialisation<ExampleDataA> deSerialisation = new JacksonDeSerialisation<>(ExampleDataA.class, 1);
-        JacksonSerialisation<ExampleDataA> serialisation = new JacksonSerialisation<>(1);
-        DataSerialisationManager<ExampleDataA> manager = new DataSerialisationManager<>(serialisation,deSerialisation, migrations,1);
+        JacksonDeSerialisation<ExampleDataA,Void> deSerialisation = new JacksonDeSerialisation<>(ExampleDataA.class, 1);
+        JacksonSerialisation<ExampleDataA,Void> serialisation = new JacksonSerialisation<>(1);
+        DataSerialisationManager<ExampleDataA,Void> manager = new DataSerialisationManager<>(serialisation,deSerialisation, migrations,1);
         ExampleDataA result = manager.read(ObjectMapperBuilder.build().writeValueAsString(new ExampleDataA()),0);
         Assert.assertNotNull(result);
 
@@ -149,9 +149,9 @@ public class DataSerialisationManagerTest {
         migrations.add(new NopDataMigration(2,5));
 
 
-        JacksonDeSerialisation<ExampleDataA> deSerialisation = new JacksonDeSerialisation<>(ExampleDataA.class, 5);
-        JacksonSerialisation<ExampleDataA> serialisation = new JacksonSerialisation<>(5);
-        DataSerialisationManager<ExampleDataA> manager = new DataSerialisationManager<>(serialisation,deSerialisation, migrations,1);
+        JacksonDeSerialisation<ExampleDataA,Void> deSerialisation = new JacksonDeSerialisation<>(ExampleDataA.class, 5);
+        JacksonSerialisation<ExampleDataA,Void> serialisation = new JacksonSerialisation<>(5);
+        DataSerialisationManager<ExampleDataA,Void> manager = new DataSerialisationManager<>(serialisation,deSerialisation, migrations,1);
         ExampleDataA result = manager.read(ObjectMapperBuilder.build().writeValueAsString(new ExampleDataA()),1);
         Assert.assertNotNull(result);
 
@@ -198,9 +198,9 @@ public class DataSerialisationManagerTest {
 
 
 
-        JacksonDeSerialisation<ExampleDataA> deSerialisation = new JacksonDeSerialisation<>(ExampleDataA.class, 3);
-        JacksonSerialisation<ExampleDataA> serialisation = new JacksonSerialisation<>(3);
-        DataSerialisationManager<ExampleDataA> manager = new DataSerialisationManager<>(serialisation,deSerialisation, migrations,1);
+        JacksonDeSerialisation<ExampleDataA,Void> deSerialisation = new JacksonDeSerialisation<>(ExampleDataA.class, 3);
+        JacksonSerialisation<ExampleDataA,Void> serialisation = new JacksonSerialisation<>(3);
+        DataSerialisationManager<ExampleDataA,Void> manager = new DataSerialisationManager<>(serialisation,deSerialisation, migrations,1);
         ExampleDataA result = manager.read(ObjectMapperBuilder.build().writeValueAsString(new ExampleDataA()),1);
         Assert.assertNotNull(result);
 

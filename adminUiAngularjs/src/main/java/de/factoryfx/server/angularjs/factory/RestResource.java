@@ -57,9 +57,9 @@ import javafx.collections.ObservableList;
 
 /** path defined in Server and not with the path annotation*/
 @Path("/")
-public class RestResource<V,L, R extends FactoryBase<L,V>> {
+public class RestResource<V,L, R extends FactoryBase<L,V>,S> {
 
-    private final ApplicationServer<V,L,R> applicationServer;
+    private final ApplicationServer<V,L,R,S> applicationServer;
     private final List<Class<? extends FactoryBase>> appFactoryClasses;
     private final List<Locale> locales;
     private final Layout webGuiLayout;
@@ -83,7 +83,7 @@ public class RestResource<V,L, R extends FactoryBase<L,V>> {
      * @param views views
      * @param sessionStorage sessionStorage
      */
-    public RestResource(Layout layout, ApplicationServer<V,L, R> applicationServer, List<Class<? extends FactoryBase>> appFactoryClasses, List<Locale> locales, UserManagement userManagement, Supplier<V> emptyVisitorCreator, Function<V, List<WebGuiTable>> dashboardTablesProvider, List<GuiView<?>> views, SessionStorage sessionStorage) {
+    public RestResource(Layout layout, ApplicationServer<V,L, R,S> applicationServer, List<Class<? extends FactoryBase>> appFactoryClasses, List<Locale> locales, UserManagement userManagement, Supplier<V> emptyVisitorCreator, Function<V, List<WebGuiTable>> dashboardTablesProvider, List<GuiView<?>> views, SessionStorage sessionStorage) {
         this.applicationServer = applicationServer;
         this.appFactoryClasses = appFactoryClasses;
         this.locales = locales;

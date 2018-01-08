@@ -1,15 +1,19 @@
 package de.factoryfx.data.storage;
 
 import de.factoryfx.data.jackson.ObjectMapperBuilder;
+import de.factoryfx.data.merge.testfactories.ExampleDataA;
 import org.junit.Test;
 
 public class ApplicationFactoryMetadataTest {
 
+    private static class SummaryDummy{
+        public long diffCounter=1;
+    }
+
     @Test
-    @SuppressWarnings("unchecked")
     public void test_json(){
-        StoredDataMetadata applicationFactoryMetadata = new StoredDataMetadata();
-        ObjectMapperBuilder.build().copy(applicationFactoryMetadata); //test json serializable
+        StoredDataMetadata<SummaryDummy> storedDataMetadata = new StoredDataMetadata<>("","","","",0,new SummaryDummy());
+        ObjectMapperBuilder.build().copy(storedDataMetadata); //test json serializable
     }
 
 }

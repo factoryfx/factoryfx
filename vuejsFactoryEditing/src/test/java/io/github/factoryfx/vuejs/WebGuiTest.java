@@ -38,7 +38,7 @@ public class WebGuiTest extends Application{
                 connectorFactory.port.set(8087);
                 serverFactory.connectors.add(connectorFactory);
 
-                ApplicationServerResourceFactory<Void, Object, FactoryBase<Object, Void>> applicationServerResourceFactory = new ApplicationServerResourceFactory<>();
+                ApplicationServerResourceFactory<Void, Object, FactoryBase<Object, Void>,Void> applicationServerResourceFactory = new ApplicationServerResourceFactory<>();
                 applicationServerResourceFactory.userManagement.set(new NoUserManagementFactory());
                 serverFactory.resources.add(applicationServerResourceFactory);
 
@@ -48,7 +48,7 @@ public class WebGuiTest extends Application{
 
 
 
-            ApplicationServer<Void, VuejsTestServer, VuejsTestServerFactory> exampleApplicationServer = new ApplicationServer<>(new FactoryManager<>(new RethrowingFactoryExceptionHandler<>()), new InMemoryDataStorage<>(factoryTreeBuilder.buildTree()));
+            ApplicationServer<Void, VuejsTestServer, VuejsTestServerFactory,Void> exampleApplicationServer = new ApplicationServer<>(new FactoryManager<>(new RethrowingFactoryExceptionHandler<>()), new InMemoryDataStorage<>(factoryTreeBuilder.buildTree()));
             exampleApplicationServer.start();
 
             {

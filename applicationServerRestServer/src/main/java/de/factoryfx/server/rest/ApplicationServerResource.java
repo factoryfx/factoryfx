@@ -26,13 +26,13 @@ import de.factoryfx.user.persistent.UserFactory;
 //https://stackoverflow.com/questions/17000193/can-we-have-more-than-one-path-annotation-for-same-rest-method
 //2 Paths for compatibility
 @Path("{parameter: adminui|applicationServer}")
-public class ApplicationServerResource<V,L,T extends FactoryBase<L,V>>  {
+public class ApplicationServerResource<V,L,T extends FactoryBase<L,V>,S>  {
 
-    private final ApplicationServer<V,L,T> applicationServer;
+    private final ApplicationServer<V,L,T,S> applicationServer;
     private final UserManagement userManagement;
     private final Predicate<Optional<AuthorizedUser>> authorizedKeyUserEvaluator;
 
-    public ApplicationServerResource(ApplicationServer<V,L,T> applicationServer, UserManagement userManagement, Predicate<Optional<AuthorizedUser>> authorizedKeyUserEvaluator) {
+    public ApplicationServerResource(ApplicationServer<V,L,T,S> applicationServer, UserManagement userManagement, Predicate<Optional<AuthorizedUser>> authorizedKeyUserEvaluator) {
         this.applicationServer = applicationServer;
         this.userManagement = userManagement;
         this.authorizedKeyUserEvaluator = authorizedKeyUserEvaluator;
@@ -119,7 +119,7 @@ public class ApplicationServerResource<V,L,T extends FactoryBase<L,V>>  {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @Path("historyFactoryList")
-    public Collection<StoredDataMetadata> getHistoryFactoryList(UserAwareRequest<Void> request) {
+    public Collection<StoredDataMetadata<S>> getHistoryFactoryList(UserAwareRequest<Void> request) {
         authenticate(request);
         return applicationServer.getHistoryFactoryList();
     }
@@ -169,7 +169,8 @@ public class ApplicationServerResource<V,L,T extends FactoryBase<L,V>>  {
     public DiffForFactoryResponse getDiffHistoryForFactory(UserAwareRequest<String> request){
         authenticate(request);
         final DiffForFactoryResponse diffForFactoryResponse = new DiffForFactoryResponse();
-        diffForFactoryResponse.diffs=applicationServer.getDiffHistoryForFactory(request.request);
+        //TODO
+//        diffForFactoryResponse.diffs=applicationServer.getDiffHistoryForFactory(request.request);
         return diffForFactoryResponse;
 
     }

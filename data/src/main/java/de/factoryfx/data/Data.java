@@ -837,7 +837,7 @@ public class Data {
          */
         public void checkUsable() {
             if (!isUsable()){
-                throw new IllegalStateException("currentData is not a usableCopy use prepareUsableCopy();\n  data=data.internal().prepareUsableCopy();");
+                throw new IllegalStateException("passed data is not a usableCopy use prepareUsableCopy(); e.g.:\n  data=data.internal().prepareUsableCopy();");
             }
         }
 

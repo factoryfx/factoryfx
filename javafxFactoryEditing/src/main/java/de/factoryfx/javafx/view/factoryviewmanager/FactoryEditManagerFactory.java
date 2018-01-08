@@ -15,15 +15,15 @@ import de.factoryfx.server.rest.client.ApplicationServerRestClientFactory;
  * @param <VS> server visitor
  * @param <RS> server root
  */
-public class FactoryEditManagerFactory<V,R  extends FactoryBase<?,V>,VS,RS  extends FactoryBase<?,VS>> extends SimpleFactoryBase<FactoryEditManager<VS,RS>,Void> {
+public class FactoryEditManagerFactory<V,R  extends FactoryBase<?,V>,VS,RS  extends FactoryBase<?,VS>,S> extends SimpleFactoryBase<FactoryEditManager<VS,RS,S>,Void> {
 
     public final FactoryReferenceAttribute<ApplicationServerRestClient<VS,RS>,ApplicationServerRestClientFactory<V,R,VS,RS>> restClient = new FactoryReferenceAttribute<ApplicationServerRestClient<VS,RS>,ApplicationServerRestClientFactory<V,R,VS,RS>>().setupUnsafe(ApplicationServerRestClientFactory.class);
     //TODO refactor to FactoryReferenceAttribute?
-    public final ObjectValueAttribute<DataSerialisationManager<RS>> factorySerialisationManager = new ObjectValueAttribute<>();
+    public final ObjectValueAttribute<DataSerialisationManager<RS,S>> factorySerialisationManager = new ObjectValueAttribute<>();
 
 
     @Override
-    public FactoryEditManager<VS,RS> createImpl() {
+    public FactoryEditManager<VS,RS,S> createImpl() {
         return new FactoryEditManager<>(restClient.instance(),factorySerialisationManager.get());
     }
 

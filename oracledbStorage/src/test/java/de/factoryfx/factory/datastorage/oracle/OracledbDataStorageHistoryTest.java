@@ -14,17 +14,16 @@ public class OracledbDataStorageHistoryTest extends DatabaseTest {
 
     @Test
     public void test_empty() throws MalformedURLException {
-        OracledbFactoryStorageHistory<ExampleFactoryA> oracledbFactoryStorageHistory = new OracledbFactoryStorageHistory<>(connectionSupplier,createSerialisation());
+        OracledbFactoryStorageHistory<ExampleFactoryA,Void> oracledbFactoryStorageHistory = new OracledbFactoryStorageHistory<>(connectionSupplier,createSerialisation());
 
         Assert.assertTrue(oracledbFactoryStorageHistory.getHistoryFactoryList().isEmpty());
     }
 
     @Test
     public void test_add() throws MalformedURLException {
-        OracledbFactoryStorageHistory<ExampleFactoryA> oracledbFactoryStorageHistory = new OracledbFactoryStorageHistory<>(connectionSupplier,createSerialisation());
+        OracledbFactoryStorageHistory<ExampleFactoryA,Void> oracledbFactoryStorageHistory = new OracledbFactoryStorageHistory<>(connectionSupplier,createSerialisation());
 
-        StoredDataMetadata metadata = new StoredDataMetadata();
-        metadata.id= UUID.randomUUID().toString();
+        StoredDataMetadata<Void> metadata = new StoredDataMetadata<>( UUID.randomUUID().toString(), "", "", "", 0,null);
         oracledbFactoryStorageHistory.updateHistory(metadata,new ExampleFactoryA());
 
         assertEquals(1, oracledbFactoryStorageHistory.getHistoryFactoryList().size());
@@ -32,23 +31,20 @@ public class OracledbDataStorageHistoryTest extends DatabaseTest {
 
     @Test
     public void test_multi_add() throws MalformedURLException {
-        OracledbFactoryStorageHistory<ExampleFactoryA> oracledbFactoryStorageHistory = new OracledbFactoryStorageHistory<>(connectionSupplier,createSerialisation());
+        OracledbFactoryStorageHistory<ExampleFactoryA,Void> oracledbFactoryStorageHistory = new OracledbFactoryStorageHistory<>(connectionSupplier,createSerialisation());
 
         {
-            StoredDataMetadata metadata = new StoredDataMetadata();
-            metadata.id = UUID.randomUUID().toString();
+            StoredDataMetadata<Void> metadata = new StoredDataMetadata<>( UUID.randomUUID().toString(), "", "", "", 0,null);
             oracledbFactoryStorageHistory.updateHistory(metadata, new ExampleFactoryA());
         }
 
         {
-            StoredDataMetadata metadata = new StoredDataMetadata();
-            metadata.id = UUID.randomUUID().toString();
+            StoredDataMetadata<Void> metadata = new StoredDataMetadata<>( UUID.randomUUID().toString(), "", "", "", 0,null);
             oracledbFactoryStorageHistory.updateHistory(metadata, new ExampleFactoryA());
         }
 
         {
-            StoredDataMetadata metadata = new StoredDataMetadata();
-            metadata.id = UUID.randomUUID().toString();
+            StoredDataMetadata<Void> metadata = new StoredDataMetadata<>( UUID.randomUUID().toString(), "", "", "", 0,null);
             oracledbFactoryStorageHistory.updateHistory(metadata, new ExampleFactoryA());
         }
 
@@ -57,14 +53,13 @@ public class OracledbDataStorageHistoryTest extends DatabaseTest {
 
     @Test
     public void test_restore() throws MalformedURLException {
-        OracledbFactoryStorageHistory<ExampleFactoryA> oracledbFactoryStorageHistory = new OracledbFactoryStorageHistory<>(connectionSupplier,createSerialisation());
+        OracledbFactoryStorageHistory<ExampleFactoryA,Void> oracledbFactoryStorageHistory = new OracledbFactoryStorageHistory<>(connectionSupplier,createSerialisation());
 
-        StoredDataMetadata metadata = new StoredDataMetadata();
-        metadata.id= UUID.randomUUID().toString();
+        StoredDataMetadata<Void> metadata = new StoredDataMetadata<>( UUID.randomUUID().toString(), "", "", "", 0,null);
         oracledbFactoryStorageHistory.updateHistory(metadata,new ExampleFactoryA());
         assertEquals(1, oracledbFactoryStorageHistory.getHistoryFactoryList().size());
 
-        OracledbFactoryStorageHistory<ExampleFactoryA> restored = new OracledbFactoryStorageHistory<>(connectionSupplier,createSerialisation());
+        OracledbFactoryStorageHistory<ExampleFactoryA,Void> restored = new OracledbFactoryStorageHistory<>(connectionSupplier,createSerialisation());
         Assert.assertEquals(1,restored.getHistoryFactoryList().size());
     }
 }

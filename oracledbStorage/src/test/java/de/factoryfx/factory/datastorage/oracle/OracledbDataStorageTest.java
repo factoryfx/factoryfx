@@ -13,7 +13,7 @@ public class OracledbDataStorageTest extends DatabaseTest{
 
     @Test
     public void test_init_no_existing_factory() throws MalformedURLException {
-        OracledbDataStorage<ExampleFactoryA> oracledbFactoryStorage = new OracledbDataStorage<>(connectionSupplier, new ExampleFactoryA(),createSerialisation());
+        OracledbDataStorage<ExampleFactoryA,Void> oracledbFactoryStorage = new OracledbDataStorage<>(connectionSupplier, new ExampleFactoryA(),createSerialisation());
         oracledbFactoryStorage.loadInitialFactory();
 
         Assert.assertEquals(1,oracledbFactoryStorage.getHistoryFactoryList().size());
@@ -21,24 +21,24 @@ public class OracledbDataStorageTest extends DatabaseTest{
 
     @Test
     public void test_init_existing_factory() throws MalformedURLException {
-        OracledbDataStorage<ExampleFactoryA> oracledbFactoryStorage = new OracledbDataStorage<>(connectionSupplier, new ExampleFactoryA(),createSerialisation());
+        OracledbDataStorage<ExampleFactoryA,Void> oracledbFactoryStorage = new OracledbDataStorage<>(connectionSupplier, new ExampleFactoryA(),createSerialisation());
         oracledbFactoryStorage.loadInitialFactory();
         String id=oracledbFactoryStorage.getCurrentFactory().metadata.id;
 
-        OracledbDataStorage<ExampleFactoryA> restored = new OracledbDataStorage<>(connectionSupplier,null,createSerialisation());
+        OracledbDataStorage<ExampleFactoryA,Void> restored = new OracledbDataStorage<>(connectionSupplier,null,createSerialisation());
         restored.loadInitialFactory();
         Assert.assertEquals(id,restored.getCurrentFactory().metadata.id);
     }
 
     @Test
     public void test_update() throws MalformedURLException {
-        OracledbDataStorage<ExampleFactoryA> oracledbFactoryStorage = new OracledbDataStorage<>(connectionSupplier, new ExampleFactoryA(),createSerialisation());
+        OracledbDataStorage<ExampleFactoryA,Void> oracledbFactoryStorage = new OracledbDataStorage<>(connectionSupplier, new ExampleFactoryA(),createSerialisation());
         oracledbFactoryStorage.loadInitialFactory();
         String id=oracledbFactoryStorage.getCurrentFactory().metadata.id;
 
         NewDataMetadata metadata = new NewDataMetadata();
         DataAndNewMetadata<ExampleFactoryA> update = new DataAndNewMetadata<>(new ExampleFactoryA(), metadata);
-        oracledbFactoryStorage.updateCurrentFactory(update,"","");
+        oracledbFactoryStorage.updateCurrentFactory(update,"","",null);
         Assert.assertNotEquals(id,oracledbFactoryStorage.getCurrentFactory().metadata.id);
         Assert.assertEquals(2,oracledbFactoryStorage.getHistoryFactoryList().size());
 

@@ -18,11 +18,15 @@ import org.junit.rules.TemporaryFolder;
 
 public class FileSystemDataStorageHistoryTest {
 
+    private StoredDataMetadata<Void> createStoredDataMetadata(String id){
+        return new StoredDataMetadata<>(id,"","","",0,null);
+    }
+
     @Rule
     public TemporaryFolder folder= new TemporaryFolder();
 
 
-    private DataSerialisationManager<ExampleDataA> createSerialisation(){
+    private DataSerialisationManager<ExampleDataA,Void> createSerialisation(){
         int dataModelVersion = 1;
         return new DataSerialisationManager<>(new JacksonSerialisation<>(dataModelVersion),new JacksonDeSerialisation<>(ExampleDataA.class, dataModelVersion), Collections.emptyList(),1);
     }
@@ -30,7 +34,7 @@ public class FileSystemDataStorageHistoryTest {
 
     @Test
     public void test_empty() throws MalformedURLException {
-        FileSystemFactoryStorageHistory<ExampleDataA> fileSystemFactoryStorage = new FileSystemFactoryStorageHistory<>(Paths.get(folder.getRoot().toURI()),createSerialisation());
+        FileSystemFactoryStorageHistory<ExampleDataA,Void> fileSystemFactoryStorage = new FileSystemFactoryStorageHistory<>(Paths.get(folder.getRoot().toURI()),createSerialisation());
         fileSystemFactoryStorage.initFromFileSystem();
 
         Assert.assertTrue(fileSystemFactoryStorage.getHistoryFactoryList().isEmpty());
@@ -38,11 +42,10 @@ public class FileSystemDataStorageHistoryTest {
 
     @Test
     public void test_add() throws MalformedURLException {
-        FileSystemFactoryStorageHistory<ExampleDataA> fileSystemFactoryStorage = new FileSystemFactoryStorageHistory<>(Paths.get(folder.getRoot().toURI()),createSerialisation());
+        FileSystemFactoryStorageHistory<ExampleDataA,Void> fileSystemFactoryStorage = new FileSystemFactoryStorageHistory<>(Paths.get(folder.getRoot().toURI()),createSerialisation());
         fileSystemFactoryStorage.initFromFileSystem();
 
-        StoredDataMetadata metadata = new StoredDataMetadata();
-        metadata.id= UUID.randomUUID().toString();
+        StoredDataMetadata metadata = createStoredDataMetadata(UUID.randomUUID().toString());
         fileSystemFactoryStorage.updateHistory(metadata,new ExampleDataA());
 
         Assert.assertEquals(1,fileSystemFactoryStorage.getHistoryFactoryList().size());
@@ -50,24 +53,21 @@ public class FileSystemDataStorageHistoryTest {
 
     @Test
     public void test_multi_add() throws MalformedURLException {
-        FileSystemFactoryStorageHistory<ExampleDataA> fileSystemFactoryStorage = new FileSystemFactoryStorageHistory<>(Paths.get(folder.getRoot().toURI()),createSerialisation());
+        FileSystemFactoryStorageHistory<ExampleDataA,Void> fileSystemFactoryStorage = new FileSystemFactoryStorageHistory<>(Paths.get(folder.getRoot().toURI()),createSerialisation());
         fileSystemFactoryStorage.initFromFileSystem();
 
         {
-            StoredDataMetadata metadata = new StoredDataMetadata();
-            metadata.id = UUID.randomUUID().toString();
+            StoredDataMetadata metadata = createStoredDataMetadata(UUID.randomUUID().toString());
             fileSystemFactoryStorage.updateHistory(metadata, new ExampleDataA());
         }
 
         {
-            StoredDataMetadata metadata = new StoredDataMetadata();
-            metadata.id = UUID.randomUUID().toString();
+            StoredDataMetadata metadata = createStoredDataMetadata(UUID.randomUUID().toString());
             fileSystemFactoryStorage.updateHistory(metadata, new ExampleDataA());
         }
 
         {
-            StoredDataMetadata metadata = new StoredDataMetadata();
-            metadata.id = UUID.randomUUID().toString();
+            StoredDataMetadata metadata = createStoredDataMetadata(UUID.randomUUID().toString());
             fileSystemFactoryStorage.updateHistory(metadata, new ExampleDataA());
         }
 
@@ -76,15 +76,14 @@ public class FileSystemDataStorageHistoryTest {
 
     @Test
     public void test_restore() throws MalformedURLException {
-        FileSystemFactoryStorageHistory<ExampleDataA> fileSystemFactoryStorage = new FileSystemFactoryStorageHistory<>(Paths.get(folder.getRoot().toURI()),createSerialisation());
+        FileSystemFactoryStorageHistory<ExampleDataA,Void> fileSystemFactoryStorage = new FileSystemFactoryStorageHistory<>(Paths.get(folder.getRoot().toURI()),createSerialisation());
         fileSystemFactoryStorage.initFromFileSystem();
 
-        StoredDataMetadata metadata = new StoredDataMetadata();
-        metadata.id= UUID.randomUUID().toString();
+        StoredDataMetadata metadata = createStoredDataMetadata(UUID.randomUUID().toString());
         fileSystemFactoryStorage.updateHistory(metadata,new ExampleDataA());
         Assert.assertEquals(1,fileSystemFactoryStorage.getHistoryFactoryList().size());
 
-        FileSystemFactoryStorageHistory<ExampleDataA> restored = new FileSystemFactoryStorageHistory<>(Paths.get(folder.getRoot().toURI()),createSerialisation());
+        FileSystemFactoryStorageHistory<ExampleDataA,Void> restored = new FileSystemFactoryStorageHistory<>(Paths.get(folder.getRoot().toURI()),createSerialisation());
         restored.initFromFileSystem();
         Assert.assertEquals(1,restored.getHistoryFactoryList().size());
     }

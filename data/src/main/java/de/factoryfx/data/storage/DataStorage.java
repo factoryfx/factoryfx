@@ -8,18 +8,20 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import de.factoryfx.data.Data;
+import de.factoryfx.data.merge.MergeDiffInfo;
 
 /**
  * storage/load and history for factories
  *
  * @param <R> Root
+ * @param <S> Change Summary
  */
-public interface DataStorage<R extends Data> {
+public interface DataStorage<R extends Data, S> {
 
     R getHistoryFactory(String id);
 
     default R getPreviousHistoryFactory(String id) {
-        Collection<StoredDataMetadata> historyFactoryList = getHistoryFactoryList();
+        Collection<StoredDataMetadata<S>> historyFactoryList = getHistoryFactoryList();
         if (historyFactoryList.isEmpty())
             return null;
         List<StoredDataMetadata> historyFactoryListSorted = historyFactoryList.stream().sorted(Comparator.comparing(h -> h.creationTime)).collect(Collectors.toList());
@@ -31,9 +33,9 @@ public interface DataStorage<R extends Data> {
         return null;
     }
 
-    Collection<StoredDataMetadata> getHistoryFactoryList();
+    Collection<StoredDataMetadata<S>> getHistoryFactoryList();
 
-    default Collection<ScheduledDataMetadata> getFutureFactoryList() {
+    default Collection<ScheduledDataMetadata<S>> getFutureFactoryList() {
         return Collections.emptyList();
     }
 
@@ -46,19 +48,18 @@ public interface DataStorage<R extends Data> {
     }
 
     /**
-
      * @param futureFactory futureFactory
      * @param futureFactoryMetadata futureFactoryMetadata
      * @param user user
      * @param comment comment
      * @return the added factory metadata
      */
-    default ScheduledDataMetadata addFutureFactory(R futureFactory, NewScheduledDataMetadata futureFactoryMetadata, String user, String comment) {
+    default ScheduledDataMetadata<S> addFutureFactory(R futureFactory, NewScheduledDataMetadata futureFactoryMetadata, String user, String comment, MergeDiffInfo<R> mergeDiff) {
         throw new UnsupportedOperationException();
     }
 
 
-    DataAndStoredMetadata<R> getCurrentFactory();
+    DataAndStoredMetadata<R,S> getCurrentFactory();
 
     /**
      * prepare a new Factory which could we an update. mainly give it the correct baseVersionId
@@ -72,7 +73,7 @@ public interface DataStorage<R extends Data> {
      * @param user user
      * @param comment comment
      */
-    void  updateCurrentFactory(DataAndNewMetadata<R> update, String user, String comment);
+    void  updateCurrentFactory(DataAndNewMetadata<R> update, String user, String comment, MergeDiffInfo<R> mergeDiff);
 
     /**
      * at Application start load current Factory

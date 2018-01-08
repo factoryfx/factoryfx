@@ -13,7 +13,7 @@ import de.factoryfx.user.UserManagement;
 import de.factoryfx.user.nop.NoUserManagementFactory;
 import de.factoryfx.user.persistent.PersistentUserManagementFactory;
 
-public class ApplicationServerResourceFactory<V,L,T extends FactoryBase<L,V>> extends ApplicationServerAwareFactory<V,L,T,ApplicationServerResource> {
+public class ApplicationServerResourceFactory<V,L,T extends FactoryBase<L,V>,S> extends ApplicationServerAwareFactory<V,L,T,ApplicationServerResource,S> {
 
     public final FactoryPolymorphicReferenceAttribute<UserManagement> userManagement = new FactoryPolymorphicReferenceAttribute<UserManagement>().setupUnsafe(UserManagement.class, NoUserManagementFactory.class, PersistentUserManagementFactory.class).labelText("resource");
     public final ObjectValueAttribute<Predicate<Optional<AuthorizedUser>>> authorizedKeyUserEvaluator= new ObjectValueAttribute<Predicate<Optional<AuthorizedUser>>>().labelText("authorizedKeyUserEvaluator");

@@ -22,7 +22,7 @@ public class FactoryEditManagerTest {
     @Test
     @SuppressWarnings("unchecked")
     public void test_export_import() throws IOException {
-        DataSerialisationManager<ExampleFactoryA> serialisationManager = new DataSerialisationManager<>(new JacksonSerialisation<>(1),new JacksonDeSerialisation<>(ExampleFactoryA.class, 1), new ArrayList<>(),1);
+        DataSerialisationManager<ExampleFactoryA,Void> serialisationManager = new DataSerialisationManager<>(new JacksonSerialisation<>(1),new JacksonDeSerialisation<>(ExampleFactoryA.class, 1), new ArrayList<>(),1);
         ApplicationServerRestClient<Void,ExampleFactoryA> client = Mockito.mock(ApplicationServerRestClient.class);
         NewDataMetadata newFactoryMetadata = new NewDataMetadata();
         newFactoryMetadata.dataModelVersion=1;
@@ -30,7 +30,7 @@ public class FactoryEditManagerTest {
         value.root.stringAttribute.set("123");
         Mockito.when(client.prepareNewFactory()).thenReturn(value);
 
-        FactoryEditManager<Void,ExampleFactoryA> factoryEditManager = new FactoryEditManager<>(client, serialisationManager);
+        FactoryEditManager<Void,ExampleFactoryA,Void> factoryEditManager = new FactoryEditManager<>(client, serialisationManager);
         factoryEditManager.runLaterExecuter= Runnable::run;
 
         factoryEditManager.load();

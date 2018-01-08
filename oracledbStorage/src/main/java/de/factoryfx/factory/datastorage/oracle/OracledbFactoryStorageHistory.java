@@ -9,12 +9,12 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.function.Supplier;
 
-public class OracledbFactoryStorageHistory<R extends Data> {
+public class OracledbFactoryStorageHistory<R extends Data,S> {
 
-    private final DataSerialisationManager<R> dataSerialisationManager;
+    private final DataSerialisationManager<R,S> dataSerialisationManager;
     private final Supplier<Connection> connectionSupplier;
 
-    public OracledbFactoryStorageHistory(Supplier<Connection> connectionSupplier, DataSerialisationManager<R> dataSerialisationManager){
+    public OracledbFactoryStorageHistory(Supplier<Connection> connectionSupplier, DataSerialisationManager<R,S> dataSerialisationManager){
         this.connectionSupplier = connectionSupplier;
         this.dataSerialisationManager = dataSerialisationManager;
 
@@ -56,8 +56,8 @@ public class OracledbFactoryStorageHistory<R extends Data> {
         return null;
     }
 
-    public Collection<StoredDataMetadata> getHistoryFactoryList() {
-        ArrayList<StoredDataMetadata> result = new ArrayList<>();
+    public Collection<StoredDataMetadata<S>> getHistoryFactoryList() {
+        ArrayList<StoredDataMetadata<S>> result = new ArrayList<>();
         try (Connection connection= connectionSupplier.get()){
             try (Statement statement = connection.createStatement()){
                 String sql = "SELECT * FROM FACTORY_HISTORY";
@@ -77,7 +77,7 @@ public class OracledbFactoryStorageHistory<R extends Data> {
         return result;
     }
 
-    public void updateHistory(StoredDataMetadata metadata, R factoryRoot) {
+    public void updateHistory(StoredDataMetadata<S> metadata, R factoryRoot) {
         String id=metadata.id;
 
         try (Connection connection= connectionSupplier.get()){

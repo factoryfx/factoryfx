@@ -24,15 +24,15 @@ import de.factoryfx.data.storage.DataStorage;
 import de.factoryfx.server.ApplicationServer;
 import de.factoryfx.user.UserManagement;
 
-public class WebGuiApplicationCreator<V,L,T extends FactoryBase<L,V>> {
-    private final ApplicationServer<V,L,T> applicationServer;
+public class WebGuiApplicationCreator<V,L,T extends FactoryBase<L,V>,S> {
+    private final ApplicationServer<V,L,T,S> applicationServer;
     private final List<Class<? extends FactoryBase>> appFactoryClasses;
     private final UserManagement userManagement;
     private final Supplier<V> emptyVisitorCreator;
     private final Function<V, List<WebGuiTable>> dashboardTablesProvider;
     private final List<GuiView<T>> guiViews;
 
-    public WebGuiApplicationCreator(ApplicationServer<V,L,T> applicationServer, List<Class<? extends FactoryBase>> appFactoryClasses, UserManagement userManagement, Supplier<V> emptyVisitorCreator, Function<V, List<WebGuiTable>> dashboardTablesProvider, List<GuiView<T>> guiViews) {
+    public WebGuiApplicationCreator(ApplicationServer<V,L,T,S> applicationServer, List<Class<? extends FactoryBase>> appFactoryClasses, UserManagement userManagement, Supplier<V> emptyVisitorCreator, Function<V, List<WebGuiTable>> dashboardTablesProvider, List<GuiView<T>> guiViews) {
         this.applicationServer = applicationServer;
         this.appFactoryClasses = appFactoryClasses;
         this.userManagement = userManagement;
@@ -41,17 +41,17 @@ public class WebGuiApplicationCreator<V,L,T extends FactoryBase<L,V>> {
         this.guiViews = guiViews;
     }
 
-    public ApplicationServer<Void,HttpServer,HttpServerFactory<V, L, T>> createApplication(DataStorage<HttpServerFactory<V, L, T>> dataStorage){
+    public ApplicationServer<Void,HttpServer,HttpServerFactory<V, L, T,S>,S> createApplication(DataStorage<HttpServerFactory<V, L, T,S>,S> dataStorage){
         return new ApplicationServer<>(new FactoryManager<>(new RethrowingFactoryExceptionHandler<>()), dataStorage);
     }
 
-    public HttpServerFactory<V,L,T> createDefaultFactory() {
-        HttpServerFactory<V,L,T> httpServerFactory =new HttpServerFactory<>();
+    public HttpServerFactory<V,L,T,S> createDefaultFactory() {
+        HttpServerFactory<V,L,T,S> httpServerFactory =new HttpServerFactory<>();
         httpServerFactory.port.set(8089);
         httpServerFactory.host.set("localhost");
         httpServerFactory.sessionTimeoutS.set(60*30);
 
-        RestResourceFactory<V,L,T> restResourceFactory = new RestResourceFactory<>();
+        RestResourceFactory<V,L,T,S> restResourceFactory = new RestResourceFactory<>();
         LayoutFactory layoutFactory = new LayoutFactory();
         layoutFactory.title.en("Admin UI");
 

@@ -42,24 +42,24 @@ public class ExampleMain extends Application {
         new WebAppViewer(primaryStage, () -> {
             ShopFactory shopFactory = getNetherlandsShopFactory();
 
-            ApplicationServer<OrderCollector, Shop, ShopFactory> applicationServer = new ApplicationServer<>(new FactoryManager<>(new LoggingFactoryExceptionHandler<>(new AllOrNothingFactoryExceptionHandler<>())), new InMemoryDataStorage<>(shopFactory));
+            ApplicationServer<OrderCollector, Shop, ShopFactory,Void> applicationServer = new ApplicationServer<>(new FactoryManager<>(new LoggingFactoryExceptionHandler<>(new AllOrNothingFactoryExceptionHandler<>())), new InMemoryDataStorage<>(shopFactory));
             applicationServer.start();
 
-            WebGuiApplicationCreator<OrderCollector, Shop, ShopFactory> webGuiApplicationCreator=new WebGuiApplicationCreator<>(
+            WebGuiApplicationCreator<OrderCollector, Shop, ShopFactory,Void> webGuiApplicationCreator=new WebGuiApplicationCreator<>(
                     applicationServer,
                     new ClasspathBasedFactoryProvider().get(ShopFactory.class),
                     new NoUserManagement(),
                     OrderCollector::new,new OrderCollectorToTables(),
                     Collections.singletonList(new GuiView<>("sgjhfgdsj", new LanguageText().en("Products"), shopFactory1 -> shopFactory1.products.stream().map(WebGuiFactoryHeader::new).collect(Collectors.toList())))
             );
-            HttpServerFactory<OrderCollector, Shop, ShopFactory> defaultFactory = webGuiApplicationCreator.createDefaultFactory();
+            HttpServerFactory<OrderCollector, Shop, ShopFactory,Void> defaultFactory = webGuiApplicationCreator.createDefaultFactory();
             try (InputStream inputStream = WebGuiApplicationCreator.class.getResourceAsStream("/logo/logo.png")) {
                 defaultFactory.webGuiResource.get().layout.get().logoSmall.set(ByteStreams.toByteArray(inputStream));
             } catch (IOException e) {
                 throw new RuntimeException(e);
 
             }
-            ApplicationServer<Void, HttpServer, HttpServerFactory<OrderCollector, Shop, ShopFactory>> shopApplication = webGuiApplicationCreator.createApplication(new InMemoryDataStorage<>(defaultFactory));
+            ApplicationServer<Void, HttpServer, HttpServerFactory<OrderCollector, Shop, ShopFactory,Void>,Void> shopApplication = webGuiApplicationCreator.createApplication(new InMemoryDataStorage<>(defaultFactory));
             shopApplication.start();
 
         },"http://localhost:8089/#/login");

@@ -10,7 +10,7 @@ import de.factoryfx.servlet.ServletContextAwareVisitor;
 
 public class RootFactory extends SimpleFactoryBase<Root,ServletContextAwareVisitor> {
     public final StringAttribute stringAttribute =new StringAttribute();
-    public final FactoryReferenceAttribute<ApplicationServerRestServletBridge,ApplicationServerRestServletBridgeFactory<Root,RootFactory>> applicationServerRestBridge = new FactoryReferenceAttribute<ApplicationServerRestServletBridge,ApplicationServerRestServletBridgeFactory<Root,RootFactory>>().setupUnsafe(ApplicationServerResourceFactory.class);
+    public final FactoryReferenceAttribute<ApplicationServerRestServletBridge,ApplicationServerRestServletBridgeFactory<Root,RootFactory,Void>> applicationServerRestBridge = new FactoryReferenceAttribute<ApplicationServerRestServletBridge,ApplicationServerRestServletBridgeFactory<Root,RootFactory,Void>>().setupUnsafe(ApplicationServerResourceFactory.class);
 
 
     @Override
