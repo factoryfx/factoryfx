@@ -126,7 +126,9 @@ public class FactoryBase<L,V> extends Data implements Iterable<FactoryBase<?, V>
         needRecreation |=changedData.contains(this); //|= means if needRecreation set true once never override with false
         if (needRecreation){
             for (FactoryBase factoryBase: path){
-                factoryBase.needRecreation =true;
+                if (factoryBase.createdLiveObject!=null){
+                    factoryBase.needRecreation =true;
+                }
             }
         }
 
