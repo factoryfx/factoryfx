@@ -1,22 +1,32 @@
 package de.factoryfx.server;
 
+import de.factoryfx.data.attribute.types.StringAttribute;
 import de.factoryfx.data.merge.AttributeDiffInfo;
 import de.factoryfx.data.merge.MergeDiffInfo;
 import de.factoryfx.data.storage.ChangeSummaryCreator;
 import de.factoryfx.data.storage.DataAndNewMetadata;
 import de.factoryfx.data.storage.StoredDataMetadata;
 import de.factoryfx.data.storage.inmemory.InMemoryDataStorage;
+import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.factory.FactoryManager;
+import de.factoryfx.factory.SimpleFactoryBase;
+import de.factoryfx.factory.atrribute.FactoryReferenceAttribute;
+import de.factoryfx.factory.atrribute.FactoryReferenceListAttribute;
+import de.factoryfx.factory.exception.AllOrNothingFactoryExceptionHandler;
+import de.factoryfx.factory.exception.LoggingFactoryExceptionHandler;
 import de.factoryfx.factory.exception.RethrowingFactoryExceptionHandler;
 import de.factoryfx.factory.log.FactoryUpdateLog;
 import de.factoryfx.factory.testfactories.ExampleFactoryA;
 import de.factoryfx.factory.testfactories.ExampleFactoryB;
 import de.factoryfx.factory.testfactories.ExampleLiveObjectA;
+import de.factoryfx.factory.testfactories.ExampleLiveObjectB;
 import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mockito;
 
 import java.util.*;
+import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 public class ApplicationServerTest {
@@ -142,6 +152,47 @@ public class ApplicationServerTest {
         Assert.assertEquals("change1",applicationServer.getHistoryFactory(historyFactoryList.get(2).id).stringAttribute.get());
         Assert.assertEquals("change2",applicationServer.getHistoryFactory(historyFactoryList.get(1).id).stringAttribute.get());
         Assert.assertEquals("change3",applicationServer.getHistoryFactory(historyFactoryList.get(0).id).stringAttribute.get());
+    }
+
+
+    public static class ExampleFactoryARecreation extends SimpleFactoryBase<ExampleLiveObjectA,Void> {
+        public final FactoryReferenceAttribute<ExampleLiveObjectB,ExampleFactoryBRecreation> referenceAttribute = new FactoryReferenceAttribute<>(ExampleFactoryBRecreation.class).labelText("ExampleA2");
+
+        @Override
+        public ExampleLiveObjectA createImpl() {
+            return null;
+        }
+    }
+
+    public static class ExampleFactoryBRecreation extends FactoryBase<ExampleLiveObjectB,Void> {
+        public final FactoryReferenceAttribute<ExampleLiveObjectB,ExampleFactoryB> referenceAttribute = new FactoryReferenceAttribute<>(ExampleFactoryB.class).labelText("ExampleA2");
+
+        long recreationCounter=0;
+        public ExampleFactoryBRecreation(){
+            this.configLiveCycle().setReCreator(exampleLiveObjectB -> {
+                recreationCounter++;
+                return null;
+            });
+            this.configLiveCycle().setCreator(() -> null);
+        }
+    }
+    @Test
+    public void recreation_bug() {
+
+        ExampleFactoryARecreation root = new ExampleFactoryARecreation();
+        root =root.internal().prepareUsableCopy();
+        final InMemoryDataStorage<ExampleFactoryARecreation, Void> memoryFactoryStorage = new InMemoryDataStorage<>(root);
+        ApplicationServer<Void,ExampleLiveObjectA,ExampleFactoryARecreation,Void> applicationServer = new ApplicationServer<>(new FactoryManager<>(new RethrowingFactoryExceptionHandler<>()), memoryFactoryStorage);
+
+        applicationServer.start();
+
+        DataAndNewMetadata<ExampleFactoryARecreation> update = applicationServer.prepareNewFactory();
+
+        update.root.referenceAttribute.set(new ExampleFactoryBRecreation());
+
+        Assert.assertEquals(0,update.root.referenceAttribute.get().recreationCounter);
+        applicationServer.updateCurrentFactory(update, "", "", s -> true);
+        Assert.assertEquals(0,update.root.referenceAttribute.get().recreationCounter);
     }
 
 
