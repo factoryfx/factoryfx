@@ -7,7 +7,9 @@ import de.factoryfx.factory.atrribute.FactoryReferenceListAttribute;
 import org.eclipse.jetty.server.Handler;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /**
  *   Unusual inheritance api to support typesafe navigation.
@@ -33,14 +35,18 @@ public abstract class JettyServerFactory<V> extends FactoryBase<JettyServer,V> {
 
     public JettyServerFactory(){
         configLiveCycle().setCreator(() -> {
-            return new JettyServer(connectors.instances(), getResourcesInstances());
+            return new JettyServer(connectors.instances(), getResourcesInstancesNullRemoved());
         });
-        configLiveCycle().setReCreator(currentLiveObject->currentLiveObject.recreate(connectors.instances(), getResourcesInstances()));
+        configLiveCycle().setReCreator(currentLiveObject->currentLiveObject.recreate(connectors.instances(), getResourcesInstancesNullRemoved()));
 
         configLiveCycle().setStarter(JettyServer::start);
         configLiveCycle().setDestroyer(JettyServer::stop);
 
         config().setDisplayTextProvider(() -> "ApplicationServerRestServer");
+    }
+
+    private List<Object> getResourcesInstancesNullRemoved(){
+        return getResourcesInstances().stream().filter(Objects::nonNull).collect(Collectors.toList());
     }
 
     /**
