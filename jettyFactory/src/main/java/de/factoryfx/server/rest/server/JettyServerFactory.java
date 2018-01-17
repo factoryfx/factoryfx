@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
  *
  *  {@code
  *      public static class TestWebserverFactory extends JettyServerFactory<Void>{
- *          public final FactoryReferenceAttribute<Resource1,Resource1FactoryBase> resource = new FactoryReferenceAttribute<>();
+ *          public final FactoryReferenceAttribute<Resource1,Resource1FactoryBase> resource = new FactoryReferenceAttribute<>(Resource1FactoryBase.class);
  *          @Override
  *          protected List<Object> getResourcesInstances() {
  *              return Arrays.asList(resource.instance());
