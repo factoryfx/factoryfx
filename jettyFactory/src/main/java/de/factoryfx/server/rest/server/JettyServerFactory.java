@@ -31,7 +31,7 @@ public abstract class JettyServerFactory<V> extends FactoryBase<JettyServer,V> {
 
     /** jersey resource class with Annotations*/
 //    public final FactoryReferenceListAttribute<Object,FactoryBase<?,V>> resources = new FactoryReferenceListAttribute<Object,FactoryBase<?,V>>().setupUnsafe(FactoryBase.class).labelText("resource");
-    public final FactoryReferenceListAttribute<HttpServerConnectorCreator,HttpServerConnectorFactory<V>> connectors = new FactoryReferenceListAttribute<HttpServerConnectorCreator,HttpServerConnectorFactory<V>>().setupUnsafe(HttpServerConnectorFactory.class).labelText("connectors");
+    public final FactoryReferenceListAttribute<HttpServerConnectorCreator,HttpServerConnectorFactory<V>> connectors = new FactoryReferenceListAttribute<HttpServerConnectorCreator,HttpServerConnectorFactory<V>>().setupUnsafe(HttpServerConnectorFactory.class).labelText("connectors").userNotSelectable();
 
     public JettyServerFactory(){
         configLiveCycle().setCreator(() -> {
