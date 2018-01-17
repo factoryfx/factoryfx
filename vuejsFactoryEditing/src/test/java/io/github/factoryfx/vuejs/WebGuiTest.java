@@ -4,11 +4,13 @@ import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
 import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.factory.FactoryManager;
+import de.factoryfx.factory.atrribute.FactoryReferenceAttribute;
 import de.factoryfx.factory.builder.FactoryTreeBuilder;
 import de.factoryfx.factory.builder.Scope;
 import de.factoryfx.data.storage.inmemory.InMemoryDataStorage;
 import de.factoryfx.factory.exception.RethrowingFactoryExceptionHandler;
 import de.factoryfx.server.ApplicationServer;
+import de.factoryfx.server.rest.ApplicationServerResource;
 import de.factoryfx.server.rest.ApplicationServerResourceFactory;
 import de.factoryfx.server.rest.server.HttpServerConnectorFactory;
 import de.factoryfx.server.rest.server.JettyServerFactory;
@@ -21,7 +23,20 @@ import javafx.application.Application;
 import javafx.stage.Stage;
 import org.slf4j.LoggerFactory;
 
+import java.util.Arrays;
+import java.util.List;
+
 public class WebGuiTest extends Application{
+
+    public static class DynamicWebserver extends JettyServerFactory<Void>{
+        public final FactoryReferenceAttribute<ProjectFileStructureServingResource,ProjectFileStructureServingResourceFactory> resource = new FactoryReferenceAttribute<>();
+        public final FactoryReferenceAttribute<
+                ApplicationServerResource<Void, VuejsTestServer, VuejsTestServerFactory,Void>, ApplicationServerResourceFactory<Void, VuejsTestServer, VuejsTestServerFactory,Void>> applicationServerResourceFactory = new FactoryReferenceAttribute<>();
+        @Override
+        protected List<Object> getResourcesInstances() {
+            return Arrays.asList(resource.instance(),applicationServerResourceFactory.instance());
+        }
+    }
 
     @SuppressWarnings("unchecked")
     @Override
@@ -31,16 +46,16 @@ public class WebGuiTest extends Application{
             FactoryTreeBuilder<Void,VuejsTestServer,VuejsTestServerFactory> factoryTreeBuilder = new FactoryTreeBuilder<>(VuejsTestServerFactory.class);
             factoryTreeBuilder.addFactory(VuejsTestServerFactory.class, Scope.SINGLETON);
             factoryTreeBuilder.addFactory(JettyServerFactory.class, Scope.SINGLETON, context -> {
-                JettyServerFactory<Void> serverFactory = new JettyServerFactory<>();
-                serverFactory.resources.add(new ProjectFileStructureServingResourceFactory());
+                DynamicWebserver serverFactory = new DynamicWebserver();
+                serverFactory.resource.set(new ProjectFileStructureServingResourceFactory());
                 HttpServerConnectorFactory<Void> connectorFactory = new HttpServerConnectorFactory<>();
                 connectorFactory.host.set("localhost");
                 connectorFactory.port.set(8087);
                 serverFactory.connectors.add(connectorFactory);
 
-                ApplicationServerResourceFactory<Void, Object, FactoryBase<Object, Void>,Void> applicationServerResourceFactory = new ApplicationServerResourceFactory<>();
+                ApplicationServerResourceFactory<Void, VuejsTestServer, VuejsTestServerFactory,Void> applicationServerResourceFactory = new ApplicationServerResourceFactory<>();
                 applicationServerResourceFactory.userManagement.set(new NoUserManagementFactory());
-                serverFactory.resources.add(applicationServerResourceFactory);
+                serverFactory.applicationServerResourceFactory.set(applicationServerResourceFactory);
 
                 return serverFactory;
             });

@@ -44,7 +44,7 @@ subprojects {
     }
 
     group = 'io.github.factoryfx'
-    version = '0.7.8'
+    version = '0.7.9'
 
     if (project.hasProperty('secretKeyRingFileSourceURL')) {
         //workaround  to get key  file to the plugin

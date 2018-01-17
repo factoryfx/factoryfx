@@ -1,6 +1,8 @@
 package de.factoryfx.server.rest;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Locale;
 
 import ch.qos.logback.classic.Level;
@@ -25,6 +27,14 @@ import de.factoryfx.user.persistent.UserFactory;
 
 public class ApplicationServerRestTest {
 
+    public static class TestJettyServer extends JettyServerFactory<Void>{
+        public final FactoryReferenceAttribute<ApplicationServerResource<Void, String, RootTestclazz,Void>, ApplicationServerResourceFactory<Void, String, RootTestclazz,Void>> resource = new FactoryReferenceAttribute<>();
+        @Override
+        protected List<Object> getResourcesInstances() {
+            return Arrays.asList(resource.instance());
+        }
+    }
+
     public static void main(String[] args) {
         String key  = new EncryptedStringAttribute().createKey();
         UserFactory.passwordKey=key;
@@ -35,13 +45,13 @@ public class ApplicationServerRestTest {
 //        ObjectMapperBuilder.build().getObjectMapper().registerSubtypes(UserManagementFactory.class);
 
         new Thread(() -> {
-            JettyServerFactory<Void> jettyServer = new JettyServerFactory<>();
+            TestJettyServer jettyServer = new TestJettyServer();
             final HttpServerConnectorFactory<Void> httpServerConnectorFactory = new HttpServerConnectorFactory<>();
             httpServerConnectorFactory.port.set(34579);
             httpServerConnectorFactory.host.set("localhost");
             jettyServer.connectors.add(httpServerConnectorFactory);
             final ApplicationServerResourceFactory<Void, String, RootTestclazz,Void> applicationServerResource = new ApplicationServerResourceFactory<>();
-            jettyServer.resources.add(applicationServerResource);
+            jettyServer.resource.set(applicationServerResource);
             final PersistentUserManagementFactory<Void> userManagement = new PersistentUserManagementFactory<>();
             final UserFactory<Void> user = new UserFactory<>();
             user.name.set("user123");

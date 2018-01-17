@@ -23,7 +23,7 @@ public class Main {
         httpServerConnectorFactory.host.set("localhost");
         jettyServer.connectors.add(httpServerConnectorFactory);
         rootFactory.server.set(jettyServer);
-        jettyServer.resources.add(new SimpleResourceFactory());
+        jettyServer.factoryReferenceAttribute.set(new SimpleResourceFactory());
 
         ApplicationServer<ServerVisitor,Root,RootFactory,Void> applicationServer = new ApplicationServer<>(new FactoryManager<>(new RethrowingFactoryExceptionHandler<>()),new InMemoryDataStorage<>(rootFactory));
         applicationServer.start();

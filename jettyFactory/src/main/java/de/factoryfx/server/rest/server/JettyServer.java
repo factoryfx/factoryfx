@@ -22,6 +22,7 @@ import org.eclipse.jetty.server.handler.gzip.GzipHandler;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.glassfish.jersey.server.ResourceConfig;
+import org.glassfish.jersey.server.model.Resource;
 import org.glassfish.jersey.servlet.ServletContainer;
 
 public class JettyServer {
@@ -68,6 +69,7 @@ public class JettyServer {
     }
 
     private ResourceConfig jerseySetup(List<Object>  resource) {
+
         ResourceConfig resourceConfig = new ResourceConfig();
 //        resourceConfig.register(resource);
         resource.forEach(resourceConfig::register);

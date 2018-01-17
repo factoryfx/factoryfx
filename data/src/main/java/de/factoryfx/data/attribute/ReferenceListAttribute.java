@@ -9,7 +9,6 @@ import java.util.stream.Stream;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import de.factoryfx.data.Data;
-import javafx.collections.ObservableList;
 
 public abstract class ReferenceListAttribute<T extends Data,A extends ReferenceBaseAttribute<T,List<T>,A>> extends ReferenceBaseAttribute<T,List<T>,A> implements List<T> {
     List<T> list = new ArrayList<>();
@@ -136,7 +135,7 @@ public abstract class ReferenceListAttribute<T extends Data,A extends ReferenceB
     @Override
     @JsonIgnore
     public AttributeTypeInfo internal_getAttributeType() {
-        return new AttributeTypeInfo(ObservableList.class,null,null,Data.class, AttributeTypeInfo.AttributeTypeCategory.REFERENCE_LIST);
+        return new AttributeTypeInfo(List.class,null,null,Data.class, AttributeTypeInfo.AttributeTypeCategory.REFERENCE_LIST);
     }
 
     public T internal_addNewFactory(){
