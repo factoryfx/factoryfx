@@ -1,16 +1,33 @@
 package de.factoryfx.javafx.view.factoryviewmanager;
 
+import de.factoryfx.data.attribute.types.StringAttribute;
+import de.factoryfx.data.merge.DataMerger;
+import de.factoryfx.data.merge.MergeDiffInfo;
 import de.factoryfx.data.storage.*;
+import de.factoryfx.data.storage.inmemory.InMemoryDataStorage;
+import de.factoryfx.factory.FactoryBase;
+import de.factoryfx.factory.FactoryManager;
+import de.factoryfx.factory.SimpleFactoryBase;
+import de.factoryfx.factory.atrribute.FactoryReferenceAttribute;
+import de.factoryfx.factory.atrribute.FactoryReferenceListAttribute;
+import de.factoryfx.factory.exception.RethrowingFactoryExceptionHandler;
 import de.factoryfx.factory.testfactories.ExampleFactoryA;
+import de.factoryfx.factory.testfactories.ExampleFactoryB;
+import de.factoryfx.factory.testfactories.ExampleLiveObjectA;
+import de.factoryfx.factory.testfactories.ExampleLiveObjectB;
+import de.factoryfx.server.ApplicationServer;
 import de.factoryfx.server.rest.client.ApplicationServerRestClient;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.mockito.Mockito;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 
 
@@ -43,6 +60,87 @@ public class FactoryEditManagerTest {
 
 
 
-    };
 
+    }
+
+    @Test
+    public void test_root_merge() {
+        ExampleFactoryA currentFactory = new ExampleFactoryA();
+        currentFactory = currentFactory.internal().prepareUsableCopy();
+
+        ExampleFactoryA updateFactory = new ExampleFactoryA();
+        updateFactory.referenceAttribute.set(new ExampleFactoryB());
+        updateFactory = updateFactory.internal().prepareUsableCopy();
+        DataMerger<ExampleFactoryA> dataMerger = new DataMerger<>(currentFactory,currentFactory,updateFactory);
+
+        Assert.assertNull(currentFactory.referenceAttribute.get());
+        Assert.assertNotNull(updateFactory.referenceAttribute.get());
+        MergeDiffInfo<ExampleFactoryA> diff = dataMerger.mergeIntoCurrent((p) -> true);
+
+        Assert.assertNotNull(currentFactory.referenceAttribute.get());
+        Assert.assertEquals(1,diff.mergeInfos.size());
+    }
+
+
+    @Test
+    public void test_import_save_differentSystem() throws IOException {
+
+        Path target = tmpFolder.newFile("fghfh.json").toPath();
+        {
+            DataSerialisationManager<ExampleFactoryA, Void> serialisationManager = new DataSerialisationManager<>(new JacksonSerialisation<>(0), new JacksonDeSerialisation<>(ExampleFactoryA.class, 1), new ArrayList<>(), 0);
+
+            ExampleFactoryA initialFactory = new ExampleFactoryA();
+            initialFactory.referenceAttribute.set(new ExampleFactoryB());
+            initialFactory = initialFactory.internal().prepareUsableCopy();
+            ApplicationServer<Void, ExampleLiveObjectA, ExampleFactoryA, Void> applicationServer = new ApplicationServer<>(new FactoryManager<>(new RethrowingFactoryExceptionHandler<>()), new InMemoryDataStorage<ExampleFactoryA, Void>(initialFactory));
+            applicationServer.start();
+
+
+            ApplicationServerRestClient<Void, ExampleFactoryA> client = Mockito.mock(ApplicationServerRestClient.class);
+            Mockito.when(client.prepareNewFactory()).thenReturn(applicationServer.prepareNewFactory());
+
+            FactoryEditManager<Void, ExampleFactoryA, Void> factoryEditManager = new FactoryEditManager<>(client, serialisationManager);
+            factoryEditManager.runLaterExecuter = Runnable::run;
+
+            factoryEditManager.load();
+            factoryEditManager.saveToFile(target);
+        }
+
+
+
+        {
+            DataSerialisationManager<ExampleFactoryA, Void> serialisationManager = new DataSerialisationManager<>(new JacksonSerialisation<>(0), new JacksonDeSerialisation<>(ExampleFactoryA.class, 0), new ArrayList<>(), 0);
+
+            ExampleFactoryA initialFactory = new ExampleFactoryA();
+            initialFactory = initialFactory.internal().prepareUsableCopy();
+//            initialFactory.referenceAttribute.set(new ExampleFactoryB());
+            ApplicationServer<Void, ExampleLiveObjectA, ExampleFactoryA, Void> applicationServer = new ApplicationServer<>(new FactoryManager<>(new RethrowingFactoryExceptionHandler<>()), new InMemoryDataStorage<ExampleFactoryA, Void>(initialFactory));
+            applicationServer.start();
+
+
+            ApplicationServerRestClient<Void, ExampleFactoryA> client = Mockito.mock(ApplicationServerRestClient.class);
+            Mockito.when(client.prepareNewFactory()).thenAnswer(invocation -> applicationServer.prepareNewFactory());
+
+            Mockito.when(client.updateCurrentFactory(Mockito.any(DataAndNewMetadata.class),Mockito.anyString())).thenAnswer((Answer) invocation -> {
+                Object[] args = invocation.getArguments();
+                return applicationServer.updateCurrentFactory((DataAndNewMetadata<ExampleFactoryA>) args[0],"","",(p)->true);
+            });
+
+            FactoryEditManager<Void, ExampleFactoryA, Void> factoryEditManager = new FactoryEditManager<>(client, serialisationManager);
+            factoryEditManager.runLaterExecuter = Runnable::run;
+
+            factoryEditManager.load();
+            Assert.assertNull(factoryEditManager.getLoadedFactory().get().referenceAttribute.get());
+
+            factoryEditManager.loadFromFile(target);
+            Assert.assertNotNull(factoryEditManager.getLoadedFactory().get().referenceAttribute.get());
+            factoryEditManager.save("blub");
+
+            Assert.assertNotNull(applicationServer.prepareNewFactory().root.referenceAttribute.get());
+            Assert.assertNotNull(factoryEditManager.getLoadedFactory().get().referenceAttribute.get());
+        }
+
+
+
+    };
 }

@@ -44,7 +44,7 @@ subprojects {
     }
 
     group = 'io.github.factoryfx'
-    version = '0.8.1'
+    version = '0.8.2'
 
     if (project.hasProperty('secretKeyRingFileSourceURL')) {
         //workaround  to get key  file to the plugin
@@ -330,6 +330,7 @@ project(':javafxFactoryEditing') {
     dependencies {
         compile project(":factory")
         compile project(":applicationServerRestClient")
+        compile project(":applicationServer");
         compile project(":javafxDataEditing");
         testCompile project(":testfactories")
     }

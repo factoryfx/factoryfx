@@ -29,8 +29,8 @@ public class DataMerger<R extends Data> {
         Map<String, Data> newMap = newData.internal().collectChildDataMap();
 
         for (Map.Entry<String, Data> entry : currentMap.entrySet()) {
-            Data originalValue = originalMap.get(entry.getKey());
-            Data newValue = newMap.get(entry.getKey());
+            Data originalValue = getOriginalValue(originalMap, entry);
+            Data newValue = getNewValue(newMap, entry);
 
             if (newValue==null && originalValue!=null){
                 //check for conflict for removed object
@@ -50,7 +50,23 @@ public class DataMerger<R extends Data> {
         return mergeResult;
     }
 
+    private Data getNewValue(Map<String, Data> newMap, Map.Entry<String, Data> currentEntry) {
+        if (currentEntry.getValue()==currentData){//for root different id don't make sense
+            return newData;
+        }
+        return newMap.get(currentEntry.getKey());
+    }
+
+    private Data getOriginalValue(Map<String, Data> originalMap, Map.Entry<String, Data> currentEntry) {
+        if (currentEntry.getValue()==currentData){//for root different id don't make sense
+            return commonData;
+        }
+        return originalMap.get(currentEntry.getKey());
+    }
+
     public MergeDiffInfo<R> mergeIntoCurrent(Function<String,Boolean> permissionChecker) {
         return createMergeResult(permissionChecker).executeMerge();
     }
+
+
 }
