@@ -1,6 +1,7 @@
 package de.factoryfx.factory;
 
 import java.util.*;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -57,11 +58,14 @@ public class FactoryManager<V,L,R extends FactoryBase<L,V>> {
             final LinkedHashSet<FactoryBase<?, V>> factoriesInCreateAndStartOrder = getFactoriesInCreateAndStartOrder(currentFactoryRoot);
             factoriesInCreateAndStartOrder.forEach(this::createWithExceptionHandling);
 
-            destroyFactories(previousFactories, newFactories);
+            removed=getRemovedFactories(previousFactories,newFactories);
+
+            newFactories.forEach(this::destroyUpdatedWithExceptionHandling);
+            removed.forEach(this::destroyRemovedWithExceptionHandling);//TODO is the order correct, do we care?
 
             factoriesInCreateAndStartOrder.forEach(this::startWithExceptionHandling);
             totalUpdateDuration=System.nanoTime()-start;
-            removed=getRemovedFactories(previousFactories,newFactories);
+
         }
 
         return new FactoryUpdateLog<>(currentFactoryRoot.internalFactory().createFactoryLogEntry(), removed.stream().map(r->r.internalFactory().createFactoryLogEntryFlat()).collect(Collectors.toSet()),mergeDiff,totalUpdateDuration);
@@ -109,11 +113,7 @@ public class FactoryManager<V,L,R extends FactoryBase<L,V>> {
         return dataMerger.createMergeResult(permissionChecker).executeMerge();
     }
 
-    private void destroyFactories(LinkedHashSet<FactoryBase<?,V>> previousFactories, Set<FactoryBase<?,V>> newFactories){
-        for (FactoryBase<?,V> newFactory: newFactories){
-            destroyWithExceptionHandling(newFactory,previousFactories);
-        }
-    }
+
 
 
     private LinkedHashSet<FactoryBase<?,V>> getFactoriesInCreateAndStartOrder(R root){
@@ -152,7 +152,7 @@ public class FactoryManager<V,L,R extends FactoryBase<L,V>> {
         HashSet<FactoryBase<?,V>> factories = getFactoriesInDestroyOrder(currentFactoryRoot);
 
         for (FactoryBase<?,V> factory: factories){
-            destroyWithExceptionHandling(factory,new HashSet<>());
+            destroyRemovedWithExceptionHandling(factory);
         }
     }
 
@@ -180,13 +180,21 @@ public class FactoryManager<V,L,R extends FactoryBase<L,V>> {
         }
     }
 
-    private void destroyWithExceptionHandling(FactoryBase<?,V> factory, Set<FactoryBase<?,V>> previousFactories){
+    private void destroyUpdatedWithExceptionHandling(FactoryBase<?,V> factory){
         try {
-            factory.internalFactory().destroy(previousFactories);
+            //TODO destroy logging seems wrong cause this is called for all factories and method impl checks if destroy needed
+            factory.internalFactory().destroyUpdated();
         } catch (Exception e){
             factoryExceptionHandler.destroyException(e,factory,new ExceptionResponseAction(this));
         }
     }
 
+    private void destroyRemovedWithExceptionHandling(FactoryBase<?,V> factory){
+        try {
+            factory.internalFactory().destroyRemoved();
+        } catch (Exception e){
+            factoryExceptionHandler.destroyException(e,factory,new ExceptionResponseAction(this));
+        }
+    }
 
 }

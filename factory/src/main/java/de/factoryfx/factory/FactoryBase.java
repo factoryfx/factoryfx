@@ -105,18 +105,22 @@ public class FactoryBase<L,V> extends Data implements Iterable<FactoryBase<?, V>
         }
     }
 
-    private void destroy(Set<FactoryBase<?,V>> previousFactories) {
-        if (!previousFactories.contains(this) && destroyerWithPreviousLiveObject!=null){
-            loggedAction(FactoryLogEntryEventType.DESTROY, ()-> {
-                destroyerWithPreviousLiveObject.accept(createdLiveObject);
-            });
-        }
+    private void destroyUpdated() {
         if (previousLiveObject!=null && destroyerWithPreviousLiveObject!=null){
             loggedAction(FactoryLogEntryEventType.DESTROY, ()-> {
                 destroyerWithPreviousLiveObject.accept(previousLiveObject);
             });
         }
         previousLiveObject=null;
+    }
+
+    private void destroyRemoved() {
+        if (createdLiveObject!=null && destroyerWithPreviousLiveObject!=null){
+            loggedAction(FactoryLogEntryEventType.DESTROY, ()-> {
+                destroyerWithPreviousLiveObject.accept(createdLiveObject);
+            });
+        }
+        createdLiveObject=null;
     }
 
     boolean reRecreationChecked;
@@ -336,11 +340,17 @@ public class FactoryBase<L,V> extends Data implements Iterable<FactoryBase<?, V>
         }
 
         /**
-         * start the liveObject e.g open a port
-         * @param previousFactories previousFactories
+         * destroy liveobject form a removed factory
          * */
-        public void destroy(Set<FactoryBase<?,V>> previousFactories) {
-            factory.destroy(previousFactories);
+        public void destroyRemoved() {
+            factory.destroyRemoved();
+        }
+
+        /**
+         * destroy the old liveobject in updated factories
+         * */
+        public void destroyUpdated() {
+            factory.destroyUpdated();
         }
 
         /**
