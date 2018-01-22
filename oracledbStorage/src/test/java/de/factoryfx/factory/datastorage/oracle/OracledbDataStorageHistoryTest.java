@@ -6,6 +6,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import java.net.MalformedURLException;
+import java.util.ArrayList;
 import java.util.UUID;
 
 import static org.junit.Assert.assertEquals;
@@ -13,14 +14,14 @@ import static org.junit.Assert.assertEquals;
 public class OracledbDataStorageHistoryTest extends DatabaseTest {
 
     @Test
-    public void test_empty() throws MalformedURLException {
+    public void test_empty() {
         OracledbFactoryStorageHistory<ExampleFactoryA,Void> oracledbFactoryStorageHistory = new OracledbFactoryStorageHistory<>(connectionSupplier,createSerialisation());
 
         Assert.assertTrue(oracledbFactoryStorageHistory.getHistoryFactoryList().isEmpty());
     }
 
     @Test
-    public void test_add() throws MalformedURLException {
+    public void test_add() {
         OracledbFactoryStorageHistory<ExampleFactoryA,Void> oracledbFactoryStorageHistory = new OracledbFactoryStorageHistory<>(connectionSupplier,createSerialisation());
 
         StoredDataMetadata<Void> metadata = new StoredDataMetadata<>( UUID.randomUUID().toString(), "", "", "", 0,null);
@@ -30,7 +31,7 @@ public class OracledbDataStorageHistoryTest extends DatabaseTest {
     }
 
     @Test
-    public void test_multi_add() throws MalformedURLException {
+    public void test_multi_add() {
         OracledbFactoryStorageHistory<ExampleFactoryA,Void> oracledbFactoryStorageHistory = new OracledbFactoryStorageHistory<>(connectionSupplier,createSerialisation());
 
         {
@@ -52,7 +53,7 @@ public class OracledbDataStorageHistoryTest extends DatabaseTest {
     }
 
     @Test
-    public void test_restore() throws MalformedURLException {
+    public void test_restore() {
         OracledbFactoryStorageHistory<ExampleFactoryA,Void> oracledbFactoryStorageHistory = new OracledbFactoryStorageHistory<>(connectionSupplier,createSerialisation());
 
         StoredDataMetadata<Void> metadata = new StoredDataMetadata<>( UUID.randomUUID().toString(), "", "", "", 0,null);
@@ -61,5 +62,20 @@ public class OracledbDataStorageHistoryTest extends DatabaseTest {
 
         OracledbFactoryStorageHistory<ExampleFactoryA,Void> restored = new OracledbFactoryStorageHistory<>(connectionSupplier,createSerialisation());
         Assert.assertEquals(1,restored.getHistoryFactoryList().size());
+    }
+
+    @Test
+    public void test_getById() {
+        OracledbFactoryStorageHistory<ExampleFactoryA,Void> oracledbFactoryStorageHistory = new OracledbFactoryStorageHistory<>(connectionSupplier,createSerialisation());
+
+        StoredDataMetadata<Void> metadata = new StoredDataMetadata<>( UUID.randomUUID().toString(), "", "", "", 0,null);
+        oracledbFactoryStorageHistory.updateHistory(metadata,new ExampleFactoryA());
+        assertEquals(1, oracledbFactoryStorageHistory.getHistoryFactoryList().size());
+
+        OracledbFactoryStorageHistory<ExampleFactoryA,Void> history = new OracledbFactoryStorageHistory<>(connectionSupplier,createSerialisation());
+
+        ExampleFactoryA reloaded = oracledbFactoryStorageHistory.getHistoryFactory(new ArrayList<>(history.getHistoryFactoryList()).get(0).id);
+        Assert.assertNotNull(reloaded);
+
     }
 }

@@ -39,10 +39,9 @@ public class OracledbFactoryStorageHistory<R extends Data,S> {
     public R getHistoryFactory(String id) {
 
         try (Connection connection= connectionSupplier.get()){
-            try (Statement statement = connection.createStatement()){
-                String sql = "SELECT * FROM FACTORY_HISTORY WHERE id='"+id+"'";
-
-                ResultSet resultSet =statement.executeQuery(sql);
+            try (PreparedStatement statement = connection.prepareStatement("SELECT * FROM FACTORY_HISTORY WHERE id= ?")){
+                statement.setString(1, id);
+                ResultSet resultSet =statement.executeQuery();
                 if(resultSet.next()){
                     StoredDataMetadata factoryMetadata = dataSerialisationManager.readStoredFactoryMetadata(JdbcUtil.readStringToBlob(resultSet,"factoryMetadata"));
                     return  dataSerialisationManager.read(JdbcUtil.readStringToBlob(resultSet,"factory"),factoryMetadata.dataModelVersion);
@@ -61,16 +60,12 @@ public class OracledbFactoryStorageHistory<R extends Data,S> {
         try (Connection connection= connectionSupplier.get()){
             try (Statement statement = connection.createStatement()){
                 String sql = "SELECT * FROM FACTORY_HISTORY";
-
                 try (ResultSet resultSet =statement.executeQuery(sql)) {
                     while (resultSet.next()) {
                         result.add(dataSerialisationManager.readStoredFactoryMetadata(JdbcUtil.readStringToBlob(resultSet, "factoryMetadata")));
                     }
                 }
-
-
             }
-
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
