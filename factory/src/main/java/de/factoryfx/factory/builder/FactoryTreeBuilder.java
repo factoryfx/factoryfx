@@ -2,11 +2,14 @@ package de.factoryfx.factory.builder;
 
 import de.factoryfx.factory.FactoryBase;
 
-import java.util.HashSet;
 import java.util.function.Function;
 
-/** utility class to build a factory hierarchy*/
-public class FactoryTreeBuilder<V, L, R extends FactoryBase<L,V>> {
+/** utility class to build a factory hierarchy
+ * @param <V>  vistor
+ * @param <RL> root liveobject
+ * @param <R> root factory
+ * */
+public class FactoryTreeBuilder<V, RL, R extends FactoryBase<RL,V>> {
     private final FactoryContext<V> factoryContext = new FactoryContext<>();
     private final Class<R> rootClass;
 

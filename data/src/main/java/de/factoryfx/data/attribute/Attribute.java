@@ -10,7 +10,6 @@ import de.factoryfx.data.validation.ObjectRequired;
 import de.factoryfx.data.validation.Validation;
 import de.factoryfx.data.validation.ValidationError;
 import de.factoryfx.data.validation.ValidationResult;
-import javafx.scene.control.Tooltip;
 
 public abstract class Attribute<T,A extends Attribute<T,A>>{
 

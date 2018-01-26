@@ -1,12 +1,7 @@
 package de.factoryfx.javafx.javascript.editor.attribute.visualisation;
 
 import java.lang.ref.WeakReference;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.NavigableMap;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -58,8 +53,7 @@ public class JavascriptVisual {
 
         RootNode(List<SourceFile> externs, SimpleObjectProperty<Javascript<?>> boundTo) {
             this.getStylesheets().add(getClass().getResource("jsstyle.css").toExternalForm());
-            List<SourceFile> externalSources = new ArrayList<>();
-            externalSources.addAll(externs);
+            List<SourceFile> externalSources = new ArrayList<>(externs);
             this.contentAssistant = new ContentAssistant(externalSources, new WeakReference<>(processProoposals));
             this.errorsAndWarningsAssistant = new ErrorsAndWarningsAssistant(externalSources, new WeakReference<>(processErrorsAndWarnings));
             codeArea.setParagraphGraphicFactory(LineNumberFactory.get(codeArea));
@@ -221,7 +215,7 @@ public class JavascriptVisual {
 
         private void processHighlighting(List<Span> spans) {
             if (!spans.isEmpty()) {
-                spans.sort((s1, s2) -> Integer.valueOf(s1.from).compareTo(s2.from));
+                spans.sort(Comparator.comparingInt(s2 -> s2.from));
                 StyleSpansBuilder<Collection<String>> spansBuilder
                         = new StyleSpansBuilder<>();
                 int last = 0;

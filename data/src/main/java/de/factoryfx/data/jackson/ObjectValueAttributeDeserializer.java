@@ -10,7 +10,7 @@ import de.factoryfx.data.attribute.types.ObjectValueAttribute;
 /** ignore value, @Ignore annotation doesn't work therefore this custom Deserializer*/
 public class ObjectValueAttributeDeserializer extends JsonDeserializer {
     @Override
-    public ObjectValueAttribute deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException {
+    public ObjectValueAttribute deserialize(JsonParser jp, DeserializationContext ctxt) {
         return new ObjectValueAttribute();
     }
 }

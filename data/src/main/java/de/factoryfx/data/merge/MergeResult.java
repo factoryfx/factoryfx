@@ -1,8 +1,6 @@
 package de.factoryfx.data.merge;
 
 import de.factoryfx.data.Data;
-import de.factoryfx.data.jackson.ObjectMapperBuilder;
-import de.factoryfx.data.jackson.SimpleObjectMapper;
 
 import java.util.ArrayList;
 import java.util.List;

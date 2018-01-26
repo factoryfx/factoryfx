@@ -50,7 +50,11 @@ public class LongRunningActionExecutor {
                 });
                 runnable.run();
             } catch (Exception exception){
-                Thread.getDefaultUncaughtExceptionHandler().uncaughtException(Thread.currentThread(),exception);
+                if (Thread.getDefaultUncaughtExceptionHandler()!=null){
+                    Thread.getDefaultUncaughtExceptionHandler().uncaughtException(Thread.currentThread(),exception);
+                } else {
+                    exception.printStackTrace();
+                }
             } finally {
                 Platform.runLater(() -> {
                     target.getChildren().remove(progressIndicator);

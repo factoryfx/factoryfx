@@ -4,7 +4,6 @@ import de.factoryfx.data.Data;
 import de.factoryfx.data.attribute.Attribute;
 import de.factoryfx.javafx.editor.attribute.AttributeEditor;
 import de.factoryfx.javafx.editor.attribute.AttributeEditorVisualisation;
-import de.factoryfx.javafx.editor.data.DataEditor;
 import de.factoryfx.javafx.util.UniformDesign;
 
 import java.util.List;

@@ -86,6 +86,10 @@
         <Bug pattern="UC_USELESS_OBJECT" />
     </Match>
 
+    <Match>
+        <Class name="de.factoryfx.data.storage.ScheduledDataMetadata" />
+        <Bug pattern="EQ_COMPARETO_USE_OBJECT_EQUALS" />
+    </Match>
 
 
 

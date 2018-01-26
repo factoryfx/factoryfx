@@ -1,6 +1,5 @@
 package de.factoryfx.data.storage;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import de.factoryfx.data.Data;
 import de.factoryfx.data.jackson.ObjectMapperBuilder;
 

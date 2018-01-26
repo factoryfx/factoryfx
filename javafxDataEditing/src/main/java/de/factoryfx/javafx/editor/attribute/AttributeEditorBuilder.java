@@ -10,7 +10,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.function.Consumer;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import de.factoryfx.data.attribute.time.LocalTimeAttribute;
@@ -39,12 +38,10 @@ import de.factoryfx.data.attribute.time.DurationAttribute;
 import de.factoryfx.data.attribute.time.LocalDateAttribute;
 import de.factoryfx.data.attribute.time.LocalDateTimeAttribute;
 import de.factoryfx.data.util.LanguageText;
-import de.factoryfx.data.validation.ValidationError;
 import de.factoryfx.javafx.editor.attribute.builder.DataSingleAttributeEditorBuilder;
 import de.factoryfx.javafx.editor.attribute.builder.NoListSingleAttributeEditorBuilder;
 import de.factoryfx.javafx.editor.attribute.builder.SimpleSingleAttributeEditorBuilder;
 import de.factoryfx.javafx.editor.attribute.builder.SingleAttributeEditorBuilder;
-import de.factoryfx.javafx.editor.data.DataEditor;
 import de.factoryfx.javafx.util.UniformDesign;
 
 public class AttributeEditorBuilder {
@@ -83,9 +80,7 @@ public class AttributeEditorBuilder {
         result.add(new SimpleSingleAttributeEditorBuilder<>(uniformDesign,EncryptedStringAttribute.class,EncryptedString.class,(attribute)-> new EncryptedStringAttributeVisualisation(attribute::createKey, attribute::internal_isValidKey,uniformDesign),()->new EncryptedStringAttribute()));
 
         result.add(new NoListSingleAttributeEditorBuilder<EnumAttribute.EnumWrapper,EnumAttribute<?>>(uniformDesign,(attribute)->attribute instanceof EnumAttribute,(attribute)->{
-            ArrayList<EnumAttribute.EnumWrapper> possibleEnumConstants = new ArrayList<>();
-            possibleEnumConstants.addAll(attribute.internal_possibleEnumValues().stream().map(e->new EnumAttribute.EnumWrapper(e)).collect(Collectors.toList()));
-            return new EnumAttributeVisualisation(uniformDesign,possibleEnumConstants);
+            return new EnumAttributeVisualisation(uniformDesign,attribute.internal_possibleEnumValues().stream().map(e->new EnumAttribute.EnumWrapper(e)).collect(Collectors.toList()));
         }));
 
         result.add(new SimpleSingleAttributeEditorBuilder<>(uniformDesign,I18nAttribute.class,LanguageText.class,(attribute)-> new I18nAttributeVisualisation(),()->new I18nAttribute()));

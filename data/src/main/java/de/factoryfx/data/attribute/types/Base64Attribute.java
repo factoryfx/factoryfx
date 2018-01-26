@@ -3,8 +3,6 @@ package de.factoryfx.data.attribute.types;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import de.factoryfx.data.attribute.ImmutableValueAttribute;
 
-import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
 import java.util.Base64;
 import java.util.Objects;
 

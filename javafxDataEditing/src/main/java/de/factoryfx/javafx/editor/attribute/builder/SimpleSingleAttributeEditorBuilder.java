@@ -6,7 +6,6 @@ import de.factoryfx.javafx.editor.attribute.AttributeEditor;
 import de.factoryfx.javafx.editor.attribute.AttributeEditorVisualisation;
 import de.factoryfx.javafx.editor.attribute.visualisation.ExpandableAttributeVisualisation;
 import de.factoryfx.javafx.editor.attribute.visualisation.ValueListAttributeVisualisation;
-import de.factoryfx.javafx.editor.data.DataEditor;
 import de.factoryfx.javafx.util.UniformDesign;
 import org.controlsfx.glyphfont.FontAwesome;
 

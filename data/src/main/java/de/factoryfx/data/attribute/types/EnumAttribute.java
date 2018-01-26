@@ -8,7 +8,6 @@ import java.util.Optional;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import de.factoryfx.data.attribute.Attribute;
 import de.factoryfx.data.attribute.AttributeTypeInfo;
 import de.factoryfx.data.attribute.ImmutableValueAttribute;
 

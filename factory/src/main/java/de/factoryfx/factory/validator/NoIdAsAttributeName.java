@@ -14,7 +14,7 @@ public class NoIdAsAttributeName implements FactoryStyleValidation {
     public Optional<String> validateFactory() {
         boolean valid = !attributeField.getName().equals("id");
         if (!valid) {
-            return Optional.of("id  is not a valif attribute name cause name conflict in json");
+            return Optional.of("'id' is not a valid attribute name cause name conflict in json");
         } else {
             return Optional.empty();
         }

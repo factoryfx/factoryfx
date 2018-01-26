@@ -1,6 +1,5 @@
 package de.factoryfx.data.storage;
 
-import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -52,6 +51,7 @@ public interface DataStorage<R extends Data, S> {
      * @param futureFactoryMetadata futureFactoryMetadata
      * @param user user
      * @param comment comment
+     * @param mergeDiff mergeDiff
      * @return the added factory metadata
      */
     default ScheduledDataMetadata<S> addFutureFactory(R futureFactory, NewScheduledDataMetadata futureFactoryMetadata, String user, String comment, MergeDiffInfo<R> mergeDiff) {
@@ -72,6 +72,7 @@ public interface DataStorage<R extends Data, S> {
      * @param update update
      * @param user user
      * @param comment comment
+     * @param mergeDiff mergeDiff
      */
     void  updateCurrentFactory(DataAndNewMetadata<R> update, String user, String comment, MergeDiffInfo<R> mergeDiff);
 

@@ -12,13 +12,13 @@ public class DataSerialisationManager<R extends Data,S> {
     private final DataSerialisation<R,S> defaultDataSerialisation;
     private final DataDeSerialisation<R,S> defaultDataDeSerialisation;
     private final List<DataMigration> dataMigrations;
-    private final int dataModelVersion;
+    private final int dataModelVersionForStoring;
 
     public DataSerialisationManager(DataSerialisation<R,S> defaultDataSerialisation, DataDeSerialisation<R,S> defaultDataDeSerialisation, List<DataMigration> dataMigrations, int dataModelVersion) {
         this.defaultDataDeSerialisation = defaultDataDeSerialisation;
         this.defaultDataSerialisation = defaultDataSerialisation;
         this.dataMigrations = dataMigrations;
-        this.dataModelVersion=dataModelVersion;
+        this.dataModelVersionForStoring =dataModelVersion;
     }
 
     public String write(R root) {
@@ -65,7 +65,7 @@ public class DataSerialisationManager<R extends Data,S> {
     }
 
     public NewDataMetadata prepareNewFactoryMetadata(NewDataMetadata newFactoryMetadata){
-        newFactoryMetadata.dataModelVersion=dataModelVersion;
+        newFactoryMetadata.dataModelVersion= dataModelVersionForStoring;
         return newFactoryMetadata;
     }
 

@@ -12,7 +12,6 @@ import de.factoryfx.data.validation.Validation;
 import de.factoryfx.data.validation.ValidationError;
 import javafx.beans.property.ReadOnlyStringProperty;
 import javafx.beans.property.SimpleStringProperty;
-import javafx.scene.Parent;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -181,7 +180,7 @@ public class Data {
             result=newInstanceSupplier.get();
         } else {
             try {
-                Constructor constructor = Data.this.getClass().getDeclaredConstructor(new Class[0]);
+                Constructor constructor = Data.this.getClass().getDeclaredConstructor();
                 constructor.setAccessible(true);
                 result = (Data) constructor.newInstance(new Object[0]);
             } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
@@ -201,7 +200,7 @@ public class Data {
         return all;
     }
 
-    //remove parents that are not in the mereg resul
+    //remove parents that are not in the merge result
     private void cleanUpParents(Set<Data> all) {
         for (Data data: all){
             data.parents.removeIf(parent -> !all.contains(parent));
@@ -699,7 +698,7 @@ public class Data {
 
         /**
          * -fix all data with same id should be same object
-         * -remove parents taht are no not tin the tree
+         * -remove parents that are no not tin the tree
          * only call on root
          * */
         public void fixDuplicatesAndParents() {
@@ -773,7 +772,7 @@ public class Data {
         public <T extends Data> T prepareUsableCopy() {
 
             T usableCopy = data.prepareUsableCopy();
-            //init ids, id couldt depend on parents, usablecopy must have init ids else a copy is broken;
+            //init ids, id could depend on parents, usable copy must have init ids else a copy is broken;
             for (Data child : usableCopy.internal().collectChildrenDeep()) {
                 child.getId();
                 child.setUsable();

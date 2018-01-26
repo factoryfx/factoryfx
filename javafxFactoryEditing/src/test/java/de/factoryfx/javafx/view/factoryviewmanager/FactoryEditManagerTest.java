@@ -1,20 +1,14 @@
 package de.factoryfx.javafx.view.factoryviewmanager;
 
-import de.factoryfx.data.attribute.types.StringAttribute;
 import de.factoryfx.data.merge.DataMerger;
 import de.factoryfx.data.merge.MergeDiffInfo;
 import de.factoryfx.data.storage.*;
 import de.factoryfx.data.storage.inmemory.InMemoryDataStorage;
-import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.factory.FactoryManager;
-import de.factoryfx.factory.SimpleFactoryBase;
-import de.factoryfx.factory.atrribute.FactoryReferenceAttribute;
-import de.factoryfx.factory.atrribute.FactoryReferenceListAttribute;
 import de.factoryfx.factory.exception.RethrowingFactoryExceptionHandler;
 import de.factoryfx.factory.testfactories.ExampleFactoryA;
 import de.factoryfx.factory.testfactories.ExampleFactoryB;
 import de.factoryfx.factory.testfactories.ExampleLiveObjectA;
-import de.factoryfx.factory.testfactories.ExampleLiveObjectB;
 import de.factoryfx.server.ApplicationServer;
 import de.factoryfx.server.rest.client.ApplicationServerRestClient;
 import org.junit.Assert;
@@ -22,12 +16,10 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.mockito.Mockito;
-import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
 import java.io.IOException;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 
 
@@ -83,6 +75,7 @@ public class FactoryEditManagerTest {
 
 
     @Test
+    @SuppressWarnings("unchecked")
     public void test_import_save_differentSystem() throws IOException {
 
         Path target = tmpFolder.newFile("fghfh.json").toPath();
@@ -140,7 +133,5 @@ public class FactoryEditManagerTest {
             Assert.assertNotNull(factoryEditManager.getLoadedFactory().get().referenceAttribute.get());
         }
 
-
-
-    };
+    }
 }

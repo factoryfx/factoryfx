@@ -3,7 +3,6 @@ package de.factoryfx.javafx.editor.attribute.builder;
 import de.factoryfx.data.Data;
 import de.factoryfx.data.attribute.Attribute;
 import de.factoryfx.javafx.editor.attribute.AttributeEditor;
-import de.factoryfx.javafx.editor.data.DataEditor;
 
 import java.util.List;
 import java.util.function.Consumer;

@@ -10,10 +10,10 @@ import de.factoryfx.data.storage.*;
 
 
 public class InMemoryDataStorage<R extends Data,S> implements DataStorage<R,S> {
-    private Map<String,DataAndStoredMetadata<R,S>> storage = new TreeMap<>();
-    private Map<String,DataAndScheduledMetadata<R,S>> future = new TreeMap<>();
+    private final Map<String,DataAndStoredMetadata<R,S>> storage = new TreeMap<>();
+    private final Map<String,DataAndScheduledMetadata<R,S>> future = new TreeMap<>();
     private String current;
-    private R initialFactory;
+    private final R initialFactory;
     private final ChangeSummaryCreator<R,S> changeSummaryCreator;
 
     public InMemoryDataStorage(R initialFactory, ChangeSummaryCreator<R,S> changeSummaryCreator){
@@ -46,7 +46,7 @@ public class InMemoryDataStorage<R extends Data,S> implements DataStorage<R,S> {
     @Override
     public void updateCurrentFactory(DataAndNewMetadata<R> update, String user, String comment, MergeDiffInfo<R> mergeDiff) {
         update.root.internal().checkUsable();
-        final StoredDataMetadata<S> storedDataMetadata = new StoredDataMetadata<S>(
+        final StoredDataMetadata<S> storedDataMetadata = new StoredDataMetadata<>(
                 LocalDateTime.now(),
                 UUID.randomUUID().toString(),
                 user,
@@ -70,7 +70,7 @@ public class InMemoryDataStorage<R extends Data,S> implements DataStorage<R,S> {
     @Override
     public void loadInitialFactory() {
         current = UUID.randomUUID().toString();
-        StoredDataMetadata metadata = new StoredDataMetadata(current, "System", "initial", current, 0,null);
+        StoredDataMetadata<S> metadata = new StoredDataMetadata<>(current, "System", "initial", current, 0,null);
         storage.put(current,new DataAndStoredMetadata<>(initialFactory, metadata));
     }
 
@@ -91,7 +91,7 @@ public class InMemoryDataStorage<R extends Data,S> implements DataStorage<R,S> {
 
     @Override
     public ScheduledDataMetadata<S> addFutureFactory(R futureFactory, NewScheduledDataMetadata futureFactoryMetadata, String user, String comment, MergeDiffInfo<R> mergeDiff) {
-        final ScheduledDataMetadata<S> storedFactoryMetadata = new ScheduledDataMetadata<S>(
+        final ScheduledDataMetadata<S> storedFactoryMetadata = new ScheduledDataMetadata<>(
             LocalDateTime.now(),
             UUID.randomUUID().toString(),
             user,

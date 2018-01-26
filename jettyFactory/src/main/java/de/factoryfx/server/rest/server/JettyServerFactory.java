@@ -1,18 +1,15 @@
 package de.factoryfx.server.rest.server;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import de.factoryfx.data.attribute.types.ObjectValueAttribute;
 import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.factory.atrribute.FactoryReferenceListAttribute;
-import org.eclipse.jetty.server.Handler;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
- *   Unusual inheritance api to support typesafe navigation.
+ *   Unusual inheritance api to support type-safe navigation.
  *  (alternative would be a factorylist but there is no common interface for resources)
  *
  *  usage example.

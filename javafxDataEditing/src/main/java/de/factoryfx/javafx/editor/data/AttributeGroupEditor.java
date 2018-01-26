@@ -11,8 +11,6 @@ import de.factoryfx.javafx.editor.attribute.AttributeEditor;
 import de.factoryfx.javafx.editor.attribute.AttributeEditorBuilder;
 import de.factoryfx.javafx.util.UniformDesign;
 import de.factoryfx.javafx.widget.Widget;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
@@ -28,7 +26,7 @@ import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-/** to edit attributes indepentend af the parent factory*/
+/** to edit attributes independent af the parent factory*/
 public class AttributeGroupEditor implements Widget {
     private final List<? extends Attribute<?,?>> attributeGroup;
     private final Data oldValue;

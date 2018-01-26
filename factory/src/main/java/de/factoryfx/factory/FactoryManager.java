@@ -1,7 +1,6 @@
 package de.factoryfx.factory;
 
 import java.util.*;
-import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -106,7 +105,7 @@ public class FactoryManager<V,L,R extends FactoryBase<L,V>> {
      * @param permissionChecker permissionChecker
      * @return MergeDiffInfo*/
     @SuppressWarnings("unchecked")
-    public MergeDiffInfo simulateUpdate(R commonVersion , R newVersion,  Function<String, Boolean> permissionChecker){
+    public MergeDiffInfo<R> simulateUpdate(R commonVersion , R newVersion,  Function<String, Boolean> permissionChecker){
         newVersion.internalFactory().loopDetector();
 
         DataMerger<R> dataMerger = new DataMerger<>(currentFactoryRoot.internal().copyFromRoot(), commonVersion, newVersion);

@@ -94,10 +94,7 @@ public class FileSystemDataStorage<R extends Data,S> implements DataStorage<R,S>
     @Override
     public void loadInitialFactory() {
         fileSystemFactoryStorageHistory.initFromFileSystem();
-        if (Files.exists(currentFactoryPath)){
-//            objectMapper.readValue(currentFactoryPath.toFile(),rootClass);
-//            objectMapper.readValue(currentFactoryPathMetadata.toFile(),StoredFactoryMetadata.class);
-        } else {
+        if (!Files.exists(currentFactoryPath)){
             NewDataMetadata metadata = new NewDataMetadata();
             metadata.baseVersionId= UUID.randomUUID().toString();
             DataAndNewMetadata<R> initialFactoryAndStorageMetadata = new DataAndNewMetadata<>(initialFactory,metadata);

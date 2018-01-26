@@ -5,8 +5,6 @@ import de.factoryfx.data.attribute.primitive.IntegerAttribute;
 import de.factoryfx.data.attribute.types.StringAttribute;
 import de.factoryfx.factory.SimpleFactoryBase;
 
-import java.util.function.Supplier;
-
 public class RestClientFactory<V> extends SimpleFactoryBase<RestClient,V> {
     public final BooleanAttribute ssl=new BooleanAttribute().labelText("ssl");
     public final StringAttribute host=new StringAttribute().labelText("host");

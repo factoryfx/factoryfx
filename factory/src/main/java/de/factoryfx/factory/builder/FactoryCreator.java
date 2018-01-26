@@ -2,8 +2,6 @@ package de.factoryfx.factory.builder;
 
 import de.factoryfx.factory.FactoryBase;
 
-import java.util.HashSet;
-import java.util.Set;
 import java.util.function.Function;
 
 public class FactoryCreator<V, L, F extends FactoryBase<L,V>> {

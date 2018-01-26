@@ -14,6 +14,8 @@ import java.util.concurrent.TimeUnit;
  * metadata for a future data
  *
  * implements Delayed to make it's easy usable width a DelayQueue
+ *
+ * Note: this class has a natural ordering that is inconsistent with equals
  */
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class ScheduledDataMetadata<T> extends StoredDataMetadata<T> implements Delayed{

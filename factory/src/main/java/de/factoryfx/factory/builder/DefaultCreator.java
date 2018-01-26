@@ -1,7 +1,5 @@
 package de.factoryfx.factory.builder;
 
-import de.factoryfx.data.Data;
-import de.factoryfx.data.attribute.Attribute;
 import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.factory.atrribute.FactoryReferenceAttribute;
 import de.factoryfx.factory.atrribute.FactoryReferenceListAttribute;

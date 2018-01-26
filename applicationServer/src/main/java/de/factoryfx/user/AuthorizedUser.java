@@ -31,10 +31,7 @@ public class AuthorizedUser {
     }
 
     public boolean checkPermissionValid(String permission){
-        if (permission!=null && !permissions.contains(permission)){
-            return false;
-        }
-        return true;
+        return permission == null || permissions.contains(permission);
     }
 
     public Locale getLocale() {

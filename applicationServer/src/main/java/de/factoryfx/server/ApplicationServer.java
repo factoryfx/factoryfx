@@ -1,11 +1,8 @@
 package de.factoryfx.server;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 import java.util.function.Function;
 
-import de.factoryfx.data.merge.AttributeDiffInfo;
 import de.factoryfx.data.merge.DataMerger;
 import de.factoryfx.data.merge.MergeDiffInfo;
 import de.factoryfx.factory.FactoryBase;

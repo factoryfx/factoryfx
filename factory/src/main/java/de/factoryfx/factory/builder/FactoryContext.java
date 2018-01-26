@@ -3,8 +3,6 @@ package de.factoryfx.factory.builder;
 import de.factoryfx.factory.FactoryBase;
 
 import java.util.*;
-import java.util.function.Consumer;
-import java.util.function.Function;
 import java.util.function.Predicate;
 
 public class FactoryContext<V> {
@@ -15,8 +13,7 @@ public class FactoryContext<V> {
     public <L, F extends FactoryBase<L,V>> F get(Predicate<FactoryCreator<V,?,?>> filter){
         Optional<FactoryCreator<V,?,?>> any = factoryCreators.stream().filter(filter).findAny();
         if (any.isPresent()){
-            F factoryBases = (F) any.get().create(this);
-            return factoryBases;
+            return (F) any.get().create(this);
         }
         return null;
     }

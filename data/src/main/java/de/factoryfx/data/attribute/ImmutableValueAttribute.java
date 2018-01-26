@@ -119,7 +119,7 @@ public abstract class ImmutableValueAttribute<T,A extends Attribute<T,A>> extend
         set(value);
     }
 
-    /** alternative to equals on value, typesafe , less verbose, without worrying about hidden contracts
+    /** alternative to equals on value, type-safe , less verbose, without worrying about hidden contracts
      * @param value compare value
      * @return true if equals
      */

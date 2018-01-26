@@ -43,7 +43,7 @@ public class ValueListAttribute<T, A extends Attribute<List<T>,A>> extends Immut
 
     @Override
     public String getDisplayText() {
-        return new CollectionAttributeUtil<>(get(), t -> t.toString()).getDisplayText();
+        return new CollectionAttributeUtil<>(get(), Object::toString).getDisplayText();
     }
 
     @Override

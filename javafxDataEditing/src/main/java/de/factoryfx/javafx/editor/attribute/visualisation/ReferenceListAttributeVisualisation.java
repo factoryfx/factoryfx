@@ -2,14 +2,12 @@ package de.factoryfx.javafx.editor.attribute.visualisation;
 
 import de.factoryfx.data.Data;
 import de.factoryfx.javafx.editor.attribute.ListAttributeEditorVisualisation;
-import de.factoryfx.javafx.editor.data.DataEditor;
 import de.factoryfx.javafx.util.UniformDesign;
 import de.factoryfx.javafx.widget.datalistedit.ReferenceListAttributeEditWidget;
 import de.factoryfx.javafx.widget.table.TableControlWidget;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.DoubleBinding;
 import javafx.beans.property.SimpleStringProperty;
-import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.scene.Node;

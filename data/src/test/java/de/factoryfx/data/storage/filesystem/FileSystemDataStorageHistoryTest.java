@@ -1,6 +1,5 @@
 package de.factoryfx.data.storage.filesystem;
 
-import java.net.MalformedURLException;
 import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.UUID;
@@ -33,7 +32,7 @@ public class FileSystemDataStorageHistoryTest {
 
 
     @Test
-    public void test_empty() throws MalformedURLException {
+    public void test_empty() {
         FileSystemFactoryStorageHistory<ExampleDataA,Void> fileSystemFactoryStorage = new FileSystemFactoryStorageHistory<>(Paths.get(folder.getRoot().toURI()),createSerialisation());
         fileSystemFactoryStorage.initFromFileSystem();
 
@@ -41,33 +40,33 @@ public class FileSystemDataStorageHistoryTest {
     }
 
     @Test
-    public void test_add() throws MalformedURLException {
+    public void test_add() {
         FileSystemFactoryStorageHistory<ExampleDataA,Void> fileSystemFactoryStorage = new FileSystemFactoryStorageHistory<>(Paths.get(folder.getRoot().toURI()),createSerialisation());
         fileSystemFactoryStorage.initFromFileSystem();
 
-        StoredDataMetadata metadata = createStoredDataMetadata(UUID.randomUUID().toString());
+        StoredDataMetadata<Void> metadata = createStoredDataMetadata(UUID.randomUUID().toString());
         fileSystemFactoryStorage.updateHistory(metadata,new ExampleDataA());
 
         Assert.assertEquals(1,fileSystemFactoryStorage.getHistoryFactoryList().size());
     }
 
     @Test
-    public void test_multi_add() throws MalformedURLException {
+    public void test_multi_add() {
         FileSystemFactoryStorageHistory<ExampleDataA,Void> fileSystemFactoryStorage = new FileSystemFactoryStorageHistory<>(Paths.get(folder.getRoot().toURI()),createSerialisation());
         fileSystemFactoryStorage.initFromFileSystem();
 
         {
-            StoredDataMetadata metadata = createStoredDataMetadata(UUID.randomUUID().toString());
+            StoredDataMetadata<Void> metadata = createStoredDataMetadata(UUID.randomUUID().toString());
             fileSystemFactoryStorage.updateHistory(metadata, new ExampleDataA());
         }
 
         {
-            StoredDataMetadata metadata = createStoredDataMetadata(UUID.randomUUID().toString());
+            StoredDataMetadata<Void> metadata = createStoredDataMetadata(UUID.randomUUID().toString());
             fileSystemFactoryStorage.updateHistory(metadata, new ExampleDataA());
         }
 
         {
-            StoredDataMetadata metadata = createStoredDataMetadata(UUID.randomUUID().toString());
+            StoredDataMetadata<Void> metadata = createStoredDataMetadata(UUID.randomUUID().toString());
             fileSystemFactoryStorage.updateHistory(metadata, new ExampleDataA());
         }
 
@@ -75,11 +74,11 @@ public class FileSystemDataStorageHistoryTest {
     }
 
     @Test
-    public void test_restore() throws MalformedURLException {
+    public void test_restore() {
         FileSystemFactoryStorageHistory<ExampleDataA,Void> fileSystemFactoryStorage = new FileSystemFactoryStorageHistory<>(Paths.get(folder.getRoot().toURI()),createSerialisation());
         fileSystemFactoryStorage.initFromFileSystem();
 
-        StoredDataMetadata metadata = createStoredDataMetadata(UUID.randomUUID().toString());
+        StoredDataMetadata<Void> metadata = createStoredDataMetadata(UUID.randomUUID().toString());
         fileSystemFactoryStorage.updateHistory(metadata,new ExampleDataA());
         Assert.assertEquals(1,fileSystemFactoryStorage.getHistoryFactoryList().size());
 

@@ -34,7 +34,7 @@ public abstract class AssistantBase<I,R> implements Consumer<I> {
     }
 
     @Override
-    protected final void finalize() throws Throwable {
+    protected final void finalize(){
         dispose();
     }
 

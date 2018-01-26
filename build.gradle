@@ -44,7 +44,7 @@ subprojects {
     }
 
     group = 'io.github.factoryfx'
-    version = '0.8.3'
+    version = '0.8.4'
 
     if (project.hasProperty('secretKeyRingFileSourceURL')) {
         //workaround  to get key  file to the plugin
@@ -249,30 +249,6 @@ project(':oracledbStorage') {
 
 }
 
-project(':adminUiAngularjs') {
-
-    dependencies {
-        compile 'com.google.javascript:closure-compiler:v20160315'
-        compile 'org.jsoup:jsoup:1.8.3'
-
-        compile 'com.googlecode.java-diff-utils:diffutils:1.3.0'
-
-        compile project(":jettyFactory")
-        compile project(":applicationServer")
-        testCompile project(":testutils")
-        testCompile group: 'ch.qos.logback', name: 'logback-classic', version: '1.1.7'
-    }
-
-}
-
-project(':testutils') {
-    uploadArchives.enabled = false
-    dependencies {
-
-    }
-
-}
-
 project(':jettyFactory') {
 
     dependencies {
@@ -303,9 +279,10 @@ project(':restutilClient') {
 project(':example') {
     uploadArchives.enabled = false
     dependencies {
-        compile project(":adminUiAngularjs")
+        compile project(":javafxFactoryEditing")
+        compile project(":jettyFactory")
+        compile project(":applicationServerRestServer")
         compile project(":factory")
-        compile project(":testutils")
         compile project(":applicationServer")
         compile group: 'ch.qos.logback', name: 'logback-classic', version: '1.1.7'
     }
@@ -330,8 +307,8 @@ project(':javafxFactoryEditing') {
     dependencies {
         compile project(":factory")
         compile project(":applicationServerRestClient")
-        compile project(":applicationServer");
-        compile project(":javafxDataEditing");
+        compile project(":applicationServer")
+        compile project(":javafxDataEditing")
         testCompile project(":testfactories")
     }
 
@@ -401,23 +378,10 @@ project(':docu') {
         compile project(":applicationServer")
         compile project(":jettyFactory")
         compile project(":restutilClient")
-        compile project(':postgresqlStorage');
+        compile project(':postgresqlStorage')
         compile group: 'io.dropwizard.metrics', name: 'metrics-jetty9', version: '3.2.4'
         compile 'ru.yandex.qatools.embed:postgresql-embedded:1.15'
         compile group: 'ch.qos.logback', name: 'logback-classic', version: '1.1.7'
-    }
-
-}
-
-project(':vuejsFactoryEditing') {
-    uploadArchives.enabled = false
-    dependencies {
-        compile project(":jettyFactory")
-        compile project(":applicationServer")
-        testCompile project(":testutils")
-        testCompile project(":testfactories")
-        testCompile group: 'ch.qos.logback', name: 'logback-classic', version: '1.1.7'
-        compile project(":applicationServerRestServer")
     }
 
 }

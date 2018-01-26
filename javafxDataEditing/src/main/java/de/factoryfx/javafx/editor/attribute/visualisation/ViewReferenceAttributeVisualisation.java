@@ -2,7 +2,6 @@ package de.factoryfx.javafx.editor.attribute.visualisation;
 
 import de.factoryfx.data.Data;
 import de.factoryfx.javafx.editor.attribute.ValueAttributeEditorVisualisation;
-import de.factoryfx.javafx.editor.data.DataEditor;
 import de.factoryfx.javafx.util.UniformDesign;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.StringBinding;

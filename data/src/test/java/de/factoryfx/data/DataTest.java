@@ -375,8 +375,8 @@ public class DataTest {
         dataB = dataA.referenceAttribute.get();
         dataC = dataB.referenceAttributeC.get();
 
-        Assert.assertEquals(dataB,dataC.internal().getParent());
-        Assert.assertEquals(dataA,dataB.internal().getParent());
+        Assert.assertEquals(dataB,dataC.internal().getParents().iterator().next());
+        Assert.assertEquals(dataA,dataB.internal().getParents().iterator().next());
 
     }
 

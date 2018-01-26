@@ -166,7 +166,7 @@ public abstract class ReferenceBaseAttribute<T extends Data, U, A extends Refere
     private Class<T> clazz;
     /**setup value selection and new value adding for user editing
      * @param clazz class
-     * @return sdelf*/
+     * @return self*/
     @SuppressWarnings("unchecked")
     protected A setup(Class<T> clazz){
         this.clazz=clazz;//lazy creation for performance

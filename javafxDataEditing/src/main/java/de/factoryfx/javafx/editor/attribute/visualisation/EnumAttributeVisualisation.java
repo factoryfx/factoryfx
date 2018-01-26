@@ -7,8 +7,6 @@ import de.factoryfx.javafx.editor.attribute.ValueAttributeEditorVisualisation;
 import de.factoryfx.javafx.util.UniformDesign;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleObjectProperty;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
