@@ -23,6 +23,6 @@ public class UniqueListBy<T, V> implements Validation<List<T>> {
                 error = true;
             }
         }
-        return new ValidationResult(error,new LanguageText().en("List contains duplicates entries"));
+        return new ValidationResult(error,new LanguageText().en("List contains duplicate entries").de("Liste enthält doppelte Einträge"));
     }
 }
