@@ -177,7 +177,7 @@ public abstract class ReferenceBaseAttribute<T extends Data, U, A extends Refere
         return clazz;
     }
 
-    /** workaround for nested generic parameter e.g.: Class&lt;TypA&lt;TypB&gt;&gt;  <br>
+    /** workaround for java limitations width nested generic parameter e.g.: Class&lt;TypA&lt;TypB&gt;&gt;  <br>
      * if possible use {@link #setup} instead
      * @param clazz class
      * @return self
@@ -189,5 +189,24 @@ public abstract class ReferenceBaseAttribute<T extends Data, U, A extends Refere
         }
         return setup((Class<T>)clazz);
     }
+
+    /**
+     * reference is a selection from a catalogue
+     * @return self
+     */
+    @SuppressWarnings("unchecked")
+    public A catalogue(){
+        catalogue=true;
+        setCopySemantic(CopySemantic.SELF);
+        return (A)this;
+    }
+
+    @JsonIgnore
+    public boolean internal_isCatalogue(){
+        return catalogue;
+    }
+
+    private boolean catalogue =false;
+
 
 }

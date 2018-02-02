@@ -145,6 +145,7 @@ public class ReferenceListAttributeEditWidget<T extends Data> implements Widget 
         copyButton.setOnAction(event -> {
             referenceListAttribute.add(tableView.getSelectionModel().getSelectedItem().utility().semanticCopy());
         });
+        selectButton.setDisable(!isUserEditable /*|| !isUserCopyAble*/);
 
         HBox buttons = new HBox();
         buttons.setAlignment(Pos.CENTER_LEFT);
