@@ -195,18 +195,18 @@ public abstract class ReferenceBaseAttribute<T extends Data, U, A extends Refere
      * @return self
      */
     @SuppressWarnings("unchecked")
-    public A catalogue(){
-        catalogue=true;
+    public A catalogueBased(){
+        catalogueBased=true;
         setCopySemantic(CopySemantic.SELF);
         return (A)this;
     }
 
     @JsonIgnore
-    public boolean internal_isCatalogue(){
-        return catalogue;
+    public boolean internal_isCatalogueBased(){
+        return catalogueBased;
     }
 
-    private boolean catalogue =false;
+    private boolean catalogueBased =false;
 
 
 }
