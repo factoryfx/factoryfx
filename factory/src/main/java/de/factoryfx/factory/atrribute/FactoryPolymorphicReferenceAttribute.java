@@ -6,9 +6,7 @@ import de.factoryfx.data.attribute.ReferenceAttribute;
 import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.factory.PolymorphicFactory;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Attribute for polymorphic Reference.
@@ -35,6 +33,8 @@ public class FactoryPolymorphicReferenceAttribute<L> extends ReferenceAttribute<
         return get().internalFactory().instance();
     }
 
+    private List<Class> possibleFactoriesClasses;
+
 
     /**
      * workaround: if possibleFactoriesClasses has generic parameter the normal setup method doesn't work
@@ -45,6 +45,7 @@ public class FactoryPolymorphicReferenceAttribute<L> extends ReferenceAttribute<
     @SuppressWarnings("unchecked")
     @SafeVarargs
     public final FactoryPolymorphicReferenceAttribute<L> setupUnsafe(Class liveObjectClass, Class... possibleFactoriesClasses){
+        this.possibleFactoriesClasses=Arrays.asList(possibleFactoriesClasses);
         for (Class clazz: possibleFactoriesClasses){
             if (!FactoryBase.class.isAssignableFrom(clazz)){
                 throw new IllegalArgumentException("parameter must be a factory: "+clazz);
@@ -62,6 +63,8 @@ public class FactoryPolymorphicReferenceAttribute<L> extends ReferenceAttribute<
     @SuppressWarnings("unchecked")
     @SafeVarargs
     public final FactoryPolymorphicReferenceAttribute<L> setup(Class<L> liveObjectClass, Class<? extends PolymorphicFactory<?>>... possibleFactoriesClasses){
+        this.possibleFactoriesClasses=Arrays.asList(possibleFactoriesClasses);
+
         this.possibleValueProvider(data -> {
             Set<FactoryBase<L, ?>> result = new HashSet<>();
             for (Data factory: root.internal().collectChildrenDeep()){
@@ -103,5 +106,9 @@ public class FactoryPolymorphicReferenceAttribute<L> extends ReferenceAttribute<
     }
 
 
+    /**intended to be used from code generators*/
+    public List<Class> internal_possibleFactoriesClasses(){
+        return possibleFactoriesClasses;
+    }
 
 }
