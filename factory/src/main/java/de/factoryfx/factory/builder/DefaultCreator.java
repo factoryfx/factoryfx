@@ -1,9 +1,12 @@
 package de.factoryfx.factory.builder;
 
 import de.factoryfx.factory.FactoryBase;
+import de.factoryfx.factory.atrribute.FactoryPolymorphicReferenceAttribute;
 import de.factoryfx.factory.atrribute.FactoryReferenceAttribute;
 import de.factoryfx.factory.atrribute.FactoryReferenceListAttribute;
 
+import java.util.List;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 public class DefaultCreator<V,F extends FactoryBase<?,V>> implements Function<FactoryContext<V>, F> {
@@ -33,6 +36,16 @@ public class DefaultCreator<V,F extends FactoryBase<?,V>> implements Function<Fa
                     validateAttributeClass(attributeVariableName, clazz);
                     factoryReferenceAttribute.set(context.getList(clazz));
                 }
+                if (attribute instanceof FactoryPolymorphicReferenceAttribute){
+                    FactoryPolymorphicReferenceAttribute factoryReferenceAttribute = (FactoryPolymorphicReferenceAttribute) attribute;
+                    for (Class<? extends FactoryBase> possibleClazz: (List<Class>)factoryReferenceAttribute.internal_possibleFactoriesClasses()){
+                        if (context.anyMatch(possibleClazz)){
+                            factoryReferenceAttribute.set(context.get(possibleClazz));
+                            break;
+                        }
+                    }
+                }
+
             });
             return result;
         } catch (InstantiationException e) {

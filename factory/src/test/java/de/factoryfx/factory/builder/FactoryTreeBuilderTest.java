@@ -1,9 +1,14 @@
 package de.factoryfx.factory.builder;
 
 import de.factoryfx.data.jackson.ObjectMapperBuilder;
+import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.factory.SimpleFactoryBase;
+import de.factoryfx.factory.atrribute.FactoryPolymorphicReferenceAttribute;
 import de.factoryfx.factory.atrribute.FactoryReferenceAttribute;
 import de.factoryfx.factory.testfactories.*;
+import de.factoryfx.factory.testfactories.poly.ErrorPrinterFactory;
+import de.factoryfx.factory.testfactories.poly.OutPrinterFactory;
+import de.factoryfx.factory.testfactories.poly.Printer;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -111,5 +116,24 @@ public class FactoryTreeBuilderTest {
         Assert.assertNotEquals(root.referenceAttribute1.get(),root.referenceAttribute2.get());
 
     }
+
+
+    public static class ExamplePolymorphic extends FactoryBase<Void,Void>{
+        public final FactoryPolymorphicReferenceAttribute<Printer> attribute = new FactoryPolymorphicReferenceAttribute<>(Printer.class, ErrorPrinterFactory.class, OutPrinterFactory.class);
+    }
+
+    @Test
+    public void test_polymorphic(){
+        FactoryTreeBuilder<Void,Void,ExamplePolymorphic> factoryTreeBuilder = new FactoryTreeBuilder<>(ExamplePolymorphic.class);
+
+        factoryTreeBuilder.addFactory(ExamplePolymorphic.class, Scope.SINGLETON);
+
+        factoryTreeBuilder.addFactory(ErrorPrinterFactory.class, Scope.SINGLETON);
+
+        ExamplePolymorphic root = factoryTreeBuilder.buildTree();
+        Assert.assertNotNull(root.attribute.get());
+
+    }
+
 
 }

@@ -37,4 +37,8 @@ public class FactoryContext<V> {
         factoryCreators.stream().filter(fc -> fc.match(clazz)).forEach(vFactoryCreator -> result.add((F) vFactoryCreator.create(FactoryContext.this)));
         return result;
     }
+
+    public <L, F extends FactoryBase<L,V>> boolean anyMatch(Class<F> clazz){
+        return factoryCreators.stream().anyMatch(fc -> fc.match(clazz));
+    }
 }

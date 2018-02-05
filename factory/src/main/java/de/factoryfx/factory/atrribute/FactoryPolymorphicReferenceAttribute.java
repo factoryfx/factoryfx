@@ -26,6 +26,12 @@ public class FactoryPolymorphicReferenceAttribute<L> extends ReferenceAttribute<
         super();
     }
 
+    @SafeVarargs
+    public FactoryPolymorphicReferenceAttribute(Class<L> liveObjectClass, Class<? extends PolymorphicFactory<?>>... possibleFactoriesClasses) {
+        super();
+        setup(liveObjectClass,possibleFactoriesClasses);
+    }
+
     public L instance(){
         if (get()==null){
             return null;
@@ -106,7 +112,10 @@ public class FactoryPolymorphicReferenceAttribute<L> extends ReferenceAttribute<
     }
 
 
-    /**intended to be used from code generators*/
+    /**
+     * intended to be used from code generators
+     * @return list of possible classes
+     * */
     public List<Class> internal_possibleFactoriesClasses(){
         return possibleFactoriesClasses;
     }
