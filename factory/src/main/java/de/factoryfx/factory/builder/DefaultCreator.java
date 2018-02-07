@@ -48,9 +48,7 @@ public class DefaultCreator<V,F extends FactoryBase<?,V>> implements Function<Fa
 
             });
             return result;
-        } catch (InstantiationException e) {
-            throw new RuntimeException(e);
-        } catch (IllegalAccessException e) {
+        } catch (InstantiationException | IllegalAccessException e) {
             throw new RuntimeException(e);
         }
     }
