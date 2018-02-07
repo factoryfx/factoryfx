@@ -39,7 +39,7 @@ public class FactoryPolymorphicReferenceAttribute<L> extends ReferenceAttribute<
         return get().internalFactory().instance();
     }
 
-    private List<Class> possibleFactoriesClasses;
+    private List<Class<?>> possibleFactoriesClasses;
 
 
     /**
@@ -116,7 +116,7 @@ public class FactoryPolymorphicReferenceAttribute<L> extends ReferenceAttribute<
      * intended to be used from code generators
      * @return list of possible classes
      * */
-    public List<Class> internal_possibleFactoriesClasses(){
+    public List<Class<?>> internal_possibleFactoriesClasses(){
         return possibleFactoriesClasses;
     }
 

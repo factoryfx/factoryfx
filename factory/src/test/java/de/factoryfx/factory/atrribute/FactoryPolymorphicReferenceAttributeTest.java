@@ -18,6 +18,8 @@ public class FactoryPolymorphicReferenceAttributeTest {
     public void test_json(){
         FactoryPolymorphicReferenceAttribute<Printer> attribute = new FactoryPolymorphicReferenceAttribute<>();
         attribute.set(new ErrorPrinterFactory());
+
+        System.out.println(ObjectMapperBuilder.build().writeValueAsString(attribute));
         ObjectMapperBuilder.build().copy(attribute);
     }
 

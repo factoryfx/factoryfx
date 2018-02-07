@@ -3,15 +3,18 @@ package de.factoryfx.server.rest.server;
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.NetworkTrafficServerConnector;
 import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.util.ssl.SslContextFactory;
 
 public class HttpServerConnectorCreator {
 
     private final String host;
     private final int port;
+    private final SslContextFactory sslContextFactory;
 
-    public HttpServerConnectorCreator(String host, int port) {
+    public HttpServerConnectorCreator(String host, int port, SslContextFactory sslContextFactory) {
         this.host = host;
         this.port = port;
+        this.sslContextFactory= sslContextFactory;
     }
 
     public void addToServer(Server server) {
@@ -22,7 +25,14 @@ public class HttpServerConnectorCreator {
                     return;
             }
         }
-        NetworkTrafficServerConnector connector = new NetworkTrafficServerConnector(server);
+
+        NetworkTrafficServerConnector connector;
+        if (sslContextFactory!=null){
+            connector = new NetworkTrafficServerConnector(server,sslContextFactory);
+        } else {
+            connector = new NetworkTrafficServerConnector(server);
+        }
+
         connector.setPort(port);
         connector.setReuseAddress(true);
         connector.setHost(host);

@@ -37,7 +37,7 @@ public class JettyServerTest {
     @Test
     public void test_multiple_resources_samepath() throws InterruptedException {
         List<HttpServerConnectorCreator> connectors= new ArrayList<>();
-        connectors.add(new HttpServerConnectorCreator("localhost",8005));
+        connectors.add(new HttpServerConnectorCreator("localhost",8005,null));
         JettyServer jettyServer = new JettyServer(connectors, Arrays.asList(new Resource1(), new Resource2()));
         jettyServer.start();
 //        Thread.sleep(1000);
@@ -65,7 +65,7 @@ public class JettyServerTest {
     @Test
     public void test_recreate() throws InterruptedException {
         List<HttpServerConnectorCreator> connectors= new ArrayList<>();
-        connectors.add(new HttpServerConnectorCreator("localhost",8005));
+        connectors.add(new HttpServerConnectorCreator("localhost",8005,null));
         JettyServer jettyServer = new JettyServer(connectors, Arrays.asList(new Resource("Hello")));
         jettyServer.start();
 //        Thread.sleep(1000);
@@ -82,10 +82,10 @@ public class JettyServerTest {
     public void test_addRemoveConnector() throws InterruptedException {
 
         List<HttpServerConnectorCreator> connectors= new ArrayList<>();
-        connectors.add(new HttpServerConnectorCreator("localhost",8005));
+        connectors.add(new HttpServerConnectorCreator("localhost",8005,null));
         List<HttpServerConnectorCreator> moreConnectors= new ArrayList<>();
-        moreConnectors.add(new HttpServerConnectorCreator("localhost",8005));
-        moreConnectors.add(new HttpServerConnectorCreator("localhost",8006));
+        moreConnectors.add(new HttpServerConnectorCreator("localhost",8005,null));
+        moreConnectors.add(new HttpServerConnectorCreator("localhost",8006,null));
         List<Object> resources = Arrays.asList(new Resource("Hello"));
 
         JettyServer jettyServer = new JettyServer(connectors, resources);
@@ -139,7 +139,7 @@ public class JettyServerTest {
     @Test
     public void test_lateResponse() throws InterruptedException, ExecutionException, TimeoutException {
         List<HttpServerConnectorCreator> connectors= new ArrayList<>();
-        connectors.add(new HttpServerConnectorCreator("localhost",8005));
+        connectors.add(new HttpServerConnectorCreator("localhost",8005,null));
         JettyServer jettyServer = new JettyServer(connectors, Arrays.asList(new LateResponse()));
         jettyServer.start();
 //        Thread.sleep(1000);
