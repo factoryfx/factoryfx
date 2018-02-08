@@ -425,9 +425,31 @@ public class Data {
         return (T)this;
     }
 
+    /**
+     * after serialisation or programmatically creation this mus be called first before using the object<br>
+     * to:<br>
+     * -fix jackson wrong deserialization (metadata ==null)<br>
+     * -propagate root/parent node to all children (for validation etc)<br>
+     * -init ids
+     *<br>
+     * unfortunately we must create a copy and can't make the same object usable(which we tried but failed)<br>
+     *<br>
+     * only call on root<br>
+     *<br>
+     * @param <T> type
+     * @return usable copy
+     *
+     */
     private <T extends Data> T prepareUsableCopy() {
-        return reconstructMetadataDeepRoot();
+        T usableCopy = reconstructMetadataDeepRoot();
+        //init ids, id could depend on parents, usable copy must have init ids else a copy is broken;
+        for (Data child : usableCopy.internal().collectChildrenDeep()) {
+            child.getId();
+            child.setUsable();
+        }
+        return usableCopy;
     }
+
     private boolean isUsable=false;
     @JsonIgnore
     private boolean isUsable(){
@@ -535,6 +557,15 @@ public class Data {
          */
         public <T extends Data> T semanticCopy(){
             return data.semanticCopy();
+        }
+
+        /**
+         * see: {@link Data#prepareUsableCopy}
+         *
+         * @return usableCopy
+         */
+        public <T extends Data> T prepareUsableCopy() {
+            return data.prepareUsableCopy();
         }
 
     }
@@ -755,29 +786,12 @@ public class Data {
         }
 
         /**
-         * after serialisation or programmatically creation this mus be called first before using the object<br>
-         * to:<br>
-         * -fix jackson wrong deserialization (metadata ==null)<br>
-         * -propagate root/parent node to all children (for validation etc)<br>
-         * -init ids
-         *<br>
-         * unfortunately we must create a copy and can't make the same object usable(which we tried but failed)<br>
-         *<br>
-         * only call on root<br>
-         *<br>
-         * @param <T> type
-         * @return usable copy
+         * see: {@link Data#prepareUsableCopy}
+         *
+         * @return usableCopy
          */
-        @SuppressWarnings("unchecked")
         public <T extends Data> T prepareUsableCopy() {
-
-            T usableCopy = data.prepareUsableCopy();
-            //init ids, id could depend on parents, usable copy must have init ids else a copy is broken;
-            for (Data child : usableCopy.internal().collectChildrenDeep()) {
-                child.getId();
-                child.setUsable();
-            }
-            return usableCopy;
+            return data.prepareUsableCopy();
         }
 
         /** only call on root*/
@@ -832,11 +846,11 @@ public class Data {
         }
 
         /**
-         * see {@link #prepareUsableCopy }
+         * see {@link Data#prepareUsableCopy }
          */
         public void checkUsable() {
             if (!isUsable()){
-                throw new IllegalStateException("passed data is not a usableCopy use prepareUsableCopy(); e.g.:\n  data=data.internal().prepareUsableCopy();");
+                throw new IllegalStateException("passed data is not a usableCopy use prepareUsableCopy(); e.g.:\n  data=data.utility().prepareUsableCopy();");
             }
         }
 

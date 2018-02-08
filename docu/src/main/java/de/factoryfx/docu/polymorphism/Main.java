@@ -12,6 +12,7 @@ public class Main {
         RootFactory root = new RootFactory();
         //update to print system.out
         root.printer.set(new DefaultPrinterFactory());
+        root=root.utility().prepareUsableCopy();
 
         ApplicationServer<Void,Root,RootFactory,Void> applicationServer = new ApplicationServer<>(new FactoryManager<>(new RethrowingFactoryExceptionHandler<>()),new InMemoryDataStorage<>(root));
         applicationServer.start();

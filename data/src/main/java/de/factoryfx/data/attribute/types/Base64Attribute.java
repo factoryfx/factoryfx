@@ -41,4 +41,18 @@ public class Base64Attribute extends ImmutableValueAttribute<String,Base64Attrib
         return Objects.equals(get(), value);
     }
 
+    private String fileExtension;
+    /* ui hint what data should be stored in the attribute*/
+    public Base64Attribute fileExtension(String fileExtension){
+        this.fileExtension=fileExtension;
+        return this;
+    }
+
+    public String internal_getFileExtension(){
+        return this.fileExtension;
+    }
+
+
+
+
 }

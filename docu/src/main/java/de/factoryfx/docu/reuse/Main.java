@@ -11,6 +11,7 @@ public class Main {
     public static void main(String[] args) {
         RootFactory root = new RootFactory();
         root.stringAttribute.set("1");
+        root=root.utility().prepareUsableCopy();
 
         long start=System.currentTimeMillis();
         ApplicationServer<Void,Root,RootFactory,Void> applicationServer = new ApplicationServer<>(new FactoryManager<>(new RethrowingFactoryExceptionHandler<>()),new InMemoryDataStorage<>(root));

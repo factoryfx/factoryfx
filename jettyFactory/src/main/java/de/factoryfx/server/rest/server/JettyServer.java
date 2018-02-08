@@ -27,7 +27,8 @@ public class JettyServer {
     private final UpdateableServlet rootServlet;
     private boolean disposed = false;
 
-    public JettyServer(List<HttpServerConnectorCreator> connectors, List<Object> resources) {
+
+    public JettyServer(List<HttpServerConnectorCreator> connectors, List<Object> resources, List<Handler> additionalHandlers) {
         server=new org.eclipse.jetty.server.Server();
         currentConnectors.addAll(connectors);
         for (HttpServerConnectorCreator creator : currentConnectors) {
@@ -54,13 +55,14 @@ public class JettyServer {
         gzipHandler.setHandler(contextHandler);
 
         HandlerCollection handlers = new HandlerList();
-        additionalHandlers().forEach(handler -> handlers.addHandler(handler));
+        additionalHandlers.forEach(handlers::addHandler);
         handlers.addHandler(gzipHandler);
         server.setHandler(handlers);
     }
 
-    protected List<Handler> additionalHandlers(){
-        return new ArrayList<>();
+
+    public JettyServer(List<HttpServerConnectorCreator> connectors, List<Object> resources) {
+        this(connectors,resources,new ArrayList<>());
     }
 
     private ResourceConfig jerseySetup(List<Object>  resource) {

@@ -17,17 +17,13 @@ import java.util.List;
 /*
     collect monitoring data with metrics library
  */
-public class InstrumentedJettyServer extends JettyServer{
+public class InstrumentedJettyServer{
 
-    private MetricRegistry metricRegistry;
-    public InstrumentedJettyServer(List<HttpServerConnectorCreator> connectors, List<Object> resources) {
-        super(connectors, resources);
-    }
-
-    @Override
-    protected List<Handler> additionalHandlers(){
-        metricRegistry= new MetricRegistry();
-        return Arrays.asList(new InstrumentedHandler(metricRegistry,"monitoring example"));
+    private final MetricRegistry metricRegistry;
+    private final JettyServer jettyServer;
+    public InstrumentedJettyServer(JettyServer jettyServer, MetricRegistry metricRegistry) {
+        this.jettyServer=jettyServer;
+        this.metricRegistry=metricRegistry;
     }
 
     public void acceptVisitor(ServerVisitor serverVisitor){
@@ -42,5 +38,18 @@ public class InstrumentedJettyServer extends JettyServer{
         } catch (UnsupportedEncodingException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public void start() {
+        jettyServer.start();
+    }
+
+    public void stop() {
+        jettyServer.stop();
+    }
+
+    public InstrumentedJettyServer recreate(List<HttpServerConnectorCreator> instances, List<Object> simpleResources) {
+        jettyServer.recreate(instances,simpleResources);
+        return this;
     }
 }

@@ -24,6 +24,8 @@ public class Main {
         jettyServer.connectors.add(httpServerConnectorFactory);
         rootFactory.server.set(jettyServer);
         jettyServer.factoryReferenceAttribute.set(new SimpleResourceFactory());
+        rootFactory=rootFactory.utility().prepareUsableCopy();
+
 
         ApplicationServer<ServerVisitor,Root,RootFactory,Void> applicationServer = new ApplicationServer<>(new FactoryManager<>(new RethrowingFactoryExceptionHandler<>()),new InMemoryDataStorage<>(rootFactory));
         applicationServer.start();

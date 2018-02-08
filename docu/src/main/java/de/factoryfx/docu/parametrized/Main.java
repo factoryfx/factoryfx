@@ -13,6 +13,7 @@ public class Main {
         PrinterCreatorFactory printerCreatorFactory = new PrinterCreatorFactory();
         printerCreatorFactory.text.set("bla");
         root.printerCreator.set(printerCreatorFactory);
+        root=root.utility().prepareUsableCopy();
 
         ApplicationServer<Void,Root,RootFactory,Void> applicationServer = new ApplicationServer<>(new FactoryManager<>(new RethrowingFactoryExceptionHandler<>()),new InMemoryDataStorage<>(root));
         applicationServer.start();

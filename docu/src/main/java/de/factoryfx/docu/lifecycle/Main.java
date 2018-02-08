@@ -9,6 +9,7 @@ public class Main {
 
     public static void main(String[] args) {
         RootFactory root = new RootFactory();
+        root=root.utility().prepareUsableCopy();
 
         ApplicationServer<Void,Root,RootFactory,Void> applicationServer = new ApplicationServer<>(new FactoryManager<>(new RethrowingFactoryExceptionHandler<>()),new InMemoryDataStorage<>(root));
         applicationServer.start();

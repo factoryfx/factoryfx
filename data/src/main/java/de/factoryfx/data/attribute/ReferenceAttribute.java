@@ -156,4 +156,17 @@ public abstract class ReferenceAttribute<T extends Data, A extends ReferenceBase
         return !defaultValueUsed;
     }
 
+
+    /**default values can be confusing in merge and history view.
+     * a Fixed a id solves that, the
+     * @param defaultValue  defaultValue
+     * @param id unique id, usually a uuid
+     * @return self
+     * */
+    public A defaultValue(T defaultValue, String id) {
+        set(defaultValue);
+        get().setId(id);
+        return (A)this;
+    }
+
 }

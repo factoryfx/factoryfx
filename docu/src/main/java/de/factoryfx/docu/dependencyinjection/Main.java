@@ -8,10 +8,11 @@ import de.factoryfx.server.ApplicationServer;
 public class Main {
 
     public static void main(String[] args) {
-        RootFactory root = new RootFactory();
-        root.dependency.set(new DependencyFactory());
+        RootFactory rootFactory = new RootFactory();
+        rootFactory.dependency.set(new DependencyFactory());
+        rootFactory=rootFactory.utility().prepareUsableCopy();
 
-        ApplicationServer<Void,Root,RootFactory,Void> applicationServer = new ApplicationServer<>(new FactoryManager<>(new RethrowingFactoryExceptionHandler<>()),new InMemoryDataStorage<>(root));
+        ApplicationServer<Void,Root,RootFactory,Void> applicationServer = new ApplicationServer<>(new FactoryManager<>(new RethrowingFactoryExceptionHandler<>()),new InMemoryDataStorage<>(rootFactory));
         applicationServer.start();
 
     }

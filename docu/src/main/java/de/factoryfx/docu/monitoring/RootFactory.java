@@ -6,7 +6,7 @@ import de.factoryfx.server.rest.server.JettyServer;
 import de.factoryfx.server.rest.server.JettyServerFactory;
 
 public class RootFactory extends SimpleFactoryBase<Root,ServerVisitor>{
-    public final FactoryReferenceAttribute<JettyServer,JettyServerFactory<ServerVisitor>> server=new FactoryReferenceAttribute<JettyServer,JettyServerFactory<ServerVisitor>>().setupUnsafe(JettyServerFactory.class).labelText("server");
+    public final FactoryReferenceAttribute<InstrumentedJettyServer,InstrumentedJettyServerFactory> server=new FactoryReferenceAttribute<>(InstrumentedJettyServerFactory.class).labelText("server");
 
     @Override
     public Root createImpl() {

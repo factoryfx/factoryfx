@@ -10,6 +10,7 @@ public class Main {
     public static void main(String[] args) {
         RootFactory rootFactory = new RootFactory();
         rootFactory.text.set("HelloWorld");
+        rootFactory=rootFactory.utility().prepareUsableCopy();
 
         ApplicationServer<Void,Root,RootFactory,Void> applicationServer = new ApplicationServer<>(new FactoryManager<>(new RethrowingFactoryExceptionHandler<>()),new InMemoryDataStorage<>(rootFactory));
         applicationServer.start();

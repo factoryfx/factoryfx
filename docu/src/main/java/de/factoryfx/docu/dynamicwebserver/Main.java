@@ -41,6 +41,7 @@ public class Main {
         jettyServer.connectors.add(serverConnectorFactory);
 
         jettyServer.resource.set(createNewWebResourceReturningCreationTimestamp());
+        jettyServer=jettyServer.utility().prepareUsableCopy();
 
 
         ApplicationServer<Void,JettyServer,DynamicWebserver,Void> applicationServer
