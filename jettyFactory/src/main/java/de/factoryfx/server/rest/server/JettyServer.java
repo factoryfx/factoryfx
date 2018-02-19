@@ -31,6 +31,7 @@ public class JettyServer {
 
     public JettyServer(List<HttpServerConnectorCreator> connectors, List<Object> resources, List<Handler> additionalHandlers, ObjectMapper objectMapper) {
         server=new org.eclipse.jetty.server.Server();
+        this.objectMapper=objectMapper;
         currentConnectors.addAll(connectors);
         for (HttpServerConnectorCreator creator : currentConnectors) {
             creator.addToServer(server);
@@ -59,8 +60,6 @@ public class JettyServer {
         additionalHandlers.forEach(handlers::addHandler);
         handlers.addHandler(gzipHandler);
         server.setHandler(handlers);
-
-        this.objectMapper=objectMapper;
     }
 
     public JettyServer(List<HttpServerConnectorCreator> connectors, List<Object> resources, ObjectMapper objectMapper) {
