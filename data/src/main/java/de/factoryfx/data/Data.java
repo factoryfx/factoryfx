@@ -561,7 +561,7 @@ public class Data {
 
         /**
          * see: {@link Data#prepareUsableCopy}
-         *
+         * @param <T> type
          * @return usableCopy
          */
         public <T extends Data> T prepareUsableCopy() {
@@ -787,7 +787,7 @@ public class Data {
 
         /**
          * see: {@link Data#prepareUsableCopy}
-         *
+         * @param <T> type
          * @return usableCopy
          */
         public <T extends Data> T prepareUsableCopy() {

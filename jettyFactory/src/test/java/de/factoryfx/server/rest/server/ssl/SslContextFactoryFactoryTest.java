@@ -61,14 +61,14 @@ public class SslContextFactoryFactoryTest {
         jettyServerFactory.resource.set(new TestResourceFactory());
         HttpServerConnectorFactory<Void> http = new HttpServerConnectorFactory<>();
         http.host.set("localhost");
-        http.port.set(8007);
+        http.port.set(8009);
         jettyServerFactory.connectors.add(http);
 
         JettyServer server = jettyServerFactory.internalFactory().instance();
         server.start();
 
 
-        URL url = new URL("http://localhost:8007/test");
+        URL url = new URL("http://localhost:8009/test");
         URLConnection conn = url.openConnection();
         InputStream is = conn.getInputStream();
         Assert.assertEquals("Hello World",convertStreamToString(is));
@@ -82,7 +82,7 @@ public class SslContextFactoryFactoryTest {
         jettyServerFactory.resource.set(new TestResourceFactory());
         HttpServerConnectorFactory<Void> http = new HttpServerConnectorFactory<>();
         http.host.set("localhost");
-        http.port.set(8007);
+        http.port.set(8009);
         jettyServerFactory.connectors.add(http);
 
 
@@ -104,7 +104,7 @@ public class SslContextFactoryFactoryTest {
         server.start();
 
         fixUntrustCertificate();
-        URL url = new URL("https://localhost:8007/test");
+        URL url = new URL("https://localhost:8009/test");
         URLConnection conn = url.openConnection();
         InputStream is = conn.getInputStream();
         Assert.assertEquals("Hello World",convertStreamToString(is));

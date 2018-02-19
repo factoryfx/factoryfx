@@ -20,7 +20,7 @@ import java.util.List;
 public class InstrumentedJettyServer{
 
     private final MetricRegistry metricRegistry;
-    private final JettyServer jettyServer;
+    private JettyServer jettyServer;
     public InstrumentedJettyServer(JettyServer jettyServer, MetricRegistry metricRegistry) {
         this.jettyServer=jettyServer;
         this.metricRegistry=metricRegistry;
@@ -49,7 +49,7 @@ public class InstrumentedJettyServer{
     }
 
     public InstrumentedJettyServer recreate(List<HttpServerConnectorCreator> instances, List<Object> simpleResources) {
-        jettyServer.recreate(instances,simpleResources);
+        this.jettyServer=jettyServer.recreate(instances,simpleResources);
         return this;
     }
 }

@@ -1,7 +1,9 @@
 package de.factoryfx.server.rest.server;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import de.factoryfx.factory.FactoryBase;
+import de.factoryfx.factory.atrribute.FactoryReferenceAttribute;
 import de.factoryfx.factory.atrribute.FactoryReferenceListAttribute;
 
 import java.util.List;
@@ -29,10 +31,13 @@ public abstract class JettyServerFactory<V> extends FactoryBase<JettyServer,V> {
     /** jersey resource class with Annotations*/
 //    public final FactoryReferenceListAttribute<Object,FactoryBase<?,V>> resources = new FactoryReferenceListAttribute<Object,FactoryBase<?,V>>().setupUnsafe(FactoryBase.class).labelText("resource");
     public final FactoryReferenceListAttribute<HttpServerConnectorCreator,HttpServerConnectorFactory<V>> connectors = new FactoryReferenceListAttribute<HttpServerConnectorCreator,HttpServerConnectorFactory<V>>().setupUnsafe(HttpServerConnectorFactory.class).labelText("connectors").userNotSelectable();
+    public final FactoryReferenceAttribute<ObjectMapper,FactoryBase<ObjectMapper,V>> objectMapper = new FactoryReferenceAttribute<ObjectMapper,FactoryBase<ObjectMapper,V>>().setupUnsafe(FactoryBase.class).labelText("connectors").userReadOnly();
+
+
 
     public JettyServerFactory(){
         configLiveCycle().setCreator(() -> {
-            return new JettyServer(connectors.instances(), getResourcesInstancesNullRemoved());
+            return new JettyServer(connectors.instances(), getResourcesInstancesNullRemoved(),objectMapper.instance());
         });
         configLiveCycle().setReCreator(currentLiveObject->currentLiveObject.recreate(connectors.instances(), getResourcesInstancesNullRemoved()));
 

@@ -5,6 +5,7 @@ import java.util.Locale;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
@@ -23,19 +24,29 @@ import de.factoryfx.user.UserManagement;
 import de.factoryfx.user.persistent.UserFactory;
 
 
-//https://stackoverflow.com/questions/17000193/can-we-have-more-than-one-path-annotation-for-same-rest-method
-//2 Paths for compatibility
+
+/**
+ *https://stackoverflow.com/questions/17000193/can-we-have-more-than-one-path-annotation-for-same-rest-method
+ *2 Paths for compatibility
+ *applicationServer is new one
+ */
 @Path("{parameter: adminui|applicationServer}")
 public class ApplicationServerResource<V,L,T extends FactoryBase<L,V>,S>  {
 
     private final ApplicationServer<V,L,T,S> applicationServer;
     private final UserManagement userManagement;
     private final Predicate<Optional<AuthorizedUser>> authorizedKeyUserEvaluator;
+    private final Supplier<V> emptyVisitorCreator;
 
     public ApplicationServerResource(ApplicationServer<V,L,T,S> applicationServer, UserManagement userManagement, Predicate<Optional<AuthorizedUser>> authorizedKeyUserEvaluator) {
+        this(applicationServer,userManagement,authorizedKeyUserEvaluator,null);
+    }
+
+    public ApplicationServerResource(ApplicationServer<V,L,T,S> applicationServer, UserManagement userManagement, Predicate<Optional<AuthorizedUser>> authorizedKeyUserEvaluator, Supplier<V> emptyVisitorCreator) {
         this.applicationServer = applicationServer;
         this.userManagement = userManagement;
         this.authorizedKeyUserEvaluator = authorizedKeyUserEvaluator;
+        this.emptyVisitorCreator= emptyVisitorCreator;
     }
 
     private Optional<AuthorizedUser> authenticate(UserAwareRequest<?> request){
@@ -131,6 +142,15 @@ public class ApplicationServerResource<V,L,T extends FactoryBase<L,V>,S>  {
     public V query(UserAwareRequest<V> request) {
         authenticate(request);
         return applicationServer.query(request.request);
+    }
+
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("queryReadOnly")
+    public V queryReadOnly(UserAwareRequest<Void> request) {
+        authenticate(request);
+        return applicationServer.query(emptyVisitorCreator.get());
     }
 
     @POST

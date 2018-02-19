@@ -26,9 +26,10 @@ public class JettyServer {
     private final Set<HttpServerConnectorCreator> currentConnectors = new HashSet<>();
     private final UpdateableServlet rootServlet;
     private boolean disposed = false;
+    private final ObjectMapper objectMapper;
 
 
-    public JettyServer(List<HttpServerConnectorCreator> connectors, List<Object> resources, List<Handler> additionalHandlers) {
+    public JettyServer(List<HttpServerConnectorCreator> connectors, List<Object> resources, List<Handler> additionalHandlers, ObjectMapper objectMapper) {
         server=new org.eclipse.jetty.server.Server();
         currentConnectors.addAll(connectors);
         for (HttpServerConnectorCreator creator : currentConnectors) {
@@ -58,11 +59,24 @@ public class JettyServer {
         additionalHandlers.forEach(handlers::addHandler);
         handlers.addHandler(gzipHandler);
         server.setHandler(handlers);
+
+        this.objectMapper=objectMapper;
     }
 
+    public JettyServer(List<HttpServerConnectorCreator> connectors, List<Object> resources, ObjectMapper objectMapper) {
+        this(connectors,resources,new ArrayList<>(),objectMapper!=null?objectMapper:ObjectMapperBuilder.buildNewObjectMapper());
+    }
 
     public JettyServer(List<HttpServerConnectorCreator> connectors, List<Object> resources) {
-        this(connectors,resources,new ArrayList<>());
+        this(connectors,resources,new ArrayList<>(),ObjectMapperBuilder.buildNewObjectMapper());
+    }
+
+    private JettyServer(JettyServer priorServer) {
+        this.rootServlet = priorServer.rootServlet;
+        this.currentConnectors.addAll(priorServer.currentConnectors);
+        this.server = priorServer.server;
+        priorServer.disposed = true;
+        this.objectMapper = priorServer.objectMapper;
     }
 
     private ResourceConfig jerseySetup(List<Object>  resource) {
@@ -74,10 +88,8 @@ public class JettyServer {
         resourceConfig.register(Soap11Provider.class);
         resourceConfig.register(Soap12Provider.class);
 
-        ObjectMapper mapper = createObjectMapper();
-
         JacksonJaxbJsonProvider provider = new JacksonJaxbJsonProvider();
-        provider.setMapper(mapper);
+        provider.setMapper(objectMapper);
         resourceConfig.register(provider);
 
         org.glassfish.jersey.logging.LoggingFeature loggingFilter = new org.glassfish.jersey.logging.LoggingFeature(new DelegatingLoggingFilterLogger());
@@ -85,9 +97,6 @@ public class JettyServer {
         return resourceConfig;
     }
 
-    private ObjectMapper createObjectMapper() {
-        return ObjectMapperBuilder.buildNewObjectMapper();
-    }
 
     public void start() throws Error {
         try {
@@ -105,13 +114,6 @@ public class JettyServer {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-    }
-
-    private JettyServer(JettyServer priorServer) {
-        this.rootServlet = priorServer.rootServlet;
-        this.currentConnectors.addAll(priorServer.currentConnectors);
-        this.server = priorServer.server;
-        priorServer.disposed = true;
     }
 
 
