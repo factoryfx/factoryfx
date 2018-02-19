@@ -2,6 +2,7 @@ package de.factoryfx.docu.monitoring;
 
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.jetty9.InstrumentedHandler;
+import de.factoryfx.data.jackson.ObjectMapperBuilder;
 import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.factory.atrribute.FactoryReferenceAttribute;
 import de.factoryfx.factory.atrribute.FactoryReferenceListAttribute;
@@ -29,7 +30,8 @@ public class InstrumentedJettyServerFactory extends FactoryBase<InstrumentedJett
             JettyServer jettyServer = new JettyServer(
                     connectors.instances(),
                     getResourcesInstances(),
-                    Collections.singletonList(new InstrumentedHandler(metricRegistry, "monitoring example"))
+                    Collections.singletonList(new InstrumentedHandler(metricRegistry, "monitoring example")),
+                    ObjectMapperBuilder.buildNewObjectMapper()
             );
             return new InstrumentedJettyServer(jettyServer, metricRegistry);
 
