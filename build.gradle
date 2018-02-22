@@ -44,7 +44,7 @@ subprojects {
     }
 
     group = 'io.github.factoryfx'
-    version = '0.9.0'
+    version = '0.9.1'
 
     if (project.hasProperty('secretKeyRingFileSourceURL')) {
         //workaround  to get key  file to the plugin
@@ -386,3 +386,9 @@ project(':docu') {
 
 }
 
+project(':process') {
+    dependencies {
+        compile project(":factory")
+
+    }
+}

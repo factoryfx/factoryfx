@@ -23,7 +23,6 @@ import de.factoryfx.factory.parametrized.ParametrizedObjectCreatorAttribute;
  * @param <V> runtime visitor
  */
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@JsonTypeInfo(use=JsonTypeInfo.Id.MINIMAL_CLASS, include=JsonTypeInfo.As.PROPERTY, property="@class")
 public class FactoryBase<L,V> extends Data implements Iterable<FactoryBase<?, V>>{
 
     public FactoryBase() {

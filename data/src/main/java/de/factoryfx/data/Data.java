@@ -2,6 +2,7 @@ package de.factoryfx.data;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.google.common.base.Strings;
 import de.factoryfx.data.attribute.*;
@@ -24,6 +25,7 @@ import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
+@JsonTypeInfo(use=JsonTypeInfo.Id.MINIMAL_CLASS, include=JsonTypeInfo.As.PROPERTY, property="@class")
 public class Data {
 
     private String id;
