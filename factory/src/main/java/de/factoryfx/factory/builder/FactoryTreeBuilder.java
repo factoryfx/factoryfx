@@ -31,6 +31,9 @@ public class FactoryTreeBuilder<V, RL, R extends FactoryBase<RL,V>> {
         addFactory(clazz,scope,new DefaultCreator<>(clazz));
     }
 
+    /**create the complete factory tree that represent teh app dependencies
+     * @return dependency tree
+     * */
     public R buildTree(){
         R factoryBases = factoryContext.get(rootClass);
         if (factoryBases==null){

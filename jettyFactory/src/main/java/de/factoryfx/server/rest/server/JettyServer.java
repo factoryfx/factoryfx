@@ -17,6 +17,7 @@ import org.eclipse.jetty.server.handler.HandlerList;
 import org.eclipse.jetty.server.handler.gzip.GzipHandler;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
+import org.glassfish.jersey.CommonProperties;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.servlet.ServletContainer;
 
@@ -81,6 +82,7 @@ public class JettyServer {
     private ResourceConfig jerseySetup(List<Object>  resource) {
 
         ResourceConfig resourceConfig = new ResourceConfig();
+        resourceConfig.property(CommonProperties.FEATURE_AUTO_DISCOVERY_DISABLE, true);// without we have 2 JacksonJaxbJsonProvider and wrong mapper
 //        resourceConfig.register(resource);
         resource.forEach(resourceConfig::register);
         resourceConfig.register(new AllExceptionMapper());

@@ -44,7 +44,7 @@ subprojects {
     }
 
     group = 'io.github.factoryfx'
-    version = '0.9.2'
+    version = '0.9.3'
 
     if (project.hasProperty('secretKeyRingFileSourceURL')) {
         //workaround  to get key  file to the plugin
@@ -189,8 +189,6 @@ project(':applicationServerRestClient') {
         compile 'com.googlecode.java-diff-utils:diffutils:1.3.0'
         compile 'org.fxmisc.richtext:richtextfx:0.6.7'
         compile 'org.controlsfx:controlsfx:8.40.12'
-        compile group: 'org.glassfish.jersey.core', name: 'jersey-client', version: '2.25.1'
-        compile 'org.glassfish.jersey.media:jersey-media-json-jackson:2.25.1'
         compile project(":factory")
         compile project(":restutilClient")
         compile project(":applicationServerRestCommon")
@@ -201,7 +199,7 @@ project(':applicationServerRestClient') {
 project(':applicationServerRestCommon') {
     dependencies {
         compile project(":factory")
-        compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.8.8'
+        compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.9.4'
     }
 }
 
@@ -216,9 +214,9 @@ project(':applicationServerRestIntegrationTest') {
 
 project(':data') {
     dependencies {
-        compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.8.8'
-        compile group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jdk8', version: '2.8.8'
-        compile group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jsr310', version: '2.8.8'
+        compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.9.4'
+        compile group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jdk8', version: '2.9.4'
+        compile group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jsr310', version: '2.9.4'
     }
 }
 
@@ -253,12 +251,15 @@ project(':jettyFactory') {
 
     dependencies {
         compile project(":factory")
-        compile group: 'org.eclipse.jetty', name: 'jetty-server', version: '9.4.7.v20170914'
-        compile group: 'org.eclipse.jetty', name: 'jetty-servlet', version: '9.4.7.v20170914'
-        compile group: 'org.eclipse.jetty', name: 'jetty-webapp', version: '9.4.7.v20170914'
-        compile group: 'org.glassfish.jersey.core', name: 'jersey-server', version: '2.25.1'
-        compile group: 'com.fasterxml.jackson.jaxrs', name: 'jackson-jaxrs-json-provider', version: '2.8.8'
-        compile 'org.glassfish.jersey.containers:jersey-container-servlet-core:2.25.1'
+        compile group: 'org.eclipse.jetty', name: 'jetty-server', version: '9.4.8.v20171121'
+        compile group: 'org.eclipse.jetty', name: 'jetty-servlet', version: '9.4.8.v20171121'
+        compile group: 'org.eclipse.jetty', name: 'jetty-webapp', version: '9.4.8.v20171121'
+
+        compile group: 'org.glassfish.jersey.core', name: 'jersey-server', version: '2.26'
+        compile group: 'com.fasterxml.jackson.jaxrs', name: 'jackson-jaxrs-json-provider', version: '2.9.4'
+        compile 'org.glassfish.jersey.containers:jersey-container-servlet-core:2.26'
+        compile 'org.glassfish.jersey.inject:jersey-hk2:2.26'
+
         testCompile project(":restutilClient")
         testCompile group: 'ch.qos.logback', name: 'logback-classic', version: '1.1.7'
     }
@@ -269,8 +270,9 @@ project(':restutilClient') {
 
     dependencies {
         compile project(":factory")
-        compile 'org.glassfish.jersey.media:jersey-media-json-jackson:2.25.1'
-        compile 'org.glassfish.jersey.core:jersey-client:2.25.1'
+        compile 'org.glassfish.jersey.media:jersey-media-json-jackson:2.26'
+        compile 'org.glassfish.jersey.core:jersey-client:2.26'
+        compile 'org.glassfish.jersey.inject:jersey-hk2:2.26'
     }
 
 }
@@ -360,10 +362,10 @@ project(':servletContainerBridge'){
         compile project(":factory")
         compile project(":applicationServerRestServer")
         compile group: 'javax.servlet', name: 'javax.servlet-api', version: '3.1.0'
-        testCompile group: 'org.eclipse.jetty', name: 'jetty-server', version: '9.4.7.v20170914'
-        testCompile group: 'org.eclipse.jetty', name: 'jetty-server', version: '9.4.7.v20170914'
-        testCompile group: 'org.eclipse.jetty', name: 'jetty-servlet', version: '9.4.7.v20170914'
-        testCompile group: 'org.eclipse.jetty', name: 'jetty-webapp', version: '9.4.7.v20170914'
+        testCompile group: 'org.eclipse.jetty', name: 'jetty-server', version: '9.4.8.v20171121'
+        testCompile group: 'org.eclipse.jetty', name: 'jetty-server', version: '9.4.8.v20171121'
+        testCompile group: 'org.eclipse.jetty', name: 'jetty-servlet', version: '9.4.8.v20171121'
+        testCompile group: 'org.eclipse.jetty', name: 'jetty-webapp', version: '9.4.8.v20171121'
         testCompile group: 'ch.qos.logback', name: 'logback-classic', version: '1.1.7'
 
         testCompile project(":applicationServerRestServer")
