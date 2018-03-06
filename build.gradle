@@ -270,6 +270,7 @@ project(':restutilClient') {
 
     dependencies {
         compile project(":factory")
+        compile group: 'com.fasterxml.jackson.jaxrs', name: 'jackson-jaxrs-json-provider', version: '2.9.4'
         compile 'org.glassfish.jersey.media:jersey-media-json-jackson:2.26'
         compile 'org.glassfish.jersey.core:jersey-client:2.26'
         compile 'org.glassfish.jersey.inject:jersey-hk2:2.26'

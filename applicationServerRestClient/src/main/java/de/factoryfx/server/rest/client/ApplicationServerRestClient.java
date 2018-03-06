@@ -15,8 +15,9 @@ import de.factoryfx.server.rest.UpdateCurrentFactoryRequest;
 import de.factoryfx.server.rest.UserAwareRequest;
 import de.factoryfx.server.rest.UserLocaleResponse;
 
-public class ApplicationServerRestClient<V, R extends FactoryBase<?,V>> {
 
+//TODO use rest proxy client
+public class ApplicationServerRestClient<V, R extends FactoryBase<?,V>> {
 
     private final Class<R> factoryRootClass;
     private final RestClient restClient;
