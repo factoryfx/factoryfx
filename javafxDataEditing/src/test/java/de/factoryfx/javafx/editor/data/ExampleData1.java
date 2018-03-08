@@ -5,17 +5,36 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Pattern;
 
+import javafx.scene.Node;
+import javafx.scene.control.Button;
+import javafx.scene.layout.BorderPane;
+
 import de.factoryfx.data.Data;
-import de.factoryfx.data.attribute.*;
-import de.factoryfx.data.attribute.primitive.list.IntegerListAttribute;
-import de.factoryfx.data.attribute.time.DurationAttribute;
-import de.factoryfx.data.attribute.time.LocalDateAttribute;
-import de.factoryfx.data.attribute.time.LocalDateTimeAttribute;
-import de.factoryfx.data.attribute.types.*;
+import de.factoryfx.data.attribute.Attribute;
+import de.factoryfx.data.attribute.AttributeGroup;
+import de.factoryfx.data.attribute.DataReferenceAttribute;
+import de.factoryfx.data.attribute.DataReferenceListAttribute;
 import de.factoryfx.data.attribute.primitive.BooleanAttribute;
 import de.factoryfx.data.attribute.primitive.DoubleAttribute;
 import de.factoryfx.data.attribute.primitive.IntegerAttribute;
 import de.factoryfx.data.attribute.primitive.LongAttribute;
+import de.factoryfx.data.attribute.primitive.list.IntegerListAttribute;
+import de.factoryfx.data.attribute.time.DurationAttribute;
+import de.factoryfx.data.attribute.time.LocalDateAttribute;
+import de.factoryfx.data.attribute.time.LocalDateTimeAttribute;
+import de.factoryfx.data.attribute.types.BigDecimalAttribute;
+import de.factoryfx.data.attribute.types.ByteArrayAttribute;
+import de.factoryfx.data.attribute.types.ColorAttribute;
+import de.factoryfx.data.attribute.types.EncryptedStringAttribute;
+import de.factoryfx.data.attribute.types.EnumAttribute;
+import de.factoryfx.data.attribute.types.I18nAttribute;
+import de.factoryfx.data.attribute.types.LocaleAttribute;
+import de.factoryfx.data.attribute.types.PasswordAttribute;
+import de.factoryfx.data.attribute.types.StringAttribute;
+import de.factoryfx.data.attribute.types.StringListAttribute;
+import de.factoryfx.data.attribute.types.StringMapAttribute;
+import de.factoryfx.data.attribute.types.URIAttribute;
+import de.factoryfx.data.attribute.types.URIListAttribute;
 import de.factoryfx.data.util.LanguageText;
 import de.factoryfx.data.validation.RegexValidation;
 import de.factoryfx.data.validation.StringRequired;
@@ -25,9 +44,6 @@ import de.factoryfx.factory.atrribute.FactoryPolymorphicReferenceAttribute;
 import de.factoryfx.factory.testfactories.poly.ErrorPrinterFactory;
 import de.factoryfx.factory.testfactories.poly.OutPrinterFactory;
 import de.factoryfx.factory.testfactories.poly.Printer;
-import javafx.scene.Node;
-import javafx.scene.control.Button;
-import javafx.scene.layout.BorderPane;
 
 public class ExampleData1 extends Data {
     public final FactoryPolymorphicReferenceAttribute<Printer> reference = new FactoryPolymorphicReferenceAttribute<Printer>().setup(Printer.class,ErrorPrinterFactory.class,OutPrinterFactory.class).labelText("poly");
@@ -55,6 +71,10 @@ public class ExampleData1 extends Data {
 
     public final DataReferenceAttribute<ExampleData2> referenceAttribute = new DataReferenceAttribute<ExampleData2>().setup(ExampleData2.class).en("ReferenceAttribute").de("ReferenceAttribute de");
     public final DataReferenceListAttribute<ExampleData2> referenceListAttribute = new DataReferenceListAttribute<ExampleData2>().setup(ExampleData2.class).en("ReferenceListAttribute").de("ReferenceListAttribute de");
+
+    public final DataReferenceAttribute<ExampleData2> referenceAttributeCat = new DataReferenceAttribute<ExampleData2>().setup(ExampleData2.class).catalogueBased().en("ReferenceAttribute catalog based").de("ReferenceAttribute catalog based de");
+    public final DataReferenceListAttribute<ExampleData2> referenceListAttributeCat = new DataReferenceListAttribute<ExampleData2>().setup(ExampleData2.class).catalogueBased().en("ReferenceListAttribute catalog based").de("ReferenceListAttribute catalog based de");
+    public final DataReferenceListAttribute<ExampleData2> readOnlyReferenceListAttributeCat = new DataReferenceListAttribute<ExampleData2>().setup(ExampleData2.class).userReadOnly().catalogueBased().en("Readonly referenceListAttribute catalog based").de("Lesend ReferenceListAttribute catalog based de");
 
     public final URIAttribute uriAttribute = new URIAttribute().en("URI");
     public final URIListAttribute uriListAttribute = new URIListAttribute().en("URIList");

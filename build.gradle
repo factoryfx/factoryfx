@@ -10,8 +10,9 @@ idea {
     }
 }
 
-task wrapper(type: Wrapper) {
-    gradleVersion = '4.1'
+wrapper {
+    gradleVersion = '4.5.1'
+    distributionType = org.gradle.api.tasks.wrapper.Wrapper.DistributionType.ALL
 }
 
 
@@ -44,7 +45,7 @@ subprojects {
     }
 
     group = 'io.github.factoryfx'
-    version = '0.9.3'
+    version = '0.9.4'
 
     if (project.hasProperty('secretKeyRingFileSourceURL')) {
         //workaround  to get key  file to the plugin

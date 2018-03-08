@@ -9,12 +9,6 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-import de.factoryfx.data.Data;
-import de.factoryfx.data.attribute.ReferenceListAttribute;
-import de.factoryfx.data.util.LanguageText;
-import de.factoryfx.javafx.util.DataChoiceDialog;
-import de.factoryfx.javafx.util.UniformDesign;
-import de.factoryfx.javafx.widget.Widget;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -30,7 +24,15 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.HBox;
 import javafx.stage.Window;
+
 import org.controlsfx.glyphfont.FontAwesome;
+
+import de.factoryfx.data.Data;
+import de.factoryfx.data.attribute.ReferenceListAttribute;
+import de.factoryfx.data.util.LanguageText;
+import de.factoryfx.javafx.util.DataChoiceDialog;
+import de.factoryfx.javafx.util.UniformDesign;
+import de.factoryfx.javafx.widget.Widget;
 
 /**
  * Data list edit widget (add Button,delete Button,... )
@@ -44,7 +46,7 @@ public class ReferenceListAttributeEditWidget<T extends Data> implements Widget 
     private LanguageText deleteText= new LanguageText().en("delete").de("Löschen");
     private LanguageText copyText= new LanguageText().en("copy").de("Kopieren");
 
-    private LanguageText deleteConfirmationTitle= new LanguageText().en("Delte").de("Löschen");
+    private LanguageText deleteConfirmationTitle= new LanguageText().en("Delete").de("Löschen");
     private LanguageText deleteConfirmationHeader= new LanguageText().en("delete item").de("Eintrag löschen");
     private LanguageText deleteConfirmationContent= new LanguageText().en("delete item?").de("Soll der Eintrag gelöscht werden?");
 
