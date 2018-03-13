@@ -31,7 +31,7 @@ public class DurationAttributeVisualisation extends ValueAttributeEditorVisualis
 
         ComboBox<ChronoUnit> comboBox = new ComboBox<>();
         comboBox.setEditable(false);
-        comboBox.getItems().addAll(ChronoUnit.NANOS, ChronoUnit.MICROS, ChronoUnit.MILLIS, ChronoUnit.SECONDS, ChronoUnit.MINUTES, ChronoUnit.HOURS, ChronoUnit.HALF_DAYS, ChronoUnit.DAYS, ChronoUnit.WEEKS);
+        comboBox.getItems().addAll(ChronoUnit.NANOS, ChronoUnit.MICROS, ChronoUnit.MILLIS, ChronoUnit.SECONDS, ChronoUnit.MINUTES, ChronoUnit.HOURS, ChronoUnit.HALF_DAYS, ChronoUnit.DAYS);
 
         TextField textField = new TextField();
         TypedTextFieldHelper.setupLongTextField(textField);
