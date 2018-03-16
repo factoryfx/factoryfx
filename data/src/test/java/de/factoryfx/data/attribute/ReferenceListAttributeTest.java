@@ -70,7 +70,8 @@ public class ReferenceListAttributeTest {
     public void test_add_new(){
         ExampleReferenceListFactory exampleReferenceListFactory = new ExampleReferenceListFactory();
         exampleReferenceListFactory.referenceListAttribute.internal_prepareUsage(new ExampleReferenceListFactory(),null);
-        exampleReferenceListFactory.referenceListAttribute.internal_addNewFactory();
+        List<ExampleDataA> exampleDataAS = exampleReferenceListFactory.referenceListAttribute.internal_createNewPossibleValues();
+        exampleReferenceListFactory.referenceListAttribute.add(exampleDataAS.get(0));
         Assert.assertEquals(1,exampleReferenceListFactory.referenceListAttribute.size());
 
     }
@@ -96,9 +97,13 @@ public class ReferenceListAttributeTest {
         referenceListAttribute.internal_prepareUsage(new ExampleDataA(),null);
         List<ExampleDataA> calls=new ArrayList<>();
         referenceListAttribute.internal_addListener((attribute, value) -> calls.add(value.get(0)));
-        referenceListAttribute.internal_addNewFactory();
+
+        referenceListAttribute.add(referenceListAttribute.internal_createNewPossibleValues().get(0));
+
         Assert.assertEquals(1,calls.size());
-        referenceListAttribute.internal_addNewFactory();
+
+        referenceListAttribute.add(referenceListAttribute.internal_createNewPossibleValues().get(0));
+
         Assert.assertEquals(2,calls.size());
 //        Assert.assertEquals(value,calls.get(0));
     }

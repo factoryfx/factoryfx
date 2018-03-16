@@ -5,6 +5,10 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Pattern;
 
+import de.factoryfx.factory.atrribute.FactoryPolymorphicReferenceListAttribute;
+import de.factoryfx.factory.testfactories.poly.ErrorPrinterFactory;
+import de.factoryfx.factory.testfactories.poly.OutPrinterFactory;
+import de.factoryfx.factory.testfactories.poly.Printer;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.layout.BorderPane;
