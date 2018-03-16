@@ -5,17 +5,18 @@ import java.util.List;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
+import javafx.geometry.Side;
+import javafx.scene.Node;
+import javafx.scene.control.ContextMenu;
+import javafx.scene.control.Label;
+import javafx.scene.control.MenuItem;
+
 import de.factoryfx.data.attribute.Attribute;
 import de.factoryfx.data.attribute.AttributeChangeListener;
 import de.factoryfx.data.attribute.WeakAttributeChangeListener;
 import de.factoryfx.data.validation.ValidationError;
 import de.factoryfx.javafx.util.UniformDesign;
 import de.factoryfx.javafx.widget.Widget;
-import javafx.geometry.Side;
-import javafx.scene.Node;
-import javafx.scene.control.ContextMenu;
-import javafx.scene.control.Label;
-import javafx.scene.control.MenuItem;
 
 public class AttributeEditor<T,A extends Attribute<T,A>> implements Widget {
 
@@ -29,15 +30,12 @@ public class AttributeEditor<T,A extends Attribute<T,A>> implements Widget {
     public AttributeEditor(A boundAttribute, AttributeEditorVisualisation<T> attributeEditorVisualisation, UniformDesign uniformDesign) {
         this.boundAttribute=boundAttribute;
         this.attributeEditorVisualisation=attributeEditorVisualisation;
+        this.attributeChangeListener = (attribute, value) -> AttributeEditor.this.attributeEditorVisualisation.attributeValueChanged(value);
         attributeEditorVisualisation.init(boundAttribute);
         this.uniformDesign = uniformDesign;
     }
 
-    private final AttributeChangeListener<T,A> attributeChangeListener = (attribute, value) -> {
-//        Platform.runLater(()-> {
-            AttributeEditor.this.attributeEditorVisualisation.attributeValueChanged(value);
-//        });
-    };
+    private final AttributeChangeListener<T,A> attributeChangeListener;
 
     public void expand() {
         attributeEditorVisualisation.expand();

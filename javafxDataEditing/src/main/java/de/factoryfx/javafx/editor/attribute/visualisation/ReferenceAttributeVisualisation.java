@@ -6,12 +6,6 @@ import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-import de.factoryfx.data.Data;
-import de.factoryfx.data.util.LanguageText;
-import de.factoryfx.javafx.editor.attribute.ValueAttributeEditorVisualisation;
-import de.factoryfx.javafx.util.DataChoiceDialog;
-import de.factoryfx.javafx.util.UniformDesign;
-import de.factoryfx.javafx.widget.select.SelectDataDialog;
 import javafx.beans.InvalidationListener;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -23,7 +17,15 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.stage.Window;
+
 import org.controlsfx.glyphfont.FontAwesome;
+
+import de.factoryfx.data.Data;
+import de.factoryfx.data.util.LanguageText;
+import de.factoryfx.javafx.editor.attribute.ValueAttributeEditorVisualisation;
+import de.factoryfx.javafx.util.DataChoiceDialog;
+import de.factoryfx.javafx.util.UniformDesign;
+import de.factoryfx.javafx.widget.select.SelectDataDialog;
 
 public class ReferenceAttributeVisualisation extends ValueAttributeEditorVisualisation<Data> {
 
@@ -40,11 +42,12 @@ public class ReferenceAttributeVisualisation extends ValueAttributeEditorVisuali
     private final boolean isUserSelectable;
     private final boolean isUserCreateable;
     private final boolean isUserDeletable;
+    private final boolean isCatalogBased;
     private final Runnable remover;
     private final Consumer<Data> referenceSetter;
 
 
-    public ReferenceAttributeVisualisation(UniformDesign uniformDesign, Consumer<Data> navigateToData, Supplier<List<Data>> newValueProvider, Consumer<Data> referenceSetter, Supplier<Collection<? extends Data>> possibleValuesProvider, Runnable remover, boolean isUserEditable, boolean isUserSelectable, boolean isUserCreateable, boolean isUserDeletable) {
+    public ReferenceAttributeVisualisation(UniformDesign uniformDesign, Consumer<Data> navigateToData, Supplier<List<Data>> newValueProvider, Consumer<Data> referenceSetter, Supplier<Collection<? extends Data>> possibleValuesProvider, Runnable remover, boolean isUserEditable, boolean isUserSelectable, boolean isUserCreateable, boolean isUserDeletable, boolean isCatalogBased) {
         this.uniformDesign = uniformDesign;
         this.navigateToData = navigateToData;
         this.newValueProvider = newValueProvider;
@@ -55,6 +58,7 @@ public class ReferenceAttributeVisualisation extends ValueAttributeEditorVisuali
         this.remover = remover;
         this.referenceSetter = referenceSetter;
         this.isUserDeletable = isUserDeletable;
+        this.isCatalogBased = isCatalogBased;
     }
 
     @Override
@@ -77,7 +81,7 @@ public class ReferenceAttributeVisualisation extends ValueAttributeEditorVisuali
         newButton.setOnAction(event -> {
             addNewReference(newButton.getScene().getWindow());
         });
-        newButton.setDisable(!isUserEditable || !isUserCreateable || readonly);
+        newButton.setDisable(!isUserEditable || !isUserCreateable || isCatalogBased || readonly);
 
         Button deleteButton = new Button();
         uniformDesign.addDangerIcon(deleteButton,FontAwesome.Glyph.TIMES);

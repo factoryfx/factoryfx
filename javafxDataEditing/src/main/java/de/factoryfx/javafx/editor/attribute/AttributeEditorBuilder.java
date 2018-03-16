@@ -12,10 +12,6 @@ import java.util.Locale;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-import de.factoryfx.data.attribute.time.LocalTimeAttribute;
-import de.factoryfx.data.attribute.types.*;
-import de.factoryfx.javafx.editor.attribute.visualisation.*;
-import de.factoryfx.javafx.widget.datalistedit.ReferenceListAttributeEditWidget;
 import javafx.scene.control.TableView;
 import javafx.scene.paint.Color;
 
@@ -37,12 +33,50 @@ import de.factoryfx.data.attribute.primitive.LongAttribute;
 import de.factoryfx.data.attribute.time.DurationAttribute;
 import de.factoryfx.data.attribute.time.LocalDateAttribute;
 import de.factoryfx.data.attribute.time.LocalDateTimeAttribute;
+import de.factoryfx.data.attribute.time.LocalTimeAttribute;
+import de.factoryfx.data.attribute.types.BigDecimalAttribute;
+import de.factoryfx.data.attribute.types.ColorAttribute;
+import de.factoryfx.data.attribute.types.EncryptedString;
+import de.factoryfx.data.attribute.types.EncryptedStringAttribute;
+import de.factoryfx.data.attribute.types.EnumAttribute;
+import de.factoryfx.data.attribute.types.I18nAttribute;
+import de.factoryfx.data.attribute.types.LocaleAttribute;
+import de.factoryfx.data.attribute.types.PasswordAttribute;
+import de.factoryfx.data.attribute.types.StringAttribute;
+import de.factoryfx.data.attribute.types.URIAttribute;
 import de.factoryfx.data.util.LanguageText;
 import de.factoryfx.javafx.editor.attribute.builder.DataSingleAttributeEditorBuilder;
 import de.factoryfx.javafx.editor.attribute.builder.NoListSingleAttributeEditorBuilder;
 import de.factoryfx.javafx.editor.attribute.builder.SimpleSingleAttributeEditorBuilder;
 import de.factoryfx.javafx.editor.attribute.builder.SingleAttributeEditorBuilder;
+import de.factoryfx.javafx.editor.attribute.visualisation.BigDecimalAttributeVisualisation;
+import de.factoryfx.javafx.editor.attribute.visualisation.BooleanAttributeVisualisation;
+import de.factoryfx.javafx.editor.attribute.visualisation.CatalogListAttributeVisualisation;
+import de.factoryfx.javafx.editor.attribute.visualisation.ColorAttributeVisualisation;
+import de.factoryfx.javafx.editor.attribute.visualisation.DefaultValueAttributeVisualisation;
+import de.factoryfx.javafx.editor.attribute.visualisation.DoubleAttributeVisualisation;
+import de.factoryfx.javafx.editor.attribute.visualisation.DurationAttributeVisualisation;
+import de.factoryfx.javafx.editor.attribute.visualisation.EncryptedStringAttributeVisualisation;
+import de.factoryfx.javafx.editor.attribute.visualisation.EnumAttributeVisualisation;
+import de.factoryfx.javafx.editor.attribute.visualisation.ExpandableAttributeVisualisation;
+import de.factoryfx.javafx.editor.attribute.visualisation.I18nAttributeVisualisation;
+import de.factoryfx.javafx.editor.attribute.visualisation.IntegerAttributeVisualisation;
+import de.factoryfx.javafx.editor.attribute.visualisation.LocalDateAttributeVisualisation;
+import de.factoryfx.javafx.editor.attribute.visualisation.LocalDateTimeAttributeVisualisation;
+import de.factoryfx.javafx.editor.attribute.visualisation.LocalTimeVisualisation;
+import de.factoryfx.javafx.editor.attribute.visualisation.LocaleAttributeVisualisation;
+import de.factoryfx.javafx.editor.attribute.visualisation.LongAttributeVisualisation;
+import de.factoryfx.javafx.editor.attribute.visualisation.PasswordAttributeVisualisation;
+import de.factoryfx.javafx.editor.attribute.visualisation.ReferenceAttributeVisualisation;
+import de.factoryfx.javafx.editor.attribute.visualisation.ReferenceListAttributeVisualisation;
+import de.factoryfx.javafx.editor.attribute.visualisation.StringAttributeVisualisation;
+import de.factoryfx.javafx.editor.attribute.visualisation.StringHtmlAttributeVisualisation;
+import de.factoryfx.javafx.editor.attribute.visualisation.StringLongAttributeVisualisation;
+import de.factoryfx.javafx.editor.attribute.visualisation.URIAttributeVisualisation;
+import de.factoryfx.javafx.editor.attribute.visualisation.ViewListReferenceAttributeVisualisation;
+import de.factoryfx.javafx.editor.attribute.visualisation.ViewReferenceAttributeVisualisation;
 import de.factoryfx.javafx.util.UniformDesign;
+import de.factoryfx.javafx.widget.datalistedit.ReferenceListAttributeEditWidget;
 
 public class AttributeEditorBuilder {
 
@@ -122,18 +156,18 @@ public class AttributeEditorBuilder {
             public AttributeEditor<Data, ?> createEditor(Attribute<?, ?> attribute, Consumer<Data> navigateToData, Data previousData) {
                 ReferenceAttribute referenceAttribute = (ReferenceAttribute) attribute;
                 return new AttributeEditor<>(referenceAttribute,
-                        new ReferenceAttributeVisualisation(
-                            uniformDesign,
-                            navigateToData,
-                            referenceAttribute::internal_createNewPossibleValues,
-                            referenceAttribute::set,
-                            referenceAttribute::internal_possibleValues,
-                            referenceAttribute::internal_deleteFactory,
-                            referenceAttribute.internal_isUserEditable(),
-                            referenceAttribute.internal_isUserSelectable(),
-                            referenceAttribute.internal_isUserCreatable(),
-                            referenceAttribute.internal_isUserDeletable()),
-                        uniformDesign);
+                                             new ReferenceAttributeVisualisation(uniformDesign,
+                                                                                 navigateToData,
+                                                                                 referenceAttribute::internal_createNewPossibleValues,
+                                                                                 referenceAttribute::set,
+                                                                                 referenceAttribute::internal_possibleValues,
+                                                                                 referenceAttribute::internal_deleteFactory,
+                                                                                 referenceAttribute.internal_isUserEditable(),
+                                                                                 referenceAttribute.internal_isUserSelectable(),
+                                                                                 referenceAttribute.internal_isUserCreatable(),
+                                                                                 referenceAttribute.internal_isUserDeletable(),
+                                                                                 referenceAttribute.internal_isCatalogueBased()),
+                                             uniformDesign);
 
             }
         });
@@ -148,30 +182,29 @@ public class AttributeEditorBuilder {
             @SuppressWarnings("unchecked")
             public AttributeEditor<List<Data>, ?> createEditor(Attribute<?, ?> attribute, Consumer<Data> navigateToData, Data previousData) {
                 ReferenceListAttribute referenceListAttribute = (ReferenceListAttribute)attribute;
-                final TableView<Data> dataTableView = new TableView<>();
-                final ReferenceListAttributeVisualisation referenceListAttributeVisualisation = new ReferenceListAttributeVisualisation(uniformDesign, navigateToData, dataTableView, new ReferenceListAttributeEditWidget<Data>(dataTableView, navigateToData,uniformDesign,referenceListAttribute));
-                ExpandableAttributeVisualisation<List<Data>> expandableAttributeVisualisation= new ExpandableAttributeVisualisation<>(referenceListAttributeVisualisation,uniformDesign,(l)->"Items: "+l.size(),FontAwesome.Glyph.LIST);
-                if (referenceListAttribute.contains(previousData)){
-                    expandableAttributeVisualisation.expand();
+                if(referenceListAttribute.internal_isCatalogueBased()){
+                    return new AttributeEditor<>(referenceListAttribute, new CatalogListAttributeVisualisation(referenceListAttribute::internal_possibleValues, referenceListAttribute), uniformDesign);
+                } else {
+                    final TableView<Data> dataTableView = new TableView<>();
+                    final ReferenceListAttributeVisualisation referenceListAttributeVisualisation = new ReferenceListAttributeVisualisation(uniformDesign, navigateToData, dataTableView, new ReferenceListAttributeEditWidget<Data>(dataTableView, navigateToData, uniformDesign, referenceListAttribute));
+                    ExpandableAttributeVisualisation<List<Data>> expandableAttributeVisualisation = new ExpandableAttributeVisualisation<>(referenceListAttributeVisualisation, uniformDesign, (l) -> "Items: " + l.size(), FontAwesome.Glyph.LIST);
+                    if (referenceListAttribute.contains(previousData)) {
+                        expandableAttributeVisualisation.expand();
+                    }
+                    return new AttributeEditor<>(referenceListAttribute, expandableAttributeVisualisation, uniformDesign);
                 }
-                return new AttributeEditor<>(referenceListAttribute,expandableAttributeVisualisation,uniformDesign);
-
             }
         });
-
         result.add(new NoListSingleAttributeEditorBuilder<>(uniformDesign,(attribute)->true,(attribute)->new DefaultValueAttributeVisualisation()));
         return result;
     }
 
-    public AttributeEditor<?,?> getAttributeEditor(Attribute<?,?> attribute, Consumer<Data> navigateToData, Data oldValue){
-
-        if (attribute instanceof ValueListAttribute<?,?>){
-            SingleAttributeEditorBuilder<?> builder = singleAttributeEditorBuilders.stream().filter(a -> a.isListItemEditorFor(attribute)).findAny().orElse(null);
-            return builder.createValueListEditor(attribute);
+    public AttributeEditor<?, ?> getAttributeEditor(Attribute<?, ?> attribute, Consumer<Data> navigateToData, Data oldValue) {
+        if (attribute instanceof ValueListAttribute<?, ?>) {
+            return singleAttributeEditorBuilders.stream().filter(a -> a.isListItemEditorFor(attribute)).findAny().orElseThrow(() -> new RuntimeException("No implementation found for " + attribute.getClass().getSimpleName()))
+                                                .createValueListEditor(attribute);
         }
-
-        SingleAttributeEditorBuilder<?> builder = singleAttributeEditorBuilders.stream().filter(a -> a.isEditorFor(attribute)).findAny().orElse(null);
-        return builder.createEditor(attribute, navigateToData, oldValue);
+        return singleAttributeEditorBuilders.stream().filter(a -> a.isEditorFor(attribute)).findAny().orElseThrow(() -> new RuntimeException("No implementation found for " + attribute.getClass().getSimpleName()))
+                                            .createEditor(attribute, navigateToData, oldValue);
     }
-
 }
