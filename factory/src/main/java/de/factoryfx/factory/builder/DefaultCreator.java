@@ -2,6 +2,7 @@ package de.factoryfx.factory.builder;
 
 import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.factory.atrribute.FactoryPolymorphicReferenceAttribute;
+import de.factoryfx.factory.atrribute.FactoryPolymorphicReferenceListAttribute;
 import de.factoryfx.factory.atrribute.FactoryReferenceAttribute;
 import de.factoryfx.factory.atrribute.FactoryReferenceListAttribute;
 
@@ -45,6 +46,16 @@ public class DefaultCreator<V,F extends FactoryBase<?,V>> implements Function<Fa
                         }
                     }
                 }
+                if (attribute instanceof FactoryPolymorphicReferenceListAttribute){
+                    FactoryPolymorphicReferenceListAttribute factoryReferenceAttribute = (FactoryPolymorphicReferenceListAttribute) attribute;
+                    for (Class<? extends FactoryBase> possibleClazz: (List<Class>)factoryReferenceAttribute.internal_possibleFactoriesClasses()){
+                        if (context.anyMatch(possibleClazz)){
+                            factoryReferenceAttribute.add(context.get(possibleClazz));
+                            break;
+                        }
+                    }
+                }
+
 
             });
             return result;

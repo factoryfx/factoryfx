@@ -248,6 +248,13 @@ public class FactoryBase<L,V> extends Data implements Iterable<FactoryBase<?, V>
                     consumer.accept(factory);
                 }
             }
+            if (attribute instanceof FactoryPolymorphicReferenceListAttribute) {
+                ((FactoryPolymorphicReferenceListAttribute<?>)attribute).get().forEach((Consumer<FactoryBase<?, ?>>) factory -> {
+                    if (factory!=null){
+                        consumer.accept((FactoryBase<?, V>)factory);
+                    }
+                });
+            }
             if (attribute instanceof ParametrizedObjectCreatorAttribute) {
                 FactoryBase<?, V> factory = (FactoryBase<?, V>)attribute.get();
                 if (factory!=null){
