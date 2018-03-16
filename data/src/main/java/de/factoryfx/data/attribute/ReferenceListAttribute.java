@@ -1,5 +1,6 @@
 package de.factoryfx.data.attribute;
 
+import java.lang.reflect.Array;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -138,14 +139,14 @@ public abstract class ReferenceListAttribute<T extends Data,A extends ReferenceB
         return new AttributeTypeInfo(List.class,null,null,Data.class, AttributeTypeInfo.AttributeTypeCategory.REFERENCE_LIST);
     }
 
-    public T internal_addNewFactory(){
-        T addedFactory = null;
-        if (getNewValueProvider()!=null) {
-            T newFactory = getNewValueProvider().apply(root);
-            get().add(newFactory);
-            addedFactory = newFactory;
+    public List<T> internal_createNewPossibleValues(){
+        if (newValuesProvider!=null) {
+            return newValuesProvider.apply(root);
         }
-        return addedFactory;
+        if (getNewValueProvider()!=null) {
+            return Collections.singletonList(getNewValueProvider().apply(root));
+        }
+        return new ArrayList<>();
     }
 
     public void internal_deleteFactory(T factory){

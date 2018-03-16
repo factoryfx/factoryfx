@@ -22,9 +22,8 @@ import de.factoryfx.data.validation.StringRequired;
 import de.factoryfx.data.validation.Validation;
 import de.factoryfx.data.validation.ValidationResult;
 import de.factoryfx.factory.atrribute.FactoryPolymorphicReferenceAttribute;
-import de.factoryfx.factory.testfactories.poly.ErrorPrinterFactory;
-import de.factoryfx.factory.testfactories.poly.OutPrinterFactory;
-import de.factoryfx.factory.testfactories.poly.Printer;
+import de.factoryfx.factory.atrribute.FactoryPolymorphicReferenceListAttribute;
+import de.factoryfx.factory.testfactories.poly.*;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.layout.BorderPane;
@@ -65,6 +64,7 @@ public class ExampleData1 extends Data {
     public final LocaleAttribute localeAttribute =new LocaleAttribute().en("colorAttribute").de("colorAttribute de");
 
     public final DataReferenceAttribute<ExampleData2> referenceAttributereadonly = new DataReferenceAttribute<ExampleData2>().userReadOnly().defaultValue(new ExampleData2()).en("referenceAttributereadonly").de("referenceAttributereadonly de");
+    public final FactoryPolymorphicReferenceListAttribute<Printer> polymorphicreferenceList = new FactoryPolymorphicReferenceListAttribute<Printer>().setup(Printer.class, ErrorPrinterFactory.class, OutPrinterFactory.class).en("polymorphicreferenceList").de("polymorphicreferenceList");
 
 
     public final StringAttribute specialAttribute=new StringAttribute().longText().en("specialAttribute").de("specialAttribute de");

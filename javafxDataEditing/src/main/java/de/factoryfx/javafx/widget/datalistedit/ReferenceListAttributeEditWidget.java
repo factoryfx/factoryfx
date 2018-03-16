@@ -1,10 +1,6 @@
 package de.factoryfx.javafx.widget.datalistedit;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -15,6 +11,7 @@ import de.factoryfx.data.util.LanguageText;
 import de.factoryfx.javafx.util.DataChoiceDialog;
 import de.factoryfx.javafx.util.UniformDesign;
 import de.factoryfx.javafx.widget.Widget;
+import de.factoryfx.javafx.widget.select.SelectDataDialog;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -50,7 +47,7 @@ public class ReferenceListAttributeEditWidget<T extends Data> implements Widget 
 
 
     private final UniformDesign uniformDesign;
-    private final Runnable emptyAdder;
+    private final Supplier<List<? extends T>> newValueProvider;
     private final Supplier<Collection<? extends Data>> possibleValuesProvider;
     private final boolean isUserEditable;
     private final boolean isUserSelectable;
@@ -61,9 +58,9 @@ public class ReferenceListAttributeEditWidget<T extends Data> implements Widget 
     private final boolean isUserCreateable;
     private final BiConsumer<T,List<T>> deleter;
 
-    public ReferenceListAttributeEditWidget(ReferenceListAttribute<T,?> referenceListAttribute, TableView<T> tableView, Consumer<Data> navigateToData, UniformDesign uniformDesign, Runnable emptyAdder, Supplier<Collection<? extends Data>> possibleValuesProvider, BiConsumer<T,List<T>> deleter , boolean isUserEditable, boolean isUserSelectable, boolean isUserCreateable) {
+    public ReferenceListAttributeEditWidget(ReferenceListAttribute<T,?> referenceListAttribute, TableView<T> tableView, Consumer<Data> navigateToData, UniformDesign uniformDesign, Supplier<List<? extends T>> newValueProvider, Supplier<Collection<? extends Data>> possibleValuesProvider, BiConsumer<T,List<T>> deleter , boolean isUserEditable, boolean isUserSelectable, boolean isUserCreateable) {
         this.uniformDesign = uniformDesign;
-        this.emptyAdder = emptyAdder;
+        this.newValueProvider = newValueProvider;
         this.possibleValuesProvider = possibleValuesProvider;
         this.isUserEditable = isUserEditable;
         this.isUserSelectable = isUserSelectable;
@@ -77,7 +74,7 @@ public class ReferenceListAttributeEditWidget<T extends Data> implements Widget 
 
     public ReferenceListAttributeEditWidget(TableView<T> tableView, Consumer<Data> navigateToData, UniformDesign uniformDesign, ReferenceListAttribute<T,?> referenceListAttribute) {
         this(referenceListAttribute, tableView, navigateToData, uniformDesign,
-                referenceListAttribute::internal_addNewFactory, referenceListAttribute::internal_possibleValues, (t, ts) -> referenceListAttribute.internal_deleteFactory(t),
+                referenceListAttribute::internal_createNewPossibleValues, referenceListAttribute::internal_possibleValues, (t, ts) -> referenceListAttribute.internal_deleteFactory(t),
                 referenceListAttribute.internal_isUserEditable(), referenceListAttribute.internal_isUserSelectable(), referenceListAttribute.internal_isUserCreatable());
     }
 
@@ -99,8 +96,7 @@ public class ReferenceListAttributeEditWidget<T extends Data> implements Widget 
         Button adderButton = new Button();
         uniformDesign.addIcon(adderButton,FontAwesome.Glyph.PLUS);
         adderButton.setOnAction(event -> {
-            emptyAdder.run();
-            navigateToData.accept(referenceListAttribute.get(referenceListAttribute.size()-1));
+            addNewReference(adderButton.getScene().getWindow());
         });
         adderButton.setDisable(!isUserEditable || !isUserCreateable);
 
@@ -197,6 +193,24 @@ public class ReferenceListAttributeEditWidget<T extends Data> implements Widget 
             final List<T> selectedItems = new ArrayList<>(tableView.getSelectionModel().getSelectedItems());
             selectedItems.forEach(t -> deleter.accept(t,referenceListAttribute));
         }
+    }
+
+    private void addNewReference(Window owner) {
+        List<? extends T> newDataList = newValueProvider.get();
+        if (!newDataList.isEmpty()){
+            if (newDataList.size()==1){
+                referenceListAttribute.add((T)newDataList.get(0));
+                navigateToData.accept(newDataList.get(0));
+            } else {
+                List<Data> newDataListData = new ArrayList<>(newDataList);
+                new SelectDataDialog(newDataListData,uniformDesign).show(owner, data -> {
+                    referenceListAttribute.add((T) data);
+                    navigateToData.accept(data);
+                });
+            }
+        }
+
+
     }
 
 }

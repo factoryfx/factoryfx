@@ -3,6 +3,7 @@ package de.factoryfx.factory.atrribute;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import de.factoryfx.data.Data;
 import de.factoryfx.data.attribute.ReferenceAttribute;
+import de.factoryfx.data.attribute.ReferenceListAttribute;
 import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.factory.PolymorphicFactory;
 
@@ -14,29 +15,25 @@ import java.util.*;
  *
  * @param <L> the base interface/class
  */
-public class FactoryPolymorphicReferenceAttribute<L> extends ReferenceAttribute<FactoryBase<L,?>,FactoryPolymorphicReferenceAttribute<L>> {
+public class FactoryPolymorphicReferenceListAttribute<L> extends ReferenceListAttribute<FactoryBase<L,?>,FactoryPolymorphicReferenceListAttribute<L>> {
 
 
-    @JsonCreator
-    protected FactoryPolymorphicReferenceAttribute(FactoryBase<L,?> value) {
-        super(value);
-    }
-
-    public FactoryPolymorphicReferenceAttribute() {
+    public FactoryPolymorphicReferenceListAttribute() {
         super();
     }
 
     @SafeVarargs
-    public FactoryPolymorphicReferenceAttribute(Class<L> liveObjectClass, Class<? extends PolymorphicFactory<?>>... possibleFactoriesClasses) {
+    public FactoryPolymorphicReferenceListAttribute(Class<L> liveObjectClass, Class<? extends PolymorphicFactory<?>>... possibleFactoriesClasses) {
         super();
         setup(liveObjectClass,possibleFactoriesClasses);
     }
 
-    public L instance(){
-        if (get()==null){
-            return null;
+    public List<L> instances(){
+        ArrayList<L> result = new ArrayList<>();
+        for(FactoryBase<L, ?> item: get()){
+            result.add(item.internalFactory().instance());
         }
-        return get().internalFactory().instance();
+        return result;
     }
 
     private List<Class<?>> possibleFactoriesClasses;
@@ -50,7 +47,7 @@ public class FactoryPolymorphicReferenceAttribute<L> extends ReferenceAttribute<
      */
     @SuppressWarnings("unchecked")
     @SafeVarargs
-    public final FactoryPolymorphicReferenceAttribute<L> setupUnsafe(Class liveObjectClass, Class... possibleFactoriesClasses){
+    public final FactoryPolymorphicReferenceListAttribute<L> setupUnsafe(Class liveObjectClass, Class... possibleFactoriesClasses){
         this.possibleFactoriesClasses=Arrays.asList(possibleFactoriesClasses);
         for (Class clazz: possibleFactoriesClasses){
             if (!FactoryBase.class.isAssignableFrom(clazz)){
@@ -68,7 +65,7 @@ public class FactoryPolymorphicReferenceAttribute<L> extends ReferenceAttribute<
      */
     @SuppressWarnings("unchecked")
     @SafeVarargs
-    public final FactoryPolymorphicReferenceAttribute<L> setup(Class<L> liveObjectClass, Class<? extends PolymorphicFactory<?>>... possibleFactoriesClasses){
+    public final FactoryPolymorphicReferenceListAttribute<L> setup(Class<L> liveObjectClass, Class<? extends PolymorphicFactory<?>>... possibleFactoriesClasses){
         this.possibleFactoriesClasses=Arrays.asList(possibleFactoriesClasses);
         new FactoryPolymorphicUtil<L>().setup(this,liveObjectClass,()->this.root,possibleFactoriesClasses);
         return this;
