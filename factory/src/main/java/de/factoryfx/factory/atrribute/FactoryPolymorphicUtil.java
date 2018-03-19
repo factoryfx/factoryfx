@@ -12,9 +12,9 @@ import java.util.function.Supplier;
 
 public class FactoryPolymorphicUtil<L> {
     @SuppressWarnings("unchecked")
-    public void setup(ReferenceBaseAttribute<FactoryBase<L,?>,?,?> attribute, Class<L> liveObjectClass, Supplier<Data> root, Class<? extends PolymorphicFactory<?>>... possibleFactoriesClasses){
+    public void setup(ReferenceBaseAttribute<FactoryBase<? extends L,?>,?,?> attribute, Class<L> liveObjectClass, Supplier<Data> root, Class<? extends PolymorphicFactory<?>>... possibleFactoriesClasses){
         attribute.possibleValueProvider(data -> {
-            Set<FactoryBase<L, ?>> result = new HashSet<>();
+            Set<FactoryBase<? extends L, ?>> result = new HashSet<>();
             for (Data factory: root.get().internal().collectChildrenDeep()){
                 if (factory instanceof PolymorphicFactory){
                     if (liveObjectClass.isAssignableFrom(((PolymorphicFactory)factory).getLiveObjectClass())){
@@ -41,7 +41,7 @@ public class FactoryPolymorphicUtil<L> {
 
         attribute.newValuesProvider(data -> {
             try {
-                ArrayList<FactoryBase<L, ?>> result = new ArrayList<>();
+                ArrayList<FactoryBase<? extends L, ?>> result = new ArrayList<>();
                 for (Class<?> clazz: possibleFactoriesClasses){
                     result.add((FactoryBase<L, ?>) clazz.newInstance());
                 }

@@ -14,7 +14,7 @@ import java.util.*;
  *
  * @param <L> the base interface/class
  */
-public class FactoryPolymorphicReferenceAttribute<L> extends ReferenceAttribute<FactoryBase<L,?>,FactoryPolymorphicReferenceAttribute<L>> {
+public class FactoryPolymorphicReferenceAttribute<L> extends ReferenceAttribute<FactoryBase<? extends L,?>,FactoryPolymorphicReferenceAttribute<L>> {
 
 
     @JsonCreator
@@ -82,5 +82,4 @@ public class FactoryPolymorphicReferenceAttribute<L> extends ReferenceAttribute<
     public List<Class<?>> internal_possibleFactoriesClasses(){
         return possibleFactoriesClasses;
     }
-
 }

@@ -1,5 +1,7 @@
 package de.factoryfx.factory.atrribute;
 
+import de.factoryfx.factory.PolymorphicFactoryBase;
+import de.factoryfx.factory.testfactories.poly.ErrorPrinter;
 import de.factoryfx.factory.testfactories.poly.ErrorPrinterFactory;
 import de.factoryfx.factory.testfactories.poly.OutPrinterFactory;
 import de.factoryfx.factory.testfactories.poly.Printer;
@@ -36,7 +38,7 @@ public class FactoryPolymorphicReferenceAttributeTest {
         PolymorphicFactoryExample polymorphicFactoryExample = new PolymorphicFactoryExample();
         polymorphicFactoryExample = polymorphicFactoryExample.internal().prepareUsableCopy();
 
-        List<FactoryBase<Printer, ?>> factoryBases = polymorphicFactoryExample.reference.internal_createNewPossibleValues();
+        List<FactoryBase<? extends Printer, ?>> factoryBases = polymorphicFactoryExample.reference.internal_createNewPossibleValues();
         Assert.assertEquals(ErrorPrinterFactory.class,new ArrayList<>(factoryBases).get(0).getClass());
         Assert.assertEquals(OutPrinterFactory.class,new ArrayList<>(polymorphicFactoryExample.reference.internal_createNewPossibleValues()).get(1).getClass());
     }
@@ -71,5 +73,21 @@ public class FactoryPolymorphicReferenceAttributeTest {
         FactoryPolymorphicReferenceAttribute<Printer> attribute = new FactoryPolymorphicReferenceAttribute<>(Printer.class, ErrorPrinterFactory.class, OutPrinterFactory.class);
         Assert.assertEquals(ErrorPrinterFactory.class,attribute.internal_possibleFactoriesClasses().get(0));
         Assert.assertEquals(OutPrinterFactory.class,attribute.internal_possibleFactoriesClasses().get(1));
+    }
+
+    public static class ErrorPrinterFactory2 extends PolymorphicFactoryBase<ErrorPrinter,Void> {
+        @Override
+        public ErrorPrinter createImpl() {
+            return new ErrorPrinter();
+        }
+    }
+
+    @Test
+    public void test_set(){
+        PolymorphicFactoryExample polymorphicFactoryExample = new PolymorphicFactoryExample();
+        polymorphicFactoryExample = polymorphicFactoryExample.internal().prepareUsableCopy();
+        ErrorPrinterFactory2 errorPrinterFactory = new ErrorPrinterFactory2();
+        polymorphicFactoryExample.reference.set(errorPrinterFactory);
+        Assert.assertEquals(errorPrinterFactory,new ArrayList<>(polymorphicFactoryExample.reference.internal_possibleValues()).get(0));
     }
 }
