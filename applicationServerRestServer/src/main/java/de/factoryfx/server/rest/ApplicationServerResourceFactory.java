@@ -2,6 +2,7 @@ package de.factoryfx.server.rest;
 
 import java.util.Optional;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 
 import de.factoryfx.data.attribute.types.ObjectValueAttribute;
 import de.factoryfx.factory.FactoryBase;
@@ -24,6 +25,7 @@ public class ApplicationServerResourceFactory<V,RL,R extends FactoryBase<RL,V>,S
 
     public final FactoryPolymorphicReferenceAttribute<UserManagement> userManagement = new FactoryPolymorphicReferenceAttribute<UserManagement>().setupUnsafe(UserManagement.class, NoUserManagementFactory.class, PersistentUserManagementFactory.class).labelText("resource");
     public final ObjectValueAttribute<Predicate<Optional<AuthorizedUser>>> authorizedKeyUserEvaluator= new ObjectValueAttribute<Predicate<Optional<AuthorizedUser>>>().labelText("authorizedKeyUserEvaluator");
+    public final ObjectValueAttribute<Supplier<V>> emptyVisitorCreator= new ObjectValueAttribute<Supplier<V>>().labelText("emptyVisitorCreator");
 
     public ApplicationServerResourceFactory(){
         configLiveCycle().setCreator(() -> {
@@ -35,7 +37,7 @@ public class ApplicationServerResourceFactory<V,RL,R extends FactoryBase<RL,V>,S
             if (userManagementInstance==null) {
                 userManagementInstance=new NoUserManagement();
             }
-            return new ApplicationServerResource<>(applicationServer.get(), userManagementInstance, authorizedKeyUserEvaluator);
+            return new ApplicationServerResource<>(applicationServer.get(), userManagementInstance, authorizedKeyUserEvaluator,emptyVisitorCreator.get());
         });
 
         config().setDisplayTextProvider(()->"Resource");
