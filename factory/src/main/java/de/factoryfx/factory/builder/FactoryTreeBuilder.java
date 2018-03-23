@@ -5,6 +5,9 @@ import de.factoryfx.factory.FactoryBase;
 import java.util.function.Function;
 
 /** utility class to build a factory hierarchy
+ *
+ *  see RichClientBuilder for an example
+ *
  * @param <V>  vistor
  * @param <RL> root liveobject
  * @param <R> root factory

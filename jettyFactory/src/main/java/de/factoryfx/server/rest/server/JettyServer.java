@@ -18,6 +18,7 @@ import org.eclipse.jetty.server.handler.gzip.GzipHandler;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.glassfish.jersey.CommonProperties;
+import org.glassfish.jersey.logging.LoggingFeature;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.servlet.ServletContainer;
 
@@ -28,11 +29,12 @@ public class JettyServer {
     private final UpdateableServlet rootServlet;
     private boolean disposed = false;
     private final ObjectMapper objectMapper;
+    private final LoggingFeature loggingFeature;
 
-
-    public JettyServer(List<HttpServerConnectorCreator> connectors, List<Object> resources, List<Handler> additionalHandlers, ObjectMapper objectMapper) {
+    public JettyServer(List<HttpServerConnectorCreator> connectors, List<Object> resources, List<Handler> additionalHandlers, ObjectMapper objectMapper, LoggingFeature loggingFeature) {
         server=new org.eclipse.jetty.server.Server();
         this.objectMapper=objectMapper;
+        this.loggingFeature=loggingFeature;
         currentConnectors.addAll(connectors);
         for (HttpServerConnectorCreator creator : currentConnectors) {
             creator.addToServer(server);
@@ -63,12 +65,14 @@ public class JettyServer {
         server.setHandler(handlers);
     }
 
-    public JettyServer(List<HttpServerConnectorCreator> connectors, List<Object> resources, ObjectMapper objectMapper) {
-        this(connectors,resources,new ArrayList<>(),objectMapper!=null?objectMapper:ObjectMapperBuilder.buildNewObjectMapper());
+    public JettyServer(List<HttpServerConnectorCreator> connectors, List<Object> resources, ObjectMapper objectMapper, LoggingFeature loggingFeature) {
+        this(connectors,resources,new ArrayList<>(),
+                objectMapper!=null?objectMapper:ObjectMapperBuilder.buildNewObjectMapper(),
+                loggingFeature!=null?loggingFeature:new org.glassfish.jersey.logging.LoggingFeature(new DelegatingLoggingFilterLogger()));
     }
 
     public JettyServer(List<HttpServerConnectorCreator> connectors, List<Object> resources) {
-        this(connectors,resources,new ArrayList<>(),ObjectMapperBuilder.buildNewObjectMapper());
+        this(connectors,resources,new ArrayList<>(),ObjectMapperBuilder.buildNewObjectMapper(),new org.glassfish.jersey.logging.LoggingFeature(new DelegatingLoggingFilterLogger()));
     }
 
     private JettyServer(JettyServer priorServer) {
@@ -77,6 +81,7 @@ public class JettyServer {
         this.server = priorServer.server;
         priorServer.disposed = true;
         this.objectMapper = priorServer.objectMapper;
+        this.loggingFeature = priorServer.loggingFeature;
     }
 
     private ResourceConfig jerseySetup(List<Object>  resource) {
@@ -93,8 +98,7 @@ public class JettyServer {
         provider.setMapper(objectMapper);
         resourceConfig.register(provider);
 
-        org.glassfish.jersey.logging.LoggingFeature loggingFilter = new org.glassfish.jersey.logging.LoggingFeature(new DelegatingLoggingFilterLogger());
-        resourceConfig.registerInstances(loggingFilter);
+        resourceConfig.registerInstances(loggingFeature);
         return resourceConfig;
     }
 
