@@ -59,6 +59,10 @@ public class EncryptedStringAttribute extends ImmutableValueAttribute<EncryptedS
         }
     }
 
+    public void encrypt(String value, String key) {
+        this.set(new EncryptedString(value,key));
+    }
+
     public String decrypt(String key) {
         return get().decrypt(key);
     }
