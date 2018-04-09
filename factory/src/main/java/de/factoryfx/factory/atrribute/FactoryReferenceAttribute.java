@@ -1,7 +1,6 @@
 package de.factoryfx.factory.atrribute;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
-import com.sun.org.apache.bcel.internal.generic.RETURN;
 import de.factoryfx.data.Data;
 import de.factoryfx.data.attribute.ReferenceAttribute;
 import de.factoryfx.data.util.LanguageText;
