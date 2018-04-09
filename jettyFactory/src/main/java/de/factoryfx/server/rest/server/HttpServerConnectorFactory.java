@@ -10,7 +10,7 @@ import org.eclipse.jetty.util.ssl.SslContextFactory;
 public class HttpServerConnectorFactory<V> extends SimpleFactoryBase<HttpServerConnectorCreator,V> {
     public final StringAttribute host = new StringAttribute().de("host").en("host");
     public final IntegerAttribute port = new IntegerAttribute().de("port").en("port");
-    public final FactoryReferenceAttribute<SslContextFactory,SslContextFactoryFactory<V>> ssl = new FactoryReferenceAttribute<SslContextFactory,SslContextFactoryFactory<V>>().setupUnsafe(SslContextFactoryFactory.class).de("ssl").en("ssl");
+    public final FactoryReferenceAttribute<SslContextFactory,SslContextFactoryFactory<V>> ssl = new FactoryReferenceAttribute<SslContextFactory,SslContextFactoryFactory<V>>().setupUnsafe(SslContextFactoryFactory.class).de("ssl").en("ssl").nullable();
 
     @Override
     public HttpServerConnectorCreator createImpl() {

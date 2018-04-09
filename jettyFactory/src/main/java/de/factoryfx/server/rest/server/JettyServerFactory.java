@@ -32,8 +32,8 @@ public abstract class JettyServerFactory<V> extends FactoryBase<JettyServer,V> {
     /** jersey resource class with Annotations*/
 //    public final FactoryReferenceListAttribute<Object,FactoryBase<?,V>> resources = new FactoryReferenceListAttribute<Object,FactoryBase<?,V>>().setupUnsafe(FactoryBase.class).labelText("resource");
     public final FactoryReferenceListAttribute<HttpServerConnectorCreator,HttpServerConnectorFactory<V>> connectors = new FactoryReferenceListAttribute<HttpServerConnectorCreator,HttpServerConnectorFactory<V>>().setupUnsafe(HttpServerConnectorFactory.class).labelText("connectors").userNotSelectable();
-    public final FactoryReferenceAttribute<ObjectMapper,FactoryBase<ObjectMapper,V>> objectMapper = new FactoryReferenceAttribute<ObjectMapper,FactoryBase<ObjectMapper,V>>().setupUnsafe(FactoryBase.class).labelText("object mapper").userReadOnly();
-    public final FactoryReferenceAttribute<org.glassfish.jersey.logging.LoggingFeature,FactoryBase<org.glassfish.jersey.logging.LoggingFeature,V>> restLogging = new FactoryReferenceAttribute<org.glassfish.jersey.logging.LoggingFeature,FactoryBase<org.glassfish.jersey.logging.LoggingFeature,V>>().setupUnsafe(FactoryBase.class).labelText("restLogging").userReadOnly();
+    public final FactoryReferenceAttribute<ObjectMapper,FactoryBase<ObjectMapper,V>> objectMapper = new FactoryReferenceAttribute<ObjectMapper,FactoryBase<ObjectMapper,V>>().setupUnsafe(FactoryBase.class).labelText("object mapper").userReadOnly().nullable();
+    public final FactoryReferenceAttribute<org.glassfish.jersey.logging.LoggingFeature,FactoryBase<org.glassfish.jersey.logging.LoggingFeature,V>> restLogging = new FactoryReferenceAttribute<org.glassfish.jersey.logging.LoggingFeature,FactoryBase<org.glassfish.jersey.logging.LoggingFeature,V>>().setupUnsafe(FactoryBase.class).labelText("restLogging").userReadOnly().nullable();
 
 
     public JettyServerFactory(){

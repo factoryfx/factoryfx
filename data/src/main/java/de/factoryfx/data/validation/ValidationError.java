@@ -36,6 +36,6 @@ public class ValidationError {
 
 
     public String getSimpleErrorDescription(){
-        return validationDescriptionForChild(Locale.ENGLISH);
+        return parent.getClass()+" | "+validationDescriptionForChild(Locale.ENGLISH);
     }
 }
