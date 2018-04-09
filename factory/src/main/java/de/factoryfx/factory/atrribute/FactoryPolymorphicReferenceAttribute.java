@@ -18,7 +18,7 @@ import java.util.*;
  *
  * @param <L> the base interface/class
  */
-public class FactoryPolymorphicReferenceAttribute<L> extends ReferenceAttribute<FactoryBase<? extends L,?>,FactoryPolymorphicReferenceAttribute<L>> {
+public class FactoryPolymorphicReferenceAttribute<L> extends FactoryReferenceAttributeBase<L,FactoryBase<? extends L,?>,FactoryPolymorphicReferenceAttribute<L>> {
 
     private static final Validation requiredValidation = value -> {
         boolean error = value == null;
@@ -44,12 +44,6 @@ public class FactoryPolymorphicReferenceAttribute<L> extends ReferenceAttribute<
         this.validation(requiredValidation);
     }
 
-    public L instance(){
-        if (get()==null){
-            return null;
-        }
-        return get().internalFactory().instance();
-    }
 
     private List<Class<?>> possibleFactoriesClasses;
 
@@ -95,22 +89,4 @@ public class FactoryPolymorphicReferenceAttribute<L> extends ReferenceAttribute<
         return possibleFactoriesClasses;
     }
 
-    private boolean nullable;
-    public FactoryPolymorphicReferenceAttribute<L> nullable(){
-        nullable=true;
-        return this;
-    }
-
-    @Override
-    public List<ValidationError> internal_validate(Data parent) {
-        if (!nullable){
-            this.validation(requiredValidation);// to minimise object creations
-        }
-        return super.internal_validate(parent);
-    }
-
-    @Override
-    public boolean internal_required() {
-        return !nullable;
-    }
 }
