@@ -12,7 +12,7 @@ idea {
 
 wrapper {
     gradleVersion = '4.5.1'
-    distributionType = DistributionType.ALL
+    distributionType = org.gradle.api.tasks.wrapper.Wrapper.DistributionType.ALL
 }
 
 
