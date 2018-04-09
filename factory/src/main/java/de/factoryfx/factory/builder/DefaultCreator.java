@@ -7,7 +7,6 @@ import de.factoryfx.factory.atrribute.FactoryReferenceAttribute;
 import de.factoryfx.factory.atrribute.FactoryReferenceListAttribute;
 
 import java.util.List;
-import java.util.function.Consumer;
 import java.util.function.Function;
 
 public class DefaultCreator<V,F extends FactoryBase<?,V>> implements Function<FactoryContext<V>, F> {

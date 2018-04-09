@@ -2,16 +2,13 @@ package de.factoryfx.docu.monitoring;
 
 import com.codahale.metrics.ConsoleReporter;
 import com.codahale.metrics.MetricRegistry;
-import com.codahale.metrics.jetty9.InstrumentedHandler;
 import de.factoryfx.server.rest.server.HttpServerConnectorCreator;
 import de.factoryfx.server.rest.server.JettyServer;
-import org.eclipse.jetty.server.Handler;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
 import java.util.List;
 
 /*

@@ -1,8 +1,5 @@
 package de.factoryfx.factory.atrribute;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import de.factoryfx.data.Data;
-import de.factoryfx.data.attribute.ReferenceAttribute;
 import de.factoryfx.data.attribute.ReferenceListAttribute;
 import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.factory.PolymorphicFactory;

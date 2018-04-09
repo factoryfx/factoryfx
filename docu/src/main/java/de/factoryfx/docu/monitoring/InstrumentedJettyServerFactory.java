@@ -9,10 +9,8 @@ import de.factoryfx.factory.atrribute.FactoryReferenceListAttribute;
 import de.factoryfx.server.rest.server.*;
 import org.glassfish.jersey.logging.LoggingFeature;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.function.Consumer;
 
 /*
     connect ServerVisitor with InstrumentedJettyServer

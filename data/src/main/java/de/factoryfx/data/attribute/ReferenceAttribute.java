@@ -163,6 +163,7 @@ public abstract class ReferenceAttribute<T extends Data, A extends ReferenceBase
      * @param id unique id, usually a uuid
      * @return self
      * */
+    @SuppressWarnings("unchecked")
     public A defaultValue(T defaultValue, String id) {
         set(defaultValue);
         get().setId(id);

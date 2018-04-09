@@ -1,6 +1,5 @@
 package de.factoryfx.javafx.javascript.editor.attribute.visualisation;
 
-import java.io.IOException;
 import java.io.OutputStream;
 
 public class DiscardOutputStream extends OutputStream {

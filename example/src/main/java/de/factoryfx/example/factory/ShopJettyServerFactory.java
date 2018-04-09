@@ -5,7 +5,7 @@ import de.factoryfx.server.rest.ApplicationServerResource;
 import de.factoryfx.server.rest.ApplicationServerResourceFactory;
 import de.factoryfx.server.rest.server.JettyServerFactory;
 
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 public class ShopJettyServerFactory extends JettyServerFactory<OrderCollector> {
@@ -13,6 +13,6 @@ public class ShopJettyServerFactory extends JettyServerFactory<OrderCollector> {
 
     @Override
     protected List<Object> getResourcesInstances() {
-        return Arrays.asList(resource.instance());
+        return Collections.singletonList(resource.instance());
     }
 }

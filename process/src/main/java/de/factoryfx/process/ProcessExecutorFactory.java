@@ -9,6 +9,6 @@ public class ProcessExecutorFactory<P extends Process,PP extends ProcessParamete
 
     @Override
     public ProcessExecutor<P, PP> createImpl() {
-        return new ProcessExecutor<>(processStorage.instance());
+        return new ProcessExecutor<P, PP>(processStorage.instance());
     }
 }

@@ -1,8 +1,16 @@
 package de.factoryfx.factory.atrribute;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.sun.org.apache.bcel.internal.generic.RETURN;
+import de.factoryfx.data.Data;
 import de.factoryfx.data.attribute.ReferenceAttribute;
+import de.factoryfx.data.util.LanguageText;
+import de.factoryfx.data.validation.Validation;
+import de.factoryfx.data.validation.ValidationError;
+import de.factoryfx.data.validation.ValidationResult;
 import de.factoryfx.factory.FactoryBase;
+
+import java.util.List;
 
 /**
  * Attribute with factory
@@ -11,19 +19,31 @@ import de.factoryfx.factory.FactoryBase;
  */
 public class FactoryReferenceAttribute<L, F extends FactoryBase<? extends L,?>> extends ReferenceAttribute<F,FactoryReferenceAttribute<L, F>> {
 
+    private static final Validation requiredValidation = value -> {
+        boolean error = value == null;
+        return new ValidationResult(error, new LanguageText().en("required parameter").de("Pflichtparameter"));
+    };
+
     @JsonCreator
+    @SuppressWarnings("unchecked")
     protected FactoryReferenceAttribute(F value) {
         super(value);
     }
 
 
     public FactoryReferenceAttribute(Class<F> clazz) {
-        super();
+        this();
         setup(clazz);
     }
 
+    @SuppressWarnings("unchecked")
     public FactoryReferenceAttribute() {
         super();
+    }
+
+    @Override
+    public boolean internal_required() {
+        return !nullable;
     }
 
     public L instance(){
@@ -43,4 +63,17 @@ public class FactoryReferenceAttribute<L, F extends FactoryBase<? extends L,?>> 
         return super.setup(clazz);
     }
 
+    private boolean nullable;
+    public FactoryReferenceAttribute<L, F> nullable(){
+        nullable=true;
+        return this;
+    }
+
+    @Override
+    public List<ValidationError> internal_validate(Data parent) {
+        if (!nullable){
+            this.validation(requiredValidation);// to minimise object creations
+        }
+        return super.internal_validate(parent);
+    }
 }

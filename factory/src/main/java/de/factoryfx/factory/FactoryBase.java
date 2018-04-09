@@ -8,7 +8,6 @@ import java.util.function.Supplier;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.google.common.base.Throwables;
 import com.google.common.collect.TreeTraverser;
 import de.factoryfx.data.Data;

@@ -26,11 +26,15 @@ public class DelegatingLoggingFilterLogger extends Logger {
 
     @Override
     public void info(String msg) {
-        logger.info(msg);
+        log(msg);
     }
 
     @Override
     public void log(Level level, String msg) {
+        log(msg);
+    }
+
+    protected void log(String msg) {
         logger.info(msg);
     }
 }

@@ -14,7 +14,7 @@ import de.factoryfx.data.validation.ValidationResult;
 public abstract class Attribute<T,A extends Attribute<T,A>>{
 
     @JsonIgnore
-    private List<Validation<T>> validations;
+    private Set<Validation<T>> validations;
 
     public Attribute() {
 
@@ -175,7 +175,7 @@ public abstract class Attribute<T,A extends Attribute<T,A>>{
     @SuppressWarnings("unchecked")
     public A validation(Validation<T> validation){
         if (validations==null){
-            validations=new ArrayList<>();
+            validations=new HashSet<>();
         }
         this.validations.add(validation);
         return (A)this;
@@ -365,6 +365,12 @@ public abstract class Attribute<T,A extends Attribute<T,A>>{
             return tooltipDe;
         }
         return "";
+    }
+
+    @SuppressWarnings("unchecked")
+    public A required(){
+        this.validation(new ObjectRequired<>());
+        return (A)this;
     }
 
 

@@ -3,6 +3,10 @@ package de.factoryfx.factory.atrribute;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import de.factoryfx.data.Data;
 import de.factoryfx.data.attribute.ReferenceAttribute;
+import de.factoryfx.data.util.LanguageText;
+import de.factoryfx.data.validation.Validation;
+import de.factoryfx.data.validation.ValidationError;
+import de.factoryfx.data.validation.ValidationResult;
 import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.factory.PolymorphicFactory;
 
@@ -16,20 +20,28 @@ import java.util.*;
  */
 public class FactoryPolymorphicReferenceAttribute<L> extends ReferenceAttribute<FactoryBase<? extends L,?>,FactoryPolymorphicReferenceAttribute<L>> {
 
+    private static final Validation requiredValidation = value -> {
+        boolean error = value == null;
+        return new ValidationResult(error, new LanguageText().en("required parameter").de("Pflichtparameter"));
+    };
 
     @JsonCreator
+    @SuppressWarnings("unchecked")
     protected FactoryPolymorphicReferenceAttribute(FactoryBase<L,?> value) {
         super(value);
     }
 
+    @SuppressWarnings("unchecked")
     public FactoryPolymorphicReferenceAttribute() {
         super();
     }
 
     @SafeVarargs
+    @SuppressWarnings("unchecked")
     public FactoryPolymorphicReferenceAttribute(Class<L> liveObjectClass, Class<? extends PolymorphicFactory<?>>... possibleFactoriesClasses) {
         super();
         setup(liveObjectClass,possibleFactoriesClasses);
+        this.validation(requiredValidation);
     }
 
     public L instance(){
@@ -81,5 +93,24 @@ public class FactoryPolymorphicReferenceAttribute<L> extends ReferenceAttribute<
      * */
     public List<Class<?>> internal_possibleFactoriesClasses(){
         return possibleFactoriesClasses;
+    }
+
+    private boolean nullable;
+    public FactoryPolymorphicReferenceAttribute<L> nullable(){
+        nullable=true;
+        return this;
+    }
+
+    @Override
+    public List<ValidationError> internal_validate(Data parent) {
+        if (!nullable){
+            this.validation(requiredValidation);// to minimise object creations
+        }
+        return super.internal_validate(parent);
+    }
+
+    @Override
+    public boolean internal_required() {
+        return !nullable;
     }
 }

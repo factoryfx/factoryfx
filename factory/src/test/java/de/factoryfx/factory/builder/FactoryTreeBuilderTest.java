@@ -37,7 +37,7 @@ public class FactoryTreeBuilderTest {
         });
 
 
-        ExampleFactoryA root = factoryTreeBuilder.buildTree();
+        ExampleFactoryA root = factoryTreeBuilder.buildTreeUnvalidated();
 
 
         System.out.println(ObjectMapperBuilder.build().writeValueAsString(root));
@@ -60,7 +60,7 @@ public class FactoryTreeBuilderTest {
             return factory;
         });
 
-        ExampleFactoryA root = factoryTreeBuilder.buildTree();
+        ExampleFactoryA root = factoryTreeBuilder.buildTreeUnvalidated();
 
         System.out.println(ObjectMapperBuilder.build().writeValueAsString(root));
     }
@@ -92,7 +92,7 @@ public class FactoryTreeBuilderTest {
             return factory;
         });
 
-        FactoryTestA root = factoryTreeBuilder.buildTree();
+        FactoryTestA root = factoryTreeBuilder.buildTreeUnvalidated();
         Assert.assertEquals(root.referenceAttribute1.get(),root.referenceAttribute2.get());
     }
 
@@ -112,7 +112,7 @@ public class FactoryTreeBuilderTest {
             return factory;
         });
 
-        FactoryTestA root = factoryTreeBuilder.buildTree();
+        FactoryTestA root = factoryTreeBuilder.buildTreeUnvalidated();
         Assert.assertNotEquals(root.referenceAttribute1.get(),root.referenceAttribute2.get());
 
     }
@@ -130,10 +130,32 @@ public class FactoryTreeBuilderTest {
 
         factoryTreeBuilder.addFactory(ErrorPrinterFactory.class, Scope.SINGLETON);
 
-        ExamplePolymorphic root = factoryTreeBuilder.buildTree();
+        ExamplePolymorphic root = factoryTreeBuilder.buildTreeUnvalidated();
         Assert.assertNotNull(root.attribute.get());
 
     }
 
+
+    @Test(expected=IllegalStateException.class)
+    public void test_simple_validation(){
+        FactoryTreeBuilder<Void,ExampleLiveObjectA,ExampleFactoryA> factoryTreeBuilder = new FactoryTreeBuilder<>(ExampleFactoryA.class);
+
+        factoryTreeBuilder.addFactory(ExampleFactoryA.class, Scope.PROTOTYPE);
+        factoryTreeBuilder.addFactory(ExampleFactoryB.class, Scope.PROTOTYPE, context -> {
+            ExampleFactoryB factory = new ExampleFactoryB();
+            factory.referenceAttributeC.set(context.get(ExampleFactoryC.class));
+            factory.referenceAttribute.set(new ExampleFactoryA());
+            return factory;
+        });
+        factoryTreeBuilder.addFactory(ExampleFactoryC.class, Scope.PROTOTYPE, context -> {
+            ExampleFactoryC factory = new ExampleFactoryC();
+            factory.referenceAttribute.set(new ExampleFactoryB());
+            return factory;
+        });
+
+        ExampleFactoryA root = factoryTreeBuilder.buildTree();
+
+        System.out.println(ObjectMapperBuilder.build().writeValueAsString(root));
+    }
 
 }

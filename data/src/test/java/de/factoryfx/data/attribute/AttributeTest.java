@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Locale;
 
 import de.factoryfx.data.Data;
+import de.factoryfx.data.attribute.primitive.IntegerAttribute;
 import de.factoryfx.data.attribute.types.StringAttribute;
 import de.factoryfx.data.jackson.ObjectMapperBuilder;
 import de.factoryfx.data.jackson.SimpleObjectMapper;
@@ -82,4 +83,52 @@ public class AttributeTest {
         StringAttribute stringAttribute = new StringAttribute().tooltipEn("hi");
         Assert.assertEquals("hi",stringAttribute.internal_getPreferredTooltipText(Locale.ENGLISH));
     }
+
+    @Test
+    public void test_required_yes(){
+        IntegerAttribute attribute = new IntegerAttribute().required();
+
+        {
+            attribute.set(null);
+            List<ValidationError> validationErrors = attribute.internal_validate(null);
+            Assert.assertEquals(1, validationErrors.size());
+        }
+
+        {
+            attribute.set(1);
+            List<ValidationError> validationErrors = attribute.internal_validate(null);
+            Assert.assertEquals(0, validationErrors.size());
+        }
+    }
+
+
+    @Test
+    public void test_required_internal_yes(){
+        IntegerAttribute attribute = new IntegerAttribute().required();
+        Assert.assertTrue(attribute.internal_required());
+    }
+
+    @Test
+    public void test_required_internal_no(){
+        IntegerAttribute attribute = new IntegerAttribute();
+        Assert.assertFalse(attribute.internal_required());
+    }
+
+    @Test
+    public void test_required_no(){
+        IntegerAttribute attribute = new IntegerAttribute();
+
+        {
+            attribute.set(null);
+            List<ValidationError> validationErrors = attribute.internal_validate(null);
+            Assert.assertEquals(0, validationErrors.size());
+        }
+
+        {
+            attribute.set(1);
+            List<ValidationError> validationErrors = attribute.internal_validate(null);
+            Assert.assertEquals(0, validationErrors.size());
+        }
+    }
+
 }

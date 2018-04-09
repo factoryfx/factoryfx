@@ -1,7 +1,5 @@
 package de.factoryfx.process;
 
-import de.factoryfx.data.Data;
-
 import java.util.ArrayList;
 import java.util.List;
 

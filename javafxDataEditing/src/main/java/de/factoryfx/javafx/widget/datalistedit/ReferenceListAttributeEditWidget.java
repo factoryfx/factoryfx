@@ -198,11 +198,12 @@ public class ReferenceListAttributeEditWidget<T extends Data> implements Widget 
         }
     }
 
+    @SuppressWarnings("unchecked")
     private void addNewReference(Window owner) {
         List<? extends T> newDataList = newValueProvider.get();
         if (!newDataList.isEmpty()){
             if (newDataList.size()==1){
-                referenceListAttribute.add((T)newDataList.get(0));
+                referenceListAttribute.add(newDataList.get(0));
                 navigateToData.accept(newDataList.get(0));
             } else {
                 List<Data> newDataListData = new ArrayList<>(newDataList);

@@ -1,6 +1,9 @@
 package de.factoryfx.factory.atrribute;
 
+import de.factoryfx.data.validation.ValidationError;
 import de.factoryfx.factory.PolymorphicFactoryBase;
+import de.factoryfx.factory.testfactories.ExampleFactoryA;
+import de.factoryfx.factory.testfactories.ExampleLiveObjectA;
 import de.factoryfx.factory.testfactories.poly.ErrorPrinter;
 import de.factoryfx.factory.testfactories.poly.ErrorPrinterFactory;
 import de.factoryfx.factory.testfactories.poly.OutPrinterFactory;
@@ -89,5 +92,51 @@ public class FactoryPolymorphicReferenceAttributeTest {
         ErrorPrinterFactory2 errorPrinterFactory = new ErrorPrinterFactory2();
         polymorphicFactoryExample.reference.set(errorPrinterFactory);
         Assert.assertEquals(errorPrinterFactory,new ArrayList<>(polymorphicFactoryExample.reference.internal_possibleValues()).get(0));
+    }
+
+    @Test
+    public void test_null(){
+        FactoryPolymorphicReferenceAttribute<Printer> attribute = new FactoryPolymorphicReferenceAttribute<Printer>().setup(Printer.class, ErrorPrinterFactory.class, OutPrinterFactory.class);
+
+        {
+            attribute.set(null);
+            List<ValidationError> validationErrors = attribute.internal_validate(new ExampleFactoryA());
+            Assert.assertEquals(1, validationErrors.size());
+        }
+
+        {
+            attribute.set(new ErrorPrinterFactory());
+            List<ValidationError> validationErrors = attribute.internal_validate(new ExampleFactoryA());
+            Assert.assertEquals(0, validationErrors.size());
+        }
+    }
+
+    @Test
+    public void test_nullable(){
+        FactoryPolymorphicReferenceAttribute<Printer> attribute = new FactoryPolymorphicReferenceAttribute<Printer>().setup(Printer.class, ErrorPrinterFactory.class, OutPrinterFactory.class).nullable();
+
+        {
+            attribute.set(null);
+            List<ValidationError> validationErrors = attribute.internal_validate(new ExampleFactoryA());
+            Assert.assertEquals(0, validationErrors.size());
+        }
+
+        {
+            attribute.set(new ErrorPrinterFactory());
+            List<ValidationError> validationErrors = attribute.internal_validate(new ExampleFactoryA());
+            Assert.assertEquals(0, validationErrors.size());
+        }
+    }
+
+    @Test
+    public void test_internal_require_true(){
+        FactoryPolymorphicReferenceAttribute<Printer> attribute = new FactoryPolymorphicReferenceAttribute<Printer>().setup(Printer.class, ErrorPrinterFactory.class, OutPrinterFactory.class);
+        Assert.assertTrue(attribute.internal_required());
+    }
+
+    @Test
+    public void test_internal_require_false(){
+        FactoryPolymorphicReferenceAttribute<Printer> attribute = new FactoryPolymorphicReferenceAttribute<Printer>().setup(Printer.class, ErrorPrinterFactory.class, OutPrinterFactory.class).nullable();
+        Assert.assertFalse(attribute.internal_required());
     }
 }
