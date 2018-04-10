@@ -16,6 +16,6 @@ import de.factoryfx.factory.FactoryBase;
  */
 public abstract class ApplicationServerAwareFactory<V,RL, R extends FactoryBase<RL,V>, FL,S> extends FactoryBase<FL,V> {
 
-    public final ObjectValueAttribute<ApplicationServer<V, RL, R,S>> applicationServer = new ObjectValueAttribute<ApplicationServer<V, RL, R,S>>().labelText("application server");
+    public final ObjectValueAttribute<ApplicationServer<V, RL, R,S>> applicationServer = new ObjectValueAttribute<ApplicationServer<V, RL, R,S>>().labelText("application server").nullable();
 
 }
