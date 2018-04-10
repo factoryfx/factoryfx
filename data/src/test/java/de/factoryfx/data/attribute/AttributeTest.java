@@ -18,7 +18,7 @@ import org.junit.Test;
 
 public class AttributeTest {
     public class ValidationExampleFactory extends Data {
-        public final StringAttribute stringAttribute= new StringAttribute().labelText("ExampleA1").validation(StringRequired.VALIDATION);
+        public final StringAttribute stringAttribute= new StringAttribute().labelText("ExampleA1");
     }
 
     @Test
