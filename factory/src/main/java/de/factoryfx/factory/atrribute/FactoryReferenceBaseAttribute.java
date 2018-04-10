@@ -18,24 +18,24 @@ import java.util.List;
  * @param <A> Attribute self
 
  */
-public class FactoryReferenceAttributeBase<L,F extends FactoryBase<? extends L,?>, A extends ReferenceBaseAttribute<F,F,A>> extends ReferenceAttribute<F,A> {
+public class FactoryReferenceBaseAttribute<L,F extends FactoryBase<? extends L,?>, A extends ReferenceBaseAttribute<F,F,A>> extends ReferenceAttribute<F,A> {
 
 
 
     @JsonCreator
     @SuppressWarnings("unchecked")
-    protected FactoryReferenceAttributeBase(F value) {
+    protected FactoryReferenceBaseAttribute(F value) {
         super(value);
     }
 
 
-    public FactoryReferenceAttributeBase(Class<F> clazz) {
+    public FactoryReferenceBaseAttribute(Class<F> clazz) {
         this();
         setup(clazz);
     }
 
     @SuppressWarnings("unchecked")
-    public FactoryReferenceAttributeBase() {
+    public FactoryReferenceBaseAttribute() {
         super();
     }
 
@@ -57,12 +57,15 @@ public class FactoryReferenceAttributeBase<L,F extends FactoryBase<? extends L,?
     };
 
     private boolean nullable;
+
+    @SuppressWarnings("unchecked")
     public A nullable(){
         nullable=true;
         return (A)this;
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public List<ValidationError> internal_validate(Data parent) {
         if (!nullable){
             this.validation(requiredValidation);// to minimise object creations

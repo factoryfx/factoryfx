@@ -18,7 +18,7 @@ public class JacksonSerialisation<R extends Data, S> implements DataSerialisatio
 
     @Override
     public String writeStorageMetadata(StoredDataMetadata<S> metadata) {
-        return ObjectMapperBuilder.build().writeValueAsString(new StoredDataMetadata<S>(
+        return ObjectMapperBuilder.build().writeValueAsString(new StoredDataMetadata<>(
                 metadata.creationTime,
                 metadata.id,
                 metadata.user,

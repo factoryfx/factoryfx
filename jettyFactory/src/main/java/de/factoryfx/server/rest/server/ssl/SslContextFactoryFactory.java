@@ -3,8 +3,6 @@ package de.factoryfx.server.rest.server.ssl;
 import de.factoryfx.data.attribute.types.Base64Attribute;
 import de.factoryfx.data.attribute.types.EnumAttribute;
 import de.factoryfx.data.attribute.types.StringAttribute;
-import de.factoryfx.data.validation.ObjectRequired;
-import de.factoryfx.data.validation.StringRequired;
 import de.factoryfx.factory.SimpleFactoryBase;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 
@@ -13,15 +11,15 @@ import java.io.InputStream;
 import java.security.KeyStore;
 
 public class SslContextFactoryFactory<V> extends SimpleFactoryBase<SslContextFactory,V> {
-    public final Base64Attribute keyStore=new Base64Attribute().validation(new ObjectRequired<>()).en("keyStore").de("keyStore");
-    public final EnumAttribute<KeyStoreType> keyStoreType=new EnumAttribute<>(KeyStoreType.class).validation(new ObjectRequired<>());
-    public final StringAttribute keyStorePassword = new StringAttribute().en("keyStorePassword").de("keyStorePassword").validation(new StringRequired());
+    public final Base64Attribute keyStore=new Base64Attribute().en("keyStore").de("keyStore");
+    public final EnumAttribute<KeyStoreType> keyStoreType=new EnumAttribute<>(KeyStoreType.class);
+    public final StringAttribute keyStorePassword = new StringAttribute().en("keyStorePassword").de("keyStorePassword");
 
-    public final Base64Attribute trustStore = new Base64Attribute().en("trustStore").de("trustStore").validation(new ObjectRequired<>());
-    public final EnumAttribute<KeyStoreType> trustStoreType=new EnumAttribute<>(KeyStoreType.class).validation(new ObjectRequired<>());
-    public final StringAttribute trustStorePassword = new StringAttribute().en("trustStorePassword").de("trustStorePassword").validation(new StringRequired());
+    public final Base64Attribute trustStore = new Base64Attribute().en("trustStore").de("trustStore");
+    public final EnumAttribute<KeyStoreType> trustStoreType=new EnumAttribute<>(KeyStoreType.class);
+    public final StringAttribute trustStorePassword = new StringAttribute().en("trustStorePassword").de("trustStorePassword");
 
-    public final StringAttribute certAlias = new StringAttribute().en("certAlias").de("certAlias");
+    public final StringAttribute certAlias = new StringAttribute().en("certAlias").de("certAlias").nullable();
 
     @Override
     public SslContextFactory createImpl() {

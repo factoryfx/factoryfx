@@ -1,11 +1,8 @@
 package de.factoryfx.factory.atrribute;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
-import de.factoryfx.data.Data;
-import de.factoryfx.data.attribute.ReferenceAttribute;
 import de.factoryfx.data.util.LanguageText;
 import de.factoryfx.data.validation.Validation;
-import de.factoryfx.data.validation.ValidationError;
 import de.factoryfx.data.validation.ValidationResult;
 import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.factory.PolymorphicFactory;
@@ -18,7 +15,7 @@ import java.util.*;
  *
  * @param <L> the base interface/class
  */
-public class FactoryPolymorphicReferenceAttribute<L> extends FactoryReferenceAttributeBase<L,FactoryBase<? extends L,?>,FactoryPolymorphicReferenceAttribute<L>> {
+public class FactoryPolymorphicReferenceAttribute<L> extends FactoryReferenceBaseAttribute<L,FactoryBase<? extends L,?>,FactoryPolymorphicReferenceAttribute<L>> {
 
     private static final Validation requiredValidation = value -> {
         boolean error = value == null;

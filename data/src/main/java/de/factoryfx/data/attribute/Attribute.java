@@ -367,12 +367,6 @@ public abstract class Attribute<T,A extends Attribute<T,A>>{
         return "";
     }
 
-    @SuppressWarnings("unchecked")
-    public A required(){
-        this.validation(new ObjectRequired<>());
-        return (A)this;
-    }
-
 
 
 }

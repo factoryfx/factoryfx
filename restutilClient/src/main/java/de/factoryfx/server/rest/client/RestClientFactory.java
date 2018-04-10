@@ -11,8 +11,8 @@ public class RestClientFactory<V> extends SimpleFactoryBase<RestClient,V> {
     public final IntegerAttribute port=new IntegerAttribute().labelText("port");
     public final StringAttribute path=new StringAttribute().labelText("path").defaultValue("adminui");
 
-    public final StringAttribute httpAuthenticationUser=new StringAttribute().labelText("httpAuthenticationUser");
-    public final StringAttribute httpAuthenticationPassword=new StringAttribute().labelText("httpAuthenticationPassword");
+    public final StringAttribute httpAuthenticationUser=new StringAttribute().labelText("httpAuthenticationUser").nullable();
+    public final StringAttribute httpAuthenticationPassword=new StringAttribute().labelText("httpAuthenticationPassword").nullable();
 
     @Override
     public RestClient createImpl() {

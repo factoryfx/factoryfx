@@ -15,7 +15,7 @@ import org.controlsfx.glyphfont.FontAwesome.Glyph;
 public class ViewMenuFactory<V> extends SimpleFactoryBase<Menu,V> {
 
     public final I18nAttribute text = new I18nAttribute().de("text").en("text");
-    public final EnumAttribute<Glyph> icon = new EnumAttribute<>(FontAwesome.Glyph.class).de("icon").en("icon");
+    public final EnumAttribute<Glyph> icon = new EnumAttribute<>(FontAwesome.Glyph.class).de("icon").en("icon").nullable();
     public final FactoryReferenceListAttribute<MenuItem,ViewMenuItemFactory<V>> items = new FactoryReferenceListAttribute<MenuItem,ViewMenuItemFactory<V>>().setupUnsafe(ViewMenuItemFactory.class).de("items").en("items");
     public final FactoryReferenceAttribute<UniformDesign,UniformDesignFactory<V>> uniformDesign = new FactoryReferenceAttribute<UniformDesign,UniformDesignFactory<V>>().setupUnsafe(UniformDesignFactory.class).de("view").en("view");
 
