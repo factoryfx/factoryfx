@@ -1,6 +1,5 @@
 package de.factoryfx.factory;
 
-import com.sun.xml.internal.bind.v2.TODO;
 import de.factoryfx.data.attribute.Attribute;
 import de.factoryfx.factory.atrribute.FactoryReferenceAttribute;
 import de.factoryfx.factory.atrribute.FactoryReferenceListAttribute;
