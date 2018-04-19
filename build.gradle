@@ -169,7 +169,6 @@ subprojects {
 
 project(':applicationServerRestServer') {
     dependencies {
-        compile project(":applicationServer")
         compile project(":jettyFactory")
         compile project(":applicationServerRestCommon")
     }
@@ -278,7 +277,6 @@ project(':example') {
         compile project(":jettyFactory")
         compile project(":applicationServerRestServer")
         compile project(":factory")
-        compile project(":applicationServer")
         compile group: 'ch.qos.logback', name: 'logback-classic', version: '1.1.7'
     }
 
@@ -302,7 +300,6 @@ project(':javafxFactoryEditing') {
     dependencies {
         compile project(":factory")
         compile project(":applicationServerRestClient")
-        compile project(":applicationServer")
         compile project(":javafxDataEditing")
         testCompile project(":testfactories")
     }
@@ -370,7 +367,6 @@ project(':docu') {
     uploadArchives.enabled = false
     dependencies {
         compile project(":factory")
-        compile project(":applicationServer")
         compile project(":jettyFactory")
         compile project(":restutilClient")
         compile project(':postgresqlStorage')
