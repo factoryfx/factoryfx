@@ -15,7 +15,7 @@ import de.factoryfx.server.rest.client.ApplicationServerRestClientFactory;
  * @param <VS> server visitor
  * @param <RS> server root
  */
-public class FactoryEditManagerFactory<V,R  extends FactoryBase<?,V>,VS,RS  extends FactoryBase<?,VS>,S> extends SimpleFactoryBase<FactoryEditManager<VS,RS,S>,Void> {
+public class FactoryEditManagerFactory<V,R  extends FactoryBase<?,V,R>,VS,RS  extends FactoryBase<?,VS,RS>,S> extends SimpleFactoryBase<FactoryEditManager<VS,RS,S>,V,R> {
 
     public final FactoryReferenceAttribute<ApplicationServerRestClient<VS,RS>,ApplicationServerRestClientFactory<V,R,VS,RS>> restClient = new FactoryReferenceAttribute<ApplicationServerRestClient<VS,RS>,ApplicationServerRestClientFactory<V,R,VS,RS>>().setupUnsafe(ApplicationServerRestClientFactory.class);
     //TODO refactor to FactoryReferenceAttribute?

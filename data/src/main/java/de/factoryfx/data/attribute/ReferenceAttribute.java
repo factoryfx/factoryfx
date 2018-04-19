@@ -135,6 +135,10 @@ public abstract class ReferenceAttribute<T extends Data, A extends ReferenceBase
         }
     }
 
+    public boolean internal_hasCustomNewValuesProvider(){
+        return newValuesProvider!=null;
+    }
+
     public List<T> internal_createNewPossibleValues(){
         if (newValuesProvider!=null) {
             return newValuesProvider.apply(root);

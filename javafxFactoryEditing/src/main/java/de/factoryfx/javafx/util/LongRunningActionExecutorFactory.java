@@ -1,8 +1,9 @@
 package de.factoryfx.javafx.util;
 
+import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.factory.SimpleFactoryBase;
 
-public class LongRunningActionExecutorFactory<V> extends SimpleFactoryBase<LongRunningActionExecutor,V> {
+public class LongRunningActionExecutorFactory<V,R extends FactoryBase<?,V,R>> extends SimpleFactoryBase<LongRunningActionExecutor,V,R> {
     @Override
     public LongRunningActionExecutor createImpl() {
         return new LongRunningActionExecutor();

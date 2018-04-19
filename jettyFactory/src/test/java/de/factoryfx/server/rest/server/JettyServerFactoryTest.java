@@ -22,8 +22,8 @@ public class JettyServerFactoryTest {
         }
     }
 
-    public static class TestWebserverFactory extends JettyServerFactory<Void>{
-        public final FactoryReferenceAttribute<Resource1,FactoryBase<Resource1,Void>> resource = new FactoryReferenceAttribute<>();
+    public static class TestWebserverFactory extends JettyServerFactory<Void,TestWebserverFactory>{
+        public final FactoryReferenceAttribute<Resource1,FactoryBase<Resource1,Void,TestWebserverFactory>> resource = new FactoryReferenceAttribute<>();
             @Override
         protected List<Object> getResourcesInstances() {
             return Arrays.asList(resource.instance());

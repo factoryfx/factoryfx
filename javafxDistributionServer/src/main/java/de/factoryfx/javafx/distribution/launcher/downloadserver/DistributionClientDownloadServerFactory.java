@@ -5,7 +5,7 @@ import de.factoryfx.data.attribute.primitive.IntegerAttribute;
 import de.factoryfx.data.attribute.types.StringAttribute;
 import de.factoryfx.factory.FactoryBase;
 
-public class DistributionClientDownloadServerFactory<V> extends FactoryBase<DistributionClientDownloadServer,V> {
+public class DistributionClientDownloadServerFactory<V,R extends FactoryBase<?,V,R>> extends FactoryBase<DistributionClientDownloadServer,V,R> {
 
 
     public final StringAttribute host = new StringAttribute().de("host").en("host");

@@ -17,7 +17,7 @@ import de.factoryfx.server.rest.UserLocaleResponse;
 
 
 //TODO use rest proxy client
-public class ApplicationServerRestClient<V, R extends FactoryBase<?,V>> {
+public class ApplicationServerRestClient<V, R extends FactoryBase<?,V,R>> {
 
     private final Class<R> factoryRootClass;
     private final RestClient restClient;

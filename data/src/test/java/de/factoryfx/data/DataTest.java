@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -161,6 +162,22 @@ public class DataTest {
         ExampleDataA copy =  exampleFactoryA.internal().copyOneLevelDeep();
 
         Assert.assertEquals(copy.referenceAttribute.get(),copy.referenceListAttribute.get().get(0));
+    }
+
+    @Test
+    public void test_copy_consumer(){
+        ExampleDataA exampleFactoryA = new ExampleDataA();
+        ExampleDataB exampleFactoryB = new ExampleDataB();
+
+        exampleFactoryA.referenceAttribute.set(exampleFactoryB);
+        exampleFactoryA.referenceListAttribute.add(exampleFactoryB);
+
+        List<Data> dataList =new ArrayList<>();
+        List<Attribute> attributeList =new ArrayList<>();
+        ExampleDataA copy =  exampleFactoryA.internal().prepareUsableCopy(data -> dataList.add(data), attribute -> attributeList.add(attribute));
+
+        Assert.assertEquals(2,dataList.size());
+        Assert.assertEquals(6,attributeList.size());
     }
 
     @Test

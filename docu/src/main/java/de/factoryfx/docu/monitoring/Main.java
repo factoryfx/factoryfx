@@ -18,7 +18,7 @@ public class Main {
     public static void main(String[] args) throws Exception {
         RootFactory rootFactory = new RootFactory();
         InstrumentedJettyServerFactory jettyServer = new InstrumentedJettyServerFactory();
-        final HttpServerConnectorFactory<ServerVisitor> httpServerConnectorFactory = new HttpServerConnectorFactory<>();
+        final HttpServerConnectorFactory<ServerVisitor,RootFactory> httpServerConnectorFactory = new HttpServerConnectorFactory<>();
         httpServerConnectorFactory.port.set(34576);
         httpServerConnectorFactory.host.set("localhost");
         jettyServer.connectors.add(httpServerConnectorFactory);
@@ -27,7 +27,7 @@ public class Main {
         rootFactory=rootFactory.utility().prepareUsableCopy();
 
 
-        ApplicationServer<ServerVisitor,Root,RootFactory,Void> applicationServer = new ApplicationServer<>(new FactoryManager<>(new RethrowingFactoryExceptionHandler<>()),new InMemoryDataStorage<>(rootFactory));
+        ApplicationServer<ServerVisitor,RootFactory,Void> applicationServer = new ApplicationServer<>(new FactoryManager<ServerVisitor,RootFactory>(new RethrowingFactoryExceptionHandler<>()),new InMemoryDataStorage<>(rootFactory));
         applicationServer.start();
 
         //execute some random request as example

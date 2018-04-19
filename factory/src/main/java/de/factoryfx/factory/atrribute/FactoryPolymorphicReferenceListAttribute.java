@@ -12,7 +12,7 @@ import java.util.*;
  *
  * @param <L> the base interface/class
  */
-public class FactoryPolymorphicReferenceListAttribute<L> extends ReferenceListAttribute<FactoryBase<? extends L,?>,FactoryPolymorphicReferenceListAttribute<L>> {
+public class FactoryPolymorphicReferenceListAttribute<L> extends ReferenceListAttribute<FactoryBase<? extends L,?,?>,FactoryPolymorphicReferenceListAttribute<L>> {
 
 
     public FactoryPolymorphicReferenceListAttribute() {
@@ -27,7 +27,7 @@ public class FactoryPolymorphicReferenceListAttribute<L> extends ReferenceListAt
 
     public List<L> instances(){
         ArrayList<L> result = new ArrayList<>();
-        for(FactoryBase<? extends L, ?> item: get()){
+        for(FactoryBase<? extends L, ?,?> item: get()){
             result.add(item.internalFactory().instance());
         }
         return result;

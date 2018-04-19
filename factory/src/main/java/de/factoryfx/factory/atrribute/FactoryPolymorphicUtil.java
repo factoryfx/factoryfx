@@ -5,6 +5,8 @@ import de.factoryfx.data.attribute.ReferenceBaseAttribute;
 import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.factory.PolymorphicFactory;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
@@ -12,13 +14,13 @@ import java.util.function.Supplier;
 
 public class FactoryPolymorphicUtil<L> {
     @SuppressWarnings("unchecked")
-    public void setup(ReferenceBaseAttribute<FactoryBase<? extends L,?>,?,?> attribute, Class<L> liveObjectClass, Supplier<Data> root, Class<? extends PolymorphicFactory<?>>... possibleFactoriesClasses){
+    public void setup(ReferenceBaseAttribute<FactoryBase<? extends L,?,?>,?,?> attribute, Class<L> liveObjectClass, Supplier<Data> root, Class<? extends PolymorphicFactory<?>>... possibleFactoriesClasses){
         attribute.possibleValueProvider(data -> {
-            Set<FactoryBase<? extends L, ?>> result = new HashSet<>();
+            Set<FactoryBase<? extends L, ?, ?>> result = new HashSet<>();
             for (Data factory: root.get().internal().collectChildrenDeep()){
                 if (factory instanceof PolymorphicFactory){
                     if (liveObjectClass.isAssignableFrom(((PolymorphicFactory)factory).getLiveObjectClass())){
-                        result.add((FactoryBase<L, ?>) factory);
+                        result.add((FactoryBase<L, ?, ?>) factory);
                     }
                 }
             }
@@ -28,22 +30,26 @@ public class FactoryPolymorphicUtil<L> {
 
         //compile time validation doesn't work java generic limitation
         for (Class<? extends PolymorphicFactory<?>> clazz: possibleFactoriesClasses){
+
             try {
-                PolymorphicFactory<?> newInstance = clazz.newInstance();
+                Constructor constructor = clazz.getDeclaredConstructor();
+                constructor.setAccessible(true);
+                PolymorphicFactory<?> newInstance = (PolymorphicFactory<?>) constructor.newInstance(new Object[0]);
+
                 if (!liveObjectClass.isAssignableFrom(((PolymorphicFactory)newInstance).getLiveObjectClass())){
                     throw new IllegalArgumentException("class has wrong liveobject: "+clazz);
                 }
-            } catch (InstantiationException | IllegalAccessException e) {
+
+            } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
                 throw new RuntimeException(e);
             }
-
         }
 
         attribute.newValuesProvider(data -> {
             try {
-                ArrayList<FactoryBase<? extends L, ?>> result = new ArrayList<>();
+                ArrayList<FactoryBase<? extends L, ?, ?>> result = new ArrayList<>();
                 for (Class<?> clazz: possibleFactoriesClasses){
-                    result.add((FactoryBase<L, ?>) clazz.newInstance());
+                    result.add((FactoryBase<L, ?, ?>) clazz.newInstance());
                 }
                 return result;
             } catch (InstantiationException | IllegalAccessException e) {

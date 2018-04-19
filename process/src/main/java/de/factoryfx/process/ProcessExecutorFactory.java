@@ -1,11 +1,12 @@
 package de.factoryfx.process;
 
+import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.factory.SimpleFactoryBase;
 import de.factoryfx.factory.atrribute.FactoryReferenceAttribute;
 
 
-public class ProcessExecutorFactory<P extends Process,PP extends ProcessParameter,V> extends SimpleFactoryBase<ProcessExecutor<P,PP>,V> {
-    public final FactoryReferenceAttribute<ProcessStorage,ProcessStorageFactory<V,PP>> processStorage= new FactoryReferenceAttribute<>();
+public class ProcessExecutorFactory<P extends Process,PP extends ProcessParameter,V, R extends FactoryBase<?,V,R>> extends SimpleFactoryBase<ProcessExecutor<P,PP>,V,R> {
+    public final FactoryReferenceAttribute<ProcessStorage,ProcessStorageFactory<V,PP,R>> processStorage= new FactoryReferenceAttribute<>();
 
     @Override
     public ProcessExecutor<P, PP> createImpl() {

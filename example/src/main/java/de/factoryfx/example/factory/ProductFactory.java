@@ -5,7 +5,7 @@ import de.factoryfx.data.attribute.types.StringAttribute;
 import de.factoryfx.factory.SimpleFactoryBase;
 import de.factoryfx.factory.atrribute.FactoryReferenceAttribute;
 
-public class ProductFactory extends SimpleFactoryBase<Product,OrderCollector> {
+public class ProductFactory extends SimpleFactoryBase<Product,OrderCollector,ShopFactory> {
 //    public ProductFactory(){
 //        this.setDisplayTextProvider(() -> name.get());
 //    }

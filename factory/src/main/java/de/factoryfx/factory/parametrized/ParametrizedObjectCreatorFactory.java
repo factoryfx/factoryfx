@@ -4,7 +4,7 @@ import de.factoryfx.factory.FactoryBase;
 
 import java.util.function.Function;
 
-public abstract class ParametrizedObjectCreatorFactory<P,L,V> extends FactoryBase<ParametrizedObjectCreator<P,L>,V> {
+public abstract class ParametrizedObjectCreatorFactory<P,L,V,R extends FactoryBase<?,V,R>> extends FactoryBase<ParametrizedObjectCreator<P,L>,V,R> {
 
 
     public ParametrizedObjectCreatorFactory(){

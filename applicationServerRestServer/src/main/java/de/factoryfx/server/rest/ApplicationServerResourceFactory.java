@@ -7,26 +7,26 @@ import java.util.function.Supplier;
 import de.factoryfx.data.attribute.types.ObjectValueAttribute;
 import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.factory.atrribute.FactoryPolymorphicReferenceAttribute;
-import de.factoryfx.server.ApplicationServerAwareFactory;
-import de.factoryfx.user.AuthorizedUser;
-import de.factoryfx.user.nop.NoUserManagement;
-import de.factoryfx.user.UserManagement;
-import de.factoryfx.user.nop.NoUserManagementFactory;
-import de.factoryfx.user.persistent.PersistentUserManagementFactory;
+import de.factoryfx.server.ApplicationServer;
+import de.factoryfx.server.user.AuthorizedUser;
+import de.factoryfx.server.user.nop.NoUserManagement;
+import de.factoryfx.server.user.UserManagement;
+import de.factoryfx.server.user.nop.NoUserManagementFactory;
+import de.factoryfx.server.user.persistent.PersistentUserManagementFactory;
 
 /**
  *
  * @param <V> visitor
- * @param <RL> root live object
  * @param <R> root
- * @param <S> Factory summary, set to void if not used
+ * @param <S> Summary Data form storage history
  */
-public class ApplicationServerResourceFactory<V,RL,R extends FactoryBase<RL,V>,S> extends ApplicationServerAwareFactory<V, RL, R,ApplicationServerResource<V,RL,R,S>,S> {
+public class ApplicationServerResourceFactory<V,R extends FactoryBase<?,V,R>,S> extends FactoryBase<ApplicationServerResource<V,R,S>,V,R> {
 
     public final FactoryPolymorphicReferenceAttribute<UserManagement> userManagement = new FactoryPolymorphicReferenceAttribute<UserManagement>().setupUnsafe(UserManagement.class, NoUserManagementFactory.class, PersistentUserManagementFactory.class).labelText("resource");
     public final ObjectValueAttribute<Predicate<Optional<AuthorizedUser>>> authorizedKeyUserEvaluator= new ObjectValueAttribute<Predicate<Optional<AuthorizedUser>>>().labelText("authorizedKeyUserEvaluator").nullable();
     public final ObjectValueAttribute<Supplier<V>> emptyVisitorCreator= new ObjectValueAttribute<Supplier<V>>().labelText("emptyVisitorCreator").nullable();
 
+    @SuppressWarnings("unchecked")
     public ApplicationServerResourceFactory(){
         configLiveCycle().setCreator(() -> {
             Predicate<Optional<AuthorizedUser>> authorizedKeyUserEvaluator = this.authorizedKeyUserEvaluator.get();
@@ -37,7 +37,8 @@ public class ApplicationServerResourceFactory<V,RL,R extends FactoryBase<RL,V>,S
             if (userManagementInstance==null) {
                 userManagementInstance=new NoUserManagement();
             }
-            return new ApplicationServerResource<>(applicationServer.get(), userManagementInstance, authorizedKeyUserEvaluator,emptyVisitorCreator.get());
+            ApplicationServer<V, R, S> applicationServer = (ApplicationServer<V, R, S>)utilityFactory().getApplicationServer();
+            return new ApplicationServerResource<>(applicationServer, userManagementInstance,authorizedKeyUserEvaluator,emptyVisitorCreator.get());
         });
 
         config().setDisplayTextProvider(()->"Resource");

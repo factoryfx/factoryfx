@@ -141,9 +141,8 @@ public abstract class Attribute<T,A extends Attribute<T,A>>{
 
     /**
      * all elements prepared and root is usable
-     * @param root factory root
      * */
-    public void internal_afterPreparedUsage(Data root){
+    public void internal_afterPreparedUsage(){
         //nothing
     }
 
@@ -366,7 +365,4 @@ public abstract class Attribute<T,A extends Attribute<T,A>>{
         }
         return "";
     }
-
-
-
 }

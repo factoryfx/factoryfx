@@ -12,7 +12,7 @@ public class FactoryCreatorTest {
 
     @Test
     public void test_singleton_scope(){
-        FactoryCreator<Void,ExampleLiveObjectA,ExampleFactoryA> factoryCreator = new FactoryCreator<>(ExampleFactoryA.class, "", Scope.SINGLETON, context -> {
+        FactoryCreator<ExampleFactoryA,ExampleFactoryA> factoryCreator = new FactoryCreator<>(ExampleFactoryA.class, "", Scope.SINGLETON, context -> {
             return new ExampleFactoryA();
         });
 
@@ -24,7 +24,7 @@ public class FactoryCreatorTest {
 
     @Test
     public void test_prototype_scope(){
-        FactoryCreator<Void,ExampleLiveObjectA,ExampleFactoryA> factoryCreator = new FactoryCreator<>(ExampleFactoryA.class, "", Scope.PROTOTYPE, context -> {
+        FactoryCreator<ExampleFactoryA,ExampleFactoryA> factoryCreator = new FactoryCreator<>(ExampleFactoryA.class, "", Scope.PROTOTYPE, context -> {
             return new ExampleFactoryA();
         });
 

@@ -15,7 +15,7 @@ public class Main {
         root.printerCreator.set(printerCreatorFactory);
         root=root.utility().prepareUsableCopy();
 
-        ApplicationServer<Void,Root,RootFactory,Void> applicationServer = new ApplicationServer<>(new FactoryManager<>(new RethrowingFactoryExceptionHandler<>()),new InMemoryDataStorage<>(root));
+        ApplicationServer<Void,RootFactory,Void> applicationServer = new ApplicationServer<>(new FactoryManager<Void, RootFactory>(new RethrowingFactoryExceptionHandler<>()),new InMemoryDataStorage<>(root));
         applicationServer.start();
 
         //prints: 123::bla

@@ -9,11 +9,11 @@ import de.factoryfx.data.attribute.Attribute;
 import de.factoryfx.factory.FactoryBase;
 
 public class LocaleAttributeValidation implements FactoryStyleValidation {
-    private final FactoryBase<?, ?> factoryBase;
+    private final FactoryBase<?, ?, ?> factoryBase;
     private final Field attributeField;
     private Locale locale;
 
-    public LocaleAttributeValidation(FactoryBase<?, ?> factoryBase, Field attributeField, Locale locale) {
+    public LocaleAttributeValidation(FactoryBase<?, ?, ?> factoryBase, Field attributeField, Locale locale) {
         this.factoryBase = factoryBase;
         this.attributeField = attributeField;
         this.locale = locale;

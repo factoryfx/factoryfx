@@ -25,7 +25,7 @@ import java.util.List;
 
 public class SslContextFactoryFactoryTest {
 
-    public static class TestResourceFactory extends SimpleFactoryBase<TestResource,Void> {
+    public static class TestResourceFactory extends SimpleFactoryBase<TestResource,Void,TestJettyServerFactory> {
 
         @Override
         public TestResource createImpl() {
@@ -44,7 +44,7 @@ public class SslContextFactoryFactoryTest {
 
 
 
-    public static class TestJettyServerFactory extends JettyServerFactory<Void> {
+    public static class TestJettyServerFactory extends JettyServerFactory<Void,TestJettyServerFactory> {
         public final FactoryReferenceAttribute<TestResource,TestResourceFactory> resource = new FactoryReferenceAttribute<>();
 
         @Override
@@ -59,7 +59,7 @@ public class SslContextFactoryFactoryTest {
     public void test_without_ssl() throws IOException {
         TestJettyServerFactory jettyServerFactory = new TestJettyServerFactory();
         jettyServerFactory.resource.set(new TestResourceFactory());
-        HttpServerConnectorFactory<Void> http = new HttpServerConnectorFactory<>();
+        HttpServerConnectorFactory<Void,TestJettyServerFactory> http = new HttpServerConnectorFactory<>();
         http.host.set("localhost");
         http.port.set(8009);
         jettyServerFactory.connectors.add(http);
@@ -80,13 +80,13 @@ public class SslContextFactoryFactoryTest {
     public void test_with_ssl() throws Exception {
         TestJettyServerFactory jettyServerFactory = new TestJettyServerFactory();
         jettyServerFactory.resource.set(new TestResourceFactory());
-        HttpServerConnectorFactory<Void> http = new HttpServerConnectorFactory<>();
+        HttpServerConnectorFactory<Void,TestJettyServerFactory> http = new HttpServerConnectorFactory<>();
         http.host.set("localhost");
         http.port.set(8009);
         jettyServerFactory.connectors.add(http);
 
 
-        SslContextFactoryFactory<Void> ssl = new SslContextFactoryFactory<>();
+        SslContextFactoryFactory<Void,TestJettyServerFactory> ssl = new SslContextFactoryFactory<>();
         ssl.keyStoreType.set(KeyStoreType.jks);
         ssl.trustStoreType.set(KeyStoreType.jks);
         try (InputStream in = getClass().getResourceAsStream("/keystore.jks")){

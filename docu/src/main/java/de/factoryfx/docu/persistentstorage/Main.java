@@ -45,7 +45,7 @@ public class Main {
         PostgresDataStorage<RootFactory,Void> postgresFactoryStorage = new PostgresDataStorage<>(datasource, root, serialisationManager);
 
 
-        ApplicationServer<Void,Root, RootFactory,Void> applicationServer = new ApplicationServer<>(new FactoryManager<>(new RethrowingFactoryExceptionHandler<>()),postgresFactoryStorage);
+        ApplicationServer<Void, RootFactory,Void> applicationServer = new ApplicationServer<>(new FactoryManager<Void, RootFactory>(new RethrowingFactoryExceptionHandler<>()),postgresFactoryStorage);
         applicationServer.start();
         //output is 1 from initial factory
 
@@ -55,7 +55,7 @@ public class Main {
         //output is 2 from initial factory
 
         applicationServer.stop();
-        ApplicationServer<Void,Root, RootFactory,Void> newApplicationServer = new ApplicationServer<>(new FactoryManager<>(new RethrowingFactoryExceptionHandler<>()),postgresFactoryStorage);
+        ApplicationServer<Void, RootFactory,Void> newApplicationServer = new ApplicationServer<>(new FactoryManager<Void, RootFactory>(new RethrowingFactoryExceptionHandler<>()),postgresFactoryStorage);
         newApplicationServer.start();
         //output is 2 again from the saved update
 

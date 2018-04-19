@@ -16,13 +16,14 @@ import de.factoryfx.factory.log.FactoryLogEntry;
 import de.factoryfx.factory.log.FactoryLogEntryEvent;
 import de.factoryfx.factory.log.FactoryLogEntryEventType;
 import de.factoryfx.factory.parametrized.ParametrizedObjectCreatorAttribute;
+import de.factoryfx.server.ApplicationServer;
 
 /**
  * @param <L> liveobject created from this factory
  * @param <V> runtime visitor
  */
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class FactoryBase<L,V> extends Data implements Iterable<FactoryBase<?, V>>{
+public class FactoryBase<L,V,R extends FactoryBase<?,V,R>> extends Data implements Iterable<FactoryBase<?, V, R>>{
 
     public FactoryBase() {
 
@@ -122,7 +123,7 @@ public class FactoryBase<L,V> extends Data implements Iterable<FactoryBase<?, V>
     }
 
     boolean reRecreationChecked;
-    private void determineRecreationNeed(Set<Data> changedData, ArrayDeque<FactoryBase<?,?>> path){
+    private void determineRecreationNeed(Set<Data> changedData, ArrayDeque<FactoryBase<?,?,?>> path){
         path.push(this);
 
         needRecreation |=changedData.contains(this); //|= means if needRecreation set true once never override with false
@@ -152,13 +153,13 @@ public class FactoryBase<L,V> extends Data implements Iterable<FactoryBase<?, V>
         collectChildFactoriesDeep();
     }
 
-    private Set<FactoryBase<?,V>> collectChildFactoriesDeep(){
-        final HashSet<FactoryBase<?, V>> result = new HashSet<>();
+    private Set<FactoryBase<?,V,R>> collectChildFactoriesDeep(){
+        final HashSet<FactoryBase<?, V, R>> result = new HashSet<>();
         collectChildFactoriesDeep(this,result,new HashSet<>());
         return result;
     }
 
-    private void collectChildFactoriesDeep(FactoryBase<?,V> factory, Set<FactoryBase<?, V>> result, Set<FactoryBase<?, V>> stack){
+    private void collectChildFactoriesDeep(FactoryBase<?,V, R> factory, Set<FactoryBase<?, V, R>> result, Set<FactoryBase<?, V, R>> stack){
         if (result.add(factory)){
             stack.add(factory);
             factory.visitChildFactoriesAndViewsFlat(child -> collectChildFactoriesDeep(child,result,stack));
@@ -170,14 +171,14 @@ public class FactoryBase<L,V> extends Data implements Iterable<FactoryBase<?, V>
         }
     }
 
-    private List<FactoryBase<?,V>> collectChildrenFactoriesFlat() {
-        List<FactoryBase<?,V>> result = new ArrayList<>();
+    private List<FactoryBase<?,V, R>> collectChildrenFactoriesFlat() {
+        List<FactoryBase<?,V, R>> result = new ArrayList<>();
         this.visitChildFactoriesAndViewsFlat(result::add);
         return result;
     }
 
     @Override
-    public Iterator<FactoryBase<?, V>> iterator() {
+    public Iterator<FactoryBase<?, V, R>> iterator() {
         return collectChildrenFactoriesFlat().iterator();
     }
 
@@ -210,7 +211,7 @@ public class FactoryBase<L,V> extends Data implements Iterable<FactoryBase<?, V>
     }
 
     @SuppressWarnings("unchecked")
-    private void visitChildFactoriesAndViewsFlat(Consumer<FactoryBase<?,V>> consumer) {
+    private void visitChildFactoriesAndViewsFlat(Consumer<FactoryBase<?,V, R>> consumer) {
         if (visited){
             return;
         }
@@ -218,7 +219,7 @@ public class FactoryBase<L,V> extends Data implements Iterable<FactoryBase<?, V>
 
         this.internal().visitAttributesFlat((attributeVariableName, attribute) -> {
             if (attribute instanceof FactoryReferenceAttribute) {
-                FactoryBase<?, V> factory = (FactoryBase<?, V>)attribute.get();
+                FactoryBase<?, V, R> factory = (FactoryBase<?, V, R>)attribute.get();
                 if (factory!=null){
                     consumer.accept(factory);
                 }
@@ -226,11 +227,11 @@ public class FactoryBase<L,V> extends Data implements Iterable<FactoryBase<?, V>
             if (attribute instanceof FactoryReferenceListAttribute) {
                 List<?> factories = ((FactoryReferenceListAttribute<?, ?>) attribute).get();
                 for (Object factory: factories){
-                    consumer.accept((FactoryBase<?, V>)factory);
+                    consumer.accept((FactoryBase<?, V, R>)factory);
                 }
             }
             if (attribute instanceof FactoryViewReferenceAttribute) {
-                FactoryBase<?, V> factory = (FactoryBase<?, V>)attribute.get();
+                FactoryBase<?, V, R> factory = (FactoryBase<?, V, R>)attribute.get();
                 if (factory!=null){
                     consumer.accept(factory);
                 }
@@ -238,24 +239,24 @@ public class FactoryBase<L,V> extends Data implements Iterable<FactoryBase<?, V>
             if (attribute instanceof FactoryViewListReferenceAttribute) {
                 List<?> factories = ((FactoryViewListReferenceAttribute<?, ?, ?>) attribute).get();
                 for (Object factory: factories){
-                    consumer.accept((FactoryBase<?, V>)factory);
+                    consumer.accept((FactoryBase<?, V, R>)factory);
                 }
             }
             if (attribute instanceof FactoryPolymorphicReferenceAttribute) {
-                FactoryBase<?, V> factory = (FactoryBase<?, V>)attribute.get();
+                FactoryBase<?, V, R> factory = (FactoryBase<?, V, R>)attribute.get();
                 if (factory!=null){
                     consumer.accept(factory);
                 }
             }
             if (attribute instanceof FactoryPolymorphicReferenceListAttribute) {
-                ((FactoryPolymorphicReferenceListAttribute<?>)attribute).get().forEach((Consumer<FactoryBase<?, ?>>) factory -> {
+                ((FactoryPolymorphicReferenceListAttribute<?>)attribute).get().forEach(factory -> {
                     if (factory!=null){
-                        consumer.accept((FactoryBase<?, V>)factory);
+                        consumer.accept((FactoryBase<?, V, R>)factory);
                     }
                 });
             }
             if (attribute instanceof ParametrizedObjectCreatorAttribute) {
-                FactoryBase<?, V> factory = (FactoryBase<?, V>)attribute.get();
+                FactoryBase<?, V, R> factory = (FactoryBase<?, V, R>)attribute.get();
                 if (factory!=null){
                     consumer.accept(factory);
                 }
@@ -294,20 +295,44 @@ public class FactoryBase<L,V> extends Data implements Iterable<FactoryBase<?, V>
         return null;
     }
 
-    final FactoryInternal<L,V> factoryInternal = new FactoryInternal<>(this);
+    ApplicationServer<V, R, ?> applicationServer;
+    private void setApplicationServer(ApplicationServer<V, R, ?> applicationServer) {
+        this.applicationServer = applicationServer;
+    }
+    private ApplicationServer<V, R, ?> getApplicationServer() {
+        return getRoot().applicationServer;
+    }
+
+
+    AttributeSetupHelper<R> attributeSetupHelper;
+    public void setAttributeSetupHelper(AttributeSetupHelper<R> attributeSetupHelper) {
+        this.attributeSetupHelper = attributeSetupHelper;
+    }
+    private AttributeSetupHelper<R> getAttributeSetupHelper() {
+        return getRoot().attributeSetupHelper;
+    }
+
+
+    @SuppressWarnings("unchecked")
+    private R getRoot(){
+        return (R)this.internal().getRoot();
+    }
+
+
+    final FactoryInternal<L,V,R> factoryInternal = new FactoryInternal<>(this);
     /** <b>internal methods should be only used from the framework.</b>
      *  They may change in the Future.
      *  There is no fitting visibility in java therefore this workaround.
      * @return internal factory api
      */
-    public FactoryInternal<L,V> internalFactory(){
+    public FactoryInternal<L,V,R> internalFactory(){
         return factoryInternal;
     }
 
-    public static class FactoryInternal<L,V> {
-        private final FactoryBase<L,V> factory;
+    public static class FactoryInternal<L,V,R  extends FactoryBase<?,V,R>> {
+        private final FactoryBase<L,V,R> factory;
 
-        public FactoryInternal(FactoryBase<L, V> factory) {
+        public FactoryInternal(FactoryBase<L, V, R> factory) {
             this.factory = factory;
         }
 
@@ -374,27 +399,27 @@ public class FactoryBase<L,V> extends Data implements Iterable<FactoryBase<?, V>
             factory.loopDetector();
         }
 
-        public Set<FactoryBase<?,V>> collectChildFactoriesDeepFromRoot(){
+        public Set<FactoryBase<?,V,R>> collectChildFactoriesDeepFromRoot(){
             factory.prepareIterationRunFromRoot();
             return factory.collectChildFactoriesDeep();
         }
 
-        public Iterable<FactoryBase<?,V>> breadthFirstTraversalFromRoot(){
+        public Iterable<FactoryBase<?,V,R>> breadthFirstTraversalFromRoot(){
             factory.prepareIterationRunFromRoot();
-            final TreeTraverser<FactoryBase<?,V>> factoryTraverser = new FactoryTreeTraverser<>();
+            final TreeTraverser<FactoryBase<?,V,R>> factoryTraverser = new FactoryTreeTraverser<>();
             return factoryTraverser.breadthFirstTraversal(factory);
         }
 
-        public Iterable<FactoryBase<?,V>> postOrderTraversalFromRoot(){
+        public Iterable<FactoryBase<?,V,R>> postOrderTraversalFromRoot(){
             factory.prepareIterationRunFromRoot();
-            final TreeTraverser<FactoryBase<?,V>> factoryTraverser = new FactoryTreeTraverser<>();
+            final TreeTraverser<FactoryBase<?,V,R>> factoryTraverser = new FactoryTreeTraverser<>();
             return factoryTraverser.postOrderTraversal(factory);
         }
 
-        public HashMap<String,FactoryBase<?,V>> collectChildFactoriesDeepMapFromRoot(){
-            final Set<FactoryBase<?, V>> factoryBases = collectChildFactoriesDeepFromRoot();
-            HashMap<String, FactoryBase<?, V>> result = new HashMap<>();
-            for (FactoryBase<?, V> factory: factoryBases){
+        public HashMap<String,FactoryBase<?,V,R>> collectChildFactoriesDeepMapFromRoot(){
+            final Set<FactoryBase<?, V,R>> factoryBases = collectChildFactoriesDeepFromRoot();
+            HashMap<String, FactoryBase<?, V, R>> result = new HashMap<>();
+            for (FactoryBase<?, V, R> factory: factoryBases){
                 result.put(factory.getId(),factory);
             }
             return result;
@@ -405,6 +430,13 @@ public class FactoryBase<L,V> extends Data implements Iterable<FactoryBase<?, V>
         }
 
 
+        public void setApplicationServer(ApplicationServer<V, R, ?> applicationServer) {
+            factory.setApplicationServer(applicationServer);
+        }
+
+        public void setAttributeSetupHelper(AttributeSetupHelper<R> attributeSetupHelper) {
+            factory.setAttributeSetupHelper(attributeSetupHelper);
+        }
     }
 
     Supplier<L> creator=null;
@@ -432,7 +464,7 @@ public class FactoryBase<L,V> extends Data implements Iterable<FactoryBase<?, V>
         this.executorWidthVisitorAndCurrentLiveObject=executorWidthVisitorAndCurrentLiveObject;
     }
 
-    final LiveCycleConfig<L,V> liveCycleConfig = new LiveCycleConfig<>(this);
+    final LiveCycleConfig<L,V,R> liveCycleConfig = new LiveCycleConfig<>(this);
 
     /** live cycle configurations api<br>
      *<br>
@@ -448,14 +480,14 @@ public class FactoryBase<L,V> extends Data implements Iterable<FactoryBase<?, V>
      *
      * @return configuration api
      * */
-    protected LiveCycleConfig<L,V> configLiveCycle(){
+    protected LiveCycleConfig<L,V,R> configLiveCycle(){
         return liveCycleConfig;
     }
 
-    public static class LiveCycleConfig<L,V> {
-        private final FactoryBase<L,V> factory;
+    public static class LiveCycleConfig<L,V,R  extends FactoryBase<?,V,R>> {
+        private final FactoryBase<L,V,R> factory;
 
-        public LiveCycleConfig(FactoryBase<L, V> factory) {
+        public LiveCycleConfig(FactoryBase<L, V, R> factory) {
             this.factory = factory;
         }
 
@@ -492,4 +524,31 @@ public class FactoryBase<L,V> extends Data implements Iterable<FactoryBase<?, V>
             factory.setRuntimeQueryExecutor(executorWidthVisitorAndCurrentLiveObject);
         }
     }
+
+    final UtilityFactory<L,V,R> utilityFactory = new UtilityFactory<>(this);
+    public UtilityFactory<L,V,R> utilityFactory(){
+        return utilityFactory;
+    }
+
+    public static class UtilityFactory<L,V,R  extends FactoryBase<?,V,R>> {
+        private final FactoryBase<L,V,R> factory;
+
+        public UtilityFactory(FactoryBase<L, V, R> factory) {
+            this.factory = factory;
+        }
+
+        public ApplicationServer<V,R,?> getApplicationServer(){
+            return factory.getApplicationServer();
+        }
+
+        public AttributeSetupHelper getAttributeSetupHelper(){
+            return factory.getAttributeSetupHelper();
+        }
+
+        public R getRoot(){
+            return factory.getRoot();
+        }
+    }
+
+
 }

@@ -14,7 +14,7 @@ public class Main {
         root=root.utility().prepareUsableCopy();
 
         long start=System.currentTimeMillis();
-        ApplicationServer<Void,Root,RootFactory,Void> applicationServer = new ApplicationServer<>(new FactoryManager<>(new RethrowingFactoryExceptionHandler<>()),new InMemoryDataStorage<>(root));
+        ApplicationServer<Void,RootFactory,Void> applicationServer = new ApplicationServer<>(new FactoryManager<Void,RootFactory>(new RethrowingFactoryExceptionHandler<>()),new InMemoryDataStorage<>(root));
         applicationServer.start();
 
         //over 5000ms most time for the ExpensiveResource

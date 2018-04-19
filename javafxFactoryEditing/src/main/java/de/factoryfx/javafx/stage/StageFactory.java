@@ -14,13 +14,17 @@ import de.factoryfx.javafx.view.menu.ViewMenuFactory;
 import javafx.scene.control.Menu;
 import javafx.stage.Stage;
 
-public class StageFactory<V> extends FactoryBase<BorderPaneStage,V> {
+/**
+ * @param <V>
+ * @param <R>
+ */
+public class StageFactory<V,R extends FactoryBase<?,V,R>> extends FactoryBase<BorderPaneStage,V,R> {
     public final ObjectValueAttribute<Stage> stage = new ObjectValueAttribute<Stage>().en("main stage");
-    public final FactoryReferenceListAttribute<Menu,ViewMenuFactory<V>> items = new FactoryReferenceListAttribute<Menu,ViewMenuFactory<V>>().de("items").en("items");
-    public final FactoryReferenceAttribute<ViewsDisplayWidget,ViewsDisplayWidgetFactory<V>> viewsDisplayWidget = new FactoryReferenceAttribute<ViewsDisplayWidget,ViewsDisplayWidgetFactory<V>>().de("items").en("items");
+    public final FactoryReferenceListAttribute<Menu,ViewMenuFactory<V,R>> items = new FactoryReferenceListAttribute<Menu,ViewMenuFactory<V,R>>().de("items").en("items");
+    public final FactoryReferenceAttribute<ViewsDisplayWidget,ViewsDisplayWidgetFactory<V,R>> viewsDisplayWidget = new FactoryReferenceAttribute<ViewsDisplayWidget,ViewsDisplayWidgetFactory<V,R>>().de("items").en("items");
     public final IntegerAttribute width = new IntegerAttribute().de("width").en("width");
     public final IntegerAttribute height = new IntegerAttribute().de("height").en("height");
-    public final FactoryReferenceAttribute<LongRunningActionExecutor,LongRunningActionExecutorFactory<V>> longRunningActionExecutor = new FactoryReferenceAttribute<LongRunningActionExecutor,LongRunningActionExecutorFactory<V>>().de("items").en("items");
+    public final FactoryReferenceAttribute<LongRunningActionExecutor,LongRunningActionExecutorFactory<V,R>> longRunningActionExecutor = new FactoryReferenceAttribute<LongRunningActionExecutor,LongRunningActionExecutorFactory<V,R>>().de("items").en("items");
     public final StringListAttribute cssResourceUrlExternalForm = new StringListAttribute().de("cssResourceUrlExternalForm").en("cssResourceUrlExternalForm");
 
     public StageFactory(){

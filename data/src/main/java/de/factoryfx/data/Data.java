@@ -20,6 +20,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
@@ -163,14 +164,6 @@ public class Data {
         }
     }
 
-
-    /**
-     * after deserialization from json only the value is present and metadata are missing
-     * we create a copy which contains the metadata and than copy then transfer the value in the new  copy (which is what conveniently copy does)
-     */
-    private <T extends Data> T reconstructMetadataDeepRoot() {
-        return this.copy();
-    }
 
     private Supplier<Data> newInstanceSupplier=null;
     private void setNewInstanceSupplier(Supplier<Data> newInstanceSupplier){
@@ -324,48 +317,56 @@ public class Data {
 
     /**copy including one the references first level of nested references*/
     private <T extends Data> T copyOneLevelDeep(){
-        return copy(1);
+        return copy(1,null,null);
     }
 
     /**copy without nested references, only value attributes are copied*/
     private <T extends Data> T copyZeroLevelDeep(){
-        return copy(0);
+        return copy(0,null,null);
     }
 
     private <T extends Data> T copy() {
-        return copy(Integer.MAX_VALUE);
+        return copy(Integer.MAX_VALUE,null,null);
     }
 
 
     @SuppressWarnings("unchecked")
-    private <T extends Data> T copy(int level) {
+    private <T extends Data> T copy(int level, Consumer<Data> newDataConsumer, Consumer<Attribute<?, ?>> newAttributesConsumer) {
         ArrayList<Attribute<?, ?>> newAttributes = new ArrayList<>();
         ArrayList<Data> oldData = new ArrayList<>();
-        Data copy = copyDeep(0, level, null, null, newAttributes,oldData);
+        ArrayList<Data> copyData = new ArrayList<>();
+        Data copy = copyDeep(0, level, null, null, newAttributes,oldData,copyData);
         if (copy!=null){
-            copy.afterPreparedUsage(newAttributes,copy);
+            copy.afterPreparedUsage(newAttributes);
         }
+
+        if (newDataConsumer!=null){
+            copyData.forEach(newDataConsumer);
+        }
+        if (newAttributesConsumer!=null){
+            newAttributes.forEach(newAttributesConsumer);
+        }
+
         oldData.forEach(d->d.copy=null);
         return (T) copy;
     }
 
     private Data copy;
-    private Data copyDeep(final int level, final int maxLevel, Data root, Data parent, List<Attribute<?,?>> newAttributes, List<Data> oldData){
+    private Data copyDeep(final int level, final int maxLevel, Data root, Data parent, List<Attribute<?,?>> newAttributes, List<Data> oldData, List<Data> copyData){
         if (level>maxLevel){
             return null;
         }
-        Data result= copy;
-        if (result==null){
-            result = newInstance();
-            result.id=this.id;
-            result.isUsable=true;//only possible to created copies form usable data therefore copy is always usable
+        if (copy==null){
+            copy = newInstance();
+            copy.id=this.id;
+            copy.isUsable=true;//only possible to created copies form usable data therefore copy is always usable
             if (root==null){
-                root=result;
+                root=copy;
             }
 
             final Data finalRoot=root;
-            final Data finalCopy=result;
-            this.visitAttributesDualFlat(result, (name, thisAttribute, copyAttribute) -> {
+            final Data finalCopy=copy;
+            this.visitAttributesDualFlat(copy, (name, thisAttribute, copyAttribute) -> {
                 newAttributes.add(copyAttribute);
                 copyAttribute.internal_prepareUsage(finalRoot,finalCopy);
                 if (thisAttribute!=null){//cause jackson decided it's a good idea to override the final field with null
@@ -373,19 +374,19 @@ public class Data {
                         if (data==null){
                             return null;
                         }
-                        return data.copyDeep(level + 1, maxLevel,finalRoot,finalCopy,newAttributes,oldData);
+                        return data.copyDeep(level + 1, maxLevel,finalRoot,finalCopy,newAttributes,oldData,copyData);
                     });
                 }
             });
 
             oldData.add(this);
-            result.root=root;
-            copy=result;
+            copyData.add(copy);
+            copy.root=root;
         }
         if (parent!=null){
-            result.parents.add(parent);
+            copy.parents.add(parent);
         }
-        return result;
+        return copy;
     }
 
 
@@ -403,10 +404,10 @@ public class Data {
     }
 
     @SuppressWarnings("unchecked")
-    private <T extends Data> T afterPreparedUsage(Collection<Attribute<?,?>> newAttributesForAfterInitialise, Data root){
+    private <T extends Data> T afterPreparedUsage(Collection<Attribute<?,?>> newAttributesForAfterInitialise){
 
         for (Attribute<?,?> attribute: newAttributesForAfterInitialise){
-            attribute.internal_afterPreparedUsage(root);
+            attribute.internal_afterPreparedUsage();
         }
         return (T)this;
     }
@@ -423,7 +424,7 @@ public class Data {
             });
         }
 
-        afterPreparedUsage(attributes,root);
+        afterPreparedUsage(attributes);
         return (T)this;
     }
 
@@ -442,13 +443,22 @@ public class Data {
      * @return usable copy
      *
      */
-    private <T extends Data> T prepareUsableCopy() {
-        T usableCopy = reconstructMetadataDeepRoot();
-        //init ids, id could depend on parents, usable copy must have init ids else a copy is broken;
-        for (Data child : usableCopy.internal().collectChildrenDeep()) {
-            child.getId();
-            child.setUsable();
-        }
+    private <T extends Data> T prepareUsableCopy(Consumer<Data> newData, Consumer<Attribute<?,?>> newAttributes) {
+
+        /*
+          after deserialization from json only the value is present and metadata are missing
+          we create a copy which contains the metadata and than copy then transfer the value in the new  copy (which is what conveniently copy does)
+         */
+        T usableCopy = this.copy(Integer.MAX_VALUE, data -> {
+            //init ids, id could depend on parents, usable copy must have init ids else a copy is broken;
+            data.getId();
+            data.setUsable();
+            if (newData!=null){
+                newData.accept(data);
+            }
+        }, newAttributes);
+
+
         return usableCopy;
     }
 
@@ -567,7 +577,7 @@ public class Data {
          * @return usableCopy
          */
         public <T extends Data> T prepareUsableCopy() {
-            return data.prepareUsableCopy();
+            return data.prepareUsableCopy(null,null);
         }
 
     }
@@ -793,7 +803,11 @@ public class Data {
          * @return usableCopy
          */
         public <T extends Data> T prepareUsableCopy() {
-            return data.prepareUsableCopy();
+            return data.prepareUsableCopy(null,null);
+        }
+
+        public <T extends Data> T prepareUsableCopy(Consumer<Data> newData, Consumer<Attribute<?,?>> newAttributes) {
+            return data.prepareUsableCopy(newData, newAttributes);
         }
 
         /** only call on root*/

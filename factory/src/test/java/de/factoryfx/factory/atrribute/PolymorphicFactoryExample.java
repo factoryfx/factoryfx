@@ -5,7 +5,7 @@ import de.factoryfx.factory.testfactories.poly.ErrorPrinterFactory;
 import de.factoryfx.factory.testfactories.poly.OutPrinterFactory;
 import de.factoryfx.factory.testfactories.poly.Printer;
 
-public class PolymorphicFactoryExample extends SimpleFactoryBase<Object,Void> {
+public class PolymorphicFactoryExample extends SimpleFactoryBase<Object,Void,PolymorphicFactoryExample> {
     public final FactoryPolymorphicReferenceAttribute<Printer> reference = new FactoryPolymorphicReferenceAttribute<Printer>().setup(Printer.class,ErrorPrinterFactory.class,OutPrinterFactory.class);
     public final FactoryPolymorphicReferenceListAttribute<Printer> referenceList = new FactoryPolymorphicReferenceListAttribute<Printer>().setup(Printer.class,ErrorPrinterFactory.class,OutPrinterFactory.class);
 

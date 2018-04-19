@@ -30,7 +30,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.util.Callback;
 
-public class HistoryWidget<V, R extends FactoryBase<?,V>> implements Widget {
+public class HistoryWidget<V, R extends FactoryBase<?,V,R>> implements Widget {
 
     private final UniformDesign uniformDesign;
     private final LongRunningActionExecutor longRunningActionExecutor;

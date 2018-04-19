@@ -11,7 +11,7 @@ import java.util.function.Function;
 public abstract class ReferenceBaseAttribute<T extends Data, U, A extends ReferenceBaseAttribute<T,U,A>> extends Attribute<U,A> {
 
     protected Data root;
-    protected Data parent;
+    protected Data parent;//data that contains this attribute
 //    protected Class<T> containingFactoryClass;
 
 
@@ -163,7 +163,7 @@ public abstract class ReferenceBaseAttribute<T extends Data, U, A extends Refere
         return (A)this;
     }
 
-    private Class<T> clazz;
+    protected Class<T> clazz;
     /**setup value selection and new value adding for user editing
      * @param clazz class
      * @return self*/

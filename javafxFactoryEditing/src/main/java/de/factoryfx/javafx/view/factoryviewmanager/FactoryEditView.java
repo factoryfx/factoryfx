@@ -39,7 +39,7 @@ import org.controlsfx.glyphfont.FontAwesome;
  *
  * @param <R> server root
  */
-public class FactoryEditView<V,R extends FactoryBase<?,V>,S> implements Widget, FactoryRootChangeListener<R> {
+public class FactoryEditView<V,R extends FactoryBase<?,V,R>,S> implements Widget, FactoryRootChangeListener<R> {
 
     private final LongRunningActionExecutor LongRunningActionExecutor;
     private final FactoryEditManager<V,R,S> factoryManager;

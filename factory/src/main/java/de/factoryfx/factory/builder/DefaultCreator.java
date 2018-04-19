@@ -6,10 +6,12 @@ import de.factoryfx.factory.atrribute.FactoryPolymorphicReferenceListAttribute;
 import de.factoryfx.factory.atrribute.FactoryReferenceAttribute;
 import de.factoryfx.factory.atrribute.FactoryReferenceListAttribute;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import java.util.function.Function;
 
-public class DefaultCreator<V,F extends FactoryBase<?,V>> implements Function<FactoryContext<V>, F> {
+public class DefaultCreator<F extends FactoryBase<?,?,R>, R extends FactoryBase<?,?,R>> implements Function<FactoryContext<R>, F> {
     private final Class<F> clazz;
 
     public DefaultCreator(Class<F> clazz) {
@@ -19,9 +21,14 @@ public class DefaultCreator<V,F extends FactoryBase<?,V>> implements Function<Fa
 
     @SuppressWarnings("unchecked")
     @Override
-    public F apply(FactoryContext<V> context) {
+    public F apply(FactoryContext<R> context) {
         try {
-            F result = clazz.newInstance();
+
+            Constructor constructor = clazz.getDeclaredConstructor();
+            constructor.setAccessible(true);
+            F result = (F) constructor.newInstance(new Object[0]);
+
+
             result.internal().visitAttributesFlat((attributeVariableName, attribute) -> {
                 if (attribute instanceof FactoryReferenceAttribute){
                     FactoryReferenceAttribute factoryReferenceAttribute = (FactoryReferenceAttribute) attribute;
@@ -58,7 +65,7 @@ public class DefaultCreator<V,F extends FactoryBase<?,V>> implements Function<Fa
 
             });
             return result;
-        } catch (InstantiationException | IllegalAccessException e) {
+        } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
             throw new RuntimeException(e);
         }
     }

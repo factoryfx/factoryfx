@@ -13,11 +13,11 @@ import de.factoryfx.factory.atrribute.FactoryReferenceAttribute;
  * @param <VS> Visitor server
  * @param <RS> Root Server
  */
-public class ApplicationServerRestClientFactory<V, R extends FactoryBase<?,V>,VS, RS extends FactoryBase<?,VS>> extends SimpleFactoryBase<ApplicationServerRestClient<VS, RS>,V> {
-    public final FactoryReferenceAttribute<RestClient,RestClientFactory<VS>> restClient= new FactoryReferenceAttribute<RestClient,RestClientFactory<VS>>().setupUnsafe(RestClientFactory.class);//.en("rest client");
+public class ApplicationServerRestClientFactory<V, R extends FactoryBase<?,V,R>,VS, RS extends FactoryBase<?,VS,RS>> extends SimpleFactoryBase<ApplicationServerRestClient<VS, RS>,V,R> {
+    public final FactoryReferenceAttribute<RestClient,RestClientFactory<VS,RS>> restClient= new FactoryReferenceAttribute<RestClient,RestClientFactory<VS,RS>>().setupUnsafe(RestClientFactory.class);//.en("rest client");
     public final ObjectValueAttribute<Class<RS>> factoryRootClass = new ObjectValueAttribute<>();//.en("factoryRootClass");
-    public final StringAttribute user = new StringAttribute().en("user");
-    public final StringAttribute passwordHash = new StringAttribute().en("passwordHash");
+    public final StringAttribute user = new StringAttribute().en("user").nullable();
+    public final StringAttribute passwordHash = new StringAttribute().en("passwordHash").nullable();
 
     @Override
     public ApplicationServerRestClient<VS, RS> createImpl() {

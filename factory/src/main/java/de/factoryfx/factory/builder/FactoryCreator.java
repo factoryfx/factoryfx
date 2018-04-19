@@ -4,13 +4,13 @@ import de.factoryfx.factory.FactoryBase;
 
 import java.util.function.Function;
 
-public class FactoryCreator<V, L, F extends FactoryBase<L,V>> {
+public class FactoryCreator<F extends FactoryBase<?,?,R>,R extends FactoryBase<?,?,R>> {
     private final Class<F> clazz;
     private final Scope scope;
-    private final Function<FactoryContext<V>, F> creator;
+    private final Function<FactoryContext<R>, F> creator;
     private final String name;
 
-    public FactoryCreator(Class<F> clazz,String name, Scope scope, Function<FactoryContext<V>, F> creator) {
+    public FactoryCreator(Class<F> clazz,String name, Scope scope, Function<FactoryContext<R>, F> creator) {
         this.clazz = clazz;
         this.scope = scope;
         this.creator = creator;
@@ -26,7 +26,7 @@ public class FactoryCreator<V, L, F extends FactoryBase<L,V>> {
     }
 
     F factory;
-    public F create(FactoryContext<V> context) {
+    public F create(FactoryContext<R> context) {
         if (scope==Scope.PROTOTYPE){
             return creator.apply(context);
         } else {
@@ -36,5 +36,9 @@ public class FactoryCreator<V, L, F extends FactoryBase<L,V>> {
             return factory;
         }
 
+    }
+
+    public Scope getScope() {
+        return scope;
     }
 }

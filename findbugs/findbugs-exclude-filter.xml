@@ -55,7 +55,7 @@
     </Match>
 
     <Match>
-        <Class name="de.factoryfx.user.persistent.UserFactory" />
+        <Class name="de.factoryfx.server.user.persistent.UserFactory" />
         <Bug pattern="MS_SHOULD_BE_FINAL" />
     </Match>
 

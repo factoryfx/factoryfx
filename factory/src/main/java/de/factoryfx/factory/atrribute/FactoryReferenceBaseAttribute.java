@@ -18,7 +18,7 @@ import java.util.List;
  * @param <A> Attribute self
 
  */
-public class FactoryReferenceBaseAttribute<L,F extends FactoryBase<? extends L,?>, A extends ReferenceBaseAttribute<F,F,A>> extends ReferenceAttribute<F,A> {
+public class FactoryReferenceBaseAttribute<L,F extends FactoryBase<? extends L,?,?>, A extends ReferenceBaseAttribute<F,F,A>> extends ReferenceAttribute<F,A> {
 
 
 

@@ -9,7 +9,6 @@ import de.factoryfx.factory.exception.RethrowingFactoryExceptionHandler;
 import de.factoryfx.server.ApplicationServer;
 import de.factoryfx.server.rest.client.RestClient;
 import de.factoryfx.server.rest.server.HttpServerConnectorFactory;
-import de.factoryfx.server.rest.server.JettyServer;
 import de.factoryfx.server.rest.server.JettyServerFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,7 +20,7 @@ import java.util.List;
 
 public class Main {
 
-    public static class DynamicWebserver extends JettyServerFactory<Void>{
+    public static class DynamicWebserver extends JettyServerFactory<Void,RootFactory>{
         public final FactoryReferenceAttribute<WebResource,WebResourceFactory> resource = new FactoryReferenceAttribute<>();
         @Override
         protected List<Object> getResourcesInstances() {
@@ -33,26 +32,27 @@ public class Main {
         ch.qos.logback.classic.Logger root = (ch.qos.logback.classic.Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
         root.setLevel(Level.INFO);
 
-        DynamicWebserver jettyServer = new DynamicWebserver();
+        RootFactory jettyServer = new RootFactory();
+        jettyServer.server.set(new DynamicWebserver());
 
-        HttpServerConnectorFactory<Void> serverConnectorFactory = new HttpServerConnectorFactory<>();
+        HttpServerConnectorFactory<Void, RootFactory> serverConnectorFactory = new HttpServerConnectorFactory<>();
         serverConnectorFactory.host.set("localhost");
         serverConnectorFactory.port.set(8005);
-        jettyServer.connectors.add(serverConnectorFactory);
+        jettyServer.server.get().connectors.add(serverConnectorFactory);
 
-        jettyServer.resource.set(createNewWebResourceReturningCreationTimestamp());
+        jettyServer.server.get().resource.set(createNewWebResourceReturningCreationTimestamp());
         jettyServer=jettyServer.utility().prepareUsableCopy();
 
 
-        ApplicationServer<Void,JettyServer,DynamicWebserver,Void> applicationServer
-                = new ApplicationServer<>(new FactoryManager<>(new RethrowingFactoryExceptionHandler<>()),new InMemoryDataStorage<>(jettyServer));
+        ApplicationServer<Void,RootFactory,Void> applicationServer
+                = new ApplicationServer<>(new FactoryManager<Void, RootFactory>(new RethrowingFactoryExceptionHandler<>()),new InMemoryDataStorage<>(jettyServer));
         applicationServer.start();
 
         Thread continuouslyQueryWebserver = startQueryServerThread();
         for (int i = 0; i < 10; ++i) {
-            DataAndNewMetadata<DynamicWebserver> editableConfig = applicationServer.prepareNewFactory();
-            DynamicWebserver editableJettyServer = editableConfig.root;
-            editableJettyServer.resource.set(createNewWebResourceReturningCreationTimestamp());
+            DataAndNewMetadata<RootFactory> editableConfig = applicationServer.prepareNewFactory();
+            RootFactory editableJettyServer = editableConfig.root;
+            editableJettyServer.server.get().resource.set(createNewWebResourceReturningCreationTimestamp());
             applicationServer.updateCurrentFactory(editableConfig,"user","commit",s->true);
             Thread.sleep(1100);
         }

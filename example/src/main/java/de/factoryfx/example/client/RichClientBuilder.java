@@ -11,7 +11,6 @@ import de.factoryfx.factory.builder.Scope;
 import de.factoryfx.javafx.editor.DataEditorFactory;
 import de.factoryfx.javafx.editor.attribute.AttributeEditorBuilderFactory;
 import de.factoryfx.javafx.editor.attribute.EditorBuildersListFactory;
-import de.factoryfx.javafx.stage.BorderPaneStage;
 import de.factoryfx.javafx.stage.DefaultStageFactory;
 import de.factoryfx.javafx.util.LongRunningActionExecutorFactory;
 import de.factoryfx.javafx.util.UniformDesignFactory;
@@ -43,12 +42,14 @@ public class RichClientBuilder {
 
 
     @SuppressWarnings("unchecked")
-    public FactoryTreeBuilder<Void, BorderPaneStage, DefaultStageFactory> createFactoryBuilder(Stage primaryStage, String user, String passwordHash, Locale locale) {
-        FactoryTreeBuilder<Void, BorderPaneStage, DefaultStageFactory> factoryBuilder = new FactoryTreeBuilder<>(DefaultStageFactory.class);
+    public FactoryTreeBuilder<RichClientRoot> createFactoryBuilder(Stage primaryStage, String user, String passwordHash, Locale locale) {
+        FactoryTreeBuilder<RichClientRoot> factoryBuilder = new FactoryTreeBuilder<>(RichClientRoot.class);
 
         factoryBuilder.addFactory(LongRunningActionExecutorFactory.class, Scope.SINGLETON);
+        factoryBuilder.addFactory(RichClientRoot.class, Scope.SINGLETON);
+
         factoryBuilder.addFactory(UniformDesignFactory.class, Scope.SINGLETON, voidSimpleFactoryContext -> {
-            UniformDesignFactory<Void> uniformDesignFactory = new UniformDesignFactory<>();
+            UniformDesignFactory<Void,RichClientRoot> uniformDesignFactory = new UniformDesignFactory<>();
             uniformDesignFactory.locale.set(locale);
             uniformDesignFactory.askBeforeDelete.set(false);
             return uniformDesignFactory;
@@ -63,8 +64,8 @@ public class RichClientBuilder {
         });
 
         factoryBuilder.addFactory(AttributeEditorBuilderFactory.class, Scope.SINGLETON, context -> {
-            final AttributeEditorBuilderFactory<Void> attributeEditorBuilderFactory = new AttributeEditorBuilderFactory<>();
-            EditorBuildersListFactory<Void> editorBuildersListFactory = new EditorBuildersListFactory<>();
+            final AttributeEditorBuilderFactory<Void,RichClientRoot> attributeEditorBuilderFactory = new AttributeEditorBuilderFactory<>();
+            EditorBuildersListFactory<Void,RichClientRoot> editorBuildersListFactory = new EditorBuildersListFactory<>();
             editorBuildersListFactory.uniformDesign.set(context.get(UniformDesignFactory.class));
             attributeEditorBuilderFactory.editorBuildersList.set(editorBuildersListFactory);
             return attributeEditorBuilderFactory;
@@ -78,7 +79,7 @@ public class RichClientBuilder {
         });
 
         factoryBuilder.addFactory(ViewMenuFactory.class, "file", Scope.SINGLETON, context -> {
-            ViewMenuFactory<Void> fileMenu = new ViewMenuFactory<>();
+            ViewMenuFactory<Void,RichClientRoot> fileMenu = new ViewMenuFactory<>();
             fileMenu.uniformDesign.set(context.get(UniformDesignFactory.class));
             fileMenu.text.en("File").de("Data");
             fileMenu.items.add(context.get(ViewMenuItemFactory.class, "configuration"));
@@ -101,7 +102,7 @@ public class RichClientBuilder {
         });
 
         factoryBuilder.addFactory(ApplicationServerRestClientFactory.class, Scope.SINGLETON, context -> {
-            ApplicationServerRestClientFactory<Void, DefaultStageFactory, OrderCollector, ShopFactory> restClient = new ApplicationServerRestClientFactory<>();
+            ApplicationServerRestClientFactory<Void, RichClientRoot, OrderCollector, ShopFactory> restClient = new ApplicationServerRestClientFactory<>();
             restClient.factoryRootClass.set(ShopFactory.class);
             restClient.restClient.set(new RestClientFactory<>());
             restClient.restClient.get().host.set("localhost");
@@ -113,18 +114,18 @@ public class RichClientBuilder {
         });
 
         factoryBuilder.addFactory(DiffDialogBuilderFactory.class, Scope.PROTOTYPE, context -> {
-            DiffDialogBuilderFactory<Void> diffDialogBuilderFactory = new DiffDialogBuilderFactory<>();
+            DiffDialogBuilderFactory<Void,RichClientRoot> diffDialogBuilderFactory = new DiffDialogBuilderFactory<>();
             diffDialogBuilderFactory.attributeEditorBuilder.set(context.get(AttributeEditorBuilderFactory.class));
             diffDialogBuilderFactory.uniformDesign.set(context.get(UniformDesignFactory.class));
             return diffDialogBuilderFactory;
         });
 
         factoryBuilder.addFactory(ViewMenuItemFactory.class, "configuration", Scope.SINGLETON, context -> {
-            ViewDescriptionFactory<Void> viewDescriptionFactory = new ViewDescriptionFactory<>();
+            ViewDescriptionFactory<Void,RichClientRoot> viewDescriptionFactory = new ViewDescriptionFactory<>();
             viewDescriptionFactory.text.en("Configuration").de("Konfiguration");
             viewDescriptionFactory.uniformDesign.set(context.get(UniformDesignFactory.class));
 
-            ViewFactory<Void> viewFactory = new ViewFactory<>();
+            ViewFactory<Void,RichClientRoot> viewFactory = new ViewFactory<>();
             viewFactory.viewDescription.set(viewDescriptionFactory);
             viewFactory.viewsDisplayWidget.set(context.get(ViewsDisplayWidgetFactory.class));
 
@@ -132,7 +133,7 @@ public class RichClientBuilder {
             configurationViewFactory.uniformDesign.set(context.get(UniformDesignFactory.class));
             configurationViewFactory.dataEditorFactory.set(context.get(DataEditorFactory.class));
 
-            FactoryEditViewFactory<Void, DefaultStageFactory, OrderCollector, ShopFactory, String> factoryEditViewFactory = new FactoryEditViewFactory<>();
+            FactoryEditViewFactory<Void, RichClientRoot, OrderCollector, ShopFactory, Void> factoryEditViewFactory = new FactoryEditViewFactory<>();
             factoryEditViewFactory.factoryEditManager.set(context.get(FactoryEditManagerFactory.class));
             factoryEditViewFactory.longRunningActionExecutor.set(context.get(LongRunningActionExecutorFactory.class));
             factoryEditViewFactory.uniformDesign.set(context.get(UniformDesignFactory.class));
@@ -141,7 +142,7 @@ public class RichClientBuilder {
             factoryEditViewFactory.diffDialogBuilder.set(context.get(DiffDialogBuilderFactory.class));
             viewFactory.widget.set(factoryEditViewFactory);
 
-            ViewMenuItemFactory<Void> viewMenuItemFactory = new ViewMenuItemFactory<>();
+            ViewMenuItemFactory<Void,RichClientRoot> viewMenuItemFactory = new ViewMenuItemFactory<>();
             viewMenuItemFactory.uniformDesign.set(context.get(UniformDesignFactory.class));
             viewMenuItemFactory.viewDescription.set(viewDescriptionFactory);
             viewMenuItemFactory.view.set(viewFactory);

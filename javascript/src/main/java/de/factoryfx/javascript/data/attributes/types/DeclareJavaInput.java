@@ -107,7 +107,7 @@ public class DeclareJavaInput {
         }
         List<Method> methods = Stream.of(clazz.getMethods()).filter(m->Modifier.isPublic(m.getModifiers()) && !Modifier.isStatic(m.getModifiers()))
                 .collect(Collectors.toList());
-        for (String methodName : methods.stream().map(m->m.getName()).distinct().collect(Collectors.toList())) {
+        for (String methodName : methods.stream().map(Method::getName).distinct().collect(Collectors.toList())) {
             List<Method> matchingMethods = methods.stream()
                     .filter(m->m.getName().equals(methodName) &&
                             shouldDeclareMethod(m)).collect(Collectors.toList());
@@ -185,8 +185,8 @@ public class DeclareJavaInput {
         source.append("\n");
         reachableClasses.removeAll(classesAlreadyDeclared);
         reachableClasses.removeIf(this::isBuiltIn);
-        reachableClasses.removeIf(c->c.isArray());
-        reachableClasses.removeIf(c->c.isPrimitive());
+        reachableClasses.removeIf(Class::isArray);
+        reachableClasses.removeIf(Class::isPrimitive);
         reachableClasses.forEach(r->{
             if (!classesAlreadyDeclared.contains(r)) {
                 declareClass(classesAlreadyDeclared, r, source);

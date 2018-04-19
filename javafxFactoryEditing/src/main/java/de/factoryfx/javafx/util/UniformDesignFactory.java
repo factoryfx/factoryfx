@@ -5,10 +5,11 @@ import java.util.Locale;
 import de.factoryfx.data.attribute.primitive.BooleanAttribute;
 import de.factoryfx.data.attribute.types.ColorAttribute;
 import de.factoryfx.data.attribute.types.LocaleAttribute;
+import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.factory.SimpleFactoryBase;
 import javafx.scene.paint.Color;
 
-public class UniformDesignFactory<V> extends SimpleFactoryBase<UniformDesign,V> {
+public class UniformDesignFactory<V,R extends FactoryBase<?,V,R>> extends SimpleFactoryBase<UniformDesign,V,R> {
 
     public final LocaleAttribute locale=new LocaleAttribute().en("locale").defaultValue(Locale.ENGLISH);
     public final ColorAttribute dangerColor=new ColorAttribute().en("dangerColor").defaultValue(Color.web("#FF7979"));

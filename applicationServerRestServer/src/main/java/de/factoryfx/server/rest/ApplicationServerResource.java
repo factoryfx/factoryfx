@@ -19,9 +19,9 @@ import de.factoryfx.data.storage.DataAndNewMetadata;
 import de.factoryfx.data.storage.StoredDataMetadata;
 import de.factoryfx.factory.log.FactoryUpdateLog;
 import de.factoryfx.server.ApplicationServer;
-import de.factoryfx.user.AuthorizedUser;
-import de.factoryfx.user.UserManagement;
-import de.factoryfx.user.persistent.UserFactory;
+import de.factoryfx.server.user.AuthorizedUser;
+import de.factoryfx.server.user.UserManagement;
+import de.factoryfx.server.user.persistent.UserFactory;
 
 
 
@@ -31,18 +31,18 @@ import de.factoryfx.user.persistent.UserFactory;
  *applicationServer is new one
  */
 @Path("{parameter: adminui|applicationServer}")
-public class ApplicationServerResource<V,L,T extends FactoryBase<L,V>,S>  {
+public class ApplicationServerResource<V,R extends FactoryBase<?,V,R>,S>  {
 
-    private final ApplicationServer<V,L,T,S> applicationServer;
+    private final ApplicationServer<V,R,S> applicationServer;
     private final UserManagement userManagement;
     private final Predicate<Optional<AuthorizedUser>> authorizedKeyUserEvaluator;
     private final Supplier<V> emptyVisitorCreator;
 
-    public ApplicationServerResource(ApplicationServer<V,L,T,S> applicationServer, UserManagement userManagement, Predicate<Optional<AuthorizedUser>> authorizedKeyUserEvaluator) {
+    public ApplicationServerResource(ApplicationServer<V,R,S> applicationServer, UserManagement userManagement, Predicate<Optional<AuthorizedUser>> authorizedKeyUserEvaluator) {
         this(applicationServer,userManagement,authorizedKeyUserEvaluator,null);
     }
 
-    public ApplicationServerResource(ApplicationServer<V,L,T,S> applicationServer, UserManagement userManagement, Predicate<Optional<AuthorizedUser>> authorizedKeyUserEvaluator, Supplier<V> emptyVisitorCreator) {
+    public ApplicationServerResource(ApplicationServer<V,R,S> applicationServer, UserManagement userManagement, Predicate<Optional<AuthorizedUser>> authorizedKeyUserEvaluator, Supplier<V> emptyVisitorCreator) {
         this.applicationServer = applicationServer;
         this.userManagement = userManagement;
         this.authorizedKeyUserEvaluator = authorizedKeyUserEvaluator;

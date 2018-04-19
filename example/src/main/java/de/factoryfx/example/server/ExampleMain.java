@@ -4,14 +4,13 @@ import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
 import de.factoryfx.data.storage.inmemory.InMemoryDataStorage;
 import de.factoryfx.example.client.RichClientBuilder;
+import de.factoryfx.example.client.RichClientRoot;
 import de.factoryfx.example.factory.*;
 import de.factoryfx.example.factory.netherlands.NetherlandsCarProductFactory;
 import de.factoryfx.factory.FactoryManager;
 import de.factoryfx.factory.exception.AllOrNothingFactoryExceptionHandler;
 import de.factoryfx.factory.exception.LoggingFactoryExceptionHandler;
 import de.factoryfx.factory.exception.RethrowingFactoryExceptionHandler;
-import de.factoryfx.javafx.stage.BorderPaneStage;
-import de.factoryfx.javafx.stage.DefaultStageFactory;
 import de.factoryfx.server.ApplicationServer;
 import de.factoryfx.server.rest.ApplicationServerResourceFactory;
 import de.factoryfx.server.rest.server.HttpServerConnectorFactory;
@@ -27,20 +26,20 @@ public class ExampleMain extends Application {
     public void start(Stage primaryStage){
         ShopFactory shopFactory = getShopFactory();
 
-        ApplicationServer<OrderCollector, Shop, ShopFactory, Void> applicationServer = new ApplicationServer<>(new FactoryManager<>(new LoggingFactoryExceptionHandler<>(new AllOrNothingFactoryExceptionHandler<>())), new InMemoryDataStorage<>(shopFactory));
+        ApplicationServer<OrderCollector, ShopFactory, Void> applicationServer = new ApplicationServer<>(new FactoryManager<>(new LoggingFactoryExceptionHandler<OrderCollector, ShopFactory>(new AllOrNothingFactoryExceptionHandler<>())), new InMemoryDataStorage<>(shopFactory));
         applicationServer.start();
 
-        DefaultStageFactory richClientFactory = new RichClientBuilder(8089).createFactoryBuilder(primaryStage, "", "", Locale.ENGLISH).buildTree();
-        ApplicationServer<Void, BorderPaneStage, DefaultStageFactory, Void> richClient = new ApplicationServer<>(new FactoryManager<>(new RethrowingFactoryExceptionHandler<>()), new InMemoryDataStorage<>(richClientFactory));
+        RichClientRoot richClientFactory = new RichClientBuilder(8089).createFactoryBuilder(primaryStage, "", "", Locale.ENGLISH).buildTree();
+        ApplicationServer<Void, RichClientRoot, Void> richClient = new ApplicationServer<>(new FactoryManager<Void, RichClientRoot>(new RethrowingFactoryExceptionHandler<>()), new InMemoryDataStorage<>(richClientFactory));
         richClient.start();
     }
 
     private ShopFactory getShopFactory() {
         ShopFactory shopFactory = new ShopFactory();
         ShopJettyServerFactory shopJettyServer = new ShopJettyServerFactory();
-        ApplicationServerResourceFactory<OrderCollector, Shop, ShopFactory, Void> resource = new ApplicationServerResourceFactory<>();
+        ApplicationServerResourceFactory<OrderCollector, ShopFactory, Void> resource = new ApplicationServerResourceFactory<>();
         shopJettyServer.resource.set(resource);
-        HttpServerConnectorFactory<OrderCollector> connector = new HttpServerConnectorFactory<>();
+        HttpServerConnectorFactory<OrderCollector,ShopFactory> connector = new HttpServerConnectorFactory<>();
         connector.host.set("localhost");
         connector.port.set(8089);
         shopJettyServer.connectors.add(connector);

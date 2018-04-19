@@ -9,7 +9,7 @@ import de.factoryfx.server.rest.server.JettyServer;
 import de.factoryfx.server.rest.server.JettyServerFactory;
 import javafx.stage.Stage;
 
-public class ShopFactory extends FactoryBase<Shop,OrderCollector> {
+public class ShopFactory extends FactoryBase<Shop,OrderCollector,ShopFactory> {
 
     public final FactoryReferenceAttribute<JettyServer, ShopJettyServerFactory> httpServer =
             new FactoryReferenceAttribute<JettyServer, ShopJettyServerFactory>().setupUnsafe(JettyServerFactory.class)

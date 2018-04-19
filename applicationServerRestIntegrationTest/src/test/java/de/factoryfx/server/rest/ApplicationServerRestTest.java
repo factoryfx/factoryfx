@@ -15,10 +15,9 @@ import de.factoryfx.server.rest.client.ApplicationServerRestClient;
 import de.factoryfx.server.rest.client.ApplicationServerRestClientFactory;
 import de.factoryfx.server.rest.client.RestClientFactory;
 import de.factoryfx.server.rest.server.HttpServerConnectorFactory;
-import de.factoryfx.server.rest.server.JettyServer;
 import de.factoryfx.server.rest.server.JettyServerFactory;
-import de.factoryfx.user.persistent.PersistentUserManagementFactory;
-import de.factoryfx.user.persistent.UserFactory;
+import de.factoryfx.server.user.persistent.PersistentUserManagementFactory;
+import de.factoryfx.server.user.persistent.UserFactory;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -29,8 +28,8 @@ import java.util.Locale;
 
 public class ApplicationServerRestTest {
 
-    public static class TestJettyServer extends JettyServerFactory<Void>{
-        public final FactoryReferenceAttribute<ApplicationServerResource<Void, String, RootTestclazz,Void>, ApplicationServerResourceFactory<Void, String, RootTestclazz,Void>> resource = new FactoryReferenceAttribute<>();
+    public static class TestJettyServer extends JettyServerFactory<Void,TestJettyServer>{
+        public final FactoryReferenceAttribute<ApplicationServerResource<Void, TestJettyServer,Void>, ApplicationServerResourceFactory<Void, TestJettyServer,Void>> resource = new FactoryReferenceAttribute<>();
         @Override
         protected List<Object> getResourcesInstances() {
             return Arrays.asList(resource.instance());
@@ -49,24 +48,22 @@ public class ApplicationServerRestTest {
 
 
         TestJettyServer jettyServer = new TestJettyServer();
-        final HttpServerConnectorFactory<Void> httpServerConnectorFactory = new HttpServerConnectorFactory<>();
+        final HttpServerConnectorFactory<Void,TestJettyServer> httpServerConnectorFactory = new HttpServerConnectorFactory<>();
         httpServerConnectorFactory.port.set(34579);
         httpServerConnectorFactory.host.set("localhost");
         jettyServer.connectors.add(httpServerConnectorFactory);
-        final ApplicationServerResourceFactory<Void, String, RootTestclazz, Void> applicationServerResource = new ApplicationServerResourceFactory<>();
+        final ApplicationServerResourceFactory<Void, TestJettyServer, Void> applicationServerResource = new ApplicationServerResourceFactory<>();
         jettyServer.resource.set(applicationServerResource);
-        final PersistentUserManagementFactory<Void> userManagement = new PersistentUserManagementFactory<>();
-        final UserFactory<Void> user = new UserFactory<>();
+        final PersistentUserManagementFactory<Void,TestJettyServer> userManagement = new PersistentUserManagementFactory<>();
+        final UserFactory<Void,TestJettyServer> user = new UserFactory<>();
         user.name.set("user123");
         user.password.set(new EncryptedString("hash123", key));
         user.locale.set(Locale.GERMAN);
         userManagement.users.add(user);
         applicationServerResource.userManagement.set(userManagement);
 
-        RootTestclazz rootTestclazz = new RootTestclazz();
-        rootTestclazz.jettyServer.set(jettyServer);
-        rootTestclazz = rootTestclazz.utility().prepareUsableCopy();
-        ApplicationServer<Void, String, RootTestclazz, Void> applicationServer = new ApplicationServer<>(new FactoryManager<>(new RethrowingFactoryExceptionHandler<>()), new InMemoryDataStorage<>(rootTestclazz));
+        jettyServer = jettyServer.utility().prepareUsableCopy();
+        ApplicationServer<Void, TestJettyServer, Void> applicationServer = new ApplicationServer<>(new FactoryManager<Void, TestJettyServer>(new RethrowingFactoryExceptionHandler<>()), new InMemoryDataStorage<>(jettyServer));
         Thread serverThread = new Thread(() -> {
             applicationServer.start();
         });
@@ -81,17 +78,18 @@ public class ApplicationServerRestTest {
             }
 
 
-            ApplicationServerRestClientFactory<Void, FactoryBase<Void, Void>, Void, RootTestclazz> applicationServerRestClientFactory = new ApplicationServerRestClientFactory<>();
-            final RestClientFactory<Void> restClient = new RestClientFactory<>();
+            ApplicationServerRestClientFactory<Void, RestClientRoot, Void, TestJettyServer> applicationServerRestClientFactory = new ApplicationServerRestClientFactory<>();
+            final RestClientFactory<Void,RestClientRoot> restClient = new RestClientFactory<>();
             restClient.port.set(34579);
             restClient.host.set("localhost");
             restClient.path.set("adminui");
-            applicationServerRestClientFactory.restClient.set(restClient);
+            RestClientFactory<Void, TestJettyServer> value = new RestClientFactory<>();
+            applicationServerRestClientFactory.restClient.set(value);
             applicationServerRestClientFactory.user.set("user123");
             applicationServerRestClientFactory.passwordHash.set("hash123");
-            applicationServerRestClientFactory.factoryRootClass.set(RootTestclazz.class);
+            applicationServerRestClientFactory.factoryRootClass.set(TestJettyServer.class);
 
-            ApplicationServerRestClient<Void, RootTestclazz> applicationServerRestClient = applicationServerRestClientFactory.internalFactory().instance();
+            ApplicationServerRestClient<Void, TestJettyServer> applicationServerRestClient = applicationServerRestClientFactory.internalFactory().instance();
             applicationServerRestClient.prepareNewFactory();
 
 
@@ -104,14 +102,12 @@ public class ApplicationServerRestTest {
         }
     }
 
-
-    public static class RootTestclazz extends SimpleFactoryBase<String,Void> {
-        public final FactoryReferenceAttribute<JettyServer,JettyServerFactory<Void>> jettyServer = new FactoryReferenceAttribute<>();
-
+    public static class RestClientRoot extends SimpleFactoryBase<Void,Void,RestClientRoot> {
         @Override
-        public String createImpl() {
-            jettyServer.instance();
-            return "";
+        public Void createImpl() {
+            return null;
         }
     }
+
+
 }

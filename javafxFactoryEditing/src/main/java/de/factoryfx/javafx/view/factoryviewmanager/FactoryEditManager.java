@@ -17,7 +17,7 @@ import de.factoryfx.factory.log.FactoryUpdateLog;
 import de.factoryfx.server.rest.client.ApplicationServerRestClient;
 import javafx.application.Platform;
 
-public class FactoryEditManager<V,R extends FactoryBase<?,V>,S> {
+public class FactoryEditManager<V,R extends FactoryBase<?,V,R>,S> {
     private final ApplicationServerRestClient<V,R> client;
     private final List<FactoryRootChangeListener<R>> listeners= new ArrayList<>();
     private final DataSerialisationManager<R,S> dataSerialisationManager;

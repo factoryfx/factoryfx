@@ -1,5 +1,6 @@
 package de.factoryfx.javafx;
 
+import de.factoryfx.factory.testfactories.ExampleFactoryA;
 import de.factoryfx.javafx.stage.StageFactory;
 import de.factoryfx.javafx.util.LongRunningActionExecutorFactory;
 import de.factoryfx.javafx.util.UniformDesignFactory;
@@ -21,7 +22,7 @@ public class IntegrationTest extends Application{
         Application.launch();
     }
 
-    public class ViewXWidgetFactory extends WidgetFactory<Void>{
+    public class ViewXWidgetFactory extends WidgetFactory<Void,ExampleFactoryA>{
 
         @Override
         protected Widget createWidget() {
@@ -35,33 +36,33 @@ public class IntegrationTest extends Application{
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        LongRunningActionExecutorFactory<Void> longRunningActionExecutorFactory = new  LongRunningActionExecutorFactory<>();
+        LongRunningActionExecutorFactory<Void,ExampleFactoryA> longRunningActionExecutorFactory = new  LongRunningActionExecutorFactory<>();
 
-        UniformDesignFactory<Void> uniformDesignFactory = new UniformDesignFactory<>();
+        UniformDesignFactory<Void,ExampleFactoryA> uniformDesignFactory = new UniformDesignFactory<>();
 
-        ViewsDisplayWidgetFactory<Void> viewsDisplayWidgetFactory = new ViewsDisplayWidgetFactory<>();
+        ViewsDisplayWidgetFactory<Void,ExampleFactoryA> viewsDisplayWidgetFactory = new ViewsDisplayWidgetFactory<>();
         viewsDisplayWidgetFactory.uniformDesign.set(uniformDesignFactory);
 
-        ViewDescriptionFactory<Void> viewDescriptionFactory = new ViewDescriptionFactory<>();
+        ViewDescriptionFactory<Void,ExampleFactoryA> viewDescriptionFactory = new ViewDescriptionFactory<>();
         viewDescriptionFactory.text.en("Config").de("Config");
         viewDescriptionFactory.uniformDesign.set(uniformDesignFactory);
 
-        ViewFactory<Void> viewFactory = new ViewFactory<>();
+        ViewFactory<Void,ExampleFactoryA> viewFactory = new ViewFactory<>();
         viewFactory.viewDescription.set(viewDescriptionFactory);
         viewFactory.viewsDisplayWidget.set(viewsDisplayWidgetFactory);
         viewFactory.widget.set(new ViewXWidgetFactory());
 
-        ViewMenuItemFactory<Void> viewMenuItemFactory = new ViewMenuItemFactory<>();
+        ViewMenuItemFactory<Void,ExampleFactoryA> viewMenuItemFactory = new ViewMenuItemFactory<>();
         viewMenuItemFactory.uniformDesign.set(uniformDesignFactory);
         viewMenuItemFactory.viewDescription.set(viewDescriptionFactory);
         viewMenuItemFactory.view.set(viewFactory);
 
-        ViewMenuFactory<Void> menuFactory = new ViewMenuFactory<>();
+        ViewMenuFactory<Void,ExampleFactoryA> menuFactory = new ViewMenuFactory<>();
         menuFactory.text.en("File").de("Datei");
         menuFactory.items.add(viewMenuItemFactory);
         menuFactory.uniformDesign.set(uniformDesignFactory);
 
-        StageFactory<Void> stageFactory = new StageFactory<>();
+        StageFactory<Void,ExampleFactoryA> stageFactory = new StageFactory<>();
         stageFactory.stage.set(primaryStage);
         stageFactory.items.add(menuFactory);
         stageFactory.width.set(1920);

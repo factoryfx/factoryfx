@@ -8,9 +8,9 @@ import de.factoryfx.servlet.ApplicationServerRestServletBridge;
 import de.factoryfx.servlet.ApplicationServerRestServletBridgeFactory;
 import de.factoryfx.servlet.ServletContextAwareVisitor;
 
-public class RootFactory extends SimpleFactoryBase<Root,ServletContextAwareVisitor> {
+public class RootFactory extends SimpleFactoryBase<Root,ServletContextAwareVisitor,RootFactory> {
     public final StringAttribute stringAttribute =new StringAttribute();
-    public final FactoryReferenceAttribute<ApplicationServerRestServletBridge,ApplicationServerRestServletBridgeFactory<Root,RootFactory,Void>> applicationServerRestBridge = new FactoryReferenceAttribute<ApplicationServerRestServletBridge,ApplicationServerRestServletBridgeFactory<Root,RootFactory,Void>>().setupUnsafe(ApplicationServerResourceFactory.class);
+    public final FactoryReferenceAttribute<ApplicationServerRestServletBridge,ApplicationServerRestServletBridgeFactory<RootFactory,Void>> applicationServerRestBridge = new FactoryReferenceAttribute<ApplicationServerRestServletBridge,ApplicationServerRestServletBridgeFactory<RootFactory,Void>>().setupUnsafe(ApplicationServerResourceFactory.class);
 
 
     @Override

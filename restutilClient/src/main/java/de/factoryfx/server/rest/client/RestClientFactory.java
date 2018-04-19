@@ -3,9 +3,10 @@ package de.factoryfx.server.rest.client;
 import de.factoryfx.data.attribute.primitive.BooleanAttribute;
 import de.factoryfx.data.attribute.primitive.IntegerAttribute;
 import de.factoryfx.data.attribute.types.StringAttribute;
+import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.factory.SimpleFactoryBase;
 
-public class RestClientFactory<V> extends SimpleFactoryBase<RestClient,V> {
+public class RestClientFactory<V,R extends FactoryBase<?,V,R>> extends SimpleFactoryBase<RestClient,V,R> {
     public final BooleanAttribute ssl=new BooleanAttribute().labelText("ssl");
     public final StringAttribute host=new StringAttribute().labelText("host");
     public final IntegerAttribute port=new IntegerAttribute().labelText("port");

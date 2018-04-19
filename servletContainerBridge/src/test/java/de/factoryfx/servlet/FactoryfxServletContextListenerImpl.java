@@ -12,13 +12,13 @@ import de.factoryfx.servlet.example.RootFactory;
 
 public class FactoryfxServletContextListenerImpl extends ApplicationServerStartingServletContextListener {
     @Override
-    protected ApplicationServer<? super ServletContextAwareVisitor, ?, ? extends FactoryBase<?, ? super ServletContextAwareVisitor>,?> createFactoryFxApplicationServer() {
+    protected ApplicationServer<? super ServletContextAwareVisitor, ? extends FactoryBase<?, ? super ServletContextAwareVisitor,?>,?> createFactoryFxApplicationServer() {
         RootFactory rootFactory = new RootFactory();
         rootFactory.stringAttribute.set("blub");
-        ApplicationServerResourceFactory<ServletContextAwareVisitor, Root, RootFactory,Void> applicationServerResourceFactory = new ApplicationServerResourceFactory<>();
-        ApplicationServerRestServletBridgeFactory<Root, RootFactory,Void> bridgeFactory = new ApplicationServerRestServletBridgeFactory<>();
+        ApplicationServerResourceFactory<ServletContextAwareVisitor, RootFactory,Void> applicationServerResourceFactory = new ApplicationServerResourceFactory<>();
+        ApplicationServerRestServletBridgeFactory<RootFactory,Void> bridgeFactory = new ApplicationServerRestServletBridgeFactory<>();
         bridgeFactory.applicationServerResource.set(applicationServerResourceFactory);
         rootFactory.applicationServerRestBridge.set(bridgeFactory);
-        return new ApplicationServer<>(new FactoryManager<>(new LoggingFactoryExceptionHandler<>(new AllOrNothingFactoryExceptionHandler<>())),new InMemoryDataStorage<>(rootFactory));
+        return new ApplicationServer<>(new FactoryManager<>(new LoggingFactoryExceptionHandler<ServletContextAwareVisitor,RootFactory>(new AllOrNothingFactoryExceptionHandler<>())),new InMemoryDataStorage<>(rootFactory));
     }
 }

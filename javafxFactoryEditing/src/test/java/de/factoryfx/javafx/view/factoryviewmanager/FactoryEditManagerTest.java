@@ -85,7 +85,7 @@ public class FactoryEditManagerTest {
             ExampleFactoryA initialFactory = new ExampleFactoryA();
             initialFactory.referenceAttribute.set(new ExampleFactoryB());
             initialFactory = initialFactory.internal().prepareUsableCopy();
-            ApplicationServer<Void, ExampleLiveObjectA, ExampleFactoryA, Void> applicationServer = new ApplicationServer<>(new FactoryManager<>(new RethrowingFactoryExceptionHandler<>()), new InMemoryDataStorage<ExampleFactoryA, Void>(initialFactory));
+            ApplicationServer<Void, ExampleFactoryA, Void> applicationServer = new ApplicationServer<>(new FactoryManager<Void, ExampleFactoryA>(new RethrowingFactoryExceptionHandler<>()), new InMemoryDataStorage<ExampleFactoryA, Void>(initialFactory));
             applicationServer.start();
 
 
@@ -107,7 +107,7 @@ public class FactoryEditManagerTest {
             ExampleFactoryA initialFactory = new ExampleFactoryA();
             initialFactory = initialFactory.internal().prepareUsableCopy();
 //            initialFactory.referenceAttribute.set(new ExampleFactoryB());
-            ApplicationServer<Void, ExampleLiveObjectA, ExampleFactoryA, Void> applicationServer = new ApplicationServer<>(new FactoryManager<>(new RethrowingFactoryExceptionHandler<>()), new InMemoryDataStorage<ExampleFactoryA, Void>(initialFactory));
+            ApplicationServer<Void, ExampleFactoryA, Void> applicationServer = new ApplicationServer<>(new FactoryManager<Void, ExampleFactoryA>(new RethrowingFactoryExceptionHandler<>()), new InMemoryDataStorage<ExampleFactoryA, Void>(initialFactory));
             applicationServer.start();
 
 
