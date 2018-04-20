@@ -180,6 +180,18 @@ public class DataTest {
         Assert.assertEquals(6,attributeList.size());
     }
 
+    private static class EmptyExampleDataA extends Data {
+
+    }
+
+    @Test
+    public void test_copy_consumer_root_empty_data(){
+        EmptyExampleDataA emptyExampleDataA = new EmptyExampleDataA();
+        EmptyExampleDataA copy =  emptyExampleDataA.internal().prepareUsableCopy();
+        Assert.assertEquals(copy,copy.internal().getRoot());
+    }
+
+
     @Test
     public void test_copy(){
         ExampleDataA exampleFactoryA = new ExampleDataA();

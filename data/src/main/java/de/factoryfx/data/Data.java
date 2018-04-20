@@ -337,8 +337,8 @@ public class Data {
         Data newRoot = copyDeep(0, level, null,oldDataList);
 
         for (Data oldData : oldDataList) {
+            oldData.copy.root = newRoot;
             oldData.copy.visitAttributesFlat((attributeVariableName, attribute) -> {
-                oldData.copy.root = newRoot;
                 attribute.internal_prepareUsage(newRoot, oldData.copy);
                 if (newAttributesConsumer != null) {
                     newAttributesConsumer.accept(attribute);
@@ -348,7 +348,7 @@ public class Data {
             if (newDataConsumer!=null){
                newDataConsumer.accept(oldData.copy);
             }
-            oldData.copy=null;//clenup
+            oldData.copy=null;//cleanup
         }
 
         if (newRoot!=null){
@@ -369,7 +369,6 @@ public class Data {
             copy.isUsable=true;//only possible to created copies form usable data therefore copy is always usable
 
             this.visitAttributesDualFlat(copy, (name, thisAttribute, copyAttribute) -> {
-//                newAttributes.add(copyAttribute);
                 if (thisAttribute!=null){//cause jackson decided it's a good idea to override the final field with null
                     thisAttribute.internal_copyToUnsafe(copyAttribute,(data)->{
                         if (data==null){
