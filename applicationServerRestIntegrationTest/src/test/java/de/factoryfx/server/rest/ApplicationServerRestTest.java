@@ -79,15 +79,16 @@ public class ApplicationServerRestTest {
 
 
             ApplicationServerRestClientFactory<Void, RestClientRoot, Void, TestJettyServer> applicationServerRestClientFactory = new ApplicationServerRestClientFactory<>();
-            final RestClientFactory<Void,RestClientRoot> restClient = new RestClientFactory<>();
+            final RestClientFactory<Void,TestJettyServer> restClient = new RestClientFactory<>();
             restClient.port.set(34579);
             restClient.host.set("localhost");
             restClient.path.set("adminui");
-            RestClientFactory<Void, TestJettyServer> value = new RestClientFactory<>();
-            applicationServerRestClientFactory.restClient.set(value);
+            applicationServerRestClientFactory.restClient.set(restClient);
             applicationServerRestClientFactory.user.set("user123");
             applicationServerRestClientFactory.passwordHash.set("hash123");
             applicationServerRestClientFactory.factoryRootClass.set(TestJettyServer.class);
+
+//            applicationServerRestClientFactory=applicationServerRestClientFactory.utility().prepareUsableCopy();
 
             ApplicationServerRestClient<Void, TestJettyServer> applicationServerRestClient = applicationServerRestClientFactory.internalFactory().instance();
             applicationServerRestClient.prepareNewFactory();

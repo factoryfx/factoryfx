@@ -55,12 +55,6 @@ public class FactoryReferenceAttribute<L, F extends FactoryBase<? extends L,?,?>
         }
     }
 
-    @Override
-    @SuppressWarnings("unchecked")
-    public void internal_afterPreparedUsage(){
-        super.internal_afterPreparedUsage();
-    }
-
     public void internal_setupWithAttributeSetupHelper(AttributeSetupHelper<?> attributeSetupHelper){
         attributeSetupHelper.setupReferenceAttribute(this,this.clazz);
     }

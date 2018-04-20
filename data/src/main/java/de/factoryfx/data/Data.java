@@ -333,26 +333,33 @@ public class Data {
     @SuppressWarnings("unchecked")
     private <T extends Data> T copy(int level, Consumer<Data> newDataConsumer, Consumer<Attribute<?, ?>> newAttributesConsumer) {
         ArrayList<Attribute<?, ?>> newAttributes = new ArrayList<>();
-        ArrayList<Data> oldData = new ArrayList<>();
-        ArrayList<Data> copyData = new ArrayList<>();
-        Data copy = copyDeep(0, level, null, null, newAttributes,oldData,copyData);
-        if (copy!=null){
-            copy.afterPreparedUsage(newAttributes);
+        ArrayList<Data> oldDataList = new ArrayList<>();
+        Data newRoot = copyDeep(0, level, null,oldDataList);
+
+        for (Data oldData : oldDataList) {
+            oldData.copy.visitAttributesFlat((attributeVariableName, attribute) -> {
+                oldData.copy.root = newRoot;
+                attribute.internal_prepareUsage(newRoot, oldData.copy);
+                if (newAttributesConsumer != null) {
+                    newAttributesConsumer.accept(attribute);
+                }
+                newAttributes.add(attribute);
+            });
+            if (newDataConsumer!=null){
+               newDataConsumer.accept(oldData.copy);
+            }
+            oldData.copy=null;//clenup
         }
 
-        if (newDataConsumer!=null){
-            copyData.forEach(newDataConsumer);
-        }
-        if (newAttributesConsumer!=null){
-            newAttributes.forEach(newAttributesConsumer);
+        if (newRoot!=null){
+            newRoot.afterPreparedUsage(newAttributes);
         }
 
-        oldData.forEach(d->d.copy=null);
-        return (T) copy;
+        return (T) newRoot;
     }
 
     private Data copy;
-    private Data copyDeep(final int level, final int maxLevel, Data root, Data parent, List<Attribute<?,?>> newAttributes, List<Data> oldData, List<Data> copyData){
+    private Data copyDeep(final int level, final int maxLevel, final Data parent, final List<Data> oldData){
         if (level>maxLevel){
             return null;
         }
@@ -360,28 +367,20 @@ public class Data {
             copy = newInstance();
             copy.id=this.id;
             copy.isUsable=true;//only possible to created copies form usable data therefore copy is always usable
-            if (root==null){
-                root=copy;
-            }
 
-            final Data finalRoot=root;
-            final Data finalCopy=copy;
             this.visitAttributesDualFlat(copy, (name, thisAttribute, copyAttribute) -> {
-                newAttributes.add(copyAttribute);
-                copyAttribute.internal_prepareUsage(finalRoot,finalCopy);
+//                newAttributes.add(copyAttribute);
                 if (thisAttribute!=null){//cause jackson decided it's a good idea to override the final field with null
                     thisAttribute.internal_copyToUnsafe(copyAttribute,(data)->{
                         if (data==null){
                             return null;
                         }
-                        return data.copyDeep(level + 1, maxLevel,finalRoot,finalCopy,newAttributes,oldData,copyData);
+                        return data.copyDeep(level + 1, maxLevel,copy,oldData);
                     });
                 }
             });
 
             oldData.add(this);
-            copyData.add(copy);
-            copy.root=root;
         }
         if (parent!=null){
             copy.parents.add(parent);
