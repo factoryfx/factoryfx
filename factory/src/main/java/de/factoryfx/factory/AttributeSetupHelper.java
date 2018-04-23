@@ -10,7 +10,7 @@ import java.util.function.Consumer;
 
 /**
  *  provides additional setup for attributes based on the FactoryTreeBuilder
- * @param <R>
+ * @param <R> root
  */
 public class AttributeSetupHelper<R extends FactoryBase<?,?,R>> implements Consumer<Attribute<?,?>> {
 

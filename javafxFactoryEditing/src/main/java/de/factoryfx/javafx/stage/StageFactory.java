@@ -15,8 +15,8 @@ import javafx.scene.control.Menu;
 import javafx.stage.Stage;
 
 /**
- * @param <V>
- * @param <R>
+ * @param <V> visitor
+ * @param <R> root
  */
 public class StageFactory<V,R extends FactoryBase<?,V,R>> extends FactoryBase<BorderPaneStage,V,R> {
     public final ObjectValueAttribute<Stage> stage = new ObjectValueAttribute<Stage>().en("main stage");
