@@ -8,7 +8,6 @@ import de.factoryfx.factory.FactoryManager;
 import de.factoryfx.factory.exception.RethrowingFactoryExceptionHandler;
 import de.factoryfx.factory.testfactories.ExampleFactoryA;
 import de.factoryfx.factory.testfactories.ExampleFactoryB;
-import de.factoryfx.factory.testfactories.ExampleLiveObjectA;
 import de.factoryfx.server.ApplicationServer;
 import de.factoryfx.server.rest.client.ApplicationServerRestClient;
 import org.junit.Assert;
@@ -85,7 +84,7 @@ public class FactoryEditManagerTest {
             ExampleFactoryA initialFactory = new ExampleFactoryA();
             initialFactory.referenceAttribute.set(new ExampleFactoryB());
             initialFactory = initialFactory.internal().prepareUsableCopy();
-            ApplicationServer<Void, ExampleFactoryA, Void> applicationServer = new ApplicationServer<>(new FactoryManager<Void, ExampleFactoryA>(new RethrowingFactoryExceptionHandler<>()), new InMemoryDataStorage<ExampleFactoryA, Void>(initialFactory));
+            ApplicationServer<Void, ExampleFactoryA, Void> applicationServer = new ApplicationServer<>(new FactoryManager<>(new RethrowingFactoryExceptionHandler()), new InMemoryDataStorage<ExampleFactoryA, Void>(initialFactory));
             applicationServer.start();
 
 
@@ -107,7 +106,7 @@ public class FactoryEditManagerTest {
             ExampleFactoryA initialFactory = new ExampleFactoryA();
             initialFactory = initialFactory.internal().prepareUsableCopy();
 //            initialFactory.referenceAttribute.set(new ExampleFactoryB());
-            ApplicationServer<Void, ExampleFactoryA, Void> applicationServer = new ApplicationServer<>(new FactoryManager<Void, ExampleFactoryA>(new RethrowingFactoryExceptionHandler<>()), new InMemoryDataStorage<ExampleFactoryA, Void>(initialFactory));
+            ApplicationServer<Void, ExampleFactoryA, Void> applicationServer = new ApplicationServer<>(new FactoryManager<>(new RethrowingFactoryExceptionHandler()), new InMemoryDataStorage<ExampleFactoryA, Void>(initialFactory));
             applicationServer.start();
 
 

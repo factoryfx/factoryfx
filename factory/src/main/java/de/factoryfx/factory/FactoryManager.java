@@ -26,10 +26,10 @@ public class FactoryManager<V,R extends FactoryBase<?,V,R>> {
     private static final org.slf4j.Logger logger = LoggerFactory.getLogger(FactoryManager.class);
 
     private R currentFactoryRoot;
-    private final FactoryExceptionHandler<V,R> factoryExceptionHandler;
+    private final FactoryExceptionHandler factoryExceptionHandler;
 
 
-    public FactoryManager(FactoryExceptionHandler<V,R> factoryExceptionHandler) {
+    public FactoryManager(FactoryExceptionHandler factoryExceptionHandler) {
         this.factoryExceptionHandler = factoryExceptionHandler;
         if (factoryExceptionHandler instanceof AllOrNothingFactoryExceptionHandler){
             logger.warn("only AllOrNothingFactoryExceptionHandler is set therefore no exception will be logged. Usually this setup is wrong and the handler should be wrapped with LoggingFactoryExceptionHandler");

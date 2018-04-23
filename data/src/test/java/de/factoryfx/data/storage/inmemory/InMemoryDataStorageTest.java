@@ -6,9 +6,7 @@ import java.time.LocalDateTime;
 import de.factoryfx.data.Data;
 import de.factoryfx.data.attribute.types.StringAttribute;
 import de.factoryfx.data.storage.DataAndNewMetadata;
-import de.factoryfx.data.storage.DataAndScheduledMetadata;
 import de.factoryfx.data.storage.NewScheduledDataMetadata;
-import de.factoryfx.data.storage.ScheduledDataMetadata;
 import org.junit.Assert;
 import org.junit.Test;
 

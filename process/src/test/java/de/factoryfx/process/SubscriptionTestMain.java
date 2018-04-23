@@ -1,10 +1,7 @@
 package de.factoryfx.process;
 
-import de.factoryfx.factory.builder.FactoryContext;
 import de.factoryfx.factory.builder.FactoryTreeBuilder;
 import de.factoryfx.factory.builder.Scope;
-
-import java.util.function.Function;
 
 public class SubscriptionTestMain {
 

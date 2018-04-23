@@ -19,7 +19,7 @@ public class ApplicationServerAwareFactoryTest {
         rootTestclazz = rootTestclazz.internal().prepareUsableCopy();
 //        Assert.assertNull(rootTestclazz.ref.get().utilityFactory().getApplicationServer());
 
-        final FactoryManager<Void, RootTestClazz> factoryManager = new FactoryManager<>(new RethrowingFactoryExceptionHandler<Void, RootTestClazz>());
+        final FactoryManager<Void, RootTestClazz> factoryManager = new FactoryManager<>(new RethrowingFactoryExceptionHandler());
         ApplicationServer<Void,RootTestClazz,Void> applicationServer = new ApplicationServer<>(factoryManager, new InMemoryDataStorage<>(rootTestclazz));
         applicationServer.start();
 

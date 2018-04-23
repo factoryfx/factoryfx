@@ -3,9 +3,6 @@ package de.factoryfx.factory.atrribute;
 import de.factoryfx.data.validation.ValidationError;
 import de.factoryfx.factory.testfactories.ExampleFactoryA;
 import de.factoryfx.factory.testfactories.ExampleLiveObjectA;
-import de.factoryfx.factory.testfactories.poly.ErrorPrinterFactory;
-import de.factoryfx.factory.testfactories.poly.OutPrinterFactory;
-import de.factoryfx.factory.testfactories.poly.Printer;
 import org.junit.Assert;
 import org.junit.Test;
 

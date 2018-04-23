@@ -2,17 +2,12 @@ package de.factoryfx.factory;
 
 import de.factoryfx.data.jackson.ObjectMapperBuilder;
 import de.factoryfx.data.storage.JacksonDeSerialisation;
-import de.factoryfx.data.storage.inmemory.InMemoryDataStorage;
 import de.factoryfx.factory.builder.FactoryTreeBuilder;
 import de.factoryfx.factory.builder.Scope;
-import de.factoryfx.factory.exception.RethrowingFactoryExceptionHandler;
 import de.factoryfx.factory.testfactories.ExampleFactoryA;
 import de.factoryfx.factory.testfactories.ExampleFactoryB;
-import de.factoryfx.server.ApplicationServer;
 import org.junit.Assert;
 import org.junit.Test;
-
-import static org.junit.Assert.*;
 
 public class AttributeSetupHelperTest {
 

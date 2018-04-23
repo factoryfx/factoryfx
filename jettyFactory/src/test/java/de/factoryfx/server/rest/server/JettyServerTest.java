@@ -1,6 +1,5 @@
 package de.factoryfx.server.rest.server;
 
-import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -11,7 +10,6 @@ import java.util.concurrent.TimeoutException;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
-import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.Response;
 
 import de.factoryfx.server.rest.client.RestClient;

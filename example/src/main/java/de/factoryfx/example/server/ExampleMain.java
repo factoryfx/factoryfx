@@ -26,11 +26,11 @@ public class ExampleMain extends Application {
     public void start(Stage primaryStage){
         ShopFactory shopFactory = getShopFactory();
 
-        ApplicationServer<OrderCollector, ShopFactory, Void> applicationServer = new ApplicationServer<>(new FactoryManager<>(new LoggingFactoryExceptionHandler<OrderCollector, ShopFactory>(new AllOrNothingFactoryExceptionHandler<>())), new InMemoryDataStorage<>(shopFactory));
+        ApplicationServer<OrderCollector, ShopFactory, Void> applicationServer = new ApplicationServer<>(new FactoryManager<>(new LoggingFactoryExceptionHandler(new AllOrNothingFactoryExceptionHandler())), new InMemoryDataStorage<>(shopFactory));
         applicationServer.start();
 
         RichClientRoot richClientFactory = new RichClientBuilder(8089).createFactoryBuilder(primaryStage, "", "", Locale.ENGLISH).buildTree();
-        ApplicationServer<Void, RichClientRoot, Void> richClient = new ApplicationServer<>(new FactoryManager<Void, RichClientRoot>(new RethrowingFactoryExceptionHandler<>()), new InMemoryDataStorage<>(richClientFactory));
+        ApplicationServer<Void, RichClientRoot, Void> richClient = new ApplicationServer<>(new FactoryManager<>(new RethrowingFactoryExceptionHandler()), new InMemoryDataStorage<>(richClientFactory));
         richClient.start();
     }
 

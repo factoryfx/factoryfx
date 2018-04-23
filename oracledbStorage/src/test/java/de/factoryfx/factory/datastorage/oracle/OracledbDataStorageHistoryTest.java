@@ -5,7 +5,6 @@ import de.factoryfx.factory.testfactories.ExampleFactoryA;
 import org.junit.Assert;
 import org.junit.Test;
 
-import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.UUID;
 

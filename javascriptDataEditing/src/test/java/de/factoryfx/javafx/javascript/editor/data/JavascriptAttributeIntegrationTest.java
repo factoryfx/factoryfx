@@ -9,7 +9,6 @@ import de.factoryfx.data.attribute.Attribute;
 import de.factoryfx.data.jackson.ObjectMapperBuilder;
 import de.factoryfx.javafx.editor.attribute.AttributeEditor;
 import de.factoryfx.javafx.editor.attribute.AttributeEditorBuilder;
-import de.factoryfx.javafx.editor.attribute.builder.SimpleSingleAttributeEditorBuilder;
 import de.factoryfx.javafx.editor.attribute.builder.SingleAttributeEditorBuilder;
 import de.factoryfx.javafx.editor.data.DataEditor;
 import de.factoryfx.javafx.javascript.editor.attribute.visualisation.JavascriptAttributeVisualisation;

@@ -1,6 +1,5 @@
 package de.factoryfx.process;
 
-import de.factoryfx.data.Data;
 import de.factoryfx.data.attribute.primitive.IntegerAttribute;
 
 public class SubscriptionParameter extends ProcessParameter {

@@ -3,7 +3,6 @@ package de.factoryfx.process;
 import de.factoryfx.data.attribute.types.StringAttribute;
 import de.factoryfx.factory.SimpleFactoryBase;
 import de.factoryfx.factory.atrribute.FactoryReferenceAttribute;
-import de.factoryfx.factory.atrribute.FactoryReferenceListAttribute;
 
 public class SubscriptionInitializerFactory extends SimpleFactoryBase<SubscriptionInitializer,Void,SubscriptionInitializerFactory> {
     public final StringAttribute stringAttribute= new StringAttribute().labelText("ExampleA1");

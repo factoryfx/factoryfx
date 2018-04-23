@@ -27,7 +27,7 @@ public class Main {
         rootFactory=rootFactory.utility().prepareUsableCopy();
 
 
-        ApplicationServer<ServerVisitor,RootFactory,Void> applicationServer = new ApplicationServer<>(new FactoryManager<ServerVisitor,RootFactory>(new RethrowingFactoryExceptionHandler<>()),new InMemoryDataStorage<>(rootFactory));
+        ApplicationServer<ServerVisitor,RootFactory,Void> applicationServer = new ApplicationServer<>(new FactoryManager<>(new RethrowingFactoryExceptionHandler()),new InMemoryDataStorage<>(rootFactory));
         applicationServer.start();
 
         //execute some random request as example

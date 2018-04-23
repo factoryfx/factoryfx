@@ -4,14 +4,12 @@ import java.util.List;
 import java.util.Locale;
 
 import de.factoryfx.data.Data;
-import de.factoryfx.data.attribute.primitive.IntegerAttribute;
 import de.factoryfx.data.attribute.types.StringAttribute;
 import de.factoryfx.data.jackson.ObjectMapperBuilder;
 import de.factoryfx.data.jackson.SimpleObjectMapper;
 import de.factoryfx.data.merge.testfactories.ExampleDataA;
 import de.factoryfx.data.merge.testfactories.ExampleDataB;
 import de.factoryfx.data.merge.testfactories.ExampleDataC;
-import de.factoryfx.data.validation.StringRequired;
 import de.factoryfx.data.validation.ValidationError;
 import org.junit.Assert;
 import org.junit.Test;

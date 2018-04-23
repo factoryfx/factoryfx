@@ -7,7 +7,6 @@ import de.factoryfx.factory.exception.AllOrNothingFactoryExceptionHandler;
 import de.factoryfx.factory.exception.LoggingFactoryExceptionHandler;
 import de.factoryfx.server.ApplicationServer;
 import de.factoryfx.server.rest.ApplicationServerResourceFactory;
-import de.factoryfx.servlet.example.Root;
 import de.factoryfx.servlet.example.RootFactory;
 
 public class FactoryfxServletContextListenerImpl extends ApplicationServerStartingServletContextListener {
@@ -19,6 +18,6 @@ public class FactoryfxServletContextListenerImpl extends ApplicationServerStarti
         ApplicationServerRestServletBridgeFactory<RootFactory,Void> bridgeFactory = new ApplicationServerRestServletBridgeFactory<>();
         bridgeFactory.applicationServerResource.set(applicationServerResourceFactory);
         rootFactory.applicationServerRestBridge.set(bridgeFactory);
-        return new ApplicationServer<>(new FactoryManager<>(new LoggingFactoryExceptionHandler<ServletContextAwareVisitor,RootFactory>(new AllOrNothingFactoryExceptionHandler<>())),new InMemoryDataStorage<>(rootFactory));
+        return new ApplicationServer<>(new FactoryManager<>(new LoggingFactoryExceptionHandler(new AllOrNothingFactoryExceptionHandler())),new InMemoryDataStorage<>(rootFactory));
     }
 }

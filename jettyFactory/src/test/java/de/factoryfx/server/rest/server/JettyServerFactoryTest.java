@@ -11,8 +11,6 @@ import javax.ws.rs.core.Response;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.junit.Assert.*;
-
 public class JettyServerFactoryTest {
     @Path("/Resource1")
     public static class Resource1{

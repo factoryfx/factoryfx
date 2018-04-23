@@ -1,12 +1,8 @@
 package de.factoryfx.factory.builder;
 
-import de.factoryfx.data.attribute.DefaultNewValueProvider;
 import de.factoryfx.factory.testfactories.ExampleFactoryA;
-import de.factoryfx.factory.testfactories.ExampleLiveObjectA;
 import org.junit.Assert;
 import org.junit.Test;
-
-import static org.junit.Assert.*;
 
 public class FactoryCreatorTest {
 

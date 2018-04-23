@@ -4,8 +4,6 @@ import de.factoryfx.javascript.data.attributes.types.Externs;
 import de.factoryfx.javascript.data.attributes.types.Javascript;
 import org.junit.Test;
 
-import static org.junit.Assert.*;
-
 public class ContentAssistTest {
 
     @Test

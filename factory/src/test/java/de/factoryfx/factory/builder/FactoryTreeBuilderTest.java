@@ -9,7 +9,6 @@ import de.factoryfx.factory.atrribute.FactoryPolymorphicReferenceAttribute;
 import de.factoryfx.factory.atrribute.FactoryReferenceAttribute;
 import de.factoryfx.factory.testfactories.*;
 import de.factoryfx.factory.testfactories.poly.ErrorPrinter;
-import de.factoryfx.factory.testfactories.poly.ErrorPrinterFactory;
 import de.factoryfx.factory.testfactories.poly.OutPrinterFactory;
 import de.factoryfx.factory.testfactories.poly.Printer;
 import org.junit.Assert;

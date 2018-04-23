@@ -1,6 +1,5 @@
 package de.factoryfx.javafx.editor.data;
 
-import de.factoryfx.data.attribute.Attribute;
 import de.factoryfx.data.attribute.ImmutableValueAttribute;
 import de.factoryfx.data.jackson.ObjectMapperBuilder;
 import de.factoryfx.javafx.UniformDesignBuilder;
@@ -13,11 +12,8 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 
-import java.lang.reflect.Array;
 import java.util.Arrays;
 import java.util.List;
-
-import static org.junit.Assert.*;
 
 public class AttributeGroupEditorTest  extends Application {
 

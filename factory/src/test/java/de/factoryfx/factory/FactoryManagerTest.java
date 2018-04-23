@@ -14,7 +14,7 @@ public class FactoryManagerTest {
 
     @Test
     public void test(){
-        FactoryManager<Void,ExampleFactoryA> factoryManager = new FactoryManager<>(new RethrowingFactoryExceptionHandler<Void,ExampleFactoryA>());
+        FactoryManager<Void,ExampleFactoryA> factoryManager = new FactoryManager<>(new RethrowingFactoryExceptionHandler());
 
         ArrayList<String> calls =new ArrayList<>();
 
@@ -35,7 +35,7 @@ public class FactoryManagerTest {
 
     @Test
     public void test_remove_destroy_called(){
-        FactoryManager<Void,ExampleFactoryA> factoryManager = new FactoryManager<>(new RethrowingFactoryExceptionHandler<Void,ExampleFactoryA>());
+        FactoryManager<Void,ExampleFactoryA> factoryManager = new FactoryManager<>(new RethrowingFactoryExceptionHandler());
 
         ArrayList<String> calls =new ArrayList<>();
 
@@ -63,7 +63,7 @@ public class FactoryManagerTest {
 
     @Test
     public void test_updated_destroy_called(){
-        FactoryManager<Void,ExampleFactoryA> factoryManager = new FactoryManager<>(new RethrowingFactoryExceptionHandler<Void,ExampleFactoryA>());
+        FactoryManager<Void,ExampleFactoryA> factoryManager = new FactoryManager<>(new RethrowingFactoryExceptionHandler());
 
         ArrayList<String> calls =new ArrayList<>();
 

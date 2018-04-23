@@ -5,7 +5,6 @@ import de.factoryfx.data.attribute.types.EncryptedString;
 import de.factoryfx.data.attribute.types.EncryptedStringAttribute;
 import de.factoryfx.data.storage.StoredDataMetadata;
 import de.factoryfx.data.storage.inmemory.InMemoryDataStorage;
-import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.factory.FactoryManager;
 import de.factoryfx.factory.SimpleFactoryBase;
 import de.factoryfx.factory.atrribute.FactoryReferenceAttribute;
@@ -63,7 +62,7 @@ public class ApplicationServerRestTest {
         applicationServerResource.userManagement.set(userManagement);
 
         jettyServer = jettyServer.utility().prepareUsableCopy();
-        ApplicationServer<Void, TestJettyServer, Void> applicationServer = new ApplicationServer<>(new FactoryManager<Void, TestJettyServer>(new RethrowingFactoryExceptionHandler<>()), new InMemoryDataStorage<>(jettyServer));
+        ApplicationServer<Void, TestJettyServer, Void> applicationServer = new ApplicationServer<>(new FactoryManager<>(new RethrowingFactoryExceptionHandler()), new InMemoryDataStorage<>(jettyServer));
         Thread serverThread = new Thread(() -> {
             applicationServer.start();
         });

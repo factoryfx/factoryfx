@@ -336,7 +336,7 @@ public class Data {
         ArrayList<Data> oldDataList = new ArrayList<>();
         Data newRoot = copyDeep(0, level, null,oldDataList);
 
-        for (Data oldData : oldDataList) {
+        for (Data oldData: oldDataList) {
             oldData.copy.root = newRoot;
             oldData.copy.visitAttributesFlat((attributeVariableName, attribute) -> {
                 attribute.internal_prepareUsage(newRoot, oldData.copy);

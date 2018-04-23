@@ -1,6 +1,5 @@
 package de.factoryfx.javafx.editor.data;
 
-import java.util.Arrays;
 import java.util.Collections;
 
 import de.factoryfx.data.Data;

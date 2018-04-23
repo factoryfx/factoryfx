@@ -45,7 +45,7 @@ public class Main {
 
 
         ApplicationServer<Void,RootFactory,Void> applicationServer
-                = new ApplicationServer<>(new FactoryManager<Void, RootFactory>(new RethrowingFactoryExceptionHandler<>()),new InMemoryDataStorage<>(jettyServer));
+                = new ApplicationServer<>(new FactoryManager<>(new RethrowingFactoryExceptionHandler()),new InMemoryDataStorage<>(jettyServer));
         applicationServer.start();
 
         Thread continuouslyQueryWebserver = startQueryServerThread();

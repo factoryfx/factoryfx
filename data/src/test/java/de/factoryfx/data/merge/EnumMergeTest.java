@@ -2,17 +2,13 @@ package de.factoryfx.data.merge;
 
 import de.factoryfx.data.Data;
 import de.factoryfx.data.attribute.types.EnumAttribute;
-import de.factoryfx.data.attribute.types.EnumAttributeTest;
-import de.factoryfx.data.attribute.types.I18nAttribute;
 import de.factoryfx.data.jackson.ObjectMapperBuilder;
 import org.junit.Assert;
 import org.junit.Test;
 
-import java.util.Locale;
-
 public class EnumMergeTest extends MergeHelperTestBase {
     public enum TestEnum{
-        A,B;
+        A,B
     }
 
     public static class EnumMergeTestPojo extends Data {

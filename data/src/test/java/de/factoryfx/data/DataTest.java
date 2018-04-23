@@ -4,10 +4,7 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Consumer;
-import java.util.function.Supplier;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import de.factoryfx.data.attribute.*;
 import de.factoryfx.data.attribute.types.ObjectValueAttribute;
 import de.factoryfx.data.attribute.types.StringAttribute;
@@ -22,7 +19,6 @@ import de.factoryfx.data.validation.AttributeValidation;
 import de.factoryfx.data.validation.Validation;
 import de.factoryfx.data.validation.ValidationResult;
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 
 public class DataTest {

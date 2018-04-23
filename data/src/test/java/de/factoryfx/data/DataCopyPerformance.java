@@ -3,9 +3,6 @@ package de.factoryfx.data;
 import de.factoryfx.data.merge.testfactories.ExampleDataA;
 import de.factoryfx.data.merge.testfactories.ExampleDataB;
 
-import java.util.List;
-import java.util.Set;
-
 public class DataCopyPerformance {
 
     public static void main(String[] args) {
