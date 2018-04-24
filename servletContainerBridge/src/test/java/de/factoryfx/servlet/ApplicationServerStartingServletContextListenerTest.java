@@ -1,7 +1,7 @@
 package de.factoryfx.servlet;
 
 import de.factoryfx.data.storage.DataAndNewMetadata;
-import de.factoryfx.server.rest.client.ApplicationServerRestClient;
+import de.factoryfx.server.rest.client.MicroserviceRestClient;
 import de.factoryfx.server.rest.client.RestClient;
 import de.factoryfx.servlet.example.RootFactory;
 import org.eclipse.jetty.server.NetworkTrafficServerConnector;
@@ -40,20 +40,20 @@ public class ApplicationServerStartingServletContextListenerTest {
         Thread.sleep(3000);
 
         RestClient restClient = new RestClient("localhost", ((ServerConnector) server.getConnectors()[0]).getLocalPort(), "applicationServer", false, null, null);
-        ApplicationServerRestClient<ServletContextAwareVisitor, RootFactory> applicationServerRestClient = new ApplicationServerRestClient<>(restClient, RootFactory.class, "", "");
+        MicroserviceRestClient<ServletContextAwareVisitor, RootFactory> microserviceRestClient = new MicroserviceRestClient<>(restClient, RootFactory.class, "", "");
 
         {
-            DataAndNewMetadata<RootFactory> rootFactoryFactoryAndNewMetadata = applicationServerRestClient.prepareNewFactory();
+            DataAndNewMetadata<RootFactory> rootFactoryFactoryAndNewMetadata = microserviceRestClient.prepareNewFactory();
             rootFactoryFactoryAndNewMetadata.root.stringAttribute.set("XXX111");
             System.out.print(rootFactoryFactoryAndNewMetadata.root.stringAttribute.get());
-            applicationServerRestClient.updateCurrentFactory(rootFactoryFactoryAndNewMetadata, "comment1");
+            microserviceRestClient.updateCurrentFactory(rootFactoryFactoryAndNewMetadata, "comment1");
         }
 
         {
-            DataAndNewMetadata<RootFactory> rootFactoryFactoryAndNewMetadata = applicationServerRestClient.prepareNewFactory();
+            DataAndNewMetadata<RootFactory> rootFactoryFactoryAndNewMetadata = microserviceRestClient.prepareNewFactory();
             rootFactoryFactoryAndNewMetadata.root.stringAttribute.set("XXX222");
             System.out.print(rootFactoryFactoryAndNewMetadata.root.stringAttribute.get());
-            applicationServerRestClient.updateCurrentFactory(rootFactoryFactoryAndNewMetadata, "comment2");
+            microserviceRestClient.updateCurrentFactory(rootFactoryFactoryAndNewMetadata, "comment2");
         }
 
         Thread.sleep(20000000);

@@ -4,7 +4,7 @@ package de.factoryfx.servlet;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider;
 import de.factoryfx.data.jackson.ObjectMapperBuilder;
-import de.factoryfx.server.rest.ApplicationServerResource;
+import de.factoryfx.server.rest.MicroserviceResource;
 import de.factoryfx.server.rest.server.AllExceptionMapper;
 import de.factoryfx.server.rest.server.JettyServerFactory;
 import org.glassfish.jersey.server.ResourceConfig;
@@ -15,11 +15,11 @@ import java.util.Collections;
 import java.util.List;
 
 public class ApplicationServerRestServletBridge {
-    private final ApplicationServerResource resource;
+    private final MicroserviceResource resource;
     private UpdateableServlet updateableServlet;
 
 
-    public ApplicationServerRestServletBridge(ApplicationServerResource resource, UpdateableServlet updateableServlet) {
+    public ApplicationServerRestServletBridge(MicroserviceResource resource, UpdateableServlet updateableServlet) {
         this.resource = resource;
         this.updateableServlet=updateableServlet;
     }

@@ -8,7 +8,7 @@ import de.factoryfx.data.storage.JacksonSerialisation;
 import de.factoryfx.factory.datastorage.postgres.DisableAutocommitDatasource;
 import de.factoryfx.factory.datastorage.postgres.PostgresDataStorage;
 import de.factoryfx.factory.exception.RethrowingFactoryExceptionHandler;
-import de.factoryfx.server.ApplicationServer;
+import de.factoryfx.server.Microservice;
 import org.postgresql.jdbc.AutoSave;
 import org.postgresql.jdbc3.Jdbc3SimpleDataSource;
 import ru.yandex.qatools.embed.postgresql.PostgresExecutable;
@@ -45,18 +45,18 @@ public class Main {
         PostgresDataStorage<RootFactory,Void> postgresFactoryStorage = new PostgresDataStorage<>(datasource, root, serialisationManager);
 
 
-        ApplicationServer<Void, RootFactory,Void> applicationServer = new ApplicationServer<>(new FactoryManager<>(new RethrowingFactoryExceptionHandler()),postgresFactoryStorage);
-        applicationServer.start();
+        Microservice<Void, RootFactory,Void> microservice = new Microservice<>(new FactoryManager<>(new RethrowingFactoryExceptionHandler()),postgresFactoryStorage);
+        microservice.start();
         //output is 1 from initial factory
 
-        DataAndNewMetadata<RootFactory> update = applicationServer.prepareNewFactory();
+        DataAndNewMetadata<RootFactory> update = microservice.prepareNewFactory();
         update.root.stringAttribute.set("2");
-        applicationServer.updateCurrentFactory(update, "", "", s -> true);
+        microservice.updateCurrentFactory(update, "", "", s -> true);
         //output is 2 from initial factory
 
-        applicationServer.stop();
-        ApplicationServer<Void, RootFactory,Void> newApplicationServer = new ApplicationServer<>(new FactoryManager<>(new RethrowingFactoryExceptionHandler()),postgresFactoryStorage);
-        newApplicationServer.start();
+        microservice.stop();
+        Microservice<Void, RootFactory,Void> newMicroservice = new Microservice<>(new FactoryManager<>(new RethrowingFactoryExceptionHandler()),postgresFactoryStorage);
+        newMicroservice.start();
         //output is 2 again from the saved update
 
 

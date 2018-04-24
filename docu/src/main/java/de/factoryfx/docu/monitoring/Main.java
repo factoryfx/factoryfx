@@ -5,7 +5,7 @@ import com.google.common.io.CharStreams;
 import de.factoryfx.factory.FactoryManager;
 import de.factoryfx.data.storage.inmemory.InMemoryDataStorage;
 import de.factoryfx.factory.exception.RethrowingFactoryExceptionHandler;
-import de.factoryfx.server.ApplicationServer;
+import de.factoryfx.server.Microservice;
 import de.factoryfx.server.rest.server.HttpServerConnectorFactory;
 
 import java.io.InputStream;
@@ -27,8 +27,8 @@ public class Main {
         rootFactory=rootFactory.utility().prepareUsableCopy();
 
 
-        ApplicationServer<ServerVisitor,RootFactory,Void> applicationServer = new ApplicationServer<>(new FactoryManager<>(new RethrowingFactoryExceptionHandler()),new InMemoryDataStorage<>(rootFactory));
-        applicationServer.start();
+        Microservice<ServerVisitor,RootFactory,Void> microservice = new Microservice<>(new FactoryManager<>(new RethrowingFactoryExceptionHandler()),new InMemoryDataStorage<>(rootFactory));
+        microservice.start();
 
         //execute some random request as example
         getHTML("http://localhost:34576");
@@ -36,7 +36,7 @@ public class Main {
         //for the sake of simplicity the query ist called in the same vm.
         //you could also use the applicationServerRestServer / applicationServerRestClient from a different process if ServerVisitor is json serializable
         ServerVisitor serverVisitor = new ServerVisitor();
-        applicationServer.query(serverVisitor);
+        microservice.query(serverVisitor);
         System.out.println(serverVisitor.jettyReport);
 
         //report shows 1 get request

@@ -6,7 +6,7 @@ import de.factoryfx.data.storage.DataAndNewMetadata;
 import de.factoryfx.data.storage.inmemory.InMemoryDataStorage;
 import de.factoryfx.factory.atrribute.FactoryReferenceAttribute;
 import de.factoryfx.factory.exception.RethrowingFactoryExceptionHandler;
-import de.factoryfx.server.ApplicationServer;
+import de.factoryfx.server.Microservice;
 import de.factoryfx.server.rest.client.RestClient;
 import de.factoryfx.server.rest.server.HttpServerConnectorFactory;
 import de.factoryfx.server.rest.server.JettyServerFactory;
@@ -44,20 +44,20 @@ public class Main {
         jettyServer=jettyServer.utility().prepareUsableCopy();
 
 
-        ApplicationServer<Void,RootFactory,Void> applicationServer
-                = new ApplicationServer<>(new FactoryManager<>(new RethrowingFactoryExceptionHandler()),new InMemoryDataStorage<>(jettyServer));
-        applicationServer.start();
+        Microservice<Void,RootFactory,Void> microservice
+                = new Microservice<>(new FactoryManager<>(new RethrowingFactoryExceptionHandler()),new InMemoryDataStorage<>(jettyServer));
+        microservice.start();
 
         Thread continuouslyQueryWebserver = startQueryServerThread();
         for (int i = 0; i < 10; ++i) {
-            DataAndNewMetadata<RootFactory> editableConfig = applicationServer.prepareNewFactory();
+            DataAndNewMetadata<RootFactory> editableConfig = microservice.prepareNewFactory();
             RootFactory editableJettyServer = editableConfig.root;
             editableJettyServer.server.get().resource.set(createNewWebResourceReturningCreationTimestamp());
-            applicationServer.updateCurrentFactory(editableConfig,"user","commit",s->true);
+            microservice.updateCurrentFactory(editableConfig,"user","commit", s->true);
             Thread.sleep(1100);
         }
         continuouslyQueryWebserver.interrupt();
-        applicationServer.stop();
+        microservice.stop();
 
     }
 

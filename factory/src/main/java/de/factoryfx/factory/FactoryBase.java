@@ -16,7 +16,7 @@ import de.factoryfx.factory.log.FactoryLogEntry;
 import de.factoryfx.factory.log.FactoryLogEntryEvent;
 import de.factoryfx.factory.log.FactoryLogEntryEventType;
 import de.factoryfx.factory.parametrized.ParametrizedObjectCreatorAttribute;
-import de.factoryfx.server.ApplicationServer;
+import de.factoryfx.server.Microservice;
 
 /**
  * @param <L> liveobject created from this factory
@@ -295,12 +295,12 @@ public class FactoryBase<L,V,R extends FactoryBase<?,V,R>> extends Data implemen
         return null;
     }
 
-    ApplicationServer<V, R, ?> applicationServer;
-    private void setApplicationServer(ApplicationServer<V, R, ?> applicationServer) {
-        this.applicationServer = applicationServer;
+    Microservice<V, R, ?> microservice;
+    private void setMicroservice(Microservice<V, R, ?> microservice) {
+        this.microservice = microservice;
     }
-    private ApplicationServer<V, R, ?> getApplicationServer() {
-        return getRoot().applicationServer;
+    private Microservice<V, R, ?> getMicroservice() {
+        return getRoot().microservice;
     }
 
 
@@ -430,12 +430,16 @@ public class FactoryBase<L,V,R extends FactoryBase<?,V,R>> extends Data implemen
         }
 
 
-        public void setApplicationServer(ApplicationServer<V, R, ?> applicationServer) {
-            factory.setApplicationServer(applicationServer);
+        public void setApplicationServer(Microservice<V, R, ?> microservice) {
+            factory.setMicroservice(microservice);
         }
 
         public void setAttributeSetupHelper(AttributeSetupHelper<R> attributeSetupHelper) {
             factory.setAttributeSetupHelper(attributeSetupHelper);
+        }
+
+        public L getLiveObject() {
+            return factory.createdLiveObject;
         }
     }
 
@@ -537,8 +541,8 @@ public class FactoryBase<L,V,R extends FactoryBase<?,V,R>> extends Data implemen
             this.factory = factory;
         }
 
-        public ApplicationServer<V,R,?> getApplicationServer(){
-            return factory.getApplicationServer();
+        public Microservice<V,R,?> getApplicationServer(){
+            return factory.getMicroservice();
         }
 
         public AttributeSetupHelper getAttributeSetupHelper(){

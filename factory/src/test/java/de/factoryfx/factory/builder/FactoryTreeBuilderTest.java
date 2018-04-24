@@ -191,4 +191,29 @@ public class FactoryTreeBuilderTest {
         System.out.println(ObjectMapperBuilder.build().writeValueAsString(root));
     }
 
+    @Test(expected=IllegalStateException.class)
+    public void test_root_creator_missing(){
+        FactoryTreeBuilder<FactoryTestA> factoryTreeBuilder = new FactoryTreeBuilder<>(FactoryTestA.class);
+
+        //intentional commented out(test docu):  factoryTreeBuilder.addFactory(FactoryTestA.class, Scope.PROTOTYPE);
+        factoryTreeBuilder.addFactory(ExampleFactoryB.class, Scope.PROTOTYPE, context -> {
+            ExampleFactoryB factory = new ExampleFactoryB();
+            factory.referenceAttributeC.set(context.get(ExampleFactoryC.class));
+            factory.referenceAttribute.set(new FactoryTestA());
+            return factory;
+        });
+        factoryTreeBuilder.addFactory(ExampleFactoryC.class, Scope.PROTOTYPE, context -> {
+            ExampleFactoryC factory = new ExampleFactoryC();
+            factory.referenceAttribute.set(new de.factoryfx.factory.testfactories.ExampleFactoryB());
+            return factory;
+        });
+
+        factoryTreeBuilder.buildTreeUnvalidated();
+    }
+
+    @Test(expected=IllegalArgumentException.class)
+    public void test_root_mandatory(){
+        new FactoryTreeBuilder<>(null);
+    }
+
 }

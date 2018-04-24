@@ -15,7 +15,7 @@ import de.factoryfx.javafx.util.UniformDesign;
 import de.factoryfx.javafx.widget.diffdialog.DiffDialogBuilder;
 import de.factoryfx.javafx.widget.Widget;
 import de.factoryfx.javafx.widget.table.TableControlWidget;
-import de.factoryfx.server.rest.client.ApplicationServerRestClient;
+import de.factoryfx.server.rest.client.MicroserviceRestClient;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
@@ -34,11 +34,11 @@ public class HistoryWidget<V, R extends FactoryBase<?,V,R>> implements Widget {
 
     private final UniformDesign uniformDesign;
     private final LongRunningActionExecutor longRunningActionExecutor;
-    private final ApplicationServerRestClient<V, R> restClient;
+    private final MicroserviceRestClient<V, R> restClient;
     private Consumer<List<StoredDataMetadata>> tableUpdater;
     private final DiffDialogBuilder diffDialogBuilder;
 
-    public HistoryWidget(UniformDesign uniformDesign, LongRunningActionExecutor longRunningActionExecutor, ApplicationServerRestClient<V, R> restClient, DiffDialogBuilder diffDialogBuilder) {
+    public HistoryWidget(UniformDesign uniformDesign, LongRunningActionExecutor longRunningActionExecutor, MicroserviceRestClient<V, R> restClient, DiffDialogBuilder diffDialogBuilder) {
         this.uniformDesign=uniformDesign;
         this.longRunningActionExecutor = longRunningActionExecutor;
         this.restClient= restClient;

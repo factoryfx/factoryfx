@@ -1,7 +1,7 @@
 package de.factoryfx.servlet;
 
 import de.factoryfx.factory.FactoryBase;
-import de.factoryfx.server.ApplicationServer;
+import de.factoryfx.server.Microservice;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
@@ -11,19 +11,19 @@ import javax.servlet.ServletContextListener;
 //@WebListener
 public abstract class ApplicationServerStartingServletContextListener implements ServletContextListener {
 
-    private ApplicationServer<? super ServletContextAwareVisitor, ? extends FactoryBase<?, ? super ServletContextAwareVisitor,?>,?> applicationServer;
+    private Microservice<? super ServletContextAwareVisitor, ? extends FactoryBase<?, ? super ServletContextAwareVisitor,?>,?> microservice;
 
     @Override
     public void contextInitialized(ServletContextEvent sce) {
         ServletContext context = sce.getServletContext();
-        applicationServer = createFactoryFxApplicationServer();
-        applicationServer.start();
-        applicationServer.query(new ServletContextAwareVisitor(context));
+        microservice = createFactoryFxApplicationServer();
+        microservice.start();
+        microservice.query(new ServletContextAwareVisitor(context));
     }
 
     @Override
     public void contextDestroyed(ServletContextEvent sce) {
     }
 
-    protected abstract ApplicationServer<? super ServletContextAwareVisitor,? extends FactoryBase<?,? super ServletContextAwareVisitor,?>,?> createFactoryFxApplicationServer();
+    protected abstract Microservice<? super ServletContextAwareVisitor,? extends FactoryBase<?,? super ServletContextAwareVisitor,?>,?> createFactoryFxApplicationServer();
 }

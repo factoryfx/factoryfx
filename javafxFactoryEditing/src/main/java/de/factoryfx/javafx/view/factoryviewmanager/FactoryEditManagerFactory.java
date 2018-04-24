@@ -5,8 +5,8 @@ import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.factory.SimpleFactoryBase;
 import de.factoryfx.factory.atrribute.FactoryReferenceAttribute;
 import de.factoryfx.data.storage.DataSerialisationManager;
-import de.factoryfx.server.rest.client.ApplicationServerRestClient;
-import de.factoryfx.server.rest.client.ApplicationServerRestClientFactory;
+import de.factoryfx.server.rest.client.MicroserviceRestClient;
+import de.factoryfx.server.rest.client.MicroserviceRestClientFactory;
 
 /**
  *
@@ -17,7 +17,7 @@ import de.factoryfx.server.rest.client.ApplicationServerRestClientFactory;
  */
 public class FactoryEditManagerFactory<V,R  extends FactoryBase<?,V,R>,VS,RS  extends FactoryBase<?,VS,RS>,S> extends SimpleFactoryBase<FactoryEditManager<VS,RS,S>,V,R> {
 
-    public final FactoryReferenceAttribute<ApplicationServerRestClient<VS,RS>,ApplicationServerRestClientFactory<V,R,VS,RS>> restClient = new FactoryReferenceAttribute<ApplicationServerRestClient<VS,RS>,ApplicationServerRestClientFactory<V,R,VS,RS>>().setupUnsafe(ApplicationServerRestClientFactory.class);
+    public final FactoryReferenceAttribute<MicroserviceRestClient<VS,RS>,MicroserviceRestClientFactory<V,R,VS,RS>> restClient = new FactoryReferenceAttribute<MicroserviceRestClient<VS,RS>,MicroserviceRestClientFactory<V,R,VS,RS>>().setupUnsafe(MicroserviceRestClientFactory.class);
     //TODO refactor to FactoryReferenceAttribute?
     public final ObjectValueAttribute<DataSerialisationManager<RS,S>> factorySerialisationManager = new ObjectValueAttribute<>();
 

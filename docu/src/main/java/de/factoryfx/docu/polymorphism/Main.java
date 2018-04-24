@@ -4,7 +4,7 @@ import de.factoryfx.factory.FactoryManager;
 import de.factoryfx.data.storage.DataAndNewMetadata;
 import de.factoryfx.data.storage.inmemory.InMemoryDataStorage;
 import de.factoryfx.factory.exception.RethrowingFactoryExceptionHandler;
-import de.factoryfx.server.ApplicationServer;
+import de.factoryfx.server.Microservice;
 
 public class Main {
 
@@ -14,13 +14,13 @@ public class Main {
         root.printer.set(new DefaultPrinterFactory());
         root=root.utility().prepareUsableCopy();
 
-        ApplicationServer<Void,RootFactory,Void> applicationServer = new ApplicationServer<>(new FactoryManager<>(new RethrowingFactoryExceptionHandler()),new InMemoryDataStorage<>(root));
-        applicationServer.start();
+        Microservice<Void,RootFactory,Void> microservice = new Microservice<>(new FactoryManager<>(new RethrowingFactoryExceptionHandler()),new InMemoryDataStorage<>(root));
+        microservice.start();
 
-        DataAndNewMetadata<RootFactory> update = applicationServer.prepareNewFactory();
+        DataAndNewMetadata<RootFactory> update = microservice.prepareNewFactory();
         //update to print on error out
         update.root.printer.set(new ErrorPrinterFactory());
-        applicationServer.updateCurrentFactory(update, "", "", s -> true);
+        microservice.updateCurrentFactory(update, "", "", s -> true);
 
     }
 }

@@ -45,7 +45,7 @@ subprojects {
     }
 
     group = 'io.github.factoryfx'
-    version = '0.9.16'
+    version = '1.0.0'
 
     if (project.hasProperty('secretKeyRingFileSourceURL')) {
         //workaround  to get key  file to the plugin
@@ -167,14 +167,14 @@ subprojects {
 }
 
 
-project(':applicationServerRestServer') {
+project(':microserviceRestServer') {
     dependencies {
         compile project(":jettyFactory")
-        compile project(":applicationServerRestCommon")
+        compile project(":microserviceRestCommon")
     }
 }
 
-project(':applicationServerRestClient') {
+project(':microserviceRestClient') {
 
     dependencies {
         compile 'com.googlecode.java-diff-utils:diffutils:1.3.0'
@@ -182,23 +182,23 @@ project(':applicationServerRestClient') {
         compile 'org.controlsfx:controlsfx:8.40.12'
         compile project(":factory")
         compile project(":restutilClient")
-        compile project(":applicationServerRestCommon")
+        compile project(":microserviceRestCommon")
     }
 
 }
 
-project(':applicationServerRestCommon') {
+project(':microserviceRestCommon') {
     dependencies {
         compile project(":factory")
         compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.9.4'
     }
 }
 
-project(':applicationServerRestIntegrationTest') {
+project(':microserviceRestIntegrationTest') {
     uploadArchives.enabled = false
     dependencies {
-        compile project(":applicationServerRestServer")
-        compile project(":applicationServerRestClient")
+        compile project(":microserviceRestServer")
+        compile project(":microserviceRestClient")
         compile group: 'ch.qos.logback', name: 'logback-classic', version: '1.1.7'
     }
 }
@@ -275,7 +275,7 @@ project(':example') {
     dependencies {
         compile project(":javafxFactoryEditing")
         compile project(":jettyFactory")
-        compile project(":applicationServerRestServer")
+        compile project(":microserviceRestServer")
         compile project(":factory")
         compile group: 'ch.qos.logback', name: 'logback-classic', version: '1.1.7'
     }
@@ -299,7 +299,7 @@ project(':javafxFactoryEditing') {
 
     dependencies {
         compile project(":factory")
-        compile project(":applicationServerRestClient")
+        compile project(":microserviceRestClient")
         compile project(":javafxDataEditing")
         testCompile project(":testfactories")
     }
@@ -350,7 +350,7 @@ project(':testfactories') {
 project(':servletContainerBridge'){
     dependencies {
         compile project(":factory")
-        compile project(":applicationServerRestServer")
+        compile project(":microserviceRestServer")
         compile group: 'javax.servlet', name: 'javax.servlet-api', version: '3.1.0'
         testCompile group: 'org.eclipse.jetty', name: 'jetty-server', version: '9.4.8.v20171121'
         testCompile group: 'org.eclipse.jetty', name: 'jetty-server', version: '9.4.8.v20171121'
@@ -358,8 +358,8 @@ project(':servletContainerBridge'){
         testCompile group: 'org.eclipse.jetty', name: 'jetty-webapp', version: '9.4.8.v20171121'
         testCompile group: 'ch.qos.logback', name: 'logback-classic', version: '1.1.7'
 
-        testCompile project(":applicationServerRestServer")
-        testCompile project(":applicationServerRestClient")
+        testCompile project(":microserviceRestServer")
+        testCompile project(":microserviceRestClient")
     }
 }
 
@@ -377,7 +377,7 @@ project(':docu') {
 
 }
 
-project(':process') {
+project(':nanoservice') {
     dependencies {
         compile project(":factory")
 

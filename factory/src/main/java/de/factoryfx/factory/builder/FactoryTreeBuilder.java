@@ -21,6 +21,10 @@ public class FactoryTreeBuilder<R extends FactoryBase<?,?,R>> {
     private final Class<R> rootClass;
 
     public FactoryTreeBuilder(Class<R> rootClass) {
+        if (rootClass==null){
+            throw new IllegalArgumentException("rootClass is mandatory");
+
+        }
         this.rootClass = rootClass;
     }
 
@@ -64,7 +68,7 @@ public class FactoryTreeBuilder<R extends FactoryBase<?,?,R>> {
     public R buildTreeUnvalidated(){
         R factoryBases = factoryContext.get(rootClass);
         if (factoryBases==null){
-            throw new IllegalStateException("FactoryCreator missing for root class"+ rootClass);
+            throw new IllegalStateException("FactoryCreator missing for root class "+ rootClass.getSimpleName()+"\n"+"probably missing call: factoryBuilder.addFactory("+rootClass.getSimpleName()+".class,...\n");
         }
         AttributeSetupHelper<R> attributeSetupHelper = new AttributeSetupHelper<>(this);
         factoryBases.internalFactory().setAttributeSetupHelper(attributeSetupHelper);

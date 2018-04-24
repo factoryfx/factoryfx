@@ -867,7 +867,6 @@ public class Data {
                 throw new IllegalStateException("passed data is not a usableCopy use prepareUsableCopy(); e.g.:\n  data=data.utility().prepareUsableCopy();");
             }
         }
-
     }
 
 }

@@ -4,7 +4,7 @@ import de.factoryfx.data.storage.*;
 import de.factoryfx.factory.FactoryManager;
 import de.factoryfx.data.storage.filesystem.FileSystemDataStorage;
 import de.factoryfx.factory.exception.RethrowingFactoryExceptionHandler;
-import de.factoryfx.server.ApplicationServer;
+import de.factoryfx.server.Microservice;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -27,8 +27,8 @@ public class Main {
         DataSerialisationManager<RootFactory,Void> serialisationManager = new DataSerialisationManager<>(new JacksonSerialisation<>(dataModelVersion),new JacksonDeSerialisation<>(RootFactory.class, dataModelVersion), dataMigrations,dataModelVersion);
         FileSystemDataStorage<RootFactory,Void> fileSystemFactoryStorage = new FileSystemDataStorage<>(Files.createTempDirectory("tempfiles"), rootFactory, serialisationManager);
 
-        ApplicationServer<Void,RootFactory,Void> applicationServer = new ApplicationServer<>(new FactoryManager<>(new RethrowingFactoryExceptionHandler()), fileSystemFactoryStorage);
-        applicationServer.start();
+        Microservice<Void,RootFactory,Void> microservice = new Microservice<>(new FactoryManager<>(new RethrowingFactoryExceptionHandler()), fileSystemFactoryStorage);
+        microservice.start();
 
     }
 }

@@ -1,3 +1,3 @@
-include 'applicationServerRestClient', 'applicationServerRestServer', 'applicationServerRestCommon', 'applicationServerRestIntegrationTest',
+include 'microserviceRestClient', 'microserviceRestServer', 'microserviceRestCommon', 'microserviceRestIntegrationTest', 'nanoservice',
         'data', 'factory', 'example', 'jettyFactory', 'restutilClient', 'javafxDataEditing', 'javafxDistributionClient', 'javafxDistributionServer', 'postgresqlStorage', 'oracledbStorage',
-        'javascript', 'javascriptDataEditing', 'javafxFactoryEditing', 'testfactories', 'servletContainerBridge', 'docu', 'process'
+        'javascript', 'javascriptDataEditing', 'javafxFactoryEditing', 'testfactories', 'servletContainerBridge', 'docu'

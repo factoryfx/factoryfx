@@ -11,8 +11,8 @@ import de.factoryfx.factory.FactoryManager;
 import de.factoryfx.factory.exception.AllOrNothingFactoryExceptionHandler;
 import de.factoryfx.factory.exception.LoggingFactoryExceptionHandler;
 import de.factoryfx.factory.exception.RethrowingFactoryExceptionHandler;
-import de.factoryfx.server.ApplicationServer;
-import de.factoryfx.server.rest.ApplicationServerResourceFactory;
+import de.factoryfx.server.Microservice;
+import de.factoryfx.server.rest.MicroserviceResourceFactory;
 import de.factoryfx.server.rest.server.HttpServerConnectorFactory;
 import javafx.application.Application;
 import javafx.stage.Stage;
@@ -26,18 +26,18 @@ public class ExampleMain extends Application {
     public void start(Stage primaryStage){
         ShopFactory shopFactory = getShopFactory();
 
-        ApplicationServer<OrderCollector, ShopFactory, Void> applicationServer = new ApplicationServer<>(new FactoryManager<>(new LoggingFactoryExceptionHandler(new AllOrNothingFactoryExceptionHandler())), new InMemoryDataStorage<>(shopFactory));
-        applicationServer.start();
+        Microservice<OrderCollector, ShopFactory, Void> microservice = new Microservice<>(new FactoryManager<>(new LoggingFactoryExceptionHandler(new AllOrNothingFactoryExceptionHandler())), new InMemoryDataStorage<>(shopFactory));
+        microservice.start();
 
         RichClientRoot richClientFactory = new RichClientBuilder(8089).createFactoryBuilder(primaryStage, "", "", Locale.ENGLISH).buildTree();
-        ApplicationServer<Void, RichClientRoot, Void> richClient = new ApplicationServer<>(new FactoryManager<>(new RethrowingFactoryExceptionHandler()), new InMemoryDataStorage<>(richClientFactory));
+        Microservice<Void, RichClientRoot, Void> richClient = new Microservice<>(new FactoryManager<>(new RethrowingFactoryExceptionHandler()), new InMemoryDataStorage<>(richClientFactory));
         richClient.start();
     }
 
     private ShopFactory getShopFactory() {
         ShopFactory shopFactory = new ShopFactory();
         ShopJettyServerFactory shopJettyServer = new ShopJettyServerFactory();
-        ApplicationServerResourceFactory<OrderCollector, ShopFactory, Void> resource = new ApplicationServerResourceFactory<>();
+        MicroserviceResourceFactory<OrderCollector, ShopFactory, Void> resource = new MicroserviceResourceFactory<>();
         shopJettyServer.resource.set(resource);
         HttpServerConnectorFactory<OrderCollector,ShopFactory> connector = new HttpServerConnectorFactory<>();
         connector.host.set("localhost");

@@ -22,7 +22,7 @@ import de.factoryfx.javafx.view.factoryviewmanager.FactoryEditViewFactory;
 import de.factoryfx.javafx.view.menu.ViewMenuFactory;
 import de.factoryfx.javafx.view.menu.ViewMenuItemFactory;
 import de.factoryfx.javafx.widget.diffdialog.DiffDialogBuilderFactory;
-import de.factoryfx.server.rest.client.ApplicationServerRestClientFactory;
+import de.factoryfx.server.rest.client.MicroserviceRestClientFactory;
 import de.factoryfx.server.rest.client.RestClientFactory;
 import javafx.geometry.Rectangle2D;
 import javafx.stage.Screen;
@@ -56,7 +56,7 @@ public class RichClientBuilder {
         });
         factoryBuilder.addFactory(FactoryEditManagerFactory.class, Scope.SINGLETON, context -> {
             FactoryEditManagerFactory factoryEditManager = new FactoryEditManagerFactory();
-            factoryEditManager.restClient.set(context.get(ApplicationServerRestClientFactory.class));
+            factoryEditManager.restClient.set(context.get(MicroserviceRestClientFactory.class));
             DataSerialisationManager<ShopFactory,Void> serialisationManager = new DataSerialisationManager<>(new JacksonSerialisation<>(1),new JacksonDeSerialisation<>(ShopFactory.class,1),new ArrayList<>(),1);
 
             factoryEditManager.factorySerialisationManager.set(serialisationManager);
@@ -101,8 +101,8 @@ public class RichClientBuilder {
             return stageFactory;
         });
 
-        factoryBuilder.addFactory(ApplicationServerRestClientFactory.class, Scope.SINGLETON, context -> {
-            ApplicationServerRestClientFactory<Void, RichClientRoot, OrderCollector, ShopFactory> restClient = new ApplicationServerRestClientFactory<>();
+        factoryBuilder.addFactory(MicroserviceRestClientFactory.class, Scope.SINGLETON, context -> {
+            MicroserviceRestClientFactory<Void, RichClientRoot, OrderCollector, ShopFactory> restClient = new MicroserviceRestClientFactory<>();
             restClient.factoryRootClass.set(ShopFactory.class);
             restClient.restClient.set(new RestClientFactory<>());
             restClient.restClient.get().host.set("localhost");
