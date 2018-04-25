@@ -51,15 +51,15 @@ public class MicroserviceRestTest {
         httpServerConnectorFactory.port.set(34579);
         httpServerConnectorFactory.host.set("localhost");
         jettyServer.connectors.add(httpServerConnectorFactory);
-        final MicroserviceResourceFactory<Void, TestJettyServer, Void> applicationServerResource = new MicroserviceResourceFactory<>();
-        jettyServer.resource.set(applicationServerResource);
+        final MicroserviceResourceFactory<Void, TestJettyServer, Void> microserviceResource = new MicroserviceResourceFactory<>();
+        jettyServer.resource.set(microserviceResource);
         final PersistentUserManagementFactory<Void,TestJettyServer> userManagement = new PersistentUserManagementFactory<>();
         final UserFactory<Void,TestJettyServer> user = new UserFactory<>();
         user.name.set("user123");
         user.password.set(new EncryptedString("hash123", key));
         user.locale.set(Locale.GERMAN);
         userManagement.users.add(user);
-        applicationServerResource.userManagement.set(userManagement);
+        microserviceResource.userManagement.set(userManagement);
 
         jettyServer = jettyServer.utility().prepareUsableCopy();
         Microservice<Void, TestJettyServer, Void> microservice = new Microservice<>(new FactoryManager<>(new RethrowingFactoryExceptionHandler()), new InMemoryDataStorage<>(jettyServer));
@@ -87,7 +87,7 @@ public class MicroserviceRestTest {
             microserviceRestClientFactory.passwordHash.set("hash123");
             microserviceRestClientFactory.factoryRootClass.set(TestJettyServer.class);
 
-//            applicationServerRestClientFactory=applicationServerRestClientFactory.utility().prepareUsableCopy();
+//            microserviceRestClientFactory=microserviceRestClientFactory.utility().prepareUsableCopy();
 
             MicroserviceRestClient<Void, TestJettyServer> microserviceRestClient = microserviceRestClientFactory.internalFactory().instance();
             microserviceRestClient.prepareNewFactory();
