@@ -34,7 +34,7 @@ public class Main {
         getHTML("http://localhost:34576");
 
         //for the sake of simplicity the query ist called in the same vm.
-        //you could also use the applicationServerRestServer / applicationServerRestClient from a different process if ServerVisitor is json serializable
+        //you could also use the microserviceRestServer / microserviceRestClient from a different process if ServerVisitor is json serializable
         ServerVisitor serverVisitor = new ServerVisitor();
         microservice.query(serverVisitor);
         System.out.println(serverVisitor.jettyReport);

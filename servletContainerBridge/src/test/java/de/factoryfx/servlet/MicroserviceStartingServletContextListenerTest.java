@@ -12,7 +12,7 @@ import org.eclipse.jetty.webapp.WebAppContext;
 /**
  * Created by hbrackmann on 15.05.2017.
  */
-public class ApplicationServerStartingServletContextListenerTest {
+public class MicroserviceStartingServletContextListenerTest {
 
     public static void main(String[] args) throws Exception {
         final Server server = new Server();
@@ -39,7 +39,7 @@ public class ApplicationServerStartingServletContextListenerTest {
 
         Thread.sleep(3000);
 
-        RestClient restClient = new RestClient("localhost", ((ServerConnector) server.getConnectors()[0]).getLocalPort(), "applicationServer", false, null, null);
+        RestClient restClient = new RestClient("localhost", ((ServerConnector) server.getConnectors()[0]).getLocalPort(), "microservice", false, null, null);
         MicroserviceRestClient<ServletContextAwareVisitor, RootFactory> microserviceRestClient = new MicroserviceRestClient<>(restClient, RootFactory.class, "", "");
 
         {

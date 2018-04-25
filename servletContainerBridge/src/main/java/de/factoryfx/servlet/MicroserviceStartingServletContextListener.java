@@ -9,14 +9,14 @@ import javax.servlet.ServletContextListener;
 
 
 //@WebListener
-public abstract class ApplicationServerStartingServletContextListener implements ServletContextListener {
+public abstract class MicroserviceStartingServletContextListener implements ServletContextListener {
 
     private Microservice<? super ServletContextAwareVisitor, ? extends FactoryBase<?, ? super ServletContextAwareVisitor,?>,?> microservice;
 
     @Override
     public void contextInitialized(ServletContextEvent sce) {
         ServletContext context = sce.getServletContext();
-        microservice = createFactoryFxApplicationServer();
+        microservice = createFactoryFxMicroservice();
         microservice.start();
         microservice.query(new ServletContextAwareVisitor(context));
     }
@@ -25,5 +25,5 @@ public abstract class ApplicationServerStartingServletContextListener implements
     public void contextDestroyed(ServletContextEvent sce) {
     }
 
-    protected abstract Microservice<? super ServletContextAwareVisitor,? extends FactoryBase<?,? super ServletContextAwareVisitor,?>,?> createFactoryFxApplicationServer();
+    protected abstract Microservice<? super ServletContextAwareVisitor,? extends FactoryBase<?,? super ServletContextAwareVisitor,?>,?> createFactoryFxMicroservice();
 }

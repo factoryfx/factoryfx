@@ -430,7 +430,7 @@ public class FactoryBase<L,V,R extends FactoryBase<?,V,R>> extends Data implemen
         }
 
 
-        public void setApplicationServer(Microservice<V, R, ?> microservice) {
+        public void setMicroservice(Microservice<V, R, ?> microservice) {
             factory.setMicroservice(microservice);
         }
 
@@ -541,7 +541,7 @@ public class FactoryBase<L,V,R extends FactoryBase<?,V,R>> extends Data implemen
             this.factory = factory;
         }
 
-        public Microservice<V,R,?> getApplicationServer(){
+        public Microservice<V,R,?> getMicroservice(){
             return factory.getMicroservice();
         }
 

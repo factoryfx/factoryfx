@@ -14,28 +14,27 @@ public class MicroserviceAwareFactoryTest {
     @Test//1344
     public void test(){
         RootTestClazz rootTestclazz = new RootTestClazz();
-        final ApplicationServerAwareFactoryTestclazz value = new ApplicationServerAwareFactoryTestclazz();
+        final MicroserviceAwareFactoryTestclazz value = new MicroserviceAwareFactoryTestclazz();
         rootTestclazz.ref.set(value);
         rootTestclazz = rootTestclazz.internal().prepareUsableCopy();
-//        Assert.assertNull(rootTestclazz.ref.get().utilityFactory().getApplicationServer());
 
         final FactoryManager<Void, RootTestClazz> factoryManager = new FactoryManager<>(new RethrowingFactoryExceptionHandler());
         Microservice<Void,RootTestClazz,Void> microservice = new Microservice<>(factoryManager, new InMemoryDataStorage<>(rootTestclazz));
         microservice.start();
 
-        Assert.assertEquals(microservice,factoryManager.getCurrentFactory().ref.get().utilityFactory().getApplicationServer());
+        Assert.assertEquals(microservice,factoryManager.getCurrentFactory().ref.get().utilityFactory().getMicroservice());
 
     }
 
-    public static class ApplicationServerAwareFactoryTestclazz extends FactoryBase<String,Void,RootTestClazz> {
-        public ApplicationServerAwareFactoryTestclazz(){
+    public static class MicroserviceAwareFactoryTestclazz extends FactoryBase<String,Void,RootTestClazz> {
+        public MicroserviceAwareFactoryTestclazz(){
             this.configLiveCycle().setCreator(() -> "");
         }
     }
 
     public static class RootTestClazz extends SimpleFactoryBase<String,Void,RootTestClazz> {
 
-        public final FactoryReferenceAttribute<String,ApplicationServerAwareFactoryTestclazz> ref = new FactoryReferenceAttribute<>(ApplicationServerAwareFactoryTestclazz.class);
+        public final FactoryReferenceAttribute<String,MicroserviceAwareFactoryTestclazz> ref = new FactoryReferenceAttribute<>(MicroserviceAwareFactoryTestclazz.class);
 
         @Override
         public String createImpl() {

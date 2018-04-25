@@ -107,7 +107,7 @@ public class RichClientBuilder {
             restClient.restClient.set(new RestClientFactory<>());
             restClient.restClient.get().host.set("localhost");
             restClient.restClient.get().port.set(adminServerPort);
-            restClient.restClient.get().path.set("applicationServer");
+            restClient.restClient.get().path.set("microservice");
             restClient.user.set(user);
             restClient.passwordHash.set(passwordHash);
             return restClient;
@@ -162,7 +162,7 @@ public class RichClientBuilder {
 //            historyViewFactory.factoryEditManager.set(context.get(FactoryEditManagerFactory.class));
 //            historyViewFactory.longRunningActionExecutor.set(context.get(LongRunningActionExecutorFactory.class));
 //            historyViewFactory.uniformDesign.set(context.get(UniformDesignFactory.class));
-//            historyViewFactory.restClient.set(context.get(ApplicationServerRestClientFactory.class));
+//            historyViewFactory.restClient.set(context.get(MicroserviceRestClientFactory.class));
 //
 //            viewFactory.widget.set(historyViewFactory);
 //

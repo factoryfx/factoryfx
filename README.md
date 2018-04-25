@@ -22,15 +22,14 @@ compile(group: 'io.github.factoryfx', name: 'factory', version: factoryfxVersion
 ```groovy
 compile(group: 'io.github.factoryfx', name: 'factory', version: factoryfxVersion)
 compile(group: 'io.github.factoryfx', name: 'javafxDistributionServer', version: factoryfxVersion)
-compile(group: 'io.github.factoryfx', name: 'applicationServer', version: factoryfxVersion)
-compile(group: 'io.github.factoryfx', name: 'applicationServerRestServer', version: factoryfxVersion)
+compile(group: 'io.github.factoryfx', name: 'microserviceRestServer', version: factoryfxVersion)
 compile(group: 'io.github.factoryfx', name: 'postgresqlStorage', version: factoryfxVersion)
 ```
 ###### client
 ```groovy
 compile(group: 'io.github.factoryfx', name: 'factory', version: factoryfxVersion)
 compile(group: 'io.github.factoryfx', name: 'javafxFactoryEditing', version: factoryfxVersion)
-compile(group: 'io.github.factoryfx', name: 'applicationServerRestClient', version: factoryfxVersion)
+compile(group: 'io.github.factoryfx', name: 'microserviceRestClient', version: factoryfxVersion)
 ```
 
 ## Basic example

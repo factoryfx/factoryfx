@@ -14,12 +14,12 @@ import javax.servlet.ServletContext;
 import java.util.Collections;
 import java.util.List;
 
-public class ApplicationServerRestServletBridge {
+public class MicroserviceRestServletBridge {
     private final MicroserviceResource resource;
     private UpdateableServlet updateableServlet;
 
 
-    public ApplicationServerRestServletBridge(MicroserviceResource resource, UpdateableServlet updateableServlet) {
+    public MicroserviceRestServletBridge(MicroserviceResource resource, UpdateableServlet updateableServlet) {
         this.resource = resource;
         this.updateableServlet=updateableServlet;
     }

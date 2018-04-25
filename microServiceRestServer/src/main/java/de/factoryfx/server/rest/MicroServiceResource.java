@@ -27,10 +27,10 @@ import de.factoryfx.server.user.persistent.UserFactory;
 
 /**
  *https://stackoverflow.com/questions/17000193/can-we-have-more-than-one-path-annotation-for-same-rest-method
- *2 Paths for compatibility
- *applicationServer is new one
+ *3 Paths for compatibility
+ *microservice is new one
  */
-@Path("{parameter: adminui|applicationServer}")
+@Path("{parameter: adminui|applicationServer|microservice}")
 public class MicroserviceResource<V,R extends FactoryBase<?,V,R>,S>  {
 
     private final Microservice<V,R,S> microservice;
@@ -180,19 +180,6 @@ public class MicroserviceResource<V,R extends FactoryBase<?,V,R>,S>  {
     public UserLocaleResponse getUserLocale(UserAwareRequest<Void> request){
         final Optional<AuthorizedUser> authenticate = authenticate(request);
         return authenticate.map(authorizedUser -> new UserLocaleResponse(authorizedUser.getLocale())).orElseGet(() -> new UserLocaleResponse(Locale.ENGLISH));
-    }
-
-    @POST
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON)
-    @Path("diffForFactory")
-    public DiffForFactoryResponse getDiffHistoryForFactory(UserAwareRequest<String> request){
-        authenticate(request);
-        final DiffForFactoryResponse diffForFactoryResponse = new DiffForFactoryResponse();
-        //TODO
-//        diffForFactoryResponse.diffs=applicationServer.getDiffHistoryForFactory(request.request);
-        return diffForFactoryResponse;
-
     }
 
 }

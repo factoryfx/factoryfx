@@ -1,5 +1,5 @@
 <web-app>
     <listener>
-        <listener-class>de.factoryfx.servlet.ApplicationServerStartingServletContextListener</listener-class>
+        <listener-class>de.factoryfx.servlet.MicroserviceStartingServletContextListener</listener-class>
     </listener>
 </web-app>

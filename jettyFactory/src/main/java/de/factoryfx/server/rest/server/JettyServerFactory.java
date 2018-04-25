@@ -43,7 +43,7 @@ public abstract class JettyServerFactory<V,R extends FactoryBase<?,V,R>> extends
         configLiveCycle().setStarter(JettyServer::start);
         configLiveCycle().setDestroyer(JettyServer::stop);
 
-        config().setDisplayTextProvider(() -> "ApplicationServerRestServer");
+        config().setDisplayTextProvider(() -> "MicroserviceRestServer");
     }
 
     private List<Object> getResourcesInstancesNullRemoved(){

@@ -79,7 +79,7 @@ public class Microservice<V,R extends FactoryBase<?,V,R>,S> {
     public void start() {
         dataStorage.loadInitialFactory();
         final DataAndStoredMetadata<R,S> currentFactory = dataStorage.getCurrentFactory();
-        currentFactory.root.internalFactory().setApplicationServer(this);
+        currentFactory.root.internalFactory().setMicroservice(this);
 
         factoryManager.start(currentFactory.root);
     }

@@ -9,15 +9,15 @@ import de.factoryfx.server.Microservice;
 import de.factoryfx.server.rest.MicroserviceResourceFactory;
 import de.factoryfx.servlet.example.RootFactory;
 
-public class FactoryfxServletContextListenerImpl extends ApplicationServerStartingServletContextListener {
+public class FactoryfxServletContextListenerImpl extends MicroserviceStartingServletContextListener {
     @Override
-    protected Microservice<? super ServletContextAwareVisitor, ? extends FactoryBase<?, ? super ServletContextAwareVisitor,?>,?> createFactoryFxApplicationServer() {
+    protected Microservice<? super ServletContextAwareVisitor, ? extends FactoryBase<?, ? super ServletContextAwareVisitor,?>,?> createFactoryFxMicroservice() {
         RootFactory rootFactory = new RootFactory();
         rootFactory.stringAttribute.set("blub");
         MicroserviceResourceFactory<ServletContextAwareVisitor, RootFactory,Void> microServiceResourceFactory = new MicroserviceResourceFactory<>();
-        ApplicationServerRestServletBridgeFactory<RootFactory,Void> bridgeFactory = new ApplicationServerRestServletBridgeFactory<>();
-        bridgeFactory.applicationServerResource.set(microServiceResourceFactory);
-        rootFactory.applicationServerRestBridge.set(bridgeFactory);
+        MicroserviceRestServletBridgeFactory<RootFactory,Void> bridgeFactory = new MicroserviceRestServletBridgeFactory<>();
+        bridgeFactory.microserviceResource.set(microServiceResourceFactory);
+        rootFactory.microserviceRestBridge.set(bridgeFactory);
         return new Microservice<>(new FactoryManager<>(new LoggingFactoryExceptionHandler(new AllOrNothingFactoryExceptionHandler())),new InMemoryDataStorage<>(rootFactory));
     }
 }
