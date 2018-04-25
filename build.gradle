@@ -118,6 +118,7 @@ subprojects {
     }
 
     sourceCompatibility = 1.8
+    compileJava.options.encoding = 'UTF-8'
 
     dependencies {
         compile group: 'org.slf4j', name: 'slf4j-api', version: '1.7.21'
