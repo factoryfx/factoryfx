@@ -1,9 +1,10 @@
 package de.factoryfx.example.factory;
 
 import de.factoryfx.factory.atrribute.FactoryReferenceAttribute;
-import de.factoryfx.server.rest.MicroserviceResource;
-import de.factoryfx.server.rest.MicroserviceResourceFactory;
-import de.factoryfx.server.rest.server.JettyServerFactory;
+import de.factoryfx.jetty.JettyServerFactory;
+import de.factoryfx.microservice.rest.MicroserviceResource;
+import de.factoryfx.microservice.rest.MicroserviceResourceFactory;
+
 
 import java.util.Collections;
 import java.util.List;

@@ -1,6 +1,8 @@
 package de.factoryfx.server.user.persistent;
 
 import de.factoryfx.factory.testfactories.ExampleFactoryA;
+import de.factoryfx.server.user.persistent.PersistentUserManagementFactory;
+import de.factoryfx.server.user.persistent.UserFactory;
 import org.junit.Assert;
 import org.junit.Test;
 

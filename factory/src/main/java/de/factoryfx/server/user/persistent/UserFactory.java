@@ -3,6 +3,7 @@ package de.factoryfx.server.user.persistent;
 import de.factoryfx.data.attribute.types.*;
 import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.factory.SimpleFactoryBase;
+import de.factoryfx.server.user.persistent.PasswordHash;
 import de.factoryfx.server.user.User;
 
 public class UserFactory<V,R extends FactoryBase<?,V,R>> extends SimpleFactoryBase<User,V,R> {

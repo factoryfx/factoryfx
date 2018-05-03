@@ -6,7 +6,10 @@ import de.factoryfx.data.jackson.ObjectMapperBuilder;
 import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.factory.atrribute.FactoryReferenceAttribute;
 import de.factoryfx.factory.atrribute.FactoryReferenceListAttribute;
-import de.factoryfx.server.rest.server.*;
+import de.factoryfx.jetty.DelegatingLoggingFilterLogger;
+import de.factoryfx.jetty.HttpServerConnectorCreator;
+import de.factoryfx.jetty.HttpServerConnectorFactory;
+import de.factoryfx.jetty.JettyServer;
 import org.glassfish.jersey.logging.LoggingFeature;
 
 import java.util.Collections;

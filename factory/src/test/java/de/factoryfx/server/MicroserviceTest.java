@@ -16,6 +16,7 @@ import de.factoryfx.factory.testfactories.ExampleFactoryA;
 import de.factoryfx.factory.testfactories.ExampleFactoryB;
 import de.factoryfx.factory.testfactories.ExampleLiveObjectA;
 import de.factoryfx.factory.testfactories.ExampleLiveObjectB;
+import de.factoryfx.server.Microservice;
 import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mockito;

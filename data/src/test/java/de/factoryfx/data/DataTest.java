@@ -290,26 +290,6 @@ public class DataTest {
         Assert.assertTrue(copy.referenceListAttribute.get().isEmpty());
     }
 
-    private class ExampleFactoryObservable extends Data {
-        public final StringAttribute stringAttribute= new StringAttribute().labelText("ExampleA1");
-        public ExampleFactoryObservable(){
-            config().setDisplayTextProvider(() -> stringAttribute.get());
-            config().setDisplayTextDependencies(stringAttribute);
-        }
-    }
-
-    @Test
-    public void test_displaytext_observable(){
-        ExampleFactoryObservable exampleFactory = new ExampleFactoryObservable();
-        exampleFactory.stringAttribute.set("1");
-
-        Assert.assertEquals("stable ref",exampleFactory.internal().getDisplayTextObservable(),exampleFactory.internal().getDisplayTextObservable());
-
-        Assert.assertEquals("1",exampleFactory.internal().getDisplayTextObservable().get());
-        exampleFactory.stringAttribute.set("2");
-        Assert.assertEquals("2",exampleFactory.internal().getDisplayTextObservable().get());
-    }
-
     @Test
     public void test_copy_objectProperty(){
         ExampleObjectProperty exampleObjectProperty = new ExampleObjectProperty();

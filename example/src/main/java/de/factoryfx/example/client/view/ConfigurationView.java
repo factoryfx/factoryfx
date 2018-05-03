@@ -1,10 +1,10 @@
 package de.factoryfx.example.client.view;
 
 import de.factoryfx.example.factory.ShopFactory;
-import de.factoryfx.javafx.editor.data.DataEditor;
-import de.factoryfx.javafx.util.UniformDesign;
-import de.factoryfx.javafx.view.factoryviewmanager.FactoryAwareWidget;
-import de.factoryfx.javafx.widget.tree.DataTreeWidget;
+import de.factoryfx.javafx.data.editor.data.DataEditor;
+import de.factoryfx.javafx.data.util.UniformDesign;
+import de.factoryfx.javafx.factory.view.factoryviewmanager.FactoryAwareWidget;
+import de.factoryfx.javafx.data.widget.tree.DataTreeWidget;
 import javafx.scene.Node;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;

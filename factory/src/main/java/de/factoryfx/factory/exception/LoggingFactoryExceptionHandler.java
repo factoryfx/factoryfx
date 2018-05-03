@@ -1,6 +1,5 @@
 package de.factoryfx.factory.exception;
 
-import com.sun.net.httpserver.HttpServer;
 import de.factoryfx.factory.FactoryBase;
 import org.slf4j.LoggerFactory;
 
@@ -8,7 +7,7 @@ public class LoggingFactoryExceptionHandler implements FactoryExceptionHandler{
 
     private final FactoryExceptionHandler delegate;
 
-    private static final org.slf4j.Logger logger = LoggerFactory.getLogger(HttpServer.class);
+    private static final org.slf4j.Logger logger = LoggerFactory.getLogger(LoggingFactoryExceptionHandler.class);
 
     public LoggingFactoryExceptionHandler(FactoryExceptionHandler delegate) {
         this.delegate = delegate;

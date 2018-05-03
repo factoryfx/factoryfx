@@ -5,13 +5,13 @@
 apply plugin: 'idea'
 idea {
     project {
-        languageLevel = '1.8'
+        languageLevel = '1.9'
         vcs = 'Git'
     }
 }
 
 wrapper {
-    gradleVersion = '4.5.1'
+    gradleVersion = '4.7'
     distributionType = org.gradle.api.tasks.wrapper.Wrapper.DistributionType.ALL
 }
 
@@ -45,7 +45,7 @@ subprojects {
     }
 
     group = 'io.github.factoryfx'
-    version = '1.0.0'
+    version = '1.1.0'
 
     if (project.hasProperty('secretKeyRingFileSourceURL')) {
         //workaround  to get key  file to the plugin
@@ -115,14 +115,19 @@ subprojects {
 
     repositories {
         mavenCentral()
+        maven {
+            url "http://maven.java.net/content/repositories/snapshots"
+        }
     }
 
-    sourceCompatibility = 1.8
+    sourceCompatibility = JavaVersion.VERSION_1_9
     compileJava.options.encoding = 'UTF-8'
 
     dependencies {
         compile group: 'org.slf4j', name: 'slf4j-api', version: '1.7.21'
-        compile group: 'com.google.guava', name: 'guava', version: '23.0'
+        compile (group: 'com.google.guava', name: 'guava', version: '25.0-jre'){
+            exclude module: "jsr305" // module conflict: https://blog.codefx.org/java/jsr-305-java-9/, https://github.com/google/guava/issues/2960
+        }
         testCompile group: 'junit', name: 'junit', version: '4.12'
         testCompile group: 'org.mockito', name: 'mockito-all', version: '1.9.5'
     }
@@ -178,9 +183,6 @@ project(':microserviceRestServer') {
 project(':microserviceRestClient') {
 
     dependencies {
-        compile 'com.googlecode.java-diff-utils:diffutils:1.3.0'
-        compile 'org.fxmisc.richtext:richtextfx:0.6.7'
-        compile 'org.controlsfx:controlsfx:8.40.12'
         compile project(":factory")
         compile project(":restutilClient")
         compile project(":microserviceRestCommon")
@@ -247,13 +249,32 @@ project(':jettyFactory') {
         compile group: 'org.eclipse.jetty', name: 'jetty-servlet', version: '9.4.8.v20171121'
         compile group: 'org.eclipse.jetty', name: 'jetty-webapp', version: '9.4.8.v20171121'
 
-        compile group: 'org.glassfish.jersey.core', name: 'jersey-server', version: '2.26'
+       // currently jaxb doesn't work with java 9:  https://github.com/javaee/jaxb-v2/pull/1152
+//        compile group: 'javax.xml.bind', name: 'jaxb-api', version: '2.3.0'
+//        compile group: 'org.glassfish.jaxb', name: 'jaxb-runtime', version: '2.3.0'
+//        compile group: 'org.glassfish.jaxb', name: 'jaxb-runtime', version: '2.3.0'
+
+        //FIXME switch to normal release if ready, current release 2.3 jaxb doesn't work with java 9:  https://github.com/javaee/jaxb-v2/pull/1152
+        compile group: 'com.sun.xml.bind', name: 'jaxb-impl', version: '2.3.1-SNAPSHOT'
+
+
+        compile (group: 'org.glassfish.jersey.core', name: 'jersey-server', version: '2.26'){
+            exclude group: "javax.annotation"
+        }
         compile group: 'com.fasterxml.jackson.jaxrs', name: 'jackson-jaxrs-json-provider', version: '2.9.4'
-        compile 'org.glassfish.jersey.containers:jersey-container-servlet-core:2.26'
-        compile 'org.glassfish.jersey.inject:jersey-hk2:2.26'
+        compile ('org.glassfish.jersey.containers:jersey-container-servlet-core:2.26'){
+            exclude group: "javax.annotation"
+        }
+        compile ('org.glassfish.jersey.inject:jersey-hk2:2.26'){
+            exclude group: "javax.annotation"
+        }
 
         testCompile project(":restutilClient")
         testCompile group: 'ch.qos.logback', name: 'logback-classic', version: '1.1.7'
+
+//        compile group: 'org.apache.cxf', name: 'cxf-rt-bindings-soap', version: '3.2.4'
+        compile group: 'javax.xml.ws', name: 'jaxws-api', version: '2.3.0'
+        compile group: 'com.sun.activation', name: 'javax.activation', version: '1.2.0' // workaround for jersey-hk2
     }
 
 }
@@ -289,7 +310,7 @@ project(':javafxDataEditing') {
     dependencies {
         compile project(":data")
         compile group: 'ch.qos.logback', name: 'logback-classic', version: '1.1.7'
-        compile group: 'org.controlsfx', name: 'controlsfx', version: '8.40.12'
+        compile group: 'org.controlsfx', name: 'controlsfx', version: '9.0.0'
         compile group: 'org.fxmisc.richtext', name: 'richtextfx', version: '0.6.10'
         testCompile project(":testfactories")
     }
@@ -327,9 +348,26 @@ project(':javafxDistributionClient') {
 }
 
 project(':javascript') {
+
     dependencies {
-        compile project(":data")
-        compile group: 'com.google.javascript', name: 'closure-compiler', version: 'v20170218'
+        compile project(":factory")
+
+        compile group: 'com.google.javascript', name: 'closure-compiler-unshaded', version: 'v20170218'
+        compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.9.4'
+
+//        compile group: 'com.google.javascript', name: 'closure-compiler-main', version: 'v20180402', ext: 'pom'
+//        compile group: 'com.google.javascript', name: 'closure-compiler-externs', version: 'v20180402'
+
+        //fat jar workaround
+////        compile files('libs/closure-compiler.jar')
+//        compile name: 'closurecompiler'
+//
+//        //try to add all transitive dependencies for closure-compiler
+//        compile group: 'args4j', name: 'args4j', version: '2.33'
+//        compile group: 'com.google.errorprone', name: 'error_prone_annotations', version: '2.0.18'
+//        compile group: 'com.google.protobuf', name: 'protobuf-java', version: '3.5.1'
+//        compile group: 'com.google.code.gson', name: 'gson', version: '2.7'
+//        compile group: 'com.google.jsinterop', name: 'jsinterop-annotations', version: '1.0.0'
     }
 }
 
@@ -337,7 +375,6 @@ project(':javascriptDataEditing') {
     dependencies {
         compile project(":javascript")
         compile project(":javafxDataEditing")
-        compile group: 'com.google.javascript', name: 'closure-compiler', version: 'v20170218'
     }
 }
 
@@ -345,22 +382,6 @@ project(':testfactories') {
     uploadArchives.enabled = false
     dependencies {
         compile project(":factory")
-    }
-}
-
-project(':servletContainerBridge'){
-    dependencies {
-        compile project(":factory")
-        compile project(":microserviceRestServer")
-        compile group: 'javax.servlet', name: 'javax.servlet-api', version: '3.1.0'
-        testCompile group: 'org.eclipse.jetty', name: 'jetty-server', version: '9.4.8.v20171121'
-        testCompile group: 'org.eclipse.jetty', name: 'jetty-server', version: '9.4.8.v20171121'
-        testCompile group: 'org.eclipse.jetty', name: 'jetty-servlet', version: '9.4.8.v20171121'
-        testCompile group: 'org.eclipse.jetty', name: 'jetty-webapp', version: '9.4.8.v20171121'
-        testCompile group: 'ch.qos.logback', name: 'logback-classic', version: '1.1.7'
-
-        testCompile project(":microserviceRestServer")
-        testCompile project(":microserviceRestClient")
     }
 }
 

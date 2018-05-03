@@ -22,7 +22,7 @@ public class SetAttributeTest {
         exampleSetFactory.setAttribute.internal_addListener((a,o)-> {
             calls.add("");
         });
-        exampleSetFactory.setAttribute.get().add("7787");
+        exampleSetFactory.setAttribute.add("7787");
 
         Assert.assertEquals(1,calls.size());
     }
@@ -30,7 +30,7 @@ public class SetAttributeTest {
     @Test
     public void test_json(){
         ExampleSetFactory exampleSetFactory = new ExampleSetFactory();
-        exampleSetFactory.setAttribute.get().add("7787");
+        exampleSetFactory.setAttribute.add("7787");
         ObjectMapperBuilder.build().copy(exampleSetFactory);
     }
 
@@ -42,12 +42,12 @@ public class SetAttributeTest {
             calls.add("");
         };
         exampleSetFactory.setAttribute.internal_addListener(invalidationListener);
-        exampleSetFactory.setAttribute.get().add("7787");
+        exampleSetFactory.setAttribute.add("7787");
 
         Assert.assertEquals(1,calls.size());
 
         exampleSetFactory.setAttribute.internal_removeListener(invalidationListener);
-        exampleSetFactory.setAttribute.get().add("7787");
+        exampleSetFactory.setAttribute.add("7787");
         Assert.assertEquals(1,calls.size());
     }
 }

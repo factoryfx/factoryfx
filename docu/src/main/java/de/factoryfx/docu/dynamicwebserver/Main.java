@@ -6,10 +6,10 @@ import de.factoryfx.data.storage.DataAndNewMetadata;
 import de.factoryfx.data.storage.inmemory.InMemoryDataStorage;
 import de.factoryfx.factory.atrribute.FactoryReferenceAttribute;
 import de.factoryfx.factory.exception.RethrowingFactoryExceptionHandler;
+import de.factoryfx.jetty.HttpServerConnectorFactory;
+import de.factoryfx.jetty.JettyServerFactory;
 import de.factoryfx.server.Microservice;
-import de.factoryfx.server.rest.client.RestClient;
-import de.factoryfx.server.rest.server.HttpServerConnectorFactory;
-import de.factoryfx.server.rest.server.JettyServerFactory;
+import de.factoryfx.util.rest.client.RestClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,7 +20,7 @@ import java.util.List;
 
 public class Main {
 
-    public static class DynamicWebserver extends JettyServerFactory<Void,RootFactory>{
+    public static class DynamicWebserver extends JettyServerFactory<Void,RootFactory> {
         public final FactoryReferenceAttribute<WebResource,WebResourceFactory> resource = new FactoryReferenceAttribute<>();
         @Override
         protected List<Object> getResourcesInstances() {

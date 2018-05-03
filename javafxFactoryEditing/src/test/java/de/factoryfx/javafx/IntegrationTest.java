@@ -1,16 +1,16 @@
 package de.factoryfx.javafx;
 
 import de.factoryfx.factory.testfactories.ExampleFactoryA;
-import de.factoryfx.javafx.stage.StageFactory;
-import de.factoryfx.javafx.util.LongRunningActionExecutorFactory;
-import de.factoryfx.javafx.util.UniformDesignFactory;
-import de.factoryfx.javafx.view.ViewDescriptionFactory;
-import de.factoryfx.javafx.view.ViewFactory;
-import de.factoryfx.javafx.view.container.ViewsDisplayWidgetFactory;
-import de.factoryfx.javafx.view.menu.ViewMenuFactory;
-import de.factoryfx.javafx.view.menu.ViewMenuItemFactory;
-import de.factoryfx.javafx.widget.Widget;
-import de.factoryfx.javafx.widget.WidgetFactory;
+import de.factoryfx.javafx.factory.stage.StageFactory;
+import de.factoryfx.javafx.factory.util.LongRunningActionExecutorFactory;
+import de.factoryfx.javafx.factory.util.UniformDesignFactory;
+import de.factoryfx.javafx.factory.view.ViewDescriptionFactory;
+import de.factoryfx.javafx.factory.view.ViewFactory;
+import de.factoryfx.javafx.factory.view.container.ViewsDisplayWidgetFactory;
+import de.factoryfx.javafx.factory.view.menu.ViewMenuFactory;
+import de.factoryfx.javafx.factory.view.menu.ViewMenuItemFactory;
+import de.factoryfx.javafx.data.widget.Widget;
+import de.factoryfx.javafx.factory.widget.factory.WidgetFactory;
 import javafx.application.Application;
 import javafx.scene.control.Label;
 import javafx.scene.layout.BorderPane;

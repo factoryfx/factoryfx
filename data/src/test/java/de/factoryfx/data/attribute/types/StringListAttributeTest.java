@@ -22,7 +22,7 @@ public class StringListAttributeTest {
         exampleListFactory.listAttribute.internal_addListener((a,o)-> {
             calls.add("");
         });
-        exampleListFactory.listAttribute.get().add("7787");
+        exampleListFactory.listAttribute.add("7787");
 
         Assert.assertEquals(1,calls.size());
     }
@@ -30,7 +30,7 @@ public class StringListAttributeTest {
     @Test
     public void test_json(){
         ExampleListFactory exampleListFactory = new ExampleListFactory();
-        exampleListFactory.listAttribute.get().add("7787");
+        exampleListFactory.listAttribute.add("7787");
         ObjectMapperBuilder.build().copy(exampleListFactory);
     }
 
@@ -42,12 +42,12 @@ public class StringListAttributeTest {
             calls.add("");
         };
         exampleListFactory.listAttribute.internal_addListener(invalidationListener);
-        exampleListFactory.listAttribute.get().add("7787");
+        exampleListFactory.listAttribute.add("7787");
 
         Assert.assertEquals(1,calls.size());
 
         exampleListFactory.listAttribute.internal_removeListener(invalidationListener);
-        exampleListFactory.listAttribute.get().add("7787");
+        exampleListFactory.listAttribute.add("7787");
         Assert.assertEquals(1,calls.size());
     }
 }

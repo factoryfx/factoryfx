@@ -5,8 +5,8 @@ import com.google.common.io.CharStreams;
 import de.factoryfx.factory.FactoryManager;
 import de.factoryfx.data.storage.inmemory.InMemoryDataStorage;
 import de.factoryfx.factory.exception.RethrowingFactoryExceptionHandler;
+import de.factoryfx.jetty.HttpServerConnectorFactory;
 import de.factoryfx.server.Microservice;
-import de.factoryfx.server.rest.server.HttpServerConnectorFactory;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;

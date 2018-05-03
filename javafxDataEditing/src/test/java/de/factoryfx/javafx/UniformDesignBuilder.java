@@ -2,7 +2,7 @@ package de.factoryfx.javafx;
 
 import java.util.Locale;
 
-import de.factoryfx.javafx.util.UniformDesign;
+import de.factoryfx.javafx.data.util.UniformDesign;
 import javafx.scene.paint.Color;
 
 public class UniformDesignBuilder {

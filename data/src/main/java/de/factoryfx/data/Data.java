@@ -11,8 +11,6 @@ import de.factoryfx.data.merge.MergeResult;
 import de.factoryfx.data.validation.AttributeValidation;
 import de.factoryfx.data.validation.Validation;
 import de.factoryfx.data.validation.ValidationError;
-import javafx.beans.property.ReadOnlyStringProperty;
-import javafx.beans.property.SimpleStringProperty;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -517,17 +515,6 @@ public class Data {
         this.displayTextDependencies = displayTextDependencies;
     }
 
-    private SimpleStringProperty simpleStringProperty=null;
-    @JsonIgnore
-    private ReadOnlyStringProperty getDisplayTextObservable() {
-        if (simpleStringProperty==null){
-            simpleStringProperty = new SimpleStringProperty();
-            simpleStringProperty.set(getDisplayText());
-            addDisplayTextListeners(this,(attributeParam, value) -> simpleStringProperty.set(getDisplayText()));
-        }
-        return simpleStringProperty;
-    }
-
     @SuppressWarnings("unchecked")
     private void addDisplayTextListeners(Data data, AttributeChangeListener attributeChangeListener){
         for (Attribute<?,?> attribute: data.displayTextDependencies){
@@ -751,8 +738,14 @@ public class Data {
             return data.getDisplayText();
         }
 
-        public ReadOnlyStringProperty getDisplayTextObservable(){
-            return data.getDisplayTextObservable();
+        //TODO cleanup the hack (goal is to remove javafx dependency )
+        private Object simpleStringProperty;
+        public void storeDisplayTextObservable(Object simpleStringProperty){
+            this.simpleStringProperty = simpleStringProperty;
+        }
+
+        public Object getDisplayTextObservable(){
+            return this.simpleStringProperty;
         }
 
         public List<ValidationError> validateFlat(){
@@ -866,6 +859,10 @@ public class Data {
             if (!isUsable()){
                 throw new IllegalStateException("passed data is not a usableCopy use prepareUsableCopy(); e.g.:\n  data=data.utility().prepareUsableCopy();");
             }
+        }
+
+        public void addDisplayTextListeners(AttributeChangeListener attributeChangeListener){
+            data.addDisplayTextListeners(data, attributeChangeListener);
         }
     }
 

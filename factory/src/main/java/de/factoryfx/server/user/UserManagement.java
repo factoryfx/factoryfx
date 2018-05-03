@@ -1,5 +1,7 @@
 package de.factoryfx.server.user;
 
+import de.factoryfx.server.user.AuthorizedUser;
+
 import java.util.Optional;
 
 public interface UserManagement {

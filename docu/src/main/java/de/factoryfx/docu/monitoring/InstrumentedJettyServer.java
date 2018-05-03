@@ -2,8 +2,8 @@ package de.factoryfx.docu.monitoring;
 
 import com.codahale.metrics.ConsoleReporter;
 import com.codahale.metrics.MetricRegistry;
-import de.factoryfx.server.rest.server.HttpServerConnectorCreator;
-import de.factoryfx.server.rest.server.JettyServer;
+import de.factoryfx.jetty.HttpServerConnectorCreator;
+import de.factoryfx.jetty.JettyServer;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;

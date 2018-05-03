@@ -75,7 +75,7 @@ public class ViewReferenceAttributeTest {
         root.exampleFactoryA.set(value);
 
         root = root.internal().prepareUsableCopy();
-        root.ref.get().view.setRunlaterExecutorForTest(runnable -> runnable.run());
+        root.ref.get().view.setRunlaterExecutor(runnable -> runnable.run());
 
         ArrayList<String> calls=new ArrayList<>();
         root.ref.get().view.internal_addListener((attribute, value1) -> {

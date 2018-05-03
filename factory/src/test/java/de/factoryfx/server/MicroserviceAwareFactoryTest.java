@@ -6,6 +6,7 @@ import de.factoryfx.factory.SimpleFactoryBase;
 import de.factoryfx.factory.atrribute.FactoryReferenceAttribute;
 import de.factoryfx.data.storage.inmemory.InMemoryDataStorage;
 import de.factoryfx.factory.exception.RethrowingFactoryExceptionHandler;
+import de.factoryfx.server.Microservice;
 import org.junit.Assert;
 import org.junit.Test;
 

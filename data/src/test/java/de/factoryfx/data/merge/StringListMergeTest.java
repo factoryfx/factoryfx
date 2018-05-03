@@ -21,6 +21,10 @@ public class StringListMergeTest extends MergeHelperTestBase {
         aTest1.refB.add("33333");
         aTest1 = aTest1.internal().prepareUsableCopy();
 
+        Assert.assertEquals("11111", aTest1.refB.get(0));
+        Assert.assertEquals("222222", aTest1.refB.get(1));
+        Assert.assertEquals("33333", aTest1.refB.get(2));
+
 
         StringListTest update = new StringListTest();
         update.refB.add("11111");
@@ -29,9 +33,9 @@ public class StringListMergeTest extends MergeHelperTestBase {
         update = update.internal().prepareUsableCopy();
 
         Assert.assertTrue(merge(aTest1, aTest1, update).hasNoConflicts());
-        Assert.assertEquals("11111", aTest1.refB.get().get(0));
-        Assert.assertEquals("222222", aTest1.refB.get().get(1));
-        Assert.assertEquals("33333", aTest1.refB.get().get(2));
+        Assert.assertEquals("11111", aTest1.refB.get(0));
+        Assert.assertEquals("222222", aTest1.refB.get(1));
+        Assert.assertEquals("33333", aTest1.refB.get(2));
     }
 
     @Test

@@ -12,7 +12,7 @@ public class StringSetAttributeTest {
     @Test
     public void test_json(){
         ExampleSetFactory exampleSetFactory = new ExampleSetFactory();
-        exampleSetFactory.setAttribute.get().add("7787");
+        exampleSetFactory.setAttribute.add("7787");
         ObjectMapperBuilder.build().copy(exampleSetFactory);
     }
 }

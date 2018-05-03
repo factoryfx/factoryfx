@@ -22,9 +22,9 @@ public class Externs {
     private static final List<SourceFile> externs;
     static {
         try {
-            InputStream input = Compiler.class.getResourceAsStream("/externs.zip");
+            InputStream input = Externs.class.getResourceAsStream("/externs.zip");
             if (input == null) {
-                input = Compiler.class.getResourceAsStream("externs.zip");
+                input = Externs.class.getResourceAsStream("externs.zip");
             }
             ZipInputStream zip = new ZipInputStream(input);
             String envPrefix = CompilerOptions.Environment.CUSTOM.toString().toLowerCase() + "/";

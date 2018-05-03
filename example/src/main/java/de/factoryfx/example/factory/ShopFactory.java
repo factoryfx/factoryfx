@@ -5,8 +5,9 @@ import de.factoryfx.example.server.OrderStorage;
 import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.factory.atrribute.FactoryReferenceAttribute;
 import de.factoryfx.factory.atrribute.FactoryReferenceListAttribute;
-import de.factoryfx.server.rest.server.JettyServer;
-import de.factoryfx.server.rest.server.JettyServerFactory;
+
+import de.factoryfx.jetty.JettyServer;
+import de.factoryfx.jetty.JettyServerFactory;
 import javafx.stage.Stage;
 
 public class ShopFactory extends FactoryBase<Shop,OrderCollector,ShopFactory> {

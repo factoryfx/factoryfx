@@ -11,10 +11,9 @@ import java.util.function.Function;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreType;
 import de.factoryfx.data.Data;
-import javafx.application.Platform;
 
 @JsonIgnoreType
-public abstract class ViewReferenceAttribute<R extends Data, T extends Data,A extends Attribute<T,A>> extends Attribute<T,A> {
+public abstract class ViewReferenceAttribute<R extends Data, T extends Data,A extends Attribute<T,A>> extends Attribute<T,A> implements RunLaterAble {
 
     private R root;
     protected final Function<R,T> view;
@@ -62,16 +61,14 @@ public abstract class ViewReferenceAttribute<R extends Data, T extends Data,A ex
     }
 
 
-    //** so we don't need to initialise javax toolkit in test*/
+    //** so we don't need to initialise javax toolkit in test, Platform.runLater(runnable);*/
     Consumer<Runnable> runlaterExecutor;
-    void setRunlaterExecutorForTest(Consumer<Runnable> runlaterExecutor){
+    public void setRunlaterExecutor(Consumer<Runnable> runlaterExecutor){
         this.runlaterExecutor=runlaterExecutor;
     }
 
     public void runLater(Runnable runnable){
-        if (runlaterExecutor==null) {
-            Platform.runLater(runnable);
-        } else {
+        if (runlaterExecutor!=null) {
             runlaterExecutor.accept(runnable);
         }
     }
@@ -178,5 +175,6 @@ public abstract class ViewReferenceAttribute<R extends Data, T extends Data,A ex
     public boolean internal_ignoreForMerging() {
         return true;
     }
+
 
 }
