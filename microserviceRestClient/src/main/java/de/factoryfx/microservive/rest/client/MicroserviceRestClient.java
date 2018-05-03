@@ -1,4 +1,4 @@
-package de.factoryfx.server.rest.client;
+package de.factoryfx.microservice.rest.client;
 
 import java.util.*;
 
@@ -9,11 +9,12 @@ import de.factoryfx.data.storage.DataAndNewMetadata;
 import de.factoryfx.data.storage.DataStorage;
 import de.factoryfx.data.storage.StoredDataMetadata;
 import de.factoryfx.factory.log.FactoryUpdateLog;
-import de.factoryfx.server.rest.CheckUserResponse;
-import de.factoryfx.server.rest.DiffForFactoryResponse;
-import de.factoryfx.server.rest.UpdateCurrentFactoryRequest;
-import de.factoryfx.server.rest.UserAwareRequest;
-import de.factoryfx.server.rest.UserLocaleResponse;
+import de.factoryfx.util.rest.CheckUserResponse;
+import de.factoryfx.util.rest.DiffForFactoryResponse;
+import de.factoryfx.util.rest.UpdateCurrentFactoryRequest;
+import de.factoryfx.util.rest.UserAwareRequest;
+import de.factoryfx.util.rest.UserLocaleResponse;
+import de.factoryfx.util.rest.client.RestClient;
 
 
 //TODO use rest proxy client

@@ -6,6 +6,7 @@ module de.factoryfx.javafxDataEditing {
     requires javafx.web;
     requires javafx.fxml;
     requires jackson.annotations;
+    requires com.google.common;
     exports de.factoryfx.javafx.data.widget;
     exports de.factoryfx.javafx.data.util;
     exports de.factoryfx.javafx.data.attribute;
