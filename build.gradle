@@ -18,7 +18,7 @@ wrapper {
 
 subprojects {
     apply plugin: 'java'
-    apply plugin: 'findbugs'
+//    apply plugin: 'findbugs'
 
     apply plugin: 'maven'
     apply plugin: 'signing'
@@ -143,12 +143,12 @@ subprojects {
         testCompile group: 'org.mockito', name: 'mockito-all', version: '1.9.5'
     }
 
-    findbugs {
-        sourceSets = [sourceSets.main]
-        toolVersion = "3.0.1"
-        ignoreFailures = true
-        excludeFilter = file("$rootProject.projectDir/findbugs/findbugs-exclude-filter.xml")
-    }
+//    findbugs {
+//        sourceSets = [sourceSets.main]
+//        toolVersion = "3.0.1"
+//        ignoreFailures = true
+//        excludeFilter = file("$rootProject.projectDir/findbugs/findbugs-exclude-filter.xml")
+//    }
 
 
     //that is the new publish plugin that doesn't work with maven central
