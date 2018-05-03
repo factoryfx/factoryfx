@@ -9,11 +9,8 @@ import de.factoryfx.data.storage.DataAndNewMetadata;
 import de.factoryfx.data.storage.DataStorage;
 import de.factoryfx.data.storage.StoredDataMetadata;
 import de.factoryfx.factory.log.FactoryUpdateLog;
-import de.factoryfx.util.rest.CheckUserResponse;
-import de.factoryfx.util.rest.DiffForFactoryResponse;
-import de.factoryfx.util.rest.UpdateCurrentFactoryRequest;
-import de.factoryfx.util.rest.UserAwareRequest;
-import de.factoryfx.util.rest.UserLocaleResponse;
+
+import de.factoryfx.microservice.common.*;
 import de.factoryfx.util.rest.client.RestClient;
 
 

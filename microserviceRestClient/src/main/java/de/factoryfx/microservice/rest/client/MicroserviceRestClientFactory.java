@@ -1,11 +1,10 @@
-package de.factoryfx.microservive.rest.client;
+package de.factoryfx.microservice.rest.client;
 
 import de.factoryfx.data.attribute.types.ObjectValueAttribute;
 import de.factoryfx.data.attribute.types.StringAttribute;
 import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.factory.SimpleFactoryBase;
 import de.factoryfx.factory.atrribute.FactoryReferenceAttribute;
-import de.factoryfx.util.rest.client.MicroserviceRestClient;
 import de.factoryfx.util.rest.client.RestClient;
 import de.factoryfx.util.rest.client.RestClientFactory;
 
