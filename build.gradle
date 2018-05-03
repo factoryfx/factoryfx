@@ -5,7 +5,7 @@
 apply plugin: 'idea'
 idea {
     project {
-        languageLevel = '1.9'
+        languageLevel = JavaVersion.VERSION_1_9
         vcs = 'Git'
     }
 }
@@ -22,6 +22,16 @@ subprojects {
 
     apply plugin: 'maven'
     apply plugin: 'signing'
+
+    compileJava {
+        inputs.property("moduleName", "de.factoryfx.$project.name")
+        doFirst {
+            options.compilerArgs = [
+                    '--module-path', classpath.asPath,
+            ]
+            classpath = files()
+        }
+    }
 
     task javadocJar(type: Jar) {
         classifier = 'javadoc'
@@ -121,6 +131,7 @@ subprojects {
     }
 
     sourceCompatibility = JavaVersion.VERSION_1_9
+    targetCompatibility = JavaVersion.VERSION_1_9
     compileJava.options.encoding = 'UTF-8'
 
     dependencies {
@@ -174,6 +185,9 @@ subprojects {
 
 
 project(':microserviceRestServer') {
+    ext.moduleName = 'org.gradle.fairy.app'
+
+
     dependencies {
         compile project(":jettyFactory")
         compile project(":microserviceRestCommon")
@@ -181,6 +195,9 @@ project(':microserviceRestServer') {
 }
 
 project(':microserviceRestClient') {
+    ext.moduleName = 'org.gradle.fairy.app'
+
+
 
     dependencies {
         compile project(":factory")
@@ -191,6 +208,10 @@ project(':microserviceRestClient') {
 }
 
 project(':microserviceRestCommon') {
+    ext.moduleName = 'org.gradle.fairy.app'
+
+
+
     dependencies {
         compile project(":factory")
         compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.9.4'
@@ -198,6 +219,10 @@ project(':microserviceRestCommon') {
 }
 
 project(':microserviceRestIntegrationTest') {
+    ext.moduleName = 'org.gradle.fairy.app'
+
+
+
     uploadArchives.enabled = false
     dependencies {
         compile project(":microserviceRestServer")
@@ -207,6 +232,10 @@ project(':microserviceRestIntegrationTest') {
 }
 
 project(':data') {
+    ext.moduleName = 'org.gradle.fairy.app'
+
+
+
     dependencies {
         compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.9.4'
         compile group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jdk8', version: '2.9.4'
@@ -215,6 +244,10 @@ project(':data') {
 }
 
 project(':factory') {
+    ext.moduleName = 'org.gradle.fairy.app'
+
+
+
     dependencies {
         compile project(":data")
         testCompile project(":testfactories")
@@ -222,6 +255,10 @@ project(':factory') {
 }
 
 project(':postgresqlStorage') {
+    ext.moduleName = 'org.gradle.fairy.app'
+
+
+
     dependencies {
         compile project(":factory")
         compile group: 'org.postgresql', name: 'postgresql', version: '9.4.1210.jre7'
@@ -232,6 +269,9 @@ project(':postgresqlStorage') {
 }
 
 project(':oracledbStorage') {
+    ext.moduleName = 'org.gradle.fairy.app'
+
+
     dependencies {
         compile project(":factory")
         //still no oracle driver in mvn central
@@ -242,6 +282,7 @@ project(':oracledbStorage') {
 }
 
 project(':jettyFactory') {
+    ext.moduleName = 'org.gradle.fairy.app'
 
     dependencies {
         compile project(":factory")
@@ -293,6 +334,7 @@ project(':restutilClient') {
 
 
 project(':example') {
+
     uploadArchives.enabled = false
     dependencies {
         compile project(":javafxFactoryEditing")
@@ -306,6 +348,9 @@ project(':example') {
 
 
 project(':javafxDataEditing') {
+    ext.moduleName = 'org.gradle.fairy.app'
+
+
 
     dependencies {
         compile project(":data")
@@ -318,6 +363,7 @@ project(':javafxDataEditing') {
 }
 
 project(':javafxFactoryEditing') {
+    ext.moduleName = 'org.gradle.fairy.app'
 
     dependencies {
         compile project(":factory")
@@ -329,6 +375,9 @@ project(':javafxFactoryEditing') {
 }
 
 project(':javafxDistributionServer') {
+    ext.moduleName = 'org.gradle.fairy.app'
+
+
 
     dependencies {
         compile project(":jettyFactory")

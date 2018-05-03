@@ -10,7 +10,7 @@ Factoryfx is a lightweight Dependency Injection Framework that extends dependenc
 
 | Group ID            | Artifact ID | Version |
 | :-----------------: | :---------: | :-----: |
-| io.github.factoryfx | factory  | 0.6.1  |
+| io.github.factoryfx | factory  | 1.0.0  |
 
 ##### minimal server
 ```groovy
