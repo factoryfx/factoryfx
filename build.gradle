@@ -40,7 +40,9 @@ subprojects {
 
     javadoc {
         failOnError = false
-        options.addStringOption('-module-path', classpath.asPath)
+        doFirst {
+            options.addStringOption('-module-path', classpath.asPath)
+        }
     }
 
     task sourcesJar(type: Jar) {

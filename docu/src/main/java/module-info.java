@@ -1,0 +1,2 @@
+module de.factoryfx.docu {
+}
