@@ -4,4 +4,5 @@ module de.factoryfx.microserviceRestServer {
     requires java.ws.rs;
     requires de.factoryfx.microserviceRestCommon;
 
+    exports de.factoryfx.microservice.rest;
 }

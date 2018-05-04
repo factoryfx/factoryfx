@@ -188,9 +188,6 @@ subprojects {
 
 
 project(':microserviceRestServer') {
-    ext.moduleName = 'org.gradle.fairy.app'
-
-
     dependencies {
         compile project(":jettyFactory")
         compile project(":microserviceRestCommon")
@@ -198,10 +195,6 @@ project(':microserviceRestServer') {
 }
 
 project(':microserviceRestClient') {
-    ext.moduleName = 'org.gradle.fairy.app'
-
-
-
     dependencies {
         compile project(":factory")
         compile project(":restutilClient")
@@ -211,10 +204,6 @@ project(':microserviceRestClient') {
 }
 
 project(':microserviceRestCommon') {
-    ext.moduleName = 'org.gradle.fairy.app'
-
-
-
     dependencies {
         compile project(":factory")
         compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.9.4'
@@ -222,10 +211,6 @@ project(':microserviceRestCommon') {
 }
 
 project(':microserviceRestIntegrationTest') {
-    ext.moduleName = 'org.gradle.fairy.app'
-
-
-
     uploadArchives.enabled = false
     dependencies {
         compile project(":microserviceRestServer")
@@ -235,10 +220,6 @@ project(':microserviceRestIntegrationTest') {
 }
 
 project(':data') {
-    ext.moduleName = 'org.gradle.fairy.app'
-
-
-
     dependencies {
         compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.9.4'
         compile group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jdk8', version: '2.9.4'
@@ -247,10 +228,6 @@ project(':data') {
 }
 
 project(':factory') {
-    ext.moduleName = 'org.gradle.fairy.app'
-
-
-
     dependencies {
         compile project(":data")
         testCompile project(":testfactories")
@@ -272,9 +249,6 @@ project(':postgresqlStorage') {
 }
 
 project(':oracledbStorage') {
-    ext.moduleName = 'org.gradle.fairy.app'
-
-
     dependencies {
         compile project(":factory")
         //still no oracle driver in mvn central
@@ -285,8 +259,6 @@ project(':oracledbStorage') {
 }
 
 project(':jettyFactory') {
-    ext.moduleName = 'org.gradle.fairy.app'
-
     dependencies {
         compile project(":factory")
         compile group: 'org.eclipse.jetty', name: 'jetty-server', version: '9.4.8.v20171121'
@@ -328,9 +300,15 @@ project(':restutilClient') {
     dependencies {
         compile project(":factory")
         compile group: 'com.fasterxml.jackson.jaxrs', name: 'jackson-jaxrs-json-provider', version: '2.9.4'
-        compile 'org.glassfish.jersey.media:jersey-media-json-jackson:2.26'
-        compile 'org.glassfish.jersey.core:jersey-client:2.26'
-        compile 'org.glassfish.jersey.inject:jersey-hk2:2.26'
+        compile ('org.glassfish.jersey.media:jersey-media-json-jackson:2.26') {
+            exclude group: "javax.annotation"
+        }
+        compile ('org.glassfish.jersey.core:jersey-client:2.26') {
+            exclude group: "javax.annotation"
+        }
+        compile ('org.glassfish.jersey.inject:jersey-hk2:2.26'){
+            exclude group: "javax.annotation"
+        }
     }
 
 }
@@ -351,10 +329,6 @@ project(':example') {
 
 
 project(':javafxDataEditing') {
-    ext.moduleName = 'org.gradle.fairy.app'
-
-
-
     dependencies {
         compile project(":data")
         compile group: 'ch.qos.logback', name: 'logback-classic', version: '1.1.7'
@@ -366,8 +340,6 @@ project(':javafxDataEditing') {
 }
 
 project(':javafxFactoryEditing') {
-    ext.moduleName = 'org.gradle.fairy.app'
-
     dependencies {
         compile project(":factory")
         compile project(":microserviceRestClient")
@@ -378,10 +350,6 @@ project(':javafxFactoryEditing') {
 }
 
 project(':javafxDistributionServer') {
-    ext.moduleName = 'org.gradle.fairy.app'
-
-
-
     dependencies {
         compile project(":jettyFactory")
         compile project(":factory")
@@ -441,12 +409,8 @@ project(':docu') {
     uploadArchives.enabled = false
     dependencies {
         compile project(":factory")
-        compile (project(":jettyFactory")){
-           exclude group: "javax.annotation"
-        }
-        compile (project(":restutilClient")){
-            exclude group: "javax.annotation"
-        }
+        compile project(":jettyFactory")
+        compile project(":restutilClient")
         compile project(':postgresqlStorage')
         compile group: 'io.dropwizard.metrics', name: 'metrics-jetty9', version: '3.2.4'
         compile 'ru.yandex.qatools.embed:postgresql-embedded:1.15'

@@ -17,6 +17,7 @@ module de.factoryfx.javafxDataEditing {
     exports de.factoryfx.javafx.data.widget.validation;
     exports de.factoryfx.javafx.data.editor.attribute.builder;
     exports de.factoryfx.javafx.data.stage;
+    exports de.factoryfx.javafx.data.widget.tree;
 
 
 }
