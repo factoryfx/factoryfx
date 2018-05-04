@@ -51,7 +51,7 @@ public abstract class JettyServerFactory<V,R extends FactoryBase<?,V,R>> extends
         return new JettyServer(connectors.instances(), getResourcesInstancesNullRemoved(), objectMapper.instance(),restLogging.instance());
     }
 
-    private List<Object> getResourcesInstancesNullRemoved(){
+    protected List<Object> getResourcesInstancesNullRemoved(){
         return getResourcesInstances().stream().filter(Objects::nonNull).collect(Collectors.toList());
     }
 

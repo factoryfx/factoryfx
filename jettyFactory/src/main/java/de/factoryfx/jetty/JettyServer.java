@@ -74,6 +74,12 @@ public class JettyServer {
                 loggingFeature!=null?loggingFeature:new org.glassfish.jersey.logging.LoggingFeature(new DelegatingLoggingFilterLogger()),new DefaultResourceConfigSetup());
     }
 
+    public JettyServer(List<de.factoryfx.jetty.HttpServerConnectorCreator> connectors, List<Object> resources, ObjectMapper objectMapper, LoggingFeature loggingFeature, Consumer<ResourceConfig> resourceConfigSetup) {
+        this(connectors,resources,new ArrayList<>(),
+                objectMapper!=null?objectMapper:ObjectMapperBuilder.buildNewObjectMapper(),
+                loggingFeature!=null?loggingFeature:new org.glassfish.jersey.logging.LoggingFeature(new DelegatingLoggingFilterLogger()),resourceConfigSetup);
+    }
+
     public JettyServer(List<de.factoryfx.jetty.HttpServerConnectorCreator> connectors, List<Object> resources) {
         this(connectors,resources,new ArrayList<>(),ObjectMapperBuilder.buildNewObjectMapper(),new org.glassfish.jersey.logging.LoggingFeature(new DelegatingLoggingFilterLogger()),new DefaultResourceConfigSetup());
     }
