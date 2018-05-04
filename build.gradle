@@ -264,7 +264,7 @@ project(':postgresqlStorage') {
 
     dependencies {
         compile project(":factory")
-        compile group: 'org.postgresql', name: 'postgresql', version: '9.4.1210.jre7'
+        compile group: 'org.postgresql', name: 'postgresql', version: '42.2.2'
         testCompile 'ru.yandex.qatools.embed:postgresql-embedded:1.15'
         testCompile project(":testfactories")
     }
@@ -441,8 +441,12 @@ project(':docu') {
     uploadArchives.enabled = false
     dependencies {
         compile project(":factory")
-        compile project(":jettyFactory")
-        compile project(":restutilClient")
+        compile (project(":jettyFactory")){
+           exclude group: "javax.annotation"
+        }
+        compile (project(":restutilClient")){
+            exclude group: "javax.annotation"
+        }
         compile project(':postgresqlStorage')
         compile group: 'io.dropwizard.metrics', name: 'metrics-jetty9', version: '3.2.4'
         compile 'ru.yandex.qatools.embed:postgresql-embedded:1.15'

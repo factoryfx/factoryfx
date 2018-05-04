@@ -23,8 +23,8 @@ import org.junit.Test;
 import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
+import org.postgresql.ds.PGSimpleDataSource;
 import org.postgresql.jdbc.AutoSave;
-import org.postgresql.jdbc3.Jdbc3SimpleDataSource;
 import ru.yandex.qatools.embed.postgresql.PostgresExecutable;
 import ru.yandex.qatools.embed.postgresql.PostgresProcess;
 import ru.yandex.qatools.embed.postgresql.PostgresStarter;
@@ -41,18 +41,18 @@ public class PostgresDataStorageTest {
             final PostgresConfig config = PostgresConfig.defaultWithDbName("test","testuser","testpw");
             PostgresExecutable exec = runtime.prepare(config);
             postgresProcess = exec.start();
-            Jdbc3SimpleDataSource _postgresDatasource = new Jdbc3SimpleDataSource();
-            _postgresDatasource.setServerName(config.net().host());
-            _postgresDatasource.setPortNumber(config.net().port());
-            _postgresDatasource.setDatabaseName(config.storage().dbName());
-            _postgresDatasource.setUser(config.credentials().username());
-            _postgresDatasource.setPassword(config.credentials().password());
-            _postgresDatasource.setAutosave(AutoSave.NEVER);
-            postgresDatasource = Mockito.spy(_postgresDatasource);
-            Mockito.when(postgresDatasource.getConnection()).thenAnswer(new Answer<Connection>() {
+            PGSimpleDataSource postgresDatasource = new PGSimpleDataSource();
+            postgresDatasource.setServerName(config.net().host());
+            postgresDatasource.setPortNumber(config.net().port());
+            postgresDatasource.setDatabaseName(config.storage().dbName());
+            postgresDatasource.setUser(config.credentials().username());
+            postgresDatasource.setPassword(config.credentials().password());
+            postgresDatasource.setAutosave(AutoSave.NEVER);
+            PostgresDataStorageTest.postgresDatasource = Mockito.spy(postgresDatasource);
+            Mockito.when(PostgresDataStorageTest.postgresDatasource.getConnection()).thenAnswer(new Answer<Connection>() {
                 @Override
                 public Connection answer(InvocationOnMock invocation) throws Throwable {
-                    Connection connection = _postgresDatasource.getConnection();
+                    Connection connection = postgresDatasource.getConnection();
                     connection.setAutoCommit(false);
                     return connection;
                 }

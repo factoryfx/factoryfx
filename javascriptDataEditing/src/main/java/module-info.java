@@ -9,4 +9,6 @@ module de.factoryfx.javascriptDataEditing {
     requires de.factoryfx.javascript;
     requires richtextfx;
     requires de.factoryfx.javafxDataEditing;
+
+    exports de.factoryfx.javafx.javascript.editor.attribute.visualisation;
 }

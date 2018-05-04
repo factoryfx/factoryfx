@@ -14,4 +14,6 @@ module de.factoryfx.data {
     exports de.factoryfx.data.merge;
     exports de.factoryfx.data.storage;
     exports de.factoryfx.data.jackson;
+    exports de.factoryfx.data.storage.inmemory;
+    exports de.factoryfx.data.storage.filesystem;
 }

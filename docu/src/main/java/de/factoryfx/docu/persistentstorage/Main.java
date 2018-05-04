@@ -9,8 +9,8 @@ import de.factoryfx.factory.datastorage.postgres.DisableAutocommitDatasource;
 import de.factoryfx.factory.datastorage.postgres.PostgresDataStorage;
 import de.factoryfx.factory.exception.RethrowingFactoryExceptionHandler;
 import de.factoryfx.server.Microservice;
+import org.postgresql.ds.PGSimpleDataSource;
 import org.postgresql.jdbc.AutoSave;
-import org.postgresql.jdbc3.Jdbc3SimpleDataSource;
 import ru.yandex.qatools.embed.postgresql.PostgresExecutable;
 import ru.yandex.qatools.embed.postgresql.PostgresProcess;
 import ru.yandex.qatools.embed.postgresql.PostgresStarter;
@@ -28,7 +28,7 @@ public class Main {
         final PostgresConfig config = PostgresConfig.defaultWithDbName("test","testuser","testpw");
         PostgresExecutable exec = runtime.prepare(config);
         postgresProcess = exec.start();
-        Jdbc3SimpleDataSource postgresDatasource = new Jdbc3SimpleDataSource();
+        PGSimpleDataSource postgresDatasource = new PGSimpleDataSource();
         postgresDatasource.setServerName(config.net().host());
         postgresDatasource.setPortNumber(config.net().port());
         postgresDatasource.setDatabaseName(config.storage().dbName());
