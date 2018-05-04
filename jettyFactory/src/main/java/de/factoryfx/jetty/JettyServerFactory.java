@@ -37,13 +37,18 @@ public abstract class JettyServerFactory<V,R extends FactoryBase<?,V,R>> extends
 
 
     public JettyServerFactory(){
-        configLiveCycle().setCreator(() -> new JettyServer(connectors.instances(), getResourcesInstancesNullRemoved(), objectMapper.instance(),restLogging.instance()));
+        configLiveCycle().setCreator(this::createJetty);
         configLiveCycle().setReCreator(currentLiveObject->currentLiveObject.recreate(connectors.instances(), getResourcesInstancesNullRemoved()));
 
         configLiveCycle().setStarter(JettyServer::start);
         configLiveCycle().setDestroyer(JettyServer::stop);
 
         config().setDisplayTextProvider(() -> "MicroserviceRestServer");
+    }
+
+    //api for customizing JettyServer creation
+    protected JettyServer createJetty() {
+        return new JettyServer(connectors.instances(), getResourcesInstancesNullRemoved(), objectMapper.instance(),restLogging.instance());
     }
 
     private List<Object> getResourcesInstancesNullRemoved(){

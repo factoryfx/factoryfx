@@ -274,22 +274,16 @@ project(':jettyFactory') {
         compile group: 'com.sun.xml.bind', name: 'jaxb-impl', version: '2.3.1-SNAPSHOT'
 
 
-        compile (group: 'org.glassfish.jersey.core', name: 'jersey-server', version: '2.26'){
-            exclude group: "javax.annotation"
-        }
+        compile (group: 'org.glassfish.jersey.core', name: 'jersey-server', version: '2.26')
         compile group: 'com.fasterxml.jackson.jaxrs', name: 'jackson-jaxrs-json-provider', version: '2.9.4'
-        compile ('org.glassfish.jersey.containers:jersey-container-servlet-core:2.26'){
-            exclude group: "javax.annotation"
-        }
-        compile ('org.glassfish.jersey.inject:jersey-hk2:2.26'){
-            exclude group: "javax.annotation"
-        }
+        compile 'org.glassfish.jersey.containers:jersey-container-servlet-core:2.26'
+        compile 'org.glassfish.jersey.inject:jersey-hk2:2.26'
 
         testCompile project(":restutilClient")
         testCompile group: 'ch.qos.logback', name: 'logback-classic', version: '1.1.7'
 
 //        compile group: 'org.apache.cxf', name: 'cxf-rt-bindings-soap', version: '3.2.4'
-        compile group: 'javax.xml.ws', name: 'jaxws-api', version: '2.3.0'
+//        compile group: 'javax.xml.ws', name: 'jaxws-api', version: '2.3.0'
         compile group: 'com.sun.activation', name: 'javax.activation', version: '1.2.0' // workaround for jersey-hk2
     }
 
@@ -300,15 +294,9 @@ project(':restutilClient') {
     dependencies {
         compile project(":factory")
         compile group: 'com.fasterxml.jackson.jaxrs', name: 'jackson-jaxrs-json-provider', version: '2.9.4'
-        compile ('org.glassfish.jersey.media:jersey-media-json-jackson:2.26') {
-            exclude group: "javax.annotation"
-        }
-        compile ('org.glassfish.jersey.core:jersey-client:2.26') {
-            exclude group: "javax.annotation"
-        }
-        compile ('org.glassfish.jersey.inject:jersey-hk2:2.26'){
-            exclude group: "javax.annotation"
-        }
+        compile 'org.glassfish.jersey.media:jersey-media-json-jackson:2.26'
+        compile 'org.glassfish.jersey.core:jersey-client:2.26'
+        compile 'org.glassfish.jersey.inject:jersey-hk2:2.26'
     }
 
 }

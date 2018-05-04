@@ -4,12 +4,11 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Consumer;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider;
 import de.factoryfx.data.jackson.ObjectMapperBuilder;
-import de.factoryfx.jetty.soap.Soap11Provider;
-import de.factoryfx.jetty.soap.Soap12Provider;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.handler.ErrorHandler;
 import org.eclipse.jetty.server.handler.HandlerCollection;
@@ -30,17 +29,20 @@ public class JettyServer {
     private boolean disposed = false;
     private final ObjectMapper objectMapper;
     private final LoggingFeature loggingFeature;
+    private final Consumer<ResourceConfig> resourceConfigSetup;
 
-    public JettyServer(List<de.factoryfx.jetty.HttpServerConnectorCreator> connectors, List<Object> resources, List<Handler> additionalHandlers, ObjectMapper objectMapper, LoggingFeature loggingFeature) {
-        server=new org.eclipse.jetty.server.Server();
+
+    public JettyServer(List<de.factoryfx.jetty.HttpServerConnectorCreator> connectors, List<Object> resources, List<Handler> additionalHandlers, ObjectMapper objectMapper, LoggingFeature loggingFeature, Consumer<ResourceConfig> resourceConfigSetup) {
+        this.server=new org.eclipse.jetty.server.Server();
         this.objectMapper=objectMapper;
         this.loggingFeature=loggingFeature;
-        currentConnectors.addAll(connectors);
+        this.currentConnectors.addAll(connectors);
         for (de.factoryfx.jetty.HttpServerConnectorCreator creator : currentConnectors) {
             creator.addToServer(server);
         }
+        this.resourceConfigSetup = resourceConfigSetup;
 
-        rootServlet = new UpdateableServlet(new ServletContainer(jerseySetup(resources)));
+        this.rootServlet = new UpdateableServlet(new ServletContainer(jerseySetup(resources)));
         ServletHolder holder = new ServletHolder(rootServlet);
         ServletContextHandler contextHandler = new ServletContextHandler(ServletContextHandler.SESSIONS);
         contextHandler.addServlet( holder, "/*");
@@ -65,14 +67,15 @@ public class JettyServer {
         server.setHandler(handlers);
     }
 
+
     public JettyServer(List<de.factoryfx.jetty.HttpServerConnectorCreator> connectors, List<Object> resources, ObjectMapper objectMapper, LoggingFeature loggingFeature) {
         this(connectors,resources,new ArrayList<>(),
                 objectMapper!=null?objectMapper:ObjectMapperBuilder.buildNewObjectMapper(),
-                loggingFeature!=null?loggingFeature:new org.glassfish.jersey.logging.LoggingFeature(new DelegatingLoggingFilterLogger()));
+                loggingFeature!=null?loggingFeature:new org.glassfish.jersey.logging.LoggingFeature(new DelegatingLoggingFilterLogger()),new DefaultResourceConfigSetup());
     }
 
     public JettyServer(List<de.factoryfx.jetty.HttpServerConnectorCreator> connectors, List<Object> resources) {
-        this(connectors,resources,new ArrayList<>(),ObjectMapperBuilder.buildNewObjectMapper(),new org.glassfish.jersey.logging.LoggingFeature(new DelegatingLoggingFilterLogger()));
+        this(connectors,resources,new ArrayList<>(),ObjectMapperBuilder.buildNewObjectMapper(),new org.glassfish.jersey.logging.LoggingFeature(new DelegatingLoggingFilterLogger()),new DefaultResourceConfigSetup());
     }
 
     private JettyServer(JettyServer priorServer) {
@@ -82,21 +85,22 @@ public class JettyServer {
         priorServer.disposed = true;
         this.objectMapper = priorServer.objectMapper;
         this.loggingFeature = priorServer.loggingFeature;
+        this.resourceConfigSetup = priorServer.resourceConfigSetup;
     }
 
     private ResourceConfig jerseySetup(List<Object>  resource) {
 
         ResourceConfig resourceConfig = new ResourceConfig();
         resourceConfig.property(CommonProperties.FEATURE_AUTO_DISCOVERY_DISABLE, true);// without we have 2 JacksonJaxbJsonProvider and wrong mapper
-//        resourceConfig.register(resource);
         resource.forEach(resourceConfig::register);
-        resourceConfig.register(new AllExceptionMapper());
-        resourceConfig.register(Soap11Provider.class);
-        resourceConfig.register(Soap12Provider.class);
+
+
 
         JacksonJaxbJsonProvider provider = new JacksonJaxbJsonProvider();
         provider.setMapper(objectMapper);
         resourceConfig.register(provider);
+
+        resourceConfigSetup.accept(resourceConfig);
 
         resourceConfig.registerInstances(loggingFeature);
         return resourceConfig;

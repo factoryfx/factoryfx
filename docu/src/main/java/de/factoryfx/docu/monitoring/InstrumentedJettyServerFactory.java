@@ -6,10 +6,7 @@ import de.factoryfx.data.jackson.ObjectMapperBuilder;
 import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.factory.atrribute.FactoryReferenceAttribute;
 import de.factoryfx.factory.atrribute.FactoryReferenceListAttribute;
-import de.factoryfx.jetty.DelegatingLoggingFilterLogger;
-import de.factoryfx.jetty.HttpServerConnectorCreator;
-import de.factoryfx.jetty.HttpServerConnectorFactory;
-import de.factoryfx.jetty.JettyServer;
+import de.factoryfx.jetty.*;
 import org.glassfish.jersey.logging.LoggingFeature;
 
 import java.util.Collections;
@@ -31,7 +28,8 @@ public class InstrumentedJettyServerFactory extends FactoryBase<InstrumentedJett
                     getResourcesInstances(),
                     Collections.singletonList(new InstrumentedHandler(metricRegistry, "monitoring example")),
                     ObjectMapperBuilder.buildNewObjectMapper(),
-                    new LoggingFeature(new DelegatingLoggingFilterLogger())
+                    new LoggingFeature(new DelegatingLoggingFilterLogger()),
+                    new DefaultResourceConfigSetup()
 
             );
             return new InstrumentedJettyServer(jettyServer, metricRegistry);
