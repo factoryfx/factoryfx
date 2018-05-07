@@ -4,7 +4,7 @@ module de.factoryfx.javafxFactoryEditing {
     requires de.factoryfx.factory;
     requires de.factoryfx.javafxDataEditing;
     requires de.factoryfx.data;
-    requires microserviceRestClient;
+    requires de.factoryfx.microserviceRestClient;
     requires controlsfx;
 
     exports de.factoryfx.javafx.factory.view;

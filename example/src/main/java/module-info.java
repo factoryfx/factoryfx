@@ -9,6 +9,6 @@ module de.factoryfx.example {
     requires de.factoryfx.microserviceRestServer;
     requires slf4j.api;
     requires logback.classic;
-    requires microserviceRestClient;
+    requires de.factoryfx.microserviceRestClient;
     requires de.factoryfx.restutilClient;
 }

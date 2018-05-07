@@ -11,6 +11,7 @@ module de.factoryfx.factory {
     exports de.factoryfx.server.user;
     exports de.factoryfx.server.user.nop;
     exports de.factoryfx.server.user.persistent;
+    exports de.factoryfx.factory.util;
     exports de.factoryfx.factory.parametrized;
     exports de.factoryfx.factory.builder;
 }

@@ -1,4 +1,4 @@
-module microserviceRestClient {
+module de.factoryfx.microserviceRestClient {
     requires de.factoryfx.data;
     requires de.factoryfx.factory;
     requires de.factoryfx.restutilClient;
