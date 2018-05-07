@@ -10,6 +10,7 @@ module de.factoryfx.data {
     exports de.factoryfx.data.util;
     exports de.factoryfx.data;
     exports de.factoryfx.data.attribute.primitive;
+    exports de.factoryfx.data.attribute.primitive.list;
     exports de.factoryfx.data.attribute.time;
     exports de.factoryfx.data.merge;
     exports de.factoryfx.data.storage;
