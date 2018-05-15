@@ -55,13 +55,13 @@
     </Match>
 
     <Match>
-        <Class name="de.factoryfx.user.persistent.UserFactory" />
+        <Class name="de.factoryfx.util.user.persistent.UserFactory" />
         <Bug pattern="MS_SHOULD_BE_FINAL" />
     </Match>
 
     <!-- false positive -->
     <Match>
-        <Class name="de.factoryfx.javafx.widget.datalistedit.DataListEditWidget" />
+        <Class name="de.factoryfx.javafx.factory.widget.datalistedit.DataListEditWidget" />
         <Bug pattern="UC_USELESS_OBJECT" />
     </Match>
 
@@ -82,10 +82,14 @@
     </Match>
 
     <Match>
-        <Class name="de.factoryfx.javafx.widget.datalistedit.ReferenceListAttributeEditWidget" />
+        <Class name="de.factoryfx.javafx.factory.widget.datalistedit.ReferenceListAttributeEditWidget" />
         <Bug pattern="UC_USELESS_OBJECT" />
     </Match>
 
+    <Match>
+        <Class name="de.factoryfx.data.storage.ScheduledDataMetadata" />
+        <Bug pattern="EQ_COMPARETO_USE_OBJECT_EQUALS" />
+    </Match>
 
 
 

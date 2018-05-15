@@ -12,11 +12,9 @@ import java.util.stream.Stream;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreType;
 import de.factoryfx.data.Data;
-import javafx.application.Platform;
-import javafx.collections.ObservableList;
 
 @JsonIgnoreType
-public abstract class ViewListReferenceAttribute <R extends Data, T extends Data, A extends Attribute<List<T>,A>> extends Attribute<List<T>,A> {
+public abstract class ViewListReferenceAttribute <R extends Data, T extends Data, A extends Attribute<List<T>,A>> extends Attribute<List<T>,A> implements RunLaterAble {
     private R root;
     protected final Function<R,List<T>> view;
 
@@ -83,14 +81,13 @@ public abstract class ViewListReferenceAttribute <R extends Data, T extends Data
 
     //** so we don't need to initialise javax toolkit for tests*/
     Consumer<Runnable> runlaterExecutor;
-    void setRunlaterExecutorForTest(Consumer<Runnable> runlaterExecutor){
+    @Override
+    public void setRunlaterExecutor(Consumer<Runnable> runlaterExecutor){
         this.runlaterExecutor=runlaterExecutor;
     }
 
-    public void runLater(Runnable runnable){
-        if (runlaterExecutor==null){
-            Platform.runLater(runnable);
-        } else {
+    private void runLater(Runnable runnable){
+        if (runlaterExecutor!=null){
             runlaterExecutor.accept(runnable);
         }
     }
@@ -185,12 +182,12 @@ public abstract class ViewListReferenceAttribute <R extends Data, T extends Data
     @JsonIgnore
     @Override
     public AttributeTypeInfo internal_getAttributeType() {
-        return new AttributeTypeInfo(ObservableList.class,null,null,Data.class, AttributeTypeInfo.AttributeTypeCategory.REFERENCE_LIST);
+        return new AttributeTypeInfo(List.class,null,null,Data.class, AttributeTypeInfo.AttributeTypeCategory.REFERENCE_LIST);
     }
 
     @Override
     @SuppressWarnings("unchecked")
-    public void internal_prepareUsage(Data root){
+    public void internal_prepareUsage(Data root, Data parent){
         this.root=(R)root;
     }
 

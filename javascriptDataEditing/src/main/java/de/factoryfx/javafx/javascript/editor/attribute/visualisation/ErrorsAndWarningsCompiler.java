@@ -20,8 +20,7 @@ public class ErrorsAndWarningsCompiler {
             Compiler compiler = new Compiler(new PrintStream(new DiscardOutputStream(),false,"UTF-8"));
             compiler.disableThreads();
             try {
-                ArrayList<SourceFile> externals = new ArrayList<>();
-                externals.addAll(externalSources);
+                ArrayList<SourceFile> externals = new ArrayList<>(externalSources);
                 externals.add(SourceFile.fromCode("declarations",code.getHeaderCode()));
                 externals.add(SourceFile.fromCode("apiDecl",code.getDeclarationCode()));
                 ArrayList<SourceFile> internalSource = new ArrayList<>();

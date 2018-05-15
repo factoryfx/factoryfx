@@ -21,7 +21,7 @@ public class ValueMapAttributeTest {
         exampleMapFactory.mapAttribute.internal_addListener((a,o)-> {
             calls.add("");
         });
-        exampleMapFactory.mapAttribute.get().put("123","7787");
+        exampleMapFactory.mapAttribute.put("123","7787");
 
         Assert.assertEquals(1,calls.size());
     }

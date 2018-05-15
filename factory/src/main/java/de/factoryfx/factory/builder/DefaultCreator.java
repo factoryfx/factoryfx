@@ -1,14 +1,17 @@
 package de.factoryfx.factory.builder;
 
-import de.factoryfx.data.Data;
-import de.factoryfx.data.attribute.Attribute;
 import de.factoryfx.factory.FactoryBase;
+import de.factoryfx.factory.atrribute.FactoryPolymorphicReferenceAttribute;
+import de.factoryfx.factory.atrribute.FactoryPolymorphicReferenceListAttribute;
 import de.factoryfx.factory.atrribute.FactoryReferenceAttribute;
 import de.factoryfx.factory.atrribute.FactoryReferenceListAttribute;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.util.List;
 import java.util.function.Function;
 
-public class DefaultCreator<V,F extends FactoryBase<?,V>> implements Function<FactoryContext<V>, F> {
+public class DefaultCreator<F extends FactoryBase<?,?,R>, R extends FactoryBase<?,?,R>> implements Function<FactoryContext<R>, F> {
     private final Class<F> clazz;
 
     public DefaultCreator(Class<F> clazz) {
@@ -16,10 +19,16 @@ public class DefaultCreator<V,F extends FactoryBase<?,V>> implements Function<Fa
     }
 
 
+    @SuppressWarnings("unchecked")
     @Override
-    public F apply(FactoryContext<V> context) {
+    public F apply(FactoryContext<R> context) {
         try {
-            F result = clazz.newInstance();
+
+            Constructor constructor = clazz.getDeclaredConstructor();
+            constructor.setAccessible(true);
+            F result = (F) constructor.newInstance(new Object[0]);
+
+
             result.internal().visitAttributesFlat((attributeVariableName, attribute) -> {
                 if (attribute instanceof FactoryReferenceAttribute){
                     FactoryReferenceAttribute factoryReferenceAttribute = (FactoryReferenceAttribute) attribute;
@@ -34,11 +43,29 @@ public class DefaultCreator<V,F extends FactoryBase<?,V>> implements Function<Fa
                     validateAttributeClass(attributeVariableName, clazz);
                     factoryReferenceAttribute.set(context.getList(clazz));
                 }
+                if (attribute instanceof FactoryPolymorphicReferenceAttribute){
+                    FactoryPolymorphicReferenceAttribute factoryReferenceAttribute = (FactoryPolymorphicReferenceAttribute) attribute;
+                    for (Class<? extends FactoryBase> possibleClazz: (List<Class>)factoryReferenceAttribute.internal_possibleFactoriesClasses()){
+                        if (context.anyMatch(possibleClazz)){
+                            factoryReferenceAttribute.set(context.get(possibleClazz));
+                            break;
+                        }
+                    }
+                }
+                if (attribute instanceof FactoryPolymorphicReferenceListAttribute){
+                    FactoryPolymorphicReferenceListAttribute factoryReferenceAttribute = (FactoryPolymorphicReferenceListAttribute) attribute;
+                    for (Class<? extends FactoryBase> possibleClazz: (List<Class>)factoryReferenceAttribute.internal_possibleFactoriesClasses()){
+                        if (context.anyMatch(possibleClazz)){
+                            factoryReferenceAttribute.add(context.get(possibleClazz));
+                            break;
+                        }
+                    }
+                }
+
+
             });
             return result;
-        } catch (InstantiationException e) {
-            throw new RuntimeException(e);
-        } catch (IllegalAccessException e) {
+        } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
             throw new RuntimeException(e);
         }
     }

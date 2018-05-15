@@ -10,12 +10,11 @@ import de.factoryfx.data.validation.ObjectRequired;
 import de.factoryfx.data.validation.Validation;
 import de.factoryfx.data.validation.ValidationError;
 import de.factoryfx.data.validation.ValidationResult;
-import javafx.scene.control.Tooltip;
 
 public abstract class Attribute<T,A extends Attribute<T,A>>{
 
     @JsonIgnore
-    private List<Validation<T>> validations;
+    private Set<Validation<T>> validations;
 
     public Attribute() {
 
@@ -131,15 +130,19 @@ public abstract class Attribute<T,A extends Attribute<T,A>>{
 
     public abstract AttributeTypeInfo internal_getAttributeType();
 
-    public void internal_prepareUsage(Data root){
+    /**
+     *
+     * @param root factory tree root
+     * @param parent data that contains the attribute
+     */
+    public void internal_prepareUsage(Data root, Data parent){
         //nothing
     }
 
     /**
      * all elements prepared and root is usable
-     * @param root factory root
      * */
-    public void internal_afterPreparedUsage(Data root){
+    public void internal_afterPreparedUsage(){
         //nothing
     }
 
@@ -171,7 +174,7 @@ public abstract class Attribute<T,A extends Attribute<T,A>>{
     @SuppressWarnings("unchecked")
     public A validation(Validation<T> validation){
         if (validations==null){
-            validations=new ArrayList<>();
+            validations=new HashSet<>();
         }
         this.validations.add(validation);
         return (A)this;
@@ -334,11 +337,13 @@ public abstract class Attribute<T,A extends Attribute<T,A>>{
     @JsonIgnore
     String tooltipDe;
 
+    @SuppressWarnings("unchecked")
     public A tooltipEn(String tooltip){
         tooltipEn=tooltip;
         return (A)this;
     }
 
+    @SuppressWarnings("unchecked")
     public A tooltipDe(String tooltip){
         tooltipDe=tooltip;
         return (A)this;
@@ -360,7 +365,4 @@ public abstract class Attribute<T,A extends Attribute<T,A>>{
         }
         return "";
     }
-
-
-
 }

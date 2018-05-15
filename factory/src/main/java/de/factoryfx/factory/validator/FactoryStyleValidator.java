@@ -11,10 +11,10 @@ import de.factoryfx.factory.FactoryBase;
 public class FactoryStyleValidator {
 
 
-    private final BiFunction<FactoryBase<?, ?>, Field,List<FactoryStyleValidation>> fieldValidationAdder;
-    private final Function<FactoryBase<?, ?>,List<FactoryStyleValidation>> factoryValidationAdder;
+    private final BiFunction<FactoryBase<?, ?, ?>, Field,List<FactoryStyleValidation>> fieldValidationAdder;
+    private final Function<FactoryBase<?, ?, ?>,List<FactoryStyleValidation>> factoryValidationAdder;
 
-    public FactoryStyleValidator(BiFunction<FactoryBase<?, ?>, Field, List<FactoryStyleValidation>> validationAdder, Function<FactoryBase<?, ?>,List<FactoryStyleValidation>> factoryValidationAdder) {
+    public FactoryStyleValidator(BiFunction<FactoryBase<?, ?, ?>, Field, List<FactoryStyleValidation>> validationAdder, Function<FactoryBase<?, ?, ?>,List<FactoryStyleValidation>> factoryValidationAdder) {
         this.fieldValidationAdder = validationAdder;
         this.factoryValidationAdder = factoryValidationAdder;
     }
@@ -26,6 +26,7 @@ public class FactoryStyleValidator {
             factoryStyleValidations.add(new NotNullAttributeValidation(factoryBase, field));
             factoryStyleValidations.add(new PublicValidation(factoryBase, field));
             factoryStyleValidations.add(new FinalValidation(factoryBase, field));
+            factoryStyleValidations.add(new NoIdAsAttributeName(field));
             return factoryStyleValidations;
         }, factoryBase -> new ArrayList<>());
     }
@@ -36,7 +37,7 @@ public class FactoryStyleValidator {
      * @param factoryBase factoryBase
      * @return validations
      * */
-    public List<FactoryStyleValidation> createFactoryValidations(FactoryBase<?,?> factoryBase){
+    public List<FactoryStyleValidation> createFactoryValidations(FactoryBase<?,?,?> factoryBase){
         final ArrayList<FactoryStyleValidation> result = new ArrayList<>();
         for (Field field: factoryBase.getClass().getDeclaredFields()){
 

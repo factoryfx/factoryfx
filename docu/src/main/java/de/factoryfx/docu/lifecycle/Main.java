@@ -1,18 +1,19 @@
 package de.factoryfx.docu.lifecycle;
 
 import de.factoryfx.factory.FactoryManager;
-import de.factoryfx.factory.datastorage.inmemory.InMemoryFactoryStorage;
+import de.factoryfx.data.storage.inmemory.InMemoryDataStorage;
 import de.factoryfx.factory.exception.RethrowingFactoryExceptionHandler;
-import de.factoryfx.server.ApplicationServer;
+import de.factoryfx.server.Microservice;
 
 public class Main {
 
     public static void main(String[] args) {
         RootFactory root = new RootFactory();
+        root=root.utility().prepareUsableCopy();
 
-        ApplicationServer<Void,Root,RootFactory> applicationServer = new ApplicationServer<>(new FactoryManager<>(new RethrowingFactoryExceptionHandler<>()),new InMemoryFactoryStorage<>(root));
-        applicationServer.start();
-        applicationServer.stop();
+        Microservice<Void,RootFactory,Void> microservice = new Microservice<>(new FactoryManager<>(new RethrowingFactoryExceptionHandler()),new InMemoryDataStorage<>(root));
+        microservice.start();
+        microservice.stop();
 
     }
 }

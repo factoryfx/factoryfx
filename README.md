@@ -10,7 +10,7 @@ Factoryfx is a lightweight Dependency Injection Framework that extends dependenc
 
 | Group ID            | Artifact ID | Version |
 | :-----------------: | :---------: | :-----: |
-| io.github.factoryfx | factory  | 0.6.1  |
+| io.github.factoryfx | factory  | 1.0.0  |
 
 ##### minimal server
 ```groovy
@@ -22,15 +22,14 @@ compile(group: 'io.github.factoryfx', name: 'factory', version: factoryfxVersion
 ```groovy
 compile(group: 'io.github.factoryfx', name: 'factory', version: factoryfxVersion)
 compile(group: 'io.github.factoryfx', name: 'javafxDistributionServer', version: factoryfxVersion)
-compile(group: 'io.github.factoryfx', name: 'applicationServer', version: factoryfxVersion)
-compile(group: 'io.github.factoryfx', name: 'applicationServerRestServer', version: factoryfxVersion)
+compile(group: 'io.github.factoryfx', name: 'microserviceRestServer', version: factoryfxVersion)
 compile(group: 'io.github.factoryfx', name: 'postgresqlStorage', version: factoryfxVersion)
 ```
 ###### client
 ```groovy
 compile(group: 'io.github.factoryfx', name: 'factory', version: factoryfxVersion)
 compile(group: 'io.github.factoryfx', name: 'javafxFactoryEditing', version: factoryfxVersion)
-compile(group: 'io.github.factoryfx', name: 'applicationServerRestClient', version: factoryfxVersion)
+compile(group: 'io.github.factoryfx', name: 'microserviceRestClient', version: factoryfxVersion)
 ```
 
 ## Basic example

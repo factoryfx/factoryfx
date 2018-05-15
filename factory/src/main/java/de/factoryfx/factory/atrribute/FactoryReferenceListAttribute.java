@@ -4,6 +4,7 @@ import java.util.*;
 import java.util.function.Predicate;
 
 import de.factoryfx.data.attribute.ReferenceListAttribute;
+import de.factoryfx.factory.AttributeSetupHelper;
 import de.factoryfx.factory.FactoryBase;
 
 /**
@@ -11,7 +12,7 @@ import de.factoryfx.factory.FactoryBase;
  * @param <L> liveobject created form the factory
  * @param <F> factory
  */
-public class FactoryReferenceListAttribute<L, F extends FactoryBase<? extends L,?>> extends  ReferenceListAttribute<F,FactoryReferenceListAttribute<L, F>>{
+public class FactoryReferenceListAttribute<L, F extends FactoryBase<? extends L,?,?>> extends  ReferenceListAttribute<F,FactoryReferenceListAttribute<L, F>>{
 
 
     public FactoryReferenceListAttribute() {
@@ -44,5 +45,9 @@ public class FactoryReferenceListAttribute<L, F extends FactoryBase<? extends L,
     @Override
     public FactoryReferenceListAttribute<L, F> setup(Class<F> clazz) {
         return super.setup(clazz);
+    }
+
+    public void internal_setupWithAttributeSetupHelper(AttributeSetupHelper<?> attributeSetupHelper){
+        attributeSetupHelper.setupReferenceListAttribute(this,this.clazz);
     }
 }

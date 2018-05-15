@@ -55,8 +55,8 @@ public abstract class ReferenceAttribute<T extends Data, A extends ReferenceBase
     @Override
     public void set(T value) {
         this.value=value;
-        if (root!=null && value!=null && value.internal().getRoot()!=root) {
-            value.internal().propagateRoot(root);
+        if (root!=null && value!=null) {
+            value.internal().propagateRootAndParent(root,this.parent);
         }
         if (listeners!=null) {
             for (AttributeChangeListener<T, A> listener : listeners) {
@@ -123,7 +123,7 @@ public abstract class ReferenceAttribute<T extends Data, A extends ReferenceBase
 
     @Override
     public AttributeTypeInfo internal_getAttributeType() {
-        return new AttributeTypeInfo(Data.class,null,null, AttributeTypeInfo.AttributeTypeCategory.REFERENCE);
+        return new AttributeTypeInfo(internal_getReferenceClass(),null,null, AttributeTypeInfo.AttributeTypeCategory.REFERENCE);
     }
 
 
@@ -133,6 +133,10 @@ public abstract class ReferenceAttribute<T extends Data, A extends ReferenceBase
         if (additionalDeleteAction!=null){
             additionalDeleteAction.accept(removedFactory, root);
         }
+    }
+
+    public boolean internal_hasCustomNewValuesProvider(){
+        return newValuesProvider!=null;
     }
 
     public List<T> internal_createNewPossibleValues(){
@@ -154,6 +158,20 @@ public abstract class ReferenceAttribute<T extends Data, A extends ReferenceBase
     //**attributes with a default value can not be set to null(deleted)*/
     public boolean internal_isUserDeletable(){
         return !defaultValueUsed;
+    }
+
+
+    /**default values can be confusing in merge and history view.
+     * a Fixed a id solves that, the
+     * @param defaultValue  defaultValue
+     * @param id unique id, usually a uuid
+     * @return self
+     * */
+    @SuppressWarnings("unchecked")
+    public A defaultValue(T defaultValue, String id) {
+        set(defaultValue);
+        get().setId(id);
+        return (A)this;
     }
 
 }

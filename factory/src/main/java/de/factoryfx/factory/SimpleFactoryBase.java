@@ -2,7 +2,7 @@ package de.factoryfx.factory;
 
 import de.factoryfx.factory.log.FactoryLogEntryEventType;
 
-public abstract class SimpleFactoryBase<L,V> extends FactoryBase<L,V>{
+public abstract class SimpleFactoryBase<L,V,R extends FactoryBase<?,V,R>> extends FactoryBase<L,V, R>{
 
     public abstract L createImpl();
 

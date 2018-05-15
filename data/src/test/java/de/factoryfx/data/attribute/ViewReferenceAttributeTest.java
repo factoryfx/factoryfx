@@ -45,7 +45,7 @@ public class ViewReferenceAttributeTest {
 
         root = root.internal().prepareUsableCopy();
 
-        Assert.assertEquals(value.getId(),root.ref.get().view.get().getId());
+        Assert.assertEquals(root.exampleFactoryA.get().getId(),root.ref.get().view.get().getId());
     }
 
     @Test
@@ -75,7 +75,7 @@ public class ViewReferenceAttributeTest {
         root.exampleFactoryA.set(value);
 
         root = root.internal().prepareUsableCopy();
-        root.ref.get().view.setRunlaterExecutorForTest(runnable -> runnable.run());
+        root.ref.get().view.setRunlaterExecutor(runnable -> runnable.run());
 
         ArrayList<String> calls=new ArrayList<>();
         root.ref.get().view.internal_addListener((attribute, value1) -> {
@@ -146,6 +146,7 @@ public class ViewReferenceAttributeTest {
         root.ref.set(viewExampleFactory);
         ExampleDataA value = new ExampleDataA();
         root.exampleFactoryA.set(value);
+        root=root.internal().prepareUsableCopy();
 
         root.internal().copy();
 

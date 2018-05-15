@@ -1,22 +1,22 @@
 package de.factoryfx.factory.datastorage.oracle;
 
-import de.factoryfx.factory.FactoryBase;
-import de.factoryfx.factory.datastorage.FactorySerialisationManager;
-import de.factoryfx.factory.datastorage.ScheduledFactoryMetadata;
+import de.factoryfx.data.Data;
+import de.factoryfx.data.storage.DataSerialisationManager;
+import de.factoryfx.data.storage.ScheduledDataMetadata;
 
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.function.Supplier;
 
-public class OracledbFactoryStorageFuture<V,L,R extends FactoryBase<L,V>> {
+public class OracledbFactoryStorageFuture<R extends Data,S> {
 
-    private final FactorySerialisationManager<R> factorySerialisationManager;
+    private final DataSerialisationManager<R,S> dataSerialisationManager;
     private final Supplier<Connection> connectionSupplier;
 
-    public OracledbFactoryStorageFuture(Supplier<Connection> connectionSupplier, FactorySerialisationManager<R> factorySerialisationManager){
+    public OracledbFactoryStorageFuture(Supplier<Connection> connectionSupplier, DataSerialisationManager<R,S> dataSerialisationManager){
         this.connectionSupplier = connectionSupplier;
-        this.factorySerialisationManager= factorySerialisationManager;
+        this.dataSerialisationManager = dataSerialisationManager;
 
         try (Connection connection= connectionSupplier.get()){
             try (Statement statement = connection.createStatement()){
@@ -42,10 +42,11 @@ public class OracledbFactoryStorageFuture<V,L,R extends FactoryBase<L,V>> {
             try (Statement statement = connection.createStatement()){
                 String sql = "SELECT * FROM FACTORY_FUTURE WHERE id='"+id+"'";
 
-                ResultSet resultSet =statement.executeQuery(sql);
-                if(resultSet.next()){
-                    ScheduledFactoryMetadata factoryMetadata = factorySerialisationManager.readScheduledFactoryMetadata(JdbcUtil.readStringToBlob(resultSet,"factoryMetadata"));
-                    return  factorySerialisationManager.read(JdbcUtil.readStringToBlob(resultSet,"factory"),factoryMetadata.dataModelVersion);
+                try (ResultSet resultSet =statement.executeQuery(sql)) {
+                    if (resultSet.next()) {
+                        ScheduledDataMetadata factoryMetadata = dataSerialisationManager.readScheduledFactoryMetadata(JdbcUtil.readStringToBlob(resultSet, "factoryMetadata"));
+                        return dataSerialisationManager.read(JdbcUtil.readStringToBlob(resultSet, "factory"), factoryMetadata.dataModelVersion);
+                    }
                 }
             }
         } catch (SQLException e) {
@@ -56,15 +57,15 @@ public class OracledbFactoryStorageFuture<V,L,R extends FactoryBase<L,V>> {
         return null;
     }
 
-    public Collection<ScheduledFactoryMetadata> getFutureFactoryList() {
-        ArrayList<ScheduledFactoryMetadata> result = new ArrayList<>();
+    public Collection<ScheduledDataMetadata<S>> getFutureFactoryList() {
+        ArrayList<ScheduledDataMetadata<S>> result = new ArrayList<>();
         try (Connection connection= connectionSupplier.get()){
             try (Statement statement = connection.createStatement()){
                 String sql = "SELECT * FROM FACTORY_FUTURE";
 
                 try (ResultSet resultSet =statement.executeQuery(sql)) {
                     while (resultSet.next()) {
-                        result.add(factorySerialisationManager.readScheduledFactoryMetadata(JdbcUtil.readStringToBlob(resultSet, "factoryMetadata")));
+                        result.add(dataSerialisationManager.readScheduledFactoryMetadata(JdbcUtil.readStringToBlob(resultSet, "factoryMetadata")));
                     }
                 }
 
@@ -77,14 +78,14 @@ public class OracledbFactoryStorageFuture<V,L,R extends FactoryBase<L,V>> {
         return result;
     }
 
-    public void addFuture(ScheduledFactoryMetadata metadata, R factoryRoot) {
+    public void addFuture(ScheduledDataMetadata<S> metadata, R factoryRoot) {
         String id=metadata.id;
 
         try (Connection connection= connectionSupplier.get()){
             try (PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO FACTORY_FUTURE(id,factory,factoryMetadata) VALUES (?,?,? )")){
                 preparedStatement.setString(1, id);
-                JdbcUtil.writeStringToBlob(factorySerialisationManager.write(factoryRoot),preparedStatement,2);
-                JdbcUtil.writeStringToBlob(factorySerialisationManager.writeStorageMetadata(metadata),preparedStatement,3);
+                JdbcUtil.writeStringToBlob(dataSerialisationManager.write(factoryRoot),preparedStatement,2);
+                JdbcUtil.writeStringToBlob(dataSerialisationManager.writeStorageMetadata(metadata),preparedStatement,3);
                 preparedStatement.executeUpdate();
             }
         } catch (SQLException e) {

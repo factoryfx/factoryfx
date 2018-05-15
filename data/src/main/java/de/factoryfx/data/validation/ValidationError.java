@@ -34,4 +34,8 @@ public class ValidationError {
         return attribute.internal_getPreferredLabelText(locale);
     }
 
+
+    public String getSimpleErrorDescription(){
+        return parent.getClass()+" | "+validationDescriptionForChild(Locale.ENGLISH);
+    }
 }

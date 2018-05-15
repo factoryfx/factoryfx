@@ -1,14 +1,13 @@
 package de.factoryfx.factory.atrribute;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
-import de.factoryfx.data.Data;
-import de.factoryfx.data.attribute.ReferenceAttribute;
+import de.factoryfx.data.util.LanguageText;
+import de.factoryfx.data.validation.Validation;
+import de.factoryfx.data.validation.ValidationResult;
 import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.factory.PolymorphicFactory;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Attribute for polymorphic Reference.
@@ -16,24 +15,34 @@ import java.util.Set;
  *
  * @param <L> the base interface/class
  */
-public class FactoryPolymorphicReferenceAttribute<L> extends ReferenceAttribute<FactoryBase<L,?>,FactoryPolymorphicReferenceAttribute<L>> {
+public class FactoryPolymorphicReferenceAttribute<L> extends FactoryReferenceBaseAttribute<L,FactoryBase<? extends L,?,?>,FactoryPolymorphicReferenceAttribute<L>> {
 
+    private static final Validation requiredValidation = value -> {
+        boolean error = value == null;
+        return new ValidationResult(error, new LanguageText().en("required parameter").de("Pflichtparameter"));
+    };
 
     @JsonCreator
-    protected FactoryPolymorphicReferenceAttribute(FactoryBase<L,?> value) {
+    @SuppressWarnings("unchecked")
+    protected FactoryPolymorphicReferenceAttribute(FactoryBase<L,?,?> value) {
         super(value);
     }
 
+    @SuppressWarnings("unchecked")
     public FactoryPolymorphicReferenceAttribute() {
         super();
     }
 
-    public L instance(){
-        if (get()==null){
-            return null;
-        }
-        return get().internalFactory().instance();
+    @SafeVarargs
+    @SuppressWarnings("unchecked")
+    public FactoryPolymorphicReferenceAttribute(Class<L> liveObjectClass, Class<? extends PolymorphicFactory<?>>... possibleFactoriesClasses) {
+        super();
+        setup(liveObjectClass,possibleFactoriesClasses);
+        this.validation(requiredValidation);
     }
+
+
+    private List<Class<?>> possibleFactoriesClasses;
 
 
     /**
@@ -45,6 +54,7 @@ public class FactoryPolymorphicReferenceAttribute<L> extends ReferenceAttribute<
     @SuppressWarnings("unchecked")
     @SafeVarargs
     public final FactoryPolymorphicReferenceAttribute<L> setupUnsafe(Class liveObjectClass, Class... possibleFactoriesClasses){
+        this.possibleFactoriesClasses=Arrays.asList(possibleFactoriesClasses);
         for (Class clazz: possibleFactoriesClasses){
             if (!FactoryBase.class.isAssignableFrom(clazz)){
                 throw new IllegalArgumentException("parameter must be a factory: "+clazz);
@@ -62,46 +72,18 @@ public class FactoryPolymorphicReferenceAttribute<L> extends ReferenceAttribute<
     @SuppressWarnings("unchecked")
     @SafeVarargs
     public final FactoryPolymorphicReferenceAttribute<L> setup(Class<L> liveObjectClass, Class<? extends PolymorphicFactory<?>>... possibleFactoriesClasses){
-        this.possibleValueProvider(data -> {
-            Set<FactoryBase<L, ?>> result = new HashSet<>();
-            for (Data factory: root.internal().collectChildrenDeep()){
-                if (factory instanceof PolymorphicFactory){
-                    if (liveObjectClass.isAssignableFrom(((PolymorphicFactory)factory).getLiveObjectClass())){
-                        result.add((FactoryBase<L, ?>) factory);
-                    }
-                }
-            }
-
-            return result;
-        });
-
-        //compile time validation doesn't work java generic limitation
-        for (Class<? extends PolymorphicFactory<?>> clazz: possibleFactoriesClasses){
-            try {
-                PolymorphicFactory<?> newInstance = clazz.newInstance();
-                if (!liveObjectClass.isAssignableFrom(((PolymorphicFactory)newInstance).getLiveObjectClass())){
-                    throw new IllegalArgumentException("class has wrong liveobject: "+clazz);
-                }
-            } catch (InstantiationException | IllegalAccessException e) {
-                throw new RuntimeException(e);
-            }
-
-        }
-
-        this.newValuesProvider(data -> {
-            try {
-                ArrayList<FactoryBase<L, ?>> result = new ArrayList<>();
-                for (Class<?> clazz: possibleFactoriesClasses){
-                    result.add((FactoryBase<L, ?>) clazz.newInstance());
-                }
-                return result;
-            } catch (InstantiationException | IllegalAccessException e) {
-                throw new RuntimeException(e);
-            }
-        });
+        this.possibleFactoriesClasses=Arrays.asList(possibleFactoriesClasses);
+        new FactoryPolymorphicUtil<L>().setup(this,liveObjectClass,()->this.root,possibleFactoriesClasses);
         return this;
     }
 
 
+    /**
+     * intended to be used from code generators
+     * @return list of possible classes
+     * */
+    public List<Class<?>> internal_possibleFactoriesClasses(){
+        return possibleFactoriesClasses;
+    }
 
 }

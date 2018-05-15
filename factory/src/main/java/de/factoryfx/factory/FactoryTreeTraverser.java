@@ -2,9 +2,9 @@ package de.factoryfx.factory;
 
 import com.google.common.collect.TreeTraverser;
 
-class FactoryTreeTraverser<V> extends TreeTraverser<FactoryBase<?,V>> {
+class FactoryTreeTraverser<V,R extends FactoryBase<?,V,R>> extends TreeTraverser<FactoryBase<?,V,R>> {
     @Override
-    public Iterable<FactoryBase<?,V>> children(FactoryBase<?,V> factory) {
+    public Iterable<FactoryBase<?,V,R>> children(FactoryBase<?,V,R> factory) {
         return factory;
     }
 }

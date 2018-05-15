@@ -1,16 +1,16 @@
 package de.factoryfx.docu.persistentstorage;
 
 import de.factoryfx.factory.FactoryManager;
-import de.factoryfx.factory.datastorage.FactoryAndNewMetadata;
-import de.factoryfx.factory.datastorage.FactorySerialisationManager;
-import de.factoryfx.factory.datastorage.JacksonDeSerialisation;
-import de.factoryfx.factory.datastorage.JacksonSerialisation;
+import de.factoryfx.data.storage.DataAndNewMetadata;
+import de.factoryfx.data.storage.DataSerialisationManager;
+import de.factoryfx.data.storage.JacksonDeSerialisation;
+import de.factoryfx.data.storage.JacksonSerialisation;
 import de.factoryfx.factory.datastorage.postgres.DisableAutocommitDatasource;
-import de.factoryfx.factory.datastorage.postgres.PostgresFactoryStorage;
+import de.factoryfx.factory.datastorage.postgres.PostgresDataStorage;
 import de.factoryfx.factory.exception.RethrowingFactoryExceptionHandler;
-import de.factoryfx.server.ApplicationServer;
+import de.factoryfx.server.Microservice;
+import org.postgresql.ds.PGSimpleDataSource;
 import org.postgresql.jdbc.AutoSave;
-import org.postgresql.jdbc3.Jdbc3SimpleDataSource;
 import ru.yandex.qatools.embed.postgresql.PostgresExecutable;
 import ru.yandex.qatools.embed.postgresql.PostgresProcess;
 import ru.yandex.qatools.embed.postgresql.PostgresStarter;
@@ -28,7 +28,7 @@ public class Main {
         final PostgresConfig config = PostgresConfig.defaultWithDbName("test","testuser","testpw");
         PostgresExecutable exec = runtime.prepare(config);
         postgresProcess = exec.start();
-        Jdbc3SimpleDataSource postgresDatasource = new Jdbc3SimpleDataSource();
+        PGSimpleDataSource postgresDatasource = new PGSimpleDataSource();
         postgresDatasource.setServerName(config.net().host());
         postgresDatasource.setPortNumber(config.net().port());
         postgresDatasource.setDatabaseName(config.storage().dbName());
@@ -41,22 +41,22 @@ public class Main {
 
         RootFactory root = new RootFactory();
         root.stringAttribute.set("1");
-        FactorySerialisationManager<RootFactory> serialisationManager = new FactorySerialisationManager<>(new JacksonSerialisation<>(1),new JacksonDeSerialisation<>(RootFactory.class,1),new ArrayList<>(),1);
-        PostgresFactoryStorage<Void,Root, RootFactory> postgresFactoryStorage = new PostgresFactoryStorage<>(datasource, root, serialisationManager);
+        DataSerialisationManager<RootFactory,Void> serialisationManager = new DataSerialisationManager<>(new JacksonSerialisation<>(1),new JacksonDeSerialisation<>(RootFactory.class,1),new ArrayList<>(),1);
+        PostgresDataStorage<RootFactory,Void> postgresFactoryStorage = new PostgresDataStorage<>(datasource, root, serialisationManager);
 
 
-        ApplicationServer<Void,Root, RootFactory> applicationServer = new ApplicationServer<>(new FactoryManager<>(new RethrowingFactoryExceptionHandler<>()),postgresFactoryStorage);
-        applicationServer.start();
+        Microservice<Void, RootFactory,Void> microservice = new Microservice<>(new FactoryManager<>(new RethrowingFactoryExceptionHandler()),postgresFactoryStorage);
+        microservice.start();
         //output is 1 from initial factory
 
-        FactoryAndNewMetadata<RootFactory> update = applicationServer.prepareNewFactory();
+        DataAndNewMetadata<RootFactory> update = microservice.prepareNewFactory();
         update.root.stringAttribute.set("2");
-        applicationServer.updateCurrentFactory(update, "", "", s -> true);
+        microservice.updateCurrentFactory(update, "", "", s -> true);
         //output is 2 from initial factory
 
-        applicationServer.stop();
-        ApplicationServer<Void,Root, RootFactory> newApplicationServer = new ApplicationServer<>(new FactoryManager<>(new RethrowingFactoryExceptionHandler<>()),postgresFactoryStorage);
-        newApplicationServer.start();
+        microservice.stop();
+        Microservice<Void, RootFactory,Void> newMicroservice = new Microservice<>(new FactoryManager<>(new RethrowingFactoryExceptionHandler()),postgresFactoryStorage);
+        newMicroservice.start();
         //output is 2 again from the saved update
 
 

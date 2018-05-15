@@ -5,20 +5,23 @@ import java.util.function.Function;
 
 import de.factoryfx.data.Data;
 
-public class DataMerger {
+public class DataMerger<R extends Data> {
 
-    private final Data commonData;
-    private final Data currentData;
-    private final Data newData;
+    private final R commonData;
+    private final R currentData;
+    private final R newData;
 
-    public DataMerger(Data currentData, Data commonData, Data newData) {
+    public DataMerger(R currentData, R commonData, R newData) {
+        currentData.internal().checkUsable();
+        commonData.internal().checkUsable();
+        newData.internal().checkUsable();
         this.commonData = commonData;
         this.currentData = currentData;
         this.newData = newData;
     }
 
     @SuppressWarnings("unchecked")
-    public MergeResult createMergeResult(Function<String,Boolean> permissionChecker) {
+    public MergeResult<R> createMergeResult(Function<String,Boolean> permissionChecker) {
         MergeResult mergeResult = new MergeResult(currentData);
 
         Map<String, Data> originalMap = commonData.internal().collectChildDataMap();
@@ -26,8 +29,8 @@ public class DataMerger {
         Map<String, Data> newMap = newData.internal().collectChildDataMap();
 
         for (Map.Entry<String, Data> entry : currentMap.entrySet()) {
-            Data originalValue = originalMap.get(entry.getKey());
-            Data newValue = newMap.get(entry.getKey());
+            Data originalValue = getOriginalValue(originalMap, entry);
+            Data newValue = getNewValue(newMap, entry);
 
             if (newValue==null && originalValue!=null){
                 //check for conflict for removed object
@@ -47,7 +50,23 @@ public class DataMerger {
         return mergeResult;
     }
 
-    public MergeDiffInfo mergeIntoCurrent(Function<String,Boolean> permissionChecker) {
+    private Data getNewValue(Map<String, Data> newMap, Map.Entry<String, Data> currentEntry) {
+        if (currentEntry.getValue()==currentData){//for root different id don't make sense
+            return newData;
+        }
+        return newMap.get(currentEntry.getKey());
+    }
+
+    private Data getOriginalValue(Map<String, Data> originalMap, Map.Entry<String, Data> currentEntry) {
+        if (currentEntry.getValue()==currentData){//for root different id don't make sense
+            return commonData;
+        }
+        return originalMap.get(currentEntry.getKey());
+    }
+
+    public MergeDiffInfo<R> mergeIntoCurrent(Function<String,Boolean> permissionChecker) {
         return createMergeResult(permissionChecker).executeMerge();
     }
+
+
 }

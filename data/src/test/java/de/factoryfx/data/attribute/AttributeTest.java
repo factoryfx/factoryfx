@@ -10,14 +10,13 @@ import de.factoryfx.data.jackson.SimpleObjectMapper;
 import de.factoryfx.data.merge.testfactories.ExampleDataA;
 import de.factoryfx.data.merge.testfactories.ExampleDataB;
 import de.factoryfx.data.merge.testfactories.ExampleDataC;
-import de.factoryfx.data.validation.StringRequired;
 import de.factoryfx.data.validation.ValidationError;
 import org.junit.Assert;
 import org.junit.Test;
 
 public class AttributeTest {
     public class ValidationExampleFactory extends Data {
-        public final StringAttribute stringAttribute= new StringAttribute().labelText("ExampleA1").validation(StringRequired.VALIDATION);
+        public final StringAttribute stringAttribute= new StringAttribute().labelText("ExampleA1");
     }
 
     @Test
@@ -82,4 +81,5 @@ public class AttributeTest {
         StringAttribute stringAttribute = new StringAttribute().tooltipEn("hi");
         Assert.assertEquals("hi",stringAttribute.internal_getPreferredTooltipText(Locale.ENGLISH));
     }
+
 }

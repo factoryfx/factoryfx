@@ -9,7 +9,6 @@ import java.util.stream.Stream;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import de.factoryfx.data.Data;
-import javafx.collections.ObservableList;
 
 public abstract class ReferenceListAttribute<T extends Data,A extends ReferenceBaseAttribute<T,List<T>,A>> extends ReferenceBaseAttribute<T,List<T>,A> implements List<T> {
     List<T> list = new ArrayList<>();
@@ -136,17 +135,17 @@ public abstract class ReferenceListAttribute<T extends Data,A extends ReferenceB
     @Override
     @JsonIgnore
     public AttributeTypeInfo internal_getAttributeType() {
-        return new AttributeTypeInfo(ObservableList.class,null,null,Data.class, AttributeTypeInfo.AttributeTypeCategory.REFERENCE_LIST);
+        return new AttributeTypeInfo(List.class,null,null,Data.class, AttributeTypeInfo.AttributeTypeCategory.REFERENCE_LIST);
     }
 
-    public T internal_addNewFactory(){
-        T addedFactory = null;
-        if (getNewValueProvider()!=null) {
-            T newFactory = getNewValueProvider().apply(root);
-            get().add(newFactory);
-            addedFactory = newFactory;
+    public List<T> internal_createNewPossibleValues(){
+        if (newValuesProvider!=null) {
+            return newValuesProvider.apply(root);
         }
-        return addedFactory;
+        if (getNewValueProvider()!=null) {
+            return Collections.singletonList(getNewValueProvider().apply(root));
+        }
+        return new ArrayList<>();
     }
 
     public void internal_deleteFactory(T factory){
@@ -161,7 +160,7 @@ public abstract class ReferenceListAttribute<T extends Data,A extends ReferenceB
             throw new IllegalStateException("cant't add null to list");
         }
         if (root!=null && added.internal().getRoot()!=root) {
-            added.internal().propagateRoot(root);
+            added.internal().propagateRootAndParent(root,parent);
         }
 
         afterModify();

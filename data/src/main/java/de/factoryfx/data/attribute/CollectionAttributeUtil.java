@@ -2,6 +2,7 @@ package de.factoryfx.data.attribute;
 
 import java.util.Collection;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public class CollectionAttributeUtil<T> {
 
@@ -14,20 +15,7 @@ public class CollectionAttributeUtil<T> {
     }
 
     public String getDisplayText() {
-        StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append("[");
-        stringBuilder.append(list.size());
-        stringBuilder.append("][");
-        int counter=0;
-        for (T item:  list){
-            stringBuilder.append(listItemDisplayText.apply(item));
-            if (counter<list.size()-1){
-                stringBuilder.append(", ");
-            }
-            counter++;
-        }
-        stringBuilder.append("]");
-        return stringBuilder.toString();
+        return "[" + list.size() + "][" + list.stream().map(listItemDisplayText).collect(Collectors.joining(", ")) + "]";
     }
 
 

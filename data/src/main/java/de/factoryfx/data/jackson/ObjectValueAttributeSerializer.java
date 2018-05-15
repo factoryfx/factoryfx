@@ -11,7 +11,7 @@ import de.factoryfx.data.attribute.types.ObjectValueAttribute;
 public class ObjectValueAttributeSerializer extends JsonSerializer<ObjectValueAttribute> {
     @Override
     public void serialize(ObjectValueAttribute value, JsonGenerator gen, SerializerProvider serializers) throws IOException {
-        gen.writeNull();//noithing
+        gen.writeNull();//nothing
 //        gen.writeStartObject();
 //        gen.writeEndObject();
         //nothing

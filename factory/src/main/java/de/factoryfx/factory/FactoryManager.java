@@ -19,18 +19,17 @@ import org.slf4j.LoggerFactory;
  * Manage application lifecycle (start,stop,update)
  *
  * @param <V> Visitor
- * @param <L> Root liveobject
  * @param <R> Root
  */
-public class FactoryManager<V,L,R extends FactoryBase<L,V>> {
+public class FactoryManager<V,R extends FactoryBase<?,V,R>> {
 
     private static final org.slf4j.Logger logger = LoggerFactory.getLogger(FactoryManager.class);
 
     private R currentFactoryRoot;
-    private final FactoryExceptionHandler<V> factoryExceptionHandler;
+    private final FactoryExceptionHandler factoryExceptionHandler;
 
 
-    public FactoryManager(FactoryExceptionHandler<V> factoryExceptionHandler) {
+    public FactoryManager(FactoryExceptionHandler factoryExceptionHandler) {
         this.factoryExceptionHandler = factoryExceptionHandler;
         if (factoryExceptionHandler instanceof AllOrNothingFactoryExceptionHandler){
             logger.warn("only AllOrNothingFactoryExceptionHandler is set therefore no exception will be logged. Usually this setup is wrong and the handler should be wrapped with LoggingFactoryExceptionHandler");
@@ -38,41 +37,44 @@ public class FactoryManager<V,L,R extends FactoryBase<L,V>> {
     }
 
     @SuppressWarnings("unchecked")
-    public FactoryUpdateLog update(R commonVersion , R newVersion, Function<String,Boolean> permissionChecker){
-        LinkedHashSet<FactoryBase<?,V>> previousFactories = getFactoriesInDestroyOrder(currentFactoryRoot);
+    public FactoryUpdateLog<R> update(R commonVersion , R newVersion, Function<String,Boolean> permissionChecker){
+        LinkedHashSet<FactoryBase<?,V,R>> previousFactories = getFactoriesInDestroyOrder(currentFactoryRoot);
         previousFactories.forEach((f)->f.internalFactory().resetLog());
 
         R previousFactoryCopyRoot = currentFactoryRoot.internal().copyFromRoot();
 
-        DataMerger dataMerger = new DataMerger(currentFactoryRoot, commonVersion, newVersion);
-        MergeDiffInfo mergeDiff= dataMerger.mergeIntoCurrent(permissionChecker);
+        DataMerger<R> dataMerger = new DataMerger<>(currentFactoryRoot, commonVersion, newVersion);
+        MergeDiffInfo<R> mergeDiff= dataMerger.mergeIntoCurrent(permissionChecker);
         long totalUpdateDuration=0;
-        List<FactoryBase<?,V>> removed = new ArrayList<>();
+        List<FactoryBase<?,V,R>> removed = new ArrayList<>();
         if (mergeDiff.successfullyMerged()){
-            final Set<FactoryBase<?, V>> newFactories = currentFactoryRoot.internalFactory().collectChildFactoriesDeepFromRoot();
+            final Set<FactoryBase<?, V,R>> newFactories = currentFactoryRoot.internalFactory().collectChildFactoriesDeepFromRoot();
 
             long start=System.nanoTime();
             currentFactoryRoot.internalFactory().determineRecreationNeedFromRoot(getChangedFactories(previousFactoryCopyRoot));
 
-            final LinkedHashSet<FactoryBase<?, V>> factoriesInCreateAndStartOrder = getFactoriesInCreateAndStartOrder(currentFactoryRoot);
+            final LinkedHashSet<FactoryBase<?, V, R>> factoriesInCreateAndStartOrder = getFactoriesInCreateAndStartOrder(currentFactoryRoot);
             factoriesInCreateAndStartOrder.forEach(this::createWithExceptionHandling);
 
-            destroyFactories(previousFactories, newFactories);
+            removed=getRemovedFactories(previousFactories,newFactories);
+
+            newFactories.forEach(this::destroyUpdatedWithExceptionHandling);
+            removed.forEach(this::destroyRemovedWithExceptionHandling);//TODO is the order correct, do we care?
 
             factoriesInCreateAndStartOrder.forEach(this::startWithExceptionHandling);
             totalUpdateDuration=System.nanoTime()-start;
-            removed=getRemovedFactories(previousFactories,newFactories);
+
         }
 
-        return new FactoryUpdateLog(currentFactoryRoot.internalFactory().createFactoryLogEntry(), removed.stream().map(r->r.internalFactory().createFactoryLogEntryFlat()).collect(Collectors.toSet()),mergeDiff,totalUpdateDuration);
+        return new FactoryUpdateLog<>(currentFactoryRoot.internalFactory().createFactoryLogEntry(), removed.stream().map(r->r.internalFactory().createFactoryLogEntryFlat()).collect(Collectors.toSet()),mergeDiff,totalUpdateDuration);
     }
 
     private Set<Data> getChangedFactories(R previousFactoryCopyRoot){
         //one might think that the merger could do the change detection but that don't work for views and separation of concern is better anyway
         final HashSet<Data> result = new HashSet<>();
-        final HashMap<String, FactoryBase<?, V>> previousFactories = previousFactoryCopyRoot.internalFactory().collectChildFactoriesDeepMapFromRoot();
+        final HashMap<String, FactoryBase<?, V,R>> previousFactories = previousFactoryCopyRoot.internalFactory().collectChildFactoriesDeepMapFromRoot();
         for (Data data: currentFactoryRoot.internalFactory().collectChildFactoriesDeepFromRoot()){
-            final FactoryBase<?, V> previousFactory = previousFactories.get(data.getId());
+            final FactoryBase<?, V,R> previousFactory = previousFactories.get(data.getId());
             if (previousFactory!=null){
                 data.internal().visitAttributesDualFlat(previousFactory, (name, currentAttribute, previousAttribute) -> {
                     if (!(currentAttribute instanceof DataViewReferenceAttribute) && !(currentAttribute instanceof DataViewListReferenceAttribute)){//Data views have no function no need to check
@@ -86,8 +88,8 @@ public class FactoryManager<V,L,R extends FactoryBase<L,V>> {
         return result;
     }
 
-    public List<FactoryBase<?,V>> getRemovedFactories(Set<FactoryBase<?,V>> previousFactories, Set<FactoryBase<?,V>> newFactories){
-        final ArrayList<FactoryBase<?, V>> result = new ArrayList<>();
+    public List<FactoryBase<?,V,R>> getRemovedFactories(Set<FactoryBase<?,V,R>> previousFactories, Set<FactoryBase<?,V,R>> newFactories){
+        final ArrayList<FactoryBase<?, V,R>> result = new ArrayList<>();
         previousFactories.forEach(previous -> {
             if (!newFactories.contains(previous)){
                 result.add(previous);
@@ -102,30 +104,26 @@ public class FactoryManager<V,L,R extends FactoryBase<L,V>> {
      * @param permissionChecker permissionChecker
      * @return MergeDiffInfo*/
     @SuppressWarnings("unchecked")
-    public MergeDiffInfo simulateUpdate(R commonVersion , R newVersion,  Function<String, Boolean> permissionChecker){
+    public MergeDiffInfo<R> simulateUpdate(R commonVersion , R newVersion,  Function<String, Boolean> permissionChecker){
         newVersion.internalFactory().loopDetector();
 
-        DataMerger dataMerger = new DataMerger(currentFactoryRoot.internal().copyFromRoot(), commonVersion, newVersion);
+        DataMerger<R> dataMerger = new DataMerger<>(currentFactoryRoot.internal().copyFromRoot(), commonVersion, newVersion);
         return dataMerger.createMergeResult(permissionChecker).executeMerge();
     }
 
-    private void destroyFactories(LinkedHashSet<FactoryBase<?,V>> previousFactories, Set<FactoryBase<?,V>> newFactories){
-        for (FactoryBase<?,V> newFactory: newFactories){
-            destroyWithExceptionHandling(newFactory,previousFactories);
-        }
-    }
 
 
-    private LinkedHashSet<FactoryBase<?,V>> getFactoriesInCreateAndStartOrder(R root){
-        LinkedHashSet<FactoryBase<?,V>> result = new LinkedHashSet<>();
-        for (FactoryBase<?,V> factory : root.internalFactory().postOrderTraversalFromRoot()) {
+
+    private LinkedHashSet<FactoryBase<?,V,R>> getFactoriesInCreateAndStartOrder(R root){
+        LinkedHashSet<FactoryBase<?,V,R>> result = new LinkedHashSet<>();
+        for (FactoryBase<?,V,R> factory : root.internalFactory().postOrderTraversalFromRoot()) {
             result.add(factory);
         }
         return result;
     }
-    private LinkedHashSet<FactoryBase<?,V>> getFactoriesInDestroyOrder(R root){
-        LinkedHashSet<FactoryBase<?,V>> result = new LinkedHashSet<>();
-        for (FactoryBase<?,V> factory : root.internalFactory().breadthFirstTraversalFromRoot()) {
+    private LinkedHashSet<FactoryBase<?,V,R>> getFactoriesInDestroyOrder(R root){
+        LinkedHashSet<FactoryBase<?,V,R>> result = new LinkedHashSet<>();
+        for (FactoryBase<?,V,R> factory : root.internalFactory().breadthFirstTraversalFromRoot()) {
             result.add(factory);
         }
         return result;
@@ -140,7 +138,7 @@ public class FactoryManager<V,L,R extends FactoryBase<L,V>> {
         newFactory.internalFactory().loopDetector();
         currentFactoryRoot =newFactory;
 
-        HashSet<FactoryBase<?,V>> factoriesInCreateAndStartOrder = getFactoriesInCreateAndStartOrder(newFactory);
+        HashSet<FactoryBase<?,V,R>> factoriesInCreateAndStartOrder = getFactoriesInCreateAndStartOrder(newFactory);
         factoriesInCreateAndStartOrder.forEach(this::createWithExceptionHandling);
         factoriesInCreateAndStartOrder.forEach(this::startWithExceptionHandling);
 
@@ -149,22 +147,22 @@ public class FactoryManager<V,L,R extends FactoryBase<L,V>> {
 
     @SuppressWarnings("unchecked")
     public void stop(){
-        HashSet<FactoryBase<?,V>> factories = getFactoriesInDestroyOrder(currentFactoryRoot);
+        HashSet<FactoryBase<?,V,R>> factories = getFactoriesInDestroyOrder(currentFactoryRoot);
 
-        for (FactoryBase<?,V> factory: factories){
-            destroyWithExceptionHandling(factory,new HashSet<>());
+        for (FactoryBase<?,V,R> factory: factories){
+            destroyRemovedWithExceptionHandling(factory);
         }
     }
 
     @SuppressWarnings("unchecked")
     public V query(V visitor){
-        for (FactoryBase<?,V> factory: currentFactoryRoot.internalFactory().collectChildFactoriesDeepFromRoot()){
+        for (FactoryBase<?,V,R> factory: currentFactoryRoot.internalFactory().collectChildFactoriesDeepFromRoot()){
             factory.internalFactory().runtimeQuery(visitor);
         }
         return visitor;
     }
 
-    private void createWithExceptionHandling(FactoryBase<?,V> factory){
+    private void createWithExceptionHandling(FactoryBase<?,V,R> factory){
         try {
             factory.internalFactory().instance();
         } catch (Exception e){
@@ -172,7 +170,7 @@ public class FactoryManager<V,L,R extends FactoryBase<L,V>> {
         }
     }
 
-    private void startWithExceptionHandling(FactoryBase<?,V> factory){
+    private void startWithExceptionHandling(FactoryBase<?,V,R> factory){
         try {
             factory.internalFactory().start();
         } catch (Exception e){
@@ -180,13 +178,21 @@ public class FactoryManager<V,L,R extends FactoryBase<L,V>> {
         }
     }
 
-    private void destroyWithExceptionHandling(FactoryBase<?,V> factory, Set<FactoryBase<?,V>> previousFactories){
+    private void destroyUpdatedWithExceptionHandling(FactoryBase<?,V,R> factory){
         try {
-            factory.internalFactory().destroy(previousFactories);
+            //TODO destroy logging seems wrong cause this is called for all factories and method impl checks if destroy needed
+            factory.internalFactory().destroyUpdated();
         } catch (Exception e){
             factoryExceptionHandler.destroyException(e,factory,new ExceptionResponseAction(this));
         }
     }
 
+    private void destroyRemovedWithExceptionHandling(FactoryBase<?,V,R> factory){
+        try {
+            factory.internalFactory().destroyRemoved();
+        } catch (Exception e){
+            factoryExceptionHandler.destroyException(e,factory,new ExceptionResponseAction(this));
+        }
+    }
 
 }

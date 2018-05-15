@@ -1,16 +1,10 @@
 package de.factoryfx.data.jackson;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import javafx.scene.paint.Color;
 
 public class ObjectMapperBuilder {
     private static SimpleObjectMapper simpleObjectMapper;
@@ -37,28 +31,15 @@ public class ObjectMapperBuilder {
         objectMapper.enable(DeserializationFeature.READ_ENUMS_USING_TO_STRING);
         objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
         objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
-//        objectMapper.setSerializationInclusion(JsonInclude.Include.ALWAYS);
 
-        SimpleModule m = new SimpleModule();
-        objectMapper.registerModule(m);
 
-        objectMapper.registerModule(new JavaTimeModule());
+        objectMapper.registerModule(new com.fasterxml.jackson.datatype.jsr310.JavaTimeModule());
         objectMapper.registerModule(new Jdk8Module());
         objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
         objectMapper.disable(DeserializationFeature.ADJUST_DATES_TO_CONTEXT_TIME_ZONE);
-//            objectMapper.disable(DeserializationFeature.);
         objectMapper.disable(SerializationFeature.FAIL_ON_EMPTY_BEANS);
-//            objectMapper.enableDefaultTyping();
 
-        objectMapper.addMixIn(Color.class, ColorMixInAnnotations.class);
         return objectMapper;
     }
 
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    static class ColorMixInAnnotations{
-        @JsonCreator
-        ColorMixInAnnotations(@JsonProperty("red") double red, @JsonProperty("green") double green, @JsonProperty("blue") double blue, @JsonProperty("opacity") double opacity  ) {
-
-        }
-    }
 }

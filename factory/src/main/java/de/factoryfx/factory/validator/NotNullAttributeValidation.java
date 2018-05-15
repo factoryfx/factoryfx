@@ -6,10 +6,10 @@ import java.util.Optional;
 import de.factoryfx.factory.FactoryBase;
 
 public class NotNullAttributeValidation implements FactoryStyleValidation {
-    private final FactoryBase<?, ?> factoryBase;
+    private final FactoryBase<?, ?, ?> factoryBase;
     private final Field attributeField;
 
-    public NotNullAttributeValidation(FactoryBase<?, ?> factoryBase, Field attributeField) {
+    public NotNullAttributeValidation(FactoryBase<?, ?, ?> factoryBase, Field attributeField) {
         this.factoryBase = factoryBase;
         this.attributeField = attributeField;
     }

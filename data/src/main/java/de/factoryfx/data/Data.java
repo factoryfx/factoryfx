@@ -2,6 +2,7 @@ package de.factoryfx.data;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.google.common.base.Strings;
 import de.factoryfx.data.attribute.*;
@@ -10,8 +11,6 @@ import de.factoryfx.data.merge.MergeResult;
 import de.factoryfx.data.validation.AttributeValidation;
 import de.factoryfx.data.validation.Validation;
 import de.factoryfx.data.validation.ValidationError;
-import javafx.beans.property.ReadOnlyStringProperty;
-import javafx.beans.property.SimpleStringProperty;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -19,11 +18,13 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
+@JsonTypeInfo(use=JsonTypeInfo.Id.CLASS, include=JsonTypeInfo.As.PROPERTY, property="@class")// minimal class don't work always
 public class Data {
 
     private String id;
@@ -162,14 +163,6 @@ public class Data {
     }
 
 
-    /**
-     * after deserialization from json only the value is present and metadata are missing
-     * we create a copy which contains the metadata and than copy then transfer the value in the new  copy (which is what conveniently copy does)
-     */
-    private <T extends Data> T reconstructMetadataDeepRoot() {
-        return this.copy();
-    }
-
     private Supplier<Data> newInstanceSupplier=null;
     private void setNewInstanceSupplier(Supplier<Data> newInstanceSupplier){
         this.newInstanceSupplier=newInstanceSupplier;
@@ -180,7 +173,7 @@ public class Data {
             result=newInstanceSupplier.get();
         } else {
             try {
-                Constructor constructor = Data.this.getClass().getDeclaredConstructor(new Class[0]);
+                Constructor constructor = Data.this.getClass().getDeclaredConstructor();
                 constructor.setAccessible(true);
                 result = (Data) constructor.newInstance(new Object[0]);
             } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
@@ -191,11 +184,19 @@ public class Data {
     }
 
     @SuppressWarnings("unchecked")
-    private void fixDuplicateObjects() {
+    private Set<Data> fixDuplicateObjects() {
         Map<String, Data> idToDataMap = collectChildDataMap();
-        final List<Data> all = collectChildrenDeep();
+        final Set<Data> all = new HashSet<>(idToDataMap.values());
         for (Data data: all){
             data.visitAttributesFlat((attributeVariableName, attribute) -> attribute.internal_fixDuplicateObjects(idToDataMap));
+        }
+        return all;
+    }
+
+    //remove parents that are not in the merge result
+    private void cleanUpParents(Set<Data> all) {
+        for (Data data: all){
+            data.parents.removeIf(parent -> !all.contains(parent));
         }
     }
 
@@ -314,65 +315,74 @@ public class Data {
 
     /**copy including one the references first level of nested references*/
     private <T extends Data> T copyOneLevelDeep(){
-        return copy(1);
+        return copy(1,null,null);
     }
 
     /**copy without nested references, only value attributes are copied*/
     private <T extends Data> T copyZeroLevelDeep(){
-        return copy(0);
+        return copy(0,null,null);
     }
 
     private <T extends Data> T copy() {
-        return copy(Integer.MAX_VALUE);
+        return copy(Integer.MAX_VALUE,null,null);
     }
 
 
     @SuppressWarnings("unchecked")
-    private <T extends Data> T copy(int level) {
+    private <T extends Data> T copy(int level, Consumer<Data> newDataConsumer, Consumer<Attribute<?, ?>> newAttributesConsumer) {
         ArrayList<Attribute<?, ?>> newAttributes = new ArrayList<>();
-        ArrayList<Data> oldData = new ArrayList<>();
-        Data copy = copyDeep(0, level, null, null, newAttributes,oldData);
-        if (copy!=null){
-            copy.propagateRoot(Collections.emptyList(),Collections.emptyList(),newAttributes,copy);
+        ArrayList<Data> oldDataList = new ArrayList<>();
+        Data newRoot = copyDeep(0, level, null,oldDataList);
+
+        for (Data oldData: oldDataList) {
+            oldData.copy.root = newRoot;
+            oldData.copy.visitAttributesFlat((attributeVariableName, attribute) -> {
+                attribute.internal_prepareUsage(newRoot, oldData.copy);
+                if (newAttributesConsumer != null) {
+                    newAttributesConsumer.accept(attribute);
+                }
+                newAttributes.add(attribute);
+            });
+            if (newDataConsumer!=null){
+               newDataConsumer.accept(oldData.copy);
+            }
+            oldData.copy=null;//cleanup
         }
-        oldData.forEach(d->d.copy=null);
-        return (T) copy;
+
+        if (newRoot!=null){
+            newRoot.afterPreparedUsage(newAttributes);
+        }
+
+        return (T) newRoot;
     }
 
     private Data copy;
-    private Data copyDeep(final int level, final int maxLevel, Data root, Data parent, List<Attribute<?,?>> newAttributes, List<Data> oldData){
+    private Data copyDeep(final int level, final int maxLevel, final Data parent, final List<Data> oldData){
         if (level>maxLevel){
             return null;
         }
-        Data result= copy;
-        if (result==null){
-            result = newInstance();
-            result.setId(this.getId());
-            if (root==null){
-                root=result;
-            }
-            result.parent=parent;
+        if (copy==null){
+            copy = newInstance();
+            copy.id=this.id;
+            copy.isUsable=true;//only possible to created copies form usable data therefore copy is always usable
 
-            final Data finalRoot=root;
-            final Data finalCopy=result;
-            this.visitAttributesDualFlat(result, (name, thisAttribute, copyAttribute) -> {
-                newAttributes.add(copyAttribute);
-                copyAttribute.internal_prepareUsage(finalRoot);
+            this.visitAttributesDualFlat(copy, (name, thisAttribute, copyAttribute) -> {
                 if (thisAttribute!=null){//cause jackson decided it's a good idea to override the final field with null
                     thisAttribute.internal_copyToUnsafe(copyAttribute,(data)->{
                         if (data==null){
                             return null;
                         }
-                        return data.copyDeep(level + 1, maxLevel,finalRoot,finalCopy,newAttributes,oldData);
+                        return data.copyDeep(level + 1, maxLevel,copy,oldData);
                     });
                 }
             });
 
             oldData.add(this);
-            result.root=root;
-            copy=result;
         }
-        return result;
+        if (parent!=null){
+            copy.parents.add(parent);
+        }
+        return copy;
     }
 
 
@@ -390,39 +400,77 @@ public class Data {
     }
 
     @SuppressWarnings("unchecked")
-    private <T extends Data> T propagateRoot(Collection<Data> dataCollection, Collection<Attribute<?,?>> newAttributesForInitialise, Collection<Attribute<?,?>> newAttributesForAfterInitialise   ,Data root){
-        for (Data data: dataCollection){
-            data.root=root;
-        }
-        for (Attribute<?,?> attribute: newAttributesForInitialise){
-            attribute.internal_prepareUsage(root);
-        }
+    private <T extends Data> T afterPreparedUsage(Collection<Attribute<?,?>> newAttributesForAfterInitialise){
+
         for (Attribute<?,?> attribute: newAttributesForAfterInitialise){
-            attribute.internal_afterPreparedUsage(root);
+            attribute.internal_afterPreparedUsage();
         }
         return (T)this;
     }
 
     @SuppressWarnings("unchecked")
-    <T extends Data> T propagateRoot(Data root){
+    <T extends Data> T propagateRootAndParent(Data root, Data parent){
+        this.parents.add(parent);
         final List<Data> childrenDeep = collectChildrenDeep();
         final ArrayList<Attribute<?,?>> attributes=new ArrayList<>();
         for (Data data: childrenDeep){
+            data.root=root;
             data.visitAttributesFlat((attributeVariableName, attribute) -> {
-                attributes.add(attribute);
+                attribute.internal_prepareUsage(root,data);
             });
         }
-        propagateRoot(childrenDeep,attributes,attributes,root);
+
+        afterPreparedUsage(attributes);
         return (T)this;
     }
 
-    private <T extends Data> T prepareUsableCopy() {
-        return reconstructMetadataDeepRoot();
+    /**
+     * after serialisation or programmatically creation this mus be called first before using the object<br>
+     * to:<br>
+     * -fix jackson wrong deserialization (metadata ==null)<br>
+     * -propagate root/parent node to all children (for validation etc)<br>
+     * -init ids
+     *<br>
+     * unfortunately we must create a copy and can't make the same object usable(which we tried but failed)<br>
+     *<br>
+     * only call on root<br>
+     *<br>
+     * @param <T> type
+     * @return usable copy
+     *
+     */
+    private <T extends Data> T prepareUsableCopy(Consumer<Data> newData, Consumer<Attribute<?,?>> newAttributes) {
+
+        /*
+          after deserialization from json only the value is present and metadata are missing
+          we create a copy which contains the metadata and than copy then transfer the value in the new  copy (which is what conveniently copy does)
+         */
+        T usableCopy = this.copy(Integer.MAX_VALUE, data -> {
+            //init ids, id could depend on parents, usable copy must have init ids else a copy is broken;
+            data.getId();
+            data.setUsable();
+            if (newData!=null){
+                newData.accept(data);
+            }
+        }, newAttributes);
+
+
+        return usableCopy;
     }
 
-    private Data parent;
-    private Data getParent(){
-        return parent;
+    private boolean isUsable=false;
+    @JsonIgnore
+    private boolean isUsable(){
+        return isUsable;
+    }
+    private void setUsable(){
+        isUsable=true;
+    }
+
+    private Set<Data> parents=new HashSet<>();
+
+    private Set<Data> getParents(){
+        return parents;
     }
 
     private Data root;
@@ -467,17 +515,6 @@ public class Data {
         this.displayTextDependencies = displayTextDependencies;
     }
 
-    private SimpleStringProperty simpleStringProperty=null;
-    @JsonIgnore
-    private ReadOnlyStringProperty getDisplayTextObservable() {
-        if (simpleStringProperty==null){
-            simpleStringProperty = new SimpleStringProperty();
-            simpleStringProperty.set(getDisplayText());
-            addDisplayTextListeners(this,(attributeParam, value) -> simpleStringProperty.set(getDisplayText()));
-        }
-        return simpleStringProperty;
-    }
-
     @SuppressWarnings("unchecked")
     private void addDisplayTextListeners(Data data, AttributeChangeListener attributeChangeListener){
         for (Attribute<?,?> attribute: data.displayTextDependencies){
@@ -517,6 +554,15 @@ public class Data {
          */
         public <T extends Data> T semanticCopy(){
             return data.semanticCopy();
+        }
+
+        /**
+         * see: {@link Data#prepareUsableCopy}
+         * @param <T> type
+         * @return usableCopy
+         */
+        public <T extends Data> T prepareUsableCopy() {
+            return data.prepareUsableCopy(null,null);
         }
 
     }
@@ -678,12 +724,28 @@ public class Data {
             data.fixDuplicateObjects();
         }
 
+        /**
+         * -fix all data with same id should be same object
+         * -remove parents that are no not tin the tree
+         * only call on root
+         * */
+        public void fixDuplicatesAndParents() {
+            Set<Data> data = this.data.fixDuplicateObjects();
+            this.data.cleanUpParents(data);
+        }
+
         public String getDisplayText(){
             return data.getDisplayText();
         }
 
-        public ReadOnlyStringProperty getDisplayTextObservable(){
-            return data.getDisplayTextObservable();
+        //TODO cleanup the hack (goal is to remove javafx dependency )
+        private Object simpleStringProperty;
+        public void storeDisplayTextObservable(Object simpleStringProperty){
+            this.simpleStringProperty = simpleStringProperty;
+        }
+
+        public Object getDisplayTextObservable(){
+            return this.simpleStringProperty;
         }
 
         public List<ValidationError> validateFlat(){
@@ -706,7 +768,8 @@ public class Data {
         }
 
         public <T extends Data> T copy() {
-            return  data.copy();
+            this.checkUsable();
+            return data.copy();
         }
 
         /** copy a root data element
@@ -726,20 +789,16 @@ public class Data {
         }
 
         /**
-         * after serialisation or programmatically creation this mus be called first before using the object<br>
-         * to:<br>
-         * -fix jackson wrong deserialization (metadata ==null)<br>
-         * -propagate root node to all children (for validation etc)<br>
-         *<br>
-         * unfortunately we must create a copy and can't make the same object usable(which we tried but failed)<br>
-         *<br>
-         * only call on root<br>
-         *<br>
+         * see: {@link Data#prepareUsableCopy}
          * @param <T> type
-         * @return usable copy
+         * @return usableCopy
          */
         public <T extends Data> T prepareUsableCopy() {
-            return data.prepareUsableCopy();
+            return data.prepareUsableCopy(null,null);
+        }
+
+        public <T extends Data> T prepareUsableCopy(Consumer<Data> newData, Consumer<Attribute<?,?>> newAttributes) {
+            return data.prepareUsableCopy(newData, newAttributes);
         }
 
         /** only call on root*/
@@ -755,20 +814,30 @@ public class Data {
         /**
          *
          * @param root root
+         * @param parent parent
          * @param <T> type
          * @return root
          */
-        public <T extends Data> T propagateRoot(Data root){
-            return data.propagateRoot(root);
+        public <T extends Data> T propagateRootAndParent(Data root, Data parent){
+            return data.propagateRootAndParent(root,parent);
         }
 
         public Data getRoot(){
             return data.getRoot();
         }
 
-        //TODO parent should be a list?
+        /** use getParents instead
+         * @return parent*/
+        @Deprecated
         public Data getParent(){
-            return data.getParent();
+            if (data.getParents().isEmpty()){
+                return null;
+            }
+            return data.getParents().iterator().next();
+        }
+
+        public Set<Data> getParents(){
+            return data.getParents();
         }
 
         public HashMap<Data, Data> getChildToParentMap() {
@@ -777,6 +846,23 @@ public class Data {
 
         public boolean hasCustomDisplayText(){
             return data.hasCustomDisplayText();
+        }
+
+        public boolean isUsable() {
+            return data.isUsable();
+        }
+
+        /**
+         * see {@link Data#prepareUsableCopy }
+         */
+        public void checkUsable() {
+            if (!isUsable()){
+                throw new IllegalStateException("passed data is not a usableCopy use prepareUsableCopy(); e.g.:\n  data=data.utility().prepareUsableCopy();");
+            }
+        }
+
+        public void addDisplayTextListeners(AttributeChangeListener attributeChangeListener){
+            data.addDisplayTextListeners(data, attributeChangeListener);
         }
     }
 

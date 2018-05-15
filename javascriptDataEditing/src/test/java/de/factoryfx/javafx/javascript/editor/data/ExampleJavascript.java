@@ -6,7 +6,6 @@ import de.factoryfx.javascript.data.attributes.types.JavascriptAttribute;
 
 import java.io.PrintStream;
 import java.util.Arrays;
-import java.util.UUID;
 
 public class ExampleJavascript extends Data {
 

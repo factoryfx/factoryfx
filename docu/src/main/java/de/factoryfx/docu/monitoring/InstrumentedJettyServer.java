@@ -2,33 +2,25 @@ package de.factoryfx.docu.monitoring;
 
 import com.codahale.metrics.ConsoleReporter;
 import com.codahale.metrics.MetricRegistry;
-import com.codahale.metrics.jetty9.InstrumentedHandler;
-import de.factoryfx.server.rest.server.HttpServerConnectorCreator;
-import de.factoryfx.server.rest.server.JettyServer;
-import org.eclipse.jetty.server.Handler;
+import de.factoryfx.jetty.HttpServerConnectorCreator;
+import de.factoryfx.jetty.JettyServer;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /*
     collect monitoring data with metrics library
  */
-public class InstrumentedJettyServer extends JettyServer{
+public class InstrumentedJettyServer{
 
-    private MetricRegistry metricRegistry;
-    public InstrumentedJettyServer(List<HttpServerConnectorCreator> connectors, List<Object> resources) {
-        super(connectors, resources);
-    }
-
-    @Override
-    protected List<Handler> additionalHandlers(){
-        metricRegistry= new MetricRegistry();
-        return Arrays.asList(new InstrumentedHandler(metricRegistry,"monitoring example"));
+    private final MetricRegistry metricRegistry;
+    private JettyServer jettyServer;
+    public InstrumentedJettyServer(JettyServer jettyServer, MetricRegistry metricRegistry) {
+        this.jettyServer=jettyServer;
+        this.metricRegistry=metricRegistry;
     }
 
     public void acceptVisitor(ServerVisitor serverVisitor){
@@ -43,5 +35,18 @@ public class InstrumentedJettyServer extends JettyServer{
         } catch (UnsupportedEncodingException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public void start() {
+        jettyServer.start();
+    }
+
+    public void stop() {
+        jettyServer.stop();
+    }
+
+    public InstrumentedJettyServer recreate(List<HttpServerConnectorCreator> instances, List<Object> simpleResources) {
+        this.jettyServer=jettyServer.recreate(instances,simpleResources);
+        return this;
     }
 }

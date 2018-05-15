@@ -8,6 +8,10 @@ import java.util.function.Function;
 
 import com.fasterxml.jackson.annotation.JsonValue;
 import de.factoryfx.data.Data;
+import de.factoryfx.data.util.LanguageText;
+import de.factoryfx.data.validation.Validation;
+import de.factoryfx.data.validation.ValidationError;
+import de.factoryfx.data.validation.ValidationResult;
 
 /** base class for Attributes with immutable value(for ChangeListener)*/
 public abstract class ImmutableValueAttribute<T,A extends Attribute<T,A>> extends Attribute<T,A> {
@@ -119,7 +123,7 @@ public abstract class ImmutableValueAttribute<T,A extends Attribute<T,A>> extend
         set(value);
     }
 
-    /** alternative to equals on value, typesafe , less verbose, without worrying about hidden contracts
+    /** alternative to equals on value, type-safe , less verbose, without worrying about hidden contracts
      * @param value compare value
      * @return true if equals
      */
@@ -138,4 +142,51 @@ public abstract class ImmutableValueAttribute<T,A extends Attribute<T,A>> extend
         return match(attribute.get());
     }
 
+    public boolean internal_isUserReadOnly() {
+        return userReadOnly;
+    }
+
+    private boolean userReadOnly=false;
+    /**
+     * marks the attribute as readonly for the user
+     * @return self
+     */
+    @SuppressWarnings("unchecked")
+    public A userReadOnly(){
+        userReadOnly=true;
+        return (A)this;
+    }
+
+
+    @Override
+    public boolean internal_required() {
+        return !nullable;
+    }
+
+    private static final Validation requiredValidation = value -> {
+        boolean error = value == null;
+        if (value instanceof String){
+            if (((String)value).isEmpty()){
+                error=true;
+            }
+        }
+        return new ValidationResult(error, new LanguageText().en("required parameter").de("Pflichtparameter"));
+    };
+
+    private boolean nullable;
+
+    @SuppressWarnings("unchecked")
+    public A nullable(){
+        nullable=true;
+        return (A)this;
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public List<ValidationError> internal_validate(Data parent) {
+        if (!nullable){
+            this.validation(requiredValidation);// to minimise object creations
+        }
+        return super.internal_validate(parent);
+    }
 }

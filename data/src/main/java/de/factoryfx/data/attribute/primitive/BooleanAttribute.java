@@ -8,12 +8,14 @@ public class BooleanAttribute extends ImmutableValueAttribute<Boolean,BooleanAtt
     public BooleanAttribute() {
         super(Boolean.class);
         set(Boolean.FALSE);
+        nullable();
     }
 
     @JsonCreator
     BooleanAttribute(Boolean value) {
         super(Boolean.class);
         set(value);
+        nullable();
     }
 
 

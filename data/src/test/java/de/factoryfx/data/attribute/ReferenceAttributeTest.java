@@ -71,7 +71,7 @@ public class ReferenceAttributeTest {
         ExampleDataA exampleFactoryA = new ExampleDataA();
         root.referenceAttribute.set(exampleFactoryA);
 
-        referenceAttribute.internal_prepareUsage(root);
+        referenceAttribute.internal_prepareUsage(root,null);
 
         Collection<ExampleDataA> possibleFactories =referenceAttribute.internal_possibleValues();
         Assert.assertEquals(1,possibleFactories.size());
@@ -145,7 +145,7 @@ public class ReferenceAttributeTest {
     @Test
     public void delegate_root_for_added() throws Exception {
         DataReferenceAttribute<ExampleDataA> attribute=new DataReferenceAttribute<>(ExampleDataA.class);
-        attribute.internal_prepareUsage(new ExampleDataB());
+        attribute.internal_prepareUsage(new ExampleDataB(),null);
 
         final ExampleDataA exampleFactoryA = new ExampleDataA();
         Assert.assertFalse(exampleFactoryA.internal().readyForUsage());

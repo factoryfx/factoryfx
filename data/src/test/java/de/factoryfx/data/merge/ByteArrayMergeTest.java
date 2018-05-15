@@ -16,9 +16,11 @@ public class ByteArrayMergeTest extends MergeHelperTestBase {
     public void test_merge(){
         StringTestPojo aTest1 = new StringTestPojo();
         aTest1.byteArrayAttribute.set(new byte[]{1,2,3,4});
+        aTest1=aTest1.internal().prepareUsableCopy();
 
         StringTestPojo aTest2 = new StringTestPojo();
         aTest2.byteArrayAttribute.set(new byte[]{1,2,3,4});
+        aTest2=aTest1.internal().prepareUsableCopy();
 
         Assert.assertTrue(merge(aTest1, aTest1, aTest2).hasNoConflicts());
 

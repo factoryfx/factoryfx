@@ -2,6 +2,7 @@ package de.factoryfx.data.jackson;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -42,6 +43,10 @@ public class SimpleObjectMapper {
         return readInternal(() -> objectMapper.readValue(file, valueType));
     }
 
+    public <T> T readValue(InputStream inputStream, Class<T> valueType) {
+        return readInternal(() -> objectMapper.readValue(inputStream, valueType));
+    }
+
     public void writeValue(Object object, OutputStream out) {
         try {
             objectMapper.writeValue(out, object);
@@ -69,4 +74,5 @@ public class SimpleObjectMapper {
     private interface ReaderFunction<T> {
         T read() throws IOException;
     }
+
 }

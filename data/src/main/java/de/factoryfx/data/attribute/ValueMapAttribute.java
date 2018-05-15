@@ -3,12 +3,10 @@ package de.factoryfx.data.attribute;
 import java.util.*;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
-import javafx.collections.FXCollections;
-import javafx.collections.MapChangeListener;
-import javafx.collections.ObservableMap;
+
 
 //TODO remove ObservableMap same as list
-public abstract class ValueMapAttribute<K, V, A extends ValueMapAttribute<K,V,A>> extends ImmutableValueAttribute<ObservableMap<K,V>,A> implements Map<K,V> {
+public abstract class ValueMapAttribute<K, V, A extends ValueMapAttribute<K,V,A>> extends ImmutableValueAttribute<Map<K,V>,A> implements Map<K,V> {
     private final Class<K> keyType;
     private final Class<V> valueType;
 
@@ -16,11 +14,7 @@ public abstract class ValueMapAttribute<K, V, A extends ValueMapAttribute<K,V,A>
         super(null);
         this.keyType=keyType;
         this.valueType=valueType;
-        set(FXCollections.observableMap(new TreeMap<>()));
-
-        get().addListener((MapChangeListener<K, V>) change -> {
-            updateListeners(get());
-        });
+        this.value=new HashMap<>();
     }
 
 
@@ -31,71 +25,90 @@ public abstract class ValueMapAttribute<K, V, A extends ValueMapAttribute<K,V,A>
 
     @Override
     public String getDisplayText() {
-        return new CollectionAttributeUtil<>(get().entrySet(), item -> item.getKey()+":"+item.getValue()).getDisplayText();
+        return new CollectionAttributeUtil<>(value.entrySet(), item -> item.getKey()+":"+item.getValue()).getDisplayText();
+    }
+
+//    @Override
+//    public Map<K,V> get() {
+//        return this;
+//    }
+
+    private void afterModify(){
+        if (listeners!=null) {
+            for (AttributeChangeListener<Map<K,V>, A> listener : listeners) {
+                listener.changed(ValueMapAttribute.this, this.value);
+            }
+        }
     }
 
     @Override
     public AttributeTypeInfo internal_getAttributeType() {
-        return new AttributeTypeInfo(ObservableMap.class,keyType,valueType, AttributeTypeInfo.AttributeTypeCategory.MAP);
+        return new AttributeTypeInfo(Map.class,keyType,valueType, AttributeTypeInfo.AttributeTypeCategory.MAP);
     }
 
     @Override
     public int size() {
-        return get().size();
+        return this.value.size();
     }
 
     @Override
     public boolean isEmpty() {
-        return get().isEmpty();
+        return this.value.isEmpty();
     }
 
     @Override
     public boolean containsKey(Object key) {
-        return get().containsKey(key);
+        return this.value.containsKey(key);
     }
 
     @Override
     public boolean containsValue(Object value) {
-        return get().containsValue(value);
+        return this.value.containsValue(value);
     }
 
     @Override
     public V get(Object key) {
-        return get().get(key);
+        return this.value.get(key);
     }
 
     @Override
     public V put(K key, V value) {
-        return get().put(key,value);
+        V put = this.value.put(key, value);
+        afterModify();
+        return put;
     }
 
     @Override
     public V remove(Object key) {
-        return get().remove(key);
+        V remove = this.value.remove(key);
+        afterModify();
+        return remove;
     }
 
     @Override
     public void putAll(Map<? extends K, ? extends V> m) {
-        get().putAll(m);
+        this.value.putAll(m);
+        afterModify();
     }
 
     @Override
     public void clear() {
-        get().clear();
+        this.value.clear();
+        afterModify();
     }
 
     @Override
     public Set<K> keySet() {
-        return get().keySet();
+        return this.value.keySet();
     }
 
     @Override
     public Collection<V> values() {
-        return get().values();
+        return this.value.values();
     }
 
     @Override
     public Set<Entry<K, V>> entrySet() {
-        return get().entrySet();
+        return this.value.entrySet();
     }
 }

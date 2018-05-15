@@ -19,17 +19,23 @@ public class StringListMergeTest extends MergeHelperTestBase {
         aTest1.refB.add("11111");
         aTest1.refB.add("222222");
         aTest1.refB.add("33333");
+        aTest1 = aTest1.internal().prepareUsableCopy();
+
+        Assert.assertEquals("11111", aTest1.refB.get(0));
+        Assert.assertEquals("222222", aTest1.refB.get(1));
+        Assert.assertEquals("33333", aTest1.refB.get(2));
 
 
-        StringListTest aTest2 = new StringListTest();
-        aTest2.refB.add("11111");
-        aTest2.refB.add("222222");
-        aTest2.refB.add("33333");
+        StringListTest update = new StringListTest();
+        update.refB.add("11111");
+        update.refB.add("222222");
+        update.refB.add("33333");
+        update = update.internal().prepareUsableCopy();
 
-        Assert.assertTrue(merge(aTest1, aTest1, aTest2).hasNoConflicts());
-        Assert.assertEquals("11111", aTest1.refB.get().get(0));
-        Assert.assertEquals("222222", aTest1.refB.get().get(1));
-        Assert.assertEquals("33333", aTest1.refB.get().get(2));
+        Assert.assertTrue(merge(aTest1, aTest1, update).hasNoConflicts());
+        Assert.assertEquals("11111", aTest1.refB.get(0));
+        Assert.assertEquals("222222", aTest1.refB.get(1));
+        Assert.assertEquals("33333", aTest1.refB.get(2));
     }
 
     @Test
@@ -38,15 +44,16 @@ public class StringListMergeTest extends MergeHelperTestBase {
         aTest1.refB.add("11111");
         aTest1.refB.add("222222");
         aTest1.refB.add("33333");
+        aTest1 = aTest1.internal().prepareUsableCopy();
+
+        StringListTest update = new StringListTest();
+        update.refB.add("11111");
+        update.refB.add("222222");
+        update.refB.add("33333qqqqq");
+        update = update.internal().prepareUsableCopy();
 
 
-        StringListTest aTest2 = new StringListTest();
-        aTest2.refB.add("11111");
-        aTest2.refB.add("222222");
-        aTest2.refB.add("33333qqqqq");
-
-
-        Assert.assertTrue(merge(aTest1, aTest1, aTest2).hasNoConflicts());
+        Assert.assertTrue(merge(aTest1, aTest1, update).hasNoConflicts());
         Assert.assertEquals("11111", aTest1.refB.get().get(0));
         Assert.assertEquals("222222", aTest1.refB.get().get(1));
         Assert.assertEquals("33333qqqqq", aTest1.refB.get().get(2));
@@ -58,13 +65,15 @@ public class StringListMergeTest extends MergeHelperTestBase {
         aTest1.refB.add("11111");
         aTest1.refB.add("222222");
         aTest1.refB.add("33333");
+        aTest1 = aTest1.internal().prepareUsableCopy();
 
 
-        StringListTest aTest2 = new StringListTest();
-        aTest2.refB.add("11111");
-        aTest2.refB.add("222222");
+        StringListTest update = new StringListTest();
+        update.refB.add("11111");
+        update.refB.add("222222");
+        update = update.internal().prepareUsableCopy();
 
-        Assert.assertTrue(merge(aTest1, aTest1, aTest2).hasNoConflicts());
+        Assert.assertTrue(merge(aTest1, aTest1, update).hasNoConflicts());
         Assert.assertEquals(2, aTest1.refB.get().size());
         Assert.assertEquals("11111", aTest1.refB.get().get(0));
         Assert.assertEquals("222222", aTest1.refB.get().get(1));

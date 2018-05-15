@@ -13,12 +13,13 @@ public class ReferenceMergeTest extends MergeHelperTestBase{
         ExampleDataA current = new ExampleDataA();
         ExampleDataB newValue = new ExampleDataB();
         current.referenceAttribute.set(newValue);
+        current = current.internal().prepareUsableCopy();
 
-        ExampleDataA newVersion = new ExampleDataA();
-        newVersion.referenceAttribute.set(newValue);
+        ExampleDataA newVersion = current.internal().copy();
 
-        Assert.assertTrue( this.merge(current, current, newVersion).hasNoConflicts());
-        Assert.assertEquals(newValue, current.referenceAttribute.get());
+        MergeDiffInfo merge = this.merge(current, current, newVersion);
+        Assert.assertTrue( merge.hasNoConflicts());
+        Assert.assertEquals(0,merge.mergeInfos.size());
     }
 
     @Test
@@ -26,13 +27,16 @@ public class ReferenceMergeTest extends MergeHelperTestBase{
         ExampleDataA current = new ExampleDataA();
         ExampleDataB newValue = new ExampleDataB();
         current.referenceAttribute.set(newValue);
+        current = current.internal().prepareUsableCopy();
 
-        ExampleDataA newVersion = new ExampleDataA();
+        ExampleDataA update = new ExampleDataA();
         ExampleDataB newValue2 = new ExampleDataB();
-        newVersion.referenceAttribute.set(newValue2);
+        update.referenceAttribute.set(newValue2);
+        update = update.internal().prepareUsableCopy();
 
-        Assert.assertTrue(merge(current, current, newVersion).hasNoConflicts());
-        Assert.assertEquals(newValue2, current.referenceAttribute.get());
+        String beforeMergeId=update.referenceAttribute.get().getId();
+        Assert.assertTrue(merge(current, current, update).hasNoConflicts());
+        Assert.assertEquals(beforeMergeId, current.referenceAttribute.get().getId());
     }
 
     @Test
@@ -40,9 +44,11 @@ public class ReferenceMergeTest extends MergeHelperTestBase{
         ExampleDataA current = new ExampleDataA();
         ExampleDataB newValue = new ExampleDataB();
         current.referenceAttribute.set(newValue);
+        current = current.internal().prepareUsableCopy();
 
         ExampleDataA newVersion = new ExampleDataA();
         newVersion.referenceAttribute.set(null);
+        newVersion = newVersion.internal().prepareUsableCopy();
 
         Assert.assertTrue(merge(current, current, newVersion).hasNoConflicts());
         Assert.assertEquals(null, current.referenceAttribute.get());

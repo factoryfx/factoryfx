@@ -3,39 +3,50 @@ package de.factoryfx.factory.builder;
 import de.factoryfx.factory.FactoryBase;
 
 import java.util.*;
-import java.util.function.Consumer;
-import java.util.function.Function;
 import java.util.function.Predicate;
 
-public class FactoryContext<V> {
+public class FactoryContext<R extends FactoryBase<?,?,R>> {
 
-    private List<FactoryCreator<V,?,?>> factoryCreators = new ArrayList<>();
+    private List<FactoryCreator<?,R>> factoryCreators = new ArrayList<>();
 
-    public <L, F extends FactoryBase<L,V>> F get(Predicate<FactoryCreator<V,?,?>> filter){
-        Optional<FactoryCreator<V,?,?>> any = factoryCreators.stream().filter(filter).findAny();
+    @SuppressWarnings("unchecked")
+    public <L, F extends FactoryBase<?,?,R>> F get(Predicate<FactoryCreator<?,R>> filter){
+        Optional<FactoryCreator<?,R>> any = factoryCreators.stream().filter(filter).findAny();
         if (any.isPresent()){
-            F factoryBases = (F) any.get().create(this);
-            return factoryBases;
+            return (F) any.get().create(this);
         }
         return null;
     }
 
-    public <L, F extends FactoryBase<L,V>> F get(Class<F> clazz){
+    public <F extends FactoryBase<?,?,R>> F get(Class<F> clazz){
         return get(fc -> fc.match(clazz));
     }
 
-    public <L, F extends FactoryBase<L,V>> F get(Class<F> clazz, String name){
+    public <F extends FactoryBase<?,?,R>> F get(Class<F> clazz, String name){
         return get(fc -> fc.match(clazz) && fc.match(name));
     }
 
-    void addFactoryCreator(FactoryCreator<V,?,?> factoryCreator){
+    void addFactoryCreator(FactoryCreator<?,R> factoryCreator){
         factoryCreators.add(factoryCreator);
     }
 
 
-    public <L, F extends FactoryBase<L,V>> List<F> getList(Class<F> clazz) {
+    @SuppressWarnings("unchecked")
+    public <L, F extends FactoryBase<L,?,R>> List<F> getList(Class<F> clazz) {
         ArrayList<F> result = new ArrayList<>();
         factoryCreators.stream().filter(fc -> fc.match(clazz)).forEach(vFactoryCreator -> result.add((F) vFactoryCreator.create(FactoryContext.this)));
         return result;
+    }
+
+    public <L, F extends FactoryBase<L,?,R>> boolean anyMatch(Class<F> clazz){
+        return factoryCreators.stream().anyMatch(fc -> fc.match(clazz));
+    }
+
+    public Scope getScope(Class<?> factoryClazz) {
+        Optional<FactoryCreator<?,R>> any = factoryCreators.stream().filter(fc -> fc.match(factoryClazz)).findAny();
+        if (any.isPresent()){
+            return any.get().getScope();
+        }
+        return null;
     }
 }

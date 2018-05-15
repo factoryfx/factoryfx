@@ -6,12 +6,12 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import de.factoryfx.data.Data;
 import de.factoryfx.data.attribute.Attribute;
 
-//just the infotext used in gui
+//represent a changed attribute
 public class AttributeDiffInfo {
     @JsonProperty
-    private final String attributeName;
+    public final String attributeName;
     @JsonProperty
-    private final String dataId;
+    public final String dataId;
 
     @JsonCreator
     public AttributeDiffInfo(
@@ -60,5 +60,7 @@ public class AttributeDiffInfo {
         }
         return "";
     }
+
+
 
 }

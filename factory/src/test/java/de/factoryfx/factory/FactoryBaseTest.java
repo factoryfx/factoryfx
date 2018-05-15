@@ -62,7 +62,7 @@ public class FactoryBaseTest {
 //        Assert.assertEquals(3,liveObjects.entrySet().size());
     }
 
-    public static class XRoot extends SimpleFactoryBase<String,Void> {
+    public static class XRoot extends SimpleFactoryBase<String,Void,XRoot> {
         public final FactoryReferenceAttribute<String,ExampleFactoryAndViewA> referenceAttribute = new FactoryReferenceAttribute<String,ExampleFactoryAndViewA>(ExampleFactoryAndViewA.class).labelText("ExampleA2");
         public final FactoryReferenceAttribute<String,XFactory> xFactory = new FactoryReferenceAttribute<String,XFactory>(XFactory.class).labelText("XFactory");
         public final FactoryReferenceAttribute<String,XFactory> xFactory2 = new FactoryReferenceAttribute<String,XFactory>(XFactory.class).labelText("XFactory");
@@ -78,7 +78,7 @@ public class FactoryBaseTest {
         }
     }
 
-    public static class ExampleFactoryAndViewA extends SimpleFactoryBase<String,Void> {
+    public static class ExampleFactoryAndViewA extends SimpleFactoryBase<String,Void,ExampleFactoryAndViewA> {
         public final FactoryViewReferenceAttribute<XRoot,String,XFactory> referenceView = new FactoryViewReferenceAttribute<XRoot,String,XFactory>(
                 root -> root.xFactory.get()).labelText("ExampleA2");
         public final FactoryViewListReferenceAttribute<XRoot,String,XFactory> listView = new FactoryViewListReferenceAttribute<XRoot,String,XFactory>(
@@ -93,7 +93,7 @@ public class FactoryBaseTest {
     }
 
 
-    public static class XFactory extends SimpleFactoryBase<String,Void> {
+    public static class XFactory extends SimpleFactoryBase<String,Void,XFactory> {
         public final StringAttribute bla=new StringAttribute();
 
         public List<String> createCalls=new ArrayList<>();

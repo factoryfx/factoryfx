@@ -23,4 +23,12 @@ public class EncryptedStringAttributeTest {
         ObjectMapperBuilder.build().copy(attribute);
     }
 
+    @Test
+    public void encrypt_encrypt(){
+        EncryptedStringAttribute attribute = new EncryptedStringAttribute();
+        String key=attribute.createKey();
+        attribute.encrypt("test123üÄ",key);
+
+        Assert.assertEquals("test123üÄ",attribute.decrypt(key));
+    }
 }

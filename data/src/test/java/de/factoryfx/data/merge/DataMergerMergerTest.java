@@ -13,12 +13,14 @@ public class DataMergerMergerTest {
     public void test_diff_info(){
         ExampleDataA currentModel = new ExampleDataA();
         currentModel.stringAttribute.set("1111111");
+
+        currentModel=currentModel.internal().prepareUsableCopy();
         ExampleDataA originalModel = currentModel.internal().copy();
         ExampleDataA newModel = currentModel.internal().copy();
         newModel.stringAttribute.set("2222222");
-        DataMerger dataMerger = new DataMerger(currentModel, originalModel, newModel);
+        DataMerger<ExampleDataA>dataMerger = new DataMerger<>(currentModel, originalModel, newModel);
 
-        MergeDiffInfo mergeDiff= dataMerger.mergeIntoCurrent((permission)->true);
+        MergeDiffInfo<ExampleDataA> mergeDiff= dataMerger.mergeIntoCurrent((permission)->true);
         Assert.assertTrue(mergeDiff.hasNoConflicts());
         Assert.assertEquals("1111111",mergeDiff.mergeInfos.get(0).getAttributeDisplayText(mergeDiff.getPreviousRootData()));
         Assert.assertEquals("2222222",mergeDiff.mergeInfos.get(0).getAttributeDisplayText(mergeDiff.getNewRootData()));
@@ -30,14 +32,17 @@ public class DataMergerMergerTest {
         ExampleDataB exampleFactoryB = new ExampleDataB();
         exampleFactoryB.stringAttribute.set("Factory to be deleted");
         currentModel.referenceAttribute.set(exampleFactoryB);
+
+        currentModel=currentModel.internal().prepareUsableCopy();
         ExampleDataA originalModel = currentModel.internal().copy();
         ExampleDataA newModel = currentModel.internal().copy();
         newModel.referenceAttribute.set(null);
-        DataMerger dataMerger = new DataMerger(currentModel, originalModel, newModel);
+        DataMerger<ExampleDataA> dataMerger = new DataMerger<>(currentModel, originalModel, newModel);
 
-        MergeDiffInfo mergeDiff= dataMerger.mergeIntoCurrent((permission)->true);
+        MergeDiffInfo<ExampleDataA> mergeDiff= dataMerger.mergeIntoCurrent((permission)->true);
         Assert.assertTrue(mergeDiff.hasNoConflicts());
-        Assert.assertTrue((((ExampleDataB)mergeDiff.mergeInfos.get(0).getAttribute(mergeDiff.getPreviousRootData()).get()).stringAttribute.get()).equals("Factory to be deleted"));
+        ExampleDataB exampleDataB = (ExampleDataB) mergeDiff.mergeInfos.get(0).getAttribute(mergeDiff.getPreviousRootData()).get();
+        Assert.assertTrue((exampleDataB.stringAttribute.get()).equals("Factory to be deleted"));
         Assert.assertEquals("empty",mergeDiff.mergeInfos.get(0).getAttributeDisplayText(mergeDiff.getNewRootData()));
     }
 
@@ -46,14 +51,17 @@ public class DataMergerMergerTest {
         ExampleDataA currentModel = new ExampleDataA();
         ExampleDataB exampleFactoryB = new ExampleDataB();
         currentModel.referenceAttribute.set(exampleFactoryB);
+        currentModel=currentModel.internal().prepareUsableCopy();
+        currentModel=currentModel.internal().prepareUsableCopy();
+
         ExampleDataA originalModel = currentModel.internal().copy();
         ExampleDataA newModel = currentModel.internal().copy();
 
         newModel.referenceAttribute.set(null);
 
-        DataMerger dataMerger = new DataMerger(currentModel, originalModel, newModel);
+        DataMerger<ExampleDataA>dataMerger = new DataMerger<>(currentModel, originalModel, newModel);
 
-        MergeDiffInfo mergeDiff= dataMerger.mergeIntoCurrent((permission)->true);
+        MergeDiffInfo<ExampleDataA> mergeDiff= dataMerger.mergeIntoCurrent((permission)->true);
         Assert.assertTrue(mergeDiff.hasNoConflicts());
     }
 
@@ -65,12 +73,13 @@ public class DataMergerMergerTest {
     public void test_permission_violation(){
         ExampleFactoryPermission currentModel = new ExampleFactoryPermission();
         currentModel.stringAttribute.set("123");
+        currentModel=currentModel.internal().prepareUsableCopy();
         ExampleFactoryPermission originalModel = currentModel.internal().copy();
         ExampleFactoryPermission newModel = currentModel.internal().copy();
         newModel.stringAttribute.set("XXX");
 
-        DataMerger dataMerger = new DataMerger(currentModel, originalModel, newModel);
-        MergeDiffInfo mergeDiff= dataMerger.mergeIntoCurrent((permission)->false);
+        DataMerger<ExampleFactoryPermission> dataMerger = new DataMerger<>(currentModel, originalModel, newModel);
+        MergeDiffInfo<ExampleFactoryPermission> mergeDiff= dataMerger.mergeIntoCurrent((permission)->false);
 
         Assert.assertFalse(mergeDiff.hasNoPermissionViolation());
         Assert.assertFalse(mergeDiff.successfullyMerged());
@@ -80,12 +89,13 @@ public class DataMergerMergerTest {
     public void test_permission_no_violation(){
         ExampleFactoryPermission currentModel = new ExampleFactoryPermission();
         currentModel.stringAttribute.set("123");
+        currentModel=currentModel.internal().prepareUsableCopy();
         ExampleFactoryPermission originalModel = currentModel.internal().copy();
         ExampleFactoryPermission newModel = currentModel.internal().copy();
         newModel.stringAttribute.set("XXX");
 
-        DataMerger dataMerger = new DataMerger(currentModel, originalModel, newModel);
-        MergeDiffInfo mergeDiff= dataMerger.mergeIntoCurrent((permission)->true);
+        DataMerger<ExampleFactoryPermission> dataMerger = new DataMerger<>(currentModel, originalModel, newModel);
+        MergeDiffInfo<ExampleFactoryPermission> mergeDiff= dataMerger.mergeIntoCurrent((permission)->true);
         Assert.assertTrue(mergeDiff.hasNoPermissionViolation());
         Assert.assertTrue(mergeDiff.successfullyMerged());
     }

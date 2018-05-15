@@ -108,8 +108,7 @@ public class ContentAssist {
         } else if (inspectedNode.getToken() == com.google.javascript.rhino.Token.NEW) {
             createNewProposals(inspectedNode, proposals, internalVars, externalVars);
         } else if (inspectedNode.getToken() == com.google.javascript.rhino.Token.FUNCTION_TYPE) {
-            List<Proposal> ret = new ArrayList<>();
-            proposals.put(inspectedNode.getSourceOffset(),ret);
+            proposals.put(inspectedNode.getSourceOffset(),new ArrayList<>());
         } else if (inspectedNode.getToken() == com.google.javascript.rhino.Token.GETPROP) {
             createGetPropProposals(code, inspectedNode, proposals, internalVars, externalVars);
         } else if (inspectedNode.getToken() == com.google.javascript.rhino.Token.FUNCTION) {

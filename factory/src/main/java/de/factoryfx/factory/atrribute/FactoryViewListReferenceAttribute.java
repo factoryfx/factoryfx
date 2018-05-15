@@ -10,7 +10,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import de.factoryfx.data.attribute.ViewListReferenceAttribute;
 import de.factoryfx.factory.FactoryBase;
 
-public class FactoryViewListReferenceAttribute<R extends FactoryBase<?,?>,L, T extends FactoryBase<L,?>> extends ViewListReferenceAttribute<R,T,FactoryViewListReferenceAttribute<R,L,T>> {
+public class FactoryViewListReferenceAttribute<R extends FactoryBase<?,?,?>,L, T extends FactoryBase<L,?,?>> extends ViewListReferenceAttribute<R,T,FactoryViewListReferenceAttribute<R,L,T>> {
 
     public FactoryViewListReferenceAttribute(Function<R, List<T>> view) {
         super(view);

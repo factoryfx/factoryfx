@@ -9,17 +9,18 @@ import de.factoryfx.data.Data;
 import de.factoryfx.data.jackson.ObjectMapperBuilder;
 
 //JSON serializable
-public class MergeDiffInfo {
+public class MergeDiffInfo<R extends Data> {
     @JsonProperty
-    private final String previousRoot;
-    @JsonProperty
-    private final String newRoot;
-    @JsonProperty
-    private final Class<? extends Data> rootClazz;
+    private final Class<R> rootClazz;
 
     public final List<AttributeDiffInfo> mergeInfos;
     public final List<AttributeDiffInfo> conflictInfos;
     public final List<AttributeDiffInfo> permissionViolations;
+
+    @JsonIgnore
+    private final R previousRoot;
+    @JsonIgnore
+    private final R newRoot;
 
     @JsonCreator
     public MergeDiffInfo(
@@ -28,13 +29,36 @@ public class MergeDiffInfo {
             @JsonProperty("permissionViolations")List<AttributeDiffInfo> permissionViolations,
             @JsonProperty("previousRoot")String previousRoot,
             @JsonProperty("newRoot")String newRoot,
-            @JsonProperty("rootClazz")Class<? extends Data> rootClazz){
+            @JsonProperty("rootClazz")Class<R> rootClazz){
+        this.mergeInfos=mergeInfos;
+        this.conflictInfos=conflictInfos;
+        this.permissionViolations = permissionViolations;
+        this.previousRoot=ObjectMapperBuilder.build().readValue(previousRoot,rootClazz);
+        this.newRoot=ObjectMapperBuilder.build().readValue(newRoot,rootClazz);
+        this.rootClazz=rootClazz;
+    }
+
+    public MergeDiffInfo(
+            List<AttributeDiffInfo> mergeInfos,
+            List<AttributeDiffInfo> conflictInfos,
+            List<AttributeDiffInfo> permissionViolations,
+            R previousRoot,
+            R newRoot,
+            Class<R> rootClazz){
         this.mergeInfos=mergeInfos;
         this.conflictInfos=conflictInfos;
         this.permissionViolations = permissionViolations;
         this.previousRoot=previousRoot;
         this.newRoot=newRoot;
-        this.rootClazz=rootClazz;
+        this.rootClazz = rootClazz;
+    }
+
+    public String getPreviousRoot() {//workaround for duplicated ids
+        return ObjectMapperBuilder.build().writeValueAsString(previousRoot);
+    }
+
+    public String getNewRoot() {
+        return ObjectMapperBuilder.build().writeValueAsString(newRoot);
     }
 
     @JsonIgnore
@@ -58,12 +82,12 @@ public class MergeDiffInfo {
     }
 
     @JsonIgnore
-    public Data getPreviousRootData() {
-        return ObjectMapperBuilder.build().readValue(previousRoot,rootClazz);
+    public R getPreviousRootData() {
+        return previousRoot;
     }
 
     @JsonIgnore
-    public Data getNewRootData() {
-        return ObjectMapperBuilder.build().readValue(newRoot,rootClazz);
+    public R getNewRootData() {
+        return newRoot;
     }
 }

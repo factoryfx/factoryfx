@@ -26,7 +26,7 @@ import com.google.common.base.Strings;
 import com.google.common.base.Throwables;
 import com.google.common.hash.Hashing;
 import com.google.common.io.Files;
-import de.factoryfx.server.rest.client.HttpStatusException;
+import de.factoryfx.util.rest.client.HttpStatusException;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.fxml.FXML;

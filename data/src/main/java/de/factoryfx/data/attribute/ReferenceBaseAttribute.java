@@ -11,6 +11,7 @@ import java.util.function.Function;
 public abstract class ReferenceBaseAttribute<T extends Data, U, A extends ReferenceBaseAttribute<T,U,A>> extends Attribute<U,A> {
 
     protected Data root;
+    protected Data parent;//data that contains this attribute
 //    protected Class<T> containingFactoryClass;
 
 
@@ -52,8 +53,9 @@ public abstract class ReferenceBaseAttribute<T extends Data, U, A extends Refere
     }
 
     @Override
-    public void internal_prepareUsage(Data root){
+    public void internal_prepareUsage(Data root, Data parent){
         this.root=root;
+        this.parent=parent;
     }
 
     private Function<Data,T> newValueProvider;
@@ -161,10 +163,10 @@ public abstract class ReferenceBaseAttribute<T extends Data, U, A extends Refere
         return (A)this;
     }
 
-    private Class<T> clazz;
+    protected Class<T> clazz;
     /**setup value selection and new value adding for user editing
      * @param clazz class
-     * @return sdelf*/
+     * @return self*/
     @SuppressWarnings("unchecked")
     protected A setup(Class<T> clazz){
         this.clazz=clazz;//lazy creation for performance
@@ -175,14 +177,36 @@ public abstract class ReferenceBaseAttribute<T extends Data, U, A extends Refere
         return clazz;
     }
 
-    /** workaround for nested generic parameter e.g.: Class&lt;TypA&lt;TypB&gt;&gt;  <br>
+    /** workaround for java limitations width nested generic parameter e.g.: Class&lt;TypA&lt;TypB&gt;&gt;  <br>
      * if possible use {@link #setup} instead
      * @param clazz class
      * @return self
      */
     @SuppressWarnings("unchecked")
     protected A setupUnsafe(Class clazz){
+        if (!Data.class.isAssignableFrom(clazz)){
+            throw new IllegalArgumentException(clazz+" is no data class, maybe mixed up with liveobject class");
+        }
         return setup((Class<T>)clazz);
     }
+
+    /**
+     * reference is a selection from a catalogue
+     * @return self
+     */
+    @SuppressWarnings("unchecked")
+    public A catalogueBased(){
+        catalogueBased=true;
+        setCopySemantic(CopySemantic.SELF);
+        return (A)this;
+    }
+
+    @JsonIgnore
+    public boolean internal_isCatalogueBased(){
+        return catalogueBased;
+    }
+
+    private boolean catalogueBased =false;
+
 
 }

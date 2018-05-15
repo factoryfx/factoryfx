@@ -1,53 +1,63 @@
 package de.factoryfx.docu.dynamicwebserver;
 
 import ch.qos.logback.classic.Level;
-import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.factory.FactoryManager;
-import de.factoryfx.factory.datastorage.FactoryAndNewMetadata;
-import de.factoryfx.factory.datastorage.inmemory.InMemoryFactoryStorage;
+import de.factoryfx.data.storage.DataAndNewMetadata;
+import de.factoryfx.data.storage.inmemory.InMemoryDataStorage;
+import de.factoryfx.factory.atrribute.FactoryReferenceAttribute;
 import de.factoryfx.factory.exception.RethrowingFactoryExceptionHandler;
-import de.factoryfx.server.ApplicationServer;
-import de.factoryfx.server.rest.client.RestClient;
-import de.factoryfx.server.rest.server.HttpServerConnectorFactory;
-import de.factoryfx.server.rest.server.JettyServer;
-import de.factoryfx.server.rest.server.JettyServerFactory;
+import de.factoryfx.jetty.HttpServerConnectorFactory;
+import de.factoryfx.jetty.JettyServerFactory;
+import de.factoryfx.server.Microservice;
+import de.factoryfx.util.rest.client.RestClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatterBuilder;
+import java.util.Collections;
+import java.util.List;
 
 public class Main {
+
+    public static class DynamicWebserver extends JettyServerFactory<Void,RootFactory> {
+        public final FactoryReferenceAttribute<WebResource,WebResourceFactory> resource = new FactoryReferenceAttribute<>();
+        @Override
+        protected List<Object> getResourcesInstances() {
+            return Collections.singletonList(resource.instance());
+        }
+    }
 
     public static void main(String[] args) throws InterruptedException {
         ch.qos.logback.classic.Logger root = (ch.qos.logback.classic.Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
         root.setLevel(Level.INFO);
 
-        JettyServerFactory<Void> jettyServer = new JettyServerFactory<>();
+        RootFactory jettyServer = new RootFactory();
+        jettyServer.server.set(new DynamicWebserver());
 
-        HttpServerConnectorFactory<Void> serverConnectorFactory = new HttpServerConnectorFactory<>();
+        HttpServerConnectorFactory<Void, RootFactory> serverConnectorFactory = new HttpServerConnectorFactory<>();
         serverConnectorFactory.host.set("localhost");
         serverConnectorFactory.port.set(8005);
-        jettyServer.connectors.add(serverConnectorFactory);
+        jettyServer.server.get().connectors.add(serverConnectorFactory);
 
-        jettyServer.resources.add(createNewWebResourceReturningCreationTimestamp());
+        jettyServer.server.get().resource.set(createNewWebResourceReturningCreationTimestamp());
+        jettyServer=jettyServer.utility().prepareUsableCopy();
 
 
-        ApplicationServer<Void,JettyServer,JettyServerFactory<Void>> applicationServer
-                = new ApplicationServer<>(new FactoryManager<>(new RethrowingFactoryExceptionHandler<>()),new InMemoryFactoryStorage<>(jettyServer));
-        applicationServer.start();
+        Microservice<Void,RootFactory,Void> microservice
+                = new Microservice<>(new FactoryManager<>(new RethrowingFactoryExceptionHandler()),new InMemoryDataStorage<>(jettyServer));
+        microservice.start();
 
         Thread continuouslyQueryWebserver = startQueryServerThread();
         for (int i = 0; i < 10; ++i) {
-            FactoryAndNewMetadata<JettyServerFactory<Void>> editableConfig = applicationServer.prepareNewFactory();
-            JettyServerFactory<Void> editableJettyServer = editableConfig.root;
-            editableJettyServer.resources.clear();
-            editableJettyServer.resources.add(createNewWebResourceReturningCreationTimestamp());
-            applicationServer.updateCurrentFactory(editableConfig,"user","commit",s->true);
+            DataAndNewMetadata<RootFactory> editableConfig = microservice.prepareNewFactory();
+            RootFactory editableJettyServer = editableConfig.root;
+            editableJettyServer.server.get().resource.set(createNewWebResourceReturningCreationTimestamp());
+            microservice.updateCurrentFactory(editableConfig,"user","commit", s->true);
             Thread.sleep(1100);
         }
         continuouslyQueryWebserver.interrupt();
-        applicationServer.stop();
+        microservice.stop();
 
     }
 
@@ -75,7 +85,7 @@ public class Main {
     }
 
 
-    private static FactoryBase<?, Void> createNewWebResourceReturningCreationTimestamp() {
+    private static WebResourceFactory createNewWebResourceReturningCreationTimestamp() {
         String time = new DateTimeFormatterBuilder().appendPattern("dd.MM.yyyy HH:mm:ss.SSS").toFormatter().format(LocalDateTime.now());
         WebResourceFactory webResourceFactory = new WebResourceFactory();
         webResourceFactory.responseText.set("Resource Factory was created at "+time);

@@ -9,14 +9,14 @@ import de.factoryfx.factory.FactoryBase;
 
 @JsonIdentityInfo(generator = ObjectIdGenerators.IntSequenceGenerator.class)
 public class FactoryLogEntry {
-    public final Class<? extends FactoryBase<?,?>> factoryClass;
+    public final Class<? extends FactoryBase<?,?,?>> factoryClass;
     public final String displayText;
     public final List<FactoryLogEntry> children;
     public final List<FactoryLogEntryEvent> events;
     public final long id;
 
     @JsonCreator
-    public FactoryLogEntry(@JsonProperty("factoryClass") Class<? extends FactoryBase<?, ?>> factoryClass, @JsonProperty("displayText") String displayText, @JsonProperty("children") List<FactoryLogEntry> children, @JsonProperty("events") List<FactoryLogEntryEvent> items, @JsonProperty("id")long id) {
+    public FactoryLogEntry(@JsonProperty("factoryClass") Class<? extends FactoryBase<?, ?,?>> factoryClass, @JsonProperty("displayText") String displayText, @JsonProperty("children") List<FactoryLogEntry> children, @JsonProperty("events") List<FactoryLogEntryEvent> items, @JsonProperty("id")long id) {
         this.factoryClass = factoryClass;
         this.displayText = displayText;
         this.children = children;
@@ -25,8 +25,8 @@ public class FactoryLogEntry {
     }
 
     @SuppressWarnings("unchecked")
-    public FactoryLogEntry(FactoryBase<?,?> factoryBase) {
-        this((Class<? extends FactoryBase<?, ?>>) factoryBase.getClass(), factoryBase.internal().hasCustomDisplayText()?factoryBase.internal().getDisplayText():"",new ArrayList<>(),new ArrayList<>(), ThreadLocalRandom.current().nextLong(Long.MAX_VALUE));
+    public FactoryLogEntry(FactoryBase<?,?,?> factoryBase) {
+        this((Class<? extends FactoryBase<?, ?,?>>) factoryBase.getClass(), factoryBase.internal().hasCustomDisplayText()?factoryBase.internal().getDisplayText():"",new ArrayList<>(),new ArrayList<>(), ThreadLocalRandom.current().nextLong(Long.MAX_VALUE));
     }
 
     public boolean hasEvents(){
