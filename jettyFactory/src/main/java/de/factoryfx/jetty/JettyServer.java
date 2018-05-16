@@ -5,6 +5,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Consumer;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider;
@@ -33,6 +35,15 @@ public class JettyServer {
 
 
     public JettyServer(List<de.factoryfx.jetty.HttpServerConnectorCreator> connectors, List<Object> resources, List<Handler> additionalHandlers, ObjectMapper objectMapper, LoggingFeature loggingFeature, Consumer<ResourceConfig> resourceConfigSetup) {
+        {
+            Logger logger = Logger.getLogger(org.glassfish.jersey.internal.inject.Providers.class.getName());
+            logger.setLevel(Level.SEVERE); //another useless warning https://github.com/jersey/jersey/issues/3700
+        }
+        {
+            Logger logger = Logger.getLogger(org.glassfish.jersey.internal.Errors.class.getName());
+            logger.setLevel(Level.SEVERE);//warning about generic parameters, works fine and no fix available so the warnings are just useless
+        }
+
         this.server=new org.eclipse.jetty.server.Server();
         this.objectMapper=objectMapper;
         this.loggingFeature=loggingFeature;

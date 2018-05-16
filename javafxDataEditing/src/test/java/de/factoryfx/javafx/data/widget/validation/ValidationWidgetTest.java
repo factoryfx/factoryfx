@@ -3,6 +3,7 @@ package de.factoryfx.javafx.data.widget.validation;
 import java.util.ArrayList;
 
 import de.factoryfx.javafx.UniformDesignBuilder;
+import de.factoryfx.javafx.css.CssUtil;
 import de.factoryfx.javafx.data.editor.attribute.AttributeEditorBuilder;
 import de.factoryfx.javafx.data.editor.data.DataEditor;
 import de.factoryfx.javafx.data.editor.data.ExampleData1;
@@ -34,7 +35,7 @@ public class ValidationWidgetTest extends Application {
 
 
         BorderPane root = new BorderPane();
-        root.getStylesheets().add(getClass().getResource("/de/factoryfx/javafx/css/app.css").toExternalForm());
+        CssUtil.addToNode(root);
         root.setCenter(validationWidget.createContent());
         primaryStage.setScene(new Scene(root,1200,800));
 

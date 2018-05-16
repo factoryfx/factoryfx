@@ -10,5 +10,17 @@ module de.factoryfx.example {
     requires slf4j.api;
     requires logback.classic;
     requires de.factoryfx.microserviceRestClient;
-    requires de.factoryfx.restutilClient;
+    requires java.ws.rs;
+    requires java.desktop;
+    requires java.activation;
+    requires com.fasterxml.jackson.databind;
+    requires de.factoryfx.microserviceRestCommon;
+    requires jackson.annotations;
+    requires controlsfx;
+
+    exports de.factoryfx.example.client.view;
+    exports de.factoryfx.example.server;
+    exports de.factoryfx.example.client;
+    exports de.factoryfx.example.server.shop;
+
 }

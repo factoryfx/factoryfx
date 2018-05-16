@@ -2,6 +2,7 @@ package de.factoryfx.data.attribute;
 
 import de.factoryfx.data.Data;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.function.Function;
 
 public class DefaultNewValueProvider<L, T extends Data> implements Function<Data, T> {
@@ -15,8 +16,8 @@ public class DefaultNewValueProvider<L, T extends Data> implements Function<Data
     @Override
     public T apply(Data root) {
         try {
-            return clazz.newInstance();
-        } catch (InstantiationException | IllegalAccessException e) {
+            return clazz.getConstructor().newInstance();
+        } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
             throw new RuntimeException(e);
         }
     }

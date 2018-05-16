@@ -2,6 +2,7 @@ package de.factoryfx.javafx.factory.widget.factory.diffdialog;
 
 import de.factoryfx.data.merge.MergeDiffInfo;
 import de.factoryfx.factory.log.FactoryUpdateLog;
+import de.factoryfx.javafx.css.CssUtil;
 import de.factoryfx.javafx.data.editor.attribute.AttributeEditorBuilder;
 import de.factoryfx.javafx.data.util.UniformDesign;
 import de.factoryfx.javafx.data.widget.factorydiff.FactoryDiffWidget;
@@ -47,7 +48,7 @@ public class DiffDialogBuilder {
 //        dialog.getDialogPane().setContent(pane);
 //        dialog.setResizable(true);
 //
-//        dialog.getDialogPane().getStylesheets().add(getClass().getResource("/de/factoryfx/javafx/css/app.css").toExternalForm());
+//        CssUtil.addToNode(dialog.getDialogPane());
 //
 //        dialog.showAndWait();
 //    }
@@ -75,7 +76,7 @@ public class DiffDialogBuilder {
         dialog.getDialogPane().setContent(pane);
         dialog.setResizable(true);
 
-        dialog.getDialogPane().getStylesheets().add(getClass().getResource("/de/factoryfx/javafx/css/app.css").toExternalForm());
+        CssUtil.addToNode(dialog.getDialogPane());
 
         if (!mergeDiff.hasNoConflicts()){
             dialog.setTitle("Konflikte");
@@ -124,7 +125,7 @@ public class DiffDialogBuilder {
         dialog.getDialogPane().setContent(pane);
         dialog.setResizable(true);
 
-        dialog.getDialogPane().getStylesheets().add(getClass().getResource("/de/factoryfx/javafx/css/app.css").toExternalForm());
+        CssUtil.addToNode(dialog.getDialogPane());
 
         if (!factoryLog.mergeDiffInfo.hasNoConflicts()){
             dialog.setTitle("Konflikte");

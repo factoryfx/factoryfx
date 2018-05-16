@@ -66,13 +66,13 @@ public class ImmutableValueAttributeTest {
 
         {
             attribute.set(null);
-            List<ValidationError> validationErrors = attribute.internal_validate(null);
+            List<ValidationError> validationErrors = attribute.internal_validate(null,"");
             Assert.assertEquals(1, validationErrors.size());
         }
 
         {
             attribute.set(1);
-            List<ValidationError> validationErrors = attribute.internal_validate(null);
+            List<ValidationError> validationErrors = attribute.internal_validate(null,"");
             Assert.assertEquals(0, validationErrors.size());
         }
     }
@@ -83,13 +83,13 @@ public class ImmutableValueAttributeTest {
 
         {
             attribute.set(null);
-            List<ValidationError> validationErrors = attribute.internal_validate(null);
+            List<ValidationError> validationErrors = attribute.internal_validate(null,"");
             Assert.assertEquals(0, validationErrors.size());
         }
 
         {
             attribute.set(1);
-            List<ValidationError> validationErrors = attribute.internal_validate(null);
+            List<ValidationError> validationErrors = attribute.internal_validate(null,"");
             Assert.assertEquals(0, validationErrors.size());
         }
     }

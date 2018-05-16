@@ -5,6 +5,7 @@ import java.util.Optional;
 
 import de.factoryfx.data.Data;
 import de.factoryfx.data.util.LanguageText;
+import de.factoryfx.javafx.css.CssUtil;
 import de.factoryfx.javafx.data.widget.table.TableControlWidget;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -46,7 +47,7 @@ public class DataChoiceDialog {
 //            }
 //        });
 
-        choiceDialog.getDialogPane().getStylesheets().add(getClass().getResource("/de/factoryfx/javafx/css/app.css").toExternalForm());
+        CssUtil.addToNode(choiceDialog.getDialogPane());
         choiceDialog.getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
         choiceDialog.getDialogPane().lookupButton(ButtonType.OK).disableProperty().bind(dataTableView.getSelectionModel().selectedItemProperty().isNull());
 

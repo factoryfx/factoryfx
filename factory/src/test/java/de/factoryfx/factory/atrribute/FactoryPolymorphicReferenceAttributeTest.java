@@ -99,13 +99,13 @@ public class FactoryPolymorphicReferenceAttributeTest {
 
         {
             attribute.set(null);
-            List<ValidationError> validationErrors = attribute.internal_validate(new ExampleFactoryA());
+            List<ValidationError> validationErrors = attribute.internal_validate(new ExampleFactoryA(),"");
             Assert.assertEquals(1, validationErrors.size());
         }
 
         {
             attribute.set(new ErrorPrinterFactory());
-            List<ValidationError> validationErrors = attribute.internal_validate(new ExampleFactoryA());
+            List<ValidationError> validationErrors = attribute.internal_validate(new ExampleFactoryA(),"");
             Assert.assertEquals(0, validationErrors.size());
         }
     }
@@ -116,13 +116,13 @@ public class FactoryPolymorphicReferenceAttributeTest {
 
         {
             attribute.set(null);
-            List<ValidationError> validationErrors = attribute.internal_validate(new ExampleFactoryA());
+            List<ValidationError> validationErrors = attribute.internal_validate(new ExampleFactoryA(),"");
             Assert.assertEquals(0, validationErrors.size());
         }
 
         {
             attribute.set(new ErrorPrinterFactory());
-            List<ValidationError> validationErrors = attribute.internal_validate(new ExampleFactoryA());
+            List<ValidationError> validationErrors = attribute.internal_validate(new ExampleFactoryA(),"");
             Assert.assertEquals(0, validationErrors.size());
         }
     }

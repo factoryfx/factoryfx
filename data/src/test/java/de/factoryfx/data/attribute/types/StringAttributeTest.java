@@ -15,13 +15,13 @@ public class StringAttributeTest {
 
         {
             attribute.set("");
-            List<ValidationError> validationErrors = attribute.internal_validate(null);
+            List<ValidationError> validationErrors = attribute.internal_validate(null,"");
             Assert.assertEquals(1, validationErrors.size());
         }
 
         {
             attribute.set("123");
-            List<ValidationError> validationErrors = attribute.internal_validate(null);
+            List<ValidationError> validationErrors = attribute.internal_validate(null,"");
             Assert.assertEquals(0, validationErrors.size());
         }
     }

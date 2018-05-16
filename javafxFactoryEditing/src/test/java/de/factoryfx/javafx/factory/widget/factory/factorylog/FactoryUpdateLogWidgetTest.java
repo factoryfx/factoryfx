@@ -10,6 +10,7 @@ import de.factoryfx.factory.log.FactoryLogEntry;
 import de.factoryfx.factory.log.FactoryLogEntryEvent;
 import de.factoryfx.factory.log.FactoryLogEntryEventType;
 import de.factoryfx.factory.testfactories.ExampleFactoryA;
+import de.factoryfx.javafx.css.CssUtil;
 import de.factoryfx.javafx.factory.util.UniformDesignFactory;
 import javafx.application.Application;
 import javafx.scene.Scene;
@@ -23,7 +24,7 @@ public class FactoryUpdateLogWidgetTest extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
 
-        FactoryUpdateLogWidget factoryUpdateLogWidget = new FactoryUpdateLogWidget(new UniformDesignFactory<>().internalFactory().instance());
+        FactoryUpdateLogWidget factoryUpdateLogWidget = new FactoryUpdateLogWidget(new UniformDesignFactory().internalFactory().instance());
         final FactoryLogEntry factoryLogEntry = new FactoryLogEntry(ExampleFactoryA.class, "FactoryX",new ArrayList<>(),new ArrayList<>(), 0);
         factoryLogEntry.events.add(new FactoryLogEntryEvent(FactoryLogEntryEventType.CREATE,21323));
         factoryLogEntry.events.add(new FactoryLogEntryEvent(FactoryLogEntryEventType.START,5646546));
@@ -41,7 +42,7 @@ public class FactoryUpdateLogWidgetTest extends Application {
         factoryUpdateLogWidget.updateLog(factoryLog);
 
         BorderPane root = new BorderPane();
-        root.getStylesheets().add(getClass().getResource("/de/factoryfx/javafx/css/app.css").toExternalForm());
+        CssUtil.addToNode(root);
         root.setCenter(factoryUpdateLogWidget.createContent());
         primaryStage.setScene(new Scene(root,1200,800));
 

@@ -15,6 +15,7 @@ module de.factoryfx.jettyFactory {
     requires jersey.server;
     requires jersey.container.servlet.core;
     requires jackson.annotations;
+    requires jersey.media.jaxb;
 
     exports de.factoryfx.jetty;
     exports de.factoryfx.jetty.ssl;

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import de.factoryfx.data.merge.DataMerger;
 import de.factoryfx.javafx.UniformDesignBuilder;
+import de.factoryfx.javafx.css.CssUtil;
 import de.factoryfx.javafx.data.editor.attribute.AttributeEditorBuilder;
 import de.factoryfx.javafx.data.editor.data.DataEditor;
 import de.factoryfx.javafx.data.editor.data.ExampleData1;
@@ -40,7 +41,7 @@ public class FactoryDiffWidgetTest extends Application {
         factoryDiffWidget.updateMergeDiff(dataMerger.mergeIntoCurrent((p)->true));
 
         BorderPane rootPane = new BorderPane();
-        rootPane.getStylesheets().add(getClass().getResource("/de/factoryfx/javafx/css/app.css").toExternalForm());
+        CssUtil.addToNode(rootPane);
         rootPane.setCenter(factoryDiffWidget.createContent());
         primaryStage.setScene(new Scene(rootPane, 1200, 800));
 

@@ -9,7 +9,6 @@ import de.factoryfx.factory.exception.RethrowingFactoryExceptionHandler;
 import de.factoryfx.jetty.HttpServerConnectorFactory;
 import de.factoryfx.jetty.JettyServerFactory;
 import de.factoryfx.server.Microservice;
-import de.factoryfx.util.rest.client.RestClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

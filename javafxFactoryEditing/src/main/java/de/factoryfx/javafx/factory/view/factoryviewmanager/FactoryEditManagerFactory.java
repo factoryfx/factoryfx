@@ -1,30 +1,27 @@
 package de.factoryfx.javafx.factory.view.factoryviewmanager;
 
-import de.factoryfx.data.attribute.types.ObjectValueAttribute;
 import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.factory.SimpleFactoryBase;
 import de.factoryfx.factory.atrribute.FactoryReferenceAttribute;
 import de.factoryfx.data.storage.DataSerialisationManager;
+import de.factoryfx.javafx.factory.RichClientRoot;
 import de.factoryfx.microservice.rest.client.MicroserviceRestClient;
 import de.factoryfx.microservice.rest.client.MicroserviceRestClientFactory;
 
 /**
  *
- * @param <V> client visitor
- * @param <R> client root
  * @param <VS> server visitor
  * @param <RS> server root
+ * @param <S> History summary
  */
-public class FactoryEditManagerFactory<V,R  extends FactoryBase<?,V,R>,VS,RS  extends FactoryBase<?,VS,RS>,S> extends SimpleFactoryBase<FactoryEditManager<VS,RS,S>,V,R> {
+public class FactoryEditManagerFactory<VS,RS  extends FactoryBase<?,VS,RS>,S> extends SimpleFactoryBase<FactoryEditManager<VS,RS>,Void,RichClientRoot> {
 
-    public final FactoryReferenceAttribute<MicroserviceRestClient<VS,RS>,MicroserviceRestClientFactory<V,R,VS,RS>> restClient = new FactoryReferenceAttribute<MicroserviceRestClient<VS,RS>,MicroserviceRestClientFactory<V,R,VS,RS>>().setupUnsafe(MicroserviceRestClientFactory.class);
-    //TODO refactor to FactoryReferenceAttribute?
-    public final ObjectValueAttribute<DataSerialisationManager<RS,S>> factorySerialisationManager = new ObjectValueAttribute<>();
-
+    public final FactoryReferenceAttribute<MicroserviceRestClient<VS,RS,S>,MicroserviceRestClientFactory<Void,RichClientRoot,VS,RS,S>> restClient = new FactoryReferenceAttribute<MicroserviceRestClient<VS,RS,S>,MicroserviceRestClientFactory<Void,RichClientRoot,VS,RS,S>>().setupUnsafe(MicroserviceRestClientFactory.class);
+    public final FactoryReferenceAttribute<DataSerialisationManager<RS,S>,FactorySerialisationManagerFactory<RS,S,Void,RichClientRoot>> factorySerialisationManager = new FactoryReferenceAttribute<DataSerialisationManager<RS,S>,FactorySerialisationManagerFactory<RS,S,Void,RichClientRoot>>().setupUnsafe(FactorySerialisationManagerFactory.class);
 
     @Override
-    public FactoryEditManager<VS,RS,S> createImpl() {
-        return new FactoryEditManager<VS,RS,S>(restClient.instance(),factorySerialisationManager.get());
+    public FactoryEditManager<VS,RS> createImpl() {
+        return new FactoryEditManager<>(restClient.instance(),factorySerialisationManager.instance());
     }
 
 

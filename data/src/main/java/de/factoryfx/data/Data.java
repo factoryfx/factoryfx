@@ -235,7 +235,7 @@ public class Data {
         visitAttributesFlat((attributeVariableName, attribute) -> {
             final ArrayList<ValidationError> validationErrors = new ArrayList<>();
             result.put(attribute, validationErrors);
-            validationErrors.addAll(attribute.internal_validate(this));
+            validationErrors.addAll(attribute.internal_validate(this,attributeVariableName));
         });
 
         if (dataValidations!=null){

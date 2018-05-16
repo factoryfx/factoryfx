@@ -66,10 +66,10 @@ public class FactoryReferenceBaseAttribute<L,F extends FactoryBase<? extends L,?
 
     @Override
     @SuppressWarnings("unchecked")
-    public List<ValidationError> internal_validate(Data parent) {
+    public List<ValidationError> internal_validate(Data parent,String attributeVariableName) {
         if (!nullable){
             this.validation(requiredValidation);// to minimise object creations
         }
-        return super.internal_validate(parent);
+        return super.internal_validate(parent,attributeVariableName);
     }
 }

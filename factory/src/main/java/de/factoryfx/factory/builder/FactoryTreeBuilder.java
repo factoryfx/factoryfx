@@ -57,7 +57,7 @@ public class FactoryTreeBuilder<R extends FactoryBase<?,?,R>> {
             validationErrors.addAll(data.internal().validateFlat());
         }
         if (!validationErrors.isEmpty()){
-            throw new IllegalStateException("factory tree contains validation errors:\n"+validationErrors.stream().map(ValidationError::getSimpleErrorDescription).collect(Collectors.joining( "\n" )));
+            throw new IllegalStateException("\n    Factory tree contains validation errors:\n"+validationErrors.stream().map(ValidationError::getSimpleErrorDescription).collect(Collectors.joining( "\n" )));
         }
     }
 

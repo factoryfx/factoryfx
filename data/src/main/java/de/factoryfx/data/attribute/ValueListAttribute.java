@@ -5,7 +5,6 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
-import de.factoryfx.data.Data;
 
 public class ValueListAttribute<T, A extends Attribute<List<T>,A>> extends ImmutableValueAttribute<List<T>,A> implements List<T> {
     private final Class<T> itemType;

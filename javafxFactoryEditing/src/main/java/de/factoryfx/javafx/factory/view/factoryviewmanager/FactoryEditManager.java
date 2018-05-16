@@ -7,7 +7,6 @@ import java.util.Optional;
 import java.util.function.Consumer;
 
 import de.factoryfx.data.jackson.ObjectMapperBuilder;
-import de.factoryfx.data.merge.AttributeDiffInfo;
 import de.factoryfx.data.merge.MergeDiffInfo;
 import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.data.storage.DataAndNewMetadata;
@@ -17,18 +16,14 @@ import de.factoryfx.factory.log.FactoryUpdateLog;
 import de.factoryfx.microservice.rest.client.MicroserviceRestClient;
 import javafx.application.Platform;
 
-public class FactoryEditManager<V,R extends FactoryBase<?,V,R>,S> {
-    private final MicroserviceRestClient<V,R> client;
+public class FactoryEditManager<V,R extends FactoryBase<?,V,R>> {
+    private final MicroserviceRestClient<V,R,?> client;
     private final List<FactoryRootChangeListener<R>> listeners= new ArrayList<>();
-    private final DataSerialisationManager<R,S> dataSerialisationManager;
+    private final DataSerialisationManager<R,?> dataSerialisationManager;
 
-    public FactoryEditManager(MicroserviceRestClient<V, R> client, DataSerialisationManager<R,S> dataSerialisationManager) {
+    public FactoryEditManager(MicroserviceRestClient<V, R, ?> client, DataSerialisationManager<R,?> dataSerialisationManager) {
         this.client = client;
         this.dataSerialisationManager = dataSerialisationManager;
-    }
-
-    public List<AttributeDiffInfo> getSingleFactoryHistory(String id) {
-        return client.getSingleFactoryHistory(id);
     }
 
     public void registerListener(FactoryRootChangeListener<R> listener){

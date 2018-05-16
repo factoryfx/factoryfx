@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<meta charset="UTF-8">
+<head>
+    <title>Example Shop</title>
+    <link rel="icon" href="data:;base64,=">
+</head>
+<body>
+<div id="app" style="padding: 6px;">
+    <form novalidate>
+        <div class="form-group">
+            <label for="User">User</label>
+            <input v-model="user" type="email" class="form-control" id="User">
+        </div>
+    </form>
+
+    <table class="table">
+        <thead>
+        <tr>
+            <th scope="col">#</th>
+            <th scope="col">Name</th>
+            <th scope="col">Price</th>
+            <th scope="col"></th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr v-for="(product, index) in products">
+            <th scope="row">{{index}}</th>
+            <td>{{product.name}}</td>
+            <td>{{product.price}}</td>
+            <td><button @click="buy(product.name)" type="button" class="btn btn-primary">buy</button></td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+<script src="https://unpkg.com/vue"></script>
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+<script>
+    var app = new Vue({
+        el: '#app',
+        data: {
+            products: [],
+            user: 'customerXYZ'
+        },
+        created: function () {
+            axios.get('shop/products')
+                .then((response) => {
+                    this.products = response.data
+                })
+                .catch((error) => {
+                    console.log(error);
+                });
+
+        },
+        methods: {
+            buy: function (productName) {
+                axios.post('shop/buy',{
+                    productName: productName,
+                    userName: this.user
+                });
+            }
+        }
+    })
+</script>
+</body>
+</html>

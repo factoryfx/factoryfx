@@ -7,7 +7,7 @@ import java.util.function.Function;
 import de.factoryfx.data.Data;
 import de.factoryfx.javafx.data.editor.data.DataEditor;
 import de.factoryfx.javafx.data.util.UniformDesign;
-import de.factoryfx.javafx.data.widget.CloseAwareWidget;
+import de.factoryfx.javafx.data.widget.Widget;
 import de.factoryfx.javafx.data.widget.table.TableControlWidget;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
@@ -17,7 +17,7 @@ import javafx.scene.control.SplitPane;
 import javafx.scene.control.TableView;
 import javafx.scene.layout.BorderPane;
 
-public class TableDataViewWidget<T extends Data> implements CloseAwareWidget {
+public class TableDataViewWidget<T extends Data> implements Widget {
 
     private final TableDataView<T> tableDataView;
     private final DataEditor dataEditor;
@@ -51,13 +51,7 @@ public class TableDataViewWidget<T extends Data> implements CloseAwareWidget {
     }
 
     @Override
-    public void closeNotifier() {
-//        listener.changed(null, null, null);
-    }
-
-    @Override
     public Node createContent() {
-//        MasterDetailPane pane = new MasterDetailPane();
         SplitPane splitPane = new SplitPane();
         splitPane.setOrientation(Orientation.VERTICAL);
 

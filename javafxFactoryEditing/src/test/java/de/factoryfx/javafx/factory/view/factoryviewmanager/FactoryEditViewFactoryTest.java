@@ -16,7 +16,7 @@ public class FactoryEditViewFactoryTest {
     }
     @Test
     public void test_generics(){
-        FactoryEditViewFactory<Void,DummyRoot,Void,DummyRoot,Void> factoryEditViewFactory = new FactoryEditViewFactory<>();
+        FactoryEditViewFactory<Void,DummyRoot,Void> factoryEditViewFactory = new FactoryEditViewFactory<>();
         factoryEditViewFactory.dataEditorFactory.set(new SimpleFactoryBase<DataEditor,Void,DummyRoot>(){
             @Override
             public DataEditor createImpl() {

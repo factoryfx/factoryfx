@@ -1,6 +1,7 @@
 package de.factoryfx.factory.validator;
 
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,11 +23,11 @@ public class FactoryValidatorTest {
         for (Class<? extends FactoryBase> clazz: new ClasspathBasedFactoryProvider().get(ExampleFactoryA.class)){
 
             try {
-                final List<FactoryStyleValidation> factoryValidations = factoryStyleValidator.createFactoryValidations(clazz.newInstance());
+                final List<FactoryStyleValidation> factoryValidations = factoryStyleValidator.createFactoryValidations(clazz.getConstructor().newInstance());
                 for (FactoryStyleValidation factoryStyleValidation: factoryValidations){
                     result.add(new Object[]{factoryStyleValidation,clazz.getName()+":"+factoryStyleValidation.getClass().getSimpleName()});
                 }
-            } catch (InstantiationException | IllegalAccessException e) {
+            } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
                 throw new RuntimeException(e);
             }
 //            result.add(new Object[]{clazz});

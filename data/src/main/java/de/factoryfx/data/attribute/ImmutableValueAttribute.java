@@ -183,10 +183,10 @@ public abstract class ImmutableValueAttribute<T,A extends Attribute<T,A>> extend
 
     @Override
     @SuppressWarnings("unchecked")
-    public List<ValidationError> internal_validate(Data parent) {
+    public List<ValidationError> internal_validate(Data parent,String attributeVariableName) {
         if (!nullable){
             this.validation(requiredValidation);// to minimise object creations
         }
-        return super.internal_validate(parent);
+        return super.internal_validate(parent, attributeVariableName);
     }
 }

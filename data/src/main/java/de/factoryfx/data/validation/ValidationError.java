@@ -11,11 +11,13 @@ public class ValidationError {
     private final LanguageText validationDescription;
     private final Attribute<?,?> attribute;
     private final Data parent;
+    private final String attributeVariableName;
 
-    public ValidationError(LanguageText validationDescription, Attribute<?,?> attribute, Data parent) {
+    public ValidationError(LanguageText validationDescription, Attribute<?,?> attribute, Data parent, String attributeVariableName) {
         this.validationDescription = validationDescription;
         this.attribute = attribute;
         this.parent = parent;
+        this.attributeVariableName= attributeVariableName;
     }
 
     public boolean isErrorFor(Attribute<?,?> attribute){
@@ -27,15 +29,21 @@ public class ValidationError {
     }
 
     public String validationDescriptionForChild(Locale locale){
-        return parent.internal().getDisplayText()+" | "+ attribute.internal_getPreferredLabelText(locale)+" | "+validationDescription.internal_getPreferred(locale);
+        return parent.internal().getDisplayText()+" | "+ attributeDescription(locale)+" | "+validationDescription.internal_getPreferred(locale);
     }
 
     public String attributeDescription(Locale locale){
-        return attribute.internal_getPreferredLabelText(locale);
+        String label = attribute.internal_getPreferredLabelText(locale);
+        if (label.isEmpty()){
+            label=attributeVariableName;
+        }
+        return label;
     }
 
 
     public String getSimpleErrorDescription(){
-        return parent.getClass()+" | "+validationDescriptionForChild(Locale.ENGLISH);
+        return "        Factory class: "+parent.getClass()+
+                "\n        Attribute: "+attributeDescription(Locale.ENGLISH)+
+                "\n        Error: "+validationDescription.internal_getPreferred(Locale.ENGLISH);
     }
 }

@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 
 import de.factoryfx.data.Data;
 import de.factoryfx.javafx.UniformDesignBuilder;
+import de.factoryfx.javafx.css.CssUtil;
 import de.factoryfx.javafx.data.editor.attribute.AttributeEditorBuilder;
 import de.factoryfx.javafx.data.editor.data.DataEditor;
 import de.factoryfx.javafx.data.editor.data.ExampleData1;
@@ -63,10 +64,10 @@ public class DataTreeViewWidgetTest extends Application{
             dataTreeItem.getChildren().addAll(item.referenceListAttribute.stream().map((Function<ExampleData2, TreeItem<Data>>) value -> new TreeItem<>(value)).collect(Collectors.toList()));
             dataTreeItem.setExpanded(true);
             return dataTreeItem;
-        }),dataEditor,uniformDesign);
+        }),dataEditor);
 
         BorderPane root = new BorderPane();
-        root.getStylesheets().add(getClass().getResource("/de/factoryfx/javafx/css/app.css").toExternalForm());
+        CssUtil.addToNode(root);
         root.setCenter(dataViewWidget.createContent());
         primaryStage.setScene(new Scene(root, 1200, 800));
 

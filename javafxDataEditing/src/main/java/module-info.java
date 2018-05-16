@@ -28,5 +28,6 @@ module de.factoryfx.javafxDataEditing {
     exports de.factoryfx.javafx.data.widget.tree;
     exports de.factoryfx.javafx.data.widget.validation;
 
-
+    exports de.factoryfx.javafx.css;
+    opens de.factoryfx.javafx.css;
 }

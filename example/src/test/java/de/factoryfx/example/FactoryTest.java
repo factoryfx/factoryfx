@@ -1,10 +1,11 @@
 package de.factoryfx.example;
 
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 
-import de.factoryfx.example.factory.ShopFactory;
+import de.factoryfx.example.server.ServerRootFactory;
 import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.factory.util.ClasspathBasedFactoryProvider;
 import de.factoryfx.factory.validator.FactoryStyleValidation;
@@ -20,14 +21,14 @@ public class FactoryTest {
     public static Iterable<Object[]> data1() throws IOException {
         List<Object[]> result = new ArrayList<>();
         final FactoryStyleValidator factoryStyleValidator = new FactoryStyleValidator();
-        for (Class<? extends FactoryBase> clazz: new ClasspathBasedFactoryProvider().get(ShopFactory.class)){
+        for (Class<? extends FactoryBase> clazz: new ClasspathBasedFactoryProvider().get(ServerRootFactory.class)){
 
             try {
-                final List<FactoryStyleValidation> factoryValidations = factoryStyleValidator.createFactoryValidations(clazz.newInstance());
+                final List<FactoryStyleValidation> factoryValidations = factoryStyleValidator.createFactoryValidations(clazz.getConstructor().newInstance());
                 for (FactoryStyleValidation factoryStyleValidation: factoryValidations){
                     result.add(new Object[]{factoryStyleValidation,clazz.getName()+":"+factoryStyleValidation.getClass().getSimpleName()});
                 }
-            } catch (InstantiationException | IllegalAccessException e) {
+            } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
                 throw new RuntimeException(e);
             }
 //            result.add(new Object[]{clazz});

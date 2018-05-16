@@ -3,15 +3,14 @@ package de.factoryfx.javafx.factory.view.factoryviewmanager;
 import static javafx.scene.control.Alert.AlertType.CONFIRMATION;
 
 import java.io.File;
-import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
 
 import de.factoryfx.data.Data;
-import de.factoryfx.data.merge.AttributeDiffInfo;
 import de.factoryfx.data.merge.MergeDiffInfo;
 import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.factory.log.FactoryUpdateLog;
+import de.factoryfx.javafx.css.CssUtil;
 import de.factoryfx.javafx.data.editor.data.DataEditor;
 import de.factoryfx.javafx.factory.util.LongRunningActionExecutor;
 import de.factoryfx.javafx.data.util.UniformDesign;
@@ -39,10 +38,10 @@ import org.controlsfx.glyphfont.FontAwesome;
  *
  * @param <R> server root
  */
-public class FactoryEditView<V,R extends FactoryBase<?,V,R>,S> implements Widget, FactoryRootChangeListener<R> {
+public class FactoryEditView<V,R extends FactoryBase<?,V,R>> implements Widget, FactoryRootChangeListener<R> {
 
     private final LongRunningActionExecutor LongRunningActionExecutor;
-    private final FactoryEditManager<V,R,S> factoryManager;
+    private final FactoryEditManager<V,R> factoryManager;
     private final FactoryAwareWidget<R> content;
     private final UniformDesign uniformDesign;
     private final DataEditor dataEditor;
@@ -50,7 +49,7 @@ public class FactoryEditView<V,R extends FactoryBase<?,V,R>,S> implements Widget
     private final DiffDialogBuilder diffDialogBuilder;
     private final SimpleObjectProperty<Data> selectedFactory;
 
-    public FactoryEditView(LongRunningActionExecutor longRunningActionExecutor, FactoryEditManager<V,R,S> factoryManager, FactoryAwareWidget<R> content, UniformDesign uniformDesign, DataEditor dataEditor, DiffDialogBuilder diffDialogBuilder) {
+    public FactoryEditView(LongRunningActionExecutor longRunningActionExecutor, FactoryEditManager<V,R> factoryManager, FactoryAwareWidget<R> content, UniformDesign uniformDesign, DataEditor dataEditor, DiffDialogBuilder diffDialogBuilder) {
         this.LongRunningActionExecutor = longRunningActionExecutor;
         this.factoryManager = factoryManager;
         this.content = content;
@@ -58,11 +57,6 @@ public class FactoryEditView<V,R extends FactoryBase<?,V,R>,S> implements Widget
         this.dataEditor = dataEditor;
         this.diffDialogBuilder = diffDialogBuilder;
         this.selectedFactory = content.selectedFactory();
-    }
-
-    @Override
-    public void closeNotifier() {
-        factoryManager.removeListener(this);
     }
 
     @Override
@@ -167,26 +161,6 @@ public class FactoryEditView<V,R extends FactoryBase<?,V,R>,S> implements Widget
             toolBar.getItems().add(new Separator());
         }
 
-        {
-            final Button factoryHistory = new Button("");
-            factoryHistory.setTooltip(new Tooltip("Factory History"));
-            uniformDesign.addIcon(factoryHistory, FontAwesome.Glyph.HISTORY);
-            factoryHistory.setOnAction(event -> {
-
-                LongRunningActionExecutor.execute(() -> {
-                    LongRunningActionExecutor.execute(() -> {
-                        final List<AttributeDiffInfo> diff = factoryManager.getSingleFactoryHistory(selectedFactory.get().getId());
-                        Platform.runLater(() -> {
-//                            diffDialogBuilder.createDiffDialog(diff, "Änderungen",factoryHistory.getScene().getWindow());
-                        });
-                    });
-                    factoryManager.reset();
-                });
-            });
-            factoryHistory.disableProperty().bind(selectedFactory.isNull());
-            toolBar.getItems().add(factoryHistory);
-        }
-
 
         borderPane.setTop(toolBar);
 
@@ -245,7 +219,8 @@ public class FactoryEditView<V,R extends FactoryBase<?,V,R>,S> implements Widget
         dialog.getDialogPane().setContent(pane);
         dialog.setResizable(true);
 
-        dialog.getDialogPane().getStylesheets().add(getClass().getResource("/de/factoryfx/javafx/css/app.css").toExternalForm());
+
+        CssUtil.addToNode(dialog.getDialogPane());
 
         dialog.getDialogPane().lookupButton(ButtonType.OK).disableProperty().bind(validationWidget.isValid().not().or(comment.textProperty().isEmpty()));
 

@@ -49,10 +49,10 @@ public class FactoryPolymorphicUtil<L> {
             try {
                 ArrayList<FactoryBase<? extends L, ?, ?>> result = new ArrayList<>();
                 for (Class<?> clazz: possibleFactoriesClasses){
-                    result.add((FactoryBase<L, ?, ?>) clazz.newInstance());
+                    result.add((FactoryBase<L, ?, ?>) clazz.getConstructor().newInstance());
                 }
                 return result;
-            } catch (InstantiationException | IllegalAccessException e) {
+            } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
                 throw new RuntimeException(e);
             }
         });

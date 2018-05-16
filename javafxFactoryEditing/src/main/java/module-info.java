@@ -7,6 +7,8 @@ module de.factoryfx.javafxFactoryEditing {
     requires de.factoryfx.microserviceRestClient;
     requires controlsfx;
 
+    exports de.factoryfx.javafx.factory;
+
     exports de.factoryfx.javafx.factory.view;
     exports de.factoryfx.javafx.factory.view.factoryviewmanager;
     exports de.factoryfx.javafx.factory.view.container;
@@ -21,4 +23,5 @@ module de.factoryfx.javafxFactoryEditing {
     exports de.factoryfx.javafx.factory.widget.factory.factorylog;
     exports de.factoryfx.javafx.factory.widget.factory.history;
     exports de.factoryfx.javafx.factory.widget.factory.diffdialog;
+    exports de.factoryfx.javafx.factory.widget.factory.datatree;
 }

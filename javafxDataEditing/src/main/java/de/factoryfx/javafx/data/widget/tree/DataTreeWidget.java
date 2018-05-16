@@ -1,11 +1,11 @@
 package de.factoryfx.javafx.data.widget.tree;
 
-import com.google.common.collect.TreeTraverser;
+import com.google.common.graph.Traverser;
 import de.factoryfx.data.Data;
 import de.factoryfx.javafx.data.editor.data.DataEditor;
 import de.factoryfx.javafx.data.util.DataTextFieldTreeCell;
 import de.factoryfx.javafx.data.util.UniformDesign;
-import de.factoryfx.javafx.data.widget.CloseAwareWidget;
+import de.factoryfx.javafx.data.widget.Widget;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.scene.Node;
@@ -17,27 +17,27 @@ import javafx.scene.control.SplitPane;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 
-public class DataTreeWidget implements CloseAwareWidget {
-    private final Data root;
+public class DataTreeWidget implements Widget {
+    private Data root;
     private final DataEditor dataEditor;
     private final UniformDesign uniformDesign;
+    private final SplitPane splitPane = new SplitPane();
 
-    public DataTreeWidget(DataEditor dataEditor, Data root, UniformDesign uniformDesign) {
+    public DataTreeWidget(DataEditor dataEditor, UniformDesign uniformDesign) {
         this.dataEditor=dataEditor;
-        this.root = root;
         this.uniformDesign = uniformDesign;
     }
 
-    @Override
-    public void closeNotifier() {
-//        listener.changed(null, null, null);
+    public void edit(Data root){
+       this.root=root;
+
+        splitPane.getItems().setAll(dataEditor.createContent(),createTree());
+        splitPane.setDividerPosition(0,0.75);
+        dataEditor.edit(root);
     }
 
     @Override
     public Node createContent() {
-        SplitPane splitPane = new SplitPane();
-        splitPane.getItems().addAll(dataEditor.createContent(),createTree());
-        splitPane.setDividerPosition(0,0.75);
         return splitPane;
     }
     
@@ -63,7 +63,7 @@ public class DataTreeWidget implements CloseAwareWidget {
                 }
 
                 tree.getSelectionModel().clearSelection();
-                for (TreeItem<TreeData> item : treeViewTraverser.breadthFirstTraversal(tree.getRoot())) {
+                for (TreeItem<TreeData> item : treeViewTraverser.breadthFirst(tree.getRoot())) {
                     programmaticallySelect=true;
                     if (item.getValue().match(newValue)) {
                         tree.getSelectionModel().select(item);
@@ -83,7 +83,7 @@ public class DataTreeWidget implements CloseAwareWidget {
         ContextMenu contextMenu = new ContextMenu();
         MenuItem menuItem = new MenuItem("expand all");
         menuItem.setOnAction(event -> {
-            for (TreeItem<TreeData> item : treeViewTraverser.breadthFirstTraversal(tree.getRoot())) {
+            for (TreeItem<TreeData> item : treeViewTraverser.breadthFirst(tree.getRoot())) {
                 item.setExpanded(true);
             }
         });
@@ -93,12 +93,7 @@ public class DataTreeWidget implements CloseAwareWidget {
         return scrollPane;
     }
 
-    TreeTraverser<TreeItem<TreeData>> treeViewTraverser = new TreeTraverser<TreeItem<TreeData>>() {
-        @Override
-        public Iterable<TreeItem<TreeData>> children(TreeItem<TreeData> data) {
-            return data.getChildren();
-        }
-    };
+    private Traverser<TreeItem<TreeData>> treeViewTraverser =  Traverser.forTree(TreeItem::getChildren);
 
     long lastSize=0;
     private boolean treeStructureChanged(Data root){
@@ -119,7 +114,7 @@ public class DataTreeWidget implements CloseAwareWidget {
             TreeItem<TreeData> dataTreeItem = new TreeItem<>(new TreeData(data,null));
             data.internal().visitAttributesFlat((attributeVariableName, attribute) -> {
                 attribute.internal_visit(data1 -> {
-                    TreeItem<TreeData> refDataTreeItem = new TreeItem<>(new TreeData(null,uniformDesign.getLabelText(attribute)));
+                    TreeItem<TreeData> refDataTreeItem = new TreeItem<>(new TreeData(null,uniformDesign.getLabelText(attribute,attributeVariableName)));
                     dataTreeItem.getChildren().add(refDataTreeItem);
 
                     final TreeItem<TreeData> treeItem = constructTree(data1);

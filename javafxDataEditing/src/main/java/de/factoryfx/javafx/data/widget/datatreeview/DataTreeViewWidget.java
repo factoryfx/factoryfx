@@ -1,11 +1,10 @@
 package de.factoryfx.javafx.data.widget.datatreeview;
 
-import com.google.common.collect.TreeTraverser;
+import com.google.common.graph.Traverser;
 import de.factoryfx.data.Data;
 import de.factoryfx.javafx.data.editor.data.DataEditor;
 import de.factoryfx.javafx.data.util.DataTextFieldTreeCell;
-import de.factoryfx.javafx.data.util.UniformDesign;
-import de.factoryfx.javafx.data.widget.CloseAwareWidget;
+import de.factoryfx.javafx.data.widget.Widget;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.geometry.Orientation;
 import javafx.scene.Node;
@@ -14,26 +13,18 @@ import javafx.scene.control.SplitPane;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 
-public class DataTreeViewWidget<T extends Data> implements CloseAwareWidget {
+public class DataTreeViewWidget<T extends Data> implements Widget {
     private final DataTreeView<T> dataTreeView;
     private final DataEditor dataEditor;
     private double dividerPosition = 0.333;
-    private final UniformDesign uniformDesign;
 
-    public DataTreeViewWidget(DataTreeView<T> dataTreeView, DataEditor dataEditor, UniformDesign uniformDesign) {
+    public DataTreeViewWidget(DataTreeView<T> dataTreeView, DataEditor dataEditor) {
         this.dataTreeView = dataTreeView;
         this.dataEditor = dataEditor;
-        this.uniformDesign = uniformDesign;
-    }
-
-    @Override
-    public void closeNotifier() {
-//        listener.changed(null, null, null);
     }
 
     @Override
     public Node createContent() {
-//        MasterDetailPane pane = new MasterDetailPane();
         dataEditor.reset();
 
         SplitPane splitPane = new SplitPane();
@@ -63,7 +54,7 @@ public class DataTreeViewWidget<T extends Data> implements CloseAwareWidget {
 
         dataTreeView.setUpdateAction(dataTreeItem -> {
             tree.setRoot(dataTreeItem);
-            for (TreeItem<Data> treeItem: treeTraverser.breadthFirstTraversal(dataTreeItem)){
+            for (TreeItem<Data> treeItem: treeTraverser.breadthFirst(dataTreeItem)){
                 if (treeItem.getValue()==dataEditor.editData().get()){
                     tree.getSelectionModel().select(treeItem);
                 }
@@ -74,12 +65,7 @@ public class DataTreeViewWidget<T extends Data> implements CloseAwareWidget {
         return splitPane;
     }
 
-    TreeTraverser<TreeItem<Data>> treeTraverser = new TreeTraverser<TreeItem<Data>>() {
-        @Override
-        public Iterable<TreeItem<Data>> children(TreeItem<Data> data) {
-            return data.getChildren();
-        }
-    };
+    Traverser<TreeItem<Data>> treeTraverser = Traverser.forGraph(TreeItem::getChildren);
 
     public DataTreeViewWidget setDividerPositions(double dividerPosition) {
         this.dividerPosition = dividerPosition;

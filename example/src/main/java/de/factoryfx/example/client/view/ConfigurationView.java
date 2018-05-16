@@ -1,33 +1,29 @@
 package de.factoryfx.example.client.view;
 
-import de.factoryfx.example.factory.ShopFactory;
-import de.factoryfx.javafx.data.editor.data.DataEditor;
-import de.factoryfx.javafx.data.util.UniformDesign;
+import de.factoryfx.example.server.ServerRootFactory;
 import de.factoryfx.javafx.factory.view.factoryviewmanager.FactoryAwareWidget;
 import de.factoryfx.javafx.data.widget.tree.DataTreeWidget;
 import javafx.scene.Node;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
 
-public class ConfigurationView implements FactoryAwareWidget<ShopFactory> {
+public class ConfigurationView implements FactoryAwareWidget<ServerRootFactory> {
 
-    private final UniformDesign uniformDesign;
-    private final DataEditor dataEditor;
+    private final DataTreeWidget dataTreeWidget;
 
-    public ConfigurationView(UniformDesign uniformDesign, DataEditor dataEditor) {
-        this.uniformDesign = uniformDesign;
-        this.dataEditor = dataEditor;
+    public ConfigurationView(DataTreeWidget dataTreeWidget) {
+        this.dataTreeWidget = dataTreeWidget;
     }
 
     @Override
-    public Node init(ShopFactory serverFactory) {
+    public Node init(ServerRootFactory serverFactory) {
         StackPane root = new StackPane();
 
         BorderPane content = new BorderPane();
         root.getChildren().add(content);
 
-        content.setCenter(new DataTreeWidget(dataEditor, serverFactory, uniformDesign).createContent());
-        dataEditor.edit(serverFactory);
+        content.setCenter(dataTreeWidget.createContent());
+        dataTreeWidget.edit(serverFactory);
         return content;
     }
 }
