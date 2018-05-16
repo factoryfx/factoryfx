@@ -2,6 +2,7 @@ package de.factoryfx.example;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,15 +23,17 @@ public class FactoryTest {
         List<Object[]> result = new ArrayList<>();
         final FactoryStyleValidator factoryStyleValidator = new FactoryStyleValidator();
         for (Class<? extends FactoryBase> clazz: new ClasspathBasedFactoryProvider().get(ServerRootFactory.class)){
-
-            try {
-                final List<FactoryStyleValidation> factoryValidations = factoryStyleValidator.createFactoryValidations(clazz.getConstructor().newInstance());
-                for (FactoryStyleValidation factoryStyleValidation: factoryValidations){
-                    result.add(new Object[]{factoryStyleValidation,clazz.getName()+":"+factoryStyleValidation.getClass().getSimpleName()});
+            if (!Modifier.isAbstract( clazz.getModifiers() )){
+                try {
+                    final List<FactoryStyleValidation> factoryValidations = factoryStyleValidator.createFactoryValidations(clazz.getConstructor().newInstance());
+                    for (FactoryStyleValidation factoryStyleValidation: factoryValidations){
+                        result.add(new Object[]{factoryStyleValidation,clazz.getName()+":"+factoryStyleValidation.getClass().getSimpleName()});
+                    }
+                } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
+                    throw new RuntimeException(e);
                 }
-            } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
-                throw new RuntimeException(e);
             }
+
 //            result.add(new Object[]{clazz});
         }
 
