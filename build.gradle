@@ -1,6 +1,13 @@
-
-
-
+buildscript {
+    repositories {
+        maven {
+            url "https://plugins.gradle.org/m2/"
+        }
+    }
+    dependencies {
+        classpath "gradle.plugin.com.github.spotbugs:spotbugs-gradle-plugin:1.6.1"
+    }
+}
 
 apply plugin: 'idea'
 idea {
@@ -16,12 +23,15 @@ wrapper {
 }
 
 
+
 subprojects {
     apply plugin: 'java'
-//    apply plugin: 'findbugs'
+    apply plugin: "com.github.spotbugs"
 
     apply plugin: 'maven'
     apply plugin: 'signing'
+
+
 
     compileJava {
         inputs.property("moduleName", "de.factoryfx.$project.name")
@@ -146,12 +156,12 @@ subprojects {
         testCompile group: 'org.mockito', name: 'mockito-all', version: '1.9.5'
     }
 
-//    findbugs {
-//        sourceSets = [sourceSets.main]
+    spotbugs {
+        sourceSets = [sourceSets.main]
 //        toolVersion = "3.0.1"
-//        ignoreFailures = true
-//        excludeFilter = file("$rootProject.projectDir/findbugs/findbugs-exclude-filter.xml")
-//    }
+        ignoreFailures = true
+        excludeFilter = file("$rootProject.projectDir/findbugs/findbugs-exclude-filter.xml")
+    }
 
 
     //that is the new publish plugin that doesn't work with maven central
@@ -222,6 +232,10 @@ project(':microserviceRestIntegrationTest') {
         compile project(":microserviceRestServer")
         compile project(":microserviceRestClient")
         compile group: 'ch.qos.logback', name: 'logback-classic', version: '1.1.7'
+    }
+
+    spotbugs {
+        sourceSets = []
     }
 }
 
