@@ -9,12 +9,12 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.function.Supplier;
 
-public class OracledbFactoryStorageFuture<R extends Data,S> {
+public class OracledbDataStorageFuture<R extends Data,S> {
 
     private final DataSerialisationManager<R,S> dataSerialisationManager;
     private final Supplier<Connection> connectionSupplier;
 
-    public OracledbFactoryStorageFuture(Supplier<Connection> connectionSupplier, DataSerialisationManager<R,S> dataSerialisationManager){
+    public OracledbDataStorageFuture(Supplier<Connection> connectionSupplier, DataSerialisationManager<R,S> dataSerialisationManager){
         this.connectionSupplier = connectionSupplier;
         this.dataSerialisationManager = dataSerialisationManager;
 

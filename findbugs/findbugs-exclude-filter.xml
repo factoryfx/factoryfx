@@ -44,45 +44,24 @@
 
 
 
-
-    <Match>
-        <Class name="de.factoryfx.testutils.SingleProcessInstanceUtil"/>
-        <Bug pattern="REC_CATCH_EXCEPTION"/>
-    </Match>
-    <Match>
-        <Class name="de.factoryfx.testutils.SingleProcessInstanceUtil"/>
-        <Bug pattern="DE_MIGHT_IGNORE"/>
-    </Match>
-
-    <Match>
-        <Class name="de.factoryfx.util.user.persistent.UserFactory" />
-        <Bug pattern="MS_SHOULD_BE_FINAL" />
-    </Match>
-
-    <!-- false positive -->
-    <Match>
-        <Class name="de.factoryfx.javafx.factory.widget.datalistedit.DataListEditWidget" />
-        <Bug pattern="UC_USELESS_OBJECT" />
-    </Match>
-
     <!-- yes the servlet is mutable that's the point of the class -->
     <Match>
-        <Class name="de.factoryfx.servlet.UpdateableServlet" />
+        <Class name="de.factoryfx.jetty.UpdateableServlet" />
         <Bug pattern="MSF_MUTABLE_SERVLET_FIELD" />
     </Match>
 
     <Match>
-        <Class name="de.factoryfx.factory.datastorage.oracle.OracledbFactoryStorageHistory" />
+        <Class name="de.factoryfx.factory.datastorage.oracle.OracledbDataStorageFuture" />
         <Bug pattern="OBL_UNSATISFIED_OBLIGATION" />
     </Match>
 
     <Match>
-        <Class name="de.factoryfx.factory.datastorage.oracle.OracledbFactoryStorage" />
+        <Class name="de.factoryfx.factory.datastorage.oracle.OracledbDataStorage" />
         <Bug pattern="OBL_UNSATISFIED_OBLIGATION" />
     </Match>
 
     <Match>
-        <Class name="de.factoryfx.javafx.factory.widget.datalistedit.ReferenceListAttributeEditWidget" />
+        <Class name="de.factoryfx.javafx.data.widget.datalistedit.ReferenceListAttributeEditWidget" />
         <Bug pattern="UC_USELESS_OBJECT" />
     </Match>
 
