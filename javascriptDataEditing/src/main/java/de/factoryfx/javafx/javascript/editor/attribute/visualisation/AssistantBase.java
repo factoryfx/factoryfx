@@ -33,6 +33,7 @@ public abstract class AssistantBase<I,R> implements Consumer<I> {
         }
     }
 
+    @SuppressWarnings("deprecation") //FIXME the finalize looks wrong
     @Override
     protected final void finalize(){
         dispose();

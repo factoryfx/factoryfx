@@ -4,7 +4,7 @@ import de.factoryfx.data.Data;
 import de.factoryfx.javafx.data.editor.data.DataEditor;
 import de.factoryfx.javafx.data.util.DataObservableDisplayText;
 import de.factoryfx.javafx.data.util.UniformDesign;
-import de.factoryfx.javafx.data.widget.CloseAwareWidget;
+import de.factoryfx.javafx.data.widget.Widget;
 import de.factoryfx.javafx.data.widget.table.TableControlWidget;
 import javafx.geometry.Orientation;
 import javafx.scene.Node;
@@ -13,7 +13,7 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.layout.BorderPane;
 
-public class DataViewWidget<T extends Data> implements CloseAwareWidget {
+public class DataViewWidget<T extends Data> implements Widget {
     private final DataView<T> dataView;
     private final DataEditor dataEditor;
     private double dividerPosition = 0.333;
@@ -33,13 +33,7 @@ public class DataViewWidget<T extends Data> implements CloseAwareWidget {
     }
 
     @Override
-    public void closeNotifier() {
-//        listener.changed(null, null, null);
-    }
-
-    @Override
     public Node createContent() {
-//        MasterDetailPane pane = new MasterDetailPane();
         dataEditor.reset();
         SplitPane splitPane = new SplitPane();
         splitPane.setOrientation(orientation);

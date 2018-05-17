@@ -5,13 +5,13 @@ import java.util.Locale;
 import de.factoryfx.data.attribute.primitive.BooleanAttribute;
 
 import de.factoryfx.data.attribute.types.LocaleAttribute;
-import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.factory.SimpleFactoryBase;
 import de.factoryfx.javafx.data.attribute.ColorAttribute;
 import de.factoryfx.javafx.data.util.UniformDesign;
+import de.factoryfx.javafx.factory.RichClientRoot;
 import javafx.scene.paint.Color;
 
-public class UniformDesignFactory<V,R extends FactoryBase<?,V,R>> extends SimpleFactoryBase<UniformDesign,V,R> {
+public class UniformDesignFactory extends SimpleFactoryBase<UniformDesign,Void,RichClientRoot> {
 
     public final LocaleAttribute locale=new LocaleAttribute().en("locale").defaultValue(Locale.ENGLISH);
     public final ColorAttribute dangerColor=new ColorAttribute().en("dangerColor").defaultValue(Color.web("#FF7979"));

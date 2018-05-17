@@ -1,23 +1,17 @@
 package de.factoryfx.example.client.view;
 
-import de.factoryfx.example.client.RichClientRoot;
+import de.factoryfx.example.server.ServerRootFactory;
 import de.factoryfx.factory.atrribute.FactoryReferenceAttribute;
-import de.factoryfx.javafx.factory.editor.DataEditorFactory;
-import de.factoryfx.javafx.data.editor.data.DataEditor;
-import de.factoryfx.javafx.data.util.UniformDesign;
-import de.factoryfx.javafx.factory.util.UniformDesignFactory;
+import de.factoryfx.javafx.data.widget.tree.DataTreeWidget;
 import de.factoryfx.javafx.factory.view.factoryviewmanager.FactoryAwareWidget;
 import de.factoryfx.javafx.factory.view.factoryviewmanager.FactoryAwareWidgetFactory;
+import de.factoryfx.javafx.factory.widget.factory.datatree.DataTreeWidgetFactory;
 
-public class ConfigurationViewFactory extends FactoryAwareWidgetFactory {
-    public final FactoryReferenceAttribute<UniformDesign, UniformDesignFactory<Void,RichClientRoot>> uniformDesign = new FactoryReferenceAttribute<UniformDesign, UniformDesignFactory<Void,RichClientRoot>>()
-        .setupUnsafe(UniformDesignFactory.class)
-        .de("uniformDesign")
-        .en("uniformDesign");
-    public final FactoryReferenceAttribute<DataEditor, DataEditorFactory<Void,RichClientRoot>> dataEditorFactory = new FactoryReferenceAttribute<>();
+public class ConfigurationViewFactory extends FactoryAwareWidgetFactory<ServerRootFactory> {
+    public final FactoryReferenceAttribute<DataTreeWidget, DataTreeWidgetFactory> dataTreeWidget = new FactoryReferenceAttribute<>(DataTreeWidgetFactory.class);
 
     @Override
-    protected FactoryAwareWidget createWidget() {
-        return new ConfigurationView(uniformDesign.instance(), dataEditorFactory.instance());
+    protected FactoryAwareWidget<ServerRootFactory> createWidget() {
+        return new ConfigurationView(dataTreeWidget.instance());
     }
 }

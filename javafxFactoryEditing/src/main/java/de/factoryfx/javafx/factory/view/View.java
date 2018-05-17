@@ -1,58 +1,65 @@
 package de.factoryfx.javafx.factory.view;
 
-import java.util.Optional;
-
+import de.factoryfx.javafx.css.CssUtil;
 import de.factoryfx.javafx.factory.view.container.ViewsDisplayWidget;
 import de.factoryfx.javafx.data.widget.Widget;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.value.ObservableValue;
-import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.control.Tab;
+import javafx.stage.Stage;
 
 public class View implements Widget {
 
-    private final SimpleStringProperty title = new SimpleStringProperty();
-
+    private final ViewDescription viewDescription;
     private final Widget viewContent;
-    private ViewsDisplayWidget viewsDisplayWidget;
-    private boolean isShowing;
-    private Optional<Runnable> closeListener = Optional.empty();
+    private final ViewsDisplayWidget viewsDisplayWidget;
 
-    public View(String title, ViewsDisplayWidget viewsDisplayWidget, Widget viewContent) {
-        this.title.set(title);
+
+    public View(ViewDescription viewDescription, ViewsDisplayWidget viewsDisplayWidget, Widget viewContent) {
+        this.viewDescription = viewDescription;
         this.viewsDisplayWidget = viewsDisplayWidget;
         this.viewContent = viewContent;
     }
 
     public void close() {
-        viewContent.closeNotifier();
-        isShowing = false;
         viewsDisplayWidget.close(this);
-        closeListener.ifPresent(Runnable::run);
     }
 
     @Override
-    public Node createContent() {
+    public Parent createContent() {
         final ScrollPane scrollPane = new ScrollPane(viewContent.createContent());
         scrollPane.setFitToWidth(true);
         scrollPane.setFitToHeight(true);
         return scrollPane;
     }
 
-    public boolean isShowing() {
-        return isShowing;
-    }
-
-    public void setCloseListener(Runnable closeListener) {
-        this.closeListener = Optional.of(closeListener);
-    }
-
     public void show() {
         viewsDisplayWidget.show(this);
-        isShowing = true;
     }
 
-    public ObservableValue<? extends String> titleProperty() {
-        return title;
+    public Tab createTab(){
+        final Tab tab = new Tab();
+        viewDescription.describeTabView(tab);
+
+        tab.setContent(createContent());
+        tab.setOnClosed(event -> close());
+        return tab;
+    }
+
+
+    public Stage createStage() {
+        Stage stage = new Stage();
+        viewDescription.describeStageView(stage);
+
+        Scene scene = new Scene(createContent(), 1380, 850);
+        CssUtil.addToScene(scene);
+        stage.setScene(scene);
+        stage.show();
+        stage.setOnCloseRequest(we -> {
+            close();
+        });
+
+        return stage;
     }
 }

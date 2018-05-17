@@ -17,13 +17,13 @@ public class FactoryReferenceAttributeTest {
 
         {
             attribute.set(null);
-            List<ValidationError> validationErrors = attribute.internal_validate(new ExampleFactoryA());
+            List<ValidationError> validationErrors = attribute.internal_validate(new ExampleFactoryA(),"");
             Assert.assertEquals(1, validationErrors.size());
         }
 
         {
             attribute.set(new ExampleFactoryA());
-            List<ValidationError> validationErrors = attribute.internal_validate(new ExampleFactoryA());
+            List<ValidationError> validationErrors = attribute.internal_validate(new ExampleFactoryA(),"");
             Assert.assertEquals(0, validationErrors.size());
         }
     }
@@ -47,13 +47,13 @@ public class FactoryReferenceAttributeTest {
 
         {
             attribute.set(null);
-            List<ValidationError> validationErrors = attribute.internal_validate(new ExampleFactoryA());
+            List<ValidationError> validationErrors = attribute.internal_validate(new ExampleFactoryA(),"");
             Assert.assertEquals(0, validationErrors.size());
         }
 
         {
             attribute.set(new ExampleFactoryA());
-            List<ValidationError> validationErrors = attribute.internal_validate(new ExampleFactoryA());
+            List<ValidationError> validationErrors = attribute.internal_validate(new ExampleFactoryA(),"");
             Assert.assertEquals(0, validationErrors.size());
         }
     }

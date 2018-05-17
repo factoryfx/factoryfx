@@ -31,14 +31,14 @@ public class FactoryEditManagerTest {
     @SuppressWarnings("unchecked")
     public void test_export_import() throws IOException {
         DataSerialisationManager<ExampleFactoryA,Void> serialisationManager = new DataSerialisationManager<>(new JacksonSerialisation<>(1),new JacksonDeSerialisation<>(ExampleFactoryA.class, 1), new ArrayList<>(),1);
-        MicroserviceRestClient<Void,ExampleFactoryA> client = Mockito.mock(MicroserviceRestClient.class);
+        MicroserviceRestClient<Void,ExampleFactoryA,Void> client = Mockito.mock(MicroserviceRestClient.class);
         NewDataMetadata newFactoryMetadata = new NewDataMetadata();
         newFactoryMetadata.dataModelVersion=1;
         DataAndNewMetadata<ExampleFactoryA> value = new DataAndNewMetadata<>(new ExampleFactoryA(), newFactoryMetadata);
         value.root.stringAttribute.set("123");
         Mockito.when(client.prepareNewFactory()).thenReturn(value);
 
-        FactoryEditManager<Void,ExampleFactoryA,Void> factoryEditManager = new FactoryEditManager<>(client, serialisationManager);
+        FactoryEditManager<Void,ExampleFactoryA> factoryEditManager = new FactoryEditManager<>(client, serialisationManager);
         factoryEditManager.runLaterExecuter= Runnable::run;
 
         factoryEditManager.load();
@@ -88,10 +88,10 @@ public class FactoryEditManagerTest {
             microservice.start();
 
 
-            MicroserviceRestClient<Void, ExampleFactoryA> client = Mockito.mock(MicroserviceRestClient.class);
+            MicroserviceRestClient<Void, ExampleFactoryA,Void> client = Mockito.mock(MicroserviceRestClient.class);
             Mockito.when(client.prepareNewFactory()).thenReturn(microservice.prepareNewFactory());
 
-            FactoryEditManager<Void, ExampleFactoryA, Void> factoryEditManager = new FactoryEditManager<>(client, serialisationManager);
+            FactoryEditManager<Void, ExampleFactoryA> factoryEditManager = new FactoryEditManager<>(client, serialisationManager);
             factoryEditManager.runLaterExecuter = Runnable::run;
 
             factoryEditManager.load();
@@ -110,7 +110,7 @@ public class FactoryEditManagerTest {
             microservice.start();
 
 
-            MicroserviceRestClient<Void, ExampleFactoryA> client = Mockito.mock(MicroserviceRestClient.class);
+            MicroserviceRestClient<Void, ExampleFactoryA,Void> client = Mockito.mock(MicroserviceRestClient.class);
             Mockito.when(client.prepareNewFactory()).thenAnswer(invocation -> microservice.prepareNewFactory());
 
             Mockito.when(client.updateCurrentFactory(Mockito.any(DataAndNewMetadata.class),Mockito.anyString())).thenAnswer((Answer) invocation -> {
@@ -118,7 +118,7 @@ public class FactoryEditManagerTest {
                 return microservice.updateCurrentFactory((DataAndNewMetadata<ExampleFactoryA>) args[0],"","",(p)->true);
             });
 
-            FactoryEditManager<Void, ExampleFactoryA, Void> factoryEditManager = new FactoryEditManager<>(client, serialisationManager);
+            FactoryEditManager<Void, ExampleFactoryA> factoryEditManager = new FactoryEditManager<>(client, serialisationManager);
             factoryEditManager.runLaterExecuter = Runnable::run;
 
             factoryEditManager.load();

@@ -30,15 +30,15 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.util.Callback;
 
-public class HistoryWidget<V, R extends FactoryBase<?,V,R>> implements Widget {
+public class HistoryWidget<V, R extends FactoryBase<?,V,R>,S> implements Widget {
 
     private final UniformDesign uniformDesign;
     private final LongRunningActionExecutor longRunningActionExecutor;
-    private final MicroserviceRestClient<V, R> restClient;
+    private final MicroserviceRestClient<V, R,S> restClient;
     private Consumer<List<StoredDataMetadata>> tableUpdater;
     private final DiffDialogBuilder diffDialogBuilder;
 
-    public HistoryWidget(UniformDesign uniformDesign, LongRunningActionExecutor longRunningActionExecutor, MicroserviceRestClient<V, R> restClient, DiffDialogBuilder diffDialogBuilder) {
+    public HistoryWidget(UniformDesign uniformDesign, LongRunningActionExecutor longRunningActionExecutor, MicroserviceRestClient<V, R, S> restClient, DiffDialogBuilder diffDialogBuilder) {
         this.uniformDesign=uniformDesign;
         this.longRunningActionExecutor = longRunningActionExecutor;
         this.restClient= restClient;
@@ -109,7 +109,7 @@ public class HistoryWidget<V, R extends FactoryBase<?,V,R>> implements Widget {
 
     private void update() {
         longRunningActionExecutor.execute(() -> {
-            final Collection<StoredDataMetadata> historyFactoryList = restClient.getHistoryFactoryList();
+            final Collection<StoredDataMetadata<S>> historyFactoryList = restClient.getHistoryFactoryList();
             Platform.runLater(() -> tableUpdater.accept(historyFactoryList.stream().sorted((o1, o2) -> o2.creationTime.compareTo(o1.creationTime)).collect(Collectors.toList())));
         });
     }

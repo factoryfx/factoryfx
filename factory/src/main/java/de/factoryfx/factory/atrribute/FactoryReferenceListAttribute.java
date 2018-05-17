@@ -32,7 +32,7 @@ public class FactoryReferenceListAttribute<L, F extends FactoryBase<? extends L,
         return result;
     }
 
-    public L instance(Predicate<F> filter){
+    public L instances(Predicate<F> filter){
         Optional<F> any = get().stream().filter(filter).findAny();
         return any.map(t -> t.internalFactory().instance()).orElse(null);
     }

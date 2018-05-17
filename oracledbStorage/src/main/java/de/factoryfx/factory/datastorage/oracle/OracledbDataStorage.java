@@ -11,19 +11,19 @@ import java.util.UUID;
 import java.util.function.Supplier;
 
 public class OracledbDataStorage<R extends Data,S> implements DataStorage<R,S> {
-    private final OracledbFactoryStorageHistory<R,S> oracledbFactoryStorageHistory;
-    private final OracledbFactoryStorageFuture<R,S> oracledbFactoryStorageFuture;
+    private final OracledbDataStorageHistory<R,S> oracledbDataStorageHistory;
+    private final OracledbDataStorageFuture<R,S> oracledbDataStorageFuture;
     private final R initialFactory;
     private final DataSerialisationManager<R,S> dataSerialisationManager;
     private final Supplier< Connection > connectionSupplier;
     private final ChangeSummaryCreator<R,S> changeSummaryCreator;
 
-    public OracledbDataStorage(Supplier<Connection> connectionSupplier, R defaultFactory, DataSerialisationManager<R,S> dataSerialisationManager, OracledbFactoryStorageHistory<R,S> oracledbFactoryStorageHistory, OracledbFactoryStorageFuture<R,S> oracledbFactoryStorageFuture, ChangeSummaryCreator<R,S> changeSummaryCreator ){
+    public OracledbDataStorage(Supplier<Connection> connectionSupplier, R defaultFactory, DataSerialisationManager<R,S> dataSerialisationManager, OracledbDataStorageHistory<R,S> oracledbDataStorageHistory, OracledbDataStorageFuture<R,S> oracledbDataStorageFuture, ChangeSummaryCreator<R,S> changeSummaryCreator ){
         this.initialFactory=defaultFactory;
         this.connectionSupplier = connectionSupplier;
         this.dataSerialisationManager = dataSerialisationManager;
-        this.oracledbFactoryStorageHistory = oracledbFactoryStorageHistory;
-        this.oracledbFactoryStorageFuture = oracledbFactoryStorageFuture;
+        this.oracledbDataStorageHistory = oracledbDataStorageHistory;
+        this.oracledbDataStorageFuture = oracledbDataStorageFuture;
         this.changeSummaryCreator=changeSummaryCreator;
 
         try (Connection connection= connectionSupplier.get()){
@@ -44,30 +44,28 @@ public class OracledbDataStorage<R extends Data,S> implements DataStorage<R,S> {
         }
     }
 
-    public OracledbDataStorage(Supplier<Connection> connectionSupplier, R defaultFactory, DataSerialisationManager<R,S> dataSerialisationManager, OracledbFactoryStorageHistory<R,S> oracledbFactoryStorageHistory, OracledbFactoryStorageFuture<R,S> oracledbFactoryStorageFuture){
+    public OracledbDataStorage(Supplier<Connection> connectionSupplier, R defaultFactory, DataSerialisationManager<R,S> dataSerialisationManager, OracledbDataStorageHistory<R,S> oracledbDataStorageHistory, OracledbDataStorageFuture<R,S> oracledbDataStorageFuture){
         this(
             connectionSupplier,
             defaultFactory,
-            dataSerialisationManager,
-            oracledbFactoryStorageHistory,
-            oracledbFactoryStorageFuture,
+            dataSerialisationManager, oracledbDataStorageHistory, oracledbDataStorageFuture,
             (d)->null
         );
 
     }
     public OracledbDataStorage(Supplier< Connection > connectionSupplier, R defaultFactory, DataSerialisationManager<R,S> dataSerialisationManager){
-        this(connectionSupplier,defaultFactory, dataSerialisationManager,new OracledbFactoryStorageHistory<>(connectionSupplier, dataSerialisationManager),
-                new OracledbFactoryStorageFuture<>(connectionSupplier, dataSerialisationManager));
+        this(connectionSupplier,defaultFactory, dataSerialisationManager,new OracledbDataStorageHistory<>(connectionSupplier, dataSerialisationManager),
+                new OracledbDataStorageFuture<>(connectionSupplier, dataSerialisationManager));
     }
 
     @Override
     public R getHistoryFactory(String id) {
-        return oracledbFactoryStorageHistory.getHistoryFactory(id);
+        return oracledbDataStorageHistory.getHistoryFactory(id);
     }
 
     @Override
     public Collection<StoredDataMetadata<S>> getHistoryFactoryList() {
-        return oracledbFactoryStorageHistory.getHistoryFactoryList();
+        return oracledbDataStorageHistory.getHistoryFactoryList();
     }
 
     @Override
@@ -117,7 +115,7 @@ public class OracledbDataStorage<R extends Data,S> implements DataStorage<R,S> {
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-        oracledbFactoryStorageHistory.updateHistory(storedDataMetadata,update.root);
+        oracledbDataStorageHistory.updateHistory(storedDataMetadata,update.root);
     }
 
     @Override
@@ -142,16 +140,16 @@ public class OracledbDataStorage<R extends Data,S> implements DataStorage<R,S> {
 
     @Override
     public Collection<ScheduledDataMetadata<S>> getFutureFactoryList() {
-        return oracledbFactoryStorageFuture.getFutureFactoryList();
+        return oracledbDataStorageFuture.getFutureFactoryList();
     }
 
     @Override
     public void deleteFutureFactory(String id) {
-        oracledbFactoryStorageFuture.deleteFutureFactory(id);
+        oracledbDataStorageFuture.deleteFutureFactory(id);
     }
 
     public R getFutureFactory(String id) {
-        return oracledbFactoryStorageFuture.getFutureFactory(id);
+        return oracledbDataStorageFuture.getFutureFactory(id);
     }
 
     @Override
@@ -167,7 +165,7 @@ public class OracledbDataStorage<R extends Data,S> implements DataStorage<R,S> {
             futureFactoryMetadata.scheduled
         );
 
-        oracledbFactoryStorageFuture.addFuture(storedFactoryMetadata,futureFactory);
+        oracledbDataStorageFuture.addFuture(storedFactoryMetadata,futureFactory);
         return storedFactoryMetadata;
     }
 

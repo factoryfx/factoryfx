@@ -4,12 +4,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Locale;
 
+import com.google.common.base.Strings;
 import de.factoryfx.data.attribute.Attribute;
 import de.factoryfx.data.attribute.types.I18nAttribute;
 import de.factoryfx.data.util.LanguageText;
 import javafx.scene.control.Button;
 import javafx.scene.control.Labeled;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.Tab;
 import javafx.scene.paint.Color;
 import org.controlsfx.glyphfont.FontAwesome;
 import org.controlsfx.glyphfont.Glyph;
@@ -43,18 +45,26 @@ public class UniformDesign {
         this.askBeforeDelete = askBeforeDelete;
     }
 
-    public void addIcon(Labeled component, FontAwesome.Glyph icon) {
-        component.setGraphic(getFontAwesome().create(icon));
-    }
-
-    public void addDangerIcon(Labeled component, FontAwesome.Glyph icon) {
-        component.setGraphic(getFontAwesome().create(icon).color(dangerColor));
-    }
-
     public void addIcon(MenuItem component, FontAwesome.Glyph icon) {
         if (icon != null) {
             component.setGraphic(getFontAwesome().create(icon));
         }
+    }
+
+    public void addIcon(Tab component, FontAwesome.Glyph icon) {
+        if (icon != null) {
+            component.setGraphic(getFontAwesome().create(icon));
+        }
+    }
+
+    public void addIcon(Labeled component, FontAwesome.Glyph icon) {
+        if (icon != null) {
+            component.setGraphic(getFontAwesome().create(icon));
+        }
+    }
+
+    public void addDangerIcon(Labeled component, FontAwesome.Glyph icon) {
+        component.setGraphic(getFontAwesome().create(icon).color(dangerColor));
     }
 
     public Glyph createIcon(FontAwesome.Glyph icon) {
@@ -92,6 +102,14 @@ public class UniformDesign {
 
     public String getLabelText(Attribute<?,?> attribute) {
         return attribute.internal_getPreferredLabelText(locale);
+    }
+
+    public String getLabelText(Attribute<?,?> attribute, String attributeVariableName) {
+        String labelText = attribute.internal_getPreferredLabelText(locale);
+        if (Strings.isNullOrEmpty(labelText)){
+            labelText=attributeVariableName;
+        }
+        return labelText;
     }
 
     public String getTooltipText(Attribute<?,?> attribute) {

@@ -3,7 +3,6 @@ package de.factoryfx.data.attribute;
 import java.util.*;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 
 
 public abstract class ValueSetAttribute<T,A extends Attribute<Set<T>,A>> extends ImmutableValueAttribute<Set<T>,A> implements Set<T> {

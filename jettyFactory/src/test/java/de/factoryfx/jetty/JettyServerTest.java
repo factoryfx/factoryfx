@@ -14,7 +14,6 @@ import javax.ws.rs.core.Response;
 
 import de.factoryfx.jetty.HttpServerConnectorCreator;
 import de.factoryfx.jetty.JettyServer;
-import de.factoryfx.util.rest.client.RestClient;
 import org.junit.Assert;
 import org.junit.Test;
 

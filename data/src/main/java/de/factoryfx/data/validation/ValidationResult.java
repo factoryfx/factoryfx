@@ -17,8 +17,8 @@ public class ValidationResult {
         return error;
     }
 
-    public ValidationError createValidationError(Attribute<?,?> attribute, Data parent){
-        return new ValidationError(languageText,attribute,parent);
+    public ValidationError createValidationError(Attribute<?,?> attribute, Data parent, String attributeVariableName){
+        return new ValidationError(languageText,attribute,parent,attributeVariableName);
     }
 
 

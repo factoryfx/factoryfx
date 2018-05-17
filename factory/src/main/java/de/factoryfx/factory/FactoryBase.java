@@ -9,7 +9,7 @@ import java.util.function.Supplier;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.google.common.base.Throwables;
-import com.google.common.collect.TreeTraverser;
+import com.google.common.graph.Traverser;
 import de.factoryfx.data.Data;
 import de.factoryfx.factory.atrribute.*;
 import de.factoryfx.factory.log.FactoryLogEntry;
@@ -406,14 +406,14 @@ public class FactoryBase<L,V,R extends FactoryBase<?,V,R>> extends Data implemen
 
         public Iterable<FactoryBase<?,V,R>> breadthFirstTraversalFromRoot(){
             factory.prepareIterationRunFromRoot();
-            final TreeTraverser<FactoryBase<?,V,R>> factoryTraverser = new FactoryTreeTraverser<>();
-            return factoryTraverser.breadthFirstTraversal(factory);
+            final Traverser<FactoryBase<?,V,R>> factoryTraverser = Traverser.forTree(factory -> factory);
+            return factoryTraverser.breadthFirst(factory);
         }
 
         public Iterable<FactoryBase<?,V,R>> postOrderTraversalFromRoot(){
             factory.prepareIterationRunFromRoot();
-            final TreeTraverser<FactoryBase<?,V,R>> factoryTraverser = new FactoryTreeTraverser<>();
-            return factoryTraverser.postOrderTraversal(factory);
+            final Traverser<FactoryBase<?,V,R>> factoryTraverser = Traverser.forTree(factory -> factory);
+            return factoryTraverser.depthFirstPostOrder(factory);
         }
 
         public HashMap<String,FactoryBase<?,V,R>> collectChildFactoriesDeepMapFromRoot(){

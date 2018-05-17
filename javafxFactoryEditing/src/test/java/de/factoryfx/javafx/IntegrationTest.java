@@ -22,7 +22,7 @@ public class IntegrationTest extends Application{
         Application.launch();
     }
 
-    public class ViewXWidgetFactory extends WidgetFactory<Void,ExampleFactoryA>{
+    public class ViewXWidgetFactory extends WidgetFactory{
 
         @Override
         protected Widget createWidget() {
@@ -36,33 +36,32 @@ public class IntegrationTest extends Application{
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        LongRunningActionExecutorFactory<Void,ExampleFactoryA> longRunningActionExecutorFactory = new  LongRunningActionExecutorFactory<>();
+        LongRunningActionExecutorFactory longRunningActionExecutorFactory = new  LongRunningActionExecutorFactory();
 
-        UniformDesignFactory<Void,ExampleFactoryA> uniformDesignFactory = new UniformDesignFactory<>();
+        UniformDesignFactory uniformDesignFactory = new UniformDesignFactory();
 
-        ViewsDisplayWidgetFactory<Void,ExampleFactoryA> viewsDisplayWidgetFactory = new ViewsDisplayWidgetFactory<>();
+        ViewsDisplayWidgetFactory viewsDisplayWidgetFactory = new ViewsDisplayWidgetFactory();
         viewsDisplayWidgetFactory.uniformDesign.set(uniformDesignFactory);
 
-        ViewDescriptionFactory<Void,ExampleFactoryA> viewDescriptionFactory = new ViewDescriptionFactory<>();
+        ViewDescriptionFactory viewDescriptionFactory = new ViewDescriptionFactory();
         viewDescriptionFactory.text.en("Config").de("Config");
         viewDescriptionFactory.uniformDesign.set(uniformDesignFactory);
 
-        ViewFactory<Void,ExampleFactoryA> viewFactory = new ViewFactory<>();
+        ViewFactory viewFactory = new ViewFactory();
         viewFactory.viewDescription.set(viewDescriptionFactory);
         viewFactory.viewsDisplayWidget.set(viewsDisplayWidgetFactory);
         viewFactory.widget.set(new ViewXWidgetFactory());
 
-        ViewMenuItemFactory<Void,ExampleFactoryA> viewMenuItemFactory = new ViewMenuItemFactory<>();
-        viewMenuItemFactory.uniformDesign.set(uniformDesignFactory);
+        ViewMenuItemFactory viewMenuItemFactory = new ViewMenuItemFactory();
         viewMenuItemFactory.viewDescription.set(viewDescriptionFactory);
         viewMenuItemFactory.view.set(viewFactory);
 
-        ViewMenuFactory<Void,ExampleFactoryA> menuFactory = new ViewMenuFactory<>();
+        ViewMenuFactory menuFactory = new ViewMenuFactory();
         menuFactory.text.en("File").de("Datei");
         menuFactory.items.add(viewMenuItemFactory);
         menuFactory.uniformDesign.set(uniformDesignFactory);
 
-        StageFactory<Void,ExampleFactoryA> stageFactory = new StageFactory<>();
+        StageFactory stageFactory = new StageFactory();
         stageFactory.stage.set(primaryStage);
         stageFactory.items.add(menuFactory);
         stageFactory.width.set(1920);

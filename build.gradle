@@ -1,6 +1,13 @@
-
-
-
+buildscript {
+    repositories {
+        maven {
+            url "https://plugins.gradle.org/m2/"
+        }
+    }
+    dependencies {
+        classpath "gradle.plugin.com.github.spotbugs:spotbugs-gradle-plugin:1.6.1"
+    }
+}
 
 apply plugin: 'idea'
 idea {
@@ -16,12 +23,15 @@ wrapper {
 }
 
 
+
 subprojects {
     apply plugin: 'java'
-//    apply plugin: 'findbugs'
+    apply plugin: "com.github.spotbugs"
 
     apply plugin: 'maven'
     apply plugin: 'signing'
+
+
 
     compileJava {
         inputs.property("moduleName", "de.factoryfx.$project.name")
@@ -58,7 +68,7 @@ subprojects {
     }
 
     group = 'io.github.factoryfx'
-    version = '1.1.0'
+    version = '1.2.0'
 
     if (project.hasProperty('secretKeyRingFileSourceURL')) {
         //workaround  to get key  file to the plugin
@@ -146,12 +156,12 @@ subprojects {
         testCompile group: 'org.mockito', name: 'mockito-all', version: '1.9.5'
     }
 
-//    findbugs {
-//        sourceSets = [sourceSets.main]
+    spotbugs {
+        sourceSets = [sourceSets.main]
 //        toolVersion = "3.0.1"
-//        ignoreFailures = true
-//        excludeFilter = file("$rootProject.projectDir/findbugs/findbugs-exclude-filter.xml")
-//    }
+        ignoreFailures = true
+        excludeFilter = file("$rootProject.projectDir/findbugs/findbugs-exclude-filter.xml")
+    }
 
 
     //that is the new publish plugin that doesn't work with maven central
@@ -197,8 +207,9 @@ project(':microserviceRestServer') {
 project(':microserviceRestClient') {
     dependencies {
         compile project(":factory")
-        compile project(":restutilClient")
         compile project(":microserviceRestCommon")
+        compile group: 'org.glassfish.jersey.ext', name: 'jersey-proxy-client', version: '2.27'
+        compile 'org.glassfish.jersey.core:jersey-client:2.27'
     }
 
 }
@@ -207,6 +218,11 @@ project(':microserviceRestCommon') {
     dependencies {
         compile project(":factory")
         compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.9.4'
+
+        compile group: 'org.glassfish.jersey.core', name: 'jersey-server', version: '2.27'
+        compile group: 'com.fasterxml.jackson.jaxrs', name: 'jackson-jaxrs-json-provider', version: '2.9.4'
+        compile 'org.glassfish.jersey.media:jersey-media-json-jackson:2.27'
+        compile 'org.glassfish.jersey.inject:jersey-hk2:2.27'
     }
 }
 
@@ -216,6 +232,10 @@ project(':microserviceRestIntegrationTest') {
         compile project(":microserviceRestServer")
         compile project(":microserviceRestClient")
         compile group: 'ch.qos.logback', name: 'logback-classic', version: '1.1.7'
+    }
+
+    spotbugs {
+        sourceSets = []
     }
 }
 
@@ -271,32 +291,19 @@ project(':jettyFactory') {
 //        compile group: 'org.glassfish.jaxb', name: 'jaxb-runtime', version: '2.3.0'
 
         //FIXME switch to normal release if ready, current release 2.3 jaxb doesn't work with java 9:  https://github.com/javaee/jaxb-v2/pull/1152
-        compile group: 'com.sun.xml.bind', name: 'jaxb-impl', version: '2.3.1-SNAPSHOT'
+        compile group: 'javax.xml.bind', name: 'jaxb-api', version: '2.3.1-SNAPSHOT'
 
 
-        compile (group: 'org.glassfish.jersey.core', name: 'jersey-server', version: '2.26')
+        compile group: 'org.glassfish.jersey.core', name: 'jersey-server', version: '2.27'
         compile group: 'com.fasterxml.jackson.jaxrs', name: 'jackson-jaxrs-json-provider', version: '2.9.4'
-        compile 'org.glassfish.jersey.containers:jersey-container-servlet-core:2.26'
-        compile 'org.glassfish.jersey.inject:jersey-hk2:2.26'
+        compile 'org.glassfish.jersey.containers:jersey-container-servlet-core:2.27'
+        compile 'org.glassfish.jersey.inject:jersey-hk2:2.27'
 
-        testCompile project(":restutilClient")
         testCompile group: 'ch.qos.logback', name: 'logback-classic', version: '1.1.7'
 
 //        compile group: 'org.apache.cxf', name: 'cxf-rt-bindings-soap', version: '3.2.4'
 //        compile group: 'javax.xml.ws', name: 'jaxws-api', version: '2.3.0'
         compile group: 'com.sun.activation', name: 'javax.activation', version: '1.2.0' // workaround for jersey-hk2
-    }
-
-}
-
-project(':restutilClient') {
-
-    dependencies {
-        compile project(":factory")
-        compile group: 'com.fasterxml.jackson.jaxrs', name: 'jackson-jaxrs-json-provider', version: '2.9.4'
-        compile 'org.glassfish.jersey.media:jersey-media-json-jackson:2.26'
-        compile 'org.glassfish.jersey.core:jersey-client:2.26'
-        compile 'org.glassfish.jersey.inject:jersey-hk2:2.26'
     }
 
 }
@@ -332,6 +339,7 @@ project(':javafxFactoryEditing') {
         compile project(":factory")
         compile project(":microserviceRestClient")
         compile project(":javafxDataEditing")
+
         testCompile project(":testfactories")
     }
 
@@ -349,8 +357,13 @@ project(':javafxDistributionServer') {
 project(':javafxDistributionClient') {
 
     dependencies {
-        compile project(":restutilClient")
         compile 'org.slf4j:slf4j-api:1.7.12'
+        compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.9.4'
+
+        compile group: 'org.glassfish.jersey.core', name: 'jersey-server', version: '2.27'
+        compile group: 'com.fasterxml.jackson.jaxrs', name: 'jackson-jaxrs-json-provider', version: '2.9.4'
+        compile 'org.glassfish.jersey.media:jersey-media-json-jackson:2.27'
+        compile 'org.glassfish.jersey.inject:jersey-hk2:2.27'
     }
 
 }
@@ -398,7 +411,6 @@ project(':docu') {
     dependencies {
         compile project(":factory")
         compile project(":jettyFactory")
-        compile project(":restutilClient")
         compile project(':postgresqlStorage')
         compile group: 'io.dropwizard.metrics', name: 'metrics-jetty9', version: '3.2.4'
         compile 'ru.yandex.qatools.embed:postgresql-embedded:1.15'

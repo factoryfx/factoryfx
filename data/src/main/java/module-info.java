@@ -3,6 +3,7 @@ module de.factoryfx.data {
     requires com.fasterxml.jackson.databind;
     requires com.fasterxml.jackson.datatype.jdk8;
     requires com.fasterxml.jackson.datatype.jsr310;
+    requires com.google.common;
 
     exports de.factoryfx.data.attribute;
     exports de.factoryfx.data.validation;

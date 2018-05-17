@@ -8,7 +8,6 @@ module de.factoryfx.docu {
     requires jersey.common;
     requires com.google.common;
     requires logback.classic;
-    requires de.factoryfx.restutilClient;
     requires slf4j.api;
 
     requires postgresql;
@@ -16,5 +15,9 @@ module de.factoryfx.docu {
     requires java.naming;
 
     requires de.factoryfx.postgresqlStorage;
+    requires jersey.client;
+    requires com.fasterxml.jackson.jaxrs.json;
+
+    exports de.factoryfx.docu.dynamicwebserver;
 
 }

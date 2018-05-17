@@ -2,7 +2,6 @@ package de.factoryfx.microservice.rest.client;
 
 import java.util.*;
 
-import de.factoryfx.data.merge.AttributeDiffInfo;
 import de.factoryfx.data.merge.MergeDiffInfo;
 import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.data.storage.DataAndNewMetadata;
@@ -11,20 +10,23 @@ import de.factoryfx.data.storage.StoredDataMetadata;
 import de.factoryfx.factory.log.FactoryUpdateLog;
 
 import de.factoryfx.microservice.common.*;
-import de.factoryfx.util.rest.client.RestClient;
 
 
-//TODO use rest proxy client
-public class MicroserviceRestClient<V, R extends FactoryBase<?,V,R>> {
+/**
+ *
+ * @param <V> Visitor
+ * @param <R> Root factory
+ * @param <S> History summary
+ */
+public class MicroserviceRestClient<V, R extends FactoryBase<?,V,R>,S> {
 
     private final Class<R> factoryRootClass;
-    private final RestClient restClient;
+    private final MicroserviceResourceApi<V,R,S> microserviceResource;
     private final String user;
     private final String passwordHash;
 
-
-    public MicroserviceRestClient(RestClient restClient, Class<R> factoryRootClass, String user, String passwordHash) {
-        this.restClient = restClient;
+    public MicroserviceRestClient(MicroserviceResourceApi<V,R,S> microserviceResource, Class<R> factoryRootClass, String user, String passwordHash) {
+        this.microserviceResource = microserviceResource;
         this.factoryRootClass = factoryRootClass;
         this.user=user;
         this.passwordHash=passwordHash;
@@ -34,12 +36,12 @@ public class MicroserviceRestClient<V, R extends FactoryBase<?,V,R>> {
         final UpdateCurrentFactoryRequest updateCurrentFactoryRequest = new UpdateCurrentFactoryRequest();
         updateCurrentFactoryRequest.comment=comment;
         updateCurrentFactoryRequest.factoryUpdate=update;
-        return restClient.post("updateCurrentFactory", new UserAwareRequest<>(user,passwordHash,updateCurrentFactoryRequest), FactoryUpdateLog.class);
+        return microserviceResource.updateCurrentFactory(new UserAwareRequest<>(user,passwordHash,updateCurrentFactoryRequest));
     }
 
     @SuppressWarnings("unchecked")
     public MergeDiffInfo<R> simulateUpdateCurrentFactory(DataAndNewMetadata<R> update) {
-        return restClient.post("simulateUpdateCurrentFactory", new UserAwareRequest<>(user,passwordHash,update), MergeDiffInfo.class);
+        return microserviceResource.simulateUpdateCurrentFactory(new UserAwareRequest<>(user,passwordHash,update));
     }
 
     /**
@@ -49,46 +51,43 @@ public class MicroserviceRestClient<V, R extends FactoryBase<?,V,R>> {
      */
     @SuppressWarnings("unchecked")
     public DataAndNewMetadata<R> prepareNewFactory() {
-        DataAndNewMetadata<R> currentFactory = restClient.post("prepareNewFactory",new UserAwareRequest<Void>(user,passwordHash,null), DataAndNewMetadata.class);
+        DataAndNewMetadata<R> currentFactory = microserviceResource.prepareNewFactory(new UserAwareRequest<>(user,passwordHash,null));
         return new DataAndNewMetadata<>(currentFactory.root.internal().prepareUsableCopy(),currentFactory.metadata);
     }
 
     @SuppressWarnings("unchecked")
     public MergeDiffInfo<R> getDiff(StoredDataMetadata historyEntry) {
-        return restClient.post("diff", new UserAwareRequest<>(user, passwordHash, historyEntry), MergeDiffInfo.class);
+        return microserviceResource.getDiff(new UserAwareRequest<>(user, passwordHash, historyEntry));
     }
 
 
     public R getHistoryFactory(String id) {
-        return restClient.post("historyFactory",new UserAwareRequest<>(user,passwordHash,id), factoryRootClass).internal().prepareUsableCopy();
+        R historyFactory = microserviceResource.getHistoryFactory(new UserAwareRequest<>(user, passwordHash, id)).value;
+        return historyFactory.internal().prepareUsableCopy();
     }
 
-    static final Class<? extends ArrayList<StoredDataMetadata>> collectionOfStoredFactoryMetadataClass = new ArrayList<StoredDataMetadata>() {}.getClass();
-    public Collection<StoredDataMetadata> getHistoryFactoryList() {
-        return restClient.post("historyFactoryList",new UserAwareRequest<Void>(user,passwordHash,null), collectionOfStoredFactoryMetadataClass);
+    public Collection<StoredDataMetadata<S>> getHistoryFactoryList() {
+        return microserviceResource.getHistoryFactoryList(new UserAwareRequest<>(user, passwordHash, null));
     }
 
     @SuppressWarnings("unchecked")
-    public V query(V visitor) {
-        return restClient.post("query",new UserAwareRequest<>(user,passwordHash,visitor),(Class<? extends V>)visitor.getClass());
+    public ResponseWorkaround<V> query(V visitor) {
+        return new ResponseWorkaround(microserviceResource.query(new UserAwareRequest<>(user,passwordHash,visitor)));
     }
 
     public boolean checkUser() {
-        CheckUserResponse response = restClient.post("checkUser",new UserAwareRequest<>(user,passwordHash,null), CheckUserResponse.class);
+        CheckUserResponse response = microserviceResource.checkUser(new UserAwareRequest<>(user,passwordHash,null));
         return response.valid;
     }
 
     public Locale getLocale() {
-        UserLocaleResponse response = restClient.post("userLocale",new UserAwareRequest<>(user,passwordHash,null), UserLocaleResponse.class);
+        UserLocaleResponse response = microserviceResource.getUserLocale(new UserAwareRequest<>(user,passwordHash,null));
         return response.locale;
     }
 
     public FactoryUpdateLog revert(StoredDataMetadata historyFactory) {
-        return restClient.post("revert",new UserAwareRequest<>(user,passwordHash,historyFactory), FactoryUpdateLog.class);
+        return microserviceResource.revert(new UserAwareRequest<>(user,passwordHash,historyFactory));
     }
 
-    public List<AttributeDiffInfo> getSingleFactoryHistory(String factoryId) {
-        return restClient.post("diffForFactory",new UserAwareRequest<>(user,passwordHash,factoryId), DiffForFactoryResponse.class).diffs;
-    }
 
 }

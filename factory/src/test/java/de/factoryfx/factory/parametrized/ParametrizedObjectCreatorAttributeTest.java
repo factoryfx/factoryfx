@@ -14,13 +14,13 @@ public class ParametrizedObjectCreatorAttributeTest {
 
         {
             attribute.set(null);
-            List<ValidationError> validationErrors = attribute.internal_validate(new ExampleFactoryA());
+            List<ValidationError> validationErrors = attribute.internal_validate(new ExampleFactoryA(),"");
             Assert.assertEquals(1, validationErrors.size());
         }
 
         {
             attribute.set(new ParametrizedObjectCreatorFactoryTest.ShortLivedLiveObjectCreatorFactory());
-            List<ValidationError> validationErrors = attribute.internal_validate(new ExampleFactoryA());
+            List<ValidationError> validationErrors = attribute.internal_validate(new ExampleFactoryA(),"");
             Assert.assertEquals(0, validationErrors.size());
         }
     }
@@ -31,13 +31,13 @@ public class ParametrizedObjectCreatorAttributeTest {
 
         {
             attribute.set(null);
-            List<ValidationError> validationErrors = attribute.internal_validate(new ExampleFactoryA());
+            List<ValidationError> validationErrors = attribute.internal_validate(new ExampleFactoryA(),"");
             Assert.assertEquals(0, validationErrors.size());
         }
 
         {
             attribute.set(new ParametrizedObjectCreatorFactoryTest.ShortLivedLiveObjectCreatorFactory());
-            List<ValidationError> validationErrors = attribute.internal_validate(new ExampleFactoryA());
+            List<ValidationError> validationErrors = attribute.internal_validate(new ExampleFactoryA(),"");
             Assert.assertEquals(0, validationErrors.size());
         }
     }

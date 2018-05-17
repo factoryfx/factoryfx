@@ -3,6 +3,7 @@ package de.factoryfx.javafx.data.widget.tree;
 import java.util.ArrayList;
 
 import de.factoryfx.javafx.UniformDesignBuilder;
+import de.factoryfx.javafx.css.CssUtil;
 import de.factoryfx.javafx.data.editor.attribute.AttributeEditorBuilder;
 import de.factoryfx.javafx.data.editor.data.DataEditor;
 import de.factoryfx.javafx.data.editor.data.ExampleData1;
@@ -25,22 +26,23 @@ public class DataTreeWidgetTest extends Application {
         exampleData1 = exampleData1.internal().prepareUsableCopy();
 
         UniformDesign uniformDesign = UniformDesignBuilder.build();
-        DataEditor dataEditor = new DataEditor(new AttributeEditorBuilder(new ArrayList<>()),uniformDesign);
+        DataEditor dataEditor = new DataEditor(new AttributeEditorBuilder(AttributeEditorBuilder.createDefaultSingleAttributeEditorBuilders(UniformDesignBuilder.build())),uniformDesign);
         dataEditor.edit(exampleData1);
 
 
 
-        DataTreeWidget dataTreeWidget= new DataTreeWidget(dataEditor,exampleData1,UniformDesignBuilder.build());
+        DataTreeWidget dataTreeWidget= new DataTreeWidget(dataEditor,UniformDesignBuilder.build());
 
 
 
         BorderPane root = new BorderPane();
-        root.getStylesheets().add(getClass().getResource("/de/factoryfx/javafx/css/app.css").toExternalForm());
+        CssUtil.addToNode(root);
         root.setCenter(dataTreeWidget.createContent());
         primaryStage.setScene(new Scene(root,1200,800));
 
         primaryStage.show();
 
+        dataTreeWidget.edit(exampleData1);
 
 
     }

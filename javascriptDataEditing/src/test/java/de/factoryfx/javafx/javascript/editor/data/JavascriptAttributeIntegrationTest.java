@@ -7,6 +7,7 @@ import java.util.function.Consumer;
 import de.factoryfx.data.Data;
 import de.factoryfx.data.attribute.Attribute;
 import de.factoryfx.data.jackson.ObjectMapperBuilder;
+import de.factoryfx.javafx.css.CssUtil;
 import de.factoryfx.javafx.data.editor.attribute.AttributeEditor;
 import de.factoryfx.javafx.data.editor.attribute.AttributeEditorBuilder;
 import de.factoryfx.javafx.data.editor.attribute.builder.SingleAttributeEditorBuilder;
@@ -29,7 +30,7 @@ public class JavascriptAttributeIntegrationTest extends Application{
     @SuppressWarnings("unchecked")
     public void start(Stage primaryStage) throws Exception {
         BorderPane root = new BorderPane();
-        root.getStylesheets().add(getClass().getResource("/de/factoryfx/javafx/css/app.css").toExternalForm());
+        CssUtil.addToNode(root);
 
 
 

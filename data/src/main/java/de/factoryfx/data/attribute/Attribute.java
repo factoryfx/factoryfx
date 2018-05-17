@@ -88,7 +88,7 @@ public abstract class Attribute<T,A extends Attribute<T,A>>{
         internal_semanticCopyTo((A)copyAttribute);
     }
 
-    public List<ValidationError> internal_validate(Data parent) {
+    public List<ValidationError> internal_validate(Data parent,String attributeVariableName) {
         List<ValidationError> validationErrors = new ArrayList<>();
         if (validations==null){
             return validationErrors;
@@ -96,7 +96,7 @@ public abstract class Attribute<T,A extends Attribute<T,A>>{
         for (Validation<T> validation : validations) {
             ValidationResult validationResult = validation.validate(get());
             if (validationResult.validationFailed()){
-                validationErrors.add(validationResult.createValidationError(this,parent));
+                validationErrors.add(validationResult.createValidationError(this,parent,attributeVariableName));
             }
         }
         return validationErrors;

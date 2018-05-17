@@ -24,7 +24,7 @@ public class AttributeValidation<T> {
             Map<Attribute<?,?>,List<ValidationError>> result = new HashMap<>();
             for (Attribute<?,?> dependency: dependencies){
                 List<ValidationError> validationErrors = result.computeIfAbsent(dependency, k -> new ArrayList<>());
-                validationErrors.add(validationResult.createValidationError(dependency,data));
+                validationErrors.add(validationResult.createValidationError(dependency,data,""));
             }
             return result;
         }

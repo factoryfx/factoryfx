@@ -60,7 +60,7 @@ public class AttributeGroupEditor implements Widget {
         }, uniformDesign, () -> {
             ArrayList<ValidationError> result = new ArrayList<>();
             for (ImmutableValueAttribute<?, ?> immutableValueAttribute : attributeGroup) {
-                result.addAll(immutableValueAttribute.internal_validate(null));
+                result.addAll(immutableValueAttribute.internal_validate(null,""));
             }
             return result;
         });

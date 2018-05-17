@@ -2,6 +2,7 @@ package de.factoryfx.javafx.data.editor.data;
 
 import de.factoryfx.data.jackson.ObjectMapperBuilder;
 import de.factoryfx.javafx.UniformDesignBuilder;
+import de.factoryfx.javafx.css.CssUtil;
 import de.factoryfx.javafx.data.editor.attribute.AttributeEditorBuilder;
 import de.factoryfx.javafx.data.util.UniformDesign;
 import javafx.application.Application;
@@ -16,7 +17,7 @@ public class DataEditorIntegrationTest extends Application{
     @Override
     public void start(Stage primaryStage) throws Exception {
         BorderPane root = new BorderPane();
-        root.getStylesheets().add(getClass().getResource("/de/factoryfx/javafx/css/app.css").toExternalForm());
+        CssUtil.addToNode(root);
 
 
 

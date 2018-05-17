@@ -27,7 +27,7 @@ public class FactoryReferenceListAttributeTest {
             attribute.add(data);
         }
 
-        ExampleLiveObjectA instance = attribute.instance(exampleFactoryA -> exampleFactoryA.stringAttribute.get().equals("1"));
+        ExampleLiveObjectA instance = attribute.instances(exampleFactoryA -> exampleFactoryA.stringAttribute.get().equals("1"));
         Assert.assertNotNull(instance);
     }
 

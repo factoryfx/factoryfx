@@ -1,6 +1,7 @@
 package de.factoryfx.javafx.data.widget.select;
 
 import de.factoryfx.data.Data;
+import de.factoryfx.javafx.css.CssUtil;
 import de.factoryfx.javafx.data.util.DataObservableDisplayText;
 import de.factoryfx.javafx.data.util.UniformDesign;
 import javafx.scene.control.*;
@@ -42,7 +43,7 @@ public class SelectDataDialog {
         dialog.getDialogPane().setContent(pane);
         dialog.setResizable(true);
 
-        dialog.getDialogPane().getStylesheets().add(getClass().getResource("/de/factoryfx/javafx/css/app.css").toExternalForm());
+        CssUtil.addToNode(dialog.getDialogPane());
         dialog.getDialogPane().lookupButton(ButtonType.OK).disableProperty().bind(table.getSelectionModel().selectedItemProperty().isNull());
 
         final Optional<ButtonType> dialogResult = dialog.showAndWait();

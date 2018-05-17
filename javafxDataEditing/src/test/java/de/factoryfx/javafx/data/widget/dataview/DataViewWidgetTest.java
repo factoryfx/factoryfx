@@ -2,6 +2,7 @@ package de.factoryfx.javafx.data.widget.dataview;
 
 import de.factoryfx.data.Data;
 import de.factoryfx.javafx.UniformDesignBuilder;
+import de.factoryfx.javafx.css.CssUtil;
 import de.factoryfx.javafx.data.editor.attribute.AttributeEditorBuilder;
 import de.factoryfx.javafx.data.editor.data.DataEditor;
 import de.factoryfx.javafx.data.editor.data.ExampleData1;
@@ -40,7 +41,7 @@ public class DataViewWidgetTest extends Application {
         DataViewWidget<Data> dataViewWidget2 = new DataViewWidget<>(new UpdatableDataView(()->dataList),dataEditor,uniformDesign);
 
         BorderPane root = new BorderPane();
-        root.getStylesheets().add(getClass().getResource("/de/factoryfx/javafx/css/app.css").toExternalForm());
+        CssUtil.addToNode(root);
         root.setCenter(dataViewWidget.createContent());
         primaryStage.setScene(new Scene(root, 1200, 800));
 
