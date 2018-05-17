@@ -56,6 +56,11 @@
     </Match>
 
     <Match>
+        <Class name="de.factoryfx.factory.datastorage.oracle.OracledbDataStorageHistory" />
+        <Bug pattern="OBL_UNSATISFIED_OBLIGATION" />
+    </Match>
+
+    <Match>
         <Class name="de.factoryfx.factory.datastorage.oracle.OracledbDataStorage" />
         <Bug pattern="OBL_UNSATISFIED_OBLIGATION" />
     </Match>
@@ -70,8 +75,15 @@
         <Bug pattern="EQ_COMPARETO_USE_OBJECT_EQUALS" />
     </Match>
 
+    <Match>
+        <Class name="de.factoryfx.factory.datastorage.postgres.PostgresDataStorage" />
+        <Bug pattern="OBL_UNSATISFIED_OBLIGATION" />
+    </Match>
 
-
+    <Match>
+        <Class name="de.factoryfx.server.user.persistent.UserFactory" />
+        <Bug pattern="MS_SHOULD_BE_FINAL" />
+    </Match>
 
 
 </FindBugsFilter>
