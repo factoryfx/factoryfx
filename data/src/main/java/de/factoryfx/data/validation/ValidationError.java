@@ -42,7 +42,7 @@ public class ValidationError {
 
 
     public String getSimpleErrorDescription(){
-        return "        Factory class: "+parent.getClass()+
+        return "        Factory class: "+parent.getClass().getName()+
                 "\n        Attribute: "+attributeDescription(Locale.ENGLISH)+
                 "\n        Error: "+validationDescription.internal_getPreferred(Locale.ENGLISH);
     }

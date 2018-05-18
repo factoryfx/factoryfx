@@ -9,6 +9,11 @@ import de.factoryfx.data.merge.MergeDiffInfo;
 import de.factoryfx.data.storage.*;
 
 
+/**
+ *
+ * @param <R> Root factory
+ * @param <S> Storage history summary
+ */
 public class InMemoryDataStorage<R extends Data,S> implements DataStorage<R,S> {
     private final Map<String,DataAndStoredMetadata<R,S>> storage = new TreeMap<>();
     private final Map<String,DataAndScheduledMetadata<R,S>> future = new TreeMap<>();

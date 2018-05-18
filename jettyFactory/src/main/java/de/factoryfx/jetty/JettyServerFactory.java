@@ -17,15 +17,15 @@ import de.factoryfx.factory.atrribute.FactoryReferenceListAttribute;
  *
  *  usage example.
  *
- *  {@code
+ *  <pre>{@code
  *      public static class TestWebserverFactory extends JettyServerFactory<Void>{
  *          public final FactoryReferenceAttribute<Resource1,Resource1FactoryBase> resource = new FactoryReferenceAttribute<>(Resource1FactoryBase.class);
- *          @Override
+ *          Override
  *          protected List<Object> getResourcesInstances() {
  *              return Arrays.asList(resource.instance());
  *          }
  *      }
- *  }
+ *  }</pre>
  */
 public abstract class JettyServerFactory<V,R extends FactoryBase<?,V,R>> extends FactoryBase<JettyServer,V,R> {
 

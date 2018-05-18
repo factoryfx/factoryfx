@@ -42,7 +42,7 @@ public class FactoryTreeBuilder<R extends FactoryBase<?,?,R>> {
         addFactory(clazz,scope,new DefaultCreator<>(clazz));
     }
 
-    /**create the complete factory tree that represent teh app dependencies
+    /**create the complete factory tree that represent the app dependencies and validates the result
      * @return dependency tree
      * */
     public R buildTree(){
@@ -57,11 +57,14 @@ public class FactoryTreeBuilder<R extends FactoryBase<?,?,R>> {
             validationErrors.addAll(data.internal().validateFlat());
         }
         if (!validationErrors.isEmpty()){
-            throw new IllegalStateException("\n    Factory tree contains validation errors:\n"+validationErrors.stream().map(ValidationError::getSimpleErrorDescription).collect(Collectors.joining( "\n" )));
+            throw new IllegalStateException("\n    Factory tree contains validation errors:\n        --------------------------------\n"+
+                    validationErrors.stream().map(ValidationError::getSimpleErrorDescription).collect(Collectors.joining( "\n        --------------------------------\n"))+
+                    "\n        --------------------------------"
+                    );
         }
     }
 
-    /**create the complete factory tree that represent teh app dependencies
+    /**create the complete factory tree that represent the app dependencies
      * @return dependency tree
      * */
     @SuppressWarnings("unchecked")
