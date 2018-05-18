@@ -14,4 +14,6 @@ module de.factoryfx.factory {
     exports de.factoryfx.factory.util;
     exports de.factoryfx.factory.parametrized;
     exports de.factoryfx.factory.builder;
+
+    opens de.factoryfx.factory;//jackson
 }
