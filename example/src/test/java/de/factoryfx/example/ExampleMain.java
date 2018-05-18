@@ -3,17 +3,11 @@ package de.factoryfx.example;
 
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
-import de.factoryfx.data.storage.inmemory.InMemoryDataStorage;
 import de.factoryfx.example.client.RichClientBuilder;
 import de.factoryfx.example.server.ServerRootFactory;
 import de.factoryfx.example.server.ServerBuilder;
-import de.factoryfx.example.server.shop.*;
-import de.factoryfx.factory.FactoryManager;
-import de.factoryfx.factory.exception.AllOrNothingFactoryExceptionHandler;
-import de.factoryfx.factory.exception.LoggingFactoryExceptionHandler;
-import de.factoryfx.factory.exception.RethrowingFactoryExceptionHandler;
 import de.factoryfx.javafx.factory.RichClientRoot;
-import de.factoryfx.server.Microservice;
+import de.factoryfx.server.MicroserviceBuilder;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.stage.Stage;
@@ -30,13 +24,10 @@ public class ExampleMain extends Application {
     @Override
     public void start(Stage primaryStage){
         ServerRootFactory shopFactory = getShopFactory();
+        MicroserviceBuilder.buildInMemoryMicroservice(shopFactory).start();
 
-        Microservice<OrderCollector, ServerRootFactory, Void> microservice = new Microservice<>(new FactoryManager<>(new LoggingFactoryExceptionHandler(new AllOrNothingFactoryExceptionHandler())), new InMemoryDataStorage<>(shopFactory));
-        microservice.start();
-
-        RichClientRoot richClientFactory = new RichClientBuilder(8089).createFactoryBuilder(primaryStage, "", "", Locale.ENGLISH).buildTree();
-        Microservice<Void, RichClientRoot, Void> richClient = new Microservice<>(new FactoryManager<>(new RethrowingFactoryExceptionHandler()), new InMemoryDataStorage<>(richClientFactory));
-        richClient.start();
+        RichClientRoot richClientFactory = RichClientBuilder.createFactoryBuilder(8089,primaryStage, "", "", Locale.ENGLISH).buildTree();
+        MicroserviceBuilder.buildInMemoryMicroservice(richClientFactory).start();
 
         Platform.runLater(() -> {
             try {

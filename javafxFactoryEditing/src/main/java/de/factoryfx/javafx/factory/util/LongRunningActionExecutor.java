@@ -4,9 +4,11 @@ import javafx.animation.FadeTransition;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressIndicator;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.util.Duration;
 
@@ -27,10 +29,6 @@ public class LongRunningActionExecutor {
         borderPane.setCenter(indicator);
         borderPane.setStyle("-fx-background-color: rgba(230,230,230,0.7);");
         return borderPane;
-    }
-
-    public StackPane getStackPane() {
-        return target;
     }
 
     //** execute with progress dialog in background */
@@ -70,4 +68,8 @@ public class LongRunningActionExecutor {
         this.execute(runnable,"");
     }
 
+    public Parent wrap(Pane root) {
+        target.getChildren().add(root);
+        return target;
+    }
 }

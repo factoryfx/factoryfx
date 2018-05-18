@@ -10,12 +10,12 @@ module de.factoryfx.javafxDataEditing {
 
     exports de.factoryfx.javafx.data.attribute;
     exports de.factoryfx.javafx.data.editor.attribute;
+    opens de.factoryfx.javafx.data.editor.attribute;
     exports de.factoryfx.javafx.data.editor.attribute.builder;
     exports de.factoryfx.javafx.data.editor.attribute.visualisation;
     exports de.factoryfx.javafx.data.editor.attribute.converter;
     exports de.factoryfx.javafx.data.editor.data;
 
-    exports de.factoryfx.javafx.data.stage;
     exports de.factoryfx.javafx.data.util;
     exports de.factoryfx.javafx.data.widget;
     exports de.factoryfx.javafx.data.widget.datalistedit;

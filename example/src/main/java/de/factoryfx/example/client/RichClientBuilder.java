@@ -38,15 +38,8 @@ import java.util.Locale;
 
 public class RichClientBuilder {
 
-    private final int adminServerPort;
-
-    public RichClientBuilder(int adminServerPort) {
-        this.adminServerPort = adminServerPort;
-    }
-
-
     @SuppressWarnings("unchecked")
-    public FactoryTreeBuilder<RichClientRoot> createFactoryBuilder(Stage primaryStage, String user, String passwordHash, Locale locale) {
+    public static FactoryTreeBuilder<RichClientRoot> createFactoryBuilder(int adminServerPort, Stage primaryStage, String user, String passwordHash, Locale locale) {
         FactoryTreeBuilder<RichClientRoot> factoryBuilder = new FactoryTreeBuilder<>(RichClientRoot.class);
 
         factoryBuilder.addFactory(LongRunningActionExecutorFactory.class, Scope.SINGLETON);
