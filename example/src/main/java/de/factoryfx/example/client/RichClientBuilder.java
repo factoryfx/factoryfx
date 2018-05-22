@@ -146,7 +146,7 @@ public class RichClientBuilder {
 
     }
 
-    private static class RichClientFactorySerialisationManagerFactory extends FactorySerialisationManagerFactory<ServerRootFactory,Void,Void,RichClientRoot> {
+    private static class RichClientFactorySerialisationManagerFactory extends FactorySerialisationManagerFactory<ServerRootFactory,Void> {
         @Override
         public DataSerialisationManager<ServerRootFactory, Void> createImpl() {
             return new DataSerialisationManager<>(new JacksonSerialisation<>(1),new JacksonDeSerialisation<>(ServerRootFactory.class,1),new ArrayList<>(),1);

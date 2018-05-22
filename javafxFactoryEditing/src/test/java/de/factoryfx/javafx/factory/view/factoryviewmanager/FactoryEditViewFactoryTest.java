@@ -3,6 +3,7 @@ package de.factoryfx.javafx.factory.view.factoryviewmanager;
 import de.factoryfx.factory.SimpleFactoryBase;
 import de.factoryfx.factory.testfactories.ExampleLiveObjectA;
 import de.factoryfx.javafx.data.editor.data.DataEditor;
+import de.factoryfx.javafx.factory.editor.DataEditorFactory;
 import org.junit.Test;
 
 public class FactoryEditViewFactoryTest {
@@ -17,12 +18,7 @@ public class FactoryEditViewFactoryTest {
     @Test
     public void test_generics(){
         FactoryEditViewFactory<Void,DummyRoot,Void> factoryEditViewFactory = new FactoryEditViewFactory<>();
-        factoryEditViewFactory.dataEditorFactory.set(new SimpleFactoryBase<DataEditor,Void,DummyRoot>(){
-            @Override
-            public DataEditor createImpl() {
-                return null;
-            }
-        });
+        factoryEditViewFactory.dataEditorFactory.set(new DataEditorFactory());
 
     }
 
