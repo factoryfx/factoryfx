@@ -11,25 +11,28 @@ import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.layout.HBox;
+import javafx.util.StringConverter;
 import org.controlsfx.glyphfont.FontAwesome;
 
-public class EnumAttributeVisualisation extends ValueAttributeEditorVisualisation<EnumAttribute.EnumWrapper> {
-    private final Collection<EnumAttribute.EnumWrapper> possibleEnumConstants;
+public class EnumAttributeVisualisation extends ValueAttributeEditorVisualisation<EnumAttribute.EnumWrapper<?>> {
+    private final Collection<EnumAttribute.EnumWrapper<?>> possibleEnumConstants;
     private final UniformDesign uniformDesign;
+    private final StringConverter<EnumAttribute.EnumWrapper<?>> stringConverter;
 
-    public EnumAttributeVisualisation(UniformDesign uniformDesign, Collection<EnumAttribute.EnumWrapper> possibleEnumConstants) {
+    public EnumAttributeVisualisation(UniformDesign uniformDesign, Collection<EnumAttribute.EnumWrapper<?>> possibleEnumConstants, StringConverter<EnumAttribute.EnumWrapper<?>> stringConverter) {
         this.possibleEnumConstants = possibleEnumConstants;
         this.uniformDesign = uniformDesign;
+        this.stringConverter = stringConverter;
     }
 
     @Override
     @SuppressWarnings("unchecked")
-    public Node createVisualisation(SimpleObjectProperty<EnumAttribute.EnumWrapper> boundTo, boolean readonly) {
-        ComboBox<EnumAttribute.EnumWrapper> comboBox = new ComboBox<>();
+    public Node createVisualisation(SimpleObjectProperty<EnumAttribute.EnumWrapper<?>> boundTo, boolean readonly) {
+        ComboBox<EnumAttribute.EnumWrapper<?>> comboBox = new ComboBox<>();
         comboBox.setEditable(false);
         comboBox.getItems().addAll(possibleEnumConstants);
         comboBox.valueProperty().bindBidirectional(boundTo);
-
+        comboBox.setConverter(stringConverter);
 
         Button deleteButton = new Button();
         uniformDesign.addDangerIcon(deleteButton, FontAwesome.Glyph.TIMES);

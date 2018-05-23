@@ -12,6 +12,8 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 
+import java.util.Locale;
+
 public class DataEditorIntegrationTest extends Application{
 
     @Override
@@ -24,7 +26,7 @@ public class DataEditorIntegrationTest extends Application{
         ExampleData1 exampleData1 = new ExampleData1();
         exampleData1.stringAttribute.set("abc");
 
-        UniformDesign uniformDesign = UniformDesignBuilder.build();
+        UniformDesign uniformDesign = UniformDesignBuilder.build(Locale.GERMAN);
         DataEditor dataEditor = new DataEditor(new AttributeEditorBuilder(AttributeEditorBuilder.createDefaultSingleAttributeEditorBuilders(uniformDesign)),uniformDesign, (node, data) -> {
             if (data instanceof ExampleData1) {
                 return ((ExampleData1)data).customize(node);

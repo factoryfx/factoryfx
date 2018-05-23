@@ -1,28 +1,33 @@
 package de.factoryfx.data.attribute.types;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import de.factoryfx.data.attribute.AttributeTypeInfo;
 import de.factoryfx.data.attribute.ImmutableValueAttribute;
+import de.factoryfx.data.util.LanguageText;
 
-public class EnumAttribute<T extends Enum<T>> extends ImmutableValueAttribute<EnumAttribute.EnumWrapper<T>,EnumAttribute<T>> {
+/**
+ * @param <E> enum class
+ */
+public class EnumAttribute<E extends Enum<E>> extends ImmutableValueAttribute<EnumAttribute.EnumWrapper<E>,EnumAttribute<E>> {
 
     @JsonCreator
-    EnumAttribute(EnumWrapper<T> value) {
+    EnumAttribute(EnumWrapper<E> value) {
         super(null);
         set(value);
     }
-    private Class<T> clazz;
+    private Class<E> clazz;
 
     @SuppressWarnings("unchecked")
-    public EnumAttribute(Class<T> clazz) {
-        super((Class<EnumWrapper<T>>) EnumWrapper.class.asSubclass(EnumWrapper.class));//workaround for java generic bug
+    public EnumAttribute(Class<E> clazz) {
+        super((Class<EnumWrapper<E>>) EnumWrapper.class.asSubclass(EnumWrapper.class));//workaround for java generic bug
         this.clazz=clazz;
     }
 
@@ -32,11 +37,15 @@ public class EnumAttribute<T extends Enum<T>> extends ImmutableValueAttribute<En
         return new AttributeTypeInfo(clazz,null,null,AttributeTypeInfo.AttributeTypeCategory.VALUE);
     }
 
-    public List<Enum<T>> internal_possibleEnumValues() {
+    public List<Enum<E>> internal_possibleEnumValues() {
         return new ArrayList<>(Arrays.asList(clazz.getEnumConstants()));
     }
 
-    public T getEnum() {
+    public List<EnumAttribute.EnumWrapper<?>> internal_possibleEnumWrapperValues() {
+        return Stream.of(clazz.getEnumConstants()).map(EnumWrapper::new).collect(Collectors.toList());
+    }
+
+    public E getEnum() {
         return Optional.ofNullable(get()).map(e->e.enumField).orElse(null);
     }
 
@@ -45,12 +54,12 @@ public class EnumAttribute<T extends Enum<T>> extends ImmutableValueAttribute<En
      * @param enumValue value
      */
     @SuppressWarnings("unchecked")
-    public void setEnum(T enumValue) {
+    public void setEnum(E enumValue) {
         set(new EnumWrapper<>(enumValue));
     }
 
     @SuppressWarnings("unchecked")
-    public EnumAttribute<T> defaultEnum(T anEnum){
+    public EnumAttribute<E> defaultEnum(E anEnum){
         set(new EnumWrapper<>(anEnum));
         return this;
     }
@@ -60,11 +69,11 @@ public class EnumAttribute<T extends Enum<T>> extends ImmutableValueAttribute<En
      * @param value wrapper for workaround
      */
     @Override
-    public void set(EnumWrapper<T> value) {
+    public void set(EnumWrapper<E> value) {
         super.set(value);
     }
 
-    public void set(T anEnum) {
+    public void set(E anEnum) {
         set(new EnumWrapper<>(anEnum));
     }
 
@@ -73,17 +82,17 @@ public class EnumAttribute<T extends Enum<T>> extends ImmutableValueAttribute<En
      * @return wrapper
      */
     @Override
-    public EnumWrapper<T> get() {
+    public EnumWrapper<E> get() {
         return super.get();
     }
 
     //Workaround for bug https://github.com/FasterXML/jackson-databind/issues/937
     //@JsonValue doesn't work with JsonTypeInfo
-    public static class EnumWrapper<T extends Enum<T>>{
+    public static class EnumWrapper<E extends Enum<E>>{
         @JsonProperty
-        private final T enumField;
+        public final E enumField;
         @JsonProperty
-        private final Class<T> enumClass;
+        private final Class<E> enumClass;
 
 
 //        public EnumWrapper(Enum<?> enumField) {
@@ -92,9 +101,9 @@ public class EnumAttribute<T extends Enum<T>> extends ImmutableValueAttribute<En
 //        }
 
         @SuppressWarnings("unchecked")
-        public EnumWrapper(T enumField) {
+        public EnumWrapper(E enumField) {
             this.enumField = enumField;
-            this.enumClass= (Class<T>) enumField.getClass();
+            this.enumClass= (Class<E>) enumField.getClass();
         }
 
         //TODO remove, used only for quickfix compatibility
@@ -104,7 +113,7 @@ public class EnumAttribute<T extends Enum<T>> extends ImmutableValueAttribute<En
         }
 
         @JsonCreator
-        protected EnumWrapper(@JsonProperty("enumField")String enumField, @JsonProperty("enumClass")Class<T> enumClass) {
+        protected EnumWrapper(@JsonProperty("enumField")String enumField, @JsonProperty("enumClass")Class<E> enumClass) {
             this.enumClass= enumClass;
             this.enumField = enumClass==null?null:Arrays.stream(this.enumClass.getEnumConstants()).filter(t -> t.name().equals(enumField)).findAny().orElseGet(null);
         }
@@ -133,6 +142,52 @@ public class EnumAttribute<T extends Enum<T>> extends ImmutableValueAttribute<En
         }
     }
 
+    @JsonIgnore
+    public HashMap<E,LanguageText> enumTranslations;
+
+    public EnumAttribute<E> deEnum(E value, String text){
+        if (enumTranslations==null){
+            enumTranslations = new HashMap<>();
+        }
+        LanguageText languageText = enumTranslations.get(value);
+        if (languageText == null) {
+            languageText = new LanguageText();
+            enumTranslations.put(value,languageText);
+        }
+        languageText.de(text);
+        return this;
+    }
+
+    public EnumAttribute<E> enEnum(E value, String text){
+        if (enumTranslations==null){
+            enumTranslations = new HashMap<>();
+        }
+        LanguageText languageText = enumTranslations.get(value);
+        if (languageText == null) {
+            languageText = new LanguageText();
+            enumTranslations.put(value,languageText);
+        }
+        languageText.en(text);
+        return this;
+    }
+
+    public String internal_enumDisplayText(E enumValue,Function<LanguageText,String> uniformDesign){
+        if (enumValue==null){
+            return "-";
+        }
+        if (enumTranslations!=null){
+            LanguageText languageText = enumTranslations.get(enumValue);
+            if (languageText!=null) {
+                return uniformDesign.apply(languageText);
+            }
+        }
+        return enumValue.name();
+    }
+
+    @SuppressWarnings("unchecked")
+    public String internal_enumDisplayText(Object enumValue,Function<LanguageText,String> uniformDesign){
+        return internal_enumDisplayText((E)enumValue,uniformDesign);
+    }
 
 
 }
