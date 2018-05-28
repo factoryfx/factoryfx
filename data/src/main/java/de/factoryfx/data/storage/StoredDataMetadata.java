@@ -9,9 +9,11 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
 /**
  * metadata for a stored historical factory
+ *
+ * @param <S> Summary for this change
  */
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
-public class StoredDataMetadata<T> {
+public class StoredDataMetadata<S> {
     public final LocalDateTime creationTime;
     /**id for the complete configuration, NOT any factory id*/
     public final String id;
@@ -19,7 +21,7 @@ public class StoredDataMetadata<T> {
     public final String comment;
 
     @JsonTypeInfo(use=JsonTypeInfo.Id.MINIMAL_CLASS, include=JsonTypeInfo.As.PROPERTY, property="@class")
-    public final T changeSummary;
+    public final S changeSummary;
 
     /**the base version on the server*/
     public final  String baseVersionId;
@@ -35,7 +37,7 @@ public class StoredDataMetadata<T> {
             @JsonProperty("comment")String comment,
             @JsonProperty("baseVersionId")String baseVersionId,
             @JsonProperty("dataModelVersion")int dataModelVersion,
-            @JsonProperty("changeSummary")T changeSummary) {
+            @JsonProperty("changeSummary")S changeSummary) {
         this.creationTime = creationTime;
         this.id = id;
         this.user = user;
@@ -45,7 +47,7 @@ public class StoredDataMetadata<T> {
         this.dataModelVersion = dataModelVersion;
     }
 
-    public StoredDataMetadata( String id, String user, String comment, String baseVersionId, int dataModelVersion, T changeSummary) {
+    public StoredDataMetadata( String id, String user, String comment, String baseVersionId, int dataModelVersion, S changeSummary) {
         this.creationTime=LocalDateTime.now();
         this.id = id;
         this.user = user;

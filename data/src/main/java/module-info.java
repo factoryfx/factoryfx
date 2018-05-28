@@ -18,4 +18,11 @@ module de.factoryfx.data {
     exports de.factoryfx.data.jackson;
     exports de.factoryfx.data.storage.inmemory;
     exports de.factoryfx.data.storage.filesystem;
+
+    opens de.factoryfx.data.attribute;//open for Jackson
+    opens de.factoryfx.data.attribute.primitive;
+    opens de.factoryfx.data.attribute.time;
+    opens de.factoryfx.data.attribute.types;
+    opens de.factoryfx.data;
+
 }

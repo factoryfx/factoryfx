@@ -4,15 +4,13 @@ import de.factoryfx.data.Data;
 import de.factoryfx.data.storage.DataSerialisationManager;
 import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.factory.SimpleFactoryBase;
+import de.factoryfx.javafx.factory.RichClientRoot;
 
 /**
  *
  * @param <RS> root server
- *
  * @param <S>  server historysummary
- * @param <V>  visitor
- * @param <R>  root
  */
-public abstract class FactorySerialisationManagerFactory<RS extends Data,S, V, R extends FactoryBase<?,V,R>> extends SimpleFactoryBase<DataSerialisationManager<RS,S>,V,R> {
+public abstract class FactorySerialisationManagerFactory<RS extends Data,S> extends SimpleFactoryBase<DataSerialisationManager<RS,S>,Void,RichClientRoot> {
 
 }

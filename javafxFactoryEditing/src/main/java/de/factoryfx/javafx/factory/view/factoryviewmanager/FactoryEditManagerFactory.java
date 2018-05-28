@@ -17,7 +17,7 @@ import de.factoryfx.microservice.rest.client.MicroserviceRestClientFactory;
 public class FactoryEditManagerFactory<VS,RS  extends FactoryBase<?,VS,RS>,S> extends SimpleFactoryBase<FactoryEditManager<VS,RS>,Void,RichClientRoot> {
 
     public final FactoryReferenceAttribute<MicroserviceRestClient<VS,RS,S>,MicroserviceRestClientFactory<Void,RichClientRoot,VS,RS,S>> restClient = new FactoryReferenceAttribute<MicroserviceRestClient<VS,RS,S>,MicroserviceRestClientFactory<Void,RichClientRoot,VS,RS,S>>().setupUnsafe(MicroserviceRestClientFactory.class);
-    public final FactoryReferenceAttribute<DataSerialisationManager<RS,S>,FactorySerialisationManagerFactory<RS,S,Void,RichClientRoot>> factorySerialisationManager = new FactoryReferenceAttribute<DataSerialisationManager<RS,S>,FactorySerialisationManagerFactory<RS,S,Void,RichClientRoot>>().setupUnsafe(FactorySerialisationManagerFactory.class);
+    public final FactoryReferenceAttribute<DataSerialisationManager<RS,S>,FactorySerialisationManagerFactory<RS,S>> factorySerialisationManager = new FactoryReferenceAttribute<DataSerialisationManager<RS,S>,FactorySerialisationManagerFactory<RS,S>>().setupUnsafe(FactorySerialisationManagerFactory.class);
 
     @Override
     public FactoryEditManager<VS,RS> createImpl() {

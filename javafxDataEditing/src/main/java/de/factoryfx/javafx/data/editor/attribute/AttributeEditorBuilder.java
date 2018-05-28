@@ -20,6 +20,7 @@ import de.factoryfx.javafx.data.editor.attribute.builder.SingleAttributeEditorBu
 import javafx.scene.control.TableView;
 import javafx.scene.paint.Color;
 
+import javafx.util.StringConverter;
 import org.controlsfx.glyphfont.FontAwesome;
 
 import com.google.common.base.Ascii;
@@ -113,8 +114,19 @@ public class AttributeEditorBuilder {
         result.add(new SimpleSingleAttributeEditorBuilder<>(uniformDesign,DoubleAttribute.class,Double.class,(attribute)-> new DoubleAttributeVisualisation(),()->new DoubleAttribute()));
         result.add(new SimpleSingleAttributeEditorBuilder<>(uniformDesign,EncryptedStringAttribute.class,EncryptedString.class,(attribute)-> new EncryptedStringAttributeVisualisation(attribute::createKey, attribute::internal_isValidKey,uniformDesign),()->new EncryptedStringAttribute()));
 
-        result.add(new NoListSingleAttributeEditorBuilder<EnumAttribute.EnumWrapper,EnumAttribute<?>>(uniformDesign,(attribute)->attribute instanceof EnumAttribute,(attribute)->{
-            return new EnumAttributeVisualisation(uniformDesign,attribute.internal_possibleEnumValues().stream().map(e->new EnumAttribute.EnumWrapper(e)).collect(Collectors.toList()));
+        result.add(new NoListSingleAttributeEditorBuilder<EnumAttribute.EnumWrapper<?>,EnumAttribute<?>>(uniformDesign,(attribute)->attribute instanceof EnumAttribute,(attribute)->{
+            EnumAttributeVisualisation enumAttributeVisualisation = new EnumAttributeVisualisation(uniformDesign, attribute.internal_possibleEnumWrapperValues(), new StringConverter<>() {
+                @Override
+                public String toString(EnumAttribute.EnumWrapper<?> wrapper) {
+                    if (wrapper==null){
+                        return attribute.internal_enumDisplayText(null, uniformDesign::getText);
+                    }
+                    return attribute.internal_enumDisplayText(wrapper.enumField, uniformDesign::getText);
+                }
+                @Override
+                public EnumAttribute.EnumWrapper<?> fromString(String string) { return null;} //nothing
+            });
+            return enumAttributeVisualisation;
         }));
 
         result.add(new SimpleSingleAttributeEditorBuilder<>(uniformDesign,I18nAttribute.class,LanguageText.class,(attribute)-> new I18nAttributeVisualisation(),()->new I18nAttribute()));

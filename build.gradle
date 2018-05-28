@@ -68,7 +68,7 @@ subprojects {
     }
 
     group = 'io.github.factoryfx'
-    version = '1.2.0'
+    version = '1.2.4'
 
     if (project.hasProperty('secretKeyRingFileSourceURL')) {
         //workaround  to get key  file to the plugin
@@ -153,7 +153,7 @@ subprojects {
             exclude module: "jsr305" // module conflict: https://blog.codefx.org/java/jsr-305-java-9/, https://github.com/google/guava/issues/2960
         }
         testCompile group: 'junit', name: 'junit', version: '4.12'
-        testCompile group: 'org.mockito', name: 'mockito-all', version: '1.9.5'
+        testCompile group: 'org.mockito', name: 'mockito-core', version: '2.18.3'
     }
 
     spotbugs {

@@ -38,15 +38,8 @@ import java.util.Locale;
 
 public class RichClientBuilder {
 
-    private final int adminServerPort;
-
-    public RichClientBuilder(int adminServerPort) {
-        this.adminServerPort = adminServerPort;
-    }
-
-
     @SuppressWarnings("unchecked")
-    public FactoryTreeBuilder<RichClientRoot> createFactoryBuilder(Stage primaryStage, String user, String passwordHash, Locale locale) {
+    public static FactoryTreeBuilder<RichClientRoot> createFactoryBuilder(int adminServerPort, Stage primaryStage, String user, String passwordHash, Locale locale) {
         FactoryTreeBuilder<RichClientRoot> factoryBuilder = new FactoryTreeBuilder<>(RichClientRoot.class);
 
         factoryBuilder.addFactory(LongRunningActionExecutorFactory.class, Scope.SINGLETON);
@@ -153,7 +146,7 @@ public class RichClientBuilder {
 
     }
 
-    private static class RichClientFactorySerialisationManagerFactory extends FactorySerialisationManagerFactory<ServerRootFactory,Void,Void,RichClientRoot> {
+    private static class RichClientFactorySerialisationManagerFactory extends FactorySerialisationManagerFactory<ServerRootFactory,Void> {
         @Override
         public DataSerialisationManager<ServerRootFactory, Void> createImpl() {
             return new DataSerialisationManager<>(new JacksonSerialisation<>(1),new JacksonDeSerialisation<>(ServerRootFactory.class,1),new ArrayList<>(),1);

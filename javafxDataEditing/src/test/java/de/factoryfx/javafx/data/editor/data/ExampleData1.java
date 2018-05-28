@@ -62,7 +62,7 @@ public class ExampleData1 extends Data {
     public final BigDecimalAttribute bigDecimalAttribute=new BigDecimalAttribute().en("BigDecimalAttribute").de("BigDecimalAttribute de").addonText("EUR");
     public final BooleanAttribute booleanAttribute=new BooleanAttribute().en("BooleanAttribute").de("BooleanAttribute de");
     public final DoubleAttribute doubleAttribute=new DoubleAttribute().en("DoubleAttribute").de("DoubleAttribute de");
-    public final EnumAttribute<ExampleEnum> enumAttribute=new EnumAttribute<>(ExampleEnum.class).en("EnumAttribute").de("EnumAttribute de");
+    public final EnumAttribute<ExampleEnum> enumAttribute=new EnumAttribute<>(ExampleEnum.class).en("EnumAttribute").de("EnumAttribute de").enEnum(ExampleEnum.EXAMPLE_1,"Example_1").deEnum(ExampleEnum.EXAMPLE_1,"Beispiel_1");
     public final IntegerAttribute integerAttribute=new IntegerAttribute().en("IntegerAttribute").de("IntegerAttribute de");
     public final LongAttribute longAttribute=new LongAttribute().en("LongAttribute").de("LongAttribute de");
     public final StringListAttribute valueListAttribute=new StringListAttribute().en("ValueListAttribute").de("ValueListAttribute de");

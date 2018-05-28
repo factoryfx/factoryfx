@@ -3,6 +3,7 @@ package de.factoryfx.microservice.test;
 import ch.qos.logback.classic.Level;
 import de.factoryfx.data.attribute.types.EncryptedString;
 import de.factoryfx.data.attribute.types.EncryptedStringAttribute;
+import de.factoryfx.data.attribute.types.StringAttribute;
 import de.factoryfx.data.storage.StoredDataMetadata;
 import de.factoryfx.data.storage.inmemory.InMemoryDataStorage;
 import de.factoryfx.factory.FactoryManager;
@@ -30,10 +31,11 @@ import java.util.List;
 import java.util.Locale;
 import java.util.function.BiConsumer;
 
-public class MicroserviceRestTest {
+public class MicroserviceRestIntegrationTest {
 
     public static class TestJettyServer extends JettyServerFactory<TestVisitor,TestJettyServer> {
         public final FactoryReferenceAttribute<MicroserviceResource<TestVisitor, TestJettyServer,Void>, MicroserviceResourceFactory<TestVisitor, TestJettyServer,Void>> resource = new FactoryReferenceAttribute<>();
+
         @Override
         protected List<Object> getResourcesInstances() {
             return Arrays.asList(resource.instance());
@@ -55,8 +57,6 @@ public class MicroserviceRestTest {
 
         ch.qos.logback.classic.Logger root = (ch.qos.logback.classic.Logger) org.slf4j.LoggerFactory.getLogger(ch.qos.logback.classic.Logger.ROOT_LOGGER_NAME);
         root.setLevel(Level.INFO);
-
-//        ObjectMapperBuilder.build().getObjectMapper().registerSubtypes(UserManagementFactory.class);
 
 
         TestJettyServer jettyServer = new TestJettyServer();

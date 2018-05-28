@@ -4,6 +4,7 @@ import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.factory.atrribute.FactoryPolymorphicReferenceAttribute;
 import de.factoryfx.factory.atrribute.FactoryReferenceAttribute;
 import de.factoryfx.javafx.data.editor.data.DataEditor;
+import de.factoryfx.javafx.factory.editor.DataEditorFactory;
 import de.factoryfx.javafx.factory.util.LongRunningActionExecutor;
 import de.factoryfx.javafx.factory.util.LongRunningActionExecutorFactory;
 import de.factoryfx.javafx.data.util.UniformDesign;
@@ -22,7 +23,7 @@ public class FactoryEditViewFactory<VS,RS extends FactoryBase<?,VS,RS>,S> extend
     public final FactoryReferenceAttribute<FactoryEditManager<VS,RS>, FactoryEditManagerFactory<VS,RS,S>> factoryEditManager = new FactoryReferenceAttribute<FactoryEditManager<VS,RS>, FactoryEditManagerFactory<VS,RS,S>>().setupUnsafe(FactoryEditManagerFactory.class).de("uniformDesign").en("uniformDesign");
     public final FactoryReferenceAttribute<LongRunningActionExecutor, LongRunningActionExecutorFactory> longRunningActionExecutor = new FactoryReferenceAttribute<>(LongRunningActionExecutorFactory.class).de("items").en("items");
     public final FactoryReferenceAttribute<UniformDesign, UniformDesignFactory> uniformDesign = new FactoryReferenceAttribute<>(UniformDesignFactory.class).de("uniformDesign").en("uniformDesign");
-    public final FactoryPolymorphicReferenceAttribute<DataEditor> dataEditorFactory = new FactoryPolymorphicReferenceAttribute<>();
+    public final FactoryReferenceAttribute<DataEditor,DataEditorFactory> dataEditorFactory = new FactoryReferenceAttribute<>();
     public final FactoryReferenceAttribute<FactoryAwareWidget<RS>,FactoryAwareWidgetFactory<RS>> contentWidgetFactory = new FactoryReferenceAttribute<FactoryAwareWidget<RS>,FactoryAwareWidgetFactory<RS>>().setupUnsafe(FactoryAwareWidgetFactory.class);
     public final FactoryReferenceAttribute<DiffDialogBuilder,DiffDialogBuilderFactory> diffDialogBuilder = new FactoryReferenceAttribute<>(DiffDialogBuilderFactory.class);
 
