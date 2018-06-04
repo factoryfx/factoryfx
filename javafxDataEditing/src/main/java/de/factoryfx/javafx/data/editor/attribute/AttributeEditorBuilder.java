@@ -170,20 +170,23 @@ public class AttributeEditorBuilder {
             @Override
             public AttributeEditor<Data, ?> createEditor(Attribute<?, ?> attribute, Consumer<Data> navigateToData, Data previousData) {
                 ReferenceAttribute referenceAttribute = (ReferenceAttribute) attribute;
-                return new AttributeEditor<>(referenceAttribute,
-                                             new ReferenceAttributeVisualisation(uniformDesign,
-                                                                                 navigateToData,
-                                                                                 referenceAttribute::internal_createNewPossibleValues,
-                                                                                 referenceAttribute::set,
-                                                                                 referenceAttribute::internal_possibleValues,
-                                                                                 referenceAttribute::internal_deleteFactory,
-                                                                                 referenceAttribute.internal_isUserEditable(),
-                                                                                 referenceAttribute.internal_isUserSelectable(),
-                                                                                 referenceAttribute.internal_isUserCreatable(),
-                                                                                 referenceAttribute.internal_isUserDeletable(),
-                                                                                 referenceAttribute.internal_isCatalogueBased()),
-                                             uniformDesign);
-
+                if(referenceAttribute.internal_isCatalogueBased()){
+                    return new AttributeEditor<>(referenceAttribute, new CatalogAttributeVisualisation(referenceAttribute::internal_possibleValues, referenceAttribute), uniformDesign);
+                } else {
+                    return new AttributeEditor<>(referenceAttribute,
+                            new ReferenceAttributeVisualisation(uniformDesign,
+                                    navigateToData,
+                                    referenceAttribute::internal_createNewPossibleValues,
+                                    referenceAttribute::set,
+                                    referenceAttribute::internal_possibleValues,
+                                    referenceAttribute::internal_deleteFactory,
+                                    referenceAttribute.internal_isUserEditable(),
+                                    referenceAttribute.internal_isUserSelectable(),
+                                    referenceAttribute.internal_isUserCreatable(),
+                                    referenceAttribute.internal_isUserDeletable(),
+                                    referenceAttribute.internal_isCatalogueBased()),
+                            uniformDesign);
+                }
             }
         });
 
