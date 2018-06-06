@@ -24,5 +24,6 @@ module de.factoryfx.data {
     opens de.factoryfx.data.attribute.time;
     opens de.factoryfx.data.attribute.types;
     opens de.factoryfx.data;
+    opens de.factoryfx.data.merge;
 
 }
