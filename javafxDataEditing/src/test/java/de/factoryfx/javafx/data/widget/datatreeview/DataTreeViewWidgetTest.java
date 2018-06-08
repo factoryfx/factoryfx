@@ -57,7 +57,7 @@ public class DataTreeViewWidgetTest extends Application{
 //            exampleData1.referenceListAttribute.add(new ExampleData2());
 //        }
 
-        exampleData1 = exampleData1.internal().prepareUsableCopy();
+        exampleData1 = exampleData1.internal().addBackReferences();
 
         DataTreeViewWidget<ExampleData1> dataViewWidget = new DataTreeViewWidget<>(new DataTreeView<>(() -> dataList, item -> {
             final TreeItem<Data> dataTreeItem = new TreeItem<>(item);

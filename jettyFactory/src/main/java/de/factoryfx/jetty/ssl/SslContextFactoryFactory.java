@@ -29,7 +29,7 @@ public class SslContextFactoryFactory<V,R extends FactoryBase<?,V,R>> extends Si
 
         sslContextFactory.setKeyStorePassword(keyStorePassword.get());
         try {
-            KeyStore keyStore = KeyStore.getInstance(keyStoreType.getEnum().value());
+            KeyStore keyStore = KeyStore.getInstance(keyStoreType.get().value());
             try (InputStream inputStream = new ByteArrayInputStream(this.keyStore.getBytes())) {
                 keyStore.load(inputStream, keyStorePassword.get().toCharArray());
                 sslContextFactory.setKeyStore(keyStore);
@@ -40,7 +40,7 @@ public class SslContextFactoryFactory<V,R extends FactoryBase<?,V,R>> extends Si
 
         sslContextFactory.setKeyStorePassword(trustStorePassword.get());
         try {
-            KeyStore keyStore = KeyStore.getInstance(trustStoreType.getEnum().value());
+            KeyStore keyStore = KeyStore.getInstance(trustStoreType.get().value());
             try (InputStream inputStream = new ByteArrayInputStream(this.trustStore.getBytes())) {
                 keyStore.load(inputStream, keyStorePassword.get().toCharArray());
                 sslContextFactory.setTrustStore(keyStore);

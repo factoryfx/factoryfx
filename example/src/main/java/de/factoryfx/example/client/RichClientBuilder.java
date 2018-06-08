@@ -99,7 +99,7 @@ public class RichClientBuilder {
         factoryBuilder.addFactory(ViewMenuItemFactory.class, "configuration", Scope.SINGLETON, context -> {
             ViewDescriptionFactory viewDescriptionFactory = new ViewDescriptionFactory();
             viewDescriptionFactory.text.en("Configuration").de("Konfiguration");
-            viewDescriptionFactory.icon.setEnum(FontAwesome.Glyph.COG);
+            viewDescriptionFactory.icon.set(FontAwesome.Glyph.COG);
             viewDescriptionFactory.uniformDesign.set(context.get(UniformDesignFactory.class));
 
             ViewFactory viewFactory = new ViewFactory();

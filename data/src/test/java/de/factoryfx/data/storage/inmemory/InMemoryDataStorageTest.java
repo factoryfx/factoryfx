@@ -24,7 +24,7 @@ public class InMemoryDataStorageTest {
     @Test
     public void test_init() throws MalformedURLException {
         Dummy dummy = new Dummy();
-        dummy = dummy.internal().prepareUsableCopy();
+        dummy = dummy.internal().addBackReferences();
         InMemoryDataStorage<Dummy,Void> fileSystemFactoryStorage = new InMemoryDataStorage<>(dummy);
         fileSystemFactoryStorage.loadInitialFactory();
 
@@ -34,7 +34,7 @@ public class InMemoryDataStorageTest {
     @Test
     public void test_update() throws MalformedURLException {
         Dummy dummy = new Dummy();
-        dummy = dummy.internal().prepareUsableCopy();
+        dummy = dummy.internal().addBackReferences();
         InMemoryDataStorage<Dummy,Void> fileSystemFactoryStorage = new InMemoryDataStorage<>(dummy);
         fileSystemFactoryStorage.loadInitialFactory();
 
@@ -50,7 +50,7 @@ public class InMemoryDataStorageTest {
     @Test
     public void test_addFuture()  {
         Dummy dummy = new Dummy();
-        dummy = dummy.internal().prepareUsableCopy();
+        dummy = dummy.internal().addBackReferences();
         InMemoryDataStorage<Dummy,Void> fileSystemFactoryStorage = new InMemoryDataStorage<>(dummy);
         fileSystemFactoryStorage.loadInitialFactory();
 

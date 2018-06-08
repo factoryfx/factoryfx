@@ -43,7 +43,7 @@ public class ViewReferenceAttributeTest {
         ExampleDataA value = new ExampleDataA();
         root.exampleFactoryA.set(value);
 
-        root = root.internal().prepareUsableCopy();
+        root = root.internal().addBackReferences();
 
         Assert.assertEquals(root.exampleFactoryA.get().getId(),root.ref.get().view.get().getId());
     }
@@ -58,7 +58,7 @@ public class ViewReferenceAttributeTest {
         ExampleDataA value = new ExampleDataA();
         root.exampleFactoryA.set(value);
 
-        root.internal().prepareUsableCopy();
+        root.internal().addBackReferences();
 
         Assert.assertEquals(null,viewExampleFactory.view.get());
     }
@@ -74,7 +74,7 @@ public class ViewReferenceAttributeTest {
         value.stringAttribute.set("123");
         root.exampleFactoryA.set(value);
 
-        root = root.internal().prepareUsableCopy();
+        root = root.internal().addBackReferences();
         root.ref.get().view.setRunlaterExecutor(runnable -> runnable.run());
 
         ArrayList<String> calls=new ArrayList<>();
@@ -121,7 +121,7 @@ public class ViewReferenceAttributeTest {
         value.stringAttribute.set("123");
         root.exampleFactoryA.set(value);
 
-        root.internal().prepareUsableCopy();
+        root.internal().addBackReferences();
 
         ArrayList<String> calls=new ArrayList<>();
         viewExampleFactory.view.internal_addListener((attribute, value1) -> calls.add(value1.stringAttribute.get()));
@@ -146,7 +146,7 @@ public class ViewReferenceAttributeTest {
         root.ref.set(viewExampleFactory);
         ExampleDataA value = new ExampleDataA();
         root.exampleFactoryA.set(value);
-        root=root.internal().prepareUsableCopy();
+        root=root.internal().addBackReferences();
 
         root.internal().copy();
 
@@ -162,7 +162,7 @@ public class ViewReferenceAttributeTest {
         ExampleDataA value = new ExampleDataA();
         root.exampleFactoryA.set(value);
 
-        root.internal().prepareUsableCopy();
+        root.internal().addBackReferences();
     }
 
     @Test

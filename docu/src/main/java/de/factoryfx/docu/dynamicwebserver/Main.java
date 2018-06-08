@@ -40,7 +40,6 @@ public class Main {
         jettyServer.server.get().connectors.add(serverConnectorFactory);
 
         jettyServer.server.get().resource.set(createNewWebResourceReturningCreationTimestamp());
-        jettyServer=jettyServer.utility().prepareUsableCopy();
 
 
         Microservice<Void,RootFactory,Void> microservice

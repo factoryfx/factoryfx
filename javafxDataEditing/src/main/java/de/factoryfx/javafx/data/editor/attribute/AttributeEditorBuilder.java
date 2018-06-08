@@ -10,7 +10,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
 
 import de.factoryfx.data.attribute.types.*;
 import de.factoryfx.javafx.data.attribute.ColorAttribute;
@@ -81,21 +80,21 @@ public class AttributeEditorBuilder {
         result.add(new SimpleSingleAttributeEditorBuilder<>(uniformDesign,DoubleAttribute.class,Double.class,(attribute)-> new DoubleAttributeVisualisation(),()->new DoubleAttribute()));
         result.add(new SimpleSingleAttributeEditorBuilder<>(uniformDesign,EncryptedStringAttribute.class,EncryptedString.class,(attribute)-> new EncryptedStringAttributeVisualisation(attribute::createKey, attribute::internal_isValidKey,uniformDesign),()->new EncryptedStringAttribute()));
 
-        result.add(new NoListSingleAttributeEditorBuilder<EnumAttribute.EnumWrapper<?>,EnumAttribute<?>>(uniformDesign,(attribute)->attribute instanceof EnumAttribute,(attribute)->{
-            EnumAttributeVisualisation enumAttributeVisualisation = new EnumAttributeVisualisation(uniformDesign, attribute.internal_possibleEnumWrapperValues(), new StringConverter<>() {
+        result.add(new NoListSingleAttributeEditorBuilder<Enum<?>,EnumAttribute<?>>(uniformDesign,(attribute)->attribute instanceof EnumAttribute,(attribute)->{
+            EnumAttributeVisualisation enumAttributeVisualisation = new EnumAttributeVisualisation(uniformDesign, attribute.internal_possibleEnumValues(), new StringConverter<>() {
                 @Override
-                public String toString(EnumAttribute.EnumWrapper<?> wrapper) {
+                public String toString(Enum<?> wrapper) {
                     if (wrapper==null){
                         return attribute.internal_enumDisplayText(null, uniformDesign::getText);
                     }
-                    return attribute.internal_enumDisplayText(wrapper.enumField, uniformDesign::getText);
+                    return attribute.internal_enumDisplayText(wrapper, uniformDesign::getText);
                 }
                 @Override
-                public EnumAttribute.EnumWrapper<?> fromString(String string) { return null;} //nothing
+                public Enum<?> fromString(String string) { return null;} //nothing
             });
             return enumAttributeVisualisation;
         }));
-        result.add(new SingleAttributeEditorBuilder<EnumListAttribute.EnumWrapper<?>>() {
+        result.add(new SingleAttributeEditorBuilder<Enum<?>>() {
             @Override
             public boolean isListItemEditorFor(Attribute<?, ?> attribute) {
                 return attribute instanceof EnumListAttribute;
@@ -107,26 +106,26 @@ public class AttributeEditorBuilder {
             }
 
             @Override
-            public AttributeEditor<EnumListAttribute.EnumWrapper<?>, ?> createEditor(Attribute<?, ?> attribute, Consumer<Data> navigateToData, Data previousData) {
+            public AttributeEditor<Enum<?>, ?> createEditor(Attribute<?, ?> attribute, Consumer<Data> navigateToData, Data previousData) {
                 return null;
             }
 
             @Override
-            public AttributeEditor<List<EnumListAttribute.EnumWrapper<?>>,?> createValueListEditor(Attribute<?, ?> attribute) {
+            public AttributeEditor<List<Enum<?>>,?> createValueListEditor(Attribute<?, ?> attribute) {
                 EnumListAttribute attr = (EnumListAttribute)attribute;
                 EnumListAttribute<?> wattr = (EnumListAttribute<?>)attribute;
-                StringConverter c = new StringConverter<EnumListAttribute.EnumWrapper<?>>() {
+                StringConverter c = new StringConverter<Enum<?>>() {
                     @Override
-                    public String toString(EnumListAttribute.EnumWrapper<?> wrapper) {
-                        if (wrapper==null){
+                    public String toString(Enum<?> enumValue) {
+                        if (enumValue==null){
                             return wattr.internal_enumDisplayText(null, uniformDesign::getText);
                         }
-                        return wattr.internal_enumDisplayText(wrapper.enumField, uniformDesign::getText);
+                        return wattr.internal_enumDisplayText(enumValue, uniformDesign::getText);
                     }
                     @Override
-                    public EnumListAttribute.EnumWrapper<?> fromString(String string) { return null;} //nothing
+                    public Enum<?> fromString(String string) { return null;} //nothing
                 };
-                EnumListAttributeVisualisation visualisation = new EnumListAttributeVisualisation(attr.internal_possibleEnumWrapperValues(),c,attr);
+                EnumListAttributeVisualisation visualisation = new EnumListAttributeVisualisation(attr.internal_possibleEnumValues(),c,attr);
                 return new AttributeEditor<>(attr,visualisation,uniformDesign);
             }
 

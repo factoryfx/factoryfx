@@ -53,7 +53,7 @@ public abstract class ReferenceBaseAttribute<T extends Data, U, A extends Refere
     }
 
     @Override
-    public void internal_prepareUsage(Data root, Data parent){
+    public void internal_prepareUsageFlat(Data root, Data parent){
         this.root=root;
         this.parent=parent;
     }
@@ -150,7 +150,16 @@ public abstract class ReferenceBaseAttribute<T extends Data, U, A extends Refere
         return userCreatable;
     }
 
-    protected CopySemantic copySemantic = CopySemantic.COPY;
+    private CopySemantic copySemantic;
+
+    @JsonIgnore
+    protected CopySemantic getCopySemantic(){
+        if (copySemantic==null) {
+            return CopySemantic.COPY;
+        } else {
+            return copySemantic;
+        }
+    }
 
     /**
      * @see Data.DataUtility#semanticCopy()

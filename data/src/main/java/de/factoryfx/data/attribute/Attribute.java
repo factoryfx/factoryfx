@@ -1,7 +1,6 @@
 package de.factoryfx.data.attribute;
 
 import java.util.*;
-import java.util.function.Consumer;
 import java.util.function.Function;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -115,19 +114,6 @@ public abstract class Attribute<T,A extends Attribute<T,A>>{
     }
 
 
-    public void internal_visit(Consumer<Data> childFactoriesVisitor){
-
-        if (this instanceof ReferenceAttribute) {
-            Data data=((ReferenceAttribute<?,?>)this).get();
-            if (data!=null){
-                childFactoriesVisitor.accept(data);
-            }
-        }
-        if (this instanceof ReferenceListAttribute) {
-            ((ReferenceListAttribute<?,?>)this).forEach(childFactoriesVisitor);
-        }
-    }
-
     public abstract AttributeTypeInfo internal_getAttributeType();
 
     /**
@@ -135,14 +121,7 @@ public abstract class Attribute<T,A extends Attribute<T,A>>{
      * @param root factory tree root
      * @param parent data that contains the attribute
      */
-    public void internal_prepareUsage(Data root, Data parent){
-        //nothing
-    }
-
-    /**
-     * all elements prepared and root is usable
-     * */
-    public void internal_afterPreparedUsage(){
+    public void internal_prepareUsageFlat(Data root, Data parent){
         //nothing
     }
 

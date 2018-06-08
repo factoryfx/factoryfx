@@ -57,11 +57,11 @@ public class FactoryEditManagerTest {
     @Test
     public void test_root_merge() {
         ExampleFactoryA currentFactory = new ExampleFactoryA();
-        currentFactory = currentFactory.internal().prepareUsableCopy();
+        currentFactory = currentFactory.internal().addBackReferences();
 
         ExampleFactoryA updateFactory = new ExampleFactoryA();
         updateFactory.referenceAttribute.set(new ExampleFactoryB());
-        updateFactory = updateFactory.internal().prepareUsableCopy();
+        updateFactory = updateFactory.internal().addBackReferences();
         DataMerger<ExampleFactoryA> dataMerger = new DataMerger<>(currentFactory,currentFactory,updateFactory);
 
         Assert.assertNull(currentFactory.referenceAttribute.get());
@@ -83,7 +83,7 @@ public class FactoryEditManagerTest {
 
             ExampleFactoryA initialFactory = new ExampleFactoryA();
             initialFactory.referenceAttribute.set(new ExampleFactoryB());
-            initialFactory = initialFactory.internal().prepareUsableCopy();
+            initialFactory = initialFactory.internal().addBackReferences();
             Microservice<Void, ExampleFactoryA, Void> microservice = new Microservice<>(new FactoryManager<>(new RethrowingFactoryExceptionHandler()), new InMemoryDataStorage<ExampleFactoryA, Void>(initialFactory));
             microservice.start();
 
@@ -104,7 +104,7 @@ public class FactoryEditManagerTest {
             DataSerialisationManager<ExampleFactoryA, Void> serialisationManager = new DataSerialisationManager<>(new JacksonSerialisation<>(0), new JacksonDeSerialisation<>(ExampleFactoryA.class, 0), new ArrayList<>(), 0);
 
             ExampleFactoryA initialFactory = new ExampleFactoryA();
-            initialFactory = initialFactory.internal().prepareUsableCopy();
+            initialFactory = initialFactory.internal().addBackReferences();
 //            initialFactory.referenceAttribute.set(new ExampleFactoryB());
             Microservice<Void, ExampleFactoryA, Void> microservice = new Microservice<>(new FactoryManager<>(new RethrowingFactoryExceptionHandler()), new InMemoryDataStorage<ExampleFactoryA, Void>(initialFactory));
             microservice.start();

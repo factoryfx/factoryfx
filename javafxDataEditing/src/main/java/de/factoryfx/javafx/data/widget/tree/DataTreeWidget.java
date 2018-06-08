@@ -2,6 +2,8 @@ package de.factoryfx.javafx.data.widget.tree;
 
 import com.google.common.graph.Traverser;
 import de.factoryfx.data.Data;
+import de.factoryfx.data.attribute.ReferenceAttribute;
+import de.factoryfx.data.attribute.ReferenceListAttribute;
 import de.factoryfx.javafx.data.editor.data.DataEditor;
 import de.factoryfx.javafx.data.util.DataTextFieldTreeCell;
 import de.factoryfx.javafx.data.util.UniformDesign;
@@ -16,6 +18,8 @@ import javafx.scene.control.SelectionMode;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
+
+import java.util.function.Consumer;
 
 public class DataTreeWidget implements Widget {
     private Data root;
@@ -113,7 +117,8 @@ public class DataTreeWidget implements Widget {
         if (data!=null){
             TreeItem<TreeData> dataTreeItem = new TreeItem<>(new TreeData(data,null));
             data.internal().visitAttributesFlat((attributeVariableName, attribute) -> {
-                attribute.internal_visit(data1 -> {
+
+                Consumer<Data> childFactoriesVisitor= data1 -> {
                     TreeItem<TreeData> refDataTreeItem = new TreeItem<>(new TreeData(null,uniformDesign.getLabelText(attribute,attributeVariableName)));
                     dataTreeItem.getChildren().add(refDataTreeItem);
 
@@ -121,7 +126,19 @@ public class DataTreeWidget implements Widget {
                     if (treeItem!=null){
                         refDataTreeItem.getChildren().add(treeItem);
                     }
-                });
+                };
+
+
+                if (attribute instanceof ReferenceAttribute) {
+                    Data child=((ReferenceAttribute<?,?>)attribute).get();
+                    if (child!=null){
+                        childFactoriesVisitor.accept(child);
+                    }
+                }
+                if (attribute instanceof ReferenceListAttribute) {
+                    ((ReferenceListAttribute<?,?>)attribute).forEach(childFactoriesVisitor);
+                }
+
 
             });
             return dataTreeItem;

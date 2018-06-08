@@ -6,7 +6,6 @@ import de.factoryfx.factory.SimpleFactoryBase;
 import de.factoryfx.factory.atrribute.FactoryReferenceAttribute;
 import de.factoryfx.data.storage.inmemory.InMemoryDataStorage;
 import de.factoryfx.factory.exception.RethrowingFactoryExceptionHandler;
-import de.factoryfx.server.Microservice;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -17,7 +16,7 @@ public class MicroserviceAwareFactoryTest {
         RootTestClazz rootTestclazz = new RootTestClazz();
         final MicroserviceAwareFactoryTestclazz value = new MicroserviceAwareFactoryTestclazz();
         rootTestclazz.ref.set(value);
-        rootTestclazz = rootTestclazz.internal().prepareUsableCopy();
+        rootTestclazz = rootTestclazz.internal().addBackReferences();
 
         final FactoryManager<Void, RootTestClazz> factoryManager = new FactoryManager<>(new RethrowingFactoryExceptionHandler());
         Microservice<Void,RootTestClazz,Void> microservice = new Microservice<>(factoryManager, new InMemoryDataStorage<>(rootTestclazz));

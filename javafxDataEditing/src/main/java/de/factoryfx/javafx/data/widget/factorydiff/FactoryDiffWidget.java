@@ -195,7 +195,7 @@ public class FactoryDiffWidget implements Widget {
 
 
         tableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
-        tableView.setRowFactory((param) -> new TableRow<AttributeDiffInfoExtended>() {
+        tableView.setRowFactory((param) -> new TableRow<>() {
             @Override
             protected void updateItem(AttributeDiffInfoExtended mergeResultEntry, boolean empty) {
                 super.updateItem(mergeResultEntry, empty);

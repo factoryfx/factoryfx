@@ -16,7 +16,7 @@ public class EncryptedStringAttributeTest {
     }
 
     @Test
-    public void encrypt_json(){
+    public void test_json(){
         EncryptedStringAttribute attribute = new EncryptedStringAttribute();
         String key=attribute.createKey();
         attribute.set(new EncryptedString("test123üÄ",key));

@@ -20,7 +20,7 @@ public class ContentAssist {
 
 
     public NavigableMap<Integer,List<Proposal>> findProposals(List<SourceFile> externalSources, Javascript<?> text) {
-        NavigableMap<Integer,List<Proposal>> ret = new TreeMap<Integer,List<Proposal>>() {
+        NavigableMap<Integer,List<Proposal>> ret = new TreeMap<>() {
             @Override
             public List<Proposal> put(Integer key, List<Proposal> value) {
                 return super.put(key, value);

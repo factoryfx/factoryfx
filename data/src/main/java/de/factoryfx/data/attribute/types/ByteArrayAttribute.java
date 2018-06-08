@@ -3,7 +3,7 @@ package de.factoryfx.data.attribute.types;
 import java.util.Arrays;
 import java.util.Base64;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import de.factoryfx.data.attribute.ImmutableValueAttribute;
 
 public class ByteArrayAttribute extends ImmutableValueAttribute<byte[],ByteArrayAttribute> {
@@ -11,12 +11,7 @@ public class ByteArrayAttribute extends ImmutableValueAttribute<byte[],ByteArray
         super(byte[].class);
     }
 
-    @JsonCreator
-    ByteArrayAttribute(byte[] value) {
-        super(null);
-        set(value);
-    }
-
+    @JsonIgnore
     @Override
     public String getDisplayText() {
         if (get()!=null){

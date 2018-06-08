@@ -24,7 +24,7 @@ public class I18nAttributeVisualisation extends ValueAttributeEditorVisualisatio
         boundTo.addListener((observable, oldValue, newValue) -> displayTextfiled.setText(newValue.toString()));
 
         ComboBox<Locale> comboBox=new ComboBox<>();
-        comboBox.setConverter(new StringConverter<Locale>() {
+        comboBox.setConverter(new StringConverter<>() {
             @Override
             public String toString(Locale locale) {
                 return locale.getDisplayName();

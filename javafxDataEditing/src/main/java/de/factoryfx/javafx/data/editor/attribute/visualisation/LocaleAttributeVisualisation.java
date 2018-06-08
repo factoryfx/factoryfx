@@ -14,7 +14,7 @@ public class LocaleAttributeVisualisation extends ValueAttributeEditorVisualisat
     @Override
     public Node createVisualisation(SimpleObjectProperty<Locale> boundTo, boolean readonly) {
         ComboBox<Locale> comboBox=new ComboBox<>();
-        comboBox.setConverter(new StringConverter<Locale>() {
+        comboBox.setConverter(new StringConverter<>() {
             @Override
             public String toString(Locale locale) {
                 if (locale!=null){

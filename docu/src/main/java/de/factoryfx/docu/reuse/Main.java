@@ -11,7 +11,6 @@ public class Main {
     public static void main(String[] args) {
         RootFactory root = new RootFactory();
         root.stringAttribute.set("1");
-        root=root.utility().prepareUsableCopy();
 
         long start=System.currentTimeMillis();
         Microservice<Void,RootFactory,Void> microservice = new Microservice<>(new FactoryManager<>(new RethrowingFactoryExceptionHandler()),new InMemoryDataStorage<>(root));

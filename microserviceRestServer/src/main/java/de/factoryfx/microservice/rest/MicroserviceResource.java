@@ -9,6 +9,7 @@ import de.factoryfx.data.merge.MergeDiffInfo;
 import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.data.storage.DataAndNewMetadata;
 import de.factoryfx.data.storage.StoredDataMetadata;
+import de.factoryfx.factory.FactoryTreeBuilderBasedAttributeSetup;
 import de.factoryfx.factory.log.FactoryUpdateLog;
 import de.factoryfx.microservice.common.*;
 import de.factoryfx.server.Microservice;
@@ -29,16 +30,18 @@ public class MicroserviceResource<V,R extends FactoryBase<?,V,R>,S> implements M
     private final UserManagement userManagement;
     private final Predicate<Optional<AuthorizedUser>> authorizedKeyUserEvaluator;
     private final Supplier<V> emptyVisitorCreator;
+    private final FactoryTreeBuilderBasedAttributeSetup<R> factoryTreeBuilderBasedAttributeSetup;
 
     public MicroserviceResource(Microservice<V,R,S> microservice, UserManagement userManagement, Predicate<Optional<AuthorizedUser>> authorizedKeyUserEvaluator) {
-        this(microservice,userManagement,authorizedKeyUserEvaluator,null);
+        this(microservice,userManagement,authorizedKeyUserEvaluator,null,null);
     }
 
-    public MicroserviceResource(Microservice<V,R,S> microservice, UserManagement userManagement, Predicate<Optional<AuthorizedUser>> authorizedKeyUserEvaluator, Supplier<V> emptyVisitorCreator) {
+    public MicroserviceResource(Microservice<V,R,S> microservice, UserManagement userManagement, Predicate<Optional<AuthorizedUser>> authorizedKeyUserEvaluator, Supplier<V> emptyVisitorCreator, FactoryTreeBuilderBasedAttributeSetup<R> factoryTreeBuilderBasedAttributeSetup) {
         this.microservice = microservice;
         this.userManagement = userManagement;
         this.authorizedKeyUserEvaluator = authorizedKeyUserEvaluator;
         this.emptyVisitorCreator= emptyVisitorCreator;
+        this.factoryTreeBuilderBasedAttributeSetup = factoryTreeBuilderBasedAttributeSetup;
     }
 
     private Optional<AuthorizedUser> authenticate(UserAwareRequest<?> request){
@@ -55,7 +58,7 @@ public class MicroserviceResource<V,R extends FactoryBase<?,V,R>,S> implements M
     @Override
     public FactoryUpdateLog updateCurrentFactory(UserAwareRequest<UpdateCurrentFactoryRequest> update) {
         Function<String, Boolean> permissionChecker = authenticateAndGetPermissionChecker(update);
-        return microservice.updateCurrentFactory(new DataAndNewMetadata<>(update.request.factoryUpdate.root.internal().prepareUsableCopy(), update.request.factoryUpdate.metadata), update.user, update.request.comment, permissionChecker);
+        return microservice.updateCurrentFactory(new DataAndNewMetadata<>(update.request.factoryUpdate.root.internal().addBackReferences(), update.request.factoryUpdate.metadata), update.user, update.request.comment, permissionChecker);
     }
 
     @Override
@@ -76,7 +79,7 @@ public class MicroserviceResource<V,R extends FactoryBase<?,V,R>,S> implements M
     @Override
     public MergeDiffInfo simulateUpdateCurrentFactory(UserAwareRequest<DataAndNewMetadata> request) {
         Function<String, Boolean> permissionChecker = authenticateAndGetPermissionChecker(request);
-        return microservice.simulateUpdateCurrentFactory(new DataAndNewMetadata<>(request.request.root.internal().prepareUsableCopy(), request.request.metadata), permissionChecker);
+        return microservice.simulateUpdateCurrentFactory(new DataAndNewMetadata<>(request.request.root.internal().addBackReferences(), request.request.metadata), permissionChecker);
     }
 
     @Override

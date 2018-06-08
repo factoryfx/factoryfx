@@ -6,7 +6,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.function.Function;
 
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.fasterxml.jackson.annotation.*;
 import de.factoryfx.data.Data;
 import de.factoryfx.data.util.LanguageText;
 import de.factoryfx.data.validation.Validation;
@@ -14,8 +14,10 @@ import de.factoryfx.data.validation.ValidationError;
 import de.factoryfx.data.validation.ValidationResult;
 
 /** base class for Attributes with immutable value(for ChangeListener)*/
+//@JsonDeserialize(using = JsonNullAwareDeserializer.class)
 public abstract class ImmutableValueAttribute<T,A extends Attribute<T,A>> extends Attribute<T,A> {
     //    @JsonProperty
+    @JsonProperty("v")
     protected T value;
     private final Class<T> dataType;
 
@@ -100,6 +102,7 @@ public abstract class ImmutableValueAttribute<T,A extends Attribute<T,A>> extend
         }
     }
 
+    @JsonIgnore
     @Override
     public String getDisplayText() {
         if (value!=null){
@@ -113,12 +116,17 @@ public abstract class ImmutableValueAttribute<T,A extends Attribute<T,A>> extend
         return new AttributeTypeInfo(dataType);
     }
 
-    @JsonValue
+//    @JsonUnwrapped
+    @JsonGetter
+//    @JsonValue
     protected T getValue() {
         return get();
     }
 
-    @JsonValue
+//    @JsonUnwrapped
+    @JsonSetter
+//    @JsonMerge
+//    @JsonValue
     protected void setValue(T value) {
         set(value);
     }

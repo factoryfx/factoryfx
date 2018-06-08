@@ -5,6 +5,7 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class ValueListAttribute<T, A extends Attribute<List<T>,A>> extends ImmutableValueAttribute<List<T>,A> implements List<T> {
     private final Class<T> itemType;
@@ -28,6 +29,7 @@ public class ValueListAttribute<T, A extends Attribute<List<T>,A>> extends Immut
         this(null);
     }
 
+    @JsonIgnore
     @Override
     public String getDisplayText() {
         return new CollectionAttributeUtil<>(this.value, Object::toString).getDisplayText();

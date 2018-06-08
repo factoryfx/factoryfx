@@ -1,6 +1,5 @@
 package de.factoryfx.data.attribute.types;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
 import de.factoryfx.data.attribute.ImmutableValueAttribute;
 
 import java.util.function.Function;
@@ -9,18 +8,6 @@ public class PasswordAttribute extends ImmutableValueAttribute<EncryptedString, 
 
     public PasswordAttribute() {
         super(EncryptedString.class);
-    }
-
-    @JsonCreator
-    PasswordAttribute(EncryptedString initialValue) {
-        super(EncryptedString.class);
-        set(initialValue);
-    }
-
-    @JsonCreator
-    PasswordAttribute(String initialValue) {
-        super(EncryptedString.class);
-        set(new EncryptedString(initialValue));
     }
 
     private Function<String, String> passwordHash;

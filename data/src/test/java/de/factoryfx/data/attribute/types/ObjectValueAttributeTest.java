@@ -6,42 +6,31 @@ import org.junit.Test;
 
 public class ObjectValueAttributeTest {
 
-    public static class NoJsonPropertiesObject{
-            //dummy for not serializable objetc
+    public static class ExampleObjectValueData {
+        public final ObjectValueAttribute<NoJsonPropertiesObject> attribute = new ObjectValueAttribute<>();
     }
 
-    public abstract class NoJsonPropertiesObjectAbstract {
-        //dummy for not serializable objetc
+    public class NoJsonPropertiesObject {
+        //dummy for not serializable object
         public String test="sfsfdsf";
+    }
+
+    @Test
+    public void test_json_inside_data(){
+        ExampleObjectValueData noJsonPropertiesObject = new ExampleObjectValueData();
+        noJsonPropertiesObject.attribute.set(new NoJsonPropertiesObject());
+
+        ExampleObjectValueData copy= ObjectMapperBuilder.build().copy(noJsonPropertiesObject);
+        Assert.assertNull(copy.attribute.get());
     }
 
     @Test
     public void test_json(){
 
         ObjectValueAttribute<NoJsonPropertiesObject> attribute= new ObjectValueAttribute<>();
-        attribute.set(new NoJsonPropertiesObject());
+        attribute.set(new NoJsonPropertiesObject(){});
 
         ObjectValueAttribute<NoJsonPropertiesObject>  copy= ObjectMapperBuilder.build().copy(attribute);
-        Assert.assertNull(copy);
     }
 
-    @Test
-    public void test_json_abstract(){
-
-        ObjectValueAttribute<NoJsonPropertiesObjectAbstract> attribute= new ObjectValueAttribute<>();
-        attribute.set(new NoJsonPropertiesObjectAbstract(){});
-
-        ObjectValueAttribute<NoJsonPropertiesObjectAbstract>  copy= ObjectMapperBuilder.build().copy(attribute);
-        Assert.assertNull(copy);
-    }
-
-    @Test
-    public void test_json_deserialseabstract(){
-
-        ObjectValueAttribute<NoJsonPropertiesObjectAbstract> attribute= new ObjectValueAttribute<>();
-        attribute.set(new NoJsonPropertiesObjectAbstract(){});
-
-        String value = ObjectMapperBuilder.build().writeValueAsString(attribute);
-        System.out.println("fhg"+value);
-    }
 }

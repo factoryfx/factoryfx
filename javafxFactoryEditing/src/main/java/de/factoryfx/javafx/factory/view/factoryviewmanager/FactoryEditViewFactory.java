@@ -1,7 +1,6 @@
 package de.factoryfx.javafx.factory.view.factoryviewmanager;
 
 import de.factoryfx.factory.FactoryBase;
-import de.factoryfx.factory.atrribute.FactoryPolymorphicReferenceAttribute;
 import de.factoryfx.factory.atrribute.FactoryReferenceAttribute;
 import de.factoryfx.javafx.data.editor.data.DataEditor;
 import de.factoryfx.javafx.factory.editor.DataEditorFactory;

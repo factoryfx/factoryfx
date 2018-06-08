@@ -1,9 +1,5 @@
 package de.factoryfx.factory;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-
 import de.factoryfx.data.Data;
 import de.factoryfx.data.attribute.types.StringAttribute;
 import de.factoryfx.factory.atrribute.FactoryReferenceAttribute;
@@ -15,6 +11,10 @@ import de.factoryfx.factory.testfactories.ExampleFactoryB;
 import de.factoryfx.factory.testfactories.ExampleFactoryC;
 import org.junit.Assert;
 import org.junit.Test;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
 
 public class FactoryBaseTest {
 
@@ -114,7 +114,7 @@ public class FactoryBaseTest {
         root.xFactory.set(new XFactory());
         root.referenceAttribute.set(exampleFactoryAndViewA);
 
-        final XRoot usableCopy = root.internal().prepareUsableCopy();
+        final XRoot usableCopy = root.internal().addBackReferences();
         usableCopy.internalFactory().instance();
 
 
@@ -133,7 +133,7 @@ public class FactoryBaseTest {
         root.xFactory.set(new XFactory());
         root.referenceAttribute.set(exampleFactoryAndViewA);
 
-        final XRoot usableCopy = root.internal().prepareUsableCopy();
+        final XRoot usableCopy = root.internal().addBackReferences();
         usableCopy.internalFactory().instance();
 
         HashSet<Data> changed =new HashSet<>();
@@ -151,7 +151,7 @@ public class FactoryBaseTest {
         root.xFactory.set(new XFactory());
         root.referenceAttribute.set(exampleFactoryAndViewA);
 
-        final XRoot usableCopy = root.internal().prepareUsableCopy();
+        final XRoot usableCopy = root.internal().addBackReferences();
         usableCopy.internalFactory().instance();
 
         HashSet<Data> changed =new HashSet<>();
@@ -171,7 +171,7 @@ public class FactoryBaseTest {
         root.xFactory.set(new XFactory());
         root.referenceAttribute.set(exampleFactoryAndViewA);
 
-        final XRoot usableCopy = root.internal().prepareUsableCopy();
+        final XRoot usableCopy = root.internal().addBackReferences();
         usableCopy.internalFactory().instance();
 
         HashSet<Data> changed =new HashSet<>();
@@ -191,16 +191,16 @@ public class FactoryBaseTest {
         root.xFactoryList.add(new XFactory());
         root.referenceAttribute.set(exampleFactoryAndViewA);
 
-        final XRoot usableCopy = root.internal().prepareUsableCopy();
-        usableCopy.internalFactory().instance();
+        root.internal().addBackReferences();
+        root.internalFactory().instance();
 
         HashSet<Data> changed =new HashSet<>();
-        changed.add(usableCopy.xFactoryList.get().get(0));
+        changed.add(root.xFactoryList.get().get(0));
 
-        usableCopy.internalFactory().determineRecreationNeedFromRoot(changed);
-        Assert.assertTrue(usableCopy.needRecreation);
-        Assert.assertTrue(usableCopy.xFactoryList.get(0).needRecreation);
-        Assert.assertTrue(usableCopy.referenceAttribute.get().needRecreation);
+        root.internalFactory().determineRecreationNeedFromRoot(changed);
+        Assert.assertTrue(root.needRecreation);
+        Assert.assertTrue(root.xFactoryList.get(0).needRecreation);
+        Assert.assertTrue(root.referenceAttribute.get().needRecreation);
     }
 
 
@@ -210,7 +210,7 @@ public class FactoryBaseTest {
         root.xFactory.set(new XFactory());
         root.xFactory2.set(root.xFactory.get());
 
-        final XRoot usableCopy = root.internal().prepareUsableCopy();
+        final XRoot usableCopy = root.internal().addBackReferences();
         usableCopy.internalFactory().instance();
 
 
@@ -223,6 +223,88 @@ public class FactoryBaseTest {
         usableCopy.xFactory.get().createCalls.clear();
         usableCopy.internalFactory().instance();
         Assert.assertEquals(1,usableCopy.xFactory.get().createCalls.size());
+
+    }
+
+    public static class IterationTestFactory extends SimpleFactoryBase<Void,Void,IterationTestFactory>{
+        public String testinfo;
+        public final FactoryReferenceListAttribute<Void,IterationTestFactory>  children = new FactoryReferenceListAttribute<>();
+
+        public IterationTestFactory(String testinfo) {
+            this.testinfo = testinfo;
+        }
+
+        @Override
+        public Void createImpl() {
+            return null;
+        }
+    }
+
+//https://google.github.io/guava/releases/22.0/api/docs/com/google/common/collect/TreeTraverser.html
+//        h
+//      / | \
+//     /  e  \
+//    d       g
+//   /|\      |
+//  / | \     f
+// a  b  c
+
+//postorder: abcdefgh
+    @Test
+    public void test_getFactoriesInCreateAndStartOrder(){
+        IterationTestFactory root = new IterationTestFactory("h");
+
+        IterationTestFactory d = new IterationTestFactory("d");
+        root.children.add(d);
+        root.children.add(new IterationTestFactory("e"));
+        IterationTestFactory g = new IterationTestFactory("g");
+        root.children.add(g);
+
+        d.children.add(new IterationTestFactory("a"));
+        d.children.add(new IterationTestFactory("b"));
+        d.children.add(new IterationTestFactory("c"));
+
+        g.children.add(new IterationTestFactory("f"));
+
+        StringBuilder result = new StringBuilder();
+        for (FactoryBase<?, ?, ?> item : root.internalFactory().getFactoriesInCreateAndStartOrder()) {
+           result.append(((IterationTestFactory)item).testinfo);
+        }
+        Assert.assertEquals("abcdefgh",result.toString());
+    }
+
+
+
+//        h
+//      / | \
+//     /  e  \
+//    d       g
+//   /|\      |
+//  / | \     f
+// a  b  c
+
+    //breadth-first order: hdegabcf
+    @Test
+    public void test_getFactoriesInDestroyOrder(){
+            IterationTestFactory root = new IterationTestFactory("h");
+
+            IterationTestFactory d = new IterationTestFactory("d");
+            root.children.add(d);
+            root.children.add(new IterationTestFactory("e"));
+            IterationTestFactory g = new IterationTestFactory("g");
+            root.children.add(g);
+
+            d.children.add(new IterationTestFactory("a"));
+            d.children.add(new IterationTestFactory("b"));
+            d.children.add(new IterationTestFactory("c"));
+
+            g.children.add(new IterationTestFactory("f"));
+
+            StringBuilder result = new StringBuilder();
+            for (FactoryBase<?, ?, ?> item : root.internalFactory().getFactoriesInDestroyOrder()) {
+                result.append(((IterationTestFactory)item).testinfo);
+            }
+            Assert.assertEquals("hdegabcf",result.toString());
 
     }
 }

@@ -71,7 +71,7 @@ public class JavascriptAttributeIntegrationTest extends Application{
 
         exampleJavascript= ObjectMapperBuilder.build().copy(exampleJavascript);
 
-        exampleJavascript = exampleJavascript.internal().prepareUsableCopy();
+        exampleJavascript = exampleJavascript.internal().addBackReferences();
         dataEditor.edit(exampleJavascript);
 
         primaryStage.setScene(new Scene(root,1200,800));

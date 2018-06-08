@@ -3,6 +3,7 @@ package de.factoryfx.data.attribute;
 import java.util.*;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 
 //TODO remove ObservableMap same as list
@@ -23,6 +24,7 @@ public abstract class ValueMapAttribute<K, V, A extends ValueMapAttribute<K,V,A>
         this(null,null);
     }
 
+    @JsonIgnore
     @Override
     public String getDisplayText() {
         return new CollectionAttributeUtil<>(value.entrySet(), item -> item.getKey()+":"+item.getValue()).getDisplayText();

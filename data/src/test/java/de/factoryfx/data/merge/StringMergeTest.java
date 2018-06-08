@@ -16,11 +16,11 @@ public class StringMergeTest extends MergeHelperTestBase {
     public void test_merge_same(){
         StringTestPojo aTest1 = new StringTestPojo();
         aTest1.stringA.set("11111111");
-        aTest1 = aTest1.internal().prepareUsableCopy();
+        aTest1 = aTest1.internal().addBackReferences();
 
         StringTestPojo update = new StringTestPojo();
         update.stringA.set("11111111");
-        update = update.internal().prepareUsableCopy();
+        update = update.internal().addBackReferences();
 
         Assert.assertTrue(merge(aTest1, aTest1, update).hasNoConflicts());
 
@@ -33,11 +33,11 @@ public class StringMergeTest extends MergeHelperTestBase {
     public void test_merge_change(){
         StringTestPojo aTest1 = new StringTestPojo();
         aTest1.stringA.set("11111111");
-        aTest1 = aTest1.internal().prepareUsableCopy();
+        aTest1 = aTest1.internal().addBackReferences();
 
         StringTestPojo aTest2 = new StringTestPojo();
         aTest2.stringA.set("11111111qqqqq");
-        aTest2 = aTest2.internal().prepareUsableCopy();
+        aTest2 = aTest2.internal().addBackReferences();
 
         Assert.assertTrue(merge(aTest1, aTest1, aTest2).hasNoConflicts());
         Assert.assertEquals("11111111qqqqq",aTest1.stringA.get());
@@ -48,17 +48,17 @@ public class StringMergeTest extends MergeHelperTestBase {
         StringTestPojo current = new StringTestPojo();
         current.stringA.set("11111111xxxxxxx");
         current.stringB.set("11111111");
-        current = current.internal().prepareUsableCopy();
+        current = current.internal().addBackReferences();
 
         StringTestPojo original = new StringTestPojo();
         original.stringA.set("11111111");
         original.stringB.set("11111111");
-        original = original.internal().prepareUsableCopy();
+        original = original.internal().addBackReferences();
 
         StringTestPojo newData = new StringTestPojo();
         newData.stringA.set("11111111");
         newData.stringB.set("11111111qqqqq");
-        newData = newData.internal().prepareUsableCopy();
+        newData = newData.internal().addBackReferences();
 
         Assert.assertTrue(merge(current, original, newData).hasNoConflicts());
         Assert.assertEquals("11111111xxxxxxx", current.stringA.get());

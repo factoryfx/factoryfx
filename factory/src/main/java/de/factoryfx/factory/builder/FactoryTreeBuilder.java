@@ -2,7 +2,7 @@ package de.factoryfx.factory.builder;
 
 import de.factoryfx.data.Data;
 import de.factoryfx.data.validation.ValidationError;
-import de.factoryfx.factory.AttributeSetupHelper;
+import de.factoryfx.factory.FactoryTreeBuilderBasedAttributeSetup;
 import de.factoryfx.factory.FactoryBase;
 
 import java.util.ArrayList;
@@ -73,9 +73,9 @@ public class FactoryTreeBuilder<R extends FactoryBase<?,?,R>> {
         if (factoryBases==null){
             throw new IllegalStateException("FactoryCreator missing for root class "+ rootClass.getSimpleName()+"\n"+"probably missing call: factoryBuilder.addFactory("+rootClass.getSimpleName()+".class,...\n");
         }
-        AttributeSetupHelper<R> attributeSetupHelper = new AttributeSetupHelper<>(this);
-        factoryBases.internalFactory().setAttributeSetupHelper(attributeSetupHelper);
-        return factoryBases.internal().prepareUsableCopy(null, attributeSetupHelper);
+        FactoryTreeBuilderBasedAttributeSetup<R> factoryTreeBuilderBasedAttributeSetup = new FactoryTreeBuilderBasedAttributeSetup<>(this);
+        factoryBases.internalFactory().setAttributeSetupHelper(factoryTreeBuilderBasedAttributeSetup);
+        return factoryBases.internal().addBackReferences();
     }
 
     public <L, F extends FactoryBase<L,?,R>> F buildSubTree(Class<F> factoryClazz){

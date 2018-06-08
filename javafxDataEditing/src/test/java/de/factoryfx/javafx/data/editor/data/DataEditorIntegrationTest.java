@@ -37,7 +37,7 @@ public class DataEditorIntegrationTest extends Application{
 
         exampleData1= ObjectMapperBuilder.build().copy(exampleData1);
 
-        exampleData1 = exampleData1.internal().prepareUsableCopy();
+        exampleData1 = exampleData1.internal().addBackReferences();
         dataEditor.edit(exampleData1);
 
         primaryStage.setScene(new Scene(root,1200,800));

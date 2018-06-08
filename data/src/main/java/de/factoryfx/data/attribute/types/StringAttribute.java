@@ -1,6 +1,5 @@
 package de.factoryfx.data.attribute.types;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.common.base.Strings;
 import de.factoryfx.data.attribute.ImmutableValueAttribute;
@@ -11,16 +10,11 @@ public class StringAttribute extends ImmutableValueAttribute<String,StringAttrib
         super(String.class);
     }
 
-    @JsonCreator
-    StringAttribute(String initialValue) {
-        super(String.class);
-        set(initialValue);
-    }
-
     @JsonIgnore
     private boolean longText=false;
     @JsonIgnore
     private boolean defaultExpanded =false;
+
     /**hint for data editing, a textarea is used instead of textfield
      * @return self
      * */
@@ -48,6 +42,7 @@ public class StringAttribute extends ImmutableValueAttribute<String,StringAttrib
         return this;
     }
 
+    @JsonIgnore
     public boolean isEmpty(){
         return Strings.isNullOrEmpty(get());
     }

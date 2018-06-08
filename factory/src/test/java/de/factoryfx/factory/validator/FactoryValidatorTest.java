@@ -20,7 +20,7 @@ public class FactoryValidatorTest {
     public static Iterable<Object[]> data1() throws IOException {
         List<Object[]> result = new ArrayList<>();
         final FactoryStyleValidator factoryStyleValidator = new FactoryStyleValidator();
-        for (Class<? extends FactoryBase> clazz: new ClasspathBasedFactoryProvider().get(ExampleFactoryA.class)){
+        for (Class<? extends FactoryBase> clazz: List.of(ExampleFactoryA.class)/*new ClasspathBasedFactoryProvider().get(ExampleFactoryA.class)*/){
 
             try {
                 final List<FactoryStyleValidation> factoryValidations = factoryStyleValidator.createFactoryValidations(clazz.getConstructor().newInstance());

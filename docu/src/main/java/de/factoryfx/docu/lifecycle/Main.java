@@ -9,7 +9,6 @@ public class Main {
 
     public static void main(String[] args) {
         RootFactory root = new RootFactory();
-        root=root.utility().prepareUsableCopy();
 
         Microservice<Void,RootFactory,Void> microservice = new Microservice<>(new FactoryManager<>(new RethrowingFactoryExceptionHandler()),new InMemoryDataStorage<>(root));
         microservice.start();

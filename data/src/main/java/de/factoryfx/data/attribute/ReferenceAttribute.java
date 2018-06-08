@@ -2,11 +2,12 @@ package de.factoryfx.data.attribute;
 
 import java.util.*;
 import java.util.function.Function;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonValue;
+
+import com.fasterxml.jackson.annotation.*;
 import de.factoryfx.data.Data;
 
 public abstract class ReferenceAttribute<T extends Data, A extends ReferenceBaseAttribute<T,T,A>> extends ReferenceBaseAttribute<T,T,A> {
+    @JsonProperty("v")
     private T value;
 
     @JsonCreator
@@ -47,6 +48,7 @@ public abstract class ReferenceAttribute<T extends Data, A extends ReferenceBase
         return value;
     }
 
+    @JsonIgnore
     public Optional<T> getOptional() {
         return Optional.ofNullable(value);
     }
@@ -56,7 +58,7 @@ public abstract class ReferenceAttribute<T extends Data, A extends ReferenceBase
     public void set(T value) {
         this.value=value;
         if (root!=null && value!=null) {
-            value.internal().propagateRootAndParent(root,this.parent);
+            value.internal().addBackReferencesForSubtree(root,this.parent);
         }
         if (listeners!=null) {
             for (AttributeChangeListener<T, A> listener : listeners) {
@@ -74,22 +76,26 @@ public abstract class ReferenceAttribute<T extends Data, A extends ReferenceBase
     @Override
     public void internal_semanticCopyTo(A copyAttribute) {
         if (get()!=null){
-            if (copySemantic==CopySemantic.SELF){
+            if (getCopySemantic()==CopySemantic.SELF){
                 copyAttribute.set(get());
             } else {
                 copyAttribute.set(get().internal().semanticCopy());
             }
         }
-
     }
 
-    @JsonValue
-    T getValue() {
+//    @JsonUnwrapped
+//    @JsonValue
+    @JsonGetter
+    @JsonMerge(OptBoolean.FALSE)
+    protected T getValue() {
         return value;
     }
 
-    @JsonValue
-    void setValue(T value) {
+//    @JsonUnwrapped
+//    @JsonValue
+    @JsonSetter
+    protected void setValue(T value) {
         this.value = value;
     }
 
@@ -112,6 +118,7 @@ public abstract class ReferenceAttribute<T extends Data, A extends ReferenceBase
         }
     }
 
+    @JsonIgnore
     @Override
     public String getDisplayText() {
         String referenceDisplayText = "empty";

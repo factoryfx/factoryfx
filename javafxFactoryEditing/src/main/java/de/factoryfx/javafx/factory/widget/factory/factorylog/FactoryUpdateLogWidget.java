@@ -6,10 +6,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.function.Consumer;
 
-import de.factoryfx.factory.log.FactoryUpdateLog;
-import de.factoryfx.factory.log.FactoryLogEntry;
-import de.factoryfx.factory.log.FactoryLogEntryEvent;
-import de.factoryfx.factory.log.FactoryLogEntryEventType;
+import de.factoryfx.factory.log.*;
 import de.factoryfx.javafx.data.util.UniformDesign;
 import de.factoryfx.javafx.data.widget.Widget;
 import de.factoryfx.javafx.data.widget.table.TableControlWidget;
@@ -52,7 +49,7 @@ public class FactoryUpdateLogWidget implements Widget {
             if (factoryLog.root!=null){
                 treeView.setRoot(createLogTree(factoryLog.root, System.currentTimeMillis()+5000,new HashMap<>()));
             }
-            treeView.setCellFactory(param-> new TextFieldTreeCell<FactoryLogWidgetTreeData>(){
+            treeView.setCellFactory(param-> new TextFieldTreeCell<>(){
                 @Override
                 public void updateItem(FactoryLogWidgetTreeData item, boolean empty) {
                     super.updateItem(item, empty);
@@ -114,7 +111,7 @@ public class FactoryUpdateLogWidget implements Widget {
     }
 
     private String getTypeText(FactoryLogEntry entry, FactoryLogEntryEventType type){
-        for (FactoryLogEntryEvent event: entry.events){
+        for (FactoryLogEntryEvent event: entry.getEvents()){
             if (type==event.type){
                 return( event.durationNs / 1000000.0) + "ms";
             }
@@ -122,7 +119,7 @@ public class FactoryUpdateLogWidget implements Widget {
         return null;
     }
 
-    private TreeItem<FactoryLogWidgetTreeData> createLogTree(FactoryLogEntry factoryLogEntry, long abortOnCurrentTimeMillis, Map<FactoryLogEntry, TreeItem<FactoryLogWidgetTreeData>> createdTreeItems) {
+    private TreeItem<FactoryLogWidgetTreeData> createLogTree(FactoryLogEntryTreeItem factoryLogEntry, long abortOnCurrentTimeMillis, Map<FactoryLogEntryTreeItem, TreeItem<FactoryLogWidgetTreeData>> createdTreeItems) {
         if (createdTreeItems.containsKey(factoryLogEntry)){
             return createdTreeItems.get(factoryLogEntry);
         }
@@ -130,7 +127,7 @@ public class FactoryUpdateLogWidget implements Widget {
         createdTreeItems.put(factoryLogEntry,factoryLogEntryTreeItem);
         factoryLogEntryTreeItem.setExpanded(true);
         if (System.currentTimeMillis() < abortOnCurrentTimeMillis) {
-            factoryLogEntry.events.forEach(event -> factoryLogEntryTreeItem.getChildren().add(new TreeItem<>(new FactoryLogWidgetTreeDataEvent(event))));
+            factoryLogEntry.log.getEvents().forEach(event -> factoryLogEntryTreeItem.getChildren().add(new TreeItem<>(new FactoryLogWidgetTreeDataEvent(event))));
             factoryLogEntry.children.forEach(child -> factoryLogEntryTreeItem.getChildren().add(createLogTree(child, abortOnCurrentTimeMillis,createdTreeItems)));
         }
         return factoryLogEntryTreeItem;
@@ -142,14 +139,14 @@ public class FactoryUpdateLogWidget implements Widget {
     }
 
     public static class FactoryLogWidgetTreeDataFactory implements FactoryLogWidgetTreeData {
-        private final FactoryLogEntry factory;
+        private final FactoryLogEntryTreeItem factory;
 
-        public FactoryLogWidgetTreeDataFactory(FactoryLogEntry factory) {
+        public FactoryLogWidgetTreeDataFactory(FactoryLogEntryTreeItem factory) {
             this.factory = factory;
         }
 
         public String getText(){
-            return factory.getFactoryDescription();
+            return factory.log.getFactoryDescription();
         }
 
         public FontAwesome.Glyph getIcon(){

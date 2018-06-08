@@ -1,6 +1,5 @@
 package de.factoryfx.data.attribute.time;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
 import de.factoryfx.data.attribute.ImmutableValueAttribute;
 
 import java.time.LocalDate;
@@ -9,12 +8,6 @@ public class LocalDateAttribute extends ImmutableValueAttribute<LocalDate,LocalD
 
     public LocalDateAttribute() {
         super(LocalDate.class);
-    }
-
-    @JsonCreator
-    LocalDateAttribute(LocalDate initialValue) {
-        super(LocalDate.class);
-        set(initialValue);
     }
 
 }

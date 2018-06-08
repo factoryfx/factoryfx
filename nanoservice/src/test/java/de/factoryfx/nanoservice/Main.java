@@ -10,7 +10,7 @@ public class Main {
     public static void main(String[] args) {
         RootFactory rootFactory = new RootFactory();
         rootFactory.storageFactory.set(new SubscriptionStorageFactory());
-        Microservice<Void,RootFactory,Void> microService = new Microservice<Void,RootFactory,Void>(new FactoryManager<>(new RethrowingFactoryExceptionHandler()),new InMemoryDataStorage<>(rootFactory.utility().prepareUsableCopy()));
+        Microservice<Void,RootFactory,Void> microService = new Microservice<Void,RootFactory,Void>(new FactoryManager<>(new RethrowingFactoryExceptionHandler()),new InMemoryDataStorage<>(rootFactory));
         microService.start();
     }
 

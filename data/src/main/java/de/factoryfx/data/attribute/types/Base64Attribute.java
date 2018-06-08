@@ -1,6 +1,6 @@
 package de.factoryfx.data.attribute.types;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import de.factoryfx.data.attribute.ImmutableValueAttribute;
 
 import java.util.Base64;
@@ -14,12 +14,6 @@ public class Base64Attribute extends ImmutableValueAttribute<String,Base64Attrib
         super(String.class);
     }
 
-    @JsonCreator
-    Base64Attribute(String value) {
-        super(null);
-        set(value);
-    }
-
     @Override
     public String getDisplayText() {
         if (get()!=null){
@@ -28,10 +22,12 @@ public class Base64Attribute extends ImmutableValueAttribute<String,Base64Attrib
         return "<empty>";
     }
 
+    @JsonIgnore
     public void set(byte[] bytes){
         set(Base64.getEncoder().encodeToString(bytes));
     }
 
+    @JsonIgnore
     public byte[] getBytes(){
         return Base64.getDecoder().decode(get());
     }

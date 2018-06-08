@@ -6,17 +6,15 @@ import de.factoryfx.factory.atrribute.FactoryReferenceListAttribute;
 import de.factoryfx.factory.builder.FactoryTreeBuilder;
 import de.factoryfx.factory.builder.Scope;
 
-import java.util.function.Consumer;
-
 /**
  *  provides additional setup for attributes based on the FactoryTreeBuilder
  * @param <R> root
  */
-public class AttributeSetupHelper<R extends FactoryBase<?,?,R>> implements Consumer<Attribute<?,?>> {
+public class FactoryTreeBuilderBasedAttributeSetup<R extends FactoryBase<?,?,R>> {
 
     private final FactoryTreeBuilder<R> factoryTreeBuilder;
 
-    public AttributeSetupHelper(FactoryTreeBuilder<R> factoryTreeBuilder) {
+    public FactoryTreeBuilderBasedAttributeSetup(FactoryTreeBuilder<R> factoryTreeBuilder) {
         this.factoryTreeBuilder = factoryTreeBuilder;
     }
 
@@ -25,8 +23,9 @@ public class AttributeSetupHelper<R extends FactoryBase<?,?,R>> implements Consu
         return factoryTreeBuilder.buildSubTree(clazz);
     }
 
-    public void setupReferenceAttribute(FactoryReferenceAttribute<?, ?> referenceAttribute, Class clazz) {
-        Scope scope = factoryTreeBuilder.getScope(clazz);
+    private void setupReferenceAttribute(FactoryReferenceAttribute<?, ?> referenceAttribute) {
+        Class<?> referenceClass = referenceAttribute.internal_getReferenceClass();
+        Scope scope = factoryTreeBuilder.getScope(referenceClass);
         if (scope== Scope.SINGLETON) {
             referenceAttribute.userNotSelectable();
         }
@@ -35,8 +34,9 @@ public class AttributeSetupHelper<R extends FactoryBase<?,?,R>> implements Consu
         }
     }
 
-    public void setupReferenceListAttribute(FactoryReferenceListAttribute<?, ?> referenceAttribute, Class clazz) {
-        Scope scope = factoryTreeBuilder.getScope(clazz);
+    private void setupReferenceListAttribute(FactoryReferenceListAttribute<?, ?> referenceAttribute) {
+        Class<?> referenceClass = referenceAttribute.internal_getReferenceClass();
+        Scope scope = factoryTreeBuilder.getScope(referenceClass);
         if (scope== Scope.SINGLETON) {
             referenceAttribute.userNotSelectable();
         }
@@ -46,13 +46,12 @@ public class AttributeSetupHelper<R extends FactoryBase<?,?,R>> implements Consu
     }
 
     @SuppressWarnings("unchecked")
-    @Override
     public void accept(Attribute<?, ?> attribute) {
         if (attribute instanceof FactoryReferenceAttribute){
-            ((FactoryReferenceAttribute)attribute).internal_setupWithAttributeSetupHelper(this);
+            setupReferenceAttribute((FactoryReferenceAttribute)attribute);
         }
         if (attribute instanceof FactoryReferenceListAttribute){
-            ((FactoryReferenceListAttribute)attribute).internal_setupWithAttributeSetupHelper(this);
+            setupReferenceListAttribute((FactoryReferenceListAttribute)attribute);
         }
     }
 

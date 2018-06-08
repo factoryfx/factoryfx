@@ -13,7 +13,6 @@ public class Main {
         PrinterCreatorFactory printerCreatorFactory = new PrinterCreatorFactory();
         printerCreatorFactory.text.set("bla");
         root.printerCreator.set(printerCreatorFactory);
-        root=root.utility().prepareUsableCopy();
 
         Microservice<Void,RootFactory,Void> microservice = new Microservice<>(new FactoryManager<>(new RethrowingFactoryExceptionHandler()),new InMemoryDataStorage<>(root));
         microservice.start();

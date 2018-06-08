@@ -1,5 +1,6 @@
 package de.factoryfx.data.attribute.types;
 
+import com.fasterxml.jackson.annotation.JsonMerge;
 import de.factoryfx.data.jackson.ObjectMapperBuilder;
 import de.factoryfx.data.util.LanguageText;
 import org.junit.Assert;
@@ -16,11 +17,17 @@ public class EnumAttributeTest {
     }
 
     @Test
-    public void test_json(){
-        EnumAttribute<TestEnum> attribute= new EnumAttribute<>(TestEnum.class).defaultEnum(TestEnum.FGDFGDFGDFGDDFG_AA);
-        EnumAttribute<TestEnum> copy= ObjectMapperBuilder.build().copy(attribute);
-        System.out.println(ObjectMapperBuilder.build().writeValueAsString(attribute));
-        Assert.assertEquals(TestEnum.FGDFGDFGDFGDDFG_AA,copy.getEnum());
+    public void test_json_class(){
+        ExampleEnumData data= new ExampleEnumData();
+        ExampleEnumData copy= ObjectMapperBuilder.build().copy(data);
+        Assert.assertEquals(2,copy.attribute.internal_possibleEnumValues().size());
+    }
+
+    @Test
+    public void test_json_getAttributeType(){
+        ExampleEnumData data= new ExampleEnumData();
+        ExampleEnumData copy= ObjectMapperBuilder.build().copy(data);
+        Assert.assertEquals(TestEnum.class,copy.attribute.internal_getAttributeType().dataType);
     }
 
     @Test
@@ -35,5 +42,17 @@ public class EnumAttributeTest {
         EnumAttribute<TestEnum> attribute= new EnumAttribute<>(TestEnum.class);
         Assert.assertEquals("FGDFGDFGDFGDDFG_AA",attribute.internal_enumDisplayText(TestEnum.FGDFGDFGDFGDDFG_AA, languageText -> languageText.internal_getPreferred(Locale.GERMAN)));
         Assert.assertEquals("FGDFGDFGDFGDDFG_AA",attribute.internal_enumDisplayText(TestEnum.FGDFGDFGDFGDDFG_AA, languageText -> languageText.internal_getPreferred(Locale.ENGLISH)));
+    }
+
+    public static class ExampleEnumData{
+        public final EnumAttribute<TestEnum> attribute = new EnumAttribute<>(TestEnum.class);
+    }
+
+    @Test
+    public void test_in_Data(){
+        ExampleEnumData exampleEnumData = new ExampleEnumData();
+        exampleEnumData.attribute.set(TestEnum.FGDFGDFGDFGDDFG_AA);
+        ExampleEnumData copy= ObjectMapperBuilder.build().copy(exampleEnumData);
+        Assert.assertEquals(TestEnum.FGDFGDFGDFGDDFG_AA,copy.attribute.get());
     }
 }

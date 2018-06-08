@@ -22,14 +22,14 @@ public class ReferenceListMergeTest extends MergeHelperTestBase{
         current.referenceListAttribute.add(newValue1);
         current.referenceListAttribute.add(newValue2);
         current.referenceListAttribute.add(newValue3);
-        current = current.internal().prepareUsableCopy();
+        current = current.internal().addBackReferences();
 
 
         ExampleDataA update = new ExampleDataA();
         update.referenceListAttribute.add(newValue1);
         update.referenceListAttribute.add(newValue2);
         update.referenceListAttribute.add(newValue3);
-        update = update.internal().prepareUsableCopy();
+        update = update.internal().addBackReferences();
 
         Assert.assertTrue(merge(current, current, update).hasNoConflicts());
         Assert.assertEquals(3, current.referenceListAttribute.size());
@@ -47,7 +47,7 @@ public class ReferenceListMergeTest extends MergeHelperTestBase{
         current.referenceListAttribute.add(newValue1);
         current.referenceListAttribute.add(newValue2);
         current.referenceListAttribute.add(newValue3);
-        current = current.internal().prepareUsableCopy();
+        current = current.internal().addBackReferences();
 
         ExampleDataA update = current.internal().copy();
         ExampleDataB replacedValue = new ExampleDataB();
@@ -70,7 +70,7 @@ public class ReferenceListMergeTest extends MergeHelperTestBase{
         ExampleDataB newValue2 = new ExampleDataB();
         current.referenceListAttribute.add(newValue1);
         current.referenceListAttribute.add(newValue2);
-        current = current.internal().prepareUsableCopy();
+        current = current.internal().addBackReferences();
 
         ExampleDataA orginal = current.internal().copy();
         ExampleDataA update = current.internal().copy();
@@ -100,12 +100,12 @@ public class ReferenceListMergeTest extends MergeHelperTestBase{
         current.referenceListAttribute.add(newValue1);
         current.referenceListAttribute.add(newValue2);
         current.referenceListAttribute.add(newValue3);
-        current = current.internal().prepareUsableCopy();
+        current = current.internal().addBackReferences();
 
 
         ExampleDataA update = current.internal().copy();
         update.referenceListAttribute.remove(2);
-        update = update.internal().prepareUsableCopy();
+        update = update.internal().addBackReferences();
 
         String idBefore1=current.referenceListAttribute.get(0).getId();
         String idBefore2=current.referenceListAttribute.get(1).getId();
@@ -149,7 +149,7 @@ public class ReferenceListMergeTest extends MergeHelperTestBase{
         ExampleDataB newValue2 = new ExampleDataB();
         current.referenceListAttribute.add(newValue1);
         current.referenceListAttribute.add(newValue2);
-        current = current.internal().prepareUsableCopy();
+        current = current.internal().addBackReferences();
 
 
         ExampleDataA orginal = current.internal().copy();
@@ -168,7 +168,7 @@ public class ReferenceListMergeTest extends MergeHelperTestBase{
         ExampleDataB newValue2 = new ExampleDataB();
         current.referenceListAttribute.add(newValue1);
         current.referenceListAttribute.add(newValue2);
-        current = current.internal().prepareUsableCopy();
+        current = current.internal().addBackReferences();
 
         ExampleDataA orginal = current.internal().copy();
 

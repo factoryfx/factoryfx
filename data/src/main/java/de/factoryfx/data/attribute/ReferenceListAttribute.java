@@ -91,7 +91,7 @@ public abstract class ReferenceListAttribute<T extends Data,A extends ReferenceB
 
     @Override
     public void internal_semanticCopyTo(A copyAttribute) {
-        if (copySemantic==CopySemantic.SELF){
+        if (getCopySemantic()==CopySemantic.SELF){
             copyAttribute.set(get());
         } else {
             for (T item: get()){
@@ -160,7 +160,7 @@ public abstract class ReferenceListAttribute<T extends Data,A extends ReferenceB
             throw new IllegalStateException("cant't add null to list");
         }
         if (root!=null && added.internal().getRoot()!=root) {
-            added.internal().propagateRootAndParent(root,parent);
+            added.internal().addBackReferencesForSubtree(root,parent);
         }
 
         afterModify();

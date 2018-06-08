@@ -47,11 +47,8 @@ public class CatalogListAttributeVisualisation extends ListAttributeEditorVisual
                 combo.showingProperty().addListener((obs, hidden, showing) -> updateCheckComboBox(comboBox));
             }
         });
-        comboBox.addEventHandler(ComboBox.ON_HIDDEN, event -> {
-            System.out.println("CheckComboBox is now hidden.");
-        });
 
-        comboBox.setConverter(new StringConverter<Data>() {
+        comboBox.setConverter(new StringConverter<>() {
             @Override
             public String toString(Data object) {
                 return object.internal().getDisplayText();

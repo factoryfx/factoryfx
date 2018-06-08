@@ -26,7 +26,7 @@ public class AttributeGroupEditorTest  extends Application {
 
 
         ExampleData1 exampleData1 = new ExampleData1();
-        exampleData1=exampleData1.internal().prepareUsableCopy();
+        exampleData1=exampleData1.internal().addBackReferences();
         exampleData1.stringAttribute.set("abc");
 
 

@@ -74,7 +74,6 @@ public class MicroserviceRestIntegrationTest {
         userManagement.users.add(user);
         microserviceResource.userManagement.set(userManagement);
 
-        jettyServer = jettyServer.utility().prepareUsableCopy();
         Microservice<TestVisitor, TestJettyServer, Void> microservice = new Microservice<>(new FactoryManager<>(new RethrowingFactoryExceptionHandler()), new InMemoryDataStorage<>(jettyServer));
         Thread serverThread = new Thread(() -> {
             microservice.start();
@@ -99,7 +98,7 @@ public class MicroserviceRestIntegrationTest {
             microserviceRestClientFactory.passwordHash.set("hash123");
             microserviceRestClientFactory.factoryRootClass.set(TestJettyServer.class);
 
-//            microserviceRestClientFactory=microserviceRestClientFactory.utility().prepareUsableCopy();
+//            microserviceRestClientFactory=microserviceRestClientFactory.utility().addBackReferences();
 
             MicroserviceRestClient<TestVisitor, TestJettyServer,Void> microserviceRestClient = microserviceRestClientFactory.internalFactory().instance();
             microserviceRestClient.prepareNewFactory();

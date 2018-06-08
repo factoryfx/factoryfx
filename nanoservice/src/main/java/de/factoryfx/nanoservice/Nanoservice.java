@@ -1,6 +1,7 @@
 package de.factoryfx.nanoservice;
 
 import de.factoryfx.factory.FactoryManager;
+import de.factoryfx.factory.RootFactoryWrapper;
 import de.factoryfx.factory.exception.RethrowingFactoryExceptionHandler;
 
 public class Nanoservice<R,L extends NanoserviceRoot<R>,RF extends NanoserviceRootFactory<R,L,RF>> {
@@ -18,7 +19,7 @@ public class Nanoservice<R,L extends NanoserviceRoot<R>,RF extends NanoserviceRo
     }
 
     public R run() {
-        factoryManager.start(rootFactory);
+        factoryManager.start(new RootFactoryWrapper<>(rootFactory));
         R result = factoryManager.getCurrentFactory().internalFactory().getLiveObject().run();
         factoryManager.stop();
 

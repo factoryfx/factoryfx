@@ -11,6 +11,15 @@ import org.junit.Test;
 
 public class StringListAttributeTest {
 
+    @Test
+    public void test_json(){
+        StringListAttribute attribute = new StringListAttribute();
+        String value = "123";
+        attribute.add(value);
+        StringListAttribute copy = ObjectMapperBuilder.build().copy(attribute);
+        Assert.assertEquals(value,copy.get().get(0));
+    }
+
     public static class ExampleListFactory extends Data {
         public StringListAttribute listAttribute =new StringListAttribute();
     }
@@ -28,7 +37,7 @@ public class StringListAttributeTest {
     }
 
     @Test
-    public void test_json(){
+    public void test_json_in_data(){
         ExampleListFactory exampleListFactory = new ExampleListFactory();
         exampleListFactory.listAttribute.add("7787");
         ObjectMapperBuilder.build().copy(exampleListFactory);

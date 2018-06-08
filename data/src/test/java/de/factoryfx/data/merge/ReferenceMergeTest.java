@@ -13,7 +13,7 @@ public class ReferenceMergeTest extends MergeHelperTestBase{
         ExampleDataA current = new ExampleDataA();
         ExampleDataB newValue = new ExampleDataB();
         current.referenceAttribute.set(newValue);
-        current = current.internal().prepareUsableCopy();
+        current = current.internal().addBackReferences();
 
         ExampleDataA newVersion = current.internal().copy();
 
@@ -27,12 +27,12 @@ public class ReferenceMergeTest extends MergeHelperTestBase{
         ExampleDataA current = new ExampleDataA();
         ExampleDataB newValue = new ExampleDataB();
         current.referenceAttribute.set(newValue);
-        current = current.internal().prepareUsableCopy();
+        current = current.internal().addBackReferences();
 
         ExampleDataA update = new ExampleDataA();
         ExampleDataB newValue2 = new ExampleDataB();
         update.referenceAttribute.set(newValue2);
-        update = update.internal().prepareUsableCopy();
+        update = update.internal().addBackReferences();
 
         String beforeMergeId=update.referenceAttribute.get().getId();
         Assert.assertTrue(merge(current, current, update).hasNoConflicts());
@@ -44,11 +44,11 @@ public class ReferenceMergeTest extends MergeHelperTestBase{
         ExampleDataA current = new ExampleDataA();
         ExampleDataB newValue = new ExampleDataB();
         current.referenceAttribute.set(newValue);
-        current = current.internal().prepareUsableCopy();
+        current = current.internal().addBackReferences();
 
         ExampleDataA newVersion = new ExampleDataA();
         newVersion.referenceAttribute.set(null);
-        newVersion = newVersion.internal().prepareUsableCopy();
+        newVersion = newVersion.internal().addBackReferences();
 
         Assert.assertTrue(merge(current, current, newVersion).hasNoConflicts());
         Assert.assertEquals(null, current.referenceAttribute.get());

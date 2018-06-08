@@ -1,7 +1,7 @@
 package de.factoryfx.factory.atrribute;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
-import de.factoryfx.factory.AttributeSetupHelper;
+import de.factoryfx.factory.FactoryTreeBuilderBasedAttributeSetup;
 import de.factoryfx.factory.FactoryBase;
 
 import java.util.Collections;
@@ -46,16 +46,13 @@ public class FactoryReferenceAttribute<L, F extends FactoryBase<? extends L,?,?>
         if (internal_hasCustomNewValuesProvider()) {
             return super.internal_createNewPossibleValues();
         } else {
-            AttributeSetupHelper attributeSetupHelper = ((FactoryBase) root).utilityFactory().getAttributeSetupHelper();
-            if (attributeSetupHelper!=null){
-                F newFactory = (F) attributeSetupHelper.createNewFactory(this.clazz);
+            FactoryTreeBuilderBasedAttributeSetup factoryTreeBuilderBasedAttributeSetup = ((FactoryBase) root).utilityFactory().getAttributeSetupHelper();
+            if (factoryTreeBuilderBasedAttributeSetup !=null){
+                F newFactory = (F) factoryTreeBuilderBasedAttributeSetup.createNewFactory(this.clazz);
                 return Collections.singletonList(newFactory);
             }
             return super.internal_createNewPossibleValues();
         }
     }
 
-    public void internal_setupWithAttributeSetupHelper(AttributeSetupHelper<?> attributeSetupHelper){
-        attributeSetupHelper.setupReferenceAttribute(this,this.clazz);
-    }
 }

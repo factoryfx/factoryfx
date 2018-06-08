@@ -2,29 +2,30 @@ package de.factoryfx.data.attribute.types;
 
 import java.math.BigDecimal;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
 import de.factoryfx.data.attribute.ImmutableValueAttribute;
 
 public class BigDecimalAttribute extends ImmutableValueAttribute<BigDecimal,BigDecimalAttribute> {
 
-    private String decimalFormatPattern="#,#";
-
-    @JsonCreator
-    BigDecimalAttribute(BigDecimal value) {
-        super(BigDecimal.class);
-        set(value);
-    }
+    private String decimalFormatPattern;
 
     public BigDecimalAttribute() {
         super(BigDecimal.class);
     }
 
     public String internal_getDecimalFormatPattern() {
+        if (this.decimalFormatPattern==null){
+            return "#,#";
+        }
         return decimalFormatPattern;
     }
 
-    public void decimalFormatPatter(String decimalFormatPattern) {
+    /**
+     * @see java.text.DecimalFormat
+     * @param decimalFormatPattern pattern
+     */
+    public BigDecimalAttribute decimalFormatPattern(String decimalFormatPattern) {
         this.decimalFormatPattern=decimalFormatPattern;
+        return this;
     }
 
 }

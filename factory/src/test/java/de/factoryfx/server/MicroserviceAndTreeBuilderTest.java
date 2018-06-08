@@ -36,8 +36,6 @@ public class MicroserviceAndTreeBuilderTest {
 
         microservice.start();
 
-        Assert.assertFalse(root.referenceAttribute.internal_isUserSelectable());
-        Assert.assertFalse(root.referenceAttribute.get().referenceAttribute.internal_isUserSelectable());
 
     }
 

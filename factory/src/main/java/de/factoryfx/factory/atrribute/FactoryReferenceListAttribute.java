@@ -4,7 +4,6 @@ import java.util.*;
 import java.util.function.Predicate;
 
 import de.factoryfx.data.attribute.ReferenceListAttribute;
-import de.factoryfx.factory.AttributeSetupHelper;
 import de.factoryfx.factory.FactoryBase;
 
 /**
@@ -25,8 +24,8 @@ public class FactoryReferenceListAttribute<L, F extends FactoryBase<? extends L,
     }
 
     public List<L> instances(){
-        ArrayList<L> result = new ArrayList<>();
-        for(F item: get()){
+        ArrayList<L> result = new ArrayList<>(this.size());
+        for(F item: this){
             result.add(item.internalFactory().instance());
         }
         return result;
@@ -47,7 +46,4 @@ public class FactoryReferenceListAttribute<L, F extends FactoryBase<? extends L,
         return super.setup(clazz);
     }
 
-    public void internal_setupWithAttributeSetupHelper(AttributeSetupHelper<?> attributeSetupHelper){
-        attributeSetupHelper.setupReferenceListAttribute(this,this.clazz);
-    }
 }

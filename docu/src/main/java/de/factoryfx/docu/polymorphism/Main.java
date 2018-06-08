@@ -12,7 +12,6 @@ public class Main {
         RootFactory root = new RootFactory();
         //update to print system.out
         root.printer.set(new DefaultPrinterFactory());
-        root=root.utility().prepareUsableCopy();
 
         Microservice<Void,RootFactory,Void> microservice = new Microservice<>(new FactoryManager<>(new RethrowingFactoryExceptionHandler()),new InMemoryDataStorage<>(root));
         microservice.start();

@@ -8,7 +8,6 @@ import java.util.Base64;
 import javax.crypto.*;
 import javax.crypto.spec.SecretKeySpec;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import de.factoryfx.data.attribute.ImmutableValueAttribute;
 
@@ -16,18 +15,6 @@ public class EncryptedStringAttribute extends ImmutableValueAttribute<EncryptedS
 
     public EncryptedStringAttribute() {
         super(EncryptedString.class);
-    }
-
-    @JsonCreator
-    EncryptedStringAttribute(EncryptedString initialValue) {
-        super(EncryptedString.class);
-        set(initialValue);
-    }
-
-    @JsonCreator
-    EncryptedStringAttribute(String initialValue) {
-        super(EncryptedString.class);
-        set(new EncryptedString(initialValue));
     }
 
     @JsonIgnore

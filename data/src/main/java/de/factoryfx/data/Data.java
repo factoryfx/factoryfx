@@ -1,9 +1,6 @@
 package de.factoryfx.data;
 
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import com.fasterxml.jackson.annotation.*;
 import com.google.common.base.Strings;
 import de.factoryfx.data.attribute.*;
 import de.factoryfx.data.merge.AttributeDiffInfo;
@@ -12,33 +9,34 @@ import de.factoryfx.data.validation.AttributeValidation;
 import de.factoryfx.data.validation.Validation;
 import de.factoryfx.data.validation.ValidationError;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Modifier;
+import java.lang.reflect.*;
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
-import java.util.stream.Stream;
 
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 @JsonTypeInfo(use=JsonTypeInfo.Id.CLASS, include=JsonTypeInfo.As.PROPERTY, property="@class")// minimal class don't work always
 public class Data {
 
-    private String id;
+    @JsonProperty
+    private Object id;
 
     private Supplier<String> idSupplier;
+    private static final Random r = new Random();
+
+
     public String getId() {
         if (id == null) {
             if (idSupplier != null) {
                 id = idSupplier.get();
             } else {
-                id = UUID.randomUUID().toString();
+                id = new UUID(r.nextLong(), r.nextLong());
+                //TODO does this increase collision probability?
+                // Secure random in UUID.randomUUID().toString() is too slow and it doesn't matter if the random is predictable
             }
         }
-        return id;
+        return id.toString();
     }
 
     public void setId(String value) {
@@ -50,28 +48,26 @@ public class Data {
         this.idSupplier=idSupplier;
     }
 
-    @JsonIgnore
-    private static final Map<Class<?>, Field[]> fields = new ConcurrentHashMap<>();
-
-    @JsonIgnore
-    private Field[] getFields() {
-        Field[] instanceFields = fields.get(getClass());
-        if (instanceFields==null) {
-            final List<Field> fieldsOrdered = getFieldsOrdered(getClass());
-            instanceFields = fieldsOrdered.toArray(new Field[fieldsOrdered.size()]);
-            fields.put(getClass(), instanceFields);
-        }
-        return instanceFields;
+    @SuppressWarnings("unchecked")
+    private DataDictionary<Data> getDataDictionary(){
+        return (DataDictionary<Data>)DataDictionary.getDataDictionary(getClass());
     }
 
-    private List<Field> getFieldsOrdered(Class<?> clazz) {
-        ArrayList<Field> fields = new ArrayList<>();
-        Class<?> parent = clazz.getSuperclass();
-        if (parent!=null){// skip Object
-            fields.addAll(getFieldsOrdered(parent));
+    public static class AttributeNamePair{
+        public final String name;
+        public final Attribute<?,?> attribute;
+
+        public AttributeNamePair(String name, Attribute<?, ?> attribute) {
+            this.name = name;
+            this.attribute = attribute;
         }
-        Stream.of(clazz.getDeclaredFields()).filter(f->Modifier.isPublic(f.getModifiers())).filter(f->!Modifier.isStatic(f.getModifiers())).forEach(fields::add);
-        return fields;
+    }
+
+    @JsonIgnore
+    private List<AttributeNamePair> getAttributes() {
+        List<AttributeNamePair> attributes = new ArrayList<>();
+        getDataDictionary().visitAttributesFlat(this, (attributeVariableName, attribute) -> attributes.add(new AttributeNamePair(attributeVariableName,attribute)));
+        return attributes;
     }
 
     @FunctionalInterface
@@ -84,52 +80,25 @@ public class Data {
         void accept(String attributeName, Attribute<?,?> attribute1, Attribute<?,?> attribute2);
     }
 
-    @FunctionalInterface
-    public interface AttributeVisitor{
-        void accept(String attributeVariableName, Attribute<?,?> attribute);
-    }
-
     private void visitAttributesFlat(AttributeVisitor consumer) {
-//        for (AttributeAndName attribute: getAttributes()){
-//            consumer.accept(attribute.name,attribute.attribute);
-//        }
-
-        Field[] fields = getFields();
-        for (Field field : fields) {
-            try {
-                if (Attribute.class.isAssignableFrom(field.getType())) {
-                    consumer.accept(field.getName(),(Attribute<?,?>) field.get(this));
-                }
-            } catch (IllegalAccessException e) {
-                throw new RuntimeException(e);
-            }
-        }
+        getDataDictionary().visitAttributesFlat(this,consumer);
     }
 
     @SuppressWarnings("unchecked")
     private void visitAttributesDualFlat(Data data, BiAttributeVisitor consumer) {
-        Field[] fields = getFields();
-        for (Field field : fields) {
-            try {
-                if (Attribute.class.isAssignableFrom(field.getType())) {
-                    consumer.accept(field.getName(),(Attribute<?,?>) field.get(this), (Attribute<?,?>) field.get(data));
-                }
-            } catch (IllegalAccessException e) {
-                throw new RuntimeException(e);
-            }
+        List<AttributeNamePair> attributes = getAttributes();
+        List<AttributeNamePair> otherAttributes = data.getAttributes();
+        for (int i = 0; i < attributes.size(); i++) {
+            consumer.accept(attributes.get(i).name,attributes.get(i).attribute,otherAttributes.get(i).attribute);
         }
     }
 
     private void visitAttributesTripleFlat(Data data1, Data data2, TriAttributeVisitor consumer) {
-        Field[] fields = getFields();
-        for (Field field : fields) {
-            try {
-                if (Attribute.class.isAssignableFrom(field.getType())) {
-                    consumer.accept(field.getName(),(Attribute<?,?>) field.get(this), (Attribute<?,?>) field.get(data1), (Attribute<?,?>) field.get(data2));
-                }
-            } catch (IllegalAccessException e) {
-                throw new RuntimeException(e);
-            }
+        List<AttributeNamePair> attributes = getAttributes();
+        List<AttributeNamePair> otherAttributes1 = data1.getAttributes();
+        List<AttributeNamePair> otherAttributes2 = data2.getAttributes();
+        for (int i = 0; i < attributes.size(); i++) {
+            consumer.accept(attributes.get(i).name,attributes.get(i).attribute,otherAttributes1.get(i).attribute,otherAttributes2.get(i).attribute);
         }
     }
 
@@ -150,24 +119,26 @@ public class Data {
         return dataList;
     }
 
+    private void visitDataChildren(Consumer<Data> childFactoriesVisitor){
+        getDataDictionary().visitDataChildren(this,childFactoriesVisitor);
+    }
+
 
     boolean collected=false;
     void collectModelEntitiesTo(List<Data> allModelEntities) {
         if (!collected){
             allModelEntities.add(this);
             collected=true;
-            visitAttributesFlat((attributeVariableName, attribute) -> {
-                attribute.internal_visit(data -> data.collectModelEntitiesTo(allModelEntities));
-            });
+            visitDataChildren(child -> child.collectModelEntitiesTo(allModelEntities));
         }
     }
 
-
+    private static Object[] defaultConstructor = new Object[0];;
     private Supplier<Data> newInstanceSupplier=null;
     private void setNewInstanceSupplier(Supplier<Data> newInstanceSupplier){
         this.newInstanceSupplier=newInstanceSupplier;
     }
-    Data newInstance() {
+    private Data newInstance() {
         final Data result;
         if (newInstanceSupplier!=null){
             result=newInstanceSupplier.get();
@@ -175,7 +146,7 @@ public class Data {
             try {
                 Constructor constructor = Data.this.getClass().getDeclaredConstructor();
                 constructor.setAccessible(true);
-                result = (Data) constructor.newInstance(new Object[0]);
+                result = (Data) constructor.newInstance(defaultConstructor);
             } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
                 throw new RuntimeException(e);
             }
@@ -196,7 +167,12 @@ public class Data {
     //remove parents that are not in the merge result
     private void cleanUpParents(Set<Data> all) {
         for (Data data: all){
-            data.parents.removeIf(parent -> !all.contains(parent));
+            if (data.parents!=null){
+                data.parents.removeIf(parent -> !all.contains(parent));
+            }
+            if (!all.contains(data.parent)){
+                data.parent=null;
+            }
         }
     }
 
@@ -283,11 +259,7 @@ public class Data {
     private HashMap<Data, Data> getChildToParentMap(List<Data> allModelEntities) {
         HashMap<Data, Data> result = new HashMap<>();
         for (Data factoryBase : allModelEntities) {
-            factoryBase.visitAttributesFlat((attributeVariableName, attribute) -> {
-                attribute.internal_visit(nestedFactoryBase -> {
-                    result.put(nestedFactoryBase, factoryBase);
-                });
-            });
+            factoryBase.visitDataChildren(child->result.put(child, factoryBase));
         }
         return result;
     }
@@ -315,56 +287,47 @@ public class Data {
 
     /**copy including one the references first level of nested references*/
     private <T extends Data> T copyOneLevelDeep(){
-        return copy(1,null,null);
+        return copy(1);
     }
 
     /**copy without nested references, only value attributes are copied*/
     private <T extends Data> T copyZeroLevelDeep(){
-        return copy(0,null,null);
+        return copy(0);
     }
 
     private <T extends Data> T copy() {
-        return copy(Integer.MAX_VALUE,null,null);
+        return copy(Integer.MAX_VALUE);
     }
 
 
     @SuppressWarnings("unchecked")
-    private <T extends Data> T copy(int level, Consumer<Data> newDataConsumer, Consumer<Attribute<?, ?>> newAttributesConsumer) {
+    private <T extends Data> T copy(int level) {
         ArrayList<Attribute<?, ?>> newAttributes = new ArrayList<>();
         ArrayList<Data> oldDataList = new ArrayList<>();
-        Data newRoot = copyDeep(0, level, null,oldDataList);
+        Data newRoot = copyDeep(0, level,oldDataList);
 
         for (Data oldData: oldDataList) {
-            oldData.copy.root = newRoot;
             oldData.copy.visitAttributesFlat((attributeVariableName, attribute) -> {
-                attribute.internal_prepareUsage(newRoot, oldData.copy);
-                if (newAttributesConsumer != null) {
-                    newAttributesConsumer.accept(attribute);
-                }
                 newAttributes.add(attribute);
             });
-            if (newDataConsumer!=null){
-               newDataConsumer.accept(oldData.copy);
-            }
             oldData.copy=null;//cleanup
         }
 
         if (newRoot!=null){
-            newRoot.afterPreparedUsage(newAttributes);
+            newRoot.addBackReferences();
         }
 
         return (T) newRoot;
     }
 
     private Data copy;
-    private Data copyDeep(final int level, final int maxLevel, final Data parent, final List<Data> oldData){
+    private Data copyDeep(final int level, final int maxLevel, final List<Data> oldData){
         if (level>maxLevel){
             return null;
         }
         if (copy==null){
             copy = newInstance();
-            copy.id=this.id;
-            copy.isUsable=true;//only possible to created copies form usable data therefore copy is always usable
+            copy.id=this.getId();
 
             this.visitAttributesDualFlat(copy, (name, thisAttribute, copyAttribute) -> {
                 if (thisAttribute!=null){//cause jackson decided it's a good idea to override the final field with null
@@ -372,15 +335,12 @@ public class Data {
                         if (data==null){
                             return null;
                         }
-                        return data.copyDeep(level + 1, maxLevel,copy,oldData);
+                        return data.copyDeep(level + 1, maxLevel,oldData);
                     });
                 }
             });
 
             oldData.add(this);
-        }
-        if (parent!=null){
-            copy.parents.add(parent);
         }
         return copy;
     }
@@ -399,78 +359,66 @@ public class Data {
         }
     }
 
-    @SuppressWarnings("unchecked")
-    private <T extends Data> T afterPreparedUsage(Collection<Attribute<?,?>> newAttributesForAfterInitialise){
-
-        for (Attribute<?,?> attribute: newAttributesForAfterInitialise){
-            attribute.internal_afterPreparedUsage();
-        }
-        return (T)this;
-    }
-
-    @SuppressWarnings("unchecked")
-    <T extends Data> T propagateRootAndParent(Data root, Data parent){
-        this.parents.add(parent);
-        final List<Data> childrenDeep = collectChildrenDeep();
-        final ArrayList<Attribute<?,?>> attributes=new ArrayList<>();
-        for (Data data: childrenDeep){
-            data.root=root;
-            data.visitAttributesFlat((attributeVariableName, attribute) -> {
-                attribute.internal_prepareUsage(root,data);
-            });
-        }
-
-        afterPreparedUsage(attributes);
-        return (T)this;
-    }
 
     /**
      * after serialisation or programmatically creation this mus be called first before using the object<br>
      * to:<br>
-     * -fix jackson wrong deserialization (metadata ==null)<br>
      * -propagate root/parent node to all children (for validation etc)<br>
      * -init ids
      *<br>
-     * unfortunately we must create a copy and can't make the same object usable(which we tried but failed)<br>
-     *<br>
      * only call on root<br>
      *<br>
-     * @param <T> type
      * @return usable copy
      *
      */
-    private <T extends Data> T prepareUsableCopy(Consumer<Data> newData, Consumer<Attribute<?,?>> newAttributes) {
+    private void addBackReferences() {
+        addBackReferences(this,null);
+    }
 
-        /*
-          after deserialization from json only the value is present and metadata are missing
-          we create a copy which contains the metadata and than copy then transfer the value in the new  copy (which is what conveniently copy does)
-         */
-        T usableCopy = this.copy(Integer.MAX_VALUE, data -> {
-            //init ids, id could depend on parents, usable copy must have init ids else a copy is broken;
-            data.getId();
-            data.setUsable();
-            if (newData!=null){
-                newData.accept(data);
+
+    private void addBackReferences(final Data root, final Data parent){
+        addParent(parent);
+        if (this.root==root){//no endless iteration for cycles
+            return;
+        }
+        this.root=root;
+
+        getDataDictionary().addBackReferencesToAttributes(this,root);
+
+        this.visitDataChildren(data -> data.addBackReferences(root, Data.this));
+    }
+
+    private void addBackReferencesForSubtree(Data root, Data parent){
+        addBackReferences(root,parent);
+    }
+
+    private Set<Data> parents;
+    private Data parent;
+
+    private void addParent(Data parent){
+        if (this.parent==null || this.parent==parent){
+            this.parent=parent;
+        } else {
+            if (parents==null){
+                parents=new HashSet<>();
+                parents.add(this.parent);
+                parents.add(parent);
+            } else {
+                parents.add(parent);
             }
-        }, newAttributes);
-
-
-        return usableCopy;
+        }
     }
 
-    private boolean isUsable=false;
     @JsonIgnore
-    private boolean isUsable(){
-        return isUsable;
-    }
-    private void setUsable(){
-        isUsable=true;
-    }
-
-    private Set<Data> parents=new HashSet<>();
-
     private Set<Data> getParents(){
-        return parents;
+        if (parents==null){
+            if (parent==null){
+                return Collections.emptySet();
+            }
+            return Set.of(parent);
+        } else {
+            return parents;
+        }
     }
 
     private Data root;
@@ -519,13 +467,10 @@ public class Data {
     private void addDisplayTextListeners(Data data, AttributeChangeListener attributeChangeListener){
         for (Attribute<?,?> attribute: data.displayTextDependencies){
             attribute.internal_addListener(attributeChangeListener);
-            attribute.internal_visit(data1 -> addDisplayTextListeners(data1,attributeChangeListener));
+
+
+//            attribute.internal_visit(data1 -> addDisplayTextListeners(data1,attributeChangeListener));
         }
-    }
-
-
-    private boolean hasCustomDisplayText(){
-        return displayTextProvider!=null;
     }
 
     private DataUtility dataUtility;
@@ -533,10 +478,7 @@ public class Data {
      * @return the api
      */
     public DataUtility utility(){
-        if (dataUtility==null){
-            dataUtility = new DataUtility(this);
-        }
-        return dataUtility;
+        return new DataUtility(this);
     }
 
     public static class DataUtility {
@@ -547,7 +489,7 @@ public class Data {
         }
 
 
-        /** semantic copy can be configured on the attributes, unlike internal copy which always create complete copy with same ids
+        /** semantic copy can be configured on the attributes, unlike copy which always create complete copy with same ids
          *
          * @param <T> type
          * @return self
@@ -557,21 +499,20 @@ public class Data {
         }
 
         /**
-         * see: {@link Data#prepareUsableCopy}
-         * @param <T> type
-         * @return usableCopy
+         * copy with same ids
+         * @param <T> self
+         * @return scopy
          */
-        public <T extends Data> T prepareUsableCopy() {
-            return data.prepareUsableCopy(null,null);
+        public <T extends Data> T copy(){
+            return data.copy();
         }
 
     }
 
-    private final DataConfiguration dataConfiguration = new DataConfiguration(this);
     /** data configurations api. Should be used in the default constructor
      * @return the configuration api*/
     protected DataConfiguration config(){
-        return dataConfiguration;
+        return new DataConfiguration(this);
     }
 
     public static class DataConfiguration {
@@ -662,25 +603,24 @@ public class Data {
         public void attributeId(Supplier<String> customIdSupplier){
             data.setIdSupplier(customIdSupplier);
         }
-
     }
 
-    private final Internal internal = new Internal(this);
+
     /** <b>internal methods should be only used from the framework.</b>
      *  They may change in the Future.
      *  There is no fitting visibility in java therefore this workaround.
      * @return the internal api
      */
     public Internal internal(){
-        return internal;
+        return new Internal(this);
     }
 
     public static class Internal  {
         private final Data data;
 
-        public Internal(Data data) {
-            this.data = data;
-        }
+            public Internal(Data data) {
+                this.data = data;
+            }
 
         public boolean matchSearchText(String newValue) {
             return data.matchSearchText(newValue);
@@ -768,15 +708,6 @@ public class Data {
         }
 
         public <T extends Data> T copy() {
-            this.checkUsable();
-            return data.copy();
-        }
-
-        /** copy a root data element
-         * @param <T> type
-         * @return root copy
-         */
-        public <T extends Data> T copyFromRoot() {
             return data.copy();
         }
 
@@ -789,16 +720,15 @@ public class Data {
         }
 
         /**
-         * see: {@link Data#prepareUsableCopy}
+         * see: {@link Data#addBackReferences}
          * @param <T> type
          * @return usableCopy
          */
-        public <T extends Data> T prepareUsableCopy() {
-            return data.prepareUsableCopy(null,null);
-        }
+        @SuppressWarnings("unchecked")
 
-        public <T extends Data> T prepareUsableCopy(Consumer<Data> newData, Consumer<Attribute<?,?>> newAttributes) {
-            return data.prepareUsableCopy(newData, newAttributes);
+        public <T extends Data> T addBackReferences() {
+            this.data.addBackReferences();
+            return (T)data;
         }
 
         /** only call on root*/
@@ -812,14 +742,12 @@ public class Data {
 
 
         /**
-         *
          * @param root root
          * @param parent parent
-         * @param <T> type
          * @return root
          */
-        public <T extends Data> T propagateRootAndParent(Data root, Data parent){
-            return data.propagateRootAndParent(root,parent);
+        public void addBackReferencesForSubtree(Data root, Data parent){
+            data.addBackReferencesForSubtree(root,parent);
         }
 
         public Data getRoot(){
@@ -844,26 +772,10 @@ public class Data {
             return data.getChildToParentMap(data.root.collectChildrenDeep());
         }
 
-        public boolean hasCustomDisplayText(){
-            return data.hasCustomDisplayText();
-        }
-
-        public boolean isUsable() {
-            return data.isUsable();
-        }
-
-        /**
-         * see {@link Data#prepareUsableCopy }
-         */
-        public void checkUsable() {
-            if (!isUsable()){
-                throw new IllegalStateException("passed data is not a usableCopy use prepareUsableCopy(); e.g.:\n  data=data.utility().prepareUsableCopy();");
-            }
-        }
-
         public void addDisplayTextListeners(AttributeChangeListener attributeChangeListener){
             data.addDisplayTextListeners(data, attributeChangeListener);
         }
     }
+
 
 }

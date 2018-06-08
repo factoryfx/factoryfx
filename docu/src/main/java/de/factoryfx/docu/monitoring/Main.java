@@ -24,7 +24,6 @@ public class Main {
         jettyServer.connectors.add(httpServerConnectorFactory);
         rootFactory.server.set(jettyServer);
         jettyServer.factoryReferenceAttribute.set(new SimpleResourceFactory());
-        rootFactory=rootFactory.utility().prepareUsableCopy();
 
 
         Microservice<ServerVisitor,RootFactory,Void> microservice = new Microservice<>(new FactoryManager<>(new RethrowingFactoryExceptionHandler()),new InMemoryDataStorage<>(rootFactory));

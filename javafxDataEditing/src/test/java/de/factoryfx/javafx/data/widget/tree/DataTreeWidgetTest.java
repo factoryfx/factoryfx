@@ -1,7 +1,5 @@
 package de.factoryfx.javafx.data.widget.tree;
 
-import java.util.ArrayList;
-
 import de.factoryfx.javafx.UniformDesignBuilder;
 import de.factoryfx.javafx.css.CssUtil;
 import de.factoryfx.javafx.data.editor.attribute.AttributeEditorBuilder;
@@ -23,7 +21,7 @@ public class DataTreeWidgetTest extends Application {
 
         ExampleData1 exampleData1 = new ExampleData1();
         exampleData1.stringAttribute.set("abc");
-        exampleData1 = exampleData1.internal().prepareUsableCopy();
+        exampleData1 = exampleData1.internal().addBackReferences();
 
         UniformDesign uniformDesign = UniformDesignBuilder.build();
         DataEditor dataEditor = new DataEditor(new AttributeEditorBuilder(AttributeEditorBuilder.createDefaultSingleAttributeEditorBuilders(UniformDesignBuilder.build())),uniformDesign);

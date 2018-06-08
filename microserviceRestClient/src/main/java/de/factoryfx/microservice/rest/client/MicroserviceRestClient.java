@@ -52,7 +52,7 @@ public class MicroserviceRestClient<V, R extends FactoryBase<?,V,R>,S> {
     @SuppressWarnings("unchecked")
     public DataAndNewMetadata<R> prepareNewFactory() {
         DataAndNewMetadata<R> currentFactory = microserviceResource.prepareNewFactory(new UserAwareRequest<>(user,passwordHash,null));
-        return new DataAndNewMetadata<>(currentFactory.root.internal().prepareUsableCopy(),currentFactory.metadata);
+        return new DataAndNewMetadata<>(currentFactory.root.internal().addBackReferences(),currentFactory.metadata);
     }
 
     @SuppressWarnings("unchecked")
@@ -63,7 +63,7 @@ public class MicroserviceRestClient<V, R extends FactoryBase<?,V,R>,S> {
 
     public R getHistoryFactory(String id) {
         R historyFactory = microserviceResource.getHistoryFactory(new UserAwareRequest<>(user, passwordHash, id)).value;
-        return historyFactory.internal().prepareUsableCopy();
+        return historyFactory.internal().addBackReferences();
     }
 
     public Collection<StoredDataMetadata<S>> getHistoryFactoryList() {

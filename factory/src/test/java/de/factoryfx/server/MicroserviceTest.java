@@ -16,7 +16,6 @@ import de.factoryfx.factory.testfactories.ExampleFactoryA;
 import de.factoryfx.factory.testfactories.ExampleFactoryB;
 import de.factoryfx.factory.testfactories.ExampleLiveObjectA;
 import de.factoryfx.factory.testfactories.ExampleLiveObjectB;
-import de.factoryfx.server.Microservice;
 import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -37,7 +36,7 @@ public class MicroserviceTest {
     @Test
     public void test_summary() throws Exception {
         ExampleFactoryA root = new ExampleFactoryA();
-        root =root.internal().prepareUsableCopy();
+        root =root.internal().addBackReferences();
 
         String rootId=root.getId();
         final InMemoryDataStorage<ExampleFactoryA, ChangeListingSummary> memoryFactoryStorage = new InMemoryDataStorage<>(root, new ChangeSummaryCreator<ExampleFactoryA, ChangeListingSummary>() {
@@ -93,7 +92,7 @@ public class MicroserviceTest {
     public void testUpdateReferenceList() {
         ExampleFactoryA root = new ExampleFactoryA();
         root.referenceListAttribute.add(new ExampleFactoryB());
-        root =root.internal().prepareUsableCopy();
+        root =root.internal().addBackReferences();
         final InMemoryDataStorage<ExampleFactoryA,Void> memoryFactoryStorage = new InMemoryDataStorage<>(root);
         memoryFactoryStorage.loadInitialFactory();
 
@@ -115,7 +114,7 @@ public class MicroserviceTest {
     @SuppressWarnings("unchecked")
     public void test_history() throws Exception {
         ExampleFactoryA root = new ExampleFactoryA();
-        root =root.internal().prepareUsableCopy();
+        root =root.internal().addBackReferences();
         final InMemoryDataStorage<ExampleFactoryA, Void> memoryFactoryStorage = new InMemoryDataStorage<>(root);
         memoryFactoryStorage.loadInitialFactory();
         Thread.sleep(2);//avoid same timestamp
@@ -175,7 +174,7 @@ public class MicroserviceTest {
     public void recreation_bug() {
 
         ExampleFactoryARecreation root = new ExampleFactoryARecreation();
-        root =root.internal().prepareUsableCopy();
+        root =root.internal().addBackReferences();
         final InMemoryDataStorage<ExampleFactoryARecreation, Void> memoryFactoryStorage = new InMemoryDataStorage<>(root);
         Microservice<Void,ExampleFactoryARecreation,Void> microservice = new Microservice<>(new FactoryManager<>(new RethrowingFactoryExceptionHandler()), memoryFactoryStorage);
 

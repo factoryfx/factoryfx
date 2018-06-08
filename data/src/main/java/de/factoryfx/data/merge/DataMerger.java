@@ -12,9 +12,9 @@ public class DataMerger<R extends Data> {
     private final R newData;
 
     public DataMerger(R currentData, R commonData, R newData) {
-        currentData.internal().checkUsable();
-        commonData.internal().checkUsable();
-        newData.internal().checkUsable();
+        commonData.internal().addBackReferences();
+        newData.internal().addBackReferences();
+
         this.commonData = commonData;
         this.currentData = currentData;
         this.newData = newData;

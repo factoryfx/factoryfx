@@ -6,7 +6,6 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -32,16 +31,6 @@ public class JavascriptAttribute<A> extends ImmutableValueAttribute<Javascript<A
         this.apiClass = apiClass;
         set(new Javascript<>("",createHeader(),createHeaderApi()));
     }
-
-    @JsonCreator
-    @SuppressWarnings("unchecked")
-    protected JavascriptAttribute(Javascript<A> initialValue) {
-        super((Class<Javascript<A>>)Javascript.class.asSubclass(Javascript.class));
-        set(initialValue);
-        apiClass = null;
-        data = null;
-    }
-
 
     @Override
     public boolean internal_mergeMatch(Javascript<A> value) {

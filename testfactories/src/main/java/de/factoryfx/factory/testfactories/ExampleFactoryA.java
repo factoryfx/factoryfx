@@ -15,4 +15,5 @@ public class ExampleFactoryA extends SimpleFactoryBase<ExampleLiveObjectA,Void,E
         return new ExampleLiveObjectA(referenceAttribute.instance(), referenceListAttribute.instances());
     }
 
+
 }

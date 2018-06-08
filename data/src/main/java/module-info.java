@@ -4,6 +4,8 @@ module de.factoryfx.data {
     requires com.fasterxml.jackson.datatype.jdk8;
     requires com.fasterxml.jackson.datatype.jsr310;
     requires com.google.common;
+    requires com.fasterxml.jackson.core;
+    requires com.fasterxml.jackson.dataformat.smile;
 
     exports de.factoryfx.data.attribute;
     exports de.factoryfx.data.validation;

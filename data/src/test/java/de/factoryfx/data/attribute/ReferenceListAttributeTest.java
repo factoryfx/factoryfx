@@ -69,7 +69,7 @@ public class ReferenceListAttributeTest {
     @Test
     public void test_add_new(){
         ExampleReferenceListFactory exampleReferenceListFactory = new ExampleReferenceListFactory();
-        exampleReferenceListFactory.referenceListAttribute.internal_prepareUsage(new ExampleReferenceListFactory(),null);
+        exampleReferenceListFactory.referenceListAttribute.internal_prepareUsageFlat(new ExampleReferenceListFactory(),null);
         List<ExampleDataA> exampleDataAS = exampleReferenceListFactory.referenceListAttribute.internal_createNewPossibleValues();
         exampleReferenceListFactory.referenceListAttribute.add(exampleDataAS.get(0));
         Assert.assertEquals(1,exampleReferenceListFactory.referenceListAttribute.size());
@@ -82,7 +82,7 @@ public class ReferenceListAttributeTest {
         ExampleDataA exampleFactoryA = new ExampleDataA();
         String expectedId=exampleFactoryA.getId();
         exampleReferenceListFactory.referenceListAttribute.add(exampleFactoryA);
-        exampleReferenceListFactory = exampleReferenceListFactory.internal().prepareUsableCopy();
+        exampleReferenceListFactory = exampleReferenceListFactory.internal().addBackReferences();
 
 
         Collection<ExampleDataA> possibleFactories = exampleReferenceListFactory.referenceListAttribute.internal_possibleValues();
@@ -94,7 +94,7 @@ public class ReferenceListAttributeTest {
     @Test
     public void test_add_new_listener(){
         DataReferenceListAttribute<ExampleDataA> referenceListAttribute =new DataReferenceListAttribute<>(ExampleDataA.class);
-        referenceListAttribute.internal_prepareUsage(new ExampleDataA(),null);
+        referenceListAttribute.internal_prepareUsageFlat(new ExampleDataA(),null);
         List<ExampleDataA> calls=new ArrayList<>();
         referenceListAttribute.internal_addListener((attribute, value) -> calls.add(value.get(0)));
 
@@ -144,7 +144,7 @@ public class ReferenceListAttributeTest {
     @Test
     public void delegate_root_for_added() {
         DataReferenceListAttribute<ExampleDataA> attribute =new DataReferenceListAttribute<>(ExampleDataA.class);
-        attribute.internal_prepareUsage(new ExampleDataB(),null);
+        attribute.internal_prepareUsageFlat(new ExampleDataB(),null);
 
         final ExampleDataA exampleFactoryA = new ExampleDataA();
         Assert.assertFalse(exampleFactoryA.internal().readyForUsage());
@@ -155,7 +155,7 @@ public class ReferenceListAttributeTest {
     @Test
     public void delegate_root_for_addAll(){
         DataReferenceListAttribute<ExampleDataA> attribute =new DataReferenceListAttribute<>(ExampleDataA.class);
-        attribute.internal_prepareUsage(new ExampleDataB(),null);
+        attribute.internal_prepareUsageFlat(new ExampleDataB(),null);
 
         final ExampleDataA exampleFactoryA1 = new ExampleDataA();
         final ExampleDataA exampleFactoryA2 = new ExampleDataA();
@@ -169,14 +169,14 @@ public class ReferenceListAttributeTest {
     @Test(expected = IllegalStateException.class)
     public void delegate_root_for_addAll_with_null(){
         DataReferenceListAttribute<ExampleDataA> attribute =new DataReferenceListAttribute<>(ExampleDataA.class);
-        attribute.internal_prepareUsage(new ExampleDataB(),null);
+        attribute.internal_prepareUsageFlat(new ExampleDataB(),null);
         attribute.get().add(null);
     }
 
     @Test(expected = IllegalStateException.class)
     public void delegate_root_for_addAll_with_null_nested(){
         DataReferenceListAttribute<ExampleDataA> attribute =new DataReferenceListAttribute<>(ExampleDataA.class);
-        attribute.internal_prepareUsage(new ExampleDataB(),null);
+        attribute.internal_prepareUsageFlat(new ExampleDataB(),null);
 
         final ExampleDataA exampleFactoryA1 = new ExampleDataA();
         exampleFactoryA1.referenceListAttribute.add(null);

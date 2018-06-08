@@ -1,8 +1,7 @@
 package de.factoryfx.javafx.data.editor.attribute.visualisation;
 
-import java.util.Collection;
+import java.util.List;
 
-import de.factoryfx.data.attribute.types.EnumAttribute;
 import de.factoryfx.javafx.data.editor.attribute.ValueAttributeEditorVisualisation;
 import de.factoryfx.javafx.data.util.UniformDesign;
 import javafx.beans.binding.Bindings;
@@ -14,12 +13,12 @@ import javafx.scene.layout.HBox;
 import javafx.util.StringConverter;
 import org.controlsfx.glyphfont.FontAwesome;
 
-public class EnumAttributeVisualisation extends ValueAttributeEditorVisualisation<EnumAttribute.EnumWrapper<?>> {
-    private final Collection<EnumAttribute.EnumWrapper<?>> possibleEnumConstants;
+public class EnumAttributeVisualisation extends ValueAttributeEditorVisualisation<Enum<?>> {
+    private final List<? extends Enum<?>> possibleEnumConstants;
     private final UniformDesign uniformDesign;
-    private final StringConverter<EnumAttribute.EnumWrapper<?>> stringConverter;
+    private final StringConverter<Enum<?>> stringConverter;
 
-    public EnumAttributeVisualisation(UniformDesign uniformDesign, Collection<EnumAttribute.EnumWrapper<?>> possibleEnumConstants, StringConverter<EnumAttribute.EnumWrapper<?>> stringConverter) {
+    public EnumAttributeVisualisation(UniformDesign uniformDesign, List<? extends Enum<?>> possibleEnumConstants, StringConverter<Enum<?>> stringConverter) {
         this.possibleEnumConstants = possibleEnumConstants;
         this.uniformDesign = uniformDesign;
         this.stringConverter = stringConverter;
@@ -27,8 +26,8 @@ public class EnumAttributeVisualisation extends ValueAttributeEditorVisualisatio
 
     @Override
     @SuppressWarnings("unchecked")
-    public Node createVisualisation(SimpleObjectProperty<EnumAttribute.EnumWrapper<?>> boundTo, boolean readonly) {
-        ComboBox<EnumAttribute.EnumWrapper<?>> comboBox = new ComboBox<>();
+    public Node createVisualisation(SimpleObjectProperty<Enum<?>> boundTo, boolean readonly) {
+        ComboBox<Enum<?>> comboBox = new ComboBox<>();
         comboBox.setEditable(false);
         comboBox.getItems().addAll(possibleEnumConstants);
         comboBox.valueProperty().bindBidirectional(boundTo);

@@ -23,7 +23,7 @@ public class ValidationWidgetTest extends Application {
 
         ExampleData1 exampleData1 = new ExampleData1();
         exampleData1.stringAttribute.set("abc");
-        exampleData1 = exampleData1.internal().prepareUsableCopy();
+        exampleData1 = exampleData1.internal().addBackReferences();
 
         UniformDesign uniformDesign = UniformDesignBuilder.build();
         DataEditor dataEditor = new DataEditor(new AttributeEditorBuilder(new ArrayList<>()),uniformDesign);

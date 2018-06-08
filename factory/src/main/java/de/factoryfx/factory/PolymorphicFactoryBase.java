@@ -2,9 +2,9 @@ package de.factoryfx.factory;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import de.factoryfx.factory.log.FactoryLogEntryEventType;
 
 import java.lang.reflect.ParameterizedType;
+import java.util.function.Supplier;
 
 @JsonTypeInfo(use=JsonTypeInfo.Id.CLASS, include=JsonTypeInfo.As.PROPERTY, property="@class") //minimal class doesn't work
 public abstract class PolymorphicFactoryBase<L,V,R extends FactoryBase<?,V,R>> extends FactoryBase<L,V,R> implements PolymorphicFactory<L>{
@@ -12,11 +12,8 @@ public abstract class PolymorphicFactoryBase<L,V,R extends FactoryBase<?,V,R>> e
     public abstract L createImpl();
 
     @Override
-    L create(){
-        if (creator!=null){
-            return creator.get();
-        }
-        return loggedAction(FactoryLogEntryEventType.CREATE, this::createImpl);
+    L createTemplateMethod(){
+        return createImpl();
     }
 
     @Override
@@ -25,5 +22,10 @@ public abstract class PolymorphicFactoryBase<L,V,R extends FactoryBase<?,V,R>> e
     public Class<L> getLiveObjectClass() {
         return (Class<L>) ((ParameterizedType) getClass()
                 .getGenericSuperclass()).getActualTypeArguments()[0];
+    }
+
+    @Override
+    void setCreator(Supplier<L> creator){
+        throw new IllegalStateException("can't set creator for PolymorphicFactoryBase, use createImpl instead");
     }
 }

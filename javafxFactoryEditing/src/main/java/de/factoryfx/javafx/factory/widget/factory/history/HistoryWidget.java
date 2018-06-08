@@ -54,7 +54,7 @@ public class HistoryWidget<V, R extends FactoryBase<?,V,R>,S> implements Widget 
         tableView.setItems(items);
 
         final TableColumn<StoredDataMetadata, String> creationTimeCol = new TableColumn<>("Datum");
-        creationTimeCol.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<StoredDataMetadata, String>, ObservableValue<String>>() {
+        creationTimeCol.setCellValueFactory(new Callback<>() {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
             @Override
             public ObservableValue<String> call(TableColumn.CellDataFeatures<StoredDataMetadata, String> param) {

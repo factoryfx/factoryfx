@@ -22,7 +22,7 @@ public class InMemoryDataStorage<R extends Data,S> implements DataStorage<R,S> {
     private final ChangeSummaryCreator<R,S> changeSummaryCreator;
 
     public InMemoryDataStorage(R initialFactory, ChangeSummaryCreator<R,S> changeSummaryCreator){
-        initialFactory.internal().checkUsable();
+        initialFactory.internal().addBackReferences();
         this.initialFactory=initialFactory;
         this.changeSummaryCreator = changeSummaryCreator;
     }
@@ -34,7 +34,7 @@ public class InMemoryDataStorage<R extends Data,S> implements DataStorage<R,S> {
     @Override
     public R getHistoryFactory(String id) {
         DataAndStoredMetadata<R,S> data = storage.get(id);
-        return data.root.internal().copyFromRoot();
+        return data.root.internal().copy();
     }
 
     @Override
@@ -50,7 +50,6 @@ public class InMemoryDataStorage<R extends Data,S> implements DataStorage<R,S> {
 
     @Override
     public void updateCurrentFactory(DataAndNewMetadata<R> update, String user, String comment, MergeDiffInfo<R> mergeDiff) {
-        update.root.internal().checkUsable();
         final StoredDataMetadata<S> storedDataMetadata = new StoredDataMetadata<>(
                 LocalDateTime.now(),
                 UUID.randomUUID().toString(),
@@ -91,7 +90,7 @@ public class InMemoryDataStorage<R extends Data,S> implements DataStorage<R,S> {
 
     public R getFutureFactory(String id) {
         DataAndScheduledMetadata<R,S> data = future.get(id);
-        return data.root.internal().copyFromRoot();
+        return data.root.internal().copy();
     }
 
     @Override

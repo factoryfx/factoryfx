@@ -9,13 +9,10 @@ import java.util.function.Supplier;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.google.common.base.Throwables;
-import com.google.common.graph.Traverser;
 import de.factoryfx.data.Data;
-import de.factoryfx.factory.atrribute.*;
 import de.factoryfx.factory.log.FactoryLogEntry;
-import de.factoryfx.factory.log.FactoryLogEntryEvent;
 import de.factoryfx.factory.log.FactoryLogEntryEventType;
-import de.factoryfx.factory.parametrized.ParametrizedObjectCreatorAttribute;
+import de.factoryfx.factory.log.FactoryLogEntryTreeItem;
 import de.factoryfx.server.Microservice;
 
 /**
@@ -23,7 +20,7 @@ import de.factoryfx.server.Microservice;
  * @param <V> runtime visitor
  */
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class FactoryBase<L,V,R extends FactoryBase<?,V,R>> extends Data implements Iterable<FactoryBase<?, V, R>>{
+public class FactoryBase<L,V,R extends FactoryBase<?,V,R>> extends Data{
 
     public FactoryBase() {
 
@@ -40,16 +37,22 @@ public class FactoryBase<L,V,R extends FactoryBase<?,V,R>> extends Data implemen
     @JsonIgnore
     private L previousLiveObject;
 
-    private void resetLog() {
-        factoryLogEntry=new FactoryLogEntry(this);
+
+    @SuppressWarnings("unchecked")
+    private FactoryDictionary<FactoryBase<?,V, R>> getFactoryDictionary(){
+        return (FactoryDictionary<FactoryBase<?,V, R>>)FactoryDictionary.getFactoryDictionary(getClass());
     }
 
-    private FactoryLogEntry getFactoryLogEntry(){
-        if (factoryLogEntry==null){
-            factoryLogEntry=new FactoryLogEntry(this);
-        }
+    private FactoryLogEntry createFactoryLogEntry(){
+        FactoryLogEntry factoryLogEntry = new FactoryLogEntry(this);
+        factoryLogEntry.logStart(reuseDurationNs);
+        factoryLogEntry.logCreate(createDurationNs);
+        factoryLogEntry.logRecreate(recreateDurationNs);
+        factoryLogEntry.logStart(startDurationNs);
+        factoryLogEntry.logDestroy(destroyDurationNs);
         return factoryLogEntry;
     }
+
 
     private L instance() {
         if (needRecreation){
@@ -65,65 +68,83 @@ public class FactoryBase<L,V,R extends FactoryBase<?,V,R>> extends Data implemen
         return createdLiveObject;
     }
 
-    <U> U loggedAction(FactoryLogEntryEventType type, Supplier<U> action){
+    private static class MeasuredActionResult<T>{
+        public final T result;
+        public final long time;
+
+        private MeasuredActionResult(T result, long time) {
+            this.result = result;
+            this.time = time;
+        }
+    }
+
+    <U> MeasuredActionResult<U> timeMeasuringAction(Supplier<U> action){
         long start=System.nanoTime();
         U result = action.get();
-        getFactoryLogEntry().events.add(new FactoryLogEntryEvent(type,System.nanoTime()-start));
-        return result;
+        long passedTimeNs = System.nanoTime() - start;
+        return new MeasuredActionResult<>(result,passedTimeNs);
     }
 
-    private void loggedAction(FactoryLogEntryEventType type, Runnable action){
-        loggedAction(type, (Supplier<Void>) () -> {
+    private long timeMeasuringAction(Runnable action){
+        return timeMeasuringAction(() -> {
             action.run();
             return null;
-        });
+        }).time;
     }
 
-    L create(){
+    L createTemplateMethod(){
         if (creator==null){
             throw new IllegalStateException("no creator defined: "+getClass());
         }
-        return loggedAction(FactoryLogEntryEventType.CREATE, ()-> creator.get());
+        return creator.get();
+    }
+
+    private L create(){
+        MeasuredActionResult<L> actionResult = timeMeasuringAction(this::createTemplateMethod);
+        logCreate(actionResult.time);
+        return actionResult.result;
     }
 
     private L reCreate(L previousLiveObject) {
         if (reCreatorWithPreviousLiveObject!=null){
-            return loggedAction(FactoryLogEntryEventType.RECREATE, ()-> {
+            MeasuredActionResult<L> actionResult = timeMeasuringAction(() -> {
                 return reCreatorWithPreviousLiveObject.apply(previousLiveObject);
             });
+            logRecreate(actionResult.time);
+            return actionResult.result;
         }
         return create();
     }
 
     private void start() {
         if (!started && starterWithNewLiveObject!=null && createdLiveObject!=null){//createdLiveObject is null e.g. if object ist not instanced in the parent factory
-            loggedAction(FactoryLogEntryEventType.START, ()-> {
+            logStart(timeMeasuringAction(() -> {
                 starterWithNewLiveObject.accept(createdLiveObject);
-                started=true;
-            });
+                started = true;
+            }));
         }
     }
 
     private void destroyUpdated() {
         if (previousLiveObject!=null && destroyerWithPreviousLiveObject!=null){
-            loggedAction(FactoryLogEntryEventType.DESTROY, ()-> {
+            logDestroy(timeMeasuringAction(()-> {
                 destroyerWithPreviousLiveObject.accept(previousLiveObject);
-            });
+            }));
         }
         previousLiveObject=null;
     }
 
     private void destroyRemoved() {
         if (createdLiveObject!=null && destroyerWithPreviousLiveObject!=null){
-            loggedAction(FactoryLogEntryEventType.DESTROY, ()-> {
+            logDestroy(timeMeasuringAction(()-> {
                 destroyerWithPreviousLiveObject.accept(createdLiveObject);
-            });
+            }));
         }
         createdLiveObject=null;
     }
 
-    boolean reRecreationChecked;
-    private void determineRecreationNeed(Set<Data> changedData, ArrayDeque<FactoryBase<?,?,?>> path){
+//    boolean reRecreationChecked;
+    private void determineRecreationNeed(Set<Data> changedData, ArrayDeque<FactoryBase<?,?,?>> path, long iterationRun){
         path.push(this);
 
         needRecreation |=changedData.contains(this); //|= means if needRecreation set true once never override with false
@@ -135,51 +156,92 @@ public class FactoryBase<L,V,R extends FactoryBase<?,V,R>> extends Data implemen
             }
         }
 
-        if (!reRecreationChecked){
-            reRecreationChecked=true;
+//        if (!reRecreationChecked){
+//            reRecreationChecked=true;
 
-            visited = false;
+
             visitChildFactoriesAndViewsFlat(child -> {
-                child.visited = false;
-                child.determineRecreationNeed(changedData,path);
-            });
-        }
+                child.determineRecreationNeed(changedData,path,iterationRun);
+            },iterationRun);//ignore iterationRun and always visit children, e.g.: visit double added also double
+//        }
         path.pop();
     }
 
 
 
     private void loopDetector(){
-        collectChildFactoriesDeep();
+        long iterationRun=this.iterationRun+1;
+        loopDetector(this,new ArrayDeque<>(),iterationRun);
     }
 
-    private Set<FactoryBase<?,V,R>> collectChildFactoriesDeep(){
-        final HashSet<FactoryBase<?, V, R>> result = new HashSet<>();
-        collectChildFactoriesDeep(this,result,new HashSet<>());
-        return result;
-    }
-
-    private void collectChildFactoriesDeep(FactoryBase<?,V, R> factory, Set<FactoryBase<?, V, R>> result, Set<FactoryBase<?, V, R>> stack){
-        if (result.add(factory)){
-            stack.add(factory);
-            factory.visitChildFactoriesAndViewsFlat(child -> collectChildFactoriesDeep(child,result,stack));
-            stack.remove(factory);
-        } else {
+    private void loopDetector(FactoryBase<?,?, ?> factory, ArrayDeque<FactoryBase<?, ?, ?>> stack, final long iterationRun){
+        if (factory.iterationRun==iterationRun){
             if (stack.contains(factory)){
                 throw new IllegalStateException("Factories contains a cycle, circular dependencies are not supported cause it indicates a design flaw.");
             }
+        } else {
+            stack.push(factory);
+            factory.visitChildFactoriesAndViewsFlat(child -> {
+                loopDetector(child,stack,iterationRun);
+            },iterationRun);
+            stack.pop();
         }
     }
 
-    private List<FactoryBase<?,V, R>> collectChildrenFactoriesFlat() {
-        List<FactoryBase<?,V, R>> result = new ArrayList<>();
-        this.visitChildFactoriesAndViewsFlat(result::add);
+    private List<FactoryBase<?,?,?>> collectChildFactoriesDeep(){
+        long iterationRun=this.iterationRun+1;
+        final List<FactoryBase<?, ?, ?>> result = new ArrayList<>();
+        collectChildFactoriesDeep(this,result,iterationRun);
         return result;
     }
 
-    @Override
-    public Iterator<FactoryBase<?, V, R>> iterator() {
-        return collectChildrenFactoriesFlat().iterator();
+    private void collectChildFactoriesDeep(FactoryBase<?,?, ?> factory, List<FactoryBase<?, ?, ?>> result, final long iterationRun){
+        result.add(factory);
+        factory.visitChildFactoriesAndViewsFlat(child -> {
+            collectChildFactoriesDeep(child,result,iterationRun);
+        },iterationRun);
+    }
+
+    private List<FactoryBase<?,?,?>> getFactoriesInDestroyOrder(){
+        long iterationRun=this.iterationRun+1;
+        final List<FactoryBase<?, ?, ?>> result = new ArrayList<>();
+        result.add(this);
+        getFactoriesInDestroyOrder(this,result,iterationRun);
+        return result;
+    }
+
+    private void getFactoriesInDestroyOrder(FactoryBase<?,?, ?> factory, List<FactoryBase<?, ?, ?>> result, final long iterationRun){
+        int size=result.size();
+        factory.visitChildFactoriesAndViewsFlat(result::add,iterationRun);
+        for (int i = size; i < result.size(); i++) {//fori loop cause performance optimization
+           getFactoriesInDestroyOrder(result.get(i),result,iterationRun);
+        }
+        //factory.visitChildFactoriesAndViewsFlat(child -> getFactoriesInDestroyOrder(child,result,iterationRun), iterationRun);
+    }
+
+    private List<FactoryBase<?,?,?>> getFactoriesInCreateAndStartOrder(){
+        long iterationRun=this.iterationRun+1;
+        final List<FactoryBase<?, ?, ?>> result = new ArrayList<>();
+        getFactoriesInCreateAndStartOrder(this,result,iterationRun);
+        return result;
+    }
+
+    private void getFactoriesInCreateAndStartOrder(FactoryBase<?,?, ?> factory, List<FactoryBase<?, ?, ?>> result, final long iterationRun){
+        factory.visitChildFactoriesAndViewsFlat(child -> {
+            getFactoriesInCreateAndStartOrder(child,result,iterationRun);
+        },iterationRun);
+        result.add(factory);
+    }
+
+    long iterationRun;
+    @SuppressWarnings("unchecked")
+    public void visitChildFactoriesAndViewsFlat(Consumer<FactoryBase<?,?, ?>> consumer, long iterationRun) {
+        if (this.iterationRun==iterationRun){
+            return;
+        }
+        this.iterationRun=iterationRun;
+
+        getFactoryDictionary().visitChildFactoriesAndViewsFlat(this,consumer);
     }
 
     private String debugInfo(){
@@ -204,95 +266,15 @@ public class FactoryBase<L,V,R extends FactoryBase<?,V,R>> extends Data implemen
         }
     }
 
-    private boolean visited;
-    //to avoid visit factories multiple times through views
-    private void prepareIterationRun(){
-        visited=false;
+
+    private FactoryLogEntryTreeItem createFactoryLogEntryTree(long iterationRun) {
+        ArrayList<FactoryLogEntryTreeItem> children = new ArrayList<>();
+        this.visitChildFactoriesAndViewsFlat(flatChild -> children.add(flatChild.createFactoryLogEntryTree(iterationRun)),iterationRun);
+        return new FactoryLogEntryTreeItem(this.createFactoryLogEntry(), children);
     }
 
-    @SuppressWarnings("unchecked")
-    private void visitChildFactoriesAndViewsFlat(Consumer<FactoryBase<?,V, R>> consumer) {
-        if (visited){
-            return;
-        }
-        visited=true;
-
-        this.internal().visitAttributesFlat((attributeVariableName, attribute) -> {
-            if (attribute instanceof FactoryReferenceAttribute) {
-                FactoryBase<?, V, R> factory = (FactoryBase<?, V, R>)attribute.get();
-                if (factory!=null){
-                    consumer.accept(factory);
-                }
-            }
-            if (attribute instanceof FactoryReferenceListAttribute) {
-                List<?> factories = ((FactoryReferenceListAttribute<?, ?>) attribute).get();
-                for (Object factory: factories){
-                    consumer.accept((FactoryBase<?, V, R>)factory);
-                }
-            }
-            if (attribute instanceof FactoryViewReferenceAttribute) {
-                FactoryBase<?, V, R> factory = (FactoryBase<?, V, R>)attribute.get();
-                if (factory!=null){
-                    consumer.accept(factory);
-                }
-            }
-            if (attribute instanceof FactoryViewListReferenceAttribute) {
-                List<?> factories = ((FactoryViewListReferenceAttribute<?, ?, ?>) attribute).get();
-                for (Object factory: factories){
-                    consumer.accept((FactoryBase<?, V, R>)factory);
-                }
-            }
-            if (attribute instanceof FactoryPolymorphicReferenceAttribute) {
-                FactoryBase<?, V, R> factory = (FactoryBase<?, V, R>)attribute.get();
-                if (factory!=null){
-                    consumer.accept(factory);
-                }
-            }
-            if (attribute instanceof FactoryPolymorphicReferenceListAttribute) {
-                ((FactoryPolymorphicReferenceListAttribute<?>)attribute).get().forEach(factory -> {
-                    if (factory!=null){
-                        consumer.accept((FactoryBase<?, V, R>)factory);
-                    }
-                });
-            }
-            if (attribute instanceof ParametrizedObjectCreatorAttribute) {
-                FactoryBase<?, V, R> factory = (FactoryBase<?, V, R>)attribute.get();
-                if (factory!=null){
-                    consumer.accept(factory);
-                }
-            }
-        });
-
-    }
-
-    private void prepareIterationRunFromRoot(){
-        internal().collectChildrenDeep().forEach(f -> {
-            if (f instanceof FactoryBase){
-                ((FactoryBase)f).prepareIterationRun();
-            }
-        });//intentional collectChildrenDeep (and not not collectFactoryChildrenDeep ) cause it's fastest iteration over all real data entities
-    }
-
-    private void  prepareRecreationCheck(){
-        internal().collectChildrenDeep().forEach(f -> {
-            if (f instanceof FactoryBase){
-                ((FactoryBase)f).reRecreationChecked=false;
-            }
-        });
-    }
-
-    private FactoryLogEntry createFactoryLogEntry(boolean flat) {
-        FactoryLogEntry factoryLogEntry = this.getFactoryLogEntry();
-        if (factoryLogEntry.hasEvents()){
-            if (!flat){
-                this.collectChildrenFactoriesFlat().forEach(child -> {
-                    factoryLogEntry.children.add(child.createFactoryLogEntry(flat));
-                });
-                factoryLogEntry.children.removeIf(Objects::isNull);
-            }
-            return factoryLogEntry;
-        }
-        return null;
+    private FactoryLogEntry createFactoryLogEntryFlat(){
+        return this.createFactoryLogEntry();
     }
 
     Microservice<V, R, ?> microservice;
@@ -304,12 +286,12 @@ public class FactoryBase<L,V,R extends FactoryBase<?,V,R>> extends Data implemen
     }
 
 
-    AttributeSetupHelper<R> attributeSetupHelper;
-    public void setAttributeSetupHelper(AttributeSetupHelper<R> attributeSetupHelper) {
-        this.attributeSetupHelper = attributeSetupHelper;
+    FactoryTreeBuilderBasedAttributeSetup<R> factoryTreeBuilderBasedAttributeSetup;
+    public void setFactoryTreeBuilderBasedAttributeSetup(FactoryTreeBuilderBasedAttributeSetup<R> factoryTreeBuilderBasedAttributeSetup) {
+        this.factoryTreeBuilderBasedAttributeSetup = factoryTreeBuilderBasedAttributeSetup;
     }
-    private AttributeSetupHelper<R> getAttributeSetupHelper() {
-        return getRoot().attributeSetupHelper;
+    private FactoryTreeBuilderBasedAttributeSetup<R> getFactoryTreeBuilderBasedAttributeSetup() {
+        return getRoot().factoryTreeBuilderBasedAttributeSetup;
     }
 
 
@@ -319,18 +301,156 @@ public class FactoryBase<L,V,R extends FactoryBase<?,V,R>> extends Data implemen
     }
 
 
-    final FactoryInternal<L,V,R> factoryInternal = new FactoryInternal<>(this);
+    @JsonIgnore
+    long reuseDurationNs;
+    private void logReuse(long reuseDurationNs){
+        this.reuseDurationNs=reuseDurationNs;
+    }
+
+    @JsonIgnore
+    long createDurationNs;
+    private void logCreate(long createDurationNs){
+        this.createDurationNs=createDurationNs;
+    }
+
+
+    @JsonIgnore
+    long recreateDurationNs;
+    private void logRecreate(long recreateDurationNs){
+        this.recreateDurationNs=recreateDurationNs;
+    }
+
+    @JsonIgnore
+    long startDurationNs;
+    private void logStart(long startDurationNs){
+        this.startDurationNs=startDurationNs;
+    }
+
+    @JsonIgnore
+    long destroyDurationNs;
+    private void logDestroy(long destroyDurationNs){
+        this.destroyDurationNs=destroyDurationNs;
+    }
+
+    private void resetLog() {
+        this.reuseDurationNs=0;
+        this.createDurationNs=0;
+        this.recreateDurationNs=0;
+        this.startDurationNs=0;
+        this.destroyDurationNs=0;
+    }
+
+    private static final int PRINTED_COUNTER_LIMIT=500;
+    private static class PrintedCounter{
+        private int printedCounter;
+        public void inc(){
+            printedCounter++;
+        }
+        public boolean limitReached(){
+            return printedCounter >= PRINTED_COUNTER_LIMIT;
+        }
+    }
+    private void logDisplayTextDeep(StringBuilder stringBuilder, long deep, String prefix, boolean isTail, PrintedCounter printedCounter, long iterationRun){
+        if (printedCounter.limitReached()) {
+            return;
+        }
+        if (deep>0){
+            stringBuilder.append(prefix).append(isTail ? "└── " : "├── ");
+        }
+//        if (!printed.add(this)){
+//            stringBuilder.append("@").append(this.getId()).append("\n");
+//            return;
+//        }
+        printedCounter.inc();
+
+        stringBuilder.append(getFactoryDescription());
+        stringBuilder.append(": ");
+        stringBuilder.append(eventsDisplayText());
+        stringBuilder.append("\n");
+
+        int counter=0;
+
+        List<FactoryBase<?, ?, ?>> children = new ArrayList<>();
+        visitChildFactoriesAndViewsFlat(children::add,iterationRun);
+        for (FactoryBase<?, ?, ?> child: children){
+            child.logDisplayTextDeep(stringBuilder, deep+1, prefix + (isTail ? "    " : "│   "), counter==children.size()-1,printedCounter,iterationRun);
+            counter++;
+        }
+
+    }
+
+    private String logDisplayTextDeep(){
+        StringBuilder stringBuilder = new StringBuilder("\n");
+        stringBuilder.append("Application Started:\n");
+//        stringBuilder.append("total start duration: " + (totalDurationNs / 1000000.0) + "ms"+"\n");
+        PrintedCounter printedCounter=new PrintedCounter();
+        long iterationRun=this.iterationRun+1;
+        logDisplayTextDeep(stringBuilder,0,"", true,printedCounter, iterationRun);
+        if (printedCounter.limitReached()){
+            stringBuilder.append("... (aborted log after "+PRINTED_COUNTER_LIMIT+" factories)");
+        }
+
+        return stringBuilder.toString();
+    }
+
+    @JsonIgnore
+    private String getFactoryDescription(){
+        return getClass().getSimpleName();
+    }
+
+    private String eventsDisplayText() {
+        StringBuilder result = new StringBuilder();
+        if (reuseDurationNs!=0) {
+            result.append(FactoryLogEntryEventType.REUSE);
+            result.append(" ");
+            result.append(reuseDurationNs);
+            result.append("ns");
+            result.append(",");
+        }
+        if (createDurationNs!=0) {
+            result.append(FactoryLogEntryEventType.CREATE);
+            result.append(" ");
+            result.append(createDurationNs);
+            result.append("ns");
+            result.append(",");
+        }
+        if (recreateDurationNs!=0) {
+            result.append(FactoryLogEntryEventType.RECREATE);
+            result.append(" ");
+            result.append(recreateDurationNs);
+            result.append("ns");
+            result.append(",");
+        }
+        if (startDurationNs!=0) {
+            result.append(FactoryLogEntryEventType.START);
+            result.append(" ");
+            result.append(startDurationNs);
+            result.append("ns");
+            result.append(",");
+        }
+        if (destroyDurationNs!=0) {
+            result.append(FactoryLogEntryEventType.DESTROY);
+            result.append(" ");
+            result.append(destroyDurationNs);
+            result.append("ns");
+            result.append(",");
+        }
+        return result.toString();
+    }
+
+
     /** <b>internal methods should be only used from the framework.</b>
      *  They may change in the Future.
      *  There is no fitting visibility in java therefore this workaround.
      * @return internal factory api
      */
     public FactoryInternal<L,V,R> internalFactory(){
-        return factoryInternal;
+        return new FactoryInternal<>(this);
     }
 
     public static class FactoryInternal<L,V,R  extends FactoryBase<?,V,R>> {
         private final FactoryBase<L,V,R> factory;
+        private String factoryDisplayText;
 
         public FactoryInternal(FactoryBase<L, V, R> factory) {
             this.factory = factory;
@@ -342,13 +462,13 @@ public class FactoryBase<L,V,R extends FactoryBase<?,V,R>> extends Data implemen
             return factory.create();
         }
 
-        public FactoryLogEntry createFactoryLogEntry() {
-            factory.prepareIterationRunFromRoot();
-            return factory.createFactoryLogEntry(false);
+        public FactoryLogEntryTreeItem createFactoryLogTree() {
+            long iterationRun=factory.iterationRun+1;
+            return factory.createFactoryLogEntryTree(iterationRun);
         }
 
-        public FactoryLogEntry createFactoryLogEntryFlat(){
-            return factory.createFactoryLogEntry(true);
+        public FactoryLogEntry createFactoryLogEntry(){
+            return factory.createFactoryLogEntryFlat();
         }
 
         /**
@@ -356,8 +476,8 @@ public class FactoryBase<L,V,R extends FactoryBase<?,V,R>> extends Data implemen
          * @param changedData changedData
          * */
         public void determineRecreationNeedFromRoot(Set<Data> changedData) {
-            factory.prepareRecreationCheck();
-            factory.determineRecreationNeed(changedData,new ArrayDeque<>());
+            long iterationRun = this.factory.iterationRun+1;
+            factory.determineRecreationNeed(changedData,new ArrayDeque<>(),iterationRun);
         }
 
         public void resetLog() {
@@ -399,27 +519,42 @@ public class FactoryBase<L,V,R extends FactoryBase<?,V,R>> extends Data implemen
             factory.loopDetector();
         }
 
-        public Set<FactoryBase<?,V,R>> collectChildFactoriesDeepFromRoot(){
-            factory.prepareIterationRunFromRoot();
+        public List<FactoryBase<?,?,?>> collectChildFactoriesDeepFromRoot(){
             return factory.collectChildFactoriesDeep();
         }
 
-        public Iterable<FactoryBase<?,V,R>> breadthFirstTraversalFromRoot(){
-            factory.prepareIterationRunFromRoot();
-            final Traverser<FactoryBase<?,V,R>> factoryTraverser = Traverser.forTree(factory -> factory);
-            return factoryTraverser.breadthFirst(factory);
+        /**
+        /*        h
+        /*      / | \
+        /*     /  e  \
+        /*    d       g
+        /*   /|\      |
+        /*  / | \     f
+        /* a  b  c
+        /* @return breadth-first order: hdegabcf
+        **/
+        public List<FactoryBase<?,?,?>> getFactoriesInDestroyOrder(){
+            return factory.getFactoriesInDestroyOrder();
         }
 
-        public Iterable<FactoryBase<?,V,R>> postOrderTraversalFromRoot(){
-            factory.prepareIterationRunFromRoot();
-            final Traverser<FactoryBase<?,V,R>> factoryTraverser = Traverser.forTree(factory -> factory);
-            return factoryTraverser.depthFirstPostOrder(factory);
+        /**
+         /*        h
+         /*      / | \
+         /*     /  e  \
+         /*    d       g
+         /*   /|\      |
+         /*  / | \     f
+         /* a  b  c
+         /* @return postorder: abcdefgh
+         **/
+        public List<FactoryBase<?,?,?>> getFactoriesInCreateAndStartOrder(){
+            return factory.getFactoriesInCreateAndStartOrder();
         }
 
-        public HashMap<String,FactoryBase<?,V,R>> collectChildFactoriesDeepMapFromRoot(){
-            final Set<FactoryBase<?, V,R>> factoryBases = collectChildFactoriesDeepFromRoot();
-            HashMap<String, FactoryBase<?, V, R>> result = new HashMap<>();
-            for (FactoryBase<?, V, R> factory: factoryBases){
+        public HashMap<String,FactoryBase<?,?,?>> collectChildFactoriesDeepMapFromRoot(){
+            final List<FactoryBase<?,?,?>> factoryBases = collectChildFactoriesDeepFromRoot();
+            HashMap<String, FactoryBase<?, ?, ?>> result = new HashMap<>();
+            for (FactoryBase<?, ?, ?> factory: factoryBases){
                 result.put(factory.getId(),factory);
             }
             return result;
@@ -434,12 +569,20 @@ public class FactoryBase<L,V,R extends FactoryBase<?,V,R>> extends Data implemen
             factory.setMicroservice(microservice);
         }
 
-        public void setAttributeSetupHelper(AttributeSetupHelper<R> attributeSetupHelper) {
-            factory.setAttributeSetupHelper(attributeSetupHelper);
+        public void setAttributeSetupHelper(FactoryTreeBuilderBasedAttributeSetup<R> factoryTreeBuilderBasedAttributeSetup) {
+            factory.setFactoryTreeBuilderBasedAttributeSetup(factoryTreeBuilderBasedAttributeSetup);
         }
 
         public L getLiveObject() {
             return factory.createdLiveObject;
+        }
+
+        public String logDisplayTextDeep(){
+            return factory.logDisplayTextDeep();
+        }
+
+        public String getFactoryDisplayText() {
+            return factory.getFactoryDescription();
         }
     }
 
@@ -448,7 +591,7 @@ public class FactoryBase<L,V,R extends FactoryBase<?,V,R>> extends Data implemen
     Consumer<L> starterWithNewLiveObject=null;
     Consumer<L> destroyerWithPreviousLiveObject=null;
     BiConsumer<V,L> executorWidthVisitorAndCurrentLiveObject=null;
-    private void setCreator(Supplier<L> creator){
+    void setCreator(Supplier<L> creator){
         this.creator=creator;
     }
 
@@ -468,8 +611,6 @@ public class FactoryBase<L,V,R extends FactoryBase<?,V,R>> extends Data implemen
         this.executorWidthVisitorAndCurrentLiveObject=executorWidthVisitorAndCurrentLiveObject;
     }
 
-    final LiveCycleConfig<L,V,R> liveCycleConfig = new LiveCycleConfig<>(this);
-
     /** live cycle configurations api<br>
      *<br>
      * Update Order<br>
@@ -485,7 +626,7 @@ public class FactoryBase<L,V,R extends FactoryBase<?,V,R>> extends Data implemen
      * @return configuration api
      * */
     protected LiveCycleConfig<L,V,R> configLiveCycle(){
-        return liveCycleConfig;
+        return new LiveCycleConfig<>(this);
     }
 
     public static class LiveCycleConfig<L,V,R  extends FactoryBase<?,V,R>> {
@@ -529,9 +670,8 @@ public class FactoryBase<L,V,R extends FactoryBase<?,V,R>> extends Data implemen
         }
     }
 
-    final UtilityFactory<L,V,R> utilityFactory = new UtilityFactory<>(this);
     public UtilityFactory<L,V,R> utilityFactory(){
-        return utilityFactory;
+        return new UtilityFactory<>(this);
     }
 
     public static class UtilityFactory<L,V,R  extends FactoryBase<?,V,R>> {
@@ -545,14 +685,16 @@ public class FactoryBase<L,V,R extends FactoryBase<?,V,R>> extends Data implemen
             return factory.getMicroservice();
         }
 
-        public AttributeSetupHelper getAttributeSetupHelper(){
-            return factory.getAttributeSetupHelper();
+        public FactoryTreeBuilderBasedAttributeSetup getAttributeSetupHelper(){
+            return factory.getFactoryTreeBuilderBasedAttributeSetup();
         }
 
         public R getRoot(){
             return factory.getRoot();
         }
     }
+
+
 
 
 }

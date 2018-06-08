@@ -1,5 +1,6 @@
 package de.factoryfx.data;
 
+import de.factoryfx.data.jackson.ObjectMapperBuilder;
 import de.factoryfx.data.merge.testfactories.ExampleDataA;
 import de.factoryfx.data.merge.testfactories.ExampleDataB;
 
@@ -11,15 +12,17 @@ public class DataCopyPerformance {
         exampleFactoryA.referenceAttribute.set(createExampleDataB(0));
         exampleFactoryA.referenceListAttribute.add(createExampleDataB(0));
 
-        System.out.println(exampleFactoryA.internal().collectChildrenDeep().size());
+//        System.out.println(exampleFactoryA.internal().collectChildrenDeep().size());
 
 
         int[] forceExecution=new int[]{0};
 
         final long start = System.currentTimeMillis();
         int times=300;
+//        times=1;
         for (int i=0;i<times;i++){
-            final Data copy = exampleFactoryA.internal().copyFromRoot();
+            final Data copy = exampleFactoryA.internal().copy();
+//            ObjectMapperBuilder.build().copy(exampleFactoryA);
             forceExecution[0]++;
         }
         System.out.println(forceExecution[0]);

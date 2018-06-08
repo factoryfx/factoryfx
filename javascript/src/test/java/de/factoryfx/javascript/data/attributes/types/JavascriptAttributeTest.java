@@ -5,6 +5,9 @@ import java.util.Collections;
 import java.util.List;
 
 import de.factoryfx.data.Data;
+import de.factoryfx.data.attribute.primitive.BooleanAttribute;
+import de.factoryfx.data.attribute.types.EnumAttribute;
+import de.factoryfx.data.jackson.ObjectMapperBuilder;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -46,4 +49,17 @@ public class JavascriptAttributeTest {
         javascriptAttributeTest.set(new Javascript<>("XXX2"));
         Assert.assertEquals("XXX2",calls.get(calls.size()-1));
     }
+
+    public static class ExampleJavascriptData{
+        public final JavascriptAttribute<Object> attribute = new JavascriptAttribute<>(() -> Collections.singletonList(new Data()),Object.class);
+    }
+
+    @Test
+    public void test_json_inside_data(){
+        ExampleJavascriptData data = new ExampleJavascriptData();
+        data.attribute.set(new Javascript<>("XXX1"));
+        ExampleJavascriptData copy = ObjectMapperBuilder.build().copy(data);
+        Assert.assertEquals("XXX1",data.attribute.get().getCode());
+    }
+
 }

@@ -32,11 +32,11 @@ public class JettyServer {
     private final LoggingFeature loggingFeature;
     private final Consumer<ResourceConfig> resourceConfigSetup;
 
-    private static final Logger jersyLogger1 = Logger.getLogger(org.glassfish.jersey.internal.inject.Providers.class.getName());
-    private static final Logger jersyLogger2 = Logger.getLogger(org.glassfish.jersey.internal.Errors.class.getName());
-    {
-        jersyLogger1.setLevel(Level.SEVERE); //another useless warning https://github.com/jersey/jersey/issues/3700
-        jersyLogger2.setLevel(Level.SEVERE);//warning about generic parameters, works fine and no fix available so the warnings are just useless
+    private static final Logger jerseyLogger1 = Logger.getLogger(org.glassfish.jersey.internal.inject.Providers.class.getName());
+    private static final Logger jerseyLogger2 = Logger.getLogger(org.glassfish.jersey.internal.Errors.class.getName());
+    static {
+        jerseyLogger1.setLevel(Level.SEVERE); //another useless warning https://github.com/jersey/jersey/issues/3700
+        jerseyLogger2.setLevel(Level.SEVERE);//warning about generic parameters, works fine and no fix available so the warnings are just useless
     }
 
     public JettyServer(List<de.factoryfx.jetty.HttpServerConnectorCreator> connectors, List<Object> resources, List<Handler> additionalHandlers, ObjectMapper objectMapper, LoggingFeature loggingFeature, Consumer<ResourceConfig> resourceConfigSetup) {

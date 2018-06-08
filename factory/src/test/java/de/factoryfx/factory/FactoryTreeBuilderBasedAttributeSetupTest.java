@@ -1,5 +1,7 @@
 package de.factoryfx.factory;
 
+import de.factoryfx.data.Data;
+import de.factoryfx.data.attribute.Attribute;
 import de.factoryfx.data.jackson.ObjectMapperBuilder;
 import de.factoryfx.data.storage.JacksonDeSerialisation;
 import de.factoryfx.factory.builder.FactoryTreeBuilder;
@@ -9,7 +11,9 @@ import de.factoryfx.factory.testfactories.ExampleFactoryB;
 import org.junit.Assert;
 import org.junit.Test;
 
-public class AttributeSetupHelperTest {
+import java.util.function.Consumer;
+
+public class FactoryTreeBuilderBasedAttributeSetupTest {
 
 
     @Test
@@ -29,22 +33,15 @@ public class AttributeSetupHelperTest {
 
         ExampleFactoryA root = builder.buildTreeUnvalidated();
 
+        FactoryTreeBuilderBasedAttributeSetup<ExampleFactoryA> factoryTreeBuilderBasedAttributeSetup = new FactoryTreeBuilderBasedAttributeSetup<>(builder);
 
-        {//without AttributeSetupHelper
-            JacksonDeSerialisation<ExampleFactoryA, Void> jacksonDeSerialisation = new JacksonDeSerialisation<>(ExampleFactoryA.class, 0);
-            ExampleFactoryA read = jacksonDeSerialisation.read(ObjectMapperBuilder.build().writeValueAsString(root));
+        root.internal().collectChildrenDeep().forEach(data -> {
+            data.internal().visitAttributesFlat((attributeVariableName, attribute) -> factoryTreeBuilderBasedAttributeSetup.accept(attribute));
+        });
 
-            Assert.assertTrue(read.referenceAttribute.internal_isUserSelectable());
-            Assert.assertTrue(read.referenceAttribute.get().referenceAttribute.internal_isUserSelectable());
-        }
 
-        {//with AttributeSetupHelper
-            JacksonDeSerialisation<ExampleFactoryA, Void> jacksonDeSerialisation = new JacksonDeSerialisation<>(ExampleFactoryA.class, 0, new AttributeSetupHelper<>(builder));
-            ExampleFactoryA read = jacksonDeSerialisation.read(ObjectMapperBuilder.build().writeValueAsString(root));
-
-            Assert.assertFalse(read.referenceAttribute.internal_isUserSelectable());
-            Assert.assertFalse(read.referenceAttribute.get().referenceAttribute.internal_isUserSelectable());
-        }
+        Assert.assertFalse(root.referenceAttribute.internal_isUserSelectable());
+        Assert.assertFalse(root.referenceAttribute.get().referenceAttribute.internal_isUserSelectable());
 
     }
 }

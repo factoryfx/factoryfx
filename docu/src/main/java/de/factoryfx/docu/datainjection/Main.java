@@ -10,7 +10,6 @@ public class Main {
     public static void main(String[] args) {
         RootFactory rootFactory = new RootFactory();
         rootFactory.text.set("HelloWorld");
-        rootFactory=rootFactory.utility().prepareUsableCopy();
 
         Microservice<Void,RootFactory,Void> microservice = new Microservice<>(new FactoryManager<>(new RethrowingFactoryExceptionHandler()),new InMemoryDataStorage<>(rootFactory));
         microservice.start();

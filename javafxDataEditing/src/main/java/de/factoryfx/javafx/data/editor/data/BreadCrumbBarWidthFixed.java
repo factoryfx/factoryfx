@@ -11,7 +11,7 @@ public class BreadCrumbBarWidthFixed<T> extends BreadCrumbBar<T> {
      */
     @Override
     protected Skin<?> createDefaultSkin() {
-        return new BreadCrumbBarSkin<T>(this) {
+        return new BreadCrumbBarSkin<>(this) {
 
             @Override
             protected double computePrefWidth(double height, double topInset, double rightInset, double bottomInset, double leftInset) {

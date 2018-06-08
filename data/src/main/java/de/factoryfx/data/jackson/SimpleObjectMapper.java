@@ -1,9 +1,6 @@
 package de.factoryfx.data.jackson;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -18,8 +15,9 @@ public class SimpleObjectMapper {
 
     @SuppressWarnings("unchecked")
     public <T> T copy(T value) {
-        String jsonString = writeValueAsString(value);
-        return readValue(jsonString, (Class<T>) value.getClass());
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        writeValue(value, out);
+        return readValue(new ByteArrayInputStream(out.toByteArray()), (Class<T>) value.getClass());
     }
 
     @SuppressWarnings("unchecked")
@@ -27,7 +25,7 @@ public class SimpleObjectMapper {
         try {
             T value = function.read();
             if (value instanceof Data) {
-                return (T) ((Data) value).internal().prepareUsableCopy();
+                return (T) ((Data) value).internal().addBackReferences();
             }
             return value;
         } catch (IOException e) {

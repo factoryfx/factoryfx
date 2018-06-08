@@ -1,15 +1,8 @@
 package de.factoryfx.data.attribute;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
 import de.factoryfx.data.Data;
 
 public class DataReferenceAttribute<T extends Data> extends ReferenceAttribute<T,DataReferenceAttribute<T>> {
-
-
-    @JsonCreator
-    protected DataReferenceAttribute(T value) {
-        super(value);
-    }
 
     public DataReferenceAttribute(Class<T> clazz) {
         super();
@@ -29,4 +22,5 @@ public class DataReferenceAttribute<T extends Data> extends ReferenceAttribute<T
     public DataReferenceAttribute<T> setupUnsafe(Class clazz) {
         return super.setupUnsafe(clazz);
     }
+
 }

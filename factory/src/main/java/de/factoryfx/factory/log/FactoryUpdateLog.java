@@ -8,7 +8,7 @@ import de.factoryfx.data.Data;
 import de.factoryfx.data.merge.MergeDiffInfo;
 
 public class FactoryUpdateLog<R extends Data> {
-    public final FactoryLogEntry root;
+    public final FactoryLogEntryTreeItem root;
     public final Set<FactoryLogEntry> removedFactoryLogs;
     public final MergeDiffInfo<R> mergeDiffInfo;
     /**duration for factory update mostly the time from create/destroy/etc */
@@ -16,7 +16,7 @@ public class FactoryUpdateLog<R extends Data> {
 
     @JsonCreator
     public FactoryUpdateLog(
-            @JsonProperty("root")FactoryLogEntry factoryLogEntry,
+            @JsonProperty("root")FactoryLogEntryTreeItem factoryLogEntry,
             @JsonProperty("removedFactoryLogs")Set<FactoryLogEntry> removedFactoryLogs,
             @JsonProperty("mergeDiffInfo")MergeDiffInfo<R> mergeDiffInfo,
             @JsonProperty("totalDurationNs")long totalDurationNs) {

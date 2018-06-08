@@ -2,9 +2,10 @@ package de.factoryfx.data;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.List;
+import java.nio.ByteBuffer;
+import java.util.*;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import de.factoryfx.data.attribute.*;
 import de.factoryfx.data.attribute.types.ObjectValueAttribute;
 import de.factoryfx.data.attribute.types.StringAttribute;
@@ -59,10 +60,10 @@ public class DataTest {
         String string = mapper.writeValueAsString(exampleFactoryThis);
         ExampleFactoryThis readed = ObjectMapperBuilder.buildNewObjectMapper().readValue(string,ExampleFactoryThis.class);
 
-        Assert.assertEquals(null,readed.stringAttribute);
+//        Assert.assertEquals(null,readed.stringAttribute);
         Assert.assertEquals(0,readed.calls.size());
 
-        readed = readed.internal().prepareUsableCopy();
+        readed = readed.internal().addBackReferences();
 
         readed.internal().validateFlat();
 
@@ -87,7 +88,7 @@ public class DataTest {
         String string = mapper.writeValueAsString(exampleFactoryA);
         ExampleDataA readed = ObjectMapperBuilder.buildNewObjectMapper().readValue(string,ExampleDataA.class);
 
-        readed = readed.internal().prepareUsableCopy();
+        readed = readed.internal().addBackReferences();
 
 
         final Field displayTextDependencies = Data.class.getDeclaredField("displayTextDependencies");
@@ -110,7 +111,7 @@ public class DataTest {
         ExampleDataA exampleFactoryA = new ExampleDataA();
         ExampleDataB exampleFactoryB = new ExampleDataB();
         exampleFactoryA.referenceAttribute.set(exampleFactoryB);
-        exampleFactoryA=exampleFactoryA.internal().prepareUsableCopy();
+        exampleFactoryA=exampleFactoryA.internal().addBackReferences();
         Assert.assertNotNull(exampleFactoryA.internal().getRoot());
 
         List<Data> pathTo = exampleFactoryA.referenceAttribute.get().internal().getPathFromRoot();
@@ -122,6 +123,19 @@ public class DataTest {
     public static class ExampleObjectProperty extends Data {
         public final StringAttribute stringAttribute= new StringAttribute().labelText("stringAttribute");
         public final ObjectValueAttribute<String> objectValueAttribute= new ObjectValueAttribute<String>().labelText("objectValueAttribute");
+    }
+
+    @Test
+    public void test_copy_width_cycle(){
+        ExampleDataA exampleFactoryA = new ExampleDataA();
+        ExampleDataB exampleFactoryB = new ExampleDataB();
+
+        exampleFactoryA.referenceAttribute.set(exampleFactoryB);
+        exampleFactoryB.referenceAttribute.set(exampleFactoryA);
+
+        ExampleDataA copy =  exampleFactoryA.internal().copy();
+
+        //Assert no Stackoverflow
     }
 
     @Test
@@ -160,22 +174,6 @@ public class DataTest {
         Assert.assertEquals(copy.referenceAttribute.get(),copy.referenceListAttribute.get().get(0));
     }
 
-    @Test
-    public void test_copy_consumer(){
-        ExampleDataA exampleFactoryA = new ExampleDataA();
-        ExampleDataB exampleFactoryB = new ExampleDataB();
-
-        exampleFactoryA.referenceAttribute.set(exampleFactoryB);
-        exampleFactoryA.referenceListAttribute.add(exampleFactoryB);
-
-        List<Data> dataList =new ArrayList<>();
-        List<Attribute> attributeList =new ArrayList<>();
-        ExampleDataA copy =  exampleFactoryA.internal().prepareUsableCopy(data -> dataList.add(data), attribute -> attributeList.add(attribute));
-
-        Assert.assertEquals(2,dataList.size());
-        Assert.assertEquals(6,attributeList.size());
-    }
-
     private static class EmptyExampleDataA extends Data {
 
     }
@@ -183,7 +181,7 @@ public class DataTest {
     @Test
     public void test_copy_consumer_root_empty_data(){
         EmptyExampleDataA emptyExampleDataA = new EmptyExampleDataA();
-        EmptyExampleDataA copy =  emptyExampleDataA.internal().prepareUsableCopy();
+        EmptyExampleDataA copy =  emptyExampleDataA.internal().addBackReferences();
         Assert.assertEquals(copy,copy.internal().getRoot());
     }
 
@@ -197,11 +195,13 @@ public class DataTest {
         exampleFactoryA.referenceAttribute.set(exampleFactoryB);
         exampleFactoryA.referenceListAttribute.add(new ExampleDataB());
 
-        exampleFactoryA = exampleFactoryA.internal().prepareUsableCopy();
+        exampleFactoryA = exampleFactoryA.internal().addBackReferences();
 
         ExampleDataA copy =  exampleFactoryA.internal().copy();
 
         SimpleObjectMapper mapper = ObjectMapperBuilder.build();
+        System.out.println(mapper.writeValueAsString(exampleFactoryA));
+
         final Data expectedData = mapper.copy(exampleFactoryA);
         String expected = mapper.writeValueAsString(expectedData);
         String actual = mapper.writeValueAsString(copy);
@@ -217,7 +217,7 @@ public class DataTest {
 
         exampleFactoryA.referenceAttribute.set(null);
         exampleFactoryA.referenceListAttribute.add(new ExampleDataB());
-        exampleFactoryA = exampleFactoryA.internal().prepareUsableCopy();
+        exampleFactoryA = exampleFactoryA.internal().addBackReferences();
 
 
         ExampleDataA copy  =ObjectMapperBuilder.build().copy(exampleFactoryA);
@@ -262,12 +262,12 @@ public class DataTest {
     @Test
     public void test_editing_nested_add(){
         ExampleWithDefaultParent exampleWithDefaultParent = new ExampleWithDefaultParent();
-        exampleWithDefaultParent = exampleWithDefaultParent.internal().prepareUsableCopy();
-        Assert.assertTrue(exampleWithDefaultParent.internal().readyForUsage());
+        exampleWithDefaultParent.internal().addBackReferences();
 
-        List<ExampleWithDefault> exampleWithDefaults = exampleWithDefaultParent.referenceAttribute.internal_createNewPossibleValues();
-        ExampleWithDefault exampleWithDefault = exampleWithDefaults.get(0);
-        exampleWithDefaultParent.referenceAttribute.set(exampleWithDefault);
+        Assert.assertTrue(exampleWithDefaultParent.internal().readyForUsage());
+        exampleWithDefaultParent.referenceAttribute.get();
+
+        exampleWithDefaultParent.referenceAttribute.set(new ExampleWithDefault());
 
         Assert.assertTrue(exampleWithDefaultParent.internal().readyForUsage());
         Assert.assertTrue(exampleWithDefaultParent.referenceAttribute.get().internal().readyForUsage());
@@ -295,7 +295,7 @@ public class DataTest {
         ExampleObjectProperty exampleObjectProperty = new ExampleObjectProperty();
         final String test = "Test";
         exampleObjectProperty.objectValueAttribute.set(test);
-        exampleObjectProperty=exampleObjectProperty.internal().prepareUsableCopy();
+        exampleObjectProperty=exampleObjectProperty.internal().addBackReferences();
         ExampleObjectProperty copy = exampleObjectProperty.internal().copy();
         //that comparision ist correct (no equals)
         Assert.assertTrue(copy.objectValueAttribute.get()==test);
@@ -376,7 +376,7 @@ public class DataTest {
         dataA.referenceAttribute.set(dataB);
         dataB.referenceAttributeC.set(dataC);
 
-        dataA = dataA.internal().prepareUsableCopy();
+        dataA = dataA.internal().addBackReferences();
         dataB = dataA.referenceAttribute.get();
         dataC = dataB.referenceAttributeC.get();
 
@@ -447,7 +447,7 @@ public class DataTest {
         exampleParentsA.exampleParentsC.set(exampleParentsC);
 
         //Assert.assertEquals(2,exampleParentsC.internal().getParents().size());
-        exampleParentsA = exampleParentsA.internal().prepareUsableCopy();
+        exampleParentsA = exampleParentsA.internal().addBackReferences();
         Assert.assertEquals(2,exampleParentsA.exampleParentsB.get().exampleParentsC.get().internal().getParents().size());
     }
 
@@ -459,15 +459,29 @@ public class DataTest {
         exampleDataB.referenceAttributeC.set(new ExampleDataC());
         exampleDataA.referenceListAttribute.add(exampleDataB);
 
-        exampleDataA = exampleDataA.internal().prepareUsableCopy();
+        exampleDataA = exampleDataA.internal().addBackReferences();
         Assert.assertEquals(1,exampleDataA.referenceListAttribute.get(0).internal().getParents().size());
         Assert.assertEquals(1,exampleDataA.referenceListAttribute.get(0).referenceAttributeC.get().internal().getParents().size());
     }
 
     @Test
+    public void test_addBackReferencese(){
+        ExampleDataA example= new ExampleDataA();
+
+        ExampleDataB exampleDataB = new ExampleDataB();
+        exampleDataB.referenceAttributeC.set(new ExampleDataC());
+        example.referenceListAttribute.add(exampleDataB);
+
+        example.internal().addBackReferences();
+
+        Assert.assertEquals(1,example.referenceListAttribute.get(0).internal().getParents().size());
+        Assert.assertEquals(1,example.referenceListAttribute.get(0).referenceAttributeC.get().internal().getParents().size());
+    }
+
+    @Test
     public void test_parents_list_nested_merge(){
         ExampleDataA current= new ExampleDataA();
-        current = current.internal().prepareUsableCopy();
+        current = current.internal().addBackReferences();
 
         ExampleDataA update = current.internal().copy();
 
@@ -475,7 +489,7 @@ public class DataTest {
         exampleDataB.referenceAttributeC.set(new ExampleDataC());
         update.referenceListAttribute.add(exampleDataB);
 
-        update = update.internal().prepareUsableCopy();
+        update = update.internal().addBackReferences();
 
 
         new DataMerger<>(current,current,update).mergeIntoCurrent((p)->true);
@@ -487,22 +501,104 @@ public class DataTest {
     }
 
     @Test
-    public void createProduct_parent(){
-        ExampleDataA current= new ExampleDataA();
-        current=current.internal().prepareUsableCopy();
+    public void test_json_null_attribute() throws IOException {
+        ExampleDataA exampleDataA = new ExampleDataA();
+//        exampleDataA.stringAttribute.set("adsa");
+        exampleDataA.stringAttribute.set(null);
+        ObjectMapper objectMapper = ObjectMapperBuilder.buildNewObjectMapper();
+        String content = objectMapper.writeValueAsString(exampleDataA);
+        ExampleDataA copy = objectMapper.readValue(content,ExampleDataA.class);
 
-
-        ExampleDataA update = current.internal().copy();
-
-        ExampleDataB exampleDataB = new ExampleDataB();
-        exampleDataB.referenceAttributeC.set(new ExampleDataC());
-        update.referenceListAttribute.add(exampleDataB);
-
-        update = update.internal().prepareUsableCopy();
-
-        Assert.assertEquals(1,update.referenceListAttribute.get(0).internal().getParents().size());
-        Assert.assertEquals(1,update.referenceListAttribute.get(0).referenceAttributeC.get().internal().getParents().size());
-
-
+        System.out.println(content);
+        Assert.assertNotNull(copy.stringAttribute);
+        Assert.assertNotNull(copy.referenceListAttribute);
+        Assert.assertNotNull(copy.referenceAttribute);
     }
+
+    @Test
+    public void test_json_metadata() throws IOException {
+        ExampleDataA exampleDataA = new ExampleDataA();
+        exampleDataA.stringAttribute.set("adad");
+        exampleDataA.referenceAttribute.set(new ExampleDataB());
+
+
+        ObjectMapper objectMapper = ObjectMapperBuilder.buildNewObjectMapper();
+        String content = objectMapper.writeValueAsString(exampleDataA);
+        System.out.println(content);
+        ExampleDataA copy = objectMapper.readValue(content,ExampleDataA.class);
+
+        Assert.assertEquals("ExampleA1",copy.stringAttribute.internal_getPreferredLabelText(Locale.ENGLISH));
+        Assert.assertEquals("adad",copy.stringAttribute.get());
+        Assert.assertEquals("ExampleA2",copy.referenceAttribute.internal_getPreferredLabelText(Locale.ENGLISH));
+        Assert.assertEquals("ExampleA3",copy.referenceListAttribute.internal_getPreferredLabelText(Locale.ENGLISH));
+    }
+
+    @Test
+    public void test_json_list() throws IOException {
+        ExampleDataA exampleDataA = new ExampleDataA();
+        exampleDataA.referenceListAttribute.add(new ExampleDataB());
+        exampleDataA.referenceListAttribute.add(new ExampleDataB());
+
+        ObjectMapper objectMapper = ObjectMapperBuilder.buildNewObjectMapper();
+        String content = objectMapper.writeValueAsString(exampleDataA);
+        System.out.println(content);
+        ExampleDataA copy = objectMapper.readValue(content, ExampleDataA.class);
+
+        Assert.assertTrue(copy.referenceListAttribute.get(0) instanceof ExampleDataB);
+        Assert.assertEquals(2,copy.referenceListAttribute.size());
+    }
+
+    @Test
+    public void test_json_list_with_ids() throws IOException {
+        ExampleDataA exampleDataA = new ExampleDataA();
+        ExampleDataB value = new ExampleDataB();
+        value.referenceAttribute.set(new ExampleDataA());
+        exampleDataA.referenceAttribute.set(value);
+        exampleDataA.referenceListAttribute.add(value);
+        exampleDataA.referenceListAttribute.add(new ExampleDataB());
+
+        ObjectMapper objectMapper = ObjectMapperBuilder.buildNewObjectMapper();
+        String content = objectMapper.writeValueAsString(exampleDataA);
+        System.out.println(content);
+        ExampleDataA copy = objectMapper.readValue(content,ExampleDataA.class);
+
+        Assert.assertEquals(copy.referenceAttribute.get(),copy.referenceListAttribute.get().get(0));
+    }
+
+    @Test
+    public void test_unique_ids() {
+        HashSet<String> ids=new HashSet<>();
+        for (int i=0;i<1000000;i++){
+            ExampleDataA exampleDataA = new ExampleDataA();
+            String id = exampleDataA.getId();
+            if (!ids.add(id)) {
+                Assert.fail("doubel id"+id+" count:"+ i);
+            }
+        }
+    }
+
+    @Test
+    public void addBackReferences_cycle(){
+        ExampleDataA exampleFactoryA = new ExampleDataA();
+        ExampleDataB exampleFactoryB = new ExampleDataB();
+        exampleFactoryB.referenceAttribute.set(exampleFactoryA);
+        exampleFactoryA.referenceAttribute.set(exampleFactoryB);
+
+        exampleFactoryA.internal().addBackReferences();
+    }
+
+    @Test
+    public void test_visitChildren(){
+        ExampleDataA exampleFactoryA = new ExampleDataA();
+        ExampleDataB exampleFactoryB = new ExampleDataB();
+        exampleFactoryB.referenceAttribute.set(new ExampleDataA());
+
+        exampleFactoryA.referenceAttribute.set(exampleFactoryB);
+        exampleFactoryA.referenceListAttribute.add(new ExampleDataB());
+        exampleFactoryA.referenceListAttribute.add(new ExampleDataB());
+
+        Assert.assertEquals(5,exampleFactoryA.internal().collectChildrenDeep().size());
+    }
+
+
 }

@@ -1,5 +1,6 @@
 package de.factoryfx.data.merge.testfactories;
 
+import com.fasterxml.jackson.annotation.*;
 import de.factoryfx.data.Data;
 import de.factoryfx.data.attribute.*;
 import de.factoryfx.data.attribute.types.StringAttribute;

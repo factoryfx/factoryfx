@@ -6,13 +6,13 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.LinkedBlockingDeque;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import javafx.util.Pair;
 
 public class Javascript<A> {
 
+    @JsonProperty
     private final String code;
 
     @JsonIgnore
@@ -24,7 +24,6 @@ public class Javascript<A> {
     @JsonIgnore
     private final ScriptExecutorCache scriptExecutorCache = new ScriptExecutorCache();
 
-    @JsonCreator
     public Javascript(String code) {
         this(code,"","");
     }
@@ -47,7 +46,6 @@ public class Javascript<A> {
         return Objects.equals(code, o.code) && Objects.equals(headerCode, o.headerCode);
     }
 
-    @JsonValue
     public String getCode() {
         return code;
     }
