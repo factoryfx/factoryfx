@@ -28,7 +28,7 @@ public class ObjectMapperBuilder {
 
         // disable the thread local to prevent memory leak
 //        jsonFactory.disable(JsonFactory.Feature.INTERN_FIELD_NAMES);
-        new com.fasterxml.jackson.dataformat.smile.SmileFactory();
+//        new com.fasterxml.jackson.dataformat.smile.SmileFactory();
         ObjectMapper objectMapper = new ObjectMapper(jsonFactory);
 
 
