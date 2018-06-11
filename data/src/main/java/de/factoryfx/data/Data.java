@@ -467,10 +467,12 @@ public class Data {
     private void addDisplayTextListeners(Data data, AttributeChangeListener attributeChangeListener){
         for (Attribute<?,?> attribute: data.displayTextDependencies){
             attribute.internal_addListener(attributeChangeListener);
-
-
-//            attribute.internal_visit(data1 -> addDisplayTextListeners(data1,attributeChangeListener));
         }
+    }
+
+    private Object storeDisplayTextObservable;
+    private void storeDisplayTextObservable(Object simpleStringProperty) {
+        storeDisplayTextObservable=simpleStringProperty;
     }
 
     private DataUtility dataUtility;
@@ -679,22 +681,18 @@ public class Data {
         }
 
         //TODO cleanup the hack (goal is to remove javafx dependency )
-        private Object simpleStringProperty;
         public void storeDisplayTextObservable(Object simpleStringProperty){
-            this.simpleStringProperty = simpleStringProperty;
+            this.data.storeDisplayTextObservable(simpleStringProperty);
         }
 
         public Object getDisplayTextObservable(){
-            return this.simpleStringProperty;
+            return this.data.storeDisplayTextObservable;
         }
 
         public List<ValidationError> validateFlat(){
             return data.validateFlat();
         }
 
-        public Map<Attribute<?,?>,List<ValidationError>> validateFlatMapped(){
-            return data.validateFlatMapped();
-        }
 
         public void merge(Data originalValue, Data newValue, MergeResult mergeResult, Function<String,Boolean> permissionChecker) {
             data.merge(originalValue,newValue,mergeResult,permissionChecker);
@@ -776,6 +774,5 @@ public class Data {
             data.addDisplayTextListeners(data, attributeChangeListener);
         }
     }
-
 
 }
