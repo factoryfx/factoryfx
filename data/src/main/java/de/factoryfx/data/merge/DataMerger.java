@@ -7,16 +7,21 @@ import de.factoryfx.data.Data;
 
 public class DataMerger<R extends Data> {
 
-    private final R commonData;
     private final R currentData;
+    private final R commonData;
     private final R newData;
 
     public DataMerger(R currentData, R commonData, R newData) {
+        if (currentData==commonData){
+            throw new IllegalArgumentException("Arguments: currentData and commonData can't be the same, use .utility().copy() to create a copy");
+        }
+
+        currentData.internal().addBackReferences();
         commonData.internal().addBackReferences();
         newData.internal().addBackReferences();
 
-        this.commonData = commonData;
         this.currentData = currentData;
+        this.commonData = commonData;
         this.newData = newData;
     }
 
@@ -24,9 +29,13 @@ public class DataMerger<R extends Data> {
     public MergeResult<R> createMergeResult(Function<String,Boolean> permissionChecker) {
         MergeResult mergeResult = new MergeResult(currentData);
 
-        Map<String, Data> originalMap = commonData.internal().collectChildDataMap();
         Map<String, Data> currentMap = currentData.internal().collectChildDataMap();
+        Map<String, Data> originalMap = commonData.internal().collectChildDataMap();
         Map<String, Data> newMap = newData.internal().collectChildDataMap();
+
+        for (Data newData : newMap.values()) {//avoid mixup with iteration countern
+            newData.internal().resetIterationCounterFlat();
+        }
 
         for (Map.Entry<String, Data> entry : currentMap.entrySet()) {
             Data originalValue = getOriginalValue(originalMap, entry);

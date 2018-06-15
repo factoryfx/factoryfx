@@ -29,7 +29,7 @@ public abstract class ReferenceAttribute<T extends Data, A extends ReferenceBase
         if (this.value == null || value == null) {
             return false;
         }
-        return this.value.getId().equals(value.getId());
+        return this.value.idEquals(value);
     }
 
 
@@ -39,7 +39,10 @@ public abstract class ReferenceAttribute<T extends Data, A extends ReferenceBase
         Data currentReferenceContent = get();
 
         if (currentReferenceContent != null) {
-            set((T)idToDataMap.get(currentReferenceContent.getId()));
+            T value = (T) idToDataMap.get(currentReferenceContent.getId());
+            if (get()!=value){
+                set(value);
+            }
         }
     }
 
@@ -179,6 +182,17 @@ public abstract class ReferenceAttribute<T extends Data, A extends ReferenceBase
         set(defaultValue);
         get().setId(id);
         return (A)this;
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public void internal_merge(Attribute<?,?> newValue) {
+        this.value=(T)newValue.get();//faster than call set, backreferences are updated anyway for all after merge
+        if (listeners!=null) {
+            for (AttributeChangeListener<T, A> listener : listeners) {
+                listener.changed(this, value);
+            }
+        }
     }
 
 }

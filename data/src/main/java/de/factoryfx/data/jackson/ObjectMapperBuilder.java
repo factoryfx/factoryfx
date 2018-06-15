@@ -155,7 +155,7 @@ public class ObjectMapperBuilder {
 //
 //
 //            final Data bean1 = (Data)_valueInstantiator.createUsingDefault(ctxt);
-//            Data bean = bean1.newInstance();
+//            Data bean = bean1.newCopyInstance();
 //            HashMap<String,Attribute> attributeMap = new HashMap<>();
 //            bean.internal().visitAttributesFlat(attributeMap::put);
 //

@@ -1,13 +1,9 @@
 package de.factoryfx.data.attribute;
 
-import de.factoryfx.data.attribute.types.EnumAttribute;
-import de.factoryfx.data.attribute.types.EnumAttributeTest;
 import de.factoryfx.data.jackson.ObjectMapperBuilder;
-import de.factoryfx.data.merge.testfactories.ExampleDataA;
+import de.factoryfx.data.merge.testdata.ExampleDataA;
 import org.junit.Assert;
 import org.junit.Test;
-
-import static org.junit.Assert.*;
 
 public class DataDictionaryAttributeTest {
 

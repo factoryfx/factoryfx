@@ -7,7 +7,7 @@ import java.util.stream.Collectors;
 import de.factoryfx.data.Data;
 import de.factoryfx.data.attribute.types.StringAttribute;
 import de.factoryfx.data.jackson.ObjectMapperBuilder;
-import de.factoryfx.data.merge.testfactories.ExampleDataA;
+import de.factoryfx.data.merge.testdata.ExampleDataA;
 import org.junit.Assert;
 import org.junit.Test;
 

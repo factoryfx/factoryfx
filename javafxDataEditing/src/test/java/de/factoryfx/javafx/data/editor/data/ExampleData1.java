@@ -44,7 +44,7 @@ public class ExampleData1 extends Data {
     public final EncryptedStringAttribute encryptedStringAttribute=new EncryptedStringAttribute().en("encryptedStringAttribute").de("StringAttribute de").tooltipDe("tooltip xyz");
 
     public final StringAttribute stringAttribute=new StringAttribute().en("StringAttribute gajsd jgsdajh gjasdja jhsadgjg ghf hgf hgfhff hgfhgf hf").de("StringAttribute de").validation(StringRequired.VALIDATION).defaultValue("blub");
-    public final StringAttribute stringLongAttribute=new StringAttribute().longText().defaultExpanded(true).validation(new StringRequired()).en("Long StringAttribute").de("Long StringAttribute de");
+    public final StringAttribute stringLongAttribute=new StringAttribute().longText().defaultExpanded().validation(new StringRequired()).en("Long StringAttribute").de("Long StringAttribute de");
     public final StringAttribute stringHtmlAttribute=new StringAttribute().htmlText().en("stringHtmlAttribute").de("stringHtmlAttribute de");
 
     public final StringAttribute regexValidationNumber=new StringAttribute().en("regexValidationNumber").de("regexValidationNumber de").validation(new RegexValidation(Pattern.compile("[0-9]*")));

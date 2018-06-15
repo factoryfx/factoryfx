@@ -19,5 +19,5 @@ module de.factoryfx.docu {
     requires com.fasterxml.jackson.jaxrs.json;
 
     exports de.factoryfx.docu.dynamicwebserver;
-
+    opens de.factoryfx.docu.helloworld;
 }

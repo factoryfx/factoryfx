@@ -6,8 +6,8 @@ import java.util.List;
 
 import de.factoryfx.data.Data;
 import de.factoryfx.data.jackson.ObjectMapperBuilder;
-import de.factoryfx.data.merge.testfactories.ExampleDataA;
-import de.factoryfx.data.merge.testfactories.ExampleDataB;
+import de.factoryfx.data.merge.testdata.ExampleDataA;
+import de.factoryfx.data.merge.testdata.ExampleDataB;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -65,15 +65,12 @@ public class ReferenceAttributeTest {
 
     @Test
     public void test_get_possible(){
-        DataReferenceAttribute<ExampleDataA> referenceAttribute=new DataReferenceAttribute<>(ExampleDataA.class);
-
         ExampleReferenceFactory root = new ExampleReferenceFactory();
         ExampleDataA exampleFactoryA = new ExampleDataA();
         root.referenceAttribute.set(exampleFactoryA);
+        root.internal().addBackReferences();
 
-        referenceAttribute.internal_prepareUsageFlat(root,null);
-
-        Collection<ExampleDataA> possibleFactories =referenceAttribute.internal_possibleValues();
+        Collection<ExampleDataA> possibleFactories =root.referenceAttribute.internal_possibleValues();
         Assert.assertEquals(1,possibleFactories.size());
         Assert.assertEquals(exampleFactoryA,new ArrayList<>(possibleFactories).get(0));
 
@@ -141,18 +138,6 @@ public class ReferenceAttributeTest {
         attribute.internal_removeListener(attributeChangeListener);
         Assert.assertTrue(attribute.listeners.size()==0);
     }
-
-    @Test
-    public void delegate_root_for_added() throws Exception {
-        DataReferenceAttribute<ExampleDataA> attribute=new DataReferenceAttribute<>(ExampleDataA.class);
-        attribute.internal_prepareUsageFlat(new ExampleDataB(),null);
-
-        final ExampleDataA exampleFactoryA = new ExampleDataA();
-        Assert.assertFalse(exampleFactoryA.internal().readyForUsage());
-        attribute.set(exampleFactoryA);
-        Assert.assertTrue(exampleFactoryA.internal().readyForUsage());
-    }
-
 
     @Test
     public void test_semanticcopy_self(){

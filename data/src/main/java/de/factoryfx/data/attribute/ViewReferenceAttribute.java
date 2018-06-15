@@ -32,7 +32,7 @@ public abstract class ViewReferenceAttribute<R extends Data, T extends Data,A ex
         if (thisValue == null || value == null) {
             return false;
         }
-        return thisValue.getId().equals(value.getId());
+        return thisValue.idEquals(value);
     }
 
     @Override
@@ -84,7 +84,7 @@ public abstract class ViewReferenceAttribute<R extends Data, T extends Data,A ex
                 if (
                      (previousValue==null && currentValue!=null) ||
                      (previousValue!=null && currentValue==null) ||
-                     (previousValue!=null && currentValue!=null && !previousValue.getId().equals(currentValue.getId()))
+                     (previousValue!=null && currentValue!=null && !previousValue.idEquals(currentValue))
                    ){
                     for (AttributeChangeListener<T,A> listener: new ArrayList<>(listeners)){
                         runLater(()-> listener.changed(ViewReferenceAttribute.this,currentValue));

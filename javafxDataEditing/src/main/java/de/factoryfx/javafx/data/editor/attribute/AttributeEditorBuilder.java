@@ -10,7 +10,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
+import de.factoryfx.data.attribute.primitive.*;
 import de.factoryfx.data.attribute.types.*;
 import de.factoryfx.javafx.data.attribute.ColorAttribute;
 import de.factoryfx.javafx.data.editor.attribute.builder.DataSingleAttributeEditorBuilder;
@@ -33,10 +36,6 @@ import de.factoryfx.data.attribute.ReferenceListAttribute;
 import de.factoryfx.data.attribute.ValueListAttribute;
 import de.factoryfx.data.attribute.ViewListReferenceAttribute;
 import de.factoryfx.data.attribute.ViewReferenceAttribute;
-import de.factoryfx.data.attribute.primitive.BooleanAttribute;
-import de.factoryfx.data.attribute.primitive.DoubleAttribute;
-import de.factoryfx.data.attribute.primitive.IntegerAttribute;
-import de.factoryfx.data.attribute.primitive.LongAttribute;
 import de.factoryfx.data.attribute.time.DurationAttribute;
 import de.factoryfx.data.attribute.time.LocalDateAttribute;
 import de.factoryfx.data.attribute.time.LocalDateTimeAttribute;
@@ -53,11 +52,15 @@ public class AttributeEditorBuilder {
         this.singleAttributeEditorBuilders = singleAttributeEditorBuilders;
     }
 
-    @SuppressWarnings("unchecked")
     public static List<SingleAttributeEditorBuilder<?>> createDefaultSingleAttributeEditorBuilders(UniformDesign uniformDesign){
-        ArrayList<SingleAttributeEditorBuilder<?>> result = new ArrayList<>();
+        return createDefaultSingleAttributeEditorBuildersFunctions().stream().map((f)->f.apply(uniformDesign)).collect(Collectors.toList());
+    }
 
-        result.add(new SingleAttributeEditorBuilder<EncryptedString>(){
+    @SuppressWarnings("unchecked")
+    public static List<Function<UniformDesign,SingleAttributeEditorBuilder<?>>> createDefaultSingleAttributeEditorBuildersFunctions(){
+        ArrayList<Function<UniformDesign,SingleAttributeEditorBuilder<?>>> result = new ArrayList<>();
+
+        result.add(uniformDesign->new SingleAttributeEditorBuilder<EncryptedString>(){
             @Override
             public boolean isEditorFor(Attribute<?, ?> attribute) {
                 return attribute instanceof PasswordAttribute;
@@ -71,16 +74,16 @@ public class AttributeEditorBuilder {
             }
         });
 
-        result.add(new SimpleSingleAttributeEditorBuilder<>(uniformDesign,BigDecimalAttribute.class,BigDecimal.class,(attribute)-> new BigDecimalAttributeVisualisation(attribute.internal_getDecimalFormatPattern()),()->new BigDecimalAttribute()));
-        result.add(new SimpleSingleAttributeEditorBuilder<>(uniformDesign,BooleanAttribute.class,Boolean.class,(attribute)-> new BooleanAttributeVisualisation(),()->new BooleanAttribute()));
+        result.add(uniformDesign->new SimpleSingleAttributeEditorBuilder<>(uniformDesign,BigDecimalAttribute.class,BigDecimal.class,(attribute)-> new BigDecimalAttributeVisualisation(attribute.internal_getDecimalFormatPattern()), BigDecimalAttribute::new));
+        result.add(uniformDesign->new SimpleSingleAttributeEditorBuilder<>(uniformDesign,BooleanAttribute.class,Boolean.class,(attribute)-> new BooleanAttributeVisualisation(), BooleanAttribute::new));
 //        result.add(new SimpleSingleAttributeEditorBuilder<>(ByteArrayAttribute.class,byte[].class,(attribute)->{
 //            return new AttributeEditor<BigDecimal>(attribute,new BigDecimalAttributeVisualisation(attribute.internal_getDecimalFormatPattern()),uniformDesign);
 //        }));
-        result.add(new SimpleSingleAttributeEditorBuilder<>(uniformDesign,ColorAttribute.class,Color.class,(attribute)-> new ColorAttributeVisualisation(),()->new ColorAttribute()));
-        result.add(new SimpleSingleAttributeEditorBuilder<>(uniformDesign,DoubleAttribute.class,Double.class,(attribute)-> new DoubleAttributeVisualisation(),()->new DoubleAttribute()));
-        result.add(new SimpleSingleAttributeEditorBuilder<>(uniformDesign,EncryptedStringAttribute.class,EncryptedString.class,(attribute)-> new EncryptedStringAttributeVisualisation(attribute::createKey, attribute::internal_isValidKey,uniformDesign),()->new EncryptedStringAttribute()));
+        result.add(uniformDesign->new SimpleSingleAttributeEditorBuilder<>(uniformDesign,ColorAttribute.class,Color.class,(attribute)-> new ColorAttributeVisualisation(), ColorAttribute::new));
+        result.add(uniformDesign->new SimpleSingleAttributeEditorBuilder<>(uniformDesign,DoubleAttribute.class,Double.class,(attribute)-> new DoubleAttributeVisualisation(), DoubleAttribute::new));
+        result.add(uniformDesign->new SimpleSingleAttributeEditorBuilder<>(uniformDesign,EncryptedStringAttribute.class,EncryptedString.class,(attribute)-> new EncryptedStringAttributeVisualisation(attribute::createKey, attribute::internal_isValidKey,uniformDesign), EncryptedStringAttribute::new));
 
-        result.add(new NoListSingleAttributeEditorBuilder<Enum<?>,EnumAttribute<?>>(uniformDesign,(attribute)->attribute instanceof EnumAttribute,(attribute)->{
+        result.add(uniformDesign->new NoListSingleAttributeEditorBuilder<Enum<?>,EnumAttribute<?>>(uniformDesign,(attribute)->attribute instanceof EnumAttribute,(attribute)->{
             EnumAttributeVisualisation enumAttributeVisualisation = new EnumAttributeVisualisation(uniformDesign, attribute.internal_possibleEnumValues(), new StringConverter<>() {
                 @Override
                 public String toString(Enum<?> wrapper) {
@@ -94,7 +97,7 @@ public class AttributeEditorBuilder {
             });
             return enumAttributeVisualisation;
         }));
-        result.add(new SingleAttributeEditorBuilder<Enum<?>>() {
+        result.add(uniformDesign->new SingleAttributeEditorBuilder<Enum<?>>() {
             @Override
             public boolean isListItemEditorFor(Attribute<?, ?> attribute) {
                 return attribute instanceof EnumListAttribute;
@@ -131,16 +134,17 @@ public class AttributeEditorBuilder {
 
         });
 
-        result.add(new SimpleSingleAttributeEditorBuilder<>(uniformDesign,I18nAttribute.class,LanguageText.class,(attribute)-> new I18nAttributeVisualisation(),()->new I18nAttribute()));
-        result.add(new SimpleSingleAttributeEditorBuilder<>(uniformDesign,IntegerAttribute.class,Integer.class,(attribute)-> new IntegerAttributeVisualisation(),()->new IntegerAttribute()));
-        result.add(new SimpleSingleAttributeEditorBuilder<>(uniformDesign,LocalDateAttribute.class,LocalDate.class,(attribute)-> new LocalDateAttributeVisualisation(),()->new LocalDateAttribute()));
-        result.add(new SimpleSingleAttributeEditorBuilder<>(uniformDesign,LocalDateTimeAttribute.class,LocalDateTime.class,(attribute)-> new LocalDateTimeAttributeVisualisation(),()->new LocalDateTimeAttribute()));
-        result.add(new SimpleSingleAttributeEditorBuilder<>(uniformDesign,LocalTimeAttribute.class,LocalTime.class,(attribute)-> new LocalTimeVisualisation(),()->new LocalTimeAttribute()));
+        result.add(uniformDesign->new SimpleSingleAttributeEditorBuilder<>(uniformDesign,I18nAttribute.class,LanguageText.class,(attribute)-> new I18nAttributeVisualisation(), I18nAttribute::new));
+        result.add(uniformDesign->new SimpleSingleAttributeEditorBuilder<>(uniformDesign,ShortAttribute.class,Short.class,(attribute)-> new ShortAttributeVisualisation(), ShortAttribute::new));
+        result.add(uniformDesign->new SimpleSingleAttributeEditorBuilder<>(uniformDesign,IntegerAttribute.class,Integer.class,(attribute)-> new IntegerAttributeVisualisation(), IntegerAttribute::new));
+        result.add(uniformDesign->new SimpleSingleAttributeEditorBuilder<>(uniformDesign,LocalDateAttribute.class,LocalDate.class,(attribute)-> new LocalDateAttributeVisualisation(), LocalDateAttribute::new));
+        result.add(uniformDesign->new SimpleSingleAttributeEditorBuilder<>(uniformDesign,LocalDateTimeAttribute.class,LocalDateTime.class,(attribute)-> new LocalDateTimeAttributeVisualisation(), LocalDateTimeAttribute::new));
+        result.add(uniformDesign->new SimpleSingleAttributeEditorBuilder<>(uniformDesign,LocalTimeAttribute.class,LocalTime.class,(attribute)-> new LocalTimeVisualisation(), LocalTimeAttribute::new));
 
-        result.add(new SimpleSingleAttributeEditorBuilder<>(uniformDesign,LocaleAttribute.class,Locale.class,(attribute)-> new LocaleAttributeVisualisation(),()->new LocaleAttribute()));
-        result.add(new SimpleSingleAttributeEditorBuilder<>(uniformDesign,LongAttribute.class,Long.class,(attribute)-> new LongAttributeVisualisation(),()->new LongAttribute()));
-        result.add(new SimpleSingleAttributeEditorBuilder<>(uniformDesign, DurationAttribute.class, Duration.class, (attribute)-> new DurationAttributeVisualisation(), ()->new DurationAttribute()));
-        result.add(new SimpleSingleAttributeEditorBuilder<>(uniformDesign,StringAttribute.class,String.class,(attribute)->{
+        result.add(uniformDesign->new SimpleSingleAttributeEditorBuilder<>(uniformDesign,LocaleAttribute.class,Locale.class,(attribute)-> new LocaleAttributeVisualisation(), LocaleAttribute::new));
+        result.add(uniformDesign->new SimpleSingleAttributeEditorBuilder<>(uniformDesign,LongAttribute.class,Long.class,(attribute)-> new LongAttributeVisualisation(), LongAttribute::new));
+        result.add(uniformDesign->new SimpleSingleAttributeEditorBuilder<>(uniformDesign, DurationAttribute.class, Duration.class, (attribute)-> new DurationAttributeVisualisation(), DurationAttribute::new));
+        result.add(uniformDesign->new SimpleSingleAttributeEditorBuilder<>(uniformDesign,StringAttribute.class,String.class,(attribute)->{
             if (attribute.internal_isLongText()){
                 return new ExpandableAttributeVisualisation<>(new StringLongAttributeVisualisation(),uniformDesign, (s)->Ascii.truncate(s,20,"..."),FontAwesome.Glyph.FONT,attribute.internal_isDefaultExpanded() );
             }
@@ -148,10 +152,10 @@ public class AttributeEditorBuilder {
                 return new ExpandableAttributeVisualisation<>(new StringHtmlAttributeVisualisation(),uniformDesign, (s)->Ascii.truncate(s,20,"..."),FontAwesome.Glyph.FONT,attribute.internal_isDefaultExpanded() );
             }
             return new StringAttributeVisualisation();
-        },()->new StringAttribute()));
-        result.add(new SimpleSingleAttributeEditorBuilder<>(uniformDesign,URIAttribute.class,URI.class,(attribute)-> new URIAttributeVisualisation(),()->new URIAttribute()));
-        result.add(new DataSingleAttributeEditorBuilder(uniformDesign,(a)->a instanceof ViewReferenceAttribute,(attribute, navigateToData, previousData)-> new ViewReferenceAttributeVisualisation(navigateToData, uniformDesign)));
-        result.add(new DataSingleAttributeEditorBuilder(uniformDesign,(a)->a instanceof ViewListReferenceAttribute,(attribute, navigateToData, previousData)->{
+        }, StringAttribute::new));
+        result.add(uniformDesign->new SimpleSingleAttributeEditorBuilder<>(uniformDesign,URIAttribute.class,URI.class,(attribute)-> new URIAttributeVisualisation(), URIAttribute::new));
+        result.add(uniformDesign->new DataSingleAttributeEditorBuilder(uniformDesign,(a)->a instanceof ViewReferenceAttribute,(attribute, navigateToData, previousData)-> new ViewReferenceAttributeVisualisation(navigateToData, uniformDesign)));
+        result.add(uniformDesign->new DataSingleAttributeEditorBuilder(uniformDesign,(a)->a instanceof ViewListReferenceAttribute,(attribute, navigateToData, previousData)->{
             ViewListReferenceAttributeVisualisation visualisation = new ViewListReferenceAttributeVisualisation(navigateToData, uniformDesign);
             ExpandableAttributeVisualisation<List<Data>> expandableAttributeVisualisation= new ExpandableAttributeVisualisation<>(visualisation,uniformDesign,(l)->"Items: "+l.size(),FontAwesome.Glyph.LIST);
             if (((ViewListReferenceAttribute)attribute).get().contains(previousData)){
@@ -160,7 +164,7 @@ public class AttributeEditorBuilder {
             return expandableAttributeVisualisation;
         }));
 
-        result.add(new SingleAttributeEditorBuilder<Data>(){
+        result.add(uniformDesign->new SingleAttributeEditorBuilder<Data>(){
             @Override
             public boolean isEditorFor(Attribute<?, ?> attribute) {
                 return attribute instanceof ReferenceAttribute;
@@ -189,7 +193,7 @@ public class AttributeEditorBuilder {
             }
         });
 
-        result.add(new SingleAttributeEditorBuilder<List<Data>>(){
+        result.add(uniformDesign->new SingleAttributeEditorBuilder<List<Data>>(){
             @Override
             public boolean isEditorFor(Attribute<?, ?> attribute) {
                 return attribute instanceof ReferenceListAttribute;
@@ -212,7 +216,7 @@ public class AttributeEditorBuilder {
                 }
             }
         });
-        result.add(new NoListSingleAttributeEditorBuilder<>(uniformDesign,(attribute)->true,(attribute)->new DefaultValueAttributeVisualisation()));
+        result.add(uniformDesign->new NoListSingleAttributeEditorBuilder<>(uniformDesign,(attribute)->true,(attribute)->new DefaultValueAttributeVisualisation()));
         return result;
     }
 

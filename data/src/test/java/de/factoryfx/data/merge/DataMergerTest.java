@@ -2,12 +2,13 @@ package de.factoryfx.data.merge;
 
 import de.factoryfx.data.Data;
 import de.factoryfx.data.attribute.types.StringAttribute;
-import de.factoryfx.data.merge.testfactories.ExampleDataA;
-import de.factoryfx.data.merge.testfactories.ExampleDataB;
+import de.factoryfx.data.merge.testdata.ExampleDataA;
+import de.factoryfx.data.merge.testdata.ExampleDataB;
+import de.factoryfx.data.merge.testdata.ExampleDataC;
 import org.junit.Assert;
 import org.junit.Test;
 
-public class DataMergerMergerTest {
+public class DataMergerTest {
 
     @Test
     public void test_diff_info(){
@@ -98,6 +99,36 @@ public class DataMergerMergerTest {
         MergeDiffInfo<ExampleFactoryPermission> mergeDiff= dataMerger.mergeIntoCurrent((permission)->true);
         Assert.assertTrue(mergeDiff.hasNoPermissionViolation());
         Assert.assertTrue(mergeDiff.successfullyMerged());
+    }
+
+    @Test
+    public void test_performance_merge(){
+        ExampleDataA currentModel = new ExampleDataA();
+        for (int i=0;i<100000;i++){
+            ExampleDataB dataB = new ExampleDataB();
+            dataB.referenceAttributeC.set(new ExampleDataC());
+            currentModel.referenceListAttribute.add(dataB);
+        }
+        currentModel.stringAttribute.set("1111111");
+
+        currentModel=currentModel.internal().addBackReferences();
+        ExampleDataA originalModel = currentModel.internal().copy();
+        ExampleDataA newModel = currentModel.internal().copy();
+
+        int jreDeoptmizer=0;
+        for (int i = 0; i < 1; i++) {
+            newModel.stringAttribute.set(""+i);
+            DataMerger<ExampleDataA> dataMerger = new DataMerger<>(currentModel, originalModel, newModel);
+            MergeDiffInfo<ExampleDataA> mergeDiff= dataMerger.mergeIntoCurrent((permission)->true);
+            jreDeoptmizer++;
+            originalModel.stringAttribute.set(""+i);
+        }
+        System.out.println(jreDeoptmizer);
+
+//        Assert.assertTrue(mergeDiff.hasNoConflicts());
+
+//        Assert.assertTrue(mergeDiff.hasNoConflicts());
+//        Assert.assertEquals("2222222",currentModel.stringAttribute.get());
     }
 
 }

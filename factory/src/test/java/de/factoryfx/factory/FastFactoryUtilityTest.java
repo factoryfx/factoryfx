@@ -22,18 +22,36 @@ public class FastFactoryUtilityTest {
 
 
     @Test
-    public void test_merge(){
+    public void test_merge_ref(){
 
         FastExampleFactoryA original = new FastExampleFactoryA();
+        original.internal().addBackReferences();
+
         Assert.assertEquals(1,original.internal().collectChildrenDeep().size());
 
         FastExampleFactoryA update= original.utility().copy();
         update.referenceAttribute=new FastExampleFactoryB();
 
-        DataMerger<FastExampleFactoryA> dataMerger = new DataMerger<>(original,original,update);
+        DataMerger<FastExampleFactoryA> dataMerger = new DataMerger<>(original,original.utility().copy(),update);
         dataMerger.mergeIntoCurrent((p)->true);
 
         Assert.assertEquals(2,original.internal().collectChildrenDeep().size());
     }
 
+    @Test
+    public void test_merge_refList(){
+
+        FastExampleFactoryA original = new FastExampleFactoryA();
+        original.internal().addBackReferences();
+
+        Assert.assertEquals(1,original.internal().collectChildrenDeep().size());
+
+        FastExampleFactoryA update= original.utility().copy();
+        update.referenceListAttribute.add(new FastExampleFactoryB());
+
+        DataMerger<FastExampleFactoryA> dataMerger = new DataMerger<>(original,original.utility().copy(),update);
+        dataMerger.mergeIntoCurrent((p)->true);
+
+        Assert.assertEquals(2,original.internal().collectChildrenDeep().size());
+    }
 }

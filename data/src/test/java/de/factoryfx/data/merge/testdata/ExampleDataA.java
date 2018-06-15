@@ -1,17 +1,38 @@
-package de.factoryfx.data.merge.testfactories;
+package de.factoryfx.data.merge.testdata;
 
-import com.fasterxml.jackson.annotation.*;
 import de.factoryfx.data.Data;
+import de.factoryfx.data.DataDictionary;
 import de.factoryfx.data.attribute.*;
 import de.factoryfx.data.attribute.types.StringAttribute;
 import de.factoryfx.data.util.LanguageText;
 import de.factoryfx.data.validation.Validation;
 import de.factoryfx.data.validation.ValidationResult;
 
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
+import java.util.function.Function;
+
 public class ExampleDataA extends Data {
     public final StringAttribute stringAttribute= new StringAttribute().labelText("ExampleA1");
     public final DataReferenceAttribute<ExampleDataB> referenceAttribute = new DataReferenceAttribute<>(ExampleDataB.class).setCopySemantic(CopySemantic.SELF).labelText("ExampleA2");
     public final DataReferenceListAttribute<ExampleDataB> referenceListAttribute = new DataReferenceListAttribute<>(ExampleDataB.class).setCopySemantic(CopySemantic.SELF).labelText("ExampleA3");
+
+    static {
+//        DataDictionary.getDataDictionary(ExampleDataA.class)
+//            .setVisitDataChildren((exampleDataA, dataConsumer) -> {
+//                if (exampleDataA.referenceAttribute.get()!=null){
+//                    dataConsumer.accept(exampleDataA.referenceAttribute.get());
+//                }
+//                exampleDataA.referenceListAttribute.forEach(dataConsumer);
+//            })
+//            .setVisitAttributesFlat((exampleDataA, dataConsumer) -> {
+//                dataConsumer.accept("stringAttribute",exampleDataA.stringAttribute);
+//                dataConsumer.accept("referenceAttribute",exampleDataA.referenceAttribute);
+//                dataConsumer.accept("referenceAttributeC",exampleDataA.referenceListAttribute);
+//            })
+//            .setNewCopyInstanceSupplier(exampleDataA -> new ExampleDataA());
+
+    }
 
     public ExampleDataA(){
         config().setDisplayTextProvider(() -> stringAttribute.get());

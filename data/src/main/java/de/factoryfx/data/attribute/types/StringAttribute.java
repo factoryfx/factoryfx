@@ -36,9 +36,10 @@ public class StringAttribute extends ImmutableValueAttribute<String,StringAttrib
         return this;
     }
 
+    /**edit hint to show textfield initial expanded*/
     @JsonIgnore
-    public StringAttribute defaultExpanded(boolean defaultExpanded){
-        this.defaultExpanded=defaultExpanded;
+    public StringAttribute defaultExpanded(){
+        this.defaultExpanded=true;
         return this;
     }
 

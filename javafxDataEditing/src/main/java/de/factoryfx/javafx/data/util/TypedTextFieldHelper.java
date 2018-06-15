@@ -35,6 +35,10 @@ public class TypedTextFieldHelper {
         setupTextField(textField, Integer::valueOf);
     }
 
+    public static void setupShortTextField(TextField textField) {
+        setupTextField(textField, Short::valueOf);
+    }
+
     public static void setupURITextField(TextField textField) {
         textField.textProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue!=null){

@@ -4,7 +4,7 @@ import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.UUID;
 
-import de.factoryfx.data.merge.testfactories.ExampleDataA;
+import de.factoryfx.data.merge.testdata.ExampleDataA;
 import de.factoryfx.data.storage.DataSerialisationManager;
 import de.factoryfx.data.storage.JacksonDeSerialisation;
 import de.factoryfx.data.storage.JacksonSerialisation;

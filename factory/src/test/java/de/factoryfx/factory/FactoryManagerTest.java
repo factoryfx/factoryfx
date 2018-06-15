@@ -37,23 +37,23 @@ public class FactoryManagerTest {
 
         ArrayList<String> calls =new ArrayList<>();
 
-        ExampleFactoryA exampleFactoryA = new ExampleFactoryA();
+        ExampleFactoryA root = new ExampleFactoryA();
         ExampleFactoryB exampleFactoryB = new ExampleFactoryB();
-        exampleFactoryA.referenceAttribute.set(exampleFactoryB);
-        exampleFactoryA = exampleFactoryA.internal().addBackReferences();
-        exampleFactoryA.configLiveCycle().setDestroyer(new Consumer<ExampleLiveObjectA>() {
+        root.referenceAttribute.set(exampleFactoryB);
+        root = root.internal().addBackReferences();
+        root.configLiveCycle().setDestroyer(new Consumer<ExampleLiveObjectA>() {
             @Override
             public void accept(ExampleLiveObjectA exampleLiveObjectA) {
                 calls.add("destroy");
             }
         });
-        factoryManager.start(new RootFactoryWrapper<>(exampleFactoryA));
+        factoryManager.start(new RootFactoryWrapper<>(root));
 
-        ExampleFactoryA update = exampleFactoryA.internal().copy();
+        ExampleFactoryA update = root.internal().copy();
         update.referenceAttribute.set(null);
 
 
-        factoryManager.update(exampleFactoryA,update,(p)->true);
+        factoryManager.update(root.utility().copy(),update,(p)->true);
 
         Assert.assertEquals(1,calls.size());
         Assert.assertEquals("destroy",calls.get(0));
@@ -65,18 +65,18 @@ public class FactoryManagerTest {
 
         ArrayList<String> calls =new ArrayList<>();
 
-        ExampleFactoryA exampleFactoryA = new ExampleFactoryA();
+        ExampleFactoryA root = new ExampleFactoryA();
         ExampleFactoryB exampleFactoryB = new ExampleFactoryB();
-        exampleFactoryA.referenceAttribute.set(exampleFactoryB);
-        exampleFactoryA = exampleFactoryA.internal().addBackReferences();
-        exampleFactoryA.configLiveCycle().setDestroyer(exampleLiveObjectA -> calls.add("destroy for update"));
-        factoryManager.start(new RootFactoryWrapper<>(exampleFactoryA));
+        root.referenceAttribute.set(exampleFactoryB);
+        root = root.internal().addBackReferences();
+        root.configLiveCycle().setDestroyer(exampleLiveObjectA -> calls.add("destroy for update"));
+        factoryManager.start(new RootFactoryWrapper<>(root));
 
-        ExampleFactoryA update = exampleFactoryA.internal().copy();
+        ExampleFactoryA update = root.internal().copy();
         update.referenceAttribute.set(new ExampleFactoryB());
 
 
-        factoryManager.update(exampleFactoryA,update,(p)->true);
+        factoryManager.update(root.utility().copy(),update,(p)->true);
 
         Assert.assertEquals(1,calls.size());
         Assert.assertEquals("destroy for update",calls.get(0));

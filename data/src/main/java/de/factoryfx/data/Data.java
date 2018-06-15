@@ -2,6 +2,7 @@ package de.factoryfx.data;
 
 import com.fasterxml.jackson.annotation.*;
 import com.google.common.base.Strings;
+import com.google.common.collect.Maps;
 import de.factoryfx.data.attribute.*;
 import de.factoryfx.data.merge.AttributeDiffInfo;
 import de.factoryfx.data.merge.MergeResult;
@@ -9,7 +10,6 @@ import de.factoryfx.data.validation.AttributeValidation;
 import de.factoryfx.data.validation.Validation;
 import de.factoryfx.data.validation.ValidationError;
 
-import java.lang.reflect.*;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -20,7 +20,7 @@ import java.util.function.Supplier;
 public class Data {
 
     @JsonProperty
-    private Object id;
+    Object id;
 
     private Supplier<String> idSupplier;
     private static final Random r = new Random();
@@ -48,26 +48,18 @@ public class Data {
         this.idSupplier=idSupplier;
     }
 
-    @SuppressWarnings("unchecked")
-    private DataDictionary<Data> getDataDictionary(){
-        return (DataDictionary<Data>)DataDictionary.getDataDictionary(getClass());
-    }
-
-    public static class AttributeNamePair{
-        public final String name;
-        public final Attribute<?,?> attribute;
-
-        public AttributeNamePair(String name, Attribute<?, ?> attribute) {
-            this.name = name;
-            this.attribute = attribute;
+    /**equal using id, performance optimization if both id are UUID */
+    public boolean idEquals(Data data){
+        if (id instanceof UUID && data.id instanceof UUID){
+            return id.equals(data.id);
+        } else {
+            return getId().equals(data.getId());
         }
     }
 
-    @JsonIgnore
-    private List<AttributeNamePair> getAttributes() {
-        List<AttributeNamePair> attributes = new ArrayList<>();
-        getDataDictionary().visitAttributesFlat(this, (attributeVariableName, attribute) -> attributes.add(new AttributeNamePair(attributeVariableName,attribute)));
-        return attributes;
+    @SuppressWarnings("unchecked")
+    private DataDictionary<Data> getDataDictionary(){
+        return (DataDictionary<Data>)DataDictionary.getDataDictionary(getClass());
     }
 
     @FunctionalInterface
@@ -86,25 +78,16 @@ public class Data {
 
     @SuppressWarnings("unchecked")
     private void visitAttributesDualFlat(Data data, BiAttributeVisitor consumer) {
-        List<AttributeNamePair> attributes = getAttributes();
-        List<AttributeNamePair> otherAttributes = data.getAttributes();
-        for (int i = 0; i < attributes.size(); i++) {
-            consumer.accept(attributes.get(i).name,attributes.get(i).attribute,otherAttributes.get(i).attribute);
-        }
+        getDataDictionary().visitAttributesDualFlat(this,data,consumer);
     }
 
-    private void visitAttributesTripleFlat(Data data1, Data data2, TriAttributeVisitor consumer) {
-        List<AttributeNamePair> attributes = getAttributes();
-        List<AttributeNamePair> otherAttributes1 = data1.getAttributes();
-        List<AttributeNamePair> otherAttributes2 = data2.getAttributes();
-        for (int i = 0; i < attributes.size(); i++) {
-            consumer.accept(attributes.get(i).name,attributes.get(i).attribute,otherAttributes1.get(i).attribute,otherAttributes2.get(i).attribute);
-        }
+    private void visitAttributesTripleFlat(Data other1, Data other2, TriAttributeVisitor consumer) {
+        getDataDictionary().visitAttributesTripleFlat(this,other1,other2,consumer);
     }
 
     private Map<String,Data> collectChildDataMap() {
         List<Data> dataList = collectChildrenDeep();
-        HashMap<String, Data> result = new HashMap<>();
+        HashMap<String, Data> result = Maps.newHashMapWithExpectedSize(dataList.size());
         for (Data factory: dataList){
             result.put(factory.getId(),factory);
         }
@@ -114,66 +97,38 @@ public class Data {
     /** collect set with all nested children and itself*/
     private List<Data> collectChildrenDeep() {
         ArrayList<Data> dataList = new ArrayList<>();
-        collectModelEntitiesTo(dataList);
-        dataList.forEach(d->d.collected=false);
+        collectModelEntitiesTo(dataList,this.dataIterationRun+1);
         return dataList;
     }
 
-    private void visitDataChildren(Consumer<Data> childFactoriesVisitor){
+    @JsonIgnore
+    long dataIterationRun=0;
+    private void visitDataChildrenFlat(Consumer<Data> childFactoriesVisitor, long dataIterationRun){
+        if (this.dataIterationRun==dataIterationRun){
+            return;
+        }
+        this.dataIterationRun=dataIterationRun;
         getDataDictionary().visitDataChildren(this,childFactoriesVisitor);
     }
 
 
-    boolean collected=false;
-    void collectModelEntitiesTo(List<Data> allModelEntities) {
-        if (!collected){
-            allModelEntities.add(this);
-            collected=true;
-            visitDataChildren(child -> child.collectModelEntitiesTo(allModelEntities));
-        }
+    void collectModelEntitiesTo(List<Data> allModelEntities, long dataIterationRun) {
+        allModelEntities.add(this);
+        visitDataChildrenFlat(child -> child.collectModelEntitiesTo(allModelEntities,dataIterationRun),dataIterationRun);
     }
 
-    private static Object[] defaultConstructor = new Object[0];;
-    private Supplier<Data> newInstanceSupplier=null;
-    private void setNewInstanceSupplier(Supplier<Data> newInstanceSupplier){
-        this.newInstanceSupplier=newInstanceSupplier;
-    }
-    private Data newInstance() {
-        final Data result;
-        if (newInstanceSupplier!=null){
-            result=newInstanceSupplier.get();
-        } else {
-            try {
-                Constructor constructor = Data.this.getClass().getDeclaredConstructor();
-                constructor.setAccessible(true);
-                result = (Data) constructor.newInstance(defaultConstructor);
-            } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
-                throw new RuntimeException(e);
-            }
-        }
-        return result;
+    private Data newCopyInstance(Data data) {
+        return getDataDictionary().newCopyInstance(data);
     }
 
     @SuppressWarnings("unchecked")
-    private Set<Data> fixDuplicateObjects() {
+    private List<Data> fixDuplicateObjects() {
         Map<String, Data> idToDataMap = collectChildDataMap();
-        final Set<Data> all = new HashSet<>(idToDataMap.values());
+        final List<Data> all = new ArrayList<>(idToDataMap.values());
         for (Data data: all){
             data.visitAttributesFlat((attributeVariableName, attribute) -> attribute.internal_fixDuplicateObjects(idToDataMap));
         }
         return all;
-    }
-
-    //remove parents that are not in the merge result
-    private void cleanUpParents(Set<Data> all) {
-        for (Data data: all){
-            if (data.parents!=null){
-                data.parents.removeIf(parent -> !all.contains(parent));
-            }
-            if (!all.contains(data.parent)){
-                data.parent=null;
-            }
-        }
     }
 
     private Supplier<String> displayTextProvider;
@@ -256,10 +211,10 @@ public class Data {
         });
     }
 
-    private HashMap<Data, Data> getChildToParentMap(List<Data> allModelEntities) {
+    private HashMap<Data, Data> getChildToParentMap(List<Data> allModelEntities,long dataIterationRun) {
         HashMap<Data, Data> result = new HashMap<>();
         for (Data factoryBase : allModelEntities) {
-            factoryBase.visitDataChildren(child->result.put(child, factoryBase));
+            factoryBase.visitDataChildrenFlat(child->result.put(child, factoryBase),dataIterationRun);
         }
         return result;
     }
@@ -277,7 +232,9 @@ public class Data {
 
     @SuppressWarnings("unchecked")
     private <T extends Data> T semanticCopy() {
-        T result = (T)newInstance();
+        T result = (T)newCopyInstance(this);
+
+
 //        result.setId(this.getId());
         this.visitAttributesDualFlat(result, (attributeName, attribute1, attribute2) -> attribute1.internal_semanticCopyToUnsafe(attribute2));
 
@@ -302,45 +259,52 @@ public class Data {
 
     @SuppressWarnings("unchecked")
     private <T extends Data> T copy(int level) {
-        ArrayList<Attribute<?, ?>> newAttributes = new ArrayList<>();
         ArrayList<Data> oldDataList = new ArrayList<>();
-        Data newRoot = copyDeep(0, level,oldDataList);
+        Data newRoot = copyDeep(0, level,oldDataList,null,this);
 
         for (Data oldData: oldDataList) {
-            oldData.copy.visitAttributesFlat((attributeVariableName, attribute) -> {
-                newAttributes.add(attribute);
-            });
             oldData.copy=null;//cleanup
-        }
-
-        if (newRoot!=null){
-            newRoot.addBackReferences();
         }
 
         return (T) newRoot;
     }
 
     private Data copy;
-    private Data copyDeep(final int level, final int maxLevel, final List<Data> oldData){
+    private Data copyDeep(final int level, final int maxLevel, final List<Data> oldData, Data parent, Data root){
         if (level>maxLevel){
             return null;
         }
         if (copy==null){
-            copy = newInstance();
-            copy.id=this.getId();
+            copy = newCopyInstance(this);
+            if (this.id==null){
+                getId();
+            }
+            if (this.id instanceof UUID){
+                copy.id = this.id;
+            } else {
+                copy.id = this.getId();
+            }
+
 
             this.visitAttributesDualFlat(copy, (name, thisAttribute, copyAttribute) -> {
-                if (thisAttribute!=null){//cause jackson decided it's a good idea to override the final field with null
-                    thisAttribute.internal_copyToUnsafe(copyAttribute,(data)->{
-                        if (data==null){
-                            return null;
-                        }
-                        return data.copyDeep(level + 1, maxLevel,oldData);
-                    });
-                }
+                thisAttribute.internal_copyToUnsafe(copyAttribute,(data)->{
+                    if (data==null){
+                        return null;
+                    }
+                    return data.copyDeep(level + 1, maxLevel,oldData,this,root);
+                });
+
+                copyAttribute.internal_prepareUsageFlat(root.copy,copy);
             });
 
             oldData.add(this);
+
+            //add BackReferences
+            if (parent!=null){
+                copy.addParent(parent.copy);
+            }
+            copy.root=root.copy;
+
         }
         return copy;
     }
@@ -353,9 +317,7 @@ public class Data {
 
     private void endUsage() {
         for (Data data: collectChildrenDeep()){
-            data.visitAttributesFlat((attributeVariableName, attribute) -> {
-                attribute.internal_endUsage();
-            });
+            data.visitAttributesFlat((attributeVariableName, attribute) -> attribute.internal_endUsage());
         }
     }
 
@@ -368,28 +330,27 @@ public class Data {
      *<br>
      * only call on root<br>
      *<br>
-     * @return usable copy
-     *
      */
     private void addBackReferences() {
-        addBackReferences(this,null);
+        addBackReferences(this,null,this.dataIterationRun+1);
     }
 
 
-    private void addBackReferences(final Data root, final Data parent){
+    private void addBackReferences(final Data root, final Data parent, long dataIterationRun){
         addParent(parent);
-        if (this.root==root){//no endless iteration for cycles
-            return;
-        }
         this.root=root;
+        getDataDictionary().addBackReferencesToAttributes(this,root);
+        this.visitDataChildrenFlat(data -> data.addBackReferences(root, Data.this,dataIterationRun),dataIterationRun);
+    }
 
+    private void addBackReferencesForSubtree(Data root, Data parent, HashSet<Data> visited){
+        addParent(parent);
+        this.root=root;
         getDataDictionary().addBackReferencesToAttributes(this,root);
 
-        this.visitDataChildren(data -> data.addBackReferences(root, Data.this));
-    }
-
-    private void addBackReferencesForSubtree(Data root, Data parent){
-        addBackReferences(root,parent);
+        if (visited.add(this)) {//use HashSet instead of iteration counter to avoid iterationCounter mix up
+            getDataDictionary().visitDataChildren(this, child -> child.addBackReferencesForSubtree(root,this,visited));
+        }
     }
 
     private Set<Data> parents;
@@ -403,10 +364,23 @@ public class Data {
                 parents=new HashSet<>();
                 parents.add(this.parent);
                 parents.add(parent);
+                if (parents.size()==1){
+                    System.out.println();
+                }
             } else {
                 parents.add(parent);
             }
         }
+    }
+
+    private void resetBackReferencesFlat(){
+        this.parents=null;
+        this.parent=null;
+        this.root=null;
+    }
+
+    private boolean hasBackReferencesFlat(){
+        return this.root!=null;
     }
 
     @JsonIgnore
@@ -439,9 +413,7 @@ public class Data {
 
     private List<Attribute<?,?>> attributeList(){
         ArrayList<Attribute<?,?>> result = new ArrayList<>();
-        this.visitAttributesFlat((attributeVariableName, attribute) -> {
-            result.add(attribute);
-        });
+        this.visitAttributesFlat((attributeVariableName, attribute) -> result.add(attribute));
         return result;
     }
 
@@ -501,7 +473,7 @@ public class Data {
         }
 
         /**
-         * copy with same ids
+         * copy with same ids and data
          * @param <T> self
          * @return scopy
          */
@@ -567,15 +539,6 @@ public class Data {
             this.data.setAttributeListGroupedSupplier(attributeListGroupedSupplier);
         }
 
-        /**
-         *  new Instance configuration default in over reflection over default constructor
-         *  used for copies
-         *
-         * @param newInstanceSupplier newInstanceSupplier
-         * */
-        public void setNewInstanceSupplier(Supplier<Data> newInstanceSupplier){
-            this.data.setNewInstanceSupplier(newInstanceSupplier);
-        }
 
         /**
          *  define match logic for full-text search e.g. in tables
@@ -646,16 +609,14 @@ public class Data {
         }
 
         public Map<String,Data> collectChildDataMap() {
+            data.assertRoot();
             return data.collectChildDataMap();
         }
 
+        /**all data including root and no duplicates */
         public List<Data> collectChildrenDeep() {
+            data.assertRoot();
             return data.collectChildrenDeep();
-        }
-
-
-        public void collectModelEntitiesTo(List<Data> allModelEntities) {
-            data.collectModelEntitiesTo(allModelEntities);
         }
 
 
@@ -663,6 +624,7 @@ public class Data {
          * only call on root
          * */
         public void fixDuplicateData() {
+            data.assertRoot();
             data.fixDuplicateObjects();
         }
 
@@ -671,9 +633,13 @@ public class Data {
          * -remove parents that are no not tin the tree
          * only call on root
          * */
-        public void fixDuplicatesAndParents() {
-            Set<Data> data = this.data.fixDuplicateObjects();
-            this.data.cleanUpParents(data);
+        public void fixDuplicatesAndAddBackReferences() {
+            data.assertRoot();
+            List<Data> dataList = this.data.fixDuplicateObjects();
+            for (Data data : dataList) {
+                data.resetBackReferencesFlat();
+            }
+            this.data.addBackReferences();
         }
 
         public String getDisplayText(){
@@ -698,10 +664,11 @@ public class Data {
             data.merge(originalValue,newValue,mergeResult,permissionChecker);
         }
         public List<Data> getPathFromRoot() {
-            return data.root.getMassPathTo(data.root.getChildToParentMap(data.root.collectChildrenDeep()), data);
+            return data.root.getMassPathTo(data.root.getChildToParentMap(data.root.collectChildrenDeep(),data.dataIterationRun+1), data);
         }
 
         public List<Data> getPathFromRoot(HashMap<Data, Data> childToParentMap) {
+            data.assertRoot();
             return data.root.getMassPathTo(childToParentMap, data);
         }
 
@@ -725,7 +692,9 @@ public class Data {
         @SuppressWarnings("unchecked")
 
         public <T extends Data> T addBackReferences() {
-            this.data.addBackReferences();
+            if (!this.data.hasBackReferencesFlat()){
+                this.data.addBackReferences();
+            }
             return (T)data;
         }
 
@@ -745,7 +714,7 @@ public class Data {
          * @return root
          */
         public void addBackReferencesForSubtree(Data root, Data parent){
-            data.addBackReferencesForSubtree(root,parent);
+            data.addBackReferencesForSubtree(root,parent,new HashSet<>());
         }
 
         public Data getRoot(){
@@ -767,12 +736,27 @@ public class Data {
         }
 
         public HashMap<Data, Data> getChildToParentMap() {
-            return data.getChildToParentMap(data.root.collectChildrenDeep());
+            return data.getChildToParentMap(data.root.collectChildrenDeep(),data.dataIterationRun+1);
         }
 
         public void addDisplayTextListeners(AttributeChangeListener attributeChangeListener){
             data.addDisplayTextListeners(data, attributeChangeListener);
         }
+
+        public boolean hasBackReferencesFlat() {
+            return data.hasBackReferencesFlat();
+        }
+
+        public void resetIterationCounterFlat() {
+            data.dataIterationRun=0;
+        }
     }
+
+    private void assertRoot() {
+        if (this.root!=this || this.root==null){
+            throw new IllegalStateException("can only be called from root this.root="+this.root);
+        }
+    }
+
 
 }

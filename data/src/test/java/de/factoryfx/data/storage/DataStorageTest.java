@@ -1,6 +1,6 @@
 package de.factoryfx.data.storage;
 
-import de.factoryfx.data.merge.testfactories.ExampleDataA;
+import de.factoryfx.data.merge.testdata.ExampleDataA;
 import de.factoryfx.data.storage.inmemory.InMemoryDataStorage;
 import org.junit.Assert;
 import org.junit.Test;

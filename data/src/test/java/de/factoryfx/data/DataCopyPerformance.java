@@ -1,8 +1,7 @@
 package de.factoryfx.data;
 
-import de.factoryfx.data.jackson.ObjectMapperBuilder;
-import de.factoryfx.data.merge.testfactories.ExampleDataA;
-import de.factoryfx.data.merge.testfactories.ExampleDataB;
+import de.factoryfx.data.merge.testdata.ExampleDataA;
+import de.factoryfx.data.merge.testdata.ExampleDataB;
 
 public class DataCopyPerformance {
 

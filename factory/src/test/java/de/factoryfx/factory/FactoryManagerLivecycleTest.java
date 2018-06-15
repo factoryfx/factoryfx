@@ -346,13 +346,10 @@ public class FactoryManagerLivecycleTest {
         root.refA.set(exampleFactoryA);
         exampleFactoryA.refList.add(new LivecycleFactoryC());
 
-        root = root.internal().addBackReferences();
-        exampleFactoryA = root.refA.get();
+        factoryManager.start(new RootFactoryWrapper<>(root));
 
-        factoryManager.start(new RootFactoryWrapper<>(exampleFactoryA));
-
-        LivecycleFactoryA common = factoryManager.getCurrentFactory().internal().addBackReferences();
-        LivecycleFactoryA update = factoryManager.getCurrentFactory().internal().addBackReferences();
+        LivecycleFactoryA common = factoryManager.getCurrentFactory().utility().copy();
+        LivecycleFactoryA update = factoryManager.getCurrentFactory().utility().copy();
 //        update.refC.set(update.refList.get(0));
 //        update.refList.remove(0);
 

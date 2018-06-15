@@ -47,7 +47,7 @@ public abstract class ViewListReferenceAttribute <R extends Data, T extends Data
         if (ref1 == null || ref2 == null) {
             return false;
         }
-        return ref1.getId().equals(ref2.getId());
+        return ref1.idEquals(ref2);
     }
 
     @Override

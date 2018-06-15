@@ -2,9 +2,7 @@ package de.factoryfx.data.attribute;
 
 import de.factoryfx.data.Data;
 
-import java.util.Collection;
-import java.util.LinkedHashSet;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Function;
 
 public class DefaultPossibleValueProvider<L, T extends Data> implements Function<Data, Collection<T>> {
@@ -18,7 +16,7 @@ public class DefaultPossibleValueProvider<L, T extends Data> implements Function
     @Override
     @SuppressWarnings("unchecked")
     public Collection<T> apply(Data root) {
-        Set<T> result = new LinkedHashSet<>();
+        List<T> result = new ArrayList<>();
         for (Data factory : root.internal().collectChildrenDeep()) {
             if (clazz.isAssignableFrom(factory.getClass())) {
                 result.add((T) factory);

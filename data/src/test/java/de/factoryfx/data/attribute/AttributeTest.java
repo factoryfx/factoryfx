@@ -7,15 +7,15 @@ import de.factoryfx.data.Data;
 import de.factoryfx.data.attribute.types.StringAttribute;
 import de.factoryfx.data.jackson.ObjectMapperBuilder;
 import de.factoryfx.data.jackson.SimpleObjectMapper;
-import de.factoryfx.data.merge.testfactories.ExampleDataA;
-import de.factoryfx.data.merge.testfactories.ExampleDataB;
-import de.factoryfx.data.merge.testfactories.ExampleDataC;
+import de.factoryfx.data.merge.testdata.ExampleDataA;
+import de.factoryfx.data.merge.testdata.ExampleDataB;
+import de.factoryfx.data.merge.testdata.ExampleDataC;
 import de.factoryfx.data.validation.ValidationError;
 import org.junit.Assert;
 import org.junit.Test;
 
 public class AttributeTest {
-    public class ValidationExampleFactory extends Data {
+    public static class ValidationExampleFactory extends Data {
         public final StringAttribute stringAttribute= new StringAttribute().labelText("ExampleA1");
     }
 

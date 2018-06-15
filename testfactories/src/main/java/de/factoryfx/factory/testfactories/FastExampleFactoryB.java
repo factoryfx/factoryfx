@@ -1,12 +1,9 @@
 package de.factoryfx.factory.testfactories;
 
-import de.factoryfx.data.DataDictionary;
 import de.factoryfx.data.attribute.types.StringAttribute;
-import de.factoryfx.factory.FactoryDictionary;
 import de.factoryfx.factory.FastFactoryUtility;
 import de.factoryfx.factory.SimpleFactoryBase;
 import de.factoryfx.factory.atrribute.FactoryReferenceAttribute;
-import de.factoryfx.factory.atrribute.FactoryReferenceListAttribute;
 
 public class FastExampleFactoryB extends SimpleFactoryBase<ExampleLiveObjectB,Void,ExampleFactoryA> {
     public String stringAttribute;

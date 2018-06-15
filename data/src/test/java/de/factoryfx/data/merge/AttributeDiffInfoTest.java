@@ -3,7 +3,7 @@ package de.factoryfx.data.merge;
 import java.util.ArrayList;
 
 import de.factoryfx.data.jackson.ObjectMapperBuilder;
-import de.factoryfx.data.merge.testfactories.ExampleDataA;
+import de.factoryfx.data.merge.testdata.ExampleDataA;
 import org.junit.Test;
 
 public class AttributeDiffInfoTest {

@@ -2,7 +2,6 @@ package de.factoryfx.data;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
-import java.nio.ByteBuffer;
 import java.util.*;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -12,9 +11,10 @@ import de.factoryfx.data.attribute.types.StringAttribute;
 import de.factoryfx.data.jackson.ObjectMapperBuilder;
 import de.factoryfx.data.jackson.SimpleObjectMapper;
 import de.factoryfx.data.merge.DataMerger;
-import de.factoryfx.data.merge.testfactories.ExampleDataA;
-import de.factoryfx.data.merge.testfactories.ExampleDataB;
-import de.factoryfx.data.merge.testfactories.ExampleDataC;
+import de.factoryfx.data.merge.MergeDiffInfo;
+import de.factoryfx.data.merge.testdata.ExampleDataA;
+import de.factoryfx.data.merge.testdata.ExampleDataB;
+import de.factoryfx.data.merge.testdata.ExampleDataC;
 import de.factoryfx.data.util.LanguageText;
 import de.factoryfx.data.validation.AttributeValidation;
 import de.factoryfx.data.validation.Validation;
@@ -108,15 +108,16 @@ public class DataTest {
 
     @Test
     public void test_getPathFromRoot(){
-        ExampleDataA exampleFactoryA = new ExampleDataA();
+        ExampleDataA root = new ExampleDataA();
         ExampleDataB exampleFactoryB = new ExampleDataB();
-        exampleFactoryA.referenceAttribute.set(exampleFactoryB);
-        exampleFactoryA=exampleFactoryA.internal().addBackReferences();
-        Assert.assertNotNull(exampleFactoryA.internal().getRoot());
+        root.referenceAttribute.set(exampleFactoryB);
 
-        List<Data> pathTo = exampleFactoryA.referenceAttribute.get().internal().getPathFromRoot();
+        root.internal().addBackReferences();
+        Assert.assertNotNull(root.internal().getRoot());
+
+        List<Data> pathTo = root.referenceAttribute.get().internal().getPathFromRoot();
         Assert.assertEquals(1,pathTo.size());
-        Assert.assertEquals(exampleFactoryA.getId(),pathTo.get(0).getId());
+        Assert.assertEquals(root.getId(),pathTo.get(0).getId());
     }
 
 
@@ -489,10 +490,8 @@ public class DataTest {
         exampleDataB.referenceAttributeC.set(new ExampleDataC());
         update.referenceListAttribute.add(exampleDataB);
 
-        update = update.internal().addBackReferences();
 
-
-        new DataMerger<>(current,current,update).mergeIntoCurrent((p)->true);
+        new DataMerger<>(current,current.utility().copy(),update).mergeIntoCurrent((p)->true);
 
         Assert.assertEquals(1,current.referenceListAttribute.get(0).internal().getParents().size());
         Assert.assertEquals(1,current.referenceListAttribute.get(0).referenceAttributeC.get().internal().getParents().size());
@@ -597,8 +596,84 @@ public class DataTest {
         exampleFactoryA.referenceListAttribute.add(new ExampleDataB());
         exampleFactoryA.referenceListAttribute.add(new ExampleDataB());
 
+        exampleFactoryA.internal().addBackReferences();
         Assert.assertEquals(5,exampleFactoryA.internal().collectChildrenDeep().size());
     }
 
+    @Test
+    public void test_backReferenceCheck(){
+        ExampleDataA exampleFactoryA = new ExampleDataA();
+        Assert.assertFalse(exampleFactoryA.internal().hasBackReferencesFlat());
+        exampleFactoryA.internal().addBackReferences();
+        Assert.assertTrue(exampleFactoryA.internal().hasBackReferencesFlat());
+    }
+
+    @Test
+    public void test_idEquals(){
+        ExampleDataA exampleFactoryA = new ExampleDataA();
+        Assert.assertFalse(exampleFactoryA.internal().hasBackReferencesFlat());
+        exampleFactoryA.internal().addBackReferences();
+        Assert.assertTrue(exampleFactoryA.idEquals(exampleFactoryA.utility().copy()));
+        Assert.assertFalse(exampleFactoryA.idEquals(new ExampleDataA()));
+    }
+
+    @Test
+    public void test_copy_uuid(){
+        Data exampleFactoryA = new ExampleDataA();
+        exampleFactoryA.getId();
+        Assert.assertTrue(exampleFactoryA.id instanceof UUID);
+
+        Assert.assertTrue(exampleFactoryA.internal().copy().id instanceof UUID);
+
+        Assert.assertTrue(exampleFactoryA.internal().copy().id instanceof UUID);
+    }
+
+    @Test
+    public void test_copy_uuid_bugrecreate(){
+        ExampleDataA currentModel = new ExampleDataA();
+        currentModel.internal().addBackReferences();
+
+        ExampleDataA originalModel = currentModel.internal().copy();
+        ExampleDataA newModel = currentModel.internal().copy();
+
+        Assert.assertTrue(currentModel.internal().copy().id instanceof UUID);
+        Assert.assertTrue(originalModel.internal().copy().id instanceof UUID);
+        Assert.assertTrue(newModel.internal().copy().id instanceof UUID);
+    }
+
+    @Test
+    public void test_root_aftercopy(){
+        ExampleDataA data = new ExampleDataA();
+        data.internal().addBackReferences();
+
+        ExampleDataA copy = data.internal().copy();
+        Assert.assertEquals(copy,copy.internal().getRoot());
+
+        Assert.assertEquals(copy,getRoot(copy.referenceAttribute));
+    }
+
+    @Test
+    public void test_root_aftercopy_nested(){
+        ExampleDataA data = new ExampleDataA();
+        data.referenceAttribute.set(new ExampleDataB());
+        data.internal().addBackReferences();
+
+        ExampleDataA copy = data.internal().copy();
+        Assert.assertEquals(copy,copy.internal().getRoot());
+
+        Assert.assertEquals(copy,getRoot(copy.referenceAttribute.get().referenceAttribute));
+    }
+
+
+    private Data getRoot(ReferenceBaseAttribute attribute){
+        Field root = null;
+        try {
+            root = ReferenceBaseAttribute.class.getDeclaredField("root");
+            root.setAccessible(true);
+            return (Data) root.get(attribute);
+        } catch (IllegalAccessException | NoSuchFieldException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
 }

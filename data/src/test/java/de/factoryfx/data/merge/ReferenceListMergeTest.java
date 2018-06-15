@@ -2,8 +2,8 @@ package de.factoryfx.data.merge;
 
 import java.util.stream.Collectors;
 
-import de.factoryfx.data.merge.testfactories.ExampleDataA;
-import de.factoryfx.data.merge.testfactories.ExampleDataB;
+import de.factoryfx.data.merge.testdata.ExampleDataA;
+import de.factoryfx.data.merge.testdata.ExampleDataB;
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;

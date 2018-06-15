@@ -7,8 +7,8 @@ import java.util.List;
 
 import de.factoryfx.data.Data;
 import de.factoryfx.data.jackson.ObjectMapperBuilder;
-import de.factoryfx.data.merge.testfactories.ExampleDataA;
-import de.factoryfx.data.merge.testfactories.ExampleDataB;
+import de.factoryfx.data.merge.testdata.ExampleDataA;
+import de.factoryfx.data.merge.testdata.ExampleDataB;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -142,28 +142,25 @@ public class ReferenceListAttributeTest {
     }
 
     @Test
-    public void delegate_root_for_added() {
-        DataReferenceListAttribute<ExampleDataA> attribute =new DataReferenceListAttribute<>(ExampleDataA.class);
-        attribute.internal_prepareUsageFlat(new ExampleDataB(),null);
+    public void delegate_root_for_added_ref() {
+        final ExampleDataA root = new ExampleDataA();
+        root.internal().addBackReferences();
 
-        final ExampleDataA exampleFactoryA = new ExampleDataA();
-        Assert.assertFalse(exampleFactoryA.internal().readyForUsage());
-        attribute.get().add(exampleFactoryA);
-        Assert.assertTrue(exampleFactoryA.internal().readyForUsage());
+        ExampleDataB value = new ExampleDataB();
+        Assert.assertFalse(value.internal().readyForUsage());
+        root.referenceAttribute.set(value);
+        Assert.assertTrue(value.internal().readyForUsage());
     }
 
     @Test
-    public void delegate_root_for_addAll(){
-        DataReferenceListAttribute<ExampleDataA> attribute =new DataReferenceListAttribute<>(ExampleDataA.class);
-        attribute.internal_prepareUsageFlat(new ExampleDataB(),null);
+    public void delegate_root_for_added_refList() {
+        final ExampleDataA root = new ExampleDataA();
+        root.internal().addBackReferences();
 
-        final ExampleDataA exampleFactoryA1 = new ExampleDataA();
-        final ExampleDataA exampleFactoryA2 = new ExampleDataA();
-        Assert.assertFalse(exampleFactoryA1.internal().readyForUsage());
-        Assert.assertFalse(exampleFactoryA2.internal().readyForUsage());
-        attribute.get().addAll(Arrays.asList(exampleFactoryA1,exampleFactoryA2));
-        Assert.assertTrue(exampleFactoryA1.internal().readyForUsage());
-        Assert.assertTrue(exampleFactoryA2.internal().readyForUsage());
+        ExampleDataB value = new ExampleDataB();
+        Assert.assertFalse(value.internal().readyForUsage());
+        root.referenceListAttribute.add(value);
+        Assert.assertTrue(value.internal().readyForUsage());
     }
 
     @Test(expected = IllegalStateException.class)

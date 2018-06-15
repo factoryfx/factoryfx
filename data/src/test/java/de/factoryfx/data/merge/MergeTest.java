@@ -4,9 +4,9 @@ import java.util.Arrays;
 import java.util.stream.Collectors;
 
 import de.factoryfx.data.DataTest;
-import de.factoryfx.data.merge.testfactories.ExampleDataA;
-import de.factoryfx.data.merge.testfactories.ExampleDataB;
-import de.factoryfx.data.merge.testfactories.ExampleDataC;
+import de.factoryfx.data.merge.testdata.ExampleDataA;
+import de.factoryfx.data.merge.testdata.ExampleDataB;
+import de.factoryfx.data.merge.testdata.ExampleDataC;
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -754,11 +754,11 @@ public class MergeTest {
     @Test
     public void test_merge_parent_after_add(){
         ExampleDataA currentModel = new ExampleDataA();
-        currentModel=currentModel.internal().addBackReferences();
+        currentModel.internal().addBackReferences();
 
         ExampleDataA originalModel = currentModel.internal().copy();
-
         ExampleDataA newModel = currentModel.internal().copy();
+
         newModel.referenceAttribute.set(new ExampleDataB());
         Assert.assertTrue(newModel.referenceAttribute.get().internal().getParents().size()>0);
 

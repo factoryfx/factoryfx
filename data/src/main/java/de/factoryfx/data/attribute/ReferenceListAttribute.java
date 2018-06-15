@@ -40,21 +40,20 @@ public abstract class ReferenceListAttribute<T extends Data,A extends ReferenceB
         if (ref1 == null || ref2 == null) {
             return false;
         }
-        return ref1.getId().equals(ref2.getId());
+        return ref1.idEquals(ref2);
     }
 
     @Override
     @SuppressWarnings("unchecked")
     public void internal_fixDuplicateObjects(Map<String, Data> idToDataMap) {
-        List<T> currentToEditList = get();
 
         List<T> fixedList = new ArrayList<>();
-        for (T entity : currentToEditList) {
+        for (T entity : this.list) {
             fixedList.add((T)idToDataMap.get(entity.getId()));
         }
-        currentToEditList.clear();
-        currentToEditList.addAll(fixedList);
 
+        this.list.clear();
+        this.list.addAll(fixedList);
     }
 
     @Override
@@ -336,6 +335,18 @@ public abstract class ReferenceListAttribute<T extends Data,A extends ReferenceB
         list.add(value);
         afterAdd(value);
         return false;
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public void internal_merge(Attribute<?,?> newValue) {
+        //faster than call set, backreferences are updated anyway for all after merge
+        this.list.clear();
+        List<T> newList = (List<T>) newValue.get();
+        if (newList!=null){
+            this.list.addAll(newList);
+        }
+        afterModify();
     }
 
 

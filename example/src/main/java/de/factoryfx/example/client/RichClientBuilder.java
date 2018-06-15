@@ -12,7 +12,7 @@ import de.factoryfx.factory.builder.Scope;
 import de.factoryfx.javafx.factory.RichClientRoot;
 import de.factoryfx.javafx.factory.editor.DataEditorFactory;
 import de.factoryfx.javafx.factory.editor.attribute.AttributeEditorBuilderFactory;
-import de.factoryfx.javafx.factory.editor.attribute.DefaultEditorBuildersListFactory;
+import de.factoryfx.javafx.factory.editor.attribute.AttributeEditorBuilderFactoryBuilder;
 import de.factoryfx.javafx.factory.stage.StageFactory;
 import de.factoryfx.javafx.factory.util.LongRunningActionExecutorFactory;
 import de.factoryfx.javafx.factory.util.UniformDesignFactory;
@@ -45,8 +45,7 @@ public class RichClientBuilder {
         factoryBuilder.addFactory(LongRunningActionExecutorFactory.class, Scope.SINGLETON);
         factoryBuilder.addFactory(RichClientRoot.class, Scope.SINGLETON);
         factoryBuilder.addFactory(FactoryEditManagerFactory.class, Scope.SINGLETON);
-        factoryBuilder.addFactory(AttributeEditorBuilderFactory.class, Scope.SINGLETON);
-        factoryBuilder.addFactory(DefaultEditorBuildersListFactory.class, Scope.SINGLETON);
+        factoryBuilder.addFactory(AttributeEditorBuilderFactory.class, Scope.SINGLETON, ctx -> new AttributeEditorBuilderFactoryBuilder().build(ctx.get(UniformDesignFactory.class)));
         factoryBuilder.addFactory(DataEditorFactory.class, Scope.SINGLETON);
         factoryBuilder.addFactory(ViewsDisplayWidgetFactory.class, Scope.SINGLETON);
         factoryBuilder.addFactory(DiffDialogBuilderFactory.class, Scope.PROTOTYPE);

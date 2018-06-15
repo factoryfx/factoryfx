@@ -231,7 +231,12 @@ public class FactoryBaseTest {
         public final FactoryReferenceListAttribute<Void,IterationTestFactory>  children = new FactoryReferenceListAttribute<>();
 
         public IterationTestFactory(String testinfo) {
+            this();
             this.testinfo = testinfo;
+        }
+
+        public IterationTestFactory() {
+            super();
         }
 
         @Override

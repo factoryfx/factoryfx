@@ -1,6 +1,6 @@
 package de.factoryfx.data.attribute;
 
-import de.factoryfx.data.merge.testfactories.ExampleDataA;
+import de.factoryfx.data.merge.testdata.ExampleDataA;
 import org.junit.Test;
 
 public class ReferenceBaseAttributeTest {

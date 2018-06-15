@@ -22,7 +22,7 @@ public class JavascriptAttribute<A> extends ImmutableValueAttribute<Javascript<A
     @JsonIgnore
     private final Class<A> apiClass;
     @JsonIgnore
-    private final Function<List<? extends Data>,String> headerCreator = l->defaultCreateHeader(l);
+    private final Function<List<? extends Data>,String> headerCreator = this::defaultCreateHeader;
 
     @SuppressWarnings("unchecked")
     public JavascriptAttribute(Supplier<List<? extends Data>> data, Class<A> apiClass) {
@@ -65,15 +65,15 @@ public class JavascriptAttribute<A> extends ImmutableValueAttribute<Javascript<A
         return headerCreator.apply(data.get());
     }
 
-    private String defaultCreateHeader(List<? extends Data> l) {
+    private String defaultCreateHeader(List<? extends Data> list) {
         StringBuilder sb = new StringBuilder();
-        if (l.size() == 1) {
+        if (list.size() == 1) {
             sb.append("var data = ");
         } else {
             sb.append("var data = [");
         }
         int initialLen = sb.length();
-        for (Data d : l) {
+        for (Data d : list) {
             if (d != null) {
                 writeData(sb, d);
                 sb.append(',');
@@ -84,7 +84,7 @@ public class JavascriptAttribute<A> extends ImmutableValueAttribute<Javascript<A
         if (sb.length() > initialLen) {
             sb.setLength(sb.length()-1);
         }
-        if (l.size() == 1) {
+        if (list.size() == 1) {
             sb.append(";\n");
         } else {
             sb.append("];\n");
@@ -129,7 +129,7 @@ public class JavascriptAttribute<A> extends ImmutableValueAttribute<Javascript<A
     }
 
     //** so we don't need to initialise javax toolkit in test*/
-    private Consumer<Runnable> runlaterExecutor=(r)-> Platform.runLater(r);
+    private Consumer<Runnable> runlaterExecutor= Platform::runLater;
     void setRunlaterExecutorForTest(Consumer<Runnable> runlaterExecutor){
         this.runlaterExecutor=runlaterExecutor;
     }

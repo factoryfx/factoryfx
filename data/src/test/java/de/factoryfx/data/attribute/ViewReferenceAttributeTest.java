@@ -5,7 +5,7 @@ import java.util.function.Function;
 
 import de.factoryfx.data.Data;
 import de.factoryfx.data.attribute.primitive.BooleanAttribute;
-import de.factoryfx.data.merge.testfactories.ExampleDataA;
+import de.factoryfx.data.merge.testdata.ExampleDataA;
 import org.junit.Assert;
 import org.junit.Test;
 
