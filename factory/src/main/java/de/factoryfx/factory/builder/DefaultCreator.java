@@ -1,15 +1,16 @@
 package de.factoryfx.factory.builder;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.util.List;
+import java.util.function.Function;
+
 import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.factory.atrribute.FactoryPolymorphicReferenceAttribute;
 import de.factoryfx.factory.atrribute.FactoryPolymorphicReferenceListAttribute;
 import de.factoryfx.factory.atrribute.FactoryReferenceAttribute;
 import de.factoryfx.factory.atrribute.FactoryReferenceListAttribute;
-
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
-import java.util.List;
-import java.util.function.Function;
+import de.factoryfx.factory.parametrized.ParametrizedObjectCreatorAttribute;
 
 public class DefaultCreator<F extends FactoryBase<?,?,R>, R extends FactoryBase<?,?,R>> implements Function<FactoryContext<R>, F> {
     private final Class<F> clazz;
@@ -60,6 +61,13 @@ public class DefaultCreator<F extends FactoryBase<?,?,R>, R extends FactoryBase<
                             break;
                         }
                     }
+                }
+                if (attribute instanceof ParametrizedObjectCreatorAttribute){
+                    ParametrizedObjectCreatorAttribute factoryReferenceAttribute = (ParametrizedObjectCreatorAttribute) attribute;
+                    Class<? extends FactoryBase> clazz = factoryReferenceAttribute.internal_getReferenceClass();
+                    validateAttributeClass(attributeVariableName, clazz);
+                    FactoryBase factoryBase = context.get(clazz);
+                    factoryReferenceAttribute.set(factoryBase);
                 }
 
 
