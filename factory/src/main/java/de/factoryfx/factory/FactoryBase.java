@@ -523,29 +523,29 @@ public class FactoryBase<L,V,R extends FactoryBase<?,V,R>> extends Data{
         }
 
         /**
-        /*        h
-        /*      / | \
-        /*     /  e  \
-        /*    d       g
-        /*   /|\      |
-        /*  / | \     f
-        /* a  b  c
-        /* @return breadth-first order: hdegabcf
-        **/
+        *        h
+        *      / | \
+        *     /  e  \
+        *    d       g
+        *   /|\      |
+        *  / | \     f
+        * a  b  c
+        * @return breadth-first order: hdegabcf
+        * */
         public List<FactoryBase<?,?,?>> getFactoriesInDestroyOrder(){
             return factory.getFactoriesInDestroyOrder();
         }
 
         /**
-         /*        h
-         /*      / | \
-         /*     /  e  \
-         /*    d       g
-         /*   /|\      |
-         /*  / | \     f
-         /* a  b  c
-         /* @return postorder: abcdefgh
-         **/
+        *        h
+        *      / | \
+        *     /  e  \
+        *    d       g
+        *   /|\      |
+        *  / | \     f
+        * a  b  c
+        * @return postorder: abcdefgh
+        **/
         public List<FactoryBase<?,?,?>> getFactoriesInCreateAndStartOrder(){
             return factory.getFactoriesInCreateAndStartOrder();
         }

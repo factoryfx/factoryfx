@@ -62,7 +62,7 @@ public class FactoryEditManagerTest {
         ExampleFactoryA updateFactory = new ExampleFactoryA();
         updateFactory.referenceAttribute.set(new ExampleFactoryB());
         updateFactory = updateFactory.internal().addBackReferences();
-        DataMerger<ExampleFactoryA> dataMerger = new DataMerger<>(currentFactory,currentFactory,updateFactory);
+        DataMerger<ExampleFactoryA> dataMerger = new DataMerger<>(currentFactory,currentFactory.utility().copy(),updateFactory);
 
         Assert.assertNull(currentFactory.referenceAttribute.get());
         Assert.assertNotNull(updateFactory.referenceAttribute.get());
