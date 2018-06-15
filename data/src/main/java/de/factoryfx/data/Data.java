@@ -48,7 +48,11 @@ public class Data {
         this.idSupplier=idSupplier;
     }
 
-    /**equal using id, performance optimization if both id are UUID */
+    /**
+     * equal using id, performance optimization if both id are UUID
+     *
+     * @param data data
+     * @return true if equals*/
     public boolean idEquals(Data data){
         if (id instanceof UUID && data.id instanceof UUID){
             return id.equals(data.id);
@@ -613,7 +617,9 @@ public class Data {
             return data.collectChildDataMap();
         }
 
-        /**all data including root and no duplicates */
+        /**
+         * @return all data including root and no duplicates
+         * */
         public List<Data> collectChildrenDeep() {
             data.assertRoot();
             return data.collectChildrenDeep();

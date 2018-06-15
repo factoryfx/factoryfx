@@ -22,6 +22,7 @@ public class BigDecimalAttribute extends ImmutableValueAttribute<BigDecimal,BigD
     /**
      * @see java.text.DecimalFormat
      * @param decimalFormatPattern pattern
+     * @return self
      */
     public BigDecimalAttribute decimalFormatPattern(String decimalFormatPattern) {
         this.decimalFormatPattern=decimalFormatPattern;

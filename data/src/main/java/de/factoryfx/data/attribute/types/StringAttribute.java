@@ -15,7 +15,8 @@ public class StringAttribute extends ImmutableValueAttribute<String,StringAttrib
     @JsonIgnore
     private boolean defaultExpanded =false;
 
-    /**hint for data editing, a textarea is used instead of textfield
+    /**
+     * hint for data editing, a textarea is used instead of textfield
      * @return self
      * */
     @JsonIgnore
@@ -27,7 +28,8 @@ public class StringAttribute extends ImmutableValueAttribute<String,StringAttrib
     @JsonIgnore
     private boolean htmlText=false;
 
-    /**hint for data editing, wysiwg html editor is used instead of textfield
+    /**
+     * hint for data editing, wysiwg html editor is used instead of textfield
      * @return self
      * */
     @JsonIgnore
@@ -36,7 +38,10 @@ public class StringAttribute extends ImmutableValueAttribute<String,StringAttrib
         return this;
     }
 
-    /**edit hint to show textfield initial expanded*/
+    /**
+     * edit hint to show textfield initial expanded
+     * @return self
+     * */
     @JsonIgnore
     public StringAttribute defaultExpanded(){
         this.defaultExpanded=true;

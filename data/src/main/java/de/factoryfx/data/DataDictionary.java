@@ -45,6 +45,7 @@ public class DataDictionary<D extends Data> {
      * default implementation use reflection, this method can be used to improve performance
 
      * @param visitAttributesFlat  vistior
+     * @return DataDictionary for fluent configuration
      * */
     public DataDictionary<D> setVisitAttributesFlat(BiConsumer<D,AttributeVisitor> visitAttributesFlat){
         this.visitAttributesFlat=visitAttributesFlat;
@@ -53,7 +54,7 @@ public class DataDictionary<D extends Data> {
 
     /**
      * Data use temporary to simulate normal data, this is an optimization hind cause some operation don't make sense with Temporary attributes
-     *
+     * @return DataDictionary for fluent configuration
      */
     public DataDictionary<D> setUseTemporaryAttributes(){
         temporaryAttributes=true;
@@ -76,7 +77,12 @@ public class DataDictionary<D extends Data> {
 
     private BiConsumer<D,Consumer<Data>> visitDataChildren;
 
-    /** default implementation use reflection, this method can be used to improve performance*/
+    /**
+     * default implementation use reflection, this method can be used to improve performance
+     *
+     * @param visitDataChildren visitor
+     * @return @return DataDictionary for fluent configuration
+     * */
     public DataDictionary<D> setVisitDataChildren(BiConsumer<D,Consumer<Data>> visitDataChildren){
         this.visitDataChildren=visitDataChildren;
         return this;
@@ -167,13 +173,12 @@ public class DataDictionary<D extends Data> {
                 forEach(attributeFields::add);
     }
 
-    public DataDictionary<D> addBackReferencesToAttributes(D data, Data root) {
+    void addBackReferencesToAttributes(D data, Data root) {
         if (!temporaryAttributes) {//no BackReferences for FastFactories
             visitAttributesFlat(data,(name, attribute) -> {
                 attribute.internal_prepareUsageFlat(root,data);
             });
         }
-        return this;
     }
 
     private static Object[] defaultConstructor = new Object[0];;
@@ -184,9 +189,11 @@ public class DataDictionary<D extends Data> {
      *  used for copies
      *
      * @param newCopyInstanceSupplier newCopyInstanceSupplier
+     * @return DataDictionary for fluent configuration
      * */
-    public void setNewCopyInstanceSupplier(Function<D,D> newCopyInstanceSupplier){
+    public DataDictionary<D> setNewCopyInstanceSupplier(Function<D,D> newCopyInstanceSupplier){
         this.newCopyInstanceSupplier =newCopyInstanceSupplier;
+        return this;
     }
 
     @SuppressWarnings("unchecked")
