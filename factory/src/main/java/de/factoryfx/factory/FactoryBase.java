@@ -450,7 +450,6 @@ public class FactoryBase<L,V,R extends FactoryBase<?,V,R>> extends Data{
 
     public static class FactoryInternal<L,V,R  extends FactoryBase<?,V,R>> {
         private final FactoryBase<L,V,R> factory;
-        private String factoryDisplayText;
 
         public FactoryInternal(FactoryBase<L, V, R> factory) {
             this.factory = factory;
