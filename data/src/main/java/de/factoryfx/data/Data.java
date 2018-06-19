@@ -1,7 +1,6 @@
 package de.factoryfx.data;
 
 import com.fasterxml.jackson.annotation.*;
-import com.google.common.base.CaseFormat;
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 import de.factoryfx.data.attribute.*;
@@ -676,7 +675,6 @@ public class Data {
         }
 
         public List<Data> getPathFromRoot(HashMap<Data, Data> childToParentMap) {
-            data.assertRoot();
             return data.root.getMassPathTo(childToParentMap, data);
         }
 
