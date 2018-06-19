@@ -47,7 +47,7 @@ public class AttributeGroupEditor implements Widget {
 
 
     public AttributeGroupEditor(List<? extends Attribute<?, ?>> attributeGroup, Data oldValue, AttributeEditorBuilder attributeEditorBuilder, DataEditor dataEditor, UniformDesign uniformDesign, Supplier<List<ValidationError>> additionalValidation) {
-        this(attributeGroup,oldValue,attributeEditorBuilder,(data)->dataEditor.edit(data),uniformDesign,additionalValidation);
+        this(attributeGroup,oldValue,attributeEditorBuilder, dataEditor::edit,uniformDesign,additionalValidation);
     }
 
     /** constructor for use as single independent component
@@ -72,27 +72,27 @@ public class AttributeGroupEditor implements Widget {
     }
 
     private Node createAttributeGroupVisual() {
-        if (attributeGroup.size()==1){
-            final Attribute<?,?> attribute = attributeGroup.get(0);
-            AttributeEditor<?,?> attributeEditor = attributeEditorBuilder.getAttributeEditor(attribute, navigateToData, oldValue);
-            attributeEditor.expand();
+//        if (attributeGroup.size()==1){
+//            final Attribute<?,?> attribute = attributeGroup.get(0);
+//            AttributeEditor<?,?> attributeEditor = attributeEditorBuilder.getAttributeEditor(attribute, navigateToData, oldValue);
+//            attributeEditor.expand();
+//
+//            addAttributeValidation(attribute, attributeEditor);
+//
+//            final Node content = attributeEditor.createContent();
+//            final VBox vBox = new VBox(3);
+//            vBox.setPadding(new Insets(3));
+//            VBox.setVgrow(content, Priority.ALWAYS);
+//            vBox.getChildren().addAll(addCopyMenu(new Label(uniformDesign.getLabelText(attribute))),content);
+//
+//            if (allValidations!=null) {
+//                validateAll();
+//            }
+//            return vBox;
 
-            addAttributeValidation(attribute, attributeEditor);
-
-            final Node content = attributeEditor.createContent();
-            final VBox vBox = new VBox(3);
-            vBox.setPadding(new Insets(3));
-            VBox.setVgrow(content, Priority.ALWAYS);
-            vBox.getChildren().addAll(addCopyMenu(new Label(uniformDesign.getLabelText(attribute))),content);
-
-            if (allValidations!=null) {
-                validateAll();
-            }
-            return vBox;
-
-        } else {
+//        } else {
             GridPane grid = new GridPane();
-            grid.setPadding(new Insets(3, 3, 3, 3));
+            grid.setPadding(new Insets(0, 0, 0, 0));
 
             ColumnConstraints column1 = new ColumnConstraints();
             column1.setHgrow(Priority.SOMETIMES);
@@ -118,17 +118,24 @@ public class AttributeGroupEditor implements Widget {
                 rowConstraints.setVgrow(Priority.ALWAYS);
                 grid.getRowConstraints().add(rowConstraints);
                 row++;
+
+                if (attributeGroup.size()==1) {
+                    attributeEditor.expand();
+                }
             }
 
-            for (RowConstraints rowConstraint: grid.getRowConstraints()){
-                rowConstraint.setMinHeight(36);
-            }
+//            for (RowConstraints rowConstraint: grid.getRowConstraints()){
+//                rowConstraint.setMinHeight(36);
+//            }
 
             if (allValidations!=null) {
                 validateAll();
             }
+
+
+
             return wrapGrid(grid);
-        }
+//        }
     }
 
     private Label addCopyMenu(Label label) {
@@ -175,13 +182,13 @@ public class AttributeGroupEditor implements Widget {
     }
 
     private void addEditorContent(GridPane gridPane, int row, Node editorWidgetContent, Label label) {
-        GridPane.setMargin(editorWidgetContent, new Insets(4, 0, 4, 0));
-//        label.setLabelFor(editorWidgetContent);
+//        GridPane.setMargin(editorWidgetContent, new Insets(4, 0, 4, 0));
+        label.setLabelFor(editorWidgetContent);
 
         StackPane pane = new StackPane();
         pane.setAlignment(Pos.CENTER_LEFT);
         pane.getChildren().add(editorWidgetContent);
-        pane.setPadding(new Insets(3,0,3,0));
+        pane.setPadding(new Insets(5,3,5,0));
         gridPane.add(pane, 1, row);
 
         if (row%2==0) {
@@ -200,7 +207,7 @@ public class AttributeGroupEditor implements Widget {
 //        label.setTextOverrun(OverrunStyle.CLIP);
         GridPane.setMargin(label, new Insets(0, 9, 0, 0));
         StackPane pane = new StackPane();
-        pane.setPadding(new Insets(3,3,3,0));
+        pane.setPadding(new Insets(5,3,5,3));
         pane.setAlignment(Pos.CENTER_LEFT);
         pane.getChildren().add(label);
         gridPane.add(pane, 0, row);

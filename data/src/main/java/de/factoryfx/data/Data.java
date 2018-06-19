@@ -1,6 +1,7 @@
 package de.factoryfx.data;
 
 import com.fasterxml.jackson.annotation.*;
+import com.google.common.base.CaseFormat;
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 import de.factoryfx.data.attribute.*;
@@ -141,7 +142,8 @@ public class Data {
     @SuppressWarnings("unchecked")
     private String getDisplayText(){
         if (displayTextProvider==null){
-            return Data.this.getClass().getSimpleName()+":"+getId();
+//            return CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_HYPHEN,Data.this.getClass().getSimpleName()).replace("-"," ");
+            return Data.this.getClass().getSimpleName();
         }
         return displayTextProvider.get();
     }
@@ -717,7 +719,6 @@ public class Data {
         /**
          * @param root root
          * @param parent parent
-         * @return root
          */
         public void addBackReferencesForSubtree(Data root, Data parent){
             data.addBackReferencesForSubtree(root,parent,new HashSet<>());

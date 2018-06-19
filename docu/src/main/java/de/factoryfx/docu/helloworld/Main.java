@@ -13,7 +13,6 @@ public class Main {
             factory.text.set("Hello World");
             return factory;
         });
-        builder.buildTree();
 
         MicroserviceBuilder.buildInMemoryMicroservice(builder.buildTree()).start();
     }

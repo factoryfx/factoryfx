@@ -54,7 +54,9 @@ public class ServerBuilder {
             return shopResource;
         });
 
-        factoryTreeBuilder.addFactory(OrderStorageFactory.class, Scope.SINGLETON);
+        factoryTreeBuilder.addFactory(OrderStorageFactory.class, Scope.SINGLETON, ctx->{
+            return new OrderStorageFactory();
+        });
 
         return factoryTreeBuilder.buildTree();
     }

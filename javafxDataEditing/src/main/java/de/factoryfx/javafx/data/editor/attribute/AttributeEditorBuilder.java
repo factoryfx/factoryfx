@@ -203,6 +203,7 @@ public class AttributeEditorBuilder {
             @SuppressWarnings("unchecked")
             public AttributeEditor<List<Data>, ?> createEditor(Attribute<?, ?> attribute, Consumer<Data> navigateToData, Data previousData) {
                 ReferenceListAttribute referenceListAttribute = (ReferenceListAttribute)attribute;
+
                 if(referenceListAttribute.internal_isCatalogueBased()){
                     return new AttributeEditor<>(referenceListAttribute, new CatalogListAttributeVisualisation(referenceListAttribute::internal_possibleValues, referenceListAttribute), uniformDesign);
                 } else {

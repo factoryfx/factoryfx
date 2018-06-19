@@ -31,9 +31,9 @@ public abstract class JettyServerFactory<V,R extends FactoryBase<?,V,R>> extends
 
     /** jersey resource class with Annotations*/
 //    public final FactoryReferenceListAttribute<Object,FactoryBase<?,V>> resources = new FactoryReferenceListAttribute<Object,FactoryBase<?,V>>().setupUnsafe(FactoryBase.class).labelText("resource");
-    public final FactoryReferenceListAttribute<HttpServerConnectorCreator,HttpServerConnectorFactory<V,R>> connectors = new FactoryReferenceListAttribute<HttpServerConnectorCreator,HttpServerConnectorFactory<V,R>>().setupUnsafe(HttpServerConnectorFactory.class).labelText("connectors").userNotSelectable();
-    public final FactoryReferenceAttribute<ObjectMapper,FactoryBase<ObjectMapper,V,R>> objectMapper = new FactoryReferenceAttribute<ObjectMapper,FactoryBase<ObjectMapper,V,R>>().setupUnsafe(FactoryBase.class).labelText("object mapper").userReadOnly().nullable();
-    public final FactoryReferenceAttribute<org.glassfish.jersey.logging.LoggingFeature,FactoryBase<org.glassfish.jersey.logging.LoggingFeature,V,R>> restLogging = new FactoryReferenceAttribute<org.glassfish.jersey.logging.LoggingFeature,FactoryBase<org.glassfish.jersey.logging.LoggingFeature,V,R>>().setupUnsafe(FactoryBase.class).labelText("restLogging").userReadOnly().nullable();
+    public final FactoryReferenceListAttribute<HttpServerConnectorCreator,HttpServerConnectorFactory<V,R>> connectors = new FactoryReferenceListAttribute<HttpServerConnectorCreator,HttpServerConnectorFactory<V,R>>().setupUnsafe(HttpServerConnectorFactory.class).labelText("Connectors").userNotSelectable();
+    public final FactoryReferenceAttribute<ObjectMapper,FactoryBase<ObjectMapper,V,R>> objectMapper = new FactoryReferenceAttribute<ObjectMapper,FactoryBase<ObjectMapper,V,R>>().setupUnsafe(FactoryBase.class).labelText("Object mapper").userReadOnly().nullable();
+    public final FactoryReferenceAttribute<org.glassfish.jersey.logging.LoggingFeature,FactoryBase<org.glassfish.jersey.logging.LoggingFeature,V,R>> restLogging = new FactoryReferenceAttribute<org.glassfish.jersey.logging.LoggingFeature,FactoryBase<org.glassfish.jersey.logging.LoggingFeature,V,R>>().setupUnsafe(FactoryBase.class).labelText("REST logging").userReadOnly().nullable();
 
 
     public JettyServerFactory(){
@@ -43,7 +43,7 @@ public abstract class JettyServerFactory<V,R extends FactoryBase<?,V,R>> extends
         configLiveCycle().setStarter(JettyServer::start);
         configLiveCycle().setDestroyer(JettyServer::stop);
 
-        config().setDisplayTextProvider(() -> "MicroserviceRestServer");
+        config().setDisplayTextProvider(() -> "Microservice REST server");
     }
 
     //api for customizing JettyServer creation

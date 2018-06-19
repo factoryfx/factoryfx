@@ -26,7 +26,7 @@ public class DataEditorStateVisualisation extends BorderPane {
     private final DataEditor dataEditor;
     private final BiFunction<Node,Data,Node> visCustomizer;
 
-    public DataEditorStateVisualisation(Data currentData, List<Data> displayedEntities,Optional<Data> previousData, Optional<Data> nextData,  AttributeEditorBuilder attributeEditorBuilder, UniformDesign uniformDesign, DataEditor dataEditor, BiFunction<Node,Data,Node> visCustomizer){
+    public DataEditorStateVisualisation(Data currentData, List<Data> displayedEntities, Optional<Data> previousData, Optional<Data> nextData,  AttributeEditorBuilder attributeEditorBuilder, UniformDesign uniformDesign, DataEditor dataEditor, BiFunction<Node,Data,Node> visCustomizer){
         this.uniformDesign=uniformDesign;
         this.attributeEditorBuilder=attributeEditorBuilder;
         this.dataEditor = dataEditor;
@@ -34,7 +34,7 @@ public class DataEditorStateVisualisation extends BorderPane {
 
         Data previousValue=null;
         if (displayedEntities.size()>1){
-            previousValue=displayedEntities.get(displayedEntities.size()-2);
+            previousValue=displayedEntities.get(displayedEntities.size()-1);
         }
         setCenter(createEditor(currentData,previousValue));
         setTop(createNavigation(displayedEntities,currentData,previousData,nextData));
@@ -117,10 +117,12 @@ public class DataEditorStateVisualisation extends BorderPane {
         HBox navigation = new HBox(3);
         navigation.getStyleClass().add("navigationhbox");
         navigation.setAlignment(Pos.TOP_LEFT);
-        Button back = new Button("",uniformDesign.createIcon(FontAwesome.Glyph.CARET_LEFT).size(18));
+        Button back = new Button("",uniformDesign.createIcon(FontAwesome.Glyph.CARET_LEFT));
+        back.prefHeightProperty().bind(breadCrumbBar.heightProperty().add(1));
         back.setOnAction(event -> dataEditor.back());
         back.setDisable(!previousData.isPresent());
-        Button next = new Button("",uniformDesign.createIcon(FontAwesome.Glyph.CARET_RIGHT).size(18));
+        Button next = new Button("",uniformDesign.createIcon(FontAwesome.Glyph.CARET_RIGHT));
+        next.prefHeightProperty().bind(breadCrumbBar.heightProperty().add(1));
         next.setDisable(!nextData.isPresent());
         next.setOnAction(event -> dataEditor.next());
 

@@ -81,7 +81,7 @@ public class DataDictionary<D extends Data> {
      * default implementation use reflection, this method can be used to improve performance
      *
      * @param visitDataChildren visitor
-     * @return @return DataDictionary for fluent configuration
+     * @return DataDictionary for fluent configuration
      * */
     public DataDictionary<D> setVisitDataChildren(BiConsumer<D,Consumer<Data>> visitDataChildren){
         this.visitDataChildren=visitDataChildren;

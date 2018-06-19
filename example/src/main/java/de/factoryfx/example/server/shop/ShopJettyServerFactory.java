@@ -10,8 +10,8 @@ import de.factoryfx.microservice.rest.MicroserviceResourceFactory;
 import java.util.List;
 
 public class ShopJettyServerFactory extends JettyServerFactory<OrderCollector,ServerRootFactory> {
-    public final FactoryReferenceAttribute<MicroserviceResource<OrderCollector, ServerRootFactory,Void>, MicroserviceResourceFactory<OrderCollector, ServerRootFactory,Void>> resource = new FactoryReferenceAttribute<MicroserviceResource<OrderCollector, ServerRootFactory,Void>, MicroserviceResourceFactory<OrderCollector, ServerRootFactory,Void>>().setupUnsafe(MicroserviceResourceFactory.class);
-    public final FactoryReferenceAttribute<ShopResource, ShopResourceFactory> shopResource = new FactoryReferenceAttribute<ShopResource, ShopResourceFactory>().setupUnsafe(ShopResourceFactory.class);
+    public final FactoryReferenceAttribute<MicroserviceResource<OrderCollector, ServerRootFactory,Void>, MicroserviceResourceFactory<OrderCollector, ServerRootFactory,Void>> resource = new FactoryReferenceAttribute<MicroserviceResource<OrderCollector, ServerRootFactory,Void>, MicroserviceResourceFactory<OrderCollector, ServerRootFactory,Void>>().setupUnsafe(MicroserviceResourceFactory.class).labelText("Configuration API");
+    public final FactoryReferenceAttribute<ShopResource, ShopResourceFactory> shopResource = new FactoryReferenceAttribute<ShopResource, ShopResourceFactory>().setupUnsafe(ShopResourceFactory.class).labelText("Shop API");
 
 
     @Override
