@@ -1,19 +1,36 @@
 package de.factoryfx.data;
 
-import com.fasterxml.jackson.annotation.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Random;
+import java.util.Set;
+import java.util.UUID;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Supplier;
+
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
-import de.factoryfx.data.attribute.*;
+
+import de.factoryfx.data.attribute.Attribute;
+import de.factoryfx.data.attribute.AttributeChangeListener;
+import de.factoryfx.data.attribute.AttributeGroup;
 import de.factoryfx.data.merge.AttributeDiffInfo;
 import de.factoryfx.data.merge.MergeResult;
 import de.factoryfx.data.validation.AttributeValidation;
 import de.factoryfx.data.validation.Validation;
 import de.factoryfx.data.validation.ValidationError;
-
-import java.util.*;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.function.Supplier;
 
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 @JsonTypeInfo(use=JsonTypeInfo.Id.CLASS, include=JsonTypeInfo.As.PROPERTY, property="@class")// minimal class don't work always
@@ -368,9 +385,6 @@ public class Data {
                 parents=new HashSet<>();
                 parents.add(this.parent);
                 parents.add(parent);
-                if (parents.size()==1){
-                    System.out.println();
-                }
             } else {
                 parents.add(parent);
             }
