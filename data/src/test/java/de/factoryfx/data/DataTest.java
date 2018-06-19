@@ -676,4 +676,16 @@ public class DataTest {
         }
     }
 
+    @Test
+    public void test_getPathFromRoot_param(){
+        ExampleDataA data = new ExampleDataA();
+        ExampleDataB exampleDataB = new ExampleDataB();
+        data.referenceAttribute.set(exampleDataB);
+        data.internal().addBackReferences();
+
+        HashMap<Data,Data> child2parent = data.internal().getChildToParentMap();
+        Assert.assertEquals(1,exampleDataB.internal().getPathFromRoot(child2parent).size());
+        Assert.assertEquals(data,exampleDataB.internal().getPathFromRoot(child2parent).get(0));
+    }
+
 }
