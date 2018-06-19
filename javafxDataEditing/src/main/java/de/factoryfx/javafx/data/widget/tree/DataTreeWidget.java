@@ -1,13 +1,7 @@
 package de.factoryfx.javafx.data.widget.tree;
 
-import com.google.common.graph.Traverser;
-import de.factoryfx.data.Data;
-import de.factoryfx.data.attribute.ReferenceAttribute;
-import de.factoryfx.data.attribute.ReferenceListAttribute;
-import de.factoryfx.javafx.data.editor.data.DataEditor;
-import de.factoryfx.javafx.data.util.DataTextFieldTreeCell;
-import de.factoryfx.javafx.data.util.UniformDesign;
-import de.factoryfx.javafx.data.widget.Widget;
+import java.util.function.Consumer;
+
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.scene.Node;
@@ -19,7 +13,15 @@ import javafx.scene.control.SplitPane;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 
-import java.util.function.Consumer;
+import com.google.common.graph.Traverser;
+
+import de.factoryfx.data.Data;
+import de.factoryfx.data.attribute.ReferenceAttribute;
+import de.factoryfx.data.attribute.ReferenceListAttribute;
+import de.factoryfx.javafx.data.editor.data.DataEditor;
+import de.factoryfx.javafx.data.util.DataTextFieldTreeCell;
+import de.factoryfx.javafx.data.util.UniformDesign;
+import de.factoryfx.javafx.data.widget.Widget;
 
 public class DataTreeWidget implements Widget {
     private Data root;
@@ -151,9 +153,6 @@ public class DataTreeWidget implements Widget {
         private final String text;
 
         public TreeData(Data data, String text) {
-            if (data==null){
-                System.out.println();
-            }
             this.data = data;
             this.text = text;
         }

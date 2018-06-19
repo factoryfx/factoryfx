@@ -1,9 +1,10 @@
 package de.factoryfx.factory.builder;
 
-import de.factoryfx.factory.FactoryBase;
-
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Predicate;
+
+import de.factoryfx.factory.FactoryBase;
 
 public class FactoryContext<R extends FactoryBase<?,?,R>> {
 
@@ -11,11 +12,7 @@ public class FactoryContext<R extends FactoryBase<?,?,R>> {
 
     @SuppressWarnings("unchecked")
     public <L, F extends FactoryBase<?,?,R>> F get(Predicate<FactoryCreator<?,R>> filter){
-        Optional<FactoryCreator<?,R>> any = factoryCreators.stream().filter(filter).findAny();
-        if (any.isPresent()){
-            return (F) any.get().create(this);
-        }
-        return null;
+        return factoryCreators.stream().filter(filter).findAny().map(rFactoryCreator -> (F) rFactoryCreator.create(this)).orElse(null);
     }
 
     public <F extends FactoryBase<?,?,R>> F get(Class<F> clazz){
@@ -43,10 +40,6 @@ public class FactoryContext<R extends FactoryBase<?,?,R>> {
     }
 
     public Scope getScope(Class<?> factoryClazz) {
-        Optional<FactoryCreator<?,R>> any = factoryCreators.stream().filter(fc -> fc.match(factoryClazz)).findAny();
-        if (any.isPresent()){
-            return any.get().getScope();
-        }
-        return null;
+        return factoryCreators.stream().filter(fc -> fc.match(factoryClazz)).findAny().map(FactoryCreator::getScope).orElse(null);
     }
 }

@@ -1,7 +1,8 @@
 package de.factoryfx.factory.exception;
 
-import de.factoryfx.factory.FactoryBase;
 import org.slf4j.LoggerFactory;
+
+import de.factoryfx.factory.FactoryBase;
 
 public class LoggingFactoryExceptionHandler implements FactoryExceptionHandler{
 
@@ -30,6 +31,6 @@ public class LoggingFactoryExceptionHandler implements FactoryExceptionHandler{
     }
 
     private void log(Exception e, FactoryBase<?,?,?> factory,String text) {
-        logger.error("\nException during "+text+" for factory:\n"+factory.internalFactory().debugInfo(), e);
+        logger.error("\nException during " + text + " for factory " + factory.getClass() + ":\n" + factory.internalFactory().debugInfo(), e);
     }
 }
