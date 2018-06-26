@@ -37,7 +37,7 @@ public class FactoryUpdateLogWidgetTest extends Application {
         removed.add(factoryLogEntry);
         removed.add(child);
 
-        FactoryUpdateLog<Data> factoryLog= new FactoryUpdateLog<>(root, removed, Mockito.mock(MergeDiffInfo.class),56575);
+        FactoryUpdateLog<ExampleFactoryA> factoryLog= new FactoryUpdateLog<>(root, removed, Mockito.mock(MergeDiffInfo.class),56575,"");
         factoryUpdateLogWidget.updateLog(factoryLog);
 
         BorderPane rootPane = new BorderPane();
