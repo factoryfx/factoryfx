@@ -83,8 +83,8 @@ public class ContentAssist {
             }
         });
         externalVars.sort((v1, v2) -> {
-            boolean ext1 = Optional.ofNullable(v1.getSourceFile()).map(v -> isFromProjectSources(v)).orElse(false);
-            boolean ext2 = Optional.ofNullable(v2.getSourceFile()).map(v -> isFromProjectSources(v)).orElse(false);
+            boolean ext1 = Optional.ofNullable(v1.getSourceFile()).map(this::isFromProjectSources).orElse(false);
+            boolean ext2 = Optional.ofNullable(v2.getSourceFile()).map(this::isFromProjectSources).orElse(false);
             if (ext1) {
                 if (ext2) {
                     return compareJsType(v1, v2);
@@ -95,9 +95,7 @@ public class ContentAssist {
                 return 1;
             return compareJsType(v1, v2);
         });
-        internalVars.sort((v1, v2) -> {
-            return compareJsType(v1, v2);
-        });
+        internalVars.sort(this::compareJsType);
         if (inspectedNode.getToken() == com.google.javascript.rhino.Token.SCRIPT) {
             List<Proposal> ret = createScriptProposals(externalVars);
             proposals.put(0,ret);
@@ -245,7 +243,7 @@ public class ContentAssist {
                 visiableVars.stream().filter(v -> noTypeFound(v) || viableAssignment(v.getNameNode().getJSType(), parameterNodeType)).forEach(filteredVars::add);
                 Node argumentNode = inspectedNode.getChildCount() > paramNum?inspectedNode.getChildAtIndex(paramNum):null;
                 filteredVars.sort(this::compareTypeQuality);
-                ArrayList<Proposal> proposalList = new ArrayList<>(filteredVars.stream().map(v -> new Proposal(v.getName())).collect(Collectors.toList()));
+                ArrayList<Proposal> proposalList = filteredVars.stream().map(v -> new Proposal(v.getName())).collect(Collectors.toCollection(ArrayList::new));
                 if (parameterNodeType.isFunctionType() && (argumentNode == null || !argumentNode.getJSType().isFunctionType())) {
                     String newFunction = createFunctionDeclaration(parameterNodeType.toMaybeFunctionType());
                     proposalList.add(0,new Proposal(newFunction));
@@ -347,12 +345,12 @@ public class ContentAssist {
                 if (sp > -1) {
                     if (ot instanceof FunctionType) {
                         internalVars.stream().filter(v -> v.getNameNode().getSourceOffset() < sp).map(v -> new Proposal(v.getName())).forEach(ret::add);
-                        internalProperties.stream().map(s -> new Proposal(s)).forEach(ret::add);
+                        internalProperties.stream().map(Proposal::new).forEach(ret::add);
                         externalVars.stream().map(v -> new Proposal(v.getName())).forEach(ret::add);
-                        externalProperties.stream().map(s -> new Proposal(s)).forEach(ret::add);
+                        externalProperties.stream().map(Proposal::new).forEach(ret::add);
                     } else {
-                        internalProperties.stream().map(s -> new Proposal(s)).forEach(ret::add);
-                        externalProperties.stream().map(s -> new Proposal(s)).forEach(ret::add);
+                        internalProperties.stream().map(Proposal::new).forEach(ret::add);
+                        externalProperties.stream().map(Proposal::new).forEach(ret::add);
                     }
                     proposals.put(sourcePosition, ret);
                 }

@@ -1,5 +1,6 @@
 package de.factoryfx.javafx.factory.view.factoryviewmanager;
 
+import java.net.ConnectException;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
@@ -51,7 +52,7 @@ public class FactoryEditManager<V,R extends FactoryBase<?,V,R>> {
         });
     }
 
-    //for testablility, avoid Toolkit not initialized
+    //for testability, avoid Toolkit not initialized
     Consumer<Runnable> runLaterExecuter= Platform::runLater;
 
 
@@ -66,9 +67,24 @@ public class FactoryEditManager<V,R extends FactoryBase<?,V,R>> {
     public FactoryUpdateLog save(String comment) {
         final DataAndNewMetadata<R> update = loadedRoot.get();
         final FactoryUpdateLog factoryLog = client.updateCurrentFactory(update,comment);
-        if (factoryLog.mergeDiffInfo.successfullyMerged()) {
+        if (factoryLog.successfullyMerged()) {
             load();//to edit the newly merged data
         }
+        if (factoryLog.failedUpdate()) {
+            for (int i = 0; i < 30; i++) {
+                try {
+                    load();
+                    break;
+                } catch (Exception ex) {
+                    try {
+                        Thread.sleep(1000);//wait fo the server to restart
+                    } catch (InterruptedException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+            }
+        }
+
         return factoryLog;
     }
 

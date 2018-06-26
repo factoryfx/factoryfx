@@ -1,13 +1,10 @@
 package de.factoryfx.data.attribute.time;
 
-import de.factoryfx.data.attribute.primitive.ShortAttribute;
 import de.factoryfx.data.jackson.ObjectMapperBuilder;
 import org.junit.Assert;
 import org.junit.Test;
 
 import java.time.LocalDate;
-
-import static org.junit.Assert.*;
 
 public class LocalDateAttributeTest {
 

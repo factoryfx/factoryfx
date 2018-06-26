@@ -2,6 +2,7 @@ package de.factoryfx.microservice.rest.client;
 
 import java.util.*;
 
+import com.google.common.base.Throwables;
 import de.factoryfx.data.merge.MergeDiffInfo;
 import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.data.storage.DataAndNewMetadata;
@@ -33,10 +34,16 @@ public class MicroserviceRestClient<V, R extends FactoryBase<?,V,R>,S> {
     }
 
     public FactoryUpdateLog updateCurrentFactory(DataAndNewMetadata<R> update, String comment) {
-        final UpdateCurrentFactoryRequest updateCurrentFactoryRequest = new UpdateCurrentFactoryRequest();
-        updateCurrentFactoryRequest.comment=comment;
-        updateCurrentFactoryRequest.factoryUpdate=update;
-        return microserviceResource.updateCurrentFactory(new UserAwareRequest<>(user,passwordHash,updateCurrentFactoryRequest));
+        try {
+            final UpdateCurrentFactoryRequest updateCurrentFactoryRequest = new UpdateCurrentFactoryRequest();
+            updateCurrentFactoryRequest.comment = comment;
+            updateCurrentFactoryRequest.factoryUpdate = update;
+            return microserviceResource.updateCurrentFactory(new UserAwareRequest<>(user, passwordHash, updateCurrentFactoryRequest));
+        } catch (Exception e){
+            return new FactoryUpdateLog(Throwables.getStackTraceAsString(e));
+//            e.printStackTrace();
+//            throw new RuntimeException(e);
+        }
     }
 
     @SuppressWarnings("unchecked")

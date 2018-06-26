@@ -4,6 +4,7 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import com.google.common.base.Throwables;
 import de.factoryfx.data.Data;
 import de.factoryfx.data.attribute.DataViewListReferenceAttribute;
 import de.factoryfx.data.attribute.DataViewReferenceAttribute;
@@ -38,35 +39,59 @@ public class FactoryManager<V,R extends FactoryBase<?,V,R>> {
 
     @SuppressWarnings("unchecked")
     public FactoryUpdateLog<R> update(R commonVersion , R newVersion, Function<String,Boolean> permissionChecker){
-        Collection<FactoryBase<?,?,?>> previousFactories = currentFactoryRoot.getFactoriesInDestroyOrder();
-        previousFactories.forEach((f)->f.internalFactory().resetLog());
 
+        Collection<FactoryBase<?, ?, ?>> previousFactories = currentFactoryRoot.getFactoriesInDestroyOrder();
+        previousFactories.forEach((f) -> f.internalFactory().resetLog());
         R previousFactoryCopyRoot = currentFactoryRoot.copy();
 
-        MergeDiffInfo<R> mergeDiff = currentFactoryRoot.merge(commonVersion,newVersion,permissionChecker);
+        FactoryBase<?,?,?> factoryBaseInFocus=null;//for better exception reporting
 
-        long totalUpdateDuration=0;
-        List<FactoryBase<?,?,?>> removed = new ArrayList<>();
-        if (mergeDiff.successfullyMerged()){
-            final Collection<FactoryBase<?,?,?>> newFactories = currentFactoryRoot.collectChildFactories();
+        MergeDiffInfo<R> mergeDiff = currentFactoryRoot.merge(commonVersion, newVersion, permissionChecker);
+        long totalUpdateDuration = 0;
+        List<FactoryBase<?, ?, ?>> removed = new ArrayList<>();
 
-            long start=System.nanoTime();
-            currentFactoryRoot.determineRecreationNeedFromRoot(getChangedFactories(previousFactoryCopyRoot));
+        if (mergeDiff.successfullyMerged()) {
+            try {
+                final Collection<FactoryBase<?, ?, ?>> currentFactoriesAfterMerge = currentFactoryRoot.collectChildFactories();
+                removed = getRemovedFactories(previousFactories, currentFactoriesAfterMerge);
 
-            final Collection<FactoryBase<?,?,?>> factoriesInCreateAndStartOrder = currentFactoryRoot.getFactoriesInCreateAndStartOrder();
-            factoriesInCreateAndStartOrder.forEach(this::createWithExceptionHandling);
+                long start = System.nanoTime();
+                currentFactoryRoot.determineRecreationNeedFromRoot(getChangedFactories(previousFactoryCopyRoot));
 
-            removed=getRemovedFactories(previousFactories,newFactories);
+                final Collection<FactoryBase<?, ?, ?>> factoriesInCreateAndStartOrder = currentFactoryRoot.getFactoriesInCreateAndStartOrder();
+                for (FactoryBase<?, ?, ?> factory : factoriesInCreateAndStartOrder) {
+                    factoryBaseInFocus=factory;
+                    factory.internalFactory().instance();
+                    //createWithExceptionHandling(factory, new RootFactoryWrapper<>(previousFactoryCopyRoot), currentFactoryRoot);
+                }
 
-            newFactories.forEach(this::destroyUpdatedWithExceptionHandling);
-            removed.forEach(this::destroyRemovedWithExceptionHandling);//TODO is the order correct, do we care?
 
-            factoriesInCreateAndStartOrder.forEach(this::startWithExceptionHandling);
-            totalUpdateDuration=System.nanoTime()-start;
 
+                for (FactoryBase<?, ?, ?> factory : currentFactoriesAfterMerge) {
+                    factoryBaseInFocus=factory;
+                    factory.internalFactory().destroyUpdated();
+                }
+                for (FactoryBase<?, ?, ?> factory : removed) {
+                    factoryBaseInFocus=factory;
+                    factory.internalFactory().destroyRemoved();
+                }
+
+
+                //factoriesInCreateAndStartOrder.forEach(this::startWithExceptionHandling);
+                for (FactoryBase<?, ?, ?> factory : factoriesInCreateAndStartOrder) {
+                    factoryBaseInFocus=factory;
+                    factory.internalFactory().start();
+                }
+                totalUpdateDuration = System.nanoTime() - start;
+                return new FactoryUpdateLog<>(currentFactoryRoot.createFactoryLogTree(), removed.stream().map(r->r.internalFactory().createFactoryLogEntry()).collect(Collectors.toSet()),mergeDiff,totalUpdateDuration,null);
+            } catch(Exception e){
+                factoryExceptionHandler.updateException(e,factoryBaseInFocus,new ExceptionResponseAction(this, new RootFactoryWrapper(previousFactoryCopyRoot),currentFactoryRoot,removed));
+                return new FactoryUpdateLog<>(Throwables.getStackTraceAsString(e));
+            }
+        } else {
+            return new FactoryUpdateLog<>(currentFactoryRoot.createFactoryLogTree(), removed.stream().map(r->r.internalFactory().createFactoryLogEntry()).collect(Collectors.toSet()),mergeDiff,totalUpdateDuration,null);
         }
 
-        return new FactoryUpdateLog<>(currentFactoryRoot.createFactoryLogTree(), removed.stream().map(r->r.internalFactory().createFactoryLogEntry()).collect(Collectors.toSet()),mergeDiff,totalUpdateDuration);
     }
 
     private Set<Data> getChangedFactories(R previousFactoryCopyRoot){
@@ -113,27 +138,49 @@ public class FactoryManager<V,R extends FactoryBase<?,V,R>> {
 
 
     public R getCurrentFactory(){
+        if (currentFactoryRoot==null){
+            return null;
+        }
         return currentFactoryRoot.getRoot();
     }
 
     @SuppressWarnings("unchecked")
     public void start(RootFactoryWrapper<R> newFactory){
-        currentFactoryRoot =newFactory;
 
-        Collection<FactoryBase<?,?,?>> factoriesInCreateAndStartOrder = newFactory.getFactoriesInCreateAndStartOrder();
-        factoriesInCreateAndStartOrder.forEach(this::createWithExceptionHandling);
-        factoriesInCreateAndStartOrder.forEach(this::startWithExceptionHandling);
+        FactoryBase<?,?,?> factoryBaseInFocus=null;//for better exception reporting
+        try {
+            currentFactoryRoot =newFactory;
 
-        logger.info(currentFactoryRoot.logDisplayTextDeep());
+            Collection<FactoryBase<?,?,?>> factoriesInCreateAndStartOrder = newFactory.getFactoriesInCreateAndStartOrder();
+            for (FactoryBase<?, ?, ?> factory : factoriesInCreateAndStartOrder) {
+                factoryBaseInFocus=factory;
+                factory.internalFactory().instance();
+            }
+
+            for (FactoryBase<?, ?, ?> factory : factoriesInCreateAndStartOrder) {
+                factoryBaseInFocus=factory;
+                factory.internalFactory().start();
+            }
+            logger.info(currentFactoryRoot.logDisplayTextDeep());
+        } catch (Exception e){
+            factoryExceptionHandler.startException(e,factoryBaseInFocus,new ExceptionResponseAction(this,null,currentFactoryRoot,new ArrayList<>()));
+        }
+
     }
 
     @SuppressWarnings("unchecked")
     public void stop(){
         Collection<FactoryBase<?,?,?>> factories = currentFactoryRoot.getFactoriesInDestroyOrder();
-
-        for (FactoryBase<?,?,?> factory: factories){
-            destroyRemovedWithExceptionHandling(factory);
+        FactoryBase<?,?,?> factoryBaseInFocus=null;//for better exception reporting
+        try {
+            for (FactoryBase<?,?,?> factory: factories){
+                factoryBaseInFocus=factory;
+                factory.internalFactory().destroyRemoved();
+            }
+        } catch(Exception e){
+            factoryExceptionHandler.destroyException(e,factoryBaseInFocus,new ExceptionResponseAction(this, null,null,new ArrayList<>()));
         }
+
     }
 
     @SuppressWarnings("unchecked")
@@ -144,37 +191,10 @@ public class FactoryManager<V,R extends FactoryBase<?,V,R>> {
         return visitor;
     }
 
-    private void createWithExceptionHandling(FactoryBase<?,?,?> factory){
-        try {
-            factory.internalFactory().instance();
-        } catch (Exception e){
-            factoryExceptionHandler.createOrRecreateException(e,factory,new ExceptionResponseAction(this));
+    public void restCurrentFactory() {
+        for (FactoryBase<?, ?, ?> factory : currentFactoryRoot.getFactoriesInDestroyOrder()) {
+            factory.internalFactory().cleanUpAfterCrash();
         }
+        this.currentFactoryRoot=null;
     }
-
-    private void startWithExceptionHandling(FactoryBase<?,?,?> factory){
-        try {
-            factory.internalFactory().start();
-        } catch (Exception e){
-            factoryExceptionHandler.startException(e,factory,new ExceptionResponseAction(this));
-        }
-    }
-
-    private void destroyUpdatedWithExceptionHandling(FactoryBase<?,?,?> factory){
-        try {
-            //TODO destroy logging seems wrong cause this is called for all factories and method impl checks if destroy needed
-            factory.internalFactory().destroyUpdated();
-        } catch (Exception e){
-            factoryExceptionHandler.destroyException(e,factory,new ExceptionResponseAction(this));
-        }
-    }
-
-    private void destroyRemovedWithExceptionHandling(FactoryBase<?,?,?> factory){
-        try {
-            factory.internalFactory().destroyRemoved();
-        } catch (Exception e){
-            factoryExceptionHandler.destroyException(e,factory,new ExceptionResponseAction(this));
-        }
-    }
-
 }

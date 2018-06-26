@@ -1,6 +1,5 @@
 package de.factoryfx.javafx;
 
-import de.factoryfx.factory.testfactories.ExampleFactoryA;
 import de.factoryfx.javafx.factory.stage.StageFactory;
 import de.factoryfx.javafx.factory.util.LongRunningActionExecutorFactory;
 import de.factoryfx.javafx.factory.util.UniformDesignFactory;

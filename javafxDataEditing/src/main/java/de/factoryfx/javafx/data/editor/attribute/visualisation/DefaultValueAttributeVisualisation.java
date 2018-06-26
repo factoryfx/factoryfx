@@ -1,7 +1,6 @@
 package de.factoryfx.javafx.data.editor.attribute.visualisation;
 
 import de.factoryfx.javafx.data.editor.attribute.ValueAttributeEditorVisualisation;
-import javafx.beans.binding.StringBinding;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.Node;
 import javafx.scene.control.Label;

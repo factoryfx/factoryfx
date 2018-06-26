@@ -35,15 +35,9 @@ public class StageFactory extends FactoryBase<Stage,Void,RichClientRoot> {
     public StageFactory(){
         cssResourceUrlExternalForm.add(CssUtil.getURL());
 
-        configLiveCycle().setCreator(() -> {
-            return setupStage();
-        });
-        configLiveCycle().setStarter((newLiveObject) -> {
-            stage.get().show();
-        });
-        configLiveCycle().setDestroyer((previousLiveObject) -> {
-            stage.get().hide();
-        });
+        configLiveCycle().setCreator(this::setupStage);
+        configLiveCycle().setStarter((newLiveObject) -> stage.get().show());
+        configLiveCycle().setDestroyer((previousLiveObject) -> stage.get().hide());
     }
 
     private Stage setupStage() {

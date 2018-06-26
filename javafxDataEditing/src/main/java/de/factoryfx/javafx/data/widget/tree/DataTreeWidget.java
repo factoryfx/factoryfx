@@ -134,11 +134,27 @@ public class DataTreeWidget implements Widget {
                 if (attribute instanceof ReferenceAttribute) {
                     Data child=((ReferenceAttribute<?,?>)attribute).get();
                     if (child!=null){
-                        childFactoriesVisitor.accept(child);
+                        TreeItem<TreeData> refDataTreeItem = new TreeItem<>(new TreeData(null,uniformDesign.getLabelText(attribute,attributeVariableName)));
+                        dataTreeItem.getChildren().add(refDataTreeItem);
+
+                        final TreeItem<TreeData> treeItem = constructTree(child);
+                        if (treeItem!=null){
+                            refDataTreeItem.getChildren().add(treeItem);
+                        }
                     }
                 }
                 if (attribute instanceof ReferenceListAttribute) {
-                    ((ReferenceListAttribute<?,?>)attribute).forEach(childFactoriesVisitor);
+                    ReferenceListAttribute<?, ?> referenceListAttribute = (ReferenceListAttribute<?, ?>) attribute;
+                    if (!referenceListAttribute.isEmpty()){
+                        TreeItem<TreeData> refDataTreeItem = new TreeItem<>(new TreeData(null,uniformDesign.getLabelText(attribute,attributeVariableName)));
+                        dataTreeItem.getChildren().add(refDataTreeItem);
+                        referenceListAttribute.forEach(child -> {
+                            final TreeItem<TreeData> treeItem = constructTree(child);
+                            if (treeItem!=null){
+                                refDataTreeItem.getChildren().add(treeItem);
+                            }
+                        });
+                    }
                 }
 
 

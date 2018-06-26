@@ -134,7 +134,20 @@ public class JettyServer {
         if (disposed)
             return;
         try {
+            server.setStopTimeout(1L);
             server.stop();
+//            server.setStopTimeout(10000L);
+//            Thread thread =new Thread(()-> {
+//                try {
+//                    server.stop();
+//                } catch (Exception e) {
+//                    throw new RuntimeException(e);
+//                }
+//            });
+//            thread.start();
+//            thread.join();
+
+//            server.stop();
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

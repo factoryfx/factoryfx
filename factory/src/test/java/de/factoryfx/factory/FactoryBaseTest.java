@@ -63,10 +63,10 @@ public class FactoryBaseTest {
     }
 
     public static class XRoot extends SimpleFactoryBase<String,Void,XRoot> {
-        public final FactoryReferenceAttribute<String,ExampleFactoryAndViewA> referenceAttribute = new FactoryReferenceAttribute<String,ExampleFactoryAndViewA>(ExampleFactoryAndViewA.class).labelText("ExampleA2");
-        public final FactoryReferenceAttribute<String,XFactory> xFactory = new FactoryReferenceAttribute<String,XFactory>(XFactory.class).labelText("XFactory");
-        public final FactoryReferenceAttribute<String,XFactory> xFactory2 = new FactoryReferenceAttribute<String,XFactory>(XFactory.class).labelText("XFactory");
-        public final FactoryReferenceListAttribute<String,XFactory> xFactoryList = new FactoryReferenceListAttribute<String,XFactory>(XFactory.class).labelText("XFactory");
+        public final FactoryReferenceAttribute<String,ExampleFactoryAndViewA> referenceAttribute = new FactoryReferenceAttribute<>(ExampleFactoryAndViewA.class).labelText("ExampleA2");
+        public final FactoryReferenceAttribute<String,XFactory> xFactory = new FactoryReferenceAttribute<>(XFactory.class).labelText("XFactory");
+        public final FactoryReferenceAttribute<String,XFactory> xFactory2 = new FactoryReferenceAttribute<>(XFactory.class).labelText("XFactory");
+        public final FactoryReferenceListAttribute<String,XFactory> xFactoryList = new FactoryReferenceListAttribute<>(XFactory.class).labelText("XFactory");
 
         @Override
         public String createImpl() {

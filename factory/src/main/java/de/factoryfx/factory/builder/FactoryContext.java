@@ -8,7 +8,7 @@ import de.factoryfx.factory.FactoryBase;
 
 public class FactoryContext<R extends FactoryBase<?,?,R>> {
 
-    private List<FactoryCreator<?,R>> factoryCreators = new ArrayList<>();
+    private final List<FactoryCreator<?,R>> factoryCreators = new ArrayList<>();
 
     @SuppressWarnings("unchecked")
     public <L, F extends FactoryBase<?,?,R>> F get(Predicate<FactoryCreator<?,R>> filter){

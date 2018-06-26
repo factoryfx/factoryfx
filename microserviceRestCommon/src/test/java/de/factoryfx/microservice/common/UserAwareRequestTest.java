@@ -3,8 +3,6 @@ package de.factoryfx.microservice.common;
 import de.factoryfx.data.jackson.ObjectMapperBuilder;
 import org.junit.Test;
 
-import static org.junit.Assert.*;
-
 public class UserAwareRequestTest {
 
     public static class TestRequest{
@@ -21,7 +19,7 @@ public class UserAwareRequestTest {
     public void test_json(){
         TestRequest testRequest = new TestRequest();
         testRequest.name="123";
-        UserAwareRequest<TestRequest> userAwareRequest = new UserAwareRequest<TestRequest>("","", testRequest);
+        UserAwareRequest<TestRequest> userAwareRequest = new UserAwareRequest<>("","", testRequest);
 
         ObjectMapperBuilder.build().copy(userAwareRequest);
     }

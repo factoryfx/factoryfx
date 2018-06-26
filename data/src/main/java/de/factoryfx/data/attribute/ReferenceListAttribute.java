@@ -11,7 +11,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import de.factoryfx.data.Data;
 
 public abstract class ReferenceListAttribute<T extends Data,A extends ReferenceBaseAttribute<T,List<T>,A>> extends ReferenceBaseAttribute<T,List<T>,A> implements List<T> {
-    List<T> list = new ArrayList<>();
+    final List<T> list = new ArrayList<>();
 
     public ReferenceListAttribute() {
         super();

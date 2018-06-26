@@ -3,7 +3,6 @@ package de.factoryfx.microservice.test;
 import ch.qos.logback.classic.Level;
 import de.factoryfx.data.attribute.types.EncryptedString;
 import de.factoryfx.data.attribute.types.EncryptedStringAttribute;
-import de.factoryfx.data.attribute.types.StringAttribute;
 import de.factoryfx.data.storage.StoredDataMetadata;
 import de.factoryfx.data.storage.inmemory.InMemoryDataStorage;
 import de.factoryfx.factory.FactoryManager;
@@ -11,7 +10,6 @@ import de.factoryfx.factory.SimpleFactoryBase;
 import de.factoryfx.factory.atrribute.FactoryReferenceAttribute;
 import de.factoryfx.factory.exception.RethrowingFactoryExceptionHandler;
 import de.factoryfx.jetty.HttpServerConnectorFactory;
-import de.factoryfx.jetty.JettyServer;
 import de.factoryfx.jetty.JettyServerFactory;
 import de.factoryfx.microservice.common.ResponseWorkaround;
 import de.factoryfx.microservice.rest.MicroserviceResource;
@@ -29,7 +27,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
-import java.util.function.BiConsumer;
 
 public class MicroserviceRestIntegrationTest {
 

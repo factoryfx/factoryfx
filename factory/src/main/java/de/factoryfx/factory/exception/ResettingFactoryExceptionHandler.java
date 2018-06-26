@@ -1,12 +1,14 @@
 package de.factoryfx.factory.exception;
 
 import de.factoryfx.factory.FactoryBase;
+import de.factoryfx.factory.RootFactoryWrapper;
 
-public class RethrowingFactoryExceptionHandler implements FactoryExceptionHandler{
+/**resret to the previous state after an exception during update */
+public class ResettingFactoryExceptionHandler implements FactoryExceptionHandler{
 
     @Override
     public void updateException(Exception e, FactoryBase<?,?,?> factory, ExceptionResponseAction exceptionResponse){
-        rethrow(e);
+        exceptionResponse.reset();
     }
     @Override
     public void startException(Exception e, FactoryBase<?,?,?> factory, ExceptionResponseAction exceptionResponse) {

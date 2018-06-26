@@ -73,7 +73,7 @@ public class FactoryDictionary<T extends FactoryBase<?,?,?>> {
                 if (attribute instanceof FactoryPolymorphicReferenceListAttribute) {
                     ((FactoryPolymorphicReferenceListAttribute<?>) attribute).get().forEach(factory -> {
                         if (factory != null) {
-                            consumer.accept((FactoryBase<?, ?, ?>) factory);
+                            consumer.accept(factory);
                         }
                     });
                     return;

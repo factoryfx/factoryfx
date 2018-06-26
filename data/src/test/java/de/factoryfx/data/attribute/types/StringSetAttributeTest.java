@@ -1,7 +1,6 @@
 package de.factoryfx.data.attribute.types;
 
 import de.factoryfx.data.Data;
-import de.factoryfx.data.attribute.primitive.ShortAttribute;
 import de.factoryfx.data.jackson.ObjectMapperBuilder;
 import org.junit.Assert;
 import org.junit.Test;

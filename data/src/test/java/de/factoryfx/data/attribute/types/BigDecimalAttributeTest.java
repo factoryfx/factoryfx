@@ -1,15 +1,11 @@
 package de.factoryfx.data.attribute.types;
 
-import de.factoryfx.data.attribute.time.LocalTimeAttribute;
 import de.factoryfx.data.jackson.ObjectMapperBuilder;
 import org.junit.Assert;
 import org.junit.Test;
 
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
-import java.time.LocalTime;
-
-import static org.junit.Assert.*;
 
 public class BigDecimalAttributeTest {
 

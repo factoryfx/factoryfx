@@ -1,7 +1,6 @@
 package de.factoryfx.data.merge.testdata;
 
 import de.factoryfx.data.Data;
-import de.factoryfx.data.DataDictionary;
 import de.factoryfx.data.attribute.DataReferenceAttribute;
 import de.factoryfx.data.attribute.types.StringAttribute;
 

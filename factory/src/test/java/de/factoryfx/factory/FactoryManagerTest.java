@@ -1,7 +1,6 @@
 package de.factoryfx.factory;
 
 import java.util.ArrayList;
-import java.util.function.Consumer;
 
 import de.factoryfx.factory.exception.RethrowingFactoryExceptionHandler;
 import de.factoryfx.factory.testfactories.*;
@@ -41,12 +40,7 @@ public class FactoryManagerTest {
         ExampleFactoryB exampleFactoryB = new ExampleFactoryB();
         root.referenceAttribute.set(exampleFactoryB);
         root = root.internal().addBackReferences();
-        root.configLiveCycle().setDestroyer(new Consumer<ExampleLiveObjectA>() {
-            @Override
-            public void accept(ExampleLiveObjectA exampleLiveObjectA) {
-                calls.add("destroy");
-            }
-        });
+        root.configLiveCycle().setDestroyer(exampleLiveObjectA -> calls.add("destroy"));
         factoryManager.start(new RootFactoryWrapper<>(root));
 
         ExampleFactoryA update = root.internal().copy();

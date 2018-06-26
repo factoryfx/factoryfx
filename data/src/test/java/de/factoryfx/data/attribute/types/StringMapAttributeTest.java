@@ -1,12 +1,9 @@
 package de.factoryfx.data.attribute.types;
 
 import de.factoryfx.data.Data;
-import de.factoryfx.data.attribute.time.LocalTimeAttribute;
 import de.factoryfx.data.jackson.ObjectMapperBuilder;
 import org.junit.Assert;
 import org.junit.Test;
-
-import java.time.LocalTime;
 
 public class StringMapAttributeTest {
     public static class ExampleMapFactory extends Data {

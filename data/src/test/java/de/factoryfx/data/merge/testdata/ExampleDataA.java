@@ -1,16 +1,10 @@
 package de.factoryfx.data.merge.testdata;
 
 import de.factoryfx.data.Data;
-import de.factoryfx.data.DataDictionary;
 import de.factoryfx.data.attribute.*;
 import de.factoryfx.data.attribute.types.StringAttribute;
 import de.factoryfx.data.util.LanguageText;
-import de.factoryfx.data.validation.Validation;
 import de.factoryfx.data.validation.ValidationResult;
-
-import java.util.function.BiConsumer;
-import java.util.function.Consumer;
-import java.util.function.Function;
 
 public class ExampleDataA extends Data {
     public final StringAttribute stringAttribute= new StringAttribute().labelText("ExampleA1");
@@ -38,12 +32,7 @@ public class ExampleDataA extends Data {
         config().setDisplayTextProvider(() -> stringAttribute.get());
         config().setDisplayTextDependencies(stringAttribute);
 
-        config().addValidation(new Validation<Object>() {
-            @Override
-            public ValidationResult validate(Object value) {
-                return new ValidationResult(false,new LanguageText());
-            }
-        }, stringAttribute);
+        config().addValidation(value -> new ValidationResult(false,new LanguageText()), stringAttribute);
     }
 
 }

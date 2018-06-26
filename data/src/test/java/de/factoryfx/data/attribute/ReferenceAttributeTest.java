@@ -7,7 +7,6 @@ import java.util.List;
 import de.factoryfx.data.Data;
 import de.factoryfx.data.jackson.ObjectMapperBuilder;
 import de.factoryfx.data.merge.testdata.ExampleDataA;
-import de.factoryfx.data.merge.testdata.ExampleDataB;
 import org.junit.Assert;
 import org.junit.Test;
 

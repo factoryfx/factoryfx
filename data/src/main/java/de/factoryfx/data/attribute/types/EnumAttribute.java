@@ -15,7 +15,7 @@ import de.factoryfx.data.util.LanguageText;
  */
 public class EnumAttribute<E extends Enum<E>> extends ImmutableValueAttribute<E,EnumAttribute<E>> {
 
-    private Class<E> clazz;
+    private final Class<E> clazz;
 
     @Override
     @JsonTypeInfo(use=JsonTypeInfo.Id.CLASS, include=JsonTypeInfo.As.PROPERTY, property="@class")
@@ -37,57 +37,44 @@ public class EnumAttribute<E extends Enum<E>> extends ImmutableValueAttribute<E,
         return new AttributeTypeInfo(clazz,null,null,AttributeTypeInfo.AttributeTypeCategory.VALUE);
     }
 
-    public List<Enum<E>> internal_possibleEnumValues() {
+    public List<E> internal_possibleEnumValues() {
         return new ArrayList<>(Arrays.asList(clazz.getEnumConstants()));
     }
 
 
+
+
+
     @JsonIgnore
-    public HashMap<E,LanguageText> enumTranslations;
+    private EnumTranslations<E> enumTranslations;
 
     public EnumAttribute<E> deEnum(E value, String text){
         if (enumTranslations==null){
-            enumTranslations = new HashMap<>();
+            enumTranslations = new EnumTranslations<>();
         }
-        LanguageText languageText = enumTranslations.get(value);
-        if (languageText == null) {
-            languageText = new LanguageText();
-            enumTranslations.put(value,languageText);
-        }
-        languageText.de(text);
+        enumTranslations.deEnum(value,text);
         return this;
     }
 
     public EnumAttribute<E> enEnum(E value, String text){
         if (enumTranslations==null){
-            enumTranslations = new HashMap<>();
+            enumTranslations = new EnumTranslations<>();
         }
-        LanguageText languageText = enumTranslations.get(value);
-        if (languageText == null) {
-            languageText = new LanguageText();
-            enumTranslations.put(value,languageText);
-        }
-        languageText.en(text);
+        enumTranslations.enEnum(value,text);
         return this;
     }
 
-    public String internal_enumDisplayText(E enumValue,Function<LanguageText,String> uniformDesign){
+    public String internal_enumDisplayText(Enum<?> enumValue,Function<LanguageText,String> uniformDesign){
         if (enumValue==null){
             return "-";
         }
         if (enumTranslations!=null){
-            LanguageText languageText = enumTranslations.get(enumValue);
-            if (languageText!=null) {
-                return uniformDesign.apply(languageText);
-            }
+            return enumTranslations.getDisplayText(enumValue,uniformDesign);
         }
         return enumValue.name();
     }
 
-    @SuppressWarnings("unchecked")
-    public String internal_enumDisplayText(Object enumValue,Function<LanguageText,String> uniformDesign){
-        return internal_enumDisplayText((E)enumValue,uniformDesign);
-    }
+
 
 
 }

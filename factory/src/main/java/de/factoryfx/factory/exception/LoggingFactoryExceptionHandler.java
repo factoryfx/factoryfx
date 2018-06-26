@@ -15,9 +15,9 @@ public class LoggingFactoryExceptionHandler implements FactoryExceptionHandler{
     }
 
     @Override
-    public void createOrRecreateException(Exception e, FactoryBase<?,?,?> factory, ExceptionResponseAction exceptionResponse){
+    public void updateException(Exception e, FactoryBase<?,?,?> factory, ExceptionResponseAction exceptionResponse){
         log(e,factory,"createOrRecreate");
-        delegate.createOrRecreateException(e,factory,exceptionResponse);
+        delegate.updateException(e,factory,exceptionResponse);
     }
     @Override
     public void startException(Exception e, FactoryBase<?,?,?> factory, ExceptionResponseAction exceptionResponse) {

@@ -5,8 +5,6 @@ import java.util.Collections;
 import java.util.List;
 
 import de.factoryfx.data.Data;
-import de.factoryfx.data.attribute.primitive.BooleanAttribute;
-import de.factoryfx.data.attribute.types.EnumAttribute;
 import de.factoryfx.data.jackson.ObjectMapperBuilder;
 import org.junit.Assert;
 import org.junit.Test;

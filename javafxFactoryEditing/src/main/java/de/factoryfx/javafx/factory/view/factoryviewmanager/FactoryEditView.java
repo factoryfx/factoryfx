@@ -6,6 +6,7 @@ import java.io.File;
 import java.util.Optional;
 import java.util.function.Consumer;
 
+import com.google.common.base.Throwables;
 import de.factoryfx.data.Data;
 import de.factoryfx.data.merge.MergeDiffInfo;
 import de.factoryfx.factory.FactoryBase;
@@ -41,7 +42,7 @@ import org.controlsfx.glyphfont.FontAwesome;
 public class FactoryEditView<V,R extends FactoryBase<?,V,R>> implements Widget, FactoryRootChangeListener<R> {
 
     private final LongRunningActionExecutor LongRunningActionExecutor;
-    private final FactoryEditManager<V,R> factoryManager;
+    private final FactoryEditManager<V,R> factoryEditManager;
     private final FactoryAwareWidget<R> content;
     private final UniformDesign uniformDesign;
     private final DataEditor dataEditor;
@@ -49,9 +50,9 @@ public class FactoryEditView<V,R extends FactoryBase<?,V,R>> implements Widget, 
     private final DiffDialogBuilder diffDialogBuilder;
     private final SimpleObjectProperty<Data> selectedFactory;
 
-    public FactoryEditView(LongRunningActionExecutor longRunningActionExecutor, FactoryEditManager<V,R> factoryManager, FactoryAwareWidget<R> content, UniformDesign uniformDesign, DataEditor dataEditor, DiffDialogBuilder diffDialogBuilder) {
+    public FactoryEditView(LongRunningActionExecutor longRunningActionExecutor, FactoryEditManager<V,R> factoryEditManager, FactoryAwareWidget<R> content, UniformDesign uniformDesign, DataEditor dataEditor, DiffDialogBuilder diffDialogBuilder) {
         this.LongRunningActionExecutor = longRunningActionExecutor;
-        this.factoryManager = factoryManager;
+        this.factoryEditManager = factoryEditManager;
         this.content = content;
         this.uniformDesign = uniformDesign;
         this.dataEditor = dataEditor;
@@ -61,7 +62,7 @@ public class FactoryEditView<V,R extends FactoryBase<?,V,R>> implements Widget, 
 
     @Override
     public Node createContent() {
-        factoryManager.registerListener(this);
+        factoryEditManager.registerListener(this);
         borderPane = new BorderPane();
         final ToolBar toolBar = new ToolBar();
 
@@ -69,14 +70,25 @@ public class FactoryEditView<V,R extends FactoryBase<?,V,R>> implements Widget, 
             final Button save = new Button();
             save.setTooltip(new Tooltip("Änderungen auf den Server speichern"));
             save.setOnAction(event -> {
-                Optional<String> result = showCommitDialog(factoryManager.getLoadedFactory().get(),dataEditor,uniformDesign);
+                Optional<String> result = showCommitDialog(factoryEditManager.getLoadedFactory().get(),dataEditor,uniformDesign);
 
                 result.ifPresent(comment -> {
                     LongRunningActionExecutor.execute(() -> {
-                        final FactoryUpdateLog factoryLog = factoryManager.save(comment);
-                        Platform.runLater(() -> {
-                            diffDialogBuilder.createDiffDialog(factoryLog, "Gespeicherte Änderungen", save.getScene().getWindow());
-                        });
+                        final FactoryUpdateLog factoryLog = factoryEditManager.save(comment);
+                        if (factoryLog.failedUpdate()){
+                            Platform.runLater(()->{
+                                Alert alter = new Alert(Alert.AlertType.ERROR);
+                                alter.setContentText("Server Error. Reset to previous configuration");
+                                TextArea textArea = new TextArea();
+                                textArea.setText(factoryLog.exception);
+                                alter.setGraphic(textArea);
+                                alter.show();
+                            });
+                        } else {
+                            Platform.runLater(() -> {
+                                diffDialogBuilder.createDiffDialog(factoryLog, "Gespeicherte Änderungen", save.getScene().getWindow());
+                            });
+                        }
                     });
                 });
             });
@@ -88,7 +100,7 @@ public class FactoryEditView<V,R extends FactoryBase<?,V,R>> implements Widget, 
             check.setTooltip(new Tooltip("Änderungen anzeigen aber nicht speichern"));
             check.setOnAction(event -> {
                 LongRunningActionExecutor.execute(() -> {
-                    final MergeDiffInfo<R> mergeDiff = factoryManager.simulateUpdateCurrentFactory();
+                    final MergeDiffInfo<R> mergeDiff = factoryEditManager.simulateUpdateCurrentFactory();
                     Platform.runLater(() -> {
                         diffDialogBuilder.createDiffDialog(mergeDiff, "ungespeicherte Änderungen",check.getScene().getWindow());
                     });
@@ -112,9 +124,7 @@ public class FactoryEditView<V,R extends FactoryBase<?,V,R>> implements Widget, 
 
                 Optional<ButtonType> result = alert.showAndWait();
                 if (result.get() == ButtonType.OK){
-                    LongRunningActionExecutor.execute(() -> {
-                        factoryManager.reset();
-                    });
+                    LongRunningActionExecutor.execute(factoryEditManager::reset);
                 }
             });
             toolBar.getItems().add(new Separator());
@@ -133,7 +143,7 @@ public class FactoryEditView<V,R extends FactoryBase<?,V,R>> implements Widget, 
 
                 if (file!=null){
                     LongRunningActionExecutor.execute(() -> {
-                        factoryManager.saveToFile(file.toPath());
+                        factoryEditManager.saveToFile(file.toPath());
                     });
                 }
             });
@@ -153,7 +163,7 @@ public class FactoryEditView<V,R extends FactoryBase<?,V,R>> implements Widget, 
 
                 if (file!=null){
                     LongRunningActionExecutor.execute(() -> {
-                        factoryManager.loadFromFile(file.toPath());
+                        factoryEditManager.loadFromFile(file.toPath());
                     });
                 }
             });
@@ -164,8 +174,8 @@ public class FactoryEditView<V,R extends FactoryBase<?,V,R>> implements Widget, 
 
         borderPane.setTop(toolBar);
 
-        if (factoryManager.getLoadedFactory().isPresent()){
-            borderPane.setCenter(content.init(factoryManager.getLoadedFactory().get()));
+        if (factoryEditManager.getLoadedFactory().isPresent()){
+            borderPane.setCenter(content.init(factoryEditManager.getLoadedFactory().get()));
         } else {
 //            StackPane stackPane = new StackPane();
 //            Button loadButton = new Button("Daten laden");
@@ -176,9 +186,7 @@ public class FactoryEditView<V,R extends FactoryBase<?,V,R>> implements Widget, 
 //            });
 //            stackPane.getChildren().add(loadButton);
 //            borderPane.setCenter(stackPane);
-            LongRunningActionExecutor.execute(() -> {
-                factoryManager.load();
-            });
+            LongRunningActionExecutor.execute(factoryEditManager::load);
         }
 
         factoryUpdater=serverFactory -> {
@@ -189,7 +197,7 @@ public class FactoryEditView<V,R extends FactoryBase<?,V,R>> implements Widget, 
     }
 
 
-    Consumer<R> factoryUpdater;
+    private Consumer<R> factoryUpdater;
     @Override
     public void update(Optional<R> previousRoot, R newRoot) {
         previousRoot.ifPresent(serverFactory -> serverFactory.internal().endUsage());

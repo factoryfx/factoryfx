@@ -160,9 +160,7 @@ public class AttributeGroupEditor implements Widget {
         attributeToEditor.put(attribute,attributeEditor);
 
         if (attributeChangeListener==null) {
-            this.attributeChangeListener = (watchedAttribute, value) -> {
-                validateAll();
-            };
+            this.attributeChangeListener = (watchedAttribute, value) -> validateAll();
         }
 
         attribute.internal_addListener(new WeakAttributeChangeListener(attributeChangeListener));

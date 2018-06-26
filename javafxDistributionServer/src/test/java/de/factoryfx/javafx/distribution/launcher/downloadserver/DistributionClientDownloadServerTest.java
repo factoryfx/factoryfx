@@ -19,9 +19,7 @@ public class DistributionClientDownloadServerTest {
 
         try {
             java.awt.Desktop.getDesktop().browse(new URI("http://localhost:43654/dummy.zip"));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        } catch (URISyntaxException e) {
+        } catch (IOException | URISyntaxException e) {
             throw new RuntimeException(e);
         }
     }

@@ -72,7 +72,7 @@ public class ReferenceAttributeVisualisation extends ValueAttributeEditorVisuali
         uniformDesign.addIcon(selectButton,FontAwesome.Glyph.SEARCH_PLUS);
         selectButton.setOnAction(event -> {
             final Optional<Data> toAdd = new DataChoiceDialog().show(possibleValuesProvider.get(), selectButton.getScene().getWindow(), uniformDesign);
-            toAdd.ifPresent(data -> boundTo.set(data));
+            toAdd.ifPresent(boundTo::set);
         });
         selectButton.setDisable(!isUserEditable || !isUserSelectable || readonly);
 

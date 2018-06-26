@@ -159,7 +159,7 @@ public class DataDictionary<D extends Data> {
         return attributes;
     }
 
-    private ArrayList<Field> attributeFields = new ArrayList<>();
+    private final ArrayList<Field> attributeFields = new ArrayList<>();
 
     private void initAttributeFields(Class<?> clazz) {
         Class<?> parent = clazz.getSuperclass();
@@ -175,13 +175,11 @@ public class DataDictionary<D extends Data> {
 
     void addBackReferencesToAttributes(D data, Data root) {
         if (!temporaryAttributes) {//no BackReferences for FastFactories
-            visitAttributesFlat(data,(name, attribute) -> {
-                attribute.internal_prepareUsageFlat(root,data);
-            });
+            visitAttributesFlat(data,(name, attribute) -> attribute.internal_prepareUsageFlat(root,data));
         }
     }
 
-    private static Object[] defaultConstructor = new Object[0];;
+    private static Object[] defaultConstructor = new Object[0];
     private Function<D,D> newCopyInstanceSupplier =null;
 
     /**

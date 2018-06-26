@@ -29,17 +29,19 @@ public class DefaultCreatorTest {
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     public void test_ParametrizedObjectCreatorAttribute(){
         DefaultCreator<ParametrizedTestFactory,ParametrizedTestFactory> defaultCreator = new DefaultCreator<>(ParametrizedTestFactory.class);
 
-        FactoryContext mock = Mockito.mock(FactoryContext.class);
-        ParametrizedTestFactory value = new ParametrizedTestFactory();
+        FactoryContext<ParametrizedTestFactory> mock = Mockito.mock(FactoryContext.class);
+        DummyCreatorFactory value = new DummyCreatorFactory();
         Mockito.when(mock.get(Mockito.any(Class.class))).thenReturn(value);
 
         ParametrizedTestFactory factory= defaultCreator.apply(mock);
 
         Assert.assertNotNull(factory.dummyCreator.get());
-        Assert.assertEquals(value,factory.dummyCreator.get());
+        DummyCreatorFactory actual = factory.dummyCreator.get();
+        Assert.assertEquals(DummyCreatorFactory.class, actual.getClass());
     }
 
 

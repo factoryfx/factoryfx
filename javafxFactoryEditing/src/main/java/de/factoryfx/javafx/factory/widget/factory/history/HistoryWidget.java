@@ -72,7 +72,7 @@ public class HistoryWidget<V, R extends FactoryBase<?,V,R>,S> implements Widget 
         tableView.getColumns().add(userCol);
 
 
-        tableUpdater = storedFactoryMetadataList -> items.setAll(storedFactoryMetadataList);
+        tableUpdater = items::setAll;
         update();
 
         BorderPane content = new BorderPane();
@@ -84,16 +84,12 @@ public class HistoryWidget<V, R extends FactoryBase<?,V,R>,S> implements Widget 
         final HBox buttonPane = new HBox(3);
         buttonPane.setPadding(new Insets(3));
         final Button changesButton = new Button("Änderungen");
-        changesButton.setOnAction(event -> longRunningActionExecutor.execute(() -> {
-            showDiff(tableView);
-        }));
+        changesButton.setOnAction(event -> longRunningActionExecutor.execute(() -> showDiff(tableView)));
         changesButton.disableProperty().bind(tableView.getSelectionModel().selectedItemProperty().isNull());
         buttonPane.getChildren().add(changesButton);
 
         final Button revertButton = new Button("revert to");
-        revertButton.setOnAction(event -> longRunningActionExecutor.execute(() -> {
-            revert(tableView);
-        }));
+        revertButton.setOnAction(event -> longRunningActionExecutor.execute(() -> revert(tableView)));
         revertButton.disableProperty().bind(tableView.getSelectionModel().selectedItemProperty().isNull());
         buttonPane.getChildren().add(revertButton);
 

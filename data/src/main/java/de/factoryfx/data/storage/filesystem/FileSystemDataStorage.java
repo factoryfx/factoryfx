@@ -18,9 +18,9 @@ import de.factoryfx.data.storage.*;
 public class FileSystemDataStorage<R extends Data,S> implements DataStorage<R,S> {
     private final FileSystemFactoryStorageHistory<R,S> fileSystemFactoryStorageHistory;
 
-    private R initialFactory;
-    private Path currentFactoryPath;
-    private Path currentFactoryPathMetadata;
+    private final R initialFactory;
+    private final Path currentFactoryPath;
+    private final Path currentFactoryPathMetadata;
     private final DataSerialisationManager<R,S> dataSerialisationManager;
     private final ChangeSummaryCreator<R,S> changeSummaryCreator;
 

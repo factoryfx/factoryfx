@@ -11,13 +11,11 @@ import de.factoryfx.data.attribute.types.StringAttribute;
 import de.factoryfx.data.jackson.ObjectMapperBuilder;
 import de.factoryfx.data.jackson.SimpleObjectMapper;
 import de.factoryfx.data.merge.DataMerger;
-import de.factoryfx.data.merge.MergeDiffInfo;
 import de.factoryfx.data.merge.testdata.ExampleDataA;
 import de.factoryfx.data.merge.testdata.ExampleDataB;
 import de.factoryfx.data.merge.testdata.ExampleDataC;
 import de.factoryfx.data.util.LanguageText;
 import de.factoryfx.data.validation.AttributeValidation;
-import de.factoryfx.data.validation.Validation;
 import de.factoryfx.data.validation.ValidationResult;
 import org.junit.Assert;
 import org.junit.Test;
@@ -39,12 +37,9 @@ public class DataTest {
 
     public static class ExampleFactoryThis extends Data {
         ArrayList<String> calls=new ArrayList<>();
-        public final StringAttribute stringAttribute= new StringAttribute().labelText("ExampleA1").validation(new Validation<String>() {
-            @Override
-            public ValidationResult validate(String value) {
-                calls.add((String) ExampleFactoryThis.this.getId());
-                return new ValidationResult(false,new LanguageText());
-            }
+        public final StringAttribute stringAttribute= new StringAttribute().labelText("ExampleA1").validation(value -> {
+            calls.add(ExampleFactoryThis.this.getId());
+            return new ValidationResult(false,new LanguageText());
         });
 
         public ExampleFactoryThis(){

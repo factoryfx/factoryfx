@@ -44,7 +44,7 @@ public class TypedTextFieldHelper {
             if (newValue!=null){
                 try {
                     URI uri = new URI(newValue);
-                    textField.getStyleClass().removeIf(c->"error".equals(c));
+                    textField.getStyleClass().removeIf("error"::equals);
                 } catch (URISyntaxException e) {
                     textField.getStyleClass().add("error");
                 }
@@ -61,7 +61,7 @@ public class TypedTextFieldHelper {
             if (newValue!=null){
                 try {
                     dtf.parse(newValue);
-                    textField.getStyleClass().removeIf(c->"error".equals(c));
+                    textField.getStyleClass().removeIf("error"::equals);
                 } catch (DateTimeParseException e) {
                     textField.getStyleClass().add("error");
                 }
@@ -98,7 +98,7 @@ public class TypedTextFieldHelper {
             if (newValue!=null){
                 try {
                     TIME_FORMAT.parse(newValue);
-                    textField.getStyleClass().removeIf(c->"error".equals(c));
+                    textField.getStyleClass().removeIf("error"::equals);
                 } catch (DateTimeParseException e) {
                     textField.getStyleClass().add("error");
                 }

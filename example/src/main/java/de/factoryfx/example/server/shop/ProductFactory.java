@@ -6,9 +6,9 @@ import de.factoryfx.example.server.ServerBaseFactory;
 import de.factoryfx.factory.atrribute.FactoryReferenceAttribute;
 
 public class ProductFactory extends ServerBaseFactory<Product> {
-//    public ProductFactory(){
-//        this.setDisplayTextProvider(() -> name.get());
-//    }
+    public ProductFactory(){
+        this.config().setDisplayTextProvider(name::get);
+    }
 
     public final StringAttribute name = new StringAttribute().en("Name").de("Name");
     public final IntegerAttribute price = new IntegerAttribute().labelText("Price").addonText("EUR");
@@ -16,7 +16,19 @@ public class ProductFactory extends ServerBaseFactory<Product> {
 
     @Override
     public Product createImpl() {
+        if (price.get()==7){
+            throw new RuntimeException("dfdsfds");
+        }
         return new Product(name.get(), price.get(), vatRate.instance());
     }
 
+//
+//    public ProductFactory(){
+//        configLiveCycle().setCreator(() -> {
+//            if (price.get()==7){
+//                throw new RuntimeException("dfdsfds");
+//            }
+//            return new Product();
+//        });
+//    }
 }

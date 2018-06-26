@@ -696,7 +696,6 @@ public class Data {
          * @return usableCopy
          */
         @SuppressWarnings("unchecked")
-
         public <T extends Data> T addBackReferences() {
             if (!this.data.hasBackReferencesFlat()){
                 this.data.addBackReferences();

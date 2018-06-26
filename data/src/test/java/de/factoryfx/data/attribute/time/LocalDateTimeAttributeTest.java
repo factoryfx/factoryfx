@@ -4,10 +4,7 @@ import de.factoryfx.data.jackson.ObjectMapperBuilder;
 import org.junit.Assert;
 import org.junit.Test;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-
-import static org.junit.Assert.*;
 
 public class LocalDateTimeAttributeTest {
     @Test

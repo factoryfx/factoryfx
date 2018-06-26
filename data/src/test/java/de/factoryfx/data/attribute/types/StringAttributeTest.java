@@ -5,7 +5,6 @@ import de.factoryfx.data.validation.ValidationError;
 import org.junit.Assert;
 import org.junit.Test;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 

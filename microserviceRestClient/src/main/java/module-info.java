@@ -7,5 +7,6 @@ module de.factoryfx.microserviceRestClient {
     requires jersey.proxy.client;
     requires jersey.client;
     requires jersey.common;
+    requires com.google.common;
     exports de.factoryfx.microservice.rest.client;
 }

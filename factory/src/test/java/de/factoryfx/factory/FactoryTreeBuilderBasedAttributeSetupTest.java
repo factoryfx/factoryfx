@@ -1,17 +1,11 @@
 package de.factoryfx.factory;
 
-import de.factoryfx.data.Data;
-import de.factoryfx.data.attribute.Attribute;
-import de.factoryfx.data.jackson.ObjectMapperBuilder;
-import de.factoryfx.data.storage.JacksonDeSerialisation;
 import de.factoryfx.factory.builder.FactoryTreeBuilder;
 import de.factoryfx.factory.builder.Scope;
 import de.factoryfx.factory.testfactories.ExampleFactoryA;
 import de.factoryfx.factory.testfactories.ExampleFactoryB;
 import org.junit.Assert;
 import org.junit.Test;
-
-import java.util.function.Consumer;
 
 public class FactoryTreeBuilderBasedAttributeSetupTest {
 

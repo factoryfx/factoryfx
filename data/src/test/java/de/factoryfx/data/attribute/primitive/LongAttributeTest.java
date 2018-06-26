@@ -4,8 +4,6 @@ import de.factoryfx.data.jackson.ObjectMapperBuilder;
 import org.junit.Assert;
 import org.junit.Test;
 
-import static org.junit.Assert.*;
-
 public class LongAttributeTest {
 
     @Test

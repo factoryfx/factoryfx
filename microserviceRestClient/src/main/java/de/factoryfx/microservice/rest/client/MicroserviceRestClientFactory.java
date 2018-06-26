@@ -11,6 +11,7 @@ import de.factoryfx.factory.SimpleFactoryBase;
 import de.factoryfx.microservice.common.MicroserviceResourceApi;
 import org.glassfish.jersey.CommonProperties;
 import org.glassfish.jersey.client.ClientConfig;
+import org.glassfish.jersey.client.ClientProperties;
 import org.glassfish.jersey.client.proxy.WebResourceFactory;
 
 
@@ -69,16 +70,18 @@ public class MicroserviceRestClientFactory<V, R extends FactoryBase<?,V,R>,VS, R
         configuration.property(CommonProperties.FEATURE_AUTO_DISCOVERY_DISABLE, true);
         configuration.register(jacksonProvider);
 
+//        configuration.property(ClientProperties.CONNECT_TIMEOUT, 30000);
+//        configuration.property(ClientProperties.READ_TIMEOUT, 30000);
+
+
         Client client = ClientBuilder.newClient(configuration);
         if (!httpAuthenticationUser.isEmpty() && !httpAuthenticationPassword.isEmpty()){
             HttpAuthenticationFeature feature = HttpAuthenticationFeature.basic(httpAuthenticationUser.get(), httpAuthenticationPassword.get());
             client.register(feature);
         }
 
-
         WebTarget webTarget = client.target(getUrl());
         MicroserviceResourceApi<VS,RS,S> microserviceResourceApi = (MicroserviceResourceApi<VS,RS,S>)WebResourceFactory.newResource(MicroserviceResourceApi.class, webTarget);
-
 
 
         return new MicroserviceRestClient<>(microserviceResourceApi,factoryRootClass.get(),user.get(),passwordHash.get());

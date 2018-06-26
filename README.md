@@ -35,7 +35,7 @@ compile(group: 'io.github.factoryfx', name: 'microserviceRestClient', version: f
 ## Basic example
 ### Factory
 ```java
-public class HelloWorldFactory extends SimpleFactoryBase<HelloWorld,Visitor> {
+public class HelloWorldFactory extends SimpleFactoryBase<HelloWorld,Visitor,HelloWorldFactory> {
     public final StringAttribute text = new StringAttribute().labelText("text");
 
     @Override
@@ -65,18 +65,18 @@ Dependency injection requires 2 types of objects.
 * business logic
 * factory code which instantiate the business logic objects
 
-Most existing dependency injection frameworks try to automate the Factory code.
+Most existing dependency injection frameworks try to automate the factory code.
 They scan the classpath and create business object tree.
 
 There are a few drawback with that approach:
-* a complete automation is not possible. You need additional information with annotations e.g to exclude classes/exclude from instantiation or polymorphism.
+* a complete automation is not possible. You need additional information provided with annotations e.g to exclude classes/exclude from instantiation or polymorphism. At the end you code in an annotation dsl instead of java.
 * Annotations are not part of the typesystem and lack tooling
 * Classpath scanning and reflection cause confusing stacktraces
 * slow startup
 
 ### Alternative
-Instead of annotations factoryfx use normal java code for the factories. 
-The user creates factories following a simple structure convention. The factories provides the dependencies and lifecycle control.
+Instead of annotations factoryfx use a functional java api with factories. 
+The user creates factories following a simple structure convention. The factories also provides the dependencies and lifecycle control.
 
 Creating the factories manually offer the following advantages:
 #### Advantages:
@@ -89,22 +89,22 @@ Creating the factories manually offer the following advantages:
 The major advantage of factoryfx is data injection.
 
 In many java application most data a stored inside a database. With that architecture it is hard to implement data encapsulation which is one of the main feature of oop.
-Often you will end up with data only classes and other classes that implements business logic based on the data classes. That will result in a procedural design.
-That will cause problems since java is a oop language. 
+Often you will end up with data only classes and other classes that implements business logic based on the data classes. That will result in a procedural design which seems wrong in an oop language. 
+* boilerplate db code
 * performance problems
-* requires caching
+* caching
 
 #### Which kind of data is suitable for injection?
 ##### Database
 Since the framework loads all data into the memory the limit is the available RAM.
 Typically a database contains few large tables (e.g more than 100000 rows) and many small tables (e.g less than 10000 rows).
 The small tables are good candidates for data injection.
-* basic data e.g Products in a simple shop
+* basic data e.g. Products in a simple shop
 * mass data e.g. Orders shop 
 ![Alt text](docu/comparison.png "Optional Title") 
 
 ##### Configuration Data
-Typical configuration data are ports, hostname, ssl certificates Data which are typical in the database.
+Typical configuration data are ports, hostname, ssl certificates. Data which are typical stored in property files.
 
 ## Lifecycle control
 Data update steps:
@@ -113,10 +113,10 @@ Data update steps:
 3. update new the complete configuration
 
 The framework always works with the complete configuration and no data record.
-The advantage is easy cross validation over data records and complete historization.
+The advantage is easy cross validation over data records and complete historization of configuration changes.
 The major disadvantages are addressed by the framework as well.
 
-* server only execute delta update for the changes live objects
+* server only execute delta update for the changed live objects
 * expensive resources like sockets or database pools can be reused
 
 

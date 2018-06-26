@@ -14,6 +14,7 @@ import de.factoryfx.factory.log.FactoryLogEntry;
 import de.factoryfx.factory.log.FactoryLogEntryEventType;
 import de.factoryfx.factory.log.FactoryLogEntryTreeItem;
 import de.factoryfx.server.Microservice;
+import org.slf4j.LoggerFactory;
 
 /**
  * @param <L> liveobject created from this factory
@@ -21,6 +22,8 @@ import de.factoryfx.server.Microservice;
  */
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class FactoryBase<L,V,R extends FactoryBase<?,V,R>> extends Data{
+
+    private static final org.slf4j.Logger logger = LoggerFactory.getLogger(FactoryBase.class);
 
     public FactoryBase() {
 
@@ -32,8 +35,6 @@ public class FactoryBase<L,V,R extends FactoryBase<?,V,R>> extends Data{
     private boolean started=false;
     @JsonIgnore
     boolean needRecreation =false;
-    @JsonIgnore
-    private FactoryLogEntry factoryLogEntry;
     @JsonIgnore
     private L previousLiveObject;
 
@@ -143,7 +144,6 @@ public class FactoryBase<L,V,R extends FactoryBase<?,V,R>> extends Data{
         createdLiveObject=null;
     }
 
-//    boolean reRecreationChecked;
     private void determineRecreationNeed(Set<Data> changedData, ArrayDeque<FactoryBase<?,?,?>> path, long iterationRun){
         path.push(this);
 
@@ -156,14 +156,10 @@ public class FactoryBase<L,V,R extends FactoryBase<?,V,R>> extends Data{
             }
         }
 
-//        if (!reRecreationChecked){
-//            reRecreationChecked=true;
+        visitChildFactoriesAndViewsFlat(child -> {
+            child.determineRecreationNeed(changedData,path,iterationRun);
+        },iterationRun);//ignore iterationRun and always visit children, e.g.: visit double added also double
 
-
-            visitChildFactoriesAndViewsFlat(child -> {
-                child.determineRecreationNeed(changedData,path,iterationRun);
-            },iterationRun);//ignore iterationRun and always visit children, e.g.: visit double added also double
-//        }
         path.pop();
     }
 
@@ -500,6 +496,19 @@ public class FactoryBase<L,V,R extends FactoryBase<?,V,R>> extends Data{
          * */
         public void destroyUpdated() {
             factory.destroyUpdated();
+        }
+
+        public void cleanUpAfterCrash() {
+            try {
+                destroyRemoved();
+            } catch (Exception e) {
+                logger.info("exception trying to cleanup after crash",e);
+            }
+            try {
+                destroyUpdated();
+            } catch (Exception e) {
+                logger.info("exception trying to cleanup after crash",e);
+            }
         }
 
         /**

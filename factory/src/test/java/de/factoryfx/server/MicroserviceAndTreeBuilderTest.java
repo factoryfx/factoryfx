@@ -7,7 +7,6 @@ import de.factoryfx.factory.builder.Scope;
 import de.factoryfx.factory.exception.RethrowingFactoryExceptionHandler;
 import de.factoryfx.factory.testfactories.ExampleFactoryA;
 import de.factoryfx.factory.testfactories.ExampleFactoryB;
-import org.junit.Assert;
 import org.junit.Test;
 
 public class MicroserviceAndTreeBuilderTest {

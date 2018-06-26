@@ -86,11 +86,11 @@ public class AttributeEditorBuilder {
         result.add(uniformDesign->new NoListSingleAttributeEditorBuilder<Enum<?>,EnumAttribute<?>>(uniformDesign,(attribute)->attribute instanceof EnumAttribute,(attribute)->{
             EnumAttributeVisualisation enumAttributeVisualisation = new EnumAttributeVisualisation(uniformDesign, attribute.internal_possibleEnumValues(), new StringConverter<>() {
                 @Override
-                public String toString(Enum<?> wrapper) {
-                    if (wrapper==null){
+                public String toString(Enum<?> enumValue) {
+                    if (enumValue==null){
                         return attribute.internal_enumDisplayText(null, uniformDesign::getText);
                     }
-                    return attribute.internal_enumDisplayText(wrapper, uniformDesign::getText);
+                    return attribute.internal_enumDisplayText(enumValue, uniformDesign::getText);
                 }
                 @Override
                 public Enum<?> fromString(String string) { return null;} //nothing

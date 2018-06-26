@@ -46,7 +46,7 @@ public class Microservice<V,R extends FactoryBase<?,V,R>,S> {
     public FactoryUpdateLog<R> updateCurrentFactory(DataAndNewMetadata<R> update, String user, String comment, Function<String,Boolean> permissionChecker) {
         R commonVersion = dataStorage.getHistoryFactory(update.metadata.baseVersionId);
         FactoryUpdateLog<R> factoryLog = factoryManager.update(commonVersion,update.root, permissionChecker);
-        if (factoryLog.mergeDiffInfo.successfullyMerged()){
+        if (!factoryLog.failedUpdate()&& factoryLog.successfullyMerged()){
             DataAndNewMetadata<R> copy = new DataAndNewMetadata<>(factoryManager.getCurrentFactory().internal().copy(),update.metadata);
             dataStorage.updateCurrentFactory(copy,user,comment,factoryLog.mergeDiffInfo);
         }
@@ -80,7 +80,7 @@ public class Microservice<V,R extends FactoryBase<?,V,R>,S> {
     public void start() {
         dataStorage.loadInitialFactory();
         final DataAndStoredMetadata<R,S> currentFactory = dataStorage.getCurrentFactory();
-        currentFactory.root.internalFactory().setMicroservice(this);
+        currentFactory.root.internalFactory().setMicroservice(this);//also mind ExceptionResponseAction#reset
 
         factoryManager.start(new RootFactoryWrapper<>(currentFactory.root));
     }

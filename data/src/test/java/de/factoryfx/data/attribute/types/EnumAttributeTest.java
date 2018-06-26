@@ -1,13 +1,10 @@
 package de.factoryfx.data.attribute.types;
 
-import com.fasterxml.jackson.annotation.JsonMerge;
 import de.factoryfx.data.jackson.ObjectMapperBuilder;
-import de.factoryfx.data.util.LanguageText;
 import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.Locale;
-import java.util.function.Function;
 
 public class EnumAttributeTest {
 

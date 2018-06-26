@@ -26,4 +26,11 @@ public class ConfigurationView implements FactoryAwareWidget<ServerRootFactory> 
         dataTreeWidget.edit(serverFactory);
         return content;
     }
+
+//    @Override
+//    public Node update(ServerRootFactory newFactory) {
+////        System.out.println("asadsad");
+//        dataTreeWidget.edit(newFactory);
+//        return null;
+//    }
 }
