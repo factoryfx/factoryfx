@@ -1,41 +1,15 @@
 package de.factoryfx.javafx.distribution.launcher.ui;
 
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
-
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider;
 import com.google.common.base.Strings;
-import com.google.common.base.Supplier;
 import com.google.common.base.Throwables;
 import com.google.common.hash.Hashing;
 import com.google.common.io.Files;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.ProgressBar;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
 import org.glassfish.jersey.client.ClientConfig;
 import org.glassfish.jersey.client.authentication.HttpAuthenticationFeature;
@@ -43,6 +17,21 @@ import org.glassfish.jersey.client.filter.EncodingFilter;
 import org.glassfish.jersey.jackson.JacksonFeature;
 import org.glassfish.jersey.message.DeflateEncoder;
 import org.glassfish.jersey.message.GZipEncoder;
+
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import java.io.*;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
+import java.util.function.Supplier;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 public class UserInterfaceDistributionClientController {
 
