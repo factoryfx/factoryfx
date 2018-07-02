@@ -238,12 +238,7 @@ public class Data {
     @SuppressWarnings("unchecked")
     private <T extends Data> T semanticCopy() {
         T result = (T)newCopyInstance(this);
-
-
-//        result.setId(this.getId());
         this.visitAttributesDualFlat(result, (attributeName, attribute1, attribute2) -> attribute1.internal_semanticCopyToUnsafe(attribute2));
-
-        this.fixDuplicateObjects();
         return result;
     }
 

@@ -142,7 +142,10 @@ public class ReferenceListAttributeEditWidget<T extends Data> implements Widget 
         uniformDesign.addIcon(copyButton,FontAwesome.Glyph.COPY);
         copyButton.disableProperty().bind(tableView.getSelectionModel().selectedItemProperty().isNull().or(multipleItemsSelected));
         copyButton.setOnAction(event -> {
-            referenceListAttribute.add(tableView.getSelectionModel().getSelectedItem().utility().semanticCopy());
+            T copy = tableView.getSelectionModel().getSelectedItem().utility().semanticCopy();
+            referenceListAttribute.add(copy);
+            tableView.getSelectionModel().clearSelection();
+            tableView.getSelectionModel().select(copy);
         });
         selectButton.setDisable(!isUserEditable /*|| !isUserCopyAble*/);
 
@@ -171,6 +174,9 @@ public class ReferenceListAttributeEditWidget<T extends Data> implements Widget 
         tableView.addEventHandler(KeyEvent.KEY_PRESSED, event -> {
             if (event.getCode()== KeyCode.DELETE){
                 deleteSelected(tableView.getScene().getWindow());
+            }
+            if (event.getCode()== KeyCode.ENTER){
+                navigateToData.accept(tableView.getSelectionModel().getSelectedItem());
             }
         });
         return buttons;

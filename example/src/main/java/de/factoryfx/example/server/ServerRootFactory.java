@@ -6,8 +6,6 @@ import de.factoryfx.factory.atrribute.FactoryReferenceAttribute;
 import de.factoryfx.jetty.JettyServer;
 import de.factoryfx.jetty.JettyServerFactory;
 
-import java.util.function.Function;
-
 public class ServerRootFactory extends ServerBaseFactory<JettyServer> {
 
     public final FactoryReferenceAttribute<JettyServer, ShopJettyServerFactory> httpServer =

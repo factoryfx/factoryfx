@@ -1,13 +1,11 @@
 package de.factoryfx.factory.log;
 
-import java.util.List;
 import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import de.factoryfx.data.Data;
 import de.factoryfx.data.merge.MergeDiffInfo;
-import de.factoryfx.factory.FactoryBase;
 
 public class FactoryUpdateLog<R extends Data> {
     public final FactoryLogEntryTreeItem root;

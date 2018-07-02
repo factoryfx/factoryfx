@@ -11,7 +11,6 @@ import de.factoryfx.factory.SimpleFactoryBase;
 import de.factoryfx.microservice.common.MicroserviceResourceApi;
 import org.glassfish.jersey.CommonProperties;
 import org.glassfish.jersey.client.ClientConfig;
-import org.glassfish.jersey.client.ClientProperties;
 import org.glassfish.jersey.client.proxy.WebResourceFactory;
 
 

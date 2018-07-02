@@ -683,4 +683,22 @@ public class DataTest {
         Assert.assertEquals(data,exampleDataB.internal().getPathFromRoot(child2parent).get(0));
     }
 
+    @Test
+    public void test_semanticCopy_bugrecreation(){
+        ExampleDataA data = new ExampleDataA();
+        ExampleDataB exampleDataB = new ExampleDataB();
+        exampleDataB.referenceAttributeC.setCopySemantic(CopySemantic.SELF);
+        exampleDataB.referenceAttributeC.set(new ExampleDataC());
+
+        data.referenceAttribute.set(exampleDataB);
+
+        data.internal().addBackReferences();
+
+        ExampleDataB copy = exampleDataB.utility().semanticCopy();
+        data.referenceListAttribute.add(copy);
+
+        Assert.assertEquals(2,data.referenceAttribute.internal_possibleValues().size());
+    }
+
+
 }

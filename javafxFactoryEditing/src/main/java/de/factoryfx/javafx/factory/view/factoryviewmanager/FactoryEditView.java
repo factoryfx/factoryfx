@@ -6,7 +6,6 @@ import java.io.File;
 import java.util.Optional;
 import java.util.function.Consumer;
 
-import com.google.common.base.Throwables;
 import de.factoryfx.data.Data;
 import de.factoryfx.data.merge.MergeDiffInfo;
 import de.factoryfx.factory.FactoryBase;

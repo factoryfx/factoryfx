@@ -5,7 +5,6 @@ import de.factoryfx.data.storage.filesystem.FileSystemDataStorage;
 import de.factoryfx.data.storage.inmemory.InMemoryDataStorage;
 import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.factory.FactoryManager;
-import de.factoryfx.factory.exception.AllOrNothingFactoryExceptionHandler;
 import de.factoryfx.factory.exception.LoggingFactoryExceptionHandler;
 import de.factoryfx.factory.exception.ResettingFactoryExceptionHandler;
 import de.factoryfx.factory.exception.RethrowingFactoryExceptionHandler;

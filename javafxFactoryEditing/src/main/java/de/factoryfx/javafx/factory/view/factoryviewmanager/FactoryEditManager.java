@@ -1,6 +1,5 @@
 package de.factoryfx.javafx.factory.view.factoryviewmanager;
 
-import java.net.ConnectException;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
