@@ -231,7 +231,7 @@ public class FactoryBase<L,V,R extends FactoryBase<?,V,R>> extends Data{
 
     long iterationRun;
     @SuppressWarnings("unchecked")
-    public void visitChildFactoriesAndViewsFlat(Consumer<FactoryBase<?,?, ?>> consumer, long iterationRun) {
+    private void visitChildFactoriesAndViewsFlat(Consumer<FactoryBase<?,?, ?>> consumer, long iterationRun) {
         if (this.iterationRun==iterationRun){
             return;
         }
@@ -283,7 +283,7 @@ public class FactoryBase<L,V,R extends FactoryBase<?,V,R>> extends Data{
 
 
     FactoryTreeBuilderBasedAttributeSetup<R> factoryTreeBuilderBasedAttributeSetup;
-    public void setFactoryTreeBuilderBasedAttributeSetup(FactoryTreeBuilderBasedAttributeSetup<R> factoryTreeBuilderBasedAttributeSetup) {
+    private void setFactoryTreeBuilderBasedAttributeSetup(FactoryTreeBuilderBasedAttributeSetup<R> factoryTreeBuilderBasedAttributeSetup) {
         this.factoryTreeBuilderBasedAttributeSetup = factoryTreeBuilderBasedAttributeSetup;
     }
     private FactoryTreeBuilderBasedAttributeSetup<R> getFactoryTreeBuilderBasedAttributeSetup() {

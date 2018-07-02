@@ -6,6 +6,6 @@ module de.factoryfx.javafxDistributionServer {
     requires java.ws.rs;
     requires com.google.common;
 
-    exports de.factoryfx.javafx.distribution.launcher.downloadserver;
+    exports de.factoryfx.javafx.distribution.launcher.rest;
     exports de.factoryfx.javafx.distribution.server.rest;
 }

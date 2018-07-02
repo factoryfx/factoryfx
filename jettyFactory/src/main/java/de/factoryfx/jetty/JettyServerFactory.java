@@ -18,11 +18,11 @@ import de.factoryfx.factory.atrribute.FactoryReferenceListAttribute;
  *  usage example.
  *
  *  <pre>{@code
- *      public static class TestWebserverFactory extends JettyServerFactory<Void>{
+ *      public static class TestWebserverFactory extends JettyServerFactory<Void,RootFactory>{
  *          public final FactoryReferenceAttribute<Resource1,Resource1FactoryBase> resource = new FactoryReferenceAttribute<>(Resource1FactoryBase.class);
  *          Override
  *          protected List<Object> getResourcesInstances() {
- *              return Arrays.asList(resource.instance());
+ *              return List.of(resource.instance());
  *          }
  *      }
  *  }</pre>

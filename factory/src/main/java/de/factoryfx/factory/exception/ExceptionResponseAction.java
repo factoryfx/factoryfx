@@ -6,7 +6,6 @@ import de.factoryfx.factory.RootFactoryWrapper;
 import de.factoryfx.server.Microservice;
 
 import java.util.List;
-import java.util.function.Consumer;
 
 public class ExceptionResponseAction<V,R extends FactoryBase<?,V,R>> {
 
@@ -15,7 +14,7 @@ public class ExceptionResponseAction<V,R extends FactoryBase<?,V,R>> {
     private final RootFactoryWrapper<R> currentFactoryRoot;
     private final List<FactoryBase<?,?,?>> removed;
 
-    public ExceptionResponseAction(FactoryManager factoryManager, RootFactoryWrapper<R> previousFactoryRootCopy, RootFactoryWrapper<R> currentFactoryRoot, List<FactoryBase<?,?,?>> removed) {
+    public ExceptionResponseAction(FactoryManager<V,R> factoryManager, RootFactoryWrapper<R> previousFactoryRootCopy, RootFactoryWrapper<R> currentFactoryRoot, List<FactoryBase<?,?,?>> removed) {
         this.factoryManager = factoryManager;
         this.previousFactoryRootCopy = previousFactoryRootCopy;
         this.currentFactoryRoot = currentFactoryRoot;

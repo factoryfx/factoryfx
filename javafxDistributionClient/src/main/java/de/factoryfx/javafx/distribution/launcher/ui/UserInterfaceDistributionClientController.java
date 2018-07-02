@@ -23,6 +23,7 @@ import javax.ws.rs.core.Response;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider;
 import com.google.common.base.Strings;
+import com.google.common.base.Supplier;
 import com.google.common.base.Throwables;
 import com.google.common.hash.Hashing;
 import com.google.common.io.Files;
@@ -65,6 +66,7 @@ public class UserInterfaceDistributionClientController {
     private final String  httpAuthenticationUser;
     private final String httpAuthenticationPassword;
     private final String exeName;
+    private final Supplier<Client> clientBuilder;
 
     /**
      *
@@ -72,12 +74,22 @@ public class UserInterfaceDistributionClientController {
      * @param exeName  e.g 'project' not include '.exe'
      * @param httpAuthenticationUser user
      * @param httpAuthenticationPassword password
+     * @param clientBuilder could be used to enable ssl see https://stackoverflow.com/questions/2145431/https-using-jersey-client
      */
-    public UserInterfaceDistributionClientController(String initialUrl, String exeName, String  httpAuthenticationUser,  String httpAuthenticationPassword) {
+    public UserInterfaceDistributionClientController(String initialUrl, String exeName, String  httpAuthenticationUser, String httpAuthenticationPassword, Supplier<Client> clientBuilder) {
         this.initialUrl = initialUrl;
         this.httpAuthenticationUser = httpAuthenticationUser;
         this.httpAuthenticationPassword = httpAuthenticationPassword;
         this.exeName = exeName;
+        this.clientBuilder = clientBuilder;
+    }
+
+    public UserInterfaceDistributionClientController(String initialUrl, String exeName, String  httpAuthenticationUser, String httpAuthenticationPassword) {
+        this(initialUrl,exeName,httpAuthenticationUser,httpAuthenticationPassword,()->{
+            JacksonFeature jacksonFeature = new JacksonFeature();
+            ClientConfig cc = new ClientConfig().register(jacksonFeature);
+            return ClientBuilder.newClient(cc);
+        });
     }
 
     @FXML
@@ -121,9 +133,9 @@ public class UserInterfaceDistributionClientController {
     private void startGui() {
         String serverUrl=serverUrlInput.getText();
 
-        JacksonFeature jacksonFeature = new JacksonFeature();
-        ClientConfig cc = new ClientConfig().register(jacksonFeature);
-        Client client = ClientBuilder.newClient(cc);
+
+        Client client = clientBuilder.get();
+
         client.register(GZipEncoder.class);
         client.register(EncodingFilter.class);
         client.register(DeflateEncoder.class);
