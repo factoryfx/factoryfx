@@ -9,6 +9,7 @@ import java.util.stream.Stream;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import de.factoryfx.data.Data;
+import de.factoryfx.data.attribute.types.StringAttribute;
 
 public abstract class ReferenceListAttribute<T extends Data,A extends ReferenceBaseAttribute<T,List<T>,A>> extends ReferenceBaseAttribute<T,List<T>,A> implements List<T> {
     final List<T> list = new ArrayList<>();
@@ -349,5 +350,23 @@ public abstract class ReferenceListAttribute<T extends Data,A extends ReferenceB
         afterModify();
     }
 
+
+    @JsonIgnore
+    public ReferenceListAttribute defaultExpanded(){
+        this.defaultExpanded=true;
+        return this;
+    }
+
+    @JsonIgnore
+    private boolean defaultExpanded =false;
+
+    /**
+     * edit hint to show list initial expanded
+     * @return self
+     * */
+    @JsonIgnore
+    public boolean internal_isDefaultExpanded(){
+        return defaultExpanded;
+    }
 
 }
