@@ -352,7 +352,7 @@ public abstract class ReferenceListAttribute<T extends Data,A extends ReferenceB
 
 
     @JsonIgnore
-    public ReferenceListAttribute defaultExpanded(){
+    public ReferenceListAttribute<T,A> defaultExpanded(){
         this.defaultExpanded=true;
         return this;
     }
