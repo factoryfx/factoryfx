@@ -15,6 +15,9 @@ module de.factoryfx.factory {
     exports de.factoryfx.factory.parametrized;
     exports de.factoryfx.factory.builder;
 
+
     opens de.factoryfx.factory;//jackson
     opens de.factoryfx.factory.atrribute;
+    opens de.factoryfx.factory.log;
+
 }
