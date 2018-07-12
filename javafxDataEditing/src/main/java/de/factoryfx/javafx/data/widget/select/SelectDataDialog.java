@@ -4,8 +4,10 @@ import de.factoryfx.data.Data;
 import de.factoryfx.javafx.css.CssUtil;
 import de.factoryfx.javafx.data.util.DataObservableDisplayText;
 import de.factoryfx.javafx.data.util.UniformDesign;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
+import javafx.stage.Screen;
 import javafx.stage.Window;
 
 import java.util.List;
@@ -38,8 +40,13 @@ public class SelectDataDialog {
         column.setCellValueFactory(param -> new DataObservableDisplayText(param.getValue()).get());
         table.getColumns().add(column);
         pane.setCenter(table);
-        pane.setPrefWidth(1000);
-        pane.setPrefHeight(750);
+
+        double centerX = owner.getX()+owner.getWidth()/2;
+        double centerY = owner.getY()+owner.getHeight()/2;
+        Screen screen = Screen.getScreens().stream().filter(s->s.getBounds().contains(centerX,centerY)).findFirst().orElse(Screen.getPrimary());
+        Rectangle2D screenBounds = screen.getBounds();
+        pane.setPrefWidth(screenBounds.getWidth()/3);
+        pane.setPrefHeight(screenBounds.getHeight()/2);
         dialog.getDialogPane().setContent(pane);
         dialog.setResizable(true);
 
