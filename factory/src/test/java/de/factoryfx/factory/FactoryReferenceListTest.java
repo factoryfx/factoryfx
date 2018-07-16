@@ -66,6 +66,9 @@ public class FactoryReferenceListTest {
             Assert.assertTrue(creator.contains(first.getId()));
             creator.clear();
             recreator.clear();
+            starter.clear();
+            destroyer.clear();
+
             System.out.println("update started");
             DataAndNewMetadata<RootFactory> update1 = microService.prepareNewFactory();
             ObjectFactory second = new ObjectFactory();
