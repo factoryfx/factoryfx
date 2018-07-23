@@ -148,8 +148,10 @@ public class HistoryWidget<V, R extends FactoryBase<?,V,R>,S> implements Widget 
     }
 
     private void showDiff(TableView<StoredDataMetadata> tableView) {
-        final MergeDiffInfo<R> diff = restClient.getDiff(tableView.getSelectionModel().getSelectedItem());
-        Platform.runLater(() -> diffDialogBuilder.createDiffDialog(diff,uniformDesign.getText(changesText),tableView.getScene().getWindow()));
+        if (!isFirstVersion(tableView)){
+            final MergeDiffInfo<R> diff = restClient.getDiff(tableView.getSelectionModel().getSelectedItem());
+            Platform.runLater(() -> diffDialogBuilder.createDiffDialog(diff,uniformDesign.getText(changesText),tableView.getScene().getWindow()));
+        }
     }
 
     private void revert(TableView<StoredDataMetadata> tableView) {
