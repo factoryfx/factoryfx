@@ -187,4 +187,23 @@ public class ReferenceListMergeTest extends MergeHelperTestBase{
         Assert.assertEquals(idBefore2, current.referenceListAttribute.get(0).getId());
         Assert.assertEquals(idBefore1, current.referenceListAttribute.get(1).getId());
     }
+
+    @Test
+    public void test_keep_existing(){//important for factories
+        ExampleDataA current = new ExampleDataA();
+        ExampleDataB newValue1 = new ExampleDataB();
+        current.referenceListAttribute.add(newValue1);
+        current = current.internal().addBackReferences();
+
+        ExampleDataA orginal = current.internal().copy();
+
+        ExampleDataA update = current.internal().copy();
+        update.referenceListAttribute.add(new ExampleDataB());
+
+        ExampleDataB existing = current.referenceListAttribute.get(0);
+        merge(current, orginal, update);
+
+        Assert.assertTrue(existing==current.referenceListAttribute.get(0));
+
+    }
 }

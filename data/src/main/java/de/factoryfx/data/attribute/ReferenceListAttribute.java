@@ -9,7 +9,6 @@ import java.util.stream.Stream;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import de.factoryfx.data.Data;
-import de.factoryfx.data.attribute.types.StringAttribute;
 
 public abstract class ReferenceListAttribute<T extends Data,A extends ReferenceBaseAttribute<T,List<T>,A>> extends ReferenceBaseAttribute<T,List<T>,A> implements List<T> {
     final List<T> list = new ArrayList<>();
@@ -43,6 +42,30 @@ public abstract class ReferenceListAttribute<T extends Data,A extends ReferenceB
         }
         return ref1.idEquals(ref2);
     }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public void internal_merge(Attribute<?,?> newValue) {
+        Map<String,T> previousMap=new HashMap();
+        for (T item : this.list) {
+            previousMap.put(item.getId(),item);
+        }
+
+        this.list.clear();
+        List<T> newList = (List<T>) newValue.get();
+
+        for (T newItem : newList) {
+            T oldItem = previousMap.get(newItem.getId());
+            if (oldItem!=null){
+                this.list.add(oldItem);
+            } else {
+                this.list.add(newItem);
+            }
+        }
+
+        afterModify();
+    }
+
 
     @Override
     @SuppressWarnings("unchecked")
@@ -338,23 +361,11 @@ public abstract class ReferenceListAttribute<T extends Data,A extends ReferenceB
         return false;
     }
 
-    @Override
-    @SuppressWarnings("unchecked")
-    public void internal_merge(Attribute<?,?> newValue) {
-        //faster than call set, backreferences are updated anyway for all after merge
-        this.list.clear();
-        List<T> newList = (List<T>) newValue.get();
-        if (newList!=null){
-            this.list.addAll(newList);
-        }
-        afterModify();
-    }
-
-
     @JsonIgnore
-    public ReferenceListAttribute<T,A> defaultExpanded(){
+    @SuppressWarnings("unchecked")
+    public A defaultExpanded(){
         this.defaultExpanded=true;
-        return this;
+        return (A)this;
     }
 
     @JsonIgnore

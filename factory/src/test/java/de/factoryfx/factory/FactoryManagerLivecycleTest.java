@@ -2,7 +2,9 @@ package de.factoryfx.factory;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Function;
 
+import de.factoryfx.data.DataDictionary;
 import de.factoryfx.data.attribute.types.StringAttribute;
 import de.factoryfx.data.jackson.ObjectMapperBuilder;
 import de.factoryfx.factory.atrribute.FactoryReferenceAttribute;
@@ -24,105 +26,83 @@ public class FactoryManagerLivecycleTest {
         }
     }
 
+    public static class LivecycleFactoryBase extends FactoryBase<DummyLifeObejct,Void,LivecycleFactoryA> {
+        public List<String> createCalls= new ArrayList<>();
+        public List<String> reCreateCalls= new ArrayList<>();
+        public List<String> startCalls= new ArrayList<>();
+        public List<String> destroyCalls= new ArrayList<>();
 
-    public static class LivecycleFactoryA extends FactoryBase<DummyLifeObejct,Void,LivecycleFactoryA> {
+        public LivecycleFactoryBase(){
+            configLiveCycle().setCreator(() -> {
+                createCalls.add("created");
+                return new DummyLifeObejct("",null);
+            });
+            configLiveCycle().setReCreator(dummyLifeObject -> {
+                reCreateCalls.add("created");
+                return new DummyLifeObejct("",null);
+            });
+            configLiveCycle().setDestroyer(dummyLifeObject -> destroyCalls.add("created"));
+            configLiveCycle().setStarter(dummyLifeObject -> startCalls.add("created"));
+        }
+
+        public void resetCounter(){
+            createCalls.clear();
+            reCreateCalls.clear();
+            startCalls.clear();
+            destroyCalls.clear();
+        }
+
+        public void copyCounters(LivecycleFactoryBase from){
+            createCalls.clear();
+            reCreateCalls.clear();
+            startCalls.clear();
+            destroyCalls.clear();
+
+            createCalls.addAll(from.createCalls);
+            reCreateCalls.addAll(from.reCreateCalls);
+            startCalls.addAll(from.startCalls);
+            destroyCalls.addAll(from.destroyCalls);
+        }
+    }
+
+    public static class LivecycleFactoryA extends LivecycleFactoryBase {
         public final FactoryReferenceAttribute<DummyLifeObejct,LivecycleFactoryB> ref = new FactoryReferenceAttribute<>(LivecycleFactoryB.class);
         public final FactoryReferenceListAttribute<DummyLifeObejct,LivecycleFactoryC> refList = new FactoryReferenceListAttribute<>(LivecycleFactoryC.class);
         public final FactoryReferenceAttribute<DummyLifeObejct,LivecycleFactoryC> refC = new FactoryReferenceAttribute<>(LivecycleFactoryC.class);
 
         public final FactoryReferenceAttribute<DummyLifeObejct,LivecycleFactoryA> refA = new FactoryReferenceAttribute<>(LivecycleFactoryA.class);
-
-
-
-        public List<String> createCalls= new ArrayList<>();
-        public List<String> reCreateCalls= new ArrayList<>();
-        public List<String> startCalls= new ArrayList<>();
-        public List<String> destroyCalls= new ArrayList<>();
-
-        public LivecycleFactoryA(){
-            configLiveCycle().setCreator(() -> {
-                createCalls.add("created");
-                return new DummyLifeObejct("",null);
-            });
-            configLiveCycle().setReCreator(dummyLifeObejct -> {
-                reCreateCalls.add("created");
-                return new DummyLifeObejct("",null);
-            });
-            configLiveCycle().setDestroyer(dummyLifeObejct -> destroyCalls.add("created"));
-            configLiveCycle().setStarter(dummyLifeObejct -> startCalls.add("created"));
-        }
-
-        public void resetCounter(){
-            createCalls.clear();
-            reCreateCalls.clear();
-            startCalls.clear();
-            destroyCalls.clear();
-        }
     }
 
-    public static class LivecycleFactoryB extends FactoryBase<DummyLifeObejct,Void,LivecycleFactoryA> {
-
+    public static class LivecycleFactoryB extends LivecycleFactoryBase {
         public final FactoryReferenceAttribute<DummyLifeObejct,LivecycleFactoryC> refC = new FactoryReferenceAttribute<>(LivecycleFactoryC.class);
+        public StringAttribute stringAttribute=new StringAttribute();
 
         public final FactoryViewListReferenceAttribute<LivecycleFactoryA,DummyLifeObejct,LivecycleFactoryC> listView = new FactoryViewListReferenceAttribute<LivecycleFactoryA,DummyLifeObejct,LivecycleFactoryC>(
                 root -> root.refList).labelText("ExampleA2");
-
-        public List<String> createCalls= new ArrayList<>();
-        public List<String> reCreateCalls= new ArrayList<>();
-        public List<String> startCalls= new ArrayList<>();
-        public List<String> destroyCalls= new ArrayList<>();
-        public StringAttribute stringAttribute=new StringAttribute();
-
-        public LivecycleFactoryB(){
-            configLiveCycle().setCreator(() -> {
-                createCalls.add("created");
-                return new DummyLifeObejct("",null);
-            });
-            configLiveCycle().setReCreator(dummyLifeObejct -> {
-                reCreateCalls.add("created");
-                return dummyLifeObejct;
-            });
-            configLiveCycle().setDestroyer(dummyLifeObejct -> destroyCalls.add("created"));
-            configLiveCycle().setStarter(dummyLifeObejct -> startCalls.add("created"));
-        }
-
-        public void resetCounter(){
-            createCalls.clear();
-            reCreateCalls.clear();
-            startCalls.clear();
-            destroyCalls.clear();
-        }
     }
 
-    public static class LivecycleFactoryC extends FactoryBase<DummyLifeObejct,Void,LivecycleFactoryA> {
-
-        public List<String> createCalls= new ArrayList<>();
-        public List<String> reCreateCalls= new ArrayList<>();
-        public List<String> startCalls= new ArrayList<>();
-        public List<String> destroyCalls= new ArrayList<>();
-
+    public static class LivecycleFactoryC extends LivecycleFactoryBase {
         public StringAttribute stringAttribute=new StringAttribute();
-
-        public void resetCounter(){
-            createCalls.clear();
-            reCreateCalls.clear();
-            startCalls.clear();
-            destroyCalls.clear();
-        }
-
-        public LivecycleFactoryC(){
-            configLiveCycle().setCreator(() -> {
-                createCalls.add("created");
-                return new DummyLifeObejct("",null);
-            });
-            configLiveCycle().setReCreator(dummyLifeObejct -> {
-                reCreateCalls.add("created");
-                return new DummyLifeObejct("",null);
-            });
-            configLiveCycle().setDestroyer(dummyLifeObejct -> destroyCalls.add("created"));
-            configLiveCycle().setStarter(dummyLifeObejct -> startCalls.add("created"));
-        }
     }
+
+    static {
+        DataDictionary.getDataDictionary(LivecycleFactoryA.class).setNewCopyInstanceSupplier(livecycleFactoryA -> {
+            LivecycleFactoryA copy = new LivecycleFactoryA();
+            copy.copyCounters(livecycleFactoryA);
+            return copy;
+        });
+        DataDictionary.getDataDictionary(LivecycleFactoryB.class).setNewCopyInstanceSupplier(livecycleFactoryB -> {
+            LivecycleFactoryB copy = new LivecycleFactoryB();
+            copy.copyCounters(livecycleFactoryB);
+            return copy;
+        });
+        DataDictionary.getDataDictionary(LivecycleFactoryC.class).setNewCopyInstanceSupplier(livecycleFactoryC -> {
+            LivecycleFactoryC copy = new LivecycleFactoryC();
+            copy.copyCounters(livecycleFactoryC);
+            return copy;
+        });
+    }
+
 
 
     @Test
@@ -362,5 +342,25 @@ public class FactoryManagerLivecycleTest {
         Assert.assertEquals(0,exampleFactoryA.reCreateCalls.size());
 
         Assert.assertEquals(0,exampleFactoryA.startCalls.size());
+    }
+
+    @Test
+    public void test_list_instance_only_once(){
+        FactoryManager<Void,LivecycleFactoryA> factoryManager = new FactoryManager<>(new RethrowingFactoryExceptionHandler());
+
+        LivecycleFactoryA root = new LivecycleFactoryA();
+        root.refList.add(new LivecycleFactoryC());
+        factoryManager.start(new RootFactoryWrapper<>(root));
+
+        Assert.assertEquals(1,factoryManager.getCurrentFactory().refList.get(0).createCalls.size());
+
+        LivecycleFactoryA common = factoryManager.getCurrentFactory().utility().copy();
+        LivecycleFactoryA update = factoryManager.getCurrentFactory().utility().copy();
+        update.refList.add(new LivecycleFactoryC());
+
+        factoryManager.update(common,update,(permission)->true);
+        Assert.assertEquals(1,factoryManager.getCurrentFactory().refList.get(0).createCalls.size());
+        Assert.assertEquals(1,factoryManager.getCurrentFactory().refList.get(1).createCalls.size());
+
     }
 }

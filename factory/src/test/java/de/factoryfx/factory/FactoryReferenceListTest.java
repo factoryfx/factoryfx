@@ -79,9 +79,9 @@ public class FactoryReferenceListTest {
 
             //  does first have to be created or recreated here?
             // TODO activate:
-            // Assert.assertFalse(creator.contains(first.getId()));
-            // Assert.assertFalse(starter.contains(first.getId()));
-            // Assert.assertFalse(destroyer.contains(first.getId()));
+             Assert.assertFalse(creator.contains(first.getId()));
+             Assert.assertFalse(starter.contains(first.getId()));
+             Assert.assertFalse(destroyer.contains(first.getId()));
 
             Assert.assertFalse(recreator.contains(first.getId()));
             Assert.assertTrue(creator.contains(second.getId()));
