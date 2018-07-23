@@ -92,22 +92,22 @@ public class JettyServerTest {
 //        Thread.sleep(1000);
 
 
-        RestClient restClient8005 = new RestClient("localhost",8015,"",false,null,null);
-        RestClient restClient8006 = new RestClient("localhost",8016,"",false,null,null);
-        Assert.assertEquals("Hello",restClient8005.get("Resource",String.class));
+        RestClient restClient8015 = new RestClient("localhost",8015,"",false,null,null);
+        RestClient restClient8016 = new RestClient("localhost",8016,"",false,null,null);
+        Assert.assertEquals("Hello",restClient8015.get("Resource",String.class));
         try {
-            restClient8006.get("Resource",String.class);
+            restClient8016.get("Resource",String.class);
             Assert.fail("Expectected exception");
         } catch (Exception expected) {}
 
         jettyServer = jettyServer.recreate(moreConnectors,resources);
-        Assert.assertEquals("Hello",restClient8005.get("Resource",String.class));
-        Assert.assertEquals("Hello",restClient8006.get("Resource",String.class));
+        Assert.assertEquals("Hello",restClient8015.get("Resource",String.class));
+        Assert.assertEquals("Hello",restClient8016.get("Resource",String.class));
 
         jettyServer = jettyServer.recreate(connectors,resources);
-        Assert.assertEquals("Hello",restClient8005.get("Resource",String.class));
+        Assert.assertEquals("Hello",restClient8015.get("Resource",String.class));
         try {
-            restClient8006.get("Resource",String.class);
+            restClient8016.get("Resource",String.class);
             Assert.fail("Expectected exception");
         } catch (Exception expected) {}
         jettyServer.stop();
