@@ -18,6 +18,7 @@ import de.factoryfx.microservice.rest.client.MicroserviceRestClient;
 import de.factoryfx.microservice.rest.client.MicroserviceRestClientFactory;
 import de.factoryfx.server.Microservice;
 
+import de.factoryfx.server.MicroserviceBuilder;
 import de.factoryfx.server.user.persistent.PersistentUserManagementFactory;
 import de.factoryfx.server.user.persistent.UserFactory;
 import org.junit.Assert;
@@ -87,17 +88,14 @@ public class MicroserviceRestIntegrationTest {
 
 
             MicroserviceRestClientFactory<Void, RestClientRoot, TestVisitor, TestJettyServer,Void> microserviceRestClientFactory = new MicroserviceRestClientFactory<>();
-
             microserviceRestClientFactory.port.set(34579);
             microserviceRestClientFactory.host.set("localhost");
-//            microserviceRestClientFactory.path.set("microservice");
             microserviceRestClientFactory.user.set("user123");
             microserviceRestClientFactory.passwordHash.set("hash123");
             microserviceRestClientFactory.factoryRootClass.set(TestJettyServer.class);
 
-//            microserviceRestClientFactory=microserviceRestClientFactory.utility().addBackReferences();
 
-            MicroserviceRestClient<TestVisitor, TestJettyServer,Void> microserviceRestClient = microserviceRestClientFactory.internalFactory().instance();
+            MicroserviceRestClient<TestVisitor, TestJettyServer,Void> microserviceRestClient = microserviceRestClientFactory.createClient();
             microserviceRestClient.prepareNewFactory();
 
 
@@ -110,7 +108,7 @@ public class MicroserviceRestIntegrationTest {
 
             Assert.assertEquals(Locale.GERMAN, microserviceRestClient.getLocale());
         } finally {
-//            microservice.stop();
+            microservice.stop();
         }
     }
 

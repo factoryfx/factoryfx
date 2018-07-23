@@ -63,6 +63,15 @@ public class MicroserviceRestClientFactory<V, R extends FactoryBase<?,V,R>,VS, R
     @SuppressWarnings("unchecked")
     @Override
     public MicroserviceRestClient<VS, RS, S> createImpl() {
+        return createClient();
+    }
+
+    /**
+     * shortcut to use the client in non factory context
+     *
+     * @return client
+     **/
+    public MicroserviceRestClient<VS, RS, S> createClient() {
         JacksonJaxbJsonProvider jacksonProvider = new JacksonJaxbJsonProvider();
         jacksonProvider.setMapper(ObjectMapperBuilder.buildNewObjectMapper());
         ClientConfig configuration = new ClientConfig(new ClientConfig());
@@ -80,10 +89,11 @@ public class MicroserviceRestClientFactory<V, R extends FactoryBase<?,V,R>,VS, R
         }
 
         WebTarget webTarget = client.target(getUrl());
-        MicroserviceResourceApi<VS,RS,S> microserviceResourceApi = (MicroserviceResourceApi<VS,RS,S>)WebResourceFactory.newResource(MicroserviceResourceApi.class, webTarget);
+        MicroserviceResourceApi<VS,RS,S> microserviceResourceApi = (MicroserviceResourceApi<VS,RS,S>) WebResourceFactory.newResource(MicroserviceResourceApi.class, webTarget);
 
 
         return new MicroserviceRestClient<>(microserviceResourceApi,factoryRootClass.get(),user.get(),passwordHash.get());
     }
+
 
 }

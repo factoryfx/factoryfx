@@ -20,9 +20,9 @@ import de.factoryfx.server.user.persistent.UserFactory;
 
 
 /**
- *https://stackoverflow.com/questions/17000193/can-we-have-more-than-one-path-annotation-for-same-rest-method
- *3 Paths for compatibility
- *microservice is new one
+ *  https://stackoverflow.com/questions/17000193/can-we-have-more-than-one-path-annotation-for-same-rest-method
+ *  3 Paths for compatibility
+ *  microservice is new one
  */
 public class MicroserviceResource<V,R extends FactoryBase<?,V,R>,S> implements MicroserviceResourceApi<V,R,S> {
 
