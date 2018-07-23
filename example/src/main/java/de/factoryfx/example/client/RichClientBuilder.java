@@ -5,6 +5,7 @@ import de.factoryfx.data.storage.JacksonDeSerialisation;
 import de.factoryfx.data.storage.JacksonSerialisation;
 import de.factoryfx.example.client.view.ConfigurationViewFactory;
 import de.factoryfx.example.client.view.DashboardViewFactory;
+import de.factoryfx.example.client.view.HistoryViewFactory;
 import de.factoryfx.example.server.shop.OrderCollector;
 import de.factoryfx.example.server.ServerRootFactory;
 import de.factoryfx.factory.builder.FactoryTreeBuilder;
@@ -51,6 +52,7 @@ public class RichClientBuilder {
         factoryBuilder.addFactory(DiffDialogBuilderFactory.class, Scope.PROTOTYPE);
         factoryBuilder.addFactory(DashboardViewFactory.class, Scope.SINGLETON);
         factoryBuilder.addFactory(DataTreeWidgetFactory.class, Scope.PROTOTYPE);
+        factoryBuilder.addFactory(HistoryViewFactory.class, Scope.PROTOTYPE);
 
         factoryBuilder.addFactory(FactorySerialisationManagerFactory.class, Scope.SINGLETON, (context)->{
             return new RichClientFactorySerialisationManagerFactory();
@@ -69,6 +71,7 @@ public class RichClientBuilder {
             fileMenu.text.en("File").de("Data");
             fileMenu.items.add(context.get(ViewMenuItemFactory.class, "configuration"));
             fileMenu.items.add(context.get(ViewMenuItemFactory.class, "dashboard"));
+            fileMenu.items.add(context.get(ViewMenuItemFactory.class, "history"));
             return fileMenu;
         });
 
@@ -134,6 +137,23 @@ public class RichClientBuilder {
             viewFactory.viewsDisplayWidget.set(context.get(ViewsDisplayWidgetFactory.class));
 
             viewFactory.widget.set(context.get(DashboardViewFactory.class));
+
+            ViewMenuItemFactory viewMenuItemFactory = new ViewMenuItemFactory();
+            viewMenuItemFactory.viewDescription.set(viewDescriptionFactory);
+            viewMenuItemFactory.view.set(viewFactory);
+            return viewMenuItemFactory;
+        });
+
+        factoryBuilder.addFactory(ViewMenuItemFactory.class, "history", Scope.SINGLETON, context -> {
+            ViewDescriptionFactory viewDescriptionFactory = new ViewDescriptionFactory();
+            viewDescriptionFactory.text.en("History").de("Historie");
+            viewDescriptionFactory.uniformDesign.set(context.get(UniformDesignFactory.class));
+
+            ViewFactory viewFactory = new ViewFactory();
+            viewFactory.viewDescription.set(viewDescriptionFactory);
+            viewFactory.viewsDisplayWidget.set(context.get(ViewsDisplayWidgetFactory.class));
+
+            viewFactory.widget.set(context.get(HistoryViewFactory.class));
 
             ViewMenuItemFactory viewMenuItemFactory = new ViewMenuItemFactory();
             viewMenuItemFactory.viewDescription.set(viewDescriptionFactory);

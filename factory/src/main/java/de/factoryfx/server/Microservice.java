@@ -33,7 +33,7 @@ public class Microservice<V,R extends FactoryBase<?,V,R>,S> {
     public MergeDiffInfo<R> getDiffToPreviousVersion(StoredDataMetadata storedDataMetadata) {
         R historyFactory = getHistoryFactory(storedDataMetadata.id);
         R historyFactoryPrevious = getPreviousHistoryFactory(storedDataMetadata.id);
-        return new DataMerger<>(historyFactoryPrevious,historyFactoryPrevious,historyFactory).createMergeResult((permission)->true).executeMerge();
+        return new DataMerger<>(historyFactoryPrevious,historyFactoryPrevious.utility().copy(),historyFactory).createMergeResult((permission)->true).executeMerge();
     }
 
     public FactoryUpdateLog<R> revertTo(StoredDataMetadata storedDataMetadata, String user) {

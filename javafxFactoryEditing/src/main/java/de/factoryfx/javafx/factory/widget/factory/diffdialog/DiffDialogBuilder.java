@@ -1,6 +1,7 @@
 package de.factoryfx.javafx.factory.widget.factory.diffdialog;
 
 import de.factoryfx.data.merge.MergeDiffInfo;
+import de.factoryfx.data.util.LanguageText;
 import de.factoryfx.factory.log.FactoryUpdateLog;
 import de.factoryfx.javafx.css.CssUtil;
 import de.factoryfx.javafx.data.editor.attribute.AttributeEditorBuilder;
@@ -17,6 +18,10 @@ import javafx.scene.layout.BorderPane;
 import javafx.stage.Window;
 
 public class DiffDialogBuilder {
+
+    private LanguageText conflictText= new LanguageText().en("Changes").de("Konflikte");
+    private LanguageText changesText= new LanguageText().en("Changes").de("Änderungen");
+    private LanguageText refreshText= new LanguageText().en("Refresh").de("Aktualisieren");
 
     private final UniformDesign uniformDesign;
     private final AttributeEditorBuilder attributeEditorBuilder;
@@ -79,12 +84,10 @@ public class DiffDialogBuilder {
         CssUtil.addToNode(dialog.getDialogPane());
 
         if (!mergeDiff.hasNoConflicts()){
-            dialog.setTitle("Konflikte");
-            dialog.setHeaderText("Konflikte");
+            dialog.setTitle(uniformDesign.getText(conflictText));
+            dialog.setHeaderText(uniformDesign.getText(conflictText));
             diffWidgetContent.getStyleClass().add("error");
         }
-
-
 
         dialog.showAndWait();
     }
@@ -109,7 +112,7 @@ public class DiffDialogBuilder {
         final TabPane tabPane = new TabPane();
         tabPane.getStyleClass().add("floating");
 
-        final Tab tabDiff = new Tab("Änderungen");
+        final Tab tabDiff = new Tab(uniformDesign.getText(changesText));
         tabDiff.setClosable(false);
         tabDiff.setContent(diffWidgetContent);
         tabPane.getTabs().addAll(tabDiff);
@@ -128,8 +131,8 @@ public class DiffDialogBuilder {
         CssUtil.addToNode(dialog.getDialogPane());
 
         if (!factoryLog.mergeDiffInfo.hasNoConflicts()){
-            dialog.setTitle("Konflikte");
-            dialog.setHeaderText("Konflikte");
+            dialog.setTitle(uniformDesign.getText(conflictText));
+            dialog.setHeaderText(uniformDesign.getText(conflictText));
             diffWidgetContent.getStyleClass().add("error");
         }
 

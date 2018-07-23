@@ -39,7 +39,6 @@ public class MicroserviceTest {
     @Test
     public void test_summary() throws Exception {
         ExampleFactoryA root = new ExampleFactoryA();
-        root =root.internal().addBackReferences();
 
         String rootId=root.getId();
         final InMemoryDataStorage<ExampleFactoryA, ChangeListingSummary> memoryFactoryStorage = new InMemoryDataStorage<>(root, new ChangeSummaryCreator<ExampleFactoryA, ChangeListingSummary>() {
@@ -177,7 +176,6 @@ public class MicroserviceTest {
     public void recreation_bug() {
 
         ExampleFactoryARecreation root = new ExampleFactoryARecreation();
-        root =root.internal().addBackReferences();
         final InMemoryDataStorage<ExampleFactoryARecreation, Void> memoryFactoryStorage = new InMemoryDataStorage<>(root);
         Microservice<Void,ExampleFactoryARecreation,Void> microservice = new Microservice<>(new FactoryManager<>(new RethrowingFactoryExceptionHandler()), memoryFactoryStorage);
 
@@ -213,5 +211,32 @@ public class MicroserviceTest {
 //        microservice.updateCurrentFactory(microservice.prepareNewFactory(),"","",(p)->true);
 //
 //        Assert.assertEquals(0,memoryDataStorage.getFutureFactoryList().size());
+    }
+
+
+    @Test
+    public void test_getDiffToPreviousVersion() {
+        ExampleFactoryA root = new ExampleFactoryA();
+        final InMemoryDataStorage<ExampleFactoryA,Void> memoryFactoryStorage = new InMemoryDataStorage<>(root);
+
+        Microservice<Void,ExampleFactoryA,Void> microservice = new Microservice<>(new FactoryManager<>(new RethrowingFactoryExceptionHandler()), memoryFactoryStorage);
+        microservice.start();
+        DataAndNewMetadata<ExampleFactoryA> update = microservice.prepareNewFactory();
+        update.root.referenceListAttribute.add(new ExampleFactoryB());
+
+        Assert.assertEquals(0,microservice.prepareNewFactory().root.referenceListAttribute.size());
+
+        FactoryUpdateLog<ExampleFactoryA> log = microservice.updateCurrentFactory(update,"","", x->true);
+        Assert.assertEquals(1,log.mergeDiffInfo.mergeInfos.size());
+        Assert.assertEquals(1,microservice.prepareNewFactory().root.referenceListAttribute.size());
+
+        Assert.assertEquals(2,microservice.getHistoryFactoryList().size());
+        List<StoredDataMetadata<Void>> historyFactoryList = new ArrayList<>(microservice.getHistoryFactoryList());
+        historyFactoryList.sort(Comparator.comparing(o -> o.creationTime));
+        MergeDiffInfo<ExampleFactoryA> diffToPreviousVersion = microservice.getDiffToPreviousVersion(historyFactoryList.get(1));
+
+        Assert.assertEquals(1,diffToPreviousVersion.mergeInfos.size());
+
+
     }
 }
