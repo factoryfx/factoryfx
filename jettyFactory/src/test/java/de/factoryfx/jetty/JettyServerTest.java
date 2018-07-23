@@ -36,12 +36,12 @@ public class JettyServerTest {
     @Test
     public void test_multiple_resources_samepath() throws InterruptedException {
         List<HttpServerConnectorCreator> connectors= new ArrayList<>();
-        connectors.add(new HttpServerConnectorCreator("localhost",8005,null));
+        connectors.add(new HttpServerConnectorCreator("localhost",8015,null));
         JettyServer jettyServer = new JettyServer(connectors, Arrays.asList(new Resource1(), new Resource2()));
         jettyServer.start();
 //        Thread.sleep(1000);
 
-        RestClient restClient = new RestClient("localhost",8005,"",false,null,null);
+        RestClient restClient = new RestClient("localhost",8015,"",false,null,null);
         System.out.println(restClient.get("Resource1",String.class));
         System.out.println(restClient.get("Resource2",String.class));
         jettyServer.stop();
@@ -64,12 +64,12 @@ public class JettyServerTest {
     @Test
     public void test_recreate() throws InterruptedException {
         List<HttpServerConnectorCreator> connectors= new ArrayList<>();
-        connectors.add(new HttpServerConnectorCreator("localhost",8005,null));
+        connectors.add(new HttpServerConnectorCreator("localhost",8015,null));
         JettyServer jettyServer = new JettyServer(connectors, Arrays.asList(new Resource("Hello")));
         jettyServer.start();
 //        Thread.sleep(1000);
 
-        RestClient restClient = new RestClient("localhost",8005,"",false,null,null);
+        RestClient restClient = new RestClient("localhost",8015,"",false,null,null);
         Assert.assertEquals("Hello",restClient.get("Resource",String.class));
         jettyServer = jettyServer.recreate(connectors,Arrays.asList(new Resource("World")));
         Assert.assertEquals("World",restClient.get("Resource",String.class));
@@ -81,10 +81,10 @@ public class JettyServerTest {
     public void test_addRemoveConnector() throws InterruptedException {
 
         List<HttpServerConnectorCreator> connectors= new ArrayList<>();
-        connectors.add(new HttpServerConnectorCreator("localhost",8005,null));
+        connectors.add(new HttpServerConnectorCreator("localhost",8015,null));
         List<HttpServerConnectorCreator> moreConnectors= new ArrayList<>();
-        moreConnectors.add(new HttpServerConnectorCreator("localhost",8005,null));
-        moreConnectors.add(new HttpServerConnectorCreator("localhost",8006,null));
+        moreConnectors.add(new HttpServerConnectorCreator("localhost",8015,null));
+        moreConnectors.add(new HttpServerConnectorCreator("localhost",8016,null));
         List<Object> resources = Arrays.asList(new Resource("Hello"));
 
         JettyServer jettyServer = new JettyServer(connectors, resources);
@@ -92,8 +92,8 @@ public class JettyServerTest {
 //        Thread.sleep(1000);
 
 
-        RestClient restClient8005 = new RestClient("localhost",8005,"",false,null,null);
-        RestClient restClient8006 = new RestClient("localhost",8006,"",false,null,null);
+        RestClient restClient8005 = new RestClient("localhost",8015,"",false,null,null);
+        RestClient restClient8006 = new RestClient("localhost",8016,"",false,null,null);
         Assert.assertEquals("Hello",restClient8005.get("Resource",String.class));
         try {
             restClient8006.get("Resource",String.class);
@@ -138,11 +138,11 @@ public class JettyServerTest {
     @Test
     public void test_lateResponse() throws InterruptedException, ExecutionException, TimeoutException {
         List<HttpServerConnectorCreator> connectors= new ArrayList<>();
-        connectors.add(new HttpServerConnectorCreator("localhost",8005,null));
+        connectors.add(new HttpServerConnectorCreator("localhost",8015,null));
         JettyServer jettyServer = new JettyServer(connectors, Arrays.asList(new LateResponse()));
         jettyServer.start();
 //        Thread.sleep(1000);
-        RestClient restClient = new RestClient("localhost",8005,"",false,null,null);
+        RestClient restClient = new RestClient("localhost",8015,"",false,null,null);
         CompletableFuture<String> lateResponse = new CompletableFuture<>();
         new Thread() {
             public void run() {
