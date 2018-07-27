@@ -20,6 +20,7 @@ public class MicroserviceBuilder {
      *
      * @param root factory root
      * @param <V> Visitor
+     * @param <L> root liveobject
      * @param <R> Root
      * @param <S> Summary
      * @return microservice
@@ -34,6 +35,7 @@ public class MicroserviceBuilder {
      * @param root factory root
      * @param path filesystem path to store
      * @param <V> Visitor
+     * @param <L> root liveobject
      * @param <R> Root
      * @param <S> Summary
      * @return microservice

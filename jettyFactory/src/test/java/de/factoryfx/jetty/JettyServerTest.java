@@ -12,8 +12,6 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Response;
 
-import de.factoryfx.jetty.HttpServerConnectorCreator;
-import de.factoryfx.jetty.JettyServer;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -116,9 +114,9 @@ public class JettyServerTest {
 
 
     @Path("/Resource")
-    public static class LateResponse {
+    public static class LateResponseTestResource {
 
-        public LateResponse() {
+        public LateResponseTestResource() {
 
         }
 
@@ -139,28 +137,33 @@ public class JettyServerTest {
     public void test_lateResponse() throws InterruptedException, ExecutionException, TimeoutException {
         List<HttpServerConnectorCreator> connectors= new ArrayList<>();
         connectors.add(new HttpServerConnectorCreator("localhost",8015,null));
-        JettyServer jettyServer = new JettyServer(connectors, Arrays.asList(new LateResponse()));
+        JettyServer jettyServer = new JettyServer(connectors, List.of(new LateResponseTestResource()));
         jettyServer.start();
-//        Thread.sleep(1000);
-        RestClient restClient = new RestClient("localhost",8015,"",false,null,null);
-        CompletableFuture<String> lateResponse = new CompletableFuture<>();
-        new Thread() {
-            public void run() {
-                try {
-                    lateResponse.complete(restClient.get("Resource", String.class));
-                } catch (Exception ex) {
-                    lateResponse.completeExceptionally(ex);
-                }
-            }
-        }.start();
-        Thread.sleep(200);
-        jettyServer = jettyServer.recreate(connectors,new ArrayList<>());
+
         try {
-            restClient.get("Resource",String.class);
-            Assert.fail("Expected exception");
-        } catch (Exception expected) {}
-        Assert.assertEquals("RESPONSE",lateResponse.get(500, TimeUnit.MILLISECONDS));
-        jettyServer.stop();
+            RestClient restClient = new RestClient("localhost",8015,"",false,null,null);
+            CompletableFuture<String> lateResponse = new CompletableFuture<>();
+            new Thread() {
+                public void run() {
+                    try {
+                        lateResponse.complete(restClient.get("Resource", String.class));
+                    } catch (Exception ex) {
+                        lateResponse.completeExceptionally(ex);
+                    }
+                }
+            }.start();
+            Thread.sleep(400);
+            jettyServer = jettyServer.recreate(connectors,new ArrayList<>());
+            try {
+                restClient.get("Resource",String.class);
+                Assert.fail("Expected exception");
+            } catch (Exception expected) {}
+            Assert.assertEquals("RESPONSE",lateResponse.get(1000, TimeUnit.MILLISECONDS));
+
+        } finally {
+            jettyServer.stop();
+        }
+
 
     }
 

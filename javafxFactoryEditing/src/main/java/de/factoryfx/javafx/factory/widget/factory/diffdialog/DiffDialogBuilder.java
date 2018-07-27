@@ -21,7 +21,6 @@ public class DiffDialogBuilder {
 
     private LanguageText conflictText= new LanguageText().en("Changes").de("Konflikte");
     private LanguageText changesText= new LanguageText().en("Changes").de("Änderungen");
-    private LanguageText refreshText= new LanguageText().en("Refresh").de("Aktualisieren");
 
     private final UniformDesign uniformDesign;
     private final AttributeEditorBuilder attributeEditorBuilder;
