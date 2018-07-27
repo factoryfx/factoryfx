@@ -9,4 +9,6 @@ module de.factoryfx.javafxDistributionClient {
     requires jersey.client;
     requires jersey.media.json.jackson;
     requires jersey.common;
+
+    exports de.factoryfx.javafx.distribution.launcher.ui;
 }
