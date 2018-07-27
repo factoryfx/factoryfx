@@ -61,6 +61,12 @@ public class FileSystemDataStorage<R extends Data,S> implements DataStorage<R,S>
     }
 
     @Override
+    public String getCurrentFactoryStorageId() {
+        StoredDataMetadata<S> storedDataMetadata = dataSerialisationManager.readStoredFactoryMetadata(readFile(currentFactoryPathMetadata));
+        return storedDataMetadata.id;
+    }
+
+    @Override
     public void updateCurrentFactory(DataAndNewMetadata<R> update, String user, String comment, MergeDiffInfo<R> mergeDiff) {
         S changeSummary = null;
         if (mergeDiff!=null){
@@ -83,11 +89,11 @@ public class FileSystemDataStorage<R extends Data,S> implements DataStorage<R,S>
     }
 
     @Override
-    public DataAndNewMetadata<R> getPrepareNewFactory(){
+    public DataAndNewMetadata<R> prepareNewFactory(String currentFactoryStorageId, R currentFactoryCopy){
         NewDataMetadata metadata = new NewDataMetadata();
-        metadata.baseVersionId=getCurrentFactory().metadata.id;
+        metadata.baseVersionId=currentFactoryStorageId;
         dataSerialisationManager.prepareNewFactoryMetadata(metadata);
-        return new DataAndNewMetadata<>(getCurrentFactory().root,metadata);
+        return new DataAndNewMetadata<>(currentFactoryCopy,metadata);
     }
 
 

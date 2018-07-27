@@ -76,8 +76,8 @@ public class ExampleData1 extends Data {
     public final ColorAttribute colorAttribute=new ColorAttribute().en("colorAttribute").de("colorAttribute de");
     public final LocaleAttribute localeAttribute =new LocaleAttribute().en("colorAttribute").de("colorAttribute de");
 
-    public final DataReferenceAttribute<ExampleData2> referenceAttributereadonly = new DataReferenceAttribute<ExampleData2>().userReadOnly().defaultValue(new ExampleData2()).en("referenceAttributereadonly").de("referenceAttributereadonly de");
-    public final FactoryPolymorphicReferenceListAttribute<Printer> polymorphicreferenceList = new FactoryPolymorphicReferenceListAttribute<Printer>().setup(Printer.class, ErrorPrinterFactory.class, OutPrinterFactory.class).en("polymorphicreferenceList").de("polymorphicreferenceList");
+    public final DataReferenceAttribute<ExampleData2> referenceAttributeReadonly = new DataReferenceAttribute<ExampleData2>().userReadOnly().en("referenceAttributereadonly").de("referenceAttributereadonly de");
+    public final FactoryPolymorphicReferenceListAttribute<Printer> polymorphicReferenceList = new FactoryPolymorphicReferenceListAttribute<Printer>().setup(Printer.class, ErrorPrinterFactory.class, OutPrinterFactory.class).en("polymorphicreferenceList").de("polymorphicreferenceList");
 
 
     public final StringAttribute specialAttribute=new StringAttribute().longText().en("specialAttribute").de("specialAttribute de");

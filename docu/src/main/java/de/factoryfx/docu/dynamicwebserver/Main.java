@@ -7,6 +7,7 @@ import de.factoryfx.data.storage.inmemory.InMemoryDataStorage;
 import de.factoryfx.factory.atrribute.FactoryReferenceAttribute;
 import de.factoryfx.factory.exception.RethrowingFactoryExceptionHandler;
 import de.factoryfx.jetty.HttpServerConnectorFactory;
+import de.factoryfx.jetty.JettyServer;
 import de.factoryfx.jetty.JettyServerFactory;
 import de.factoryfx.server.Microservice;
 import org.slf4j.Logger;
@@ -42,7 +43,7 @@ public class Main {
         jettyServer.server.get().resource.set(createNewWebResourceReturningCreationTimestamp());
 
 
-        Microservice<Void,RootFactory,Void> microservice
+        Microservice<Void,JettyServer,RootFactory,Void> microservice
                 = new Microservice<>(new FactoryManager<>(new RethrowingFactoryExceptionHandler()),new InMemoryDataStorage<>(jettyServer));
         microservice.start();
 

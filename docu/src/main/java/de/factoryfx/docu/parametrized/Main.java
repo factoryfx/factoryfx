@@ -14,7 +14,7 @@ public class Main {
         printerCreatorFactory.text.set("bla");
         root.printerCreator.set(printerCreatorFactory);
 
-        Microservice<Void,RootFactory,Void> microservice = new Microservice<>(new FactoryManager<>(new RethrowingFactoryExceptionHandler()),new InMemoryDataStorage<>(root));
+        Microservice<Void,Root,RootFactory,Void> microservice = new Microservice<>(new FactoryManager<>(new RethrowingFactoryExceptionHandler()),new InMemoryDataStorage<>(root));
         microservice.start();
 
         //prints: 123::bla

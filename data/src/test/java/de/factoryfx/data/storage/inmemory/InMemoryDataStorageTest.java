@@ -40,7 +40,7 @@ public class InMemoryDataStorageTest {
 
         Assert.assertEquals(1,fileSystemFactoryStorage.getHistoryFactoryList().size());
 
-        DataAndNewMetadata<Dummy> preparedNewFactory = fileSystemFactoryStorage.getPrepareNewFactory();
+        DataAndNewMetadata<Dummy> preparedNewFactory = fileSystemFactoryStorage.prepareNewFactory();
         fileSystemFactoryStorage.updateCurrentFactory(preparedNewFactory,"","",null);
 
 
@@ -56,7 +56,7 @@ public class InMemoryDataStorageTest {
 
         Assert.assertEquals(1,fileSystemFactoryStorage.getHistoryFactoryList().size());
 
-        DataAndNewMetadata<Dummy> current = fileSystemFactoryStorage.getPrepareNewFactory();
+        DataAndNewMetadata<Dummy> current = fileSystemFactoryStorage.prepareNewFactory();
         fileSystemFactoryStorage.addFutureFactory(current.root,new NewScheduledDataMetadata(current.metadata,LocalDateTime.now()),"","",null);
 
 

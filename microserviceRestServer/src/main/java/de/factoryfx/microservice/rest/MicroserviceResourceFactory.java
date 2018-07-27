@@ -37,7 +37,7 @@ public class MicroserviceResourceFactory<V,R extends FactoryBase<?,V,R>,S> exten
             if (userManagementInstance==null) {
                 userManagementInstance=new NoUserManagement();
             }
-            Microservice<V, R, S> microservice = (Microservice<V, R, S>)utilityFactory().getMicroservice();
+            Microservice<V, ?, R, S> microservice = (Microservice<V, ?, R, S>)utilityFactory().getMicroservice();
             return new MicroserviceResource<>(microservice, userManagementInstance,authorizedKeyUserEvaluator,emptyVisitorCreator.get(),utilityFactory().getAttributeSetupHelper());
         });
 

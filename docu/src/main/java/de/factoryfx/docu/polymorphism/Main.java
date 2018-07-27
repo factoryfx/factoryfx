@@ -1,5 +1,6 @@
 package de.factoryfx.docu.polymorphism;
 
+
 import de.factoryfx.factory.FactoryManager;
 import de.factoryfx.data.storage.DataAndNewMetadata;
 import de.factoryfx.data.storage.inmemory.InMemoryDataStorage;
@@ -13,7 +14,7 @@ public class Main {
         //update to print system.out
         root.printer.set(new DefaultPrinterFactory());
 
-        Microservice<Void,RootFactory,Void> microservice = new Microservice<>(new FactoryManager<>(new RethrowingFactoryExceptionHandler()),new InMemoryDataStorage<>(root));
+        Microservice<Void,Root,RootFactory,Void> microservice = new Microservice<>(new FactoryManager<>(new RethrowingFactoryExceptionHandler()),new InMemoryDataStorage<>(root));
         microservice.start();
 
         DataAndNewMetadata<RootFactory> update = microservice.prepareNewFactory();

@@ -7,14 +7,14 @@ import de.factoryfx.server.Microservice;
 
 import java.util.List;
 
-public class ExceptionResponseAction<V,R extends FactoryBase<?,V,R>> {
+public class ExceptionResponseAction<V,L,R extends FactoryBase<L,V,R>> {
 
-    private final FactoryManager<V,R> factoryManager;
+    private final FactoryManager<V,L,R> factoryManager;
     private final RootFactoryWrapper<R> previousFactoryRootCopy;
     private final RootFactoryWrapper<R> currentFactoryRoot;
     private final List<FactoryBase<?,?,?>> removed;
 
-    public ExceptionResponseAction(FactoryManager<V,R> factoryManager, RootFactoryWrapper<R> previousFactoryRootCopy, RootFactoryWrapper<R> currentFactoryRoot, List<FactoryBase<?,?,?>> removed) {
+    public ExceptionResponseAction(FactoryManager<V,L,R> factoryManager, RootFactoryWrapper<R> previousFactoryRootCopy, RootFactoryWrapper<R> currentFactoryRoot, List<FactoryBase<?,?,?>> removed) {
         this.factoryManager = factoryManager;
         this.previousFactoryRootCopy = previousFactoryRootCopy;
         this.currentFactoryRoot = currentFactoryRoot;
@@ -22,13 +22,13 @@ public class ExceptionResponseAction<V,R extends FactoryBase<?,V,R>> {
     }
 
     public void reset() {
-        Microservice<V, R, ?> microservice = currentFactoryRoot.getRoot().utilityFactory().getMicroservice();
+        Microservice<V, ?, R, ?> microservice = currentFactoryRoot.getRoot().utilityFactory().getMicroservice();
         previousFactoryRootCopy.getRoot().internalFactory().setMicroservice(microservice);
 
         for (FactoryBase<?, ?, ?> removedFactory : removed) {
             removedFactory.internalFactory().cleanUpAfterCrash();
         }
-        factoryManager.restCurrentFactory();
+        factoryManager.resetAfterCrash();
 
         factoryManager.start(previousFactoryRootCopy);
     }

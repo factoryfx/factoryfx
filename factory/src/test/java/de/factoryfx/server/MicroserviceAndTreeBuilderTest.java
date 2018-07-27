@@ -7,6 +7,7 @@ import de.factoryfx.factory.builder.Scope;
 import de.factoryfx.factory.exception.RethrowingFactoryExceptionHandler;
 import de.factoryfx.factory.testfactories.ExampleFactoryA;
 import de.factoryfx.factory.testfactories.ExampleFactoryB;
+import de.factoryfx.factory.testfactories.ExampleLiveObjectA;
 import org.junit.Test;
 
 public class MicroserviceAndTreeBuilderTest {
@@ -31,7 +32,7 @@ public class MicroserviceAndTreeBuilderTest {
 
         ExampleFactoryA root = builder.buildTreeUnvalidated();
         final InMemoryDataStorage<ExampleFactoryA, Void> memoryFactoryStorage = new InMemoryDataStorage<>(root);
-        Microservice<Void,ExampleFactoryA,Void> microservice = new Microservice<>(new FactoryManager<>(new RethrowingFactoryExceptionHandler()), memoryFactoryStorage);
+        Microservice<Void,ExampleLiveObjectA,ExampleFactoryA,Void> microservice = new Microservice<>(new FactoryManager<>(new RethrowingFactoryExceptionHandler()), memoryFactoryStorage);
 
         microservice.start();
 

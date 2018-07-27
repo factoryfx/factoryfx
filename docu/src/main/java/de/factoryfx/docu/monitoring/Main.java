@@ -26,7 +26,7 @@ public class Main {
         jettyServer.factoryReferenceAttribute.set(new SimpleResourceFactory());
 
 
-        Microservice<ServerVisitor,RootFactory,Void> microservice = new Microservice<>(new FactoryManager<>(new RethrowingFactoryExceptionHandler()),new InMemoryDataStorage<>(rootFactory));
+        Microservice<ServerVisitor,Root,RootFactory,Void> microservice = new Microservice<>(new FactoryManager<>(new RethrowingFactoryExceptionHandler()),new InMemoryDataStorage<>(rootFactory));
         microservice.start();
 
         //execute some random request as example

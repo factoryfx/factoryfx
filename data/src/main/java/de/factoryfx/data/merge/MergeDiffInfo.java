@@ -8,7 +8,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import de.factoryfx.data.Data;
 import de.factoryfx.data.jackson.ObjectMapperBuilder;
 
-//JSON serializable
+/**
+ * @param <R> root data type
+ */
 public class MergeDiffInfo<R extends Data> {
     @JsonProperty
     private final Class<R> rootClazz;

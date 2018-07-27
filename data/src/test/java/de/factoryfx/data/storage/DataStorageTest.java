@@ -25,14 +25,14 @@ public class DataStorageTest {
 
         Thread.sleep(2);//avoid same timestamp
         {
-            DataAndNewMetadata<ExampleDataA> preparedNewFactory = factoryStorage.getPrepareNewFactory();
+            DataAndNewMetadata<ExampleDataA> preparedNewFactory = factoryStorage.prepareNewFactory(factoryStorage.getCurrentFactoryStorageId(),factoryStorage.getCurrentFactory().root.utility().copy());
             preparedNewFactory.root.stringAttribute.set("2");
             factoryStorage.updateCurrentFactory(preparedNewFactory, "", "",null);
         }
         Thread.sleep(2);//avoid same timestamp
 
         {
-            DataAndNewMetadata<ExampleDataA> preparedNewFactory = factoryStorage.getPrepareNewFactory();
+            DataAndNewMetadata<ExampleDataA> preparedNewFactory = factoryStorage.prepareNewFactory(factoryStorage.getCurrentFactoryStorageId(),factoryStorage.getCurrentFactory().root.utility().copy());
             preparedNewFactory.root.stringAttribute.set("3");
             factoryStorage.updateCurrentFactory(preparedNewFactory, "", "",null);
         }

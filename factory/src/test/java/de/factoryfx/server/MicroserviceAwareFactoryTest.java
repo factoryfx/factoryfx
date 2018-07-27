@@ -18,8 +18,8 @@ public class MicroserviceAwareFactoryTest {
         rootTestclazz.ref.set(value);
         rootTestclazz = rootTestclazz.internal().addBackReferences();
 
-        final FactoryManager<Void, RootTestClazz> factoryManager = new FactoryManager<>(new RethrowingFactoryExceptionHandler());
-        Microservice<Void,RootTestClazz,Void> microservice = new Microservice<>(factoryManager, new InMemoryDataStorage<>(rootTestclazz));
+        final FactoryManager<Void, String,RootTestClazz> factoryManager = new FactoryManager<>(new RethrowingFactoryExceptionHandler());
+        Microservice<Void,String,RootTestClazz,Void> microservice = new Microservice<>(factoryManager, new InMemoryDataStorage<>(rootTestclazz));
         microservice.start();
 
         Assert.assertEquals(microservice,factoryManager.getCurrentFactory().ref.get().utilityFactory().getMicroservice());

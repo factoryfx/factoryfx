@@ -137,12 +137,6 @@ public abstract class Attribute<T,A extends Attribute<T,A>>{
      * */
     public abstract void internal_removeListener(AttributeChangeListener<T,A> listener);
 
-    @SuppressWarnings("unchecked")
-    public A defaultValue(T defaultValue) {
-        set(defaultValue);
-        return (A)this;
-    }
-
     public abstract T get();
 
     public abstract void set(T value);

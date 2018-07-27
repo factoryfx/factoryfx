@@ -63,8 +63,8 @@ public class ContentAssist {
             };
             NodeTraversal.traverseTyped(compiler,root,scopedCallback);
 
-        } catch (RuntimeException ignored) {
-            ignored.printStackTrace();
+        } catch (RuntimeException e) {
+            e.printStackTrace();
         }
         return ret;
 

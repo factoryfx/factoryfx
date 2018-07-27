@@ -24,7 +24,7 @@ public class MicroserviceBuilder {
      * @param <S> Summary
      * @return microservice
      */
-    public static <V,R extends FactoryBase<?,V,R>,S> Microservice<V,R,S> buildInMemoryMicroservice(R root){
+    public static <V,L,R extends FactoryBase<L,V,R>,S> Microservice<V,L,R,S> buildInMemoryMicroservice(R root){
         return new Microservice<>(new FactoryManager<>(new RethrowingFactoryExceptionHandler()), new InMemoryDataStorage<>(root));
     }
 
@@ -39,7 +39,7 @@ public class MicroserviceBuilder {
      * @return microservice
      */
     @SuppressWarnings("unchecked")
-    public static <V,R extends FactoryBase<?,V,R>,S> Microservice<V,R,S> buildFilesystemMicroservice(R root, Path path){
+    public static <V,L,R extends FactoryBase<L,V,R>,S> Microservice<V,L,R,S> buildFilesystemMicroservice(R root, Path path){
         Class<R> rootClass = (Class<R>) root.getClass();
         DataSerialisationManager<R,S> defaultSerialisationManager = new DataSerialisationManager<>(new JacksonSerialisation<>(1),new JacksonDeSerialisation<>(rootClass,1),new ArrayList<>(),1);
         return new Microservice<>(new FactoryManager<>(new LoggingFactoryExceptionHandler(new ResettingFactoryExceptionHandler())), new FileSystemDataStorage<>(path, root,defaultSerialisationManager));

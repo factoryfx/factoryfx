@@ -159,31 +159,6 @@ public abstract class ReferenceAttribute<T extends Data, A extends ReferenceBase
         return new ArrayList<>();
     }
 
-    boolean defaultValueUsed;
-    @SuppressWarnings("unchecked")
-    public A defaultValue(T defaultValue) {
-        defaultValueUsed=true;
-        return super.defaultValue(defaultValue);
-    }
-    //**attributes with a default value can not be set to null(deleted)*/
-    public boolean internal_isUserDeletable(){
-        return !defaultValueUsed;
-    }
-
-
-    /**default values can be confusing in merge and history view.
-     * a Fixed a id solves that, the
-     * @param defaultValue  defaultValue
-     * @param id unique id, usually a uuid
-     * @return self
-     * */
-    @SuppressWarnings("unchecked")
-    public A defaultValue(T defaultValue, String id) {
-        set(defaultValue);
-        get().setId(id);
-        return (A)this;
-    }
-
     @Override
     @SuppressWarnings("unchecked")
     public void internal_merge(Attribute<?,?> newValue) {

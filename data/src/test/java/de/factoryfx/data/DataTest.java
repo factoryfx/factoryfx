@@ -248,28 +248,6 @@ public class DataTest {
         return null;
     }
 
-    public static class ExampleWithDefaultParent extends Data {
-        public final DataReferenceAttribute<ExampleWithDefault> referenceAttribute = new DataReferenceAttribute<>(ExampleWithDefault.class).labelText("ExampleA2");
-    }
-
-    public static class ExampleWithDefault extends Data {
-        public final DataReferenceAttribute<ExampleDataB> referenceAttribute = new DataReferenceAttribute<>(ExampleDataB.class).labelText("ExampleA2").defaultValue(new ExampleDataB());
-    }
-    @Test
-    public void test_editing_nested_add(){
-        ExampleWithDefaultParent exampleWithDefaultParent = new ExampleWithDefaultParent();
-        exampleWithDefaultParent.internal().addBackReferences();
-
-        Assert.assertTrue(exampleWithDefaultParent.internal().readyForUsage());
-        exampleWithDefaultParent.referenceAttribute.get();
-
-        exampleWithDefaultParent.referenceAttribute.set(new ExampleWithDefault());
-
-        Assert.assertTrue(exampleWithDefaultParent.internal().readyForUsage());
-        Assert.assertTrue(exampleWithDefaultParent.referenceAttribute.get().internal().readyForUsage());
-        Assert.assertTrue(exampleWithDefaultParent.referenceAttribute.get().referenceAttribute.get().internal().readyForUsage());
-    }
-
 
     @Test
     public void test_zero_copy(){

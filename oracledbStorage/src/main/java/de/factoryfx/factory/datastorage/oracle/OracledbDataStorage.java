@@ -88,6 +88,26 @@ public class OracledbDataStorage<R extends Data,S> implements DataStorage<R,S> {
     }
 
     @Override
+    public String getCurrentFactoryStorageId() {
+        //TODO cache id to improve performance
+        try (Connection connection= connectionSupplier.get()){
+            try (Statement statement = connection.createStatement()){
+                String sql = "SELECT * FROM FACTORY_CURRENT";
+
+                try (ResultSet resultSet =statement.executeQuery(sql)){
+                    if(resultSet.next()){
+                        StoredDataMetadata<S> factoryMetadata = dataSerialisationManager.readStoredFactoryMetadata(JdbcUtil.readStringToBlob(resultSet,"factoryMetadata"));
+                        return factoryMetadata.id;
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return null;
+    }
+
+    @Override
     public void updateCurrentFactory(DataAndNewMetadata<R> update, String user, String comment, MergeDiffInfo<R> mergeDiffInfo) {
         S changeSummary = null;
         if (mergeDiffInfo!=null){
@@ -119,11 +139,11 @@ public class OracledbDataStorage<R extends Data,S> implements DataStorage<R,S> {
     }
 
     @Override
-    public DataAndNewMetadata<R> getPrepareNewFactory(){
+    public DataAndNewMetadata<R> prepareNewFactory(String currentFactoryStorageId, R currentFactoryCopy){
         NewDataMetadata metadata = new NewDataMetadata();
-        metadata.baseVersionId=getCurrentFactory().metadata.id;
+        metadata.baseVersionId=currentFactoryStorageId;
         dataSerialisationManager.prepareNewFactoryMetadata(metadata);
-        return new DataAndNewMetadata<>(getCurrentFactory().root,metadata);
+        return new DataAndNewMetadata<>(currentFactoryCopy,metadata);
     }
 
 

@@ -7,18 +7,15 @@ import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-import javafx.beans.value.ChangeListener;
+import de.factoryfx.javafx.data.util.CheckComboBoxHelper;
 import javafx.collections.ObservableList;
 import javafx.scene.Node;
-import javafx.scene.control.ComboBox;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
-import javafx.scene.control.Skin;
 import javafx.util.StringConverter;
 
 import org.controlsfx.control.CheckComboBox;
 
-import impl.org.controlsfx.skin.CheckComboBoxSkin;
 import de.factoryfx.data.Data;
 import de.factoryfx.data.attribute.ReferenceListAttribute;
 import de.factoryfx.javafx.data.editor.attribute.ListAttributeEditorVisualisation;
@@ -39,14 +36,7 @@ public class CatalogListAttributeVisualisation extends ListAttributeEditorVisual
         CheckComboBox<Data> comboBox = new CheckComboBox<>();
         updateCheckComboBox(comboBox);
 
-        //workaround: http://stackoverflow.com/questions/25177523/how-to-listen-to-open-close-events-of-a-checkcombobox
-        comboBox.skinProperty().addListener((ChangeListener<Skin>) (skinObs, oldVal, newVal) -> {
-            if (oldVal == null && newVal != null) {
-                CheckComboBoxSkin skin = (CheckComboBoxSkin) newVal;
-                ComboBox combo = (ComboBox) skin.getChildren().get(0);
-                combo.showingProperty().addListener((obs, hidden, showing) -> updateCheckComboBox(comboBox));
-            }
-        });
+        CheckComboBoxHelper.addOpenCloseListener(comboBox,()->updateCheckComboBox(comboBox));
 
         comboBox.setConverter(new StringConverter<>() {
             @Override

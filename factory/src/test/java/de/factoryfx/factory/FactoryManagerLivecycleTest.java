@@ -107,7 +107,7 @@ public class FactoryManagerLivecycleTest {
 
     @Test
     public void test_initial_start(){
-        FactoryManager<Void,LivecycleFactoryA> factoryManager = new FactoryManager<>(new RethrowingFactoryExceptionHandler());
+        FactoryManager<Void,DummyLifeObejct,LivecycleFactoryA> factoryManager = new FactoryManager<>(new RethrowingFactoryExceptionHandler());
 
         LivecycleFactoryA exampleFactoryA = new LivecycleFactoryA();
         LivecycleFactoryB exampleFactoryB = new LivecycleFactoryB();
@@ -127,7 +127,7 @@ public class FactoryManagerLivecycleTest {
 
     @Test
     public void test_initial_destroy(){
-        FactoryManager<Void,LivecycleFactoryA> factoryManager = new FactoryManager<>(new RethrowingFactoryExceptionHandler());
+        FactoryManager<Void,DummyLifeObejct,LivecycleFactoryA> factoryManager = new FactoryManager<>(new RethrowingFactoryExceptionHandler());
 
         LivecycleFactoryA exampleFactoryA = new LivecycleFactoryA();
         LivecycleFactoryB exampleFactoryB = new LivecycleFactoryB();
@@ -143,7 +143,7 @@ public class FactoryManagerLivecycleTest {
 
     @Test
     public void test_initial_destroy_reused_ref(){
-        FactoryManager<Void,LivecycleFactoryA> factoryManager = new FactoryManager<>(new RethrowingFactoryExceptionHandler());
+        FactoryManager<Void,DummyLifeObejct,LivecycleFactoryA> factoryManager = new FactoryManager<>(new RethrowingFactoryExceptionHandler());
 
         LivecycleFactoryA exampleFactoryA = new LivecycleFactoryA();
         LivecycleFactoryB exampleFactoryB = new LivecycleFactoryB();
@@ -162,7 +162,7 @@ public class FactoryManagerLivecycleTest {
 
     @Test
     public void test_initial_changed_double_used(){
-        FactoryManager<Void,LivecycleFactoryA> factoryManager = new FactoryManager<>(new RethrowingFactoryExceptionHandler());
+        FactoryManager<Void,DummyLifeObejct,LivecycleFactoryA> factoryManager = new FactoryManager<>(new RethrowingFactoryExceptionHandler());
 
         LivecycleFactoryA exampleFactoryA = new LivecycleFactoryA();
         LivecycleFactoryB exampleFactoryB = new LivecycleFactoryB();
@@ -193,7 +193,7 @@ public class FactoryManagerLivecycleTest {
 
     @Test
     public void test_initial_changed(){
-        FactoryManager<Void,LivecycleFactoryA> factoryManager = new FactoryManager<>(new RethrowingFactoryExceptionHandler());
+        FactoryManager<Void,DummyLifeObejct,LivecycleFactoryA> factoryManager = new FactoryManager<>(new RethrowingFactoryExceptionHandler());
 
         LivecycleFactoryA exampleFactoryA = new LivecycleFactoryA();
         LivecycleFactoryB exampleFactoryB = new LivecycleFactoryB();
@@ -224,7 +224,7 @@ public class FactoryManagerLivecycleTest {
 
     @Test
     public void test_initial_viewlist_added(){
-        FactoryManager<Void,LivecycleFactoryA> factoryManager = new FactoryManager<>(new RethrowingFactoryExceptionHandler());
+        FactoryManager<Void,DummyLifeObejct,LivecycleFactoryA> factoryManager = new FactoryManager<>(new RethrowingFactoryExceptionHandler());
 
         LivecycleFactoryA exampleFactoryA = new LivecycleFactoryA();
         LivecycleFactoryB exampleFactoryB = new LivecycleFactoryB();
@@ -259,7 +259,7 @@ public class FactoryManagerLivecycleTest {
 
     @Test
     public void test_initial_viewlist_removed(){
-        FactoryManager<Void,LivecycleFactoryA> factoryManager = new FactoryManager<>(new RethrowingFactoryExceptionHandler());
+        FactoryManager<Void,DummyLifeObejct,LivecycleFactoryA> factoryManager = new FactoryManager<>(new RethrowingFactoryExceptionHandler());
 
         LivecycleFactoryA exampleFactoryA = new LivecycleFactoryA();
         LivecycleFactoryB exampleFactoryB = new LivecycleFactoryB();
@@ -292,7 +292,7 @@ public class FactoryManagerLivecycleTest {
 
     @Test
     public void test_changed_list_only(){
-        FactoryManager<Void,LivecycleFactoryA> factoryManager = new FactoryManager<>(new RethrowingFactoryExceptionHandler());
+        FactoryManager<Void,DummyLifeObejct,LivecycleFactoryA> factoryManager = new FactoryManager<>(new RethrowingFactoryExceptionHandler());
 
         LivecycleFactoryA exampleFactoryA = new LivecycleFactoryA();
         exampleFactoryA.refList.add(new LivecycleFactoryC());
@@ -319,7 +319,7 @@ public class FactoryManagerLivecycleTest {
 
     @Test
     public void test_changed_list_only_no_changes(){
-        FactoryManager<Void,LivecycleFactoryA> factoryManager = new FactoryManager<>(new RethrowingFactoryExceptionHandler());
+        FactoryManager<Void,DummyLifeObejct,LivecycleFactoryA> factoryManager = new FactoryManager<>(new RethrowingFactoryExceptionHandler());
 
         LivecycleFactoryA root = new LivecycleFactoryA();
         LivecycleFactoryA exampleFactoryA = new LivecycleFactoryA();
@@ -346,7 +346,7 @@ public class FactoryManagerLivecycleTest {
 
     @Test
     public void test_list_instance_only_once(){
-        FactoryManager<Void,LivecycleFactoryA> factoryManager = new FactoryManager<>(new RethrowingFactoryExceptionHandler());
+        FactoryManager<Void,DummyLifeObejct,LivecycleFactoryA> factoryManager = new FactoryManager<>(new RethrowingFactoryExceptionHandler());
 
         LivecycleFactoryA root = new LivecycleFactoryA();
         root.refList.add(new LivecycleFactoryC());

@@ -41,13 +41,12 @@ public class ReferenceAttributeVisualisation extends ValueAttributeEditorVisuali
     private final boolean isUserEditable;
     private final boolean isUserSelectable;
     private final boolean isUserCreateable;
-    private final boolean isUserDeletable;
     private final boolean isCatalogBased;
     private final Runnable remover;
     private final Consumer<Data> referenceSetter;
 
 
-    public ReferenceAttributeVisualisation(UniformDesign uniformDesign, Consumer<Data> navigateToData, Supplier<List<Data>> newValueProvider, Consumer<Data> referenceSetter, Supplier<Collection<? extends Data>> possibleValuesProvider, Runnable remover, boolean isUserEditable, boolean isUserSelectable, boolean isUserCreateable, boolean isUserDeletable, boolean isCatalogBased) {
+    public ReferenceAttributeVisualisation(UniformDesign uniformDesign, Consumer<Data> navigateToData, Supplier<List<Data>> newValueProvider, Consumer<Data> referenceSetter, Supplier<Collection<? extends Data>> possibleValuesProvider, Runnable remover, boolean isUserEditable, boolean isUserSelectable, boolean isUserCreateable, boolean isCatalogBased) {
         this.uniformDesign = uniformDesign;
         this.navigateToData = navigateToData;
         this.newValueProvider = newValueProvider;
@@ -57,7 +56,6 @@ public class ReferenceAttributeVisualisation extends ValueAttributeEditorVisuali
         this.isUserCreateable = isUserCreateable;
         this.remover = remover;
         this.referenceSetter = referenceSetter;
-        this.isUserDeletable = isUserDeletable;
         this.isCatalogBased = isCatalogBased;
     }
 
@@ -86,7 +84,7 @@ public class ReferenceAttributeVisualisation extends ValueAttributeEditorVisuali
         Button deleteButton = new Button();
         uniformDesign.addDangerIcon(deleteButton,FontAwesome.Glyph.TIMES);
         deleteButton.setOnAction(event -> remover.run());
-        deleteButton.disableProperty().bind(boundTo.isNull().or(new SimpleBooleanProperty(!isUserEditable)).or(new SimpleBooleanProperty(readonly).or(new SimpleBooleanProperty(!isUserDeletable))));
+        deleteButton.disableProperty().bind(boundTo.isNull().or(new SimpleBooleanProperty(!isUserEditable)).or(new SimpleBooleanProperty(readonly)));
 
         TextField textField = new TextField();
         InvalidationListener invalidationListener = observable -> {

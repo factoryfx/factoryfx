@@ -10,6 +10,7 @@ import de.factoryfx.factory.SimpleFactoryBase;
 import de.factoryfx.factory.atrribute.FactoryReferenceAttribute;
 import de.factoryfx.factory.exception.RethrowingFactoryExceptionHandler;
 import de.factoryfx.jetty.HttpServerConnectorFactory;
+import de.factoryfx.jetty.JettyServer;
 import de.factoryfx.jetty.JettyServerFactory;
 import de.factoryfx.microservice.common.ResponseWorkaround;
 import de.factoryfx.microservice.rest.MicroserviceResource;
@@ -72,10 +73,8 @@ public class MicroserviceRestIntegrationTest {
         userManagement.users.add(user);
         microserviceResource.userManagement.set(userManagement);
 
-        Microservice<TestVisitor, TestJettyServer, Void> microservice = new Microservice<>(new FactoryManager<>(new RethrowingFactoryExceptionHandler()), new InMemoryDataStorage<>(jettyServer));
-        Thread serverThread = new Thread(() -> {
-            microservice.start();
-        });
+        Microservice<TestVisitor, JettyServer, TestJettyServer, Void> microservice = new Microservice<>(new FactoryManager<>(new RethrowingFactoryExceptionHandler()), new InMemoryDataStorage<>(jettyServer));
+        Thread serverThread = new Thread(microservice::start);
         serverThread.start();
 
         try {

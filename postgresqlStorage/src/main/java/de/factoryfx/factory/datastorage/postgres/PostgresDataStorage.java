@@ -109,6 +109,7 @@ public class PostgresDataStorage<R extends Data, S> implements DataStorage<R, S>
         }
     }
 
+
     @Override
     public void updateCurrentFactory(DataAndNewMetadata<R> update, String user, String comment, MergeDiffInfo<R> mergeDiffInfo) {
         final StoredDataMetadata<S> storedDataMetadata = new StoredDataMetadata<>(
@@ -179,11 +180,16 @@ public class PostgresDataStorage<R extends Data, S> implements DataStorage<R, S>
 
 
     @Override
-    public DataAndNewMetadata<R> getPrepareNewFactory(){
+    public DataAndNewMetadata<R> prepareNewFactory(String currentFactoryStorageId, R currentFactoryCopy){
         NewDataMetadata metadata = new NewDataMetadata();
         metadata.baseVersionId=getCurrentFactory().metadata.id;
         dataSerialisationManager.prepareNewFactoryMetadata(metadata);
         return new DataAndNewMetadata<>(getCurrentFactory().root,metadata);
+    }
+
+    @Override
+    public String getCurrentFactoryStorageId() {
+        return getCurrentFactory().metadata.id;//TODO improve performance
     }
 
     private String createNewId() {

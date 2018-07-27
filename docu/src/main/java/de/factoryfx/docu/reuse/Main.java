@@ -13,7 +13,7 @@ public class Main {
         root.stringAttribute.set("1");
 
         long start=System.currentTimeMillis();
-        Microservice<Void,RootFactory,Void> microservice = new Microservice<>(new FactoryManager<>(new RethrowingFactoryExceptionHandler()),new InMemoryDataStorage<>(root));
+        Microservice<Void,Root,RootFactory,Void> microservice = new Microservice<>(new FactoryManager<>(new RethrowingFactoryExceptionHandler()),new InMemoryDataStorage<>(root));
         microservice.start();
 
         //over 5000ms most time for the ExpensiveResource

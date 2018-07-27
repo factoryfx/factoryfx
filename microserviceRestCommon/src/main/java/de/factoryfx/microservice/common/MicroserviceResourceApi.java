@@ -28,31 +28,31 @@ public interface MicroserviceResourceApi<V,R extends FactoryBase<?,V,R>,S>  {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @Path("updateCurrentFactory")
-    FactoryUpdateLog updateCurrentFactory(UserAwareRequest<UpdateCurrentFactoryRequest> update);
+    FactoryUpdateLog<R> updateCurrentFactory(UserAwareRequest<UpdateCurrentFactoryRequest<R>> update);
 
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @Path("revert")
-    FactoryUpdateLog revert(UserAwareRequest<StoredDataMetadata> historyFactory) ;
+    FactoryUpdateLog<R> revert(UserAwareRequest<StoredDataMetadata<S>> historyFactory) ;
 
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @Path("simulateUpdateCurrentFactory")
-    MergeDiffInfo simulateUpdateCurrentFactory(UserAwareRequest<DataAndNewMetadata> request);
+    MergeDiffInfo<R> simulateUpdateCurrentFactory(UserAwareRequest<DataAndNewMetadata<R>> request);
 
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @Path("diff")
-    MergeDiffInfo getDiff(UserAwareRequest<StoredDataMetadata> request);
+    MergeDiffInfo<R> getDiff(UserAwareRequest<StoredDataMetadata<S>> request);
 
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @Path("prepareNewFactory")
-    DataAndNewMetadata prepareNewFactory(UserAwareRequest<Void> request);
+    DataAndNewMetadata<R> prepareNewFactory(UserAwareRequest<Void> request);
 
     @POST
     @Consumes(MediaType.APPLICATION_JSON)

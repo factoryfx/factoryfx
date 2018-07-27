@@ -72,8 +72,8 @@ public class BackgroundEvaluatingAssistant<I> {
                     I input = inputQueue.poll();
                     if (input != null)
                         processor.accept(input);
-                } catch (RuntimeException | Error ignored) {
-                    logger.info("Could not compile source", ignored);
+                } catch (RuntimeException | Error e) {
+                    logger.info("Could not compile source", e);
                 }
             };
         }

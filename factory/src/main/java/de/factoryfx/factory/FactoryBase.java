@@ -273,11 +273,11 @@ public class FactoryBase<L,V,R extends FactoryBase<?,V,R>> extends Data{
         return this.createFactoryLogEntry();
     }
 
-    Microservice<V, R, ?> microservice;
-    private void setMicroservice(Microservice<V, R, ?> microservice) {
+    Microservice<V,?, R, ?> microservice;
+    private void setMicroservice(Microservice<V,?, R, ?> microservice) {
         this.microservice = microservice;
     }
-    private Microservice<V, R, ?> getMicroservice() {
+    private Microservice<V,?, R, ?> getMicroservice() {
         return getRoot().microservice;
     }
 
@@ -573,7 +573,7 @@ public class FactoryBase<L,V,R extends FactoryBase<?,V,R>> extends Data{
         }
 
 
-        public void setMicroservice(Microservice<V, R, ?> microservice) {
+        public void setMicroservice(Microservice<V,?, R, ?> microservice) {
             factory.setMicroservice(microservice);
         }
 
@@ -623,11 +623,14 @@ public class FactoryBase<L,V,R extends FactoryBase<?,V,R>> extends Data{
      *<br>
      * Update Order<br>
      * 1. recreate for changed, create for new<br>
-     * 2. destroy removed, updated<br>
+     * 2. destroy removed and updated<br>
      * 3. start new<br>
      *<br>
      * The goal is to keep the time between destroy and start as short as possible cause that's essentially the application downtime.
      * Therefore slow operation should be executed in create.<br>
+     *  <br>
+     * Once usable resources like ports should be claimed in start and released in destroy
+     *
      *<br>
      * should be used in the default constructor
      *
@@ -689,7 +692,7 @@ public class FactoryBase<L,V,R extends FactoryBase<?,V,R>> extends Data{
             this.factory = factory;
         }
 
-        public Microservice<V,R,?> getMicroservice(){
+        public Microservice<V,?,R,?> getMicroservice(){
             return factory.getMicroservice();
         }
 

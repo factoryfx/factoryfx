@@ -27,18 +27,6 @@ public class FactoryPolymorphicReferenceAttributeTest {
         Assert.assertNotNull(copy.attribute.get());
     }
 
-    @Test
-    public void test_json_defaultValue(){
-        ExamplePolymorphicReferenceAttributeFactoryDefault factory = new ExamplePolymorphicReferenceAttributeFactoryDefault();
-        ExamplePolymorphicReferenceAttributeFactoryDefault copy = ObjectMapperBuilder.build().copy(factory);
-
-        Assert.assertNotNull(copy.attribute.get());
-    }
-
-    public static class ExamplePolymorphicReferenceAttributeFactoryDefault{
-        public final FactoryPolymorphicReferenceAttribute<Printer> attribute = new FactoryPolymorphicReferenceAttribute<>(Printer.class).defaultValue(new ErrorPrinterFactory());
-    }
-
     public static class ExamplePolymorphicReferenceAttributeFactory{
         public final FactoryPolymorphicReferenceAttribute<Printer> attribute = new FactoryPolymorphicReferenceAttribute<>(Printer.class);
     }

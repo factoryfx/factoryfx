@@ -17,7 +17,7 @@ import de.factoryfx.data.storage.*;
 public class InMemoryDataStorage<R extends Data,S> implements DataStorage<R,S> {
     private final Map<String,DataAndStoredMetadata<R,S>> storage = new TreeMap<>();
     private final Map<String,DataAndScheduledMetadata<R,S>> future = new TreeMap<>();
-    private String current;
+    private String currentFactoryStorageId;
     private final R initialFactory;
     private final ChangeSummaryCreator<R,S> changeSummaryCreator;
 
@@ -44,8 +44,13 @@ public class InMemoryDataStorage<R extends Data,S> implements DataStorage<R,S> {
 
     @Override
     public DataAndStoredMetadata<R,S> getCurrentFactory() {
-        DataAndStoredMetadata<R,S> result = storage.get(current);
+        DataAndStoredMetadata<R,S> result = storage.get(currentFactoryStorageId);
         return new DataAndStoredMetadata<>(result.root.internal().copy(),result.metadata);
+    }
+
+    @Override
+    public String getCurrentFactoryStorageId() {
+        return currentFactoryStorageId;
     }
 
     @Override
@@ -61,21 +66,21 @@ public class InMemoryDataStorage<R extends Data,S> implements DataStorage<R,S> {
 
         final DataAndStoredMetadata<R,S> updateData = new DataAndStoredMetadata<>(update.root, storedDataMetadata);
         storage.put(updateData.metadata.id, updateData);
-        current=updateData.metadata.id;
+        currentFactoryStorageId =updateData.metadata.id;
     }
 
     @Override
-    public DataAndNewMetadata<R> getPrepareNewFactory(){
+    public DataAndNewMetadata<R> prepareNewFactory(String currentFactoryStorageId, R currentFactoryCopy){
         NewDataMetadata metadata = new NewDataMetadata();
-        metadata.baseVersionId=current;
-        return new DataAndNewMetadata<>(getCurrentFactory().root,metadata);
+        metadata.baseVersionId=currentFactoryStorageId;
+        return new DataAndNewMetadata<>(currentFactoryCopy,metadata);
     }
 
     @Override
     public void loadInitialFactory() {
-        current = UUID.randomUUID().toString();
-        StoredDataMetadata<S> metadata = new StoredDataMetadata<>(current, "System", "initial", current, 0,null);
-        storage.put(current,new DataAndStoredMetadata<>(initialFactory, metadata));
+        currentFactoryStorageId = UUID.randomUUID().toString();
+        StoredDataMetadata<S> metadata = new StoredDataMetadata<>(currentFactoryStorageId, "System", "initial", currentFactoryStorageId, 0,null);
+        storage.put(currentFactoryStorageId,new DataAndStoredMetadata<>(initialFactory, metadata));
     }
 
     @Override

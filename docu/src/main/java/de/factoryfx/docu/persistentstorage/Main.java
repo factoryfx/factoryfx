@@ -45,7 +45,7 @@ public class Main {
         PostgresDataStorage<RootFactory,Void> postgresFactoryStorage = new PostgresDataStorage<>(datasource, root, serialisationManager);
 
 
-        Microservice<Void, RootFactory,Void> microservice = new Microservice<>(new FactoryManager<>(new RethrowingFactoryExceptionHandler()),postgresFactoryStorage);
+        Microservice<Void, Root, RootFactory,Void> microservice = new Microservice<>(new FactoryManager<>(new RethrowingFactoryExceptionHandler()),postgresFactoryStorage);
         microservice.start();
         //output is 1 from initial factory
 
@@ -55,7 +55,7 @@ public class Main {
         //output is 2 from initial factory
 
         microservice.stop();
-        Microservice<Void, RootFactory,Void> newMicroservice = new Microservice<>(new FactoryManager<>(new RethrowingFactoryExceptionHandler()),postgresFactoryStorage);
+        Microservice<Void, Root, RootFactory,Void> newMicroservice = new Microservice<>(new FactoryManager<>(new RethrowingFactoryExceptionHandler()),postgresFactoryStorage);
         newMicroservice.start();
         //output is 2 again from the saved update
 

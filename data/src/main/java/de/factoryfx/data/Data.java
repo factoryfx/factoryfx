@@ -752,7 +752,7 @@ public class Data {
     }
 
     private void assertRoot() {
-        if (this.root!=this || this.root==null){
+        if (this.root!=this){
             throw new IllegalStateException("can only be called from root this.root="+this.root);
         }
     }

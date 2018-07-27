@@ -186,7 +186,6 @@ public class AttributeEditorBuilder {
                                     referenceAttribute.internal_isUserEditable(),
                                     referenceAttribute.internal_isUserSelectable(),
                                     referenceAttribute.internal_isUserCreatable(),
-                                    referenceAttribute.internal_isUserDeletable(),
                                     referenceAttribute.internal_isCatalogueBased()),
                             uniformDesign);
                 }

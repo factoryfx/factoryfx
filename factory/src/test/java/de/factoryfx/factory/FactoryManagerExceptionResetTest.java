@@ -80,7 +80,7 @@ public class FactoryManagerExceptionResetTest {
 
     @Test(expected = RuntimeException.class)
     public void test_exception_start_create(){
-        FactoryManager<Void,BrokenFactory> factoryManager = new FactoryManager<>(new ResettingFactoryExceptionHandler());
+        FactoryManager<Void,DummyLifeObejct,BrokenFactory> factoryManager = new FactoryManager<>(new ResettingFactoryExceptionHandler());
 
         BrokenFactory root = new BrokenFactory(false, false, false,false);
         root.ref.set(new BrokenFactory(true,false,false,false));
@@ -89,7 +89,7 @@ public class FactoryManagerExceptionResetTest {
 
     @Test(expected = RuntimeException.class)
     public void test_exception_start_start(){
-        FactoryManager<Void,BrokenFactory> factoryManager = new FactoryManager<>(new ResettingFactoryExceptionHandler());
+        FactoryManager<Void,DummyLifeObejct,BrokenFactory> factoryManager = new FactoryManager<>(new ResettingFactoryExceptionHandler());
 
         BrokenFactory root = new BrokenFactory(false, false, false,false);
         root.ref.set(new BrokenFactory(false,false,true,false));
@@ -98,7 +98,7 @@ public class FactoryManagerExceptionResetTest {
 
     @Test
     public void test_exception_update_create(){
-        FactoryManager<Void,BrokenFactory> factoryManager = new FactoryManager<>(new ResettingFactoryExceptionHandler());
+        FactoryManager<Void,DummyLifeObejct,BrokenFactory> factoryManager = new FactoryManager<>(new ResettingFactoryExceptionHandler());
 
         BrokenFactory root = new BrokenFactory(false, false, false,false);
         factoryManager.start(new RootFactoryWrapper<>(root));
@@ -120,7 +120,7 @@ public class FactoryManagerExceptionResetTest {
 
     @Test
     public void test_exception_update_start(){
-        FactoryManager<Void,BrokenFactory> factoryManager = new FactoryManager<>(new ResettingFactoryExceptionHandler());
+        FactoryManager<Void,DummyLifeObejct,BrokenFactory> factoryManager = new FactoryManager<>(new ResettingFactoryExceptionHandler());
 
         BrokenFactory root = new BrokenFactory(false, false, false,false);
         factoryManager.start(new RootFactoryWrapper<>(root));
@@ -140,7 +140,7 @@ public class FactoryManagerExceptionResetTest {
 
     @Test
     public void test_exception_update_recreate(){
-        FactoryManager<Void,BrokenFactory> factoryManager = new FactoryManager<>(new ResettingFactoryExceptionHandler());
+        FactoryManager<Void,DummyLifeObejct,BrokenFactory> factoryManager = new FactoryManager<>(new ResettingFactoryExceptionHandler());
 
         BrokenFactory root = new BrokenFactory(false, true, false,false);
         factoryManager.start(new RootFactoryWrapper<>(root));
@@ -160,7 +160,7 @@ public class FactoryManagerExceptionResetTest {
 
     @Test(expected = RuntimeException.class)
     public void test_exception_destroy(){
-        FactoryManager<Void,BrokenFactory> factoryManager = new FactoryManager<>(new ResettingFactoryExceptionHandler());
+        FactoryManager<Void,DummyLifeObejct,BrokenFactory> factoryManager = new FactoryManager<>(new ResettingFactoryExceptionHandler());
 
         BrokenFactory root = new BrokenFactory(false, false, false,true);
         factoryManager.start(new RootFactoryWrapper<>(root));
@@ -178,7 +178,7 @@ public class FactoryManagerExceptionResetTest {
 
     @Test(expected = RuntimeException.class)
     public void test_exception_update_noloop(){
-        FactoryManager<Void,BrokenFactory> factoryManager = new FactoryManager<>(new ResettingFactoryExceptionHandler());
+        FactoryManager<Void,DummyLifeObejct,BrokenFactory> factoryManager = new FactoryManager<>(new ResettingFactoryExceptionHandler());
 
         BrokenFactory root = new BrokenFactory(false, false, false,false);
         factoryManager.start(new RootFactoryWrapper<>(root));
@@ -195,7 +195,7 @@ public class FactoryManagerExceptionResetTest {
 
     @Test
     public void test_exception_update___destroy_for_removed(){
-        FactoryManager<Void,BrokenFactory> factoryManager = new FactoryManager<>(new ResettingFactoryExceptionHandler());
+        FactoryManager<Void,DummyLifeObejct,BrokenFactory> factoryManager = new FactoryManager<>(new ResettingFactoryExceptionHandler());
 
         BrokenFactory root = new BrokenFactory(false, false, false,false);
         root.ref.set(new BrokenFactory(false,false,false,false));

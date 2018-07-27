@@ -22,7 +22,7 @@ import org.slf4j.LoggerFactory;
  * @param <V> Visitor
  * @param <R> Root
  */
-public class FactoryManager<V,R extends FactoryBase<?,V,R>> {
+public class FactoryManager<V,L,R extends FactoryBase<L,V,R>> {
 
     private static final org.slf4j.Logger logger = LoggerFactory.getLogger(FactoryManager.class);
 
@@ -58,14 +58,14 @@ public class FactoryManager<V,R extends FactoryBase<?,V,R>> {
                 long start = System.nanoTime();
                 currentFactoryRoot.determineRecreationNeedFromRoot(getChangedFactories(previousFactoryCopyRoot));
 
+                //attention lifecycle method call order is important
+
                 final Collection<FactoryBase<?, ?, ?>> factoriesInCreateAndStartOrder = currentFactoryRoot.getFactoriesInCreateAndStartOrder();
                 for (FactoryBase<?, ?, ?> factory : factoriesInCreateAndStartOrder) {
                     factoryBaseInFocus=factory;
                     factory.internalFactory().instance();
                     //createWithExceptionHandling(factory, new RootFactoryWrapper<>(previousFactoryCopyRoot), currentFactoryRoot);
                 }
-
-
 
                 for (FactoryBase<?, ?, ?> factory : currentFactoriesAfterMerge) {
                     factoryBaseInFocus=factory;
@@ -145,8 +145,7 @@ public class FactoryManager<V,R extends FactoryBase<?,V,R>> {
     }
 
     @SuppressWarnings("unchecked")
-    public void start(RootFactoryWrapper<R> newFactory){
-
+    public L start(RootFactoryWrapper<R> newFactory){
         FactoryBase<?,?,?> factoryBaseInFocus=null;//for better exception reporting
         try {
             currentFactoryRoot =newFactory;
@@ -162,10 +161,11 @@ public class FactoryManager<V,R extends FactoryBase<?,V,R>> {
                 factory.internalFactory().start();
             }
             logger.info(currentFactoryRoot.logDisplayTextDeep());
+            return currentFactoryRoot.getRoot().internalFactory().getLiveObject();
         } catch (Exception e){
             factoryExceptionHandler.startException(e,factoryBaseInFocus,new ExceptionResponseAction(this,null,currentFactoryRoot,new ArrayList<>()));
+            return null;
         }
-
     }
 
     @SuppressWarnings("unchecked")
@@ -191,7 +191,7 @@ public class FactoryManager<V,R extends FactoryBase<?,V,R>> {
         return visitor;
     }
 
-    public void restCurrentFactory() {
+    public void resetAfterCrash() {
         for (FactoryBase<?, ?, ?> factory : currentFactoryRoot.getFactoriesInDestroyOrder()) {
             factory.internalFactory().cleanUpAfterCrash();
         }

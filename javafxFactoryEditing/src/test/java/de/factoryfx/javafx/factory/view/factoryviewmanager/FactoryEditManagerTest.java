@@ -8,6 +8,7 @@ import de.factoryfx.factory.FactoryManager;
 import de.factoryfx.factory.exception.RethrowingFactoryExceptionHandler;
 import de.factoryfx.factory.testfactories.ExampleFactoryA;
 import de.factoryfx.factory.testfactories.ExampleFactoryB;
+import de.factoryfx.factory.testfactories.ExampleLiveObjectA;
 import de.factoryfx.microservice.rest.client.MicroserviceRestClient;
 import de.factoryfx.server.Microservice;
 import org.junit.Assert;
@@ -84,7 +85,7 @@ public class FactoryEditManagerTest {
             ExampleFactoryA initialFactory = new ExampleFactoryA();
             initialFactory.referenceAttribute.set(new ExampleFactoryB());
             initialFactory = initialFactory.internal().addBackReferences();
-            Microservice<Void, ExampleFactoryA, Void> microservice = new Microservice<>(new FactoryManager<>(new RethrowingFactoryExceptionHandler()), new InMemoryDataStorage<ExampleFactoryA, Void>(initialFactory));
+            Microservice<Void, ExampleLiveObjectA, ExampleFactoryA, Void> microservice = new Microservice<>(new FactoryManager<>(new RethrowingFactoryExceptionHandler()), new InMemoryDataStorage<ExampleFactoryA, Void>(initialFactory));
             microservice.start();
 
 
@@ -106,7 +107,7 @@ public class FactoryEditManagerTest {
             ExampleFactoryA initialFactory = new ExampleFactoryA();
             initialFactory = initialFactory.internal().addBackReferences();
 //            initialFactory.referenceAttribute.set(new ExampleFactoryB());
-            Microservice<Void, ExampleFactoryA, Void> microservice = new Microservice<>(new FactoryManager<>(new RethrowingFactoryExceptionHandler()), new InMemoryDataStorage<ExampleFactoryA, Void>(initialFactory));
+            Microservice<Void, ExampleLiveObjectA, ExampleFactoryA, Void> microservice = new Microservice<>(new FactoryManager<>(new RethrowingFactoryExceptionHandler()), new InMemoryDataStorage<ExampleFactoryA, Void>(initialFactory));
             microservice.start();
 
 

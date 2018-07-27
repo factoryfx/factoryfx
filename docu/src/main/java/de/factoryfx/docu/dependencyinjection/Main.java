@@ -11,7 +11,7 @@ public class Main {
         RootFactory rootFactory = new RootFactory();
         rootFactory.dependency.set(new DependencyFactory());
 
-        Microservice<Void,RootFactory,Void> microservice = new Microservice<>(new FactoryManager<>(new RethrowingFactoryExceptionHandler()),new InMemoryDataStorage<>(rootFactory));
+        Microservice<Void,Root,RootFactory,Void> microservice = new Microservice<>(new FactoryManager<>(new RethrowingFactoryExceptionHandler()),new InMemoryDataStorage<>(rootFactory));
         microservice.start();
 
     }

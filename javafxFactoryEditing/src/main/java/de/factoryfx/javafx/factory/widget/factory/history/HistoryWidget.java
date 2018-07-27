@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
-import java.util.concurrent.Callable;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -21,7 +20,6 @@ import de.factoryfx.javafx.data.widget.Widget;
 import de.factoryfx.javafx.data.widget.table.TableControlWidget;
 import de.factoryfx.microservice.rest.client.MicroserviceRestClient;
 import javafx.application.Platform;
-import javafx.beans.binding.Binding;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.SimpleStringProperty;
@@ -147,6 +145,7 @@ public class HistoryWidget<V, R extends FactoryBase<?,V,R>,S> implements Widget 
         });
     }
 
+    @SuppressWarnings("unchecked")
     private void showDiff(TableView<StoredDataMetadata> tableView) {
         if (!isFirstVersion(tableView)){
             final MergeDiffInfo<R> diff = restClient.getDiff(tableView.getSelectionModel().getSelectedItem());
@@ -154,6 +153,7 @@ public class HistoryWidget<V, R extends FactoryBase<?,V,R>,S> implements Widget 
         }
     }
 
+    @SuppressWarnings("unchecked")
     private void revert(TableView<StoredDataMetadata> tableView) {
         final FactoryUpdateLog factoryUpdateLog = restClient.revert(tableView.getSelectionModel().getSelectedItem());
         Platform.runLater(() -> diffDialogBuilder.createDiffDialog(factoryUpdateLog,uniformDesign.getText(changesText),tableView.getScene().getWindow()));

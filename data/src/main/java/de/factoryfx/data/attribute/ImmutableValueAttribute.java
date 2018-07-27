@@ -197,4 +197,10 @@ public abstract class ImmutableValueAttribute<T,A extends Attribute<T,A>> extend
         }
         return super.internal_validate(parent, attributeVariableName);
     }
+
+    @SuppressWarnings("unchecked")
+    public A defaultValue(T defaultValue) {
+        set(defaultValue);
+        return (A)this;
+    }
 }

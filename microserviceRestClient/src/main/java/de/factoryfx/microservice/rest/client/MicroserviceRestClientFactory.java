@@ -60,7 +60,6 @@ public class MicroserviceRestClientFactory<V, R extends FactoryBase<?,V,R>,VS, R
         return (ssl.get() ? "https" : "http") + "://" + host.get() + ":" + port.get() + "/" + path;
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public MicroserviceRestClient<VS, RS, S> createImpl() {
         return createClient();
@@ -71,6 +70,7 @@ public class MicroserviceRestClientFactory<V, R extends FactoryBase<?,V,R>,VS, R
      *
      * @return client
      **/
+    @SuppressWarnings("unchecked")
     public MicroserviceRestClient<VS, RS, S> createClient() {
         JacksonJaxbJsonProvider jacksonProvider = new JacksonJaxbJsonProvider();
         jacksonProvider.setMapper(ObjectMapperBuilder.buildNewObjectMapper());
@@ -87,6 +87,8 @@ public class MicroserviceRestClientFactory<V, R extends FactoryBase<?,V,R>,VS, R
             HttpAuthenticationFeature feature = HttpAuthenticationFeature.basic(httpAuthenticationUser.get(), httpAuthenticationPassword.get());
             client.register(feature);
         }
+
+
 
         WebTarget webTarget = client.target(getUrl());
         MicroserviceResourceApi<VS,RS,S> microserviceResourceApi = (MicroserviceResourceApi<VS,RS,S>) WebResourceFactory.newResource(MicroserviceResourceApi.class, webTarget);

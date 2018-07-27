@@ -61,11 +61,18 @@ public interface DataStorage<R extends Data, S> {
 
     DataAndStoredMetadata<R,S> getCurrentFactory();
 
+    String getCurrentFactoryStorageId();
+
+
+    DataAndNewMetadata<R> prepareNewFactory(String currentFactoryStorageId, R currentFactoryCopy);
+
     /**
-     * prepare a new Factory which could we an update. mainly give it the correct baseVersionId
-     * @return new possible factory update with prepared ids
+     * prepare a new factory which could be used to update data. mainly give it the correct baseVersionId
+     * @return new possible factory update with prepared ids/metadata
      * */
-    DataAndNewMetadata<R> getPrepareNewFactory();
+    default DataAndNewMetadata<R> prepareNewFactory(){
+        return prepareNewFactory(getCurrentFactoryStorageId(),getCurrentFactory().root.utility().copy());
+    }
 
     /**
      * updateCurrentFactory and history

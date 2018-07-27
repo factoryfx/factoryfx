@@ -21,11 +21,11 @@ import de.factoryfx.factory.log.FactoryUpdateLog;
  * @param <R> Root
  * @param <S> Summary Data for factory history
  */
-public class Microservice<V,R extends FactoryBase<?,V,R>,S> {
-    private final FactoryManager<V,R> factoryManager;
+public class Microservice<V,L,R extends FactoryBase<L,V,R>,S> {
+    private final FactoryManager<V,L,R> factoryManager;
     private final DataStorage<R,S> dataStorage;
 
-    public Microservice(FactoryManager<V,R> factoryManager, DataStorage<R,S> dataStorage) {
+    public Microservice(FactoryManager<V,L,R> factoryManager, DataStorage<R,S> dataStorage) {
         this.factoryManager = factoryManager;
         this.dataStorage = dataStorage;
     }
@@ -62,7 +62,7 @@ public class Microservice<V,R extends FactoryBase<?,V,R>,S> {
      * @return creates a new factory update which is ready for editing mainly assign the right ids
      * */
     public DataAndNewMetadata<R> prepareNewFactory() {
-        return dataStorage.getPrepareNewFactory();
+        return dataStorage.prepareNewFactory(dataStorage.getCurrentFactoryStorageId(),factoryManager.getCurrentFactory().utility().copy());
     }
 
     public R getHistoryFactory(String id) {
@@ -77,12 +77,12 @@ public class Microservice<V,R extends FactoryBase<?,V,R>,S> {
         return dataStorage.getHistoryFactoryList();
     }
 
-    public void start() {
+    public L start() {
         dataStorage.loadInitialFactory();
         final DataAndStoredMetadata<R,S> currentFactory = dataStorage.getCurrentFactory();
         currentFactory.root.internalFactory().setMicroservice(this);//also mind ExceptionResponseAction#reset
 
-        factoryManager.start(new RootFactoryWrapper<>(currentFactory.root));
+        return factoryManager.start(new RootFactoryWrapper<>(currentFactory.root));
     }
 
     public void stop() {

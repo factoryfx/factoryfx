@@ -59,7 +59,7 @@ public class FactoryReferenceListTest {
         RootFactory rootFactory = new RootFactory();
         ObjectFactory first = new ObjectFactory();
         rootFactory.objects.add(first);
-        Microservice<Void, RootFactory, Void> microService = new Microservice<>(new FactoryManager<>(new RethrowingFactoryExceptionHandler()), new InMemoryDataStorage<>(rootFactory));
+        Microservice<Void, String,RootFactory, Void> microService = new Microservice<>(new FactoryManager<>(new RethrowingFactoryExceptionHandler()), new InMemoryDataStorage<>(rootFactory));
         microService.start();
 
         {
