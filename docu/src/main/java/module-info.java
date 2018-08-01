@@ -7,8 +7,8 @@ module de.factoryfx.docu {
     requires metrics.jetty9;
     requires jersey.common;
     requires com.google.common;
-    requires logback.classic;
-    requires slf4j.api;
+    requires ch.qos.logback.classic;
+    requires org.slf4j;
 
     requires postgresql;
     requires postgresql.embedded;

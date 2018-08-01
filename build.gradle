@@ -69,7 +69,7 @@ subprojects {
     }
 
     group = 'io.github.factoryfx'
-    version = '1.5.0'
+    version = '1.5.1'
 
     if (project.hasProperty('secretKeyRingFileSourceURL')) {
         //workaround  to get key  file to the plugin
@@ -149,7 +149,7 @@ subprojects {
     compileJava.options.encoding = 'UTF-8'
 
     dependencies {
-        compile group: 'org.slf4j', name: 'slf4j-api', version: '1.7.21'
+        compile group: 'org.slf4j', name: 'slf4j-api', version: '1.8.0-beta2'
         compile (group: 'com.google.guava', name: 'guava', version: '25.0-jre'){
             exclude module: "jsr305" // module conflict: https://blog.codefx.org/java/jsr-305-java-9/, https://github.com/google/guava/issues/2960
         }
@@ -218,10 +218,10 @@ project(':microserviceRestClient') {
 project(':microserviceRestCommon') {
     dependencies {
         compile project(":factory")
-        compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.9.4'
+        compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.9.6'
 
         compile group: 'org.glassfish.jersey.core', name: 'jersey-server', version: '2.27'
-        compile group: 'com.fasterxml.jackson.jaxrs', name: 'jackson-jaxrs-json-provider', version: '2.9.4'
+        compile group: 'com.fasterxml.jackson.jaxrs', name: 'jackson-jaxrs-json-provider', version: '2.9.6'
         compile 'org.glassfish.jersey.media:jersey-media-json-jackson:2.27'
         compile 'org.glassfish.jersey.inject:jersey-hk2:2.27'
     }
@@ -232,7 +232,7 @@ project(':microserviceRestIntegrationTest') {
     dependencies {
         compile project(":microserviceRestServer")
         compile project(":microserviceRestClient")
-        compile group: 'ch.qos.logback', name: 'logback-classic', version: '1.1.7'
+        compile group: 'ch.qos.logback', name: 'logback-classic', version: '1.3.0-alpha4'
     }
 
     spotbugs {
@@ -242,9 +242,9 @@ project(':microserviceRestIntegrationTest') {
 
 project(':data') {
     dependencies {
-        compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.9.4'
-        compile group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jdk8', version: '2.9.4'
-        compile group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jsr310', version: '2.9.4'
+        compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.9.6'
+        compile group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jdk8', version: '2.9.6'
+        compile group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jsr310', version: '2.9.6'
     }
 }
 
@@ -282,9 +282,9 @@ project(':oracledbStorage') {
 project(':jettyFactory') {
     dependencies {
         compile project(":factory")
-        compile group: 'org.eclipse.jetty', name: 'jetty-server', version: '9.4.8.v20171121'
-        compile group: 'org.eclipse.jetty', name: 'jetty-servlet', version: '9.4.8.v20171121'
-        compile group: 'org.eclipse.jetty', name: 'jetty-webapp', version: '9.4.8.v20171121'
+        compile group: 'org.eclipse.jetty', name: 'jetty-server', version: '9.4.11.v20180605'
+        compile group: 'org.eclipse.jetty', name: 'jetty-servlet', version: '9.4.11.v20180605'
+        compile group: 'org.eclipse.jetty', name: 'jetty-webapp', version: '9.4.11.v20180605'
 
        // currently jaxb doesn't work with java 9:  https://github.com/javaee/jaxb-v2/pull/1152
 //        compile group: 'javax.xml.bind', name: 'jaxb-api', version: '2.3.0'
@@ -296,11 +296,11 @@ project(':jettyFactory') {
 
 
         compile group: 'org.glassfish.jersey.core', name: 'jersey-server', version: '2.27'
-        compile group: 'com.fasterxml.jackson.jaxrs', name: 'jackson-jaxrs-json-provider', version: '2.9.4'
+        compile group: 'com.fasterxml.jackson.jaxrs', name: 'jackson-jaxrs-json-provider', version: '2.9.6'
         compile 'org.glassfish.jersey.containers:jersey-container-servlet-core:2.27'
         compile 'org.glassfish.jersey.inject:jersey-hk2:2.27'
 
-        testCompile group: 'ch.qos.logback', name: 'logback-classic', version: '1.1.7'
+        testCompile group: 'ch.qos.logback', name: 'logback-classic', version: '1.3.0-alpha4'
 
 //        compile group: 'org.apache.cxf', name: 'cxf-rt-bindings-soap', version: '3.2.4'
 //        compile group: 'javax.xml.ws', name: 'jaxws-api', version: '2.3.0'
@@ -318,7 +318,7 @@ project(':example') {
         compile project(":jettyFactory")
         compile project(":microserviceRestServer")
         compile project(":factory")
-        compile group: 'ch.qos.logback', name: 'logback-classic', version: '1.1.7'
+        compile group: 'ch.qos.logback', name: 'logback-classic', version: '1.3.0-alpha4'
     }
 
 }
@@ -327,7 +327,7 @@ project(':example') {
 project(':javafxDataEditing') {
     dependencies {
         compile project(":data")
-        compile group: 'ch.qos.logback', name: 'logback-classic', version: '1.1.7'
+        compile group: 'ch.qos.logback', name: 'logback-classic', version: '1.3.0-alpha4'
         compile group: 'org.controlsfx', name: 'controlsfx', version: '9.0.0'
         compile group: 'org.fxmisc.richtext', name: 'richtextfx', version: '0.6.10'
         testCompile project(":testfactories")
@@ -350,9 +350,9 @@ project(':javafxDistributionServer') {
     dependencies {
         compile project(":jettyFactory")
         compile project(":factory")
-        compile 'org.slf4j:slf4j-api:1.7.12'
+        compile 'org.slf4j:slf4j-api:1.8.0-beta2'
 
-        testCompile group: 'ch.qos.logback', name: 'logback-classic', version: '1.1.7'
+        testCompile group: 'ch.qos.logback', name: 'logback-classic', version: '1.3.0-alpha4'
     }
 
 }
@@ -360,11 +360,11 @@ project(':javafxDistributionServer') {
 project(':javafxDistributionClient') {
 
     dependencies {
-        compile 'org.slf4j:slf4j-api:1.7.12'
-        compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.9.4'
+        compile 'org.slf4j:slf4j-api:1.8.0-beta2'
+        compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.9.6'
 
         compile group: 'org.glassfish.jersey.core', name: 'jersey-server', version: '2.27'
-        compile group: 'com.fasterxml.jackson.jaxrs', name: 'jackson-jaxrs-json-provider', version: '2.9.4'
+        compile group: 'com.fasterxml.jackson.jaxrs', name: 'jackson-jaxrs-json-provider', version: '2.9.6'
         compile 'org.glassfish.jersey.media:jersey-media-json-jackson:2.27'
         compile 'org.glassfish.jersey.inject:jersey-hk2:2.27'
     }
@@ -377,7 +377,7 @@ project(':javascript') {
         compile project(":factory")
 
         compile group: 'com.google.javascript', name: 'closure-compiler-unshaded', version: 'v20170218'
-        compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.9.4'
+        compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.9.6'
 
 //        compile group: 'com.google.javascript', name: 'closure-compiler-main', version: 'v20180402', ext: 'pom'
 //        compile group: 'com.google.javascript', name: 'closure-compiler-externs', version: 'v20180402'
@@ -417,7 +417,7 @@ project(':docu') {
         compile project(':postgresqlStorage')
         compile group: 'io.dropwizard.metrics', name: 'metrics-jetty9', version: '3.2.4'
         compile 'ru.yandex.qatools.embed:postgresql-embedded:1.15'
-        compile group: 'ch.qos.logback', name: 'logback-classic', version: '1.1.7'
+        compile group: 'ch.qos.logback', name: 'logback-classic', version: '1.3.0-alpha4'
     }
 
 }

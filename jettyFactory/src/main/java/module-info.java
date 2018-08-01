@@ -1,6 +1,6 @@
 module de.factoryfx.jettyFactory {
     requires java.ws.rs;
-    requires slf4j.api;
+    requires org.slf4j;
     requires javax.servlet.api;
     requires de.factoryfx.factory;
     requires jetty.util;

@@ -7,12 +7,11 @@ module de.factoryfx.example {
     requires de.factoryfx.jettyFactory;
     requires javafx.controls;
     requires de.factoryfx.microserviceRestServer;
-    requires slf4j.api;
-    requires logback.classic;
+    requires org.slf4j;
+    requires ch.qos.logback.classic;
     requires de.factoryfx.microserviceRestClient;
     requires java.ws.rs;
     requires java.desktop;
-    requires java.activation;
     requires com.fasterxml.jackson.databind;
     requires de.factoryfx.microserviceRestCommon;
     requires jackson.annotations;

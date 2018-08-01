@@ -1,7 +1,7 @@
 module de.factoryfx.factory {
     requires jackson.annotations;
     requires de.factoryfx.data;
-    requires slf4j.api;
+    requires org.slf4j;
     requires com.google.common;
     exports de.factoryfx.factory;
     exports de.factoryfx.factory.atrribute;
@@ -17,6 +17,7 @@ module de.factoryfx.factory {
 
 
     opens de.factoryfx.factory;//jackson
+    opens de.factoryfx.factory.parametrized;
     opens de.factoryfx.factory.atrribute;
     opens de.factoryfx.factory.log;
 
