@@ -69,7 +69,7 @@ subprojects {
     }
 
     group = 'io.github.factoryfx'
-    version = '1.5.1'
+    version = '1.5.2'
 
     if (project.hasProperty('secretKeyRingFileSourceURL')) {
         //workaround  to get key  file to the plugin
@@ -139,9 +139,6 @@ subprojects {
 
     repositories {
         mavenCentral()
-        maven {
-            url "http://maven.java.net/content/repositories/snapshots"
-        }
     }
 
     sourceCompatibility = JavaVersion.VERSION_1_9
@@ -292,7 +289,7 @@ project(':jettyFactory') {
 //        compile group: 'org.glassfish.jaxb', name: 'jaxb-runtime', version: '2.3.0'
 
         //FIXME switch to normal release if ready, current release 2.3 jaxb doesn't work with java 9:  https://github.com/javaee/jaxb-v2/pull/1152
-        compile group: 'javax.xml.bind', name: 'jaxb-api', version: '2.3.1-SNAPSHOT'
+        compile group: 'javax.xml.bind', name: 'jaxb-api', version: '2.4.0-b180725.0427'
 
 
         compile group: 'org.glassfish.jersey.core', name: 'jersey-server', version: '2.27'
@@ -426,5 +423,12 @@ project(':nanoservice') {
     dependencies {
         compile project(":factory")
 
+    }
+}
+
+project(':typescriptGenerator') {
+    dependencies {
+        compile project(":jettyFactory")
+        compile project(":microserviceRestCommon")
     }
 }
