@@ -6,7 +6,7 @@ import de.factoryfx.data.storage.inmemory.InMemoryDataStorage;
 import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.factory.FactoryManager;
 import de.factoryfx.factory.exception.LoggingFactoryExceptionHandler;
-import de.factoryfx.factory.exception.ResettingFactoryExceptionHandler;
+import de.factoryfx.factory.exception.ResettingHandler;
 import de.factoryfx.factory.exception.RethrowingFactoryExceptionHandler;
 
 import java.nio.file.Path;
@@ -44,7 +44,7 @@ public class MicroserviceBuilder {
     public static <V,L,R extends FactoryBase<L,V,R>,S> Microservice<V,L,R,S> buildFilesystemMicroservice(R root, Path path){
         Class<R> rootClass = (Class<R>) root.getClass();
         DataSerialisationManager<R,S> defaultSerialisationManager = new DataSerialisationManager<>(new JacksonSerialisation<>(1),new JacksonDeSerialisation<>(rootClass,1),new ArrayList<>(),1);
-        return new Microservice<>(new FactoryManager<>(new LoggingFactoryExceptionHandler(new ResettingFactoryExceptionHandler())), new FileSystemDataStorage<>(path, root,defaultSerialisationManager));
+        return new Microservice<>(new FactoryManager<>(new LoggingFactoryExceptionHandler(new ResettingHandler())), new FileSystemDataStorage<>(path, root,defaultSerialisationManager));
     }
 
 

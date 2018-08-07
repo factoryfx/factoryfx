@@ -1,6 +1,5 @@
 package de.factoryfx.server;
 
-import de.factoryfx.data.DataDictionary;
 import de.factoryfx.data.merge.AttributeDiffInfo;
 import de.factoryfx.data.merge.MergeDiffInfo;
 import de.factoryfx.data.storage.ChangeSummaryCreator;
@@ -9,10 +8,9 @@ import de.factoryfx.data.storage.StoredDataMetadata;
 import de.factoryfx.data.storage.inmemory.InMemoryDataStorage;
 import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.factory.FactoryManager;
-import de.factoryfx.factory.FactoryManagerExceptionResetTest;
 import de.factoryfx.factory.SimpleFactoryBase;
 import de.factoryfx.factory.atrribute.FactoryReferenceAttribute;
-import de.factoryfx.factory.exception.ResettingFactoryExceptionHandler;
+import de.factoryfx.factory.exception.ResettingHandler;
 import de.factoryfx.factory.exception.RethrowingFactoryExceptionHandler;
 import de.factoryfx.factory.log.FactoryUpdateLog;
 import de.factoryfx.factory.testfactories.ExampleFactoryA;
@@ -21,7 +19,6 @@ import de.factoryfx.factory.testfactories.ExampleLiveObjectA;
 import de.factoryfx.factory.testfactories.ExampleLiveObjectB;
 import org.junit.Assert;
 import org.junit.Test;
-import org.mockito.Mockito;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -203,7 +200,7 @@ public class MicroserviceTest {
         InMemoryDataStorage<BrokenFactory, ChangeListingSummary> memoryDataStorage = new InMemoryDataStorage<>(new BrokenFactory());
         Assert.assertEquals(0,memoryDataStorage.getFutureFactoryList().size());
 
-        Microservice<Void,Void,BrokenFactory,ChangeListingSummary> microservice = new Microservice<>(new FactoryManager<>(new ResettingFactoryExceptionHandler()), memoryDataStorage);
+        Microservice<Void,Void,BrokenFactory,ChangeListingSummary> microservice = new Microservice<>(new FactoryManager<>(new ResettingHandler()), memoryDataStorage);
         microservice.start();
 
 //        microservice.updateCurrentFactory(microservice.prepareNewFactory(),"","",(p)->true);

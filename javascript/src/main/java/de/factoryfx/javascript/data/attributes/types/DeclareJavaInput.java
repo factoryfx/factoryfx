@@ -2,7 +2,6 @@ package de.factoryfx.javascript.data.attributes.types;
 
 import com.google.javascript.jscomp.parsing.parser.Keywords;
 
-import javax.annotation.Nullable;
 import java.lang.reflect.*;
 import java.util.*;
 import java.util.function.Function;

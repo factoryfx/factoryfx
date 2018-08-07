@@ -217,4 +217,8 @@ public class DataDictionary<D extends Data> {
         }
         return result;
     }
+
+    public D newInstance(){
+        return newCopyInstance(null);
+    }
 }

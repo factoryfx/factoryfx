@@ -8,8 +8,7 @@ import de.factoryfx.example.client.RichClientBuilder;
 import de.factoryfx.example.server.ServerRootFactory;
 import de.factoryfx.example.server.ServerBuilder;
 import de.factoryfx.factory.FactoryManager;
-import de.factoryfx.factory.exception.ResettingFactoryExceptionHandler;
-import de.factoryfx.factory.exception.RethrowingFactoryExceptionHandler;
+import de.factoryfx.factory.exception.ResettingHandler;
 import de.factoryfx.javafx.factory.RichClientRoot;
 import de.factoryfx.server.Microservice;
 import de.factoryfx.server.MicroserviceBuilder;
@@ -31,7 +30,7 @@ public class ExampleMain extends Application {
     public void start(Stage primaryStage){
         ServerRootFactory shopFactory = getShopFactory();
 //        MicroserviceBuilder.buildInMemoryMicroservice(shopFactory).start();
-        new Microservice<>(new FactoryManager<>(new ResettingFactoryExceptionHandler()), new InMemoryDataStorage<>(shopFactory)).start();
+        new Microservice<>(new FactoryManager<>(new ResettingHandler()), new InMemoryDataStorage<>(shopFactory)).start();
 
         RichClientRoot richClientFactory = RichClientBuilder.createFactoryBuilder(8089,primaryStage, "", "", Locale.ENGLISH).buildTree();
         MicroserviceBuilder.buildInMemoryMicroservice(richClientFactory).start();
