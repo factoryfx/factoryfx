@@ -5,11 +5,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Pattern;
 
-import de.factoryfx.data.attribute.types.*;
-import de.factoryfx.factory.atrribute.FactoryPolymorphicReferenceListAttribute;
-import de.factoryfx.factory.testfactories.poly.ErrorPrinterFactory;
-import de.factoryfx.factory.testfactories.poly.OutPrinterFactory;
-import de.factoryfx.factory.testfactories.poly.Printer;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.layout.BorderPane;
@@ -27,13 +22,31 @@ import de.factoryfx.data.attribute.primitive.list.IntegerListAttribute;
 import de.factoryfx.data.attribute.time.DurationAttribute;
 import de.factoryfx.data.attribute.time.LocalDateAttribute;
 import de.factoryfx.data.attribute.time.LocalDateTimeAttribute;
-import de.factoryfx.javafx.data.attribute.ColorAttribute;
+import de.factoryfx.data.attribute.types.Base64Attribute;
+import de.factoryfx.data.attribute.types.BigDecimalAttribute;
+import de.factoryfx.data.attribute.types.ByteArrayAttribute;
+import de.factoryfx.data.attribute.types.EncryptedStringAttribute;
+import de.factoryfx.data.attribute.types.EnumAttribute;
+import de.factoryfx.data.attribute.types.EnumListAttribute;
+import de.factoryfx.data.attribute.types.I18nAttribute;
+import de.factoryfx.data.attribute.types.LocaleAttribute;
+import de.factoryfx.data.attribute.types.PasswordAttribute;
+import de.factoryfx.data.attribute.types.StringAttribute;
+import de.factoryfx.data.attribute.types.StringListAttribute;
+import de.factoryfx.data.attribute.types.StringMapAttribute;
+import de.factoryfx.data.attribute.types.URIAttribute;
+import de.factoryfx.data.attribute.types.URIListAttribute;
 import de.factoryfx.data.util.LanguageText;
 import de.factoryfx.data.validation.RegexValidation;
 import de.factoryfx.data.validation.StringRequired;
 import de.factoryfx.data.validation.Validation;
 import de.factoryfx.data.validation.ValidationResult;
 import de.factoryfx.factory.atrribute.FactoryPolymorphicReferenceAttribute;
+import de.factoryfx.factory.atrribute.FactoryPolymorphicReferenceListAttribute;
+import de.factoryfx.factory.testfactories.poly.ErrorPrinterFactory;
+import de.factoryfx.factory.testfactories.poly.OutPrinterFactory;
+import de.factoryfx.factory.testfactories.poly.Printer;
+import de.factoryfx.javafx.data.attribute.ColorAttribute;
 
 
 public class ExampleData1 extends Data {
@@ -42,6 +55,9 @@ public class ExampleData1 extends Data {
     public final DurationAttribute durationAttribute = new DurationAttribute().en("durationAttribute").de("durationAttribute de");
 
     public final EncryptedStringAttribute encryptedStringAttribute=new EncryptedStringAttribute().en("encryptedStringAttribute").de("StringAttribute de").tooltipDe("tooltip xyz");
+
+    public final Base64Attribute base64Attribute=new Base64Attribute().en("Base64Attribute sda jgsdajh gjasdja jhsadgjg ghfgfds hgf hgfthrwhff hgfhgf hf").de("Base64Attribute de").nullable();
+
 
     public final StringAttribute stringAttribute=new StringAttribute().en("StringAttribute gajsd jgsdajh gjasdja jhsadgjg ghf hgf hgfhff hgfhgf hf").de("StringAttribute de").validation(StringRequired.VALIDATION).defaultValue("blub");
     public final StringAttribute stringLongAttribute=new StringAttribute().longText().defaultExpanded().validation(new StringRequired()).en("Long StringAttribute").de("Long StringAttribute de");
