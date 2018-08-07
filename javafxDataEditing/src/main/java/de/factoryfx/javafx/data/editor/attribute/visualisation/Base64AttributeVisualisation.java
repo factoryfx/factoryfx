@@ -46,7 +46,7 @@ public class Base64AttributeVisualisation extends ValueAttributeEditorVisualisat
 
         final Button openButton = new Button("Open Resource File...");
         openButton.setOnAction(e -> {
-            File file = fileChooser.showOpenDialog(null);
+            File file = fileChooser.showOpenDialog(openButton.getScene().getWindow());
             if (file != null) {
                 openFile(file);
             }
