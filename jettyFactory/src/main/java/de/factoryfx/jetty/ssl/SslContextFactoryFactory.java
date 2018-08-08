@@ -1,16 +1,16 @@
 package de.factoryfx.jetty.ssl;
 
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.security.KeyStore;
+
+import org.eclipse.jetty.util.ssl.SslContextFactory;
+
 import de.factoryfx.data.attribute.types.Base64Attribute;
 import de.factoryfx.data.attribute.types.EnumAttribute;
 import de.factoryfx.data.attribute.types.StringAttribute;
 import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.factory.SimpleFactoryBase;
-import de.factoryfx.jetty.ssl.KeyStoreType;
-import org.eclipse.jetty.util.ssl.SslContextFactory;
-
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
-import java.security.KeyStore;
 
 public class SslContextFactoryFactory<V,R extends FactoryBase<?,V,R>> extends SimpleFactoryBase<SslContextFactory,V, R> {
     public final Base64Attribute keyStore=new Base64Attribute().en("keyStore").de("keyStore");
@@ -42,7 +42,7 @@ public class SslContextFactoryFactory<V,R extends FactoryBase<?,V,R>> extends Si
         try {
             KeyStore keyStore = KeyStore.getInstance(trustStoreType.get().value());
             try (InputStream inputStream = new ByteArrayInputStream(this.trustStore.getBytes())) {
-                keyStore.load(inputStream, keyStorePassword.get().toCharArray());
+                keyStore.load(inputStream, trustStorePassword.get().toCharArray());
                 sslContextFactory.setTrustStore(keyStore);
             }
         } catch (Exception e) {
