@@ -22,27 +22,29 @@ public class Base64AttributeVisualisation extends ValueAttributeEditorVisualisat
 
     private final Base64Attribute bytes;
     private final UniformDesign uniformDesign;
-    private LanguageText empty = new LanguageText().en("Value not set").de("Kein Wert gesetzt");
-    private LanguageText notEmpty = new LanguageText().en("Value set").de("Wert gesetzt");
+    private final static LanguageText EMPTY = new LanguageText().en("Value not set").de("Kein Wert gesetzt");
+    private final static LanguageText NOT_EMPTY = new LanguageText().en("Value set").de("Wert gesetzt");
 
     public Base64AttributeVisualisation(Base64Attribute bytes, UniformDesign uniformDesign) {
         this.bytes = bytes;
         this.uniformDesign = uniformDesign;
     }
 
-    String empty() {
-        return (bytes == null || bytes.get() == null || bytes.getBytes().length == 0) ? empty.internal_getText(uniformDesign.getLocale()) : notEmpty.internal_getText(uniformDesign.getLocale());
+    private String labelText() {
+        return uniformDesign.getText((bytes == null || bytes.get() == null || bytes.getBytes().length == 0) ? EMPTY : NOT_EMPTY);
     }
 
     @Override
     public Node createVisualisation(SimpleObjectProperty<String> attributeValue, boolean readonly) {
-        HBox hBox = new HBox(20);
-        Label status = new Label(empty());
-        attributeValue.addListener(observable -> status.setText(empty()));
+        HBox hBox = new HBox(3);
+        Label status = new Label(labelText());
+        attributeValue.addListener(observable -> status.setText(labelText()));
 
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Open Resource File");
-        if (bytes.internal_getFileExtension() != null) { fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("Files", "*." + bytes.internal_getFileExtension())); }
+        if (bytes.internal_getFileExtension() != null) {
+            fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("Files", "*." + bytes.internal_getFileExtension()));
+        }
 
         final Button openButton = new Button("Open Resource File...");
         openButton.setOnAction(e -> {
@@ -52,9 +54,12 @@ public class Base64AttributeVisualisation extends ValueAttributeEditorVisualisat
             }
         });
 
+        final Button clear = new Button("Clear");
+        clear.setOnAction(e -> bytes.set((String) null));
+
         hBox.setAlignment(Pos.CENTER_LEFT);
         HBox.setHgrow(status, Priority.SOMETIMES);
-        hBox.getChildren().addAll(status, openButton);
+        hBox.getChildren().addAll(openButton, clear, status);
 
         return hBox;
     }
