@@ -92,4 +92,8 @@ public class Microservice<V,L,R extends FactoryBase<L,V,R>,S> {
     public V query(V visitor) {
         return factoryManager.query(visitor);
     }
+
+    public L getRootLiveObject(){
+        return factoryManager.getCurrentFactory().internalFactory().getLiveObject();
+    }
 }
