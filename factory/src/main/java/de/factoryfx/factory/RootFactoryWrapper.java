@@ -61,8 +61,12 @@ public class RootFactoryWrapper<R extends FactoryBase<?,?,?>> {
         return rootFactory.internal().copy();
     }
 
-    public String logDisplayTextDeep() {
-        return rootFactory.internalFactory().logDisplayTextDeep();
+    public String logStartDisplayTextDeep() {
+        return rootFactory.internalFactory().logStartDisplayTextDeep();
+    }
+
+    public String logUpdateDisplayTextDeep() {
+        return rootFactory.internalFactory().logUpdateDisplayTextDeep();
     }
 
     public R getRoot() {

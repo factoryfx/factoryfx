@@ -34,6 +34,24 @@ public class DataGenerator {
             attributes.add(getTsAttribute(attributeVariableName,attribute));
         });
 
+        data.internal().visitAttributesFlat((attributeVariableName, attribute) -> {
+            attributes.add(getTsAttributeMetadata(attributeVariableName,attribute));
+        });
+
+
+        ArrayList<TsMethod> methods = new ArrayList<>();
+        methods.add(createMapValuesFromJson(data));
+        addMapValueToJson(data, methods);
+
+
+        tsClass.parent=dataTsClass;
+        tsClass.attributes=attributes;
+        tsClass.methods=methods;
+
+        return tsClass;
+    }
+
+    private TsMethod createMapValuesFromJson(Data data) {
         StringBuilder fromJsonCode=new StringBuilder();
         ArrayList<TsClass> mapValuesFromJsonImports = new ArrayList<>();
         data.internal().visitAttributesFlat((attributeVariableName, attribute) -> {
@@ -58,12 +76,12 @@ public class DataGenerator {
 //            fromJsonCode.append("       if (!json."+attributeVariableName+".v) this."+attributeVariableName+"=null;\n");
         });
 
-        ArrayList<TsMethod> methods = new ArrayList<>();
-        methods.add(new TsMethod("mapValuesFromJson",
+        return new TsMethod("mapValuesFromJson",
                 List.of(new TsMethodParameterPrimitive("json","any"),new TsMethodParameterPrimitive("idToDataMap","any"), new TsMethodParameterClass("dataCreator",dataCreatorTsClass)),
-                new TsMethodResultVoid(),new TsMethodCode(fromJsonCode.toString(), mapValuesFromJsonImports),"protected"));
+                new TsMethodResultVoid(),new TsMethodCode(fromJsonCode.toString(), mapValuesFromJsonImports),"protected");
+    }
 
-
+    private TsMethod addMapValueToJson(Data data, ArrayList<TsMethod> methods) {
         StringBuilder toJsonCode=new StringBuilder();
         ArrayList<TsClass> toValuesFromJsonImports = new ArrayList<>();
         data.internal().visitAttributesFlat((attributeVariableName, attribute) -> {
@@ -84,17 +102,9 @@ public class DataGenerator {
             }
             toJsonCode.append("result."+attributeVariableName+"=this.mapAttributeValueToJson(idToDataMap,this."+attributeVariableName+");\n");
         });
-        methods.add(new TsMethod("mapValuesToJson",
+        return new TsMethod("mapValuesToJson",
                 List.of(new TsMethodParameterPrimitive("idToDataMap","any"),new TsMethodParameterPrimitive("result","any")),
-                new TsMethodResultVoid(),new TsMethodCode(toJsonCode.toString(),toValuesFromJsonImports),"protected"));
-
-
-
-        tsClass.parent=dataTsClass;
-        tsClass.attributes=attributes;
-        tsClass.methods=methods;
-
-        return tsClass;
+                new TsMethodResultVoid(),new TsMethodCode(toJsonCode.toString(),toValuesFromJsonImports),"protected");
     }
 
     private TsAttribute getTsAttribute(String attributeVariableName, Attribute<?, ?> attribute){
@@ -109,6 +119,18 @@ public class DataGenerator {
             ReferenceListAttribute<?,?> referenceListAttribute = (ReferenceListAttribute<?,?>) attribute;
             return new TsAttributeArrayClass(attributeVariableName,dataToTs.get(referenceListAttribute.internal_getReferenceClass()));
         }
+
+        //TODO should support custom non default attributes
+        throw new IllegalStateException("unkown attribute type"+attribute);
+
+    }
+
+    private TsAttribute getTsAttributeMetadata(String attributeVariableName, Attribute<?, ?> attribute){
+        TsAttribute tsAttribute = getTsAttribute(attributeVariableName, attribute);
+        if (tsAttribute instanceof TsAttributePrimitive){
+
+        };
+
 
         //TODO should support custom non default attributes
         throw new IllegalStateException("unkown attribute type"+attribute);

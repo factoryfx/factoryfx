@@ -178,9 +178,6 @@ public class FactoryUpdateLogWidget implements Widget {
             if (event.type== FactoryLogEntryEventType.RECREATE){
                 return FontAwesome.Glyph.REFRESH;
             }
-            if (event.type== FactoryLogEntryEventType.REUSE){
-                return FontAwesome.Glyph.EXCHANGE;
-            }
             return null;
         }
     }

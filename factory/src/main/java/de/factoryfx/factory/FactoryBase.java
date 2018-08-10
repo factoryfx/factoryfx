@@ -46,7 +46,6 @@ public class FactoryBase<L,V,R extends FactoryBase<?,V,R>> extends Data{
 
     private FactoryLogEntry createFactoryLogEntry(){
         FactoryLogEntry factoryLogEntry = new FactoryLogEntry(this);
-        factoryLogEntry.logStart(reuseDurationNs);
         factoryLogEntry.logCreate(createDurationNs);
         factoryLogEntry.logRecreate(recreateDurationNs);
         factoryLogEntry.logStart(startDurationNs);
@@ -108,13 +107,14 @@ public class FactoryBase<L,V,R extends FactoryBase<?,V,R>> extends Data{
 
     private L reCreate(L previousLiveObject) {
         if (reCreatorWithPreviousLiveObject!=null){
-            MeasuredActionResult<L> actionResult = timeMeasuringAction(() -> {
-                return reCreatorWithPreviousLiveObject.apply(previousLiveObject);
-            });
+            MeasuredActionResult<L> actionResult = timeMeasuringAction(() -> reCreatorWithPreviousLiveObject.apply(previousLiveObject));
             logRecreate(actionResult.time);
             return actionResult.result;
         }
-        return create();
+
+        MeasuredActionResult<L> actionResult = timeMeasuringAction(this::createTemplateMethod);
+        logRecreate(actionResult.time);
+        return actionResult.result;
     }
 
     private void start() {
@@ -296,40 +296,32 @@ public class FactoryBase<L,V,R extends FactoryBase<?,V,R>> extends Data{
         return (R)this.internal().getRoot();
     }
 
-
     @JsonIgnore
-    long reuseDurationNs;
-    private void logReuse(long reuseDurationNs){
-        this.reuseDurationNs=reuseDurationNs;
-    }
-
-    @JsonIgnore
-    long createDurationNs;
+    private long createDurationNs;
     private void logCreate(long createDurationNs){
         this.createDurationNs=createDurationNs;
     }
 
 
     @JsonIgnore
-    long recreateDurationNs;
+    private long recreateDurationNs;
     private void logRecreate(long recreateDurationNs){
         this.recreateDurationNs=recreateDurationNs;
     }
 
     @JsonIgnore
-    long startDurationNs;
+    private long startDurationNs;
     private void logStart(long startDurationNs){
         this.startDurationNs=startDurationNs;
     }
 
     @JsonIgnore
-    long destroyDurationNs;
+    private long destroyDurationNs;
     private void logDestroy(long destroyDurationNs){
         this.destroyDurationNs=destroyDurationNs;
     }
 
     private void resetLog() {
-        this.reuseDurationNs=0;
         this.createDurationNs=0;
         this.recreateDurationNs=0;
         this.startDurationNs=0;
@@ -375,18 +367,27 @@ public class FactoryBase<L,V,R extends FactoryBase<?,V,R>> extends Data{
 
     }
 
-    private String logDisplayTextDeep(){
+    private String logStartDisplayTextDeep(){
         StringBuilder stringBuilder = new StringBuilder("\n");
-        stringBuilder.append("Application Started:\n");
-//        stringBuilder.append("total start duration: " + (totalDurationNs / 1000000.0) + "ms"+"\n");
-        PrintedCounter printedCounter=new PrintedCounter();
-        long iterationRun=this.iterationRun+1;
-        logDisplayTextDeep(stringBuilder,0,"", true,printedCounter, iterationRun);
-        if (printedCounter.limitReached()){
-            stringBuilder.append("... (aborted log after "+PRINTED_COUNTER_LIMIT+" factories)");
-        }
-
+        stringBuilder.append("Application started:\n");
+        logDisplayText(stringBuilder);
         return stringBuilder.toString();
+    }
+
+    private String logUpdateDisplayTextDeep(){
+        StringBuilder stringBuilder = new StringBuilder("\n");
+        stringBuilder.append("Application updated:\n");
+        logDisplayText(stringBuilder);
+        return stringBuilder.toString();
+    }
+
+    private void logDisplayText(StringBuilder stringBuilder) {
+        PrintedCounter printedCounter = new PrintedCounter();
+        long iterationRun = this.iterationRun + 1;
+        logDisplayTextDeep(stringBuilder, 0, "", true, printedCounter, iterationRun);
+        if (printedCounter.limitReached()) {
+            stringBuilder.append("... (aborted log after " + PRINTED_COUNTER_LIMIT + " factories)");
+        }
     }
 
     @JsonIgnore
@@ -394,41 +395,34 @@ public class FactoryBase<L,V,R extends FactoryBase<?,V,R>> extends Data{
         return getClass().getSimpleName();
     }
 
+    private String formatNsPeriod(long periodNs){
+        return periodNs+ "ns("+periodNs/1000000+"ms)";
+    }
+
     private String eventsDisplayText() {
         StringBuilder result = new StringBuilder();
-        if (reuseDurationNs!=0) {
-            result.append(FactoryLogEntryEventType.REUSE);
-            result.append(" ");
-            result.append(reuseDurationNs);
-            result.append("ns");
-            result.append(",");
-        }
         if (createDurationNs!=0) {
             result.append(FactoryLogEntryEventType.CREATE);
             result.append(" ");
-            result.append(createDurationNs);
-            result.append("ns");
+            result.append(formatNsPeriod(createDurationNs));
             result.append(",");
         }
         if (recreateDurationNs!=0) {
             result.append(FactoryLogEntryEventType.RECREATE);
             result.append(" ");
-            result.append(recreateDurationNs);
-            result.append("ns");
+            result.append(formatNsPeriod(recreateDurationNs));
             result.append(",");
         }
         if (startDurationNs!=0) {
             result.append(FactoryLogEntryEventType.START);
             result.append(" ");
-            result.append(startDurationNs);
-            result.append("ns");
+            result.append(formatNsPeriod(startDurationNs));
             result.append(",");
         }
         if (destroyDurationNs!=0) {
             result.append(FactoryLogEntryEventType.DESTROY);
             result.append(" ");
-            result.append(destroyDurationNs);
-            result.append("ns");
+            result.append(formatNsPeriod(destroyDurationNs));
             result.append(",");
         }
         return result.toString();
@@ -585,8 +579,12 @@ public class FactoryBase<L,V,R extends FactoryBase<?,V,R>> extends Data{
             return factory.createdLiveObject;
         }
 
-        public String logDisplayTextDeep(){
-            return factory.logDisplayTextDeep();
+        public String logStartDisplayTextDeep(){
+            return factory.logStartDisplayTextDeep();
+        }
+
+        public String logUpdateDisplayTextDeep(){
+            return factory.logUpdateDisplayTextDeep();
         }
 
         public String getFactoryDisplayText() {

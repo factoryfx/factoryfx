@@ -21,4 +21,6 @@ public class TsAttributeArrayClass implements TsAttribute {
     public String construct() {
         return "public "+name+": "+type.getName()+"[];";
     }
+
+
 }

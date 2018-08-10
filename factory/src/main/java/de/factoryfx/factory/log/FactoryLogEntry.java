@@ -25,11 +25,6 @@ public class FactoryLogEntry {
     }
 
     //field/method instead of list for performance
-    @JsonProperty
-    long reuseDurationNs;
-    public void logReuse(long reuseDurationNs){
-        this.reuseDurationNs=reuseDurationNs;
-    }
 
     @JsonProperty
     long createDurationNs;
@@ -58,9 +53,6 @@ public class FactoryLogEntry {
     @JsonIgnore
     public List<FactoryLogEntryEvent> getEvents(){
         ArrayList<FactoryLogEntryEvent> events = new ArrayList<>();
-        if (reuseDurationNs!=0) {
-            events.add(new FactoryLogEntryEvent(FactoryLogEntryEventType.REUSE,reuseDurationNs));
-        }
         if (createDurationNs!=0) {
             events.add(new FactoryLogEntryEvent(FactoryLogEntryEventType.CREATE,createDurationNs));
         }

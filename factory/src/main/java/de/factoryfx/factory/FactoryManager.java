@@ -83,6 +83,7 @@ public class FactoryManager<V,L,R extends FactoryBase<L,V,R>> {
                     factory.internalFactory().start();
                 }
                 totalUpdateDuration = System.nanoTime() - start;
+                logger.info(currentFactoryRoot.logUpdateDisplayTextDeep());
                 return new FactoryUpdateLog<>(currentFactoryRoot.createFactoryLogTree(), removed.stream().map(r->r.internalFactory().createFactoryLogEntry()).collect(Collectors.toSet()),mergeDiff,totalUpdateDuration,null);
             } catch(Exception e){
                 factoryExceptionHandler.updateException(e,factoryBaseInFocus,new ExceptionResponseAction(this, new RootFactoryWrapper(previousFactoryCopyRoot),currentFactoryRoot,removed));
@@ -160,7 +161,7 @@ public class FactoryManager<V,L,R extends FactoryBase<L,V,R>> {
                 factoryBaseInFocus=factory;
                 factory.internalFactory().start();
             }
-            logger.info(currentFactoryRoot.logDisplayTextDeep());
+            logger.info(currentFactoryRoot.logStartDisplayTextDeep());
             return currentFactoryRoot.getRoot().internalFactory().getLiveObject();
         } catch (Exception e){
             factoryExceptionHandler.startException(e,factoryBaseInFocus,new ExceptionResponseAction(this,null,currentFactoryRoot,new ArrayList<>()));
@@ -170,6 +171,9 @@ public class FactoryManager<V,L,R extends FactoryBase<L,V,R>> {
 
     @SuppressWarnings("unchecked")
     public void stop(){
+        if (currentFactoryRoot==null){
+            throw new IllegalStateException("server is not started");
+        }
         Collection<FactoryBase<?,?,?>> factories = currentFactoryRoot.getFactoriesInDestroyOrder();
         FactoryBase<?,?,?> factoryBaseInFocus=null;//for better exception reporting
         try {
