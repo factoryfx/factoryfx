@@ -1,14 +1,14 @@
 package de.factoryfx.javafx.data.widget.datalistedit;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-
-import de.factoryfx.javafx.data.util.DataChoiceDialog;
-import de.factoryfx.javafx.data.util.UniformDesign;
-import de.factoryfx.javafx.data.widget.select.SelectDataDialog;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -30,7 +30,10 @@ import org.controlsfx.glyphfont.FontAwesome;
 import de.factoryfx.data.Data;
 import de.factoryfx.data.attribute.ReferenceListAttribute;
 import de.factoryfx.data.util.LanguageText;
+import de.factoryfx.javafx.data.util.DataChoiceDialog;
+import de.factoryfx.javafx.data.util.UniformDesign;
 import de.factoryfx.javafx.data.widget.Widget;
+import de.factoryfx.javafx.data.widget.select.SelectDataDialog;
 
 /**
  * Data list edit widget (add Button,delete Button,... )
@@ -147,7 +150,6 @@ public class ReferenceListAttributeEditWidget<T extends Data> implements Widget 
             tableView.getSelectionModel().clearSelection();
             tableView.getSelectionModel().select(copy);
         });
-        selectButton.setDisable(!isUserEditable /*|| !isUserCopyAble*/);
 
         HBox buttons = new HBox();
         buttons.setAlignment(Pos.CENTER_LEFT);
