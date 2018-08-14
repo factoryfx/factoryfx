@@ -99,24 +99,21 @@ public class ExampleData1 extends Data {
     public final StringAttribute specialAttribute=new StringAttribute().longText().en("specialAttribute").de("specialAttribute de");
 
     public ExampleData1() {
-        config().addValidation(new Validation<ExampleData1>() {
-            @Override
-            public ValidationResult validate(ExampleData1 value) {
-                if (value.integerAttribute.get()==null){
-                    return new ValidationResult(false,new LanguageText().de("long = int"));
-                }
-                if (value.longAttribute.get()==null){
-                    return new ValidationResult(false,new LanguageText().de("long = int"));
-                }
-                return new ValidationResult(value.integerAttribute.get().intValue()!=value.longAttribute.get().longValue(),new LanguageText().de("long = int"));
+        config().addValidation((Validation<ExampleData1>) value -> {
+            if (value.integerAttribute.get()==null){
+                return new ValidationResult(false,new LanguageText().de("long = int"));
             }
-        },integerAttribute,longAttribute);
+            if (value.longAttribute.get()==null){
+                return new ValidationResult(false,new LanguageText().de("long = int"));
+            }
+            return new ValidationResult(value.integerAttribute.get().intValue()!=value.longAttribute.get().longValue(),new LanguageText().de("long = int"));
+        }, integerAttribute, longAttribute);
 
 
 
-        config().setAttributeListGroupedSupplier((List<Attribute<?,?>> defaultGroup)->attributeListGrouped(defaultGroup));
+        config().setAttributeListGroupedSupplier(this::attributeListGrouped);
 
-        config().setDisplayTextProvider(() -> stringAttribute.get());
+        config().setDisplayTextProvider(stringAttribute::get);
         config().setDisplayTextDependencies(stringAttribute);
     }
 

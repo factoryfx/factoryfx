@@ -1,14 +1,8 @@
 package de.factoryfx.javafx.data.editor.attribute.visualisation;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.function.Consumer;
 
-import de.factoryfx.data.Data;
-import de.factoryfx.data.attribute.Attribute;
-import de.factoryfx.javafx.data.editor.attribute.AttributeEditorVisualisation;
-import de.factoryfx.javafx.data.util.UniformDesign;
-import de.factoryfx.javafx.data.widget.table.TableControlWidget;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -20,6 +14,12 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
+
+import de.factoryfx.data.Data;
+import de.factoryfx.data.attribute.Attribute;
+import de.factoryfx.javafx.data.editor.attribute.AttributeEditorVisualisation;
+import de.factoryfx.javafx.data.util.UniformDesign;
+import de.factoryfx.javafx.data.widget.table.TableControlWidget;
 
 public class ViewListReferenceAttributeVisualisation implements AttributeEditorVisualisation<List<Data>> {
 
@@ -36,15 +36,15 @@ public class ViewListReferenceAttributeVisualisation implements AttributeEditorV
 
     @Override
     public void init(Attribute<List<Data>,?> boundAttribute) {
-        updater.ifPresent(listConsumer -> listConsumer.accept(boundAttribute.get()));
+        updater.accept(boundAttribute.get());
     }
 
     @Override
     public void attributeValueChanged(List<Data> newValue) {
-        updater.ifPresent(listConsumer -> listConsumer.accept(newValue));
+        updater.accept(newValue);
     }
 
-    Optional<Consumer<List<Data>>> updater= Optional.empty();
+    private Consumer<List<Data>> updater = data -> {};
 
     @Override
     public Node createVisualisation() {
@@ -65,13 +65,13 @@ public class ViewListReferenceAttributeVisualisation implements AttributeEditorV
             }
         });
 
-        updater=Optional.of(datas -> {
+        updater=datas -> {
             if (datas == null) {
                 items.clear();
             } else {
                 items.setAll(datas);
             }
-        });
+        };
 
         TableControlWidget<Data> tableControlWidget = new TableControlWidget<>(tableView,uniformDesign);
         Node tableControlWidgetContent = tableControlWidget.createContent();

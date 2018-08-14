@@ -76,9 +76,7 @@ public class ReferenceAttributeVisualisation extends ValueAttributeEditorVisuali
 
         Button newButton = new Button();
         uniformDesign.addIcon(newButton,FontAwesome.Glyph.PLUS);
-        newButton.setOnAction(event -> {
-            addNewReference(newButton.getScene().getWindow());
-        });
+        newButton.setOnAction(event -> addNewReference(newButton.getScene().getWindow()));
         newButton.setDisable(!isUserEditable || !isUserCreateable || isCatalogBased || readonly);
 
         Button deleteButton = new Button();

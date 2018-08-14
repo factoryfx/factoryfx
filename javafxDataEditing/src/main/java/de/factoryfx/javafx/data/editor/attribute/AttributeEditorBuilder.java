@@ -265,11 +265,9 @@ public class AttributeEditorBuilder {
     }
 
     public AttributeEditor<?, ?> getAttributeEditor(Attribute<?, ?> attribute, Consumer<Data> navigateToData, Data oldValue) {
-        if (attribute instanceof ValueListAttribute<?, ?>) {
-            return singleAttributeEditorBuilders.stream().filter(a -> a.isListItemEditorFor(attribute)).findAny().orElseThrow(() -> new RuntimeException("No implementation found for " + attribute.getClass().getSimpleName()))
-                                                .createValueListEditor(attribute);
-        }
-        return singleAttributeEditorBuilders.stream().filter(a -> a.isEditorFor(attribute)).findAny().orElseThrow(() -> new RuntimeException("No implementation found for " + attribute.getClass().getSimpleName()))
+        return singleAttributeEditorBuilders.stream()
+                                            .filter(attribute instanceof ValueListAttribute<?, ?> ? a->a.isListItemEditorFor(attribute) : a->a.isEditorFor(attribute))
+                                            .findAny().orElseThrow(() -> new RuntimeException("No implementation found for " + attribute.getClass().getSimpleName()))
                                             .createEditor(attribute, navigateToData, oldValue);
     }
 }

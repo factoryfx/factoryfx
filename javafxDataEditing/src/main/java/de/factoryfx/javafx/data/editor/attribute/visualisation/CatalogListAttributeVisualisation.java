@@ -1,29 +1,26 @@
 package de.factoryfx.javafx.data.editor.attribute.visualisation;
 
-
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-import de.factoryfx.javafx.data.util.CheckComboBoxHelper;
 import javafx.collections.ObservableList;
 import javafx.scene.Node;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
-import javafx.util.StringConverter;
 
 import org.controlsfx.control.CheckComboBox;
 
 import de.factoryfx.data.Data;
 import de.factoryfx.data.attribute.ReferenceListAttribute;
 import de.factoryfx.javafx.data.editor.attribute.ListAttributeEditorVisualisation;
+import de.factoryfx.javafx.data.editor.attribute.converter.DataStringConverter;
+import de.factoryfx.javafx.data.util.CheckComboBoxHelper;
 
 public class CatalogListAttributeVisualisation extends ListAttributeEditorVisualisation<Data> {
     private final Supplier<Collection<? extends Data>> possibleValuesProvider;
-    private final ReferenceListAttribute<Data,?> referenceListAttribute;
-
+    private final ReferenceListAttribute<Data, ?> referenceListAttribute;
 
     public CatalogListAttributeVisualisation(Supplier<Collection<? extends Data>> possibleValuesProvider, ReferenceListAttribute<Data, ?> referenceListAttribute) {
         this.possibleValuesProvider = possibleValuesProvider;
@@ -32,64 +29,48 @@ public class CatalogListAttributeVisualisation extends ListAttributeEditorVisual
 
     @Override
     public Node createContent(ObservableList<Data> readOnlyList, Consumer<Consumer<List<Data>>> listModifyingAction, boolean readonly) {
-
         CheckComboBox<Data> comboBox = new CheckComboBox<>();
-        updateCheckComboBox(comboBox);
+        possibleValuesProvider.get().stream().distinct().forEach(comboBox.getItems()::add);
+        CheckComboBoxHelper.addOpenCloseListener(comboBox, this::updateCheckComboBox);
 
-        CheckComboBoxHelper.addOpenCloseListener(comboBox,()->updateCheckComboBox(comboBox));
-
-        comboBox.setConverter(new StringConverter<>() {
-            @Override
-            public String toString(Data object) {
-                return object.internal().getDisplayText();
-            }
-
-            @Override
-            public Data fromString(String string) {
-                throw new UnsupportedOperationException();
-            }
-        });
+        comboBox.setConverter(new DataStringConverter());
         comboBox.setMinWidth(300);
 
         final MenuItem selectAll = new MenuItem("alle auswählen");
         selectAll.setOnAction(event -> {
-            referenceListAttribute.get().clear();
-            referenceListAttribute.get().addAll(comboBox.getItems());
+            setAll(comboBox, true);
             updateCheckComboBox(comboBox);
         });
         final MenuItem unSelectAll = new MenuItem("keine auswählen");
         unSelectAll.setOnAction(event -> {
-            referenceListAttribute.get().clear();
+            setAll(comboBox, false);
             updateCheckComboBox(comboBox);
         });
         comboBox.setContextMenu(new ContextMenu(selectAll, unSelectAll));
 
-        comboBox.setDisable(readonly);
+        updateCheckComboBox(comboBox);
         return comboBox;
     }
 
-    private void updateCheckComboBox(CheckComboBox<Data> comboBox){
-        comboBox.getItems().clear();
+    void setAll(CheckComboBox<Data> comboBox, boolean value) {
+        comboBox.getItems().stream().map(comboBox::getItemBooleanProperty).forEach(s -> s.setValue(value));
+    }
 
-        List<Data> items = new ArrayList<>(possibleValuesProvider.get());
-        comboBox.getItems().addAll(items);
-        //datas.stream().filter(unlisted->!items.contains(unlisted)).forEach(comboBox.getItems()::add);
-
-        comboBox.getItems().forEach(i->{
-            if (referenceListAttribute.get().contains(i)) {
-                comboBox.getItemBooleanProperty(i).set(true);
+    private void updateCheckComboBox(CheckComboBox<Data> comboBox) {
+        comboBox.getItems().forEach(data -> {
+            if (referenceListAttribute.get().contains(data)) {
+                comboBox.getItemBooleanProperty(data).set(true);
             }
-            comboBox.getItemBooleanProperty(i).addListener((a,b,newV)->{
+            comboBox.getItemBooleanProperty(data).addListener((a, b, newV) -> {
                 if (newV) {
-                    boolean contained = referenceListAttribute.get().contains(i);
-                    if (!contained) {
-                        referenceListAttribute.get().add(i);
+                    if (!referenceListAttribute.get().contains(data)) {
+                        referenceListAttribute.get().add(data);
                     }
                 } else {
-                    referenceListAttribute.get().remove(i);
+                    referenceListAttribute.get().remove(data);
                 }
             });
+
         });
-        referenceListAttribute.get().removeIf(d->!items.contains(d));
     }
 }
