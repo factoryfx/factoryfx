@@ -14,18 +14,27 @@ import org.controlsfx.control.CheckComboBox;
 
 import de.factoryfx.data.Data;
 import de.factoryfx.data.attribute.ReferenceListAttribute;
+import de.factoryfx.data.util.LanguageText;
 import de.factoryfx.javafx.data.editor.attribute.ListAttributeEditorVisualisation;
 import de.factoryfx.javafx.data.editor.attribute.converter.DataStringConverter;
 import de.factoryfx.javafx.data.util.CheckComboBoxHelper;
+import de.factoryfx.javafx.data.util.UniformDesign;
 
 public class CatalogListAttributeVisualisation extends ListAttributeEditorVisualisation<Data> {
+    private final UniformDesign uniformDesign;
     private final Supplier<Collection<? extends Data>> possibleValuesProvider;
     private final ReferenceListAttribute<Data, ?> referenceListAttribute;
 
-    public CatalogListAttributeVisualisation(Supplier<Collection<? extends Data>> possibleValuesProvider, ReferenceListAttribute<Data, ?> referenceListAttribute) {
+    public CatalogListAttributeVisualisation(UniformDesign uniformDesign, Supplier<Collection<? extends Data>> possibleValuesProvider, ReferenceListAttribute<Data, ?> referenceListAttribute) {
+        this.uniformDesign = uniformDesign;
         this.possibleValuesProvider = possibleValuesProvider;
         this.referenceListAttribute = referenceListAttribute;
     }
+
+
+
+    private final static LanguageText selectAll = new LanguageText().en("Select all").de("Alle auswählen");
+    private final static LanguageText selectNon = new LanguageText().en("Deselect all").de("Keins auswählen");
 
     @Override
     public Node createContent(ObservableList<Data> readOnlyList, Consumer<Consumer<List<Data>>> listModifyingAction, boolean readonly) {
@@ -36,24 +45,17 @@ public class CatalogListAttributeVisualisation extends ListAttributeEditorVisual
         comboBox.setConverter(new DataStringConverter());
         comboBox.setMinWidth(300);
 
-        final MenuItem selectAll = new MenuItem("alle auswählen");
-        selectAll.setOnAction(event -> {
-            setAll(comboBox, true);
-            updateCheckComboBox(comboBox);
-        });
-        final MenuItem unSelectAll = new MenuItem("keine auswählen");
-        unSelectAll.setOnAction(event -> {
-            setAll(comboBox, false);
-            updateCheckComboBox(comboBox);
-        });
-        comboBox.setContextMenu(new ContextMenu(selectAll, unSelectAll));
+        comboBox.setContextMenu(new ContextMenu(menuItem(selectAll, comboBox, true),
+                                                menuItem(selectNon, comboBox, false)));
 
         updateCheckComboBox(comboBox);
         return comboBox;
     }
 
-    void setAll(CheckComboBox<Data> comboBox, boolean value) {
-        comboBox.getItems().stream().map(comboBox::getItemBooleanProperty).forEach(s -> s.setValue(value));
+    private MenuItem menuItem(LanguageText text, CheckComboBox<Data> comboBox, boolean value) {
+        final MenuItem menuItem = new MenuItem(uniformDesign.getText(text));
+        menuItem.setOnAction(event ->comboBox.getItems().stream().map(comboBox::getItemBooleanProperty).forEach(s -> s.setValue(value)));
+        return menuItem;
     }
 
     private void updateCheckComboBox(CheckComboBox<Data> comboBox) {

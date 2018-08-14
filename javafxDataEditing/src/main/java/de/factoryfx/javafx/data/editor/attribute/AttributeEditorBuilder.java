@@ -248,7 +248,7 @@ public class AttributeEditorBuilder {
                 ReferenceListAttribute referenceListAttribute = (ReferenceListAttribute)attribute;
 
                 if(referenceListAttribute.internal_isCatalogueBased()){
-                    return new AttributeEditor<>(referenceListAttribute, new CatalogListAttributeVisualisation(referenceListAttribute::internal_possibleValues, referenceListAttribute), uniformDesign);
+                    return new AttributeEditor<>(referenceListAttribute, new CatalogListAttributeVisualisation(uniformDesign, referenceListAttribute::internal_possibleValues, referenceListAttribute), uniformDesign);
                 } else {
                     final TableView<Data> dataTableView = new TableView<>();
                     final ReferenceListAttributeVisualisation referenceListAttributeVisualisation = new ReferenceListAttributeVisualisation(uniformDesign, navigateToData, dataTableView, new ReferenceListAttributeEditWidget<Data>(dataTableView, navigateToData, uniformDesign, referenceListAttribute));
@@ -265,9 +265,11 @@ public class AttributeEditorBuilder {
     }
 
     public AttributeEditor<?, ?> getAttributeEditor(Attribute<?, ?> attribute, Consumer<Data> navigateToData, Data oldValue) {
-        return singleAttributeEditorBuilders.stream()
-                                            .filter(attribute instanceof ValueListAttribute<?, ?> ? a->a.isListItemEditorFor(attribute) : a->a.isEditorFor(attribute))
-                                            .findAny().orElseThrow(() -> new RuntimeException("No implementation found for " + attribute.getClass().getSimpleName()))
+        if (attribute instanceof ValueListAttribute<?, ?>) {
+            return singleAttributeEditorBuilders.stream().filter(a -> a.isListItemEditorFor(attribute)).findAny().orElseThrow(() -> new RuntimeException("No implementation found for " + attribute.getClass().getSimpleName()))
+                                                .createValueListEditor(attribute);
+        }
+        return singleAttributeEditorBuilders.stream().filter(a -> a.isEditorFor(attribute)).findAny().orElseThrow(() -> new RuntimeException("No implementation found for " + attribute.getClass().getSimpleName()))
                                             .createEditor(attribute, navigateToData, oldValue);
     }
 }
