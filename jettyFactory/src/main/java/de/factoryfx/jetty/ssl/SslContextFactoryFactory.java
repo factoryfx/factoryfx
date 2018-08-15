@@ -15,12 +15,12 @@ import de.factoryfx.factory.SimpleFactoryBase;
 
 public class SslContextFactoryFactory<V, R extends FactoryBase<?, V, R>> extends SimpleFactoryBase<SslContextFactory, V, R> {
     public final Base64Attribute keyStore = new Base64Attribute().en("keyStore").de("keyStore");
-    public final EnumAttribute<KeyStoreType> keyStoreType = new EnumAttribute<>(KeyStoreType.class);
+    public final EnumAttribute<KeyStoreType> keyStoreType = new EnumAttribute<>(KeyStoreType.class).en("keyStoreType").de("keyStoreType");
     public final StringAttribute keyStorePassword = new StringAttribute().en("keyStorePassword").de("keyStorePassword");
     public final StringAttribute keyPassword = new StringAttribute().en("keyPassword").de("keyPassword").nullable();
 
     public final Base64Attribute trustStore = new Base64Attribute().en("trustStore").de("trustStore");
-    public final EnumAttribute<KeyStoreType> trustStoreType = new EnumAttribute<>(KeyStoreType.class);
+    public final EnumAttribute<KeyStoreType> trustStoreType = new EnumAttribute<>(KeyStoreType.class).en("trustStoreType").de("trustStoreType");;
     public final StringAttribute trustStorePassword = new StringAttribute().en("trustStorePassword").de("trustStorePassword");
 
     public final StringAttribute certAlias = new StringAttribute().en("certAlias").de("certAlias").nullable();
