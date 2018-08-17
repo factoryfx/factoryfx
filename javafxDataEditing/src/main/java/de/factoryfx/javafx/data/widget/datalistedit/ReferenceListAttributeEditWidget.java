@@ -81,7 +81,7 @@ public class ReferenceListAttributeEditWidget<T extends Data> implements Widget 
     public ReferenceListAttributeEditWidget(TableView<T> tableView, Consumer<Data> navigateToData, UniformDesign uniformDesign, ReferenceListAttribute<T,?> referenceListAttribute) {
         this(referenceListAttribute, tableView, navigateToData, uniformDesign,
                 referenceListAttribute::internal_createNewPossibleValues, referenceListAttribute::internal_possibleValues, (t, ts) -> referenceListAttribute.internal_deleteFactory(t),
-                referenceListAttribute.internal_isUserEditable(), referenceListAttribute.internal_isUserSelectable(), referenceListAttribute.internal_isUserCreatable());
+                !referenceListAttribute.internal_isUserReadOnly(), referenceListAttribute.internal_isUserSelectable(), referenceListAttribute.internal_isUserCreatable());
     }
 
 

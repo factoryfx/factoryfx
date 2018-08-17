@@ -227,7 +227,7 @@ public class AttributeEditorBuilder {
                                     referenceAttribute::set,
                                     referenceAttribute::internal_possibleValues,
                                     referenceAttribute::internal_deleteFactory,
-                                    referenceAttribute.internal_isUserEditable(),
+                                    !referenceAttribute.internal_isUserReadOnly(),
                                     referenceAttribute.internal_isUserSelectable(),
                                     referenceAttribute.internal_isUserCreatable(),
                                     referenceAttribute.internal_isCatalogueBased()),
