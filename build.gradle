@@ -144,10 +144,6 @@ subprojects {
     targetCompatibility = JavaVersion.VERSION_1_10
     compileJava.options.encoding = 'UTF-8'
 
-    configurations {
-        compile.exclude group: 'javax.annotation'
-    }
-
     dependencies {
         compile group: 'org.slf4j', name: 'slf4j-api', version: '1.8.0-beta2'
         compile (group: 'com.google.guava', name: 'guava', version: '25.0-jre'){
@@ -304,7 +300,10 @@ project(':jettyFactory') {
 
 //        compile group: 'org.apache.cxf', name: 'cxf-rt-bindings-soap', version: '3.2.4'
 //        compile group: 'javax.xml.ws', name: 'jaxws-api', version: '2.3.0'
-        compile group: 'com.sun.activation', name: 'javax.activation', version: '1.2.0' // workaround for jersey-hk2
+//        compile group: 'com.sun.activation', name: 'javax.activation', version: '1.2.0' // workaround for jersey-hk2
+
+        compile group: 'javax.activation', name: 'javax.activation-api', version: '1.2.0'
+        compile group: 'javax.annotation', name: 'javax.annotation-api', version: '1.3.2'
     }
 
 }
@@ -449,4 +448,30 @@ project(':typescriptGenerator') {
         compile project(":microserviceRestCommon")
     }
 }
+
+//project(':soapFactory') {
+//    configurations {
+//        compile.exclude group: 'com.google.code.findbugs'
+//        compile.exclude group: 'com.sun.activation'
+//        compile.exclude group: 'javax.xml.stream'
+//    }
+//
+//    dependencies {
+//        compile (project(":jettyFactory")){
+//            exclude group: 'javax.annotation'
+//            exclude group: 'org.glassfish.hk2'
+//            exclude group: 'javax.activation'
+//        }
+//        compile group: 'com.sun.xml.bind', name: 'jaxb-impl', version: '2.4.0-b180725.0644'
+////        compile group: 'javax.annotation', name: 'javax.annotation-api', version: '1.3.2'
+//        compile (group: 'com.sun.xml.ws', name: 'jaxws-rt', version: '2.3.0.2'){
+//            exclude module: 'sdo-eclipselink-plugin'
+//            exclude group: 'javax.activation'
+//            exclude group: 'javax.annotation'
+//            exclude module: 'jsr181-api'
+//        }
+////        compile group: 'javax.xml.ws', name: 'jaxws-api', version: '2.3.0'
+//        compile group: 'javax.activation', name: 'javax.activation-api', version: '1.2.0'
+//    }
+//}
 
