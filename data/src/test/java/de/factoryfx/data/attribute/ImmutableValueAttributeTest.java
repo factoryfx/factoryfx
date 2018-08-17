@@ -105,4 +105,5 @@ public class ImmutableValueAttributeTest {
         IntegerAttribute attribute = new IntegerAttribute().nullable();
         Assert.assertFalse(attribute.internal_required());
     }
+
 }

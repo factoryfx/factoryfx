@@ -101,22 +101,6 @@ public abstract class ReferenceBaseAttribute<T extends Data, U, A extends Refere
         return (A)this;
     }
 
-    private boolean userEditable=true;
-    /**
-     * marks the reference as readonly for the user(user can still navigate but not change the reference)
-     * @return self
-     */
-    @SuppressWarnings("unchecked")
-    public A userReadOnly(){
-        userEditable=false;
-        return (A)this;
-    }
-
-    @JsonIgnore
-    public boolean internal_isUserEditable(){
-        return userEditable;
-    }
-
     private boolean userSelectable=true;
     /**
      * disable select for reference, used in gui to disable the select button so that the user can't select new factories in this attribute

@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Locale;
 
 import de.factoryfx.data.Data;
+import de.factoryfx.data.attribute.primitive.BooleanAttribute;
 import de.factoryfx.data.attribute.types.StringAttribute;
 import de.factoryfx.data.jackson.ObjectMapperBuilder;
 import de.factoryfx.data.jackson.SimpleObjectMapper;
@@ -80,6 +81,31 @@ public class AttributeTest {
     public void test_tooltipText_en(){
         StringAttribute stringAttribute = new StringAttribute().tooltipEn("hi");
         Assert.assertEquals("hi",stringAttribute.internal_getPreferredTooltipText(Locale.ENGLISH));
+    }
+
+
+    @Test
+    public void test_dynamic_readonly(){
+        DynamicReadOnlyData dynamicReadOnlyData = new DynamicReadOnlyData();
+        dynamicReadOnlyData.barred.set(false);
+        DynamicReadOnlyData2 data2 = new DynamicReadOnlyData2();
+        data2.attribute.set("123");
+        dynamicReadOnlyData.strangeList.add(data2);
+
+        dynamicReadOnlyData.internal().addBackReferences();
+
+        Assert.assertFalse(data2.attribute.internal_isUserReadOnly());
+        dynamicReadOnlyData.barred.set(true);
+        Assert.assertTrue(data2.attribute.internal_isUserReadOnly());
+    }
+
+    public static class DynamicReadOnlyData extends Data {
+        public final BooleanAttribute barred = new BooleanAttribute();
+        public final DataReferenceListAttribute<DynamicReadOnlyData2> strangeList = new DataReferenceListAttribute<>();
+    }
+
+    public static class DynamicReadOnlyData2 extends Data {
+        public final StringAttribute attribute= new StringAttribute().userReadOnly(()->((DynamicReadOnlyData)internal().getRoot()).barred.get());
     }
 
 }

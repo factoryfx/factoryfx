@@ -2,6 +2,7 @@ package de.factoryfx.data.attribute;
 
 import java.util.*;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import de.factoryfx.data.Data;
@@ -337,6 +338,41 @@ public abstract class Attribute<T,A extends Attribute<T,A>>{
             return tooltipDe;
         }
         return "";
+    }
+
+
+    public boolean internal_isUserReadOnly() {
+        if (userReadOnly){
+            return true;
+        }
+        if (readyOnlySupplier!=null){
+            return readyOnlySupplier.get();
+        }
+        return false;
+    }
+
+    private boolean userReadOnly=false;
+    /**
+     * marks the attribute as readonly for the user
+     * @return self
+     */
+    @SuppressWarnings("unchecked")
+    public A userReadOnly(){
+        userReadOnly=true;
+        return (A)this;
+    }
+
+    private Supplier<Boolean> readyOnlySupplier;
+
+    /**
+     * readonly state depend on data in tree
+     *
+     * @param readyOnlySupplier  readyOnlySupplier
+     * @return self
+     * */
+    public A userReadOnly(Supplier<Boolean> readyOnlySupplier){
+        this.readyOnlySupplier=readyOnlySupplier;
+        return (A)this;
     }
 
 

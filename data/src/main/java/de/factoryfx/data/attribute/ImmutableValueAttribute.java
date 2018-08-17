@@ -1,10 +1,9 @@
 package de.factoryfx.data.attribute;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
+import java.util.function.BiFunction;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 import com.fasterxml.jackson.annotation.*;
 import de.factoryfx.data.Data;
@@ -149,22 +148,6 @@ public abstract class ImmutableValueAttribute<T,A extends Attribute<T,A>> extend
     public boolean match(A attribute){
         return match(attribute.get());
     }
-
-    public boolean internal_isUserReadOnly() {
-        return userReadOnly;
-    }
-
-    private boolean userReadOnly=false;
-    /**
-     * marks the attribute as readonly for the user
-     * @return self
-     */
-    @SuppressWarnings("unchecked")
-    public A userReadOnly(){
-        userReadOnly=true;
-        return (A)this;
-    }
-
 
     @Override
     public boolean internal_required() {

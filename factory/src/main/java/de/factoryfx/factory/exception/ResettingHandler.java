@@ -2,7 +2,10 @@ package de.factoryfx.factory.exception;
 
 import de.factoryfx.factory.FactoryBase;
 
-/**reset to the previous state after an exception during update */
+/**
+ * reset to the previous state after an exception during update
+ * (Some memory/resource leaks can't be fixed in the framework e.g if the factory close code throw an exception again or is wrong implemented)
+ * */
 public class ResettingHandler<V,L,R extends FactoryBase<L,V,R>> implements FactoryExceptionHandler<V,L,R>{
 
 
