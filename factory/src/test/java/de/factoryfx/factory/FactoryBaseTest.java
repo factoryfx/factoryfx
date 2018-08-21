@@ -1,7 +1,9 @@
 package de.factoryfx.factory;
 
 import de.factoryfx.data.Data;
+import de.factoryfx.data.attribute.types.ObjectValueAttribute;
 import de.factoryfx.data.attribute.types.StringAttribute;
+import de.factoryfx.data.jackson.ObjectMapperBuilder;
 import de.factoryfx.factory.atrribute.FactoryReferenceAttribute;
 import de.factoryfx.factory.atrribute.FactoryReferenceListAttribute;
 import de.factoryfx.factory.atrribute.FactoryViewListReferenceAttribute;
@@ -311,5 +313,26 @@ public class FactoryBaseTest {
             }
             Assert.assertEquals("hdegabcf",result.toString());
 
+    }
+
+    @Test
+    public void test_treebuildername(){
+        ExampleFactoryA factory = new ExampleFactoryA();
+        factory.internalFactory().setTreeBuilderName("EEE");
+        ExampleFactoryA copy=ObjectMapperBuilder.build().copy(factory);
+        Assert.assertEquals("EEE",factory.internalFactory().getTreeBuilderName());
+
+        System.out.println(ObjectMapperBuilder.build().writeValueAsString(factory));
+
+    }
+
+    @Test
+    public void test_collectChildFactoriesDeepFromNode(){
+        ExampleFactoryA root = new ExampleFactoryA();
+        ExampleFactoryB factoryB = new ExampleFactoryB();
+        root.referenceAttribute.set(factoryB);
+        factoryB.referenceAttributeC.set(new ExampleFactoryC());
+
+        Assert.assertEquals(2,factoryB.internalFactory().collectChildFactoriesDeepFromNode().size());
     }
 }

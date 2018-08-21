@@ -161,9 +161,10 @@ public abstract class ReferenceListAttribute<T extends Data,A extends ReferenceB
         return new AttributeTypeInfo(List.class,null,null,Data.class, AttributeTypeInfo.AttributeTypeCategory.REFERENCE_LIST);
     }
 
+    @SuppressWarnings("unchecked")
     public List<T> internal_createNewPossibleValues(){
-        if (newValuesProvider!=null) {
-            return newValuesProvider.apply(root);
+        if (newValuesProviderFromRootAndAttribute!=null) {
+            return newValuesProviderFromRootAndAttribute.apply(root,(A)this);
         }
         if (getNewValueProvider()!=null) {
             return Collections.singletonList(getNewValueProvider().apply(root));

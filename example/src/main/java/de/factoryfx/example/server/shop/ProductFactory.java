@@ -7,7 +7,7 @@ import de.factoryfx.factory.atrribute.FactoryReferenceAttribute;
 
 public class ProductFactory extends ServerBaseFactory<Product> {
     public ProductFactory(){
-        this.config().setDisplayTextProvider(name::get);
+        this.config().setDisplayTextProvider(name::get,name);
     }
 
     public final StringAttribute name = new StringAttribute().en("Name").de("Name");

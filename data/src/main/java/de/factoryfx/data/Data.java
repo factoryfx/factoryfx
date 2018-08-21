@@ -749,6 +749,10 @@ public class Data {
         public void resetIterationCounterFlat() {
             data.dataIterationRun=0;
         }
+
+        public void assertRoot(){
+            data.assertRoot();
+        }
     }
 
     private void assertRoot() {

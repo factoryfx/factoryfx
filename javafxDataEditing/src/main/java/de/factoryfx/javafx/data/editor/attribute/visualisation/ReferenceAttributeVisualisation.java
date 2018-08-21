@@ -9,6 +9,7 @@ import java.util.function.Supplier;
 import javafx.beans.InvalidationListener;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
@@ -125,7 +126,7 @@ public class ReferenceAttributeVisualisation extends ValueAttributeEditorVisuali
         deleteButton.setTooltip(new Tooltip(uniformDesign.getText(deleteText)));
 
 
-
+        hBox.setAlignment(Pos.CENTER_LEFT);
         return hBox;
     }
 

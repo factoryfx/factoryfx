@@ -8,6 +8,7 @@ import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.data.storage.DataAndNewMetadata;
 import de.factoryfx.data.storage.DataStorage;
 import de.factoryfx.data.storage.StoredDataMetadata;
+import de.factoryfx.factory.FactoryTreeBuilderBasedAttributeSetup;
 import de.factoryfx.factory.log.FactoryUpdateLog;
 
 import de.factoryfx.microservice.common.*;
@@ -27,12 +28,14 @@ public class MicroserviceRestClient<V, R extends FactoryBase<?,V,R>,S> {
     private final MicroserviceResourceApi<V,R,S> microserviceResource;
     private final String user;
     private final String passwordHash;
+    private final FactoryTreeBuilderBasedAttributeSetup<R> factoryTreeBuilderBasedAttributeSetup;
 
-    public MicroserviceRestClient(MicroserviceResourceApi<V,R,S> microserviceResource, Class<R> factoryRootClass, String user, String passwordHash) {
+    public MicroserviceRestClient(MicroserviceResourceApi<V,R,S> microserviceResource, Class<R> factoryRootClass, String user, String passwordHash, FactoryTreeBuilderBasedAttributeSetup<R> factoryTreeBuilderBasedAttributeSetup) {
         this.microserviceResource = microserviceResource;
         this.factoryRootClass = factoryRootClass;
         this.user=user;
         this.passwordHash=passwordHash;
+        this.factoryTreeBuilderBasedAttributeSetup = factoryTreeBuilderBasedAttributeSetup;
     }
 
     public FactoryUpdateLog updateCurrentFactory(DataAndNewMetadata<R> update, String comment) {
@@ -60,7 +63,11 @@ public class MicroserviceRestClient<V, R extends FactoryBase<?,V,R>,S> {
     @SuppressWarnings("unchecked")
     public DataAndNewMetadata<R> prepareNewFactory() {
         DataAndNewMetadata<R> currentFactory = executeWidthServerExceptionReporting(()->microserviceResource.prepareNewFactory(new UserAwareRequest<>(user,passwordHash,null)));
-        return new DataAndNewMetadata<>(currentFactory.root.internal().addBackReferences(),currentFactory.metadata);
+        R root = currentFactory.root.internal().addBackReferences();
+        if (factoryTreeBuilderBasedAttributeSetup!=null){
+            factoryTreeBuilderBasedAttributeSetup.applyToRootFactoryDeep(root);
+        }
+        return new DataAndNewMetadata<>(root,currentFactory.metadata);
     }
 
     @SuppressWarnings("unchecked")

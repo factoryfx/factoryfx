@@ -69,20 +69,30 @@ public class FactoryTreeBuilder<R extends FactoryBase<?,?,R>> {
      * */
     @SuppressWarnings("unchecked")
     public R buildTreeUnvalidated(){
-        R factoryBases = factoryContext.get(rootClass);
-        if (factoryBases==null){
+        R rootFactory = factoryContext.get(rootClass);
+        if (rootFactory==null){
             throw new IllegalStateException("FactoryCreator missing for root class "+ rootClass.getSimpleName()+"\n"+"probably missing call: factoryBuilder.addFactory("+rootClass.getSimpleName()+".class,...\n");
         }
-        FactoryTreeBuilderBasedAttributeSetup<R> factoryTreeBuilderBasedAttributeSetup = new FactoryTreeBuilderBasedAttributeSetup<>(this);
-        factoryBases.internalFactory().setAttributeSetupHelper(factoryTreeBuilderBasedAttributeSetup);
-        return factoryBases.internal().addBackReferences();
+        rootFactory.internal().addBackReferences();
+        return rootFactory;
     }
 
     public <L, F extends FactoryBase<L,?,R>> F buildSubTree(Class<F> factoryClazz){
         return factoryContext.get(factoryClazz);
     }
 
+    public <L, F extends FactoryBase<L,?,R>> List<F> buildSubTrees(Class<F> factoryClazz){
+        return factoryContext.getList(factoryClazz);
+    }
+
+
     public Scope getScope(Class<?> factoryClazz){
         return factoryContext.getScope(factoryClazz);
     }
+
+    public void fillFromExistingFactoryTree(R root) {
+        factoryContext.fillFromExistingFactoryTree(root);
+    }
+
+
 }

@@ -145,13 +145,10 @@ public abstract class ReferenceAttribute<T extends Data, A extends ReferenceBase
         }
     }
 
-    public boolean internal_hasCustomNewValuesProvider(){
-        return newValuesProvider!=null;
-    }
-
+    @SuppressWarnings("unchecked")
     public List<T> internal_createNewPossibleValues(){
-        if (newValuesProvider!=null) {
-            return newValuesProvider.apply(root);
+        if (newValuesProviderFromRootAndAttribute!=null) {
+            return newValuesProviderFromRootAndAttribute.apply(root, (A)this);
         }
         if (getNewValueProvider()!=null) {
             return Collections.singletonList(getNewValueProvider().apply(root));

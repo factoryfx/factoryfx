@@ -84,6 +84,8 @@ public class ExpandableAttributeVisualisation<T> implements AttributeEditorVisua
         root.getChildren().addAll(summary);
 
         expandButton.selectedProperty().bindBidirectional(expanded);
+
+        root.setAlignment(Pos.CENTER_LEFT);
         return root;
     }
 

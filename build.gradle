@@ -68,7 +68,7 @@ subprojects {
     }
 
     group = 'io.github.factoryfx'
-    version = '1.5.8'
+    version = '1.6.0'
 
     if (project.hasProperty('secretKeyRingFileSourceURL')) {
         //workaround  to get key  file to the plugin
@@ -146,7 +146,7 @@ subprojects {
 
     dependencies {
         compile group: 'org.slf4j', name: 'slf4j-api', version: '1.8.0-beta2'
-        compile (group: 'com.google.guava', name: 'guava', version: '25.0-jre'){
+        compile (group: 'com.google.guava', name: 'guava', version: '26.0-jre'){
             exclude module: "jsr305" // module conflict: https://blog.codefx.org/java/jsr-305-java-9/, https://github.com/google/guava/issues/2960
         }
         testCompile group: 'junit', name: 'junit', version: '4.12'
@@ -207,6 +207,9 @@ project(':microserviceRestClient') {
         compile project(":microserviceRestCommon")
         compile group: 'org.glassfish.jersey.ext', name: 'jersey-proxy-client', version: '2.27'
         compile 'org.glassfish.jersey.core:jersey-client:2.27'
+        compile group: 'com.fasterxml.jackson.jaxrs', name: 'jackson-jaxrs-json-provider', version: '2.9.6'
+
+        compile group: 'javax.annotation', name: 'javax.annotation-api', version: '1.3.2'
     }
 
 }
@@ -214,12 +217,8 @@ project(':microserviceRestClient') {
 project(':microserviceRestCommon') {
     dependencies {
         compile project(":factory")
-        compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.9.6'
+        compile group: 'javax.ws.rs', name: 'javax.ws.rs-api', version: '2.1'
 
-        compile group: 'org.glassfish.jersey.core', name: 'jersey-server', version: '2.27'
-        compile group: 'com.fasterxml.jackson.jaxrs', name: 'jackson-jaxrs-json-provider', version: '2.9.6'
-        compile 'org.glassfish.jersey.media:jersey-media-json-jackson:2.27'
-        compile 'org.glassfish.jersey.inject:jersey-hk2:2.27'
     }
 }
 
@@ -228,7 +227,10 @@ project(':microserviceRestIntegrationTest') {
     dependencies {
         compile project(":microserviceRestServer")
         compile project(":microserviceRestClient")
-        compile group: 'ch.qos.logback', name: 'logback-classic', version: '1.3.0-alpha4'
+        compile (group: 'ch.qos.logback', name: 'logback-classic', version: '1.3.0-alpha4'){
+            exclude group: "javax.activation"
+        }
+        compile group: 'javax.activation', name: 'javax.activation-api', version: '1.2.0'
     }
 
     spotbugs {
@@ -294,9 +296,13 @@ project(':jettyFactory') {
         compile group: 'org.glassfish.jersey.core', name: 'jersey-server', version: '2.27'
         compile group: 'com.fasterxml.jackson.jaxrs', name: 'jackson-jaxrs-json-provider', version: '2.9.6'
         compile 'org.glassfish.jersey.containers:jersey-container-servlet-core:2.27'
-        compile 'org.glassfish.jersey.inject:jersey-hk2:2.27'
+        compile ('org.glassfish.jersey.inject:jersey-hk2:2.27'){
+            exclude group: 'javax.annotation'
+        }
 
-        testCompile group: 'ch.qos.logback', name: 'logback-classic', version: '1.3.0-alpha4'
+        testCompile (group: 'ch.qos.logback', name: 'logback-classic', version: '1.3.0-alpha4'){
+            exclude group: "javax.activation"
+        }
 
 //        compile group: 'org.apache.cxf', name: 'cxf-rt-bindings-soap', version: '3.2.4'
 //        compile group: 'javax.xml.ws', name: 'jaxws-api', version: '2.3.0'
@@ -317,7 +323,11 @@ project(':example') {
         compile project(":jettyFactory")
         compile project(":microserviceRestServer")
         compile project(":factory")
-        compile group: 'ch.qos.logback', name: 'logback-classic', version: '1.3.0-alpha4'
+
+        compile (group: 'ch.qos.logback', name: 'logback-classic', version: '1.3.0-alpha4'){
+            exclude group: "javax.activation"
+        }
+        compile group: 'javax.activation', name: 'javax.activation-api', version: '1.2.0'
     }
 
 }
@@ -332,10 +342,13 @@ project(':javafxDataEditing') {
 
     dependencies {
         compile project(":data")
-        compile group: 'ch.qos.logback', name: 'logback-classic', version: '1.3.0-alpha4'
         compile group: 'org.controlsfx', name: 'controlsfx', version: '9.0.0'
         compile group: 'org.fxmisc.richtext', name: 'richtextfx', version: '0.6.10'
         testCompile project(":testfactories")
+        testCompile (group: 'ch.qos.logback', name: 'logback-classic', version: '1.3.0-alpha4'){
+            exclude group: "javax.activation"
+        }
+        testCompile group: 'javax.activation', name: 'javax.activation-api', version: '1.2.0'
 
         //TODO replace with non snap shot versions
 //        compile "org.openjfx:javafx-controls:11-ea+19:win"
@@ -365,7 +378,10 @@ project(':javafxDistributionServer') {
         compile project(":factory")
         compile 'org.slf4j:slf4j-api:1.8.0-beta2'
 
-        testCompile group: 'ch.qos.logback', name: 'logback-classic', version: '1.3.0-alpha4'
+        testCompile (group: 'ch.qos.logback', name: 'logback-classic', version: '1.3.0-alpha4'){
+            exclude group: "javax.activation"
+        }
+        testCompile group: 'javax.activation', name: 'javax.activation-api', version: '1.2.0'
     }
 
 }
@@ -379,7 +395,8 @@ project(':javafxDistributionClient') {
         compile group: 'org.glassfish.jersey.core', name: 'jersey-client', version: '2.27'
         compile group: 'com.fasterxml.jackson.jaxrs', name: 'jackson-jaxrs-json-provider', version: '2.9.6'
         compile 'org.glassfish.jersey.media:jersey-media-json-jackson:2.27'
-        compile 'org.glassfish.jersey.inject:jersey-hk2:2.27'
+
+        compile group: 'javax.annotation', name: 'javax.annotation-api', version: '1.3.2'
     }
 
 }
@@ -430,7 +447,10 @@ project(':docu') {
         compile project(':postgresqlStorage')
         compile group: 'io.dropwizard.metrics', name: 'metrics-jetty9', version: '3.2.4'
         compile 'ru.yandex.qatools.embed:postgresql-embedded:1.15'
-        compile group: 'ch.qos.logback', name: 'logback-classic', version: '1.3.0-alpha4'
+        compile (group: 'ch.qos.logback', name: 'logback-classic', version: '1.3.0-alpha4'){
+            exclude group: "javax.activation"
+        }
+        compile group: 'javax.activation', name: 'javax.activation-api', version: '1.2.0'
     }
 
 }
@@ -449,29 +469,72 @@ project(':typescriptGenerator') {
     }
 }
 
+////idea bug https://youtrack.jetbrains.com/issue/IDEA-192658
+//
 //project(':soapFactory') {
-//    configurations {
-//        compile.exclude group: 'com.google.code.findbugs'
-//        compile.exclude group: 'com.sun.activation'
-//        compile.exclude group: 'javax.xml.stream'
+//
+////    configurations {
+//////        compile.exclude group: 'com.google.code.findbugs'
+//////        compile.exclude group: 'com.sun.activation'
+//////        compile.exclude group: 'javax.xml.stream'
+//////    }
+//
+//    repositories {
+//        mavenCentral()
+////        maven {
+////            url "https://oss.sonatype.org/content/repositories/snapshots"
+////        }
+//
+//        maven {
+//            url "http://maven.java.net/content/repositories/snapshots"
+//        }
 //    }
 //
 //    dependencies {
-//        compile (project(":jettyFactory")){
+////        compile (group: 'org.eclipse.jetty', name: 'jetty-server', version: '9.4.11.v20180605'){
+////                        exclude group: 'javax.annotation'
+////            exclude module: 'jetty-servlet'
+////            exclude module: 'jetty-webapp'
+////            exclude group: 'org.glassfish.jersey.core'
+////            exclude group: 'javax.servlet'
+//////            exclude group: 'org.eclipse.jetty'
+////
+////            exclude module: 'jetty-http'
+////            exclude module: 'jetty-util'
+////            exclude module: 'jetty-io'
+////        }
+//
+//
+//
+//
+////        compile (project(":jettyFactory")){
+////            exclude group: 'javax.annotation'
+////            exclude module: 'jetty-servlet'
+////            exclude module: 'jetty-webapp'
+////            exclude group: 'org.glassfish.jersey.core'
+////            exclude group: 'javax.servlet'
+////            exclude group: 'org.eclipse.jetty'
+////        }
+//        compile (group: 'com.sun.xml.bind', name: 'jaxb-impl', version: '2.4.0-b180725.0644'){
 //            exclude group: 'javax.annotation'
-//            exclude group: 'org.glassfish.hk2'
-//            exclude group: 'javax.activation'
 //        }
-//        compile group: 'com.sun.xml.bind', name: 'jaxb-impl', version: '2.4.0-b180725.0644'
 ////        compile group: 'javax.annotation', name: 'javax.annotation-api', version: '1.3.2'
-//        compile (group: 'com.sun.xml.ws', name: 'jaxws-rt', version: '2.3.0.2'){
-//            exclude module: 'sdo-eclipselink-plugin'
-//            exclude group: 'javax.activation'
+////        compile (group: 'com.sun.xml.ws', name: 'jaxws-rt', version: '2.3.0.2'){
+////            exclude module: 'sdo-eclipselink-plugin'
+////            exclude group: 'javax.activation'
+////            exclude group: 'javax.annotation'
+////            exclude module: 'jsr181-api'
+//////            exclude group: 'javax.xml.soap'
+////            exclude group: 'javax.xml.stream'
+////        }
+//        compile (group: 'javax.xml.ws', name: 'jaxws-api', version: '2.4.0-SNAPSHOT') {
 //            exclude group: 'javax.annotation'
-//            exclude module: 'jsr181-api'
 //        }
+////        compile group: 'javax.annotation', name: 'javax.annotation-api', version: '1.3.2'
+//
+//
+//
 ////        compile group: 'javax.xml.ws', name: 'jaxws-api', version: '2.3.0'
-//        compile group: 'javax.activation', name: 'javax.activation-api', version: '1.2.0'
+////        compile group: 'javax.activation', name: 'javax.activation-api', version: '1.2.0'
 //    }
 //}
-

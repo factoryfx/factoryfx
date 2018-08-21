@@ -1,9 +1,13 @@
 package de.factoryfx.factory.builder;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Predicate;
+import java.util.stream.Stream;
 
+import de.factoryfx.data.Data;
 import de.factoryfx.factory.FactoryBase;
 
 public class FactoryContext<R extends FactoryBase<?,?,R>> {
@@ -41,5 +45,24 @@ public class FactoryContext<R extends FactoryBase<?,?,R>> {
 
     public Scope getScope(Class<?> factoryClazz) {
         return factoryCreators.stream().filter(fc -> fc.match(factoryClazz)).findAny().map(FactoryCreator::getScope).orElse(null);
+    }
+
+    boolean isEmpty() {
+        return factoryCreators.stream().allMatch(FactoryCreator::isEmpty);
+    }
+
+    @SuppressWarnings("unchecked")
+    public void fillFromExistingFactoryTree(R root) {
+        List<FactoryBase<?,?,?>> factories = root.internalFactory().collectChildFactoriesDeepFromRoot();
+        Map<FactoryCreatorIdentifier,FactoryBase<?,?,?>> classToFactory = new HashMap<>();
+        for (FactoryBase<?,?,?> factory : factories) {
+            classToFactory.put(new FactoryCreatorIdentifier(factory.getClass(),factory.internalFactory().getTreeBuilderName()),factory);
+        }
+
+        for (FactoryCreator<?, R> factoryCreator : factoryCreators) {
+            factoryCreator.fillFromExistingFactoryTree(classToFactory);
+        }
+
+        //.stream().allMatch(FactoryCreator::isEmpty);
     }
 }

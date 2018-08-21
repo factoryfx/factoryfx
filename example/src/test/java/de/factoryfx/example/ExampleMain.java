@@ -10,6 +10,7 @@ import de.factoryfx.example.server.ServerRootFactory;
 import de.factoryfx.example.server.ServerBuilder;
 import de.factoryfx.example.server.shop.OrderCollector;
 import de.factoryfx.factory.FactoryManager;
+import de.factoryfx.factory.builder.FactoryTreeBuilder;
 import de.factoryfx.factory.exception.ResettingHandler;
 import de.factoryfx.javafx.factory.RichClientRoot;
 import de.factoryfx.jetty.JettyServer;
@@ -32,11 +33,12 @@ public class ExampleMain extends Application {
     @Override
     public void start(Stage primaryStage){
 
-        ServerRootFactory shopFactory = getShopFactory();
+        FactoryTreeBuilder<ServerRootFactory> serverBuilder = new ServerBuilder().builder();
+        ServerRootFactory shopFactory = serverBuilder.buildTree();
         Microservice<OrderCollector, JettyServer, ServerRootFactory, Void> shopService = new Microservice<>(new FactoryManager<>(new ResettingHandler()), new InMemoryDataStorage<>(shopFactory));
         shopService.start();
 
-        RichClientRoot richClientFactory = RichClientBuilder.createFactoryBuilder(8089,primaryStage, "", "", Locale.ENGLISH).buildTree();
+        RichClientRoot richClientFactory = RichClientBuilder.createFactoryBuilder(8089,primaryStage, "", "", Locale.ENGLISH,serverBuilder).buildTree();
         MicroserviceBuilder.buildInMemoryMicroservice(richClientFactory).start();
 
         try {
@@ -53,34 +55,6 @@ public class ExampleMain extends Application {
             }
         });
     }
-
-    private ServerRootFactory getShopFactory() {
-        return new ServerBuilder().build();
-    }
-
-//    private RootFactory getNetherlandsShopFactory() {
-//        RootFactory shopFactory = new RootFactory();
-//        shopFactory.stageTitle.set("vehicle shop");
-//
-//        VatRateFactory vatRate =new VatRateFactory();
-//        vatRate.rate.set(0.21);
-//        {
-//            NetherlandsCarProductFactory productFactory = new NetherlandsCarProductFactory();
-//            productFactory.name.set("Car");
-//            productFactory.price.set(5);
-//            productFactory.vatRate.set(vatRate);
-//            productFactory.bpmTax.set(.05);
-//            shopFactory.products.add(productFactory);
-//        }
-//        {
-//            ProductFactory productFactory = new ProductFactory();
-//            productFactory.name.set("Bike");
-//            productFactory.price.set(10);
-//            productFactory.vatRate.set(vatRate);
-//            shopFactory.products.add(productFactory);
-//        }
-//        return shopFactory;
-//    }
 
     public static void main(String[] args) {
         Thread.setDefaultUncaughtExceptionHandler((t, e) -> {

@@ -5,6 +5,7 @@ import de.factoryfx.data.Data;
 
 import java.util.*;
 import java.util.function.BiConsumer;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 
 /** Base for Reference attributes, with common api  */
@@ -77,15 +78,31 @@ public abstract class ReferenceBaseAttribute<T extends Data, U, A extends Refere
         return newValueProvider;
     }
 
-    Function<Data,List<T>> newValuesProvider;
+    BiFunction<Data,A,List<T>> newValuesProviderFromRootAndAttribute;
     /**
      * customise how new values are created
      * @param newValuesProvider value, root
      * @return the new added factory
+     *
+     * Deprecated use newValuesProvider(BiFunction... ) instead
      */
     @SuppressWarnings("unchecked")
+    @Deprecated
     public A newValuesProvider(Function<Data,List<T>> newValuesProvider){
-        this.newValuesProvider = newValuesProvider;
+        this.newValuesProviderFromRootAndAttribute = (root, attribute)->{
+            return newValuesProvider.apply(root);
+        };
+        return (A)this;
+    }
+
+    /**
+     * customise how new values are created
+     * @param newValuesProviderFromRootAndAttribute root, attribute -> List.of(T)
+     * @return the new added factory
+     */
+    @SuppressWarnings("unchecked")
+    public A newValuesProvider(BiFunction<Data,A,List<T>> newValuesProviderFromRootAndAttribute){
+        this.newValuesProviderFromRootAndAttribute = newValuesProviderFromRootAndAttribute;
         return (A)this;
     }
 

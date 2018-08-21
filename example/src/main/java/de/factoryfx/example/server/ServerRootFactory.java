@@ -18,4 +18,8 @@ public class ServerRootFactory extends ServerBaseFactory<JettyServer> {
     public JettyServer createImpl() {
         return httpServer.instance();
     }
+
+    public ServerRootFactory(){
+        this.config().setDisplayTextProvider(()->"Server");
+    }
 }

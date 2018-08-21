@@ -8,6 +8,7 @@ import de.factoryfx.example.client.view.DashboardViewFactory;
 import de.factoryfx.example.client.view.HistoryViewFactory;
 import de.factoryfx.example.server.shop.OrderCollector;
 import de.factoryfx.example.server.ServerRootFactory;
+import de.factoryfx.factory.FactoryTreeBuilderBasedAttributeSetup;
 import de.factoryfx.factory.builder.FactoryTreeBuilder;
 import de.factoryfx.factory.builder.Scope;
 import de.factoryfx.javafx.factory.RichClientRoot;
@@ -40,14 +41,14 @@ import java.util.Locale;
 public class RichClientBuilder {
 
     @SuppressWarnings("unchecked")
-    public static FactoryTreeBuilder<RichClientRoot> createFactoryBuilder(int adminServerPort, Stage primaryStage, String user, String passwordHash, Locale locale) {
+    public static FactoryTreeBuilder<RichClientRoot> createFactoryBuilder(int adminServerPort, Stage primaryStage, String user, String passwordHash, Locale locale, FactoryTreeBuilder<ServerRootFactory> serverRootFactoryFactoryTreeBuilder) {
         FactoryTreeBuilder<RichClientRoot> factoryBuilder = new FactoryTreeBuilder<>(RichClientRoot.class);
 
         factoryBuilder.addFactory(LongRunningActionExecutorFactory.class, Scope.SINGLETON);
         factoryBuilder.addFactory(RichClientRoot.class, Scope.SINGLETON);
         factoryBuilder.addFactory(FactoryEditManagerFactory.class, Scope.SINGLETON);
         factoryBuilder.addFactory(AttributeEditorBuilderFactory.class, Scope.SINGLETON, ctx -> new AttributeEditorBuilderFactoryBuilder().build(ctx.get(UniformDesignFactory.class)));
-        factoryBuilder.addFactory(DataEditorFactory.class, Scope.SINGLETON);
+        factoryBuilder.addFactory(DataEditorFactory.class, Scope.PROTOTYPE);
         factoryBuilder.addFactory(ViewsDisplayWidgetFactory.class, Scope.SINGLETON);
         factoryBuilder.addFactory(DiffDialogBuilderFactory.class, Scope.PROTOTYPE);
         factoryBuilder.addFactory(DashboardViewFactory.class, Scope.SINGLETON);
@@ -95,6 +96,7 @@ public class RichClientBuilder {
             restClient.path.set(null);
             restClient.user.set(user);
             restClient.passwordHash.set(passwordHash);
+            restClient.factoryTreeBuilderBasedAttributeSetup.set(new FactoryTreeBuilderBasedAttributeSetup<>(serverRootFactoryFactoryTreeBuilder));
             return restClient;
         });
 

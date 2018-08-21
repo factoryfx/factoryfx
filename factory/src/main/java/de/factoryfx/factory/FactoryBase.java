@@ -8,6 +8,7 @@ import java.util.function.Supplier;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.base.Throwables;
 import de.factoryfx.data.Data;
 import de.factoryfx.factory.log.FactoryLogEntry;
@@ -37,6 +38,9 @@ public class FactoryBase<L,V,R extends FactoryBase<?,V,R>> extends Data{
     boolean needRecreation =false;
     @JsonIgnore
     private L previousLiveObject;
+
+    @JsonProperty
+    private String treeBuilderName;
 
 
     @SuppressWarnings("unchecked")
@@ -240,6 +244,23 @@ public class FactoryBase<L,V,R extends FactoryBase<?,V,R>> extends Data{
         getFactoryDictionary().visitChildFactoriesAndViewsFlat(this,consumer);
     }
 
+    private void visitChildFactoriesAndViewsFlatWithoutIterationCheck(Consumer<FactoryBase<?,?, ?>> consumer) {
+        getFactoryDictionary().visitChildFactoriesAndViewsFlat(this,consumer);
+    }
+
+    private Set<FactoryBase<?,?,?>> collectChildFactoriesDeepFromNode() {
+        HashSet<FactoryBase<?, ?, ?>> result = new HashSet<>();
+        collectChildFactoriesDeepFromNode(result);
+        return result;
+    }
+
+    private void collectChildFactoriesDeepFromNode(Set<FactoryBase<?,?,?>> collected) {
+        if (collected.add(this)){
+            visitChildFactoriesAndViewsFlatWithoutIterationCheck(child -> child.collectChildFactoriesDeepFromNode(collected));
+        }
+    }
+
+
     private String debugInfo(){
         try {
             StringBuilder stringBuilder = new StringBuilder();
@@ -280,16 +301,6 @@ public class FactoryBase<L,V,R extends FactoryBase<?,V,R>> extends Data{
     private Microservice<V,?, R, ?> getMicroservice() {
         return getRoot().microservice;
     }
-
-
-    FactoryTreeBuilderBasedAttributeSetup<R> factoryTreeBuilderBasedAttributeSetup;
-    private void setFactoryTreeBuilderBasedAttributeSetup(FactoryTreeBuilderBasedAttributeSetup<R> factoryTreeBuilderBasedAttributeSetup) {
-        this.factoryTreeBuilderBasedAttributeSetup = factoryTreeBuilderBasedAttributeSetup;
-    }
-    private FactoryTreeBuilderBasedAttributeSetup<R> getFactoryTreeBuilderBasedAttributeSetup() {
-        return getRoot().factoryTreeBuilderBasedAttributeSetup;
-    }
-
 
     @SuppressWarnings("unchecked")
     private R getRoot(){
@@ -562,6 +573,13 @@ public class FactoryBase<L,V,R extends FactoryBase<?,V,R>> extends Data{
             return result;
         }
 
+        /**
+         * collect child from middle node, slower than FromRoot but work from all nodes
+         */
+        public Set<FactoryBase<?, ?, ?>> collectChildFactoriesDeepFromNode() {
+            return factory.collectChildFactoriesDeepFromNode();
+        }
+
         public String debugInfo() {
             return factory.debugInfo();
         }
@@ -569,10 +587,6 @@ public class FactoryBase<L,V,R extends FactoryBase<?,V,R>> extends Data{
 
         public void setMicroservice(Microservice<V,?, R, ?> microservice) {
             factory.setMicroservice(microservice);
-        }
-
-        public void setAttributeSetupHelper(FactoryTreeBuilderBasedAttributeSetup<R> factoryTreeBuilderBasedAttributeSetup) {
-            factory.setFactoryTreeBuilderBasedAttributeSetup(factoryTreeBuilderBasedAttributeSetup);
         }
 
         public L getLiveObject() {
@@ -590,6 +604,19 @@ public class FactoryBase<L,V,R extends FactoryBase<?,V,R>> extends Data{
         public String getFactoryDisplayText() {
             return factory.getFactoryDescription();
         }
+
+        /**
+         * @param treeBuilderName name used in treebuilder
+         */
+        public void setTreeBuilderName(String treeBuilderName){
+            factory.treeBuilderName=treeBuilderName;
+        }
+
+        public String getTreeBuilderName(){
+            return factory.treeBuilderName;
+        }
+
+
     }
 
     Supplier<L> creator=null;
@@ -692,10 +719,6 @@ public class FactoryBase<L,V,R extends FactoryBase<?,V,R>> extends Data{
 
         public Microservice<V,?,R,?> getMicroservice(){
             return factory.getMicroservice();
-        }
-
-        public FactoryTreeBuilderBasedAttributeSetup getAttributeSetupHelper(){
-            return factory.getFactoryTreeBuilderBasedAttributeSetup();
         }
 
         public R getRoot(){

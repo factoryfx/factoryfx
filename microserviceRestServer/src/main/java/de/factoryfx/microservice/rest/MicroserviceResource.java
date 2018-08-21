@@ -30,18 +30,16 @@ public class MicroserviceResource<V,R extends FactoryBase<?,V,R>,S> implements M
     private final UserManagement userManagement;
     private final Predicate<Optional<AuthorizedUser>> authorizedKeyUserEvaluator;
     private final Supplier<V> emptyVisitorCreator;
-    private final FactoryTreeBuilderBasedAttributeSetup<R> factoryTreeBuilderBasedAttributeSetup;
 
     public MicroserviceResource(Microservice<V,?,R,S> microservice, UserManagement userManagement, Predicate<Optional<AuthorizedUser>> authorizedKeyUserEvaluator) {
-        this(microservice,userManagement,authorizedKeyUserEvaluator,null,null);
+        this(microservice,userManagement,authorizedKeyUserEvaluator,null);
     }
 
-    public MicroserviceResource(Microservice<V,?,R,S> microservice, UserManagement userManagement, Predicate<Optional<AuthorizedUser>> authorizedKeyUserEvaluator, Supplier<V> emptyVisitorCreator, FactoryTreeBuilderBasedAttributeSetup<R> factoryTreeBuilderBasedAttributeSetup) {
+    public MicroserviceResource(Microservice<V,?,R,S> microservice, UserManagement userManagement, Predicate<Optional<AuthorizedUser>> authorizedKeyUserEvaluator, Supplier<V> emptyVisitorCreator) {
         this.microservice = microservice;
         this.userManagement = userManagement;
         this.authorizedKeyUserEvaluator = authorizedKeyUserEvaluator;
         this.emptyVisitorCreator= emptyVisitorCreator;
-        this.factoryTreeBuilderBasedAttributeSetup = factoryTreeBuilderBasedAttributeSetup;
     }
 
     private Optional<AuthorizedUser> authenticate(UserAwareRequest<?> request){

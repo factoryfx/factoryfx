@@ -7,6 +7,7 @@ import de.factoryfx.data.attribute.types.ObjectValueAttribute;
 import de.factoryfx.data.attribute.types.StringAttribute;
 import de.factoryfx.data.jackson.ObjectMapperBuilder;
 import de.factoryfx.factory.FactoryBase;
+import de.factoryfx.factory.FactoryTreeBuilderBasedAttributeSetup;
 import de.factoryfx.factory.SimpleFactoryBase;
 import de.factoryfx.microservice.common.MicroserviceResourceApi;
 import org.glassfish.jersey.CommonProperties;
@@ -42,6 +43,10 @@ public class MicroserviceRestClientFactory<V, R extends FactoryBase<?,V,R>,VS, R
 
     public final StringAttribute httpAuthenticationUser=new StringAttribute().labelText("httpAuthenticationUser").nullable();
     public final StringAttribute httpAuthenticationPassword=new StringAttribute().labelText("httpAuthenticationPassword").nullable();
+
+    public final ObjectValueAttribute<FactoryTreeBuilderBasedAttributeSetup<RS>> factoryTreeBuilderBasedAttributeSetup=new ObjectValueAttribute<FactoryTreeBuilderBasedAttributeSetup<RS>>().labelText("factoryTreeBuilderBasedAttributeSetup").nullable();
+
+
 //
 //    @Override
 //    public RestClient createImpl() {
@@ -94,7 +99,7 @@ public class MicroserviceRestClientFactory<V, R extends FactoryBase<?,V,R>,VS, R
         MicroserviceResourceApi<VS,RS,S> microserviceResourceApi = (MicroserviceResourceApi<VS,RS,S>) WebResourceFactory.newResource(MicroserviceResourceApi.class, webTarget);
 
 
-        return new MicroserviceRestClient<>(microserviceResourceApi,factoryRootClass.get(),user.get(),passwordHash.get());
+        return new MicroserviceRestClient<>(microserviceResourceApi,factoryRootClass.get(),user.get(),passwordHash.get(),factoryTreeBuilderBasedAttributeSetup.get());
     }
 
 

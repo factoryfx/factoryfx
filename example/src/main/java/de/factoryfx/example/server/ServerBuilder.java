@@ -10,7 +10,7 @@ import de.factoryfx.microservice.rest.MicroserviceResourceFactory;
 public class ServerBuilder {
 
     @SuppressWarnings("unchecked")
-    public ServerRootFactory build(){
+    public FactoryTreeBuilder<ServerRootFactory> builder(){
         FactoryTreeBuilder<ServerRootFactory> factoryTreeBuilder = new FactoryTreeBuilder<>(ServerRootFactory.class);
 
         factoryTreeBuilder.addFactory(ServerRootFactory.class, Scope.SINGLETON);
@@ -34,30 +34,37 @@ public class ServerBuilder {
         factoryTreeBuilder.addFactory(ShopResourceFactory.class, Scope.SINGLETON, context -> {
             ShopResourceFactory shopResource = new ShopResourceFactory();
             shopResource.orderStorage.set(context.get(OrderStorageFactory.class));
+            shopResource.products.add(context.get(ProductFactory.class,"car"));
+            shopResource.products.add(context.get(ProductFactory.class,"bike"));
+            return shopResource;
+        });
 
+        factoryTreeBuilder.addFactory(ProductFactory.class, "car", Scope.PROTOTYPE, context -> {
+            ProductFactory carFactory = new ProductFactory();
+            carFactory.vatRate.set(context.get(VatRateFactory.class));
+            carFactory.name.set("Car");
+            carFactory.price.set(5);
+            return carFactory;
+        });
+
+        factoryTreeBuilder.addFactory(ProductFactory.class, "bike", Scope.PROTOTYPE, context -> {
+            ProductFactory bikeFactory = new ProductFactory();
+            bikeFactory.vatRate.set(context.get(VatRateFactory.class));
+            bikeFactory.name.set("Bike");
+            bikeFactory.price.set(10);
+            return bikeFactory;
+        });
+
+        factoryTreeBuilder.addFactory(VatRateFactory.class, Scope.SINGLETON, context -> {
             VatRateFactory vatRate =new VatRateFactory();
             vatRate.rate.set(0.19);
-            {
-                ProductFactory carFactory = new ProductFactory();
-                carFactory.vatRate.set(vatRate);
-                carFactory.name.set("Car");
-                carFactory.price.set(5);
-                shopResource.products.add(carFactory);
-            }
-            {
-                ProductFactory bikeFactory = new ProductFactory();
-                bikeFactory.vatRate.set(vatRate);
-                bikeFactory.name.set("Bike");
-                bikeFactory.price.set(10);
-                shopResource.products.add(bikeFactory);
-            }
-            return shopResource;
+            return vatRate;
         });
 
         factoryTreeBuilder.addFactory(OrderStorageFactory.class, Scope.SINGLETON, ctx->{
             return new OrderStorageFactory();
         });
 
-        return factoryTreeBuilder.buildTree();
+        return factoryTreeBuilder;
     }
 }

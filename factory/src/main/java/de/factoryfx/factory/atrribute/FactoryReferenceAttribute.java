@@ -40,19 +40,4 @@ public class FactoryReferenceAttribute<L, F extends FactoryBase<? extends L,?,?>
         return super.setup(clazz);
     }
 
-    @Override
-    @SuppressWarnings("unchecked")
-    public List<F> internal_createNewPossibleValues() {
-        if (internal_hasCustomNewValuesProvider()) {
-            return super.internal_createNewPossibleValues();
-        } else {
-            FactoryTreeBuilderBasedAttributeSetup factoryTreeBuilderBasedAttributeSetup = ((FactoryBase) root).utilityFactory().getAttributeSetupHelper();
-            if (factoryTreeBuilderBasedAttributeSetup !=null){
-                F newFactory = (F) factoryTreeBuilderBasedAttributeSetup.createNewFactory(this.clazz);
-                return Collections.singletonList(newFactory);
-            }
-            return super.internal_createNewPossibleValues();
-        }
-    }
-
 }

@@ -223,7 +223,12 @@ public class AttributeGroupEditor implements Widget {
     final static String highlightBackground = "#FCFCFC";
 
     private Node wrapGrid(GridPane gridPane){
-        ScrollPane scrollPane = new ScrollPane(gridPane);
+        VBox vBox = new VBox();
+        vBox.getChildren().add(new Separator());
+        vBox.getChildren().add(gridPane);
+        vBox.getChildren().add(new Separator());
+
+        ScrollPane scrollPane = new ScrollPane(vBox);
         scrollPane.setFitToWidth(true);
 //        root.setFitToHeight(scrollPaneFitToHeight);
         scrollPane.setStyle("-fx-background-color:transparent;");//hide border
