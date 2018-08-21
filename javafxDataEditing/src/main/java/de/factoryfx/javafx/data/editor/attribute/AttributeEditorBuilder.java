@@ -118,7 +118,7 @@ public class AttributeEditorBuilder {
         });
 
         result.add(uniformDesign->new SimpleSingleAttributeEditorBuilder<>(uniformDesign,BigDecimalAttribute.class,BigDecimal.class,(attribute)-> new BigDecimalAttributeVisualisation(attribute.internal_getDecimalFormatPattern()), BigDecimalAttribute::new));
-        result.add(uniformDesign->new SimpleSingleAttributeEditorBuilder<>(uniformDesign, Base64Attribute.class, String.class, a->new Base64AttributeVisualisation(a, uniformDesign), Base64Attribute::new));
+        result.add(uniformDesign->new NoListSingleAttributeEditorBuilder<String, Base64Attribute>(uniformDesign, (attribute)->attribute instanceof Base64Attribute, a->new Base64AttributeVisualisation(a, uniformDesign)));
         result.add(uniformDesign->new SimpleSingleAttributeEditorBuilder<>(uniformDesign,BooleanAttribute.class,Boolean.class,(attribute)-> new BooleanAttributeVisualisation(), BooleanAttribute::new));
 //        result.add(new SimpleSingleAttributeEditorBuilder<>(ByteArrayAttribute.class,byte[].class,(attribute)->{
 //            return new AttributeEditor<BigDecimal>(attribute,new BigDecimalAttributeVisualisation(attribute.internal_getDecimalFormatPattern()),uniformDesign);
@@ -218,7 +218,7 @@ public class AttributeEditorBuilder {
             public AttributeEditor<Data, ?> createEditor(Attribute<?, ?> attribute, Consumer<Data> navigateToData, Data previousData) {
                 ReferenceAttribute referenceAttribute = (ReferenceAttribute) attribute;
                 if(referenceAttribute.internal_isCatalogueBased()){
-                    return new AttributeEditor<>(referenceAttribute, new CatalogAttributeVisualisation(referenceAttribute::internal_possibleValues, referenceAttribute), uniformDesign);
+                    return new AttributeEditor<>(referenceAttribute, new CatalogAttributeVisualisation(referenceAttribute::internal_possibleValues), uniformDesign);
                 } else {
                     return new AttributeEditor<>(referenceAttribute,
                             new ReferenceAttributeVisualisation(uniformDesign,

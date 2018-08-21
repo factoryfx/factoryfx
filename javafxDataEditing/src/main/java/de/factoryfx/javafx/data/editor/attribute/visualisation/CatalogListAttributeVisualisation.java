@@ -31,8 +31,6 @@ public class CatalogListAttributeVisualisation extends ListAttributeEditorVisual
         this.referenceListAttribute = referenceListAttribute;
     }
 
-
-
     private final static LanguageText selectAll = new LanguageText().en("Select all").de("Alle auswählen");
     private final static LanguageText selectNon = new LanguageText().en("Deselect all").de("Keins auswählen");
 
@@ -45,8 +43,7 @@ public class CatalogListAttributeVisualisation extends ListAttributeEditorVisual
         comboBox.setConverter(new DataStringConverter());
         comboBox.setMinWidth(300);
 
-        comboBox.setContextMenu(new ContextMenu(menuItem(selectAll, comboBox, true),
-                                                menuItem(selectNon, comboBox, false)));
+        comboBox.setContextMenu(new ContextMenu(menuItem(selectAll, comboBox, true), menuItem(selectNon, comboBox, false)));
 
         updateCheckComboBox(comboBox);
         return comboBox;
@@ -54,7 +51,10 @@ public class CatalogListAttributeVisualisation extends ListAttributeEditorVisual
 
     private MenuItem menuItem(LanguageText text, CheckComboBox<Data> comboBox, boolean value) {
         final MenuItem menuItem = new MenuItem(uniformDesign.getText(text));
-        menuItem.setOnAction(event ->comboBox.getItems().stream().map(comboBox::getItemBooleanProperty).forEach(s -> s.setValue(value)));
+        menuItem.setOnAction(event -> {
+            comboBox.getItems().stream().map(comboBox::getItemBooleanProperty).forEach(s -> s.setValue(value));
+            updateCheckComboBox(comboBox);
+        });
         return menuItem;
     }
 

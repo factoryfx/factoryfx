@@ -68,10 +68,10 @@ public class ExampleData1 extends Data {
     public final BooleanAttribute booleanAttribute=new BooleanAttribute().en("BooleanAttribute").de("BooleanAttribute de");
     public final DoubleAttribute doubleAttribute=new DoubleAttribute().en("DoubleAttribute").de("DoubleAttribute de");
     public final EnumAttribute<ExampleEnum> enumAttribute=new EnumAttribute<>(ExampleEnum.class).en("EnumAttribute").de("EnumAttribute de").enEnum(ExampleEnum.EXAMPLE_1,"Example_1").deEnum(ExampleEnum.EXAMPLE_1,"Beispiel_1");
-    public final EnumListAttribute<ExampleEnum> enumListAttribute=new EnumListAttribute<>(ExampleEnum.class).en("EnumAttribute").de("EnumAttribute de").enEnum(ExampleEnum.EXAMPLE_1,"Example_1").deEnum(ExampleEnum.EXAMPLE_1,"Beispiel_1");
+    public final EnumListAttribute<ExampleEnum> enumListAttribute=new EnumListAttribute<>(ExampleEnum.class).en("EnumListAttribute").de("EnumListAttribute de").enEnum(ExampleEnum.EXAMPLE_1,"Example_1").deEnum(ExampleEnum.EXAMPLE_1,"Beispiel_1");
     public final IntegerAttribute integerAttribute=new IntegerAttribute().en("IntegerAttribute").de("IntegerAttribute de");
     public final LongAttribute longAttribute=new LongAttribute().en("LongAttribute").de("LongAttribute de");
-    public final StringListAttribute valueListAttribute=new StringListAttribute().en("ValueListAttribute").de("ValueListAttribute de");
+    public final StringListAttribute valueListAttribute=new StringListAttribute().en("StringListAttribute").de("StringListAttribute de");
     public final IntegerListAttribute integerListAttribute=new IntegerListAttribute().en("ValueListAttribute").de("ValueListAttribute de");
     public final StringMapAttribute mapAttribute=new StringMapAttribute().en("MapAttribute").de("MapAttribute de");
     public final I18nAttribute i18nAttribute=new I18nAttribute().en("i18nAttribute").de("i18nAttribute de").en("envalue").de("devalue");
