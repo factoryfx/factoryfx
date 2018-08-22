@@ -3,7 +3,6 @@ package de.factoryfx.javafx.data.editor.attribute.visualisation;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.function.Consumer;
 
 import javafx.collections.ObservableList;
 import javafx.scene.Node;
@@ -13,6 +12,7 @@ import javafx.util.StringConverter;
 
 import org.controlsfx.control.CheckComboBox;
 
+import de.factoryfx.data.ChangeAble;
 import de.factoryfx.data.attribute.types.EnumListAttribute;
 import de.factoryfx.javafx.data.editor.attribute.ListAttributeEditorVisualisation;
 import de.factoryfx.javafx.data.util.CheckComboBoxHelper;
@@ -22,7 +22,6 @@ public class EnumListAttributeVisualisation extends ListAttributeEditorVisualisa
     private final Collection<Enum<?>> possibleEnumConstants;
     private final StringConverter<Enum<?>> stringConverter;
     private final EnumListAttribute<?> enumListAttribute;
-
     public EnumListAttributeVisualisation(Collection<Enum<?>> possibleEnumConstants, StringConverter<Enum<?>> stringConverter, EnumListAttribute<?> enumListAttribute) {
         this.possibleEnumConstants = possibleEnumConstants;
         this.stringConverter = stringConverter;
@@ -56,7 +55,7 @@ public class EnumListAttributeVisualisation extends ListAttributeEditorVisualisa
 
     @Override
     @SuppressWarnings("unchecked")
-    public Node createContent(ObservableList<Enum<?>> readOnlyList, Consumer<Consumer<List<Enum<?>>>> listModifyingAction, boolean readonly) {
+    public Node createContent(ObservableList<Enum<?>> readOnlyList, ChangeAble<List<Enum<?>>> attribute, boolean readonly) {
         CheckComboBox<Enum<?>> comboBox = new CheckComboBox<>();
         updateCheckComboBox(comboBox);
 
