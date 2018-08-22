@@ -12,7 +12,6 @@ import javafx.util.StringConverter;
 
 import org.controlsfx.control.CheckComboBox;
 
-import de.factoryfx.data.ChangeAble;
 import de.factoryfx.data.attribute.types.EnumListAttribute;
 import de.factoryfx.javafx.data.editor.attribute.ListAttributeEditorVisualisation;
 import de.factoryfx.javafx.data.util.CheckComboBoxHelper;
@@ -55,7 +54,7 @@ public class EnumListAttributeVisualisation extends ListAttributeEditorVisualisa
 
     @Override
     @SuppressWarnings("unchecked")
-    public Node createContent(ObservableList<Enum<?>> readOnlyList, ChangeAble<List<Enum<?>>> attribute, boolean readonly) {
+    public Node createContent(ObservableList<Enum<?>> readOnlyList, boolean readonly) {
         CheckComboBox<Enum<?>> comboBox = new CheckComboBox<>();
         updateCheckComboBox(comboBox);
 

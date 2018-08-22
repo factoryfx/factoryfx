@@ -2,6 +2,7 @@ package de.factoryfx.javafx.data.editor.attribute.builder;
 
 import de.factoryfx.data.Data;
 import de.factoryfx.data.attribute.Attribute;
+import de.factoryfx.data.attribute.ValueListAttribute;
 import de.factoryfx.javafx.data.editor.attribute.visualisation.ExpandableAttributeVisualisation;
 import de.factoryfx.javafx.data.editor.attribute.visualisation.ValueListAttributeVisualisation;
 import de.factoryfx.javafx.data.editor.attribute.AttributeEditor;
@@ -61,7 +62,8 @@ public class SimpleSingleAttributeEditorBuilder<T,A extends Attribute<T,A>> impl
                 new ValueListAttributeVisualisation(
                     uniformDesign,
                     detailAttribute,
-                    createEditor(detailAttribute,null,null)),
+                    createEditor(detailAttribute,null,null),
+                    (ValueListAttribute)attribute),
                 uniformDesign,
                 (l) -> "Items: " + ((Collection)l).size(),
                 FontAwesome.Glyph.LIST);

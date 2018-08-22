@@ -17,10 +17,9 @@ import java.util.stream.Stream;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import de.factoryfx.data.ChangeAble;
 import de.factoryfx.data.Data;
 
-public abstract class ReferenceListAttribute<T extends Data,A extends ReferenceBaseAttribute<T,List<T>,A>> extends ReferenceBaseAttribute<T,List<T>,A> implements List<T>, ChangeAble {
+public abstract class ReferenceListAttribute<T extends Data,A extends ReferenceBaseAttribute<T,List<T>,A>> extends ReferenceBaseAttribute<T,List<T>,A> implements List<T> {
     final List<T> list = new ArrayList<>();
 
     public ReferenceListAttribute() {
@@ -200,7 +199,7 @@ public abstract class ReferenceListAttribute<T extends Data,A extends ReferenceB
         afterModify();
     }
 
-    public void afterModify(){
+    private void afterModify(){
         if (listeners!=null) {
             for (AttributeChangeListener<List<T>, A> listener : listeners) {
                 listener.changed(ReferenceListAttribute.this, get());

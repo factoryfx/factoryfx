@@ -45,7 +45,7 @@ public class FactoryPolymorphicUtil<L> {
             }
         }
 
-        attribute.newValuesProvider(data -> {
+        attribute.newValuesProvider((data,a) -> {
             try {
                 ArrayList<FactoryBase<? extends L, ?, ?>> result = new ArrayList<>();
                 for (Class<?> clazz: possibleFactoriesClasses){

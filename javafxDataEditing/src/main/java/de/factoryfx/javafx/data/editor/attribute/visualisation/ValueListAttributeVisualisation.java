@@ -2,6 +2,7 @@ package de.factoryfx.javafx.data.editor.attribute.visualisation;
 
 import java.util.List;
 
+import de.factoryfx.data.attribute.ValueListAttribute;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.ObservableList;
@@ -18,9 +19,9 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 
+import javafx.scene.paint.Color;
 import org.controlsfx.glyphfont.FontAwesome;
 
-import de.factoryfx.data.ChangeAble;
 import de.factoryfx.data.attribute.Attribute;
 import de.factoryfx.data.attribute.AttributeChangeListener;
 import de.factoryfx.javafx.data.editor.attribute.AttributeEditor;
@@ -33,16 +34,18 @@ public class ValueListAttributeVisualisation<T> extends ListAttributeEditorVisua
     private final UniformDesign uniformDesign;
     private final Attribute<T,?> detailAttribute;
     private final AttributeEditor<T,?> attributeEditor;
+    private final ValueListAttribute valueListAttribute;
 
-    public ValueListAttributeVisualisation(UniformDesign uniformDesign, Attribute<T,?> detailAttribute, AttributeEditor<T,?> attributeEditor) {
+    public ValueListAttributeVisualisation(UniformDesign uniformDesign, Attribute<T,?> detailAttribute, AttributeEditor<T,?> attributeEditor, ValueListAttribute valueListAttribute) {
         this.uniformDesign = uniformDesign;
         this.detailAttribute = detailAttribute;
         this.attributeEditor = attributeEditor;
+        this.valueListAttribute = valueListAttribute;
     }
 
     @Override
     @SuppressWarnings("unchecked")
-    public Node createContent(ObservableList<T> readOnlyList, ChangeAble<List<T>> changeAble, boolean readonly) {
+    public Node createContent(ObservableList<T> readOnlyList, boolean readonly) {
         TextField textField = new TextField();
         TypedTextFieldHelper.setupLongTextField(textField);
 //        textField.textProperty().bindBidirectional(boundTo, new LongStringConverter());
@@ -61,19 +64,19 @@ public class ValueListAttributeVisualisation<T> extends ListAttributeEditorVisua
 
         Button addButton=new Button("", uniformDesign.createIcon(FontAwesome.Glyph.PLUS));
         addButton.setOnAction(event -> {
-            changeAble.apply(l->l.add(detailAttribute.get()));
+            valueListAttribute.add(detailAttribute.get());
         });
 
         Button replaceButton=new Button("", uniformDesign.createIcon(FontAwesome.Glyph.EXCHANGE));
         replaceButton.setOnAction(event -> {
             int selectedIndex = tableView.getSelectionModel().getSelectedIndex();
-            changeAble.apply(l-> l.set(selectedIndex, detailAttribute.get()));
+            valueListAttribute.set(selectedIndex, detailAttribute.get());
         });
 
         Button deleteButton = new Button("");
         uniformDesign.addDangerIcon(deleteButton,FontAwesome.Glyph.TIMES);
         deleteButton.setOnAction(event -> {
-            changeAble.apply(l-> l.remove(tableView.getSelectionModel().getSelectedItem()));
+            valueListAttribute.remove(tableView.getSelectionModel().getSelectedItem());
         });
         deleteButton.disableProperty().bind(tableView.getSelectionModel().selectedItemProperty().isNull());
 
@@ -82,8 +85,22 @@ public class ValueListAttributeVisualisation<T> extends ListAttributeEditorVisua
         });
         AttributeChangeListener detailAttributeChangeListener = (attribute1, value) -> {
             Platform.runLater(() -> {
-                addButton.setDisable(value == null);
+                if (value instanceof String){
+                    addButton.setDisable("".equals(value));
+                } else {
+                    addButton.setDisable(value == null);
+                }
+                if (!addButton.isDisabled()){//bug workaround disable styling doesn't work
+                    addButton.setOpacity(1);
+                } else {
+                    addButton.setOpacity(0.4);
+                }
                 replaceButton.setDisable(value == null || tableView.getSelectionModel().getSelectedItem()==null);
+                if (!replaceButton.isDisabled()){//bug workaround disable styling doesn't work
+                    replaceButton.setOpacity(1);
+                } else {
+                    replaceButton.setOpacity(0.4);
+                }
             });
         };
         detailAttribute.internal_addListener(detailAttributeChangeListener);
@@ -120,6 +137,14 @@ public class ValueListAttributeVisualisation<T> extends ListAttributeEditorVisua
         vBox.getChildren().add(editorWrapper);
 
         listControls.setDisable(readonly);
+
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                addButton.getStylesheets();
+                addButton.getStyleClass();
+            }
+        });
 
 //        editorWrapper.disableProperty().edit(tableView.getSelectionModel().selectedItemProperty().isNull().and(content.focusedProperty().not()));
         return vBox;

@@ -12,9 +12,7 @@ import java.util.stream.Collectors;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import de.factoryfx.data.ChangeAble;
-
-public class ValueListAttribute<T, A extends Attribute<List<T>,A>> extends ImmutableValueAttribute<List<T>,A> implements List<T>, ChangeAble {
+public class ValueListAttribute<T, A extends Attribute<List<T>,A>> extends ImmutableValueAttribute<List<T>,A> implements List<T> {
     private final Class<T> itemType;
 
     public ValueListAttribute(Class<T> itemType) {
@@ -23,7 +21,7 @@ public class ValueListAttribute<T, A extends Attribute<List<T>,A>> extends Immut
         this.value = new ArrayList<>();
     }
 
-    public void afterModify(){
+    private void afterModify(){
         if (listeners!=null) {
             for (AttributeChangeListener<List<T>, A> listener : listeners) {
                 listener.changed(ValueListAttribute.this, this.value);
@@ -45,6 +43,11 @@ public class ValueListAttribute<T, A extends Attribute<List<T>,A>> extends Immut
     @Override
     public AttributeTypeInfo internal_getAttributeType() {
         return new AttributeTypeInfo(Set.class,null,null,itemType, AttributeTypeInfo.AttributeTypeCategory.COLLECTION);
+    }
+
+    @Override
+    public List<T> get() {
+        return this;
     }
 
     //** set list only take the list items not the list itself, (to simplify ChangeListeners)*/
@@ -150,7 +153,9 @@ public class ValueListAttribute<T, A extends Attribute<List<T>,A>> extends Immut
 
     @Override
     public T set(int index, T element) {
-        return this.value.set(index,element);
+        T result = this.value.set(index, element);
+        afterModify();
+        return result;
     }
 
     @Override
@@ -190,5 +195,6 @@ public class ValueListAttribute<T, A extends Attribute<List<T>,A>> extends Immut
     public List<T> subList(int fromIndex, int toIndex) {
         return this.value.subList(fromIndex,toIndex);
     }
+
 
 }
