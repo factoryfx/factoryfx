@@ -3,6 +3,7 @@ package de.factoryfx.factory.builder;
 import de.factoryfx.data.attribute.types.StringAttribute;
 import de.factoryfx.data.jackson.ObjectMapperBuilder;
 import de.factoryfx.factory.FactoryBase;
+import de.factoryfx.factory.FactoryTreeBuilderBasedAttributeSetup;
 import de.factoryfx.factory.PolymorphicFactoryBase;
 import de.factoryfx.factory.SimpleFactoryBase;
 import de.factoryfx.factory.atrribute.FactoryPolymorphicReferenceAttribute;
@@ -14,6 +15,8 @@ import de.factoryfx.factory.testfactories.poly.OutPrinterFactory;
 import de.factoryfx.factory.testfactories.poly.Printer;
 import org.junit.Assert;
 import org.junit.Test;
+
+import java.util.List;
 
 public class FactoryTreeBuilderTest {
 
@@ -230,13 +233,13 @@ public class FactoryTreeBuilderTest {
         });
         factoryTreeBuilder.addFactory(ExampleFactoryB.class,"111", Scope.SINGLETON, context -> {
             ExampleFactoryB factory = new ExampleFactoryB();
-            factory.referenceAttributeC.set(context.get(ExampleFactoryC.class));
+            factory.referenceAttributeC.set(null);
             factory.referenceAttribute.set(new FactoryTestA());
             return factory;
         });
         factoryTreeBuilder.addFactory(ExampleFactoryB.class,"222", Scope.SINGLETON, context -> {
             ExampleFactoryB factory = new ExampleFactoryB();
-            factory.referenceAttributeC.set(context.get(ExampleFactoryC.class));
+            factory.referenceAttributeC.set(null);
             factory.referenceAttribute.set(new FactoryTestA());
             return factory;
         });
@@ -255,13 +258,13 @@ public class FactoryTreeBuilderTest {
         });
         factoryTreeBuilder.addFactory(ExampleFactoryB.class,"111", Scope.SINGLETON, context -> {
             ExampleFactoryB factory = new ExampleFactoryB();
-            factory.referenceAttributeC.set(context.get(ExampleFactoryC.class));
+            factory.referenceAttributeC.set(null);
             factory.referenceAttribute.set(new FactoryTestA());
             return factory;
         });
         factoryTreeBuilder.addFactory(ExampleFactoryB.class,"222", Scope.SINGLETON, context -> {
             ExampleFactoryB factory = new ExampleFactoryB();
-            factory.referenceAttributeC.set(context.get(ExampleFactoryC.class));
+            factory.referenceAttributeC.set(null);
             factory.referenceAttribute.set(new FactoryTestA());
             return factory;
         });
@@ -303,6 +306,53 @@ public class FactoryTreeBuilderTest {
             return factory;
         });
         return factoryTreeBuilder;
+    }
+
+
+    @Test(expected = IllegalStateException.class)
+    public void test_incomplete_builder_class() {
+
+        FactoryTreeBuilder<ExampleFactoryA> builder = new FactoryTreeBuilder<>(ExampleFactoryA.class);
+        builder.addFactory(ExampleFactoryA.class, Scope.SINGLETON, context -> {
+            ExampleFactoryA factoryBases = new ExampleFactoryA();
+            factoryBases.referenceAttribute.set(context.get(de.factoryfx.factory.testfactories.ExampleFactoryB.class));
+            factoryBases.referenceAttribute.set(null);
+            return factoryBases;
+        });
+        //intentional commented out
+//        builder.addFactory(ExampleFactoryB.class, Scope.PROTOTYPE, context -> {
+//            ExampleFactoryB factoryBases = new ExampleFactoryB();
+//            factoryBases.stringAttribute.set("123");
+//            factoryBases.referenceAttributeC.set(context.get(ExampleFactoryC.class));
+//            return factoryBases;
+//        });
+
+
+
+        ExampleFactoryA root = builder.buildTreeUnvalidated();
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void test_incomplete_builder_classAndName() {
+
+        FactoryTreeBuilder<ExampleFactoryA> builder = new FactoryTreeBuilder<>(ExampleFactoryA.class);
+        builder.addFactory(ExampleFactoryA.class, Scope.SINGLETON, context -> {
+            ExampleFactoryA factoryBases = new ExampleFactoryA();
+            factoryBases.referenceAttribute.set(context.get(de.factoryfx.factory.testfactories.ExampleFactoryB.class,"dfgdgf"));
+            factoryBases.referenceAttribute.set(null);
+            return factoryBases;
+        });
+        //intentional commented out
+//        builder.addFactory(ExampleFactoryB.class, Scope.PROTOTYPE, context -> {
+//            ExampleFactoryB factoryBases = new ExampleFactoryB();
+//            factoryBases.stringAttribute.set("123");
+//            factoryBases.referenceAttributeC.set(context.get(ExampleFactoryC.class));
+//            return factoryBases;
+//        });
+
+
+
+        ExampleFactoryA root = builder.buildTreeUnvalidated();
     }
 
 }

@@ -10,24 +10,30 @@ import de.factoryfx.example.client.view.ProductsViewFactory;
 import de.factoryfx.example.server.shop.OrderCollector;
 import de.factoryfx.example.server.ServerRootFactory;
 import de.factoryfx.factory.FactoryTreeBuilderBasedAttributeSetup;
+import de.factoryfx.factory.atrribute.FactoryReferenceAttribute;
 import de.factoryfx.factory.builder.FactoryTreeBuilder;
 import de.factoryfx.factory.builder.Scope;
+import de.factoryfx.javafx.data.editor.data.DataEditor;
+import de.factoryfx.javafx.data.util.UniformDesign;
 import de.factoryfx.javafx.factory.RichClientRoot;
 import de.factoryfx.javafx.factory.editor.DataEditorFactory;
 import de.factoryfx.javafx.factory.editor.attribute.AttributeEditorBuilderFactory;
 import de.factoryfx.javafx.factory.editor.attribute.AttributeEditorBuilderFactoryBuilder;
 import de.factoryfx.javafx.factory.stage.StageFactory;
+import de.factoryfx.javafx.factory.util.LongRunningActionExecutor;
 import de.factoryfx.javafx.factory.util.LongRunningActionExecutorFactory;
 import de.factoryfx.javafx.factory.util.UniformDesignFactory;
 import de.factoryfx.javafx.factory.view.ViewDescriptionFactory;
 import de.factoryfx.javafx.factory.view.ViewFactory;
 import de.factoryfx.javafx.factory.view.container.ViewsDisplayWidgetFactory;
+import de.factoryfx.javafx.factory.view.factoryviewmanager.FactoryAwareWidgetFactory;
 import de.factoryfx.javafx.factory.view.factoryviewmanager.FactoryEditManagerFactory;
 import de.factoryfx.javafx.factory.view.factoryviewmanager.FactoryEditViewFactory;
 import de.factoryfx.javafx.factory.view.factoryviewmanager.FactorySerialisationManagerFactory;
 import de.factoryfx.javafx.factory.view.menu.ViewMenuFactory;
 import de.factoryfx.javafx.factory.view.menu.ViewMenuItemFactory;
 import de.factoryfx.javafx.factory.widget.factory.datatree.DataTreeWidgetFactory;
+import de.factoryfx.javafx.factory.widget.factory.diffdialog.DiffDialogBuilder;
 import de.factoryfx.javafx.factory.widget.factory.diffdialog.DiffDialogBuilderFactory;
 import de.factoryfx.microservice.rest.client.MicroserviceRestClientFactory;
 import javafx.geometry.Rectangle2D;
@@ -184,7 +190,16 @@ public class RichClientBuilder {
 
         factoryBuilder.addFactory(ProductsViewFactory.class,Scope.SINGLETON);
 
-        factoryBuilder.addFactory(FactoryEditViewFactory.class,Scope.PROTOTYPE);
+        factoryBuilder.addFactory(FactoryEditViewFactory.class,Scope.PROTOTYPE, context ->{
+            FactoryEditViewFactory<OrderCollector, ServerRootFactory, Void> factoryEditViewFactory = new FactoryEditViewFactory<>();
+            factoryEditViewFactory.factoryEditManager.set(context.get(FactoryEditManagerFactory.class));
+            factoryEditViewFactory.longRunningActionExecutor.set(context.get(LongRunningActionExecutorFactory.class));
+            factoryEditViewFactory.uniformDesign.set(context.get(UniformDesignFactory.class));
+            DataEditorFactory dataEditorFactory = context.get(DataEditorFactory.class);
+            factoryEditViewFactory.dataEditorFactory.set(dataEditorFactory);
+            factoryEditViewFactory.diffDialogBuilder.set(context.get(DiffDialogBuilderFactory.class));
+            return factoryEditViewFactory;
+        });
 
 
         return factoryBuilder;

@@ -66,13 +66,11 @@ public class FactoryTreeBuilderBasedAttributeSetupTest {
         builder.addFactory(ExampleFactoryB.class,"1", Scope.PROTOTYPE, context -> {
             ExampleFactoryB factoryBases = new ExampleFactoryB();
             factoryBases.stringAttribute.set("111");
-            factoryBases.referenceAttributeC.set(context.get(ExampleFactoryC.class));
             return factoryBases;
         });
         builder.addFactory(ExampleFactoryB.class,"2", Scope.PROTOTYPE, context -> {
             ExampleFactoryB factoryBases = new ExampleFactoryB();
             factoryBases.stringAttribute.set("222");
-            factoryBases.referenceAttributeC.set(context.get(ExampleFactoryC.class));
             return factoryBases;
         });
 
@@ -104,7 +102,6 @@ public class FactoryTreeBuilderBasedAttributeSetupTest {
         builder.addFactory(ExampleFactoryB.class, Scope.SINGLETON, context -> {
             ExampleFactoryB factoryBases = new ExampleFactoryB();
             factoryBases.stringAttribute.set("123");
-            factoryBases.referenceAttributeC.set(context.get(ExampleFactoryC.class));
             return factoryBases;
         });
 
@@ -130,7 +127,6 @@ public class FactoryTreeBuilderBasedAttributeSetupTest {
         builder.addFactory(ExampleFactoryB.class, Scope.PROTOTYPE, context -> {
             ExampleFactoryB factoryBases = new ExampleFactoryB();
             factoryBases.stringAttribute.set("123");
-            factoryBases.referenceAttributeC.set(context.get(ExampleFactoryC.class));
             return factoryBases;
         });
 
@@ -155,7 +151,6 @@ public class FactoryTreeBuilderBasedAttributeSetupTest {
         builder.addFactory(ExampleFactoryB.class, Scope.SINGLETON, context -> {
             ExampleFactoryB factoryBases = new ExampleFactoryB();
             factoryBases.stringAttribute.set("123");
-            factoryBases.referenceAttributeC.set(context.get(ExampleFactoryC.class));
             return factoryBases;
         });
         return builder;
@@ -190,13 +185,11 @@ public class FactoryTreeBuilderBasedAttributeSetupTest {
         builder.addFactory(ExampleFactoryB.class,"111", Scope.SINGLETON, context -> {
             ExampleFactoryB factoryBases = new ExampleFactoryB();
             factoryBases.stringAttribute.set("123");
-            factoryBases.referenceAttributeC.set(context.get(ExampleFactoryC.class));
             return factoryBases;
         });
         builder.addFactory(ExampleFactoryB.class,"222", Scope.SINGLETON, context -> {
             ExampleFactoryB factoryBases = new ExampleFactoryB();
             factoryBases.stringAttribute.set("123");
-            factoryBases.referenceAttributeC.set(context.get(ExampleFactoryC.class));
             return factoryBases;
         });
 
