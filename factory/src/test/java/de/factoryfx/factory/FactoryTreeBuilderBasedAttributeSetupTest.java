@@ -334,5 +334,37 @@ public class FactoryTreeBuilderBasedAttributeSetupTest {
 
     }
 
+    @Test
+    public void test_incomplete_builder() {
+
+        FactoryTreeBuilder<ExampleFactoryA> builder = new FactoryTreeBuilder<>(ExampleFactoryA.class);
+        builder.addFactory(ExampleFactoryA.class, Scope.SINGLETON, context -> {
+            ExampleFactoryA factoryBases = new ExampleFactoryA();
+//            factoryBases.referenceAttribute.set(context.get(ExampleFactoryB.class));
+            factoryBases.referenceAttribute.set(null);
+            return factoryBases;
+        });
+        //intentional commented out
+//        builder.addFactory(ExampleFactoryB.class, Scope.PROTOTYPE, context -> {
+//            ExampleFactoryB factoryBases = new ExampleFactoryB();
+//            factoryBases.stringAttribute.set("123");
+//            factoryBases.referenceAttributeC.set(context.get(ExampleFactoryC.class));
+//            return factoryBases;
+//        });
+//        builder.addFactory(ExampleFactoryC.class, Scope.PROTOTYPE, context -> {
+//            ExampleFactoryC factoryBases = new ExampleFactoryC();
+//            factoryBases.stringAttribute.set("YYY");
+//            return factoryBases;
+//        });
+
+
+        ExampleFactoryA root = builder.buildTreeUnvalidated();
+        FactoryTreeBuilderBasedAttributeSetup<ExampleFactoryA> factoryTreeBuilderBasedAttributeSetup = new FactoryTreeBuilderBasedAttributeSetup<>(builder);
+        factoryTreeBuilderBasedAttributeSetup.applyToRootFactoryDeep(root);
+
+        List<ExampleFactoryB> possibleValues = root.referenceAttribute.internal_createNewPossibleValues();
+        Assert.assertEquals(1, possibleValues.size());
+    }
+
 
 }

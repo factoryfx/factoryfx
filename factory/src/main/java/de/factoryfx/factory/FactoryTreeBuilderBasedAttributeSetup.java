@@ -1,6 +1,7 @@
 package de.factoryfx.factory;
 
 import de.factoryfx.data.Data;
+import de.factoryfx.data.DataDictionary;
 import de.factoryfx.data.attribute.Attribute;
 import de.factoryfx.data.attribute.ReferenceBaseAttribute;
 import de.factoryfx.factory.atrribute.FactoryReferenceAttribute;
@@ -30,6 +31,11 @@ public class FactoryTreeBuilderBasedAttributeSetup<R extends FactoryBase<?,?,R>>
             List<?> newFactories =  this.createNewFactory((Class<FactoryBase<Object, ?, R>>) referenceClazz);
             ArrayList result = new ArrayList();
             result.addAll(newFactories);
+
+            if(result.isEmpty()){
+                Class referenceClazzWorkaround=referenceClazz;
+                result.add(DataDictionary.getDataDictionary(referenceClazzWorkaround).newInstance());
+            }
 
             for (Object o : result) {
                 FactoryBase<?,?,?> factory=(FactoryBase)o;

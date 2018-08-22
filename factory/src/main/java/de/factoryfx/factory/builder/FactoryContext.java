@@ -20,11 +20,19 @@ public class FactoryContext<R extends FactoryBase<?,?,R>> {
     }
 
     public <F extends FactoryBase<?,?,R>> F get(Class<F> clazz){
-        return get(fc -> fc.match(clazz));
+        F result = get(fc -> fc.match(clazz));
+        if (result==null){
+           throw new IllegalStateException("builder missing Factory: "+clazz);
+        }
+        return result;
     }
 
     public <F extends FactoryBase<?,?,R>> F get(Class<F> clazz, String name){
-        return get(fc -> fc.match(clazz) && fc.match(name));
+        F result = get(fc -> fc.match(clazz) && fc.match(name));
+        if (result==null){
+            throw new IllegalStateException("builder missing Factory: "+clazz + "and name: "+name);
+        }
+        return result;
     }
 
     void addFactoryCreator(FactoryCreator<?,R> factoryCreator){
