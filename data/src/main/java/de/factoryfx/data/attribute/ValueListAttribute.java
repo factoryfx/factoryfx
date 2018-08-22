@@ -1,13 +1,20 @@
 package de.factoryfx.data.attribute;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+import java.util.ListIterator;
+import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-public class ValueListAttribute<T, A extends Attribute<List<T>,A>> extends ImmutableValueAttribute<List<T>,A> implements List<T> {
+import de.factoryfx.data.ChangeAble;
+
+public class ValueListAttribute<T, A extends Attribute<List<T>,A>> extends ImmutableValueAttribute<List<T>,A> implements List<T>, ChangeAble {
     private final Class<T> itemType;
 
     public ValueListAttribute(Class<T> itemType) {
@@ -16,7 +23,7 @@ public class ValueListAttribute<T, A extends Attribute<List<T>,A>> extends Immut
         this.value = new ArrayList<>();
     }
 
-    private void afterModify(){
+    public void afterModify(){
         if (listeners!=null) {
             for (AttributeChangeListener<List<T>, A> listener : listeners) {
                 listener.changed(ValueListAttribute.this, this.value);

@@ -1,10 +1,8 @@
 package de.factoryfx.javafx.data.editor.attribute.visualisation;
 
-import de.factoryfx.data.Data;
-import de.factoryfx.javafx.data.editor.attribute.ListAttributeEditorVisualisation;
-import de.factoryfx.javafx.data.util.UniformDesign;
-import de.factoryfx.javafx.data.widget.datalistedit.ReferenceListAttributeEditWidget;
-import de.factoryfx.javafx.data.widget.table.TableControlWidget;
+import java.util.List;
+import java.util.function.Consumer;
+
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.DoubleBinding;
 import javafx.beans.property.SimpleStringProperty;
@@ -18,8 +16,12 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 
-import java.util.List;
-import java.util.function.Consumer;
+import de.factoryfx.data.ChangeAble;
+import de.factoryfx.data.Data;
+import de.factoryfx.javafx.data.editor.attribute.ListAttributeEditorVisualisation;
+import de.factoryfx.javafx.data.util.UniformDesign;
+import de.factoryfx.javafx.data.widget.datalistedit.ReferenceListAttributeEditWidget;
+import de.factoryfx.javafx.data.widget.table.TableControlWidget;
 
 public class ReferenceListAttributeVisualisation extends ListAttributeEditorVisualisation<Data> {
 
@@ -38,7 +40,7 @@ public class ReferenceListAttributeVisualisation extends ListAttributeEditorVisu
 
 
     @Override
-    public Node createContent(ObservableList<Data> readOnlyList, Consumer<Consumer<List<Data>>> listModifyingAction, boolean readonly) {
+    public Node createContent(ObservableList<Data> readOnlyList, ChangeAble<List<Data>> attribute, boolean readonly) {
         tableView.setItems(readOnlyList);
 
         tableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
@@ -74,6 +76,4 @@ public class ReferenceListAttributeVisualisation extends ListAttributeEditorVisu
         buttons.setDisable(readonly);
         return vbox;
     }
-
-
 }

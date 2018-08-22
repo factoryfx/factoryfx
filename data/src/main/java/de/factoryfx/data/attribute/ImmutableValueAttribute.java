@@ -1,11 +1,16 @@
 package de.factoryfx.data.attribute;
 
-import java.util.*;
-import java.util.function.BiFunction;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.function.Function;
-import java.util.function.Supplier;
 
-import com.fasterxml.jackson.annotation.*;
+import com.fasterxml.jackson.annotation.JsonGetter;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonSetter;
+
 import de.factoryfx.data.Data;
 import de.factoryfx.data.util.LanguageText;
 import de.factoryfx.data.validation.Validation;
@@ -43,15 +48,13 @@ public abstract class ImmutableValueAttribute<T,A extends Attribute<T,A>> extend
     @Override
     public void set(T value) {
         this.value = value;
-        if (listeners!=null){
-            updateListeners(value);
-        }
+        updateListeners(value);
     }
 
     List<AttributeChangeListener<T,A>> listeners;
 
     protected void updateListeners(T value){
-        if (listeners==null){
+        if (listenersEmpty()){
             return;
         }
         for (AttributeChangeListener<T,A> listener: listeners){

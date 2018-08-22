@@ -1,6 +1,14 @@
 package de.factoryfx.data.attribute;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.ListIterator;
+import java.util.Map;
+import java.util.Spliterator;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -8,9 +16,11 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import de.factoryfx.data.ChangeAble;
 import de.factoryfx.data.Data;
 
-public abstract class ReferenceListAttribute<T extends Data,A extends ReferenceBaseAttribute<T,List<T>,A>> extends ReferenceBaseAttribute<T,List<T>,A> implements List<T> {
+public abstract class ReferenceListAttribute<T extends Data,A extends ReferenceBaseAttribute<T,List<T>,A>> extends ReferenceBaseAttribute<T,List<T>,A> implements List<T>, ChangeAble {
     final List<T> list = new ArrayList<>();
 
     public ReferenceListAttribute() {
@@ -190,7 +200,7 @@ public abstract class ReferenceListAttribute<T extends Data,A extends ReferenceB
         afterModify();
     }
 
-    private void afterModify(){
+    public void afterModify(){
         if (listeners!=null) {
             for (AttributeChangeListener<List<T>, A> listener : listeners) {
                 listener.changed(ReferenceListAttribute.this, get());

@@ -1,7 +1,5 @@
 package de.factoryfx.javafx.data.widget.tree;
 
-import java.util.function.Consumer;
-
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.scene.Node;
@@ -119,18 +117,6 @@ public class DataTreeWidget implements Widget {
         if (data!=null){
             TreeItem<TreeData> dataTreeItem = new TreeItem<>(new TreeData(data,null));
             data.internal().visitAttributesFlat((attributeVariableName, attribute) -> {
-
-                Consumer<Data> childFactoriesVisitor= data1 -> {
-                    TreeItem<TreeData> refDataTreeItem = new TreeItem<>(new TreeData(null,uniformDesign.getLabelText(attribute,attributeVariableName)));
-                    dataTreeItem.getChildren().add(refDataTreeItem);
-
-                    final TreeItem<TreeData> treeItem = constructTree(data1);
-                    if (treeItem!=null){
-                        refDataTreeItem.getChildren().add(treeItem);
-                    }
-                };
-
-
                 if (attribute instanceof ReferenceAttribute) {
                     Data child=((ReferenceAttribute<?,?>)attribute).get();
                     if (child!=null){
@@ -156,8 +142,6 @@ public class DataTreeWidget implements Widget {
                         });
                     }
                 }
-
-
             });
             return dataTreeItem;
         }

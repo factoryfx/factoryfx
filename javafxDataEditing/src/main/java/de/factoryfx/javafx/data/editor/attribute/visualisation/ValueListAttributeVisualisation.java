@@ -1,12 +1,7 @@
 package de.factoryfx.javafx.data.editor.attribute.visualisation;
 
-import de.factoryfx.data.attribute.Attribute;
-import de.factoryfx.data.attribute.AttributeChangeListener;
-import de.factoryfx.javafx.data.editor.attribute.AttributeEditor;
-import de.factoryfx.javafx.data.editor.attribute.ListAttributeEditorVisualisation;
-import de.factoryfx.javafx.data.util.TypedTextFieldHelper;
-import de.factoryfx.javafx.data.util.UniformDesign;
-import de.factoryfx.javafx.data.widget.table.TableControlWidget;
+import java.util.List;
+
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.ObservableList;
@@ -22,10 +17,17 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
+
 import org.controlsfx.glyphfont.FontAwesome;
 
-import java.util.List;
-import java.util.function.Consumer;
+import de.factoryfx.data.ChangeAble;
+import de.factoryfx.data.attribute.Attribute;
+import de.factoryfx.data.attribute.AttributeChangeListener;
+import de.factoryfx.javafx.data.editor.attribute.AttributeEditor;
+import de.factoryfx.javafx.data.editor.attribute.ListAttributeEditorVisualisation;
+import de.factoryfx.javafx.data.util.TypedTextFieldHelper;
+import de.factoryfx.javafx.data.util.UniformDesign;
+import de.factoryfx.javafx.data.widget.table.TableControlWidget;
 
 public class ValueListAttributeVisualisation<T> extends ListAttributeEditorVisualisation<T> {
     private final UniformDesign uniformDesign;
@@ -40,7 +42,7 @@ public class ValueListAttributeVisualisation<T> extends ListAttributeEditorVisua
 
     @Override
     @SuppressWarnings("unchecked")
-    public Node createContent(ObservableList<T> readOnlyList, Consumer<Consumer<List<T>>> listModifyingAction, boolean readonly) {
+    public Node createContent(ObservableList<T> readOnlyList, ChangeAble<List<T>> changeAble, boolean readonly) {
         TextField textField = new TextField();
         TypedTextFieldHelper.setupLongTextField(textField);
 //        textField.textProperty().bindBidirectional(boundTo, new LongStringConverter());
@@ -59,19 +61,19 @@ public class ValueListAttributeVisualisation<T> extends ListAttributeEditorVisua
 
         Button addButton=new Button("", uniformDesign.createIcon(FontAwesome.Glyph.PLUS));
         addButton.setOnAction(event -> {
-            listModifyingAction.accept(list -> list.add(detailAttribute.get()));
+            changeAble.apply(l->l.add(detailAttribute.get()));
         });
 
         Button replaceButton=new Button("", uniformDesign.createIcon(FontAwesome.Glyph.EXCHANGE));
         replaceButton.setOnAction(event -> {
             int selectedIndex = tableView.getSelectionModel().getSelectedIndex();
-            listModifyingAction.accept(list -> list.set(selectedIndex, detailAttribute.get()));
+            changeAble.apply(l-> l.set(selectedIndex, detailAttribute.get()));
         });
 
         Button deleteButton = new Button("");
         uniformDesign.addDangerIcon(deleteButton,FontAwesome.Glyph.TIMES);
         deleteButton.setOnAction(event -> {
-            listModifyingAction.accept(list -> list.remove(tableView.getSelectionModel().getSelectedItem()));
+            changeAble.apply(l-> l.remove(tableView.getSelectionModel().getSelectedItem()));
         });
         deleteButton.disableProperty().bind(tableView.getSelectionModel().selectedItemProperty().isNull());
 
