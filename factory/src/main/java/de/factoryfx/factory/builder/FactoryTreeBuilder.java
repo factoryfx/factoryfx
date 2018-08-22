@@ -30,7 +30,7 @@ public class FactoryTreeBuilder<R extends FactoryBase<?,?,R>> {
 
 
     public <F extends FactoryBase<?,?,R>> void addFactory(Class<F> clazz, Scope scope, Function<FactoryContext<R>, F> creator){
-        addFactory(clazz,"",scope,creator);
+        addFactory(clazz,null,scope,creator);
     }
 
     public <F extends FactoryBase<?,?,R>> void addFactory(Class<F> clazz, String name, Scope scope, Function<FactoryContext<R>, F> creator){

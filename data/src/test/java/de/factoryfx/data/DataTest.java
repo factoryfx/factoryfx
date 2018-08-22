@@ -678,5 +678,15 @@ public class DataTest {
         Assert.assertEquals(2,data.referenceAttribute.internal_possibleValues().size());
     }
 
+    @Test
+    public void test_collectChildFactoriesDeepFromNode(){
+        ExampleDataA root = new ExampleDataA();
+        ExampleDataB factoryB = new ExampleDataB();
+        root.referenceAttribute.set(factoryB);
+        factoryB.referenceAttributeC.set(new ExampleDataC());
+
+        Assert.assertEquals(2,factoryB.internal().collectChildrenDeepFromNode().size());
+    }
+
 
 }

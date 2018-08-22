@@ -6,6 +6,7 @@ import de.factoryfx.data.storage.JacksonSerialisation;
 import de.factoryfx.example.client.view.ConfigurationViewFactory;
 import de.factoryfx.example.client.view.DashboardViewFactory;
 import de.factoryfx.example.client.view.HistoryViewFactory;
+import de.factoryfx.example.client.view.ProductsViewFactory;
 import de.factoryfx.example.server.shop.OrderCollector;
 import de.factoryfx.example.server.ServerRootFactory;
 import de.factoryfx.factory.FactoryTreeBuilderBasedAttributeSetup;
@@ -73,6 +74,7 @@ public class RichClientBuilder {
             fileMenu.items.add(context.get(ViewMenuItemFactory.class, "configuration"));
             fileMenu.items.add(context.get(ViewMenuItemFactory.class, "dashboard"));
             fileMenu.items.add(context.get(ViewMenuItemFactory.class, "history"));
+            fileMenu.items.add(context.get(ViewMenuItemFactory.class, "products"));
             return fileMenu;
         });
 
@@ -110,17 +112,10 @@ public class RichClientBuilder {
             viewFactory.viewDescription.set(viewDescriptionFactory);
             viewFactory.viewsDisplayWidget.set(context.get(ViewsDisplayWidgetFactory.class));
 
-            ConfigurationViewFactory configurationViewFactory = new ConfigurationViewFactory();
-            configurationViewFactory.dataTreeWidget.set(context.get(DataTreeWidgetFactory.class));
+            ConfigurationViewFactory configurationViewFactory = context.get(ConfigurationViewFactory.class);
 
-            FactoryEditViewFactory<OrderCollector, ServerRootFactory, Void> factoryEditViewFactory = new FactoryEditViewFactory<>();
-            factoryEditViewFactory.factoryEditManager.set(context.get(FactoryEditManagerFactory.class));
-            factoryEditViewFactory.longRunningActionExecutor.set(context.get(LongRunningActionExecutorFactory.class));
-            factoryEditViewFactory.uniformDesign.set(context.get(UniformDesignFactory.class));
-            DataEditorFactory dataEditorFactory = context.get(DataEditorFactory.class);
-            factoryEditViewFactory.dataEditorFactory.set(dataEditorFactory);
+            FactoryEditViewFactory<OrderCollector, ServerRootFactory, Void> factoryEditViewFactory = (FactoryEditViewFactory<OrderCollector, ServerRootFactory, Void>)context.get(FactoryEditViewFactory.class);
             factoryEditViewFactory.contentWidgetFactory.set(configurationViewFactory);
-            factoryEditViewFactory.diffDialogBuilder.set(context.get(DiffDialogBuilderFactory.class));
             viewFactory.widget.set(factoryEditViewFactory);
 
             ViewMenuItemFactory viewMenuItemFactory = new ViewMenuItemFactory();
@@ -128,6 +123,8 @@ public class RichClientBuilder {
             viewMenuItemFactory.view.set(viewFactory);
             return viewMenuItemFactory;
         });
+
+        factoryBuilder.addFactory(ConfigurationViewFactory.class, Scope.SINGLETON);
 
         factoryBuilder.addFactory(ViewMenuItemFactory.class, "dashboard", Scope.SINGLETON, context -> {
             ViewDescriptionFactory viewDescriptionFactory = new ViewDescriptionFactory();
@@ -162,6 +159,33 @@ public class RichClientBuilder {
             viewMenuItemFactory.view.set(viewFactory);
             return viewMenuItemFactory;
         });
+
+        factoryBuilder.addFactory(ViewMenuItemFactory.class, "products", Scope.SINGLETON, context -> {
+            ViewDescriptionFactory viewDescriptionFactory = new ViewDescriptionFactory();
+            viewDescriptionFactory.text.en("Products").de("Produkte");
+            viewDescriptionFactory.icon.set(FontAwesome.Glyph.COG);
+            viewDescriptionFactory.uniformDesign.set(context.get(UniformDesignFactory.class));
+
+            ViewFactory viewFactory = new ViewFactory();
+            viewFactory.viewDescription.set(viewDescriptionFactory);
+            viewFactory.viewsDisplayWidget.set(context.get(ViewsDisplayWidgetFactory.class));
+
+            ProductsViewFactory configurationViewFactory = context.get(ProductsViewFactory.class);
+
+            FactoryEditViewFactory<OrderCollector, ServerRootFactory, Void> factoryEditViewFactory = (FactoryEditViewFactory<OrderCollector, ServerRootFactory, Void>)context.get(FactoryEditViewFactory.class);
+            factoryEditViewFactory.contentWidgetFactory.set(configurationViewFactory);
+            viewFactory.widget.set(factoryEditViewFactory);
+
+            ViewMenuItemFactory viewMenuItemFactory = new ViewMenuItemFactory();
+            viewMenuItemFactory.viewDescription.set(viewDescriptionFactory);
+            viewMenuItemFactory.view.set(viewFactory);
+            return viewMenuItemFactory;
+        });
+
+        factoryBuilder.addFactory(ProductsViewFactory.class,Scope.SINGLETON);
+
+        factoryBuilder.addFactory(FactoryEditViewFactory.class,Scope.PROTOTYPE);
+
 
         return factoryBuilder;
 

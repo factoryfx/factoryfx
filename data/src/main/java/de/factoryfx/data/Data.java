@@ -125,6 +125,18 @@ public class Data {
         return getDataDictionary().newCopyInstance(data);
     }
 
+    private Set<Data> collectChildrenDeepFromNode() {
+        HashSet<Data> result = new HashSet<>();
+        collectChildFactoriesDeepFromNode(result);
+        return result;
+    }
+
+    private void collectChildFactoriesDeepFromNode(Set<Data> collected) {
+        if (collected.add(this)){
+            getDataDictionary().visitDataChildren(this,child -> child.collectChildFactoriesDeepFromNode(collected));
+        }
+    }
+
     @SuppressWarnings("unchecked")
     private List<Data> fixDuplicateObjects() {
         Map<String, Data> idToDataMap = collectChildDataMap();
@@ -752,6 +764,13 @@ public class Data {
 
         public void assertRoot(){
             data.assertRoot();
+        }
+
+        /**
+         * collect child from middle node, slower than FromRoot but work from all nodes
+         */
+        public Set<Data> collectChildrenDeepFromNode() {
+            return data.collectChildrenDeepFromNode();
         }
     }
 

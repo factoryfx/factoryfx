@@ -248,18 +248,6 @@ public class FactoryBase<L,V,R extends FactoryBase<?,V,R>> extends Data{
         getFactoryDictionary().visitChildFactoriesAndViewsFlat(this,consumer);
     }
 
-    private Set<FactoryBase<?,?,?>> collectChildFactoriesDeepFromNode() {
-        HashSet<FactoryBase<?, ?, ?>> result = new HashSet<>();
-        collectChildFactoriesDeepFromNode(result);
-        return result;
-    }
-
-    private void collectChildFactoriesDeepFromNode(Set<FactoryBase<?,?,?>> collected) {
-        if (collected.add(this)){
-            visitChildFactoriesAndViewsFlatWithoutIterationCheck(child -> child.collectChildFactoriesDeepFromNode(collected));
-        }
-    }
-
 
     private String debugInfo(){
         try {
@@ -571,13 +559,6 @@ public class FactoryBase<L,V,R extends FactoryBase<?,V,R>> extends Data{
                 result.put(factory.getId(),factory);
             }
             return result;
-        }
-
-        /**
-         * collect child from middle node, slower than FromRoot but work from all nodes
-         */
-        public Set<FactoryBase<?, ?, ?>> collectChildFactoriesDeepFromNode() {
-            return factory.collectChildFactoriesDeepFromNode();
         }
 
         public String debugInfo() {

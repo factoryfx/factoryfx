@@ -25,7 +25,7 @@ public class FactoryCreator<F extends FactoryBase<?,?,R>,R extends FactoryBase<?
     }
 
     public boolean match(String name) {
-        return this.name.equals(name);
+        return Objects.equals(this.name,name);
     }
 
     F factory;

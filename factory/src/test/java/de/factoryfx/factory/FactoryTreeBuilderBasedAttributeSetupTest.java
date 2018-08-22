@@ -1,11 +1,14 @@
 package de.factoryfx.factory;
 
 import de.factoryfx.data.jackson.ObjectMapperBuilder;
+import de.factoryfx.factory.atrribute.FactoryReferenceAttribute;
+import de.factoryfx.factory.atrribute.FactoryViewReferenceAttribute;
 import de.factoryfx.factory.builder.FactoryTreeBuilder;
 import de.factoryfx.factory.builder.Scope;
 import de.factoryfx.factory.testfactories.ExampleFactoryA;
 import de.factoryfx.factory.testfactories.ExampleFactoryB;
 import de.factoryfx.factory.testfactories.ExampleFactoryC;
+import de.factoryfx.factory.testfactories.ExampleLiveObjectB;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -281,6 +284,54 @@ public class FactoryTreeBuilderBasedAttributeSetupTest {
         List<ExampleFactoryC> possibleValuesC =possibleValues.get(0).referenceAttributeC.internal_createNewPossibleValues();
         Assert.assertEquals(1, possibleValuesC.size());
         Assert.assertEquals("YYY", possibleValuesC.get(0).stringAttribute.get());
+    }
+
+
+    public static class ExampleViewFactory extends SimpleFactoryBase<ExampleLiveObjectB,Void,ExampleFactoryViewRootFactory>{
+        public final FactoryViewReferenceAttribute<ExampleFactoryViewRootFactory,ExampleLiveObjectB,ExamplDummyFactory> viewAttribute =new FactoryViewReferenceAttribute<>((root)->root.referenceAttribute.get());
+
+        @Override
+        public ExampleLiveObjectB createImpl() {
+            return viewAttribute.instance();
+        }
+    }
+
+    public static class ExampleFactoryViewRootFactory extends SimpleFactoryBase<ExampleLiveObjectB,Void,ExampleFactoryViewRootFactory>{
+        public final FactoryReferenceAttribute<ExampleLiveObjectB,ExampleViewFactory> referenceAttributeViewFactory = new FactoryReferenceAttribute<>(ExampleViewFactory.class);
+        public final FactoryReferenceAttribute<ExampleLiveObjectB,ExamplDummyFactory> referenceAttribute = new FactoryReferenceAttribute<>(ExamplDummyFactory.class);
+
+        @Override
+        public ExampleLiveObjectB createImpl() {
+            return referenceAttribute.instance();
+        }
+    }
+
+    public static class ExamplDummyFactory extends SimpleFactoryBase<ExampleLiveObjectB,Void,ExampleFactoryViewRootFactory>{
+        @Override
+        public ExampleLiveObjectB createImpl() {
+            return null;
+        }
+    }
+
+
+    @Test
+    public void test_view() {
+
+        FactoryTreeBuilder<ExampleFactoryViewRootFactory> builder = new FactoryTreeBuilder<>(ExampleFactoryViewRootFactory.class);
+        builder.addFactory(ExampleFactoryViewRootFactory.class, Scope.SINGLETON);
+        builder.addFactory(ExampleViewFactory.class, Scope.PROTOTYPE);
+        builder.addFactory(ExamplDummyFactory.class, Scope.PROTOTYPE);
+
+        ExampleFactoryViewRootFactory root = builder.buildTreeUnvalidated();
+        System.out.println(ObjectMapperBuilder.build().writeValueAsString(root));
+
+        FactoryTreeBuilderBasedAttributeSetup<ExampleFactoryViewRootFactory> factoryTreeBuilderBasedAttributeSetup = new FactoryTreeBuilderBasedAttributeSetup<>(builder);
+        factoryTreeBuilderBasedAttributeSetup.applyToRootFactoryDeep(root);
+
+        List<ExampleViewFactory> exampleViewFactories = root.referenceAttributeViewFactory.internal_createNewPossibleValues();
+        //no exception, no npe(root) in view function
+
+
     }
 
 

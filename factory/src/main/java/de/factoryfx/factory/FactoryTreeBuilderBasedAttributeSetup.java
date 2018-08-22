@@ -1,5 +1,6 @@
 package de.factoryfx.factory;
 
+import de.factoryfx.data.Data;
 import de.factoryfx.data.attribute.Attribute;
 import de.factoryfx.data.attribute.ReferenceBaseAttribute;
 import de.factoryfx.factory.atrribute.FactoryReferenceAttribute;
@@ -32,8 +33,10 @@ public class FactoryTreeBuilderBasedAttributeSetup<R extends FactoryBase<?,?,R>>
 
             for (Object o : result) {
                 FactoryBase<?,?,?> factory=(FactoryBase)o;
-                for (FactoryBase<?, ?, ?> children : factory.internalFactory().collectChildFactoriesDeepFromNode()) {
-                    children.internal().visitAttributesFlat((attributeVariableName, childattribute) -> applyToAttribute(childattribute));
+                for (Data child : factory.internal().collectChildrenDeepFromNode()) {
+                    if (child instanceof FactoryBase<?,?,?>) {
+                        child.internal().visitAttributesFlat((attributeVariableName, childAttribute) -> applyToAttribute(childAttribute));
+                    }
                 }
             }
             return result;

@@ -325,14 +325,4 @@ public class FactoryBaseTest {
         System.out.println(ObjectMapperBuilder.build().writeValueAsString(factory));
 
     }
-
-    @Test
-    public void test_collectChildFactoriesDeepFromNode(){
-        ExampleFactoryA root = new ExampleFactoryA();
-        ExampleFactoryB factoryB = new ExampleFactoryB();
-        root.referenceAttribute.set(factoryB);
-        factoryB.referenceAttributeC.set(new ExampleFactoryC());
-
-        Assert.assertEquals(2,factoryB.internalFactory().collectChildFactoriesDeepFromNode().size());
-    }
 }
