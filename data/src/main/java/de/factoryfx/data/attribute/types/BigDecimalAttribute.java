@@ -1,6 +1,7 @@
 package de.factoryfx.data.attribute.types;
 
 import java.math.BigDecimal;
+import java.util.Objects;
 
 import de.factoryfx.data.attribute.ImmutableValueAttribute;
 
@@ -13,10 +14,7 @@ public class BigDecimalAttribute extends ImmutableValueAttribute<BigDecimal,BigD
     }
 
     public String internal_getDecimalFormatPattern() {
-        if (this.decimalFormatPattern==null){
-            return "#,#";
-        }
-        return decimalFormatPattern;
+        return Objects.requireNonNullElse(decimalFormatPattern,"#,#");
     }
 
     /**

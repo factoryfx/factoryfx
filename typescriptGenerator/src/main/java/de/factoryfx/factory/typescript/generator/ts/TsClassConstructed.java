@@ -1,12 +1,9 @@
 package de.factoryfx.factory.typescript.generator.ts;
 
-import de.factoryfx.data.attribute.Attribute;
-
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 public class TsClassConstructed  extends TsClass  {

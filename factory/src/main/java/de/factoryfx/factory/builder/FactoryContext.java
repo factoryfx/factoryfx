@@ -5,9 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
-import java.util.stream.Stream;
 
-import de.factoryfx.data.Data;
 import de.factoryfx.factory.FactoryBase;
 
 public class FactoryContext<R extends FactoryBase<?,?,R>> {

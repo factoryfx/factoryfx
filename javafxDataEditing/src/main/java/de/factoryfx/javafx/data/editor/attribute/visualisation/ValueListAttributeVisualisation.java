@@ -1,7 +1,5 @@
 package de.factoryfx.javafx.data.editor.attribute.visualisation;
 
-import java.util.List;
-
 import de.factoryfx.data.attribute.ValueListAttribute;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
@@ -19,7 +17,6 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 
-import javafx.scene.paint.Color;
 import org.controlsfx.glyphfont.FontAwesome;
 
 import de.factoryfx.data.attribute.Attribute;
@@ -90,13 +87,13 @@ public class ValueListAttributeVisualisation<T> extends ListAttributeEditorVisua
                 } else {
                     addButton.setDisable(value == null);
                 }
-                if (!addButton.isDisabled()){//bug workaround disable styling doesn't work
+                if (!addButton.isDisabled()){//bug workaround disable state styling doesn't work
                     addButton.setOpacity(1);
                 } else {
                     addButton.setOpacity(0.4);
                 }
                 replaceButton.setDisable(value == null || tableView.getSelectionModel().getSelectedItem()==null);
-                if (!replaceButton.isDisabled()){//bug workaround disable styling doesn't work
+                if (!replaceButton.isDisabled()){//bug workaround disable state styling doesn't work
                     replaceButton.setOpacity(1);
                 } else {
                     replaceButton.setOpacity(0.4);
@@ -137,14 +134,6 @@ public class ValueListAttributeVisualisation<T> extends ListAttributeEditorVisua
         vBox.getChildren().add(editorWrapper);
 
         listControls.setDisable(readonly);
-
-        Platform.runLater(new Runnable() {
-            @Override
-            public void run() {
-                addButton.getStylesheets();
-                addButton.getStyleClass();
-            }
-        });
 
 //        editorWrapper.disableProperty().edit(tableView.getSelectionModel().selectedItemProperty().isNull().and(content.focusedProperty().not()));
         return vBox;

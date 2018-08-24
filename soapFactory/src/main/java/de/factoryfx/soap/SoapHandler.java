@@ -1,11 +1,5 @@
 package de.factoryfx.soap;
 
-import org.eclipse.jetty.server.Request;
-import org.eclipse.jetty.server.handler.AbstractHandler;
-
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.xml.soap.*;
 import javax.xml.transform.stream.StreamSource;
 import java.io.IOException;

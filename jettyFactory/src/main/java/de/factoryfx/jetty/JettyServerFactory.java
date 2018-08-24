@@ -31,9 +31,15 @@ public abstract class JettyServerFactory<V,R extends FactoryBase<?,V,R>> extends
 
     /** jersey resource class with Annotations*/
 //    public final FactoryReferenceListAttribute<Object,FactoryBase<?,V>> resources = new FactoryReferenceListAttribute<Object,FactoryBase<?,V>>().setupUnsafe(FactoryBase.class).labelText("resource");
-    public final FactoryReferenceListAttribute<HttpServerConnectorCreator,HttpServerConnectorFactory<V,R>> connectors = new FactoryReferenceListAttribute<HttpServerConnectorCreator,HttpServerConnectorFactory<V,R>>().setupUnsafe(HttpServerConnectorFactory.class).labelText("Connectors").userNotSelectable();
-    public final FactoryReferenceAttribute<ObjectMapper,FactoryBase<ObjectMapper,V,R>> objectMapper = new FactoryReferenceAttribute<ObjectMapper,FactoryBase<ObjectMapper,V,R>>().setupUnsafe(FactoryBase.class).labelText("Object mapper").userReadOnly().nullable();
-    public final FactoryReferenceAttribute<org.glassfish.jersey.logging.LoggingFeature,FactoryBase<org.glassfish.jersey.logging.LoggingFeature,V,R>> restLogging = new FactoryReferenceAttribute<org.glassfish.jersey.logging.LoggingFeature,FactoryBase<org.glassfish.jersey.logging.LoggingFeature,V,R>>().setupUnsafe(FactoryBase.class).labelText("REST logging").userReadOnly().nullable();
+    @SuppressWarnings("unchecked")
+    public final FactoryReferenceListAttribute<HttpServerConnectorCreator,HttpServerConnectorFactory<V,R>> connectors =
+            FactoryReferenceListAttribute.create( new FactoryReferenceListAttribute<>(HttpServerConnectorFactory.class).labelText("Connectors").userNotSelectable());
+    @SuppressWarnings("unchecked")
+    public final FactoryReferenceAttribute<ObjectMapper,FactoryBase<ObjectMapper,V,R>> objectMapper =
+            FactoryReferenceAttribute.create( new FactoryReferenceAttribute<>(FactoryBase.class).nullable().en("fdsf"));
+    @SuppressWarnings("unchecked")
+    public final FactoryReferenceAttribute<org.glassfish.jersey.logging.LoggingFeature,FactoryBase<org.glassfish.jersey.logging.LoggingFeature,V,R>> restLogging =
+            FactoryReferenceAttribute.create(new FactoryReferenceAttribute<>(FactoryBase.class).userReadOnly().nullable().labelText("REST logging"));
 
 
     public JettyServerFactory(){

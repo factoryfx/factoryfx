@@ -304,9 +304,7 @@ public class ContentAssist {
                     Optional<JSType> propertyType1 = Optional.ofNullable(ot.getPropertyType(s1));
                     Optional<JSType> propertyType2 = Optional.ofNullable(ot.getPropertyType(s2));
                     if (propertyType1.isPresent()) {
-                        if (!propertyType2.isPresent())
-                            return -1;
-                        return compareJsType(propertyType1.get(),propertyType2.get());
+                        return propertyType2.map(jsType -> compareJsType(propertyType1.get(), jsType)).orElse(-1);
                     }
                     if (propertyType2.isPresent())
                         return 1;

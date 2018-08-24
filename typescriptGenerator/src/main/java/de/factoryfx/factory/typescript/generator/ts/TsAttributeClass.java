@@ -1,6 +1,5 @@
 package de.factoryfx.factory.typescript.generator.ts;
 
-import java.util.Optional;
 import java.util.Set;
 
 public class TsAttributeClass implements TsAttribute {

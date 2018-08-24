@@ -12,7 +12,8 @@ import de.factoryfx.server.user.persistent.UserFactory;
 import java.util.HashSet;
 
 public class PersistentUserManagementFactory<V,R extends FactoryBase<?,V,R>> extends PolymorphicFactoryBase<UserManagement,V,R>  {
-    public final FactoryReferenceListAttribute<User, UserFactory<V,R>> users = new FactoryReferenceListAttribute<User, UserFactory<V,R>>().setupUnsafe(UserFactory.class).en("users").de("Benutzer").userNotSelectable();
+    @SuppressWarnings("unchecked")
+    public final FactoryReferenceListAttribute<User, UserFactory<V,R>> users = FactoryReferenceListAttribute.create(new FactoryReferenceListAttribute<>(UserFactory.class).en("users").de("Benutzer").userNotSelectable());
 
     @Override
     public PersistentUserManagement createImpl() {

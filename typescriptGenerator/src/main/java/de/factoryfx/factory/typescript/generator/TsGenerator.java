@@ -1,9 +1,6 @@
 package de.factoryfx.factory.typescript.generator;
 
 import de.factoryfx.data.Data;
-import de.factoryfx.data.attribute.Attribute;
-import de.factoryfx.data.attribute.ReferenceAttribute;
-import de.factoryfx.data.attribute.types.StringAttribute;
 import de.factoryfx.factory.typescript.generator.ts.*;
 
 import java.nio.file.Path;

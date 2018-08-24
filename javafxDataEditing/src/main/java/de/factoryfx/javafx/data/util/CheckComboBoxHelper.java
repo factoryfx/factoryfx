@@ -13,7 +13,7 @@ import impl.org.controlsfx.skin.CheckComboBoxSkin;
 public class CheckComboBoxHelper {
 
     //workaround: http://stackoverflow.com/questions/25177523/how-to-listen-to-open-close-events-of-a-checkcombobox
-    public static void addOpenCloseListener(CheckComboBox comboBox, Consumer<CheckComboBox> listener){
+    public static <T> void addOpenCloseListener(CheckComboBox<T> comboBox, Consumer<CheckComboBox<T>> listener){
         comboBox.skinProperty().addListener((ChangeListener<Skin>) (skinObs, oldVal, newVal) -> {
             if (oldVal == null && newVal != null) {
                 CheckComboBoxSkin skin = (CheckComboBoxSkin) newVal;

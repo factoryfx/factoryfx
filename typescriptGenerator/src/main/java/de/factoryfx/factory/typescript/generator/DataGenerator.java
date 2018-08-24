@@ -129,7 +129,7 @@ public class DataGenerator {
         TsAttribute tsAttribute = getTsAttribute(attributeVariableName, attribute);
         if (tsAttribute instanceof TsAttributePrimitive){
 
-        };
+        }
 
 
         //TODO should support custom non default attributes

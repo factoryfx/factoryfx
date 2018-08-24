@@ -1,15 +1,9 @@
 package de.factoryfx.soap;
 
-import javax.jws.WebService;
-import javax.xml.bind.JAXBElement;
-import javax.xml.namespace.QName;
 //import javax.xml.ws.WebFault;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Optional;
+        import java.util.HashMap;
 
 public class WebServiceRequestDispatcher {
     private final Object webService;

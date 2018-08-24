@@ -1,6 +1,5 @@
 package de.factoryfx.javafx.data.editor.attribute.visualisation;
 
-import java.util.List;
 import java.util.function.Consumer;
 
 import javafx.beans.binding.Bindings;

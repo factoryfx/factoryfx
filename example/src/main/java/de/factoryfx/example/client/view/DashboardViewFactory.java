@@ -10,8 +10,9 @@ import de.factoryfx.microservice.rest.client.MicroserviceRestClient;
 import de.factoryfx.microservice.rest.client.MicroserviceRestClientFactory;
 
 public class DashboardViewFactory extends WidgetFactory {
-    public final FactoryReferenceAttribute<MicroserviceRestClient<OrderCollector,ServerRootFactory,Void>,MicroserviceRestClientFactory<Void,RichClientRoot,OrderCollector,ServerRootFactory,Void>> restClient = new FactoryReferenceAttribute<MicroserviceRestClient<OrderCollector,ServerRootFactory,Void>,MicroserviceRestClientFactory<Void,RichClientRoot,OrderCollector,ServerRootFactory,Void>>().setupUnsafe(MicroserviceRestClientFactory.class);
-
+    @SuppressWarnings("unchecked")
+    public final FactoryReferenceAttribute<MicroserviceRestClient<OrderCollector,ServerRootFactory,Void>,MicroserviceRestClientFactory<Void,RichClientRoot,OrderCollector,ServerRootFactory,Void>> restClient =
+            FactoryReferenceAttribute.create(new FactoryReferenceAttribute<>(MicroserviceRestClientFactory.class));
     @Override
     protected Widget createWidget() {
         return new DashboardView(restClient.instance());

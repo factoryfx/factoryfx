@@ -33,7 +33,9 @@ import java.util.Locale;
 public class MicroserviceRestIntegrationTest {
 
     public static class TestJettyServer extends JettyServerFactory<TestVisitor,TestJettyServer> {
-        public final FactoryReferenceAttribute<MicroserviceResource<TestVisitor, TestJettyServer,Void>, MicroserviceResourceFactory<TestVisitor, TestJettyServer,Void>> resource = new FactoryReferenceAttribute<>();
+        @SuppressWarnings("unchecked")
+        public final FactoryReferenceAttribute<MicroserviceResource<TestVisitor, TestJettyServer,Void>, MicroserviceResourceFactory<TestVisitor, TestJettyServer,Void>> resource =
+                FactoryReferenceAttribute.create(new FactoryReferenceAttribute<>(MicroserviceResourceFactory.class));
 
         @Override
         protected List<Object> getResourcesInstances() {

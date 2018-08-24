@@ -10,7 +10,9 @@ import java.util.List;
 
 
 public class DownloadTestServerFactory extends JettyServerFactory<Void,DownloadTestServerFactory>{
-     public final FactoryReferenceAttribute<DistributionClientDownloadResource,DistributionClientDownloadResourceFactory<Void,DownloadTestServerFactory>> resource = new FactoryReferenceAttribute<DistributionClientDownloadResource,DistributionClientDownloadResourceFactory<Void,DownloadTestServerFactory>>().setupUnsafe(DistributionClientDownloadResourceFactory.class);
+    @SuppressWarnings("unchecked")
+     public final FactoryReferenceAttribute<DistributionClientDownloadResource,DistributionClientDownloadResourceFactory<Void,DownloadTestServerFactory>> resource =
+            FactoryReferenceAttribute.create(new FactoryReferenceAttribute<>(DistributionClientDownloadResourceFactory.class));
 
      @Override
      protected List<Object> getResourcesInstances() {

@@ -4,7 +4,6 @@ import de.factoryfx.example.server.shop.*;
 import de.factoryfx.factory.builder.FactoryTreeBuilder;
 import de.factoryfx.factory.builder.Scope;
 import de.factoryfx.jetty.HttpServerConnectorFactory;
-import de.factoryfx.jetty.JettyServerFactory;
 import de.factoryfx.microservice.rest.MicroserviceResourceFactory;
 
 public class ServerBuilder {
@@ -15,7 +14,7 @@ public class ServerBuilder {
 
         factoryTreeBuilder.addFactory(ServerRootFactory.class, Scope.SINGLETON);
 
-        factoryTreeBuilder.addFactory(JettyServerFactory.class, Scope.SINGLETON,  context -> {
+        factoryTreeBuilder.addFactory(ShopJettyServerFactory.class, Scope.SINGLETON,  context -> {
             ShopJettyServerFactory jettyServerFactory = new ShopJettyServerFactory();
             jettyServerFactory.resource.set(context.get(MicroserviceResourceFactory.class));
             jettyServerFactory.shopResource.set(context.get(ShopResourceFactory.class));

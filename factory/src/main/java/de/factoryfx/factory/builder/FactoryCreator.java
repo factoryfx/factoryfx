@@ -1,6 +1,5 @@
 package de.factoryfx.factory.builder;
 
-import de.factoryfx.data.Data;
 import de.factoryfx.factory.FactoryBase;
 
 import java.util.Map;

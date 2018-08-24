@@ -16,8 +16,9 @@ import java.util.List;
     connect ServerVisitor with InstrumentedJettyServer
  */
 public class InstrumentedJettyServerFactory extends FactoryBase<InstrumentedJettyServer,ServerVisitor,RootFactory> {
-    public final FactoryReferenceAttribute<SimpleResource,SimpleResourceFactory> factoryReferenceAttribute = new FactoryReferenceAttribute<>();
-    public final FactoryReferenceListAttribute<HttpServerConnectorCreator,HttpServerConnectorFactory<ServerVisitor,RootFactory>> connectors = new FactoryReferenceListAttribute<HttpServerConnectorCreator,HttpServerConnectorFactory<ServerVisitor,RootFactory>>().setupUnsafe(HttpServerConnectorFactory.class).labelText("connectors").userNotSelectable();
+    public final FactoryReferenceAttribute<SimpleResource,SimpleResourceFactory> factoryReferenceAttribute = new FactoryReferenceAttribute<>(SimpleResourceFactory.class);
+    @SuppressWarnings("unchecked")
+    public final FactoryReferenceListAttribute<HttpServerConnectorCreator,HttpServerConnectorFactory<ServerVisitor,RootFactory>> connectors = FactoryReferenceListAttribute.create(new FactoryReferenceListAttribute<>(HttpServerConnectorFactory.class).labelText("connectors").userNotSelectable());
 
     public InstrumentedJettyServerFactory(){
         super();

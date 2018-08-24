@@ -29,8 +29,7 @@ public class FactoryTreeBuilderBasedAttributeSetup<R extends FactoryBase<?,?,R>>
         newValuesProvider = (root, attribute) -> {
             Class<?> referenceClazz = ((ReferenceBaseAttribute<?,?, ?>) attribute).internal_getReferenceClass();
             List<?> newFactories =  this.createNewFactory((Class<FactoryBase<Object, ?, R>>) referenceClazz);
-            ArrayList result = new ArrayList();
-            result.addAll(newFactories);
+            ArrayList result = new ArrayList(newFactories);
 
             if(result.isEmpty()){
                 Class referenceClazzWorkaround=referenceClazz;

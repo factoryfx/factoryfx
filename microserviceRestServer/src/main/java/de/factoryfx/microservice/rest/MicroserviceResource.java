@@ -9,7 +9,6 @@ import de.factoryfx.data.merge.MergeDiffInfo;
 import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.data.storage.DataAndNewMetadata;
 import de.factoryfx.data.storage.StoredDataMetadata;
-import de.factoryfx.factory.FactoryTreeBuilderBasedAttributeSetup;
 import de.factoryfx.factory.log.FactoryUpdateLog;
 import de.factoryfx.microservice.common.*;
 import de.factoryfx.server.Microservice;

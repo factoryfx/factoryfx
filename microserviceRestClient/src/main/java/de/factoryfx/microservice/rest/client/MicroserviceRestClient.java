@@ -1,8 +1,9 @@
 package de.factoryfx.microservice.rest.client;
 
 import java.util.*;
+import java.util.function.Supplier;
 
-import com.google.common.base.Supplier;
+
 import de.factoryfx.data.merge.MergeDiffInfo;
 import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.data.storage.DataAndNewMetadata;

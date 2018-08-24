@@ -2,7 +2,6 @@ package de.factoryfx.factory.builder;
 
 import de.factoryfx.data.Data;
 import de.factoryfx.data.validation.ValidationError;
-import de.factoryfx.factory.FactoryTreeBuilderBasedAttributeSetup;
 import de.factoryfx.factory.FactoryBase;
 
 import java.util.ArrayList;

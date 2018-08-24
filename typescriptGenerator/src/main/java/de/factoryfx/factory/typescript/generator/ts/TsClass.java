@@ -1,12 +1,9 @@
 package de.factoryfx.factory.typescript.generator.ts;
 
-import de.factoryfx.factory.typescript.generator.ts.TsMethod;
-
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.List;
 
 public abstract class TsClass {
 

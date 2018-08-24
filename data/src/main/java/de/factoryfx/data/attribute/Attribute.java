@@ -370,6 +370,7 @@ public abstract class Attribute<T,A extends Attribute<T,A>>{
      * @param readyOnlySupplier  readyOnlySupplier
      * @return self
      * */
+    @SuppressWarnings("unchecked")
     public A userReadOnly(Supplier<Boolean> readyOnlySupplier){
         this.readyOnlySupplier=readyOnlySupplier;
         return (A)this;

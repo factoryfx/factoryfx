@@ -45,7 +45,7 @@ public class SslContextFactoryFactoryTest {
 
 
     public static class TestJettyServerFactory extends JettyServerFactory<Void,TestJettyServerFactory> {
-        public final FactoryReferenceAttribute<TestResource,TestResourceFactory> resource = new FactoryReferenceAttribute<>();
+        public final FactoryReferenceAttribute<TestResource,TestResourceFactory> resource = new FactoryReferenceAttribute<>(TestResourceFactory.class);
 
         @Override
         protected List<Object> getResourcesInstances() {

@@ -19,11 +19,13 @@ import de.factoryfx.javafx.factory.widget.factory.diffdialog.DiffDialogBuilderFa
  * @param <RS> server root
  */
 public class FactoryEditViewFactory<VS,RS extends FactoryBase<?,VS,RS>,S> extends WidgetFactory {
-    public final FactoryReferenceAttribute<FactoryEditManager<VS,RS>, FactoryEditManagerFactory<VS,RS,S>> factoryEditManager = new FactoryReferenceAttribute<FactoryEditManager<VS,RS>, FactoryEditManagerFactory<VS,RS,S>>().setupUnsafe(FactoryEditManagerFactory.class).de("uniformDesign").en("uniformDesign");
+    @SuppressWarnings("unchecked")
+    public final FactoryReferenceAttribute<FactoryEditManager<VS,RS>, FactoryEditManagerFactory<VS,RS,S>> factoryEditManager = FactoryReferenceAttribute.create(new FactoryReferenceAttribute<>(FactoryEditManagerFactory.class));
     public final FactoryReferenceAttribute<LongRunningActionExecutor, LongRunningActionExecutorFactory> longRunningActionExecutor = new FactoryReferenceAttribute<>(LongRunningActionExecutorFactory.class).de("items").en("items");
     public final FactoryReferenceAttribute<UniformDesign, UniformDesignFactory> uniformDesign = new FactoryReferenceAttribute<>(UniformDesignFactory.class).de("uniformDesign").en("uniformDesign");
     public final FactoryReferenceAttribute<DataEditor,DataEditorFactory> dataEditorFactory = new FactoryReferenceAttribute<>(DataEditorFactory.class);
-    public final FactoryReferenceAttribute<FactoryAwareWidget<RS>,FactoryAwareWidgetFactory<RS>> contentWidgetFactory = new FactoryReferenceAttribute<FactoryAwareWidget<RS>,FactoryAwareWidgetFactory<RS>>().setupUnsafe(FactoryAwareWidgetFactory.class);
+    @SuppressWarnings("unchecked")
+    public final FactoryReferenceAttribute<FactoryAwareWidget<RS>,FactoryAwareWidgetFactory<RS>> contentWidgetFactory = FactoryReferenceAttribute.create(new FactoryReferenceAttribute<>(FactoryAwareWidgetFactory.class));
     public final FactoryReferenceAttribute<DiffDialogBuilder,DiffDialogBuilderFactory> diffDialogBuilder = new FactoryReferenceAttribute<>(DiffDialogBuilderFactory.class);
 
     @Override

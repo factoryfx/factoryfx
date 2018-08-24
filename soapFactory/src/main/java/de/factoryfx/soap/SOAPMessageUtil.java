@@ -1,13 +1,10 @@
 package de.factoryfx.soap;
 
 import javax.xml.bind.*;
-import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.soap.*;
-import javax.xml.ws.WebFault;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
 import java.util.logging.Level;

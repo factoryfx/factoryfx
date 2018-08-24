@@ -5,6 +5,7 @@ import javax.ws.rs.core.MediaType;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.Date;
 import java.util.List;
 
 @Path("shop")
@@ -43,7 +44,9 @@ public class ShopResource {
     @POST
     @Path("buy")
     @Consumes(MediaType.APPLICATION_JSON)
-    public void getProducts(BuyProductRequest buyProductRequest){
-        orderStorage.storeOrder(new OrderStorage.Order(buyProductRequest.productName,buyProductRequest.userName));
+    public void buyProducts(BuyProductRequest buyProductRequest){
+        products.stream().filter(p->buyProductRequest.productName.equals(p.getName())).findAny().ifPresent(product -> {
+            orderStorage.storeOrder(new OrderStorage.Order(product.getName(),product.getPrice(),buyProductRequest.userName, new Date()));
+        });
     }
 }

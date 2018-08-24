@@ -21,7 +21,7 @@ import java.util.List;
 public class Main {
 
     public static class DynamicWebserver extends JettyServerFactory<Void,RootFactory> {
-        public final FactoryReferenceAttribute<WebResource,WebResourceFactory> resource = new FactoryReferenceAttribute<>();
+        public final FactoryReferenceAttribute<WebResource,WebResourceFactory> resource = new FactoryReferenceAttribute<>(WebResourceFactory.class);
         @Override
         protected List<Object> getResourcesInstances() {
             return Collections.singletonList(resource.instance());

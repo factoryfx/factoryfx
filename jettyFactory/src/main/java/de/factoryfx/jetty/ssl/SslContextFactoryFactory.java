@@ -20,7 +20,7 @@ public class SslContextFactoryFactory<V, R extends FactoryBase<?, V, R>> extends
     public final StringAttribute keyPassword = new StringAttribute().en("keyPassword").de("keyPassword").nullable();
 
     public final Base64Attribute trustStore = new Base64Attribute().en("trustStore").de("trustStore");
-    public final EnumAttribute<KeyStoreType> trustStoreType = new EnumAttribute<>(KeyStoreType.class).en("trustStoreType").de("trustStoreType");;
+    public final EnumAttribute<KeyStoreType> trustStoreType = new EnumAttribute<>(KeyStoreType.class).en("trustStoreType").de("trustStoreType");
     public final StringAttribute trustStorePassword = new StringAttribute().en("trustStorePassword").de("trustStorePassword");
 
     public final StringAttribute certAlias = new StringAttribute().en("certAlias").de("certAlias").nullable();

@@ -155,11 +155,7 @@ public abstract class ReferenceBaseAttribute<T extends Data, U, A extends Refere
 
     @JsonIgnore
     protected CopySemantic getCopySemantic(){
-        if (copySemantic==null) {
-            return CopySemantic.COPY;
-        } else {
-            return copySemantic;
-        }
+        return Objects.requireNonNullElse(copySemantic, CopySemantic.COPY);
     }
 
     /**
