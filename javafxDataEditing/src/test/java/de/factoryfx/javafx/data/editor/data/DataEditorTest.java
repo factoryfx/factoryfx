@@ -22,10 +22,10 @@ public class DataEditorTest {
         ExampleData1 exampleData4 = new ExampleData1();
 
 
-        dataEditor.edit(exampleData1);
-        dataEditor.edit(exampleData2);
-        dataEditor.edit(exampleData3);
-        dataEditor.edit(exampleData4);
+        dataEditor.navigate(exampleData1);
+        dataEditor.navigate(exampleData2);
+        dataEditor.navigate(exampleData3);
+        dataEditor.navigate(exampleData4);
 
         dataEditor.back();
         Assert.assertEquals(exampleData3,dataEditor.editData.get());
@@ -46,7 +46,7 @@ public class DataEditorTest {
         DataEditor dataEditor = new DataEditor(new AttributeEditorBuilder(new ArrayList<>()),uniformDesign);
 
         for (int i=0;i<100;i++){
-            dataEditor.edit(new ExampleData1());
+            dataEditor.navigate(new ExampleData1());
         }
 
         Assert.assertEquals(DataEditorState.HISTORY_LIMIT,dataEditor.dataEditorState.displayedEntities.size());
@@ -65,10 +65,10 @@ public class DataEditorTest {
         ExampleData1 exampleData4 = new ExampleData1();
 
 
-        dataEditor.edit(exampleData1);
-        dataEditor.edit(exampleData2);
-        dataEditor.edit(exampleData3);
-        dataEditor.edit(exampleData4);
+        dataEditor.navigate(exampleData1);
+        dataEditor.navigate(exampleData2);
+        dataEditor.navigate(exampleData3);
+        dataEditor.navigate(exampleData4);
 
 
 
@@ -96,14 +96,14 @@ public class DataEditorTest {
         ExampleData2 value = new ExampleData2();
         root.referenceAttribute.set(value);
 
-        dataEditor.edit(root);
-        dataEditor.edit(value);
+        dataEditor.navigate(root);
+        dataEditor.navigate(value);
 
         Assert.assertEquals(2,dataEditor.dataEditorState.displayedEntities.size());
         Assert.assertEquals(root,dataEditor.dataEditorState.displayedEntities.get(0));
         Assert.assertEquals(value,dataEditor.dataEditorState.displayedEntities.get(1));
 
-        dataEditor.edit(root);
+        dataEditor.navigate(root);
         Assert.assertEquals(2,dataEditor.dataEditorState.displayedEntities.size());
         Assert.assertEquals(root,dataEditor.dataEditorState.displayedEntities.get(0));
 
@@ -120,13 +120,13 @@ public class DataEditorTest {
         ExampleData2 value2 = new ExampleData2();
         root.referenceListAttribute.add(value2);
 
-        dataEditor.edit(root);
-        dataEditor.edit(value1);
+        dataEditor.navigate(root);
+        dataEditor.navigate(value1);
         dataEditor.back();
         Assert.assertEquals(2,dataEditor.dataEditorState.displayedEntities.size());
         Assert.assertEquals(root,dataEditor.dataEditorState.displayedEntities.get(0));
 
-        dataEditor.edit(value2);
+        dataEditor.navigate(value2);
         Assert.assertEquals(2,dataEditor.dataEditorState.displayedEntities.size());
         Assert.assertEquals(root,dataEditor.dataEditorState.displayedEntities.get(0));
         Assert.assertEquals(value2,dataEditor.dataEditorState.displayedEntities.get(1));

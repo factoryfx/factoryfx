@@ -96,7 +96,6 @@ public class ValidationWidget implements Widget {
                 dataEditor.setHistory(newValue.getValue().data.internal().getPathFromRoot());
             } else {
                 dataEditor.edit(null);
-                dataEditor.resetHistory();
             }
         });
 

@@ -15,7 +15,7 @@ import javafx.scene.Scene;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 
-public class DataViewWidgetTest extends Application {
+public class DataViewWidgetIntegrationTest extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
@@ -37,8 +37,10 @@ public class DataViewWidgetTest extends Application {
         exampleData1.referenceListAttribute.add(new ExampleData2());
         exampleData1.referenceListAttribute.add(new ExampleData2());
 
-        DataViewWidget<ExampleData2> dataViewWidget = new DataViewWidget<>(new ReferenceAttributeDataView<>(exampleData1.referenceListAttribute),dataEditor,uniformDesign);
-        DataViewWidget<Data> dataViewWidget2 = new DataViewWidget<>(new UpdatableDataView(()->dataList),dataEditor,uniformDesign);
+        DataViewWidget<ExampleData2> dataViewWidget = new DataViewWidget<>(dataEditor,uniformDesign);
+        dataViewWidget.edit(exampleData1.referenceListAttribute);
+        DataViewWidget<Data> dataViewWidget2 = new DataViewWidget<>(dataEditor,uniformDesign);
+        dataViewWidget2.edit(dataList);
 
         BorderPane root = new BorderPane();
         CssUtil.addToNode(root);

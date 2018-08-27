@@ -19,12 +19,10 @@ module de.factoryfx.javafxDataEditing {
     exports de.factoryfx.javafx.data.util;
     exports de.factoryfx.javafx.data.widget;
     exports de.factoryfx.javafx.data.widget.datalistedit;
-    exports de.factoryfx.javafx.data.widget.datatreeview;
     exports de.factoryfx.javafx.data.widget.dataview;
     exports de.factoryfx.javafx.data.widget.factorydiff;
     exports de.factoryfx.javafx.data.widget.select;
     exports de.factoryfx.javafx.data.widget.table;
-    exports de.factoryfx.javafx.data.widget.tableview;
     exports de.factoryfx.javafx.data.widget.tree;
     exports de.factoryfx.javafx.data.widget.validation;
 

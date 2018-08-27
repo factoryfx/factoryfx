@@ -13,19 +13,19 @@ import javafx.scene.control.TableView;
 
 public class ProductsView implements FactoryAwareWidget<ServerRootFactory> {
 
-    private final DataEditor dataEditor;
-    private final UniformDesign uniformDesign;
+    private final DataViewWidget<ProductFactory> viewWidget;
 
-    public ProductsView(DataEditor dataEditor, UniformDesign uniformDesign) {
-        this.dataEditor = dataEditor;
-        this.uniformDesign = uniformDesign;
+    public ProductsView(DataViewWidget<ProductFactory> viewWidget) {
+        this.viewWidget = viewWidget;
     }
 
     @Override
-    public Node init(ServerRootFactory serverFactory) {
-        DataView<ProductFactory> dataView = new ReferenceAttributeDataView<>(serverFactory.httpServer.get().shopResource.get().products);
-        TableView<ProductFactory> dataTableView = new TableView<>();
-        DataViewWidget<ProductFactory> widget = new DataViewWidget<>(dataView, dataEditor, uniformDesign, dataTableView);
-        return widget.createContent();
+    public void edit(ServerRootFactory serverFactory) {
+        viewWidget.edit(serverFactory.httpServer.get().shopResource.get().products);
+    }
+
+    @Override
+    public Node createContent() {
+        return viewWidget.createContent();
     }
 }

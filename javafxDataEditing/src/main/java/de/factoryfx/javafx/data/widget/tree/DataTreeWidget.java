@@ -33,8 +33,7 @@ public class DataTreeWidget implements Widget {
     }
 
     public void edit(Data root){
-       this.root=root;
-
+        this.root=root;
         splitPane.getItems().setAll(dataEditor.createContent(),createTree());
         splitPane.setDividerPosition(0,0.75);
         dataEditor.edit(root);
@@ -44,8 +43,8 @@ public class DataTreeWidget implements Widget {
     public Node createContent() {
         return splitPane;
     }
-    
-    boolean programmaticallySelect=false;
+
+    private boolean programmaticallySelect=false;
 
     private Node createTree(){
         TreeView<TreeData> tree = new TreeView<>();

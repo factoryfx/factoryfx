@@ -79,7 +79,7 @@ public class FactoryUpdateLogWidget implements Widget {
             tabPane.getTabs().add(removedTab);
 
             borderPane.setCenter(tabPane);
-            final Label totalDuarion = new Label("total update duration: " + (factoryLog.totalDurationNs / 1000000.0) + "ms");
+            final Label totalDuarion = new Label("total edit duration: " + (factoryLog.totalDurationNs / 1000000.0) + "ms");
             BorderPane.setMargin(totalDuarion,new Insets(3));
             borderPane.setTop(totalDuarion);
         };

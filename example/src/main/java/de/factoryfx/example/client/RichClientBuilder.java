@@ -28,6 +28,7 @@ import de.factoryfx.javafx.factory.view.factoryviewmanager.FactorySerialisationM
 import de.factoryfx.javafx.factory.view.menu.ViewMenuFactory;
 import de.factoryfx.javafx.factory.view.menu.ViewMenuItemFactory;
 import de.factoryfx.javafx.factory.widget.factory.datatree.DataTreeWidgetFactory;
+import de.factoryfx.javafx.factory.widget.factory.dataview.DataViewWidgetFactory;
 import de.factoryfx.javafx.factory.widget.factory.diffdialog.DiffDialogBuilderFactory;
 import de.factoryfx.microservice.rest.client.MicroserviceRestClientFactory;
 import javafx.geometry.Rectangle2D;
@@ -194,6 +195,8 @@ public class RichClientBuilder {
             factoryEditViewFactory.diffDialogBuilder.set(context.get(DiffDialogBuilderFactory.class));
             return factoryEditViewFactory;
         });
+
+        factoryBuilder.addFactory(DataViewWidgetFactory.class,Scope.PROTOTYPE);
 
 
         return factoryBuilder;

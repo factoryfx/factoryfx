@@ -7,11 +7,11 @@ import de.factoryfx.data.Data;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
-public class UpdatableDataView implements DataView<Data> {
+public class UpdatableDataView<T extends Data> implements DataView<T> {
 
-    private final ObservableList<Data> dataList= FXCollections.observableArrayList();
-    private final Supplier<List<Data>> listSupplier;
-    public UpdatableDataView(Supplier<List<Data>> listSupplier) {
+    private final ObservableList<T> dataList= FXCollections.observableArrayList();
+    private final Supplier<List<T>> listSupplier;
+    public UpdatableDataView(Supplier<List<T>> listSupplier) {
         this.listSupplier = listSupplier;
     }
 
@@ -21,7 +21,7 @@ public class UpdatableDataView implements DataView<Data> {
     }
 
     @Override
-    public ObservableList<Data> dataList(){
+    public ObservableList<T> dataList(){
         update();
         return dataList;
     }

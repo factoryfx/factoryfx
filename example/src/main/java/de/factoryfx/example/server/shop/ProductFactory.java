@@ -16,19 +16,7 @@ public class ProductFactory extends ServerBaseFactory<Product> {
 
     @Override
     public Product createImpl() {
-        if (price.get()==7){
-            throw new RuntimeException("dfdsfds");
-        }
         return new Product(name.get(), price.get(), vatRate.instance());
     }
 
-//
-//    public ProductFactory(){
-//        configLiveCycle().setCreator(() -> {
-//            if (price.get()==7){
-//                throw new RuntimeException("dfdsfds");
-//            }
-//            return new Product();
-//        });
-//    }
 }

@@ -11,6 +11,7 @@ import de.factoryfx.example.server.ServerBuilder;
 import de.factoryfx.example.server.shop.OrderCollector;
 import de.factoryfx.factory.FactoryManager;
 import de.factoryfx.factory.builder.FactoryTreeBuilder;
+import de.factoryfx.factory.exception.LoggingFactoryExceptionHandler;
 import de.factoryfx.factory.exception.ResettingHandler;
 import de.factoryfx.javafx.factory.RichClientRoot;
 import de.factoryfx.jetty.JettyServer;
@@ -35,7 +36,8 @@ public class ExampleMain extends Application {
 
         FactoryTreeBuilder<ServerRootFactory> serverBuilder = new ServerBuilder().builder();
         ServerRootFactory shopFactory = serverBuilder.buildTree();
-        Microservice<OrderCollector, JettyServer, ServerRootFactory, Void> shopService = new Microservice<>(new FactoryManager<>(new ResettingHandler()), new InMemoryDataStorage<>(shopFactory));
+
+        Microservice<OrderCollector, JettyServer, ServerRootFactory, Void> shopService = new Microservice<>(new FactoryManager<>(new LoggingFactoryExceptionHandler<>(new ResettingHandler<OrderCollector, JettyServer, ServerRootFactory>())), new InMemoryDataStorage<>(shopFactory));
         shopService.start();
 
         RichClientRoot richClientFactory = RichClientBuilder.createFactoryBuilder(8089,primaryStage, "", "", Locale.ENGLISH,serverBuilder).buildTree();

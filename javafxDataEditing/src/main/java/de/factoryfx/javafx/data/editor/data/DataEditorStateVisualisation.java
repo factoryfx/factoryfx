@@ -97,7 +97,7 @@ public class DataEditorStateVisualisation extends BorderPane {
             return breadCrumbButton;
         });
         breadCrumbBar.setOnCrumbAction(event -> {
-            dataEditor.edit(event.getSelectedCrumb().getValue());
+            dataEditor.navigate(event.getSelectedCrumb().getValue());
         });
 
 

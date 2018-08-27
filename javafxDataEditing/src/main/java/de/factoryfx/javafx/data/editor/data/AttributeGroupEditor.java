@@ -47,7 +47,7 @@ public class AttributeGroupEditor implements Widget {
 
 
     public AttributeGroupEditor(List<? extends Attribute<?, ?>> attributeGroup, Data oldValue, AttributeEditorBuilder attributeEditorBuilder, DataEditor dataEditor, UniformDesign uniformDesign, Supplier<List<ValidationError>> additionalValidation) {
-        this(attributeGroup,oldValue,attributeEditorBuilder, dataEditor::edit,uniformDesign,additionalValidation);
+        this(attributeGroup,oldValue,attributeEditorBuilder, dataEditor::navigate, uniformDesign, additionalValidation);
     }
 
     /** constructor for use as single independent component

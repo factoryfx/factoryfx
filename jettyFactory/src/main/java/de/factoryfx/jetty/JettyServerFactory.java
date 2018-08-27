@@ -36,7 +36,7 @@ public abstract class JettyServerFactory<V,R extends FactoryBase<?,V,R>> extends
             FactoryReferenceListAttribute.create( new FactoryReferenceListAttribute<>(HttpServerConnectorFactory.class).labelText("Connectors").userNotSelectable());
     @SuppressWarnings("unchecked")
     public final FactoryReferenceAttribute<ObjectMapper,FactoryBase<ObjectMapper,V,R>> objectMapper =
-            FactoryReferenceAttribute.create( new FactoryReferenceAttribute<>(FactoryBase.class).nullable().en("fdsf"));
+            FactoryReferenceAttribute.create( new FactoryReferenceAttribute<>(FactoryBase.class).nullable().en("objectMapper"));
     @SuppressWarnings("unchecked")
     public final FactoryReferenceAttribute<org.glassfish.jersey.logging.LoggingFeature,FactoryBase<org.glassfish.jersey.logging.LoggingFeature,V,R>> restLogging =
             FactoryReferenceAttribute.create(new FactoryReferenceAttribute<>(FactoryBase.class).userReadOnly().nullable().labelText("REST logging"));

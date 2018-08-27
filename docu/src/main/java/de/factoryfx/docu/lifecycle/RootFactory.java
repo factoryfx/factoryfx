@@ -6,7 +6,8 @@ public class RootFactory extends FactoryBase<Root,Void, RootFactory> {
 
     public RootFactory(){
         configLiveCycle().setCreator(Root::new);
-        configLiveCycle().setStarter(Root::start);
-        configLiveCycle().setDestroyer(Root::destroy);
+        configLiveCycle().setReCreator(oldRoot -> new Root());
+        configLiveCycle().setStarter(newRoot -> newRoot.start());
+        configLiveCycle().setDestroyer(oldRoot -> oldRoot.destroy());
     }
 }

@@ -36,8 +36,17 @@ public class DataEditor implements Widget {
         return editData;
     }
 
+    /**
+     * edit without history reset
+     * @param newValue new value
+     */
+    public void navigate(Data newValue) {
+        updateState(dataEditorState.edit(newValue));
+    }
+
     public void edit(Data newValue) {
         updateState(dataEditorState.edit(newValue));
+        updateState(dataEditorState.resetHistory());
     }
 
     private void updateState(DataEditorState dataEditorState){
@@ -48,9 +57,6 @@ public class DataEditor implements Widget {
         }
     }
 
-    public void resetHistory(){
-        updateState(dataEditorState.resetHistory());
-    }
     public void setHistory(List<Data> data){
         updateState(dataEditorState.withHistory(data));
     }

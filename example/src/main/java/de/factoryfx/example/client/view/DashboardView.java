@@ -70,7 +70,7 @@ public class DashboardView implements Widget {
         final LineChart<Number,Number> lineChart = new LineChart<>(xAxis,yAxis);
         lineChart.setTitle("Orders");
 
-        Button update = new Button("update");
+        Button update = new Button("edit");
         update.setOnAction(event -> updateLineChart(lineChart));
         content.setBottom(update);
 

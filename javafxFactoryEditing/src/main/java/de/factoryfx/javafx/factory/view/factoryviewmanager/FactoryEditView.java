@@ -174,23 +174,14 @@ public class FactoryEditView<V,R extends FactoryBase<?,V,R>> implements Widget, 
         borderPane.setTop(toolBar);
 
         if (factoryEditManager.getLoadedFactory().isPresent()){
-            borderPane.setCenter(content.init(factoryEditManager.getLoadedFactory().get()));
+            borderPane.setCenter(content.createContent());
+            content.edit((factoryEditManager.getLoadedFactory().get()));
         } else {
-//            StackPane stackPane = new StackPane();
-//            Button loadButton = new Button("Daten laden");
-//            loadButton.setOnAction(event -> {
-//                LongRunningActionExecutor.execute(() -> {
-//                    factoryManager.load();
-//                });
-//            });
-//            stackPane.getChildren().add(loadButton);
-//            borderPane.setCenter(stackPane);
+            borderPane.setCenter(content.createContent());
             LongRunningActionExecutor.execute(factoryEditManager::load);
         }
 
-        factoryUpdater=serverFactory -> {
-            borderPane.setCenter(content.update(serverFactory));
-        };
+        factoryUpdater=content::edit;
 
         return borderPane;
     }

@@ -21,6 +21,9 @@ import java.util.function.Supplier;
  */
 public class FactoryReferenceAttribute<L, F extends FactoryBase<? extends L,?,?>> extends FactoryReferenceBaseAttribute<L,F,FactoryReferenceAttribute<L, F>> {
 
+    /**
+     * @param clazz generic type erasure workaround
+     */
     public FactoryReferenceAttribute(Class<F> clazz) {
         setup(clazz);
     }

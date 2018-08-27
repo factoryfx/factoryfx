@@ -39,6 +39,7 @@ public class FactoryReferenceBaseAttribute<L,F extends FactoryBase<? extends L,?
         super();
     }
 
+
     public L instance(){
         if (get()==null){
             return null;

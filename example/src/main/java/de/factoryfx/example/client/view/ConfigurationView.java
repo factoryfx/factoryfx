@@ -16,21 +16,13 @@ public class ConfigurationView implements FactoryAwareWidget<ServerRootFactory> 
     }
 
     @Override
-    public Node init(ServerRootFactory serverFactory) {
-        StackPane root = new StackPane();
-
-        BorderPane content = new BorderPane();
-        root.getChildren().add(content);
-
-        content.setCenter(dataTreeWidget.createContent());
+    public void edit(ServerRootFactory serverFactory) {
         dataTreeWidget.edit(serverFactory);
-        return content;
     }
 
-//    @Override
-//    public Node update(ServerRootFactory newFactory) {
-////        System.out.println("asadsad");
-//        dataTreeWidget.edit(newFactory);
-//        return null;
-//    }
+    @Override
+    public Node createContent() {
+        return dataTreeWidget.createContent();
+    }
+
 }
