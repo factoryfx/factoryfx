@@ -10,6 +10,7 @@ import de.factoryfx.data.attribute.primitive.BooleanAttribute;
 import de.factoryfx.data.attribute.types.Base64Attribute;
 import de.factoryfx.data.attribute.types.EnumAttribute;
 import de.factoryfx.data.attribute.types.StringAttribute;
+import de.factoryfx.data.attribute.types.StringListAttribute;
 import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.factory.SimpleFactoryBase;
 
@@ -25,6 +26,8 @@ public class SslContextFactoryFactory<V, R extends FactoryBase<?, V, R>> extends
 
     public final StringAttribute certAlias = new StringAttribute().en("certAlias").de("certAlias").nullable();
 
+    public final StringListAttribute allowCipherSuites = new StringListAttribute().en("Cipher suites to allow");
+
     public final BooleanAttribute wantClientAuth = new BooleanAttribute().en("wantClientAuth").de("wantClientAuth").defaultValue(false);
     public final BooleanAttribute needClientAuth = new BooleanAttribute().en("needClientAuth").de("needClientAuth").defaultValue(false);
 
@@ -32,8 +35,15 @@ public class SslContextFactoryFactory<V, R extends FactoryBase<?, V, R>> extends
     public SslContextFactory createImpl() {
         SslContextFactory sslContextFactory = new SslContextFactory();
 
+        if (allowCipherSuites.size() > 0) {
+            sslContextFactory.setExcludeCipherSuites();
+            sslContextFactory.setIncludeCipherSuites(allowCipherSuites.get().toArray(new String[allowCipherSuites.size()]));
+        }
+
         sslContextFactory.setKeyStorePassword(keyStorePassword.get());
-        if (!keyPassword.isEmpty()) { sslContextFactory.setKeyManagerPassword(keyPassword.get()); }
+        if (!keyPassword.isEmpty()) {
+            sslContextFactory.setKeyManagerPassword(keyPassword.get());
+        }
 
         try {
             KeyStore keyStore = KeyStore.getInstance(keyStoreType.get().value());
@@ -60,5 +70,4 @@ public class SslContextFactoryFactory<V, R extends FactoryBase<?, V, R>> extends
 
         return sslContextFactory;
     }
-
 }
