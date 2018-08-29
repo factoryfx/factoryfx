@@ -45,7 +45,7 @@ public class FactoryReferenceListAttribute<L, F extends FactoryBase<? extends L,
      *
      * if possible use constructor instead
      *
-     * @param factoryReferenceListAttribute
+     * @param factoryReferenceListAttribute factoryReferenceListAttribute
      * @return factoryReferenceListAttribute
      * @param <L> Live Object
      * @param <F> Factory

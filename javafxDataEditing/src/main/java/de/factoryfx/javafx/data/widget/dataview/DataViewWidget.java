@@ -69,9 +69,11 @@ public class DataViewWidget<T extends Data> implements Widget {
     }
 
     private ReferenceAttributeDataView<T, ?> dataView;//gc protection for listener
+
     /**
-     * automatic change detection for ReferenceListAttribute, changes in the attribute lead to automatic changes in the table
-     * */
+     * automatic change detection for ReferenceListAttribute, that means that changes in the attribute leads to automatic changes in the table
+     * @param attribute ReferenceListAttribute
+     */
     public void edit(ReferenceListAttribute<T,?> attribute){
         final Data oldData = dataEditor.editData().get();
         dataView = new ReferenceAttributeDataView<>(attribute);

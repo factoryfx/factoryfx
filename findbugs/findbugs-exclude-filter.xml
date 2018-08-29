@@ -95,6 +95,12 @@
         <Bug pattern="NP_UNWRITTEN_PUBLIC_OR_PROTECTED_FIELD" />
     </Match>
 
+    <Match>
+        <Class name="de.factoryfx.docu.dynamicwebserver.RestClient" />
+        <Bug pattern="NP_NULL_PARAM_DEREF_NONVIRTUAL" />
+    </Match>
+
+
 
 
 

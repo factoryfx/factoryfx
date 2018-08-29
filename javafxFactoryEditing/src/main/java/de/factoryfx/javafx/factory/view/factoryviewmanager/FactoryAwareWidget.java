@@ -9,8 +9,8 @@ import de.factoryfx.javafx.data.widget.Widget;
 public interface FactoryAwareWidget<R> extends Widget {
 
     /**
-     * called after initail factory load and after updates to the server
-     * @param rootFactory
+     * called after initial factory load and after updates to the server
+     * @param rootFactory new rootFactory
      */
     void edit(R rootFactory);
 

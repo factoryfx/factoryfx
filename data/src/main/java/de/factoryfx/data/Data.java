@@ -768,6 +768,7 @@ public class Data {
 
         /**
          * collect child from middle node, slower than FromRoot but work from all nodes
+         * @return children including itself
          */
         public Set<Data> collectChildrenDeepFromNode() {
             return data.collectChildrenDeepFromNode();
