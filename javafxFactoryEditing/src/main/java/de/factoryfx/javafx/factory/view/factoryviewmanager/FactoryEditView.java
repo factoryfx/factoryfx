@@ -18,7 +18,6 @@ import de.factoryfx.javafx.data.widget.Widget;
 import de.factoryfx.javafx.factory.widget.factory.diffdialog.DiffDialogBuilder;
 import de.factoryfx.javafx.data.widget.validation.ValidationWidget;
 import javafx.application.Platform;
-import javafx.beans.property.SimpleObjectProperty;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.control.Alert;
@@ -47,7 +46,6 @@ public class FactoryEditView<V,R extends FactoryBase<?,V,R>> implements Widget, 
     private final DataEditor dataEditor;
     private BorderPane borderPane;
     private final DiffDialogBuilder diffDialogBuilder;
-    private final SimpleObjectProperty<Data> selectedFactory;
 
     public FactoryEditView(LongRunningActionExecutor longRunningActionExecutor, FactoryEditManager<V,R> factoryEditManager, FactoryAwareWidget<R> content, UniformDesign uniformDesign, DataEditor dataEditor, DiffDialogBuilder diffDialogBuilder) {
         this.LongRunningActionExecutor = longRunningActionExecutor;
@@ -56,7 +54,6 @@ public class FactoryEditView<V,R extends FactoryBase<?,V,R>> implements Widget, 
         this.uniformDesign = uniformDesign;
         this.dataEditor = dataEditor;
         this.diffDialogBuilder = diffDialogBuilder;
-        this.selectedFactory = content.selectedFactory();
     }
 
     @Override

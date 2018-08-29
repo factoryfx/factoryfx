@@ -3,8 +3,8 @@ package de.factoryfx.javafx.factory.view.menu;
 import de.factoryfx.data.attribute.types.EnumAttribute;
 import de.factoryfx.data.attribute.types.I18nAttribute;
 import de.factoryfx.factory.SimpleFactoryBase;
+import de.factoryfx.factory.atrribute.FactoryPolymorphicReferenceListAttribute;
 import de.factoryfx.factory.atrribute.FactoryReferenceAttribute;
-import de.factoryfx.factory.atrribute.FactoryReferenceListAttribute;
 import de.factoryfx.javafx.data.util.UniformDesign;
 import de.factoryfx.javafx.factory.RichClientRoot;
 import de.factoryfx.javafx.factory.util.UniformDesignFactory;
@@ -17,7 +17,10 @@ public class ViewMenuFactory extends SimpleFactoryBase<Menu,Void,RichClientRoot>
 
     public final I18nAttribute text = new I18nAttribute().de("text").en("text");
     public final EnumAttribute<Glyph> icon = new EnumAttribute<>(FontAwesome.Glyph.class).de("icon").en("icon").nullable();
-    public final FactoryReferenceListAttribute<MenuItem,ViewMenuItemFactory> items = new FactoryReferenceListAttribute<>(ViewMenuItemFactory.class).de("items").en("items");
+//    public final FactoryReferenceListAttribute<MenuItem,ViewMenuItemFactory> items = new FactoryReferenceListAttribute<>(ViewMenuItemFactory.class).de("items").en("items");
+
+    public final FactoryPolymorphicReferenceListAttribute<MenuItem> items = new FactoryPolymorphicReferenceListAttribute<>(MenuItem.class, ViewMenuItemFactory.class).de("items").en("items");
+
     public final FactoryReferenceAttribute<UniformDesign,UniformDesignFactory> uniformDesign = new FactoryReferenceAttribute<>(UniformDesignFactory.class).de("uniformDesign").en("uniformDesign");
 
     @Override

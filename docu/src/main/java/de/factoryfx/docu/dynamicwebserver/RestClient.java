@@ -24,6 +24,10 @@ public class RestClient {
         this(buildURI(host, port, ssl, path),httpAuthenticationUser,httpAuthenticationPassword);
     }
 
+    public RestClient(String host, int port, String path) {
+        this(buildURI(host, port, false, path),null,null);
+    }
+
     public RestClient(URI baseURI, String httpAuthenticationUser, String httpAuthenticationPassword, Client client) {
         this.baseURI = baseURI;
         this.client = client; createClient(httpAuthenticationUser,httpAuthenticationPassword);

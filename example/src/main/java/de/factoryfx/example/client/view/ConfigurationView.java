@@ -4,8 +4,6 @@ import de.factoryfx.example.server.ServerRootFactory;
 import de.factoryfx.javafx.factory.view.factoryviewmanager.FactoryAwareWidget;
 import de.factoryfx.javafx.data.widget.tree.DataTreeWidget;
 import javafx.scene.Node;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.StackPane;
 
 public class ConfigurationView implements FactoryAwareWidget<ServerRootFactory> {
 

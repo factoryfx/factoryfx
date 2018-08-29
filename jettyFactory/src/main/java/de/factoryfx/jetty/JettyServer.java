@@ -134,23 +134,20 @@ public class JettyServer {
         if (disposed)
             return;
         try {
+            if (Thread.interrupted())
+                throw new RuntimeException("Interrupted");
             server.setStopTimeout(1L);
             server.stop();
-//            server.setStopTimeout(10000L);
-//            Thread thread =new Thread(()-> {
-//                try {
-//                    server.stop();
-//                } catch (Exception e) {
-//                    throw new RuntimeException(e);
-//                }
-//            });
-//            thread.start();
-//            thread.join();
-
-//            server.stop();
+            //because stop call can be inside this one of jetty's threads, we need to clear the interrupt
+            //to let the rest of the factory updates run. They might be interrupt-sensitive
+            Thread.interrupted();
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public boolean isStopped() {
+        return server.isStopped();
     }
 
 

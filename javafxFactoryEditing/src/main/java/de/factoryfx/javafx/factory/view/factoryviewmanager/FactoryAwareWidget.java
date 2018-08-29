@@ -1,9 +1,6 @@
 package de.factoryfx.javafx.factory.view.factoryviewmanager;
 
-import de.factoryfx.data.Data;
 import de.factoryfx.javafx.data.widget.Widget;
-import javafx.beans.property.SimpleObjectProperty;
-import javafx.scene.Node;
 
 /**
  *
@@ -11,11 +8,13 @@ import javafx.scene.Node;
  */
 public interface FactoryAwareWidget<R> extends Widget {
 
-    void edit(R newFactory);
+    /**
+     * called after initail factory load and after updates to the server
+     * @param rootFactory
+     */
+    void edit(R rootFactory);
 
-    default SimpleObjectProperty<Data> selectedFactory(){
-        return new SimpleObjectProperty<>();
-    }
+
 
 
 }

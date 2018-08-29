@@ -25,6 +25,7 @@ import de.factoryfx.javafx.factory.view.container.ViewsDisplayWidgetFactory;
 import de.factoryfx.javafx.factory.view.factoryviewmanager.FactoryEditManagerFactory;
 import de.factoryfx.javafx.factory.view.factoryviewmanager.FactoryEditViewFactory;
 import de.factoryfx.javafx.factory.view.factoryviewmanager.FactorySerialisationManagerFactory;
+import de.factoryfx.javafx.factory.view.menu.SeparatorMenuItemFactory;
 import de.factoryfx.javafx.factory.view.menu.ViewMenuFactory;
 import de.factoryfx.javafx.factory.view.menu.ViewMenuItemFactory;
 import de.factoryfx.javafx.factory.widget.factory.datatree.DataTreeWidgetFactory;
@@ -75,6 +76,7 @@ public class RichClientBuilder {
             fileMenu.items.add(context.get(ViewMenuItemFactory.class, "configuration"));
             fileMenu.items.add(context.get(ViewMenuItemFactory.class, "dashboard"));
             fileMenu.items.add(context.get(ViewMenuItemFactory.class, "history"));
+            fileMenu.items.add(context.get(SeparatorMenuItemFactory.class));
             fileMenu.items.add(context.get(ViewMenuItemFactory.class, "products"));
             return fileMenu;
         });
@@ -164,7 +166,7 @@ public class RichClientBuilder {
         factoryBuilder.addFactory(ViewMenuItemFactory.class, "products", Scope.SINGLETON, context -> {
             ViewDescriptionFactory viewDescriptionFactory = new ViewDescriptionFactory();
             viewDescriptionFactory.text.en("Products").de("Produkte");
-            viewDescriptionFactory.icon.set(FontAwesome.Glyph.COG);
+            viewDescriptionFactory.icon.set(FontAwesome.Glyph.LIST);
             viewDescriptionFactory.uniformDesign.set(context.get(UniformDesignFactory.class));
 
             ViewFactory viewFactory = new ViewFactory();
@@ -197,6 +199,7 @@ public class RichClientBuilder {
         });
 
         factoryBuilder.addFactory(DataViewWidgetFactory.class,Scope.PROTOTYPE);
+        factoryBuilder.addFactory(SeparatorMenuItemFactory.class,Scope.PROTOTYPE);
 
 
         return factoryBuilder;

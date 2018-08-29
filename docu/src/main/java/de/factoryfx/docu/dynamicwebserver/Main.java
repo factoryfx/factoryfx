@@ -61,7 +61,7 @@ public class Main {
     }
 
     private static Thread startQueryServerThread() {
-        RestClient restClient8005 = new RestClient("localhost",8005,"",false,null,null);
+        RestClient restClient8005 = new RestClient("localhost",8005,"");
         Thread pollServer = new Thread() {
             {
                 setDaemon(true);

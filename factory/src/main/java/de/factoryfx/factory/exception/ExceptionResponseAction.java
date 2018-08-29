@@ -31,6 +31,7 @@ public class ExceptionResponseAction<V,L,R extends FactoryBase<L,V,R>> {
         factoryManager.resetAfterCrash();
 
         factoryManager.start(previousFactoryRootCopy);
+        //TODO use a new thread?
     }
 
     public void terminateApplication() {

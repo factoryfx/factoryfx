@@ -6,9 +6,7 @@ import de.factoryfx.javafx.data.editor.data.DataEditor;
 import de.factoryfx.javafx.data.util.DataObservableDisplayText;
 import de.factoryfx.javafx.data.util.UniformDesign;
 import de.factoryfx.javafx.data.widget.Widget;
-import de.factoryfx.javafx.data.widget.datalistedit.ReferenceListAttributeEditWidget;
 import de.factoryfx.javafx.data.widget.table.TableControlWidget;
-import javafx.collections.ObservableList;
 import javafx.geometry.Orientation;
 import javafx.scene.Node;
 import javafx.scene.control.SplitPane;
@@ -17,7 +15,6 @@ import javafx.scene.control.TableView;
 import javafx.scene.layout.BorderPane;
 
 import java.util.List;
-import java.util.function.Consumer;
 
 public class DataViewWidget<T extends Data> implements Widget {
     private final DataEditor dataEditor;

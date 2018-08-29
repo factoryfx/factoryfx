@@ -47,7 +47,7 @@ public class UniformDesign {
 
     public void addIcon(MenuItem component, FontAwesome.Glyph icon) {
         if (icon != null) {
-            component.setGraphic(getFontAwesome().create(icon));
+            component.setGraphic(getFontAwesome().create(icon).color(Color.BLACK));
         }
     }
 

@@ -7,9 +7,12 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.function.Consumer;
 
+import javax.management.relation.RoleUnresolved;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
+import javax.ws.rs.ProcessingException;
 import javax.ws.rs.core.Response;
 
 import org.junit.Assert;
@@ -163,6 +166,74 @@ public class JettyServerTest {
         } finally {
             jettyServer.stop();
         }
+
+
+    }
+
+    @Path("/Killer")
+    public static class ResourceKiller{
+        private  Runnable stopper;
+
+        private final Consumer<Thread> killerThread;
+
+        public ResourceKiller(Consumer<Thread> killerThread) {
+            this.killerThread = killerThread;
+        }
+
+        public void setStopper(Runnable stopper){
+            this.stopper = stopper;
+        }
+
+
+        @GET()
+        public Response get(){
+            killerThread.accept(Thread.currentThread());
+            stopper.run();
+            return Response.ok().build();
+        }
+    }
+
+    @Test
+    public void test_stop_itself() throws InterruptedException {
+        List<HttpServerConnectorCreator> connectors= new ArrayList<>();
+        connectors.add(new HttpServerConnectorCreator("localhost",8015,null));
+        final Thread whichThread[] = new Thread[1];
+        ResourceKiller killer = new ResourceKiller(t->{
+            whichThread[0] = t;
+        });
+        JettyServer jettyServer = new JettyServer(connectors, List.of(killer));
+        jettyServer.start();
+
+        CompletableFuture<Void> future = new CompletableFuture<>();
+        killer.setStopper(()->{
+            jettyServer.stop();
+            try {
+                Thread.sleep(10);//some code that trigger interrupted exception if thread is already interrupted(unwanted)
+                future.complete(null);
+            } catch (InterruptedException e) {
+                future.completeExceptionally(e);            }
+        });
+
+        RestClient restClient = new RestClient("localhost",8015,"",false,null,null);
+        try {
+            restClient.get("Killer", String.class);
+            Assert.fail("Expected exception");
+        } catch (ProcessingException expected) {
+            expected.printStackTrace();
+        }
+        try {
+            future.get();
+        } catch (ExecutionException e) {
+            throw new RuntimeException(e);
+        }
+        try {
+            whichThread[0].join(2000);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+        Assert.assertFalse(whichThread[0].isAlive());
+        Assert.assertTrue(jettyServer.isStopped());
+
 
 
     }

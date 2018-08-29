@@ -1,6 +1,5 @@
 package de.factoryfx.factory.atrribute;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
 import de.factoryfx.data.Data;
 import de.factoryfx.data.attribute.CopySemantic;
 import de.factoryfx.data.validation.Validation;
