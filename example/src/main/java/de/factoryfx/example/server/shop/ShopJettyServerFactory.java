@@ -14,7 +14,6 @@ public class ShopJettyServerFactory extends JettyServerFactory<OrderCollector,Se
     @SuppressWarnings("unchecked")
     public final FactoryReferenceAttribute<MicroserviceResource<OrderCollector, ServerRootFactory,Void>, MicroserviceResourceFactory<OrderCollector, ServerRootFactory,Void>> resource = FactoryReferenceAttribute.create(new FactoryReferenceAttribute<>(MicroserviceResourceFactory.class).labelText("Configuration API"));
     public final FactoryReferenceAttribute<ShopResource, ShopResourceFactory> shopResource = new FactoryReferenceAttribute<>(ShopResourceFactory.class).labelText("Shop API");
-    public final StringAttribute dummy = new StringAttribute().labelText("Shop API").nullable();
 
     @Override
     protected List<Object> getResourcesInstances() {

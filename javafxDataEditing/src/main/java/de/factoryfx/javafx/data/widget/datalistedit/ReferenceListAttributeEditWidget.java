@@ -84,10 +84,9 @@ public class ReferenceListAttributeEditWidget<T extends Data> implements Widget 
                 !referenceListAttribute.internal_isUserReadOnly(), referenceListAttribute.internal_isUserSelectable(), referenceListAttribute.internal_isUserCreatable());
     }
 
-
     @Override
     @SuppressWarnings("unchecked")
-    public Node createContent() {
+    public HBox createContent() {
         Button showButton = new Button("", uniformDesign.createIcon(FontAwesome.Glyph.PENCIL));
         showButton.setOnAction(event -> navigateToData.accept(tableView.getSelectionModel().getSelectedItem()));
         showButton.disableProperty().bind(tableView.getSelectionModel().selectedItemProperty().isNull().or(multipleItemsSelected));

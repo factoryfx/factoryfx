@@ -6,15 +6,20 @@ import de.factoryfx.javafx.data.editor.data.DataEditor;
 import de.factoryfx.javafx.data.util.DataObservableDisplayText;
 import de.factoryfx.javafx.data.util.UniformDesign;
 import de.factoryfx.javafx.data.widget.Widget;
+import de.factoryfx.javafx.data.widget.datalistedit.ReferenceListAttributeEditWidget;
 import de.factoryfx.javafx.data.widget.table.TableControlWidget;
+import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
 import javafx.scene.Node;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 
 import java.util.List;
+import java.util.function.Consumer;
 
 public class DataViewWidget<T extends Data> implements Widget {
     private final DataEditor dataEditor;
@@ -22,6 +27,8 @@ public class DataViewWidget<T extends Data> implements Widget {
     private Orientation orientation=Orientation.HORIZONTAL;
     private final UniformDesign uniformDesign;
     private final TableView<T> tableView;
+    private BorderPane listEditWidget;
+    private TableColumn<T, String> column;
 
     public DataViewWidget(DataEditor dataEditor, UniformDesign uniformDesign, TableView<T> tableView) {
         this.dataEditor = dataEditor;
@@ -39,10 +46,9 @@ public class DataViewWidget<T extends Data> implements Widget {
         splitPane.setOrientation(orientation);
 
         tableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
-        TableColumn<T, String> test = new TableColumn<>("Data");
-        test.setCellValueFactory(param -> new DataObservableDisplayText(param.getValue()).get());
-        tableView.getColumns().add(test);
-        tableView.getStyleClass().add("hidden-tableview-headers");
+        column = new TableColumn<>("Data");
+        column.setCellValueFactory(param -> new DataObservableDisplayText(param.getValue()).get());
+        tableView.getColumns().add(column);
 
         BorderPane borderPaneWrapper = new BorderPane();
         borderPaneWrapper.setCenter(tableView);
@@ -59,8 +65,18 @@ public class DataViewWidget<T extends Data> implements Widget {
         });
 
 
+        listEditWidget = new BorderPane();
+
+
         TableControlWidget tableControlWidget= new TableControlWidget<>(tableView, uniformDesign);
-        borderPaneWrapper.setBottom(tableControlWidget.createContent());
+        Node tableControlWidgetContent = tableControlWidget.createContent();
+        HBox hBox = new HBox();
+        hBox.getChildren().addAll(listEditWidget, tableControlWidgetContent);
+        HBox.setHgrow(tableControlWidgetContent, Priority.ALWAYS);
+        HBox.setMargin(tableControlWidgetContent, new Insets(0,1,0,0));
+        borderPaneWrapper.setBottom(hBox);
+
+        tableView.setTableMenuButtonVisible(false);
         return splitPane;
     }
 
@@ -75,6 +91,11 @@ public class DataViewWidget<T extends Data> implements Widget {
      * @param attribute ReferenceListAttribute
      */
     public void edit(ReferenceListAttribute<T,?> attribute){
+        editReadOnly(attribute);
+        listEditWidget.setCenter(new ReferenceListAttributeEditWidget<>(tableView, dataEditor::navigate, uniformDesign, attribute).createContent());
+    }
+
+    public void editReadOnly(ReferenceListAttribute<T,?> attribute){
         final Data oldData = dataEditor.editData().get();
         dataView = new ReferenceAttributeDataView<>(attribute);
         tableView.setItems(dataView.dataList());
@@ -82,10 +103,14 @@ public class DataViewWidget<T extends Data> implements Widget {
         if (oldData!=null){
             attribute.stream().filter(d->d.idEquals(oldData)).findAny().ifPresent(dataEditor::edit);
         }
+
+        tableView.getStyleClass().remove("hidden-tableview-headers");
+        column.setText(uniformDesign.getLabelText(attribute));
     }
 
     public void edit(List<T> dataList){
         tableView.setItems(new UpdatableDataView<>(()->dataList).dataList());
+        tableView.getStyleClass().add("hidden-tableview-headers");
     }
 
     public DataViewWidget setDividerPositions(double dividerPosition) {
