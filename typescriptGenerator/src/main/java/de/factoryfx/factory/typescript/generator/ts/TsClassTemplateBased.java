@@ -3,13 +3,14 @@ package de.factoryfx.factory.typescript.generator.ts;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
 
-public class TsClassTemplateBased extends TsClass {
+public class TsClassTemplateBased extends TsClassFile {
 
     private final String content;
 
-    public TsClassTemplateBased(String name, String content) {
-        super(name);
+    public TsClassTemplateBased(String name, String content, Path targetPath) {
+        super(name,targetPath);
         this.content = content;
     }
 
@@ -17,8 +18,8 @@ public class TsClassTemplateBased extends TsClass {
      *
      * @param resourcePathShort e.g Data.ts
      */
-    public TsClassTemplateBased(String resourcePathShort) {
-        super(resourcePathShort.replace(".ts",""));
+    public TsClassTemplateBased(String resourcePathShort, Path targetPath) {
+        super(resourcePathShort.replace(".ts",""),targetPath);
 
         try (InputStream inputStream = this.getClass().getResourceAsStream("/de/factoryfx/factory/typescript/generator/ts/"+resourcePathShort)) {
             this.content = new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);

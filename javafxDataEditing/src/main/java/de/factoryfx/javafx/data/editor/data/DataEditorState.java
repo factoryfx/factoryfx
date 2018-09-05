@@ -17,26 +17,28 @@ public class DataEditorState {
     private final UniformDesign uniformDesign;
     private final DataEditor dataEditor;
     private final BiFunction<Node,Data,Node> visCustomizer;
+    private final boolean showNavigation;
 
-    public DataEditorState(Data currentData, List<Data> displayedEntities, AttributeEditorBuilder attributeEditorBuilder, UniformDesign uniformDesign, DataEditor dataEditor, BiFunction<Node,Data,Node> visCustomizer) {
+    public DataEditorState(Data currentData, List<Data> displayedEntities, AttributeEditorBuilder attributeEditorBuilder, UniformDesign uniformDesign, DataEditor dataEditor, BiFunction<Node,Data,Node> visCustomizer, boolean showNavigation) {
         this.displayedEntities = displayedEntities;
         this.currentData = currentData;
         this.attributeEditorBuilder = attributeEditorBuilder;
         this.uniformDesign = uniformDesign;
         this.dataEditor = dataEditor;
         this.visCustomizer = visCustomizer;
+        this.showNavigation = showNavigation;
     }
 
     public Node createVisualisation(){
-        return new DataEditorStateVisualisation(currentData,displayedEntities,previousData(),nextData(),attributeEditorBuilder,uniformDesign,dataEditor, visCustomizer);
+        return new DataEditorStateVisualisation(currentData,displayedEntities,previousData(),nextData(),attributeEditorBuilder,uniformDesign,dataEditor, visCustomizer,showNavigation);
     }
 
     public DataEditorState resetHistory() {
-        return new DataEditorState(currentData,new ArrayList<>(Collections.singletonList(currentData)),attributeEditorBuilder,uniformDesign,dataEditor, visCustomizer);
+        return new DataEditorState(currentData,new ArrayList<>(Collections.singletonList(currentData)),attributeEditorBuilder,uniformDesign,dataEditor, visCustomizer,showNavigation);
     }
 
     public DataEditorState withHistory(List<Data> data) {
-        return new DataEditorState(currentData,data,attributeEditorBuilder,uniformDesign,dataEditor, visCustomizer);
+        return new DataEditorState(currentData,data,attributeEditorBuilder,uniformDesign,dataEditor, visCustomizer,showNavigation);
     }
 
     private Optional<Data> previousData(){
@@ -62,7 +64,7 @@ public class DataEditorState {
         if(data.isPresent()){
             newData=data.get();
         }
-        return new DataEditorState(newData,new ArrayList<>(displayedEntities),attributeEditorBuilder,uniformDesign,dataEditor, visCustomizer);
+        return new DataEditorState(newData,new ArrayList<>(displayedEntities),attributeEditorBuilder,uniformDesign,dataEditor, visCustomizer,showNavigation);
     }
 
     public DataEditorState next(){
@@ -71,7 +73,7 @@ public class DataEditorState {
         if(data.isPresent()){
             newData=data.get();
         }
-        return new DataEditorState(newData,new ArrayList<>(displayedEntities),attributeEditorBuilder,uniformDesign,dataEditor, visCustomizer);
+        return new DataEditorState(newData,new ArrayList<>(displayedEntities),attributeEditorBuilder,uniformDesign,dataEditor, visCustomizer,showNavigation);
     }
 
 
@@ -91,7 +93,7 @@ public class DataEditorState {
             displayedEntities.remove(0);
         }
 
-        return new DataEditorState(newValue,new ArrayList<>(displayedEntities),attributeEditorBuilder,uniformDesign,dataEditor, visCustomizer);
+        return new DataEditorState(newValue,new ArrayList<>(displayedEntities),attributeEditorBuilder,uniformDesign,dataEditor, visCustomizer,showNavigation);
     }
 
     public Data getCurrentData() {
@@ -111,6 +113,10 @@ public class DataEditorState {
     }
 
     public DataEditorState reset() {
-        return new DataEditorState(null,new ArrayList<>(),attributeEditorBuilder,uniformDesign,dataEditor, visCustomizer);
+        return new DataEditorState(null,new ArrayList<>(),attributeEditorBuilder,uniformDesign,dataEditor, visCustomizer,showNavigation);
+    }
+
+    public DataEditorState setShowNavigation(boolean newShowNavigation) {
+        return new DataEditorState(null,new ArrayList<>(),attributeEditorBuilder,uniformDesign,dataEditor, visCustomizer,newShowNavigation);
     }
 }

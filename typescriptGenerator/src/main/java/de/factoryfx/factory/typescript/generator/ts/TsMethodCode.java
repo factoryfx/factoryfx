@@ -6,9 +6,9 @@ import java.util.Set;
 
 public class TsMethodCode {
     private final String code;
-    private final List<TsClass> imports;
+    private final List<TsClassFile> imports;
 
-    public TsMethodCode(String code, List<TsClass> imports) {
+    public TsMethodCode(String code, List<TsClassFile> imports) {
         this.code = code;
         this.imports = imports;
     }
@@ -17,7 +17,7 @@ public class TsMethodCode {
         this(code, new ArrayList<>());
     }
 
-    public void addImports(Set<TsClass> imports){
+    public void addImports(Set<TsClassFile> imports){
         imports.addAll(this.imports);
     }
 

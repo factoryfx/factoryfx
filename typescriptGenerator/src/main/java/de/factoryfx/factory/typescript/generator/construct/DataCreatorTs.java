@@ -1,26 +1,29 @@
-package de.factoryfx.factory.typescript.generator;
+package de.factoryfx.factory.typescript.generator.construct;
 
 import de.factoryfx.data.Data;
 import de.factoryfx.factory.typescript.generator.ts.*;
 
+import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class DataCreatorGenerator {
+public class DataCreatorTs {
 
     private final List<Class<? extends Data>> allDataClasses;
-    private final HashMap<Class<? extends Data>, TsClassConstructed> dataToTs;
-    private final TsClass dataClass;
+    private final HashMap<Class<? extends Data>, TsClassConstructed> dataToDataConfigTs;
+    private final TsClassFile dataClass;
+    private final Path targetPath;
 
-    public DataCreatorGenerator(List<Class<? extends Data>> allDataClasses, HashMap<Class<? extends Data>, TsClassConstructed> dataToTs, TsClass dataClass) {
+    public DataCreatorTs(List<Class<? extends Data>> allDataClasses, HashMap<Class<? extends Data>, TsClassConstructed> dataToDataConfigTs, TsClassFile dataClass, Path targetPath) {
         this.allDataClasses = allDataClasses;
-        this.dataToTs = dataToTs;
+        this.dataToDataConfigTs = dataToDataConfigTs;
         this.dataClass = dataClass;
+        this.targetPath = targetPath;
     }
 
-    public TsClass construct(){
-        TsClassConstructed constructed = new TsClassConstructed("DataCreator");
+    public TsClassFile construct(){
+        TsClassConstructed constructed = new TsClassConstructed("DataCreator",  targetPath);
 
         StringBuilder typeMappingCode=new StringBuilder();
         typeMappingCode.append("if (!json) return null;\n");
@@ -39,8 +42,8 @@ public class DataCreatorGenerator {
         typeMappingCode.append("return null;");
 
         constructed.methods.add(new TsMethod("createData",
-                List.of(new TsMethodParameterPrimitive("json","any"),new TsMethodParameterPrimitive("idToDataMap","any")),new TsMethodResultClass(dataClass),
-                new TsMethodCode(typeMappingCode.toString(),allDataClasses.stream().map(dataToTs::get).collect(Collectors.toList())),"public"));
+                List.of(new TsMethodParameter("json",new TsTypePrimitive("any")),new TsMethodParameter("idToDataMap",new TsTypePrimitive("any"))),new TsMethodResult(new TsTypeClass(dataClass)),
+                new TsMethodCode(typeMappingCode.toString(),allDataClasses.stream().map(dataToDataConfigTs::get).collect(Collectors.toList())),"public"));
 
 
         StringBuilder typeListMappingCode=new StringBuilder();
@@ -51,8 +54,8 @@ public class DataCreatorGenerator {
         typeListMappingCode.append("return result;");
 
         constructed.methods.add(new TsMethod("createDataList",
-                List.of(new TsMethodParameterPrimitive("json","any"),new TsMethodParameterPrimitive("idToDataMap","any")),new TsMethodResultArrayClass(dataClass),
-                new TsMethodCode(typeListMappingCode.toString(),allDataClasses.stream().map(dataToTs::get).collect(Collectors.toList())),"public"));
+                List.of(new TsMethodParameter("json",new TsTypePrimitive("any")),new TsMethodParameter("idToDataMap",new TsTypePrimitive("any"))),new TsMethodResult(new TsTypeArray(new TsTypeClass(dataClass))),
+                new TsMethodCode(typeListMappingCode.toString(),allDataClasses.stream().map(dataToDataConfigTs::get).collect(Collectors.toList())),"public"));
 
         return constructed;
     }

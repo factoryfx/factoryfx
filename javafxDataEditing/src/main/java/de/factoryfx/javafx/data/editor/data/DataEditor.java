@@ -9,6 +9,7 @@ import de.factoryfx.javafx.data.editor.attribute.AttributeEditorBuilder;
 import de.factoryfx.javafx.data.util.UniformDesign;
 import de.factoryfx.javafx.data.widget.Widget;
 import javafx.beans.property.ReadOnlyObjectProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.Node;
 import javafx.scene.layout.BorderPane;
@@ -24,7 +25,9 @@ public class DataEditor implements Widget {
      * @param dataVisualisationCustomizer way to customize or extend the editor visualisation for a specific data class, e.g. add a green border(silly example), add special button
      */
     public DataEditor(AttributeEditorBuilder attributeEditorBuilder, UniformDesign uniformDesign, BiFunction<Node,Data,Node> dataVisualisationCustomizer) {
-        this.dataEditorState = new DataEditorState(null, new ArrayList<>(),attributeEditorBuilder,uniformDesign,this,dataVisualisationCustomizer);
+        this.dataEditorState = new DataEditorState(null, new ArrayList<>(),attributeEditorBuilder,uniformDesign,this,dataVisualisationCustomizer,true);
+        historyNavigationVisible.set(true);
+        historyNavigationVisible.addListener(observable -> updateState(dataEditorState.setShowNavigation(historyNavigationVisible.get())));
     }
 
     public DataEditor(AttributeEditorBuilder attributeEditorBuilder, UniformDesign uniformDesign) {
@@ -81,6 +84,11 @@ public class DataEditor implements Widget {
 
     void next(){
         updateState(dataEditorState.next());
+    }
+
+    private final SimpleBooleanProperty historyNavigationVisible = new SimpleBooleanProperty(true);
+    public SimpleBooleanProperty historyNavigationVisibleProperty(){
+        return historyNavigationVisible;
     }
 
 }

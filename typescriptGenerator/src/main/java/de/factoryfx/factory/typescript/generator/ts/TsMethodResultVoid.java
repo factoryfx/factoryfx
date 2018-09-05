@@ -2,19 +2,19 @@ package de.factoryfx.factory.typescript.generator.ts;
 
 import java.util.Set;
 
-public class TsMethodResultVoid implements TsMethodResult {
+public class TsMethodResultVoid extends TsMethodResult {
 
     public TsMethodResultVoid() {
-
+        super(null);
     }
 
     @Override
-    public void addImports(Set<TsClass> imports) {
-        //nothing
-    }
-
-    @Override
-    public String construct() {
+    public String construct(){
         return "";
+    }
+
+    @Override
+    public void addImport(Set<TsClassFile> imports) {
+        //nothing
     }
 }

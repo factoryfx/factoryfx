@@ -1,3 +1,4 @@
+//generated code don't edit manually
 import ValidationError from "./ValidationError";
 
 export default class AttributeMetadata<T>  {

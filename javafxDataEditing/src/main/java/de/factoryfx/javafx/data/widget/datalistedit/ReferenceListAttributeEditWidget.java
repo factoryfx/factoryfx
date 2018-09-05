@@ -14,7 +14,6 @@ import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
@@ -184,7 +183,6 @@ public class ReferenceListAttributeEditWidget<T extends Data> implements Widget 
     }
 
     private void deleteSelected(Window owner) {
-        boolean reallyDelete=true;
         if (uniformDesign.isAskBeforeDelete()){
             Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
             alert.initOwner(owner);
@@ -193,16 +191,15 @@ public class ReferenceListAttributeEditWidget<T extends Data> implements Widget 
             alert.setContentText(uniformDesign.getText(deleteConfirmationContent));
 
             Optional<ButtonType> result = alert.showAndWait();
-            if (result.get() == ButtonType.OK){
-                reallyDelete=true;
-            } else {
-                reallyDelete=false;
+            if (result.isPresent()){
+                if (result.get() != ButtonType.OK){
+                    return;
+                }
             }
         }
-        if (reallyDelete){
-            final List<T> selectedItems = new ArrayList<>(tableView.getSelectionModel().getSelectedItems());
-            selectedItems.forEach(t -> deleter.accept(t,referenceListAttribute));
-        }
+
+        final List<T> selectedItems = new ArrayList<>(tableView.getSelectionModel().getSelectedItems());
+        selectedItems.forEach(t -> deleter.accept(t,referenceListAttribute));
     }
 
     @SuppressWarnings("unchecked")

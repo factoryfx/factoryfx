@@ -32,10 +32,11 @@ import Data from '../../../../../../../../main/resources/de/factoryfx/factory/ty
 
 import { expect } from 'chai';
 import 'mocha';
-import ExampleData from "./example/ExampleData";
-import DataCreator from "./example/DataCreator";
+import ExampleData from "./example/config/ExampleData";
+import DataCreator from "./example/data/DataCreator";
+import ExampleData2 from "./example/config/ExampleData2";
 
-suite('DataTest');
+suite('DataTest');// set user interface to QUnit in runconfig
 
 let exampleDataJson=
     `
@@ -81,7 +82,7 @@ test('mapValuesFromJson_ref_id', ()=>{
 
     data.mapFromJsonFromRoot(JSON.parse(exampleDataJson),new DataCreator());
 
-    expect(data.ref.id).to.equal("8738e21d-8eaa-c3e4-26fe-e9ed0d89c4b2");
+    expect(data.ref.getId()).to.equal("8738e21d-8eaa-c3e4-26fe-e9ed0d89c4b2");
 });
 
 test('mapValuesFromJson_ref_id', ()=>{
@@ -89,7 +90,7 @@ test('mapValuesFromJson_ref_id', ()=>{
 
     data.mapFromJsonFromRoot(JSON.parse(exampleDataJson),new DataCreator());
 
-    expect(data.ref.id).to.equal("8738e21d-8eaa-c3e4-26fe-e9ed0d89c4b2");
+    expect(data.ref.getId()).to.equal("8738e21d-8eaa-c3e4-26fe-e9ed0d89c4b2");
 });
 
 test('mapValuesFromJson_list', ()=>{
@@ -152,4 +153,19 @@ test('mapValuesToJson_empty', ()=>{
     let stringifyResult = JSON.stringify(json, null, 2);
     expect(stringifyResult).to.equal(stringifyExampleDataJsonEmpty);
 });
+
+test('getDisplayText', () => {
+    let data: ExampleData = new ExampleData();
+
+    expect(data.getDisplayText()).to.equal("Example Data");
+});
+
+test('collectChildren', () => {
+    let data: ExampleData = new ExampleData();
+    data.ref=new ExampleData2();
+    data.refList=[new ExampleData2(),new ExampleData2()]
+
+    expect(data.collectChildren().length).to.equal(4);
+});
+
 

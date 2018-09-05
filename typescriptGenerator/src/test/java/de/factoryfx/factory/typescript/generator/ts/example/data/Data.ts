@@ -1,9 +1,17 @@
 //generated code don't edit manually
 import DataCreator from "./DataCreator";
+import AttributeAccessor from "./AttributeAccessor";
 
 export default abstract class Data  {
-    id: string;
-    javaClass: string;
+    private id: string;
+    private javaClass: string;
+
+    public getId(): string{
+        if (!this.id){
+            this.id=(Math.floor(Math.random()*1000000000)).toLocaleString();;
+        }
+        return this.id;
+    }
 
     //DataCreator passed as parameter cause cyclic dependency (ts compiles fine but error at runtime)
     public mapFromJsonFromRoot(json: any, dataCreator: DataCreator) {
@@ -35,6 +43,8 @@ export default abstract class Data  {
 
     protected abstract mapValuesFromJson(json: any, idToDataMap: any, dataCreator: DataCreator);//hook for generated code
     protected abstract mapValuesToJson(idToDataMap: any, result: any);//hook for generated code
+    protected abstract collectChildrenRecursiveIntern(idToDataMap: any);//hook for generated code
+
 
     protected mapAttributeValueToJson(idToDataMap: any, value: any): any {
         if (value) {
@@ -61,6 +71,41 @@ export default abstract class Data  {
                 result.push(entry.mapToJson(idToDataMap));
             }
         }
+        return result;
+    }
+
+    public abstract getDisplayText();
+
+    private collectChildrenRecursive(idToDataMap: any){
+        if (this && !idToDataMap[this.getId()]) {
+            idToDataMap[this.getId()] = this;
+        } else {
+            return
+        }
+        this.collectChildrenRecursiveIntern(idToDataMap);
+    }
+
+    protected collectDataChildren(data: Data,idToDataMap: any) {
+        if (data){
+            data.collectChildrenRecursive(idToDataMap);
+        }
+    }
+
+    protected collectDataArrayChildren(dataArray: Data[],idToDataMap: any) {
+        if (dataArray) {
+            for (let child of dataArray) {
+                child.collectChildrenRecursive(idToDataMap);
+            }
+        }
+    }
+
+    public collectChildren(): Data[] {
+        let idToDataMap = {};
+        this.collectChildrenRecursive(idToDataMap);
+
+        let result = [];
+        for(var child in idToDataMap) result.push(idToDataMap[child]);
+        //Object["values"](idToDataMap);//Object.values(idToDataMap);
         return result;
     }
 

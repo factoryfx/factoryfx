@@ -8,6 +8,7 @@ import de.factoryfx.javafx.data.util.UniformDesign;
 import de.factoryfx.javafx.data.widget.Widget;
 import de.factoryfx.javafx.data.widget.datalistedit.ReferenceListAttributeEditWidget;
 import de.factoryfx.javafx.data.widget.table.TableControlWidget;
+import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
 import javafx.scene.Node;
@@ -19,7 +20,6 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 
 import java.util.List;
-import java.util.function.Consumer;
 
 public class DataViewWidget<T extends Data> implements Widget {
     private final DataEditor dataEditor;
@@ -121,5 +121,9 @@ public class DataViewWidget<T extends Data> implements Widget {
     public DataViewWidget setOrientation(Orientation orientation) {
         this.orientation = orientation;
         return this;
+    }
+
+    public ReadOnlyObjectProperty<T> selectedData(){
+        return tableView.getSelectionModel().selectedItemProperty();
     }
 }

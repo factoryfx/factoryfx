@@ -69,10 +69,10 @@ Most existing dependency injection frameworks try to automate the factory code.
 They scan the classpath and create business object tree.
 
 There are a few drawback with that approach:
-* a complete automation is not possible. You need additional information provided with annotations e.g to exclude classes/exclude from instantiation or polymorphism. At the end you code in an annotation dsl instead of java.
+* A complete automation is not possible. You need additional information provided with annotations e.g to exclude classes/exclude from instantiation or polymorphism. Finally, you program in an annotation dsl instead of java.
 * Annotations are not part of the typesystem and lack tooling
 * Classpath scanning and reflection cause confusing stacktraces
-* slow startup
+* Slow startup
 
 ### Alternative
 Instead of annotations factoryfx use a functional java api with factories. 
@@ -88,11 +88,9 @@ Creating the factories manually offer the following advantages:
 ### Data injection
 The major advantage of factoryfx is data injection.
 
-In many java application most data a stored inside a database. With that architecture it is hard to implement data encapsulation which is one of the main feature of oop.
+In many java application most data a stored inside a database. The data design is is determined by the database (relational model).
+With that architecture it is hard to implement data encapsulation which is one of the main feature of oop.
 Often you will end up with data only classes and other classes that implements business logic based on the data classes. That will result in a procedural design which seems wrong in an oop language. 
-* boilerplate db code
-* performance problems
-* caching
 
 #### Which kind of data is suitable for injection?
 ##### Database
@@ -101,7 +99,6 @@ Typically a database contains few large tables (e.g more than 100000 rows) and m
 The small tables are good candidates for data injection.
 * basic data e.g. Products in a simple shop
 * mass data e.g. Orders shop 
-![Alt text](docu/comparison.png "Optional Title") 
 
 ##### Configuration Data
 Typical configuration data are ports, hostname, ssl certificates. Data which are typical stored in property files.
@@ -121,6 +118,11 @@ The major disadvantages are addressed by the framework as well.
 
 
 ## User interface
+Factory supports adding ui metadata to the factories. Examples for metadata are i18n labels or validations.
+#####Richclient
+Javafx data editing components.
+#####Webapp
+Typescript code generator.
 
 
 ## Documentation

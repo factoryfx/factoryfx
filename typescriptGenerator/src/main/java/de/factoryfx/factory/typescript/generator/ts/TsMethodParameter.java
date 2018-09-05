@@ -2,9 +2,20 @@ package de.factoryfx.factory.typescript.generator.ts;
 
 import java.util.Set;
 
-public interface TsMethodParameter {
+public class TsMethodParameter {
+    private final String name;
+    private final TsType type;
 
-    void addImport(Set<TsClass> imports);
+    public TsMethodParameter(String name, TsType type) {
+        this.name = name;
+        this.type = type;
+    }
 
-    String construct();
+    public void addImport(Set<TsClassFile> imports){
+        type.addImport(imports);
+    }
+
+    public String construct(){
+        return name+": "+type.construct();
+    }
 }

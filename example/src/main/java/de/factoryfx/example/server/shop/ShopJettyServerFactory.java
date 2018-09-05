@@ -1,6 +1,5 @@
 package de.factoryfx.example.server.shop;
 
-import de.factoryfx.data.attribute.types.StringAttribute;
 import de.factoryfx.example.server.ServerRootFactory;
 import de.factoryfx.factory.atrribute.FactoryReferenceAttribute;
 import de.factoryfx.jetty.JettyServerFactory;

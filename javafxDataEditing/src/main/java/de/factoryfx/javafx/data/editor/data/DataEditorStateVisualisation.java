@@ -26,7 +26,7 @@ public class DataEditorStateVisualisation extends BorderPane {
     private final DataEditor dataEditor;
     private final BiFunction<Node,Data,Node> visCustomizer;
 
-    public DataEditorStateVisualisation(Data currentData, List<Data> displayedEntities, Optional<Data> previousData, Optional<Data> nextData,  AttributeEditorBuilder attributeEditorBuilder, UniformDesign uniformDesign, DataEditor dataEditor, BiFunction<Node,Data,Node> visCustomizer){
+    public DataEditorStateVisualisation(Data currentData, List<Data> displayedEntities, Optional<Data> previousData, Optional<Data> nextData,  AttributeEditorBuilder attributeEditorBuilder, UniformDesign uniformDesign, DataEditor dataEditor, BiFunction<Node,Data,Node> visCustomizer, boolean showNavigation){
         this.uniformDesign=uniformDesign;
         this.attributeEditorBuilder=attributeEditorBuilder;
         this.dataEditor = dataEditor;
@@ -37,7 +37,10 @@ public class DataEditorStateVisualisation extends BorderPane {
             previousValue=displayedEntities.get(displayedEntities.size()-1);
         }
         setCenter(createEditor(currentData,previousValue));
-        setTop(createNavigation(displayedEntities,currentData,previousData,nextData));
+
+        if (showNavigation){
+            setTop(createNavigation(displayedEntities,currentData,previousData,nextData));
+        }
     }
 
     private Node customizeVis(Node defaultVis, Data data){

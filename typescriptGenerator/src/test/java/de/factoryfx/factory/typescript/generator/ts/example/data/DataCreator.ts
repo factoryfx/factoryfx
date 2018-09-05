@@ -1,11 +1,9 @@
 //generated code don't edit manually
-import ExampleData2 from "./ExampleData2";
-import ExampleData from "./ExampleData";
+import ExampleData from "../config/ExampleData";
+import ExampleData2 from "../config/ExampleData2";
 import Data from "./Data";
 
 export default class DataCreator  {
-
-
 
     public createData(json: any, idToDataMap: any): Data{
         if (!json) return null;
@@ -33,6 +31,5 @@ export default class DataCreator  {
         }
         return result;
     }
-
 
 }

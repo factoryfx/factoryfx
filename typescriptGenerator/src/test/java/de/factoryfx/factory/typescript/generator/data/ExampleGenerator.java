@@ -1,18 +1,12 @@
 package de.factoryfx.factory.typescript.generator.data;
 
 import de.factoryfx.data.Data;
-import de.factoryfx.data.DataDictionary;
 import de.factoryfx.data.jackson.ObjectMapperBuilder;
-import de.factoryfx.factory.typescript.generator.DataGenerator;
 import de.factoryfx.factory.typescript.generator.TsGenerator;
-import de.factoryfx.factory.typescript.generator.ts.TsClass;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.function.Supplier;
 
 public class ExampleGenerator extends Data {
 
