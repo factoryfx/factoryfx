@@ -1,14 +1,6 @@
 package de.factoryfx.data.attribute;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.ListIterator;
-import java.util.Map;
-import java.util.Spliterator;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -211,6 +203,18 @@ public abstract class ReferenceListAttribute<T extends Data,A extends ReferenceB
         for (T add: added){
             afterAdd(add);
         }
+    }
+
+    @Override
+    public void sort(Comparator<? super T> c) {
+        Object[] a = this.toArray();
+        Arrays.sort(a, (Comparator) c);
+        ListIterator<T> i = this.listIterator();
+        for (Object t : a) {
+            i.next();
+            i.set((T) t);
+        }
+        afterModify();
     }
 
     @Override
