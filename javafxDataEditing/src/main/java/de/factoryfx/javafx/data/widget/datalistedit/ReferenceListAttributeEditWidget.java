@@ -141,7 +141,7 @@ public class ReferenceListAttributeEditWidget<T extends Data> implements Widget 
 
         Button copyButton = new Button();
         uniformDesign.addIcon(copyButton,FontAwesome.Glyph.COPY);
-        copyButton.disableProperty().bind(tableView.getSelectionModel().selectedItemProperty().isNull().or(multipleItemsSelected));
+        copyButton.disableProperty().bind(tableView.getSelectionModel().selectedItemProperty().isNull().or(multipleItemsSelected).or(new SimpleBooleanProperty(!isUserEditable)));
         copyButton.setOnAction(event -> {
             T copy = tableView.getSelectionModel().getSelectedItem().utility().semanticCopy();
             referenceListAttribute.add(copy);
