@@ -138,6 +138,7 @@ public class ReferenceListAttributeEditWidget<T extends Data> implements Widget 
                 return s1.compareTo(s2);
             });
         });
+        sortButton.disableProperty().bind(new SimpleBooleanProperty(!isUserEditable));
 
         Button copyButton = new Button();
         uniformDesign.addIcon(copyButton,FontAwesome.Glyph.COPY);
