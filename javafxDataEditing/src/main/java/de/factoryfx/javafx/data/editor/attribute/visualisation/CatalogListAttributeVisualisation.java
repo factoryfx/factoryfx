@@ -41,7 +41,11 @@ public class CatalogListAttributeVisualisation extends ListAttributeEditorVisual
         comboBox.setConverter(new DataStringConverter());
         comboBox.setMinWidth(300);
 
-        comboBox.setContextMenu(new ContextMenu(menuItem(selectAll, comboBox, true), menuItem(selectNon, comboBox, false)));
+        comboBox.setDisable(true);
+        if (!referenceListAttribute.internal_isUserReadOnly()) {
+            comboBox.setDisable(false);
+            comboBox.setContextMenu(new ContextMenu(menuItem(selectAll, comboBox, true), menuItem(selectNon, comboBox, false)));
+        }
 
         updateCheckComboBox(comboBox);
         return comboBox;

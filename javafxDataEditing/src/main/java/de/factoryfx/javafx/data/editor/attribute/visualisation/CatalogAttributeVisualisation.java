@@ -13,9 +13,11 @@ import de.factoryfx.javafx.data.editor.attribute.ValueAttributeEditorVisualisati
 
 public class CatalogAttributeVisualisation extends ValueAttributeEditorVisualisation<Data> {
     private final Supplier<Collection<Data>> possibleValuesProvider;
+    private final boolean userReadOnly;
 
-    public CatalogAttributeVisualisation(Supplier<Collection<Data>> possibleValuesProvider) {
+    public CatalogAttributeVisualisation(Supplier<Collection<Data>> possibleValuesProvider, boolean userReadOnly) {
         this.possibleValuesProvider = possibleValuesProvider;
+        this.userReadOnly = userReadOnly;
     }
 
     @Override
@@ -40,7 +42,7 @@ public class CatalogAttributeVisualisation extends ValueAttributeEditorVisualisa
             }
         });
         comboBox.setMinWidth(300);
-        comboBox.setDisable(readonly);
+        comboBox.setDisable(readonly || userReadOnly);
         return comboBox;
     }
 
