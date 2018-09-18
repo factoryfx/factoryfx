@@ -1,20 +1,18 @@
 package de.factoryfx.javafx.data.editor.attribute.visualisation;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
+import de.factoryfx.data.attribute.types.EnumListAttribute;
+import de.factoryfx.javafx.data.editor.attribute.ListAttributeEditorVisualisation;
+import de.factoryfx.javafx.data.util.CheckComboBoxHelper;
 import javafx.collections.ObservableList;
 import javafx.scene.Node;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
 import javafx.util.StringConverter;
-
 import org.controlsfx.control.CheckComboBox;
 
-import de.factoryfx.data.attribute.types.EnumListAttribute;
-import de.factoryfx.javafx.data.editor.attribute.ListAttributeEditorVisualisation;
-import de.factoryfx.javafx.data.util.CheckComboBoxHelper;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 public class EnumListAttributeVisualisation extends ListAttributeEditorVisualisation<Enum<?>> {
 
@@ -76,7 +74,7 @@ public class EnumListAttributeVisualisation extends ListAttributeEditorVisualisa
         });
         comboBox.setContextMenu(new ContextMenu(selectAll, unSelectAll));
 
-        comboBox.setDisable(readonly);
+        comboBox.setDisable(readonly || enumListAttribute.internal_isUserReadOnly());
         return comboBox;
     }
 }

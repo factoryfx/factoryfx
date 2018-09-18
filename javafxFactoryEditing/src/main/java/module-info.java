@@ -26,4 +26,6 @@ module de.factoryfx.javafxFactoryEditing {
     exports de.factoryfx.javafx.factory.widget.factory.diffdialog;
     exports de.factoryfx.javafx.factory.widget.factory.datatree;
     exports de.factoryfx.javafx.factory.widget.factory.dataview;
+
+    opens de.factoryfx.javafx.factory.view.factoryviewmanager;//jackson
 }
