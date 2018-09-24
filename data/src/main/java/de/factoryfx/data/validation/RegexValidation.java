@@ -5,6 +5,7 @@ import java.util.regex.Pattern;
 
 import de.factoryfx.data.util.LanguageText;
 
+/** string match match regex*/
 public class RegexValidation implements Validation<String> {
     private final Pattern pattern;
     public RegexValidation(Pattern pattern) {
@@ -14,6 +15,6 @@ public class RegexValidation implements Validation<String> {
     @Override
     public ValidationResult validate(String value) {
         boolean error = Optional.ofNullable(value).map(ss -> pattern.matcher(ss).matches()).orElse(true);
-        return new ValidationResult(error,new LanguageText().en("Input match pattern '" + pattern.pattern() + "'"));
+        return new ValidationResult(!error,new LanguageText().en("Input match pattern '" + pattern.pattern() + "'"));
     }
 }

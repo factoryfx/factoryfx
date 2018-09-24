@@ -9,8 +9,8 @@ import org.junit.Test;
 public class FactoryReferenceListAttributeTest {
 
     @Test
-    public void test_filtred_instance(){
-        FactoryReferenceListAttribute<ExampleLiveObjectA,ExampleFactoryA> attribute = new FactoryReferenceListAttribute<>();
+    public void test_filtered_instance(){
+        FactoryReferenceListAttribute<ExampleLiveObjectA,ExampleFactoryA> attribute = new FactoryReferenceListAttribute<>(ExampleFactoryA.class);
         {
             ExampleFactoryA data = new ExampleFactoryA();
             data.stringAttribute.set("1");

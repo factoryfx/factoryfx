@@ -1,24 +1,29 @@
 package de.factoryfx.javafx.javascript.editor.attribute.visualisation;
 
 
-import de.factoryfx.javafx.data.editor.attribute.ValueAttributeEditorVisualisation;
+import de.factoryfx.javafx.data.editor.attribute.ValidationDecoration;
+import de.factoryfx.javafx.data.editor.attribute.ValueAttributeVisualisation;
 import de.factoryfx.javascript.data.attributes.types.JavascriptAttribute;
 import de.factoryfx.javascript.data.attributes.types.Javascript;
-import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.Node;
 
-public class JavascriptAttributeVisualisation extends ValueAttributeEditorVisualisation<Javascript<?>> {
+/**
+ *
+ * @param <A> api class
+ */
+public class JavascriptAttributeVisualisation<A> extends ValueAttributeVisualisation<Javascript<A>,JavascriptAttribute<A>> {
 
-    private final JavascriptAttribute<?> attribute;
+    private final JavascriptAttribute<A> attribute;
 
-    public JavascriptAttributeVisualisation(JavascriptAttribute attribute) {
+    public JavascriptAttributeVisualisation(JavascriptAttribute<A> attribute, ValidationDecoration validationDecoration) {
+        super(attribute, validationDecoration);
         this.attribute = attribute;
     }
 
     @Override
-    public Node createVisualisation(SimpleObjectProperty<Javascript<?>> boundTo, boolean readonly) {
+    public Node createValueVisualisation() {
         JavascriptVisual visual = new JavascriptVisual(attribute.internal_getExterns());
-        return visual.createContent(boundTo);
+        return visual.createContent(observableAttributeValue);
     }
 
 

@@ -54,7 +54,7 @@ public abstract class ReferenceBaseAttribute<T extends Data, U, A extends Refere
     }
 
     @Override
-    public void internal_prepareUsageFlat(Data root, Data parent){
+    public void internal_addBackReferences(Data root, Data parent){
         this.root=root;
         this.parent=parent;
     }

@@ -1,8 +1,9 @@
 package de.factoryfx.javafx.data.editor.attribute.visualisation;
 
+import de.factoryfx.data.attribute.types.I18nAttribute;
 import de.factoryfx.data.util.LanguageText;
-import de.factoryfx.javafx.data.editor.attribute.ValueAttributeEditorVisualisation;
-import javafx.beans.property.SimpleObjectProperty;
+import de.factoryfx.javafx.data.editor.attribute.ValidationDecoration;
+import de.factoryfx.javafx.data.editor.attribute.ValueAttributeVisualisation;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
@@ -13,15 +14,19 @@ import javafx.util.StringConverter;
 import java.text.DateFormat;
 import java.util.Locale;
 
-public class I18nAttributeVisualisation extends ValueAttributeEditorVisualisation<LanguageText> {
+public class I18nAttributeVisualisation extends ValueAttributeVisualisation<LanguageText, I18nAttribute> {
+
+    public I18nAttributeVisualisation(I18nAttribute attribute, ValidationDecoration validationDecoration) {
+        super(attribute,validationDecoration);
+    }
 
     @Override
-    public Node createVisualisation(SimpleObjectProperty<LanguageText> boundTo, boolean readonly) {
+    public Node createValueVisualisation() {
         HBox hBox = new HBox();
         TextField displayTextfiled = new TextField();
         displayTextfiled.setEditable(false);
 
-        boundTo.addListener((observable, oldValue, newValue) -> displayTextfiled.setText(newValue.toString()));
+        observableAttributeValue.addListener((observable, oldValue, newValue) -> displayTextfiled.setText(newValue.toString()));
 
         ComboBox<Locale> comboBox=new ComboBox<>();
         comboBox.setConverter(new StringConverter<>() {
@@ -41,14 +46,13 @@ public class I18nAttributeVisualisation extends ValueAttributeEditorVisualisatio
 
 
         Button button = new Button("set");
-        button.setOnAction(event -> boundTo.set(new LanguageText().en(textfiled.getText())));
+        button.setOnAction(event -> observableAttributeValue.set(new LanguageText().en(textfiled.getText())));
 
 
 
         hBox.getChildren().add(button);
         hBox.getChildren().add(displayTextfiled);
-
-        hBox.setDisable(readonly);
+        hBox.disableProperty().bind(readOnly);
         return hBox;
     }
 }

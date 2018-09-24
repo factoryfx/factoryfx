@@ -4,7 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 
-import javafx.beans.property.SimpleObjectProperty;
+import de.factoryfx.javafx.data.editor.attribute.ValidationDecoration;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
@@ -15,17 +15,18 @@ import javafx.stage.FileChooser;
 
 import de.factoryfx.data.attribute.types.Base64Attribute;
 import de.factoryfx.data.util.LanguageText;
-import de.factoryfx.javafx.data.editor.attribute.ValueAttributeEditorVisualisation;
+import de.factoryfx.javafx.data.editor.attribute.ValueAttributeVisualisation;
 import de.factoryfx.javafx.data.util.UniformDesign;
 
-public class Base64AttributeVisualisation extends ValueAttributeEditorVisualisation<String> {
+public class Base64AttributeVisualisation extends ValueAttributeVisualisation<String,Base64Attribute> {
 
     private final Base64Attribute bytes;
     private final UniformDesign uniformDesign;
     private final static LanguageText EMPTY = new LanguageText().en("Value not set").de("Kein Wert gesetzt");
     private final static LanguageText NOT_EMPTY = new LanguageText().en("Value set").de("Wert gesetzt");
 
-    public Base64AttributeVisualisation(Base64Attribute bytes, UniformDesign uniformDesign) {
+    public Base64AttributeVisualisation(Base64Attribute bytes, ValidationDecoration validationDecoration, UniformDesign uniformDesign) {
+        super(bytes, validationDecoration);
         this.bytes = bytes;
         this.uniformDesign = uniformDesign;
     }
@@ -35,10 +36,10 @@ public class Base64AttributeVisualisation extends ValueAttributeEditorVisualisat
     }
 
     @Override
-    public Node createVisualisation(SimpleObjectProperty<String> attributeValue, boolean readonly) {
+    public Node createValueVisualisation() {
         HBox hBox = new HBox(3);
         Label status = new Label(labelText());
-        attributeValue.addListener(observable -> status.setText(labelText()));
+        observableAttributeValue.addListener(observable -> status.setText(labelText()));
 
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Open Resource File");
@@ -60,7 +61,7 @@ public class Base64AttributeVisualisation extends ValueAttributeEditorVisualisat
         hBox.setAlignment(Pos.CENTER_LEFT);
         HBox.setHgrow(status, Priority.SOMETIMES);
         hBox.getChildren().addAll(openButton, clear, status);
-
+        hBox.disableProperty().bind(readOnly);
         return hBox;
     }
 

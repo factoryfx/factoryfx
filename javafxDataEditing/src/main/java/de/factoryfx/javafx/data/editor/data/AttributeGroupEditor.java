@@ -3,12 +3,10 @@ package de.factoryfx.javafx.data.editor.data;
 import com.google.common.base.Strings;
 import de.factoryfx.data.Data;
 import de.factoryfx.data.attribute.Attribute;
-import de.factoryfx.data.attribute.AttributeChangeListener;
 import de.factoryfx.data.attribute.ImmutableValueAttribute;
-import de.factoryfx.data.attribute.WeakAttributeChangeListener;
 import de.factoryfx.data.validation.ValidationError;
-import de.factoryfx.javafx.data.editor.attribute.AttributeEditor;
-import de.factoryfx.javafx.data.editor.attribute.AttributeEditorBuilder;
+import de.factoryfx.javafx.data.editor.attribute.AttributeVisualisationMappingBuilder;
+import de.factoryfx.javafx.data.editor.attribute.AttributeVisualisation;
 import de.factoryfx.javafx.data.util.UniformDesign;
 import de.factoryfx.javafx.data.widget.Widget;
 import javafx.geometry.Insets;
@@ -20,9 +18,7 @@ import javafx.scene.input.ClipboardContent;
 import javafx.scene.layout.*;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
@@ -30,33 +26,33 @@ import java.util.function.Supplier;
 public class AttributeGroupEditor implements Widget {
     private final List<? extends Attribute<?,?>> attributeGroup;
     private final Data oldValue;
-    private final AttributeEditorBuilder attributeEditorBuilder;
+    private final AttributeVisualisationMappingBuilder attributeVisualisationMappingBuilder;
     private final Consumer<Data> navigateToData;
     private final UniformDesign uniformDesign;
     /** parent data validation that includes multi attribute validation and single attribute validation */
     private final Supplier<List<ValidationError>> allValidations;
 
-    public AttributeGroupEditor(List<? extends Attribute<?, ?>> attributeGroup, Data oldValue, AttributeEditorBuilder attributeEditorBuilder, Consumer<Data> navigateToData, UniformDesign uniformDesign, Supplier<List<ValidationError>> additionalValidation) {
+    public AttributeGroupEditor(List<? extends Attribute<?, ?>> attributeGroup, Data oldValue, AttributeVisualisationMappingBuilder attributeVisualisationMappingBuilder, Consumer<Data> navigateToData, UniformDesign uniformDesign, Supplier<List<ValidationError>> additionalValidation) {
         this.attributeGroup = attributeGroup;
         this.oldValue = oldValue;
-        this.attributeEditorBuilder = attributeEditorBuilder;
+        this.attributeVisualisationMappingBuilder = attributeVisualisationMappingBuilder;
         this.navigateToData = navigateToData;
         this.uniformDesign = uniformDesign;
         this.allValidations = additionalValidation;
     }
 
 
-    public AttributeGroupEditor(List<? extends Attribute<?, ?>> attributeGroup, Data oldValue, AttributeEditorBuilder attributeEditorBuilder, DataEditor dataEditor, UniformDesign uniformDesign, Supplier<List<ValidationError>> additionalValidation) {
-        this(attributeGroup,oldValue,attributeEditorBuilder, dataEditor::navigate, uniformDesign, additionalValidation);
+    public AttributeGroupEditor(List<? extends Attribute<?, ?>> attributeGroup, Data oldValue, AttributeVisualisationMappingBuilder attributeVisualisationMappingBuilder, DataEditor dataEditor, UniformDesign uniformDesign, Supplier<List<ValidationError>> additionalValidation) {
+        this(attributeGroup,oldValue, attributeVisualisationMappingBuilder, dataEditor::navigate, uniformDesign, additionalValidation);
     }
 
     /** constructor for use as single independent component
      * @param attributeGroup attributeGroup
-     * @param attributeEditorBuilder attributeEditorBuilder
+     * @param attributeVisualisationMappingBuilder attributeEditorBuilder
      * @param uniformDesign uniformDesign
      * */
-    public AttributeGroupEditor(List<? extends ImmutableValueAttribute<?, ?>> attributeGroup, AttributeEditorBuilder attributeEditorBuilder, UniformDesign uniformDesign) {
-        this(attributeGroup, null, attributeEditorBuilder, (data) -> {
+    public AttributeGroupEditor(List<? extends ImmutableValueAttribute<?, ?>> attributeGroup, AttributeVisualisationMappingBuilder attributeVisualisationMappingBuilder, UniformDesign uniformDesign) {
+        this(attributeGroup, null, attributeVisualisationMappingBuilder, (data) -> {
         }, uniformDesign, () -> {
             ArrayList<ValidationError> result = new ArrayList<>();
             for (ImmutableValueAttribute<?, ?> immutableValueAttribute : attributeGroup) {
@@ -71,10 +67,12 @@ public class AttributeGroupEditor implements Widget {
         return createAttributeGroupVisual();
     }
 
+    private List<AttributeVisualisation> createdVisualisations=new ArrayList<>();//prevent gc collection, javafx bindings are weak
+
     private Node createAttributeGroupVisual() {
 //        if (attributeGroup.size()==1){
 //            final Attribute<?,?> attribute = attributeGroup.get(0);
-//            AttributeEditor<?,?> attributeEditor = attributeEditorBuilder.getAttributeEditor(attribute, navigateToData, oldValue);
+//            AttributeEditor<?,?> attributeEditor = attributeEditorBuilder.getAttributeVisualisation(attribute, navigateToData, oldValue);
 //            attributeEditor.expand();
 //
 //            addAttributeValidation(attribute, attributeEditor);
@@ -102,17 +100,17 @@ public class AttributeGroupEditor implements Widget {
             column2.setHgrow(Priority.ALWAYS);
             grid.getColumnConstraints().addAll(column1, column2);
 
-
+            createdVisualisations.clear();
             int row = 0;
             for (Attribute<?,?> attribute: attributeGroup){
                 Label label = addLabelContent(grid, row,attribute);
                 addCopyMenu(label);
-                AttributeEditor<?,?> attributeEditor = attributeEditorBuilder.getAttributeEditor(attribute,navigateToData,oldValue);
-                addAttributeValidation(attribute, attributeEditor);
+                AttributeVisualisation attributeVisualisation  = attributeVisualisationMappingBuilder.getAttributeVisualisation(attribute,navigateToData,oldValue);
+                createdVisualisations.add(attributeVisualisation);
 
                 int rowFinal=row;
 //                createdEditors.put(attribute,attributeEditor);
-                addEditorContent(grid, rowFinal, attributeEditor.createContent(),label);
+                addEditorContent(grid, rowFinal, attributeVisualisation.createVisualisation(),label);
 
                 RowConstraints rowConstraints = new RowConstraints();
                 rowConstraints.setVgrow(Priority.ALWAYS);
@@ -120,17 +118,13 @@ public class AttributeGroupEditor implements Widget {
                 row++;
 
                 if (attributeGroup.size()==1) {
-                    attributeEditor.expand();
+                    attributeVisualisation.expand();
                 }
             }
 
 //            for (RowConstraints rowConstraint: grid.getRowConstraints()){
 //                rowConstraint.setMinHeight(36);
 //            }
-
-            if (allValidations!=null) {
-                validateAll();
-            }
 
 
 
@@ -153,31 +147,6 @@ public class AttributeGroupEditor implements Widget {
         return label;
     }
 
-    private Map<Attribute<?, ?>,AttributeEditor<?, ?>> attributeToEditor = new HashMap<>();
-    private AttributeChangeListener attributeChangeListener=null;
-    @SuppressWarnings("unchecked")
-    private void addAttributeValidation(Attribute<?, ?> attribute, AttributeEditor<?, ?> attributeEditor) {
-        attributeToEditor.put(attribute,attributeEditor);
-
-        if (attributeChangeListener==null) {
-            this.attributeChangeListener = (watchedAttribute, value) -> validateAll();
-        }
-
-        attribute.internal_addListener(new WeakAttributeChangeListener(attributeChangeListener));
-    }
-
-    private void validateAll() {
-        List<ValidationError> validationErrors = allValidations.get();
-        for (Map.Entry<Attribute<?, ?>,AttributeEditor<?, ?>> entry: attributeToEditor.entrySet()){
-            List<ValidationError> attributeValidationErrors = new ArrayList<>();
-            validationErrors.forEach(validationError -> {
-                if (validationError.isErrorFor(entry.getKey())) {
-                    attributeValidationErrors.add(validationError);
-                }
-            });
-            entry.getValue().reportValidation(attributeValidationErrors);
-        }
-    }
 
     private void addEditorContent(GridPane gridPane, int row, Node editorWidgetContent, Label label) {
 //        GridPane.setMargin(editorWidgetContent, new Insets(4, 0, 4, 0));
@@ -234,5 +203,11 @@ public class AttributeGroupEditor implements Widget {
         scrollPane.setStyle("-fx-background-color:transparent;");//hide border
 //        root.disableProperty().edit(disabledProperty());
         return scrollPane;
+    }
+
+    public void destroy() {
+        for (AttributeVisualisation createdVisualisation : createdVisualisations) {
+            createdVisualisation.destroy();
+        }
     }
 }

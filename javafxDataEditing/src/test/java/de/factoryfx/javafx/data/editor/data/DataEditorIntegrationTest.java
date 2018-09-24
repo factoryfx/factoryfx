@@ -13,7 +13,7 @@ import javafx.stage.Stage;
 import de.factoryfx.data.jackson.ObjectMapperBuilder;
 import de.factoryfx.javafx.UniformDesignBuilder;
 import de.factoryfx.javafx.css.CssUtil;
-import de.factoryfx.javafx.data.editor.attribute.AttributeEditorBuilder;
+import de.factoryfx.javafx.data.editor.attribute.AttributeVisualisationMappingBuilder;
 import de.factoryfx.javafx.data.util.UniformDesign;
 
 public class DataEditorIntegrationTest extends Application{
@@ -30,7 +30,7 @@ public class DataEditorIntegrationTest extends Application{
         exampleData1.valueListAttribute.set(List.of("a", "b"));
 
         UniformDesign uniformDesign = UniformDesignBuilder.build(Locale.GERMAN);
-        DataEditor dataEditor = new DataEditor(new AttributeEditorBuilder(AttributeEditorBuilder.createDefaultSingleAttributeEditorBuilders(uniformDesign)),uniformDesign, (node, data) -> {
+        DataEditor dataEditor = new DataEditor(new AttributeVisualisationMappingBuilder(AttributeVisualisationMappingBuilder.createDefaultSingleAttributeEditorBuilders(uniformDesign)),uniformDesign, (node, data) -> {
             if (data instanceof ExampleData1) {
                 return ((ExampleData1)data).customize(node);
             }

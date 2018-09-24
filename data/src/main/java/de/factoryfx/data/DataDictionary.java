@@ -175,7 +175,7 @@ public class DataDictionary<D extends Data> {
 
     void addBackReferencesToAttributes(D data, Data root) {
         if (!temporaryAttributes) {//no BackReferences for FastFactories
-            visitAttributesFlat(data,(name, attribute) -> attribute.internal_prepareUsageFlat(root,data));
+            visitAttributesFlat(data,(name, attribute) -> attribute.internal_addBackReferences(root,data));
         }
     }
 

@@ -306,7 +306,7 @@ public class Data {
                     return data.copyDeep(level + 1, maxLevel,oldData,this,root);
                 });
 
-                copyAttribute.internal_prepareUsageFlat(root.copy,copy);
+                copyAttribute.internal_addBackReferences(root.copy,copy);
             });
 
             oldData.add(this);

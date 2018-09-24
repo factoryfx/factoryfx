@@ -1,9 +1,10 @@
 package de.factoryfx.javafx.data.editor.attribute.visualisation;
 
 import de.factoryfx.data.attribute.types.EnumListAttribute;
-import de.factoryfx.javafx.data.editor.attribute.ListAttributeEditorVisualisation;
+import de.factoryfx.javafx.data.editor.attribute.ValidationDecoration;
+import de.factoryfx.javafx.data.editor.attribute.ValueListAttributeVisualisation;
 import de.factoryfx.javafx.data.util.CheckComboBoxHelper;
-import javafx.collections.ObservableList;
+import de.factoryfx.javafx.data.util.UniformDesign;
 import javafx.scene.Node;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
@@ -14,22 +15,34 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-public class EnumListAttributeVisualisation extends ListAttributeEditorVisualisation<Enum<?>> {
+public class EnumListAttributeVisualisation<E extends Enum<E>> extends ValueListAttributeVisualisation<E, EnumListAttribute<E>> {
 
-    private final Collection<Enum<?>> possibleEnumConstants;
-    private final StringConverter<Enum<?>> stringConverter;
-    private final EnumListAttribute<?> enumListAttribute;
-    public EnumListAttributeVisualisation(Collection<Enum<?>> possibleEnumConstants, StringConverter<Enum<?>> stringConverter, EnumListAttribute<?> enumListAttribute) {
-        this.possibleEnumConstants = possibleEnumConstants;
-        this.stringConverter = stringConverter;
+    private final Collection<E> possibleEnumConstants;
+    private final StringConverter<E> stringConverter;
+    private final EnumListAttribute<E> enumListAttribute;
+
+    public EnumListAttributeVisualisation(EnumListAttribute<E> enumListAttribute, ValidationDecoration validationDecoration, UniformDesign uniformDesign) {
+        super(enumListAttribute,validationDecoration);
         this.enumListAttribute = enumListAttribute;
+        this.possibleEnumConstants = enumListAttribute.internal_possibleEnumValues();
+        this.stringConverter = new StringConverter<E>() {
+            @Override
+            public String toString(E enumValue) {
+                if (enumValue==null){
+                    return enumListAttribute.internal_enumDisplayText(null, uniformDesign::getText);
+                }
+                return enumListAttribute.internal_enumDisplayText(enumValue, uniformDesign::getText);
+            }
+            @Override
+            public E fromString(String string) { return null;} //nothing
+        };
     }
 
     @SuppressWarnings("unchecked")
-    private void updateCheckComboBox(CheckComboBox<Enum<?>> comboBox){
+    private void updateCheckComboBox(CheckComboBox<E> comboBox){
         comboBox.getItems().clear();
 
-        List<Enum<?>> items = new ArrayList<>(possibleEnumConstants);
+        List<E> items = new ArrayList<>(possibleEnumConstants);
         comboBox.getItems().addAll(items);
 
         comboBox.getItems().forEach(i->{
@@ -52,8 +65,8 @@ public class EnumListAttributeVisualisation extends ListAttributeEditorVisualisa
 
     @Override
     @SuppressWarnings("unchecked")
-    public Node createContent(ObservableList<Enum<?>> readOnlyList, boolean readonly) {
-        CheckComboBox<Enum<?>> comboBox = new CheckComboBox<>();
+    public Node createValueListVisualisation() {
+        CheckComboBox<E> comboBox = new CheckComboBox<>();
         updateCheckComboBox(comboBox);
 
         CheckComboBoxHelper.addOpenCloseListener(comboBox, this::updateCheckComboBox);
@@ -74,7 +87,7 @@ public class EnumListAttributeVisualisation extends ListAttributeEditorVisualisa
         });
         comboBox.setContextMenu(new ContextMenu(selectAll, unSelectAll));
 
-        comboBox.setDisable(readonly || enumListAttribute.internal_isUserReadOnly());
+        comboBox.disableProperty().bind(readOnly);
         return comboBox;
     }
 }

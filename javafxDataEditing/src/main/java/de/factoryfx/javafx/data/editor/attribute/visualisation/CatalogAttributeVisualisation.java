@@ -3,47 +3,47 @@ package de.factoryfx.javafx.data.editor.attribute.visualisation;
 import java.util.Collection;
 import java.util.function.Supplier;
 
-import javafx.beans.property.SimpleObjectProperty;
+import de.factoryfx.data.attribute.ReferenceBaseAttribute;
+import de.factoryfx.javafx.data.editor.attribute.ValidationDecoration;
 import javafx.scene.Node;
 import javafx.scene.control.ComboBox;
 import javafx.util.StringConverter;
 
 import de.factoryfx.data.Data;
-import de.factoryfx.javafx.data.editor.attribute.ValueAttributeEditorVisualisation;
+import de.factoryfx.javafx.data.editor.attribute.ValueAttributeVisualisation;
 
-public class CatalogAttributeVisualisation extends ValueAttributeEditorVisualisation<Data> {
-    private final Supplier<Collection<Data>> possibleValuesProvider;
-    private final boolean userReadOnly;
+public class CatalogAttributeVisualisation<T extends Data, A extends ReferenceBaseAttribute<T,T,A>> extends ValueAttributeVisualisation<T, A> {
+    private final Supplier<Collection<T>> possibleValuesProvider;
+    private ComboBox<T> comboBox;
 
-    public CatalogAttributeVisualisation(Supplier<Collection<Data>> possibleValuesProvider, boolean userReadOnly) {
+    public CatalogAttributeVisualisation(Supplier<Collection<T>> possibleValuesProvider, A attribute, ValidationDecoration validationDecoration) {
+        super(attribute, validationDecoration);
         this.possibleValuesProvider = possibleValuesProvider;
-        this.userReadOnly = userReadOnly;
     }
 
     @Override
-    public Node createVisualisation(SimpleObjectProperty<Data> boundTo, boolean readonly) {
+    public Node createValueVisualisation() {
 
-        ComboBox<Data> comboBox = new ComboBox<>();
+        comboBox = new ComboBox<>();
         comboBox.getItems().add(0, null);
         comboBox.getItems().addAll(possibleValuesProvider.get());
-        comboBox.valueProperty().bindBidirectional(boundTo);
+        comboBox.valueProperty().bindBidirectional(observableAttributeValue);
 
         comboBox.setEditable(false);
+        comboBox.disableProperty().bind(readOnly);
 
         comboBox.setConverter(new StringConverter<>() {
             @Override
-            public String toString(Data object) {
+            public String toString(T object) {
                 return object == null ? "" : object.internal().getDisplayText();
             }
 
             @Override
-            public Data fromString(String string) {
+            public T fromString(String string) {
                 throw new UnsupportedOperationException();
             }
         });
         comboBox.setMinWidth(300);
-        comboBox.setDisable(readonly || userReadOnly);
         return comboBox;
     }
-
 }

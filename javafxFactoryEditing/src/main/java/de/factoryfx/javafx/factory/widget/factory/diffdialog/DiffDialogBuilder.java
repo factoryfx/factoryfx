@@ -4,7 +4,7 @@ import de.factoryfx.data.merge.MergeDiffInfo;
 import de.factoryfx.data.util.LanguageText;
 import de.factoryfx.factory.log.FactoryUpdateLog;
 import de.factoryfx.javafx.css.CssUtil;
-import de.factoryfx.javafx.data.editor.attribute.AttributeEditorBuilder;
+import de.factoryfx.javafx.data.editor.attribute.AttributeVisualisationMappingBuilder;
 import de.factoryfx.javafx.data.util.UniformDesign;
 import de.factoryfx.javafx.data.widget.factorydiff.FactoryDiffWidget;
 import de.factoryfx.javafx.factory.widget.factory.factorylog.FactoryUpdateLogWidget;
@@ -23,11 +23,11 @@ public class DiffDialogBuilder {
     private LanguageText changesText= new LanguageText().en("Changes").de("Änderungen");
 
     private final UniformDesign uniformDesign;
-    private final AttributeEditorBuilder attributeEditorBuilder;
+    private final AttributeVisualisationMappingBuilder attributeVisualisationMappingBuilder;
 
-    public DiffDialogBuilder(UniformDesign uniformDesign, AttributeEditorBuilder attributeEditorBuilder) {
+    public DiffDialogBuilder(UniformDesign uniformDesign, AttributeVisualisationMappingBuilder attributeVisualisationMappingBuilder) {
         this.uniformDesign = uniformDesign;
-        this.attributeEditorBuilder = attributeEditorBuilder;
+        this.attributeVisualisationMappingBuilder = attributeVisualisationMappingBuilder;
     }
 
 //    public void createDiffDialog(List<AttributeDiffInfo> diffs, String title, Window owner) {
@@ -59,7 +59,7 @@ public class DiffDialogBuilder {
 
 
     public void createDiffDialog(MergeDiffInfo<?> mergeDiff, String title, Window owner) {
-        final FactoryDiffWidget factoryDiffWidget = new FactoryDiffWidget(uniformDesign,attributeEditorBuilder);
+        final FactoryDiffWidget factoryDiffWidget = new FactoryDiffWidget(uniformDesign, attributeVisualisationMappingBuilder);
         factoryDiffWidget.updateMergeDiff(mergeDiff);
 
 
@@ -92,7 +92,7 @@ public class DiffDialogBuilder {
     }
 
     public void createDiffDialog(FactoryUpdateLog factoryLog, String title, Window owner){
-        final FactoryDiffWidget factoryDiffWidget = new FactoryDiffWidget(uniformDesign,attributeEditorBuilder);
+        final FactoryDiffWidget factoryDiffWidget = new FactoryDiffWidget(uniformDesign, attributeVisualisationMappingBuilder);
         factoryDiffWidget.updateMergeDiff(factoryLog.mergeDiffInfo);
 
         final FactoryUpdateLogWidget factoryLogWidget = new FactoryUpdateLogWidget(uniformDesign);

@@ -3,10 +3,12 @@ package de.factoryfx.javafx.data.editor.attribute.visualisation;
 import java.util.function.Function;
 
 import de.factoryfx.data.attribute.Attribute;
-import de.factoryfx.javafx.data.editor.attribute.AttributeEditorVisualisation;
+import de.factoryfx.javafx.data.editor.attribute.AttributeVisualisation;
+import de.factoryfx.javafx.data.editor.attribute.ValueAttributeVisualisation;
 import de.factoryfx.javafx.data.util.UniformDesign;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.value.ChangeListener;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
@@ -24,22 +26,22 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import org.controlsfx.glyphfont.FontAwesome;
 
-public class ExpandableAttributeVisualisation<T> implements AttributeEditorVisualisation<T> {
+public class ExpandableAttributeVisualisation<T, A extends Attribute<T,A>> implements AttributeVisualisation {
 
     private final UniformDesign uniformDesign;
     private final SimpleBooleanProperty expanded = new SimpleBooleanProperty(false);
-    private final AttributeEditorVisualisation<T> attributeEditorVisualisation;
+    private final ValueAttributeVisualisation<T, A> attributeVisualisation;
     private final SimpleStringProperty title = new SimpleStringProperty();
     private final Function<T,String> titleTextProvider;
     private final FontAwesome.Glyph  icon;
 
-    public ExpandableAttributeVisualisation(AttributeEditorVisualisation<T> attributeEditorVisualisation, UniformDesign uniformDesign, Function<T,String> titleTextProvider, FontAwesome.Glyph icon) {
+    public ExpandableAttributeVisualisation(ValueAttributeVisualisation<T, A> attributeEditorVisualisation, UniformDesign uniformDesign, Function<T,String> titleTextProvider, FontAwesome.Glyph icon) {
         this(attributeEditorVisualisation,uniformDesign,titleTextProvider,icon,false);
     }
 
-    public ExpandableAttributeVisualisation(AttributeEditorVisualisation<T> attributeEditorVisualisation, UniformDesign uniformDesign, Function<T,String> titleTextProvider, FontAwesome.Glyph icon, boolean expanded) {
+    public ExpandableAttributeVisualisation(ValueAttributeVisualisation<T, A> attributeVisualisation, UniformDesign uniformDesign, Function<T,String> titleTextProvider, FontAwesome.Glyph icon, boolean expanded) {
         this.uniformDesign= uniformDesign;
-        this.attributeEditorVisualisation = attributeEditorVisualisation;
+        this.attributeVisualisation = attributeVisualisation;
         this.titleTextProvider = titleTextProvider;
         this.icon = icon;
         this.expanded.set(expanded);
@@ -50,9 +52,9 @@ public class ExpandableAttributeVisualisation<T> implements AttributeEditorVisua
         VBox root = new VBox();
         Node detailView;
         if (readonly){
-            detailView = attributeEditorVisualisation.createReadOnlyVisualisation();
+            detailView = attributeVisualisation.createReadOnlyVisualisation();
         } else {
-            detailView = attributeEditorVisualisation.createVisualisation();
+            detailView = attributeVisualisation.createVisualisation();
         }
 
         Pane detailViewWrapper=new Pane();
@@ -86,23 +88,22 @@ public class ExpandableAttributeVisualisation<T> implements AttributeEditorVisua
         expandButton.selectedProperty().bindBidirectional(expanded);
 
         root.setAlignment(Pos.CENTER_LEFT);
+
+        ChangeListener<T> changeListener = (observable, oldValue, newValue) -> {
+            updateTitleText(newValue);
+        };
+        attributeVisualisation.observableAttributeValue.addListener(changeListener);
+        updateTitleText(attributeVisualisation.observableAttributeValue.get());
+
         return root;
     }
 
-    @Override
-    public void init(Attribute<T,?> boundAttribute) {
-        attributeEditorVisualisation.init(boundAttribute);
-    }
-
-    @Override
-    public void attributeValueChanged(T newValue) {
+    private void updateTitleText(T newValue) {
         if (newValue == null) {
             title.set("<empty>");
         } else {
             title.set(titleTextProvider.apply(newValue));
         }
-
-        attributeEditorVisualisation.attributeValueChanged(newValue);
     }
 
     @Override
@@ -118,5 +119,15 @@ public class ExpandableAttributeVisualisation<T> implements AttributeEditorVisua
     @Override
     public void expand() {
         expanded.set(true);
+    }
+
+    @Override
+    public void setReadOnly() {
+        attributeVisualisation.setReadOnly();
+    }
+
+    @Override
+    public void destroy() {
+        attributeVisualisation.destroy();
     }
 }

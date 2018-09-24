@@ -18,12 +18,11 @@ public class ReferenceAttributeDataView<T extends Data, A extends ReferenceBaseA
         this.listAttributeChangeListener = (attribute, value) -> list.setAll(value);
         this.refList.internal_addListener(new WeakAttributeChangeListener<>(listAttributeChangeListener));
     }
+
     @Override
     public ObservableList<T> dataList(){
         list.setAll(refList);
         return list;
-
-
     }
 
 }

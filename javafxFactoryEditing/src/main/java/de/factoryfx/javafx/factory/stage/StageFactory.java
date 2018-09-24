@@ -24,7 +24,7 @@ import javafx.stage.Stage;
  */
 public class StageFactory extends FactoryBase<Stage,Void,RichClientRoot> {
     public final ObjectValueAttribute<Stage> stage = new ObjectValueAttribute<Stage>().en("main stage");
-    public final FactoryReferenceListAttribute<Menu,ViewMenuFactory> items = new FactoryReferenceListAttribute<Menu,ViewMenuFactory>().de("items").en("items");
+    public final FactoryReferenceListAttribute<Menu,ViewMenuFactory> items = new FactoryReferenceListAttribute<>(ViewMenuFactory.class).de("items").en("items");
     public final FactoryReferenceAttribute<ViewsDisplayWidget,ViewsDisplayWidgetFactory> viewsDisplayWidget =new FactoryReferenceAttribute<>(ViewsDisplayWidgetFactory.class).de("viewsDisplayWidget").en("viewsDisplayWidget");
     public final IntegerAttribute width = new IntegerAttribute().de("width").en("width");
     public final IntegerAttribute height = new IntegerAttribute().de("height").en("height");

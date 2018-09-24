@@ -10,20 +10,21 @@ import javafx.scene.layout.BorderPane;
 import javafx.stage.Screen;
 import javafx.stage.Window;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
 
-public class SelectDataDialog {
-    public final List<Data> dataList;
+public class SelectDataDialog<T extends Data> {
+    public final Collection<T> dataList;
     private final UniformDesign uniformDesign;
 
-    public SelectDataDialog(List<Data> dataList, UniformDesign uniformDesign) {
+    public SelectDataDialog(Collection<T> dataList, UniformDesign uniformDesign) {
         this.dataList = dataList;
         this.uniformDesign = uniformDesign;
     }
 
-    public void show(Window owner, Consumer<Data> success){
+    public void show(Window owner, Consumer<T> success){
         Dialog<ButtonType> dialog = new Dialog<>();
         dialog.initOwner(owner);
         dialog.setTitle("Select");
@@ -33,10 +34,10 @@ public class SelectDataDialog {
         dialog.getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
 
         final BorderPane pane = new BorderPane();
-        TableView<Data> table = new TableView<>();
+        TableView<T> table = new TableView<>();
         table.getItems().setAll(dataList);
         table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
-        TableColumn<Data, String> column = new TableColumn<>();
+        TableColumn<T, String> column = new TableColumn<>();
         column.setCellValueFactory(param -> new DataObservableDisplayText(param.getValue()).get());
         table.getColumns().add(column);
         pane.setCenter(table);

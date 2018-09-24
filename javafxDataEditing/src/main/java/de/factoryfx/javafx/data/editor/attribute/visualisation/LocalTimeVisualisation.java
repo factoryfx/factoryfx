@@ -4,8 +4,9 @@ import java.time.LocalTime;
 import java.time.format.DateTimeParseException;
 
 import com.google.common.base.Strings;
-import de.factoryfx.javafx.data.editor.attribute.ValueAttributeEditorVisualisation;
-import javafx.beans.property.SimpleObjectProperty;
+import de.factoryfx.data.attribute.time.LocalTimeAttribute;
+import de.factoryfx.javafx.data.editor.attribute.ValidationDecoration;
+import de.factoryfx.javafx.data.editor.attribute.ValueAttributeVisualisation;
 import javafx.scene.Node;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
@@ -14,13 +15,17 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.util.converter.LocalTimeStringConverter;
 
-public class LocalTimeVisualisation extends ValueAttributeEditorVisualisation<LocalTime> {
+public class LocalTimeVisualisation extends ValueAttributeVisualisation<LocalTime, LocalTimeAttribute> {
+
+    public LocalTimeVisualisation(LocalTimeAttribute attribute, ValidationDecoration validationDecoration) {
+        super(attribute,validationDecoration);
+    }
 
     @Override
-    public Node createVisualisation(SimpleObjectProperty<LocalTime> boundTo, boolean readonly) {
+    public Node createValueVisualisation() {
         TextField textField = new TextField();
         textField.setPromptText("e.g.: 12:13");
-        textField.textProperty().bindBidirectional(boundTo,new LocalTimeStringConverter());
+        textField.textProperty().bindBidirectional(observableAttributeValue,new LocalTimeStringConverter());
 
         HBox hBox = new HBox();
         hBox.setSpacing(3);
@@ -35,10 +40,10 @@ public class LocalTimeVisualisation extends ValueAttributeEditorVisualisation<Lo
         hour.setMaxWidth(47);
         hour.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             int newMinute=0;
-            if (boundTo.getValue()!=null){
-                newMinute=(boundTo.getValue().getMinute());
+            if (observableAttributeValue.getValue()!=null){
+                newMinute=(observableAttributeValue.getValue().getMinute());
             }
-            boundTo.setValue(LocalTime.of(newValue, newMinute));
+            observableAttributeValue.setValue(LocalTime.of(newValue, newMinute));
         });
         hBox.getChildren().add(hour);
         hBox.getChildren().add(new Label("m"));
@@ -50,10 +55,10 @@ public class LocalTimeVisualisation extends ValueAttributeEditorVisualisation<Lo
         minute.setMaxWidth(47);
         minute.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             int newHour=0;
-            if (boundTo.getValue()!=null){
-                newHour=(boundTo.getValue().getHour());
+            if (observableAttributeValue.getValue()!=null){
+                newHour=(observableAttributeValue.getValue().getHour());
             }
-            boundTo.setValue(LocalTime.of(newHour, newValue));
+            observableAttributeValue.setValue(LocalTime.of(newHour, newValue));
         });
         LocalTimeStringConverter localTimeStringConverter = new LocalTimeStringConverter();
         textField.textProperty().addListener((observable, oldValue, newValue) -> {
@@ -73,9 +78,7 @@ public class LocalTimeVisualisation extends ValueAttributeEditorVisualisation<Lo
         });
 
         hBox.getChildren().add(minute);
-
-
-        hBox.setDisable(readonly);
+        hBox.disableProperty().bind(readOnly);
         return hBox;
     }
 }

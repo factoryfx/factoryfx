@@ -187,7 +187,7 @@ public abstract class ViewListReferenceAttribute <R extends Data, T extends Data
 
     @Override
     @SuppressWarnings("unchecked")
-    public void internal_prepareUsageFlat(Data root, Data parent){
+    public void internal_addBackReferences(Data root, Data parent){
         this.root=(R)root;
     }
 

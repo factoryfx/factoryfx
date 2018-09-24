@@ -8,13 +8,12 @@ import de.factoryfx.data.Data;
 import de.factoryfx.data.attribute.Attribute;
 import de.factoryfx.data.jackson.ObjectMapperBuilder;
 import de.factoryfx.javafx.css.CssUtil;
-import de.factoryfx.javafx.data.editor.attribute.AttributeEditor;
-import de.factoryfx.javafx.data.editor.attribute.AttributeEditorBuilder;
-import de.factoryfx.javafx.data.editor.attribute.builder.SingleAttributeEditorBuilder;
+import de.factoryfx.javafx.data.editor.attribute.AttributeVisualisationMappingBuilder;
+import de.factoryfx.javafx.data.editor.attribute.AttributeVisualisation;
+import de.factoryfx.javafx.data.editor.attribute.ValidationDecoration;
 import de.factoryfx.javafx.data.editor.data.DataEditor;
 import de.factoryfx.javafx.data.util.UniformDesign;
 import de.factoryfx.javafx.javascript.editor.attribute.visualisation.JavascriptAttributeVisualisation;
-import de.factoryfx.javascript.data.attributes.types.Javascript;
 import de.factoryfx.javascript.data.attributes.types.JavascriptAttribute;
 import javafx.application.Application;
 import javafx.scene.Scene;
@@ -40,8 +39,8 @@ public class JavascriptAttributeIntegrationTest extends Application{
 
         UniformDesign uniformDesign = new UniformDesign(Locale.ENGLISH, Color.web("#FF7979"),Color.web("#F0AD4E"),Color.web("#5BC0DE"),Color.web("#5CB85C"),Color.web("#5494CB"),Color.web("#B5B5B5"),false);
 
-        List<SingleAttributeEditorBuilder<?>> singleAttributeEditorBuilders = AttributeEditorBuilder.createDefaultSingleAttributeEditorBuilders(uniformDesign);
-        SingleAttributeEditorBuilder editorBuilder = new SingleAttributeEditorBuilder<Javascript<?>>() {
+        List<de.factoryfx.javafx.data.editor.attribute.builder.AttributeVisualisationBuilder> singleAttributeVisualisationBuilders = AttributeVisualisationMappingBuilder.createDefaultSingleAttributeEditorBuilders(uniformDesign);
+        de.factoryfx.javafx.data.editor.attribute.builder.AttributeVisualisationBuilder editorBuilder = new de.factoryfx.javafx.data.editor.attribute.builder.AttributeVisualisationBuilder() {
             @Override
             public boolean isListItemEditorFor(Attribute<?, ?> attribute) {
                 return false;
@@ -53,20 +52,20 @@ public class JavascriptAttributeIntegrationTest extends Application{
             }
 
             @Override
-            public AttributeEditor createEditor(Attribute<?,?> attribute, Consumer<Data> navgigateTo, Data previousData) {
-                return new AttributeEditor(attribute, new JavascriptAttributeVisualisation((JavascriptAttribute<?>) attribute), uniformDesign);
+            public AttributeVisualisation createVisualisation(Attribute<?,?> attribute, Consumer<Data> navgigateTo, Data previousData) {
+                return new JavascriptAttributeVisualisation((JavascriptAttribute<?>) attribute, new ValidationDecoration(uniformDesign));
             }
 
             @Override
-            public AttributeEditor<List<Javascript<?>>, ?> createValueListEditor(Attribute<?, ?> attribute) {
+            public AttributeVisualisation createValueListVisualisation(Attribute<?, ?> attribute) {
                 return null;
             }
         };
-        singleAttributeEditorBuilders.add(editorBuilder);
-        AttributeEditorBuilder attributeEditorBuilder = new AttributeEditorBuilder(singleAttributeEditorBuilders);
+        singleAttributeVisualisationBuilders.add(editorBuilder);
+        AttributeVisualisationMappingBuilder attributeVisualisationMappingBuilder = new AttributeVisualisationMappingBuilder(singleAttributeVisualisationBuilders);
 
 
-        DataEditor dataEditor = new DataEditor(attributeEditorBuilder,uniformDesign);
+        DataEditor dataEditor = new DataEditor(attributeVisualisationMappingBuilder,uniformDesign);
         root.setCenter(dataEditor.createContent());
 
         exampleJavascript= ObjectMapperBuilder.build().copy(exampleJavascript);

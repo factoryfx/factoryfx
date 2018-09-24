@@ -74,7 +74,7 @@ There are a few drawback with that approach:
 * Classpath scanning and reflection cause confusing stacktraces
 * Slow startup
 
-### Alternative
+### Factoryfx
 Instead of annotations factoryfx use a functional java api with factories. 
 The user creates factories following a simple structure convention. The factories also provides the dependencies and lifecycle control.
 
@@ -118,7 +118,12 @@ The major disadvantages are addressed by the framework as well.
 
 
 ## User interface
+### Metadata
 Factory supports adding ui metadata to the factories. Examples for metadata are i18n labels or validations.
+The factoryfx configuration is exposed
+### REST
+The rest api supports editing the configuration in json format.
+### Client
 #####Richclient
 Javafx data editing components.
 #####Webapp

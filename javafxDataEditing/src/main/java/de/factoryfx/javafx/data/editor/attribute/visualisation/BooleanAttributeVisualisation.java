@@ -1,24 +1,23 @@
 package de.factoryfx.javafx.data.editor.attribute.visualisation;
 
-import de.factoryfx.javafx.data.editor.attribute.ValueAttributeEditorVisualisation;
-import javafx.beans.property.SimpleObjectProperty;
+import de.factoryfx.data.attribute.primitive.BooleanAttribute;
+import de.factoryfx.javafx.data.editor.attribute.ValidationDecoration;
+import de.factoryfx.javafx.data.editor.attribute.ValueAttributeVisualisation;
 import javafx.scene.Node;
 import javafx.scene.control.CheckBox;
 
-public class BooleanAttributeVisualisation extends ValueAttributeEditorVisualisation<Boolean> {
+public class BooleanAttributeVisualisation extends ValueAttributeVisualisation<Boolean, BooleanAttribute> {
 
-    private final boolean userReadOnly;
-
-    public BooleanAttributeVisualisation(boolean userReadOnly) {
-        this.userReadOnly = userReadOnly;
+    public BooleanAttributeVisualisation(BooleanAttribute booleanAttribute, ValidationDecoration validationDecoration) {
+        super(booleanAttribute, validationDecoration);
     }
 
 
     @Override
-    public Node createVisualisation(SimpleObjectProperty<Boolean> boundTo, boolean readonly) {
+    public Node createValueVisualisation() {
         CheckBox checkBox = new CheckBox();
-        checkBox.selectedProperty().bindBidirectional(boundTo);
-        checkBox.setDisable(readonly || userReadOnly);
+        checkBox.selectedProperty().bindBidirectional(observableAttributeValue);
+        checkBox.disableProperty().bind(readOnly);
         return checkBox;
     }
 }

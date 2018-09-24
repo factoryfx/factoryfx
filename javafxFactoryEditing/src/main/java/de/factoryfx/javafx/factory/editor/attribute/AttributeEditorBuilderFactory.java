@@ -2,16 +2,15 @@ package de.factoryfx.javafx.factory.editor.attribute;
 
 import de.factoryfx.factory.SimpleFactoryBase;
 import de.factoryfx.factory.atrribute.FactoryReferenceListAttribute;
-import de.factoryfx.javafx.data.editor.attribute.AttributeEditorBuilder;
-import de.factoryfx.javafx.data.editor.attribute.builder.SingleAttributeEditorBuilder;
+import de.factoryfx.javafx.data.editor.attribute.AttributeVisualisationMappingBuilder;
 import de.factoryfx.javafx.factory.RichClientRoot;
 
-public class AttributeEditorBuilderFactory extends SimpleFactoryBase<AttributeEditorBuilder,Void,RichClientRoot> {
-    public final FactoryReferenceListAttribute<SingleAttributeEditorBuilder<?>,SingleAttributeEditorBuilderFactory> editors = new FactoryReferenceListAttribute<>();
+public class AttributeEditorBuilderFactory extends SimpleFactoryBase<AttributeVisualisationMappingBuilder,Void,RichClientRoot> {
+    public final FactoryReferenceListAttribute<de.factoryfx.javafx.data.editor.attribute.builder.AttributeVisualisationBuilder,SingleAttributeEditorBuilderFactory> editors = new FactoryReferenceListAttribute<>(SingleAttributeEditorBuilderFactory.class);
 
     @Override
-    public AttributeEditorBuilder createImpl() {
-        return new AttributeEditorBuilder(editors.instances());
+    public AttributeVisualisationMappingBuilder createImpl() {
+        return new AttributeVisualisationMappingBuilder(editors.instances());
     }
 
     public AttributeEditorBuilderFactory(){

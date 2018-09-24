@@ -26,7 +26,7 @@ public class EnumListAttribute<E extends Enum<E>> extends ValueListAttribute<E,E
         return new AttributeTypeInfo(clazz,null,null,AttributeTypeInfo.AttributeTypeCategory.VALUE);
     }
 
-    public List<Enum<E>> internal_possibleEnumValues() {
+    public List<E> internal_possibleEnumValues() {
         return new ArrayList<>(Arrays.asList(clazz.getEnumConstants()));
     }
 

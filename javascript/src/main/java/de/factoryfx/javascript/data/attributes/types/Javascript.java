@@ -58,7 +58,7 @@ public class Javascript<A> {
         scriptExecutorCache.putBack(scriptExecutor);
     }
 
-    public Javascript<?> copyWithNewCode(String newCode) {
+    public Javascript<A> copyWithNewCode(String newCode) {
         return new Javascript<>(newCode,headerCode,declarationCode);
     }
 

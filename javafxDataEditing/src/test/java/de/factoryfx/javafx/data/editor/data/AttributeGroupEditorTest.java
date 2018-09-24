@@ -4,7 +4,7 @@ import de.factoryfx.data.attribute.ImmutableValueAttribute;
 import de.factoryfx.data.jackson.ObjectMapperBuilder;
 import de.factoryfx.javafx.UniformDesignBuilder;
 import de.factoryfx.javafx.css.CssUtil;
-import de.factoryfx.javafx.data.editor.attribute.AttributeEditorBuilder;
+import de.factoryfx.javafx.data.editor.attribute.AttributeVisualisationMappingBuilder;
 import de.factoryfx.javafx.data.util.UniformDesign;
 import javafx.application.Application;
 import javafx.scene.Scene;
@@ -32,7 +32,7 @@ public class AttributeGroupEditorTest  extends Application {
 
         UniformDesign uniformDesign = UniformDesignBuilder.build();
         List<? extends ImmutableValueAttribute<?, ?>> list = Arrays.asList(exampleData1.stringLongAttribute, exampleData1.doubleAttribute);
-        AttributeGroupEditor attributeGroupEditor = new AttributeGroupEditor(list, new AttributeEditorBuilder(AttributeEditorBuilder.createDefaultSingleAttributeEditorBuilders(uniformDesign)),uniformDesign);
+        AttributeGroupEditor attributeGroupEditor = new AttributeGroupEditor(list, new AttributeVisualisationMappingBuilder(AttributeVisualisationMappingBuilder.createDefaultSingleAttributeEditorBuilders(uniformDesign)),uniformDesign);
         root.setCenter(attributeGroupEditor.createContent());
 
         primaryStage.setScene(new Scene(root,1200,800));

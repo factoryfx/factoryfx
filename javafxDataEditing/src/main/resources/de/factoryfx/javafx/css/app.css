@@ -59,6 +59,13 @@
     -fx-control-inner-background: derive(DANGER_COLOR,90%);
 }
 
+.errorTooltip {
+    -fx-effect: dropshadow(three-pass-box, DANGER_COLOR, 5, 0, 0, 0);
+    -fx-background-color: derive(DANGER_COLOR,90%);
+    -fx-text-fill: #FF2025;
+}
+
+
 .transparent-scroll-pane > .viewport {
     -fx-background-color: transparent;
 }

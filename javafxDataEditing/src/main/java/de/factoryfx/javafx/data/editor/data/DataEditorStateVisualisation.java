@@ -4,7 +4,7 @@ import de.factoryfx.data.Data;
 import de.factoryfx.data.attribute.Attribute;
 import de.factoryfx.data.attribute.AttributeGroup;
 import de.factoryfx.data.validation.ValidationError;
-import de.factoryfx.javafx.data.editor.attribute.AttributeEditorBuilder;
+import de.factoryfx.javafx.data.editor.attribute.AttributeVisualisationMappingBuilder;
 import de.factoryfx.javafx.data.util.DataObservableDisplayText;
 import de.factoryfx.javafx.data.util.UniformDesign;
 import impl.org.controlsfx.skin.BreadCrumbBarSkin;
@@ -22,13 +22,13 @@ import java.util.function.Supplier;
 
 public class DataEditorStateVisualisation extends BorderPane {
     private final UniformDesign uniformDesign;
-    private final AttributeEditorBuilder attributeEditorBuilder;
+    private final AttributeVisualisationMappingBuilder attributeVisualisationMappingBuilder;
     private final DataEditor dataEditor;
     private final BiFunction<Node,Data,Node> visCustomizer;
 
-    public DataEditorStateVisualisation(Data currentData, List<Data> displayedEntities, Optional<Data> previousData, Optional<Data> nextData,  AttributeEditorBuilder attributeEditorBuilder, UniformDesign uniformDesign, DataEditor dataEditor, BiFunction<Node,Data,Node> visCustomizer, boolean showNavigation){
+    public DataEditorStateVisualisation(Data currentData, List<Data> displayedEntities, Optional<Data> previousData, Optional<Data> nextData, AttributeVisualisationMappingBuilder attributeVisualisationMappingBuilder, UniformDesign uniformDesign, DataEditor dataEditor, BiFunction<Node,Data,Node> visCustomizer, boolean showNavigation){
         this.uniformDesign=uniformDesign;
-        this.attributeEditorBuilder=attributeEditorBuilder;
+        this.attributeVisualisationMappingBuilder = attributeVisualisationMappingBuilder;
         this.dataEditor = dataEditor;
         this.visCustomizer = visCustomizer;
 
@@ -143,9 +143,14 @@ public class DataEditorStateVisualisation extends BorderPane {
 
     List<AttributeGroupEditor> createdAttributeGroupEditor=new ArrayList<>();//prevent gc for weak listeners
     private Node createAttributeGroupVisual(List<Attribute<?,?>> attributeGroup, Data oldValue, Supplier<List<ValidationError>> additionalValidation) {
-        AttributeGroupEditor attributeGroupEditor = new AttributeGroupEditor(attributeGroup, oldValue, attributeEditorBuilder, dataEditor, uniformDesign, additionalValidation);
+        AttributeGroupEditor attributeGroupEditor = new AttributeGroupEditor(attributeGroup, oldValue, attributeVisualisationMappingBuilder, dataEditor, uniformDesign, additionalValidation);
         createdAttributeGroupEditor.add(attributeGroupEditor);
         return attributeGroupEditor.createContent();
     }
 
+    public void destroy() {
+        for (AttributeGroupEditor attributeGroupEditor : createdAttributeGroupEditor) {
+            attributeGroupEditor.destroy();
+        }
+    }
 }

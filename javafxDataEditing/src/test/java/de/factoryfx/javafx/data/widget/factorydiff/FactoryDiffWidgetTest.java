@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import de.factoryfx.data.merge.DataMerger;
 import de.factoryfx.javafx.UniformDesignBuilder;
 import de.factoryfx.javafx.css.CssUtil;
-import de.factoryfx.javafx.data.editor.attribute.AttributeEditorBuilder;
+import de.factoryfx.javafx.data.editor.attribute.AttributeVisualisationMappingBuilder;
 import de.factoryfx.javafx.data.editor.data.DataEditor;
 import de.factoryfx.javafx.data.editor.data.ExampleData1;
 import de.factoryfx.javafx.data.editor.data.ExampleData2;
@@ -25,7 +25,7 @@ public class FactoryDiffWidgetTest extends Application {
         root = root.internal().addBackReferences();
 
         UniformDesign uniformDesign = UniformDesignBuilder.build();
-        DataEditor dataEditor = new DataEditor(new AttributeEditorBuilder(new ArrayList<>()), uniformDesign);
+        DataEditor dataEditor = new DataEditor(new AttributeVisualisationMappingBuilder(new ArrayList<>()), uniformDesign);
         dataEditor.edit(root);
 
 
@@ -37,7 +37,7 @@ public class FactoryDiffWidgetTest extends Application {
         newData.referenceListAttribute.add(new ExampleData2());
         DataMerger<ExampleData1> dataMerger = new DataMerger<>(root,root.internal().copy(), newData);
 
-        FactoryDiffWidget factoryDiffWidget = new FactoryDiffWidget(uniformDesign,new AttributeEditorBuilder(AttributeEditorBuilder.createDefaultSingleAttributeEditorBuilders(uniformDesign)));
+        FactoryDiffWidget factoryDiffWidget = new FactoryDiffWidget(uniformDesign,new AttributeVisualisationMappingBuilder(AttributeVisualisationMappingBuilder.createDefaultSingleAttributeEditorBuilders(uniformDesign)));
         factoryDiffWidget.updateMergeDiff(dataMerger.mergeIntoCurrent((p)->true));
 
         BorderPane rootPane = new BorderPane();

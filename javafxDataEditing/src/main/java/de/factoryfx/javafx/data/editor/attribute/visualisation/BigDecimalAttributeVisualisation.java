@@ -4,23 +4,25 @@ import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.text.ParseException;
 
-import de.factoryfx.javafx.data.editor.attribute.ValueAttributeEditorVisualisation;
+import de.factoryfx.data.attribute.types.BigDecimalAttribute;
+import de.factoryfx.javafx.data.editor.attribute.ValidationDecoration;
+import de.factoryfx.javafx.data.editor.attribute.ValueAttributeVisualisation;
 import de.factoryfx.javafx.data.util.TypedTextFieldHelper;
-import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.Node;
 import javafx.scene.control.TextField;
 import javafx.util.StringConverter;
 
-public class BigDecimalAttributeVisualisation extends ValueAttributeEditorVisualisation<BigDecimal> {
+public class BigDecimalAttributeVisualisation extends ValueAttributeVisualisation<BigDecimal,BigDecimalAttribute> {
 
     public final String decimalFormatPattern;
 
-    public BigDecimalAttributeVisualisation(String decimalFormatPattern) {
-        this.decimalFormatPattern = decimalFormatPattern;
+    public BigDecimalAttributeVisualisation(BigDecimalAttribute attribute, ValidationDecoration validationDecoration) {
+        super(attribute, validationDecoration);
+        this.decimalFormatPattern = attribute.internal_getDecimalFormatPattern();
     }
 
     @Override
-    public Node createVisualisation(SimpleObjectProperty<BigDecimal> boundTo, boolean readonly) {
+    public Node createValueVisualisation() {
         TextField textField = new TextField();
         TypedTextFieldHelper.setupBigDecimalTextField(textField,decimalFormatPattern);
 
@@ -28,8 +30,8 @@ public class BigDecimalAttributeVisualisation extends ValueAttributeEditorVisual
 
         DecimalFormat decimalFormat = new DecimalFormat(decimalFormatPattern);
         decimalFormat.setParseBigDecimal(true);
-        textField.textProperty().bindBidirectional(boundTo, new BigDecimalStringConverter(decimalFormat));
-        textField.setEditable(!readonly);
+        textField.textProperty().bindBidirectional(observableAttributeValue, new BigDecimalStringConverter(decimalFormat));
+        textField.disableProperty().bind(readOnly);
         return textField;
     }
 

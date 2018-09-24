@@ -38,7 +38,6 @@ import de.factoryfx.data.attribute.types.URIAttribute;
 import de.factoryfx.data.attribute.types.URIListAttribute;
 import de.factoryfx.data.util.LanguageText;
 import de.factoryfx.data.validation.RegexValidation;
-import de.factoryfx.data.validation.StringRequired;
 import de.factoryfx.data.validation.Validation;
 import de.factoryfx.data.validation.ValidationResult;
 import de.factoryfx.factory.atrribute.FactoryPolymorphicReferenceAttribute;
@@ -59,8 +58,8 @@ public class ExampleData1 extends Data {
     public final Base64Attribute base64Attribute=new Base64Attribute().en("Base64Attribute sda jgsdajh gjasdja jhsadgjg ghfgfds hgf hgfthrwhff hgfhgf hf").de("Base64Attribute de").nullable();
 
 
-    public final StringAttribute stringAttribute=new StringAttribute().en("StringAttribute gajsd jgsdajh gjasdja jhsadgjg ghf hgf hgfhff hgfhgf hf").de("StringAttribute de").validation(StringRequired.VALIDATION).defaultValue("blub");
-    public final StringAttribute stringLongAttribute=new StringAttribute().longText().defaultExpanded().validation(new StringRequired()).en("Long StringAttribute").de("Long StringAttribute de");
+    public final StringAttribute stringAttribute=new StringAttribute().en("StringAttribute gajsd jgsdajh gjasdja jhsadgjg ghf hgf hgfhff hgfhgf hf").de("StringAttribute de").defaultValue("blub");
+    public final StringAttribute stringLongAttribute=new StringAttribute().longText().defaultExpanded().en("Long StringAttribute").de("Long StringAttribute de");
     public final StringAttribute stringHtmlAttribute=new StringAttribute().htmlText().en("stringHtmlAttribute").de("stringHtmlAttribute de");
 
     public final StringAttribute regexValidationNumber=new StringAttribute().en("regexValidationNumber").de("regexValidationNumber de").validation(new RegexValidation(Pattern.compile("[0-9]*")));
@@ -92,7 +91,7 @@ public class ExampleData1 extends Data {
     public final ColorAttribute colorAttribute=new ColorAttribute().en("colorAttribute").de("colorAttribute de");
     public final LocaleAttribute localeAttribute =new LocaleAttribute().en("colorAttribute").de("colorAttribute de");
 
-    public final DataReferenceAttribute<ExampleData2> referenceAttributeReadonly = new DataReferenceAttribute<ExampleData2>().userReadOnly().en("referenceAttributereadonly").de("referenceAttributereadonly de");
+    public final DataReferenceAttribute<ExampleData2> referenceAttributeReadonly = new DataReferenceAttribute<ExampleData2>().userReadOnly().en("referenceAttributereadonly").de("referenceAttribute readonly de");
     public final FactoryPolymorphicReferenceListAttribute<Printer> polymorphicReferenceList = new FactoryPolymorphicReferenceListAttribute<Printer>().setup(Printer.class, ErrorPrinterFactory.class, OutPrinterFactory.class).en("polymorphicreferenceList").de("polymorphicreferenceList");
 
 

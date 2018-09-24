@@ -3,6 +3,8 @@ package de.factoryfx.javafx.data.editor.attribute.visualisation;
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 
+import de.factoryfx.data.attribute.time.DurationAttribute;
+import de.factoryfx.javafx.data.editor.attribute.ValidationDecoration;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
@@ -14,20 +16,24 @@ import javafx.scene.layout.Priority;
 
 import com.google.common.base.Strings;
 
-import de.factoryfx.javafx.data.editor.attribute.ValueAttributeEditorVisualisation;
+import de.factoryfx.javafx.data.editor.attribute.ValueAttributeVisualisation;
 import de.factoryfx.javafx.data.editor.attribute.converter.DurationStringConverter;
 import de.factoryfx.javafx.data.util.TypedTextFieldHelper;
 
-public class DurationAttributeVisualisation extends ValueAttributeEditorVisualisation<Duration> {
+public class DurationAttributeVisualisation extends ValueAttributeVisualisation<Duration, DurationAttribute> {
+
+    public DurationAttributeVisualisation(DurationAttribute attribute, ValidationDecoration validationDecoration) {
+        super(attribute, validationDecoration);
+    }
 
     @Override
-    public Node createVisualisation(SimpleObjectProperty<Duration> boundTo, boolean readonly) {
+    public Node createValueVisualisation() {
 
         HBox hBox = new HBox(3);
         hBox.setAlignment(Pos.CENTER_LEFT);
 
         Label label = new Label();
-        label.textProperty().bindBidirectional(boundTo, new DurationStringConverter());
+        label.textProperty().bindBidirectional(observableAttributeValue, new DurationStringConverter());
 
         ComboBox<ChronoUnit> comboBox = new ComboBox<>();
         comboBox.setEditable(false);
@@ -43,13 +49,11 @@ public class DurationAttributeVisualisation extends ValueAttributeEditorVisualis
         //            setFields(newValue, textField, comboBox);
         //        });
 
-        comboBox.valueProperty().addListener((observable, oldValue, newValue) -> setDuration(boundTo, textField, comboBox));
-        textField.textProperty().addListener((observable, oldValue, newValue) -> setDuration(boundTo, textField, comboBox));
+        comboBox.valueProperty().addListener((observable, oldValue, newValue) -> setDuration(observableAttributeValue, textField, comboBox));
+        textField.textProperty().addListener((observable, oldValue, newValue) -> setDuration(observableAttributeValue, textField, comboBox));
 
         hBox.getChildren().addAll(label, comboBox, textField);
-
-        comboBox.setDisable(readonly);
-        textField.setEditable(!readonly);
+        hBox.disableProperty().bind(readOnly);
         return hBox;
     }
 

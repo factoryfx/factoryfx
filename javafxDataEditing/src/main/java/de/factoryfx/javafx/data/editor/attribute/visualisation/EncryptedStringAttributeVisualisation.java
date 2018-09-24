@@ -2,12 +2,13 @@ package de.factoryfx.javafx.data.editor.attribute.visualisation;
 
 import com.google.common.base.Strings;
 import de.factoryfx.data.attribute.types.EncryptedString;
+import de.factoryfx.data.attribute.types.EncryptedStringAttribute;
 import de.factoryfx.data.util.LanguageText;
-import de.factoryfx.javafx.data.editor.attribute.ValueAttributeEditorVisualisation;
+import de.factoryfx.javafx.data.editor.attribute.ValidationDecoration;
+import de.factoryfx.javafx.data.editor.attribute.ValueAttributeVisualisation;
 import de.factoryfx.javafx.data.util.UniformDesign;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.BooleanBinding;
-import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
@@ -20,7 +21,7 @@ import org.controlsfx.glyphfont.FontAwesome;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-public class EncryptedStringAttributeVisualisation extends ValueAttributeEditorVisualisation<EncryptedString> {
+public class EncryptedStringAttributeVisualisation extends ValueAttributeVisualisation<EncryptedString, EncryptedStringAttribute> {
 
     private final LanguageText keyText = new LanguageText().en("Key").de("Schlüssel");
     private final LanguageText encryptedText = new LanguageText().en("Encrypted").de("Verschlüsselt");
@@ -32,14 +33,16 @@ public class EncryptedStringAttributeVisualisation extends ValueAttributeEditorV
     private final Function<String,Boolean> keyValidator;
     private BooleanBinding validKey;
 
-    public EncryptedStringAttributeVisualisation(Supplier<String> keyCreator, Function<String,Boolean> keyValidator,  UniformDesign uniformDesign) {
-        this.keyCreator=keyCreator;
+    public EncryptedStringAttributeVisualisation(EncryptedStringAttribute attribute, ValidationDecoration validationDecoration, UniformDesign uniformDesign) {
+        super(attribute, validationDecoration);
         this.uniformDesign = uniformDesign;
-        this.keyValidator=keyValidator;
+
+        keyCreator=attribute::createKey;
+        keyValidator=attribute::internal_isValidKey;
     }
 
     @Override
-    public Node createVisualisation(SimpleObjectProperty<EncryptedString> boundTo, boolean readonly) {
+    public Node createValueVisualisation() {
         TextField encryptedTextField = new TextField();
         encryptedTextField.setEditable(false);
 
@@ -63,8 +66,8 @@ public class EncryptedStringAttributeVisualisation extends ValueAttributeEditorV
                 }
             }
         };
-        boundTo.addListener(encryptedStringChangeListener);
-        encryptedStringChangeListener.changed(boundTo,boundTo.get(),boundTo.get());
+        observableAttributeValue.addListener(encryptedStringChangeListener);
+        encryptedStringChangeListener.changed(observableAttributeValue, observableAttributeValue.get(), observableAttributeValue.get());
         decryptedTextField.setEditable(false);
 
         TextField newValueTextField = new TextField();
@@ -74,7 +77,7 @@ public class EncryptedStringAttributeVisualisation extends ValueAttributeEditorV
         newValueTextField.disableProperty().bind(keyField.textProperty().isEmpty().or(validKey.not()));
         newValueTextField.textProperty().addListener((observable, oldValue, newValue1) -> {
             if (!Strings.isNullOrEmpty(keyField.getText())){
-                boundTo.set(new EncryptedString(newValue1,keyField.getText()));
+                observableAttributeValue.set(new EncryptedString(newValue1,keyField.getText()));
             }
         });
 
@@ -97,8 +100,7 @@ public class EncryptedStringAttributeVisualisation extends ValueAttributeEditorV
         HBox.setHgrow(encryptedTextField, Priority.ALWAYS);
         HBox.setHgrow(decryptedTextField, Priority.ALWAYS);
         hBox.getChildren().addAll(new Label(uniformDesign.getText(encryptedText)),encryptedTextField,new Label(uniformDesign.getText(decryptedText)),decryptedTextField,new Label(uniformDesign.getText(keyText)), keyField, new Label(uniformDesign.getText(newText)), newValueTextField, popupButton);
-
-        hBox.setDisable(readonly);
+        hBox.disableProperty().bind(readOnly);
         return hBox;
     }
 }

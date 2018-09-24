@@ -15,6 +15,10 @@ import de.factoryfx.data.attribute.AttributeChangeListener;
 import de.factoryfx.data.attribute.ImmutableValueAttribute;
 import javafx.application.Platform;
 
+/**
+ *
+ * @param <A> api class
+ */
 public class JavascriptAttribute<A> extends ImmutableValueAttribute<Javascript<A>,JavascriptAttribute<A>> {
 
     @JsonIgnore

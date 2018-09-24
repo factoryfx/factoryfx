@@ -24,7 +24,10 @@ public abstract class TsClassFile {
     public void writeToFile(){
         try {
             Path fileName = getFileName();
-            Files.createDirectories(fileName.getParent());
+            Path parent = fileName.getParent();
+            if (parent!=null){
+                Files.createDirectories(parent);
+            }
             Files.write(fileName, ("//generated code don't edit manually\n"+generateTsFile()).getBytes(StandardCharsets.UTF_8), StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.CREATE);
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -34,8 +37,13 @@ public abstract class TsClassFile {
     public void writeToFileOnce(){
         try {
             Path fileName = getFileName();
-            Files.createDirectories(fileName.getParent());
-            Files.write(fileName, ("//generated code don't edit manually\n"+generateTsFile()).getBytes(StandardCharsets.UTF_8), StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.CREATE);
+            Path parent = fileName.getParent();
+            if (parent!=null){
+                Files.createDirectories(parent);
+            }
+            if (!Files.exists(fileName)){
+                Files.write(fileName, ("//generated once\n"+generateTsFile()).getBytes(StandardCharsets.UTF_8), StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.CREATE);
+            }
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -46,6 +54,10 @@ public abstract class TsClassFile {
     }
 
     public Path getRelativePathToFileName(TsClassFile tsClass){
-        return tsClass.getFileName().getParent().relativize(getFileName());
+        Path parent = tsClass.getFileName().getParent();
+        if (parent!=null){
+            return tsClass.getFileName().getParent().relativize(getFileName());
+        }
+        return tsClass.getFileName().relativize(getFileName());
     }
 }

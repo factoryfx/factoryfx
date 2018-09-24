@@ -3,7 +3,7 @@ package de.factoryfx.javafx.data.widget.dataview;
 import de.factoryfx.data.Data;
 import de.factoryfx.javafx.UniformDesignBuilder;
 import de.factoryfx.javafx.css.CssUtil;
-import de.factoryfx.javafx.data.editor.attribute.AttributeEditorBuilder;
+import de.factoryfx.javafx.data.editor.attribute.AttributeVisualisationMappingBuilder;
 import de.factoryfx.javafx.data.editor.data.DataEditor;
 import de.factoryfx.javafx.data.editor.data.ExampleData1;
 import de.factoryfx.javafx.data.editor.data.ExampleData2;
@@ -25,7 +25,7 @@ public class DataViewWidgetIntegrationTest extends Application {
         exampleData1 = exampleData1.internal().addBackReferences();
 
         UniformDesign uniformDesign = UniformDesignBuilder.build();
-        DataEditor dataEditor = new DataEditor(new AttributeEditorBuilder(AttributeEditorBuilder.createDefaultSingleAttributeEditorBuilders(uniformDesign)), uniformDesign);
+        DataEditor dataEditor = new DataEditor(new AttributeVisualisationMappingBuilder(AttributeVisualisationMappingBuilder.createDefaultSingleAttributeEditorBuilders(uniformDesign)), uniformDesign);
         dataEditor.edit(exampleData1);
 
         ObservableList<Data> dataList = FXCollections.observableArrayList();

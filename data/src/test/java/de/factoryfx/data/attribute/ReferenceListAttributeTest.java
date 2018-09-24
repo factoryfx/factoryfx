@@ -68,7 +68,7 @@ public class ReferenceListAttributeTest {
     @Test
     public void test_add_new(){
         ExampleReferenceListFactory exampleReferenceListFactory = new ExampleReferenceListFactory();
-        exampleReferenceListFactory.referenceListAttribute.internal_prepareUsageFlat(new ExampleReferenceListFactory(),null);
+        exampleReferenceListFactory.referenceListAttribute.internal_addBackReferences(new ExampleReferenceListFactory(),null);
         List<ExampleDataA> exampleDataAS = exampleReferenceListFactory.referenceListAttribute.internal_createNewPossibleValues();
         exampleReferenceListFactory.referenceListAttribute.add(exampleDataAS.get(0));
         Assert.assertEquals(1,exampleReferenceListFactory.referenceListAttribute.size());
@@ -93,7 +93,7 @@ public class ReferenceListAttributeTest {
     @Test
     public void test_add_new_listener(){
         DataReferenceListAttribute<ExampleDataA> referenceListAttribute =new DataReferenceListAttribute<>(ExampleDataA.class);
-        referenceListAttribute.internal_prepareUsageFlat(new ExampleDataA(),null);
+        referenceListAttribute.internal_addBackReferences(new ExampleDataA(),null);
         List<ExampleDataA> calls=new ArrayList<>();
         referenceListAttribute.internal_addListener((attribute, value) -> calls.add(value.get(0)));
 
@@ -165,14 +165,14 @@ public class ReferenceListAttributeTest {
     @Test(expected = IllegalStateException.class)
     public void delegate_root_for_addAll_with_null(){
         DataReferenceListAttribute<ExampleDataA> attribute =new DataReferenceListAttribute<>(ExampleDataA.class);
-        attribute.internal_prepareUsageFlat(new ExampleDataB(),null);
+        attribute.internal_addBackReferences(new ExampleDataB(),null);
         attribute.get().add(null);
     }
 
     @Test(expected = IllegalStateException.class)
     public void delegate_root_for_addAll_with_null_nested(){
         DataReferenceListAttribute<ExampleDataA> attribute =new DataReferenceListAttribute<>(ExampleDataA.class);
-        attribute.internal_prepareUsageFlat(new ExampleDataB(),null);
+        attribute.internal_addBackReferences(new ExampleDataB(),null);
 
         final ExampleDataA exampleFactoryA1 = new ExampleDataA();
         exampleFactoryA1.referenceListAttribute.add(null);

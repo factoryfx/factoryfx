@@ -1,8 +1,12 @@
 package de.factoryfx.javafx.data.editor.attribute.visualisation;
 
-import java.util.List;
 import java.util.function.Consumer;
 
+import de.factoryfx.data.attribute.*;
+import de.factoryfx.javafx.data.editor.attribute.ValidationDecoration;
+import de.factoryfx.javafx.data.editor.attribute.ValueListAttributeVisualisation;
+import javafx.application.Platform;
+import javafx.beans.InvalidationListener;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -16,38 +20,25 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 
 import de.factoryfx.data.Data;
-import de.factoryfx.data.attribute.Attribute;
-import de.factoryfx.javafx.data.editor.attribute.AttributeEditorVisualisation;
 import de.factoryfx.javafx.data.util.UniformDesign;
 import de.factoryfx.javafx.data.widget.table.TableControlWidget;
 
-public class ViewListReferenceAttributeVisualisation implements AttributeEditorVisualisation<List<Data>> {
+public class ViewListReferenceAttributeVisualisation<R extends Data, T extends Data, A extends ViewListReferenceAttribute<R,T,A>> extends ValueListAttributeVisualisation<T,A> {
 
     private final Consumer<Data> navigateToData;
     private final UniformDesign uniformDesign;
+    private final A attribute;
 
-    public ViewListReferenceAttributeVisualisation(Consumer<Data> navigateToData, UniformDesign uniformDesign) {
+    public ViewListReferenceAttributeVisualisation(A attribute, ValidationDecoration validationDecoration,Consumer<Data> navigateToData, UniformDesign uniformDesign) {
+        super(attribute, validationDecoration);
         this.navigateToData = navigateToData;
         this.uniformDesign = uniformDesign;
-    }
-
-
-
-
-    @Override
-    public void init(Attribute<List<Data>,?> boundAttribute) {
-        updater.accept(boundAttribute.get());
+        this.attribute=attribute;
+        this.attribute.setRunlaterExecutor(Platform::runLater);
     }
 
     @Override
-    public void attributeValueChanged(List<Data> newValue) {
-        updater.accept(newValue);
-    }
-
-    private Consumer<List<Data>> updater = data -> {};
-
-    @Override
-    public Node createVisualisation() {
+    public Node createValueListVisualisation() {
         TableView<Data> tableView = new TableView<>();
         tableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         TableColumn<Data, String> test = new TableColumn<>("Data");
@@ -65,13 +56,9 @@ public class ViewListReferenceAttributeVisualisation implements AttributeEditorV
             }
         });
 
-        updater=datas -> {
-            if (datas == null) {
-                items.clear();
-            } else {
-                items.setAll(datas);
-            }
-        };
+        this.readOnlyObservableList.addListener((InvalidationListener) observable -> items.setAll(readOnlyObservableList));
+        items.setAll(readOnlyObservableList);
+
 
         TableControlWidget<Data> tableControlWidget = new TableControlWidget<>(tableView,uniformDesign);
         Node tableControlWidgetContent = tableControlWidget.createContent();

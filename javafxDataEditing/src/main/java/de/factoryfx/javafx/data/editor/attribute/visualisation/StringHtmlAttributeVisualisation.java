@@ -1,7 +1,8 @@
 package de.factoryfx.javafx.data.editor.attribute.visualisation;
 
-import de.factoryfx.javafx.data.editor.attribute.ValueAttributeEditorVisualisation;
-import javafx.beans.property.SimpleObjectProperty;
+import de.factoryfx.data.attribute.types.StringAttribute;
+import de.factoryfx.javafx.data.editor.attribute.ValidationDecoration;
+import de.factoryfx.javafx.data.editor.attribute.ValueAttributeVisualisation;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.WeakChangeListener;
 import javafx.geometry.Insets;
@@ -13,26 +14,32 @@ import javafx.scene.web.HTMLEditor;
 /*
     wysiwyg editor
  */
-public class StringHtmlAttributeVisualisation extends ValueAttributeEditorVisualisation<String> {
+public class StringHtmlAttributeVisualisation extends ValueAttributeVisualisation<String, StringAttribute> {
 
     private ChangeListener<String> changeListener;
 
+    public StringHtmlAttributeVisualisation(StringAttribute attribute, ValidationDecoration validationDecoration) {
+        super(attribute,validationDecoration);
+    }
+
     @Override
-    public Node createVisualisation(SimpleObjectProperty<String> attributeValue, boolean readonly) {
+    public Node createValueVisualisation() {
         HTMLEditor htmlEditor = new HTMLEditor();
+        htmlEditor.disableProperty().bind(readOnly);
 
         changeListener = (observable, oldValue, newValue) -> htmlEditor.setHtmlText(newValue);
-        attributeValue.addListener(new WeakChangeListener<>(changeListener));
-        htmlEditor.setDisable(readonly);
+        observableAttributeValue.addListener(new WeakChangeListener<>(changeListener));
 
 
         BorderPane borderPane = new BorderPane();
         borderPane.setCenter(htmlEditor);
         Button save = new Button("save");//strangely workaround HTMLEditor have no bind or change events
-        save.setOnAction(event -> attributeValue.set(htmlEditor.getHtmlText()));
-        htmlEditor.setHtmlText(attributeValue.get());
+        save.setOnAction(event -> observableAttributeValue.set(htmlEditor.getHtmlText()));
+        htmlEditor.setHtmlText(observableAttributeValue.get());
         BorderPane.setMargin(save,new Insets(3,0,3,0));
         borderPane.setTop(save);
         return borderPane;
     }
+
+
 }

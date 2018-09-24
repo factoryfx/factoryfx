@@ -20,16 +20,8 @@ public class ValidationError {
         this.attributeVariableName= attributeVariableName;
     }
 
-    public boolean isErrorFor(Attribute<?,?> attribute){
-        return this.attribute==attribute;
-    }
-
     public String validationDescription(Function<LanguageText,String> languageTextEvaluator){
         return languageTextEvaluator.apply(validationDescription);
-    }
-
-    public String validationDescriptionForChild(Locale locale){
-        return parent.internal().getDisplayText()+" | "+ attributeDescription(locale)+" | "+validationDescription.internal_getPreferred(locale);
     }
 
     public String attributeDescription(Locale locale){

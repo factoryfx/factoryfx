@@ -10,8 +10,8 @@ import de.factoryfx.data.attribute.Attribute;
 import de.factoryfx.data.merge.AttributeDiffInfo;
 import de.factoryfx.data.merge.MergeDiffInfo;
 import de.factoryfx.data.util.LanguageText;
-import de.factoryfx.javafx.data.editor.attribute.AttributeEditor;
-import de.factoryfx.javafx.data.editor.attribute.AttributeEditorBuilder;
+import de.factoryfx.javafx.data.editor.attribute.AttributeVisualisationMappingBuilder;
+import de.factoryfx.javafx.data.editor.attribute.AttributeVisualisation;
 import de.factoryfx.javafx.data.util.UniformDesign;
 import de.factoryfx.javafx.data.widget.Widget;
 import de.factoryfx.javafx.data.widget.table.TableControlWidget;
@@ -46,11 +46,11 @@ public class FactoryDiffWidget implements Widget {
     private final LanguageText titleNew=new LanguageText().en("new value").de("Neuer Wert");
     private final LanguageText noChangesFound=new LanguageText().en("No changes found").de("keine Änderungen gefunden");
 
-    private final AttributeEditorBuilder attributeEditorBuilder;
+    private final AttributeVisualisationMappingBuilder attributeVisualisationMappingBuilder;
 
-    public FactoryDiffWidget(UniformDesign uniformDesign, AttributeEditorBuilder attributeEditorBuilder){
+    public FactoryDiffWidget(UniformDesign uniformDesign, AttributeVisualisationMappingBuilder attributeVisualisationMappingBuilder){
         this.uniformDesign=uniformDesign;
-        this.attributeEditorBuilder = attributeEditorBuilder;
+        this.attributeVisualisationMappingBuilder = attributeVisualisationMappingBuilder;
     }
 
     private List<AttributeDiffInfoExtended> diff=new ArrayList<>();
@@ -155,10 +155,11 @@ public class FactoryDiffWidget implements Widget {
     }
 
     private Node createEditor(Attribute<?,?> attribute){
-        final AttributeEditor<?, ?> previousAttributeEditor = attributeEditorBuilder.getAttributeEditor(attribute, null, null);
-        previousAttributeEditor.setReadOnly();
+        final AttributeVisualisation previousAttributeEditor = attributeVisualisationMappingBuilder.getAttributeVisualisation(attribute, null, null);
         previousAttributeEditor.expand();
-        return previousAttributeEditor.createContent();
+        Node readOnlyVisualisation = previousAttributeEditor.createReadOnlyVisualisation();
+        previousAttributeEditor.setReadOnly();
+        return readOnlyVisualisation;
     }
 
     private TableView<AttributeDiffInfoExtended> createDiffTableViewTable(){

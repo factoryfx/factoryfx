@@ -2,12 +2,13 @@ package de.factoryfx.javafx.data.editor.attribute.visualisation;
 
 import com.google.common.base.Strings;
 import de.factoryfx.data.attribute.types.EncryptedString;
+import de.factoryfx.data.attribute.types.PasswordAttribute;
 import de.factoryfx.data.util.LanguageText;
-import de.factoryfx.javafx.data.editor.attribute.ValueAttributeEditorVisualisation;
+import de.factoryfx.javafx.data.editor.attribute.ValidationDecoration;
+import de.factoryfx.javafx.data.editor.attribute.ValueAttributeVisualisation;
 import de.factoryfx.javafx.data.util.UniformDesign;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.BooleanBinding;
-import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
@@ -16,7 +17,7 @@ import javafx.scene.layout.GridPane;
 
 import java.util.function.Function;
 
-public class PasswordAttributeVisualisation extends ValueAttributeEditorVisualisation<EncryptedString> {
+public class PasswordAttributeVisualisation extends ValueAttributeVisualisation<EncryptedString, PasswordAttribute> {
 
     private final LanguageText key = new LanguageText().en("Common key").de("Gemeinsamer Schlüssel");
     private final LanguageText newPw = new LanguageText().en("Password new").de("Neues Passwort");
@@ -26,18 +27,21 @@ public class PasswordAttributeVisualisation extends ValueAttributeEditorVisualis
     private final Function<String,Boolean> keyValidator;
     private BooleanBinding validKey;
 
-    public PasswordAttributeVisualisation(Function<String,String> hashFunction, Function<String,Boolean> keyValidator, UniformDesign uniformDesign) {
-        this.hashFunction=hashFunction;
+    public PasswordAttributeVisualisation(PasswordAttribute attribute, ValidationDecoration validationDecoration, UniformDesign uniformDesign) {
+        super(attribute,validationDecoration);
+
         this.uniformDesign = uniformDesign;
-        this.keyValidator=keyValidator;
+
+        this.hashFunction = attribute::internal_hash;
+        this.keyValidator = attribute::internal_isValidKey;
     }
 
     @Override
-    public Node createVisualisation(SimpleObjectProperty<EncryptedString> boundTo, boolean readonly) {
+    public Node createValueVisualisation() {
         GridPane grid = new GridPane();
         grid.setAlignment(Pos.CENTER_LEFT);
-        grid.setHgap(3);
-        grid.setVgap(3);
+        grid.setHgap(6);
+        grid.setVgap(6);
 //        grid.setPadding(new Insets(25, 25, 25, 25));
 
 
@@ -58,7 +62,7 @@ public class PasswordAttributeVisualisation extends ValueAttributeEditorVisualis
         passwordNew.disableProperty().bind(passwordKey.textProperty().isEmpty().or(validKey.not()));
         passwordNew.textProperty().addListener((observable, oldValue, newValue) -> {
             if (!Strings.isNullOrEmpty(passwordKey.getText())){
-                boundTo.set(new EncryptedString(hashFunction.apply(newValue),passwordKey.getText()));
+                observableAttributeValue.set(new EncryptedString(hashFunction.apply(newValue),passwordKey.getText()));
             }
         });
         ChangeListener<Boolean> booleanChangeListener = (observable, oldValue, newValue) -> {
@@ -73,9 +77,7 @@ public class PasswordAttributeVisualisation extends ValueAttributeEditorVisualis
         };
         validKey.addListener(booleanChangeListener);
         booleanChangeListener.changed(validKey,validKey.get(),validKey.get());
-
-        passwordKey.setEditable(!readonly);
-        passwordNew.setEditable(!readonly);
+        grid.disableProperty().bind(readOnly);
         return grid;
     }
 }

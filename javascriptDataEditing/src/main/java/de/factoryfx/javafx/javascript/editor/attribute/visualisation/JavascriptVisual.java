@@ -29,13 +29,21 @@ import org.fxmisc.richtext.CodeArea;
 import org.fxmisc.richtext.LineNumberFactory;
 import org.fxmisc.richtext.StyleSpansBuilder;
 
-public class JavascriptVisual {
+/**
+ *
+ * @param <A> api class
+ */
+public class JavascriptVisual<A> {
 
     public JavascriptVisual(List<SourceFile> externs) {
         this.externs = externs;
     }
 
-    static class RootNode extends StackPane {
+    /**
+     *
+     * @param <A> api class
+     */
+    static class RootNode<A> extends StackPane {
 
         final Consumer<List<JSError>> processErrorsAndWarnings = this::processErrorsAndWarnings;
         final Consumer<NavigableMap<Integer,List<Proposal>>> processProoposals = this::processProposals;
@@ -48,10 +56,10 @@ public class JavascriptVisual {
         final CodeArea codeArea = new CodeArea();
         final ListView<JSError> errorsAndWarnings = new ListView<>();
         final ContentAssistPopup popup = new ContentAssistPopup();
-        final ChangeListener<Javascript> onUpdateScript;
+        final ChangeListener<Javascript<A>> onUpdateScript;
         NavigableMap<Integer, List<Proposal>> currentProposals;
 
-        RootNode(List<SourceFile> externs, SimpleObjectProperty<Javascript<?>> boundTo) {
+        RootNode(List<SourceFile> externs, SimpleObjectProperty<Javascript<A>> boundTo) {
             this.getStylesheets().add(getClass().getResource("jsstyle.css").toExternalForm());
             List<SourceFile> externalSources = new ArrayList<>(externs);
             this.contentAssistant = new ContentAssistant(externalSources, new WeakReference<>(processProoposals));
@@ -71,7 +79,7 @@ public class JavascriptVisual {
                 codeArea.insertText(0,boundTo.get().getCode());
             codeArea.textProperty().addListener((a,b,newValue)->{
                 if (boundTo.get() == null || boundTo.get().getCode() == null) {
-                    boundTo.set(new Javascript(newValue));
+                    boundTo.set(new Javascript<A>(newValue));
                 } else if (!boundTo.get().getCode().equals(newValue)) {
                     boundTo.set(boundTo.get().copyWithNewCode(newValue));
                 }
@@ -258,7 +266,7 @@ public class JavascriptVisual {
 
     private final List<SourceFile> externs;
 
-    public Node createContent(SimpleObjectProperty<Javascript<?>> boundTo) {
+    public Node createContent(SimpleObjectProperty<? extends Javascript<?>> boundTo) {
         return new RootNode(externs,boundTo);
     }
 

@@ -29,7 +29,6 @@ import org.controlsfx.glyphfont.FontAwesome;
 import de.factoryfx.data.Data;
 import de.factoryfx.data.attribute.ReferenceListAttribute;
 import de.factoryfx.data.util.LanguageText;
-import de.factoryfx.javafx.data.util.DataChoiceDialog;
 import de.factoryfx.javafx.data.util.UniformDesign;
 import de.factoryfx.javafx.data.widget.Widget;
 import de.factoryfx.javafx.data.widget.select.SelectDataDialog;
@@ -53,7 +52,7 @@ public class ReferenceListAttributeEditWidget<T extends Data> implements Widget 
 
     private final UniformDesign uniformDesign;
     private final Supplier<List<? extends T>> newValueProvider;
-    private final Supplier<Collection<? extends Data>> possibleValuesProvider;
+    private final Supplier<Collection<T>> possibleValuesProvider;
     private final boolean isUserEditable;
     private final boolean isUserSelectable;
     private final ReferenceListAttribute<T,?> referenceListAttribute;
@@ -63,7 +62,7 @@ public class ReferenceListAttributeEditWidget<T extends Data> implements Widget 
     private final boolean isUserCreateable;
     private final BiConsumer<T,List<T>> deleter;
 
-    public ReferenceListAttributeEditWidget(ReferenceListAttribute<T,?> referenceListAttribute, TableView<T> tableView, Consumer<Data> navigateToData, UniformDesign uniformDesign, Supplier<List<? extends T>> newValueProvider, Supplier<Collection<? extends Data>> possibleValuesProvider, BiConsumer<T,List<T>> deleter , boolean isUserEditable, boolean isUserSelectable, boolean isUserCreateable) {
+    public ReferenceListAttributeEditWidget(ReferenceListAttribute<T,?> referenceListAttribute, TableView<T> tableView, Consumer<Data> navigateToData, UniformDesign uniformDesign, Supplier<List<? extends T>> newValueProvider, Supplier<Collection<T>> possibleValuesProvider, BiConsumer<T,List<T>> deleter , boolean isUserEditable, boolean isUserSelectable, boolean isUserCreateable) {
         this.uniformDesign = uniformDesign;
         this.newValueProvider = newValueProvider;
         this.possibleValuesProvider = possibleValuesProvider;
@@ -92,8 +91,7 @@ public class ReferenceListAttributeEditWidget<T extends Data> implements Widget 
 
         Button selectButton = new Button("", uniformDesign.createIcon(FontAwesome.Glyph.SEARCH_PLUS));
         selectButton.setOnAction(event -> {
-            Optional<Data> toAdd = new DataChoiceDialog().show(possibleValuesProvider.get(),selectButton.getScene().getWindow(),uniformDesign);
-            toAdd.ifPresent(data -> referenceListAttribute.add((T) data));
+            new SelectDataDialog<T>(possibleValuesProvider.get(),uniformDesign).show(selectButton.getScene().getWindow(), data -> referenceListAttribute.get().add(data));
         });
         selectButton.setDisable(!isUserEditable || !isUserSelectable);
 
@@ -211,9 +209,9 @@ public class ReferenceListAttributeEditWidget<T extends Data> implements Widget 
                 referenceListAttribute.add(newDataList.get(0));
                 navigateToData.accept(newDataList.get(0));
             } else {
-                List<Data> newDataListData = new ArrayList<>(newDataList);
-                new SelectDataDialog(newDataListData,uniformDesign).show(owner, data -> {
-                    referenceListAttribute.add((T) data);
+                List<T> newDataListData = new ArrayList<>(newDataList);
+                new SelectDataDialog<T>(newDataListData,uniformDesign).show(owner, data -> {
+                    referenceListAttribute.add(data);
                     navigateToData.accept(data);
                 });
             }

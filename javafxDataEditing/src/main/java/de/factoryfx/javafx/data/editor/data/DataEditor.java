@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.function.BiFunction;
 
 import de.factoryfx.data.Data;
-import de.factoryfx.javafx.data.editor.attribute.AttributeEditorBuilder;
+import de.factoryfx.javafx.data.editor.attribute.AttributeVisualisationMappingBuilder;
 import de.factoryfx.javafx.data.util.UniformDesign;
 import de.factoryfx.javafx.data.widget.Widget;
 import javafx.beans.property.ReadOnlyObjectProperty;
@@ -20,18 +20,18 @@ public class DataEditor implements Widget {
 
     /**
      *
-     * @param attributeEditorBuilder attributeEditorBuilder
+     * @param attributeVisualisationMappingBuilder attributeEditorBuilder
      * @param uniformDesign uniformDesign
      * @param dataVisualisationCustomizer way to customize or extend the editor visualisation for a specific data class, e.g. add a green border(silly example), add special button
      */
-    public DataEditor(AttributeEditorBuilder attributeEditorBuilder, UniformDesign uniformDesign, BiFunction<Node,Data,Node> dataVisualisationCustomizer) {
-        this.dataEditorState = new DataEditorState(null, new ArrayList<>(),attributeEditorBuilder,uniformDesign,this,dataVisualisationCustomizer,true);
+    public DataEditor(AttributeVisualisationMappingBuilder attributeVisualisationMappingBuilder, UniformDesign uniformDesign, BiFunction<Node,Data,Node> dataVisualisationCustomizer) {
+        this.dataEditorState = new DataEditorState(null, new ArrayList<>(), attributeVisualisationMappingBuilder,uniformDesign,this,dataVisualisationCustomizer,true);
         historyNavigationVisible.set(true);
         historyNavigationVisible.addListener(observable -> updateState(dataEditorState.setShowNavigation(historyNavigationVisible.get())));
     }
 
-    public DataEditor(AttributeEditorBuilder attributeEditorBuilder, UniformDesign uniformDesign) {
-        this(attributeEditorBuilder,uniformDesign,(node, data) -> node);
+    public DataEditor(AttributeVisualisationMappingBuilder attributeVisualisationMappingBuilder, UniformDesign uniformDesign) {
+        this(attributeVisualisationMappingBuilder,uniformDesign,(node, data) -> node);
     }
 
     SimpleObjectProperty<Data> editData = new SimpleObjectProperty<>();
@@ -53,6 +53,7 @@ public class DataEditor implements Widget {
     }
 
     private void updateState(DataEditorState dataEditorState){
+        this.dataEditorState.destroy();
         editData.set(dataEditorState.getCurrentData());
         this.dataEditorState=dataEditorState;
         if (borderPane!=null){

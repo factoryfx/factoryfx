@@ -2,13 +2,13 @@ package de.factoryfx.javafx.data.editor.attribute.visualisation;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
+import de.factoryfx.data.attribute.ReferenceAttribute;
+import de.factoryfx.javafx.data.editor.attribute.ValidationDecoration;
 import javafx.beans.InvalidationListener;
 import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleObjectProperty;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
@@ -23,12 +23,11 @@ import org.controlsfx.glyphfont.FontAwesome;
 
 import de.factoryfx.data.Data;
 import de.factoryfx.data.util.LanguageText;
-import de.factoryfx.javafx.data.editor.attribute.ValueAttributeEditorVisualisation;
-import de.factoryfx.javafx.data.util.DataChoiceDialog;
+import de.factoryfx.javafx.data.editor.attribute.ValueAttributeVisualisation;
 import de.factoryfx.javafx.data.util.UniformDesign;
 import de.factoryfx.javafx.data.widget.select.SelectDataDialog;
 
-public class ReferenceAttributeVisualisation extends ValueAttributeEditorVisualisation<Data> {
+public class ReferenceAttributeVisualisation<T extends Data, A extends ReferenceAttribute<T,A>> extends ValueAttributeVisualisation<T,A> {
 
     private LanguageText selectText= new LanguageText().en("select").de("Auswählen");
     private LanguageText addText= new LanguageText().en("add").de("Hinzufügen");
@@ -37,64 +36,64 @@ public class ReferenceAttributeVisualisation extends ValueAttributeEditorVisuali
 
     private final UniformDesign uniformDesign;
     private final Consumer<Data> navigateToData;
-    private final Supplier<List<Data>> newValueProvider;
-    private final Supplier<Collection<? extends Data>> possibleValuesProvider;
-    private final boolean isUserEditable;
-    private final boolean isUserSelectable;
-    private final boolean isUserCreateable;
-    private final boolean isCatalogBased;
+    private final Supplier<List<T>> newValueProvider;
+    private final Supplier<Collection<T>> possibleValuesProvider;
+    private final SimpleBooleanProperty isUserSelectable;
+    private final SimpleBooleanProperty isUserCreateable;
     private final Runnable remover;
-    private final Consumer<Data> referenceSetter;
+    private final Consumer<T> referenceSetter;
 
 
-    public ReferenceAttributeVisualisation(UniformDesign uniformDesign, Consumer<Data> navigateToData, Supplier<List<Data>> newValueProvider, Consumer<Data> referenceSetter, Supplier<Collection<? extends Data>> possibleValuesProvider, Runnable remover, boolean isUserEditable, boolean isUserSelectable, boolean isUserCreateable, boolean isCatalogBased) {
+
+    public ReferenceAttributeVisualisation(A attribute, ValidationDecoration validationDecoration, UniformDesign uniformDesign, Consumer<Data> navigateToData) {
+        super(attribute,validationDecoration);
         this.uniformDesign = uniformDesign;
         this.navigateToData = navigateToData;
-        this.newValueProvider = newValueProvider;
-        this.possibleValuesProvider = possibleValuesProvider;
-        this.isUserEditable = isUserEditable;
-        this.isUserSelectable = isUserSelectable;
-        this.isUserCreateable = isUserCreateable;
-        this.remover = remover;
-        this.referenceSetter = referenceSetter;
-        this.isCatalogBased = isCatalogBased;
+
+        this.newValueProvider=attribute::internal_createNewPossibleValues;
+        this.possibleValuesProvider=attribute::internal_possibleValues;
+        this.isUserSelectable=new SimpleBooleanProperty(attribute.internal_isUserSelectable());
+        this.isUserCreateable=new SimpleBooleanProperty(attribute.internal_isUserCreatable());
+        this.remover=attribute::internal_deleteFactory;
+        this.referenceSetter=attribute::set;
     }
 
     @Override
-    public Node createVisualisation(SimpleObjectProperty<Data> boundTo, boolean readonly) {
+    public Node createValueVisualisation() {
         Button showButton = new Button("", uniformDesign.createIcon(FontAwesome.Glyph.PENCIL));
-        showButton.setOnAction(event -> navigateToData.accept(boundTo.get()));
-        showButton.disableProperty().bind(boundTo.isNull());
+        showButton.setOnAction(event -> navigateToData.accept(observableAttributeValue.get()));
+        showButton.disableProperty().bind(observableAttributeValue.isNull());
 
 
         Button selectButton = new Button();
+        selectButton.disableProperty().bind(readOnly.or(isUserSelectable.not()));
         uniformDesign.addIcon(selectButton,FontAwesome.Glyph.SEARCH_PLUS);
         selectButton.setOnAction(event -> {
-            final Optional<Data> toAdd = new DataChoiceDialog().show(possibleValuesProvider.get(), selectButton.getScene().getWindow(), uniformDesign);
-            toAdd.ifPresent(boundTo::set);
+            Collection<T> collection = possibleValuesProvider.get();
+            new SelectDataDialog<>(collection, uniformDesign).show(selectButton.getScene().getWindow(), data -> observableAttributeValue.set(data));
         });
-        selectButton.setDisable(!isUserEditable || !isUserSelectable || readonly);
 
         Button newButton = new Button();
+//        newButton.disableProperty().bind(readOnly.or(isUserCreateable.not()));
+        newButton.disableProperty().bind(readOnly);
         uniformDesign.addIcon(newButton,FontAwesome.Glyph.PLUS);
         newButton.setOnAction(event -> addNewReference(newButton.getScene().getWindow()));
-        newButton.setDisable(!isUserEditable || !isUserCreateable || isCatalogBased || readonly);
 
         Button deleteButton = new Button();
+        deleteButton.disableProperty().bind(readOnly.or(observableAttributeValue.isNull()));
         uniformDesign.addDangerIcon(deleteButton,FontAwesome.Glyph.TIMES);
         deleteButton.setOnAction(event -> remover.run());
-        deleteButton.disableProperty().bind(boundTo.isNull().or(new SimpleBooleanProperty(!isUserEditable)).or(new SimpleBooleanProperty(readonly)));
 
         TextField textField = new TextField();
         InvalidationListener invalidationListener = observable -> {
-            if (boundTo.get() == null) {
+            if (observableAttributeValue.get() == null) {
                 textField.setText(null);
             } else {
-                textField.setText(boundTo.get().internal().getDisplayText());
+                textField.setText(observableAttributeValue.get().internal().getDisplayText());
             }
         };
-        invalidationListener.invalidated(boundTo);
-        boundTo.addListener(invalidationListener);
+        invalidationListener.invalidated(observableAttributeValue);
+        observableAttributeValue.addListener(invalidationListener);
 
 
 
@@ -103,8 +102,8 @@ public class ReferenceAttributeVisualisation extends ValueAttributeEditorVisuali
 
         textField.setOnMouseClicked(mouseEvent -> {
             if (mouseEvent.getButton().equals(MouseButton.PRIMARY)) {
-                if (mouseEvent.getClickCount() == 2 && boundTo.get()!=null) {
-                    navigateToData.accept(boundTo.get());
+                if (mouseEvent.getClickCount() == 2 && observableAttributeValue.get()!=null) {
+                    navigateToData.accept(observableAttributeValue.get());
                 }
             }
         });
@@ -131,13 +130,13 @@ public class ReferenceAttributeVisualisation extends ValueAttributeEditorVisuali
     }
 
     private void addNewReference(Window owner) {
-        List<Data> newData = newValueProvider.get();
+        List<T> newData = newValueProvider.get();
         if (!newData.isEmpty()){
             if (newData.size()==1){
                 referenceSetter.accept(newData.get(0));
                 navigateToData.accept(newData.get(0));
             } else {
-                new SelectDataDialog(newData,uniformDesign).show(owner, data -> {
+                new SelectDataDialog<T>(newData,uniformDesign).show(owner, data -> {
                     referenceSetter.accept(data);
                     navigateToData.accept(data);
                 });

@@ -3,7 +3,7 @@ package de.factoryfx.javafx.data.editor.data;
 import java.util.ArrayList;
 
 import de.factoryfx.javafx.UniformDesignBuilder;
-import de.factoryfx.javafx.data.editor.attribute.AttributeEditorBuilder;
+import de.factoryfx.javafx.data.editor.attribute.AttributeVisualisationMappingBuilder;
 import de.factoryfx.javafx.data.util.UniformDesign;
 import org.junit.Assert;
 import org.junit.Test;
@@ -13,7 +13,7 @@ public class DataEditorTest {
     @Test
     public void testBack() throws Exception {
         UniformDesign uniformDesign = UniformDesignBuilder.build();
-        DataEditor dataEditor = new DataEditor(new AttributeEditorBuilder(new ArrayList<>()),uniformDesign);
+        DataEditor dataEditor = new DataEditor(new AttributeVisualisationMappingBuilder(new ArrayList<>()),uniformDesign);
 
 
         ExampleData1 exampleData1 = new ExampleData1();
@@ -43,7 +43,7 @@ public class DataEditorTest {
     @Test
     public void testBack_limit() throws Exception {
         UniformDesign uniformDesign = UniformDesignBuilder.build();
-        DataEditor dataEditor = new DataEditor(new AttributeEditorBuilder(new ArrayList<>()),uniformDesign);
+        DataEditor dataEditor = new DataEditor(new AttributeVisualisationMappingBuilder(new ArrayList<>()),uniformDesign);
 
         for (int i=0;i<100;i++){
             dataEditor.navigate(new ExampleData1());
@@ -56,7 +56,7 @@ public class DataEditorTest {
     @Test
     public void testForward() throws Exception {
         UniformDesign uniformDesign = UniformDesignBuilder.build();
-        DataEditor dataEditor = new DataEditor(new AttributeEditorBuilder(new ArrayList<>()),uniformDesign);
+        DataEditor dataEditor = new DataEditor(new AttributeVisualisationMappingBuilder(new ArrayList<>()),uniformDesign);
 
 
         ExampleData1 exampleData1 = new ExampleData1();
@@ -90,7 +90,7 @@ public class DataEditorTest {
     @Test
     public void test_navigated_hierarchy() throws Exception {
         UniformDesign uniformDesign = UniformDesignBuilder.build();
-        DataEditor dataEditor = new DataEditor(new AttributeEditorBuilder(new ArrayList<>()),uniformDesign);
+        DataEditor dataEditor = new DataEditor(new AttributeVisualisationMappingBuilder(new ArrayList<>()),uniformDesign);
 
         ExampleData1 root = new ExampleData1();
         ExampleData2 value = new ExampleData2();
@@ -112,7 +112,7 @@ public class DataEditorTest {
     @Test
     public void test_navigated_hierarchy2() throws Exception {
         UniformDesign uniformDesign = UniformDesignBuilder.build();
-        DataEditor dataEditor = new DataEditor(new AttributeEditorBuilder(new ArrayList<>()),uniformDesign);
+        DataEditor dataEditor = new DataEditor(new AttributeVisualisationMappingBuilder(new ArrayList<>()),uniformDesign);
 
         ExampleData1 root = new ExampleData1();
         ExampleData2 value1 = new ExampleData2();

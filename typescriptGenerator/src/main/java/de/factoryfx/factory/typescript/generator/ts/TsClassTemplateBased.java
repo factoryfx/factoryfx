@@ -17,6 +17,7 @@ public class TsClassTemplateBased extends TsClassFile {
     /**
      *
      * @param resourcePathShort e.g Data.ts
+     * @param targetPath targetPath
      */
     public TsClassTemplateBased(String resourcePathShort, Path targetPath) {
         super(resourcePathShort.replace(".ts",""),targetPath);

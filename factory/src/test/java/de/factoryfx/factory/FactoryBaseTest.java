@@ -230,7 +230,7 @@ public class FactoryBaseTest {
 
     public static class IterationTestFactory extends SimpleFactoryBase<Void,Void,IterationTestFactory>{
         public String testinfo;
-        public final FactoryReferenceListAttribute<Void,IterationTestFactory>  children = new FactoryReferenceListAttribute<>();
+        public final FactoryReferenceListAttribute<Void,IterationTestFactory>  children = new FactoryReferenceListAttribute<>(IterationTestFactory.class);
 
         public IterationTestFactory(String testinfo) {
             this();

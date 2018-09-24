@@ -16,11 +16,6 @@ import de.factoryfx.factory.FactoryBase;
  */
 public class FactoryReferenceListAttribute<L, F extends FactoryBase<? extends L,?,?>> extends  ReferenceListAttribute<F,FactoryReferenceListAttribute<L, F>>{
 
-
-    public FactoryReferenceListAttribute() {
-        super();
-    }
-
     public FactoryReferenceListAttribute(Class<F> clazz) {
         super();
         setup(clazz);

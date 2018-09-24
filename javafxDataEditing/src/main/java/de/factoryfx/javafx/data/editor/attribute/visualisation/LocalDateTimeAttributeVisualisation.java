@@ -8,7 +8,9 @@ import java.time.format.DateTimeParseException;
 import java.util.Optional;
 
 import com.google.common.base.Strings;
-import de.factoryfx.javafx.data.editor.attribute.ValueAttributeEditorVisualisation;
+import de.factoryfx.data.attribute.time.LocalDateTimeAttribute;
+import de.factoryfx.javafx.data.editor.attribute.ValidationDecoration;
+import de.factoryfx.javafx.data.editor.attribute.ValueAttributeVisualisation;
 import de.factoryfx.javafx.data.util.TypedTextFieldHelper;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.geometry.Insets;
@@ -17,33 +19,35 @@ import javafx.scene.control.DatePicker;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 
-public class LocalDateTimeAttributeVisualisation extends ValueAttributeEditorVisualisation<LocalDateTime> {
+public class LocalDateTimeAttributeVisualisation extends ValueAttributeVisualisation<LocalDateTime, LocalDateTimeAttribute> {
+
+    public LocalDateTimeAttributeVisualisation(LocalDateTimeAttribute attribute, ValidationDecoration validationDecoration) {
+        super(attribute,validationDecoration);
+    }
 
     @Override
-    public Node createVisualisation(SimpleObjectProperty<LocalDateTime> boundTo, boolean readonly) {
+    public Node createValueVisualisation() {
         HBox controls = new HBox(3);
         controls.setOpaqueInsets(new Insets(0,3,0,3));
         DatePicker datePicker = new DatePicker();
         datePicker.valueProperty().addListener((observable, oldValue, newValue) -> {
-            updateDatePart(boundTo,newValue);
+            updateDatePart(observableAttributeValue,newValue);
         });
         TextField timeField = new TextField();
         TypedTextFieldHelper.setupLocalTimeTextField(timeField);
         timeField.textProperty().addListener((observable, oldValue, newValue) -> {
-            updateTimePart(boundTo,newValue);
+            updateTimePart(observableAttributeValue,newValue);
         });
         controls.getChildren().addAll(datePicker,timeField);
-        boundTo.addListener((observable, oldValue, newValue) -> {
+        observableAttributeValue.addListener((observable, oldValue, newValue) -> {
             updateDatePicker(datePicker,newValue);
             updateTimeField(timeField,newValue);
         });
-        Optional.ofNullable(boundTo.getValue()).ifPresent(newValue-> {
+        Optional.ofNullable(observableAttributeValue.getValue()).ifPresent(newValue-> {
             updateDatePicker(datePicker, newValue);
             updateTimeField(timeField, newValue);
         });
-
-        datePicker.setEditable(!readonly);
-        timeField.setEditable(!readonly);
+        controls.disableProperty().bind(readOnly);
         return controls;
     }
 

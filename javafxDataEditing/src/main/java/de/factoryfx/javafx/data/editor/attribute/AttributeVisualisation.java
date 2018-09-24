@@ -1,14 +1,10 @@
 package de.factoryfx.javafx.data.editor.attribute;
 
-import de.factoryfx.data.attribute.Attribute;
 import javafx.scene.Node;
 
-/** also see {@link ValueAttributeEditorVisualisation} **/
-public interface AttributeEditorVisualisation<T> {
+/** also see {@link ValueAttributeVisualisation} **/
+public interface AttributeVisualisation {
 
-    void init(Attribute<T,?> boundAttribute);
-
-    void attributeValueChanged(T newValue);
 
     /*the javafx visualisation**/
     Node createVisualisation();
@@ -28,5 +24,9 @@ public interface AttributeEditorVisualisation<T> {
     default void expand(){
         //nothing
     }
+
+    void setReadOnly();
+
+    void destroy();
 
 }

@@ -6,7 +6,6 @@ import java.util.function.Supplier;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import de.factoryfx.data.Data;
-import de.factoryfx.data.validation.ObjectRequired;
 import de.factoryfx.data.validation.Validation;
 import de.factoryfx.data.validation.ValidationError;
 import de.factoryfx.data.validation.ValidationResult;
@@ -103,14 +102,6 @@ public abstract class Attribute<T,A extends Attribute<T,A>>{
     }
 
     public boolean internal_required() {
-        if (validations==null){
-            return false;
-        }
-        for (Validation<?> validation: validations){
-            if (validation instanceof ObjectRequired<?>) {
-                return true;
-            }
-        }
         return false;
     }
 
@@ -122,7 +113,7 @@ public abstract class Attribute<T,A extends Attribute<T,A>>{
      * @param root factory tree root
      * @param parent data that contains the attribute
      */
-    public void internal_prepareUsageFlat(Data root, Data parent){
+    public void internal_addBackReferences(Data root, Data parent){
         //nothing
     }
 

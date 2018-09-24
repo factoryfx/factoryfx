@@ -4,11 +4,11 @@ import de.factoryfx.data.util.LanguageText;
 
 import java.util.List;
 
-public class MinimalOccurrence<T,R extends List<T>> implements Validation<R> {
+public class MinimumOccurrence<T,R extends List<T>> implements Validation<R> {
 
     private final int minimalOccurrence;
 
-    public MinimalOccurrence(int minimalOccurrence) {
+    public MinimumOccurrence(int minimalOccurrence) {
         this.minimalOccurrence = minimalOccurrence;
     }
 
