@@ -4,7 +4,7 @@ import java.util.function.Consumer;
 
 import de.factoryfx.data.attribute.ReferenceListAttribute;
 import de.factoryfx.javafx.data.editor.attribute.ValidationDecoration;
-import de.factoryfx.javafx.data.editor.attribute.ValueListAttributeVisualisation;
+import de.factoryfx.javafx.data.editor.attribute.ListAttributeVisualisation;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.DoubleBinding;
 import javafx.beans.property.SimpleStringProperty;
@@ -22,7 +22,7 @@ import de.factoryfx.javafx.data.util.UniformDesign;
 import de.factoryfx.javafx.data.widget.datalistedit.ReferenceListAttributeEditWidget;
 import de.factoryfx.javafx.data.widget.table.TableControlWidget;
 
-public class ReferenceListAttributeVisualisation<T extends Data, A extends ReferenceListAttribute<T,A>> extends ValueListAttributeVisualisation<T,A> {
+public class ReferenceListAttributeVisualisation<T extends Data, A extends ReferenceListAttribute<T,A>> extends ListAttributeVisualisation<T,A> {
 
     private final UniformDesign uniformDesign;
     private final Consumer<Data> navigateToData;

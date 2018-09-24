@@ -1,6 +1,7 @@
 package de.factoryfx.javafx.data.editor.attribute.visualisation;
 
 import de.factoryfx.javafx.data.editor.attribute.AttributeVisualisation;
+import de.factoryfx.javafx.data.editor.attribute.ListAttributeVisualisation;
 import de.factoryfx.javafx.data.editor.attribute.ValidationDecoration;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
@@ -27,7 +28,7 @@ import de.factoryfx.javafx.data.widget.table.TableControlWidget;
 
 import java.util.List;
 
-public class ValueListAttributeVisualisation<T, A extends Attribute<List<T>,A>> extends de.factoryfx.javafx.data.editor.attribute.ValueListAttributeVisualisation<T,A> {
+public class ValueListAttributeVisualisation<T, A extends Attribute<List<T>,A>> extends ListAttributeVisualisation<T,A> {
     private final UniformDesign uniformDesign;
     private final Attribute<T,?> detailAttribute;
     private final AttributeVisualisation detailAttributeVisualisation;

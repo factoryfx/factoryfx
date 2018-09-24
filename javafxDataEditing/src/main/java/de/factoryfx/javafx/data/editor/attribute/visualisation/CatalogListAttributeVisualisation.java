@@ -4,7 +4,7 @@ import java.util.Collection;
 import java.util.function.Supplier;
 
 import de.factoryfx.javafx.data.editor.attribute.ValidationDecoration;
-import de.factoryfx.javafx.data.editor.attribute.ValueListAttributeVisualisation;
+import de.factoryfx.javafx.data.editor.attribute.ListAttributeVisualisation;
 import javafx.scene.Node;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
@@ -18,7 +18,7 @@ import de.factoryfx.javafx.data.editor.attribute.converter.DataStringConverter;
 import de.factoryfx.javafx.data.util.CheckComboBoxHelper;
 import de.factoryfx.javafx.data.util.UniformDesign;
 
-public class CatalogListAttributeVisualisation<T extends Data, A extends ReferenceListAttribute<T,A>> extends ValueListAttributeVisualisation<T,A> {
+public class CatalogListAttributeVisualisation<T extends Data, A extends ReferenceListAttribute<T,A>> extends ListAttributeVisualisation<T,A> {
     private final UniformDesign uniformDesign;
     private final Supplier<Collection<T>> possibleValuesProvider;
     private final A referenceListAttribute;

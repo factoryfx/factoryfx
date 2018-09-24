@@ -8,10 +8,10 @@ import javafx.scene.Node;
 import java.util.List;
 
 
-public abstract class ValueListAttributeVisualisation<T, A extends Attribute<List<T>,A>> extends ValueAttributeVisualisation<List<T>,A> {
+public abstract class ListAttributeVisualisation<T, A extends Attribute<List<T>,A>> extends ValueAttributeVisualisation<List<T>,A> {
     public ObservableList<T> readOnlyObservableList = FXCollections.observableArrayList();
 
-    protected ValueListAttributeVisualisation(A boundAttribute, ValidationDecoration validationDecoration) {
+    protected ListAttributeVisualisation(A boundAttribute, ValidationDecoration validationDecoration) {
         super(boundAttribute, validationDecoration);
         observableAttributeValue.addListener(observable -> readOnlyObservableList.setAll(observableAttributeValue.get()));
     }

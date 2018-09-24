@@ -2,7 +2,7 @@ package de.factoryfx.javafx.data.editor.attribute.visualisation;
 
 import de.factoryfx.data.attribute.types.EnumListAttribute;
 import de.factoryfx.javafx.data.editor.attribute.ValidationDecoration;
-import de.factoryfx.javafx.data.editor.attribute.ValueListAttributeVisualisation;
+import de.factoryfx.javafx.data.editor.attribute.ListAttributeVisualisation;
 import de.factoryfx.javafx.data.util.CheckComboBoxHelper;
 import de.factoryfx.javafx.data.util.UniformDesign;
 import javafx.scene.Node;
@@ -15,7 +15,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-public class EnumListAttributeVisualisation<E extends Enum<E>> extends ValueListAttributeVisualisation<E, EnumListAttribute<E>> {
+public class EnumListAttributeVisualisation<E extends Enum<E>> extends ListAttributeVisualisation<E, EnumListAttribute<E>> {
 
     private final Collection<E> possibleEnumConstants;
     private final StringConverter<E> stringConverter;
