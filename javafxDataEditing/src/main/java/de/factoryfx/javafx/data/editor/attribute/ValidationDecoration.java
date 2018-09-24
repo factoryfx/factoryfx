@@ -16,7 +16,7 @@ public class ValidationDecoration {
     private final UniformDesign uniformDesign;
     private Consumer<List<ValidationError>> validationUpdater;
     private List<ValidationError> validationErrors=new ArrayList<>();
-    private final Tooltip tooltip = new Tooltip();
+    private Tooltip tooltip;
 
     public ValidationDecoration(UniformDesign uniformDesign) {
         this.uniformDesign = uniformDesign;
@@ -61,6 +61,9 @@ public class ValidationDecoration {
 //                }
 //            }
 
+            if (tooltip==null){
+                tooltip = new Tooltip();
+            }
 
             tooltip.setText(validationErrorText.toString());
             tooltip.setShowDelay(Duration.ZERO);
