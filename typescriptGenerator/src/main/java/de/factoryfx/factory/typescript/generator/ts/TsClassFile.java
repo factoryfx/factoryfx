@@ -56,7 +56,7 @@ public abstract class TsClassFile {
     public Path getRelativePathToFileName(TsClassFile tsClass){
         Path parent = tsClass.getFileName().getParent();
         if (parent!=null){
-            return tsClass.getFileName().getParent().relativize(getFileName());
+            return parent.relativize(getFileName());
         }
         return tsClass.getFileName().relativize(getFileName());
     }
