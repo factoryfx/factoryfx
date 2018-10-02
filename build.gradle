@@ -193,6 +193,13 @@ subprojects {
 
 }
 
+project(':copperBridge') {
+    dependencies {
+        compile project(":factory")
+        compile("org.copper-engine:copper-coreengine:5.0.1")
+        compile("org.copper-engine:copper-ext:5.0.1")
+    }
+}
 
 project(':microserviceRestServer') {
     dependencies {
