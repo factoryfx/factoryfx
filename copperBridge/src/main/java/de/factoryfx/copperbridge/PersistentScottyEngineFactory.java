@@ -23,10 +23,7 @@ import de.factoryfx.factory.atrribute.FactoryReferenceAttribute;
 public class PersistentScottyEngineFactory<V, R extends FactoryBase<?, V, R>> extends FactoryBase<PersistentEngineContainer, V, R> {
 
     public final StringAttribute idPrefix = new StringAttribute().labelText("processor pool id prefix");
-
-    public final FactoryReferenceAttribute<CopperEngineContext, CopperEngineContextFactory<V, R>> copperEngineContext =
-        FactoryReferenceAttribute.create(new FactoryReferenceAttribute<>(CopperEngineContextFactory.class).labelText("Copper engine context"));
-
+    public final IntegerAttribute batcherThreads = new IntegerAttribute().labelText("Number of batcher threads");
     public final IntegerAttribute threads = new IntegerAttribute().labelText("Number of processing threads");
 
     public final FactoryReferenceAttribute<EngineIdProvider, EngineIdProviderFactory<V, R>> persistentEngineIdProviderFactory =
@@ -50,7 +47,7 @@ public class PersistentScottyEngineFactory<V, R extends FactoryBase<?, V, R>> ex
         ProcessorPoolManager<PersistentProcessorPool> processorPoolManager = new DefaultProcessorPoolManager<>();
         processorPoolManager.setProcessorPools(Collections.singletonList(processorPool));
 
-        BatcherImpl batcher = new BatcherImpl(3);
+        BatcherImpl batcher = new BatcherImpl(batcherThreads.get());
         batcher.setBatchRunner(new RetryingTxnBatchRunner(dbDialectFactory.instance().dataSource));
 
         ScottyDBStorage dbStorage = new ScottyDBStorage();
@@ -66,7 +63,6 @@ public class PersistentScottyEngineFactory<V, R extends FactoryBase<?, V, R>> ex
         engine.setDbStorage(dbStorage);
         engine.setWfRepository(dbDialectFactory.instance().wfRepository);
         engine.setEngineIdProvider(persistentEngineIdProviderFactory.instance());
-        engine.setDependencyInjector(copperEngineContext.instance());
         return new PersistentEngineContainer(engine, batcher);
     }
 

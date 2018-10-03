@@ -22,13 +22,10 @@ import de.factoryfx.factory.atrribute.FactoryReferenceAttribute;
 
 public abstract class TransientScottyEngineFactory<V, R extends FactoryBase<?, V, R>> extends FactoryBase<TransientScottyEngine, V, R> {
 
-    public final FactoryReferenceAttribute<CopperEngineContext, CopperEngineContextFactory<V,R>> copperEngineContext =
-        FactoryReferenceAttribute.create(new FactoryReferenceAttribute<>(CopperEngineContextFactory.class).labelText("Copper engine context"));
-
     public final FactoryReferenceAttribute<EngineIdProvider, EngineIdProviderFactory<V, R>> engineIdProviderFactory =
         FactoryReferenceAttribute.create(new FactoryReferenceAttribute<>(EngineIdProviderFactory.class));
 
-    public final IntegerAttribute threads = new IntegerAttribute().labelText("Number of processing threads").defaultValue(10);
+    public final IntegerAttribute threads = new IntegerAttribute().labelText("Number of processing threads");
 
     public abstract List<String> getWorkflowClassPaths();
 
@@ -39,7 +36,6 @@ public abstract class TransientScottyEngineFactory<V, R extends FactoryBase<?, V
     }
 
     public TransientScottyEngine createImpl() {
-
         TransientScottyEngine engine = new TransientScottyEngine();
         TransientProcessorPool processorPool = new TransientPriorityProcessorPool(TransientProcessorPool.DEFAULT_POOL_ID, threads.get());
         ProcessorPoolManager<TransientProcessorPool> processorPoolManager = new DefaultProcessorPoolManager<>();
@@ -53,7 +49,6 @@ public abstract class TransientScottyEngineFactory<V, R extends FactoryBase<?, V
         engine.setTicketPoolManager(new DefaultTicketPoolManager());
         engine.setTimeoutManager(new DefaultTimeoutManager());
         engine.setWfRepository(new ClasspathWorkflowRepository(getWorkflowClassPaths()));
-        engine.setDependencyInjector(copperEngineContext.instance());
         return engine;
     }
 }

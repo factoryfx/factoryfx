@@ -31,7 +31,7 @@ public class WorkflowLauncher {
     public enum EngineType{
         PERSISTENT,
         TRANSIENT;
-        AbstractProcessingEngine getEngine(TransientScottyEngine transientScottyEngine, PersistentScottyEngine persistentScottyEngine){
+        private AbstractProcessingEngine getEngine(TransientScottyEngine transientScottyEngine, PersistentScottyEngine persistentScottyEngine){
             return this == PERSISTENT? persistentScottyEngine : transientScottyEngine;
         }
     }

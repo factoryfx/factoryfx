@@ -7,7 +7,7 @@ import org.copperengine.core.AbstractDependencyInjector;
 public class CopperEngineContext extends AbstractDependencyInjector {
 
     private final String type;
-    private Map<String, Object> dependencyMap;
+    private final Map<String, Object> dependencyMap;
 
     public CopperEngineContext(String type, Map<String, Object> dependencyMap) {
         this.type = type;
