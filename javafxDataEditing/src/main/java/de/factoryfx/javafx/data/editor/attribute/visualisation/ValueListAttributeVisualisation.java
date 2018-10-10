@@ -63,7 +63,10 @@ public class ValueListAttributeVisualisation<T, A extends Attribute<List<T>,A>> 
 
         Button addButton=new Button("", uniformDesign.createIcon(FontAwesome.Glyph.PLUS));
         addButton.setOnAction(event -> {
-            valueListAttribute.get().add(detailAttribute.get());
+            T newValue = detailAttribute.get();
+            valueListAttribute.get().add(newValue);
+            tableView.getSelectionModel().clearSelection();
+            tableView.getSelectionModel().select(newValue);
         });
 
         Button replaceButton=new Button("", uniformDesign.createIcon(FontAwesome.Glyph.EXCHANGE));
