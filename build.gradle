@@ -63,14 +63,14 @@ subprojects {
     artifacts {
         archives javadocJar, sourcesJar
     }
-    signing {
-        sign configurations.archives
-    }
 
     group = 'io.github.factoryfx'
     version = '1.7.2'
 
     if (project.hasProperty('secretKeyRingFileSourceURL')) {
+        signing {
+            sign configurations.archives
+        }
         //workaround  to get key  file to the plugin
 
         // task to fetch the GPG key to sign the JAR archives
@@ -90,6 +90,7 @@ subprojects {
             tasks.signArchives.dependsOn fetchSecretKeyRingFile
         }
     }
+
 
     uploadArchives {
         repositories {
@@ -349,6 +350,13 @@ project(':javafxDataEditing') {
 
     dependencies {
         compile project(":data")
+
+        compile "org.openjfx:javafx-base:11:win"
+        compile "org.openjfx:javafx-graphics:11:win"
+        compile "org.openjfx:javafx-controls:11:win"
+        compile "org.openjfx:javafx-web:11:win"
+        compile "org.openjfx:javafx-fxml:11:win"
+
         compile group: 'org.controlsfx', name: 'controlsfx', version: '9.0.0'
         compile group: 'org.fxmisc.richtext', name: 'richtextfx', version: '0.6.10'
         testCompile project(":testfactories")
@@ -398,6 +406,13 @@ project(':javafxDistributionClient') {
     dependencies {
         compile 'org.slf4j:slf4j-api:1.8.0-beta2'
         compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.9.6'
+
+        compile "org.openjfx:javafx-base:11:win"
+        compile "org.openjfx:javafx-graphics:11:win"
+        compile "org.openjfx:javafx-controls:11:win"
+        compile "org.openjfx:javafx-web:11:win"
+        compile "org.openjfx:javafx-fxml:11:win"
+
 
         compile group: 'org.glassfish.jersey.core', name: 'jersey-client', version: '2.27'
         compile group: 'com.fasterxml.jackson.jaxrs', name: 'jackson-jaxrs-json-provider', version: '2.9.6'

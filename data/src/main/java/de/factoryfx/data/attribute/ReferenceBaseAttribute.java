@@ -97,7 +97,7 @@ public abstract class ReferenceBaseAttribute<T extends Data, U, A extends Refere
 
     /**
      * customise how new values are created
-     * @param newValuesProviderFromRootAndAttribute root, attribute -> List.of(T)
+     * @param newValuesProviderFromRootAndAttribute root, attribute to List.of(T)
      * @return the new added factory
      */
     @SuppressWarnings("unchecked")
