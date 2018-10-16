@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Enumeration;
 import java.util.Iterator;
+import java.util.Objects;
 import java.util.StringTokenizer;
 
 public class SoapHandler<S> extends AbstractHandler {
@@ -28,7 +29,7 @@ public class SoapHandler<S> extends AbstractHandler {
 
         try {
             MessageFactory messageFactory;
-            if (request.getHeader("Content-Type").equals("text/xml")){
+            if (Objects.equals(request.getHeader("Content-Type"),"text/xml")){
                 messageFactory  = MessageFactory.newInstance(SOAPConstants.SOAP_1_1_PROTOCOL);
             } else {
                 //"application/soap+xml"
