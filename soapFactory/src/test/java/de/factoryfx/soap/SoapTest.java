@@ -1,18 +1,25 @@
 package de.factoryfx.soap;
 
 import de.factoryfx.soap.example.HelloWorld;
+import de.factoryfx.soap.example.SoapDummyRequest;
+import de.factoryfx.soap.example.SoapDummyRequestNested;
 import de.factoryfx.soap.server.SoapJettyServerFactory;
 import de.factoryfx.jetty.HttpServerConnectorFactory;
 import de.factoryfx.server.MicroserviceBuilder;
 import org.junit.Test;
 
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.soap.*;
 
 public class SoapTest {
 
     @Test
     public void test(){
-        System.out.println("34453");
 
         SoapHandlerFactory<HelloWorld, Void, SoapJettyServerFactory> soapHandlerFactory = new SoapHandlerFactory<>();
         soapHandlerFactory.serviceBean.set(new HelloWorldImplFactory());
@@ -26,7 +33,7 @@ public class SoapTest {
 
         MicroserviceBuilder.buildInMemoryMicroservice(root).start();
 
-//        callSoapWebService("http://localhost/8088");
+        callSoapWebService("http://localhost:8088","action");
     }
 
     // SAAJ - SOAP Client Testing
@@ -65,8 +72,7 @@ public class SoapTest {
 
             soapConnection.close();
         } catch (Exception e) {
-            System.err.println("\nError occurred while sending SOAP Request to Server!\nMake sure you have the correct endpoint URL and SOAPAction!\n");
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
     }
 
@@ -94,13 +100,27 @@ public class SoapTest {
 
         // SOAP Body
         SOAPBody soapBody = envelope.getBody();
-        SOAPElement soapBodyElem = soapBody.addChildElement("GetInfoByCity", myNamespace);
-        SOAPElement soapBodyElem1 = soapBodyElem.addChildElement("USCity", myNamespace);
-        soapBodyElem1.addTextNode("New York");
+        SoapDummyRequest req = new SoapDummyRequest();
+        req.dummy = "BLA";
+        req.soapDummyRequestNested = new SoapDummyRequestNested();
+        req.soapDummyRequestNested.dummy = "BLUB";
+        Marshaller marshaller = null;
+        DocumentBuilder db = null;
+        try {
+            marshaller = JAXBContext.newInstance(SoapDummyRequest.class).createMarshaller();
+            db = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+            org.w3c.dom.Document document = db.newDocument();
+            marshaller.marshal(req, document);
+            org.w3c.dom.Node importedNode = soapBody.getOwnerDocument().importNode(document.getChildNodes().item(0), true);
+            soapBody.appendChild(importedNode);
+        } catch (JAXBException | ParserConfigurationException e) {
+            throw new RuntimeException(e);
+        }
+
     }
 
     private static SOAPMessage createSOAPRequest(String soapAction) throws Exception {
-        MessageFactory messageFactory = MessageFactory.newInstance();
+        MessageFactory messageFactory = MessageFactory.newInstance(SOAPConstants.SOAP_1_2_PROTOCOL);
         SOAPMessage soapMessage = messageFactory.createMessage();
 
         createSoapEnvelope(soapMessage);

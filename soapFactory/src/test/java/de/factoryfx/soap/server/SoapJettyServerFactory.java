@@ -1,7 +1,6 @@
 package de.factoryfx.soap.server;
 
 
-import de.factoryfx.soap.example.HelloWorld;
 import de.factoryfx.data.jackson.ObjectMapperBuilder;
 import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.factory.atrribute.FactoryReferenceAttribute;
@@ -9,17 +8,20 @@ import de.factoryfx.factory.atrribute.FactoryReferenceListAttribute;
 import de.factoryfx.jetty.*;
 import de.factoryfx.soap.SoapHandler;
 import de.factoryfx.soap.SoapHandlerFactory;
-
-import java.util.Collections;
+import de.factoryfx.soap.example.HelloWorld;
 import org.eclipse.jetty.server.handler.ContextHandler;
 import org.glassfish.jersey.logging.LoggingFeature;
+
+import java.util.Collections;
 
 /*
     connect ServerVisitor with InstrumentedJettyServer
  */
 public class SoapJettyServerFactory extends FactoryBase<JettyServer,Void,SoapJettyServerFactory> {
-    public final FactoryReferenceAttribute<SoapHandler<HelloWorld>, SoapHandlerFactory<HelloWorld,Void,SoapJettyServerFactory>> soapHandler = new FactoryReferenceAttribute<>();
-    public final FactoryReferenceListAttribute<HttpServerConnectorCreator,HttpServerConnectorFactory<Void,SoapJettyServerFactory>> connectors = new FactoryReferenceListAttribute<HttpServerConnectorCreator,HttpServerConnectorFactory<Void,SoapJettyServerFactory>>().setupUnsafe(HttpServerConnectorFactory.class).labelText("connectors").userNotSelectable();
+
+    public final FactoryReferenceAttribute<SoapHandler<HelloWorld>, SoapHandlerFactory<HelloWorld,Void,SoapJettyServerFactory>> soapHandler = new FactoryReferenceAttribute<>(null);
+    public final FactoryReferenceListAttribute<HttpServerConnectorCreator,HttpServerConnectorFactory<Void,SoapJettyServerFactory>> connectors =
+            FactoryReferenceListAttribute.create(new FactoryReferenceListAttribute<>(HttpServerConnectorFactory.class)).labelText("connectors").userNotSelectable();
 
     public SoapJettyServerFactory(){
         super();

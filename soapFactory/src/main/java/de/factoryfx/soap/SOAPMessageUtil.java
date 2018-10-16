@@ -14,18 +14,9 @@ public class SOAPMessageUtil {
     private final JAXBContext jaxbContext;
     private final HashMap<Class, Method> dispatchMap = new HashMap<>();
     private final DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-    private final MessageFactory messageFactory11;
-    private final MessageFactory messageFactory12;
 
     public SOAPMessageUtil(JAXBContext jaxbContext) {
         Logger.getLogger("javax.xml.soap").setLevel(Level.OFF); //avoid useless not fixable warning
-
-        try {
-            messageFactory11 = MessageFactory.newInstance(SOAPConstants.SOAP_1_1_PROTOCOL);
-            messageFactory12 = MessageFactory.newInstance(SOAPConstants.SOAP_1_2_PROTOCOL);
-        } catch (SOAPException e) {
-            throw new RuntimeException(e);
-        }
         this.jaxbContext = jaxbContext;
     }
 
@@ -33,30 +24,32 @@ public class SOAPMessageUtil {
         try {
 
             Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
-//            SOAPFault soapFault = soapMessage.getSOAPBody().getFault();
-//            if (soapFault != null) {
-//                DetailEntry next = soapFault.getDetail().getDetailEntries().next();
-//                Object unmarshalledExceptionElement = unmarshaller.unmarshal(soapFault.getDetail().getDetailEntries().next());
-//
-//                Class<?> elementClass;
-//                Object exceptionElement;
-//
-//                if (unmarshalledExceptionElement instanceof JAXBElement) {
-//                    JAXBElement jaxbElement = (JAXBElement) unmarshalledExceptionElement;
-//                    elementClass = jaxbElement.getDeclaredType();
-//                    exceptionElement = jaxbElement.getValue();
-//                } else {
-//                    elementClass = unmarshalledExceptionElement.getClass();
-//                    exceptionElement = unmarshalledExceptionElement;
-//                }
-//
-//                throw (GeneratedJAXBException) soapExceptionMap.get(elementClass)
-//                        .getConstructor(String.class, elementClass)
-//                        .newInstance(soapFault.getFaultString(), elementClass.cast(exceptionElement));
-//            } else {
+            /*
+            SOAPFault soapFault = soapMessage.getSOAPBody().getFault();
+            if (soapFault != null) {
+                DetailEntry next = soapFault.getDetail().getDetailEntries().next();
+                Object unmarshalledExceptionElement = unmarshaller.unmarshal(soapFault.getDetail().getDetailEntries().next());
+
+                Class<?> elementClass;
+                Object exceptionElement;
+
+                if (unmarshalledExceptionElement instanceof JAXBElement) {
+                    JAXBElement jaxbElement = (JAXBElement) unmarshalledExceptionElement;
+                    elementClass = jaxbElement.getDeclaredType();
+                    exceptionElement = jaxbElement.getValue();
+                } else {
+                    elementClass = unmarshalledExceptionElement.getClass();
+                    exceptionElement = unmarshalledExceptionElement;
+                }
+
+                throw (GeneratedJAXBException) soapExceptionMap.get(elementClass)
+                        .getConstructor(String.class, elementClass)
+                        .newInstance(soapFault.getFaultString(), elementClass.cast(exceptionElement));
+            } else {
+            */
 
                 return unmarshaller.unmarshal(soapMessage.getSOAPBody().getFirstChild());
-//            }
+            //}
 
         } catch (JAXBException | SOAPException e) {
             throw new RuntimeException(e);
@@ -64,10 +57,10 @@ public class SOAPMessageUtil {
 
     }
 
-    public SOAPMessage wrapRequest11(Object request){
+    public SOAPMessage wrapRequest(Object request, MessageFactory messageFactory){
         try {
 //            SOAPFactory soapFactory = SOAPFactory.newInstance(SOAPConstants.SOAP_1_1_PROTOCOL);
-            SOAPMessage requestMessage = messageFactory11.createMessage();
+            SOAPMessage requestMessage = messageFactory.createMessage();
 
             Marshaller marshaller = jaxbContext.createMarshaller();
             DocumentBuilder db = dbf.newDocumentBuilder();
@@ -83,9 +76,9 @@ public class SOAPMessageUtil {
     }
 
 
-    public SOAPMessage wrapResponse(Object response){
+    public SOAPMessage wrapResponse(Object response, MessageFactory messageFactory){
         try {
-            SOAPMessage responseMessage = messageFactory11.createMessage();
+            SOAPMessage responseMessage = messageFactory.createMessage();
 
             Marshaller marshaller = jaxbContext.createMarshaller();
             DocumentBuilder db = dbf.newDocumentBuilder();

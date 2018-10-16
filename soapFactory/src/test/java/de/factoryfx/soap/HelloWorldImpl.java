@@ -12,6 +12,6 @@ public class HelloWorldImpl implements HelloWorld {
 
     @Override
     public SoapDummyResponse subIMMEDIATETEMPLATECHANGE(SoapDummyRequest parameters) throws SoapDummyRequestException1, SoapDummyRequestException2 {
-        return null;
+        return new SoapDummyResponse();
     }
 }

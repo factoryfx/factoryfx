@@ -1,10 +1,18 @@
 package de.factoryfx.soap;
 
+import org.eclipse.jetty.server.Request;
+import org.eclipse.jetty.server.handler.AbstractHandler;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.xml.soap.*;
 import javax.xml.transform.stream.StreamSource;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.*;
+import java.util.Enumeration;
+import java.util.Iterator;
+import java.util.StringTokenizer;
 
 public class SoapHandler<S> extends AbstractHandler {
     private final WebServiceRequestDispatcher dispatcher;
@@ -34,7 +42,7 @@ public class SoapHandler<S> extends AbstractHandler {
             message.saveChanges();
 
             Object requestData = dispatcher.execute(soapMessageUtil.parseRequest(message));
-            SOAPMessage responseMessage = soapMessageUtil.wrapResponse(requestData);
+            SOAPMessage responseMessage = soapMessageUtil.wrapResponse(requestData, messageFactory);
 
             if (responseMessage.saveRequired()) {
                 responseMessage.saveChanges();
@@ -45,6 +53,8 @@ public class SoapHandler<S> extends AbstractHandler {
             OutputStream os = response.getOutputStream();
             responseMessage.writeTo(os);
             os.flush();
+
+            baseRequest.setHandled(true);
 
         } catch (SOAPException e) {
             throw new RuntimeException(e);

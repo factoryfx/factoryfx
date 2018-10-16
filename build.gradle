@@ -12,14 +12,14 @@ buildscript {
 apply plugin: 'idea'
 idea {
     project {
-        languageLevel = JavaVersion.VERSION_1_10
+        languageLevel = JavaVersion.VERSION_11
         vcs = 'Git'
     }
 }
 
 import org.gradle.api.tasks.wrapper.Wrapper.DistributionType
 wrapper {
-    gradleVersion = '4.9'
+    gradleVersion = '4.10.2'
     distributionType = DistributionType.ALL
 }
 
@@ -68,7 +68,7 @@ subprojects {
     }
 
     group = 'io.github.factoryfx'
-    version = '1.7.1'
+    version = '1.7.2'
 
     if (project.hasProperty('secretKeyRingFileSourceURL')) {
         //workaround  to get key  file to the plugin
@@ -480,72 +480,44 @@ project(':typescriptGenerator') {
     }
 }
 
-////idea bug https://youtrack.jetbrains.com/issue/IDEA-192658
-//
-//project(':soapFactory') {
-//
-////    configurations {
-//////        compile.exclude group: 'com.google.code.findbugs'
-//////        compile.exclude group: 'com.sun.activation'
-//////        compile.exclude group: 'javax.xml.stream'
-//////    }
-//
-//    repositories {
-//        mavenCentral()
-////        maven {
-////            url "https://oss.sonatype.org/content/repositories/snapshots"
-////        }
-//
-//        maven {
-//            url "http://maven.java.net/content/repositories/snapshots"
-//        }
-//    }
-//
-//    dependencies {
-////        compile (group: 'org.eclipse.jetty', name: 'jetty-server', version: '9.4.11.v20180605'){
-////                        exclude group: 'javax.annotation'
-////            exclude module: 'jetty-servlet'
-////            exclude module: 'jetty-webapp'
-////            exclude group: 'org.glassfish.jersey.core'
-////            exclude group: 'javax.servlet'
-//////            exclude group: 'org.eclipse.jetty'
-////
-////            exclude module: 'jetty-http'
-////            exclude module: 'jetty-util'
-////            exclude module: 'jetty-io'
-////        }
-//
-//
-//
-//
-////        compile (project(":jettyFactory")){
-////            exclude group: 'javax.annotation'
-////            exclude module: 'jetty-servlet'
-////            exclude module: 'jetty-webapp'
-////            exclude group: 'org.glassfish.jersey.core'
-////            exclude group: 'javax.servlet'
-////            exclude group: 'org.eclipse.jetty'
-////        }
-//        compile (group: 'com.sun.xml.bind', name: 'jaxb-impl', version: '2.4.0-b180725.0644'){
-//            exclude group: 'javax.annotation'
-//        }
-////        compile group: 'javax.annotation', name: 'javax.annotation-api', version: '1.3.2'
-////        compile (group: 'com.sun.xml.ws', name: 'jaxws-rt', version: '2.3.0.2'){
-////            exclude module: 'sdo-eclipselink-plugin'
-////            exclude group: 'javax.activation'
-////            exclude group: 'javax.annotation'
-////            exclude module: 'jsr181-api'
-//////            exclude group: 'javax.xml.soap'
-////            exclude group: 'javax.xml.stream'
-////        }
-//        compile (group: 'javax.xml.ws', name: 'jaxws-api', version: '2.4.0-SNAPSHOT') {
-//            exclude group: 'javax.annotation'
-//        }
-//        compile group: 'javax.annotation', name: 'javax.annotation-api', version: '1.3.2'
-//
-//
-//
-////        compile group: 'javax.xml.ws', name: 'jaxws-api', version: '2.3.0'
-////        compile group: 'javax.activation', name: 'javax.activation-api', version: '1.2.0'
-//    }
-//}
+//idea bug https://youtrack.jetbrains.com/issue/IDEA-192658
+
+project(':soapFactory') {
+
+    repositories {
+        mavenCentral()
+
+        maven {
+            url "http://maven.java.net/content/repositories/snapshots"
+        }
+    }
+
+    dependencies {
+
+        compile project(":jettyFactory")
+
+        compile (group: 'com.sun.xml.bind', name: 'jaxb-impl', version: '2.4.0-b180830.0438') {
+            exclude group: 'javax.annotation'
+        }
+
+        compile group: 'com.sun.istack', name: 'istack-commons-runtime', version: '3.0.7'
+
+        compile (group: 'com.sun.xml.messaging.saaj', name: 'saaj-impl', version: '1.5.0') {
+            exclude group: 'org.jvnet.mimepull'
+            exclude group: 'javax.activation'
+        }
+
+        compile (group: 'javax.xml.ws', name: 'jaxws-api', version: '2.4.1-SNAPSHOT') {
+            exclude group: 'javax.annotation'
+        }
+
+
+        compile group: 'javax.annotation', name: 'javax.annotation-api', version: '1.3.2'
+
+        compile (group: 'javax.jws', name: 'javax.jws-api', version: '1.1') {
+            exclude group: 'javax.annotation'
+//            exclude group: 'javax.xml.soap'
+        }
+
+    }
+}
