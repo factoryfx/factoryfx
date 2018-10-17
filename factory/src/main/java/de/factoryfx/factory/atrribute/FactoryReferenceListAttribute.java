@@ -41,8 +41,8 @@ public class FactoryReferenceListAttribute<L, F extends FactoryBase<? extends L,
      * if possible use constructor instead
      *
      *      * e.g.:
-     *      *     public final FactoryReferenceListAttribute<MicroserviceRestClient<VS,RS,S>,MicroserviceRestClientFactory<Void,RichClientRoot,VS,RS,S>> restClient =
-     *      *             FactoryReferenceListAttribute.create(new FactoryReferenceListAttribute<>(MicroserviceRestClientFactory.class));
+     *      *     public final FactoryReferenceListAttribute&lt;MicroserviceRestClient&lt;VS,RS,S&gt;,MicroserviceRestClientFactory&lt;Void,RichClientRoot,VS,RS,S&gt;&gt; restClient =
+     *      *             FactoryReferenceListAttribute.create(new FactoryReferenceListAttribute&lt;&gt;(MicroserviceRestClientFactory.class));
      *
      * @param factoryReferenceListAttribute factoryReferenceListAttribute
      * @return factoryReferenceListAttribute

@@ -42,8 +42,10 @@ public class SoapHandler<S> extends AbstractHandler {
             soapPart.setContent(messageSource);
             message.saveChanges();
 
-            Object requestData = dispatcher.execute(soapMessageUtil.parseRequest(message));
-            SOAPMessage responseMessage = soapMessageUtil.wrapResponse(requestData, messageFactory);
+            WebServiceCallResult callResult = dispatcher.execute(soapMessageUtil.parseRequest(message));
+            SOAPMessage responseMessage =
+                    callResult.result != null?soapMessageUtil.wrapResponse(callResult.result, messageFactory)
+                    :soapMessageUtil.wrapFault(callResult.createFaultDetail(),callResult.fault.getMessage(), messageFactory);
 
             if (responseMessage.saveRequired()) {
                 responseMessage.saveChanges();

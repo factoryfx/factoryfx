@@ -1,9 +1,8 @@
 package de.factoryfx.soap;
 
-//import javax.xml.ws.WebFault;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-        import java.util.HashMap;
+import java.util.HashMap;
 
 public class WebServiceRequestDispatcher {
     private final Object webService;
@@ -19,35 +18,25 @@ public class WebServiceRequestDispatcher {
         }
     }
 
-    public Object execute(Object request) {
+    public WebServiceCallResult execute(Object request) {
         Method method = dispatchMap.get(request.getClass());
         try {
-            return method.invoke(webService, request);
-        } catch (IllegalAccessException | InvocationTargetException e) {
+            return WebServiceCallResult.fromResult(method.invoke(webService, request));
+        } catch (IllegalAccessException  e) {
             throw new RuntimeException(e);
+        } catch (InvocationTargetException t) {
+            Throwable ex = t.getTargetException();
+            if (ex instanceof Error)
+                throw (Error)ex;
+            if (ex instanceof RuntimeException)
+                throw (RuntimeException)ex;
+            for (Class<?> exceptionType : method.getExceptionTypes()) {
+                if (exceptionType.isAssignableFrom(ex.getClass())) {
+                    return WebServiceCallResult.fromFault((Exception)ex);
+                }
+            }
+            throw new RuntimeException(ex);
         }
     }
 
-//            Throwable targetException = ex.getTargetException();
-//            fault = Optional.ofNullable(targetException.getClass().getAnnotation(WebFault.class));
-//            if (fault.isPresent()) {
-//                try {
-//                    Method getFaultInfo = targetException.getClass().getMethod("getFaultInfo");
-//                    result = getFaultInfo.invoke(targetException);
-//                    QName faultCode = new QName(fault.get().targetNamespace(), fault.get().name());
-//                    boolean isNil = result == null;
-//                    result = new JAXBElement(faultCode,getFaultInfo.getReturnType(),result);
-//                    ((JAXBElement)result).setNil(isNil);
-//                } catch (InvocationTargetException | NoSuchMethodException e) {
-//                    throw new RuntimeException(e);
-//                }
-//            } else {
-//                if (targetException instanceof RuntimeException) {
-//                    throw (RuntimeException)targetException;
-//                } else {
-//                    throw new RuntimeException(targetException);
-//                }
-//            }
-//        }
-//    }
 }
