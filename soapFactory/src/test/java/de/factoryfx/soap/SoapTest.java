@@ -1,8 +1,9 @@
 package de.factoryfx.soap;
 
-import de.factoryfx.soap.example.HelloWorld;
-import de.factoryfx.soap.example.SoapDummyRequest;
-import de.factoryfx.soap.example.SoapDummyRequestNested;
+import de.factoryfx.data.storage.DataAndNewMetadata;
+import de.factoryfx.jetty.JettyServer;
+import de.factoryfx.server.Microservice;
+import de.factoryfx.soap.example.*;
 import de.factoryfx.soap.server.SoapJettyServerFactory;
 import de.factoryfx.jetty.HttpServerConnectorFactory;
 import de.factoryfx.server.MicroserviceBuilder;
@@ -15,14 +16,18 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.soap.*;
+import java.util.stream.Stream;
 
 public class SoapTest {
+
 
     @Test
     public void test(){
 
         SoapHandlerFactory<HelloWorld, Void, SoapJettyServerFactory> soapHandlerFactory = new SoapHandlerFactory<>();
-        soapHandlerFactory.serviceBean.set(new HelloWorldImplFactory());
+        HelloWorldFactory helloWorldFactory = new HelloWorldFactory();
+        helloWorldFactory.service.set(req->new SoapDummyResponse());
+        soapHandlerFactory.serviceBean.set(helloWorldFactory);
 
         SoapJettyServerFactory root = new SoapJettyServerFactory();
         root.soapHandler.set(soapHandlerFactory);
@@ -31,9 +36,19 @@ public class SoapTest {
         httpServerConnectorFactory.port.set(8088);
         root.connectors.add(httpServerConnectorFactory);
 
-        MicroserviceBuilder.buildInMemoryMicroservice(root).start();
+        Microservice<Void, JettyServer, SoapJettyServerFactory, Object> microService = MicroserviceBuilder.buildInMemoryMicroservice(root);
+        microService.start();
 
         callSoapWebService("http://localhost:8088","action");
+        DataAndNewMetadata<SoapJettyServerFactory> newFactory = microService.prepareNewFactory();
+        helloWorldFactory = new HelloWorldFactory();
+        helloWorldFactory.service.set(req->{
+            throw new SoapDummyRequestException1();
+        });
+        newFactory.root.soapHandler.get().serviceBean.set(helloWorldFactory);
+        microService.updateCurrentFactory(newFactory,"","",x->true);
+        callSoapWebService("http://localhost:8088","action");
+
     }
 
     // SAAJ - SOAP Client Testing

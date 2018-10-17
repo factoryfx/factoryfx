@@ -2,6 +2,7 @@ package de.factoryfx.jetty;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
@@ -72,7 +73,7 @@ public class JettyServerTest {
 
         RestClient restClient = new RestClient("localhost",8015,"",false,null,null);
         Assert.assertEquals("Hello",restClient.get("Resource",String.class));
-        jettyServer = jettyServer.recreate(connectors,Arrays.asList(new Resource("World")));
+        jettyServer = jettyServer.recreate(connectors,Arrays.asList(new Resource("World")), Collections.emptyList());
         Assert.assertEquals("World",restClient.get("Resource",String.class));
         jettyServer.stop();
 
@@ -101,11 +102,11 @@ public class JettyServerTest {
             Assert.fail("Expectected exception");
         } catch (Exception expected) {}
 
-        jettyServer = jettyServer.recreate(moreConnectors,resources);
+        jettyServer = jettyServer.recreate(moreConnectors,resources, Collections.emptyList());
         Assert.assertEquals("Hello",restClient8015.get("Resource",String.class));
         Assert.assertEquals("Hello",restClient8016.get("Resource",String.class));
 
-        jettyServer = jettyServer.recreate(connectors,resources);
+        jettyServer = jettyServer.recreate(connectors,resources, Collections.emptyList());
         Assert.assertEquals("Hello",restClient8015.get("Resource",String.class));
         try {
             restClient8016.get("Resource",String.class);
@@ -156,7 +157,7 @@ public class JettyServerTest {
                 }
             }.start();
             Thread.sleep(400);
-            jettyServer = jettyServer.recreate(connectors,new ArrayList<>());
+            jettyServer = jettyServer.recreate(connectors,new ArrayList<>(), Collections.emptyList());
             try {
                 restClient.get("Resource",String.class);
                 Assert.fail("Expected exception");

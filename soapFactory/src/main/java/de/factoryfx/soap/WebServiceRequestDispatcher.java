@@ -30,12 +30,7 @@ public class WebServiceRequestDispatcher {
                 throw (Error)ex;
             if (ex instanceof RuntimeException)
                 throw (RuntimeException)ex;
-            for (Class<?> exceptionType : method.getExceptionTypes()) {
-                if (exceptionType.isAssignableFrom(ex.getClass())) {
-                    return WebServiceCallResult.fromFault((Exception)ex);
-                }
-            }
-            throw new RuntimeException(ex);
+            return WebServiceCallResult.fromFault((Exception)ex);
         }
     }
 

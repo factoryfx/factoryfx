@@ -1,9 +1,12 @@
 package de.factoryfx.soap.example;
 
-import javax.xml.ws.WebFault;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 
 
-public class SoapDummyRequestExceptionFault extends Exception{
+@XmlType(name = "SoapDummyRequestExceptionFault", namespace = "")
+@XmlRootElement(name = "SoapDummyRequestExceptionFault")
+public class SoapDummyRequestExceptionFault {
 
 
 }

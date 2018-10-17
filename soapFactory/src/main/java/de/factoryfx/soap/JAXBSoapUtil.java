@@ -42,23 +42,47 @@ public class JAXBSoapUtil {
 
     private static void collect(Class<?> clazz, Set<Class<?>> classes) {
         for (Method method : clazz.getDeclaredMethods()) {
-            if (method.getParameterCount() == 1 && method.getReturnType() != null) {
+            if (method.getParameterCount() <= 1 && method.getReturnType() != null) {
                 if (classes.add(method.getReturnType())) {
                     collect(method.getReturnType(),classes);
                 }
-                Class<?> parameterType = method.getParameterTypes()[0];
-                if (classes.add(parameterType)) {
-                    collect(parameterType,classes);
-                }
-
-
-                for (Class<?> exceptionClass : method.getExceptionTypes()) {
-                    if (classes.add(exceptionClass)) {
-                        collect(exceptionClass,classes);
+                if (method.getParameterCount() > 0) {
+                    Class<?> parameterType = method.getParameterTypes()[0];
+                    if (classes.add(parameterType)) {
+                        collect(parameterType, classes);
                     }
                 }
 
+
+                collectExceptions(classes, method);
+
             }
+        }
+    }
+
+    private static void collectExceptions(Set<Class<?>> classes, Method method) {
+        for (Class<?> exceptionClass : method.getExceptionTypes()) {
+            if (classes.add(exceptionClass)) {
+                collect(exceptionClass,classes);
+            }
+        }
+        Class<?> thisClass = method.getDeclaringClass();
+        for (Class<?> i : thisClass.getInterfaces()) {
+            try {
+                Method parentMethod = i.getDeclaredMethod(method.getName(),method.getParameterTypes());
+                collectExceptions(classes,parentMethod);
+            } catch (NoSuchMethodException ignored) {
+            }
+        }
+        Class<?> parent = thisClass.getSuperclass();
+        while (parent != null) {
+            try {
+                Method parentMethod = parent.getDeclaredMethod(method.getName(),method.getParameterTypes());
+                collectExceptions(classes,parentMethod);
+                return;
+            } catch (NoSuchMethodException ignored) {
+            }
+            parent = parent.getSuperclass();
         }
     }
 }

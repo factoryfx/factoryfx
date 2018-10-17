@@ -1,5 +1,6 @@
 package de.factoryfx.soap;
 
+
 import javax.xml.bind.*;
 import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilder;
@@ -83,7 +84,7 @@ public class SOAPMessageUtil {
         }
     }
 
-    public SOAPMessage wrapFault(JAXBElement fault, String faultString, MessageFactory messageFactory){
+    public SOAPMessage wrapFault(JAXBElement fault, String faultString, MessageFactory messageFactory, boolean soap12){
         try {
             SOAPMessage responseMessage = messageFactory.createMessage();
 
@@ -93,7 +94,11 @@ public class SOAPMessageUtil {
             marshaller.marshal(fault, document);
             org.w3c.dom.Node importedNode = responseMessage.getSOAPBody().getOwnerDocument().importNode(document.getChildNodes().item(0), true);
             SOAPFault soapFault = responseMessage.getSOAPBody().addFault();
-            soapFault.setFaultCode(fault.getName());
+            if (soap12) {
+                soapFault.setFaultCode(SOAPConstants.SOAP_SENDER_FAULT);
+            } else {
+                soapFault.setFaultCode(fault.getName());
+            }
             soapFault.setFaultString(faultString!=null?faultString:"Unspecified error");
             soapFault.addDetail();
             DetailEntry detailEntry = soapFault.getDetail().addDetailEntry(new QName(importedNode.getNamespaceURI(), importedNode.getLocalName(), importedNode.getPrefix()));

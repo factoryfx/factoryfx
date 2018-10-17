@@ -4,6 +4,7 @@ module de.factoryfx.soapFactory {
     requires java.logging;
 
     requires de.factoryfx.factory;
+    requires de.factoryfx.jettyFactory;
 
 
     requires javax.servlet.api;

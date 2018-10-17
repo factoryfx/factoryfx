@@ -9,6 +9,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
+import java.util.Collections;
 import java.util.List;
 
 /*
@@ -46,7 +47,7 @@ public class InstrumentedJettyServer{
     }
 
     public InstrumentedJettyServer recreate(List<HttpServerConnectorCreator> instances, List<Object> simpleResources) {
-        this.jettyServer=jettyServer.recreate(instances,simpleResources);
+        this.jettyServer=jettyServer.recreate(instances,simpleResources, Collections.emptyList());
         return this;
     }
 }

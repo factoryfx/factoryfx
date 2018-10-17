@@ -1,5 +1,6 @@
 package de.factoryfx.jetty;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -44,7 +45,7 @@ public abstract class JettyServerFactory<V,R extends FactoryBase<?,V,R>> extends
 
     public JettyServerFactory(){
         configLiveCycle().setCreator(this::createJetty);
-        configLiveCycle().setReCreator(currentLiveObject->currentLiveObject.recreate(connectors.instances(), getResourcesInstancesNullRemoved()));
+        configLiveCycle().setReCreator(currentLiveObject->currentLiveObject.recreate(connectors.instances(), getResourcesInstancesNullRemoved(), getBasicRequestHandlerInstancesNullRemoved()));
 
         configLiveCycle().setStarter(JettyServer::start);
         configLiveCycle().setDestroyer(JettyServer::stop);
@@ -54,11 +55,15 @@ public abstract class JettyServerFactory<V,R extends FactoryBase<?,V,R>> extends
 
     //api for customizing JettyServer creation
     protected JettyServer createJetty() {
-        return new JettyServer(connectors.instances(), getResourcesInstancesNullRemoved(), objectMapper.instance(),restLogging.instance());
+        return new JettyServer(connectors.instances(), getResourcesInstancesNullRemoved(), getBasicRequestHandlerInstancesNullRemoved(), objectMapper.instance(),restLogging.instance());
     }
 
-    protected List<Object> getResourcesInstancesNullRemoved(){
+    protected final List<Object> getResourcesInstancesNullRemoved(){
         return getResourcesInstances().stream().filter(Objects::nonNull).collect(Collectors.toList());
+    }
+
+    protected final List<BasicRequestHandler> getBasicRequestHandlerInstancesNullRemoved(){
+        return getBasicRequestHandlerInstances().stream().filter(Objects::nonNull).collect(Collectors.toList());
     }
 
     /**
@@ -66,4 +71,10 @@ public abstract class JettyServerFactory<V,R extends FactoryBase<?,V,R>> extends
      * */
     @JsonIgnore
     protected abstract List<Object> getResourcesInstances();
+
+    @JsonIgnore
+    protected List<BasicRequestHandler> getBasicRequestHandlerInstances() {
+        return Collections.emptyList();
+    };
+
 }

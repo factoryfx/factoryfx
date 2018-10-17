@@ -10,11 +10,8 @@ import javax.jws.soap.SOAPBinding;
 @SOAPBinding(style = SOAPBinding.Style.DOCUMENT, use= SOAPBinding.Use.LITERAL) //optional
 public interface HelloWorld{
 
-    @WebMethod
-    String getHelloWorldAsString(String name);
 
-//    @WebMethod(operationName = "", action = "")
-//    @WebResult(name = "", targetNamespace = "", partName = "")
+    @WebMethod
     public SoapDummyResponse subIMMEDIATETEMPLATECHANGE(
             //@WebParam(partName = "", name = "", targetNamespace = "")
             SoapDummyRequest parameters

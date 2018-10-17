@@ -2,11 +2,11 @@ package de.factoryfx.soap.example;
 
 import javax.xml.ws.WebFault;
 
-@WebFault(name = "SoapDummyRequestException1", targetNamespace = "")
-public class SoapDummyRequestException1 extends Exception{
+@WebFault(name = "SomeFaultElement", targetNamespace = "someNS")
+public class SoapDummyRequestException1 extends Exception {
 
 
-    private SoapDummyRequestExceptionFault eCRMInvalidInputElement;
+    public SoapDummyRequestExceptionFault eCRMInvalidInputElement = new SoapDummyRequestExceptionFault();
 
 
 

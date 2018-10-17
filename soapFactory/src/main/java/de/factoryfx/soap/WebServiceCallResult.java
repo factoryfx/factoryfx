@@ -11,7 +11,6 @@ public class WebServiceCallResult {
     public final Object result;
     public final Exception fault;
 
-
     private WebServiceCallResult(Object result) {
         this.result = result;
         this.fault = null;

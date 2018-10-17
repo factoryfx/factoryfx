@@ -1,9 +1,6 @@
 package de.factoryfx.jetty;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.logging.*;
 
@@ -39,7 +36,9 @@ public class JettyServer {
         jerseyLogger2.setLevel(Level.SEVERE);//warning about generic parameters, works fine and no fix available so the warnings are just useless
     }
 
-    public JettyServer(List<de.factoryfx.jetty.HttpServerConnectorCreator> connectors, List<Object> resources, List<Handler> additionalHandlers, ObjectMapper objectMapper, LoggingFeature loggingFeature, Consumer<ResourceConfig> resourceConfigSetup) {
+    public JettyServer(List<de.factoryfx.jetty.HttpServerConnectorCreator> connectors, List<Object> resources,
+                       List<BasicRequestHandler> basicRequestHandlers,
+                       List<Handler> additionalHandlers, ObjectMapper objectMapper, LoggingFeature loggingFeature, Consumer<ResourceConfig> resourceConfigSetup) {
 
 
         this.server=new org.eclipse.jetty.server.Server();
@@ -51,7 +50,7 @@ public class JettyServer {
         }
         this.resourceConfigSetup = resourceConfigSetup;
 
-        this.rootServlet = new UpdateableServlet(new ServletContainer(jerseySetup(resources)));
+        this.rootServlet = new UpdateableServlet(new ServletContainer(jerseySetup(resources)),basicRequestHandlers);
         ServletHolder holder = new ServletHolder(rootServlet);
         ServletContextHandler contextHandler = new ServletContextHandler(ServletContextHandler.SESSIONS);
         contextHandler.addServlet( holder, "/*");
@@ -77,14 +76,16 @@ public class JettyServer {
     }
 
 
-    public JettyServer(List<de.factoryfx.jetty.HttpServerConnectorCreator> connectors, List<Object> resources, ObjectMapper objectMapper, LoggingFeature loggingFeature) {
-        this(connectors,resources,new ArrayList<>(),
+    public JettyServer(List<de.factoryfx.jetty.HttpServerConnectorCreator> connectors, List<Object> resources, List<BasicRequestHandler> basicRequestHandlers, ObjectMapper objectMapper, LoggingFeature loggingFeature) {
+        this(connectors,resources,basicRequestHandlers,new ArrayList<>(),
                 objectMapper!=null?objectMapper:ObjectMapperBuilder.buildNewObjectMapper(),
                 loggingFeature!=null?loggingFeature:new org.glassfish.jersey.logging.LoggingFeature(new DelegatingLoggingFilterLogger()),new DefaultResourceConfigSetup());
     }
 
-    public JettyServer(List<de.factoryfx.jetty.HttpServerConnectorCreator> connectors, List<Object> resources, ObjectMapper objectMapper, LoggingFeature loggingFeature, Consumer<ResourceConfig> resourceConfigSetup) {
-        this(connectors,resources,new ArrayList<>(),
+    public JettyServer(List<de.factoryfx.jetty.HttpServerConnectorCreator> connectors, List<Object> resources,
+                       List<BasicRequestHandler> basicRequestHandlers,
+                       ObjectMapper objectMapper, LoggingFeature loggingFeature, Consumer<ResourceConfig> resourceConfigSetup) {
+        this(connectors,resources,basicRequestHandlers,new ArrayList<>(),
                 objectMapper!=null?objectMapper:ObjectMapperBuilder.buildNewObjectMapper(),
                 loggingFeature!=null?loggingFeature:new org.glassfish.jersey.logging.LoggingFeature(new DelegatingLoggingFilterLogger()),resourceConfigSetup);
     }
@@ -151,13 +152,13 @@ public class JettyServer {
     }
 
 
-    public JettyServer recreate(List<de.factoryfx.jetty.HttpServerConnectorCreator> connectors, List<Object> resources) {
+    public JettyServer recreate(List<de.factoryfx.jetty.HttpServerConnectorCreator> connectors, List<Object> resources, Collection<BasicRequestHandler> basicRequestHandlers) {
         JettyServer newServer = new JettyServer(this);
-        newServer._recreate(connectors,resources);
+        newServer._recreate(connectors,resources,basicRequestHandlers);
         return newServer;
     }
 
-    private void _recreate(List<de.factoryfx.jetty.HttpServerConnectorCreator> connectors, List<Object> resources) {
+    private void _recreate(List<de.factoryfx.jetty.HttpServerConnectorCreator> connectors, List<Object> resources, Collection<BasicRequestHandler> basicRequestHandlers) {
         Set<de.factoryfx.jetty.HttpServerConnectorCreator> oldConnectors = new HashSet<>(currentConnectors);
         oldConnectors.removeAll(connectors);
         for (de.factoryfx.jetty.HttpServerConnectorCreator creator : oldConnectors) {
@@ -168,7 +169,7 @@ public class JettyServer {
         for (de.factoryfx.jetty.HttpServerConnectorCreator currentConnector : currentConnectors) {
             currentConnector.addToServer(server);
         }
-        rootServlet.update(new ServletContainer(jerseySetup(resources)));
+        rootServlet.update(new ServletContainer(jerseySetup(resources)),basicRequestHandlers);
     }
 
 }
