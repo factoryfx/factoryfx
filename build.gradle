@@ -13,6 +13,7 @@ apply plugin: 'idea'
 idea {
     project {
         languageLevel = JavaVersion.VERSION_11
+        targetBytecodeVersion = JavaVersion.VERSION_11
         vcs = 'Git'
     }
 }
