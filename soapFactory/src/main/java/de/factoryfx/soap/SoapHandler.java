@@ -19,7 +19,7 @@ import java.util.Objects;
 import java.util.StringTokenizer;
 import java.util.function.Predicate;
 
-public class SoapHandler<S> implements BasicRequestHandler {
+public class SoapHandler implements BasicRequestHandler {
     private final WebServiceRequestDispatcher dispatcher;
     private final SOAPMessageUtil soapMessageUtil;
     private final Predicate<HttpServletRequest> testTarget;
