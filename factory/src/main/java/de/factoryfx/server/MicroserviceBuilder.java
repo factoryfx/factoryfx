@@ -5,6 +5,7 @@ import de.factoryfx.data.storage.filesystem.FileSystemDataStorage;
 import de.factoryfx.data.storage.inmemory.InMemoryDataStorage;
 import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.factory.FactoryManager;
+import de.factoryfx.factory.builder.FactoryTreeBuilder;
 import de.factoryfx.factory.exception.LoggingFactoryExceptionHandler;
 import de.factoryfx.factory.exception.ResettingHandler;
 import de.factoryfx.factory.exception.RethrowingFactoryExceptionHandler;
@@ -18,21 +19,36 @@ public class MicroserviceBuilder {
     /**
      * Microservice without a persistence data storage
      *
-     * @param root factory root
+     * @param rootFactory factory root
      * @param <V> Visitor
      * @param <L> root liveobject
      * @param <R> Root
      * @param <S> Summary
      * @return microservice
      */
-    public static <V,L,R extends FactoryBase<L,V,R>,S> Microservice<V,L,R,S> buildInMemoryMicroservice(R root){
-        return new Microservice<>(new FactoryManager<>(new RethrowingFactoryExceptionHandler()), new InMemoryDataStorage<>(root));
+    public static <V,L,R extends FactoryBase<L,V,R>,S> Microservice<V,L,R,S> buildInMemoryMicroservice(R rootFactory){
+        return new Microservice<>(new FactoryManager<>(new RethrowingFactoryExceptionHandler()), new InMemoryDataStorage<>(rootFactory));
     }
+
+    /**
+     * Microservice without a persistence data storage
+     *
+     * @param factoryTreeBuilder factoryTreeBuilder
+     * @param <V> Visitor
+     * @param <L> root liveobject
+     * @param <R> Root
+     * @param <S> Summary
+     * @return microservice
+     */
+    public static <V,L,R extends FactoryBase<L,V,R>,S> Microservice<V,L,R,S> buildInMemoryMicroservice(FactoryTreeBuilder<R> factoryTreeBuilder){
+        return new Microservice<>(new FactoryManager<>(new RethrowingFactoryExceptionHandler()), new InMemoryDataStorage<>(factoryTreeBuilder.buildTree()));
+    }
+
 
 
     /**
      * Microservice with filesystem data storage
-     * @param root factory root
+     * @param rootFactory factory root
      * @param path filesystem path to store
      * @param <V> Visitor
      * @param <L> root liveobject
@@ -41,10 +57,10 @@ public class MicroserviceBuilder {
      * @return microservice
      */
     @SuppressWarnings("unchecked")
-    public static <V,L,R extends FactoryBase<L,V,R>,S> Microservice<V,L,R,S> buildFilesystemMicroservice(R root, Path path){
-        Class<R> rootClass = (Class<R>) root.getClass();
+    public static <V,L,R extends FactoryBase<L,V,R>,S> Microservice<V,L,R,S> buildFilesystemMicroservice(R rootFactory, Path path){
+        Class<R> rootClass = (Class<R>) rootFactory.getClass();
         DataSerialisationManager<R,S> defaultSerialisationManager = new DataSerialisationManager<>(new JacksonSerialisation<>(1),new JacksonDeSerialisation<>(rootClass,1),new ArrayList<>(),1);
-        return new Microservice<>(new FactoryManager<>(new LoggingFactoryExceptionHandler(new ResettingHandler())), new FileSystemDataStorage<>(path, root,defaultSerialisationManager));
+        return new Microservice<>(new FactoryManager<>(new LoggingFactoryExceptionHandler(new ResettingHandler())), new FileSystemDataStorage<>(path, rootFactory,defaultSerialisationManager));
     }
 
 

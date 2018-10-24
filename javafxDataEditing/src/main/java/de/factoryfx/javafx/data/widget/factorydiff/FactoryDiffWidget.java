@@ -157,9 +157,7 @@ public class FactoryDiffWidget implements Widget {
     private Node createEditor(Attribute<?,?> attribute){
         final AttributeVisualisation previousAttributeEditor = attributeVisualisationMappingBuilder.getAttributeVisualisation(attribute, null, null);
         previousAttributeEditor.expand();
-        Node readOnlyVisualisation = previousAttributeEditor.createReadOnlyVisualisation();
-        previousAttributeEditor.setReadOnly();
-        return readOnlyVisualisation;
+        return previousAttributeEditor.createReadOnlyVisualisation();
     }
 
     private TableView<AttributeDiffInfoExtended> createDiffTableViewTable(){

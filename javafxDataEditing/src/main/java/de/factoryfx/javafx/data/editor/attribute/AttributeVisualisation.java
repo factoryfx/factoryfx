@@ -15,7 +15,7 @@ public interface AttributeVisualisation {
      * */
     default Node createReadOnlyVisualisation(){
         Node visualisation = createVisualisation();
-        visualisation.setDisable(true);
+        setReadOnly();
         return visualisation;
     }
 
