@@ -10,7 +10,7 @@ public class ApplicationClientDownloadResourceFactory<V,R extends FactoryBase<?,
 
     public ApplicationClientDownloadResourceFactory() {
         config().setDisplayTextProvider(() -> "DownloadResource:"+guiZipFile.get());
-        configLiveCycle().setCreator(() -> new ApplicationClientDownloadResource(new File(guiZipFile.get())));
+        configLifeCycle().setCreator(() -> new ApplicationClientDownloadResource(new File(guiZipFile.get())));
     }
 
 }

@@ -7,7 +7,7 @@ public class PolymorphicFactoryBaseTest {
     public static class InvalidPolymorphicFactoryBase extends PolymorphicFactoryBase<Void,Void,SimpleFactoryBaseTest.InvalidSimpleFactoryFactory>{
 
         public InvalidPolymorphicFactoryBase(){
-            this.configLiveCycle().setCreator(() -> null);
+            this.configLifeCycle().setCreator(() -> null);
         }
 
         @Override

@@ -160,11 +160,11 @@ public class MicroserviceTest {
 
         long recreationCounter=0;
         public ExampleFactoryBRecreation(){
-            this.configLiveCycle().setReCreator(exampleLiveObjectB -> {
+            this.configLifeCycle().setReCreator(exampleLiveObjectB -> {
                 recreationCounter++;
                 return null;
             });
-            this.configLiveCycle().setCreator(() -> null);
+            this.configLifeCycle().setCreator(() -> null);
         }
     }
     @Test
@@ -188,7 +188,7 @@ public class MicroserviceTest {
 
     public static class BrokenFactory extends FactoryBase<Void,Void,BrokenFactory> {
         public BrokenFactory(){
-            configLiveCycle().setCreator(() -> {
+            configLifeCycle().setCreator(() -> {
                 throw new RuntimeException("create");
             });
         }

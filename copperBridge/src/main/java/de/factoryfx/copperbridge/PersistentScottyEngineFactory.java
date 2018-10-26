@@ -34,9 +34,9 @@ public class PersistentScottyEngineFactory<V, R extends FactoryBase<?, V, R>> ex
         FactoryReferenceAttribute.create(new FactoryReferenceAttribute<>(OracleDataSourceFactory.class)).labelText("DB dialect");
 
     public PersistentScottyEngineFactory() {
-        configLiveCycle().setCreator(this::createImpl);
-        configLiveCycle().setStarter(PersistentEngineContainer::startup);
-        configLiveCycle().setDestroyer(PersistentEngineContainer::shutdown);
+        configLifeCycle().setCreator(this::createImpl);
+        configLifeCycle().setStarter(PersistentEngineContainer::startup);
+        configLifeCycle().setDestroyer(PersistentEngineContainer::shutdown);
     }
 
     public PersistentEngineContainer createImpl() {

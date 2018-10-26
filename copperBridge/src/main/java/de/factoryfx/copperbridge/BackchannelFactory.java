@@ -9,6 +9,6 @@ public class BackchannelFactory<V, R extends FactoryBase<?, V, R>> extends Facto
 
     //must be singleton
     public BackchannelFactory() {
-        configLiveCycle().setCreator(BackchannelDefaultImpl::new);
+        configLifeCycle().setCreator(BackchannelDefaultImpl::new);
     }
 }

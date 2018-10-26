@@ -22,7 +22,7 @@ public class InstrumentedJettyServerFactory extends FactoryBase<InstrumentedJett
 
     public InstrumentedJettyServerFactory(){
         super();
-        configLiveCycle().setCreator(() -> {
+        configLifeCycle().setCreator(() -> {
             MetricRegistry metricRegistry=new MetricRegistry();
             JettyServer jettyServer = new JettyServer(
                     connectors.instances(),
@@ -38,13 +38,13 @@ public class InstrumentedJettyServerFactory extends FactoryBase<InstrumentedJett
 
 
         });
-        configLiveCycle().setReCreator(currentLiveObject->currentLiveObject.recreate(connectors.instances(),getResourcesInstances()));
+        configLifeCycle().setReCreator(currentLiveObject->currentLiveObject.recreate(connectors.instances(),getResourcesInstances()));
 
-        configLiveCycle().setStarter(InstrumentedJettyServer::start);
-        configLiveCycle().setDestroyer(InstrumentedJettyServer::stop);
+        configLifeCycle().setStarter(InstrumentedJettyServer::start);
+        configLifeCycle().setDestroyer(InstrumentedJettyServer::stop);
 
         config().setDisplayTextProvider(() -> "InstrumentedJettyServerFactory");
-        configLiveCycle().setRuntimeQueryExecutor((serverVisitor, jettyServer) -> jettyServer.acceptVisitor(serverVisitor));
+        configLifeCycle().setRuntimeQueryExecutor((serverVisitor, jettyServer) -> jettyServer.acceptVisitor(serverVisitor));
     }
 
     private List<Object> getResourcesInstances() {

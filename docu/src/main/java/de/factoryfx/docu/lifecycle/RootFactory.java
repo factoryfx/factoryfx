@@ -5,9 +5,9 @@ import de.factoryfx.factory.FactoryBase;
 public class RootFactory extends FactoryBase<Root,Void, RootFactory> {
 
     public RootFactory(){
-        configLiveCycle().setCreator(Root::new);
-        configLiveCycle().setReCreator(oldRoot -> new Root());
-        configLiveCycle().setStarter(newRoot -> newRoot.start());
-        configLiveCycle().setDestroyer(oldRoot -> oldRoot.destroy());
+        configLifeCycle().setCreator(Root::new);
+        configLifeCycle().setReCreator(oldRoot -> new Root());
+        configLifeCycle().setStarter(newRoot -> newRoot.start());
+        configLifeCycle().setDestroyer(oldRoot -> oldRoot.destroy());
     }
 }

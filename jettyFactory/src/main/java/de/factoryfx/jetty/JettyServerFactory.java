@@ -44,11 +44,11 @@ public abstract class JettyServerFactory<V,R extends FactoryBase<?,V,R>> extends
 
 
     public JettyServerFactory(){
-        configLiveCycle().setCreator(this::createJetty);
-        configLiveCycle().setReCreator(currentLiveObject->currentLiveObject.recreate(connectors.instances(), getResourcesInstancesNullRemoved(), getBasicRequestHandlerInstancesNullRemoved()));
+        configLifeCycle().setCreator(this::createJetty);
+        configLifeCycle().setReCreator(currentLiveObject->currentLiveObject.recreate(connectors.instances(), getResourcesInstancesNullRemoved(), getBasicRequestHandlerInstancesNullRemoved()));
 
-        configLiveCycle().setStarter(JettyServer::start);
-        configLiveCycle().setDestroyer(JettyServer::stop);
+        configLifeCycle().setStarter(JettyServer::start);
+        configLifeCycle().setDestroyer(JettyServer::stop);
 
         config().setDisplayTextProvider(() -> "Microservice REST server");
     }

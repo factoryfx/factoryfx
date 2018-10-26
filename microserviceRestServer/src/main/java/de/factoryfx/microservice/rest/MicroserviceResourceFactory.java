@@ -28,7 +28,7 @@ public class MicroserviceResourceFactory<V,R extends FactoryBase<?,V,R>,S> exten
 
     @SuppressWarnings("unchecked")
     public MicroserviceResourceFactory(){
-        configLiveCycle().setCreator(() -> {
+        configLifeCycle().setCreator(() -> {
             Predicate<Optional<AuthorizedUser>> authorizedKeyUserEvaluator = this.authorizedKeyUserEvaluator.get();
             if (authorizedKeyUserEvaluator==null) {
                 authorizedKeyUserEvaluator=(u)->true;

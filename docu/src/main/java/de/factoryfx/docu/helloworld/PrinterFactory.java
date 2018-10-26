@@ -11,8 +11,8 @@ public class PrinterFactory extends FactoryBase<Printer,Void, PrinterFactory> {
     });
 
     public PrinterFactory(){
-        configLiveCycle().setCreator(() -> new Printer(text.get()));
-        configLiveCycle().setStarter(Printer::print);
+        configLifeCycle().setCreator(() -> new Printer(text.get()));
+        configLifeCycle().setStarter(Printer::print);
     }
 
 }

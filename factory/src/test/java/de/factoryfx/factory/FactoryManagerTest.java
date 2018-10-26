@@ -16,9 +16,9 @@ public class FactoryManagerTest {
         ArrayList<String> calls =new ArrayList<>();
 
         ExampleFactoryA exampleFactoryA = new ExampleFactoryA();
-        exampleFactoryA.configLiveCycle().setStarter(exampleLiveObjectA -> calls.add("start exampleFactoryA"));
+        exampleFactoryA.configLifeCycle().setStarter(exampleLiveObjectA -> calls.add("start exampleFactoryA"));
         ExampleFactoryB exampleFactoryB = new ExampleFactoryB();
-        exampleFactoryB.configLiveCycle().setStarter(exampleLiveObjectA -> calls.add("start exampleFactoryB"));
+        exampleFactoryB.configLifeCycle().setStarter(exampleLiveObjectA -> calls.add("start exampleFactoryB"));
 
 
 
@@ -40,7 +40,7 @@ public class FactoryManagerTest {
         ExampleFactoryB exampleFactoryB = new ExampleFactoryB();
         root.referenceAttribute.set(exampleFactoryB);
         root = root.internal().addBackReferences();
-        root.configLiveCycle().setDestroyer(exampleLiveObjectA -> calls.add("destroy"));
+        root.configLifeCycle().setDestroyer(exampleLiveObjectA -> calls.add("destroy"));
         factoryManager.start(new RootFactoryWrapper<>(root));
 
         ExampleFactoryA update = root.internal().copy();
@@ -63,7 +63,7 @@ public class FactoryManagerTest {
         ExampleFactoryB exampleFactoryB = new ExampleFactoryB();
         root.referenceAttribute.set(exampleFactoryB);
         root = root.internal().addBackReferences();
-        root.configLiveCycle().setDestroyer(exampleLiveObjectA -> calls.add("destroy for update"));
+        root.configLifeCycle().setDestroyer(exampleLiveObjectA -> calls.add("destroy for update"));
         factoryManager.start(new RootFactoryWrapper<>(root));
 
         ExampleFactoryA update = root.internal().copy();

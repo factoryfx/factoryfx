@@ -42,27 +42,27 @@ public class FactoryManagerExceptionResetTest {
             this.startException=startException;
             this.destroyException=destroyException;
 
-            configLiveCycle().setCreator(() -> {
+            configLifeCycle().setCreator(() -> {
                 createCalls.add("created");
                 if (this.createException){
                     throw new RuntimeException("create");
                 }
                 return new DummyLifeObejct();
             });
-            configLiveCycle().setReCreator(dummyLifeObejct -> {
+            configLifeCycle().setReCreator(dummyLifeObejct -> {
                 reCreateCalls.add("recreate");
                 if (this.reCreateException){
                     throw new RuntimeException("recreate");
                 }
                 return new DummyLifeObejct();
             });
-            configLiveCycle().setDestroyer(dummyLifeObejct -> {
+            configLifeCycle().setDestroyer(dummyLifeObejct -> {
                 destroyCalls.add("destroy");
                 if (this.destroyException){
                     throw new RuntimeException("destroy");
                 }
             });
-            configLiveCycle().setStarter(dummyLifeObejct -> {
+            configLifeCycle().setStarter(dummyLifeObejct -> {
                 startCalls.add("start");
                 if (this.startException){
                     throw new RuntimeException("start");

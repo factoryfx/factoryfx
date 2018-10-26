@@ -8,7 +8,7 @@ public class DistributionClientDownloadResourceFactory<V,R extends FactoryBase<?
 
     public DistributionClientDownloadResourceFactory() {
         config().setDisplayTextProvider(() -> "Distribution client download path:"+distributionClientZipPath.get());
-        configLiveCycle().setCreator(() -> new DistributionClientDownloadResource(distributionClientZipPath.get()));
+        configLifeCycle().setCreator(() -> new DistributionClientDownloadResource(distributionClientZipPath.get()));
     }
 
 }

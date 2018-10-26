@@ -19,7 +19,7 @@ public abstract class CopperEngineContextFactory<V, R extends FactoryBase<?, V, 
         FactoryReferenceAttribute.create(new FactoryReferenceAttribute<>(PersistentScottyEngineFactory.class)).labelText("Persistent engine").nullable();
 
     public CopperEngineContextFactory(){
-        configLiveCycle().setCreator(()->{
+        configLifeCycle().setCreator(()->{
             // Here we need to break the ffx dependency injection, because we don't need a new engine in case of a dependency change
             CopperEngineContext dependencyInjector = new CopperEngineContext(dependencyInjectorType.get(), createDependencyHashMap());
             if(transientScottyEngine.instance()!=null) transientScottyEngine.instance().setDependencyInjector(dependencyInjector);

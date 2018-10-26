@@ -60,6 +60,7 @@ public class ExampleMain extends Application {
 
     public static void main(String[] args) {
         Thread.setDefaultUncaughtExceptionHandler((t, e) -> {
+            e.printStackTrace();
             Platform.runLater(()-> new ExceptionDialog(e).showAndWait());
         });
 

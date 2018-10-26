@@ -8,7 +8,7 @@ public class RootFactory extends FactoryBase<Root,Void, RootFactory> {
     public final StringAttribute stringAttribute = new StringAttribute();
 
     public RootFactory(){
-        configLiveCycle().setCreator(() ->  new Root(new ExpensiveResource()));
-        configLiveCycle().setReCreator(previousLiveObject -> new Root(previousLiveObject.getExpensiveResource()));
+        configLifeCycle().setCreator(() ->  new Root(new ExpensiveResource()));
+        configLifeCycle().setReCreator(previousLiveObject -> new Root(previousLiveObject.getExpensiveResource()));
     }
 }

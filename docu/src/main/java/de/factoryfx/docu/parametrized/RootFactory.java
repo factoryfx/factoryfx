@@ -12,6 +12,6 @@ public class RootFactory extends SimpleFactoryBase<Root,Void, RootFactory> {
     }
 
     public RootFactory() {
-        configLiveCycle().setStarter(root -> root.processRequest("123"));
+        configLifeCycle().setStarter(root -> root.processRequest("123"));
     }
 }

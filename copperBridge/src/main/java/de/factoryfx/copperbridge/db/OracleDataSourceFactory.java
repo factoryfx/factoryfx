@@ -26,7 +26,7 @@ public abstract class OracleDataSourceFactory<V, R extends FactoryBase<?, V, R>>
     public abstract List<String> getWorkflowClassPaths();
 
     public OracleDataSourceFactory() {
-        configLiveCycle().setCreator(() -> {
+        configLifeCycle().setCreator(() -> {
             OracleDialect dOra = new OracleDialect();
             ClasspathWorkflowRepository wfRepository = new ClasspathWorkflowRepository(getWorkflowClassPaths());
             dOra.setWfRepository(wfRepository);

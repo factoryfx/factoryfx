@@ -7,7 +7,7 @@ public class SimpleFactoryBaseTest {
     public static class InvalidSimpleFactoryFactory extends SimpleFactoryBase<Void,Void,InvalidSimpleFactoryFactory>{
 
         public InvalidSimpleFactoryFactory(){
-            this.configLiveCycle().setCreator(() -> null);
+            this.configLifeCycle().setCreator(() -> null);
         }
 
         @Override

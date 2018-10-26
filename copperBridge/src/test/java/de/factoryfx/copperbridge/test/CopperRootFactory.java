@@ -14,7 +14,7 @@ public class CopperRootFactory extends FactoryBase<WorkflowLauncher, Void, Coppe
 
 
     public CopperRootFactory(){
-        configLiveCycle().setCreator(workflowLauncher::instance);
+        configLifeCycle().setCreator(workflowLauncher::instance);
     }
 
 }

@@ -19,7 +19,6 @@ import de.factoryfx.microservice.rest.client.MicroserviceRestClient;
 import de.factoryfx.microservice.rest.client.MicroserviceRestClientFactory;
 import de.factoryfx.server.Microservice;
 
-import de.factoryfx.server.MicroserviceBuilder;
 import de.factoryfx.server.user.persistent.PersistentUserManagementFactory;
 import de.factoryfx.server.user.persistent.UserFactory;
 import org.junit.Assert;
@@ -43,7 +42,7 @@ public class MicroserviceRestIntegrationTest {
         }
 
         public TestJettyServer(){
-            configLiveCycle().setRuntimeQueryExecutor((testVisitor, jettyServer) -> testVisitor.test="123");
+            configLifeCycle().setRuntimeQueryExecutor((testVisitor, jettyServer) -> testVisitor.test="123");
         }
     }
 

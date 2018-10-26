@@ -30,9 +30,9 @@ public abstract class TransientScottyEngineFactory<V, R extends FactoryBase<?, V
     public abstract List<String> getWorkflowClassPaths();
 
     public TransientScottyEngineFactory() {
-        configLiveCycle().setCreator(this::createImpl);
-        configLiveCycle().setStarter(TransientScottyEngine::startup);
-        configLiveCycle().setDestroyer(TransientScottyEngine::shutdown);
+        configLifeCycle().setCreator(this::createImpl);
+        configLifeCycle().setStarter(TransientScottyEngine::startup);
+        configLifeCycle().setDestroyer(TransientScottyEngine::shutdown);
     }
 
     public TransientScottyEngine createImpl() {

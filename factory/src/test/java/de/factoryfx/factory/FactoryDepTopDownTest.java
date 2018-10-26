@@ -23,21 +23,21 @@ public class FactoryDepTopDownTest {
 
     public static class ObjectFactory extends FactoryBase<Object, Void, RootFactory> {
         ObjectFactory() {
-            configLiveCycle().setCreator(() -> {
+            configLifeCycle().setCreator(() -> {
                 System.out.println("creator called " + getId());
                 FactoryDepTopDownTest.creator.add(getId());
                 return new Object();
             });
-            configLiveCycle().setReCreator(old -> {
+            configLifeCycle().setReCreator(old -> {
                 System.out.println("reCreator called " + getId());
                 FactoryDepTopDownTest.recreator.add(getId());
                 return new Object();
             });
-            configLiveCycle().setStarter(i -> {
+            configLifeCycle().setStarter(i -> {
                 System.out.println("starter called " + getId());
                 FactoryDepTopDownTest.starter.add(getId());
             });
-            configLiveCycle().setDestroyer(i -> {
+            configLifeCycle().setDestroyer(i -> {
                 System.out.println("destroyer called " + getId());
                 FactoryDepTopDownTest.destroyer.add(getId());
             });

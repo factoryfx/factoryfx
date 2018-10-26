@@ -28,7 +28,7 @@ public class MicroserviceAwareFactoryTest {
 
     public static class MicroserviceAwareFactoryTestclazz extends FactoryBase<String,Void,RootTestClazz> {
         public MicroserviceAwareFactoryTestclazz(){
-            this.configLiveCycle().setCreator(() -> "");
+            this.configLifeCycle().setCreator(() -> "");
         }
     }
 

@@ -9,6 +9,6 @@ public class EngineIdProviderFactory<V, R extends FactoryBase<?, V, R>> extends 
     public final StringAttribute idPrefix = new StringAttribute().labelText("id prefix");
 
     public EngineIdProviderFactory() {
-        configLiveCycle().setCreator(() -> idPrefix::get);
+        configLifeCycle().setCreator(() -> idPrefix::get);
     }
 }

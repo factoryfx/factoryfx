@@ -1,6 +1,7 @@
 package de.factoryfx.example.server;
 
 import de.factoryfx.example.server.shop.*;
+import de.factoryfx.example.server.shop.netherlands.NetherlandsCarProductFactory;
 import de.factoryfx.factory.builder.FactoryTreeBuilder;
 import de.factoryfx.factory.builder.Scope;
 import de.factoryfx.jetty.HttpServerConnectorFactory;
@@ -35,6 +36,7 @@ public class ServerBuilder {
             shopResource.orderStorage.set(context.get(OrderStorageFactory.class));
             shopResource.products.add(context.get(ProductFactory.class,"car"));
             shopResource.products.add(context.get(ProductFactory.class,"bike"));
+            shopResource.products.add(context.get(NetherlandsCarProductFactory.class,"netherland car"));
             return shopResource;
         });
 
@@ -53,6 +55,16 @@ public class ServerBuilder {
             bikeFactory.price.set(10);
             return bikeFactory;
         });
+
+        factoryTreeBuilder.addFactory(NetherlandsCarProductFactory.class, "netherland car", Scope.PROTOTYPE, context -> {
+            NetherlandsCarProductFactory bikeFactory = new NetherlandsCarProductFactory();
+            bikeFactory.vatRate.set(context.get(VatRateFactory.class));
+            bikeFactory.name.set("Netherland ");
+            bikeFactory.price.set(10);
+            bikeFactory.bpmTax.set(0.1);
+            return bikeFactory;
+        });
+
 
         factoryTreeBuilder.addFactory(VatRateFactory.class, Scope.SINGLETON, context -> {
             VatRateFactory vatRate =new VatRateFactory();

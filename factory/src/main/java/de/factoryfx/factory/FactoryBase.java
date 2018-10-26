@@ -625,7 +625,7 @@ public class FactoryBase<L,V,R extends FactoryBase<?,V,R>> extends Data{
         this.executorWidthVisitorAndCurrentLiveObject=executorWidthVisitorAndCurrentLiveObject;
     }
 
-    /** live cycle configurations api<br>
+    /** life cycle configurations api<br>
      *<br>
      * Update Order<br>
      * 1. recreate for changed, create for new<br>
@@ -642,14 +642,14 @@ public class FactoryBase<L,V,R extends FactoryBase<?,V,R>> extends Data{
      *
      * @return configuration api
      * */
-    protected LiveCycleConfig<L,V,R> configLiveCycle(){
-        return new LiveCycleConfig<>(this);
+    protected LifeCycleConfig<L,V,R> configLifeCycle(){
+        return new LifeCycleConfig<>(this);
     }
 
-    public static class LiveCycleConfig<L,V,R  extends FactoryBase<?,V,R>> {
+    public static class LifeCycleConfig<L,V,R  extends FactoryBase<?,V,R>> {
         private final FactoryBase<L,V,R> factory;
 
-        public LiveCycleConfig(FactoryBase<L, V, R> factory) {
+        public LifeCycleConfig(FactoryBase<L, V, R> factory) {
             this.factory = factory;
         }
 

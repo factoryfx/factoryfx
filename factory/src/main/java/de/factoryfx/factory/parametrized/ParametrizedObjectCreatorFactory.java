@@ -8,7 +8,7 @@ public abstract class ParametrizedObjectCreatorFactory<P,L,V,R extends FactoryBa
 
 
     public ParametrizedObjectCreatorFactory(){
-        this.configLiveCycle().setCreator(() -> new ParametrizedObjectCreator<>(getCreator()));
+        this.configLifeCycle().setCreator(() -> new ParametrizedObjectCreator<>(getCreator()));
     }
 
     protected abstract Function<P,L> getCreator();
