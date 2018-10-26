@@ -70,7 +70,7 @@ public abstract class JettyServerFactory<V,R extends FactoryBase<?,V,R>> extends
      * @return jersey resource class with Annotation
      * */
     @JsonIgnore
-    protected abstract List<Object> getResourcesInstances();
+    protected abstract List<?> getResourcesInstances();
 
     @JsonIgnore
     protected List<BasicRequestHandler> getBasicRequestHandlerInstances() {
