@@ -233,6 +233,8 @@ project(':microserviceRestCommon') {
     dependencies {
         compile project(":factory")
         compile group: 'javax.ws.rs', name: 'javax.ws.rs-api', version: '2.1'
+        compile group: 'javax.activation', name: 'javax.activation-api', version: '1.2.0'
+
 
     }
 }
