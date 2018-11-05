@@ -7,8 +7,6 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.soap.*;
-import java.lang.reflect.Method;
-import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -16,8 +14,13 @@ public class SOAPMessageUtil {
     private final JAXBContext jaxbContext;
     private final DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 
+    static final Logger trashMessagesLogger = Logger.getLogger("javax.xml.soap");
+    static {
+        trashMessagesLogger.setLevel(Level.OFF); //avoid useless not fixable warning
+    }
+
+
     public SOAPMessageUtil(JAXBContext jaxbContext) {
-        Logger.getLogger("javax.xml.soap").setLevel(Level.OFF); //avoid useless not fixable warning
         this.jaxbContext = jaxbContext;
     }
 
