@@ -51,7 +51,7 @@ public class HelloWorldFactory extends SimpleFactoryBase<HelloWorld,Visitor,Hell
 public class HelloWorld{
     private final String text;
 
-    public Shop(String text) {
+    public HelloWorld(String text) {
         this.text = text;
     }
 
