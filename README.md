@@ -126,9 +126,9 @@ The factoryfx configuration is exposed
 ### REST
 The rest api supports editing the configuration in json format.
 ### Client
-#####Richclient
+##### Richclient
 Javafx data editing components.
-#####Webapp
+##### Webapp
 Typescript code generator.
 
 
@@ -144,6 +144,7 @@ Typescript code generator.
 * [polymorphism](docu/src/main/java/de/factoryfx/docu/polymorphism/usecase.md)
 * [reuse](docu/src/main/java/de/factoryfx/docu/reuse/usecase.md)
 * [monitoring](docu/src/main/java/de/factoryfx/docu/monitoring/usecase.md)
+* [swagger] docu/src/main/java/de/factoryfx/docu/swagger/usecase.md)
 
 
 ## Example

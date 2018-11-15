@@ -18,6 +18,16 @@ module de.factoryfx.docu {
     requires jersey.client;
     requires com.fasterxml.jackson.jaxrs.json;
 
+    requires swagger.annotations;
+    requires swagger.models;
+    requires swagger.jaxrs;
+    requires swagger.core;
+    requires com.fasterxml.jackson.core;
+    requires java.xml.bind;
+    requires java.net.http;
+
     exports de.factoryfx.docu.dynamicwebserver;
+    exports de.factoryfx.docu.reuse;
+    exports de.factoryfx.docu.swagger;
     opens de.factoryfx.docu.helloworld;
 }
