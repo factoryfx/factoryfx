@@ -33,11 +33,9 @@ public class HelloWorldResource {
     @Path("/swagger.json")
     @Produces(MediaType.APPLICATION_JSON)
     public Response swagger() {
-        Set<Class<?>> classes = Set.of(HelloWorldResource.class);
-
         Swagger swagger = new Swagger();
         Reader reader = new Reader(swagger, new DefaultReaderConfig());
-        swagger = reader.read(classes);
+        swagger = reader.read(Set.of(getClass()));
 
         try {
             return Response.ok(Json.pretty().writeValueAsString(swagger)).build();
