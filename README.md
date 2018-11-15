@@ -144,7 +144,7 @@ Typescript code generator.
 * [polymorphism](docu/src/main/java/de/factoryfx/docu/polymorphism/usecase.md)
 * [reuse](docu/src/main/java/de/factoryfx/docu/reuse/usecase.md)
 * [monitoring](docu/src/main/java/de/factoryfx/docu/monitoring/usecase.md)
-* [swagger] docu/src/main/java/de/factoryfx/docu/swagger/usecase.md)
+* [swagger](docu/src/main/java/de/factoryfx/docu/swagger/usecase.md)
 
 
 ## Example
