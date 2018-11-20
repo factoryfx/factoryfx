@@ -8,6 +8,7 @@ buildscript {
         classpath "gradle.plugin.com.github.spotbugs:spotbugs-gradle-plugin:1.6.4"
     }
 }
+ext.platform = "win"
 
 apply plugin: 'idea'
 idea {
@@ -66,7 +67,7 @@ subprojects {
     }
 
     group = 'io.github.factoryfx'
-    version = '1.7.7'
+    version = '1.7.8'
 
     if (project.hasProperty('secretKeyRingFileSourceURL')) {
         signing {
@@ -189,10 +190,6 @@ subprojects {
             }
         }
     }
-
-
-
-
 }
 
 project(':copperBridge') {
@@ -391,12 +388,12 @@ project(':javafxDataEditing') {
     dependencies {
         compile project(":data")
 
-        compile "org.openjfx:javafx-base:11:win"
-        compile "org.openjfx:javafx-graphics:11:win"
-        compile "org.openjfx:javafx-controls:11:win"
-        compile "org.openjfx:javafx-web:11:win"
-        compile "org.openjfx:javafx-fxml:11:win"
-        compile "org.openjfx:javafx-media:11:win"
+        compile "org.openjfx:javafx-base:11.0.1:$platform"
+        compile "org.openjfx:javafx-graphics:11.0.1:$platform"
+        compile "org.openjfx:javafx-controls:11.0.1:$platform"
+        compile "org.openjfx:javafx-web:11.0.1:$platform"
+        compile "org.openjfx:javafx-fxml:11.0.1:$platform"
+        compile "org.openjfx:javafx-media:11:$platform"
 
         compile group: 'org.controlsfx', name: 'controlsfx', version: '9.0.0'
         compile group: 'org.fxmisc.richtext', name: 'richtextfx', version: '0.6.10'
@@ -442,11 +439,11 @@ project(':javafxDistributionClient') {
             exclude group: "javax.annotation"
         }
 
-        compile "org.openjfx:javafx-base:11:win"
-        compile "org.openjfx:javafx-graphics:11:win"
-        compile "org.openjfx:javafx-controls:11:win"
-        compile "org.openjfx:javafx-web:11:win"
-        compile "org.openjfx:javafx-fxml:11:win"
+        compile "org.openjfx:javafx-base:11.0.1:$platform"
+        compile "org.openjfx:javafx-graphics:11.0.1:$platform"
+        compile "org.openjfx:javafx-controls:11.0.1:$platform"
+        compile "org.openjfx:javafx-web:11.0.1:$platform"
+        compile "org.openjfx:javafx-fxml:11.0.1:$platform"
 
 
         compile (group: 'org.glassfish.jersey.core', name: 'jersey-client', version: '2.27')  {
@@ -478,8 +475,8 @@ project(':javascript') {
             exclude group: "javax.annotation"
         }
 
-        compile "org.openjfx:javafx-base:11:win"
-        compile "org.openjfx:javafx-graphics:11:win"
+        compile "org.openjfx:javafx-base:11.0.1:$platform"
+        compile "org.openjfx:javafx-graphics:11.0.1:$platform"
 
 //        compile group: 'com.google.javascript', name: 'closure-compiler-main', version: 'v20180402', ext: 'pom'
 //        compile group: 'com.google.javascript', name: 'closure-compiler-externs', version: 'v20180402'

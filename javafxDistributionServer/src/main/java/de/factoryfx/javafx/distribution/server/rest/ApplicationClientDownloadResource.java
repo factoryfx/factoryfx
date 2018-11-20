@@ -40,8 +40,7 @@ public class ApplicationClientDownloadResource {
     @Path("/checkVersion")
     @Produces(MediaType.TEXT_PLAIN)
     public String updateConfiguration(@QueryParam("fileHash")String  fileHash) {
-        Boolean needUpdate=needUpdate(fileHash);
-        return needUpdate.toString();
+        return Boolean.toString(needUpdate(fileHash));
     }
 
     @GET
