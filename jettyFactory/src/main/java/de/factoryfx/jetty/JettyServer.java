@@ -8,10 +8,8 @@ import org.eclipse.jetty.server.handler.HandlerList;
 import org.eclipse.jetty.server.handler.gzip.GzipHandler;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
-import org.glassfish.jersey.server.ResourceConfig;
 
 import java.util.*;
-import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -21,7 +19,6 @@ public class JettyServer {
     private final Set<de.factoryfx.jetty.HttpServerConnectorCreator> currentConnectors = new HashSet<>();
     private final UpdateableServlet rootServlet;
     private boolean disposed = false;
-    private final Consumer<ResourceConfig> resourceConfigSetup;
 
     private static final Logger jerseyLogger1 = Logger.getLogger(org.glassfish.jersey.internal.inject.Providers.class.getName());
     private static final Logger jerseyLogger2 = Logger.getLogger(org.glassfish.jersey.internal.Errors.class.getName());
@@ -31,7 +28,7 @@ public class JettyServer {
     }
 
     public JettyServer(List<de.factoryfx.jetty.HttpServerConnectorCreator> connectors, ServletBuilder servletBuilder,
-                       List<Handler> additionalHandlers, Consumer<ResourceConfig> resourceConfigSetup) {
+                       List<Handler> additionalHandlers) {
 
 
         this.server=new org.eclipse.jetty.server.Server();
@@ -39,7 +36,6 @@ public class JettyServer {
         for (de.factoryfx.jetty.HttpServerConnectorCreator creator : currentConnectors) {
             creator.addToServer(server);
         }
-        this.resourceConfigSetup = resourceConfigSetup;
 
         this.rootServlet = new UpdateableServlet();
         updateWithServletBuilder(servletBuilder);
@@ -70,21 +66,16 @@ public class JettyServer {
     }
 
 
-    public JettyServer(List<de.factoryfx.jetty.HttpServerConnectorCreator> connectors, ServletBuilder servletBuilder,
-                       Consumer<ResourceConfig> resourceConfigSetup) {
-        this(connectors,servletBuilder,new ArrayList<>(),resourceConfigSetup);
+    public JettyServer(List<de.factoryfx.jetty.HttpServerConnectorCreator> connectors, ServletBuilder servletBuilder) {
+        this(connectors,servletBuilder,new ArrayList<>());
     }
 
-    public JettyServer(List<de.factoryfx.jetty.HttpServerConnectorCreator> connectors, ServletBuilder servletBuilder) {
-        this(connectors,servletBuilder,new ArrayList<>(),new DefaultResourceConfigSetup());
-    }
 
     private JettyServer(JettyServer priorServer) {
         this.rootServlet = priorServer.rootServlet;
         this.currentConnectors.addAll(priorServer.currentConnectors);
         this.server = priorServer.server;
         priorServer.disposed = true;
-        this.resourceConfigSetup = priorServer.resourceConfigSetup;
     }
 
 

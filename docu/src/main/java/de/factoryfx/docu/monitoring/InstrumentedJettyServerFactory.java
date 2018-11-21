@@ -28,9 +28,7 @@ public class InstrumentedJettyServerFactory extends FactoryBase<InstrumentedJett
             JettyServer jettyServer = new JettyServer(
                     connectors.instances(),
                     servletBuilder,
-                    Collections.singletonList(new InstrumentedHandler(metricRegistry, "monitoring example")),
-                    new LoggingFeature(new DelegatingLoggingFilterLogger()),
-                    new DefaultResourceConfigSetup()
+                    Collections.singletonList(new InstrumentedHandler(metricRegistry, "monitoring example"))
 
             );
             return new InstrumentedJettyServer(jettyServer, metricRegistry);
