@@ -1,8 +1,8 @@
 module de.factoryfx.javafxDistributionServer {
     requires de.factoryfx.data;
     requires de.factoryfx.factory;
-    requires jetty.server;
-    requires jetty.util;
+    requires org.eclipse.jetty.server;
+    requires org.eclipse.jetty.util;
     requires java.ws.rs;
     requires com.google.common;
 
