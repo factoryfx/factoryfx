@@ -101,6 +101,11 @@
     </Match>
 
     <Match>
+        <Class name="de.factoryfx.docu.swagger.RestClient" />
+        <Bug pattern="NP_NULL_PARAM_DEREF_NONVIRTUAL" />
+    </Match>
+
+    <Match>
         <Package name="de.factoryfx.factory.datastorage.oracle"/>
         <Bug pattern="RCN_REDUNDANT_NULLCHECK_WOULD_HAVE_BEEN_A_NPE"/>
     </Match>
@@ -112,6 +117,11 @@
 
     <Match>
         <Class name="de.factoryfx.factory.FactoryBase" />
+        <Bug pattern="UPM_UNCALLED_PRIVATE_METHOD" />
+    </Match>
+
+    <Match>
+        <Class name="de.factoryfx.data.Data" />
         <Bug pattern="UPM_UNCALLED_PRIVATE_METHOD" />
     </Match>
 

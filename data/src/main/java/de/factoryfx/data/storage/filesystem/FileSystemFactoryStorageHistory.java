@@ -52,15 +52,13 @@ public class FileSystemFactoryStorageHistory<R extends Data,S> {
     }
 
     public void initFromFileSystem(){
-        try {
-            try (Stream<Path> files = Files.walk(historyDirectory).filter(Files::isRegularFile)){
-                files.forEach(path -> {
-                    if (path.toString().endsWith("_metadata.json")){
-                        StoredDataMetadata<S> storedDataMetadata = dataSerialisationManager.readStoredFactoryMetadata(readFile(path));
-                        cache.put(storedDataMetadata.id, storedDataMetadata);
-                    }
-                });
-            }
+        try (Stream<Path> files = Files.walk(historyDirectory).filter(Files::isRegularFile)){
+            files.forEach(path -> {
+                if (path.toString().endsWith("_metadata.json")){
+                    StoredDataMetadata<S> storedDataMetadata = dataSerialisationManager.readStoredFactoryMetadata(readFile(path));
+                    cache.put(storedDataMetadata.id, storedDataMetadata);
+                }
+            });
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
