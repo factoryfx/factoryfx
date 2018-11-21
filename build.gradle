@@ -197,6 +197,9 @@ project(':copperBridge') {
         compile project(":factory")
         compile("org.copper-engine:copper-coreengine:5.0.1")
         compile("org.copper-engine:copper-ext:5.0.1")
+        compile group: 'org.ow2.asm', name: 'asm', version: '7.0'
+        compile group: 'org.ow2.asm', name: 'asm-tree', version: '7.0'
+        compile group: 'org.yaml', name: 'snakeyaml', version: '1.23'
     }
 }
 
