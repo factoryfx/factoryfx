@@ -26,17 +26,15 @@ public class OracledbDataStorage<R extends Data,S> implements DataStorage<R,S> {
         this.oracledbDataStorageFuture = oracledbDataStorageFuture;
         this.changeSummaryCreator=changeSummaryCreator;
 
-        try (Connection connection= connectionSupplier.get()){
-            try (Statement statement = connection.createStatement()){
-                String sql = "CREATE TABLE FACTORY_CURRENT " +
-                        "(id VARCHAR(255) not NULL, " +
-                        " factory BLOB, " +
-                        " factoryMetadata BLOB, " +
-                        " PRIMARY KEY ( id ))";
+        try (Connection connection= connectionSupplier.get();
+         Statement statement = connection.createStatement()){
+            String sql = "CREATE TABLE FACTORY_CURRENT " +
+                    "(id VARCHAR(255) not NULL, " +
+                    " factory BLOB, " +
+                    " factoryMetadata BLOB, " +
+                    " PRIMARY KEY ( id ))";
 
-                statement.executeUpdate(sql);
-            }
-
+            statement.executeUpdate(sql);
         } catch (SQLException e) {
             //oracle don't know IF NOT EXISTS
             //workaround ignore exception
@@ -70,15 +68,14 @@ public class OracledbDataStorage<R extends Data,S> implements DataStorage<R,S> {
 
     @Override
     public DataAndStoredMetadata<R,S> getCurrentFactory() {
-        try (Connection connection= connectionSupplier.get()){
-            try (Statement statement = connection.createStatement()){
-                String sql = "SELECT * FROM FACTORY_CURRENT";
+        try (Connection connection= connectionSupplier.get();
+             Statement statement = connection.createStatement()){
+            String sql = "SELECT * FROM FACTORY_CURRENT";
 
-                try (ResultSet resultSet =statement.executeQuery(sql)){
-                    if(resultSet.next()){
-                        StoredDataMetadata<S> factoryMetadata = dataSerialisationManager.readStoredFactoryMetadata(JdbcUtil.readStringToBlob(resultSet,"factoryMetadata"));
-                        return new DataAndStoredMetadata<>(dataSerialisationManager.read(JdbcUtil.readStringToBlob(resultSet,"factory"),factoryMetadata.dataModelVersion),factoryMetadata);
-                    }
+            try (ResultSet resultSet =statement.executeQuery(sql)){
+                if(resultSet.next()){
+                    StoredDataMetadata<S> factoryMetadata = dataSerialisationManager.readStoredFactoryMetadata(JdbcUtil.readStringToBlob(resultSet,"factoryMetadata"));
+                    return new DataAndStoredMetadata<>(dataSerialisationManager.read(JdbcUtil.readStringToBlob(resultSet,"factory"),factoryMetadata.dataModelVersion),factoryMetadata);
                 }
             }
         } catch (SQLException e) {
@@ -90,15 +87,13 @@ public class OracledbDataStorage<R extends Data,S> implements DataStorage<R,S> {
     @Override
     public String getCurrentFactoryStorageId() {
         //TODO cache id to improve performance
-        try (Connection connection= connectionSupplier.get()){
-            try (Statement statement = connection.createStatement()){
-                String sql = "SELECT * FROM FACTORY_CURRENT";
+        try (Connection connection= connectionSupplier.get(); Statement statement = connection.createStatement()){
+            String sql = "SELECT * FROM FACTORY_CURRENT";
 
-                try (ResultSet resultSet =statement.executeQuery(sql)){
-                    if(resultSet.next()){
-                        StoredDataMetadata<S> factoryMetadata = dataSerialisationManager.readStoredFactoryMetadata(JdbcUtil.readStringToBlob(resultSet,"factoryMetadata"));
-                        return factoryMetadata.id;
-                    }
+            try (ResultSet resultSet =statement.executeQuery(sql)){
+                if(resultSet.next()){
+                    StoredDataMetadata<S> factoryMetadata = dataSerialisationManager.readStoredFactoryMetadata(JdbcUtil.readStringToBlob(resultSet,"factoryMetadata"));
+                    return factoryMetadata.id;
                 }
             }
         } catch (SQLException e) {
@@ -122,16 +117,15 @@ public class OracledbDataStorage<R extends Data,S> implements DataStorage<R,S> {
             update.metadata.dataModelVersion, changeSummary
         );
 
-        try (Connection connection= connectionSupplier.get()){
-            try (PreparedStatement preparedStatement = connection.prepareStatement("TRUNCATE TABLE FACTORY_CURRENT")){
-                preparedStatement.execute();
-            }
-            try (PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO FACTORY_CURRENT(id,factory,factoryMetadata) VALUES (?,?,? )")){
-                preparedStatement.setString(1, storedDataMetadata.id);
-                JdbcUtil.writeStringToBlob(dataSerialisationManager.write(update.root),preparedStatement,2);
-                JdbcUtil.writeStringToBlob(dataSerialisationManager.writeStorageMetadata(storedDataMetadata),preparedStatement,3);
-                preparedStatement.executeUpdate();
-            }
+        try (Connection connection= connectionSupplier.get();
+             PreparedStatement truncate = connection.prepareStatement("TRUNCATE TABLE FACTORY_CURRENT");
+             PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO FACTORY_CURRENT(id,factory,factoryMetadata) VALUES (?,?,? )")
+        ) {
+            truncate.execute();
+            preparedStatement.setString(1, storedDataMetadata.id);
+            JdbcUtil.writeStringToBlob(dataSerialisationManager.write(update.root),preparedStatement,2);
+            JdbcUtil.writeStringToBlob(dataSerialisationManager.writeStorageMetadata(storedDataMetadata),preparedStatement,3);
+            preparedStatement.executeUpdate();
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
