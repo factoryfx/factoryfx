@@ -18,8 +18,8 @@ public class OracledbDataStorageFuture<R extends Data,S> {
         this.connectionSupplier = connectionSupplier;
         this.dataSerialisationManager = dataSerialisationManager;
 
-        try (Connection connection= connectionSupplier.get()){
-            try (Statement statement = connection.createStatement()){
+        try (Connection connection= connectionSupplier.get();
+             Statement statement = connection.createStatement()){
                 String sql = "CREATE TABLE FACTORY_FUTURE " +
                         "(id VARCHAR(255) not NULL, " +
                         " factory BLOB, " +
@@ -27,7 +27,6 @@ public class OracledbDataStorageFuture<R extends Data,S> {
                         " PRIMARY KEY ( id ))";
 
                 statement.executeUpdate(sql);
-            }
 
         } catch (SQLException e) {
             //oracle don't know IF NOT EXISTS
@@ -38,15 +37,14 @@ public class OracledbDataStorageFuture<R extends Data,S> {
 
     public R getFutureFactory(String id) {
 
-        try (Connection connection= connectionSupplier.get()){
-            try (Statement statement = connection.createStatement()){
-                String sql = "SELECT * FROM FACTORY_FUTURE WHERE id='"+id+"'";
+        try (Connection connection= connectionSupplier.get();
+             Statement statement = connection.createStatement()){
+            String sql = "SELECT * FROM FACTORY_FUTURE WHERE id='"+id+"'";
 
-                try (ResultSet resultSet =statement.executeQuery(sql)) {
-                    if (resultSet.next()) {
-                        ScheduledDataMetadata factoryMetadata = dataSerialisationManager.readScheduledFactoryMetadata(JdbcUtil.readStringToBlob(resultSet, "factoryMetadata"));
-                        return dataSerialisationManager.read(JdbcUtil.readStringToBlob(resultSet, "factory"), factoryMetadata.dataModelVersion);
-                    }
+            try (ResultSet resultSet =statement.executeQuery(sql)) {
+                if (resultSet.next()) {
+                    ScheduledDataMetadata factoryMetadata = dataSerialisationManager.readScheduledFactoryMetadata(JdbcUtil.readStringToBlob(resultSet, "factoryMetadata"));
+                    return dataSerialisationManager.read(JdbcUtil.readStringToBlob(resultSet, "factory"), factoryMetadata.dataModelVersion);
                 }
             }
         } catch (SQLException e) {
@@ -59,19 +57,13 @@ public class OracledbDataStorageFuture<R extends Data,S> {
 
     public Collection<ScheduledDataMetadata<S>> getFutureFactoryList() {
         ArrayList<ScheduledDataMetadata<S>> result = new ArrayList<>();
-        try (Connection connection= connectionSupplier.get()){
-            try (Statement statement = connection.createStatement()){
-                String sql = "SELECT * FROM FACTORY_FUTURE";
-
-                try (ResultSet resultSet =statement.executeQuery(sql)) {
-                    while (resultSet.next()) {
-                        result.add(dataSerialisationManager.readScheduledFactoryMetadata(JdbcUtil.readStringToBlob(resultSet, "factoryMetadata")));
-                    }
-                }
-
-
+        try (Connection connection= connectionSupplier.get();
+            Statement statement = connection.createStatement();
+             ResultSet resultSet =statement.executeQuery("SELECT * FROM FACTORY_FUTURE")
+            ){
+            while (resultSet.next()) {
+                result.add(dataSerialisationManager.readScheduledFactoryMetadata(JdbcUtil.readStringToBlob(resultSet, "factoryMetadata")));
             }
-
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -81,13 +73,12 @@ public class OracledbDataStorageFuture<R extends Data,S> {
     public void addFuture(ScheduledDataMetadata<S> metadata, R factoryRoot) {
         String id=metadata.id;
 
-        try (Connection connection= connectionSupplier.get()){
-            try (PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO FACTORY_FUTURE(id,factory,factoryMetadata) VALUES (?,?,? )")){
-                preparedStatement.setString(1, id);
-                JdbcUtil.writeStringToBlob(dataSerialisationManager.write(factoryRoot),preparedStatement,2);
-                JdbcUtil.writeStringToBlob(dataSerialisationManager.writeStorageMetadata(metadata),preparedStatement,3);
-                preparedStatement.executeUpdate();
-            }
+        try (Connection connection= connectionSupplier.get();
+             PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO FACTORY_FUTURE(id,factory,factoryMetadata) VALUES (?,?,? )")){
+             preparedStatement.setString(1, id);
+             JdbcUtil.writeStringToBlob(dataSerialisationManager.write(factoryRoot),preparedStatement,2);
+             JdbcUtil.writeStringToBlob(dataSerialisationManager.writeStorageMetadata(metadata),preparedStatement,3);
+             preparedStatement.executeUpdate();
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -97,8 +88,8 @@ public class OracledbDataStorageFuture<R extends Data,S> {
     public void deleteFutureFactory(String id) {
         try (Connection connection= connectionSupplier.get();
              PreparedStatement preparedStatement = connection.prepareStatement("DELETE FROM FACTORY_FUTURE WHERE id = ?")){
-                preparedStatement.setString(1, id);
-                preparedStatement.executeUpdate();
+             preparedStatement.setString(1, id);
+             preparedStatement.executeUpdate();
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
