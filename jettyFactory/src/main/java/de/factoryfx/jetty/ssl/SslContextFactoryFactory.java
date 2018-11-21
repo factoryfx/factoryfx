@@ -1,11 +1,5 @@
 package de.factoryfx.jetty.ssl;
 
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
-import java.security.KeyStore;
-
-import org.eclipse.jetty.util.ssl.SslContextFactory;
-
 import de.factoryfx.data.attribute.primitive.BooleanAttribute;
 import de.factoryfx.data.attribute.types.Base64Attribute;
 import de.factoryfx.data.attribute.types.EnumAttribute;
@@ -13,6 +7,11 @@ import de.factoryfx.data.attribute.types.StringAttribute;
 import de.factoryfx.data.attribute.types.StringListAttribute;
 import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.factory.SimpleFactoryBase;
+import org.eclipse.jetty.util.ssl.SslContextFactory;
+
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.security.KeyStore;
 
 public class SslContextFactoryFactory<V, R extends FactoryBase<?, V, R>> extends SimpleFactoryBase<SslContextFactory, V, R> {
     public final Base64Attribute keyStore = new Base64Attribute().en("keyStore").de("keyStore");

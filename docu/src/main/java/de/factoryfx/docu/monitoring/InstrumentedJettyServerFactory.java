@@ -24,12 +24,11 @@ public class InstrumentedJettyServerFactory extends FactoryBase<InstrumentedJett
         super();
         configLifeCycle().setCreator(() -> {
             MetricRegistry metricRegistry=new MetricRegistry();
+            ServletBuilder servletBuilder = createServletBuilder();
             JettyServer jettyServer = new JettyServer(
                     connectors.instances(),
-                    getResourcesInstances(),
-                    Collections.emptyList(),
+                    servletBuilder,
                     Collections.singletonList(new InstrumentedHandler(metricRegistry, "monitoring example")),
-                    ObjectMapperBuilder.buildNewObjectMapper(),
                     new LoggingFeature(new DelegatingLoggingFilterLogger()),
                     new DefaultResourceConfigSetup()
 
@@ -38,13 +37,19 @@ public class InstrumentedJettyServerFactory extends FactoryBase<InstrumentedJett
 
 
         });
-        configLifeCycle().setReCreator(currentLiveObject->currentLiveObject.recreate(connectors.instances(),getResourcesInstances()));
+        configLifeCycle().setReCreator(currentLiveObject->currentLiveObject.recreate(connectors.instances(),createServletBuilder()));
 
         configLifeCycle().setStarter(InstrumentedJettyServer::start);
         configLifeCycle().setDestroyer(InstrumentedJettyServer::stop);
 
         config().setDisplayTextProvider(() -> "InstrumentedJettyServerFactory");
         configLifeCycle().setRuntimeQueryExecutor((serverVisitor, jettyServer) -> jettyServer.acceptVisitor(serverVisitor));
+    }
+
+    private ServletBuilder createServletBuilder() {
+        ServletBuilder servletBuilder = new ServletBuilder();
+        servletBuilder.withJerseyResources("/*",getResourcesInstances());
+        return servletBuilder;
     }
 
     private List<Object> getResourcesInstances() {

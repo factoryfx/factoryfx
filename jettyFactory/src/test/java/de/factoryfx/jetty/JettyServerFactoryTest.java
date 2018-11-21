@@ -26,8 +26,8 @@ public class JettyServerFactoryTest {
         public final FactoryReferenceAttribute<Resource1,Resource1Factory> resource = new FactoryReferenceAttribute<>(Resource1Factory.class);
 
         @Override
-        protected List<Object> getResourcesInstances() {
-            return Arrays.asList(resource.instance());
+        protected void setupServlets(ServletBuilder servletBuilder) {
+            defaultSetupServlets(servletBuilder,resource.instance());
         }
     }
 

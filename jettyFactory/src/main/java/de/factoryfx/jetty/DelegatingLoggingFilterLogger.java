@@ -1,9 +1,9 @@
 package de.factoryfx.jetty;
 
+import org.slf4j.LoggerFactory;
+
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import org.slf4j.LoggerFactory;
 
 /**
  * jersey use java util for logging this class will bridge to slf4j

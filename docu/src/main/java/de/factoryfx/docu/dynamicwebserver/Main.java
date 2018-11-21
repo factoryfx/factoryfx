@@ -9,6 +9,7 @@ import de.factoryfx.factory.exception.RethrowingFactoryExceptionHandler;
 import de.factoryfx.jetty.HttpServerConnectorFactory;
 import de.factoryfx.jetty.JettyServer;
 import de.factoryfx.jetty.JettyServerFactory;
+import de.factoryfx.jetty.ServletBuilder;
 import de.factoryfx.server.Microservice;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,9 +23,10 @@ public class Main {
 
     public static class DynamicWebserver extends JettyServerFactory<Void,RootFactory> {
         public final FactoryReferenceAttribute<WebResource,WebResourceFactory> resource = new FactoryReferenceAttribute<>(WebResourceFactory.class);
+
         @Override
-        protected List<Object> getResourcesInstances() {
-            return Collections.singletonList(resource.instance());
+        protected void setupServlets(ServletBuilder servletBuilder) {
+            defaultSetupServlets(servletBuilder,resource.instance());
         }
     }
 

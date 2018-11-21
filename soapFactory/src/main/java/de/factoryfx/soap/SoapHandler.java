@@ -1,9 +1,6 @@
 package de.factoryfx.soap;
 
-import de.factoryfx.jetty.BasicRequestHandler;
-import org.eclipse.jetty.server.Request;
-import org.eclipse.jetty.server.handler.AbstractHandler;
-
+import javax.servlet.GenericServlet;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
@@ -19,22 +16,22 @@ import java.util.Objects;
 import java.util.StringTokenizer;
 import java.util.function.Predicate;
 
-public class SoapHandler implements BasicRequestHandler {
+public class SoapHandler extends GenericServlet {
+
     private final WebServiceRequestDispatcher dispatcher;
     private final SOAPMessageUtil soapMessageUtil;
-    private final Predicate<HttpServletRequest> testTarget;
 
-    public SoapHandler(WebServiceRequestDispatcher dispatcher, SOAPMessageUtil soapXmlParser, Predicate<HttpServletRequest> testTarget) {
+    public SoapHandler(WebServiceRequestDispatcher dispatcher, SOAPMessageUtil soapXmlParser) {
         this.dispatcher = dispatcher;
         this.soapMessageUtil = soapXmlParser;
-        this.testTarget = testTarget;
     }
 
     @Override
-    public boolean handle(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    public void service(ServletRequest req, ServletResponse res) throws ServletException, IOException {
 
-        if (!testTarget.test(request))
-            return false;
+        HttpServletRequest request = (HttpServletRequest)req;
+        HttpServletResponse response = (HttpServletResponse)res;
+
         try {
             MessageFactory messageFactory;
             boolean soap12 = false;
@@ -66,8 +63,6 @@ public class SoapHandler implements BasicRequestHandler {
             OutputStream os = response.getOutputStream();
             responseMessage.writeTo(os);
             os.flush();
-
-            return true;
 
         } catch (SOAPException e) {
             throw new RuntimeException(e);
@@ -113,6 +108,7 @@ public class SoapHandler implements BasicRequestHandler {
             }
         }
     }
+
 
 
 }

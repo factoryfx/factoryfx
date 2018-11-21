@@ -21,12 +21,8 @@ public class SoapJettyServerFactory extends JettyServerFactory<Void,SoapJettySer
     }
 
     @Override
-    protected List<Object> getResourcesInstances() {
-        return Collections.emptyList();
+    protected void setupServlets(ServletBuilder servletBuilder) {
+        servletBuilder.withServlet("/*",soapHandler.instance());
     }
 
-    @Override
-    protected List<BasicRequestHandler> getBasicRequestHandlerInstances() {
-        return List.of(soapHandler.instance());
-    }
 }

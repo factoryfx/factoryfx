@@ -1,16 +1,14 @@
 package de.factoryfx.jetty;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.factory.atrribute.FactoryReferenceAttribute;
 import de.factoryfx.factory.atrribute.FactoryReferenceListAttribute;
+import org.glassfish.jersey.logging.LoggingFeature;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  *   Unusual inheritance api to support type-safe navigation.
@@ -45,7 +43,11 @@ public abstract class JettyServerFactory<V,R extends FactoryBase<?,V,R>> extends
 
     public JettyServerFactory(){
         configLifeCycle().setCreator(this::createJetty);
-        configLifeCycle().setReCreator(currentLiveObject->currentLiveObject.recreate(connectors.instances(), getResourcesInstancesNullRemoved(), getBasicRequestHandlerInstancesNullRemoved()));
+        configLifeCycle().setReCreator(currentLiveObject->{
+            ServletBuilder servletBuilder = new ServletBuilder();
+            setupServlets(servletBuilder);
+            return currentLiveObject.recreate(connectors.instances(), servletBuilder);
+        });
 
         configLifeCycle().setStarter(JettyServer::start);
         configLifeCycle().setDestroyer(JettyServer::stop);
@@ -55,26 +57,37 @@ public abstract class JettyServerFactory<V,R extends FactoryBase<?,V,R>> extends
 
     //api for customizing JettyServer creation
     protected JettyServer createJetty() {
-        return new JettyServer(connectors.instances(), getResourcesInstancesNullRemoved(), getBasicRequestHandlerInstancesNullRemoved(), objectMapper.instance(),restLogging.instance());
-    }
-
-    protected final List<Object> getResourcesInstancesNullRemoved(){
-        return getResourcesInstances().stream().filter(Objects::nonNull).collect(Collectors.toList());
-    }
-
-    protected final List<BasicRequestHandler> getBasicRequestHandlerInstancesNullRemoved(){
-        return getBasicRequestHandlerInstances().stream().filter(Objects::nonNull).collect(Collectors.toList());
+        ServletBuilder servletBuilder = new ServletBuilder();
+        setupServlets(servletBuilder);
+        return new JettyServer(connectors.instances(), servletBuilder);
     }
 
     /**
-     * @return jersey resource class with Annotation
-     * */
-    @JsonIgnore
-    protected abstract List<?> getResourcesInstances();
+     * When migrating from older revision you can simple call {@link #defaultSetupServlets(ServletBuilder, List)} to achieve the old beghaviour
+     * @param servletBuilder
+     */
+    protected abstract void setupServlets(ServletBuilder servletBuilder);
 
-    @JsonIgnore
-    protected List<BasicRequestHandler> getBasicRequestHandlerInstances() {
-        return Collections.emptyList();
-    };
+    protected final void defaultSetupServlets(ServletBuilder servletBuilder, Object ... resources) {
+        defaultSetupServlets(servletBuilder, Arrays.asList(resources));
+    }
+
+     protected final void defaultSetupServlets(ServletBuilder servletBuilder, List<Object> resources) {
+        LoggingFeature lf = restLogging.instance();
+        if (lf == null) {
+            servletBuilder.withDefaultJerseyLoggingFeature();
+        } else {
+            servletBuilder.withJerseyResource(lf);
+        }
+        servletBuilder.withDefaultJerseyAllExceptionMapper();
+        List<Object> noNulls = resources.stream().filter(o->o != null).collect(Collectors.toList());
+        if (!noNulls.isEmpty()) {
+            ObjectMapper objectMapper = this.objectMapper.instance();
+            if (objectMapper != null)
+                servletBuilder.withJerseyJacksonObjectMapper(objectMapper);
+            servletBuilder.withJerseyResources("/*",resources);
+        }
+    }
+
 
 }

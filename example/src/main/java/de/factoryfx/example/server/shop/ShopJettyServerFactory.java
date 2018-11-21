@@ -3,6 +3,7 @@ package de.factoryfx.example.server.shop;
 import de.factoryfx.example.server.ServerRootFactory;
 import de.factoryfx.factory.atrribute.FactoryReferenceAttribute;
 import de.factoryfx.jetty.JettyServerFactory;
+import de.factoryfx.jetty.ServletBuilder;
 import de.factoryfx.microservice.rest.MicroserviceResource;
 import de.factoryfx.microservice.rest.MicroserviceResourceFactory;
 
@@ -15,7 +16,7 @@ public class ShopJettyServerFactory extends JettyServerFactory<OrderCollector,Se
     public final FactoryReferenceAttribute<ShopResource, ShopResourceFactory> shopResource = new FactoryReferenceAttribute<>(ShopResourceFactory.class).labelText("Shop API");
 
     @Override
-    protected List<Object> getResourcesInstances() {
-        return List.of(resource.instance(),shopResource.instance());
+    protected void setupServlets(ServletBuilder servletBuilder) {
+        defaultSetupServlets(servletBuilder,resource.instance(),shopResource.instance());
     }
 }

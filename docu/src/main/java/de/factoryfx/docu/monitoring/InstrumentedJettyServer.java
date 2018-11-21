@@ -4,6 +4,7 @@ import com.codahale.metrics.ConsoleReporter;
 import com.codahale.metrics.MetricRegistry;
 import de.factoryfx.jetty.HttpServerConnectorCreator;
 import de.factoryfx.jetty.JettyServer;
+import de.factoryfx.jetty.ServletBuilder;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
@@ -46,8 +47,8 @@ public class InstrumentedJettyServer{
         jettyServer.stop();
     }
 
-    public InstrumentedJettyServer recreate(List<HttpServerConnectorCreator> instances, List<Object> simpleResources) {
-        this.jettyServer=jettyServer.recreate(instances,simpleResources, Collections.emptyList());
+    public InstrumentedJettyServer recreate(List<HttpServerConnectorCreator> instances, ServletBuilder servletBuilder) {
+        this.jettyServer=jettyServer.recreate(instances,servletBuilder);
         return this;
     }
 }

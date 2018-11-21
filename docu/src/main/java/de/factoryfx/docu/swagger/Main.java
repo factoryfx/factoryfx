@@ -8,6 +8,7 @@ import de.factoryfx.factory.exception.RethrowingFactoryExceptionHandler;
 import de.factoryfx.jetty.HttpServerConnectorFactory;
 import de.factoryfx.jetty.JettyServer;
 import de.factoryfx.jetty.JettyServerFactory;
+import de.factoryfx.jetty.ServletBuilder;
 import de.factoryfx.server.Microservice;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,9 +26,10 @@ public class Main {
 
     public static class SwaggerWebserver extends JettyServerFactory<Void, SwaggerWebserver> {
         public final FactoryReferenceAttribute<HelloWorldResource, HelloWorldResourceFactory> resource = new FactoryReferenceAttribute<>(HelloWorldResourceFactory.class);
+
         @Override
-        protected List<Object> getResourcesInstances() {
-            return Collections.singletonList(resource.instance());
+        protected void setupServlets(ServletBuilder servletBuilder) {
+            defaultSetupServlets(servletBuilder,resource.instance());
         }
     }
 

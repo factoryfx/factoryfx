@@ -1,12 +1,12 @@
 package de.factoryfx.jetty;
 
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.ext.ExceptionMapper;
-
 import com.google.common.base.Throwables;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.ext.ExceptionMapper;
 
 public class AllExceptionMapper implements ExceptionMapper<Throwable> {
     private static final Logger logger = LoggerFactory.getLogger(AllExceptionMapper.class);

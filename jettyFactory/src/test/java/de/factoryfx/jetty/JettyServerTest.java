@@ -35,11 +35,17 @@ public class JettyServerTest {
             return Response.ok().build();
         }
     }
+    
+    private ServletBuilder servlets(Object ... resources) {
+        ServletBuilder servletBuilder = new ServletBuilder();
+        return servletBuilder.withJerseyResources("/*",Arrays.asList(resources));
+    }
+    
     @Test
     public void test_multiple_resources_samepath() throws InterruptedException {
         List<HttpServerConnectorCreator> connectors= new ArrayList<>();
         connectors.add(new HttpServerConnectorCreator("localhost",8015,null));
-        JettyServer jettyServer = new JettyServer(connectors, Arrays.asList(new Resource1(), new Resource2()));
+        JettyServer jettyServer = new JettyServer(connectors,servlets(new Resource1(), new Resource2()));
         jettyServer.start();
 //        Thread.sleep(1000);
 
@@ -67,13 +73,13 @@ public class JettyServerTest {
     public void test_recreate() throws InterruptedException {
         List<HttpServerConnectorCreator> connectors= new ArrayList<>();
         connectors.add(new HttpServerConnectorCreator("localhost",8015,null));
-        JettyServer jettyServer = new JettyServer(connectors, Arrays.asList(new Resource("Hello")));
+        JettyServer jettyServer = new JettyServer(connectors, servlets(new Resource("Hello")));
         jettyServer.start();
 //        Thread.sleep(1000);
 
         RestClient restClient = new RestClient("localhost",8015,"",false,null,null);
         Assert.assertEquals("Hello",restClient.get("Resource",String.class));
-        jettyServer = jettyServer.recreate(connectors,Arrays.asList(new Resource("World")), Collections.emptyList());
+        jettyServer = jettyServer.recreate(connectors,servlets(new Resource("World")));
         Assert.assertEquals("World",restClient.get("Resource",String.class));
         jettyServer.stop();
 
@@ -87,7 +93,7 @@ public class JettyServerTest {
         List<HttpServerConnectorCreator> moreConnectors= new ArrayList<>();
         moreConnectors.add(new HttpServerConnectorCreator("localhost",8015,null));
         moreConnectors.add(new HttpServerConnectorCreator("localhost",8016,null));
-        List<Object> resources = Arrays.asList(new Resource("Hello"));
+        ServletBuilder resources = servlets(new Resource("Hello"));
 
         JettyServer jettyServer = new JettyServer(connectors, resources);
         jettyServer.start();
@@ -102,11 +108,11 @@ public class JettyServerTest {
             Assert.fail("Expectected exception");
         } catch (Exception expected) {}
 
-        jettyServer = jettyServer.recreate(moreConnectors,resources, Collections.emptyList());
+        jettyServer = jettyServer.recreate(moreConnectors,resources);
         Assert.assertEquals("Hello",restClient8015.get("Resource",String.class));
         Assert.assertEquals("Hello",restClient8016.get("Resource",String.class));
 
-        jettyServer = jettyServer.recreate(connectors,resources, Collections.emptyList());
+        jettyServer = jettyServer.recreate(connectors,resources);
         Assert.assertEquals("Hello",restClient8015.get("Resource",String.class));
         try {
             restClient8016.get("Resource",String.class);
@@ -141,7 +147,7 @@ public class JettyServerTest {
     public void test_lateResponse() throws InterruptedException, ExecutionException, TimeoutException {
         List<HttpServerConnectorCreator> connectors= new ArrayList<>();
         connectors.add(new HttpServerConnectorCreator("localhost",8015,null));
-        JettyServer jettyServer = new JettyServer(connectors, List.of(new LateResponseTestResource()));
+        JettyServer jettyServer = new JettyServer(connectors, servlets(new LateResponseTestResource()));
         jettyServer.start();
 
         try {
@@ -157,7 +163,7 @@ public class JettyServerTest {
                 }
             }.start();
             Thread.sleep(400);
-            jettyServer = jettyServer.recreate(connectors,new ArrayList<>(), Collections.emptyList());
+            jettyServer = jettyServer.recreate(connectors,servlets());
             try {
                 restClient.get("Resource",String.class);
                 Assert.fail("Expected exception");
@@ -202,7 +208,7 @@ public class JettyServerTest {
         ResourceKiller killer = new ResourceKiller(t->{
             whichThread[0] = t;
         });
-        JettyServer jettyServer = new JettyServer(connectors, List.of(killer));
+        JettyServer jettyServer = new JettyServer(connectors, servlets(killer));
         jettyServer.start();
 
         CompletableFuture<Void> future = new CompletableFuture<>();

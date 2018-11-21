@@ -12,6 +12,7 @@ import de.factoryfx.factory.exception.RethrowingFactoryExceptionHandler;
 import de.factoryfx.jetty.HttpServerConnectorFactory;
 import de.factoryfx.jetty.JettyServer;
 import de.factoryfx.jetty.JettyServerFactory;
+import de.factoryfx.jetty.ServletBuilder;
 import de.factoryfx.microservice.common.ResponseWorkaround;
 import de.factoryfx.microservice.rest.MicroserviceResource;
 import de.factoryfx.microservice.rest.MicroserviceResourceFactory;
@@ -36,13 +37,13 @@ public class MicroserviceRestIntegrationTest {
         public final FactoryReferenceAttribute<MicroserviceResource<TestVisitor, TestJettyServer,Void>, MicroserviceResourceFactory<TestVisitor, TestJettyServer,Void>> resource =
                 FactoryReferenceAttribute.create(new FactoryReferenceAttribute<>(MicroserviceResourceFactory.class));
 
-        @Override
-        protected List<Object> getResourcesInstances() {
-            return Arrays.asList(resource.instance());
-        }
-
         public TestJettyServer(){
             configLifeCycle().setRuntimeQueryExecutor((testVisitor, jettyServer) -> testVisitor.test="123");
+        }
+
+        @Override
+        protected void setupServlets(ServletBuilder servletBuilder) {
+            defaultSetupServlets(servletBuilder,Arrays.asList(resource.instance()));
         }
     }
 

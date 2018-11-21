@@ -6,6 +6,7 @@ import de.factoryfx.factory.atrribute.FactoryReferenceAttribute;
 import de.factoryfx.jetty.HttpServerConnectorFactory;
 import de.factoryfx.jetty.JettyServer;
 import de.factoryfx.jetty.JettyServerFactory;
+import de.factoryfx.jetty.ServletBuilder;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -48,10 +49,9 @@ public class SslContextFactoryFactoryTest {
         public final FactoryReferenceAttribute<TestResource,TestResourceFactory> resource = new FactoryReferenceAttribute<>(TestResourceFactory.class);
 
         @Override
-        protected List<Object> getResourcesInstances() {
-            return Arrays.asList(resource.instance());
+        protected void setupServlets(ServletBuilder servletBuilder) {
+            defaultSetupServlets(servletBuilder,Arrays.asList(resource.instance()));
         }
-
 
     }
 
