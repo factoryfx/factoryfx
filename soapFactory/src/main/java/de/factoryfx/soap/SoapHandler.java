@@ -1,22 +1,16 @@
 package de.factoryfx.soap;
 
-import javax.servlet.GenericServlet;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
+import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.soap.*;
 import javax.xml.transform.stream.StreamSource;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.Objects;
-import java.util.StringTokenizer;
-import java.util.function.Predicate;
 
-public class SoapHandler extends GenericServlet {
+public class SoapHandler implements Servlet {
 
     private final WebServiceRequestDispatcher dispatcher;
     private final SOAPMessageUtil soapMessageUtil;
@@ -27,7 +21,7 @@ public class SoapHandler extends GenericServlet {
     }
 
     @Override
-    public void service(ServletRequest req, ServletResponse res) throws ServletException, IOException {
+    public void service(ServletRequest req, ServletResponse res) throws IOException {
 
         HttpServletRequest request = (HttpServletRequest)req;
         HttpServletResponse response = (HttpServletResponse)res;
@@ -70,22 +64,15 @@ public class SoapHandler extends GenericServlet {
 
     }
 
-    private MimeHeaders getHeaders(HttpServletRequest req) {
-
-        Enumeration headerNames = req.getHeaderNames();
-        MimeHeaders headers = new MimeHeaders();
-
-        while (headerNames.hasMoreElements()) {
-            String headerName = (String)headerNames.nextElement();
-            String headerValue = req.getHeader(headerName);
-
-            StringTokenizer values = new StringTokenizer(headerValue, ",");
-            while (values.hasMoreTokens()) {
-                headers.addHeader(headerName, values.nextToken().trim());
-            }
-        }
-        return headers;
+    @Override
+    public String getServletInfo() {
+        return "SOAP Handler";
     }
+
+    @Override
+    public void destroy() {
+    }
+
     private void putHeaders(MimeHeaders headers, HttpServletResponse res) {
 
         Iterator it = headers.getAllHeaders();
@@ -109,6 +96,16 @@ public class SoapHandler extends GenericServlet {
         }
     }
 
+    ServletConfig config;
+    @Override
+    public void init(ServletConfig config) {
+        this.config = config;
+    }
+
+    @Override
+    public ServletConfig getServletConfig() {
+        return config;
+    }
 
 
 }
