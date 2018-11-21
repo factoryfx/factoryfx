@@ -1,6 +1,6 @@
 module de.factoryfx.soapFactory {
 
-    requires jetty.server;
+    requires org.eclipse.jetty.server;
     requires java.logging;
 
     requires de.factoryfx.factory;
