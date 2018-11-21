@@ -53,8 +53,8 @@ public class PostgresDataStorage<R extends Data, S> implements DataStorage<R, S>
         }
 
         try {
-            try (Connection connection = dataSource.getConnection()) {
-                try (PreparedStatement pstmt = connection.prepareStatement("select cast (root as text) as root from configuration where id = ?")) {
+            try (Connection connection = dataSource.getConnection();
+                PreparedStatement pstmt = connection.prepareStatement("select cast (root as text) as root from configuration where id = ?")) {
                     pstmt.setString(1,id);
                     try (ResultSet rs = pstmt.executeQuery()) {
                         if (!rs.next())
@@ -62,7 +62,6 @@ public class PostgresDataStorage<R extends Data, S> implements DataStorage<R, S>
                         return dataSerialisationManager.read(rs.getString(1),dataModelVersion);
                     }
                 }
-            }
         } catch (SQLException e) {
             throw new RuntimeException("Cannot read current factory",e);
         }
@@ -71,16 +70,15 @@ public class PostgresDataStorage<R extends Data, S> implements DataStorage<R, S>
     @Override
     public Collection<StoredDataMetadata<S>> getHistoryFactoryList() {
         try {
-            try (Connection connection = dataSource.getConnection()) {
-                try (PreparedStatement pstmt = connection.prepareStatement("select cast (metadata as text) as metadata from configuration")) {
-                    ArrayList<StoredDataMetadata<S>> ret = new ArrayList<>();
-                    try (ResultSet rs = pstmt.executeQuery()) {
-                        while (rs.next()) {
-                           ret.add(dataSerialisationManager.readStoredFactoryMetadata(rs.getString(1)));
-                        }
+            try (Connection connection = dataSource.getConnection();
+                PreparedStatement pstmt = connection.prepareStatement("select cast (metadata as text) as metadata from configuration")) {
+                ArrayList<StoredDataMetadata<S>> ret = new ArrayList<>();
+                try (ResultSet rs = pstmt.executeQuery()) {
+                    while (rs.next()) {
+                       ret.add(dataSerialisationManager.readStoredFactoryMetadata(rs.getString(1)));
                     }
-                    return ret;
                 }
+                 return ret;
             }
         } catch (SQLException e) {
             throw new RuntimeException("Cannot read current factory",e);
@@ -90,19 +88,17 @@ public class PostgresDataStorage<R extends Data, S> implements DataStorage<R, S>
     @Override
     public DataAndStoredMetadata<R,S> getCurrentFactory() {
         try {
-            try (Connection connection = dataSource.getConnection()) {
-                try (PreparedStatement pstmt = connection.prepareStatement("select cast (root as text) as root, cast (metadata as text) as metadata from currentconfiguration")) {
-                    try (ResultSet rs = pstmt.executeQuery()) {
-                        if (!rs.next())
-                            throw new RuntimeException("No current factory found");
+            try (Connection connection = dataSource.getConnection();
+                 PreparedStatement pstmt = connection.prepareStatement("select cast (root as text) as root, cast (metadata as text) as metadata from currentconfiguration");
+                 ResultSet rs = pstmt.executeQuery()) {
+                    if (!rs.next())
+                        throw new RuntimeException("No current factory found");
 
-                        StoredDataMetadata<S> storedDataMetadata = dataSerialisationManager.readStoredFactoryMetadata(rs.getString(2));
+                    StoredDataMetadata<S> storedDataMetadata = dataSerialisationManager.readStoredFactoryMetadata(rs.getString(2));
 
-                        return new DataAndStoredMetadata<>(
-                                dataSerialisationManager.read(rs.getString(1), storedDataMetadata.dataModelVersion), storedDataMetadata
-                        );
-                    }
-                }
+                    return new DataAndStoredMetadata<>(
+                            dataSerialisationManager.read(rs.getString(1), storedDataMetadata.dataModelVersion), storedDataMetadata
+                    );
             }
         } catch (SQLException e) {
             throw new RuntimeException("Cannot read current factory",e);
@@ -139,8 +135,8 @@ public class PostgresDataStorage<R extends Data, S> implements DataStorage<R, S>
         }
         long createdAt = System.currentTimeMillis();
         boolean firstEntry = false;
-        try (PreparedStatement selectMaxCreatedAt = connection.prepareStatement("select max(createdAt) as ts from currentconfiguration")) {
-            try (ResultSet maxCreatedAtRs = selectMaxCreatedAt.executeQuery()) {
+        try (PreparedStatement selectMaxCreatedAt = connection.prepareStatement("select max(createdAt) as ts from currentconfiguration");
+            ResultSet maxCreatedAtRs = selectMaxCreatedAt.executeQuery()) {
                 Timestamp timestamp = null;
                 if (maxCreatedAtRs.next()) {
                     timestamp = maxCreatedAtRs.getTimestamp(1);
@@ -150,7 +146,6 @@ public class PostgresDataStorage<R extends Data, S> implements DataStorage<R, S>
                 } else {
                     firstEntry = true;
                 }
-            }
         }
         Timestamp createdAtTimestamp = new Timestamp(createdAt);
         try (PreparedStatement pstmtInsertConfigurationMetadata = connection.prepareStatement("insert into configurationmetadata (metadata, createdAt, id) values (cast (? as json), ?, ?)")) {
