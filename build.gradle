@@ -305,13 +305,13 @@ project(':oracledbStorage') {
 project(':jettyFactory') {
     dependencies {
         compile project(":factory")
-        compile (group: 'org.eclipse.jetty', name: 'jetty-server', version: '9.4.12.v20180830')  {
+        compile (group: 'org.eclipse.jetty', name: 'jetty-server', version: '9.4.14.v20181114')  {
             exclude group: "javax.annotation"
         }
-        compile (group: 'org.eclipse.jetty', name: 'jetty-servlet', version: '9.4.12.v20180830')  {
+        compile (group: 'org.eclipse.jetty', name: 'jetty-servlet', version: '9.4.14.v20181114')  {
             exclude group: "javax.annotation"
         }
-        compile (group: 'org.eclipse.jetty', name: 'jetty-webapp', version: '9.4.12.v20180830')  {
+        compile (group: 'org.eclipse.jetty', name: 'jetty-webapp', version: '9.4.14.v20181114')  {
             exclude group: "javax.annotation"
         }
 
@@ -571,7 +571,7 @@ project(':soapFactory') {
         compile project(":factory")
         compile project(":jettyFactory")
 
-        compile (group: 'org.eclipse.jetty', name: 'jetty-server', version: '9.4.12.v20180830')  {
+        compile (group: 'org.eclipse.jetty', name: 'jetty-server', version: '9.4.14.v20181114')  {
             exclude group: "javax.annotation"
         }
 
