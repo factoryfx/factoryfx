@@ -75,7 +75,13 @@ public class ServletBuilder {
         provider.setMapper(objectMapper);
         resourceConfig.register(provider);
 
-        additionalJerseyResources.forEach(r->resourceConfig.register(r));
+        additionalJerseyResources.forEach(r->{
+            if (r instanceof Class) {
+                resourceConfig.register((Class)r);
+            } else {
+                resourceConfig.register(r);
+            }
+        });
 
         return resourceConfig;
     }

@@ -1,8 +1,14 @@
 package de.factoryfx.jetty;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
@@ -10,12 +16,20 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.function.Consumer;
 
-import javax.management.relation.RoleUnresolved;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.ProcessingException;
+import javax.ws.rs.*;
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.Entity;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.ext.MessageBodyReader;
+import javax.ws.rs.ext.MessageBodyWriter;
 
+import com.google.common.io.ByteStreams;
+import org.glassfish.jersey.client.ClientConfig;
+import org.glassfish.jersey.server.ResourceConfig;
+import org.glassfish.jersey.servlet.ServletContainer;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -242,6 +256,82 @@ public class JettyServerTest {
         Assert.assertTrue(jettyServer.isStopped());
 
 
+
+    }
+
+    static final class MyMime {
+        public String data;
+    }
+
+
+    @Produces("my/mime")
+    @Consumes("my/mime")
+    public static final class SomeMessageBodyReaderWriter implements MessageBodyWriter<MyMime>, MessageBodyReader<MyMime> {
+
+        @Override
+        public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
+            return MyMime.class.isAssignableFrom(type);
+        }
+
+        @Override
+        public MyMime readFrom(Class<MyMime> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, String> httpHeaders, InputStream entityStream) throws IOException, WebApplicationException {
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            ByteStreams.copy(entityStream, out);
+            MyMime ret = new MyMime();
+            ret.data = "Changed by reader: "+out.toString(StandardCharsets.UTF_8);
+            return ret;
+        }
+
+        @Override
+        public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
+            return MyMime.class.isAssignableFrom(type);
+        }
+
+        @Override
+        public void writeTo(MyMime s, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws IOException, WebApplicationException {
+            entityStream.write(("Changed by writer: "+s.data).getBytes(StandardCharsets.UTF_8));
+        }
+    }
+
+    @Path("/echo")
+    public static final class MessageBodyReaderWriterEcho {
+
+        @POST
+        public MyMime echo(MyMime req) {
+            return req;
+        }
+
+    };
+
+    @Test
+    public void testMessageBodyReader() {
+        List<HttpServerConnectorCreator> connectors= new ArrayList<>();
+        connectors.add(new HttpServerConnectorCreator("localhost",8015,null));
+        ServletBuilder servletBuilder = new ServletBuilder();
+
+        boolean working = false;
+
+        if (working) {
+            ResourceConfig resourceConfig = new ResourceConfig();
+            resourceConfig.register(SomeMessageBodyReaderWriter.class);
+            resourceConfig.register(new MessageBodyReaderWriterEcho());
+            servletBuilder.withServlet("/*", new ServletContainer(resourceConfig));
+        } else {
+            servletBuilder.withJerseyResource(SomeMessageBodyReaderWriter.class);
+            servletBuilder.withJerseyResources("/*", List.of(new MessageBodyReaderWriterEcho()));
+        }
+        JettyServer jettyServer = new JettyServer(connectors, servletBuilder);
+        jettyServer.start();
+
+        try {
+            ClientConfig cc = new ClientConfig();
+            Client client = ClientBuilder.newBuilder().withConfig(cc).build();
+            String resp = client.target("http://localhost:8015/echo").request().buildPost(Entity.entity("Hello", MediaType.valueOf("my/mime"))).invoke().readEntity(String.class);
+
+            Assert.assertEquals("Changed by writer: Changed by reader: Hello", resp);
+        } finally {
+            jettyServer.stop();
+        }
 
     }
 
