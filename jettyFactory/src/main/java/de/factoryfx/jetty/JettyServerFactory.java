@@ -85,7 +85,7 @@ public abstract class JettyServerFactory<V,R extends FactoryBase<?,V,R>> extends
             ObjectMapper objectMapper = this.objectMapper.instance();
             if (objectMapper != null)
                 servletBuilder.withJerseyJacksonObjectMapper(objectMapper);
-            servletBuilder.withJerseyResources("/*",resources);
+            servletBuilder.withJerseyResources("/*",noNulls);
         }
     }
 
