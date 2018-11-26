@@ -12,8 +12,8 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.util.List;
 import java.util.function.Supplier;
+import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -188,13 +188,12 @@ public class UserInterfaceDistributionClientController {
 
                         unzip(newFile.getAbsolutePath(), newFile.getParent());
                     }
-                    String executable = List.of("", ".exe", ".bat")
-                                            .stream()
-                                            .map(ending -> new File(guiFolder, exeName + ending))
-                                            .filter(File::exists)
-                                            .findFirst()
-                                            .orElseThrow(() -> new FileNotFoundException(exeName + " not found"))
-                                            .getAbsolutePath();
+                    String executable = Stream.of("", ".exe", ".bat")
+                                              .map(ending -> new File(guiFolder, exeName + ending))
+                                              .filter(File::exists)
+                                              .findFirst()
+                                              .orElseThrow(() -> new FileNotFoundException(exeName + " not found"))
+                                              .getAbsolutePath();
 
                     URL distributionServerURL = new URL(serverUrl);
                     new ProcessBuilder(executable, distributionServerURL.toExternalForm()).directory(new File(guiFolder.getAbsolutePath(), "./")).inheritIO().start();
