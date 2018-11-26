@@ -60,7 +60,7 @@ public class UpdateableServlet implements Servlet {
         String pathMatch = null;
         String pathInfo = null;
         Servlet bestMatch = null;
-        String servletPath = httpReq.getServletPath();
+        String servletPath = httpReq.getRequestURI().substring(httpReq.getServletPath().length());
         for (Map.Entry<KeyedServlet, List<ServletPathSpec>> entry : servlets.entrySet()) {
             Servlet servlet = entry.getKey().servlet;
             List<ServletPathSpec> pathes = entry.getValue();
@@ -80,7 +80,7 @@ public class UpdateableServlet implements Servlet {
             if (httpReq instanceof Request) {
                 baseRequest = (Request)httpReq;
             }
-            dispatch(bestMatch,servletPath,pathInfo,baseRequest,httpReq, (HttpServletResponse) res);
+            dispatch(bestMatch,pathMatch,pathInfo,baseRequest,httpReq, (HttpServletResponse) res);
         }
     }
 
