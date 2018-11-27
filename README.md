@@ -72,8 +72,8 @@ They scan the classpath and create business object tree.
 
 There are a few drawback with that approach:
 * A complete automation is not possible. You need additional information provided with annotations e.g to exclude classes/exclude from instantiation or polymorphism. Finally, you program in an annotation dsl instead of java.
-* Annotations are not part of the typesystem and lack tooling
-* Classpath scanning and reflection cause confusing stacktraces
+* Annotations are not part of the type system and lack tooling
+* Classpath scanning and reflection cause confusing stack traces
 * Slow startup
 
 ### Factoryfx
@@ -145,7 +145,7 @@ Typescript code generator.
 * [reuse](docu/src/main/java/de/factoryfx/docu/reuse/usecase.md)
 * [monitoring](docu/src/main/java/de/factoryfx/docu/monitoring/usecase.md)
 * [swagger](docu/src/main/java/de/factoryfx/docu/swagger/usecase.md)
-
+* [permissions](docu/src/main/java/de/factoryfx/docu/permission/usecase.md)
 
 ## Example
 
