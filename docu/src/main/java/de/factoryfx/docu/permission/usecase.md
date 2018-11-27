@@ -1,9 +1,9 @@
 # Permissions (attribute based)
 
-Factory supports setting permission on attribute to restrict the write access for user.
+Factoryfx supports setting attribute permissions to limit write access.
 
-The permission check is executed on the server and therefore safe but the setup is also complicated because you need a user management.
-Alternatively you can deactivate editing in the gui.(not checked on the server)
+The check is secure because it is done on the server side but also more complex because a user management is needed.
+Alternatively you can deactivate editing in the gui only.(without server check)
 ```java
 ...
     public final StringAttribute attribute = new StringAttribute().userReadOnly();
