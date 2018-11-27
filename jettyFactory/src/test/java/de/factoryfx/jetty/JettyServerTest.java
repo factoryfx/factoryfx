@@ -27,6 +27,7 @@ import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.MessageBodyWriter;
 
 import com.google.common.io.ByteStreams;
+import org.checkerframework.common.reflection.qual.GetClass;
 import org.glassfish.jersey.client.ClientConfig;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.servlet.ServletContainer;
@@ -309,17 +310,8 @@ public class JettyServerTest {
         connectors.add(new HttpServerConnectorCreator("localhost",8015,null));
         ServletBuilder servletBuilder = new ServletBuilder();
 
-        boolean working = false;
-
-        if (working) {
-            ResourceConfig resourceConfig = new ResourceConfig();
-            resourceConfig.register(SomeMessageBodyReaderWriter.class);
-            resourceConfig.register(new MessageBodyReaderWriterEcho());
-            servletBuilder.withServlet("/*", new ServletContainer(resourceConfig));
-        } else {
-            servletBuilder.withJerseyResource(SomeMessageBodyReaderWriter.class);
-            servletBuilder.withJerseyResources("/*", List.of(new MessageBodyReaderWriterEcho()));
-        }
+        servletBuilder.withJerseyResource(SomeMessageBodyReaderWriter.class);
+        servletBuilder.withJerseyResources("/*", List.of(new MessageBodyReaderWriterEcho()));
         JettyServer jettyServer = new JettyServer(connectors, servletBuilder);
         jettyServer.start();
 
@@ -329,6 +321,49 @@ public class JettyServerTest {
             String resp = client.target("http://localhost:8015/echo").request().buildPost(Entity.entity("Hello", MediaType.valueOf("my/mime"))).invoke().readEntity(String.class);
 
             Assert.assertEquals("Changed by writer: Changed by reader: Hello", resp);
+        } finally {
+            jettyServer.stop();
+        }
+
+    }
+
+    @Path("/")
+    public static class ResourceWithData {
+        public final String data;
+
+        public ResourceWithData(String data) {
+            this.data = data;
+        }
+
+        @Path("get")
+        @GET
+        public String get() {
+            return data;
+        }
+    }
+    @Test
+    public void testSomePathes() {
+        List<HttpServerConnectorCreator> connectors= new ArrayList<>();
+        connectors.add(new HttpServerConnectorCreator("localhost",8015,null));
+        ServletBuilder servletBuilder = new ServletBuilder();
+
+        servletBuilder.withJerseyResources("/*", List.of(new ResourceWithData("0")));
+        servletBuilder.withJerseyResources("/resource1/*", List.of(new ResourceWithData("1")));
+        servletBuilder.withJerseyResources("/resource2/*", List.of(new ResourceWithData("2")));
+
+        JettyServer jettyServer = new JettyServer(connectors, servletBuilder);
+        jettyServer.start();
+
+        try {
+            ClientConfig cc = new ClientConfig();
+            Client client = ClientBuilder.newBuilder().withConfig(cc).build();
+            String resp0 = client.target("http://localhost:8015/get").request().buildGet().invoke().readEntity(String.class);
+            String resp1 = client.target("http://localhost:8015/resource1/get").request().buildGet().invoke().readEntity(String.class);
+            String resp2 = client.target("http://localhost:8015/resource2/get").request().buildGet().invoke().readEntity(String.class);
+            Assert.assertEquals("0",resp0);
+            Assert.assertEquals("1",resp1);
+            Assert.assertEquals("2",resp2);
+
         } finally {
             jettyServer.stop();
         }

@@ -1,14 +1,16 @@
 package de.factoryfx.jetty;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import de.factoryfx.factory.FactoryBase;
-import de.factoryfx.factory.atrribute.FactoryReferenceAttribute;
-import de.factoryfx.factory.atrribute.FactoryReferenceListAttribute;
-import org.glassfish.jersey.logging.LoggingFeature;
-
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import org.glassfish.jersey.logging.LoggingFeature;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import de.factoryfx.factory.FactoryBase;
+import de.factoryfx.factory.atrribute.FactoryReferenceAttribute;
+import de.factoryfx.factory.atrribute.FactoryReferenceListAttribute;
 
 /**
  *   Unusual inheritance api to support type-safe navigation.
@@ -20,8 +22,8 @@ import java.util.stream.Collectors;
  *      public static class TestWebserverFactory extends JettyServerFactory<Void,RootFactory>{
  *          public final FactoryReferenceAttribute<Resource1,Resource1FactoryBase> resource = new FactoryReferenceAttribute<>(Resource1FactoryBase.class);
  *          Override
- *          protected List<Object> getResourcesInstances() {
- *              return List.of(resource.instance());
+ *          protected void setupServlets(ServletBuilder servletBuilder) {
+ *              defaultSetupServlets(servletBuilder, List.of(resource.instance());
  *          }
  *      }
  *  }</pre>
