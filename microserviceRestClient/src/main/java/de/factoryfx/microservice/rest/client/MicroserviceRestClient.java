@@ -1,9 +1,14 @@
 package de.factoryfx.microservice.rest.client;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.*;
 import java.util.function.Supplier;
 
 
+import com.google.common.base.Charsets;
+import com.google.common.io.CharStreams;
 import de.factoryfx.data.merge.MergeDiffInfo;
 import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.data.storage.DataAndNewMetadata;
@@ -63,7 +68,7 @@ public class MicroserviceRestClient<V, R extends FactoryBase<?,V,R>,S> {
      */
     @SuppressWarnings("unchecked")
     public DataAndNewMetadata<R> prepareNewFactory() {
-        DataAndNewMetadata<R> currentFactory = executeWidthServerExceptionReporting(()->microserviceResource.prepareNewFactory(new UserAwareRequest<>(user,passwordHash,null)));
+        DataAndNewMetadata<R> currentFactory = executeWidthServerExceptionReporting(()->microserviceResource.prepareNewFactory(new VoidUserAwareRequest(user,passwordHash)));
         R root = currentFactory.root.internal().addBackReferences();
         if (factoryTreeBuilderBasedAttributeSetup!=null){
             factoryTreeBuilderBasedAttributeSetup.applyToRootFactoryDeep(root);
@@ -83,7 +88,7 @@ public class MicroserviceRestClient<V, R extends FactoryBase<?,V,R>,S> {
     }
 
     public Collection<StoredDataMetadata<S>> getHistoryFactoryList() {
-        return executeWidthServerExceptionReporting(()->microserviceResource.getHistoryFactoryList(new UserAwareRequest<>(user, passwordHash, null)));
+        return executeWidthServerExceptionReporting(()->microserviceResource.getHistoryFactoryList(new VoidUserAwareRequest(user, passwordHash)));
     }
 
     @SuppressWarnings("unchecked")
@@ -92,12 +97,12 @@ public class MicroserviceRestClient<V, R extends FactoryBase<?,V,R>,S> {
     }
 
     public boolean checkUser() {
-        CheckUserResponse response = executeWidthServerExceptionReporting(()->microserviceResource.checkUser(new UserAwareRequest<>(user,passwordHash,null)));
+        CheckUserResponse response = executeWidthServerExceptionReporting(()->microserviceResource.checkUser(new VoidUserAwareRequest(user,passwordHash)));
         return response.valid;
     }
 
     public Locale getLocale() {
-        UserLocaleResponse response = executeWidthServerExceptionReporting(()->microserviceResource.getUserLocale(new UserAwareRequest<>(user,passwordHash,null)));
+        UserLocaleResponse response = executeWidthServerExceptionReporting(()->microserviceResource.getUserLocale(new VoidUserAwareRequest(user,passwordHash)));
         return response.locale;
     }
 
@@ -110,7 +115,15 @@ public class MicroserviceRestClient<V, R extends FactoryBase<?,V,R>,S> {
         try {
             return action.get();
         } catch (InternalServerErrorException e) {
-            String respString = e.getResponse().readEntity(String.class);
+
+            String respString= null;
+            if (e.getResponse().getEntity() instanceof ByteArrayInputStream ){
+                try {
+                    respString = CharStreams.toString(new InputStreamReader(((ByteArrayInputStream)e.getResponse().getEntity()), Charsets.UTF_8));
+                } catch (IOException e1) {
+                    throw new RuntimeException(e1);
+                }
+            }
             throw new RuntimeException("Server exception:\n----------------"+respString+"\n----------------",e);
         }
     }

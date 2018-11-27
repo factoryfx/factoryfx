@@ -17,6 +17,7 @@ import de.factoryfx.microservice.common.ResponseWorkaround;
 import de.factoryfx.microservice.rest.MicroserviceResource;
 import de.factoryfx.microservice.rest.MicroserviceResourceFactory;
 import de.factoryfx.microservice.rest.client.MicroserviceRestClient;
+import de.factoryfx.microservice.rest.client.MicroserviceRestClientBuilder;
 import de.factoryfx.microservice.rest.client.MicroserviceRestClientFactory;
 import de.factoryfx.server.Microservice;
 
@@ -70,7 +71,7 @@ public class MicroserviceRestIntegrationTest {
         final PersistentUserManagementFactory<TestVisitor,TestJettyServer> userManagement = new PersistentUserManagementFactory<>();
         final UserFactory<TestVisitor,TestJettyServer> user = new UserFactory<>();
         user.name.set("user123");
-        user.password.set(new EncryptedString("hash123", key));
+        user.password.setPasswordNotHashed("pw1", key);
         user.locale.set(Locale.GERMAN);
         userManagement.users.add(user);
         microserviceResource.userManagement.set(userManagement);
@@ -96,7 +97,7 @@ public class MicroserviceRestIntegrationTest {
             microserviceRestClientFactory.factoryRootClass.set(TestJettyServer.class);
 
 
-            MicroserviceRestClient<TestVisitor, TestJettyServer,Void> microserviceRestClient = microserviceRestClientFactory.createClient();
+            MicroserviceRestClient<TestVisitor, TestJettyServer,Void> microserviceRestClient = MicroserviceRestClientBuilder.build("localhost",34579,"user123","pw1",TestJettyServer.class);
             microserviceRestClient.prepareNewFactory();
 
 

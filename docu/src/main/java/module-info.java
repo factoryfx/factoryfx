@@ -25,9 +25,20 @@ module de.factoryfx.docu {
     requires com.fasterxml.jackson.core;
     requires java.xml.bind;
     requires java.net.http;
+    requires de.factoryfx.microserviceRestServer;
+    requires de.factoryfx.microserviceRestClient;
 
-    exports de.factoryfx.docu.dynamicwebserver;
-    exports de.factoryfx.docu.reuse;
-    exports de.factoryfx.docu.swagger;
+    opens de.factoryfx.docu.datainjection;
+    opens de.factoryfx.docu.dependencyinjection;
+    opens de.factoryfx.docu.dynamicwebserver;
     opens de.factoryfx.docu.helloworld;
+    opens de.factoryfx.docu.lifecycle;
+    opens de.factoryfx.docu.migration;
+    opens de.factoryfx.docu.monitoring;
+    opens de.factoryfx.docu.parametrized;
+    opens de.factoryfx.docu.permission;
+    opens de.factoryfx.docu.persistentstorage;
+    opens de.factoryfx.docu.polymorphism;
+    opens de.factoryfx.docu.reuse;
+    opens de.factoryfx.docu.swagger;
 }

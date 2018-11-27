@@ -64,7 +64,7 @@ public abstract class JettyServerFactory<V,R extends FactoryBase<?,V,R>> extends
 
     /**
      * When migrating from older revision you can simple call {@link #defaultSetupServlets(ServletBuilder, List)} to achieve the old beghaviour
-     * @param servletBuilder
+     * @param servletBuilder servlet builder
      */
     protected abstract void setupServlets(ServletBuilder servletBuilder);
 

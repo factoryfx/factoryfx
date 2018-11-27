@@ -2,12 +2,10 @@ package de.factoryfx.docu.monitoring;
 
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.jetty9.InstrumentedHandler;
-import de.factoryfx.data.jackson.ObjectMapperBuilder;
 import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.factory.atrribute.FactoryReferenceAttribute;
 import de.factoryfx.factory.atrribute.FactoryReferenceListAttribute;
 import de.factoryfx.jetty.*;
-import org.glassfish.jersey.logging.LoggingFeature;
 
 import java.util.Collections;
 import java.util.List;

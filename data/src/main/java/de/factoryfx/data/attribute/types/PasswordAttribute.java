@@ -24,6 +24,10 @@ public class PasswordAttribute extends ImmutableValueAttribute<EncryptedString, 
         return pw;
     }
 
+    public void setPasswordNotHashed(String password, String key){
+        this.set(new EncryptedString(internal_hash(password),key));
+    }
+
     public boolean internal_isValidKey(String key) {
         return new EncryptedStringAttribute.KeyValidator().validate(key);
     }

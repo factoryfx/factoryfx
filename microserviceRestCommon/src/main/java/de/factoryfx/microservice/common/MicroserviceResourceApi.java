@@ -16,9 +16,8 @@ import java.util.Collection;
 
 
 /**
- *https://stackoverflow.com/questions/17000193/can-we-have-more-than-one-path-annotation-for-same-rest-method
- *3 Paths for compatibility
- *microservice is new one
+ * REST resource API for managing a microservice. start,stop,update,..
+ *
  */
 @Path("microservice")
 public interface MicroserviceResourceApi<V,R extends FactoryBase<?,V,R>,S>  {
@@ -52,7 +51,7 @@ public interface MicroserviceResourceApi<V,R extends FactoryBase<?,V,R>,S>  {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @Path("prepareNewFactory")
-    DataAndNewMetadata<R> prepareNewFactory(UserAwareRequest<Void> request);
+    DataAndNewMetadata<R> prepareNewFactory(VoidUserAwareRequest request);
 
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
@@ -64,7 +63,7 @@ public interface MicroserviceResourceApi<V,R extends FactoryBase<?,V,R>,S>  {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @Path("historyFactoryList")
-    Collection<StoredDataMetadata<S>> getHistoryFactoryList(UserAwareRequest<Void> request);
+    Collection<StoredDataMetadata<S>> getHistoryFactoryList(VoidUserAwareRequest request);
 
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
@@ -76,23 +75,17 @@ public interface MicroserviceResourceApi<V,R extends FactoryBase<?,V,R>,S>  {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @Path("queryReadOnly")
-    ResponseWorkaround<V> queryReadOnly(UserAwareRequest<Void> request);
+    ResponseWorkaround<V> queryReadOnly(VoidUserAwareRequest request);
 
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @Path("checkUser")
-    CheckUserResponse checkUser(UserAwareRequest<Void> request);
-
-    @POST
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON)
-    @Path("userKey")
-    KeyResponse getUserKey(UserAwareRequest<Void> request);
+    CheckUserResponse checkUser(VoidUserAwareRequest request);
 
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @Path("userLocale")
-    UserLocaleResponse getUserLocale(UserAwareRequest<Void> request);
+    UserLocaleResponse getUserLocale(VoidUserAwareRequest request);
 }

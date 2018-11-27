@@ -16,28 +16,20 @@ import de.factoryfx.server.user.AuthorizedUser;
 import de.factoryfx.server.user.UserManagement;
 import de.factoryfx.server.user.persistent.UserFactory;
 
-
-
-/**
- *  https://stackoverflow.com/questions/17000193/can-we-have-more-than-one-path-annotation-for-same-rest-method
- *  3 Paths for compatibility
- *  microservice is new one
- */
 public class MicroserviceResource<V,R extends FactoryBase<?,V,R>,S> implements MicroserviceResourceApi<V,R,S> {
 
     private final Microservice<V,?,R,S> microservice;
     private final UserManagement userManagement;
-    private final Predicate<Optional<AuthorizedUser>> authorizedKeyUserEvaluator;
+
     private final Supplier<V> emptyVisitorCreator;
 
-    public MicroserviceResource(Microservice<V,?,R,S> microservice, UserManagement userManagement, Predicate<Optional<AuthorizedUser>> authorizedKeyUserEvaluator) {
-        this(microservice,userManagement,authorizedKeyUserEvaluator,null);
+    public MicroserviceResource(Microservice<V,?,R,S> microservice, UserManagement userManagement) {
+        this(microservice,userManagement,null);
     }
 
-    public MicroserviceResource(Microservice<V,?,R,S> microservice, UserManagement userManagement, Predicate<Optional<AuthorizedUser>> authorizedKeyUserEvaluator, Supplier<V> emptyVisitorCreator) {
+    public MicroserviceResource(Microservice<V,?,R,S> microservice, UserManagement userManagement, Supplier<V> emptyVisitorCreator) {
         this.microservice = microservice;
         this.userManagement = userManagement;
-        this.authorizedKeyUserEvaluator = authorizedKeyUserEvaluator;
         this.emptyVisitorCreator= emptyVisitorCreator;
     }
 
@@ -86,7 +78,7 @@ public class MicroserviceResource<V,R extends FactoryBase<?,V,R>,S> implements M
     }
 
     @Override
-    public DataAndNewMetadata<R> prepareNewFactory(UserAwareRequest<Void> request) {
+    public DataAndNewMetadata<R> prepareNewFactory(VoidUserAwareRequest request) {
         authenticate(request);
         return microservice.prepareNewFactory();
     }
@@ -98,7 +90,7 @@ public class MicroserviceResource<V,R extends FactoryBase<?,V,R>,S> implements M
     }
 
     @Override
-    public Collection<StoredDataMetadata<S>> getHistoryFactoryList(UserAwareRequest<Void> request) {
+    public Collection<StoredDataMetadata<S>> getHistoryFactoryList(VoidUserAwareRequest request) {
         authenticate(request);
         return microservice.getHistoryFactoryList();
     }
@@ -110,27 +102,18 @@ public class MicroserviceResource<V,R extends FactoryBase<?,V,R>,S> implements M
     }
 
     @Override
-    public ResponseWorkaround<V> queryReadOnly(UserAwareRequest<Void> request) {
+    public ResponseWorkaround<V> queryReadOnly(VoidUserAwareRequest request) {
         authenticate(request);
         return new ResponseWorkaround<>(microservice.query(emptyVisitorCreator.get()));
     }
 
     @Override
-    public CheckUserResponse checkUser(UserAwareRequest<Void> request){
+    public CheckUserResponse checkUser(VoidUserAwareRequest request){
         return new CheckUserResponse(userManagement.authenticate(request.user,request.passwordHash).isPresent());
     }
 
     @Override
-    public KeyResponse getUserKey(UserAwareRequest<Void> request){
-        if (authorizedKeyUserEvaluator.test(authenticate(request))){
-            return new KeyResponse(UserFactory.passwordKey);
-        } else {
-            return new KeyResponse("");
-        }
-    }
-
-    @Override
-    public UserLocaleResponse getUserLocale(UserAwareRequest<Void> request){
+    public UserLocaleResponse getUserLocale(VoidUserAwareRequest request){
         final Optional<AuthorizedUser> authenticate = authenticate(request);
         return authenticate.map(authorizedUser -> new UserLocaleResponse(authorizedUser.getLocale())).orElseGet(() -> new UserLocaleResponse(Locale.ENGLISH));
     }

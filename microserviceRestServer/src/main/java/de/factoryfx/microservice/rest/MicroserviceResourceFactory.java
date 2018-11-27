@@ -15,6 +15,13 @@ import de.factoryfx.server.user.nop.NoUserManagementFactory;
 import de.factoryfx.server.user.persistent.PersistentUserManagementFactory;
 
 /**
+ * usage example: (in a JettyserverFactory)<br>
+ * {@code
+ *         @SuppressWarnings("unchecked")
+ *         public final FactoryReferenceAttribute<MicroserviceResource<Void, RootFactory,Void>, MicroserviceResourceFactory<Void,RootFactory,Void>> resource =
+ *                 FactoryReferenceAttribute.create(new FactoryReferenceAttribute<>(MicroserviceResourceFactory.class));
+ *}
+ * <br><br>(the messed up generics are caused by java limitations)
  *
  * @param <V> visitor
  * @param <R> root
@@ -23,22 +30,17 @@ import de.factoryfx.server.user.persistent.PersistentUserManagementFactory;
 public class MicroserviceResourceFactory<V,R extends FactoryBase<?,V,R>,S> extends FactoryBase<MicroserviceResource<V,R,S>,V,R> {
 
     public final FactoryPolymorphicReferenceAttribute<UserManagement> userManagement = new FactoryPolymorphicReferenceAttribute<UserManagement>().setupUnsafe(UserManagement.class, NoUserManagementFactory.class, PersistentUserManagementFactory.class).labelText("resource").nullable();
-    public final ObjectValueAttribute<Predicate<Optional<AuthorizedUser>>> authorizedKeyUserEvaluator= new ObjectValueAttribute<Predicate<Optional<AuthorizedUser>>>().labelText("authorizedKeyUserEvaluator").nullable();
     public final ObjectValueAttribute<Supplier<V>> emptyVisitorCreator= new ObjectValueAttribute<Supplier<V>>().labelText("emptyVisitorCreator").nullable();
 
     @SuppressWarnings("unchecked")
     public MicroserviceResourceFactory(){
         configLifeCycle().setCreator(() -> {
-            Predicate<Optional<AuthorizedUser>> authorizedKeyUserEvaluator = this.authorizedKeyUserEvaluator.get();
-            if (authorizedKeyUserEvaluator==null) {
-                authorizedKeyUserEvaluator=(u)->true;
-            }
             UserManagement userManagementInstance = userManagement.instance();
             if (userManagementInstance==null) {
                 userManagementInstance=new NoUserManagement();
             }
             Microservice<V, ?, R, S> microservice = (Microservice<V, ?, R, S>)utilityFactory().getMicroservice();
-            return new MicroserviceResource<>(microservice, userManagementInstance,authorizedKeyUserEvaluator,emptyVisitorCreator.get());
+            return new MicroserviceResource<>(microservice, userManagementInstance,emptyVisitorCreator.get());
         });
 
         config().setDisplayTextProvider(()->"Resource");
