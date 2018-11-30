@@ -7,11 +7,9 @@ import de.factoryfx.factory.atrribute.FactoryReferenceAttribute;
 
 public class CopperRootFactory extends FactoryBase<WorkflowLauncher, Void, CopperRootFactory> {
 
-
+    @SuppressWarnings("unchecked")
     public final FactoryReferenceAttribute<WorkflowLauncher, WorkflowLauncherFactory<Void, CopperRootFactory>> workflowLauncher =
         FactoryReferenceAttribute.create(new FactoryReferenceAttribute<>(WorkflowLauncherFactory.class)).labelText("wfl");
-
-
 
     public CopperRootFactory(){
         configLifeCycle().setCreator(workflowLauncher::instance);

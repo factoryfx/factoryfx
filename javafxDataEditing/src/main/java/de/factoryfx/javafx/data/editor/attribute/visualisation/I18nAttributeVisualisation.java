@@ -42,11 +42,11 @@ public class I18nAttributeVisualisation extends ValueAttributeVisualisation<Lang
         });
         comboBox.getItems().addAll(DateFormat.getAvailableLocales());
 
-        TextField textfiled = new TextField();
+        TextField textfield = new TextField();
 
 
         Button button = new Button("set");
-        button.setOnAction(event -> observableAttributeValue.set(new LanguageText().en(textfiled.getText())));
+        button.setOnAction(event -> observableAttributeValue.set(new LanguageText().en(textfield.getText())));
 
 
 

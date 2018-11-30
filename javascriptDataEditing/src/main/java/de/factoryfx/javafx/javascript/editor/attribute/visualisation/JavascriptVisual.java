@@ -266,8 +266,8 @@ public class JavascriptVisual<A> {
 
     private final List<SourceFile> externs;
 
-    public Node createContent(SimpleObjectProperty<? extends Javascript<?>> boundTo) {
-        return new RootNode(externs,boundTo);
+    public Node createContent(SimpleObjectProperty<Javascript<A>> boundTo) {
+        return new RootNode<A>(externs,boundTo);
     }
 
     static final class ContentAssistPopup extends AutoCompletePopup<String> {

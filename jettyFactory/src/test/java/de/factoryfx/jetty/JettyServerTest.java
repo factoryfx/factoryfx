@@ -6,6 +6,10 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -64,9 +68,8 @@ public class JettyServerTest {
         jettyServer.start();
 //        Thread.sleep(1000);
 
-        RestClient restClient = new RestClient("localhost",8015,"",false,null,null);
-        System.out.println(restClient.get("Resource1",String.class));
-        System.out.println(restClient.get("Resource2",String.class));
+        System.out.println(get(8015,"Resource1"));
+        System.out.println(get(8015,"Resource2"));
         jettyServer.stop();
     }
 
@@ -92,10 +95,9 @@ public class JettyServerTest {
         jettyServer.start();
 //        Thread.sleep(1000);
 
-        RestClient restClient = new RestClient("localhost",8015,"",false,null,null);
-        Assert.assertEquals("Hello",restClient.get("Resource",String.class));
+        Assert.assertEquals("Hello",get(8015,"Resource"));
         jettyServer = jettyServer.recreate(connectors,servlets(new Resource("World")));
-        Assert.assertEquals("World",restClient.get("Resource",String.class));
+        Assert.assertEquals("World",get(8015,"Resource"));
         jettyServer.stop();
 
     }
@@ -115,22 +117,20 @@ public class JettyServerTest {
 //        Thread.sleep(1000);
 
 
-        RestClient restClient8015 = new RestClient("localhost",8015,"",false,null,null);
-        RestClient restClient8016 = new RestClient("localhost",8016,"",false,null,null);
-        Assert.assertEquals("Hello",restClient8015.get("Resource",String.class));
+        Assert.assertEquals("Hello",get(8015,"Resource"));
         try {
-            restClient8016.get("Resource",String.class);
+            get(8016,"Resource");
             Assert.fail("Expectected exception");
         } catch (Exception expected) {}
 
         jettyServer = jettyServer.recreate(moreConnectors,resources);
-        Assert.assertEquals("Hello",restClient8015.get("Resource",String.class));
-        Assert.assertEquals("Hello",restClient8016.get("Resource",String.class));
+        Assert.assertEquals("Hello",get(8015,"Resource"));
+        Assert.assertEquals("Hello",get(8016,"Resource"));
 
         jettyServer = jettyServer.recreate(connectors,resources);
-        Assert.assertEquals("Hello",restClient8015.get("Resource",String.class));
+        Assert.assertEquals("Hello",get(8015,"Resource"));
         try {
-            restClient8016.get("Resource",String.class);
+            get(8016,"Resource");
             Assert.fail("Expectected exception");
         } catch (Exception expected) {}
         jettyServer.stop();
@@ -166,12 +166,11 @@ public class JettyServerTest {
         jettyServer.start();
 
         try {
-            RestClient restClient = new RestClient("localhost",8015,"",false,null,null);
             CompletableFuture<String> lateResponse = new CompletableFuture<>();
             new Thread() {
                 public void run() {
                     try {
-                        lateResponse.complete(restClient.get("Resource", String.class));
+                        lateResponse.complete(get(8015,"Resource"));
                     } catch (Exception ex) {
                         lateResponse.completeExceptionally(ex);
                     }
@@ -180,7 +179,7 @@ public class JettyServerTest {
             Thread.sleep(400);
             jettyServer = jettyServer.recreate(connectors,servlets());
             try {
-                restClient.get("Resource",String.class);
+                get(8015,"Resource");
                 Assert.fail("Expected exception");
             } catch (Exception expected) {}
             Assert.assertEquals("RESPONSE",lateResponse.get(1000, TimeUnit.MILLISECONDS));
@@ -236,11 +235,10 @@ public class JettyServerTest {
                 future.completeExceptionally(e);            }
         });
 
-        RestClient restClient = new RestClient("localhost",8015,"",false,null,null);
         try {
-            restClient.get("Killer", String.class);
+            get(8015,"Killer");
             Assert.fail("Expected exception");
-        } catch (ProcessingException expected) {
+        } catch (Exception expected) {
             expected.printStackTrace();
         }
         try {
@@ -368,6 +366,24 @@ public class JettyServerTest {
             jettyServer.stop();
         }
 
+    }
+
+    private String get(int port,String path){
+        HttpClient httpClient = HttpClient.newBuilder().version(HttpClient.Version.HTTP_1_1).build();
+        HttpRequest request = HttpRequest.newBuilder().uri(URI.create("http://localhost:"+port+"/"+path)).GET().build();
+        try {
+            HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+            if (response.statusCode()>400){
+                throw new IllegalStateException("http response:"+response.statusCode());
+            }
+            return response.body();
+        } catch (IOException | InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+
+
+//        RestClient restClient = new RestClient("localhost",port,"",false,null,null);
+//        return restClient.get(path,String.class);
     }
 
 }

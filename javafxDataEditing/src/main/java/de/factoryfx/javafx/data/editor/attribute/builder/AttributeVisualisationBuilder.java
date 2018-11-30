@@ -12,5 +12,5 @@ public interface AttributeVisualisationBuilder {
     }
     boolean isEditorFor(Attribute<?,?> attribute);
     AttributeVisualisation createVisualisation(Attribute<?,?> attribute, Consumer<Data> navigateToData, Data previousData);
-    default AttributeVisualisation createValueListVisualisation(Attribute<?,?> attribute) { return null;};
+    default AttributeVisualisation createValueListVisualisation(Attribute<?,?> attribute) { return null;}
 }

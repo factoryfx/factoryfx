@@ -207,13 +207,7 @@ public abstract class ReferenceListAttribute<T extends Data,A extends ReferenceB
 
     @Override
     public void sort(Comparator<? super T> c) {
-        Object[] a = this.toArray();
-        Arrays.sort(a, (Comparator) c);
-        ListIterator<T> i = this.listIterator();
-        for (Object t : a) {
-            i.next();
-            i.set((T) t);
-        }
+        list.sort(c);
         afterModify();
     }
 

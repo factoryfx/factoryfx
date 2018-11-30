@@ -21,6 +21,7 @@ public class WebServiceCallResult {
         this.fault = ex;
     }
 
+    @SuppressWarnings("unchecked")
     public JAXBElement createFaultDetail() {
         try {
             WebFault faultAnnotation = fault.getClass().getAnnotation(WebFault.class);

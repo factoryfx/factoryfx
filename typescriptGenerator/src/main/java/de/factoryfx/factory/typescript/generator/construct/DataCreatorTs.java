@@ -32,9 +32,9 @@ public class DataCreatorTs {
         typeMappingCode.append("    return idToDataMap[json];\n");
         typeMappingCode.append("}\n");
         for (Class<? extends Data> allDataClass : allDataClasses) {
-            typeMappingCode.append("if (clazz==='"+allDataClass.getName()+"'){\n");
+            typeMappingCode.append("if (clazz==='").append(allDataClass.getName()).append("'){\n");
             String typeName = allDataClass.getSimpleName();
-            typeMappingCode.append("    let result: "+ typeName +"= new "+ typeName +"();\n");
+            typeMappingCode.append("    let result: ").append(typeName).append("= new ").append(typeName).append("();\n");
             typeMappingCode.append("    result.mapFromJson(json,idToDataMap,this);\n");
             typeMappingCode.append("    return result;\n");
             typeMappingCode.append("}\n");
@@ -46,16 +46,16 @@ public class DataCreatorTs {
                 new TsMethodCode(typeMappingCode.toString(),allDataClasses.stream().map(dataToDataConfigTs::get).collect(Collectors.toList())),"public"));
 
 
-        StringBuilder typeListMappingCode=new StringBuilder();
-        typeListMappingCode.append("let result: Data[]=[];\n");
-        typeListMappingCode.append("for (let entry of json) {\n" +
+        String typeListMappingCode =
+                "let result: Data[]=[];\n" +
+                "for (let entry of json) {\n" +
                 "    result.push(this.createData(entry,idToDataMap));\n" +
-                "}\n");
-        typeListMappingCode.append("return result;");
+                "}\n" +
+                "return result;";
 
         constructed.methods.add(new TsMethod("createDataList",
                 List.of(new TsMethodParameter("json",new TsTypePrimitive("any")),new TsMethodParameter("idToDataMap",new TsTypePrimitive("any"))),new TsMethodResult(new TsTypeArray(new TsTypeClass(dataClass))),
-                new TsMethodCode(typeListMappingCode.toString(),allDataClasses.stream().map(dataToDataConfigTs::get).collect(Collectors.toList())),"public"));
+                new TsMethodCode(typeListMappingCode,allDataClasses.stream().map(dataToDataConfigTs::get).collect(Collectors.toList())),"public"));
 
         return constructed;
     }

@@ -8,7 +8,6 @@ import de.factoryfx.jetty.ServletBuilder;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
-import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
@@ -26,16 +25,12 @@ public class InstrumentedJettyServer{
 
     public void acceptVisitor(ServerVisitor serverVisitor){
         //MetricRegistry to string
-        try {
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            PrintStream ps = new PrintStream(baos,false, "UTF-8");
-            ConsoleReporter consoleReporter = ConsoleReporter.forRegistry(metricRegistry).outputTo(ps).build();
-            consoleReporter.report();
-            consoleReporter.stop();
-            serverVisitor.jettyReport=new String(baos.toByteArray(), StandardCharsets.UTF_8);
-        } catch (UnsupportedEncodingException e) {
-            throw new RuntimeException(e);
-        }
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        PrintStream ps = new PrintStream(baos,false, StandardCharsets.UTF_8);
+        ConsoleReporter consoleReporter = ConsoleReporter.forRegistry(metricRegistry).outputTo(ps).build();
+        consoleReporter.report();
+        consoleReporter.stop();
+        serverVisitor.jettyReport=new String(baos.toByteArray(), StandardCharsets.UTF_8);
     }
 
     public void start() {

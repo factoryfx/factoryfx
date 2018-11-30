@@ -73,7 +73,7 @@ public class DataGeneratedTs {
     private TsMethod createListAttributeAccessor(Data data, TsClassConstructed tsClass) {
         StringBuilder code=new StringBuilder("let result: AttributeAccessor<any,"+tsClass.getName()+">[]=[];\n");
         data.internal().visitAttributesFlat((attributeVariableName, attribute) -> {
-            code.append("result.push(this."+attributeVariableName+"Accessor());\n");
+            code.append("result.push(this.").append(attributeVariableName).append("Accessor());\n");
         });
         code.append("return result;");
         return new TsMethod("listAttributeAccessor", List.of(),
@@ -88,14 +88,14 @@ public class DataGeneratedTs {
                 Class referenceClass = ((ReferenceAttribute) attribute).internal_getReferenceClass();
                 TsClassConstructed dataClass = dataToOverrideTs.get(referenceClass);
                 mapValuesFromJsonImports.add(dataClass);
-                fromJsonCode.append("this.collectDataChildren(this."+attributeVariableName+",idToDataMap);\n");
+                fromJsonCode.append("this.collectDataChildren(this.").append(attributeVariableName).append(",idToDataMap);\n");
                 return;
             }
             if (attribute instanceof ReferenceListAttribute){
                 Class referenceClass = ((ReferenceListAttribute) attribute).internal_getReferenceClass();
                 TsClassConstructed dataClass = dataToOverrideTs.get(referenceClass);
                 mapValuesFromJsonImports.add(dataClass);
-                fromJsonCode.append("this.collectDataArrayChildren(this."+attributeVariableName+",idToDataMap);\n");
+                fromJsonCode.append("this.collectDataArrayChildren(this.").append(attributeVariableName).append(",idToDataMap);\n");
                 return;
             }
         });
@@ -114,18 +114,18 @@ public class DataGeneratedTs {
                 Class referenceClass = ((ReferenceAttribute) attribute).internal_getReferenceClass();
                 TsClassConstructed dataClass = dataToOverrideTs.get(referenceClass);
                 mapValuesFromJsonImports.add(dataClass);
-                fromJsonCode.append("this."+attributeVariableName+"=<"+ dataClass.getName()+">dataCreator.createData(json."+attributeVariableName+".v,idToDataMap);\n");
+                fromJsonCode.append("this.").append(attributeVariableName).append("=<").append(dataClass.getName()).append(">dataCreator.createData(json.").append(attributeVariableName).append(".v,idToDataMap);\n");
                 return;
             }
             if (attribute instanceof ReferenceListAttribute){
                 Class referenceClass = ((ReferenceListAttribute) attribute).internal_getReferenceClass();
                 TsClassConstructed dataClass = dataToOverrideTs.get(referenceClass);
                 mapValuesFromJsonImports.add(dataClass);
-                fromJsonCode.append("this."+attributeVariableName+"=<"+ dataClass.getName()+"[]>dataCreator.createDataList(json."+attributeVariableName+",idToDataMap);\n");
+                fromJsonCode.append("this.").append(attributeVariableName).append("=<").append(dataClass.getName()).append("[]>dataCreator.createDataList(json.").append(attributeVariableName).append(",idToDataMap);\n");
                 return;
             }
 
-            fromJsonCode.append("this."+attributeVariableName+"=json."+attributeVariableName+".v;\n");
+            fromJsonCode.append("this.").append(attributeVariableName).append("=json.").append(attributeVariableName).append(".v;\n");
 //            fromJsonCode.append("       this."+attributeVariableName+"=json."+attributeVariableName+".v;\n");
 //            fromJsonCode.append("       if (!json."+attributeVariableName+".v) this."+attributeVariableName+"=null;\n");
         });
@@ -144,17 +144,17 @@ public class DataGeneratedTs {
                 Class referenceClass = ((ReferenceAttribute) attribute).internal_getReferenceClass();
                 TsClassConstructed dataClass = dataToOverrideTs.get(referenceClass);
                 toValuesFromJsonImports.add(dataClass);
-                toJsonCode.append("result."+attributeVariableName+"=this.mapAttributeDataToJson(idToDataMap,this."+attributeVariableName+");\n");
+                toJsonCode.append("result.").append(attributeVariableName).append("=this.mapAttributeDataToJson(idToDataMap,this.").append(attributeVariableName).append(");\n");
                 return;
             }
             if (attribute instanceof ReferenceListAttribute){
                 Class referenceClass = ((ReferenceListAttribute) attribute).internal_getReferenceClass();
                 TsClassConstructed dataClass = dataToOverrideTs.get(referenceClass);
                 toValuesFromJsonImports.add(dataClass);
-                toJsonCode.append("result."+attributeVariableName+"=this.mapAttributeDataListToJson(idToDataMap,this."+attributeVariableName+");\n");
+                toJsonCode.append("result.").append(attributeVariableName).append("=this.mapAttributeDataListToJson(idToDataMap,this.").append(attributeVariableName).append(");\n");
                 return;
             }
-            toJsonCode.append("result."+attributeVariableName+"=this.mapAttributeValueToJson(idToDataMap,this."+attributeVariableName+");\n");
+            toJsonCode.append("result.").append(attributeVariableName).append("=this.mapAttributeValueToJson(idToDataMap,this.").append(attributeVariableName).append(");\n");
         });
         return new TsMethod("mapValuesToJson",
                 List.of(new TsMethodParameter("idToDataMap",new TsTypePrimitive("any")),new TsMethodParameter("result",new TsTypePrimitive("any"))),

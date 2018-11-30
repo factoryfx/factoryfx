@@ -1,6 +1,9 @@
 /*/build/
 /*/out/
-/.gradle/
+.gradle/
 /.idea/
 factoryfx.iml
 /factoryfx/
+/typescriptGenerator/src/test/java/de/factoryfx/factory/typescript/generator/ts/node_modules/
+# Ignores compiled TypeScript files
+**/typescriptGenerator/**/*.js

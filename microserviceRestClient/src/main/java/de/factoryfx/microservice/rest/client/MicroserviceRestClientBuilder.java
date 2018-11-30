@@ -1,24 +1,7 @@
 package de.factoryfx.microservice.rest.client;
 
-import com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider;
-import de.factoryfx.data.attribute.primitive.BooleanAttribute;
-import de.factoryfx.data.attribute.primitive.IntegerAttribute;
-import de.factoryfx.data.attribute.types.ObjectValueAttribute;
-import de.factoryfx.data.attribute.types.StringAttribute;
-import de.factoryfx.data.jackson.ObjectMapperBuilder;
 import de.factoryfx.factory.FactoryBase;
-import de.factoryfx.factory.FactoryTreeBuilderBasedAttributeSetup;
-import de.factoryfx.factory.SimpleFactoryBase;
-import de.factoryfx.microservice.common.MicroserviceResourceApi;
 import de.factoryfx.server.user.persistent.PasswordHash;
-import org.glassfish.jersey.CommonProperties;
-import org.glassfish.jersey.client.ClientConfig;
-import org.glassfish.jersey.client.authentication.HttpAuthenticationFeature;
-import org.glassfish.jersey.client.proxy.WebResourceFactory;
-
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.WebTarget;
 
 
 public class MicroserviceRestClientBuilder {

@@ -14,6 +14,11 @@ import de.factoryfx.server.Microservice;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatterBuilder;
 
@@ -61,15 +66,25 @@ public class Main {
     }
 
     private static Thread startQueryServerThread() {
-        RestClient restClient8005 = new RestClient("localhost",8005,"");
         Thread pollServer = new Thread() {
             {
                 setDaemon(true);
             }
             public void run() {
                 while (true) {
-                    String serverResponse = restClient8005.get("/Resource",String.class);
-                    System.out.println("Server responded: "+serverResponse);
+                    HttpClient client = HttpClient.newBuilder().version(HttpClient.Version.HTTP_1_1).build();
+
+                    HttpRequest request = HttpRequest.newBuilder()
+                            .uri(URI.create("http://localhost:8005/Resource"))
+                            .GET()
+                            .build();
+                    try {
+                        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+                        System.out.println("Server responded: "+response.body());
+                    } catch (IOException | InterruptedException e) {
+                        throw new RuntimeException(e);
+                    }
+
                     try {
                         Thread.sleep(500);
                     } catch (InterruptedException e) {

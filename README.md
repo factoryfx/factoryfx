@@ -126,7 +126,7 @@ The factoryfx configuration is exposed
 ### REST
 The rest api supports editing the configuration in json format.
 ### Client
-##### Richclient
+##### Rich client
 Javafx data editing components.
 ##### Webapp
 Typescript code generator.

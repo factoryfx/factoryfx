@@ -22,7 +22,7 @@ public class JavascriptAttributeVisualisation<A> extends ValueAttributeVisualisa
 
     @Override
     public Node createValueVisualisation() {
-        JavascriptVisual visual = new JavascriptVisual(attribute.internal_getExterns());
+        JavascriptVisual<A> visual = new JavascriptVisual<A>(attribute.internal_getExterns());
         return visual.createContent(observableAttributeValue);
     }
 

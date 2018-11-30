@@ -22,6 +22,7 @@ import de.factoryfx.factory.atrribute.FactoryReferenceAttribute;
 
 public abstract class TransientScottyEngineFactory<V, R extends FactoryBase<?, V, R>> extends FactoryBase<TransientScottyEngine, V, R> {
 
+    @SuppressWarnings("unchecked")
     public final FactoryReferenceAttribute<EngineIdProvider, EngineIdProviderFactory<V, R>> engineIdProviderFactory =
         FactoryReferenceAttribute.create(new FactoryReferenceAttribute<>(EngineIdProviderFactory.class));
 

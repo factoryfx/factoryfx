@@ -26,10 +26,11 @@ public class PersistentScottyEngineFactory<V, R extends FactoryBase<?, V, R>> ex
     public final IntegerAttribute batcherThreads = new IntegerAttribute().labelText("Number of batcher threads");
     public final IntegerAttribute threads = new IntegerAttribute().labelText("Number of processing threads");
 
+    @SuppressWarnings("unchecked")
     public final FactoryReferenceAttribute<EngineIdProvider, EngineIdProviderFactory<V, R>> persistentEngineIdProviderFactory =
         FactoryReferenceAttribute.create(new FactoryReferenceAttribute<>(EngineIdProviderFactory.class));
 
-
+    @SuppressWarnings("unchecked")
     public final FactoryReferenceAttribute<DBDialect, OracleDataSourceFactory<V, R>> dbDialectFactory =
         FactoryReferenceAttribute.create(new FactoryReferenceAttribute<>(OracleDataSourceFactory.class)).labelText("DB dialect");
 

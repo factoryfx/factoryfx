@@ -58,9 +58,9 @@ public class JettyServer {
     }
 
     private void updateWithServletBuilder(ServletBuilder servletBuilder) {
-        HashMap<UpdateableServlet.KeyedServlet,List<ServletPathSpec>> servlets = new HashMap<>();
+        HashMap<KeyedServlet,List<ServletPathSpec>> servlets = new HashMap<>();
         servletBuilder.forEachServletMapping((p,s)->{
-            servlets.computeIfAbsent(new UpdateableServlet.KeyedServlet(s),k->new ArrayList<>()).add(p);
+            servlets.computeIfAbsent(new KeyedServlet(s), k->new ArrayList<>()).add(p);
         });
         this.rootServlet.update(servlets);
     }

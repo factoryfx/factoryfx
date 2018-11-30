@@ -18,6 +18,7 @@ public abstract class OracleDataSourceFactory<V, R extends FactoryBase<?, V, R>>
 
     public final BooleanAttribute multiEngineMode = new BooleanAttribute().labelText("MultiEngineMode");
 
+    @SuppressWarnings("unchecked")
     public final FactoryReferenceAttribute<EngineIdProvider, EngineIdProviderFactory<V, R>> engineIdProviderFactory =
         FactoryReferenceAttribute.create(new FactoryReferenceAttribute<>(EngineIdProviderFactory.class)).labelText("EngineId provider");
 

@@ -132,12 +132,7 @@ public class TableMenu<T> {
 
         for (int i = 0; i < tableView.getItems().size(); i++) {
             for (TableColumn<?, ?> column : tableView.getColumns()) {
-                Object cellData = column.getCellData(i);
-                String data = "";
-                if (cellData != null) {
-                    data = cellData.toString();
-                }
-                result.append(escapeCsvString(data)).append("\t");
+                result.append(escapeCsvString(getCellText(i, column))).append("\t");
             }
             result.append("\n");
         }
@@ -157,16 +152,20 @@ public class TableMenu<T> {
 
         for (int i = 0; i < items.size(); i++) {
             for (TreeTableColumn<?, ?> column : tableView.getColumns()) {
-                Object cellData = column.getCellData(i);
-                String data = "";
-                if (cellData != null) {
-                    data = cellData.toString();
-                }
-                result.append(escapeCsvString(data)).append("\t");
+                result.append(escapeCsvString(getCellText(i, column))).append("\t");
             }
             result.append("\n");
         }
         return result.toString();
+    }
+
+    private String getCellText(int i, TableColumnBase<?, ?> column) {
+        Object cellData = column.getCellData(i);
+        String data = "";
+        if (cellData != null) {
+            data = cellData.toString();
+        }
+        return data;
     }
 
     private void collectTreeTableItems(TreeItem<T> item, List<T> list){

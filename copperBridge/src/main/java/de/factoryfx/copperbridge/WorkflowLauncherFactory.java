@@ -10,9 +10,11 @@ import de.factoryfx.factory.atrribute.FactoryReferenceAttribute;
 
 public class WorkflowLauncherFactory<V, R extends FactoryBase<?, V, R>> extends SimpleFactoryBase<WorkflowLauncher, V, R> {
 
+    @SuppressWarnings("unchecked")
     public final FactoryReferenceAttribute<Backchannel, BackchannelFactory<V, R>> backchannel =
         FactoryReferenceAttribute.create(new FactoryReferenceAttribute<>(BackchannelFactory.class)).labelText("Backchannel");
 
+    @SuppressWarnings("unchecked")
     public final FactoryReferenceAttribute<CopperEngineContext, CopperEngineContextFactory<V, R>> copperEngineContext =
         FactoryReferenceAttribute.create(new FactoryReferenceAttribute<>(CopperEngineContextFactory.class).labelText("Copper engine context"));
 

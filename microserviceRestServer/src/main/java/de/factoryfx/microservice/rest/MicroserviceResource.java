@@ -2,7 +2,6 @@ package de.factoryfx.microservice.rest;
 
 import java.util.*;
 import java.util.function.Function;
-import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 import de.factoryfx.data.merge.MergeDiffInfo;
@@ -14,7 +13,6 @@ import de.factoryfx.microservice.common.*;
 import de.factoryfx.server.Microservice;
 import de.factoryfx.server.user.AuthorizedUser;
 import de.factoryfx.server.user.UserManagement;
-import de.factoryfx.server.user.persistent.UserFactory;
 
 public class MicroserviceResource<V,R extends FactoryBase<?,V,R>,S> implements MicroserviceResourceApi<V,R,S> {
 

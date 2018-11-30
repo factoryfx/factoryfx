@@ -26,13 +26,13 @@ public class UpdateableServlet implements Servlet {
 
     public void update(Map<KeyedServlet,List<ServletPathSpec>> newServlets){
         try {
-            List<Servlet> removedServlets = servlets.keySet().stream().filter(s->!newServlets.containsKey(s)).map(ks->ks.servlet).collect(Collectors.toList());
-            List<Servlet> addedServlets = newServlets.keySet().stream().filter(s->!servlets.containsKey(s)).map(ks->ks.servlet).collect(Collectors.toList());
+            List<Servlet> removedServlets = servlets.keySet().stream().filter(s->!newServlets.containsKey(s)).map(KeyedServlet::getServlet).collect(Collectors.toList());
+            List<Servlet> addedServlets = newServlets.keySet().stream().filter(s->!servlets.containsKey(s)).map(KeyedServlet::getServlet).collect(Collectors.toList());
             this.servlets = newServlets;
-            removedServlets.forEach(s->s.destroy());
+            removedServlets.forEach(servlet->servlet.destroy());
             if (servletConfig != null) {
-                for (Servlet s : addedServlets) {
-                    s.init(servletConfig);
+                for (Servlet servlet : addedServlets) {
+                    servlet.init(servletConfig);
                 }
             }
         } catch (ServletException e) {
@@ -44,8 +44,8 @@ public class UpdateableServlet implements Servlet {
     @Override
     public void init(ServletConfig config) throws ServletException {
         this.servletConfig= config;
-        for (KeyedServlet s : servlets.keySet()) {
-            s.servlet.init(servletConfig);
+        for (KeyedServlet keyedServlet : servlets.keySet()) {
+            keyedServlet.init(servletConfig);
         }
     }
 
@@ -62,7 +62,7 @@ public class UpdateableServlet implements Servlet {
         Servlet bestMatch = null;
         String servletPath = httpReq.getRequestURI().substring(httpReq.getServletPath().length());
         for (Map.Entry<KeyedServlet, List<ServletPathSpec>> entry : servlets.entrySet()) {
-            Servlet servlet = entry.getKey().servlet;
+            Servlet servlet = entry.getKey().getServlet();
             List<ServletPathSpec> pathes = entry.getValue();
             for (ServletPathSpec spc : pathes) {
                 String thisPathMatch = spc.getPathMatch(servletPath);
@@ -92,27 +92,7 @@ public class UpdateableServlet implements Servlet {
     @Override
     public void destroy() {
         for (KeyedServlet ks : servlets.keySet()) {
-            ks.servlet.destroy();
-        }
-    }
-
-    static final class KeyedServlet {
-        private final Servlet servlet;
-
-        KeyedServlet(Servlet servlet) {
-            this.servlet = servlet;
-        }
-
-        @Override
-        public boolean equals(Object obj) {
-            if (!(obj instanceof KeyedServlet))
-                return false;
-            return this.servlet == ((KeyedServlet)obj).servlet;
-        }
-
-        @Override
-        public int hashCode() {
-            return System.identityHashCode(servlet);
+            ks.destroy();
         }
     }
 

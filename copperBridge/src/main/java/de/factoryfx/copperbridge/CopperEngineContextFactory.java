@@ -12,9 +12,11 @@ public abstract class CopperEngineContextFactory<V, R extends FactoryBase<?, V, 
 
     public final StringAttribute dependencyInjectorType = new StringAttribute().labelText("DependencyInjectorType");
 
+    @SuppressWarnings("unchecked")
     public final FactoryReferenceAttribute<TransientScottyEngine, TransientScottyEngineFactory<V, R>> transientScottyEngine =
         FactoryReferenceAttribute.create(new FactoryReferenceAttribute<>(TransientScottyEngineFactory.class)).labelText("Transient engine").nullable();
 
+    @SuppressWarnings("unchecked")
     public final FactoryReferenceAttribute<PersistentEngineContainer, PersistentScottyEngineFactory<V, R>> persistentScottyEngine =
         FactoryReferenceAttribute.create(new FactoryReferenceAttribute<>(PersistentScottyEngineFactory.class)).labelText("Persistent engine").nullable();
 

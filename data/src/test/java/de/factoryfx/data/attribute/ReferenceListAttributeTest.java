@@ -2,6 +2,7 @@ package de.factoryfx.data.attribute;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.List;
 
 import de.factoryfx.data.Data;
@@ -200,4 +201,34 @@ public class ReferenceListAttributeTest {
         Assert.assertTrue("not same reference",attributeFrom.get(0)!=attributeTo.get(0));
         Assert.assertNotEquals(attributeFrom.get(0).getId(),attributeTo.get(0).getId());
     }
+
+    @Test
+    public void test_sort_notifies_listener(){
+        DataReferenceListAttribute<ExampleDataA> attribute =new DataReferenceListAttribute<>(ExampleDataA.class);
+        {
+            ExampleDataA exampleDataA = new ExampleDataA();
+            exampleDataA.stringAttribute.set("a");
+            attribute.add(exampleDataA);
+        }
+        {
+            ExampleDataA exampleDataA = new ExampleDataA();
+            exampleDataA.stringAttribute.set("c");
+            attribute.add(exampleDataA);
+        }
+        {
+            ExampleDataA exampleDataA = new ExampleDataA();
+            exampleDataA.stringAttribute.set("b");
+            attribute.add(exampleDataA);
+        }
+
+        int[] counter=new int[1];
+        attribute.internal_addListener((attribute1, value) -> {
+            counter[0]++;
+        });
+
+        Assert.assertEquals(0,counter[0]);
+        attribute.sort(Comparator.comparing(o -> o.stringAttribute.get()));
+        Assert.assertEquals(1,counter[0]);
+    }
+
 }

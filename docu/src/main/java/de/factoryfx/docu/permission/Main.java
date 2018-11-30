@@ -48,7 +48,7 @@ public class Main {
             UserFactory<Void, PrinterFactory> user1 = new UserFactory<>();
             user1.name.set("user1");
             user1.password.setPasswordNotHashed("pw1", UserFactory.passwordKey);
-            user1.permissons.add(PrinterFactory.CHANGE_TEXT_PERMISSION);
+            user1.permissions.add(PrinterFactory.CHANGE_TEXT_PERMISSION);
             user1.locale.set(Locale.ENGLISH);
             userManagement.users.add(user1);
             UserFactory<Void, PrinterFactory> user2 = new UserFactory<>();

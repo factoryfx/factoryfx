@@ -1,10 +1,5 @@
 package de.factoryfx.soap;
 
-import java.util.Optional;
-import java.util.function.Predicate;
-
-import javax.servlet.http.HttpServletRequest;
-
 import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.factory.SimpleFactoryBase;
 import de.factoryfx.factory.atrribute.FactoryReferenceAttribute;

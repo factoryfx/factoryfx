@@ -1,25 +1,12 @@
 package de.factoryfx.javafx.data.editor.attribute.converter;
 
-import javafx.util.StringConverter;
-
 import java.net.URI;
 import java.net.URISyntaxException;
 
-public class URIStringConverter extends StringConverter<URI> {
+public class URIStringConverter extends ParsingStringConverter<URI> {
 
-    /** {@inheritDoc} */
-    @Override public URI fromString(String value) {
-        // If the specified value is null or zero-length, return null
-        if (value == null) {
-            return null;
-        }
-
-        value = value.trim();
-
-        if (value.length() < 1) {
-            return null;
-        }
-
+    @Override
+    URI fromNonEmptyString(String value) {
         try {
             return new URI(value);
         } catch (URISyntaxException e) {
@@ -27,13 +14,11 @@ public class URIStringConverter extends StringConverter<URI> {
         }
     }
 
-    /** {@inheritDoc} */
-    @Override public String toString(URI value) {
-        // If the specified value is null, return a zero-length String
+    @Override
+    public String toString(URI value) {
         if (value == null) {
             return "";
         }
-
         return value.toString();
     }
 }

@@ -9,7 +9,7 @@ import com.google.javascript.rhino.jstype.*;
 import de.factoryfx.javascript.data.attributes.types.Javascript;
 
 import java.io.PrintStream;
-import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.function.Predicate;
 import java.util.function.UnaryOperator;
@@ -574,14 +574,10 @@ public class ContentAssist {
     }
 
     private Compiler createCompiler() {
-        try {
-            Compiler closureCompiler  = new Compiler(new PrintStream(new DiscardOutputStream(), false, "UTF-8"));
-            closureCompiler.disableThreads();
-            Compiler.setLoggingLevel(Level.INFO);
-            return closureCompiler;
-        } catch (UnsupportedEncodingException e) {
-            throw new RuntimeException(e);
-        }
+        Compiler closureCompiler  = new Compiler(new PrintStream(new DiscardOutputStream(), false, StandardCharsets.UTF_8));
+        closureCompiler.disableThreads();
+        Compiler.setLoggingLevel(Level.INFO);
+        return closureCompiler;
     }
 
 
