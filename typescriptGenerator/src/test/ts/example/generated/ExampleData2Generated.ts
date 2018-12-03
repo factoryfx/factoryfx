@@ -1,8 +1,8 @@
 //generated code don't edit manually
-import AttributeAccessor from "../data/AttributeAccessor";
 import AttributeMetadata from "../data/AttributeMetadata";
-import DataCreator from "../data/DataCreator";
+import AttributeAccessor from "../data/AttributeAccessor";
 import Data from "../data/Data";
+import DataCreator from "../data/DataCreator";
 
 export default abstract class ExampleData2Generated  extends Data {
 

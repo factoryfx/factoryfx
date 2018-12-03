@@ -7,3 +7,5 @@ factoryfx.iml
 /typescriptGenerator/src/test/java/de/factoryfx/factory/typescript/generator/ts/node_modules/
 # Ignores compiled TypeScript files
 **/typescriptGenerator/**/*.js
+**/typescriptGenerator/**/*.map
+typescriptGenerator/src/test/ts/node_modules

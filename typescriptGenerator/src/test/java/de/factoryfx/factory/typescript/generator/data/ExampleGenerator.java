@@ -11,7 +11,7 @@ import java.util.List;
 public class ExampleGenerator extends Data {
 
     public static void main(String[] args) {
-        Path targetDir = Paths.get("src/test/java/de/factoryfx/factory/typescript/generator/ts/example/");
+        Path targetDir = Paths.get("src/test/ts/example/");
         if (!targetDir.toFile().exists()){
 //            System.out.println(targetDir.toFile().getAbsoluteFile());
             throw new IllegalArgumentException("set intellij working dir to $MODULE_WORKING_DIR$");

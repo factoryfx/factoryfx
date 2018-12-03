@@ -1,6 +1,6 @@
 //generated code don't edit manually
-import ExampleData from "../config/ExampleData";
 import ExampleData2 from "../config/ExampleData2";
+import ExampleData from "../config/ExampleData";
 import Data from "./Data";
 
 export default class DataCreator  {

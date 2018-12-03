@@ -1,4 +1,4 @@
-import Data from '../../../../../../../../main/resources/de/factoryfx/factory/typescript/generator/ts/Data';
+// import Data from '../../../../../../../../main/resources/de/factoryfx/factory/typescript/generator/ts/Data';
 
 // import 'mocha';
 // import { expect } from 'chai';

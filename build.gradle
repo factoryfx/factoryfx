@@ -556,6 +556,27 @@ project(':typescriptGenerator') {
         compile project(":jettyFactory")
         compile project(":microserviceRestCommon")
     }
+
+    task installAngular(type: Exec) {
+        workingDir "$projectDir/src/test/ts/"
+
+        if (org.gradle.internal.os.OperatingSystem.current().isWindows()) {
+            commandLine "npm.cmd", "install"
+        } else {
+            commandLine "npm", "install"
+        }
+    }
+
+    task typescriptTest(type: Exec) {
+        dependsOn ':typescriptGenerator:installAngular'
+        workingDir "$projectDir/src/test/ts/"
+
+        if (org.gradle.internal.os.OperatingSystem.current().isWindows()) {
+            commandLine "npm.cmd", "test"
+        } else {
+            commandLine "npm", "test"
+        }
+    }
 }
 
 //idea bug https://youtrack.jetbrains.com/issue/IDEA-192658
