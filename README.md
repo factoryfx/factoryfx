@@ -146,6 +146,8 @@ Typescript code generator.
 * [monitoring](docu/src/main/java/de/factoryfx/docu/monitoring/usecase.md)
 * [swagger](docu/src/main/java/de/factoryfx/docu/swagger/usecase.md)
 * [permissions](docu/src/main/java/de/factoryfx/docu/permission/usecase.md)
+* [custom configuration REST API](docu/src/main/java/de/factoryfx/docu/customconfig/usecase.md)
+
 
 ## Example
 
