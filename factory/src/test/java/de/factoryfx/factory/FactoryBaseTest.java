@@ -1,7 +1,6 @@
 package de.factoryfx.factory;
 
 import de.factoryfx.data.Data;
-import de.factoryfx.data.attribute.types.ObjectValueAttribute;
 import de.factoryfx.data.attribute.types.StringAttribute;
 import de.factoryfx.data.jackson.ObjectMapperBuilder;
 import de.factoryfx.factory.atrribute.FactoryReferenceAttribute;
@@ -325,4 +324,6 @@ public class FactoryBaseTest {
         System.out.println(ObjectMapperBuilder.build().writeValueAsString(factory));
 
     }
+
+
 }

@@ -6,7 +6,6 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
 import de.factoryfx.data.attribute.ViewListReferenceAttribute;
 import de.factoryfx.factory.FactoryBase;
 
@@ -15,12 +14,6 @@ public class FactoryViewListReferenceAttribute<R extends FactoryBase<?,?,?>,L, T
     public FactoryViewListReferenceAttribute(Function<R, List<T>> view) {
         super(view);
     }
-
-    @JsonCreator
-    FactoryViewListReferenceAttribute() {
-        super(null);
-    }
-
 
     public List<L> instances(){
         if (get()==null){

@@ -11,7 +11,7 @@ public class TsMethodParameter {
         this.type = type;
     }
 
-    public void addImport(Set<TsClassFile> imports){
+    public void addImport(Set<TsFile> imports){
         type.addImport(imports);
     }
 

@@ -15,7 +15,7 @@ import de.factoryfx.data.Data;
 @JsonIgnoreType
 public abstract class ViewReferenceAttribute<R extends Data, T extends Data,A extends Attribute<T,A>> extends Attribute<T,A> implements RunLaterAble {
 
-    private R root;
+    R root;
     protected final Function<R,T> view;
 
     public ViewReferenceAttribute(Function<R,T> view) {

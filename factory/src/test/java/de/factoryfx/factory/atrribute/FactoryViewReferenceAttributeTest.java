@@ -3,21 +3,23 @@ package de.factoryfx.factory.atrribute;
 import java.util.function.Function;
 
 import de.factoryfx.data.jackson.ObjectMapperBuilder;
+import de.factoryfx.factory.SimpleFactoryBase;
 import org.junit.Test;
 
 public class FactoryViewReferenceAttributeTest {
 
-    @Test
-    @SuppressWarnings("unchecked")
-    public void test_jon(){
-        FactoryViewReferenceAttribute attribute = new FactoryViewReferenceAttribute(new Function() {
-            @Override
-            public Object apply(Object o) {
-                return "gfhgf";
-            }
-        });
+    public static class ExampleViewFactory extends SimpleFactoryBase<Void,Void,ExampleViewFactory>{
+        public final FactoryViewReferenceAttribute<ExampleViewFactory,Void,ExampleViewFactory> attribute = new FactoryViewReferenceAttribute<>(exampleViewFactory -> null);
 
-        ObjectMapperBuilder.build().copy(attribute);
+        @Override
+        public Void createImpl() {
+            return null;
+        }
+    }
+
+    @Test
+    public void test_jon(){
+        ObjectMapperBuilder.build().copy(new ExampleViewFactory());
     }
 
 }

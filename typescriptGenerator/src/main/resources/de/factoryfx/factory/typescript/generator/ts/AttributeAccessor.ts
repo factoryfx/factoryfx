@@ -1,7 +1,7 @@
-import AttributeMetadata from "./AttributeMetadata";
-import Data from "./Data";
+import { AttributeMetadata } from "./AttributeMetadata";
+import { Data } from "./Data";
 
-export default class AttributeAccessor<T, P extends Data> {
+export class AttributeAccessor<T, P extends Data> {
     attributeMetadata: AttributeMetadata<T>;
     attributeName: string;
     attributeParent: P;

@@ -56,7 +56,7 @@ public class Main {
         HttpClient httpClient = HttpClient.newBuilder().version(HttpClient.Version.HTTP_1_1).build();
         HttpRequest request = HttpRequest.newBuilder().uri(URI.create("http://localhost:"+port+"/CustomConfiguration/")).GET().build();
         try {
-            HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+            httpClient.send(request, HttpResponse.BodyHandlers.ofString());
         } catch (IOException | InterruptedException e) {
             throw new RuntimeException(e);
         }

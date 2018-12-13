@@ -37,7 +37,7 @@ public class EncryptedStringAttributeVisualisation extends ValueAttributeVisuali
         super(attribute, validationDecoration);
         this.uniformDesign = uniformDesign;
 
-        keyCreator=attribute::createKey;
+        keyCreator=EncryptedStringAttribute::createKey;
         keyValidator=attribute::internal_isValidKey;
     }
 

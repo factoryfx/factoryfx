@@ -1,9 +1,6 @@
 package de.factoryfx.data.storage.filesystem;
 
-import static java.nio.file.Files.readAllBytes;
-
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -110,7 +107,7 @@ public class FileSystemDataStorage<R extends Data,S> implements DataStorage<R,S>
 
     private String readFile(Path path){
         try {
-            return new String(readAllBytes(path), StandardCharsets.UTF_8);
+            return Files.readString(path);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -118,7 +115,7 @@ public class FileSystemDataStorage<R extends Data,S> implements DataStorage<R,S>
 
     private void writeFile(Path path, String content){
         try {
-            Files.write(path,content.getBytes(StandardCharsets.UTF_8));
+            Files.writeString(path, content);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

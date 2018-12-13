@@ -12,18 +12,18 @@ public class DataCreatorTs {
 
     private final List<Class<? extends Data>> allDataClasses;
     private final HashMap<Class<? extends Data>, TsClassConstructed> dataToDataConfigTs;
-    private final TsClassFile dataClass;
+    private final TsFile dataClass;
     private final Path targetPath;
 
-    public DataCreatorTs(List<Class<? extends Data>> allDataClasses, HashMap<Class<? extends Data>, TsClassConstructed> dataToDataConfigTs, TsClassFile dataClass, Path targetPath) {
+    public DataCreatorTs(List<Class<? extends Data>> allDataClasses, HashMap<Class<? extends Data>, TsClassConstructed> dataToDataConfigTs, TsFile dataClass, Path targetPath) {
         this.allDataClasses = allDataClasses;
         this.dataToDataConfigTs = dataToDataConfigTs;
         this.dataClass = dataClass;
         this.targetPath = targetPath;
     }
 
-    public TsClassFile construct(){
-        TsClassConstructed constructed = new TsClassConstructed("DataCreator",  targetPath);
+    public TsFile construct(){
+        TsClassConstructed constructed = new TsClassConstructed("DataCreator", "",  targetPath);
 
         StringBuilder typeMappingCode=new StringBuilder();
         typeMappingCode.append("if (!json) return null;\n");
@@ -43,7 +43,7 @@ public class DataCreatorTs {
 
         constructed.methods.add(new TsMethod("createData",
                 List.of(new TsMethodParameter("json",new TsTypePrimitive("any")),new TsMethodParameter("idToDataMap",new TsTypePrimitive("any"))),new TsMethodResult(new TsTypeClass(dataClass)),
-                new TsMethodCode(typeMappingCode.toString(),allDataClasses.stream().map(dataToDataConfigTs::get).collect(Collectors.toList())),"public"));
+                new TsMethodCode(typeMappingCode.toString(),allDataClasses.stream().map(dataToDataConfigTs::get).collect(Collectors.toSet())),"public"));
 
 
         String typeListMappingCode =
@@ -55,7 +55,7 @@ public class DataCreatorTs {
 
         constructed.methods.add(new TsMethod("createDataList",
                 List.of(new TsMethodParameter("json",new TsTypePrimitive("any")),new TsMethodParameter("idToDataMap",new TsTypePrimitive("any"))),new TsMethodResult(new TsTypeArray(new TsTypeClass(dataClass))),
-                new TsMethodCode(typeListMappingCode,allDataClasses.stream().map(dataToDataConfigTs::get).collect(Collectors.toList())),"public"));
+                new TsMethodCode(typeListMappingCode,allDataClasses.stream().map(dataToDataConfigTs::get).collect(Collectors.toSet())),"public"));
 
         return constructed;
     }

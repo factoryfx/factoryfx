@@ -15,7 +15,6 @@ public class EnumListAttribute<E extends Enum<E>> extends ValueListAttribute<E,E
 
     private final Class<E> clazz;
 
-    @SuppressWarnings("unchecked")
     public EnumListAttribute(Class<E> clazz) {
         super(clazz);//workaround for java generic bug
         this.clazz=clazz;
@@ -28,6 +27,10 @@ public class EnumListAttribute<E extends Enum<E>> extends ValueListAttribute<E,E
 
     public List<E> internal_possibleEnumValues() {
         return new ArrayList<>(Arrays.asList(clazz.getEnumConstants()));
+    }
+
+    public Class<E> internal_getEnumClass() {
+        return clazz;
     }
 
     @JsonIgnore

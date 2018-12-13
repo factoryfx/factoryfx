@@ -9,7 +9,7 @@ public class TsTypeArray implements TsType {
     }
 
     @Override
-    public void addImport(Set<TsClassFile> imports) {
+    public void addImport(Set<TsFile> imports) {
         type.addImport(imports);
     }
 

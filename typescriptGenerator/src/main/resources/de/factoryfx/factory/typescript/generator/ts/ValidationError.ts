@@ -1,4 +1,4 @@
-export default class ValidationError {
+export class ValidationError {
     public enErrorText: string;
     public deErrorText: string;
 

@@ -36,7 +36,7 @@ public class TsMethod {
             indent+"}\n";
     }
 
-    public void addImports(Set<TsClassFile> imports){
+    public void addImports(Set<TsFile> imports){
         result.addImport(imports);
         for (TsMethodParameter p : parameters) {
             p.addImport(imports);

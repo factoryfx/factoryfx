@@ -14,7 +14,7 @@ public class TsMethodResult{
         return ": "+type.construct();
     }
 
-    public void addImport(Set<TsClassFile> imports) {
+    public void addImport(Set<TsFile> imports) {
         type.addImport(imports);
     }
 }

@@ -3,6 +3,7 @@ package de.factoryfx.factory.typescript.generator.ts;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class TsAttribute {
 
@@ -10,7 +11,7 @@ public class TsAttribute {
     private final TsType type;
     private final boolean isStatic;
     private final boolean initialised;
-    private final List<String> constructorParameters;
+    private final List<TsValue> constructorParameters;
     private final boolean readonly;
 
     public TsAttribute(String name, TsType type) {
@@ -22,7 +23,7 @@ public class TsAttribute {
         this.readonly = false;
     }
 
-    public TsAttribute(String name, TsType type, boolean isStatic, boolean initialised, boolean readonly, List<String> constructorParameters) {
+    public TsAttribute(String name, TsType type, boolean isStatic, boolean initialised, boolean readonly, List<TsValue> constructorParameters) {
         this.name = name;
         this.type = type;
         this.isStatic = isStatic;
@@ -34,7 +35,7 @@ public class TsAttribute {
     public String constructClassDeclaration(){
         String constructorParametersString="";
         if (initialised){
-            constructorParametersString= String.join(",", constructorParameters);
+            constructorParametersString= String.join(",", constructorParameters.stream().map(TsValue::construct).collect(Collectors.toList()));
         }
 
         String initialisation="";
@@ -54,7 +55,10 @@ public class TsAttribute {
         return "public "+staticString+readonlyString+name+": "+type.construct()+initialisation+";";
     }
 
-    public void addImport(HashSet<TsClassFile> imports) {
+    public void addImport(HashSet<TsFile> imports) {
+        for (TsValue constructorParameter : constructorParameters) {
+            constructorParameter.addImport(imports);
+        }
         type.addImport(imports);
     }
 }

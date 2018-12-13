@@ -1,7 +1,6 @@
-import DataCreator from "./DataCreator";
-import AttributeAccessor from "./AttributeAccessor";
+import { DataCreator } from "./DataCreator";
 
-export default abstract class Data  {
+export abstract class Data  {
     private id: string;
     private javaClass: string;
 
@@ -45,8 +44,8 @@ export default abstract class Data  {
     protected abstract collectChildrenRecursiveIntern(idToDataMap: any);//hook for generated code
 
 
-    protected mapAttributeValueToJson(idToDataMap: any, value: any): any {
-        if (value) {
+    protected mapAttributeValueToJson(value: any): any {
+        if (value!==null && value!==undefined) {
             return {
                 v: value
             };
@@ -107,5 +106,59 @@ export default abstract class Data  {
         //Object["values"](idToDataMap);//Object.values(idToDataMap);
         return result;
     }
+
+    private pad(num: number, size: number): string {
+        let s = num+"";
+        while (s.length < size) s = "0" + s;
+        return s;
+    }
+
+    protected mapLocalDateFromJson(json: any): Date{
+        return new Date(json);
+    }
+
+    protected mapLocalDateToJson(date: Date): any{
+        let day = date.getDate();
+        let monthIndex = date.getMonth()+1;
+        let year = date.getFullYear();
+        return year+"-"+this.pad(monthIndex,2)+"-"+this.pad(day,2);
+    }
+
+    protected mapInstantFromJson(json: any): Date{
+        let match = /(.*)\.(.*)Z/.exec(json);
+        let convertNanoToMilli=match[1]+'.'+this.pad((Math.round(Number(match[2])/100000)),2)+'Z';
+
+        let current:Date = new Date(convertNanoToMilli);
+        let utcDate = new Date(current.getTime() + current.getTimezoneOffset() * 60000);
+        return utcDate;
+    }
+
+    protected mapInstantToJson(date: Date): any{
+        let day = date.getDate();
+        let monthIndex = date.getMonth()+1;
+        let year = date.getFullYear();
+        let hour = date.getHours();
+        let min = date.getMinutes();
+        let sec = date.getSeconds();
+        let milliseconds = date.getMilliseconds();
+        return year+"-"+this.pad(monthIndex,2)+"-"+this.pad(day,2)+'T'+this.pad(hour,2)+':'+this.pad(min,2)+':'+this.pad(sec,2)+'.'+milliseconds+'Z';
+    }
+
+    protected mapLocalDateTimeFromJson(json: any): Date{
+        return new Date(json);
+    }
+
+    protected mapLocalDateTimeToJson(date: Date): any{
+        let day = date.getDate();
+        let monthIndex = date.getMonth()+1;
+        let year = date.getFullYear();
+        let hour = date.getHours();
+        let min = date.getMinutes();
+        let sec = date.getSeconds();
+        let milliseconds = date.getMilliseconds();
+        return year+"-"+this.pad(monthIndex,2)+"-"+this.pad(day,2)+'T'+this.pad(hour,2)+':'+this.pad(min,2)+':'+this.pad(sec,2)+'.'+milliseconds;
+    }
+
+
 
 }

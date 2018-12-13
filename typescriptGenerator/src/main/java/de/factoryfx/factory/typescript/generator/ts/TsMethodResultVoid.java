@@ -14,7 +14,7 @@ public class TsMethodResultVoid extends TsMethodResult {
     }
 
     @Override
-    public void addImport(Set<TsClassFile> imports) {
+    public void addImport(Set<TsFile> imports) {
         //nothing
     }
 }

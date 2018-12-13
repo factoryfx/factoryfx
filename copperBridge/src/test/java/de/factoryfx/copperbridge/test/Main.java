@@ -58,11 +58,13 @@ public class Main {
         }).start();
     }
 
+
+    @SuppressWarnings("unchecked")
     private static FactoryTreeBuilder<CopperRootFactory> buildApplication() {
         FactoryTreeBuilder<CopperRootFactory> builder = new FactoryTreeBuilder<>(CopperRootFactory.class);
 
         builder.addFactory(TransientScottyEngineFactory.class, Scope.SINGLETON, copperRootFactoryFactoryContext -> {
-            TransientScottyEngineFactory transientScottyEngineFactory = new TransientScottyEngineFactory() {
+            TransientScottyEngineFactory<Void,CopperRootFactory> transientScottyEngineFactory = new TransientScottyEngineFactory<>() {
                 @Override
                 public List<String> getWorkflowClassPaths() {
                     return List.of("de.factoryfx.copperbridge.test.wf");
@@ -73,7 +75,7 @@ public class Main {
             return transientScottyEngineFactory;
         });
         builder.addFactory(EngineIdProviderFactory.class, Scope.PROTOTYPE, copperRootFactoryFactoryContext -> {
-            EngineIdProviderFactory engineIdProviderFactory = new EngineIdProviderFactory();
+            EngineIdProviderFactory<Void,CopperRootFactory> engineIdProviderFactory = new EngineIdProviderFactory<>();
             engineIdProviderFactory.idPrefix.set("P#");
             return engineIdProviderFactory;
         });
@@ -88,7 +90,7 @@ public class Main {
 
         builder.addFactory(BackchannelFactory.class, Scope.SINGLETON);
         builder.addFactory(WorkflowLauncherFactory.class, Scope.SINGLETON, copperRootFactoryFactoryContext -> {
-            WorkflowLauncherFactory workflowLauncherFactory = new WorkflowLauncherFactory();
+            WorkflowLauncherFactory<Void,CopperRootFactory> workflowLauncherFactory = new WorkflowLauncherFactory<>();
             workflowLauncherFactory.copperEngineContext.set(copperRootFactoryFactoryContext.get(CopperEngineContextFactoryImpl.class));
             workflowLauncherFactory.backchannel.set(copperRootFactoryFactoryContext.get(BackchannelFactory.class));
             return workflowLauncherFactory;

@@ -36,7 +36,7 @@ public class EncryptedStringAttribute extends ImmutableValueAttribute<EncryptedS
     }
 
 
-    public String createKey() {
+    public static String createKey() {
         try {
             KeyGenerator keyGen = KeyGenerator.getInstance("AES");
             keyGen.init(128);
@@ -46,8 +46,13 @@ public class EncryptedStringAttribute extends ImmutableValueAttribute<EncryptedS
         }
     }
 
-    public void encrypt(String value, String key) {
+    public EncryptedStringAttribute encrypt(String value, String key) {
         this.set(new EncryptedString(value,key));
+        return this;
+    }
+
+    public EncryptedStringAttribute set(String value, String key) {
+        return encrypt(value,key);
     }
 
     public String decrypt(String key) {

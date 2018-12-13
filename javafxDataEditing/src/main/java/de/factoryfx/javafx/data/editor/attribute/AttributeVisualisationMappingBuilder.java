@@ -38,7 +38,7 @@ import de.factoryfx.data.attribute.time.DurationAttribute;
 import de.factoryfx.data.attribute.time.LocalDateAttribute;
 import de.factoryfx.data.attribute.time.LocalDateTimeAttribute;
 import de.factoryfx.data.attribute.time.LocalTimeAttribute;
-import de.factoryfx.data.attribute.types.Base64Attribute;
+import de.factoryfx.data.attribute.types.FileContentAttribute;
 import de.factoryfx.data.attribute.types.BigDecimalAttribute;
 import de.factoryfx.data.attribute.types.EncryptedString;
 import de.factoryfx.data.attribute.types.EncryptedStringAttribute;
@@ -78,8 +78,8 @@ public class AttributeVisualisationMappingBuilder {
         }));
 
         result.add(uniformDesign->new ValueAttributeVisualisationBuilder<>(uniformDesign,BigDecimalAttribute.class,BigDecimal.class,(attribute)-> new BigDecimalAttributeVisualisation(attribute,new ValidationDecoration(uniformDesign)), BigDecimalAttribute::new));
-        result.add(uniformDesign->new SimpleAttributeVisualisationBuilder<Base64Attribute>((attribute)->attribute instanceof Base64Attribute,(attribute, navigateToData, previousData)->{
-            return new Base64AttributeVisualisation(attribute,new ValidationDecoration(uniformDesign), uniformDesign);
+        result.add(uniformDesign->new SimpleAttributeVisualisationBuilder<FileContentAttribute>((attribute)->attribute instanceof FileContentAttribute,(attribute, navigateToData, previousData)->{
+            return new FileContentAttributeVisualisation(attribute,new ValidationDecoration(uniformDesign), uniformDesign);
         }));
         result.add(uniformDesign->new ValueAttributeVisualisationBuilder<>(uniformDesign,BooleanAttribute.class,Boolean.class,(attribute)-> new BooleanAttributeVisualisation(attribute,new ValidationDecoration(uniformDesign)), BooleanAttribute::new));
         result.add(uniformDesign->new ValueAttributeVisualisationBuilder<>(uniformDesign,ColorAttribute.class,Color.class,(attribute)-> new ColorAttributeVisualisation(attribute,new ValidationDecoration(uniformDesign)), ColorAttribute::new));

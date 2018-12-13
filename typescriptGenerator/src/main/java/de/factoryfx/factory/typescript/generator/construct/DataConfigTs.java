@@ -8,16 +8,16 @@ import java.util.*;
 public class DataConfigTs {
 
     private final Class<? extends Data> clazz;
-    private final TsClassFile dataGeneratedTsClass;
+    private final TsFile dataGeneratedTsClass;
 
 
-    public DataConfigTs(Class<? extends Data> clazz, TsClassFile dataGeneratedTsClass) {
+    public DataConfigTs(Class<? extends Data> clazz, TsFile dataGeneratedTsClass) {
         this.clazz = clazz;
         this.dataGeneratedTsClass = dataGeneratedTsClass;
     }
 
 
-    public TsClassFile complete(TsClassConstructed tsClass){
+    public TsFile complete(TsClassConstructed tsClass){
         ArrayList<TsMethod> methods = new ArrayList<>();
         methods.add(new TsMethod("initializeAttribute", Collections.emptyList(),new TsMethodResultVoid(),new TsMethodCode(""),"static"));
         tsClass.methods=methods;

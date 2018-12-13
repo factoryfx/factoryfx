@@ -5,7 +5,7 @@ buildscript {
         }
     }
     dependencies {
-        classpath "gradle.plugin.com.github.spotbugs:spotbugs-gradle-plugin:1.6.5"
+        classpath "gradle.plugin.com.github.spotbugs:spotbugs-gradle-plugin:1.6.6"
     }
 }
 ext.platform = "win"
@@ -67,7 +67,7 @@ subprojects {
     }
 
     group = 'io.github.factoryfx'
-    version = '1.8.2'
+    version = '1.9.0'
 
     if (project.hasProperty('secretKeyRingFileSourceURL')) {
         signing {
@@ -553,8 +553,8 @@ project(':nanoservice') {
 
 project(':typescriptGenerator') {
     dependencies {
-        compile project(":jettyFactory")
-        compile project(":microserviceRestCommon")
+        compile project(":factory")
+        testCompile project(":testfactories")
     }
 
     task installAngular(type: Exec) {

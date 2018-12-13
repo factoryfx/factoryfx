@@ -1,15 +1,19 @@
-import ValidationError from "./ValidationError";
+import { ValidationError } from "./ValidationError";
+import {AttributeType} from "./AttributeType";
 
-export default class AttributeMetadata<T>  {
+export class AttributeMetadata<T>  {
     private readonly  en: string;
     private readonly  de: string;
 
     private isNullable: boolean= false;
 
+    private attributeType: AttributeType;
 
-    public constructor(en: string, de: string) {
+
+    public constructor(en: string, de: string, attributeType: AttributeType) {
         this.en = en;
         this.de = de;
+        this.attributeType=attributeType;
     }
 
     public getLabelText(locale: string): string{
@@ -40,5 +44,11 @@ export default class AttributeMetadata<T>  {
     nullable(){
         this.isNullable=true;
     }
+
+    getType(): AttributeType {
+        return this.attributeType;
+    }
+
+
 
 }

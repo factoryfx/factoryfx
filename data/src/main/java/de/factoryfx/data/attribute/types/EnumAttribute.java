@@ -5,7 +5,6 @@ import java.util.function.Function;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import de.factoryfx.data.attribute.AttributeTypeInfo;
 import de.factoryfx.data.attribute.ImmutableValueAttribute;
 import de.factoryfx.data.util.LanguageText;
@@ -17,15 +16,6 @@ public class EnumAttribute<E extends Enum<E>> extends ImmutableValueAttribute<E,
 
     private final Class<E> clazz;
 
-    @Override
-    @JsonTypeInfo(use=JsonTypeInfo.Id.CLASS, include=JsonTypeInfo.As.PROPERTY, property="@class")
-    protected E getValue() {
-        return super.getValue();
-    }
-
-
-
-    @SuppressWarnings("unchecked")
     public EnumAttribute(Class<E> clazz) {
         super(null);  //null is fine cause internal_getAttributeType override
         this.clazz=clazz;
@@ -41,7 +31,9 @@ public class EnumAttribute<E extends Enum<E>> extends ImmutableValueAttribute<E,
         return new ArrayList<>(Arrays.asList(clazz.getEnumConstants()));
     }
 
-
+    public Class<E> internal_getEnumClass() {
+        return clazz;
+    }
 
 
 

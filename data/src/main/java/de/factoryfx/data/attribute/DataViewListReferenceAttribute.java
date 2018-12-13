@@ -1,6 +1,5 @@
 package de.factoryfx.data.attribute;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnoreType;
 import de.factoryfx.data.Data;
 
@@ -17,11 +16,6 @@ public class DataViewListReferenceAttribute<R extends Data, T extends Data> exte
 
     public DataViewListReferenceAttribute(Function<R,List<T>> view) {
         super(view);
-    }
-
-    @JsonCreator
-    DataViewListReferenceAttribute() {
-        super(null);
     }
 
 }

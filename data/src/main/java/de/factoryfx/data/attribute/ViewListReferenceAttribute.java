@@ -13,6 +13,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreType;
 import de.factoryfx.data.Data;
 
+//Base Attributes for ViewListReferenceAttribute, use instead: DataViewListReferenceAttribute/FactorsViewListReferenceAttribute
 @JsonIgnoreType
 public abstract class ViewListReferenceAttribute <R extends Data, T extends Data, A extends Attribute<List<T>,A>> extends Attribute<List<T>,A> implements RunLaterAble {
     private R root;

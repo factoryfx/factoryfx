@@ -22,7 +22,7 @@ import de.factoryfx.data.attribute.primitive.list.IntegerListAttribute;
 import de.factoryfx.data.attribute.time.DurationAttribute;
 import de.factoryfx.data.attribute.time.LocalDateAttribute;
 import de.factoryfx.data.attribute.time.LocalDateTimeAttribute;
-import de.factoryfx.data.attribute.types.Base64Attribute;
+import de.factoryfx.data.attribute.types.FileContentAttribute;
 import de.factoryfx.data.attribute.types.BigDecimalAttribute;
 import de.factoryfx.data.attribute.types.ByteArrayAttribute;
 import de.factoryfx.data.attribute.types.EncryptedStringAttribute;
@@ -55,7 +55,7 @@ public class ExampleData1 extends Data {
 
     public final EncryptedStringAttribute encryptedStringAttribute=new EncryptedStringAttribute().en("encryptedStringAttribute").de("StringAttribute de").tooltipDe("tooltip xyz");
 
-    public final Base64Attribute base64Attribute=new Base64Attribute().en("Base64Attribute sda jgsdajh gjasdja jhsadgjg ghfgfds hgf hgfthrwhff hgfhgf hf").de("Base64Attribute de").nullable();
+    public final FileContentAttribute fileContentAttribute =new FileContentAttribute().en("Base64Attribute sda jgsdajh gjasdja jhsadgjg ghfgfds hgf hgfthrwhff hgfhgf hf").de("Base64Attribute de").nullable();
 
 
     public final StringAttribute stringAttribute=new StringAttribute().en("StringAttribute gajsd jgsdajh gjasdja jhsadgjg ghf hgf hgfhff hgfhgf hf").de("StringAttribute de").defaultValue("blub");
