@@ -1,10 +1,10 @@
 //generated code don't edit manually
+import { AttributeAccessor } from "../../../../../../../util/AttributeAccessor";
+import { ExampleData2 } from "../../../../../../../config/de/factoryfx/factory/typescript/generator/data/ExampleData2";
+import { DataCreator } from "../../../../../../../util/DataCreator";
 import { AttributeType } from "../../../../../../../util/AttributeType";
 import { Data } from "../../../../../../../util/Data";
-import { ExampleData2 } from "../../../../../../../config/de/factoryfx/factory/typescript/generator/data/ExampleData2";
-import { AttributeAccessor } from "../../../../../../../util/AttributeAccessor";
 import { AttributeMetadata } from "../../../../../../../util/AttributeMetadata";
-import { DataCreator } from "../../../../../../../util/DataCreator";
 
 export abstract class ExampleDataGenerated  extends Data {
 

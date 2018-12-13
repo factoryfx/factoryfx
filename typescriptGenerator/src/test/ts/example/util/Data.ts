@@ -160,15 +160,6 @@ export abstract class Data  {
         return year+"-"+this.pad(monthIndex,2)+"-"+this.pad(day,2)+'T'+this.pad(hour,2)+':'+this.pad(min,2)+':'+this.pad(sec,2)+'.'+milliseconds;
     }
 
-    protected mapByteArrayFromJson(json: any): string{
-        return atob(json);
-    }
-
-    protected mapByteArrayToJson(date: string): any{
-        return atob(date);
-    }
-
-
 
 
 }

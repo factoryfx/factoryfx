@@ -1,9 +1,9 @@
 //generated code don't edit manually
+import { AttributeAccessor } from "../../../../../../../util/AttributeAccessor";
+import { DataCreator } from "../../../../../../../util/DataCreator";
 import { AttributeType } from "../../../../../../../util/AttributeType";
 import { Data } from "../../../../../../../util/Data";
-import { AttributeAccessor } from "../../../../../../../util/AttributeAccessor";
 import { AttributeMetadata } from "../../../../../../../util/AttributeMetadata";
-import { DataCreator } from "../../../../../../../util/DataCreator";
 
 export abstract class ExampleData2Generated  extends Data {
 

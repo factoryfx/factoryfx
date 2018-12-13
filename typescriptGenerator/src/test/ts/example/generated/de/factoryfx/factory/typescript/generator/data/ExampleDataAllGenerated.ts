@@ -1,10 +1,10 @@
 //generated code don't edit manually
+import { AttributeAccessor } from "../../../../../../../util/AttributeAccessor";
+import { DataCreator } from "../../../../../../../util/DataCreator";
 import { AttributeType } from "../../../../../../../util/AttributeType";
 import { Data } from "../../../../../../../util/Data";
-import { AttributeAccessor } from "../../../../../../../util/AttributeAccessor";
-import { AttributeMetadata } from "../../../../../../../util/AttributeMetadata";
 import { ExampleEnum } from "./ExampleEnum";
-import { DataCreator } from "../../../../../../../util/DataCreator";
+import { AttributeMetadata } from "../../../../../../../util/AttributeMetadata";
 
 export abstract class ExampleDataAllGenerated  extends Data {
 
@@ -23,7 +23,7 @@ export abstract class ExampleDataAllGenerated  extends Data {
     public localDateTimeAttribute: Date;
     public localeAttribute: string;
     public durationAttribute: string;
-    public base64Attribute: string;
+    public fileContentAttribute: string;
     public localTimeAttribute: string;
     public shortAttribute: number;
     public passwordAttribute: string;
@@ -49,7 +49,7 @@ export abstract class ExampleDataAllGenerated  extends Data {
     public static readonly localDateTimeAttributeMetadata: AttributeMetadata<Date>= new AttributeMetadata<Date>('','',AttributeType.LocalDateTimeAttribute);
     public static readonly localeAttributeMetadata: AttributeMetadata<string>= new AttributeMetadata<string>('','',AttributeType.LocaleAttribute);
     public static readonly durationAttributeMetadata: AttributeMetadata<string>= new AttributeMetadata<string>('','',AttributeType.DurationAttribute);
-    public static readonly base64AttributeMetadata: AttributeMetadata<string>= new AttributeMetadata<string>('','',AttributeType.Base64Attribute);
+    public static readonly fileContentAttributeMetadata: AttributeMetadata<string>= new AttributeMetadata<string>('','',AttributeType.FileContentAttribute);
     public static readonly localTimeAttributeMetadata: AttributeMetadata<string>= new AttributeMetadata<string>('','',AttributeType.LocalTimeAttribute);
     public static readonly shortAttributeMetadata: AttributeMetadata<number>= new AttributeMetadata<number>('','',AttributeType.ShortAttribute);
     public static readonly passwordAttributeMetadata: AttributeMetadata<string>= new AttributeMetadata<string>('','',AttributeType.PasswordAttribute);
@@ -121,8 +121,8 @@ export abstract class ExampleDataAllGenerated  extends Data {
         return new AttributeAccessor<string,ExampleDataAllGenerated>(ExampleDataAllGenerated.durationAttributeMetadata,this,"durationAttribute");
     }
 
-    public base64AttributeAccessor(): AttributeAccessor<string,ExampleDataAllGenerated>{
-        return new AttributeAccessor<string,ExampleDataAllGenerated>(ExampleDataAllGenerated.base64AttributeMetadata,this,"base64Attribute");
+    public fileContentAttributeAccessor(): AttributeAccessor<string,ExampleDataAllGenerated>{
+        return new AttributeAccessor<string,ExampleDataAllGenerated>(ExampleDataAllGenerated.fileContentAttributeMetadata,this,"fileContentAttribute");
     }
 
     public localTimeAttributeAccessor(): AttributeAccessor<string,ExampleDataAllGenerated>{
@@ -166,7 +166,7 @@ export abstract class ExampleDataAllGenerated  extends Data {
     }
 
     protected mapValuesFromJson(json: any, idToDataMap: any, dataCreator: DataCreator){
-        this.byteArrayAttribute=this.mapByteArrayFromJson(json.byteArrayAttribute.v);
+        this.byteArrayAttribute=json.byteArrayAttribute.v;
         this.i18nAttribute=json.i18nAttribute.v;
         this.encryptedStringAttribute=json.encryptedStringAttribute.v;
         this.doubleAttribute=json.doubleAttribute.v;
@@ -181,7 +181,7 @@ export abstract class ExampleDataAllGenerated  extends Data {
         this.localDateTimeAttribute=this.mapLocalDateTimeFromJson(json.localDateTimeAttribute.v);
         this.localeAttribute=json.localeAttribute.v;
         this.durationAttribute=json.durationAttribute.v;
-        this.base64Attribute=json.base64Attribute.v;
+        this.fileContentAttribute=json.fileContentAttribute.v;
         this.localTimeAttribute=json.localTimeAttribute.v;
         this.shortAttribute=json.shortAttribute.v;
         this.passwordAttribute=json.passwordAttribute.v;
@@ -195,7 +195,7 @@ export abstract class ExampleDataAllGenerated  extends Data {
     }
 
     protected mapValuesToJson(idToDataMap: any, result: any){
-        result.byteArrayAttribute=this.mapAttributeValueToJson(this.mapByteArrayToJson(this.byteArrayAttribute));
+        result.byteArrayAttribute=this.mapAttributeValueToJson(this.byteArrayAttribute);
         result.i18nAttribute=this.mapAttributeValueToJson(this.i18nAttribute);
         result.encryptedStringAttribute=this.mapAttributeValueToJson(this.encryptedStringAttribute);
         result.doubleAttribute=this.mapAttributeValueToJson(this.doubleAttribute);
@@ -210,7 +210,7 @@ export abstract class ExampleDataAllGenerated  extends Data {
         result.localDateTimeAttribute=this.mapAttributeValueToJson(this.mapLocalDateTimeToJson(this.localDateTimeAttribute));
         result.localeAttribute=this.mapAttributeValueToJson(this.localeAttribute);
         result.durationAttribute=this.mapAttributeValueToJson(this.durationAttribute);
-        result.base64Attribute=this.mapAttributeValueToJson(this.base64Attribute);
+        result.fileContentAttribute=this.mapAttributeValueToJson(this.fileContentAttribute);
         result.localTimeAttribute=this.mapAttributeValueToJson(this.localTimeAttribute);
         result.shortAttribute=this.mapAttributeValueToJson(this.shortAttribute);
         result.passwordAttribute=this.mapAttributeValueToJson(this.passwordAttribute);
@@ -244,7 +244,7 @@ export abstract class ExampleDataAllGenerated  extends Data {
         result.push(this.localDateTimeAttributeAccessor());
         result.push(this.localeAttributeAccessor());
         result.push(this.durationAttributeAccessor());
-        result.push(this.base64AttributeAccessor());
+        result.push(this.fileContentAttributeAccessor());
         result.push(this.localTimeAttributeAccessor());
         result.push(this.shortAttributeAccessor());
         result.push(this.passwordAttributeAccessor());

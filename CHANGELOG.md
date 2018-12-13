@@ -8,10 +8,14 @@
 * **typescript:** improved typescript generator
   * support for adding custom project specific attributes
   * support for most standard attributes
+  
+* **attribute:** new attributes
+  * InstantAttribute
+  * BigIntegerAttribute 
 
 ### BREAKING CHANGES
 
-* **attributes:** Removed **Base64Attribute** because jackson automatically converts byte arrays to base 64 and therefore no special attribute is required. 
+* **attribute:** Removed **Base64Attribute** because jackson automatically converts byte arrays to base 64 and therefore no special attribute is required. 
   Replacement is the **ByteArrayAttribute** or FileContentAttribute
 * **json:** Changed EnumAttribute json format. 
 

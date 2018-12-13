@@ -232,7 +232,7 @@ let exampleDataAll=
           "durationAttribute" : {
             "v" : "PT4S"
           },
-          "base64Attribute" : {
+          "fileContentAttribute" : {
             "v" : "Cuw="
           },
           "localTimeAttribute" : {
