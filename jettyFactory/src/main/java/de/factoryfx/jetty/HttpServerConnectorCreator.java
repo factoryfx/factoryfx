@@ -54,13 +54,15 @@ public class HttpServerConnectorCreator {
         HttpServerConnectorCreator that = (HttpServerConnectorCreator) o;
 
         if (port != that.port) return false;
-        return host.equals(that.host);
+        if (host != null ? !host.equals(that.host) : that.host != null) return false;
+        return sslContextFactory != null ? sslContextFactory.equals(that.sslContextFactory) : that.sslContextFactory == null;
     }
 
     @Override
     public int hashCode() {
-        int result = host.hashCode();
+        int result = host != null ? host.hashCode() : 0;
         result = 31 * result + port;
+        result = 31 * result + (sslContextFactory != null ? sslContextFactory.hashCode() : 0);
         return result;
     }
 

@@ -1,10 +1,12 @@
 package de.factoryfx.javafx.data.editor.attribute.visualisation;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-
+import de.factoryfx.data.attribute.types.FileContentAttribute;
+import de.factoryfx.data.util.LanguageText;
 import de.factoryfx.javafx.data.editor.attribute.ValidationDecoration;
+import de.factoryfx.javafx.data.editor.attribute.ValueAttributeVisualisation;
+import de.factoryfx.javafx.data.util.UniformDesign;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
@@ -13,33 +15,41 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.stage.FileChooser;
 
-import de.factoryfx.data.attribute.types.FileContentAttribute;
-import de.factoryfx.data.util.LanguageText;
-import de.factoryfx.javafx.data.editor.attribute.ValueAttributeVisualisation;
-import de.factoryfx.javafx.data.util.UniformDesign;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.util.function.Function;
 
 public class FileContentAttributeVisualisation extends ValueAttributeVisualisation<byte[], FileContentAttribute> {
 
     private final FileContentAttribute bytes;
     private final UniformDesign uniformDesign;
+
+    private final static Function<String, LanguageText> notEmptyTextCreator = fileName -> {
+        if (fileName != null) {
+            return new LanguageText().en("Value set (" + fileName + ")").de("Wert gesetzt (" + fileName + ")");
+        } else {
+            return new LanguageText().en("Value set").de("Wert gesetzt");
+        }
+    };
     private final static LanguageText EMPTY = new LanguageText().en("Value not set").de("Kein Wert gesetzt");
-    private final static LanguageText NOT_EMPTY = new LanguageText().en("Value set").de("Wert gesetzt");
+    private StringProperty openedFileName;
 
     public FileContentAttributeVisualisation(FileContentAttribute bytes, ValidationDecoration validationDecoration, UniformDesign uniformDesign) {
         super(bytes, validationDecoration);
         this.bytes = bytes;
         this.uniformDesign = uniformDesign;
+        this.openedFileName = new SimpleStringProperty();
     }
 
     private String labelText() {
-        return uniformDesign.getText((bytes == null || bytes.get() == null || bytes.get().length == 0) ? EMPTY : NOT_EMPTY);
+        return uniformDesign.getText((bytes == null || bytes.get() == null || bytes.get().length == 0) ? EMPTY : notEmptyTextCreator.apply(openedFileName.get()));
     }
 
     @Override
     public Node createValueVisualisation() {
         HBox hBox = new HBox(3);
         Label status = new Label(labelText());
-        observableAttributeValue.addListener(observable -> status.setText(labelText()));
 
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Open Resource File");
@@ -52,11 +62,17 @@ public class FileContentAttributeVisualisation extends ValueAttributeVisualisati
             File file = fileChooser.showOpenDialog(openButton.getScene().getWindow());
             if (file != null) {
                 openFile(file);
+                openedFileName.set(file.getName());
             }
         });
 
         final Button clear = new Button("Clear");
-        clear.setOnAction(e -> bytes.set(null));
+        clear.setOnAction(e -> {
+            bytes.set(null);
+            openedFileName.set(null);
+        });
+
+        openedFileName.addListener((obs, oldValue, newValue) -> status.setText(labelText()));
 
         hBox.setAlignment(Pos.CENTER_LEFT);
         HBox.setHgrow(status, Priority.SOMETIMES);
