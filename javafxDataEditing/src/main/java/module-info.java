@@ -1,11 +1,10 @@
 module de.factoryfx.javafxDataEditing {
-    requires javafx.graphics;
-    requires javafx.controls;
-    requires de.factoryfx.data;
+    requires transitive javafx.graphics;
+    requires transitive javafx.controls;
+    requires transitive de.factoryfx.data;
     requires controlsfx;
-    requires javafx.web;
-    requires javafx.fxml;
-    requires jackson.annotations;
+    requires transitive javafx.web;
+    requires transitive javafx.fxml;
     requires com.google.common;
 
     exports de.factoryfx.javafx.data.attribute;
@@ -28,4 +27,5 @@ module de.factoryfx.javafxDataEditing {
 
     exports de.factoryfx.javafx.css;
     opens de.factoryfx.javafx.css;
+
 }

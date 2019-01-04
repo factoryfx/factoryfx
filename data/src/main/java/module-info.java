@@ -1,10 +1,12 @@
 module de.factoryfx.data {
+    //automatic module that should be transitive but can't until they are real modules
+    requires com.google.common;
     requires jackson.annotations;
     requires com.fasterxml.jackson.databind;
     requires com.fasterxml.jackson.datatype.jdk8;
     requires com.fasterxml.jackson.datatype.jsr310;
-    requires com.google.common;
     requires com.fasterxml.jackson.core;
+
 
     exports de.factoryfx.data.attribute;
     exports de.factoryfx.data.validation;

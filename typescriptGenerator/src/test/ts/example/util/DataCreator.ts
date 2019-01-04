@@ -1,9 +1,9 @@
 //generated code don't edit manually
+import { Data } from "./Data";
 import { ExampleFactory } from "../config/de/factoryfx/factory/typescript/generator/data/ExampleFactory";
 import { ExampleData } from "../config/de/factoryfx/factory/typescript/generator/data/ExampleData";
 import { ExampleData2 } from "../config/de/factoryfx/factory/typescript/generator/data/ExampleData2";
 import { ExampleDataIgnore } from "../config/de/factoryfx/factory/typescript/generator/data/ExampleDataIgnore";
-import { Data } from "./Data";
 import { ExampleDataAll } from "../config/de/factoryfx/factory/typescript/generator/data/ExampleDataAll";
 
 export class DataCreator  {

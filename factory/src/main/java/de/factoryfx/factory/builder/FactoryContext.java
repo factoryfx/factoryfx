@@ -17,6 +17,22 @@ public class FactoryContext<R extends FactoryBase<?,?,R>> {
         return factoryCreators.stream().filter(filter).findAny().map(rFactoryCreator -> (F) rFactoryCreator.create(this)).orElse(null);
     }
 
+    /*check if factory is available, used to and create improved error message*/
+    void check(Class<? extends FactoryBase> fromClazz, String attributeVariableName, Class<? extends FactoryBase> refClazz) {
+        Object result = get(fc -> fc.match(refClazz));
+        if (result==null){
+            throw new IllegalStateException(
+                    "\nbuilder missing Factory: "+refClazz.getName()+"\n"+
+                    "required in: "+fromClazz+"\n"+
+                    "from attribute: "+attributeVariableName
+            );
+        }
+    }
+
+    <F extends FactoryBase<?,?,R>> F getUnchecked(Class<F> clazz){
+        return get(fc -> fc.match(clazz));
+    }
+
     public <F extends FactoryBase<?,?,R>> F get(Class<F> clazz){
         F result = get(fc -> fc.match(clazz));
         if (result==null){
@@ -71,4 +87,5 @@ public class FactoryContext<R extends FactoryBase<?,?,R>> {
 
         //.stream().allMatch(FactoryCreator::isEmpty);
     }
+
 }

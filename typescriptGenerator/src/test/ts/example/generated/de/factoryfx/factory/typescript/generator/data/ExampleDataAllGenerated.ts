@@ -1,9 +1,9 @@
 //generated code don't edit manually
+import { Data } from "../../../../../../../util/Data";
 import { AttributeAccessor } from "../../../../../../../util/AttributeAccessor";
+import { ExampleEnum } from "./ExampleEnum";
 import { DataCreator } from "../../../../../../../util/DataCreator";
 import { AttributeType } from "../../../../../../../util/AttributeType";
-import { Data } from "../../../../../../../util/Data";
-import { ExampleEnum } from "./ExampleEnum";
 import { AttributeMetadata } from "../../../../../../../util/AttributeMetadata";
 
 export abstract class ExampleDataAllGenerated  extends Data {

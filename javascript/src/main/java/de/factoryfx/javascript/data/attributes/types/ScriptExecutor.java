@@ -1,6 +1,5 @@
 package de.factoryfx.javascript.data.attributes.types;
 
-import javafx.util.Pair;
 import jdk.nashorn.api.scripting.NashornScriptEngine;
 import jdk.nashorn.api.scripting.NashornScriptEngineFactory;
 

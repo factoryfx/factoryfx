@@ -3,6 +3,11 @@ package de.factoryfx.javafx.css;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Optional;
+
 public class CssUtil {
     public static void addToNode(Parent node ){
         node.getStylesheets().add(CssUtil.class.getResource("/de/factoryfx/javafx/css/app.css").toExternalForm());
@@ -13,15 +18,8 @@ public class CssUtil {
     }
 
     public static String getURL(){
-//        Optional<Module> specificModule = ModuleLayer.boot().findModule("de.factoryfx.javafxDataEditing");
-//        try {
-//            specificModule.get().getResourceAsStream("de/factoryfx/javafx/css/app.css");
-//        } catch (IOException e) {
-//            throw new RuntimeException(e);
-//        }
-//        return "";
-
-
+        //npe here is probably not a real error, try reimport intellij
+        //https://intellij-support.jetbrains.com/hc/en-us/community/posts/360000430279-Can-t-access-resource-with-Java-10?page=1#community_comment_360000102619
         return CssUtil.class.getResource("/de/factoryfx/javafx/css/app.css").toExternalForm();
 
     }

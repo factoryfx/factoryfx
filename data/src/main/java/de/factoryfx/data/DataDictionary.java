@@ -69,7 +69,6 @@ public class DataDictionary<D extends Data> {
                 try {
                     attributeVisitor.accept(field.getName(),(Attribute<?,?>) field.get(data));
                 } catch (IllegalAccessException e) {
-
                     throw new RuntimeException("\nto fix the error add jpms boilerplate, \noption 1: module-info.info: opens "+data.getClass().getPackage().getName()+";\noption 2: open all, open module {A} { ... } (open keyword before module)\n",e);
                 }
             }

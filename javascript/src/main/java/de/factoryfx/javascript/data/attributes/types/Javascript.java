@@ -8,7 +8,6 @@ import java.util.concurrent.LinkedBlockingDeque;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import javafx.util.Pair;
 
 public class Javascript<A> {
 

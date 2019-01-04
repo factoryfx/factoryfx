@@ -13,7 +13,6 @@ import com.google.javascript.jscomp.SourceFile;
 import de.factoryfx.data.Data;
 import de.factoryfx.data.attribute.AttributeChangeListener;
 import de.factoryfx.data.attribute.ImmutableValueAttribute;
-import javafx.application.Platform;
 
 /**
  *
@@ -133,8 +132,8 @@ public class JavascriptAttribute<A> extends ImmutableValueAttribute<Javascript<A
     }
 
     //** so we don't need to initialise javax toolkit in test*/
-    private Consumer<Runnable> runlaterExecutor= Platform::runLater;
-    void setRunlaterExecutorForTest(Consumer<Runnable> runlaterExecutor){
+    private Consumer<Runnable> runlaterExecutor= Runnable::run;
+    public void internal_setRunlaterExecutor(Consumer<Runnable> runlaterExecutor){
         this.runlaterExecutor=runlaterExecutor;
     }
 

@@ -1,8 +1,11 @@
 module de.factoryfx.factory {
+    //automatic module that should be transitive but can't until they are real modules
     requires jackson.annotations;
-    requires de.factoryfx.data;
-    requires org.slf4j;
     requires com.google.common;
+
+    requires transitive de.factoryfx.data;
+    requires transitive org.slf4j;
+
     exports de.factoryfx.factory;
     exports de.factoryfx.factory.atrribute;
     exports de.factoryfx.factory.exception;

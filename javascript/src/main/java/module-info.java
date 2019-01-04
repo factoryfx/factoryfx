@@ -1,7 +1,6 @@
 module de.factoryfx.javascript {
     requires de.factoryfx.data;
     requires closure.compiler.unshaded.v20170218;
-    requires javafx.graphics;
     requires jdk.scripting.nashorn;
     requires jackson.annotations;
     requires com.fasterxml.jackson.databind;

@@ -1,12 +1,9 @@
 module de.factoryfx.javafxFactoryEditing {
-    requires javafx.graphics;
-    requires javafx.controls;
-    requires de.factoryfx.factory;
-    requires de.factoryfx.javafxDataEditing;
-    requires de.factoryfx.data;
-    requires de.factoryfx.microserviceRestClient;
     requires controlsfx;
-    requires com.google.common;
+
+    requires transitive de.factoryfx.factory;
+    requires transitive de.factoryfx.javafxDataEditing;
+    requires transitive de.factoryfx.microserviceRestClient;
 
     exports de.factoryfx.javafx.factory;
 

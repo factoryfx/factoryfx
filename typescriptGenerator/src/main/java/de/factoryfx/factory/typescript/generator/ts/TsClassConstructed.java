@@ -1,10 +1,7 @@
 package de.factoryfx.factory.typescript.generator.ts;
 
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class TsClassConstructed extends TsFile {
@@ -71,7 +68,7 @@ public class TsClassConstructed extends TsFile {
     }
 
     private Set<TsFile> getImports(){
-        HashSet<TsFile> imports = new HashSet<>();
+        Set<TsFile> imports = new LinkedHashSet<>();
         if (parent!=null){
             imports.add(parent);
         }

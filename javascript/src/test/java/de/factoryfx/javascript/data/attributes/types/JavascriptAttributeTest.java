@@ -12,7 +12,7 @@ import org.junit.Test;
 public class JavascriptAttributeTest {
 
     @Test
-    public void test_get_update_header() throws InterruptedException {
+    public void test_get_update_header(){
         Data data = new Data();
         JavascriptAttribute<Object> javascriptAttributeTest = new JavascriptAttribute<>(() -> Collections.singletonList(data),Object.class);
         Assert.assertEquals("var data = {};",javascriptAttributeTest.get().getHeaderCode().trim());
@@ -22,7 +22,7 @@ public class JavascriptAttributeTest {
     public void test_listeners() throws InterruptedException {
         Data data = new Data();
         JavascriptAttribute<Object> javascriptAttributeTest = new JavascriptAttribute<>(() -> Collections.singletonList(data),Object.class);
-        javascriptAttributeTest.setRunlaterExecutorForTest(runnable -> runnable.run());
+        javascriptAttributeTest.internal_setRunlaterExecutor(runnable -> runnable.run());
         List<String> calls = new ArrayList<>();
         javascriptAttributeTest.internal_addListener((attribute, value) -> {
             calls.add(value.getCode());
@@ -35,10 +35,10 @@ public class JavascriptAttributeTest {
     }
 
     @Test
-    public void test_listeners_multiple() throws InterruptedException {
+    public void test_listeners_multiple() {
         Data data = new Data();
         JavascriptAttribute<Object> javascriptAttributeTest = new JavascriptAttribute<>(() -> Collections.singletonList(data),Object.class);
-        javascriptAttributeTest.setRunlaterExecutorForTest(runnable -> runnable.run());
+        javascriptAttributeTest.internal_setRunlaterExecutor(runnable -> runnable.run());
         List<String> calls = new ArrayList<>();
         javascriptAttributeTest.internal_addListener((attribute, value) -> {
             calls.add(value.getCode());

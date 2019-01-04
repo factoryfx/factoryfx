@@ -157,7 +157,7 @@ Typescript code generator.
 
 Released under the [Apache 2.0 license](http://www.apache.org/licenses/LICENSE-2.0.html).
 
-## Get professional support 
+## Professional support 
 
 FactoryFx is the long-time development effort of the german company [**SCOOP Software GmbH**](https://www.scoop-software.de/en/). We are a consulting and software company with a constant direction towards state-of-the-art technologies and methods. Our high performance systems are used in multiple medium sized and large enterprises in branches such as online retail, telecommunications, financial services, logistics and local government.
 

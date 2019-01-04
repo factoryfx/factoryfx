@@ -1,7 +1,6 @@
 module de.factoryfx.microserviceRestClient {
-    requires de.factoryfx.data;
+    requires transitive de.factoryfx.microserviceRestCommon;
     requires de.factoryfx.factory;
-    requires de.factoryfx.microserviceRestCommon;
     requires java.ws.rs;
     requires jersey.proxy.client;
     requires jersey.client;

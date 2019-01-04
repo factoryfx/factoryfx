@@ -5,11 +5,10 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import java.util.function.Function;
 
+import de.factoryfx.data.attribute.Attribute;
+import de.factoryfx.data.attribute.ReferenceBaseAttribute;
 import de.factoryfx.factory.FactoryBase;
-import de.factoryfx.factory.atrribute.FactoryPolymorphicReferenceAttribute;
-import de.factoryfx.factory.atrribute.FactoryPolymorphicReferenceListAttribute;
-import de.factoryfx.factory.atrribute.FactoryReferenceAttribute;
-import de.factoryfx.factory.atrribute.FactoryReferenceListAttribute;
+import de.factoryfx.factory.atrribute.*;
 import de.factoryfx.factory.parametrized.ParametrizedObjectCreatorAttribute;
 
 public class DefaultCreator<F extends FactoryBase<?,?,R>, R extends FactoryBase<?,?,R>> implements Function<FactoryContext<R>, F> {
@@ -31,11 +30,14 @@ public class DefaultCreator<F extends FactoryBase<?,?,R>, R extends FactoryBase<
 
 
             result.internal().visitAttributesFlat((attributeVariableName, attribute) -> {
-                if (attribute instanceof FactoryReferenceAttribute){
-                    FactoryReferenceAttribute factoryReferenceAttribute = (FactoryReferenceAttribute) attribute;
+                if (attribute instanceof FactoryReferenceAttribute || attribute instanceof ParametrizedObjectCreatorAttribute){
+                    FactoryReferenceBaseAttribute factoryReferenceAttribute = (FactoryReferenceBaseAttribute) attribute;
                     Class<? extends FactoryBase> clazz = factoryReferenceAttribute.internal_getReferenceClass();
                     validateAttributeClass(attributeVariableName, clazz);
-                    FactoryBase factoryBase = context.get(clazz);
+                    if (factoryReferenceAttribute.internal_required()){
+                        context.check(this.clazz, attributeVariableName,clazz);
+                    }
+                    FactoryBase factoryBase = context.getUnchecked(clazz);
                     factoryReferenceAttribute.set(factoryBase);
                 }
                 if (attribute instanceof FactoryReferenceListAttribute){
@@ -62,19 +64,12 @@ public class DefaultCreator<F extends FactoryBase<?,?,R>, R extends FactoryBase<
                         }
                     }
                 }
-                if (attribute instanceof ParametrizedObjectCreatorAttribute){
-                    ParametrizedObjectCreatorAttribute factoryReferenceAttribute = (ParametrizedObjectCreatorAttribute) attribute;
-                    Class<? extends FactoryBase> clazz = factoryReferenceAttribute.internal_getReferenceClass();
-                    validateAttributeClass(attributeVariableName, clazz);
-                    FactoryBase factoryBase = context.get(clazz);
-                    factoryReferenceAttribute.set(factoryBase);
-                }
-
-
             });
             return result;
-        } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
+        } catch (InstantiationException  | NoSuchMethodException | InvocationTargetException e) {
             throw new RuntimeException(e);
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException("\nto fix the error add jpms boilerplate, \noption 1: module-info.info: opens "+clazz.getPackage().getName()+";\noption 2: open all, open module {A} { ... } (open keyword before module)\n",e);
         }
     }
 
