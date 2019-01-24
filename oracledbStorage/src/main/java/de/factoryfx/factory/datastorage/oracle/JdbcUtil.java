@@ -10,7 +10,8 @@ import java.sql.SQLException;
 public class JdbcUtil {
     public static void writeStringToBlob(String value, PreparedStatement preparedStatement, int index){
         try {
-            preparedStatement.setBinaryStream(index, new ByteArrayInputStream(value.getBytes(StandardCharsets.UTF_8)), value.length());
+            final byte[] bytes = value.getBytes(StandardCharsets.UTF_8);
+            preparedStatement.setBinaryStream(index, new ByteArrayInputStream(bytes), bytes.length);
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
