@@ -136,7 +136,7 @@ Typescript code generator.
 
 * [datainjection](docu/src/main/java/de/factoryfx/docu/datainjection/usecase.md)
 * [dependencyinjection](docu/src/main/java/de/factoryfx/docu/dependencyinjection/usecase.md)
-* [dynamicwebserver](docu/src/main/java/de/factoryfx/docu/dynamicwebserver/usecase.md)
+* [restserver](docu/src/main/java/de/factoryfx/docu/restserver/usecase.md)
 * [lifecycle](docu/src/main/java/de/factoryfx/docu/lifecycle/usecase.md)
 * [migration](docu/src/main/java/de/factoryfx/docu/migration/usecase.md)
 * [parametrized](docu/src/main/java/de/factoryfx/docu/parametrized/usecase.md)

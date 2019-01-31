@@ -3,10 +3,13 @@ package de.factoryfx.docu.customconfig;
 import ch.qos.logback.classic.Level;
 import de.factoryfx.data.storage.inmemory.InMemoryDataStorage;
 import de.factoryfx.factory.FactoryManager;
+import de.factoryfx.factory.builder.FactoryTreeBuilder;
+import de.factoryfx.factory.builder.Scope;
 import de.factoryfx.factory.exception.RethrowingFactoryExceptionHandler;
-import de.factoryfx.jetty.HttpServerConnectorFactory;
-import de.factoryfx.jetty.JettyServer;
+import de.factoryfx.jetty.JettyServerBuilder;
+import de.factoryfx.jetty.JettyServerFactory;
 import de.factoryfx.server.Microservice;
+import org.eclipse.jetty.server.Server;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,20 +20,23 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 
 public class Main {
-
+    @SuppressWarnings("unchecked")
     public static void main(String[] args) throws InterruptedException {
         ch.qos.logback.classic.Logger root = (ch.qos.logback.classic.Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
         root.setLevel(Level.ERROR);
 
-        CustomConfigurationJettyServer server = new CustomConfigurationJettyServer();
-        HttpServerConnectorFactory<Void, CustomConfigurationJettyServer> serverConnectorFactory = new HttpServerConnectorFactory<>();
-        serverConnectorFactory.host.set("localhost");
-        serverConnectorFactory.port.set(8005);
-        server.connectors.add(serverConnectorFactory);
-        server.resource.set(new CustomConfigurationResourceFactory());
+        FactoryTreeBuilder<ServerFactory> builder = new FactoryTreeBuilder<>(ServerFactory.class);
+        builder.addFactory(ServerFactory.class, Scope.SINGLETON);
+        builder.addFactory(JettyServerFactory.class, Scope.SINGLETON, ctx-> new JettyServerBuilder<>(new JettyServerFactory<Void, ServerFactory>())
+                .withHost("localhost").widthPort(8005)
+                .withResource(ctx.get(CustomConfigurationResourceFactory.class)).build());
+        builder.addFactory(CustomConfigurationResourceFactory.class, Scope.SINGLETON);
 
-        Microservice<Void,JettyServer, CustomConfigurationJettyServer,Void> microservice
-                = new Microservice<>(new FactoryManager<>(new RethrowingFactoryExceptionHandler()),new InMemoryDataStorage<>(server));
+
+
+
+        Microservice<Void, Server, ServerFactory,Void> microservice
+                = new Microservice<>(new FactoryManager<>(new RethrowingFactoryExceptionHandler()),new InMemoryDataStorage<>(builder.buildTree()));
         microservice.start();
 
         ping(8005);

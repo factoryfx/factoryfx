@@ -110,6 +110,11 @@ public class FactoryBase<L,V,R extends FactoryBase<?,V,R>> extends Data{
     }
 
     private L reCreate(L previousLiveObject) {
+        if (updater!=null){
+            long time = timeMeasuringAction(() -> updater.accept(previousLiveObject) );
+            logRecreate(time);
+            return previousLiveObject;
+        }
         if (reCreatorWithPreviousLiveObject!=null){
             MeasuredActionResult<L> actionResult = timeMeasuringAction(() -> reCreatorWithPreviousLiveObject.apply(previousLiveObject));
             logRecreate(actionResult.time);
@@ -148,25 +153,28 @@ public class FactoryBase<L,V,R extends FactoryBase<?,V,R>> extends Data{
         createdLiveObject=null;
     }
 
-    private void determineRecreationNeed(Set<Data> changedData, ArrayDeque<FactoryBase<?,?,?>> path, long iterationRun){
-        path.push(this);
-
-        needRecreation |=changedData.contains(this); //|= means if needRecreation set true once never override with false
-        if (needRecreation){
-            for (FactoryBase factoryBase: path){
-                if (factoryBase.createdLiveObject!=null){
-                    factoryBase.needRecreation =true;
+    private void determineRecreationNeed(Set<Data> changedData){
+        for (Data data : changedData) {
+            ((FactoryBase)data).needRecreation=true;
+            if (((FactoryBase)data).needsCreatePropagation()){
+                Set<Data> parents = data.internal().getParents();
+                while (!parents.isEmpty()){
+                    Set<Data> grandParents = new HashSet<>();
+                    for (Data parent : parents) {
+                        ((FactoryBase) parent).needRecreation = true;
+                        if (((FactoryBase)parent).needsCreatePropagation()) {
+                            grandParents.addAll(parent.internal().getParents());
+                        }
+                    }
+                    parents = grandParents;
                 }
             }
         }
-
-        visitChildFactoriesAndViewsFlat(child -> {
-            child.determineRecreationNeed(changedData,path,iterationRun);
-        },iterationRun);//ignore iterationRun and always visit children, e.g.: visit double added also double
-
-        path.pop();
     }
 
+    private boolean needsCreatePropagation() {
+        return updater==null;
+    }
 
 
     private void loopDetector(){
@@ -234,7 +242,6 @@ public class FactoryBase<L,V,R extends FactoryBase<?,V,R>> extends Data{
     }
 
     long iterationRun;
-    @SuppressWarnings("unchecked")
     private void visitChildFactoriesAndViewsFlat(Consumer<FactoryBase<?,?, ?>> consumer, long iterationRun) {
         if (this.iterationRun==iterationRun){
             return;
@@ -464,8 +471,7 @@ public class FactoryBase<L,V,R extends FactoryBase<?,V,R>> extends Data{
          * @param changedData changedData
          * */
         public void determineRecreationNeedFromRoot(Set<Data> changedData) {
-            long iterationRun = this.factory.iterationRun+1;
-            factory.determineRecreationNeed(changedData,new ArrayDeque<>(),iterationRun);
+            factory.determineRecreationNeed(changedData);
         }
 
         public void resetLog() {
@@ -601,6 +607,7 @@ public class FactoryBase<L,V,R extends FactoryBase<?,V,R>> extends Data{
     }
 
     Supplier<L> creator=null;
+    Consumer<L> updater=null;
     Function<L,L> reCreatorWithPreviousLiveObject=null;
     Consumer<L> starterWithNewLiveObject=null;
     Consumer<L> destroyerWithPreviousLiveObject=null;
@@ -611,6 +618,10 @@ public class FactoryBase<L,V,R extends FactoryBase<?,V,R>> extends Data{
 
     private void setReCreator(Function<L,L> reCreatorWithPreviousLiveObject ) {
         this.reCreatorWithPreviousLiveObject=reCreatorWithPreviousLiveObject;
+    }
+
+    private void setUpdater(Consumer<L> updater) {
+        this.updater=updater;
     }
 
     private void setStarter(Consumer<L> starterWithNewLiveObject) {
@@ -660,13 +671,21 @@ public class FactoryBase<L,V,R extends FactoryBase<?,V,R>> extends Data{
         }
 
         /**the factory data has changed therefore a new liveobject is needed.<br>
-         * previousLiveObject can be used to reuse resources like connection pools etc.<br>
-         * passed old liveobject is never null
+         * previousLiveObject can be used to pass runtime status from previous object (e.g request counter).<br>
+         * passed vrevious liveobject is never null
          *
          * @param reCreatorWithPreviousLiveObject reCreatorWithPreviousLiveObject*/
         public void setReCreator(Function<L,L> reCreatorWithPreviousLiveObject ) {
             factory.setReCreator(reCreatorWithPreviousLiveObject);
         }
+
+        /**the factory data has changed therefore bud you want to reuse the liveObject and only update it.<br>
+         * (that means that parents do not have to be recreated.)
+         *
+         * @param updater updater*/
+         public void setUpdater(Consumer<L> updater ) {
+                factory.setUpdater(updater);
+         }
 
         /** start the liveObject e.g open a port
          * @param starterWithNewLiveObject starterWithNewLiveObject*/
@@ -686,6 +705,8 @@ public class FactoryBase<L,V,R extends FactoryBase<?,V,R>> extends Data{
             factory.setRuntimeQueryExecutor(executorWidthVisitorAndCurrentLiveObject);
         }
     }
+
+
 
     public UtilityFactory<L,V,R> utilityFactory(){
         return new UtilityFactory<>(this);

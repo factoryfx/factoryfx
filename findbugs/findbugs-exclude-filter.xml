@@ -96,7 +96,7 @@
     </Match>
 
     <Match>
-        <Class name="de.factoryfx.docu.dynamicwebserver.RestClient" />
+        <Class name="de.factoryfx.docu.restserver.RestClient" />
         <Bug pattern="NP_NULL_PARAM_DEREF_NONVIRTUAL" />
     </Match>
 

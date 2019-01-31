@@ -6,7 +6,8 @@ import de.factoryfx.data.storage.DataAndNewMetadata;
 import de.factoryfx.factory.builder.FactoryTreeBuilder;
 import de.factoryfx.factory.builder.Scope;
 import de.factoryfx.factory.log.FactoryUpdateLog;
-import de.factoryfx.jetty.HttpServerConnectorFactory;
+import de.factoryfx.jetty.JettyServerBuilder;
+import de.factoryfx.jetty.JettyServerFactory;
 import de.factoryfx.microservice.rest.client.MicroserviceRestClient;
 import de.factoryfx.microservice.rest.client.MicroserviceRestClientBuilder;
 import de.factoryfx.server.Microservice;
@@ -19,29 +20,23 @@ import org.slf4j.LoggerFactory;
 import java.util.Locale;
 
 public class Main {
-
+    @SuppressWarnings("unchecked")
     public static void main(String[] args) {
         ch.qos.logback.classic.Logger root = (ch.qos.logback.classic.Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
         root.setLevel(Level.ERROR);
 
-        UserFactory.passwordKey=new EncryptedStringAttribute().createKey();
+        UserFactory.passwordKey=EncryptedStringAttribute.createKey();
 
         FactoryTreeBuilder<PrinterFactory> builder = new FactoryTreeBuilder<>(PrinterFactory.class);
         builder.addFactory(PrinterFactory.class, Scope.SINGLETON, ctx->{
             PrinterFactory factory = new PrinterFactory();
             factory.text.set("Hello World");
-            factory.server.set(ctx.get(PermissionJettyServerFactory.class));
+            factory.server.set(ctx.get(JettyServerFactory.class));
             return factory;
         });
-        builder.addFactory(PermissionJettyServerFactory.class, Scope.SINGLETON, ctx->{
-            PermissionJettyServerFactory server = new PermissionJettyServerFactory();
-            HttpServerConnectorFactory<Void, PrinterFactory> connector = new HttpServerConnectorFactory<>();
-            server.connectors.add(connector);
-            connector.host.set("localhost");
-            connector.port.set(8005);
-            server.resource.set(ctx.get(PrinterMicroserviceResourceFactory.class));
-            return server;
-        }) ;
+        builder.addFactory(JettyServerFactory.class, Scope.SINGLETON, ctx-> new JettyServerBuilder<>(new JettyServerFactory<Void,PrinterFactory>())
+                .withHost("localhost").widthPort(8005)
+                .withResource(ctx.get(PrinterMicroserviceResourceFactory.class)).build());
         builder.addFactory(PrinterMicroserviceResourceFactory.class, Scope.SINGLETON, ctx->{
             PrinterMicroserviceResourceFactory resource = new PrinterMicroserviceResourceFactory();
             PersistentUserManagementFactory<Void, PrinterFactory> userManagement = new PersistentUserManagementFactory<>();

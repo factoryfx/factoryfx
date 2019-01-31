@@ -73,7 +73,6 @@ public class FactoryContext<R extends FactoryBase<?,?,R>> {
         return factoryCreators.stream().allMatch(FactoryCreator::isEmpty);
     }
 
-    @SuppressWarnings("unchecked")
     public void fillFromExistingFactoryTree(R root) {
         List<FactoryBase<?,?,?>> factories = root.internalFactory().collectChildFactoriesDeepFromRoot();
         Map<FactoryCreatorIdentifier,FactoryBase<?,?,?>> classToFactory = new HashMap<>();

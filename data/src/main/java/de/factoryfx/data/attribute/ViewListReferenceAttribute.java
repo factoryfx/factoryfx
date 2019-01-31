@@ -145,7 +145,6 @@ public abstract class ViewListReferenceAttribute <R extends Data, T extends Data
 
     List<AttributeChangeListener<List<T>,A>> listeners;
     @Override
-    @SuppressWarnings("unchecked")
     public void internal_addListener(AttributeChangeListener<List<T>,A> listener) {
         if (listeners==null){
             listeners=Collections.synchronizedList(new ArrayList<>());

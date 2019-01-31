@@ -3,7 +3,7 @@ package de.factoryfx.javafx.factory.view.factoryviewmanager;
 import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.factory.SimpleFactoryBase;
 import de.factoryfx.factory.atrribute.FactoryReferenceAttribute;
-import de.factoryfx.data.storage.DataSerialisationManager;
+import de.factoryfx.data.storage.migration.MigrationManager;
 import de.factoryfx.javafx.factory.RichClientRoot;
 import de.factoryfx.microservice.rest.client.MicroserviceRestClient;
 import de.factoryfx.microservice.rest.client.MicroserviceRestClientFactory;
@@ -20,7 +20,7 @@ public class FactoryEditManagerFactory<VS,RS  extends FactoryBase<?,VS,RS>,S> ex
     public final FactoryReferenceAttribute<MicroserviceRestClient<VS,RS,S>,MicroserviceRestClientFactory<Void,RichClientRoot,VS,RS,S>> restClient =
             FactoryReferenceAttribute.create(new FactoryReferenceAttribute<>(MicroserviceRestClientFactory.class));
     @SuppressWarnings("unchecked")
-    public final FactoryReferenceAttribute<DataSerialisationManager<RS,S>,FactorySerialisationManagerFactory<RS,S>> factorySerialisationManager =
+    public final FactoryReferenceAttribute<MigrationManager<RS,S>,FactorySerialisationManagerFactory<RS,S>> factorySerialisationManager =
             FactoryReferenceAttribute.create(new FactoryReferenceAttribute<>(FactorySerialisationManagerFactory.class));
 
     @Override

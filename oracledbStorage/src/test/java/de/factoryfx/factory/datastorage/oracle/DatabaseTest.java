@@ -1,8 +1,8 @@
 package de.factoryfx.factory.datastorage.oracle;
 
-import de.factoryfx.data.storage.DataSerialisationManager;
-import de.factoryfx.data.storage.JacksonDeSerialisation;
-import de.factoryfx.data.storage.JacksonSerialisation;
+import de.factoryfx.data.storage.migration.MigrationManager;
+import de.factoryfx.data.storage.migration.metadata.DataStorageMetadataDictionary;
+import de.factoryfx.data.storage.migration.GeneralStorageMetadataBuilder;
 import de.factoryfx.factory.testfactories.ExampleFactoryA;
 import org.h2.tools.Server;
 import org.junit.After;
@@ -12,7 +12,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.util.Collections;
+import java.util.List;
 import java.util.function.Supplier;
 
 public class DatabaseTest {
@@ -46,9 +46,8 @@ public class DatabaseTest {
     }
 
 
-    protected DataSerialisationManager<ExampleFactoryA,Void> createSerialisation(){
-        int dataModelVersion = 1;
-        return new DataSerialisationManager<>(new JacksonSerialisation<>(dataModelVersion),new JacksonDeSerialisation<>(ExampleFactoryA.class, dataModelVersion), Collections.emptyList(),1);
+    protected MigrationManager<ExampleFactoryA,Void> createSerialisation(){
+        return new MigrationManager<>(ExampleFactoryA.class, List.of(), GeneralStorageMetadataBuilder.build(), List.of(), new DataStorageMetadataDictionary(ExampleFactoryA.class));
     }
 
 }

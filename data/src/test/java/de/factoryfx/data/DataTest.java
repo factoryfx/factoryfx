@@ -398,12 +398,12 @@ public class DataTest {
 
 
     public static class ExampleParentsA extends Data {
-        public final DataReferenceAttribute<ExampleParentsB> exampleParentsB = new DataReferenceAttribute<>();
-        public final DataReferenceAttribute<ExampleParentsC> exampleParentsC = new DataReferenceAttribute<>();
+        public final DataReferenceAttribute<ExampleParentsB> exampleParentsB = new DataReferenceAttribute<>(ExampleParentsB.class);
+        public final DataReferenceAttribute<ExampleParentsC> exampleParentsC = new DataReferenceAttribute<>(ExampleParentsC.class);
     }
 
     public static class ExampleParentsB extends Data {
-        public final DataReferenceAttribute<ExampleParentsC> exampleParentsC = new DataReferenceAttribute<>();
+        public final DataReferenceAttribute<ExampleParentsC> exampleParentsC = new DataReferenceAttribute<>(ExampleParentsC.class);
     }
 
     public static class ExampleParentsC extends Data {
@@ -656,9 +656,8 @@ public class DataTest {
         data.referenceAttribute.set(exampleDataB);
         data.internal().addBackReferences();
 
-        HashMap<Data,Data> child2parent = data.internal().getChildToParentMap();
-        Assert.assertEquals(1,exampleDataB.internal().getPathFromRoot(child2parent).size());
-        Assert.assertEquals(data,exampleDataB.internal().getPathFromRoot(child2parent).get(0));
+        Assert.assertEquals(1,exampleDataB.internal().getPathFromRoot().size());
+        Assert.assertEquals(data,exampleDataB.internal().getPathFromRoot().get(0));
     }
 
     @Test

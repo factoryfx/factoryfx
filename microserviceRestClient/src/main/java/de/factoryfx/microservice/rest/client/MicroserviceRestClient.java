@@ -31,13 +31,13 @@ import javax.ws.rs.InternalServerErrorException;
 public class MicroserviceRestClient<V, R extends FactoryBase<?,V,R>,S> {
 
     private final Class<R> factoryRootClass;
-    private final MicroserviceResourceApi<V,R,S> microserviceResource;
+    private final MicroserviceResourceApi<V,R,S> microserviceResourceApi;
     private final String user;
     private final String passwordHash;
     private final FactoryTreeBuilderBasedAttributeSetup<R> factoryTreeBuilderBasedAttributeSetup;
 
-    public MicroserviceRestClient(MicroserviceResourceApi<V,R,S> microserviceResource, Class<R> factoryRootClass, String user, String passwordHash, FactoryTreeBuilderBasedAttributeSetup<R> factoryTreeBuilderBasedAttributeSetup) {
-        this.microserviceResource = microserviceResource;
+    public MicroserviceRestClient(MicroserviceResourceApi<V,R,S> microserviceResourceApi, Class<R> factoryRootClass, String user, String passwordHash, FactoryTreeBuilderBasedAttributeSetup<R> factoryTreeBuilderBasedAttributeSetup) {
+        this.microserviceResourceApi = microserviceResourceApi;
         this.factoryRootClass = factoryRootClass;
         this.user=user;
         this.passwordHash=passwordHash;
@@ -49,16 +49,15 @@ public class MicroserviceRestClient<V, R extends FactoryBase<?,V,R>,S> {
             final UpdateCurrentFactoryRequest<R> updateCurrentFactoryRequest = new UpdateCurrentFactoryRequest<>();
             updateCurrentFactoryRequest.comment = comment;
             updateCurrentFactoryRequest.factoryUpdate = update;
-            return microserviceResource.updateCurrentFactory(new UserAwareRequest<>(user, passwordHash, updateCurrentFactoryRequest));
+            return microserviceResourceApi.updateCurrentFactory(new UserAwareRequest<>(user, passwordHash, updateCurrentFactoryRequest));
         } catch (InternalServerErrorException e) {
             String respString = e.getResponse().readEntity(String.class);
             return new FactoryUpdateLog(respString);
         }
     }
 
-    @SuppressWarnings("unchecked")
     public MergeDiffInfo<R> simulateUpdateCurrentFactory(DataAndNewMetadata<R> update) {
-        return executeWidthServerExceptionReporting(()->microserviceResource.simulateUpdateCurrentFactory(new UserAwareRequest<>(user,passwordHash,update)));
+        return executeWidthServerExceptionReporting(()-> microserviceResourceApi.simulateUpdateCurrentFactory(new UserAwareRequest<>(user,passwordHash,update)));
     }
 
     /**
@@ -66,9 +65,8 @@ public class MicroserviceRestClient<V, R extends FactoryBase<?,V,R>,S> {
      *
      * @return new factory for editing, server assign new id for the update
      */
-    @SuppressWarnings("unchecked")
     public DataAndNewMetadata<R> prepareNewFactory() {
-        DataAndNewMetadata<R> currentFactory = executeWidthServerExceptionReporting(()->microserviceResource.prepareNewFactory(new VoidUserAwareRequest(user,passwordHash)));
+        DataAndNewMetadata<R> currentFactory = executeWidthServerExceptionReporting(()-> microserviceResourceApi.prepareNewFactory(new VoidUserAwareRequest(user,passwordHash)));
         R root = currentFactory.root.internal().addBackReferences();
         if (factoryTreeBuilderBasedAttributeSetup!=null){
             factoryTreeBuilderBasedAttributeSetup.applyToRootFactoryDeep(root);
@@ -76,38 +74,37 @@ public class MicroserviceRestClient<V, R extends FactoryBase<?,V,R>,S> {
         return new DataAndNewMetadata<>(root,currentFactory.metadata);
     }
 
-    @SuppressWarnings("unchecked")
     public MergeDiffInfo<R> getDiff(StoredDataMetadata<S> historyEntry) {
-        return executeWidthServerExceptionReporting(()->microserviceResource.getDiff(new UserAwareRequest<>(user, passwordHash, historyEntry)));
+        return executeWidthServerExceptionReporting(()-> microserviceResourceApi.getDiff(new UserAwareRequest<>(user, passwordHash, historyEntry)));
     }
 
 
     public R getHistoryFactory(String id) {
-        R historyFactory = executeWidthServerExceptionReporting(()->microserviceResource.getHistoryFactory(new UserAwareRequest<>(user, passwordHash, id))).value;
+        R historyFactory = executeWidthServerExceptionReporting(()-> microserviceResourceApi.getHistoryFactory(new UserAwareRequest<>(user, passwordHash, id))).value;
         return historyFactory.internal().addBackReferences();
     }
 
     public Collection<StoredDataMetadata<S>> getHistoryFactoryList() {
-        return executeWidthServerExceptionReporting(()->microserviceResource.getHistoryFactoryList(new VoidUserAwareRequest(user, passwordHash)));
+        return executeWidthServerExceptionReporting(()-> microserviceResourceApi.getHistoryFactoryList(new VoidUserAwareRequest(user, passwordHash)));
     }
 
     @SuppressWarnings("unchecked")
     public ResponseWorkaround<V> query(V visitor) {
-        return new ResponseWorkaround(executeWidthServerExceptionReporting(()->microserviceResource.query(new UserAwareRequest<>(user,passwordHash,visitor))));
+        return new ResponseWorkaround(executeWidthServerExceptionReporting(()-> microserviceResourceApi.query(new UserAwareRequest<>(user,passwordHash,visitor))));
     }
 
     public boolean checkUser() {
-        CheckUserResponse response = executeWidthServerExceptionReporting(()->microserviceResource.checkUser(new VoidUserAwareRequest(user,passwordHash)));
+        CheckUserResponse response = executeWidthServerExceptionReporting(()-> microserviceResourceApi.checkUser(new VoidUserAwareRequest(user,passwordHash)));
         return response.valid;
     }
 
     public Locale getLocale() {
-        UserLocaleResponse response = executeWidthServerExceptionReporting(()->microserviceResource.getUserLocale(new VoidUserAwareRequest(user,passwordHash)));
+        UserLocaleResponse response = executeWidthServerExceptionReporting(()-> microserviceResourceApi.getUserLocale(new VoidUserAwareRequest(user,passwordHash)));
         return response.locale;
     }
 
     public FactoryUpdateLog revert(StoredDataMetadata<S> historyFactory) {
-        return executeWidthServerExceptionReporting(()->microserviceResource.revert(new UserAwareRequest<>(user,passwordHash,historyFactory)));
+        return executeWidthServerExceptionReporting(()-> microserviceResourceApi.revert(new UserAwareRequest<>(user,passwordHash,historyFactory)));
     }
 
     /**execute a jersey proxy client action and get server error  */

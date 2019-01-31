@@ -1,6 +1,9 @@
 package de.factoryfx.factory.atrribute;
 
+import de.factoryfx.data.jackson.ObjectMapperBuilder;
 import de.factoryfx.factory.FactoryBase;
+import de.factoryfx.factory.SimpleFactoryBase;
+import de.factoryfx.factory.builder.FactoryTreeBuilderTest;
 import de.factoryfx.factory.testfactories.poly.ErrorPrinterFactory;
 import de.factoryfx.factory.testfactories.poly.OutPrinterFactory;
 import de.factoryfx.factory.testfactories.poly.Printer;
@@ -70,5 +73,22 @@ public class FactoryPolymorphicReferenceListAttributeTest {
         FactoryPolymorphicReferenceAttributeTest.ErrorPrinterFactory2 errorPrinterFactory = new FactoryPolymorphicReferenceAttributeTest.ErrorPrinterFactory2();
         polymorphicFactoryExample.referenceList.add(errorPrinterFactory);
         Assert.assertEquals(errorPrinterFactory,new ArrayList<>(polymorphicFactoryExample.reference.internal_possibleValues()).get(0));
+    }
+
+    public static class FactoryPolymorphic extends SimpleFactoryBase<Void,Void,FactoryPolymorphic>{
+        FactoryPolymorphicReferenceListAttribute<Printer> attribute = new FactoryPolymorphicReferenceListAttribute<Printer>().setupUnsafe(Printer.class, ErrorPrinterFactory.class, OutPrinterFactory.class);
+
+        @Override
+        public Void createImpl() {
+            return null;
+        }
+    }
+
+    @Test
+    public void test_json(){
+        FactoryPolymorphic factoryPolymorphic = new FactoryPolymorphic();
+        factoryPolymorphic.attribute.add(new ErrorPrinterFactory());
+
+        ObjectMapperBuilder.build().copy(factoryPolymorphic);
     }
 }

@@ -36,7 +36,6 @@ public class WorkflowLauncher {
         }
     }
 
-    @SuppressWarnings("unchecked")
     public void fire(EngineType engineType, String workflowName, Object inputBean, int priority) {
         try {
             logger.debug("CALL -- {}({})", workflowName, inputBean);

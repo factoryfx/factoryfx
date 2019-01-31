@@ -60,7 +60,6 @@ public class FactoryPolymorphicReferenceListAttribute<L> extends ReferenceListAt
      * @param possibleFactoriesClasses possible factories that crate the liveobject, PolymorphicFactory&lt;L&gt; would be correct but doesn't work
      * @return self
      */
-    @SuppressWarnings("unchecked")
     @SafeVarargs
     public final FactoryPolymorphicReferenceListAttribute<L> setup(Class<L> liveObjectClass, Class<? extends PolymorphicFactory<?>>... possibleFactoriesClasses){
         this.possibleFactoriesClasses=Arrays.asList(possibleFactoriesClasses);
@@ -75,6 +74,17 @@ public class FactoryPolymorphicReferenceListAttribute<L> extends ReferenceListAt
      * */
     public List<Class<?>> internal_possibleFactoriesClasses(){
         return possibleFactoriesClasses;
+    }
+
+
+    @SuppressWarnings("unchecked")
+    public <T extends FactoryBase> T get(Class<T> clazz) {
+        for (FactoryBase<? extends L, ?, ?> item : this.get()) {
+            if (item.getClass()==clazz){
+                return (T)item;
+            }
+        }
+        return null;
     }
 
 }

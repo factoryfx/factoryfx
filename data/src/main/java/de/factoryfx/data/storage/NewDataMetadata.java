@@ -11,11 +11,6 @@ public class NewDataMetadata {
      */
     public String baseVersionId;
 
-    /**
-     * version of the factory structure used for migration
-     */
-    public int dataModelVersion;
-
     @JsonCreator
     public NewDataMetadata(){
     }

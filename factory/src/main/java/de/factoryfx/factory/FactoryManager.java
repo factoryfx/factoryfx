@@ -56,7 +56,7 @@ public class FactoryManager<V,L,R extends FactoryBase<L,V,R>> {
                 removed = getRemovedFactories(previousFactories, currentFactoriesAfterMerge);
 
                 long start = System.nanoTime();
-                currentFactoryRoot.determineRecreationNeedFromRoot(getChangedFactories(previousFactoryCopyRoot));
+                determineRecreationNeedFromRoot(previousFactoryCopyRoot);
 
                 //attention lifecycle method call order is important
 
@@ -95,7 +95,22 @@ public class FactoryManager<V,L,R extends FactoryBase<L,V,R>> {
 
     }
 
-    private Set<Data> getChangedFactories(R previousFactoryCopyRoot){
+    private void determineRecreationNeedFromRoot(R previousFactoryCopyRoot) {
+        currentFactoryRoot.determineRecreationNeedFromRoot(getChangedFactories(this.currentFactoryRoot,previousFactoryCopyRoot));
+
+//        for (Data data: currentFactoryRoot.collectChildFactories()){
+//            data.internal().visitAttributesFlat((name, attribute) -> {
+//                if (!(attribute instanceof FactoryViewReferenceAttribute) && !(currentAttribute instanceof DataViewListReferenceAttribute)){//Data views have no function no need to check
+//                    if (!currentAttribute.internal_mergeMatch(previousAttribute)){
+//                        result.add(data);
+//                    }
+//                }
+//
+//            });
+//        }
+    }
+
+    Set<Data> getChangedFactories(RootFactoryWrapper<R> currentFactoryRoot, R previousFactoryCopyRoot){
         //one might think that the merger could do the change detection but that don't work for views and separation of concern is better anyway
         final HashSet<Data> result = new HashSet<>();
         final HashMap<String, FactoryBase<?, ?,?>> previousFactories = previousFactoryCopyRoot.internalFactory().collectChildFactoriesDeepMapFromRoot();
@@ -108,6 +123,7 @@ public class FactoryManager<V,L,R extends FactoryBase<L,V,R>> {
                             result.add(data);
                         }
                     }
+
                 });
             }
         }
@@ -129,7 +145,6 @@ public class FactoryManager<V,L,R extends FactoryBase<L,V,R>> {
      * @param newVersion newVersion
      * @param permissionChecker permissionChecker
      * @return MergeDiffInfo*/
-    @SuppressWarnings("unchecked")
     public MergeDiffInfo<R> simulateUpdate(R commonVersion , R newVersion,  Function<String, Boolean> permissionChecker){
         newVersion.internalFactory().loopDetector();
 

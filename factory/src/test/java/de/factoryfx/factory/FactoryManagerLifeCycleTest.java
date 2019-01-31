@@ -2,7 +2,10 @@ package de.factoryfx.factory;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 
+import ch.qos.logback.classic.Level;
+import de.factoryfx.data.Data;
 import de.factoryfx.data.DataDictionary;
 import de.factoryfx.data.attribute.types.StringAttribute;
 import de.factoryfx.data.jackson.ObjectMapperBuilder;
@@ -12,6 +15,8 @@ import de.factoryfx.factory.atrribute.FactoryViewListReferenceAttribute;
 import de.factoryfx.factory.exception.RethrowingFactoryExceptionHandler;
 import org.junit.Assert;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class FactoryManagerLifeCycleTest {
 
@@ -70,10 +75,13 @@ public class FactoryManagerLifeCycleTest {
         public final FactoryReferenceAttribute<DummyLifeObejct, LifecycleFactoryC> refC = new FactoryReferenceAttribute<>(LifecycleFactoryC.class);
 
         public final FactoryReferenceAttribute<DummyLifeObejct, LifecycleFactoryA> refA = new FactoryReferenceAttribute<>(LifecycleFactoryA.class);
+
+        public final FactoryReferenceAttribute<DummyLifeObejct, LifecycleFactoryB> ref2 = new FactoryReferenceAttribute<>(LifecycleFactoryB.class);
     }
 
     public static class LifecycleFactoryB extends LifecycleFactoryBase {
         public final FactoryReferenceAttribute<DummyLifeObejct, LifecycleFactoryC> refC = new FactoryReferenceAttribute<>(LifecycleFactoryC.class);
+        public final FactoryReferenceAttribute<DummyLifeObejct, LifecycleFactoryD> refD = new FactoryReferenceAttribute<>(LifecycleFactoryD.class);
         public StringAttribute stringAttribute=new StringAttribute();
 
         public final FactoryViewListReferenceAttribute<LifecycleFactoryA,DummyLifeObejct, LifecycleFactoryC> listView = new FactoryViewListReferenceAttribute<LifecycleFactoryA,DummyLifeObejct, LifecycleFactoryC>(
@@ -83,6 +91,11 @@ public class FactoryManagerLifeCycleTest {
     public static class LifecycleFactoryC extends LifecycleFactoryBase {
         public StringAttribute stringAttribute=new StringAttribute();
     }
+
+    public static class LifecycleFactoryD extends LifecycleFactoryBase {
+        public final FactoryReferenceAttribute<DummyLifeObejct, LifecycleFactoryC> refC = new FactoryReferenceAttribute<>(LifecycleFactoryC.class);
+    }
+
 
     static {
         DataDictionary.getDataDictionary(LifecycleFactoryA.class).setNewCopyInstanceSupplier(lifecycleFactoryA -> {
@@ -360,6 +373,178 @@ public class FactoryManagerLifeCycleTest {
         factoryManager.update(common,update,(permission)->true);
         Assert.assertEquals(1,factoryManager.getCurrentFactory().refList.get(0).createCalls.size());
         Assert.assertEquals(1,factoryManager.getCurrentFactory().refList.get(1).createCalls.size());
+
+    }
+
+
+
+    @Test
+    public void test_double_used(){
+        ch.qos.logback.classic.Logger rootLogger = (ch.qos.logback.classic.Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
+        rootLogger.setLevel(Level.INFO);
+
+        FactoryManager<Void,DummyLifeObejct, LifecycleFactoryA> factoryManager = new FactoryManager<>(new RethrowingFactoryExceptionHandler());
+
+        LifecycleFactoryA root = new LifecycleFactoryA();
+        {
+            LifecycleFactoryB exampleFactoryB = new LifecycleFactoryB();
+            root.ref.set(exampleFactoryB);
+        }
+        {
+            LifecycleFactoryB exampleFactoryB = new LifecycleFactoryB();
+            root.ref2.set(exampleFactoryB);
+        }
+        LifecycleFactoryC lifecycleFactoryC = new LifecycleFactoryC();
+        root.ref.get().refC.set(lifecycleFactoryC);
+        root.ref2.get().refC.set(lifecycleFactoryC);
+
+
+        factoryManager.start(new RootFactoryWrapper<>(root));
+
+        LifecycleFactoryA common = factoryManager.getCurrentFactory().utility().copy();
+        LifecycleFactoryA update = factoryManager.getCurrentFactory().utility().copy();
+
+        update.ref.get().refC.get().stringAttribute.set("hgfghfhg");
+
+
+        root.internal().collectChildrenDeep().forEach(data -> ((LifecycleFactoryBase)data).resetCounter());
+        factoryManager.update(common,update,(permission)->true);
+
+        Assert.assertEquals(1,root.reCreateCalls.size());
+        Assert.assertEquals(1,root.ref.get().reCreateCalls.size());
+        Assert.assertEquals(1,root.ref2.get().reCreateCalls.size());
+    }
+
+
+    @Test
+    public void test_double_used_more_nested(){
+        ch.qos.logback.classic.Logger rootLogger = (ch.qos.logback.classic.Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
+        rootLogger.setLevel(Level.INFO);
+
+        FactoryManager<Void,DummyLifeObejct, LifecycleFactoryA> factoryManager = new FactoryManager<>(new RethrowingFactoryExceptionHandler());
+
+        LifecycleFactoryC lifecycleFactoryC = new LifecycleFactoryC();
+
+        LifecycleFactoryA root = new LifecycleFactoryA();
+        {
+            LifecycleFactoryB exampleFactoryB = new LifecycleFactoryB();
+            root.ref.set(exampleFactoryB);
+            LifecycleFactoryD lifecycleFactoryD = new LifecycleFactoryD();
+            exampleFactoryB.refD.set(lifecycleFactoryD);
+            lifecycleFactoryD.refC.set(lifecycleFactoryC);
+        }
+        {
+            LifecycleFactoryB exampleFactoryB = new LifecycleFactoryB();
+            root.ref2.set(exampleFactoryB);
+            LifecycleFactoryD lifecycleFactoryD = new LifecycleFactoryD();
+            exampleFactoryB.refD.set(lifecycleFactoryD);
+            lifecycleFactoryD.refC.set(lifecycleFactoryC);
+        }
+
+        factoryManager.start(new RootFactoryWrapper<>(root));
+
+        LifecycleFactoryA common = factoryManager.getCurrentFactory().utility().copy();
+        LifecycleFactoryA update = factoryManager.getCurrentFactory().utility().copy();
+
+        update.ref.get().refD.get().refC.get().stringAttribute.set("hgfghfhg");
+
+
+        root.internal().collectChildrenDeep().forEach(data -> ((LifecycleFactoryBase)data).resetCounter());
+        factoryManager.update(common,update,(permission)->true);
+
+        Assert.assertEquals(1,root.reCreateCalls.size());
+        Assert.assertEquals(1,root.ref.get().reCreateCalls.size());
+        Assert.assertEquals(1,root.ref2.get().reCreateCalls.size());
+
+        Assert.assertEquals(1,root.ref.get().refD.get().reCreateCalls.size());
+        Assert.assertEquals(1,root.ref2.get().refD.get().reCreateCalls.size());
+
+    }
+
+
+
+    @Test
+    public void test_double_used_and_once_removed(){
+        ch.qos.logback.classic.Logger rootLogger = (ch.qos.logback.classic.Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
+        rootLogger.setLevel(Level.INFO);
+
+        FactoryManager<Void,DummyLifeObejct, LifecycleFactoryA> factoryManager = new FactoryManager<>(new RethrowingFactoryExceptionHandler());
+
+        LifecycleFactoryA root = new LifecycleFactoryA();
+        {
+            LifecycleFactoryB exampleFactoryB = new LifecycleFactoryB();
+            root.ref.set(exampleFactoryB);
+        }
+        {
+            LifecycleFactoryB exampleFactoryB = new LifecycleFactoryB();
+            root.ref2.set(exampleFactoryB);
+        }
+        LifecycleFactoryC lifecycleFactoryC = new LifecycleFactoryC();
+        root.ref.get().refC.set(lifecycleFactoryC);
+        root.ref2.get().refC.set(lifecycleFactoryC);
+
+
+        factoryManager.start(new RootFactoryWrapper<>(root));
+
+        LifecycleFactoryA common = factoryManager.getCurrentFactory().utility().copy();
+        LifecycleFactoryA update = factoryManager.getCurrentFactory().utility().copy();
+
+        update.ref.get().refC.set(null);
+
+
+        root.internal().collectChildrenDeep().forEach(data -> ((LifecycleFactoryBase)data).resetCounter());
+        factoryManager.update(common,update,(permission)->true);
+
+        Assert.assertNull(factoryManager.getCurrentFactory().ref.get().refC.get());
+        Assert.assertNotNull(factoryManager.getCurrentFactory().ref2.get().refC.get());
+
+        Assert.assertEquals(1,root.reCreateCalls.size());
+        Assert.assertEquals(1,root.ref.get().reCreateCalls.size());
+        Assert.assertEquals(0,root.ref2.get().reCreateCalls.size());
+    }
+
+    @Test
+    public void test_double_remove(){
+        ch.qos.logback.classic.Logger rootLogger = (ch.qos.logback.classic.Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
+        rootLogger.setLevel(Level.INFO);
+
+        FactoryManager<Void,DummyLifeObejct, LifecycleFactoryA> factoryManager = new FactoryManager<>(new RethrowingFactoryExceptionHandler());
+
+        LifecycleFactoryC lifecycleFactoryC = new LifecycleFactoryC();
+
+        LifecycleFactoryA root = new LifecycleFactoryA();
+        {
+            LifecycleFactoryB exampleFactoryB = new LifecycleFactoryB();
+            root.ref.set(exampleFactoryB);
+            LifecycleFactoryD lifecycleFactoryD = new LifecycleFactoryD();
+            exampleFactoryB.refD.set(lifecycleFactoryD);
+            lifecycleFactoryD.refC.set(lifecycleFactoryC);
+        }
+        {
+            LifecycleFactoryB exampleFactoryB = new LifecycleFactoryB();
+            root.ref2.set(exampleFactoryB);
+            LifecycleFactoryD lifecycleFactoryD = new LifecycleFactoryD();
+            exampleFactoryB.refD.set(lifecycleFactoryD);
+            lifecycleFactoryD.refC.set(lifecycleFactoryC);
+        }
+
+        factoryManager.start(new RootFactoryWrapper<>(root));
+
+        LifecycleFactoryA common = factoryManager.getCurrentFactory().utility().copy();
+        LifecycleFactoryA update = factoryManager.getCurrentFactory().utility().copy();
+
+        update.ref.get().refD.get().refC.set(null);
+
+
+        root.internal().collectChildrenDeep().forEach(data -> ((LifecycleFactoryBase)data).resetCounter());
+        factoryManager.update(common,update,(permission)->true);
+
+        Assert.assertEquals(1,root.reCreateCalls.size());
+        Assert.assertEquals(1,root.ref.get().reCreateCalls.size());
+        Assert.assertEquals(0,root.ref2.get().reCreateCalls.size());
+
+        Assert.assertEquals(1,root.ref.get().refD.get().reCreateCalls.size());
+        Assert.assertEquals(0,root.ref2.get().refD.get().reCreateCalls.size());
 
     }
 }

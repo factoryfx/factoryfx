@@ -1,8 +1,10 @@
 package de.factoryfx.server;
 
-import de.factoryfx.data.storage.*;
 import de.factoryfx.data.storage.filesystem.FileSystemDataStorage;
 import de.factoryfx.data.storage.inmemory.InMemoryDataStorage;
+import de.factoryfx.data.storage.migration.MigrationManager;
+import de.factoryfx.data.storage.migration.GeneralStorageMetadataBuilder;
+import de.factoryfx.data.storage.migration.metadata.DataStorageMetadataDictionary;
 import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.factory.FactoryManager;
 import de.factoryfx.factory.builder.FactoryTreeBuilder;
@@ -59,8 +61,8 @@ public class MicroserviceBuilder {
     @SuppressWarnings("unchecked")
     public static <V,L,R extends FactoryBase<L,V,R>,S> Microservice<V,L,R,S> buildFilesystemMicroservice(R rootFactory, Path path){
         Class<R> rootClass = (Class<R>) rootFactory.getClass();
-        DataSerialisationManager<R,S> defaultSerialisationManager = new DataSerialisationManager<>(new JacksonSerialisation<>(1),new JacksonDeSerialisation<>(rootClass,1),new ArrayList<>(),1);
-        return new Microservice<>(new FactoryManager<>(new LoggingFactoryExceptionHandler(new ResettingHandler())), new FileSystemDataStorage<>(path, rootFactory,defaultSerialisationManager));
+        MigrationManager<R,S> migrationManager = new MigrationManager<>(rootClass, new ArrayList<>(), GeneralStorageMetadataBuilder.build(), new ArrayList<>(), new DataStorageMetadataDictionary(rootFactory.getClass()));
+        return new Microservice<>(new FactoryManager<>(new LoggingFactoryExceptionHandler(new ResettingHandler())), new FileSystemDataStorage<>(path, rootFactory, migrationManager));
     }
 
 

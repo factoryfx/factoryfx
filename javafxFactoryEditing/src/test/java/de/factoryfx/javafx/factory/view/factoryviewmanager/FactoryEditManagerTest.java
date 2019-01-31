@@ -4,6 +4,9 @@ import de.factoryfx.data.merge.DataMerger;
 import de.factoryfx.data.merge.MergeDiffInfo;
 import de.factoryfx.data.storage.*;
 import de.factoryfx.data.storage.inmemory.InMemoryDataStorage;
+import de.factoryfx.data.storage.migration.metadata.DataStorageMetadataDictionary;
+import de.factoryfx.data.storage.migration.GeneralStorageMetadataBuilder;
+import de.factoryfx.data.storage.migration.MigrationManager;
 import de.factoryfx.factory.FactoryManager;
 import de.factoryfx.factory.exception.RethrowingFactoryExceptionHandler;
 import de.factoryfx.factory.testfactories.ExampleFactoryA;
@@ -20,7 +23,7 @@ import org.mockito.stubbing.Answer;
 
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.ArrayList;
+import java.util.List;
 
 
 public class FactoryEditManagerTest {
@@ -31,15 +34,13 @@ public class FactoryEditManagerTest {
     @Test
     @SuppressWarnings("unchecked")
     public void test_export_import() throws IOException {
-        DataSerialisationManager<ExampleFactoryA,Void> serialisationManager = new DataSerialisationManager<>(new JacksonSerialisation<>(1),new JacksonDeSerialisation<>(ExampleFactoryA.class, 1), new ArrayList<>(),1);
         MicroserviceRestClient<Void,ExampleFactoryA,Void> client = Mockito.mock(MicroserviceRestClient.class);
         NewDataMetadata newFactoryMetadata = new NewDataMetadata();
-        newFactoryMetadata.dataModelVersion=1;
         DataAndNewMetadata<ExampleFactoryA> value = new DataAndNewMetadata<>(new ExampleFactoryA(), newFactoryMetadata);
         value.root.stringAttribute.set("123");
         Mockito.when(client.prepareNewFactory()).thenReturn(value);
 
-        FactoryEditManager<Void,ExampleFactoryA> factoryEditManager = new FactoryEditManager<>(client, serialisationManager);
+        FactoryEditManager<Void,ExampleFactoryA> factoryEditManager = new FactoryEditManager<>(client, createDataMigrationManager());
         factoryEditManager.runLaterExecuter= Runnable::run;
 
         factoryEditManager.load();
@@ -53,6 +54,10 @@ public class FactoryEditManagerTest {
 
 
 
+    }
+
+    private MigrationManager<ExampleFactoryA, Void> createDataMigrationManager() {
+        return new MigrationManager<>(ExampleFactoryA.class, List.of(), GeneralStorageMetadataBuilder.build(), List.of(), new DataStorageMetadataDictionary(ExampleFactoryA.class));
     }
 
     @Test
@@ -80,7 +85,6 @@ public class FactoryEditManagerTest {
 
         Path target = tmpFolder.newFile("fghfh.json").toPath();
         {
-            DataSerialisationManager<ExampleFactoryA, Void> serialisationManager = new DataSerialisationManager<>(new JacksonSerialisation<>(0), new JacksonDeSerialisation<>(ExampleFactoryA.class, 1), new ArrayList<>(), 0);
 
             ExampleFactoryA initialFactory = new ExampleFactoryA();
             initialFactory.referenceAttribute.set(new ExampleFactoryB());
@@ -92,7 +96,7 @@ public class FactoryEditManagerTest {
             MicroserviceRestClient<Void, ExampleFactoryA,Void> client = Mockito.mock(MicroserviceRestClient.class);
             Mockito.when(client.prepareNewFactory()).thenReturn(microservice.prepareNewFactory());
 
-            FactoryEditManager<Void, ExampleFactoryA> factoryEditManager = new FactoryEditManager<>(client, serialisationManager);
+            FactoryEditManager<Void, ExampleFactoryA> factoryEditManager = new FactoryEditManager<>(client, createDataMigrationManager());
             factoryEditManager.runLaterExecuter = Runnable::run;
 
             factoryEditManager.load();
@@ -102,8 +106,6 @@ public class FactoryEditManagerTest {
 
 
         {
-            DataSerialisationManager<ExampleFactoryA, Void> serialisationManager = new DataSerialisationManager<>(new JacksonSerialisation<>(0), new JacksonDeSerialisation<>(ExampleFactoryA.class, 0), new ArrayList<>(), 0);
-
             ExampleFactoryA initialFactory = new ExampleFactoryA();
             initialFactory = initialFactory.internal().addBackReferences();
 //            initialFactory.referenceAttribute.set(new ExampleFactoryB());
@@ -119,7 +121,7 @@ public class FactoryEditManagerTest {
                 return microservice.updateCurrentFactory((DataAndNewMetadata<ExampleFactoryA>) args[0],"","",(p)->true);
             });
 
-            FactoryEditManager<Void, ExampleFactoryA> factoryEditManager = new FactoryEditManager<>(client, serialisationManager);
+            FactoryEditManager<Void, ExampleFactoryA> factoryEditManager = new FactoryEditManager<>(client, createDataMigrationManager());
             factoryEditManager.runLaterExecuter = Runnable::run;
 
             factoryEditManager.load();

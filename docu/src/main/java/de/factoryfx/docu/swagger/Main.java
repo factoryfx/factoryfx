@@ -3,13 +3,14 @@ package de.factoryfx.docu.swagger;
 import ch.qos.logback.classic.Level;
 import de.factoryfx.data.storage.inmemory.InMemoryDataStorage;
 import de.factoryfx.factory.FactoryManager;
+import de.factoryfx.factory.SimpleFactoryBase;
 import de.factoryfx.factory.atrribute.FactoryReferenceAttribute;
+import de.factoryfx.factory.builder.FactoryTreeBuilder;
+import de.factoryfx.factory.builder.Scope;
 import de.factoryfx.factory.exception.RethrowingFactoryExceptionHandler;
-import de.factoryfx.jetty.HttpServerConnectorFactory;
-import de.factoryfx.jetty.JettyServer;
-import de.factoryfx.jetty.JettyServerFactory;
-import de.factoryfx.jetty.ServletBuilder;
+import de.factoryfx.jetty.*;
 import de.factoryfx.server.Microservice;
+import org.eclipse.jetty.server.Server;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,30 +22,30 @@ import java.net.http.HttpResponse;
 
 public class Main {
 
-    public static class SwaggerWebserver extends JettyServerFactory<Void, SwaggerWebserver> {
-        public final FactoryReferenceAttribute<HelloWorldResource, HelloWorldResourceFactory> resource = new FactoryReferenceAttribute<>(HelloWorldResourceFactory.class);
+    public static class SwaggerWebserver extends SimpleFactoryBase<Server, Void, SwaggerWebserver> {
+        @SuppressWarnings("unchecked")
+        public final FactoryReferenceAttribute<Server, JettyServerFactory<Void, SwaggerWebserver>> server = FactoryReferenceAttribute.create(new FactoryReferenceAttribute<>(JettyServerFactory.class));
 
         @Override
-        protected void setupServlets(ServletBuilder servletBuilder) {
-            defaultSetupServlets(servletBuilder,resource.instance());
+        public Server createImpl() {
+            return server.instance();
         }
     }
 
+    @SuppressWarnings("unchecked")
     public static void main(String[] args) throws InterruptedException {
         ch.qos.logback.classic.Logger root = (ch.qos.logback.classic.Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
         root.setLevel(Level.INFO);
 
-        SwaggerWebserver server = new SwaggerWebserver();
+        FactoryTreeBuilder<SwaggerWebserver> builder = new FactoryTreeBuilder<>(SwaggerWebserver.class);
+        builder.addFactory(SwaggerWebserver.class, Scope.SINGLETON);
+        builder.addFactory(JettyServerFactory.class, Scope.SINGLETON, ctx-> new JettyServerBuilder<>(new JettyServerFactory<Void,SwaggerWebserver>())
+                .withHost("localhost").widthPort(8005)
+                .withResource(ctx.get(HelloWorldResourceFactory.class)).build());
+        builder.addFactory(HelloWorldResourceFactory.class, Scope.SINGLETON);
 
-        HttpServerConnectorFactory<Void, SwaggerWebserver> serverConnectorFactory = new HttpServerConnectorFactory<>();
-        serverConnectorFactory.host.set("localhost");
-        serverConnectorFactory.port.set(8005);
-        server.connectors.add(serverConnectorFactory);
-
-        server.resource.set(new HelloWorldResourceFactory());
-
-        Microservice<Void,JettyServer, SwaggerWebserver,Void> microservice
-                = new Microservice<>(new FactoryManager<>(new RethrowingFactoryExceptionHandler()),new InMemoryDataStorage<>(server));
+        Microservice<Void, Server, SwaggerWebserver,Void> microservice
+                = new Microservice<>(new FactoryManager<>(new RethrowingFactoryExceptionHandler()),new InMemoryDataStorage<>(builder.buildTree()));
         microservice.start();
 
 

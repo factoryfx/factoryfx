@@ -1,7 +1,7 @@
 package de.factoryfx.javafx.factory.view.factoryviewmanager;
 
 import de.factoryfx.data.Data;
-import de.factoryfx.data.storage.DataSerialisationManager;
+import de.factoryfx.data.storage.migration.MigrationManager;
 import de.factoryfx.factory.SimpleFactoryBase;
 import de.factoryfx.javafx.factory.RichClientRoot;
 
@@ -10,6 +10,6 @@ import de.factoryfx.javafx.factory.RichClientRoot;
  * @param <RS> root server
  * @param <S>  server historysummary
  */
-public abstract class FactorySerialisationManagerFactory<RS extends Data,S> extends SimpleFactoryBase<DataSerialisationManager<RS,S>,Void,RichClientRoot> {
+public abstract class FactorySerialisationManagerFactory<RS extends Data,S> extends SimpleFactoryBase<MigrationManager<RS,S>,Void,RichClientRoot> {
 
 }

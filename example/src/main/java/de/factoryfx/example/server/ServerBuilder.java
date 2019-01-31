@@ -4,8 +4,7 @@ import de.factoryfx.example.server.shop.*;
 import de.factoryfx.example.server.shop.netherlands.NetherlandsCarProductFactory;
 import de.factoryfx.factory.builder.FactoryTreeBuilder;
 import de.factoryfx.factory.builder.Scope;
-import de.factoryfx.jetty.HttpServerConnectorFactory;
-import de.factoryfx.microservice.rest.MicroserviceResourceFactory;
+import de.factoryfx.jetty.JettyServerBuilder;
 
 public class ServerBuilder {
 
@@ -16,19 +15,15 @@ public class ServerBuilder {
         factoryTreeBuilder.addFactory(ServerRootFactory.class, Scope.SINGLETON);
 
         factoryTreeBuilder.addFactory(ShopJettyServerFactory.class, Scope.SINGLETON,  context -> {
-            ShopJettyServerFactory jettyServerFactory = new ShopJettyServerFactory();
-            jettyServerFactory.resource.set(context.get(MicroserviceResourceFactory.class));
-            jettyServerFactory.shopResource.set(context.get(ShopResourceFactory.class));
-            HttpServerConnectorFactory<OrderCollector,ServerRootFactory> connector = new HttpServerConnectorFactory<>();
-            connector.host.set("localhost");
-            connector.port.set(8089);
-            jettyServerFactory.connectors.add(connector);
-            return jettyServerFactory;
+            return new JettyServerBuilder<>(new ShopJettyServerFactory())
+                    .withHost("localhost").widthPort(8089)
+                    .withResource(context.get(SpecificMicroserviceResourceFactory.class))
+                    .withResource(context.get(ShopResourceFactory.class)).build();
+
         });
 
-        factoryTreeBuilder.addFactory(MicroserviceResourceFactory.class, Scope.SINGLETON, context -> {
-            MicroserviceResourceFactory<OrderCollector,ServerRootFactory,Void> microserviceResourceFactory = new MicroserviceResourceFactory<>();
-            return microserviceResourceFactory;
+        factoryTreeBuilder.addFactory(SpecificMicroserviceResourceFactory.class, Scope.SINGLETON, context -> {
+            return new SpecificMicroserviceResourceFactory();
         });
 
         factoryTreeBuilder.addFactory(ShopResourceFactory.class, Scope.SINGLETON, context -> {

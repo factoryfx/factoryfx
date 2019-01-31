@@ -5,8 +5,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import java.util.function.Function;
 
-import de.factoryfx.data.attribute.Attribute;
-import de.factoryfx.data.attribute.ReferenceBaseAttribute;
 import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.factory.atrribute.*;
 import de.factoryfx.factory.parametrized.ParametrizedObjectCreatorAttribute;

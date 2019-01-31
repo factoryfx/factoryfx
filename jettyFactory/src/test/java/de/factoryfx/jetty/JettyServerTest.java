@@ -30,13 +30,23 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.MessageBodyWriter;
 
+import ch.qos.logback.classic.Level;
 import com.google.common.io.ByteStreams;
-import org.checkerframework.common.reflection.qual.GetClass;
+import de.factoryfx.data.attribute.types.StringAttribute;
+import de.factoryfx.data.storage.DataAndNewMetadata;
+import de.factoryfx.factory.SimpleFactoryBase;
+import de.factoryfx.factory.atrribute.FactoryReferenceAttribute;
+import de.factoryfx.factory.builder.FactoryTreeBuilder;
+import de.factoryfx.factory.builder.Scope;
+import de.factoryfx.server.Microservice;
+import de.factoryfx.server.MicroserviceBuilder;
+import org.eclipse.jetty.server.Server;
 import org.glassfish.jersey.client.ClientConfig;
-import org.glassfish.jersey.server.ResourceConfig;
-import org.glassfish.jersey.servlet.ServletContainer;
 import org.junit.Assert;
+import org.junit.BeforeClass;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class JettyServerTest {
     @Path("/Resource1")
@@ -47,217 +57,315 @@ public class JettyServerTest {
         }
     }
 
-    @Path("/Resource2")
-    public static class Resource2{
-        @GET()
-        public Response get(){
-            return Response.ok().build();
-        }
-    }
-    
-    private ServletBuilder servlets(Object ... resources) {
-        ServletBuilder servletBuilder = new ServletBuilder();
-        return servletBuilder.withJerseyResources("/*",Arrays.asList(resources));
-    }
-    
-    @Test
-    public void test_multiple_resources_samepath() throws InterruptedException {
-        List<HttpServerConnectorCreator> connectors= new ArrayList<>();
-        connectors.add(new HttpServerConnectorCreator("localhost",8015,null));
-        JettyServer jettyServer = new JettyServer(connectors,servlets(new Resource1(), new Resource2()));
-        jettyServer.start();
-//        Thread.sleep(1000);
-
-        System.out.println(get(8015,"Resource1"));
-        System.out.println(get(8015,"Resource2"));
-        jettyServer.stop();
-    }
-
-    @Path("/Resource")
-    public static class Resource {
-        final String answer;
-
-        public Resource(String answer) {
-            this.answer = answer;
-        }
-
-        @GET()
-        public Response get(){
-            return Response.ok(answer).build();
+    public static class Resource1Factory extends SimpleFactoryBase<Resource1,Void, JettyServerRootFactory> {
+        @Override
+        public Resource1 createImpl() {
+            return new Resource1();
         }
     }
 
-    @Test
-    public void test_recreate() throws InterruptedException {
-        List<HttpServerConnectorCreator> connectors= new ArrayList<>();
-        connectors.add(new HttpServerConnectorCreator("localhost",8015,null));
-        JettyServer jettyServer = new JettyServer(connectors, servlets(new Resource("Hello")));
-        jettyServer.start();
-//        Thread.sleep(1000);
+    public static class JettyServerRootFactory extends SimpleFactoryBase<Server,Void, JettyServerRootFactory>{
+        @SuppressWarnings("unchecked")
+        public final FactoryReferenceAttribute<Server,JettyServerFactory<Void, JettyServerRootFactory>> server = FactoryReferenceAttribute.create(new FactoryReferenceAttribute<>(JettyServerFactory.class));
 
-        Assert.assertEquals("Hello",get(8015,"Resource"));
-        jettyServer = jettyServer.recreate(connectors,servlets(new Resource("World")));
-        Assert.assertEquals("World",get(8015,"Resource"));
-        jettyServer.stop();
-
+        @Override
+        public Server createImpl() {
+            return server.instance();
+        }
     }
 
+    @BeforeClass
+    public static void setup(){
+        ch.qos.logback.classic.Logger root = (ch.qos.logback.classic.Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
+        root.setLevel(Level.INFO);
+    }
+
+    @SuppressWarnings("unchecked")
     @Test
-    public void test_addRemoveConnector() throws InterruptedException {
-
-        List<HttpServerConnectorCreator> connectors= new ArrayList<>();
-        connectors.add(new HttpServerConnectorCreator("localhost",8015,null));
-        List<HttpServerConnectorCreator> moreConnectors= new ArrayList<>();
-        moreConnectors.add(new HttpServerConnectorCreator("localhost",8015,null));
-        moreConnectors.add(new HttpServerConnectorCreator("localhost",8016,null));
-        ServletBuilder resources = servlets(new Resource("Hello"));
-
-        JettyServer jettyServer = new JettyServer(connectors, resources);
-        jettyServer.start();
-//        Thread.sleep(1000);
-
-
-        Assert.assertEquals("Hello",get(8015,"Resource"));
+    public void test_change_port() throws InterruptedException {
+        FactoryTreeBuilder<JettyServerRootFactory> builder = new FactoryTreeBuilder<>(JettyServerRootFactory.class);
+        builder.addFactory(JettyServerRootFactory.class, Scope.SINGLETON);
+        builder.addFactory(JettyServerFactory.class, Scope.SINGLETON, ctx->{
+            return new JettyServerBuilder<>(new JettyServerFactory<Void,JettyServerRootFactory>())
+                    .withHost("localhost").widthPort(8080)
+                    .withResource(ctx.get(Resource1Factory.class)).build();
+        });
+        builder.addFactory(Resource1Factory.class, Scope.SINGLETON, ctx -> {
+            return new Resource1Factory();
+        });
+        Microservice<Void, Server, JettyServerRootFactory, Object> microservice = MicroserviceBuilder.buildInMemoryMicroservice(builder);
         try {
-            get(8016,"Resource");
-            Assert.fail("Expectected exception");
-        } catch (Exception expected) {}
+            microservice.start();
 
-        jettyServer = jettyServer.recreate(moreConnectors,resources);
-        Assert.assertEquals("Hello",get(8015,"Resource"));
-        Assert.assertEquals("Hello",get(8016,"Resource"));
-
-        jettyServer = jettyServer.recreate(connectors,resources);
-        Assert.assertEquals("Hello",get(8015,"Resource"));
-        try {
-            get(8016,"Resource");
-            Assert.fail("Expectected exception");
-        } catch (Exception expected) {}
-        jettyServer.stop();
-
-    }
-
-
-    @Path("/Resource")
-    public static class LateResponseTestResource {
-
-        public LateResponseTestResource() {
-
-        }
-
-        @GET()
-        public Response get() throws InterruptedException {
-            System.out.println("IN");
             try {
-                Thread.sleep(500);
-                return Response.ok("RESPONSE").build();
-            } finally {
-                System.out.println("Out");
+                HttpClient client = HttpClient.newBuilder().version(HttpClient.Version.HTTP_1_1).build();
+                HttpRequest request = HttpRequest.newBuilder().uri(URI.create("http://localhost:8080/Resource1")).GET().build();
+                HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+                Assert.assertEquals(200, response.statusCode());
+            } catch (IOException | InterruptedException e) {
+                throw new RuntimeException(e);
             }
+
+            DataAndNewMetadata<JettyServerRootFactory> update = microservice.prepareNewFactory();
+            update.root.server.get().connectorManager.get().connectors.get(0).port.set(8081);
+            microservice.updateCurrentFactory(update, "", "", (p) -> true);
+
+
+            try {
+                HttpClient client = HttpClient.newBuilder().version(HttpClient.Version.HTTP_1_1).build();
+                HttpRequest request = HttpRequest.newBuilder().uri(URI.create("http://localhost:8080/Resource1")).GET().build();
+                HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+                Assert.fail("expect ConnectException");
+            } catch (IOException | InterruptedException e) {
+                //expected
+            }
+
+            try {
+                HttpClient client = HttpClient.newBuilder().version(HttpClient.Version.HTTP_1_1).build();
+                HttpRequest request = HttpRequest.newBuilder().uri(URI.create("http://localhost:8081/Resource1")).GET().build();
+                HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+                Assert.assertEquals(200, response.statusCode());
+            } catch (IOException | InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        } finally {
+            microservice.stop();
         }
     }
 
-
+    @SuppressWarnings("unchecked")
     @Test
-    public void test_lateResponse() throws InterruptedException, ExecutionException, TimeoutException {
-        List<HttpServerConnectorCreator> connectors= new ArrayList<>();
-        connectors.add(new HttpServerConnectorCreator("localhost",8015,null));
-        JettyServer jettyServer = new JettyServer(connectors, servlets(new LateResponseTestResource()));
-        jettyServer.start();
+    public void test_remove_connector() {
+        FactoryTreeBuilder<JettyServerRootFactory> builder = new FactoryTreeBuilder<>(JettyServerRootFactory.class);
+        builder.addFactory(JettyServerRootFactory.class, Scope.SINGLETON);
+        builder.addFactory(JettyServerFactory.class, Scope.SINGLETON, ctx->{
+            return new JettyServerBuilder<>(new JettyServerFactory<Void,JettyServerRootFactory>())
+                    .withHost("localhost").widthPort(8080)
+                    .withResource(ctx.get(Resource1Factory.class)).build();
+        });
+        builder.addFactory(Resource1Factory.class, Scope.SINGLETON, ctx -> {
+            return new Resource1Factory();
+        });
+        Microservice<Void, Server, JettyServerRootFactory, Object> microservice = MicroserviceBuilder.buildInMemoryMicroservice(builder);
+        try{
+            microservice.start();
 
-        try {
-            CompletableFuture<String> lateResponse = new CompletableFuture<>();
-            new Thread() {
-                public void run() {
-                    try {
-                        lateResponse.complete(get(8015,"Resource"));
-                    } catch (Exception ex) {
-                        lateResponse.completeExceptionally(ex);
-                    }
-                }
-            }.start();
-            Thread.sleep(400);
-            jettyServer = jettyServer.recreate(connectors,servlets());
             try {
-                get(8015,"Resource");
-                Assert.fail("Expected exception");
-            } catch (Exception expected) {}
-            Assert.assertEquals("RESPONSE",lateResponse.get(1000, TimeUnit.MILLISECONDS));
+                HttpClient client = HttpClient.newBuilder().version(HttpClient.Version.HTTP_1_1).build();
+                HttpRequest request = HttpRequest.newBuilder().uri(URI.create("http://localhost:8080/Resource1")).GET().build();
+                HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+                Assert.assertEquals(200,response.statusCode());
+            } catch (IOException | InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+
+            DataAndNewMetadata<JettyServerRootFactory> update = microservice.prepareNewFactory();
+            update.root.server.get().connectorManager.get().connectors.clear();
+            microservice.updateCurrentFactory(update,"","",(p)->true);
+
+
+            try {
+                HttpClient client = HttpClient.newBuilder().version(HttpClient.Version.HTTP_1_1).build();
+                HttpRequest request = HttpRequest.newBuilder().uri(URI.create("http://localhost:8080/Resource1")).GET().build();
+                HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+                Assert.fail("expect ConnectException");
+            } catch (IOException | InterruptedException e) {
+                //expected
+            }
 
         } finally {
-            jettyServer.stop();
-        }
-
-
-    }
-
-    @Path("/Killer")
-    public static class ResourceKiller{
-        private  Runnable stopper;
-
-        private final Consumer<Thread> killerThread;
-
-        public ResourceKiller(Consumer<Thread> killerThread) {
-            this.killerThread = killerThread;
-        }
-
-        public void setStopper(Runnable stopper){
-            this.stopper = stopper;
-        }
-
-
-        @GET()
-        public Response get(){
-            killerThread.accept(Thread.currentThread());
-            stopper.run();
-            return Response.ok().build();
+            microservice.stop();
         }
     }
 
-    @Test
-    public void test_stop_itself() throws InterruptedException {
-        List<HttpServerConnectorCreator> connectors= new ArrayList<>();
-        connectors.add(new HttpServerConnectorCreator("localhost",8015,null));
-        final Thread whichThread[] = new Thread[1];
-        ResourceKiller killer = new ResourceKiller(t->{
-            whichThread[0] = t;
-        });
-        JettyServer jettyServer = new JettyServer(connectors, servlets(killer));
-        jettyServer.start();
 
-        CompletableFuture<Void> future = new CompletableFuture<>();
-        killer.setStopper(()->{
-            jettyServer.stop();
-            try {
-                Thread.sleep(10);//some code that trigger interrupted exception if thread is already interrupted(unwanted)
-                future.complete(null);
-            } catch (InterruptedException e) {
-                future.completeExceptionally(e);            }
-        });
+//    @Path("/Resource1")
+//    public static class Resource1{
+//        @GET()
+//        public Response get(){
+//            return Response.ok().build();
+//        }
+//    }
+//
+//    @Path("/Resource2")
+//    public static class Resource2{
+//        @GET()
+//        public Response get(){
+//            return Response.ok().build();
+//        }
+//    }
+//
+//    private ServletBuilder servlets(Object ... resources) {
+//        ServletBuilder servletBuilder = new ServletBuilder();
+//        servletBuilder.withJerseyResources("/*",List.of(resources));
+//        return servletBuilder;
+//    }
+//
+//    @Test
+//    public void test_multiple_resources_samepath() throws InterruptedException {
+//        List<HttpServerConnectorCreator> connectors= new ArrayList<>();
+//        connectors.add(new HttpServerConnectorCreator("localhost",8015,null));
+//        JettyServer jettyServer = new JettyServer(connectors,servlets(new Resource1(), new Resource2()));
+//        jettyServer.start();
+////        Thread.sleep(1000);
+//
+//        System.out.println(get(8015,"Resource1"));
+//        System.out.println(get(8015,"Resource2"));
+//        jettyServer.stop();
+//    }
+//
+//    @Path("/Resource")
+//    public static class Resource {
+//        final String answer;
+//
+//        public Resource(String answer) {
+//            this.answer = answer;
+//        }
+//
+//        @GET()
+//        public Response get(){
+//            return Response.ok(answer).build();
+//        }
+//    }
+//
+//    @Test
+//    public void test_recreate() throws InterruptedException {
+//        List<HttpServerConnectorCreator> connectors= new ArrayList<>();
+//        connectors.add(new HttpServerConnectorCreator("localhost",8015,null));
+//        JettyServer jettyServer = new JettyServer(connectors, servlets(new Resource("Hello")));
+//        jettyServer.start();
+////        Thread.sleep(1000);
+//
+//        Assert.assertEquals("Hello",get(8015,"Resource"));
+//        jettyServer = jettyServer.recreate(connectors,servlets(new Resource("World")));
+//        Assert.assertEquals("World",get(8015,"Resource"));
+//        jettyServer.stop();
+//
+//    }
+//
 
-        try {
-            get(8015,"Killer");
-            Assert.fail("Expected exception");
-        } catch (Exception expected) {
-            expected.printStackTrace();
-        }
-        try {
-            future.get();
-        } catch (ExecutionException e) {
-            throw new RuntimeException(e);
-        }
-        try {
-            whichThread[0].join(2000);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
-        Assert.assertFalse(whichThread[0].isAlive());
-        Assert.assertTrue(jettyServer.isStopped());
-
-
-
-    }
-
+//
+//
+//    @Path("/Resource")
+//    public static class LateResponseTestResource {
+//
+//        public LateResponseTestResource() {
+//
+//        }
+//
+//        @GET()
+//        public Response get() throws InterruptedException {
+//            System.out.println("IN");
+//            try {
+//                Thread.sleep(500);
+//                return Response.ok("RESPONSE").build();
+//            } finally {
+//                System.out.println("Out");
+//            }
+//        }
+//    }
+//
+//
+//    @Test
+//    public void test_lateResponse() throws InterruptedException, ExecutionException, TimeoutException {
+//        List<HttpServerConnectorCreator> connectors= new ArrayList<>();
+//        connectors.add(new HttpServerConnectorCreator("localhost",8015,null));
+//        JettyServer jettyServer = new JettyServer(connectors, servlets(new LateResponseTestResource()));
+//        jettyServer.start();
+//
+//        try {
+//            CompletableFuture<String> lateResponse = new CompletableFuture<>();
+//            new Thread() {
+//                public void run() {
+//                    try {
+//                        lateResponse.complete(get(8015,"Resource"));
+//                    } catch (Exception ex) {
+//                        lateResponse.completeExceptionally(ex);
+//                    }
+//                }
+//            }.start();
+//            Thread.sleep(400);
+//            jettyServer = jettyServer.recreate(connectors,servlets());
+//            try {
+//                get(8015,"Resource");
+//                Assert.fail("Expected exception");
+//            } catch (Exception expected) {}
+//            Assert.assertEquals("RESPONSE",lateResponse.get(1000, TimeUnit.MILLISECONDS));
+//
+//        } finally {
+//            jettyServer.stop();
+//        }
+//
+//
+//    }
+//
+//    @Path("/Killer")
+//    public static class ResourceKiller{
+//        private  Runnable stopper;
+//
+//        private final Consumer<Thread> killerThread;
+//
+//        public ResourceKiller(Consumer<Thread> killerThread) {
+//            this.killerThread = killerThread;
+//        }
+//
+//        public void setStopper(Runnable stopper){
+//            this.stopper = stopper;
+//        }
+//
+//
+//        @GET()
+//        public Response get(){
+//            killerThread.accept(Thread.currentThread());
+//            stopper.run();
+//            return Response.ok().build();
+//        }
+//    }
+//
+//    @Test
+//    public void test_stop_itself() throws InterruptedException {
+//        List<HttpServerConnectorCreator> connectors= new ArrayList<>();
+//        connectors.add(new HttpServerConnectorCreator("localhost",8015,null));
+//        final Thread whichThread[] = new Thread[1];
+//        ResourceKiller killer = new ResourceKiller(t->{
+//            whichThread[0] = t;
+//        });
+//        JettyServer jettyServer = new JettyServer(connectors, servlets(killer));
+//        jettyServer.start();
+//
+//        CompletableFuture<Void> future = new CompletableFuture<>();
+//        killer.setStopper(()->{
+//            jettyServer.stop();
+//            try {
+//                Thread.sleep(10);//some code that trigger interrupted exception if thread is already interrupted(unwanted)
+//                future.complete(null);
+//            } catch (InterruptedException e) {
+//                future.completeExceptionally(e);            }
+//        });
+//
+//        try {
+//            get(8015,"Killer");
+//            Assert.fail("Expected exception");
+//        } catch (Exception expected) {
+//            expected.printStackTrace();
+//        }
+//        try {
+//            future.get();
+//        } catch (ExecutionException e) {
+//            throw new RuntimeException(e);
+//        }
+//        try {
+//            whichThread[0].join(2000);
+//        } catch (InterruptedException e) {
+//            throw new RuntimeException(e);
+//        }
+//        Assert.assertFalse(whichThread[0].isAlive());
+//        Assert.assertTrue(jettyServer.isStopped());
+//
+//
+//
+//    }
+//
     static final class MyMime {
         public String data;
     }
@@ -300,90 +408,43 @@ public class JettyServerTest {
             return req;
         }
 
-    };
+    }
 
+    public static final class MessageBodyReaderWriterEchoFactory extends SimpleFactoryBase<MessageBodyReaderWriterEcho,Void,JettyServerRootFactory> {
+        @Override
+        public MessageBodyReaderWriterEcho createImpl() {
+            return new MessageBodyReaderWriterEcho();
+        }
+    }
+
+    @SuppressWarnings("unchecked")
     @Test
     public void testMessageBodyReader() {
-        List<HttpServerConnectorCreator> connectors= new ArrayList<>();
-        connectors.add(new HttpServerConnectorCreator("localhost",8015,null));
-        ServletBuilder servletBuilder = new ServletBuilder();
+        FactoryTreeBuilder<JettyServerRootFactory> builder = new FactoryTreeBuilder<>(JettyServerRootFactory.class);
+        builder.addFactory(JettyServerRootFactory.class, Scope.SINGLETON);
+        builder.addFactory(JettyServerFactory.class, Scope.SINGLETON, ctx->{
+            return new JettyServerBuilder<>(new JettyServerFactory<Void,JettyServerRootFactory>())
+                    .withHost("localhost").widthPort(8015)
+                    .withResource(ctx.get(MessageBodyReaderWriterEchoFactory.class))
+                    .withJaxrsComponent(SomeMessageBodyReaderWriter.class)
+                    .build();
+        });
+        builder.addFactory(MessageBodyReaderWriterEchoFactory.class, Scope.SINGLETON);
 
-        servletBuilder.withJerseyResource(SomeMessageBodyReaderWriter.class);
-        servletBuilder.withJerseyResources("/*", List.of(new MessageBodyReaderWriterEcho()));
-        JettyServer jettyServer = new JettyServer(connectors, servletBuilder);
-        jettyServer.start();
+        Microservice<Void, Server, JettyServerRootFactory, Object> microservice = MicroserviceBuilder.buildInMemoryMicroservice(builder);
+        try{
+            microservice.start();
 
-        try {
             ClientConfig cc = new ClientConfig();
             Client client = ClientBuilder.newBuilder().withConfig(cc).build();
             String resp = client.target("http://localhost:8015/echo").request().buildPost(Entity.entity("Hello", MediaType.valueOf("my/mime"))).invoke().readEntity(String.class);
 
             Assert.assertEquals("Changed by writer: Changed by reader: Hello", resp);
-        } finally {
-            jettyServer.stop();
-        }
-
-    }
-
-    @Path("/")
-    public static class ResourceWithData {
-        public final String data;
-
-        public ResourceWithData(String data) {
-            this.data = data;
-        }
-
-        @Path("get")
-        @GET
-        public String get() {
-            return data;
-        }
-    }
-    @Test
-    public void testSomePathes() {
-        List<HttpServerConnectorCreator> connectors= new ArrayList<>();
-        connectors.add(new HttpServerConnectorCreator("localhost",8015,null));
-        ServletBuilder servletBuilder = new ServletBuilder();
-
-        servletBuilder.withJerseyResources("/*", List.of(new ResourceWithData("0")));
-        servletBuilder.withJerseyResources("/resource1/*", List.of(new ResourceWithData("1")));
-        servletBuilder.withJerseyResources("/resource2/*", List.of(new ResourceWithData("2")));
-
-        JettyServer jettyServer = new JettyServer(connectors, servletBuilder);
-        jettyServer.start();
-
-        try {
-            ClientConfig cc = new ClientConfig();
-            Client client = ClientBuilder.newBuilder().withConfig(cc).build();
-            String resp0 = client.target("http://localhost:8015/get").request().buildGet().invoke().readEntity(String.class);
-            String resp1 = client.target("http://localhost:8015/resource1/get").request().buildGet().invoke().readEntity(String.class);
-            String resp2 = client.target("http://localhost:8015/resource2/get").request().buildGet().invoke().readEntity(String.class);
-            Assert.assertEquals("0",resp0);
-            Assert.assertEquals("1",resp1);
-            Assert.assertEquals("2",resp2);
 
         } finally {
-            jettyServer.stop();
+            microservice.stop();
         }
-
     }
 
-    private String get(int port,String path){
-        HttpClient httpClient = HttpClient.newBuilder().version(HttpClient.Version.HTTP_1_1).build();
-        HttpRequest request = HttpRequest.newBuilder().uri(URI.create("http://localhost:"+port+"/"+path)).GET().build();
-        try {
-            HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-            if (response.statusCode()>400){
-                throw new IllegalStateException("http response:"+response.statusCode());
-            }
-            return response.body();
-        } catch (IOException | InterruptedException e) {
-            throw new RuntimeException(e);
-        }
-
-
-//        RestClient restClient = new RestClient("localhost",port,"",false,null,null);
-//        return restClient.get(path,String.class);
-    }
 
 }

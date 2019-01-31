@@ -1,16 +1,12 @@
 package de.factoryfx.jetty;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
-
-import org.glassfish.jersey.logging.LoggingFeature;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.factory.atrribute.FactoryReferenceAttribute;
-import de.factoryfx.factory.atrribute.FactoryReferenceListAttribute;
+import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.server.handler.HandlerCollection;
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *   Unusual inheritance api to support type-safe navigation.
@@ -21,75 +17,110 @@ import de.factoryfx.factory.atrribute.FactoryReferenceListAttribute;
  *  <pre>{@code
  *      public static class TestWebserverFactory extends JettyServerFactory<Void,RootFactory>{
  *          public final FactoryReferenceAttribute<Resource1,Resource1FactoryBase> resource = new FactoryReferenceAttribute<>(Resource1FactoryBase.class);
- *          Override
+ *          @Override
  *          protected void setupServlets(ServletBuilder servletBuilder) {
- *              defaultSetupServlets(servletBuilder, List.of(resource.instance());
+ *              defaultSetupServlets(servletBuilder, List.of(resource.instance()));
  *          }
  *      }
  *  }</pre>
  */
-public abstract class JettyServerFactory<V,R extends FactoryBase<?,V,R>> extends FactoryBase<JettyServer,V,R> {
+public class JettyServerFactory<V,R extends FactoryBase<?,V,R>> extends FactoryBase<Server,V,R> {
 
-    /** jersey resource class with Annotations*/
-//    public final FactoryReferenceListAttribute<Object,FactoryBase<?,V>> resources = new FactoryReferenceListAttribute<Object,FactoryBase<?,V>>().setupUnsafe(FactoryBase.class).labelText("resource");
+    private static final Logger jerseyLogger1 = Logger.getLogger(org.glassfish.jersey.internal.inject.Providers.class.getName());
+    private static final Logger jerseyLogger2 = Logger.getLogger(org.glassfish.jersey.internal.Errors.class.getName());
+    static {
+        jerseyLogger1.setLevel(Level.SEVERE); //another useless warning https://github.com/jersey/jersey/issues/3700
+        jerseyLogger2.setLevel(Level.SEVERE);//warning about generic parameters, works fine and no fix available so the warnings are just useless
+    }
+
+
     @SuppressWarnings("unchecked")
-    public final FactoryReferenceListAttribute<HttpServerConnectorCreator,HttpServerConnectorFactory<V,R>> connectors =
-            FactoryReferenceListAttribute.create( new FactoryReferenceListAttribute<>(HttpServerConnectorFactory.class).labelText("Connectors").userNotSelectable());
+    public final FactoryReferenceAttribute<HttpServerConnectorManager, HttpServerConnectorManagerFactory<V,R>> connectorManager =
+            FactoryReferenceAttribute.create( new FactoryReferenceAttribute<>(HttpServerConnectorManagerFactory.class).labelText("Connectors").userNotSelectable());
+
     @SuppressWarnings("unchecked")
-    public final FactoryReferenceAttribute<ObjectMapper,FactoryBase<ObjectMapper,V,R>> objectMapper =
-            FactoryReferenceAttribute.create( new FactoryReferenceAttribute<>(FactoryBase.class).nullable().en("objectMapper"));
-    @SuppressWarnings("unchecked")
-    public final FactoryReferenceAttribute<org.glassfish.jersey.logging.LoggingFeature,FactoryBase<org.glassfish.jersey.logging.LoggingFeature,V,R>> restLogging =
-            FactoryReferenceAttribute.create(new FactoryReferenceAttribute<>(FactoryBase.class).userReadOnly().nullable().labelText("REST logging"));
+    public final FactoryReferenceAttribute<HandlerCollection,HandlerCollectionFactory<V,R>> handler = FactoryReferenceAttribute.create(new FactoryReferenceAttribute<>(HandlerCollectionFactory.class).labelText("Handler collection"));
 
 
     public JettyServerFactory(){
         configLifeCycle().setCreator(this::createJetty);
-        configLifeCycle().setReCreator(currentLiveObject->{
-            ServletBuilder servletBuilder = new ServletBuilder();
-            setupServlets(servletBuilder);
-            return currentLiveObject.recreate(connectors.instances(), servletBuilder);
+        configLifeCycle().setReCreator(jettyServer->{
+            return createJetty();//jettyServer.recreate(connectors.instances());
         });
 
-        configLifeCycle().setStarter(JettyServer::start);
-        configLifeCycle().setDestroyer(JettyServer::stop);
+        configLifeCycle().setStarter(this::start);
+        configLifeCycle().setDestroyer(this::stop);
 
         config().setDisplayTextProvider(() -> "Microservice REST server");
     }
 
     //api for customizing JettyServer creation
-    protected JettyServer createJetty() {
-        ServletBuilder servletBuilder = new ServletBuilder();
-        setupServlets(servletBuilder);
-        return new JettyServer(connectors.instances(), servletBuilder);
+    protected Server createJetty() {
+        Server server = new Server();
+        connectorManager.instance().addToServer(server);
+
+        handler.instance().setServer(server);
+        server.setHandler(handler.instance());
+        return server;
     }
 
-    /**
-     * When migrating from older revision you can simple call {@link #defaultSetupServlets(ServletBuilder, List)} to achieve the old beghaviour
-     * @param servletBuilder servlet builder
-     */
-    protected abstract void setupServlets(ServletBuilder servletBuilder);
-
-    protected final void defaultSetupServlets(ServletBuilder servletBuilder, Object ... resources) {
-        defaultSetupServlets(servletBuilder, Arrays.asList(resources));
+    /** model Navigation shortcut*/
+    public final <T extends FactoryBase> T getResource(Class<T> clazz){
+        return getDefaultJerseyServlet().resources.get(clazz);
     }
 
-     protected final void defaultSetupServlets(ServletBuilder servletBuilder, List<Object> resources) {
-        LoggingFeature lf = restLogging.instance();
-        if (lf == null) {
-            servletBuilder.withDefaultJerseyLoggingFeature();
-        } else {
-            servletBuilder.withJerseyResource(lf);
+    @SuppressWarnings("unchecked")
+    public final <T extends FactoryBase> void setResource(T resource){
+        JerseyServletFactory<V, R> jerseyServletFactory = getDefaultJerseyServlet();
+        jerseyServletFactory.resources.removeIf(factoryBase -> factoryBase.getClass()==resource.getClass());
+        jerseyServletFactory.resources.add(resource);
+    }
+
+    @SuppressWarnings("unchecked")
+    public final <T extends FactoryBase> T getServlet(Class<T> clazz){
+        ServletContextHandlerFactory<V, R> servletContextHandler = (ServletContextHandlerFactory<V, R>) handler.get().handlers.get(GzipHandlerFactory.class).handler.get();
+        for (ServletAndPathFactory<V, R> servletAndPath : servletContextHandler.updatableRootServlet.get().servletAndPaths) {
+            if (servletAndPath.servlet.get().getClass()==clazz){
+                return (T)servletAndPath.servlet.get();
+            }
         }
-        servletBuilder.withDefaultJerseyAllExceptionMapper();
-        List<Object> noNulls = resources.stream().filter(o->o != null).collect(Collectors.toList());
-        if (!noNulls.isEmpty()) {
-            ObjectMapper objectMapper = this.objectMapper.instance();
-            if (objectMapper != null)
-                servletBuilder.withJerseyJacksonObjectMapper(objectMapper);
-            servletBuilder.withJerseyResources("/*",noNulls);
+        return null;
+    }
+
+    public final <T extends FactoryBase> void clearResource(Class<T> resource){
+        getDefaultJerseyServlet().resources.removeIf(factoryBase -> factoryBase.getClass()==resource);
+    }
+
+    @SuppressWarnings("unchecked")
+    private JerseyServletFactory<V, R> getDefaultJerseyServlet() {
+        ServletContextHandlerFactory<V, R> servletContextHandler = (ServletContextHandlerFactory<V, R>) handler.get().handlers.get(GzipHandlerFactory.class).handler.get();
+        ServletAndPathFactory<V, R> servletAndPathFactory = servletContextHandler.updatableRootServlet.get().servletAndPaths.get(0);
+        return (JerseyServletFactory<V, R>) servletAndPathFactory.servlet.get();
+    }
+
+    public void start(Server server) throws Error {
+        try {
+            server.start();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
     }
+
+    public void stop(Server server) {
+        try {
+            if (Thread.interrupted())
+                throw new RuntimeException("Interrupted");
+            server.setStopTimeout(1L);
+            server.stop();
+            //because stop call can be inside this one of jetty's threads, we need to clear the interrupt
+            //to let the rest of the factory updates run. They might be interrupt-sensitive
+            Thread.interrupted();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+
 
 
 }

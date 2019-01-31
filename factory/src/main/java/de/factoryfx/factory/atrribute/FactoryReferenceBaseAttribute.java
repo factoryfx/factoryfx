@@ -23,7 +23,6 @@ public class FactoryReferenceBaseAttribute<L,F extends FactoryBase<? extends L,?
 
 
     @JsonCreator
-    @SuppressWarnings("unchecked")
     protected FactoryReferenceBaseAttribute(F value) {
         super(value);
     }
@@ -34,7 +33,6 @@ public class FactoryReferenceBaseAttribute<L,F extends FactoryBase<? extends L,?
         setup(clazz);
     }
 
-    @SuppressWarnings("unchecked")
     public FactoryReferenceBaseAttribute() {
         super();
     }

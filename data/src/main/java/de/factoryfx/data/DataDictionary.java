@@ -1,16 +1,11 @@
 package de.factoryfx.data;
 
-import de.factoryfx.data.attribute.Attribute;
-import de.factoryfx.data.attribute.ReferenceAttribute;
-import de.factoryfx.data.attribute.ReferenceListAttribute;
+import de.factoryfx.data.attribute.*;
+import de.factoryfx.data.storage.migration.metadata.AttributeStorageMetadata;
+import de.factoryfx.data.storage.migration.metadata.DataStorageMetadata;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Modifier;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.lang.reflect.*;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
@@ -34,9 +29,9 @@ public class DataDictionary<D extends Data> {
     private BiConsumer<D,AttributeVisitor> visitAttributesFlat;
     private boolean temporaryAttributes=false;
     private Constructor constructor;
-    private final Class<?> clazz;
+    private final Class<? extends Data> clazz;
 
-    public DataDictionary(Class<?> clazz){
+    public DataDictionary(Class<? extends Data> clazz){
         this.clazz=clazz;
         initAttributeFields(clazz);
     }
@@ -101,6 +96,34 @@ public class DataDictionary<D extends Data> {
                 }
                 if (attribute instanceof ReferenceListAttribute) {
                     ((ReferenceListAttribute<?, ?>) attribute).forEach(consumer);
+                }
+            });
+        }
+    }
+
+    void visitDataAndViewChildren(D data, Consumer<Data> consumer) {
+        if (this.visitDataChildren != null) {
+            this.visitDataChildren.accept(data, consumer);
+        } else {
+            visitAttributesFlat(data, (attributeVariableName, attribute) -> {
+                if (attribute instanceof ReferenceAttribute) {
+                    Data child = ((ReferenceAttribute<?, ?>) attribute).get();
+                    if (child != null) {
+                        consumer.accept(child);
+                    }
+                }
+                if (attribute instanceof ReferenceListAttribute) {
+                    ((ReferenceListAttribute<?, ?>) attribute).forEach(consumer);
+                }
+
+                if (attribute instanceof ViewReferenceAttribute) {
+                    Data child = ((ViewReferenceAttribute<?, ?, ?>) attribute).get();
+                    if (child != null) {
+                        consumer.accept(child);
+                    }
+                }
+                if (attribute instanceof ViewListReferenceAttribute) {
+                    ((ViewListReferenceAttribute<?, ?, ?>) attribute).get().forEach(consumer);
                 }
             });
         }
@@ -206,6 +229,8 @@ public class DataDictionary<D extends Data> {
                     this.constructor.setAccessible(true);
                 } catch (NoSuchMethodException e) {
                     throw new RuntimeException(e);
+                } catch (InaccessibleObjectException e){
+                    throw new RuntimeException("\nto fix the error add jpms boilerplate, \noption 1: module-info.info: opens "+data.getClass().getPackage().getName()+";\noption 2: open all, open module {A} { ... } (open keyword before module)\n",e);
                 }
             }
 
@@ -220,5 +245,20 @@ public class DataDictionary<D extends Data> {
 
     public D newInstance(){
         return newCopyInstance(null);
+    }
+
+
+    public DataStorageMetadata createDataStorageMetadata() {
+        D data = newInstance();
+        ArrayList<AttributeStorageMetadata> attributes = new ArrayList<>();
+        visitAttributesFlat(data, (attributeVariableName, attribute) -> attributes.add(new AttributeStorageMetadata(attributeVariableName,attribute.getClass().getName())));
+        return new DataStorageMetadata(attributes,clazz.getName());
+    }
+
+    public void collectDataClassesDeep(Set<Class<? extends Data>> classes) {
+        D data = newInstance();
+        if (classes.add(clazz)){
+            visitAttributesFlat(data, (attributeVariableName, attribute) -> attribute.internal_getDataClassesDeep(classes));
+        }
     }
 }

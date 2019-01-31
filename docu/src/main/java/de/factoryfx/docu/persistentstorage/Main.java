@@ -1,10 +1,10 @@
 package de.factoryfx.docu.persistentstorage;
 
+import de.factoryfx.data.storage.migration.metadata.DataStorageMetadataDictionary;
+import de.factoryfx.data.storage.migration.GeneralStorageMetadataBuilder;
 import de.factoryfx.factory.FactoryManager;
 import de.factoryfx.data.storage.DataAndNewMetadata;
-import de.factoryfx.data.storage.DataSerialisationManager;
-import de.factoryfx.data.storage.JacksonDeSerialisation;
-import de.factoryfx.data.storage.JacksonSerialisation;
+import de.factoryfx.data.storage.migration.MigrationManager;
 import de.factoryfx.factory.datastorage.postgres.DisableAutocommitDatasource;
 import de.factoryfx.factory.datastorage.postgres.PostgresDataStorage;
 import de.factoryfx.factory.exception.RethrowingFactoryExceptionHandler;
@@ -17,7 +17,7 @@ import ru.yandex.qatools.embed.postgresql.PostgresStarter;
 import ru.yandex.qatools.embed.postgresql.config.PostgresConfig;
 
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.List;
 
 public class Main {
 
@@ -41,7 +41,7 @@ public class Main {
 
         RootFactory root = new RootFactory();
         root.stringAttribute.set("1");
-        DataSerialisationManager<RootFactory,Void> serialisationManager = new DataSerialisationManager<>(new JacksonSerialisation<>(1),new JacksonDeSerialisation<>(RootFactory.class,1),new ArrayList<>(),1);
+        MigrationManager<RootFactory,Void> serialisationManager = new MigrationManager<>(RootFactory.class, List.of(), GeneralStorageMetadataBuilder.build(), List.of(), new DataStorageMetadataDictionary(RootFactory.class));
         PostgresDataStorage<RootFactory,Void> postgresFactoryStorage = new PostgresDataStorage<>(datasource, root, serialisationManager);
 
 

@@ -13,13 +13,13 @@ import de.factoryfx.factory.builder.FactoryTreeBuilder;
 import de.factoryfx.factory.exception.LoggingFactoryExceptionHandler;
 import de.factoryfx.factory.exception.ResettingHandler;
 import de.factoryfx.javafx.factory.RichClientRoot;
-import de.factoryfx.jetty.JettyServer;
 import de.factoryfx.server.Microservice;
 import de.factoryfx.server.MicroserviceBuilder;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.stage.Stage;
 import org.controlsfx.dialog.ExceptionDialog;
+import org.eclipse.jetty.server.Server;
 import org.slf4j.LoggerFactory;
 
 import java.awt.*;
@@ -29,14 +29,21 @@ import java.net.URISyntaxException;
 import java.util.Locale;
 
 public class ExampleMain extends Application {
-
+    //Vm-options:
+//--add-exports=javafx.base/com.sun.javafx.runtime=controlsfx
+//--add-exports=javafx.graphics/com.sun.javafx.css=controlsfx
+//--add-exports=javafx.base/com.sun.javafx.event=controlsfx
+//--add-exports=javafx.graphics/com.sun.javafx.scene.traversal=controlsfx
+//--add-exports=javafx.graphics/com.sun.javafx.scene=controlsfx
+//--add-exports=javafx.controls/com.sun.javafx.scene.control=controlsfx
+//--add-exports=javafx.base/com.sun.javafx.collections=controlsfx
     @Override
     public void start(Stage primaryStage){
 
         FactoryTreeBuilder<ServerRootFactory> serverBuilder = new ServerBuilder().builder();
         ServerRootFactory shopFactory = serverBuilder.buildTree();
 
-        Microservice<OrderCollector, JettyServer, ServerRootFactory, Void> shopService = new Microservice<>(new FactoryManager<>(new LoggingFactoryExceptionHandler<>(new ResettingHandler<OrderCollector, JettyServer, ServerRootFactory>())), new InMemoryDataStorage<>(shopFactory));
+        Microservice<OrderCollector, Server, ServerRootFactory, Void> shopService = new Microservice<>(new FactoryManager<>(new LoggingFactoryExceptionHandler<>(new ResettingHandler<OrderCollector, Server, ServerRootFactory>())), new InMemoryDataStorage<>(shopFactory));
         shopService.start();
 
         RichClientRoot richClientFactory = RichClientBuilder.createFactoryBuilder(8089,primaryStage, "", "", Locale.ENGLISH,serverBuilder).buildTree();

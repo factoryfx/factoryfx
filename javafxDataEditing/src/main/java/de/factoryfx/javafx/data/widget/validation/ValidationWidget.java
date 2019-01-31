@@ -21,7 +21,6 @@ import javafx.scene.layout.VBox;
 import org.controlsfx.glyphfont.FontAwesome;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -141,7 +140,6 @@ public class ValidationWidget implements Widget {
         final TreeItem<ValidationAndData> root = new TreeItem<>();
         tableView.setRoot(root);
         tableView.setShowRoot(false);
-        HashMap<Data,Data> child2parent = this.root.internal().getChildToParentMap();
 
         List<ValidationError> validationErrors= new ArrayList<>();
         for (Data data: this.root.internal().collectChildrenDeep()){
@@ -153,7 +151,7 @@ public class ValidationWidget implements Widget {
                 dataItem.getChildren().add(error);
             });
             if (!dataItem.getChildren().isEmpty()){
-                dataItem.setValue(new ValidationAndData(null,data,data.internal().getPathFromRoot(child2parent).stream().map(d->d.internal().getDisplayText()).collect(Collectors.joining("/"))));
+                dataItem.setValue(new ValidationAndData(null,data,data.internal().getPathFromRoot().stream().map(d->d.internal().getDisplayText()).collect(Collectors.joining("/"))));
                 root.getChildren().add(dataItem);
             }
         }

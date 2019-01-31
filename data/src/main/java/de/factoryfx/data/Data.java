@@ -80,7 +80,6 @@ public class Data {
         getDataDictionary().visitAttributesFlat(this,consumer);
     }
 
-    @SuppressWarnings("unchecked")
     private void visitAttributesDualFlat(Data data, BiAttributeVisitor consumer) {
         getDataDictionary().visitAttributesDualFlat(this,data,consumer);
     }
@@ -115,6 +114,14 @@ public class Data {
         getDataDictionary().visitDataChildren(this,childFactoriesVisitor);
     }
 
+    private void visitDatAndViewChildrenFlat(Consumer<Data> childFactoriesVisitor, long dataIterationRun){
+        if (this.dataIterationRun==dataIterationRun){
+            return;
+        }
+        this.dataIterationRun=dataIterationRun;
+        getDataDictionary().visitDataAndViewChildren(this,childFactoriesVisitor);
+    }
+
 
     void collectModelEntitiesTo(List<Data> allModelEntities, long dataIterationRun) {
         allModelEntities.add(this);
@@ -137,7 +144,6 @@ public class Data {
         }
     }
 
-    @SuppressWarnings("unchecked")
     private List<Data> fixDuplicateObjects() {
         Map<String, Data> idToDataMap = collectChildDataMap();
         final List<Data> all = new ArrayList<>(idToDataMap.values());
@@ -150,7 +156,6 @@ public class Data {
     private Supplier<String> displayTextProvider;
 
     @JsonIgnore
-    @SuppressWarnings("unchecked")
     private String getDisplayText(){
         if (displayTextProvider==null){
 //            return CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_HYPHEN,Data.this.getClass().getSimpleName()).replace("-"," ");
@@ -164,7 +169,6 @@ public class Data {
     }
 
     /** validate attributes without visiting child factories*/
-    @SuppressWarnings("unchecked")
     private List<ValidationError> validateFlat(){
         final ArrayList<ValidationError> result = new ArrayList<>();
         final Map<Attribute<?,?>, List<ValidationError>> attributeListMap = validateFlatMapped();
@@ -207,7 +211,6 @@ public class Data {
         }
     }
 
-    @SuppressWarnings("unchecked")
     private void merge(Data originalValue, Data newValue, MergeResult mergeResult, Function<String,Boolean> permissionChecker) {
         this.visitAttributesTripleFlat(originalValue, newValue, (attributeName, currentAttribute, originalAttribute, newAttribute) -> {
             if (!currentAttribute.internal_ignoreForMerging()){
@@ -226,25 +229,6 @@ public class Data {
                 }
             }
         });
-    }
-
-    private HashMap<Data, Data> getChildToParentMap(List<Data> allModelEntities,long dataIterationRun) {
-        HashMap<Data, Data> result = new HashMap<>();
-        for (Data factoryBase : allModelEntities) {
-            factoryBase.visitDataChildrenFlat(child->result.put(child, factoryBase),dataIterationRun);
-        }
-        return result;
-    }
-
-    private List<Data> getMassPathTo(HashMap<Data, Data> childToParent, Data target) {
-        List<Data> path = new ArrayList<>();
-        Optional<Data> pathElement = Optional.ofNullable(childToParent.get(target));
-        while (pathElement.isPresent()) {
-            path.add(pathElement.get());
-            pathElement = Optional.ofNullable(childToParent.get(pathElement.get()));
-        }
-        Collections.reverse(path);
-        return path;
     }
 
     @SuppressWarnings("unchecked")
@@ -352,7 +336,7 @@ public class Data {
         addParent(parent);
         this.root=root;
         getDataDictionary().addBackReferencesToAttributes(this,root);
-        this.visitDataChildrenFlat(data -> data.addBackReferences(root, Data.this,dataIterationRun),dataIterationRun);
+        this.visitDatAndViewChildrenFlat(data -> data.addBackReferences(root, Data.this,dataIterationRun),dataIterationRun);
     }
 
     private void addBackReferencesForSubtree(Data root, Data parent, HashSet<Data> visited){
@@ -678,11 +662,7 @@ public class Data {
             data.merge(originalValue,newValue,mergeResult,permissionChecker);
         }
         public List<Data> getPathFromRoot() {
-            return data.root.getMassPathTo(data.root.getChildToParentMap(data.root.collectChildrenDeep(),data.dataIterationRun+1), data);
-        }
-
-        public List<Data> getPathFromRoot(HashMap<Data, Data> childToParentMap) {
-            return data.root.getMassPathTo(childToParentMap, data);
+            return data.getPathFromRoot();
         }
 
         public <T extends Data> T copy() {
@@ -746,10 +726,6 @@ public class Data {
             return data.getParents();
         }
 
-        public HashMap<Data, Data> getChildToParentMap() {
-            return data.getChildToParentMap(data.root.collectChildrenDeep(),data.dataIterationRun+1);
-        }
-
         public void addDisplayTextListeners(AttributeChangeListener attributeChangeListener){
             data.addDisplayTextListeners(data, attributeChangeListener);
         }
@@ -773,6 +749,21 @@ public class Data {
         public Set<Data> collectChildrenDeepFromNode() {
             return data.collectChildrenDeepFromNode();
         }
+    }
+
+
+    //TODO model path with multiple parents
+    private List<Data> getPathFromRoot() {
+        ArrayList<Data> result = new ArrayList<>();
+        Data current= this;
+        while (!current.getParents().isEmpty()) {
+            Data parent = current.getParents().iterator().next();
+            result.add(parent);
+            current= parent;
+
+        }
+        Collections.reverse(result);
+        return result;
     }
 
     private void assertRoot() {

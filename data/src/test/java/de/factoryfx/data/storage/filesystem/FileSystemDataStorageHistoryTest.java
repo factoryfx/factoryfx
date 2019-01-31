@@ -1,15 +1,15 @@
 package de.factoryfx.data.storage.filesystem;
 
 import java.nio.file.Paths;
-import java.util.Collections;
+import java.util.List;
 import java.util.UUID;
 
 import de.factoryfx.data.merge.testdata.ExampleDataA;
-import de.factoryfx.data.storage.DataSerialisationManager;
-import de.factoryfx.data.storage.JacksonDeSerialisation;
-import de.factoryfx.data.storage.JacksonSerialisation;
+import de.factoryfx.data.storage.migration.MigrationManager;
 import de.factoryfx.data.storage.StoredDataMetadata;
 
+import de.factoryfx.data.storage.migration.metadata.DataStorageMetadataDictionary;
+import de.factoryfx.data.storage.migration.GeneralStorageMetadataBuilder;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
@@ -18,16 +18,15 @@ import org.junit.rules.TemporaryFolder;
 public class FileSystemDataStorageHistoryTest {
 
     private StoredDataMetadata<Void> createStoredDataMetadata(String id){
-        return new StoredDataMetadata<>(id,"","","",0,null);
+        return new StoredDataMetadata<>(id,"","","",null,null,null);
     }
 
     @Rule
     public TemporaryFolder folder= new TemporaryFolder();
 
 
-    private DataSerialisationManager<ExampleDataA,Void> createSerialisation(){
-        int dataModelVersion = 1;
-        return new DataSerialisationManager<>(new JacksonSerialisation<>(dataModelVersion),new JacksonDeSerialisation<>(ExampleDataA.class, dataModelVersion), Collections.emptyList(),1);
+    private MigrationManager<ExampleDataA,Void> createSerialisation(){
+        return new MigrationManager<>(ExampleDataA.class, List.of(), GeneralStorageMetadataBuilder.build(), List.of(), new DataStorageMetadataDictionary(ExampleDataA.class));
     }
 
 

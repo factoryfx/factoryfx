@@ -1,7 +1,9 @@
 package de.factoryfx.factory;
 
 import java.util.ArrayList;
+import java.util.Set;
 
+import de.factoryfx.data.Data;
 import de.factoryfx.factory.exception.RethrowingFactoryExceptionHandler;
 import de.factoryfx.factory.testfactories.*;
 import org.junit.Assert;
@@ -112,5 +114,35 @@ public class FactoryManagerTest {
 
     }
 
+    @Test
+    public void test_views_parent() {
+        FactoryBaseTest.XRoot root = new FactoryBaseTest.XRoot();
+        FactoryBaseTest.ExampleFactoryAndViewA exampleFactoryAndViewA = new FactoryBaseTest.ExampleFactoryAndViewA();
+        root.referenceAttribute.set(exampleFactoryAndViewA);
+        FactoryBaseTest.XFactory xFactory = new FactoryBaseTest.XFactory();
+        root.xFactory.set(xFactory);
+
+        root.internal().addBackReferences();
+
+        xFactory.internal().getParents().contains(exampleFactoryAndViewA);
+        xFactory.internal().getParents().contains(root);
+    }
+
+    @Test
+    public void test_getChangedFactories_views() {
+        FactoryBaseTest.XRoot root = new FactoryBaseTest.XRoot();
+        FactoryBaseTest.ExampleFactoryAndViewA exampleFactoryAndViewA = new FactoryBaseTest.ExampleFactoryAndViewA();
+        root.referenceAttribute.set(exampleFactoryAndViewA);
+        FactoryBaseTest.XFactory xFactory = new FactoryBaseTest.XFactory();
+        root.xFactory.set(xFactory);
+
+        FactoryManager<Void,String,FactoryBaseTest.XRoot> factoryManager = new FactoryManager<>(new RethrowingFactoryExceptionHandler());
+
+        FactoryBaseTest.XRoot previous= root.utility().copy();
+        root.xFactory.set(null);
+
+        Set<Data> changedFactories = factoryManager.getChangedFactories(new RootFactoryWrapper<>(root), previous);
+        Assert.assertTrue(changedFactories.contains(exampleFactoryAndViewA));
+    }
 
 }

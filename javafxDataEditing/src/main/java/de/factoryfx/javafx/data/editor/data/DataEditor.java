@@ -72,7 +72,6 @@ public class DataEditor implements Widget {
 
     BorderPane borderPane;
     @Override
-    @SuppressWarnings("unchecked")
     public Node createContent() {
         borderPane = new BorderPane();
         borderPane.setCenter(dataEditorState.createVisualisation());

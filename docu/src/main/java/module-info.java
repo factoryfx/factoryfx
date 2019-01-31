@@ -27,5 +27,7 @@ open module de.factoryfx.docu {
     requires java.net.http;
     requires de.factoryfx.microserviceRestServer;
     requires de.factoryfx.microserviceRestClient;
+    requires javax.servlet.api;
+    requires org.eclipse.jetty.server;
 
 }

@@ -8,7 +8,7 @@ import de.factoryfx.factory.atrribute.FactoryReferenceAttribute;
 import de.factoryfx.jetty.ssl.SslContextFactoryFactory;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 
-public class HttpServerConnectorFactory<V,R extends FactoryBase<?,V,R>> extends SimpleFactoryBase<HttpServerConnectorCreator,V,R> {
+public class HttpServerConnectorFactory<V,R extends FactoryBase<?,V,R>> extends SimpleFactoryBase<HttpServerConnector,V,R> {
     public final StringAttribute host = new StringAttribute().de("host").en("host");
     public final IntegerAttribute port = new IntegerAttribute().de("port").en("port");
     @SuppressWarnings("unchecked")
@@ -17,8 +17,8 @@ public class HttpServerConnectorFactory<V,R extends FactoryBase<?,V,R>> extends 
 
 
     @Override
-    public HttpServerConnectorCreator createImpl() {
-        return new HttpServerConnectorCreator(host.get(),port.get(),ssl.instance());
+    public HttpServerConnector createImpl() {
+        return new HttpServerConnector(host.get(),port.get(),ssl.instance());
     }
     public HttpServerConnectorFactory(){
         config().setDisplayTextProvider(() -> {

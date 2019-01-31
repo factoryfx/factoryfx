@@ -66,7 +66,6 @@ public class FactoryTreeBuilder<R extends FactoryBase<?,?,R>> {
     /**create the complete factory tree that represent the app dependencies
      * @return dependency tree
      * */
-    @SuppressWarnings("unchecked")
     public R buildTreeUnvalidated(){
         R rootFactory = factoryContext.get(rootClass);
         if (rootFactory==null){

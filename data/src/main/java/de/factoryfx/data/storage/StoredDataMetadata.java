@@ -2,10 +2,9 @@ package de.factoryfx.data.storage;
 
 import java.time.LocalDateTime;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.annotation.*;
+import de.factoryfx.data.storage.migration.metadata.DataStorageMetadataDictionary;
+import de.factoryfx.data.storage.migration.GeneralStorageFormat;
 
 /**
  * metadata for a stored historical factory
@@ -13,6 +12,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
  * @param <S> Summary for this change
  */
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
+@JsonIgnoreProperties(value = { "dataModelVersion" })
 public class StoredDataMetadata<S> {
     public final LocalDateTime creationTime;
     /**id for the complete configuration, NOT any factory id*/
@@ -26,34 +26,30 @@ public class StoredDataMetadata<S> {
     /**the base version on the server*/
     public final  String baseVersionId;
 
-    /** version of the factory structure used for migration*/
-    public final  int dataModelVersion;
+    public final GeneralStorageFormat generalStorageFormat;
+    public final DataStorageMetadataDictionary dataStorageMetadataDictionary;
 
     @JsonCreator
-    public StoredDataMetadata(
+    public  StoredDataMetadata(
             @JsonProperty("creationTime")LocalDateTime creationTime,
             @JsonProperty("id")String id,
             @JsonProperty("user")String user,
             @JsonProperty("comment")String comment,
             @JsonProperty("baseVersionId")String baseVersionId,
-            @JsonProperty("dataModelVersion")int dataModelVersion,
-            @JsonProperty("changeSummary")S changeSummary) {
+            @JsonProperty("changeSummary")S changeSummary,
+            @JsonProperty("generalStorageFormat") GeneralStorageFormat generalStorageFormat,
+            @JsonProperty("dataStorageMetadataDictionary") DataStorageMetadataDictionary dataStorageMetadataDictionary) {
         this.creationTime = creationTime;
         this.id = id;
         this.user = user;
         this.comment = comment;
         this.changeSummary = changeSummary;
         this.baseVersionId = baseVersionId;
-        this.dataModelVersion = dataModelVersion;
+        this.generalStorageFormat = generalStorageFormat;
+        this.dataStorageMetadataDictionary = dataStorageMetadataDictionary;
     }
 
-    public StoredDataMetadata( String id, String user, String comment, String baseVersionId, int dataModelVersion, S changeSummary) {
-        this.creationTime=LocalDateTime.now();
-        this.id = id;
-        this.user = user;
-        this.comment = comment;
-        this.changeSummary = changeSummary;
-        this.baseVersionId = baseVersionId;
-        this.dataModelVersion = dataModelVersion;
+    public StoredDataMetadata(String id, String user, String comment, String baseVersionId, S changeSummary, GeneralStorageFormat generalStorageFormat, DataStorageMetadataDictionary dataStorageMetadataDictionary) {
+        this(LocalDateTime.now(),id,user,comment,baseVersionId,changeSummary, generalStorageFormat,dataStorageMetadataDictionary);
     }
 }

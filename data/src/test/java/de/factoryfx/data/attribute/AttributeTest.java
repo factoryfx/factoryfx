@@ -101,7 +101,7 @@ public class AttributeTest {
 
     public static class DynamicReadOnlyData extends Data {
         public final BooleanAttribute barred = new BooleanAttribute();
-        public final DataReferenceListAttribute<DynamicReadOnlyData2> strangeList = new DataReferenceListAttribute<>();
+        public final DataReferenceListAttribute<DynamicReadOnlyData2> strangeList = new DataReferenceListAttribute<>(DynamicReadOnlyData2.class);
     }
 
     public static class DynamicReadOnlyData2 extends Data {

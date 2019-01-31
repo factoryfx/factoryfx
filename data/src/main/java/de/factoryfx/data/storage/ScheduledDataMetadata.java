@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import de.factoryfx.data.storage.migration.metadata.DataStorageMetadataDictionary;
+import de.factoryfx.data.storage.migration.GeneralStorageFormat;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
@@ -30,16 +32,17 @@ public class ScheduledDataMetadata<T> extends StoredDataMetadata<T> implements D
             @JsonProperty("user")String user,
             @JsonProperty("comment")String comment,
             @JsonProperty("baseVersionId")String baseVersionId,
-            @JsonProperty("dataModelVersion")int dataModelVersion,
             @JsonProperty("changeSummary")T changeSummary,
-            @JsonProperty("scheduled")LocalDateTime scheduled ) {
-        super(creationTime, id, user, comment, baseVersionId, dataModelVersion, changeSummary);
+            @JsonProperty("storageFormat") GeneralStorageFormat generalStorageFormat,
+            @JsonProperty("dataStorageMetadataDictionary") DataStorageMetadataDictionary dataStorageMetadataDictionary,
+            @JsonProperty("scheduled")LocalDateTime scheduled) {
+        super(creationTime, id, user, comment, baseVersionId, changeSummary, generalStorageFormat, dataStorageMetadataDictionary);
         this.scheduled=scheduled;
     }
 
 
-    public ScheduledDataMetadata(NewDataMetadata storedDataMetadata, LocalDateTime scheduled) {
-        this(null, "", "", "", storedDataMetadata.baseVersionId, storedDataMetadata.dataModelVersion, null, scheduled);
+    public ScheduledDataMetadata(NewDataMetadata storedDataMetadata, LocalDateTime scheduled, GeneralStorageFormat generalStorageFormat, DataStorageMetadataDictionary dataStorageMetadataDictionary) {
+        this(null, "", "", "", storedDataMetadata.baseVersionId, null, generalStorageFormat,dataStorageMetadataDictionary,scheduled);
     }
 
     @JsonIgnore

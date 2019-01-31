@@ -10,7 +10,7 @@ import de.factoryfx.data.jackson.ObjectMapperBuilder;
 import de.factoryfx.data.merge.MergeDiffInfo;
 import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.data.storage.DataAndNewMetadata;
-import de.factoryfx.data.storage.DataSerialisationManager;
+import de.factoryfx.data.storage.migration.MigrationManager;
 import de.factoryfx.data.storage.NewDataMetadata;
 import de.factoryfx.factory.log.FactoryUpdateLog;
 import de.factoryfx.microservice.rest.client.MicroserviceRestClient;
@@ -19,11 +19,11 @@ import javafx.application.Platform;
 public class FactoryEditManager<V,R extends FactoryBase<?,V,R>> {
     private final MicroserviceRestClient<V,R,?> client;
     private final List<FactoryRootChangeListener<R>> listeners= new ArrayList<>();
-    private final DataSerialisationManager<R,?> dataSerialisationManager;
+    private final MigrationManager<R,?> migrationManager;
 
-    public FactoryEditManager(MicroserviceRestClient<V, R, ?> client, DataSerialisationManager<R,?> dataSerialisationManager) {
+    public FactoryEditManager(MicroserviceRestClient<V, R, ?> client, MigrationManager<R,?> migrationManager) {
         this.client = client;
-        this.dataSerialisationManager = dataSerialisationManager;
+        this.migrationManager = migrationManager;
     }
 
     public void registerListener(FactoryRootChangeListener<R> listener){
@@ -94,16 +94,15 @@ public class FactoryEditManager<V,R extends FactoryBase<?,V,R>> {
         ObjectMapperBuilder.build().writeValue(target.toFile(),factoryAndStringifyedStorageMetadata);
     }
 
-    @SuppressWarnings("unchecked")
     public void loadFromFile(Path target) {
         Optional<R> previousRoot=getLoadedFactory();
         final FactoryAndStringifyedStorageMetadata value = ObjectMapperBuilder.build().readValue(target.toFile(), FactoryAndStringifyedStorageMetadata.class);
-        R serverFactory = dataSerialisationManager.read(value.root, value.metadata.dataModelVersion);
+        //TODO fix null for metadata
+        R serverFactory = migrationManager.read(value.root, null);
 
         DataAndNewMetadata<R> newFactory = client.prepareNewFactory();
 
         NewDataMetadata metadata = new NewDataMetadata();
-        metadata.dataModelVersion=value.metadata.dataModelVersion;
         metadata.baseVersionId=newFactory.metadata.baseVersionId;
         loadedRoot=Optional.of(new DataAndNewMetadata<>(serverFactory, metadata));
         updateNotify(loadedRoot.get(), previousRoot);

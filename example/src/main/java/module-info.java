@@ -1,4 +1,4 @@
-module de.factoryfx.example {
+open module de.factoryfx.example {
     requires de.factoryfx.javafxFactoryEditing;
     requires de.factoryfx.jettyFactory;
     requires de.factoryfx.microserviceRestServer;
@@ -8,6 +8,10 @@ module de.factoryfx.example {
     requires jackson.annotations;
     requires java.ws.rs;
     requires controlsfx;
+    requires org.eclipse.jetty.server;
+
+    requires javafx.base;
+    requires javafx.graphics;
 
     exports de.factoryfx.example.client.view;
     exports de.factoryfx.example.server;

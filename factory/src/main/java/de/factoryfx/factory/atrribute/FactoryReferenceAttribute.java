@@ -28,21 +28,26 @@ public class FactoryReferenceAttribute<L, F extends FactoryBase<? extends L,?,?>
     }
 
 
-    /** workaround for chained generics (missing java feature)
-     * http://openjdk.java.net/jeps/101
-     * https://stackoverflow.com/questions/27134626/when-does-diamond-syntax-not-work-in-java-8
-     *
-     * if possible use constructor instead
+    /**
+     * This is only required if you have a Factory with Generic Parameter. <br>
+     * e.g. MicroserviceRestClientFactory<strong></b>&lt;Void,RichClientRoot,VS,RS,S&gt;</strong><br>
+     * <br>
+     * workaround for chained generics (missing java feature)<br>
+     * http://openjdk.java.net/jeps/101<br>
+     * https://stackoverflow.com/questions/27134626/when-does-diamond-syntax-not-work-in-java-8<br>
+     * <br>
+     * if possible use constructor instead<br>
      * e.g.:
+     * <pre>
      *     public final FactoryReferenceAttribute&lt;MicroserviceRestClient&lt;VS,RS,S&gt;,MicroserviceRestClientFactory&lt;Void,RichClientRoot,VS,RS,S&gt;&gt; restClient =
      *             FactoryReferenceAttribute.create(new FactoryReferenceAttribute&lt;&gt;(MicroserviceRestClientFactory.class));
+     * </pre>
      *
      * @param factoryReferenceAttribute factoryReferenceAttribute
      * @return factoryReferenceListAttribute
      * @param <L> Live Object
      * @param <F> Factory
      * */
-    @SuppressWarnings("unchecked")
     public static <L, F extends FactoryBase<? extends L,?,?>> FactoryReferenceAttribute create(FactoryReferenceAttribute<L,F> factoryReferenceAttribute){
         return factoryReferenceAttribute;
     }

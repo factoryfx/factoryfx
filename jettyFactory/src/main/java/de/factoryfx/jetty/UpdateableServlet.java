@@ -1,6 +1,5 @@
 package de.factoryfx.jetty;
 
-import org.eclipse.jetty.http.pathmap.ServletPathSpec;
 import org.eclipse.jetty.server.Request;
 
 import javax.servlet.*;
@@ -8,9 +7,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -18,35 +15,37 @@ import java.util.stream.Collectors;
  */
 public class UpdateableServlet implements Servlet {
 
-    private volatile Map<KeyedServlet,List<ServletPathSpec>> servlets = Collections.emptyMap();
+    private volatile Collection<ServletAndPath> servlets;
     private ServletConfig servletConfig = null;
 
-    public UpdateableServlet() {
+    public UpdateableServlet(Collection<ServletAndPath> newServlets) {
+        this.servlets = newServlets;
     }
 
-    public void update(Map<KeyedServlet,List<ServletPathSpec>> newServlets){
-        try {
-            List<Servlet> removedServlets = servlets.keySet().stream().filter(s->!newServlets.containsKey(s)).map(KeyedServlet::getServlet).collect(Collectors.toList());
-            List<Servlet> addedServlets = newServlets.keySet().stream().filter(s->!servlets.containsKey(s)).map(KeyedServlet::getServlet).collect(Collectors.toList());
-            this.servlets = newServlets;
-            removedServlets.forEach(servlet->servlet.destroy());
-            if (servletConfig != null) {
-                for (Servlet servlet : addedServlets) {
-                    servlet.init(servletConfig);
+    public void update(Collection<ServletAndPath> newServlets){
+        update(this.servlets,newServlets);
+        this.servlets = newServlets;
+    }
+
+    private void update(Collection<ServletAndPath> previousServlets, Collection<ServletAndPath> newServlets){
+        Set<Servlet> previousServletsMapped = previousServlets.stream().map((s)->s.servlet).collect(Collectors.toSet());
+
+        newServlets.forEach(servletAndPath -> {
+            try {
+                if (!previousServletsMapped.contains(servletAndPath.servlet)){
+                    servletAndPath.servlet.init(servletConfig);
                 }
+            } catch (ServletException e) {
+                throw new RuntimeException(e);
             }
-        } catch (ServletException e) {
-            throw new RuntimeException(e);
-        }
+        });
     }
 
 
     @Override
-    public void init(ServletConfig config) throws ServletException {
-        this.servletConfig= config;
-        for (KeyedServlet keyedServlet : servlets.keySet()) {
-            keyedServlet.init(servletConfig);
-        }
+    public void init(ServletConfig config) {
+        this.servletConfig = config;
+        update(List.of(),this.servlets);
     }
 
     @Override
@@ -61,17 +60,14 @@ public class UpdateableServlet implements Servlet {
         String pathInfo = null;
         Servlet bestMatch = null;
         String servletPath = httpReq.getRequestURI().substring(httpReq.getServletPath().length());
-        for (Map.Entry<KeyedServlet, List<ServletPathSpec>> entry : servlets.entrySet()) {
-            Servlet servlet = entry.getKey().getServlet();
-            List<ServletPathSpec> pathes = entry.getValue();
-            for (ServletPathSpec spc : pathes) {
-                String thisPathMatch = spc.getPathMatch(servletPath);
-                if (thisPathMatch != null) {
-                    if (pathMatch == null || thisPathMatch.length() > pathMatch.length()) {
-                        pathMatch = thisPathMatch;
-                        pathInfo = spc.getPathInfo(servletPath);
-                        bestMatch = servlet;
-                    }
+        for (ServletAndPath servletAndPath : servlets) {
+            Servlet servlet = servletAndPath.servlet;
+            String thisPathMatch = servletAndPath.getPathMatch(servletPath);
+            if (thisPathMatch != null) {
+                if (pathMatch == null || thisPathMatch.length() > pathMatch.length()) {
+                    pathMatch = thisPathMatch;
+                    pathInfo = servletAndPath.getPathInfo(servletPath);
+                    bestMatch = servlet;
                 }
             }
         }
@@ -81,6 +77,9 @@ public class UpdateableServlet implements Servlet {
                 baseRequest = (Request)httpReq;
             }
             dispatch(bestMatch,pathMatch,pathInfo,baseRequest,httpReq, (HttpServletResponse) res);
+        } else {
+            HttpServletResponse response =(HttpServletResponse) res;
+            response.sendError(HttpServletResponse.SC_NOT_FOUND);
         }
     }
 
@@ -91,9 +90,6 @@ public class UpdateableServlet implements Servlet {
 
     @Override
     public void destroy() {
-        for (KeyedServlet ks : servlets.keySet()) {
-            ks.destroy();
-        }
     }
 
 

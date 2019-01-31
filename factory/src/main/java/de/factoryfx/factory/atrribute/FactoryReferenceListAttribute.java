@@ -34,15 +34,21 @@ public class FactoryReferenceListAttribute<L, F extends FactoryBase<? extends L,
         return any.map(t -> t.internalFactory().instance()).orElse(null);
     }
 
-    /** workaround for chained generics (missing java feature)
-     * http://openjdk.java.net/jeps/101
-     * https://stackoverflow.com/questions/27134626/when-does-diamond-syntax-not-work-in-java-8
-     *
-     * if possible use constructor instead
-     *
-     *      * e.g.:
-     *      *     public final FactoryReferenceListAttribute&lt;MicroserviceRestClient&lt;VS,RS,S&gt;,MicroserviceRestClientFactory&lt;Void,RichClientRoot,VS,RS,S&gt;&gt; restClient =
-     *      *             FactoryReferenceListAttribute.create(new FactoryReferenceListAttribute&lt;&gt;(MicroserviceRestClientFactory.class));
+    /**
+     * This is only required if you have a Factory with Generic Parameter. <br>
+     * e.g. MicroserviceRestClientFactory<strong></b>&lt;Void,RichClientRoot,VS,RS,S&gt;</strong><br>
+     * <br>
+     * workaround for chained generics (missing java feature)<br>
+     * http://openjdk.java.net/jeps/101<br>
+     * https://stackoverflow.com/questions/27134626/when-does-diamond-syntax-not-work-in-java-8<br>
+     * <br>
+     * if possible use constructor instead<br>
+     * <br>
+     * e.g.:<br>
+     * <pre>
+     *     public final FactoryReferenceListAttribute&lt;MicroserviceRestClient&lt;VS,RS,S&gt;,MicroserviceRestClientFactory&lt;Void,RichClientRoot,VS,RS,S&gt;&gt; restClient =
+     *             FactoryReferenceListAttribute.create(new FactoryReferenceListAttribute&lt;&gt;(MicroserviceRestClientFactory.class));
+     * </pre>
      *
      * @param factoryReferenceListAttribute factoryReferenceListAttribute
      * @return factoryReferenceListAttribute
@@ -50,7 +56,6 @@ public class FactoryReferenceListAttribute<L, F extends FactoryBase<? extends L,
      * @param <F> Factory
      *
      **/
-    @SuppressWarnings("unchecked")
     public static <L, F extends FactoryBase<? extends L,?,?>> FactoryReferenceListAttribute create(FactoryReferenceListAttribute<L,F> factoryReferenceListAttribute){
         return factoryReferenceListAttribute;
     }

@@ -23,10 +23,14 @@ public class OracledbDataStorageHistoryTest extends DatabaseTest {
     public void test_add() {
         OracledbDataStorageHistory<ExampleFactoryA,Void> oracledbDataStorageHistory = new OracledbDataStorageHistory<>(connectionSupplier,createSerialisation());
 
-        StoredDataMetadata<Void> metadata = new StoredDataMetadata<>( UUID.randomUUID().toString(), "", "", "", 0,null);
+        StoredDataMetadata<Void> metadata = createDummyMetadata();
         oracledbDataStorageHistory.updateHistory(metadata,new ExampleFactoryA());
 
         assertEquals(1, oracledbDataStorageHistory.getHistoryFactoryList().size());
+    }
+
+    private StoredDataMetadata<Void> createDummyMetadata() {
+        return new StoredDataMetadata<>( UUID.randomUUID().toString(), "", "", "",null,null,null);
     }
 
     @Test
@@ -34,18 +38,15 @@ public class OracledbDataStorageHistoryTest extends DatabaseTest {
         OracledbDataStorageHistory<ExampleFactoryA,Void> oracledbDataStorageHistory = new OracledbDataStorageHistory<>(connectionSupplier,createSerialisation());
 
         {
-            StoredDataMetadata<Void> metadata = new StoredDataMetadata<>( UUID.randomUUID().toString(), "", "", "", 0,null);
-            oracledbDataStorageHistory.updateHistory(metadata, new ExampleFactoryA());
+            oracledbDataStorageHistory.updateHistory(createDummyMetadata(), new ExampleFactoryA());
         }
 
         {
-            StoredDataMetadata<Void> metadata = new StoredDataMetadata<>( UUID.randomUUID().toString(), "", "", "", 0,null);
-            oracledbDataStorageHistory.updateHistory(metadata, new ExampleFactoryA());
+            oracledbDataStorageHistory.updateHistory(createDummyMetadata(), new ExampleFactoryA());
         }
 
         {
-            StoredDataMetadata<Void> metadata = new StoredDataMetadata<>( UUID.randomUUID().toString(), "", "", "", 0,null);
-            oracledbDataStorageHistory.updateHistory(metadata, new ExampleFactoryA());
+            oracledbDataStorageHistory.updateHistory(createDummyMetadata(), new ExampleFactoryA());
         }
 
         assertEquals(3, oracledbDataStorageHistory.getHistoryFactoryList().size());
@@ -55,8 +56,7 @@ public class OracledbDataStorageHistoryTest extends DatabaseTest {
     public void test_restore() {
         OracledbDataStorageHistory<ExampleFactoryA,Void> oracledbDataStorageHistory = new OracledbDataStorageHistory<>(connectionSupplier,createSerialisation());
 
-        StoredDataMetadata<Void> metadata = new StoredDataMetadata<>( UUID.randomUUID().toString(), "", "", "", 0,null);
-        oracledbDataStorageHistory.updateHistory(metadata,new ExampleFactoryA());
+        oracledbDataStorageHistory.updateHistory(createDummyMetadata(),new ExampleFactoryA());
         assertEquals(1, oracledbDataStorageHistory.getHistoryFactoryList().size());
 
         OracledbDataStorageHistory<ExampleFactoryA,Void> restored = new OracledbDataStorageHistory<>(connectionSupplier,createSerialisation());
@@ -67,8 +67,7 @@ public class OracledbDataStorageHistoryTest extends DatabaseTest {
     public void test_getById() {
         OracledbDataStorageHistory<ExampleFactoryA,Void> oracledbDataStorageHistory = new OracledbDataStorageHistory<>(connectionSupplier,createSerialisation());
 
-        StoredDataMetadata<Void> metadata = new StoredDataMetadata<>( UUID.randomUUID().toString(), "", "", "", 0,null);
-        oracledbDataStorageHistory.updateHistory(metadata,new ExampleFactoryA());
+        oracledbDataStorageHistory.updateHistory(createDummyMetadata(),new ExampleFactoryA());
         assertEquals(1, oracledbDataStorageHistory.getHistoryFactoryList().size());
 
         OracledbDataStorageHistory<ExampleFactoryA,Void> history = new OracledbDataStorageHistory<>(connectionSupplier,createSerialisation());

@@ -8,7 +8,6 @@ import java.util.function.Function;
 
 public class AttributeEditorBuilderFactoryBuilder {
 
-    @SuppressWarnings("unchecked")
     public AttributeEditorBuilderFactory build(UniformDesignFactory uniformDesignFactory){
         AttributeEditorBuilderFactory factory = new AttributeEditorBuilderFactory();
         for (Function<UniformDesign, de.factoryfx.javafx.data.editor.attribute.builder.AttributeVisualisationBuilder> creator : AttributeVisualisationMappingBuilder.createDefaultSingleAttributeEditorBuildersFunctions()) {

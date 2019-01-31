@@ -13,16 +13,16 @@ import java.util.TreeMap;
 import java.util.stream.Stream;
 
 import de.factoryfx.data.Data;
-import de.factoryfx.data.storage.DataSerialisationManager;
+import de.factoryfx.data.storage.migration.MigrationManager;
 import de.factoryfx.data.storage.StoredDataMetadata;
 
 public class FileSystemFactoryStorageHistory<R extends Data,S> {
     private final Map<String,StoredDataMetadata<S>> cache = new TreeMap<>();
     private final Path historyDirectory;
-    private final DataSerialisationManager<R,S> dataSerialisationManager;
+    private final MigrationManager<R,S> migrationManager;
 
-    public FileSystemFactoryStorageHistory(Path basePath, DataSerialisationManager<R,S> dataSerialisationManager){
-        this.dataSerialisationManager = dataSerialisationManager;
+    public FileSystemFactoryStorageHistory(Path basePath, MigrationManager<R,S> migrationManager){
+        this.migrationManager = migrationManager;
         historyDirectory= Paths.get(basePath.toString()+"/history/");
         if (!Files.exists(historyDirectory)){
             if (!historyDirectory.toFile().mkdirs()){
@@ -32,19 +32,17 @@ public class FileSystemFactoryStorageHistory<R extends Data,S> {
     }
 
     public R getHistoryFactory(String id) {
-        int dataModelVersion=-99999;
-        for(StoredDataMetadata metaData: getHistoryFactoryList()){
+        StoredDataMetadata<S> storedDataMetadata=null;
+        for(StoredDataMetadata<S> metaData: getHistoryFactoryList()){
             if (metaData.id.equals(id)){
-                dataModelVersion=metaData.dataModelVersion;
+                storedDataMetadata=metaData;
 
             }
         }
-        if (dataModelVersion==-99999) {
-            throw new IllegalStateException("cant find id: "+id+" in history");
+        if (storedDataMetadata==null) {
+            throw new IllegalStateException("cant find storedDataMetadata for factory: "+id+" in history");
         }
-
-
-        return dataSerialisationManager.read(readFile(Paths.get(historyDirectory.toString()+id+".json")),dataModelVersion);
+        return migrationManager.read(readFile(Paths.get(historyDirectory.toString()+id+".json")),storedDataMetadata);
     }
 
     public Collection<StoredDataMetadata<S>> getHistoryFactoryList() {
@@ -55,7 +53,7 @@ public class FileSystemFactoryStorageHistory<R extends Data,S> {
         try (Stream<Path> files = Files.walk(historyDirectory).filter(Files::isRegularFile)){
             files.forEach(path -> {
                 if (path.toString().endsWith("_metadata.json")){
-                    StoredDataMetadata<S> storedDataMetadata = dataSerialisationManager.readStoredFactoryMetadata(readFile(path));
+                    StoredDataMetadata<S> storedDataMetadata = migrationManager.readStoredFactoryMetadata(readFile(path));
                     cache.put(storedDataMetadata.id, storedDataMetadata);
                 }
             });
@@ -67,8 +65,8 @@ public class FileSystemFactoryStorageHistory<R extends Data,S> {
     public void updateHistory(StoredDataMetadata<S> metadata, R factoryRoot) {
         String id=metadata.id;
 
-        writeFile(Paths.get(historyDirectory.toString()+"/"+id+".json"), dataSerialisationManager.write(factoryRoot));
-        writeFile(Paths.get(historyDirectory.toString()+"/"+id+"_metadata.json"), dataSerialisationManager.writeStorageMetadata(metadata));
+        writeFile(Paths.get(historyDirectory.toString()+"/"+id+".json"), migrationManager.write(factoryRoot));
+        writeFile(Paths.get(historyDirectory.toString()+"/"+id+"_metadata.json"), migrationManager.writeStorageMetadata(metadata));
         cache.put(id,metadata);
 
     }

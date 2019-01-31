@@ -2,19 +2,18 @@ package de.factoryfx.example.server;
 
 import de.factoryfx.example.server.shop.*;
 import de.factoryfx.factory.atrribute.FactoryReferenceAttribute;
+import org.eclipse.jetty.server.Server;
 
-import de.factoryfx.jetty.JettyServer;
+public class ServerRootFactory extends ServerBaseFactory<Server> {
 
-public class ServerRootFactory extends ServerBaseFactory<JettyServer> {
-
-    public final FactoryReferenceAttribute<JettyServer, ShopJettyServerFactory> httpServer =
+    public final FactoryReferenceAttribute<Server, ShopJettyServerFactory> httpServer =
             new FactoryReferenceAttribute<>(ShopJettyServerFactory.class)
                     .labelText("HTTP Servers")
                     .userNotCreatable()
                     .userNotSelectable()
                     .userReadOnly();
 
-    public JettyServer createImpl() {
+    public Server createImpl() {
         return httpServer.instance();
     }
 

@@ -4,13 +4,13 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.UUID;
 
 import de.factoryfx.data.Data;
 import de.factoryfx.data.merge.MergeDiffInfo;
 import de.factoryfx.data.storage.*;
+import de.factoryfx.data.storage.migration.MigrationManager;
 
 public class FileSystemDataStorage<R extends Data,S> implements DataStorage<R,S> {
     private final FileSystemFactoryStorageHistory<R,S> fileSystemFactoryStorageHistory;
@@ -18,10 +18,10 @@ public class FileSystemDataStorage<R extends Data,S> implements DataStorage<R,S>
     private final R initialFactory;
     private final Path currentFactoryPath;
     private final Path currentFactoryPathMetadata;
-    private final DataSerialisationManager<R,S> dataSerialisationManager;
+    private final MigrationManager<R,S> migrationManager;
     private final ChangeSummaryCreator<R,S> changeSummaryCreator;
 
-    public FileSystemDataStorage(Path basePath, R defaultFactory, DataSerialisationManager<R,S> dataSerialisationManager, FileSystemFactoryStorageHistory<R,S> fileSystemFactoryStorageHistory, ChangeSummaryCreator<R,S> changeSummaryCreator){
+    public FileSystemDataStorage(Path basePath, R defaultFactory, MigrationManager<R,S> migrationManager, FileSystemFactoryStorageHistory<R,S> fileSystemFactoryStorageHistory, ChangeSummaryCreator<R,S> changeSummaryCreator){
         this.initialFactory=defaultFactory;
         if (!Files.exists(basePath)){
             throw new IllegalArgumentException("path don't exists:"+basePath);
@@ -29,16 +29,16 @@ public class FileSystemDataStorage<R extends Data,S> implements DataStorage<R,S>
         currentFactoryPath= Paths.get(basePath.toString()+"/currentFactory.json");
         currentFactoryPathMetadata= Paths.get(basePath.toString()+"/currentFactory_metadata.json");
         this.fileSystemFactoryStorageHistory=fileSystemFactoryStorageHistory;
-        this.dataSerialisationManager = dataSerialisationManager;
+        this.migrationManager = migrationManager;
         this.changeSummaryCreator=changeSummaryCreator;
     }
 
-    public FileSystemDataStorage(Path basePath, R defaultFactory, DataSerialisationManager<R,S> dataSerialisationManager){
-        this(basePath,defaultFactory, dataSerialisationManager,new FileSystemFactoryStorageHistory<>(basePath, dataSerialisationManager),(d)->null);
+    public FileSystemDataStorage(Path basePath, R defaultFactory, MigrationManager<R,S> migrationManager){
+        this(basePath,defaultFactory, migrationManager,new FileSystemFactoryStorageHistory<>(basePath, migrationManager),(d)->null);
     }
 
-    public FileSystemDataStorage(Path basePath, R defaultFactory, DataSerialisationManager<R,S> dataSerialisationManager, ChangeSummaryCreator<R,S> changeSummaryCreator){
-        this(basePath,defaultFactory, dataSerialisationManager,new FileSystemFactoryStorageHistory<>(basePath, dataSerialisationManager),changeSummaryCreator);
+    public FileSystemDataStorage(Path basePath, R defaultFactory, MigrationManager<R,S> migrationManager, ChangeSummaryCreator<R,S> changeSummaryCreator){
+        this(basePath,defaultFactory, migrationManager,new FileSystemFactoryStorageHistory<>(basePath, migrationManager),changeSummaryCreator);
     }
 
     @Override
@@ -53,13 +53,13 @@ public class FileSystemDataStorage<R extends Data,S> implements DataStorage<R,S>
 
     @Override
     public DataAndStoredMetadata<R,S> getCurrentFactory() {
-        StoredDataMetadata<S> storedDataMetadata = dataSerialisationManager.readStoredFactoryMetadata(readFile(currentFactoryPathMetadata));
-        return new DataAndStoredMetadata<>(dataSerialisationManager.read(readFile(currentFactoryPath), storedDataMetadata.dataModelVersion), storedDataMetadata);
+        StoredDataMetadata<S> storedDataMetadata = migrationManager.readStoredFactoryMetadata(readFile(currentFactoryPathMetadata));
+        return new DataAndStoredMetadata<>(migrationManager.read(readFile(currentFactoryPath), storedDataMetadata), storedDataMetadata);
     }
 
     @Override
     public String getCurrentFactoryStorageId() {
-        StoredDataMetadata<S> storedDataMetadata = dataSerialisationManager.readStoredFactoryMetadata(readFile(currentFactoryPathMetadata));
+        StoredDataMetadata<S> storedDataMetadata = migrationManager.readStoredFactoryMetadata(readFile(currentFactoryPathMetadata));
         return storedDataMetadata.id;
     }
 
@@ -69,19 +69,12 @@ public class FileSystemDataStorage<R extends Data,S> implements DataStorage<R,S>
         if (mergeDiff!=null){
             changeSummary=changeSummaryCreator.createChangeSummary(mergeDiff);
         }
-        final StoredDataMetadata<S> storedDataMetadata = new StoredDataMetadata<>(
-                LocalDateTime.now(),
-                UUID.randomUUID().toString(),
-                user,
-                comment,
-                update.metadata.baseVersionId,
-                update.metadata.dataModelVersion, changeSummary
-        );
+        StoredDataMetadata<S> storedDataMetadata = migrationManager.createStoredDataMetadata(user, comment, update.metadata.baseVersionId, changeSummary);
 
         final DataAndStoredMetadata<R,S> updateData = new DataAndStoredMetadata<>(update.root, storedDataMetadata);
 
-        writeFile(currentFactoryPath, dataSerialisationManager.write(updateData.root));
-        writeFile(currentFactoryPathMetadata, dataSerialisationManager.writeStorageMetadata(updateData.metadata));
+        writeFile(currentFactoryPath, migrationManager.write(updateData.root));
+        writeFile(currentFactoryPathMetadata, migrationManager.writeStorageMetadata(storedDataMetadata));
         fileSystemFactoryStorageHistory.updateHistory(updateData.metadata,updateData.root);
     }
 
@@ -89,7 +82,7 @@ public class FileSystemDataStorage<R extends Data,S> implements DataStorage<R,S>
     public DataAndNewMetadata<R> prepareNewFactory(String currentFactoryStorageId, R currentFactoryCopy){
         NewDataMetadata metadata = new NewDataMetadata();
         metadata.baseVersionId=currentFactoryStorageId;
-        dataSerialisationManager.prepareNewFactoryMetadata(metadata);
+        migrationManager.prepareNewFactoryMetadata(metadata);
         return new DataAndNewMetadata<>(currentFactoryCopy,metadata);
     }
 

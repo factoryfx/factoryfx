@@ -7,6 +7,7 @@ module de.factoryfx.data {
     requires com.fasterxml.jackson.datatype.jsr310;
     requires com.fasterxml.jackson.core;
 
+    requires transitive java.sql;//for jackson DateDeserializer
 
     exports de.factoryfx.data.attribute;
     exports de.factoryfx.data.validation;
@@ -21,6 +22,8 @@ module de.factoryfx.data {
     exports de.factoryfx.data.jackson;
     exports de.factoryfx.data.storage.inmemory;
     exports de.factoryfx.data.storage.filesystem;
+    exports de.factoryfx.data.storage.migration;
+    exports de.factoryfx.data.storage.migration.metadata;
 
     opens de.factoryfx.data.attribute;//open for Jackson
     opens de.factoryfx.data.attribute.primitive;
@@ -28,5 +31,7 @@ module de.factoryfx.data {
     opens de.factoryfx.data.attribute.types;
     opens de.factoryfx.data;
     opens de.factoryfx.data.merge;
+    opens de.factoryfx.data.storage.migration;
+    opens de.factoryfx.data.storage.migration.metadata;
 
 }

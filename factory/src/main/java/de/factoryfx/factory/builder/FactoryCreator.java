@@ -28,7 +28,6 @@ public class FactoryCreator<F extends FactoryBase<?,?,R>,R extends FactoryBase<?
     }
 
     F factory;
-    @SuppressWarnings("unchecked")
     public F create(FactoryContext<R> context) {
         if (scope==Scope.PROTOTYPE){
             return creator.apply(context);

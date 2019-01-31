@@ -36,7 +36,6 @@ public class EnumAttributeVisualisation<E extends Enum<E>> extends ValueAttribut
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public Node createValueVisualisation() {
         ComboBox<E> comboBox = new ComboBox<>();
         comboBox.setEditable(false);

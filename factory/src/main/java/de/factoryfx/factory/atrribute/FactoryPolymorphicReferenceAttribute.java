@@ -23,12 +23,10 @@ public class FactoryPolymorphicReferenceAttribute<L> extends FactoryReferenceBas
     };
 
     @JsonCreator
-    @SuppressWarnings("unchecked")
     protected FactoryPolymorphicReferenceAttribute(FactoryBase<L,?,?> value) {
         super(value);
     }
 
-    @SuppressWarnings("unchecked")
     public FactoryPolymorphicReferenceAttribute() {
         super();
     }
@@ -69,7 +67,6 @@ public class FactoryPolymorphicReferenceAttribute<L> extends FactoryReferenceBas
      * @param possibleFactoriesClasses possible factories that crate the liveobject, PolymorphicFactory&lt;L&gt; would be correct but doesn't work
      * @return self
      */
-    @SuppressWarnings("unchecked")
     @SafeVarargs
     public final FactoryPolymorphicReferenceAttribute<L> setup(Class<L> liveObjectClass, Class<? extends PolymorphicFactory<?>>... possibleFactoriesClasses){
         this.possibleFactoriesClasses=Arrays.asList(possibleFactoriesClasses);

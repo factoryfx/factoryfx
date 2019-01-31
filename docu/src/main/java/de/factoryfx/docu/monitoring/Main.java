@@ -1,32 +1,42 @@
 package de.factoryfx.docu.monitoring;
 
-import com.google.common.base.Charsets;
-import com.google.common.io.CharStreams;
+import ch.qos.logback.classic.Level;
 import de.factoryfx.factory.FactoryManager;
 import de.factoryfx.data.storage.inmemory.InMemoryDataStorage;
+import de.factoryfx.factory.builder.FactoryTreeBuilder;
+import de.factoryfx.factory.builder.Scope;
 import de.factoryfx.factory.exception.RethrowingFactoryExceptionHandler;
-import de.factoryfx.jetty.HttpServerConnectorFactory;
+import de.factoryfx.jetty.JettyServerBuilder;
+import de.factoryfx.jetty.JettyServerFactory;
 import de.factoryfx.server.Microservice;
+import org.eclipse.jetty.server.Server;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
+import java.io.IOException;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 
 public class Main {
-
+    @SuppressWarnings("unchecked")
     public static void main(String[] args) throws Exception {
-        RootFactory rootFactory = new RootFactory();
-        InstrumentedJettyServerFactory jettyServer = new InstrumentedJettyServerFactory();
-        final HttpServerConnectorFactory<ServerVisitor,RootFactory> httpServerConnectorFactory = new HttpServerConnectorFactory<>();
-        httpServerConnectorFactory.port.set(34576);
-        httpServerConnectorFactory.host.set("localhost");
-        jettyServer.connectors.add(httpServerConnectorFactory);
-        rootFactory.server.set(jettyServer);
-        jettyServer.factoryReferenceAttribute.set(new SimpleResourceFactory());
+        ch.qos.logback.classic.Logger root = (ch.qos.logback.classic.Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
+        root.setLevel(Level.INFO);
 
+        FactoryTreeBuilder<RootFactory> builder = new FactoryTreeBuilder<>(RootFactory.class);
+        builder.addFactory(RootFactory.class, Scope.SINGLETON);
+        builder.addFactory(JettyServerFactory.class, Scope.SINGLETON, ctx-> {
+            JettyServerFactory<ServerVisitor, RootFactory> server = new JettyServerBuilder<>(new JettyServerFactory<ServerVisitor, RootFactory>()).withHost("localhost").widthPort(34576).withResource(ctx.get(SimpleResourceFactory.class)).build();
+            server.handler.get().handlers.set(0,ctx.get(InstrumentedHandlerFactory.class));
+            return server;
+        });
+        builder.addFactory(SimpleResourceFactory.class, Scope.SINGLETON);
+        builder.addFactory(InstrumentedHandlerFactory.class, Scope.SINGLETON);
+        builder.addFactory(MetricRegistryFactory.class, Scope.SINGLETON);
 
-        Microservice<ServerVisitor,Root,RootFactory,Void> microservice = new Microservice<>(new FactoryManager<>(new RethrowingFactoryExceptionHandler()),new InMemoryDataStorage<>(rootFactory));
+        Microservice<ServerVisitor, Server,RootFactory,Void> microservice = new Microservice<>(new FactoryManager<>(new RethrowingFactoryExceptionHandler()),new InMemoryDataStorage<>(builder.buildTree()));
         microservice.start();
 
         //execute some random request as example
@@ -45,11 +55,14 @@ public class Main {
     }
 
     public static String getHTML(String urlToRead) throws Exception {
-        URL url = new URL(urlToRead);
-        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-        conn.setRequestMethod("GET");
-        try (InputStream inputStream= conn.getInputStream()){
-            return CharStreams.toString(new InputStreamReader(inputStream, Charsets.UTF_8));
+        HttpClient httpClient = HttpClient.newBuilder().version(HttpClient.Version.HTTP_1_1).build();
+        HttpRequest request = HttpRequest.newBuilder().uri(URI.create(urlToRead)).GET().build();
+        try {
+            HttpResponse<String> httpResponse = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+            return httpResponse.body();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
+        return "";
     }
 }

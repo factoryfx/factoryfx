@@ -47,7 +47,6 @@ public class DataEditorStateVisualisation extends BorderPane {
         return visCustomizer.apply(defaultVis,data);
     }
 
-    @SuppressWarnings("unchecked")
     private Node createEditor(Data newValue, Data previousValue){
         if (newValue==null) {
             return new Label("empty");

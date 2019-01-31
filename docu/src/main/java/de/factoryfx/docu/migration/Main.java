@@ -1,6 +1,10 @@
 package de.factoryfx.docu.migration;
 
-import de.factoryfx.data.storage.*;
+import de.factoryfx.data.storage.migration.metadata.DataStorageMetadataDictionary;
+import de.factoryfx.data.storage.migration.GeneralStorageMetadataBuilder;
+import de.factoryfx.data.storage.migration.DataMigration;
+import de.factoryfx.data.storage.migration.MigrationManager;
+import de.factoryfx.data.storage.migration.DataMigrationApi;
 import de.factoryfx.factory.FactoryManager;
 import de.factoryfx.data.storage.filesystem.FileSystemDataStorage;
 import de.factoryfx.factory.exception.RethrowingFactoryExceptionHandler;
@@ -10,6 +14,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 
 public class Main {
 
@@ -17,14 +22,16 @@ public class Main {
         RootFactory rootFactory = new RootFactory();
         rootFactory.text.set("HelloWorld");
 
-        //for every incompatible change the dataModelVersion must be adjusted and the migration added to the list
-        int dataModelVersion = 2;
         List<DataMigration> dataMigrations = new ArrayList<>();
-        dataMigrations.add(new SimpleDataMigration(1, 2, old -> {
-            return old;//do nothing it's just simple example
+        dataMigrations.add(new DataMigration(new Consumer<DataMigrationApi>() {
+            @Override
+            public void accept(DataMigrationApi dataMigrationApi) {
+                //do nothing it's just simple example
+            }
         }));
 
-        DataSerialisationManager<RootFactory,Void> serialisationManager = new DataSerialisationManager<>(new JacksonSerialisation<>(dataModelVersion),new JacksonDeSerialisation<>(RootFactory.class, dataModelVersion), dataMigrations,dataModelVersion);
+        MigrationManager<RootFactory,Void> serialisationManager = new MigrationManager<RootFactory,Void>(RootFactory.class, List.of(), GeneralStorageMetadataBuilder.build(), dataMigrations, new DataStorageMetadataDictionary(RootFactory.class));
+
         FileSystemDataStorage<RootFactory,Void> fileSystemFactoryStorage = new FileSystemDataStorage<>(Files.createTempDirectory("tempfiles"), rootFactory, serialisationManager);
 
         Microservice<Void,Root,RootFactory,Void> microservice = new Microservice<>(new FactoryManager<>(new RethrowingFactoryExceptionHandler()), fileSystemFactoryStorage);

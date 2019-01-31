@@ -5,6 +5,7 @@ import de.factoryfx.factory.builder.FactoryTreeBuilder;
 import de.factoryfx.factory.builder.Scope;
 import de.factoryfx.javafx.distribution.launcher.rest.DistributionClientDownloadResourceFactory;
 import de.factoryfx.jetty.HttpServerConnectorFactory;
+import de.factoryfx.jetty.JettyServerBuilder;
 import de.factoryfx.server.MicroserviceBuilder;
 import net.bytebuddy.asm.Advice;
 
@@ -16,20 +17,19 @@ import java.util.function.Function;
 
 public class DistributionClientDownloadServerTest {
 
+    @SuppressWarnings("unchecked")
     public static void main(String[] args) {
 
         FactoryTreeBuilder<DownloadTestServerFactory> builder = new FactoryTreeBuilder<>(DownloadTestServerFactory.class);
         builder.addFactory(DownloadTestServerFactory.class, Scope.SINGLETON, ctx -> {
-            DownloadTestServerFactory serverFactory = new DownloadTestServerFactory();
-            HttpServerConnectorFactory<Void, DownloadTestServerFactory> httpServerConnectorFactory = new HttpServerConnectorFactory<>();
-            httpServerConnectorFactory.port.set(43654);
-            httpServerConnectorFactory.host.set("localhost");
-            serverFactory.connectors.add(httpServerConnectorFactory);
-
+            return new JettyServerBuilder<>(new DownloadTestServerFactory()).
+                    withHost("localhost").widthPort(43654).withResource(ctx.get(SpecificDistributionClientDownloadResourceFactory.class)).
+                    build();
+        });
+        builder.addFactory(DistributionClientDownloadResourceFactory.class, Scope.SINGLETON, ctx -> {
             DistributionClientDownloadResourceFactory<Void, DownloadTestServerFactory> resource = new DistributionClientDownloadResourceFactory<>();
             resource.distributionClientZipPath.set("src/test/java/de/factoryfx/javafx/distribution/launcher/downloadserver/dummy.zip");
-            serverFactory.resource.set(resource);
-            return serverFactory;
+            return resource;
         });
 
         MicroserviceBuilder.buildInMemoryMicroservice(builder.buildTree()).start();

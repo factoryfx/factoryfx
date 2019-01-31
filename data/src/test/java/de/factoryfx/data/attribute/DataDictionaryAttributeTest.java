@@ -2,6 +2,7 @@ package de.factoryfx.data.attribute;
 
 import de.factoryfx.data.jackson.ObjectMapperBuilder;
 import de.factoryfx.data.merge.testdata.ExampleDataA;
+import de.factoryfx.data.merge.testdata.ExampleDataB;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -9,10 +10,11 @@ public class DataDictionaryAttributeTest {
 
     @Test
     public void test_json(){
-        DataReferenceAttribute<ExampleDataA> dataReferenceAttribute = new DataReferenceAttribute<>(ExampleDataA.class);
-        dataReferenceAttribute.set(new ExampleDataA());
-        DataReferenceAttribute<ExampleDataA> copy = ObjectMapperBuilder.build().copy(dataReferenceAttribute);
-        Assert.assertNotNull(copy.get());
+        ExampleDataA exampleDataA = new ExampleDataA();
+        exampleDataA.referenceAttribute.set(new ExampleDataB());
+
+        ExampleDataA copy = ObjectMapperBuilder.build().copy(exampleDataA);
+        Assert.assertNotNull(copy);
     }
 
     @Test

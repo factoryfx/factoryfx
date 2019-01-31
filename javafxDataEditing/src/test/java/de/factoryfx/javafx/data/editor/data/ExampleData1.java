@@ -76,12 +76,12 @@ public class ExampleData1 extends Data {
     public final I18nAttribute i18nAttribute=new I18nAttribute().en("i18nAttribute").de("i18nAttribute de").en("envalue").de("devalue");
     public final ByteArrayAttribute byteArrayAttribute=new ByteArrayAttribute().en("byteArrayAttribute").de("byteArrayAttribute de");
 
-    public final DataReferenceAttribute<ExampleData2> referenceAttribute = new DataReferenceAttribute<ExampleData2>().setup(ExampleData2.class).en("ReferenceAttribute").de("ReferenceAttribute de");
-    public final DataReferenceListAttribute<ExampleData2> referenceListAttribute = new DataReferenceListAttribute<ExampleData2>().setup(ExampleData2.class).en("ReferenceListAttribute").de("ReferenceListAttribute de");
+    public final DataReferenceAttribute<ExampleData2> referenceAttribute = new DataReferenceAttribute<>(ExampleData2.class).en("ReferenceAttribute").de("ReferenceAttribute de");
+    public final DataReferenceListAttribute<ExampleData2> referenceListAttribute = new DataReferenceListAttribute<>(ExampleData2.class).en("ReferenceListAttribute").de("ReferenceListAttribute de");
 
-    public final DataReferenceAttribute<ExampleData2> referenceAttributeCat = new DataReferenceAttribute<ExampleData2>().setup(ExampleData2.class).catalogueBased().en("ReferenceAttribute catalog based").de("ReferenceAttribute catalog based de");
-    public final DataReferenceListAttribute<ExampleData2> referenceListAttributeCat = new DataReferenceListAttribute<ExampleData2>().setup(ExampleData2.class).catalogueBased().en("ReferenceListAttribute catalog based").de("ReferenceListAttribute catalog based de");
-    public final DataReferenceListAttribute<ExampleData2> readOnlyReferenceListAttributeCat = new DataReferenceListAttribute<ExampleData2>().setup(ExampleData2.class).userReadOnly().catalogueBased().en("Readonly referenceListAttribute catalog based").de("Lesend ReferenceListAttribute catalog based de");
+    public final DataReferenceAttribute<ExampleData2> referenceAttributeCat = new DataReferenceAttribute<>(ExampleData2.class).catalogueBased().en("ReferenceAttribute catalog based").de("ReferenceAttribute catalog based de");
+    public final DataReferenceListAttribute<ExampleData2> referenceListAttributeCat = new DataReferenceListAttribute<>(ExampleData2.class).catalogueBased().en("ReferenceListAttribute catalog based").de("ReferenceListAttribute catalog based de");
+    public final DataReferenceListAttribute<ExampleData2> readOnlyReferenceListAttributeCat = new DataReferenceListAttribute<>(ExampleData2.class).userReadOnly().catalogueBased().en("Readonly referenceListAttribute catalog based").de("Lesend ReferenceListAttribute catalog based de");
 
     public final URIAttribute uriAttribute = new URIAttribute().en("URI");
     public final URIListAttribute uriListAttribute = new URIListAttribute().en("URIList");
@@ -91,7 +91,7 @@ public class ExampleData1 extends Data {
     public final ColorAttribute colorAttribute=new ColorAttribute().en("colorAttribute").de("colorAttribute de");
     public final LocaleAttribute localeAttribute =new LocaleAttribute().en("colorAttribute").de("colorAttribute de");
 
-    public final DataReferenceAttribute<ExampleData2> referenceAttributeReadonly = new DataReferenceAttribute<ExampleData2>().userReadOnly().en("referenceAttributereadonly").de("referenceAttribute readonly de");
+    public final DataReferenceAttribute<ExampleData2> referenceAttributeReadonly = new DataReferenceAttribute<>(ExampleData2.class).userReadOnly().en("referenceAttributereadonly").de("referenceAttribute readonly de");
     public final FactoryPolymorphicReferenceListAttribute<Printer> polymorphicReferenceList = new FactoryPolymorphicReferenceListAttribute<Printer>().setup(Printer.class, ErrorPrinterFactory.class, OutPrinterFactory.class).en("polymorphicreferenceList").de("polymorphicreferenceList");
 
 

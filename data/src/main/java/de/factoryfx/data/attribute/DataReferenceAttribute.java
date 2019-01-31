@@ -9,18 +9,15 @@ public class DataReferenceAttribute<T extends Data> extends ReferenceAttribute<T
         setup(clazz);
     }
 
-    public DataReferenceAttribute() {
+    /**
+     * workaround for Data with generic parameter
+     *
+     * @param clazz
+     * @param dummy must be null
+     */
+    public DataReferenceAttribute(Class clazz,Void dummy) {
         super();
-    }
-
-    @Override
-    public DataReferenceAttribute<T> setup(Class<T> clazz){
-        return super.setup(clazz);
-    }
-
-    @Override
-    public DataReferenceAttribute<T> setupUnsafe(Class clazz) {
-        return super.setupUnsafe(clazz);
+        setupUnsafe(clazz);
     }
 
 }

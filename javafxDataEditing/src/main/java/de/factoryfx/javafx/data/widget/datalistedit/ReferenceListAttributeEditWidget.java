@@ -83,7 +83,6 @@ public class ReferenceListAttributeEditWidget<T extends Data> implements Widget 
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public HBox createContent() {
         Button showButton = new Button("", uniformDesign.createIcon(FontAwesome.Glyph.PENCIL));
         showButton.setOnAction(event -> navigateToData.accept(tableView.getSelectionModel().getSelectedItem()));
@@ -201,7 +200,6 @@ public class ReferenceListAttributeEditWidget<T extends Data> implements Widget 
         selectedItems.forEach(t -> deleter.accept(t,referenceListAttribute));
     }
 
-    @SuppressWarnings("unchecked")
     private void addNewReference(Window owner) {
         List<? extends T> newDataList = newValueProvider.get();
         if (!newDataList.isEmpty()){

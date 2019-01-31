@@ -8,7 +8,7 @@ public class DataAndScheduledMetadataTest {
 
     @Test
     public void test_json(){
-        DataAndScheduledMetadata<ExampleDataA,Void> test = new DataAndScheduledMetadata<>(new ExampleDataA(),new ScheduledDataMetadata<>(null,"","","","",0,null,null));
+        DataAndScheduledMetadata<ExampleDataA,Void> test = new DataAndScheduledMetadata<>(new ExampleDataA(),new ScheduledDataMetadata<>(null,"","","","",null,null,null,null));
         ObjectMapperBuilder.build().copy(test);
     }
 

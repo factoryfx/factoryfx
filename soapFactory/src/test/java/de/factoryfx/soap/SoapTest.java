@@ -1,12 +1,16 @@
 package de.factoryfx.soap;
 
 import de.factoryfx.data.storage.DataAndNewMetadata;
-import de.factoryfx.jetty.JettyServer;
+import de.factoryfx.factory.builder.FactoryTreeBuilder;
+import de.factoryfx.factory.builder.Scope;
+import de.factoryfx.jetty.JettyServerBuilder;
+import de.factoryfx.jetty.JettyServerFactory;
 import de.factoryfx.server.Microservice;
 import de.factoryfx.soap.example.*;
 import de.factoryfx.soap.server.SoapJettyServerFactory;
 import de.factoryfx.jetty.HttpServerConnectorFactory;
 import de.factoryfx.server.MicroserviceBuilder;
+import org.eclipse.jetty.server.Server;
 import org.junit.Test;
 
 import javax.xml.bind.JAXBContext;
@@ -16,36 +20,41 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.soap.*;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatterBuilder;
 import java.util.stream.Stream;
 
 public class SoapTest {
 
-
+    @SuppressWarnings("unchecked")
     @Test
     public void test(){
 
-        SoapHandlerFactory<HelloWorld, Void, SoapJettyServerFactory> soapHandlerFactory = new SoapHandlerFactory<>();
-        HelloWorldFactory helloWorldFactory = new HelloWorldFactory();
-        helloWorldFactory.service.set(req->new SoapDummyResponse());
-        soapHandlerFactory.serviceBean.set(helloWorldFactory);
+        FactoryTreeBuilder<SoapJettyServerFactory> builder = new FactoryTreeBuilder<>(SoapJettyServerFactory.class);
+        builder.addFactory(SoapJettyServerFactory.class, Scope.SINGLETON);
+        builder.addFactory(JettyServerFactory.class, Scope.SINGLETON, ctx-> new JettyServerBuilder<>(new JettyServerFactory<Void,SoapJettyServerFactory>())
+                .withHost("localhost").widthPort(8088).removeDefaultJerseyServlet()
+                .withServlet("/*",ctx.get(SoapHandlerFactory.class)).build());
 
-        SoapJettyServerFactory root = new SoapJettyServerFactory();
-        root.soapHandler.set(soapHandlerFactory);
-        HttpServerConnectorFactory<Void, SoapJettyServerFactory> httpServerConnectorFactory = new HttpServerConnectorFactory<>();
-        httpServerConnectorFactory.host.set("localhost");
-        httpServerConnectorFactory.port.set(8088);
-        root.connectors.add(httpServerConnectorFactory);
+        builder.addFactory(SoapHandlerFactory.class, Scope.SINGLETON, ctx->{
+            SoapHandlerFactory<HelloWorld, Void, SoapJettyServerFactory> soapHandlerFactory = new SoapHandlerFactory<>();
+            HelloWorldFactory helloWorldFactory = new HelloWorldFactory();
+            helloWorldFactory.service.set(req->new SoapDummyResponse());
+            soapHandlerFactory.serviceBean.set(helloWorldFactory);
+            return soapHandlerFactory;
+        });
 
-        Microservice<Void, JettyServer, SoapJettyServerFactory, Object> microService = MicroserviceBuilder.buildInMemoryMicroservice(root);
+
+        Microservice<Void, Server, SoapJettyServerFactory, Object> microService = MicroserviceBuilder.buildInMemoryMicroservice(builder);
         microService.start();
 
         callSoapWebService("http://localhost:8088","action");
         DataAndNewMetadata<SoapJettyServerFactory> newFactory = microService.prepareNewFactory();
-        helloWorldFactory = new HelloWorldFactory();
+        HelloWorldFactory helloWorldFactory = new HelloWorldFactory();
         helloWorldFactory.service.set(req->{
             throw new SoapDummyRequestException1();
         });
-        newFactory.root.soapHandler.get().serviceBean.set(helloWorldFactory);
+        newFactory.root.server.get().getServlet(SoapHandlerFactory.class).serviceBean.set(helloWorldFactory);
         microService.updateCurrentFactory(newFactory,"","",x->true);
         callSoapWebService("http://localhost:8088","action");
 

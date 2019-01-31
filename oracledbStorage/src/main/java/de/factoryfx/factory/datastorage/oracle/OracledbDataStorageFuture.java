@@ -1,7 +1,7 @@
 package de.factoryfx.factory.datastorage.oracle;
 
 import de.factoryfx.data.Data;
-import de.factoryfx.data.storage.DataSerialisationManager;
+import de.factoryfx.data.storage.migration.MigrationManager;
 import de.factoryfx.data.storage.ScheduledDataMetadata;
 
 import java.sql.*;
@@ -11,12 +11,12 @@ import java.util.function.Supplier;
 
 public class OracledbDataStorageFuture<R extends Data,S> {
 
-    private final DataSerialisationManager<R,S> dataSerialisationManager;
+    private final MigrationManager<R,S> migrationManager;
     private final Supplier<Connection> connectionSupplier;
 
-    public OracledbDataStorageFuture(Supplier<Connection> connectionSupplier, DataSerialisationManager<R,S> dataSerialisationManager){
+    public OracledbDataStorageFuture(Supplier<Connection> connectionSupplier, MigrationManager<R,S> migrationManager){
         this.connectionSupplier = connectionSupplier;
-        this.dataSerialisationManager = dataSerialisationManager;
+        this.migrationManager = migrationManager;
 
         try (Connection connection= connectionSupplier.get();
              Statement statement = connection.createStatement()){
@@ -43,8 +43,8 @@ public class OracledbDataStorageFuture<R extends Data,S> {
 
             try (ResultSet resultSet =statement.executeQuery(sql)) {
                 if (resultSet.next()) {
-                    ScheduledDataMetadata factoryMetadata = dataSerialisationManager.readScheduledFactoryMetadata(JdbcUtil.readStringToBlob(resultSet, "factoryMetadata"));
-                    return dataSerialisationManager.read(JdbcUtil.readStringToBlob(resultSet, "factory"), factoryMetadata.dataModelVersion);
+                    ScheduledDataMetadata<S> factoryMetadata = migrationManager.readScheduledFactoryMetadata(JdbcUtil.readStringFromBlob(resultSet, "factoryMetadata"));
+                    return migrationManager.read(JdbcUtil.readStringFromBlob(resultSet, "factory"), factoryMetadata);
                 }
             }
         } catch (SQLException e) {
@@ -62,7 +62,7 @@ public class OracledbDataStorageFuture<R extends Data,S> {
              ResultSet resultSet =statement.executeQuery("SELECT * FROM FACTORY_FUTURE")
             ){
             while (resultSet.next()) {
-                result.add(dataSerialisationManager.readScheduledFactoryMetadata(JdbcUtil.readStringToBlob(resultSet, "factoryMetadata")));
+                result.add(migrationManager.readScheduledFactoryMetadata(JdbcUtil.readStringFromBlob(resultSet, "factoryMetadata")));
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -76,8 +76,8 @@ public class OracledbDataStorageFuture<R extends Data,S> {
         try (Connection connection= connectionSupplier.get();
              PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO FACTORY_FUTURE(id,factory,factoryMetadata) VALUES (?,?,? )")){
              preparedStatement.setString(1, id);
-             JdbcUtil.writeStringToBlob(dataSerialisationManager.write(factoryRoot),preparedStatement,2);
-             JdbcUtil.writeStringToBlob(dataSerialisationManager.writeStorageMetadata(metadata),preparedStatement,3);
+             JdbcUtil.writeStringToBlob(migrationManager.write(factoryRoot),preparedStatement,2);
+             JdbcUtil.writeStringToBlob(migrationManager.writeStorageMetadata(metadata),preparedStatement,3);
              preparedStatement.executeUpdate();
         } catch (SQLException e) {
             throw new RuntimeException(e);

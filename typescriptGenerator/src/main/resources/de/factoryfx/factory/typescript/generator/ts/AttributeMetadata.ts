@@ -7,7 +7,7 @@ export class AttributeMetadata<T>  {
 
     private isNullable: boolean= false;
 
-    private attributeType: AttributeType;
+    private readonly attributeType: AttributeType;
 
 
     public constructor(en: string, de: string, attributeType: AttributeType) {

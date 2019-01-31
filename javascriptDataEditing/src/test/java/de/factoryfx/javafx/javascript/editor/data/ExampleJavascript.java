@@ -9,7 +9,7 @@ import java.util.Arrays;
 
 public class ExampleJavascript extends Data {
 
-    public final DataReferenceAttribute<ExampleData1> data = new DataReferenceAttribute<ExampleData1>().en("data").setup(ExampleData1.class);
+    public final DataReferenceAttribute<ExampleData1> data = new DataReferenceAttribute<>(ExampleData1.class).en("data");
     public final JavascriptAttribute<PrintStream> specialAttribute=new JavascriptAttribute<>(()-> Arrays.asList(data.get()),PrintStream.class).de("code");
 
     public ExampleJavascript() {

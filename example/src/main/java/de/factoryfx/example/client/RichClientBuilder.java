@@ -1,8 +1,8 @@
 package de.factoryfx.example.client;
 
-import de.factoryfx.data.storage.DataSerialisationManager;
-import de.factoryfx.data.storage.JacksonDeSerialisation;
-import de.factoryfx.data.storage.JacksonSerialisation;
+import de.factoryfx.data.storage.migration.MigrationManager;
+import de.factoryfx.data.storage.migration.metadata.DataStorageMetadataDictionary;
+import de.factoryfx.data.storage.migration.GeneralStorageMetadataBuilder;
 import de.factoryfx.example.client.view.ConfigurationViewFactory;
 import de.factoryfx.example.client.view.DashboardViewFactory;
 import de.factoryfx.example.client.view.HistoryViewFactory;
@@ -37,7 +37,7 @@ import javafx.stage.Screen;
 import javafx.stage.Stage;
 import org.controlsfx.glyphfont.FontAwesome;
 
-import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
 
@@ -208,8 +208,8 @@ public class RichClientBuilder {
 
     private static class RichClientFactorySerialisationManagerFactory extends FactorySerialisationManagerFactory<ServerRootFactory,Void> {
         @Override
-        public DataSerialisationManager<ServerRootFactory, Void> createImpl() {
-            return new DataSerialisationManager<>(new JacksonSerialisation<>(1),new JacksonDeSerialisation<>(ServerRootFactory.class,1),new ArrayList<>(),1);
+        public MigrationManager<ServerRootFactory, Void> createImpl() {
+            return new MigrationManager<>(ServerRootFactory.class, List.of(), GeneralStorageMetadataBuilder.build(), List.of(), new DataStorageMetadataDictionary(ServerRootFactory.class));
         }
     }
 }

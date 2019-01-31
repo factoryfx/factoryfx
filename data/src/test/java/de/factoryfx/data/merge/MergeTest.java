@@ -3,7 +3,12 @@ package de.factoryfx.data.merge;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
+import de.factoryfx.data.Data;
 import de.factoryfx.data.DataTest;
+import de.factoryfx.data.attribute.CopySemantic;
+import de.factoryfx.data.attribute.DataReferenceAttribute;
+import de.factoryfx.data.attribute.DataViewReferenceAttribute;
+import de.factoryfx.data.attribute.types.StringAttribute;
 import de.factoryfx.data.merge.testdata.ExampleDataA;
 import de.factoryfx.data.merge.testdata.ExampleDataB;
 import de.factoryfx.data.merge.testdata.ExampleDataC;
@@ -768,6 +773,36 @@ public class MergeTest {
         Assert.assertTrue(mergeDiff.hasNoConflicts());
         Assert.assertEquals(1,newModel.referenceAttribute.get().internal().getParents().size());
         Assert.assertEquals(currentModel,currentModel.referenceAttribute.get().internal().getParents().iterator().next());
+    }
+
+    public static class ExampleDataView extends Data {
+        public final DataViewReferenceAttribute<ExampleDataView,ExampleDataB> viewAttribute = new DataViewReferenceAttribute<>((r)->r.referenceAttribute.get().referenceAttribute.get());
+        public final DataReferenceAttribute<ExampleDataA> referenceAttribute = new DataReferenceAttribute<>(ExampleDataA.class);
+
+    }
+
+
+    @Test
+    public void test_merge_parent_after_add_view(){
+        ExampleDataView currentModel = new ExampleDataView();
+        currentModel.referenceAttribute.set(new ExampleDataA());
+        currentModel.internal().addBackReferences();
+
+        ExampleDataView originalModel = currentModel.internal().copy();
+        ExampleDataView newModel = currentModel.internal().copy();
+
+        newModel.referenceAttribute.get().referenceAttribute.set(new ExampleDataB());
+
+
+        DataMerger<ExampleDataView> dataMerger = new DataMerger<>(currentModel, originalModel, newModel);
+
+        MergeDiffInfo mergeDiff= dataMerger.mergeIntoCurrent((permission)->true);
+        Assert.assertTrue(mergeDiff.hasNoConflicts());
+
+//        currentModel.internal().addBackReferences();
+
+        Assert.assertEquals(2,currentModel.referenceAttribute.get().referenceAttribute.get().internal().getParents().size());
+        Assert.assertTrue(currentModel.referenceAttribute.get().referenceAttribute.get().internal().getParents().contains(currentModel));
     }
 
 }

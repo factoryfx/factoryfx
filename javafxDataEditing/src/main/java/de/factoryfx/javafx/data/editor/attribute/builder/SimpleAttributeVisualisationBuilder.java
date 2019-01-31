@@ -34,7 +34,6 @@ public class SimpleAttributeVisualisationBuilder<A extends Attribute<?,A>> imple
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public AttributeVisualisation createValueListVisualisation(Attribute<?,?> attribute) {
           return null;
     }

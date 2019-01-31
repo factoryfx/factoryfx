@@ -17,7 +17,7 @@ public class JdbcUtil {
         }
     }
 
-    public static String readStringToBlob(ResultSet resultSet, String columnLabel){
+    public static String readStringFromBlob(ResultSet resultSet, String columnLabel){
         try {
             Blob factoryBlob  = resultSet.getBlob(columnLabel);
             return new String(factoryBlob.getBytes(1L, (int) factoryBlob.length()), StandardCharsets.UTF_8);

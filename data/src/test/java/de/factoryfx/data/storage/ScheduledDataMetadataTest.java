@@ -10,7 +10,7 @@ import java.util.concurrent.TimeUnit;
 
 public class ScheduledDataMetadataTest {
     private ScheduledDataMetadata<Void> createScheduledDataMetadata(LocalDateTime scheduled){
-        return new ScheduledDataMetadata<>(null,"","","","",0,null,scheduled);
+        return new ScheduledDataMetadata<>(null,"","","","",null,null,null,scheduled);
     }
 
 

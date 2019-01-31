@@ -3,10 +3,14 @@ package de.factoryfx.jetty.ssl;
 import com.google.common.io.ByteStreams;
 import de.factoryfx.factory.SimpleFactoryBase;
 import de.factoryfx.factory.atrribute.FactoryReferenceAttribute;
+import de.factoryfx.factory.builder.FactoryTreeBuilder;
+import de.factoryfx.factory.builder.Scope;
 import de.factoryfx.jetty.HttpServerConnectorFactory;
-import de.factoryfx.jetty.JettyServer;
+import de.factoryfx.jetty.JettyServerBuilder;
 import de.factoryfx.jetty.JettyServerFactory;
-import de.factoryfx.jetty.ServletBuilder;
+import de.factoryfx.server.Microservice;
+import de.factoryfx.server.MicroserviceBuilder;
+import org.eclipse.jetty.server.Server;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -22,7 +26,6 @@ import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.X509Certificate;
 import java.util.Arrays;
-import java.util.List;
 
 public class SslContextFactoryFactoryTest {
 
@@ -43,73 +46,79 @@ public class SslContextFactoryFactoryTest {
 
     }
 
-
-
-    public static class TestJettyServerFactory extends JettyServerFactory<Void,TestJettyServerFactory> {
-        public final FactoryReferenceAttribute<TestResource,TestResourceFactory> resource = new FactoryReferenceAttribute<>(TestResourceFactory.class);
+    public static class TestJettyServerFactory extends SimpleFactoryBase<Server,Void, TestJettyServerFactory>{
+        @SuppressWarnings("unchecked")
+        public final FactoryReferenceAttribute<Server,JettyServerFactory<Void, TestJettyServerFactory>> server = FactoryReferenceAttribute.create(new FactoryReferenceAttribute<>(JettyServerFactory.class));
 
         @Override
-        protected void setupServlets(ServletBuilder servletBuilder) {
-            defaultSetupServlets(servletBuilder,Arrays.asList(resource.instance()));
-        }
+        public Server createImpl() {
+            return server.instance();
+        }}
 
-    }
-
+    @SuppressWarnings("unchecked")
     @Test
     public void test_without_ssl() throws IOException {
-        TestJettyServerFactory jettyServerFactory = new TestJettyServerFactory();
-        jettyServerFactory.resource.set(new TestResourceFactory());
-        HttpServerConnectorFactory<Void,TestJettyServerFactory> http = new HttpServerConnectorFactory<>();
-        http.host.set("localhost");
-        http.port.set(8009);
-        jettyServerFactory.connectors.add(http);
+        FactoryTreeBuilder<TestJettyServerFactory> builder = new FactoryTreeBuilder<>(TestJettyServerFactory.class);
+        builder.addFactory(TestJettyServerFactory.class, Scope.SINGLETON);
+        builder.addFactory(JettyServerFactory.class, Scope.SINGLETON, ctx->{
+            return new JettyServerBuilder<>(new JettyServerFactory<Void,TestJettyServerFactory>())
+                    .withHost("localhost").widthPort(8009)
+                    .withResource(ctx.get(TestResourceFactory.class)).build();
+        });
+        builder.addFactory(TestResourceFactory.class, Scope.SINGLETON);
 
-        JettyServer server = jettyServerFactory.internalFactory().instance();
-        server.start();
+        Microservice<Void, Server, TestJettyServerFactory, Object> microservice = MicroserviceBuilder.buildInMemoryMicroservice(builder);
+        try {
+            microservice.start();
 
+            URL url = new URL("http://localhost:8009/test");
+            URLConnection conn = url.openConnection();
+            InputStream is = conn.getInputStream();
+            Assert.assertEquals("Hello World", convertStreamToString(is));
 
-        URL url = new URL("http://localhost:8009/test");
-        URLConnection conn = url.openConnection();
-        InputStream is = conn.getInputStream();
-        Assert.assertEquals("Hello World",convertStreamToString(is));
-
-        server.stop();
+        } catch (Exception e){
+            microservice.stop();
+        }
     }
 
+    @SuppressWarnings("unchecked")
     @Test
-    public void test_with_ssl() throws Exception {
-        TestJettyServerFactory jettyServerFactory = new TestJettyServerFactory();
-        jettyServerFactory.resource.set(new TestResourceFactory());
-        HttpServerConnectorFactory<Void,TestJettyServerFactory> http = new HttpServerConnectorFactory<>();
-        http.host.set("localhost");
-        http.port.set(8009);
-        jettyServerFactory.connectors.add(http);
+    public void test_with_ssl() {
+        FactoryTreeBuilder<TestJettyServerFactory> builder = new FactoryTreeBuilder<>(TestJettyServerFactory.class);
+        builder.addFactory(TestJettyServerFactory.class, Scope.SINGLETON);
+        builder.addFactory(JettyServerFactory.class, Scope.SINGLETON, ctx->{
+            SslContextFactoryFactory<Void,TestJettyServerFactory> ssl = new SslContextFactoryFactory<>();
+            ssl.keyStoreType.set(KeyStoreType.jks);
+            ssl.trustStoreType.set(KeyStoreType.jks);
+            try (InputStream in = getClass().getResourceAsStream("/keystore.jks")){
+                byte[] bytes = ByteStreams.toByteArray(in);
+                ssl.keyStore.set(bytes);
+                ssl.keyStorePassword.set("password");
 
+                ssl.trustStore.set(bytes);
+                ssl.trustStorePassword.set("password");
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
 
-        SslContextFactoryFactory<Void,TestJettyServerFactory> ssl = new SslContextFactoryFactory<>();
-        ssl.keyStoreType.set(KeyStoreType.jks);
-        ssl.trustStoreType.set(KeyStoreType.jks);
-        try (InputStream in = getClass().getResourceAsStream("/keystore.jks")){
-            byte[] bytes = ByteStreams.toByteArray(in);
-            ssl.keyStore.set(bytes);
-            ssl.keyStorePassword.set("password");
+            return new JettyServerBuilder<>(new JettyServerFactory<Void,TestJettyServerFactory>())
+                    .withHost("localhost").widthPort(8009).witdhSsl(ssl)
+                    .withResource(ctx.get(TestResourceFactory.class)).build();
+        });
+        builder.addFactory(TestResourceFactory.class, Scope.SINGLETON);
 
-            ssl.trustStore.set(bytes);
-            ssl.trustStorePassword.set("password");
+        Microservice<Void, Server, TestJettyServerFactory, Object> microservice = MicroserviceBuilder.buildInMemoryMicroservice(builder);
+        try {
+            microservice.start();
+            fixUntrustCertificate();
+            URL url = new URL("https://localhost:8009/test");
+            URLConnection conn = url.openConnection();
+            InputStream is = conn.getInputStream();
+            Assert.assertEquals("Hello World",convertStreamToString(is));
+        } catch (Exception e){
+            microservice.stop();
         }
 
-        http.ssl.set(ssl);
-
-        JettyServer server = jettyServerFactory.internalFactory().instance();
-        server.start();
-
-        fixUntrustCertificate();
-        URL url = new URL("https://localhost:8009/test");
-        URLConnection conn = url.openConnection();
-        InputStream is = conn.getInputStream();
-        Assert.assertEquals("Hello World",convertStreamToString(is));
-
-        server.stop();
     }
 
     public void fixUntrustCertificate() throws KeyManagementException, NoSuchAlgorithmException {

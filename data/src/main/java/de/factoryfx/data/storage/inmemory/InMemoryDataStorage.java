@@ -61,8 +61,7 @@ public class InMemoryDataStorage<R extends Data,S> implements DataStorage<R,S> {
                 user,
                 comment,
                 update.metadata.baseVersionId,
-                update.metadata.dataModelVersion,
-                changeSummaryCreator.createChangeSummary(mergeDiff));
+                changeSummaryCreator.createChangeSummary(mergeDiff),null,null);
 
         final DataAndStoredMetadata<R,S> updateData = new DataAndStoredMetadata<>(update.root, storedDataMetadata);
         storage.put(updateData.metadata.id, updateData);
@@ -79,7 +78,7 @@ public class InMemoryDataStorage<R extends Data,S> implements DataStorage<R,S> {
     @Override
     public void loadInitialFactory() {
         currentFactoryStorageId = UUID.randomUUID().toString();
-        StoredDataMetadata<S> metadata = new StoredDataMetadata<>(currentFactoryStorageId, "System", "initial", currentFactoryStorageId, 0,null);
+        StoredDataMetadata<S> metadata = new StoredDataMetadata<>(currentFactoryStorageId, "System", "initial", currentFactoryStorageId,null,null,null);
         storage.put(currentFactoryStorageId,new DataAndStoredMetadata<>(initialFactory, metadata));
     }
 
@@ -100,14 +99,14 @@ public class InMemoryDataStorage<R extends Data,S> implements DataStorage<R,S> {
 
     @Override
     public ScheduledDataMetadata<S> addFutureFactory(R futureFactory, NewScheduledDataMetadata futureFactoryMetadata, String user, String comment, MergeDiffInfo<R> mergeDiff) {
-        final ScheduledDataMetadata<S> storedFactoryMetadata = new ScheduledDataMetadata<>(
+        final ScheduledDataMetadata<S> storedFactoryMetadata = new ScheduledDataMetadata<S>(
             LocalDateTime.now(),
             UUID.randomUUID().toString(),
             user,
             comment,
             futureFactoryMetadata.newDataMetadata.baseVersionId,
-            futureFactoryMetadata.newDataMetadata.dataModelVersion,
             changeSummaryCreator.createFutureChangeSummary(mergeDiff),
+            null, null,
             futureFactoryMetadata.scheduled
         );
 

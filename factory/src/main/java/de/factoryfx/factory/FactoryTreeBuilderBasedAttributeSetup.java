@@ -81,7 +81,6 @@ public class FactoryTreeBuilderBasedAttributeSetup<R extends FactoryBase<?,?,R>>
         workaround.newValuesProvider(newValuesProvider);
     }
 
-    @SuppressWarnings("unchecked")
     private void applyToAttribute(Attribute<?, ?> attribute) {
         if (attribute instanceof FactoryReferenceAttribute){
             setupReferenceAttribute((FactoryReferenceAttribute)attribute);
