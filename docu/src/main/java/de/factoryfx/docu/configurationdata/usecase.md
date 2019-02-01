@@ -1,11 +1,11 @@
 # Configuration data/properties in factoryfx
 
-##Introduction
+## Introduction
 In factoryfx configuration data are treated like dependencies.
 If a liveobject needs configuration data(for example jdbc url for a database) the data is stored in the corresponding Factory.
 The basic dependencies injection principle: "Don’t Look For Things" also applies to data. So you don't ask a property storage for the data instead they are passed directly from the factory.
 
-##Example
+## Example
 The example consist of a jetty server with a jersey resource. The jersey resource creates a connection to a database.
 For the database connection the resource needs a jdbc url and user/password.
 
@@ -41,7 +41,7 @@ public class DatabaseResourceFactory  extends SimpleFactoryBase<DatabaseResource
 ```
 The configuration data are part of the DatabaseResourceFactory and is passed directly to the DatabaseResource.
 
-##Initial Configuration 
+## Initial Configuration 
 ```java
 public class Main {
     public static void main(String[] args) {
@@ -65,23 +65,24 @@ public class Main {
 ```
 The initial configuration is defined with the FactoryTreeBuilder. 
 To save the configuration we use the use the filesystem storage. That means the Configuration is stored in the file: 'currentFactory.json'.
-For the first start the configuration created from the FactoryTreeBuilder is used. For teh following starts the configuration stored in the file is used.
+For the first start the configuration created from the FactoryTreeBuilder is used. For the following starts the configuration stored in the file is used.
 
 
-##Comparison with property
-For the configuration no additional property file are required. For explanation lets look at the example
-A property file containing the configuration would look like this.
+## Comparison with property
+For the configuration no additional property files are required. The following example serves as an explanation.
+
+A property file containing the configuration data
 ```
 resource.database.url = "jdbc:postgresql://host/database"
 resource.database.user = user
 resource.database.password = 123
 ```
-Reading the properties would like this.
+Reading and using the properties.
 ```java
 public class Main {
     public static void main(String[] args) {
 ...
-        Properties prop = new Properties();
+        Properties property = new Properties();
         prop.load(...);
 ...
         builder.addFactory(WebResourceFactory.class, Scope.SINGLETON, ctx->{
@@ -97,16 +98,16 @@ public class Main {
 }
 ```
 
-##Problems
+## Problems
 There are several problems with this approach.
-###Specific problems in this example
+### Specific problems in this example
 * **Only works for initial configuration**<br>
 In this example it would only work for the first start. (possible to work around but cumbersome)
 * **Data duplication**<br>
 The data is stored in currentFactory.json and in the property file.
 The configuration data is duplicated.
 
-###General problems
+### General problems
 * **No validation**<br>
 User input in the property file is not validated
 * **Fantasy structure**<br>
@@ -122,26 +123,23 @@ The installation process becomes more complicated and therefore automation gets 
 * **Unused properties**<br>
 Hard to detect unused properties and it's hard to figure out where the data is being used.
 
-##But there are only 3 values that can't be that important
+## But there are only 3 values that can't be that important
 A good analogy  is the broken windows theory.
 > Consider a building with a few broken windows. If the windows are not repaired, the tendency is for vandals to break a few more windows. Eventually, they may even break into the building, and if it's unoccupied, perhaps become squatters or light fires inside. 
 
 If you already have a property file you will likely add more properties to it. For example why not add a property to configure the database schema, a connection timeout, or even a feature switch? Over time you will add more and more properties and they become harder and harder to manage.
 
-##But can't i just use a library or different format to fix it?
-Can i just fix the problems by using a different format like yaml, xml, json etc? Or by using a property file library? 
-No! Although some problems can be fixed with those technologies non of them fixes all.
-It's an architecture problem that can't be solved by just focusing on the property file.
 
-##Change the configuration data
-###From inside the same jvm
+## Change the configuration data
+### From inside the same jvm
 ```java
     DataAndNewMetadata<RootFactory> update = microservice.prepareNewFactory();
     update.root.getResource(DatabaseResourceFactory.class).url.set("jdbc:postgresql://host/databasenew");
     microservice.updateCurrentFactory(update,"user","comment",(p)->true);
 ```
-###Rest
-To change the configuration from outside a REST interface is available
+### Rest
+To change the configuration from outside there is a REST interface
+
 Add REST interface to the server:
 ```java
     builder.addFactory(RootFactory.class, Scope.SINGLETON, ctx-> new JettyServerBuilder<>(new RootFactory())
@@ -158,10 +156,10 @@ Using the REST interface with the MicroserviceRestClient.
     microservice.updateCurrentFactory(update, "user", "comment", (p) -> true);
 ```
 
-##Complete code
+## Complete code
 [**code**](https://github.com/factoryfx/factoryfx/tree/master/docu/src/main/java/de/factoryfx/docu/configurationdata)
 
-##Conclusion
+## Conclusion
 The problems with configuration data is one of the reasons for the development of factoryfx.
 It makes no sense to combine factoryfx and property files because factoryfx is a superior replacement for property files and duplicated configuration data are harmful.
 
