@@ -67,8 +67,9 @@ The initial configuration is defined with the FactoryTreeBuilder.
 To save the configuration we use the use the filesystem storage. That means the Configuration is stored in the file: 'currentFactory.json'.
 For the first start the configuration created from the FactoryTreeBuilder is used. For the following starts the configuration stored in the file is used.
 
+Please note that this is only the first initial configuration. The configuration can be changed with microservice api and the changes are stored permanently.
 
-## Comparison with property
+## Comparison with property files
 For the configuration no additional property files are required. The following example serves as an explanation.
 
 A property file containing the configuration data
