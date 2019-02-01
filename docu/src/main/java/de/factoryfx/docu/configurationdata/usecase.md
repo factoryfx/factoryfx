@@ -2,7 +2,7 @@
 
 ## Introduction
 In factoryfx configuration data are treated like dependencies.
-If a liveobject needs configuration data(for example jdbc url for a database) the data is stored in the corresponding Factory.
+If a liveobject needs configuration data (for example jdbc url for a database) the data is stored in the corresponding Factory.
 The basic dependencies injection principle: "Don’t Look For Things" also applies to data. So you don't ask a property storage for the data instead they are passed directly from the factory.
 
 ## Example
@@ -108,7 +108,7 @@ In this example it would only work for the first start. (possible to work around
 The data is stored in currentFactory.json and in the property file.
 The configuration data is duplicated.
 
-### General problems
+### General problems with property files
 * **No validation**<br>
 User input in the property file is not validated
 * **Fantasy structure**<br>
