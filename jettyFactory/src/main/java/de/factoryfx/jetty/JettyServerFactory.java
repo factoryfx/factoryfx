@@ -15,13 +15,20 @@ import java.util.logging.Logger;
  *  usage example.
  *
  *  <pre>{@code
- *      public static class TestWebserverFactory extends JettyServerFactory<Void,RootFactory>{
- *          public final FactoryReferenceAttribute<Resource1,Resource1FactoryBase> resource = new FactoryReferenceAttribute<>(Resource1FactoryBase.class);
- *          @Override
- *          protected void setupServlets(ServletBuilder servletBuilder) {
- *              defaultSetupServlets(servletBuilder, List.of(resource.instance()));
- *          }
- *      }
+        public class SimpleHttpServer extends SimpleFactoryBase<Server, Void, SimpleHttpServer> {
+            @SuppressWarnings("unchecked")
+            public final FactoryReferenceAttribute<Server, JettyServerFactory<Void, SimpleHttpServer>> server = FactoryReferenceAttribute.create(new FactoryReferenceAttribute<>(JettyServerFactory.class));
+
+            @Override
+            public Server createImpl() {
+                return server.instance();
+            }
+        }
+
+        builder.addFactory(JettyServerFactory.class, Scope.SINGLETON, ctx-> new JettyServerBuilder<>(new JettyServerFactory<Void,SimpleHttpServer>())
+            .withHost("localhost").widthPort(8005)
+            .withResource(ctx.get(CustomResourceFactory.class)).build());
+
  *  }</pre>
  */
 public class JettyServerFactory<V,R extends FactoryBase<?,V,R>> extends FactoryBase<Server,V,R> {
@@ -44,9 +51,6 @@ public class JettyServerFactory<V,R extends FactoryBase<?,V,R>> extends FactoryB
 
     public JettyServerFactory(){
         configLifeCycle().setCreator(this::createJetty);
-        configLifeCycle().setReCreator(jettyServer->{
-            return createJetty();//jettyServer.recreate(connectors.instances());
-        });
 
         configLifeCycle().setStarter(this::start);
         configLifeCycle().setDestroyer(this::stop);
@@ -64,11 +68,21 @@ public class JettyServerFactory<V,R extends FactoryBase<?,V,R>> extends FactoryB
         return server;
     }
 
-    /** model Navigation shortcut*/
+    /**
+     * model navigation shortcut, only works with th e default setup form the builder
+     * @param clazz resource clazz
+     * @param <T>  resource type
+     * @return resource
+     */
     public final <T extends FactoryBase> T getResource(Class<T> clazz){
         return getDefaultJerseyServlet().resources.get(clazz);
     }
 
+    /**
+     * model navigation shortcut, only works with th e default setup form the builder
+     * @param resource resource
+     * @param <T> resource type
+     */
     @SuppressWarnings("unchecked")
     public final <T extends FactoryBase> void setResource(T resource){
         JerseyServletFactory<V, R> jerseyServletFactory = getDefaultJerseyServlet();
@@ -76,6 +90,12 @@ public class JettyServerFactory<V,R extends FactoryBase<?,V,R>> extends FactoryB
         jerseyServletFactory.resources.add(resource);
     }
 
+    /**
+     * model navigation shortcut, only works with th e default setup form the builder
+     * @param clazz servlet class
+     * @param <T> servlet type
+     * @return servlet
+     */
     @SuppressWarnings("unchecked")
     public final <T extends FactoryBase> T getServlet(Class<T> clazz){
         ServletContextHandlerFactory<V, R> servletContextHandler = (ServletContextHandlerFactory<V, R>) handler.get().handlers.get(GzipHandlerFactory.class).handler.get();

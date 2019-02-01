@@ -98,7 +98,7 @@ public class FactoryEditManager<V,R extends FactoryBase<?,V,R>> {
         Optional<R> previousRoot=getLoadedFactory();
         final FactoryAndStringifyedStorageMetadata value = ObjectMapperBuilder.build().readValue(target.toFile(), FactoryAndStringifyedStorageMetadata.class);
         //TODO fix null for metadata
-        R serverFactory = migrationManager.read(value.root, null);
+        R serverFactory = migrationManager.read(value.root, value.metadata);
 
         DataAndNewMetadata<R> newFactory = client.prepareNewFactory();
 
