@@ -1,38 +1,7 @@
 package de.factoryfx.jetty;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Type;
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
-import java.util.function.Consumer;
-
-import javax.ws.rs.*;
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.ext.MessageBodyReader;
-import javax.ws.rs.ext.MessageBodyWriter;
-
 import ch.qos.logback.classic.Level;
 import com.google.common.io.ByteStreams;
-import de.factoryfx.data.attribute.types.StringAttribute;
 import de.factoryfx.data.storage.DataAndNewMetadata;
 import de.factoryfx.factory.SimpleFactoryBase;
 import de.factoryfx.factory.atrribute.FactoryReferenceAttribute;
@@ -47,6 +16,31 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.ws.rs.*;
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.Entity;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.ext.MessageBodyReader;
+import javax.ws.rs.ext.MessageBodyWriter;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.nio.charset.StandardCharsets;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 public class JettyServerTest {
     @Path("/Resource1")
@@ -178,194 +172,79 @@ public class JettyServerTest {
         }
     }
 
+    @Path("/Resource")
+    public static class LateResponseTestResource {
 
-//    @Path("/Resource1")
-//    public static class Resource1{
-//        @GET()
-//        public Response get(){
-//            return Response.ok().build();
-//        }
-//    }
-//
-//    @Path("/Resource2")
-//    public static class Resource2{
-//        @GET()
-//        public Response get(){
-//            return Response.ok().build();
-//        }
-//    }
-//
-//    private ServletBuilder servlets(Object ... resources) {
-//        ServletBuilder servletBuilder = new ServletBuilder();
-//        servletBuilder.withJerseyResources("/*",List.of(resources));
-//        return servletBuilder;
-//    }
-//
-//    @Test
-//    public void test_multiple_resources_samepath() throws InterruptedException {
-//        List<HttpServerConnectorCreator> connectors= new ArrayList<>();
-//        connectors.add(new HttpServerConnectorCreator("localhost",8015,null));
-//        JettyServer jettyServer = new JettyServer(connectors,servlets(new Resource1(), new Resource2()));
-//        jettyServer.start();
-////        Thread.sleep(1000);
-//
-//        System.out.println(get(8015,"Resource1"));
-//        System.out.println(get(8015,"Resource2"));
-//        jettyServer.stop();
-//    }
-//
-//    @Path("/Resource")
-//    public static class Resource {
-//        final String answer;
-//
-//        public Resource(String answer) {
-//            this.answer = answer;
-//        }
-//
-//        @GET()
-//        public Response get(){
-//            return Response.ok(answer).build();
-//        }
-//    }
-//
-//    @Test
-//    public void test_recreate() throws InterruptedException {
-//        List<HttpServerConnectorCreator> connectors= new ArrayList<>();
-//        connectors.add(new HttpServerConnectorCreator("localhost",8015,null));
-//        JettyServer jettyServer = new JettyServer(connectors, servlets(new Resource("Hello")));
-//        jettyServer.start();
-////        Thread.sleep(1000);
-//
-//        Assert.assertEquals("Hello",get(8015,"Resource"));
-//        jettyServer = jettyServer.recreate(connectors,servlets(new Resource("World")));
-//        Assert.assertEquals("World",get(8015,"Resource"));
-//        jettyServer.stop();
-//
-//    }
-//
+        public LateResponseTestResource() {
 
-//
-//
-//    @Path("/Resource")
-//    public static class LateResponseTestResource {
-//
-//        public LateResponseTestResource() {
-//
-//        }
-//
-//        @GET()
-//        public Response get() throws InterruptedException {
-//            System.out.println("IN");
-//            try {
-//                Thread.sleep(500);
-//                return Response.ok("RESPONSE").build();
-//            } finally {
-//                System.out.println("Out");
-//            }
-//        }
-//    }
-//
-//
-//    @Test
-//    public void test_lateResponse() throws InterruptedException, ExecutionException, TimeoutException {
-//        List<HttpServerConnectorCreator> connectors= new ArrayList<>();
-//        connectors.add(new HttpServerConnectorCreator("localhost",8015,null));
-//        JettyServer jettyServer = new JettyServer(connectors, servlets(new LateResponseTestResource()));
-//        jettyServer.start();
-//
-//        try {
-//            CompletableFuture<String> lateResponse = new CompletableFuture<>();
-//            new Thread() {
-//                public void run() {
-//                    try {
-//                        lateResponse.complete(get(8015,"Resource"));
-//                    } catch (Exception ex) {
-//                        lateResponse.completeExceptionally(ex);
-//                    }
-//                }
-//            }.start();
-//            Thread.sleep(400);
-//            jettyServer = jettyServer.recreate(connectors,servlets());
-//            try {
-//                get(8015,"Resource");
-//                Assert.fail("Expected exception");
-//            } catch (Exception expected) {}
-//            Assert.assertEquals("RESPONSE",lateResponse.get(1000, TimeUnit.MILLISECONDS));
-//
-//        } finally {
-//            jettyServer.stop();
-//        }
-//
-//
-//    }
-//
-//    @Path("/Killer")
-//    public static class ResourceKiller{
-//        private  Runnable stopper;
-//
-//        private final Consumer<Thread> killerThread;
-//
-//        public ResourceKiller(Consumer<Thread> killerThread) {
-//            this.killerThread = killerThread;
-//        }
-//
-//        public void setStopper(Runnable stopper){
-//            this.stopper = stopper;
-//        }
-//
-//
-//        @GET()
-//        public Response get(){
-//            killerThread.accept(Thread.currentThread());
-//            stopper.run();
-//            return Response.ok().build();
-//        }
-//    }
-//
-//    @Test
-//    public void test_stop_itself() throws InterruptedException {
-//        List<HttpServerConnectorCreator> connectors= new ArrayList<>();
-//        connectors.add(new HttpServerConnectorCreator("localhost",8015,null));
-//        final Thread whichThread[] = new Thread[1];
-//        ResourceKiller killer = new ResourceKiller(t->{
-//            whichThread[0] = t;
-//        });
-//        JettyServer jettyServer = new JettyServer(connectors, servlets(killer));
-//        jettyServer.start();
-//
-//        CompletableFuture<Void> future = new CompletableFuture<>();
-//        killer.setStopper(()->{
-//            jettyServer.stop();
-//            try {
-//                Thread.sleep(10);//some code that trigger interrupted exception if thread is already interrupted(unwanted)
-//                future.complete(null);
-//            } catch (InterruptedException e) {
-//                future.completeExceptionally(e);            }
-//        });
-//
-//        try {
-//            get(8015,"Killer");
-//            Assert.fail("Expected exception");
-//        } catch (Exception expected) {
-//            expected.printStackTrace();
-//        }
-//        try {
-//            future.get();
-//        } catch (ExecutionException e) {
-//            throw new RuntimeException(e);
-//        }
-//        try {
-//            whichThread[0].join(2000);
-//        } catch (InterruptedException e) {
-//            throw new RuntimeException(e);
-//        }
-//        Assert.assertFalse(whichThread[0].isAlive());
-//        Assert.assertTrue(jettyServer.isStopped());
-//
-//
-//
-//    }
-//
+        }
+
+        @GET()
+        public Response get() throws InterruptedException {
+            try {
+                Thread.sleep(400);
+                return Response.ok("RESPONSE").build();
+            } finally {
+            }
+        }
+    }
+
+    public static class LateResponseTestResourceFactory extends SimpleFactoryBase<LateResponseTestResource,Void, JettyServerRootFactory> {
+        @Override
+        public LateResponseTestResource createImpl() {
+            return new LateResponseTestResource();
+        }
+    }
+
+
+
+
+
+    @Test
+    public void test_lateResponse() throws InterruptedException, ExecutionException, TimeoutException {
+
+        FactoryTreeBuilder<JettyServerRootFactory> builder = new FactoryTreeBuilder<>(JettyServerRootFactory.class);
+        builder.addFactory(JettyServerRootFactory.class, Scope.SINGLETON);
+        builder.addFactory(JettyServerFactory.class, Scope.SINGLETON, ctx->{
+            return new JettyServerBuilder<>(new JettyServerFactory<Void,JettyServerRootFactory>())
+                    .withHost("localhost").widthPort(8015)
+                    .withResource(new LateResponseTestResourceFactory()).build();
+        });
+        builder.addFactory(Resource1Factory.class, Scope.SINGLETON, ctx -> {
+            return new Resource1Factory();
+        });
+        Microservice<Void, Server, JettyServerRootFactory, Object> microservice = MicroserviceBuilder.buildInMemoryMicroservice(builder);
+
+        try {
+            microservice.start();
+            CompletableFuture<String> lateResponse = new CompletableFuture<>();
+            HttpClient client = HttpClient.newBuilder().version(HttpClient.Version.HTTP_1_1).build();
+            HttpRequest request = HttpRequest.newBuilder().uri(URI.create("http://localhost:8015/Resource")).GET().build();
+            new Thread() {
+                public void run() {
+                    try {
+                        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+                        lateResponse.complete(response.body());
+                    } catch (Exception ex) {
+                        lateResponse.completeExceptionally(ex);
+                    }
+                }
+            }.start();
+            Thread.sleep(200);
+            DataAndNewMetadata<JettyServerRootFactory> r = microservice.prepareNewFactory();
+            r.root.server.get().clearResource(LateResponseTestResourceFactory.class);
+            microservice.updateCurrentFactory(r,"","",x->true);
+            try {
+                HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+                Assert.assertEquals(404,response.statusCode());
+            } catch (Exception expected) {}
+            Assert.assertEquals("RESPONSE",lateResponse.get(1000, TimeUnit.MILLISECONDS));
+
+        } finally {
+            microservice.stop();
+        }
+    }
+
     static final class MyMime {
         public String data;
     }
