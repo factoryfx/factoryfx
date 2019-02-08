@@ -5,7 +5,6 @@ import de.factoryfx.factory.builder.FactoryTreeBuilder;
 import de.factoryfx.factory.builder.Scope;
 import de.factoryfx.jetty.*;
 import de.factoryfx.server.Microservice;
-import de.factoryfx.server.MicroserviceBuilder;
 import org.eclipse.jetty.server.Server;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,7 +24,7 @@ public class Main {
         ch.qos.logback.classic.Logger root = (ch.qos.logback.classic.Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
         root.setLevel(Level.INFO);
 
-        FactoryTreeBuilder<SimpleHttpServer> builder = new FactoryTreeBuilder<>(SimpleHttpServer.class);
+        FactoryTreeBuilder<Void, Server,SimpleHttpServer,Void> builder = new FactoryTreeBuilder<>(SimpleHttpServer.class);
         builder.addFactory(SimpleHttpServer.class, Scope.SINGLETON);
         builder.addFactory(JettyServerFactory.class, Scope.SINGLETON, ctx-> new JettyServerBuilder<>(new JettyServerFactory<Void,SimpleHttpServer>())
                 .withHost("localhost").widthPort(8005)
@@ -38,7 +37,7 @@ public class Main {
             return webResourceFactory;
         });
 
-        Microservice<Void, Server,SimpleHttpServer,Void> microservice = MicroserviceBuilder.buildInMemoryMicroservice(builder);
+        Microservice<Void, Server,SimpleHttpServer,Void> microservice = builder.microservice().withInMemoryStorage().build();
         microservice.start();
 
         HttpClient client = HttpClient.newBuilder().version(HttpClient.Version.HTTP_1_1).build();

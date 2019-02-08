@@ -1,11 +1,8 @@
 package de.factoryfx.docu.monitoring;
 
 import ch.qos.logback.classic.Level;
-import de.factoryfx.factory.FactoryManager;
-import de.factoryfx.data.storage.inmemory.InMemoryDataStorage;
 import de.factoryfx.factory.builder.FactoryTreeBuilder;
 import de.factoryfx.factory.builder.Scope;
-import de.factoryfx.factory.exception.RethrowingFactoryExceptionHandler;
 import de.factoryfx.jetty.JettyServerBuilder;
 import de.factoryfx.jetty.JettyServerFactory;
 import de.factoryfx.server.Microservice;
@@ -25,7 +22,7 @@ public class Main {
         ch.qos.logback.classic.Logger root = (ch.qos.logback.classic.Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
         root.setLevel(Level.INFO);
 
-        FactoryTreeBuilder<RootFactory> builder = new FactoryTreeBuilder<>(RootFactory.class);
+        FactoryTreeBuilder<ServerVisitor, Server,RootFactory,Void> builder = new FactoryTreeBuilder<>(RootFactory.class);
         builder.addFactory(RootFactory.class, Scope.SINGLETON);
         builder.addFactory(JettyServerFactory.class, Scope.SINGLETON, ctx-> {
             JettyServerFactory<ServerVisitor, RootFactory> server = new JettyServerBuilder<>(new JettyServerFactory<ServerVisitor, RootFactory>()).withHost("localhost").widthPort(34576).withResource(ctx.get(SimpleResourceFactory.class)).build();
@@ -36,7 +33,7 @@ public class Main {
         builder.addFactory(InstrumentedHandlerFactory.class, Scope.SINGLETON);
         builder.addFactory(MetricRegistryFactory.class, Scope.SINGLETON);
 
-        Microservice<ServerVisitor, Server,RootFactory,Void> microservice = new Microservice<>(new FactoryManager<>(new RethrowingFactoryExceptionHandler()),new InMemoryDataStorage<>(builder.buildTree()));
+        Microservice<ServerVisitor, Server,RootFactory,Void> microservice = builder.microservice().withInMemoryStorage().build();
         microservice.start();
 
         //execute some random request as example

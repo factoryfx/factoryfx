@@ -43,8 +43,8 @@ public class StoredDataMetadata<S> {
         this.id = id;
         this.user = user;
         this.comment = comment;
-        this.changeSummary = changeSummary;
         this.baseVersionId = baseVersionId;
+        this.changeSummary = changeSummary;
         this.generalStorageFormat = generalStorageFormat;
         this.dataStorageMetadataDictionary = dataStorageMetadataDictionary;
     }

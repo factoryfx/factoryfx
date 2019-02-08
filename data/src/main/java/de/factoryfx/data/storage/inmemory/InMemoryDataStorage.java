@@ -1,11 +1,9 @@
 package de.factoryfx.data.storage.inmemory;
 
-import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
 import de.factoryfx.data.Data;
-import de.factoryfx.data.merge.MergeDiffInfo;
 import de.factoryfx.data.storage.*;
 
 
@@ -17,74 +15,41 @@ import de.factoryfx.data.storage.*;
 public class InMemoryDataStorage<R extends Data,S> implements DataStorage<R,S> {
     private final Map<String,DataAndStoredMetadata<R,S>> storage = new TreeMap<>();
     private final Map<String,DataAndScheduledMetadata<R,S>> future = new TreeMap<>();
-    private String currentFactoryStorageId;
-    private final R initialFactory;
-    private final ChangeSummaryCreator<R,S> changeSummaryCreator;
-
-    public InMemoryDataStorage(R initialFactory, ChangeSummaryCreator<R,S> changeSummaryCreator){
-        initialFactory.internal().addBackReferences();
-        this.initialFactory=initialFactory;
-        this.changeSummaryCreator = changeSummaryCreator;
-    }
+    private String currentFactoryId;
 
     public InMemoryDataStorage(R initialFactory){
-        this(initialFactory,(d)->null);
+        initialFactory.internal().addBackReferences();
+        this.currentFactoryId=UUID.randomUUID().toString();
+
+        StoredDataMetadata<S> metadata = new StoredDataMetadata<>(currentFactoryId, "System", "initial", currentFactoryId,null,null,null);
+        storage.put(currentFactoryId,new DataAndStoredMetadata<>(initialFactory, metadata));
     }
 
     @Override
     public R getHistoryFactory(String id) {
         DataAndStoredMetadata<R,S> data = storage.get(id);
-        return data.root.internal().copy();
+        return data.root.utility().copy();
     }
 
     @Override
     public Collection<StoredDataMetadata<S>> getHistoryFactoryList() {
-        return storage.values().stream()/*.filter(factory -> !factory.metadata.id.equals(current))*/.map(item -> item.metadata).collect(Collectors.toList());
+        return storage.values().stream().map(item -> item.metadata).collect(Collectors.toList());
     }
 
     @Override
-    public DataAndStoredMetadata<R,S> getCurrentFactory() {
-        DataAndStoredMetadata<R,S> result = storage.get(currentFactoryStorageId);
-        return new DataAndStoredMetadata<>(result.root.internal().copy(),result.metadata);
+    public DataAndId<R> getCurrentFactory() {
+        return new DataAndId<>(storage.get(currentFactoryId).root,currentFactoryId);
     }
 
     @Override
-    public String getCurrentFactoryStorageId() {
-        return currentFactoryStorageId;
-    }
-
-    @Override
-    public void updateCurrentFactory(DataAndNewMetadata<R> update, String user, String comment, MergeDiffInfo<R> mergeDiff) {
-        final StoredDataMetadata<S> storedDataMetadata = new StoredDataMetadata<>(
-                LocalDateTime.now(),
-                UUID.randomUUID().toString(),
-                user,
-                comment,
-                update.metadata.baseVersionId,
-                changeSummaryCreator.createChangeSummary(mergeDiff),null,null);
-
-        final DataAndStoredMetadata<R,S> updateData = new DataAndStoredMetadata<>(update.root, storedDataMetadata);
-        storage.put(updateData.metadata.id, updateData);
-        currentFactoryStorageId =updateData.metadata.id;
-    }
-
-    @Override
-    public DataAndNewMetadata<R> prepareNewFactory(String currentFactoryStorageId, R currentFactoryCopy){
-        NewDataMetadata metadata = new NewDataMetadata();
-        metadata.baseVersionId=currentFactoryStorageId;
-        return new DataAndNewMetadata<>(currentFactoryCopy,metadata);
-    }
-
-    @Override
-    public void loadInitialFactory() {
-        currentFactoryStorageId = UUID.randomUUID().toString();
-        StoredDataMetadata<S> metadata = new StoredDataMetadata<>(currentFactoryStorageId, "System", "initial", currentFactoryStorageId,null,null,null);
-        storage.put(currentFactoryStorageId,new DataAndStoredMetadata<>(initialFactory, metadata));
+    public void updateCurrentFactory(DataAndStoredMetadata<R,S> update) {
+        storage.put(update.metadata.id, update);
+        currentFactoryId=update.metadata.id;
     }
 
     @Override
     public Collection<ScheduledDataMetadata<S>> getFutureFactoryList() {
-        return future.values().stream()/*.filter(factory -> !factory.metadata.id.equals(current))*/.map(item -> item.metadata).collect(Collectors.toList());
+        return future.values().stream().map(item -> item.metadata).collect(Collectors.toList());
     }
 
     @Override
@@ -98,21 +63,8 @@ public class InMemoryDataStorage<R extends Data,S> implements DataStorage<R,S> {
     }
 
     @Override
-    public ScheduledDataMetadata<S> addFutureFactory(R futureFactory, NewScheduledDataMetadata futureFactoryMetadata, String user, String comment, MergeDiffInfo<R> mergeDiff) {
-        final ScheduledDataMetadata<S> storedFactoryMetadata = new ScheduledDataMetadata<S>(
-            LocalDateTime.now(),
-            UUID.randomUUID().toString(),
-            user,
-            comment,
-            futureFactoryMetadata.newDataMetadata.baseVersionId,
-            changeSummaryCreator.createFutureChangeSummary(mergeDiff),
-            null, null,
-            futureFactoryMetadata.scheduled
-        );
-
-        final DataAndScheduledMetadata<R,S> updateData = new DataAndScheduledMetadata<>(futureFactory, storedFactoryMetadata);
-        future.put(updateData.metadata.id, updateData);
-        return storedFactoryMetadata;
+    public void addFutureFactory(DataAndScheduledMetadata<R,S> futureFactory) {
+        future.put(futureFactory.metadata.id, futureFactory);
     }
 
 }

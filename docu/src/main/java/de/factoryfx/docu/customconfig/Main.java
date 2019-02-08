@@ -1,11 +1,8 @@
 package de.factoryfx.docu.customconfig;
 
 import ch.qos.logback.classic.Level;
-import de.factoryfx.data.storage.inmemory.InMemoryDataStorage;
-import de.factoryfx.factory.FactoryManager;
 import de.factoryfx.factory.builder.FactoryTreeBuilder;
 import de.factoryfx.factory.builder.Scope;
-import de.factoryfx.factory.exception.RethrowingFactoryExceptionHandler;
 import de.factoryfx.jetty.JettyServerBuilder;
 import de.factoryfx.jetty.JettyServerFactory;
 import de.factoryfx.server.Microservice;
@@ -25,7 +22,7 @@ public class Main {
         ch.qos.logback.classic.Logger root = (ch.qos.logback.classic.Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
         root.setLevel(Level.ERROR);
 
-        FactoryTreeBuilder<ServerFactory> builder = new FactoryTreeBuilder<>(ServerFactory.class);
+        FactoryTreeBuilder<Void, Server, ServerFactory,Void> builder = new FactoryTreeBuilder<>(ServerFactory.class);
         builder.addFactory(ServerFactory.class, Scope.SINGLETON);
         builder.addFactory(JettyServerFactory.class, Scope.SINGLETON, ctx-> new JettyServerBuilder<>(new JettyServerFactory<Void, ServerFactory>())
                 .withHost("localhost").widthPort(8005)
@@ -33,10 +30,7 @@ public class Main {
         builder.addFactory(CustomConfigurationResourceFactory.class, Scope.SINGLETON);
 
 
-
-
-        Microservice<Void, Server, ServerFactory,Void> microservice
-                = new Microservice<>(new FactoryManager<>(new RethrowingFactoryExceptionHandler()),new InMemoryDataStorage<>(builder.buildTree()));
+        Microservice<Void, Server, ServerFactory,Void> microservice = builder.microservice().withInMemoryStorage().build();
         microservice.start();
 
         ping(8005);

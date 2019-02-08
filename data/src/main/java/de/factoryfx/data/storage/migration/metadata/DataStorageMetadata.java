@@ -23,14 +23,6 @@ public class DataStorageMetadata {
         this.className = className;
     }
 
-    public void compatibleCheck(DataStorageMetadata newDataStorageMetadata,CompatibleCheckResult compatibleCheckResult) {
-        for (AttributeStorageMetadata attribute : attributes) {
-            for (AttributeStorageMetadata newAttribute : newDataStorageMetadata.attributes) {
-//                attribute.compatibleCheck(newAttribute, compatibleCheckResult);
-            }
-        }
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

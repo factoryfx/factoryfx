@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import de.factoryfx.data.Data;
-import de.factoryfx.data.merge.MergeDiffInfo;
 
 /**
  * storage/load and history for factories
@@ -48,43 +47,22 @@ public interface DataStorage<R extends Data, S> {
 
     /**
      * @param futureFactory futureFactory
-     * @param futureFactoryMetadata futureFactoryMetadata
-     * @param user user
-     * @param comment comment
-     * @param mergeDiff mergeDiff
      * @return the added factory metadata
      */
-    default ScheduledDataMetadata<S> addFutureFactory(R futureFactory, NewScheduledDataMetadata futureFactoryMetadata, String user, String comment, MergeDiffInfo<R> mergeDiff) {
+    default void addFutureFactory(DataAndScheduledMetadata<R,S> futureFactory) {
         throw new UnsupportedOperationException();
     }
 
-
-    DataAndStoredMetadata<R,S> getCurrentFactory();
-
-    String getCurrentFactoryStorageId();
-
-
-    DataAndNewMetadata<R> prepareNewFactory(String currentFactoryStorageId, R currentFactoryCopy);
-
     /**
-     * prepare a new factory which could be used to update data. mainly give it the correct baseVersionId
-     * @return new possible factory update with prepared ids/metadata
+     * get the current factory, if first start or no available an initial factory is created
+     * @return current factory
      * */
-    default DataAndNewMetadata<R> prepareNewFactory(){
-        return prepareNewFactory(getCurrentFactoryStorageId(),getCurrentFactory().root.utility().copy());
-    }
+    DataAndId<R> getCurrentFactory();
 
     /**
      * updateCurrentFactory and history
      * @param update update
-     * @param user user
-     * @param comment comment
-     * @param mergeDiff mergeDiff
      */
-    void  updateCurrentFactory(DataAndNewMetadata<R> update, String user, String comment, MergeDiffInfo<R> mergeDiff);
+    void updateCurrentFactory(DataAndStoredMetadata<R,S> update);
 
-    /**
-     * at Application start load current Factory
-     * */
-    void loadInitialFactory();
 }

@@ -1,17 +1,20 @@
 package de.factoryfx.docu.dependencyinjection;
 
-import de.factoryfx.factory.FactoryManager;
-import de.factoryfx.data.storage.inmemory.InMemoryDataStorage;
-import de.factoryfx.factory.exception.RethrowingFactoryExceptionHandler;
+import de.factoryfx.factory.builder.FactoryTreeBuilder;
+import de.factoryfx.factory.builder.Scope;
 import de.factoryfx.server.Microservice;
 
 public class Main {
 
     public static void main(String[] args) {
-        RootFactory rootFactory = new RootFactory();
-        rootFactory.dependency.set(new DependencyFactory());
+        FactoryTreeBuilder<Void,Root,RootFactory,Void> builder = new FactoryTreeBuilder<>(RootFactory.class);
+        builder.addFactory(RootFactory.class, Scope.SINGLETON, ctx-> {
+            RootFactory rootFactory = new RootFactory();
+            rootFactory.dependency.set(new DependencyFactory());
+            return rootFactory;
+        });
 
-        Microservice<Void,Root,RootFactory,Void> microservice = new Microservice<>(new FactoryManager<>(new RethrowingFactoryExceptionHandler()),new InMemoryDataStorage<>(rootFactory));
+        Microservice<Void,Root,RootFactory,Void> microservice = builder.microservice().withInMemoryStorage().build();
         microservice.start();
 
     }

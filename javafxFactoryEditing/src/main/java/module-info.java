@@ -4,6 +4,7 @@ module de.factoryfx.javafxFactoryEditing {
     requires transitive de.factoryfx.factory;
     requires transitive de.factoryfx.javafxDataEditing;
     requires transitive de.factoryfx.microserviceRestClient;
+    requires com.fasterxml.jackson.databind;
 
     exports de.factoryfx.javafx.factory;
 

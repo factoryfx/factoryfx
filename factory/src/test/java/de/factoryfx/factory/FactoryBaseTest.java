@@ -397,4 +397,11 @@ public class FactoryBaseTest {
         Assert.assertTrue(root.xFactory.get().xFactory2.get().needRecreation);
         Assert.assertTrue(root.xFactory.get().xFactory2.get().xFactory3.get().needRecreation);
     }
+
+    @Test
+    public void test_copy_reflist_copied(){
+        ExampleFactoryA original = new ExampleFactoryA();
+        ExampleFactoryA copy = original.internal().copy();
+        Assert.assertFalse(original.referenceListAttribute==copy.referenceListAttribute);
+    }
 }

@@ -5,14 +5,16 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import de.factoryfx.data.storage.DataAndStoredMetadata;
+import de.factoryfx.factory.builder.FactoryTreeBuilder;
+import de.factoryfx.factory.builder.Scope;
 import org.junit.Assert;
 import org.junit.Test;
 
-import de.factoryfx.data.storage.DataAndNewMetadata;
 import de.factoryfx.factory.atrribute.FactoryReferenceAttribute;
 import de.factoryfx.factory.log.FactoryUpdateLog;
 import de.factoryfx.server.Microservice;
-import de.factoryfx.server.MicroserviceBuilder;
+import de.factoryfx.factory.builder.MicroserviceBuilder;
 
 public class FactoryDepTopDownTest {
 
@@ -57,14 +59,25 @@ public class FactoryDepTopDownTest {
 
     @Test
     public void topDownTest(){
-        RootFactory rootFactory = new RootFactory();
-        ObjectFactory first = new ObjectFactory();
-        ObjectFactory second = new ObjectFactory();
-        rootFactory.object1.set(first);
-        rootFactory.object2.set(second);
-        Microservice<Void, String,RootFactory, Void> microService = MicroserviceBuilder.buildInMemoryMicroservice(rootFactory);
+
+        FactoryTreeBuilder<Void, String,RootFactory, Void> builder = new FactoryTreeBuilder<>(RootFactory.class);
+        builder.addFactory(RootFactory.class, Scope.SINGLETON, ctx->{
+            final RootFactory rootFactory = new RootFactory();
+            ObjectFactory first = new ObjectFactory();
+            ObjectFactory second = new ObjectFactory();
+            rootFactory.object1.set(first);
+            rootFactory.object2.set(second);
+            return rootFactory;
+        });
+
+
+        Microservice<Void, String,RootFactory, Void> microService = builder.microservice().withInMemoryStorage().build();
         microService.start();
 
+        DataAndStoredMetadata<RootFactory, Void> current = microService.prepareNewFactory();
+        RootFactory rootFactory=current.root;
+        ObjectFactory first=rootFactory.object1.get();
+        ObjectFactory second=rootFactory.object2.get();
         {
             Assert.assertTrue(creator.contains(rootFactory.getId()));
             Assert.assertTrue(creator.contains(first.getId()));
@@ -75,11 +88,11 @@ public class FactoryDepTopDownTest {
             destroyer.clear();
 
             System.out.println("update started");
-            DataAndNewMetadata<RootFactory> update1 = microService.prepareNewFactory();
+            DataAndStoredMetadata<RootFactory,Void> update1 = microService.prepareNewFactory();
             ObjectFactory secondV2 = new ObjectFactory();
             update1.root.object2.set(secondV2);
 
-            FactoryUpdateLog<RootFactory> res1 = microService.updateCurrentFactory(update1, "root", "update1", s -> true);
+            FactoryUpdateLog<RootFactory> res1 = microService.updateCurrentFactory(update1);
             Assert.assertTrue(res1.successfullyMerged());
 
             Assert.assertTrue(creator.contains(rootFactory.getId()));

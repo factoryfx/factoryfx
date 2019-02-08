@@ -1,6 +1,7 @@
 package de.factoryfx.data.jackson;
 
 import java.io.*;
+import java.nio.file.Path;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -78,6 +79,14 @@ public class SimpleObjectMapper {
         }
     }
 
+    public JsonNode readTree(Path path){
+        try {
+            return objectMapper.readTree(path.toFile());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public String writeTree(JsonNode node){
         try {
             ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -87,6 +96,29 @@ public class SimpleObjectMapper {
             throw new RuntimeException(e);
         }
     }
+
+    public JsonNode writeValueAsTree(Object object) {
+        return objectMapper.valueToTree(object);
+    }
+
+
+    public <R extends Data> R treeToValue(JsonNode jsonNode, Class<R> rootClass) {
+        try {
+            return objectMapper.treeToValue(jsonNode,rootClass);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    public <T> T treeToValueUnsafe(JsonNode jsonNode, Class<T> rootClass) {
+        try {
+            return objectMapper.treeToValue(jsonNode,rootClass);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
 
     private interface ReaderFunction<T> {
         T read() throws IOException;

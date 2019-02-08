@@ -1,13 +1,10 @@
 package de.factoryfx.docu.swagger;
 
 import ch.qos.logback.classic.Level;
-import de.factoryfx.data.storage.inmemory.InMemoryDataStorage;
-import de.factoryfx.factory.FactoryManager;
 import de.factoryfx.factory.SimpleFactoryBase;
 import de.factoryfx.factory.atrribute.FactoryReferenceAttribute;
 import de.factoryfx.factory.builder.FactoryTreeBuilder;
 import de.factoryfx.factory.builder.Scope;
-import de.factoryfx.factory.exception.RethrowingFactoryExceptionHandler;
 import de.factoryfx.jetty.*;
 import de.factoryfx.server.Microservice;
 import org.eclipse.jetty.server.Server;
@@ -37,7 +34,7 @@ public class Main {
         ch.qos.logback.classic.Logger root = (ch.qos.logback.classic.Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
         root.setLevel(Level.INFO);
 
-        FactoryTreeBuilder<SwaggerWebserver> builder = new FactoryTreeBuilder<>(SwaggerWebserver.class);
+        FactoryTreeBuilder<Void, Server, SwaggerWebserver,Void> builder = new FactoryTreeBuilder<>(SwaggerWebserver.class);
         builder.addFactory(SwaggerWebserver.class, Scope.SINGLETON);
         builder.addFactory(JettyServerFactory.class, Scope.SINGLETON, ctx-> new JettyServerBuilder<>(new JettyServerFactory<Void,SwaggerWebserver>())
                 .withHost("localhost").widthPort(8005)
@@ -45,7 +42,7 @@ public class Main {
         builder.addFactory(HelloWorldResourceFactory.class, Scope.SINGLETON);
 
         Microservice<Void, Server, SwaggerWebserver,Void> microservice
-                = new Microservice<>(new FactoryManager<>(new RethrowingFactoryExceptionHandler()),new InMemoryDataStorage<>(builder.buildTree()));
+                = builder.microservice().withInMemoryStorage().build();
         microservice.start();
 
 

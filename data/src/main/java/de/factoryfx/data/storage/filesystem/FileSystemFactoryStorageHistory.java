@@ -46,23 +46,22 @@ public class FileSystemFactoryStorageHistory<R extends Data,S> {
     }
 
     public Collection<StoredDataMetadata<S>> getHistoryFactoryList() {
+        if (cache.isEmpty()) {
+            try (Stream<Path> files = Files.walk(historyDirectory).filter(Files::isRegularFile)){
+                files.forEach(path -> {
+                    if (path.toString().endsWith("_metadata.json")){
+                        StoredDataMetadata<S> storedDataMetadata = migrationManager.readStoredFactoryMetadata(readFile(path));
+                        cache.put(storedDataMetadata.id, storedDataMetadata);
+                    }
+                });
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
         return cache.values();
     }
 
-    public void initFromFileSystem(){
-        try (Stream<Path> files = Files.walk(historyDirectory).filter(Files::isRegularFile)){
-            files.forEach(path -> {
-                if (path.toString().endsWith("_metadata.json")){
-                    StoredDataMetadata<S> storedDataMetadata = migrationManager.readStoredFactoryMetadata(readFile(path));
-                    cache.put(storedDataMetadata.id, storedDataMetadata);
-                }
-            });
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public void updateHistory(StoredDataMetadata<S> metadata, R factoryRoot) {
+    public void updateHistory(R factoryRoot, StoredDataMetadata<S> metadata) {
         String id=metadata.id;
 
         writeFile(Paths.get(historyDirectory.toString()+"/"+id+".json"), migrationManager.write(factoryRoot));

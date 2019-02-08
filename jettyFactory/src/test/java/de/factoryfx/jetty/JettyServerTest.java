@@ -1,31 +1,5 @@
 package de.factoryfx.jetty;
 
-import ch.qos.logback.classic.Level;
-import com.google.common.io.ByteStreams;
-import de.factoryfx.data.storage.DataAndNewMetadata;
-import de.factoryfx.factory.SimpleFactoryBase;
-import de.factoryfx.factory.atrribute.FactoryReferenceAttribute;
-import de.factoryfx.factory.builder.FactoryTreeBuilder;
-import de.factoryfx.factory.builder.Scope;
-import de.factoryfx.server.Microservice;
-import de.factoryfx.server.MicroserviceBuilder;
-import org.eclipse.jetty.server.Server;
-import org.glassfish.jersey.client.ClientConfig;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import javax.ws.rs.*;
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.ext.MessageBodyReader;
-import javax.ws.rs.ext.MessageBodyWriter;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -41,6 +15,33 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+
+import javax.ws.rs.*;
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.Entity;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.ext.MessageBodyReader;
+import javax.ws.rs.ext.MessageBodyWriter;
+
+import ch.qos.logback.classic.Level;
+import com.google.common.io.ByteStreams;
+import de.factoryfx.data.storage.DataAndStoredMetadata;
+import de.factoryfx.factory.SimpleFactoryBase;
+import de.factoryfx.factory.atrribute.FactoryReferenceAttribute;
+import de.factoryfx.factory.builder.FactoryTreeBuilder;
+import de.factoryfx.factory.builder.Scope;
+import de.factoryfx.server.Microservice;
+import de.factoryfx.factory.builder.MicroserviceBuilder;
+import org.eclipse.jetty.server.Server;
+import org.glassfish.jersey.client.ClientConfig;
+import org.junit.Assert;
+import org.junit.BeforeClass;
+import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class JettyServerTest {
     @Path("/Resource1")
@@ -76,8 +77,8 @@ public class JettyServerTest {
 
     @SuppressWarnings("unchecked")
     @Test
-    public void test_change_port() throws InterruptedException {
-        FactoryTreeBuilder<JettyServerRootFactory> builder = new FactoryTreeBuilder<>(JettyServerRootFactory.class);
+    public void test_change_port() {
+        FactoryTreeBuilder<Void, Server, JettyServerRootFactory, Void> builder = new FactoryTreeBuilder<>(JettyServerRootFactory.class);
         builder.addFactory(JettyServerRootFactory.class, Scope.SINGLETON);
         builder.addFactory(JettyServerFactory.class, Scope.SINGLETON, ctx->{
             return new JettyServerBuilder<>(new JettyServerFactory<Void,JettyServerRootFactory>())
@@ -87,7 +88,7 @@ public class JettyServerTest {
         builder.addFactory(Resource1Factory.class, Scope.SINGLETON, ctx -> {
             return new Resource1Factory();
         });
-        Microservice<Void, Server, JettyServerRootFactory, Object> microservice = MicroserviceBuilder.buildInMemoryMicroservice(builder);
+        Microservice<Void, Server, JettyServerRootFactory, Void> microservice = builder.microservice().withInMemoryStorage().build();
         try {
             microservice.start();
 
@@ -100,9 +101,9 @@ public class JettyServerTest {
                 throw new RuntimeException(e);
             }
 
-            DataAndNewMetadata<JettyServerRootFactory> update = microservice.prepareNewFactory();
+            DataAndStoredMetadata<JettyServerRootFactory,Void> update = microservice.prepareNewFactory();
             update.root.server.get().connectorManager.get().connectors.get(0).port.set(8081);
-            microservice.updateCurrentFactory(update, "", "", (p) -> true);
+            microservice.updateCurrentFactory(update);
 
 
             try {
@@ -130,7 +131,7 @@ public class JettyServerTest {
     @SuppressWarnings("unchecked")
     @Test
     public void test_remove_connector() {
-        FactoryTreeBuilder<JettyServerRootFactory> builder = new FactoryTreeBuilder<>(JettyServerRootFactory.class);
+        FactoryTreeBuilder<Void, Server, JettyServerRootFactory, Void> builder = new FactoryTreeBuilder<>(JettyServerRootFactory.class);
         builder.addFactory(JettyServerRootFactory.class, Scope.SINGLETON);
         builder.addFactory(JettyServerFactory.class, Scope.SINGLETON, ctx->{
             return new JettyServerBuilder<>(new JettyServerFactory<Void,JettyServerRootFactory>())
@@ -140,7 +141,7 @@ public class JettyServerTest {
         builder.addFactory(Resource1Factory.class, Scope.SINGLETON, ctx -> {
             return new Resource1Factory();
         });
-        Microservice<Void, Server, JettyServerRootFactory, Object> microservice = MicroserviceBuilder.buildInMemoryMicroservice(builder);
+        Microservice<Void, Server, JettyServerRootFactory, Void> microservice = builder.microservice().withInMemoryStorage().build();
         try{
             microservice.start();
 
@@ -153,9 +154,9 @@ public class JettyServerTest {
                 throw new RuntimeException(e);
             }
 
-            DataAndNewMetadata<JettyServerRootFactory> update = microservice.prepareNewFactory();
+            DataAndStoredMetadata<JettyServerRootFactory,Void> update = microservice.prepareNewFactory();
             update.root.server.get().connectorManager.get().connectors.clear();
-            microservice.updateCurrentFactory(update,"","",(p)->true);
+            microservice.updateCurrentFactory(update);
 
 
             try {
@@ -196,14 +197,11 @@ public class JettyServerTest {
         }
     }
 
-
-
-
-
+    @SuppressWarnings("unchecked")
     @Test
     public void test_lateResponse() throws InterruptedException, ExecutionException, TimeoutException {
 
-        FactoryTreeBuilder<JettyServerRootFactory> builder = new FactoryTreeBuilder<>(JettyServerRootFactory.class);
+        FactoryTreeBuilder<Void, Server, JettyServerRootFactory, Void> builder = new FactoryTreeBuilder<>(JettyServerRootFactory.class);
         builder.addFactory(JettyServerRootFactory.class, Scope.SINGLETON);
         builder.addFactory(JettyServerFactory.class, Scope.SINGLETON, ctx->{
             return new JettyServerBuilder<>(new JettyServerFactory<Void,JettyServerRootFactory>())
@@ -213,7 +211,7 @@ public class JettyServerTest {
         builder.addFactory(Resource1Factory.class, Scope.SINGLETON, ctx -> {
             return new Resource1Factory();
         });
-        Microservice<Void, Server, JettyServerRootFactory, Object> microservice = MicroserviceBuilder.buildInMemoryMicroservice(builder);
+        Microservice<Void, Server, JettyServerRootFactory, Void> microservice = builder.microservice().withInMemoryStorage().build();
 
         try {
             microservice.start();
@@ -231,9 +229,9 @@ public class JettyServerTest {
                 }
             }.start();
             Thread.sleep(200);
-            DataAndNewMetadata<JettyServerRootFactory> r = microservice.prepareNewFactory();
-            r.root.server.get().clearResource(LateResponseTestResourceFactory.class);
-            microservice.updateCurrentFactory(r,"","",x->true);
+            DataAndStoredMetadata<JettyServerRootFactory,Void> update = microservice.prepareNewFactory();
+            update.root.server.get().clearResource(LateResponseTestResourceFactory.class);
+            microservice.updateCurrentFactory(update);
             try {
                 HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
                 Assert.assertEquals(404,response.statusCode());
@@ -299,7 +297,7 @@ public class JettyServerTest {
     @SuppressWarnings("unchecked")
     @Test
     public void testMessageBodyReader() {
-        FactoryTreeBuilder<JettyServerRootFactory> builder = new FactoryTreeBuilder<>(JettyServerRootFactory.class);
+        FactoryTreeBuilder<Void, Server, JettyServerRootFactory, Void> builder = new FactoryTreeBuilder<>(JettyServerRootFactory.class);
         builder.addFactory(JettyServerRootFactory.class, Scope.SINGLETON);
         builder.addFactory(JettyServerFactory.class, Scope.SINGLETON, ctx->{
             return new JettyServerBuilder<>(new JettyServerFactory<Void,JettyServerRootFactory>())
@@ -310,7 +308,7 @@ public class JettyServerTest {
         });
         builder.addFactory(MessageBodyReaderWriterEchoFactory.class, Scope.SINGLETON);
 
-        Microservice<Void, Server, JettyServerRootFactory, Object> microservice = MicroserviceBuilder.buildInMemoryMicroservice(builder);
+        Microservice<Void, Server, JettyServerRootFactory, Void> microservice = builder.microservice().withInMemoryStorage().build();
         try{
             microservice.start();
 

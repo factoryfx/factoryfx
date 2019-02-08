@@ -1,13 +1,10 @@
 package de.factoryfx.docu.persistentstorage;
 
-import de.factoryfx.data.storage.migration.metadata.DataStorageMetadataDictionary;
-import de.factoryfx.data.storage.migration.GeneralStorageMetadataBuilder;
-import de.factoryfx.factory.FactoryManager;
-import de.factoryfx.data.storage.DataAndNewMetadata;
-import de.factoryfx.data.storage.migration.MigrationManager;
+import de.factoryfx.data.storage.DataAndStoredMetadata;
+import de.factoryfx.factory.builder.FactoryTreeBuilder;
+import de.factoryfx.factory.builder.Scope;
 import de.factoryfx.factory.datastorage.postgres.DisableAutocommitDatasource;
 import de.factoryfx.factory.datastorage.postgres.PostgresDataStorage;
-import de.factoryfx.factory.exception.RethrowingFactoryExceptionHandler;
 import de.factoryfx.server.Microservice;
 import org.postgresql.ds.PGSimpleDataSource;
 import org.postgresql.jdbc.AutoSave;
@@ -17,7 +14,6 @@ import ru.yandex.qatools.embed.postgresql.PostgresStarter;
 import ru.yandex.qatools.embed.postgresql.config.PostgresConfig;
 
 import java.io.IOException;
-import java.util.List;
 
 public class Main {
 
@@ -39,23 +35,30 @@ public class Main {
 
         System.out.println("\n\n\n\n\n\n\n\n");
 
-        RootFactory root = new RootFactory();
-        root.stringAttribute.set("1");
-        MigrationManager<RootFactory,Void> serialisationManager = new MigrationManager<>(RootFactory.class, List.of(), GeneralStorageMetadataBuilder.build(), List.of(), new DataStorageMetadataDictionary(RootFactory.class));
-        PostgresDataStorage<RootFactory,Void> postgresFactoryStorage = new PostgresDataStorage<>(datasource, root, serialisationManager);
 
-
-        Microservice<Void, Root, RootFactory,Void> microservice = new Microservice<>(new FactoryManager<>(new RethrowingFactoryExceptionHandler()),postgresFactoryStorage);
+        FactoryTreeBuilder<Void, Root, RootFactory,Void> builder = new FactoryTreeBuilder<>(RootFactory.class);
+        builder.addFactory(RootFactory.class, Scope.SINGLETON, xtc -> {
+            RootFactory root = new RootFactory();
+            root.stringAttribute.set("1");
+            return root;
+        });
+        Microservice<Void, Root, RootFactory, Void> microservice = builder.microservice().withStorage((initialFactory, migrationManager) -> {
+            return new PostgresDataStorage<>(datasource, initialFactory, migrationManager);
+        }).build();
         microservice.start();
+
         //output is 1 from initial factory
 
-        DataAndNewMetadata<RootFactory> update = microservice.prepareNewFactory();
+        DataAndStoredMetadata<RootFactory,Void> update = microservice.prepareNewFactory();
         update.root.stringAttribute.set("2");
-        microservice.updateCurrentFactory(update, "", "", s -> true);
+        microservice.updateCurrentFactory(update);
         //output is 2 from initial factory
 
         microservice.stop();
-        Microservice<Void, Root, RootFactory,Void> newMicroservice = new Microservice<>(new FactoryManager<>(new RethrowingFactoryExceptionHandler()),postgresFactoryStorage);
+
+        Microservice<Void, Root, RootFactory,Void> newMicroservice = builder.microservice().withStorage((initialFactory, migrationManager) -> {
+            return new PostgresDataStorage<>(datasource, initialFactory, migrationManager);
+        }).build();
         newMicroservice.start();
         //output is 2 again from the saved update
 

@@ -10,17 +10,23 @@ public class DataStorageMetadataDictionaryTest {
 
     @Test
     public void test_json(){
-        ObjectMapperBuilder.build().copy(new DataStorageMetadataDictionary(ExampleDataA.class));
-        System.out.println( ObjectMapperBuilder.build().writeValueAsString(new DataStorageMetadataDictionary(ExampleDataA.class)));
+        ObjectMapperBuilder.build().copy(createDataStorageMetadataDictionaryFromRoot());
+//        System.out.println( ObjectMapperBuilder.build().writeValueAsString(new DataStorageMetadataDictionary(ExampleDataA.class)));
+    }
+
+    private DataStorageMetadataDictionary createDataStorageMetadataDictionaryFromRoot() {
+        ExampleDataA exampleDataA = new ExampleDataA();
+        exampleDataA.internal().addBackReferences();
+        return exampleDataA.internal().createDataStorageMetadataDictionaryFromRoot();
     }
 
     @Test
     public void test_json_stable(){
-        Assert.assertEquals(ObjectMapperBuilder.build().writeValueAsString(new DataStorageMetadataDictionary(ExampleDataA.class)),ObjectMapperBuilder.build().writeValueAsString(new DataStorageMetadataDictionary(ExampleDataA.class)));
+        Assert.assertEquals(ObjectMapperBuilder.build().writeValueAsString(createDataStorageMetadataDictionaryFromRoot()),ObjectMapperBuilder.build().writeValueAsString(createDataStorageMetadataDictionaryFromRoot()));
     }
 
     @Test
     public void test_init(){
-        Assert.assertEquals(3,new DataStorageMetadataDictionary(ExampleDataA.class).dataStorageMetadataList.size());
+        Assert.assertEquals(1, createDataStorageMetadataDictionaryFromRoot().dataStorageMetadataList.size());
     }
 }

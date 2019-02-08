@@ -2,13 +2,13 @@ package de.factoryfx.jetty;
 
 import ch.qos.logback.classic.Level;
 import de.factoryfx.data.attribute.types.StringAttribute;
-import de.factoryfx.data.storage.DataAndNewMetadata;
+import de.factoryfx.data.storage.DataAndStoredMetadata;
 import de.factoryfx.factory.SimpleFactoryBase;
 import de.factoryfx.factory.atrribute.FactoryReferenceAttribute;
 import de.factoryfx.factory.builder.FactoryTreeBuilder;
 import de.factoryfx.factory.builder.Scope;
 import de.factoryfx.server.Microservice;
-import de.factoryfx.server.MicroserviceBuilder;
+import de.factoryfx.factory.builder.MicroserviceBuilder;
 import org.eclipse.jetty.server.Server;
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -66,7 +66,7 @@ public class UpdateableServletTest {
     @SuppressWarnings("unchecked")
     @Test
     public void test_jersey_after_update() throws IOException, InterruptedException {
-        FactoryTreeBuilder<UpdateableWebserverRootFactory> builder = new FactoryTreeBuilder<>(UpdateableWebserverRootFactory.class);
+        FactoryTreeBuilder<Void, Server, UpdateableWebserverRootFactory, Void> builder = new FactoryTreeBuilder<>(UpdateableWebserverRootFactory.class);
         builder.addFactory(UpdateableWebserverRootFactory.class, Scope.SINGLETON);
         builder.addFactory(JettyServerFactory.class, Scope.SINGLETON, ctx->{
             return new JettyServerBuilder<>(new JettyServerFactory<Void,UpdateableWebserverRootFactory>())
@@ -79,7 +79,7 @@ public class UpdateableServletTest {
             return resource;
         });
 
-        Microservice<Void, Server, UpdateableWebserverRootFactory, Object> microservice = MicroserviceBuilder.buildInMemoryMicroservice(builder);
+        Microservice<Void, Server, UpdateableWebserverRootFactory, Void> microservice = builder.microservice().withInMemoryStorage().build();
         microservice.start();
         try {
 
@@ -91,9 +91,9 @@ public class UpdateableServletTest {
             }
 
 
-            DataAndNewMetadata<UpdateableWebserverRootFactory> update = microservice.prepareNewFactory();
+            DataAndStoredMetadata<UpdateableWebserverRootFactory,Void> update = microservice.prepareNewFactory();
             update.root.server.get().getResource(UpdateableTestResourceFactory.class).response.set("abc");
-            microservice.updateCurrentFactory(update,"","",(p)->true);
+            microservice.updateCurrentFactory(update);
 
             {
                 HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
@@ -108,7 +108,7 @@ public class UpdateableServletTest {
     @SuppressWarnings("unchecked")
     @Test
     public void test_remove_resource() throws IOException, InterruptedException {
-        FactoryTreeBuilder<UpdateableWebserverRootFactory> builder = new FactoryTreeBuilder<>(UpdateableWebserverRootFactory.class);
+        FactoryTreeBuilder<Void, Server, UpdateableWebserverRootFactory, Void> builder = new FactoryTreeBuilder<>(UpdateableWebserverRootFactory.class);
         builder.addFactory(UpdateableWebserverRootFactory.class, Scope.SINGLETON);
         builder.addFactory(JettyServerFactory.class, Scope.SINGLETON, ctx->{
             return new JettyServerBuilder<>(new JettyServerFactory<Void,UpdateableWebserverRootFactory>())
@@ -122,15 +122,15 @@ public class UpdateableServletTest {
             return resource;
         });
 
-        Microservice<Void, Server, UpdateableWebserverRootFactory, Object> microservice = MicroserviceBuilder.buildInMemoryMicroservice(builder);
+        Microservice<Void, Server, UpdateableWebserverRootFactory, Void> microservice = builder.microservice().withInMemoryStorage().build();
         microservice.start();
         try {
             HttpClient client = HttpClient.newBuilder().version(HttpClient.Version.HTTP_1_1).build();
             HttpRequest request = HttpRequest.newBuilder().GET().uri(URI.create("http://localhost:8080/UpdateableTestResource")).build();
 
-            DataAndNewMetadata<UpdateableWebserverRootFactory> update = microservice.prepareNewFactory();
+            DataAndStoredMetadata<UpdateableWebserverRootFactory,Void> update = microservice.prepareNewFactory();
             update.root.server.get().clearResource(UpdateableTestResourceFactory.class);
-            microservice.updateCurrentFactory(update,"","",(p)->true);
+            microservice.updateCurrentFactory(update);
 
             {
                 HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
@@ -144,7 +144,7 @@ public class UpdateableServletTest {
     @SuppressWarnings("unchecked")
     @Test
     public void test_add_resource() throws IOException, InterruptedException {
-        FactoryTreeBuilder<UpdateableWebserverRootFactory> builder = new FactoryTreeBuilder<>(UpdateableWebserverRootFactory.class);
+        FactoryTreeBuilder<Void, Server, UpdateableWebserverRootFactory, Void> builder = new FactoryTreeBuilder<>(UpdateableWebserverRootFactory.class);
         builder.addFactory(UpdateableWebserverRootFactory.class, Scope.SINGLETON);
         builder.addFactory(JettyServerFactory.class, Scope.SINGLETON, ctx->{
             return new JettyServerBuilder<>(new JettyServerFactory<Void,UpdateableWebserverRootFactory>())
@@ -153,19 +153,19 @@ public class UpdateableServletTest {
         });
 
 
-        Microservice<Void, Server, UpdateableWebserverRootFactory, Object> microservice = MicroserviceBuilder.buildInMemoryMicroservice(builder);
+        Microservice<Void, Server, UpdateableWebserverRootFactory, Void> microservice = builder.microservice().withInMemoryStorage().build();
         microservice.start();
         try {
             HttpClient client = HttpClient.newBuilder().version(HttpClient.Version.HTTP_1_1).build();
             HttpRequest request = HttpRequest.newBuilder().GET().uri(URI.create("http://localhost:8080/UpdateableTestResource")).build();
 
-            DataAndNewMetadata<UpdateableWebserverRootFactory> update = microservice.prepareNewFactory();
+            DataAndStoredMetadata<UpdateableWebserverRootFactory,Void> update = microservice.prepareNewFactory();
 
             UpdateableTestResourceFactory resource = new UpdateableTestResourceFactory();
             resource.response.set("123");
             update.root.server.get().setResource(resource);
 
-            microservice.updateCurrentFactory(update,"","",(p)->true);
+            microservice.updateCurrentFactory(update);
 
             {
                 HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
@@ -179,7 +179,7 @@ public class UpdateableServletTest {
     @SuppressWarnings("unchecked")
     @Test
     public void test_add_jerseyServlet() throws IOException, InterruptedException {
-        FactoryTreeBuilder<UpdateableWebserverRootFactory> builder = new FactoryTreeBuilder<>(UpdateableWebserverRootFactory.class);
+        FactoryTreeBuilder<Void, Server, UpdateableWebserverRootFactory, Void> builder = new FactoryTreeBuilder<>(UpdateableWebserverRootFactory.class);
         builder.addFactory(UpdateableWebserverRootFactory.class, Scope.SINGLETON);
         builder.addFactory(JettyServerFactory.class, Scope.SINGLETON, ctx->{
             return new JettyServerBuilder<>(new JettyServerFactory<Void,UpdateableWebserverRootFactory>())
@@ -187,12 +187,12 @@ public class UpdateableServletTest {
         });
 
 
-        Microservice<Void, Server, UpdateableWebserverRootFactory, Object> microservice = MicroserviceBuilder.buildInMemoryMicroservice(builder);
+        Microservice<Void, Server, UpdateableWebserverRootFactory, Void> microservice = builder.microservice().withInMemoryStorage().build();
         microservice.start();
         try {
 
             {
-                DataAndNewMetadata<UpdateableWebserverRootFactory> update = microservice.prepareNewFactory();
+                DataAndStoredMetadata<UpdateableWebserverRootFactory,Void> update = microservice.prepareNewFactory();
 
                 UpdateableTestResourceFactory resource = new UpdateableTestResourceFactory();
                 resource.response.set("123");
@@ -206,7 +206,7 @@ public class UpdateableServletTest {
                 jerseyServletFactoryPath.pathSpec.set("/new/*");
                 servletContextHandler.updatableRootServlet.get().servletAndPaths.add(jerseyServletFactoryPath);
 
-                microservice.updateCurrentFactory(update, "", "", (p) -> true);
+                microservice.updateCurrentFactory(update);
             }
 
             HttpClient client = HttpClient.newBuilder().version(HttpClient.Version.HTTP_1_1).build();

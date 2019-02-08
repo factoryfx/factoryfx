@@ -236,8 +236,8 @@ public class DataDictionary<D extends Data> {
 
             try {
                 result = (D) constructor.newInstance(defaultConstructor);
-            } catch (InstantiationException | InvocationTargetException | IllegalAccessException e) {
-                throw new RuntimeException(e);
+            } catch (InstantiationException | InvocationTargetException | IllegalAccessException e ) {
+                throw new RuntimeException(clazz.getName(),e);
             }
         }
         return result;

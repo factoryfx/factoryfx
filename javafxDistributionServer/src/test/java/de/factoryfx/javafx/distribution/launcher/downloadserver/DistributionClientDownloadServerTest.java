@@ -1,18 +1,15 @@
 package de.factoryfx.javafx.distribution.launcher.downloadserver;
 
-import de.factoryfx.factory.builder.FactoryContext;
 import de.factoryfx.factory.builder.FactoryTreeBuilder;
 import de.factoryfx.factory.builder.Scope;
 import de.factoryfx.javafx.distribution.launcher.rest.DistributionClientDownloadResourceFactory;
-import de.factoryfx.jetty.HttpServerConnectorFactory;
 import de.factoryfx.jetty.JettyServerBuilder;
-import de.factoryfx.server.MicroserviceBuilder;
-import net.bytebuddy.asm.Advice;
+import de.factoryfx.factory.builder.MicroserviceBuilder;
+import org.eclipse.jetty.server.Server;
 
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.function.Function;
 
 
 public class DistributionClientDownloadServerTest {
@@ -20,7 +17,7 @@ public class DistributionClientDownloadServerTest {
     @SuppressWarnings("unchecked")
     public static void main(String[] args) {
 
-        FactoryTreeBuilder<DownloadTestServerFactory> builder = new FactoryTreeBuilder<>(DownloadTestServerFactory.class);
+        FactoryTreeBuilder<Void, Server,DownloadTestServerFactory,Void> builder = new FactoryTreeBuilder<>(DownloadTestServerFactory.class);
         builder.addFactory(DownloadTestServerFactory.class, Scope.SINGLETON, ctx -> {
             return new JettyServerBuilder<>(new DownloadTestServerFactory()).
                     withHost("localhost").widthPort(43654).withResource(ctx.get(SpecificDistributionClientDownloadResourceFactory.class)).
@@ -32,7 +29,7 @@ public class DistributionClientDownloadServerTest {
             return resource;
         });
 
-        MicroserviceBuilder.buildInMemoryMicroservice(builder.buildTree()).start();
+        builder.microservice().withInMemoryStorage().build().start();
 //
 //
 //        DistributionClientDownloadServerFactory distributionClientDownloadServerFactory=new DistributionClientDownloadServerFactory();

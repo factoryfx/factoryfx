@@ -5,12 +5,13 @@ import de.factoryfx.example.server.shop.netherlands.NetherlandsCarProductFactory
 import de.factoryfx.factory.builder.FactoryTreeBuilder;
 import de.factoryfx.factory.builder.Scope;
 import de.factoryfx.jetty.JettyServerBuilder;
+import org.eclipse.jetty.server.Server;
 
 public class ServerBuilder {
 
     @SuppressWarnings("unchecked")
-    public FactoryTreeBuilder<ServerRootFactory> builder(){
-        FactoryTreeBuilder<ServerRootFactory> factoryTreeBuilder = new FactoryTreeBuilder<>(ServerRootFactory.class);
+    public FactoryTreeBuilder<OrderCollector, Server, ServerRootFactory, Void> builder(){
+        FactoryTreeBuilder<OrderCollector, Server, ServerRootFactory, Void> factoryTreeBuilder = new FactoryTreeBuilder<>(ServerRootFactory.class);
 
         factoryTreeBuilder.addFactory(ServerRootFactory.class, Scope.SINGLETON);
 

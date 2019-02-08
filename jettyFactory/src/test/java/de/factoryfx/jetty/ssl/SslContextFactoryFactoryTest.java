@@ -5,11 +5,10 @@ import de.factoryfx.factory.SimpleFactoryBase;
 import de.factoryfx.factory.atrribute.FactoryReferenceAttribute;
 import de.factoryfx.factory.builder.FactoryTreeBuilder;
 import de.factoryfx.factory.builder.Scope;
-import de.factoryfx.jetty.HttpServerConnectorFactory;
 import de.factoryfx.jetty.JettyServerBuilder;
 import de.factoryfx.jetty.JettyServerFactory;
 import de.factoryfx.server.Microservice;
-import de.factoryfx.server.MicroserviceBuilder;
+import de.factoryfx.factory.builder.MicroserviceBuilder;
 import org.eclipse.jetty.server.Server;
 import org.junit.Assert;
 import org.junit.Test;
@@ -25,7 +24,6 @@ import java.net.URLConnection;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.X509Certificate;
-import java.util.Arrays;
 
 public class SslContextFactoryFactoryTest {
 
@@ -57,8 +55,8 @@ public class SslContextFactoryFactoryTest {
 
     @SuppressWarnings("unchecked")
     @Test
-    public void test_without_ssl() throws IOException {
-        FactoryTreeBuilder<TestJettyServerFactory> builder = new FactoryTreeBuilder<>(TestJettyServerFactory.class);
+    public void test_without_ssl() {
+        FactoryTreeBuilder<Void, Server, TestJettyServerFactory, Void> builder = new FactoryTreeBuilder<>(TestJettyServerFactory.class);
         builder.addFactory(TestJettyServerFactory.class, Scope.SINGLETON);
         builder.addFactory(JettyServerFactory.class, Scope.SINGLETON, ctx->{
             return new JettyServerBuilder<>(new JettyServerFactory<Void,TestJettyServerFactory>())
@@ -67,7 +65,7 @@ public class SslContextFactoryFactoryTest {
         });
         builder.addFactory(TestResourceFactory.class, Scope.SINGLETON);
 
-        Microservice<Void, Server, TestJettyServerFactory, Object> microservice = MicroserviceBuilder.buildInMemoryMicroservice(builder);
+        Microservice<Void, Server, TestJettyServerFactory, Void> microservice = builder.microservice().withInMemoryStorage().build();
         try {
             microservice.start();
 
@@ -84,7 +82,7 @@ public class SslContextFactoryFactoryTest {
     @SuppressWarnings("unchecked")
     @Test
     public void test_with_ssl() {
-        FactoryTreeBuilder<TestJettyServerFactory> builder = new FactoryTreeBuilder<>(TestJettyServerFactory.class);
+        FactoryTreeBuilder<Void, Server, TestJettyServerFactory, Void> builder = new FactoryTreeBuilder<>(TestJettyServerFactory.class);
         builder.addFactory(TestJettyServerFactory.class, Scope.SINGLETON);
         builder.addFactory(JettyServerFactory.class, Scope.SINGLETON, ctx->{
             SslContextFactoryFactory<Void,TestJettyServerFactory> ssl = new SslContextFactoryFactory<>();
@@ -107,7 +105,7 @@ public class SslContextFactoryFactoryTest {
         });
         builder.addFactory(TestResourceFactory.class, Scope.SINGLETON);
 
-        Microservice<Void, Server, TestJettyServerFactory, Object> microservice = MicroserviceBuilder.buildInMemoryMicroservice(builder);
+        Microservice<Void, Server, TestJettyServerFactory, Void> microservice = builder.microservice().withInMemoryStorage().build();
         try {
             microservice.start();
             fixUntrustCertificate();

@@ -6,22 +6,28 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import de.factoryfx.data.jackson.ObjectMapperBuilder;
 import de.factoryfx.data.merge.MergeDiffInfo;
+import de.factoryfx.data.storage.DataAndStoredMetadata;
+import de.factoryfx.data.storage.StoredDataMetadata;
 import de.factoryfx.factory.FactoryBase;
-import de.factoryfx.data.storage.DataAndNewMetadata;
 import de.factoryfx.data.storage.migration.MigrationManager;
-import de.factoryfx.data.storage.NewDataMetadata;
 import de.factoryfx.factory.log.FactoryUpdateLog;
 import de.factoryfx.microservice.rest.client.MicroserviceRestClient;
 import javafx.application.Platform;
 
-public class FactoryEditManager<V,R extends FactoryBase<?,V,R>> {
-    private final MicroserviceRestClient<V,R,?> client;
+/**
+ * @param <V> Visitor
+ * @param <R> Root
+ * @param <S> Summary Data for factory history
+ */
+public class FactoryEditManager<V,R extends FactoryBase<?,V,R>,S> {
+    private final MicroserviceRestClient<V,R,S> client;
     private final List<FactoryRootChangeListener<R>> listeners= new ArrayList<>();
-    private final MigrationManager<R,?> migrationManager;
+    private final MigrationManager<R,S> migrationManager;
 
-    public FactoryEditManager(MicroserviceRestClient<V, R, ?> client, MigrationManager<R,?> migrationManager) {
+    public FactoryEditManager(MicroserviceRestClient<V, R, S> client, MigrationManager<R,S> migrationManager) {
         this.client = client;
         this.migrationManager = migrationManager;
     }
@@ -34,19 +40,19 @@ public class FactoryEditManager<V,R extends FactoryBase<?,V,R>> {
         listeners.remove(listener);
     }
 
-    Optional<DataAndNewMetadata<R>> loadedRoot = Optional.empty();
+    DataAndStoredMetadata<R,S> loadedRoot;
     public void load(){
-        DataAndNewMetadata<R> currentFactory = client.prepareNewFactory();
-        Optional<R> previousRoot=getLoadedFactory();
-        loadedRoot = Optional.of(currentFactory);
+        DataAndStoredMetadata<R,S> currentFactory = client.prepareNewFactory();
+        DataAndStoredMetadata<R,S> previousRoot=loadedRoot;
+        loadedRoot = currentFactory;
 
         updateNotify(currentFactory, previousRoot);
     }
 
-    private void updateNotify(DataAndNewMetadata<R> currentFactory, Optional<R> previousRoot) {
+    private void updateNotify(DataAndStoredMetadata<R,S> currentFactory, DataAndStoredMetadata<R,S> previousRoot) {
         runLaterExecuter.accept(() -> {
             for (FactoryRootChangeListener<R> listener: listeners){
-                listener.update(previousRoot,currentFactory.root);
+                listener.update(Optional.ofNullable(previousRoot).map((p)->p.root),currentFactory.root);
             }
         });
     }
@@ -56,7 +62,10 @@ public class FactoryEditManager<V,R extends FactoryBase<?,V,R>> {
 
 
     public Optional<R> getLoadedFactory(){
-        return loadedRoot.map(rFactoryAndNewMetadata -> rFactoryAndNewMetadata.root);
+        if (loadedRoot==null){
+            return Optional.empty();
+        }
+        return Optional.of(loadedRoot.root);
     }
 
     public void reset() {
@@ -64,8 +73,7 @@ public class FactoryEditManager<V,R extends FactoryBase<?,V,R>> {
     }
 
     public FactoryUpdateLog save(String comment) {
-        final DataAndNewMetadata<R> update = loadedRoot.get();
-        final FactoryUpdateLog factoryLog = client.updateCurrentFactory(update,comment);
+        final FactoryUpdateLog factoryLog = client.updateCurrentFactory(loadedRoot,comment);
         if (factoryLog.successfullyMerged()) {
             load();//to edit the newly merged data
         }
@@ -88,33 +96,32 @@ public class FactoryEditManager<V,R extends FactoryBase<?,V,R>> {
     }
 
     public void saveToFile(Path target) {
-        FactoryAndStringifyedStorageMetadata factoryAndStringifyedStorageMetadata = new FactoryAndStringifyedStorageMetadata();
-        factoryAndStringifyedStorageMetadata.metadata=loadedRoot.get().metadata;
-        factoryAndStringifyedStorageMetadata.root= ObjectMapperBuilder.build().writeValueAsString(loadedRoot.get().root);
-        ObjectMapperBuilder.build().writeValue(target.toFile(),factoryAndStringifyedStorageMetadata);
+        RawFactoryDataAndMetadata<S> rawFactoryDataAndMetadata = new RawFactoryDataAndMetadata<>();
+        rawFactoryDataAndMetadata.metadata=loadedRoot.metadata;
+        rawFactoryDataAndMetadata.root= ObjectMapperBuilder.build().writeValueAsTree(loadedRoot.root);
+        ObjectMapperBuilder.build().writeValue(target.toFile(), rawFactoryDataAndMetadata);
     }
 
-    public void loadFromFile(Path target) {
-        Optional<R> previousRoot=getLoadedFactory();
-        final FactoryAndStringifyedStorageMetadata value = ObjectMapperBuilder.build().readValue(target.toFile(), FactoryAndStringifyedStorageMetadata.class);
-        //TODO fix null for metadata
-        R serverFactory = migrationManager.read(value.root, null);
+    @SuppressWarnings("unchecked")
+    public void loadFromFile(Path from) {
+        RawFactoryDataAndMetadata<S> wrapper = (RawFactoryDataAndMetadata<S>)ObjectMapperBuilder.build().readValue(from.toFile(), RawFactoryDataAndMetadata.class);
+        R serverFactory = migrationManager.read(wrapper.root, wrapper.metadata);
 
-        DataAndNewMetadata<R> newFactory = client.prepareNewFactory();
+        DataAndStoredMetadata<R,S> previousRoot=loadedRoot;
 
-        NewDataMetadata metadata = new NewDataMetadata();
-        metadata.baseVersionId=newFactory.metadata.baseVersionId;
-        loadedRoot=Optional.of(new DataAndNewMetadata<>(serverFactory, metadata));
-        updateNotify(loadedRoot.get(), previousRoot);
+        DataAndStoredMetadata<R, S> update = client.prepareNewFactory();
+        loadedRoot=new DataAndStoredMetadata<>(serverFactory,update.metadata);
+        this.save("reloaded from file: "+from.toFile().getAbsolutePath());
+
+        updateNotify(loadedRoot, previousRoot);
     }
 
-    private static class FactoryAndStringifyedStorageMetadata{
-        public String root;
-        public NewDataMetadata metadata;
+    private static class RawFactoryDataAndMetadata<S>{
+        public JsonNode root;
+        public StoredDataMetadata<S> metadata;
     }
 
     public MergeDiffInfo<R> simulateUpdateCurrentFactory() {
-        final DataAndNewMetadata<R> update = loadedRoot.get();
-        return client.simulateUpdateCurrentFactory(update);
+        return client.simulateUpdateCurrentFactory(loadedRoot);
     }
 }

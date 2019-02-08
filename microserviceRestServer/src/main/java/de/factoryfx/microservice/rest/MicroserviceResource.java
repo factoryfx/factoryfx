@@ -5,8 +5,8 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 import de.factoryfx.data.merge.MergeDiffInfo;
+import de.factoryfx.data.storage.DataAndStoredMetadata;
 import de.factoryfx.factory.FactoryBase;
-import de.factoryfx.data.storage.DataAndNewMetadata;
 import de.factoryfx.data.storage.StoredDataMetadata;
 import de.factoryfx.factory.log.FactoryUpdateLog;
 import de.factoryfx.microservice.common.*;
@@ -43,9 +43,10 @@ public class MicroserviceResource<V,R extends FactoryBase<?,V,R>,S> implements M
     }
 
     @Override
-    public FactoryUpdateLog<R> updateCurrentFactory(UserAwareRequest<UpdateCurrentFactoryRequest<R>> update) {
-        Function<String, Boolean> permissionChecker = authenticateAndGetPermissionChecker(update);
-        return microservice.updateCurrentFactory(new DataAndNewMetadata<>(update.request.factoryUpdate.root.internal().addBackReferences(), update.request.factoryUpdate.metadata), update.user, update.request.comment, permissionChecker);
+    public FactoryUpdateLog<R> updateCurrentFactory(UserAwareRequest<DataAndStoredMetadata<R,S>> update) {
+        update.request.permissionChecker = authenticateAndGetPermissionChecker(update);
+        update.request.root.internal().addBackReferences();
+        return microservice.updateCurrentFactory(update.request);
     }
 
     @Override
@@ -64,9 +65,10 @@ public class MicroserviceResource<V,R extends FactoryBase<?,V,R>,S> implements M
     }
 
     @Override
-    public MergeDiffInfo<R> simulateUpdateCurrentFactory(UserAwareRequest<DataAndNewMetadata<R>> request) {
-        Function<String, Boolean> permissionChecker = authenticateAndGetPermissionChecker(request);
-        return microservice.simulateUpdateCurrentFactory(new DataAndNewMetadata<>(request.request.root.internal().addBackReferences(), request.request.metadata), permissionChecker);
+    public MergeDiffInfo<R> simulateUpdateCurrentFactory(UserAwareRequest<DataAndStoredMetadata<R,S>> request) {
+        request.request.permissionChecker= authenticateAndGetPermissionChecker(request);
+        request.request.root.internal().addBackReferences();
+        return microservice.simulateUpdateCurrentFactory(request.request);
     }
 
     @Override
@@ -76,7 +78,7 @@ public class MicroserviceResource<V,R extends FactoryBase<?,V,R>,S> implements M
     }
 
     @Override
-    public DataAndNewMetadata<R> prepareNewFactory(VoidUserAwareRequest request) {
+    public DataAndStoredMetadata<R,S> prepareNewFactory(VoidUserAwareRequest request) {
         authenticate(request);
         return microservice.prepareNewFactory();
     }

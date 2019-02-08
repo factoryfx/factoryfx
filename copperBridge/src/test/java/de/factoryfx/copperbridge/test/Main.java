@@ -8,18 +8,17 @@ import de.factoryfx.copperbridge.EngineIdProviderFactory;
 import de.factoryfx.copperbridge.TransientScottyEngineFactory;
 import de.factoryfx.copperbridge.WorkflowLauncher;
 import de.factoryfx.copperbridge.WorkflowLauncherFactory;
-import de.factoryfx.data.storage.DataAndNewMetadata;
+import de.factoryfx.data.storage.DataAndStoredMetadata;
 import de.factoryfx.factory.builder.FactoryTreeBuilder;
 import de.factoryfx.factory.builder.Scope;
 import de.factoryfx.server.Microservice;
-import de.factoryfx.server.MicroserviceBuilder;
 
 public class Main {
 
     public static void main(String[] args) {
-        FactoryTreeBuilder<CopperRootFactory> builder = buildApplication();
+        FactoryTreeBuilder<Void, WorkflowLauncher, CopperRootFactory, Void> builder = buildApplication();
 
-        Microservice<Void, WorkflowLauncher, CopperRootFactory, String> microservice = MicroserviceBuilder.buildInMemoryMicroservice(builder.buildTree());
+        Microservice<Void, WorkflowLauncher, CopperRootFactory, Void> microservice = builder.microservice().withInMemoryStorage().build();
         microservice.start();
 
         startWorkflowExecutingThread(microservice);
@@ -27,20 +26,20 @@ public class Main {
         sleep(500);
         {
             System.out.println("update1");
-            DataAndNewMetadata<CopperRootFactory> update = microservice.prepareNewFactory();
+            DataAndStoredMetadata<CopperRootFactory,Void> update = microservice.prepareNewFactory();
             CopperEngineContextFactory<Void, CopperRootFactory> da = update.root.workflowLauncher.get().copperEngineContext.get();
             ((CopperEngineContextFactoryImpl) da).dep1.set("world");
-            microservice.updateCurrentFactory(update, "admin", "update", a -> true);
+            microservice.updateCurrentFactory(update);
             System.out.println("update1 fnished");
         }
 
         sleep(500);
         {
             System.out.println("update2");
-            DataAndNewMetadata<CopperRootFactory> update = microservice.prepareNewFactory();
+            DataAndStoredMetadata<CopperRootFactory,Void> update = microservice.prepareNewFactory();
             TransientScottyEngineFactory<Void, CopperRootFactory> da = update.root.workflowLauncher.get().copperEngineContext.get().transientScottyEngine.get();
             da.threads.set(20);
-            microservice.updateCurrentFactory(update, "admin", "update2", a -> true);
+            microservice.updateCurrentFactory(update);
             System.out.println("update2 fnished");
         }
 
@@ -49,7 +48,7 @@ public class Main {
         microservice.stop();
     }
 
-    private static void startWorkflowExecutingThread(Microservice<Void, WorkflowLauncher, CopperRootFactory, String> microservice) {
+    private static void startWorkflowExecutingThread(Microservice<Void, WorkflowLauncher, CopperRootFactory, Void> microservice) {
         new Thread(() -> {
             while (true) {
                 microservice.getRootLiveObject().fire(WorkflowLauncher.EngineType.TRANSIENT, "TestWorkflow", "Hello", 1);
@@ -60,8 +59,8 @@ public class Main {
 
 
     @SuppressWarnings("unchecked")
-    private static FactoryTreeBuilder<CopperRootFactory> buildApplication() {
-        FactoryTreeBuilder<CopperRootFactory> builder = new FactoryTreeBuilder<>(CopperRootFactory.class);
+    private static FactoryTreeBuilder<Void, WorkflowLauncher, CopperRootFactory, Void> buildApplication() {
+        FactoryTreeBuilder<Void, WorkflowLauncher, CopperRootFactory, Void> builder = new FactoryTreeBuilder<>(CopperRootFactory.class);
 
         builder.addFactory(TransientScottyEngineFactory.class, Scope.SINGLETON, copperRootFactoryFactoryContext -> {
             TransientScottyEngineFactory<Void,CopperRootFactory> transientScottyEngineFactory = new TransientScottyEngineFactory<>() {

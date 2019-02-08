@@ -51,10 +51,21 @@ public class DefaultCreatorTest {
         Assert.assertEquals(DummyCreatorFactory.class, actual.getClass());
     }
 
+    public static class ExampleFactoryANotNullable extends SimpleFactoryBase<ExampleLiveObjectA,Void, ExampleFactoryANotNullable> {
+        public final FactoryReferenceAttribute<ExampleLiveObjectB,ExampleFactoryB> referenceAttribute = new FactoryReferenceAttribute<>(ExampleFactoryB.class);
+
+        @Override
+        public ExampleLiveObjectA createImpl() {
+            return new ExampleLiveObjectA(referenceAttribute.instance(), null);
+        }
+
+
+    }
+
 
     @Test(expected = IllegalStateException.class)
     public void test_missing_factory(){
-        DefaultCreator<ExampleFactoryA,ExampleFactoryA> defaultCreator = new DefaultCreator<>(ExampleFactoryA.class);
+        DefaultCreator<ExampleFactoryANotNullable,ExampleFactoryANotNullable> defaultCreator = new DefaultCreator<>(ExampleFactoryANotNullable.class);
         defaultCreator.apply(new FactoryContext<>());
     }
 

@@ -29,7 +29,6 @@ public class FactoryManager<V,L,R extends FactoryBase<L,V,R>> {
     private RootFactoryWrapper<R> currentFactoryRoot;
     private final FactoryExceptionHandler factoryExceptionHandler;
 
-
     public FactoryManager(FactoryExceptionHandler factoryExceptionHandler) {
         this.factoryExceptionHandler = factoryExceptionHandler;
         if (factoryExceptionHandler instanceof AllOrNothingFactoryExceptionHandler){

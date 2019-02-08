@@ -6,6 +6,7 @@ import com.google.common.collect.Maps;
 import de.factoryfx.data.attribute.*;
 import de.factoryfx.data.merge.AttributeDiffInfo;
 import de.factoryfx.data.merge.MergeResult;
+import de.factoryfx.data.storage.migration.metadata.DataStorageMetadataDictionary;
 import de.factoryfx.data.validation.AttributeValidation;
 import de.factoryfx.data.validation.Validation;
 import de.factoryfx.data.validation.ValidationError;
@@ -748,6 +749,12 @@ public class Data {
          */
         public Set<Data> collectChildrenDeepFromNode() {
             return data.collectChildrenDeepFromNode();
+        }
+
+        public DataStorageMetadataDictionary createDataStorageMetadataDictionaryFromRoot(){
+            HashSet<Class<? extends Data>> dataClasses = new HashSet<>();
+            this.collectChildrenDeep().forEach(d->dataClasses.add(d.getClass()));
+            return new DataStorageMetadataDictionary(dataClasses);
         }
     }
 

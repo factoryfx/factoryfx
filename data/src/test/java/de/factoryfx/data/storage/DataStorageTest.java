@@ -5,8 +5,10 @@ import de.factoryfx.data.storage.inmemory.InMemoryDataStorage;
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 /**
@@ -21,20 +23,19 @@ public class DataStorageTest {
         exampleFactoryA = exampleFactoryA.internal().addBackReferences();
 
         final InMemoryDataStorage<ExampleDataA,Void> factoryStorage = new InMemoryDataStorage<>(exampleFactoryA);
-        factoryStorage.loadInitialFactory();
 
         Thread.sleep(2);//avoid same timestamp
         {
-            DataAndNewMetadata<ExampleDataA> preparedNewFactory = factoryStorage.prepareNewFactory(factoryStorage.getCurrentFactoryStorageId(),factoryStorage.getCurrentFactory().root.utility().copy());
-            preparedNewFactory.root.stringAttribute.set("2");
-            factoryStorage.updateCurrentFactory(preparedNewFactory, "", "",null);
+            ExampleDataA preparedNewFactory = factoryStorage.getCurrentFactory().root.utility().copy();
+            preparedNewFactory.stringAttribute.set("2");
+            factoryStorage.updateCurrentFactory(new DataAndStoredMetadata<>(preparedNewFactory,new StoredDataMetadata<>(LocalDateTime.now(), UUID.randomUUID().toString(),null,null,null,null,null,null)));
         }
         Thread.sleep(2);//avoid same timestamp
 
         {
-            DataAndNewMetadata<ExampleDataA> preparedNewFactory = factoryStorage.prepareNewFactory(factoryStorage.getCurrentFactoryStorageId(),factoryStorage.getCurrentFactory().root.utility().copy());
-            preparedNewFactory.root.stringAttribute.set("3");
-            factoryStorage.updateCurrentFactory(preparedNewFactory, "", "",null);
+            ExampleDataA preparedNewFactory = factoryStorage.getCurrentFactory().root.utility().copy();
+            preparedNewFactory.stringAttribute.set("3");
+            factoryStorage.updateCurrentFactory(new DataAndStoredMetadata<>(preparedNewFactory, new StoredDataMetadata<>(LocalDateTime.now(), UUID.randomUUID().toString(),null,null,null,null,null,null)));
         }
         Thread.sleep(2);//avoid same timestamp
 

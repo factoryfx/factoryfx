@@ -55,6 +55,7 @@ public class MergeDiffInfo<R extends Data> {
         this.rootClazz = rootClazz;
     }
 
+    //TODO refactor to use JsonNode instead of string
     public String getPreviousRoot() {//workaround for duplicated ids
         return ObjectMapperBuilder.build().writeValueAsString(previousRoot);
     }

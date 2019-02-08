@@ -1,6 +1,6 @@
 package de.factoryfx.soap;
 
-import de.factoryfx.data.storage.DataAndNewMetadata;
+import de.factoryfx.data.storage.DataAndStoredMetadata;
 import de.factoryfx.factory.builder.FactoryTreeBuilder;
 import de.factoryfx.factory.builder.Scope;
 import de.factoryfx.jetty.JettyServerBuilder;
@@ -8,8 +8,7 @@ import de.factoryfx.jetty.JettyServerFactory;
 import de.factoryfx.server.Microservice;
 import de.factoryfx.soap.example.*;
 import de.factoryfx.soap.server.SoapJettyServerFactory;
-import de.factoryfx.jetty.HttpServerConnectorFactory;
-import de.factoryfx.server.MicroserviceBuilder;
+import de.factoryfx.factory.builder.MicroserviceBuilder;
 import org.eclipse.jetty.server.Server;
 import org.junit.Test;
 
@@ -20,9 +19,6 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.soap.*;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatterBuilder;
-import java.util.stream.Stream;
 
 public class SoapTest {
 
@@ -30,7 +26,7 @@ public class SoapTest {
     @Test
     public void test(){
 
-        FactoryTreeBuilder<SoapJettyServerFactory> builder = new FactoryTreeBuilder<>(SoapJettyServerFactory.class);
+        FactoryTreeBuilder<Void, Server, SoapJettyServerFactory, Object> builder = new FactoryTreeBuilder<>(SoapJettyServerFactory.class);
         builder.addFactory(SoapJettyServerFactory.class, Scope.SINGLETON);
         builder.addFactory(JettyServerFactory.class, Scope.SINGLETON, ctx-> new JettyServerBuilder<>(new JettyServerFactory<Void,SoapJettyServerFactory>())
                 .withHost("localhost").widthPort(8088).removeDefaultJerseyServlet()
@@ -45,17 +41,17 @@ public class SoapTest {
         });
 
 
-        Microservice<Void, Server, SoapJettyServerFactory, Object> microService = MicroserviceBuilder.buildInMemoryMicroservice(builder);
+        Microservice<Void, Server, SoapJettyServerFactory, Object> microService = builder.microservice().withInMemoryStorage().build();
         microService.start();
 
         callSoapWebService("http://localhost:8088","action");
-        DataAndNewMetadata<SoapJettyServerFactory> newFactory = microService.prepareNewFactory();
+        DataAndStoredMetadata<SoapJettyServerFactory,Object> newFactory = microService.prepareNewFactory();
         HelloWorldFactory helloWorldFactory = new HelloWorldFactory();
         helloWorldFactory.service.set(req->{
             throw new SoapDummyRequestException1();
         });
         newFactory.root.server.get().getServlet(SoapHandlerFactory.class).serviceBean.set(helloWorldFactory);
-        microService.updateCurrentFactory(newFactory,"","",x->true);
+        microService.updateCurrentFactory(newFactory);
         callSoapWebService("http://localhost:8088","action");
 
     }

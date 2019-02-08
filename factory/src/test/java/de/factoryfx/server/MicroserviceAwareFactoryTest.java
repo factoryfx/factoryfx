@@ -1,29 +1,33 @@
 package de.factoryfx.server;
 
 import de.factoryfx.factory.FactoryBase;
-import de.factoryfx.factory.FactoryManager;
 import de.factoryfx.factory.SimpleFactoryBase;
 import de.factoryfx.factory.atrribute.FactoryReferenceAttribute;
-import de.factoryfx.data.storage.inmemory.InMemoryDataStorage;
-import de.factoryfx.factory.exception.RethrowingFactoryExceptionHandler;
+import de.factoryfx.factory.builder.FactoryTreeBuilder;
+import de.factoryfx.factory.builder.MicroserviceBuilder;
+import de.factoryfx.factory.builder.Scope;
+import de.factoryfx.factory.testfactories.ExampleFactoryA;
+import de.factoryfx.factory.testfactories.ExampleFactoryB;
+import de.factoryfx.factory.testfactories.ExampleLiveObjectA;
 import org.junit.Assert;
 import org.junit.Test;
 
 public class MicroserviceAwareFactoryTest {
 
-    @Test//1344
+    @Test
     public void test(){
         RootTestClazz rootTestclazz = new RootTestClazz();
         final MicroserviceAwareFactoryTestclazz value = new MicroserviceAwareFactoryTestclazz();
         rootTestclazz.ref.set(value);
-        rootTestclazz = rootTestclazz.internal().addBackReferences();
 
-        final FactoryManager<Void, String,RootTestClazz> factoryManager = new FactoryManager<>(new RethrowingFactoryExceptionHandler());
-        Microservice<Void,String,RootTestClazz,Void> microservice = new Microservice<>(factoryManager, new InMemoryDataStorage<>(rootTestclazz));
+        FactoryTreeBuilder<Void,String,RootTestClazz,Void> builder = new FactoryTreeBuilder<>(RootTestClazz.class);
+        builder.addFactory(RootTestClazz.class, Scope.SINGLETON, context -> {
+            return rootTestclazz;
+        });
+        Microservice<Void,String,RootTestClazz,Void> microservice = builder.microservice().withInMemoryStorage().build();
         microservice.start();
 
-        Assert.assertEquals(microservice,factoryManager.getCurrentFactory().ref.get().utilityFactory().getMicroservice());
-
+        Assert.assertEquals(microservice,rootTestclazz.ref.get().utilityFactory().getMicroservice());
     }
 
     public static class MicroserviceAwareFactoryTestclazz extends FactoryBase<String,Void,RootTestClazz> {

@@ -20,7 +20,7 @@ import de.factoryfx.javafx.factory.widget.factory.diffdialog.DiffDialogBuilderFa
  */
 public class FactoryEditViewFactory<VS,RS extends FactoryBase<?,VS,RS>,S> extends WidgetFactory {
     @SuppressWarnings("unchecked")
-    public final FactoryReferenceAttribute<FactoryEditManager<VS,RS>, FactoryEditManagerFactory<VS,RS,S>> factoryEditManager = FactoryReferenceAttribute.create(new FactoryReferenceAttribute<>(FactoryEditManagerFactory.class));
+    public final FactoryReferenceAttribute<FactoryEditManager<VS,RS,S>, FactoryEditManagerFactory<VS,RS,S>> factoryEditManager = FactoryReferenceAttribute.create(new FactoryReferenceAttribute<>(FactoryEditManagerFactory.class));
     public final FactoryReferenceAttribute<LongRunningActionExecutor, LongRunningActionExecutorFactory> longRunningActionExecutor = new FactoryReferenceAttribute<>(LongRunningActionExecutorFactory.class).de("items").en("items");
     public final FactoryReferenceAttribute<UniformDesign, UniformDesignFactory> uniformDesign = new FactoryReferenceAttribute<>(UniformDesignFactory.class).de("uniformDesign").en("uniformDesign");
     public final FactoryReferenceAttribute<DataEditor,DataEditorFactory> dataEditorFactory = new FactoryReferenceAttribute<>(DataEditorFactory.class);

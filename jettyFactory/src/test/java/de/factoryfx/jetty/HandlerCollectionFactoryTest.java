@@ -1,14 +1,12 @@
 package de.factoryfx.jetty;
 
 import ch.qos.logback.classic.Level;
-import de.factoryfx.data.attribute.types.StringAttribute;
-import de.factoryfx.data.storage.DataAndNewMetadata;
+import de.factoryfx.data.storage.DataAndStoredMetadata;
 import de.factoryfx.factory.SimpleFactoryBase;
 import de.factoryfx.factory.atrribute.FactoryReferenceAttribute;
 import de.factoryfx.factory.builder.FactoryTreeBuilder;
 import de.factoryfx.factory.builder.Scope;
 import de.factoryfx.server.Microservice;
-import de.factoryfx.server.MicroserviceBuilder;
 import org.eclipse.jetty.server.Server;
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -60,7 +58,7 @@ public class HandlerCollectionFactoryTest {
     @SuppressWarnings("unchecked")
     @Test
     public void test_add_handler_no_exception() {
-        FactoryTreeBuilder<HandlerCollectionRootFactory> builder = new FactoryTreeBuilder<>(HandlerCollectionRootFactory.class);
+        FactoryTreeBuilder<Void, Server, HandlerCollectionRootFactory, Void> builder = new FactoryTreeBuilder<>(HandlerCollectionRootFactory.class);
         builder.addFactory(HandlerCollectionRootFactory.class, Scope.SINGLETON);
         builder.addFactory(JettyServerFactory.class, Scope.SINGLETON, ctx->{
             return new JettyServerBuilder<>(new JettyServerFactory<Void, HandlerCollectionRootFactory>())
@@ -68,13 +66,13 @@ public class HandlerCollectionFactoryTest {
         });
 
 
-        Microservice<Void, Server, HandlerCollectionRootFactory, Object> microservice = MicroserviceBuilder.buildInMemoryMicroservice(builder);
+        Microservice<Void, Server, HandlerCollectionRootFactory, Void> microservice = builder.microservice().withInMemoryStorage().build();
         microservice.start();
         try {
 
-            DataAndNewMetadata<HandlerCollectionRootFactory> update = microservice.prepareNewFactory();
+            DataAndStoredMetadata<HandlerCollectionRootFactory,Void> update = microservice.prepareNewFactory();
             update.root.server.get().handler.get().handlers.add(new GzipHandlerFactory<>());
-            microservice.updateCurrentFactory(update,"","",(p)->true);
+            microservice.updateCurrentFactory(update);
 
         } finally {
             microservice.stop();
@@ -84,7 +82,7 @@ public class HandlerCollectionFactoryTest {
     @SuppressWarnings("unchecked")
     @Test
     public void test_remove_handler() {
-        FactoryTreeBuilder<HandlerCollectionRootFactory> builder = new FactoryTreeBuilder<>(HandlerCollectionRootFactory.class);
+        FactoryTreeBuilder<Void, Server, HandlerCollectionRootFactory, Void> builder = new FactoryTreeBuilder<>(HandlerCollectionRootFactory.class);
         builder.addFactory(HandlerCollectionRootFactory.class, Scope.SINGLETON);
         builder.addFactory(JettyServerFactory.class, Scope.SINGLETON, ctx->{
             return new JettyServerBuilder<>(new JettyServerFactory<Void, HandlerCollectionRootFactory>())
@@ -94,7 +92,7 @@ public class HandlerCollectionFactoryTest {
         builder.addFactory(HandlerCollectionResourceFactory.class, Scope.SINGLETON);
 
 
-        Microservice<Void, Server, HandlerCollectionRootFactory, Void> microservice = MicroserviceBuilder.buildInMemoryMicroservice(builder);
+        Microservice<Void, Server, HandlerCollectionRootFactory, Void> microservice = builder.microservice().withInMemoryStorage().build();
         microservice.start();
         try {
             HttpClient client = HttpClient.newBuilder().version(HttpClient.Version.HTTP_1_1).build();
@@ -104,9 +102,9 @@ public class HandlerCollectionFactoryTest {
                 Assert.assertEquals(200, response.statusCode());
             }
 
-            DataAndNewMetadata<HandlerCollectionRootFactory> update = microservice.prepareNewFactory();
+            DataAndStoredMetadata<HandlerCollectionRootFactory,Void> update = microservice.prepareNewFactory();
             update.root.server.get().handler.get().handlers.clear();
-            microservice.updateCurrentFactory(update,"","",(p)->true);
+            microservice.updateCurrentFactory(update);
 
             {
 

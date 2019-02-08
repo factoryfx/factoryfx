@@ -1,7 +1,6 @@
 package de.factoryfx.example.client;
 
 import de.factoryfx.data.storage.migration.MigrationManager;
-import de.factoryfx.data.storage.migration.metadata.DataStorageMetadataDictionary;
 import de.factoryfx.data.storage.migration.GeneralStorageMetadataBuilder;
 import de.factoryfx.example.client.view.ConfigurationViewFactory;
 import de.factoryfx.example.client.view.DashboardViewFactory;
@@ -36,6 +35,7 @@ import javafx.geometry.Rectangle2D;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import org.controlsfx.glyphfont.FontAwesome;
+import org.eclipse.jetty.server.Server;
 
 import java.util.List;
 import java.util.Locale;
@@ -44,8 +44,8 @@ import java.util.Locale;
 public class RichClientBuilder {
 
     @SuppressWarnings("unchecked")
-    public static FactoryTreeBuilder<RichClientRoot> createFactoryBuilder(int adminServerPort, Stage primaryStage, String user, String passwordHash, Locale locale, FactoryTreeBuilder<ServerRootFactory> serverRootFactoryFactoryTreeBuilder) {
-        FactoryTreeBuilder<RichClientRoot> factoryBuilder = new FactoryTreeBuilder<>(RichClientRoot.class);
+    public static FactoryTreeBuilder<Void,Stage,RichClientRoot,Void> createFactoryBuilder(int adminServerPort, Stage primaryStage, String user, String passwordHash, Locale locale, FactoryTreeBuilder<OrderCollector, Server, ServerRootFactory, Void> serverRootFactoryFactoryTreeBuilder) {
+        FactoryTreeBuilder<Void,Stage,RichClientRoot,Void> factoryBuilder = new FactoryTreeBuilder<>(RichClientRoot.class);
 
         factoryBuilder.addFactory(LongRunningActionExecutorFactory.class, Scope.SINGLETON);
         factoryBuilder.addFactory(RichClientRoot.class, Scope.SINGLETON);
@@ -209,7 +209,7 @@ public class RichClientBuilder {
     private static class RichClientFactorySerialisationManagerFactory extends FactorySerialisationManagerFactory<ServerRootFactory,Void> {
         @Override
         public MigrationManager<ServerRootFactory, Void> createImpl() {
-            return new MigrationManager<>(ServerRootFactory.class, List.of(), GeneralStorageMetadataBuilder.build(), List.of(), new DataStorageMetadataDictionary(ServerRootFactory.class));
+            return new MigrationManager<>(ServerRootFactory.class, List.of(), GeneralStorageMetadataBuilder.build(), List.of());
         }
     }
 }

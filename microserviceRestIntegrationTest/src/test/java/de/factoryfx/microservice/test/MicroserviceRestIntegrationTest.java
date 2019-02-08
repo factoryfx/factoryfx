@@ -4,34 +4,25 @@ import ch.qos.logback.classic.Level;
 import de.factoryfx.data.attribute.types.EncryptedStringAttribute;
 import de.factoryfx.data.jackson.ObjectMapperBuilder;
 import de.factoryfx.data.storage.StoredDataMetadata;
-import de.factoryfx.data.storage.inmemory.InMemoryDataStorage;
-import de.factoryfx.factory.FactoryManager;
 import de.factoryfx.factory.SimpleFactoryBase;
 import de.factoryfx.factory.atrribute.FactoryReferenceAttribute;
 import de.factoryfx.factory.builder.FactoryTreeBuilder;
 import de.factoryfx.factory.builder.Scope;
-import de.factoryfx.factory.exception.RethrowingFactoryExceptionHandler;
 import de.factoryfx.jetty.*;
 import de.factoryfx.microservice.common.ResponseWorkaround;
-import de.factoryfx.microservice.rest.MicroserviceResource;
 import de.factoryfx.microservice.rest.MicroserviceResourceFactory;
 import de.factoryfx.microservice.rest.client.MicroserviceRestClient;
 import de.factoryfx.microservice.rest.client.MicroserviceRestClientBuilder;
-import de.factoryfx.microservice.rest.client.MicroserviceRestClientFactory;
 import de.factoryfx.server.Microservice;
 
-import de.factoryfx.server.MicroserviceBuilder;
+import de.factoryfx.factory.builder.MicroserviceBuilder;
 import de.factoryfx.server.user.persistent.PersistentUserManagementFactory;
 import de.factoryfx.server.user.persistent.UserFactory;
 import org.eclipse.jetty.server.Server;
-import org.glassfish.jersey.client.proxy.WebResourceFactory;
 import org.junit.Assert;
 import org.junit.Test;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatterBuilder;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Locale;
 
 public class MicroserviceRestIntegrationTest {
@@ -65,7 +56,7 @@ public class MicroserviceRestIntegrationTest {
         ch.qos.logback.classic.Logger root = (ch.qos.logback.classic.Logger) org.slf4j.LoggerFactory.getLogger(ch.qos.logback.classic.Logger.ROOT_LOGGER_NAME);
         root.setLevel(Level.INFO);
 
-        FactoryTreeBuilder<TestJettyServer> builder = new FactoryTreeBuilder<>(TestJettyServer.class);
+        FactoryTreeBuilder<TestVisitor, Server, TestJettyServer, Void> builder = new FactoryTreeBuilder<>(TestJettyServer.class);
         builder.addFactory(TestJettyServer.class, Scope.SINGLETON);
         builder.addFactory(JettyServerFactory.class, Scope.SINGLETON, ctx-> new JettyServerBuilder<>(new JettyServerFactory<TestVisitor,TestJettyServer>())
                 .withHost("localhost").widthPort(34579)
@@ -85,7 +76,7 @@ public class MicroserviceRestIntegrationTest {
 
         ObjectMapperBuilder.build().copy(builder.buildTree());
 
-        Microservice<TestVisitor, Server, TestJettyServer, Void> microservice = MicroserviceBuilder.buildInMemoryMicroservice(builder.buildTree());
+        Microservice<TestVisitor, Server, TestJettyServer, Void> microservice = builder.microservice().withInMemoryStorage().build();
         microservice.start();
 
         try {

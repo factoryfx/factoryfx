@@ -43,6 +43,8 @@ public class FactoryReferenceAttributeTest {
         Assert.assertFalse(attribute.internal_required());
     }
 
+
+
     @Test
     public void test_nullable(){
         FactoryReferenceAttribute<ExampleLiveObjectA, ExampleFactoryA> attribute = new FactoryReferenceAttribute<>(ExampleFactoryA.class).nullable();

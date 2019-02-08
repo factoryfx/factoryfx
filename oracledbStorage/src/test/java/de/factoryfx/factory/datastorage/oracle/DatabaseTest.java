@@ -46,8 +46,8 @@ public class DatabaseTest {
     }
 
 
-    protected MigrationManager<ExampleFactoryA,Void> createSerialisation(){
-        return new MigrationManager<>(ExampleFactoryA.class, List.of(), GeneralStorageMetadataBuilder.build(), List.of(), new DataStorageMetadataDictionary(ExampleFactoryA.class));
+    protected MigrationManager<ExampleFactoryA,Void> createMigrationManager(){
+        return new MigrationManager<>(ExampleFactoryA.class, List.of(), GeneralStorageMetadataBuilder.build(), List.of());
     }
 
 }

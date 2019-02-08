@@ -14,13 +14,11 @@ public class DatabaseResource {
     private final String url;
     private final String user;
     private final String password;
-
     public DatabaseResource(String url, String user, String password) {
         this.url = url;
         this.user = user;
         this.password = password;
     }
-
     @GET
     public String get() {
         //connect with url,user and password and do something with database
@@ -32,7 +30,6 @@ public class DatabaseResourceFactory  extends SimpleFactoryBase<DatabaseResource
     public final StringAttribute url = new StringAttribute();
     public final StringAttribute user = new StringAttribute();
     public final StringAttribute password = new StringAttribute();
-
     @Override
     public DatabaseResource createImpl() {
         return new DatabaseResource(url.get(),user.get(),password.get());
@@ -80,23 +77,17 @@ resource.database.password = 123
 ```
 Reading and using the properties.
 ```java
-public class Main {
-    public static void main(String[] args) {
+Properties property = new Properties();
+prop.load(...);
 ...
-        Properties property = new Properties();
-        prop.load(...);
-...
-        builder.addFactory(WebResourceFactory.class, Scope.SINGLETON, ctx->{
-            String time = new DateTimeFormatterBuilder().appendPattern("dd.MM.yyyy HH:mm:ss.SSS").toFormatter().format(LocalDateTime.now());
-            WebResourceFactory webResourceFactory = new WebResourceFactory();
-            webResourceFactory.url.set(property.getProperty("resource.database.url"));
-            webResourceFactory.user.set(property.getProperty("resource.database.user"));
-            webResourceFactory.password.set(property.getProperty("resource.database.password"));
-            return webResourceFactory;
-        });
-...
-    }
-}
+builder.addFactory(WebResourceFactory.class, Scope.SINGLETON, ctx->{
+    String time = new DateTimeFormatterBuilder().appendPattern("dd.MM.yyyy HH:mm:ss.SSS").toFormatter().format(LocalDateTime.now());
+    WebResourceFactory webResourceFactory = new WebResourceFactory();
+    webResourceFactory.url.set(property.getProperty("resource.database.url"));
+    webResourceFactory.user.set(property.getProperty("resource.database.user"));
+    webResourceFactory.password.set(property.getProperty("resource.database.password"));
+    return webResourceFactory;
+});
 ```
 
 ## Problems
@@ -134,27 +125,27 @@ If you already have a property file you will likely add more properties to it. F
 ## Change the configuration data
 ### From inside the same jvm
 ```java
-    DataAndNewMetadata<RootFactory> update = microservice.prepareNewFactory();
-    update.root.getResource(DatabaseResourceFactory.class).url.set("jdbc:postgresql://host/databasenew");
-    microservice.updateCurrentFactory(update,"user","comment",(p)->true);
+DataAndNewMetadata<RootFactory> update = microservice.prepareNewFactory();
+update.root.getResource(DatabaseResourceFactory.class).url.set("jdbc:postgresql://host/databasenew");
+microservice.updateCurrentFactory(update,"user","comment",(p)->true);
 ```
 ### Rest
 To change the configuration from outside there is a REST interface
 
 Add REST interface to the server:
 ```java
-    builder.addFactory(RootFactory.class, Scope.SINGLETON, ctx-> new JettyServerBuilder<>(new RootFactory())
-            .withHost("localhost").widthPort(8005)
-            .withResource(ctx.get(SpecificMicroserviceResource.class))
-            .withResource(ctx.get(DatabaseResourceFactory.class)).build());
-    builder.addFactory(SpecificMicroserviceResource.class, Scope.SINGLETON);
+builder.addFactory(RootFactory.class, Scope.SINGLETON, ctx-> new JettyServerBuilder<>(new RootFactory())
+        .withHost("localhost").widthPort(8005)
+        .withResource(ctx.get(SpecificMicroserviceResource.class))
+        .withResource(ctx.get(DatabaseResourceFactory.class)).build());
+builder.addFactory(SpecificMicroserviceResource.class, Scope.SINGLETON);
 ```
 Using the REST interface with the MicroserviceRestClient.
 ```java
-    MicroserviceRestClient<Void, RootFactory, Void> microserviceRestClient = MicroserviceRestClientBuilder.build("localhost", 8005, "", "", RootFactory.class);
-    DataAndNewMetadata<RootFactory> update = microserviceRestClient.prepareNewFactory();
-    update.root.getResource(DatabaseResourceFactory.class).url.set("jdbc:postgresql://host/databasenew");
-    microservice.updateCurrentFactory(update, "user", "comment", (p) -> true);
+MicroserviceRestClient<Void, RootFactory, Void> microserviceRestClient = MicroserviceRestClientBuilder.build("localhost", 8005, "", "", RootFactory.class);
+DataAndNewMetadata<RootFactory> update = microserviceRestClient.prepareNewFactory();
+update.root.getResource(DatabaseResourceFactory.class).url.set("jdbc:postgresql://host/databasenew");
+microservice.updateCurrentFactory(update, "user", "comment", (p) -> true);
 ```
 
 ## Complete code

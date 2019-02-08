@@ -45,7 +45,7 @@ public class StoredDataMetadataTest {
                 "    \"diffCounter\" : 1\n" +
                 "  }\n" +
                 "}";
-        MigrationManager<ExampleDataA,SummaryDummy> manager = new MigrationManager<>(ExampleDataA.class, List.of(), GeneralStorageMetadataBuilder.build(), List.of(), new DataStorageMetadataDictionary(ExampleDataA.class));
+        MigrationManager<ExampleDataA,SummaryDummy> manager = new MigrationManager<>(ExampleDataA.class, List.of(), GeneralStorageMetadataBuilder.build(), List.of());
         final StoredDataMetadata<SummaryDummy> oldParsed = manager.readStoredFactoryMetadata(old);
 
 

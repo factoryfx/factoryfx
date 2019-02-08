@@ -1,20 +1,23 @@
 package de.factoryfx.docu.parametrized;
 
-import de.factoryfx.factory.FactoryManager;
-import de.factoryfx.data.storage.inmemory.InMemoryDataStorage;
-import de.factoryfx.factory.exception.RethrowingFactoryExceptionHandler;
+import de.factoryfx.factory.builder.FactoryTreeBuilder;
+import de.factoryfx.factory.builder.Scope;
 import de.factoryfx.server.Microservice;
 
 public class Main {
 
     public static void main(String[] args) {
-        RootFactory root = new RootFactory();
-        //update to print system.out
-        PrinterCreatorFactory printerCreatorFactory = new PrinterCreatorFactory();
-        printerCreatorFactory.text.set("bla");
-        root.printerCreator.set(printerCreatorFactory);
+        FactoryTreeBuilder<Void,Root,RootFactory,Void> builder = new FactoryTreeBuilder<>(RootFactory.class);
+        builder.addFactory(RootFactory.class, Scope.SINGLETON,ctx->{
+            RootFactory root = new RootFactory();
+            //update to print system.out
+            PrinterCreatorFactory printerCreatorFactory = new PrinterCreatorFactory();
+            printerCreatorFactory.text.set("bla");
+            root.printerCreator.set(printerCreatorFactory);
+            return root;
+        });
 
-        Microservice<Void,Root,RootFactory,Void> microservice = new Microservice<>(new FactoryManager<>(new RethrowingFactoryExceptionHandler()),new InMemoryDataStorage<>(root));
+        Microservice<Void,Root,RootFactory,Void> microservice = builder.microservice().withInMemoryStorage().build();
         microservice.start();
 
         //prints: 123::bla

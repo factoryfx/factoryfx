@@ -2,7 +2,7 @@ package de.factoryfx.docu.permission;
 
 import ch.qos.logback.classic.Level;
 import de.factoryfx.data.attribute.types.EncryptedStringAttribute;
-import de.factoryfx.data.storage.DataAndNewMetadata;
+import de.factoryfx.data.storage.DataAndStoredMetadata;
 import de.factoryfx.factory.builder.FactoryTreeBuilder;
 import de.factoryfx.factory.builder.Scope;
 import de.factoryfx.factory.log.FactoryUpdateLog;
@@ -11,7 +11,6 @@ import de.factoryfx.jetty.JettyServerFactory;
 import de.factoryfx.microservice.rest.client.MicroserviceRestClient;
 import de.factoryfx.microservice.rest.client.MicroserviceRestClientBuilder;
 import de.factoryfx.server.Microservice;
-import de.factoryfx.server.MicroserviceBuilder;
 import de.factoryfx.server.user.persistent.PersistentUserManagementFactory;
 import de.factoryfx.server.user.persistent.UserFactory;
 import org.slf4j.Logger;
@@ -27,7 +26,7 @@ public class Main {
 
         UserFactory.passwordKey=EncryptedStringAttribute.createKey();
 
-        FactoryTreeBuilder<PrinterFactory> builder = new FactoryTreeBuilder<>(PrinterFactory.class);
+        FactoryTreeBuilder<Void, Printer, PrinterFactory, Void> builder = new FactoryTreeBuilder<>(PrinterFactory.class);
         builder.addFactory(PrinterFactory.class, Scope.SINGLETON, ctx->{
             PrinterFactory factory = new PrinterFactory();
             factory.text.set("Hello World");
@@ -57,17 +56,14 @@ public class Main {
             return resource;
         }) ;
 
-
-
-        Microservice<Void, Printer, PrinterFactory, Object> microservice = MicroserviceBuilder.buildInMemoryMicroservice(builder);
+        Microservice<Void, Printer, PrinterFactory, Void> microservice = builder.microservice().withInMemoryStorage().build();
         microservice.start();
-
 
         System.out.println("first update:");
         {
             MicroserviceRestClient<Void, PrinterFactory, Void> microserviceRestClient = MicroserviceRestClientBuilder.build("localhost",8005,"user1","pw1",PrinterFactory.class);
 
-            DataAndNewMetadata<PrinterFactory> update = microserviceRestClient.prepareNewFactory();
+            DataAndStoredMetadata<PrinterFactory, Void> update = microserviceRestClient.prepareNewFactory();
             update.root.text.set("bla blub1");
             FactoryUpdateLog updateLog = microserviceRestClient.updateCurrentFactory(update, "comment");
 
@@ -79,7 +75,7 @@ public class Main {
         {
             MicroserviceRestClient<Void, PrinterFactory, Void> microserviceRestClient = MicroserviceRestClientBuilder.build("localhost",8005,"user2","pw2",PrinterFactory.class);
 
-            DataAndNewMetadata<PrinterFactory> update = microserviceRestClient.prepareNewFactory();
+            DataAndStoredMetadata<PrinterFactory, Void> update = microserviceRestClient.prepareNewFactory();
             update.root.text.set("bla blub2");
             FactoryUpdateLog updateLog =  microserviceRestClient.updateCurrentFactory(update, "comment");
 

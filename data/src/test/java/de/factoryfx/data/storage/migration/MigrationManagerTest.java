@@ -14,7 +14,7 @@ public class MigrationManagerTest {
 
     @Test
     public void read_read(){
-        MigrationManager<ExampleDataA,Void> manager =  new MigrationManager<>(ExampleDataA.class, List.of(), GeneralStorageMetadataBuilder.build(), List.of(), new DataStorageMetadataDictionary(ExampleDataA.class));
+        MigrationManager<ExampleDataA,Void> manager =  new MigrationManager<>(ExampleDataA.class, List.of(), GeneralStorageMetadataBuilder.build(), List.of());
 
         ExampleDataA result = manager.read(ObjectMapperBuilder.build().writeValueAsString(new ExampleDataA()), createExampleMetadata());
         Assert.assertNotNull(result);
@@ -26,7 +26,9 @@ public class MigrationManagerTest {
     }
 
     private ScheduledDataMetadata<Void> createExampleMetadata(GeneralStorageFormat generalStorageFormat) {
-        return createExampleMetadata(generalStorageFormat,new DataStorageMetadataDictionary(ExampleDataA.class));
+        ExampleDataA exampleDataA = new ExampleDataA();
+        exampleDataA.internal().addBackReferences();
+        return createExampleMetadata(generalStorageFormat, exampleDataA.internal().createDataStorageMetadataDictionaryFromRoot());
     }
     private ScheduledDataMetadata<Void> createExampleMetadata() {
         return createExampleMetadata(GeneralStorageMetadataBuilder.build());
@@ -53,7 +55,7 @@ public class MigrationManagerTest {
         });
 
         GeneralStorageFormat generalStorageFormat = new GeneralStorageFormat(2,0);
-        MigrationManager<ExampleDataA,Void> manager = new MigrationManager<>(ExampleDataA.class, migrations, generalStorageFormat, List.of(), new DataStorageMetadataDictionary(ExampleDataA.class));
+        MigrationManager<ExampleDataA,Void> manager = new MigrationManager<>(ExampleDataA.class, migrations, generalStorageFormat, List.of());
         ExampleDataA result = manager.read(ObjectMapperBuilder.build().writeValueAsString(new ExampleDataA()), createExampleMetadata(new GeneralStorageFormat(1,0)));
         Assert.assertNotNull(result);
     }
@@ -96,7 +98,7 @@ public class MigrationManagerTest {
 
 
         GeneralStorageFormat generalStorageFormat = new GeneralStorageFormat(3,0);
-        MigrationManager<ExampleDataA,Void> manager = new MigrationManager<>(ExampleDataA.class, migrations, generalStorageFormat, List.of(), new DataStorageMetadataDictionary(ExampleDataA.class));
+        MigrationManager<ExampleDataA,Void> manager = new MigrationManager<>(ExampleDataA.class, migrations, generalStorageFormat, List.of());
         ExampleDataA result = manager.read(ObjectMapperBuilder.build().writeValueAsString(new ExampleDataA()), createExampleMetadata(new GeneralStorageFormat(1,0)));
         Assert.assertNotNull(result);
 
@@ -107,7 +109,7 @@ public class MigrationManagerTest {
         List<GeneralMigration> migrations = new ArrayList<>();
 
         GeneralStorageFormat generalStorageFormat = new GeneralStorageFormat(2,0);
-        MigrationManager<ExampleDataA,Void> manager = new MigrationManager<>(ExampleDataA.class, migrations, generalStorageFormat, List.of(), new DataStorageMetadataDictionary(ExampleDataA.class));
+        MigrationManager<ExampleDataA,Void> manager = new MigrationManager<>(ExampleDataA.class, migrations, generalStorageFormat, List.of());
         ExampleDataA result = manager.read(ObjectMapperBuilder.build().writeValueAsString(new ExampleDataA()), createExampleMetadata(new GeneralStorageFormat(1,0)));
         Assert.assertNotNull(result);
 
@@ -152,7 +154,7 @@ public class MigrationManagerTest {
 
 
         GeneralStorageFormat generalStorageFormat = new GeneralStorageFormat(3,0);
-        MigrationManager<ExampleDataA,Void> manager = new MigrationManager<>(ExampleDataA.class, migrations, generalStorageFormat, List.of(), new DataStorageMetadataDictionary(ExampleDataA.class));
+        MigrationManager<ExampleDataA,Void> manager = new MigrationManager<>(ExampleDataA.class, migrations, generalStorageFormat, List.of());
         ExampleDataA result = manager.read(ObjectMapperBuilder.build().writeValueAsString(new ExampleDataA()), createExampleMetadata(new GeneralStorageFormat(1,0)));
         Assert.assertNotNull(result);
 
@@ -200,7 +202,7 @@ public class MigrationManagerTest {
 
 
         GeneralStorageFormat generalStorageFormat = new GeneralStorageFormat(3,0);
-        MigrationManager<ExampleDataA,Void> manager = new MigrationManager<>(ExampleDataA.class, migrations, generalStorageFormat, List.of(), new DataStorageMetadataDictionary(ExampleDataA.class));
+        MigrationManager<ExampleDataA,Void> manager = new MigrationManager<>(ExampleDataA.class, migrations, generalStorageFormat, List.of());
         ExampleDataA result = manager.read(ObjectMapperBuilder.build().writeValueAsString(new ExampleDataA()), createExampleMetadata(new GeneralStorageFormat(1,0)));
         Assert.assertNotNull(result);
     }
@@ -262,7 +264,7 @@ public class MigrationManagerTest {
 
 
         GeneralStorageFormat generalStorageFormat = new GeneralStorageFormat(1, 0);
-        MigrationManager<ExampleDataA,Void> manager = new MigrationManager<>(ExampleDataA.class, List.of(), generalStorageFormat, migrations, new DataStorageMetadataDictionary(ExampleDataA.class));
+        MigrationManager<ExampleDataA,Void> manager = new MigrationManager<>(ExampleDataA.class, List.of(), generalStorageFormat, migrations);
         ExampleDataA result = manager.read(input, createExampleMetadata(generalStorageFormat,ObjectMapperBuilder.build().readValue(oldDictionary,DataStorageMetadataDictionary.class)));
         Assert.assertEquals("123",result.stringAttribute.get());
     }

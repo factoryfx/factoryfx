@@ -17,13 +17,13 @@ import java.util.function.BiFunction;
  *  provides additional setup for attributes based on the FactoryTreeBuilder
  * @param <R> root
  */
-public class FactoryTreeBuilderBasedAttributeSetup<R extends FactoryBase<?,?,R>> {
+public class FactoryTreeBuilderBasedAttributeSetup<V,L,R extends FactoryBase<L,V,R>,S> {
 
-    private final FactoryTreeBuilder<R> factoryTreeBuilder;
+    private final FactoryTreeBuilder<V,L,R,S> factoryTreeBuilder;
     private BiFunction<?, ReferenceBaseAttribute<?, ?, ?>, List> newValuesProvider;
 
     @SuppressWarnings("unchecked")
-    public FactoryTreeBuilderBasedAttributeSetup(FactoryTreeBuilder<R> factoryTreeBuilder) {
+    public FactoryTreeBuilderBasedAttributeSetup(FactoryTreeBuilder<V,L,R,S> factoryTreeBuilder) {
         this.factoryTreeBuilder = factoryTreeBuilder;
 
         newValuesProvider = (root, attribute) -> {

@@ -2,16 +2,14 @@ package de.factoryfx.server;
 
 import de.factoryfx.data.merge.AttributeDiffInfo;
 import de.factoryfx.data.merge.MergeDiffInfo;
-import de.factoryfx.data.storage.ChangeSummaryCreator;
-import de.factoryfx.data.storage.DataAndNewMetadata;
+import de.factoryfx.data.storage.DataAndStoredMetadata;
 import de.factoryfx.data.storage.StoredDataMetadata;
-import de.factoryfx.data.storage.inmemory.InMemoryDataStorage;
 import de.factoryfx.factory.FactoryBase;
-import de.factoryfx.factory.FactoryManager;
 import de.factoryfx.factory.SimpleFactoryBase;
 import de.factoryfx.factory.atrribute.FactoryReferenceAttribute;
-import de.factoryfx.factory.exception.ResettingHandler;
-import de.factoryfx.factory.exception.RethrowingFactoryExceptionHandler;
+import de.factoryfx.factory.builder.FactoryTreeBuilder;
+import de.factoryfx.factory.builder.MicroserviceBuilder;
+import de.factoryfx.factory.builder.Scope;
 import de.factoryfx.factory.log.FactoryUpdateLog;
 import de.factoryfx.factory.testfactories.ExampleFactoryA;
 import de.factoryfx.factory.testfactories.ExampleFactoryB;
@@ -35,39 +33,36 @@ public class MicroserviceTest {
 
     @Test
     public void test_summary() throws Exception {
-        ExampleFactoryA root = new ExampleFactoryA();
+        FactoryTreeBuilder<Void,ExampleLiveObjectA,ExampleFactoryA,ChangeListingSummary> builder = new FactoryTreeBuilder<>(ExampleFactoryA.class);
+        builder.addFactory(ExampleFactoryA.class, Scope.SINGLETON, ctx -> new ExampleFactoryA());
 
-        String rootId=root.getId();
-        final InMemoryDataStorage<ExampleFactoryA, ChangeListingSummary> memoryFactoryStorage = new InMemoryDataStorage<>(root, new ChangeSummaryCreator<ExampleFactoryA, ChangeListingSummary>() {
-            @Override
-            public ChangeListingSummary createChangeSummary(MergeDiffInfo<ExampleFactoryA> mergeDiffInfo) {
-                if (mergeDiffInfo==null){
-                    return null;
-                }
-                return new ChangeListingSummary(mergeDiffInfo.mergeInfos.stream().map((m)->m.dataId).collect(Collectors.toList()));
+        Microservice<Void,ExampleLiveObjectA,ExampleFactoryA,ChangeListingSummary> microservice = builder.microservice().withInMemoryStorage().widthChangeSummaryCreator(mergeDiffInfo -> {
+            if (mergeDiffInfo==null){
+                return null;
             }
-        });
-
-        Microservice<Void,ExampleLiveObjectA,ExampleFactoryA,ChangeListingSummary> microservice = new Microservice<>(new FactoryManager<>(new RethrowingFactoryExceptionHandler()), memoryFactoryStorage);
+            return new ChangeListingSummary(mergeDiffInfo.mergeInfos.stream().map((m)->m.dataId).collect(Collectors.toList()));
+        }).build();
         microservice.start();
 
+        String rootId=microservice.prepareNewFactory().root.getId();
+
         Thread.sleep(2);//avoid same timestamp
         {
-            final DataAndNewMetadata<ExampleFactoryA> prepareNewFactory = microservice.prepareNewFactory();
+            final DataAndStoredMetadata<ExampleFactoryA,ChangeListingSummary> prepareNewFactory = microservice.prepareNewFactory();
             prepareNewFactory.root.stringAttribute.set("change1");
-            microservice.updateCurrentFactory(prepareNewFactory, "user", "comment1",(p)->true);
+            microservice.updateCurrentFactory(prepareNewFactory);
         }
         Thread.sleep(2);//avoid same timestamp
         {
-            final DataAndNewMetadata<ExampleFactoryA> prepareNewFactory = microservice.prepareNewFactory();
+            final DataAndStoredMetadata<ExampleFactoryA,ChangeListingSummary> prepareNewFactory = microservice.prepareNewFactory();
             prepareNewFactory.root.stringAttribute.set("change2");
-            microservice.updateCurrentFactory(prepareNewFactory, "user", "comment2",(p)->true);
+            microservice.updateCurrentFactory(prepareNewFactory);
         }
         Thread.sleep(2);//avoid same timestamp
         {
-            final DataAndNewMetadata<ExampleFactoryA> prepareNewFactory = microservice.prepareNewFactory();
+            final DataAndStoredMetadata<ExampleFactoryA,ChangeListingSummary> prepareNewFactory = microservice.prepareNewFactory();
             prepareNewFactory.root.stringAttribute.set("change3");
-            microservice.updateCurrentFactory(prepareNewFactory, "user", "comment3",(p)->true);
+            microservice.updateCurrentFactory(prepareNewFactory);
         }
         Thread.sleep(2);//avoid same timestamp
 
@@ -92,15 +87,19 @@ public class MicroserviceTest {
         ExampleFactoryA root = new ExampleFactoryA();
         root.referenceListAttribute.add(new ExampleFactoryB());
         root =root.internal().addBackReferences();
-        final InMemoryDataStorage<ExampleFactoryA,Void> memoryFactoryStorage = new InMemoryDataStorage<>(root);
-        memoryFactoryStorage.loadInitialFactory();
 
-        Microservice<Void,ExampleLiveObjectA,ExampleFactoryA,Void> microservice = new Microservice<>(new FactoryManager<>(new RethrowingFactoryExceptionHandler()), memoryFactoryStorage);
+        FactoryTreeBuilder<Void,ExampleLiveObjectA,ExampleFactoryA,Void> builder = new FactoryTreeBuilder<>(ExampleFactoryA.class);
+        builder.addFactory(ExampleFactoryA.class, Scope.SINGLETON, ctx -> {
+            return new ExampleFactoryA();
+        });
+
+        Microservice<Void,ExampleLiveObjectA,ExampleFactoryA,Void> microservice = builder.microservice().withInMemoryStorage().build();
+
         microservice.start();
-        DataAndNewMetadata<ExampleFactoryA> editableFactory = microservice.prepareNewFactory();
+        DataAndStoredMetadata<ExampleFactoryA,Void> editableFactory = microservice.prepareNewFactory();
         editableFactory.root.referenceListAttribute.add(new ExampleFactoryB());
 
-        FactoryUpdateLog<ExampleFactoryA> log = microservice.updateCurrentFactory(editableFactory,"","", x->true);
+        FactoryUpdateLog<ExampleFactoryA> log = microservice.updateCurrentFactory(editableFactory);
         AttributeDiffInfo theDiff = log.mergeDiffInfo.mergeInfos.get(0);
 
         String dt = theDiff.getAttributeDisplayText(log.mergeDiffInfo.getPreviousRootData());
@@ -111,26 +110,28 @@ public class MicroserviceTest {
 
     @Test
     public void test_history() throws Exception {
-        Microservice<Void,ExampleLiveObjectA,ExampleFactoryA,Void> microservice = MicroserviceBuilder.buildInMemoryMicroservice(new ExampleFactoryA());
+        FactoryTreeBuilder<Void,ExampleLiveObjectA,ExampleFactoryA,Void> builder = new FactoryTreeBuilder<>(ExampleFactoryA.class);
+        builder.addFactory(ExampleFactoryA.class, Scope.SINGLETON, ctx -> new ExampleFactoryA());
+        Microservice<Void,ExampleLiveObjectA,ExampleFactoryA,Void> microservice = builder.microservice().withInMemoryStorage().build();
         microservice.start();
 
         Thread.sleep(2);//avoid same timestamp
         {
-            final DataAndNewMetadata<ExampleFactoryA> prepareNewFactory = microservice.prepareNewFactory();
+            final DataAndStoredMetadata<ExampleFactoryA,Void> prepareNewFactory = microservice.prepareNewFactory();
             prepareNewFactory.root.stringAttribute.set("change1");
-            microservice.updateCurrentFactory(prepareNewFactory, "user", "comment1",null);
+            microservice.updateCurrentFactory(prepareNewFactory);
         }
         Thread.sleep(2);//avoid same timestamp
         {
-            final DataAndNewMetadata<ExampleFactoryA> prepareNewFactory = microservice.prepareNewFactory();
+            final DataAndStoredMetadata<ExampleFactoryA,Void> prepareNewFactory = microservice.prepareNewFactory();
             prepareNewFactory.root.stringAttribute.set("change2");
-            microservice.updateCurrentFactory(prepareNewFactory, "user", "comment2",null);
+            microservice.updateCurrentFactory(prepareNewFactory);
         }
         Thread.sleep(2);//avoid same timestamp
         {
-            final DataAndNewMetadata<ExampleFactoryA> prepareNewFactory = microservice.prepareNewFactory();
+            final DataAndStoredMetadata<ExampleFactoryA,Void> prepareNewFactory = microservice.prepareNewFactory();
             prepareNewFactory.root.stringAttribute.set("change3");
-            microservice.updateCurrentFactory(prepareNewFactory, "user", "comment3",null);
+            microservice.updateCurrentFactory(prepareNewFactory);
         }
         Thread.sleep(2);//avoid same timestamp
 
@@ -147,7 +148,7 @@ public class MicroserviceTest {
 
 
     public static class ExampleFactoryARecreation extends SimpleFactoryBase<ExampleLiveObjectA,Void,ExampleFactoryARecreation> {
-        public final FactoryReferenceAttribute<ExampleLiveObjectB,ExampleFactoryBRecreation> referenceAttribute = new FactoryReferenceAttribute<>(ExampleFactoryBRecreation.class).labelText("ExampleA2");
+        public final FactoryReferenceAttribute<ExampleLiveObjectB,ExampleFactoryBRecreation> referenceAttribute = new FactoryReferenceAttribute<>(ExampleFactoryBRecreation.class).labelText("ExampleA2").nullable();
 
         @Override
         public ExampleLiveObjectA createImpl() {
@@ -156,7 +157,7 @@ public class MicroserviceTest {
     }
 
     public static class ExampleFactoryBRecreation extends FactoryBase<ExampleLiveObjectB,Void,ExampleFactoryARecreation> {
-        public final FactoryReferenceAttribute<ExampleLiveObjectB,ExampleFactoryB> referenceAttribute = new FactoryReferenceAttribute<>(ExampleFactoryB.class).labelText("ExampleA2");
+        public final FactoryReferenceAttribute<ExampleLiveObjectB,ExampleFactoryB> referenceAttribute = new FactoryReferenceAttribute<>(ExampleFactoryB.class).labelText("ExampleA2").nullable();
 
         long recreationCounter=0;
         public ExampleFactoryBRecreation(){
@@ -169,19 +170,18 @@ public class MicroserviceTest {
     }
     @Test
     public void recreation_bug() {
-
-        ExampleFactoryARecreation root = new ExampleFactoryARecreation();
-        final InMemoryDataStorage<ExampleFactoryARecreation, Void> memoryFactoryStorage = new InMemoryDataStorage<>(root);
-        Microservice<Void,ExampleLiveObjectA,ExampleFactoryARecreation,Void> microservice = new Microservice<>(new FactoryManager<>(new RethrowingFactoryExceptionHandler()), memoryFactoryStorage);
+        FactoryTreeBuilder<Void,ExampleLiveObjectA,ExampleFactoryARecreation,Void> builder = new FactoryTreeBuilder<>(ExampleFactoryARecreation.class);
+        builder.addFactory(ExampleFactoryARecreation.class, Scope.SINGLETON, ctx -> new ExampleFactoryARecreation());
+        Microservice<Void,ExampleLiveObjectA,ExampleFactoryARecreation,Void> microservice = builder.microservice().withInMemoryStorage().build();
 
         microservice.start();
 
-        DataAndNewMetadata<ExampleFactoryARecreation> update = microservice.prepareNewFactory();
+        DataAndStoredMetadata<ExampleFactoryARecreation,Void> update = microservice.prepareNewFactory();
 
         update.root.referenceAttribute.set(new ExampleFactoryBRecreation());
 
         Assert.assertEquals(0,update.root.referenceAttribute.get().recreationCounter);
-        microservice.updateCurrentFactory(update, "", "", s -> true);
+        microservice.updateCurrentFactory(update);
         Assert.assertEquals(0,update.root.referenceAttribute.get().recreationCounter);
     }
 
@@ -196,38 +196,46 @@ public class MicroserviceTest {
 
     @Test(expected = RuntimeException.class)
     public void test_create_width_exception() throws Exception {
-
-        InMemoryDataStorage<BrokenFactory, ChangeListingSummary> memoryDataStorage = new InMemoryDataStorage<>(new BrokenFactory());
-        Assert.assertEquals(0,memoryDataStorage.getFutureFactoryList().size());
-
-        Microservice<Void,Void,BrokenFactory,ChangeListingSummary> microservice = new Microservice<>(new FactoryManager<>(new ResettingHandler()), memoryDataStorage);
+        FactoryTreeBuilder<Void,Void,BrokenFactory,ChangeListingSummary> builder = new FactoryTreeBuilder<>(BrokenFactory.class);
+        builder.addFactory(BrokenFactory.class, Scope.SINGLETON, ctx -> new BrokenFactory());
+        Microservice<Void,Void,BrokenFactory,ChangeListingSummary> microservice = builder.microservice().withInMemoryStorage().build();
         microservice.start();
-
-//        microservice.updateCurrentFactory(microservice.prepareNewFactory(),"","",(p)->true);
-//
-//        Assert.assertEquals(0,memoryDataStorage.getFutureFactoryList().size());
     }
 
 
     @Test
+    public void test_prepareNewFactory_is_copy() {
+        FactoryTreeBuilder<Void,ExampleLiveObjectA,ExampleFactoryA,Void> builder = new FactoryTreeBuilder<>(ExampleFactoryA.class);
+        builder.addFactory(ExampleFactoryA.class, Scope.SINGLETON, ctx -> new ExampleFactoryA());
+        Microservice<Void,ExampleLiveObjectA,ExampleFactoryA,Void> microservice = builder.microservice().withInMemoryStorage().build();
+
+        Assert.assertFalse(microservice.prepareNewFactory().root==microservice.prepareNewFactory().root);
+        Assert.assertFalse(microservice.prepareNewFactory().root.referenceListAttribute==microservice.prepareNewFactory().root.referenceListAttribute);
+    }
+
+    @Test
     public void test_getDiffToPreviousVersion() {
-        ExampleFactoryA root = new ExampleFactoryA();
-        final InMemoryDataStorage<ExampleFactoryA,Void> memoryFactoryStorage = new InMemoryDataStorage<>(root);
+        FactoryTreeBuilder<Void,ExampleLiveObjectA,ExampleFactoryA,Void> builder = new FactoryTreeBuilder<>(ExampleFactoryA.class);
+        builder.addFactory(ExampleFactoryA.class, Scope.SINGLETON, ctx -> new ExampleFactoryA());
+        Microservice<Void,ExampleLiveObjectA,ExampleFactoryA,Void> microservice = builder.microservice().withInMemoryStorage().build();
 
-        Microservice<Void,ExampleLiveObjectA,ExampleFactoryA,Void> microservice = new Microservice<>(new FactoryManager<>(new RethrowingFactoryExceptionHandler()), memoryFactoryStorage);
         microservice.start();
-        DataAndNewMetadata<ExampleFactoryA> update = microservice.prepareNewFactory();
-        update.root.referenceListAttribute.add(new ExampleFactoryB());
-
         Assert.assertEquals(0,microservice.prepareNewFactory().root.referenceListAttribute.size());
+        Assert.assertEquals(0,microservice.getHistoryFactory(new ArrayList<>(microservice.getHistoryFactoryList()).get(0).id).referenceListAttribute.size());
 
-        FactoryUpdateLog<ExampleFactoryA> log = microservice.updateCurrentFactory(update,"","", x->true);
+        DataAndStoredMetadata<ExampleFactoryA,Void> update = microservice.prepareNewFactory();
+        update.root.referenceListAttribute.add(new ExampleFactoryB());
+        FactoryUpdateLog<ExampleFactoryA> log = microservice.updateCurrentFactory(update);
+
         Assert.assertEquals(1,log.mergeDiffInfo.mergeInfos.size());
-        Assert.assertEquals(1,microservice.prepareNewFactory().root.referenceListAttribute.size());
+//        Assert.assertEquals(1,microservice.prepareNewFactory().root.referenceListAttribute.size());
 
         Assert.assertEquals(2,microservice.getHistoryFactoryList().size());
         List<StoredDataMetadata<Void>> historyFactoryList = new ArrayList<>(microservice.getHistoryFactoryList());
+
         historyFactoryList.sort(Comparator.comparing(o -> o.creationTime));
+        Assert.assertEquals(0,microservice.getHistoryFactory(historyFactoryList.get(0).id).referenceListAttribute.size());
+        Assert.assertEquals(1,microservice.getHistoryFactory(historyFactoryList.get(1).id).referenceListAttribute.size());
         MergeDiffInfo<ExampleFactoryA> diffToPreviousVersion = microservice.getDiffToPreviousVersion(historyFactoryList.get(1));
 
         Assert.assertEquals(1,diffToPreviousVersion.mergeInfos.size());

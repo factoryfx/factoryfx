@@ -14,7 +14,7 @@ import de.factoryfx.microservice.rest.client.MicroserviceRestClientFactory;
  * @param <RS> server root
  * @param <S> History summary
  */
-public class FactoryEditManagerFactory<VS,RS  extends FactoryBase<?,VS,RS>,S> extends SimpleFactoryBase<FactoryEditManager<VS,RS>,Void,RichClientRoot> {
+public class FactoryEditManagerFactory<VS,RS  extends FactoryBase<?,VS,RS>,S> extends SimpleFactoryBase<FactoryEditManager<VS,RS,S>,Void,RichClientRoot> {
 
     @SuppressWarnings("unchecked")
     public final FactoryReferenceAttribute<MicroserviceRestClient<VS,RS,S>,MicroserviceRestClientFactory<Void,RichClientRoot,VS,RS,S>> restClient =
@@ -24,7 +24,7 @@ public class FactoryEditManagerFactory<VS,RS  extends FactoryBase<?,VS,RS>,S> ex
             FactoryReferenceAttribute.create(new FactoryReferenceAttribute<>(FactorySerialisationManagerFactory.class));
 
     @Override
-    public FactoryEditManager<VS,RS> createImpl() {
+    public FactoryEditManager<VS,RS,S> createImpl() {
         return new FactoryEditManager<>(restClient.instance(),factorySerialisationManager.instance());
     }
 

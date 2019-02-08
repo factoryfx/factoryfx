@@ -3,14 +3,10 @@ package de.factoryfx.data.storage.migration;
 import com.fasterxml.jackson.databind.JsonNode;
 import de.factoryfx.data.Data;
 import de.factoryfx.data.jackson.ObjectMapperBuilder;
-import de.factoryfx.data.storage.NewDataMetadata;
 import de.factoryfx.data.storage.ScheduledDataMetadata;
 import de.factoryfx.data.storage.StoredDataMetadata;
-import de.factoryfx.data.storage.migration.metadata.DataStorageMetadataDictionary;
 
-import java.time.LocalDateTime;
 import java.util.List;
-import java.util.UUID;
 
 /**
  * @param <R> root
@@ -21,14 +17,12 @@ public class MigrationManager<R extends Data,S> {
     private final List<DataMigration> dataMigrations;
     private final GeneralStorageFormat generalStorageFormat;
     private final List<GeneralMigration> storageFormatMigrations;
-    private final DataStorageMetadataDictionary dataStorageMetadataDictionary;
 
-    public MigrationManager(Class<R> rootClass, List<GeneralMigration> generalStorageFormatMigrations, GeneralStorageFormat generalStorageFormat, List<DataMigration> dataMigrations, DataStorageMetadataDictionary dataStorageMetadataDictionary) {
+    public MigrationManager(Class<R> rootClass, List<GeneralMigration> generalStorageFormatMigrations, GeneralStorageFormat generalStorageFormat, List<DataMigration> dataMigrations) {
         this.rootClass = rootClass;
         this.dataMigrations = dataMigrations;
         this.generalStorageFormat = generalStorageFormat;
         this.storageFormatMigrations = generalStorageFormatMigrations;
-        this.dataStorageMetadataDictionary = dataStorageMetadataDictionary;
     }
 
     public String write(R root) {
@@ -46,6 +40,10 @@ public class MigrationManager<R extends Data,S> {
 //    private boolean canRead(int dataModelVersion) {
 //        return dataModelVersionForStoring == dataModelVersion;
 //    }
+
+    public R read(JsonNode data, StoredDataMetadata<S> metadata) {
+        return read(ObjectMapperBuilder.build().writeTree(data),metadata);
+    }
 
     public R read(String data, StoredDataMetadata<S> metadata) {
         GeneralStorageFormat currentFormat= metadata.generalStorageFormat;
@@ -72,7 +70,7 @@ public class MigrationManager<R extends Data,S> {
             }
         }
 
-        return read(ObjectMapperBuilder.build().writeTree(jsonNode));
+        return ObjectMapperBuilder.build().treeToValue(jsonNode,rootClass).internal().addBackReferences();
     }
 
     @SuppressWarnings("unchecked")
@@ -84,23 +82,6 @@ public class MigrationManager<R extends Data,S> {
     public ScheduledDataMetadata<S> readScheduledFactoryMetadata(String data) {
         return ObjectMapperBuilder.build().readValue(data,ScheduledDataMetadata.class);
     }
-
-    public NewDataMetadata prepareNewFactoryMetadata(NewDataMetadata newFactoryMetadata){
-        return newFactoryMetadata;
-    }
-
-    private R read(String data) {
-        return ObjectMapperBuilder.build().readValue(data,rootClass).internal().addBackReferences();
-    }
-
-    public StoredDataMetadata<S> createStoredDataMetadata(String user, String comment, String baseVersionId, S changeSummary) {
-        return new StoredDataMetadata<S>(LocalDateTime.now(),UUID.randomUUID().toString(),user,comment,baseVersionId,changeSummary, generalStorageFormat,dataStorageMetadataDictionary);
-    }
-
-    public ScheduledDataMetadata<S> createScheduledDataMetadata(String user, String comment, String baseVersionId, S changeSummary, LocalDateTime scheduled) {
-        return new ScheduledDataMetadata<>(LocalDateTime.now(),UUID.randomUUID().toString(),user,comment,baseVersionId,changeSummary, generalStorageFormat,dataStorageMetadataDictionary,scheduled);
-    }
-
 
 
 }

@@ -4,14 +4,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import de.factoryfx.data.storage.DataAndStoredMetadata;
+import de.factoryfx.factory.builder.FactoryTreeBuilder;
+import de.factoryfx.factory.builder.Scope;
 import org.junit.Assert;
 import org.junit.Test;
 
-import de.factoryfx.data.storage.DataAndNewMetadata;
 import de.factoryfx.factory.atrribute.FactoryReferenceListAttribute;
 import de.factoryfx.factory.log.FactoryUpdateLog;
 import de.factoryfx.server.Microservice;
-import de.factoryfx.server.MicroserviceBuilder;
+import de.factoryfx.factory.builder.MicroserviceBuilder;
 
 public class FactoryReferenceListTest {
 
@@ -54,11 +56,16 @@ public class FactoryReferenceListTest {
 
     @Test
     public void referenceListTest() {
-
-        RootFactory rootFactory = new RootFactory();
         ObjectFactory first = new ObjectFactory();
-        rootFactory.objects.add(first);
-        Microservice<Void, String,RootFactory, Void> microService = MicroserviceBuilder.buildInMemoryMicroservice(rootFactory);
+
+        FactoryTreeBuilder<Void, String,RootFactory, Void> builder = new FactoryTreeBuilder<>(RootFactory.class);
+        builder.addFactory(RootFactory.class, Scope.SINGLETON, ctx->{
+            RootFactory rootFactory = new RootFactory();
+            rootFactory.objects.add(first);
+            return rootFactory;
+        });
+
+        Microservice<Void, String,RootFactory, Void> microService = builder.microservice().withInMemoryStorage().build();
         microService.start();
 
         {
@@ -69,11 +76,11 @@ public class FactoryReferenceListTest {
             destroyer.clear();
 
             System.out.println("update started");
-            DataAndNewMetadata<RootFactory> update1 = microService.prepareNewFactory();
+            DataAndStoredMetadata<RootFactory,Void> update1 = microService.prepareNewFactory();
             ObjectFactory second = new ObjectFactory();
             update1.root.objects.add(second);
 
-            FactoryUpdateLog<RootFactory> res1 = microService.updateCurrentFactory(update1, "root", "update1", s -> true);
+            FactoryUpdateLog<RootFactory> res1 = microService.updateCurrentFactory(update1);
             Assert.assertTrue(res1.successfullyMerged());
 
              Assert.assertFalse(creator.contains(first.getId()));

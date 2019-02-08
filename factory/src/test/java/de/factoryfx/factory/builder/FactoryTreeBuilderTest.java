@@ -2,6 +2,7 @@ package de.factoryfx.factory.builder;
 
 import de.factoryfx.data.attribute.types.StringAttribute;
 import de.factoryfx.data.jackson.ObjectMapperBuilder;
+import de.factoryfx.data.storage.migration.metadata.DataStorageMetadataDictionary;
 import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.factory.FactoryTreeBuilderBasedAttributeSetup;
 import de.factoryfx.factory.PolymorphicFactoryBase;
@@ -22,7 +23,7 @@ public class FactoryTreeBuilderTest {
 
     @Test
     public void test_simple(){
-        FactoryTreeBuilder<de.factoryfx.factory.testfactories.ExampleFactoryA> factoryTreeBuilder = new FactoryTreeBuilder<>(de.factoryfx.factory.testfactories.ExampleFactoryA.class);
+        FactoryTreeBuilder<Void,ExampleLiveObjectA,ExampleFactoryA,Void> factoryTreeBuilder = new FactoryTreeBuilder<>(de.factoryfx.factory.testfactories.ExampleFactoryA.class);
 
         factoryTreeBuilder.addFactory(ExampleFactoryA.class, Scope.PROTOTYPE, context -> {
             ExampleFactoryA factory = new ExampleFactoryA();
@@ -51,7 +52,7 @@ public class FactoryTreeBuilderTest {
 
     @Test
     public void test_simple_defaultcreator(){
-        FactoryTreeBuilder<ExampleFactoryA> factoryTreeBuilder = new FactoryTreeBuilder<>(ExampleFactoryA.class);
+        FactoryTreeBuilder<Void,ExampleLiveObjectA,ExampleFactoryA,Void> factoryTreeBuilder = new FactoryTreeBuilder<>(ExampleFactoryA.class);
 
         factoryTreeBuilder.addFactory(de.factoryfx.factory.testfactories.ExampleFactoryA.class, Scope.PROTOTYPE);
         factoryTreeBuilder.addFactory(de.factoryfx.factory.testfactories.ExampleFactoryB.class, Scope.PROTOTYPE, context -> {
@@ -110,7 +111,7 @@ public class FactoryTreeBuilderTest {
 
     @Test
     public void test_singelton(){
-        FactoryTreeBuilder<FactoryTestA> factoryTreeBuilder = new FactoryTreeBuilder<>(FactoryTestA.class);
+        FactoryTreeBuilder<Void,Void,FactoryTestA,Void> factoryTreeBuilder = new FactoryTreeBuilder<>(FactoryTestA.class);
 
         factoryTreeBuilder.addFactory(FactoryTestA.class, Scope.PROTOTYPE, context -> {
             FactoryTestA factory = new FactoryTestA();
@@ -130,7 +131,7 @@ public class FactoryTreeBuilderTest {
 
     @Test
     public void test_prototype(){
-        FactoryTreeBuilder<FactoryTestA> factoryTreeBuilder = new FactoryTreeBuilder<>(FactoryTestA.class);
+        FactoryTreeBuilder<Void,Void,FactoryTestA,Void> factoryTreeBuilder = new FactoryTreeBuilder<>(FactoryTestA.class);
 
         factoryTreeBuilder.addFactory(FactoryTestA.class, Scope.PROTOTYPE, context -> {
             FactoryTestA factory = new FactoryTestA();
@@ -163,7 +164,7 @@ public class FactoryTreeBuilderTest {
 
     @Test
     public void test_polymorphic(){
-        FactoryTreeBuilder<ExamplePolymorphic> factoryTreeBuilder = new FactoryTreeBuilder<>(ExamplePolymorphic.class);
+        FactoryTreeBuilder<Void,Void,ExamplePolymorphic,Void> factoryTreeBuilder = new FactoryTreeBuilder<>(ExamplePolymorphic.class);
 
         factoryTreeBuilder.addFactory(ExamplePolymorphic.class, Scope.SINGLETON);
 
@@ -177,7 +178,7 @@ public class FactoryTreeBuilderTest {
 
     @Test(expected=IllegalStateException.class)
     public void test_simple_validation(){
-        FactoryTreeBuilder<FactoryTestA> factoryTreeBuilder = new FactoryTreeBuilder<>(FactoryTestA.class);
+        FactoryTreeBuilder<Void,Void,FactoryTestA,Void> factoryTreeBuilder = new FactoryTreeBuilder<>(FactoryTestA.class);
 
         factoryTreeBuilder.addFactory(FactoryTestA.class, Scope.PROTOTYPE);
         factoryTreeBuilder.addFactory(ExampleFactoryB.class, Scope.PROTOTYPE, context -> {
@@ -199,7 +200,7 @@ public class FactoryTreeBuilderTest {
 
     @Test(expected=IllegalStateException.class)
     public void test_root_creator_missing(){
-        FactoryTreeBuilder<FactoryTestA> factoryTreeBuilder = new FactoryTreeBuilder<>(FactoryTestA.class);
+        FactoryTreeBuilder<Void,Void,FactoryTestA,Void> factoryTreeBuilder = new FactoryTreeBuilder<>(FactoryTestA.class);
 
         //intentional commented out(test docu):  factoryTreeBuilder.addFactory(FactoryTestA.class, Scope.PROTOTYPE);
         factoryTreeBuilder.addFactory(ExampleFactoryB.class, Scope.PROTOTYPE, context -> {
@@ -224,7 +225,7 @@ public class FactoryTreeBuilderTest {
 
     @Test
     public void test_singleton_named(){
-        FactoryTreeBuilder<FactoryTestA> factoryTreeBuilder = new FactoryTreeBuilder<>(FactoryTestA.class);
+        FactoryTreeBuilder<Void,Void,FactoryTestA,Void> factoryTreeBuilder = new FactoryTreeBuilder<>(FactoryTestA.class);
         factoryTreeBuilder.addFactory(FactoryTestA.class, Scope.PROTOTYPE, context -> {
             FactoryTestA factory = new FactoryTestA();
             factory.referenceList.add(context.get(ExampleFactoryB.class,"111"));
@@ -250,7 +251,7 @@ public class FactoryTreeBuilderTest {
 
     @Test
     public void test_singleton_named_getList(){
-        FactoryTreeBuilder<FactoryTestA> factoryTreeBuilder = new FactoryTreeBuilder<>(FactoryTestA.class);
+        FactoryTreeBuilder<Void,Void,FactoryTestA,Void> factoryTreeBuilder = new FactoryTreeBuilder<>(FactoryTestA.class);
         factoryTreeBuilder.addFactory(FactoryTestA.class, Scope.PROTOTYPE, context -> {
             FactoryTestA factory = new FactoryTestA();
             factory.referenceList.addAll(context.getList(ExampleFactoryB.class));
@@ -275,13 +276,13 @@ public class FactoryTreeBuilderTest {
 
     @Test
     public void test_mutiple_named_getList(){
-        FactoryTreeBuilder<FactoryTestA> factoryTreeBuilder = createBuilder();
+        FactoryTreeBuilder<Void,Void,FactoryTestA,Void> factoryTreeBuilder = createBuilder();
         FactoryTestA factoryTestA = factoryTreeBuilder.buildTreeUnvalidated();
 
         Assert.assertTrue(factoryTestA.referenceList.get(0)==factoryTestA.referenceList.get(2));
         Assert.assertTrue(factoryTestA.referenceList.get(1)==factoryTestA.referenceList.get(3));
 
-        FactoryTreeBuilder<FactoryTestA> factoryTreeBuilder2 = createBuilder();
+        FactoryTreeBuilder<Void,Void,FactoryTestA,Void> factoryTreeBuilder2 = createBuilder();
         factoryTreeBuilder2.fillFromExistingFactoryTree(factoryTestA);
         FactoryTestA factoryTestA2 = factoryTreeBuilder.buildTreeUnvalidated();
 
@@ -289,8 +290,8 @@ public class FactoryTreeBuilderTest {
         Assert.assertTrue(factoryTestA2.referenceList.get(1)==factoryTestA2.referenceList.get(3));
     }
 
-    private FactoryTreeBuilder<FactoryTestA> createBuilder() {
-        FactoryTreeBuilder<FactoryTestA> factoryTreeBuilder = new FactoryTreeBuilder<>(FactoryTestA.class);
+    private FactoryTreeBuilder<Void,Void,FactoryTestA,Void> createBuilder() {
+        FactoryTreeBuilder<Void,Void,FactoryTestA,Void> factoryTreeBuilder = new FactoryTreeBuilder<>(FactoryTestA.class);
         factoryTreeBuilder.addFactory(FactoryTestA.class, Scope.PROTOTYPE, context -> {
             FactoryTestA factory = new FactoryTestA();
             factory.referenceList.addAll(context.getList(ExampleFactoryB.class));
@@ -312,7 +313,7 @@ public class FactoryTreeBuilderTest {
     @Test(expected = IllegalStateException.class)
     public void test_incomplete_builder_class() {
 
-        FactoryTreeBuilder<ExampleFactoryA> builder = new FactoryTreeBuilder<>(ExampleFactoryA.class);
+        FactoryTreeBuilder<Void,ExampleLiveObjectA,ExampleFactoryA,Void> builder = new FactoryTreeBuilder<>(ExampleFactoryA.class);
         builder.addFactory(ExampleFactoryA.class, Scope.SINGLETON, context -> {
             ExampleFactoryA factoryBases = new ExampleFactoryA();
             factoryBases.referenceAttribute.set(context.get(de.factoryfx.factory.testfactories.ExampleFactoryB.class));
@@ -335,7 +336,7 @@ public class FactoryTreeBuilderTest {
     @Test(expected = IllegalStateException.class)
     public void test_incomplete_builder_classAndName() {
 
-        FactoryTreeBuilder<ExampleFactoryA> builder = new FactoryTreeBuilder<>(ExampleFactoryA.class);
+        FactoryTreeBuilder<Void,ExampleLiveObjectA,ExampleFactoryA,Void> builder = new FactoryTreeBuilder<>(ExampleFactoryA.class);
         builder.addFactory(ExampleFactoryA.class, Scope.SINGLETON, context -> {
             ExampleFactoryA factoryBases = new ExampleFactoryA();
             factoryBases.referenceAttribute.set(context.get(de.factoryfx.factory.testfactories.ExampleFactoryB.class,"dfgdgf"));
@@ -355,4 +356,40 @@ public class FactoryTreeBuilderTest {
         ExampleFactoryA root = builder.buildTreeUnvalidated();
     }
 
+    @Test
+    public void test_dataDictionary(){
+        FactoryTreeBuilder<Void,Void,FactoryTestA,Void> builder = new FactoryTreeBuilder<>(FactoryTestA.class);
+        builder.addFactory(FactoryTestA.class, Scope.PROTOTYPE, context -> {
+            FactoryTestA factory = new FactoryTestA();
+            factory.referenceAttribute1.set(context.get(ExampleFactoryB.class));
+            return factory;
+        });
+        builder.addFactory(ExampleFactoryB.class, Scope.SINGLETON, context -> {
+            return new ExampleFactoryB();
+        });
+
+        DataStorageMetadataDictionary dataStorageMetadataDictionary = builder.buildTreeUnvalidated().internal().createDataStorageMetadataDictionaryFromRoot();
+        Assert.assertTrue(dataStorageMetadataDictionary.containsClass(FactoryTestA.class.getName()));
+        Assert.assertTrue(dataStorageMetadataDictionary.containsClass(ExampleFactoryB.class.getName()));
+    }
+
+    public static class ExampleFactoryB2 extends ExampleFactoryB {
+    }
+
+    @Test
+    public void test_dataDictionary_inheritance(){
+        FactoryTreeBuilder<Void,Void,FactoryTestA,Void> builder = new FactoryTreeBuilder<>(FactoryTestA.class);
+        builder.addFactory(FactoryTestA.class, Scope.PROTOTYPE, context -> {
+            FactoryTestA factory = new FactoryTestA();
+            factory.referenceAttribute1.set(context.get(ExampleFactoryB.class));
+            return factory;
+        });
+        builder.addFactory(ExampleFactoryB.class, Scope.SINGLETON, context -> {
+            return new ExampleFactoryB2();
+        });
+
+        DataStorageMetadataDictionary dataStorageMetadataDictionary = builder.buildTreeUnvalidated().internal().createDataStorageMetadataDictionaryFromRoot();
+        Assert.assertTrue(dataStorageMetadataDictionary.containsClass(FactoryTestA.class.getName()));
+        Assert.assertTrue(dataStorageMetadataDictionary.containsClass(ExampleFactoryB2.class.getName()));
+    }
 }

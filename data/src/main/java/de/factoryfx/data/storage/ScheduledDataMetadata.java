@@ -18,9 +18,11 @@ import java.util.concurrent.TimeUnit;
  * implements Delayed to make it's easy usable width a DelayQueue
  *
  * Note: this class has a natural ordering that is inconsistent with equals
+ *
+ * @param <S> Summary for this change
  */
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
-public class ScheduledDataMetadata<T> extends StoredDataMetadata<T> implements Delayed{
+public class ScheduledDataMetadata<S> extends StoredDataMetadata<S> implements Delayed{
 
     /** for scheduled update: date and time of planned activation of this configuration */
     public final LocalDateTime scheduled;
@@ -32,7 +34,7 @@ public class ScheduledDataMetadata<T> extends StoredDataMetadata<T> implements D
             @JsonProperty("user")String user,
             @JsonProperty("comment")String comment,
             @JsonProperty("baseVersionId")String baseVersionId,
-            @JsonProperty("changeSummary")T changeSummary,
+            @JsonProperty("changeSummary")S changeSummary,
             @JsonProperty("storageFormat") GeneralStorageFormat generalStorageFormat,
             @JsonProperty("dataStorageMetadataDictionary") DataStorageMetadataDictionary dataStorageMetadataDictionary,
             @JsonProperty("scheduled")LocalDateTime scheduled) {
@@ -41,7 +43,7 @@ public class ScheduledDataMetadata<T> extends StoredDataMetadata<T> implements D
     }
 
 
-    public ScheduledDataMetadata(NewDataMetadata storedDataMetadata, LocalDateTime scheduled, GeneralStorageFormat generalStorageFormat, DataStorageMetadataDictionary dataStorageMetadataDictionary) {
+    public ScheduledDataMetadata(StoredDataMetadata<S> storedDataMetadata, LocalDateTime scheduled, GeneralStorageFormat generalStorageFormat, DataStorageMetadataDictionary dataStorageMetadataDictionary) {
         this(null, "", "", "", storedDataMetadata.baseVersionId, null, generalStorageFormat,dataStorageMetadataDictionary,scheduled);
     }
 

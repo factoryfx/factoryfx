@@ -687,5 +687,11 @@ public class DataTest {
         Assert.assertEquals(2,factoryB.internal().collectChildrenDeepFromNode().size());
     }
 
+    @Test
+    public void test_copy_reflist_copied(){
+        ExampleDataA original = new ExampleDataA();
+        ExampleDataA copy = original.internal().copy();
+        Assert.assertFalse(original.referenceListAttribute==copy.referenceListAttribute);
+    }
 
 }

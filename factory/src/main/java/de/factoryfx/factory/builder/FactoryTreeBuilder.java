@@ -1,6 +1,8 @@
 package de.factoryfx.factory.builder;
 
 import de.factoryfx.data.Data;
+import de.factoryfx.data.storage.migration.GeneralStorageFormat;
+import de.factoryfx.data.storage.migration.GeneralStorageMetadataBuilder;
 import de.factoryfx.data.validation.ValidationError;
 import de.factoryfx.factory.FactoryBase;
 
@@ -9,13 +11,13 @@ import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-/** utility class to build a factory hierarchy
+/** utility class to build a factory hierarchy(dependency tree)
  *
  *  see RichClientBuilder for an example
  *
  * @param <R> root factory
  * */
-public class FactoryTreeBuilder<R extends FactoryBase<?,?,R>> {
+public class FactoryTreeBuilder<V,L,R extends FactoryBase<L,V,R>,S> {
     private final FactoryContext<R> factoryContext = new FactoryContext<>();
     private final Class<R> rootClass;
 
@@ -92,5 +94,9 @@ public class FactoryTreeBuilder<R extends FactoryBase<?,?,R>> {
         factoryContext.fillFromExistingFactoryTree(root);
     }
 
+    public MicroserviceBuilder<V,L,R,S> microservice(){
+        GeneralStorageFormat generalStorageFormat = GeneralStorageMetadataBuilder.build();
+        return new MicroserviceBuilder<>(this.rootClass,this.buildTree(),generalStorageFormat);
+    }
 
 }

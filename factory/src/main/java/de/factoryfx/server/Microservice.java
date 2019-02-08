@@ -1,16 +1,15 @@
 package de.factoryfx.server;
 
+import java.time.LocalDateTime;
 import java.util.Collection;
-import java.util.function.Function;
+import java.util.UUID;
 
 import de.factoryfx.data.merge.DataMerger;
 import de.factoryfx.data.merge.MergeDiffInfo;
+import de.factoryfx.data.storage.*;
+import de.factoryfx.data.storage.migration.GeneralStorageFormat;
 import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.factory.FactoryManager;
-import de.factoryfx.data.storage.DataAndNewMetadata;
-import de.factoryfx.data.storage.DataAndStoredMetadata;
-import de.factoryfx.data.storage.DataStorage;
-import de.factoryfx.data.storage.StoredDataMetadata;
 import de.factoryfx.factory.RootFactoryWrapper;
 import de.factoryfx.factory.log.FactoryUpdateLog;
 
@@ -24,45 +23,82 @@ import de.factoryfx.factory.log.FactoryUpdateLog;
 public class Microservice<V,L,R extends FactoryBase<L,V,R>,S> {
     private final FactoryManager<V,L,R> factoryManager;
     private final DataStorage<R,S> dataStorage;
+    private final ChangeSummaryCreator<R,S> changeSummaryCreator;
 
-    public Microservice(FactoryManager<V,L,R> factoryManager, DataStorage<R,S> dataStorage) {
+    public final GeneralStorageFormat generalStorageFormat;
+
+    public Microservice(FactoryManager<V,L,R> factoryManager, DataStorage<R,S> dataStorage, ChangeSummaryCreator<R,S> changeSummaryCreator, GeneralStorageFormat generalStorageFormat) {
         this.factoryManager = factoryManager;
         this.dataStorage = dataStorage;
+        this.changeSummaryCreator = changeSummaryCreator;
+        this.generalStorageFormat=generalStorageFormat;
     }
 
-    public MergeDiffInfo<R> getDiffToPreviousVersion(StoredDataMetadata storedDataMetadata) {
+    public MergeDiffInfo<R> getDiffToPreviousVersion(StoredDataMetadata<S> storedDataMetadata) {
         R historyFactory = getHistoryFactory(storedDataMetadata.id);
         R historyFactoryPrevious = getPreviousHistoryFactory(storedDataMetadata.id);
         return new DataMerger<>(historyFactoryPrevious,historyFactoryPrevious.utility().copy(),historyFactory).createMergeResult((permission)->true).executeMerge();
     }
 
-    public FactoryUpdateLog<R> revertTo(StoredDataMetadata storedDataMetadata, String user) {
+    public FactoryUpdateLog<R> revertTo(StoredDataMetadata<S> storedDataMetadata, String user) {
         R historyFactory = getHistoryFactory(storedDataMetadata.id);
-        DataAndNewMetadata<R> current = prepareNewFactory();
-        current = new DataAndNewMetadata<>(historyFactory,current.metadata);
-        return updateCurrentFactory(current,user,"revert",s->true);
+        DataAndStoredMetadata<R,S> current = prepareNewFactory();
+        current = new DataAndStoredMetadata<>(historyFactory,current.metadata);
+        return updateCurrentFactory(current);
     }
 
-    public FactoryUpdateLog<R> updateCurrentFactory(DataAndNewMetadata<R> update, String user, String comment, Function<String,Boolean> permissionChecker) {
+    public FactoryUpdateLog<R> updateCurrentFactory(DataAndStoredMetadata<R,S> update) {
+        return updateCurrentFactory(update.metadata.user,update.metadata.comment,update);
+    }
+
+    public FactoryUpdateLog<R> updateCurrentFactory(String user, String comment, DataAndStoredMetadata<R,S> update) {
         R commonVersion = dataStorage.getHistoryFactory(update.metadata.baseVersionId);
-        FactoryUpdateLog<R> factoryLog = factoryManager.update(commonVersion,update.root, permissionChecker);
-        if (!factoryLog.failedUpdate()&& factoryLog.successfullyMerged()){
-            DataAndNewMetadata<R> copy = new DataAndNewMetadata<>(factoryManager.getCurrentFactory().internal().copy(),update.metadata);
-            dataStorage.updateCurrentFactory(copy,user,comment,factoryLog.mergeDiffInfo);
+        FactoryUpdateLog<R> factoryLog = factoryManager.update(commonVersion,update.root, update.permissionChecker);
+        if (!factoryLog.failedUpdate() && factoryLog.successfullyMerged()){
+
+            S changeSummary=null;
+            if (factoryLog.mergeDiffInfo!=null && changeSummaryCreator!=null){
+                changeSummary=changeSummaryCreator.createChangeSummary(factoryLog.mergeDiffInfo);
+            }
+
+            R copy = factoryManager.getCurrentFactory().internal().copy();
+            StoredDataMetadata<S> copyStoredDataMetadata = new StoredDataMetadata<>(
+                    LocalDateTime.now(),
+                    update.metadata.id,
+                    user,
+                    comment,
+                    update.metadata.baseVersionId,
+                    changeSummary,
+                    this.generalStorageFormat,
+                    copy.internal().createDataStorageMetadataDictionaryFromRoot()
+            );
+            dataStorage.updateCurrentFactory(new DataAndStoredMetadata<>(copy,copyStoredDataMetadata));
         }
         return factoryLog;
     }
 
-    public MergeDiffInfo<R> simulateUpdateCurrentFactory(DataAndNewMetadata<R> possibleUpdate, Function<String, Boolean> permissionChecker){
+
+    public MergeDiffInfo<R> simulateUpdateCurrentFactory(DataAndStoredMetadata<R,S> possibleUpdate){
         R commonVersion = dataStorage.getHistoryFactory(possibleUpdate.metadata.baseVersionId);
-        return factoryManager.simulateUpdate(commonVersion , possibleUpdate.root, permissionChecker);
+        return factoryManager.simulateUpdate(commonVersion , possibleUpdate.root, possibleUpdate.permissionChecker);
     }
 
     /**
-     * @return creates a new factory update which is ready for editing mainly assign the right ids
+     *  prepare a new factory which could be used to update data. mainly give it the correct baseVersionId
+     *  @return new possible factory update with prepared ids/metadata
      * */
-    public DataAndNewMetadata<R> prepareNewFactory() {
-        return dataStorage.prepareNewFactory(dataStorage.getCurrentFactoryStorageId(),factoryManager.getCurrentFactory().utility().copy());
+    public DataAndStoredMetadata<R,S> prepareNewFactory() {
+        DataAndId<R> currentFactory = dataStorage.getCurrentFactory();
+        StoredDataMetadata<S> copyMetadata = new StoredDataMetadata<>(
+                LocalDateTime.now(),
+                UUID.randomUUID().toString(),
+                "",
+                "",
+                currentFactory.id,
+                null,
+                generalStorageFormat,
+                currentFactory.root.internal().createDataStorageMetadataDictionaryFromRoot());
+        return new DataAndStoredMetadata<>(currentFactory.root.utility().copy(),copyMetadata);
     }
 
     public R getHistoryFactory(String id) {
@@ -78,11 +114,11 @@ public class Microservice<V,L,R extends FactoryBase<L,V,R>,S> {
     }
 
     public L start() {
-        dataStorage.loadInitialFactory();
-        final DataAndStoredMetadata<R,S> currentFactory = dataStorage.getCurrentFactory();
-        currentFactory.root.internalFactory().setMicroservice(this);//also mind ExceptionResponseAction#reset
+        final DataAndId<R> currentFactory = dataStorage.getCurrentFactory();
 
-        return factoryManager.start(new RootFactoryWrapper<>(currentFactory.root));
+        R copy = currentFactory.root.utility().copy();
+        copy.internalFactory().setMicroservice(this);//also mind ExceptionResponseAction#reset
+        return factoryManager.start(new RootFactoryWrapper<>(copy));
     }
 
     public void stop() {
