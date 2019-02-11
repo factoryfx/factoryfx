@@ -120,12 +120,11 @@ public class FactoryEditManagerTest {
             FactoryTreeBuilder<Void, ExampleLiveObjectA, ExampleFactoryA, Void> builder = new FactoryTreeBuilder<>(ExampleFactoryA.class);
             builder.addFactory(ExampleFactoryA.class, Scope.SINGLETON,ctx->{
                 ExampleFactoryA factory = new ExampleFactoryA();
-                factory.referenceAttribute.set(new ExampleFactoryB());
                 return factory;
             });
 
             Microservice<Void, ExampleLiveObjectA, ExampleFactoryA, Void> microservice = builder.microservice().withInMemoryStorage().build();
-
+            microservice.start();
 
             MicroserviceRestClient<Void, ExampleFactoryA,Void> client = Mockito.mock(MicroserviceRestClient.class);
             Mockito.when(client.prepareNewFactory()).thenAnswer(invocation -> microservice.prepareNewFactory());

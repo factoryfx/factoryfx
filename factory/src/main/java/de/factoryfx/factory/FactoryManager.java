@@ -38,6 +38,9 @@ public class FactoryManager<V,L,R extends FactoryBase<L,V,R>> {
 
     @SuppressWarnings("unchecked")
     public FactoryUpdateLog<R> update(R commonVersion , R newVersion, Function<String,Boolean> permissionChecker){
+        if (currentFactoryRoot==null) {
+            throw new IllegalStateException("update on a not started manager");
+        }
 
         Collection<FactoryBase<?, ?, ?>> previousFactories = currentFactoryRoot.getFactoriesInDestroyOrder();
         previousFactories.forEach((f) -> f.internalFactory().resetLog());

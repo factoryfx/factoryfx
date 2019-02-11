@@ -8,13 +8,13 @@ Factoryfx is a lightweight Dependency Injection Framework that extends dependenc
 
 Factoryfx is a replacement for the following technologies
 * **Factoryfx vs Dependency Injection**<br>
-Order independence
+Order independence, uniform structure
 * **Factoryfx vs Dependency Injection Frameworks**<br>
-Programmatic java API over annotations.
+Programmatic java API over annotations API.
 * **Factoryfx vs JConsole MBeans**<br>
 Lifecycle support, end user metadata(labels, validation), multi-user editing
 * **Factoryfx vs Property files(text,xml,json or yaml)**<br>
-Change history, Change metadata (comment, user, date)
+Change history, change metadata (comment, user, date)
 
 ## Setup
 
@@ -155,7 +155,7 @@ Typescript code generator.
 * [Persistentstorage](docu/src/main/java/de/factoryfx/docu/persistentstorage/usecase.md)<br>Persistent configuration data storage using a database
 * [Polymorphism](docu/src/main/java/de/factoryfx/docu/polymorphism/usecase.md)<br>Polymorphic factories
 * [Runtime status](docu/src/main/java/de/factoryfx/docu/runtimestatus/usecase.md)<br>Pass runtime status over updates(e.g request counter)
-* [Update](docu/src/main/java/de/factoryfx/docu/reuse/usecase.md)<br>Optimise Factory update/Server restart e.g. for liveobjects that need a lot of time for initialization
+* [Update](docu/src/main/java/de/factoryfx/docu/update/usecase.md)<br>Optimise Factory update/Server restart e.g. for liveobjects that need a lot of time for initialization
 * [Monitoring](docu/src/main/java/de/factoryfx/docu/monitoring/usecase.md)<br>Request monitoring data 
 * [Swagger](docu/src/main/java/de/factoryfx/docu/swagger/usecase.md)<br>Swagger example 
 * [Permissions](docu/src/main/java/de/factoryfx/docu/permission/usecase.md)<br>Permissions on attribute level
