@@ -35,7 +35,7 @@ public class PostgresDataStorage<R extends Data, S> implements DataStorage<R, S>
     public R getHistoryFactory(String id) {
         StoredDataMetadata<S> metaData=null;
         for(StoredDataMetadata<S> historyMetaData: getHistoryFactoryList()){
-            if (metaData.id.equals(id)){
+            if (historyMetaData.id.equals(id)){
                 metaData=historyMetaData;
 
             }
@@ -223,7 +223,7 @@ public class PostgresDataStorage<R extends Data, S> implements DataStorage<R, S>
     public R getFutureFactory(String id) {
         ScheduledDataMetadata<S> metaData=null;
         for(ScheduledDataMetadata<S> historyMetaData: getFutureFactoryList()){
-            if (metaData.id.equals(id)){
+            if (historyMetaData.id.equals(id)){
                 metaData=historyMetaData;
             }
         }

@@ -33,9 +33,8 @@ java 11+ required
 ## Basic example
 ### Factory
 ```java
-public class HelloWorldFactory extends SimpleFactoryBase<HelloWorld,Visitor,HelloWorldFactory> {
+public class HelloWorldFactory extends SimpleFactoryBase<HelloWorld,Void,HelloWorldFactory> {
     public final StringAttribute text = new StringAttribute().labelText("text");
-
     @Override
     protected HelloWorld create() {
         return new HelloWorld(text.get());
@@ -56,6 +55,19 @@ public class HelloWorld{
     }
 }
 ```
+### Setup
+```java
+    FactoryTreeBuilder<Void,HelloWorld,HelloWorldFactory,Void> builder = new FactoryTreeBuilder<>(HelloWorldFactory.class);
+    builder.addFactory(HelloWorldFactory.class, Scope.SINGLETON, ctx-> {
+        HelloWorldFactory helloWorldFactory = new HelloWorldFactory();
+        helloWorldFactory.text.set("HelloWorld");
+        return rootFactory;
+    });
+
+    Microservice<Void,Root,RootFactory,Void> microservice = builder.microservice().withInMemoryStorage().build();
+    microservice.start();
+```
+
 ## Motivation
 
 ### Background

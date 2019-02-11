@@ -18,3 +18,5 @@ compile(group: 'io.github.factoryfx', name: 'postgresqlStorage', version: factor
 compile(group: 'io.github.factoryfx', name: 'factory', version: factoryfxVersion)
 compile(group: 'io.github.factoryfx', name: 'javafxFactoryEditing', version: factoryfxVersion)
 compile(group: 'io.github.factoryfx', name: 'microserviceRestClient', version: factoryfxVersion)
+```
+

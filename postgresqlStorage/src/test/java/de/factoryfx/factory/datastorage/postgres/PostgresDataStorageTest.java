@@ -278,6 +278,49 @@ public class PostgresDataStorageTest {
         postgresFactoryStorage.deleteFutureFactory(list.iterator().next().id);
         list = postgresFactoryStorage.getFutureFactoryList();
         Assert.assertEquals(1,list.size());
+
+        Assert.assertNotNull(postgresFactoryStorage.getFutureFactory(new ArrayList<>(list).get(0).id));
+    }
+
+    @Test
+    public void test_history() {
+        PostgresDataStorage<ExampleFactoryA,Void> postgresFactoryStorage = new PostgresDataStorage<>(postgresDatasource, createInitialExampleFactoryA(), createDataMigrationManager());
+
+        DataAndStoredMetadata<ExampleFactoryA, Void> initialExampleFactoryA = createInitialExampleFactoryA();
+        StoredDataMetadata<Void> scheduledDataMetadata = new StoredDataMetadata<>(
+                initialExampleFactoryA.metadata.creationTime,
+                UUID.randomUUID().toString(),
+                initialExampleFactoryA.metadata.user,
+                initialExampleFactoryA.metadata.comment,
+                initialExampleFactoryA.metadata.baseVersionId,
+                initialExampleFactoryA.metadata.changeSummary,
+                initialExampleFactoryA.metadata.generalStorageFormat,
+                initialExampleFactoryA.metadata.dataStorageMetadataDictionary
+        );
+
+
+        postgresFactoryStorage.updateCurrentFactory(new DataAndStoredMetadata<>(new ExampleFactoryA(),scheduledDataMetadata));
+        Collection<StoredDataMetadata<Void>> list = postgresFactoryStorage.getHistoryFactoryList();
+        Assert.assertEquals(1,list.size());
+        String id = list.iterator().next().id;
+        Assert.assertEquals(id,scheduledDataMetadata.id);
+
+        StoredDataMetadata<Void> storedDataMetadata2 = new StoredDataMetadata<>(
+                initialExampleFactoryA.metadata.creationTime,
+                UUID.randomUUID().toString(),
+                initialExampleFactoryA.metadata.user,
+                initialExampleFactoryA.metadata.comment,
+                initialExampleFactoryA.metadata.baseVersionId,
+                initialExampleFactoryA.metadata.changeSummary,
+                initialExampleFactoryA.metadata.generalStorageFormat,
+                initialExampleFactoryA.metadata.dataStorageMetadataDictionary
+        );
+        postgresFactoryStorage.updateCurrentFactory(new DataAndStoredMetadata<>(new ExampleFactoryA(),storedDataMetadata2));
+        list = postgresFactoryStorage.getHistoryFactoryList();
+        Assert.assertEquals(2,list.size());
+
+        Assert.assertNotNull(postgresFactoryStorage.getHistoryFactory(new ArrayList<>(list).get(0).id));
+
     }
 
 

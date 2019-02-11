@@ -15,9 +15,6 @@ public class Main {
             return rootFactory;
         });
 
-        RootFactory rootFactory = new RootFactory();
-        rootFactory.text.set("HelloWorld");
-
         Microservice<Void,Root,RootFactory,Void> microservice = builder.microservice().withInMemoryStorage().build();
         microservice.start();
 
