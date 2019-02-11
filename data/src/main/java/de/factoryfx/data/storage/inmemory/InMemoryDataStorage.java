@@ -38,7 +38,7 @@ public class InMemoryDataStorage<R extends Data,S> implements DataStorage<R,S> {
 
     @Override
     public DataAndId<R> getCurrentFactory() {
-        return new DataAndId<>(storage.get(currentFactoryId).root,currentFactoryId);
+        return new DataAndId<>(storage.get(currentFactoryId).root.internal().copy(),currentFactoryId);
     }
 
     @Override

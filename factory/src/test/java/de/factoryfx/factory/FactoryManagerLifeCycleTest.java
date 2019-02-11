@@ -547,4 +547,101 @@ public class FactoryManagerLifeCycleTest {
         Assert.assertEquals(0,root.ref2.get().refD.get().reCreateCalls.size());
 
     }
+
+    public static class UpdateFactory extends FactoryBase<DummyLifeObejct,Void,UpdateFactory> {
+
+        public List<String> updateCalls= new ArrayList<>();
+        public List<String> startCalls= new ArrayList<>();
+        public List<String> destroyCalls= new ArrayList<>();
+
+        public StringAttribute stringAttribute=new StringAttribute();
+
+        public UpdateFactory(){
+            configLifeCycle().setCreator(() -> new DummyLifeObejct("",null));
+            configLifeCycle().setUpdater(dummyLifeObject -> updateCalls.add("updated"));
+            configLifeCycle().setStarter(dummyLifeObject -> startCalls.add("started"));
+            configLifeCycle().setDestroyer(dummyLifeObject -> destroyCalls.add("destroy"));
+        }
+
+        public void resetCounter(){
+            updateCalls.clear();
+            startCalls.clear();
+            destroyCalls.clear();
+        }
+
+        public void copyCounters(UpdateFactory from){
+            updateCalls.addAll(from.updateCalls);
+            startCalls.addAll(from.startCalls);
+            destroyCalls.addAll(from.startCalls);
+        }
+    }
+
+
+    @Test
+    public void test_updater(){
+        ch.qos.logback.classic.Logger rootLogger = (ch.qos.logback.classic.Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
+        rootLogger.setLevel(Level.INFO);
+
+        FactoryManager<Void,DummyLifeObejct,UpdateFactory> factoryManager = new FactoryManager<>(new RethrowingFactoryExceptionHandler());
+
+
+        factoryManager.start(new RootFactoryWrapper<>(new UpdateFactory()));
+
+        UpdateFactory common = factoryManager.getCurrentFactory().utility().copy();
+        UpdateFactory update = factoryManager.getCurrentFactory().utility().copy();
+
+        update.stringAttribute.set("123");
+
+        Assert.assertEquals(0,factoryManager.getCurrentFactory().updateCalls.size());
+        update.resetCounter();
+        factoryManager.update(common,update,(permission)->true);
+
+        Assert.assertEquals(1,factoryManager.getCurrentFactory().updateCalls.size());
+    }
+
+    @Test
+    public void test_updater_start_not_called_again(){
+        ch.qos.logback.classic.Logger rootLogger = (ch.qos.logback.classic.Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
+        rootLogger.setLevel(Level.INFO);
+
+        FactoryManager<Void,DummyLifeObejct,UpdateFactory> factoryManager = new FactoryManager<>(new RethrowingFactoryExceptionHandler());
+
+
+        factoryManager.start(new RootFactoryWrapper<>(new UpdateFactory()));
+
+        UpdateFactory common = factoryManager.getCurrentFactory().utility().copy();
+        UpdateFactory update = factoryManager.getCurrentFactory().utility().copy();
+
+        update.stringAttribute.set("123");
+
+        Assert.assertEquals(1,factoryManager.getCurrentFactory().startCalls.size());
+        update.resetCounter();
+        factoryManager.update(common,update,(permission)->true);
+
+        Assert.assertEquals(1,factoryManager.getCurrentFactory().startCalls.size());
+    }
+
+    @Test
+    public void test_updater_destroy_not_called_again(){
+        ch.qos.logback.classic.Logger rootLogger = (ch.qos.logback.classic.Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
+        rootLogger.setLevel(Level.INFO);
+
+        FactoryManager<Void,DummyLifeObejct,UpdateFactory> factoryManager = new FactoryManager<>(new RethrowingFactoryExceptionHandler());
+
+
+        factoryManager.start(new RootFactoryWrapper<>(new UpdateFactory()));
+
+        UpdateFactory common = factoryManager.getCurrentFactory().utility().copy();
+        UpdateFactory update = factoryManager.getCurrentFactory().utility().copy();
+
+        update.stringAttribute.set("123");
+
+        Assert.assertEquals(0,factoryManager.getCurrentFactory().destroyCalls.size());
+        update.resetCounter();
+        factoryManager.update(common,update,(permission)->true);
+
+        Assert.assertEquals(0,factoryManager.getCurrentFactory().destroyCalls.size());
+    }
+
+
 }

@@ -27,7 +27,7 @@ public class MicroserviceAwareFactoryTest {
         Microservice<Void,String,RootTestClazz,Void> microservice = builder.microservice().withInMemoryStorage().build();
         microservice.start();
 
-        Assert.assertEquals(microservice,rootTestclazz.ref.get().utilityFactory().getMicroservice());
+        //assert no npe in MicroserviceAwareFactoryTestclazz
     }
 
     public static class MicroserviceAwareFactoryTestclazz extends FactoryBase<String,Void,RootTestClazz> {
@@ -42,6 +42,8 @@ public class MicroserviceAwareFactoryTest {
 
         @Override
         public String createImpl() {
+            this.utilityFactory().getMicroservice().prepareNewFactory(); //no npw, Microservice available
+
             return "";
         }
     }

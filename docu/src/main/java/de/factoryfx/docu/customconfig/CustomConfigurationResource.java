@@ -24,12 +24,13 @@ public class CustomConfigurationResource {
         public int port;
     }
 
+    @SuppressWarnings("unchecked")
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     public Response config(CustomConfigurationRequest request) {
-        DataAndStoredMetadata<ServerFactory,?> update = microservice.prepareNewFactory();
-        update.root.server.get().connectorManager.get().connectors.get(0).port.set(request.port);
-//        microservice.updateCurrentFactory("CustomConfigurationResource","port change",update);
+        DataAndStoredMetadata update = microservice.prepareNewFactory();
+        ((ServerFactory)update.root).server.get().connectors.get(0).port.set(request.port);
+        microservice.updateCurrentFactory("CustomConfigurationResource","port change",update);
         return Response.ok().build();
     }
 

@@ -6,13 +6,25 @@
 
 Factoryfx is a lightweight Dependency Injection Framework that extends dependency injection with data injection
 
+Factoryfx is a replacement for the following technologies
+* **Factoryfx vs Dependency Injection**<br>
+Order independence
+* **Factoryfx vs Dependency Injection Frameworks**<br>
+Programmatic java API over annotations.
+* **Factoryfx vs JConsole MBeans**<br>
+Lifecycle support, end user metadata(labels, validation), multi-user editing
+* **Factoryfx vs Property files(text,xml,json or yaml)**<br>
+Change history, Change metadata (comment, user, date)
+
 ## Setup
 
 | Group ID            | Artifact ID | Version |
 | :-----------------: | :---------: | :-----: |
 | io.github.factoryfx | factory  | 1.7.6  |
 
-java 11 required
+java 11+ required
+
+### Dependencies
 
 ##### minimal server
 ```groovy
@@ -134,20 +146,21 @@ Typescript code generator.
 
 ## Documentation
 
-* [datainjection](docu/src/main/java/de/factoryfx/docu/datainjection/usecase.md)
-* [dependencyinjection](docu/src/main/java/de/factoryfx/docu/dependencyinjection/usecase.md)
-* [restserver](docu/src/main/java/de/factoryfx/docu/restserver/usecase.md)
-* [lifecycle](docu/src/main/java/de/factoryfx/docu/lifecycle/usecase.md)
-* [migration](docu/src/main/java/de/factoryfx/docu/migration/usecase.md)
-* [parametrized](docu/src/main/java/de/factoryfx/docu/parametrized/usecase.md)
-* [persistentstorage](docu/src/main/java/de/factoryfx/docu/persistentstorage/usecase.md)
-* [polymorphism](docu/src/main/java/de/factoryfx/docu/polymorphism/usecase.md)
-* [reuse](docu/src/main/java/de/factoryfx/docu/reuse/usecase.md)
-* [monitoring](docu/src/main/java/de/factoryfx/docu/monitoring/usecase.md)
-* [swagger](docu/src/main/java/de/factoryfx/docu/swagger/usecase.md)
-* [permissions](docu/src/main/java/de/factoryfx/docu/permission/usecase.md)
-* [custom configuration REST API](docu/src/main/java/de/factoryfx/docu/customconfig/usecase.md)
-
+* [Datainjection](docu/src/main/java/de/factoryfx/docu/datainjection/usecase.md)<br>Injection data into a liveobject
+* [Dependencyinjection](docu/src/main/java/de/factoryfx/docu/dependencyinjection/usecase.md)<br>Injection dependency into a liveobject
+* [Restserver](docu/src/main/java/de/factoryfx/docu/restserver/usecase.md)<br>Basic jetty server with a jersey REST resource
+* [Lifecycle](docu/src/main/java/de/factoryfx/docu/lifecycle/usecase.md)<br>Lifecycle configuration (start/top/update)
+* [Migration](docu/src/main/java/de/factoryfx/docu/migration/usecase.md)<br>Configuration data migration
+* [Parametrized](docu/src/main/java/de/factoryfx/docu/parametrized/usecase.md)<br>Combining runtime data with factory data
+* [Persistentstorage](docu/src/main/java/de/factoryfx/docu/persistentstorage/usecase.md)<br>Persistent configuration data storage using a database
+* [Polymorphism](docu/src/main/java/de/factoryfx/docu/polymorphism/usecase.md)<br>Polymorphic factories
+* [Runtime status](docu/src/main/java/de/factoryfx/docu/runtimestatus/usecase.md)<br>Pass runtime status over updates(e.g request counter)
+* [Update](docu/src/main/java/de/factoryfx/docu/reuse/usecase.md)<br>Optimise Factory update/Server restart e.g. for liveobjects that need a lot of time for initialization
+* [Monitoring](docu/src/main/java/de/factoryfx/docu/monitoring/usecase.md)<br>Request monitoring data 
+* [Swagger](docu/src/main/java/de/factoryfx/docu/swagger/usecase.md)<br>Swagger example 
+* [Permissions](docu/src/main/java/de/factoryfx/docu/permission/usecase.md)<br>Permissions on attribute level
+* [Custom configuration REST API](docu/src/main/java/de/factoryfx/docu/customconfig/usecase.md)<br>Custom configuration REST API
+* [Configuration data](docu/src/main/java/de/factoryfx/docu/configurationdata/usecase.md)<br>How to handle configuration data
 
 ## Example
 

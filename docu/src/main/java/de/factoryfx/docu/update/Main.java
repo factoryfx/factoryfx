@@ -1,4 +1,4 @@
-package de.factoryfx.docu.reuse;
+package de.factoryfx.docu.update;
 
 import de.factoryfx.data.storage.DataAndStoredMetadata;
 import de.factoryfx.factory.builder.FactoryTreeBuilder;

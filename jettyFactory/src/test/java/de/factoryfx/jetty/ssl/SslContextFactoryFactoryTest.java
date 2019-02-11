@@ -8,7 +8,6 @@ import de.factoryfx.factory.builder.Scope;
 import de.factoryfx.jetty.JettyServerBuilder;
 import de.factoryfx.jetty.JettyServerFactory;
 import de.factoryfx.server.Microservice;
-import de.factoryfx.factory.builder.MicroserviceBuilder;
 import org.eclipse.jetty.server.Server;
 import org.junit.Assert;
 import org.junit.Test;
@@ -100,7 +99,7 @@ public class SslContextFactoryFactoryTest {
             }
 
             return new JettyServerBuilder<>(new JettyServerFactory<Void,TestJettyServerFactory>())
-                    .withHost("localhost").widthPort(8009).witdhSsl(ssl)
+                    .withHost("localhost").widthPort(8009).withSsl(ssl)
                     .withResource(ctx.get(TestResourceFactory.class)).build();
         });
         builder.addFactory(TestResourceFactory.class, Scope.SINGLETON);

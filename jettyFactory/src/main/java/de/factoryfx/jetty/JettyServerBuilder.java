@@ -17,12 +17,9 @@ public class JettyServerBuilder<V,R extends FactoryBase<?,V,R>,S extends JettySe
     public JettyServerBuilder(S jettyServerFactory){
         this.jettyServerFactory=jettyServerFactory;
 
-        HttpServerConnectorManagerFactory<V, R> connectorManager = new HttpServerConnectorManagerFactory<>();
-        jettyServerFactory.connectorManager.set(connectorManager);
-
         HttpServerConnectorFactory<V, R> serverConnectorFactory = new HttpServerConnectorFactory<>();
         serverConnectorFactory.host.set("localhost");
-        connectorManager.connectors.add(serverConnectorFactory);
+        jettyServerFactory.connectors.add(serverConnectorFactory);
 
 
         HandlerCollectionFactory<V, R> handlerCollection = new HandlerCollectionFactory<>();
@@ -69,12 +66,12 @@ public class JettyServerBuilder<V,R extends FactoryBase<?,V,R>,S extends JettySe
     }
 
     public JettyServerBuilder<V,R,S> widthPort(int port){
-        jettyServerFactory.connectorManager.get().connectors.get(0).port.set(port);
+        jettyServerFactory.connectors.get(0).port.set(port);
         return this;
     }
 
     public JettyServerBuilder<V,R,S> withHost(String host){
-        jettyServerFactory.connectorManager.get().connectors.get(0).host.set(host);
+        jettyServerFactory.connectors.get(0).host.set(host);
         return this;
     }
 
@@ -106,8 +103,8 @@ public class JettyServerBuilder<V,R extends FactoryBase<?,V,R>,S extends JettySe
     }
 
 
-    public JettyServerBuilder<V, R,S> witdhSsl(SslContextFactoryFactory<V, R> ssl) {
-        jettyServerFactory.connectorManager.get().connectors.get(0).ssl.set(ssl);
+    public JettyServerBuilder<V, R,S> withSsl(SslContextFactoryFactory<V, R> ssl) {
+        jettyServerFactory.connectors.get(0).ssl.set(ssl);
         return this;
     }
 }

@@ -102,7 +102,7 @@ public class JettyServerTest {
             }
 
             DataAndStoredMetadata<JettyServerRootFactory,Void> update = microservice.prepareNewFactory();
-            update.root.server.get().connectorManager.get().connectors.get(0).port.set(8081);
+            update.root.server.get().connectors.get(0).port.set(8081);
             microservice.updateCurrentFactory(update);
 
 
@@ -155,7 +155,7 @@ public class JettyServerTest {
             }
 
             DataAndStoredMetadata<JettyServerRootFactory,Void> update = microservice.prepareNewFactory();
-            update.root.server.get().connectorManager.get().connectors.clear();
+            update.root.server.get().connectors.clear();
             microservice.updateCurrentFactory(update);
 
 

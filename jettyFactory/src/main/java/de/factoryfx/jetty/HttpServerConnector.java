@@ -38,7 +38,4 @@ public class HttpServerConnector {
         }
     }
 
-    public void removeFromServer() {
-        connector.getServer().removeConnector(connector);
-    }
 }

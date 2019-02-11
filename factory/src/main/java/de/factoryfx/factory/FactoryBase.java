@@ -63,7 +63,10 @@ public class FactoryBase<L,V,R extends FactoryBase<?,V,R>> extends Data{
             previousLiveObject = this.createdLiveObject;
             this.createdLiveObject = reCreate(previousLiveObject);
             needRecreation=false;
-            started=false;
+            if (needsCreatePropagation()){
+                started=false;
+            }
+
         } else {
             if (createdLiveObject==null){
                 createdLiveObject = create();
@@ -112,7 +115,7 @@ public class FactoryBase<L,V,R extends FactoryBase<?,V,R>> extends Data{
     private L reCreate(L previousLiveObject) {
         if (updater!=null){
             long time = timeMeasuringAction(() -> updater.accept(previousLiveObject) );
-            logRecreate(time);
+            logUpdate(time);
             return previousLiveObject;
         }
         if (reCreatorWithPreviousLiveObject!=null){
@@ -136,7 +139,7 @@ public class FactoryBase<L,V,R extends FactoryBase<?,V,R>> extends Data{
     }
 
     private void destroyUpdated() {
-        if (previousLiveObject!=null && destroyerWithPreviousLiveObject!=null){
+        if (previousLiveObject!=null && destroyerWithPreviousLiveObject!=null && needsCreatePropagation()){
             logDestroy(timeMeasuringAction(()-> {
                 destroyerWithPreviousLiveObject.accept(previousLiveObject);
             }));
@@ -316,6 +319,12 @@ public class FactoryBase<L,V,R extends FactoryBase<?,V,R>> extends Data{
     }
 
     @JsonIgnore
+    private long updateDurationNs;
+    private void logUpdate(long updateDurationNs){
+        this.updateDurationNs=updateDurationNs;
+    }
+
+    @JsonIgnore
     private long startDurationNs;
     private void logStart(long startDurationNs){
         this.startDurationNs=startDurationNs;
@@ -332,6 +341,7 @@ public class FactoryBase<L,V,R extends FactoryBase<?,V,R>> extends Data{
         this.recreateDurationNs=0;
         this.startDurationNs=0;
         this.destroyDurationNs=0;
+        this.updateDurationNs=0;
     }
 
     private static final int PRINTED_COUNTER_LIMIT=500;
@@ -429,6 +439,12 @@ public class FactoryBase<L,V,R extends FactoryBase<?,V,R>> extends Data{
             result.append(FactoryLogEntryEventType.DESTROY);
             result.append(" ");
             result.append(formatNsPeriod(destroyDurationNs));
+            result.append(",");
+        }
+        if (updateDurationNs!=0) {
+            result.append(FactoryLogEntryEventType.UPDATE);
+            result.append(" ");
+            result.append(formatNsPeriod(updateDurationNs));
             result.append(",");
         }
         return result.toString();
@@ -672,7 +688,7 @@ public class FactoryBase<L,V,R extends FactoryBase<?,V,R>> extends Data{
 
         /**the factory data has changed therefore a new liveobject is needed.<br>
          * previousLiveObject can be used to pass runtime status from previous object (e.g request counter).<br>
-         * passed vrevious liveobject is never null
+         * passed previous liveobject is never null
          *
          * @param reCreatorWithPreviousLiveObject reCreatorWithPreviousLiveObject*/
         public void setReCreator(Function<L,L> reCreatorWithPreviousLiveObject ) {

@@ -115,10 +115,8 @@ public class Microservice<V,L,R extends FactoryBase<L,V,R>,S> {
 
     public L start() {
         final DataAndId<R> currentFactory = dataStorage.getCurrentFactory();
-
-        R copy = currentFactory.root.utility().copy();
-        copy.internalFactory().setMicroservice(this);//also mind ExceptionResponseAction#reset
-        return factoryManager.start(new RootFactoryWrapper<>(copy));
+        currentFactory.root.internalFactory().setMicroservice(this);//also mind ExceptionResponseAction#reset
+        return factoryManager.start(new RootFactoryWrapper<>(currentFactory.root));
     }
 
     public void stop() {

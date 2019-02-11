@@ -50,7 +50,6 @@ public class FileSystemDataStorage<R extends Data,S> implements DataStorage<R,S>
         return new DataAndId<>(migrationManager.read(readFile(currentFactoryPath), storedDataMetadata), storedDataMetadata.id);
     }
 
-
     @Override
     public void updateCurrentFactory(DataAndStoredMetadata<R,S> update) {
         writeFile(currentFactoryPath, migrationManager.write(update.root));

@@ -2,9 +2,12 @@ package de.factoryfx.jetty;
 
 import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.factory.atrribute.FactoryReferenceAttribute;
+import de.factoryfx.factory.atrribute.FactoryReferenceListAttribute;
+import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.HandlerCollection;
 
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -40,10 +43,10 @@ public class JettyServerFactory<V,R extends FactoryBase<?,V,R>> extends FactoryB
         jerseyLogger2.setLevel(Level.SEVERE);//warning about generic parameters, works fine and no fix available so the warnings are just useless
     }
 
-
     @SuppressWarnings("unchecked")
-    public final FactoryReferenceAttribute<HttpServerConnectorManager, HttpServerConnectorManagerFactory<V,R>> connectorManager =
-            FactoryReferenceAttribute.create( new FactoryReferenceAttribute<>(HttpServerConnectorManagerFactory.class).labelText("Connectors").userNotSelectable());
+    public final FactoryReferenceListAttribute<HttpServerConnector,HttpServerConnectorFactory<V,R>> connectors =
+            FactoryReferenceListAttribute.create( new FactoryReferenceListAttribute<>(HttpServerConnectorFactory.class).labelText("Connectors").userNotSelectable());
+
 
     @SuppressWarnings("unchecked")
     public final FactoryReferenceAttribute<HandlerCollection,HandlerCollectionFactory<V,R>> handler = FactoryReferenceAttribute.create(new FactoryReferenceAttribute<>(HandlerCollectionFactory.class).labelText("Handler collection"));
@@ -51,7 +54,7 @@ public class JettyServerFactory<V,R extends FactoryBase<?,V,R>> extends FactoryB
 
     public JettyServerFactory(){
         configLifeCycle().setCreator(this::createJetty);
-
+        configLifeCycle().setUpdater(this::update);
         configLifeCycle().setStarter(this::start);
         configLifeCycle().setDestroyer(this::stop);
 
@@ -61,11 +64,20 @@ public class JettyServerFactory<V,R extends FactoryBase<?,V,R>> extends FactoryB
     //api for customizing JettyServer creation
     protected Server createJetty() {
         Server server = new Server();
-        connectorManager.instance().addToServer(server);
+        connectors.instances().forEach(httpServerConnector -> httpServerConnector.addToServer(server));
 
         handler.instance().setServer(server);
         server.setHandler(handler.instance());
         return server;
+    }
+
+    private void update(Server server){
+        for (Connector connector : server.getConnectors()) {
+            server.removeConnector(connector);
+        }
+        for (HttpServerConnector connector : connectors.instances()) {
+            connector.addToServer(server);
+        }
     }
 
     /**
