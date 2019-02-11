@@ -1,17 +1,32 @@
 package de.factoryfx.jetty;
 
 import ch.qos.logback.classic.Level;
+import de.factoryfx.data.attribute.primitive.BooleanAttribute;
+import de.factoryfx.data.attribute.primitive.IntegerAttribute;
+import de.factoryfx.data.attribute.types.EnumListAttribute;
+import de.factoryfx.data.attribute.types.StringListAttribute;
 import de.factoryfx.data.storage.DataAndStoredMetadata;
+import de.factoryfx.factory.FactoryBase;
+import de.factoryfx.factory.PolymorphicFactoryBase;
 import de.factoryfx.factory.SimpleFactoryBase;
+import de.factoryfx.factory.atrribute.FactoryPolymorphicReferenceAttribute;
 import de.factoryfx.factory.atrribute.FactoryReferenceAttribute;
 import de.factoryfx.factory.builder.FactoryTreeBuilder;
 import de.factoryfx.factory.builder.Scope;
 import de.factoryfx.server.Microservice;
+import org.eclipse.jetty.server.Handler;
+import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.server.handler.AbstractHandler;
+import org.eclipse.jetty.server.handler.gzip.GzipHandler;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import javax.servlet.DispatcherType;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Response;
@@ -54,6 +69,18 @@ public class HandlerCollectionFactoryTest {
         }
     }
 
+    public static class CustomHandlerFactory<V,R extends FactoryBase<?,V,R>> extends PolymorphicFactoryBase<Handler,V,R> {
+        @Override
+        public Handler createImpl() {
+            return new AbstractHandler() {
+                @Override
+                public void handle(String target, Request baseRequest, HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+
+                }
+            };
+        }
+    }
+
 
     @SuppressWarnings("unchecked")
     @Test
@@ -71,7 +98,7 @@ public class HandlerCollectionFactoryTest {
         try {
 
             DataAndStoredMetadata<HandlerCollectionRootFactory,Void> update = microservice.prepareNewFactory();
-            update.root.server.get().handler.get().handlers.add(new GzipHandlerFactory<>());
+            update.root.server.get().handler.get().handlers.add(new CustomHandlerFactory<>());
             microservice.updateCurrentFactory(update);
 
         } finally {
