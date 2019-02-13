@@ -7,7 +7,6 @@ import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.HandlerCollection;
 
-import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 

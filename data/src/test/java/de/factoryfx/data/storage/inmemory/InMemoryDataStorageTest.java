@@ -9,9 +9,8 @@ import de.factoryfx.data.storage.DataAndScheduledMetadata;
 import de.factoryfx.data.storage.DataAndStoredMetadata;
 import de.factoryfx.data.storage.ScheduledDataMetadata;
 import de.factoryfx.data.storage.StoredDataMetadata;
-import de.factoryfx.data.storage.migration.GeneralStorageFormat;
+import de.factoryfx.data.storage.migration.GeneralStorageMetadata;
 import de.factoryfx.data.storage.migration.GeneralStorageMetadataBuilder;
-import de.factoryfx.data.storage.migration.metadata.DataStorageMetadataDictionary;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -20,15 +19,14 @@ public class InMemoryDataStorageTest {
     private DataAndStoredMetadata<Dummy,Void> createInitialFactory() {
         Dummy exampleFactoryA = new Dummy();
         exampleFactoryA.internal().addBackReferences();
-        GeneralStorageFormat generalStorageFormat = GeneralStorageMetadataBuilder.build();
+        GeneralStorageMetadata generalStorageMetadata = GeneralStorageMetadataBuilder.build();
         DataAndStoredMetadata<Dummy,Void> initialFactoryAndStorageMetadata = new DataAndStoredMetadata<>(exampleFactoryA,
                 new StoredDataMetadata<>(LocalDateTime.now(),
                         UUID.randomUUID().toString(),
                         "System",
                         "initial factory",
                         UUID.randomUUID().toString(),
-                        null,
-                        generalStorageFormat,
+                        null, generalStorageMetadata,
                         exampleFactoryA.internal().createDataStorageMetadataDictionaryFromRoot()
                 )
         );
@@ -80,7 +78,7 @@ public class InMemoryDataStorageTest {
                 initialFactory.metadata.comment,
                 initialFactory.metadata.baseVersionId,
                 initialFactory.metadata.changeSummary,
-                initialFactory.metadata.generalStorageFormat,
+                initialFactory.metadata.generalStorageMetadata,
                 initialFactory.metadata.dataStorageMetadataDictionary,
                 LocalDateTime.now()
         );

@@ -1,5 +1,7 @@
 package de.factoryfx.example.client;
 
+import de.factoryfx.data.jackson.ObjectMapperBuilder;
+import de.factoryfx.data.storage.migration.DataMigrationManager;
 import de.factoryfx.data.storage.migration.MigrationManager;
 import de.factoryfx.data.storage.migration.GeneralStorageMetadataBuilder;
 import de.factoryfx.example.client.view.ConfigurationViewFactory;
@@ -209,7 +211,7 @@ public class RichClientBuilder {
     private static class RichClientFactorySerialisationManagerFactory extends FactorySerialisationManagerFactory<ServerRootFactory,Void> {
         @Override
         public MigrationManager<ServerRootFactory, Void> createImpl() {
-            return new MigrationManager<>(ServerRootFactory.class, List.of(), GeneralStorageMetadataBuilder.build(), List.of());
+            return new MigrationManager<>(ServerRootFactory.class, List.of(), GeneralStorageMetadataBuilder.build(), new DataMigrationManager(), ObjectMapperBuilder.build());
         }
     }
 }

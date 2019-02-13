@@ -1,7 +1,7 @@
 package de.factoryfx.factory.datastorage.oracle;
 
 import de.factoryfx.data.storage.StoredDataMetadata;
-import de.factoryfx.data.storage.migration.GeneralStorageFormat;
+import de.factoryfx.data.storage.migration.GeneralStorageMetadata;
 import de.factoryfx.data.storage.migration.GeneralStorageMetadataBuilder;
 import de.factoryfx.data.storage.migration.metadata.DataStorageMetadataDictionary;
 import de.factoryfx.factory.testfactories.ExampleFactoryA;
@@ -34,10 +34,9 @@ public class OracledbDataStorageHistoryTest extends DatabaseTest {
     }
 
     private StoredDataMetadata<Void> createDummyMetadata() {
-        GeneralStorageFormat generalStorageFormat = GeneralStorageMetadataBuilder.build();
+        GeneralStorageMetadata generalStorageMetadata = GeneralStorageMetadataBuilder.build();
         DataStorageMetadataDictionary dataStorageMetadataDictionary = new DataStorageMetadataDictionary(Set.of(ExampleFactoryA.class));
-        return new StoredDataMetadata<>( UUID.randomUUID().toString(), "", "", "",null,
-                generalStorageFormat,
+        return new StoredDataMetadata<>( UUID.randomUUID().toString(), "", "", "",null, generalStorageMetadata,
                 dataStorageMetadataDictionary);
     }
 

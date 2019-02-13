@@ -1,8 +1,10 @@
 package de.factoryfx.javafx.factory.view.factoryviewmanager;
 
+import de.factoryfx.data.jackson.ObjectMapperBuilder;
 import de.factoryfx.data.merge.DataMerger;
 import de.factoryfx.data.merge.MergeDiffInfo;
 import de.factoryfx.data.storage.*;
+import de.factoryfx.data.storage.migration.DataMigrationManager;
 import de.factoryfx.data.storage.migration.GeneralStorageMetadataBuilder;
 import de.factoryfx.data.storage.migration.MigrationManager;
 import de.factoryfx.factory.builder.FactoryTreeBuilder;
@@ -65,7 +67,7 @@ public class FactoryEditManagerTest {
 
 
     private MigrationManager<ExampleFactoryA, Void> createDataMigrationManager() {
-        return new MigrationManager<>(ExampleFactoryA.class, List.of(), GeneralStorageMetadataBuilder.build(), List.of());
+        return new MigrationManager<>(ExampleFactoryA.class, List.of(), GeneralStorageMetadataBuilder.build(), new DataMigrationManager(), ObjectMapperBuilder.build());
     }
 
     @Test

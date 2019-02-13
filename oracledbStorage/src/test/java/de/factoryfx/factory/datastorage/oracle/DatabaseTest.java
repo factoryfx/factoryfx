@@ -1,5 +1,7 @@
 package de.factoryfx.factory.datastorage.oracle;
 
+import de.factoryfx.data.jackson.ObjectMapperBuilder;
+import de.factoryfx.data.storage.migration.DataMigrationManager;
 import de.factoryfx.data.storage.migration.MigrationManager;
 import de.factoryfx.data.storage.migration.metadata.DataStorageMetadataDictionary;
 import de.factoryfx.data.storage.migration.GeneralStorageMetadataBuilder;
@@ -47,7 +49,7 @@ public class DatabaseTest {
 
 
     protected MigrationManager<ExampleFactoryA,Void> createMigrationManager(){
-        return new MigrationManager<>(ExampleFactoryA.class, List.of(), GeneralStorageMetadataBuilder.build(), List.of());
+        return new MigrationManager<>(ExampleFactoryA.class, List.of(), GeneralStorageMetadataBuilder.build(), new DataMigrationManager(), ObjectMapperBuilder.build());
     }
 
 }

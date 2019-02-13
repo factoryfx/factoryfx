@@ -10,8 +10,10 @@ import java.util.*;
 
 import javax.sql.DataSource;
 
+import de.factoryfx.data.jackson.ObjectMapperBuilder;
 import de.factoryfx.data.storage.*;
-import de.factoryfx.data.storage.migration.GeneralStorageFormat;
+import de.factoryfx.data.storage.migration.DataMigrationManager;
+import de.factoryfx.data.storage.migration.GeneralStorageMetadata;
 import de.factoryfx.data.storage.migration.metadata.DataStorageMetadataDictionary;
 import de.factoryfx.data.storage.migration.GeneralStorageMetadataBuilder;
 import de.factoryfx.data.storage.migration.MigrationManager;
@@ -70,7 +72,7 @@ public class PostgresDataStorageTest {
 
 
     private MigrationManager<ExampleFactoryA,Void> createDataMigrationManager(){
-        return new MigrationManager<>(ExampleFactoryA.class, List.of(), GeneralStorageMetadataBuilder.build(), List.of());
+        return new MigrationManager<>(ExampleFactoryA.class, List.of(), GeneralStorageMetadataBuilder.build(), new DataMigrationManager(), ObjectMapperBuilder.build());
     }
 
     @Test
@@ -111,7 +113,7 @@ public class PostgresDataStorageTest {
 
     private DataAndStoredMetadata<ExampleFactoryA,Void> createInitialExampleFactoryA() {
         ExampleFactoryA exampleDataA = new ExampleFactoryA();
-        GeneralStorageFormat generalStorageFormat = GeneralStorageMetadataBuilder.build();
+        GeneralStorageMetadata generalStorageMetadata = GeneralStorageMetadataBuilder.build();
         DataStorageMetadataDictionary dataStorageMetadataDictionary = new DataStorageMetadataDictionary(Set.of(ExampleFactoryA.class));
         DataAndStoredMetadata<ExampleFactoryA,Void> initialFactoryAndStorageMetadata = new DataAndStoredMetadata<>(exampleDataA,
                 new StoredDataMetadata<>(LocalDateTime.now(),
@@ -119,8 +121,7 @@ public class PostgresDataStorageTest {
                         "System",
                         "initial factory",
                         UUID.randomUUID().toString(),
-                        null,
-                        generalStorageFormat,
+                        null, generalStorageMetadata,
                         dataStorageMetadataDictionary
                 )
         );
@@ -187,7 +188,7 @@ public class PostgresDataStorageTest {
                     currentFactory.metadata.comment,
                     currentFactory.metadata.baseVersionId,
                     currentFactory.metadata.changeSummary,
-                    currentFactory.metadata.generalStorageFormat,
+                    currentFactory.metadata.generalStorageMetadata,
                     currentFactory.metadata.dataStorageMetadataDictionary
             );
             postgresFactoryStorage.updateCurrentFactory(new DataAndStoredMetadata<>(currentFactory.root,scheduledDataMetadata));
@@ -201,7 +202,7 @@ public class PostgresDataStorageTest {
                     currentFactory.metadata.comment,
                     currentFactory.metadata.baseVersionId,
                     currentFactory.metadata.changeSummary,
-                    currentFactory.metadata.generalStorageFormat,
+                    currentFactory.metadata.generalStorageMetadata,
                     currentFactory.metadata.dataStorageMetadataDictionary
             );
             postgresFactoryStorage.updateCurrentFactory(new DataAndStoredMetadata<>(currentFactory.root,scheduledDataMetadata));
@@ -215,7 +216,7 @@ public class PostgresDataStorageTest {
                     currentFactory.metadata.comment,
                     currentFactory.metadata.baseVersionId,
                     currentFactory.metadata.changeSummary,
-                    currentFactory.metadata.generalStorageFormat,
+                    currentFactory.metadata.generalStorageMetadata,
                     currentFactory.metadata.dataStorageMetadataDictionary
             );
             postgresFactoryStorage.updateCurrentFactory(new DataAndStoredMetadata<>(currentFactory.root,scheduledDataMetadata));
@@ -248,7 +249,7 @@ public class PostgresDataStorageTest {
                     initialExampleFactoryA.metadata.comment,
                     initialExampleFactoryA.metadata.baseVersionId,
                     initialExampleFactoryA.metadata.changeSummary,
-                    initialExampleFactoryA.metadata.generalStorageFormat,
+                    initialExampleFactoryA.metadata.generalStorageMetadata,
                     initialExampleFactoryA.metadata.dataStorageMetadataDictionary,
                     LocalDateTime.now()
         );
@@ -267,7 +268,7 @@ public class PostgresDataStorageTest {
                 initialExampleFactoryA.metadata.comment,
                 initialExampleFactoryA.metadata.baseVersionId,
                 initialExampleFactoryA.metadata.changeSummary,
-                initialExampleFactoryA.metadata.generalStorageFormat,
+                initialExampleFactoryA.metadata.generalStorageMetadata,
                 initialExampleFactoryA.metadata.dataStorageMetadataDictionary,
                 LocalDateTime.now()
         );
@@ -294,7 +295,7 @@ public class PostgresDataStorageTest {
                 initialExampleFactoryA.metadata.comment,
                 initialExampleFactoryA.metadata.baseVersionId,
                 initialExampleFactoryA.metadata.changeSummary,
-                initialExampleFactoryA.metadata.generalStorageFormat,
+                initialExampleFactoryA.metadata.generalStorageMetadata,
                 initialExampleFactoryA.metadata.dataStorageMetadataDictionary
         );
 
@@ -312,7 +313,7 @@ public class PostgresDataStorageTest {
                 initialExampleFactoryA.metadata.comment,
                 initialExampleFactoryA.metadata.baseVersionId,
                 initialExampleFactoryA.metadata.changeSummary,
-                initialExampleFactoryA.metadata.generalStorageFormat,
+                initialExampleFactoryA.metadata.generalStorageMetadata,
                 initialExampleFactoryA.metadata.dataStorageMetadataDictionary
         );
         postgresFactoryStorage.updateCurrentFactory(new DataAndStoredMetadata<>(new ExampleFactoryA(),storedDataMetadata2));

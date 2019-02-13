@@ -1,7 +1,7 @@
 package de.factoryfx.data.storage.migration;
 
 public interface GeneralMigration {
-    boolean canMigrate(GeneralStorageFormat generalStorageFormat);
+    boolean canMigrate(GeneralStorageMetadata generalStorageMetadata);
     String migrate(String data);
-    GeneralStorageFormat migrationResultStorageFormat();
+    GeneralStorageMetadata migrationResultStorageFormat();
 }

@@ -1,10 +1,13 @@
 package de.factoryfx.data.storage.filesystem;
 
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import de.factoryfx.data.jackson.ObjectMapperBuilder;
 import de.factoryfx.data.merge.testdata.ExampleDataA;
+import de.factoryfx.data.storage.migration.DataMigrationManager;
 import de.factoryfx.data.storage.migration.MigrationManager;
 import de.factoryfx.data.storage.StoredDataMetadata;
 
@@ -26,7 +29,7 @@ public class FileSystemDataStorageHistoryTest {
 
 
     private MigrationManager<ExampleDataA,Void> createSerialisation(){
-        return new MigrationManager<>(ExampleDataA.class, List.of(), GeneralStorageMetadataBuilder.build(), List.of());
+        return new MigrationManager<>(ExampleDataA.class, List.of(), GeneralStorageMetadataBuilder.build(), new DataMigrationManager(), ObjectMapperBuilder.build());
     }
 
 
@@ -79,5 +82,15 @@ public class FileSystemDataStorageHistoryTest {
 
         FileSystemFactoryStorageHistory<ExampleDataA,Void> restored = new FileSystemFactoryStorageHistory<>(Paths.get(folder.getRoot().toURI()),createSerialisation());
         Assert.assertEquals(1,restored.getHistoryFactoryList().size());
+    }
+
+    @Test
+    public void test_getHistory() {
+        FileSystemFactoryStorageHistory<ExampleDataA,Void> fileSystemFactoryStorage = new FileSystemFactoryStorageHistory<>(Paths.get(folder.getRoot().toURI()),createSerialisation());
+
+        StoredDataMetadata<Void> metadata = createStoredDataMetadata(UUID.randomUUID().toString());
+        fileSystemFactoryStorage.updateHistory(new ExampleDataA(), metadata);
+
+        Assert.assertNotNull(fileSystemFactoryStorage.getHistoryFactory(new ArrayList<>(fileSystemFactoryStorage.getHistoryFactoryList()).get(0).id));
     }
 }

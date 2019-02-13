@@ -1,7 +1,7 @@
 package de.factoryfx.factory.builder;
 
 import de.factoryfx.data.Data;
-import de.factoryfx.data.storage.migration.GeneralStorageFormat;
+import de.factoryfx.data.storage.migration.GeneralStorageMetadata;
 import de.factoryfx.data.storage.migration.GeneralStorageMetadataBuilder;
 import de.factoryfx.data.validation.ValidationError;
 import de.factoryfx.factory.FactoryBase;
@@ -95,8 +95,8 @@ public class FactoryTreeBuilder<V,L,R extends FactoryBase<L,V,R>,S> {
     }
 
     public MicroserviceBuilder<V,L,R,S> microservice(){
-        GeneralStorageFormat generalStorageFormat = GeneralStorageMetadataBuilder.build();
-        return new MicroserviceBuilder<>(this.rootClass,this.buildTree(),generalStorageFormat);
+        GeneralStorageMetadata generalStorageMetadata = GeneralStorageMetadataBuilder.build();
+        return new MicroserviceBuilder<>(this.rootClass,this.buildTree(), generalStorageMetadata);
     }
 
 }

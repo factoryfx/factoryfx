@@ -7,7 +7,7 @@ import java.util.UUID;
 import de.factoryfx.data.merge.DataMerger;
 import de.factoryfx.data.merge.MergeDiffInfo;
 import de.factoryfx.data.storage.*;
-import de.factoryfx.data.storage.migration.GeneralStorageFormat;
+import de.factoryfx.data.storage.migration.GeneralStorageMetadata;
 import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.factory.FactoryManager;
 import de.factoryfx.factory.RootFactoryWrapper;
@@ -25,13 +25,13 @@ public class Microservice<V,L,R extends FactoryBase<L,V,R>,S> {
     private final DataStorage<R,S> dataStorage;
     private final ChangeSummaryCreator<R,S> changeSummaryCreator;
 
-    public final GeneralStorageFormat generalStorageFormat;
+    public final GeneralStorageMetadata generalStorageMetadata;
 
-    public Microservice(FactoryManager<V,L,R> factoryManager, DataStorage<R,S> dataStorage, ChangeSummaryCreator<R,S> changeSummaryCreator, GeneralStorageFormat generalStorageFormat) {
+    public Microservice(FactoryManager<V,L,R> factoryManager, DataStorage<R,S> dataStorage, ChangeSummaryCreator<R,S> changeSummaryCreator, GeneralStorageMetadata generalStorageMetadata) {
         this.factoryManager = factoryManager;
         this.dataStorage = dataStorage;
         this.changeSummaryCreator = changeSummaryCreator;
-        this.generalStorageFormat=generalStorageFormat;
+        this.generalStorageMetadata = generalStorageMetadata;
     }
 
     public MergeDiffInfo<R> getDiffToPreviousVersion(StoredDataMetadata<S> storedDataMetadata) {
@@ -69,7 +69,7 @@ public class Microservice<V,L,R extends FactoryBase<L,V,R>,S> {
                     comment,
                     update.metadata.baseVersionId,
                     changeSummary,
-                    this.generalStorageFormat,
+                    this.generalStorageMetadata,
                     copy.internal().createDataStorageMetadataDictionaryFromRoot()
             );
             dataStorage.updateCurrentFactory(new DataAndStoredMetadata<>(copy,copyStoredDataMetadata));
@@ -88,18 +88,26 @@ public class Microservice<V,L,R extends FactoryBase<L,V,R>,S> {
      *  @return new possible factory update with prepared ids/metadata
      * */
     public DataAndStoredMetadata<R,S> prepareNewFactory() {
+        return prepareNewFactory("","");
+    }
+
+    /**
+     *  prepare a new factory which could be used to update data. mainly give it the correct baseVersionId
+     *  @return new possible factory update with prepared ids/metadata
+     * */
+    public DataAndStoredMetadata<R,S> prepareNewFactory(String user, String comment) {
         DataAndId<R> currentFactory = dataStorage.getCurrentFactory();
         StoredDataMetadata<S> copyMetadata = new StoredDataMetadata<>(
                 LocalDateTime.now(),
                 UUID.randomUUID().toString(),
-                "",
-                "",
+                user,
+                comment,
                 currentFactory.id,
-                null,
-                generalStorageFormat,
+                null, generalStorageMetadata,
                 currentFactory.root.internal().createDataStorageMetadataDictionaryFromRoot());
         return new DataAndStoredMetadata<>(currentFactory.root.utility().copy(),copyMetadata);
     }
+
 
     public R getHistoryFactory(String id) {
         return dataStorage.getHistoryFactory(id);

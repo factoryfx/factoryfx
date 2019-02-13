@@ -11,36 +11,25 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 
-public class DataMigrationApi {
+public class DataMigrationManager {
 
-    List<AttributeRename<?>> attributeRenames =new ArrayList<>();
-    List<ClassRename> classRenames=new ArrayList<>();
+    List<DataMigration> dataMigrations =new ArrayList<>();
 
     public <D extends Data> void renameAttribute(Class<D> dataClass, String previousAttributeName, Function<D, Attribute<?,?>> attributeNameProvider){
-        attributeRenames.add(new AttributeRename<>(dataClass,previousAttributeName,attributeNameProvider));
+        dataMigrations.add(new AttributeRename<>(dataClass,previousAttributeName,attributeNameProvider));
     }
 
     public void renameClass(String previousDataClassNameFullQualified, Class<? extends Data> newDataClass){
-        classRenames.add(new ClassRename(previousDataClassNameFullQualified,newDataClass));
+        dataMigrations.add(new ClassRename(previousDataClassNameFullQualified,newDataClass));
     }
 
-    public void migrate(JsonNode jsonNode){
+    public void migrate(JsonNode jsonNode, DataStorageMetadataDictionary dataStorageMetadataDictionary){
         List<DataJsonNode> dataJsonNodes = readDataList(jsonNode);
-        for (AttributeRename<?> migration : attributeRenames) {
-            migration.migrate(dataJsonNodes);
-        }
-        for (ClassRename classRename: classRenames) {
-            classRename.migrate(dataJsonNodes);
-        }
-    }
-
-    public boolean canMigrate(DataStorageMetadataDictionary pastDataStorageMetadataDictionary) {
-        for (AttributeRename<?> migration : attributeRenames) {
-            if (!migration.canMigrate(pastDataStorageMetadataDictionary)){
-                return false;
+        for (DataMigration migration : dataMigrations) {
+            if (migration.canMigrate(dataStorageMetadataDictionary)) {
+                migration.migrate(dataJsonNodes);
             }
         }
-        return true;
     }
 
     List<DataJsonNode> readDataList(JsonNode jsonNode){
@@ -76,13 +65,23 @@ public class DataMigrationApi {
         return false;
     }
 
-    public static class ClassRename{
+    public interface DataMigration{
+        boolean canMigrate(DataStorageMetadataDictionary pastDataStorageMetadataDictionary);
+        void migrate(List<DataJsonNode> dataJsonNodes);
+    }
+
+    public static class ClassRename implements DataMigration{
         private final String previousDataClassNameFullQualified;
         private final Class<? extends Data> newDataClass;
 
         public ClassRename(String previousDataClassNameFullQualified, Class<? extends Data> newDataClass) {
             this.previousDataClassNameFullQualified = previousDataClassNameFullQualified;
             this.newDataClass = newDataClass;
+        }
+
+        @Override
+        public boolean canMigrate(DataStorageMetadataDictionary dataStorageMetadataDictionary) {
+            return dataStorageMetadataDictionary.containsClass(previousDataClassNameFullQualified);
         }
 
         public void migrate(List<DataJsonNode> dataJsonNodes) {
@@ -92,7 +91,7 @@ public class DataMigrationApi {
         }
     }
 
-    public static class AttributeRename<D extends Data>{
+    public static class AttributeRename<D extends Data>  implements DataMigration{
         private final String dataClassNameFullQualified;
         private final String previousAttributeName;
         private String newAttributeName;
@@ -114,9 +113,9 @@ public class DataMigrationApi {
 
         }
 
-        public boolean canMigrate(DataStorageMetadataDictionary pastDataStorageMetadataDictionary){
-            return pastDataStorageMetadataDictionary.containsClass(dataClassNameFullQualified) &&
-                   pastDataStorageMetadataDictionary.containsAttribute(dataClassNameFullQualified,previousAttributeName);
+        public boolean canMigrate(DataStorageMetadataDictionary dataStorageMetadataDictionary){
+            return dataStorageMetadataDictionary.containsClass(dataClassNameFullQualified) &&
+                    dataStorageMetadataDictionary.containsAttribute(dataClassNameFullQualified,previousAttributeName);
         }
 
         public void migrate(List<DataJsonNode> dataJsonNodes) {

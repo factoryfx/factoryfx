@@ -1,12 +1,15 @@
 package de.factoryfx.factory.builder;
 
+import de.factoryfx.data.jackson.ObjectMapperBuilder;
+import de.factoryfx.data.jackson.SimpleObjectMapper;
 import de.factoryfx.data.storage.ChangeSummaryCreator;
 import de.factoryfx.data.storage.DataAndStoredMetadata;
 import de.factoryfx.data.storage.StoredDataMetadata;
 import de.factoryfx.data.storage.filesystem.FileSystemDataStorage;
 import de.factoryfx.data.storage.inmemory.InMemoryDataStorage;
-import de.factoryfx.data.storage.migration.DataMigration;
-import de.factoryfx.data.storage.migration.GeneralStorageFormat;
+import de.factoryfx.data.storage.migration.DataMigrationManager;
+import de.factoryfx.data.storage.migration.GeneralMigration;
+import de.factoryfx.data.storage.migration.GeneralStorageMetadata;
 import de.factoryfx.data.storage.migration.MigrationManager;
 import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.factory.FactoryManager;
@@ -19,6 +22,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.function.Consumer;
 
 
 /**
@@ -33,16 +37,18 @@ public class MicroserviceBuilder<V,L,R extends FactoryBase<L,V,R>,S> {
 
     private final Class<R> rootClass;
     private final R initialFactory;
-    private final GeneralStorageFormat generalStorageFormat;
+    private final GeneralStorageMetadata generalStorageMetadata;
     private DataStorageCreator<R,S> dataStorageCreator;
     private ChangeSummaryCreator<R,S> changeSummaryCreator;
     private FactoryExceptionHandler factoryExceptionHandler;
-    private List<DataMigration> dataMigrations = new ArrayList<>();
+    private List<GeneralMigration> generalStorageFormatMigrations = new ArrayList<>();
+    private DataMigrationManager dataMigrationManager = new DataMigrationManager();
+    private SimpleObjectMapper objectMapper;
 
-    public MicroserviceBuilder(Class<R> rootClass, R initialFactory, GeneralStorageFormat generalStorageFormat) {
+    public MicroserviceBuilder(Class<R> rootClass, R initialFactory, GeneralStorageMetadata generalStorageMetadata) {
         this.rootClass = rootClass;
         this.initialFactory = initialFactory;
-        this.generalStorageFormat = generalStorageFormat;
+        this.generalStorageMetadata = generalStorageMetadata;
     }
 
     public Microservice<V,L,R,S> build(){
@@ -52,8 +58,7 @@ public class MicroserviceBuilder<V,L,R extends FactoryBase<L,V,R>,S> {
                         "System",
                         "initial factory",
                         UUID.randomUUID().toString(),
-                        null,
-                        generalStorageFormat,
+                        null, generalStorageMetadata,
                         this.initialFactory.internal().createDataStorageMetadataDictionaryFromRoot()
                 )
         );
@@ -65,8 +70,12 @@ public class MicroserviceBuilder<V,L,R extends FactoryBase<L,V,R>,S> {
             factoryExceptionHandler = new RethrowingFactoryExceptionHandler();
         }
 
-        MigrationManager<R,S> migrationManager = new MigrationManager<>(rootClass, new ArrayList<>(),generalStorageFormat, dataMigrations);
-        return new Microservice<>(new FactoryManager<>(factoryExceptionHandler), dataStorageCreator.createDataStorage(initialFactory, migrationManager),changeSummaryCreator,generalStorageFormat);
+        if (objectMapper ==null){
+            objectMapper =ObjectMapperBuilder.build();
+        }
+
+        MigrationManager<R,S> migrationManager = new MigrationManager<>(rootClass, generalStorageFormatMigrations, generalStorageMetadata, dataMigrationManager, objectMapper);
+        return new Microservice<>(new FactoryManager<>(factoryExceptionHandler), dataStorageCreator.createDataStorage(initialFactory, migrationManager),changeSummaryCreator, generalStorageMetadata);
     }
 
     /**
@@ -114,8 +123,23 @@ public class MicroserviceBuilder<V,L,R extends FactoryBase<L,V,R>,S> {
         return this;
     }
 
-    public MicroserviceBuilder<V,L,R,S> withDataMigration(DataMigration dataMigration){
-        dataMigrations.add(dataMigration);
+    public MicroserviceBuilder<V,L,R,S> withDataMigration(DataMigrationManager dataMigration){
+        this.dataMigrationManager =dataMigration;
+        return this;
+    }
+
+    public MicroserviceBuilder<V,L,R,S> withDataMigration(Consumer<DataMigrationManager> dataMigrationAdder){
+        dataMigrationAdder.accept(dataMigrationManager);
+        return this;
+    }
+
+    public MicroserviceBuilder<V,L,R,S> withGeneralStorageFormatMigrations(GeneralMigration generalMigration){
+        generalStorageFormatMigrations.add(generalMigration);
+        return this;
+    }
+
+    public MicroserviceBuilder<V,L,R,S> withJacksonObjectMapper(SimpleObjectMapper objectMapper){
+        this.objectMapper =objectMapper;;
         return this;
     }
 

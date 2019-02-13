@@ -1,21 +1,20 @@
 package de.factoryfx.data.storage.filesystem;
 
 import java.io.File;
-import java.net.MalformedURLException;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.List;
 import java.util.UUID;
 
+import de.factoryfx.data.jackson.ObjectMapperBuilder;
 import de.factoryfx.data.merge.testdata.ExampleDataA;
 import de.factoryfx.data.storage.DataAndStoredMetadata;
-import de.factoryfx.data.storage.ScheduledDataMetadata;
 import de.factoryfx.data.storage.StoredDataMetadata;
-import de.factoryfx.data.storage.migration.GeneralStorageFormat;
+import de.factoryfx.data.storage.migration.DataMigrationManager;
+import de.factoryfx.data.storage.migration.GeneralStorageMetadata;
 import de.factoryfx.data.storage.migration.MigrationManager;
 
-import de.factoryfx.data.storage.migration.metadata.DataStorageMetadataDictionary;
 import de.factoryfx.data.storage.migration.GeneralStorageMetadataBuilder;
 import org.junit.Assert;
 import org.junit.Rule;
@@ -28,7 +27,7 @@ public class FileSystemDataStorageTest {
     public TemporaryFolder folder= new TemporaryFolder();
 
     private MigrationManager<ExampleDataA,Void> createDataMigrationManager(){
-        return new MigrationManager<>(ExampleDataA.class, List.of(), GeneralStorageMetadataBuilder.build(), List.of());
+        return new MigrationManager<>(ExampleDataA.class, List.of(), GeneralStorageMetadataBuilder.build(), new DataMigrationManager(), ObjectMapperBuilder.build());
     }
 
 
@@ -43,15 +42,14 @@ public class FileSystemDataStorageTest {
     private DataAndStoredMetadata<ExampleDataA,Void> createInitialExampleDataA() {
         ExampleDataA exampleDataA = new ExampleDataA();
         exampleDataA.internal().addBackReferences();
-        GeneralStorageFormat generalStorageFormat = GeneralStorageMetadataBuilder.build();
+        GeneralStorageMetadata generalStorageMetadata = GeneralStorageMetadataBuilder.build();
         DataAndStoredMetadata<ExampleDataA,Void> initialFactoryAndStorageMetadata = new DataAndStoredMetadata<>(exampleDataA,
                 new StoredDataMetadata<>(LocalDateTime.now(),
                         UUID.randomUUID().toString(),
                         "System",
                         "initial factory",
                         UUID.randomUUID().toString(),
-                        null,
-                        generalStorageFormat,
+                        null, generalStorageMetadata,
                         exampleDataA.internal().createDataStorageMetadataDictionaryFromRoot()
                 )
         );

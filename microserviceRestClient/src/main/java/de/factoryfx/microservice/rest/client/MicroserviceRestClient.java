@@ -52,7 +52,7 @@ public class MicroserviceRestClient<V, R extends FactoryBase<?,V,R>,S> {
                     comment,
                     update.metadata.baseVersionId,
                     null,
-                    update.metadata.generalStorageFormat,
+                    update.metadata.generalStorageMetadata,
                     update.metadata.dataStorageMetadataDictionary
             );
 

@@ -16,16 +16,18 @@ public class ObjectMapperBuilder {
     }
 
     public static ObjectMapper buildNewObjectMapper() {
-        return setupMapper();
+        return setupMapper(new JsonFactory());
     }
 
     public static SimpleObjectMapper buildNew() {
-        return new SimpleObjectMapper(setupMapper());
+        return new SimpleObjectMapper(setupMapper(new JsonFactory()));
     }
 
-    private static ObjectMapper setupMapper() {
-        JsonFactory jsonFactory = new JsonFactory();
+    public static SimpleObjectMapper buildNew(JsonFactory jsonFactory ) {
+        return new SimpleObjectMapper(setupMapper(jsonFactory));
+    }
 
+    private static ObjectMapper setupMapper(JsonFactory jsonFactory) {
         ObjectMapper objectMapper = new ObjectMapper(jsonFactory);
 
         objectMapper.enable(SerializationFeature.WRITE_ENUMS_USING_TO_STRING);

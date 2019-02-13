@@ -8,6 +8,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.factoryfx.data.Data;
 
+/** the main task of SimpleObjectMapper is to get rid of the checked exceptions*/
 public class SimpleObjectMapper {
     private final ObjectMapper objectMapper;
 

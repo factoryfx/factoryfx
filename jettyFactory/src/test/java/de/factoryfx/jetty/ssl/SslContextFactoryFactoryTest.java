@@ -1,6 +1,12 @@
 package de.factoryfx.jetty.ssl;
 
 import com.google.common.io.ByteStreams;
+import de.factoryfx.data.attribute.primitive.BooleanAttribute;
+import de.factoryfx.data.attribute.types.EnumAttribute;
+import de.factoryfx.data.attribute.types.FileContentAttribute;
+import de.factoryfx.data.attribute.types.StringAttribute;
+import de.factoryfx.data.attribute.types.StringListAttribute;
+import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.factory.SimpleFactoryBase;
 import de.factoryfx.factory.atrribute.FactoryReferenceAttribute;
 import de.factoryfx.factory.builder.FactoryTreeBuilder;
@@ -9,6 +15,7 @@ import de.factoryfx.jetty.JettyServerBuilder;
 import de.factoryfx.jetty.JettyServerFactory;
 import de.factoryfx.server.Microservice;
 import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -16,11 +23,14 @@ import javax.net.ssl.*;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Response;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.security.KeyManagementException;
+import java.security.KeyStore;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.X509Certificate;
 
@@ -73,8 +83,16 @@ public class SslContextFactoryFactoryTest {
             InputStream is = conn.getInputStream();
             Assert.assertEquals("Hello World", convertStreamToString(is));
 
-        } catch (Exception e){
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        } finally {
             microservice.stop();
+        }
+    }
+
+    public static class SslContextFactoryFactoryCustom<V, R extends FactoryBase<?, V, R>> extends SslContextFactoryFactory<V, R> {
+        SslContextFactoryFactoryCustom(){
+            trustStore.nullable();
         }
     }
 
@@ -84,7 +102,7 @@ public class SslContextFactoryFactoryTest {
         FactoryTreeBuilder<Void, Server, TestJettyServerFactory, Void> builder = new FactoryTreeBuilder<>(TestJettyServerFactory.class);
         builder.addFactory(TestJettyServerFactory.class, Scope.SINGLETON);
         builder.addFactory(JettyServerFactory.class, Scope.SINGLETON, ctx->{
-            SslContextFactoryFactory<Void,TestJettyServerFactory> ssl = new SslContextFactoryFactory<>();
+            SslContextFactoryFactoryCustom<Void,TestJettyServerFactory> ssl = new SslContextFactoryFactoryCustom<>();
             ssl.keyStoreType.set(KeyStoreType.jks);
             ssl.trustStoreType.set(KeyStoreType.jks);
             try (InputStream in = getClass().getResourceAsStream("/keystore.jks")){
@@ -112,7 +130,9 @@ public class SslContextFactoryFactoryTest {
             URLConnection conn = url.openConnection();
             InputStream is = conn.getInputStream();
             Assert.assertEquals("Hello World",convertStreamToString(is));
-        } catch (Exception e){
+        } catch (NoSuchAlgorithmException | KeyManagementException | IOException e) {
+            throw new RuntimeException(e);
+        } finally {
             microservice.stop();
         }
 

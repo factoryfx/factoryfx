@@ -2,8 +2,8 @@ package de.factoryfx.data.storage;
 
 import de.factoryfx.data.jackson.ObjectMapperBuilder;
 import de.factoryfx.data.merge.testdata.ExampleDataA;
-import de.factoryfx.data.storage.migration.metadata.DataStorageMetadataDictionary;
-import de.factoryfx.data.storage.migration.GeneralStorageFormat;
+import de.factoryfx.data.storage.migration.DataMigrationManager;
+import de.factoryfx.data.storage.migration.GeneralStorageMetadata;
 import de.factoryfx.data.storage.migration.GeneralStorageMetadataBuilder;
 import de.factoryfx.data.storage.migration.MigrationManager;
 import org.junit.Assert;
@@ -22,7 +22,7 @@ public class StoredDataMetadataTest {
     @Test
     public void test_json(){
         LocalDateTime now = LocalDateTime.now();
-        StoredDataMetadata<SummaryDummy> value=new StoredDataMetadata<>(now, "", "", "", "sdfgstrg", new SummaryDummy(),new GeneralStorageFormat(1,2),null);
+        StoredDataMetadata<SummaryDummy> value=new StoredDataMetadata<>(now, "", "", "", "sdfgstrg", new SummaryDummy(),new GeneralStorageMetadata(1,2),null);
         final StoredDataMetadata<SummaryDummy> copy = ObjectMapperBuilder.build().copy(value);
 
         System.out.println(
@@ -30,7 +30,7 @@ public class StoredDataMetadataTest {
         );
         Assert.assertEquals(now,copy.creationTime);
         Assert.assertEquals(1,copy.changeSummary.diffCounter);
-        Assert.assertTrue(copy.generalStorageFormat.match(new GeneralStorageFormat(1, 2)));
+        Assert.assertTrue(copy.generalStorageMetadata.match(new GeneralStorageMetadata(1, 2)));
 
     }
 
@@ -45,7 +45,7 @@ public class StoredDataMetadataTest {
                 "    \"diffCounter\" : 1\n" +
                 "  }\n" +
                 "}";
-        MigrationManager<ExampleDataA,SummaryDummy> manager = new MigrationManager<>(ExampleDataA.class, List.of(), GeneralStorageMetadataBuilder.build(), List.of());
+        MigrationManager<ExampleDataA,SummaryDummy> manager = new MigrationManager<>(ExampleDataA.class, List.of(), GeneralStorageMetadataBuilder.build(), new DataMigrationManager(), ObjectMapperBuilder.build());
         final StoredDataMetadata<SummaryDummy> oldParsed = manager.readStoredFactoryMetadata(old);
 
 

@@ -42,7 +42,7 @@ public class FileSystemFactoryStorageHistory<R extends Data,S> {
         if (storedDataMetadata==null) {
             throw new IllegalStateException("cant find storedDataMetadata for factory: "+id+" in history");
         }
-        return migrationManager.read(readFile(Paths.get(historyDirectory.toString()+id+".json")),storedDataMetadata);
+        return migrationManager.read(readFile(Paths.get(historyDirectory.toString()+"/"+id+".json")),storedDataMetadata);
     }
 
     public Collection<StoredDataMetadata<S>> getHistoryFactoryList() {

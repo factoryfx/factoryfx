@@ -9,7 +9,7 @@ import org.junit.Test;
 
 import java.util.List;
 
-public class DataMigrationApiTest {
+public class DataMigrationManagerTest {
 
     @Test
     public void test_read_list(){
@@ -18,8 +18,8 @@ public class DataMigrationApiTest {
         exampleDataB.referenceAttributeC.set(new ExampleDataC());
         root.referenceListAttribute.add(exampleDataB);
 
-        DataMigrationApi dataMigrationApi = new DataMigrationApi();
-        List<DataJsonNode> jsonNodes = dataMigrationApi.readDataList(ObjectMapperBuilder.build().readTree(ObjectMapperBuilder.build().writeValueAsString(root)));
+        DataMigrationManager dataMigrationManager = new DataMigrationManager();
+        List<DataJsonNode> jsonNodes = dataMigrationManager.readDataList(ObjectMapperBuilder.build().readTree(ObjectMapperBuilder.build().writeValueAsString(root)));
         Assert.assertEquals(3,jsonNodes.size());
         Assert.assertEquals(ExampleDataA.class.getName(),jsonNodes.get(0).getDataClassName());
         Assert.assertEquals(ExampleDataB.class.getName(),jsonNodes.get(1).getDataClassName());
@@ -35,8 +35,8 @@ public class DataMigrationApiTest {
         root.referenceListAttribute.add(new ExampleDataB());
         root.referenceListAttribute.add(new ExampleDataB());
 
-        DataMigrationApi dataMigrationApi = new DataMigrationApi();
-        List<DataJsonNode> jsonNodes = dataMigrationApi.readDataList(ObjectMapperBuilder.build().readTree(ObjectMapperBuilder.build().writeValueAsString(root)));
+        DataMigrationManager dataMigrationManager = new DataMigrationManager();
+        List<DataJsonNode> jsonNodes = dataMigrationManager.readDataList(ObjectMapperBuilder.build().readTree(ObjectMapperBuilder.build().writeValueAsString(root)));
         Assert.assertEquals(5,jsonNodes.size());
     }
 
@@ -48,8 +48,8 @@ public class DataMigrationApiTest {
         root.referenceListAttribute.add(exampleDataB);
         root.referenceAttribute.set(exampleDataB);
 
-        DataMigrationApi dataMigrationApi = new DataMigrationApi();
-        List<DataJsonNode> jsonNodes = dataMigrationApi.readDataList(ObjectMapperBuilder.build().readTree(ObjectMapperBuilder.build().writeValueAsString(root)));
+        DataMigrationManager dataMigrationManager = new DataMigrationManager();
+        List<DataJsonNode> jsonNodes = dataMigrationManager.readDataList(ObjectMapperBuilder.build().readTree(ObjectMapperBuilder.build().writeValueAsString(root)));
         Assert.assertEquals(3,jsonNodes.size());
     }
 

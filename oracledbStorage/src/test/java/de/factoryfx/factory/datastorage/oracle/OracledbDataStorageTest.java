@@ -2,14 +2,13 @@ package de.factoryfx.factory.datastorage.oracle;
 
 import de.factoryfx.data.storage.DataAndStoredMetadata;
 import de.factoryfx.data.storage.StoredDataMetadata;
-import de.factoryfx.data.storage.migration.GeneralStorageFormat;
+import de.factoryfx.data.storage.migration.GeneralStorageMetadata;
 import de.factoryfx.data.storage.migration.GeneralStorageMetadataBuilder;
 import de.factoryfx.data.storage.migration.metadata.DataStorageMetadataDictionary;
 import de.factoryfx.factory.testfactories.ExampleFactoryA;
 import org.junit.Assert;
 import org.junit.Test;
 
-import java.net.MalformedURLException;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
@@ -19,7 +18,7 @@ public class OracledbDataStorageTest extends DatabaseTest{
 
     private DataAndStoredMetadata<ExampleFactoryA,Void> createInitialExampleFactoryA() {
         ExampleFactoryA exampleFactoryA = new ExampleFactoryA();
-        GeneralStorageFormat generalStorageFormat = GeneralStorageMetadataBuilder.build();
+        GeneralStorageMetadata generalStorageMetadata = GeneralStorageMetadataBuilder.build();
         DataStorageMetadataDictionary dataStorageMetadataDictionary = new DataStorageMetadataDictionary(Set.of(exampleFactoryA.getClass()));
         DataAndStoredMetadata<ExampleFactoryA,Void> initialFactoryAndStorageMetadata = new DataAndStoredMetadata<>(exampleFactoryA,
                 new StoredDataMetadata<>(LocalDateTime.now(),
@@ -27,8 +26,7 @@ public class OracledbDataStorageTest extends DatabaseTest{
                         "System",
                         "initial factory",
                         UUID.randomUUID().toString(),
-                        null,
-                        generalStorageFormat,
+                        null, generalStorageMetadata,
                         dataStorageMetadataDictionary
                 )
         );
@@ -64,7 +62,7 @@ public class OracledbDataStorageTest extends DatabaseTest{
                 "update",
                 currentFactory.metadata.id,
                 null,
-                currentFactory.metadata.generalStorageFormat,
+                currentFactory.metadata.generalStorageMetadata,
                 currentFactory.metadata.dataStorageMetadataDictionary
         );
         oracledbFactoryStorage.updateCurrentFactory(new DataAndStoredMetadata<>(new ExampleFactoryA(),updateMetadata));

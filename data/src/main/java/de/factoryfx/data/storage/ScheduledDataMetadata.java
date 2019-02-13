@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import de.factoryfx.data.storage.migration.metadata.DataStorageMetadataDictionary;
-import de.factoryfx.data.storage.migration.GeneralStorageFormat;
+import de.factoryfx.data.storage.migration.GeneralStorageMetadata;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
@@ -35,16 +35,16 @@ public class ScheduledDataMetadata<S> extends StoredDataMetadata<S> implements D
             @JsonProperty("comment")String comment,
             @JsonProperty("baseVersionId")String baseVersionId,
             @JsonProperty("changeSummary")S changeSummary,
-            @JsonProperty("storageFormat") GeneralStorageFormat generalStorageFormat,
+            @JsonProperty("storageFormat") GeneralStorageMetadata generalStorageMetadata,
             @JsonProperty("dataStorageMetadataDictionary") DataStorageMetadataDictionary dataStorageMetadataDictionary,
             @JsonProperty("scheduled")LocalDateTime scheduled) {
-        super(creationTime, id, user, comment, baseVersionId, changeSummary, generalStorageFormat, dataStorageMetadataDictionary);
+        super(creationTime, id, user, comment, baseVersionId, changeSummary, generalStorageMetadata, dataStorageMetadataDictionary);
         this.scheduled=scheduled;
     }
 
 
-    public ScheduledDataMetadata(StoredDataMetadata<S> storedDataMetadata, LocalDateTime scheduled, GeneralStorageFormat generalStorageFormat, DataStorageMetadataDictionary dataStorageMetadataDictionary) {
-        this(null, "", "", "", storedDataMetadata.baseVersionId, null, generalStorageFormat,dataStorageMetadataDictionary,scheduled);
+    public ScheduledDataMetadata(StoredDataMetadata<S> storedDataMetadata, LocalDateTime scheduled, GeneralStorageMetadata generalStorageMetadata, DataStorageMetadataDictionary dataStorageMetadataDictionary) {
+        this(null, "", "", "", storedDataMetadata.baseVersionId, null, generalStorageMetadata,dataStorageMetadataDictionary,scheduled);
     }
 
     @JsonIgnore
