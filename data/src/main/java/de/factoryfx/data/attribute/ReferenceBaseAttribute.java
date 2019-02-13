@@ -2,7 +2,6 @@ package de.factoryfx.data.attribute;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import de.factoryfx.data.Data;
-import de.factoryfx.data.DataDictionary;
 
 import java.util.*;
 import java.util.function.BiConsumer;
@@ -214,14 +213,5 @@ public abstract class ReferenceBaseAttribute<T extends Data, U, A extends Refere
 
     private boolean catalogueBased =false;
 
-
-    @Override
-    public void internal_getDataClassesDeep(Set<Class<? extends Data>> result){
-        if (clazz!=null) {
-           // throw new IllegalArgumentException("fdsfdsf"+this.parent.getClass());
-            DataDictionary.getDataDictionary(clazz).collectDataClassesDeep(result);
-        }
-//        DataDictionary.getDataDictionary(clazz).collectDataClassesDeep(result);
-    }
 
 }

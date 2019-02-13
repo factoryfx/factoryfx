@@ -19,10 +19,10 @@ public class SingleAttributeEditorBuilderFactory extends SimpleFactoryBase<Attri
         this.creator = creator;
     }
 
-//    public SingleAttributeEditorBuilderFactory() {
-//        super();
-//        creator=null;
-//    }
+    SingleAttributeEditorBuilderFactory() {
+        super();
+        creator=null;
+    }
 
     static {
 

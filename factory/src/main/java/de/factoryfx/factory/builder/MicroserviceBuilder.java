@@ -139,7 +139,7 @@ public class MicroserviceBuilder<V,L,R extends FactoryBase<L,V,R>,S> {
     }
 
     public MicroserviceBuilder<V,L,R,S> withJacksonObjectMapper(SimpleObjectMapper objectMapper){
-        this.objectMapper =objectMapper;;
+        this.objectMapper =objectMapper;
         return this;
     }
 

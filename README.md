@@ -56,14 +56,14 @@ public class HelloWorld{
     }
 }
 ```
-[Live object explanation](docu/src/main/java/de/factoryfx/docu/factorylayer/usecase.md)
+[Live object explanation](docu/src/main/java/de/factoryfx/docu/liveobjects/usecase.md)
 #### Setup
 ```java
     new FactoryTreeBuilder<Void,HelloWorld,HelloWorldFactory,Void>(HelloWorldFactory.class)
     .addFactory(HelloWorldFactory.class, Scope.SINGLETON, ctx-> {
         HelloWorldFactory helloWorldFactory = new HelloWorldFactory();
         helloWorldFactory.text.set("HelloWorld");
-        return rootFactory;
+        return helloWorldFactory;
     })
     .microservice().withInMemoryStorage().build().start();
 ```
@@ -74,11 +74,11 @@ public class HelloWorld{
 * [Comparison](docu/src/main/java/de/factoryfx/docu/comparison/usecase.md)<br>Comparison to other dependency injection frameworks
 * [Data injection](docu/src/main/java/de/factoryfx/docu/datainjection/usecase.md)<br>Injection data into a liveobject
 * [Dependency injection](docu/src/main/java/de/factoryfx/docu/dependencyinjection/usecase.md)<br>Injection dependency into a liveobject
-* [Restserver](docu/src/main/java/de/factoryfx/docu/restserver/usecase.md)<br>Basic jetty server with a jersey REST resource
+* [REST server](docu/src/main/java/de/factoryfx/docu/restserver/usecase.md)<br>Basic jetty server with a jersey REST resource
 * [Lifecycle](docu/src/main/java/de/factoryfx/docu/lifecycle/usecase.md)<br>Lifecycle configuration (start/top/update)
 * [Migration](docu/src/main/java/de/factoryfx/docu/migration/usecase.md)<br>Configuration data migration
 * [Parametrized](docu/src/main/java/de/factoryfx/docu/parametrized/usecase.md)<br>Combining runtime data with factory data
-* [Persistentstorage](docu/src/main/java/de/factoryfx/docu/persistentstorage/usecase.md)<br>Persistent configuration data storage using a database
+* [Persistent storage](docu/src/main/java/de/factoryfx/docu/persistentstorage/usecase.md)<br>Persistent configuration data storage using a database
 * [Polymorphism](docu/src/main/java/de/factoryfx/docu/polymorphism/usecase.md)<br>Polymorphic factories
 * [Runtime status](docu/src/main/java/de/factoryfx/docu/runtimestatus/usecase.md)<br>Pass runtime status over updates(e.g request counter)
 * [Update](docu/src/main/java/de/factoryfx/docu/update/usecase.md)<br>Optimise Factory update/Server restart e.g. for liveobjects that need a lot of time for initialization

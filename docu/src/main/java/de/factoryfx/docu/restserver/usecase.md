@@ -1,4 +1,4 @@
-# Http Server usig jetty and jersey
+# Http Server using jetty and jersey
 A simple Jetty with a jetty resource.
 
 The Jetty Server is optimised to not kill connection for restart/factory updates.

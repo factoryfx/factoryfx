@@ -220,7 +220,7 @@ public class DataDictionary<D extends Data> {
     @SuppressWarnings("unchecked")
     D newCopyInstance(D data) {
         D result;
-        if (newCopyInstanceSupplier !=null){
+        if (newCopyInstanceSupplier !=null && data!=null){
             result= newCopyInstanceSupplier.apply(data);
         } else {
             if (constructor==null){
@@ -230,7 +230,7 @@ public class DataDictionary<D extends Data> {
                 } catch (NoSuchMethodException e) {
                     throw new RuntimeException(e);
                 } catch (InaccessibleObjectException e){
-                    throw new RuntimeException("\nto fix the error add jpms boilerplate, \noption 1: module-info.info: opens "+data.getClass().getPackage().getName()+";\noption 2: open all, open module {A} { ... } (open keyword before module)\n",e);
+                    throw new RuntimeException("\n\nto fix the error add jpms boilerplate, \noption 1: module-info.info: opens "+clazz.getPackage().getName()+";\noption 2: open all, open module {A} { ... } (open keyword before module)\n",e);
                 }
             }
 
@@ -253,12 +253,5 @@ public class DataDictionary<D extends Data> {
         ArrayList<AttributeStorageMetadata> attributes = new ArrayList<>();
         visitAttributesFlat(data, (attributeVariableName, attribute) -> attributes.add(new AttributeStorageMetadata(attributeVariableName,attribute.getClass().getName())));
         return new DataStorageMetadata(attributes,clazz.getName());
-    }
-
-    public void collectDataClassesDeep(Set<Class<? extends Data>> classes) {
-        D data = newInstance();
-        if (classes.add(clazz)){
-            visitAttributesFlat(data, (attributeVariableName, attribute) -> attribute.internal_getDataClassesDeep(classes));
-        }
     }
 }
