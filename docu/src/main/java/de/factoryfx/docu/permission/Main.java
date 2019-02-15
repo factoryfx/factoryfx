@@ -2,7 +2,7 @@ package de.factoryfx.docu.permission;
 
 import ch.qos.logback.classic.Level;
 import de.factoryfx.data.attribute.types.EncryptedStringAttribute;
-import de.factoryfx.data.storage.DataAndStoredMetadata;
+import de.factoryfx.data.storage.DataUpdate;
 import de.factoryfx.factory.builder.FactoryTreeBuilder;
 import de.factoryfx.factory.builder.Scope;
 import de.factoryfx.factory.log.FactoryUpdateLog;
@@ -63,7 +63,7 @@ public class Main {
         {
             MicroserviceRestClient<Void, PrinterFactory, Void> microserviceRestClient = MicroserviceRestClientBuilder.build("localhost",8005,"user1","pw1",PrinterFactory.class);
 
-            DataAndStoredMetadata<PrinterFactory, Void> update = microserviceRestClient.prepareNewFactory();
+            DataUpdate<PrinterFactory> update = microserviceRestClient.prepareNewFactory();
             update.root.text.set("bla blub1");
             FactoryUpdateLog updateLog = microserviceRestClient.updateCurrentFactory(update, "comment");
 
@@ -75,7 +75,7 @@ public class Main {
         {
             MicroserviceRestClient<Void, PrinterFactory, Void> microserviceRestClient = MicroserviceRestClientBuilder.build("localhost",8005,"user2","pw2",PrinterFactory.class);
 
-            DataAndStoredMetadata<PrinterFactory, Void> update = microserviceRestClient.prepareNewFactory();
+            DataUpdate<PrinterFactory> update = microserviceRestClient.prepareNewFactory();
             update.root.text.set("bla blub2");
             FactoryUpdateLog updateLog =  microserviceRestClient.updateCurrentFactory(update, "comment");
 

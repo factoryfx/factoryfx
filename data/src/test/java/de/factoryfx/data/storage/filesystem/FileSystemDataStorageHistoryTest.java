@@ -21,7 +21,7 @@ import org.junit.rules.TemporaryFolder;
 public class FileSystemDataStorageHistoryTest {
 
     private StoredDataMetadata<Void> createStoredDataMetadata(String id){
-        return new StoredDataMetadata<>(id,"","","",null,null,null);
+        return new StoredDataMetadata<>(id,"","","",null,GeneralStorageMetadataBuilder.build(),null);
     }
 
     @Rule

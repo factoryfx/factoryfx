@@ -1,8 +1,6 @@
 package de.factoryfx.server;
 
-import java.time.LocalDateTime;
 import java.util.Collection;
-import java.util.UUID;
 
 import de.factoryfx.data.merge.DataMerger;
 import de.factoryfx.data.merge.MergeDiffInfo;
@@ -42,17 +40,17 @@ public class Microservice<V,L,R extends FactoryBase<L,V,R>,S> {
 
     public FactoryUpdateLog<R> revertTo(StoredDataMetadata<S> storedDataMetadata, String user) {
         R historyFactory = getHistoryFactory(storedDataMetadata.id);
-        DataAndStoredMetadata<R,S> current = prepareNewFactory();
-        current = new DataAndStoredMetadata<>(historyFactory,current.metadata);
-        return updateCurrentFactory(current);
+        DataAndId<R> currentFactory = dataStorage.getCurrentFactory();
+        return updateCurrentFactory(new DataUpdate<>(
+                historyFactory,
+                user,
+                "revert",
+                currentFactory.id)
+        );
     }
 
-    public FactoryUpdateLog<R> updateCurrentFactory(DataAndStoredMetadata<R,S> update) {
-        return updateCurrentFactory(update.metadata.user,update.metadata.comment,update);
-    }
-
-    public FactoryUpdateLog<R> updateCurrentFactory(String user, String comment, DataAndStoredMetadata<R,S> update) {
-        R commonVersion = dataStorage.getHistoryFactory(update.metadata.baseVersionId);
+    public FactoryUpdateLog<R> updateCurrentFactory(DataUpdate<R> update) {
+        R commonVersion = dataStorage.getHistoryFactory(update.baseVersionId);
         FactoryUpdateLog<R> factoryLog = factoryManager.update(commonVersion,update.root, update.permissionChecker);
         if (!factoryLog.failedUpdate() && factoryLog.successfullyMerged()){
 
@@ -62,24 +60,20 @@ public class Microservice<V,L,R extends FactoryBase<L,V,R>,S> {
             }
 
             R copy = factoryManager.getCurrentFactory().internal().copy();
-            StoredDataMetadata<S> copyStoredDataMetadata = new StoredDataMetadata<>(
-                    LocalDateTime.now(),
-                    update.metadata.id,
-                    user,
-                    comment,
-                    update.metadata.baseVersionId,
-                    changeSummary,
-                    this.generalStorageMetadata,
-                    copy.internal().createDataStorageMetadataDictionaryFromRoot()
+            DataUpdate<R> updateAfterMerge = new DataUpdate<>(
+                    copy,
+                    update.user,
+                    update.comment,
+                    update.baseVersionId
             );
-            dataStorage.updateCurrentFactory(new DataAndStoredMetadata<>(copy,copyStoredDataMetadata));
+            dataStorage.updateCurrentFactory(updateAfterMerge,changeSummary);
         }
         return factoryLog;
     }
 
 
-    public MergeDiffInfo<R> simulateUpdateCurrentFactory(DataAndStoredMetadata<R,S> possibleUpdate){
-        R commonVersion = dataStorage.getHistoryFactory(possibleUpdate.metadata.baseVersionId);
+    public MergeDiffInfo<R> simulateUpdateCurrentFactory(DataUpdate<R> possibleUpdate){
+        R commonVersion = dataStorage.getHistoryFactory(possibleUpdate.baseVersionId);
         return factoryManager.simulateUpdate(commonVersion , possibleUpdate.root, possibleUpdate.permissionChecker);
     }
 
@@ -87,7 +81,7 @@ public class Microservice<V,L,R extends FactoryBase<L,V,R>,S> {
      *  prepare a new factory which could be used to update data. mainly give it the correct baseVersionId
      *  @return new possible factory update with prepared ids/metadata
      * */
-    public DataAndStoredMetadata<R,S> prepareNewFactory() {
+    public DataUpdate<R> prepareNewFactory() {
         return prepareNewFactory("","");
     }
 
@@ -95,17 +89,14 @@ public class Microservice<V,L,R extends FactoryBase<L,V,R>,S> {
      *  prepare a new factory which could be used to update data. mainly give it the correct baseVersionId
      *  @return new possible factory update with prepared ids/metadata
      * */
-    public DataAndStoredMetadata<R,S> prepareNewFactory(String user, String comment) {
+    public DataUpdate<R> prepareNewFactory(String user, String comment) {
         DataAndId<R> currentFactory = dataStorage.getCurrentFactory();
-        StoredDataMetadata<S> copyMetadata = new StoredDataMetadata<>(
-                LocalDateTime.now(),
-                UUID.randomUUID().toString(),
+        DataUpdate<R> update = new DataUpdate<>(
+                currentFactory.root.utility().copy(),
                 user,
                 comment,
-                currentFactory.id,
-                null, generalStorageMetadata,
-                currentFactory.root.internal().createDataStorageMetadataDictionaryFromRoot());
-        return new DataAndStoredMetadata<>(currentFactory.root.utility().copy(),copyMetadata);
+                currentFactory.id);
+        return update;
     }
 
 

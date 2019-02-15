@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import de.factoryfx.data.storage.DataAndStoredMetadata;
+import de.factoryfx.data.storage.DataUpdate;
 import de.factoryfx.factory.builder.FactoryTreeBuilder;
 import de.factoryfx.factory.builder.Scope;
 import org.junit.Assert;
@@ -74,7 +75,7 @@ public class FactoryDepTopDownTest {
         Microservice<Void, String,RootFactory, Void> microService = builder.microservice().withInMemoryStorage().build();
         microService.start();
 
-        DataAndStoredMetadata<RootFactory, Void> current = microService.prepareNewFactory();
+        DataUpdate<RootFactory> current = microService.prepareNewFactory();
         RootFactory rootFactory=current.root;
         ObjectFactory first=rootFactory.object1.get();
         ObjectFactory second=rootFactory.object2.get();
@@ -88,7 +89,7 @@ public class FactoryDepTopDownTest {
             destroyer.clear();
 
             System.out.println("update started");
-            DataAndStoredMetadata<RootFactory,Void> update1 = microService.prepareNewFactory();
+            DataUpdate<RootFactory> update1 = microService.prepareNewFactory();
             ObjectFactory secondV2 = new ObjectFactory();
             update1.root.object2.set(secondV2);
 

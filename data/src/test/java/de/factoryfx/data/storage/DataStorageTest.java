@@ -26,16 +26,18 @@ public class DataStorageTest {
 
         Thread.sleep(2);//avoid same timestamp
         {
-            ExampleDataA preparedNewFactory = factoryStorage.getCurrentFactory().root.utility().copy();
+            DataAndId<ExampleDataA> currentFactory = factoryStorage.getCurrentFactory();
+            ExampleDataA preparedNewFactory = currentFactory.root.utility().copy();
             preparedNewFactory.stringAttribute.set("2");
-            factoryStorage.updateCurrentFactory(new DataAndStoredMetadata<>(preparedNewFactory,new StoredDataMetadata<>(LocalDateTime.now(), UUID.randomUUID().toString(),null,null,null,null,null,null)));
+            factoryStorage.updateCurrentFactory(new DataUpdate<>(preparedNewFactory, "user","comment",currentFactory.id),null);
         }
         Thread.sleep(2);//avoid same timestamp
 
         {
-            ExampleDataA preparedNewFactory = factoryStorage.getCurrentFactory().root.utility().copy();
+            DataAndId<ExampleDataA> currentFactory = factoryStorage.getCurrentFactory();
+            ExampleDataA preparedNewFactory = currentFactory.root.utility().copy();
             preparedNewFactory.stringAttribute.set("3");
-            factoryStorage.updateCurrentFactory(new DataAndStoredMetadata<>(preparedNewFactory, new StoredDataMetadata<>(LocalDateTime.now(), UUID.randomUUID().toString(),null,null,null,null,null,null)));
+            factoryStorage.updateCurrentFactory(new DataUpdate<>(preparedNewFactory, "user","comment",currentFactory.id),null);
         }
         Thread.sleep(2);//avoid same timestamp
 

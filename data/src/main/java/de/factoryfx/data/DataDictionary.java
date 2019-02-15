@@ -84,24 +84,15 @@ public class DataDictionary<D extends Data> {
     }
 
     void visitDataChildren(D data, Consumer<Data> consumer) {
-        if (this.visitDataChildren != null) {
-            this.visitDataChildren.accept(data, consumer);
-        } else {
-            visitAttributesFlat(data, (attributeVariableName, attribute) -> {
-                if (attribute instanceof ReferenceAttribute) {
-                    Data child = ((ReferenceAttribute<?, ?>) attribute).get();
-                    if (child != null) {
-                        consumer.accept(child);
-                    }
-                }
-                if (attribute instanceof ReferenceListAttribute) {
-                    ((ReferenceListAttribute<?, ?>) attribute).forEach(consumer);
-                }
-            });
-        }
+        visitDataAndViewChildren(data,consumer,false);
     }
 
     void visitDataAndViewChildren(D data, Consumer<Data> consumer) {
+        visitDataAndViewChildren(data,consumer,true);
+    }
+
+
+    private void visitDataAndViewChildren(D data, Consumer<Data> consumer, boolean visitViews) {
         if (this.visitDataChildren != null) {
             this.visitDataChildren.accept(data, consumer);
         } else {
@@ -116,14 +107,16 @@ public class DataDictionary<D extends Data> {
                     ((ReferenceListAttribute<?, ?>) attribute).forEach(consumer);
                 }
 
-                if (attribute instanceof ViewReferenceAttribute) {
-                    Data child = ((ViewReferenceAttribute<?, ?, ?>) attribute).get();
-                    if (child != null) {
-                        consumer.accept(child);
+                if (visitViews){
+                    if (attribute instanceof ViewReferenceAttribute) {
+                        Data child = ((ViewReferenceAttribute<?, ?, ?>) attribute).get();
+                        if (child != null) {
+                            consumer.accept(child);
+                        }
                     }
-                }
-                if (attribute instanceof ViewListReferenceAttribute) {
-                    ((ViewListReferenceAttribute<?, ?, ?>) attribute).get().forEach(consumer);
+                    if (attribute instanceof ViewListReferenceAttribute) {
+                        ((ViewListReferenceAttribute<?, ?, ?>) attribute).get().forEach(consumer);
+                    }
                 }
             });
         }

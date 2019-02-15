@@ -5,9 +5,10 @@ import java.util.UUID;
 
 import de.factoryfx.data.Data;
 import de.factoryfx.data.attribute.types.StringAttribute;
-import de.factoryfx.data.storage.DataAndScheduledMetadata;
+import de.factoryfx.data.merge.testdata.ExampleDataA;
+import de.factoryfx.data.storage.DataUpdate;
+import de.factoryfx.data.storage.ScheduledUpdate;
 import de.factoryfx.data.storage.DataAndStoredMetadata;
-import de.factoryfx.data.storage.ScheduledDataMetadata;
 import de.factoryfx.data.storage.StoredDataMetadata;
 import de.factoryfx.data.storage.migration.GeneralStorageMetadata;
 import de.factoryfx.data.storage.migration.GeneralStorageMetadataBuilder;
@@ -16,23 +17,12 @@ import org.junit.Test;
 
 public class InMemoryDataStorageTest {
 
-    private DataAndStoredMetadata<Dummy,Void> createInitialFactory() {
-        Dummy exampleFactoryA = new Dummy();
-        exampleFactoryA.internal().addBackReferences();
-        GeneralStorageMetadata generalStorageMetadata = GeneralStorageMetadataBuilder.build();
-        DataAndStoredMetadata<Dummy,Void> initialFactoryAndStorageMetadata = new DataAndStoredMetadata<>(exampleFactoryA,
-                new StoredDataMetadata<>(LocalDateTime.now(),
-                        UUID.randomUUID().toString(),
-                        "System",
-                        "initial factory",
-                        UUID.randomUUID().toString(),
-                        null, generalStorageMetadata,
-                        exampleFactoryA.internal().createDataStorageMetadataDictionaryFromRoot()
-                )
-        );
-        return initialFactoryAndStorageMetadata;
+    private DataUpdate<ExampleDataA> createUpdate() {
+        ExampleDataA exampleDataA = new ExampleDataA();
+        exampleDataA.stringAttribute.set("update");
+        exampleDataA.internal().addBackReferences();
+        return new DataUpdate<>(exampleDataA,"user","comment","123");
     }
-
 
     public static class Dummy extends Data {
 
@@ -50,14 +40,13 @@ public class InMemoryDataStorageTest {
 
     @Test
     public void test_update() {
-        Dummy dummy = new Dummy();
-        InMemoryDataStorage<Dummy,Void> inMemoryDataStorage = new InMemoryDataStorage<>(dummy);
+        InMemoryDataStorage<ExampleDataA,Void> inMemoryDataStorage = new InMemoryDataStorage<>(new ExampleDataA());
 
         inMemoryDataStorage.getCurrentFactory();
         Assert.assertEquals(1,inMemoryDataStorage.getHistoryFactoryList().size());
 
 
-        inMemoryDataStorage.updateCurrentFactory(createInitialFactory());
+        inMemoryDataStorage.updateCurrentFactory(createUpdate(),null);
 
 
         Assert.assertEquals(2,inMemoryDataStorage.getHistoryFactoryList().size());
@@ -70,20 +59,16 @@ public class InMemoryDataStorageTest {
 
         Assert.assertEquals(1,fileSystemFactoryStorage.getHistoryFactoryList().size());
 
-        DataAndStoredMetadata<Dummy, Void> initialFactory = createInitialFactory();
-        ScheduledDataMetadata<Void> scheduledDataMetadata = new ScheduledDataMetadata<>(
-                initialFactory.metadata.creationTime,
-                UUID.randomUUID().toString(),
-                initialFactory.metadata.user,
-                initialFactory.metadata.comment,
-                initialFactory.metadata.baseVersionId,
-                initialFactory.metadata.changeSummary,
-                initialFactory.metadata.generalStorageMetadata,
-                initialFactory.metadata.dataStorageMetadataDictionary,
+        ScheduledUpdate<Dummy> update = new ScheduledUpdate<>(
+                new Dummy(),
+                "user",
+                "comment",
+                fileSystemFactoryStorage.getCurrentFactory().id,
                 LocalDateTime.now()
         );
-        fileSystemFactoryStorage.addFutureFactory(new DataAndScheduledMetadata<>(new Dummy(),scheduledDataMetadata));
+        update.root.internal().addBackReferences();
 
+        fileSystemFactoryStorage.addFutureFactory(update);
 
         Assert.assertEquals(1,fileSystemFactoryStorage.getFutureFactoryList().size());
     }

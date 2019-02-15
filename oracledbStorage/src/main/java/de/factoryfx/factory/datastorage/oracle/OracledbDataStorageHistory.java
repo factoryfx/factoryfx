@@ -29,7 +29,7 @@ public class OracledbDataStorageHistory<R extends Data,S> {
              statement.executeUpdate(sql);
 
         } catch (SQLException e) {
-            //oracle don't know IF NOT EXISTS
+            //oracle don't know "IF NOT EXISTS"
             //workaround ignore exception
 //            throw new RuntimeException(e);
         }
@@ -42,8 +42,8 @@ public class OracledbDataStorageHistory<R extends Data,S> {
              statement.setString(1, id);
              try (ResultSet resultSet =statement.executeQuery()) {
                  if (resultSet.next()) {
-                     StoredDataMetadata<S> factoryMetadata = migrationManager.readStoredFactoryMetadata(JdbcUtil.readStringFromBlob(resultSet, "factoryMetadata"));
-                     return migrationManager.read(JdbcUtil.readStringFromBlob(resultSet, "factory"), factoryMetadata);
+                     StoredDataMetadata<S> metadata = migrationManager.readStoredFactoryMetadata(JdbcUtil.readStringFromBlob(resultSet, "factoryMetadata"));
+                     return migrationManager.read(JdbcUtil.readStringFromBlob(resultSet, "factory"), metadata.generalStorageMetadata, metadata.dataStorageMetadataDictionary);
                  }
              }
         } catch (SQLException e) {

@@ -1,5 +1,6 @@
 package de.factoryfx.data.storage.inmemory;
 
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -14,7 +15,7 @@ import de.factoryfx.data.storage.*;
  */
 public class InMemoryDataStorage<R extends Data,S> implements DataStorage<R,S> {
     private final Map<String,DataAndStoredMetadata<R,S>> storage = new TreeMap<>();
-    private final Map<String,DataAndScheduledMetadata<R,S>> future = new TreeMap<>();
+    private final Map<String, ScheduledUpdate<R>> future = new TreeMap<>();
     private String currentFactoryId;
 
     public InMemoryDataStorage(R initialFactory){
@@ -42,14 +43,32 @@ public class InMemoryDataStorage<R extends Data,S> implements DataStorage<R,S> {
     }
 
     @Override
-    public void updateCurrentFactory(DataAndStoredMetadata<R,S> update) {
-        storage.put(update.metadata.id, update);
-        currentFactoryId=update.metadata.id;
+    public void updateCurrentFactory(DataUpdate<R> update, S changeSummary) {
+        StoredDataMetadata<S> metadata = new StoredDataMetadata<>(LocalDateTime.now(),
+                UUID.randomUUID().toString(),
+                update.user,
+                update.comment,
+                update.baseVersionId,
+                changeSummary, null,
+                update.root.internal().createDataStorageMetadataDictionaryFromRoot()
+        );
+
+        storage.put(metadata.id, new DataAndStoredMetadata<>(update.root,metadata));
+        currentFactoryId=metadata.id;
     }
 
     @Override
-    public Collection<ScheduledDataMetadata<S>> getFutureFactoryList() {
-        return future.values().stream().map(item -> item.metadata).collect(Collectors.toList());
+    public Collection<ScheduledUpdateMetadata> getFutureFactoryList() {
+        ArrayList<ScheduledUpdateMetadata> result = new ArrayList<>();
+        for (Map.Entry<String, ScheduledUpdate<R>> entry : future.entrySet()) {
+            result.add(new ScheduledUpdateMetadata(
+                    entry.getKey(),
+                    entry.getValue().user,
+                    entry.getValue().comment,
+                    entry.getValue().scheduled,null,null
+            ));
+        }
+        return result;
     }
 
     @Override
@@ -58,13 +77,13 @@ public class InMemoryDataStorage<R extends Data,S> implements DataStorage<R,S> {
     }
 
     public R getFutureFactory(String id) {
-        DataAndScheduledMetadata<R,S> data = future.get(id);
+        ScheduledUpdate<R> data = future.get(id);
         return data.root.internal().copy();
     }
 
     @Override
-    public void addFutureFactory(DataAndScheduledMetadata<R,S> futureFactory) {
-        future.put(futureFactory.metadata.id, futureFactory);
+    public void addFutureFactory(ScheduledUpdate<R> futureFactory) {
+        future.put(UUID.randomUUID().toString(), futureFactory);
     }
 
 }

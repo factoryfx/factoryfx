@@ -29,6 +29,7 @@ import javax.ws.rs.ext.MessageBodyWriter;
 import ch.qos.logback.classic.Level;
 import com.google.common.io.ByteStreams;
 import de.factoryfx.data.storage.DataAndStoredMetadata;
+import de.factoryfx.data.storage.DataUpdate;
 import de.factoryfx.factory.SimpleFactoryBase;
 import de.factoryfx.factory.atrribute.FactoryReferenceAttribute;
 import de.factoryfx.factory.builder.FactoryTreeBuilder;
@@ -101,7 +102,7 @@ public class JettyServerTest {
                 throw new RuntimeException(e);
             }
 
-            DataAndStoredMetadata<JettyServerRootFactory,Void> update = microservice.prepareNewFactory();
+            DataUpdate<JettyServerRootFactory> update = microservice.prepareNewFactory();
             update.root.server.get().connectors.get(0).port.set(8081);
             microservice.updateCurrentFactory(update);
 
@@ -154,7 +155,7 @@ public class JettyServerTest {
                 throw new RuntimeException(e);
             }
 
-            DataAndStoredMetadata<JettyServerRootFactory,Void> update = microservice.prepareNewFactory();
+            DataUpdate<JettyServerRootFactory> update = microservice.prepareNewFactory();
             update.root.server.get().connectors.clear();
             microservice.updateCurrentFactory(update);
 
@@ -229,7 +230,7 @@ public class JettyServerTest {
                 }
             }.start();
             Thread.sleep(200);
-            DataAndStoredMetadata<JettyServerRootFactory,Void> update = microservice.prepareNewFactory();
+            DataUpdate<JettyServerRootFactory> update = microservice.prepareNewFactory();
             update.root.server.get().clearResource(LateResponseTestResourceFactory.class);
             microservice.updateCurrentFactory(update);
             try {

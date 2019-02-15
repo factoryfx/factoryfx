@@ -3,6 +3,7 @@ package de.factoryfx.jetty;
 import ch.qos.logback.classic.Level;
 import de.factoryfx.data.attribute.types.StringAttribute;
 import de.factoryfx.data.storage.DataAndStoredMetadata;
+import de.factoryfx.data.storage.DataUpdate;
 import de.factoryfx.factory.SimpleFactoryBase;
 import de.factoryfx.factory.atrribute.FactoryReferenceAttribute;
 import de.factoryfx.factory.builder.FactoryTreeBuilder;
@@ -91,7 +92,7 @@ public class UpdateableServletTest {
             }
 
 
-            DataAndStoredMetadata<UpdateableWebserverRootFactory,Void> update = microservice.prepareNewFactory();
+            DataUpdate<UpdateableWebserverRootFactory> update = microservice.prepareNewFactory();
             update.root.server.get().getResource(UpdateableTestResourceFactory.class).response.set("abc");
             microservice.updateCurrentFactory(update);
 
@@ -128,7 +129,7 @@ public class UpdateableServletTest {
             HttpClient client = HttpClient.newBuilder().version(HttpClient.Version.HTTP_1_1).build();
             HttpRequest request = HttpRequest.newBuilder().GET().uri(URI.create("http://localhost:8080/UpdateableTestResource")).build();
 
-            DataAndStoredMetadata<UpdateableWebserverRootFactory,Void> update = microservice.prepareNewFactory();
+            DataUpdate<UpdateableWebserverRootFactory> update = microservice.prepareNewFactory();
             update.root.server.get().clearResource(UpdateableTestResourceFactory.class);
             microservice.updateCurrentFactory(update);
 
@@ -159,7 +160,7 @@ public class UpdateableServletTest {
             HttpClient client = HttpClient.newBuilder().version(HttpClient.Version.HTTP_1_1).build();
             HttpRequest request = HttpRequest.newBuilder().GET().uri(URI.create("http://localhost:8080/UpdateableTestResource")).build();
 
-            DataAndStoredMetadata<UpdateableWebserverRootFactory,Void> update = microservice.prepareNewFactory();
+            DataUpdate<UpdateableWebserverRootFactory> update = microservice.prepareNewFactory();
 
             UpdateableTestResourceFactory resource = new UpdateableTestResourceFactory();
             resource.response.set("123");
@@ -192,7 +193,7 @@ public class UpdateableServletTest {
         try {
 
             {
-                DataAndStoredMetadata<UpdateableWebserverRootFactory,Void> update = microservice.prepareNewFactory();
+                DataUpdate<UpdateableWebserverRootFactory> update = microservice.prepareNewFactory();
 
                 UpdateableTestResourceFactory resource = new UpdateableTestResourceFactory();
                 resource.response.set("123");

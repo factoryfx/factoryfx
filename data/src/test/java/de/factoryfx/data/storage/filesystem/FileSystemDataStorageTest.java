@@ -10,6 +10,7 @@ import java.util.UUID;
 import de.factoryfx.data.jackson.ObjectMapperBuilder;
 import de.factoryfx.data.merge.testdata.ExampleDataA;
 import de.factoryfx.data.storage.DataAndStoredMetadata;
+import de.factoryfx.data.storage.DataUpdate;
 import de.factoryfx.data.storage.StoredDataMetadata;
 import de.factoryfx.data.storage.migration.DataMigrationManager;
 import de.factoryfx.data.storage.migration.GeneralStorageMetadata;
@@ -26,55 +27,51 @@ public class FileSystemDataStorageTest {
     @Rule
     public TemporaryFolder folder= new TemporaryFolder();
 
+    private ExampleDataA createInitialExampleDataA() {
+        ExampleDataA exampleDataA = new ExampleDataA();
+        exampleDataA.internal().addBackReferences();
+        return exampleDataA;
+    }
+
+    private DataUpdate<ExampleDataA> createUpdate() {
+        ExampleDataA exampleDataA = new ExampleDataA();
+        exampleDataA.stringAttribute.set("update");
+        exampleDataA.internal().addBackReferences();
+        return new DataUpdate<>(exampleDataA,"user","comment","123");
+    }
+
+
     private MigrationManager<ExampleDataA,Void> createDataMigrationManager(){
         return new MigrationManager<>(ExampleDataA.class, List.of(), GeneralStorageMetadataBuilder.build(), new DataMigrationManager(), ObjectMapperBuilder.build());
     }
 
-
     @Test
     public void test_init_no_existing_factory() {
-        FileSystemDataStorage<ExampleDataA,Void> fileSystemFactoryStorage = new FileSystemDataStorage<>(Paths.get(folder.getRoot().toURI()), createInitialExampleDataA(), createDataMigrationManager());
+        FileSystemDataStorage<ExampleDataA,Void> fileSystemFactoryStorage = new FileSystemDataStorage<>(Paths.get(folder.getRoot().toURI()), createInitialExampleDataA(), GeneralStorageMetadataBuilder.build(), createDataMigrationManager());
         fileSystemFactoryStorage.getCurrentFactory();
 
         Assert.assertTrue(new File(folder.getRoot().getAbsolutePath()+"/currentFactory.json").exists());
     }
 
-    private DataAndStoredMetadata<ExampleDataA,Void> createInitialExampleDataA() {
-        ExampleDataA exampleDataA = new ExampleDataA();
-        exampleDataA.internal().addBackReferences();
-        GeneralStorageMetadata generalStorageMetadata = GeneralStorageMetadataBuilder.build();
-        DataAndStoredMetadata<ExampleDataA,Void> initialFactoryAndStorageMetadata = new DataAndStoredMetadata<>(exampleDataA,
-                new StoredDataMetadata<>(LocalDateTime.now(),
-                        UUID.randomUUID().toString(),
-                        "System",
-                        "initial factory",
-                        UUID.randomUUID().toString(),
-                        null, generalStorageMetadata,
-                        exampleDataA.internal().createDataStorageMetadataDictionaryFromRoot()
-                )
-        );
-        return initialFactoryAndStorageMetadata;
-    }
-
     @Test
     public void test_init_existing_factory() {
-        FileSystemDataStorage<ExampleDataA,Void> fileSystemFactoryStorage = new FileSystemDataStorage<>(Paths.get(folder.getRoot().toURI()), createInitialExampleDataA(), createDataMigrationManager());
+        FileSystemDataStorage<ExampleDataA,Void> fileSystemFactoryStorage = new FileSystemDataStorage<>(Paths.get(folder.getRoot().toURI()), createInitialExampleDataA(), GeneralStorageMetadataBuilder.build(), createDataMigrationManager());
         String id=fileSystemFactoryStorage.getCurrentFactory().id;
         Assert.assertTrue(new File(folder.getRoot().getAbsolutePath()+"/currentFactory.json").exists());
 
-        FileSystemDataStorage<ExampleDataA,Void> restored = new FileSystemDataStorage<>(Paths.get(folder.getRoot().toURI()),null, createDataMigrationManager());
+        FileSystemDataStorage<ExampleDataA,Void> restored = new FileSystemDataStorage<>(Paths.get(folder.getRoot().toURI()),null, GeneralStorageMetadataBuilder.build(), createDataMigrationManager());
         Assert.assertEquals(id,restored.getCurrentFactory().id);
     }
 
     @Test
     public void test_update()  {
-        FileSystemDataStorage<ExampleDataA,Void> fileSystemFactoryStorage = new FileSystemDataStorage<>(Paths.get(folder.getRoot().toURI()), createInitialExampleDataA(), createDataMigrationManager());
+        FileSystemDataStorage<ExampleDataA,Void> fileSystemFactoryStorage = new FileSystemDataStorage<>(Paths.get(folder.getRoot().toURI()), createInitialExampleDataA(), GeneralStorageMetadataBuilder.build(), createDataMigrationManager());
         String id=fileSystemFactoryStorage.getCurrentFactory().id;
 
 
-        DataAndStoredMetadata<ExampleDataA,Void> update = createInitialExampleDataA();
+        DataUpdate<ExampleDataA> update = createUpdate();
 
-        fileSystemFactoryStorage.updateCurrentFactory(update);
+        fileSystemFactoryStorage.updateCurrentFactory(update,null);
         Assert.assertNotEquals(id,fileSystemFactoryStorage.getCurrentFactory().id);
         Assert.assertEquals(2,fileSystemFactoryStorage.getHistoryFactoryList().size());
 

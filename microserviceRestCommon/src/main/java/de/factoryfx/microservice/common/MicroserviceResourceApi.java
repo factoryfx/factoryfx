@@ -1,7 +1,7 @@
 package de.factoryfx.microservice.common;
 
 import de.factoryfx.data.merge.MergeDiffInfo;
-import de.factoryfx.data.storage.DataAndStoredMetadata;
+import de.factoryfx.data.storage.DataUpdate;
 import de.factoryfx.data.storage.StoredDataMetadata;
 import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.factory.log.FactoryUpdateLog;
@@ -27,7 +27,7 @@ public interface MicroserviceResourceApi<V,R extends FactoryBase<?,V,R>,S>  {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @Path("updateCurrentFactory")
-    FactoryUpdateLog<R> updateCurrentFactory(UserAwareRequest<DataAndStoredMetadata<R,S>> update);
+    FactoryUpdateLog<R> updateCurrentFactory(UserAwareRequest<DataUpdate<R>> update);
 
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
@@ -39,7 +39,7 @@ public interface MicroserviceResourceApi<V,R extends FactoryBase<?,V,R>,S>  {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @Path("simulateUpdateCurrentFactory")
-    MergeDiffInfo<R> simulateUpdateCurrentFactory(UserAwareRequest<DataAndStoredMetadata<R,S>> request);
+    MergeDiffInfo<R> simulateUpdateCurrentFactory(UserAwareRequest<DataUpdate<R>> request);
 
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
@@ -51,7 +51,7 @@ public interface MicroserviceResourceApi<V,R extends FactoryBase<?,V,R>,S>  {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @Path("prepareNewFactory")
-    DataAndStoredMetadata<R,S> prepareNewFactory(VoidUserAwareRequest request);
+    DataUpdate<R> prepareNewFactory(VoidUserAwareRequest request);
 
     @POST
     @Consumes(MediaType.APPLICATION_JSON)

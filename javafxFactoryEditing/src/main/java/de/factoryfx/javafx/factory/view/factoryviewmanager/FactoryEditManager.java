@@ -9,8 +9,9 @@ import java.util.function.Consumer;
 import com.fasterxml.jackson.databind.JsonNode;
 import de.factoryfx.data.jackson.ObjectMapperBuilder;
 import de.factoryfx.data.merge.MergeDiffInfo;
-import de.factoryfx.data.storage.DataAndStoredMetadata;
+import de.factoryfx.data.storage.DataUpdate;
 import de.factoryfx.data.storage.StoredDataMetadata;
+import de.factoryfx.data.storage.migration.GeneralStorageMetadataBuilder;
 import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.data.storage.migration.MigrationManager;
 import de.factoryfx.factory.log.FactoryUpdateLog;
@@ -40,16 +41,16 @@ public class FactoryEditManager<V,R extends FactoryBase<?,V,R>,S> {
         listeners.remove(listener);
     }
 
-    DataAndStoredMetadata<R,S> loadedRoot;
+    DataUpdate<R> loadedRoot;
     public void load(){
-        DataAndStoredMetadata<R,S> currentFactory = client.prepareNewFactory();
-        DataAndStoredMetadata<R,S> previousRoot=loadedRoot;
+        DataUpdate<R> currentFactory = client.prepareNewFactory();
+        DataUpdate<R> previousRoot=loadedRoot;
         loadedRoot = currentFactory;
 
         updateNotify(currentFactory, previousRoot);
     }
 
-    private void updateNotify(DataAndStoredMetadata<R,S> currentFactory, DataAndStoredMetadata<R,S> previousRoot) {
+    private void updateNotify(DataUpdate<R> currentFactory, DataUpdate<R> previousRoot) {
         runLaterExecuter.accept(() -> {
             for (FactoryRootChangeListener<R> listener: listeners){
                 listener.update(Optional.ofNullable(previousRoot).map((p)->p.root),currentFactory.root);
@@ -97,7 +98,7 @@ public class FactoryEditManager<V,R extends FactoryBase<?,V,R>,S> {
 
     public void saveToFile(Path target) {
         RawFactoryDataAndMetadata<S> rawFactoryDataAndMetadata = new RawFactoryDataAndMetadata<>();
-        rawFactoryDataAndMetadata.metadata=loadedRoot.metadata;
+        rawFactoryDataAndMetadata.metadata=loadedRoot.createUpdateStoredDataMetadata(null,GeneralStorageMetadataBuilder.build());
         rawFactoryDataAndMetadata.root= ObjectMapperBuilder.build().writeValueAsTree(loadedRoot.root);
         ObjectMapperBuilder.build().writeValue(target.toFile(), rawFactoryDataAndMetadata);
     }
@@ -105,12 +106,12 @@ public class FactoryEditManager<V,R extends FactoryBase<?,V,R>,S> {
     @SuppressWarnings("unchecked")
     public void loadFromFile(Path from) {
         RawFactoryDataAndMetadata<S> wrapper = (RawFactoryDataAndMetadata<S>)ObjectMapperBuilder.build().readValue(from.toFile(), RawFactoryDataAndMetadata.class);
-        R serverFactory = migrationManager.read(wrapper.root, wrapper.metadata);
+        R serverFactory = migrationManager.read(wrapper.root, wrapper.metadata.generalStorageMetadata,wrapper.metadata.dataStorageMetadataDictionary);
 
-        DataAndStoredMetadata<R,S> previousRoot=loadedRoot;
+        DataUpdate<R> previousRoot=loadedRoot;
 
-        DataAndStoredMetadata<R, S> update = client.prepareNewFactory();
-        loadedRoot=new DataAndStoredMetadata<>(serverFactory,update.metadata);
+        DataUpdate<R> update = client.prepareNewFactory();
+        loadedRoot=new DataUpdate<>(serverFactory,update.user,update.comment,update.baseVersionId);
         this.save("reloaded from file: "+from.toFile().getAbsolutePath());
 
         updateNotify(loadedRoot, previousRoot);

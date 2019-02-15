@@ -1,6 +1,7 @@
 package de.factoryfx.soap;
 
 import de.factoryfx.data.storage.DataAndStoredMetadata;
+import de.factoryfx.data.storage.DataUpdate;
 import de.factoryfx.factory.builder.FactoryTreeBuilder;
 import de.factoryfx.factory.builder.Scope;
 import de.factoryfx.jetty.JettyServerBuilder;
@@ -45,7 +46,7 @@ public class SoapTest {
         microService.start();
 
         callSoapWebService("http://localhost:8088","action");
-        DataAndStoredMetadata<SoapJettyServerFactory,Object> newFactory = microService.prepareNewFactory();
+        DataUpdate<SoapJettyServerFactory> newFactory = microService.prepareNewFactory();
         HelloWorldFactory helloWorldFactory = new HelloWorldFactory();
         helloWorldFactory.service.set(req->{
             throw new SoapDummyRequestException1();

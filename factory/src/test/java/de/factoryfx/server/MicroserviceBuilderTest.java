@@ -5,6 +5,7 @@ import com.fasterxml.jackson.dataformat.yaml.YAMLGenerator;
 import de.factoryfx.data.jackson.ObjectMapperBuilder;
 import de.factoryfx.data.jackson.SimpleObjectMapper;
 import de.factoryfx.data.storage.DataAndStoredMetadata;
+import de.factoryfx.data.storage.DataUpdate;
 import de.factoryfx.factory.FactoryReferenceListTest;
 import de.factoryfx.factory.builder.FactoryTreeBuilder;
 import de.factoryfx.factory.builder.MicroserviceBuilder;
@@ -53,7 +54,7 @@ public class MicroserviceBuilderTest {
 //        for (File file : folder.getRoot().listFiles()[0]) {
 //            System.out.println(file.getAbsoluteFile());
 //        }
-        DataAndStoredMetadata<ExampleFactoryA, Void> update = microservice.prepareNewFactory();
+        DataUpdate<ExampleFactoryA> update = microservice.prepareNewFactory();
         update.root.stringAttribute.set("hjhjggjhgjh");
 
         microservice.updateCurrentFactory(update);

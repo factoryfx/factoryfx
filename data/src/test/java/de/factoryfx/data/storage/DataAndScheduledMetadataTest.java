@@ -4,11 +4,13 @@ import de.factoryfx.data.jackson.ObjectMapperBuilder;
 import de.factoryfx.data.merge.testdata.ExampleDataA;
 import org.junit.Test;
 
+import java.time.LocalDateTime;
+
 public class DataAndScheduledMetadataTest {
 
     @Test
     public void test_json(){
-        DataAndScheduledMetadata<ExampleDataA,Void> test = new DataAndScheduledMetadata<>(new ExampleDataA(),new ScheduledDataMetadata<>(null,"","","","",null,null,null,null));
+        ScheduledUpdate<ExampleDataA> test = new ScheduledUpdate<>(new ExampleDataA(),"fg","dsad","dad", LocalDateTime.now());
         ObjectMapperBuilder.build().copy(test);
     }
 

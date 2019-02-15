@@ -1,6 +1,6 @@
 package de.factoryfx.docu.runtimestatus;
 
-import de.factoryfx.data.storage.DataAndStoredMetadata;
+import de.factoryfx.data.storage.DataUpdate;
 import de.factoryfx.factory.builder.FactoryTreeBuilder;
 import de.factoryfx.factory.builder.Scope;
 import de.factoryfx.server.Microservice;
@@ -23,7 +23,7 @@ public class Main {
         System.out.println(System.currentTimeMillis()-start);
 
         long updateStart=System.currentTimeMillis();
-        DataAndStoredMetadata<RootFactory,Void> update = microservice.prepareNewFactory();
+        DataUpdate<RootFactory> update = microservice.prepareNewFactory();
         update.root.stringAttribute.set("2");
         microservice.updateCurrentFactory(update);
 

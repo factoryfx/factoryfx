@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import de.factoryfx.data.storage.DataAndStoredMetadata;
+import de.factoryfx.data.storage.DataUpdate;
 import de.factoryfx.factory.builder.FactoryTreeBuilder;
 import de.factoryfx.factory.builder.Scope;
 import org.junit.Assert;
@@ -76,7 +77,7 @@ public class FactoryReferenceListTest {
             destroyer.clear();
 
             System.out.println("update started");
-            DataAndStoredMetadata<RootFactory,Void> update1 = microService.prepareNewFactory();
+            DataUpdate<RootFactory> update1 = microService.prepareNewFactory();
             ObjectFactory second = new ObjectFactory();
             update1.root.objects.add(second);
 

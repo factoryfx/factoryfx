@@ -90,7 +90,6 @@ public class SimpleObjectMapper {
 
     public String writeTree(JsonNode node){
         try {
-            ByteArrayOutputStream out = new ByteArrayOutputStream();
             Object value = objectMapper.treeToValue(node, Object.class);
             return writeValueAsString(value);
         } catch (IOException e) {

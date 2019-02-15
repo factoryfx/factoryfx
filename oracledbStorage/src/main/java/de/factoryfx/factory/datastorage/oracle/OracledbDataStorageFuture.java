@@ -1,8 +1,8 @@
 package de.factoryfx.factory.datastorage.oracle;
 
 import de.factoryfx.data.Data;
+import de.factoryfx.data.storage.ScheduledUpdateMetadata;
 import de.factoryfx.data.storage.migration.MigrationManager;
-import de.factoryfx.data.storage.ScheduledDataMetadata;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -43,8 +43,8 @@ public class OracledbDataStorageFuture<R extends Data,S> {
 
             try (ResultSet resultSet =statement.executeQuery(sql)) {
                 if (resultSet.next()) {
-                    ScheduledDataMetadata<S> factoryMetadata = migrationManager.readScheduledFactoryMetadata(JdbcUtil.readStringFromBlob(resultSet, "factoryMetadata"));
-                    return migrationManager.read(JdbcUtil.readStringFromBlob(resultSet, "factory"), factoryMetadata);
+                    ScheduledUpdateMetadata metadata = migrationManager.readScheduledFactoryMetadata(JdbcUtil.readStringFromBlob(resultSet, "factoryMetadata"));
+                    return migrationManager.read(JdbcUtil.readStringFromBlob(resultSet, "factory"), metadata.generalStorageMetadata,metadata.dataStorageMetadataDictionary);
                 }
             }
         } catch (SQLException e) {
@@ -55,8 +55,8 @@ public class OracledbDataStorageFuture<R extends Data,S> {
         return null;
     }
 
-    public Collection<ScheduledDataMetadata<S>> getFutureFactoryList() {
-        ArrayList<ScheduledDataMetadata<S>> result = new ArrayList<>();
+    public Collection<ScheduledUpdateMetadata> getFutureFactoryList() {
+        ArrayList<ScheduledUpdateMetadata> result = new ArrayList<>();
         try (Connection connection= connectionSupplier.get();
             Statement statement = connection.createStatement();
              ResultSet resultSet =statement.executeQuery("SELECT * FROM FACTORY_FUTURE")
@@ -70,14 +70,14 @@ public class OracledbDataStorageFuture<R extends Data,S> {
         return result;
     }
 
-    public void addFuture(ScheduledDataMetadata<S> metadata, R factoryRoot) {
+    public void addFuture(ScheduledUpdateMetadata metadata, R factoryRoot) {
         String id=metadata.id;
 
         try (Connection connection= connectionSupplier.get();
              PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO FACTORY_FUTURE(id,factory,factoryMetadata) VALUES (?,?,? )")){
              preparedStatement.setString(1, id);
              JdbcUtil.writeStringToBlob(migrationManager.write(factoryRoot),preparedStatement,2);
-             JdbcUtil.writeStringToBlob(migrationManager.writeStorageMetadata(metadata),preparedStatement,3);
+             JdbcUtil.writeStringToBlob(migrationManager.writeScheduledUpdateMetadata(metadata),preparedStatement,3);
              preparedStatement.executeUpdate();
         } catch (SQLException e) {
             throw new RuntimeException(e);

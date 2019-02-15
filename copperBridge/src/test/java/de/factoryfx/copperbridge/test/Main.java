@@ -9,6 +9,7 @@ import de.factoryfx.copperbridge.TransientScottyEngineFactory;
 import de.factoryfx.copperbridge.WorkflowLauncher;
 import de.factoryfx.copperbridge.WorkflowLauncherFactory;
 import de.factoryfx.data.storage.DataAndStoredMetadata;
+import de.factoryfx.data.storage.DataUpdate;
 import de.factoryfx.factory.builder.FactoryTreeBuilder;
 import de.factoryfx.factory.builder.Scope;
 import de.factoryfx.server.Microservice;
@@ -26,7 +27,7 @@ public class Main {
         sleep(500);
         {
             System.out.println("update1");
-            DataAndStoredMetadata<CopperRootFactory,Void> update = microservice.prepareNewFactory();
+            DataUpdate<CopperRootFactory> update = microservice.prepareNewFactory();
             CopperEngineContextFactory<Void, CopperRootFactory> da = update.root.workflowLauncher.get().copperEngineContext.get();
             ((CopperEngineContextFactoryImpl) da).dep1.set("world");
             microservice.updateCurrentFactory(update);
@@ -36,7 +37,7 @@ public class Main {
         sleep(500);
         {
             System.out.println("update2");
-            DataAndStoredMetadata<CopperRootFactory,Void> update = microservice.prepareNewFactory();
+            DataUpdate<CopperRootFactory> update = microservice.prepareNewFactory();
             TransientScottyEngineFactory<Void, CopperRootFactory> da = update.root.workflowLauncher.get().copperEngineContext.get().transientScottyEngine.get();
             da.threads.set(20);
             microservice.updateCurrentFactory(update);

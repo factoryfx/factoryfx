@@ -2,7 +2,7 @@ package de.factoryfx.docu.customconfig;
 
 //import io.swagger.annotations.Api;
 
-import de.factoryfx.data.storage.DataAndStoredMetadata;
+import de.factoryfx.data.storage.DataUpdate;
 import de.factoryfx.server.Microservice;
 import io.swagger.annotations.Api;
 
@@ -24,13 +24,12 @@ public class CustomConfigurationResource {
         public int port;
     }
 
-    @SuppressWarnings("unchecked")
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     public Response config(CustomConfigurationRequest request) {
-        DataAndStoredMetadata update = microservice.prepareNewFactory();
-        ((ServerFactory)update.root).server.get().connectors.get(0).port.set(request.port);
-        microservice.updateCurrentFactory("CustomConfigurationResource","port change",update);
+        DataUpdate<ServerFactory> update = microservice.prepareNewFactory("CustomConfigurationResource","port change");
+        update.root.server.get().connectors.get(0).port.set(request.port);
+        microservice.updateCurrentFactory(update);
         return Response.ok().build();
     }
 

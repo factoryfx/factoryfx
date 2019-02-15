@@ -28,16 +28,19 @@ public class WebServiceCallResult {
             if (faultAnnotation == null) {
                 throw new RuntimeException("Declared exception of type '"+fault.getClass().getName()+"' does not have an WebFault annotation. Unable to convert it to an xml element thus.");
             }
-            Method getFaultInfo = fault.getClass().getMethod("getFaultInfo");
-            if (getFaultInfo == null) {
-                throw new RuntimeException("Declared exception of type '"+fault.getClass().getName()+"' does not have a getFaultInfo() method. Unable to create a soap fault thus.");
+
+            Method getFaultInfo;
+            try {
+                getFaultInfo = fault.getClass().getMethod("getFaultInfo");
+            } catch ( NoSuchMethodException e){
+                throw new RuntimeException("Declared exception of type '"+fault.getClass().getName()+"' does not have a getFaultInfo() method. Unable to create a soap fault thus.",e);
             }
             Object faultInfo = getFaultInfo.invoke(fault);
             QName faultCode = new QName(faultAnnotation.targetNamespace(), faultAnnotation.name());
             JAXBElement result = new JAXBElement(faultCode,getFaultInfo.getReturnType(),faultInfo);
             result.setNil(faultInfo == null);
             return result;
-        } catch (InvocationTargetException | NoSuchMethodException | IllegalAccessException e) {
+        } catch (InvocationTargetException | IllegalAccessException e) {
             throw new RuntimeException("Cannot convert declared Exception to Webfault. Please check @WebFault annotation",e);
         }
 

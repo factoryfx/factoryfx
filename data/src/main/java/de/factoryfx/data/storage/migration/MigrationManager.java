@@ -3,8 +3,9 @@ package de.factoryfx.data.storage.migration;
 import com.fasterxml.jackson.databind.JsonNode;
 import de.factoryfx.data.Data;
 import de.factoryfx.data.jackson.SimpleObjectMapper;
-import de.factoryfx.data.storage.ScheduledDataMetadata;
+import de.factoryfx.data.storage.ScheduledUpdateMetadata;
 import de.factoryfx.data.storage.StoredDataMetadata;
+import de.factoryfx.data.storage.migration.metadata.DataStorageMetadataDictionary;
 
 import java.util.List;
 
@@ -43,17 +44,17 @@ public class MigrationManager<R extends Data,S> {
 //        return dataModelVersionForStoring == dataModelVersion;
 //    }
 
-    public R read(JsonNode data, StoredDataMetadata<S> metadata) {
-        return read(objectMapper.writeTree(data),metadata);
+    public R read(JsonNode data, GeneralStorageMetadata generalStorageMetadata, DataStorageMetadataDictionary dataStorageMetadataDictionary) {
+        return read(objectMapper.writeTree(data),generalStorageMetadata,dataStorageMetadataDictionary);
     }
 
-    public R read(String data, StoredDataMetadata<S> metadata) {
-        GeneralStorageMetadata currentFormat= metadata.generalStorageMetadata;
+    public R read(String data, GeneralStorageMetadata generalStorageMetadata, DataStorageMetadataDictionary dataStorageMetadataDictionary) {
+        GeneralStorageMetadata currentFormat= generalStorageMetadata;
         String migratedData = data;
         if (currentFormat==null){//old data from old migration system
             currentFormat=new GeneralStorageMetadata(1,0);
         }
-        while (!generalStorageMetadata.match(currentFormat)){
+        while (!this.generalStorageMetadata.match(currentFormat)){
             boolean foundMigration=false;
             for (GeneralMigration migration: storageFormatMigrations){
                 if (migration.canMigrate(currentFormat)){
@@ -69,7 +70,7 @@ public class MigrationManager<R extends Data,S> {
         }
 
         JsonNode jsonNode = objectMapper.readTree(migratedData);
-        dataMigration.migrate(jsonNode,metadata.dataStorageMetadataDictionary);
+        dataMigration.migrate(jsonNode,dataStorageMetadataDictionary);
         return objectMapper.treeToValue(jsonNode,rootClass).internal().addBackReferences();
     }
 
@@ -79,8 +80,12 @@ public class MigrationManager<R extends Data,S> {
     }
 
     @SuppressWarnings("unchecked")
-    public ScheduledDataMetadata<S> readScheduledFactoryMetadata(String data) {
-        return objectMapper.readValue(data,ScheduledDataMetadata.class);
+    public ScheduledUpdateMetadata readScheduledFactoryMetadata(String data) {
+        return objectMapper.readValue(data,ScheduledUpdateMetadata.class);
+    }
+
+    public String writeScheduledUpdateMetadata(ScheduledUpdateMetadata metadata) {
+        return  objectMapper.writeValueAsString(metadata);
     }
 
 

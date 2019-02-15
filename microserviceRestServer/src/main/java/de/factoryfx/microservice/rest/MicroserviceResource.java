@@ -5,7 +5,7 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 import de.factoryfx.data.merge.MergeDiffInfo;
-import de.factoryfx.data.storage.DataAndStoredMetadata;
+import de.factoryfx.data.storage.DataUpdate;
 import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.data.storage.StoredDataMetadata;
 import de.factoryfx.factory.log.FactoryUpdateLog;
@@ -43,7 +43,7 @@ public class MicroserviceResource<V,R extends FactoryBase<?,V,R>,S> implements M
     }
 
     @Override
-    public FactoryUpdateLog<R> updateCurrentFactory(UserAwareRequest<DataAndStoredMetadata<R,S>> update) {
+    public FactoryUpdateLog<R> updateCurrentFactory(UserAwareRequest<DataUpdate<R>> update) {
         update.request.permissionChecker = authenticateAndGetPermissionChecker(update);
         update.request.root.internal().addBackReferences();
         return microservice.updateCurrentFactory(update.request);
@@ -65,7 +65,7 @@ public class MicroserviceResource<V,R extends FactoryBase<?,V,R>,S> implements M
     }
 
     @Override
-    public MergeDiffInfo<R> simulateUpdateCurrentFactory(UserAwareRequest<DataAndStoredMetadata<R,S>> request) {
+    public MergeDiffInfo<R> simulateUpdateCurrentFactory(UserAwareRequest<DataUpdate<R>> request) {
         request.request.permissionChecker= authenticateAndGetPermissionChecker(request);
         request.request.root.internal().addBackReferences();
         return microservice.simulateUpdateCurrentFactory(request.request);
@@ -78,7 +78,7 @@ public class MicroserviceResource<V,R extends FactoryBase<?,V,R>,S> implements M
     }
 
     @Override
-    public DataAndStoredMetadata<R,S> prepareNewFactory(VoidUserAwareRequest request) {
+    public DataUpdate<R> prepareNewFactory(VoidUserAwareRequest request) {
         authenticate(request);
         return microservice.prepareNewFactory();
     }

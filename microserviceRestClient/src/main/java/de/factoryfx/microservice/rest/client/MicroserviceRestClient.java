@@ -3,7 +3,6 @@ package de.factoryfx.microservice.rest.client;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.time.LocalDateTime;
 import java.util.*;
 import java.util.function.Supplier;
 
@@ -11,7 +10,7 @@ import java.util.function.Supplier;
 import com.google.common.base.Charsets;
 import com.google.common.io.CharStreams;
 import de.factoryfx.data.merge.MergeDiffInfo;
-import de.factoryfx.data.storage.DataAndStoredMetadata;
+import de.factoryfx.data.storage.DataUpdate;
 import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.data.storage.StoredDataMetadata;
 import de.factoryfx.factory.FactoryTreeBuilderBasedAttributeSetup;
@@ -44,26 +43,23 @@ public class MicroserviceRestClient<V, R extends FactoryBase<?,V,R>,S> {
         this.factoryTreeBuilderBasedAttributeSetup = factoryTreeBuilderBasedAttributeSetup;
     }
 
-    public FactoryUpdateLog updateCurrentFactory(DataAndStoredMetadata<R,S> update, String comment) {
+    public FactoryUpdateLog updateCurrentFactory(DataUpdate<R> update, String comment) {
         try {
-            StoredDataMetadata<S> updateMetadata = new StoredDataMetadata<>(LocalDateTime.now(),
-                    update.metadata.id,
-                    user,
+            DataUpdate<R> updateMetadata = new DataUpdate<>(
+                    update.root,
+                    update.user,
                     comment,
-                    update.metadata.baseVersionId,
-                    null,
-                    update.metadata.generalStorageMetadata,
-                    update.metadata.dataStorageMetadataDictionary
+                    update.baseVersionId
             );
 
-            return microserviceResourceApi.updateCurrentFactory(new UserAwareRequest<>(user, passwordHash, new DataAndStoredMetadata<>(update.root,updateMetadata)));
+            return microserviceResourceApi.updateCurrentFactory(new UserAwareRequest<>(user, passwordHash, updateMetadata));
         } catch (InternalServerErrorException e) {
             String respString = e.getResponse().readEntity(String.class);
             return new FactoryUpdateLog(respString);
         }
     }
 
-    public MergeDiffInfo<R> simulateUpdateCurrentFactory(DataAndStoredMetadata<R,S> update) {
+    public MergeDiffInfo<R> simulateUpdateCurrentFactory(DataUpdate<R> update) {
         return executeWidthServerExceptionReporting(()-> microserviceResourceApi.simulateUpdateCurrentFactory(new UserAwareRequest<>(user,passwordHash,update)));
     }
 
@@ -72,8 +68,8 @@ public class MicroserviceRestClient<V, R extends FactoryBase<?,V,R>,S> {
      *
      * @return new factory for editing, server assign new id for the update
      */
-    public DataAndStoredMetadata<R,S> prepareNewFactory() {
-        DataAndStoredMetadata<R,S> update = executeWidthServerExceptionReporting(()-> microserviceResourceApi.prepareNewFactory(new VoidUserAwareRequest(user,passwordHash)));
+    public DataUpdate<R> prepareNewFactory() {
+        DataUpdate<R> update = executeWidthServerExceptionReporting(()-> microserviceResourceApi.prepareNewFactory(new VoidUserAwareRequest(user,passwordHash)));
         update.root.internal().addBackReferences();
         if (factoryTreeBuilderBasedAttributeSetup!=null){
             factoryTreeBuilderBasedAttributeSetup.applyToRootFactoryDeep(update.root);

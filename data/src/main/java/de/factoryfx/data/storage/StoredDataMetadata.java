@@ -37,7 +37,7 @@ public class StoredDataMetadata<S> {
             @JsonProperty("comment")String comment,
             @JsonProperty("baseVersionId")String baseVersionId,
             @JsonProperty("changeSummary")S changeSummary,
-            @JsonProperty("generalStorageFormat") GeneralStorageMetadata generalStorageMetadata,
+            @JsonProperty("generalStorageMetadata") GeneralStorageMetadata generalStorageMetadata,
             @JsonProperty("dataStorageMetadataDictionary") DataStorageMetadataDictionary dataStorageMetadataDictionary) {
         this.creationTime = creationTime;
         this.id = id;

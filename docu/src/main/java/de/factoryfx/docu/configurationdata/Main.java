@@ -1,6 +1,6 @@
 package de.factoryfx.docu.configurationdata;
 
-import de.factoryfx.data.storage.DataAndStoredMetadata;
+import de.factoryfx.data.storage.DataUpdate;
 import de.factoryfx.factory.builder.FactoryTreeBuilder;
 import de.factoryfx.factory.builder.Scope;
 import de.factoryfx.jetty.JettyServerBuilder;
@@ -33,14 +33,14 @@ public class Main {
         microservice.start();
 
         {
-            DataAndStoredMetadata<RootFactory,Void> update = microservice.prepareNewFactory();
+            DataUpdate<RootFactory> update = microservice.prepareNewFactory();
             update.root.getResource(DatabaseResourceFactory.class).url.set("jdbc:postgresql://host/databasenew");
             microservice.updateCurrentFactory(update);
         }
 
         {
             MicroserviceRestClient<Void, RootFactory, Void> microserviceRestClient = MicroserviceRestClientBuilder.build("localhost", 8005, "", "", RootFactory.class);
-            DataAndStoredMetadata<RootFactory,Void> update = microserviceRestClient.prepareNewFactory();
+            DataUpdate<RootFactory> update = microserviceRestClient.prepareNewFactory();
             update.root.getResource(DatabaseResourceFactory.class).url.set("jdbc:postgresql://host/databasenew");
             microservice.updateCurrentFactory(update);
         }

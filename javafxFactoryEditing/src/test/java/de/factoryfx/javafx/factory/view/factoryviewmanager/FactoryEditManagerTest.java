@@ -47,7 +47,7 @@ public class FactoryEditManagerTest {
 
         MicroserviceRestClient<Void,ExampleFactoryA,Void> client = Mockito.mock(MicroserviceRestClient.class);
         Mockito.when(client.prepareNewFactory()).then(invocation -> microservice.prepareNewFactory());
-        Mockito.when(client.updateCurrentFactory(Mockito.any(DataAndStoredMetadata.class),Mockito.anyString())).then(invocation -> microservice.updateCurrentFactory(invocation.getArgument(0)));
+        Mockito.when(client.updateCurrentFactory(Mockito.any(DataUpdate.class),Mockito.anyString())).then(invocation -> microservice.updateCurrentFactory(invocation.getArgument(0)));
 
         FactoryEditManager<Void,ExampleFactoryA,Void> factoryEditManager = new FactoryEditManager<>(client, createDataMigrationManager());
         factoryEditManager.runLaterExecuter= Runnable::run;
@@ -131,9 +131,9 @@ public class FactoryEditManagerTest {
             MicroserviceRestClient<Void, ExampleFactoryA,Void> client = Mockito.mock(MicroserviceRestClient.class);
             Mockito.when(client.prepareNewFactory()).thenAnswer(invocation -> microservice.prepareNewFactory());
 
-            Mockito.when(client.updateCurrentFactory(Mockito.any(DataAndStoredMetadata.class),Mockito.anyString())).thenAnswer((Answer) invocation -> {
+            Mockito.when(client.updateCurrentFactory(Mockito.any(DataUpdate.class),Mockito.anyString())).thenAnswer((Answer) invocation -> {
                 Object[] args = invocation.getArguments();
-                return microservice.updateCurrentFactory((DataAndStoredMetadata<ExampleFactoryA,Void>) args[0]);
+                return microservice.updateCurrentFactory((DataUpdate<ExampleFactoryA>) args[0]);
             });
 
             FactoryEditManager<Void, ExampleFactoryA,Void> factoryEditManager = new FactoryEditManager<>(client, createDataMigrationManager());

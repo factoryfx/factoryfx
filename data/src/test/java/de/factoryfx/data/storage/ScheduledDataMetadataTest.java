@@ -8,46 +8,40 @@ import java.time.LocalDateTime;
 import java.util.concurrent.DelayQueue;
 import java.util.concurrent.TimeUnit;
 
-public class ScheduledDataMetadataTest {
-    private ScheduledDataMetadata<Void> createScheduledDataMetadata(LocalDateTime scheduled){
-        return new ScheduledDataMetadata<>(null,"","","","",null,null,null,scheduled);
+public class ScheduledDataMetadataTest {//ScheduledUpdateMetadata
+    private ScheduledUpdateMetadata createScheduledDataMetadata(LocalDateTime scheduled){
+        return new ScheduledUpdateMetadata("id","user","comment",scheduled,null,null);
     }
-
 
     @Test
     public void test_json(){
-
-        ScheduledDataMetadata scheduledDataMetadata =createScheduledDataMetadata(LocalDateTime.now());
-        ScheduledDataMetadata copy= ObjectMapperBuilder.build().copy(scheduledDataMetadata);
+        ScheduledUpdateMetadata scheduledDataMetadata =createScheduledDataMetadata(LocalDateTime.now());
+        ScheduledUpdateMetadata copy= ObjectMapperBuilder.build().copy(scheduledDataMetadata);
         Assert.assertEquals(scheduledDataMetadata.scheduled,copy.scheduled);
-
     }
 
     @Test
     public void test_delay(){
-
-        ScheduledDataMetadata scheduledDataMetadata = createScheduledDataMetadata(LocalDateTime.of(2000,1,1,1,1));
+        ScheduledUpdateMetadata scheduledDataMetadata = createScheduledDataMetadata(LocalDateTime.of(2000,1,1,1,1));
         Assert.assertTrue(scheduledDataMetadata.getDelay(TimeUnit.MILLISECONDS)<0);
 
-
-        ScheduledDataMetadata scheduledDataMetadata2 = createScheduledDataMetadata(LocalDateTime.of(2100,1,1,1,1));
+        ScheduledUpdateMetadata scheduledDataMetadata2 = createScheduledDataMetadata(LocalDateTime.of(2100,1,1,1,1));
         Assert.assertTrue(scheduledDataMetadata2.getDelay(TimeUnit.MILLISECONDS)>0);
     }
 
     @Test
     public void test_compare(){
+        ScheduledUpdateMetadata scheduledDataMetadataOld = createScheduledDataMetadata(LocalDateTime.of(2000,1,1,1,1));
 
-        ScheduledDataMetadata scheduledDataMetadataOld = createScheduledDataMetadata(LocalDateTime.of(2000,1,1,1,1));
-
-        ScheduledDataMetadata scheduledDataMetadataNew = createScheduledDataMetadata(LocalDateTime.of(2100,1,1,1,1));
+        ScheduledUpdateMetadata scheduledDataMetadataNew = createScheduledDataMetadata(LocalDateTime.of(2100,1,1,1,1));
 
         Assert.assertTrue(scheduledDataMetadataOld.compareTo(scheduledDataMetadataNew)<0);
     }
 
     @Test
     public void test_DelayQueue_past(){
-        DelayQueue<ScheduledDataMetadata> queue = new DelayQueue<>();
-        ScheduledDataMetadata scheduledDataMetadata = createScheduledDataMetadata(LocalDateTime.of(2000,1,1,1,1));
+        DelayQueue<ScheduledUpdateMetadata> queue = new DelayQueue<>();
+        ScheduledUpdateMetadata scheduledDataMetadata = createScheduledDataMetadata(LocalDateTime.of(2000,1,1,1,1));
         queue.offer(scheduledDataMetadata);
         Assert.assertEquals(1,queue.size());
         Assert.assertNotNull(queue.poll());
@@ -55,11 +49,11 @@ public class ScheduledDataMetadataTest {
 
     @Test
     public void test_DelayQueue_past_order(){
-        DelayQueue<ScheduledDataMetadata> queue = new DelayQueue<>();
+        DelayQueue<ScheduledUpdateMetadata> queue = new DelayQueue<>();
 
-        ScheduledDataMetadata scheduledDataMetadata1 = createScheduledDataMetadata(LocalDateTime.of(2000,1,1,1,1));
+        ScheduledUpdateMetadata scheduledDataMetadata1 = createScheduledDataMetadata(LocalDateTime.of(2000,1,1,1,1));
         queue.offer(scheduledDataMetadata1);
-        ScheduledDataMetadata scheduledDataMetadata2 = createScheduledDataMetadata(LocalDateTime.of(2000,1,1,1,2));
+        ScheduledUpdateMetadata scheduledDataMetadata2 = createScheduledDataMetadata(LocalDateTime.of(2000,1,1,1,2));
         queue.offer(scheduledDataMetadata2);
 
         Assert.assertEquals(2,queue.size());
@@ -70,8 +64,8 @@ public class ScheduledDataMetadataTest {
 
     @Test
     public void test_DelayQueue_future(){
-        DelayQueue<ScheduledDataMetadata> queue = new DelayQueue<>();
-        ScheduledDataMetadata scheduledDataMetadata = createScheduledDataMetadata(LocalDateTime.of(2100,1,1,1,1));
+        DelayQueue<ScheduledUpdateMetadata> queue = new DelayQueue<>();
+        ScheduledUpdateMetadata scheduledDataMetadata = createScheduledDataMetadata(LocalDateTime.of(2100,1,1,1,1));
         queue.offer(scheduledDataMetadata);
         Assert.assertEquals(1,queue.size());
         Assert.assertNull(queue.poll());

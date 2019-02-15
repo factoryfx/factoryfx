@@ -13,8 +13,11 @@ import de.factoryfx.factory.exception.ResettingHandler;
 import de.factoryfx.server.Microservice;
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.collections.ListChangeListener;
 import javafx.stage.Stage;
+import javafx.stage.Window;
 import org.controlsfx.dialog.ExceptionDialog;
+import org.controlsfx.glyphfont.GlyphFont;
 import org.eclipse.jetty.server.Server;
 import org.slf4j.LoggerFactory;
 
@@ -35,6 +38,16 @@ public class ExampleMain extends Application {
 //--add-exports=javafx.base/com.sun.javafx.collections=controlsfx
     @Override
     public void start(Stage primaryStage){
+//        Stage.getWindows().filtered(window -> window.isShowing()).forEach(window -> {
+//            window.getScene().getStylesheets().add()
+//        });
+
+        Stage.getWindows().addListener((ListChangeListener<Window>) window -> {
+            if (window.next()) {
+                window.getAddedSubList().forEach(w->w.getScene().getStylesheets().add(GlyphFont.class.getResource("glyphfont.css").toExternalForm()));
+            }
+        });
+
 
         FactoryTreeBuilder<OrderCollector, Server, ServerRootFactory, Void> serverBuilder = new ServerBuilder().builder();
         Microservice<OrderCollector, Server, ServerRootFactory, Void> microservice = serverBuilder.microservice().

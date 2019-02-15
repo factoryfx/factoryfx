@@ -9,25 +9,30 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.UUID;
 
 import javax.sql.DataSource;
 
 import com.google.common.io.CharStreams;
 import de.factoryfx.data.Data;
 import de.factoryfx.data.storage.*;
+import de.factoryfx.data.storage.migration.GeneralStorageMetadata;
 import de.factoryfx.data.storage.migration.MigrationManager;
 
 public class PostgresDataStorage<R extends Data, S> implements DataStorage<R, S> {
 
-    private final DataAndStoredMetadata<R,S> initialFactory;
+    private final R initialData;
     private final DataSource dataSource;
     private final MigrationManager<R,S> migrationManager;
+    private final GeneralStorageMetadata generalStorageMetadata;
 
-    public PostgresDataStorage(DataSource dataSource, DataAndStoredMetadata<R,S> initialFactory, MigrationManager<R,S> migrationManager){
-        this.dataSource     = dataSource;
-        this.initialFactory = initialFactory;
+    public PostgresDataStorage(DataSource dataSource, R initialDataParam, GeneralStorageMetadata generalStorageMetadata, MigrationManager<R,S> migrationManager){
+        this.dataSource = dataSource;
+        this.initialData = initialDataParam;
+        this.generalStorageMetadata = generalStorageMetadata;
         this.migrationManager = migrationManager;
     }
 
@@ -52,7 +57,7 @@ public class PostgresDataStorage<R extends Data, S> implements DataStorage<R, S>
                     try (ResultSet rs = pstmt.executeQuery()) {
                         if (!rs.next())
                             throw new IllegalArgumentException("No factory with id '"+id+"' found");
-                        return migrationManager.read(rs.getString(1),metaData);
+                        return migrationManager.read(rs.getString(1),metaData.generalStorageMetadata,metaData.dataStorageMetadataDictionary);
                     }
                 }
         } catch (SQLException e) {
@@ -89,12 +94,21 @@ public class PostgresDataStorage<R extends Data, S> implements DataStorage<R, S>
                     ResultSet rs = pstmt.executeQuery()) {
 
                     if (!rs.next()) {//"No current factory found
-                        updateCurrentFactory(connection,initialFactory);
+                        StoredDataMetadata<S> metadata = new StoredDataMetadata<>(LocalDateTime.now(),
+                                UUID.randomUUID().toString(),
+                                "System",
+                                "initial factory",
+                                UUID.randomUUID().toString(),
+                                null, generalStorageMetadata,
+                                initialData.internal().createDataStorageMetadataDictionaryFromRoot()
+                        );
+
+                        updateCurrentFactory(connection, new DataAndStoredMetadata<>(initialData,metadata));
                         connection.commit();
-                        return new DataAndId<>(initialFactory.root,initialFactory.metadata.id);
+                        return new DataAndId<>(initialData, metadata.id);
                     } else {
-                        StoredDataMetadata<S> storedDataMetadata = migrationManager.readStoredFactoryMetadata(rs.getString(2));
-                        return new DataAndId<>(migrationManager.read(rs.getString(1), storedDataMetadata), storedDataMetadata.id);
+                        StoredDataMetadata<S> metaData = migrationManager.readStoredFactoryMetadata(rs.getString(2));
+                        return new DataAndId<>(migrationManager.read(rs.getString(1), metaData.generalStorageMetadata,metaData.dataStorageMetadataDictionary), metaData.id);
                     }
 
                 }
@@ -106,11 +120,16 @@ public class PostgresDataStorage<R extends Data, S> implements DataStorage<R, S>
 
 
     @Override
-    public void updateCurrentFactory(DataAndStoredMetadata<R,S> update) {
+    public void updateCurrentFactory(DataUpdate<R> update, S changeSummary) {
+        StoredDataMetadata<S> metadata =update.createUpdateStoredDataMetadata(changeSummary,generalStorageMetadata);
+        update(update.root, metadata);
+    }
+
+    private void update(R update, StoredDataMetadata<S> metadata) {
         try {
             try (Connection connection = dataSource.getConnection()) {
                 ensureTablesAreAvailable(connection);
-                updateCurrentFactory(connection, update);
+                updateCurrentFactory(connection, new DataAndStoredMetadata<>(update,metadata));
                 connection.commit();
             }
         } catch (SQLException e) {
@@ -187,10 +206,10 @@ public class PostgresDataStorage<R extends Data, S> implements DataStorage<R, S>
     }
 
     @Override
-    public Collection<ScheduledDataMetadata<S>> getFutureFactoryList() {
+    public Collection<ScheduledUpdateMetadata> getFutureFactoryList() {
         try {
             try (Connection connection = dataSource.getConnection(); PreparedStatement pstmt = connection.prepareStatement("select cast (metadata as text) as metadata from futureconfigurationmetadata")) {
-                    ArrayList<ScheduledDataMetadata<S>> ret = new ArrayList<>();
+                    ArrayList<ScheduledUpdateMetadata> ret = new ArrayList<>();
                     try (ResultSet rs = pstmt.executeQuery()) {
                         while (rs.next()) {
                             ret.add(migrationManager.readScheduledFactoryMetadata(rs.getString(1)));
@@ -221,8 +240,8 @@ public class PostgresDataStorage<R extends Data, S> implements DataStorage<R, S>
     }
 
     public R getFutureFactory(String id) {
-        ScheduledDataMetadata<S> metaData=null;
-        for(ScheduledDataMetadata<S> historyMetaData: getFutureFactoryList()){
+        ScheduledUpdateMetadata metaData=null;
+        for(ScheduledUpdateMetadata historyMetaData: getFutureFactoryList()){
             if (historyMetaData.id.equals(id)){
                 metaData=historyMetaData;
             }
@@ -237,7 +256,7 @@ public class PostgresDataStorage<R extends Data, S> implements DataStorage<R, S>
                 try (ResultSet rs = pstmt.executeQuery()) {
                     if (!rs.next())
                         throw new IllegalArgumentException("No factory with id '"+id+"' found");
-                    return migrationManager.read(rs.getString(1),metaData);
+                    return migrationManager.read(rs.getString(1),metaData.generalStorageMetadata,metaData.dataStorageMetadataDictionary);
                 }
         } catch (SQLException e) {
             throw new RuntimeException("Cannot read future factory",e);
@@ -245,24 +264,34 @@ public class PostgresDataStorage<R extends Data, S> implements DataStorage<R, S>
     }
 
     @Override
-    public void addFutureFactory(DataAndScheduledMetadata<R,S> futureFactory) {
+    public void addFutureFactory(ScheduledUpdate<R> futureFactory) {
+
+        ScheduledUpdateMetadata scheduledUpdateMetadata =new ScheduledUpdateMetadata(
+                UUID.randomUUID().toString(),
+                futureFactory.user,
+                futureFactory.comment,
+                futureFactory.scheduled,
+                generalStorageMetadata,
+                futureFactory.root.internal().createDataStorageMetadataDictionaryFromRoot()
+        );
+
 
         try (Connection connection = this.dataSource.getConnection()) {
             ensureTablesAreAvailable(connection);
             long createdAt = System.currentTimeMillis();
             Timestamp createdAtTimestamp = new Timestamp(createdAt);
             try (PreparedStatement pstmtInsertConfigurationMetadata = connection.prepareStatement("insert into futureconfigurationmetadata (metadata, createdAt, id) values (cast (? as json), ?, ?)")) {
-                pstmtInsertConfigurationMetadata.setString(1, migrationManager.writeScheduledMetadata(futureFactory.metadata));
+                pstmtInsertConfigurationMetadata.setString(1, migrationManager.writeScheduledUpdateMetadata(scheduledUpdateMetadata));
                 pstmtInsertConfigurationMetadata.setTimestamp(2, createdAtTimestamp);
-                pstmtInsertConfigurationMetadata.setString(3,futureFactory.metadata.id);
+                pstmtInsertConfigurationMetadata.setString(3,scheduledUpdateMetadata.id);
                 pstmtInsertConfigurationMetadata.execute();
             }
 
             try (PreparedStatement pstmtInsertConfiguration = connection.prepareStatement("insert into futureconfiguration (root, metadata, createdAt, id) values (cast (? as json), cast (? as json), ?, ?)")) {
                 pstmtInsertConfiguration.setString(1, migrationManager.write(futureFactory.root));
-                pstmtInsertConfiguration.setString(2, migrationManager.writeScheduledMetadata(futureFactory.metadata));
+                pstmtInsertConfiguration.setString(2, migrationManager.writeScheduledUpdateMetadata(scheduledUpdateMetadata));
                 pstmtInsertConfiguration.setTimestamp(3, createdAtTimestamp);
-                pstmtInsertConfiguration.setString(4, futureFactory.metadata.id);
+                pstmtInsertConfiguration.setString(4, scheduledUpdateMetadata.id);
                 pstmtInsertConfiguration.execute();
             }
 

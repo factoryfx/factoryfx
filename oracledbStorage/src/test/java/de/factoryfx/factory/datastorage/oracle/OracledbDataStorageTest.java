@@ -1,6 +1,7 @@
 package de.factoryfx.factory.datastorage.oracle;
 
 import de.factoryfx.data.storage.DataAndStoredMetadata;
+import de.factoryfx.data.storage.DataUpdate;
 import de.factoryfx.data.storage.StoredDataMetadata;
 import de.factoryfx.data.storage.migration.GeneralStorageMetadata;
 import de.factoryfx.data.storage.migration.GeneralStorageMetadataBuilder;
@@ -10,32 +11,27 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 public class OracledbDataStorageTest extends DatabaseTest{
 
-    private DataAndStoredMetadata<ExampleFactoryA,Void> createInitialExampleFactoryA() {
+    private ExampleFactoryA createInitialExampleFactoryA() {
         ExampleFactoryA exampleFactoryA = new ExampleFactoryA();
-        GeneralStorageMetadata generalStorageMetadata = GeneralStorageMetadataBuilder.build();
-        DataStorageMetadataDictionary dataStorageMetadataDictionary = new DataStorageMetadataDictionary(Set.of(exampleFactoryA.getClass()));
-        DataAndStoredMetadata<ExampleFactoryA,Void> initialFactoryAndStorageMetadata = new DataAndStoredMetadata<>(exampleFactoryA,
-                new StoredDataMetadata<>(LocalDateTime.now(),
-                        UUID.randomUUID().toString(),
-                        "System",
-                        "initial factory",
-                        UUID.randomUUID().toString(),
-                        null, generalStorageMetadata,
-                        dataStorageMetadataDictionary
-                )
-        );
-        return initialFactoryAndStorageMetadata;
+        exampleFactoryA.stringAttribute.set("initial");
+        exampleFactoryA.internal().addBackReferences();
+        return exampleFactoryA;
+    }
+
+    private DataUpdate<ExampleFactoryA> createUpdate() {
+        ExampleFactoryA exampleFactoryA = new ExampleFactoryA();
+        exampleFactoryA.stringAttribute.set("update");
+        exampleFactoryA.internal().addBackReferences();
+        return new DataUpdate<>(exampleFactoryA,"user","comment","123");
     }
 
     @Test
     public void test_init_no_existing_factory() {
-        OracledbDataStorage<ExampleFactoryA,Void> oracledbFactoryStorage = new OracledbDataStorage<>(connectionSupplier, createInitialExampleFactoryA(), createMigrationManager());
+        OracledbDataStorage<ExampleFactoryA,Void> oracledbFactoryStorage = new OracledbDataStorage<>(connectionSupplier, createInitialExampleFactoryA(), GeneralStorageMetadataBuilder.build(), createMigrationManager());
         oracledbFactoryStorage.getCurrentFactory();
 
         Assert.assertEquals(1,oracledbFactoryStorage.getHistoryFactoryList().size());
@@ -43,38 +39,26 @@ public class OracledbDataStorageTest extends DatabaseTest{
 
     @Test
     public void test_init_existing_factory() {
-        OracledbDataStorage<ExampleFactoryA,Void> oracledbFactoryStorage = new OracledbDataStorage<>(connectionSupplier, createInitialExampleFactoryA(), createMigrationManager());
+        OracledbDataStorage<ExampleFactoryA,Void> oracledbFactoryStorage = new OracledbDataStorage<>(connectionSupplier, createInitialExampleFactoryA(), GeneralStorageMetadataBuilder.build(), createMigrationManager());
         String id=oracledbFactoryStorage.getCurrentFactory().id;
 
-        OracledbDataStorage<ExampleFactoryA,Void> restored = new OracledbDataStorage<>(connectionSupplier,null, createMigrationManager());
+        OracledbDataStorage<ExampleFactoryA,Void> restored = new OracledbDataStorage<>(connectionSupplier,null, GeneralStorageMetadataBuilder.build(), createMigrationManager());
         Assert.assertEquals(id,restored.getCurrentFactory().id);
     }
 
     @Test
     public void test_update()  {
-        OracledbDataStorage<ExampleFactoryA,Void> oracledbFactoryStorage = new OracledbDataStorage<>(connectionSupplier, createInitialExampleFactoryA(), createMigrationManager());
-        DataAndStoredMetadata<ExampleFactoryA, Void> currentFactory = createInitialExampleFactoryA();
-        String id=  oracledbFactoryStorage.getCurrentFactory().id;
-
-        StoredDataMetadata<Void> updateMetadata = new StoredDataMetadata<>(LocalDateTime.now(),
-                UUID.randomUUID().toString(),
-                "user",
-                "update",
-                currentFactory.metadata.id,
-                null,
-                currentFactory.metadata.generalStorageMetadata,
-                currentFactory.metadata.dataStorageMetadataDictionary
-        );
-        oracledbFactoryStorage.updateCurrentFactory(new DataAndStoredMetadata<>(new ExampleFactoryA(),updateMetadata));
-        Assert.assertNotEquals(id,oracledbFactoryStorage.getCurrentFactory() .id);
+        OracledbDataStorage<ExampleFactoryA,Void> oracledbFactoryStorage = new OracledbDataStorage<>(connectionSupplier, createInitialExampleFactoryA(), GeneralStorageMetadataBuilder.build(), createMigrationManager());
+        oracledbFactoryStorage.getCurrentFactory();//usually called in preparenew
+        Assert.assertEquals(1,oracledbFactoryStorage.getHistoryFactoryList().size());
+        oracledbFactoryStorage.updateCurrentFactory(createUpdate(),null);
         Assert.assertEquals(2,oracledbFactoryStorage.getHistoryFactoryList().size());
 
-        HashSet<String> ids= new HashSet<>();
-        oracledbFactoryStorage.getHistoryFactoryList().forEach(storedFactoryMetadata -> {
-            ids.add(storedFactoryMetadata.id);
-        });
-        Assert.assertTrue(ids.contains(id));
-
+        StoredDataMetadata<Void> storedDataMetadata = new ArrayList<>(oracledbFactoryStorage.getHistoryFactoryList()).get(1);
+        Assert.assertEquals("update", oracledbFactoryStorage.getHistoryFactory(storedDataMetadata.id).stringAttribute.get());
+        Assert.assertEquals("update", oracledbFactoryStorage.getCurrentFactory().root.stringAttribute.get());
+        StoredDataMetadata<Void> storedDataMetadataFirst = new ArrayList<>(oracledbFactoryStorage.getHistoryFactoryList()).get(0);
+        Assert.assertEquals("initial", oracledbFactoryStorage.getHistoryFactory(storedDataMetadataFirst.id).stringAttribute.get());
     }
 
 }

@@ -1,6 +1,6 @@
 package de.factoryfx.docu.persistentstorage;
 
-import de.factoryfx.data.storage.DataAndStoredMetadata;
+import de.factoryfx.data.storage.DataUpdate;
 import de.factoryfx.factory.builder.FactoryTreeBuilder;
 import de.factoryfx.factory.builder.Scope;
 import de.factoryfx.factory.datastorage.postgres.DisableAutocommitDatasource;
@@ -42,22 +42,22 @@ public class Main {
             root.stringAttribute.set("1");
             return root;
         });
-        Microservice<Void, Root, RootFactory, Void> microservice = builder.microservice().withStorage((initialFactory, migrationManager) -> {
-            return new PostgresDataStorage<>(datasource, initialFactory, migrationManager);
+        Microservice<Void, Root, RootFactory, Void> microservice = builder.microservice().withStorage((initialFactory, migrationManager, generalStorageMetadata) -> {
+            return new PostgresDataStorage<>(datasource, initialFactory, migrationManager, generalStorageMetadata);
         }).build();
         microservice.start();
 
         //output is 1 from initial factory
 
-        DataAndStoredMetadata<RootFactory,Void> update = microservice.prepareNewFactory();
+        DataUpdate<RootFactory> update = microservice.prepareNewFactory();
         update.root.stringAttribute.set("2");
         microservice.updateCurrentFactory(update);
         //output is 2 from initial factory
 
         microservice.stop();
 
-        Microservice<Void, Root, RootFactory,Void> newMicroservice = builder.microservice().withStorage((initialFactory, migrationManager) -> {
-            return new PostgresDataStorage<>(datasource, initialFactory, migrationManager);
+        Microservice<Void, Root, RootFactory,Void> newMicroservice = builder.microservice().withStorage((initialFactory, migrationManager, generalStorageMetadata) -> {
+            return new PostgresDataStorage<>(datasource, initialFactory, migrationManager, generalStorageMetadata);
         }).build();
         newMicroservice.start();
         //output is 2 again from the saved update

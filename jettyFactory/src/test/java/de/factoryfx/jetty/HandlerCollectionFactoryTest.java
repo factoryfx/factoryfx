@@ -6,6 +6,7 @@ import de.factoryfx.data.attribute.primitive.IntegerAttribute;
 import de.factoryfx.data.attribute.types.EnumListAttribute;
 import de.factoryfx.data.attribute.types.StringListAttribute;
 import de.factoryfx.data.storage.DataAndStoredMetadata;
+import de.factoryfx.data.storage.DataUpdate;
 import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.factory.PolymorphicFactoryBase;
 import de.factoryfx.factory.SimpleFactoryBase;
@@ -97,7 +98,7 @@ public class HandlerCollectionFactoryTest {
         microservice.start();
         try {
 
-            DataAndStoredMetadata<HandlerCollectionRootFactory,Void> update = microservice.prepareNewFactory();
+            DataUpdate<HandlerCollectionRootFactory> update = microservice.prepareNewFactory();
             update.root.server.get().handler.get().handlers.add(new CustomHandlerFactory<>());
             microservice.updateCurrentFactory(update);
 
@@ -129,7 +130,7 @@ public class HandlerCollectionFactoryTest {
                 Assert.assertEquals(200, response.statusCode());
             }
 
-            DataAndStoredMetadata<HandlerCollectionRootFactory,Void> update = microservice.prepareNewFactory();
+            DataUpdate<HandlerCollectionRootFactory> update = microservice.prepareNewFactory();
             update.root.server.get().handler.get().handlers.clear();
             microservice.updateCurrentFactory(update);
 
