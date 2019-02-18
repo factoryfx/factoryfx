@@ -40,7 +40,7 @@ public class Microservice<V,L,R extends FactoryBase<L,V,R>,S> {
 
     public FactoryUpdateLog<R> revertTo(StoredDataMetadata<S> storedDataMetadata, String user) {
         R historyFactory = getHistoryFactory(storedDataMetadata.id);
-        DataAndId<R> currentFactory = dataStorage.getCurrentFactory();
+        DataAndId<R> currentFactory = dataStorage.getCurrentData();
         return updateCurrentFactory(new DataUpdate<>(
                 historyFactory,
                 user,
@@ -50,7 +50,7 @@ public class Microservice<V,L,R extends FactoryBase<L,V,R>,S> {
     }
 
     public FactoryUpdateLog<R> updateCurrentFactory(DataUpdate<R> update) {
-        R commonVersion = dataStorage.getHistoryFactory(update.baseVersionId);
+        R commonVersion = dataStorage.getHistoryData(update.baseVersionId);
         FactoryUpdateLog<R> factoryLog = factoryManager.update(commonVersion,update.root, update.permissionChecker);
         if (!factoryLog.failedUpdate() && factoryLog.successfullyMerged()){
 
@@ -66,14 +66,14 @@ public class Microservice<V,L,R extends FactoryBase<L,V,R>,S> {
                     update.comment,
                     update.baseVersionId
             );
-            dataStorage.updateCurrentFactory(updateAfterMerge,changeSummary);
+            dataStorage.updateCurrentData(updateAfterMerge,changeSummary);
         }
         return factoryLog;
     }
 
 
     public MergeDiffInfo<R> simulateUpdateCurrentFactory(DataUpdate<R> possibleUpdate){
-        R commonVersion = dataStorage.getHistoryFactory(possibleUpdate.baseVersionId);
+        R commonVersion = dataStorage.getHistoryData(possibleUpdate.baseVersionId);
         return factoryManager.simulateUpdate(commonVersion , possibleUpdate.root, possibleUpdate.permissionChecker);
     }
 
@@ -90,7 +90,7 @@ public class Microservice<V,L,R extends FactoryBase<L,V,R>,S> {
      *  @return new possible factory update with prepared ids/metadata
      * */
     public DataUpdate<R> prepareNewFactory(String user, String comment) {
-        DataAndId<R> currentFactory = dataStorage.getCurrentFactory();
+        DataAndId<R> currentFactory = dataStorage.getCurrentData();
         DataUpdate<R> update = new DataUpdate<>(
                 currentFactory.root.utility().copy(),
                 user,
@@ -101,19 +101,19 @@ public class Microservice<V,L,R extends FactoryBase<L,V,R>,S> {
 
 
     public R getHistoryFactory(String id) {
-        return dataStorage.getHistoryFactory(id);
+        return dataStorage.getHistoryData(id);
     }
 
     private R getPreviousHistoryFactory(String id) {
-        return dataStorage.getPreviousHistoryFactory(id);
+        return dataStorage.getPreviousHistoryData(id);
     }
 
     public Collection<StoredDataMetadata<S>> getHistoryFactoryList() {
-        return dataStorage.getHistoryFactoryList();
+        return dataStorage.getHistoryDataList();
     }
 
     public L start() {
-        final DataAndId<R> currentFactory = dataStorage.getCurrentFactory();
+        final DataAndId<R> currentFactory = dataStorage.getCurrentData();
         currentFactory.root.internalFactory().setMicroservice(this);//also mind ExceptionResponseAction#reset
         return factoryManager.start(new RootFactoryWrapper<>(currentFactory.root));
     }

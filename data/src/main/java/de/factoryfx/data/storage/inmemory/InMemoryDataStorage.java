@@ -2,8 +2,10 @@ package de.factoryfx.data.storage.inmemory;
 
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import de.factoryfx.data.Data;
 import de.factoryfx.data.storage.*;
 
@@ -27,23 +29,23 @@ public class InMemoryDataStorage<R extends Data,S> implements DataStorage<R,S> {
     }
 
     @Override
-    public R getHistoryFactory(String id) {
+    public R getHistoryData(String id) {
         DataAndStoredMetadata<R,S> data = storage.get(id);
         return data.root.utility().copy();
     }
 
     @Override
-    public Collection<StoredDataMetadata<S>> getHistoryFactoryList() {
+    public Collection<StoredDataMetadata<S>> getHistoryDataList() {
         return storage.values().stream().map(item -> item.metadata).collect(Collectors.toList());
     }
 
     @Override
-    public DataAndId<R> getCurrentFactory() {
+    public DataAndId<R> getCurrentData() {
         return new DataAndId<>(storage.get(currentFactoryId).root.internal().copy(),currentFactoryId);
     }
 
     @Override
-    public void updateCurrentFactory(DataUpdate<R> update, S changeSummary) {
+    public void updateCurrentData(DataUpdate<R> update, S changeSummary) {
         StoredDataMetadata<S> metadata = new StoredDataMetadata<>(LocalDateTime.now(),
                 UUID.randomUUID().toString(),
                 update.user,
@@ -58,7 +60,17 @@ public class InMemoryDataStorage<R extends Data,S> implements DataStorage<R,S> {
     }
 
     @Override
-    public Collection<ScheduledUpdateMetadata> getFutureFactoryList() {
+    public void patchAll(DataStoragePatcher consumer) {
+        throw new UnsupportedOperationException("in memory format can't be outdated");
+    }
+
+    @Override
+    public void patchCurrentData(DataStoragePatcher consumer) {
+        throw new UnsupportedOperationException("in memory format can't be outdated");
+    }
+
+    @Override
+    public Collection<ScheduledUpdateMetadata> getFutureDataList() {
         ArrayList<ScheduledUpdateMetadata> result = new ArrayList<>();
         for (Map.Entry<String, ScheduledUpdate<R>> entry : future.entrySet()) {
             result.add(new ScheduledUpdateMetadata(
@@ -72,17 +84,17 @@ public class InMemoryDataStorage<R extends Data,S> implements DataStorage<R,S> {
     }
 
     @Override
-    public void deleteFutureFactory(String id) {
+    public void deleteFutureData(String id) {
         future.remove(id);
     }
 
-    public R getFutureFactory(String id) {
+    public R getFutureData(String id) {
         ScheduledUpdate<R> data = future.get(id);
         return data.root.internal().copy();
     }
 
     @Override
-    public void addFutureFactory(ScheduledUpdate<R> futureFactory) {
+    public void addFutureData(ScheduledUpdate<R> futureFactory) {
         future.put(UUID.randomUUID().toString(), futureFactory);
     }
 

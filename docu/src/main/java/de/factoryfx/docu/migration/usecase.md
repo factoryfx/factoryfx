@@ -7,6 +7,7 @@ There are 3 Layers of Migrations
 * **Data structure**<br> Structure of the Factories e.g.: attributes name, factory names
 * **Data populations**<br> Data content changes
 
+![aoverview](overview.png)
 ## Data storage format migration
 ```json
 {
@@ -23,17 +24,21 @@ This unusual structure in an example for the structure format.
 (Most of the structure is required for Jackson or workaround for Jackson limitations)
 The structure format is mostly stable but may change if, for example Jackson adds a new useful feature in the future.
 
-Data storage format migration can be added to a microservice with MicroserviceBuilder#withGeneralMigration and MicroserviceBuilder#withGeneralStorageMetadata
+Data storage format migration can be added to a microservice with 
+```java 
+MicroserviceBuilder#withGeneralMigration
+MicroserviceBuilder#withGeneralStorageMetadata
+```
 This should hardly be necessary in practice.
 
 ## Data structure migration
 The more common case are refactorings in the factory structure. (comparable to refactoring operations in the IDE)
 ```java
 public class ExampleFactory extends SimpleFactoryBase<Void,Void,ExampleFactory> {
-    public final StringAttribute oldAttribute= new StringAttribute().labelText("123");
+    public final StringAttribute oldAttribute= new StringAttribute();
 }
 public class ExampleFactory extends SimpleFactoryBase<Void,Void,ExampleFactory> {
-    public final StringAttribute newAttribute= new StringAttribute().labelText("123");
+    public final StringAttribute newAttribute= new StringAttribute();
 }
 ```
 In this example the for attribute is renamed from "oldAttribute" to "newAttribute".
@@ -47,11 +52,19 @@ withDataMigration(
 ```
 This adds a rename migration. To support multiple renames the new name is provided with a lambada expression and thereby enables IDE refactoring for the migrations. This also prevents rename cycles.
 
-## One time migration
-Migration is executed on the fly. advantage faulty migration can't destroy old data
-
 ## Data populations
 There is no framework support for data populations because it's too project specific.
+
+
+## Special case: One time migration
+Normally the migration are executed on the fly when the data is loaded from memory. 
+This has the advantage that a faulty migration can't destroy old data. Mistakes in the migration code are easier to fix because you don't have repair data. 
+
+In some cases it can be convenient to execute a one time migration. For that case the storage api has a special api.
+
+The mayor difference of a one time migration is that the data are updated in the storage after the migration. 
+
+
 
 ## Example
 [**code**](https://github.com/factoryfx/factoryfx/tree/master/docu/src/main/java/de/factoryfx/docu/migration)

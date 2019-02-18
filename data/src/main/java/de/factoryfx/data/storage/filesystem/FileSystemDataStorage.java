@@ -8,7 +8,9 @@ import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.UUID;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import de.factoryfx.data.Data;
+import de.factoryfx.data.jackson.SimpleObjectMapper;
 import de.factoryfx.data.storage.*;
 import de.factoryfx.data.storage.migration.GeneralStorageMetadata;
 import de.factoryfx.data.storage.migration.MigrationManager;
@@ -21,8 +23,9 @@ public class FileSystemDataStorage<R extends Data,S> implements DataStorage<R,S>
     private final Path currentFactoryPathMetadata;
     private final MigrationManager<R,S> migrationManager;
     private final GeneralStorageMetadata generalStorageMetadata;
+    private final SimpleObjectMapper objectMapper;
 
-    public FileSystemDataStorage(Path basePath, R initialData, GeneralStorageMetadata generalStorageMetadata, MigrationManager<R,S> migrationManager, FileSystemFactoryStorageHistory<R,S> fileSystemFactoryStorageHistory){
+    public FileSystemDataStorage(Path basePath, R initialData, GeneralStorageMetadata generalStorageMetadata, MigrationManager<R,S> migrationManager, FileSystemFactoryStorageHistory<R,S> fileSystemFactoryStorageHistory, SimpleObjectMapper objectMapper){
         this.initialData = initialData;
         this.generalStorageMetadata=generalStorageMetadata;
 
@@ -33,52 +36,53 @@ public class FileSystemDataStorage<R extends Data,S> implements DataStorage<R,S>
         currentFactoryPathMetadata= Paths.get(basePath.toString()+"/currentFactory_metadata.json");
         this.fileSystemFactoryStorageHistory=fileSystemFactoryStorageHistory;
         this.migrationManager = migrationManager;
+        this.objectMapper = objectMapper;
 
     }
 
-    public FileSystemDataStorage(Path basePath, R initialData, GeneralStorageMetadata generalStorageMetadata, MigrationManager<R,S> migrationManager){
-        this(basePath, initialData, generalStorageMetadata, migrationManager,new FileSystemFactoryStorageHistory<>(basePath, migrationManager));
+    public FileSystemDataStorage(Path basePath, R initialData, GeneralStorageMetadata generalStorageMetadata, MigrationManager<R,S> migrationManager, SimpleObjectMapper objectMapper){
+        this(basePath, initialData, generalStorageMetadata, migrationManager,new FileSystemFactoryStorageHistory<>(basePath, migrationManager),objectMapper);
     }
 
     @Override
-    public R getHistoryFactory(String id) {
+    public R getHistoryData(String id) {
         return fileSystemFactoryStorageHistory.getHistoryFactory(id);
     }
 
     @Override
-    public Collection<StoredDataMetadata<S>> getHistoryFactoryList() {
+    public Collection<StoredDataMetadata<S>> getHistoryDataList() {
         return fileSystemFactoryStorageHistory.getHistoryFactoryList();
     }
 
     @Override
-    public Collection<ScheduledUpdateMetadata> getFutureFactoryList() {
+    public Collection<ScheduledUpdateMetadata> getFutureDataList() {
         throw new UnsupportedOperationException();//TODO
     }
 
     @Override
-    public void deleteFutureFactory(String id) {
+    public void deleteFutureData(String id) {
         throw new UnsupportedOperationException();//TODO
     }
 
     @Override
-    public R getFutureFactory(String id) {
+    public R getFutureData(String id) {
         throw new UnsupportedOperationException();//TODO
     }
 
     @Override
-    public void addFutureFactory(ScheduledUpdate<R> futureFactory) {
+    public void addFutureData(ScheduledUpdate<R> futureFactory) {
         throw new UnsupportedOperationException();//TODO
     }
 
     @Override
-    public DataAndId<R> getCurrentFactory() {
+    public DataAndId<R> getCurrentData() {
         loadInitialFactory();
         StoredDataMetadata<S> storedDataMetadata = migrationManager.readStoredFactoryMetadata(readFile(currentFactoryPathMetadata));
         return new DataAndId<>(migrationManager.read(readFile(currentFactoryPath), storedDataMetadata.generalStorageMetadata,storedDataMetadata.dataStorageMetadataDictionary), storedDataMetadata.id);
     }
 
     @Override
-    public void updateCurrentFactory(DataUpdate<R> update, S changeSummary) {
+    public void updateCurrentData(DataUpdate<R> update, S changeSummary) {
         StoredDataMetadata<S> metadata = new StoredDataMetadata<>(
                 UUID.randomUUID().toString(),
                 update.user,
@@ -88,6 +92,21 @@ public class FileSystemDataStorage<R extends Data,S> implements DataStorage<R,S>
                 generalStorageMetadata,
                 update.root.internal().createDataStorageMetadataDictionaryFromRoot());
         update(update.root, metadata);
+    }
+
+    @Override
+    public void patchAll(DataStoragePatcher consumer) {
+        patchCurrentData(consumer);
+        fileSystemFactoryStorageHistory.patchAll(consumer, objectMapper);
+    }
+
+    @Override
+    public void patchCurrentData(DataStoragePatcher consumer) {
+        JsonNode data = objectMapper.readTree(currentFactoryPath);
+        JsonNode metadata = objectMapper.readTree(currentFactoryPathMetadata);
+        consumer.patch(data,metadata);
+        writeFile(currentFactoryPath, objectMapper.writeTree(data));
+        writeFile(currentFactoryPathMetadata, objectMapper.writeTree(metadata));
     }
 
     private void update(R update, StoredDataMetadata<S> metadata) {

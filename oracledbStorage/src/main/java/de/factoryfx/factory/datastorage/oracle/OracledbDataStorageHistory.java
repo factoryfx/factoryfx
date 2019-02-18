@@ -1,6 +1,9 @@
 package de.factoryfx.factory.datastorage.oracle;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import de.factoryfx.data.Data;
+import de.factoryfx.data.jackson.SimpleObjectMapper;
+import de.factoryfx.data.storage.DataStoragePatcher;
 import de.factoryfx.data.storage.migration.MigrationManager;
 import de.factoryfx.data.storage.StoredDataMetadata;
 
@@ -83,4 +86,37 @@ public class OracledbDataStorageHistory<R extends Data,S> {
     }
 
 
+    public void patchAll(DataStoragePatcher consumer, SimpleObjectMapper objectMapper) {
+
+        try (Connection connection= connectionSupplier.get()){
+            connection.setAutoCommit(false);
+            try (Statement statement = connection.createStatement()) {
+                String sql = "SELECT * FROM FACTORY_HISTORY";
+
+                try (ResultSet resultSet = statement.executeQuery(sql)) {
+                    while (resultSet.next()) {
+                        String dataString = JdbcUtil.readStringFromBlob(resultSet, "factory");
+                        String metadataString = JdbcUtil.readStringFromBlob(resultSet, "factoryMetadata");
+
+                        JsonNode data = objectMapper.readTree(dataString);
+                        JsonNode metadata = objectMapper.readTree(metadataString);
+                        consumer.patch(data,metadata);
+                        String metadataId=metadata.get("id").asText();
+
+                        try (PreparedStatement updateStatement = connection.prepareStatement("UPDATE FACTORY_HISTORY SET factory=?,factoryMetadata=? WHERE id=?")) {
+                            JdbcUtil.writeStringToBlob(objectMapper.writeTree(data),updateStatement,1);
+                            JdbcUtil.writeStringToBlob(objectMapper.writeTree(metadata),updateStatement,2);
+                            updateStatement.setString(3, metadataId);
+                            updateStatement.executeUpdate();
+                        } catch (SQLException e1) {
+                            throw new RuntimeException(e1);
+                        }
+                    }
+                }
+            }
+            connection.commit();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

@@ -45,7 +45,7 @@ public class MicroserviceBuilder<V,L,R extends FactoryBase<L,V,R>,S> {
 
     public Microservice<V,L,R,S> build(){
         if (dataStorageCreator ==null) {
-            dataStorageCreator =(initialData, metadata, migrationManager)->new InMemoryDataStorage<>(initialData);
+            dataStorageCreator =(initialData, metadata, migrationManager, objectMapper)->new InMemoryDataStorage<>(initialData);
         }
         if (factoryExceptionHandler == null) {
             factoryExceptionHandler = new RethrowingFactoryExceptionHandler();
@@ -60,7 +60,7 @@ public class MicroserviceBuilder<V,L,R extends FactoryBase<L,V,R>,S> {
         }
 
         MigrationManager<R,S> migrationManager = new MigrationManager<>(rootClass, generalStorageFormatMigrations, generalStorageMetadata, dataMigrationManager, objectMapper);
-        return new Microservice<>(new FactoryManager<>(factoryExceptionHandler), dataStorageCreator.createDataStorage(initialFactory,generalStorageMetadata, migrationManager),changeSummaryCreator, generalStorageMetadata);
+        return new Microservice<>(new FactoryManager<>(factoryExceptionHandler), dataStorageCreator.createDataStorage(initialFactory,generalStorageMetadata, migrationManager, objectMapper),changeSummaryCreator, generalStorageMetadata);
     }
 
     /**
@@ -89,7 +89,7 @@ public class MicroserviceBuilder<V,L,R extends FactoryBase<L,V,R>,S> {
      * @return builder
      */
     public MicroserviceBuilder<V,L,R,S> withFilesystemStorage(Path path){
-        dataStorageCreator =(initialData, generalStorageMetadata, migrationManager)->new FileSystemDataStorage<>(path, initialData, generalStorageMetadata, migrationManager);
+        dataStorageCreator =(initialData, generalStorageMetadata, migrationManager, objectMapper)->new FileSystemDataStorage<>(path, initialData, generalStorageMetadata, migrationManager, objectMapper);
         return this;
     }
 

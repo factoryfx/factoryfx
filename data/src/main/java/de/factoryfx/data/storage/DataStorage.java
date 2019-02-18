@@ -1,9 +1,9 @@
 package de.factoryfx.data.storage;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -18,45 +18,57 @@ import de.factoryfx.data.Data;
  */
 public interface DataStorage<R extends Data, S> {
 
-    R getHistoryFactory(String id);
+    R getHistoryData(String id);
 
-    default R getPreviousHistoryFactory(String id) {
-        Collection<StoredDataMetadata<S>> historyFactoryList = getHistoryFactoryList();
-        if (historyFactoryList.isEmpty())
+    default R getPreviousHistoryData(String id) {
+        Collection<StoredDataMetadata<S>> historyDataList = getHistoryDataList();
+        if (historyDataList.isEmpty())
             return null;
-        List<StoredDataMetadata> historyFactoryListSorted = historyFactoryList.stream().sorted(Comparator.comparing(h -> h.creationTime)).collect(Collectors.toList());
-        for (int i=0;i<historyFactoryListSorted.size();i++) {
-            if (historyFactoryListSorted.get(i).id.equals(id) && i-1>=0) {
-                return getHistoryFactory(historyFactoryListSorted.get(i - 1).id);
+        List<StoredDataMetadata> historyDataListSorted = historyDataList.stream().sorted(Comparator.comparing(h -> h.creationTime)).collect(Collectors.toList());
+        for (int i=0;i<historyDataListSorted.size();i++) {
+            if (historyDataListSorted.get(i).id.equals(id) && i-1>=0) {
+                return getHistoryData(historyDataListSorted.get(i - 1).id);
             }
         }
         return null;
     }
 
-    Collection<StoredDataMetadata<S>> getHistoryFactoryList();
+    Collection<StoredDataMetadata<S>> getHistoryDataList();
 
-    Collection<ScheduledUpdateMetadata> getFutureFactoryList();
+    Collection<ScheduledUpdateMetadata> getFutureDataList();
 
-    void deleteFutureFactory(String id);
+    void deleteFutureData(String id);
 
-    R getFutureFactory(String id);
+    R getFutureData(String id);
 
     /**
-     * @param futureFactory futureFactory
-     * @return the added factory metadata
+     * @param futureData futureData
      */
-    void addFutureFactory(ScheduledUpdate<R> futureFactory);
+    void addFutureData(ScheduledUpdate<R> futureData);
 
     /**
-     * get the current factory, if first start or no available an initial factory is created
-     * @return current factory
+     * get the current data, if first start or no available an initial data is created
+     * @return current data
      * */
-    DataAndId<R> getCurrentFactory();
+    DataAndId<R> getCurrentData();
 
     /**
-     * updateCurrentFactory and history
+     * updateCurrentData and history
      * @param update update
      */
-    void updateCurrentFactory(DataUpdate<R> update, S changeSummary);
+    void updateCurrentData(DataUpdate<R> update, S changeSummary);
+
+    /**
+     * for one-time migration
+     * apply patch to all stored data including history
+     */
+    void patchAll(DataStoragePatcher consumer);
+
+    /**
+     * for one-time migration
+     * apply patch to current data
+     */
+    void patchCurrentData(DataStoragePatcher consumer);
+
 
 }

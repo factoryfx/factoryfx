@@ -170,9 +170,9 @@ public class FactoryManagerExceptionResetTest {
 
         Assert.assertEquals(2,root.destroyCalls.size());//1 for the stop and 1 for the reset
 
-//        Assert.assertEquals(1,factoryManager.getCurrentFactory().createCalls.size());
-//        Assert.assertEquals(1,factoryManager.getCurrentFactory().startCalls.size());
-//        Assert.assertEquals(1,factoryManager.getCurrentFactory().internal().collectChildrenDeep().size());//the update is reverted
+//        Assert.assertEquals(1,factoryManager.getCurrentData().createCalls.size());
+//        Assert.assertEquals(1,factoryManager.getCurrentData().startCalls.size());
+//        Assert.assertEquals(1,factoryManager.getCurrentData().internal().collectChildrenDeep().size());//the update is reverted
     }
 
 

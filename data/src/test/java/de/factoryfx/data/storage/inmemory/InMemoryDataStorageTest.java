@@ -1,17 +1,12 @@
 package de.factoryfx.data.storage.inmemory;
 
 import java.time.LocalDateTime;
-import java.util.UUID;
 
 import de.factoryfx.data.Data;
 import de.factoryfx.data.attribute.types.StringAttribute;
 import de.factoryfx.data.merge.testdata.ExampleDataA;
 import de.factoryfx.data.storage.DataUpdate;
 import de.factoryfx.data.storage.ScheduledUpdate;
-import de.factoryfx.data.storage.DataAndStoredMetadata;
-import de.factoryfx.data.storage.StoredDataMetadata;
-import de.factoryfx.data.storage.migration.GeneralStorageMetadata;
-import de.factoryfx.data.storage.migration.GeneralStorageMetadataBuilder;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -35,21 +30,21 @@ public class InMemoryDataStorageTest {
         Dummy dummy = new Dummy();
         InMemoryDataStorage<Dummy,Void> fileSystemFactoryStorage = new InMemoryDataStorage<>(dummy);
 
-        Assert.assertNotNull(fileSystemFactoryStorage.getCurrentFactory());
+        Assert.assertNotNull(fileSystemFactoryStorage.getCurrentData());
     }
 
     @Test
     public void test_update() {
         InMemoryDataStorage<ExampleDataA,Void> inMemoryDataStorage = new InMemoryDataStorage<>(new ExampleDataA());
 
-        inMemoryDataStorage.getCurrentFactory();
-        Assert.assertEquals(1,inMemoryDataStorage.getHistoryFactoryList().size());
+        inMemoryDataStorage.getCurrentData();
+        Assert.assertEquals(1,inMemoryDataStorage.getHistoryDataList().size());
 
 
-        inMemoryDataStorage.updateCurrentFactory(createUpdate(),null);
+        inMemoryDataStorage.updateCurrentData(createUpdate(),null);
 
 
-        Assert.assertEquals(2,inMemoryDataStorage.getHistoryFactoryList().size());
+        Assert.assertEquals(2,inMemoryDataStorage.getHistoryDataList().size());
     }
 
     @Test
@@ -57,20 +52,20 @@ public class InMemoryDataStorageTest {
         Dummy dummy = new Dummy();
         InMemoryDataStorage<Dummy,Void> fileSystemFactoryStorage = new InMemoryDataStorage<>(dummy);
 
-        Assert.assertEquals(1,fileSystemFactoryStorage.getHistoryFactoryList().size());
+        Assert.assertEquals(1,fileSystemFactoryStorage.getHistoryDataList().size());
 
         ScheduledUpdate<Dummy> update = new ScheduledUpdate<>(
                 new Dummy(),
                 "user",
                 "comment",
-                fileSystemFactoryStorage.getCurrentFactory().id,
+                fileSystemFactoryStorage.getCurrentData().id,
                 LocalDateTime.now()
         );
         update.root.internal().addBackReferences();
 
-        fileSystemFactoryStorage.addFutureFactory(update);
+        fileSystemFactoryStorage.addFutureData(update);
 
-        Assert.assertEquals(1,fileSystemFactoryStorage.getFutureFactoryList().size());
+        Assert.assertEquals(1,fileSystemFactoryStorage.getFutureDataList().size());
     }
 
 }

@@ -9,3 +9,4 @@ factoryfx.iml
 **/typescriptGenerator/**/*.js
 **/typescriptGenerator/**/*.map
 typescriptGenerator/src/test/ts/node_modules
+/docu/src/main/java/de/factoryfx/docu/migration/~$overview.pptx

@@ -13,11 +13,14 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.UUID;
+import java.util.function.BiConsumer;
 
 import javax.sql.DataSource;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.io.CharStreams;
 import de.factoryfx.data.Data;
+import de.factoryfx.data.jackson.SimpleObjectMapper;
 import de.factoryfx.data.storage.*;
 import de.factoryfx.data.storage.migration.GeneralStorageMetadata;
 import de.factoryfx.data.storage.migration.MigrationManager;
@@ -28,18 +31,20 @@ public class PostgresDataStorage<R extends Data, S> implements DataStorage<R, S>
     private final DataSource dataSource;
     private final MigrationManager<R,S> migrationManager;
     private final GeneralStorageMetadata generalStorageMetadata;
+    private final SimpleObjectMapper objectMapper;
 
-    public PostgresDataStorage(DataSource dataSource, R initialDataParam, GeneralStorageMetadata generalStorageMetadata, MigrationManager<R,S> migrationManager){
+    public PostgresDataStorage(DataSource dataSource, R initialDataParam, GeneralStorageMetadata generalStorageMetadata, MigrationManager<R,S> migrationManager, SimpleObjectMapper objectMapper){
         this.dataSource = dataSource;
         this.initialData = initialDataParam;
         this.generalStorageMetadata = generalStorageMetadata;
         this.migrationManager = migrationManager;
+        this.objectMapper = objectMapper;
     }
 
     @Override
-    public R getHistoryFactory(String id) {
+    public R getHistoryData(String id) {
         StoredDataMetadata<S> metaData=null;
-        for(StoredDataMetadata<S> historyMetaData: getHistoryFactoryList()){
+        for(StoredDataMetadata<S> historyMetaData: getHistoryDataList()){
             if (historyMetaData.id.equals(id)){
                 metaData=historyMetaData;
 
@@ -66,7 +71,7 @@ public class PostgresDataStorage<R extends Data, S> implements DataStorage<R, S>
     }
 
     @Override
-    public Collection<StoredDataMetadata<S>> getHistoryFactoryList() {
+    public Collection<StoredDataMetadata<S>> getHistoryDataList() {
         try {
             try (Connection connection = dataSource.getConnection();
                 PreparedStatement pstmt = connection.prepareStatement("select cast (metadata as text) as metadata from configuration")) {
@@ -84,8 +89,9 @@ public class PostgresDataStorage<R extends Data, S> implements DataStorage<R, S>
         }
     }
 
+
     @Override
-    public DataAndId<R> getCurrentFactory() {
+    public DataAndId<R> getCurrentData() {
         try {
             try (Connection connection = dataSource.getConnection()){
                 ensureTablesAreAvailable(connection);
@@ -120,9 +126,48 @@ public class PostgresDataStorage<R extends Data, S> implements DataStorage<R, S>
 
 
     @Override
-    public void updateCurrentFactory(DataUpdate<R> update, S changeSummary) {
+    public void updateCurrentData(DataUpdate<R> update, S changeSummary) {
         StoredDataMetadata<S> metadata =update.createUpdateStoredDataMetadata(changeSummary,generalStorageMetadata);
         update(update.root, metadata);
+    }
+
+    @Override
+    public void patchAll(DataStoragePatcher consumer) {
+//        patchCurrentData(consumer);
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void patchCurrentData(DataStoragePatcher consumer) {
+        String dataString=null;
+        String metadataString=null;
+        getCurrentData();//ensure initial data populated
+        try {
+            try (Connection connection = dataSource.getConnection()){
+
+                try (PreparedStatement pstmt = connection.prepareStatement("select cast (root as text) as root, cast (metadata as text) as metadata from currentconfiguration");
+                     ResultSet rs = pstmt.executeQuery()) {
+                    if (rs.next()) {
+                        dataString=rs.getString(1);
+                        metadataString=rs.getString(2);
+                    }
+                }
+
+                JsonNode data = objectMapper.readTree(dataString);
+                JsonNode metadata = objectMapper.readTree(metadataString);
+                consumer.patch(data,metadata);
+
+                try (PreparedStatement pstmt =
+                             connection.prepareStatement("update currentconfiguration set root = cast (? as json), metadata = cast (? as json)")) {
+                    pstmt.setString(1, objectMapper.writeTree(data));
+                    pstmt.setString(2, objectMapper.writeTree(metadata));
+                    pstmt.execute();
+                }
+                connection.commit();
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Cannot read current factory",e);
+        }
     }
 
     private void update(R update, StoredDataMetadata<S> metadata) {
@@ -206,7 +251,7 @@ public class PostgresDataStorage<R extends Data, S> implements DataStorage<R, S>
     }
 
     @Override
-    public Collection<ScheduledUpdateMetadata> getFutureFactoryList() {
+    public Collection<ScheduledUpdateMetadata> getFutureDataList() {
         try {
             try (Connection connection = dataSource.getConnection(); PreparedStatement pstmt = connection.prepareStatement("select cast (metadata as text) as metadata from futureconfigurationmetadata")) {
                     ArrayList<ScheduledUpdateMetadata> ret = new ArrayList<>();
@@ -223,7 +268,7 @@ public class PostgresDataStorage<R extends Data, S> implements DataStorage<R, S>
     }
 
     @Override
-    public void deleteFutureFactory(String id) {
+    public void deleteFutureData(String id) {
         try (Connection connection = this.dataSource.getConnection();
              PreparedStatement pstmtDeleteMetadata =
                          connection.prepareStatement("delete from futureconfigurationmetadata where id = ?");
@@ -239,9 +284,9 @@ public class PostgresDataStorage<R extends Data, S> implements DataStorage<R, S>
         }
     }
 
-    public R getFutureFactory(String id) {
+    public R getFutureData(String id) {
         ScheduledUpdateMetadata metaData=null;
-        for(ScheduledUpdateMetadata historyMetaData: getFutureFactoryList()){
+        for(ScheduledUpdateMetadata historyMetaData: getFutureDataList()){
             if (historyMetaData.id.equals(id)){
                 metaData=historyMetaData;
             }
@@ -264,7 +309,7 @@ public class PostgresDataStorage<R extends Data, S> implements DataStorage<R, S>
     }
 
     @Override
-    public void addFutureFactory(ScheduledUpdate<R> futureFactory) {
+    public void addFutureData(ScheduledUpdate<R> futureFactory) {
 
         ScheduledUpdateMetadata scheduledUpdateMetadata =new ScheduledUpdateMetadata(
                 UUID.randomUUID().toString(),

@@ -110,7 +110,7 @@ public class FactoryManagerTest {
 //        } catch (InterruptedException e) {
 //            throw new RuntimeException(e);
 //        }
-//        factoryManager.getCurrentFactory();
+//        factoryManager.getCurrentData();
 
     }
 
