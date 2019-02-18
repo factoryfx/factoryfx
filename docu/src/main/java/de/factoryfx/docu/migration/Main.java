@@ -17,12 +17,11 @@ public class Main {
             rootFactory.text.set("HelloWorld");
             return rootFactory;
         });
-        Microservice<Void,Root,RootFactory,Void> microservice = builder.microservice().
+        builder.microservice().
                 withDataMigration(
                         (dmm)->dmm.renameAttribute(RootFactory.class,"previousAttributeName",(rf)->rf.text)//dummy rename for demonstration
-                ).withFilesystemStorage(Files.createTempDirectory("tempfiles")).build();
-
-        microservice.start();
+                ).
+        withFilesystemStorage(Files.createTempDirectory("tempfiles")).build().start();
 
     }
 }
