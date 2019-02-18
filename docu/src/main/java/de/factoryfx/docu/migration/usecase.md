@@ -44,11 +44,7 @@ public class ExampleFactory extends SimpleFactoryBase<Void,Void,ExampleFactory> 
 In this example the for attribute is renamed from "oldAttribute" to "newAttribute".
 
 ```java
-FactoryTreeBuilder...
-builder.microservice().
-withDataMigration(
-        (migration)->migration.renameAttribute(ExampleFactory.class,"oldAttribute",(rf)->rf.newAttribute)
-).withFilesystemStorage(Files.createTempDirectory("tempfiles")).build();
+dataMigrationManager.renameAttribute(ExampleFactory.class,"oldAttribute",(rf)->rf.newAttribute)
 ```
 This adds a rename migration. To support multiple renames the new name is provided with a lambada expression and thereby enables IDE refactoring for the migrations. This also prevents rename cycles.
 
@@ -63,8 +59,6 @@ This has the advantage that a faulty migration can't destroy old data. Mistakes 
 In some cases it can be convenient to execute a one time migration. For that case the storage api has a special api.
 
 The mayor difference of a one time migration is that the data are updated in the storage after the migration. 
-
-
 
 ## Example
 [**code**](https://github.com/factoryfx/factoryfx/tree/master/docu/src/main/java/de/factoryfx/docu/migration)
