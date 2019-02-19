@@ -19,7 +19,7 @@ In factoryfx we distinguish between 3 layers of migrations
 }
 ```
 This is an example for the json format of a factory with a StringAttribute.
-The StringAttribute is serialised to nested object and the value is stored in the "v" attribute. 
+The StringAttribute is serialised to a nested object and the value is stored in the "v" attribute. 
 This unusual structure in an example for the structure format.
 (Most of the structure is required for Jackson or workaround for Jackson limitations)
 The structure format is mostly stable but may change if, for example Jackson adds a new useful feature in the future.
