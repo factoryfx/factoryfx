@@ -75,11 +75,11 @@ public class FactoryTreeBuilder<V,L,R extends FactoryBase<L,V,R>,S> {
         return rootFactory;
     }
 
-    public <L, F extends FactoryBase<L,?,R>> F buildSubTree(Class<F> factoryClazz){
+    public <LO, FO extends FactoryBase<LO,?,R>> FO buildSubTree(Class<FO> factoryClazz){
         return factoryContext.get(factoryClazz);
     }
 
-    public <L, F extends FactoryBase<L,?,R>> List<F> buildSubTrees(Class<F> factoryClazz){
+    public <LO, FO extends FactoryBase<LO,?,R>> List<FO> buildSubTrees(Class<FO> factoryClazz){
         return factoryContext.getList(factoryClazz);
     }
 

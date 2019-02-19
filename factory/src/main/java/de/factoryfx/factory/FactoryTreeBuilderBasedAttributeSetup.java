@@ -48,7 +48,7 @@ public class FactoryTreeBuilderBasedAttributeSetup<V,L,R extends FactoryBase<L,V
         };
     }
 
-    public <L, F extends FactoryBase<L, ?, R>> List<F> createNewFactory(Class<F> clazz) {
+    public <LO, FO extends FactoryBase<LO, ?, R>> List<FO> createNewFactory(Class<FO> clazz) {
         return factoryTreeBuilder.buildSubTrees(clazz);
     }
 

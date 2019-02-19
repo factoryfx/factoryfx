@@ -31,7 +31,6 @@ import org.glassfish.jersey.client.authentication.HttpAuthenticationFeature;
  */
 public class MicroserviceRestClientFactory<V, R extends FactoryBase<?,V,R>, VS, RS extends FactoryBase<?,VS,RS>,S> extends SimpleFactoryBase<MicroserviceRestClient<VS, RS,S>,V,R> {
     //public final FactoryReferenceAttribute<RestClient,RestClientFactory<VS,RS>> restClient= new FactoryReferenceAttribute<RestClient,RestClientFactory<VS,RS>>().setupUnsafe(RestClientFactory.class);//.en("rest client");
-    public final ObjectValueAttribute<Class<RS>> factoryRootClass = new ObjectValueAttribute<>();//.en("factoryRootClass");
     public final StringAttribute user = new StringAttribute().en("user").nullable();
     public final StringAttribute passwordHash = new StringAttribute().en("passwordHash").nullable();
 
@@ -99,7 +98,7 @@ public class MicroserviceRestClientFactory<V, R extends FactoryBase<?,V,R>, VS, 
         MicroserviceResourceApi<VS,RS,S> microserviceResourceApi = (MicroserviceResourceApi<VS,RS,S>) WebResourceFactory.newResource(MicroserviceResourceApi.class, webTarget);
 
 
-        return new MicroserviceRestClient<>(microserviceResourceApi,factoryRootClass.get(),user.get(),passwordHash.get(),factoryTreeBuilderBasedAttributeSetup.get());
+        return new MicroserviceRestClient<>(microserviceResourceApi,user.get(),passwordHash.get(),factoryTreeBuilderBasedAttributeSetup.get());
     }
 
 

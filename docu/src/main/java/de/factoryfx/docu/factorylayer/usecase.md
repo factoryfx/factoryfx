@@ -69,5 +69,5 @@ This saves mapping effort between multiple files. (template <=> java data class 
 ## Trade-of
 For each object a corresponding factory must be created. But this boilerplate code is still better than a new dsl.
 HelloWorldFactory is essentially a structure convention which can be misused unintentionally. To validate the structure you can use the FactoryStyleValidator in a unit test. 
-[example](example/src/test/java/de/factoryfx/example/FactoryTest.java)
+[Test example](./../../../../../../../../example/src/test/java/de/factoryfx/example/FactoryTest.java)
  

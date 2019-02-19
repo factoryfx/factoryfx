@@ -11,9 +11,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- *   Unusual inheritance api to support type-safe navigation.
- *  (alternative would be a factorylist but there is no common interface for resources)
- *
  *  usage example.
  *
  *  <pre>{@code
@@ -94,8 +91,7 @@ public class JettyServerFactory<V,R extends FactoryBase<?,V,R>> extends FactoryB
      * @param resource resource
      * @param <T> resource type
      */
-    @SuppressWarnings("unchecked")
-    public final <T extends FactoryBase> void setResource(T resource){
+    public final <T extends FactoryBase<?,V,R>> void setResource(T resource){
         JerseyServletFactory<V, R> jerseyServletFactory = getDefaultJerseyServlet();
         jerseyServletFactory.resources.removeIf(factoryBase -> factoryBase.getClass()==resource.getClass());
         jerseyServletFactory.resources.add(resource);

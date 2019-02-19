@@ -18,6 +18,7 @@ import java.util.function.Supplier;
 
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 @JsonTypeInfo(use=JsonTypeInfo.Id.CLASS, include=JsonTypeInfo.As.PROPERTY, property="@class")// minimal class don't work always
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Data {
 
     @JsonProperty

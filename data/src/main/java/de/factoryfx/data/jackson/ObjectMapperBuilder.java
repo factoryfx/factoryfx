@@ -42,9 +42,6 @@ public class ObjectMapperBuilder {
         objectMapper.disable(DeserializationFeature.ADJUST_DATES_TO_CONTEXT_TIME_ZONE);
         objectMapper.disable(SerializationFeature.FAIL_ON_EMPTY_BEANS);
 
-//        objectMapper.enable(MapperFeature.USE_STATIC_TYPING);
-
-
         objectMapper.setDefaultMergeable(true); // global default, merging
 
         return objectMapper;

@@ -1,6 +1,5 @@
 package de.factoryfx.docu.persistentstorage;
 
-import de.factoryfx.data.jackson.SimpleObjectMapper;
 import de.factoryfx.data.storage.DataUpdate;
 import de.factoryfx.factory.builder.FactoryTreeBuilder;
 import de.factoryfx.factory.builder.Scope;

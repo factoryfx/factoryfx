@@ -89,6 +89,7 @@ public class OracledbDataStorageHistory<R extends Data,S> {
     public void patchAll(DataStoragePatcher consumer, SimpleObjectMapper objectMapper) {
 
         try (Connection connection= connectionSupplier.get()){
+            boolean initialAutoCommit=connection.getAutoCommit();
             connection.setAutoCommit(false);
             try (Statement statement = connection.createStatement()) {
                 String sql = "SELECT * FROM FACTORY_HISTORY";
@@ -113,7 +114,10 @@ public class OracledbDataStorageHistory<R extends Data,S> {
                         }
                     }
                 }
+            } finally {
+                connection.setAutoCommit(initialAutoCommit);  //connection might be from a pool better restore state
             }
+
             connection.commit();
         } catch (SQLException e) {
             throw new RuntimeException(e);

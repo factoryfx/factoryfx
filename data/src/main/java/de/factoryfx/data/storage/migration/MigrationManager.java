@@ -36,14 +36,6 @@ public class MigrationManager<R extends Data,S> {
         return objectMapper.writeValueAsString(metadata);
     }
 
-    public String writeScheduledMetadata(StoredDataMetadata<S> metadata) {
-        return  objectMapper.writeValueAsString(metadata);
-    }
-
-//    private boolean canRead(int dataModelVersion) {
-//        return dataModelVersionForStoring == dataModelVersion;
-//    }
-
     public R read(JsonNode data, GeneralStorageMetadata generalStorageMetadata, DataStorageMetadataDictionary dataStorageMetadataDictionary) {
         return read(objectMapper.writeTree(data),generalStorageMetadata,dataStorageMetadataDictionary);
     }
@@ -79,7 +71,6 @@ public class MigrationManager<R extends Data,S> {
         return objectMapper.readValue(data,StoredDataMetadata.class);
     }
 
-    @SuppressWarnings("unchecked")
     public ScheduledUpdateMetadata readScheduledFactoryMetadata(String data) {
         return objectMapper.readValue(data,ScheduledUpdateMetadata.class);
     }

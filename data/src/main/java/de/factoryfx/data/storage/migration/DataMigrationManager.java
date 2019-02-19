@@ -23,7 +23,7 @@ public class DataMigrationManager {
         dataMigrations.add(new ClassRename(previousDataClassNameFullQualified,newDataClass));
     }
 
-    public void migrate(JsonNode jsonNode, DataStorageMetadataDictionary dataStorageMetadataDictionary){
+    void migrate(JsonNode jsonNode, DataStorageMetadataDictionary dataStorageMetadataDictionary){
         List<DataJsonNode> dataJsonNodes = readDataList(jsonNode);
         for (DataMigration migration : dataMigrations) {
             if (migration.canMigrate(dataStorageMetadataDictionary)) {
@@ -124,4 +124,5 @@ public class DataMigrationManager {
             });
         }
     }
+
 }

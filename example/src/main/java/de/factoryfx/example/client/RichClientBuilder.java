@@ -97,7 +97,6 @@ public class RichClientBuilder {
 
         factoryBuilder.addFactory(MicroserviceRestClientFactory.class, Scope.SINGLETON, context -> {
             MicroserviceRestClientFactory<Void,RichClientRoot, OrderCollector, ServerRootFactory,Void> restClient = new MicroserviceRestClientFactory<>();
-            restClient.factoryRootClass.set(ServerRootFactory.class);
             restClient.host.set("localhost");
             restClient.port.set(adminServerPort);
             restClient.path.set(null);

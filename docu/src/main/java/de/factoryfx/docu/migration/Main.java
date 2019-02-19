@@ -2,7 +2,6 @@ package de.factoryfx.docu.migration;
 
 import de.factoryfx.factory.builder.FactoryTreeBuilder;
 import de.factoryfx.factory.builder.Scope;
-import de.factoryfx.server.Microservice;
 
 import java.io.IOException;
 import java.nio.file.Files;

@@ -110,16 +110,6 @@ public class SimpleObjectMapper {
         }
     }
 
-    @SuppressWarnings("unchecked")
-    public <T> T treeToValueUnsafe(JsonNode jsonNode, Class<T> rootClass) {
-        try {
-            return objectMapper.treeToValue(jsonNode,rootClass);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-
     private interface ReaderFunction<T> {
         T read() throws IOException;
     }

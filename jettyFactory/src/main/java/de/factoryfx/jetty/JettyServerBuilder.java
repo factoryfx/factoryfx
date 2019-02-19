@@ -60,11 +60,6 @@ public class JettyServerBuilder<V,R extends FactoryBase<?,V,R>,S extends JettySe
         return jettyServerFactory;
     }
 
-    @SuppressWarnings("unchecked")
-    public <S extends JettyServerFactory<V, R>> S build(Class<S> clazz){
-        return (S)jettyServerFactory;
-    }
-
     public JettyServerBuilder<V,R,S> widthPort(int port){
         jettyServerFactory.connectors.get(0).port.set(port);
         return this;

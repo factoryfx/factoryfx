@@ -323,4 +323,30 @@ public class MigrationManagerTest {
         Assert.assertEquals("123",result.stringAttribute.get());
     }
 
+    @Test
+    public void read_removed_property_no_exception() {
+        ExampleDataA exampleDataA = new ExampleDataA();
+        exampleDataA.internal().addBackReferences();
+        DataStorageMetadataDictionary dummyDictionaryFromRoot = exampleDataA.internal().createDataStorageMetadataDictionaryFromRoot();
+
+        String input =
+                "{\n" +
+                        "  \"@class\" : \"de.factoryfx.data.merge.testdata.ExampleDataA\",\n" +//<======
+                        "  \"id\" : \"d2412cc8-c759-58f5-93f8-ef4e195114b5\",\n" +
+                        "  \"stringAttribute\" : {\n" +
+                        "    \"v\" : \"123\"\n" +
+                        "  },\n" +
+                        "  \"removedAttribute\" : {\n" +
+                        "    \"v\" : \"123\"\n" +
+                        "  },\n" +
+                        "  \"referenceAttribute\" : { },\n" +
+                        "  \"referenceListAttribute\" : [ ]\n" +
+                        "}";
+
+        GeneralStorageMetadata generalStorageMetadata = new GeneralStorageMetadata(1, 0);
+        MigrationManager<ExampleDataA,Void> manager = new MigrationManager<>(ExampleDataA.class, List.of(), generalStorageMetadata, new DataMigrationManager(),ObjectMapperBuilder.build());
+        ExampleDataA result = manager.read(input, generalStorageMetadata,dummyDictionaryFromRoot);
+        Assert.assertEquals("123",result.stringAttribute.get());
+    }
+
 }

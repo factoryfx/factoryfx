@@ -29,15 +29,13 @@ import javax.ws.rs.InternalServerErrorException;
  */
 public class MicroserviceRestClient<V, R extends FactoryBase<?,V,R>,S> {
 
-    private final Class<R> factoryRootClass;
     private final MicroserviceResourceApi<V,R,S> microserviceResourceApi;
     private final String user;
     private final String passwordHash;
     private final FactoryTreeBuilderBasedAttributeSetup<V,?,R,S> factoryTreeBuilderBasedAttributeSetup;
 
-    public MicroserviceRestClient(MicroserviceResourceApi<V,R,S> microserviceResourceApi, Class<R> factoryRootClass, String user, String passwordHash, FactoryTreeBuilderBasedAttributeSetup<V,?,R,S> factoryTreeBuilderBasedAttributeSetup) {
+    public MicroserviceRestClient(MicroserviceResourceApi<V,R,S> microserviceResourceApi, String user, String passwordHash, FactoryTreeBuilderBasedAttributeSetup<V,?,R,S> factoryTreeBuilderBasedAttributeSetup) {
         this.microserviceResourceApi = microserviceResourceApi;
-        this.factoryRootClass = factoryRootClass;
         this.user=user;
         this.passwordHash=passwordHash;
         this.factoryTreeBuilderBasedAttributeSetup = factoryTreeBuilderBasedAttributeSetup;

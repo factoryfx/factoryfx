@@ -2,10 +2,8 @@ package de.factoryfx.data.storage.inmemory;
 
 import java.time.LocalDateTime;
 import java.util.*;
-import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import de.factoryfx.data.Data;
 import de.factoryfx.data.storage.*;
 

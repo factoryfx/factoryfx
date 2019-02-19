@@ -27,7 +27,6 @@ public class MicroserviceRestClientBuilder {
         microserviceRestClientFactory.host.set(host);
         microserviceRestClientFactory.user.set(user);
         microserviceRestClientFactory.passwordHash.set(new PasswordHash().hash(passwordNotHashed));
-        microserviceRestClientFactory.factoryRootClass.set(serverRootClass);
         return microserviceRestClientFactory.createClient();
     }
 
@@ -49,7 +48,6 @@ public class MicroserviceRestClientBuilder {
         microserviceRestClientFactory.host.set(host);
         microserviceRestClientFactory.user.set(null);
         microserviceRestClientFactory.passwordHash.set(null);
-        microserviceRestClientFactory.factoryRootClass.set(serverRootClass);
         return microserviceRestClientFactory.createClient();
     }
 }
