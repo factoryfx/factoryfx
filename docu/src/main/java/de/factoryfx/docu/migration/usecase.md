@@ -5,7 +5,7 @@ To simplify the migration process factory provides a dedicated migration API.
 There are 3 Layers of Migrations
 * **Data storage format**<br> The general format how data and attributes are stored.
 * **Data structure**<br> Structure of the Factories e.g.: attributes name, factory names
-* **Data populations**<br> Data content changes
+* **Data content**<br> Data content changes
 
 ![aoverview](overview.png)
 ## Data storage format migration
@@ -48,8 +48,9 @@ dataMigrationManager.renameAttribute(ExampleFactory.class,"oldAttribute",(rf)->r
 ```
 This adds a rename migration. To support multiple renames the new name is provided with a lambada expression and thereby enables IDE refactoring for the migrations. This also prevents rename cycles.
 
-## Data populations
-There is no framework support for data populations because it's too project specific.
+## Data content
+There is no special framework support for data changes because it's too project specific. 
+You can use the normal microservice update API or use the DataStorage API.
 
 
 ## Special case: One time migration
