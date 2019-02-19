@@ -4,6 +4,10 @@ import de.factoryfx.data.Data;
 
 public class DataReferenceAttribute<T extends Data> extends ReferenceAttribute<T,DataReferenceAttribute<T>> {
 
+    /**
+     *
+     * @param clazz content clazz
+     */
     public DataReferenceAttribute(Class<T> clazz) {
         super();
         setup(clazz);
@@ -12,7 +16,7 @@ public class DataReferenceAttribute<T extends Data> extends ReferenceAttribute<T
     /**
      * workaround for Data with generic parameter
      *
-     * @param clazz
+     * @param clazz content clazz
      * @param dummy must be null
      */
     public DataReferenceAttribute(Class clazz,Void dummy) {

@@ -1,4 +1,4 @@
-package de.factoryfx.data.storage.migration;
+package de.factoryfx.data.storage.migration.datamigration;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.TextNode;

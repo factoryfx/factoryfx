@@ -71,7 +71,7 @@
     </Match>
 
     <Match>
-        <Class name="de.factoryfx.data.storage.ScheduledDataMetadata" />
+        <Class name="de.factoryfx.data.storage.ScheduledUpdateMetadata" />
         <Bug pattern="EQ_COMPARETO_USE_OBJECT_EQUALS" />
     </Match>
 

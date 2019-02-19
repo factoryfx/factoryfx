@@ -74,7 +74,7 @@ public class MicroserviceBuilder<V,L,R extends FactoryBase<L,V,R>,S> {
 
     /**
      * changeSummaryCreator for history metadata
-     * @param changeSummaryCreator
+     * @param changeSummaryCreator changeSummaryCreator
      * @return builder
      */
     public MicroserviceBuilder<V,L,R,S> widthChangeSummaryCreator(ChangeSummaryCreator<R,S> changeSummaryCreator){

@@ -12,7 +12,7 @@ public class DataReferenceListAttribute<T extends Data> extends ReferenceListAtt
     /**
      * workaround for Data with generic parameter
      *
-     * @param clazz
+     * @param clazz content clazz
      * @param dummy must be null
      */
     public DataReferenceListAttribute(Class<T> clazz, Void dummy) {

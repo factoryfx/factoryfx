@@ -52,6 +52,7 @@ public interface DataStorage<R extends Data, S> {
     /**
      * updateCurrentData and history
      * @param update update
+     * @param changeSummary changeSummary
      */
     void updateCurrentData(DataUpdate<R> update, S changeSummary);
 

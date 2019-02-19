@@ -87,8 +87,10 @@ public class Microservice<V,L,R extends FactoryBase<L,V,R>,S> {
 
     /**
      *  prepare a new factory which could be used to update data. mainly give it the correct baseVersionId
-     *  @return new possible factory update with prepared ids/metadata
-     * */
+     * @param user use
+     * @param comment comment
+     * @return new possible factory update with prepared ids/metadata
+     */
     public DataUpdate<R> prepareNewFactory(String user, String comment) {
         DataAndId<R> currentFactory = dataStorage.getCurrentData();
         DataUpdate<R> update = new DataUpdate<>(
