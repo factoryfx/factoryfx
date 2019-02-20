@@ -1,16 +1,10 @@
 package de.factoryfx.jetty;
 
 import ch.qos.logback.classic.Level;
-import de.factoryfx.data.attribute.primitive.BooleanAttribute;
-import de.factoryfx.data.attribute.primitive.IntegerAttribute;
-import de.factoryfx.data.attribute.types.EnumListAttribute;
-import de.factoryfx.data.attribute.types.StringListAttribute;
-import de.factoryfx.data.storage.DataAndStoredMetadata;
 import de.factoryfx.data.storage.DataUpdate;
 import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.factory.PolymorphicFactoryBase;
 import de.factoryfx.factory.SimpleFactoryBase;
-import de.factoryfx.factory.atrribute.FactoryPolymorphicReferenceAttribute;
 import de.factoryfx.factory.atrribute.FactoryReferenceAttribute;
 import de.factoryfx.factory.builder.FactoryTreeBuilder;
 import de.factoryfx.factory.builder.Scope;
@@ -19,12 +13,10 @@ import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.AbstractHandler;
-import org.eclipse.jetty.server.handler.gzip.GzipHandler;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import javax.servlet.DispatcherType;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;

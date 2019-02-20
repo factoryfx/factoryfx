@@ -1,12 +1,9 @@
 package de.factoryfx.factory.builder;
 
-import de.factoryfx.data.attribute.types.StringAttribute;
 import de.factoryfx.factory.SimpleFactoryBase;
 import de.factoryfx.factory.atrribute.FactoryReferenceAttribute;
-import de.factoryfx.factory.atrribute.FactoryReferenceListAttribute;
 import de.factoryfx.factory.parametrized.ParametrizedObjectCreatorAttribute;
 import de.factoryfx.factory.parametrized.ParametrizedObjectCreatorFactory;
-import de.factoryfx.factory.testfactories.ExampleFactoryA;
 import de.factoryfx.factory.testfactories.ExampleFactoryB;
 import de.factoryfx.factory.testfactories.ExampleLiveObjectA;
 import de.factoryfx.factory.testfactories.ExampleLiveObjectB;

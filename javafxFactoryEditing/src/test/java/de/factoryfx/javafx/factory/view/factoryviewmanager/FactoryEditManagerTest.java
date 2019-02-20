@@ -14,7 +14,6 @@ import de.factoryfx.factory.testfactories.ExampleFactoryB;
 import de.factoryfx.factory.testfactories.ExampleLiveObjectA;
 import de.factoryfx.microservice.rest.client.MicroserviceRestClient;
 import de.factoryfx.server.Microservice;
-import de.factoryfx.factory.builder.MicroserviceBuilder;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;

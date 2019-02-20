@@ -3,7 +3,6 @@ package de.factoryfx.factory.datastorage.oracle;
 import de.factoryfx.data.jackson.ObjectMapperBuilder;
 import de.factoryfx.data.storage.migration.DataMigrationManager;
 import de.factoryfx.data.storage.migration.MigrationManager;
-import de.factoryfx.data.storage.migration.metadata.DataStorageMetadataDictionary;
 import de.factoryfx.data.storage.migration.GeneralStorageMetadataBuilder;
 import de.factoryfx.factory.testfactories.ExampleFactoryA;
 import org.h2.tools.Server;

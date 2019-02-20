@@ -1,7 +1,6 @@
 package de.factoryfx.server.user.persistent;
 
 import de.factoryfx.data.jackson.ObjectMapperBuilder;
-import de.factoryfx.factory.testfactories.ExampleFactoryA;
 import org.junit.Assert;
 import org.junit.Test;
 

@@ -42,7 +42,7 @@ public class MigrationManager<R extends Data,S> {
 
     public R read(String data, GeneralStorageMetadata generalStorageMetadata, DataStorageMetadataDictionary dataStorageMetadataDictionary) {
         GeneralStorageMetadata currentFormat= generalStorageMetadata;
-        String migratedData = data;
+        JsonNode migratedData = objectMapper.readTree(data);
         if (currentFormat==null){//old data from old migration system
             currentFormat=new GeneralStorageMetadata(1,0);
         }
@@ -50,7 +50,7 @@ public class MigrationManager<R extends Data,S> {
             boolean foundMigration=false;
             for (GeneralMigration migration: storageFormatMigrations){
                 if (migration.canMigrate(currentFormat)){
-                    migratedData = migration.migrate(migratedData);
+                    migration.migrate(migratedData);
                     currentFormat = migration.migrationResultStorageFormat();
                     foundMigration=true;
                     break;
@@ -61,9 +61,8 @@ public class MigrationManager<R extends Data,S> {
             }
         }
 
-        JsonNode jsonNode = objectMapper.readTree(migratedData);
-        dataMigration.migrate(jsonNode,dataStorageMetadataDictionary);
-        return objectMapper.treeToValue(jsonNode,rootClass).internal().addBackReferences();
+        dataMigration.migrate(migratedData,dataStorageMetadataDictionary);
+        return objectMapper.treeToValue(migratedData,rootClass).internal().addBackReferences();
     }
 
     @SuppressWarnings("unchecked")

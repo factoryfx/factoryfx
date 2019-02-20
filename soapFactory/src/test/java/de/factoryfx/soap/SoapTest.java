@@ -1,6 +1,5 @@
 package de.factoryfx.soap;
 
-import de.factoryfx.data.storage.DataAndStoredMetadata;
 import de.factoryfx.data.storage.DataUpdate;
 import de.factoryfx.factory.builder.FactoryTreeBuilder;
 import de.factoryfx.factory.builder.Scope;
@@ -9,7 +8,6 @@ import de.factoryfx.jetty.JettyServerFactory;
 import de.factoryfx.server.Microservice;
 import de.factoryfx.soap.example.*;
 import de.factoryfx.soap.server.SoapJettyServerFactory;
-import de.factoryfx.factory.builder.MicroserviceBuilder;
 import org.eclipse.jetty.server.Server;
 import org.junit.Test;
 

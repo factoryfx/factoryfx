@@ -2,10 +2,8 @@ package de.factoryfx.factory;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Consumer;
 
 import ch.qos.logback.classic.Level;
-import de.factoryfx.data.Data;
 import de.factoryfx.data.DataDictionary;
 import de.factoryfx.data.attribute.types.StringAttribute;
 import de.factoryfx.data.jackson.ObjectMapperBuilder;

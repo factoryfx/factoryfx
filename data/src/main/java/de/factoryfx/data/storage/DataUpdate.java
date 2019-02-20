@@ -37,7 +37,7 @@ public class DataUpdate<R extends Data> {
     }
 
     public <S> StoredDataMetadata<S> createUpdateStoredDataMetadata(S changeSummary, GeneralStorageMetadata generalStorageMetadata){
-        StoredDataMetadata<S> metadata = new StoredDataMetadata<>(
+        return new StoredDataMetadata<>(
             LocalDateTime.now(),
             UUID.randomUUID().toString(),
             this.user,
@@ -47,7 +47,6 @@ public class DataUpdate<R extends Data> {
             generalStorageMetadata,
             root.internal().createDataStorageMetadataDictionaryFromRoot()
         );
-        return metadata;
     }
 }
 

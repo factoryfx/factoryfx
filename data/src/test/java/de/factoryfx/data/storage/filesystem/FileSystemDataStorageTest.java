@@ -4,9 +4,7 @@ import java.io.File;
 import java.nio.file.Paths;
 import java.util.HashSet;
 import java.util.List;
-import java.util.function.Consumer;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import de.factoryfx.data.jackson.ObjectMapperBuilder;
 import de.factoryfx.data.merge.testdata.ExampleDataA;

@@ -1,5 +1,7 @@
 package de.factoryfx.data.storage.migration;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import de.factoryfx.data.jackson.ObjectMapperBuilder;
 import de.factoryfx.data.merge.testdata.ExampleDataA;
 import de.factoryfx.data.storage.migration.metadata.DataStorageMetadataDictionary;
@@ -41,8 +43,8 @@ public class MigrationManagerTest {
             }
 
             @Override
-            public String migrate(String data) {
-                return data;//nothing
+            public void migrate(JsonNode data) {
+                //nothing
             }
 
             @Override
@@ -68,8 +70,8 @@ public class MigrationManagerTest {
             }
 
             @Override
-            public String migrate(String data) {
-                return data;//nothing
+            public void migrate(JsonNode data) {
+                //nothing
             }
 
             @Override
@@ -84,8 +86,8 @@ public class MigrationManagerTest {
             }
 
             @Override
-            public String migrate(String data) {
-                return data;//nothing
+            public void migrate(JsonNode data) {
+                //nothing
             }
 
             @Override
@@ -125,8 +127,8 @@ public class MigrationManagerTest {
             }
 
             @Override
-            public String migrate(String data) {
-                return data;//nothing
+            public void migrate(JsonNode data) {
+                //nothing
             }
 
             @Override
@@ -172,8 +174,8 @@ public class MigrationManagerTest {
             }
 
             @Override
-            public String migrate(String data) {
-                return "1"+data;
+            public void migrate(JsonNode data) {
+                ((ObjectNode)data).put("a","1");
             }
 
             @Override
@@ -188,11 +190,10 @@ public class MigrationManagerTest {
             }
 
             @Override
-            public String migrate(String data) {
-                if (!data.startsWith("1")){//hack to simulate migration depending on previous migration
+            public void migrate(JsonNode data) {
+                if (! data.get("a").asText().equals("1")){//hack to simulate migration depending on previous migration
                     throw new IllegalStateException();
                 }
-                return data.substring(1);
             }
 
             @Override

@@ -8,7 +8,6 @@ import de.factoryfx.copperbridge.EngineIdProviderFactory;
 import de.factoryfx.copperbridge.TransientScottyEngineFactory;
 import de.factoryfx.copperbridge.WorkflowLauncher;
 import de.factoryfx.copperbridge.WorkflowLauncherFactory;
-import de.factoryfx.data.storage.DataAndStoredMetadata;
 import de.factoryfx.data.storage.DataUpdate;
 import de.factoryfx.factory.builder.FactoryTreeBuilder;
 import de.factoryfx.factory.builder.Scope;

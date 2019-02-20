@@ -1,7 +1,5 @@
 package de.factoryfx.factory.atrribute;
 
-import java.util.function.Function;
-
 import de.factoryfx.data.jackson.ObjectMapperBuilder;
 import de.factoryfx.factory.SimpleFactoryBase;
 import org.junit.Test;

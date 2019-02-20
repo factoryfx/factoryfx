@@ -4,12 +4,7 @@ import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.factory.SimpleFactoryBase;
 import de.factoryfx.factory.atrribute.FactoryReferenceAttribute;
 import de.factoryfx.factory.builder.FactoryTreeBuilder;
-import de.factoryfx.factory.builder.MicroserviceBuilder;
 import de.factoryfx.factory.builder.Scope;
-import de.factoryfx.factory.testfactories.ExampleFactoryA;
-import de.factoryfx.factory.testfactories.ExampleFactoryB;
-import de.factoryfx.factory.testfactories.ExampleLiveObjectA;
-import org.junit.Assert;
 import org.junit.Test;
 
 public class MicroserviceAwareFactoryTest {

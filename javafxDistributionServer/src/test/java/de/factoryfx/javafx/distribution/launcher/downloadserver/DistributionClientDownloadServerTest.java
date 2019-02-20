@@ -4,7 +4,6 @@ import de.factoryfx.factory.builder.FactoryTreeBuilder;
 import de.factoryfx.factory.builder.Scope;
 import de.factoryfx.javafx.distribution.launcher.rest.DistributionClientDownloadResourceFactory;
 import de.factoryfx.jetty.JettyServerBuilder;
-import de.factoryfx.factory.builder.MicroserviceBuilder;
 import org.eclipse.jetty.server.Server;
 
 import java.io.IOException;

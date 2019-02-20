@@ -15,7 +15,6 @@ import de.factoryfx.microservice.rest.client.MicroserviceRestClient;
 import de.factoryfx.microservice.rest.client.MicroserviceRestClientBuilder;
 import de.factoryfx.server.Microservice;
 
-import de.factoryfx.factory.builder.MicroserviceBuilder;
 import de.factoryfx.server.user.persistent.PersistentUserManagementFactory;
 import de.factoryfx.server.user.persistent.UserFactory;
 import org.eclipse.jetty.server.Server;

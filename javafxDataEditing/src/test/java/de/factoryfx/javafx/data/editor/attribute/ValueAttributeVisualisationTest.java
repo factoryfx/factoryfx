@@ -2,11 +2,8 @@ package de.factoryfx.javafx.data.editor.attribute;
 
 import de.factoryfx.data.attribute.types.StringAttribute;
 import de.factoryfx.javafx.UniformDesignBuilder;
-import de.factoryfx.javafx.data.util.UniformDesign;
 import javafx.application.Application;
 import javafx.stage.Stage;
-
-import static org.junit.Assert.*;
 
 public class ValueAttributeVisualisationTest extends Application {
     StringAttribute attribute = new StringAttribute();

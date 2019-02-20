@@ -367,12 +367,4 @@ public abstract class Attribute<T,A extends Attribute<T,A>>{
         return (A)this;
     }
 
-
-    public int internal_gerJsonFormatVersion() {
-        return 1;
-    }
-
-    public void internal_getDataClassesDeep(Set<Class<? extends Data>> result){
-        //nothing
-    }
 }

@@ -5,7 +5,6 @@ import de.factoryfx.data.validation.ValidationError;
 import de.factoryfx.factory.SimpleFactoryBase;
 import de.factoryfx.factory.testfactories.ExampleFactoryA;
 import de.factoryfx.factory.testfactories.ExampleLiveObjectA;
-import de.factoryfx.factory.testfactories.ExampleLiveObjectB;
 import org.junit.Assert;
 import org.junit.Test;
 

@@ -2,15 +2,11 @@ package de.factoryfx.factory.log;
 
 import de.factoryfx.data.jackson.ObjectMapperBuilder;
 import de.factoryfx.data.merge.DataMerger;
-import de.factoryfx.data.merge.MergeDiffInfo;
 import de.factoryfx.factory.testfactories.ExampleFactoryA;
-import de.factoryfx.factory.testfactories.ExampleFactoryB;
 import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.HashSet;
-
-import static org.junit.Assert.*;
 
 public class FactoryUpdateLogTest {
 

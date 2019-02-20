@@ -1,7 +1,6 @@
 package de.factoryfx.server;
 
 import de.factoryfx.factory.builder.FactoryTreeBuilder;
-import de.factoryfx.factory.builder.MicroserviceBuilder;
 import de.factoryfx.factory.builder.Scope;
 import de.factoryfx.factory.testfactories.ExampleFactoryA;
 import de.factoryfx.factory.testfactories.ExampleFactoryB;

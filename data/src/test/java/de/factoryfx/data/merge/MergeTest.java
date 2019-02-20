@@ -5,10 +5,8 @@ import java.util.stream.Collectors;
 
 import de.factoryfx.data.Data;
 import de.factoryfx.data.DataTest;
-import de.factoryfx.data.attribute.CopySemantic;
 import de.factoryfx.data.attribute.DataReferenceAttribute;
 import de.factoryfx.data.attribute.DataViewReferenceAttribute;
-import de.factoryfx.data.attribute.types.StringAttribute;
 import de.factoryfx.data.merge.testdata.ExampleDataA;
 import de.factoryfx.data.merge.testdata.ExampleDataB;
 import de.factoryfx.data.merge.testdata.ExampleDataC;

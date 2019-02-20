@@ -11,7 +11,6 @@ import de.factoryfx.data.storage.migration.DataMigrationManager;
 import de.factoryfx.data.storage.migration.MigrationManager;
 import de.factoryfx.data.storage.StoredDataMetadata;
 
-import de.factoryfx.data.storage.migration.metadata.DataStorageMetadataDictionary;
 import de.factoryfx.data.storage.migration.GeneralStorageMetadataBuilder;
 import org.junit.Assert;
 import org.junit.Rule;

@@ -68,12 +68,13 @@ public class HelloWorld{
     .microservice().withInMemoryStorage().build().start();
 ```
 ## Documentation
-
+### Fundamentals
+* [Comparison](docu/src/main/java/de/factoryfx/docu/comparison/usecase.md)<br>Comparison to other dependency injection frameworks
+* [Dependency injection](docu/src/main/java/de/factoryfx/docu/dependencyinjection/usecase.md)<br>Injection dependency into a liveobject
+* [Data injection](docu/src/main/java/de/factoryfx/docu/datainjection/usecase.md)<br>Injection data into a liveobject
 * [Factory](docu/src/main/java/de/factoryfx/docu/factorylayer/usecase.md)<br>Factory explanation
 * [Liveobject](docu/src/main/java/de/factoryfx/docu/liveobjects/usecase.md)<br>Liveobject explanation
-* [Comparison](docu/src/main/java/de/factoryfx/docu/comparison/usecase.md)<br>Comparison to other dependency injection frameworks
-* [Data injection](docu/src/main/java/de/factoryfx/docu/datainjection/usecase.md)<br>Injection data into a liveobject
-* [Dependency injection](docu/src/main/java/de/factoryfx/docu/dependencyinjection/usecase.md)<br>Injection dependency into a liveobject
+### Miscellaneous
 * [REST server](docu/src/main/java/de/factoryfx/docu/restserver/usecase.md)<br>Basic jetty server with a jersey REST resource
 * [Lifecycle](docu/src/main/java/de/factoryfx/docu/lifecycle/usecase.md)<br>Lifecycle configuration (start/top/update)
 * [Migration](docu/src/main/java/de/factoryfx/docu/migration/usecase.md)<br>Configuration data migration

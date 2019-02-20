@@ -58,13 +58,15 @@ public interface DataStorage<R extends Data, S> {
 
     /**
      * for one-time migration
-     * apply patch to all stored data including history
+     * apply patch to all stored data including history, changes to jsonNodes are stored
+     * @param consumer called for all stored factories
      */
     void patchAll(DataStoragePatcher consumer);
 
     /**
      * for one-time migration
      * apply patch to current data
+     * @param consumer called for current factory, changes to jsonNodes are stored
      */
     void patchCurrentData(DataStoragePatcher consumer);
 

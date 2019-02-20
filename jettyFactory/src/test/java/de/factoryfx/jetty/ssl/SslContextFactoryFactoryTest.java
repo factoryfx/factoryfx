@@ -1,11 +1,6 @@
 package de.factoryfx.jetty.ssl;
 
 import com.google.common.io.ByteStreams;
-import de.factoryfx.data.attribute.primitive.BooleanAttribute;
-import de.factoryfx.data.attribute.types.EnumAttribute;
-import de.factoryfx.data.attribute.types.FileContentAttribute;
-import de.factoryfx.data.attribute.types.StringAttribute;
-import de.factoryfx.data.attribute.types.StringListAttribute;
 import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.factory.SimpleFactoryBase;
 import de.factoryfx.factory.atrribute.FactoryReferenceAttribute;
@@ -15,7 +10,6 @@ import de.factoryfx.jetty.JettyServerBuilder;
 import de.factoryfx.jetty.JettyServerFactory;
 import de.factoryfx.server.Microservice;
 import org.eclipse.jetty.server.Server;
-import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -23,14 +17,11 @@ import javax.net.ssl.*;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Response;
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.security.KeyManagementException;
-import java.security.KeyStore;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.X509Certificate;
 

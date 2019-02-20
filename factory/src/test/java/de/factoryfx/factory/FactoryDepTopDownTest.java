@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import de.factoryfx.data.storage.DataAndStoredMetadata;
 import de.factoryfx.data.storage.DataUpdate;
 import de.factoryfx.factory.builder.FactoryTreeBuilder;
 import de.factoryfx.factory.builder.Scope;
@@ -15,7 +14,6 @@ import org.junit.Test;
 import de.factoryfx.factory.atrribute.FactoryReferenceAttribute;
 import de.factoryfx.factory.log.FactoryUpdateLog;
 import de.factoryfx.server.Microservice;
-import de.factoryfx.factory.builder.MicroserviceBuilder;
 
 public class FactoryDepTopDownTest {
 

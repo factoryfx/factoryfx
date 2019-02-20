@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
-import de.factoryfx.data.Data;
 import de.factoryfx.data.merge.MergeDiffInfo;
 import de.factoryfx.factory.log.*;
 import de.factoryfx.factory.testfactories.ExampleFactoryA;

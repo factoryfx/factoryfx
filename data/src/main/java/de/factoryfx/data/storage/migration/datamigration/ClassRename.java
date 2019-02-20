@@ -1,12 +1,11 @@
 package de.factoryfx.data.storage.migration.datamigration;
 
 import de.factoryfx.data.Data;
-import de.factoryfx.data.storage.migration.DataMigrationManager;
 import de.factoryfx.data.storage.migration.metadata.DataStorageMetadataDictionary;
 
 import java.util.List;
 
-public class ClassRename implements DataMigrationManager.DataMigration {
+public class ClassRename implements DataMigration {
     private final String previousDataClassNameFullQualified;
     private final Class<? extends Data> newDataClass;
 

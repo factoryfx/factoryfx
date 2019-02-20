@@ -4,7 +4,6 @@ import de.factoryfx.data.attribute.types.StringAttribute;
 import de.factoryfx.data.jackson.ObjectMapperBuilder;
 import de.factoryfx.data.storage.migration.metadata.DataStorageMetadataDictionary;
 import de.factoryfx.factory.FactoryBase;
-import de.factoryfx.factory.FactoryTreeBuilderBasedAttributeSetup;
 import de.factoryfx.factory.PolymorphicFactoryBase;
 import de.factoryfx.factory.SimpleFactoryBase;
 import de.factoryfx.factory.atrribute.FactoryPolymorphicReferenceAttribute;
@@ -16,8 +15,6 @@ import de.factoryfx.factory.testfactories.poly.OutPrinterFactory;
 import de.factoryfx.factory.testfactories.poly.Printer;
 import org.junit.Assert;
 import org.junit.Test;
-
-import java.util.List;
 
 public class FactoryTreeBuilderTest {
 

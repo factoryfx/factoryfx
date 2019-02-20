@@ -28,14 +28,12 @@ import javax.ws.rs.ext.MessageBodyWriter;
 
 import ch.qos.logback.classic.Level;
 import com.google.common.io.ByteStreams;
-import de.factoryfx.data.storage.DataAndStoredMetadata;
 import de.factoryfx.data.storage.DataUpdate;
 import de.factoryfx.factory.SimpleFactoryBase;
 import de.factoryfx.factory.atrribute.FactoryReferenceAttribute;
 import de.factoryfx.factory.builder.FactoryTreeBuilder;
 import de.factoryfx.factory.builder.Scope;
 import de.factoryfx.server.Microservice;
-import de.factoryfx.factory.builder.MicroserviceBuilder;
 import org.eclipse.jetty.server.Server;
 import org.glassfish.jersey.client.ClientConfig;
 import org.junit.Assert;

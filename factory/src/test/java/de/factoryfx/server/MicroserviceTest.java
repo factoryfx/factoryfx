@@ -2,14 +2,12 @@ package de.factoryfx.server;
 
 import de.factoryfx.data.merge.AttributeDiffInfo;
 import de.factoryfx.data.merge.MergeDiffInfo;
-import de.factoryfx.data.storage.DataAndStoredMetadata;
 import de.factoryfx.data.storage.DataUpdate;
 import de.factoryfx.data.storage.StoredDataMetadata;
 import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.factory.SimpleFactoryBase;
 import de.factoryfx.factory.atrribute.FactoryReferenceAttribute;
 import de.factoryfx.factory.builder.FactoryTreeBuilder;
-import de.factoryfx.factory.builder.MicroserviceBuilder;
 import de.factoryfx.factory.builder.Scope;
 import de.factoryfx.factory.log.FactoryUpdateLog;
 import de.factoryfx.factory.testfactories.ExampleFactoryA;

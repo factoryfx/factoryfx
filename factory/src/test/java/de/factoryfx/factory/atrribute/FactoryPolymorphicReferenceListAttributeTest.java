@@ -3,7 +3,6 @@ package de.factoryfx.factory.atrribute;
 import de.factoryfx.data.jackson.ObjectMapperBuilder;
 import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.factory.SimpleFactoryBase;
-import de.factoryfx.factory.builder.FactoryTreeBuilderTest;
 import de.factoryfx.factory.testfactories.poly.ErrorPrinterFactory;
 import de.factoryfx.factory.testfactories.poly.OutPrinterFactory;
 import de.factoryfx.factory.testfactories.poly.Printer;

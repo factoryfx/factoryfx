@@ -11,8 +11,6 @@ import javax.xml.soap.SOAPMessage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
-import static org.junit.Assert.*;
-
 public class SOAPMessageUtilTest {
 
     @Test

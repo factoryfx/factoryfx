@@ -7,6 +7,7 @@ import de.factoryfx.data.attribute.Attribute;
 import de.factoryfx.data.storage.migration.datamigration.AttributeRename;
 import de.factoryfx.data.storage.migration.datamigration.ClassRename;
 import de.factoryfx.data.storage.migration.datamigration.DataJsonNode;
+import de.factoryfx.data.storage.migration.datamigration.DataMigration;
 import de.factoryfx.data.storage.migration.metadata.DataStorageMetadataDictionary;
 
 import java.util.ArrayList;
@@ -60,16 +61,9 @@ public class DataMigrationManager {
     private boolean isData(JsonNode jsonNode){
         if (jsonNode.fieldNames().hasNext()){
             String fieldName = jsonNode.fieldNames().next();
-            if ("@class".equals(fieldName)){
-                return true;
-            }
+            return "@class".equals(fieldName);
         }
         return false;
-    }
-
-    public interface DataMigration{
-        boolean canMigrate(DataStorageMetadataDictionary pastDataStorageMetadataDictionary);
-        void migrate(List<DataJsonNode> dataJsonNodes);
     }
 
 }
