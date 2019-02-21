@@ -1,7 +1,7 @@
 package de.factoryfx.factory.log;
 
 import de.factoryfx.data.jackson.ObjectMapperBuilder;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class FactoryLogEntryItemTest {
     @Test

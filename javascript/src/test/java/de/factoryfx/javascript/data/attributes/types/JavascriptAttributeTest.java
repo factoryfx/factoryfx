@@ -6,8 +6,8 @@ import java.util.List;
 
 import de.factoryfx.data.Data;
 import de.factoryfx.data.jackson.ObjectMapperBuilder;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class JavascriptAttributeTest {
 
@@ -15,7 +15,7 @@ public class JavascriptAttributeTest {
     public void test_get_update_header(){
         Data data = new Data();
         JavascriptAttribute<Object> javascriptAttributeTest = new JavascriptAttribute<>(() -> Collections.singletonList(data),Object.class);
-        Assert.assertEquals("var data = {};",javascriptAttributeTest.get().getHeaderCode().trim());
+        Assertions.assertEquals("var data = {};",javascriptAttributeTest.get().getHeaderCode().trim());
     }
 
     @Test
@@ -30,8 +30,8 @@ public class JavascriptAttributeTest {
         javascriptAttributeTest.set(new Javascript<>("XXX"));
         Thread.sleep(2100);
 
-        Assert.assertEquals(2,calls.size()); //TODO should be 1 call
-        Assert.assertEquals("XXX",calls.get(0));
+        Assertions.assertEquals(2,calls.size()); //TODO should be 1 call
+        Assertions.assertEquals("XXX",calls.get(0));
     }
 
     @Test
@@ -45,7 +45,7 @@ public class JavascriptAttributeTest {
         });
         javascriptAttributeTest.set(new Javascript<>("XXX1"));
         javascriptAttributeTest.set(new Javascript<>("XXX2"));
-        Assert.assertEquals("XXX2",calls.get(calls.size()-1));
+        Assertions.assertEquals("XXX2",calls.get(calls.size()-1));
     }
 
     public static class ExampleJavascriptData{
@@ -57,7 +57,7 @@ public class JavascriptAttributeTest {
         ExampleJavascriptData data = new ExampleJavascriptData();
         data.attribute.set(new Javascript<>("XXX1"));
         ExampleJavascriptData copy = ObjectMapperBuilder.build().copy(data);
-        Assert.assertEquals("XXX1",data.attribute.get().getCode());
+        Assertions.assertEquals("XXX1",data.attribute.get().getCode());
     }
 
 }

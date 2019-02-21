@@ -2,8 +2,8 @@ package de.factoryfx.data.storage;
 
 import de.factoryfx.data.merge.testdata.ExampleDataA;
 import de.factoryfx.data.storage.inmemory.InMemoryDataStorage;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import java.util.Comparator;
 import java.util.List;
@@ -40,12 +40,12 @@ public class DataStorageTest {
         Thread.sleep(2);//avoid same timestamp
 
         List<StoredDataMetadata> historyFactoryList = factoryStorage.getHistoryDataList().stream().sorted(Comparator.comparing(h -> h.creationTime)).collect(Collectors.toList());
-        Assert.assertEquals("1",factoryStorage.getHistoryData(historyFactoryList.get(0).id).stringAttribute.get());
-        Assert.assertEquals("2",factoryStorage.getHistoryData(historyFactoryList.get(1).id).stringAttribute.get());
-        Assert.assertEquals("3",factoryStorage.getHistoryData(historyFactoryList.get(2).id).stringAttribute.get());
-        Assert.assertEquals("2",factoryStorage.getPreviousHistoryData(historyFactoryList.get(2).id).stringAttribute.get());
-        Assert.assertEquals("1",factoryStorage.getPreviousHistoryData(historyFactoryList.get(1).id).stringAttribute.get());
-        Assert.assertEquals(null,factoryStorage.getPreviousHistoryData(historyFactoryList.get(0).id));
+        Assertions.assertEquals("1",factoryStorage.getHistoryData(historyFactoryList.get(0).id).stringAttribute.get());
+        Assertions.assertEquals("2",factoryStorage.getHistoryData(historyFactoryList.get(1).id).stringAttribute.get());
+        Assertions.assertEquals("3",factoryStorage.getHistoryData(historyFactoryList.get(2).id).stringAttribute.get());
+        Assertions.assertEquals("2",factoryStorage.getPreviousHistoryData(historyFactoryList.get(2).id).stringAttribute.get());
+        Assertions.assertEquals("1",factoryStorage.getPreviousHistoryData(historyFactoryList.get(1).id).stringAttribute.get());
+        Assertions.assertEquals(null,factoryStorage.getPreviousHistoryData(historyFactoryList.get(0).id));
     }
 
 }

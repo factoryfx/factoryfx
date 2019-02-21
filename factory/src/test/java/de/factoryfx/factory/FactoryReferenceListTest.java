@@ -7,8 +7,8 @@ import java.util.stream.Collectors;
 import de.factoryfx.data.storage.DataUpdate;
 import de.factoryfx.factory.builder.FactoryTreeBuilder;
 import de.factoryfx.factory.builder.Scope;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import de.factoryfx.factory.atrribute.FactoryReferenceListAttribute;
 import de.factoryfx.factory.log.FactoryUpdateLog;
@@ -68,7 +68,7 @@ public class FactoryReferenceListTest {
         microService.start();
 
         {
-            Assert.assertTrue(creator.contains(first.getId()));
+            Assertions.assertTrue(creator.contains(first.getId()));
             creator.clear();
             recreator.clear();
             starter.clear();
@@ -80,15 +80,15 @@ public class FactoryReferenceListTest {
             update1.root.objects.add(second);
 
             FactoryUpdateLog<RootFactory> res1 = microService.updateCurrentFactory(update1);
-            Assert.assertTrue(res1.successfullyMerged());
+            Assertions.assertTrue(res1.successfullyMerged());
 
-             Assert.assertFalse(creator.contains(first.getId()));
-             Assert.assertFalse(starter.contains(first.getId()));
-             Assert.assertFalse(destroyer.contains(first.getId()));
+             Assertions.assertFalse(creator.contains(first.getId()));
+             Assertions.assertFalse(starter.contains(first.getId()));
+             Assertions.assertFalse(destroyer.contains(first.getId()));
 
-            Assert.assertFalse(recreator.contains(first.getId()));
-            Assert.assertTrue(creator.contains(second.getId()));
-            Assert.assertTrue(starter.contains(second.getId()));
+            Assertions.assertFalse(recreator.contains(first.getId()));
+            Assertions.assertTrue(creator.contains(second.getId()));
+            Assertions.assertTrue(starter.contains(second.getId()));
         }
 
     }

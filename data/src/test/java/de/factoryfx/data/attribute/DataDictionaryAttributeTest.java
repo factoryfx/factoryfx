@@ -3,8 +3,8 @@ package de.factoryfx.data.attribute;
 import de.factoryfx.data.jackson.ObjectMapperBuilder;
 import de.factoryfx.data.merge.testdata.ExampleDataA;
 import de.factoryfx.data.merge.testdata.ExampleDataB;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class DataDictionaryAttributeTest {
 
@@ -14,7 +14,7 @@ public class DataDictionaryAttributeTest {
         exampleDataA.referenceAttribute.set(new ExampleDataB());
 
         ExampleDataA copy = ObjectMapperBuilder.build().copy(exampleDataA);
-        Assert.assertNotNull(copy);
+        Assertions.assertNotNull(copy);
     }
 
     @Test
@@ -22,7 +22,7 @@ public class DataDictionaryAttributeTest {
         ExampleReferenceData value = new ExampleReferenceData();
         value.attribute.set(new ExampleDataA());
         ExampleReferenceData copy = ObjectMapperBuilder.build().copy(value);
-        Assert.assertNotNull(copy.attribute.get());
+        Assertions.assertNotNull(copy.attribute.get());
     }
 
     public static class ExampleReferenceData{

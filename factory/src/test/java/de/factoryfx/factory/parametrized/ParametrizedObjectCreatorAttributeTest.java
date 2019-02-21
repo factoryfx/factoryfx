@@ -2,8 +2,8 @@ package de.factoryfx.factory.parametrized;
 
 import de.factoryfx.data.validation.ValidationError;
 import de.factoryfx.factory.testfactories.ExampleFactoryA;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
@@ -15,13 +15,13 @@ public class ParametrizedObjectCreatorAttributeTest {
         {
             attribute.set(null);
             List<ValidationError> validationErrors = attribute.internal_validate(new ExampleFactoryA(),"");
-            Assert.assertEquals(1, validationErrors.size());
+            Assertions.assertEquals(1, validationErrors.size());
         }
 
         {
             attribute.set(new ParametrizedObjectCreatorFactoryTest.ShortLivedLiveObjectCreatorFactory());
             List<ValidationError> validationErrors = attribute.internal_validate(new ExampleFactoryA(),"");
-            Assert.assertEquals(0, validationErrors.size());
+            Assertions.assertEquals(0, validationErrors.size());
         }
     }
 
@@ -32,26 +32,26 @@ public class ParametrizedObjectCreatorAttributeTest {
         {
             attribute.set(null);
             List<ValidationError> validationErrors = attribute.internal_validate(new ExampleFactoryA(),"");
-            Assert.assertEquals(0, validationErrors.size());
+            Assertions.assertEquals(0, validationErrors.size());
         }
 
         {
             attribute.set(new ParametrizedObjectCreatorFactoryTest.ShortLivedLiveObjectCreatorFactory());
             List<ValidationError> validationErrors = attribute.internal_validate(new ExampleFactoryA(),"");
-            Assert.assertEquals(0, validationErrors.size());
+            Assertions.assertEquals(0, validationErrors.size());
         }
     }
 
     @Test
     public void test_internal_require_true(){
         ParametrizedObjectCreatorAttribute<ParametrizedObjectCreatorFactoryTest.ShortLivedParameter,ParametrizedObjectCreatorFactoryTest.ShortLivedLiveObject,ParametrizedObjectCreatorFactoryTest.ShortLivedLiveObjectCreatorFactory> attribute = new ParametrizedObjectCreatorAttribute<>(ParametrizedObjectCreatorFactoryTest.ShortLivedLiveObjectCreatorFactory.class);
-        Assert.assertTrue(attribute.internal_required());
+        Assertions.assertTrue(attribute.internal_required());
     }
 
     @Test
     public void test_internal_require_false(){
         ParametrizedObjectCreatorAttribute<ParametrizedObjectCreatorFactoryTest.ShortLivedParameter,ParametrizedObjectCreatorFactoryTest.ShortLivedLiveObject,ParametrizedObjectCreatorFactoryTest.ShortLivedLiveObjectCreatorFactory> attribute = new ParametrizedObjectCreatorAttribute<>(ParametrizedObjectCreatorFactoryTest.ShortLivedLiveObjectCreatorFactory.class).nullable();
-        Assert.assertFalse(attribute.internal_required());
+        Assertions.assertFalse(attribute.internal_required());
     }
 
 }

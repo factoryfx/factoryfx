@@ -2,8 +2,8 @@ package de.factoryfx.data.merge;
 
 import de.factoryfx.data.jackson.ObjectMapperBuilder;
 import de.factoryfx.data.merge.testdata.ExampleDataA;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class MergeDiffInfoTest {
 
@@ -22,9 +22,9 @@ public class MergeDiffInfoTest {
         MergeDiffInfo mergeDiff= dataMerger.mergeIntoCurrent((permission)->true);
 
         MergeDiffInfo copy = ObjectMapperBuilder.build().copy(mergeDiff);
-        Assert.assertEquals("1111111",((ExampleDataA)copy.getPreviousRootData()).stringAttribute.get());
-        Assert.assertEquals("2222222",((ExampleDataA)copy.getNewRootData()).stringAttribute.get());
-        Assert.assertNotNull(((ExampleDataA)copy.getNewRootData()).internal().getRoot());
+        Assertions.assertEquals("1111111",((ExampleDataA)copy.getPreviousRootData()).stringAttribute.get());
+        Assertions.assertEquals("2222222",((ExampleDataA)copy.getNewRootData()).stringAttribute.get());
+        Assertions.assertNotNull(((ExampleDataA)copy.getNewRootData()).internal().getRoot());
 
 
     }

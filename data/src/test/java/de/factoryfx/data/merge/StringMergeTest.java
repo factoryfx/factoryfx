@@ -2,8 +2,8 @@ package de.factoryfx.data.merge;
 
 import de.factoryfx.data.Data;
 import de.factoryfx.data.attribute.types.StringAttribute;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class StringMergeTest extends MergeHelperTestBase {
 
@@ -22,11 +22,11 @@ public class StringMergeTest extends MergeHelperTestBase {
         update.stringA.set("11111111");
         update = update.internal().addBackReferences();
 
-        Assert.assertTrue(merge(aTest1, aTest1, update).hasNoConflicts());
+        Assertions.assertTrue(merge(aTest1, aTest1, update).hasNoConflicts());
 
         update.stringA.set("11111111qqqqq");
-        Assert.assertTrue(merge(aTest1, aTest1, update).hasNoConflicts());
-        Assert.assertEquals("11111111qqqqq",aTest1.stringA.get());
+        Assertions.assertTrue(merge(aTest1, aTest1, update).hasNoConflicts());
+        Assertions.assertEquals("11111111qqqqq",aTest1.stringA.get());
     }
 
     @Test
@@ -39,8 +39,8 @@ public class StringMergeTest extends MergeHelperTestBase {
         aTest2.stringA.set("11111111qqqqq");
         aTest2 = aTest2.internal().addBackReferences();
 
-        Assert.assertTrue(merge(aTest1, aTest1, aTest2).hasNoConflicts());
-        Assert.assertEquals("11111111qqqqq",aTest1.stringA.get());
+        Assertions.assertTrue(merge(aTest1, aTest1, aTest2).hasNoConflicts());
+        Assertions.assertEquals("11111111qqqqq",aTest1.stringA.get());
     }
 
     @Test
@@ -60,9 +60,9 @@ public class StringMergeTest extends MergeHelperTestBase {
         newData.stringB.set("11111111qqqqq");
         newData = newData.internal().addBackReferences();
 
-        Assert.assertTrue(merge(current, original, newData).hasNoConflicts());
-        Assert.assertEquals("11111111xxxxxxx", current.stringA.get());
-        Assert.assertEquals("11111111qqqqq", current.stringB.get());
+        Assertions.assertTrue(merge(current, original, newData).hasNoConflicts());
+        Assertions.assertEquals("11111111xxxxxxx", current.stringA.get());
+        Assertions.assertEquals("11111111qqqqq", current.stringB.get());
     }
 
 }

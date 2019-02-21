@@ -1,6 +1,8 @@
 package de.factoryfx.factory;
 
-import org.junit.Test;
+
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class SimpleFactoryBaseTest {
 
@@ -16,10 +18,12 @@ public class SimpleFactoryBaseTest {
         }
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test
     public void test_invalid_creator_set(){
-        //creator should not work cause inheritance api in SimpleFactory
-        InvalidSimpleFactoryFactory simpleFactoryFactory = new InvalidSimpleFactoryFactory();
+        Assertions.assertThrows(IllegalStateException.class, () -> {
+            //creator should not work cause inheritance api in SimpleFactory
+            InvalidSimpleFactoryFactory simpleFactoryFactory = new InvalidSimpleFactoryFactory();
+        });
     }
 
 }

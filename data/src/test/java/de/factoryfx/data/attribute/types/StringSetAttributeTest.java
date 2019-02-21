@@ -2,8 +2,8 @@ package de.factoryfx.data.attribute.types;
 
 import de.factoryfx.data.Data;
 import de.factoryfx.data.jackson.ObjectMapperBuilder;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class StringSetAttributeTest {
     public static class ExampleSetFactory extends Data {
@@ -22,7 +22,7 @@ public class StringSetAttributeTest {
         StringSetAttribute attribute = new StringSetAttribute();
         attribute.add("123");
         StringSetAttribute copy = ObjectMapperBuilder.build().copy(attribute);
-        Assert.assertEquals("123",copy.get().iterator().next());
+        Assertions.assertEquals("123",copy.get().iterator().next());
     }
 
 }

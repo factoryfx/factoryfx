@@ -3,15 +3,15 @@ package de.factoryfx.data.attribute.types;
 import java.util.Locale;
 
 import de.factoryfx.data.jackson.ObjectMapperBuilder;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class LocaleAttributeTest {
     @Test
     public void test_json(){
         LocaleAttribute attribute= new LocaleAttribute().defaultValue(Locale.FRANCE);
         LocaleAttribute copy= ObjectMapperBuilder.build().copy(attribute);
-        Assert.assertEquals(Locale.FRANCE,copy.get());
+        Assertions.assertEquals(Locale.FRANCE,copy.get());
     }
 
     @Test
@@ -19,6 +19,6 @@ public class LocaleAttributeTest {
         LocaleAttribute attribute= new LocaleAttribute().defaultValue(Locale.FRANCE);
         LocaleAttribute copy= new LocaleAttribute();
         attribute.internal_copyTo(copy,null);
-        Assert.assertEquals(Locale.FRANCE,copy.get());
+        Assertions.assertEquals(Locale.FRANCE,copy.get());
     }
 }

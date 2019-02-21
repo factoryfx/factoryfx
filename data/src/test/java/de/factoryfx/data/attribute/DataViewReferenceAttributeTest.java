@@ -7,8 +7,8 @@ import de.factoryfx.data.Data;
 import de.factoryfx.data.attribute.primitive.BooleanAttribute;
 import de.factoryfx.data.jackson.ObjectMapperBuilder;
 import de.factoryfx.data.merge.testdata.ExampleDataA;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class DataViewReferenceAttributeTest {
 
@@ -46,7 +46,7 @@ public class DataViewReferenceAttributeTest {
 
         root = root.internal().addBackReferences();
 
-        Assert.assertEquals(root.exampleFactoryA.get().getId(),root.ref.get().view.get().getId());
+        Assertions.assertEquals(root.exampleFactoryA.get().getId(),root.ref.get().view.get().getId());
     }
 
     @Test
@@ -61,7 +61,7 @@ public class DataViewReferenceAttributeTest {
 
         root.internal().addBackReferences();
 
-        Assert.assertEquals(null,viewExampleFactory.view.get());
+        Assertions.assertEquals(null,viewExampleFactory.view.get());
     }
 
     @Test
@@ -95,8 +95,8 @@ public class DataViewReferenceAttributeTest {
             throw new RuntimeException(e);
         }
 
-        Assert.assertEquals(1,calls.size());
-        Assert.assertEquals("123",calls.get(0));
+        Assertions.assertEquals(1,calls.size());
+        Assertions.assertEquals("123",calls.get(0));
 
 
         calls.clear();
@@ -106,8 +106,8 @@ public class DataViewReferenceAttributeTest {
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
-        Assert.assertEquals(1,calls.size());
-        Assert.assertEquals("null",calls.get(0));
+        Assertions.assertEquals(1,calls.size());
+        Assertions.assertEquals("null",calls.get(0));
     }
 
 
@@ -135,7 +135,7 @@ public class DataViewReferenceAttributeTest {
             throw new RuntimeException(e);
         }
 
-        Assert.assertEquals(0,calls.size());
+        Assertions.assertEquals(0,calls.size());
     }
 
     @Test
@@ -164,7 +164,7 @@ public class DataViewReferenceAttributeTest {
         root.exampleFactoryA.set(value);
 
         root.internal().addBackReferences();
-        Assert.assertEquals(root.ref.get().view.root,root);
+        Assertions.assertEquals(root.ref.get().view.root,root);
     }
 
     @Test
@@ -178,9 +178,9 @@ public class DataViewReferenceAttributeTest {
 
         final AttributeChangeListener<ExampleDataA,DataViewReferenceAttribute<ViewExampleFactoryRoot,ExampleDataA>> attributeChangeListener = (a, value) -> System.out.println(value);
         attribute.internal_addListener(attributeChangeListener);
-        Assert.assertTrue(attribute.listeners.size()==1);
+        Assertions.assertTrue(attribute.listeners.size()==1);
         attribute.internal_removeListener(attributeChangeListener);
-        Assert.assertTrue(attribute.listeners.size()==0);
+        Assertions.assertTrue(attribute.listeners.size()==0);
     }
 
     @Test
@@ -194,9 +194,9 @@ public class DataViewReferenceAttributeTest {
 
         final AttributeChangeListener<ExampleDataA,DataViewReferenceAttribute<ViewExampleFactoryRoot,ExampleDataA>> attributeChangeListener = (a, value) -> System.out.println(value);
         attribute.internal_addListener(new WeakAttributeChangeListener<>(attributeChangeListener));
-        Assert.assertTrue(attribute.listeners.size()==1);
+        Assertions.assertTrue(attribute.listeners.size()==1);
         attribute.internal_removeListener(attributeChangeListener);
-        Assert.assertTrue(attribute.listeners.size()==0);
+        Assertions.assertTrue(attribute.listeners.size()==0);
     }
 
     @Test

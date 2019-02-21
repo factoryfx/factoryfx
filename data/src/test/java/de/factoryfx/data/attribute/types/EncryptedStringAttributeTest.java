@@ -1,8 +1,8 @@
 package de.factoryfx.data.attribute.types;
 
 import de.factoryfx.data.jackson.ObjectMapperBuilder;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class EncryptedStringAttributeTest {
 
@@ -12,7 +12,7 @@ public class EncryptedStringAttributeTest {
         String key=attribute.createKey();
         attribute.set(new EncryptedString("test123üÄ",key));
 
-        Assert.assertEquals("test123üÄ",attribute.decrypt(key));
+        Assertions.assertEquals("test123üÄ",attribute.decrypt(key));
     }
 
     @Test
@@ -29,6 +29,6 @@ public class EncryptedStringAttributeTest {
         String key=attribute.createKey();
         attribute.encrypt("test123üÄ",key);
 
-        Assert.assertEquals("test123üÄ",attribute.decrypt(key));
+        Assertions.assertEquals("test123üÄ",attribute.decrypt(key));
     }
 }

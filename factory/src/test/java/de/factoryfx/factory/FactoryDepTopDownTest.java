@@ -8,8 +8,8 @@ import java.util.stream.Stream;
 import de.factoryfx.data.storage.DataUpdate;
 import de.factoryfx.factory.builder.FactoryTreeBuilder;
 import de.factoryfx.factory.builder.Scope;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import de.factoryfx.factory.atrribute.FactoryReferenceAttribute;
 import de.factoryfx.factory.log.FactoryUpdateLog;
@@ -78,9 +78,9 @@ public class FactoryDepTopDownTest {
         ObjectFactory first=rootFactory.object1.get();
         ObjectFactory second=rootFactory.object2.get();
         {
-            Assert.assertTrue(creator.contains(rootFactory.getId()));
-            Assert.assertTrue(creator.contains(first.getId()));
-            Assert.assertTrue(creator.contains(second.getId()));
+            Assertions.assertTrue(creator.contains(rootFactory.getId()));
+            Assertions.assertTrue(creator.contains(first.getId()));
+            Assertions.assertTrue(creator.contains(second.getId()));
             creator.clear();
             recreator.clear();
             starter.clear();
@@ -92,18 +92,18 @@ public class FactoryDepTopDownTest {
             update1.root.object2.set(secondV2);
 
             FactoryUpdateLog<RootFactory> res1 = microService.updateCurrentFactory(update1);
-            Assert.assertTrue(res1.successfullyMerged());
+            Assertions.assertTrue(res1.successfullyMerged());
 
-            Assert.assertTrue(creator.contains(rootFactory.getId()));
+            Assertions.assertTrue(creator.contains(rootFactory.getId()));
 
-            Assert.assertFalse(creator.contains(first.getId()));
-            Assert.assertFalse(starter.contains(first.getId()));
-            Assert.assertFalse(destroyer.contains(first.getId()));
-            Assert.assertFalse(recreator.contains(first.getId()));
+            Assertions.assertFalse(creator.contains(first.getId()));
+            Assertions.assertFalse(starter.contains(first.getId()));
+            Assertions.assertFalse(destroyer.contains(first.getId()));
+            Assertions.assertFalse(recreator.contains(first.getId()));
 
-            Assert.assertTrue(destroyer.contains(second.getId()));
-            Assert.assertTrue(creator.contains(secondV2.getId()));
-            Assert.assertTrue(starter.contains(secondV2.getId()));
+            Assertions.assertTrue(destroyer.contains(second.getId()));
+            Assertions.assertTrue(creator.contains(secondV2.getId()));
+            Assertions.assertTrue(starter.contains(secondV2.getId()));
         }
     }
 

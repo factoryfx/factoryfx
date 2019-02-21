@@ -1,7 +1,7 @@
 package de.factoryfx.microservice.common;
 
 import de.factoryfx.data.jackson.ObjectMapperBuilder;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class UserAwareRequestTest {
 

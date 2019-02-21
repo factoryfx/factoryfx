@@ -5,8 +5,8 @@ import de.factoryfx.data.attribute.types.StringAttribute;
 import de.factoryfx.data.merge.testdata.ExampleDataA;
 import de.factoryfx.data.merge.testdata.ExampleDataB;
 import de.factoryfx.data.merge.testdata.ExampleDataC;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class DataMergerTest {
 
@@ -22,9 +22,9 @@ public class DataMergerTest {
         DataMerger<ExampleDataA>dataMerger = new DataMerger<>(currentModel, originalModel, newModel);
 
         MergeDiffInfo<ExampleDataA> mergeDiff= dataMerger.mergeIntoCurrent((permission)->true);
-        Assert.assertTrue(mergeDiff.hasNoConflicts());
-        Assert.assertEquals("1111111",mergeDiff.mergeInfos.get(0).getAttributeDisplayText(mergeDiff.getPreviousRootData()));
-        Assert.assertEquals("2222222",mergeDiff.mergeInfos.get(0).getAttributeDisplayText(mergeDiff.getNewRootData()));
+        Assertions.assertTrue(mergeDiff.hasNoConflicts());
+        Assertions.assertEquals("1111111",mergeDiff.mergeInfos.get(0).getAttributeDisplayText(mergeDiff.getPreviousRootData()));
+        Assertions.assertEquals("2222222",mergeDiff.mergeInfos.get(0).getAttributeDisplayText(mergeDiff.getNewRootData()));
     }
 
     @Test
@@ -41,10 +41,10 @@ public class DataMergerTest {
         DataMerger<ExampleDataA> dataMerger = new DataMerger<>(currentModel, originalModel, newModel);
 
         MergeDiffInfo<ExampleDataA> mergeDiff= dataMerger.mergeIntoCurrent((permission)->true);
-        Assert.assertTrue(mergeDiff.hasNoConflicts());
+        Assertions.assertTrue(mergeDiff.hasNoConflicts());
         ExampleDataB exampleDataB = (ExampleDataB) mergeDiff.mergeInfos.get(0).getAttribute(mergeDiff.getPreviousRootData()).get();
-        Assert.assertTrue((exampleDataB.stringAttribute.get()).equals("Factory to be deleted"));
-        Assert.assertEquals("empty",mergeDiff.mergeInfos.get(0).getAttributeDisplayText(mergeDiff.getNewRootData()));
+        Assertions.assertTrue((exampleDataB.stringAttribute.get()).equals("Factory to be deleted"));
+        Assertions.assertEquals("empty",mergeDiff.mergeInfos.get(0).getAttributeDisplayText(mergeDiff.getNewRootData()));
     }
 
     @Test
@@ -63,7 +63,7 @@ public class DataMergerTest {
         DataMerger<ExampleDataA>dataMerger = new DataMerger<>(currentModel, originalModel, newModel);
 
         MergeDiffInfo<ExampleDataA> mergeDiff= dataMerger.mergeIntoCurrent((permission)->true);
-        Assert.assertTrue(mergeDiff.hasNoConflicts());
+        Assertions.assertTrue(mergeDiff.hasNoConflicts());
     }
 
     public static class ExampleFactoryPermission extends Data {
@@ -82,8 +82,8 @@ public class DataMergerTest {
         DataMerger<ExampleFactoryPermission> dataMerger = new DataMerger<>(currentModel, originalModel, newModel);
         MergeDiffInfo<ExampleFactoryPermission> mergeDiff= dataMerger.mergeIntoCurrent((permission)->false);
 
-        Assert.assertFalse(mergeDiff.hasNoPermissionViolation());
-        Assert.assertFalse(mergeDiff.successfullyMerged());
+        Assertions.assertFalse(mergeDiff.hasNoPermissionViolation());
+        Assertions.assertFalse(mergeDiff.successfullyMerged());
     }
 
     @Test
@@ -97,8 +97,8 @@ public class DataMergerTest {
 
         DataMerger<ExampleFactoryPermission> dataMerger = new DataMerger<>(currentModel, originalModel, newModel);
         MergeDiffInfo<ExampleFactoryPermission> mergeDiff= dataMerger.mergeIntoCurrent((permission)->true);
-        Assert.assertTrue(mergeDiff.hasNoPermissionViolation());
-        Assert.assertTrue(mergeDiff.successfullyMerged());
+        Assertions.assertTrue(mergeDiff.hasNoPermissionViolation());
+        Assertions.assertTrue(mergeDiff.successfullyMerged());
     }
 
     @Test
@@ -125,10 +125,10 @@ public class DataMergerTest {
         }
         System.out.println(jreDeoptmizer);
 
-//        Assert.assertTrue(mergeDiff.hasNoConflicts());
+//        Assertions.assertTrue(mergeDiff.hasNoConflicts());
 
-//        Assert.assertTrue(mergeDiff.hasNoConflicts());
-//        Assert.assertEquals("2222222",currentModel.stringAttribute.get());
+//        Assertions.assertTrue(mergeDiff.hasNoConflicts());
+//        Assertions.assertEquals("2222222",currentModel.stringAttribute.get());
     }
 
 }

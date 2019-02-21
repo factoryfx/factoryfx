@@ -3,8 +3,8 @@ package de.factoryfx.server.user.persistent;
 import de.factoryfx.factory.testfactories.ExampleFactoryA;
 import de.factoryfx.server.user.persistent.PersistentUserManagementFactory;
 import de.factoryfx.server.user.persistent.UserFactory;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class PersistentUserManagementFactoryTest {
 
@@ -21,7 +21,7 @@ public class PersistentUserManagementFactoryTest {
             userFactory.name.set("2");
             persistentUserManagementFactory.users.add(userFactory);
         }
-        Assert.assertEquals(0,persistentUserManagementFactory.internal().validateFlat().size());
+        Assertions.assertEquals(0,persistentUserManagementFactory.internal().validateFlat().size());
     }
 
     @Test
@@ -37,7 +37,7 @@ public class PersistentUserManagementFactoryTest {
             userFactory.name.set("1");
             persistentUserManagementFactory.users.add(userFactory);
         }
-        Assert.assertEquals(1,persistentUserManagementFactory.internal().validateFlat().size());
+        Assertions.assertEquals(1,persistentUserManagementFactory.internal().validateFlat().size());
     }
 
 

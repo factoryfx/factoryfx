@@ -2,8 +2,8 @@ package de.factoryfx.data.merge;
 
 import de.factoryfx.data.merge.testdata.ExampleDataA;
 import de.factoryfx.data.merge.testdata.ExampleDataB;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class ReferenceMergeTest extends MergeHelperTestBase{
 
@@ -18,8 +18,8 @@ public class ReferenceMergeTest extends MergeHelperTestBase{
         ExampleDataA newVersion = current.internal().copy();
 
         MergeDiffInfo merge = this.merge(current, current, newVersion);
-        Assert.assertTrue( merge.hasNoConflicts());
-        Assert.assertEquals(0,merge.mergeInfos.size());
+        Assertions.assertTrue( merge.hasNoConflicts());
+        Assertions.assertEquals(0,merge.mergeInfos.size());
     }
 
     @Test
@@ -35,8 +35,8 @@ public class ReferenceMergeTest extends MergeHelperTestBase{
         update = update.internal().addBackReferences();
 
         String beforeMergeId=update.referenceAttribute.get().getId();
-        Assert.assertTrue(merge(current, current, update).hasNoConflicts());
-        Assert.assertEquals(beforeMergeId, current.referenceAttribute.get().getId());
+        Assertions.assertTrue(merge(current, current, update).hasNoConflicts());
+        Assertions.assertEquals(beforeMergeId, current.referenceAttribute.get().getId());
     }
 
     @Test
@@ -50,8 +50,8 @@ public class ReferenceMergeTest extends MergeHelperTestBase{
         newVersion.referenceAttribute.set(null);
         newVersion = newVersion.internal().addBackReferences();
 
-        Assert.assertTrue(merge(current, current, newVersion).hasNoConflicts());
-        Assert.assertEquals(null, current.referenceAttribute.get());
+        Assertions.assertTrue(merge(current, current, newVersion).hasNoConflicts());
+        Assertions.assertEquals(null, current.referenceAttribute.get());
     }
 
 

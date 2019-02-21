@@ -2,7 +2,7 @@ package de.factoryfx.factory.atrribute;
 
 import de.factoryfx.data.jackson.ObjectMapperBuilder;
 import de.factoryfx.factory.SimpleFactoryBase;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class FactoryViewListReferenceAttributeTest {
     public static class ExampleViewListFactory extends SimpleFactoryBase<Void,Void, ExampleViewListFactory> {

@@ -2,7 +2,7 @@ package de.factoryfx.soap;
 
 import de.factoryfx.soap.example.HelloWorld;
 import de.factoryfx.soap.example.SoapDummyRequest;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import javax.xml.soap.MessageFactory;
 import javax.xml.soap.SOAPException;

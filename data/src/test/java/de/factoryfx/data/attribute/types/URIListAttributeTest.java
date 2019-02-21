@@ -1,8 +1,8 @@
 package de.factoryfx.data.attribute.types;
 
 import de.factoryfx.data.jackson.ObjectMapperBuilder;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class URIListAttributeTest {
 
@@ -11,7 +11,7 @@ public class URIListAttributeTest {
         URIListAttribute attribute = new URIListAttribute();
         attribute.addUnchecked("www.google.de");
         URIListAttribute copy = ObjectMapperBuilder.build().copy(attribute);
-        Assert.assertEquals("www.google.de",copy.get().iterator().next().toString());
+        Assertions.assertEquals("www.google.de",copy.get().iterator().next().toString());
     }
 
 }

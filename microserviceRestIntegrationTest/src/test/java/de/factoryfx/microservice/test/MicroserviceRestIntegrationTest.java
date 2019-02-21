@@ -18,8 +18,8 @@ import de.factoryfx.server.Microservice;
 import de.factoryfx.server.user.persistent.PersistentUserManagementFactory;
 import de.factoryfx.server.user.persistent.UserFactory;
 import org.eclipse.jetty.server.Server;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.Locale;
@@ -95,9 +95,9 @@ public class MicroserviceRestIntegrationTest {
 
             ResponseWorkaround<TestVisitor> query1 = microserviceRestClient.query(new TestVisitor());
             TestVisitor query = query1.value;
-            Assert.assertEquals("123",query.test);
+            Assertions.assertEquals("123",query.test);
 
-            Assert.assertEquals(Locale.GERMAN, microserviceRestClient.getLocale());
+            Assertions.assertEquals(Locale.GERMAN, microserviceRestClient.getLocale());
         } finally {
             microservice.stop();
         }

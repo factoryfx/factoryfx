@@ -7,8 +7,8 @@ import java.util.List;
 import de.factoryfx.data.Data;
 import de.factoryfx.data.jackson.ObjectMapperBuilder;
 import de.factoryfx.data.merge.testdata.ExampleDataA;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class ReferenceAttributeTest {
 
@@ -23,7 +23,7 @@ public class ReferenceAttributeTest {
         referenceAttribute.internal_addListener((a,value) -> calls.add(""));
         referenceAttribute.set(new ExampleDataA());
 
-        Assert.assertEquals(1,calls.size());
+        Assertions.assertEquals(1,calls.size());
     }
 
     @Test
@@ -45,20 +45,20 @@ public class ReferenceAttributeTest {
         referenceAttribute.internal_addListener(invalidationListener);
         referenceAttribute.set(new ExampleDataA());
 
-        Assert.assertEquals(1,calls.size());
+        Assertions.assertEquals(1,calls.size());
 
         referenceAttribute.internal_removeListener(invalidationListener);
         referenceAttribute.set(new ExampleDataA());
-        Assert.assertEquals(1,calls.size());
+        Assertions.assertEquals(1,calls.size());
     }
 
     @Test
     public void test_add_new(){
         DataReferenceAttribute<ExampleDataA> referenceAttribute=new DataReferenceAttribute<>(ExampleDataA.class);
-        Assert.assertNull(referenceAttribute.get());
+        Assertions.assertNull(referenceAttribute.get());
         List<ExampleDataA> exampleFactoryAS = referenceAttribute.internal_createNewPossibleValues();
         referenceAttribute.set(exampleFactoryAS.get(0));
-        Assert.assertNotNull(referenceAttribute.get());
+        Assertions.assertNotNull(referenceAttribute.get());
 
     }
 
@@ -70,8 +70,8 @@ public class ReferenceAttributeTest {
         root.internal().addBackReferences();
 
         Collection<ExampleDataA> possibleFactories =root.referenceAttribute.internal_possibleValues();
-        Assert.assertEquals(1,possibleFactories.size());
-        Assert.assertEquals(exampleFactoryA,new ArrayList<>(possibleFactories).get(0));
+        Assertions.assertEquals(1,possibleFactories.size());
+        Assertions.assertEquals(exampleFactoryA,new ArrayList<>(possibleFactories).get(0));
 
     }
 
@@ -83,8 +83,8 @@ public class ReferenceAttributeTest {
         ExampleDataA added = new ExampleDataA();
         referenceAttribute.set(added);
 
-        Assert.assertEquals(1,calls.size());
-        Assert.assertEquals(added,calls.get(0));
+        Assertions.assertEquals(1,calls.size());
+        Assertions.assertEquals(added,calls.get(0));
     }
 
     @Test
@@ -99,9 +99,9 @@ public class ReferenceAttributeTest {
         });
         ExampleDataA exampleFactoryA = new ExampleDataA();
         referenceAttribute.set(exampleFactoryA);
-        Assert.assertEquals(1,calls.size());
-        Assert.assertEquals(exampleFactoryA,calls.get(0));
-        Assert.assertEquals(exampleFactoryA,callsAttributeGet.get(0));
+        Assertions.assertEquals(1,calls.size());
+        Assertions.assertEquals(exampleFactoryA,calls.get(0));
+        Assertions.assertEquals(exampleFactoryA,callsAttributeGet.get(0));
 
     }
 
@@ -111,9 +111,9 @@ public class ReferenceAttributeTest {
 
         final AttributeChangeListener<ExampleDataA,DataReferenceAttribute<ExampleDataA>> attributeChangeListener = (a, value) -> System.out.println(value);
         attribute.internal_addListener(attributeChangeListener);
-        Assert.assertTrue(attribute.listeners.size()==1);
+        Assertions.assertTrue(attribute.listeners.size()==1);
         attribute.internal_removeListener(attributeChangeListener);
-        Assert.assertTrue(attribute.listeners.size()==0);
+        Assertions.assertTrue(attribute.listeners.size()==0);
     }
 
     @Test
@@ -122,9 +122,9 @@ public class ReferenceAttributeTest {
 
         final AttributeChangeListener<ExampleDataA,DataReferenceAttribute<ExampleDataA>> attributeChangeListener = (a, value) -> System.out.println(value);
         attribute.internal_addListener(new WeakAttributeChangeListener<>(attributeChangeListener));
-        Assert.assertTrue(attribute.listeners.size()==1);
+        Assertions.assertTrue(attribute.listeners.size()==1);
         attribute.internal_removeListener(attributeChangeListener);
-        Assert.assertTrue(attribute.listeners.size()==0);
+        Assertions.assertTrue(attribute.listeners.size()==0);
     }
 
     @Test
@@ -133,9 +133,9 @@ public class ReferenceAttributeTest {
 
         final AttributeChangeListener<ExampleDataA,DataReferenceAttribute<ExampleDataA>> attributeChangeListener = (a, value) -> System.out.println(value);
         attribute.internal_addListener(new WeakAttributeChangeListener<>(null));
-        Assert.assertTrue(attribute.listeners.size()==1);
+        Assertions.assertTrue(attribute.listeners.size()==1);
         attribute.internal_removeListener(attributeChangeListener);
-        Assert.assertTrue(attribute.listeners.size()==0);
+        Assertions.assertTrue(attribute.listeners.size()==0);
     }
 
     @Test
@@ -145,7 +145,7 @@ public class ReferenceAttributeTest {
         attributeFrom.set(new ExampleDataA());
         DataReferenceAttribute<ExampleDataA> attributeTo =new DataReferenceAttribute<>(ExampleDataA.class);
         attributeFrom.internal_semanticCopyTo(attributeTo);
-        Assert.assertTrue("same reference",attributeFrom.get()==attributeTo.get());
+        Assertions.assertTrue(attributeFrom.get()==attributeTo.get(),"same reference");
     }
 
     @Test
@@ -155,8 +155,8 @@ public class ReferenceAttributeTest {
         attributeFrom.set(new ExampleDataA());
         DataReferenceAttribute<ExampleDataA> attributeTo =new DataReferenceAttribute<>(ExampleDataA.class);
         attributeFrom.internal_semanticCopyTo(attributeTo);
-        Assert.assertTrue("not same reference",attributeFrom.get()!=attributeTo.get());
-        Assert.assertNotEquals(attributeFrom.get().getId(),attributeTo.get().getId());
+        Assertions.assertTrue(attributeFrom.get()!=attributeTo.get(),"not same reference");
+        Assertions.assertNotEquals(attributeFrom.get().getId(),attributeTo.get().getId());
     }
 
 

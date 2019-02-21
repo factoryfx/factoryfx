@@ -1,8 +1,8 @@
 package de.factoryfx.data.attribute.types;
 
 import de.factoryfx.data.jackson.ObjectMapperBuilder;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import java.math.BigInteger;
 
 public class BigIntegerAttributeTest {
@@ -12,6 +12,6 @@ public class BigIntegerAttributeTest {
         BigInteger value = BigInteger.valueOf(1);
         attribute.set(value);
         BigIntegerAttribute copy = ObjectMapperBuilder.build().copy(attribute);
-        Assert.assertEquals(value,copy.get());
+        Assertions.assertEquals(value,copy.get());
     }
 }

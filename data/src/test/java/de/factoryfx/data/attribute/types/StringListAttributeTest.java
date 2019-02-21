@@ -6,8 +6,8 @@ import java.util.List;
 import de.factoryfx.data.Data;
 import de.factoryfx.data.attribute.AttributeChangeListener;
 import de.factoryfx.data.jackson.ObjectMapperBuilder;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class StringListAttributeTest {
 
@@ -17,7 +17,7 @@ public class StringListAttributeTest {
         String value = "123";
         attribute.add(value);
         StringListAttribute copy = ObjectMapperBuilder.build().copy(attribute);
-        Assert.assertEquals(value,copy.get().get(0));
+        Assertions.assertEquals(value,copy.get().get(0));
     }
 
     public static class ExampleListFactory extends Data {
@@ -33,7 +33,7 @@ public class StringListAttributeTest {
         });
         exampleListFactory.listAttribute.add("7787");
 
-        Assert.assertEquals(1,calls.size());
+        Assertions.assertEquals(1,calls.size());
     }
 
     @Test
@@ -53,10 +53,10 @@ public class StringListAttributeTest {
         exampleListFactory.listAttribute.internal_addListener(invalidationListener);
         exampleListFactory.listAttribute.add("7787");
 
-        Assert.assertEquals(1,calls.size());
+        Assertions.assertEquals(1,calls.size());
 
         exampleListFactory.listAttribute.internal_removeListener(invalidationListener);
         exampleListFactory.listAttribute.add("7787");
-        Assert.assertEquals(1,calls.size());
+        Assertions.assertEquals(1,calls.size());
     }
 }

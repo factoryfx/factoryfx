@@ -2,8 +2,8 @@ package de.factoryfx.factory.atrribute;
 
 import de.factoryfx.factory.testfactories.ExampleFactoryA;
 import de.factoryfx.factory.testfactories.ExampleLiveObjectA;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 
 public class FactoryReferenceListAttributeTest {
@@ -28,7 +28,7 @@ public class FactoryReferenceListAttributeTest {
         }
 
         ExampleLiveObjectA instance = attribute.instances(exampleFactoryA -> exampleFactoryA.stringAttribute.get().equals("1"));
-        Assert.assertNotNull(instance);
+        Assertions.assertNotNull(instance);
     }
 
 }

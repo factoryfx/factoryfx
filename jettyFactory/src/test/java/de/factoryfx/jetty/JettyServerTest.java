@@ -36,9 +36,9 @@ import de.factoryfx.factory.builder.Scope;
 import de.factoryfx.server.Microservice;
 import org.eclipse.jetty.server.Server;
 import org.glassfish.jersey.client.ClientConfig;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -68,7 +68,7 @@ public class JettyServerTest {
         }
     }
 
-    @BeforeClass
+    @BeforeAll
     public static void setup(){
         ch.qos.logback.classic.Logger root = (ch.qos.logback.classic.Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
         root.setLevel(Level.INFO);
@@ -95,7 +95,7 @@ public class JettyServerTest {
                 HttpClient client = HttpClient.newBuilder().version(HttpClient.Version.HTTP_1_1).build();
                 HttpRequest request = HttpRequest.newBuilder().uri(URI.create("http://localhost:8080/Resource1")).GET().build();
                 HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-                Assert.assertEquals(200, response.statusCode());
+                Assertions.assertEquals(200, response.statusCode());
             } catch (IOException | InterruptedException e) {
                 throw new RuntimeException(e);
             }
@@ -109,7 +109,7 @@ public class JettyServerTest {
                 HttpClient client = HttpClient.newBuilder().version(HttpClient.Version.HTTP_1_1).build();
                 HttpRequest request = HttpRequest.newBuilder().uri(URI.create("http://localhost:8080/Resource1")).GET().build();
                 HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-                Assert.fail("expect ConnectException");
+                Assertions.fail("expect ConnectException");
             } catch (IOException | InterruptedException e) {
                 //expected
             }
@@ -118,7 +118,7 @@ public class JettyServerTest {
                 HttpClient client = HttpClient.newBuilder().version(HttpClient.Version.HTTP_1_1).build();
                 HttpRequest request = HttpRequest.newBuilder().uri(URI.create("http://localhost:8081/Resource1")).GET().build();
                 HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-                Assert.assertEquals(200, response.statusCode());
+                Assertions.assertEquals(200, response.statusCode());
             } catch (IOException | InterruptedException e) {
                 throw new RuntimeException(e);
             }
@@ -148,7 +148,7 @@ public class JettyServerTest {
                 HttpClient client = HttpClient.newBuilder().version(HttpClient.Version.HTTP_1_1).build();
                 HttpRequest request = HttpRequest.newBuilder().uri(URI.create("http://localhost:8080/Resource1")).GET().build();
                 HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-                Assert.assertEquals(200,response.statusCode());
+                Assertions.assertEquals(200,response.statusCode());
             } catch (IOException | InterruptedException e) {
                 throw new RuntimeException(e);
             }
@@ -162,7 +162,7 @@ public class JettyServerTest {
                 HttpClient client = HttpClient.newBuilder().version(HttpClient.Version.HTTP_1_1).build();
                 HttpRequest request = HttpRequest.newBuilder().uri(URI.create("http://localhost:8080/Resource1")).GET().build();
                 HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-                Assert.fail("expect ConnectException");
+                Assertions.fail("expect ConnectException");
             } catch (IOException | InterruptedException e) {
                 //expected
             }
@@ -233,9 +233,9 @@ public class JettyServerTest {
             microservice.updateCurrentFactory(update);
             try {
                 HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-                Assert.assertEquals(404,response.statusCode());
+                Assertions.assertEquals(404,response.statusCode());
             } catch (Exception expected) {}
-            Assert.assertEquals("RESPONSE",lateResponse.get(1000, TimeUnit.MILLISECONDS));
+            Assertions.assertEquals("RESPONSE",lateResponse.get(1000, TimeUnit.MILLISECONDS));
 
         } finally {
             microservice.stop();
@@ -315,7 +315,7 @@ public class JettyServerTest {
             Client client = ClientBuilder.newBuilder().withConfig(cc).build();
             String resp = client.target("http://localhost:8015/echo").request().buildPost(Entity.entity("Hello", MediaType.valueOf("my/mime"))).invoke().readEntity(String.class);
 
-            Assert.assertEquals("Changed by writer: Changed by reader: Hello", resp);
+            Assertions.assertEquals("Changed by writer: Changed by reader: Hello", resp);
 
         } finally {
             microservice.stop();

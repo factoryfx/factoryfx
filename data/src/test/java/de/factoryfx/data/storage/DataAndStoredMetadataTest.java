@@ -2,7 +2,7 @@ package de.factoryfx.data.storage;
 
 import de.factoryfx.data.jackson.ObjectMapperBuilder;
 import de.factoryfx.data.merge.testdata.ExampleDataA;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class DataAndStoredMetadataTest {
     @Test

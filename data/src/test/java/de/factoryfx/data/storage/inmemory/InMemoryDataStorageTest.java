@@ -7,8 +7,8 @@ import de.factoryfx.data.attribute.types.StringAttribute;
 import de.factoryfx.data.merge.testdata.ExampleDataA;
 import de.factoryfx.data.storage.DataUpdate;
 import de.factoryfx.data.storage.ScheduledUpdate;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class InMemoryDataStorageTest {
 
@@ -30,7 +30,7 @@ public class InMemoryDataStorageTest {
         Dummy dummy = new Dummy();
         InMemoryDataStorage<Dummy,Void> fileSystemFactoryStorage = new InMemoryDataStorage<>(dummy);
 
-        Assert.assertNotNull(fileSystemFactoryStorage.getCurrentData());
+        Assertions.assertNotNull(fileSystemFactoryStorage.getCurrentData());
     }
 
     @Test
@@ -38,13 +38,13 @@ public class InMemoryDataStorageTest {
         InMemoryDataStorage<ExampleDataA,Void> inMemoryDataStorage = new InMemoryDataStorage<>(new ExampleDataA());
 
         inMemoryDataStorage.getCurrentData();
-        Assert.assertEquals(1,inMemoryDataStorage.getHistoryDataList().size());
+        Assertions.assertEquals(1,inMemoryDataStorage.getHistoryDataList().size());
 
 
         inMemoryDataStorage.updateCurrentData(createUpdate(),null);
 
 
-        Assert.assertEquals(2,inMemoryDataStorage.getHistoryDataList().size());
+        Assertions.assertEquals(2,inMemoryDataStorage.getHistoryDataList().size());
     }
 
     @Test
@@ -52,7 +52,7 @@ public class InMemoryDataStorageTest {
         Dummy dummy = new Dummy();
         InMemoryDataStorage<Dummy,Void> fileSystemFactoryStorage = new InMemoryDataStorage<>(dummy);
 
-        Assert.assertEquals(1,fileSystemFactoryStorage.getHistoryDataList().size());
+        Assertions.assertEquals(1,fileSystemFactoryStorage.getHistoryDataList().size());
 
         ScheduledUpdate<Dummy> update = new ScheduledUpdate<>(
                 new Dummy(),
@@ -65,7 +65,7 @@ public class InMemoryDataStorageTest {
 
         fileSystemFactoryStorage.addFutureData(update);
 
-        Assert.assertEquals(1,fileSystemFactoryStorage.getFutureDataList().size());
+        Assertions.assertEquals(1,fileSystemFactoryStorage.getFutureDataList().size());
     }
 
 }

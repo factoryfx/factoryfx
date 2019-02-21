@@ -1,8 +1,8 @@
 package de.factoryfx.data.attribute.types;
 
 import de.factoryfx.data.jackson.ObjectMapperBuilder;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class ByteArrayAttributeTest {
 
@@ -13,7 +13,7 @@ public class ByteArrayAttributeTest {
         System.out.println(ObjectMapperBuilder.build().writeValueAsString(copy));
 
 
-        Assert.assertArrayEquals(new byte[]{1,2},copy.get());
+        Assertions.assertArrayEquals(new byte[]{1,2},copy.get());
     }
 
 

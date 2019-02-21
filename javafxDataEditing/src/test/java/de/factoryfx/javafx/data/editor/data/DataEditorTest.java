@@ -5,8 +5,8 @@ import java.util.ArrayList;
 import de.factoryfx.javafx.UniformDesignBuilder;
 import de.factoryfx.javafx.data.editor.attribute.AttributeVisualisationMappingBuilder;
 import de.factoryfx.javafx.data.util.UniformDesign;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class DataEditorTest {
 
@@ -28,16 +28,16 @@ public class DataEditorTest {
         dataEditor.navigate(exampleData4);
 
         dataEditor.back();
-        Assert.assertEquals(exampleData3,dataEditor.editData.get());
+        Assertions.assertEquals(exampleData3,dataEditor.editData.get());
         dataEditor.back();
-        Assert.assertEquals(exampleData2,dataEditor.editData.get());
+        Assertions.assertEquals(exampleData2,dataEditor.editData.get());
         dataEditor.back();
-        Assert.assertEquals(exampleData1,dataEditor.editData.get());
+        Assertions.assertEquals(exampleData1,dataEditor.editData.get());
 
         dataEditor.back();
-        Assert.assertEquals(exampleData1,dataEditor.editData.get());
+        Assertions.assertEquals(exampleData1,dataEditor.editData.get());
         dataEditor.back();
-        Assert.assertEquals(exampleData1,dataEditor.editData.get());
+        Assertions.assertEquals(exampleData1,dataEditor.editData.get());
     }
 
     @Test
@@ -49,7 +49,7 @@ public class DataEditorTest {
             dataEditor.navigate(new ExampleData1());
         }
 
-        Assert.assertEquals(DataEditorState.HISTORY_LIMIT,dataEditor.dataEditorState.displayedEntities.size());
+        Assertions.assertEquals(DataEditorState.HISTORY_LIMIT,dataEditor.dataEditorState.displayedEntities.size());
     }
 
 
@@ -73,18 +73,18 @@ public class DataEditorTest {
 
 
         dataEditor.back();
-        Assert.assertEquals(exampleData3, dataEditor.editData.get());
+        Assertions.assertEquals(exampleData3, dataEditor.editData.get());
         dataEditor.back();
-        Assert.assertEquals(exampleData2, dataEditor.editData.get());
+        Assertions.assertEquals(exampleData2, dataEditor.editData.get());
         dataEditor.next();
-        Assert.assertEquals(exampleData3,dataEditor.editData.get());
+        Assertions.assertEquals(exampleData3,dataEditor.editData.get());
         dataEditor.next();
-        Assert.assertEquals(exampleData4,dataEditor.editData.get());
+        Assertions.assertEquals(exampleData4,dataEditor.editData.get());
 
-        Assert.assertEquals(4,dataEditor.dataEditorState.displayedEntities.size());
+        Assertions.assertEquals(4,dataEditor.dataEditorState.displayedEntities.size());
 
         dataEditor.next();
-        Assert.assertEquals(exampleData4,dataEditor.editData.get());
+        Assertions.assertEquals(exampleData4,dataEditor.editData.get());
     }
 
     @Test
@@ -99,13 +99,13 @@ public class DataEditorTest {
         dataEditor.navigate(root);
         dataEditor.navigate(value);
 
-        Assert.assertEquals(2,dataEditor.dataEditorState.displayedEntities.size());
-        Assert.assertEquals(root,dataEditor.dataEditorState.displayedEntities.get(0));
-        Assert.assertEquals(value,dataEditor.dataEditorState.displayedEntities.get(1));
+        Assertions.assertEquals(2,dataEditor.dataEditorState.displayedEntities.size());
+        Assertions.assertEquals(root,dataEditor.dataEditorState.displayedEntities.get(0));
+        Assertions.assertEquals(value,dataEditor.dataEditorState.displayedEntities.get(1));
 
         dataEditor.navigate(root);
-        Assert.assertEquals(2,dataEditor.dataEditorState.displayedEntities.size());
-        Assert.assertEquals(root,dataEditor.dataEditorState.displayedEntities.get(0));
+        Assertions.assertEquals(2,dataEditor.dataEditorState.displayedEntities.size());
+        Assertions.assertEquals(root,dataEditor.dataEditorState.displayedEntities.get(0));
 
     }
 
@@ -123,13 +123,13 @@ public class DataEditorTest {
         dataEditor.navigate(root);
         dataEditor.navigate(value1);
         dataEditor.back();
-        Assert.assertEquals(2,dataEditor.dataEditorState.displayedEntities.size());
-        Assert.assertEquals(root,dataEditor.dataEditorState.displayedEntities.get(0));
+        Assertions.assertEquals(2,dataEditor.dataEditorState.displayedEntities.size());
+        Assertions.assertEquals(root,dataEditor.dataEditorState.displayedEntities.get(0));
 
         dataEditor.navigate(value2);
-        Assert.assertEquals(2,dataEditor.dataEditorState.displayedEntities.size());
-        Assert.assertEquals(root,dataEditor.dataEditorState.displayedEntities.get(0));
-        Assert.assertEquals(value2,dataEditor.dataEditorState.displayedEntities.get(1));
+        Assertions.assertEquals(2,dataEditor.dataEditorState.displayedEntities.size());
+        Assertions.assertEquals(root,dataEditor.dataEditorState.displayedEntities.get(0));
+        Assertions.assertEquals(value2,dataEditor.dataEditorState.displayedEntities.get(1));
 
     }
 }

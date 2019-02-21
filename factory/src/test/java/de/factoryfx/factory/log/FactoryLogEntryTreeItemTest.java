@@ -3,8 +3,8 @@ package de.factoryfx.factory.log;
 import de.factoryfx.data.jackson.ObjectMapperBuilder;
 import de.factoryfx.factory.testfactories.ExampleFactoryA;
 import de.factoryfx.factory.testfactories.ExampleFactoryB;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,6 +26,6 @@ public class FactoryLogEntryTreeItemTest {
         FactoryLogEntryTreeItem root = new FactoryLogEntryTreeItem(factoryLogEntry, List.of(new FactoryLogEntryTreeItem((new FactoryLogEntry(new ExampleFactoryB())),new ArrayList<>())));
         FactoryLogEntryTreeItem copy = ObjectMapperBuilder.build().copy(root);
         System.out.println(ObjectMapperBuilder.build().writeValueAsString(root));
-        Assert.assertEquals(123,copy.log.getEvents().get(0).durationNs);
+        Assertions.assertEquals(123,copy.log.getEvents().get(0).durationNs);
     }
 }

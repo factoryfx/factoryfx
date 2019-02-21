@@ -13,9 +13,9 @@ import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.AbstractHandler;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -30,7 +30,7 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 
 public class HandlerCollectionFactoryTest {
-    @BeforeClass
+    @BeforeAll
     public static void setup(){
         ch.qos.logback.classic.Logger root = (ch.qos.logback.classic.Logger) org.slf4j.LoggerFactory.getLogger(ch.qos.logback.classic.Logger.ROOT_LOGGER_NAME);
         root.setLevel(Level.INFO);
@@ -119,7 +119,7 @@ public class HandlerCollectionFactoryTest {
             HttpRequest request = HttpRequest.newBuilder().GET().uri(URI.create("http://localhost:8080/HandlerCollectionResource")).build();
             {
                 HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-                Assert.assertEquals(200, response.statusCode());
+                Assertions.assertEquals(200, response.statusCode());
             }
 
             DataUpdate<HandlerCollectionRootFactory> update = microservice.prepareNewFactory();
@@ -129,7 +129,7 @@ public class HandlerCollectionFactoryTest {
             {
 
                 HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-                Assert.assertEquals(404, response.statusCode());
+                Assertions.assertEquals(404, response.statusCode());
 
             }
 

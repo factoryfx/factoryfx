@@ -9,8 +9,8 @@ import de.factoryfx.factory.testfactories.poly.OutPrinterFactory;
 import de.factoryfx.factory.testfactories.poly.Printer;
 import de.factoryfx.data.jackson.ObjectMapperBuilder;
 import de.factoryfx.factory.FactoryBase;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,7 +24,7 @@ public class FactoryPolymorphicReferenceAttributeTest {
         factory.attribute.set(new ErrorPrinterFactory());
         ExamplePolymorphicReferenceAttributeFactory copy = ObjectMapperBuilder.build().copy(factory);
 
-        Assert.assertNotNull(copy.attribute.get());
+        Assertions.assertNotNull(copy.attribute.get());
     }
 
     public static class ExamplePolymorphicReferenceAttributeFactory{
@@ -38,7 +38,7 @@ public class FactoryPolymorphicReferenceAttributeTest {
         polymorphicFactoryExample = polymorphicFactoryExample.internal().addBackReferences();
         ErrorPrinterFactory errorPrinterFactory = new ErrorPrinterFactory();
         polymorphicFactoryExample.reference.set(errorPrinterFactory);
-        Assert.assertEquals(errorPrinterFactory,new ArrayList<>(polymorphicFactoryExample.reference.internal_possibleValues()).get(0));
+        Assertions.assertEquals(errorPrinterFactory,new ArrayList<>(polymorphicFactoryExample.reference.internal_possibleValues()).get(0));
     }
 
     @Test
@@ -47,13 +47,15 @@ public class FactoryPolymorphicReferenceAttributeTest {
         polymorphicFactoryExample = polymorphicFactoryExample.internal().addBackReferences();
 
         List<FactoryBase<? extends Printer, ?,?>> factoryBases = polymorphicFactoryExample.reference.internal_createNewPossibleValues();
-        Assert.assertEquals(ErrorPrinterFactory.class,new ArrayList<>(factoryBases).get(0).getClass());
-        Assert.assertEquals(OutPrinterFactory.class,new ArrayList<>(polymorphicFactoryExample.reference.internal_createNewPossibleValues()).get(1).getClass());
+        Assertions.assertEquals(ErrorPrinterFactory.class,new ArrayList<>(factoryBases).get(0).getClass());
+        Assertions.assertEquals(OutPrinterFactory.class,new ArrayList<>(polymorphicFactoryExample.reference.internal_createNewPossibleValues()).get(1).getClass());
     }
 
-    @Test(expected=IllegalArgumentException.class)
+    @Test
     public void test_setupUnsafe_validation(){
-        new FactoryPolymorphicReferenceAttribute<Printer>().setupUnsafe(Printer.class,String.class);
+        Assertions.assertThrows(IllegalArgumentException.class, () -> {
+            new FactoryPolymorphicReferenceAttribute<Printer>().setupUnsafe(Printer.class,String.class);
+        });
     }
 
     @Test
@@ -64,23 +66,23 @@ public class FactoryPolymorphicReferenceAttributeTest {
     @Test
     public void test_generatorInfo_safe(){
         FactoryPolymorphicReferenceAttribute<Printer> attribute = new FactoryPolymorphicReferenceAttribute<Printer>().setup(Printer.class, ErrorPrinterFactory.class, OutPrinterFactory.class);
-        Assert.assertEquals(ErrorPrinterFactory.class,attribute.internal_possibleFactoriesClasses().get(0));
-        Assert.assertEquals(OutPrinterFactory.class,attribute.internal_possibleFactoriesClasses().get(1));
+        Assertions.assertEquals(ErrorPrinterFactory.class,attribute.internal_possibleFactoriesClasses().get(0));
+        Assertions.assertEquals(OutPrinterFactory.class,attribute.internal_possibleFactoriesClasses().get(1));
     }
 
     @Test
     public void test_generatorInfo_unsafe(){
         FactoryPolymorphicReferenceAttribute<Printer> attribute = new FactoryPolymorphicReferenceAttribute<Printer>().setupUnsafe(Printer.class, ErrorPrinterFactory.class, OutPrinterFactory.class);
-        Assert.assertEquals(ErrorPrinterFactory.class,attribute.internal_possibleFactoriesClasses().get(0));
-        Assert.assertEquals(OutPrinterFactory.class,attribute.internal_possibleFactoriesClasses().get(1));
+        Assertions.assertEquals(ErrorPrinterFactory.class,attribute.internal_possibleFactoriesClasses().get(0));
+        Assertions.assertEquals(OutPrinterFactory.class,attribute.internal_possibleFactoriesClasses().get(1));
     }
 
 
     @Test
     public void test_generatorInfo_constructor(){
         FactoryPolymorphicReferenceAttribute<Printer> attribute = new FactoryPolymorphicReferenceAttribute<>(Printer.class, ErrorPrinterFactory.class, OutPrinterFactory.class);
-        Assert.assertEquals(ErrorPrinterFactory.class,attribute.internal_possibleFactoriesClasses().get(0));
-        Assert.assertEquals(OutPrinterFactory.class,attribute.internal_possibleFactoriesClasses().get(1));
+        Assertions.assertEquals(ErrorPrinterFactory.class,attribute.internal_possibleFactoriesClasses().get(0));
+        Assertions.assertEquals(OutPrinterFactory.class,attribute.internal_possibleFactoriesClasses().get(1));
     }
 
     public static class ErrorPrinterFactory2 extends PolymorphicFactoryBase<ErrorPrinter,Void,ExampleFactoryA> {
@@ -96,7 +98,7 @@ public class FactoryPolymorphicReferenceAttributeTest {
         polymorphicFactoryExample = polymorphicFactoryExample.internal().addBackReferences();
         ErrorPrinterFactory2 errorPrinterFactory = new ErrorPrinterFactory2();
         polymorphicFactoryExample.reference.set(errorPrinterFactory);
-        Assert.assertEquals(errorPrinterFactory,new ArrayList<>(polymorphicFactoryExample.reference.internal_possibleValues()).get(0));
+        Assertions.assertEquals(errorPrinterFactory,new ArrayList<>(polymorphicFactoryExample.reference.internal_possibleValues()).get(0));
     }
 
     @Test
@@ -106,13 +108,13 @@ public class FactoryPolymorphicReferenceAttributeTest {
         {
             attribute.set(null);
             List<ValidationError> validationErrors = attribute.internal_validate(new ExampleFactoryA(),"");
-            Assert.assertEquals(1, validationErrors.size());
+            Assertions.assertEquals(1, validationErrors.size());
         }
 
         {
             attribute.set(new ErrorPrinterFactory());
             List<ValidationError> validationErrors = attribute.internal_validate(new ExampleFactoryA(),"");
-            Assert.assertEquals(0, validationErrors.size());
+            Assertions.assertEquals(0, validationErrors.size());
         }
     }
 
@@ -123,25 +125,25 @@ public class FactoryPolymorphicReferenceAttributeTest {
         {
             attribute.set(null);
             List<ValidationError> validationErrors = attribute.internal_validate(new ExampleFactoryA(),"");
-            Assert.assertEquals(0, validationErrors.size());
+            Assertions.assertEquals(0, validationErrors.size());
         }
 
         {
             attribute.set(new ErrorPrinterFactory());
             List<ValidationError> validationErrors = attribute.internal_validate(new ExampleFactoryA(),"");
-            Assert.assertEquals(0, validationErrors.size());
+            Assertions.assertEquals(0, validationErrors.size());
         }
     }
 
     @Test
     public void test_internal_require_true(){
         FactoryPolymorphicReferenceAttribute<Printer> attribute = new FactoryPolymorphicReferenceAttribute<Printer>().setup(Printer.class, ErrorPrinterFactory.class, OutPrinterFactory.class);
-        Assert.assertTrue(attribute.internal_required());
+        Assertions.assertTrue(attribute.internal_required());
     }
 
     @Test
     public void test_internal_require_false(){
         FactoryPolymorphicReferenceAttribute<Printer> attribute = new FactoryPolymorphicReferenceAttribute<Printer>().setup(Printer.class, ErrorPrinterFactory.class, OutPrinterFactory.class).nullable();
-        Assert.assertFalse(attribute.internal_required());
+        Assertions.assertFalse(attribute.internal_required());
     }
 }

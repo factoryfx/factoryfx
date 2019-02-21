@@ -1,5 +1,6 @@
 package de.factoryfx.data.storage.filesystem;
 
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
@@ -12,10 +13,9 @@ import de.factoryfx.data.storage.migration.MigrationManager;
 import de.factoryfx.data.storage.StoredDataMetadata;
 
 import de.factoryfx.data.storage.migration.GeneralStorageMetadataBuilder;
-import org.junit.Assert;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 public class FileSystemDataStorageHistoryTest {
 
@@ -23,8 +23,8 @@ public class FileSystemDataStorageHistoryTest {
         return new StoredDataMetadata<>(id,"","","",null,GeneralStorageMetadataBuilder.build(),null);
     }
 
-    @Rule
-    public TemporaryFolder folder= new TemporaryFolder();
+    @TempDir
+    public Path folder;
 
 
     private MigrationManager<ExampleDataA,Void> createSerialisation(){
@@ -34,24 +34,24 @@ public class FileSystemDataStorageHistoryTest {
 
     @Test
     public void test_empty() {
-        FileSystemFactoryStorageHistory<ExampleDataA,Void> fileSystemFactoryStorage = new FileSystemFactoryStorageHistory<>(Paths.get(folder.getRoot().toURI()),createSerialisation());
+        FileSystemFactoryStorageHistory<ExampleDataA,Void> fileSystemFactoryStorage = new FileSystemFactoryStorageHistory<>(Paths.get(folder.toFile().toURI()),createSerialisation());
 
-        Assert.assertTrue(fileSystemFactoryStorage.getHistoryFactoryList().isEmpty());
+        Assertions.assertTrue(fileSystemFactoryStorage.getHistoryFactoryList().isEmpty());
     }
 
     @Test
     public void test_add() {
-        FileSystemFactoryStorageHistory<ExampleDataA,Void> fileSystemFactoryStorage = new FileSystemFactoryStorageHistory<>(Paths.get(folder.getRoot().toURI()),createSerialisation());
+        FileSystemFactoryStorageHistory<ExampleDataA,Void> fileSystemFactoryStorage = new FileSystemFactoryStorageHistory<>(Paths.get(folder.toFile().toURI()),createSerialisation());
 
         StoredDataMetadata<Void> metadata = createStoredDataMetadata(UUID.randomUUID().toString());
         fileSystemFactoryStorage.updateHistory(new ExampleDataA(), metadata);
 
-        Assert.assertEquals(1,fileSystemFactoryStorage.getHistoryFactoryList().size());
+        Assertions.assertEquals(1,fileSystemFactoryStorage.getHistoryFactoryList().size());
     }
 
     @Test
     public void test_multi_add() {
-        FileSystemFactoryStorageHistory<ExampleDataA,Void> fileSystemFactoryStorage = new FileSystemFactoryStorageHistory<>(Paths.get(folder.getRoot().toURI()),createSerialisation());
+        FileSystemFactoryStorageHistory<ExampleDataA,Void> fileSystemFactoryStorage = new FileSystemFactoryStorageHistory<>(Paths.get(folder.toFile().toURI()),createSerialisation());
 
         {
             StoredDataMetadata<Void> metadata = createStoredDataMetadata(UUID.randomUUID().toString());
@@ -68,28 +68,28 @@ public class FileSystemDataStorageHistoryTest {
             fileSystemFactoryStorage.updateHistory(new ExampleDataA(), metadata);
         }
 
-        Assert.assertEquals(3,fileSystemFactoryStorage.getHistoryFactoryList().size());
+        Assertions.assertEquals(3,fileSystemFactoryStorage.getHistoryFactoryList().size());
     }
 
     @Test
     public void test_restore() {
-        FileSystemFactoryStorageHistory<ExampleDataA,Void> fileSystemFactoryStorage = new FileSystemFactoryStorageHistory<>(Paths.get(folder.getRoot().toURI()),createSerialisation());
+        FileSystemFactoryStorageHistory<ExampleDataA,Void> fileSystemFactoryStorage = new FileSystemFactoryStorageHistory<>(Paths.get(folder.toFile().toURI()),createSerialisation());
 
         StoredDataMetadata<Void> metadata = createStoredDataMetadata(UUID.randomUUID().toString());
         fileSystemFactoryStorage.updateHistory(new ExampleDataA(), metadata);
-        Assert.assertEquals(1,fileSystemFactoryStorage.getHistoryFactoryList().size());
+        Assertions.assertEquals(1,fileSystemFactoryStorage.getHistoryFactoryList().size());
 
-        FileSystemFactoryStorageHistory<ExampleDataA,Void> restored = new FileSystemFactoryStorageHistory<>(Paths.get(folder.getRoot().toURI()),createSerialisation());
-        Assert.assertEquals(1,restored.getHistoryFactoryList().size());
+        FileSystemFactoryStorageHistory<ExampleDataA,Void> restored = new FileSystemFactoryStorageHistory<>(Paths.get(folder.toFile().toURI()),createSerialisation());
+        Assertions.assertEquals(1,restored.getHistoryFactoryList().size());
     }
 
     @Test
     public void test_getHistory() {
-        FileSystemFactoryStorageHistory<ExampleDataA,Void> fileSystemFactoryStorage = new FileSystemFactoryStorageHistory<>(Paths.get(folder.getRoot().toURI()),createSerialisation());
+        FileSystemFactoryStorageHistory<ExampleDataA,Void> fileSystemFactoryStorage = new FileSystemFactoryStorageHistory<>(Paths.get(folder.toFile().toURI()),createSerialisation());
 
         StoredDataMetadata<Void> metadata = createStoredDataMetadata(UUID.randomUUID().toString());
         fileSystemFactoryStorage.updateHistory(new ExampleDataA(), metadata);
 
-        Assert.assertNotNull(fileSystemFactoryStorage.getHistoryFactory(new ArrayList<>(fileSystemFactoryStorage.getHistoryFactoryList()).get(0).id));
+        Assertions.assertNotNull(fileSystemFactoryStorage.getHistoryFactory(new ArrayList<>(fileSystemFactoryStorage.getHistoryFactoryList()).get(0).id));
     }
 }

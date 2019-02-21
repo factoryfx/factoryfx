@@ -6,8 +6,8 @@ import java.util.Set;
 import de.factoryfx.data.Data;
 import de.factoryfx.data.attribute.types.StringSetAttribute;
 import de.factoryfx.data.jackson.ObjectMapperBuilder;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class SetAttributeTest {
 
@@ -24,7 +24,7 @@ public class SetAttributeTest {
         });
         exampleSetFactory.setAttribute.add("7787");
 
-        Assert.assertEquals(1,calls.size());
+        Assertions.assertEquals(1,calls.size());
     }
 
     @Test
@@ -44,10 +44,10 @@ public class SetAttributeTest {
         exampleSetFactory.setAttribute.internal_addListener(invalidationListener);
         exampleSetFactory.setAttribute.add("7787");
 
-        Assert.assertEquals(1,calls.size());
+        Assertions.assertEquals(1,calls.size());
 
         exampleSetFactory.setAttribute.internal_removeListener(invalidationListener);
         exampleSetFactory.setAttribute.add("7787");
-        Assert.assertEquals(1,calls.size());
+        Assertions.assertEquals(1,calls.size());
     }
 }

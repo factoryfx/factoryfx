@@ -5,7 +5,7 @@ import de.factoryfx.factory.SimpleFactoryBase;
 import de.factoryfx.factory.atrribute.FactoryReferenceAttribute;
 import de.factoryfx.factory.builder.FactoryTreeBuilder;
 import de.factoryfx.factory.builder.Scope;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class MicroserviceAwareFactoryTest {
 

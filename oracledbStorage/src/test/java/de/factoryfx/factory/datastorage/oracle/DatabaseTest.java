@@ -6,8 +6,8 @@ import de.factoryfx.data.storage.migration.MigrationManager;
 import de.factoryfx.data.storage.migration.GeneralStorageMetadataBuilder;
 import de.factoryfx.factory.testfactories.ExampleFactoryA;
 import org.h2.tools.Server;
-import org.junit.After;
-import org.junit.Before;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -20,7 +20,7 @@ public class DatabaseTest {
 
     Server server;
     Supplier<Connection> connectionSupplier;
-    @Before
+    @BeforeEach
     public void setup(){
         try {
             server = Server.createTcpServer("-tcpAllowOthers").start();
@@ -36,7 +36,7 @@ public class DatabaseTest {
             throw new RuntimeException(e);
         }
     }
-    @After
+    @AfterEach
     public void shutdown() throws SQLException {
         try (Connection connection= connectionSupplier.get()){
             try (PreparedStatement preparedStatement= connection.prepareStatement("DROP ALL OBJECTS")){

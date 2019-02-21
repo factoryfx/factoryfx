@@ -5,8 +5,8 @@ import de.factoryfx.data.merge.testdata.ExampleDataA;
 import de.factoryfx.data.merge.testdata.ExampleDataB;
 import de.factoryfx.data.merge.testdata.ExampleDataC;
 import de.factoryfx.data.storage.migration.datamigration.DataJsonNode;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
@@ -21,10 +21,10 @@ public class DataMigrationManagerTest {
 
         DataMigrationManager dataMigrationManager = new DataMigrationManager();
         List<DataJsonNode> jsonNodes = dataMigrationManager.readDataList(ObjectMapperBuilder.build().readTree(ObjectMapperBuilder.build().writeValueAsString(root)));
-        Assert.assertEquals(3,jsonNodes.size());
-        Assert.assertEquals(ExampleDataA.class.getName(),jsonNodes.get(0).getDataClassName());
-        Assert.assertEquals(ExampleDataB.class.getName(),jsonNodes.get(1).getDataClassName());
-        Assert.assertEquals(ExampleDataC.class.getName(),jsonNodes.get(2).getDataClassName());
+        Assertions.assertEquals(3,jsonNodes.size());
+        Assertions.assertEquals(ExampleDataA.class.getName(),jsonNodes.get(0).getDataClassName());
+        Assertions.assertEquals(ExampleDataB.class.getName(),jsonNodes.get(1).getDataClassName());
+        Assertions.assertEquals(ExampleDataC.class.getName(),jsonNodes.get(2).getDataClassName());
     }
 
     @Test
@@ -38,7 +38,7 @@ public class DataMigrationManagerTest {
 
         DataMigrationManager dataMigrationManager = new DataMigrationManager();
         List<DataJsonNode> jsonNodes = dataMigrationManager.readDataList(ObjectMapperBuilder.build().readTree(ObjectMapperBuilder.build().writeValueAsString(root)));
-        Assert.assertEquals(5,jsonNodes.size());
+        Assertions.assertEquals(5,jsonNodes.size());
     }
 
     @Test
@@ -51,7 +51,7 @@ public class DataMigrationManagerTest {
 
         DataMigrationManager dataMigrationManager = new DataMigrationManager();
         List<DataJsonNode> jsonNodes = dataMigrationManager.readDataList(ObjectMapperBuilder.build().readTree(ObjectMapperBuilder.build().writeValueAsString(root)));
-        Assert.assertEquals(3,jsonNodes.size());
+        Assertions.assertEquals(3,jsonNodes.size());
     }
 
 }

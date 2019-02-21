@@ -8,8 +8,8 @@ import de.factoryfx.data.Data;
 import de.factoryfx.data.attribute.types.StringAttribute;
 import de.factoryfx.data.jackson.ObjectMapperBuilder;
 import de.factoryfx.data.merge.testdata.ExampleDataA;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class ViewListReferenceAttributeTest {
     public static class ViewListExampleFactory extends Data {
@@ -49,8 +49,8 @@ public class ViewListReferenceAttributeTest {
 
         root = root.internal().addBackReferences();
 
-        Assert.assertEquals(1,root.ref.get().view.get().size());
-        Assert.assertEquals("1",root.ref.get().view.get().get(0).stringAttribute.get());
+        Assertions.assertEquals(1,root.ref.get().view.get().size());
+        Assertions.assertEquals("1",root.ref.get().view.get().get(0).stringAttribute.get());
     }
 
     @Test
@@ -74,7 +74,7 @@ public class ViewListReferenceAttributeTest {
 
         root = root.internal().addBackReferences();
         final String valueAsString = ObjectMapperBuilder.build().writeValueAsString(root);
-        Assert.assertFalse(valueAsString.contains("view"));
+        Assertions.assertFalse(valueAsString.contains("view"));
     }
 
     @Test
@@ -98,7 +98,7 @@ public class ViewListReferenceAttributeTest {
 
         root = root.internal().addBackReferences();
 
-        Assert.assertEquals(0,root.ref.get().view.get().size());
+        Assertions.assertEquals(0,root.ref.get().view.get().size());
     }
 
     @Test
@@ -122,7 +122,7 @@ public class ViewListReferenceAttributeTest {
 
         root = root.internal().addBackReferences();
 
-        Assert.assertEquals(2,root.ref.get().view.get().size());
+        Assertions.assertEquals(2,root.ref.get().view.get().size());
     }
 
 
@@ -165,9 +165,9 @@ public class ViewListReferenceAttributeTest {
             throw new RuntimeException(e);
         }
 
-        Assert.assertEquals(1,root.ref.get().view.get().size());
-        Assert.assertEquals(1,calls.size());
-        Assert.assertEquals("1",calls.get(0));
+        Assertions.assertEquals(1,root.ref.get().view.get().size());
+        Assertions.assertEquals(1,calls.size());
+        Assertions.assertEquals("1",calls.get(0));
 
 
         calls.clear();
@@ -177,8 +177,8 @@ public class ViewListReferenceAttributeTest {
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
-        Assert.assertEquals(1,calls.size());
-        Assert.assertEquals("empty",calls.get(0));
+        Assertions.assertEquals(1,calls.size());
+        Assertions.assertEquals("empty",calls.get(0));
     }
 
 
@@ -214,7 +214,7 @@ public class ViewListReferenceAttributeTest {
             throw new RuntimeException(e);
         }
 
-        Assert.assertEquals(0,calls.size());
+        Assertions.assertEquals(0,calls.size());
     }
 
     @Test
@@ -247,9 +247,9 @@ public class ViewListReferenceAttributeTest {
 
         final AttributeChangeListener<List<ExampleDataA>,DataViewListReferenceAttribute<ViewListExampleFactoryRoot, ExampleDataA>> attributeChangeListener = (a, value) -> System.out.println(value);
         attribute.internal_addListener(attributeChangeListener);
-        Assert.assertTrue(attribute.listeners.size()==1);
+        Assertions.assertTrue(attribute.listeners.size()==1);
         attribute.internal_removeListener(attributeChangeListener);
-        Assert.assertTrue(attribute.listeners.size()==0);
+        Assertions.assertTrue(attribute.listeners.size()==0);
     }
 
     @Test
@@ -260,8 +260,8 @@ public class ViewListReferenceAttributeTest {
 
         final AttributeChangeListener<List<ExampleDataA>,DataViewListReferenceAttribute<ViewListExampleFactoryRoot, ExampleDataA>> attributeChangeListener = (a, value) -> System.out.println(value);
         attribute.internal_addListener(new WeakAttributeChangeListener<>(attributeChangeListener));
-        Assert.assertTrue(attribute.listeners.size()==1);
+        Assertions.assertTrue(attribute.listeners.size()==1);
         attribute.internal_removeListener(attributeChangeListener);
-        Assert.assertTrue(attribute.listeners.size()==0);
+        Assertions.assertTrue(attribute.listeners.size()==0);
     }
 }

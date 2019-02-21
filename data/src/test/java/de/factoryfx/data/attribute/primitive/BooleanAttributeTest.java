@@ -1,8 +1,8 @@
 package de.factoryfx.data.attribute.primitive;
 
 import de.factoryfx.data.jackson.ObjectMapperBuilder;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class BooleanAttributeTest {
 
@@ -11,7 +11,7 @@ public class BooleanAttributeTest {
         BooleanAttribute booleanAttribute = new BooleanAttribute();
         booleanAttribute.set(true);
         BooleanAttribute copy = ObjectMapperBuilder.build().copy(booleanAttribute);
-        Assert.assertEquals(true,copy.get());
+        Assertions.assertEquals(true,copy.get());
     }
 
 }

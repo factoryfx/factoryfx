@@ -6,8 +6,8 @@ import de.factoryfx.factory.atrribute.FactoryViewReferenceAttribute;
 import de.factoryfx.factory.builder.FactoryTreeBuilder;
 import de.factoryfx.factory.builder.Scope;
 import de.factoryfx.factory.testfactories.*;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
@@ -40,15 +40,15 @@ public class FactoryTreeBuilderBasedAttributeSetupTest {
         FactoryTreeBuilderBasedAttributeSetup<Void,ExampleLiveObjectA,ExampleFactoryA,Void> factoryTreeBuilderBasedAttributeSetup = new FactoryTreeBuilderBasedAttributeSetup<>(builder);
         factoryTreeBuilderBasedAttributeSetup.applyToRootFactoryDeep(root);
 
-        Assert.assertTrue(root.referenceAttribute.internal_isUserSelectable());
-        Assert.assertFalse(root.referenceAttribute.get().referenceAttribute.internal_isUserSelectable());
+        Assertions.assertTrue(root.referenceAttribute.internal_isUserSelectable());
+        Assertions.assertFalse(root.referenceAttribute.get().referenceAttribute.internal_isUserSelectable());
 
         List<ExampleFactoryB> possibleValues = root.referenceAttribute.internal_createNewPossibleValues();
-        Assert.assertEquals(1, possibleValues.size());
+        Assertions.assertEquals(1, possibleValues.size());
 
 
-        Assert.assertEquals("123", possibleValues.get(0).stringAttribute.get());
-        Assert.assertEquals("YYY", possibleValues.get(0).referenceAttributeC.get().stringAttribute.get());
+        Assertions.assertEquals("123", possibleValues.get(0).stringAttribute.get());
+        Assertions.assertEquals("YYY", possibleValues.get(0).referenceAttributeC.get().stringAttribute.get());
     }
 
     @Test
@@ -76,13 +76,13 @@ public class FactoryTreeBuilderBasedAttributeSetupTest {
         FactoryTreeBuilderBasedAttributeSetup<Void,ExampleLiveObjectA,ExampleFactoryA,Void> factoryTreeBuilderBasedAttributeSetup = new FactoryTreeBuilderBasedAttributeSetup<>(builder);
         factoryTreeBuilderBasedAttributeSetup.applyToRootFactoryDeep(root);
 
-//        Assert.assertFalse(root.referenceListAttribute.internal_isUserSelectable());
+//        Assertions.assertFalse(root.referenceListAttribute.internal_isUserSelectable());
 
         List<ExampleFactoryB> possibleValues = root.referenceListAttribute.internal_createNewPossibleValues();
-        Assert.assertEquals(2, possibleValues.size());
+        Assertions.assertEquals(2, possibleValues.size());
 
-        Assert.assertEquals("111", possibleValues.get(0).stringAttribute.get());
-        Assert.assertEquals("222", possibleValues.get(1).stringAttribute.get());
+        Assertions.assertEquals("111", possibleValues.get(0).stringAttribute.get());
+        Assertions.assertEquals("222", possibleValues.get(1).stringAttribute.get());
     }
 
 
@@ -109,7 +109,7 @@ public class FactoryTreeBuilderBasedAttributeSetupTest {
 
         List<ExampleFactoryB> possibleValues1 = root.referenceAttribute.internal_createNewPossibleValues();
         List<ExampleFactoryB> possibleValues2 = root.referenceAttribute.internal_createNewPossibleValues();
-        Assert.assertEquals(possibleValues1.get(0),possibleValues2.get(0));
+        Assertions.assertEquals(possibleValues1.get(0),possibleValues2.get(0));
     }
 
     @Test
@@ -134,7 +134,7 @@ public class FactoryTreeBuilderBasedAttributeSetupTest {
 
         List<ExampleFactoryB> possibleValues1 = root.referenceAttribute.internal_createNewPossibleValues();
         List<ExampleFactoryB> possibleValues2 = root.referenceAttribute.internal_createNewPossibleValues();
-        Assert.assertNotEquals(possibleValues1.get(0),possibleValues2.get(0));
+        Assertions.assertNotEquals(possibleValues1.get(0),possibleValues2.get(0));
     }
 
 
@@ -166,7 +166,7 @@ public class FactoryTreeBuilderBasedAttributeSetupTest {
         factoryTreeBuilderBasedAttributeSetup.applyToRootFactoryDeep(jsonCopy);
 
         List<ExampleFactoryB> possibleValues = jsonCopy.referenceAttribute.internal_createNewPossibleValues();
-        Assert.assertEquals(possibleValues.get(0),jsonCopy.referenceAttribute.get());
+        Assertions.assertEquals(possibleValues.get(0),jsonCopy.referenceAttribute.get());
     }
 
 
@@ -196,11 +196,11 @@ public class FactoryTreeBuilderBasedAttributeSetupTest {
         factoryTreeBuilderBasedAttributeSetup.applyToRootFactoryDeep(root);
 
         List<ExampleFactoryB> possibleValues = root.referenceListAttribute.internal_createNewPossibleValues();
-        Assert.assertEquals(2,possibleValues.size());
-        Assert.assertNotEquals(possibleValues.get(0),possibleValues.get(1));
+        Assertions.assertEquals(2,possibleValues.size());
+        Assertions.assertNotEquals(possibleValues.get(0),possibleValues.get(1));
 
-        Assert.assertEquals(root.referenceListAttribute.get(0),possibleValues.get(0));
-        Assert.assertEquals(root.referenceListAttribute.get(1),possibleValues.get(1));
+        Assertions.assertEquals(root.referenceListAttribute.get(0),possibleValues.get(0));
+        Assertions.assertEquals(root.referenceListAttribute.get(1),possibleValues.get(1));
     }
 
     private FactoryTreeBuilder<Void,ExampleLiveObjectA,ExampleFactoryA,Void> createNamedListBuilder() {
@@ -233,8 +233,8 @@ public class FactoryTreeBuilderBasedAttributeSetupTest {
         factoryTreeBuilderBasedAttributeSetup.applyToRootFactoryDeep(jsonCopy);
 
         List<ExampleFactoryB> possibleValues = jsonCopy.referenceListAttribute.internal_createNewPossibleValues();
-        Assert.assertTrue(possibleValues.get(0)==jsonCopy.referenceListAttribute.get(0));
-        Assert.assertTrue(possibleValues.get(1)==jsonCopy.referenceListAttribute.get(1));
+        Assertions.assertTrue(possibleValues.get(0)==jsonCopy.referenceListAttribute.get(0));
+        Assertions.assertTrue(possibleValues.get(1)==jsonCopy.referenceListAttribute.get(1));
     }
 
 
@@ -266,14 +266,14 @@ public class FactoryTreeBuilderBasedAttributeSetupTest {
 
 
         List<ExampleFactoryB> possibleValues = root.referenceAttribute.internal_createNewPossibleValues();
-        Assert.assertEquals(1, possibleValues.size());
-        Assert.assertEquals("123", possibleValues.get(0).stringAttribute.get());
+        Assertions.assertEquals(1, possibleValues.size());
+        Assertions.assertEquals("123", possibleValues.get(0).stringAttribute.get());
 
 
 
         List<ExampleFactoryC> possibleValuesC =possibleValues.get(0).referenceAttributeC.internal_createNewPossibleValues();
-        Assert.assertEquals(1, possibleValuesC.size());
-        Assert.assertEquals("YYY", possibleValuesC.get(0).stringAttribute.get());
+        Assertions.assertEquals(1, possibleValuesC.size());
+        Assertions.assertEquals("YYY", possibleValuesC.get(0).stringAttribute.get());
     }
 
 
@@ -353,7 +353,7 @@ public class FactoryTreeBuilderBasedAttributeSetupTest {
         factoryTreeBuilderBasedAttributeSetup.applyToRootFactoryDeep(root);
 
         List<ExampleFactoryB> possibleValues = root.referenceAttribute.internal_createNewPossibleValues();
-        Assert.assertEquals(1, possibleValues.size());
+        Assertions.assertEquals(1, possibleValues.size());
     }
 
 

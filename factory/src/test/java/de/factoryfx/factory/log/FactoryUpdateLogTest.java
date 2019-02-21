@@ -3,7 +3,7 @@ package de.factoryfx.factory.log;
 import de.factoryfx.data.jackson.ObjectMapperBuilder;
 import de.factoryfx.data.merge.DataMerger;
 import de.factoryfx.factory.testfactories.ExampleFactoryA;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.HashSet;

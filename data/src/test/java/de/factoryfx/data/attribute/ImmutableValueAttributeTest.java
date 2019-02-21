@@ -3,8 +3,8 @@ package de.factoryfx.data.attribute;
 import de.factoryfx.data.attribute.primitive.IntegerAttribute;
 import de.factoryfx.data.attribute.types.StringAttribute;
 import de.factoryfx.data.validation.ValidationError;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
@@ -16,9 +16,9 @@ public class ImmutableValueAttributeTest {
 
         final AttributeChangeListener<String,StringAttribute> stringAttributeChangeListener = (attribute, value) -> System.out.println(value);
         valueAttribute.internal_addListener(stringAttributeChangeListener);
-        Assert.assertTrue(valueAttribute.listeners.size()==1);
+        Assertions.assertTrue(valueAttribute.listeners.size()==1);
         valueAttribute.internal_removeListener(stringAttributeChangeListener);
-        Assert.assertTrue(valueAttribute.listeners.size()==0);
+        Assertions.assertTrue(valueAttribute.listeners.size()==0);
     }
 
     @Test
@@ -27,9 +27,9 @@ public class ImmutableValueAttributeTest {
 
         final AttributeChangeListener<String,StringAttribute> stringAttributeChangeListener = (attribute, value) -> System.out.println(value);
         valueAttribute.internal_addListener(new WeakAttributeChangeListener<>(stringAttributeChangeListener));
-        Assert.assertTrue(valueAttribute.listeners.size()==1);
+        Assertions.assertTrue(valueAttribute.listeners.size()==1);
         valueAttribute.internal_removeListener(stringAttributeChangeListener);
-        Assert.assertTrue(valueAttribute.listeners.size()==0);
+        Assertions.assertTrue(valueAttribute.listeners.size()==0);
     }
 
     @Test
@@ -38,16 +38,16 @@ public class ImmutableValueAttributeTest {
 
         final AttributeChangeListener<String,StringAttribute> stringAttributeChangeListener = (attribute, value) -> System.out.println(value);
         valueAttribute.internal_addListener(new WeakAttributeChangeListener<>(null));
-        Assert.assertTrue(valueAttribute.listeners.size()==1);
+        Assertions.assertTrue(valueAttribute.listeners.size()==1);
         valueAttribute.internal_removeListener(stringAttributeChangeListener);
-        Assert.assertTrue(valueAttribute.listeners.size()==0);
+        Assertions.assertTrue(valueAttribute.listeners.size()==0);
     }
 
     @Test
     public void test_match() throws Exception {
         StringAttribute stringAttribute = new StringAttribute();
         stringAttribute.set("123");
-        Assert.assertTrue(stringAttribute.match("123"));
+        Assertions.assertTrue(stringAttribute.match("123"));
     }
 
     @Test
@@ -57,7 +57,7 @@ public class ImmutableValueAttributeTest {
 
         StringAttribute stringAttribute2 = new StringAttribute();
         stringAttribute2.set("123");
-        Assert.assertTrue(stringAttribute.match(stringAttribute2));
+        Assertions.assertTrue(stringAttribute.match(stringAttribute2));
     }
 
     @Test
@@ -67,13 +67,13 @@ public class ImmutableValueAttributeTest {
         {
             attribute.set(null);
             List<ValidationError> validationErrors = attribute.internal_validate(null,"");
-            Assert.assertEquals(1, validationErrors.size());
+            Assertions.assertEquals(1, validationErrors.size());
         }
 
         {
             attribute.set(1);
             List<ValidationError> validationErrors = attribute.internal_validate(null,"");
-            Assert.assertEquals(0, validationErrors.size());
+            Assertions.assertEquals(0, validationErrors.size());
         }
     }
 
@@ -84,26 +84,26 @@ public class ImmutableValueAttributeTest {
         {
             attribute.set(null);
             List<ValidationError> validationErrors = attribute.internal_validate(null,"");
-            Assert.assertEquals(0, validationErrors.size());
+            Assertions.assertEquals(0, validationErrors.size());
         }
 
         {
             attribute.set(1);
             List<ValidationError> validationErrors = attribute.internal_validate(null,"");
-            Assert.assertEquals(0, validationErrors.size());
+            Assertions.assertEquals(0, validationErrors.size());
         }
     }
 
     @Test
     public void test_internal_require_true(){
         IntegerAttribute attribute = new IntegerAttribute();
-        Assert.assertTrue(attribute.internal_required());
+        Assertions.assertTrue(attribute.internal_required());
     }
 
     @Test
     public void test_internal_require_false(){
         IntegerAttribute attribute = new IntegerAttribute().nullable();
-        Assert.assertFalse(attribute.internal_required());
+        Assertions.assertFalse(attribute.internal_required());
     }
 
 }

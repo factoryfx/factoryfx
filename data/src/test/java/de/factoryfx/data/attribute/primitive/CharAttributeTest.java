@@ -1,8 +1,8 @@
 package de.factoryfx.data.attribute.primitive;
 
 import de.factoryfx.data.jackson.ObjectMapperBuilder;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class CharAttributeTest {
 
@@ -12,7 +12,7 @@ public class CharAttributeTest {
         char value = 'a';
         attribute.set(value);
         CharAttribute copy = ObjectMapperBuilder.build().copy(attribute);
-        Assert.assertEquals(value,copy.get().charValue());
+        Assertions.assertEquals(value,copy.get().charValue());
     }
 
 }

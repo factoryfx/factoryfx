@@ -2,8 +2,8 @@ package de.factoryfx.data.merge;
 
 import de.factoryfx.data.Data;
 import de.factoryfx.data.attribute.types.StringMapAttribute;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class MapMergeTest extends MergeHelperTestBase{
 
@@ -27,11 +27,11 @@ public class MapMergeTest extends MergeHelperTestBase{
         update.mapAttribute.get().put("k3","v3");
         update=update.internal().addBackReferences();
 
-        Assert.assertTrue(merge(original, original, update).hasNoConflicts());
-        Assert.assertEquals(3, original.mapAttribute.get().size());
-        Assert.assertEquals("v1", original.mapAttribute.get().get("k1"));
-        Assert.assertEquals("v2", original.mapAttribute.get().get("k2"));
-        Assert.assertEquals("v3", original.mapAttribute.get().get("k3"));
+        Assertions.assertTrue(merge(original, original, update).hasNoConflicts());
+        Assertions.assertEquals(3, original.mapAttribute.get().size());
+        Assertions.assertEquals("v1", original.mapAttribute.get().get("k1"));
+        Assertions.assertEquals("v2", original.mapAttribute.get().get("k2"));
+        Assertions.assertEquals("v3", original.mapAttribute.get().get("k3"));
     }
 
     @Test
@@ -48,11 +48,11 @@ public class MapMergeTest extends MergeHelperTestBase{
         update.mapAttribute.get().put("k3","v4");
         update=update.internal().addBackReferences();
 
-        Assert.assertTrue(merge(original, original, update).hasNoConflicts());
-        Assert.assertEquals(3, original.mapAttribute.get().size());
-        Assert.assertEquals("v1", original.mapAttribute.get().get("k1"));
-        Assert.assertEquals("v2", original.mapAttribute.get().get("k2"));
-        Assert.assertEquals("v4", original.mapAttribute.get().get("k3"));
+        Assertions.assertTrue(merge(original, original, update).hasNoConflicts());
+        Assertions.assertEquals(3, original.mapAttribute.get().size());
+        Assertions.assertEquals("v1", original.mapAttribute.get().get("k1"));
+        Assertions.assertEquals("v2", original.mapAttribute.get().get("k2"));
+        Assertions.assertEquals("v4", original.mapAttribute.get().get("k3"));
     }
 
     @Test
@@ -68,10 +68,10 @@ public class MapMergeTest extends MergeHelperTestBase{
         update.mapAttribute.get().put("k2","v2");
         update=update.internal().addBackReferences();
 
-        Assert.assertTrue(merge(original, original, update).hasNoConflicts());
-        Assert.assertEquals(2, original.mapAttribute.get().size());
-        Assert.assertEquals("v1", original.mapAttribute.get().get("k1"));
-        Assert.assertEquals("v2", original.mapAttribute.get().get("k2"));
+        Assertions.assertTrue(merge(original, original, update).hasNoConflicts());
+        Assertions.assertEquals(2, original.mapAttribute.get().size());
+        Assertions.assertEquals("v1", original.mapAttribute.get().get("k1"));
+        Assertions.assertEquals("v2", original.mapAttribute.get().get("k2"));
 
     }
 

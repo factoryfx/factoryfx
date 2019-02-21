@@ -9,7 +9,7 @@ import de.factoryfx.server.Microservice;
 import de.factoryfx.soap.example.*;
 import de.factoryfx.soap.server.SoapJettyServerFactory;
 import org.eclipse.jetty.server.Server;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;

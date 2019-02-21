@@ -2,8 +2,8 @@ package de.factoryfx.data.attribute.time;
 
 import java.time.Duration;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import de.factoryfx.data.jackson.ObjectMapperBuilder;
 
@@ -15,7 +15,7 @@ public class DurationAttributeTest {
         DurationAttribute attribute = new DurationAttribute();
         attribute.set(Duration.ofDays(1));
         DurationAttribute r = ObjectMapperBuilder.build().copy(attribute);
-        Assert.assertEquals(r.get(),attribute.get());
+        Assertions.assertEquals(r.get(),attribute.get());
     }
 
 }

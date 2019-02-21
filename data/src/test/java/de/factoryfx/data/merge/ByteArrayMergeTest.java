@@ -2,8 +2,8 @@ package de.factoryfx.data.merge;
 
 import de.factoryfx.data.Data;
 import de.factoryfx.data.attribute.types.ByteArrayAttribute;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class ByteArrayMergeTest extends MergeHelperTestBase {
 
@@ -22,11 +22,11 @@ public class ByteArrayMergeTest extends MergeHelperTestBase {
         aTest2.byteArrayAttribute.set(new byte[]{1,2,3,4});
         aTest2=aTest1.internal().addBackReferences();
 
-        Assert.assertTrue(merge(aTest1, aTest1, aTest2).hasNoConflicts());
+        Assertions.assertTrue(merge(aTest1, aTest1, aTest2).hasNoConflicts());
 
         aTest2.byteArrayAttribute.set(new byte[]{1,2,3,4,5});
-        Assert.assertTrue(merge(aTest1, aTest1, aTest2).hasNoConflicts());
-        Assert.assertArrayEquals(new byte[]{1,2,3,4,5},aTest1.byteArrayAttribute.get());
+        Assertions.assertTrue(merge(aTest1, aTest1, aTest2).hasNoConflicts());
+        Assertions.assertArrayEquals(new byte[]{1,2,3,4,5},aTest1.byteArrayAttribute.get());
     }
 
 

@@ -1,8 +1,8 @@
 package de.factoryfx.factory.builder;
 
 import de.factoryfx.factory.testfactories.ExampleFactoryA;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class FactoryCreatorTest {
 
@@ -15,7 +15,7 @@ public class FactoryCreatorTest {
         ExampleFactoryA first = factoryCreator.create(null);
         ExampleFactoryA second = factoryCreator.create(null);
 
-        Assert.assertEquals(first,second);
+        Assertions.assertEquals(first,second);
     }
 
     @Test
@@ -27,7 +27,7 @@ public class FactoryCreatorTest {
         ExampleFactoryA first = factoryCreator.create(null);
         ExampleFactoryA second = factoryCreator.create(null);
 
-        Assert.assertNotEquals(first,second);
+        Assertions.assertNotEquals(first,second);
     }
 
 }

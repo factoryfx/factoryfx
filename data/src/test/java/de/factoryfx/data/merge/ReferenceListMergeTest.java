@@ -4,9 +4,9 @@ import java.util.stream.Collectors;
 
 import de.factoryfx.data.merge.testdata.ExampleDataA;
 import de.factoryfx.data.merge.testdata.ExampleDataB;
-import org.junit.Assert;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
 public class ReferenceListMergeTest extends MergeHelperTestBase{
 
@@ -31,11 +31,11 @@ public class ReferenceListMergeTest extends MergeHelperTestBase{
         update.referenceListAttribute.add(newValue3);
         update = update.internal().addBackReferences();
 
-        Assert.assertTrue(merge(current, current, update).hasNoConflicts());
-        Assert.assertEquals(3, current.referenceListAttribute.size());
-        Assert.assertEquals(newValue1.stringAttribute.get(), current.referenceListAttribute.get(0).stringAttribute.get());
-        Assert.assertEquals(newValue2.stringAttribute.get(), current.referenceListAttribute.get(1).stringAttribute.get());
-        Assert.assertEquals(newValue3.stringAttribute.get(), current.referenceListAttribute.get(2).stringAttribute.get());
+        Assertions.assertTrue(merge(current, current, update).hasNoConflicts());
+        Assertions.assertEquals(3, current.referenceListAttribute.size());
+        Assertions.assertEquals(newValue1.stringAttribute.get(), current.referenceListAttribute.get(0).stringAttribute.get());
+        Assertions.assertEquals(newValue2.stringAttribute.get(), current.referenceListAttribute.get(1).stringAttribute.get());
+        Assertions.assertEquals(newValue3.stringAttribute.get(), current.referenceListAttribute.get(2).stringAttribute.get());
     }
 
     @Test
@@ -56,11 +56,11 @@ public class ReferenceListMergeTest extends MergeHelperTestBase{
         String idBefore1=current.referenceListAttribute.get(0).getId();
         String idBefore2=current.referenceListAttribute.get(1).getId();
         String idBefore3=update.referenceListAttribute.get(2).getId();
-        Assert.assertTrue(merge(current, current, update).hasNoConflicts());
-        Assert.assertEquals(3, current.referenceListAttribute.size());
-        Assert.assertEquals(idBefore1, current.referenceListAttribute.get(0).getId());
-        Assert.assertEquals(idBefore2, current.referenceListAttribute.get(1).getId());
-        Assert.assertEquals(idBefore3, current.referenceListAttribute.get(2).getId());
+        Assertions.assertTrue(merge(current, current, update).hasNoConflicts());
+        Assertions.assertEquals(3, current.referenceListAttribute.size());
+        Assertions.assertEquals(idBefore1, current.referenceListAttribute.get(0).getId());
+        Assertions.assertEquals(idBefore2, current.referenceListAttribute.get(1).getId());
+        Assertions.assertEquals(idBefore3, current.referenceListAttribute.get(2).getId());
     }
 
     @Test
@@ -84,11 +84,11 @@ public class ReferenceListMergeTest extends MergeHelperTestBase{
         String idBefore2=current.referenceListAttribute.get(1).getId();
         String idBefore3=current.referenceListAttribute.get(2).getId();
 
-        Assert.assertTrue(merge(current, orginal, update).hasNoConflicts());
-        Assert.assertEquals(3, current.referenceListAttribute.size());
-        Assert.assertEquals(idBefore1, current.referenceListAttribute.get(0).getId());
-        Assert.assertEquals(idBefore2, current.referenceListAttribute.get(1).getId());
-        Assert.assertEquals(idBefore3,current.referenceListAttribute.get(2).getId());
+        Assertions.assertTrue(merge(current, orginal, update).hasNoConflicts());
+        Assertions.assertEquals(3, current.referenceListAttribute.size());
+        Assertions.assertEquals(idBefore1, current.referenceListAttribute.get(0).getId());
+        Assertions.assertEquals(idBefore2, current.referenceListAttribute.get(1).getId());
+        Assertions.assertEquals(idBefore3,current.referenceListAttribute.get(2).getId());
     }
 
     @Test
@@ -109,13 +109,13 @@ public class ReferenceListMergeTest extends MergeHelperTestBase{
 
         String idBefore1=current.referenceListAttribute.get(0).getId();
         String idBefore2=current.referenceListAttribute.get(1).getId();
-        Assert.assertTrue(merge(current, current, update).hasNoConflicts());
-        Assert.assertEquals(2, current.referenceListAttribute.size());
-        Assert.assertEquals(idBefore1, current.referenceListAttribute.get(0).getId());
-        Assert.assertEquals(idBefore2, current.referenceListAttribute.get(1).getId());
+        Assertions.assertTrue(merge(current, current, update).hasNoConflicts());
+        Assertions.assertEquals(2, current.referenceListAttribute.size());
+        Assertions.assertEquals(idBefore1, current.referenceListAttribute.get(0).getId());
+        Assertions.assertEquals(idBefore2, current.referenceListAttribute.get(1).getId());
     }
 
-    @Ignore
+    @Disabled
     @Test
     public void test_both_added(){
         ExampleDataA current = new ExampleDataA();
@@ -134,12 +134,12 @@ public class ReferenceListMergeTest extends MergeHelperTestBase{
         ExampleDataB newValue4 = new ExampleDataB();
         update.referenceListAttribute.add(newValue4);
 
-        Assert.assertTrue(merge(current, orginal, update).hasNoConflicts());
-        Assert.assertEquals(4, current.referenceListAttribute.size());
-        Assert.assertTrue(current.referenceListAttribute.stream().map(bTest -> bTest.getId()).collect(Collectors.toList()).contains(newValue1.getId()));
-        Assert.assertTrue(current.referenceListAttribute.stream().map(bTest -> bTest.getId()).collect(Collectors.toList()).contains(newValue2.getId()));
-        Assert.assertTrue(current.referenceListAttribute.stream().map(bTest -> bTest.getId()).collect(Collectors.toList()).contains(newValue3.getId()));
-        Assert.assertTrue(current.referenceListAttribute.stream().map(bTest -> bTest.getId()).collect(Collectors.toList()).contains(newValue4.getId()));
+        Assertions.assertTrue(merge(current, orginal, update).hasNoConflicts());
+        Assertions.assertEquals(4, current.referenceListAttribute.size());
+        Assertions.assertTrue(current.referenceListAttribute.stream().map(bTest -> bTest.getId()).collect(Collectors.toList()).contains(newValue1.getId()));
+        Assertions.assertTrue(current.referenceListAttribute.stream().map(bTest -> bTest.getId()).collect(Collectors.toList()).contains(newValue2.getId()));
+        Assertions.assertTrue(current.referenceListAttribute.stream().map(bTest -> bTest.getId()).collect(Collectors.toList()).contains(newValue3.getId()));
+        Assertions.assertTrue(current.referenceListAttribute.stream().map(bTest -> bTest.getId()).collect(Collectors.toList()).contains(newValue4.getId()));
     }
 
     @Test
@@ -156,9 +156,9 @@ public class ReferenceListMergeTest extends MergeHelperTestBase{
         ExampleDataA update = current.internal().copy();
 
         final MergeDiffInfo merge = merge(current, orginal, update);
-        Assert.assertTrue(merge.hasNoConflicts());
-        Assert.assertEquals(2, current.referenceListAttribute.size());
-        Assert.assertEquals(0, merge.mergeInfos.size());
+        Assertions.assertTrue(merge.hasNoConflicts());
+        Assertions.assertEquals(2, current.referenceListAttribute.size());
+        Assertions.assertEquals(0, merge.mergeInfos.size());
     }
 
     @Test
@@ -182,10 +182,10 @@ public class ReferenceListMergeTest extends MergeHelperTestBase{
         String idBefore1=current.referenceListAttribute.get(0).getId();
         String idBefore2=current.referenceListAttribute.get(1).getId();
         final MergeDiffInfo merge = merge(current, orginal, update);
-        Assert.assertTrue(merge.hasNoConflicts());
-        Assert.assertEquals(2, current.referenceListAttribute.size());
-        Assert.assertEquals(idBefore2, current.referenceListAttribute.get(0).getId());
-        Assert.assertEquals(idBefore1, current.referenceListAttribute.get(1).getId());
+        Assertions.assertTrue(merge.hasNoConflicts());
+        Assertions.assertEquals(2, current.referenceListAttribute.size());
+        Assertions.assertEquals(idBefore2, current.referenceListAttribute.get(0).getId());
+        Assertions.assertEquals(idBefore1, current.referenceListAttribute.get(1).getId());
     }
 
     @Test
@@ -203,7 +203,7 @@ public class ReferenceListMergeTest extends MergeHelperTestBase{
         ExampleDataB existing = current.referenceListAttribute.get(0);
         merge(current, orginal, update);
 
-        Assert.assertTrue(existing==current.referenceListAttribute.get(0));
+        Assertions.assertTrue(existing==current.referenceListAttribute.get(0));
 
     }
 }

@@ -2,7 +2,9 @@ package de.factoryfx.server.user;
 
 import java.util.Locale;
 
-import org.junit.Test;
+
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class AuthorizedUserTest {
 
@@ -16,11 +18,13 @@ public class AuthorizedUserTest {
         //nothing
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test
     public void test_permission_missing(){
-        AuthorizedUser user = new AuthorizedUser("us",Locale.ENGLISH,"TEST_PERMISSION");
+        Assertions.assertThrows(IllegalStateException.class, () -> {
+            AuthorizedUser user = new AuthorizedUser("us", Locale.ENGLISH, "TEST_PERMISSION");
 
-        user.checkPermission("hgfdhghgdh");
+            user.checkPermission("hgfdhghgdh");
+        });
     }
 
 }

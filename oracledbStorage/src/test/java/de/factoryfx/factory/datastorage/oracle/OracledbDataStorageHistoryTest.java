@@ -5,14 +5,15 @@ import de.factoryfx.data.storage.migration.GeneralStorageMetadata;
 import de.factoryfx.data.storage.migration.GeneralStorageMetadataBuilder;
 import de.factoryfx.data.storage.migration.metadata.DataStorageMetadataDictionary;
 import de.factoryfx.factory.testfactories.ExampleFactoryA;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.Set;
 import java.util.UUID;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 
 public class OracledbDataStorageHistoryTest extends DatabaseTest {
 
@@ -20,7 +21,7 @@ public class OracledbDataStorageHistoryTest extends DatabaseTest {
     public void test_empty() {
         OracledbDataStorageHistory<ExampleFactoryA,Void> oracledbDataStorageHistory = new OracledbDataStorageHistory<>(connectionSupplier, createMigrationManager());
 
-        Assert.assertTrue(oracledbDataStorageHistory.getHistoryFactoryList().isEmpty());
+        Assertions.assertTrue(oracledbDataStorageHistory.getHistoryFactoryList().isEmpty());
     }
 
     @Test
@@ -67,7 +68,7 @@ public class OracledbDataStorageHistoryTest extends DatabaseTest {
         assertEquals(1, oracledbDataStorageHistory.getHistoryFactoryList().size());
 
         OracledbDataStorageHistory<ExampleFactoryA,Void> restored = new OracledbDataStorageHistory<>(connectionSupplier, createMigrationManager());
-        Assert.assertEquals(1,restored.getHistoryFactoryList().size());
+        assertEquals(1,restored.getHistoryFactoryList().size());
     }
 
     @Test
@@ -80,7 +81,7 @@ public class OracledbDataStorageHistoryTest extends DatabaseTest {
         OracledbDataStorageHistory<ExampleFactoryA,Void> history = new OracledbDataStorageHistory<>(connectionSupplier, createMigrationManager());
 
         ExampleFactoryA reloaded = oracledbDataStorageHistory.getHistoryFactory(new ArrayList<>(history.getHistoryFactoryList()).get(0).id);
-        Assert.assertNotNull(reloaded);
+        Assertions.assertNotNull(reloaded);
 
     }
 }

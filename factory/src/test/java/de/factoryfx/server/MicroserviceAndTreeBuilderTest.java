@@ -5,7 +5,7 @@ import de.factoryfx.factory.builder.Scope;
 import de.factoryfx.factory.testfactories.ExampleFactoryA;
 import de.factoryfx.factory.testfactories.ExampleFactoryB;
 import de.factoryfx.factory.testfactories.ExampleLiveObjectA;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class MicroserviceAndTreeBuilderTest {
 

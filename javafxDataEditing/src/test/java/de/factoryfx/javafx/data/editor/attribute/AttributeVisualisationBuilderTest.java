@@ -2,8 +2,8 @@ package de.factoryfx.javafx.data.editor.attribute;
 
 import de.factoryfx.data.attribute.types.StringAttribute;
 import de.factoryfx.javafx.UniformDesignBuilder;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class AttributeVisualisationBuilderTest {
 
@@ -11,7 +11,7 @@ public class AttributeVisualisationBuilderTest {
     public void test_canEdit(){
         AttributeVisualisationMappingBuilder attributeEditor = new AttributeVisualisationMappingBuilder(AttributeVisualisationMappingBuilder.createDefaultSingleAttributeEditorBuilders(UniformDesignBuilder.build()));
 
-        Assert.assertNotNull(attributeEditor.getAttributeVisualisation(new StringAttribute(),null,null));
+        Assertions.assertNotNull(attributeEditor.getAttributeVisualisation(new StringAttribute(),null,null));
     }
 
 }

@@ -1,8 +1,8 @@
 package de.factoryfx.data.attribute.primitive.list;
 
 import de.factoryfx.data.jackson.ObjectMapperBuilder;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class LongListAttributeTest {
 
@@ -12,7 +12,7 @@ public class LongListAttributeTest {
         long value = 1;
         attribute.add(value);
         LongListAttribute copy = ObjectMapperBuilder.build().copy(attribute);
-        Assert.assertEquals(1,copy.get(0).longValue());
+        Assertions.assertEquals(1,copy.get(0).longValue());
     }
 
 }

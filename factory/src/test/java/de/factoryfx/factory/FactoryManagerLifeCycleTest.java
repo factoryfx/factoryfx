@@ -11,8 +11,8 @@ import de.factoryfx.factory.atrribute.FactoryReferenceAttribute;
 import de.factoryfx.factory.atrribute.FactoryReferenceListAttribute;
 import de.factoryfx.factory.atrribute.FactoryViewListReferenceAttribute;
 import de.factoryfx.factory.exception.RethrowingFactoryExceptionHandler;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -128,11 +128,11 @@ public class FactoryManagerLifeCycleTest {
 
         factoryManager.start(new RootFactoryWrapper<>(exampleFactoryA));
 
-        Assert.assertEquals(1,exampleFactoryA.createCalls.size());
-        Assert.assertEquals(1,exampleFactoryB.createCalls.size());
+        Assertions.assertEquals(1,exampleFactoryA.createCalls.size());
+        Assertions.assertEquals(1,exampleFactoryB.createCalls.size());
 
-        Assert.assertEquals(1,exampleFactoryA.startCalls.size());
-        Assert.assertEquals(1,exampleFactoryB.startCalls.size());
+        Assertions.assertEquals(1,exampleFactoryA.startCalls.size());
+        Assertions.assertEquals(1,exampleFactoryB.startCalls.size());
     }
 
     @Test
@@ -146,8 +146,8 @@ public class FactoryManagerLifeCycleTest {
         factoryManager.start(new RootFactoryWrapper<>(exampleFactoryA));
         factoryManager.stop();
 
-        Assert.assertEquals(1,exampleFactoryA.destroyCalls.size());
-        Assert.assertEquals(1,exampleFactoryB.destroyCalls.size());
+        Assertions.assertEquals(1,exampleFactoryA.destroyCalls.size());
+        Assertions.assertEquals(1,exampleFactoryB.destroyCalls.size());
     }
 
 
@@ -167,7 +167,7 @@ public class FactoryManagerLifeCycleTest {
         factoryManager.start(new RootFactoryWrapper<>(exampleFactoryA));
         factoryManager.stop();
 
-        Assert.assertEquals(1,exampleFactoryReused.destroyCalls.size());
+        Assertions.assertEquals(1,exampleFactoryReused.destroyCalls.size());
     }
 
     @Test
@@ -197,8 +197,8 @@ public class FactoryManagerLifeCycleTest {
         exampleFactoryB.resetCounter();
         factoryManager.update(common, update,(permission)->true);
 
-        Assert.assertEquals(1,exampleFactoryA.reCreateCalls.size());
-        Assert.assertEquals(1,exampleFactoryB.reCreateCalls.size());
+        Assertions.assertEquals(1,exampleFactoryA.reCreateCalls.size());
+        Assertions.assertEquals(1,exampleFactoryB.reCreateCalls.size());
     }
 
     @Test
@@ -222,14 +222,14 @@ public class FactoryManagerLifeCycleTest {
         exampleFactoryB.resetCounter();
         factoryManager.update(common,update,(permission)->true);
 
-        Assert.assertEquals(1,exampleFactoryA.destroyCalls.size());
-        Assert.assertEquals(1,exampleFactoryB.destroyCalls.size());
+        Assertions.assertEquals(1,exampleFactoryA.destroyCalls.size());
+        Assertions.assertEquals(1,exampleFactoryB.destroyCalls.size());
 
-        Assert.assertEquals(1,exampleFactoryA.reCreateCalls.size());
-        Assert.assertEquals(1,exampleFactoryB.reCreateCalls.size());
+        Assertions.assertEquals(1,exampleFactoryA.reCreateCalls.size());
+        Assertions.assertEquals(1,exampleFactoryB.reCreateCalls.size());
 
-        Assert.assertEquals(1,exampleFactoryA.startCalls.size());
-        Assert.assertEquals(1,exampleFactoryB.startCalls.size());
+        Assertions.assertEquals(1,exampleFactoryA.startCalls.size());
+        Assertions.assertEquals(1,exampleFactoryB.startCalls.size());
     }
 
     @Test
@@ -257,14 +257,14 @@ public class FactoryManagerLifeCycleTest {
 
         factoryManager.update(common,update,(permission)->true);
 
-        Assert.assertEquals(1,exampleFactoryA.destroyCalls.size());
-        Assert.assertEquals(1,exampleFactoryB.destroyCalls.size());
+        Assertions.assertEquals(1,exampleFactoryA.destroyCalls.size());
+        Assertions.assertEquals(1,exampleFactoryB.destroyCalls.size());
 
-        Assert.assertEquals(1,exampleFactoryA.reCreateCalls.size());
-        Assert.assertEquals(1,exampleFactoryB.reCreateCalls.size());
+        Assertions.assertEquals(1,exampleFactoryA.reCreateCalls.size());
+        Assertions.assertEquals(1,exampleFactoryB.reCreateCalls.size());
 
-        Assert.assertEquals(1,exampleFactoryA.startCalls.size());
-        Assert.assertEquals(1,exampleFactoryB.startCalls.size());
+        Assertions.assertEquals(1,exampleFactoryA.startCalls.size());
+        Assertions.assertEquals(1,exampleFactoryB.startCalls.size());
     }
 
     @Test
@@ -289,14 +289,14 @@ public class FactoryManagerLifeCycleTest {
         exampleFactoryB.resetCounter();
         factoryManager.update(common,update,(permission)->true);
 
-        Assert.assertEquals(1,exampleFactoryA.destroyCalls.size());
-        Assert.assertEquals(1,exampleFactoryB.destroyCalls.size());
+        Assertions.assertEquals(1,exampleFactoryA.destroyCalls.size());
+        Assertions.assertEquals(1,exampleFactoryB.destroyCalls.size());
 
-        Assert.assertEquals(1,exampleFactoryA.reCreateCalls.size());
-        Assert.assertEquals(1,exampleFactoryB.reCreateCalls.size());
+        Assertions.assertEquals(1,exampleFactoryA.reCreateCalls.size());
+        Assertions.assertEquals(1,exampleFactoryB.reCreateCalls.size());
 
-        Assert.assertEquals(1,exampleFactoryA.startCalls.size());
-        Assert.assertEquals(1,exampleFactoryB.startCalls.size());
+        Assertions.assertEquals(1,exampleFactoryA.startCalls.size());
+        Assertions.assertEquals(1,exampleFactoryB.startCalls.size());
     }
 
 
@@ -318,11 +318,11 @@ public class FactoryManagerLifeCycleTest {
         exampleFactoryA.resetCounter();
         factoryManager.update(common,update,(permission)->true);
 
-        Assert.assertEquals(1,exampleFactoryA.destroyCalls.size());
+        Assertions.assertEquals(1,exampleFactoryA.destroyCalls.size());
 
-        Assert.assertEquals(1,exampleFactoryA.reCreateCalls.size());
+        Assertions.assertEquals(1,exampleFactoryA.reCreateCalls.size());
 
-        Assert.assertEquals(1,exampleFactoryA.startCalls.size());
+        Assertions.assertEquals(1,exampleFactoryA.startCalls.size());
     }
 
 
@@ -347,11 +347,11 @@ public class FactoryManagerLifeCycleTest {
         exampleFactoryA.resetCounter();
         factoryManager.update(common,update,(permission)->true);
 
-        Assert.assertEquals(0,exampleFactoryA.destroyCalls.size());
+        Assertions.assertEquals(0,exampleFactoryA.destroyCalls.size());
 
-        Assert.assertEquals(0,exampleFactoryA.reCreateCalls.size());
+        Assertions.assertEquals(0,exampleFactoryA.reCreateCalls.size());
 
-        Assert.assertEquals(0,exampleFactoryA.startCalls.size());
+        Assertions.assertEquals(0,exampleFactoryA.startCalls.size());
     }
 
     @Test
@@ -362,15 +362,15 @@ public class FactoryManagerLifeCycleTest {
         root.refList.add(new LifecycleFactoryC());
         factoryManager.start(new RootFactoryWrapper<>(root));
 
-        Assert.assertEquals(1,factoryManager.getCurrentFactory().refList.get(0).createCalls.size());
+        Assertions.assertEquals(1,factoryManager.getCurrentFactory().refList.get(0).createCalls.size());
 
         LifecycleFactoryA common = factoryManager.getCurrentFactory().utility().copy();
         LifecycleFactoryA update = factoryManager.getCurrentFactory().utility().copy();
         update.refList.add(new LifecycleFactoryC());
 
         factoryManager.update(common,update,(permission)->true);
-        Assert.assertEquals(1,factoryManager.getCurrentFactory().refList.get(0).createCalls.size());
-        Assert.assertEquals(1,factoryManager.getCurrentFactory().refList.get(1).createCalls.size());
+        Assertions.assertEquals(1,factoryManager.getCurrentFactory().refList.get(0).createCalls.size());
+        Assertions.assertEquals(1,factoryManager.getCurrentFactory().refList.get(1).createCalls.size());
 
     }
 
@@ -408,9 +408,9 @@ public class FactoryManagerLifeCycleTest {
         root.internal().collectChildrenDeep().forEach(data -> ((LifecycleFactoryBase)data).resetCounter());
         factoryManager.update(common,update,(permission)->true);
 
-        Assert.assertEquals(1,root.reCreateCalls.size());
-        Assert.assertEquals(1,root.ref.get().reCreateCalls.size());
-        Assert.assertEquals(1,root.ref2.get().reCreateCalls.size());
+        Assertions.assertEquals(1,root.reCreateCalls.size());
+        Assertions.assertEquals(1,root.ref.get().reCreateCalls.size());
+        Assertions.assertEquals(1,root.ref2.get().reCreateCalls.size());
     }
 
 
@@ -450,12 +450,12 @@ public class FactoryManagerLifeCycleTest {
         root.internal().collectChildrenDeep().forEach(data -> ((LifecycleFactoryBase)data).resetCounter());
         factoryManager.update(common,update,(permission)->true);
 
-        Assert.assertEquals(1,root.reCreateCalls.size());
-        Assert.assertEquals(1,root.ref.get().reCreateCalls.size());
-        Assert.assertEquals(1,root.ref2.get().reCreateCalls.size());
+        Assertions.assertEquals(1,root.reCreateCalls.size());
+        Assertions.assertEquals(1,root.ref.get().reCreateCalls.size());
+        Assertions.assertEquals(1,root.ref2.get().reCreateCalls.size());
 
-        Assert.assertEquals(1,root.ref.get().refD.get().reCreateCalls.size());
-        Assert.assertEquals(1,root.ref2.get().refD.get().reCreateCalls.size());
+        Assertions.assertEquals(1,root.ref.get().refD.get().reCreateCalls.size());
+        Assertions.assertEquals(1,root.ref2.get().refD.get().reCreateCalls.size());
 
     }
 
@@ -493,12 +493,12 @@ public class FactoryManagerLifeCycleTest {
         root.internal().collectChildrenDeep().forEach(data -> ((LifecycleFactoryBase)data).resetCounter());
         factoryManager.update(common,update,(permission)->true);
 
-        Assert.assertNull(factoryManager.getCurrentFactory().ref.get().refC.get());
-        Assert.assertNotNull(factoryManager.getCurrentFactory().ref2.get().refC.get());
+        Assertions.assertNull(factoryManager.getCurrentFactory().ref.get().refC.get());
+        Assertions.assertNotNull(factoryManager.getCurrentFactory().ref2.get().refC.get());
 
-        Assert.assertEquals(1,root.reCreateCalls.size());
-        Assert.assertEquals(1,root.ref.get().reCreateCalls.size());
-        Assert.assertEquals(0,root.ref2.get().reCreateCalls.size());
+        Assertions.assertEquals(1,root.reCreateCalls.size());
+        Assertions.assertEquals(1,root.ref.get().reCreateCalls.size());
+        Assertions.assertEquals(0,root.ref2.get().reCreateCalls.size());
     }
 
     @Test
@@ -537,12 +537,12 @@ public class FactoryManagerLifeCycleTest {
         root.internal().collectChildrenDeep().forEach(data -> ((LifecycleFactoryBase)data).resetCounter());
         factoryManager.update(common,update,(permission)->true);
 
-        Assert.assertEquals(1,root.reCreateCalls.size());
-        Assert.assertEquals(1,root.ref.get().reCreateCalls.size());
-        Assert.assertEquals(0,root.ref2.get().reCreateCalls.size());
+        Assertions.assertEquals(1,root.reCreateCalls.size());
+        Assertions.assertEquals(1,root.ref.get().reCreateCalls.size());
+        Assertions.assertEquals(0,root.ref2.get().reCreateCalls.size());
 
-        Assert.assertEquals(1,root.ref.get().refD.get().reCreateCalls.size());
-        Assert.assertEquals(0,root.ref2.get().refD.get().reCreateCalls.size());
+        Assertions.assertEquals(1,root.ref.get().refD.get().reCreateCalls.size());
+        Assertions.assertEquals(0,root.ref2.get().refD.get().reCreateCalls.size());
 
     }
 
@@ -590,11 +590,11 @@ public class FactoryManagerLifeCycleTest {
 
         update.stringAttribute.set("123");
 
-        Assert.assertEquals(0,factoryManager.getCurrentFactory().updateCalls.size());
+        Assertions.assertEquals(0,factoryManager.getCurrentFactory().updateCalls.size());
         update.resetCounter();
         factoryManager.update(common,update,(permission)->true);
 
-        Assert.assertEquals(1,factoryManager.getCurrentFactory().updateCalls.size());
+        Assertions.assertEquals(1,factoryManager.getCurrentFactory().updateCalls.size());
     }
 
     @Test
@@ -612,11 +612,11 @@ public class FactoryManagerLifeCycleTest {
 
         update.stringAttribute.set("123");
 
-        Assert.assertEquals(1,factoryManager.getCurrentFactory().startCalls.size());
+        Assertions.assertEquals(1,factoryManager.getCurrentFactory().startCalls.size());
         update.resetCounter();
         factoryManager.update(common,update,(permission)->true);
 
-        Assert.assertEquals(1,factoryManager.getCurrentFactory().startCalls.size());
+        Assertions.assertEquals(1,factoryManager.getCurrentFactory().startCalls.size());
     }
 
     @Test
@@ -634,11 +634,11 @@ public class FactoryManagerLifeCycleTest {
 
         update.stringAttribute.set("123");
 
-        Assert.assertEquals(0,factoryManager.getCurrentFactory().destroyCalls.size());
+        Assertions.assertEquals(0,factoryManager.getCurrentFactory().destroyCalls.size());
         update.resetCounter();
         factoryManager.update(common,update,(permission)->true);
 
-        Assert.assertEquals(0,factoryManager.getCurrentFactory().destroyCalls.size());
+        Assertions.assertEquals(0,factoryManager.getCurrentFactory().destroyCalls.size());
     }
 
 

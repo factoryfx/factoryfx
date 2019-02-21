@@ -7,8 +7,8 @@ import de.factoryfx.factory.parametrized.ParametrizedObjectCreatorFactory;
 import de.factoryfx.factory.testfactories.ExampleFactoryB;
 import de.factoryfx.factory.testfactories.ExampleLiveObjectA;
 import de.factoryfx.factory.testfactories.ExampleLiveObjectB;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import java.util.function.Function;
@@ -43,9 +43,9 @@ public class DefaultCreatorTest {
 
         ParametrizedTestFactory factory= defaultCreator.apply(mock);
 
-        Assert.assertNotNull(factory.dummyCreator.get());
+        Assertions.assertNotNull(factory.dummyCreator.get());
         DummyCreatorFactory actual = factory.dummyCreator.get();
-        Assert.assertEquals(DummyCreatorFactory.class, actual.getClass());
+        Assertions.assertEquals(DummyCreatorFactory.class, actual.getClass());
     }
 
     public static class ExampleFactoryANotNullable extends SimpleFactoryBase<ExampleLiveObjectA,Void, ExampleFactoryANotNullable> {
@@ -60,10 +60,12 @@ public class DefaultCreatorTest {
     }
 
 
-    @Test(expected = IllegalStateException.class)
+    @Test
     public void test_missing_factory(){
-        DefaultCreator<ExampleFactoryANotNullable,ExampleFactoryANotNullable> defaultCreator = new DefaultCreator<>(ExampleFactoryANotNullable.class);
-        defaultCreator.apply(new FactoryContext<>());
+        Assertions.assertThrows(IllegalStateException.class, () -> {
+            DefaultCreator<ExampleFactoryANotNullable, ExampleFactoryANotNullable> defaultCreator = new DefaultCreator<>(ExampleFactoryANotNullable.class);
+            defaultCreator.apply(new FactoryContext<>());
+        });
     }
 
     public static class ExampleFactoryNullableRef extends SimpleFactoryBase<ExampleLiveObjectA,Void, ExampleFactoryNullableRef> {

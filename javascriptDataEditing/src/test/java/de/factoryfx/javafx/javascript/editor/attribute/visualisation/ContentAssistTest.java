@@ -2,7 +2,7 @@ package de.factoryfx.javafx.javascript.editor.attribute.visualisation;
 
 import de.factoryfx.javascript.data.attributes.types.Externs;
 import de.factoryfx.javascript.data.attributes.types.Javascript;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class ContentAssistTest {
 

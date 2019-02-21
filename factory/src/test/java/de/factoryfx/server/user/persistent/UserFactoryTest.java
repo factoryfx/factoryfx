@@ -1,8 +1,8 @@
 package de.factoryfx.server.user.persistent;
 
 import de.factoryfx.data.jackson.ObjectMapperBuilder;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class UserFactoryTest {
 
@@ -19,7 +19,7 @@ public class UserFactoryTest {
 
 
         UserFactory userFactory = ObjectMapperBuilder.build().readValue(old, UserFactory.class);
-        Assert.assertEquals("ABC",userFactory.permissions.get().get(0));
+        Assertions.assertEquals("ABC",userFactory.permissions.get().get(0));
 
 
     }

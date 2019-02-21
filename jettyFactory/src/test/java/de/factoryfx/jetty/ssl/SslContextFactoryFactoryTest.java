@@ -10,8 +10,8 @@ import de.factoryfx.jetty.JettyServerBuilder;
 import de.factoryfx.jetty.JettyServerFactory;
 import de.factoryfx.server.Microservice;
 import org.eclipse.jetty.server.Server;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import javax.net.ssl.*;
 import javax.ws.rs.GET;
@@ -72,7 +72,7 @@ public class SslContextFactoryFactoryTest {
             URL url = new URL("http://localhost:8009/test");
             URLConnection conn = url.openConnection();
             InputStream is = conn.getInputStream();
-            Assert.assertEquals("Hello World", convertStreamToString(is));
+            Assertions.assertEquals("Hello World", convertStreamToString(is));
 
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -120,7 +120,7 @@ public class SslContextFactoryFactoryTest {
             URL url = new URL("https://localhost:8009/test");
             URLConnection conn = url.openConnection();
             InputStream is = conn.getInputStream();
-            Assert.assertEquals("Hello World",convertStreamToString(is));
+            Assertions.assertEquals("Hello World",convertStreamToString(is));
         } catch (NoSuchAlgorithmException | KeyManagementException | IOException e) {
             throw new RuntimeException(e);
         } finally {

@@ -6,8 +6,8 @@ import de.factoryfx.data.storage.DataUpdate;
 import de.factoryfx.data.storage.StoredDataMetadata;
 import de.factoryfx.data.storage.migration.GeneralStorageMetadataBuilder;
 import de.factoryfx.factory.testfactories.ExampleFactoryA;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import java.util.*;
 
@@ -32,7 +32,7 @@ public class OracledbDataStorageTest extends DatabaseTest{
         OracledbDataStorage<ExampleFactoryA,Void> oracledbFactoryStorage = new OracledbDataStorage<>(connectionSupplier, createInitialExampleFactoryA(), GeneralStorageMetadataBuilder.build(), createMigrationManager(), ObjectMapperBuilder.build());
         oracledbFactoryStorage.getCurrentData();
 
-        Assert.assertEquals(1,oracledbFactoryStorage.getHistoryDataList().size());
+        Assertions.assertEquals(1,oracledbFactoryStorage.getHistoryDataList().size());
     }
 
     @Test
@@ -41,22 +41,22 @@ public class OracledbDataStorageTest extends DatabaseTest{
         String id=oracledbFactoryStorage.getCurrentData().id;
 
         OracledbDataStorage<ExampleFactoryA,Void> restored = new OracledbDataStorage<>(connectionSupplier,null, GeneralStorageMetadataBuilder.build(), createMigrationManager(), ObjectMapperBuilder.build());
-        Assert.assertEquals(id,restored.getCurrentData().id);
+        Assertions.assertEquals(id,restored.getCurrentData().id);
     }
 
     @Test
     public void test_update()  {
         OracledbDataStorage<ExampleFactoryA,Void> oracledbFactoryStorage = new OracledbDataStorage<>(connectionSupplier, createInitialExampleFactoryA(), GeneralStorageMetadataBuilder.build(), createMigrationManager(), ObjectMapperBuilder.build());
         oracledbFactoryStorage.getCurrentData();//usually called in preparenew
-        Assert.assertEquals(1,oracledbFactoryStorage.getHistoryDataList().size());
+        Assertions.assertEquals(1,oracledbFactoryStorage.getHistoryDataList().size());
         oracledbFactoryStorage.updateCurrentData(createUpdate(),null);
-        Assert.assertEquals(2,oracledbFactoryStorage.getHistoryDataList().size());
+        Assertions.assertEquals(2,oracledbFactoryStorage.getHistoryDataList().size());
 
         StoredDataMetadata<Void> storedDataMetadata = new ArrayList<>(oracledbFactoryStorage.getHistoryDataList()).get(1);
-        Assert.assertEquals("update", oracledbFactoryStorage.getHistoryData(storedDataMetadata.id).stringAttribute.get());
-        Assert.assertEquals("update", oracledbFactoryStorage.getCurrentData().root.stringAttribute.get());
+        Assertions.assertEquals("update", oracledbFactoryStorage.getHistoryData(storedDataMetadata.id).stringAttribute.get());
+        Assertions.assertEquals("update", oracledbFactoryStorage.getCurrentData().root.stringAttribute.get());
         StoredDataMetadata<Void> storedDataMetadataFirst = new ArrayList<>(oracledbFactoryStorage.getHistoryDataList()).get(0);
-        Assert.assertEquals("initial", oracledbFactoryStorage.getHistoryData(storedDataMetadataFirst.id).stringAttribute.get());
+        Assertions.assertEquals("initial", oracledbFactoryStorage.getHistoryData(storedDataMetadataFirst.id).stringAttribute.get());
     }
 
     @Test
@@ -68,7 +68,7 @@ public class OracledbDataStorageTest extends DatabaseTest{
         oracleStorage.patchCurrentData((data, metadata) -> {
             ((ObjectNode) data.get("stringAttribute")).put("v", "qqq");
         });
-        Assert.assertEquals("qqq",oracleStorage.getCurrentData().root.stringAttribute.get());
+        Assertions.assertEquals("qqq",oracleStorage.getCurrentData().root.stringAttribute.get());
     }
 
 
@@ -82,7 +82,7 @@ public class OracledbDataStorageTest extends DatabaseTest{
         oracleStorage.patchAll((data, metadata) -> {
             ((ObjectNode) data.get("stringAttribute")).put("v", "qqq");
         });
-        Assert.assertEquals("qqq",oracleStorage.getHistoryData(id).stringAttribute.get());
+        Assertions.assertEquals("qqq",oracleStorage.getHistoryData(id).stringAttribute.get());
     }
 
 

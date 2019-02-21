@@ -1,8 +1,8 @@
 package de.factoryfx.data.attribute.primitive;
 
 import de.factoryfx.data.jackson.ObjectMapperBuilder;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class FloatAttributeTest {
 
@@ -12,7 +12,7 @@ public class FloatAttributeTest {
         float value = 1;
         attribute.set(value);
         FloatAttribute copy = ObjectMapperBuilder.build().copy(attribute);
-        Assert.assertEquals(value,copy.get().doubleValue(),0.0001);
+        Assertions.assertEquals(value,copy.get().doubleValue(),0.0001);
     }
 
     @Test
@@ -21,7 +21,7 @@ public class FloatAttributeTest {
         float value = 1.532f;
         attribute.set(value);
         FloatAttribute copy = ObjectMapperBuilder.build().copy(attribute);
-        Assert.assertEquals(value,copy.get().doubleValue(),0.0001);
+        Assertions.assertEquals(value,copy.get().doubleValue(),0.0001);
     }
 
 }

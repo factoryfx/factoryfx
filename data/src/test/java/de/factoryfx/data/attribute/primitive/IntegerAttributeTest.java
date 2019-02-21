@@ -1,8 +1,8 @@
 package de.factoryfx.data.attribute.primitive;
 
 import de.factoryfx.data.jackson.ObjectMapperBuilder;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class IntegerAttributeTest {
 
@@ -12,7 +12,7 @@ public class IntegerAttributeTest {
         int value = 1;
         attribute.set(value);
         IntegerAttribute copy = ObjectMapperBuilder.build().copy(attribute);
-        Assert.assertEquals(value,copy.get().intValue());
+        Assertions.assertEquals(value,copy.get().intValue());
     }
 
 }

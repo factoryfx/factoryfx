@@ -4,8 +4,8 @@ import java.util.Locale;
 
 import de.factoryfx.data.Data;
 import de.factoryfx.data.attribute.types.I18nAttribute;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class I18nMergeTest extends MergeHelperTestBase {
 
@@ -23,9 +23,9 @@ public class I18nMergeTest extends MergeHelperTestBase {
         aTest2.attribute.en("test1X").de("test2X");
         aTest2=aTest2.internal().addBackReferences();
 
-        Assert.assertTrue(merge(aTest1, aTest1, aTest2).hasNoConflicts());
-        Assert.assertEquals("test1X",aTest1.attribute.get().internal_getPreferred(Locale.ENGLISH));
-        Assert.assertEquals("test2X",aTest1.attribute.get().internal_getPreferred(Locale.GERMAN));
+        Assertions.assertTrue(merge(aTest1, aTest1, aTest2).hasNoConflicts());
+        Assertions.assertEquals("test1X",aTest1.attribute.get().internal_getPreferred(Locale.ENGLISH));
+        Assertions.assertEquals("test2X",aTest1.attribute.get().internal_getPreferred(Locale.GERMAN));
     }
 
 

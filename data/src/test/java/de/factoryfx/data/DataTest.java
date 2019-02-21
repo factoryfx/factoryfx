@@ -17,8 +17,8 @@ import de.factoryfx.data.merge.testdata.ExampleDataC;
 import de.factoryfx.data.util.LanguageText;
 import de.factoryfx.data.validation.AttributeValidation;
 import de.factoryfx.data.validation.ValidationResult;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class DataTest {
 
@@ -30,8 +30,8 @@ public class DataTest {
 
         ArrayList<String> calls = new ArrayList<>();
         testModel.internal().visitAttributesFlat((attributeVariableName, attribute) -> calls.add(attribute.get().toString()));
-        Assert.assertEquals(3,calls.size());
-        Assert.assertEquals("xxxx",calls.get(0));
+        Assertions.assertEquals(3,calls.size());
+        Assertions.assertEquals("xxxx",calls.get(0));
     }
 
 
@@ -55,16 +55,16 @@ public class DataTest {
         String string = mapper.writeValueAsString(exampleFactoryThis);
         ExampleFactoryThis readed = ObjectMapperBuilder.buildNewObjectMapper().readValue(string,ExampleFactoryThis.class);
 
-//        Assert.assertEquals(null,readed.stringAttribute);
-        Assert.assertEquals(0,readed.calls.size());
+//        Assertions.assertEquals(null,readed.stringAttribute);
+        Assertions.assertEquals(0,readed.calls.size());
 
         readed = readed.internal().addBackReferences();
 
         readed.internal().validateFlat();
 
-        Assert.assertNotNull(readed.stringAttribute);
-        Assert.assertEquals(1,readed.calls.size());
-        Assert.assertEquals(readed.getId(),readed.calls.get(0));
+        Assertions.assertNotNull(readed.stringAttribute);
+        Assertions.assertEquals(1,readed.calls.size());
+        Assertions.assertEquals(readed.getId(),readed.calls.get(0));
     }
 
 
@@ -89,15 +89,15 @@ public class DataTest {
         final Field displayTextDependencies = Data.class.getDeclaredField("displayTextDependencies");
         displayTextDependencies.setAccessible(true);
         final List<Attribute<?,?>> attributes = (List<Attribute<?,?>>) displayTextDependencies.get(readed);
-        Assert.assertEquals(1, attributes.size());
-        Assert.assertEquals(readed.stringAttribute, attributes.get(0));
+        Assertions.assertEquals(1, attributes.size());
+        Assertions.assertEquals(readed.stringAttribute, attributes.get(0));
 
 
         final Field dataValidations = Data.class.getDeclaredField("dataValidations");
         dataValidations.setAccessible(true);
         displayTextDependencies.setAccessible(true);
         final List<AttributeValidation<?>> dataValidationsAttributes = (List<AttributeValidation<?>>) dataValidations.get(readed);
-        Assert.assertEquals(1, dataValidationsAttributes.size());
+        Assertions.assertEquals(1, dataValidationsAttributes.size());
     }
 
 
@@ -108,11 +108,11 @@ public class DataTest {
         root.referenceAttribute.set(exampleFactoryB);
 
         root.internal().addBackReferences();
-        Assert.assertNotNull(root.internal().getRoot());
+        Assertions.assertNotNull(root.internal().getRoot());
 
         List<Data> pathTo = root.referenceAttribute.get().internal().getPathFromRoot();
-        Assert.assertEquals(1,pathTo.size());
-        Assert.assertEquals(root.getId(),pathTo.get(0).getId());
+        Assertions.assertEquals(1,pathTo.size());
+        Assertions.assertEquals(root.getId(),pathTo.get(0).getId());
     }
 
 
@@ -146,15 +146,15 @@ public class DataTest {
         factoryB.referenceAttributeC.set(new ExampleDataC());
         exampleFactoryA.referenceListAttribute.add(factoryB);
 
-        Assert.assertNotNull(exampleFactoryA.referenceAttribute.get());
-        Assert.assertNotNull(exampleFactoryA.referenceAttribute.get().referenceAttributeC.get());
+        Assertions.assertNotNull(exampleFactoryA.referenceAttribute.get());
+        Assertions.assertNotNull(exampleFactoryA.referenceAttribute.get().referenceAttributeC.get());
 
         ExampleDataA copy =  exampleFactoryA.internal().copyOneLevelDeep();
 
-        Assert.assertNotEquals(copy,exampleFactoryA);
-        Assert.assertNotNull(copy.referenceAttribute.get());
-        Assert.assertNull(copy.referenceAttribute.get().referenceAttributeC.get());
-        Assert.assertNull(copy.referenceListAttribute.get(0).referenceAttributeC.get());
+        Assertions.assertNotEquals(copy,exampleFactoryA);
+        Assertions.assertNotNull(copy.referenceAttribute.get());
+        Assertions.assertNull(copy.referenceAttribute.get().referenceAttributeC.get());
+        Assertions.assertNull(copy.referenceListAttribute.get(0).referenceAttributeC.get());
     }
 
     @Test
@@ -167,7 +167,7 @@ public class DataTest {
 
         ExampleDataA copy =  exampleFactoryA.internal().copyOneLevelDeep();
 
-        Assert.assertEquals(copy.referenceAttribute.get(),copy.referenceListAttribute.get().get(0));
+        Assertions.assertEquals(copy.referenceAttribute.get(),copy.referenceListAttribute.get().get(0));
     }
 
     private static class EmptyExampleDataA extends Data {
@@ -178,7 +178,7 @@ public class DataTest {
     public void test_copy_consumer_root_empty_data(){
         EmptyExampleDataA emptyExampleDataA = new EmptyExampleDataA();
         EmptyExampleDataA copy =  emptyExampleDataA.internal().addBackReferences();
-        Assert.assertEquals(copy,copy.internal().getRoot());
+        Assertions.assertEquals(copy,copy.internal().getRoot());
     }
 
 
@@ -202,7 +202,7 @@ public class DataTest {
         String expected = mapper.writeValueAsString(expectedData);
         String actual = mapper.writeValueAsString(copy);
 
-        Assert.assertEquals(expected, actual);
+        Assertions.assertEquals(expected, actual);
     }
 
     @Test
@@ -220,13 +220,13 @@ public class DataTest {
         //also include jackson cause into copy test,(strange jackson behaviour for final fields)
         //ObjectMapperBuilder internally call internal().copy
 
-        Assert.assertEquals(copy, copy.internal().getRoot());
+        Assertions.assertEquals(copy, copy.internal().getRoot());
         copy.internal().visitAttributesFlat((attributeVariableName, attribute) -> {
             Field root = getField(attribute.getClass(),"root");
             if (root!=null){
                 try {
                     root.setAccessible(true);
-                    Assert.assertEquals(copy, root.get(attribute));
+                    Assertions.assertEquals(copy, root.get(attribute));
                 } catch ( IllegalAccessException e) {
                     throw new RuntimeException(e);
                 }
@@ -259,9 +259,9 @@ public class DataTest {
         ExampleDataA copy =  exampleFactoryA.internal().copyZeroLevelDeep();
 
 
-        Assert.assertEquals("dfssfdsfdsfd", copy.stringAttribute.get());
-        Assert.assertEquals(null, copy.referenceAttribute.get());
-        Assert.assertTrue(copy.referenceListAttribute.get().isEmpty());
+        Assertions.assertEquals("dfssfdsfdsfd", copy.stringAttribute.get());
+        Assertions.assertEquals(null, copy.referenceAttribute.get());
+        Assertions.assertTrue(copy.referenceListAttribute.get().isEmpty());
     }
 
     @Test
@@ -272,7 +272,7 @@ public class DataTest {
         exampleObjectProperty=exampleObjectProperty.internal().addBackReferences();
         ExampleObjectProperty copy = exampleObjectProperty.internal().copy();
         //that comparision ist correct (no equals)
-        Assert.assertTrue(copy.objectValueAttribute.get()==test);
+        Assertions.assertTrue(copy.objectValueAttribute.get()==test);
     }
 
 
@@ -285,9 +285,9 @@ public class DataTest {
 
         ExampleDataA copy =  exampleFactoryA.utility().semanticCopy();
 
-        Assert.assertEquals(exampleFactoryA.stringAttribute.get(), copy.stringAttribute.get());
-        Assert.assertEquals(exampleFactoryA.referenceAttribute.get(), copy.referenceAttribute.get());
-        Assert.assertEquals(exampleFactoryA.referenceListAttribute.get(0), copy.referenceListAttribute.get(0));
+        Assertions.assertEquals(exampleFactoryA.stringAttribute.get(), copy.stringAttribute.get());
+        Assertions.assertEquals(exampleFactoryA.referenceAttribute.get(), copy.referenceAttribute.get());
+        Assertions.assertEquals(exampleFactoryA.referenceListAttribute.get(0), copy.referenceListAttribute.get(0));
     }
 
     @Test
@@ -302,11 +302,11 @@ public class DataTest {
 
         ExampleDataA copy =  exampleFactoryA.utility().semanticCopy();
 
-        Assert.assertEquals(exampleFactoryA.stringAttribute.get(), copy.stringAttribute.get());
-        Assert.assertNotEquals(exampleFactoryA.referenceAttribute.get(), copy.referenceAttribute.get());
-        Assert.assertNotEquals(exampleFactoryA.referenceAttribute.get().getId(), copy.referenceAttribute.get().getId());
-        Assert.assertNotEquals(exampleFactoryA.referenceListAttribute.get(), copy.referenceListAttribute.get());
-        Assert.assertNotEquals(exampleFactoryA.referenceAttribute.get().getId(), copy.referenceAttribute.get().getId());
+        Assertions.assertEquals(exampleFactoryA.stringAttribute.get(), copy.stringAttribute.get());
+        Assertions.assertNotEquals(exampleFactoryA.referenceAttribute.get(), copy.referenceAttribute.get());
+        Assertions.assertNotEquals(exampleFactoryA.referenceAttribute.get().getId(), copy.referenceAttribute.get().getId());
+        Assertions.assertNotEquals(exampleFactoryA.referenceListAttribute.get(), copy.referenceListAttribute.get());
+        Assertions.assertNotEquals(exampleFactoryA.referenceAttribute.get().getId(), copy.referenceAttribute.get().getId());
     }
 
     @Test
@@ -337,7 +337,7 @@ public class DataTest {
         ExampleDataB copy =  factoryA.referenceListAttribute.get(0).utility().semanticCopy();
         factoryA.referenceListAttribute.add(copy);
 
-        Assert.assertEquals(2, factoryA.referenceListAttribute.size());
+        Assertions.assertEquals(2, factoryA.referenceListAttribute.size());
         ObjectMapperBuilder.build().copy(factoryA);
     }
 
@@ -354,8 +354,8 @@ public class DataTest {
         dataB = dataA.referenceAttribute.get();
         dataC = dataB.referenceAttributeC.get();
 
-        Assert.assertEquals(dataB,dataC.internal().getParents().iterator().next());
-        Assert.assertEquals(dataA,dataB.internal().getParents().iterator().next());
+        Assertions.assertEquals(dataB,dataC.internal().getParents().iterator().next());
+        Assertions.assertEquals(dataA,dataB.internal().getParents().iterator().next());
 
     }
 
@@ -373,7 +373,7 @@ public class DataTest {
     public void test_customId(){
         ExampleDataCustomId exampleDataCustomId = new ExampleDataCustomId();
         exampleDataCustomId.stringAttribute.set("blabla");
-        Assert.assertEquals("blabla",exampleDataCustomId.getId());
+        Assertions.assertEquals("blabla",exampleDataCustomId.getId());
     }
 
     @Test
@@ -381,7 +381,7 @@ public class DataTest {
         ExampleDataCustomId exampleDataCustomId = new ExampleDataCustomId();
         exampleDataCustomId.stringAttribute.set("blabla");
         ExampleDataCustomId copy = ObjectMapperBuilder.build().copy(exampleDataCustomId);
-        Assert.assertEquals("blabla",copy.getId());
+        Assertions.assertEquals("blabla",copy.getId());
     }
 
     public static class ExampleWithId extends Data {
@@ -393,7 +393,7 @@ public class DataTest {
         ExampleWithId exampleWithId = new ExampleWithId();
         exampleWithId.id.set("blabla");
         ExampleWithId copy = ObjectMapperBuilder.build().copy(exampleWithId);
-        Assert.assertNotEquals("blabla",copy.getId());
+        Assertions.assertNotEquals("blabla",copy.getId());
     }
 
 
@@ -420,9 +420,9 @@ public class DataTest {
         exampleParentsB.exampleParentsC.set(exampleParentsC);
         exampleParentsA.exampleParentsC.set(exampleParentsC);
 
-        //Assert.assertEquals(2,exampleParentsC.internal().getParents().size());
+        //Assertions.assertEquals(2,exampleParentsC.internal().getParents().size());
         exampleParentsA = exampleParentsA.internal().addBackReferences();
-        Assert.assertEquals(2,exampleParentsA.exampleParentsB.get().exampleParentsC.get().internal().getParents().size());
+        Assertions.assertEquals(2,exampleParentsA.exampleParentsB.get().exampleParentsC.get().internal().getParents().size());
     }
 
 
@@ -434,8 +434,8 @@ public class DataTest {
         exampleDataA.referenceListAttribute.add(exampleDataB);
 
         exampleDataA = exampleDataA.internal().addBackReferences();
-        Assert.assertEquals(1,exampleDataA.referenceListAttribute.get(0).internal().getParents().size());
-        Assert.assertEquals(1,exampleDataA.referenceListAttribute.get(0).referenceAttributeC.get().internal().getParents().size());
+        Assertions.assertEquals(1,exampleDataA.referenceListAttribute.get(0).internal().getParents().size());
+        Assertions.assertEquals(1,exampleDataA.referenceListAttribute.get(0).referenceAttributeC.get().internal().getParents().size());
     }
 
     @Test
@@ -448,8 +448,8 @@ public class DataTest {
 
         example.internal().addBackReferences();
 
-        Assert.assertEquals(1,example.referenceListAttribute.get(0).internal().getParents().size());
-        Assert.assertEquals(1,example.referenceListAttribute.get(0).referenceAttributeC.get().internal().getParents().size());
+        Assertions.assertEquals(1,example.referenceListAttribute.get(0).internal().getParents().size());
+        Assertions.assertEquals(1,example.referenceListAttribute.get(0).referenceAttributeC.get().internal().getParents().size());
     }
 
     @Test
@@ -466,8 +466,8 @@ public class DataTest {
 
         new DataMerger<>(current,current.utility().copy(),update).mergeIntoCurrent((p)->true);
 
-        Assert.assertEquals(1,current.referenceListAttribute.get(0).internal().getParents().size());
-        Assert.assertEquals(1,current.referenceListAttribute.get(0).referenceAttributeC.get().internal().getParents().size());
+        Assertions.assertEquals(1,current.referenceListAttribute.get(0).internal().getParents().size());
+        Assertions.assertEquals(1,current.referenceListAttribute.get(0).referenceAttributeC.get().internal().getParents().size());
 
 
     }
@@ -482,9 +482,9 @@ public class DataTest {
         ExampleDataA copy = objectMapper.readValue(content,ExampleDataA.class);
 
         System.out.println(content);
-        Assert.assertNotNull(copy.stringAttribute);
-        Assert.assertNotNull(copy.referenceListAttribute);
-        Assert.assertNotNull(copy.referenceAttribute);
+        Assertions.assertNotNull(copy.stringAttribute);
+        Assertions.assertNotNull(copy.referenceListAttribute);
+        Assertions.assertNotNull(copy.referenceAttribute);
     }
 
     @Test
@@ -499,10 +499,10 @@ public class DataTest {
         System.out.println(content);
         ExampleDataA copy = objectMapper.readValue(content,ExampleDataA.class);
 
-        Assert.assertEquals("ExampleA1",copy.stringAttribute.internal_getPreferredLabelText(Locale.ENGLISH));
-        Assert.assertEquals("adad",copy.stringAttribute.get());
-        Assert.assertEquals("ExampleA2",copy.referenceAttribute.internal_getPreferredLabelText(Locale.ENGLISH));
-        Assert.assertEquals("ExampleA3",copy.referenceListAttribute.internal_getPreferredLabelText(Locale.ENGLISH));
+        Assertions.assertEquals("ExampleA1",copy.stringAttribute.internal_getPreferredLabelText(Locale.ENGLISH));
+        Assertions.assertEquals("adad",copy.stringAttribute.get());
+        Assertions.assertEquals("ExampleA2",copy.referenceAttribute.internal_getPreferredLabelText(Locale.ENGLISH));
+        Assertions.assertEquals("ExampleA3",copy.referenceListAttribute.internal_getPreferredLabelText(Locale.ENGLISH));
     }
 
     @Test
@@ -516,8 +516,8 @@ public class DataTest {
         System.out.println(content);
         ExampleDataA copy = objectMapper.readValue(content, ExampleDataA.class);
 
-        Assert.assertTrue(copy.referenceListAttribute.get(0) instanceof ExampleDataB);
-        Assert.assertEquals(2,copy.referenceListAttribute.size());
+        Assertions.assertTrue(copy.referenceListAttribute.get(0) instanceof ExampleDataB);
+        Assertions.assertEquals(2,copy.referenceListAttribute.size());
     }
 
     @Test
@@ -534,7 +534,7 @@ public class DataTest {
         System.out.println(content);
         ExampleDataA copy = objectMapper.readValue(content,ExampleDataA.class);
 
-        Assert.assertEquals(copy.referenceAttribute.get(),copy.referenceListAttribute.get().get(0));
+        Assertions.assertEquals(copy.referenceAttribute.get(),copy.referenceListAttribute.get().get(0));
     }
 
     @Test
@@ -544,7 +544,7 @@ public class DataTest {
             ExampleDataA exampleDataA = new ExampleDataA();
             String id = exampleDataA.getId();
             if (!ids.add(id)) {
-                Assert.fail("doubel id"+id+" count:"+ i);
+                Assertions.fail("doubel id"+id+" count:"+ i);
             }
         }
     }
@@ -570,35 +570,35 @@ public class DataTest {
         exampleFactoryA.referenceListAttribute.add(new ExampleDataB());
 
         exampleFactoryA.internal().addBackReferences();
-        Assert.assertEquals(5,exampleFactoryA.internal().collectChildrenDeep().size());
+        Assertions.assertEquals(5,exampleFactoryA.internal().collectChildrenDeep().size());
     }
 
     @Test
     public void test_backReferenceCheck(){
         ExampleDataA exampleFactoryA = new ExampleDataA();
-        Assert.assertFalse(exampleFactoryA.internal().hasBackReferencesFlat());
+        Assertions.assertFalse(exampleFactoryA.internal().hasBackReferencesFlat());
         exampleFactoryA.internal().addBackReferences();
-        Assert.assertTrue(exampleFactoryA.internal().hasBackReferencesFlat());
+        Assertions.assertTrue(exampleFactoryA.internal().hasBackReferencesFlat());
     }
 
     @Test
     public void test_idEquals(){
         ExampleDataA exampleFactoryA = new ExampleDataA();
-        Assert.assertFalse(exampleFactoryA.internal().hasBackReferencesFlat());
+        Assertions.assertFalse(exampleFactoryA.internal().hasBackReferencesFlat());
         exampleFactoryA.internal().addBackReferences();
-        Assert.assertTrue(exampleFactoryA.idEquals(exampleFactoryA.utility().copy()));
-        Assert.assertFalse(exampleFactoryA.idEquals(new ExampleDataA()));
+        Assertions.assertTrue(exampleFactoryA.idEquals(exampleFactoryA.utility().copy()));
+        Assertions.assertFalse(exampleFactoryA.idEquals(new ExampleDataA()));
     }
 
     @Test
     public void test_copy_uuid(){
         Data exampleFactoryA = new ExampleDataA();
         exampleFactoryA.getId();
-        Assert.assertTrue(exampleFactoryA.id instanceof UUID);
+        Assertions.assertTrue(exampleFactoryA.id instanceof UUID);
 
-        Assert.assertTrue(exampleFactoryA.internal().copy().id instanceof UUID);
+        Assertions.assertTrue(exampleFactoryA.internal().copy().id instanceof UUID);
 
-        Assert.assertTrue(exampleFactoryA.internal().copy().id instanceof UUID);
+        Assertions.assertTrue(exampleFactoryA.internal().copy().id instanceof UUID);
     }
 
     @Test
@@ -609,9 +609,9 @@ public class DataTest {
         ExampleDataA originalModel = currentModel.internal().copy();
         ExampleDataA newModel = currentModel.internal().copy();
 
-        Assert.assertTrue(currentModel.internal().copy().id instanceof UUID);
-        Assert.assertTrue(originalModel.internal().copy().id instanceof UUID);
-        Assert.assertTrue(newModel.internal().copy().id instanceof UUID);
+        Assertions.assertTrue(currentModel.internal().copy().id instanceof UUID);
+        Assertions.assertTrue(originalModel.internal().copy().id instanceof UUID);
+        Assertions.assertTrue(newModel.internal().copy().id instanceof UUID);
     }
 
     @Test
@@ -620,9 +620,9 @@ public class DataTest {
         data.internal().addBackReferences();
 
         ExampleDataA copy = data.internal().copy();
-        Assert.assertEquals(copy,copy.internal().getRoot());
+        Assertions.assertEquals(copy,copy.internal().getRoot());
 
-        Assert.assertEquals(copy,getRoot(copy.referenceAttribute));
+        Assertions.assertEquals(copy,getRoot(copy.referenceAttribute));
     }
 
     @Test
@@ -632,9 +632,9 @@ public class DataTest {
         data.internal().addBackReferences();
 
         ExampleDataA copy = data.internal().copy();
-        Assert.assertEquals(copy,copy.internal().getRoot());
+        Assertions.assertEquals(copy,copy.internal().getRoot());
 
-        Assert.assertEquals(copy,getRoot(copy.referenceAttribute.get().referenceAttribute));
+        Assertions.assertEquals(copy,getRoot(copy.referenceAttribute.get().referenceAttribute));
     }
 
 
@@ -656,8 +656,8 @@ public class DataTest {
         data.referenceAttribute.set(exampleDataB);
         data.internal().addBackReferences();
 
-        Assert.assertEquals(1,exampleDataB.internal().getPathFromRoot().size());
-        Assert.assertEquals(data,exampleDataB.internal().getPathFromRoot().get(0));
+        Assertions.assertEquals(1,exampleDataB.internal().getPathFromRoot().size());
+        Assertions.assertEquals(data,exampleDataB.internal().getPathFromRoot().get(0));
     }
 
     @Test
@@ -674,7 +674,7 @@ public class DataTest {
         ExampleDataB copy = exampleDataB.utility().semanticCopy();
         data.referenceListAttribute.add(copy);
 
-        Assert.assertEquals(2,data.referenceAttribute.internal_possibleValues().size());
+        Assertions.assertEquals(2,data.referenceAttribute.internal_possibleValues().size());
     }
 
     @Test
@@ -684,14 +684,14 @@ public class DataTest {
         root.referenceAttribute.set(factoryB);
         factoryB.referenceAttributeC.set(new ExampleDataC());
 
-        Assert.assertEquals(2,factoryB.internal().collectChildrenDeepFromNode().size());
+        Assertions.assertEquals(2,factoryB.internal().collectChildrenDeepFromNode().size());
     }
 
     @Test
     public void test_copy_reflist_copied(){
         ExampleDataA original = new ExampleDataA();
         ExampleDataA copy = original.internal().copy();
-        Assert.assertFalse(original.referenceListAttribute==copy.referenceListAttribute);
+        Assertions.assertFalse(original.referenceListAttribute==copy.referenceListAttribute);
     }
 
 }

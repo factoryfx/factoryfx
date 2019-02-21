@@ -10,8 +10,8 @@ import de.factoryfx.factory.atrribute.FactoryViewReferenceAttribute;
 import de.factoryfx.factory.testfactories.ExampleFactoryA;
 import de.factoryfx.factory.testfactories.ExampleFactoryB;
 import de.factoryfx.factory.testfactories.ExampleFactoryC;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -20,14 +20,15 @@ import java.util.Set;
 
 public class FactoryBaseTest {
 
-    @Test(expected = IllegalStateException.class)
     public void create_loop_test(){
-        ExampleFactoryA exampleFactoryA = new ExampleFactoryA();
-        ExampleFactoryB exampleFactoryB = new ExampleFactoryB();
-        exampleFactoryB.referenceAttribute.set(exampleFactoryA);
-        exampleFactoryA.referenceAttribute.set(exampleFactoryB);
+        Assertions.assertThrows(IllegalStateException.class, () -> {
+            ExampleFactoryA exampleFactoryA = new ExampleFactoryA();
+            ExampleFactoryB exampleFactoryB = new ExampleFactoryB();
+            exampleFactoryB.referenceAttribute.set(exampleFactoryA);
+            exampleFactoryA.referenceAttribute.set(exampleFactoryB);
 
-        exampleFactoryA.internalFactory().loopDetector();
+            exampleFactoryA.internalFactory().loopDetector();
+        });
     }
 
     @Test
@@ -61,7 +62,7 @@ public class FactoryBaseTest {
 //        HashMap<String, LiveObject> liveObjects = new HashMap<>();
 //        exampleFactoryA.collectLiveObjects(liveObjects);
 //
-//        Assert.assertEquals(3,liveObjects.entrySet().size());
+//        Assertions.assertEquals(3,liveObjects.entrySet().size());
     }
 
     public static class XRoot extends SimpleFactoryBase<String,Void,XRoot> {
@@ -156,9 +157,9 @@ public class FactoryBaseTest {
         HashSet<Data> changed =new HashSet<>();
         changed.add(usableCopy);
         usableCopy.internalFactory().determineRecreationNeedFromRoot(changed);
-        Assert.assertTrue(usableCopy.needRecreation);
-        Assert.assertFalse(usableCopy.xFactory.get().needRecreation);
-        Assert.assertFalse(usableCopy.referenceAttribute.get().needRecreation);
+        Assertions.assertTrue(usableCopy.needRecreation);
+        Assertions.assertFalse(usableCopy.xFactory.get().needRecreation);
+        Assertions.assertFalse(usableCopy.referenceAttribute.get().needRecreation);
     }
 
     @Test
@@ -173,9 +174,9 @@ public class FactoryBaseTest {
         HashSet<Data> changed =new HashSet<>();
         changed.add(root.referenceAttribute.get());
         root.internalFactory().determineRecreationNeedFromRoot(changed);
-        Assert.assertTrue(root.needRecreation);
-        Assert.assertFalse(root.xFactory.get().needRecreation);
-        Assert.assertTrue(root.referenceAttribute.get().needRecreation);
+        Assertions.assertTrue(root.needRecreation);
+        Assertions.assertFalse(root.xFactory.get().needRecreation);
+        Assertions.assertTrue(root.referenceAttribute.get().needRecreation);
     }
 
     @Test
@@ -192,9 +193,9 @@ public class FactoryBaseTest {
         changed.add(root.xFactory.get());
 
         root.internalFactory().determineRecreationNeedFromRoot(changed);
-        Assert.assertTrue(root.needRecreation);
-        Assert.assertTrue(root.xFactory.get().needRecreation);
-        Assert.assertTrue(root.referenceAttribute.get().needRecreation);
+        Assertions.assertTrue(root.needRecreation);
+        Assertions.assertTrue(root.xFactory.get().needRecreation);
+        Assertions.assertTrue(root.referenceAttribute.get().needRecreation);
     }
 
     @Test
@@ -209,9 +210,9 @@ public class FactoryBaseTest {
         Set<Data> changed = Set.of(root.xFactory.get());
 
         root.internalFactory().determineRecreationNeedFromRoot(changed);
-        Assert.assertTrue(root.needRecreation);
-        Assert.assertTrue(root.xFactory.get().needRecreation);
-        Assert.assertTrue(root.referenceAttribute.get().needRecreation);
+        Assertions.assertTrue(root.needRecreation);
+        Assertions.assertTrue(root.xFactory.get().needRecreation);
+        Assertions.assertTrue(root.referenceAttribute.get().needRecreation);
     }
 
 
@@ -229,9 +230,9 @@ public class FactoryBaseTest {
         changed.add(root.xFactoryList.get().get(0));
 
         root.internalFactory().determineRecreationNeedFromRoot(changed);
-        Assert.assertTrue(root.needRecreation);
-        Assert.assertTrue(root.xFactoryList.get(0).needRecreation);
-        Assert.assertTrue(root.referenceAttribute.get().needRecreation);
+        Assertions.assertTrue(root.needRecreation);
+        Assertions.assertTrue(root.xFactoryList.get(0).needRecreation);
+        Assertions.assertTrue(root.referenceAttribute.get().needRecreation);
     }
 
 
@@ -248,12 +249,12 @@ public class FactoryBaseTest {
         HashSet<Data> changed =new HashSet<>();
         changed.add(usableCopy.xFactory.get());
         usableCopy.internalFactory().determineRecreationNeedFromRoot(changed);
-        Assert.assertTrue(usableCopy.needRecreation);
-        Assert.assertTrue(usableCopy.xFactory.get().needRecreation);
+        Assertions.assertTrue(usableCopy.needRecreation);
+        Assertions.assertTrue(usableCopy.xFactory.get().needRecreation);
 
         usableCopy.xFactory.get().createCalls.clear();
         usableCopy.internalFactory().instance();
-        Assert.assertEquals(1,usableCopy.xFactory.get().createCalls.size());
+        Assertions.assertEquals(1,usableCopy.xFactory.get().createCalls.size());
 
     }
 
@@ -306,7 +307,7 @@ public class FactoryBaseTest {
         for (FactoryBase<?, ?, ?> item : root.internalFactory().getFactoriesInCreateAndStartOrder()) {
            result.append(((IterationTestFactory)item).testinfo);
         }
-        Assert.assertEquals("abcdefgh",result.toString());
+        Assertions.assertEquals("abcdefgh",result.toString());
     }
 
 
@@ -340,7 +341,7 @@ public class FactoryBaseTest {
             for (FactoryBase<?, ?, ?> item : root.internalFactory().getFactoriesInDestroyOrder()) {
                 result.append(((IterationTestFactory)item).testinfo);
             }
-            Assert.assertEquals("hdegabcf",result.toString());
+            Assertions.assertEquals("hdegabcf",result.toString());
 
     }
 
@@ -349,7 +350,7 @@ public class FactoryBaseTest {
         ExampleFactoryA factory = new ExampleFactoryA();
         factory.internalFactory().setTreeBuilderName("EEE");
         ExampleFactoryA copy=ObjectMapperBuilder.build().copy(factory);
-        Assert.assertEquals("EEE",factory.internalFactory().getTreeBuilderName());
+        Assertions.assertEquals("EEE",factory.internalFactory().getTreeBuilderName());
 
         System.out.println(ObjectMapperBuilder.build().writeValueAsString(factory));
 
@@ -370,9 +371,9 @@ public class FactoryBaseTest {
         HashSet<Data> changed =new HashSet<>();
         changed.add(root.xFactory.get().xFactory2.get());
         root.internalFactory().determineRecreationNeedFromRoot(changed);
-        Assert.assertFalse(root.needRecreation);
-        Assert.assertFalse(root.xFactory.get().needRecreation);
-        Assert.assertTrue(root.xFactory.get().xFactory2.get().needRecreation);
+        Assertions.assertFalse(root.needRecreation);
+        Assertions.assertFalse(root.xFactory.get().needRecreation);
+        Assertions.assertTrue(root.xFactory.get().xFactory2.get().needRecreation);
     }
 
     @Test
@@ -391,16 +392,16 @@ public class FactoryBaseTest {
         HashSet<Data> changed =new HashSet<>();
         changed.add(x3Factory);
         root.internalFactory().determineRecreationNeedFromRoot(changed);
-        Assert.assertFalse(root.needRecreation);
-        Assert.assertFalse(root.xFactory.get().needRecreation);
-        Assert.assertTrue(root.xFactory.get().xFactory2.get().needRecreation);
-        Assert.assertTrue(root.xFactory.get().xFactory2.get().xFactory3.get().needRecreation);
+        Assertions.assertFalse(root.needRecreation);
+        Assertions.assertFalse(root.xFactory.get().needRecreation);
+        Assertions.assertTrue(root.xFactory.get().xFactory2.get().needRecreation);
+        Assertions.assertTrue(root.xFactory.get().xFactory2.get().xFactory3.get().needRecreation);
     }
 
     @Test
     public void test_copy_reflist_copied(){
         ExampleFactoryA original = new ExampleFactoryA();
         ExampleFactoryA copy = original.internal().copy();
-        Assert.assertFalse(original.referenceListAttribute==copy.referenceListAttribute);
+        Assertions.assertFalse(original.referenceListAttribute==copy.referenceListAttribute);
     }
 }

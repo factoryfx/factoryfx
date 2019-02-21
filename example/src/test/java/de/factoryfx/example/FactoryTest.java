@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import de.factoryfx.example.server.ServerRootFactory;
@@ -11,23 +12,27 @@ import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.factory.util.ClasspathBasedFactoryProvider;
 import de.factoryfx.factory.validator.FactoryStyleValidation;
 import de.factoryfx.factory.validator.FactoryStyleValidator;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
+import org.glassfish.jersey.server.model.Parameterized;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.DynamicTest;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestFactory;
+import org.junit.jupiter.params.ParameterizedTest;
 
-@RunWith(Parameterized.class)
 public class FactoryTest {
-    @Parameterized.Parameters(name = "{index}:{1}")
-    public static Iterable<Object[]> data1() throws IOException {
-        List<Object[]> result = new ArrayList<>();
+
+    @TestFactory
+    List<DynamicTest> createDynamicTests() {
+        List<DynamicTest> result = new ArrayList<>();
         final FactoryStyleValidator factoryStyleValidator = new FactoryStyleValidator();
         for (Class<? extends FactoryBase> clazz: new ClasspathBasedFactoryProvider().get(ServerRootFactory.class)){
             if (!Modifier.isAbstract( clazz.getModifiers() )){
                 try {
                     final List<FactoryStyleValidation> factoryValidations = factoryStyleValidator.createFactoryValidations(clazz.getConstructor().newInstance());
                     for (FactoryStyleValidation factoryStyleValidation: factoryValidations){
-                        result.add(new Object[]{factoryStyleValidation,clazz.getName()+":"+factoryStyleValidation.getClass().getSimpleName()});
+
+                        result.add(DynamicTest.dynamicTest(clazz.getName()+":"+factoryStyleValidation.getClass().getSimpleName(),
+                                () -> Assertions.assertEquals("",factoryStyleValidation.validateFactory().orElse(""))));
                     }
                 } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
                     throw new RuntimeException(e);
@@ -37,16 +42,8 @@ public class FactoryTest {
 //            result.add(new Object[]{clazz});
         }
 
+
         return result;
     }
 
-    FactoryStyleValidation factoryStyleValidation;
-    public FactoryTest(FactoryStyleValidation factoryStyleValidation, String testname){
-        this.factoryStyleValidation=factoryStyleValidation;
-    }
-
-    @Test
-    public void test() throws IllegalAccessException, InstantiationException {
-        Assert.assertEquals("",factoryStyleValidation.validateFactory().orElse(""));
-    }
 }

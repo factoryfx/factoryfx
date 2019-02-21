@@ -3,8 +3,8 @@ package de.factoryfx.data.merge;
 import de.factoryfx.data.Data;
 import de.factoryfx.data.attribute.types.EnumAttribute;
 import de.factoryfx.data.jackson.ObjectMapperBuilder;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class EnumMergeTest extends MergeHelperTestBase {
     public enum TestEnum{
@@ -25,12 +25,12 @@ public class EnumMergeTest extends MergeHelperTestBase {
         aTest2.attribute.set(TestEnum.B);
         aTest2=aTest2.internal().addBackReferences();
 
-        Assert.assertEquals(TestEnum.A,aTest1.attribute.get());
-        Assert.assertTrue(merge(aTest1, aTest1, aTest2).hasNoConflicts());
-        Assert.assertEquals(TestEnum.B,aTest1.attribute.get());
+        Assertions.assertEquals(TestEnum.A,aTest1.attribute.get());
+        Assertions.assertTrue(merge(aTest1, aTest1, aTest2).hasNoConflicts());
+        Assertions.assertEquals(TestEnum.B,aTest1.attribute.get());
 
         ObjectMapperBuilder.build().copy(aTest1);
-        Assert.assertEquals(TestEnum.B,aTest1.attribute.get());
+        Assertions.assertEquals(TestEnum.B,aTest1.attribute.get());
     }
 
 

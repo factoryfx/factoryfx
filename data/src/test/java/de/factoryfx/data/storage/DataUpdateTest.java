@@ -2,8 +2,8 @@ package de.factoryfx.data.storage;
 
 import de.factoryfx.data.jackson.ObjectMapperBuilder;
 import de.factoryfx.data.merge.testdata.ExampleDataA;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class DataUpdateTest {
 
@@ -11,10 +11,10 @@ public class DataUpdateTest {
     public void test_json(){
         DataUpdate<ExampleDataA> dataUpdate = new DataUpdate<>(new ExampleDataA(),"1","2","3");
         DataUpdate copy= ObjectMapperBuilder.build().copy(dataUpdate);
-        Assert.assertEquals(dataUpdate.user,"1");
-        Assert.assertEquals(dataUpdate.comment,"2");
-        Assert.assertEquals(dataUpdate.baseVersionId,"3");
-        Assert.assertNotNull(dataUpdate.root);
+        Assertions.assertEquals(dataUpdate.user,"1");
+        Assertions.assertEquals(dataUpdate.comment,"2");
+        Assertions.assertEquals(dataUpdate.baseVersionId,"3");
+        Assertions.assertNotNull(dataUpdate.root);
     }
 
 }

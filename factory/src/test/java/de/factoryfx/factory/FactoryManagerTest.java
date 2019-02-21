@@ -6,8 +6,8 @@ import java.util.Set;
 import de.factoryfx.data.Data;
 import de.factoryfx.factory.exception.RethrowingFactoryExceptionHandler;
 import de.factoryfx.factory.testfactories.*;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class FactoryManagerTest {
 
@@ -27,9 +27,9 @@ public class FactoryManagerTest {
         exampleFactoryA.referenceAttribute.set(exampleFactoryB);
         factoryManager.start(new RootFactoryWrapper<>(exampleFactoryA));
 
-        Assert.assertEquals(2,calls.size());
-        Assert.assertEquals("start exampleFactoryB",calls.get(0));
-        Assert.assertEquals("start exampleFactoryA",calls.get(1));
+        Assertions.assertEquals(2,calls.size());
+        Assertions.assertEquals("start exampleFactoryB",calls.get(0));
+        Assertions.assertEquals("start exampleFactoryA",calls.get(1));
     }
 
     @Test
@@ -51,8 +51,8 @@ public class FactoryManagerTest {
 
         factoryManager.update(root.utility().copy(),update,(p)->true);
 
-        Assert.assertEquals(1,calls.size());
-        Assert.assertEquals("destroy",calls.get(0));
+        Assertions.assertEquals(1,calls.size());
+        Assertions.assertEquals("destroy",calls.get(0));
     }
 
     @Test
@@ -74,8 +74,8 @@ public class FactoryManagerTest {
 
         factoryManager.update(root.utility().copy(),update,(p)->true);
 
-        Assert.assertEquals(1,calls.size());
-        Assert.assertEquals("destroy for update",calls.get(0));
+        Assertions.assertEquals(1,calls.size());
+        Assertions.assertEquals("destroy for update",calls.get(0));
     }
 
     @Test
@@ -142,7 +142,7 @@ public class FactoryManagerTest {
         root.xFactory.set(null);
 
         Set<Data> changedFactories = factoryManager.getChangedFactories(new RootFactoryWrapper<>(root), previous);
-        Assert.assertTrue(changedFactories.contains(exampleFactoryAndViewA));
+        Assertions.assertTrue(changedFactories.contains(exampleFactoryAndViewA));
     }
 
 }

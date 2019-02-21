@@ -22,11 +22,11 @@ public class AttributeEditorTest {
 //        });
 //        attributeEditor.createVisualisation();
 //
-//        Assert.assertEquals(1,calls.size());
-//        Assert.assertEquals("Hallo",calls.get(0));
+//        Assertions.assertEquals(1,calls.size());
+//        Assertions.assertEquals("Hallo",calls.get(0));
 //        stringAttribute.set("Welt");
-//        Assert.assertEquals(2,calls.size());
-//        Assert.assertEquals("Welt",calls.get(1));
+//        Assertions.assertEquals(2,calls.size());
+//        Assertions.assertEquals("Welt",calls.get(1));
 //
 //    }
 //
@@ -43,6 +43,6 @@ public class AttributeEditorTest {
 //        });
 //        attributeEditor.createVisualisation();
 //
-//        Assert.assertEquals("Welt",stringAttribute.get());
+//        Assertions.assertEquals("Welt",stringAttribute.get());
 //    }
 }

@@ -1,8 +1,8 @@
 package de.factoryfx.data.attribute.time;
 
 import de.factoryfx.data.jackson.ObjectMapperBuilder;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;
 
@@ -13,7 +13,7 @@ public class LocalDateTimeAttributeTest {
         LocalDateTime value = LocalDateTime.now();
         attribute.set(value);
         LocalDateTimeAttribute copy = ObjectMapperBuilder.build().copy(attribute);
-        Assert.assertEquals(value,copy.get());
+        Assertions.assertEquals(value,copy.get());
     }
 
 }

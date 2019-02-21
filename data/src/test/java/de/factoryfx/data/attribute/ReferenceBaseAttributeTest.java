@@ -1,7 +1,8 @@
 package de.factoryfx.data.attribute;
 
 import de.factoryfx.data.Data;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class ReferenceBaseAttributeTest {
 
@@ -14,9 +15,11 @@ public class ReferenceBaseAttributeTest {
         DataReferenceAttribute<GenericData<String>> test1 = new DataReferenceAttribute<>(GenericData.class,null);
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void test_setupunsafe_wrongclass(){
-        DataReferenceAttribute<GenericData<String>> test1 = new DataReferenceAttribute<>(Object.class,null);
+        Assertions.assertThrows(IllegalArgumentException.class, () -> {
+            DataReferenceAttribute<GenericData<String>> test1 = new DataReferenceAttribute<>(Object.class, null);
+        });
     }
 
 }

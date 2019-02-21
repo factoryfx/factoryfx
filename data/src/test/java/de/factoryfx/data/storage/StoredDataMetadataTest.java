@@ -6,8 +6,8 @@ import de.factoryfx.data.storage.migration.DataMigrationManager;
 import de.factoryfx.data.storage.migration.GeneralStorageMetadata;
 import de.factoryfx.data.storage.migration.GeneralStorageMetadataBuilder;
 import de.factoryfx.data.storage.migration.MigrationManager;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -28,9 +28,9 @@ public class StoredDataMetadataTest {
         System.out.println(
                 ObjectMapperBuilder.build().writeValueAsString(value)
         );
-        Assert.assertEquals(now,copy.creationTime);
-        Assert.assertEquals(1,copy.changeSummary.diffCounter);
-        Assert.assertTrue(copy.generalStorageMetadata.match(new GeneralStorageMetadata(1, 2)));
+        Assertions.assertEquals(now,copy.creationTime);
+        Assertions.assertEquals(1,copy.changeSummary.diffCounter);
+        Assertions.assertTrue(copy.generalStorageMetadata.match(new GeneralStorageMetadata(1, 2)));
 
     }
 

@@ -5,8 +5,8 @@ import java.util.ArrayList;
 import de.factoryfx.data.Data;
 import de.factoryfx.data.attribute.types.StringMapAttribute;
 import de.factoryfx.data.jackson.ObjectMapperBuilder;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class ValueMapAttributeTest {
 
@@ -23,7 +23,7 @@ public class ValueMapAttributeTest {
         });
         exampleMapFactory.mapAttribute.put("123","7787");
 
-        Assert.assertEquals(1,calls.size());
+        Assertions.assertEquals(1,calls.size());
     }
 
     @Test

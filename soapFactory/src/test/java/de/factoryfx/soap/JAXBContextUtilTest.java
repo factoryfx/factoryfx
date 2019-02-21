@@ -3,7 +3,8 @@ package de.factoryfx.soap;
 import de.factoryfx.soap.example.HelloWorld;
 import de.factoryfx.soap.example.SoapDummyRequest;
 import de.factoryfx.soap.example.SoapDummyRequestNested;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -12,9 +13,11 @@ import java.io.StringWriter;
 
 public class JAXBContextUtilTest {
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void test_invalid_class(){
-        JAXBSoapUtil.getJAXBContextForWebService(String.class);
+        Assertions.assertThrows(IllegalArgumentException.class, () -> {
+            JAXBSoapUtil.getJAXBContextForWebService(String.class);
+        });
     }
 
     @Test

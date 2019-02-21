@@ -9,28 +9,30 @@ import de.factoryfx.factory.builder.Scope;
 import de.factoryfx.factory.testfactories.ExampleFactoryA;
 import de.factoryfx.factory.testfactories.ExampleFactoryB;
 import de.factoryfx.factory.testfactories.ExampleLiveObjectA;
-import org.junit.Assert;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
+
 
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 
 public class MicroserviceBuilderTest {
 
-    @Rule
-    public TemporaryFolder folder = new TemporaryFolder();
+    @TempDir
+    public Path folder;
 
     @Test
     public void test_init_no_existing_factory()   {
         FactoryTreeBuilder<Void, ExampleLiveObjectA, ExampleFactoryA, Void> builder = new FactoryTreeBuilder<>(ExampleFactoryA.class);
         builder.addFactory(ExampleFactoryA.class, Scope.SINGLETON, ctx-> new ExampleFactoryA());
 
-        Assert.assertEquals(folder.getRoot().listFiles().length,0);
-        builder.microservice().withFilesystemStorage(Paths.get(folder.getRoot().toURI())).build().start();
-        Assert.assertEquals(folder.getRoot().listFiles().length,3);
+        Assertions.assertEquals(folder.toFile().listFiles().length,0);
+        builder.microservice().withFilesystemStorage(Paths.get(folder.toFile().toURI())).build().start();
+        Assertions.assertEquals(folder.toFile().listFiles().length,3);
     }
 
     @Test
@@ -44,7 +46,7 @@ public class MicroserviceBuilderTest {
         });
         YAMLFactory yamlFactory = new YAMLFactory();
         yamlFactory.disable(YAMLGenerator.Feature.USE_NATIVE_TYPE_ID);
-        Microservice<Void, ExampleLiveObjectA, ExampleFactoryA, Void> microservice = builder.microservice().withJacksonObjectMapper(ObjectMapperBuilder.buildNew(yamlFactory)).withFilesystemStorage(Paths.get(folder.getRoot().toURI())).build();
+        Microservice<Void, ExampleLiveObjectA, ExampleFactoryA, Void> microservice = builder.microservice().withJacksonObjectMapper(ObjectMapperBuilder.buildNew(yamlFactory)).withFilesystemStorage(Paths.get(folder.toFile().toURI())).build();
         microservice.start();
 //        for (File file : folder.getRoot().listFiles()[0]) {
 //            System.out.println(file.getAbsoluteFile());
@@ -54,8 +56,8 @@ public class MicroserviceBuilderTest {
 
         microservice.updateCurrentFactory(update);
 
-        System.out.println(Files.readString(folder.getRoot().listFiles()[0].toPath()));
-        Assert.assertTrue(Files.readString(folder.getRoot().listFiles()[0].toPath()).contains("---"));
+        System.out.println(Files.readString(folder.toFile().listFiles()[0].toPath()));
+        Assertions.assertTrue(Files.readString(folder.toFile().listFiles()[0].toPath()).contains("---"));
     }
 
 }

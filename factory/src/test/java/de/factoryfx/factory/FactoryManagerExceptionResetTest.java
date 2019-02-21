@@ -4,8 +4,8 @@ import de.factoryfx.data.DataDictionary;
 import de.factoryfx.factory.atrribute.FactoryReferenceAttribute;
 import de.factoryfx.factory.exception.ResettingHandler;
 import de.factoryfx.factory.log.FactoryUpdateLog;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -78,22 +78,26 @@ public class FactoryManagerExceptionResetTest {
         }
     }
 
-    @Test(expected = RuntimeException.class)
-    public void test_exception_start_create(){
-        FactoryManager<Void,DummyLifeObejct,BrokenFactory> factoryManager = new FactoryManager<>(new ResettingHandler());
+    @Test
+    public void test_exception_start_create() {
+        Assertions.assertThrows(RuntimeException.class, () -> {
+            FactoryManager<Void, DummyLifeObejct, BrokenFactory> factoryManager = new FactoryManager<>(new ResettingHandler());
 
-        BrokenFactory root = new BrokenFactory(false, false, false,false);
-        root.ref.set(new BrokenFactory(true,false,false,false));
-        factoryManager.start(new RootFactoryWrapper<>(root));
+            BrokenFactory root = new BrokenFactory(false, false, false, false);
+            root.ref.set(new BrokenFactory(true, false, false, false));
+            factoryManager.start(new RootFactoryWrapper<>(root));
+        });
     }
 
-    @Test(expected = RuntimeException.class)
+    @Test
     public void test_exception_start_start(){
-        FactoryManager<Void,DummyLifeObejct,BrokenFactory> factoryManager = new FactoryManager<>(new ResettingHandler());
+        Assertions.assertThrows(RuntimeException.class, () -> {
+            FactoryManager<Void, DummyLifeObejct, BrokenFactory> factoryManager = new FactoryManager<>(new ResettingHandler());
 
-        BrokenFactory root = new BrokenFactory(false, false, false,false);
-        root.ref.set(new BrokenFactory(false,false,true,false));
-        factoryManager.start(new RootFactoryWrapper<>(root));
+            BrokenFactory root = new BrokenFactory(false, false, false, false);
+            root.ref.set(new BrokenFactory(false, false, true, false));
+            factoryManager.start(new RootFactoryWrapper<>(root));
+        });
     }
 
     @Test
@@ -109,13 +113,13 @@ public class FactoryManagerExceptionResetTest {
 
         FactoryUpdateLog<BrokenFactory> updateLog = factoryManager.update(factoryManager.getCurrentFactory().utility().copy(), update, p -> true);
 
-        Assert.assertTrue(updateLog.failedUpdate());
-        Assert.assertEquals(1,root.destroyCalls.size());//restart with previous config before update
+        Assertions.assertTrue(updateLog.failedUpdate());
+        Assertions.assertEquals(1,root.destroyCalls.size());//restart with previous config before update
 
-        Assert.assertEquals(1,factoryManager.getCurrentFactory().createCalls.size());
-        Assert.assertEquals(1,factoryManager.getCurrentFactory().startCalls.size());
+        Assertions.assertEquals(1,factoryManager.getCurrentFactory().createCalls.size());
+        Assertions.assertEquals(1,factoryManager.getCurrentFactory().startCalls.size());
 
-        Assert.assertEquals(1,factoryManager.getCurrentFactory().internal().collectChildrenDeep().size());//the update is reverted
+        Assertions.assertEquals(1,factoryManager.getCurrentFactory().internal().collectChildrenDeep().size());//the update is reverted
     }
 
     @Test
@@ -131,11 +135,11 @@ public class FactoryManagerExceptionResetTest {
 
         factoryManager.update(factoryManager.getCurrentFactory().utility().copy(),update,p->true);
 
-        Assert.assertEquals(2,root.destroyCalls.size());//1 for the update and 1 for the reset
-        Assert.assertEquals(1,factoryManager.getCurrentFactory().createCalls.size());
-        Assert.assertEquals(1,factoryManager.getCurrentFactory().startCalls.size());
+        Assertions.assertEquals(2,root.destroyCalls.size());//1 for the update and 1 for the reset
+        Assertions.assertEquals(1,factoryManager.getCurrentFactory().createCalls.size());
+        Assertions.assertEquals(1,factoryManager.getCurrentFactory().startCalls.size());
 
-        Assert.assertEquals(1,factoryManager.getCurrentFactory().internal().collectChildrenDeep().size());//the update is reverted
+        Assertions.assertEquals(1,factoryManager.getCurrentFactory().internal().collectChildrenDeep().size());//the update is reverted
     }
 
     @Test
@@ -151,46 +155,50 @@ public class FactoryManagerExceptionResetTest {
 
         factoryManager.update(factoryManager.getCurrentFactory().utility().copy(),update,p->true);
 
-        Assert.assertEquals(2,root.destroyCalls.size());//1 for the update and 1 for the reset
-        Assert.assertEquals(1,factoryManager.getCurrentFactory().createCalls.size());
-        Assert.assertEquals(1,factoryManager.getCurrentFactory().startCalls.size());
+        Assertions.assertEquals(2,root.destroyCalls.size());//1 for the update and 1 for the reset
+        Assertions.assertEquals(1,factoryManager.getCurrentFactory().createCalls.size());
+        Assertions.assertEquals(1,factoryManager.getCurrentFactory().startCalls.size());
 
-        Assert.assertEquals(1,factoryManager.getCurrentFactory().internal().collectChildrenDeep().size());//the update is reverted
+        Assertions.assertEquals(1,factoryManager.getCurrentFactory().internal().collectChildrenDeep().size());//the update is reverted
     }
 
-    @Test(expected = RuntimeException.class)
+    @Test
     public void test_exception_destroy(){
-        FactoryManager<Void,DummyLifeObejct,BrokenFactory> factoryManager = new FactoryManager<>(new ResettingHandler());
+        Assertions.assertThrows(RuntimeException.class, () -> {
+            FactoryManager<Void, DummyLifeObejct, BrokenFactory> factoryManager = new FactoryManager<>(new ResettingHandler());
 
-        BrokenFactory root = new BrokenFactory(false, false, false,true);
-        factoryManager.start(new RootFactoryWrapper<>(root));
-        root.resetCounter();
-        factoryManager.stop();
+            BrokenFactory root = new BrokenFactory(false, false, false, true);
+            factoryManager.start(new RootFactoryWrapper<>(root));
+            root.resetCounter();
+            factoryManager.stop();
 
 
-        Assert.assertEquals(2,root.destroyCalls.size());//1 for the stop and 1 for the reset
+            Assertions.assertEquals(2, root.destroyCalls.size());//1 for the stop and 1 for the reset
 
-//        Assert.assertEquals(1,factoryManager.getCurrentData().createCalls.size());
-//        Assert.assertEquals(1,factoryManager.getCurrentData().startCalls.size());
-//        Assert.assertEquals(1,factoryManager.getCurrentData().internal().collectChildrenDeep().size());//the update is reverted
+//        Assertions.assertEquals(1,factoryManager.getCurrentData().createCalls.size());
+//        Assertions.assertEquals(1,factoryManager.getCurrentData().startCalls.size());
+//        Assertions.assertEquals(1,factoryManager.getCurrentData().internal().collectChildrenDeep().size());//the update is reverted
+        });
     }
 
 
-    @Test(expected = RuntimeException.class)
+    @Test
     public void test_exception_update_noloop(){
-        FactoryManager<Void,DummyLifeObejct,BrokenFactory> factoryManager = new FactoryManager<>(new ResettingHandler());
+        Assertions.assertThrows(RuntimeException.class, () -> {
+            FactoryManager<Void, DummyLifeObejct, BrokenFactory> factoryManager = new FactoryManager<>(new ResettingHandler());
 
-        BrokenFactory root = new BrokenFactory(false, false, false,false);
-        factoryManager.start(new RootFactoryWrapper<>(root));
-        root.resetCounter();
+            BrokenFactory root = new BrokenFactory(false, false, false, false);
+            factoryManager.start(new RootFactoryWrapper<>(root));
+            root.resetCounter();
 
-        BrokenFactory update = factoryManager.getCurrentFactory().utility().copy();
-        update.ref.set(new BrokenFactory(false,false,true,false));
+            BrokenFactory update = factoryManager.getCurrentFactory().utility().copy();
+            update.ref.set(new BrokenFactory(false, false, true, false));
 
-        root.createException=true;//reset should also fail
+            root.createException = true;//reset should also fail
 
-        FactoryUpdateLog<BrokenFactory> updateLog = factoryManager.update(factoryManager.getCurrentFactory().utility().copy(), update, p -> true);
-        Assert.assertTrue(updateLog.failedUpdate());
+            FactoryUpdateLog<BrokenFactory> updateLog = factoryManager.update(factoryManager.getCurrentFactory().utility().copy(), update, p -> true);
+            Assertions.assertTrue(updateLog.failedUpdate());
+        });
     }
 
     @Test
@@ -209,7 +217,7 @@ public class FactoryManagerExceptionResetTest {
         root.reCreateException=true;
         FactoryUpdateLog<BrokenFactory> updateLog = factoryManager.update(factoryManager.getCurrentFactory().utility().copy(), update, p -> true);
 
-        Assert.assertTrue(updateLog.failedUpdate());
-        Assert.assertEquals(1,removedFactory.destroyCalls.size());//restart with previous config before update
+        Assertions.assertTrue(updateLog.failedUpdate());
+        Assertions.assertEquals(1,removedFactory.destroyCalls.size());//restart with previous config before update
     }
 }

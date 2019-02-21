@@ -2,8 +2,8 @@ package de.factoryfx.data.attribute.types;
 
 import de.factoryfx.data.Data;
 import de.factoryfx.data.jackson.ObjectMapperBuilder;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class StringMapAttributeTest {
     public static class ExampleMapFactory extends Data {
@@ -22,6 +22,6 @@ public class StringMapAttributeTest {
         StringMapAttribute attribute = new StringMapAttribute();
         attribute.put("7787","dgdgf");
         StringMapAttribute copy = ObjectMapperBuilder.build().copy(attribute);
-        Assert.assertEquals("dgdgf",copy.get("7787"));
+        Assertions.assertEquals("dgdgf",copy.get("7787"));
     }
 }

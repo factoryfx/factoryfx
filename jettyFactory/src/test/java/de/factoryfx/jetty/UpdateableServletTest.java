@@ -9,9 +9,9 @@ import de.factoryfx.factory.builder.FactoryTreeBuilder;
 import de.factoryfx.factory.builder.Scope;
 import de.factoryfx.server.Microservice;
 import org.eclipse.jetty.server.Server;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -24,7 +24,7 @@ import java.net.http.HttpResponse;
 
 public class UpdateableServletTest {
 
-    @BeforeClass
+    @BeforeAll
     public static void setup(){
         ch.qos.logback.classic.Logger root = (ch.qos.logback.classic.Logger) org.slf4j.LoggerFactory.getLogger(ch.qos.logback.classic.Logger.ROOT_LOGGER_NAME);
         root.setLevel(Level.INFO);
@@ -86,7 +86,7 @@ public class UpdateableServletTest {
             HttpRequest request = HttpRequest.newBuilder().GET().uri(URI.create("http://localhost:8080/UpdateableTestResource")).build();
             {
                 HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-                Assert.assertEquals("123",response.body());
+                Assertions.assertEquals("123",response.body());
             }
 
 
@@ -96,7 +96,7 @@ public class UpdateableServletTest {
 
             {
                 HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-                Assert.assertEquals("abc", response.body());
+                Assertions.assertEquals("abc", response.body());
             }
 
         } finally {
@@ -133,7 +133,7 @@ public class UpdateableServletTest {
 
             {
                 HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-                Assert.assertEquals(404, response.statusCode());
+                Assertions.assertEquals(404, response.statusCode());
             }
         } finally {
             microservice.stop();
@@ -168,7 +168,7 @@ public class UpdateableServletTest {
 
             {
                 HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-                Assert.assertEquals("123", response.body());
+                Assertions.assertEquals("123", response.body());
             }
         } finally {
             microservice.stop();
@@ -213,7 +213,7 @@ public class UpdateableServletTest {
 
             {
                 HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-                Assert.assertEquals("123", response.body());
+                Assertions.assertEquals("123", response.body());
             }
         } finally {
             microservice.stop();

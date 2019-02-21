@@ -5,7 +5,7 @@ import java.io.IOException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.factoryfx.data.Data;
 import de.factoryfx.data.jackson.ObjectMapperBuilder;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class FactoryAndStorageMetadataTest {
 

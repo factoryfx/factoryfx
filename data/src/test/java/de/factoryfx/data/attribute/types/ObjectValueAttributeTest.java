@@ -1,8 +1,8 @@
 package de.factoryfx.data.attribute.types;
 
 import de.factoryfx.data.jackson.ObjectMapperBuilder;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class ObjectValueAttributeTest {
 
@@ -21,7 +21,7 @@ public class ObjectValueAttributeTest {
         noJsonPropertiesObject.attribute.set(new NoJsonPropertiesObject());
 
         ExampleObjectValueData copy= ObjectMapperBuilder.build().copy(noJsonPropertiesObject);
-        Assert.assertNull(copy.attribute.get());
+        Assertions.assertNull(copy.attribute.get());
     }
 
     @Test

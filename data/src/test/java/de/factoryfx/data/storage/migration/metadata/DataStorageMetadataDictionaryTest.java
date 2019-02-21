@@ -2,8 +2,8 @@ package de.factoryfx.data.storage.migration.metadata;
 
 import de.factoryfx.data.jackson.ObjectMapperBuilder;
 import de.factoryfx.data.merge.testdata.ExampleDataA;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 
 public class DataStorageMetadataDictionaryTest {
@@ -22,11 +22,11 @@ public class DataStorageMetadataDictionaryTest {
 
     @Test
     public void test_json_stable(){
-        Assert.assertEquals(ObjectMapperBuilder.build().writeValueAsString(createDataStorageMetadataDictionaryFromRoot()),ObjectMapperBuilder.build().writeValueAsString(createDataStorageMetadataDictionaryFromRoot()));
+        Assertions.assertEquals(ObjectMapperBuilder.build().writeValueAsString(createDataStorageMetadataDictionaryFromRoot()),ObjectMapperBuilder.build().writeValueAsString(createDataStorageMetadataDictionaryFromRoot()));
     }
 
     @Test
     public void test_init(){
-        Assert.assertEquals(1, createDataStorageMetadataDictionaryFromRoot().dataStorageMetadataList.size());
+        Assertions.assertEquals(1, createDataStorageMetadataDictionaryFromRoot().dataStorageMetadataList.size());
     }
 }

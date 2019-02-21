@@ -14,22 +14,22 @@ import de.factoryfx.factory.testfactories.ExampleFactoryB;
 import de.factoryfx.factory.testfactories.ExampleLiveObjectA;
 import de.factoryfx.microservice.rest.client.MicroserviceRestClient;
 import de.factoryfx.server.Microservice;
-import org.junit.Assert;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 import org.mockito.Mockito;
 import org.mockito.stubbing.Answer;
 
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 
 
 public class FactoryEditManagerTest {
 
-    @Rule
-    public TemporaryFolder tmpFolder = new TemporaryFolder();
+    @TempDir
+    public Path tmpFolder;
 
     @Test
     @SuppressWarnings("unchecked")
@@ -52,15 +52,17 @@ public class FactoryEditManagerTest {
         factoryEditManager.runLaterExecuter= Runnable::run;
 
         factoryEditManager.load();
-        Path target = tmpFolder.newFile("fghfh.json").toPath();
+
+        Path target = Files.createFile(tmpFolder.resolve("fghfh.json"));
+
         factoryEditManager.saveToFile(target);
 //        System.out.println(Files.readString(target));
 
-        Assert.assertTrue(target.toFile().exists());
+        Assertions.assertTrue(target.toFile().exists());
 
         factoryEditManager.loadFromFile(target);
 
-        Assert.assertEquals("123", factoryEditManager.getLoadedFactory().get().stringAttribute.get());
+        Assertions.assertEquals("123", factoryEditManager.getLoadedFactory().get().stringAttribute.get());
     }
 
 
@@ -79,12 +81,12 @@ public class FactoryEditManagerTest {
         updateFactory = updateFactory.internal().addBackReferences();
         DataMerger<ExampleFactoryA> dataMerger = new DataMerger<>(currentFactory,currentFactory.utility().copy(),updateFactory);
 
-        Assert.assertNull(currentFactory.referenceAttribute.get());
-        Assert.assertNotNull(updateFactory.referenceAttribute.get());
+        Assertions.assertNull(currentFactory.referenceAttribute.get());
+        Assertions.assertNotNull(updateFactory.referenceAttribute.get());
         MergeDiffInfo<ExampleFactoryA> diff = dataMerger.mergeIntoCurrent((p) -> true);
 
-        Assert.assertNotNull(currentFactory.referenceAttribute.get());
-        Assert.assertEquals(1,diff.mergeInfos.size());
+        Assertions.assertNotNull(currentFactory.referenceAttribute.get());
+        Assertions.assertEquals(1,diff.mergeInfos.size());
     }
 
 
@@ -92,7 +94,7 @@ public class FactoryEditManagerTest {
     @SuppressWarnings("unchecked")
     public void test_import_save_differentSystem() throws IOException {
 
-        Path target = tmpFolder.newFile("fghfh.json").toPath();
+        Path target = Files.createFile(tmpFolder.resolve("fghfh.json"));
         {
             FactoryTreeBuilder<Void, ExampleLiveObjectA, ExampleFactoryA, Void> builder = new FactoryTreeBuilder<>(ExampleFactoryA.class);
             builder.addFactory(ExampleFactoryA.class, Scope.SINGLETON,ctx->{
@@ -139,14 +141,14 @@ public class FactoryEditManagerTest {
             factoryEditManager.runLaterExecuter = Runnable::run;
 
             factoryEditManager.load();
-            Assert.assertNull(factoryEditManager.getLoadedFactory().get().referenceAttribute.get());
+            Assertions.assertNull(factoryEditManager.getLoadedFactory().get().referenceAttribute.get());
 
             factoryEditManager.loadFromFile(target);
-            Assert.assertNotNull(factoryEditManager.getLoadedFactory().get().referenceAttribute.get());
+            Assertions.assertNotNull(factoryEditManager.getLoadedFactory().get().referenceAttribute.get());
             factoryEditManager.save("blub");
 
-            Assert.assertNotNull(microservice.prepareNewFactory().root.referenceAttribute.get());
-            Assert.assertNotNull(factoryEditManager.getLoadedFactory().get().referenceAttribute.get());
+            Assertions.assertNotNull(microservice.prepareNewFactory().root.referenceAttribute.get());
+            Assertions.assertNotNull(factoryEditManager.getLoadedFactory().get().referenceAttribute.get());
         }
 
     }

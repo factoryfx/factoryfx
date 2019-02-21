@@ -4,8 +4,8 @@ import de.factoryfx.data.Data;
 import de.factoryfx.data.attribute.types.StringAttribute;
 import de.factoryfx.javafx.data.util.DataObservableDisplayText;
 import javafx.beans.property.ReadOnlyStringProperty;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class DataObservableDisplayTextTest {
 
@@ -25,11 +25,11 @@ public class DataObservableDisplayTextTest {
 
         ReadOnlyStringProperty expected = new DataObservableDisplayText(exampleFactory).get();
         ReadOnlyStringProperty actual = new DataObservableDisplayText(exampleFactory).get();
-        Assert.assertEquals("stable ref", expected, actual);
+        Assertions.assertEquals(expected, actual,"stable ref");
 
-        Assert.assertEquals("1",new DataObservableDisplayText(exampleFactory).get().get());
+        Assertions.assertEquals("1",new DataObservableDisplayText(exampleFactory).get().get());
         exampleFactory.stringAttribute.set("2");
-        Assert.assertEquals("2",new DataObservableDisplayText(exampleFactory).get().get());
+        Assertions.assertEquals("2",new DataObservableDisplayText(exampleFactory).get().get());
     }
 
     @Test
@@ -39,9 +39,9 @@ public class DataObservableDisplayTextTest {
 
         ReadOnlyStringProperty observable = new DataObservableDisplayText(exampleFactory).get();
 
-        Assert.assertEquals("1",observable.get());
+        Assertions.assertEquals("1",observable.get());
         exampleFactory.stringAttribute.set("2");
-        Assert.assertEquals("2",observable.get());
+        Assertions.assertEquals("2",observable.get());
     }
 
 }

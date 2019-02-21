@@ -3,8 +3,8 @@ package de.factoryfx.factory;
 import de.factoryfx.data.merge.DataMerger;
 import de.factoryfx.factory.testfactories.FastExampleFactoryA;
 import de.factoryfx.factory.testfactories.FastExampleFactoryB;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 
 public class FastFactoryUtilityTest {
@@ -17,7 +17,7 @@ public class FastFactoryUtilityTest {
 
         FastExampleFactoryA copy =original.utility().copy();
 
-        Assert.assertEquals(2,copy.internal().collectChildrenDeep().size());
+        Assertions.assertEquals(2,copy.internal().collectChildrenDeep().size());
     }
 
 
@@ -27,7 +27,7 @@ public class FastFactoryUtilityTest {
         FastExampleFactoryA original = new FastExampleFactoryA();
         original.internal().addBackReferences();
 
-        Assert.assertEquals(1,original.internal().collectChildrenDeep().size());
+        Assertions.assertEquals(1,original.internal().collectChildrenDeep().size());
 
         FastExampleFactoryA update= original.utility().copy();
         update.referenceAttribute=new FastExampleFactoryB();
@@ -35,7 +35,7 @@ public class FastFactoryUtilityTest {
         DataMerger<FastExampleFactoryA> dataMerger = new DataMerger<>(original,original.utility().copy(),update);
         dataMerger.mergeIntoCurrent((p)->true);
 
-        Assert.assertEquals(2,original.internal().collectChildrenDeep().size());
+        Assertions.assertEquals(2,original.internal().collectChildrenDeep().size());
     }
 
     @Test
@@ -44,7 +44,7 @@ public class FastFactoryUtilityTest {
         FastExampleFactoryA original = new FastExampleFactoryA();
         original.internal().addBackReferences();
 
-        Assert.assertEquals(1,original.internal().collectChildrenDeep().size());
+        Assertions.assertEquals(1,original.internal().collectChildrenDeep().size());
 
         FastExampleFactoryA update= original.utility().copy();
         update.referenceListAttribute.add(new FastExampleFactoryB());
@@ -52,6 +52,6 @@ public class FastFactoryUtilityTest {
         DataMerger<FastExampleFactoryA> dataMerger = new DataMerger<>(original,original.utility().copy(),update);
         dataMerger.mergeIntoCurrent((p)->true);
 
-        Assert.assertEquals(2,original.internal().collectChildrenDeep().size());
+        Assertions.assertEquals(2,original.internal().collectChildrenDeep().size());
     }
 }
