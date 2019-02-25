@@ -71,7 +71,7 @@ public class HelloWorld{
 ### Fundamentals
 * [Comparison](docu/src/main/java/de/factoryfx/docu/comparison/usecase.md)<br>Comparison to other dependency injection frameworks
 * [Dependency injection](docu/src/main/java/de/factoryfx/docu/dependencyinjection/usecase.md)<br>Injection dependency into a liveobject
-* [Data injection](docu/src/main/java/de/factoryfx/docu/datainjection/README.md)<br>Injection data into a liveobject
+* [Data injection](docu/src/main/java/de/factoryfx/docu/datainjection)<br>Injection data into a liveobject
 * [Factory](docu/src/main/java/de/factoryfx/docu/factorylayer/usecase.md)<br>Factory explanation
 * [Liveobject](docu/src/main/java/de/factoryfx/docu/liveobjects/usecase.md)<br>Liveobject explanation
 ### Miscellaneous
