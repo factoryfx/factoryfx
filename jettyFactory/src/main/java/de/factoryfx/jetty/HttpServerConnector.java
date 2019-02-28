@@ -29,6 +29,7 @@ public class HttpServerConnector {
         connector.setReuseAddress(true);
         connector.setHost(host);
         server.addConnector(connector);
+        server.manage(connector);
         if (server.isStarted()) {
             try {
                 connector.start();

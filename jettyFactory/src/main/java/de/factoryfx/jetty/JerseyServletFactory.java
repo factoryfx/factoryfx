@@ -24,7 +24,7 @@ public class JerseyServletFactory<V,R extends FactoryBase<?,V,R>> extends Simple
 
     public final FactoryPolymorphicReferenceAttribute<LoggingFeature> restLogging = new FactoryPolymorphicReferenceAttribute<>(LoggingFeature.class).userReadOnly().labelText("REST logging");
 
-    public final ObjectValueAttribute<List<Object>> additionalJaxrsComponents = new ObjectValueAttribute<List<Object>>().userReadOnly().labelText("additionalJaxrsComponents");
+    public final ObjectValueAttribute<List<Object>> additionalJaxrsComponents = new ObjectValueAttribute<List<Object>>().userReadOnly().labelText("additionalJaxrsComponents").nullable();
 
 
     public final FactoryPolymorphicReferenceListAttribute<Object> resources = new FactoryPolymorphicReferenceListAttribute<>(Object.class).labelText("resources");
