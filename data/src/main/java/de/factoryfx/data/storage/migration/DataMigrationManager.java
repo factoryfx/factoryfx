@@ -57,14 +57,14 @@ public class DataMigrationManager<R extends Data> {
 
         attributeFiller.fillNewAttributes(root,dataStorageMetadataDictionary);
 
-        for (SingletonDataRestore restoration : restorations) {
+        for (SingletonDataRestore<R,?> restoration : restorations) {
             DataStorageMetadataDictionary currentDataStorageMetadataDictionaryFromRoot = root.internal().createDataStorageMetadataDictionaryFromRoot();
             if (restoration.canMigrate(dataStorageMetadataDictionary,currentDataStorageMetadataDictionaryFromRoot)) {
                 restoration.migrate(dataJsonNodes,root);
             }
         }
 
-        for (PathDataRestore restoration : restorations2) {
+        for (PathDataRestore<R,?> restoration : restorations2) {
             DataStorageMetadataDictionary currentDataStorageMetadataDictionaryFromRoot = root.internal().createDataStorageMetadataDictionaryFromRoot();
             if (restoration.canMigrate(dataStorageMetadataDictionary,currentDataStorageMetadataDictionaryFromRoot)) {
                 restoration.migrate(new DataJsonNode((ObjectNode)jsonNode),root);

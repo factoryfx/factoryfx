@@ -28,7 +28,7 @@ import java.util.logging.Logger;
             .withHost("localhost").widthPort(8005)
             .withResource(ctx.get(CustomResourceFactory.class)).build());
 
- *  }</pre>
+   }</pre>
  */
 public class JettyServerFactory<V,R extends FactoryBase<?,V,R>> extends FactoryBase<Server,V,R> {
 

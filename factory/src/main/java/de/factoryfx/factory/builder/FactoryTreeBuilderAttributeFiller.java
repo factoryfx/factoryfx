@@ -16,6 +16,7 @@ public class FactoryTreeBuilderAttributeFiller<V,L,R extends FactoryBase<L,V,R>,
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public void fillNewAttributes(R root, DataStorageMetadataDictionary oldDataStorageMetadataDictionary) {
         factoryTreeBuilder.fillFromExistingFactoryTree(root);
         for (Data data : root.internal().collectChildrenDeep()) {

@@ -5,9 +5,6 @@ import com.fasterxml.jackson.databind.node.TextNode;
 import de.factoryfx.data.Data;
 import de.factoryfx.data.jackson.ObjectMapperBuilder;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class DataJsonNode {
     private final ObjectNode jsonNode;
 

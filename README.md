@@ -68,13 +68,15 @@ public class HelloWorld{
     .microservice().withInMemoryStorage().build().start();
 ```
 ## Documentation
+
 ### Fundamentals
 * [Comparison](docu/src/main/java/de/factoryfx/docu/comparison)<br>Comparison to other dependency injection frameworks
 * [Dependency injection](docu/src/main/java/de/factoryfx/docu/dependencyinjection)<br>Injection dependency into a liveobject
 * [Data injection](docu/src/main/java/de/factoryfx/docu/datainjection)<br>Injection data into a liveobject
 * [Factory](docu/src/main/java/de/factoryfx/docu/factorylayer)<br>Factory explanation
 * [Liveobject](docu/src/main/java/de/factoryfx/docu/liveobjects)<br>Liveobject explanation
-### Miscellaneous
+
+### Advanced
 * [REST server](docu/src/main/java/de/factoryfx/docu/restserver)<br>Basic jetty server with a jersey REST resource
 * [Lifecycle](docu/src/main/java/de/factoryfx/docu/lifecycle)<br>Lifecycle configuration (start/top/update)
 * [Migration](docu/src/main/java/de/factoryfx/docu/migration)<br>Configuration data migration

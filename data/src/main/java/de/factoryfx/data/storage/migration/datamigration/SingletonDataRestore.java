@@ -1,14 +1,10 @@
 package de.factoryfx.data.storage.migration.datamigration;
 
 import de.factoryfx.data.Data;
-import de.factoryfx.data.DataDictionary;
-import de.factoryfx.data.attribute.Attribute;
 import de.factoryfx.data.storage.migration.metadata.DataStorageMetadataDictionary;
 
 import java.util.List;
 import java.util.function.BiConsumer;
-import java.util.function.Consumer;
-import java.util.function.Function;
 
 /** restore attribute content from one data class to a new one, both  are singletons**/
 public class SingletonDataRestore<R extends Data,V>  {

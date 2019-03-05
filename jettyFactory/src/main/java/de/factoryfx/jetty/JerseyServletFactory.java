@@ -1,6 +1,5 @@
 package de.factoryfx.jetty;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider;
 import de.factoryfx.data.attribute.types.ObjectValueAttribute;

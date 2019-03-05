@@ -2,10 +2,7 @@ package de.factoryfx.data.storage.migration.metadata;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import de.factoryfx.data.Data;
-import de.factoryfx.data.DataDictionary;
 
-import java.lang.reflect.Modifier;
 import java.util.*;
 
 public class DataStorageMetadataDictionary {

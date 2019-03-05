@@ -87,8 +87,9 @@ public class FactoryContext<R extends FactoryBase<?,?,R>> {
         //.stream().allMatch(FactoryCreator::isEmpty);
     }
 
+    @SuppressWarnings("unchecked")
      <F extends FactoryBase<?,?,R>> F getNew(Class<F> clazz){
-        F result = factoryCreators.stream().filter(fc -> fc.match(clazz)).findAny().map(rFactoryCreator -> (F) rFactoryCreator.createNew(this)).orElse(null);;
+        F result = factoryCreators.stream().filter(fc -> fc.match(clazz)).findAny().map(rFactoryCreator -> (F) rFactoryCreator.createNew(this)).orElse(null);
         if (result==null){
             throw new IllegalStateException("builder missing Factory: "+clazz);
         }

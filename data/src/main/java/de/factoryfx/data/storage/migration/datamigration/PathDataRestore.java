@@ -13,7 +13,7 @@ public class PathDataRestore<R extends Data,V>  {
     private final BiConsumer<R,V> setter;
     private final Class<V> valueClass;
 
-    public PathDataRestore(AttributePath previousPath, Class<V> valueClass, BiConsumer<R, V> setter) {
+    public PathDataRestore(AttributePath<V> previousPath, Class<V> valueClass, BiConsumer<R, V> setter) {
         this.previousPath = previousPath;
         this.setter=setter;
         this.valueClass=valueClass;

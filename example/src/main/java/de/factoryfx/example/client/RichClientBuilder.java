@@ -1,11 +1,7 @@
 package de.factoryfx.example.client;
 
 import de.factoryfx.data.DataDictionary;
-import de.factoryfx.data.attribute.DefaultNewValueProvider;
-import de.factoryfx.data.jackson.ObjectMapperBuilder;
-import de.factoryfx.data.storage.migration.DataMigrationManager;
 import de.factoryfx.data.storage.migration.MigrationManager;
-import de.factoryfx.data.storage.migration.GeneralStorageMetadataBuilder;
 import de.factoryfx.example.client.view.ConfigurationViewFactory;
 import de.factoryfx.example.client.view.DashboardViewFactory;
 import de.factoryfx.example.client.view.HistoryViewFactory;
@@ -41,9 +37,7 @@ import javafx.stage.Stage;
 import org.controlsfx.glyphfont.FontAwesome;
 import org.eclipse.jetty.server.Server;
 
-import java.util.List;
 import java.util.Locale;
-import java.util.function.Function;
 
 
 public class RichClientBuilder {
