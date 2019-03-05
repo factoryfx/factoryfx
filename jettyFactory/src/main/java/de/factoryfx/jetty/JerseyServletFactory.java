@@ -1,5 +1,6 @@
 package de.factoryfx.jetty;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider;
 import de.factoryfx.data.attribute.types.ObjectValueAttribute;
@@ -35,7 +36,7 @@ public class JerseyServletFactory<V,R extends FactoryBase<?,V,R>> extends Simple
         resourceConfig.property(CommonProperties.FEATURE_AUTO_DISCOVERY_DISABLE, true);// without we have 2 JacksonJaxbJsonProvider and wrong mapper
 //        resourceConfig.property(ServerProperties.BV_FEATURE_DISABLE, true);
 //        resourceConfig.property(ServerProperties.RESOURCE_VALIDATION_DISABLE, true);
-        resources.instances().forEach(resourceConfig::register);
+        getResourcesInstances().forEach(resourceConfig::register);
 
         JacksonJaxbJsonProvider provider = new JacksonJaxbJsonProvider();
         provider.setMapper(objectMapper.instance());
@@ -58,7 +59,9 @@ public class JerseyServletFactory<V,R extends FactoryBase<?,V,R>> extends Simple
         return new ServletContainer(resourceConfig);
     }
 
-
+    protected List<Object> getResourcesInstances(){
+        return resources.instances();
+    }
 
 
 }

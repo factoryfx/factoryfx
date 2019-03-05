@@ -31,8 +31,6 @@ wrapper {
     distributionType = DistributionType.ALL
 }
 
-
-
 subprojects {
     apply plugin: 'java'
     apply plugin: "com.github.spotbugs"
@@ -72,7 +70,7 @@ subprojects {
     }
 
     group = 'io.github.factoryfx'
-    version = '2.0.0-ea'
+    version = '2.0.0-ea2'
 
     if (project.hasProperty('secretKeyRingFileSourceURL')) {
         signing {
