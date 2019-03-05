@@ -24,11 +24,6 @@ public abstract class ValueSetAttribute<T,A extends Attribute<Set<T>,A>> extends
         return new CollectionAttributeUtil<>(this.value, Object::toString).getDisplayText();
     }
 
-    @Override
-    public AttributeTypeInfo internal_getAttributeType() {
-        return new AttributeTypeInfo(Set.class,null,null,itemType, AttributeTypeInfo.AttributeTypeCategory.COLLECTION);
-    }
-
     //** set list only take the list items not the list itself, (to simplify ChangeListeners)*/
     @Override
     public void set(Set<T> value) {

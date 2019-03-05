@@ -113,11 +113,6 @@ public abstract class ImmutableValueAttribute<T,A extends Attribute<T,A>> extend
         return "<empty>";
     }
 
-    @Override
-    public AttributeTypeInfo internal_getAttributeType() {
-        return new AttributeTypeInfo(dataType);
-    }
-
 //    @JsonUnwrapped
     @JsonGetter
 //    @JsonValue

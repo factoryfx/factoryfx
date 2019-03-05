@@ -35,12 +35,13 @@ public class MicroserviceBuilder<V,L,R extends FactoryBase<L,V,R>,S> {
     private ChangeSummaryCreator<R,S> changeSummaryCreator;
     private FactoryExceptionHandler factoryExceptionHandler;
     private List<GeneralMigration> generalStorageFormatMigrations = new ArrayList<>();
-    private DataMigrationManager dataMigrationManager = new DataMigrationManager();
+    private DataMigrationManager<R> dataMigrationManager;
     private SimpleObjectMapper objectMapper;
 
-    public MicroserviceBuilder(Class<R> rootClass, R initialFactory) {
+    public MicroserviceBuilder(Class<R> rootClass, R initialFactory, FactoryTreeBuilder<V,L,R,S> factoryTreeBuilder) {
         this.rootClass = rootClass;
         this.initialFactory = initialFactory;
+        this.dataMigrationManager = new DataMigrationManager<>(new FactoryTreeBuilderAttributeFiller<>(factoryTreeBuilder),rootClass);
     }
 
     public Microservice<V,L,R,S> build(){
@@ -61,6 +62,10 @@ public class MicroserviceBuilder<V,L,R extends FactoryBase<L,V,R>,S> {
 
         MigrationManager<R,S> migrationManager = new MigrationManager<>(rootClass, generalStorageFormatMigrations, generalStorageMetadata, dataMigrationManager, objectMapper);
         return new Microservice<>(new FactoryManager<>(factoryExceptionHandler), dataStorageCreator.createDataStorage(initialFactory,generalStorageMetadata, migrationManager, objectMapper),changeSummaryCreator, generalStorageMetadata);
+    }
+
+    public MigrationManager<R,S> buildMigrationManager(){
+        return new MigrationManager<>(rootClass, generalStorageFormatMigrations, generalStorageMetadata, dataMigrationManager, objectMapper);
     }
 
     /**
@@ -108,12 +113,12 @@ public class MicroserviceBuilder<V,L,R extends FactoryBase<L,V,R>,S> {
         return this;
     }
 
-    public MicroserviceBuilder<V,L,R,S> withDataMigration(DataMigrationManager dataMigration){
+    public MicroserviceBuilder<V,L,R,S> withDataMigration(DataMigrationManager<R> dataMigration){
         this.dataMigrationManager =dataMigration;
         return this;
     }
 
-    public MicroserviceBuilder<V,L,R,S> withDataMigration(Consumer<DataMigrationManager> dataMigrationAdder){
+    public MicroserviceBuilder<V,L,R,S> withDataMigration(Consumer<DataMigrationManager<R>> dataMigrationAdder){
         dataMigrationAdder.accept(dataMigrationManager);
         return this;
     }

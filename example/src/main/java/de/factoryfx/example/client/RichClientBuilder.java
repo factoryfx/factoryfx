@@ -1,5 +1,7 @@
 package de.factoryfx.example.client;
 
+import de.factoryfx.data.DataDictionary;
+import de.factoryfx.data.attribute.DefaultNewValueProvider;
 import de.factoryfx.data.jackson.ObjectMapperBuilder;
 import de.factoryfx.data.storage.migration.DataMigrationManager;
 import de.factoryfx.data.storage.migration.MigrationManager;
@@ -41,12 +43,13 @@ import org.eclipse.jetty.server.Server;
 
 import java.util.List;
 import java.util.Locale;
+import java.util.function.Function;
 
 
 public class RichClientBuilder {
 
     @SuppressWarnings("unchecked")
-    public static FactoryTreeBuilder<Void,Stage,RichClientRoot,Void> createFactoryBuilder(int adminServerPort, Stage primaryStage, String user, String passwordHash, Locale locale, FactoryTreeBuilder<OrderCollector, Server, ServerRootFactory, Void> serverRootFactoryFactoryTreeBuilder) {
+    public static FactoryTreeBuilder<Void,Stage,RichClientRoot,Void> createFactoryBuilder(int adminServerPort, Stage primaryStage, String user, String passwordHash, Locale locale, FactoryTreeBuilder<OrderCollector, Server, ServerRootFactory, Void> serverRootFactoryFactoryTreeBuilder, MigrationManager<ServerRootFactory,Void> serverMigrationManager) {
         FactoryTreeBuilder<Void,Stage,RichClientRoot,Void> factoryBuilder = new FactoryTreeBuilder<>(RichClientRoot.class);
 
         factoryBuilder.addFactory(LongRunningActionExecutorFactory.class, Scope.SINGLETON);
@@ -61,7 +64,7 @@ public class RichClientBuilder {
         factoryBuilder.addFactory(HistoryViewFactory.class, Scope.PROTOTYPE);
 
         factoryBuilder.addFactory(FactorySerialisationManagerFactory.class, Scope.SINGLETON, (context)->{
-            return new RichClientFactorySerialisationManagerFactory();
+            return new RichClientFactorySerialisationManagerFactory(serverMigrationManager);
         });
 
         factoryBuilder.addFactory(UniformDesignFactory.class, Scope.SINGLETON, voidSimpleFactoryContext -> {
@@ -208,9 +211,21 @@ public class RichClientBuilder {
     }
 
     private static class RichClientFactorySerialisationManagerFactory extends FactorySerialisationManagerFactory<ServerRootFactory,Void> {
+        private final MigrationManager<ServerRootFactory,Void> serverMigrationManager;
+
+        {
+            DataDictionary.getDataDictionary(RichClientFactorySerialisationManagerFactory.class).setNewCopyInstanceSupplier(
+                    old -> new RichClientFactorySerialisationManagerFactory(old.serverMigrationManager)
+            );
+        }
+
+        private RichClientFactorySerialisationManagerFactory(MigrationManager<ServerRootFactory,Void> serverMigrationManager) {
+            this.serverMigrationManager = serverMigrationManager;
+        }
+
         @Override
         public MigrationManager<ServerRootFactory, Void> createImpl() {
-            return new MigrationManager<>(ServerRootFactory.class, List.of(), GeneralStorageMetadataBuilder.build(), new DataMigrationManager(), ObjectMapperBuilder.build());
+            return serverMigrationManager;
         }
     }
 }

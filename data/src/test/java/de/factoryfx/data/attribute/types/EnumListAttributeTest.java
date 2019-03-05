@@ -27,7 +27,7 @@ public class EnumListAttributeTest {
     public void test_json_getAttributeType(){
         ExampleEnumListData data= new ExampleEnumListData();
         ExampleEnumListData copy= ObjectMapperBuilder.build().copy(data);
-        Assertions.assertEquals(TestEnum.class,copy.attribute.internal_getAttributeType().dataType);
+        Assertions.assertEquals(TestEnum.class,copy.attribute.internal_getEnumClass());
     }
 
     @Test

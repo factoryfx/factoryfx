@@ -16,6 +16,8 @@ import de.factoryfx.data.storage.*;
 import de.factoryfx.data.storage.migration.DataMigrationManager;
 import de.factoryfx.data.storage.migration.GeneralStorageMetadataBuilder;
 import de.factoryfx.data.storage.migration.MigrationManager;
+import de.factoryfx.data.storage.migration.datamigration.AttributeFiller;
+import de.factoryfx.data.storage.migration.metadata.DataStorageMetadataDictionary;
 import de.factoryfx.factory.testfactories.ExampleFactoryA;
 import org.junit.jupiter.api.*;
 import org.mockito.Mockito;
@@ -67,7 +69,7 @@ public class PostgresDataStorageTest {
 
 
     private MigrationManager<ExampleFactoryA,Void> createDataMigrationManager(){
-        return new MigrationManager<>(ExampleFactoryA.class, List.of(), GeneralStorageMetadataBuilder.build(), new DataMigrationManager(), ObjectMapperBuilder.build());
+        return new MigrationManager<>(ExampleFactoryA.class, List.of(), GeneralStorageMetadataBuilder.build(), new DataMigrationManager<>((root, d) -> { }, ExampleFactoryA.class), ObjectMapperBuilder.build());
     }
 
     @Test

@@ -6,7 +6,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class AttributeStorageMetadata {
 
     @JsonProperty
-    private final String variableName;
+    private String variableName;
     @JsonProperty
     private final String attributeClassName;
 
@@ -26,5 +26,9 @@ public class AttributeStorageMetadata {
 
     public boolean match(AttributeStorageMetadata attributeStorageMetadata) {
         return variableName.equals(attributeStorageMetadata.variableName) && attributeClassName.equals(attributeStorageMetadata.attributeClassName);
+    }
+
+    public void rename(String newAttributeName) {
+        variableName=newAttributeName;
     }
 }

@@ -172,17 +172,9 @@ public abstract class ViewListReferenceAttribute <R extends Data, T extends Data
         }
     }
 
-
     @Override
     public String getDisplayText() {
         return new CollectionAttributeUtil<>(get(), t -> t.internal().getDisplayText()).getDisplayText();
-    }
-
-
-    @JsonIgnore
-    @Override
-    public AttributeTypeInfo internal_getAttributeType() {
-        return new AttributeTypeInfo(List.class,null,null,Data.class, AttributeTypeInfo.AttributeTypeCategory.REFERENCE_LIST);
     }
 
     @Override

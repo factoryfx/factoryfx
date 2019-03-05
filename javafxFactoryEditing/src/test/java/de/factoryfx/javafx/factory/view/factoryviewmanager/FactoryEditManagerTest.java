@@ -68,7 +68,7 @@ public class FactoryEditManagerTest {
 
 
     private MigrationManager<ExampleFactoryA, Void> createDataMigrationManager() {
-        return new MigrationManager<>(ExampleFactoryA.class, List.of(), GeneralStorageMetadataBuilder.build(), new DataMigrationManager(), ObjectMapperBuilder.build());
+        return new MigrationManager<>(ExampleFactoryA.class, List.of(), GeneralStorageMetadataBuilder.build(), new DataMigrationManager<>((root, d) -> { }, ExampleFactoryA.class), ObjectMapperBuilder.build());
     }
 
     @Test

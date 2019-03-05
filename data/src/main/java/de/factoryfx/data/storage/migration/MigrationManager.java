@@ -15,12 +15,12 @@ import java.util.List;
  */
 public class MigrationManager<R extends Data,S> {
     private final Class<R> rootClass;
-    private final DataMigrationManager dataMigration;
+    private final DataMigrationManager<R> dataMigration;
     private final GeneralStorageMetadata generalStorageMetadata;
     private final List<GeneralMigration> storageFormatMigrations;
     private final SimpleObjectMapper objectMapper;
 
-    public MigrationManager(Class<R> rootClass, List<GeneralMigration> generalStorageFormatMigrations, GeneralStorageMetadata generalStorageMetadata, DataMigrationManager dataMigration, SimpleObjectMapper objectMapper) {
+    public MigrationManager(Class<R> rootClass, List<GeneralMigration> generalStorageFormatMigrations, GeneralStorageMetadata generalStorageMetadata, DataMigrationManager<R> dataMigration, SimpleObjectMapper objectMapper) {
         this.rootClass = rootClass;
         this.dataMigration = dataMigration;
         this.generalStorageMetadata = generalStorageMetadata;
@@ -61,8 +61,7 @@ public class MigrationManager<R extends Data,S> {
             }
         }
 
-        dataMigration.migrate(migratedData,dataStorageMetadataDictionary);
-        return objectMapper.treeToValue(migratedData,rootClass).internal().addBackReferences();
+        return dataMigration.migrate(migratedData,dataStorageMetadataDictionary);
     }
 
     @SuppressWarnings("unchecked")

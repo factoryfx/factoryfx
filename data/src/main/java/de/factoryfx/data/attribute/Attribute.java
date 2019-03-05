@@ -105,9 +105,6 @@ public abstract class Attribute<T,A extends Attribute<T,A>>{
         return false;
     }
 
-
-    public abstract AttributeTypeInfo internal_getAttributeType();
-
     /**
      *
      * @param root factory tree root

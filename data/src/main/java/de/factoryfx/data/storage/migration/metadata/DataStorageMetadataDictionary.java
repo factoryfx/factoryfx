@@ -13,37 +13,56 @@ public class DataStorageMetadataDictionary {
     final List<DataStorageMetadata> dataStorageMetadataList;
 
     @JsonCreator
-    private DataStorageMetadataDictionary(@JsonProperty("dataStorageMetadataList") List<DataStorageMetadata> dataStorageMetadataList) {
+    public DataStorageMetadataDictionary(@JsonProperty("dataStorageMetadataList") List<DataStorageMetadata> dataStorageMetadataList) {
         this.dataStorageMetadataList = dataStorageMetadataList;
     }
 
-    public DataStorageMetadataDictionary(Set<Class<? extends Data>> dataClasses) {
-        dataStorageMetadataList =new ArrayList<>();
-
-        ArrayList<Class<? extends Data>> sortedClasses = new ArrayList<>(dataClasses);
-        sortedClasses.sort(Comparator.comparing(Class::getName));
-        for (Class<? extends Data> clazz : sortedClasses) {
-            if (!Modifier.isAbstract(clazz.getModifiers())){
-                dataStorageMetadataList.add(DataDictionary.getDataDictionary(clazz).createDataStorageMetadata());
+    private DataStorageMetadata getDataStorageMetadata(String dataClassNameFullQualified){
+        for (DataStorageMetadata dataStorageMetadata : this.dataStorageMetadataList) {
+            if (dataStorageMetadata.getClassName().equals(dataClassNameFullQualified)){
+                return dataStorageMetadata;
             }
         }
+        return null;
     }
 
     public boolean containsClass(String dataClassNameFullQualified) {
-        for (DataStorageMetadata dataStorageMetadata : this.dataStorageMetadataList) {
-            if (dataStorageMetadata.getClassName().equals(dataClassNameFullQualified)){
-                return true;
-            }
+        return getDataStorageMetadata(dataClassNameFullQualified)!=null;
+    }
+
+    public boolean containsAttribute(String dataClassNameFullQualified, String previousAttributeName) {
+        DataStorageMetadata dataStorageMetadata = getDataStorageMetadata(dataClassNameFullQualified);
+        if (dataStorageMetadata!=null){
+            return dataStorageMetadata.containsAttribute(previousAttributeName);
         }
         return false;
     }
 
-    public boolean containsAttribute(String dataClassNameFullQualified, String previousAttributeName) {
-        for (DataStorageMetadata dataStorageMetadata : this.dataStorageMetadataList) {
-            if (dataStorageMetadata.getClassName().equals(dataClassNameFullQualified)){
-                return dataStorageMetadata.containsAttribute(previousAttributeName);
-            }
+    public boolean isSingleton(String fullQualifiedName) {
+        DataStorageMetadata dataStorageMetadata = getDataStorageMetadata(fullQualifiedName);
+        if (dataStorageMetadata!=null){
+            return dataStorageMetadata.isSingleton();
         }
         return false;
+    }
+
+    public void renameAttribute(String dataClassNameFullQualified, String previousAttributeName, String newAttributeName) {
+        for (DataStorageMetadata dataStorageMetadata : this.dataStorageMetadataList) {
+            if (dataStorageMetadata.getClassName().equals(dataClassNameFullQualified)){
+                dataStorageMetadata.renameAttribute(previousAttributeName,newAttributeName);
+            }
+        }
+    }
+
+    public void renameClass(String previousDataClassNameFullQualified, String newNameFullQualified) {
+        for (DataStorageMetadata dataStorageMetadata : this.dataStorageMetadataList) {
+            if (dataStorageMetadata.getClassName().equals(previousDataClassNameFullQualified)){
+                dataStorageMetadata.renameClass(newNameFullQualified);
+            }
+        }
+    }
+
+    public boolean isRemovedAttribute(String dataClass, String previousAttributeName) {
+        return !containsClass(dataClass) || !containsAttribute(dataClass,previousAttributeName);
     }
 }

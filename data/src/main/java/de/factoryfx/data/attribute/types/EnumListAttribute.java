@@ -1,7 +1,6 @@
 package de.factoryfx.data.attribute.types;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import de.factoryfx.data.attribute.AttributeTypeInfo;
 import de.factoryfx.data.attribute.ValueListAttribute;
 import de.factoryfx.data.util.LanguageText;
 
@@ -18,11 +17,6 @@ public class EnumListAttribute<E extends Enum<E>> extends ValueListAttribute<E,E
     public EnumListAttribute(Class<E> clazz) {
         super(clazz);//workaround for java generic bug
         this.clazz=clazz;
-    }
-
-    @Override
-    public AttributeTypeInfo internal_getAttributeType() {
-        return new AttributeTypeInfo(clazz,null,null,AttributeTypeInfo.AttributeTypeCategory.VALUE);
     }
 
     public List<E> internal_possibleEnumValues() {

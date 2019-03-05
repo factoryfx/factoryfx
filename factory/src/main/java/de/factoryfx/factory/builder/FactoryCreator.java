@@ -55,4 +55,10 @@ public class FactoryCreator<F extends FactoryBase<?,?,R>,R extends FactoryBase<?
             factory= (F) classToFactory.get(new FactoryCreatorIdentifier(clazz,name));
         }
     }
+
+    public F createNew(FactoryContext<R> context) {
+        factory=creator.apply(context);
+        factory.internalFactory().setTreeBuilderName(name);
+        return factory;
+    }
 }

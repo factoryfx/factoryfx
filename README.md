@@ -30,7 +30,7 @@ java 11+ required
 [CHANGELOG](CHANGELOG.md)
 
 ### Dependencies
-[Gradle example dependency setups](docu/src/main/java/de/factoryfx/docu/dependencysetup/usecase.md)
+[Gradle example dependency setups](docu/src/main/java/de/factoryfx/docu/dependencysetup)
 
 ## Basic example
 #### Factory
@@ -43,7 +43,7 @@ public class HelloWorldFactory extends SimpleFactoryBase<HelloWorld,Void,HelloWo
     }
 }
 ```
-[Factory explanation](docu/src/main/java/de/factoryfx/docu/factorylayer/usecase.md)
+[Factory explanation](docu/src/main/java/de/factoryfx/docu/factorylayer)
 #### Live object
 ```java
 public class HelloWorld{
@@ -56,7 +56,7 @@ public class HelloWorld{
     }
 }
 ```
-[Live object explanation](docu/src/main/java/de/factoryfx/docu/liveobjects/usecase.md)
+[Live object explanation](docu/src/main/java/de/factoryfx/docu/liveobjects)
 #### Setup
 ```java
     new FactoryTreeBuilder<Void,HelloWorld,HelloWorldFactory,Void>(HelloWorldFactory.class)
@@ -69,26 +69,26 @@ public class HelloWorld{
 ```
 ## Documentation
 ### Fundamentals
-* [Comparison](docu/src/main/java/de/factoryfx/docu/comparison/usecase.md)<br>Comparison to other dependency injection frameworks
-* [Dependency injection](docu/src/main/java/de/factoryfx/docu/dependencyinjection/usecase.md)<br>Injection dependency into a liveobject
+* [Comparison](docu/src/main/java/de/factoryfx/docu/comparison)<br>Comparison to other dependency injection frameworks
+* [Dependency injection](docu/src/main/java/de/factoryfx/docu/dependencyinjection)<br>Injection dependency into a liveobject
 * [Data injection](docu/src/main/java/de/factoryfx/docu/datainjection)<br>Injection data into a liveobject
-* [Factory](docu/src/main/java/de/factoryfx/docu/factorylayer/usecase.md)<br>Factory explanation
-* [Liveobject](docu/src/main/java/de/factoryfx/docu/liveobjects/usecase.md)<br>Liveobject explanation
+* [Factory](docu/src/main/java/de/factoryfx/docu/factorylayer)<br>Factory explanation
+* [Liveobject](docu/src/main/java/de/factoryfx/docu/liveobjects)<br>Liveobject explanation
 ### Miscellaneous
-* [REST server](docu/src/main/java/de/factoryfx/docu/restserver/usecase.md)<br>Basic jetty server with a jersey REST resource
-* [Lifecycle](docu/src/main/java/de/factoryfx/docu/lifecycle/usecase.md)<br>Lifecycle configuration (start/top/update)
-* [Migration](docu/src/main/java/de/factoryfx/docu/migration/usecase.md)<br>Configuration data migration
-* [Parametrized](docu/src/main/java/de/factoryfx/docu/parametrized/usecase.md)<br>Combining runtime data with factory data
-* [Persistent storage](docu/src/main/java/de/factoryfx/docu/persistentstorage/usecase.md)<br>Persistent configuration data storage using a database
-* [Polymorphism](docu/src/main/java/de/factoryfx/docu/polymorphism/usecase.md)<br>Polymorphic factories
-* [Runtime status](docu/src/main/java/de/factoryfx/docu/runtimestatus/usecase.md)<br>Pass runtime status over updates(e.g request counter)
-* [Update](docu/src/main/java/de/factoryfx/docu/update/usecase.md)<br>Optimise Factory update/Server restart e.g. for liveobjects that need a lot of time for initialization
-* [Monitoring](docu/src/main/java/de/factoryfx/docu/monitoring/usecase.md)<br>Request monitoring data 
-* [Swagger](docu/src/main/java/de/factoryfx/docu/swagger/usecase.md)<br>Swagger example 
-* [Permissions](docu/src/main/java/de/factoryfx/docu/permission/usecase.md)<br>Permissions on attribute level
-* [Custom configuration REST API](docu/src/main/java/de/factoryfx/docu/customconfig/usecase.md)<br>Configuration over a custom REST API
-* [Configuration data](docu/src/main/java/de/factoryfx/docu/configurationdata/usecase.md)<br>How to handle configuration data
-* [User Interface](docu/src/main/java/de/factoryfx/docu/gui/usecase.md)<br>graphical user interface
+* [REST server](docu/src/main/java/de/factoryfx/docu/restserver)<br>Basic jetty server with a jersey REST resource
+* [Lifecycle](docu/src/main/java/de/factoryfx/docu/lifecycle)<br>Lifecycle configuration (start/top/update)
+* [Migration](docu/src/main/java/de/factoryfx/docu/migration)<br>Configuration data migration
+* [Parametrized](docu/src/main/java/de/factoryfx/docu/parametrized)<br>Combining runtime data with factory data
+* [Persistent storage](docu/src/main/java/de/factoryfx/docu/persistentstorage)<br>Persistent configuration data storage using a database
+* [Polymorphism](docu/src/main/java/de/factoryfx/docu/polymorphism)<br>Polymorphic factories
+* [Runtime status](docu/src/main/java/de/factoryfx/docu/runtimestatus)<br>Pass runtime status over updates(e.g request counter)
+* [Update](docu/src/main/java/de/factoryfx/docu/update)<br>Optimise Factory update/Server restart e.g. for liveobjects that need a lot of time for initialization
+* [Monitoring](docu/src/main/java/de/factoryfx/docu/monitoring)<br>Request monitoring data 
+* [Swagger](docu/src/main/java/de/factoryfx/docu/swagger)<br>Swagger example 
+* [Permissions](docu/src/main/java/de/factoryfx/docu/permission)<br>Permissions on attribute level
+* [Custom configuration REST API](docu/src/main/java/de/factoryfx/docu/customconfig)<br>Configuration over a custom REST API
+* [Configuration data](docu/src/main/java/de/factoryfx/docu/configurationdata)<br>How to handle configuration data
+* [User Interface](docu/src/main/java/de/factoryfx/docu/gui)<br>graphical user interface
 
 ## Example
 

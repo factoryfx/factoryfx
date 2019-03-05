@@ -8,6 +8,7 @@ import de.factoryfx.example.server.ServerBuilder;
 import de.factoryfx.example.server.ServerRootFactory;
 import de.factoryfx.example.server.shop.OrderCollector;
 import de.factoryfx.factory.builder.FactoryTreeBuilder;
+import de.factoryfx.factory.builder.MicroserviceBuilder;
 import de.factoryfx.factory.exception.LoggingFactoryExceptionHandler;
 import de.factoryfx.factory.exception.ResettingHandler;
 import de.factoryfx.server.Microservice;
@@ -50,12 +51,13 @@ public class ExampleMain extends Application {
 
 
         FactoryTreeBuilder<OrderCollector, Server, ServerRootFactory, Void> serverBuilder = new ServerBuilder().builder();
-        Microservice<OrderCollector, Server, ServerRootFactory, Void> microservice = serverBuilder.microservice().
+        MicroserviceBuilder<OrderCollector, Server, ServerRootFactory, Void> builder = serverBuilder.microservice().
                 withExceptionHandler(new LoggingFactoryExceptionHandler<>(new ResettingHandler<OrderCollector, Server, ServerRootFactory>())).
-                withInMemoryStorage().build();
+                withInMemoryStorage();
+        Microservice<OrderCollector, Server, ServerRootFactory, Void> microservice = builder.build();
         microservice.start();
 
-        RichClientBuilder.createFactoryBuilder(8089,primaryStage, "", "", Locale.ENGLISH,serverBuilder).
+        RichClientBuilder.createFactoryBuilder(8089,primaryStage, "", "", Locale.ENGLISH,serverBuilder,builder.buildMigrationManager()).
                 microservice().build().start();
 
         try {
