@@ -25,7 +25,12 @@ public class ValueAttributeVisualisationBuilder<T,A extends Attribute<T,A>, AL e
     private final Supplier<A> attributeCreator;
 
     public ValueAttributeVisualisationBuilder(UniformDesign uniformDesign, Class<A> attributeClazz, Class<T> typeClazz, Function<A, AttributeVisualisation> attributeEditorVisualisationCreator, Supplier<A> attributeCreator) {
-        this(uniformDesign,(a)->attributeClazz==a.getClass(),(a)->a.internal_getAttributeType().listItemType==typeClazz,attributeEditorVisualisationCreator,attributeCreator);
+        this(uniformDesign,(a)->attributeClazz==a.getClass(),(a)->{
+            if (a instanceof ValueListAttribute<?,?>){
+                return ((ValueListAttribute<?,?>)a).internal_getItemType()==typeClazz;
+            }
+            return false;
+        },attributeEditorVisualisationCreator,attributeCreator);
     }
 
     public ValueAttributeVisualisationBuilder(UniformDesign uniformDesign, Predicate<Attribute<?,?>> isEditorFor, Predicate<Attribute<?,?>> isListItemEditorFor, Function<A, AttributeVisualisation> attributeEditorVisualisationCreator, Supplier<A> attributeCreator) {

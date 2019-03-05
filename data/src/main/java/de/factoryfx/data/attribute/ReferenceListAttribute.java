@@ -155,13 +155,6 @@ public abstract class ReferenceListAttribute<T extends Data,A extends ReferenceB
         return new CollectionAttributeUtil<>(get(), t -> t.internal().getDisplayText()).getDisplayText();
     }
 
-
-    @Override
-    @JsonIgnore
-    public AttributeTypeInfo internal_getAttributeType() {
-        return new AttributeTypeInfo(List.class,null,null,Data.class, AttributeTypeInfo.AttributeTypeCategory.REFERENCE_LIST);
-    }
-
     @SuppressWarnings("unchecked")
     public List<T> internal_createNewPossibleValues(){
         if (newValuesProviderFromRootAndAttribute!=null) {

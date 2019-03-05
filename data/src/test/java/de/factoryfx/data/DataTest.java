@@ -14,6 +14,7 @@ import de.factoryfx.data.merge.DataMerger;
 import de.factoryfx.data.merge.testdata.ExampleDataA;
 import de.factoryfx.data.merge.testdata.ExampleDataB;
 import de.factoryfx.data.merge.testdata.ExampleDataC;
+import de.factoryfx.data.storage.migration.metadata.DataStorageMetadataDictionary;
 import de.factoryfx.data.util.LanguageText;
 import de.factoryfx.data.validation.AttributeValidation;
 import de.factoryfx.data.validation.ValidationResult;
@@ -692,6 +693,17 @@ public class DataTest {
         ExampleDataA original = new ExampleDataA();
         ExampleDataA copy = original.internal().copy();
         Assertions.assertFalse(original.referenceListAttribute==copy.referenceListAttribute);
+    }
+
+    @Test
+    public void test_collectChildrenDeepFromNode_count(){
+        ExampleDataA original = new ExampleDataA();
+        original.internal().addBackReferences();
+        original.referenceListAttribute.add(new ExampleDataB());
+        original.referenceListAttribute.add(new ExampleDataB());
+        DataStorageMetadataDictionary dataStorageMetadataDictionary = original.internal().createDataStorageMetadataDictionaryFromRoot();
+        Assertions.assertTrue(dataStorageMetadataDictionary.isSingleton(ExampleDataA.class.getName()));
+        Assertions.assertFalse(dataStorageMetadataDictionary.isSingleton(ExampleDataB.class.getName()));
     }
 
 }

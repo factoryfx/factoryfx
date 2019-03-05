@@ -147,12 +147,6 @@ public abstract class ViewReferenceAttribute<R extends Data, T extends Data,A ex
         }
         return referenceDisplayText;
     }
-    
-    @JsonIgnore
-    @Override
-    public AttributeTypeInfo internal_getAttributeType() {
-        return new AttributeTypeInfo(Data.class,null,null, AttributeTypeInfo.AttributeTypeCategory.REFERENCE);
-    }
 
     @Override
     @SuppressWarnings("unchecked")

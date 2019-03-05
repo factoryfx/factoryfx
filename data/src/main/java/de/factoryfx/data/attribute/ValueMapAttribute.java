@@ -44,11 +44,6 @@ public abstract class ValueMapAttribute<K, V, A extends ValueMapAttribute<K,V,A>
     }
 
     @Override
-    public AttributeTypeInfo internal_getAttributeType() {
-        return new AttributeTypeInfo(Map.class,keyType,valueType, AttributeTypeInfo.AttributeTypeCategory.MAP);
-    }
-
-    @Override
     public int size() {
         return this.value.size();
     }

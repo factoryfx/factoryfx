@@ -24,6 +24,7 @@ module de.factoryfx.data {
     exports de.factoryfx.data.storage.filesystem;
     exports de.factoryfx.data.storage.migration;
     exports de.factoryfx.data.storage.migration.metadata;
+    exports de.factoryfx.data.storage.migration.datamigration;
 
     opens de.factoryfx.data.attribute;//open for Jackson
     opens de.factoryfx.data.attribute.primitive;

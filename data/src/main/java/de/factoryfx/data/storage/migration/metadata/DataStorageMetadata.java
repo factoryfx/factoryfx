@@ -13,14 +13,17 @@ import java.util.stream.Collectors;
 
 public class DataStorageMetadata {
     @JsonProperty
-    private final String className;
+    private String className;
     @JsonProperty
     private final List<AttributeStorageMetadata> attributes;
+    @JsonProperty
+    private final long count;
 
     @JsonCreator
-    public DataStorageMetadata(@JsonProperty("attributes") List<AttributeStorageMetadata> attributes, @JsonProperty("className")String className) {
+    public DataStorageMetadata(@JsonProperty("attributes") List<AttributeStorageMetadata> attributes, @JsonProperty("className")String className, @JsonProperty("count")long count) {
         this.attributes=attributes;
         this.className = className;
+        this.count = count;
     }
 
     @Override
@@ -74,5 +77,21 @@ public class DataStorageMetadata {
             }
         }
         return false;
+    }
+
+    public boolean isSingleton(){
+        return count==1;
+    }
+
+    public void renameAttribute(String previousAttributeName, String newAttributeName) {
+        for (AttributeStorageMetadata attribute : attributes) {
+            if (attribute.getVariableName().equals(previousAttributeName)){
+                attribute.rename(newAttributeName);
+            }
+        }
+    }
+
+    public void renameClass(String newNameFullQualified) {
+        className=newNameFullQualified;
     }
 }

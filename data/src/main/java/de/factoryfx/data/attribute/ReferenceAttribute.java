@@ -131,12 +131,6 @@ public abstract class ReferenceAttribute<T extends Data, A extends ReferenceBase
         return referenceDisplayText;
     }
 
-    @Override
-    public AttributeTypeInfo internal_getAttributeType() {
-        return new AttributeTypeInfo(internal_getReferenceClass(),null,null, AttributeTypeInfo.AttributeTypeCategory.REFERENCE);
-    }
-
-
     public void internal_deleteFactory(){
         T removedFactory=get();
         set(null);

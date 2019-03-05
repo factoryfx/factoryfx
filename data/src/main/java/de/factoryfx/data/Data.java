@@ -6,11 +6,13 @@ import com.google.common.collect.Maps;
 import de.factoryfx.data.attribute.*;
 import de.factoryfx.data.merge.AttributeDiffInfo;
 import de.factoryfx.data.merge.MergeResult;
+import de.factoryfx.data.storage.migration.metadata.DataStorageMetadata;
 import de.factoryfx.data.storage.migration.metadata.DataStorageMetadataDictionary;
 import de.factoryfx.data.validation.AttributeValidation;
 import de.factoryfx.data.validation.Validation;
 import de.factoryfx.data.validation.ValidationError;
 
+import java.lang.reflect.Modifier;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -70,12 +72,12 @@ public class Data {
 
     @FunctionalInterface
     public interface TriAttributeVisitor {
-        void accept(String attributeName, Attribute<?,?> attribute1, Attribute<?,?> attribute2, Attribute<?,?> attribute3);
+        void accept(String attributeVariableName, Attribute<?,?> attribute1, Attribute<?,?> attribute2, Attribute<?,?> attribute3);
     }
 
     @FunctionalInterface
     public interface BiAttributeVisitor {
-        void accept(String attributeName, Attribute<?,?> attribute1, Attribute<?,?> attribute2);
+        void accept(String attributeVariableName, Attribute<?,?> attribute1, Attribute<?,?> attribute2);
     }
 
     private void visitAttributesFlat(AttributeVisitor consumer) {
@@ -753,12 +755,36 @@ public class Data {
         }
 
         public DataStorageMetadataDictionary createDataStorageMetadataDictionaryFromRoot(){
-            HashSet<Class<? extends Data>> dataClasses = new HashSet<>();
-            this.collectChildrenDeep().forEach(d->dataClasses.add(d.getClass()));
-            return new DataStorageMetadataDictionary(dataClasses);
+            assertRoot();
+            return data.createDataStorageMetadataDictionaryFromRoot();
         }
     }
 
+    private DataStorageMetadataDictionary createDataStorageMetadataDictionaryFromRoot() {
+        HashMap<Class<? extends Data>,Long> dataClassesToCount = new HashMap<>();
+
+
+        for (Data data : this.collectChildrenDeep()) {
+            Long counter=dataClassesToCount.get(data.getClass());
+            if (counter==null){
+                counter=0L;
+            }
+            counter++;
+            dataClassesToCount.put(data.getClass(),counter);
+        }
+
+        List<DataStorageMetadata> dataStorageMetadataList= new ArrayList<>();
+        ArrayList<Class<? extends Data>> sortedClasses = new ArrayList<>(dataClassesToCount.keySet());
+        sortedClasses.sort(Comparator.comparing(Class::getName));
+        for (Class<? extends Data> clazz : sortedClasses) {
+            if (!Modifier.isAbstract(clazz.getModifiers())){
+                dataStorageMetadataList.add(DataDictionary.getDataDictionary(clazz).createDataStorageMetadata(dataClassesToCount.get(clazz)));
+            }
+        }
+
+        sortedClasses.sort(Comparator.comparing(Class::getName));
+        return new DataStorageMetadataDictionary(dataStorageMetadataList);
+    }
 
     //TODO model path with multiple parents
     private List<Data> getPathFromRoot() {

@@ -346,19 +346,6 @@ public class FactoryBaseTest {
     }
 
     @Test
-    public void test_treebuildername(){
-        ExampleFactoryA factory = new ExampleFactoryA();
-        factory.internalFactory().setTreeBuilderName("EEE");
-        ExampleFactoryA copy=ObjectMapperBuilder.build().copy(factory);
-        Assertions.assertEquals("EEE",factory.internalFactory().getTreeBuilderName());
-
-        System.out.println(ObjectMapperBuilder.build().writeValueAsString(factory));
-
-    }
-
-
-
-    @Test
     public void test_update(){
         XRoot root = new XRoot();
         XFactory xFactory = new XFactory();
@@ -404,4 +391,15 @@ public class FactoryBaseTest {
         ExampleFactoryA copy = original.internal().copy();
         Assertions.assertFalse(original.referenceListAttribute==copy.referenceListAttribute);
     }
+
+
+    @Test
+    public void test_TreeBuilderName_survive_serilisation(){
+        ExampleFactoryA exampleFactoryA = new ExampleFactoryA();
+        exampleFactoryA.internalFactory().setTreeBuilderName("abc");
+
+        ExampleFactoryA copy = ObjectMapperBuilder.build().copy(exampleFactoryA);
+        Assertions.assertEquals("abc",copy.internalFactory().getTreeBuilderName());
+    }
+
 }

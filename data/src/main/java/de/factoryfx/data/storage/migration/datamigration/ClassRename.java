@@ -24,4 +24,8 @@ public class ClassRename implements DataMigration {
             dataJsonNode.renameClass(newDataClass);
         });
     }
+
+    public void updateDataStorageMetadataDictionary(DataStorageMetadataDictionary dataStorageMetadataDictionary) {
+        dataStorageMetadataDictionary.renameClass(previousDataClassNameFullQualified,newDataClass.getName());
+    }
 }

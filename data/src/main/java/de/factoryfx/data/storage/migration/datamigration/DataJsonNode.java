@@ -3,6 +3,10 @@ package de.factoryfx.data.storage.migration.datamigration;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.TextNode;
 import de.factoryfx.data.Data;
+import de.factoryfx.data.jackson.ObjectMapperBuilder;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class DataJsonNode {
     private final ObjectNode jsonNode;
@@ -32,4 +36,14 @@ public class DataJsonNode {
     public void renameClass(Class<? extends Data> newDataClass) {
         jsonNode.set("@class",new TextNode(newDataClass.getName()));
     }
+
+    public DataJsonNode getChild(String attributeName) {
+        System.out.println(attributeName);
+        return new DataJsonNode((ObjectNode)jsonNode.get(attributeName).get("v"));
+    }
+
+    public <V> V getAttributeValue(String attributeName, Class<V> valueClass) {
+        return ObjectMapperBuilder.build().treeToValue(jsonNode.get(attributeName).get("v"), valueClass);
+    }
+
 }

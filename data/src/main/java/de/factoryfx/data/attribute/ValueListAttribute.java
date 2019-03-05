@@ -21,6 +21,10 @@ public class ValueListAttribute<T, A extends Attribute<List<T>,A>> extends Immut
         this.value = new ArrayList<>();
     }
 
+    public Class<T> internal_getItemType() {
+        return itemType;
+    }
+
     private void afterModify(){
         if (listeners!=null) {
             for (AttributeChangeListener<List<T>, A> listener : listeners) {
@@ -38,11 +42,6 @@ public class ValueListAttribute<T, A extends Attribute<List<T>,A>> extends Immut
     @Override
     public String getDisplayText() {
         return new CollectionAttributeUtil<>(this.value, Object::toString).getDisplayText();
-    }
-
-    @Override
-    public AttributeTypeInfo internal_getAttributeType() {
-        return new AttributeTypeInfo(Set.class,null,null,itemType, AttributeTypeInfo.AttributeTypeCategory.COLLECTION);
     }
 
     @Override

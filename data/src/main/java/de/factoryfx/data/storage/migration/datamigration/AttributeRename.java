@@ -32,12 +32,16 @@ public class AttributeRename<D extends Data>  implements DataMigration {
 
     public boolean canMigrate(DataStorageMetadataDictionary dataStorageMetadataDictionary){
         return dataStorageMetadataDictionary.containsClass(dataClassNameFullQualified) &&
-                dataStorageMetadataDictionary.containsAttribute(dataClassNameFullQualified,previousAttributeName);
+               dataStorageMetadataDictionary.containsAttribute(dataClassNameFullQualified,previousAttributeName);
     }
 
     public void migrate(List<DataJsonNode> dataJsonNodes) {
         dataJsonNodes.stream().filter(dataJsonNode -> dataJsonNode.match(dataClassNameFullQualified)).forEach(dataJsonNode -> {
             dataJsonNode.renameAttribute(previousAttributeName,newAttributeName);
         });
+    }
+
+    public void updateDataStorageMetadataDictionary(DataStorageMetadataDictionary dataStorageMetadataDictionary) {
+        dataStorageMetadataDictionary.renameAttribute(dataClassNameFullQualified,previousAttributeName,newAttributeName);
     }
 }

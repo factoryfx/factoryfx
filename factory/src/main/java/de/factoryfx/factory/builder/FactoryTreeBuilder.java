@@ -76,7 +76,7 @@ public class FactoryTreeBuilder<V,L,R extends FactoryBase<L,V,R>,S> {
     }
 
     public <LO, FO extends FactoryBase<LO,?,R>> FO buildSubTree(Class<FO> factoryClazz){
-        return factoryContext.get(factoryClazz);
+        return factoryContext.getNew(factoryClazz);
     }
 
     public <LO, FO extends FactoryBase<LO,?,R>> List<FO> buildSubTrees(Class<FO> factoryClazz){
@@ -93,7 +93,7 @@ public class FactoryTreeBuilder<V,L,R extends FactoryBase<L,V,R>,S> {
     }
 
     public MicroserviceBuilder<V,L,R,S> microservice(){
-        return new MicroserviceBuilder<>(this.rootClass,this.buildTree());
+        return new MicroserviceBuilder<>(this.rootClass,this.buildTree(),this);
     }
 
 }

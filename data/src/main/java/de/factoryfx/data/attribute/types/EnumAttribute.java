@@ -5,7 +5,6 @@ import java.util.function.Function;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import de.factoryfx.data.attribute.AttributeTypeInfo;
 import de.factoryfx.data.attribute.ImmutableValueAttribute;
 import de.factoryfx.data.util.LanguageText;
 
@@ -19,12 +18,6 @@ public class EnumAttribute<E extends Enum<E>> extends ImmutableValueAttribute<E,
     public EnumAttribute(Class<E> clazz) {
         super(null);  //null is fine cause internal_getAttributeType override
         this.clazz=clazz;
-    }
-
-    @Override
-    public AttributeTypeInfo internal_getAttributeType() {
-
-        return new AttributeTypeInfo(clazz,null,null,AttributeTypeInfo.AttributeTypeCategory.VALUE);
     }
 
     public List<E> internal_possibleEnumValues() {

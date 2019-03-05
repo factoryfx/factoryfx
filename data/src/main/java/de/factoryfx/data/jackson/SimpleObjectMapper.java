@@ -102,7 +102,7 @@ public class SimpleObjectMapper {
     }
 
 
-    public <R extends Data> R treeToValue(JsonNode jsonNode, Class<R> rootClass) {
+    public <T> T treeToValue(JsonNode jsonNode, Class<T> rootClass) {
         try {
             return objectMapper.treeToValue(jsonNode,rootClass);
         } catch (IOException e) {
