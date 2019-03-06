@@ -357,18 +357,6 @@ project(':javafxDataEditing') {
         testCompile group: 'javax.activation', name: 'javax.activation-api', version: '1.2.0'
     }
 
-    compileTestJava {
-        inputs.property("moduleName", "de.factoryfx.$project.name")
-        doFirst {
-            options.compilerArgs = [
-                    '--module-path', classpath.asPath,
-                    '--add-modules', 'junit',
-                    '--add-reads', "$moduleName=junit",
-                    '--patch-module', "$moduleName=" + files(sourceSets.test.java.srcDirs).asPath,
-            ]
-            classpath = files()
-        }
-    }
 
 }
 
