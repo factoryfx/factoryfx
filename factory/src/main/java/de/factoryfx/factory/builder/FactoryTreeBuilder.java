@@ -75,8 +75,20 @@ public class FactoryTreeBuilder<V,L,R extends FactoryBase<L,V,R>,S> {
         return rootFactory;
     }
 
-    public <LO, FO extends FactoryBase<LO,?,R>> FO buildSubTree(Class<FO> factoryClazz){
+    /**
+     *  the passed factoryClazz ist created new even if they is declared as Singleton
+     *
+     * @param factoryClazz factory
+     * @param <LO> liveobject
+     * @param <FO> factory result
+     * @return factory
+     */
+    public <LO, FO extends FactoryBase<LO,?,R>> FO buildNewSubTree(Class<FO> factoryClazz){
         return factoryContext.getNew(factoryClazz);
+    }
+
+    public <LO, FO extends FactoryBase<LO,?,R>> FO buildSubTree(Class<FO> factoryClazz){
+        return factoryContext.get(factoryClazz);
     }
 
     public <LO, FO extends FactoryBase<LO,?,R>> List<FO> buildSubTrees(Class<FO> factoryClazz){
