@@ -30,25 +30,15 @@ import java.util.Locale;
 
 public class ExampleMain extends Application {
     //Vm-options:
-//--add-exports=javafx.base/com.sun.javafx.runtime=controlsfx
-//--add-exports=javafx.graphics/com.sun.javafx.css=controlsfx
-//--add-exports=javafx.base/com.sun.javafx.event=controlsfx
-//--add-exports=javafx.graphics/com.sun.javafx.scene.traversal=controlsfx
-//--add-exports=javafx.graphics/com.sun.javafx.scene=controlsfx
-//--add-exports=javafx.controls/com.sun.javafx.scene.control=controlsfx
-//--add-exports=javafx.base/com.sun.javafx.collections=controlsfx
+//--add-exports=javafx.base/com.sun.javafx.runtime=org.controlsfx.controls
+//--add-exports=javafx.graphics/com.sun.javafx.css=org.controlsfx.controls
+//--add-exports=javafx.base/com.sun.javafx.event=org.controlsfx.controls
+//--add-exports=javafx.graphics/com.sun.javafx.scene.traversal=org.controlsfx.controls
+//--add-exports=javafx.graphics/com.sun.javafx.scene=org.controlsfx.controls
+//--add-exports=javafx.controls/com.sun.javafx.scene.control=org.controlsfx.controls
+//--add-exports=javafx.base/com.sun.javafx.collections=org.controlsfx.controls
     @Override
     public void start(Stage primaryStage){
-//        Stage.getWindows().filtered(window -> window.isShowing()).forEach(window -> {
-//            window.getScene().getStylesheets().add()
-//        });
-
-        Stage.getWindows().addListener((ListChangeListener<Window>) window -> {
-            if (window.next()) {
-                window.getAddedSubList().forEach(w->w.getScene().getStylesheets().add(GlyphFont.class.getResource("glyphfont.css").toExternalForm()));
-            }
-        });
-
 
         FactoryTreeBuilder<OrderCollector, Server, ServerRootFactory, Void> serverBuilder = new ServerBuilder().builder();
         MicroserviceBuilder<OrderCollector, Server, ServerRootFactory, Void> builder = serverBuilder.microservice().

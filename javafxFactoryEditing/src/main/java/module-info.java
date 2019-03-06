@@ -1,6 +1,4 @@
 module de.factoryfx.javafxFactoryEditing {
-    requires controlsfx;
-
     requires transitive de.factoryfx.factory;
     requires transitive de.factoryfx.javafxDataEditing;
     requires transitive de.factoryfx.microserviceRestClient;

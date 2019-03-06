@@ -7,7 +7,6 @@ open module de.factoryfx.example {
     requires java.desktop;
     requires jackson.annotations;
     requires java.ws.rs;
-    requires controlsfx;
     requires org.eclipse.jetty.server;
 
     requires javafx.base;

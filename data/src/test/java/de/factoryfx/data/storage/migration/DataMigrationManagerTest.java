@@ -40,7 +40,7 @@ public class DataMigrationManagerTest {
         root.referenceListAttribute.add(new ExampleDataB());
         root.referenceListAttribute.add(new ExampleDataB());
 
-        DataMigrationManager dataMigrationManager = new DataMigrationManager((root1, oldDataStorageMetadataDictionary) -> { },ExampleDataA.class);
+        DataMigrationManager<ExampleDataA> dataMigrationManager = new DataMigrationManager<>((root1, oldDataStorageMetadataDictionary) -> { },ExampleDataA.class);
         List<DataJsonNode> jsonNodes = new JsonDataUtility().readDataList(ObjectMapperBuilder.build().readTree(ObjectMapperBuilder.build().writeValueAsString(root)));
         Assertions.assertEquals(5,jsonNodes.size());
     }
@@ -53,7 +53,7 @@ public class DataMigrationManagerTest {
         root.referenceListAttribute.add(exampleDataB);
         root.referenceAttribute.set(exampleDataB);
 
-        DataMigrationManager dataMigrationManager = new DataMigrationManager((root1, oldDataStorageMetadataDictionary) -> { },ExampleDataA.class);
+        DataMigrationManager<ExampleDataA> dataMigrationManager = new DataMigrationManager<>((root1, oldDataStorageMetadataDictionary) -> { },ExampleDataA.class);
         List<DataJsonNode> jsonNodes = new JsonDataUtility().readDataList(ObjectMapperBuilder.build().readTree(ObjectMapperBuilder.build().writeValueAsString(root)));
         Assertions.assertEquals(3,jsonNodes.size());
     }

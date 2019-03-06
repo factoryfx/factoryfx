@@ -28,7 +28,7 @@ public class FileSystemDataStorageHistoryTest {
 
 
     private MigrationManager<ExampleDataA,Void> createSerialisation(){
-        return new MigrationManager<>(ExampleDataA.class, List.of(), GeneralStorageMetadataBuilder.build(), new DataMigrationManager((root1, oldDataStorageMetadataDictionary) -> { },ExampleDataA.class), ObjectMapperBuilder.build());
+        return new MigrationManager<>(ExampleDataA.class, List.of(), GeneralStorageMetadataBuilder.build(), new DataMigrationManager<>((root1, oldDataStorageMetadataDictionary) -> { },ExampleDataA.class), ObjectMapperBuilder.build());
     }
 
 

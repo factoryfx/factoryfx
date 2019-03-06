@@ -1,5 +1,4 @@
 module de.factoryfx.javascriptDataEditing {
-    requires controlsfx;
     requires javafx.base;
     requires javafx.controls;
     requires closure.compiler.unshaded.v20170218;

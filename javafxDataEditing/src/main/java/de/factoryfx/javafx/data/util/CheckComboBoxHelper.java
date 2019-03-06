@@ -6,9 +6,9 @@ import javafx.beans.value.ChangeListener;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Skin;
 
+import javafx.scene.control.SkinBase;
 import org.controlsfx.control.CheckComboBox;
 
-import impl.org.controlsfx.skin.CheckComboBoxSkin;
 
 public class CheckComboBoxHelper {
 
@@ -16,7 +16,7 @@ public class CheckComboBoxHelper {
     public static <T> void addOpenCloseListener(CheckComboBox<T> comboBox, Consumer<CheckComboBox<T>> listener){
         comboBox.skinProperty().addListener((ChangeListener<Skin>) (skinObs, oldVal, newVal) -> {
             if (oldVal == null && newVal != null) {
-                CheckComboBoxSkin skin = (CheckComboBoxSkin) newVal;
+                SkinBase skin = (SkinBase) newVal;
                 ComboBox combo = (ComboBox) skin.getChildren().get(0);
                 combo.showingProperty().addListener((obs, hidden, showing) -> listener.accept(comboBox));
             }

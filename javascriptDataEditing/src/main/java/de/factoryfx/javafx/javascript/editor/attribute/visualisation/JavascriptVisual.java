@@ -10,11 +10,11 @@ import com.google.javascript.jscomp.CheckLevel;
 import com.google.javascript.jscomp.JSError;
 import com.google.javascript.jscomp.SourceFile;
 import de.factoryfx.javascript.data.attributes.types.Javascript;
-import impl.org.controlsfx.skin.AutoCompletePopup;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.WeakChangeListener;
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
 import javafx.scene.Node;
@@ -55,7 +55,7 @@ public class JavascriptVisual<A> {
 
         final CodeArea codeArea = new CodeArea();
         final ListView<JSError> errorsAndWarnings = new ListView<>();
-        final ContentAssistPopup popup = new ContentAssistPopup();
+//        final ContentAssistPopup popup = new ContentAssistPopup();
         final ChangeListener<Javascript<A>> onUpdateScript;
         NavigableMap<Integer, List<Proposal>> currentProposals;
 
@@ -74,7 +74,7 @@ public class JavascriptVisual<A> {
             boundTo.addListener(new WeakChangeListener<>(onUpdateScript));
             codeArea.onKeyPressedProperty().set(this::handleKeys);
             codeArea.onKeyReleasedProperty().set(this::handleKeys);
-            codeArea.setPopupWindow(popup);
+//            codeArea.setPopupWindow(popup);
             if (boundTo.get() != null)
                 codeArea.insertText(0,boundTo.get().getCode());
             codeArea.textProperty().addListener((a,b,newValue)->{
@@ -146,21 +146,21 @@ public class JavascriptVisual<A> {
         }
 
         private void handleKeys(KeyEvent keyEvent) {
-            if (keyEvent.getEventType() == KeyEvent.KEY_PRESSED && keyEvent.isControlDown() && keyEvent.getCode() == KeyCode.SPACE ) {
-                if (!popup.isShowing()) {
-                    popup.show(this.sceneProperty().get().getWindow());
-                    updateProposals();
-                }
-            }
-            if (popup.isShowing()) {
-                if ( keyEvent.getEventType() == KeyEvent.KEY_RELEASED &&
-                     keyEvent.getCode() != KeyCode.UP &&
-                     keyEvent.getCode() != KeyCode.DOWN) {
-                    updateProposals();
-                }
-                if (popup.getSuggestions().isEmpty())
-                    popup.hide();
-            }
+//            if (keyEvent.getEventType() == KeyEvent.KEY_PRESSED && keyEvent.isControlDown() && keyEvent.getCode() == KeyCode.SPACE ) {
+//                if (!popup.isShowing()) {
+//                    popup.show(this.sceneProperty().get().getWindow());
+//                    updateProposals();
+//                }
+//            }
+//            if (popup.isShowing()) {
+//                if ( keyEvent.getEventType() == KeyEvent.KEY_RELEASED &&
+//                     keyEvent.getCode() != KeyCode.UP &&
+//                     keyEvent.getCode() != KeyCode.DOWN) {
+//                    updateProposals();
+//                }
+//                if (popup.getSuggestions().isEmpty())
+//                    popup.hide();
+//            }
         }
 
         private void updateProposals() {
@@ -183,11 +183,11 @@ public class JavascriptVisual<A> {
             Consumer<String> applySuggestion = s -> {
                 codeArea.replaceText(from, to, s);
             };
-            popup.onSuggestionProperty().setValue(v->{
-                applySuggestion.accept(v.getSuggestion());
-                popup.hide();
-            });
-            popup.getSuggestions().clear();
+//            popup.onSuggestionProperty().setValue(v -> {
+//                        applySuggestion.accept(v.getSuggestion());
+//                        popup.hide();
+//                    });
+//            popup.getSuggestions().clear();
 
             //TODO list is just workaround, finde better way with closure compiler
             List<String> garbageSuggestions = new ArrayList<>();
@@ -204,13 +204,13 @@ public class JavascriptVisual<A> {
             garbageSuggestions.add("constructor");
             List<String> suggestions = copy.stream().map(s -> s.insertString).filter(s -> !garbageSuggestions.contains(s)).collect(Collectors.toList());
 
-            popup.getSuggestions().addAll(suggestions);
-            popup.unselect();
-            for (String suggestion : suggestions) {
-                if (suggestion.startsWith(prefix)) {
-                    popup.selectItem(suggestion);
-                }
-            }
+//            popup.getSuggestions().addAll(suggestions);
+//            popup.unselect();
+//            for (String suggestion : suggestions) {
+//                if (suggestion.startsWith(prefix)) {
+//                    popup.selectItem(suggestion);
+//                }
+//            }
         }
 
         private void updateAssistants(Javascript<?> javascript) {
@@ -270,20 +270,20 @@ public class JavascriptVisual<A> {
         return new RootNode<A>(externs,boundTo);
     }
 
-    static final class ContentAssistPopup extends AutoCompletePopup<String> {
-
-        public void selectItem(String item) {
-            ((ContentAssistPopupSkin)getSkin()).selectItem(item);
-        }
-
-        @Override
-        protected Skin<?> createDefaultSkin() {
-            return new ContentAssistPopupSkin(this);
-        }
-
-        public void unselect() {
-            ((ContentAssistPopupSkin)getSkin()).unselect();
-        }
-    }
+//    static final class ContentAssistPopup extends AutoCompletePopup<String> {
+//
+//        public void selectItem(String item) {
+//            ((ContentAssistPopupSkin)getSkin()).selectItem(item);
+//        }
+//
+//        @Override
+//        protected Skin<?> createDefaultSkin() {
+//            return new ContentAssistPopupSkin(this);
+//        }
+//
+//        public void unselect() {
+//            ((ContentAssistPopupSkin)getSkin()).unselect();
+//        }
+//    }
 
 }

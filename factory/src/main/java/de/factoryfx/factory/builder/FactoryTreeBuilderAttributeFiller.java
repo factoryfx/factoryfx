@@ -32,7 +32,7 @@ public class FactoryTreeBuilderAttributeFiller<V,L,R extends FactoryBase<L,V,R>,
             });
             if (containsNewAttributes[0]){
                 Class aClass = data.getClass();
-                FactoryBase<?, ?, R> newBuild = factoryTreeBuilder.buildSubTree(aClass);
+                FactoryBase<?, ?, R> newBuild = factoryTreeBuilder.buildNewSubTree(aClass);
 
                 data.internal().visitAttributesDualFlat(newBuild, (attributeVariableName, newAttribute, buildedAttribute) -> {
                     if (!oldDataStorageMetadataDictionary.containsAttribute(data.getClass().getName(), attributeVariableName)) {//is new Attribute

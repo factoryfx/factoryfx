@@ -318,7 +318,7 @@ public class MigrationManagerTest {
                 "  \"referenceListAttribute\" : [ ]\n" +
                 "}";
 
-        DataMigrationManager migrations = new DataMigrationManager<>((root1, oldDataStorageMetadataDictionary) -> { },ExampleDataA.class);
+        DataMigrationManager<ExampleDataA> migrations = new DataMigrationManager<>((root1, oldDataStorageMetadataDictionary) -> { },ExampleDataA.class);
         migrations.renameClass("de.factoryfx.data.merge.testdata.WrongNameExampleDataA",ExampleDataA.class);
 
         GeneralStorageMetadata generalStorageMetadata = new GeneralStorageMetadata(1, 0);

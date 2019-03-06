@@ -2,10 +2,10 @@ module de.factoryfx.javafxDataEditing {
     requires transitive javafx.graphics;
     requires transitive javafx.controls;
     requires transitive de.factoryfx.data;
-    requires controlsfx;
     requires transitive javafx.web;
     requires transitive javafx.fxml;
     requires com.google.common;
+    requires transitive org.controlsfx.controls;
 
     exports de.factoryfx.javafx.data.attribute;
     exports de.factoryfx.javafx.data.editor.attribute;

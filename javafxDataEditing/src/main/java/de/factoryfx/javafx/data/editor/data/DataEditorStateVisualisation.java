@@ -7,12 +7,13 @@ import de.factoryfx.data.validation.ValidationError;
 import de.factoryfx.javafx.data.editor.attribute.AttributeVisualisationMappingBuilder;
 import de.factoryfx.javafx.data.util.DataObservableDisplayText;
 import de.factoryfx.javafx.data.util.UniformDesign;
-import impl.org.controlsfx.skin.BreadCrumbBarSkin;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.*;
 import org.controlsfx.control.BreadCrumbBar;
 import org.controlsfx.glyphfont.FontAwesome;
 
@@ -71,7 +72,7 @@ public class DataEditorStateVisualisation extends BorderPane {
     }
 
     private Node createNavigation(List<Data> displayedEntities, Data currentData, Optional<Data> previousData, Optional<Data> nextData){
-        BreadCrumbBarWidthFixed<Data> breadCrumbBar = new BreadCrumbBarWidthFixed<>();
+        BreadCrumbBar<Data> breadCrumbBar = new BreadCrumbBar<>();
 
 
         ScrollPane scrollPaneBreadCrumbBar = new ScrollPane();
@@ -89,7 +90,10 @@ public class DataEditorStateVisualisation extends BorderPane {
         });
 
         breadCrumbBar.setCrumbFactory(param -> {
-            BreadCrumbBarSkin.BreadCrumbButton breadCrumbButton = new BreadCrumbBarSkin.BreadCrumbButton("");
+//            Button BreadCrumbButton breadCrumbButton = new BreadCrumbBarSkin.BreadCrumbButton("");
+            Button breadCrumbButton = new Button();
+            breadCrumbButton.setStyle("-fx-background-radius: 0");
+
             if (param.getValue()!=null){
                 breadCrumbButton.textProperty().bind(new DataObservableDisplayText(param.getValue()).get());
             }
