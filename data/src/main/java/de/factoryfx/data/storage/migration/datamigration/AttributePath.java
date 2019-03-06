@@ -1,6 +1,8 @@
 package de.factoryfx.data.storage.migration.datamigration;
 
 
+import de.factoryfx.data.Data;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,15 +15,25 @@ public class AttributePath<V> {
         this.path=path;
     }
 
-    public V resolve(DataJsonNode node) {
-        DataJsonNode current = node;
+    public V resolve(DataJsonNode root) {
+        DataJsonNode current = root;
 
         List<String> path = new ArrayList<>(this.path);
         String attribute = path.remove(path.size() - 1);
         for (String pathElement : path) {
             current = current.getChild(pathElement);
         }
-        return current.getAttributeValue(attribute, valueClass);
+        if (Data.class.isAssignableFrom(valueClass) && current.isIdReference(attribute)) {
+            String id= current.getAttributeIdValue(attribute);
+            for (DataJsonNode dataJsonNode : root.collectChildrenFromRoot()) { //TODO optimize performance, maybe IdToDataJsonNode Map
+                if (id.equals(dataJsonNode.getId())){
+                    return dataJsonNode.asData(valueClass);
+                }
+            }
+            throw new IllegalStateException("can't find id: "+id);
+        } else {
+            return current.getAttributeValue(attribute, valueClass);
+        }
     }
 
 

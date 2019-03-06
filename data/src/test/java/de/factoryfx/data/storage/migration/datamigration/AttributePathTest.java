@@ -40,4 +40,22 @@ public class AttributePathTest {
         Assertions.assertEquals("1234", referenceAttribute.stringAttribute.get());
     }
 
+
+    @Test
+    public void test_resolve_data_ref_id(){
+        ExampleDataA exampleDataA = new ExampleDataA();
+        exampleDataA.stringAttribute.set("1234");
+
+        ExampleDataB exampleDataB = new ExampleDataB();
+        exampleDataA.referenceAttribute.set(exampleDataB);
+        exampleDataB.referenceAttribute.set(exampleDataA);
+
+
+        DataJsonNode root = new DataJsonNode((ObjectNode) ObjectMapperBuilder.build().writeValueAsTree(exampleDataA));
+
+
+        ExampleDataA referenceAttribute = PathBuilder.value(ExampleDataA.class).pathElement("referenceAttribute").attribute("referenceAttribute").resolve(root);
+        Assertions.assertEquals("1234", referenceAttribute.stringAttribute.get());
+    }
+
 }

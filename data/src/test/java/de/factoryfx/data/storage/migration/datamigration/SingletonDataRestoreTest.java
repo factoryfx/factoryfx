@@ -1,5 +1,6 @@
 package de.factoryfx.data.storage.migration.datamigration;
 
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import de.factoryfx.data.jackson.ObjectMapperBuilder;
 import de.factoryfx.data.merge.testdata.ExampleDataA;
 import de.factoryfx.data.merge.testdata.ExampleDataB;
@@ -35,7 +36,7 @@ public class SingletonDataRestoreTest {
         valueMigrated.stringAttribute.set("");
         exampleDataAMigrated.referenceAttribute.set(valueMigrated);
 
-        singletonAttributeMove.migrate(new JsonDataUtility().readDataList(ObjectMapperBuilder.build().readTree(input)),exampleDataAMigrated);
+        singletonAttributeMove.migrate(new DataJsonNode((ObjectNode) ObjectMapperBuilder.build().readTree(input)).collectChildrenFromRoot(),exampleDataAMigrated);
 
 
         Assertions.assertEquals("1234",exampleDataAMigrated.referenceAttribute.get().stringAttribute.get());

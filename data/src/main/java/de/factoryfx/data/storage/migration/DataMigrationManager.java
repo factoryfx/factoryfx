@@ -43,8 +43,9 @@ public class DataMigrationManager<R extends Data> {
         restorations2.add(new PathDataRestore<>(path,valueClass,setter));
     }
 
-    R migrate(JsonNode jsonNode, DataStorageMetadataDictionary dataStorageMetadataDictionary){
-        List<DataJsonNode> dataJsonNodes = new JsonDataUtility().readDataList(jsonNode);
+    R migrate(JsonNode rootNode, DataStorageMetadataDictionary dataStorageMetadataDictionary){
+        DataJsonNode rootDataJson = new DataJsonNode((ObjectNode) rootNode);
+        List<DataJsonNode> dataJsonNodes = rootDataJson.collectChildrenFromRoot();
         for (DataMigration migration : dataMigrations) {
             if (migration.canMigrate(dataStorageMetadataDictionary)) {
                 migration.migrate(dataJsonNodes);
@@ -52,7 +53,7 @@ public class DataMigrationManager<R extends Data> {
             }
         }
 
-        R root = ObjectMapperBuilder.build().treeToValue(jsonNode,rootClass);
+        R root = ObjectMapperBuilder.build().treeToValue(rootNode,rootClass);
         root.internal().addBackReferences();
 
         attributeFiller.fillNewAttributes(root,dataStorageMetadataDictionary);
@@ -67,7 +68,7 @@ public class DataMigrationManager<R extends Data> {
         for (PathDataRestore<R,?> restoration : restorations2) {
             DataStorageMetadataDictionary currentDataStorageMetadataDictionaryFromRoot = root.internal().createDataStorageMetadataDictionaryFromRoot();
             if (restoration.canMigrate(dataStorageMetadataDictionary,currentDataStorageMetadataDictionaryFromRoot)) {
-                restoration.migrate(new DataJsonNode((ObjectNode)jsonNode),root);
+                restoration.migrate(rootDataJson,root);
             }
         }
         return root;
