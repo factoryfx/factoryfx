@@ -133,8 +133,8 @@ public class RestoreMigrationTest {
             Microservice<Void, Void, ServerFactory, Void> msNew = builder.microservice().withFilesystemStorage(folder)
                     .withDataMigration((dataMigrationManager) -> {
                         dataMigrationManager.renameAttribute(ClientSystemFactory.class, "url", (c) -> c.clientUrl);
-                        dataMigrationManager.restoreAttribute(PathBuilder.value(String.class).pathElement("partnerFactory1").attribute("url"), String.class, (r, v) -> r.clientSystemFactory1.get().partnerUrl.set(v));
-                        dataMigrationManager.restoreAttribute(PathBuilder.value(String.class).pathElement("partnerFactory2").attribute("url"), String.class, (r, v) -> r.clientSystemFactory2.get().partnerUrl.set(v));
+                        dataMigrationManager.restoreAttribute(PathBuilder.value(String.class).pathElement("partnerFactory1").attribute("url"), (r, v) -> r.clientSystemFactory1.get().partnerUrl.set(v));
+                        dataMigrationManager.restoreAttribute(PathBuilder.value(String.class).pathElement("partnerFactory2").attribute("url"), (r, v) -> r.clientSystemFactory2.get().partnerUrl.set(v));
                     })
                     .build();
             msNew.start();

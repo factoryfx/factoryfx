@@ -217,7 +217,7 @@ public class MigrationManagerTest {
     public void test_renameAttribute() {
 
         String oldDictionary =   "{\n" +
-                                 "  \"dataStorageMetadataList\" : [ {\n" +
+                                 "  \"dataList\" : [ {\n" +
                                  "    \"attributes\" : [ {\n" +
                                  "      \"variableName\" : \"wrongName\",\n" +
                                  "      \"attributeClassName\" : \"de.factoryfx.data.attribute.types.StringAttribute\"\n" +
@@ -274,7 +274,7 @@ public class MigrationManagerTest {
     public void read_renameClass() {
 
         String oldDictionary =   "{\n" +
-                "  \"dataStorageMetadataList\" : [ {\n" +
+                "  \"dataList\" : [ {\n" +
                 "    \"attributes\" : [ {\n" +
                 "      \"variableName\" : \"stringAttribute\",\n" +
                 "      \"attributeClassName\" : \"de.factoryfx.data.attribute.types.StringAttribute\"\n" +

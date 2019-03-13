@@ -4,6 +4,8 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import de.factoryfx.data.jackson.ObjectMapperBuilder;
 import de.factoryfx.data.merge.testdata.ExampleDataA;
 import de.factoryfx.data.merge.testdata.ExampleDataB;
+import de.factoryfx.data.storage.migration.metadata.DataStorageMetadataDictionary;
+import de.factoryfx.data.storage.migration.metadata.ExampleDataAPrevious;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -40,6 +42,17 @@ public class AttributePathTest {
         Assertions.assertEquals("1234", referenceAttribute.stringAttribute.get());
     }
 
+    @Test
+    public void test_resolve_to_null(){
+        ExampleDataA exampleDataA = new ExampleDataA();
+        exampleDataA.referenceAttribute.set(null);
+
+
+        ExampleDataB referenceAttribute = PathBuilder.value(ExampleDataB.class).attribute("referenceAttribute").resolve(new DataJsonNode((ObjectNode) ObjectMapperBuilder.build().writeValueAsTree(exampleDataA)));
+        assertNull(referenceAttribute);
+    }
+
+
 
     @Test
     public void test_resolve_data_ref_id(){
@@ -57,5 +70,35 @@ public class AttributePathTest {
         ExampleDataA referenceAttribute = PathBuilder.value(ExampleDataA.class).pathElement("referenceAttribute").attribute("referenceAttribute").resolve(root);
         Assertions.assertEquals("1234", referenceAttribute.stringAttribute.get());
     }
+
+
+    @Test
+    public void test_remove_path_check(){
+        ExampleDataAPrevious root = new ExampleDataAPrevious();
+        root.stringAttribute.set("1234");
+
+        root.internal().addBackReferences();
+        DataStorageMetadataDictionary dictionary = root.internal().createDataStorageMetadataDictionaryFromRoot();
+        dictionary.renameClass("de.factoryfx.data.storage.migration.metadata.ExampleDataAPrevious",ExampleDataA.class.getName());
+
+        dictionary.markRemovedAttributes();
+
+        Assertions.assertTrue(PathBuilder.value(ExampleDataA.class).attribute("garbage").isPathToRemovedAttribute(dictionary));
+    }
+
+    @Test
+    public void test_markRemovedAttributes_removedClass(){
+        ExampleDataAPrevious root = new ExampleDataAPrevious();
+        root.stringAttribute.set("1234");
+
+        root.internal().addBackReferences();
+        DataStorageMetadataDictionary dictionary = root.internal().createDataStorageMetadataDictionaryFromRoot();
+        dictionary.renameClass("de.factoryfx.data.storage.migration.metadata.ExampleDataAPrevious","a.b.c.Removed");
+
+        dictionary.markRemovedAttributes();
+
+        Assertions.assertTrue(PathBuilder.value(ExampleDataA.class).attribute("garbage").isPathToRemovedAttribute(dictionary));
+    }
+
 
 }

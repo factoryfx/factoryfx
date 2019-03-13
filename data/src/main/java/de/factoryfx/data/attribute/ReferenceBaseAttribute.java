@@ -2,6 +2,7 @@ package de.factoryfx.data.attribute;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import de.factoryfx.data.Data;
+import de.factoryfx.data.storage.migration.metadata.AttributeStorageMetadata;
 
 import java.util.*;
 import java.util.function.BiConsumer;
@@ -213,5 +214,8 @@ public abstract class ReferenceBaseAttribute<T extends Data, U, A extends Refere
 
     private boolean catalogueBased =false;
 
-
+    @Override
+    public AttributeStorageMetadata createAttributeStorageMetadata(String variableName) {
+        return new AttributeStorageMetadata(variableName,getClass().getName(),true, clazz.getName());
+    }
 }

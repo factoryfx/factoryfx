@@ -18,7 +18,7 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id", resolver = DataObjectIdResolver.class)
 @JsonTypeInfo(use=JsonTypeInfo.Id.CLASS, include=JsonTypeInfo.As.PROPERTY, property="@class")// minimal class don't work always
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Data {
@@ -783,7 +783,7 @@ public class Data {
         }
 
         sortedClasses.sort(Comparator.comparing(Class::getName));
-        return new DataStorageMetadataDictionary(dataStorageMetadataList);
+        return new DataStorageMetadataDictionary(dataStorageMetadataList,this.getClass().getName());
     }
 
     //TODO model path with multiple parents

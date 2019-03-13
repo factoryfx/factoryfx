@@ -2,23 +2,25 @@ package de.factoryfx.data.storage.migration;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.google.common.base.Throwables;
 import de.factoryfx.data.Data;
+import de.factoryfx.data.DataObjectIdResolver;
 import de.factoryfx.data.attribute.Attribute;
 import de.factoryfx.data.jackson.ObjectMapperBuilder;
 import de.factoryfx.data.storage.migration.datamigration.*;
 import de.factoryfx.data.storage.migration.metadata.DataStorageMetadataDictionary;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 
 public class DataMigrationManager<R extends Data> {
 
-    List<DataMigration> dataMigrations =new ArrayList<>();
+    List<AttributeRename> renameAttributeMigrations =new ArrayList<>();
+    List<ClassRename> renameClassMigrations =new ArrayList<>();
     private final Class<R> rootClass;
-    List<SingletonDataRestore<R,?>> restorations = new ArrayList<>();
-    List<PathDataRestore<R,?>> restorations2 = new ArrayList<>();
+    List<SingletonDataRestore<R,?>> singletonBasedRestorations = new ArrayList<>();
+    List<PathDataRestore<R,?>> pathBasedRestorations = new ArrayList<>();
 
 
     private final AttributeFiller<R> attributeFiller;
@@ -28,46 +30,64 @@ public class DataMigrationManager<R extends Data> {
     }
 
     public <D extends Data> void renameAttribute(Class<D> dataClass, String previousAttributeName, Function<D, Attribute<?,?>> attributeNameProvider){
-        dataMigrations.add(new AttributeRename<>(dataClass,previousAttributeName,attributeNameProvider));
+        renameAttributeMigrations.add(new AttributeRename<>(dataClass,previousAttributeName,attributeNameProvider));
     }
 
     public void renameClass(String previousDataClassNameFullQualified, Class<? extends Data> newDataClass){
-        dataMigrations.add(new ClassRename(previousDataClassNameFullQualified,newDataClass));
+        renameClassMigrations.add(new ClassRename(previousDataClassNameFullQualified,newDataClass));
     }
 
     public <V> void restoreAttribute(String singletonPreviousDataClass, String previousAttributeName, Class<V> valueClass, BiConsumer<R,V> setter){
-        restorations.add(new SingletonDataRestore<>(singletonPreviousDataClass,previousAttributeName,valueClass,setter));
+        singletonBasedRestorations.add(new SingletonDataRestore<>(singletonPreviousDataClass,previousAttributeName,valueClass,setter));
     }
 
-    public <V> void restoreAttribute(AttributePath<V> path, Class<V> valueClass, BiConsumer<R,V> setter){
-        restorations2.add(new PathDataRestore<>(path,valueClass,setter));
+    public <V> void restoreAttribute(AttributePath<V> path, BiConsumer<R,V> setter){
+        pathBasedRestorations.add(new PathDataRestore<>(path,setter));
     }
 
-    R migrate(JsonNode rootNode, DataStorageMetadataDictionary dataStorageMetadataDictionary){
+    public R migrate(JsonNode rootNode, DataStorageMetadataDictionary dataStorageMetadataDictionary){
         DataJsonNode rootDataJson = new DataJsonNode((ObjectNode) rootNode);
         List<DataJsonNode> dataJsonNodes = rootDataJson.collectChildrenFromRoot();
-        for (DataMigration migration : dataMigrations) {
+
+        for (DataMigration migration : renameClassMigrations) {
             if (migration.canMigrate(dataStorageMetadataDictionary)) {
                 migration.migrate(dataJsonNodes);
                 migration.updateDataStorageMetadataDictionary(dataStorageMetadataDictionary);
             }
         }
 
-        R root = ObjectMapperBuilder.build().treeToValue(rootNode,rootClass);
+        for (DataMigration migration : renameAttributeMigrations) {
+            if (migration.canMigrate(dataStorageMetadataDictionary)) {
+                migration.migrate(dataJsonNodes);
+                migration.updateDataStorageMetadataDictionary(dataStorageMetadataDictionary);
+            }
+        }
+
+        dataStorageMetadataDictionary.markRemovedAttributes();
+        R root;
+        try {
+            root = ObjectMapperBuilder.build().treeToValue(rootNode, rootClass);
+        } catch (RuntimeException e) {
+            if (Throwables.getRootCause(e) instanceof DataObjectIdResolver.UnresolvableJsonIDException){
+                rootDataJson.fixIdsDeepFromRoot(dataStorageMetadataDictionary);
+                root = ObjectMapperBuilder.build().treeToValue(rootNode, rootClass);
+            } else {
+               throw e;
+            }
+        }
+
         root.internal().addBackReferences();
 
         attributeFiller.fillNewAttributes(root,dataStorageMetadataDictionary);
 
-        for (SingletonDataRestore<R,?> restoration : restorations) {
-            DataStorageMetadataDictionary currentDataStorageMetadataDictionaryFromRoot = root.internal().createDataStorageMetadataDictionaryFromRoot();
-            if (restoration.canMigrate(dataStorageMetadataDictionary,currentDataStorageMetadataDictionaryFromRoot)) {
+        for (SingletonDataRestore<R,?> restoration : singletonBasedRestorations) {
+            if (restoration.canMigrate(dataStorageMetadataDictionary)) {
                 restoration.migrate(dataJsonNodes,root);
             }
         }
 
-        for (PathDataRestore<R,?> restoration : restorations2) {
-            DataStorageMetadataDictionary currentDataStorageMetadataDictionaryFromRoot = root.internal().createDataStorageMetadataDictionaryFromRoot();
-            if (restoration.canMigrate(dataStorageMetadataDictionary,currentDataStorageMetadataDictionaryFromRoot)) {
+        for (PathDataRestore<R,?> restoration : pathBasedRestorations) {
+            if (restoration.canMigrate(dataStorageMetadataDictionary)) {
                 restoration.migrate(rootDataJson,root);
             }
         }

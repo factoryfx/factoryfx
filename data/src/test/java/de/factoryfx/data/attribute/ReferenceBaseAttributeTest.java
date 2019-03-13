@@ -1,6 +1,7 @@
 package de.factoryfx.data.attribute;
 
 import de.factoryfx.data.Data;
+import de.factoryfx.data.storage.migration.metadata.AttributeStorageMetadata;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -21,5 +22,15 @@ public class ReferenceBaseAttributeTest {
             DataReferenceAttribute<GenericData<String>> test1 = new DataReferenceAttribute<>(Object.class, null);
         });
     }
+
+    @Test
+    public void test_AttributeStorageMetadata(){
+        DataReferenceAttribute<GenericData<String>> test1 = new DataReferenceAttribute<>(GenericData.class,null);
+        AttributeStorageMetadata attributeStorageMetadata = test1.createAttributeStorageMetadata("bla");
+        AttributeStorageMetadata attributeStorageMetadata2 = test1.createAttributeStorageMetadata("bla");
+        Assertions.assertTrue(attributeStorageMetadata.isReference());
+        Assertions.assertTrue(attributeStorageMetadata.match(attributeStorageMetadata2));
+    }
+
 
 }

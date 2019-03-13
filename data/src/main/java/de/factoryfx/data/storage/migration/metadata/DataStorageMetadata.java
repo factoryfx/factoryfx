@@ -2,14 +2,11 @@ package de.factoryfx.data.storage.migration.metadata;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import de.factoryfx.data.Data;
+import de.factoryfx.data.DataDictionary;
 
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.function.Function;
-import java.util.stream.Collectors;
+import java.util.*;
 
 public class DataStorageMetadata {
     @JsonProperty
@@ -26,33 +23,19 @@ public class DataStorageMetadata {
         this.count = count;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        DataStorageMetadata that = (DataStorageMetadata) o;
-        return Objects.equals(className, that.className) && Objects.equals(attributes, that.attributes);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(className, attributes);
+    private Map<String,AttributeStorageMetadata> nameToAttributeMap;
+    public AttributeStorageMetadata getAttribute(String attributeName) {
+        if (nameToAttributeMap ==null) {
+            nameToAttributeMap =new HashMap<>();
+            for (AttributeStorageMetadata attribute : attributes) {
+                nameToAttributeMap.put(attribute.getVariableName(),attribute);
+            }
+        }
+        return nameToAttributeMap.get(attributeName);
     }
 
     public String getClassName() {
         return className;
-    }
-
-    public List<String> getRemovedAttributes(DataStorageMetadata previousMetadata) {
-        ArrayList<String> result = new ArrayList<>();
-        Map<String, AttributeStorageMetadata> currentNameToMetadata = attributes.stream().collect(Collectors.toMap(AttributeStorageMetadata::getVariableName, Function.identity()));
-        Map<String, AttributeStorageMetadata> previousNameToMetadata = previousMetadata.attributes.stream().collect(Collectors.toMap(AttributeStorageMetadata::getVariableName, Function.identity()));
-        for (String previousName : previousNameToMetadata.keySet()) {
-            if (!currentNameToMetadata.containsKey(previousName)){
-                result.add(previousName);
-            }
-        }
-        return result;
     }
 
     public boolean match(DataStorageMetadata dataStorageMetadata) {
@@ -70,11 +53,18 @@ public class DataStorageMetadata {
         return true;
     }
 
-    public boolean containsAttribute(String previousAttributeName) {
-        for (AttributeStorageMetadata attribute : attributes) {
-            if (attribute.getVariableName().equals(previousAttributeName)){
-                return true;
-            }
+    public boolean containsAttribute(String attributeName) {
+        AttributeStorageMetadata attribute = getAttribute(attributeName);
+        if (attribute!=null) {
+            return true;
+        }
+        return false;
+    }
+
+    public boolean isRemovedAttribute(String attributeName) {
+        AttributeStorageMetadata attribute = getAttribute(attributeName);
+        if (attribute!=null) {
+            return attribute.isRemoved();
         }
         return false;
     }
@@ -84,14 +74,62 @@ public class DataStorageMetadata {
     }
 
     public void renameAttribute(String previousAttributeName, String newAttributeName) {
-        for (AttributeStorageMetadata attribute : attributes) {
-            if (attribute.getVariableName().equals(previousAttributeName)){
-                attribute.rename(newAttributeName);
-            }
+        AttributeStorageMetadata attribute = getAttribute(previousAttributeName);
+        if (attribute!=null) {
+            attribute.rename(newAttributeName);
+            nameToAttributeMap=null;//reset cache
         }
     }
 
-    public void renameClass(String newNameFullQualified) {
-        className=newNameFullQualified;
+    public void removeAttribute(String attributeName) {
+        AttributeStorageMetadata attribute = getAttribute(attributeName);
+        if (attribute!=null) {
+            attributes.remove(attribute);
+            nameToAttributeMap=null;//reset cache
+        }
+    }
+
+    public void renameClass(String previousDataClassNameFullQualified, String newNameFullQualified) {
+        if (previousDataClassNameFullQualified.equals(className)){
+            className=newNameFullQualified;
+        }
+        for (AttributeStorageMetadata attribute : attributes) {
+            attribute.renameReferenceClass(previousDataClassNameFullQualified,newNameFullQualified);
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    public void markRemovedAttributes(){
+        try {
+            Class aClass = Class.forName(className);
+            Data data = DataDictionary.getDataDictionary(aClass).newInstance();
+
+            Set<String> currentAttributeVariableNames= new HashSet<>();
+            data.internal().visitAttributesFlat((attributeVariableName, attribute) -> currentAttributeVariableNames.add(attributeVariableName));
+
+            for (AttributeStorageMetadata attribute : attributes) {
+                if (!currentAttributeVariableNames.contains(attribute.getVariableName())){
+                    attribute.markRemoved();
+                }
+            }
+        } catch (ClassNotFoundException e) {
+            for (AttributeStorageMetadata attribute : attributes) {
+                attribute.markRemoved();
+            }
+        }
+
+    }
+
+
+    public boolean isReferenceAttribute(String attributeName) {
+        AttributeStorageMetadata attribute = getAttribute(attributeName);
+        if (attribute!=null) {
+            return attribute.isReference();
+        }
+        return false;
+    }
+
+    public DataStorageMetadata getChild(String attribute, DataStorageMetadataDictionary dictionary) {
+        return dictionary.getDataStorageMetadata(getAttribute(attribute).getReferenceClass());
     }
 }

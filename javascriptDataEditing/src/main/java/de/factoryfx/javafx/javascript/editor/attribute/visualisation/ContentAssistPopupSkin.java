@@ -1,15 +1,6 @@
 package de.factoryfx.javafx.javascript.editor.attribute.visualisation;
 
 //import impl.org.controlsfx.skin.AutoCompletePopup;
-import javafx.beans.binding.Bindings;
-import javafx.event.Event;
-import javafx.scene.Node;
-import javafx.scene.control.ListView;
-import javafx.scene.control.MultipleSelectionModel;
-import javafx.scene.control.Skin;
-import javafx.scene.control.cell.TextFieldListCell;
-import javafx.scene.input.MouseButton;
-import org.controlsfx.control.textfield.AutoCompletionBinding;
 
 
 public class ContentAssistPopupSkin /*implements Skin<AutoCompletePopup<String>>*/ {

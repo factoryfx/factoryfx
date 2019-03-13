@@ -5,11 +5,9 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.TextNode;
 import de.factoryfx.data.Data;
 import de.factoryfx.data.jackson.ObjectMapperBuilder;
+import de.factoryfx.data.storage.migration.metadata.DataStorageMetadataDictionary;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class DataJsonNode {
     private final ObjectNode jsonNode;
@@ -45,17 +43,30 @@ public class DataJsonNode {
         return new DataJsonNode((ObjectNode)jsonNode.get(attributeName).get("v"));
     }
 
+    public JsonNode getAttributeValue(String attribute) {
+        return jsonNode.get(attribute).get("v");
+    }
+
     public <V> V getAttributeValue(String attributeName, Class<V> valueClass) {
-        return ObjectMapperBuilder.build().treeToValue(jsonNode.get(attributeName).get("v"), valueClass);
+        JsonNode attributeValue = getAttributeValue(attributeName);
+        if (attributeValue==null){
+            return null;
+        }
+        return ObjectMapperBuilder.build().treeToValue(attributeValue, valueClass);
     }
 
     //IDs from JsonIdentityInfo
-    public boolean isIdReference(String attributeName) {
-        return jsonNode.get(attributeName).get("v").isTextual();
+    public boolean isIdReference(String attributeName, DataStorageMetadataDictionary dataStorageMetadataDictionary) {
+        if (dataStorageMetadataDictionary.isReferenceAttribute(getDataClassName(),attributeName)){
+            return jsonNode.get(attributeName).get("v").isTextual();
+        }
+        return false;
     }
     public String getAttributeIdValue(String attributeName) {
         return jsonNode.get(attributeName).get("v").asText();
     }
+
+
 
     private boolean isData(JsonNode jsonNode){
         if (jsonNode==null){
@@ -104,5 +115,78 @@ public class DataJsonNode {
     public <D/*extends Data*/> D asData(Class<D> valueClass) {
         return ObjectMapperBuilder.build().treeToValue(jsonNode, valueClass);
     }
+
+    private List<String> getAttributes(){
+        ArrayList<String> result = new ArrayList<>();
+
+        Iterator<Map.Entry<String, JsonNode>> field = jsonNode.fields();
+        while (field.hasNext()) {
+            Map.Entry<String, JsonNode> element = field.next();
+            if (element.getValue().isObject()){
+                result.add(element.getKey());
+            }
+        }
+        return result;
+    }
+
+    public Map<String,DataJsonNode> collectChildrenMapFromRoot() {
+        HashMap<String, DataJsonNode> result = new HashMap<>();
+        for (DataJsonNode dataJsonNode : collectChildrenFromRoot()) {
+            result.put(dataJsonNode.getId(),dataJsonNode);
+        }
+        return result;
+
+    }
+
+    /**
+     * fix objects in removed attributes.
+     *
+     * References are serialized using JsonIdentityInfo
+     * That means first occurrence is the object and following are just the ids
+     * If the first occurrence is a removed attribute Jackson can't read the reference.
+     *
+     * @param dataStorageMetadataDictionary dataStorageMetadataDictionary
+     */
+    public void fixIdsDeepFromRoot(DataStorageMetadataDictionary dataStorageMetadataDictionary){
+        this.fixIdsDeep(dataStorageMetadataDictionary,new DataObjectIdFixer(),collectChildrenMapFromRoot());
+    }
+
+    public void fixIdsDeep(DataStorageMetadataDictionary dataStorageMetadataDictionary, DataObjectIdFixer dataObjectIdFixer, Map<String,DataJsonNode> idToDataJson) {
+        dataObjectIdFixer.bindItem(this.getId(),this);
+
+        Iterator<Map.Entry<String, JsonNode>> field = jsonNode.fields();
+        while (field.hasNext()) {
+            Map.Entry<String, JsonNode> elementEntry = field.next();
+            JsonNode element = elementEntry.getValue();
+            String attributeVariableName = elementEntry.getKey();
+
+            if (dataStorageMetadataDictionary.isRemovedAttribute(getDataClassName(),attributeVariableName)){
+
+            } else {
+                if (this.isIdReference(attributeVariableName,dataStorageMetadataDictionary)){
+                    if (!dataObjectIdFixer.isResolvable(getAttributeIdValue(attributeVariableName))){
+                        ((ObjectNode)element).set("v",idToDataJson.get(getAttributeIdValue(attributeVariableName)).jsonNode);
+                    }
+                }
+
+                if (element.isArray()) {
+                    for (JsonNode arrayElement : element) {
+                        if (isData(arrayElement)) {
+                            DataJsonNode child = new DataJsonNode((ObjectNode) arrayElement);
+                            child.fixIdsDeep(dataStorageMetadataDictionary,dataObjectIdFixer,idToDataJson);
+                        }
+                    }
+                } else {
+                    if (isData(element.get("v"))) {
+                        DataJsonNode child = new DataJsonNode((ObjectNode) element.get("v"));
+                        child.fixIdsDeep(dataStorageMetadataDictionary,dataObjectIdFixer,idToDataJson);
+                    }
+
+                }
+            }
+
+        }
+    }
+
 
 }

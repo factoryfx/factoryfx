@@ -1,7 +1,6 @@
 package de.factoryfx.factory.builder;
 
 
-import de.factoryfx.data.jackson.ObjectMapperBuilder;
 import de.factoryfx.data.storage.migration.metadata.DataStorageMetadataDictionary;
 import de.factoryfx.factory.testfactories.ExampleFactoryA;
 import de.factoryfx.factory.testfactories.ExampleFactoryB;
@@ -31,15 +30,12 @@ public class FactoryTreeBuilderAttributeFillerTest {
         ExampleFactoryA exampleFactoryA = new ExampleFactoryA();
         exampleFactoryA.internal().addBackReferences();
         DataStorageMetadataDictionary dataStorageMetadataDictionaryFromRoot = exampleFactoryA.internal().createDataStorageMetadataDictionaryFromRoot();
-        String oldDataStorageMetadataDictionary = ObjectMapperBuilder.build().writeValueAsString(dataStorageMetadataDictionaryFromRoot);
-        oldDataStorageMetadataDictionary=oldDataStorageMetadataDictionary.replace("\r\n","\n");
-        oldDataStorageMetadataDictionary=oldDataStorageMetadataDictionary.replace(", {\n" + "      \"variableName\" : \"referenceAttribute\",\n" + "      \"attributeClassName\" : \"de.factoryfx.factory.atrribute.FactoryReferenceAttribute\"\n" + "    }","");
-        System.out.println(oldDataStorageMetadataDictionary);
+        dataStorageMetadataDictionaryFromRoot.getDataStorageMetadata(ExampleFactoryA.class.getName()).removeAttribute("referenceAttribute");
 
         ExampleFactoryA exampleFactoryNew = new ExampleFactoryA();
         exampleFactoryNew.internal().addBackReferences();
         Assertions.assertNull(exampleFactoryNew.referenceAttribute.get());
-        filler.fillNewAttributes(exampleFactoryNew,ObjectMapperBuilder.build().readValue(oldDataStorageMetadataDictionary,DataStorageMetadataDictionary.class));
+        filler.fillNewAttributes(exampleFactoryNew, dataStorageMetadataDictionaryFromRoot);
         Assertions.assertEquals("111",exampleFactoryNew.referenceAttribute.get().stringAttribute.get());
     }
 
@@ -92,16 +88,13 @@ public class FactoryTreeBuilderAttributeFillerTest {
         ExampleFactoryA exampleFactoryA = new ExampleFactoryA();
         exampleFactoryA.internal().addBackReferences();
         DataStorageMetadataDictionary dataStorageMetadataDictionaryFromRoot = exampleFactoryA.internal().createDataStorageMetadataDictionaryFromRoot();
-        String oldDataStorageMetadataDictionary = ObjectMapperBuilder.build().writeValueAsString(dataStorageMetadataDictionaryFromRoot);
-        oldDataStorageMetadataDictionary=oldDataStorageMetadataDictionary.replace("\r\n","\n");
-        oldDataStorageMetadataDictionary=oldDataStorageMetadataDictionary.replace(", {\n" + "      \"variableName\" : \"referenceAttribute\",\n" + "      \"attributeClassName\" : \"de.factoryfx.factory.atrribute.FactoryReferenceAttribute\"\n" + "    }","");
-        System.out.println(oldDataStorageMetadataDictionary);
+        dataStorageMetadataDictionaryFromRoot.getDataStorageMetadata(ExampleFactoryA.class.getName()).removeAttribute("referenceAttribute");
 
         ExampleFactoryA exampleFactoryNew = new ExampleFactoryA();
         exampleFactoryNew.referenceAttribute.set(null);
         exampleFactoryNew.referenceListAttribute.add(new ExampleFactoryB());
         exampleFactoryNew.internal().addBackReferences();
-        filler.fillNewAttributes(exampleFactoryNew,ObjectMapperBuilder.build().readValue(oldDataStorageMetadataDictionary,DataStorageMetadataDictionary.class));
+        filler.fillNewAttributes(exampleFactoryNew,dataStorageMetadataDictionaryFromRoot);
         Assertions.assertEquals(exampleFactoryNew.referenceAttribute.get(),exampleFactoryNew.referenceListAttribute.get(0));
     }
 

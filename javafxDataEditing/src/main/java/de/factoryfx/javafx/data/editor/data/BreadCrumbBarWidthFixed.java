@@ -1,8 +1,6 @@
 package de.factoryfx.javafx.data.editor.data;
 
 //import impl.org.controlsfx.skin.BreadCrumbBarSkin;
-import javafx.scene.Node;
-import javafx.scene.control.Skin;
 import org.controlsfx.control.BreadCrumbBar;
 
 public class BreadCrumbBarWidthFixed<T> extends BreadCrumbBar<T> {

@@ -1,7 +1,11 @@
 package de.factoryfx.data.storage.migration.datamigration;
 
+import com.fasterxml.jackson.annotation.JsonSetter;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import de.factoryfx.data.Data;
+import de.factoryfx.data.attribute.DataReferenceListAttribute;
+import de.factoryfx.data.attribute.types.StringAttribute;
 import de.factoryfx.data.jackson.ObjectMapperBuilder;
 import de.factoryfx.data.merge.testdata.ExampleDataA;
 import de.factoryfx.data.merge.testdata.ExampleDataB;
@@ -9,8 +13,11 @@ import de.factoryfx.data.merge.testdata.ExampleDataC;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 class DataJsonNodeTest {
 
@@ -77,5 +84,60 @@ class DataJsonNodeTest {
         Assertions.assertEquals(exampleDataA.getId(), dataJsonNode.getId());
     }
 
+
+    public static class IterationTestFactory extends Data {
+        public static final List<String> createOrder= new ArrayList<>();
+        public String testinfo;
+        public final DataReferenceListAttribute<IterationTestFactory> children = new DataReferenceListAttribute<>(IterationTestFactory.class);
+
+        public IterationTestFactory(String testinfo) {
+            this();
+            this.testinfo=testinfo;
+        }
+
+        public IterationTestFactory() {
+            super();
+            createOrder.add(testinfo);
+        }
+
+        @JsonSetter
+        public void setTestinfo(String testinfo){
+            this.testinfo=testinfo;
+            createOrder.add(testinfo);
+        }
+
+    }
+
+//        h
+//      / | \
+//     /  e  \
+//    d       g
+//   /|\      |
+//  / | \     f
+// a  b  c
+    //fixid order order: hdabcegf
+    @Test
+    public void test_jackosn_iteration_oder_match_idfix_order() {
+        IterationTestFactory root = new IterationTestFactory("h");
+
+        IterationTestFactory d = new IterationTestFactory("d");
+        root.children.add(d);
+        root.children.add(new IterationTestFactory("e"));
+        IterationTestFactory g = new IterationTestFactory("g");
+        root.children.add(g);
+
+        d.children.add(new IterationTestFactory("a"));
+        d.children.add(new IterationTestFactory("b"));
+        d.children.add(new IterationTestFactory("c"));
+
+        g.children.add(new IterationTestFactory("f"));
+
+        IterationTestFactory.createOrder.clear();
+        System.out.println( ObjectMapperBuilder.build().writeValueAsString(root));
+        ObjectMapperBuilder.build().copy(root);
+
+
+        Assertions.assertEquals("hdabcegf",IterationTestFactory.createOrder.stream().filter(Objects::nonNull).collect(Collectors.joining("")));
+    }
 
 }

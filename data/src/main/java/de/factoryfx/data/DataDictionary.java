@@ -244,7 +244,7 @@ public class DataDictionary<D extends Data> {
     public DataStorageMetadata createDataStorageMetadata(long count) {
         D data = newInstance();
         ArrayList<AttributeStorageMetadata> attributes = new ArrayList<>();
-        visitAttributesFlat(data, (attributeVariableName, attribute) -> attributes.add(new AttributeStorageMetadata(attributeVariableName,attribute.getClass().getName())));
+        visitAttributesFlat(data, (attributeVariableName, attribute) -> attributes.add(attribute.createAttributeStorageMetadata(attributeVariableName)));
         return new DataStorageMetadata(attributes,clazz.getName(),count);
     }
 }

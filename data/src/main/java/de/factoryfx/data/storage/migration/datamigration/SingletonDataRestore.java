@@ -22,8 +22,8 @@ public class SingletonDataRestore<R extends Data,V>  {
         this.valueClass=valueClass;
     }
 
-    public boolean canMigrate(DataStorageMetadataDictionary previousDataStorageMetadataDictionary, DataStorageMetadataDictionary currentDataStorageMetadataDictionary){
-        return currentDataStorageMetadataDictionary.isRemovedAttribute(singletonPreviousDataClass, previousAttributeName) &&
+    public boolean canMigrate(DataStorageMetadataDictionary previousDataStorageMetadataDictionary){
+        return previousDataStorageMetadataDictionary.isRemovedAttribute(singletonPreviousDataClass, previousAttributeName) &&
                previousDataStorageMetadataDictionary.isSingleton(singletonPreviousDataClass) &&
                previousDataStorageMetadataDictionary.containsClass(singletonPreviousDataClass) &&
                previousDataStorageMetadataDictionary.containsAttribute(singletonPreviousDataClass,previousAttributeName);

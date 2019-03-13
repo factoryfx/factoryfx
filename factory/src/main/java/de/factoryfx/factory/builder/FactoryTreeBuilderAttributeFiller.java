@@ -28,6 +28,7 @@ public class FactoryTreeBuilderAttributeFiller<V,L,R extends FactoryBase<L,V,R>,
             data.internal().visitAttributesFlat((attributeVariableName, attribute) -> {
                 if (!oldDataStorageMetadataDictionary.containsAttribute(data.getClass().getName(), attributeVariableName)) {//is new Attribute
                     containsNewAttributes[0]=true;
+                    oldDataStorageMetadataDictionary.containsAttribute(data.getClass().getName(), attributeVariableName);
                 }
             });
             if (containsNewAttributes[0]){

@@ -2,6 +2,7 @@ package de.factoryfx.data.storage.migration.metadata;
 
 import de.factoryfx.data.jackson.ObjectMapperBuilder;
 import de.factoryfx.data.merge.testdata.ExampleDataA;
+import de.factoryfx.data.merge.testdata.ExampleDataB;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -27,6 +28,24 @@ public class DataStorageMetadataDictionaryTest {
 
     @Test
     public void test_init(){
-        Assertions.assertEquals(1, createDataStorageMetadataDictionaryFromRoot().dataStorageMetadataList.size());
+        Assertions.assertEquals(1, createDataStorageMetadataDictionaryFromRoot().dataList.size());
+    }
+
+    @Test
+    public void test_rename_root(){
+        DataStorageMetadataDictionary dictionary = createDataStorageMetadataDictionaryFromRoot();
+        dictionary.renameClass(ExampleDataA.class.getName(),"a.b.C");
+        Assertions.assertEquals("a.b.C",dictionary.rootClass);
+    }
+
+    @Test
+    public void test_rename_attributeref(){
+        ExampleDataA exampleDataA = new ExampleDataA();
+        exampleDataA.referenceAttribute.set(new ExampleDataB());
+        exampleDataA.internal().addBackReferences();
+        DataStorageMetadataDictionary dictionary  = exampleDataA.internal().createDataStorageMetadataDictionaryFromRoot();
+        dictionary.renameClass(ExampleDataB.class.getName(),"a.b.C");
+        Assertions.assertEquals("a.b.C",dictionary.getDataStorageMetadata("a.b.C").getClassName());
+        Assertions.assertEquals("a.b.C",dictionary.getDataStorageMetadata(ExampleDataA.class.getName()).getAttribute("referenceAttribute").referenceClass);
     }
 }

@@ -13,14 +13,18 @@ import de.factoryfx.data.storage.migration.MigrationManager;
 import de.factoryfx.data.storage.StoredDataMetadata;
 
 import de.factoryfx.data.storage.migration.GeneralStorageMetadataBuilder;
+import de.factoryfx.data.storage.migration.metadata.DataStorageMetadataDictionary;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
 public class FileSystemDataStorageHistoryTest {
 
-    private StoredDataMetadata<Void> createStoredDataMetadata(String id){
-        return new StoredDataMetadata<>(id,"","","",null,GeneralStorageMetadataBuilder.build(),null);
+    private StoredDataMetadata<Void> createDummyStoredDataMetadata(){
+        ExampleDataA exampleDataA = new ExampleDataA();
+        exampleDataA.internal().addBackReferences();
+        DataStorageMetadataDictionary dataStorageMetadataDictionaryFromRoot = exampleDataA.internal().createDataStorageMetadataDictionaryFromRoot();
+        return new StoredDataMetadata<>(UUID.randomUUID().toString(),"","","",null,GeneralStorageMetadataBuilder.build(), dataStorageMetadataDictionaryFromRoot);
     }
 
     @TempDir
@@ -43,7 +47,7 @@ public class FileSystemDataStorageHistoryTest {
     public void test_add() {
         FileSystemFactoryStorageHistory<ExampleDataA,Void> fileSystemFactoryStorage = new FileSystemFactoryStorageHistory<>(Paths.get(folder.toFile().toURI()),createSerialisation());
 
-        StoredDataMetadata<Void> metadata = createStoredDataMetadata(UUID.randomUUID().toString());
+        StoredDataMetadata<Void> metadata = createDummyStoredDataMetadata();
         fileSystemFactoryStorage.updateHistory(new ExampleDataA(), metadata);
 
         Assertions.assertEquals(1,fileSystemFactoryStorage.getHistoryFactoryList().size());
@@ -54,17 +58,17 @@ public class FileSystemDataStorageHistoryTest {
         FileSystemFactoryStorageHistory<ExampleDataA,Void> fileSystemFactoryStorage = new FileSystemFactoryStorageHistory<>(Paths.get(folder.toFile().toURI()),createSerialisation());
 
         {
-            StoredDataMetadata<Void> metadata = createStoredDataMetadata(UUID.randomUUID().toString());
+            StoredDataMetadata<Void> metadata = createDummyStoredDataMetadata();
             fileSystemFactoryStorage.updateHistory(new ExampleDataA(), metadata);
         }
 
         {
-            StoredDataMetadata<Void> metadata = createStoredDataMetadata(UUID.randomUUID().toString());
+            StoredDataMetadata<Void> metadata = createDummyStoredDataMetadata();
             fileSystemFactoryStorage.updateHistory(new ExampleDataA(), metadata);
         }
 
         {
-            StoredDataMetadata<Void> metadata = createStoredDataMetadata(UUID.randomUUID().toString());
+            StoredDataMetadata<Void> metadata = createDummyStoredDataMetadata();
             fileSystemFactoryStorage.updateHistory(new ExampleDataA(), metadata);
         }
 
@@ -75,7 +79,7 @@ public class FileSystemDataStorageHistoryTest {
     public void test_restore() {
         FileSystemFactoryStorageHistory<ExampleDataA,Void> fileSystemFactoryStorage = new FileSystemFactoryStorageHistory<>(Paths.get(folder.toFile().toURI()),createSerialisation());
 
-        StoredDataMetadata<Void> metadata = createStoredDataMetadata(UUID.randomUUID().toString());
+        StoredDataMetadata<Void> metadata = createDummyStoredDataMetadata();
         fileSystemFactoryStorage.updateHistory(new ExampleDataA(), metadata);
         Assertions.assertEquals(1,fileSystemFactoryStorage.getHistoryFactoryList().size());
 
@@ -87,7 +91,7 @@ public class FileSystemDataStorageHistoryTest {
     public void test_getHistory() {
         FileSystemFactoryStorageHistory<ExampleDataA,Void> fileSystemFactoryStorage = new FileSystemFactoryStorageHistory<>(Paths.get(folder.toFile().toURI()),createSerialisation());
 
-        StoredDataMetadata<Void> metadata = createStoredDataMetadata(UUID.randomUUID().toString());
+        StoredDataMetadata<Void> metadata = createDummyStoredDataMetadata();
         fileSystemFactoryStorage.updateHistory(new ExampleDataA(), metadata);
 
         Assertions.assertNotNull(fileSystemFactoryStorage.getHistoryFactory(new ArrayList<>(fileSystemFactoryStorage.getHistoryFactoryList()).get(0).id));

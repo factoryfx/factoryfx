@@ -12,8 +12,6 @@ import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.*;
 import org.controlsfx.control.BreadCrumbBar;
 import org.controlsfx.glyphfont.FontAwesome;
 

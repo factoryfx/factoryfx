@@ -6,6 +6,7 @@ import java.util.function.Supplier;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import de.factoryfx.data.Data;
+import de.factoryfx.data.storage.migration.metadata.AttributeStorageMetadata;
 import de.factoryfx.data.validation.Validation;
 import de.factoryfx.data.validation.ValidationError;
 import de.factoryfx.data.validation.ValidationResult;
@@ -362,6 +363,10 @@ public abstract class Attribute<T,A extends Attribute<T,A>>{
     public A userReadOnly(Supplier<Boolean> readyOnlySupplier){
         this.readyOnlySupplier=readyOnlySupplier;
         return (A)this;
+    }
+
+    public AttributeStorageMetadata createAttributeStorageMetadata(String variableName){
+        return new AttributeStorageMetadata(variableName,getClass().getName(),false, null);
     }
 
 }
