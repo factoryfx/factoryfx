@@ -216,6 +216,6 @@ public abstract class ReferenceBaseAttribute<T extends Data, U, A extends Refere
 
     @Override
     public AttributeStorageMetadata createAttributeStorageMetadata(String variableName) {
-        return new AttributeStorageMetadata(variableName,getClass().getName(),true, clazz.getName());
+        return new AttributeStorageMetadata(variableName,getClass().getName(),true, clazz!=null?clazz.getName():null);
     }
 }
