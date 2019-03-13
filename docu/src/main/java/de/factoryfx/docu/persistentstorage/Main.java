@@ -42,8 +42,8 @@ public class Main {
             root.stringAttribute.set("1");
             return root;
         });
-        Microservice<Void, Root, RootFactory, Void> microservice = builder.microservice().withStorage((initialFactory, migrationManager, generalStorageMetadata, objectMapper) -> {
-            return new PostgresDataStorage<>(datasource, initialFactory, migrationManager, generalStorageMetadata, objectMapper);
+        Microservice<Void, Root, RootFactory, Void> microservice = builder.microservice().withStorage((initialFactory, migrationManager, objectMapper) -> {
+            return new PostgresDataStorage<>(datasource, initialFactory, migrationManager, objectMapper);
         }).build();
         microservice.start();
 
@@ -56,8 +56,8 @@ public class Main {
 
         microservice.stop();
 
-        Microservice<Void, Root, RootFactory,Void> newMicroservice = builder.microservice().withStorage((initialFactory, migrationManager, generalStorageMetadata, objectMapper) -> {
-            return new PostgresDataStorage<>(datasource, initialFactory, migrationManager, generalStorageMetadata, objectMapper);
+        Microservice<Void, Root, RootFactory,Void> newMicroservice = builder.microservice().withStorage((initialFactory, migrationManager, objectMapper) -> {
+            return new PostgresDataStorage<>(datasource, initialFactory, migrationManager, objectMapper);
         }).build();
         newMicroservice.start();
         //output is 2 again from the saved update

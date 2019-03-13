@@ -21,7 +21,6 @@ import com.google.common.io.CharStreams;
 import de.factoryfx.data.Data;
 import de.factoryfx.data.jackson.SimpleObjectMapper;
 import de.factoryfx.data.storage.*;
-import de.factoryfx.data.storage.migration.GeneralStorageMetadata;
 import de.factoryfx.data.storage.migration.MigrationManager;
 
 public class PostgresDataStorage<R extends Data, S> implements DataStorage<R, S> {
@@ -29,13 +28,11 @@ public class PostgresDataStorage<R extends Data, S> implements DataStorage<R, S>
     private final R initialData;
     private final DataSource dataSource;
     private final MigrationManager<R,S> migrationManager;
-    private final GeneralStorageMetadata generalStorageMetadata;
     private final SimpleObjectMapper objectMapper;
 
-    public PostgresDataStorage(DataSource dataSource, R initialDataParam, GeneralStorageMetadata generalStorageMetadata, MigrationManager<R,S> migrationManager, SimpleObjectMapper objectMapper){
+    public PostgresDataStorage(DataSource dataSource, R initialDataParam, MigrationManager<R,S> migrationManager, SimpleObjectMapper objectMapper){
         this.dataSource = dataSource;
         this.initialData = initialDataParam;
-        this.generalStorageMetadata = generalStorageMetadata;
         this.migrationManager = migrationManager;
         this.objectMapper = objectMapper;
     }
@@ -61,7 +58,7 @@ public class PostgresDataStorage<R extends Data, S> implements DataStorage<R, S>
                     try (ResultSet rs = pstmt.executeQuery()) {
                         if (!rs.next())
                             throw new IllegalArgumentException("No factory with id '"+id+"' found");
-                        return migrationManager.read(rs.getString(1),metaData.generalStorageMetadata,metaData.dataStorageMetadataDictionary);
+                        return migrationManager.read(rs.getString(1),metaData.dataStorageMetadataDictionary);
                     }
                 }
         } catch (SQLException e) {
@@ -104,7 +101,7 @@ public class PostgresDataStorage<R extends Data, S> implements DataStorage<R, S>
                                 "System",
                                 "initial factory",
                                 UUID.randomUUID().toString(),
-                                null, generalStorageMetadata,
+                                null,
                                 initialData.internal().createDataStorageMetadataDictionaryFromRoot()
                         );
 
@@ -113,7 +110,7 @@ public class PostgresDataStorage<R extends Data, S> implements DataStorage<R, S>
                         return new DataAndId<>(initialData, metadata.id);
                     } else {
                         StoredDataMetadata<S> metaData = migrationManager.readStoredFactoryMetadata(rs.getString(2));
-                        return new DataAndId<>(migrationManager.read(rs.getString(1), metaData.generalStorageMetadata,metaData.dataStorageMetadataDictionary), metaData.id);
+                        return new DataAndId<>(migrationManager.read(rs.getString(1),metaData.dataStorageMetadataDictionary), metaData.id);
                     }
 
                 }
@@ -126,7 +123,7 @@ public class PostgresDataStorage<R extends Data, S> implements DataStorage<R, S>
 
     @Override
     public void updateCurrentData(DataUpdate<R> update, S changeSummary) {
-        StoredDataMetadata<S> metadata =update.createUpdateStoredDataMetadata(changeSummary,generalStorageMetadata);
+        StoredDataMetadata<S> metadata =update.createUpdateStoredDataMetadata(changeSummary);
         update(update.root, metadata);
     }
 
@@ -300,7 +297,7 @@ public class PostgresDataStorage<R extends Data, S> implements DataStorage<R, S>
                 try (ResultSet rs = pstmt.executeQuery()) {
                     if (!rs.next())
                         throw new IllegalArgumentException("No factory with id '"+id+"' found");
-                    return migrationManager.read(rs.getString(1),metaData.generalStorageMetadata,metaData.dataStorageMetadataDictionary);
+                    return migrationManager.read(rs.getString(1), metaData.dataStorageMetadataDictionary);
                 }
         } catch (SQLException e) {
             throw new RuntimeException("Cannot read future factory",e);
@@ -315,7 +312,6 @@ public class PostgresDataStorage<R extends Data, S> implements DataStorage<R, S>
                 futureFactory.user,
                 futureFactory.comment,
                 futureFactory.scheduled,
-                generalStorageMetadata,
                 futureFactory.root.internal().createDataStorageMetadataDictionaryFromRoot()
         );
 

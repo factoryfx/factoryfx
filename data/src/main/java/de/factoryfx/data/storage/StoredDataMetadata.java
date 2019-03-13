@@ -4,7 +4,6 @@ import java.time.LocalDateTime;
 
 import com.fasterxml.jackson.annotation.*;
 import de.factoryfx.data.storage.migration.metadata.DataStorageMetadataDictionary;
-import de.factoryfx.data.storage.migration.GeneralStorageMetadata;
 
 /**
  * metadata for a stored historical factory
@@ -26,7 +25,6 @@ public class StoredDataMetadata<S> {
     /**the base version on the server*/
     public final String baseVersionId;
 
-    public final GeneralStorageMetadata generalStorageMetadata;
     public final DataStorageMetadataDictionary dataStorageMetadataDictionary;
 
     @JsonCreator
@@ -37,7 +35,6 @@ public class StoredDataMetadata<S> {
             @JsonProperty("comment")String comment,
             @JsonProperty("baseVersionId")String baseVersionId,
             @JsonProperty("changeSummary")S changeSummary,
-            @JsonProperty("generalStorageMetadata") GeneralStorageMetadata generalStorageMetadata,
             @JsonProperty("dataStorageMetadataDictionary") DataStorageMetadataDictionary dataStorageMetadataDictionary) {
         this.creationTime = creationTime;
         this.id = id;
@@ -45,11 +42,10 @@ public class StoredDataMetadata<S> {
         this.comment = comment;
         this.baseVersionId = baseVersionId;
         this.changeSummary = changeSummary;
-        this.generalStorageMetadata = generalStorageMetadata;
         this.dataStorageMetadataDictionary = dataStorageMetadataDictionary;
     }
 
-    public StoredDataMetadata(String id, String user, String comment, String baseVersionId, S changeSummary, GeneralStorageMetadata generalStorageMetadata, DataStorageMetadataDictionary dataStorageMetadataDictionary) {
-        this(LocalDateTime.now(),id,user,comment,baseVersionId,changeSummary, generalStorageMetadata,dataStorageMetadataDictionary);
+    public StoredDataMetadata(String id, String user, String comment, String baseVersionId, S changeSummary, DataStorageMetadataDictionary dataStorageMetadataDictionary) {
+        this(LocalDateTime.now(),id,user,comment,baseVersionId,changeSummary,dataStorageMetadataDictionary);
     }
 }

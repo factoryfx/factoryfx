@@ -1,24 +1,19 @@
 package de.factoryfx.data.storage.migration;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import de.factoryfx.data.jackson.ObjectMapperBuilder;
 import de.factoryfx.data.merge.testdata.ExampleDataA;
 import de.factoryfx.data.storage.migration.metadata.DataStorageMetadataDictionary;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class MigrationManagerTest {
 
     @Test
     public void read_read(){
-        MigrationManager<ExampleDataA,Void> manager =  new MigrationManager<>(ExampleDataA.class, List.of(), GeneralStorageMetadataBuilder.build(), new DataMigrationManager<>((root1, oldDataStorageMetadataDictionary) -> { },ExampleDataA.class),ObjectMapperBuilder.build());
+        MigrationManager<ExampleDataA,Void> manager =  new MigrationManager<>(ExampleDataA.class, ObjectMapperBuilder.build(), (root1, oldDataStorageMetadataDictionary) -> { });
 
         String data= ObjectMapperBuilder.build().writeValueAsString(new ExampleDataA());
-        ExampleDataA result = manager.read(data, GeneralStorageMetadataBuilder.build(), createDataStorageMetadataDictionary());
+        ExampleDataA result = manager.read(data, createDataStorageMetadataDictionary());
         Assertions.assertNotNull(result);
 
     }
@@ -30,187 +25,6 @@ public class MigrationManagerTest {
     private DataStorageMetadataDictionary createDataStorageMetadataDictionary(ExampleDataA exampleDataA) {
         exampleDataA.internal().addBackReferences();
         return exampleDataA.internal().createDataStorageMetadataDictionaryFromRoot();
-    }
-
-    @Test
-    public void read_read_general_migration_format_(){
-        List<GeneralMigration> migrations = new ArrayList<>();
-        migrations.add(new GeneralMigration() {
-            @Override
-            public boolean canMigrate(GeneralStorageMetadata generalStorageMetadata) {
-                return generalStorageMetadata.match(new GeneralStorageMetadata(1,0));
-            }
-
-            @Override
-            public void migrate(JsonNode data) {
-                //nothing
-            }
-
-            @Override
-            public GeneralStorageMetadata migrationResultStorageFormat() {
-                return new GeneralStorageMetadata(2,0);
-            }
-        });
-
-        GeneralStorageMetadata generalStorageMetadata = new GeneralStorageMetadata(2,0);
-        MigrationManager<ExampleDataA,Void> manager = new MigrationManager<>(ExampleDataA.class, migrations, generalStorageMetadata, new DataMigrationManager<>((root1, oldDataStorageMetadataDictionary) -> { },ExampleDataA.class),ObjectMapperBuilder.build());
-        ExampleDataA exampleDataA = new ExampleDataA();
-        ExampleDataA result = manager.read(ObjectMapperBuilder.build().writeValueAsString(exampleDataA), new GeneralStorageMetadata(1,0),createDataStorageMetadataDictionary(exampleDataA));
-        Assertions.assertNotNull(result);
-    }
-
-    @Test
-    public void read_read_general_migration__nested(){
-        List<GeneralMigration> migrations = new ArrayList<>();
-        migrations.add(new GeneralMigration() {
-            @Override
-            public boolean canMigrate(GeneralStorageMetadata generalStorageMetadata) {
-                return generalStorageMetadata.match(new GeneralStorageMetadata(1,0));
-            }
-
-            @Override
-            public void migrate(JsonNode data) {
-                //nothing
-            }
-
-            @Override
-            public GeneralStorageMetadata migrationResultStorageFormat() {
-                return new GeneralStorageMetadata(2,0);
-            }
-        });
-        migrations.add(new GeneralMigration() {
-            @Override
-            public boolean canMigrate(GeneralStorageMetadata generalStorageMetadata) {
-                return generalStorageMetadata.match(new GeneralStorageMetadata(2,0));
-            }
-
-            @Override
-            public void migrate(JsonNode data) {
-                //nothing
-            }
-
-            @Override
-            public GeneralStorageMetadata migrationResultStorageFormat() {
-                return new GeneralStorageMetadata(3,0);
-            }
-        });
-
-
-        GeneralStorageMetadata generalStorageMetadata = new GeneralStorageMetadata(3,0);
-        MigrationManager<ExampleDataA,Void> manager = new MigrationManager<>(ExampleDataA.class, migrations, generalStorageMetadata, new DataMigrationManager<>((root1, oldDataStorageMetadataDictionary) -> { },ExampleDataA.class),ObjectMapperBuilder.build());
-        ExampleDataA exampleDataA = new ExampleDataA();
-        ExampleDataA result = manager.read(ObjectMapperBuilder.build().writeValueAsString(exampleDataA), new GeneralStorageMetadata(1,0),createDataStorageMetadataDictionary(exampleDataA));
-        Assertions.assertNotNull(result);
-
-    }
-
-    @Test
-    public void read_no_migration_found(){
-        Assertions.assertThrows(IllegalStateException.class, () -> {
-            List<GeneralMigration> migrations = new ArrayList<>();
-
-            GeneralStorageMetadata generalStorageMetadata = new GeneralStorageMetadata(2, 0);
-            MigrationManager<ExampleDataA, Void> manager = new MigrationManager<>(ExampleDataA.class, migrations, generalStorageMetadata, new DataMigrationManager<>((root1, oldDataStorageMetadataDictionary) -> { },ExampleDataA.class), ObjectMapperBuilder.build());
-            ExampleDataA exampleDataA = new ExampleDataA();
-            ExampleDataA result = manager.read(ObjectMapperBuilder.build().writeValueAsString(exampleDataA), new GeneralStorageMetadata(1, 0), createDataStorageMetadataDictionary(exampleDataA));
-            Assertions.assertNotNull(result);
-        });
-
-    }
-
-    @Test
-    public void read_no_migration_found_chained(){
-        Assertions.assertThrows(IllegalStateException.class, () -> {
-            List<GeneralMigration> migrations = new ArrayList<>();
-            migrations.add(new GeneralMigration() {
-                @Override
-                public boolean canMigrate(GeneralStorageMetadata generalStorageMetadata) {
-                    return generalStorageMetadata.match(new GeneralStorageMetadata(1, 0));
-                }
-
-                @Override
-                public void migrate(JsonNode data) {
-                    //nothing
-                }
-
-                @Override
-                public GeneralStorageMetadata migrationResultStorageFormat() {
-                    return new GeneralStorageMetadata(2, 0);
-                }
-            });
-            //missing 2 to 3
-//        attributeRenames.add(new GeneralStorageFormatMigration() {
-//            @Override
-//            public boolean canMigrate(GeneralStorageFormat generalStorageFormat) {
-//                return generalStorageFormat.match(new GeneralStorageFormat(2,0));
-//            }
-//
-//            @Override
-//            public String migrate(String data) {
-//                return data;//nothing
-//            }
-//
-//            @Override
-//            public GeneralStorageFormat migrationResultStorageFormat() {
-//                return new GeneralStorageFormat(3,0);
-//            }
-//        });
-
-
-            GeneralStorageMetadata generalStorageMetadata = new GeneralStorageMetadata(3, 0);
-            MigrationManager<ExampleDataA, Void> manager = new MigrationManager<>(ExampleDataA.class, migrations, generalStorageMetadata, new DataMigrationManager<>((root1, oldDataStorageMetadataDictionary) -> { },ExampleDataA.class), ObjectMapperBuilder.build());
-            ExampleDataA exampleDataA = new ExampleDataA();
-            ExampleDataA result = manager.read(ObjectMapperBuilder.build().writeValueAsString(exampleDataA), new GeneralStorageMetadata(1, 0), createDataStorageMetadataDictionary(exampleDataA));
-            Assertions.assertNotNull(result);
-        });
-
-    }
-
-
-    @Test
-    public void read_read_migration_nested_and_dependent(){
-        List<GeneralMigration> migrations = new ArrayList<>();
-        migrations.add(new GeneralMigration() {
-            @Override
-            public boolean canMigrate(GeneralStorageMetadata generalStorageMetadata) {
-                return generalStorageMetadata.match(new GeneralStorageMetadata(1,0));
-            }
-
-            @Override
-            public void migrate(JsonNode data) {
-                ((ObjectNode)data).put("a","1");
-            }
-
-            @Override
-            public GeneralStorageMetadata migrationResultStorageFormat() {
-                return new GeneralStorageMetadata(2,0);
-            }
-        });
-        migrations.add(new GeneralMigration() {
-            @Override
-            public boolean canMigrate(GeneralStorageMetadata generalStorageMetadata) {
-                return generalStorageMetadata.match(new GeneralStorageMetadata(2,0));
-            }
-
-            @Override
-            public void migrate(JsonNode data) {
-                if (! data.get("a").asText().equals("1")){//hack to simulate migration depending on previous migration
-                    throw new IllegalStateException();
-                }
-            }
-
-            @Override
-            public GeneralStorageMetadata migrationResultStorageFormat() {
-                return new GeneralStorageMetadata(3,0);
-            }
-        });
-
-
-        GeneralStorageMetadata generalStorageMetadata = new GeneralStorageMetadata(3,0);
-        MigrationManager<ExampleDataA,Void> manager = new MigrationManager<>(ExampleDataA.class, migrations, generalStorageMetadata, new DataMigrationManager<>((root1, oldDataStorageMetadataDictionary) -> { },ExampleDataA.class),ObjectMapperBuilder.build());
-        ExampleDataA exampleDataA = new ExampleDataA();
-        ExampleDataA result = manager.read(ObjectMapperBuilder.build().writeValueAsString(exampleDataA), new GeneralStorageMetadata(1,0),createDataStorageMetadataDictionary(exampleDataA));
-        Assertions.assertNotNull(result);
     }
 
     @Test
@@ -261,12 +75,10 @@ public class MigrationManagerTest {
                 "  \"referenceListAttribute\" : [ ]\n" +
                 "}";
 
-        DataMigrationManager<ExampleDataA> migrations = new DataMigrationManager<>((root1, oldDataStorageMetadataDictionary) -> { },ExampleDataA.class);
-        migrations.renameAttribute(ExampleDataA.class, "wrongName",d->d.stringAttribute);
 
-        GeneralStorageMetadata generalStorageMetadata = new GeneralStorageMetadata(1, 0);
-        MigrationManager<ExampleDataA,Void> manager = new MigrationManager<>(ExampleDataA.class, List.of(), generalStorageMetadata, migrations, ObjectMapperBuilder.build());
-        ExampleDataA result = manager.read(input, generalStorageMetadata,ObjectMapperBuilder.build().readValue(oldDictionary,DataStorageMetadataDictionary.class));
+        MigrationManager<ExampleDataA,Void> manager = new MigrationManager<>(ExampleDataA.class, ObjectMapperBuilder.build(), (root1, oldDataStorageMetadataDictionary) -> { });
+        manager.renameAttribute(ExampleDataA.class, "wrongName",d->d.stringAttribute);
+        ExampleDataA result = manager.read(input,ObjectMapperBuilder.build().readValue(oldDictionary,DataStorageMetadataDictionary.class));
         Assertions.assertEquals("123",result.stringAttribute.get());
     }
 
@@ -318,12 +130,10 @@ public class MigrationManagerTest {
                 "  \"referenceListAttribute\" : [ ]\n" +
                 "}";
 
-        DataMigrationManager<ExampleDataA> migrations = new DataMigrationManager<>((root1, oldDataStorageMetadataDictionary) -> { },ExampleDataA.class);
-        migrations.renameClass("de.factoryfx.data.merge.testdata.WrongNameExampleDataA",ExampleDataA.class);
 
-        GeneralStorageMetadata generalStorageMetadata = new GeneralStorageMetadata(1, 0);
-        MigrationManager<ExampleDataA,Void> manager = new MigrationManager<>(ExampleDataA.class, List.of(), generalStorageMetadata, migrations,ObjectMapperBuilder.build());
-        ExampleDataA result = manager.read(input, generalStorageMetadata,ObjectMapperBuilder.build().readValue(oldDictionary,DataStorageMetadataDictionary.class));
+        MigrationManager<ExampleDataA,Void> manager = new MigrationManager<>(ExampleDataA.class, ObjectMapperBuilder.build(), (root1, oldDataStorageMetadataDictionary) -> { });
+        manager.renameClass("de.factoryfx.data.merge.testdata.WrongNameExampleDataA",ExampleDataA.class);
+        ExampleDataA result = manager.read(input,ObjectMapperBuilder.build().readValue(oldDictionary,DataStorageMetadataDictionary.class));
         Assertions.assertEquals("123",result.stringAttribute.get());
     }
 
@@ -347,9 +157,8 @@ public class MigrationManagerTest {
                         "  \"referenceListAttribute\" : [ ]\n" +
                         "}";
 
-        GeneralStorageMetadata generalStorageMetadata = new GeneralStorageMetadata(1, 0);
-        MigrationManager<ExampleDataA,Void> manager = new MigrationManager<>(ExampleDataA.class, List.of(), generalStorageMetadata, new DataMigrationManager<>((root1, oldDataStorageMetadataDictionary) -> { },ExampleDataA.class),ObjectMapperBuilder.build());
-        ExampleDataA result = manager.read(input, generalStorageMetadata,dummyDictionaryFromRoot);
+        MigrationManager<ExampleDataA,Void> manager = new MigrationManager<>(ExampleDataA.class, ObjectMapperBuilder.build(), (root1, oldDataStorageMetadataDictionary) -> { });
+        ExampleDataA result = manager.read(input,dummyDictionaryFromRoot);
         Assertions.assertEquals("123",result.stringAttribute.get());
     }
 

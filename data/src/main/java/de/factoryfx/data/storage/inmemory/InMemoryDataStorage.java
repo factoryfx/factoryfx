@@ -22,7 +22,7 @@ public class InMemoryDataStorage<R extends Data,S> implements DataStorage<R,S> {
         initialFactory.internal().addBackReferences();
         this.currentFactoryId=UUID.randomUUID().toString();
 
-        StoredDataMetadata<S> metadata = new StoredDataMetadata<>(currentFactoryId, "System", "initial", currentFactoryId,null,null,null);
+        StoredDataMetadata<S> metadata = new StoredDataMetadata<>(currentFactoryId, "System", "initial", currentFactoryId,null,null);
         storage.put(currentFactoryId,new DataAndStoredMetadata<>(initialFactory, metadata));
     }
 
@@ -49,7 +49,7 @@ public class InMemoryDataStorage<R extends Data,S> implements DataStorage<R,S> {
                 update.user,
                 update.comment,
                 update.baseVersionId,
-                changeSummary, null,
+                changeSummary,
                 update.root.internal().createDataStorageMetadataDictionaryFromRoot()
         );
 
@@ -75,7 +75,7 @@ public class InMemoryDataStorage<R extends Data,S> implements DataStorage<R,S> {
                     entry.getKey(),
                     entry.getValue().user,
                     entry.getValue().comment,
-                    entry.getValue().scheduled,null,null
+                    entry.getValue().scheduled,null
             ));
         }
         return result;

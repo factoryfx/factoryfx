@@ -1,7 +1,5 @@
 package de.factoryfx.factory.builder;
 
-import de.factoryfx.data.attribute.types.StringAttribute;
-import de.factoryfx.data.storage.migration.datamigration.PathBuilder;
 import de.factoryfx.factory.SimpleFactoryBase;
 import de.factoryfx.factory.atrribute.FactoryReferenceAttribute;
 import de.factoryfx.server.Microservice;
@@ -88,11 +86,9 @@ public class ReferenceTypeChangeMigrationTest {
             FactoryTreeBuilder<Void, Void, ServerFactory, Void> builder = new FactoryTreeBuilder<>(ServerFactory.class);
             builder.addFactory(ServerFactory.class, Scope.SINGLETON);
             builder.addFactory(ClientSystemFactory.class, Scope.SINGLETON);
-            Microservice<Void, Void, ServerFactory, Void> msNew = builder.microservice().withFilesystemStorage(folder)
-                    .withDataMigration((dataMigrationManager) -> {
-                        dataMigrationManager.renameClass(PartnerFactory.class.getName(),ClientSystemFactory.class);
-                    })
-                    .build();
+            Microservice<Void, Void, ServerFactory, Void> msNew = builder.microservice().withFilesystemStorage(folder).
+                    withRenameClassMigration(PartnerFactory.class.getName(),ClientSystemFactory.class).
+                    build();
             msNew.start();
 
             ServerFactory serverFactory = msNew.prepareNewFactory().root;

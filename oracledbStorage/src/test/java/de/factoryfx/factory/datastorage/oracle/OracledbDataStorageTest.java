@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import de.factoryfx.data.jackson.ObjectMapperBuilder;
 import de.factoryfx.data.storage.DataUpdate;
 import de.factoryfx.data.storage.StoredDataMetadata;
-import de.factoryfx.data.storage.migration.GeneralStorageMetadataBuilder;
 import de.factoryfx.factory.testfactories.ExampleFactoryA;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -29,7 +28,7 @@ public class OracledbDataStorageTest extends DatabaseTest{
 
     @Test
     public void test_init_no_existing_factory() {
-        OracledbDataStorage<ExampleFactoryA,Void> oracledbFactoryStorage = new OracledbDataStorage<>(connectionSupplier, createInitialExampleFactoryA(), GeneralStorageMetadataBuilder.build(), createMigrationManager(), ObjectMapperBuilder.build());
+        OracledbDataStorage<ExampleFactoryA,Void> oracledbFactoryStorage = new OracledbDataStorage<>(connectionSupplier, createInitialExampleFactoryA(), createMigrationManager(), ObjectMapperBuilder.build());
         oracledbFactoryStorage.getCurrentData();
 
         Assertions.assertEquals(1,oracledbFactoryStorage.getHistoryDataList().size());
@@ -37,16 +36,16 @@ public class OracledbDataStorageTest extends DatabaseTest{
 
     @Test
     public void test_init_existing_factory() {
-        OracledbDataStorage<ExampleFactoryA,Void> oracledbFactoryStorage = new OracledbDataStorage<>(connectionSupplier, createInitialExampleFactoryA(), GeneralStorageMetadataBuilder.build(), createMigrationManager(), ObjectMapperBuilder.build());
+        OracledbDataStorage<ExampleFactoryA,Void> oracledbFactoryStorage = new OracledbDataStorage<>(connectionSupplier, createInitialExampleFactoryA(), createMigrationManager(), ObjectMapperBuilder.build());
         String id=oracledbFactoryStorage.getCurrentData().id;
 
-        OracledbDataStorage<ExampleFactoryA,Void> restored = new OracledbDataStorage<>(connectionSupplier,null, GeneralStorageMetadataBuilder.build(), createMigrationManager(), ObjectMapperBuilder.build());
+        OracledbDataStorage<ExampleFactoryA,Void> restored = new OracledbDataStorage<>(connectionSupplier,null, createMigrationManager(), ObjectMapperBuilder.build());
         Assertions.assertEquals(id,restored.getCurrentData().id);
     }
 
     @Test
     public void test_update()  {
-        OracledbDataStorage<ExampleFactoryA,Void> oracledbFactoryStorage = new OracledbDataStorage<>(connectionSupplier, createInitialExampleFactoryA(), GeneralStorageMetadataBuilder.build(), createMigrationManager(), ObjectMapperBuilder.build());
+        OracledbDataStorage<ExampleFactoryA,Void> oracledbFactoryStorage = new OracledbDataStorage<>(connectionSupplier, createInitialExampleFactoryA(), createMigrationManager(), ObjectMapperBuilder.build());
         oracledbFactoryStorage.getCurrentData();//usually called in preparenew
         Assertions.assertEquals(1,oracledbFactoryStorage.getHistoryDataList().size());
         oracledbFactoryStorage.updateCurrentData(createUpdate(),null);
@@ -63,7 +62,7 @@ public class OracledbDataStorageTest extends DatabaseTest{
     public void test_patchCurrentData()  {
         ExampleFactoryA initialExampleDataA = createInitialExampleFactoryA();
         initialExampleDataA.stringAttribute.set("123");
-        OracledbDataStorage<ExampleFactoryA,Void> oracleStorage = new OracledbDataStorage<>(connectionSupplier, createInitialExampleFactoryA(), GeneralStorageMetadataBuilder.build(), createMigrationManager(), ObjectMapperBuilder.build());
+        OracledbDataStorage<ExampleFactoryA,Void> oracleStorage = new OracledbDataStorage<>(connectionSupplier, createInitialExampleFactoryA(), createMigrationManager(), ObjectMapperBuilder.build());
         oracleStorage.getCurrentData();//init
         oracleStorage.patchCurrentData((data, metadata) -> {
             ((ObjectNode) data.get("stringAttribute")).put("v", "qqq");
@@ -76,7 +75,7 @@ public class OracledbDataStorageTest extends DatabaseTest{
     public void test_patchAll()  {
         ExampleFactoryA initialExampleDataA = createInitialExampleFactoryA();
         initialExampleDataA.stringAttribute.set("123");
-        OracledbDataStorage<ExampleFactoryA,Void> oracleStorage = new OracledbDataStorage<>(connectionSupplier, createInitialExampleFactoryA(), GeneralStorageMetadataBuilder.build(), createMigrationManager(), ObjectMapperBuilder.build());String id=oracleStorage.getCurrentData().id;
+        OracledbDataStorage<ExampleFactoryA,Void> oracleStorage = new OracledbDataStorage<>(connectionSupplier, createInitialExampleFactoryA(), createMigrationManager(), ObjectMapperBuilder.build());String id=oracleStorage.getCurrentData().id;
         oracleStorage.updateCurrentData(createUpdate(),null);
 
         oracleStorage.patchAll((data, metadata) -> {

@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import de.factoryfx.data.Data;
 import de.factoryfx.data.jackson.SimpleObjectMapper;
 import de.factoryfx.data.storage.*;
-import de.factoryfx.data.storage.migration.GeneralStorageMetadata;
 import de.factoryfx.data.storage.migration.MigrationManager;
 
 import java.sql.*;
@@ -18,13 +17,11 @@ public class OracledbDataStorage<R extends Data,S> implements DataStorage<R,S> {
     private final R initialData;
     private final MigrationManager<R,S> migrationManager;
     private final Supplier< Connection > connectionSupplier;
-    private final GeneralStorageMetadata generalStorageMetadata;
     private final SimpleObjectMapper objectMapper;
 
-    public OracledbDataStorage(Supplier<Connection> connectionSupplier, R initialDataParam, GeneralStorageMetadata generalStorageMetadata,  MigrationManager<R,S> migrationManager, OracledbDataStorageHistory<R,S> oracledbDataStorageHistory, OracledbDataStorageFuture<R,S> oracledbDataStorageFuture, SimpleObjectMapper objectMapper){
+    public OracledbDataStorage(Supplier<Connection> connectionSupplier, R initialDataParam,  MigrationManager<R,S> migrationManager, OracledbDataStorageHistory<R,S> oracledbDataStorageHistory, OracledbDataStorageFuture<R,S> oracledbDataStorageFuture, SimpleObjectMapper objectMapper){
         this.initialData = initialDataParam;
 
-        this.generalStorageMetadata=generalStorageMetadata;
         this.connectionSupplier = connectionSupplier;
         this.migrationManager = migrationManager;
         this.oracledbDataStorageHistory = oracledbDataStorageHistory;
@@ -47,8 +44,8 @@ public class OracledbDataStorage<R extends Data,S> implements DataStorage<R,S> {
         }
     }
 
-    public OracledbDataStorage(Supplier< Connection > connectionSupplier, R initialDataParam, GeneralStorageMetadata generalStorageMetadata, MigrationManager<R,S> migrationManager, SimpleObjectMapper objectMapper){
-        this(connectionSupplier,initialDataParam,generalStorageMetadata, migrationManager,new OracledbDataStorageHistory<>(connectionSupplier, migrationManager),
+    public OracledbDataStorage(Supplier< Connection > connectionSupplier, R initialDataParam, MigrationManager<R,S> migrationManager, SimpleObjectMapper objectMapper){
+        this(connectionSupplier,initialDataParam, migrationManager,new OracledbDataStorageHistory<>(connectionSupplier, migrationManager),
                 new OracledbDataStorageFuture<>(connectionSupplier, migrationManager),objectMapper);
     }
 
@@ -71,7 +68,7 @@ public class OracledbDataStorage<R extends Data,S> implements DataStorage<R,S> {
             try (ResultSet resultSet =statement.executeQuery(sql)){
                 if(resultSet.next()){
                     StoredDataMetadata<S> factoryMetadata = migrationManager.readStoredFactoryMetadata(JdbcUtil.readStringFromBlob(resultSet,"factoryMetadata"));
-                    return new DataAndId<>(migrationManager.read(JdbcUtil.readStringFromBlob(resultSet,"factory"),factoryMetadata.generalStorageMetadata,factoryMetadata.dataStorageMetadataDictionary),factoryMetadata.id);
+                    return new DataAndId<>(migrationManager.read(JdbcUtil.readStringFromBlob(resultSet,"factory"),factoryMetadata.dataStorageMetadataDictionary),factoryMetadata.id);
                 }
             }
         } catch (SQLException e) {
@@ -83,7 +80,7 @@ public class OracledbDataStorage<R extends Data,S> implements DataStorage<R,S> {
                 "System",
                 "initial factory",
                 UUID.randomUUID().toString(),
-                null, generalStorageMetadata,
+                null,
                 initialData.internal().createDataStorageMetadataDictionaryFromRoot()
         );
 
@@ -93,7 +90,7 @@ public class OracledbDataStorage<R extends Data,S> implements DataStorage<R,S> {
 
     @Override
     public void updateCurrentData(DataUpdate<R> update, S changeSummary) {
-        StoredDataMetadata<S> metadata =update.createUpdateStoredDataMetadata(changeSummary,generalStorageMetadata);
+        StoredDataMetadata<S> metadata =update.createUpdateStoredDataMetadata(changeSummary);
         update(update.root, metadata);
     }
 
@@ -179,7 +176,6 @@ public class OracledbDataStorage<R extends Data,S> implements DataStorage<R,S> {
                 futureFactory.user,
                 futureFactory.comment,
                 futureFactory.scheduled,
-                generalStorageMetadata,
                 futureFactory.root.internal().createDataStorageMetadataDictionaryFromRoot()
         );
 

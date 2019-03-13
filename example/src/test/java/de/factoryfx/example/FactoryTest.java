@@ -1,10 +1,8 @@
 package de.factoryfx.example;
 
-import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import de.factoryfx.example.server.ServerRootFactory;
@@ -12,12 +10,9 @@ import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.factory.util.ClasspathBasedFactoryProvider;
 import de.factoryfx.factory.validator.FactoryStyleValidation;
 import de.factoryfx.factory.validator.FactoryStyleValidator;
-import org.glassfish.jersey.server.model.Parameterized;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DynamicTest;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestFactory;
-import org.junit.jupiter.params.ParameterizedTest;
 
 public class FactoryTest {
 

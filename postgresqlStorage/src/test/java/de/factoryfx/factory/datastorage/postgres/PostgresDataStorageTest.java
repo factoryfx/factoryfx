@@ -13,11 +13,7 @@ import javax.sql.DataSource;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import de.factoryfx.data.jackson.ObjectMapperBuilder;
 import de.factoryfx.data.storage.*;
-import de.factoryfx.data.storage.migration.DataMigrationManager;
-import de.factoryfx.data.storage.migration.GeneralStorageMetadataBuilder;
 import de.factoryfx.data.storage.migration.MigrationManager;
-import de.factoryfx.data.storage.migration.datamigration.AttributeFiller;
-import de.factoryfx.data.storage.migration.metadata.DataStorageMetadataDictionary;
 import de.factoryfx.factory.testfactories.ExampleFactoryA;
 import org.junit.jupiter.api.*;
 import org.mockito.Mockito;
@@ -69,12 +65,12 @@ public class PostgresDataStorageTest {
 
 
     private MigrationManager<ExampleFactoryA,Void> createDataMigrationManager(){
-        return new MigrationManager<>(ExampleFactoryA.class, List.of(), GeneralStorageMetadataBuilder.build(), new DataMigrationManager<>((root, d) -> { }, ExampleFactoryA.class), ObjectMapperBuilder.build());
+        return new MigrationManager<>(ExampleFactoryA.class, ObjectMapperBuilder.build(), (root, d) -> { });
     }
 
     @Test
     public void test_init_no_existing_factory() throws SQLException {
-        PostgresDataStorage<ExampleFactoryA,Void> postgresFactoryStorage = new PostgresDataStorage<>(postgresDatasource, createInitialExampleFactoryA(),GeneralStorageMetadataBuilder.build(), createDataMigrationManager(),ObjectMapperBuilder.build());
+        PostgresDataStorage<ExampleFactoryA,Void> postgresFactoryStorage = new PostgresDataStorage<>(postgresDatasource, createInitialExampleFactoryA(), createDataMigrationManager(),ObjectMapperBuilder.build());
         postgresFactoryStorage.getCurrentData();
         try (Connection con = postgresDatasource.getConnection()) {
             for (String sql : Arrays.asList("select * from currentconfiguration"
@@ -90,7 +86,7 @@ public class PostgresDataStorageTest {
 
     @Test
     public void test_init_no_existing_factory_but_schema() throws SQLException {
-        PostgresDataStorage<ExampleFactoryA,Void> postgresFactoryStorage = new PostgresDataStorage<>(postgresDatasource, createInitialExampleFactoryA(),GeneralStorageMetadataBuilder.build(), createDataMigrationManager(),ObjectMapperBuilder.build());
+        PostgresDataStorage<ExampleFactoryA,Void> postgresFactoryStorage = new PostgresDataStorage<>(postgresDatasource, createInitialExampleFactoryA(), createDataMigrationManager(),ObjectMapperBuilder.build());
         try (Connection con = postgresDatasource.getConnection()) {
             postgresFactoryStorage.createTables(con);
             con.commit();
@@ -122,16 +118,16 @@ public class PostgresDataStorageTest {
 
     @Test
     public void test_init_existing_factory() {
-        PostgresDataStorage<ExampleFactoryA,Void> postgresFactoryStorage = new PostgresDataStorage<>(postgresDatasource, createInitialExampleFactoryA(),GeneralStorageMetadataBuilder.build(), createDataMigrationManager(),ObjectMapperBuilder.build());
+        PostgresDataStorage<ExampleFactoryA,Void> postgresFactoryStorage = new PostgresDataStorage<>(postgresDatasource, createInitialExampleFactoryA(), createDataMigrationManager(),ObjectMapperBuilder.build());
         String id=postgresFactoryStorage.getCurrentData().id;
 
-        PostgresDataStorage<ExampleFactoryA,Void> restored = new PostgresDataStorage<>(postgresDatasource, null,GeneralStorageMetadataBuilder.build(), createDataMigrationManager(),ObjectMapperBuilder.build());
+        PostgresDataStorage<ExampleFactoryA,Void> restored = new PostgresDataStorage<>(postgresDatasource, null, createDataMigrationManager(),ObjectMapperBuilder.build());
         Assertions.assertEquals(id,restored.getCurrentData().id);
     }
 
     @Test
     public void test_update() {
-        PostgresDataStorage<ExampleFactoryA,Void> postgresFactoryStorage = new PostgresDataStorage<>(postgresDatasource, createInitialExampleFactoryA(),GeneralStorageMetadataBuilder.build(), createDataMigrationManager(),ObjectMapperBuilder.build());
+        PostgresDataStorage<ExampleFactoryA,Void> postgresFactoryStorage = new PostgresDataStorage<>(postgresDatasource, createInitialExampleFactoryA(), createDataMigrationManager(),ObjectMapperBuilder.build());
         String id=postgresFactoryStorage.getCurrentData().id;
 
         DataUpdate<ExampleFactoryA> update = createUpdate();
@@ -160,7 +156,7 @@ public class PostgresDataStorageTest {
 
     @Test
     public void test_initial_history() {
-        PostgresDataStorage<ExampleFactoryA,Void> postgresFactoryStorage = new PostgresDataStorage<>(postgresDatasource, createInitialExampleFactoryA(),GeneralStorageMetadataBuilder.build(), createDataMigrationManager(),ObjectMapperBuilder.build());
+        PostgresDataStorage<ExampleFactoryA,Void> postgresFactoryStorage = new PostgresDataStorage<>(postgresDatasource, createInitialExampleFactoryA(), createDataMigrationManager(),ObjectMapperBuilder.build());
 
         postgresFactoryStorage.getCurrentData();
         Assertions.assertEquals(1,postgresFactoryStorage.getHistoryDataList().size());
@@ -168,7 +164,7 @@ public class PostgresDataStorageTest {
 
     @Test
     public void test_multi_add() {
-        PostgresDataStorage<ExampleFactoryA,Void> postgresFactoryStorage = new PostgresDataStorage<>(postgresDatasource, createInitialExampleFactoryA(),GeneralStorageMetadataBuilder.build(), createDataMigrationManager(),ObjectMapperBuilder.build());
+        PostgresDataStorage<ExampleFactoryA,Void> postgresFactoryStorage = new PostgresDataStorage<>(postgresDatasource, createInitialExampleFactoryA(), createDataMigrationManager(),ObjectMapperBuilder.build());
         postgresFactoryStorage.getCurrentData();
 
         {
@@ -191,20 +187,20 @@ public class PostgresDataStorageTest {
 
     @Test
     public void test_restore(){
-        PostgresDataStorage<ExampleFactoryA,Void> postgresFactoryStorage = new PostgresDataStorage<>(postgresDatasource, createInitialExampleFactoryA(),GeneralStorageMetadataBuilder.build(), createDataMigrationManager(),ObjectMapperBuilder.build());
+        PostgresDataStorage<ExampleFactoryA,Void> postgresFactoryStorage = new PostgresDataStorage<>(postgresDatasource, createInitialExampleFactoryA(), createDataMigrationManager(),ObjectMapperBuilder.build());
         postgresFactoryStorage.getCurrentData();
 
         DataUpdate<ExampleFactoryA> update = createUpdate();
         postgresFactoryStorage.updateCurrentData(update,null);
         Assertions.assertEquals(2,postgresFactoryStorage.getHistoryDataList().size());
 
-        PostgresDataStorage<ExampleFactoryA,Void> restored = new PostgresDataStorage<>(postgresDatasource,createInitialExampleFactoryA(),GeneralStorageMetadataBuilder.build(), createDataMigrationManager(),ObjectMapperBuilder.build());
+        PostgresDataStorage<ExampleFactoryA,Void> restored = new PostgresDataStorage<>(postgresDatasource,createInitialExampleFactoryA(), createDataMigrationManager(),ObjectMapperBuilder.build());
         Assertions.assertEquals(2,restored.getHistoryDataList().size());
     }
 
     @Test
     public void test_future() {
-        PostgresDataStorage<ExampleFactoryA,Void> postgresFactoryStorage = new PostgresDataStorage<>(postgresDatasource, createInitialExampleFactoryA(),GeneralStorageMetadataBuilder.build(), createDataMigrationManager(),ObjectMapperBuilder.build());
+        PostgresDataStorage<ExampleFactoryA,Void> postgresFactoryStorage = new PostgresDataStorage<>(postgresDatasource, createInitialExampleFactoryA(), createDataMigrationManager(),ObjectMapperBuilder.build());
 
         postgresFactoryStorage.getCurrentData();
         ExampleFactoryA exampleFactoryA = new ExampleFactoryA();
@@ -247,7 +243,7 @@ public class PostgresDataStorageTest {
 
     @Test
     public void test_history() {
-        PostgresDataStorage<ExampleFactoryA,Void> postgresFactoryStorage = new PostgresDataStorage<>(postgresDatasource, createInitialExampleFactoryA(),GeneralStorageMetadataBuilder.build(), createDataMigrationManager(),ObjectMapperBuilder.build());
+        PostgresDataStorage<ExampleFactoryA,Void> postgresFactoryStorage = new PostgresDataStorage<>(postgresDatasource, createInitialExampleFactoryA(), createDataMigrationManager(),ObjectMapperBuilder.build());
 
         DataUpdate<ExampleFactoryA> update = createUpdate();
         postgresFactoryStorage.updateCurrentData(update,null);
@@ -269,7 +265,7 @@ public class PostgresDataStorageTest {
     public void test_patchCurrentData()  {
         ExampleFactoryA initialExampleDataA = createInitialExampleFactoryA();
         initialExampleDataA.stringAttribute.set("123");
-        PostgresDataStorage<ExampleFactoryA,Void> postgresFactoryStorage = new PostgresDataStorage<>(postgresDatasource, createInitialExampleFactoryA(),GeneralStorageMetadataBuilder.build(), createDataMigrationManager(),ObjectMapperBuilder.build());
+        PostgresDataStorage<ExampleFactoryA,Void> postgresFactoryStorage = new PostgresDataStorage<>(postgresDatasource, createInitialExampleFactoryA(), createDataMigrationManager(),ObjectMapperBuilder.build());
         postgresFactoryStorage.getCurrentData();//init
         postgresFactoryStorage.patchCurrentData((data, metadata) -> {
             ((ObjectNode) data.get("stringAttribute")).put("v", "qqq");

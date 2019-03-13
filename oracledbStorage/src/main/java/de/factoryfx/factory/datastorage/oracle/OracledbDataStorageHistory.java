@@ -46,7 +46,7 @@ public class OracledbDataStorageHistory<R extends Data,S> {
              try (ResultSet resultSet =statement.executeQuery()) {
                  if (resultSet.next()) {
                      StoredDataMetadata<S> metadata = migrationManager.readStoredFactoryMetadata(JdbcUtil.readStringFromBlob(resultSet, "factoryMetadata"));
-                     return migrationManager.read(JdbcUtil.readStringFromBlob(resultSet, "factory"), metadata.generalStorageMetadata, metadata.dataStorageMetadataDictionary);
+                     return migrationManager.read(JdbcUtil.readStringFromBlob(resultSet, "factory"), metadata.dataStorageMetadataDictionary);
                  }
              }
         } catch (SQLException e) {

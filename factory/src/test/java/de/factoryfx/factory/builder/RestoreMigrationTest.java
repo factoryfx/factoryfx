@@ -130,13 +130,11 @@ public class RestoreMigrationTest {
             FactoryTreeBuilder<Void, Void, ServerFactory, Void> builder = new FactoryTreeBuilder<>(ServerFactory.class);
             builder.addFactory(ServerFactory.class, Scope.SINGLETON);
             builder.addFactory(ClientSystemFactory.class, Scope.SINGLETON);
-            Microservice<Void, Void, ServerFactory, Void> msNew = builder.microservice().withFilesystemStorage(folder)
-                    .withDataMigration((dataMigrationManager) -> {
-                        dataMigrationManager.renameAttribute(ClientSystemFactory.class, "url", (c) -> c.clientUrl);
-                        dataMigrationManager.restoreAttribute(PathBuilder.value(String.class).pathElement("partnerFactory1").attribute("url"), (r, v) -> r.clientSystemFactory1.get().partnerUrl.set(v));
-                        dataMigrationManager.restoreAttribute(PathBuilder.value(String.class).pathElement("partnerFactory2").attribute("url"), (r, v) -> r.clientSystemFactory2.get().partnerUrl.set(v));
-                    })
-                    .build();
+            Microservice<Void, Void, ServerFactory, Void> msNew = builder.microservice().withFilesystemStorage(folder).
+                withRenameAttributeMigration(ClientSystemFactory.class, "url", (c) -> c.clientUrl).
+                withRestoreAttributeMigration(PathBuilder.value(String.class).pathElement("partnerFactory1").attribute("url"), (r, v) -> r.clientSystemFactory1.get().partnerUrl.set(v)).
+                withRestoreAttributeMigration(PathBuilder.value(String.class).pathElement("partnerFactory2").attribute("url"), (r, v) -> r.clientSystemFactory2.get().partnerUrl.set(v)).
+            build();
             msNew.start();
 
             ServerFactory serverFactory = msNew.prepareNewFactory().root;

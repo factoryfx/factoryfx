@@ -4,8 +4,6 @@ import de.factoryfx.data.jackson.ObjectMapperBuilder;
 import de.factoryfx.data.merge.DataMerger;
 import de.factoryfx.data.merge.MergeDiffInfo;
 import de.factoryfx.data.storage.*;
-import de.factoryfx.data.storage.migration.DataMigrationManager;
-import de.factoryfx.data.storage.migration.GeneralStorageMetadataBuilder;
 import de.factoryfx.data.storage.migration.MigrationManager;
 import de.factoryfx.factory.builder.FactoryTreeBuilder;
 import de.factoryfx.factory.builder.Scope;
@@ -23,7 +21,6 @@ import org.mockito.stubbing.Answer;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.List;
 
 
 public class FactoryEditManagerTest {
@@ -68,7 +65,7 @@ public class FactoryEditManagerTest {
 
 
     private MigrationManager<ExampleFactoryA, Void> createDataMigrationManager() {
-        return new MigrationManager<>(ExampleFactoryA.class, List.of(), GeneralStorageMetadataBuilder.build(), new DataMigrationManager<>((root, d) -> { }, ExampleFactoryA.class), ObjectMapperBuilder.build());
+        return new MigrationManager<>(ExampleFactoryA.class, ObjectMapperBuilder.build(), (root, d) -> { });
     }
 
     @Test

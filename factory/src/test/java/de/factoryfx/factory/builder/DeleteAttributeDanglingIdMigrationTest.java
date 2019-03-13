@@ -115,11 +115,7 @@ public class DeleteAttributeDanglingIdMigrationTest {
                 serverFactoryNested.stringAttribute.set("123");
                 return serverFactoryNested;
             });
-            Microservice<Void, Void, ServerFactory, Void> msNew = builder.microservice().withFilesystemStorage(folder)
-                    .withDataMigration((dataMigrationManager) -> {
-                        //automatic fix for ids
-                       })
-                    .build();
+            Microservice<Void, Void, ServerFactory, Void> msNew = builder.microservice().withFilesystemStorage(folder).build();
             msNew.start();
 
             ServerFactory serverFactory = msNew.prepareNewFactory().root;

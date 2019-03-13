@@ -1,6 +1,5 @@
 package de.factoryfx.data.storage.migration.metadata;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import de.factoryfx.data.jackson.ObjectMapperBuilder;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;

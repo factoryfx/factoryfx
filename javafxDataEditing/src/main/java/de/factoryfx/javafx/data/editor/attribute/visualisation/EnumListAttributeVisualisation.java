@@ -77,7 +77,7 @@ public class EnumListAttributeVisualisation<E extends Enum<E>> extends ListAttri
         final MenuItem selectAll = new MenuItem("alle auswählen");
         selectAll.setOnAction(event -> {
             enumListAttribute.get().clear();
-            enumListAttribute.get().addAll((List)comboBox.getItems());
+            enumListAttribute.get().addAll(comboBox.getItems());
             updateCheckComboBox(comboBox);
         });
         final MenuItem unSelectAll = new MenuItem("keine auswählen");

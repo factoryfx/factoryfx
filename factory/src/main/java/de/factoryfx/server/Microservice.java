@@ -5,7 +5,6 @@ import java.util.Collection;
 import de.factoryfx.data.merge.DataMerger;
 import de.factoryfx.data.merge.MergeDiffInfo;
 import de.factoryfx.data.storage.*;
-import de.factoryfx.data.storage.migration.GeneralStorageMetadata;
 import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.factory.FactoryManager;
 import de.factoryfx.factory.RootFactoryWrapper;
@@ -23,13 +22,10 @@ public class Microservice<V,L,R extends FactoryBase<L,V,R>,S> {
     private final DataStorage<R,S> dataStorage;
     private final ChangeSummaryCreator<R,S> changeSummaryCreator;
 
-    public final GeneralStorageMetadata generalStorageMetadata;
-
-    public Microservice(FactoryManager<V,L,R> factoryManager, DataStorage<R,S> dataStorage, ChangeSummaryCreator<R,S> changeSummaryCreator, GeneralStorageMetadata generalStorageMetadata) {
+    public Microservice(FactoryManager<V,L,R> factoryManager, DataStorage<R,S> dataStorage, ChangeSummaryCreator<R,S> changeSummaryCreator) {
         this.factoryManager = factoryManager;
         this.dataStorage = dataStorage;
         this.changeSummaryCreator = changeSummaryCreator;
-        this.generalStorageMetadata = generalStorageMetadata;
     }
 
     public MergeDiffInfo<R> getDiffToPreviousVersion(StoredDataMetadata<S> storedDataMetadata) {

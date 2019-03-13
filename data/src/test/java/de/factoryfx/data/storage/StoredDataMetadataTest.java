@@ -2,15 +2,11 @@ package de.factoryfx.data.storage;
 
 import de.factoryfx.data.jackson.ObjectMapperBuilder;
 import de.factoryfx.data.merge.testdata.ExampleDataA;
-import de.factoryfx.data.storage.migration.DataMigrationManager;
-import de.factoryfx.data.storage.migration.GeneralStorageMetadata;
-import de.factoryfx.data.storage.migration.GeneralStorageMetadataBuilder;
 import de.factoryfx.data.storage.migration.MigrationManager;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 public class StoredDataMetadataTest {
 
@@ -22,7 +18,7 @@ public class StoredDataMetadataTest {
     @Test
     public void test_json(){
         LocalDateTime now = LocalDateTime.now();
-        StoredDataMetadata<SummaryDummy> value=new StoredDataMetadata<>(now, "", "", "", "sdfgstrg", new SummaryDummy(),new GeneralStorageMetadata(1,2),null);
+        StoredDataMetadata<SummaryDummy> value=new StoredDataMetadata<>(now, "", "", "", "sdfgstrg", new SummaryDummy(),null);
         final StoredDataMetadata<SummaryDummy> copy = ObjectMapperBuilder.build().copy(value);
 
         System.out.println(
@@ -30,8 +26,6 @@ public class StoredDataMetadataTest {
         );
         Assertions.assertEquals(now,copy.creationTime);
         Assertions.assertEquals(1,copy.changeSummary.diffCounter);
-        Assertions.assertTrue(copy.generalStorageMetadata.match(new GeneralStorageMetadata(1, 2)));
-
     }
 
     @Test
@@ -45,8 +39,8 @@ public class StoredDataMetadataTest {
                 "    \"diffCounter\" : 1\n" +
                 "  }\n" +
                 "}";
-        MigrationManager<ExampleDataA,SummaryDummy> manager = new MigrationManager<>(ExampleDataA.class, List.of(), GeneralStorageMetadataBuilder.build(), new DataMigrationManager<>((root1, oldDataStorageMetadataDictionary) -> { },ExampleDataA.class), ObjectMapperBuilder.build());
-        final StoredDataMetadata<SummaryDummy> oldParsed = manager.readStoredFactoryMetadata(old);
+        MigrationManager<ExampleDataA,SummaryDummy> manager = new MigrationManager<>(ExampleDataA.class, ObjectMapperBuilder.build(), ((root1, oldDataStorageMetadataDictionary) -> { }));
+        Assertions.assertNotNull(manager.readStoredFactoryMetadata(old));
 
 
     }

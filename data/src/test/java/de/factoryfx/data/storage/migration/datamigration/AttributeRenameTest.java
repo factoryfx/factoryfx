@@ -1,17 +1,11 @@
 package de.factoryfx.data.storage.migration.datamigration;
 
-import de.factoryfx.data.attribute.Attribute;
 import de.factoryfx.data.jackson.ObjectMapperBuilder;
 import de.factoryfx.data.merge.testdata.ExampleDataA;
-import de.factoryfx.data.storage.migration.DataMigrationManager;
-import de.factoryfx.data.storage.migration.metadata.DataStorageMetadataDictionary;
+import de.factoryfx.data.storage.migration.MigrationManager;
 import de.factoryfx.data.storage.migration.metadata.ExampleDataAPrevious;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-
-import java.util.function.Function;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 class AttributeRenameTest {
 
@@ -21,7 +15,7 @@ class AttributeRenameTest {
         exampleDataAPrevious.garbage.set("123");
         exampleDataAPrevious.internal().addBackReferences();
 
-        DataMigrationManager<ExampleDataA> dataMigrationManager = new DataMigrationManager<>((root, oldDataStorageMetadataDictionary) -> { }, ExampleDataA.class);
+        MigrationManager<ExampleDataA,Void> dataMigrationManager = new MigrationManager<>(ExampleDataA.class, ObjectMapperBuilder.build(),(root, oldDataStorageMetadataDictionary) -> { });
         dataMigrationManager.renameClass(ExampleDataAPrevious.class.getName(),ExampleDataA.class);
         dataMigrationManager.renameAttribute(ExampleDataA.class, "garbage", exampleDataA -> exampleDataA.stringAttribute);
 
@@ -35,7 +29,7 @@ class AttributeRenameTest {
         exampleDataAPrevious.garbage.set("123");
         exampleDataAPrevious.internal().addBackReferences();
 
-        DataMigrationManager<ExampleDataA> dataMigrationManager = new DataMigrationManager<>((root, oldDataStorageMetadataDictionary) -> {}, ExampleDataA.class);
+        MigrationManager<ExampleDataA,Void> dataMigrationManager = new MigrationManager<>(ExampleDataA.class, ObjectMapperBuilder.build(),(root, oldDataStorageMetadataDictionary) -> {});
         dataMigrationManager.renameAttribute(ExampleDataA.class, "garbage", exampleDataA -> exampleDataA.stringAttribute);
         dataMigrationManager.renameClass(ExampleDataAPrevious.class.getName(),ExampleDataA.class);
 

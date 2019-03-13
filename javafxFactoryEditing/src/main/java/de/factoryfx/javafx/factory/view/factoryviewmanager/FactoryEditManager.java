@@ -11,7 +11,6 @@ import de.factoryfx.data.jackson.ObjectMapperBuilder;
 import de.factoryfx.data.merge.MergeDiffInfo;
 import de.factoryfx.data.storage.DataUpdate;
 import de.factoryfx.data.storage.StoredDataMetadata;
-import de.factoryfx.data.storage.migration.GeneralStorageMetadataBuilder;
 import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.data.storage.migration.MigrationManager;
 import de.factoryfx.factory.log.FactoryUpdateLog;
@@ -98,7 +97,7 @@ public class FactoryEditManager<V,R extends FactoryBase<?,V,R>,S> {
 
     public void saveToFile(Path target) {
         RawFactoryDataAndMetadata<S> rawFactoryDataAndMetadata = new RawFactoryDataAndMetadata<>();
-        rawFactoryDataAndMetadata.metadata=loadedRoot.createUpdateStoredDataMetadata(null,GeneralStorageMetadataBuilder.build());
+        rawFactoryDataAndMetadata.metadata=loadedRoot.createUpdateStoredDataMetadata(null);
         rawFactoryDataAndMetadata.root= ObjectMapperBuilder.build().writeValueAsTree(loadedRoot.root);
         ObjectMapperBuilder.build().writeValue(target.toFile(), rawFactoryDataAndMetadata);
     }
@@ -106,7 +105,7 @@ public class FactoryEditManager<V,R extends FactoryBase<?,V,R>,S> {
     @SuppressWarnings("unchecked")
     public void loadFromFile(Path from) {
         RawFactoryDataAndMetadata<S> wrapper = (RawFactoryDataAndMetadata<S>)ObjectMapperBuilder.build().readValue(from.toFile(), RawFactoryDataAndMetadata.class);
-        R serverFactory = migrationManager.read(wrapper.root, wrapper.metadata.generalStorageMetadata,wrapper.metadata.dataStorageMetadataDictionary);
+        R serverFactory = migrationManager.read(wrapper.root,wrapper.metadata.dataStorageMetadataDictionary);
 
         DataUpdate<R> previousRoot=loadedRoot;
 

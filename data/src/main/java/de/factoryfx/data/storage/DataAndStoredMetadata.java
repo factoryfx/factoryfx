@@ -26,7 +26,6 @@ public class DataAndStoredMetadata<T extends Data,S> {
                 comment,
                 base.metadata.baseVersionId,
                 null,
-                base.metadata.generalStorageMetadata,
                 base.metadata.dataStorageMetadataDictionary
         );
     }

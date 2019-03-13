@@ -1,15 +1,12 @@
 package de.factoryfx.factory.datastorage.oracle;
 
 import de.factoryfx.data.storage.StoredDataMetadata;
-import de.factoryfx.data.storage.migration.GeneralStorageMetadata;
-import de.factoryfx.data.storage.migration.GeneralStorageMetadataBuilder;
 import de.factoryfx.data.storage.migration.metadata.DataStorageMetadataDictionary;
 import de.factoryfx.factory.testfactories.ExampleFactoryA;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
-import java.util.Set;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -35,11 +32,10 @@ public class OracledbDataStorageHistoryTest extends DatabaseTest {
     }
 
     private StoredDataMetadata<Void> createDummyMetadata() {
-        GeneralStorageMetadata generalStorageMetadata = GeneralStorageMetadataBuilder.build();
         ExampleFactoryA exampleFactoryA = new ExampleFactoryA();
         exampleFactoryA.internal().addBackReferences();
         DataStorageMetadataDictionary dataStorageMetadataDictionary = exampleFactoryA.internal().createDataStorageMetadataDictionaryFromRoot();
-        return new StoredDataMetadata<>( UUID.randomUUID().toString(), "", "", "",null, generalStorageMetadata,
+        return new StoredDataMetadata<>( UUID.randomUUID().toString(), "", "", "",null,
                 dataStorageMetadataDictionary);
     }
 

@@ -1,9 +1,7 @@
 package de.factoryfx.factory.datastorage.oracle;
 
 import de.factoryfx.data.jackson.ObjectMapperBuilder;
-import de.factoryfx.data.storage.migration.DataMigrationManager;
 import de.factoryfx.data.storage.migration.MigrationManager;
-import de.factoryfx.data.storage.migration.GeneralStorageMetadataBuilder;
 import de.factoryfx.factory.testfactories.ExampleFactoryA;
 import org.h2.tools.Server;
 import org.junit.jupiter.api.AfterEach;
@@ -13,7 +11,6 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.util.List;
 import java.util.function.Supplier;
 
 public class DatabaseTest {
@@ -48,7 +45,7 @@ public class DatabaseTest {
 
 
     protected MigrationManager<ExampleFactoryA,Void> createMigrationManager(){
-        return new MigrationManager<>(ExampleFactoryA.class, List.of(), GeneralStorageMetadataBuilder.build(), new DataMigrationManager<>((root, d) -> { }, ExampleFactoryA.class), ObjectMapperBuilder.build());
+        return new MigrationManager<>(ExampleFactoryA.class, ObjectMapperBuilder.build(), (root, d) -> { });
     }
 
 }

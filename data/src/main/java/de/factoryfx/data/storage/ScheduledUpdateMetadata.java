@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import de.factoryfx.data.storage.migration.GeneralStorageMetadata;
 import de.factoryfx.data.storage.migration.metadata.DataStorageMetadataDictionary;
 
 import java.time.LocalDateTime;
@@ -28,7 +27,6 @@ public class ScheduledUpdateMetadata implements Delayed {
     /** for scheduled update: date and time of planned activation of this configuration */
     public final LocalDateTime scheduled;
 
-    public final GeneralStorageMetadata generalStorageMetadata;
     public final DataStorageMetadataDictionary dataStorageMetadataDictionary;
 
     @JsonCreator
@@ -37,13 +35,11 @@ public class ScheduledUpdateMetadata implements Delayed {
             @JsonProperty("user")String user,
             @JsonProperty("comment")String comment,
             @JsonProperty("scheduled")LocalDateTime scheduled,
-            @JsonProperty("generalStorageMetadata")GeneralStorageMetadata generalStorageMetadata,
             @JsonProperty("dataStorageMetadataDictionary")DataStorageMetadataDictionary dataStorageMetadataDictionary) {
         this.id=id;
         this.scheduled=scheduled;
         this.user = user;
         this.comment = comment;
-        this.generalStorageMetadata = generalStorageMetadata;
         this.dataStorageMetadataDictionary = dataStorageMetadataDictionary;
     }
 

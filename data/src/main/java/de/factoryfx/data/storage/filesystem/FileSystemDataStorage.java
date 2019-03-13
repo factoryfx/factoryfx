@@ -12,7 +12,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import de.factoryfx.data.Data;
 import de.factoryfx.data.jackson.SimpleObjectMapper;
 import de.factoryfx.data.storage.*;
-import de.factoryfx.data.storage.migration.GeneralStorageMetadata;
 import de.factoryfx.data.storage.migration.MigrationManager;
 
 public class FileSystemDataStorage<R extends Data,S> implements DataStorage<R,S> {
@@ -22,12 +21,10 @@ public class FileSystemDataStorage<R extends Data,S> implements DataStorage<R,S>
     private final Path currentFactoryPath;
     private final Path currentFactoryPathMetadata;
     private final MigrationManager<R,S> migrationManager;
-    private final GeneralStorageMetadata generalStorageMetadata;
     private final SimpleObjectMapper objectMapper;
 
-    public FileSystemDataStorage(Path basePath, R initialData, GeneralStorageMetadata generalStorageMetadata, MigrationManager<R,S> migrationManager, FileSystemFactoryStorageHistory<R,S> fileSystemFactoryStorageHistory, SimpleObjectMapper objectMapper){
+    public FileSystemDataStorage(Path basePath, R initialData, MigrationManager<R,S> migrationManager, FileSystemFactoryStorageHistory<R,S> fileSystemFactoryStorageHistory, SimpleObjectMapper objectMapper){
         this.initialData = initialData;
-        this.generalStorageMetadata=generalStorageMetadata;
 
         if (!Files.exists(basePath)){
             throw new IllegalArgumentException("path don't exists:"+basePath);
@@ -40,8 +37,8 @@ public class FileSystemDataStorage<R extends Data,S> implements DataStorage<R,S>
 
     }
 
-    public FileSystemDataStorage(Path basePath, R initialData, GeneralStorageMetadata generalStorageMetadata, MigrationManager<R,S> migrationManager, SimpleObjectMapper objectMapper){
-        this(basePath, initialData, generalStorageMetadata, migrationManager,new FileSystemFactoryStorageHistory<>(basePath, migrationManager),objectMapper);
+    public FileSystemDataStorage(Path basePath, R initialData, MigrationManager<R,S> migrationManager, SimpleObjectMapper objectMapper){
+        this(basePath, initialData, migrationManager,new FileSystemFactoryStorageHistory<>(basePath, migrationManager),objectMapper);
     }
 
     @Override
@@ -78,7 +75,7 @@ public class FileSystemDataStorage<R extends Data,S> implements DataStorage<R,S>
     public DataAndId<R> getCurrentData() {
         loadInitialFactory();
         StoredDataMetadata<S> storedDataMetadata = migrationManager.readStoredFactoryMetadata(readFile(currentFactoryPathMetadata));
-        return new DataAndId<>(migrationManager.read(readFile(currentFactoryPath), storedDataMetadata.generalStorageMetadata,storedDataMetadata.dataStorageMetadataDictionary), storedDataMetadata.id);
+        return new DataAndId<>(migrationManager.read(readFile(currentFactoryPath),storedDataMetadata.dataStorageMetadataDictionary), storedDataMetadata.id);
     }
 
     @Override
@@ -89,7 +86,6 @@ public class FileSystemDataStorage<R extends Data,S> implements DataStorage<R,S>
                 update.comment,
                 update.baseVersionId,
                 changeSummary,
-                generalStorageMetadata,
                 update.root.internal().createDataStorageMetadataDictionaryFromRoot());
         update(update.root, metadata);
     }
@@ -122,7 +118,7 @@ public class FileSystemDataStorage<R extends Data,S> implements DataStorage<R,S>
                     "System",
                     "initial factory",
                     UUID.randomUUID().toString(),
-                    null, generalStorageMetadata,
+                    null,
                     initialData.internal().createDataStorageMetadataDictionaryFromRoot()
             );
             update(initialData, metadata);

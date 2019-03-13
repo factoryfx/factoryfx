@@ -10,7 +10,7 @@ import java.util.concurrent.TimeUnit;
 
 public class ScheduledDataMetadataTest {//ScheduledUpdateMetadata
     private ScheduledUpdateMetadata createScheduledDataMetadata(LocalDateTime scheduled){
-        return new ScheduledUpdateMetadata("id","user","comment",scheduled,null,null);
+        return new ScheduledUpdateMetadata("id","user","comment",scheduled,null);
     }
 
     @Test

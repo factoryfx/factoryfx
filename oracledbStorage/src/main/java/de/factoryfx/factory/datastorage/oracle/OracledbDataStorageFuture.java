@@ -44,7 +44,7 @@ public class OracledbDataStorageFuture<R extends Data,S> {
             try (ResultSet resultSet =statement.executeQuery(sql)) {
                 if (resultSet.next()) {
                     ScheduledUpdateMetadata metadata = migrationManager.readScheduledFactoryMetadata(JdbcUtil.readStringFromBlob(resultSet, "factoryMetadata"));
-                    return migrationManager.read(JdbcUtil.readStringFromBlob(resultSet, "factory"), metadata.generalStorageMetadata,metadata.dataStorageMetadataDictionary);
+                    return migrationManager.read(JdbcUtil.readStringFromBlob(resultSet, "factory"),metadata.dataStorageMetadataDictionary);
                 }
             }
         } catch (SQLException e) {

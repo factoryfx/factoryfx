@@ -1,8 +1,6 @@
 package de.factoryfx.factory.builder;
 
 import de.factoryfx.data.attribute.types.StringAttribute;
-import de.factoryfx.data.storage.migration.datamigration.AttributePath;
-import de.factoryfx.data.storage.migration.datamigration.PathBuilder;
 import de.factoryfx.factory.SimpleFactoryBase;
 import de.factoryfx.factory.atrribute.FactoryReferenceAttribute;
 import de.factoryfx.server.Microservice;
@@ -173,11 +171,9 @@ public class ComplexMigrationTest {
                 serverFactoryNested.clientSystemFactory.set(ctx.get(ClientSystemFactory.class,"client1"));
                 return serverFactoryNested;
             });
-            Microservice<Void, Void, ServerFactory, Void> msNew = builder.microservice().withFilesystemStorage(folder)
-                    .withDataMigration((dataMigrationManager) -> {
-                        //just the builder used for migration
-                       })
-                    .build();
+
+            //no special migartion required just the builder used for migration
+            Microservice<Void, Void, ServerFactory, Void> msNew = builder.microservice().withFilesystemStorage(folder).build();
             msNew.start();
 
             ServerFactory serverFactory = msNew.prepareNewFactory().root;

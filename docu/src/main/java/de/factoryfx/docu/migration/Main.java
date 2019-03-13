@@ -16,10 +16,7 @@ public class Main {
             rootFactory.text.set("HelloWorld");
             return rootFactory;
         });
-        builder.microservice().
-                withDataMigration(
-                        (dmm)->dmm.renameAttribute(RootFactory.class,"previousAttributeName",(rf)->rf.text)//dummy rename for demonstration
-                ).
+        builder.microservice().withRenameAttributeMigration(RootFactory.class,"previousAttributeName",(rf)->rf.text).//dummy rename for demonstration.
         withFilesystemStorage(Files.createTempDirectory("tempfiles")).build().start();
 
     }

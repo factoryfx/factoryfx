@@ -64,7 +64,7 @@ public class ValueAttributeVisualisationBuilder<T,A extends Attribute<T,A>, AL e
         A detailAttribute = attributeCreator.get();
         ExpandableAttributeVisualisation<List<T>,AL> listExpandableAttributeVisualisation = new ExpandableAttributeVisualisation<List<T>,AL>(
                 new ValueListAttributeVisualisation(
-                        (ValueListAttribute)attribute,
+                        attribute,
                         new ValidationDecoration(uniformDesign),
                         uniformDesign,
                         detailAttribute,

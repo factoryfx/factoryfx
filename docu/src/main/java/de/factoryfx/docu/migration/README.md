@@ -24,7 +24,7 @@ This unusual structure in an example for the structure format.
 (Most of the structure is required for Jackson or workaround for Jackson limitations)
 The structure format is mostly stable but may change if, for example Jackson adds a new useful feature in the future.
 
-Data storage format migration can be added to a microservice with 
+Data storage format migration are applied as one time migration with the patch API.
 ```java 
 MicroserviceBuilder#withGeneralMigration
 MicroserviceBuilder#withGeneralStorageMetadata
@@ -44,9 +44,10 @@ public class ExampleFactory extends SimpleFactoryBase<Void,Void,ExampleFactory> 
 In this example the for attribute is renamed from "oldAttribute" to "newAttribute".
 
 ```java
-dataMigrationManager.renameAttribute(ExampleFactory.class,"oldAttribute",(rf)->rf.newAttribute)
+builder.widthRenameAttributeMigartion(ExampleFactory.class,"oldAttribute",(rf)->rf.newAttribute)
 ```
 This adds a rename migration. To support multiple renames the new name is provided with a lambada expression and thereby enables IDE refactoring for the migrations. This also prevents rename cycles.
+Migration are added with the MicroserviceBuilder.
 
 ## Data content
 There is no special framework support for data changes because it's too project specific. 

@@ -3,16 +3,12 @@ package de.factoryfx.data.storage.filesystem;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
 
 import de.factoryfx.data.jackson.ObjectMapperBuilder;
 import de.factoryfx.data.merge.testdata.ExampleDataA;
-import de.factoryfx.data.storage.migration.DataMigrationManager;
 import de.factoryfx.data.storage.migration.MigrationManager;
 import de.factoryfx.data.storage.StoredDataMetadata;
-
-import de.factoryfx.data.storage.migration.GeneralStorageMetadataBuilder;
 import de.factoryfx.data.storage.migration.metadata.DataStorageMetadataDictionary;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -24,7 +20,7 @@ public class FileSystemDataStorageHistoryTest {
         ExampleDataA exampleDataA = new ExampleDataA();
         exampleDataA.internal().addBackReferences();
         DataStorageMetadataDictionary dataStorageMetadataDictionaryFromRoot = exampleDataA.internal().createDataStorageMetadataDictionaryFromRoot();
-        return new StoredDataMetadata<>(UUID.randomUUID().toString(),"","","",null,GeneralStorageMetadataBuilder.build(), dataStorageMetadataDictionaryFromRoot);
+        return new StoredDataMetadata<>(UUID.randomUUID().toString(),"","","",null, dataStorageMetadataDictionaryFromRoot);
     }
 
     @TempDir
@@ -32,7 +28,7 @@ public class FileSystemDataStorageHistoryTest {
 
 
     private MigrationManager<ExampleDataA,Void> createSerialisation(){
-        return new MigrationManager<>(ExampleDataA.class, List.of(), GeneralStorageMetadataBuilder.build(), new DataMigrationManager<>((root1, oldDataStorageMetadataDictionary) -> { },ExampleDataA.class), ObjectMapperBuilder.build());
+        return new MigrationManager<>(ExampleDataA.class, ObjectMapperBuilder.build(), (root1, oldDataStorageMetadataDictionary) -> { });
     }
 
 

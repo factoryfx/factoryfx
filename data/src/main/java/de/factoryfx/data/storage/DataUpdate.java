@@ -2,7 +2,6 @@ package de.factoryfx.data.storage;
 
 import com.fasterxml.jackson.annotation.*;
 import de.factoryfx.data.Data;
-import de.factoryfx.data.storage.migration.GeneralStorageMetadata;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -36,7 +35,7 @@ public class DataUpdate<R extends Data> {
         this.baseVersionId = baseVersionId;
     }
 
-    public <S> StoredDataMetadata<S> createUpdateStoredDataMetadata(S changeSummary, GeneralStorageMetadata generalStorageMetadata){
+    public <S> StoredDataMetadata<S> createUpdateStoredDataMetadata(S changeSummary){
         return new StoredDataMetadata<>(
             LocalDateTime.now(),
             UUID.randomUUID().toString(),
@@ -44,7 +43,6 @@ public class DataUpdate<R extends Data> {
             this.comment,
             this.baseVersionId,
             changeSummary,
-            generalStorageMetadata,
             root.internal().createDataStorageMetadataDictionaryFromRoot()
         );
     }

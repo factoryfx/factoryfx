@@ -11,7 +11,7 @@ public class ApplicationFactoryMetadataTest {
 
     @Test
     public void test_json(){
-        StoredDataMetadata<SummaryDummy> storedDataMetadata = new StoredDataMetadata<SummaryDummy>("","","","",new SummaryDummy(),null,null);
+        StoredDataMetadata<SummaryDummy> storedDataMetadata = new StoredDataMetadata<SummaryDummy>("","","","",new SummaryDummy(),null);
         ObjectMapperBuilder.build().copy(storedDataMetadata); //test json serializable
     }
 
