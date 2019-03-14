@@ -1,7 +1,6 @@
 package de.factoryfx.data.storage.migration.datamigration;
 
 import de.factoryfx.data.Data;
-import de.factoryfx.data.jackson.ObjectMapperBuilder;
 import de.factoryfx.data.jackson.SimpleObjectMapper;
 import de.factoryfx.data.storage.migration.metadata.DataStorageMetadataDictionary;
 

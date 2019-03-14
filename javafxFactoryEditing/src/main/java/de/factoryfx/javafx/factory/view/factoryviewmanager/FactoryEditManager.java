@@ -8,12 +8,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import de.factoryfx.data.jackson.ObjectMapperBuilder;
 import de.factoryfx.data.merge.MergeDiffInfo;
 import de.factoryfx.data.storage.DataUpdate;
 import de.factoryfx.data.storage.RawFactoryDataAndMetadata;
-import de.factoryfx.data.storage.StoredDataMetadata;
 import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.data.storage.migration.MigrationManager;
 import de.factoryfx.factory.log.FactoryUpdateLog;

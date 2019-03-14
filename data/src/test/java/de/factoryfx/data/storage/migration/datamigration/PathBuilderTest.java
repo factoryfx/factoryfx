@@ -23,7 +23,7 @@ class PathBuilderTest {
     }
 
     @Test
-    public void test_parse_reflist_multidigit_index(){
+    public void test_parse_reflist_multi_digit_index(){
         AttributePath<String> parsed = PathBuilder.value(String.class).of("referenceListAttribute[123].stringAttribute");
         AttributePath<String> programmatic = PathBuilder.value(String.class).pathElement("referenceListAttribute",123).attribute("stringAttribute");
 

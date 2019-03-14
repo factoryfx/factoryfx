@@ -2,7 +2,6 @@ package de.factoryfx.factory.builder;
 
 import de.factoryfx.data.Data;
 import de.factoryfx.data.attribute.Attribute;
-import de.factoryfx.data.jackson.ObjectMapperBuilder;
 import de.factoryfx.data.jackson.SimpleObjectMapper;
 import de.factoryfx.data.storage.ChangeSummaryCreator;
 import de.factoryfx.data.storage.filesystem.FileSystemDataStorage;
@@ -35,14 +34,12 @@ public class MicroserviceBuilder<V,L,R extends FactoryBase<L,V,R>,S> {
     private DataStorageCreator<R,S> dataStorageCreator;
     private ChangeSummaryCreator<R,S> changeSummaryCreator;
     private FactoryExceptionHandler factoryExceptionHandler;
-    private FactoryTreeBuilder<V,L,R,S> factoryTreeBuilder;
     private MigrationManager<R,S> migrationManager;
     private final SimpleObjectMapper objectMapper;
 
     public MicroserviceBuilder(Class<R> rootClass, R initialFactory, FactoryTreeBuilder<V,L,R,S> factoryTreeBuilder, SimpleObjectMapper objectMapper) {
         this.rootClass = rootClass;
         this.initialFactory = initialFactory;
-        this.factoryTreeBuilder=factoryTreeBuilder;
         migrationManager = new MigrationManager<>(rootClass, objectMapper, new FactoryTreeBuilderAttributeFiller<>(factoryTreeBuilder));
         this.objectMapper = objectMapper;
     }

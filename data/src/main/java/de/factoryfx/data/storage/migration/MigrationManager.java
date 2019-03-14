@@ -6,7 +6,6 @@ import com.google.common.base.Throwables;
 import de.factoryfx.data.Data;
 import de.factoryfx.data.DataObjectIdResolver;
 import de.factoryfx.data.attribute.Attribute;
-import de.factoryfx.data.jackson.ObjectMapperBuilder;
 import de.factoryfx.data.jackson.SimpleObjectMapper;
 import de.factoryfx.data.storage.RawFactoryDataAndMetadata;
 import de.factoryfx.data.storage.ScheduledUpdateMetadata;
@@ -14,8 +13,6 @@ import de.factoryfx.data.storage.StoredDataMetadata;
 import de.factoryfx.data.storage.migration.datamigration.*;
 import de.factoryfx.data.storage.migration.metadata.DataStorageMetadataDictionary;
 
-import java.io.File;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiConsumer;

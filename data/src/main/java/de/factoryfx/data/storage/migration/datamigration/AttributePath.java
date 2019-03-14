@@ -6,7 +6,6 @@ import de.factoryfx.data.jackson.SimpleObjectMapper;
 import de.factoryfx.data.storage.migration.metadata.DataStorageMetadata;
 import de.factoryfx.data.storage.migration.metadata.DataStorageMetadataDictionary;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 

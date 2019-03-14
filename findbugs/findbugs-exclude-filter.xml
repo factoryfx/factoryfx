@@ -130,6 +130,11 @@
         <Bug pattern="RCN_REDUNDANT_NULLCHECK_WOULD_HAVE_BEEN_A_NPE" />
     </Match>
 
+    <Match>
+        <Class name="de.factoryfx.javafx.javascript.editor.attribute.visualisation.JavascriptVisual" />
+        <Bug pattern="DLS_DEAD_LOCAL_STORE" />
+    </Match>
+
 
 
 </FindBugsFilter>

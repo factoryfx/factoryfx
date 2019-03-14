@@ -54,7 +54,7 @@ public class PathBuilder<V>{
             Pattern pattern = Pattern.compile("([[a-zA-Z_$]]*)\\[(\\d+)\\]");
             Matcher matcher = pattern.matcher(pathElement);
             if (matcher.matches()){
-                pathList.add(new RefListAttributePathElement(matcher.group(1),Integer.valueOf(matcher.group(2))));
+                pathList.add(new RefListAttributePathElement(matcher.group(1),Integer.parseInt(matcher.group(2))));
             } else {
                 pathList.add(new RefAttributePathElement(pathElement));
             }
