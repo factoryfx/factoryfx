@@ -60,7 +60,7 @@ public class JettyServerBuilder<V,R extends FactoryBase<?,V,R>,S extends JettySe
         return jettyServerFactory;
     }
 
-    public JettyServerBuilder<V,R,S> widthPort(int port){
+    public JettyServerBuilder<V,R,S> withPort(int port){
         jettyServerFactory.connectors.get(0).port.set(port);
         return this;
     }

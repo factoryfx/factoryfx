@@ -60,7 +60,7 @@ public class SslContextFactoryFactoryTest {
         builder.addFactory(TestJettyServerFactory.class, Scope.SINGLETON);
         builder.addFactory(JettyServerFactory.class, Scope.SINGLETON, ctx->{
             return new JettyServerBuilder<>(new JettyServerFactory<Void,TestJettyServerFactory>())
-                    .withHost("localhost").widthPort(8009)
+                    .withHost("localhost").withPort(8009)
                     .withResource(ctx.get(TestResourceFactory.class)).build();
         });
         builder.addFactory(TestResourceFactory.class, Scope.SINGLETON);
@@ -108,7 +108,7 @@ public class SslContextFactoryFactoryTest {
             }
 
             return new JettyServerBuilder<>(new JettyServerFactory<Void,TestJettyServerFactory>())
-                    .withHost("localhost").widthPort(8009).withSsl(ssl)
+                    .withHost("localhost").withPort(8009).withSsl(ssl)
                     .withResource(ctx.get(TestResourceFactory.class)).build();
         });
         builder.addFactory(TestResourceFactory.class, Scope.SINGLETON);

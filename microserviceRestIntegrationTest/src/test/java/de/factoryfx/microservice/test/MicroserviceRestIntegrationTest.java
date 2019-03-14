@@ -58,7 +58,7 @@ public class MicroserviceRestIntegrationTest {
         FactoryTreeBuilder<TestVisitor, Server, TestJettyServer, Void> builder = new FactoryTreeBuilder<>(TestJettyServer.class);
         builder.addFactory(TestJettyServer.class, Scope.SINGLETON);
         builder.addFactory(JettyServerFactory.class, Scope.SINGLETON, ctx-> new JettyServerBuilder<>(new JettyServerFactory<TestVisitor,TestJettyServer>())
-                .withHost("localhost").widthPort(34579)
+                .withHost("localhost").withPort(34579)
                 .withResource(ctx.get(MicroserviceResourceFactory.class)).build());
 
         builder.addFactory(MicroserviceResourceFactory.class, Scope.SINGLETON, ctx->{

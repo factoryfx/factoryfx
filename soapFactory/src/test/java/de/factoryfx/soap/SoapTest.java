@@ -28,7 +28,7 @@ public class SoapTest {
         FactoryTreeBuilder<Void, Server, SoapJettyServerFactory, Object> builder = new FactoryTreeBuilder<>(SoapJettyServerFactory.class);
         builder.addFactory(SoapJettyServerFactory.class, Scope.SINGLETON);
         builder.addFactory(JettyServerFactory.class, Scope.SINGLETON, ctx-> new JettyServerBuilder<>(new JettyServerFactory<Void,SoapJettyServerFactory>())
-                .withHost("localhost").widthPort(8088).removeDefaultJerseyServlet()
+                .withHost("localhost").withPort(8088).removeDefaultJerseyServlet()
                 .withServlet("/*",ctx.get(SoapHandlerFactory.class)).build());
 
         builder.addFactory(SoapHandlerFactory.class, Scope.SINGLETON, ctx->{

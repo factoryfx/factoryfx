@@ -25,7 +25,7 @@ public class Main {
         FactoryTreeBuilder<Void, Server, ServerFactory,Void> builder = new FactoryTreeBuilder<>(ServerFactory.class);
         builder.addFactory(ServerFactory.class, Scope.SINGLETON);
         builder.addFactory(JettyServerFactory.class, Scope.SINGLETON, ctx-> new JettyServerBuilder<>(new JettyServerFactory<Void, ServerFactory>())
-                .withHost("localhost").widthPort(8005)
+                .withHost("localhost").withPort(8005)
                 .withResource(ctx.get(CustomConfigurationResourceFactory.class)).build());
         builder.addFactory(CustomConfigurationResourceFactory.class, Scope.SINGLETON);
 

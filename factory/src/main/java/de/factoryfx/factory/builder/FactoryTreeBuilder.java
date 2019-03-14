@@ -1,6 +1,8 @@
 package de.factoryfx.factory.builder;
 
 import de.factoryfx.data.Data;
+import de.factoryfx.data.jackson.ObjectMapperBuilder;
+import de.factoryfx.data.jackson.SimpleObjectMapper;
 import de.factoryfx.data.validation.ValidationError;
 import de.factoryfx.factory.FactoryBase;
 
@@ -105,7 +107,10 @@ public class FactoryTreeBuilder<V,L,R extends FactoryBase<L,V,R>,S> {
     }
 
     public MicroserviceBuilder<V,L,R,S> microservice(){
-        return new MicroserviceBuilder<>(this.rootClass,this.buildTree(),this);
+        return new MicroserviceBuilder<>(this.rootClass,this.buildTree(),this, ObjectMapperBuilder.build());
     }
 
+    public MicroserviceBuilder<V,L,R,S> microservice(SimpleObjectMapper simpleObjectMapper){
+        return new MicroserviceBuilder<>(this.rootClass,this.buildTree(),this,simpleObjectMapper);
+    }
 }

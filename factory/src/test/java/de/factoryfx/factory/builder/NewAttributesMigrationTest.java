@@ -12,7 +12,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-public class ComplexMigrationTest {
+public class NewAttributesMigrationTest {
 
 //simplified real work use case
 //    this migration was needed after a refactor of Lotus, where we merged two objects into one (Partner and ClientSystem), as they both represented a different aspect of the same concept (a system communicating with Lotus, e.g CAP, SDP...).

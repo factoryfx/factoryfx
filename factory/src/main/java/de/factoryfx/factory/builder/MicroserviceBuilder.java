@@ -35,15 +35,16 @@ public class MicroserviceBuilder<V,L,R extends FactoryBase<L,V,R>,S> {
     private DataStorageCreator<R,S> dataStorageCreator;
     private ChangeSummaryCreator<R,S> changeSummaryCreator;
     private FactoryExceptionHandler factoryExceptionHandler;
-    private SimpleObjectMapper objectMapper;
     private FactoryTreeBuilder<V,L,R,S> factoryTreeBuilder;
     private MigrationManager<R,S> migrationManager;
+    private final SimpleObjectMapper objectMapper;
 
-    public MicroserviceBuilder(Class<R> rootClass, R initialFactory, FactoryTreeBuilder<V,L,R,S> factoryTreeBuilder) {
+    public MicroserviceBuilder(Class<R> rootClass, R initialFactory, FactoryTreeBuilder<V,L,R,S> factoryTreeBuilder, SimpleObjectMapper objectMapper) {
         this.rootClass = rootClass;
         this.initialFactory = initialFactory;
         this.factoryTreeBuilder=factoryTreeBuilder;
-        migrationManager = new MigrationManager<>(rootClass, objectMapper,new FactoryTreeBuilderAttributeFiller<>(factoryTreeBuilder));
+        migrationManager = new MigrationManager<>(rootClass, objectMapper, new FactoryTreeBuilderAttributeFiller<>(factoryTreeBuilder));
+        this.objectMapper = objectMapper;
     }
 
     public Microservice<V,L,R,S> build(){
@@ -54,19 +55,15 @@ public class MicroserviceBuilder<V,L,R extends FactoryBase<L,V,R>,S> {
             factoryExceptionHandler = new RethrowingFactoryExceptionHandler();
         }
 
-        if (objectMapper ==null){
-            objectMapper =ObjectMapperBuilder.build();
-        }
-
         return new Microservice<>(new FactoryManager<>(factoryExceptionHandler), dataStorageCreator.createDataStorage(initialFactory, migrationManager, objectMapper),changeSummaryCreator);
     }
 
     public MigrationManager<R,S> buildMigrationManager(){
-        return new MigrationManager<>(rootClass, objectMapper, new FactoryTreeBuilderAttributeFiller<>(factoryTreeBuilder));
+        return migrationManager;
     }
 
     /**
-     * width inMemory data storage
+     * with inMemory data storage
      * @return builder
      */
     public MicroserviceBuilder<V,L,R,S> withInMemoryStorage(){
@@ -86,7 +83,7 @@ public class MicroserviceBuilder<V,L,R extends FactoryBase<L,V,R>,S> {
 
 
     /**
-     * width filesystem data storage
+     * with filesystem data storage
      * @param path path
      * @return builder
      */
@@ -147,14 +144,5 @@ public class MicroserviceBuilder<V,L,R extends FactoryBase<L,V,R>,S> {
         this.migrationManager.restoreAttribute(path,setter);
         return this;
     }
-
-
-
-
-    public MicroserviceBuilder<V,L,R,S> withJacksonObjectMapper(SimpleObjectMapper objectMapper){
-        this.objectMapper =objectMapper;
-        return this;
-    }
-
 
 }

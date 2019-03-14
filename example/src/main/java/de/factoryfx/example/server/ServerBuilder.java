@@ -16,7 +16,7 @@ public class ServerBuilder {
 
         factoryTreeBuilder.addFactory(ShopJettyServerFactory.class, Scope.SINGLETON,  context -> {
             return new JettyServerBuilder<>(new ShopJettyServerFactory())
-                    .withHost("localhost").widthPort(8089)
+                    .withHost("localhost").withPort(8089)
                     .withResource(context.get(SpecificMicroserviceResourceFactory.class))
                     .withResource(context.get(ShopResourceFactory.class)).build();
 

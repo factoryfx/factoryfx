@@ -37,7 +37,7 @@ public class Main {
         FactoryTreeBuilder<Void, Server, SwaggerWebserver,Void> builder = new FactoryTreeBuilder<>(SwaggerWebserver.class);
         builder.addFactory(SwaggerWebserver.class, Scope.SINGLETON);
         builder.addFactory(JettyServerFactory.class, Scope.SINGLETON, ctx-> new JettyServerBuilder<>(new JettyServerFactory<Void,SwaggerWebserver>())
-                .withHost("localhost").widthPort(8005)
+                .withHost("localhost").withPort(8005)
                 .withResource(ctx.get(HelloWorldResourceFactory.class)).build());
         builder.addFactory(HelloWorldResourceFactory.class, Scope.SINGLETON);
 

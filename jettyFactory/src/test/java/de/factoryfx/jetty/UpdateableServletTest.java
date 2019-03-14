@@ -69,7 +69,7 @@ public class UpdateableServletTest {
         builder.addFactory(UpdateableWebserverRootFactory.class, Scope.SINGLETON);
         builder.addFactory(JettyServerFactory.class, Scope.SINGLETON, ctx->{
             return new JettyServerBuilder<>(new JettyServerFactory<Void,UpdateableWebserverRootFactory>())
-                    .withHost("localhost").widthPort(8080)
+                    .withHost("localhost").withPort(8080)
                     .withResource(ctx.get(UpdateableTestResourceFactory.class)).build();
         });
         builder.addFactory(UpdateableTestResourceFactory.class, Scope.SINGLETON, ctx -> {
@@ -111,7 +111,7 @@ public class UpdateableServletTest {
         builder.addFactory(UpdateableWebserverRootFactory.class, Scope.SINGLETON);
         builder.addFactory(JettyServerFactory.class, Scope.SINGLETON, ctx->{
             return new JettyServerBuilder<>(new JettyServerFactory<Void,UpdateableWebserverRootFactory>())
-                    .withHost("localhost").widthPort(8080)
+                    .withHost("localhost").withPort(8080)
                     .withResource(ctx.get(UpdateableTestResourceFactory.class)).build();
 
         });
@@ -147,7 +147,7 @@ public class UpdateableServletTest {
         builder.addFactory(UpdateableWebserverRootFactory.class, Scope.SINGLETON);
         builder.addFactory(JettyServerFactory.class, Scope.SINGLETON, ctx->{
             return new JettyServerBuilder<>(new JettyServerFactory<Void,UpdateableWebserverRootFactory>())
-                    .withHost("localhost").widthPort(8080).build();
+                    .withHost("localhost").withPort(8080).build();
 
         });
 
@@ -182,7 +182,7 @@ public class UpdateableServletTest {
         builder.addFactory(UpdateableWebserverRootFactory.class, Scope.SINGLETON);
         builder.addFactory(JettyServerFactory.class, Scope.SINGLETON, ctx->{
             return new JettyServerBuilder<>(new JettyServerFactory<Void,UpdateableWebserverRootFactory>())
-                    .withHost("localhost").widthPort(8080).build();
+                    .withHost("localhost").withPort(8080).build();
         });
 
 

@@ -25,7 +25,7 @@ import java.util.logging.Logger;
         }
 
         builder.addFactory(JettyServerFactory.class, Scope.SINGLETON, ctx-> new JettyServerBuilder<>(new JettyServerFactory<Void,SimpleHttpServer>())
-            .withHost("localhost").widthPort(8005)
+            .withHost("localhost").withPort(8005)
             .withResource(ctx.get(CustomResourceFactory.class)).build());
 
    }</pre>

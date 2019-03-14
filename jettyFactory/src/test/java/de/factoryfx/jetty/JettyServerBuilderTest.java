@@ -20,7 +20,7 @@ public class JettyServerBuilderTest {
 
     @Test
     public void test_json(){
-        JettyServerFactory<Void, DummyRoot> serverFactory = new JettyServerBuilder<>(new DummyRoot()).widthPort(123).withResource(new DummyResource()).build();
+        JettyServerFactory<Void, DummyRoot> serverFactory = new JettyServerBuilder<>(new DummyRoot()).withPort(123).withResource(new DummyResource()).build();
 
         System.out.println(ObjectMapperBuilder.build().writeValueAsString(serverFactory));
 

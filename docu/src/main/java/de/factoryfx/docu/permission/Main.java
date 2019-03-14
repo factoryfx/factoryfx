@@ -34,7 +34,7 @@ public class Main {
             return factory;
         });
         builder.addFactory(JettyServerFactory.class, Scope.SINGLETON, ctx-> new JettyServerBuilder<>(new JettyServerFactory<Void,PrinterFactory>())
-                .withHost("localhost").widthPort(8005)
+                .withHost("localhost").withPort(8005)
                 .withResource(ctx.get(PrinterMicroserviceResourceFactory.class)).build());
         builder.addFactory(PrinterMicroserviceResourceFactory.class, Scope.SINGLETON, ctx->{
             PrinterMicroserviceResourceFactory resource = new PrinterMicroserviceResourceFactory();

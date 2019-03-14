@@ -46,7 +46,7 @@ public class MicroserviceBuilderTest {
         });
         YAMLFactory yamlFactory = new YAMLFactory();
         yamlFactory.disable(YAMLGenerator.Feature.USE_NATIVE_TYPE_ID);
-        Microservice<Void, ExampleLiveObjectA, ExampleFactoryA, Void> microservice = builder.microservice().withJacksonObjectMapper(ObjectMapperBuilder.buildNew(yamlFactory)).withFilesystemStorage(Paths.get(folder.toFile().toURI())).build();
+        Microservice<Void, ExampleLiveObjectA, ExampleFactoryA, Void> microservice = builder.microservice(ObjectMapperBuilder.buildNew(yamlFactory)).withFilesystemStorage(Paths.get(folder.toFile().toURI())).build();
         microservice.start();
 //        for (File file : folder.getRoot().listFiles()[0]) {
 //            System.out.println(file.getAbsoluteFile());

@@ -82,7 +82,7 @@ public class HandlerCollectionFactoryTest {
         builder.addFactory(HandlerCollectionRootFactory.class, Scope.SINGLETON);
         builder.addFactory(JettyServerFactory.class, Scope.SINGLETON, ctx->{
             return new JettyServerBuilder<>(new JettyServerFactory<Void, HandlerCollectionRootFactory>())
-                    .withHost("localhost").widthPort(8080).build();
+                    .withHost("localhost").withPort(8080).build();
         });
 
 
@@ -107,7 +107,7 @@ public class HandlerCollectionFactoryTest {
         builder.addFactory(JettyServerFactory.class, Scope.SINGLETON, ctx->{
             return new JettyServerBuilder<>(new JettyServerFactory<Void, HandlerCollectionRootFactory>())
                     .withResource(ctx.get(HandlerCollectionResourceFactory.class))
-                    .withHost("localhost").widthPort(8080).build();
+                    .withHost("localhost").withPort(8080).build();
         });
         builder.addFactory(HandlerCollectionResourceFactory.class, Scope.SINGLETON);
 

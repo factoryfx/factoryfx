@@ -16,7 +16,7 @@ public class Main {
     public static void main(String[] args) {
         FactoryTreeBuilder<Void, Server,RootFactory,Void> builder = new FactoryTreeBuilder<>(RootFactory.class);
         builder.addFactory(RootFactory.class, Scope.SINGLETON, ctx-> new JettyServerBuilder<>(new RootFactory())
-                .withHost("localhost").widthPort(8005)
+                .withHost("localhost").withPort(8005)
                 .withResource(ctx.get(SpecificMicroserviceResource.class))
                 .withResource(ctx.get(DatabaseResourceFactory.class)).build());
         builder.addFactory(SpecificMicroserviceResource.class, Scope.SINGLETON);
