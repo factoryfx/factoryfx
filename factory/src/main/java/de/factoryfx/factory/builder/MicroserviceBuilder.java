@@ -124,7 +124,7 @@ public class MicroserviceBuilder<V,L,R extends FactoryBase<L,V,R>,S> {
      * @param previousAttributeName previousAttributeName
      * @param valueClass valueClass
      * @param setter setter
-     * @param <AV> Attribute VAlue
+     * @param <AV> attribute value
      * @return builder
      */
     public <AV> MicroserviceBuilder<V,L,R,S>  withMigrationRestoreAttributeMigration(String singletonPreviousDataClass, String previousAttributeName, Class<AV> valueClass, BiConsumer<R,AV> setter){
@@ -135,10 +135,10 @@ public class MicroserviceBuilder<V,L,R extends FactoryBase<L,V,R>,S> {
     /**
      * restore data from removed data/attributes into the current model
      * select data based on path
-     * @param path
-     * @param setter
-     * @param <AV>
-     * @return
+     * @param path path
+     * @param setter setter
+     * @param <AV> attribute value
+     * @return builder
      */
     public <AV> MicroserviceBuilder<V,L,R,S>  withRestoreAttributeMigration(AttributePath<AV> path, BiConsumer<R,AV> setter){
         this.migrationManager.restoreAttribute(path,setter);

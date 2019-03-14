@@ -20,14 +20,14 @@ public class AttributePathTest {
         exampleDataB.stringAttribute.set("1234");
         exampleDataA.referenceAttribute.set(exampleDataB);
 
-        Assertions.assertEquals("1234",PathBuilder.value(String.class).pathElement("referenceAttribute").attribute("stringAttribute").resolve(new DataJsonNode((ObjectNode)ObjectMapperBuilder.build().writeValueAsTree(exampleDataA))));
+        Assertions.assertEquals("1234",PathBuilder.value(String.class).pathElement("referenceAttribute").attribute("stringAttribute").resolveAttributeValue(new DataJsonNode((ObjectNode)ObjectMapperBuilder.build().writeValueAsTree(exampleDataA)),ObjectMapperBuilder.build()));
     }
 
     @Test
     public void test_resolve_string_root_attribute(){
         ExampleDataA exampleDataA = new ExampleDataA();
         exampleDataA.stringAttribute.set("1234");
-        Assertions.assertEquals("1234",PathBuilder.value(String.class).attribute("stringAttribute").resolve(new DataJsonNode((ObjectNode)ObjectMapperBuilder.build().writeValueAsTree(exampleDataA))));
+        Assertions.assertEquals("1234",PathBuilder.value(String.class).attribute("stringAttribute").resolveAttributeValue(new DataJsonNode((ObjectNode)ObjectMapperBuilder.build().writeValueAsTree(exampleDataA)),ObjectMapperBuilder.build()));
     }
 
     @Test
@@ -38,7 +38,7 @@ public class AttributePathTest {
         exampleDataA.referenceAttribute.set(exampleDataB);
 
 
-        ExampleDataB referenceAttribute = PathBuilder.value(ExampleDataB.class).attribute("referenceAttribute").resolve(new DataJsonNode((ObjectNode) ObjectMapperBuilder.build().writeValueAsTree(exampleDataA)));
+        ExampleDataB referenceAttribute = PathBuilder.value(ExampleDataB.class).attribute("referenceAttribute").resolveAttributeValue(new DataJsonNode((ObjectNode) ObjectMapperBuilder.build().writeValueAsTree(exampleDataA)),ObjectMapperBuilder.build());
         Assertions.assertEquals("1234", referenceAttribute.stringAttribute.get());
     }
 
@@ -48,7 +48,7 @@ public class AttributePathTest {
         exampleDataA.referenceAttribute.set(null);
 
 
-        ExampleDataB referenceAttribute = PathBuilder.value(ExampleDataB.class).attribute("referenceAttribute").resolve(new DataJsonNode((ObjectNode) ObjectMapperBuilder.build().writeValueAsTree(exampleDataA)));
+        ExampleDataB referenceAttribute = PathBuilder.value(ExampleDataB.class).attribute("referenceAttribute").resolveAttributeValue(new DataJsonNode((ObjectNode) ObjectMapperBuilder.build().writeValueAsTree(exampleDataA)),ObjectMapperBuilder.build());
         assertNull(referenceAttribute);
     }
 
@@ -67,7 +67,7 @@ public class AttributePathTest {
         DataJsonNode root = new DataJsonNode((ObjectNode) ObjectMapperBuilder.build().writeValueAsTree(exampleDataA));
 
 
-        ExampleDataA referenceAttribute = PathBuilder.value(ExampleDataA.class).pathElement("referenceAttribute").attribute("referenceAttribute").resolve(root);
+        ExampleDataA referenceAttribute = PathBuilder.value(ExampleDataA.class).pathElement("referenceAttribute").attribute("referenceAttribute").resolveAttributeValue(root,ObjectMapperBuilder.build());
         Assertions.assertEquals("1234", referenceAttribute.stringAttribute.get());
     }
 
@@ -98,6 +98,17 @@ public class AttributePathTest {
         dictionary.markRemovedAttributes();
 
         Assertions.assertTrue(PathBuilder.value(ExampleDataA.class).attribute("garbage").isPathToRemovedAttribute(dictionary));
+    }
+
+    @Test
+    public void test_resolve_reflist_string(){
+        ExampleDataA exampleDataA = new ExampleDataA();
+        ExampleDataB exampleDataB = new ExampleDataB();
+        exampleDataB.stringAttribute.set("1234");
+        exampleDataA.referenceListAttribute.add(new ExampleDataB());
+        exampleDataA.referenceListAttribute.add(exampleDataB);
+
+        Assertions.assertEquals("1234",PathBuilder.value(String.class).pathElement("referenceListAttribute",1).attribute("stringAttribute").resolveAttributeValue(new DataJsonNode((ObjectNode)ObjectMapperBuilder.build().writeValueAsTree(exampleDataA)),ObjectMapperBuilder.build()));
     }
 
 

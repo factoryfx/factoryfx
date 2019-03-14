@@ -13,7 +13,7 @@ import de.factoryfx.data.jackson.ObjectMapperBuilder;
  */
 public class MergeDiffInfo<R extends Data> {
     @JsonProperty
-    private final Class<R> rootClazz;
+    private final Class<R> rootClazz;//used from jackson
 
     public final List<AttributeDiffInfo> mergeInfos;
     public final List<AttributeDiffInfo> conflictInfos;

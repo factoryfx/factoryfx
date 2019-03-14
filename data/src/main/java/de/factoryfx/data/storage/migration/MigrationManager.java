@@ -8,11 +8,14 @@ import de.factoryfx.data.DataObjectIdResolver;
 import de.factoryfx.data.attribute.Attribute;
 import de.factoryfx.data.jackson.ObjectMapperBuilder;
 import de.factoryfx.data.jackson.SimpleObjectMapper;
+import de.factoryfx.data.storage.RawFactoryDataAndMetadata;
 import de.factoryfx.data.storage.ScheduledUpdateMetadata;
 import de.factoryfx.data.storage.StoredDataMetadata;
 import de.factoryfx.data.storage.migration.datamigration.*;
 import de.factoryfx.data.storage.migration.metadata.DataStorageMetadataDictionary;
 
+import java.io.File;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiConsumer;
@@ -48,11 +51,11 @@ public class MigrationManager<R extends Data,S> {
     }
 
     public <V> void restoreAttribute(String singletonPreviousDataClass, String previousAttributeName, Class<V> valueClass, BiConsumer<R,V> setter){
-        singletonBasedRestorations.add(new SingletonDataRestore<>(singletonPreviousDataClass,previousAttributeName,valueClass,setter));
+        singletonBasedRestorations.add(new SingletonDataRestore<>(singletonPreviousDataClass,previousAttributeName,valueClass,setter,objectMapper));
     }
 
     public <V> void restoreAttribute(AttributePath<V> path, BiConsumer<R,V> setter){
-        pathBasedRestorations.add(new PathDataRestore<>(path,setter));
+        pathBasedRestorations.add(new PathDataRestore<>(path,setter,objectMapper));
     }
 
     public R migrate(JsonNode rootNode, DataStorageMetadataDictionary dataStorageMetadataDictionary){
@@ -76,11 +79,11 @@ public class MigrationManager<R extends Data,S> {
         dataStorageMetadataDictionary.markRemovedAttributes();
         R root;
         try {
-            root = ObjectMapperBuilder.build().treeToValue(rootNode, rootClass);
+            root = objectMapper.treeToValue(rootNode, rootClass);
         } catch (RuntimeException e) {
             if (Throwables.getRootCause(e) instanceof DataObjectIdResolver.UnresolvableJsonIDException){
                 rootDataJson.fixIdsDeepFromRoot(dataStorageMetadataDictionary);
-                root = ObjectMapperBuilder.build().treeToValue(rootNode, rootClass);
+                root = objectMapper.treeToValue(rootNode, rootClass);
             } else {
                 throw e;
             }
@@ -134,6 +137,17 @@ public class MigrationManager<R extends Data,S> {
         return  objectMapper.writeValueAsString(metadata);
     }
 
+    public String writeRawFactoryDataAndMetadata(R root, StoredDataMetadata<S> metadata) {
+        RawFactoryDataAndMetadata<S> rawFactoryDataAndMetadata = new RawFactoryDataAndMetadata<>();
+        rawFactoryDataAndMetadata.metadata=metadata;
+        rawFactoryDataAndMetadata.root=objectMapper.writeValueAsTree(root);
+        return objectMapper.writeValueAsString(rawFactoryDataAndMetadata);
+    }
+
+    @SuppressWarnings("unchecked")
+    public RawFactoryDataAndMetadata<S> readRawFactoryDataAndMetadata(String data) {
+        return objectMapper.readValue(data, RawFactoryDataAndMetadata.class);
+    }
 
 }
 

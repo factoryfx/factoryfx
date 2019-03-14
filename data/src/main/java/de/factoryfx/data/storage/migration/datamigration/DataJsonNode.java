@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.TextNode;
 import de.factoryfx.data.Data;
 import de.factoryfx.data.jackson.ObjectMapperBuilder;
+import de.factoryfx.data.jackson.SimpleObjectMapper;
 import de.factoryfx.data.storage.migration.metadata.DataStorageMetadataDictionary;
 
 import java.util.*;
@@ -39,20 +40,26 @@ public class DataJsonNode {
     }
 
     public DataJsonNode getChild(String attributeName) {
-        System.out.println(attributeName);
         return new DataJsonNode((ObjectNode)jsonNode.get(attributeName).get("v"));
+    }
+
+    public DataJsonNode getChild(String attributeName, int index) {
+        if (!jsonNode.get(attributeName).isArray()){
+            throw new IllegalArgumentException("is not a reflist attribute: "+attributeName);
+        }
+        return new DataJsonNode((ObjectNode)jsonNode.get(attributeName).get(index));
     }
 
     public JsonNode getAttributeValue(String attribute) {
         return jsonNode.get(attribute).get("v");
     }
 
-    public <V> V getAttributeValue(String attributeName, Class<V> valueClass) {
+    public <V> V getAttributeValue(String attributeName, Class<V> valueClass, SimpleObjectMapper simpleObjectMapper) {
         JsonNode attributeValue = getAttributeValue(attributeName);
         if (attributeValue==null){
             return null;
         }
-        return ObjectMapperBuilder.build().treeToValue(attributeValue, valueClass);
+        return simpleObjectMapper.treeToValue(attributeValue, valueClass);
     }
 
     //IDs from JsonIdentityInfo
@@ -100,7 +107,11 @@ public class DataJsonNode {
         }
     }
 
-    /** get children including himself*/
+
+    /**
+     *  get children including himself
+     * @return children
+     */
     public List<DataJsonNode> collectChildrenFromRoot(){
         List<DataJsonNode> dataJsonNode = new ArrayList<>();
         dataJsonNode.add(this);
@@ -112,8 +123,8 @@ public class DataJsonNode {
         return jsonNode.get("id").asText();
     }
 
-    public <D/*extends Data*/> D asData(Class<D> valueClass) {
-        return ObjectMapperBuilder.build().treeToValue(jsonNode, valueClass);
+    public <D/*extends Data*/> D asData(Class<D> valueClass, SimpleObjectMapper simpleObjectMapper) {
+        return simpleObjectMapper.treeToValue(jsonNode, valueClass);
     }
 
     private List<String> getAttributes(){
@@ -187,6 +198,5 @@ public class DataJsonNode {
 
         }
     }
-
 
 }

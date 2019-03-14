@@ -1,5 +1,7 @@
 package de.factoryfx.javafx.factory.view.factoryviewmanager;
 
+import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
@@ -10,6 +12,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import de.factoryfx.data.jackson.ObjectMapperBuilder;
 import de.factoryfx.data.merge.MergeDiffInfo;
 import de.factoryfx.data.storage.DataUpdate;
+import de.factoryfx.data.storage.RawFactoryDataAndMetadata;
 import de.factoryfx.data.storage.StoredDataMetadata;
 import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.data.storage.migration.MigrationManager;
@@ -96,29 +99,30 @@ public class FactoryEditManager<V,R extends FactoryBase<?,V,R>,S> {
     }
 
     public void saveToFile(Path target) {
-        RawFactoryDataAndMetadata<S> rawFactoryDataAndMetadata = new RawFactoryDataAndMetadata<>();
-        rawFactoryDataAndMetadata.metadata=loadedRoot.createUpdateStoredDataMetadata(null);
-        rawFactoryDataAndMetadata.root= ObjectMapperBuilder.build().writeValueAsTree(loadedRoot.root);
-        ObjectMapperBuilder.build().writeValue(target.toFile(), rawFactoryDataAndMetadata);
+        try {
+            Files.writeString(target, migrationManager.writeRawFactoryDataAndMetadata(loadedRoot.root,loadedRoot.createUpdateStoredDataMetadata(null)));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
-    @SuppressWarnings("unchecked")
     public void loadFromFile(Path from) {
-        RawFactoryDataAndMetadata<S> wrapper = (RawFactoryDataAndMetadata<S>)ObjectMapperBuilder.build().readValue(from.toFile(), RawFactoryDataAndMetadata.class);
-        R serverFactory = migrationManager.read(wrapper.root,wrapper.metadata.dataStorageMetadataDictionary);
+        try {
+            RawFactoryDataAndMetadata<S> wrapper = migrationManager.readRawFactoryDataAndMetadata(Files.readString(from));
 
-        DataUpdate<R> previousRoot=loadedRoot;
+            R serverFactory = migrationManager.read(wrapper.root,wrapper.metadata.dataStorageMetadataDictionary);
 
-        DataUpdate<R> update = client.prepareNewFactory();
-        loadedRoot=new DataUpdate<>(serverFactory,update.user,update.comment,update.baseVersionId);
-        this.save("reloaded from file: "+from.toFile().getAbsolutePath());
+            DataUpdate<R> previousRoot=loadedRoot;
 
-        updateNotify(loadedRoot, previousRoot);
-    }
+            DataUpdate<R> update = client.prepareNewFactory();
+            loadedRoot=new DataUpdate<>(serverFactory,update.user,update.comment,update.baseVersionId);
+            this.save("reloaded from file: "+from.toFile().getAbsolutePath());
 
-    private static class RawFactoryDataAndMetadata<S>{
-        public JsonNode root;
-        public StoredDataMetadata<S> metadata;
+            updateNotify(loadedRoot, previousRoot);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
     }
 
     public MergeDiffInfo<R> simulateUpdateCurrentFactory() {

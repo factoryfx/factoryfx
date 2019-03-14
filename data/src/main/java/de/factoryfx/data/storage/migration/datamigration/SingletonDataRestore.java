@@ -1,6 +1,7 @@
 package de.factoryfx.data.storage.migration.datamigration;
 
 import de.factoryfx.data.Data;
+import de.factoryfx.data.jackson.SimpleObjectMapper;
 import de.factoryfx.data.storage.migration.metadata.DataStorageMetadataDictionary;
 
 import java.util.List;
@@ -14,12 +15,14 @@ public class SingletonDataRestore<R extends Data,V>  {
 
     private final BiConsumer<R,V> setter;
     private final Class<V> valueClass;
+    private final SimpleObjectMapper simpleObjectMapper;
 
-    public SingletonDataRestore(String singletonPreviousDataClass, String previousAttributeName, Class<V> valueClass, BiConsumer<R,V> setter) {
+    public SingletonDataRestore(String singletonPreviousDataClass, String previousAttributeName, Class<V> valueClass, BiConsumer<R,V> setter, SimpleObjectMapper simpleObjectMapper) {
         this.previousAttributeName = previousAttributeName;
         this.singletonPreviousDataClass=singletonPreviousDataClass;
         this.setter=setter;
         this.valueClass=valueClass;
+        this.simpleObjectMapper = simpleObjectMapper;
     }
 
     public boolean canMigrate(DataStorageMetadataDictionary previousDataStorageMetadataDictionary){
@@ -31,7 +34,7 @@ public class SingletonDataRestore<R extends Data,V>  {
 
     public void migrate(List<DataJsonNode> dataJsonNodes, R root) {
         DataJsonNode previousData = dataJsonNodes.stream().filter(dataJsonNode -> dataJsonNode.match(singletonPreviousDataClass)).findFirst().get();
-        V attributeValue = previousData.getAttributeValue(previousAttributeName, valueClass);
+        V attributeValue = previousData.getAttributeValue(previousAttributeName, valueClass, simpleObjectMapper);
 
         setter.accept(root,attributeValue);
     }

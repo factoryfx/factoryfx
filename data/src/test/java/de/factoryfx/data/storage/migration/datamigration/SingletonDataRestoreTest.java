@@ -28,7 +28,7 @@ public class SingletonDataRestoreTest {
         SingletonDataRestore<ExampleDataA,String> singletonAttributeMove =
                 new SingletonDataRestore<>("de.factoryfx.data.merge.testdata.ExampleDataB","oldStringAttribute",String.class,(r, v)->{
                     r.referenceAttribute.get().stringAttribute.set(v);
-                } );
+                },ObjectMapperBuilder.build());
 
 
         ExampleDataA exampleDataAMigrated = new ExampleDataA();

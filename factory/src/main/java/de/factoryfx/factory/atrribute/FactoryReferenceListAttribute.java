@@ -36,7 +36,7 @@ public class FactoryReferenceListAttribute<L, F extends FactoryBase<? extends L,
 
     /**
      * This is only required if you have a Factory with Generic Parameter. <br>
-     * e.g. MicroserviceRestClientFactory<strong></b>&lt;Void,RichClientRoot,VS,RS,S&gt;</strong><br>
+     * e.g. MicroserviceRestClientFactory<strong>&lt;Void,RichClientRoot,VS,RS,S&gt;</strong><br>
      * <br>
      * workaround for chained generics (missing java feature)<br>
      * http://openjdk.java.net/jeps/101<br>
