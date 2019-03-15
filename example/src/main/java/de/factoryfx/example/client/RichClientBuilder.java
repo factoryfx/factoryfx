@@ -6,7 +6,6 @@ import de.factoryfx.example.client.view.ConfigurationViewFactory;
 import de.factoryfx.example.client.view.DashboardViewFactory;
 import de.factoryfx.example.client.view.HistoryViewFactory;
 import de.factoryfx.example.client.view.ProductsViewFactory;
-import de.factoryfx.example.server.shop.OrderCollector;
 import de.factoryfx.example.server.ServerRootFactory;
 import de.factoryfx.factory.FactoryTreeBuilderBasedAttributeSetup;
 import de.factoryfx.factory.builder.FactoryTreeBuilder;
@@ -43,8 +42,8 @@ import java.util.Locale;
 public class RichClientBuilder {
 
     @SuppressWarnings("unchecked")
-    public static FactoryTreeBuilder<Void,Stage,RichClientRoot,Void> createFactoryBuilder(int adminServerPort, Stage primaryStage, String user, String passwordHash, Locale locale, FactoryTreeBuilder<OrderCollector, Server, ServerRootFactory, Void> serverRootFactoryFactoryTreeBuilder, MigrationManager<ServerRootFactory,Void> serverMigrationManager) {
-        FactoryTreeBuilder<Void,Stage,RichClientRoot,Void> factoryBuilder = new FactoryTreeBuilder<>(RichClientRoot.class);
+    public static FactoryTreeBuilder<Stage,RichClientRoot,Void> createFactoryBuilder(int adminServerPort, Stage primaryStage, String user, String passwordHash, Locale locale, FactoryTreeBuilder<Server, ServerRootFactory, Void> serverRootFactoryFactoryTreeBuilder, MigrationManager<ServerRootFactory,Void> serverMigrationManager) {
+        FactoryTreeBuilder<Stage,RichClientRoot,Void> factoryBuilder = new FactoryTreeBuilder<>(RichClientRoot.class);
 
         factoryBuilder.addFactory(LongRunningActionExecutorFactory.class, Scope.SINGLETON);
         factoryBuilder.addFactory(RichClientRoot.class, Scope.SINGLETON);
@@ -93,7 +92,7 @@ public class RichClientBuilder {
         });
 
         factoryBuilder.addFactory(MicroserviceRestClientFactory.class, Scope.SINGLETON, context -> {
-            MicroserviceRestClientFactory<Void,RichClientRoot, OrderCollector, ServerRootFactory,Void> restClient = new MicroserviceRestClientFactory<>();
+            MicroserviceRestClientFactory<RichClientRoot, ServerRootFactory,Void> restClient = new MicroserviceRestClientFactory<>();
             restClient.host.set("localhost");
             restClient.port.set(adminServerPort);
             restClient.path.set(null);
@@ -115,7 +114,7 @@ public class RichClientBuilder {
 
             ConfigurationViewFactory configurationViewFactory = context.get(ConfigurationViewFactory.class);
 
-            FactoryEditViewFactory<OrderCollector, ServerRootFactory, Void> factoryEditViewFactory = (FactoryEditViewFactory<OrderCollector, ServerRootFactory, Void>)context.get(FactoryEditViewFactory.class);
+            FactoryEditViewFactory<ServerRootFactory, Void> factoryEditViewFactory = (FactoryEditViewFactory<ServerRootFactory, Void>)context.get(FactoryEditViewFactory.class);
             factoryEditViewFactory.contentWidgetFactory.set(configurationViewFactory);
             viewFactory.widget.set(factoryEditViewFactory);
 
@@ -173,7 +172,7 @@ public class RichClientBuilder {
 
             ProductsViewFactory configurationViewFactory = context.get(ProductsViewFactory.class);
 
-            FactoryEditViewFactory<OrderCollector, ServerRootFactory, Void> factoryEditViewFactory = (FactoryEditViewFactory<OrderCollector, ServerRootFactory, Void>)context.get(FactoryEditViewFactory.class);
+            FactoryEditViewFactory<ServerRootFactory, Void> factoryEditViewFactory = (FactoryEditViewFactory<ServerRootFactory, Void>)context.get(FactoryEditViewFactory.class);
             factoryEditViewFactory.contentWidgetFactory.set(configurationViewFactory);
             viewFactory.widget.set(factoryEditViewFactory);
 
@@ -186,7 +185,7 @@ public class RichClientBuilder {
         factoryBuilder.addFactory(ProductsViewFactory.class,Scope.SINGLETON);
 
         factoryBuilder.addFactory(FactoryEditViewFactory.class,Scope.PROTOTYPE, context ->{
-            FactoryEditViewFactory<OrderCollector, ServerRootFactory, Void> factoryEditViewFactory = new FactoryEditViewFactory<>();
+            FactoryEditViewFactory<ServerRootFactory, Void> factoryEditViewFactory = new FactoryEditViewFactory<>();
             factoryEditViewFactory.factoryEditManager.set(context.get(FactoryEditManagerFactory.class));
             factoryEditViewFactory.longRunningActionExecutor.set(context.get(LongRunningActionExecutorFactory.class));
             factoryEditViewFactory.uniformDesign.set(context.get(UniformDesignFactory.class));

@@ -14,15 +14,13 @@ public class MicroserviceRestClientBuilder {
      * @param user user
      * @param passwordNotHashed password in clear text
      * @param serverRootClass  server class, cause type erasure
-     * @param <V> Visitor client
      * @param <R>  Root client
-     * @param <VS> Visitor server
      * @param <RS> Root Server
      * @param <S> Summary Data for factory history
      * @return client
      */
-    public static <V, R extends FactoryBase<?,V,R>,VS, RS extends FactoryBase<?,VS,RS>,S> MicroserviceRestClient<VS,RS,S> build(String host, int port, String user, String passwordNotHashed, Class<RS> serverRootClass){
-        MicroserviceRestClientFactory<V,R,VS, RS,S> microserviceRestClientFactory = new MicroserviceRestClientFactory<>();
+    public static <R extends FactoryBase<?,R>, RS extends FactoryBase<?,RS>,S> MicroserviceRestClient<RS,S> build(String host, int port, String user, String passwordNotHashed, Class<RS> serverRootClass){
+        MicroserviceRestClientFactory<R, RS,S> microserviceRestClientFactory = new MicroserviceRestClientFactory<>();
         microserviceRestClientFactory.port.set(port);
         microserviceRestClientFactory.host.set(host);
         microserviceRestClientFactory.user.set(user);
@@ -35,15 +33,14 @@ public class MicroserviceRestClientBuilder {
      * @param host host
      * @param port port
      * @param serverRootClass server class, cause type erasure
-     * @param <V> Visitor client
      * @param <R>  Root client
      * @param <VS> Visitor server
      * @param <RS> Root Server
      * @param <S> Summary Data for factory history
      * @return client
      */
-    public static <V, R extends FactoryBase<?,V,R>,VS, RS extends FactoryBase<?,VS,RS>,S> MicroserviceRestClient<VS,RS,S> build(String host, int port, Class<RS> serverRootClass){
-        MicroserviceRestClientFactory<V,R,VS, RS,S> microserviceRestClientFactory = new MicroserviceRestClientFactory<>();
+    public static <R extends FactoryBase<?,R>, RS extends FactoryBase<?,RS>,S> MicroserviceRestClient<RS,S> build(String host, int port, Class<RS> serverRootClass){
+        MicroserviceRestClientFactory<R, RS,S> microserviceRestClientFactory = new MicroserviceRestClientFactory<>();
         microserviceRestClientFactory.port.set(port);
         microserviceRestClientFactory.host.set(host);
         microserviceRestClientFactory.user.set(null);

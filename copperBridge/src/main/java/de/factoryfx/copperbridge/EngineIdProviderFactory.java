@@ -5,7 +5,7 @@ import org.copperengine.core.EngineIdProvider;
 import de.factoryfx.data.attribute.types.StringAttribute;
 import de.factoryfx.factory.FactoryBase;
 
-public class EngineIdProviderFactory<V, R extends FactoryBase<?, V, R>> extends FactoryBase<EngineIdProvider, V, R> {
+public class EngineIdProviderFactory<R extends FactoryBase<?, R>> extends FactoryBase<EngineIdProvider, R> {
     public final StringAttribute idPrefix = new StringAttribute().labelText("id prefix");
 
     public EngineIdProviderFactory() {

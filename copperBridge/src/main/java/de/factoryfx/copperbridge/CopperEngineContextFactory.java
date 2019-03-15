@@ -8,16 +8,16 @@ import de.factoryfx.data.attribute.types.StringAttribute;
 import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.factory.atrribute.FactoryReferenceAttribute;
 
-public abstract class CopperEngineContextFactory<V, R extends FactoryBase<?, V, R>> extends FactoryBase<CopperEngineContext, V, R> {
+public abstract class CopperEngineContextFactory<R extends FactoryBase<?, R>> extends FactoryBase<CopperEngineContext, R> {
 
     public final StringAttribute dependencyInjectorType = new StringAttribute().labelText("DependencyInjectorType");
 
     @SuppressWarnings("unchecked")
-    public final FactoryReferenceAttribute<TransientScottyEngine, TransientScottyEngineFactory<V, R>> transientScottyEngine =
+    public final FactoryReferenceAttribute<TransientScottyEngine, TransientScottyEngineFactory<R>> transientScottyEngine =
         FactoryReferenceAttribute.create(new FactoryReferenceAttribute<>(TransientScottyEngineFactory.class)).labelText("Transient engine").nullable();
 
     @SuppressWarnings("unchecked")
-    public final FactoryReferenceAttribute<PersistentEngineContainer, PersistentScottyEngineFactory<V, R>> persistentScottyEngine =
+    public final FactoryReferenceAttribute<PersistentEngineContainer, PersistentScottyEngineFactory<R>> persistentScottyEngine =
         FactoryReferenceAttribute.create(new FactoryReferenceAttribute<>(PersistentScottyEngineFactory.class)).labelText("Persistent engine").nullable();
 
     public CopperEngineContextFactory(){

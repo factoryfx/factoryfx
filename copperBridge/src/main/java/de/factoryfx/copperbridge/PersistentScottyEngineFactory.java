@@ -20,18 +20,18 @@ import de.factoryfx.data.attribute.types.StringAttribute;
 import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.factory.atrribute.FactoryReferenceAttribute;
 
-public class PersistentScottyEngineFactory<V, R extends FactoryBase<?, V, R>> extends FactoryBase<PersistentEngineContainer, V, R> {
+public class PersistentScottyEngineFactory<R extends FactoryBase<?, R>> extends FactoryBase<PersistentEngineContainer, R> {
 
     public final StringAttribute idPrefix = new StringAttribute().labelText("processor pool id prefix");
     public final IntegerAttribute batcherThreads = new IntegerAttribute().labelText("Number of batcher threads");
     public final IntegerAttribute threads = new IntegerAttribute().labelText("Number of processing threads");
 
     @SuppressWarnings("unchecked")
-    public final FactoryReferenceAttribute<EngineIdProvider, EngineIdProviderFactory<V, R>> persistentEngineIdProviderFactory =
+    public final FactoryReferenceAttribute<EngineIdProvider, EngineIdProviderFactory<R>> persistentEngineIdProviderFactory =
         FactoryReferenceAttribute.create(new FactoryReferenceAttribute<>(EngineIdProviderFactory.class));
 
     @SuppressWarnings("unchecked")
-    public final FactoryReferenceAttribute<DBDialect, OracleDataSourceFactory<V, R>> dbDialectFactory =
+    public final FactoryReferenceAttribute<DBDialect, OracleDataSourceFactory<R>> dbDialectFactory =
         FactoryReferenceAttribute.create(new FactoryReferenceAttribute<>(OracleDataSourceFactory.class)).labelText("DB dialect");
 
     public PersistentScottyEngineFactory() {

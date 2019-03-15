@@ -9,7 +9,7 @@ import de.factoryfx.javafx.factory.RichClientRoot;
 import de.factoryfx.javafx.factory.editor.DataEditorFactory;
 import de.factoryfx.javafx.factory.util.UniformDesignFactory;
 
-public class DataTreeWidgetFactory extends SimpleFactoryBase<DataTreeWidget,Void,RichClientRoot> {
+public class DataTreeWidgetFactory extends SimpleFactoryBase<DataTreeWidget,RichClientRoot> {
 
     public final FactoryReferenceAttribute<UniformDesign, UniformDesignFactory> uniformDesign = new FactoryReferenceAttribute<>(UniformDesignFactory.class).de("uniformDesign").en("uniformDesign");
     public final FactoryReferenceAttribute<DataEditor, DataEditorFactory> dataEditorFactory = new FactoryReferenceAttribute<>(DataEditorFactory.class);

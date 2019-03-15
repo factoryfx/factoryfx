@@ -23,13 +23,11 @@ import org.glassfish.jersey.client.authentication.HttpAuthenticationFeature;
 
 /**
  *
- * @param <V> Visitor client
  * @param <R>  Root client
- * @param <VS> Visitor server
  * @param <RS> Root Server
  * @param <S> Summary Data for factory history
  */
-public class MicroserviceRestClientFactory<V, R extends FactoryBase<?,V,R>, VS, RS extends FactoryBase<?,VS,RS>,S> extends SimpleFactoryBase<MicroserviceRestClient<VS, RS,S>,V,R> {
+public class MicroserviceRestClientFactory<R extends FactoryBase<?,R>, RS extends FactoryBase<?,RS>,S> extends SimpleFactoryBase<MicroserviceRestClient<RS,S>,R> {
     //public final FactoryReferenceAttribute<RestClient,RestClientFactory<VS,RS>> restClient= new FactoryReferenceAttribute<RestClient,RestClientFactory<VS,RS>>().setupUnsafe(RestClientFactory.class);//.en("rest client");
     public final StringAttribute user = new StringAttribute().en("user").nullable();
     public final StringAttribute passwordHash = new StringAttribute().en("passwordHash").nullable();
@@ -43,7 +41,7 @@ public class MicroserviceRestClientFactory<V, R extends FactoryBase<?,V,R>, VS, 
     public final StringAttribute httpAuthenticationUser=new StringAttribute().labelText("httpAuthenticationUser").nullable();
     public final StringAttribute httpAuthenticationPassword=new StringAttribute().labelText("httpAuthenticationPassword").nullable();
 
-    public final ObjectValueAttribute<FactoryTreeBuilderBasedAttributeSetup<VS,?,RS,S>> factoryTreeBuilderBasedAttributeSetup=new ObjectValueAttribute<FactoryTreeBuilderBasedAttributeSetup<VS,?,RS,S>>().labelText("factoryTreeBuilderBasedAttributeSetup").nullable();
+    public final ObjectValueAttribute<FactoryTreeBuilderBasedAttributeSetup<?,RS,S>> factoryTreeBuilderBasedAttributeSetup=new ObjectValueAttribute<FactoryTreeBuilderBasedAttributeSetup<?,RS,S>>().labelText("factoryTreeBuilderBasedAttributeSetup").nullable();
 
 
 //
@@ -65,7 +63,7 @@ public class MicroserviceRestClientFactory<V, R extends FactoryBase<?,V,R>, VS, 
     }
 
     @Override
-    public MicroserviceRestClient<VS, RS, S> createImpl() {
+    public MicroserviceRestClient<RS, S> createImpl() {
         return createClient();
     }
 
@@ -75,7 +73,7 @@ public class MicroserviceRestClientFactory<V, R extends FactoryBase<?,V,R>, VS, 
      * @return client
      **/
     @SuppressWarnings("unchecked")
-    public MicroserviceRestClient<VS, RS, S> createClient() {
+    public MicroserviceRestClient<RS, S> createClient() {
         JacksonJaxbJsonProvider jacksonProvider = new JacksonJaxbJsonProvider();
         jacksonProvider.setMapper(ObjectMapperBuilder.buildNewObjectMapper());
         ClientConfig configuration = new ClientConfig(new ClientConfig());
@@ -95,7 +93,7 @@ public class MicroserviceRestClientFactory<V, R extends FactoryBase<?,V,R>, VS, 
 
 
         WebTarget webTarget = client.target(getUrl());
-        MicroserviceResourceApi<VS,RS,S> microserviceResourceApi = (MicroserviceResourceApi<VS,RS,S>) WebResourceFactory.newResource(MicroserviceResourceApi.class, webTarget);
+        MicroserviceResourceApi<RS,S> microserviceResourceApi = (MicroserviceResourceApi<RS,S>) WebResourceFactory.newResource(MicroserviceResourceApi.class, webTarget);
 
 
         return new MicroserviceRestClient<>(microserviceResourceApi,user.get(),passwordHash.get(),factoryTreeBuilderBasedAttributeSetup.get());

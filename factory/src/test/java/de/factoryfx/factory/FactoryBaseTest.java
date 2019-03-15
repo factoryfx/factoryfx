@@ -65,7 +65,7 @@ public class FactoryBaseTest {
 //        Assertions.assertEquals(3,liveObjects.entrySet().size());
     }
 
-    public static class XRoot extends SimpleFactoryBase<String,Void,XRoot> {
+    public static class XRoot extends SimpleFactoryBase<String,XRoot> {
         public final FactoryReferenceAttribute<String,ExampleFactoryAndViewA> referenceAttribute = new FactoryReferenceAttribute<>(ExampleFactoryAndViewA.class).labelText("ExampleA2");
         public final FactoryReferenceAttribute<String,XFactory> xFactory = new FactoryReferenceAttribute<>(XFactory.class).labelText("XFactory");
         public final FactoryReferenceAttribute<String,XFactory> xFactory2 = new FactoryReferenceAttribute<>(XFactory.class).labelText("XFactory");
@@ -81,7 +81,7 @@ public class FactoryBaseTest {
         }
     }
 
-    public static class ExampleFactoryAndViewA extends SimpleFactoryBase<String,Void,ExampleFactoryAndViewA> {
+    public static class ExampleFactoryAndViewA extends SimpleFactoryBase<String,ExampleFactoryAndViewA> {
         public final FactoryViewReferenceAttribute<XRoot,String,XFactory> referenceView = new FactoryViewReferenceAttribute<XRoot,String,XFactory>(
                 root -> root.xFactory.get()).labelText("ExampleA2");
         public final FactoryViewListReferenceAttribute<XRoot,String,XFactory> listView = new FactoryViewListReferenceAttribute<XRoot,String,XFactory>(
@@ -96,7 +96,7 @@ public class FactoryBaseTest {
     }
 
 
-    public static class XFactory extends SimpleFactoryBase<String,Void,XFactory> {
+    public static class XFactory extends SimpleFactoryBase<String,XFactory> {
         public final StringAttribute bla=new StringAttribute();
         public final FactoryReferenceAttribute<String,X2Factory> xFactory2 = new FactoryReferenceAttribute<>(X2Factory.class).labelText("XFactory");
 
@@ -110,7 +110,7 @@ public class FactoryBaseTest {
         }
     }
 
-    public static class X2Factory extends SimpleFactoryBase<String,Void, XFactory> {
+    public static class X2Factory extends SimpleFactoryBase<String, XFactory> {
         public final StringAttribute bla=new StringAttribute();
         public final FactoryReferenceAttribute<String,X3Factory> xFactory3 = new FactoryReferenceAttribute<>(X3Factory.class).labelText("XFactory");
 
@@ -130,7 +130,7 @@ public class FactoryBaseTest {
         }
     }
 
-    public static class X3Factory extends SimpleFactoryBase<String,Void, XFactory> {
+    public static class X3Factory extends SimpleFactoryBase<String, XFactory> {
         public final StringAttribute bla=new StringAttribute();
 
         public List<String> createCalls=new ArrayList<>();
@@ -258,7 +258,7 @@ public class FactoryBaseTest {
 
     }
 
-    public static class IterationTestFactory extends SimpleFactoryBase<Void,Void,IterationTestFactory>{
+    public static class IterationTestFactory extends SimpleFactoryBase<Void,IterationTestFactory>{
         public String testinfo;
         public final FactoryReferenceListAttribute<Void,IterationTestFactory>  children = new FactoryReferenceListAttribute<>(IterationTestFactory.class);
 
@@ -304,7 +304,7 @@ public class FactoryBaseTest {
         g.children.add(new IterationTestFactory("f"));
 
         StringBuilder result = new StringBuilder();
-        for (FactoryBase<?, ?, ?> item : root.internalFactory().getFactoriesInCreateAndStartOrder()) {
+        for (FactoryBase<?,?> item : root.internalFactory().getFactoriesInCreateAndStartOrder()) {
            result.append(((IterationTestFactory)item).testinfo);
         }
         Assertions.assertEquals("abcdefgh",result.toString());
@@ -338,7 +338,7 @@ public class FactoryBaseTest {
             g.children.add(new IterationTestFactory("f"));
 
             StringBuilder result = new StringBuilder();
-            for (FactoryBase<?, ?, ?> item : root.internalFactory().getFactoriesInDestroyOrder()) {
+            for (FactoryBase<?,?> item : root.internalFactory().getFactoriesInDestroyOrder()) {
                 result.append(((IterationTestFactory)item).testinfo);
             }
             Assertions.assertEquals("hdegabcf",result.toString());

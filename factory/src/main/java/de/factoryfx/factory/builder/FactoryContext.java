@@ -8,12 +8,12 @@ import java.util.function.Predicate;
 
 import de.factoryfx.factory.FactoryBase;
 
-public class FactoryContext<R extends FactoryBase<?,?,R>> {
+public class FactoryContext<R extends FactoryBase<?,R>> {
 
     private final List<FactoryCreator<?,R>> factoryCreators = new ArrayList<>();
 
     @SuppressWarnings("unchecked")
-    public <L, F extends FactoryBase<?,?,R>> F get(Predicate<FactoryCreator<?,R>> filter){
+    public <L, F extends FactoryBase<?,R>> F get(Predicate<FactoryCreator<?,R>> filter){
         return factoryCreators.stream().filter(filter).findAny().map(rFactoryCreator -> (F) rFactoryCreator.create(this)).orElse(null);
     }
 
@@ -29,11 +29,11 @@ public class FactoryContext<R extends FactoryBase<?,?,R>> {
         }
     }
 
-    <F extends FactoryBase<?,?,R>> F getUnchecked(Class<F> clazz){
+    <F extends FactoryBase<?,R>> F getUnchecked(Class<F> clazz){
         return get(fc -> fc.match(clazz));
     }
 
-    public <F extends FactoryBase<?,?,R>> F get(Class<F> clazz){
+    public <F extends FactoryBase<?,R>> F get(Class<F> clazz){
         F result = get(fc -> fc.match(clazz));
         if (result==null){
            throw new IllegalStateException("builder missing Factory: "+clazz);
@@ -41,7 +41,7 @@ public class FactoryContext<R extends FactoryBase<?,?,R>> {
         return result;
     }
 
-    public <F extends FactoryBase<?,?,R>> F get(Class<F> clazz, String name){
+    public <F extends FactoryBase<?,R>> F get(Class<F> clazz, String name){
         F result = get(fc -> fc.match(clazz) && fc.match(name));
         if (result==null){
             throw new IllegalStateException("builder missing Factory: "+clazz + "and name: "+name);
@@ -55,13 +55,13 @@ public class FactoryContext<R extends FactoryBase<?,?,R>> {
 
 
     @SuppressWarnings("unchecked")
-    public <L, F extends FactoryBase<L,?,R>> List<F> getList(Class<F> clazz) {
+    public <L, F extends FactoryBase<L,R>> List<F> getList(Class<F> clazz) {
         ArrayList<F> result = new ArrayList<>();
         factoryCreators.stream().filter(fc -> fc.match(clazz)).forEach(vFactoryCreator -> result.add((F) vFactoryCreator.create(FactoryContext.this)));
         return result;
     }
 
-    public <L, F extends FactoryBase<L,?,R>> boolean anyMatch(Class<F> clazz){
+    public <L, F extends FactoryBase<L,R>> boolean anyMatch(Class<F> clazz){
         return factoryCreators.stream().anyMatch(fc -> fc.match(clazz));
     }
 
@@ -74,9 +74,9 @@ public class FactoryContext<R extends FactoryBase<?,?,R>> {
     }
 
     public void fillFromExistingFactoryTree(R root) {
-        List<FactoryBase<?,?,?>> factories = root.internalFactory().collectChildFactoriesDeepFromRoot();
-        Map<FactoryCreatorIdentifier,FactoryBase<?,?,?>> classToFactory = new HashMap<>();
-        for (FactoryBase<?,?,?> factory : factories) {
+        List<FactoryBase<?,?>> factories = root.internalFactory().collectChildFactoriesDeepFromRoot();
+        Map<FactoryCreatorIdentifier,FactoryBase<?,?>> classToFactory = new HashMap<>();
+        for (FactoryBase<?,?> factory : factories) {
             classToFactory.put(new FactoryCreatorIdentifier(factory.getClass(),factory.internalFactory().getTreeBuilderName()),factory);
         }
 
@@ -88,7 +88,7 @@ public class FactoryContext<R extends FactoryBase<?,?,R>> {
     }
 
     @SuppressWarnings("unchecked")
-     <F extends FactoryBase<?,?,R>> F getNew(Class<F> clazz){
+     <F extends FactoryBase<?,R>> F getNew(Class<F> clazz){
         F result = factoryCreators.stream().filter(fc -> fc.match(clazz)).findAny().map(rFactoryCreator -> (F) rFactoryCreator.createNew(this)).orElse(null);
         if (result==null){
             throw new IllegalStateException("builder missing Factory: "+clazz);

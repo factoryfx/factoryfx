@@ -24,9 +24,9 @@ public class Main {
         ch.qos.logback.classic.Logger root = (ch.qos.logback.classic.Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
         root.setLevel(Level.INFO);
 
-        FactoryTreeBuilder<Void, Server,SimpleHttpServer,Void> builder = new FactoryTreeBuilder<>(SimpleHttpServer.class);
+        FactoryTreeBuilder< Server,SimpleHttpServer,Void> builder = new FactoryTreeBuilder<>(SimpleHttpServer.class);
         builder.addFactory(SimpleHttpServer.class, Scope.SINGLETON);
-        builder.addFactory(JettyServerFactory.class, Scope.SINGLETON, ctx-> new JettyServerBuilder<>(new JettyServerFactory<Void,SimpleHttpServer>())
+        builder.addFactory(JettyServerFactory.class, Scope.SINGLETON, ctx-> new JettyServerBuilder<>(new JettyServerFactory<SimpleHttpServer>())
                 .withHost("localhost").withPort(8005)
                 .withResource(ctx.get(WebResourceFactory.class)).build());
 
@@ -37,7 +37,7 @@ public class Main {
             return webResourceFactory;
         });
 
-        Microservice<Void, Server,SimpleHttpServer,Void> microservice = builder.microservice().withInMemoryStorage().build();
+        Microservice<Server,SimpleHttpServer,Void> microservice = builder.microservice().withInMemoryStorage().build();
         microservice.start();
 
         HttpClient client = HttpClient.newBuilder().version(HttpClient.Version.HTTP_1_1).build();

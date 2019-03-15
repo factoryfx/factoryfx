@@ -19,10 +19,9 @@ import org.slf4j.LoggerFactory;
 /**
  * Manage application lifecycle (start,stop,update)
  *
- * @param <V> Visitor
  * @param <R> Root
  */
-public class FactoryManager<V,L,R extends FactoryBase<L,V,R>> {
+public class FactoryManager<L,R extends FactoryBase<L,R>> {
 
     private static final org.slf4j.Logger logger = LoggerFactory.getLogger(FactoryManager.class);
 
@@ -42,19 +41,19 @@ public class FactoryManager<V,L,R extends FactoryBase<L,V,R>> {
             throw new IllegalStateException("update on a not started manager");
         }
 
-        Collection<FactoryBase<?, ?, ?>> previousFactories = currentFactoryRoot.getFactoriesInDestroyOrder();
+        Collection<FactoryBase<?,?>> previousFactories = currentFactoryRoot.getFactoriesInDestroyOrder();
         previousFactories.forEach((f) -> f.internalFactory().resetLog());
         R previousFactoryCopyRoot = currentFactoryRoot.copy();
 
-        FactoryBase<?,?,?> factoryBaseInFocus=null;//for better exception reporting
+        FactoryBase<?,?> factoryBaseInFocus=null;//for better exception reporting
 
         MergeDiffInfo<R> mergeDiff = currentFactoryRoot.merge(commonVersion, newVersion, permissionChecker);
         long totalUpdateDuration = 0;
-        List<FactoryBase<?, ?, ?>> removed = new ArrayList<>();
+        List<FactoryBase<?,?>> removed = new ArrayList<>();
 
         if (mergeDiff.successfullyMerged()) {
             try {
-                final Collection<FactoryBase<?, ?, ?>> currentFactoriesAfterMerge = currentFactoryRoot.collectChildFactories();
+                final Collection<FactoryBase<?,?>> currentFactoriesAfterMerge = currentFactoryRoot.collectChildFactories();
                 removed = getRemovedFactories(previousFactories, currentFactoriesAfterMerge);
 
                 long start = System.nanoTime();
@@ -62,25 +61,25 @@ public class FactoryManager<V,L,R extends FactoryBase<L,V,R>> {
 
                 //attention lifecycle method call order is important
 
-                final Collection<FactoryBase<?, ?, ?>> factoriesInCreateAndStartOrder = currentFactoryRoot.getFactoriesInCreateAndStartOrder();
-                for (FactoryBase<?, ?, ?> factory : factoriesInCreateAndStartOrder) {
+                final Collection<FactoryBase<?,?>> factoriesInCreateAndStartOrder = currentFactoryRoot.getFactoriesInCreateAndStartOrder();
+                for (FactoryBase<?,?> factory : factoriesInCreateAndStartOrder) {
                     factoryBaseInFocus=factory;
                     factory.internalFactory().instance();
                     //createWithExceptionHandling(factory, new RootFactoryWrapper<>(previousFactoryCopyRoot), currentFactoryRoot);
                 }
 
-                for (FactoryBase<?, ?, ?> factory : currentFactoriesAfterMerge) {
+                for (FactoryBase<?,?> factory : currentFactoriesAfterMerge) {
                     factoryBaseInFocus=factory;
                     factory.internalFactory().destroyUpdated();
                 }
-                for (FactoryBase<?, ?, ?> factory : removed) {
+                for (FactoryBase<?,?> factory : removed) {
                     factoryBaseInFocus=factory;
                     factory.internalFactory().destroyRemoved();
                 }
 
 
                 //factoriesInCreateAndStartOrder.forEach(this::startWithExceptionHandling);
-                for (FactoryBase<?, ?, ?> factory : factoriesInCreateAndStartOrder) {
+                for (FactoryBase<?,?> factory : factoriesInCreateAndStartOrder) {
                     factoryBaseInFocus=factory;
                     factory.internalFactory().start();
                 }
@@ -115,9 +114,9 @@ public class FactoryManager<V,L,R extends FactoryBase<L,V,R>> {
     Set<Data> getChangedFactories(RootFactoryWrapper<R> currentFactoryRoot, R previousFactoryCopyRoot){
         //one might think that the merger could do the change detection but that don't work for views and separation of concern is better anyway
         final HashSet<Data> result = new HashSet<>();
-        final HashMap<String, FactoryBase<?, ?,?>> previousFactories = previousFactoryCopyRoot.internalFactory().collectChildFactoriesDeepMapFromRoot();
+        final HashMap<String, FactoryBase<?,?>> previousFactories = previousFactoryCopyRoot.internalFactory().collectChildFactoriesDeepMapFromRoot();
         for (Data data: currentFactoryRoot.collectChildFactories()){
-            final FactoryBase<?, ?,?> previousFactory = previousFactories.get(data.getId());
+            final FactoryBase<?,?> previousFactory = previousFactories.get(data.getId());
             if (previousFactory!=null){
                 data.internal().visitAttributesDualFlat(previousFactory, (name, currentAttribute, previousAttribute) -> {
                     if (!(currentAttribute instanceof DataViewReferenceAttribute) && !(currentAttribute instanceof DataViewListReferenceAttribute)){//Data views have no function no need to check
@@ -132,8 +131,8 @@ public class FactoryManager<V,L,R extends FactoryBase<L,V,R>> {
         return result;
     }
 
-    public List<FactoryBase<?,?,?>> getRemovedFactories(Collection<FactoryBase<?,?,?>> previousFactories, Collection<FactoryBase<?,?,?>> newFactories){
-        final ArrayList<FactoryBase<?,?,?>> result = new ArrayList<>();
+    public List<FactoryBase<?,?>> getRemovedFactories(Collection<FactoryBase<?,?>> previousFactories, Collection<FactoryBase<?,?>> newFactories){
+        final ArrayList<FactoryBase<?,?>> result = new ArrayList<>();
         previousFactories.forEach(previous -> {
             if (!newFactories.contains(previous)){
                 result.add(previous);
@@ -164,17 +163,17 @@ public class FactoryManager<V,L,R extends FactoryBase<L,V,R>> {
 
     @SuppressWarnings("unchecked")
     public L start(RootFactoryWrapper<R> newFactory){
-        FactoryBase<?,?,?> factoryBaseInFocus=null;//for better exception reporting
+        FactoryBase<?,?> factoryBaseInFocus=null;//for better exception reporting
         try {
             currentFactoryRoot =newFactory;
 
-            Collection<FactoryBase<?,?,?>> factoriesInCreateAndStartOrder = newFactory.getFactoriesInCreateAndStartOrder();
-            for (FactoryBase<?, ?, ?> factory : factoriesInCreateAndStartOrder) {
+            Collection<FactoryBase<?,?>> factoriesInCreateAndStartOrder = newFactory.getFactoriesInCreateAndStartOrder();
+            for (FactoryBase<?,?> factory : factoriesInCreateAndStartOrder) {
                 factoryBaseInFocus=factory;
                 factory.internalFactory().instance();
             }
 
-            for (FactoryBase<?, ?, ?> factory : factoriesInCreateAndStartOrder) {
+            for (FactoryBase<?,?> factory : factoriesInCreateAndStartOrder) {
                 factoryBaseInFocus=factory;
                 factory.internalFactory().start();
             }
@@ -191,10 +190,10 @@ public class FactoryManager<V,L,R extends FactoryBase<L,V,R>> {
         if (currentFactoryRoot==null){
             throw new IllegalStateException("server is not started");
         }
-        Collection<FactoryBase<?,?,?>> factories = currentFactoryRoot.getFactoriesInDestroyOrder();
-        FactoryBase<?,?,?> factoryBaseInFocus=null;//for better exception reporting
+        Collection<FactoryBase<?,?>> factories = currentFactoryRoot.getFactoriesInDestroyOrder();
+        FactoryBase<?,?> factoryBaseInFocus=null;//for better exception reporting
         try {
-            for (FactoryBase<?,?,?> factory: factories){
+            for (FactoryBase<?,?> factory: factories){
                 factoryBaseInFocus=factory;
                 factory.internalFactory().destroyRemoved();
             }
@@ -204,16 +203,8 @@ public class FactoryManager<V,L,R extends FactoryBase<L,V,R>> {
 
     }
 
-    @SuppressWarnings("unchecked")
-    public V query(V visitor){
-        for (FactoryBase<?,?,?> factory: currentFactoryRoot.collectChildFactories()){
-            ((FactoryBase<?,V,?>)factory).internalFactory().runtimeQuery(visitor);
-        }
-        return visitor;
-    }
-
     public void resetAfterCrash() {
-        for (FactoryBase<?, ?, ?> factory : currentFactoryRoot.getFactoriesInDestroyOrder()) {
+        for (FactoryBase<?,?> factory : currentFactoryRoot.getFactoriesInDestroyOrder()) {
             factory.internalFactory().cleanUpAfterCrash();
         }
         this.currentFactoryRoot=null;

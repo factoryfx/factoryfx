@@ -6,7 +6,7 @@ import de.factoryfx.factory.builder.Scope;
 public class Main {
 
     public static void main(String[] args) {
-        FactoryTreeBuilder<Void,Printer, PrinterFactory,Void> builder = new FactoryTreeBuilder<>(PrinterFactory.class);
+        FactoryTreeBuilder<Printer, PrinterFactory,Void> builder = new FactoryTreeBuilder<>(PrinterFactory.class);
         builder.addFactory(PrinterFactory.class, Scope.SINGLETON, ctx->{
             PrinterFactory factory = new PrinterFactory();
             factory.text.set("Hello World");

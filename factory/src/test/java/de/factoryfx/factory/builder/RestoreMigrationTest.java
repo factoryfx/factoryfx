@@ -17,7 +17,7 @@ public class RestoreMigrationTest {
 
     //----------------------------------old
 
-    public static class ServerFactoryOld extends SimpleFactoryBase<Void,Void, ServerFactoryOld> {
+    public static class ServerFactoryOld extends SimpleFactoryBase<Void, ServerFactoryOld> {
 
         public final FactoryReferenceAttribute<Void,PartnerFactoryOld>  partnerFactory1 = new FactoryReferenceAttribute<>(PartnerFactoryOld.class);
         public final FactoryReferenceAttribute<Void,PartnerFactoryOld>  partnerFactory2 = new FactoryReferenceAttribute<>(PartnerFactoryOld.class);
@@ -32,7 +32,7 @@ public class RestoreMigrationTest {
     }
 
 
-    public static class ServerFactoryNestedOld extends SimpleFactoryBase<Void,Void, ServerFactoryOld> {
+    public static class ServerFactoryNestedOld extends SimpleFactoryBase<Void, ServerFactoryOld> {
 
         public final FactoryReferenceAttribute<Void,PartnerFactoryOld>  partnerFactory1 = new FactoryReferenceAttribute<>(PartnerFactoryOld.class);
         public final FactoryReferenceAttribute<Void,PartnerFactoryOld>  partnerFactory2 = new FactoryReferenceAttribute<>(PartnerFactoryOld.class);
@@ -47,7 +47,7 @@ public class RestoreMigrationTest {
     }
 
 
-    public static class PartnerFactoryOld extends SimpleFactoryBase<Void,Void, ServerFactoryOld> {
+    public static class PartnerFactoryOld extends SimpleFactoryBase<Void, ServerFactoryOld> {
         public final StringAttribute url = new StringAttribute();
 
 
@@ -57,7 +57,7 @@ public class RestoreMigrationTest {
         }
     }
 
-    public static class ClientSystemFactoryOld extends SimpleFactoryBase<Void,Void, ServerFactoryOld> {
+    public static class ClientSystemFactoryOld extends SimpleFactoryBase<Void, ServerFactoryOld> {
         public final StringAttribute url = new StringAttribute();
 
         @Override
@@ -69,7 +69,7 @@ public class RestoreMigrationTest {
     //----------------------------------new
 
 
-    public static class ServerFactory extends SimpleFactoryBase<Void,Void, ServerFactory> {
+    public static class ServerFactory extends SimpleFactoryBase<Void, ServerFactory> {
         public final FactoryReferenceAttribute<Void, ClientSystemFactory>  clientSystemFactory1 = new FactoryReferenceAttribute<>(ClientSystemFactory.class);
         public final FactoryReferenceAttribute<Void, ClientSystemFactory>  clientSystemFactory2 = new FactoryReferenceAttribute<>(ClientSystemFactory.class);
 
@@ -79,7 +79,7 @@ public class RestoreMigrationTest {
         }
     }
 
-    public static class ClientSystemFactory extends SimpleFactoryBase<Void,Void, ServerFactory> {
+    public static class ClientSystemFactory extends SimpleFactoryBase<Void, ServerFactory> {
         public final StringAttribute clientUrl = new StringAttribute().nullable();
         public final StringAttribute partnerUrl = new StringAttribute().nullable();
 
@@ -96,7 +96,7 @@ public class RestoreMigrationTest {
     @Test
     public void test() throws IOException {
         {
-            FactoryTreeBuilder<Void, Void, ServerFactoryOld, Void> builderOld = new FactoryTreeBuilder<>(ServerFactoryOld.class);
+            FactoryTreeBuilder< Void, ServerFactoryOld, Void> builderOld = new FactoryTreeBuilder<>(ServerFactoryOld.class);
             builderOld.addFactory(ServerFactoryOld.class, Scope.SINGLETON, ctx -> {
                 ServerFactoryOld serverFactoryOld = new ServerFactoryOld();
                 serverFactoryOld.clientSystemFactory1.set(new ClientSystemFactoryOld());
@@ -109,7 +109,7 @@ public class RestoreMigrationTest {
                 serverFactoryOld.partnerFactory2.get().url.set("4");
                 return serverFactoryOld;
             });
-            Microservice<Void, Void, ServerFactoryOld, Void> msOld = builderOld.microservice().withFilesystemStorage(folder).build();
+            Microservice<Void,ServerFactoryOld,Void> msOld = builderOld.microservice().withFilesystemStorage(folder).build();
             msOld.start();
             msOld.stop();
         }
@@ -127,10 +127,10 @@ public class RestoreMigrationTest {
         Files.writeString(folder.resolve("currentFactory_metadata.json"),currentFactorymetadata);
 
         {
-            FactoryTreeBuilder<Void, Void, ServerFactory, Void> builder = new FactoryTreeBuilder<>(ServerFactory.class);
+            FactoryTreeBuilder< Void, ServerFactory, Void> builder = new FactoryTreeBuilder<>(ServerFactory.class);
             builder.addFactory(ServerFactory.class, Scope.SINGLETON);
             builder.addFactory(ClientSystemFactory.class, Scope.SINGLETON);
-            Microservice<Void, Void, ServerFactory, Void> msNew = builder.microservice().withFilesystemStorage(folder).
+            Microservice<Void, ServerFactory, Void> msNew = builder.microservice().withFilesystemStorage(folder).
                 withRenameAttributeMigration(ClientSystemFactory.class, "url", (c) -> c.clientUrl).
                 withRestoreAttributeMigration(PathBuilder.value(String.class).pathElement("partnerFactory1").attribute("url"), (r, v) -> r.clientSystemFactory1.get().partnerUrl.set(v)).
                 withRestoreAttributeMigration(PathBuilder.value(String.class).pathElement("partnerFactory2").attribute("url"), (r, v) -> r.clientSystemFactory2.get().partnerUrl.set(v)).

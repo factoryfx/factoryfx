@@ -9,8 +9,8 @@ import org.eclipse.jetty.server.Server;
 
 public class ServerBuilder {
 
-    public FactoryTreeBuilder<OrderCollector, Server, ServerRootFactory, Void> builder(){
-        FactoryTreeBuilder<OrderCollector, Server, ServerRootFactory, Void> factoryTreeBuilder = new FactoryTreeBuilder<>(ServerRootFactory.class);
+    public FactoryTreeBuilder<Server, ServerRootFactory, Void> builder(){
+        FactoryTreeBuilder<Server, ServerRootFactory, Void> factoryTreeBuilder = new FactoryTreeBuilder<>(ServerRootFactory.class);
 
         factoryTreeBuilder.addFactory(ServerRootFactory.class, Scope.SINGLETON);
 

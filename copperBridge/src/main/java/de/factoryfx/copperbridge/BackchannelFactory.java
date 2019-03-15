@@ -5,7 +5,7 @@ import org.copperengine.core.util.BackchannelDefaultImpl;
 
 import de.factoryfx.factory.FactoryBase;
 
-public class BackchannelFactory<V, R extends FactoryBase<?, V, R>> extends FactoryBase<Backchannel, V, R> {
+public class BackchannelFactory<R extends FactoryBase<?, R>> extends FactoryBase<Backchannel, R> {
 
     //must be singleton
     public BackchannelFactory() {

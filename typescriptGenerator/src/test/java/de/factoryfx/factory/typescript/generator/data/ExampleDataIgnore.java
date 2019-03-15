@@ -10,7 +10,7 @@ import de.factoryfx.factory.testfactories.ExampleFactoryA;
 import de.factoryfx.factory.testfactories.ExampleLiveObjectA;
 
 
-public class ExampleDataIgnore extends SimpleFactoryBase<Void,Void, ExampleFactoryA> {
+public class ExampleDataIgnore extends SimpleFactoryBase<Void, ExampleFactoryA> {
     public final StringAttribute stringAttribute = new StringAttribute();
     public final ObjectValueAttribute<Object> objectValueAttribute = new ObjectValueAttribute<>();
     public final DataViewReferenceAttribute<ExampleFactoryA,ExampleFactoryA> dataView = new DataViewReferenceAttribute<>(root -> null);

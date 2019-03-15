@@ -14,12 +14,12 @@ import de.factoryfx.data.attribute.primitive.BooleanAttribute;
 import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.factory.atrribute.FactoryReferenceAttribute;
 
-public abstract class OracleDataSourceFactory<V, R extends FactoryBase<?, V, R>> extends FactoryBase<DBDialect, V, R> {
+public abstract class OracleDataSourceFactory<R extends FactoryBase<?, R>> extends FactoryBase<DBDialect, R> {
 
     public final BooleanAttribute multiEngineMode = new BooleanAttribute().labelText("MultiEngineMode");
 
     @SuppressWarnings("unchecked")
-    public final FactoryReferenceAttribute<EngineIdProvider, EngineIdProviderFactory<V, R>> engineIdProviderFactory =
+    public final FactoryReferenceAttribute<EngineIdProvider, EngineIdProviderFactory<R>> engineIdProviderFactory =
         FactoryReferenceAttribute.create(new FactoryReferenceAttribute<>(EngineIdProviderFactory.class)).labelText("EngineId provider");
 
     public abstract DataSource getDataSource();

@@ -16,7 +16,7 @@ import java.util.logging.Logger;
  *  <pre>{@code
         public class SimpleHttpServer extends SimpleFactoryBase<Server, Void, SimpleHttpServer> {
             @SuppressWarnings("unchecked")
-            public final FactoryReferenceAttribute<Server, JettyServerFactory<Void, SimpleHttpServer>> server = FactoryReferenceAttribute.create(new FactoryReferenceAttribute<>(JettyServerFactory.class));
+            public final FactoryReferenceAttribute<Server, JettyServerFactory<SimpleHttpServer>> server = FactoryReferenceAttribute.create(new FactoryReferenceAttribute<>(JettyServerFactory.class));
 
             @Override
             public Server createImpl() {
@@ -24,13 +24,13 @@ import java.util.logging.Logger;
             }
         }
 
-        builder.addFactory(JettyServerFactory.class, Scope.SINGLETON, ctx-> new JettyServerBuilder<>(new JettyServerFactory<Void,SimpleHttpServer>())
+        builder.addFactory(JettyServerFactory.class, Scope.SINGLETON, ctx-> new JettyServerBuilder<>(new JettyServerFactory<SimpleHttpServer>())
             .withHost("localhost").withPort(8005)
             .withResource(ctx.get(CustomResourceFactory.class)).build());
 
    }</pre>
  */
-public class JettyServerFactory<V,R extends FactoryBase<?,V,R>> extends FactoryBase<Server,V,R> {
+public class JettyServerFactory<R extends FactoryBase<?,R>> extends FactoryBase<Server,R> {
 
     private static final Logger jerseyLogger1 = Logger.getLogger(org.glassfish.jersey.internal.inject.Providers.class.getName());
     private static final Logger jerseyLogger2 = Logger.getLogger(org.glassfish.jersey.internal.Errors.class.getName());
@@ -40,12 +40,12 @@ public class JettyServerFactory<V,R extends FactoryBase<?,V,R>> extends FactoryB
     }
 
     @SuppressWarnings("unchecked")
-    public final FactoryReferenceListAttribute<HttpServerConnector,HttpServerConnectorFactory<V,R>> connectors =
+    public final FactoryReferenceListAttribute<HttpServerConnector,HttpServerConnectorFactory<R>> connectors =
             FactoryReferenceListAttribute.create( new FactoryReferenceListAttribute<>(HttpServerConnectorFactory.class).labelText("Connectors").userNotSelectable());
 
 
     @SuppressWarnings("unchecked")
-    public final FactoryReferenceAttribute<HandlerCollection,HandlerCollectionFactory<V,R>> handler = FactoryReferenceAttribute.create(new FactoryReferenceAttribute<>(HandlerCollectionFactory.class).labelText("Handler collection"));
+    public final FactoryReferenceAttribute<HandlerCollection,HandlerCollectionFactory<R>> handler = FactoryReferenceAttribute.create(new FactoryReferenceAttribute<>(HandlerCollectionFactory.class).labelText("Handler collection"));
 
 
     public JettyServerFactory(){
@@ -91,8 +91,8 @@ public class JettyServerFactory<V,R extends FactoryBase<?,V,R>> extends FactoryB
      * @param resource resource
      * @param <T> resource type
      */
-    public final <T extends FactoryBase<?,V,R>> void setResource(T resource){
-        JerseyServletFactory<V, R> jerseyServletFactory = getDefaultJerseyServlet();
+    public final <T extends FactoryBase<?,R>> void setResource(T resource){
+        JerseyServletFactory<R> jerseyServletFactory = getDefaultJerseyServlet();
         jerseyServletFactory.resources.removeIf(factoryBase -> factoryBase.getClass()==resource.getClass());
         jerseyServletFactory.resources.add(resource);
     }
@@ -105,8 +105,8 @@ public class JettyServerFactory<V,R extends FactoryBase<?,V,R>> extends FactoryB
      */
     @SuppressWarnings("unchecked")
     public final <T extends FactoryBase> T getServlet(Class<T> clazz){
-        ServletContextHandlerFactory<V, R> servletContextHandler = (ServletContextHandlerFactory<V, R>) handler.get().handlers.get(GzipHandlerFactory.class).handler.get();
-        for (ServletAndPathFactory<V, R> servletAndPath : servletContextHandler.updatableRootServlet.get().servletAndPaths) {
+        ServletContextHandlerFactory<R> servletContextHandler = (ServletContextHandlerFactory<R>) handler.get().handlers.get(GzipHandlerFactory.class).handler.get();
+        for (ServletAndPathFactory<R> servletAndPath : servletContextHandler.updatableRootServlet.get().servletAndPaths) {
             if (servletAndPath.servlet.get().getClass()==clazz){
                 return (T)servletAndPath.servlet.get();
             }
@@ -119,10 +119,10 @@ public class JettyServerFactory<V,R extends FactoryBase<?,V,R>> extends FactoryB
     }
 
     @SuppressWarnings("unchecked")
-    private JerseyServletFactory<V, R> getDefaultJerseyServlet() {
-        ServletContextHandlerFactory<V, R> servletContextHandler = (ServletContextHandlerFactory<V, R>) handler.get().handlers.get(GzipHandlerFactory.class).handler.get();
-        ServletAndPathFactory<V, R> servletAndPathFactory = servletContextHandler.updatableRootServlet.get().servletAndPaths.get(0);
-        return (JerseyServletFactory<V, R>) servletAndPathFactory.servlet.get();
+    private JerseyServletFactory<R> getDefaultJerseyServlet() {
+        ServletContextHandlerFactory<R> servletContextHandler = (ServletContextHandlerFactory<R>) handler.get().handlers.get(GzipHandlerFactory.class).handler.get();
+        ServletAndPathFactory<R> servletAndPathFactory = servletContextHandler.updatableRootServlet.get().servletAndPaths.get(0);
+        return (JerseyServletFactory<R>) servletAndPathFactory.servlet.get();
     }
 
     public void start(Server server) throws Error {

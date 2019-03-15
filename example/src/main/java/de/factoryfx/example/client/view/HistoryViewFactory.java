@@ -1,7 +1,6 @@
 package de.factoryfx.example.client.view;
 
 import de.factoryfx.example.server.ServerRootFactory;
-import de.factoryfx.example.server.shop.OrderCollector;
 import de.factoryfx.factory.atrribute.FactoryReferenceAttribute;
 import de.factoryfx.javafx.data.editor.attribute.AttributeVisualisationMappingBuilder;
 import de.factoryfx.javafx.data.util.UniformDesign;
@@ -24,7 +23,7 @@ public class HistoryViewFactory extends WidgetFactory {
     public final FactoryReferenceAttribute<UniformDesign, UniformDesignFactory> uniformDesign =
             new FactoryReferenceAttribute<>(UniformDesignFactory.class).de("uniformDesign").en("uniformDesign");
     @SuppressWarnings("unchecked")
-    public final FactoryReferenceAttribute<MicroserviceRestClient<OrderCollector, ServerRootFactory, String>, MicroserviceRestClientFactory<Void, RichClientRoot, OrderCollector, ServerRootFactory, String>> restClient =
+    public final FactoryReferenceAttribute<MicroserviceRestClient<ServerRootFactory, String>, MicroserviceRestClientFactory<RichClientRoot, ServerRootFactory, String>> restClient =
             FactoryReferenceAttribute.create(new FactoryReferenceAttribute<>(MicroserviceRestClientFactory.class).de("restClient").en("restClient"));
     public final FactoryReferenceAttribute<AttributeVisualisationMappingBuilder, AttributeEditorBuilderFactory> attributeEditorBuilder =
             new FactoryReferenceAttribute<>(AttributeEditorBuilderFactory.class).de("attribute editor").en("attribute editor");

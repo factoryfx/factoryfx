@@ -18,7 +18,7 @@ import java.util.function.Supplier;
  * @param <L> liveobject created form the factory
  * @param <F> factory
  */
-public class FactoryReferenceAttribute<L, F extends FactoryBase<? extends L,?,?>> extends FactoryReferenceBaseAttribute<L,F,FactoryReferenceAttribute<L, F>> {
+public class FactoryReferenceAttribute<L, F extends FactoryBase<? extends L,?>> extends FactoryReferenceBaseAttribute<L,F,FactoryReferenceAttribute<L, F>> {
 
     /**
      * @param clazz generic type erasure workaround
@@ -48,7 +48,7 @@ public class FactoryReferenceAttribute<L, F extends FactoryBase<? extends L,?,?>
      * @param <L> Live Object
      * @param <F> Factory
      * */
-    public static <L, F extends FactoryBase<? extends L,?,?>> FactoryReferenceAttribute create(FactoryReferenceAttribute<L,F> factoryReferenceAttribute){
+    public static <L, F extends FactoryBase<? extends L,?>> FactoryReferenceAttribute create(FactoryReferenceAttribute<L,F> factoryReferenceAttribute){
         return factoryReferenceAttribute;
     }
 

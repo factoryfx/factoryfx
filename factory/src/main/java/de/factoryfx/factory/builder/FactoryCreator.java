@@ -6,7 +6,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.function.Function;
 
-public class FactoryCreator<F extends FactoryBase<?,?,R>,R extends FactoryBase<?,?,R>> {
+public class FactoryCreator<F extends FactoryBase<?,R>,R extends FactoryBase<?,R>> {
     private final Class<F> clazz;
     private final Scope scope;
     private final Function<FactoryContext<R>, F> creator;
@@ -50,7 +50,7 @@ public class FactoryCreator<F extends FactoryBase<?,?,R>,R extends FactoryBase<?
     }
 
     @SuppressWarnings("unchecked")
-    public void fillFromExistingFactoryTree(Map<FactoryCreatorIdentifier, FactoryBase<?,?,?>> classToFactory) {
+    public void fillFromExistingFactoryTree(Map<FactoryCreatorIdentifier, FactoryBase<?,?>> classToFactory) {
         if (scope==Scope.SINGLETON) {
             factory= (F) classToFactory.get(new FactoryCreatorIdentifier(clazz,name));
         }

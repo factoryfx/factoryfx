@@ -15,7 +15,7 @@ public class ReferenceTypeChangeMigrationTest {
 
     //----------------------------------old
 
-    public static class ServerFactoryOld extends SimpleFactoryBase<Void,Void, ServerFactoryOld> {
+    public static class ServerFactoryOld extends SimpleFactoryBase<Void, ServerFactoryOld> {
         public final FactoryReferenceAttribute<Void,PartnerFactory>  partnerFactory = new FactoryReferenceAttribute<>(PartnerFactory.class);
 
         @Override
@@ -24,7 +24,7 @@ public class ReferenceTypeChangeMigrationTest {
         }
     }
 
-    public static class PartnerFactory extends SimpleFactoryBase<Void,Void, ServerFactoryOld> {
+    public static class PartnerFactory extends SimpleFactoryBase<Void, ServerFactoryOld> {
         @Override
         public Void createImpl() {
             return null;
@@ -34,7 +34,7 @@ public class ReferenceTypeChangeMigrationTest {
     //----------------------------------new
 
 
-    public static class ServerFactory extends SimpleFactoryBase<Void,Void, ServerFactory> {
+    public static class ServerFactory extends SimpleFactoryBase<Void, ServerFactory> {
         public final FactoryReferenceAttribute<Void,ClientSystemFactory>  partnerFactory = new FactoryReferenceAttribute<>(ClientSystemFactory.class);
 
         @Override
@@ -43,7 +43,7 @@ public class ReferenceTypeChangeMigrationTest {
         }
     }
 
-    public static class ClientSystemFactory extends SimpleFactoryBase<Void,Void, ServerFactory> {
+    public static class ClientSystemFactory extends SimpleFactoryBase<Void, ServerFactory> {
 
 
         @Override
@@ -59,13 +59,13 @@ public class ReferenceTypeChangeMigrationTest {
     @Test
     public void test() throws IOException {
         {
-            FactoryTreeBuilder<Void, Void, ServerFactoryOld, Void> builderOld = new FactoryTreeBuilder<>(ServerFactoryOld.class);
+            FactoryTreeBuilder<Void, ServerFactoryOld, Void> builderOld = new FactoryTreeBuilder<>(ServerFactoryOld.class);
             builderOld.addFactory(ServerFactoryOld.class, Scope.SINGLETON, ctx -> {
                 ServerFactoryOld serverFactoryOld = new ServerFactoryOld();
                 serverFactoryOld.partnerFactory.set(new PartnerFactory());
                 return serverFactoryOld;
             });
-            Microservice<Void, Void, ServerFactoryOld, Void> msOld = builderOld.microservice().withFilesystemStorage(folder).build();
+            Microservice<Void, ServerFactoryOld, Void> msOld = builderOld.microservice().withFilesystemStorage(folder).build();
             msOld.start();
             msOld.stop();
         }
@@ -83,10 +83,10 @@ public class ReferenceTypeChangeMigrationTest {
         Files.writeString(folder.resolve("currentFactory_metadata.json"),currentFactorymetadata);
 
         {
-            FactoryTreeBuilder<Void, Void, ServerFactory, Void> builder = new FactoryTreeBuilder<>(ServerFactory.class);
+            FactoryTreeBuilder< Void, ServerFactory, Void> builder = new FactoryTreeBuilder<>(ServerFactory.class);
             builder.addFactory(ServerFactory.class, Scope.SINGLETON);
             builder.addFactory(ClientSystemFactory.class, Scope.SINGLETON);
-            Microservice<Void, Void, ServerFactory, Void> msNew = builder.microservice().withFilesystemStorage(folder).
+            Microservice<Void, ServerFactory, Void> msNew = builder.microservice().withFilesystemStorage(folder).
                     withRenameClassMigration(PartnerFactory.class.getName(),ClientSystemFactory.class).
                     build();
             msNew.start();

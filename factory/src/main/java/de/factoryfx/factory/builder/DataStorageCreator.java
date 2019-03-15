@@ -6,6 +6,6 @@ import de.factoryfx.data.storage.migration.MigrationManager;
 import de.factoryfx.factory.FactoryBase;
 
 @FunctionalInterface
-public interface DataStorageCreator<R extends FactoryBase<?,?,R>,S> {
+public interface DataStorageCreator<R extends FactoryBase<?,R>,S> {
     DataStorage<R,S> createDataStorage(R initialFactory, MigrationManager<R,S> migrationManager, SimpleObjectMapper objectMapper);
 }

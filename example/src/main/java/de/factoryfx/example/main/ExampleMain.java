@@ -6,7 +6,6 @@ import ch.qos.logback.classic.Logger;
 import de.factoryfx.example.client.RichClientBuilder;
 import de.factoryfx.example.server.ServerBuilder;
 import de.factoryfx.example.server.ServerRootFactory;
-import de.factoryfx.example.server.shop.OrderCollector;
 import de.factoryfx.factory.builder.FactoryTreeBuilder;
 import de.factoryfx.factory.builder.MicroserviceBuilder;
 import de.factoryfx.factory.exception.LoggingFactoryExceptionHandler;
@@ -37,11 +36,11 @@ public class ExampleMain extends Application {
     @Override
     public void start(Stage primaryStage){
 
-        FactoryTreeBuilder<OrderCollector, Server, ServerRootFactory, Void> serverBuilder = new ServerBuilder().builder();
-        MicroserviceBuilder<OrderCollector, Server, ServerRootFactory, Void> builder = serverBuilder.microservice().
-                withExceptionHandler(new LoggingFactoryExceptionHandler<>(new ResettingHandler<OrderCollector, Server, ServerRootFactory>())).
+        FactoryTreeBuilder<Server, ServerRootFactory, Void> serverBuilder = new ServerBuilder().builder();
+        MicroserviceBuilder<Server, ServerRootFactory, Void> builder = serverBuilder.microservice().
+                withExceptionHandler(new LoggingFactoryExceptionHandler<>(new ResettingHandler<Server, ServerRootFactory>())).
                 withInMemoryStorage();
-        Microservice<OrderCollector, Server, ServerRootFactory, Void> microservice = builder.build();
+        Microservice<Server, ServerRootFactory, Void> microservice = builder.build();
         microservice.start();
 
         RichClientBuilder.createFactoryBuilder(8089,primaryStage, "", "", Locale.ENGLISH,serverBuilder,builder.buildMigrationManager()).

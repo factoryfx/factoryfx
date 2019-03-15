@@ -2,18 +2,18 @@ package de.factoryfx.factory.exception;
 
 import de.factoryfx.factory.FactoryBase;
 
-public class RethrowingFactoryExceptionHandler<V,L,R extends FactoryBase<L,V,R>> implements FactoryExceptionHandler<V,L,R>{
+public class RethrowingFactoryExceptionHandler<L,R extends FactoryBase<L,R>> implements FactoryExceptionHandler<L,R>{
 
     @Override
-    public void updateException(Exception e, FactoryBase<?,?,?> factory, ExceptionResponseAction<V,L,R> exceptionResponse){
+    public void updateException(Exception e, FactoryBase<?,?> factory, ExceptionResponseAction<L,R> exceptionResponse){
         rethrow(e);
     }
     @Override
-    public void startException(Exception e, FactoryBase<?,?,?> factory, ExceptionResponseAction<V,L,R> exceptionResponse) {
+    public void startException(Exception e, FactoryBase<?,?> factory, ExceptionResponseAction<L,R> exceptionResponse) {
         rethrow(e);
     }
     @Override
-    public void destroyException(Exception e, FactoryBase<?,?,?> factory, ExceptionResponseAction<V,L,R> exceptionResponse) {
+    public void destroyException(Exception e, FactoryBase<?,?> factory, ExceptionResponseAction<L,R> exceptionResponse) {
         rethrow(e);
     }
 

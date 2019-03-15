@@ -22,7 +22,7 @@ public class FactoryDepTopDownTest {
     private static List<String> starter = new ArrayList<>();
     private static List<String> destroyer = new ArrayList<>();
 
-    public static class ObjectFactory extends FactoryBase<Object, Void, RootFactory> {
+    public static class ObjectFactory extends FactoryBase<Object, RootFactory> {
         ObjectFactory() {
             configLifeCycle().setCreator(() -> {
                 System.out.println("creator called " + getId());
@@ -45,7 +45,7 @@ public class FactoryDepTopDownTest {
         }
     }
 
-    public static class RootFactory extends SimpleFactoryBase<String, Void, RootFactory> {
+    public static class RootFactory extends SimpleFactoryBase<String, RootFactory> {
         public final FactoryReferenceAttribute<Object, ObjectFactory> object1 = new FactoryReferenceAttribute<>(ObjectFactory.class);
         public final FactoryReferenceAttribute<Object, ObjectFactory> object2 = new FactoryReferenceAttribute<>(ObjectFactory.class);
 
@@ -59,7 +59,7 @@ public class FactoryDepTopDownTest {
     @Test
     public void topDownTest(){
 
-        FactoryTreeBuilder<Void, String,RootFactory, Void> builder = new FactoryTreeBuilder<>(RootFactory.class);
+        FactoryTreeBuilder< String,RootFactory, Void> builder = new FactoryTreeBuilder<>(RootFactory.class);
         builder.addFactory(RootFactory.class, Scope.SINGLETON, ctx->{
             final RootFactory rootFactory = new RootFactory();
             ObjectFactory first = new ObjectFactory();
@@ -70,7 +70,7 @@ public class FactoryDepTopDownTest {
         });
 
 
-        Microservice<Void, String,RootFactory, Void> microService = builder.microservice().withInMemoryStorage().build();
+        Microservice<String,RootFactory, Void> microService = builder.microservice().withInMemoryStorage().build();
         microService.start();
 
         DataUpdate<RootFactory> current = microService.prepareNewFactory();

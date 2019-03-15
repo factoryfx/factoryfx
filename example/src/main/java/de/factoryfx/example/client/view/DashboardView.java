@@ -1,10 +1,7 @@
 package de.factoryfx.example.client.view;
 
-import de.factoryfx.example.server.ServerRootFactory;
-import de.factoryfx.example.server.shop.OrderCollector;
 import de.factoryfx.example.server.shop.OrderStorage;
 import de.factoryfx.javafx.data.widget.Widget;
-import de.factoryfx.microservice.rest.client.MicroserviceRestClient;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.scene.Node;
 import javafx.scene.chart.LineChart;
@@ -18,16 +15,17 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
 import javafx.util.StringConverter;
 
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.core.GenericType;
+import javax.ws.rs.core.MediaType;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 public class DashboardView implements Widget {
 
-    private final MicroserviceRestClient<OrderCollector,ServerRootFactory,Void> client;
-
-    public DashboardView(MicroserviceRestClient<OrderCollector, ServerRootFactory, Void> client) {
-        this.client = client;
+    public DashboardView() {
     }
 
     @Override
@@ -80,11 +78,13 @@ public class DashboardView implements Widget {
     }
 
     public void updateLineChart(LineChart<Number,Number> lineChart){
-        OrderCollector query = client.query(new OrderCollector(new ArrayList<>())).value;
+        Client client = ClientBuilder.newClient();
+        List<OrderStorage.Order> orders = client.target("http://localhost/orderMonitoring").request(MediaType.APPLICATION_JSON).get(new GenericType<List<OrderStorage.Order>>(){});
+
 
         XYChart.Series<Number,Number> series = new XYChart.Series<>();
         series.setName("Orders");
-        for (OrderStorage.Order order: query.orders){
+        for (OrderStorage.Order order: orders){
             series.getData().add(new XYChart.Data<>(order.orderDate.getTime(), order.price,order.productName));
         }
 
@@ -93,8 +93,8 @@ public class DashboardView implements Widget {
 
         NumberAxis xAxis = (NumberAxis) lineChart.getXAxis();
         xAxis.setAutoRanging(false);
-        query.orders.stream().map(o->o.orderDate.getTime()).min(Long::compare).ifPresent(value -> xAxis.setLowerBound((double)value));
-        query.orders.stream().map(o->o.orderDate.getTime()).max(Long::compare).ifPresent(value -> xAxis.setUpperBound((double)value));
+        orders.stream().map(o->o.orderDate.getTime()).min(Long::compare).ifPresent(value -> xAxis.setLowerBound((double)value));
+        orders.stream().map(o->o.orderDate.getTime()).max(Long::compare).ifPresent(value -> xAxis.setUpperBound((double)value));
         xAxis.setTickUnit(1000);
 
 //        lineChart.getXAxis().set

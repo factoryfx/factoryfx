@@ -6,7 +6,6 @@ import de.factoryfx.factory.builder.Scope;
 import de.factoryfx.jetty.JettyServerBuilder;
 import de.factoryfx.jetty.JettyServerFactory;
 import de.factoryfx.server.Microservice;
-import org.eclipse.jetty.server.Server;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,10 +21,10 @@ public class Main {
         ch.qos.logback.classic.Logger root = (ch.qos.logback.classic.Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
         root.setLevel(Level.INFO);
 
-        FactoryTreeBuilder<ServerVisitor, Server,RootFactory,Void> builder = new FactoryTreeBuilder<>(RootFactory.class);
+        FactoryTreeBuilder<Root,RootFactory,Void> builder = new FactoryTreeBuilder<>(RootFactory.class);
         builder.addFactory(RootFactory.class, Scope.SINGLETON);
         builder.addFactory(JettyServerFactory.class, Scope.SINGLETON, ctx-> {
-            JettyServerFactory<ServerVisitor, RootFactory> server = new JettyServerBuilder<>(new JettyServerFactory<ServerVisitor, RootFactory>()).withHost("localhost").withPort(34576).withResource(ctx.get(SimpleResourceFactory.class)).build();
+            JettyServerFactory<RootFactory> server = new JettyServerBuilder<>(new JettyServerFactory<RootFactory>()).withHost("localhost").withPort(34576).withResource(ctx.get(SimpleResourceFactory.class)).build();
             server.handler.get().handlers.set(0,ctx.get(InstrumentedHandlerFactory.class));
             return server;
         });
@@ -33,17 +32,17 @@ public class Main {
         builder.addFactory(InstrumentedHandlerFactory.class, Scope.SINGLETON);
         builder.addFactory(MetricRegistryFactory.class, Scope.SINGLETON);
 
-        Microservice<ServerVisitor, Server,RootFactory,Void> microservice = builder.microservice().withInMemoryStorage().build();
+        Microservice<Root,RootFactory,Void> microservice = builder.microservice().withInMemoryStorage().build();
         microservice.start();
 
         //execute some random request as example
         getHTML("http://localhost:34576");
 
         //for the sake of simplicity the query ist called in the same vm.
-        //you could also use the microserviceRestServer / microserviceRestClient from a different process if ServerVisitor is json serializable
-        ServerVisitor serverVisitor = new ServerVisitor();
-        microservice.query(serverVisitor);
-        System.out.println(serverVisitor.jettyReport);
+        //you could also use the jettyserver and jersey resource from a different process
+        System.out.println(microservice.getRootLiveObject().report());
+
+
 
         //report shows 1 get request
         //...

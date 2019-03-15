@@ -5,7 +5,7 @@ import de.factoryfx.factory.atrribute.FactoryReferenceListAttribute;
 import de.factoryfx.javafx.data.editor.attribute.AttributeVisualisationMappingBuilder;
 import de.factoryfx.javafx.factory.RichClientRoot;
 
-public class AttributeEditorBuilderFactory extends SimpleFactoryBase<AttributeVisualisationMappingBuilder,Void,RichClientRoot> {
+public class AttributeEditorBuilderFactory extends SimpleFactoryBase<AttributeVisualisationMappingBuilder,RichClientRoot> {
     public final FactoryReferenceListAttribute<de.factoryfx.javafx.data.editor.attribute.builder.AttributeVisualisationBuilder,SingleAttributeEditorBuilderFactory> editors = new FactoryReferenceListAttribute<>(SingleAttributeEditorBuilderFactory.class);
 
     @Override

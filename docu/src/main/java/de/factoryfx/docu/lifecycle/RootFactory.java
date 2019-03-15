@@ -2,7 +2,7 @@ package de.factoryfx.docu.lifecycle;
 
 import de.factoryfx.factory.FactoryBase;
 
-public class RootFactory extends FactoryBase<Root,Void, RootFactory> {
+public class RootFactory extends FactoryBase<Root, RootFactory> {
 
     public RootFactory(){
         configLifeCycle().setCreator(Root::new);

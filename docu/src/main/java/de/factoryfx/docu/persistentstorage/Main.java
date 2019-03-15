@@ -36,13 +36,13 @@ public class Main {
         System.out.println("\n\n\n\n\n\n\n\n");
 
 
-        FactoryTreeBuilder<Void, Root, RootFactory,Void> builder = new FactoryTreeBuilder<>(RootFactory.class);
+        FactoryTreeBuilder< Root, RootFactory,Void> builder = new FactoryTreeBuilder<>(RootFactory.class);
         builder.addFactory(RootFactory.class, Scope.SINGLETON, xtc -> {
             RootFactory root = new RootFactory();
             root.stringAttribute.set("1");
             return root;
         });
-        Microservice<Void, Root, RootFactory, Void> microservice = builder.microservice().withStorage((initialFactory, migrationManager, objectMapper) -> {
+        Microservice<Root, RootFactory, Void> microservice = builder.microservice().withStorage((initialFactory, migrationManager, objectMapper) -> {
             return new PostgresDataStorage<>(datasource, initialFactory, migrationManager, objectMapper);
         }).build();
         microservice.start();
@@ -56,7 +56,7 @@ public class Main {
 
         microservice.stop();
 
-        Microservice<Void, Root, RootFactory,Void> newMicroservice = builder.microservice().withStorage((initialFactory, migrationManager, objectMapper) -> {
+        Microservice<Root, RootFactory,Void> newMicroservice = builder.microservice().withStorage((initialFactory, migrationManager, objectMapper) -> {
             return new PostgresDataStorage<>(datasource, initialFactory, migrationManager, objectMapper);
         }).build();
         newMicroservice.start();

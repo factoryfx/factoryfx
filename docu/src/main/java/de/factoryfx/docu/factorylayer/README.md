@@ -50,7 +50,7 @@ public class HelloWorldFactory extends SimpleFactoryBase<HelloWorld,Void,HelloWo
 ```
 The Scope ist define with the FactoryTreeBuilder
 ```java
-    FactoryTreeBuilder<Void,HelloWorld,HelloWorldFactory,Void> builder = new FactoryTreeBuilder<>(HelloWorldFactory.class);
+    FactoryTreeBuilder<HelloWorld,HelloWorldFactory,Void> builder = new FactoryTreeBuilder<>(HelloWorldFactory.class);
     builder.addFactory(HelloWorldFactory.class, Scope.SINGLETON);
     builder.addFactory(DependencyFactory.class, Scope.PROTOTYPE);
 ```

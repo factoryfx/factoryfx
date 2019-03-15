@@ -10,14 +10,14 @@ public class PersistentUserManagementFactoryTest {
 
     @Test
     public void test_unique_username_happy_case(){
-        PersistentUserManagementFactory<Void,ExampleFactoryA> persistentUserManagementFactory = new PersistentUserManagementFactory<>();
+        PersistentUserManagementFactory<ExampleFactoryA> persistentUserManagementFactory = new PersistentUserManagementFactory<>();
         {
-            UserFactory<Void,ExampleFactoryA> userFactory = new UserFactory<>();
+            UserFactory<ExampleFactoryA> userFactory = new UserFactory<>();
             userFactory.name.set("1");
             persistentUserManagementFactory.users.add(userFactory);
         }
         {
-            UserFactory<Void,ExampleFactoryA> userFactory = new UserFactory<>();
+            UserFactory<ExampleFactoryA> userFactory = new UserFactory<>();
             userFactory.name.set("2");
             persistentUserManagementFactory.users.add(userFactory);
         }
@@ -26,14 +26,14 @@ public class PersistentUserManagementFactoryTest {
 
     @Test
     public void test_unique_username_error(){
-        PersistentUserManagementFactory<Void,ExampleFactoryA> persistentUserManagementFactory = new PersistentUserManagementFactory<>();
+        PersistentUserManagementFactory<ExampleFactoryA> persistentUserManagementFactory = new PersistentUserManagementFactory<>();
         {
-            UserFactory<Void,ExampleFactoryA> userFactory = new UserFactory<>();
+            UserFactory<ExampleFactoryA> userFactory = new UserFactory<>();
             userFactory.name.set("1");
             persistentUserManagementFactory.users.add(userFactory);
         }
         {
-            UserFactory<Void,ExampleFactoryA> userFactory = new UserFactory<>();
+            UserFactory<ExampleFactoryA> userFactory = new UserFactory<>();
             userFactory.name.set("1");
             persistentUserManagementFactory.users.add(userFactory);
         }

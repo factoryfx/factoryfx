@@ -6,7 +6,7 @@ import de.factoryfx.factory.SimpleFactoryBase;
 import de.factoryfx.factory.atrribute.FactoryReferenceAttribute;
 import org.eclipse.jetty.server.Handler;
 
-public class InstrumentedHandlerFactory extends SimpleFactoryBase<Handler,ServerVisitor,RootFactory> {
+public class InstrumentedHandlerFactory extends SimpleFactoryBase<Handler,RootFactory> {
     public final FactoryReferenceAttribute<MetricRegistry, MetricRegistryFactory> metricRegistry = new FactoryReferenceAttribute<>(MetricRegistryFactory.class);
 
     @Override

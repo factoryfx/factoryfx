@@ -13,7 +13,7 @@ import javafx.scene.control.MenuItem;
 import org.controlsfx.glyphfont.FontAwesome;
 import org.controlsfx.glyphfont.FontAwesome.Glyph;
 
-public class ViewMenuFactory extends SimpleFactoryBase<Menu,Void,RichClientRoot> {
+public class ViewMenuFactory extends SimpleFactoryBase<Menu,RichClientRoot> {
 
     public final I18nAttribute text = new I18nAttribute().de("text").en("text");
     public final EnumAttribute<Glyph> icon = new EnumAttribute<>(FontAwesome.Glyph.class).de("icon").en("icon").nullable();

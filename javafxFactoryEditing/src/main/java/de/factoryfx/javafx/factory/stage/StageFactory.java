@@ -22,7 +22,7 @@ import javafx.stage.Stage;
 
 /**
  */
-public class StageFactory extends FactoryBase<Stage,Void,RichClientRoot> {
+public class StageFactory extends FactoryBase<Stage,RichClientRoot> {
     public final ObjectValueAttribute<Stage> stage = new ObjectValueAttribute<Stage>().en("main stage");
     public final FactoryReferenceListAttribute<Menu,ViewMenuFactory> items = new FactoryReferenceListAttribute<>(ViewMenuFactory.class).de("items").en("items");
     public final FactoryReferenceAttribute<ViewsDisplayWidget,ViewsDisplayWidgetFactory> viewsDisplayWidget =new FactoryReferenceAttribute<>(ViewsDisplayWidgetFactory.class).de("viewsDisplayWidget").en("viewsDisplayWidget");

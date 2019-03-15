@@ -18,16 +18,15 @@ import de.factoryfx.microservice.rest.client.MicroserviceRestClient;
 import javafx.application.Platform;
 
 /**
- * @param <V> Visitor
  * @param <R> Root
  * @param <S> Summary Data for factory history
  */
-public class FactoryEditManager<V,R extends FactoryBase<?,V,R>,S> {
-    private final MicroserviceRestClient<V,R,S> client;
+public class FactoryEditManager<R extends FactoryBase<?,R>,S> {
+    private final MicroserviceRestClient<R,S> client;
     private final List<FactoryRootChangeListener<R>> listeners= new ArrayList<>();
     private final MigrationManager<R,S> migrationManager;
 
-    public FactoryEditManager(MicroserviceRestClient<V, R, S> client, MigrationManager<R,S> migrationManager) {
+    public FactoryEditManager(MicroserviceRestClient<R, S> client, MigrationManager<R,S> migrationManager) {
         this.client = client;
         this.migrationManager = migrationManager;
     }

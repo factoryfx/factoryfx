@@ -2,7 +2,7 @@ package de.factoryfx.factory;
 
 import java.util.function.Supplier;
 
-public abstract class SimpleFactoryBase<L,V,R extends FactoryBase<?,V,R>> extends FactoryBase<L,V, R>{
+public abstract class SimpleFactoryBase<L,R extends FactoryBase<?,R>> extends FactoryBase<L, R>{
 
     public abstract L createImpl();
 

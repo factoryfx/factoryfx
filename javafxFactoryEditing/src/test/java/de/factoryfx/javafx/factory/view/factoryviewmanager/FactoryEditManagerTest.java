@@ -31,21 +31,21 @@ public class FactoryEditManagerTest {
     @Test
     @SuppressWarnings("unchecked")
     public void test_export_import() throws IOException {
-        FactoryTreeBuilder<Void, ExampleLiveObjectA, ExampleFactoryA, Void> builder = new FactoryTreeBuilder<>(ExampleFactoryA.class);
+        FactoryTreeBuilder<ExampleLiveObjectA, ExampleFactoryA, Void> builder = new FactoryTreeBuilder<>(ExampleFactoryA.class);
         builder.addFactory(ExampleFactoryA.class, Scope.SINGLETON,ctx->{
             ExampleFactoryA initialFactory = new ExampleFactoryA();
             initialFactory.stringAttribute.set("123");
             return initialFactory;
         });
 
-        Microservice<Void, ExampleLiveObjectA, ExampleFactoryA, Void> microservice = builder.microservice().withInMemoryStorage().build();
+        Microservice<ExampleLiveObjectA, ExampleFactoryA, Void> microservice = builder.microservice().withInMemoryStorage().build();
         microservice.start();
 
-        MicroserviceRestClient<Void,ExampleFactoryA,Void> client = Mockito.mock(MicroserviceRestClient.class);
+        MicroserviceRestClient<ExampleFactoryA,Void> client = Mockito.mock(MicroserviceRestClient.class);
         Mockito.when(client.prepareNewFactory()).then(invocation -> microservice.prepareNewFactory());
         Mockito.when(client.updateCurrentFactory(Mockito.any(DataUpdate.class),Mockito.anyString())).then(invocation -> microservice.updateCurrentFactory(invocation.getArgument(0)));
 
-        FactoryEditManager<Void,ExampleFactoryA,Void> factoryEditManager = new FactoryEditManager<>(client, createDataMigrationManager());
+        FactoryEditManager<ExampleFactoryA,Void> factoryEditManager = new FactoryEditManager<>(client, createDataMigrationManager());
         factoryEditManager.runLaterExecuter= Runnable::run;
 
         factoryEditManager.load();
@@ -93,21 +93,21 @@ public class FactoryEditManagerTest {
 
         Path target = Files.createFile(tmpFolder.resolve("fghfh.json"));
         {
-            FactoryTreeBuilder<Void, ExampleLiveObjectA, ExampleFactoryA, Void> builder = new FactoryTreeBuilder<>(ExampleFactoryA.class);
+            FactoryTreeBuilder<ExampleLiveObjectA, ExampleFactoryA, Void> builder = new FactoryTreeBuilder<>(ExampleFactoryA.class);
             builder.addFactory(ExampleFactoryA.class, Scope.SINGLETON,ctx->{
                 ExampleFactoryA factory = new ExampleFactoryA();
                 factory.referenceAttribute.set(new ExampleFactoryB());
                 return factory;
             });
-            Microservice<Void, ExampleLiveObjectA, ExampleFactoryA, Void> microservice = builder.microservice().withInMemoryStorage().build();
+            Microservice<ExampleLiveObjectA, ExampleFactoryA, Void> microservice = builder.microservice().withInMemoryStorage().build();
 
             microservice.start();
 
 
-            MicroserviceRestClient<Void, ExampleFactoryA,Void> client = Mockito.mock(MicroserviceRestClient.class);
+            MicroserviceRestClient<ExampleFactoryA,Void> client = Mockito.mock(MicroserviceRestClient.class);
             Mockito.when(client.prepareNewFactory()).thenReturn(microservice.prepareNewFactory());
 
-            FactoryEditManager<Void, ExampleFactoryA,Void> factoryEditManager = new FactoryEditManager<>(client, createDataMigrationManager());
+            FactoryEditManager<ExampleFactoryA,Void> factoryEditManager = new FactoryEditManager<>(client, createDataMigrationManager());
             factoryEditManager.runLaterExecuter = Runnable::run;
 
             factoryEditManager.load();
@@ -117,16 +117,16 @@ public class FactoryEditManagerTest {
 
 
         {
-            FactoryTreeBuilder<Void, ExampleLiveObjectA, ExampleFactoryA, Void> builder = new FactoryTreeBuilder<>(ExampleFactoryA.class);
+            FactoryTreeBuilder<ExampleLiveObjectA, ExampleFactoryA, Void> builder = new FactoryTreeBuilder<>(ExampleFactoryA.class);
             builder.addFactory(ExampleFactoryA.class, Scope.SINGLETON,ctx->{
                 ExampleFactoryA factory = new ExampleFactoryA();
                 return factory;
             });
 
-            Microservice<Void, ExampleLiveObjectA, ExampleFactoryA, Void> microservice = builder.microservice().withInMemoryStorage().build();
+            Microservice<ExampleLiveObjectA, ExampleFactoryA, Void> microservice = builder.microservice().withInMemoryStorage().build();
             microservice.start();
 
-            MicroserviceRestClient<Void, ExampleFactoryA,Void> client = Mockito.mock(MicroserviceRestClient.class);
+            MicroserviceRestClient<ExampleFactoryA,Void> client = Mockito.mock(MicroserviceRestClient.class);
             Mockito.when(client.prepareNewFactory()).thenAnswer(invocation -> microservice.prepareNewFactory());
 
             Mockito.when(client.updateCurrentFactory(Mockito.any(DataUpdate.class),Mockito.anyString())).thenAnswer((Answer) invocation -> {
@@ -134,7 +134,7 @@ public class FactoryEditManagerTest {
                 return microservice.updateCurrentFactory((DataUpdate<ExampleFactoryA>) args[0]);
             });
 
-            FactoryEditManager<Void, ExampleFactoryA,Void> factoryEditManager = new FactoryEditManager<>(client, createDataMigrationManager());
+            FactoryEditManager<ExampleFactoryA,Void> factoryEditManager = new FactoryEditManager<>(client, createDataMigrationManager());
             factoryEditManager.runLaterExecuter = Runnable::run;
 
             factoryEditManager.load();

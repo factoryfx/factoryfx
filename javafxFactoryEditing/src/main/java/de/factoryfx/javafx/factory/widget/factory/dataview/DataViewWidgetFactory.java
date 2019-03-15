@@ -10,7 +10,7 @@ import de.factoryfx.javafx.factory.RichClientRoot;
 import de.factoryfx.javafx.factory.editor.DataEditorFactory;
 import de.factoryfx.javafx.factory.util.UniformDesignFactory;
 
-public class DataViewWidgetFactory<T extends Data> extends SimpleFactoryBase<DataViewWidget<T>,Void, RichClientRoot> {
+public class DataViewWidgetFactory<T extends Data> extends SimpleFactoryBase<DataViewWidget<T>, RichClientRoot> {
 
     public final FactoryReferenceAttribute<UniformDesign, UniformDesignFactory> uniformDesign =
             new FactoryReferenceAttribute<>(UniformDesignFactory.class).de("uniformDesign").en("uniformDesign");

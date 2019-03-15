@@ -4,7 +4,7 @@ import de.factoryfx.factory.SimpleFactoryBase;
 import de.factoryfx.javafx.data.widget.Widget;
 import de.factoryfx.javafx.factory.RichClientRoot;
 
-public abstract class WidgetFactory extends SimpleFactoryBase<Widget,Void,RichClientRoot> {
+public abstract class WidgetFactory extends SimpleFactoryBase<Widget,RichClientRoot> {
 
     @Override
     public Widget createImpl() {

@@ -28,7 +28,7 @@ public class FactoryPolymorphicReferenceListAttributeTest {
         PolymorphicFactoryExample polymorphicFactoryExample = new PolymorphicFactoryExample();
 
 
-        List<FactoryBase<? extends Printer, ?, ?>> factoryBases = polymorphicFactoryExample.referenceList.internal_createNewPossibleValues();
+        List<FactoryBase<? extends Printer, ?>> factoryBases = polymorphicFactoryExample.referenceList.internal_createNewPossibleValues();
         Assertions.assertEquals(ErrorPrinterFactory.class,new ArrayList<>(factoryBases).get(0).getClass());
         Assertions.assertEquals(OutPrinterFactory.class,new ArrayList<>(polymorphicFactoryExample.reference.internal_createNewPossibleValues()).get(1).getClass());
     }
@@ -76,7 +76,7 @@ public class FactoryPolymorphicReferenceListAttributeTest {
         Assertions.assertEquals(errorPrinterFactory,new ArrayList<>(polymorphicFactoryExample.reference.internal_possibleValues()).get(0));
     }
 
-    public static class FactoryPolymorphic extends SimpleFactoryBase<Void,Void,FactoryPolymorphic>{
+    public static class FactoryPolymorphic extends SimpleFactoryBase<Void,FactoryPolymorphic>{
         FactoryPolymorphicReferenceListAttribute<Printer> attribute = new FactoryPolymorphicReferenceListAttribute<Printer>().setupUnsafe(Printer.class, ErrorPrinterFactory.class, OutPrinterFactory.class);
 
         @Override

@@ -18,7 +18,7 @@ import java.util.List;
  * @param <A> Attribute self
 
  */
-public class FactoryReferenceBaseAttribute<L,F extends FactoryBase<? extends L,?,?>, A extends ReferenceBaseAttribute<F,F,A>> extends ReferenceAttribute<F,A> {
+public class FactoryReferenceBaseAttribute<L,F extends FactoryBase<? extends L,?>, A extends ReferenceBaseAttribute<F,F,A>> extends ReferenceAttribute<F,A> {
 
 
 
@@ -44,6 +44,14 @@ public class FactoryReferenceBaseAttribute<L,F extends FactoryBase<? extends L,?
         }
         return get().internalFactory().instance();
     }
+
+//    @SuppressWarnings("unchecked")
+//    public <LO> LO instance(){
+//        if (get()==null){
+//            return null;
+//        }
+//        return (LO)get().internalFactory().instance();
+//    }
 
     @Override
     public boolean internal_required() {

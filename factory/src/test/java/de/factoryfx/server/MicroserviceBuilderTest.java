@@ -27,7 +27,7 @@ public class MicroserviceBuilderTest {
 
     @Test
     public void test_init_no_existing_factory()   {
-        FactoryTreeBuilder<Void, ExampleLiveObjectA, ExampleFactoryA, Void> builder = new FactoryTreeBuilder<>(ExampleFactoryA.class);
+        FactoryTreeBuilder< ExampleLiveObjectA, ExampleFactoryA, Void> builder = new FactoryTreeBuilder<>(ExampleFactoryA.class);
         builder.addFactory(ExampleFactoryA.class, Scope.SINGLETON, ctx-> new ExampleFactoryA());
 
         Assertions.assertEquals(folder.toFile().listFiles().length,0);
@@ -37,7 +37,7 @@ public class MicroserviceBuilderTest {
 
     @Test
     public void test_custom_ObjectMapper() throws IOException {
-        FactoryTreeBuilder<Void, ExampleLiveObjectA, ExampleFactoryA, Void> builder = new FactoryTreeBuilder<>(ExampleFactoryA.class);
+        FactoryTreeBuilder< ExampleLiveObjectA, ExampleFactoryA, Void> builder = new FactoryTreeBuilder<>(ExampleFactoryA.class);
         builder.addFactory(ExampleFactoryA.class, Scope.SINGLETON, ctx -> {
             ExampleFactoryA factoryA = new ExampleFactoryA();
             factoryA.stringAttribute.set("12323");
@@ -46,7 +46,7 @@ public class MicroserviceBuilderTest {
         });
         YAMLFactory yamlFactory = new YAMLFactory();
         yamlFactory.disable(YAMLGenerator.Feature.USE_NATIVE_TYPE_ID);
-        Microservice<Void, ExampleLiveObjectA, ExampleFactoryA, Void> microservice = builder.microservice(ObjectMapperBuilder.buildNew(yamlFactory)).withFilesystemStorage(Paths.get(folder.toFile().toURI())).build();
+        Microservice<ExampleLiveObjectA, ExampleFactoryA, Void> microservice = builder.microservice(ObjectMapperBuilder.buildNew(yamlFactory)).withFilesystemStorage(Paths.get(folder.toFile().toURI())).build();
         microservice.start();
 //        for (File file : folder.getRoot().listFiles()[0]) {
 //            System.out.println(file.getAbsoluteFile());

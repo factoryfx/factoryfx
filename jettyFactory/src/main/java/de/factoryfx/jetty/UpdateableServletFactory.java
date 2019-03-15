@@ -7,10 +7,10 @@ import de.factoryfx.factory.atrribute.FactoryReferenceListAttribute;
 
 import java.util.HashSet;
 
-public class UpdateableServletFactory<V,R extends FactoryBase<?,V,R>> extends FactoryBase<UpdateableServlet,V,R> {
+public class UpdateableServletFactory<R extends FactoryBase<?,R>> extends FactoryBase<UpdateableServlet,R> {
 
     @SuppressWarnings("unchecked")
-    public final FactoryReferenceListAttribute<ServletAndPath,ServletAndPathFactory<V,R>> servletAndPaths = FactoryReferenceListAttribute.create(new FactoryReferenceListAttribute<>(ServletAndPathFactory.class).labelText("servletAndPaths"));
+    public final FactoryReferenceListAttribute<ServletAndPath,ServletAndPathFactory<R>> servletAndPaths = FactoryReferenceListAttribute.create(new FactoryReferenceListAttribute<>(ServletAndPathFactory.class).labelText("servletAndPaths"));
 
     public UpdateableServletFactory() {
         this.configLifeCycle().setCreator(() -> new UpdateableServlet(servletAndPaths.instances()));
@@ -19,7 +19,7 @@ public class UpdateableServletFactory<V,R extends FactoryBase<?,V,R>> extends Fa
         });
         servletAndPaths.validation(list -> {
             HashSet<String> paths = new HashSet<>();
-            for (ServletAndPathFactory<V, R> path : list) {
+            for (ServletAndPathFactory<R> path : list) {
                 if (!paths.add(path.pathSpec.get())){
                     return new ValidationResult(true,new LanguageText().en("duplicate path"));
                 }

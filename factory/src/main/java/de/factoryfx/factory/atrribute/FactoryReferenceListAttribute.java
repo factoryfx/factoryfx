@@ -14,7 +14,7 @@ import de.factoryfx.factory.FactoryBase;
  * @param <L> liveobject created form the factory
  * @param <F> factory
  */
-public class FactoryReferenceListAttribute<L, F extends FactoryBase<? extends L,?,?>> extends  ReferenceListAttribute<F,FactoryReferenceListAttribute<L, F>>{
+public class FactoryReferenceListAttribute<L, F extends FactoryBase<? extends L,?>> extends  ReferenceListAttribute<F,FactoryReferenceListAttribute<L, F>>{
 
     public FactoryReferenceListAttribute(Class<F> clazz) {
         super();
@@ -56,7 +56,7 @@ public class FactoryReferenceListAttribute<L, F extends FactoryBase<? extends L,
      * @param <F> Factory
      *
      **/
-    public static <L, F extends FactoryBase<? extends L,?,?>> FactoryReferenceListAttribute create(FactoryReferenceListAttribute<L,F> factoryReferenceListAttribute){
+    public static <L, F extends FactoryBase<? extends L,?>> FactoryReferenceListAttribute create(FactoryReferenceListAttribute<L,F> factoryReferenceListAttribute){
         return factoryReferenceListAttribute;
     }
 

@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test;
 
 public class SimpleFactoryBaseTest {
 
-    public static class InvalidSimpleFactoryFactory extends SimpleFactoryBase<Void,Void,InvalidSimpleFactoryFactory>{
+    public static class InvalidSimpleFactoryFactory extends SimpleFactoryBase<Void,InvalidSimpleFactoryFactory>{
 
         public InvalidSimpleFactoryFactory(){
             this.configLifeCycle().setCreator(() -> null);

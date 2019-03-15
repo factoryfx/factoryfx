@@ -7,10 +7,10 @@ import de.factoryfx.data.attribute.Attribute;
 import de.factoryfx.factory.FactoryBase;
 
 public class OnlyAttribute implements FactoryStyleValidation {
-    private final FactoryBase<?, ?, ?> factoryBase;
+    private final FactoryBase<?,?> factoryBase;
     private final Field attributeField;
 
-    public OnlyAttribute(FactoryBase<?, ?, ?> factoryBase, Field attributeField) {
+    public OnlyAttribute(FactoryBase<?,?> factoryBase, Field attributeField) {
         this.factoryBase = factoryBase;
         this.attributeField = attributeField;
     }

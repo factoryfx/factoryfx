@@ -13,7 +13,7 @@ public class FactoryManagerTest {
 
     @Test
     public void test(){
-        FactoryManager<Void,ExampleLiveObjectA,ExampleFactoryA> factoryManager = new FactoryManager<>(new RethrowingFactoryExceptionHandler());
+        FactoryManager<ExampleLiveObjectA,ExampleFactoryA> factoryManager = new FactoryManager<>(new RethrowingFactoryExceptionHandler());
 
         ArrayList<String> calls =new ArrayList<>();
 
@@ -34,7 +34,7 @@ public class FactoryManagerTest {
 
     @Test
     public void test_remove_destroy_called(){
-        FactoryManager<Void,ExampleLiveObjectA,ExampleFactoryA> factoryManager = new FactoryManager<>(new RethrowingFactoryExceptionHandler());
+        FactoryManager<ExampleLiveObjectA,ExampleFactoryA> factoryManager = new FactoryManager<>(new RethrowingFactoryExceptionHandler());
 
         ArrayList<String> calls =new ArrayList<>();
 
@@ -57,7 +57,7 @@ public class FactoryManagerTest {
 
     @Test
     public void test_updated_destroy_called(){
-        FactoryManager<Void,ExampleLiveObjectA,ExampleFactoryA> factoryManager = new FactoryManager<>(new RethrowingFactoryExceptionHandler());
+        FactoryManager<ExampleLiveObjectA,ExampleFactoryA> factoryManager = new FactoryManager<>(new RethrowingFactoryExceptionHandler());
 
         ArrayList<String> calls =new ArrayList<>();
 
@@ -82,7 +82,7 @@ public class FactoryManagerTest {
     public void test_large_tree(){
 
 
-        FactoryManager<Void,ExampleLiveObjectA,FastExampleFactoryA> factoryManager = new FactoryManager<>(new RethrowingFactoryExceptionHandler());
+        FactoryManager<ExampleLiveObjectA,FastExampleFactoryA> factoryManager = new FactoryManager<>(new RethrowingFactoryExceptionHandler());
 
 
         FastExampleFactoryA exampleFactoryA = new FastExampleFactoryA();
@@ -136,7 +136,7 @@ public class FactoryManagerTest {
         FactoryBaseTest.XFactory xFactory = new FactoryBaseTest.XFactory();
         root.xFactory.set(xFactory);
 
-        FactoryManager<Void,String,FactoryBaseTest.XRoot> factoryManager = new FactoryManager<>(new RethrowingFactoryExceptionHandler());
+        FactoryManager<String,FactoryBaseTest.XRoot> factoryManager = new FactoryManager<>(new RethrowingFactoryExceptionHandler());
 
         FactoryBaseTest.XRoot previous= root.utility().copy();
         root.xFactory.set(null);

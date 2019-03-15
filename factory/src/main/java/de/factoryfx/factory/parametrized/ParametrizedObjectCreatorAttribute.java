@@ -21,7 +21,8 @@ public class ParametrizedObjectCreatorAttribute<P, L, F extends ParametrizedObje
     }
 
     public L create(P p){
-        return instance().create(p);
+        ParametrizedObjectCreator<P,L> instance = this.instance();
+        return instance.create(p);
     }
 
     @Override

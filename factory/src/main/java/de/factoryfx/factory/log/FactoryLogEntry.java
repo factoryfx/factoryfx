@@ -8,20 +8,20 @@ import de.factoryfx.factory.FactoryBase;
 
 @JsonIdentityInfo(generator = ObjectIdGenerators.IntSequenceGenerator.class)
 public class FactoryLogEntry {
-    public final Class<? extends FactoryBase<?,?,?>> factoryClass;
+    public final Class<? extends FactoryBase<?,?>> factoryClass;
     public final String factoryDescription;
     public final long id;
 
     @JsonCreator
-    public FactoryLogEntry(@JsonProperty("factoryClass") Class<? extends FactoryBase<?, ?,?>> factoryClass, @JsonProperty("displayText") String factoryDescription, @JsonProperty("id")long id) {
+    public FactoryLogEntry(@JsonProperty("factoryClass") Class<? extends FactoryBase<?,?>> factoryClass, @JsonProperty("displayText") String factoryDescription, @JsonProperty("id")long id) {
         this.factoryClass = factoryClass;
         this.factoryDescription = factoryDescription;
         this.id = id;
     }
 
     @SuppressWarnings("unchecked")
-    public FactoryLogEntry(FactoryBase<?,?,?> factoryBase) {
-        this((Class<? extends FactoryBase<?, ?,?>>) factoryBase.getClass(), factoryBase.internalFactory().getFactoryDisplayText(), ThreadLocalRandom.current().nextLong(Long.MAX_VALUE));
+    public FactoryLogEntry(FactoryBase<?,?> factoryBase) {
+        this((Class<? extends FactoryBase<?,?>>) factoryBase.getClass(), factoryBase.internalFactory().getFactoryDisplayText(), ThreadLocalRandom.current().nextLong(Long.MAX_VALUE));
     }
 
     //field/method instead of list for performance

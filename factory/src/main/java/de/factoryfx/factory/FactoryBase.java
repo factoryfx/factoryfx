@@ -1,7 +1,6 @@
 package de.factoryfx.factory;
 
 import java.util.*;
-import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -19,10 +18,9 @@ import org.slf4j.LoggerFactory;
 
 /**
  * @param <L> liveobject created from this factory
- * @param <V> runtime visitor
  */
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class FactoryBase<L,V,R extends FactoryBase<?,V,R>> extends Data{
+public class FactoryBase<L,R extends FactoryBase<?,R>> extends Data{
 
     private static final org.slf4j.Logger logger = LoggerFactory.getLogger(FactoryBase.class);
 
@@ -44,8 +42,8 @@ public class FactoryBase<L,V,R extends FactoryBase<?,V,R>> extends Data{
 
 
     @SuppressWarnings("unchecked")
-    private FactoryDictionary<FactoryBase<?,V, R>> getFactoryDictionary(){
-        return (FactoryDictionary<FactoryBase<?,V, R>>)FactoryDictionary.getFactoryDictionary(getClass());
+    private FactoryDictionary<FactoryBase<?, R>> getFactoryDictionary(){
+        return (FactoryDictionary<FactoryBase<?, R>>)FactoryDictionary.getFactoryDictionary(getClass());
     }
 
     private FactoryLogEntry createFactoryLogEntry(){
@@ -185,7 +183,7 @@ public class FactoryBase<L,V,R extends FactoryBase<?,V,R>> extends Data{
         loopDetector(this,new ArrayDeque<>(),iterationRun);
     }
 
-    private void loopDetector(FactoryBase<?,?, ?> factory, ArrayDeque<FactoryBase<?, ?, ?>> stack, final long iterationRun){
+    private void loopDetector(FactoryBase<?,?> factory, ArrayDeque<FactoryBase<?, ?>> stack, final long iterationRun){
         if (factory.iterationRun==iterationRun){
             if (stack.contains(factory)){
                 throw new IllegalStateException("Factories contains a cycle, circular dependencies are not supported cause it indicates a design flaw.");
@@ -199,29 +197,29 @@ public class FactoryBase<L,V,R extends FactoryBase<?,V,R>> extends Data{
         }
     }
 
-    private List<FactoryBase<?,?,?>> collectChildFactoriesDeep(){
+    private List<FactoryBase<?,?>> collectChildFactoriesDeep(){
         long iterationRun=this.iterationRun+1;
-        final List<FactoryBase<?, ?, ?>> result = new ArrayList<>();
+        final List<FactoryBase<?,?>> result = new ArrayList<>();
         collectChildFactoriesDeep(this,result,iterationRun);
         return result;
     }
 
-    private void collectChildFactoriesDeep(FactoryBase<?,?, ?> factory, List<FactoryBase<?, ?, ?>> result, final long iterationRun){
+    private void collectChildFactoriesDeep(FactoryBase<?,?> factory, List<FactoryBase<?, ?>> result, final long iterationRun){
         result.add(factory);
         factory.visitChildFactoriesAndViewsFlat(child -> {
             collectChildFactoriesDeep(child,result,iterationRun);
         },iterationRun);
     }
 
-    private List<FactoryBase<?,?,?>> getFactoriesInDestroyOrder(){
+    private List<FactoryBase<?,?>> getFactoriesInDestroyOrder(){
         long iterationRun=this.iterationRun+1;
-        final List<FactoryBase<?, ?, ?>> result = new ArrayList<>();
+        final List<FactoryBase<?, ?>> result = new ArrayList<>();
         result.add(this);
         getFactoriesInDestroyOrder(this,result,iterationRun);
         return result;
     }
 
-    private void getFactoriesInDestroyOrder(FactoryBase<?,?, ?> factory, List<FactoryBase<?, ?, ?>> result, final long iterationRun){
+    private void getFactoriesInDestroyOrder(FactoryBase<?,?> factory, List<FactoryBase<?, ?>> result, final long iterationRun){
         int size=result.size();
         factory.visitChildFactoriesAndViewsFlat(result::add,iterationRun);
         for (int i = size; i < result.size(); i++) {//fori loop cause performance optimization
@@ -230,14 +228,14 @@ public class FactoryBase<L,V,R extends FactoryBase<?,V,R>> extends Data{
         //factory.visitChildFactoriesAndViewsFlat(child -> getFactoriesInDestroyOrder(child,result,iterationRun), iterationRun);
     }
 
-    private List<FactoryBase<?,?,?>> getFactoriesInCreateAndStartOrder(){
+    private List<FactoryBase<?,?>> getFactoriesInCreateAndStartOrder(){
         long iterationRun=this.iterationRun+1;
-        final List<FactoryBase<?, ?, ?>> result = new ArrayList<>();
+        final List<FactoryBase<?,?>> result = new ArrayList<>();
         getFactoriesInCreateAndStartOrder(this,result,iterationRun);
         return result;
     }
 
-    private void getFactoriesInCreateAndStartOrder(FactoryBase<?,?, ?> factory, List<FactoryBase<?, ?, ?>> result, final long iterationRun){
+    private void getFactoriesInCreateAndStartOrder(FactoryBase<?,?> factory, List<FactoryBase<?,?>> result, final long iterationRun){
         factory.visitChildFactoriesAndViewsFlat(child -> {
             getFactoriesInCreateAndStartOrder(child,result,iterationRun);
         },iterationRun);
@@ -245,7 +243,7 @@ public class FactoryBase<L,V,R extends FactoryBase<?,V,R>> extends Data{
     }
 
     long iterationRun;
-    private void visitChildFactoriesAndViewsFlat(Consumer<FactoryBase<?,?, ?>> consumer, long iterationRun) {
+    private void visitChildFactoriesAndViewsFlat(Consumer<FactoryBase<?,?>> consumer, long iterationRun) {
         if (this.iterationRun==iterationRun){
             return;
         }
@@ -254,7 +252,7 @@ public class FactoryBase<L,V,R extends FactoryBase<?,V,R>> extends Data{
         getFactoryDictionary().visitChildFactoriesAndViewsFlat(this,consumer);
     }
 
-    private void visitChildFactoriesAndViewsFlatWithoutIterationCheck(Consumer<FactoryBase<?,?, ?>> consumer) {
+    private void visitChildFactoriesAndViewsFlatWithoutIterationCheck(Consumer<FactoryBase<?,?>> consumer) {
         getFactoryDictionary().visitChildFactoriesAndViewsFlat(this,consumer);
     }
 
@@ -273,14 +271,7 @@ public class FactoryBase<L,V,R extends FactoryBase<?,V,R>> extends Data{
             return "can't create debuginfo text cause:\n"+ Throwables.getStackTraceAsString(e);
         }
     }
-
-
-    private void runtimeQuery(V visitor) {
-        if (executorWidthVisitorAndCurrentLiveObject!=null){
-            executorWidthVisitorAndCurrentLiveObject.accept(visitor,createdLiveObject);
-        }
-    }
-
+    
 
     private FactoryLogEntryTreeItem createFactoryLogEntryTree(long iterationRun) {
         ArrayList<FactoryLogEntryTreeItem> children = new ArrayList<>();
@@ -292,11 +283,11 @@ public class FactoryBase<L,V,R extends FactoryBase<?,V,R>> extends Data{
         return this.createFactoryLogEntry();
     }
 
-    Microservice<V,?, R, ?> microservice;
-    private void setMicroservice(Microservice<V,?, R, ?> microservice) {
+    Microservice<?, R, ?> microservice;
+    private void setMicroservice(Microservice<?, R, ?> microservice) {
         this.microservice = microservice;
     }
-    private Microservice<V,?, R, ?> getMicroservice() {
+    private Microservice<?, R, ?> getMicroservice() {
         return getRoot().microservice;
     }
 
@@ -374,9 +365,9 @@ public class FactoryBase<L,V,R extends FactoryBase<?,V,R>> extends Data{
 
         int counter=0;
 
-        List<FactoryBase<?, ?, ?>> children = new ArrayList<>();
+        List<FactoryBase<?,?>> children = new ArrayList<>();
         visitChildFactoriesAndViewsFlat(children::add,iterationRun);
-        for (FactoryBase<?, ?, ?> child: children){
+        for (FactoryBase<?,?> child: children){
             child.logDisplayTextDeep(stringBuilder, deep+1, prefix + (isTail ? "    " : "│   "), counter==children.size()-1,printedCounter,iterationRun);
             counter++;
         }
@@ -456,14 +447,14 @@ public class FactoryBase<L,V,R extends FactoryBase<?,V,R>> extends Data{
      *  There is no fitting visibility in java therefore this workaround.
      * @return internal factory api
      */
-    public FactoryInternal<L,V,R> internalFactory(){
+    public FactoryInternal<L,R> internalFactory(){
         return new FactoryInternal<>(this);
     }
 
-    public static class FactoryInternal<L,V,R  extends FactoryBase<?,V,R>> {
-        private final FactoryBase<L,V,R> factory;
+    public static class FactoryInternal<L,R  extends FactoryBase<?,R>> {
+        private final FactoryBase<L,R> factory;
 
-        public FactoryInternal(FactoryBase<L, V, R> factory) {
+        public FactoryInternal(FactoryBase<L, R> factory) {
             this.factory = factory;
         }
 
@@ -526,14 +517,6 @@ public class FactoryBase<L,V,R extends FactoryBase<?,V,R>> extends Data{
             }
         }
 
-        /**
-         * execute visitor to get runtime information from the liveobject
-         * @param visitor visitor
-         * */
-        public void runtimeQuery(V visitor) {
-            factory.runtimeQuery(visitor);
-        }
-
         public L instance() {
             return factory.instance();
         }
@@ -542,7 +525,7 @@ public class FactoryBase<L,V,R extends FactoryBase<?,V,R>> extends Data{
             factory.loopDetector();
         }
 
-        public List<FactoryBase<?,?,?>> collectChildFactoriesDeepFromRoot(){
+        public List<FactoryBase<?,?>> collectChildFactoriesDeepFromRoot(){
             return factory.collectChildFactoriesDeep();
         }
 
@@ -556,7 +539,7 @@ public class FactoryBase<L,V,R extends FactoryBase<?,V,R>> extends Data{
         * a  b  c
         * @return breadth-first order: hdegabcf
         * */
-        public List<FactoryBase<?,?,?>> getFactoriesInDestroyOrder(){
+        public List<FactoryBase<?,?>> getFactoriesInDestroyOrder(){
             return factory.getFactoriesInDestroyOrder();
         }
 
@@ -570,14 +553,14 @@ public class FactoryBase<L,V,R extends FactoryBase<?,V,R>> extends Data{
         * a  b  c
         * @return postorder: abcdefgh
         **/
-        public List<FactoryBase<?,?,?>> getFactoriesInCreateAndStartOrder(){
+        public List<FactoryBase<?,?>> getFactoriesInCreateAndStartOrder(){
             return factory.getFactoriesInCreateAndStartOrder();
         }
 
-        public HashMap<String,FactoryBase<?,?,?>> collectChildFactoriesDeepMapFromRoot(){
-            final List<FactoryBase<?,?,?>> factoryBases = collectChildFactoriesDeepFromRoot();
-            HashMap<String, FactoryBase<?, ?, ?>> result = new HashMap<>();
-            for (FactoryBase<?, ?, ?> factory: factoryBases){
+        public HashMap<String,FactoryBase<?,?>> collectChildFactoriesDeepMapFromRoot(){
+            final List<FactoryBase<?,?>> factoryBases = collectChildFactoriesDeepFromRoot();
+            HashMap<String, FactoryBase<?,?>> result = new HashMap<>();
+            for (FactoryBase<?,?> factory: factoryBases){
                 result.put(factory.getId(),factory);
             }
             return result;
@@ -588,7 +571,7 @@ public class FactoryBase<L,V,R extends FactoryBase<?,V,R>> extends Data{
         }
 
 
-        public void setMicroservice(Microservice<V,?, R, ?> microservice) {
+        public void setMicroservice(Microservice<?,R,?> microservice) {
             factory.setMicroservice(microservice);
         }
 
@@ -627,7 +610,6 @@ public class FactoryBase<L,V,R extends FactoryBase<?,V,R>> extends Data{
     Function<L,L> reCreatorWithPreviousLiveObject=null;
     Consumer<L> starterWithNewLiveObject=null;
     Consumer<L> destroyerWithPreviousLiveObject=null;
-    BiConsumer<V,L> executorWidthVisitorAndCurrentLiveObject=null;
     void setCreator(Supplier<L> creator){
         this.creator=creator;
     }
@@ -648,10 +630,6 @@ public class FactoryBase<L,V,R extends FactoryBase<?,V,R>> extends Data{
         this.destroyerWithPreviousLiveObject=destroyerWithPreviousLiveObject;
     }
 
-    private void setRuntimeQueryExecutor(BiConsumer<V,L> executorWidthVisitorAndCurrentLiveObject) {
-        this.executorWidthVisitorAndCurrentLiveObject=executorWidthVisitorAndCurrentLiveObject;
-    }
-
     /** life cycle configurations api<br>
      *<br>
      * Update Order<br>
@@ -669,14 +647,14 @@ public class FactoryBase<L,V,R extends FactoryBase<?,V,R>> extends Data{
      *
      * @return configuration api
      * */
-    protected LifeCycleConfig<L,V,R> configLifeCycle(){
+    protected LifeCycleConfig<L,R> configLifeCycle(){
         return new LifeCycleConfig<>(this);
     }
 
-    public static class LifeCycleConfig<L,V,R  extends FactoryBase<?,V,R>> {
-        private final FactoryBase<L,V,R> factory;
+    public static class LifeCycleConfig<L,R  extends FactoryBase<?,R>> {
+        private final FactoryBase<L,R> factory;
 
-        public LifeCycleConfig(FactoryBase<L, V, R> factory) {
+        public LifeCycleConfig(FactoryBase<L, R> factory) {
             this.factory = factory;
         }
 
@@ -714,28 +692,22 @@ public class FactoryBase<L,V,R extends FactoryBase<?,V,R>> extends Data{
         public void setDestroyer(Consumer<L> destroyerWithPreviousLiveObject) {
             factory.setDestroyer(destroyerWithPreviousLiveObject);
         }
-
-        /**execute visitor to get runtime information from the liveObjects
-         * @param executorWidthVisitorAndCurrentLiveObject executorWidthVisitorAndCurrentLiveObject*/
-        public void setRuntimeQueryExecutor(BiConsumer<V,L> executorWidthVisitorAndCurrentLiveObject) {
-            factory.setRuntimeQueryExecutor(executorWidthVisitorAndCurrentLiveObject);
-        }
     }
 
 
 
-    public UtilityFactory<L,V,R> utilityFactory(){
+    public UtilityFactory<L,R> utilityFactory(){
         return new UtilityFactory<>(this);
     }
 
-    public static class UtilityFactory<L,V,R  extends FactoryBase<?,V,R>> {
-        private final FactoryBase<L,V,R> factory;
+    public static class UtilityFactory<L,R  extends FactoryBase<?,R>> {
+        private final FactoryBase<L,R> factory;
 
-        public UtilityFactory(FactoryBase<L, V, R> factory) {
+        public UtilityFactory(FactoryBase<L,R> factory) {
             this.factory = factory;
         }
 
-        public Microservice<V,?,R,?> getMicroservice(){
+        public Microservice<?,R,?> getMicroservice(){
             return factory.getMicroservice();
         }
 

@@ -9,7 +9,7 @@ public class OrderStorageFactory extends ServerBaseFactory<OrderStorage> {
     }
 
     public OrderStorageFactory(){
-        this.configLifeCycle().setRuntimeQueryExecutor((orderCollector, orderStorage) -> orderStorage.accept(orderCollector));
+
     }
 
 }

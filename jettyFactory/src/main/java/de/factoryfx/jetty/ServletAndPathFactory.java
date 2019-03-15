@@ -7,7 +7,7 @@ import de.factoryfx.factory.atrribute.FactoryPolymorphicReferenceAttribute;
 
 import javax.servlet.Servlet;
 
-public class ServletAndPathFactory<V,R extends FactoryBase<?,V,R>> extends SimpleFactoryBase<ServletAndPath,V,R> {
+public class ServletAndPathFactory<R extends FactoryBase<?,R>> extends SimpleFactoryBase<ServletAndPath,R> {
 
     public final StringAttribute pathSpec = new StringAttribute().labelText("pathSpec");
     public final FactoryPolymorphicReferenceAttribute<Servlet> servlet = new FactoryPolymorphicReferenceAttribute<>(Servlet.class).labelText("Servlet");

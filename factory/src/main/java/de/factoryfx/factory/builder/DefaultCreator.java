@@ -9,7 +9,7 @@ import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.factory.atrribute.*;
 import de.factoryfx.factory.parametrized.ParametrizedObjectCreatorAttribute;
 
-public class DefaultCreator<F extends FactoryBase<?,?,R>, R extends FactoryBase<?,?,R>> implements Function<FactoryContext<R>, F> {
+public class DefaultCreator<F extends FactoryBase<?,R>, R extends FactoryBase<?,R>> implements Function<FactoryContext<R>, F> {
     private final Class<F> clazz;
 
     public DefaultCreator(Class<F> clazz) {

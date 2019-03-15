@@ -6,7 +6,7 @@ import de.factoryfx.factory.atrribute.FactoryPolymorphicReferenceListAttribute;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.handler.HandlerCollection;
 
-public class HandlerCollectionFactory<V,R extends FactoryBase<?,V,R>> extends PolymorphicFactoryBase<HandlerCollection,V,R> {
+public class HandlerCollectionFactory<R extends FactoryBase<?,R>> extends PolymorphicFactoryBase<HandlerCollection,R> {
     public final FactoryPolymorphicReferenceListAttribute<Handler> handlers = new FactoryPolymorphicReferenceListAttribute<>(Handler.class).labelText("Handlers");
 
     @Override

@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Assertions;
 
 public class PolymorphicFactoryBaseTest {
 
-    public static class InvalidPolymorphicFactoryBase extends PolymorphicFactoryBase<Void,Void,SimpleFactoryBaseTest.InvalidSimpleFactoryFactory>{
+    public static class InvalidPolymorphicFactoryBase extends PolymorphicFactoryBase<Void,SimpleFactoryBaseTest.InvalidSimpleFactoryFactory>{
 
         public InvalidPolymorphicFactoryBase(){
             this.configLifeCycle().setCreator(() -> null);

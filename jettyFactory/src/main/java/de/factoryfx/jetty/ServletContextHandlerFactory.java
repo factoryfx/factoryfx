@@ -8,9 +8,9 @@ import org.eclipse.jetty.server.handler.ErrorHandler;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 
-public class ServletContextHandlerFactory<V,R extends FactoryBase<?,V,R>> extends SimpleFactoryBase<Handler,V,R> {
+public class ServletContextHandlerFactory<R extends FactoryBase<?,R>> extends SimpleFactoryBase<Handler,R> {
     @SuppressWarnings("unchecked")
-    public final FactoryReferenceAttribute<UpdateableServlet,UpdateableServletFactory<V,R>> updatableRootServlet = FactoryReferenceAttribute.create(new FactoryReferenceAttribute<>(UpdateableServletFactory.class).labelText("updatableRootServlet"));
+    public final FactoryReferenceAttribute<UpdateableServlet,UpdateableServletFactory<R>> updatableRootServlet = FactoryReferenceAttribute.create(new FactoryReferenceAttribute<>(UpdateableServletFactory.class).labelText("updatableRootServlet"));
 
     @Override
     public Handler createImpl() {

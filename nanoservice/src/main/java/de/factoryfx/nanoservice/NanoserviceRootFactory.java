@@ -9,6 +9,6 @@ import de.factoryfx.factory.SimpleFactoryBase;
  * @param <L> Live object nano service r
  * @param <NR> nano service root
  */
-public abstract  class NanoserviceRootFactory<R,L extends NanoserviceRoot<R>, NR extends FactoryBase<?,Void, NR>> extends SimpleFactoryBase<L,Void,NR> {
+public abstract  class NanoserviceRootFactory<R,L extends NanoserviceRoot<R>, NR extends FactoryBase<?, NR>> extends SimpleFactoryBase<L,NR> {
 
 }

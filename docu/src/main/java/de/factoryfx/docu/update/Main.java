@@ -8,7 +8,7 @@ import de.factoryfx.server.Microservice;
 public class Main {
 
     public static void main(String[] args) {
-        FactoryTreeBuilder<Void, Root, RootFactory,Void> builder = new FactoryTreeBuilder<>(RootFactory.class);
+        FactoryTreeBuilder< Root, RootFactory,Void> builder = new FactoryTreeBuilder<>(RootFactory.class);
         builder.addFactory(RootFactory.class, Scope.SINGLETON, ctx->{
             RootFactory root = new RootFactory();
             root.stringAttribute.set("1");
@@ -16,7 +16,7 @@ public class Main {
         });
 
         long start=System.currentTimeMillis();
-        Microservice<Void,Root,RootFactory,Void> microservice = builder.microservice().withInMemoryStorage().build();
+        Microservice<Root,RootFactory,Void> microservice = builder.microservice().withInMemoryStorage().build();
         microservice.start();
 
         //over 5000ms most time for the ExpensiveResource

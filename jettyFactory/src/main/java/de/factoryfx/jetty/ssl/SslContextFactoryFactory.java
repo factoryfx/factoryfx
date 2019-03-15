@@ -10,7 +10,7 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.security.KeyStore;
 
-public class SslContextFactoryFactory<V, R extends FactoryBase<?, V, R>> extends SimpleFactoryBase<SslContextFactory, V, R> {
+public class SslContextFactoryFactory<R extends FactoryBase<?, R>> extends SimpleFactoryBase<SslContextFactory, R> {
     public final FileContentAttribute keyStore = new FileContentAttribute().en("keyStore").de("keyStore");
     public final EnumAttribute<KeyStoreType> keyStoreType = new EnumAttribute<>(KeyStoreType.class).en("keyStoreType").de("keyStoreType");
     public final StringAttribute keyStorePassword = new StringAttribute().en("keyStorePassword").de("keyStorePassword");

@@ -25,14 +25,14 @@ public class SoapTest {
     @Test
     public void test(){
 
-        FactoryTreeBuilder<Void, Server, SoapJettyServerFactory, Object> builder = new FactoryTreeBuilder<>(SoapJettyServerFactory.class);
+        FactoryTreeBuilder<Server, SoapJettyServerFactory, Object> builder = new FactoryTreeBuilder<>(SoapJettyServerFactory.class);
         builder.addFactory(SoapJettyServerFactory.class, Scope.SINGLETON);
-        builder.addFactory(JettyServerFactory.class, Scope.SINGLETON, ctx-> new JettyServerBuilder<>(new JettyServerFactory<Void,SoapJettyServerFactory>())
+        builder.addFactory(JettyServerFactory.class, Scope.SINGLETON, ctx-> new JettyServerBuilder<>(new JettyServerFactory<SoapJettyServerFactory>())
                 .withHost("localhost").withPort(8088).removeDefaultJerseyServlet()
                 .withServlet("/*",ctx.get(SoapHandlerFactory.class)).build());
 
         builder.addFactory(SoapHandlerFactory.class, Scope.SINGLETON, ctx->{
-            SoapHandlerFactory<HelloWorld, Void, SoapJettyServerFactory> soapHandlerFactory = new SoapHandlerFactory<>();
+            SoapHandlerFactory<HelloWorld, SoapJettyServerFactory> soapHandlerFactory = new SoapHandlerFactory<>();
             HelloWorldFactory helloWorldFactory = new HelloWorldFactory();
             helloWorldFactory.service.set(req->new SoapDummyResponse());
             soapHandlerFactory.serviceBean.set(helloWorldFactory);
@@ -40,7 +40,7 @@ public class SoapTest {
         });
 
 
-        Microservice<Void, Server, SoapJettyServerFactory, Object> microService = builder.microservice().withInMemoryStorage().build();
+        Microservice<Server, SoapJettyServerFactory, Object> microService = builder.microservice().withInMemoryStorage().build();
         microService.start();
 
         callSoapWebService("http://localhost:8088","action");

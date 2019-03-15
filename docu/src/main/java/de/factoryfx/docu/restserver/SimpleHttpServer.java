@@ -5,9 +5,9 @@ import de.factoryfx.factory.atrribute.FactoryReferenceAttribute;
 import de.factoryfx.jetty.JettyServerFactory;
 import org.eclipse.jetty.server.Server;
 
-public class SimpleHttpServer extends SimpleFactoryBase<Server, Void, SimpleHttpServer> {
+public class SimpleHttpServer extends SimpleFactoryBase<Server, SimpleHttpServer> {
     @SuppressWarnings("unchecked")
-    public final FactoryReferenceAttribute<Server, JettyServerFactory<Void, SimpleHttpServer>> server = FactoryReferenceAttribute.create(new FactoryReferenceAttribute<>(JettyServerFactory.class));
+    public final FactoryReferenceAttribute<Server, JettyServerFactory<SimpleHttpServer>> server = FactoryReferenceAttribute.create(new FactoryReferenceAttribute<>(JettyServerFactory.class));
 
     @Override
     public Server createImpl() {

@@ -19,9 +19,9 @@ import java.net.http.HttpResponse;
 
 public class Main {
 
-    public static class SwaggerWebserver extends SimpleFactoryBase<Server, Void, SwaggerWebserver> {
+    public static class SwaggerWebserver extends SimpleFactoryBase<Server, SwaggerWebserver> {
         @SuppressWarnings("unchecked")
-        public final FactoryReferenceAttribute<Server, JettyServerFactory<Void, SwaggerWebserver>> server = FactoryReferenceAttribute.create(new FactoryReferenceAttribute<>(JettyServerFactory.class));
+        public final FactoryReferenceAttribute<Server, JettyServerFactory<SwaggerWebserver>> server = FactoryReferenceAttribute.create(new FactoryReferenceAttribute<>(JettyServerFactory.class));
 
         @Override
         public Server createImpl() {
@@ -34,14 +34,14 @@ public class Main {
         ch.qos.logback.classic.Logger root = (ch.qos.logback.classic.Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
         root.setLevel(Level.INFO);
 
-        FactoryTreeBuilder<Void, Server, SwaggerWebserver,Void> builder = new FactoryTreeBuilder<>(SwaggerWebserver.class);
+        FactoryTreeBuilder< Server, SwaggerWebserver,Void> builder = new FactoryTreeBuilder<>(SwaggerWebserver.class);
         builder.addFactory(SwaggerWebserver.class, Scope.SINGLETON);
-        builder.addFactory(JettyServerFactory.class, Scope.SINGLETON, ctx-> new JettyServerBuilder<>(new JettyServerFactory<Void,SwaggerWebserver>())
+        builder.addFactory(JettyServerFactory.class, Scope.SINGLETON, ctx-> new JettyServerBuilder<>(new JettyServerFactory<SwaggerWebserver>())
                 .withHost("localhost").withPort(8005)
                 .withResource(ctx.get(HelloWorldResourceFactory.class)).build());
         builder.addFactory(HelloWorldResourceFactory.class, Scope.SINGLETON);
 
-        Microservice<Void, Server, SwaggerWebserver,Void> microservice
+        Microservice<Server, SwaggerWebserver,Void> microservice
                 = builder.microservice().withInMemoryStorage().build();
         microservice.start();
 

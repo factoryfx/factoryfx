@@ -5,7 +5,7 @@ import java.util.Map;
 import de.factoryfx.copperbridge.CopperEngineContextFactory;
 import de.factoryfx.data.attribute.types.StringAttribute;
 
-public class CopperEngineContextFactoryImpl extends CopperEngineContextFactory<Void, CopperRootFactory> {
+public class CopperEngineContextFactoryImpl extends CopperEngineContextFactory<CopperRootFactory> {
 
     public final StringAttribute dep1 = new StringAttribute().labelText("dependency 1");
 

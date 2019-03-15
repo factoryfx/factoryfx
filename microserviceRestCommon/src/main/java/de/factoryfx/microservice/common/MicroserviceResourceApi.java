@@ -20,7 +20,7 @@ import java.util.Collection;
  *
  */
 @Path("microservice")
-public interface MicroserviceResourceApi<V,R extends FactoryBase<?,V,R>,S>  {
+public interface MicroserviceResourceApi<R extends FactoryBase<?,R>,S>  {
 
 
     @POST
@@ -64,18 +64,6 @@ public interface MicroserviceResourceApi<V,R extends FactoryBase<?,V,R>,S>  {
     @Produces(MediaType.APPLICATION_JSON)
     @Path("historyFactoryList")
     Collection<StoredDataMetadata<S>> getHistoryFactoryList(VoidUserAwareRequest request);
-
-    @POST
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON)
-    @Path("query")
-    ResponseWorkaround<V> query(UserAwareRequest<V> request);
-
-    @POST
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON)
-    @Path("queryReadOnly")
-    ResponseWorkaround<V> queryReadOnly(VoidUserAwareRequest request);
 
     @POST
     @Consumes(MediaType.APPLICATION_JSON)

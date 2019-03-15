@@ -12,7 +12,7 @@ import org.eclipse.jetty.server.handler.gzip.GzipHandler;
 
 import javax.servlet.DispatcherType;
 
-public class GzipHandlerFactory<V,R extends FactoryBase<?,V,R>> extends PolymorphicFactoryBase<Handler,V,R> {
+public class GzipHandlerFactory<R extends FactoryBase<?,R>> extends PolymorphicFactoryBase<Handler,R> {
     public final FactoryPolymorphicReferenceAttribute<Handler> handler = new FactoryPolymorphicReferenceAttribute<>(Handler.class).labelText("Handler");
     public final IntegerAttribute minGzipSize = new IntegerAttribute().labelText("minGzipSize");
     public final IntegerAttribute compressionLevel = new IntegerAttribute().labelText("compressionLevel");

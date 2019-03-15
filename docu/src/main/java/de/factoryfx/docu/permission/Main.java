@@ -26,26 +26,26 @@ public class Main {
 
         UserFactory.passwordKey=EncryptedStringAttribute.createKey();
 
-        FactoryTreeBuilder<Void, Printer, PrinterFactory, Void> builder = new FactoryTreeBuilder<>(PrinterFactory.class);
+        FactoryTreeBuilder< Printer, PrinterFactory, Void> builder = new FactoryTreeBuilder<>(PrinterFactory.class);
         builder.addFactory(PrinterFactory.class, Scope.SINGLETON, ctx->{
             PrinterFactory factory = new PrinterFactory();
             factory.text.set("Hello World");
             factory.server.set(ctx.get(JettyServerFactory.class));
             return factory;
         });
-        builder.addFactory(JettyServerFactory.class, Scope.SINGLETON, ctx-> new JettyServerBuilder<>(new JettyServerFactory<Void,PrinterFactory>())
+        builder.addFactory(JettyServerFactory.class, Scope.SINGLETON, ctx-> new JettyServerBuilder<>(new JettyServerFactory<PrinterFactory>())
                 .withHost("localhost").withPort(8005)
                 .withResource(ctx.get(PrinterMicroserviceResourceFactory.class)).build());
         builder.addFactory(PrinterMicroserviceResourceFactory.class, Scope.SINGLETON, ctx->{
             PrinterMicroserviceResourceFactory resource = new PrinterMicroserviceResourceFactory();
-            PersistentUserManagementFactory<Void, PrinterFactory> userManagement = new PersistentUserManagementFactory<>();
-            UserFactory<Void, PrinterFactory> user1 = new UserFactory<>();
+            PersistentUserManagementFactory<PrinterFactory> userManagement = new PersistentUserManagementFactory<>();
+            UserFactory<PrinterFactory> user1 = new UserFactory<>();
             user1.name.set("user1");
             user1.password.setPasswordNotHashed("pw1", UserFactory.passwordKey);
             user1.permissions.add(PrinterFactory.CHANGE_TEXT_PERMISSION);
             user1.locale.set(Locale.ENGLISH);
             userManagement.users.add(user1);
-            UserFactory<Void, PrinterFactory> user2 = new UserFactory<>();
+            UserFactory<PrinterFactory> user2 = new UserFactory<>();
             //no Permission for user 2
             user2.name.set("user2");
             user2.password.setPasswordNotHashed("pw2", UserFactory.passwordKey);
@@ -56,12 +56,12 @@ public class Main {
             return resource;
         }) ;
 
-        Microservice<Void, Printer, PrinterFactory, Void> microservice = builder.microservice().withInMemoryStorage().build();
+        Microservice<Printer, PrinterFactory, Void> microservice = builder.microservice().withInMemoryStorage().build();
         microservice.start();
 
         System.out.println("first update:");
         {
-            MicroserviceRestClient<Void, PrinterFactory, Void> microserviceRestClient = MicroserviceRestClientBuilder.build("localhost",8005,"user1","pw1",PrinterFactory.class);
+            MicroserviceRestClient<PrinterFactory, Void> microserviceRestClient = MicroserviceRestClientBuilder.build("localhost",8005,"user1","pw1",PrinterFactory.class);
 
             DataUpdate<PrinterFactory> update = microserviceRestClient.prepareNewFactory();
             update.root.text.set("bla blub1");
@@ -73,7 +73,7 @@ public class Main {
 
         System.out.println("second update:");
         {
-            MicroserviceRestClient<Void, PrinterFactory, Void> microserviceRestClient = MicroserviceRestClientBuilder.build("localhost",8005,"user2","pw2",PrinterFactory.class);
+            MicroserviceRestClient<PrinterFactory, Void> microserviceRestClient = MicroserviceRestClientBuilder.build("localhost",8005,"user2","pw2",PrinterFactory.class);
 
             DataUpdate<PrinterFactory> update = microserviceRestClient.prepareNewFactory();
             update.root.text.set("bla blub2");

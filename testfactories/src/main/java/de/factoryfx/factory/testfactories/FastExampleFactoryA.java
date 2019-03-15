@@ -9,7 +9,7 @@ import de.factoryfx.factory.atrribute.FactoryReferenceListAttribute;
 import java.util.ArrayList;
 import java.util.List;
 
-public class FastExampleFactoryA extends SimpleFactoryBase<ExampleLiveObjectA,Void,FastExampleFactoryA> {
+public class FastExampleFactoryA extends SimpleFactoryBase<ExampleLiveObjectA,FastExampleFactoryA> {
     public String stringAttribute;
     public FastExampleFactoryB referenceAttribute;
     public List<FastExampleFactoryB> referenceListAttribute=new ArrayList<>();

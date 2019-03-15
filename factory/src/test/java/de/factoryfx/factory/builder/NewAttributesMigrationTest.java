@@ -22,7 +22,7 @@ public class NewAttributesMigrationTest {
 
     //----------------------------------old
 
-    public static class ServerFactoryOld extends SimpleFactoryBase<Void,Void, ServerFactoryOld> {
+    public static class ServerFactoryOld extends SimpleFactoryBase<Void, ServerFactoryOld> {
 
         public final FactoryReferenceAttribute<Void,ClientSystemFactoryOld>  clientSystemFactory1 = new FactoryReferenceAttribute<>(ClientSystemFactoryOld.class);
         public final FactoryReferenceAttribute<Void,ClientSystemFactoryOld>  clientSystemFactory2 = new FactoryReferenceAttribute<>(ClientSystemFactoryOld.class);
@@ -36,7 +36,7 @@ public class NewAttributesMigrationTest {
     }
 
 
-    public static class ServerFactoryNestedOld extends SimpleFactoryBase<Void,Void, ServerFactoryOld> {
+    public static class ServerFactoryNestedOld extends SimpleFactoryBase<Void, ServerFactoryOld> {
 
         public final FactoryReferenceAttribute<Void,PartnerFactoryOld>  partnerFactory1 = new FactoryReferenceAttribute<>(PartnerFactoryOld.class);
 
@@ -47,7 +47,7 @@ public class NewAttributesMigrationTest {
     }
 
 
-    public static class PartnerFactoryOld extends SimpleFactoryBase<Void,Void, ServerFactoryOld> {
+    public static class PartnerFactoryOld extends SimpleFactoryBase<Void, ServerFactoryOld> {
         public final StringAttribute url = new StringAttribute().nullable();
 
 
@@ -57,7 +57,7 @@ public class NewAttributesMigrationTest {
         }
     }
 
-    public static class ClientSystemFactoryOld extends SimpleFactoryBase<Void,Void, ServerFactoryOld> {
+    public static class ClientSystemFactoryOld extends SimpleFactoryBase<Void, ServerFactoryOld> {
         public final StringAttribute url = new StringAttribute().nullable();
 
         @Override
@@ -69,7 +69,7 @@ public class NewAttributesMigrationTest {
     //----------------------------------new
 
 
-    public static class ServerFactory extends SimpleFactoryBase<Void,Void, ServerFactory> {
+    public static class ServerFactory extends SimpleFactoryBase<Void, ServerFactory> {
         public final FactoryReferenceAttribute<Void, ClientSystemFactory> clientSystemFactory1 = new FactoryReferenceAttribute<>(ClientSystemFactory.class);
         public final FactoryReferenceAttribute<Void, ClientSystemFactory> clientSystemFactory2 = new FactoryReferenceAttribute<>(ClientSystemFactory.class);
 
@@ -81,7 +81,7 @@ public class NewAttributesMigrationTest {
         }
     }
 
-    public static class ServerFactoryNested extends SimpleFactoryBase<Void,Void, ServerFactory> {
+    public static class ServerFactoryNested extends SimpleFactoryBase<Void, ServerFactory> {
 
         public final FactoryReferenceAttribute<Void,ClientSystemFactory>  clientSystemFactory = new FactoryReferenceAttribute<>(ClientSystemFactory.class);
 
@@ -91,7 +91,7 @@ public class NewAttributesMigrationTest {
         }
     }
 
-    public static class ClientSystemFactory extends SimpleFactoryBase<Void,Void, ServerFactory> {
+    public static class ClientSystemFactory extends SimpleFactoryBase<Void, ServerFactory> {
         public final StringAttribute url = new StringAttribute().nullable();
 
         @Override
@@ -107,7 +107,7 @@ public class NewAttributesMigrationTest {
     @Test
     public void test() throws IOException {
         {
-            FactoryTreeBuilder<Void, Void, ServerFactoryOld, Void> builder = new FactoryTreeBuilder<>(ServerFactoryOld.class);
+            FactoryTreeBuilder< Void, ServerFactoryOld, Void> builder = new FactoryTreeBuilder<>(ServerFactoryOld.class);
             builder.addFactory(ServerFactoryOld.class, Scope.SINGLETON, ctx -> {
                 ServerFactoryOld serverFactoryOld = new ServerFactoryOld();
                 serverFactoryOld.clientSystemFactory1.set(ctx.get(ClientSystemFactoryOld.class,"client1"));
@@ -130,7 +130,7 @@ public class NewAttributesMigrationTest {
                 serverFactoryNested.partnerFactory1.set(new PartnerFactoryOld());
                 return serverFactoryNested;
             });
-            Microservice<Void, Void, ServerFactoryOld, Void> msOld = builder.microservice().withFilesystemStorage(folder).build();
+            Microservice<Void, ServerFactoryOld, Void> msOld = builder.microservice().withFilesystemStorage(folder).build();
             msOld.start();
             msOld.stop();
         }
@@ -147,7 +147,7 @@ public class NewAttributesMigrationTest {
         Files.writeString(folder.resolve("currentFactory_metadata.json"),currentFactorymetadata);
 
         {
-            FactoryTreeBuilder<Void, Void, ServerFactory, Void> builder = new FactoryTreeBuilder<>(ServerFactory.class);
+            FactoryTreeBuilder< Void, ServerFactory, Void> builder = new FactoryTreeBuilder<>(ServerFactory.class);
             builder.addFactory(ServerFactory.class, Scope.SINGLETON, ctx-> {
                 ServerFactory serverFactory = new ServerFactory();
                 serverFactory.clientSystemFactory1.set(ctx.get(ClientSystemFactory.class,"client1"));
@@ -173,7 +173,7 @@ public class NewAttributesMigrationTest {
             });
 
             //no special migartion required just the builder used for migration
-            Microservice<Void, Void, ServerFactory, Void> msNew = builder.microservice().withFilesystemStorage(folder).build();
+            Microservice<Void, ServerFactory, Void> msNew = builder.microservice().withFilesystemStorage(folder).build();
             msNew.start();
 
             ServerFactory serverFactory = msNew.prepareNewFactory().root;

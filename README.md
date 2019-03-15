@@ -59,7 +59,7 @@ public class HelloWorld{
 [Live object explanation](docu/src/main/java/de/factoryfx/docu/liveobjects)
 #### Setup
 ```java
-    new FactoryTreeBuilder<Void,HelloWorld,HelloWorldFactory,Void>(HelloWorldFactory.class)
+    new FactoryTreeBuilder<HelloWorld,HelloWorldFactory,Void>(HelloWorldFactory.class)
     .addFactory(HelloWorldFactory.class, Scope.SINGLETON, ctx-> {
         HelloWorldFactory helloWorldFactory = new HelloWorldFactory();
         helloWorldFactory.text.set("HelloWorld");

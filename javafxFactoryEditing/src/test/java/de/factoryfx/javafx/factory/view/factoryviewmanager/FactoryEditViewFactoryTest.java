@@ -6,7 +6,7 @@ import de.factoryfx.javafx.factory.editor.DataEditorFactory;
 import org.junit.jupiter.api.Test;
 
 public class FactoryEditViewFactoryTest {
-    public static class DummyRoot extends SimpleFactoryBase<ExampleLiveObjectA,Void, DummyRoot> {
+    public static class DummyRoot extends SimpleFactoryBase<ExampleLiveObjectA, DummyRoot> {
 
         @Override
         public ExampleLiveObjectA createImpl() {
@@ -16,7 +16,7 @@ public class FactoryEditViewFactoryTest {
     }
     @Test
     public void test_generics(){
-        FactoryEditViewFactory<Void,DummyRoot,Void> factoryEditViewFactory = new FactoryEditViewFactory<>();
+        FactoryEditViewFactory<DummyRoot,Void> factoryEditViewFactory = new FactoryEditViewFactory<>();
         factoryEditViewFactory.dataEditorFactory.set(new DataEditorFactory());
 
     }

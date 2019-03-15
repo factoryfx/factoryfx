@@ -5,10 +5,10 @@ import de.factoryfx.copperbridge.WorkflowLauncherFactory;
 import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.factory.atrribute.FactoryReferenceAttribute;
 
-public class CopperRootFactory extends FactoryBase<WorkflowLauncher, Void, CopperRootFactory> {
+public class CopperRootFactory extends FactoryBase<WorkflowLauncher, CopperRootFactory> {
 
     @SuppressWarnings("unchecked")
-    public final FactoryReferenceAttribute<WorkflowLauncher, WorkflowLauncherFactory<Void, CopperRootFactory>> workflowLauncher =
+    public final FactoryReferenceAttribute<WorkflowLauncher, WorkflowLauncherFactory<CopperRootFactory>> workflowLauncher =
         FactoryReferenceAttribute.create(new FactoryReferenceAttribute<>(WorkflowLauncherFactory.class)).labelText("wfl");
 
     public CopperRootFactory(){

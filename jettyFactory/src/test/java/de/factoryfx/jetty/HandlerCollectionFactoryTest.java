@@ -45,16 +45,16 @@ public class HandlerCollectionFactoryTest {
         }
     }
 
-    public static class HandlerCollectionResourceFactory extends SimpleFactoryBase<HandlerCollectionResource,Void, HandlerCollectionRootFactory> {
+    public static class HandlerCollectionResourceFactory extends SimpleFactoryBase<HandlerCollectionResource, HandlerCollectionRootFactory> {
         @Override
         public HandlerCollectionResource createImpl() {
             return new HandlerCollectionResource();
         }
     }
 
-    public static class HandlerCollectionRootFactory extends SimpleFactoryBase<Server,Void, HandlerCollectionRootFactory>{
+    public static class HandlerCollectionRootFactory extends SimpleFactoryBase<Server, HandlerCollectionRootFactory>{
         @SuppressWarnings("unchecked")
-        public final FactoryReferenceAttribute<Server,JettyServerFactory<Void, HandlerCollectionRootFactory>> server = FactoryReferenceAttribute.create(new FactoryReferenceAttribute<>(JettyServerFactory.class));
+        public final FactoryReferenceAttribute<Server,JettyServerFactory<HandlerCollectionRootFactory>> server = FactoryReferenceAttribute.create(new FactoryReferenceAttribute<>(JettyServerFactory.class));
 
         @Override
         public Server createImpl() {
@@ -62,7 +62,7 @@ public class HandlerCollectionFactoryTest {
         }
     }
 
-    public static class CustomHandlerFactory<V,R extends FactoryBase<?,V,R>> extends PolymorphicFactoryBase<Handler,V,R> {
+    public static class CustomHandlerFactory<V,R extends FactoryBase<?,R>> extends PolymorphicFactoryBase<Handler,R> {
         @Override
         public Handler createImpl() {
             return new AbstractHandler() {
@@ -78,15 +78,15 @@ public class HandlerCollectionFactoryTest {
     @SuppressWarnings("unchecked")
     @Test
     public void test_add_handler_no_exception() {
-        FactoryTreeBuilder<Void, Server, HandlerCollectionRootFactory, Void> builder = new FactoryTreeBuilder<>(HandlerCollectionRootFactory.class);
+        FactoryTreeBuilder<Server, HandlerCollectionRootFactory, Void> builder = new FactoryTreeBuilder<>(HandlerCollectionRootFactory.class);
         builder.addFactory(HandlerCollectionRootFactory.class, Scope.SINGLETON);
         builder.addFactory(JettyServerFactory.class, Scope.SINGLETON, ctx->{
-            return new JettyServerBuilder<>(new JettyServerFactory<Void, HandlerCollectionRootFactory>())
+            return new JettyServerBuilder<>(new JettyServerFactory<HandlerCollectionRootFactory>())
                     .withHost("localhost").withPort(8080).build();
         });
 
 
-        Microservice<Void, Server, HandlerCollectionRootFactory, Void> microservice = builder.microservice().withInMemoryStorage().build();
+        Microservice<Server, HandlerCollectionRootFactory, Void> microservice = builder.microservice().withInMemoryStorage().build();
         microservice.start();
         try {
 
@@ -102,17 +102,17 @@ public class HandlerCollectionFactoryTest {
     @SuppressWarnings("unchecked")
     @Test
     public void test_remove_handler() {
-        FactoryTreeBuilder<Void, Server, HandlerCollectionRootFactory, Void> builder = new FactoryTreeBuilder<>(HandlerCollectionRootFactory.class);
+        FactoryTreeBuilder<Server, HandlerCollectionRootFactory, Void> builder = new FactoryTreeBuilder<>(HandlerCollectionRootFactory.class);
         builder.addFactory(HandlerCollectionRootFactory.class, Scope.SINGLETON);
         builder.addFactory(JettyServerFactory.class, Scope.SINGLETON, ctx->{
-            return new JettyServerBuilder<>(new JettyServerFactory<Void, HandlerCollectionRootFactory>())
+            return new JettyServerBuilder<>(new JettyServerFactory<HandlerCollectionRootFactory>())
                     .withResource(ctx.get(HandlerCollectionResourceFactory.class))
                     .withHost("localhost").withPort(8080).build();
         });
         builder.addFactory(HandlerCollectionResourceFactory.class, Scope.SINGLETON);
 
 
-        Microservice<Void, Server, HandlerCollectionRootFactory, Void> microservice = builder.microservice().withInMemoryStorage().build();
+        Microservice<Server, HandlerCollectionRootFactory, Void> microservice = builder.microservice().withInMemoryStorage().build();
         microservice.start();
         try {
             HttpClient client = HttpClient.newBuilder().version(HttpClient.Version.HTTP_1_1).build();

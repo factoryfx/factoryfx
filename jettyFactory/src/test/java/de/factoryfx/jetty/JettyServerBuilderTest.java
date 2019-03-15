@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test;
 
 public class JettyServerBuilderTest {
 
-    public static class DummyResource extends SimpleFactoryBase<Void,Void,DummyRoot> {
+    public static class DummyResource extends SimpleFactoryBase<Void,DummyRoot> {
 
         @Override
         public Void createImpl() {
@@ -14,13 +14,13 @@ public class JettyServerBuilderTest {
         }
     }
 
-    public static class DummyRoot extends JettyServerFactory<Void,DummyRoot> {
+    public static class DummyRoot extends JettyServerFactory<DummyRoot> {
     }
 
 
     @Test
     public void test_json(){
-        JettyServerFactory<Void, DummyRoot> serverFactory = new JettyServerBuilder<>(new DummyRoot()).withPort(123).withResource(new DummyResource()).build();
+        JettyServerFactory<DummyRoot> serverFactory = new JettyServerBuilder<>(new DummyRoot()).withPort(123).withResource(new DummyResource()).build();
 
         System.out.println(ObjectMapperBuilder.build().writeValueAsString(serverFactory));
 

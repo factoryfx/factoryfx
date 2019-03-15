@@ -32,10 +32,10 @@ public class MicroserviceTest {
 
     @Test
     public void test_summary() throws Exception {
-        FactoryTreeBuilder<Void,ExampleLiveObjectA,ExampleFactoryA,ChangeListingSummary> builder = new FactoryTreeBuilder<>(ExampleFactoryA.class);
+        FactoryTreeBuilder<ExampleLiveObjectA,ExampleFactoryA,ChangeListingSummary> builder = new FactoryTreeBuilder<>(ExampleFactoryA.class);
         builder.addFactory(ExampleFactoryA.class, Scope.SINGLETON, ctx -> new ExampleFactoryA());
 
-        Microservice<Void,ExampleLiveObjectA,ExampleFactoryA,ChangeListingSummary> microservice = builder.microservice().withInMemoryStorage().widthChangeSummaryCreator(mergeDiffInfo -> {
+        Microservice<ExampleLiveObjectA,ExampleFactoryA,ChangeListingSummary> microservice = builder.microservice().withInMemoryStorage().widthChangeSummaryCreator(mergeDiffInfo -> {
             if (mergeDiffInfo==null){
                 return null;
             }
@@ -87,12 +87,12 @@ public class MicroserviceTest {
         root.referenceListAttribute.add(new ExampleFactoryB());
         root =root.internal().addBackReferences();
 
-        FactoryTreeBuilder<Void,ExampleLiveObjectA,ExampleFactoryA,Void> builder = new FactoryTreeBuilder<>(ExampleFactoryA.class);
+        FactoryTreeBuilder<ExampleLiveObjectA,ExampleFactoryA,Void> builder = new FactoryTreeBuilder<>(ExampleFactoryA.class);
         builder.addFactory(ExampleFactoryA.class, Scope.SINGLETON, ctx -> {
             return new ExampleFactoryA();
         });
 
-        Microservice<Void,ExampleLiveObjectA,ExampleFactoryA,Void> microservice = builder.microservice().withInMemoryStorage().build();
+        Microservice<ExampleLiveObjectA,ExampleFactoryA,Void> microservice = builder.microservice().withInMemoryStorage().build();
 
         microservice.start();
         DataUpdate<ExampleFactoryA> editableFactory = microservice.prepareNewFactory();
@@ -109,9 +109,9 @@ public class MicroserviceTest {
 
     @Test
     public void test_history() throws Exception {
-        FactoryTreeBuilder<Void,ExampleLiveObjectA,ExampleFactoryA,Void> builder = new FactoryTreeBuilder<>(ExampleFactoryA.class);
+        FactoryTreeBuilder<ExampleLiveObjectA,ExampleFactoryA,Void> builder = new FactoryTreeBuilder<>(ExampleFactoryA.class);
         builder.addFactory(ExampleFactoryA.class, Scope.SINGLETON, ctx -> new ExampleFactoryA());
-        Microservice<Void,ExampleLiveObjectA,ExampleFactoryA,Void> microservice = builder.microservice().withInMemoryStorage().build();
+        Microservice<ExampleLiveObjectA,ExampleFactoryA,Void> microservice = builder.microservice().withInMemoryStorage().build();
         microservice.start();
 
         Thread.sleep(2);//avoid same timestamp
@@ -146,7 +146,7 @@ public class MicroserviceTest {
     }
 
 
-    public static class ExampleFactoryARecreation extends SimpleFactoryBase<ExampleLiveObjectA,Void,ExampleFactoryARecreation> {
+    public static class ExampleFactoryARecreation extends SimpleFactoryBase<ExampleLiveObjectA,ExampleFactoryARecreation> {
         public final FactoryReferenceAttribute<ExampleLiveObjectB,ExampleFactoryBRecreation> referenceAttribute = new FactoryReferenceAttribute<>(ExampleFactoryBRecreation.class).labelText("ExampleA2").nullable();
 
         @Override
@@ -155,7 +155,7 @@ public class MicroserviceTest {
         }
     }
 
-    public static class ExampleFactoryBRecreation extends FactoryBase<ExampleLiveObjectB,Void,ExampleFactoryARecreation> {
+    public static class ExampleFactoryBRecreation extends FactoryBase<ExampleLiveObjectB,ExampleFactoryARecreation> {
         public final FactoryReferenceAttribute<ExampleLiveObjectB,ExampleFactoryB> referenceAttribute = new FactoryReferenceAttribute<>(ExampleFactoryB.class).labelText("ExampleA2").nullable();
 
         long recreationCounter=0;
@@ -169,9 +169,9 @@ public class MicroserviceTest {
     }
     @Test
     public void recreation_bug() {
-        FactoryTreeBuilder<Void,ExampleLiveObjectA,ExampleFactoryARecreation,Void> builder = new FactoryTreeBuilder<>(ExampleFactoryARecreation.class);
+        FactoryTreeBuilder<ExampleLiveObjectA,ExampleFactoryARecreation,Void> builder = new FactoryTreeBuilder<>(ExampleFactoryARecreation.class);
         builder.addFactory(ExampleFactoryARecreation.class, Scope.SINGLETON, ctx -> new ExampleFactoryARecreation());
-        Microservice<Void,ExampleLiveObjectA,ExampleFactoryARecreation,Void> microservice = builder.microservice().withInMemoryStorage().build();
+        Microservice<ExampleLiveObjectA,ExampleFactoryARecreation,Void> microservice = builder.microservice().withInMemoryStorage().build();
 
         microservice.start();
 
@@ -185,7 +185,7 @@ public class MicroserviceTest {
     }
 
 
-    public static class BrokenFactory extends FactoryBase<Void,Void,BrokenFactory> {
+    public static class BrokenFactory extends FactoryBase<Void,BrokenFactory> {
         public BrokenFactory(){
             configLifeCycle().setCreator(() -> {
                 throw new RuntimeException("create");
@@ -196,9 +196,9 @@ public class MicroserviceTest {
     @Test
     public void test_create_width_exception() {
         Assertions.assertThrows(RuntimeException.class, () -> {
-            FactoryTreeBuilder<Void, Void, BrokenFactory, ChangeListingSummary> builder = new FactoryTreeBuilder<>(BrokenFactory.class);
+            FactoryTreeBuilder< Void, BrokenFactory, ChangeListingSummary> builder = new FactoryTreeBuilder<>(BrokenFactory.class);
             builder.addFactory(BrokenFactory.class, Scope.SINGLETON, ctx -> new BrokenFactory());
-            Microservice<Void, Void, BrokenFactory, ChangeListingSummary> microservice = builder.microservice().withInMemoryStorage().build();
+            Microservice<Void, BrokenFactory, ChangeListingSummary> microservice = builder.microservice().withInMemoryStorage().build();
             microservice.start();
         });
     }
@@ -206,9 +206,9 @@ public class MicroserviceTest {
 
     @Test
     public void test_prepareNewFactory_is_copy() {
-        FactoryTreeBuilder<Void,ExampleLiveObjectA,ExampleFactoryA,Void> builder = new FactoryTreeBuilder<>(ExampleFactoryA.class);
+        FactoryTreeBuilder<ExampleLiveObjectA,ExampleFactoryA,Void> builder = new FactoryTreeBuilder<>(ExampleFactoryA.class);
         builder.addFactory(ExampleFactoryA.class, Scope.SINGLETON, ctx -> new ExampleFactoryA());
-        Microservice<Void,ExampleLiveObjectA,ExampleFactoryA,Void> microservice = builder.microservice().withInMemoryStorage().build();
+        Microservice<ExampleLiveObjectA,ExampleFactoryA,Void> microservice = builder.microservice().withInMemoryStorage().build();
 
         Assertions.assertFalse(microservice.prepareNewFactory().root==microservice.prepareNewFactory().root);
         Assertions.assertFalse(microservice.prepareNewFactory().root.referenceListAttribute==microservice.prepareNewFactory().root.referenceListAttribute);
@@ -216,9 +216,9 @@ public class MicroserviceTest {
 
     @Test
     public void test_getDiffToPreviousVersion() {
-        FactoryTreeBuilder<Void,ExampleLiveObjectA,ExampleFactoryA,Void> builder = new FactoryTreeBuilder<>(ExampleFactoryA.class);
+        FactoryTreeBuilder<ExampleLiveObjectA,ExampleFactoryA,Void> builder = new FactoryTreeBuilder<>(ExampleFactoryA.class);
         builder.addFactory(ExampleFactoryA.class, Scope.SINGLETON, ctx -> new ExampleFactoryA());
-        Microservice<Void,ExampleLiveObjectA,ExampleFactoryA,Void> microservice = builder.microservice().withInMemoryStorage().build();
+        Microservice<ExampleLiveObjectA,ExampleFactoryA,Void> microservice = builder.microservice().withInMemoryStorage().build();
 
         microservice.start();
         Assertions.assertEquals(0,microservice.prepareNewFactory().root.referenceListAttribute.size());

@@ -8,11 +8,10 @@ import de.factoryfx.data.Data;
  * create subtree with liveobject to instantiate only part of the tree e.g for test or in the gui
  *
  * @param <L> create Live object
- * @param <V> visitor
  * @param <R> root
  * @param <S> sub root
  */
-public class SubTreeCreator<V,L, R extends FactoryBase<?,V,R>, S extends FactoryBase<L,V,R>> {
+public class SubTreeCreator<L, R extends FactoryBase<?,R>, S extends FactoryBase<L,R>> {
 
     private final Function<R,S> subRootFactoryProvider;
 

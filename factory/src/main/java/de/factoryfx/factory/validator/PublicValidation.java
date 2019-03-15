@@ -7,10 +7,10 @@ import java.util.Optional;
 import de.factoryfx.factory.FactoryBase;
 
 public class PublicValidation implements  FactoryStyleValidation {
-    private final FactoryBase<?, ?, ?> factoryBase;
+    private final FactoryBase<?,?> factoryBase;
     private final Field attributeField;
 
-    public PublicValidation(FactoryBase<?, ?, ?> factoryBase, Field attributeField) {
+    public PublicValidation(FactoryBase<?,?> factoryBase, Field attributeField) {
         this.factoryBase = factoryBase;
         this.attributeField = attributeField;
     }

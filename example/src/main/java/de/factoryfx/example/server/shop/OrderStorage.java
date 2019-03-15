@@ -29,8 +29,9 @@ public class OrderStorage {
         orders.add(order);
     }
 
-    public void accept(OrderCollector visitor) {
-        visitor.addOrders(orders);
+    public List<Order> getOrders() {
+        return orders;
     }
+
 
 }

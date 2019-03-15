@@ -39,7 +39,7 @@ import javafx.scene.layout.Priority;
 import javafx.util.Callback;
 import org.controlsfx.glyphfont.FontAwesome;
 
-public class HistoryWidget<V, R extends FactoryBase<?,V,R>,S> implements Widget {
+public class HistoryWidget<R extends FactoryBase<?,R>,S> implements Widget {
 
     private LanguageText changesText= new LanguageText().en("Changes").de("Änderungen");
     private LanguageText revertText= new LanguageText().en("Revert to").de("Zurücksetzen zu");
@@ -53,12 +53,12 @@ public class HistoryWidget<V, R extends FactoryBase<?,V,R>,S> implements Widget 
 
     private final UniformDesign uniformDesign;
     private final LongRunningActionExecutor longRunningActionExecutor;
-    private final MicroserviceRestClient<V, R,S> restClient;
+    private final MicroserviceRestClient<R,S> restClient;
     private Consumer<List<StoredDataMetadata>> tableUpdater;
     private final DiffDialogBuilder diffDialogBuilder;
     private BooleanBinding firstVersionSelected;
 
-    public HistoryWidget(UniformDesign uniformDesign, LongRunningActionExecutor longRunningActionExecutor, MicroserviceRestClient<V, R, S> restClient, DiffDialogBuilder diffDialogBuilder) {
+    public HistoryWidget(UniformDesign uniformDesign, LongRunningActionExecutor longRunningActionExecutor, MicroserviceRestClient<R, S> restClient, DiffDialogBuilder diffDialogBuilder) {
         this.uniformDesign=uniformDesign;
         this.longRunningActionExecutor = longRunningActionExecutor;
         this.restClient= restClient;

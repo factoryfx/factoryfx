@@ -62,7 +62,7 @@ public class FactoryReferenceAttributeTest {
         }
     }
 
-    public static class CreateExampleFactory extends SimpleFactoryBase<Void,Void,CreateExampleFactory>{
+    public static class CreateExampleFactory extends SimpleFactoryBase<Void,CreateExampleFactory>{
         @SuppressWarnings("unchecked")
         FactoryReferenceAttribute<ExampleLiveObjectA, ExampleFactoryA> attribute = FactoryReferenceAttribute.create(new FactoryReferenceAttribute<>(ExampleFactoryA.class).nullable());
         @Override

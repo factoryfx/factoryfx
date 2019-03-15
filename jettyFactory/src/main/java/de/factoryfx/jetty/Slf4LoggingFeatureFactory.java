@@ -9,7 +9,7 @@ import org.glassfish.jersey.logging.LoggingFeature;
  *
  * (preferred over the jultoslf bridge cause no global install required and no loglevel setup)
  */
-public class Slf4LoggingFeatureFactory<V,R extends FactoryBase<?,V,R>> extends SimpleFactoryBase<LoggingFeature,V,R> {
+public class Slf4LoggingFeatureFactory<V,R extends FactoryBase<?,R>> extends SimpleFactoryBase<LoggingFeature,R> {
 
     @Override
     public LoggingFeature createImpl() {

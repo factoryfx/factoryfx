@@ -8,24 +8,24 @@ import javax.servlet.Servlet;
 import java.util.ArrayList;
 import java.util.zip.Deflater;
 
-public class JettyServerBuilder<V,R extends FactoryBase<?,V,R>,S extends JettyServerFactory<V, R>> {
+public class JettyServerBuilder<R extends FactoryBase<?,R>,S extends JettyServerFactory<R>> {
     public S jettyServerFactory;
-    private final JerseyServletFactory<V, R> defaultJerseyServlet;
-    private final UpdateableServletFactory<V, R> updateableServletFactory;
-    private final ServletAndPathFactory<V, R> defaultJerseyServletAndPathFactory;
+    private final JerseyServletFactory<R> defaultJerseyServlet;
+    private final UpdateableServletFactory<R> updateableServletFactory;
+    private final ServletAndPathFactory<R> defaultJerseyServletAndPathFactory;
 
     public JettyServerBuilder(S jettyServerFactory){
         this.jettyServerFactory=jettyServerFactory;
 
-        HttpServerConnectorFactory<V, R> serverConnectorFactory = new HttpServerConnectorFactory<>();
+        HttpServerConnectorFactory<R> serverConnectorFactory = new HttpServerConnectorFactory<>();
         serverConnectorFactory.host.set("localhost");
         jettyServerFactory.connectors.add(serverConnectorFactory);
 
 
-        HandlerCollectionFactory<V, R> handlerCollection = new HandlerCollectionFactory<>();
+        HandlerCollectionFactory<R> handlerCollection = new HandlerCollectionFactory<>();
         jettyServerFactory.handler.set(handlerCollection);
 
-        GzipHandlerFactory<V, R> gzipHandler = new GzipHandlerFactory<>();
+        GzipHandlerFactory<R> gzipHandler = new GzipHandlerFactory<>();
         gzipHandler.minGzipSize.set(0);
         gzipHandler.compressionLevel.set(Deflater.DEFAULT_COMPRESSION);
         gzipHandler.deflaterPoolCapacity.set(-1);
@@ -34,7 +34,7 @@ public class JettyServerBuilder<V,R extends FactoryBase<?,V,R>,S extends JettySe
         gzipHandler.syncFlush.set(false);
         handlerCollection.handlers.add(gzipHandler);
 
-        ServletContextHandlerFactory<V, R> servletContextHandlerFactory = new ServletContextHandlerFactory<>();
+        ServletContextHandlerFactory<R> servletContextHandlerFactory = new ServletContextHandlerFactory<>();
         gzipHandler.handler.set(servletContextHandlerFactory);
 
         updateableServletFactory = new UpdateableServletFactory<>();
@@ -60,37 +60,37 @@ public class JettyServerBuilder<V,R extends FactoryBase<?,V,R>,S extends JettySe
         return jettyServerFactory;
     }
 
-    public JettyServerBuilder<V,R,S> withPort(int port){
+    public JettyServerBuilder<R,S> withPort(int port){
         jettyServerFactory.connectors.get(0).port.set(port);
         return this;
     }
 
-    public JettyServerBuilder<V,R,S> withHost(String host){
+    public JettyServerBuilder<R,S> withHost(String host){
         jettyServerFactory.connectors.get(0).host.set(host);
         return this;
     }
 
-    public JettyServerBuilder<V,R,S> withHostWildcard(){
+    public JettyServerBuilder<R,S> withHostWildcard(){
         return withHost("0.0.0.0");
     }
 
-    public JettyServerBuilder<V,R,S> withResource(FactoryBase<?,V,R> resource){
+    public JettyServerBuilder<R,S> withResource(FactoryBase<?,R> resource){
         defaultJerseyServlet.resources.add(resource);
         return this;
     }
 
-    public JettyServerBuilder<V,R,S> withJaxrsComponent(Object jaxrsComponent){
+    public JettyServerBuilder<R,S> withJaxrsComponent(Object jaxrsComponent){
         defaultJerseyServlet.additionalJaxrsComponents.get().add(jaxrsComponent);
         return this;
     }
 
-    public JettyServerBuilder<V,R,S> removeDefaultJerseyServlet(){
+    public JettyServerBuilder<R,S> removeDefaultJerseyServlet(){
         updateableServletFactory.servletAndPaths.remove(defaultJerseyServletAndPathFactory);
         return this;
     }
 
-    public JettyServerBuilder<V,R,S> withServlet(String pathSpec, FactoryBase<Servlet,V,R> servlet){
-        ServletAndPathFactory<V, R> servletAndPathFactory = new ServletAndPathFactory<>();
+    public JettyServerBuilder<R,S> withServlet(String pathSpec, FactoryBase<Servlet,R> servlet){
+        ServletAndPathFactory<R> servletAndPathFactory = new ServletAndPathFactory<>();
         servletAndPathFactory.pathSpec.set(pathSpec);
         servletAndPathFactory.servlet.set(servlet);
         updateableServletFactory.servletAndPaths.add(servletAndPathFactory);
@@ -98,7 +98,7 @@ public class JettyServerBuilder<V,R extends FactoryBase<?,V,R>,S extends JettySe
     }
 
 
-    public JettyServerBuilder<V, R,S> withSsl(SslContextFactoryFactory<V, R> ssl) {
+    public JettyServerBuilder<R,S> withSsl(SslContextFactoryFactory<R> ssl) {
         jettyServerFactory.connectors.get(0).ssl.set(ssl);
         return this;
     }

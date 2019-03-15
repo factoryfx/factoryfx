@@ -7,11 +7,11 @@ import de.factoryfx.data.storage.migration.datamigration.AttributeFiller;
 import de.factoryfx.data.storage.migration.metadata.DataStorageMetadataDictionary;
 import de.factoryfx.factory.FactoryBase;
 
-public class FactoryTreeBuilderAttributeFiller<V,L,R extends FactoryBase<L,V,R>,S> implements AttributeFiller<R> {
+public class FactoryTreeBuilderAttributeFiller<L,R extends FactoryBase<L,R>,S> implements AttributeFiller<R> {
 
-    private final FactoryTreeBuilder<V, L, R, S> factoryTreeBuilder;
+    private final FactoryTreeBuilder<L, R, S> factoryTreeBuilder;
 
-    public FactoryTreeBuilderAttributeFiller(FactoryTreeBuilder<V, L, R, S> factoryTreeBuilder) {
+    public FactoryTreeBuilderAttributeFiller(FactoryTreeBuilder<L, R, S> factoryTreeBuilder) {
         this.factoryTreeBuilder = factoryTreeBuilder;
     }
 
@@ -33,7 +33,7 @@ public class FactoryTreeBuilderAttributeFiller<V,L,R extends FactoryBase<L,V,R>,
             });
             if (containsNewAttributes[0]){
                 Class aClass = data.getClass();
-                FactoryBase<?, ?, R> newBuild = factoryTreeBuilder.buildNewSubTree(aClass);
+                FactoryBase<?, R> newBuild = factoryTreeBuilder.buildNewSubTree(aClass);
 
                 data.internal().visitAttributesDualFlat(newBuild, (attributeVariableName, newAttribute, buildedAttribute) -> {
                     if (!oldDataStorageMetadataDictionary.containsAttribute(data.getClass().getName(), attributeVariableName)) {//is new Attribute

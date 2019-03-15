@@ -5,5 +5,5 @@ import de.factoryfx.factory.SimpleFactoryBase;
 
 import java.util.logging.Handler;
 
-public abstract class HandlerFactory<V,R extends FactoryBase<?,V,R>> extends SimpleFactoryBase<Handler,V,R> {
+public abstract class HandlerFactory<V,R extends FactoryBase<?,R>> extends SimpleFactoryBase<Handler,R> {
 }

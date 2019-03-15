@@ -17,18 +17,18 @@ import java.util.function.BiFunction;
  *  provides additional setup for attributes based on the FactoryTreeBuilder
  * @param <R> root
  */
-public class FactoryTreeBuilderBasedAttributeSetup<V,L,R extends FactoryBase<L,V,R>,S> {
+public class FactoryTreeBuilderBasedAttributeSetup<L,R extends FactoryBase<L,R>,S> {
 
-    private final FactoryTreeBuilder<V,L,R,S> factoryTreeBuilder;
+    private final FactoryTreeBuilder<L,R,S> factoryTreeBuilder;
     private BiFunction<?, ReferenceBaseAttribute<?, ?, ?>, List> newValuesProvider;
 
     @SuppressWarnings("unchecked")
-    public FactoryTreeBuilderBasedAttributeSetup(FactoryTreeBuilder<V,L,R,S> factoryTreeBuilder) {
+    public FactoryTreeBuilderBasedAttributeSetup(FactoryTreeBuilder<L,R,S> factoryTreeBuilder) {
         this.factoryTreeBuilder = factoryTreeBuilder;
 
         newValuesProvider = (root, attribute) -> {
             Class<?> referenceClazz = ((ReferenceBaseAttribute<?,?, ?>) attribute).internal_getReferenceClass();
-            List<?> newFactories =  this.createNewFactory((Class<FactoryBase<Object, ?, R>>) referenceClazz);
+            List<?> newFactories =  this.createNewFactory((Class<FactoryBase<Object, R>>) referenceClazz);
             ArrayList result = new ArrayList(newFactories);
 
             if(result.isEmpty()){
@@ -37,9 +37,9 @@ public class FactoryTreeBuilderBasedAttributeSetup<V,L,R extends FactoryBase<L,V
             }
 
             for (Object o : result) {
-                FactoryBase<?,?,?> factory=(FactoryBase)o;
+                FactoryBase<?,?> factory=(FactoryBase)o;
                 for (Data child : factory.internal().collectChildrenDeepFromNode()) {
-                    if (child instanceof FactoryBase<?,?,?>) {
+                    if (child instanceof FactoryBase<?,?>) {
                         child.internal().visitAttributesFlat((attributeVariableName, childAttribute) -> applyToAttribute(childAttribute));
                     }
                 }
@@ -48,7 +48,7 @@ public class FactoryTreeBuilderBasedAttributeSetup<V,L,R extends FactoryBase<L,V
         };
     }
 
-    public <LO, FO extends FactoryBase<LO, ?, R>> List<FO> createNewFactory(Class<FO> clazz) {
+    public <LO, FO extends FactoryBase<LO, R>> List<FO> createNewFactory(Class<FO> clazz) {
         return factoryTreeBuilder.buildSubTrees(clazz);
     }
 

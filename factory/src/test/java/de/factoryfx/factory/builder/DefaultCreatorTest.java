@@ -23,7 +23,7 @@ public class DefaultCreatorTest {
     }
 
 
-    public static class ParametrizedTestFactory extends SimpleFactoryBase<Void,Void, ParametrizedTestFactory> {
+    public static class ParametrizedTestFactory extends SimpleFactoryBase<Void, ParametrizedTestFactory> {
         public final ParametrizedObjectCreatorAttribute<Void,Void,DummyCreatorFactory> dummyCreator =new ParametrizedObjectCreatorAttribute<>(DummyCreatorFactory.class);
 
         @Override
@@ -48,7 +48,7 @@ public class DefaultCreatorTest {
         Assertions.assertEquals(DummyCreatorFactory.class, actual.getClass());
     }
 
-    public static class ExampleFactoryANotNullable extends SimpleFactoryBase<ExampleLiveObjectA,Void, ExampleFactoryANotNullable> {
+    public static class ExampleFactoryANotNullable extends SimpleFactoryBase<ExampleLiveObjectA, ExampleFactoryANotNullable> {
         public final FactoryReferenceAttribute<ExampleLiveObjectB,ExampleFactoryB> referenceAttribute = new FactoryReferenceAttribute<>(ExampleFactoryB.class);
 
         @Override
@@ -68,7 +68,7 @@ public class DefaultCreatorTest {
         });
     }
 
-    public static class ExampleFactoryNullableRef extends SimpleFactoryBase<ExampleLiveObjectA,Void, ExampleFactoryNullableRef> {
+    public static class ExampleFactoryNullableRef extends SimpleFactoryBase<ExampleLiveObjectA, ExampleFactoryNullableRef> {
         public final FactoryReferenceAttribute<ExampleLiveObjectB, ExampleFactoryB> referenceAttribute = new FactoryReferenceAttribute<>(ExampleFactoryB.class).nullable();
 
         @Override

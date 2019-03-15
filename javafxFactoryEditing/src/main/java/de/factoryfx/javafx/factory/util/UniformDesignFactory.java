@@ -11,7 +11,7 @@ import de.factoryfx.javafx.data.util.UniformDesign;
 import de.factoryfx.javafx.factory.RichClientRoot;
 import javafx.scene.paint.Color;
 
-public class UniformDesignFactory extends SimpleFactoryBase<UniformDesign,Void,RichClientRoot> {
+public class UniformDesignFactory extends SimpleFactoryBase<UniformDesign,RichClientRoot> {
 
     public final LocaleAttribute locale=new LocaleAttribute().en("locale").defaultValue(Locale.ENGLISH);
     public final ColorAttribute dangerColor=new ColorAttribute().en("dangerColor").defaultValue(Color.web("#FF7979"));

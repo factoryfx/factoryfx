@@ -14,7 +14,7 @@ import java.nio.file.Paths;
 public class Main {
 
     public static void main(String[] args) {
-        FactoryTreeBuilder<Void, Server,RootFactory,Void> builder = new FactoryTreeBuilder<>(RootFactory.class);
+        FactoryTreeBuilder< Server,RootFactory,Void> builder = new FactoryTreeBuilder<>(RootFactory.class);
         builder.addFactory(RootFactory.class, Scope.SINGLETON, ctx-> new JettyServerBuilder<>(new RootFactory())
                 .withHost("localhost").withPort(8005)
                 .withResource(ctx.get(SpecificMicroserviceResource.class))
@@ -29,7 +29,7 @@ public class Main {
             return databaseResource;
         });
 
-        Microservice<Void, Server,RootFactory,Void> microservice = builder.microservice().withFilesystemStorage(Paths.get("./docu/src/main/java/de/factoryfx/docu/configurationdata/")).build();
+        Microservice<Server,RootFactory,Void> microservice = builder.microservice().withFilesystemStorage(Paths.get("./docu/src/main/java/de/factoryfx/docu/configurationdata/")).build();
         microservice.start();
 
         {
@@ -39,7 +39,7 @@ public class Main {
         }
 
         {
-            MicroserviceRestClient<Void, RootFactory, Void> microserviceRestClient = MicroserviceRestClientBuilder.build("localhost", 8005, "", "", RootFactory.class);
+            MicroserviceRestClient<RootFactory, Void> microserviceRestClient = MicroserviceRestClientBuilder.build("localhost", 8005, "", "", RootFactory.class);
             DataUpdate<RootFactory> update = microserviceRestClient.prepareNewFactory();
             update.root.getResource(DatabaseResourceFactory.class).url.set("jdbc:postgresql://host/databasenew");
             microservice.updateCurrentFactory(update);

@@ -15,7 +15,7 @@ import java.util.*;
  *
  * @param <L> the base interface/class
  */
-public class FactoryPolymorphicReferenceAttribute<L> extends FactoryReferenceBaseAttribute<L,FactoryBase<? extends L,?,?>,FactoryPolymorphicReferenceAttribute<L>> {
+public class FactoryPolymorphicReferenceAttribute<L> extends FactoryReferenceBaseAttribute<L,FactoryBase<? extends L,?>,FactoryPolymorphicReferenceAttribute<L>> {
 
     private static final Validation requiredValidation = value -> {
         boolean error = value == null;
@@ -23,7 +23,7 @@ public class FactoryPolymorphicReferenceAttribute<L> extends FactoryReferenceBas
     };
 
     @JsonCreator
-    protected FactoryPolymorphicReferenceAttribute(FactoryBase<L,?,?> value) {
+    protected FactoryPolymorphicReferenceAttribute(FactoryBase<L,?> value) {
         super(value);
     }
 

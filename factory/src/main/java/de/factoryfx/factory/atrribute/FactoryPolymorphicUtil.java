@@ -14,13 +14,13 @@ import java.util.function.Supplier;
 
 public class FactoryPolymorphicUtil<L> {
     @SuppressWarnings("unchecked")
-    public void setup(ReferenceBaseAttribute<FactoryBase<? extends L,?,?>,?,?> attribute, Class<L> liveObjectClass, Supplier<Data> root, Class<? extends PolymorphicFactory<?>>... possibleFactoriesClasses){
+    public void setup(ReferenceBaseAttribute<FactoryBase<? extends L,?>,?,?> attribute, Class<L> liveObjectClass, Supplier<Data> root, Class<? extends PolymorphicFactory<?>>... possibleFactoriesClasses){
         attribute.possibleValueProvider(data -> {
-            Set<FactoryBase<? extends L, ?, ?>> result = new HashSet<>();
+            Set<FactoryBase<? extends L, ?>> result = new HashSet<>();
             for (Data factory: root.get().internal().collectChildrenDeep()){
                 if (factory instanceof PolymorphicFactory){
                     if (liveObjectClass.isAssignableFrom(((PolymorphicFactory)factory).getLiveObjectClass())){
-                        result.add((FactoryBase<L, ?, ?>) factory);
+                        result.add((FactoryBase<L, ?>) factory);
                     }
                 }
             }
@@ -47,9 +47,9 @@ public class FactoryPolymorphicUtil<L> {
 
         attribute.newValuesProvider((data,a) -> {
             try {
-                ArrayList<FactoryBase<? extends L, ?, ?>> result = new ArrayList<>();
+                ArrayList<FactoryBase<? extends L, ?>> result = new ArrayList<>();
                 for (Class<?> clazz: possibleFactoriesClasses){
-                    result.add((FactoryBase<L, ?, ?>) clazz.getConstructor().newInstance());
+                    result.add((FactoryBase<L, ?>) clazz.getConstructor().newInstance());
                 }
                 return result;
             } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {

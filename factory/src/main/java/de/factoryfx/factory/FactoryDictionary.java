@@ -9,11 +9,11 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
-public class FactoryDictionary<T extends FactoryBase<?,?,?>> {
+public class FactoryDictionary<T extends FactoryBase<?,?>> {
     private static final Map<Class<?>, FactoryDictionary<?>> factoryDictionaries = new ConcurrentHashMap<>();
 
     @SuppressWarnings("unchecked")
-    public static  <F extends FactoryBase<?,?,?>> FactoryDictionary<F> getFactoryDictionary(Class<F> clazz){
+    public static  <F extends FactoryBase<?,?>> FactoryDictionary<F> getFactoryDictionary(Class<F> clazz){
         FactoryDictionary<F> result= (FactoryDictionary<F>)factoryDictionaries.get(clazz);
         if (result==null){
             result=new FactoryDictionary<>();
@@ -22,13 +22,13 @@ public class FactoryDictionary<T extends FactoryBase<?,?,?>> {
         return result;
     }
 
-    private BiConsumer<T,Consumer<FactoryBase<?, ?, ?>>> visitChildFactoriesAndViewsFlat;
+    private BiConsumer<T,Consumer<FactoryBase<?,?>>> visitChildFactoriesAndViewsFlat;
 
-    public void setVisitChildFactoriesAndViewsFlat(BiConsumer<T,Consumer<FactoryBase<?, ?, ?>>> visitChildFactoriesAndViewsFlat){
+    public void setVisitChildFactoriesAndViewsFlat(BiConsumer<T,Consumer<FactoryBase<?,?>>> visitChildFactoriesAndViewsFlat){
         this.visitChildFactoriesAndViewsFlat=visitChildFactoriesAndViewsFlat;
     }
 
-    public void visitChildFactoriesAndViewsFlat(T data, Consumer<FactoryBase<?, ?, ?>> consumer) {
+    public void visitChildFactoriesAndViewsFlat(T data, Consumer<FactoryBase<?,?>> consumer) {
         if (this.visitChildFactoriesAndViewsFlat != null) {
             this.visitChildFactoriesAndViewsFlat.accept(data, consumer);
 
@@ -36,7 +36,7 @@ public class FactoryDictionary<T extends FactoryBase<?,?,?>> {
 
             data.internal().visitAttributesFlat((attributeVariableName, attribute) -> {
                 if (attribute instanceof FactoryReferenceAttribute) {
-                    FactoryBase<?, ?, ?> factory = (FactoryBase<?, ?, ?>) attribute.get();
+                    FactoryBase<?,?> factory = (FactoryBase<?,?>) attribute.get();
                     if (factory != null) {
                         consumer.accept(factory);
                     }
@@ -45,12 +45,12 @@ public class FactoryDictionary<T extends FactoryBase<?,?,?>> {
                 if (attribute instanceof FactoryReferenceListAttribute) {
                     List<?> factories = ((FactoryReferenceListAttribute<?, ?>) attribute).get();
                     for (Object factory : factories) {
-                        consumer.accept((FactoryBase<?, ?, ?>) factory);
+                        consumer.accept((FactoryBase<?,?>) factory);
                     }
                     return;
                 }
                 if (attribute instanceof FactoryViewReferenceAttribute) {
-                    FactoryBase<?, ?, ?> factory = (FactoryBase<?, ?, ?>) attribute.get();
+                    FactoryBase<?,?> factory = (FactoryBase<?,?>) attribute.get();
                     if (factory != null) {
                         consumer.accept(factory);
                     }
@@ -59,12 +59,12 @@ public class FactoryDictionary<T extends FactoryBase<?,?,?>> {
                 if (attribute instanceof FactoryViewListReferenceAttribute) {
                     List<?> factories = ((FactoryViewListReferenceAttribute<?, ?, ?>) attribute).get();
                     for (Object factory : factories) {
-                        consumer.accept((FactoryBase<?, ?, ?>) factory);
+                        consumer.accept((FactoryBase<?,?>) factory);
                     }
                     return;
                 }
                 if (attribute instanceof FactoryPolymorphicReferenceAttribute) {
-                    FactoryBase<?, ?, ?> factory = (FactoryBase<?, ?, ?>) attribute.get();
+                    FactoryBase<?,?> factory = (FactoryBase<?,?>) attribute.get();
                     if (factory != null) {
                         consumer.accept(factory);
                     }
@@ -79,7 +79,7 @@ public class FactoryDictionary<T extends FactoryBase<?,?,?>> {
                     return;
                 }
                 if (attribute instanceof ParametrizedObjectCreatorAttribute) {
-                    FactoryBase<?, ?, ?> factory = (FactoryBase<?, ?, ?>) attribute.get();
+                    FactoryBase<?,?> factory = (FactoryBase<?,?>) attribute.get();
                     if (factory != null) {
                         consumer.accept(factory);
                     }

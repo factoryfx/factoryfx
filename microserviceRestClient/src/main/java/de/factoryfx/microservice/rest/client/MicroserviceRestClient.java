@@ -27,14 +27,14 @@ import javax.ws.rs.InternalServerErrorException;
  * @param <R> Root factory
  * @param <S> History summary
  */
-public class MicroserviceRestClient<V, R extends FactoryBase<?,V,R>,S> {
+public class MicroserviceRestClient<R extends FactoryBase<?,R>,S> {
 
-    private final MicroserviceResourceApi<V,R,S> microserviceResourceApi;
+    private final MicroserviceResourceApi<R,S> microserviceResourceApi;
     private final String user;
     private final String passwordHash;
-    private final FactoryTreeBuilderBasedAttributeSetup<V,?,R,S> factoryTreeBuilderBasedAttributeSetup;
+    private final FactoryTreeBuilderBasedAttributeSetup<?,R,S> factoryTreeBuilderBasedAttributeSetup;
 
-    public MicroserviceRestClient(MicroserviceResourceApi<V,R,S> microserviceResourceApi, String user, String passwordHash, FactoryTreeBuilderBasedAttributeSetup<V,?,R,S> factoryTreeBuilderBasedAttributeSetup) {
+    public MicroserviceRestClient(MicroserviceResourceApi<R,S> microserviceResourceApi, String user, String passwordHash, FactoryTreeBuilderBasedAttributeSetup<?,R,S> factoryTreeBuilderBasedAttributeSetup) {
         this.microserviceResourceApi = microserviceResourceApi;
         this.user=user;
         this.passwordHash=passwordHash;
@@ -87,11 +87,6 @@ public class MicroserviceRestClient<V, R extends FactoryBase<?,V,R>,S> {
 
     public Collection<StoredDataMetadata<S>> getHistoryFactoryList() {
         return executeWidthServerExceptionReporting(()-> microserviceResourceApi.getHistoryFactoryList(new VoidUserAwareRequest(user, passwordHash)));
-    }
-
-    @SuppressWarnings("unchecked")
-    public ResponseWorkaround<V> query(V visitor) {
-        return new ResponseWorkaround(executeWidthServerExceptionReporting(()-> microserviceResourceApi.query(new UserAwareRequest<>(user,passwordHash,visitor))));
     }
 
     public boolean checkUser() {

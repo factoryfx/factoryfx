@@ -6,10 +6,10 @@ import de.factoryfx.factory.exception.RethrowingFactoryExceptionHandler;
 
 public class Nanoservice<R,L extends NanoserviceRoot<R>,RF extends NanoserviceRootFactory<R,L,RF>> {
 
-    private final FactoryManager<Void,L,RF> factoryManager;
+    private final FactoryManager<L,RF> factoryManager;
     private final RF rootFactory;
 
-    public Nanoservice(FactoryManager<Void,L,RF> factoryManager, RF rootFactory) {
+    public Nanoservice(FactoryManager<L,RF> factoryManager, RF rootFactory) {
         this.factoryManager = factoryManager;
         this.rootFactory = rootFactory;
     }

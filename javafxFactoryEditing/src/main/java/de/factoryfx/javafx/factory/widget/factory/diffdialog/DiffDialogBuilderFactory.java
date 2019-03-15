@@ -8,7 +8,7 @@ import de.factoryfx.javafx.factory.editor.attribute.AttributeEditorBuilderFactor
 import de.factoryfx.javafx.data.util.UniformDesign;
 import de.factoryfx.javafx.factory.util.UniformDesignFactory;
 
-public class DiffDialogBuilderFactory extends SimpleFactoryBase<DiffDialogBuilder,Void,RichClientRoot> {
+public class DiffDialogBuilderFactory extends SimpleFactoryBase<DiffDialogBuilder,RichClientRoot> {
     public final FactoryReferenceAttribute<UniformDesign,UniformDesignFactory> uniformDesign = new FactoryReferenceAttribute<>(UniformDesignFactory.class).de("uniformDesign").en("uniformDesign");
     public final FactoryReferenceAttribute<AttributeVisualisationMappingBuilder,AttributeEditorBuilderFactory> attributeEditorBuilder = new FactoryReferenceAttribute<>(AttributeEditorBuilderFactory.class).de("attributeEditorBuilder").en("attributeEditorBuilder");
 

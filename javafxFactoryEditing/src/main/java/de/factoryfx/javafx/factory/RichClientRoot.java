@@ -6,7 +6,7 @@ import de.factoryfx.javafx.factory.stage.StageFactory;
 import javafx.stage.Stage;
 
 
-public class RichClientRoot extends SimpleFactoryBase<Stage,Void,RichClientRoot> {
+public class RichClientRoot extends SimpleFactoryBase<Stage,RichClientRoot> {
     public final FactoryReferenceAttribute<Stage, StageFactory> stageFactory = new FactoryReferenceAttribute<>(StageFactory.class);
 
     @Override

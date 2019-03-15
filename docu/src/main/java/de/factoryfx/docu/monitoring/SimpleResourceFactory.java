@@ -2,7 +2,7 @@ package de.factoryfx.docu.monitoring;
 
 import de.factoryfx.factory.SimpleFactoryBase;
 
-public class SimpleResourceFactory extends SimpleFactoryBase<SimpleResource,ServerVisitor,RootFactory> {
+public class SimpleResourceFactory extends SimpleFactoryBase<SimpleResource,RootFactory> {
     @Override
     public SimpleResource createImpl() {
         return new SimpleResource();

@@ -26,9 +26,9 @@ import java.util.Locale;
 
 public class MicroserviceRestIntegrationTest {
 
-    public static class TestJettyServer  extends SimpleFactoryBase<Server, TestVisitor, TestJettyServer> {
+    public static class TestJettyServer  extends SimpleFactoryBase<Server, TestJettyServer> {
         @SuppressWarnings("unchecked")
-        public final FactoryReferenceAttribute<Server, JettyServerFactory<TestVisitor, TestJettyServer>> server = FactoryReferenceAttribute.create(new FactoryReferenceAttribute<>(JettyServerFactory.class));
+        public final FactoryReferenceAttribute<Server, JettyServerFactory<TestJettyServer>> server = FactoryReferenceAttribute.create(new FactoryReferenceAttribute<>(JettyServerFactory.class));
 
         @Override
         public Server createImpl() {
@@ -36,12 +36,8 @@ public class MicroserviceRestIntegrationTest {
         }
 
         public TestJettyServer(){
-            configLifeCycle().setRuntimeQueryExecutor((testVisitor, jettyServer) -> testVisitor.test="123");
-        }
-    }
 
-    public static class TestVisitor  {
-        public String test;
+        }
     }
 
     @SuppressWarnings("unchecked")
@@ -55,16 +51,16 @@ public class MicroserviceRestIntegrationTest {
         ch.qos.logback.classic.Logger root = (ch.qos.logback.classic.Logger) org.slf4j.LoggerFactory.getLogger(ch.qos.logback.classic.Logger.ROOT_LOGGER_NAME);
         root.setLevel(Level.INFO);
 
-        FactoryTreeBuilder<TestVisitor, Server, TestJettyServer, Void> builder = new FactoryTreeBuilder<>(TestJettyServer.class);
+        FactoryTreeBuilder<Server, TestJettyServer, Void> builder = new FactoryTreeBuilder<>(TestJettyServer.class);
         builder.addFactory(TestJettyServer.class, Scope.SINGLETON);
-        builder.addFactory(JettyServerFactory.class, Scope.SINGLETON, ctx-> new JettyServerBuilder<>(new JettyServerFactory<TestVisitor,TestJettyServer>())
+        builder.addFactory(JettyServerFactory.class, Scope.SINGLETON, ctx-> new JettyServerBuilder<>(new JettyServerFactory<TestJettyServer>())
                 .withHost("localhost").withPort(34579)
                 .withResource(ctx.get(MicroserviceResourceFactory.class)).build());
 
         builder.addFactory(MicroserviceResourceFactory.class, Scope.SINGLETON, ctx->{
-            final MicroserviceResourceFactory<TestVisitor, TestJettyServer, Void> microserviceResource = new MicroserviceResourceFactory<>();
-            final PersistentUserManagementFactory<TestVisitor,TestJettyServer> userManagement = new PersistentUserManagementFactory<>();
-            final UserFactory<TestVisitor,TestJettyServer> user = new UserFactory<>();
+            final MicroserviceResourceFactory<TestJettyServer, Void> microserviceResource = new MicroserviceResourceFactory<>();
+            final PersistentUserManagementFactory<TestJettyServer> userManagement = new PersistentUserManagementFactory<>();
+            final UserFactory<TestJettyServer> user = new UserFactory<>();
             user.name.set("user123");
             user.password.setPasswordNotHashed("pw1", key);
             user.locale.set(Locale.GERMAN);
@@ -75,7 +71,7 @@ public class MicroserviceRestIntegrationTest {
 
         ObjectMapperBuilder.build().copy(builder.buildTree());
 
-        Microservice<TestVisitor, Server, TestJettyServer, Void> microservice = builder.microservice().withInMemoryStorage().build();
+        Microservice<Server, TestJettyServer, Void> microservice = builder.microservice().withInMemoryStorage().build();
         microservice.start();
 
         try {
@@ -86,16 +82,12 @@ public class MicroserviceRestIntegrationTest {
                 throw new RuntimeException(e);
             }
 
-            MicroserviceRestClient<TestVisitor, TestJettyServer,Void> microserviceRestClient = MicroserviceRestClientBuilder.build("localhost",34579,"user123","pw1",TestJettyServer.class);
+            MicroserviceRestClient<TestJettyServer,Void> microserviceRestClient = MicroserviceRestClientBuilder.build("localhost",34579,"user123","pw1",TestJettyServer.class);
             microserviceRestClient.prepareNewFactory();
 
 
             final ArrayList<StoredDataMetadata> historyFactoryList = new ArrayList<>(microserviceRestClient.getHistoryFactoryList());
             microserviceRestClient.getHistoryFactory(historyFactoryList.get(0).id);
-
-            ResponseWorkaround<TestVisitor> query1 = microserviceRestClient.query(new TestVisitor());
-            TestVisitor query = query1.value;
-            Assertions.assertEquals("123",query.test);
 
             Assertions.assertEquals(Locale.GERMAN, microserviceRestClient.getLocale());
         } finally {
@@ -103,7 +95,7 @@ public class MicroserviceRestIntegrationTest {
         }
     }
 
-    public static class RestClientRoot extends SimpleFactoryBase<Void,Void,RestClientRoot> {
+    public static class RestClientRoot extends SimpleFactoryBase<Void,RestClientRoot> {
         @Override
         public Void createImpl() {
             return null;

@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.Function;
 
-public class RootFactoryWrapper<R extends FactoryBase<?,?,?>> {
+public class RootFactoryWrapper<R extends FactoryBase<?,?>> {
 
     private final R rootFactory;
 
@@ -21,24 +21,24 @@ public class RootFactoryWrapper<R extends FactoryBase<?,?,?>> {
         updateCachedChildren();
     }
 
-    private List<FactoryBase<?,?,?>> factoriesInCreateAndStartOrder;
-    private List<FactoryBase<?,?,?>> factoriesInDestroyOrder;
+    private List<FactoryBase<?,?>> factoriesInCreateAndStartOrder;
+    private List<FactoryBase<?,?>> factoriesInDestroyOrder;
     public void updateCachedChildren(){
 
         factoriesInCreateAndStartOrder = rootFactory.internalFactory().getFactoriesInCreateAndStartOrder();
         factoriesInDestroyOrder = rootFactory.internalFactory().getFactoriesInDestroyOrder();
     }
 
-    public List<FactoryBase<?,?,?>> collectChildFactories(){
+    public List<FactoryBase<?,?>> collectChildFactories(){
         return factoriesInCreateAndStartOrder;
     }
 
-    public List<FactoryBase<?,?,?>> getFactoriesInCreateAndStartOrder(){
+    public List<FactoryBase<?,?>> getFactoriesInCreateAndStartOrder(){
         return factoriesInCreateAndStartOrder;
     }
 
 
-    public List<FactoryBase<?,?,?>> getFactoriesInDestroyOrder(){
+    public List<FactoryBase<?,?>> getFactoriesInDestroyOrder(){
         return factoriesInDestroyOrder;
     }
 

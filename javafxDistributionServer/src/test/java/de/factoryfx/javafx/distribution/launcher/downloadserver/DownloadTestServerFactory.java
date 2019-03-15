@@ -3,6 +3,6 @@ package de.factoryfx.javafx.distribution.launcher.downloadserver;
 import de.factoryfx.jetty.JettyServerFactory;
 
 
-public class DownloadTestServerFactory extends JettyServerFactory<Void,DownloadTestServerFactory>{
+public class DownloadTestServerFactory extends JettyServerFactory<DownloadTestServerFactory>{
 
 }

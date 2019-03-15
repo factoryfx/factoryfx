@@ -5,7 +5,7 @@ import de.factoryfx.factory.FastFactoryUtility;
 import de.factoryfx.factory.SimpleFactoryBase;
 import de.factoryfx.factory.atrribute.FactoryReferenceAttribute;
 
-public class FastExampleFactoryC extends SimpleFactoryBase<ExampleLiveObjectC,Void,ExampleFactoryA> {
+public class FastExampleFactoryC extends SimpleFactoryBase<ExampleLiveObjectC,ExampleFactoryA> {
     public String stringAttribute;
     public FastExampleFactoryB referenceAttribute;
 

@@ -16,10 +16,10 @@ import org.glassfish.jersey.servlet.ServletContainer;
 import javax.servlet.*;
 import java.util.*;
 
-public class JerseyServletFactory<V,R extends FactoryBase<?,V,R>> extends SimpleFactoryBase<Servlet,V,R> {
+public class JerseyServletFactory<R extends FactoryBase<?,R>> extends SimpleFactoryBase<Servlet,R> {
 
     @SuppressWarnings("unchecked")
-    public final FactoryReferenceAttribute<ObjectMapper,FactoryBase<ObjectMapper,V,R>> objectMapper =
+    public final FactoryReferenceAttribute<ObjectMapper,FactoryBase<ObjectMapper,R>> objectMapper =
             FactoryReferenceAttribute.create( new FactoryReferenceAttribute<>(FactoryBase.class).nullable().en("objectMapper"));
 
     public final FactoryPolymorphicReferenceAttribute<LoggingFeature> restLogging = new FactoryPolymorphicReferenceAttribute<>(LoggingFeature.class).userReadOnly().labelText("REST logging");

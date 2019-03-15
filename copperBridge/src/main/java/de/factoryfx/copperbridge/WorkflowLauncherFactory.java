@@ -8,14 +8,14 @@ import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.factory.SimpleFactoryBase;
 import de.factoryfx.factory.atrribute.FactoryReferenceAttribute;
 
-public class WorkflowLauncherFactory<V, R extends FactoryBase<?, V, R>> extends SimpleFactoryBase<WorkflowLauncher, V, R> {
+public class WorkflowLauncherFactory<R extends FactoryBase<?, R>> extends SimpleFactoryBase<WorkflowLauncher, R> {
 
     @SuppressWarnings("unchecked")
-    public final FactoryReferenceAttribute<Backchannel, BackchannelFactory<V, R>> backchannel =
+    public final FactoryReferenceAttribute<Backchannel, BackchannelFactory<R>> backchannel =
         FactoryReferenceAttribute.create(new FactoryReferenceAttribute<>(BackchannelFactory.class)).labelText("Backchannel");
 
     @SuppressWarnings("unchecked")
-    public final FactoryReferenceAttribute<CopperEngineContext, CopperEngineContextFactory<V, R>> copperEngineContext =
+    public final FactoryReferenceAttribute<CopperEngineContext, CopperEngineContextFactory<R>> copperEngineContext =
         FactoryReferenceAttribute.create(new FactoryReferenceAttribute<>(CopperEngineContextFactory.class).labelText("Copper engine context"));
 
 

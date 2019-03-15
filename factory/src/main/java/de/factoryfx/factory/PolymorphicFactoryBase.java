@@ -7,7 +7,7 @@ import java.lang.reflect.ParameterizedType;
 import java.util.function.Supplier;
 
 @JsonTypeInfo(use=JsonTypeInfo.Id.CLASS, include=JsonTypeInfo.As.PROPERTY, property="@class") //minimal class doesn't work
-public abstract class PolymorphicFactoryBase<L,V,R extends FactoryBase<?,V,R>> extends FactoryBase<L,V,R> implements PolymorphicFactory<L>{
+public abstract class PolymorphicFactoryBase<L,R extends FactoryBase<?,R>> extends FactoryBase<L,R> implements PolymorphicFactory<L>{
 
     public abstract L createImpl();
 

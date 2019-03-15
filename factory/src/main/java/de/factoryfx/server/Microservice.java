@@ -13,16 +13,15 @@ import de.factoryfx.factory.log.FactoryUpdateLog;
 /**
  * starting point for factoryfx application
  *
- * @param <V> Visitor
  * @param <R> Root
  * @param <S> Summary Data for factory history
  */
-public class Microservice<V,L,R extends FactoryBase<L,V,R>,S> {
-    private final FactoryManager<V,L,R> factoryManager;
+public class Microservice<L,R extends FactoryBase<L,R>,S> {
+    private final FactoryManager<L,R> factoryManager;
     private final DataStorage<R,S> dataStorage;
     private final ChangeSummaryCreator<R,S> changeSummaryCreator;
 
-    public Microservice(FactoryManager<V,L,R> factoryManager, DataStorage<R,S> dataStorage, ChangeSummaryCreator<R,S> changeSummaryCreator) {
+    public Microservice(FactoryManager<L,R> factoryManager, DataStorage<R,S> dataStorage, ChangeSummaryCreator<R,S> changeSummaryCreator) {
         this.factoryManager = factoryManager;
         this.dataStorage = dataStorage;
         this.changeSummaryCreator = changeSummaryCreator;
@@ -118,10 +117,6 @@ public class Microservice<V,L,R extends FactoryBase<L,V,R>,S> {
 
     public void stop() {
         factoryManager.stop();
-    }
-
-    public V query(V visitor) {
-        return factoryManager.query(visitor);
     }
 
     public L getRootLiveObject(){

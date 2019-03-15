@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
  *
  * @param <R> root factory
  * */
-public class FactoryTreeBuilder<V,L,R extends FactoryBase<L,V,R>,S> {
+public class FactoryTreeBuilder<L,R extends FactoryBase<L,R>,S> {
     private final FactoryContext<R> factoryContext = new FactoryContext<>();
     private final Class<R> rootClass;
 
@@ -30,16 +30,16 @@ public class FactoryTreeBuilder<V,L,R extends FactoryBase<L,V,R>,S> {
     }
 
 
-    public <F extends FactoryBase<?,?,R>> void addFactory(Class<F> clazz, Scope scope, Function<FactoryContext<R>, F> creator){
+    public <F extends FactoryBase<?,R>> void addFactory(Class<F> clazz, Scope scope, Function<FactoryContext<R>, F> creator){
         addFactory(clazz,null,scope,creator);
     }
 
-    public <F extends FactoryBase<?,?,R>> void addFactory(Class<F> clazz, String name, Scope scope, Function<FactoryContext<R>, F> creator){
+    public <F extends FactoryBase<?,R>> void addFactory(Class<F> clazz, String name, Scope scope, Function<FactoryContext<R>, F> creator){
         factoryContext.addFactoryCreator(new FactoryCreator<>(clazz,name,scope,creator));
     }
 
 
-    public <F extends FactoryBase<?,?,R>> void addFactory(Class<F> clazz, Scope scope){
+    public <F extends FactoryBase<?,R>> void addFactory(Class<F> clazz, Scope scope){
         addFactory(clazz,scope,new DefaultCreator<>(clazz));
     }
 
@@ -85,15 +85,15 @@ public class FactoryTreeBuilder<V,L,R extends FactoryBase<L,V,R>,S> {
      * @param <FO> factory result
      * @return factory
      */
-    public <LO, FO extends FactoryBase<LO,?,R>> FO buildNewSubTree(Class<FO> factoryClazz){
+    public <LO, FO extends FactoryBase<LO,R>> FO buildNewSubTree(Class<FO> factoryClazz){
         return factoryContext.getNew(factoryClazz);
     }
 
-    public <LO, FO extends FactoryBase<LO,?,R>> FO buildSubTree(Class<FO> factoryClazz){
+    public <LO, FO extends FactoryBase<LO,R>> FO buildSubTree(Class<FO> factoryClazz){
         return factoryContext.get(factoryClazz);
     }
 
-    public <LO, FO extends FactoryBase<LO,?,R>> List<FO> buildSubTrees(Class<FO> factoryClazz){
+    public <LO, FO extends FactoryBase<LO,R>> List<FO> buildSubTrees(Class<FO> factoryClazz){
         return factoryContext.getList(factoryClazz);
     }
 
@@ -106,11 +106,11 @@ public class FactoryTreeBuilder<V,L,R extends FactoryBase<L,V,R>,S> {
         factoryContext.fillFromExistingFactoryTree(root);
     }
 
-    public MicroserviceBuilder<V,L,R,S> microservice(){
+    public MicroserviceBuilder<L,R,S> microservice(){
         return new MicroserviceBuilder<>(this.rootClass,this.buildTree(),this, ObjectMapperBuilder.build());
     }
 
-    public MicroserviceBuilder<V,L,R,S> microservice(SimpleObjectMapper simpleObjectMapper){
+    public MicroserviceBuilder<L,R,S> microservice(SimpleObjectMapper simpleObjectMapper){
         return new MicroserviceBuilder<>(this.rootClass,this.buildTree(),this,simpleObjectMapper);
     }
 }

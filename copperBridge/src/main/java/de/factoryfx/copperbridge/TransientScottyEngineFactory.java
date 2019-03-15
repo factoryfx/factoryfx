@@ -20,10 +20,10 @@ import de.factoryfx.data.attribute.primitive.IntegerAttribute;
 import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.factory.atrribute.FactoryReferenceAttribute;
 
-public abstract class TransientScottyEngineFactory<V, R extends FactoryBase<?, V, R>> extends FactoryBase<TransientScottyEngine, V, R> {
+public abstract class TransientScottyEngineFactory<R extends FactoryBase<?, R>> extends FactoryBase<TransientScottyEngine, R> {
 
     @SuppressWarnings("unchecked")
-    public final FactoryReferenceAttribute<EngineIdProvider, EngineIdProviderFactory<V, R>> engineIdProviderFactory =
+    public final FactoryReferenceAttribute<EngineIdProvider, EngineIdProviderFactory<R>> engineIdProviderFactory =
         FactoryReferenceAttribute.create(new FactoryReferenceAttribute<>(EngineIdProviderFactory.class));
 
     public final IntegerAttribute threads = new IntegerAttribute().labelText("Number of processing threads");

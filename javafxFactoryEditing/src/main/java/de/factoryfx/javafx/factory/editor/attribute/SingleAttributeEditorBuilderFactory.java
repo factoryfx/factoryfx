@@ -10,7 +10,7 @@ import de.factoryfx.javafx.factory.util.UniformDesignFactory;
 
 import java.util.function.Function;
 
-public class SingleAttributeEditorBuilderFactory extends SimpleFactoryBase<AttributeVisualisationBuilder,Void,RichClientRoot> {
+public class SingleAttributeEditorBuilderFactory extends SimpleFactoryBase<AttributeVisualisationBuilder,RichClientRoot> {
     public final FactoryReferenceAttribute<UniformDesign, UniformDesignFactory> uniformDesign = new FactoryReferenceAttribute<>(UniformDesignFactory.class).de("uniformDesign").en("uniformDesign");
 
     private final Function<UniformDesign, AttributeVisualisationBuilder> creator;

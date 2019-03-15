@@ -9,7 +9,7 @@ import de.factoryfx.javafx.factory.view.ViewDescriptionFactory;
 import de.factoryfx.javafx.factory.view.ViewFactory;
 import javafx.scene.control.MenuItem;
 
-public class ViewMenuItemFactory extends PolymorphicFactoryBase<MenuItem,Void,RichClientRoot> {
+public class ViewMenuItemFactory extends PolymorphicFactoryBase<MenuItem,RichClientRoot> {
 
     public final FactoryReferenceAttribute<ViewDescription,ViewDescriptionFactory> viewDescription = new FactoryReferenceAttribute<>(ViewDescriptionFactory.class).de("viewDescription").en("viewDescription");
     public final FactoryReferenceAttribute<View,ViewFactory> view = new FactoryReferenceAttribute<>(ViewFactory.class).de("view").en("view");

@@ -2,7 +2,6 @@ package de.factoryfx.microservice.rest;
 
 import java.util.*;
 import java.util.function.Function;
-import java.util.function.Supplier;
 
 import de.factoryfx.data.merge.MergeDiffInfo;
 import de.factoryfx.data.storage.DataUpdate;
@@ -14,21 +13,14 @@ import de.factoryfx.server.Microservice;
 import de.factoryfx.server.user.AuthorizedUser;
 import de.factoryfx.server.user.UserManagement;
 
-public class MicroserviceResource<V,R extends FactoryBase<?,V,R>,S> implements MicroserviceResourceApi<V,R,S> {
+public class MicroserviceResource<R extends FactoryBase<?,R>,S> implements MicroserviceResourceApi<R,S> {
 
-    private final Microservice<V,?,R,S> microservice;
+    private final Microservice<?,R,S> microservice;
     private final UserManagement userManagement;
 
-    private final Supplier<V> emptyVisitorCreator;
-
-    public MicroserviceResource(Microservice<V,?,R,S> microservice, UserManagement userManagement) {
-        this(microservice,userManagement,null);
-    }
-
-    public MicroserviceResource(Microservice<V,?,R,S> microservice, UserManagement userManagement, Supplier<V> emptyVisitorCreator) {
+    public MicroserviceResource(Microservice<?,R,S> microservice, UserManagement userManagement) {
         this.microservice = microservice;
         this.userManagement = userManagement;
-        this.emptyVisitorCreator= emptyVisitorCreator;
     }
 
     private Optional<AuthorizedUser> authenticate(UserAwareRequest<?> request){
@@ -93,18 +85,6 @@ public class MicroserviceResource<V,R extends FactoryBase<?,V,R>,S> implements M
     public Collection<StoredDataMetadata<S>> getHistoryFactoryList(VoidUserAwareRequest request) {
         authenticate(request);
         return microservice.getHistoryFactoryList();
-    }
-
-    @Override
-    public ResponseWorkaround<V> query(UserAwareRequest<V> request) {
-        authenticate(request);
-        return new ResponseWorkaround<>(microservice.query(request.request));
-    }
-
-    @Override
-    public ResponseWorkaround<V> queryReadOnly(VoidUserAwareRequest request) {
-        authenticate(request);
-        return new ResponseWorkaround<>(microservice.query(emptyVisitorCreator.get()));
     }
 
     @Override

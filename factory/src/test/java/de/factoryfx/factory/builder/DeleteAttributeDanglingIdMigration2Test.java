@@ -17,7 +17,7 @@ public class DeleteAttributeDanglingIdMigration2Test {
 
     //----------------------------------old
 
-    public static class ServerFactoryOld extends SimpleFactoryBase<Void,Void, ServerFactoryOld> {
+    public static class ServerFactoryOld extends SimpleFactoryBase<Void, ServerFactoryOld> {
 
 
         public final FactoryReferenceAttribute<Void,ServerFactoryNestedOld>  serverFactoryNested = new FactoryReferenceAttribute<>(ServerFactoryNestedOld.class);
@@ -30,7 +30,7 @@ public class DeleteAttributeDanglingIdMigration2Test {
     }
 
 
-    public static class ServerFactoryNestedOld extends SimpleFactoryBase<Void,Void, ServerFactoryOld> {
+    public static class ServerFactoryNestedOld extends SimpleFactoryBase<Void, ServerFactoryOld> {
 
         public final FactoryReferenceAttribute<Void,ServerFactoryQQQOld>  serverFactoryQQQ = new FactoryReferenceAttribute<>(ServerFactoryQQQOld.class);
 
@@ -40,7 +40,7 @@ public class DeleteAttributeDanglingIdMigration2Test {
         }
     }
 
-    public static class ServerFactoryQQQOld extends SimpleFactoryBase<Void,Void, ServerFactoryOld> {
+    public static class ServerFactoryQQQOld extends SimpleFactoryBase<Void, ServerFactoryOld> {
 
         public final StringAttribute stringAttribute = new StringAttribute();
 
@@ -55,7 +55,7 @@ public class DeleteAttributeDanglingIdMigration2Test {
     //----------------------------------new
 
 
-    public static class ServerFactory extends SimpleFactoryBase<Void,Void, ServerFactory> {
+    public static class ServerFactory extends SimpleFactoryBase<Void, ServerFactory> {
         public final FactoryReferenceAttribute<Void, ServerFactoryNested> serverFactoryNested = new FactoryReferenceAttribute<>(ServerFactoryNested.class);
 
         @Override
@@ -64,7 +64,7 @@ public class DeleteAttributeDanglingIdMigration2Test {
         }
     }
 
-    public static class ServerFactoryNested extends SimpleFactoryBase<Void,Void, ServerFactory> {
+    public static class ServerFactoryNested extends SimpleFactoryBase<Void, ServerFactory> {
         public final FactoryReferenceAttribute<Void,ServerFactoryQQQ>  serverFactoryQQQ = new FactoryReferenceAttribute<>(ServerFactoryQQQ.class);
 
 
@@ -74,7 +74,7 @@ public class DeleteAttributeDanglingIdMigration2Test {
         }
     }
 
-    public static class ServerFactoryQQQ extends SimpleFactoryBase<Void,Void, ServerFactory> {
+    public static class ServerFactoryQQQ extends SimpleFactoryBase<Void, ServerFactory> {
 
         public final StringAttribute stringAttribute = new StringAttribute();
 
@@ -91,7 +91,7 @@ public class DeleteAttributeDanglingIdMigration2Test {
     @Test
     public void test_moreNested() throws IOException {
         {
-            FactoryTreeBuilder<Void, Void, ServerFactoryOld, Void> builder = new FactoryTreeBuilder<>(ServerFactoryOld.class);
+            FactoryTreeBuilder<Void, ServerFactoryOld, Void> builder = new FactoryTreeBuilder<>(ServerFactoryOld.class);
             builder.addFactory(ServerFactoryOld.class, Scope.SINGLETON, ctx -> {
                 ServerFactoryOld serverFactoryOld = new ServerFactoryOld();
                 serverFactoryOld.serverFactoryNested.set(ctx.get(ServerFactoryNestedOld.class));
@@ -108,7 +108,7 @@ public class DeleteAttributeDanglingIdMigration2Test {
                 serverFactoryNested.serverFactoryQQQ.set(ctx.get(ServerFactoryQQQOld.class));
                 return serverFactoryNested;
             });
-            Microservice<Void, Void, ServerFactoryOld, Void> msOld = builder.microservice().withFilesystemStorage(folder).build();
+            Microservice<Void, ServerFactoryOld, Void> msOld = builder.microservice().withFilesystemStorage(folder).build();
             msOld.start();
             msOld.stop();
         }
@@ -125,7 +125,7 @@ public class DeleteAttributeDanglingIdMigration2Test {
         Files.writeString(folder.resolve("currentFactory_metadata.json"),currentFactorymetadata);
 
         {
-            FactoryTreeBuilder<Void, Void, ServerFactory, Void> builder = new FactoryTreeBuilder<>(ServerFactory.class);
+            FactoryTreeBuilder<Void, ServerFactory, Void> builder = new FactoryTreeBuilder<>(ServerFactory.class);
             builder.addFactory(ServerFactory.class, Scope.SINGLETON, ctx -> {
                 ServerFactory serverFactory = new ServerFactory();
                 serverFactory.serverFactoryNested.set(ctx.get(ServerFactoryNested.class));
@@ -141,7 +141,7 @@ public class DeleteAttributeDanglingIdMigration2Test {
                 serverFactoryQQQ.stringAttribute.set("123");
                 return serverFactoryQQQ;
             });
-            Microservice<Void, Void, ServerFactory, Void> msNew = builder.microservice().withFilesystemStorage(folder).build();
+            Microservice<Void, ServerFactory, Void> msNew = builder.microservice().withFilesystemStorage(folder).build();
             msNew.start();
 
             ServerFactory serverFactory = msNew.prepareNewFactory().root;

@@ -37,7 +37,7 @@ public class ParametrizedObjectCreatorFactoryTest {
         }
     }
 
-    public static class TestShortLivedUserFactory extends SimpleFactoryBase<TestShortLivedUser,Void,TestShortLivedUserFactory> {
+    public static class TestShortLivedUserFactory extends SimpleFactoryBase<TestShortLivedUser,TestShortLivedUserFactory> {
         public final ParametrizedObjectCreatorAttribute<ShortLivedParameter,ShortLivedLiveObject,ShortLivedLiveObjectCreatorFactory> builder = new ParametrizedObjectCreatorAttribute<>(ShortLivedLiveObjectCreatorFactory.class);
 
         @Override

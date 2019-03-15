@@ -5,7 +5,7 @@ import de.factoryfx.factory.SimpleFactoryBase;
 import org.junit.jupiter.api.Test;
 
 public class FactoryViewListReferenceAttributeTest {
-    public static class ExampleViewListFactory extends SimpleFactoryBase<Void,Void, ExampleViewListFactory> {
+    public static class ExampleViewListFactory extends SimpleFactoryBase<Void, ExampleViewListFactory> {
         public final FactoryViewListReferenceAttribute<ExampleViewListFactory,Void, ExampleViewListFactory> attribute = new FactoryViewListReferenceAttribute<>(exampleViewFactory -> null);
 
         @Override

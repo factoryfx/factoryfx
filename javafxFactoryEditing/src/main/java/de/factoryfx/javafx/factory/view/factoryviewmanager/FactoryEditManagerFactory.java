@@ -10,21 +10,20 @@ import de.factoryfx.microservice.rest.client.MicroserviceRestClientFactory;
 
 /**
  *
- * @param <VS> server visitor
  * @param <RS> server root
  * @param <S> History summary
  */
-public class FactoryEditManagerFactory<VS,RS  extends FactoryBase<?,VS,RS>,S> extends SimpleFactoryBase<FactoryEditManager<VS,RS,S>,Void,RichClientRoot> {
+public class FactoryEditManagerFactory<RS  extends FactoryBase<?,RS>,S> extends SimpleFactoryBase<FactoryEditManager<RS,S>,RichClientRoot> {
 
     @SuppressWarnings("unchecked")
-    public final FactoryReferenceAttribute<MicroserviceRestClient<VS,RS,S>,MicroserviceRestClientFactory<Void,RichClientRoot,VS,RS,S>> restClient =
+    public final FactoryReferenceAttribute<MicroserviceRestClient<RS,S>,MicroserviceRestClientFactory<RichClientRoot,RS,S>> restClient =
             FactoryReferenceAttribute.create(new FactoryReferenceAttribute<>(MicroserviceRestClientFactory.class));
     @SuppressWarnings("unchecked")
     public final FactoryReferenceAttribute<MigrationManager<RS,S>,FactorySerialisationManagerFactory<RS,S>> factorySerialisationManager =
             FactoryReferenceAttribute.create(new FactoryReferenceAttribute<>(FactorySerialisationManagerFactory.class));
 
     @Override
-    public FactoryEditManager<VS,RS,S> createImpl() {
+    public FactoryEditManager<RS,S> createImpl() {
         return new FactoryEditManager<>(restClient.instance(),factorySerialisationManager.instance());
     }
 

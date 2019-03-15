@@ -9,7 +9,7 @@ import de.factoryfx.factory.FactoryBase;
 import de.factoryfx.factory.SimpleFactoryBase;
 import de.factoryfx.server.user.User;
 
-public class UserFactory<V,R extends FactoryBase<?,V,R>> extends SimpleFactoryBase<User,V,R> {
+public class UserFactory<R extends FactoryBase<?,R>> extends SimpleFactoryBase<User,R> {
     /**key is static and not part of the factory to keep the key secret*/
     public static String passwordKey;
 

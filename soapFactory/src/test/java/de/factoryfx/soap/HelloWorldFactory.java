@@ -6,7 +6,7 @@ import de.factoryfx.factory.SimpleFactoryBase;
 import de.factoryfx.soap.example.HelloWorld;
 import de.factoryfx.soap.server.SoapJettyServerFactory;
 
-public class HelloWorldFactory extends SimpleFactoryBase<HelloWorld, Void, SoapJettyServerFactory> {
+public class HelloWorldFactory extends SimpleFactoryBase<HelloWorld, SoapJettyServerFactory> {
 
     public final ObjectValueAttribute<HelloWorld> service = new ObjectValueAttribute<>();
 
