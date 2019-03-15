@@ -13,22 +13,22 @@ import java.util.logging.Logger;
 /**
  *  usage example.
  *
- *  <pre>{@code
-        public class SimpleHttpServer extends SimpleFactoryBase<Server, Void, SimpleHttpServer> {
-            @SuppressWarnings("unchecked")
-            public final FactoryReferenceAttribute<Server, JettyServerFactory<SimpleHttpServer>> server = FactoryReferenceAttribute.create(new FactoryReferenceAttribute<>(JettyServerFactory.class));
-
-            @Override
-            public Server createImpl() {
-                return server.instance();
-            }
-        }
-
-        builder.addFactory(JettyServerFactory.class, Scope.SINGLETON, ctx-> new JettyServerBuilder<>(new JettyServerFactory<SimpleHttpServer>())
-            .withHost("localhost").withPort(8005)
-            .withResource(ctx.get(CustomResourceFactory.class)).build());
-
-   }</pre>
+ *  <pre>{@literal
+ *       public class SimpleHttpServer extends SimpleFactoryBase<Server, Void, SimpleHttpServer> {
+ *           @SuppressWarnings("unchecked")
+ *           public final FactoryReferenceAttribute<Server, JettyServerFactory<SimpleHttpServer>> server = FactoryReferenceAttribute.create(new FactoryReferenceAttribute<>(JettyServerFactory.class));
+ *
+ *           @Override
+ *           public Server createImpl() {
+ *               return server.instance();
+ *           }
+ *       }
+ *
+ *       builder.addFactory(JettyServerFactory.class, Scope.SINGLETON, ctx-> new JettyServerBuilder<>(new JettyServerFactory<SimpleHttpServer>())
+ *           .withHost("localhost").withPort(8005)
+ *           .withResource(ctx.get(CustomResourceFactory.class)).build());
+ *
+ *  }</pre>
  */
 public class JettyServerFactory<R extends FactoryBase<?,R>> extends FactoryBase<Server,R> {
 

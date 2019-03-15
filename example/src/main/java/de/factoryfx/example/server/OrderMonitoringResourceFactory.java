@@ -1,25 +1,16 @@
 package de.factoryfx.example.server;
 
 import de.factoryfx.example.server.shop.OrderStorage;
-
-import javax.ws.rs.GET;
-import java.util.List;
+import de.factoryfx.example.server.shop.OrderStorageFactory;
+import de.factoryfx.factory.atrribute.FactoryReferenceAttribute;
 
 public class OrderMonitoringResourceFactory extends ServerBaseFactory<OrderMonitoringResource> {
-    private final OrderStorage orderStorage;
-
-    public OrderMonitoringResourceFactory(OrderStorage orderStorage) {
-        this.orderStorage = orderStorage;
-    }
+    public final FactoryReferenceAttribute<OrderStorage, OrderStorageFactory> orderStorage =
+            new FactoryReferenceAttribute<>(OrderStorageFactory.class);
 
     @Override
     public OrderMonitoringResource createImpl() {
-        return new OrderMonitoringResource();
+        return new OrderMonitoringResource(orderStorage.instance());
     }
 
-    @GET
-    public List<OrderStorage.Order> get(){
-        return orderStorage.getOrders();
-
-    }
 }

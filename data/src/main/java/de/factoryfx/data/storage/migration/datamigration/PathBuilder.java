@@ -42,7 +42,7 @@ public class PathBuilder<V>{
      * </ul>
      *
      * @param path path as string
-     * @return
+     * @return builder
      */
     public AttributePath<V> of(String path) {
         List<AttributePathElement> pathList= new ArrayList<>();
