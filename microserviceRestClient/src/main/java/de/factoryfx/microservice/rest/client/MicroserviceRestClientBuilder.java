@@ -34,7 +34,6 @@ public class MicroserviceRestClientBuilder {
      * @param port port
      * @param serverRootClass server class, cause type erasure
      * @param <R>  Root client
-     * @param <VS> Visitor server
      * @param <RS> Root Server
      * @param <S> Summary Data for factory history
      * @return client

@@ -22,7 +22,6 @@ import java.util.function.Function;
 /**
  * Microservice without a persistence data storage
  *
- * @param <V> Visitor
  * @param <L> root liveobject
  * @param <R> Root
  * @param <S> Summary

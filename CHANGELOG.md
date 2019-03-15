@@ -13,6 +13,7 @@
 
 * **jetty server:** rework the jetty configuration. The complete jetty structure in represent in factory structure. A new builder can be used for creation.
   
+* **builder:** new builder API for microservice setup
 
 
 ### BREAKING CHANGES

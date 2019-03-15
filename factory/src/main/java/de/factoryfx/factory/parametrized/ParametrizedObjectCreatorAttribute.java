@@ -3,7 +3,7 @@ package de.factoryfx.factory.parametrized;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import de.factoryfx.factory.atrribute.FactoryReferenceBaseAttribute;
 
-public class ParametrizedObjectCreatorAttribute<P, L, F extends ParametrizedObjectCreatorFactory<P,L,?,?>> extends FactoryReferenceBaseAttribute<ParametrizedObjectCreator<P,L>,F,ParametrizedObjectCreatorAttribute<P, L, F>> {
+public class ParametrizedObjectCreatorAttribute<P, L, F extends ParametrizedObjectCreatorFactory<P,L,?>> extends FactoryReferenceBaseAttribute<ParametrizedObjectCreator<P,L>,F,ParametrizedObjectCreatorAttribute<P, L, F>> {
 
     @JsonCreator
     protected ParametrizedObjectCreatorAttribute(F value) {

@@ -23,7 +23,6 @@ import javax.ws.rs.InternalServerErrorException;
 
 /**
  *
- * @param <V> Visitor
  * @param <R> Root factory
  * @param <S> History summary
  */

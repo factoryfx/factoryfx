@@ -28,7 +28,7 @@ public class ParametrizedObjectCreatorFactoryTest {
         }
     }
 
-    public static class ShortLivedLiveObjectCreatorFactory extends ParametrizedObjectCreatorFactory<ShortLivedParameter,ShortLivedLiveObject,Void,ShortLivedLiveObjectCreatorFactory> {
+    public static class ShortLivedLiveObjectCreatorFactory extends ParametrizedObjectCreatorFactory<ShortLivedParameter,ShortLivedLiveObject,ShortLivedLiveObjectCreatorFactory> {
         public final FactoryReferenceAttribute<ExampleLiveObjectA,ExampleFactoryA> referenceAttribute = new FactoryReferenceAttribute<>(ExampleFactoryA.class);
 
         @Override

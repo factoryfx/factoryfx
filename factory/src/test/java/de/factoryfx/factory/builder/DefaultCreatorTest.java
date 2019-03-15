@@ -15,7 +15,7 @@ import java.util.function.Function;
 
 public class DefaultCreatorTest {
 
-    public static class DummyCreatorFactory extends ParametrizedObjectCreatorFactory<Void,Void,Void,DummyCreatorFactory> {
+    public static class DummyCreatorFactory extends ParametrizedObjectCreatorFactory<Void,Void,DummyCreatorFactory> {
         @Override
         protected Function<Void, Void> getCreator() {
             return p -> null;

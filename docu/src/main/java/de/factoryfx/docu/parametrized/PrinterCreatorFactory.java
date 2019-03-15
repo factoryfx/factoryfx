@@ -5,7 +5,7 @@ import de.factoryfx.factory.parametrized.ParametrizedObjectCreatorFactory;
 
 import java.util.function.Function;
 
-public class PrinterCreatorFactory  extends ParametrizedObjectCreatorFactory<PrinterCreateParameter,Printer,Void,PrinterCreatorFactory> {
+public class PrinterCreatorFactory  extends ParametrizedObjectCreatorFactory<PrinterCreateParameter,Printer,PrinterCreatorFactory> {
     public final StringAttribute text = new StringAttribute();
 
 
