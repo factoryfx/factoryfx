@@ -26,7 +26,9 @@ public class MicroserviceAwareFactoryTest {
     }
 
     public static class MicroserviceAwareFactoryTestclazz extends FactoryBase<String,RootTestClazz> {
-
+        public MicroserviceAwareFactoryTestclazz(){
+            this.configLifeCycle().setCreator(() -> "");
+        }
     }
 
     public static class RootTestClazz extends SimpleFactoryBase<String,RootTestClazz> {
