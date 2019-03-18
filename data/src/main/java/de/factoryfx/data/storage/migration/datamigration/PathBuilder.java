@@ -44,14 +44,14 @@ public class PathBuilder<V>{
      * @param path path as string
      * @return builder
      */
-    public AttributePath<V> of(String path) {
+    public static <V> AttributePath<V> of(Class<V> valueClass, String path) {
         List<AttributePathElement> pathList= new ArrayList<>();
 
         String[] split = path.split("\\.");
         String attributeName= split[split.length-1];
         for (String pathElement : Arrays.asList(split).subList(0, split.length-1)) {
 
-            Pattern pattern = Pattern.compile("([[a-zA-Z_$]]*)\\[(\\d+)\\]");
+            Pattern pattern = Pattern.compile("([[a-zA-Z_$]]*)\\[(\\d+)]");
             Matcher matcher = pattern.matcher(pathElement);
             if (matcher.matches()){
                 pathList.add(new RefListAttributePathElement(matcher.group(1),Integer.parseInt(matcher.group(2))));

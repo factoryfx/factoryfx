@@ -2,7 +2,6 @@ package de.factoryfx.example.server;
 
 import de.factoryfx.example.server.shop.ShopJettyServerFactory;
 import de.factoryfx.factory.atrribute.FactoryReferenceAttribute;
-import de.factoryfx.jetty.JettyServerFactory;
 import org.eclipse.jetty.server.Server;
 
 public class ServerRootFactory extends ServerBaseFactory<Server> {

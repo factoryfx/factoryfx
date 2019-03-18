@@ -44,6 +44,9 @@ public class AttributePath<V> {
         for (AttributePathElement pathElement : this.path) {
             current = pathElement.getNext(current,dictionary);
         }
+        if (current.getAttribute(attribute)==null){
+            return false;
+        }
         return current.getAttribute(attribute).isRemoved();
     }
 

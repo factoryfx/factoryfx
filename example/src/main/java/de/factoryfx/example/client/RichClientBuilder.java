@@ -206,7 +206,7 @@ public class RichClientBuilder {
     private static class RichClientFactorySerialisationManagerFactory extends FactorySerialisationManagerFactory<ServerRootFactory,Void> {
         private final MigrationManager<ServerRootFactory,Void> serverMigrationManager;
 
-        {
+        static {
             DataDictionary.getDataDictionary(RichClientFactorySerialisationManagerFactory.class).setNewCopyInstanceSupplier(
                     old -> new RichClientFactorySerialisationManagerFactory(old.serverMigrationManager)
             );
