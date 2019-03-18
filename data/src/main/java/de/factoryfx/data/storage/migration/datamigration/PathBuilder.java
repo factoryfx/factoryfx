@@ -41,8 +41,10 @@ public class PathBuilder<V>{
      * <li>referenceAttribute.referenceListAttribute[123].stringAttribute</li>
      * </ul>
      *
+     * @param valueClass attribute value class
      * @param path path as string
-     * @return builder
+     * @param <V> attribute type
+     * @return path
      */
     public static <V> AttributePath<V> of(Class<V> valueClass, String path) {
         List<AttributePathElement> pathList= new ArrayList<>();

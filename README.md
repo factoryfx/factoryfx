@@ -4,19 +4,26 @@
 
 ## Introduction
 
-Factoryfx is a lightweight dependency injection framework that extends dependency injection with data injection
+Factoryfx is a lightweight dependency injection framework that extends dependency injection with data injection.
 
 Factoryfx is a replacement for:
-* **manuel dependency injection**<br>
-Order independence, uniform structure
-* **framework dependency injection**<br>
-Programmatic java API over annotations API, java first
-* **JConsole MBeans (runtime data/structure changes)**<br>
-Lifecycle support, metadata for a end user presentable GUI (labels, validation), multi-user editing
-* **Property files (text,xml,json or yaml)**<br>
-Change history, change metadata (comment, user, date), complex validation
-* **master data in database**<br>
-real data encapsulation in java, immutable business objects
+* **manuel dependency injection**
+  * Order independence
+  * Uniform application structure
+* **framework dependency injection (guava, spring, dagger)**
+  * Programmatic java API over annotations API
+  * Java first
+  * Fast startup (no classpath scanning)
+* **JConsole MBeans (runtime data/structure changes)**
+  * Lifecycle support
+  * Metadata for a end user presentable GUI (labels, validation)
+  * Multi-user editing
+* **Property files (text,xml,json or yaml)**
+  * Change history
+  * Xhange metadata (comment, user, date), complex validation
+* **master data in database**
+  * Real data encapsulation in java
+  * Immutable business objects
 
 ## Setup
 
@@ -35,7 +42,7 @@ java 11+ required
 ## Basic example
 #### Factory
 ```java
-public class HelloWorldFactory extends SimpleFactoryBase<HelloWorld,Void,HelloWorldFactory> {
+public class HelloWorldFactory extends SimpleFactoryBase<HelloWorld,HelloWorldFactory> {
     public final StringAttribute text = new StringAttribute().labelText("text");
     @Override
     protected HelloWorld create() {
@@ -60,23 +67,23 @@ public class HelloWorld{
 #### Setup
 ```java
     new FactoryTreeBuilder<HelloWorld,HelloWorldFactory,Void>(HelloWorldFactory.class)
-    .addFactory(HelloWorldFactory.class, Scope.SINGLETON, ctx-> {
-        HelloWorldFactory helloWorldFactory = new HelloWorldFactory();
-        helloWorldFactory.text.set("HelloWorld");
-        return helloWorldFactory;
-    })
+        .addFactory(HelloWorldFactory.class, Scope.SINGLETON, ctx-> {
+            HelloWorldFactory helloWorldFactory = new HelloWorldFactory();
+            helloWorldFactory.text.set("HelloWorld");
+            return helloWorldFactory;
+        })
     .microservice().withInMemoryStorage().build().start();
 ```
 ## Documentation
 
 ### Fundamentals
-* [Comparison](docu/src/main/java/de/factoryfx/docu/comparison)<br>Comparison to other dependency injection frameworks
 * [Dependency injection](docu/src/main/java/de/factoryfx/docu/dependencyinjection)<br>Injection dependency into a liveobject
 * [Data injection](docu/src/main/java/de/factoryfx/docu/datainjection)<br>Injection data into a liveobject
 * [Factory](docu/src/main/java/de/factoryfx/docu/factorylayer)<br>Factory explanation
 * [Liveobject](docu/src/main/java/de/factoryfx/docu/liveobjects)<br>Liveobject explanation
 
 ### Advanced
+* [Comparison](docu/src/main/java/de/factoryfx/docu/comparison)<br>Comparison to other dependency injection frameworks
 * [REST server](docu/src/main/java/de/factoryfx/docu/restserver)<br>Basic jetty server with a jersey REST resource
 * [Lifecycle](docu/src/main/java/de/factoryfx/docu/lifecycle)<br>Lifecycle configuration (start/top/update)
 * [Migration](docu/src/main/java/de/factoryfx/docu/migration)<br>Configuration data migration

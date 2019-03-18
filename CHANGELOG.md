@@ -11,14 +11,14 @@
   *  Restoring old data from deleted attributes
   *  easy rename of attributes and factories
 
-* **jetty server:** rework the jetty configuration. The complete jetty structure in represent in factory structure. A new builder can be used for creation.
+* **jetty server:** rework the jetty configuration. The complete jetty structure is now represented in a factory structure. A new builder can be used for creation.
   
 * **builder:** new builder API for microservice setup
 
 
 ### BREAKING CHANGES
 
-* **factory:** removed observer, the observer was not used and complicated the generics declaration. Fix is in most cases to remove Void from generic declaration e.g.: FactoryTreeBuilder<**~~Void~~**,Root,RootFactory,Void>
+* **factory:** removed observer, the observer was not used and complicated the generics declaration. In most cases it is sufficient to remove Void from generic declaration e.g.: FactoryTreeBuilder<**~~Void~~**,Root,RootFactory,Void>
 
 
 # 1.9.0
