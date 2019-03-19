@@ -1,10 +1,10 @@
 //generated code don't edit manually
 import { Data } from "./Data";
-import { ExampleData } from "../config/io/github/factoryfx/factory/typescript/generator/data/ExampleData";
-import { ExampleData2 } from "../config/io/github/factoryfx/factory/typescript/generator/data/ExampleData2";
-import { ExampleDataAll } from "../config/io/github/factoryfx/factory/typescript/generator/data/ExampleDataAll";
-import { ExampleFactory } from "../config/io/github/factoryfx/factory/typescript/generator/data/ExampleFactory";
 import { ExampleDataIgnore } from "../config/io/github/factoryfx/factory/typescript/generator/data/ExampleDataIgnore";
+import { ExampleFactory } from "../config/io/github/factoryfx/factory/typescript/generator/data/ExampleFactory";
+import { ExampleData } from "../config/io/github/factoryfx/factory/typescript/generator/data/ExampleData";
+import { ExampleDataAll } from "../config/io/github/factoryfx/factory/typescript/generator/data/ExampleDataAll";
+import { ExampleData2 } from "../config/io/github/factoryfx/factory/typescript/generator/data/ExampleData2";
 
 export class DataCreator  {
 
