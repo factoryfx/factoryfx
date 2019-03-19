@@ -20,7 +20,8 @@ Factoryfx is a replacement for:
   * Multi-user editing
 * **Property files (text,xml,json or yaml)**
   * Change history
-  * Xhange metadata (comment, user, date), complex validation
+  * Change metadata (comment, user, date)
+  * Complex validation
 * **master data in database**
   * Real data encapsulation in java
   * Immutable business objects
@@ -37,7 +38,7 @@ java 11+ required
 [CHANGELOG](CHANGELOG.md)
 
 ### Dependencies
-[Gradle example dependency setups](docu/src/main/java/de/factoryfx/docu/dependencysetup)
+[Gradle example dependency setups](docu/src/main/java/io/github/factoryfx/docu/dependencysetup)
 
 ## Basic example
 #### Factory
@@ -50,7 +51,7 @@ public class HelloWorldFactory extends SimpleFactoryBase<HelloWorld,HelloWorldFa
     }
 }
 ```
-[Factory explanation](docu/src/main/java/de/factoryfx/docu/factorylayer)
+[Factory explanation](docu/src/main/java/io/github/factoryfx/docu/factorylayer)
 #### Live object
 ```java
 public class HelloWorld{
@@ -63,7 +64,7 @@ public class HelloWorld{
     }
 }
 ```
-[Live object explanation](docu/src/main/java/de/factoryfx/docu/liveobjects)
+[Live object explanation](docu/src/main/java/io/github/factoryfx/docu/liveobjects)
 #### Setup
 ```java
     new FactoryTreeBuilder<HelloWorld,HelloWorldFactory,Void>(HelloWorldFactory.class)
@@ -77,31 +78,31 @@ public class HelloWorld{
 ## Documentation
 
 ### Fundamentals
-* [Dependency injection](docu/src/main/java/de/factoryfx/docu/dependencyinjection)<br>Injection dependency into a liveobject
-* [Data injection](docu/src/main/java/de/factoryfx/docu/datainjection)<br>Injection data into a liveobject
-* [Factory](docu/src/main/java/de/factoryfx/docu/factorylayer)<br>Factory explanation
-* [Liveobject](docu/src/main/java/de/factoryfx/docu/liveobjects)<br>Liveobject explanation
+* [Dependency injection](docu/src/main/java/io/github/factoryfx/docu/dependencyinjection)<br>Injection dependency into a liveobject
+* [Data injection](docu/src/main/java/io/github/factoryfx/docu/datainjection)<br>Injection data into a liveobject
+* [Factory](docu/src/main/java/io/github/factoryfx/docu/factorylayer)<br>Factory explanation
+* [Liveobject](docu/src/main/java/io/github/factoryfx/docu/liveobjects)<br>Liveobject explanation
 
 ### Advanced
-* [Comparison](docu/src/main/java/de/factoryfx/docu/comparison)<br>Comparison to other dependency injection frameworks
-* [REST server](docu/src/main/java/de/factoryfx/docu/restserver)<br>Basic jetty server with a jersey REST resource
-* [Lifecycle](docu/src/main/java/de/factoryfx/docu/lifecycle)<br>Lifecycle configuration (start/top/update)
-* [Migration](docu/src/main/java/de/factoryfx/docu/migration)<br>Configuration data migration
-* [Parametrized](docu/src/main/java/de/factoryfx/docu/parametrized)<br>Combining runtime data with factory data
-* [Persistent storage](docu/src/main/java/de/factoryfx/docu/persistentstorage)<br>Persistent configuration data storage using a database
-* [Polymorphism](docu/src/main/java/de/factoryfx/docu/polymorphism)<br>Polymorphic factories
-* [Runtime status](docu/src/main/java/de/factoryfx/docu/runtimestatus)<br>Pass runtime status over updates(e.g request counter)
-* [Update](docu/src/main/java/de/factoryfx/docu/update)<br>Optimise Factory update/Server restart e.g. for liveobjects that need a lot of time for initialization
-* [Monitoring](docu/src/main/java/de/factoryfx/docu/monitoring)<br>Request monitoring data 
-* [Swagger](docu/src/main/java/de/factoryfx/docu/swagger)<br>Swagger example 
-* [Permissions](docu/src/main/java/de/factoryfx/docu/permission)<br>Permissions on attribute level
-* [Custom configuration REST API](docu/src/main/java/de/factoryfx/docu/customconfig)<br>Configuration over a custom REST API
-* [Configuration data](docu/src/main/java/de/factoryfx/docu/configurationdata)<br>How to handle configuration data
-* [User Interface](docu/src/main/java/de/factoryfx/docu/gui)<br>graphical user interface
+* [Comparison](docu/src/main/java/io/github/factoryfx/docu/comparison)<br>Comparison to other dependency injection frameworks
+* [REST server](docu/src/main/java/io/github/factoryfx/docu/restserver)<br>Basic jetty server with a jersey REST resource
+* [Lifecycle](docu/src/main/java/io/github/factoryfx/docu/lifecycle)<br>Lifecycle configuration (start/top/update)
+* [Migration](docu/src/main/java/io/github/factoryfx/docu/migration)<br>Configuration data migration
+* [Parametrized](docu/src/main/java/io/github/factoryfx/docu/parametrized)<br>Combining runtime data with factory data
+* [Persistent storage](docu/src/main/java/io/github/factoryfx/docu/persistentstorage)<br>Persistent configuration data storage using a database
+* [Polymorphism](docu/src/main/java/io/github/factoryfx/docu/polymorphism)<br>Polymorphic factories
+* [Runtime status](docu/src/main/java/io/github/factoryfx/docu/runtimestatus)<br>Pass runtime status over updates(e.g request counter)
+* [Update](docu/src/main/java/io/github/factoryfx/docu/update)<br>Optimise Factory update/Server restart e.g. for liveobjects that need a lot of time for initialization
+* [Monitoring](docu/src/main/java/io/github/factoryfx/docu/monitoring)<br>Request monitoring data 
+* [Swagger](docu/src/main/java/io/github/factoryfx/docu/swagger)<br>Swagger example 
+* [Permissions](docu/src/main/java/io/github/factoryfx/docu/permission)<br>Permissions on attribute level
+* [Custom configuration REST API](docu/src/main/java/io/github/factoryfx/docu/customconfig)<br>Configuration over a custom REST API
+* [Configuration data](docu/src/main/java/io/github/factoryfx/docu/configurationdata)<br>How to handle configuration data
+* [User Interface](docu/src/main/java/io/github/factoryfx/docu/gui)<br>graphical user interface
 
 ## Example
 
-[Example](https://github.com/factoryfx/factoryfx/tree/master/example/src/main/java/de/factoryfx/example)<br>An example that implements a simplified online store.
+[Example](https://github.com/factoryfx/factoryfx/tree/master/example/src/main/java/io/github/factoryfx/example)<br>An example that implements a simplified online store.
 
 ## License
 

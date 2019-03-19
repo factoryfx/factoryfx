@@ -1,7 +1,7 @@
-open module de.factoryfx.example {
-    requires de.factoryfx.javafxFactoryEditing;
-    requires de.factoryfx.jettyFactory;
-    requires de.factoryfx.microserviceRestServer;
+open module io.github.factoryfx.example {
+    requires io.github.factoryfx.javafxFactoryEditing;
+    requires io.github.factoryfx.jettyFactory;
+    requires io.github.factoryfx.microserviceRestServer;
 
     requires ch.qos.logback.classic;
     requires java.desktop;
@@ -12,10 +12,10 @@ open module de.factoryfx.example {
     requires javafx.base;
     requires javafx.graphics;
 
-    exports de.factoryfx.example.client.view;
-    exports de.factoryfx.example.server;
-    exports de.factoryfx.example.client;
-    exports de.factoryfx.example.server.shop;
-    exports de.factoryfx.example.main;
-    exports de.factoryfx.example.server.shop.netherlands;
+    exports io.github.factoryfx.example.client.view;
+    exports io.github.factoryfx.example.server;
+    exports io.github.factoryfx.example.client;
+    exports io.github.factoryfx.example.server.shop;
+    exports io.github.factoryfx.example.main;
+    exports io.github.factoryfx.example.server.shop.netherlands;
 }

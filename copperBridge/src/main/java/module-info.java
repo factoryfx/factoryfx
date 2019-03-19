@@ -1,8 +1,9 @@
-module de.factoryfx.copperBridge {
-    requires de.factoryfx.factory;
-    requires de.factoryfx.data;
+module io.github.factoryfx.copperBridge {
+    requires transitive io.github.factoryfx.factory;
+    requires transitive io.github.factoryfx.data;
     requires org.copperengine.core;
     requires org.copperengine.ext;
 
-    opens de.factoryfx.copperbridge;
+    opens io.github.factoryfx.copperbridge;
+    opens io.github.factoryfx.copperbridge.db;
 }

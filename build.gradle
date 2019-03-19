@@ -39,7 +39,7 @@ subprojects {
     apply plugin: 'signing'
 
     compileJava {
-        inputs.property("moduleName", "de.factoryfx.$project.name")
+        inputs.property("moduleName", "io.github.factoryfx.$project.name")
         doFirst {
             options.compilerArgs = [
                     '--module-path', classpath.asPath,

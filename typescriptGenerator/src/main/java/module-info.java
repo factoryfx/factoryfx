@@ -1,10 +1,10 @@
-module de.factoryfx.typescriptGenerator {
-    requires de.factoryfx.data;
-    requires de.factoryfx.factory;
+module io.github.factoryfx.typescriptGenerator {
+    requires io.github.factoryfx.data;
+    requires io.github.factoryfx.factory;
     requires com.google.common;
 
-    exports de.factoryfx.factory.typescript.generator;
-    exports de.factoryfx.factory.typescript.generator.ts;
-    exports de.factoryfx.factory.typescript.generator.construct;
-    exports de.factoryfx.factory.typescript.generator.construct.atttributes;
+    exports io.github.factoryfx.factory.typescript.generator;
+    exports io.github.factoryfx.factory.typescript.generator.ts;
+    exports io.github.factoryfx.factory.typescript.generator.construct;
+    exports io.github.factoryfx.factory.typescript.generator.construct.atttributes;
 }

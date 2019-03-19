@@ -20,6 +20,8 @@
 
 * **factory:** removed observer, the observer was not used and complicated the generics declaration. In most cases it is sufficient to remove Void from generic declaration e.g.: FactoryTreeBuilder<**~~Void~~**,Root,RootFactory,Void>
 
+* **module:** rename module and packages from "de.factory" to "io.github.factoryfx"
+
 
 # 1.9.0
 

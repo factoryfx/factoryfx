@@ -46,82 +46,82 @@
 
     <!-- yes the servlet is mutable that's the point of the class -->
     <Match>
-        <Class name="de.factoryfx.jetty.UpdateableServlet" />
+        <Class name="io.github.factoryfx.jetty.UpdateableServlet" />
         <Bug pattern="MSF_MUTABLE_SERVLET_FIELD" />
     </Match>
 
     <Match>
-        <Class name="de.factoryfx.factory.datastorage.oracle.OracledbDataStorageFuture" />
+        <Class name="io.github.factoryfx.factory.datastorage.oracle.OracledbDataStorageFuture" />
         <Bug pattern="OBL_UNSATISFIED_OBLIGATION" />
     </Match>
 
     <Match>
-        <Class name="de.factoryfx.factory.datastorage.oracle.OracledbDataStorageHistory" />
+        <Class name="io.github.factoryfx.factory.datastorage.oracle.OracledbDataStorageHistory" />
         <Bug pattern="OBL_UNSATISFIED_OBLIGATION" />
     </Match>
 
     <Match>
-        <Class name="de.factoryfx.factory.datastorage.oracle.OracledbDataStorage" />
+        <Class name="io.github.factoryfx.factory.datastorage.oracle.OracledbDataStorage" />
         <Bug pattern="OBL_UNSATISFIED_OBLIGATION" />
     </Match>
 
     <Match>
-        <Class name="de.factoryfx.javafx.data.widget.datalistedit.ReferenceListAttributeEditWidget" />
+        <Class name="io.github.factoryfx.javafx.data.widget.datalistedit.ReferenceListAttributeEditWidget" />
         <Bug pattern="UC_USELESS_OBJECT" />
     </Match>
 
     <Match>
-        <Class name="de.factoryfx.data.storage.ScheduledUpdateMetadata" />
+        <Class name="io.github.factoryfx.data.storage.ScheduledUpdateMetadata" />
         <Bug pattern="EQ_COMPARETO_USE_OBJECT_EQUALS" />
     </Match>
 
     <Match>
-        <Class name="de.factoryfx.factory.datastorage.postgres.PostgresDataStorage" />
+        <Class name="io.github.factoryfx.factory.datastorage.postgres.PostgresDataStorage" />
         <Bug pattern="OBL_UNSATISFIED_OBLIGATION" />
     </Match>
 
     <Match>
-        <Class name="de.factoryfx.server.user.persistent.UserFactory" />
+        <Class name="io.github.factoryfx.server.user.persistent.UserFactory" />
         <Bug pattern="MS_SHOULD_BE_FINAL" />
     </Match>
 
     <Match>
-        <Class name="de.factoryfx.factory.builder.FactoryTreeBuilder" />
+        <Class name="io.github.factoryfx.factory.builder.FactoryTreeBuilder" />
         <Bug pattern="RCN_REDUNDANT_NULLCHECK_OF_NONNULL_VALUE" />
     </Match>
 
     <Match>
-        <Class name="de.factoryfx.example.server.shop.ShopResource" />
+        <Class name="io.github.factoryfx.example.server.shop.ShopResource" />
         <Bug pattern="NP_UNWRITTEN_PUBLIC_OR_PROTECTED_FIELD" />
     </Match>
 
     <Match>
-        <Class name="de.factoryfx.docu.restserver.RestClient" />
+        <Class name="io.github.factoryfx.docu.restserver.RestClient" />
         <Bug pattern="NP_NULL_PARAM_DEREF_NONVIRTUAL" />
     </Match>
 
     <Match>
-        <Class name="de.factoryfx.docu.swagger.RestClient" />
+        <Class name="io.github.factoryfx.docu.swagger.RestClient" />
         <Bug pattern="NP_NULL_PARAM_DEREF_NONVIRTUAL" />
     </Match>
 
     <Match>
-        <Package name="de.factoryfx.factory.datastorage.oracle"/>
+        <Package name="io.github.factoryfx.factory.datastorage.oracle"/>
         <Bug pattern="RCN_REDUNDANT_NULLCHECK_WOULD_HAVE_BEEN_A_NPE"/>
     </Match>
 
     <Match>
-        <Package name="de.factoryfx.factory.datastorage.postgres"/>
+        <Package name="io.github.factoryfx.factory.datastorage.postgres"/>
         <Bug pattern="RCN_REDUNDANT_NULLCHECK_WOULD_HAVE_BEEN_A_NPE"/>
     </Match>
 
     <Match>
-        <Class name="de.factoryfx.factory.FactoryBase" />
+        <Class name="io.github.factoryfx.factory.FactoryBase" />
         <Bug pattern="UPM_UNCALLED_PRIVATE_METHOD" />
     </Match>
 
     <Match>
-        <Class name="de.factoryfx.data.Data" />
+        <Class name="io.github.factoryfx.data.Data" />
         <Bug pattern="UPM_UNCALLED_PRIVATE_METHOD" />
     </Match>
 
@@ -131,7 +131,7 @@
     </Match>
 
     <Match>
-        <Class name="de.factoryfx.javafx.javascript.editor.attribute.visualisation.JavascriptVisual" />
+        <Class name="io.github.factoryfx.javafx.javascript.editor.attribute.visualisation.JavascriptVisual" />
         <Bug pattern="DLS_DEAD_LOCAL_STORE" />
     </Match>
 

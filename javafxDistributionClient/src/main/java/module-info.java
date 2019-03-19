@@ -1,4 +1,4 @@
-module de.factoryfx.javafxDistributionClient {
+module io.github.factoryfx.javafxDistributionClient {
     requires javafx.fxml;
     requires javafx.graphics;
     requires java.ws.rs;
@@ -10,5 +10,5 @@ module de.factoryfx.javafxDistributionClient {
     requires jersey.media.json.jackson;
     requires jersey.common;
 
-    exports de.factoryfx.javafx.distribution.launcher.ui;
+    exports io.github.factoryfx.javafx.distribution.launcher.ui;
 }

@@ -1,4 +1,4 @@
-module de.factoryfx.nanoservice {
-    requires de.factoryfx.factory;
-    exports de.factoryfx.nanoservice;
+module io.github.factoryfx.nanoservice {
+    requires io.github.factoryfx.factory;
+    exports io.github.factoryfx.nanoservice;
 }

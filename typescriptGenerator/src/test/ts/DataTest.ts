@@ -1,45 +1,16 @@
-// import Data from '../../../../../../../../main/resources/de/factoryfx/factory/typescript/generator/ts/Data';
+//intellij run parameter:  -r ts-node/register
+//user interface: qunit, must be set in run config
 
-// import 'mocha';
-// import { expect } from 'chai';
-//
-// // const expect = chai.expect;
-//
-// describe('Hello function', () => {
-//     it('should return hello world', () => {
-//         let data = new Data();
-//         expect('Hello World!').to.equal('Hello World!');
-//     });
-// });
-
-// // new Data();
-// describe('My math library', () => {
-//
-//     it('should be able to add things correctly' , () => {
-//         expect(add(3,4)).to.equal(7);
-//     });
-//
-// });
-
-// import 'mocha';
-
-// describe('my test', () => {
-//     it('does something', () => {
-//         // your test
-//     });
-// });
-
-
-import { expect } from 'chai';  //intellij run parameter:  -r ts-node/register
+import { expect } from 'chai';
 import 'mocha';
 // import {ExampleData} from "./example/config/ExampleData";
-import {ExampleData} from "./example/config/de/factoryfx/factory/typescript/generator/data/ExampleData";
-import {ExampleData2} from "./example/config/de/factoryfx/factory/typescript/generator/data/ExampleData2";
-import {ExampleDataAll} from "./example/config/de/factoryfx/factory/typescript/generator/data/ExampleDataAll";
-import {ExampleDataIgnore} from "./example/config/de/factoryfx/factory/typescript/generator/data/ExampleDataIgnore";
-import {ExampleFactory} from "./example/config/de/factoryfx/factory/typescript/generator/data/ExampleFactory";
+import {ExampleData} from "./example/config/io/github/factoryfx/factory/typescript/generator/data/ExampleData";
+import {ExampleData2} from "./example/config/io/github/factoryfx/factory/typescript/generator/data/ExampleData2";
+import {ExampleDataAll} from "./example/config/io/github/factoryfx/factory/typescript/generator/data/ExampleDataAll";
+import {ExampleDataIgnore} from "./example/config/io/github/factoryfx/factory/typescript/generator/data/ExampleDataIgnore";
+import {ExampleFactory} from "./example/config/io/github/factoryfx/factory/typescript/generator/data/ExampleFactory";
 import {DataCreator} from "./example/util/DataCreator";
-import {ExampleEnum} from "./example/generated/de/factoryfx/factory/typescript/generator/data/ExampleEnum";
+import {ExampleEnum} from "./example/generated/io/github/factoryfx/factory/typescript/generator/data/ExampleEnum";
 import {AttributeType} from "./example/util/AttributeType";
 
 
@@ -48,20 +19,20 @@ suite('DataTest');// set user interface to QUnit in runconfig
 let exampleDataJson=
     `
         {
-          "@class" : "de.factoryfx.factory.typescript.generator.data.ExampleData",
+          "@class" : "io.github.factoryfx.factory.typescript.generator.data.ExampleData",
           "id" : "1bf502f7-163a-d84c-10c4-41d6486e63a1",
           "attribute" : {
             "v" : "123"
           },
           "ref" : {
             "v" : {
-              "@class" : "de.factoryfx.factory.typescript.generator.data.ExampleData2",
+              "@class" : "io.github.factoryfx.factory.typescript.generator.data.ExampleData2",
               "id" : "8738e21d-8eaa-c3e4-26fe-e9ed0d89c4b2",
               "attribute" : { }
             }
           },
           "refList" : [ {
-            "@class" : "de.factoryfx.factory.typescript.generator.data.ExampleData2",
+            "@class" : "io.github.factoryfx.factory.typescript.generator.data.ExampleData2",
             "id" : "346434f9-86a2-8576-3f32-cbb12ef70828",
             "attribute" : { }
           }, "8738e21d-8eaa-c3e4-26fe-e9ed0d89c4b2" ]
@@ -119,7 +90,7 @@ test('mapValuesFromJson_list_JsonIdentityInfo', ()=>{
 let exampleDataJsonEmpty=
     `
         {
-          "@class" : "de.factoryfx.factory.typescript.generator.data.ExampleData",
+          "@class" : "io.github.factoryfx.factory.typescript.generator.data.ExampleData",
           "id" : "d7ad0a40-3216-7d29-c589-cee305e40f34",
           "attribute" : {
             "v" : "123"
@@ -178,7 +149,7 @@ test('collectChildren', () => {
 let exampleDataAll=
     `
         {
-          "@class" : "de.factoryfx.factory.typescript.generator.data.ExampleDataAll",
+          "@class" : "io.github.factoryfx.factory.typescript.generator.data.ExampleDataAll",
           "id" : "87097278-cd36-9247-34a9-c342febab4eb",
           "byteArrayAttribute" : {
             "v" : "Cuw="
@@ -322,7 +293,7 @@ test('test_null_zero', () => {
 let exampleDataIgnore=
     `
         {
-            "@class" : "de.factoryfx.factory.typescript.generator.data.ExampleDataIgnore",
+            "@class" : "io.github.factoryfx.factory.typescript.generator.data.ExampleDataIgnore",
             "id" : "ec9b0af6-74c3-590d-9d6d-53299c9af6ee",
             "stringAttribute" : { }
         }
@@ -340,14 +311,14 @@ test('test_ignore_attributes', () => {
 
 let factoryExample = `
 {
-  "@class" : "de.factoryfx.factory.typescript.generator.data.ExampleFactory",
+  "@class" : "io.github.factoryfx.factory.typescript.generator.data.ExampleFactory",
   "id" : "09faee1a-125f-2b1b-d90d-ed3f0d41fca0",
   "attribute" : {
     "v" : "123"
   },
   "ref" : {
     "v" : {
-      "@class" : "de.factoryfx.factory.typescript.generator.data.ExampleFactory",
+      "@class" : "io.github.factoryfx.factory.typescript.generator.data.ExampleFactory",
       "id" : "4565f9bd-7783-8f4a-3df1-ac190fbe42c8",
       "attribute" : { },
       "ref" : { },
@@ -355,7 +326,7 @@ let factoryExample = `
     }
   },
   "refList" : [ {
-    "@class" : "de.factoryfx.factory.typescript.generator.data.ExampleFactory",
+    "@class" : "io.github.factoryfx.factory.typescript.generator.data.ExampleFactory",
     "id" : "cee0b7e7-0a9f-6361-f0af-02a7d860b738",
     "attribute" : { },
     "ref" : { },

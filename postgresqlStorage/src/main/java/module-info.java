@@ -1,8 +1,8 @@
-module de.factoryfx.postgresqlStorage {
+module io.github.factoryfx.postgresqlStorage {
     requires java.sql;
-    requires de.factoryfx.data;
+    requires io.github.factoryfx.data;
     requires com.google.common;
     requires com.fasterxml.jackson.databind;
 
-    exports de.factoryfx.factory.datastorage.postgres;
+    exports io.github.factoryfx.factory.datastorage.postgres;
 }

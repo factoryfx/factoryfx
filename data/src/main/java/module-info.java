@@ -1,4 +1,4 @@
-module de.factoryfx.data {
+module io.github.factoryfx.data {
     //automatic module that should be transitive but can't until they are real modules
     requires com.google.common;
     requires jackson.annotations;
@@ -9,30 +9,30 @@ module de.factoryfx.data {
 
     requires transitive java.sql;//for jackson DateDeserializer
 
-    exports de.factoryfx.data.attribute;
-    exports de.factoryfx.data.validation;
-    exports de.factoryfx.data.attribute.types;
-    exports de.factoryfx.data.util;
-    exports de.factoryfx.data;
-    exports de.factoryfx.data.attribute.primitive;
-    exports de.factoryfx.data.attribute.primitive.list;
-    exports de.factoryfx.data.attribute.time;
-    exports de.factoryfx.data.merge;
-    exports de.factoryfx.data.storage;
-    exports de.factoryfx.data.jackson;
-    exports de.factoryfx.data.storage.inmemory;
-    exports de.factoryfx.data.storage.filesystem;
-    exports de.factoryfx.data.storage.migration;
-    exports de.factoryfx.data.storage.migration.metadata;
-    exports de.factoryfx.data.storage.migration.datamigration;
+    exports io.github.factoryfx.data.attribute;
+    exports io.github.factoryfx.data.validation;
+    exports io.github.factoryfx.data.attribute.types;
+    exports io.github.factoryfx.data.util;
+    exports io.github.factoryfx.data;
+    exports io.github.factoryfx.data.attribute.primitive;
+    exports io.github.factoryfx.data.attribute.primitive.list;
+    exports io.github.factoryfx.data.attribute.time;
+    exports io.github.factoryfx.data.merge;
+    exports io.github.factoryfx.data.storage;
+    exports io.github.factoryfx.data.jackson;
+    exports io.github.factoryfx.data.storage.inmemory;
+    exports io.github.factoryfx.data.storage.filesystem;
+    exports io.github.factoryfx.data.storage.migration;
+    exports io.github.factoryfx.data.storage.migration.metadata;
+    exports io.github.factoryfx.data.storage.migration.datamigration;
 
-    opens de.factoryfx.data.attribute;//open for Jackson
-    opens de.factoryfx.data.attribute.primitive;
-    opens de.factoryfx.data.attribute.time;
-    opens de.factoryfx.data.attribute.types;
-    opens de.factoryfx.data;
-    opens de.factoryfx.data.merge;
-    opens de.factoryfx.data.storage.migration;
-    opens de.factoryfx.data.storage.migration.metadata;
+    opens io.github.factoryfx.data.attribute;//open for Jackson
+    opens io.github.factoryfx.data.attribute.primitive;
+    opens io.github.factoryfx.data.attribute.time;
+    opens io.github.factoryfx.data.attribute.types;
+    opens io.github.factoryfx.data;
+    opens io.github.factoryfx.data.merge;
+    opens io.github.factoryfx.data.storage.migration;
+    opens io.github.factoryfx.data.storage.migration.metadata;
 
 }

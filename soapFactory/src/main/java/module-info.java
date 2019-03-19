@@ -1,10 +1,10 @@
-module de.factoryfx.soapFactory {
+module io.github.factoryfx.soapFactory {
 
     requires org.eclipse.jetty.server;
     requires java.logging;
 
-    requires de.factoryfx.factory;
-    requires de.factoryfx.jettyFactory;
+    requires io.github.factoryfx.factory;
+    requires io.github.factoryfx.jettyFactory;
 
 
     requires javax.servlet.api;
@@ -15,5 +15,5 @@ module de.factoryfx.soapFactory {
 
     requires java.annotation;
 
-    exports de.factoryfx.soap;
+    exports io.github.factoryfx.soap;
 }

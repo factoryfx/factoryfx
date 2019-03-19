@@ -1,9 +1,9 @@
-open module de.factoryfx.docu {
-    requires de.factoryfx.factory;
-    requires de.factoryfx.data;
+open module io.github.factoryfx.docu {
+    requires io.github.factoryfx.factory;
+    requires io.github.factoryfx.data;
     requires java.ws.rs;
     requires metrics.core;
-    requires de.factoryfx.jettyFactory;
+    requires io.github.factoryfx.jettyFactory;
     requires metrics.jetty9;
     requires jersey.common;
     requires com.google.common;
@@ -14,7 +14,7 @@ open module de.factoryfx.docu {
     requires postgresql.embedded;
     requires java.naming;
 
-    requires de.factoryfx.postgresqlStorage;
+    requires io.github.factoryfx.postgresqlStorage;
     requires jersey.client;
     requires com.fasterxml.jackson.jaxrs.json;
 
@@ -25,8 +25,8 @@ open module de.factoryfx.docu {
     requires com.fasterxml.jackson.core;
     requires java.xml.bind;
     requires java.net.http;
-    requires de.factoryfx.microserviceRestServer;
-    requires de.factoryfx.microserviceRestClient;
+    requires io.github.factoryfx.microserviceRestServer;
+    requires io.github.factoryfx.microserviceRestClient;
     requires javax.servlet.api;
     requires org.eclipse.jetty.server;
 

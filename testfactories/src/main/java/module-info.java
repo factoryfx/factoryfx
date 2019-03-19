@@ -1,5 +1,5 @@
-module de.factoryfx.testfactories {
-    exports de.factoryfx.factory.testfactories.poly;
-    requires de.factoryfx.factory;
-    requires de.factoryfx.data;
+module io.github.factoryfx.testfactories {
+    exports io.github.factoryfx.factory.testfactories.poly;
+    requires io.github.factoryfx.factory;
+    requires io.github.factoryfx.data;
 }

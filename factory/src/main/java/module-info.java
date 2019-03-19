@@ -1,27 +1,27 @@
-module de.factoryfx.factory {
+module io.github.factoryfx.factory {
     //automatic module that should be transitive but can't until they are real modules
     requires jackson.annotations;
     requires com.google.common;
 
-    requires transitive de.factoryfx.data;
+    requires transitive io.github.factoryfx.data;
     requires transitive org.slf4j;
 
-    exports de.factoryfx.factory;
-    exports de.factoryfx.factory.atrribute;
-    exports de.factoryfx.factory.exception;
-    exports de.factoryfx.factory.log;
-    exports de.factoryfx.server;
-    exports de.factoryfx.server.user;
-    exports de.factoryfx.server.user.nop;
-    exports de.factoryfx.server.user.persistent;
-    exports de.factoryfx.factory.util;
-    exports de.factoryfx.factory.parametrized;
-    exports de.factoryfx.factory.builder;
+    exports io.github.factoryfx.factory;
+    exports io.github.factoryfx.factory.atrribute;
+    exports io.github.factoryfx.factory.exception;
+    exports io.github.factoryfx.factory.log;
+    exports io.github.factoryfx.server;
+    exports io.github.factoryfx.server.user;
+    exports io.github.factoryfx.server.user.nop;
+    exports io.github.factoryfx.server.user.persistent;
+    exports io.github.factoryfx.factory.util;
+    exports io.github.factoryfx.factory.parametrized;
+    exports io.github.factoryfx.factory.builder;
 
 
-    opens de.factoryfx.factory;//jackson
-    opens de.factoryfx.factory.parametrized;
-    opens de.factoryfx.factory.atrribute;
-    opens de.factoryfx.factory.log;
+    opens io.github.factoryfx.factory;//jackson
+    opens io.github.factoryfx.factory.parametrized;
+    opens io.github.factoryfx.factory.atrribute;
+    opens io.github.factoryfx.factory.log;
 
 }

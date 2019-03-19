@@ -1,4 +1,4 @@
-module de.factoryfx.jettyFactory {
+module io.github.factoryfx.jettyFactory {
     //automatic module that should be transitive but can't until they are real modules
     requires java.ws.rs;
     requires javax.servlet.api;
@@ -16,8 +16,8 @@ module de.factoryfx.jettyFactory {
     requires org.eclipse.jetty.http;
 
     requires java.logging;
-    requires transitive de.factoryfx.factory;
+    requires transitive io.github.factoryfx.factory;
 
-    exports de.factoryfx.jetty;
-    exports de.factoryfx.jetty.ssl;
+    exports io.github.factoryfx.jetty;
+    exports io.github.factoryfx.jetty.ssl;
 }
