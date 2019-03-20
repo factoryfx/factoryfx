@@ -70,7 +70,7 @@ subprojects {
     }
 
     group = 'io.github.factoryfx'
-    version = '2.0.0-ea6'
+    version = '2.0.0-ea7'
 
     if (project.hasProperty('secretKeyRingFileSourceURL')) {
         signing {

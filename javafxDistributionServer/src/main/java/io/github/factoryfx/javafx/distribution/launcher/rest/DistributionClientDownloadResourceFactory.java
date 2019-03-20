@@ -3,7 +3,7 @@ package io.github.factoryfx.javafx.distribution.launcher.rest;
 import io.github.factoryfx.data.attribute.types.StringAttribute;
 import io.github.factoryfx.factory.FactoryBase;
 
-public class DistributionClientDownloadResourceFactory<V,R extends FactoryBase<?,R>> extends FactoryBase<DistributionClientDownloadResource,R> {
+public class DistributionClientDownloadResourceFactory<R extends FactoryBase<?,R>> extends FactoryBase<DistributionClientDownloadResource,R> {
     public final StringAttribute distributionClientZipPath = new StringAttribute().labelText("Distribution client zip path on the server");
 
     public DistributionClientDownloadResourceFactory() {
