@@ -81,7 +81,7 @@ public class SslContextFactoryFactoryTest {
         }
     }
 
-    public static class SslContextFactoryFactoryCustom<V, R extends FactoryBase<?, R>> extends SslContextFactoryFactory<R> {
+    public static class SslContextFactoryFactoryCustom<R extends FactoryBase<?, R>> extends SslContextFactoryFactory<R> {
         SslContextFactoryFactoryCustom(){
             trustStore.nullable();
         }
@@ -93,7 +93,7 @@ public class SslContextFactoryFactoryTest {
         FactoryTreeBuilder<Server, TestJettyServerFactory, Void> builder = new FactoryTreeBuilder<>(TestJettyServerFactory.class);
         builder.addFactory(TestJettyServerFactory.class, Scope.SINGLETON);
         builder.addFactory(JettyServerFactory.class, Scope.SINGLETON, ctx->{
-            SslContextFactoryFactoryCustom<Void,TestJettyServerFactory> ssl = new SslContextFactoryFactoryCustom<>();
+            SslContextFactoryFactoryCustom<TestJettyServerFactory> ssl = new SslContextFactoryFactoryCustom<>();
             ssl.keyStoreType.set(KeyStoreType.jks);
             ssl.trustStoreType.set(KeyStoreType.jks);
             try (InputStream in = getClass().getResourceAsStream("/keystore.jks")){

@@ -62,7 +62,7 @@ public class HandlerCollectionFactoryTest {
         }
     }
 
-    public static class CustomHandlerFactory<V,R extends FactoryBase<?,R>> extends PolymorphicFactoryBase<Handler,R> {
+    public static class CustomHandlerFactory<R extends FactoryBase<?,R>> extends PolymorphicFactoryBase<Handler,R> {
         @Override
         public Handler createImpl() {
             return new AbstractHandler() {

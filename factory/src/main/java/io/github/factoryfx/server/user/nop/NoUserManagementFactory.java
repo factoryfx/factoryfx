@@ -4,7 +4,7 @@ import io.github.factoryfx.factory.FactoryBase;
 import io.github.factoryfx.factory.PolymorphicFactoryBase;
 import io.github.factoryfx.server.user.UserManagement;
 
-public class NoUserManagementFactory<V,R extends FactoryBase<?,R>> extends PolymorphicFactoryBase<UserManagement,R> {
+public class NoUserManagementFactory<R extends FactoryBase<?,R>> extends PolymorphicFactoryBase<UserManagement,R> {
 
 
     @Override
