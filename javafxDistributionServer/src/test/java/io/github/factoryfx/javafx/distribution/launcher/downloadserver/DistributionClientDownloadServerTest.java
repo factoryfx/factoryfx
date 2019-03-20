@@ -23,7 +23,7 @@ public class DistributionClientDownloadServerTest {
                     build();
         });
         builder.addFactory(DistributionClientDownloadResourceFactory.class, Scope.SINGLETON, ctx -> {
-            DistributionClientDownloadResourceFactory<Void, DownloadTestServerFactory> resource = new DistributionClientDownloadResourceFactory<>();
+            DistributionClientDownloadResourceFactory<DownloadTestServerFactory> resource = new DistributionClientDownloadResourceFactory<>();
             resource.distributionClientZipPath.set("src/test/java/io/github/factoryfx/javafx/distribution/launcher/downloadserver/dummy.zip");
             return resource;
         });
