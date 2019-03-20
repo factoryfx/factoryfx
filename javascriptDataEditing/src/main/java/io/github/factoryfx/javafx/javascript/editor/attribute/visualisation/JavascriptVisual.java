@@ -171,16 +171,16 @@ public class JavascriptVisual<A> {
             while (pos > 0 && Character.isJavaIdentifierPart(text.charAt(pos-1))) {
                 --pos;
             }
-            String prefix = text.substring(pos,pos2);
+//            String prefix = text.substring(pos,pos2);
             while (pos2 < text.length() && Character.isJavaIdentifierPart(text.charAt(pos2))) {
                 ++pos2;
             }
             ArrayList<Proposal> copy = new ArrayList<>(proposals);
             final int from = pos;
             final int to = pos2;
-            Consumer<String> applySuggestion = s -> {
-                codeArea.replaceText(from, to, s);
-            };
+//            Consumer<String> applySuggestion = s -> {
+//                codeArea.replaceText(from, to, s);
+//            };
 //            popup.onSuggestionProperty().setValue(v -> {
 //                        applySuggestion.accept(v.getSuggestion());
 //                        popup.hide();
@@ -200,8 +200,8 @@ public class JavascriptVisual<A> {
             garbageSuggestions.add("valueOf()");
             garbageSuggestions.add("watch()");
             garbageSuggestions.add("constructor");
-            List<String> suggestions = copy.stream().map(s -> s.insertString).filter(s -> !garbageSuggestions.contains(s)).collect(Collectors.toList());
-
+//            List<String> suggestions = copy.stream().map(s -> s.insertString).filter(s -> !garbageSuggestions.contains(s)).collect(Collectors.toList());
+//
 //            popup.getSuggestions().addAll(suggestions);
 //            popup.unselect();
 //            for (String suggestion : suggestions) {
