@@ -15,6 +15,8 @@ import java.util.stream.Collectors;
  *
  *  see RichClientBuilder for an example
  *
+ *  It's called tree but really is a DAG (directed acyclic graph). It' called tree to emphasize the main limitation: no cycles.
+ *
  * @param <R> root factory
  * */
 public class FactoryTreeBuilder<L,R extends FactoryBase<L,R>,S> {
