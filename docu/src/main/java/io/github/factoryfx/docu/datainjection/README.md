@@ -1,7 +1,9 @@
 # Data injection
-In many java application most data a stored inside a database. The data design is is determined by the database (relational model).
+In many java application most data a stored inside a database. 
+The data design is is determined by the database (relational model, bottom-up approach).
 With that architecture it is hard to implement data encapsulation which is one of the main feature of oop.
-Often you will end up with data only classes and other classes that implements business logic based on the data classes. That will result in a procedural design which seems wrong in an oop language. 
+Often you will end up with data only classes and other classes that implement business logic based on the data classes. 
+That will result in a procedural design that does not convey the original motivation begin object oriented programming. 
 
 Factoryfx can directly inject required data into objects.
 
@@ -15,7 +17,6 @@ The small tables are good candidates for data injection.
 
 ### Configuration Data
 Typical configuration data are ports, hostname, ssl certificates. Data which are typical stored in property files.
-
 
 
 A real world example:<br/>

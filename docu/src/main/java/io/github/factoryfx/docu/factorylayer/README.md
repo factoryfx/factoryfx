@@ -20,16 +20,16 @@ public class HelloWorld {
     }
 }
 ```
-With Reflection only it's only known that there is a constructor with 2 string parameters and a Dependency parameter.
+With reflection the only known things are that the constructor takes 2 string parameters and a parameter of type "Dependency".
 Unknown is:
-* Should this class be created with a dependency injection framework? (e.g it could just be a utility class)
+* Should instances of this class be created with a dependency injection framework? (e.g it could just be a utility class)
 * Parameter order, which String for first and second parameter
-* which implementation of Dependency should be passed. There could be multiple subclasses of Dependency.
-* The Scope of the Parameter. (Singleton, Prototype)
+* which implementation of "Dependency" should be passed. There could be multiple subclasses of "Dependency".
+* The scope of the parameter. (Singleton, Prototype)
 * Which constructor should be used if multiple constructors are available
 
-Those Information needs to be provided to the framework.
-Traditionally there are 2 Methods to pass these information:
+Those information need to be provided to the framework.
+Traditionally there are 2 methods to pass these information:
 * Custom DSL (Spring xml)
 * Annotations DSL (CDI)
 
@@ -48,7 +48,7 @@ public class HelloWorldFactory extends SimpleFactoryBase<HelloWorld,Void,HelloWo
     }
 }
 ```
-The Scope ist define with the FactoryTreeBuilder
+The scope is defined with the FactoryTreeBuilder
 ```java
     FactoryTreeBuilder<HelloWorld,HelloWorldFactory,Void> builder = new FactoryTreeBuilder<>(HelloWorldFactory.class);
     builder.addFactory(HelloWorldFactory.class, Scope.SINGLETON);
@@ -56,18 +56,19 @@ The Scope ist define with the FactoryTreeBuilder
 ```
 
 ## Immutable objects vs changes at runtime
-The factories allow you to have immutable runtime objects, but they can also be changed at runtime.
-You can change the attribute values of factories but not from the corresponding live objects.
+The factories are designed to create immutable runtime objects, but the factories themselves can be changed at runtime.
+You can change the attribute values of factories but not from the corresponding live objects. Configuration changes are
+translated to the creation of new (immutable) runtime objects by default, thus achieving both immutability and changeability. 
 
 ## GUI metadata
-Factories also provide a GUI metadata API to add Label and validation to factories.
+Factories also provide a GUI metadata API to add labels and validation to factories.
 ```java
 public final StringAttribute text1 = new StringAttribute().en("text1").de("täxt1");
 ```
 This saves mapping effort between multiple files. (template <=> java data class <=> property file)
 
 ## Trade-of
-For each object a corresponding factory must be created. But this boilerplate code is still better than a new dsl.
-HelloWorldFactory is essentially a structure convention which can be misused unintentionally. To validate the structure you can use the FactoryStyleValidator in a unit test. 
+For each object a corresponding factory has to be created. This boilerplate code is probably still better than a new dsl.
+HelloWorldFactory is essentially a structure convention which can be misused unintentionally. 
+To validate the structure you can use the FactoryStyleValidator in a unit test. 
 [Test example](./../../../../../../../../example/src/test/java/io/github/factoryfx/example/FactoryTest.java)
- 

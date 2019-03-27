@@ -36,7 +36,7 @@ public class DatabaseResourceFactory  extends SimpleFactoryBase<DatabaseResource
     }
 }
 ```
-The configuration data are part of the DatabaseResourceFactory and is passed directly to the DatabaseResource.
+The configuration data are part of the DatabaseResourceFactory and are passed directly to the DatabaseResource.
 
 ## Initial Configuration 
 ```java
@@ -61,10 +61,11 @@ public class Main {
 }
 ```
 The initial configuration is defined with the FactoryTreeBuilder. 
-To save the configuration we use the use the filesystem storage. That means the Configuration is stored in the file: 'currentFactory.json'.
-For the first start the configuration created from the FactoryTreeBuilder is used. For the following starts the configuration stored in the file is used.
+To store the configuration we use the use the filesystem storage. That means the configuration is stored in the file: 'currentFactory.json'.
+If no configuration is present the initial configuration is created by means of the FactoryTreeBuilder provided. Every consequtive start-up is based on the configuration stored in the file.
 
-Please note that this is only the first initial configuration. The configuration can be changed with microservice api and the changes are stored permanently.
+Please note that the creating of the initial configuration only happens upon the very first application start. 
+Afterwards the configuration changes are carried out with the microservice api which stores the changes persistingly.
 
 ## Comparison with property files
 For the configuration no additional property files are required. The following example serves as an explanation.
@@ -94,10 +95,10 @@ builder.addFactory(WebResourceFactory.class, Scope.SINGLETON, ctx->{
 There are several problems with this approach.
 ### Specific problems in this example
 * **Only works for initial configuration**<br>
-In this example it would only work for the first start. (possible to work around but cumbersome)
+In this example it would only work for the first start. (possible to work-around but cumbersome)
 * **Data duplication**<br>
 The data is stored in currentFactory.json and in the property file.
-The configuration data is duplicated.
+The configuration data are duplicated.
 
 ### General problems with property files
 * **No validation**<br>
@@ -119,7 +120,8 @@ Hard to detect unused properties and it's hard to figure out where the data is b
 A good analogy  is the broken windows theory.
 > Consider a building with a few broken windows. If the windows are not repaired, the tendency is for vandals to break a few more windows. Eventually, they may even break into the building, and if it's unoccupied, perhaps become squatters or light fires inside. 
 
-If you already have a property file you will likely add more properties to it. For example why not add a property to configure the database schema, a connection timeout, or even a feature switch? Over time you will add more and more properties and they become harder and harder to manage.
+If you already have a property file you will likely add more properties to it. 
+For example why not add a property to configure the database schema, a connection timeout, or even a feature switch? Over time you will add more and more properties and they become harder and harder to manage.
 
 
 ## Change the configuration data
@@ -152,7 +154,7 @@ microservice.updateCurrentFactory(update, "user", "comment", (p) -> true);
 [**code**](https://github.com/factoryfx/factoryfx/tree/master/docu/src/main/java/io/github/factoryfx/docu/configurationdata)
 
 ## Conclusion
-The problems with configuration data is one of the reasons for the development of factoryfx.
-It makes no sense to combine factoryfx and property files because factoryfx is a superior replacement for property files and duplicated configuration data are harmful.
+Fixing the configuration data problems with the coherent approach implementd in factoryfx is one of it's major advantages.
+Thus it makes no sense to combine factoryfx and property files because factoryfx is a superior replacement for property files and duplicated configuration data are harmful.
 
 

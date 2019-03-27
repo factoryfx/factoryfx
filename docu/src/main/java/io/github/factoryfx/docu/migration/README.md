@@ -1,6 +1,6 @@
 # Migration
 Data migration plays an important role in factoryfx because factoryfx unites data and application structure into one factory structure. Migrations are required not only for data changes but also for application structure changes. 
-To simplify the migration process factory provides a dedicated migration API.
+To simplify the migration process factoryfx provides a dedicated migration API.
 
 In factoryfx we distinguish between 3 layers of migrations
 * **Data storage format**<br> The general format how data and attributes are stored.
@@ -19,12 +19,11 @@ In factoryfx we distinguish between 3 layers of migrations
 }
 ```
 This is an example for the json format of a factory with a StringAttribute.
-The StringAttribute is serialised to a nested object and the value is stored in the "v" attribute. 
-This unusual structure in an example for the structure format.
-(Most of the structure is required for Jackson or workaround for Jackson limitations)
+The StringAttribute is serialized to a nested object and the value is stored in the "v" attribute. 
+This rather unusual structure can be put down to limitations of Jackson.
 The structure format is mostly stable but may change if, for example Jackson adds a new useful feature in the future.
 
-Data storage format migration are applied as one time migration with the patch API.
+Data storage format migrations are applied as one time migration with the patch API.
 ```java 
 MicroserviceBuilder#withGeneralMigration
 MicroserviceBuilder#withGeneralStorageMetadata
@@ -44,18 +43,18 @@ public class ExampleFactory extends SimpleFactoryBase<Void,Void,ExampleFactory> 
 In this example the for attribute is renamed from "oldAttribute" to "newAttribute".
 
 ```java
-builder.widthRenameAttributeMigartion(ExampleFactory.class,"oldAttribute",(rf)->rf.newAttribute)
+builder.withRenameAttributeMigration(ExampleFactory.class,"oldAttribute",(rf)->rf.newAttribute)
 ```
-This adds a rename migration. To support multiple renames the new name is provided with a lambada expression and thereby enables IDE refactoring for the migrations. This also prevents rename cycles.
-Migration are added with the MicroserviceBuilder.
+This adds a rename migration. To support multiple renames the new name is provided as a lambada expression and thereby enables IDE refactoring for the migrations. This also prevents rename cycles.
+Migrations are added with the MicroserviceBuilder.
 
 ## Data content
 There is no special framework support for data changes because it's too project specific. 
-You can use the normal microservice update API or use the DataStorage API.
+You can use the normal microservice update API or DataStorage API.
 
 
 ## Special case: One time migration
-Normally the migration are executed on the fly when the data is loaded from memory. 
+Normally the migrations are executed on the fly when the data is loaded from memory. 
 This has the advantage that a faulty migration can't destroy old data. Mistakes in the migration code are easier to fix because you don't have repair data. 
 
 In some cases it can be convenient to execute a one time migration. For that case the storage api has a special api.
