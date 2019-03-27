@@ -4,10 +4,11 @@
 
 ## Introduction
 
-Factoryfx is a lightweight dependency injection framework that extends dependency injection with data injection.
+Factoryfx is a lightweight dependency injection framework that expands dependency injection to include data injection.
+Applications build with factory fx can benefit from the stateless design yet allowing for structural and data changes during runtime.
 
 Factoryfx is a replacement for:
-* **manuel dependency injection**
+* **manual dependency injection**
   * Order independence
   * Uniform application structure
 * **framework dependency injection (guava, spring, dagger)**
@@ -16,7 +17,7 @@ Factoryfx is a replacement for:
   * Fast startup (no classpath scanning)
 * **JConsole MBeans (runtime data/structure changes)**
   * Lifecycle support
-  * Metadata for a end user presentable GUI (labels, validation)
+  * Metadata for an end user presentable GUI (labels, validation)
   * Multi-user editing
 * **Property files (text,xml,json or yaml)**
   * Change history
@@ -78,25 +79,25 @@ public class HelloWorld{
 ## Documentation
 
 ### Fundamentals
-* [Dependency injection](docu/src/main/java/io/github/factoryfx/docu/dependencyinjection)<br>Injection dependency into a liveobject
-* [Data injection](docu/src/main/java/io/github/factoryfx/docu/datainjection)<br>Injection data into a liveobject
-* [Factory](docu/src/main/java/io/github/factoryfx/docu/factorylayer)<br>Factory explanation
-* [Liveobject](docu/src/main/java/io/github/factoryfx/docu/liveobjects)<br>Liveobject explanation
+* [Dependency injection](docu/src/main/java/io/github/factoryfx/docu/dependencyinjection)<br>Injecting a dependency into a live object
+* [Data injection](docu/src/main/java/io/github/factoryfx/docu/datainjection)<br>Injection data into a live object
+* [Factory](docu/src/main/java/io/github/factoryfx/docu/factorylayer)<br>Explanation of factories
+* [Liveobject](docu/src/main/java/io/github/factoryfx/docu/liveobjects)<br>Explanation of live objects
 
 ### Advanced
 * [Comparison](docu/src/main/java/io/github/factoryfx/docu/comparison)<br>Comparison to other dependency injection frameworks
 * [REST server](docu/src/main/java/io/github/factoryfx/docu/restserver)<br>Basic jetty server with a jersey REST resource
-* [Lifecycle](docu/src/main/java/io/github/factoryfx/docu/lifecycle)<br>Lifecycle configuration (start/top/update)
+* [Lifecycle](docu/src/main/java/io/github/factoryfx/docu/lifecycle)<br>Lifecycle configuration (start/stop/update)
 * [Migration](docu/src/main/java/io/github/factoryfx/docu/migration)<br>Configuration data migration
 * [Parametrized](docu/src/main/java/io/github/factoryfx/docu/parametrized)<br>Combining runtime data with factory data
 * [Persistent storage](docu/src/main/java/io/github/factoryfx/docu/persistentstorage)<br>Persistent configuration data storage using a database
 * [Polymorphism](docu/src/main/java/io/github/factoryfx/docu/polymorphism)<br>Polymorphic factories
-* [Runtime status](docu/src/main/java/io/github/factoryfx/docu/runtimestatus)<br>Pass runtime status over updates(e.g request counter)
-* [Update](docu/src/main/java/io/github/factoryfx/docu/update)<br>Optimise Factory update/Server restart e.g. for liveobjects that need a lot of time for initialization
+* [Runtime status](docu/src/main/java/io/github/factoryfx/docu/runtimestatus)<br>Passing runtime status across configuration updates (e.g request counter)
+* [Update](docu/src/main/java/io/github/factoryfx/docu/update)<br>Optimize factory update/server restart e.g. for live objects whose initialization is very time-consuming
 * [Monitoring](docu/src/main/java/io/github/factoryfx/docu/monitoring)<br>Request monitoring data 
 * [Swagger](docu/src/main/java/io/github/factoryfx/docu/swagger)<br>Swagger example 
 * [Permissions](docu/src/main/java/io/github/factoryfx/docu/permission)<br>Permissions on attribute level
-* [Custom configuration REST API](docu/src/main/java/io/github/factoryfx/docu/customconfig)<br>Configuration over a custom REST API
+* [Custom configuration REST API](docu/src/main/java/io/github/factoryfx/docu/customconfig)<br>(Re-)configuration over a custom REST API
 * [Configuration data](docu/src/main/java/io/github/factoryfx/docu/configurationdata)<br>How to handle configuration data
 * [User Interface](docu/src/main/java/io/github/factoryfx/docu/gui)<br>graphical user interface
 
