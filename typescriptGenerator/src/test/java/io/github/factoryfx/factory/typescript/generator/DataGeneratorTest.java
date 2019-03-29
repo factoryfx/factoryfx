@@ -14,7 +14,7 @@ public class DataGeneratorTest {
 
     @Test
     public void smoketest(@TempDir Path targetDir) throws IOException {
-        TsGenerator tsClassCreator=new TsGenerator(targetDir, List.of(ExampleData.class, ExampleData2.class, ExampleDataAll.class , ExampleDataIgnore.class, ExampleFactory.class));
+        TsGenerator<ExampleData> tsClassCreator=new TsGenerator<>(targetDir, List.of(ExampleData.class, ExampleData2.class, ExampleDataAll.class , ExampleDataIgnore.class, ExampleFactory.class));
         tsClassCreator.generate();
 
     }

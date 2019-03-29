@@ -1,11 +1,11 @@
 package io.github.factoryfx.microservice.rest.client;
 
 import com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider;
-import io.github.factoryfx.data.attribute.primitive.BooleanAttribute;
-import io.github.factoryfx.data.attribute.primitive.IntegerAttribute;
-import io.github.factoryfx.data.attribute.types.ObjectValueAttribute;
-import io.github.factoryfx.data.attribute.types.StringAttribute;
-import io.github.factoryfx.data.jackson.ObjectMapperBuilder;
+import io.github.factoryfx.factory.attribute.primitive.BooleanAttribute;
+import io.github.factoryfx.factory.attribute.primitive.IntegerAttribute;
+import io.github.factoryfx.factory.attribute.types.ObjectValueAttribute;
+import io.github.factoryfx.factory.attribute.types.StringAttribute;
+import io.github.factoryfx.factory.jackson.ObjectMapperBuilder;
 import io.github.factoryfx.factory.FactoryBase;
 import io.github.factoryfx.factory.FactoryTreeBuilderBasedAttributeSetup;
 import io.github.factoryfx.factory.SimpleFactoryBase;

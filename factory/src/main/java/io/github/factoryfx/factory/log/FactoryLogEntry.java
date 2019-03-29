@@ -21,7 +21,7 @@ public class FactoryLogEntry {
 
     @SuppressWarnings("unchecked")
     public FactoryLogEntry(FactoryBase<?,?> factoryBase) {
-        this((Class<? extends FactoryBase<?,?>>) factoryBase.getClass(), factoryBase.internalFactory().getFactoryDisplayText(), ThreadLocalRandom.current().nextLong(Long.MAX_VALUE));
+        this((Class<? extends FactoryBase<?,?>>) factoryBase.getClass(), factoryBase.internal().getFactoryDisplayText(), ThreadLocalRandom.current().nextLong(Long.MAX_VALUE));
     }
 
     //field/method instead of list for performance

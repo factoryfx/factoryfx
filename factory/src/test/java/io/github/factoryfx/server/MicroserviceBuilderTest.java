@@ -2,8 +2,8 @@ package io.github.factoryfx.server;
 
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.fasterxml.jackson.dataformat.yaml.YAMLGenerator;
-import io.github.factoryfx.data.jackson.ObjectMapperBuilder;
-import io.github.factoryfx.data.storage.DataUpdate;
+import io.github.factoryfx.factory.jackson.ObjectMapperBuilder;
+import io.github.factoryfx.factory.storage.DataUpdate;
 import io.github.factoryfx.factory.builder.FactoryTreeBuilder;
 import io.github.factoryfx.factory.builder.Scope;
 import io.github.factoryfx.factory.testfactories.ExampleFactoryA;

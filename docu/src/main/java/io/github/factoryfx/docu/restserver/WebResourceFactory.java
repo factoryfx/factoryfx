@@ -1,6 +1,6 @@
 package io.github.factoryfx.docu.restserver;
 
-import io.github.factoryfx.data.attribute.types.StringAttribute;
+import io.github.factoryfx.factory.attribute.types.StringAttribute;
 import io.github.factoryfx.factory.SimpleFactoryBase;
 
 public class WebResourceFactory extends SimpleFactoryBase<Object, SimpleHttpServer> {

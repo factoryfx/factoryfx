@@ -5,11 +5,8 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import com.google.common.base.Throwables;
-import io.github.factoryfx.data.Data;
-import io.github.factoryfx.data.attribute.DataViewListReferenceAttribute;
-import io.github.factoryfx.data.attribute.DataViewReferenceAttribute;
-import io.github.factoryfx.data.merge.DataMerger;
-import io.github.factoryfx.data.merge.MergeDiffInfo;
+import io.github.factoryfx.factory.merge.DataMerger;
+import io.github.factoryfx.factory.merge.MergeDiffInfo;
 import io.github.factoryfx.factory.exception.AllOrNothingFactoryExceptionHandler;
 import io.github.factoryfx.factory.exception.ExceptionResponseAction;
 import io.github.factoryfx.factory.exception.FactoryExceptionHandler;
@@ -42,7 +39,7 @@ public class FactoryManager<L,R extends FactoryBase<L,R>> {
         }
 
         Collection<FactoryBase<?,?>> previousFactories = currentFactoryRoot.getFactoriesInDestroyOrder();
-        previousFactories.forEach((f) -> f.internalFactory().resetLog());
+        previousFactories.forEach((f) -> f.internal().resetLog());
         R previousFactoryCopyRoot = currentFactoryRoot.copy();
 
         FactoryBase<?,?> factoryBaseInFocus=null;//for better exception reporting
@@ -64,34 +61,34 @@ public class FactoryManager<L,R extends FactoryBase<L,R>> {
                 final Collection<FactoryBase<?,?>> factoriesInCreateAndStartOrder = currentFactoryRoot.getFactoriesInCreateAndStartOrder();
                 for (FactoryBase<?,?> factory : factoriesInCreateAndStartOrder) {
                     factoryBaseInFocus=factory;
-                    factory.internalFactory().instance();
+                    factory.internal().instance();
                     //createWithExceptionHandling(factory, new RootFactoryWrapper<>(previousFactoryCopyRoot), currentFactoryRoot);
                 }
 
                 for (FactoryBase<?,?> factory : currentFactoriesAfterMerge) {
                     factoryBaseInFocus=factory;
-                    factory.internalFactory().destroyUpdated();
+                    factory.internal().destroyUpdated();
                 }
                 for (FactoryBase<?,?> factory : removed) {
                     factoryBaseInFocus=factory;
-                    factory.internalFactory().destroyRemoved();
+                    factory.internal().destroyRemoved();
                 }
 
 
                 //factoriesInCreateAndStartOrder.forEach(this::startWithExceptionHandling);
                 for (FactoryBase<?,?> factory : factoriesInCreateAndStartOrder) {
                     factoryBaseInFocus=factory;
-                    factory.internalFactory().start();
+                    factory.internal().start();
                 }
                 totalUpdateDuration = System.nanoTime() - start;
                 logger.info(currentFactoryRoot.logUpdateDisplayTextDeep());
-                return new FactoryUpdateLog<>(currentFactoryRoot.createFactoryLogTree(), removed.stream().map(r->r.internalFactory().createFactoryLogEntry()).collect(Collectors.toSet()),mergeDiff,totalUpdateDuration,null);
+                return new FactoryUpdateLog<>(currentFactoryRoot.createFactoryLogTree(), removed.stream().map(r->r.internal().createFactoryLogEntry()).collect(Collectors.toSet()),mergeDiff,totalUpdateDuration,null);
             } catch(Exception e){
                 factoryExceptionHandler.updateException(e,factoryBaseInFocus,new ExceptionResponseAction(this, new RootFactoryWrapper(previousFactoryCopyRoot),currentFactoryRoot,removed));
                 return new FactoryUpdateLog<>(Throwables.getStackTraceAsString(e));
             }
         } else {
-            return new FactoryUpdateLog<>(currentFactoryRoot.createFactoryLogTree(), removed.stream().map(r->r.internalFactory().createFactoryLogEntry()).collect(Collectors.toSet()),mergeDiff,totalUpdateDuration,null);
+            return new FactoryUpdateLog<>(currentFactoryRoot.createFactoryLogTree(), removed.stream().map(r->r.internal().createFactoryLogEntry()).collect(Collectors.toSet()),mergeDiff,totalUpdateDuration,null);
         }
 
     }
@@ -111,20 +108,17 @@ public class FactoryManager<L,R extends FactoryBase<L,R>> {
 //        }
     }
 
-    Set<Data> getChangedFactories(RootFactoryWrapper<R> currentFactoryRoot, R previousFactoryCopyRoot){
+    Set<FactoryBase<?,?>> getChangedFactories(RootFactoryWrapper<R> currentFactoryRoot, R previousFactoryCopyRoot){
         //one might think that the merger could do the change detection but that don't work for views and separation of concern is better anyway
-        final HashSet<Data> result = new HashSet<>();
-        final HashMap<String, FactoryBase<?,?>> previousFactories = previousFactoryCopyRoot.internalFactory().collectChildFactoriesDeepMapFromRoot();
-        for (Data data: currentFactoryRoot.collectChildFactories()){
+        final HashSet<FactoryBase<?,?>> result = new HashSet<>();
+        final HashMap<String, FactoryBase<?,?>> previousFactories = previousFactoryCopyRoot.internal().collectChildFactoriesDeepMapFromRoot();
+        for (FactoryBase<?,?> data: currentFactoryRoot.collectChildFactories()){
             final FactoryBase<?,?> previousFactory = previousFactories.get(data.getId());
             if (previousFactory!=null){
                 data.internal().visitAttributesDualFlat(previousFactory, (name, currentAttribute, previousAttribute) -> {
-                    if (!(currentAttribute instanceof DataViewReferenceAttribute) && !(currentAttribute instanceof DataViewListReferenceAttribute)){//Data views have no function no need to check
-                        if (!currentAttribute.internal_mergeMatch(previousAttribute)){
-                            result.add(data);
-                        }
+                    if (!currentAttribute.internal_mergeMatch(previousAttribute)){
+                        result.add(data);
                     }
-
                 });
             }
         }
@@ -147,7 +141,7 @@ public class FactoryManager<L,R extends FactoryBase<L,R>> {
      * @param permissionChecker permissionChecker
      * @return MergeDiffInfo*/
     public MergeDiffInfo<R> simulateUpdate(R commonVersion , R newVersion,  Function<String, Boolean> permissionChecker){
-        newVersion.internalFactory().loopDetector();
+        newVersion.internal().loopDetector();
 
         DataMerger<R> dataMerger = new DataMerger<>(currentFactoryRoot.copy(), commonVersion, newVersion);
         return dataMerger.createMergeResult(permissionChecker).executeMerge();
@@ -170,15 +164,15 @@ public class FactoryManager<L,R extends FactoryBase<L,R>> {
             Collection<FactoryBase<?,?>> factoriesInCreateAndStartOrder = newFactory.getFactoriesInCreateAndStartOrder();
             for (FactoryBase<?,?> factory : factoriesInCreateAndStartOrder) {
                 factoryBaseInFocus=factory;
-                factory.internalFactory().instance();
+                factory.internal().instance();
             }
 
             for (FactoryBase<?,?> factory : factoriesInCreateAndStartOrder) {
                 factoryBaseInFocus=factory;
-                factory.internalFactory().start();
+                factory.internal().start();
             }
             logger.info(currentFactoryRoot.logStartDisplayTextDeep());
-            return currentFactoryRoot.getRoot().internalFactory().getLiveObject();
+            return currentFactoryRoot.getRoot().internal().getLiveObject();
         } catch (Exception e){
             factoryExceptionHandler.startException(e,factoryBaseInFocus,new ExceptionResponseAction(this,null,currentFactoryRoot,new ArrayList<>()));
             return null;
@@ -195,7 +189,7 @@ public class FactoryManager<L,R extends FactoryBase<L,R>> {
         try {
             for (FactoryBase<?,?> factory: factories){
                 factoryBaseInFocus=factory;
-                factory.internalFactory().destroyRemoved();
+                factory.internal().destroyRemoved();
             }
         } catch(Exception e){
             factoryExceptionHandler.destroyException(e,factoryBaseInFocus,new ExceptionResponseAction(this, null,null,new ArrayList<>()));
@@ -205,7 +199,7 @@ public class FactoryManager<L,R extends FactoryBase<L,R>> {
 
     public void resetAfterCrash() {
         for (FactoryBase<?,?> factory : currentFactoryRoot.getFactoriesInDestroyOrder()) {
-            factory.internalFactory().cleanUpAfterCrash();
+            factory.internal().cleanUpAfterCrash();
         }
         this.currentFactoryRoot=null;
     }

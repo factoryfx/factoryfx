@@ -1,7 +1,7 @@
 package io.github.factoryfx.factory.builder;
 
 import io.github.factoryfx.factory.SimpleFactoryBase;
-import io.github.factoryfx.factory.atrribute.FactoryReferenceAttribute;
+import io.github.factoryfx.factory.attribute.dependency.FactoryReferenceAttribute;
 import io.github.factoryfx.factory.parametrized.ParametrizedObjectCreatorAttribute;
 import io.github.factoryfx.factory.parametrized.ParametrizedObjectCreatorFactory;
 import io.github.factoryfx.factory.testfactories.ExampleFactoryB;
@@ -15,7 +15,7 @@ import java.util.function.Function;
 
 public class DefaultCreatorTest {
 
-    public static class DummyCreatorFactory extends ParametrizedObjectCreatorFactory<Void,Void,DummyCreatorFactory> {
+    public static class DummyCreatorFactory extends ParametrizedObjectCreatorFactory<Void,Void,ParametrizedTestFactory> {
         @Override
         protected Function<Void, Void> getCreator() {
             return p -> null;
@@ -24,7 +24,7 @@ public class DefaultCreatorTest {
 
 
     public static class ParametrizedTestFactory extends SimpleFactoryBase<Void, ParametrizedTestFactory> {
-        public final ParametrizedObjectCreatorAttribute<Void,Void,DummyCreatorFactory> dummyCreator =new ParametrizedObjectCreatorAttribute<>(DummyCreatorFactory.class);
+        public final ParametrizedObjectCreatorAttribute<ParametrizedTestFactory,Void,Void,DummyCreatorFactory> dummyCreator =new ParametrizedObjectCreatorAttribute<>();
 
         @Override
         public Void createImpl() {
@@ -49,11 +49,11 @@ public class DefaultCreatorTest {
     }
 
     public static class ExampleFactoryANotNullable extends SimpleFactoryBase<ExampleLiveObjectA, ExampleFactoryANotNullable> {
-        public final FactoryReferenceAttribute<ExampleLiveObjectB,ExampleFactoryB> referenceAttribute = new FactoryReferenceAttribute<>(ExampleFactoryB.class);
+        public final FactoryReferenceAttribute<ExampleFactoryANotNullable,ExampleLiveObjectA,ExampleFactoryANotNullable> referenceAttribute = new FactoryReferenceAttribute<>();
 
         @Override
         public ExampleLiveObjectA createImpl() {
-            return new ExampleLiveObjectA(referenceAttribute.instance(), null);
+            return new ExampleLiveObjectA(null, null);
         }
 
 
@@ -69,7 +69,7 @@ public class DefaultCreatorTest {
     }
 
     public static class ExampleFactoryNullableRef extends SimpleFactoryBase<ExampleLiveObjectA, ExampleFactoryNullableRef> {
-        public final FactoryReferenceAttribute<ExampleLiveObjectB, ExampleFactoryB> referenceAttribute = new FactoryReferenceAttribute<>(ExampleFactoryB.class).nullable();
+        public final FactoryReferenceAttribute<ExampleFactoryNullableRef,ExampleLiveObjectA, ExampleFactoryNullableRef> referenceAttribute = new FactoryReferenceAttribute<ExampleFactoryNullableRef,ExampleLiveObjectA, ExampleFactoryNullableRef>().nullable();
 
         @Override
         public ExampleLiveObjectA createImpl() {

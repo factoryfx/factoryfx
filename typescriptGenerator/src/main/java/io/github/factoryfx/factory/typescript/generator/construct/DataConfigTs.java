@@ -1,17 +1,18 @@
 package io.github.factoryfx.factory.typescript.generator.construct;
 
-import io.github.factoryfx.data.Data;
+
+import io.github.factoryfx.factory.FactoryBase;
 import io.github.factoryfx.factory.typescript.generator.ts.*;
 
 import java.util.*;
 
 public class DataConfigTs {
 
-    private final Class<? extends Data> clazz;
+    private final Class<? extends FactoryBase<?,?>> clazz;
     private final TsFile dataGeneratedTsClass;
 
 
-    public DataConfigTs(Class<? extends Data> clazz, TsFile dataGeneratedTsClass) {
+    public DataConfigTs(Class<? extends FactoryBase<?,?>> clazz, TsFile dataGeneratedTsClass) {
         this.clazz = clazz;
         this.dataGeneratedTsClass = dataGeneratedTsClass;
     }

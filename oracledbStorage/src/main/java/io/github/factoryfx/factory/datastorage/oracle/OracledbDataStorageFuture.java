@@ -1,15 +1,16 @@
 package io.github.factoryfx.factory.datastorage.oracle;
 
-import io.github.factoryfx.data.Data;
-import io.github.factoryfx.data.storage.ScheduledUpdateMetadata;
-import io.github.factoryfx.data.storage.migration.MigrationManager;
+
+import io.github.factoryfx.factory.FactoryBase;
+import io.github.factoryfx.factory.storage.ScheduledUpdateMetadata;
+import io.github.factoryfx.factory.storage.migration.MigrationManager;
 
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.function.Supplier;
 
-public class OracledbDataStorageFuture<R extends Data,S> {
+public class OracledbDataStorageFuture<R extends FactoryBase<?,R>,S> {
 
     private final MigrationManager<R,S> migrationManager;
     private final Supplier<Connection> connectionSupplier;

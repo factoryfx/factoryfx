@@ -1,18 +1,19 @@
 package io.github.factoryfx.factory.datastorage.oracle;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import io.github.factoryfx.data.Data;
-import io.github.factoryfx.data.jackson.SimpleObjectMapper;
-import io.github.factoryfx.data.storage.DataStoragePatcher;
-import io.github.factoryfx.data.storage.migration.MigrationManager;
-import io.github.factoryfx.data.storage.StoredDataMetadata;
+
+import io.github.factoryfx.factory.FactoryBase;
+import io.github.factoryfx.factory.jackson.SimpleObjectMapper;
+import io.github.factoryfx.factory.storage.DataStoragePatcher;
+import io.github.factoryfx.factory.storage.migration.MigrationManager;
+import io.github.factoryfx.factory.storage.StoredDataMetadata;
 
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.function.Supplier;
 
-public class OracledbDataStorageHistory<R extends Data,S> {
+public class OracledbDataStorageHistory<R extends FactoryBase<?,R>,S> {
 
     private final MigrationManager<R,S> migrationManager;
     private final Supplier<Connection> connectionSupplier;

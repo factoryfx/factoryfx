@@ -1,7 +1,7 @@
 package io.github.factoryfx.factory.typescript.generator.construct.atttributes;
 
-import io.github.factoryfx.data.attribute.Attribute;
-import io.github.factoryfx.data.attribute.types.EnumAttribute;
+import io.github.factoryfx.factory.attribute.Attribute;
+import io.github.factoryfx.factory.attribute.types.EnumAttribute;
 import io.github.factoryfx.factory.typescript.generator.ts.TsEnumConstructed;
 import io.github.factoryfx.factory.typescript.generator.ts.TsFile;
 import io.github.factoryfx.factory.typescript.generator.ts.TsType;

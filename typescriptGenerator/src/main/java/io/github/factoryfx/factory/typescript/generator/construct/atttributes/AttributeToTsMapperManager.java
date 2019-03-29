@@ -1,15 +1,16 @@
 package io.github.factoryfx.factory.typescript.generator.construct.atttributes;
 
-import io.github.factoryfx.data.Data;
-import io.github.factoryfx.data.attribute.*;
-import io.github.factoryfx.factory.atrribute.FactoryReferenceAttribute;
-import io.github.factoryfx.factory.atrribute.FactoryReferenceListAttribute;
-import io.github.factoryfx.factory.atrribute.FactoryViewListReferenceAttribute;
-import io.github.factoryfx.factory.atrribute.FactoryViewReferenceAttribute;
-import io.github.factoryfx.data.attribute.primitive.*;
-import io.github.factoryfx.data.attribute.primitive.list.*;
-import io.github.factoryfx.data.attribute.time.*;
-import io.github.factoryfx.data.attribute.types.*;
+
+import io.github.factoryfx.factory.FactoryBase;
+import io.github.factoryfx.factory.attribute.*;
+import io.github.factoryfx.factory.attribute.dependency.FactoryReferenceAttribute;
+import io.github.factoryfx.factory.attribute.dependency.FactoryReferenceListAttribute;
+import io.github.factoryfx.factory.attribute.dependency.FactoryViewListReferenceAttribute;
+import io.github.factoryfx.factory.attribute.dependency.FactoryViewReferenceAttribute;
+import io.github.factoryfx.factory.attribute.primitive.*;
+import io.github.factoryfx.factory.attribute.primitive.list.*;
+import io.github.factoryfx.factory.attribute.time.*;
+import io.github.factoryfx.factory.attribute.types.*;
 import io.github.factoryfx.factory.typescript.generator.ts.*;
 
 import java.util.*;
@@ -32,12 +33,10 @@ public class AttributeToTsMapperManager {
         throw new IllegalStateException("unknown attribute type"+attribute);
     }
 
-    public static Map<Class<? extends Attribute>, AttributeToTsMapper> createAttributeInfoMap(Map<Class<? extends Data>, TsClassConstructed> dataToOverrideTs, Set<TsEnumConstructed> tsEnums){
+    public static <R extends FactoryBase<?,R>> Map<Class<? extends Attribute>, AttributeToTsMapper> createAttributeInfoMap(Map<Class<? extends FactoryBase<?,R>>, TsClassConstructed> dataToOverrideTs, Set<TsEnumConstructed> tsEnums){
         HashMap<Class<? extends Attribute>, AttributeToTsMapper> result = new HashMap<>();
-        result.put(DataReferenceAttribute.class, new ReferenceAttributeToTsMapper(dataToOverrideTs));
-        result.put(DataReferenceListAttribute.class, new ReferenceListAttributeToTsMapper(dataToOverrideTs));
-        result.put(FactoryReferenceAttribute.class, new ReferenceAttributeToTsMapper(dataToOverrideTs));
-        result.put(FactoryReferenceListAttribute.class, new ReferenceListAttributeToTsMapper(dataToOverrideTs));
+        result.put(FactoryReferenceAttribute.class, new ReferenceAttributeToTsMapper<>(dataToOverrideTs));
+        result.put(FactoryReferenceListAttribute.class, new ReferenceListAttributeToTsMapper<>(dataToOverrideTs));
 
         result.put(ByteArrayAttribute.class, new ValueAttributeToTsMapper(TsTypePrimitive.STRING));
         result.put(I18nAttribute.class, new ValueAttributeToTsMapper(TsTypePrimitive.STRING));
@@ -80,8 +79,6 @@ public class AttributeToTsMapperManager {
     public static Set<Class<? extends Attribute>> createAttributeIgnoreSet(){
         Set<Class<? extends Attribute>> result = new HashSet<>();
         result.add(ObjectValueAttribute.class);
-        result.add(DataViewReferenceAttribute.class);
-        result.add(DataViewListReferenceAttribute.class);
         result.add(FactoryViewReferenceAttribute.class);
         result.add(FactoryViewListReferenceAttribute.class);
         return result;

@@ -1,7 +1,7 @@
 package io.github.factoryfx.jetty;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.github.factoryfx.data.jackson.ObjectMapperBuilder;
+import io.github.factoryfx.factory.jackson.ObjectMapperBuilder;
 import io.github.factoryfx.factory.FactoryBase;
 import io.github.factoryfx.factory.SimpleFactoryBase;
 

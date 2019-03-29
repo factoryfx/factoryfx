@@ -1,6 +1,6 @@
 package io.github.factoryfx.factory.typescript.generator.data;
 
-import io.github.factoryfx.data.jackson.ObjectMapperBuilder;
+import io.github.factoryfx.factory.jackson.ObjectMapperBuilder;
 
 public class ExampleFactoryExample {
     public static void main(String[] args) {

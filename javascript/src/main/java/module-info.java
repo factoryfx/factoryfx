@@ -1,5 +1,5 @@
 module io.github.factoryfx.javascript {
-    requires io.github.factoryfx.data;
+    requires io.github.factoryfx.factory;
     requires closure.compiler.unshaded.v20170218;
     requires jdk.scripting.nashorn;
     requires jackson.annotations;

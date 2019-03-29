@@ -4,13 +4,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ch.qos.logback.classic.Level;
-import io.github.factoryfx.data.DataDictionary;
-import io.github.factoryfx.data.attribute.types.StringAttribute;
-import io.github.factoryfx.data.jackson.ObjectMapperBuilder;
-import io.github.factoryfx.factory.atrribute.FactoryReferenceAttribute;
-import io.github.factoryfx.factory.atrribute.FactoryReferenceListAttribute;
-import io.github.factoryfx.factory.atrribute.FactoryViewListReferenceAttribute;
+import io.github.factoryfx.factory.attribute.types.StringAttribute;
+import io.github.factoryfx.factory.jackson.ObjectMapperBuilder;
+import io.github.factoryfx.factory.attribute.dependency.FactoryReferenceAttribute;
+import io.github.factoryfx.factory.attribute.dependency.FactoryReferenceListAttribute;
+import io.github.factoryfx.factory.attribute.dependency.FactoryViewListReferenceAttribute;
 import io.github.factoryfx.factory.exception.RethrowingFactoryExceptionHandler;
+import io.github.factoryfx.factory.metadata.FactoryMetadataManager;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
@@ -68,18 +68,18 @@ public class FactoryManagerLifeCycleTest {
     }
 
     public static class LifecycleFactoryA extends LifecycleFactoryBase {
-        public final FactoryReferenceAttribute<DummyLifeObejct, LifecycleFactoryB> ref = new FactoryReferenceAttribute<>(LifecycleFactoryB.class);
-        public final FactoryReferenceListAttribute<DummyLifeObejct, LifecycleFactoryC> refList = new FactoryReferenceListAttribute<>(LifecycleFactoryC.class);
-        public final FactoryReferenceAttribute<DummyLifeObejct, LifecycleFactoryC> refC = new FactoryReferenceAttribute<>(LifecycleFactoryC.class);
+        public final FactoryReferenceAttribute<LifecycleFactoryA,DummyLifeObejct, LifecycleFactoryB> ref = new FactoryReferenceAttribute<>();
+        public final FactoryReferenceListAttribute<LifecycleFactoryA,DummyLifeObejct, LifecycleFactoryC> refList = new FactoryReferenceListAttribute<>();
+        public final FactoryReferenceAttribute<LifecycleFactoryA,DummyLifeObejct, LifecycleFactoryC> refC = new FactoryReferenceAttribute<>();
 
-        public final FactoryReferenceAttribute<DummyLifeObejct, LifecycleFactoryA> refA = new FactoryReferenceAttribute<>(LifecycleFactoryA.class);
+        public final FactoryReferenceAttribute<LifecycleFactoryA,DummyLifeObejct, LifecycleFactoryA> refA = new FactoryReferenceAttribute<>();
 
-        public final FactoryReferenceAttribute<DummyLifeObejct, LifecycleFactoryB> ref2 = new FactoryReferenceAttribute<>(LifecycleFactoryB.class);
+        public final FactoryReferenceAttribute<LifecycleFactoryA,DummyLifeObejct, LifecycleFactoryB> ref2 = new FactoryReferenceAttribute<>();
     }
 
     public static class LifecycleFactoryB extends LifecycleFactoryBase {
-        public final FactoryReferenceAttribute<DummyLifeObejct, LifecycleFactoryC> refC = new FactoryReferenceAttribute<>(LifecycleFactoryC.class);
-        public final FactoryReferenceAttribute<DummyLifeObejct, LifecycleFactoryD> refD = new FactoryReferenceAttribute<>(LifecycleFactoryD.class);
+        public final FactoryReferenceAttribute<LifecycleFactoryA,DummyLifeObejct, LifecycleFactoryC> refC = new FactoryReferenceAttribute<>();
+        public final FactoryReferenceAttribute<LifecycleFactoryA,DummyLifeObejct, LifecycleFactoryD> refD = new FactoryReferenceAttribute<>();
         public StringAttribute stringAttribute=new StringAttribute();
 
         public final FactoryViewListReferenceAttribute<LifecycleFactoryA,DummyLifeObejct, LifecycleFactoryC> listView = new FactoryViewListReferenceAttribute<LifecycleFactoryA,DummyLifeObejct, LifecycleFactoryC>(
@@ -91,22 +91,22 @@ public class FactoryManagerLifeCycleTest {
     }
 
     public static class LifecycleFactoryD extends LifecycleFactoryBase {
-        public final FactoryReferenceAttribute<DummyLifeObejct, LifecycleFactoryC> refC = new FactoryReferenceAttribute<>(LifecycleFactoryC.class);
+        public final FactoryReferenceAttribute<LifecycleFactoryA,DummyLifeObejct, LifecycleFactoryC> refC = new FactoryReferenceAttribute<>();
     }
 
 
     static {
-        DataDictionary.getDataDictionary(LifecycleFactoryA.class).setNewCopyInstanceSupplier(lifecycleFactoryA -> {
+        FactoryMetadataManager.getMetadata(LifecycleFactoryA.class).setNewCopyInstanceSupplier(lifecycleFactoryA -> {
             LifecycleFactoryA copy = new LifecycleFactoryA();
             copy.copyCounters(lifecycleFactoryA);
             return copy;
         });
-        DataDictionary.getDataDictionary(LifecycleFactoryB.class).setNewCopyInstanceSupplier(lifecycleFactoryB -> {
+        FactoryMetadataManager.getMetadata(LifecycleFactoryB.class).setNewCopyInstanceSupplier(lifecycleFactoryB -> {
             LifecycleFactoryB copy = new LifecycleFactoryB();
             copy.copyCounters(lifecycleFactoryB);
             return copy;
         });
-        DataDictionary.getDataDictionary(LifecycleFactoryC.class).setNewCopyInstanceSupplier(lifecycleFactoryC -> {
+        FactoryMetadataManager.getMetadata(LifecycleFactoryC.class).setNewCopyInstanceSupplier(lifecycleFactoryC -> {
             LifecycleFactoryC copy = new LifecycleFactoryC();
             copy.copyCounters(lifecycleFactoryC);
             return copy;

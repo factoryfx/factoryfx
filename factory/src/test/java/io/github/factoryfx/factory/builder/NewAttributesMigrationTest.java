@@ -1,8 +1,8 @@
 package io.github.factoryfx.factory.builder;
 
-import io.github.factoryfx.data.attribute.types.StringAttribute;
+import io.github.factoryfx.factory.attribute.types.StringAttribute;
 import io.github.factoryfx.factory.SimpleFactoryBase;
-import io.github.factoryfx.factory.atrribute.FactoryReferenceAttribute;
+import io.github.factoryfx.factory.attribute.dependency.FactoryReferenceAttribute;
 import io.github.factoryfx.server.Microservice;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -24,10 +24,10 @@ public class NewAttributesMigrationTest {
 
     public static class ServerFactoryOld extends SimpleFactoryBase<Void, ServerFactoryOld> {
 
-        public final FactoryReferenceAttribute<Void,ClientSystemFactoryOld>  clientSystemFactory1 = new FactoryReferenceAttribute<>(ClientSystemFactoryOld.class);
-        public final FactoryReferenceAttribute<Void,ClientSystemFactoryOld>  clientSystemFactory2 = new FactoryReferenceAttribute<>(ClientSystemFactoryOld.class);
+        public final FactoryReferenceAttribute<ServerFactoryOld,Void,ClientSystemFactoryOld>  clientSystemFactory1 = new FactoryReferenceAttribute<>();
+        public final FactoryReferenceAttribute<ServerFactoryOld,Void,ClientSystemFactoryOld>  clientSystemFactory2 = new FactoryReferenceAttribute<>();
 
-        public final FactoryReferenceAttribute<Void,ServerFactoryNestedOld>  serverFactoryNested = new FactoryReferenceAttribute<>(ServerFactoryNestedOld.class);
+        public final FactoryReferenceAttribute<ServerFactoryOld,Void,ServerFactoryNestedOld>  serverFactoryNested = new FactoryReferenceAttribute<>();
 
         @Override
         public Void createImpl() {
@@ -38,7 +38,7 @@ public class NewAttributesMigrationTest {
 
     public static class ServerFactoryNestedOld extends SimpleFactoryBase<Void, ServerFactoryOld> {
 
-        public final FactoryReferenceAttribute<Void,PartnerFactoryOld>  partnerFactory1 = new FactoryReferenceAttribute<>(PartnerFactoryOld.class);
+        public final FactoryReferenceAttribute<ServerFactoryOld,Void,PartnerFactoryOld>  partnerFactory1 = new FactoryReferenceAttribute<>();
 
         @Override
         public Void createImpl() {
@@ -70,10 +70,10 @@ public class NewAttributesMigrationTest {
 
 
     public static class ServerFactory extends SimpleFactoryBase<Void, ServerFactory> {
-        public final FactoryReferenceAttribute<Void, ClientSystemFactory> clientSystemFactory1 = new FactoryReferenceAttribute<>(ClientSystemFactory.class);
-        public final FactoryReferenceAttribute<Void, ClientSystemFactory> clientSystemFactory2 = new FactoryReferenceAttribute<>(ClientSystemFactory.class);
+        public final FactoryReferenceAttribute<ServerFactory,Void, ClientSystemFactory> clientSystemFactory1 = new FactoryReferenceAttribute<>();
+        public final FactoryReferenceAttribute<ServerFactory,Void, ClientSystemFactory> clientSystemFactory2 = new FactoryReferenceAttribute<>();
 
-        public final FactoryReferenceAttribute<Void, ServerFactoryNested> serverFactoryNested = new FactoryReferenceAttribute<>(ServerFactoryNested.class);
+        public final FactoryReferenceAttribute<ServerFactory,Void, ServerFactoryNested> serverFactoryNested = new FactoryReferenceAttribute<>();
 
         @Override
         public Void createImpl() {
@@ -83,7 +83,7 @@ public class NewAttributesMigrationTest {
 
     public static class ServerFactoryNested extends SimpleFactoryBase<Void, ServerFactory> {
 
-        public final FactoryReferenceAttribute<Void,ClientSystemFactory>  clientSystemFactory = new FactoryReferenceAttribute<>(ClientSystemFactory.class);
+        public final FactoryReferenceAttribute<ServerFactory,Void,ClientSystemFactory>  clientSystemFactory = new FactoryReferenceAttribute<>();
 
         @Override
         public Void createImpl() {

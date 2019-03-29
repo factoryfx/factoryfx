@@ -2,9 +2,9 @@ package io.github.factoryfx.server;
 
 import java.util.Collection;
 
-import io.github.factoryfx.data.merge.DataMerger;
-import io.github.factoryfx.data.merge.MergeDiffInfo;
-import io.github.factoryfx.data.storage.*;
+import io.github.factoryfx.factory.merge.DataMerger;
+import io.github.factoryfx.factory.merge.MergeDiffInfo;
+import io.github.factoryfx.factory.storage.*;
 import io.github.factoryfx.factory.FactoryBase;
 import io.github.factoryfx.factory.FactoryManager;
 import io.github.factoryfx.factory.RootFactoryWrapper;
@@ -54,7 +54,7 @@ public class Microservice<L,R extends FactoryBase<L,R>,S> {
                 changeSummary=changeSummaryCreator.createChangeSummary(factoryLog.mergeDiffInfo);
             }
 
-            R copy = factoryManager.getCurrentFactory().internal().copy();
+            R copy = factoryManager.getCurrentFactory().utility().copy();
             DataUpdate<R> updateAfterMerge = new DataUpdate<>(
                     copy,
                     update.user,
@@ -111,7 +111,7 @@ public class Microservice<L,R extends FactoryBase<L,R>,S> {
 
     public L start() {
         final DataAndId<R> currentFactory = dataStorage.getCurrentData();
-        currentFactory.root.internalFactory().setMicroservice(this);//also mind ExceptionResponseAction#reset
+        currentFactory.root.internal().setMicroservice(this);//also mind ExceptionResponseAction#reset
         return factoryManager.start(new RootFactoryWrapper<>(currentFactory.root));
     }
 
@@ -120,6 +120,6 @@ public class Microservice<L,R extends FactoryBase<L,R>,S> {
     }
 
     public L getRootLiveObject(){
-        return factoryManager.getCurrentFactory().internalFactory().getLiveObject();
+        return factoryManager.getCurrentFactory().internal().getLiveObject();
     }
 }

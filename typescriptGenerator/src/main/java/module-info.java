@@ -1,5 +1,4 @@
 module io.github.factoryfx.typescriptGenerator {
-    requires io.github.factoryfx.data;
     requires io.github.factoryfx.factory;
     requires com.google.common;
 

@@ -4,23 +4,25 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import io.github.factoryfx.data.Data;
-import io.github.factoryfx.data.jackson.ObjectMapperBuilder;
+
+import io.github.factoryfx.factory.FactoryBase;
+import io.github.factoryfx.factory.jackson.ObjectMapperBuilder;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+
 
 public class JavascriptAttributeTest {
 
     @Test
     public void test_get_update_header(){
-        Data data = new Data();
+        ExampleJavascriptData data = new ExampleJavascriptData();
         JavascriptAttribute<Object> javascriptAttributeTest = new JavascriptAttribute<>(() -> Collections.singletonList(data),Object.class);
         Assertions.assertEquals("var data = {};",javascriptAttributeTest.get().getHeaderCode().trim());
     }
 
     @Test
     public void test_listeners() throws InterruptedException {
-        Data data = new Data();
+        ExampleJavascriptData data = new ExampleJavascriptData();
         JavascriptAttribute<Object> javascriptAttributeTest = new JavascriptAttribute<>(() -> Collections.singletonList(data),Object.class);
         javascriptAttributeTest.internal_setRunlaterExecutor(runnable -> runnable.run());
         List<String> calls = new ArrayList<>();
@@ -36,7 +38,7 @@ public class JavascriptAttributeTest {
 
     @Test
     public void test_listeners_multiple() {
-        Data data = new Data();
+        ExampleJavascriptData data = new ExampleJavascriptData();
         JavascriptAttribute<Object> javascriptAttributeTest = new JavascriptAttribute<>(() -> Collections.singletonList(data),Object.class);
         javascriptAttributeTest.internal_setRunlaterExecutor(runnable -> runnable.run());
         List<String> calls = new ArrayList<>();
@@ -48,8 +50,8 @@ public class JavascriptAttributeTest {
         Assertions.assertEquals("XXX2",calls.get(calls.size()-1));
     }
 
-    public static class ExampleJavascriptData{
-        public final JavascriptAttribute<Object> attribute = new JavascriptAttribute<>(() -> Collections.singletonList(new Data()),Object.class);
+    public static class ExampleJavascriptData extends FactoryBase<Void,ExampleJavascriptData>{
+        public final JavascriptAttribute<Object> attribute = new JavascriptAttribute<>(() -> Collections.singletonList(new ExampleJavascriptData()),Object.class);
     }
 
     @Test

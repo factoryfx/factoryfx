@@ -66,12 +66,12 @@
     </Match>
 
     <Match>
-        <Class name="io.github.factoryfx.javafx.data.widget.datalistedit.ReferenceListAttributeEditWidget" />
+        <Class name="io.github.factoryfx.javafx.factory.widget.datalistedit.ReferenceListAttributeEditWidget" />
         <Bug pattern="UC_USELESS_OBJECT" />
     </Match>
 
     <Match>
-        <Class name="io.github.factoryfx.data.storage.ScheduledUpdateMetadata" />
+        <Class name="io.github.factoryfx.factory.storage.ScheduledUpdateMetadata" />
         <Bug pattern="EQ_COMPARETO_USE_OBJECT_EQUALS" />
     </Match>
 

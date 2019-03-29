@@ -1,11 +1,14 @@
 package io.github.factoryfx.factory.typescript.generator.data;
 
-import io.github.factoryfx.data.Data;
-import io.github.factoryfx.data.attribute.primitive.*;
-import io.github.factoryfx.data.attribute.time.*;
-import io.github.factoryfx.data.attribute.types.*;
 
-public class ExampleDataAll extends Data {
+import io.github.factoryfx.factory.FactoryBase;
+import io.github.factoryfx.factory.attribute.primitive.*;
+import io.github.factoryfx.factory.attribute.time.*;
+import io.github.factoryfx.factory.attribute.types.*;
+
+import javax.xml.crypto.Data;
+
+public class ExampleDataAll extends FactoryBase<Void,ExampleData> {
     public final ByteArrayAttribute byteArrayAttribute=new ByteArrayAttribute();
     public final I18nAttribute i18nAttribute=new I18nAttribute();
     public final EncryptedStringAttribute encryptedStringAttribute=new EncryptedStringAttribute();

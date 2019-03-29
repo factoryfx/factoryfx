@@ -1,10 +1,10 @@
 package io.github.factoryfx.jetty;
 
 import ch.qos.logback.classic.Level;
-import io.github.factoryfx.data.attribute.types.StringAttribute;
-import io.github.factoryfx.data.storage.DataUpdate;
+import io.github.factoryfx.factory.attribute.types.StringAttribute;
+import io.github.factoryfx.factory.storage.DataUpdate;
 import io.github.factoryfx.factory.SimpleFactoryBase;
-import io.github.factoryfx.factory.atrribute.FactoryReferenceAttribute;
+import io.github.factoryfx.factory.attribute.dependency.FactoryReferenceAttribute;
 import io.github.factoryfx.factory.builder.FactoryTreeBuilder;
 import io.github.factoryfx.factory.builder.Scope;
 import io.github.factoryfx.server.Microservice;
@@ -53,8 +53,7 @@ public class UpdateableServletTest {
     }
 
     public static class UpdateableWebserverRootFactory extends SimpleFactoryBase<Server, UpdateableWebserverRootFactory>{
-        @SuppressWarnings("unchecked")
-        public final FactoryReferenceAttribute<Server,JettyServerFactory<UpdateableWebserverRootFactory>> server = FactoryReferenceAttribute.create(new FactoryReferenceAttribute<>(JettyServerFactory.class));
+        public final FactoryReferenceAttribute<UpdateableWebserverRootFactory,Server,JettyServerFactory<UpdateableWebserverRootFactory>> server = new FactoryReferenceAttribute<>();
 
         @Override
         public Server createImpl() {

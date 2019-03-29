@@ -1,10 +1,10 @@
 package io.github.factoryfx.docu.dependencyinjection;
 
 import io.github.factoryfx.factory.SimpleFactoryBase;
-import io.github.factoryfx.factory.atrribute.FactoryReferenceAttribute;
+import io.github.factoryfx.factory.attribute.dependency.FactoryReferenceAttribute;
 
 public class RootFactory extends SimpleFactoryBase<Root, RootFactory> {
-    public final FactoryReferenceAttribute<Dependency,DependencyFactory> dependency =new FactoryReferenceAttribute<>(DependencyFactory.class).labelText("dependency");
+    public final FactoryReferenceAttribute<RootFactory,Dependency,DependencyFactory> dependency =new FactoryReferenceAttribute<>();
 
     @Override
     public Root createImpl() {

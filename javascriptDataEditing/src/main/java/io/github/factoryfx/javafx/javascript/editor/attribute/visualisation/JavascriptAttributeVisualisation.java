@@ -1,8 +1,8 @@
 package io.github.factoryfx.javafx.javascript.editor.attribute.visualisation;
 
 
-import io.github.factoryfx.javafx.data.editor.attribute.ValidationDecoration;
-import io.github.factoryfx.javafx.data.editor.attribute.ValueAttributeVisualisation;
+import io.github.factoryfx.javafx.factory.editor.attribute.ValidationDecoration;
+import io.github.factoryfx.javafx.factory.editor.attribute.ValueAttributeVisualisation;
 import io.github.factoryfx.javascript.data.attributes.types.JavascriptAttribute;
 import io.github.factoryfx.javascript.data.attributes.types.Javascript;
 import javafx.application.Platform;

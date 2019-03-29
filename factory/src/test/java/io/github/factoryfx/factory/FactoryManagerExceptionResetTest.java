@@ -1,9 +1,9 @@
 package io.github.factoryfx.factory;
 
-import io.github.factoryfx.data.DataDictionary;
-import io.github.factoryfx.factory.atrribute.FactoryReferenceAttribute;
+import io.github.factoryfx.factory.attribute.dependency.FactoryReferenceAttribute;
 import io.github.factoryfx.factory.exception.ResettingHandler;
 import io.github.factoryfx.factory.log.FactoryUpdateLog;
+import io.github.factoryfx.factory.metadata.FactoryMetadataManager;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -18,7 +18,7 @@ public class FactoryManagerExceptionResetTest {
 
 
     public static class BrokenFactory extends FactoryBase<DummyLifeObejct,BrokenFactory> {
-        public final FactoryReferenceAttribute<DummyLifeObejct,BrokenFactory> ref= new FactoryReferenceAttribute<>(BrokenFactory.class);
+        public final FactoryReferenceAttribute<BrokenFactory,DummyLifeObejct,BrokenFactory> ref= new FactoryReferenceAttribute<>();
 
         public List<String> createCalls= new ArrayList<>();
         public List<String> reCreateCalls= new ArrayList<>();
@@ -26,7 +26,7 @@ public class FactoryManagerExceptionResetTest {
         public List<String> destroyCalls= new ArrayList<>();
 
         static {
-            DataDictionary.getDataDictionary(BrokenFactory.class).setNewCopyInstanceSupplier(brokenFactory ->
+            FactoryMetadataManager.getMetadata(BrokenFactory.class).setNewCopyInstanceSupplier(brokenFactory ->
                     new BrokenFactory(brokenFactory.createException,brokenFactory.reCreateException,brokenFactory.startException,brokenFactory.destroyException)
             );
         }
@@ -133,7 +133,7 @@ public class FactoryManagerExceptionResetTest {
         BrokenFactory update = factoryManager.getCurrentFactory().utility().copy();
         update.ref.set(new BrokenFactory(false,false,true,false));
 
-        factoryManager.update(factoryManager.getCurrentFactory().utility().copy(),update,p->true);
+        factoryManager.update(factoryManager.getCurrentFactory().utility().copy(),update, p->true);
 
         Assertions.assertEquals(2,root.destroyCalls.size());//1 for the update and 1 for the reset
         Assertions.assertEquals(1,factoryManager.getCurrentFactory().createCalls.size());
@@ -153,7 +153,7 @@ public class FactoryManagerExceptionResetTest {
         BrokenFactory update = factoryManager.getCurrentFactory().utility().copy();
         update.ref.set(new BrokenFactory(false,false,false,false));
 
-        factoryManager.update(factoryManager.getCurrentFactory().utility().copy(),update,p->true);
+        factoryManager.update(factoryManager.getCurrentFactory().utility().copy(),update, p->true);
 
         Assertions.assertEquals(2,root.destroyCalls.size());//1 for the update and 1 for the reset
         Assertions.assertEquals(1,factoryManager.getCurrentFactory().createCalls.size());

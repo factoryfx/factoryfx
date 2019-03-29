@@ -2,10 +2,10 @@ package io.github.factoryfx.javafx.factory.view.container;
 
 import java.util.HashMap;
 
-import io.github.factoryfx.data.util.LanguageText;
-import io.github.factoryfx.javafx.data.util.UniformDesign;
+import io.github.factoryfx.factory.util.LanguageText;
+import io.github.factoryfx.javafx.factory.util.UniformDesign;
 import io.github.factoryfx.javafx.factory.view.View;
-import io.github.factoryfx.javafx.data.widget.Widget;
+import io.github.factoryfx.javafx.factory.widget.Widget;
 import javafx.scene.Node;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;

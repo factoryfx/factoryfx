@@ -2,7 +2,7 @@ package io.github.factoryfx.docu.swagger;
 
 import ch.qos.logback.classic.Level;
 import io.github.factoryfx.factory.SimpleFactoryBase;
-import io.github.factoryfx.factory.atrribute.FactoryReferenceAttribute;
+import io.github.factoryfx.factory.attribute.dependency.FactoryReferenceAttribute;
 import io.github.factoryfx.factory.builder.FactoryTreeBuilder;
 import io.github.factoryfx.factory.builder.Scope;
 import io.github.factoryfx.jetty.JettyServerBuilder;
@@ -21,8 +21,7 @@ import java.net.http.HttpResponse;
 public class Main {
 
     public static class SwaggerWebserver extends SimpleFactoryBase<Server, SwaggerWebserver> {
-        @SuppressWarnings("unchecked")
-        public final FactoryReferenceAttribute<Server, JettyServerFactory<SwaggerWebserver>> server = FactoryReferenceAttribute.create(new FactoryReferenceAttribute<>(JettyServerFactory.class));
+        public final FactoryReferenceAttribute<SwaggerWebserver,Server, JettyServerFactory<SwaggerWebserver>> server = new FactoryReferenceAttribute<>();
 
         @Override
         public Server createImpl() {

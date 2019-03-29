@@ -1,18 +1,18 @@
 package io.github.factoryfx.server.user.persistent;
 
-import io.github.factoryfx.data.util.LanguageText;
-import io.github.factoryfx.data.validation.ValidationResult;
+import io.github.factoryfx.factory.util.LanguageText;
+import io.github.factoryfx.factory.validation.ValidationResult;
 import io.github.factoryfx.factory.FactoryBase;
 import io.github.factoryfx.factory.PolymorphicFactoryBase;
-import io.github.factoryfx.factory.atrribute.FactoryReferenceListAttribute;
+import io.github.factoryfx.factory.attribute.dependency.FactoryReferenceListAttribute;
 import io.github.factoryfx.server.user.User;
 import io.github.factoryfx.server.user.UserManagement;
 
 import java.util.HashSet;
 
 public class PersistentUserManagementFactory<R extends FactoryBase<?,R>> extends PolymorphicFactoryBase<UserManagement,R> {
-    @SuppressWarnings("unchecked")
-    public final FactoryReferenceListAttribute<User, UserFactory<R>> users = FactoryReferenceListAttribute.create(new FactoryReferenceListAttribute<>(UserFactory.class).en("users").de("Benutzer").userNotSelectable());
+
+    public final FactoryReferenceListAttribute<R,User, UserFactory<R>> users = new FactoryReferenceListAttribute<R,User, UserFactory<R>>().en("users").de("Benutzer").userNotSelectable();
 
     @Override
     public PersistentUserManagement createImpl() {

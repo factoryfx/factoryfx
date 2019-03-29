@@ -1,6 +1,6 @@
 module io.github.factoryfx.postgresqlStorage {
+    requires io.github.factoryfx.factory;
     requires java.sql;
-    requires io.github.factoryfx.data;
     requires com.google.common;
     requires com.fasterxml.jackson.databind;
 

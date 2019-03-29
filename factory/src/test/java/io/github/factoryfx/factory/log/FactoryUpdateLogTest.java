@@ -1,7 +1,7 @@
 package io.github.factoryfx.factory.log;
 
-import io.github.factoryfx.data.jackson.ObjectMapperBuilder;
-import io.github.factoryfx.data.merge.DataMerger;
+import io.github.factoryfx.factory.jackson.ObjectMapperBuilder;
+import io.github.factoryfx.factory.merge.DataMerger;
 import io.github.factoryfx.factory.testfactories.ExampleFactoryA;
 import org.junit.jupiter.api.Test;
 

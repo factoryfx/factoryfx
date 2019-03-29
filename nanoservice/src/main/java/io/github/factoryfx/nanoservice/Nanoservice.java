@@ -20,7 +20,7 @@ public class Nanoservice<R,L extends NanoserviceRoot<R>,RF extends NanoserviceRo
 
     public R run() {
         factoryManager.start(new RootFactoryWrapper<>(rootFactory));
-        R result = factoryManager.getCurrentFactory().internalFactory().getLiveObject().run();
+        R result = factoryManager.getCurrentFactory().internal().getLiveObject().run();
         factoryManager.stop();
 
         return result;

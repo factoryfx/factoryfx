@@ -1,6 +1,6 @@
 package io.github.factoryfx.factory;
 
-import io.github.factoryfx.data.merge.DataMerger;
+import io.github.factoryfx.factory.merge.DataMerger;
 import io.github.factoryfx.factory.testfactories.FastExampleFactoryA;
 import io.github.factoryfx.factory.testfactories.FastExampleFactoryB;
 import org.junit.jupiter.api.Assertions;

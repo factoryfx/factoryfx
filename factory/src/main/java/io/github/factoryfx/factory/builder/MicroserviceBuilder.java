@@ -1,18 +1,18 @@
 package io.github.factoryfx.factory.builder;
 
-import io.github.factoryfx.data.Data;
-import io.github.factoryfx.data.attribute.Attribute;
-import io.github.factoryfx.data.jackson.SimpleObjectMapper;
-import io.github.factoryfx.data.storage.ChangeSummaryCreator;
-import io.github.factoryfx.data.storage.filesystem.FileSystemDataStorage;
-import io.github.factoryfx.data.storage.inmemory.InMemoryDataStorage;
-import io.github.factoryfx.data.storage.migration.MigrationManager;
+
+import io.github.factoryfx.factory.attribute.Attribute;
+import io.github.factoryfx.factory.jackson.SimpleObjectMapper;
+import io.github.factoryfx.factory.storage.ChangeSummaryCreator;
+import io.github.factoryfx.factory.storage.filesystem.FileSystemDataStorage;
+import io.github.factoryfx.factory.storage.inmemory.InMemoryDataStorage;
+import io.github.factoryfx.factory.storage.migration.MigrationManager;
 import io.github.factoryfx.factory.FactoryBase;
 import io.github.factoryfx.factory.FactoryManager;
 import io.github.factoryfx.factory.exception.FactoryExceptionHandler;
 import io.github.factoryfx.factory.exception.RethrowingFactoryExceptionHandler;
 import io.github.factoryfx.server.Microservice;
-import io.github.factoryfx.data.storage.migration.datamigration.AttributePath;
+import io.github.factoryfx.factory.storage.migration.datamigration.AttributePath;
 
 import java.nio.file.Path;
 import java.util.function.BiConsumer;
@@ -103,12 +103,12 @@ public class MicroserviceBuilder<L,R extends FactoryBase<L,R>,S> {
         return this;
     }
 
-    public <D extends Data> MicroserviceBuilder<L,R,S> withRenameAttributeMigration(Class<D> dataClass, String previousAttributeName, Function<D, Attribute<?,?>> attributeNameProvider){
+    public <D extends FactoryBase<?,R>> MicroserviceBuilder<L,R,S> withRenameAttributeMigration(Class<D> dataClass, String previousAttributeName, Function<D, Attribute<?,?>> attributeNameProvider){
         this.migrationManager.renameAttribute(dataClass,previousAttributeName,attributeNameProvider);
         return this;
     }
 
-    public MicroserviceBuilder<L,R,S> withRenameClassMigration(String previousDataClassNameFullQualified, Class<? extends Data> newDataClass){
+    public MicroserviceBuilder<L,R,S> withRenameClassMigration(String previousDataClassNameFullQualified, Class<? extends FactoryBase<?,?>> newDataClass){
         this.migrationManager.renameClass(previousDataClassNameFullQualified,newDataClass);
         return this;
     }

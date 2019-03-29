@@ -4,9 +4,9 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
-import io.github.factoryfx.data.merge.MergeDiffInfo;
+import io.github.factoryfx.factory.merge.MergeDiffInfo;
 import io.github.factoryfx.factory.testfactories.ExampleFactoryA;
-import io.github.factoryfx.javafx.css.CssUtil;
+import io.github.factoryfx.javafx.factory.css.CssUtil;
 import io.github.factoryfx.javafx.factory.util.UniformDesignFactory;
 import io.github.factoryfx.factory.log.FactoryLogEntry;
 import io.github.factoryfx.factory.log.FactoryLogEntryTreeItem;
@@ -23,7 +23,7 @@ public class FactoryUpdateLogWidgetTest extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
 
-        FactoryUpdateLogWidget factoryUpdateLogWidget = new FactoryUpdateLogWidget(new UniformDesignFactory().internalFactory().instance());
+        FactoryUpdateLogWidget factoryUpdateLogWidget = new FactoryUpdateLogWidget(new UniformDesignFactory().internal().instance());
         final FactoryLogEntry factoryLogEntry = new FactoryLogEntry(ExampleFactoryA.class, "FactoryX", 0);
         factoryLogEntry.logCreate(21323);
         factoryLogEntry.logStart(5646546);

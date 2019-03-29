@@ -1,22 +1,21 @@
 package io.github.factoryfx.factory;
 
-import io.github.factoryfx.data.Data;
-import io.github.factoryfx.data.merge.DataMerger;
-import io.github.factoryfx.data.merge.MergeDiffInfo;
+import io.github.factoryfx.factory.merge.DataMerger;
+import io.github.factoryfx.factory.merge.MergeDiffInfo;
 import io.github.factoryfx.factory.log.FactoryLogEntryTreeItem;
 
 import java.util.List;
 import java.util.Set;
 import java.util.function.Function;
 
-public class RootFactoryWrapper<R extends FactoryBase<?,?>> {
+public class RootFactoryWrapper<R extends FactoryBase<?,R>> {
 
     private final R rootFactory;
 
     public RootFactoryWrapper(R rootFactory) {
         this.rootFactory = rootFactory;
         this.rootFactory.internal().addBackReferences();
-        this.rootFactory.internalFactory().loopDetector();//loop after that cause views/attributes need root and
+        this.rootFactory.internal().loopDetector();//loop after that cause views/attributes need root and
 
         updateCachedChildren();
     }
@@ -25,8 +24,8 @@ public class RootFactoryWrapper<R extends FactoryBase<?,?>> {
     private List<FactoryBase<?,?>> factoriesInDestroyOrder;
     public void updateCachedChildren(){
 
-        factoriesInCreateAndStartOrder = rootFactory.internalFactory().getFactoriesInCreateAndStartOrder();
-        factoriesInDestroyOrder = rootFactory.internalFactory().getFactoriesInDestroyOrder();
+        factoriesInCreateAndStartOrder = rootFactory.internal().getFactoriesInCreateAndStartOrder();
+        factoriesInDestroyOrder = rootFactory.internal().getFactoriesInDestroyOrder();
     }
 
     public List<FactoryBase<?,?>> collectChildFactories(){
@@ -42,14 +41,14 @@ public class RootFactoryWrapper<R extends FactoryBase<?,?>> {
         return factoriesInDestroyOrder;
     }
 
-    public void determineRecreationNeedFromRoot(Set<Data> changedData) {
-        rootFactory.internalFactory().determineRecreationNeedFromRoot(changedData);
+    public void determineRecreationNeedFromRoot(Set<FactoryBase<?,?>> changedData) {
+        rootFactory.internal().determineRecreationNeedFromRoot(changedData);
     }
 
     public MergeDiffInfo<R> merge(R commonVersion, R newVersion, Function<String,Boolean> permissionChecker){
         DataMerger<R> dataMerger = new DataMerger<>(rootFactory, commonVersion, newVersion);
         MergeDiffInfo<R> mergeDiffInfo = dataMerger.mergeIntoCurrent(permissionChecker);
-        rootFactory.internalFactory().loopDetector();
+        rootFactory.internal().loopDetector();
         updateCachedChildren();
         return mergeDiffInfo;
     }
@@ -62,11 +61,11 @@ public class RootFactoryWrapper<R extends FactoryBase<?,?>> {
     }
 
     public String logStartDisplayTextDeep() {
-        return rootFactory.internalFactory().logStartDisplayTextDeep();
+        return rootFactory.internal().logStartDisplayTextDeep();
     }
 
     public String logUpdateDisplayTextDeep() {
-        return rootFactory.internalFactory().logUpdateDisplayTextDeep();
+        return rootFactory.internal().logUpdateDisplayTextDeep();
     }
 
     public R getRoot() {
@@ -74,6 +73,6 @@ public class RootFactoryWrapper<R extends FactoryBase<?,?>> {
     }
 
     public FactoryLogEntryTreeItem createFactoryLogTree() {
-        return rootFactory.internalFactory().createFactoryLogTree();
+        return rootFactory.internal().createFactoryLogTree();
     }
 }

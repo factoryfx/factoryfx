@@ -1,6 +1,6 @@
 package io.github.factoryfx.factory.parametrized;
 
-import io.github.factoryfx.data.validation.ValidationError;
+import io.github.factoryfx.factory.validation.ValidationError;
 import io.github.factoryfx.factory.testfactories.ExampleFactoryA;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -10,7 +10,7 @@ import java.util.List;
 public class ParametrizedObjectCreatorAttributeTest {
     @Test
     public void test_null(){
-        ParametrizedObjectCreatorAttribute<ParametrizedObjectCreatorFactoryTest.ShortLivedParameter,ParametrizedObjectCreatorFactoryTest.ShortLivedLiveObject,ParametrizedObjectCreatorFactoryTest.ShortLivedLiveObjectCreatorFactory> attribute = new ParametrizedObjectCreatorAttribute<>(ParametrizedObjectCreatorFactoryTest.ShortLivedLiveObjectCreatorFactory.class);
+        ParametrizedObjectCreatorAttribute<ParametrizedObjectCreatorFactoryTest.ShortLivedLiveObjectCreatorFactory,ParametrizedObjectCreatorFactoryTest.ShortLivedParameter,ParametrizedObjectCreatorFactoryTest.ShortLivedLiveObject,ParametrizedObjectCreatorFactoryTest.ShortLivedLiveObjectCreatorFactory> attribute = new ParametrizedObjectCreatorAttribute<>();
 
         {
             attribute.set(null);
@@ -27,7 +27,7 @@ public class ParametrizedObjectCreatorAttributeTest {
 
     @Test
     public void test_nullable(){
-        ParametrizedObjectCreatorAttribute<ParametrizedObjectCreatorFactoryTest.ShortLivedParameter,ParametrizedObjectCreatorFactoryTest.ShortLivedLiveObject,ParametrizedObjectCreatorFactoryTest.ShortLivedLiveObjectCreatorFactory> attribute = new ParametrizedObjectCreatorAttribute<>(ParametrizedObjectCreatorFactoryTest.ShortLivedLiveObjectCreatorFactory.class).nullable();
+        ParametrizedObjectCreatorAttribute<ParametrizedObjectCreatorFactoryTest.ShortLivedLiveObjectCreatorFactory,ParametrizedObjectCreatorFactoryTest.ShortLivedParameter,ParametrizedObjectCreatorFactoryTest.ShortLivedLiveObject,ParametrizedObjectCreatorFactoryTest.ShortLivedLiveObjectCreatorFactory> attribute = new ParametrizedObjectCreatorAttribute<ParametrizedObjectCreatorFactoryTest.ShortLivedLiveObjectCreatorFactory,ParametrizedObjectCreatorFactoryTest.ShortLivedParameter,ParametrizedObjectCreatorFactoryTest.ShortLivedLiveObject,ParametrizedObjectCreatorFactoryTest.ShortLivedLiveObjectCreatorFactory>().nullable();
 
         {
             attribute.set(null);
@@ -44,13 +44,13 @@ public class ParametrizedObjectCreatorAttributeTest {
 
     @Test
     public void test_internal_require_true(){
-        ParametrizedObjectCreatorAttribute<ParametrizedObjectCreatorFactoryTest.ShortLivedParameter,ParametrizedObjectCreatorFactoryTest.ShortLivedLiveObject,ParametrizedObjectCreatorFactoryTest.ShortLivedLiveObjectCreatorFactory> attribute = new ParametrizedObjectCreatorAttribute<>(ParametrizedObjectCreatorFactoryTest.ShortLivedLiveObjectCreatorFactory.class);
+        ParametrizedObjectCreatorAttribute<ParametrizedObjectCreatorFactoryTest.ShortLivedLiveObjectCreatorFactory,ParametrizedObjectCreatorFactoryTest.ShortLivedParameter,ParametrizedObjectCreatorFactoryTest.ShortLivedLiveObject,ParametrizedObjectCreatorFactoryTest.ShortLivedLiveObjectCreatorFactory> attribute = new ParametrizedObjectCreatorAttribute<>();
         Assertions.assertTrue(attribute.internal_required());
     }
 
     @Test
     public void test_internal_require_false(){
-        ParametrizedObjectCreatorAttribute<ParametrizedObjectCreatorFactoryTest.ShortLivedParameter,ParametrizedObjectCreatorFactoryTest.ShortLivedLiveObject,ParametrizedObjectCreatorFactoryTest.ShortLivedLiveObjectCreatorFactory> attribute = new ParametrizedObjectCreatorAttribute<>(ParametrizedObjectCreatorFactoryTest.ShortLivedLiveObjectCreatorFactory.class).nullable();
+        ParametrizedObjectCreatorAttribute<ParametrizedObjectCreatorFactoryTest.ShortLivedLiveObjectCreatorFactory,ParametrizedObjectCreatorFactoryTest.ShortLivedParameter,ParametrizedObjectCreatorFactoryTest.ShortLivedLiveObject,ParametrizedObjectCreatorFactoryTest.ShortLivedLiveObjectCreatorFactory> attribute = new ParametrizedObjectCreatorAttribute<ParametrizedObjectCreatorFactoryTest.ShortLivedLiveObjectCreatorFactory,ParametrizedObjectCreatorFactoryTest.ShortLivedParameter,ParametrizedObjectCreatorFactoryTest.ShortLivedLiveObject,ParametrizedObjectCreatorFactoryTest.ShortLivedLiveObjectCreatorFactory>().nullable();
         Assertions.assertFalse(attribute.internal_required());
     }
 

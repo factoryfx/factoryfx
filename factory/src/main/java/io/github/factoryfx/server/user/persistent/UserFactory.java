@@ -1,10 +1,10 @@
 package io.github.factoryfx.server.user.persistent;
 
 import com.fasterxml.jackson.annotation.JsonAlias;
-import io.github.factoryfx.data.attribute.types.LocaleAttribute;
-import io.github.factoryfx.data.attribute.types.PasswordAttribute;
-import io.github.factoryfx.data.attribute.types.StringAttribute;
-import io.github.factoryfx.data.attribute.types.StringListAttribute;
+import io.github.factoryfx.factory.attribute.types.LocaleAttribute;
+import io.github.factoryfx.factory.attribute.types.PasswordAttribute;
+import io.github.factoryfx.factory.attribute.types.StringAttribute;
+import io.github.factoryfx.factory.attribute.types.StringListAttribute;
 import io.github.factoryfx.factory.FactoryBase;
 import io.github.factoryfx.factory.SimpleFactoryBase;
 import io.github.factoryfx.server.user.User;

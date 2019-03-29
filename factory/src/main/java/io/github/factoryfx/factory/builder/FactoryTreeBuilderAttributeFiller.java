@@ -1,10 +1,10 @@
 package io.github.factoryfx.factory.builder;
 
 
-import io.github.factoryfx.data.Data;
-import io.github.factoryfx.data.attribute.Attribute;
-import io.github.factoryfx.data.storage.migration.datamigration.AttributeFiller;
-import io.github.factoryfx.data.storage.migration.metadata.DataStorageMetadataDictionary;
+
+import io.github.factoryfx.factory.attribute.Attribute;
+import io.github.factoryfx.factory.storage.migration.datamigration.AttributeFiller;
+import io.github.factoryfx.factory.storage.migration.metadata.DataStorageMetadataDictionary;
 import io.github.factoryfx.factory.FactoryBase;
 
 public class FactoryTreeBuilderAttributeFiller<L,R extends FactoryBase<L,R>,S> implements AttributeFiller<R> {
@@ -19,7 +19,7 @@ public class FactoryTreeBuilderAttributeFiller<L,R extends FactoryBase<L,R>,S> i
     @SuppressWarnings("unchecked")
     public void fillNewAttributes(R root, DataStorageMetadataDictionary oldDataStorageMetadataDictionary) {
         factoryTreeBuilder.fillFromExistingFactoryTree(root);
-        for (Data data : root.internal().collectChildrenDeep()) {
+        for (FactoryBase<?,?> data : root.internal().collectChildrenDeep()) {
 
 //            Class aClass = ((FactoryReferenceAttribute<?, ?>) attribute).internal_getReferenceClass();
 

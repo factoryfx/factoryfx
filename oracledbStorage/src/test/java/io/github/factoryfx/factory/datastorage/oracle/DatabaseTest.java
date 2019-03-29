@@ -1,7 +1,7 @@
 package io.github.factoryfx.factory.datastorage.oracle;
 
-import io.github.factoryfx.data.jackson.ObjectMapperBuilder;
-import io.github.factoryfx.data.storage.migration.MigrationManager;
+import io.github.factoryfx.factory.jackson.ObjectMapperBuilder;
+import io.github.factoryfx.factory.storage.migration.MigrationManager;
 import io.github.factoryfx.factory.testfactories.ExampleFactoryA;
 import org.h2.tools.Server;
 import org.junit.jupiter.api.AfterEach;

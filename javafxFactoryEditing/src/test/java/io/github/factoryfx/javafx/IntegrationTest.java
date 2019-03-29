@@ -8,7 +8,7 @@ import io.github.factoryfx.javafx.factory.view.ViewFactory;
 import io.github.factoryfx.javafx.factory.view.container.ViewsDisplayWidgetFactory;
 import io.github.factoryfx.javafx.factory.view.menu.ViewMenuFactory;
 import io.github.factoryfx.javafx.factory.view.menu.ViewMenuItemFactory;
-import io.github.factoryfx.javafx.data.widget.Widget;
+import io.github.factoryfx.javafx.factory.widget.Widget;
 import io.github.factoryfx.javafx.factory.widget.factory.WidgetFactory;
 import javafx.application.Application;
 import javafx.scene.control.Label;
@@ -68,7 +68,7 @@ public class IntegrationTest extends Application{
         stageFactory.viewsDisplayWidget.set(viewsDisplayWidgetFactory);
         stageFactory.longRunningActionExecutor.set(longRunningActionExecutorFactory);
 
-        stageFactory.internalFactory().instance();
-        stageFactory.internalFactory().start();
+        stageFactory.internal().instance();
+        stageFactory.internal().start();
     }
 }

@@ -6,7 +6,7 @@ public class CustomConfigurationResourceFactory extends SimpleFactoryBase<Custom
 
     @Override
     public CustomConfigurationResource createImpl() {
-        return new CustomConfigurationResource(this.utilityFactory().getMicroservice());
+        return new CustomConfigurationResource(this.utility().getMicroservice());
     }
 
 }

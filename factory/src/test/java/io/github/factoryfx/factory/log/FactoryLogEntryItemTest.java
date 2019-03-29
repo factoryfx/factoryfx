@@ -1,6 +1,6 @@
 package io.github.factoryfx.factory.log;
 
-import io.github.factoryfx.data.jackson.ObjectMapperBuilder;
+import io.github.factoryfx.factory.jackson.ObjectMapperBuilder;
 import org.junit.jupiter.api.Test;
 
 public class FactoryLogEntryItemTest {

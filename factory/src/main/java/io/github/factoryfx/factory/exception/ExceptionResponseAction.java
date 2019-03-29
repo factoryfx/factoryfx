@@ -22,11 +22,11 @@ public class ExceptionResponseAction<L,R extends FactoryBase<L,R>> {
     }
 
     public void reset() {
-        Microservice<?, R, ?> microservice = currentFactoryRoot.getRoot().utilityFactory().getMicroservice();
-        previousFactoryRootCopy.getRoot().internalFactory().setMicroservice(microservice);
+        Microservice<?, R, ?> microservice = currentFactoryRoot.getRoot().utility().getMicroservice();
+        previousFactoryRootCopy.getRoot().internal().setMicroservice(microservice);
 
         for (FactoryBase<?,?> removedFactory : removed) {
-            removedFactory.internalFactory().cleanUpAfterCrash();
+            removedFactory.internal().cleanUpAfterCrash();
         }
         factoryManager.resetAfterCrash();
 

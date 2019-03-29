@@ -1,9 +1,9 @@
 package io.github.factoryfx.factory.builder;
 
-import io.github.factoryfx.data.Data;
-import io.github.factoryfx.data.jackson.ObjectMapperBuilder;
-import io.github.factoryfx.data.jackson.SimpleObjectMapper;
-import io.github.factoryfx.data.validation.ValidationError;
+
+import io.github.factoryfx.factory.jackson.ObjectMapperBuilder;
+import io.github.factoryfx.factory.jackson.SimpleObjectMapper;
+import io.github.factoryfx.factory.validation.ValidationError;
 import io.github.factoryfx.factory.FactoryBase;
 
 import java.util.ArrayList;
@@ -56,7 +56,7 @@ public class FactoryTreeBuilder<L,R extends FactoryBase<L,R>,S> {
 
     private void validate(R root) {
         List<ValidationError> validationErrors=new ArrayList<>();
-        for (Data data : root.internal().collectChildrenDeep()) {
+        for (FactoryBase<?,?> data : root.internal().collectChildrenDeep()) {
             validationErrors.addAll(data.internal().validateFlat());
         }
         if (!validationErrors.isEmpty()){

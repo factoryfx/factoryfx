@@ -1,6 +1,6 @@
 package io.github.factoryfx.example.server.shop;
 
-import io.github.factoryfx.data.attribute.primitive.DoubleAttribute;
+import io.github.factoryfx.factory.attribute.primitive.DoubleAttribute;
 import io.github.factoryfx.example.server.ServerBaseFactory;
 
 public class VatRateFactory extends ServerBaseFactory<VatRate> {

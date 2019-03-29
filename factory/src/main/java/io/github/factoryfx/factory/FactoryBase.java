@@ -1,32 +1,50 @@
 package io.github.factoryfx.factory;
 
+import java.lang.reflect.Modifier;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.*;
+import com.google.common.base.Strings;
 import com.google.common.base.Throwables;
-import io.github.factoryfx.data.Data;
+import com.google.common.collect.Maps;
+import io.github.factoryfx.factory.attribute.Attribute;
+import io.github.factoryfx.factory.attribute.AttributeChangeListener;
+import io.github.factoryfx.factory.attribute.AttributeGroup;
+import io.github.factoryfx.factory.attribute.dependency.RootAwareAttribute;
 import io.github.factoryfx.factory.log.FactoryLogEntry;
 import io.github.factoryfx.factory.log.FactoryLogEntryEventType;
 import io.github.factoryfx.factory.log.FactoryLogEntryTreeItem;
+import io.github.factoryfx.factory.merge.AttributeDiffInfo;
+import io.github.factoryfx.factory.merge.MergeResult;
+import io.github.factoryfx.factory.metadata.FactoryMetadata;
+import io.github.factoryfx.factory.metadata.FactoryMetadataManager;
+import io.github.factoryfx.factory.storage.migration.metadata.DataStorageMetadata;
+import io.github.factoryfx.factory.storage.migration.metadata.DataStorageMetadataDictionary;
+import io.github.factoryfx.factory.validation.AttributeValidation;
+import io.github.factoryfx.factory.validation.Validation;
+import io.github.factoryfx.factory.validation.ValidationError;
 import io.github.factoryfx.server.Microservice;
 import org.slf4j.LoggerFactory;
 
 /**
  * @param <L> liveobject created from this factory
  */
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id", resolver = DataObjectIdResolver.class)
+@JsonTypeInfo(use=JsonTypeInfo.Id.CLASS, include=JsonTypeInfo.As.PROPERTY, property="@class")// minimal class don't work always
+@JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class FactoryBase<L,R extends FactoryBase<?,R>> extends Data{
+public class FactoryBase<L,R extends FactoryBase<?,R>> {
+
+    @JsonProperty
+    Object id;
+
+    private Supplier<String> idSupplier;
+    private static final Random r = new Random();
 
     private static final org.slf4j.Logger logger = LoggerFactory.getLogger(FactoryBase.class);
-
-    public FactoryBase() {
-
-    }
 
     @JsonIgnore
     private L createdLiveObject;
@@ -40,11 +58,919 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> extends Data{
     @JsonProperty
     private String treeBuilderName;
 
+    public FactoryBase() {
+
+    }
+
+
+    public String getId() {
+        if (id == null) {
+            if (idSupplier != null) {
+                id = idSupplier.get();
+            } else {
+                id = new UUID(r.nextLong(), r.nextLong());
+                //TODO does this increase collision probability?
+                // Secure random in UUID.randomUUID().toString() is too slow and it doesn't matter if the random is predictable
+            }
+        }
+        return id.toString();
+    }
+
+    public void setId(String value) {
+        id = value;
+    }
+
+
+    private void setIdSupplier(Supplier<String> idSupplier){
+        this.idSupplier=idSupplier;
+    }
+
+    /**
+     * equal using id, performance optimization if both id are UUID
+     *
+     * @param data data
+     * @return true if equals*/
+    public boolean idEquals(FactoryBase<?,?> data){
+        if (id instanceof UUID && data.id instanceof UUID){
+            return id.equals(data.id);
+        } else {
+            return getId().equals(data.getId());
+        }
+    }
 
     @SuppressWarnings("unchecked")
-    private FactoryDictionary<FactoryBase<?, R>> getFactoryDictionary(){
-        return (FactoryDictionary<FactoryBase<?, R>>)FactoryDictionary.getFactoryDictionary(getClass());
+    private FactoryMetadata<R,FactoryBase<? extends L,R>> getDataDictionary(){
+        return (FactoryMetadata<R,FactoryBase<? extends L,R>>) FactoryMetadataManager.getMetadata(getClass());
     }
+
+    @FunctionalInterface
+    public interface TriAttributeVisitor {
+        void accept(String attributeVariableName, Attribute<?,?> attribute1, Attribute<?,?> attribute2, Attribute<?,?> attribute3);
+    }
+
+    @FunctionalInterface
+    public interface BiAttributeVisitor {
+        void accept(String attributeVariableName, Attribute<?,?> attribute1, Attribute<?,?> attribute2);
+    }
+
+    private void visitAttributesFlat(AttributeVisitor consumer) {
+        getDataDictionary().visitAttributesFlat(this,consumer);
+    }
+
+    private void visitAttributesDualFlat(FactoryBase<? extends L,R> data, BiAttributeVisitor consumer) {
+        getDataDictionary().visitAttributesDualFlat(this,data,consumer);
+    }
+
+    private void visitAttributesTripleFlat(FactoryBase<L,R> other1, FactoryBase<L,R> other2, TriAttributeVisitor consumer) {
+        getDataDictionary().visitAttributesTripleFlat(this,other1,other2,consumer);
+    }
+
+    private Map<String,FactoryBase<?,R>> collectChildDataMap() {
+        List<FactoryBase<?,R>> dataList = collectChildrenDeep();
+        HashMap<String, FactoryBase<?,R>> result = Maps.newHashMapWithExpectedSize(dataList.size());
+        for (FactoryBase<?,R> factory: dataList){
+            result.put(factory.getId(),factory);
+        }
+        return result;
+    }
+
+    /** collect set with all nested children and itself*/
+    private List<FactoryBase<?,R>> collectChildrenDeep() {
+        ArrayList<FactoryBase<?,R>> dataList = new ArrayList<>();
+        collectModelEntitiesTo(dataList,this.iterationRun+1);
+        return dataList;
+    }
+
+    void collectModelEntitiesTo(List<FactoryBase<?,R>> allModelEntities, long dataIterationRun) {
+        allModelEntities.add(this);
+        visitChildFactoriesAndViewsFlat(child -> child.collectModelEntitiesTo(allModelEntities,dataIterationRun),dataIterationRun);
+    }
+
+    private FactoryBase<? extends L,R> newCopyInstance(FactoryBase<L,R> data) {
+        return getDataDictionary().newCopyInstance(data);
+    }
+
+    private Set<FactoryBase<?,?>> collectChildrenDeepFromNode() {
+        HashSet<FactoryBase<?,?>> result = new HashSet<>();
+        collectChildFactoriesDeepFromNode(result);
+        return result;
+    }
+
+    private void collectChildFactoriesDeepFromNode(Set<FactoryBase<?,?>> collected) {
+        if (collected.add(this)){
+            visitChildFactoriesAndViewsFlatWithoutIterationCheck(child -> child.collectChildFactoriesDeepFromNode(collected));
+        }
+    }
+
+    private List<FactoryBase<?,R>> fixDuplicateObjects() {
+        Map<String, FactoryBase<?, R>> idToDataMapTyped = collectChildDataMap();
+        Map<String, FactoryBase<?,?>> idToDataMap = new HashMap<>();
+        for (Map.Entry<String, FactoryBase<?, R>> stringFactoryBaseEntry : idToDataMapTyped.entrySet()) {
+            idToDataMap.put(stringFactoryBaseEntry.getKey(),stringFactoryBaseEntry.getValue());
+        }
+        final List<FactoryBase<?,R>> all = new ArrayList<>(idToDataMapTyped.values());
+        for (FactoryBase<?,R> data: all){
+            data.visitAttributesFlat((attributeVariableName, attribute) -> attribute.internal_fixDuplicateObjects(idToDataMap));
+        }
+        return all;
+    }
+
+    private Supplier<String> displayTextProvider;
+
+    @JsonIgnore
+    private String getDisplayText(){
+        if (displayTextProvider==null){
+//            return CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_HYPHEN,Data.this.getClass().getSimpleName()).replace("-"," ");
+            return FactoryBase.this.getClass().getSimpleName();
+        }
+        return displayTextProvider.get();
+    }
+
+    private void setDisplayTextProvider(Supplier<String> displayTextProvider){
+        this.displayTextProvider=displayTextProvider;
+    }
+
+    /** validate attributes without visiting child factories*/
+    private List<ValidationError> validateFlat(){
+        final ArrayList<ValidationError> result = new ArrayList<>();
+        final Map<Attribute<?,?>, List<ValidationError>> attributeListMap = validateFlatMapped();
+        for (Map.Entry<Attribute<?,?>, List<ValidationError>> entry: attributeListMap.entrySet()){
+            result.addAll(entry.getValue());
+        }
+
+        return result;
+    }
+
+    /** validate attributes without visiting child factories
+     */
+    private Map<Attribute<?,?>,List<ValidationError>> validateFlatMapped(){
+        Map<Attribute<?,?>,List<ValidationError>> result= new HashMap<>();
+
+        visitAttributesFlat((attributeVariableName, attribute) -> {
+            final ArrayList<ValidationError> validationErrors = new ArrayList<>();
+            result.put(attribute, validationErrors);
+            validationErrors.addAll(attribute.internal_validate(this,attributeVariableName));
+        });
+
+        if (dataValidations!=null){
+            for (AttributeValidation<?> validation: dataValidations){
+                final Map<Attribute<?,?>, List<ValidationError>> validateResult = validation.validate(this);
+                for (Map.Entry<Attribute<?,?>, List<ValidationError>> entry: validateResult.entrySet()){
+                    result.get(entry.getKey()).addAll(entry.getValue());
+                }
+            }
+        }
+        return result;
+    }
+
+    private List<AttributeValidation<?>> dataValidations;
+    private <T> void addValidation(Validation<T> validation, Attribute<?,?>... dependencies){
+        if (dataValidations==null){
+            dataValidations = new ArrayList<>();
+        }
+        for ( Attribute<?,?> dependency: dependencies){
+            dataValidations.add(new AttributeValidation<>(validation,dependency));
+        }
+    }
+
+    private void merge(FactoryBase<L,R> originalValue, FactoryBase<L,R> newValue, MergeResult mergeResult, Function<String,Boolean> permissionChecker) {
+        this.visitAttributesTripleFlat(originalValue, newValue, (attributeName, currentAttribute, originalAttribute, newAttribute) -> {
+            if (!currentAttribute.internal_ignoreForMerging()){
+                if (currentAttribute.internal_hasMergeConflict(originalAttribute, newAttribute)) {
+                    mergeResult.addConflictInfo(new AttributeDiffInfo(FactoryBase.this.getId(), attributeName));
+                } else {
+                    if (currentAttribute.internal_isMergeable(originalAttribute, newAttribute)) {
+                        final AttributeDiffInfo attributeDiffInfo = new AttributeDiffInfo(attributeName,FactoryBase.this.getId());
+                        if (currentAttribute.internal_hasWritePermission(permissionChecker)){
+                            mergeResult.addMergeInfo(attributeDiffInfo);
+                            mergeResult.addMergeExecutions(() -> currentAttribute.internal_merge(newAttribute));
+                        } else {
+                            mergeResult.addPermissionViolationInfo(attributeDiffInfo);
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+
+    @SuppressWarnings("unchecked")
+    private <F extends FactoryBase<? extends L,R>> F semanticCopy() {
+        F result = (F)newCopyInstance(this);
+        this.visitAttributesDualFlat(result, (attributeName, attribute1, attribute2) -> attribute1.internal_semanticCopyToUnsafe(attribute2));
+        return result;
+    }
+
+    /**copy including one the references first level of nested references*/
+    private <T extends FactoryBase<?,?>> T copyOneLevelDeep(){
+        return copy(1);
+    }
+
+    /**copy without nested references, only value attributes are copied*/
+    private <T extends FactoryBase<?,?>> T copyZeroLevelDeep(){
+        return copy(0);
+    }
+
+    private <T extends FactoryBase<?,?>> T copy() {
+        return copy(Integer.MAX_VALUE);
+    }
+
+
+    @SuppressWarnings("unchecked")
+    private <T extends FactoryBase<?,?>> T copy(int level) {
+        ArrayList<FactoryBase<?,R>> oldDataList = new ArrayList<>();
+        FactoryBase<?,?> newRoot = copyDeep(0, level,oldDataList,null,(R)this);
+
+        for (FactoryBase<?,?> oldData: oldDataList) {
+            oldData.copy=null;//cleanup
+        }
+
+        return (T) newRoot;
+    }
+
+    @FunctionalInterface
+    public interface DataCopyProvider{
+        <R extends FactoryBase<?,R>,T extends FactoryBase<?,R>> T copy(T original);
+    }
+
+    FactoryBase<? extends L,R> copy;
+
+
+    @SuppressWarnings("unchecked")
+    private <F extends FactoryBase<? extends L,R>> F copyDeep(final int level, final int maxLevel, final List<FactoryBase<?,R>> oldData, FactoryBase<?,R> parent, R root){
+        if (level>maxLevel){
+            return null;
+        }
+        if (copy==null){
+            copy = newCopyInstance(this);
+            if (this.id==null){
+                getId();
+            }
+            if (this.id instanceof UUID){
+                copy.id = this.id;
+            } else {
+                copy.id = this.getId();
+            }
+
+
+            this.visitAttributesDualFlat(copy, (name, thisAttribute, copyAttribute) -> {
+                if (thisAttribute instanceof RootAwareAttribute<?,?>){
+                    ((RootAwareAttribute<R,?>)thisAttribute).internal_copyToUnsafe(copyAttribute,level + 1, maxLevel,oldData,this,root);
+                } else {
+                    thisAttribute.internal_copyToUnsafe(copyAttribute);
+                }
+
+                if (copyAttribute instanceof RootAwareAttribute<?,?>){
+                    ((RootAwareAttribute<R,?>)copyAttribute).internal_addBackReferences((R) root.copy,copy);
+                }
+//                copyAttribute.internal_addBackReferences(root.copy,copy);
+            });
+
+            oldData.add(this);
+
+            //add BackReferences
+            if (parent!=null){
+                copy.addParent(parent.copy);
+            }
+            copy.root=(R)root.copy;
+
+        }
+        return (F)copy;
+    }
+
+
+    private boolean readyForUsage(){
+        return root!=null;
+    }
+
+
+    private void endUsage() {
+        for (FactoryBase<?,?> data: collectChildrenDeep()){
+            data.visitAttributesFlat((attributeVariableName, attribute) -> attribute.internal_endUsage());
+        }
+    }
+
+
+    /**
+     * after serialisation or programmatically creation this mus be called first before using the object<br>
+     * to:<br>
+     * -propagate root/parent node to all children (for validation etc)<br>
+     * -init ids
+     *<br>
+     * only call on root<br>
+     *<br>
+     */
+    @SuppressWarnings("unchecked")
+    private void addBackReferences() {
+        this.root=(R)this;
+        addBackReferences(getRoot(),null,this.iterationRun+1);
+    }
+
+
+    private void addBackReferences(final R root, final FactoryBase<?,?> parent, long dataIterationRun){
+        getDataDictionary().setAttributeReferenceClasses(this);
+        addParent(parent);
+        this.root=root;
+        getDataDictionary().addBackReferencesToAttributes(this,root);
+        this.visitChildFactoriesAndViewsFlat(data -> data.addBackReferences(getRoot(), FactoryBase.this,dataIterationRun),dataIterationRun);
+    }
+
+    private void addBackReferencesForSubtree(R root, FactoryBase<?,?> parent, HashSet<FactoryBase<?,?>> visited){
+        getDataDictionary().setAttributeReferenceClasses(this);
+        addParent(parent);
+        this.root=root;
+        getDataDictionary().addBackReferencesToAttributes(this,root);
+
+        if (visited.add(this)) {//use HashSet instead of iteration counter to avoid iterationCounter mix up
+            visitChildFactoriesAndViewsFlatWithoutIterationCheck(child -> child.addBackReferencesForSubtree(root,this,visited));
+        }
+    }
+
+    private Set<FactoryBase<?,?>> parents;
+    private FactoryBase<?,?> parent;
+
+    private void addParent(FactoryBase<?,?> parent){
+        if (this.parent==null || this.parent==parent){
+            this.parent=parent;
+        } else {
+            if (parents==null){
+                parents=new HashSet<>();
+                parents.add(this.parent);
+                parents.add(parent);
+                if (parents.size()==1){
+                    System.out.println();
+                }
+            } else {
+                parents.add(parent);
+            }
+        }
+    }
+
+    private void resetBackReferencesFlat(){
+        this.parents=null;
+        this.parent=null;
+        this.root=null;
+    }
+
+    private boolean hasBackReferencesFlat(){
+        return this.root!=null;
+    }
+
+    @JsonIgnore
+    private Set<FactoryBase<?,?>> getParents(){
+        if (parents==null){
+            if (parent==null){
+                return Collections.emptySet();
+            }
+            return Set.of(parent);
+        } else {
+            return parents;
+        }
+    }
+
+    private R root;
+    private R getRoot(){
+        return root;
+    }
+
+    private Function<List<Attribute<?,?>>,List<AttributeGroup>> attributeListGroupedSupplier;
+    private void setAttributeListGroupedSupplier(Function<List<Attribute<?,?>>,List<AttributeGroup>> attributeListGroupedSupplier){
+        this.attributeListGroupedSupplier=attributeListGroupedSupplier;
+    }
+    private List<AttributeGroup> attributeListGrouped(){
+        if (attributeListGroupedSupplier==null){
+            return Collections.singletonList(new AttributeGroup("Data", attributeList()));
+        }
+        return attributeListGroupedSupplier.apply(attributeList());
+    }
+
+    private List<Attribute<?,?>> attributeList(){
+        ArrayList<Attribute<?,?>> result = new ArrayList<>();
+        this.visitAttributesFlat((attributeVariableName, attribute) -> result.add(attribute));
+        return result;
+    }
+
+    private Function<String,Boolean> matchSearchTextFunction;
+
+    private void setMatchSearchTextFunction(Function<String,Boolean> matchSearchTextFunction) {
+        this.matchSearchTextFunction=matchSearchTextFunction;
+    }
+
+    private boolean matchSearchText(String text) {
+        if (matchSearchTextFunction==null){
+            return Strings.isNullOrEmpty(text) || Strings.nullToEmpty(getDisplayText()).toLowerCase().contains(text.toLowerCase());
+        }
+        return matchSearchTextFunction.apply(text);
+    }
+
+    private List<Attribute<?,?>> displayTextDependencies= Collections.emptyList();
+    private void setDisplayTextDependencies(List<Attribute<?,?>> displayTextDependencies) {
+        this.displayTextDependencies = displayTextDependencies;
+    }
+
+    @SuppressWarnings("unchecked")
+    private void addDisplayTextListeners(FactoryBase<?,?>  data, AttributeChangeListener attributeChangeListener){
+        for (Attribute<?,?> attribute: data.displayTextDependencies){
+            attribute.internal_addListener(attributeChangeListener);
+        }
+    }
+
+    private Object storeDisplayTextObservable;
+    private void storeDisplayTextObservable(Object simpleStringProperty) {
+        storeDisplayTextObservable=simpleStringProperty;
+    }
+
+
+    /** data configurations api. Should be used in the default constructor
+     * @return the configuration api*/
+    protected DataConfiguration config(){
+        return new DataConfiguration(this);
+    }
+
+    public static class DataConfiguration {
+        private final FactoryBase<?,?>  data;
+
+        public DataConfiguration(FactoryBase<?,?>  data) {
+            this.data = data;
+        }
+        /**
+         * short readable text describing the factory
+         * @param displayTextProvider displayTextProvider
+         */
+        public void setDisplayTextProvider(Supplier<String> displayTextProvider){
+            data.setDisplayTextProvider(displayTextProvider);
+        }
+
+        /**
+         * short readable text describing the factory
+         * @param displayTextProvider custom displayText function
+         * @param dependencies attributes which affect the display text
+         */
+        public void setDisplayTextProvider(Supplier<String> displayTextProvider, Attribute<?,?>... dependencies){
+            data.setDisplayTextProvider(displayTextProvider);
+            data.setDisplayTextDependencies(Arrays.asList(dependencies));
+        }
+
+        /**
+         * @see  #setDisplayTextDependencies(Attribute[])
+         * @param attributes the attributes affecting the display text
+         */
+        public void setDisplayTextDependencies(List<Attribute<?,?>> attributes){
+            data.setDisplayTextDependencies(attributes);
+        }
+
+        /** set the attributes that affect the display text<br>
+         *  used for live update in gui
+         *
+         * @param attributes the attributes affecting the display text
+         * */
+        public void setDisplayTextDependencies(Attribute<?,?>... attributes){
+            data.setDisplayTextDependencies(Arrays.asList(attributes));
+        }
+
+        /**
+         *  grouped iteration over attributes e.g. used in gui editor where each group is a new Tab
+         *
+         * @param attributeListGroupedSupplier function with parameter containing all attributes
+         * */
+        public void setAttributeListGroupedSupplier(Function<List<Attribute<?,?>>,List<AttributeGroup>> attributeListGroupedSupplier){
+            this.data.setAttributeListGroupedSupplier(attributeListGroupedSupplier);
+        }
+
+
+        /**
+         *  define match logic for full-text search e.g. in tables
+         *
+         * @param matchSearchTextFunction matchSearchTextFunction
+         * */
+        public void setMatchSearchTextFunction(Function<String,Boolean> matchSearchTextFunction){
+            data.setMatchSearchTextFunction(matchSearchTextFunction);
+        }
+
+
+        /**
+         * data validation
+         * @param validation validation function
+         * @param dependencies attributes which affect the validation
+         * @param <T> this
+         */
+        public <T> void addValidation(Validation<T> validation, Attribute<?,?>... dependencies){
+            data.addValidation(validation,dependencies);
+        }
+
+        /**
+         * use id derived from attributes instead of uuid
+         *
+         * @param customIdSupplier id supplier
+         */
+        public void attributeId(Supplier<String> customIdSupplier){
+            data.setIdSupplier(customIdSupplier);
+        }
+    }
+
+
+    /** <b>internal methods should be only used from the framework.</b>
+     *  They may change in the Future.
+     *  There is no fitting visibility in java therefore this workaround.
+     * @return the internal api
+     */
+    public Internal<L,R> internal(){
+        return new Internal<>(this);
+    }
+
+    public static class Internal<L,R extends FactoryBase<?,R>>  {
+        private final FactoryBase<L,R>  factory;
+
+        public Internal(FactoryBase<L,R>  data) {
+            this.factory = data;
+        }
+
+        public boolean matchSearchText(String newValue) {
+            return factory.matchSearchText(newValue);
+        }
+
+        @SuppressWarnings("unchecked")
+        public void visitAttributesDualFlat(FactoryBase<?,?>  modelBase, BiAttributeVisitor consumer) {
+            factory.visitAttributesDualFlat((FactoryBase<L,R>)modelBase,consumer);
+        }
+
+        public void visitAttributesFlat(AttributeVisitor consumer) {
+            factory.visitAttributesFlat(consumer);
+        }
+
+
+        public List<AttributeGroup> attributeListGrouped(){
+            return factory.attributeListGrouped();
+        }
+
+        public Map<String,FactoryBase<?,R> > collectChildDataMap() {
+            factory.assertRoot();
+            return factory.collectChildDataMap();
+        }
+
+        /**
+         * @return all data including root and no duplicates
+         * */
+        public List<FactoryBase<?,R> > collectChildrenDeep() {
+            factory.assertRoot();
+            return factory.collectChildrenDeep();
+        }
+
+
+        /**fix all data with same id should be same object
+         * only call on root
+         * */
+        public void fixDuplicateData() {
+            factory.assertRoot();
+            factory.fixDuplicateObjects();
+        }
+
+        /**
+         * -fix all data with same id should be same object
+         * -remove parents that are no not tin the tree
+         * only call on root
+         * */
+        public void fixDuplicatesAndAddBackReferences() {
+            factory.assertRoot();
+            List<FactoryBase<?,R> > dataList = this.factory.fixDuplicateObjects();
+            for (FactoryBase<?,?>  data : dataList) {
+                data.resetBackReferencesFlat();
+            }
+            this.factory.addBackReferences();
+        }
+
+        public String getDisplayText(){
+            return factory.getDisplayText();
+        }
+
+        //TODO cleanup the hack (goal is to remove javafx dependency )
+        public void storeDisplayTextObservable(Object simpleStringProperty){
+            this.factory.storeDisplayTextObservable(simpleStringProperty);
+        }
+
+        public Object getDisplayTextObservable(){
+            return this.factory.storeDisplayTextObservable;
+        }
+
+        public List<ValidationError> validateFlat(){
+            return factory.validateFlat();
+        }
+
+        public <F extends FactoryBase<L,R>> void  merge(F  originalValue, F  newValue, MergeResult mergeResult, Function<String,Boolean> permissionChecker) {
+            factory.merge(originalValue,newValue,mergeResult,permissionChecker);
+        }
+        public List<FactoryBase<?,?> > getPathFromRoot() {
+            return factory.getPathFromRoot();
+        }
+
+        public <T extends FactoryBase<?,?> > T copy() {
+            return factory.copy();
+        }
+
+        public <T extends FactoryBase<L,R> > T copyOneLevelDeep(){
+            return factory.copyOneLevelDeep();
+        }
+
+        public <T extends FactoryBase<?,?> > T copyZeroLevelDeep(){
+            return factory.copyZeroLevelDeep();
+        }
+
+        public <F extends FactoryBase<L,R>> F copyDeep(final int level, final int maxLevel, final List<FactoryBase<?,R>> oldData, FactoryBase<?,R> parent, R root){
+            return factory.copyDeep(level,maxLevel,oldData,parent,root);
+        }
+
+        /**
+         * see: {@link FactoryBase#addBackReferences}
+         * @param <T> type
+         * @return usableCopy
+         */
+        @SuppressWarnings("unchecked")
+        public <T extends FactoryBase<L,R>> T addBackReferences() {
+            if (!this.factory.hasBackReferencesFlat()){
+                this.factory.addBackReferences();
+            }
+            return (T)factory;
+        }
+
+        public void serFactoryTreeBuilderBasedAttributeSetupForRoot(FactoryTreeBuilderBasedAttributeSetup<?,R,?> setup) {
+            this.factory.serFactoryTreeBuilderBasedAttributeSetupForRoot(setup);
+        }
+
+
+        /** only call on root*/
+        public void endUsage() {
+            factory.endUsage();
+        }
+
+        public boolean readyForUsage(){
+            return factory.readyForUsage();
+        }
+
+
+        /**
+         * @param root root
+         * @param parent parent
+         */
+        public void addBackReferencesForSubtree(R root, FactoryBase<?,?> parent){
+            factory.addBackReferencesForSubtree(root,parent,new HashSet<>());
+        }
+
+        public void addBackReferencesForSubtreeUnsafe(R root, FactoryBase<?,?> parent){
+            factory.addBackReferencesForSubtree(root,parent,new HashSet<>());
+        }
+
+        /** use getParents instead
+         * @return parent*/
+        @Deprecated
+        public FactoryBase<?,?>  getParent(){
+            if (factory.getParents().isEmpty()){
+                return null;
+            }
+            return factory.getParents().iterator().next();
+        }
+
+        public Set<FactoryBase<?,?> > getParents(){
+            return factory.getParents();
+        }
+
+        public void addDisplayTextListeners(AttributeChangeListener attributeChangeListener){
+            factory.addDisplayTextListeners(factory, attributeChangeListener);
+        }
+
+        public boolean hasBackReferencesFlat() {
+            return factory.hasBackReferencesFlat();
+        }
+
+        public void resetIterationCounterFlat() {
+            factory.iterationRun=0;
+        }
+
+        public void assertRoot(){
+            factory.assertRoot();
+        }
+
+        /**
+         * collect child from middle node, slower than FromRoot but work from all nodes
+         * @return children including itself
+         */
+        public Set<FactoryBase<?,?> > collectChildrenDeepFromNode() {
+            return factory.collectChildrenDeepFromNode();
+        }
+
+        public DataStorageMetadataDictionary createDataStorageMetadataDictionaryFromRoot(){
+            assertRoot();
+            return factory.createDataStorageMetadataDictionaryFromRoot();
+        }
+
+        public R getRoot() {
+            return factory.getRoot();
+        }
+
+        public FactoryTreeBuilderBasedAttributeSetup getFactoryTreeBuilderBasedAttributeSetup() {
+            return factory.factoryTreeBuilderBasedAttributeSetup;
+        }
+
+        /** create and prepare the liveobject
+         * @return liveobject*/
+        public L create(){
+            return factory.create();
+        }
+
+        public FactoryLogEntryTreeItem createFactoryLogTree() {
+            long iterationRun=factory.iterationRun+1;
+            return factory.createFactoryLogEntryTree(iterationRun);
+        }
+
+        public FactoryLogEntry createFactoryLogEntry(){
+            return factory.createFactoryLogEntryFlat();
+        }
+
+        /**
+         * determine which live objects needs recreation
+         * @param changedData changedData
+         * */
+        public void determineRecreationNeedFromRoot(Set<FactoryBase<?,?>> changedData) {
+            factory.determineRecreationNeed(changedData);
+        }
+
+        public void resetLog() {
+            factory.resetLog();
+        }
+
+        /** start the liveObject e.g open a port*/
+        public void start() {
+            factory.start();
+        }
+
+        /**
+         * destroy liveobject form a removed factory
+         * */
+        public void destroyRemoved() {
+            factory.destroyRemoved();
+        }
+
+        /**
+         * destroy the old liveobject in updated factories
+         * */
+        public void destroyUpdated() {
+            factory.destroyUpdated();
+        }
+
+        public void cleanUpAfterCrash() {
+            try {
+                destroyRemoved();
+            } catch (Exception e) {
+                logger.info("exception trying to cleanup after crash",e);
+            }
+            try {
+                destroyUpdated();
+            } catch (Exception e) {
+                logger.info("exception trying to cleanup after crash",e);
+            }
+        }
+
+        public L instance() {
+            return factory.instance();
+        }
+
+        public  void loopDetector() {
+            factory.loopDetector();
+        }
+
+        public List<FactoryBase<?,?>> collectChildFactoriesDeepFromRoot(){
+            return factory.collectChildFactoriesDeep();
+        }
+
+        /**
+         *        h
+         *      / | \
+         *     /  e  \
+         *    d       g
+         *   /|\      |
+         *  / | \     f
+         * a  b  c
+         * @return breadth-first order: hdegabcf
+         * */
+        public List<FactoryBase<?,?>> getFactoriesInDestroyOrder(){
+            return factory.getFactoriesInDestroyOrder();
+        }
+
+        /**
+         *        h
+         *      / | \
+         *     /  e  \
+         *    d       g
+         *   /|\      |
+         *  / | \     f
+         * a  b  c
+         * @return postorder: abcdefgh
+         **/
+        public List<FactoryBase<?,?>> getFactoriesInCreateAndStartOrder(){
+            return factory.getFactoriesInCreateAndStartOrder();
+        }
+
+        public HashMap<String,FactoryBase<?,?>> collectChildFactoriesDeepMapFromRoot(){
+            final List<FactoryBase<?,?>> factoryBases = collectChildFactoriesDeepFromRoot();
+            HashMap<String, FactoryBase<?,?>> result = new HashMap<>();
+            for (FactoryBase<?,?> factory: factoryBases){
+                result.put(factory.getId(),factory);
+            }
+            return result;
+        }
+
+        public String debugInfo() {
+            return factory.debugInfo();
+        }
+
+
+        public void setMicroservice(Microservice<?,R,?> microservice) {
+            factory.setMicroservice(microservice);
+        }
+
+        public L getLiveObject() {
+            return factory.createdLiveObject;
+        }
+
+        public String logStartDisplayTextDeep(){
+            return factory.logStartDisplayTextDeep();
+        }
+
+        public String logUpdateDisplayTextDeep(){
+            return factory.logUpdateDisplayTextDeep();
+        }
+
+        public String getFactoryDisplayText() {
+            return factory.getFactoryDescription();
+        }
+
+        /**
+         * @param treeBuilderName name used in treebuilder
+         */
+        public void setTreeBuilderName(String treeBuilderName){
+            factory.treeBuilderName=treeBuilderName;
+        }
+
+        public String getTreeBuilderName(){
+            return factory.treeBuilderName;
+        }
+    }
+
+    FactoryTreeBuilderBasedAttributeSetup<?, R, ?> factoryTreeBuilderBasedAttributeSetup;
+    private void serFactoryTreeBuilderBasedAttributeSetupForRoot(FactoryTreeBuilderBasedAttributeSetup<?, R, ?> factoryTreeBuilderBasedAttributeSetup) {
+        this.factoryTreeBuilderBasedAttributeSetup=factoryTreeBuilderBasedAttributeSetup;
+    }
+
+    @SuppressWarnings("unchecked")
+    private DataStorageMetadataDictionary createDataStorageMetadataDictionaryFromRoot() {
+        HashMap<Class<FactoryBase<?,R>>,Long> dataClassesToCount = new HashMap<>();
+
+
+        for (FactoryBase<?,R> data : this.collectChildrenDeep()) {
+            Long counter=dataClassesToCount.get(data.getClass());
+            if (counter==null){
+                counter=0L;
+            }
+            counter++;
+            dataClassesToCount.put((Class<FactoryBase<?, R>>) data.getClass(),counter);
+        }
+
+        List<DataStorageMetadata> dataStorageMetadataList= new ArrayList<>();
+        ArrayList<Class<? extends FactoryBase<?,R>>> sortedClasses = new ArrayList<>(dataClassesToCount.keySet());
+        sortedClasses.sort(Comparator.comparing(Class::getName));
+        for (Class<? extends FactoryBase<?,R>> clazz : sortedClasses) {
+            if (!Modifier.isAbstract(clazz.getModifiers())){
+                dataStorageMetadataList.add(FactoryMetadataManager.getMetadata(clazz).createDataStorageMetadata(dataClassesToCount.get(clazz)));
+            }
+        }
+
+        sortedClasses.sort(Comparator.comparing(Class::getName));
+        return new DataStorageMetadataDictionary(dataStorageMetadataList,this.getClass().getName());
+    }
+
+    //TODO model path with multiple parents
+    private List<FactoryBase<?,?>> getPathFromRoot() {
+        ArrayList<FactoryBase<?,?>> result = new ArrayList<>();
+        FactoryBase<?,?> current= this;
+        while (!current.getParents().isEmpty()) {
+            FactoryBase<?,?> parent = current.getParents().iterator().next();
+            result.add(parent);
+            current= parent;
+
+        }
+        Collections.reverse(result);
+        return result;
+    }
+
+    private void assertRoot() {
+        if (this.root!=this){
+            throw new IllegalStateException("can only be called from root this.root="+this.root);
+        }
+    }
+
+
+
+
+
 
     private FactoryLogEntry createFactoryLogEntry(){
         FactoryLogEntry factoryLogEntry = new FactoryLogEntry(this);
@@ -154,14 +1080,14 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> extends Data{
         createdLiveObject=null;
     }
 
-    private void determineRecreationNeed(Set<Data> changedData){
-        for (Data data : changedData) {
+    private void determineRecreationNeed(Set<FactoryBase<?,?> > changedData){
+        for (FactoryBase<?,?> data : changedData) {
             ((FactoryBase)data).needRecreation=true;
             if (((FactoryBase)data).needsCreatePropagation()){
-                Set<Data> parents = data.internal().getParents();
+                Set<FactoryBase<?,?>> parents = data.internal().getParents();
                 while (!parents.isEmpty()){
-                    Set<Data> grandParents = new HashSet<>();
-                    for (Data parent : parents) {
+                    Set<FactoryBase<?,?>> grandParents = new HashSet<>();
+                    for (FactoryBase<?,?> parent : parents) {
                         ((FactoryBase) parent).needRecreation = true;
                         if (((FactoryBase)parent).needsCreatePropagation()) {
                             grandParents.addAll(parent.internal().getParents());
@@ -243,17 +1169,17 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> extends Data{
     }
 
     long iterationRun;
-    private void visitChildFactoriesAndViewsFlat(Consumer<FactoryBase<?,?>> consumer, long iterationRun) {
+    private void visitChildFactoriesAndViewsFlat(Consumer<FactoryBase<?,R>> consumer, long iterationRun) {
         if (this.iterationRun==iterationRun){
             return;
         }
         this.iterationRun=iterationRun;
 
-        getFactoryDictionary().visitChildFactoriesAndViewsFlat(this,consumer);
+        getDataDictionary().visitChildFactoriesAndViewsFlat(this,consumer);
     }
 
-    private void visitChildFactoriesAndViewsFlatWithoutIterationCheck(Consumer<FactoryBase<?,?>> consumer) {
-        getFactoryDictionary().visitChildFactoriesAndViewsFlat(this,consumer);
+    private void visitChildFactoriesAndViewsFlatWithoutIterationCheck(Consumer<FactoryBase<?,R>> consumer) {
+        getDataDictionary().visitChildFactoriesAndViewsFlat(this,consumer);
     }
 
 
@@ -291,10 +1217,6 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> extends Data{
         return getRoot().microservice;
     }
 
-    @SuppressWarnings("unchecked")
-    private R getRoot(){
-        return (R)this.internal().getRoot();
-    }
 
     @JsonIgnore
     private long createDurationNs;
@@ -441,170 +1363,6 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> extends Data{
         return result.toString();
     }
 
-
-    /** <b>internal methods should be only used from the framework.</b>
-     *  They may change in the Future.
-     *  There is no fitting visibility in java therefore this workaround.
-     * @return internal factory api
-     */
-    public FactoryInternal<L,R> internalFactory(){
-        return new FactoryInternal<>(this);
-    }
-
-    public static class FactoryInternal<L,R  extends FactoryBase<?,R>> {
-        private final FactoryBase<L,R> factory;
-
-        public FactoryInternal(FactoryBase<L, R> factory) {
-            this.factory = factory;
-        }
-
-        /** create and prepare the liveobject
-         * @return liveobject*/
-        public L create(){
-            return factory.create();
-        }
-
-        public FactoryLogEntryTreeItem createFactoryLogTree() {
-            long iterationRun=factory.iterationRun+1;
-            return factory.createFactoryLogEntryTree(iterationRun);
-        }
-
-        public FactoryLogEntry createFactoryLogEntry(){
-            return factory.createFactoryLogEntryFlat();
-        }
-
-        /**
-         * determine which live objects needs recreation
-         * @param changedData changedData
-         * */
-        public void determineRecreationNeedFromRoot(Set<Data> changedData) {
-            factory.determineRecreationNeed(changedData);
-        }
-
-        public void resetLog() {
-            factory.resetLog();
-        }
-
-        /** start the liveObject e.g open a port*/
-        public void start() {
-            factory.start();
-        }
-
-        /**
-         * destroy liveobject form a removed factory
-         * */
-        public void destroyRemoved() {
-            factory.destroyRemoved();
-        }
-
-        /**
-         * destroy the old liveobject in updated factories
-         * */
-        public void destroyUpdated() {
-            factory.destroyUpdated();
-        }
-
-        public void cleanUpAfterCrash() {
-            try {
-                destroyRemoved();
-            } catch (Exception e) {
-                logger.info("exception trying to cleanup after crash",e);
-            }
-            try {
-                destroyUpdated();
-            } catch (Exception e) {
-                logger.info("exception trying to cleanup after crash",e);
-            }
-        }
-
-        public L instance() {
-            return factory.instance();
-        }
-
-        public  void loopDetector() {
-            factory.loopDetector();
-        }
-
-        public List<FactoryBase<?,?>> collectChildFactoriesDeepFromRoot(){
-            return factory.collectChildFactoriesDeep();
-        }
-
-        /**
-        *        h
-        *      / | \
-        *     /  e  \
-        *    d       g
-        *   /|\      |
-        *  / | \     f
-        * a  b  c
-        * @return breadth-first order: hdegabcf
-        * */
-        public List<FactoryBase<?,?>> getFactoriesInDestroyOrder(){
-            return factory.getFactoriesInDestroyOrder();
-        }
-
-        /**
-        *        h
-        *      / | \
-        *     /  e  \
-        *    d       g
-        *   /|\      |
-        *  / | \     f
-        * a  b  c
-        * @return postorder: abcdefgh
-        **/
-        public List<FactoryBase<?,?>> getFactoriesInCreateAndStartOrder(){
-            return factory.getFactoriesInCreateAndStartOrder();
-        }
-
-        public HashMap<String,FactoryBase<?,?>> collectChildFactoriesDeepMapFromRoot(){
-            final List<FactoryBase<?,?>> factoryBases = collectChildFactoriesDeepFromRoot();
-            HashMap<String, FactoryBase<?,?>> result = new HashMap<>();
-            for (FactoryBase<?,?> factory: factoryBases){
-                result.put(factory.getId(),factory);
-            }
-            return result;
-        }
-
-        public String debugInfo() {
-            return factory.debugInfo();
-        }
-
-
-        public void setMicroservice(Microservice<?,R,?> microservice) {
-            factory.setMicroservice(microservice);
-        }
-
-        public L getLiveObject() {
-            return factory.createdLiveObject;
-        }
-
-        public String logStartDisplayTextDeep(){
-            return factory.logStartDisplayTextDeep();
-        }
-
-        public String logUpdateDisplayTextDeep(){
-            return factory.logUpdateDisplayTextDeep();
-        }
-
-        public String getFactoryDisplayText() {
-            return factory.getFactoryDescription();
-        }
-
-        /**
-         * @param treeBuilderName name used in treebuilder
-         */
-        public void setTreeBuilderName(String treeBuilderName){
-            factory.treeBuilderName=treeBuilderName;
-        }
-
-        public String getTreeBuilderName(){
-            return factory.treeBuilderName;
-        }
-
-
-    }
-
     Supplier<L> creator=null;
     Consumer<L> updater=null;
     Function<L,L> reCreatorWithPreviousLiveObject=null;
@@ -696,7 +1454,7 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> extends Data{
 
 
 
-    public UtilityFactory<L,R> utilityFactory(){
+    public UtilityFactory<L,R> utility(){
         return new UtilityFactory<>(this);
     }
 
@@ -713,6 +1471,24 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> extends Data{
 
         public R getRoot(){
             return factory.getRoot();
+        }
+
+        /** semantic copy can be configured on the attributes, unlike copy which always create complete copy with same ids
+         *
+         * @param <F> type
+         * @return self
+         */
+        public <F extends FactoryBase<L,R> > F semanticCopy(){
+            return factory.semanticCopy();
+        }
+
+        /**
+         * copy with same ids and data
+         * @param <T> self
+         * @return scopy
+         */
+        public <T extends FactoryBase<?,?> > T copy(){
+            return factory.copy();
         }
     }
 

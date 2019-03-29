@@ -1,7 +1,7 @@
 package io.github.factoryfx.docu.polymorphism;
 
 
-import io.github.factoryfx.data.storage.DataUpdate;
+import io.github.factoryfx.factory.storage.DataUpdate;
 import io.github.factoryfx.factory.builder.FactoryTreeBuilder;
 import io.github.factoryfx.factory.builder.Scope;
 import io.github.factoryfx.server.Microservice;

@@ -1,7 +1,7 @@
 package io.github.factoryfx.microservice.rest;
 
 import io.github.factoryfx.factory.FactoryBase;
-import io.github.factoryfx.factory.atrribute.FactoryPolymorphicReferenceAttribute;
+import io.github.factoryfx.factory.attribute.dependency.FactoryPolymorphicReferenceAttribute;
 import io.github.factoryfx.server.Microservice;
 import io.github.factoryfx.server.user.nop.NoUserManagement;
 import io.github.factoryfx.server.user.UserManagement;
@@ -34,7 +34,7 @@ import io.github.factoryfx.server.user.persistent.PersistentUserManagementFactor
  */
 public class MicroserviceResourceFactory<R extends FactoryBase<?,R>,S> extends FactoryBase<MicroserviceResource<R,S>,R> {
 
-    public final FactoryPolymorphicReferenceAttribute<UserManagement> userManagement = new FactoryPolymorphicReferenceAttribute<UserManagement>().setupUnsafe(UserManagement.class, NoUserManagementFactory.class, PersistentUserManagementFactory.class).labelText("resource").nullable();
+    public final FactoryPolymorphicReferenceAttribute<R,UserManagement> userManagement = new FactoryPolymorphicReferenceAttribute<R,UserManagement>().setupUnsafe(UserManagement.class, NoUserManagementFactory.class, PersistentUserManagementFactory.class).labelText("resource").nullable();
 
     @SuppressWarnings("unchecked")
     public MicroserviceResourceFactory(){
@@ -43,7 +43,7 @@ public class MicroserviceResourceFactory<R extends FactoryBase<?,R>,S> extends F
             if (userManagementInstance==null) {
                 userManagementInstance=new NoUserManagement();
             }
-            Microservice<?,R,S> microservice = (Microservice<?,R,S>)utilityFactory().getMicroservice();
+            Microservice<?,R,S> microservice = (Microservice<?,R,S>) utility().getMicroservice();
             return new MicroserviceResource<>(microservice, userManagementInstance);
         });
 

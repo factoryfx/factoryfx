@@ -2,12 +2,11 @@ package io.github.factoryfx.javafx.factory.util;
 
 import java.util.Locale;
 
-import io.github.factoryfx.data.attribute.primitive.BooleanAttribute;
+import io.github.factoryfx.factory.attribute.primitive.BooleanAttribute;
 
-import io.github.factoryfx.data.attribute.types.LocaleAttribute;
+import io.github.factoryfx.factory.attribute.types.LocaleAttribute;
 import io.github.factoryfx.factory.SimpleFactoryBase;
-import io.github.factoryfx.javafx.data.attribute.ColorAttribute;
-import io.github.factoryfx.javafx.data.util.UniformDesign;
+import io.github.factoryfx.javafx.factory.editor.attribute.ColorAttribute;
 import io.github.factoryfx.javafx.factory.RichClientRoot;
 import javafx.scene.paint.Color;
 

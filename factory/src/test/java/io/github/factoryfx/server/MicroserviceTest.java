@@ -1,12 +1,12 @@
 package io.github.factoryfx.server;
 
-import io.github.factoryfx.data.merge.AttributeDiffInfo;
-import io.github.factoryfx.data.merge.MergeDiffInfo;
-import io.github.factoryfx.data.storage.DataUpdate;
-import io.github.factoryfx.data.storage.StoredDataMetadata;
+import io.github.factoryfx.factory.merge.AttributeDiffInfo;
+import io.github.factoryfx.factory.merge.MergeDiffInfo;
+import io.github.factoryfx.factory.storage.DataUpdate;
+import io.github.factoryfx.factory.storage.StoredDataMetadata;
 import io.github.factoryfx.factory.FactoryBase;
 import io.github.factoryfx.factory.SimpleFactoryBase;
-import io.github.factoryfx.factory.atrribute.FactoryReferenceAttribute;
+import io.github.factoryfx.factory.attribute.dependency.FactoryReferenceAttribute;
 import io.github.factoryfx.factory.builder.FactoryTreeBuilder;
 import io.github.factoryfx.factory.builder.Scope;
 import io.github.factoryfx.factory.log.FactoryUpdateLog;
@@ -147,7 +147,7 @@ public class MicroserviceTest {
 
 
     public static class ExampleFactoryARecreation extends SimpleFactoryBase<ExampleLiveObjectA,ExampleFactoryARecreation> {
-        public final FactoryReferenceAttribute<ExampleLiveObjectB,ExampleFactoryBRecreation> referenceAttribute = new FactoryReferenceAttribute<>(ExampleFactoryBRecreation.class).labelText("ExampleA2").nullable();
+        public final FactoryReferenceAttribute<ExampleFactoryARecreation,ExampleLiveObjectB,ExampleFactoryBRecreation> referenceAttribute = new FactoryReferenceAttribute<ExampleFactoryARecreation,ExampleLiveObjectB,ExampleFactoryBRecreation>().labelText("ExampleA2").nullable();
 
         @Override
         public ExampleLiveObjectA createImpl() {
@@ -156,7 +156,7 @@ public class MicroserviceTest {
     }
 
     public static class ExampleFactoryBRecreation extends FactoryBase<ExampleLiveObjectB,ExampleFactoryARecreation> {
-        public final FactoryReferenceAttribute<ExampleLiveObjectB,ExampleFactoryB> referenceAttribute = new FactoryReferenceAttribute<>(ExampleFactoryB.class).labelText("ExampleA2").nullable();
+        public final FactoryReferenceAttribute<ExampleFactoryARecreation,ExampleLiveObjectB,ExampleFactoryBRecreation> referenceAttribute = new FactoryReferenceAttribute<ExampleFactoryARecreation,ExampleLiveObjectB,ExampleFactoryBRecreation>().labelText("ExampleA2").nullable();
 
         long recreationCounter=0;
         public ExampleFactoryBRecreation(){
@@ -167,6 +167,7 @@ public class MicroserviceTest {
             this.configLifeCycle().setCreator(() -> null);
         }
     }
+
     @Test
     public void recreation_bug() {
         FactoryTreeBuilder<ExampleLiveObjectA,ExampleFactoryARecreation,Void> builder = new FactoryTreeBuilder<>(ExampleFactoryARecreation.class);
@@ -225,6 +226,7 @@ public class MicroserviceTest {
         Assertions.assertEquals(0,microservice.getHistoryFactory(new ArrayList<>(microservice.getHistoryFactoryList()).get(0).id).referenceListAttribute.size());
 
         DataUpdate<ExampleFactoryA> update = microservice.prepareNewFactory();
+        update.comment="XXXX for sort";
         update.root.referenceListAttribute.add(new ExampleFactoryB());
         FactoryUpdateLog<ExampleFactoryA> log = microservice.updateCurrentFactory(update);
 
@@ -233,8 +235,9 @@ public class MicroserviceTest {
 
         Assertions.assertEquals(2,microservice.getHistoryFactoryList().size());
         List<StoredDataMetadata<Void>> historyFactoryList = new ArrayList<>(microservice.getHistoryFactoryList());
+        historyFactoryList.sort(Comparator.comparing(o -> o.comment));
+        Collections.reverse(historyFactoryList);
 
-        historyFactoryList.sort(Comparator.comparing(o -> o.creationTime));
         Assertions.assertEquals(0,microservice.getHistoryFactory(historyFactoryList.get(0).id).referenceListAttribute.size());
         Assertions.assertEquals(1,microservice.getHistoryFactory(historyFactoryList.get(1).id).referenceListAttribute.size());
         MergeDiffInfo<ExampleFactoryA> diffToPreviousVersion = microservice.getDiffToPreviousVersion(historyFactoryList.get(1));

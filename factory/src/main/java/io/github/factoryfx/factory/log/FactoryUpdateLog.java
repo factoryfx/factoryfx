@@ -4,10 +4,11 @@ import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import io.github.factoryfx.data.Data;
-import io.github.factoryfx.data.merge.MergeDiffInfo;
 
-public class FactoryUpdateLog<R extends Data> {
+import io.github.factoryfx.factory.FactoryBase;
+import io.github.factoryfx.factory.merge.MergeDiffInfo;
+
+public class FactoryUpdateLog<R extends FactoryBase<?,?>> {
     public final FactoryLogEntryTreeItem root;
     public final Set<FactoryLogEntry> removedFactoryLogs;
     public final MergeDiffInfo<R> mergeDiffInfo;

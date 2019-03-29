@@ -9,10 +9,10 @@ import java.util.function.Supplier;
 
 import com.google.common.base.Charsets;
 import com.google.common.io.CharStreams;
-import io.github.factoryfx.data.merge.MergeDiffInfo;
-import io.github.factoryfx.data.storage.DataUpdate;
+import io.github.factoryfx.factory.merge.MergeDiffInfo;
+import io.github.factoryfx.factory.storage.DataUpdate;
 import io.github.factoryfx.factory.FactoryBase;
-import io.github.factoryfx.data.storage.StoredDataMetadata;
+import io.github.factoryfx.factory.storage.StoredDataMetadata;
 import io.github.factoryfx.factory.FactoryTreeBuilderBasedAttributeSetup;
 import io.github.factoryfx.factory.log.FactoryUpdateLog;
 
@@ -82,7 +82,8 @@ public class MicroserviceRestClient<R extends FactoryBase<?,R>,S> {
 
     public R getHistoryFactory(String id) {
         R historyFactory = executeWidthServerExceptionReporting(()-> microserviceResourceApi.getHistoryFactory(new UserAwareRequest<>(user, passwordHash, id))).value;
-        return historyFactory.internal().addBackReferences();
+        historyFactory.internal().addBackReferences();
+        return historyFactory;
     }
 
     public Collection<StoredDataMetadata<S>> getHistoryFactoryList() {

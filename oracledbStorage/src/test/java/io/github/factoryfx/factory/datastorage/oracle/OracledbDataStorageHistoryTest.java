@@ -1,7 +1,7 @@
 package io.github.factoryfx.factory.datastorage.oracle;
 
-import io.github.factoryfx.data.storage.StoredDataMetadata;
-import io.github.factoryfx.data.storage.migration.metadata.DataStorageMetadataDictionary;
+import io.github.factoryfx.factory.storage.StoredDataMetadata;
+import io.github.factoryfx.factory.storage.migration.metadata.DataStorageMetadataDictionary;
 import io.github.factoryfx.factory.testfactories.ExampleFactoryA;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;

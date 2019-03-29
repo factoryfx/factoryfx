@@ -1,7 +1,7 @@
 package io.github.factoryfx.example.client;
 
-import io.github.factoryfx.data.DataDictionary;
-import io.github.factoryfx.data.storage.migration.MigrationManager;
+import io.github.factoryfx.factory.metadata.FactoryMetadataManager;
+import io.github.factoryfx.factory.storage.migration.MigrationManager;
 import io.github.factoryfx.example.client.view.ConfigurationViewFactory;
 import io.github.factoryfx.example.client.view.DashboardViewFactory;
 import io.github.factoryfx.example.client.view.HistoryViewFactory;
@@ -20,9 +20,9 @@ import io.github.factoryfx.javafx.factory.util.UniformDesignFactory;
 import io.github.factoryfx.javafx.factory.view.ViewDescriptionFactory;
 import io.github.factoryfx.javafx.factory.view.ViewFactory;
 import io.github.factoryfx.javafx.factory.view.container.ViewsDisplayWidgetFactory;
-import io.github.factoryfx.javafx.factory.view.factoryviewmanager.FactoryEditManagerFactory;
-import io.github.factoryfx.javafx.factory.view.factoryviewmanager.FactoryEditViewFactory;
-import io.github.factoryfx.javafx.factory.view.factoryviewmanager.FactorySerialisationManagerFactory;
+import io.github.factoryfx.javafx.factory.factoryviewmanager.FactoryEditManagerFactory;
+import io.github.factoryfx.javafx.factory.factoryviewmanager.FactoryEditViewFactory;
+import io.github.factoryfx.javafx.factory.factoryviewmanager.FactorySerialisationManagerFactory;
 import io.github.factoryfx.javafx.factory.view.menu.SeparatorMenuItemFactory;
 import io.github.factoryfx.javafx.factory.view.menu.ViewMenuFactory;
 import io.github.factoryfx.javafx.factory.view.menu.ViewMenuItemFactory;
@@ -207,7 +207,7 @@ public class RichClientBuilder {
         private final MigrationManager<ServerRootFactory,Void> serverMigrationManager;
 
         static {
-            DataDictionary.getDataDictionary(RichClientFactorySerialisationManagerFactory.class).setNewCopyInstanceSupplier(
+            FactoryMetadataManager.getMetadata(RichClientFactorySerialisationManagerFactory.class).setNewCopyInstanceSupplier(
                     old -> new RichClientFactorySerialisationManagerFactory(old.serverMigrationManager)
             );
         }

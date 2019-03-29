@@ -1,6 +1,6 @@
 package io.github.factoryfx.example.server.shop.netherlands;
 
-import io.github.factoryfx.data.attribute.primitive.DoubleAttribute;
+import io.github.factoryfx.factory.attribute.primitive.DoubleAttribute;
 import io.github.factoryfx.example.server.shop.Product;
 import io.github.factoryfx.example.server.shop.ProductFactory;
 

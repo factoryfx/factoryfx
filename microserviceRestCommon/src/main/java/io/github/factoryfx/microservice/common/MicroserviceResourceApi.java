@@ -1,8 +1,8 @@
 package io.github.factoryfx.microservice.common;
 
-import io.github.factoryfx.data.merge.MergeDiffInfo;
-import io.github.factoryfx.data.storage.DataUpdate;
-import io.github.factoryfx.data.storage.StoredDataMetadata;
+import io.github.factoryfx.factory.merge.MergeDiffInfo;
+import io.github.factoryfx.factory.storage.DataUpdate;
+import io.github.factoryfx.factory.storage.StoredDataMetadata;
 import io.github.factoryfx.factory.FactoryBase;
 import io.github.factoryfx.factory.log.FactoryUpdateLog;
 

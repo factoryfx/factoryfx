@@ -1,20 +1,9 @@
 package io.github.factoryfx.factory.parametrized;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import io.github.factoryfx.factory.atrribute.FactoryReferenceBaseAttribute;
+import io.github.factoryfx.factory.FactoryBase;
+import io.github.factoryfx.factory.attribute.dependency.FactoryReferenceBaseAttribute;
 
-public class ParametrizedObjectCreatorAttribute<P, L, F extends ParametrizedObjectCreatorFactory<P,L,?>> extends FactoryReferenceBaseAttribute<ParametrizedObjectCreator<P,L>,F,ParametrizedObjectCreatorAttribute<P, L, F>> {
-
-    @JsonCreator
-    protected ParametrizedObjectCreatorAttribute(F value) {
-        super(value);
-    }
-
-
-    public ParametrizedObjectCreatorAttribute(Class<F> clazz) {
-        super();
-        setup(clazz);
-    }
+public class ParametrizedObjectCreatorAttribute<R extends FactoryBase<?,R>,P, L, F extends ParametrizedObjectCreatorFactory<P,L,R>> extends FactoryReferenceBaseAttribute<R,ParametrizedObjectCreator<P,L>,F,ParametrizedObjectCreatorAttribute<R,P, L, F>> {
 
     public ParametrizedObjectCreatorAttribute() {
         super();
@@ -23,16 +12,6 @@ public class ParametrizedObjectCreatorAttribute<P, L, F extends ParametrizedObje
     public L create(P p){
         ParametrizedObjectCreator<P,L> instance = this.instance();
         return instance.create(p);
-    }
-
-    @Override
-    public ParametrizedObjectCreatorAttribute<P,L,F> setupUnsafe(Class clazz){
-        return super.setupUnsafe(clazz);
-    }
-
-    @Override
-    public ParametrizedObjectCreatorAttribute<P,L,F> setup(Class<F> clazz){
-        return super.setup(clazz);
     }
 
 }

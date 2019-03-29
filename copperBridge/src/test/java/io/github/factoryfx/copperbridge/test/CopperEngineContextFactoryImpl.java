@@ -3,7 +3,7 @@ package io.github.factoryfx.copperbridge.test;
 import java.util.Map;
 
 import io.github.factoryfx.copperbridge.CopperEngineContextFactory;
-import io.github.factoryfx.data.attribute.types.StringAttribute;
+import io.github.factoryfx.factory.attribute.types.StringAttribute;
 
 public class CopperEngineContextFactoryImpl extends CopperEngineContextFactory<CopperRootFactory> {
 

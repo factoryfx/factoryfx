@@ -28,9 +28,9 @@ import javax.ws.rs.ext.MessageBodyWriter;
 
 import ch.qos.logback.classic.Level;
 import com.google.common.io.ByteStreams;
-import io.github.factoryfx.data.storage.DataUpdate;
+import io.github.factoryfx.factory.storage.DataUpdate;
 import io.github.factoryfx.factory.SimpleFactoryBase;
-import io.github.factoryfx.factory.atrribute.FactoryReferenceAttribute;
+import io.github.factoryfx.factory.attribute.dependency.FactoryReferenceAttribute;
 import io.github.factoryfx.factory.builder.FactoryTreeBuilder;
 import io.github.factoryfx.factory.builder.Scope;
 import io.github.factoryfx.server.Microservice;
@@ -59,8 +59,7 @@ public class JettyServerTest {
     }
 
     public static class JettyServerRootFactory extends SimpleFactoryBase<Server, JettyServerRootFactory>{
-        @SuppressWarnings("unchecked")
-        public final FactoryReferenceAttribute<Server,JettyServerFactory<JettyServerRootFactory>> server = FactoryReferenceAttribute.create(new FactoryReferenceAttribute<>(JettyServerFactory.class));
+        public final FactoryReferenceAttribute<JettyServerRootFactory,Server,JettyServerFactory<JettyServerRootFactory>> server = new FactoryReferenceAttribute<>();
 
         @Override
         public Server createImpl() {

@@ -1,14 +1,14 @@
 package io.github.factoryfx.factory.builder;
 
-import io.github.factoryfx.data.attribute.types.StringAttribute;
-import io.github.factoryfx.data.jackson.ObjectMapperBuilder;
-import io.github.factoryfx.data.storage.migration.metadata.DataStorageMetadataDictionary;
+import io.github.factoryfx.factory.attribute.types.StringAttribute;
+import io.github.factoryfx.factory.jackson.ObjectMapperBuilder;
+import io.github.factoryfx.factory.storage.migration.metadata.DataStorageMetadataDictionary;
 import io.github.factoryfx.factory.FactoryBase;
 import io.github.factoryfx.factory.PolymorphicFactoryBase;
 import io.github.factoryfx.factory.SimpleFactoryBase;
-import io.github.factoryfx.factory.atrribute.FactoryPolymorphicReferenceAttribute;
-import io.github.factoryfx.factory.atrribute.FactoryReferenceAttribute;
-import io.github.factoryfx.factory.atrribute.FactoryReferenceListAttribute;
+import io.github.factoryfx.factory.attribute.dependency.FactoryPolymorphicReferenceAttribute;
+import io.github.factoryfx.factory.attribute.dependency.FactoryReferenceAttribute;
+import io.github.factoryfx.factory.attribute.dependency.FactoryReferenceListAttribute;
 import io.github.factoryfx.factory.testfactories.*;
 import io.github.factoryfx.factory.testfactories.poly.ErrorPrinter;
 import io.github.factoryfx.factory.testfactories.poly.OutPrinterFactory;
@@ -71,9 +71,9 @@ public class FactoryTreeBuilderTest {
 
     public static class FactoryTestA extends SimpleFactoryBase<Void,FactoryTestA> {
 
-        public final FactoryReferenceAttribute<ExampleLiveObjectB,ExampleFactoryB> referenceAttribute1 = new FactoryReferenceAttribute<>(ExampleFactoryB.class).labelText("ExampleA2");
-        public final FactoryReferenceAttribute<ExampleLiveObjectB,ExampleFactoryB> referenceAttribute2 = new FactoryReferenceAttribute<>(ExampleFactoryB.class).labelText("ExampleA2");
-        public final FactoryReferenceListAttribute<ExampleLiveObjectB,ExampleFactoryB> referenceList = new FactoryReferenceListAttribute<>(ExampleFactoryB.class).labelText("ExampleA3");
+        public final FactoryReferenceAttribute<FactoryTestA,ExampleLiveObjectB,ExampleFactoryB> referenceAttribute1 = new FactoryReferenceAttribute<FactoryTestA,ExampleLiveObjectB,ExampleFactoryB>().labelText("ExampleA2");
+        public final FactoryReferenceAttribute<FactoryTestA,ExampleLiveObjectB,ExampleFactoryB> referenceAttribute2 = new FactoryReferenceAttribute<FactoryTestA,ExampleLiveObjectB,ExampleFactoryB>().labelText("ExampleA2");
+        public final FactoryReferenceListAttribute<FactoryTestA,ExampleLiveObjectB,ExampleFactoryB> referenceList = new FactoryReferenceListAttribute<FactoryTestA,ExampleLiveObjectB,ExampleFactoryB>().labelText("ExampleA3");
 
 
         @Override
@@ -84,7 +84,7 @@ public class FactoryTreeBuilderTest {
 
     public static class ExampleFactoryC extends SimpleFactoryBase<ExampleLiveObjectC,FactoryTestA> {
         public final StringAttribute stringAttribute= new StringAttribute().labelText("ExampleB1");
-        public final FactoryReferenceAttribute<ExampleLiveObjectB, io.github.factoryfx.factory.testfactories.ExampleFactoryB> referenceAttribute = new FactoryReferenceAttribute<>(io.github.factoryfx.factory.testfactories.ExampleFactoryB.class).labelText("ExampleA2");
+        public final FactoryReferenceAttribute<FactoryTestA,ExampleLiveObjectB, ExampleFactoryB> referenceAttribute = new FactoryReferenceAttribute<>();
 
         @Override
         public ExampleLiveObjectC createImpl() {
@@ -95,8 +95,8 @@ public class FactoryTreeBuilderTest {
 
     public static class ExampleFactoryB extends SimpleFactoryBase<ExampleLiveObjectB,FactoryTestA> {
         public final StringAttribute stringAttribute= new StringAttribute().labelText("ExampleB1");
-        public final FactoryReferenceAttribute<Void,FactoryTestA> referenceAttribute = new FactoryReferenceAttribute<>(FactoryTestA.class).labelText("ExampleB2");
-        public final FactoryReferenceAttribute<ExampleLiveObjectC,ExampleFactoryC> referenceAttributeC = new FactoryReferenceAttribute<>(ExampleFactoryC.class).labelText("ExampleC2");
+        public final FactoryReferenceAttribute<FactoryTestA,Void,FactoryTestA> referenceAttribute = new FactoryReferenceAttribute<>();
+        public final FactoryReferenceAttribute<FactoryTestA,ExampleLiveObjectC,ExampleFactoryC> referenceAttributeC = new FactoryReferenceAttribute<>();
 
         @Override
         public ExampleLiveObjectB createImpl() {
@@ -155,7 +155,7 @@ public class FactoryTreeBuilderTest {
     }
 
     public static class ExamplePolymorphic extends FactoryBase<Void,ExamplePolymorphic> {
-        public final FactoryPolymorphicReferenceAttribute<Printer> attribute = new FactoryPolymorphicReferenceAttribute<>(Printer.class, ErrorPrinterFactory2.class, OutPrinterFactory.class);
+        public final FactoryPolymorphicReferenceAttribute<ExamplePolymorphic,Printer> attribute = new FactoryPolymorphicReferenceAttribute<>(Printer.class, ErrorPrinterFactory2.class, OutPrinterFactory.class);
     }
 
 
@@ -187,7 +187,7 @@ public class FactoryTreeBuilderTest {
             });
             factoryTreeBuilder.addFactory(ExampleFactoryC.class, Scope.PROTOTYPE, context -> {
                 ExampleFactoryC factory = new ExampleFactoryC();
-                factory.referenceAttribute.set(new io.github.factoryfx.factory.testfactories.ExampleFactoryB());
+                factory.referenceAttribute.set(new ExampleFactoryB());
                 return factory;
             });
 
@@ -211,7 +211,7 @@ public class FactoryTreeBuilderTest {
             });
             factoryTreeBuilder.addFactory(ExampleFactoryC.class, Scope.PROTOTYPE, context -> {
                 ExampleFactoryC factory = new ExampleFactoryC();
-                factory.referenceAttribute.set(new io.github.factoryfx.factory.testfactories.ExampleFactoryB());
+                factory.referenceAttribute.set(new ExampleFactoryB());
                 return factory;
             });
 

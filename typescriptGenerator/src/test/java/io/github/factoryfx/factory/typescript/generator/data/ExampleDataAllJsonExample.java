@@ -1,8 +1,8 @@
 package io.github.factoryfx.factory.typescript.generator.data;
 
-import io.github.factoryfx.data.attribute.types.EncryptedStringAttribute;
-import io.github.factoryfx.data.jackson.ObjectMapperBuilder;
-import io.github.factoryfx.data.util.LanguageText;
+import io.github.factoryfx.factory.attribute.types.EncryptedStringAttribute;
+import io.github.factoryfx.factory.jackson.ObjectMapperBuilder;
+import io.github.factoryfx.factory.util.LanguageText;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;

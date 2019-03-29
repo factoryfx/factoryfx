@@ -1,9 +1,9 @@
 package io.github.factoryfx.factory.builder;
 
-import io.github.factoryfx.data.attribute.types.StringAttribute;
-import io.github.factoryfx.data.jackson.ObjectMapperBuilder;
+import io.github.factoryfx.factory.attribute.types.StringAttribute;
+import io.github.factoryfx.factory.jackson.ObjectMapperBuilder;
 import io.github.factoryfx.factory.SimpleFactoryBase;
-import io.github.factoryfx.factory.atrribute.FactoryReferenceAttribute;
+import io.github.factoryfx.factory.attribute.dependency.FactoryReferenceAttribute;
 import io.github.factoryfx.server.Microservice;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -19,11 +19,8 @@ public class DeleteAttributeDanglingIdMigrationTest {
 
     public static class ServerFactoryOld extends SimpleFactoryBase<Void, ServerFactoryOld> {
 
-
-
-
-        public final FactoryReferenceAttribute<Void,ServerFactoryNestedOld>  serverFactoryNested1 = new FactoryReferenceAttribute<>(ServerFactoryNestedOld.class);
-        public final FactoryReferenceAttribute<Void,ServerFactoryNestedOld>  serverFactoryNested2 = new FactoryReferenceAttribute<>(ServerFactoryNestedOld.class);
+        public final FactoryReferenceAttribute<ServerFactoryOld,Void,ServerFactoryNestedOld>  serverFactoryNested1 = new FactoryReferenceAttribute<>();
+        public final FactoryReferenceAttribute<ServerFactoryOld,Void,ServerFactoryNestedOld>  serverFactoryNested2 = new FactoryReferenceAttribute<>();
 
         @Override
         public Void createImpl() {
@@ -50,7 +47,7 @@ public class DeleteAttributeDanglingIdMigrationTest {
 
 
     public static class ServerFactory extends SimpleFactoryBase<Void, ServerFactory> {
-        public final FactoryReferenceAttribute<Void, ServerFactoryNested> serverFactoryNested2 = new FactoryReferenceAttribute<>(ServerFactoryNested.class);
+        public final FactoryReferenceAttribute<ServerFactory,Void, ServerFactoryNested> serverFactoryNested2 = new FactoryReferenceAttribute<>();
 
         @Override
         public Void createImpl() {

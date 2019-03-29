@@ -4,10 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import io.github.factoryfx.data.storage.DataUpdate;
+import io.github.factoryfx.factory.storage.DataUpdate;
 import io.github.factoryfx.factory.builder.FactoryTreeBuilder;
 import io.github.factoryfx.factory.builder.Scope;
-import io.github.factoryfx.factory.atrribute.FactoryReferenceListAttribute;
+import io.github.factoryfx.factory.attribute.dependency.FactoryReferenceListAttribute;
 import io.github.factoryfx.factory.log.FactoryUpdateLog;
 import io.github.factoryfx.server.Microservice;
 import org.junit.jupiter.api.Assertions;
@@ -44,7 +44,7 @@ public class FactoryReferenceListTest {
     }
 
     public static class RootFactory extends SimpleFactoryBase<String, RootFactory> {
-        public final FactoryReferenceListAttribute<Object, ObjectFactory> objects = new FactoryReferenceListAttribute<>(ObjectFactory.class);
+        public final FactoryReferenceListAttribute<RootFactory,Object, ObjectFactory> objects = new FactoryReferenceListAttribute<>();
 
         @Override
         public String createImpl() {

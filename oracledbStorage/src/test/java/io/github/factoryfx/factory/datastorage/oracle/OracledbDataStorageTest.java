@@ -1,9 +1,9 @@
 package io.github.factoryfx.factory.datastorage.oracle;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import io.github.factoryfx.data.jackson.ObjectMapperBuilder;
-import io.github.factoryfx.data.storage.DataUpdate;
-import io.github.factoryfx.data.storage.StoredDataMetadata;
+import io.github.factoryfx.factory.jackson.ObjectMapperBuilder;
+import io.github.factoryfx.factory.storage.DataUpdate;
+import io.github.factoryfx.factory.storage.StoredDataMetadata;
 import io.github.factoryfx.factory.testfactories.ExampleFactoryA;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;

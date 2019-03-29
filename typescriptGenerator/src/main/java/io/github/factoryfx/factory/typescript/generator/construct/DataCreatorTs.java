@@ -1,6 +1,7 @@
 package io.github.factoryfx.factory.typescript.generator.construct;
 
-import io.github.factoryfx.data.Data;
+
+import io.github.factoryfx.factory.FactoryBase;
 import io.github.factoryfx.factory.typescript.generator.ts.*;
 
 import java.nio.file.Path;
@@ -8,14 +9,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class DataCreatorTs {
+public class DataCreatorTs<R extends FactoryBase<?,R>> {
 
-    private final List<Class<? extends Data>> allDataClasses;
-    private final HashMap<Class<? extends Data>, TsClassConstructed> dataToDataConfigTs;
+    private final List<Class<? extends FactoryBase<?,R>>> allDataClasses;
+    private final HashMap<Class<? extends FactoryBase<?,R>>, TsClassConstructed> dataToDataConfigTs;
     private final TsFile dataClass;
     private final Path targetPath;
 
-    public DataCreatorTs(List<Class<? extends Data>> allDataClasses, HashMap<Class<? extends Data>, TsClassConstructed> dataToDataConfigTs, TsFile dataClass, Path targetPath) {
+    public DataCreatorTs(List<Class<? extends FactoryBase<?,R>>> allDataClasses, HashMap<Class<? extends FactoryBase<?,R>>, TsClassConstructed> dataToDataConfigTs, TsFile dataClass, Path targetPath) {
         this.allDataClasses = allDataClasses;
         this.dataToDataConfigTs = dataToDataConfigTs;
         this.dataClass = dataClass;
@@ -31,7 +32,7 @@ public class DataCreatorTs {
         typeMappingCode.append("if (typeof json === 'string'){\n");
         typeMappingCode.append("    return idToDataMap[json];\n");
         typeMappingCode.append("}\n");
-        for (Class<? extends Data> allDataClass : allDataClasses) {
+        for (Class<? extends FactoryBase<?,?>> allDataClass : allDataClasses) {
             typeMappingCode.append("if (clazz==='").append(allDataClass.getName()).append("'){\n");
             String typeName = allDataClass.getSimpleName();
             typeMappingCode.append("    let result: ").append(typeName).append("= new ").append(typeName).append("();\n");

@@ -1,6 +1,5 @@
 module io.github.factoryfx.javafxDistributionServer {
-    requires io.github.factoryfx.data;
-    requires io.github.factoryfx.factory;
+    requires transitive io.github.factoryfx.factory;
     requires org.eclipse.jetty.server;
     requires org.eclipse.jetty.util;
     requires java.ws.rs;

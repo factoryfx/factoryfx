@@ -1,11 +1,11 @@
 package io.github.factoryfx.jetty;
 
 import ch.qos.logback.classic.Level;
-import io.github.factoryfx.data.storage.DataUpdate;
+import io.github.factoryfx.factory.storage.DataUpdate;
 import io.github.factoryfx.factory.FactoryBase;
 import io.github.factoryfx.factory.PolymorphicFactoryBase;
 import io.github.factoryfx.factory.SimpleFactoryBase;
-import io.github.factoryfx.factory.atrribute.FactoryReferenceAttribute;
+import io.github.factoryfx.factory.attribute.dependency.FactoryReferenceAttribute;
 import io.github.factoryfx.factory.builder.FactoryTreeBuilder;
 import io.github.factoryfx.factory.builder.Scope;
 import io.github.factoryfx.server.Microservice;
@@ -53,8 +53,7 @@ public class HandlerCollectionFactoryTest {
     }
 
     public static class HandlerCollectionRootFactory extends SimpleFactoryBase<Server, HandlerCollectionRootFactory>{
-        @SuppressWarnings("unchecked")
-        public final FactoryReferenceAttribute<Server,JettyServerFactory<HandlerCollectionRootFactory>> server = FactoryReferenceAttribute.create(new FactoryReferenceAttribute<>(JettyServerFactory.class));
+        public final FactoryReferenceAttribute<HandlerCollectionRootFactory,Server,JettyServerFactory<HandlerCollectionRootFactory>> server = new FactoryReferenceAttribute<>();
 
         @Override
         public Server createImpl() {

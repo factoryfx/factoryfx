@@ -1,7 +1,7 @@
 package io.github.factoryfx.factory.builder;
 
 import io.github.factoryfx.factory.SimpleFactoryBase;
-import io.github.factoryfx.factory.atrribute.FactoryReferenceAttribute;
+import io.github.factoryfx.factory.attribute.dependency.FactoryReferenceAttribute;
 import io.github.factoryfx.server.Microservice;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -16,7 +16,7 @@ public class ReferenceTypeChangeMigrationTest {
     //----------------------------------old
 
     public static class ServerFactoryOld extends SimpleFactoryBase<Void, ServerFactoryOld> {
-        public final FactoryReferenceAttribute<Void,PartnerFactory>  partnerFactory = new FactoryReferenceAttribute<>(PartnerFactory.class);
+        public final FactoryReferenceAttribute<ServerFactoryOld,Void,PartnerFactory>  partnerFactory = new FactoryReferenceAttribute<>();
 
         @Override
         public Void createImpl() {
@@ -35,7 +35,7 @@ public class ReferenceTypeChangeMigrationTest {
 
 
     public static class ServerFactory extends SimpleFactoryBase<Void, ServerFactory> {
-        public final FactoryReferenceAttribute<Void,ClientSystemFactory>  partnerFactory = new FactoryReferenceAttribute<>(ClientSystemFactory.class);
+        public final FactoryReferenceAttribute<ServerFactory,Void,ClientSystemFactory>  partnerFactory = new FactoryReferenceAttribute<>();
 
         @Override
         public Void createImpl() {

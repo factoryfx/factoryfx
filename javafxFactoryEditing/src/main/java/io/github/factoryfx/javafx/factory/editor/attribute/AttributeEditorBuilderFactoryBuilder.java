@@ -1,9 +1,8 @@
 package io.github.factoryfx.javafx.factory.editor.attribute;
 
-import io.github.factoryfx.javafx.data.editor.attribute.AttributeVisualisationMappingBuilder;
-import io.github.factoryfx.javafx.data.util.UniformDesign;
+import io.github.factoryfx.javafx.factory.util.UniformDesign;
 import io.github.factoryfx.javafx.factory.util.UniformDesignFactory;
-import io.github.factoryfx.javafx.data.editor.attribute.builder.AttributeVisualisationBuilder;
+import io.github.factoryfx.javafx.factory.editor.attribute.builder.AttributeVisualisationBuilder;
 
 import java.util.function.Function;
 

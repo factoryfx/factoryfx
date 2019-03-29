@@ -1,13 +1,12 @@
 package io.github.factoryfx.docu.restserver;
 
 import io.github.factoryfx.factory.SimpleFactoryBase;
-import io.github.factoryfx.factory.atrribute.FactoryReferenceAttribute;
+import io.github.factoryfx.factory.attribute.dependency.FactoryReferenceAttribute;
 import io.github.factoryfx.jetty.JettyServerFactory;
 import org.eclipse.jetty.server.Server;
 
 public class SimpleHttpServer extends SimpleFactoryBase<Server, SimpleHttpServer> {
-    @SuppressWarnings("unchecked")
-    public final FactoryReferenceAttribute<Server, JettyServerFactory<SimpleHttpServer>> server = FactoryReferenceAttribute.create(new FactoryReferenceAttribute<>(JettyServerFactory.class));
+    public final FactoryReferenceAttribute<SimpleHttpServer,Server, JettyServerFactory<SimpleHttpServer>> server = new FactoryReferenceAttribute<>();
 
     @Override
     public Server createImpl() {

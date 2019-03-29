@@ -6,9 +6,9 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.function.Consumer;
 
-import io.github.factoryfx.javafx.data.util.UniformDesign;
-import io.github.factoryfx.javafx.data.widget.Widget;
-import io.github.factoryfx.javafx.data.widget.table.TableControlWidget;
+import io.github.factoryfx.javafx.factory.util.UniformDesign;
+import io.github.factoryfx.javafx.factory.widget.Widget;
+import io.github.factoryfx.javafx.factory.widget.table.TableControlWidget;
 import io.github.factoryfx.factory.log.*;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.geometry.Insets;

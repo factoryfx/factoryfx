@@ -1,6 +1,6 @@
 package io.github.factoryfx.factory.log;
 
-import io.github.factoryfx.data.jackson.ObjectMapperBuilder;
+import io.github.factoryfx.factory.jackson.ObjectMapperBuilder;
 import io.github.factoryfx.factory.testfactories.ExampleFactoryA;
 import io.github.factoryfx.factory.testfactories.ExampleFactoryB;
 import org.junit.jupiter.api.Assertions;

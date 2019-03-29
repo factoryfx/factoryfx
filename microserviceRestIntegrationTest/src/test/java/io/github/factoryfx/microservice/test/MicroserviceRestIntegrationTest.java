@@ -1,11 +1,11 @@
 package io.github.factoryfx.microservice.test;
 
 import ch.qos.logback.classic.Level;
-import io.github.factoryfx.data.attribute.types.EncryptedStringAttribute;
-import io.github.factoryfx.data.jackson.ObjectMapperBuilder;
-import io.github.factoryfx.data.storage.StoredDataMetadata;
+import io.github.factoryfx.factory.attribute.types.EncryptedStringAttribute;
+import io.github.factoryfx.factory.jackson.ObjectMapperBuilder;
+import io.github.factoryfx.factory.storage.StoredDataMetadata;
 import io.github.factoryfx.factory.SimpleFactoryBase;
-import io.github.factoryfx.factory.atrribute.FactoryReferenceAttribute;
+import io.github.factoryfx.factory.attribute.dependency.FactoryReferenceAttribute;
 import io.github.factoryfx.factory.builder.FactoryTreeBuilder;
 import io.github.factoryfx.factory.builder.Scope;
 import io.github.factoryfx.jetty.JettyServerFactory;
@@ -28,7 +28,7 @@ public class MicroserviceRestIntegrationTest {
 
     public static class TestJettyServer  extends SimpleFactoryBase<Server, TestJettyServer> {
         @SuppressWarnings("unchecked")
-        public final FactoryReferenceAttribute<Server, JettyServerFactory<TestJettyServer>> server = FactoryReferenceAttribute.create(new FactoryReferenceAttribute<>(JettyServerFactory.class));
+        public final FactoryReferenceAttribute<TestJettyServer,Server, JettyServerFactory<TestJettyServer>> server = new FactoryReferenceAttribute<>();
 
         @Override
         public Server createImpl() {

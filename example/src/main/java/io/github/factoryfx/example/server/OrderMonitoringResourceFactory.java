@@ -2,11 +2,11 @@ package io.github.factoryfx.example.server;
 
 import io.github.factoryfx.example.server.shop.OrderStorage;
 import io.github.factoryfx.example.server.shop.OrderStorageFactory;
-import io.github.factoryfx.factory.atrribute.FactoryReferenceAttribute;
+import io.github.factoryfx.factory.attribute.dependency.FactoryReferenceAttribute;
 
 public class OrderMonitoringResourceFactory extends ServerBaseFactory<OrderMonitoringResource> {
-    public final FactoryReferenceAttribute<OrderStorage, OrderStorageFactory> orderStorage =
-            new FactoryReferenceAttribute<>(OrderStorageFactory.class);
+    public final FactoryReferenceAttribute<ServerRootFactory,OrderStorage, OrderStorageFactory> orderStorage =
+            new FactoryReferenceAttribute<>();
 
     @Override
     public OrderMonitoringResource createImpl() {

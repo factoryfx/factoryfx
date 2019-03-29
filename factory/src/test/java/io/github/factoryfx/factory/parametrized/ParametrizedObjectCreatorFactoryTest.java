@@ -1,8 +1,9 @@
 package io.github.factoryfx.factory.parametrized;
 
-import io.github.factoryfx.data.jackson.ObjectMapperBuilder;
+import io.github.factoryfx.factory.FactoryBase;
+import io.github.factoryfx.factory.jackson.ObjectMapperBuilder;
 import io.github.factoryfx.factory.SimpleFactoryBase;
-import io.github.factoryfx.factory.atrribute.FactoryReferenceAttribute;
+import io.github.factoryfx.factory.attribute.dependency.FactoryReferenceAttribute;
 import io.github.factoryfx.factory.testfactories.ExampleFactoryA;
 import io.github.factoryfx.factory.testfactories.ExampleLiveObjectA;
 import org.junit.jupiter.api.Test;
@@ -29,7 +30,7 @@ public class ParametrizedObjectCreatorFactoryTest {
     }
 
     public static class ShortLivedLiveObjectCreatorFactory extends ParametrizedObjectCreatorFactory<ShortLivedParameter,ShortLivedLiveObject,ShortLivedLiveObjectCreatorFactory> {
-        public final FactoryReferenceAttribute<ExampleLiveObjectA,ExampleFactoryA> referenceAttribute = new FactoryReferenceAttribute<>(ExampleFactoryA.class);
+        public final FactoryReferenceAttribute<ShortLivedLiveObjectCreatorFactory,ExampleLiveObjectA,ShortLivedLiveObjectCreatorExampleFactoryA> referenceAttribute = new FactoryReferenceAttribute<>();
 
         @Override
         protected Function<ShortLivedParameter, ShortLivedLiveObject> getCreator() {
@@ -37,8 +38,12 @@ public class ParametrizedObjectCreatorFactoryTest {
         }
     }
 
-    public static class TestShortLivedUserFactory extends SimpleFactoryBase<TestShortLivedUser,TestShortLivedUserFactory> {
-        public final ParametrizedObjectCreatorAttribute<ShortLivedParameter,ShortLivedLiveObject,ShortLivedLiveObjectCreatorFactory> builder = new ParametrizedObjectCreatorAttribute<>(ShortLivedLiveObjectCreatorFactory.class);
+    public static class ShortLivedLiveObjectCreatorExampleFactoryA extends FactoryBase<ExampleLiveObjectA,ShortLivedLiveObjectCreatorFactory>{
+
+    }
+
+    public static class TestShortLivedUserFactory extends SimpleFactoryBase<TestShortLivedUser,ShortLivedLiveObjectCreatorFactory> {
+        public final ParametrizedObjectCreatorAttribute<ShortLivedLiveObjectCreatorFactory,ShortLivedParameter,ShortLivedLiveObject,ShortLivedLiveObjectCreatorFactory> builder = new ParametrizedObjectCreatorAttribute<>();
 
         @Override
         public TestShortLivedUser createImpl() {
@@ -60,7 +65,7 @@ public class ParametrizedObjectCreatorFactoryTest {
     @Test
     public void test(){
         ShortLivedLiveObjectCreatorFactory creator = new ShortLivedLiveObjectCreatorFactory();
-        creator.referenceAttribute.set(new ExampleFactoryA());
+        creator.referenceAttribute.set(new ShortLivedLiveObjectCreatorExampleFactoryA());
 
         TestShortLivedUserFactory testShortLivedUserFactory = new TestShortLivedUserFactory();
         testShortLivedUserFactory.builder.set(creator);
@@ -69,7 +74,7 @@ public class ParametrizedObjectCreatorFactoryTest {
     @Test
     public void test_json(){
         ShortLivedLiveObjectCreatorFactory creator = new ShortLivedLiveObjectCreatorFactory();
-        creator.referenceAttribute.set(new ExampleFactoryA());
+        creator.referenceAttribute.set(new ShortLivedLiveObjectCreatorExampleFactoryA());
 
         TestShortLivedUserFactory testShortLivedUserFactory = new TestShortLivedUserFactory();
         testShortLivedUserFactory.builder.set(creator);

@@ -10,9 +10,10 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.javascript.jscomp.SourceFile;
-import io.github.factoryfx.data.Data;
-import io.github.factoryfx.data.attribute.AttributeChangeListener;
-import io.github.factoryfx.data.attribute.ImmutableValueAttribute;
+
+import io.github.factoryfx.factory.FactoryBase;
+import io.github.factoryfx.factory.attribute.AttributeChangeListener;
+import io.github.factoryfx.factory.attribute.ImmutableValueAttribute;
 
 /**
  *
@@ -21,14 +22,14 @@ import io.github.factoryfx.data.attribute.ImmutableValueAttribute;
 public class JavascriptAttribute<A> extends ImmutableValueAttribute<Javascript<A>,JavascriptAttribute<A>> {
 
     @JsonIgnore
-    private final Supplier<List<? extends Data>> data;
+    private final Supplier<List<? extends FactoryBase<?,?>>> data;
     @JsonIgnore
     private final Class<A> apiClass;
     @JsonIgnore
-    private final Function<List<? extends Data>,String> headerCreator = this::defaultCreateHeader;
+    private final Function<List<? extends FactoryBase<?,?>>,String> headerCreator = this::defaultCreateHeader;
 
     @SuppressWarnings("unchecked")
-    public JavascriptAttribute(Supplier<List<? extends Data>> data, Class<A> apiClass) {
+    public JavascriptAttribute(Supplier<List<? extends FactoryBase<?,?>>> data, Class<A> apiClass) {
         super((Class<Javascript<A>>)Javascript.class.asSubclass(Javascript.class));
         this.data = data;
         this.apiClass = apiClass;
@@ -45,7 +46,7 @@ public class JavascriptAttribute<A> extends ImmutableValueAttribute<Javascript<A
     }
 
     @Override
-    public void internal_copyTo(JavascriptAttribute<A> copyAttribute, Function<Data, Data> dataCopyProvider) {
+    public void internal_copyTo(JavascriptAttribute<A> copyAttribute) {
         if (copyAttribute.get()==null){
             copyAttribute.set(new Javascript<>());
         } else {
@@ -68,7 +69,7 @@ public class JavascriptAttribute<A> extends ImmutableValueAttribute<Javascript<A
         return headerCreator.apply(data.get());
     }
 
-    private String defaultCreateHeader(List<? extends Data> list) {
+    private String defaultCreateHeader(List<? extends FactoryBase<?,?>> list) {
         StringBuilder sb = new StringBuilder();
         if (list.size() == 1) {
             sb.append("var data = ");
@@ -76,7 +77,7 @@ public class JavascriptAttribute<A> extends ImmutableValueAttribute<Javascript<A
             sb.append("var data = [");
         }
         int initialLen = sb.length();
-        for (Data d : list) {
+        for (FactoryBase<?,?> d : list) {
             if (d != null) {
                 writeData(sb, d);
                 sb.append(',');
@@ -95,7 +96,7 @@ public class JavascriptAttribute<A> extends ImmutableValueAttribute<Javascript<A
         return sb.toString();
     }
 
-    private void writeData(StringBuilder sb, Data d) {
+    private void writeData(StringBuilder sb, FactoryBase<?,?> d) {
         sb.append("{");
         ObjectMapper mapper = new ObjectMapper();
         int oldLen = sb.length();
@@ -104,8 +105,8 @@ public class JavascriptAttribute<A> extends ImmutableValueAttribute<Javascript<A
                 Object value = attribute.get();
 
                 sb.append("\"").append(name).append("\" : ");
-                if (value instanceof Data) {
-                    writeData(sb,(Data)value);
+                if (value instanceof FactoryBase<?,?>) {
+                    writeData(sb,(FactoryBase<?,?>)value);
                 } else {
                     sb.append(mapper.writeValueAsString(value));
                 }

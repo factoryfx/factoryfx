@@ -1,10 +1,10 @@
 package io.github.factoryfx.example.client.view;
 
 import io.github.factoryfx.example.server.ServerRootFactory;
-import io.github.factoryfx.factory.atrribute.FactoryReferenceAttribute;
-import io.github.factoryfx.javafx.data.editor.attribute.AttributeVisualisationMappingBuilder;
-import io.github.factoryfx.javafx.data.util.UniformDesign;
-import io.github.factoryfx.javafx.data.widget.Widget;
+import io.github.factoryfx.factory.attribute.dependency.FactoryReferenceAttribute;
+import io.github.factoryfx.javafx.factory.editor.attribute.AttributeVisualisationMappingBuilder;
+import io.github.factoryfx.javafx.factory.util.UniformDesign;
+import io.github.factoryfx.javafx.factory.widget.Widget;
 import io.github.factoryfx.javafx.factory.RichClientRoot;
 import io.github.factoryfx.javafx.factory.editor.attribute.AttributeEditorBuilderFactory;
 import io.github.factoryfx.javafx.factory.util.LongRunningActionExecutor;
@@ -18,15 +18,15 @@ import io.github.factoryfx.microservice.rest.client.MicroserviceRestClientFactor
 
 public class HistoryViewFactory extends WidgetFactory {
 
-    public final FactoryReferenceAttribute<LongRunningActionExecutor, LongRunningActionExecutorFactory> longRunningActionExecutor =
-            new FactoryReferenceAttribute<>(LongRunningActionExecutorFactory.class).de("items").en("items");
-    public final FactoryReferenceAttribute<UniformDesign, UniformDesignFactory> uniformDesign =
-            new FactoryReferenceAttribute<>(UniformDesignFactory.class).de("uniformDesign").en("uniformDesign");
-    @SuppressWarnings("unchecked")
-    public final FactoryReferenceAttribute<MicroserviceRestClient<ServerRootFactory, String>, MicroserviceRestClientFactory<RichClientRoot, ServerRootFactory, String>> restClient =
-            FactoryReferenceAttribute.create(new FactoryReferenceAttribute<>(MicroserviceRestClientFactory.class).de("restClient").en("restClient"));
-    public final FactoryReferenceAttribute<AttributeVisualisationMappingBuilder, AttributeEditorBuilderFactory> attributeEditorBuilder =
-            new FactoryReferenceAttribute<>(AttributeEditorBuilderFactory.class).de("attribute editor").en("attribute editor");
+    public final FactoryReferenceAttribute<RichClientRoot,LongRunningActionExecutor, LongRunningActionExecutorFactory> longRunningActionExecutor =
+            new FactoryReferenceAttribute<RichClientRoot,LongRunningActionExecutor, LongRunningActionExecutorFactory>().de("items").en("items");
+    public final FactoryReferenceAttribute<RichClientRoot,UniformDesign, UniformDesignFactory> uniformDesign =
+            new FactoryReferenceAttribute<RichClientRoot,UniformDesign, UniformDesignFactory>().de("uniformDesign").en("uniformDesign");
+
+    public final FactoryReferenceAttribute<RichClientRoot,MicroserviceRestClient<ServerRootFactory, String>, MicroserviceRestClientFactory<RichClientRoot, ServerRootFactory, String>> restClient =
+            new FactoryReferenceAttribute<RichClientRoot,MicroserviceRestClient<ServerRootFactory, String>, MicroserviceRestClientFactory<RichClientRoot, ServerRootFactory, String>>().de("restClient").en("restClient");
+    public final FactoryReferenceAttribute<RichClientRoot,AttributeVisualisationMappingBuilder, AttributeEditorBuilderFactory> attributeEditorBuilder =
+            new FactoryReferenceAttribute<RichClientRoot,AttributeVisualisationMappingBuilder, AttributeEditorBuilderFactory>().de("attribute editor").en("attribute editor");
 
     @Override
     protected Widget createWidget() {

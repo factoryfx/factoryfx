@@ -3,11 +3,11 @@ package io.github.factoryfx.factory;
 import java.util.ArrayList;
 import java.util.Set;
 
-import io.github.factoryfx.data.Data;
 import io.github.factoryfx.factory.exception.RethrowingFactoryExceptionHandler;
 import io.github.factoryfx.factory.testfactories.*;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+
 
 public class FactoryManagerTest {
 
@@ -141,7 +141,7 @@ public class FactoryManagerTest {
         FactoryBaseTest.XRoot previous= root.utility().copy();
         root.xFactory.set(null);
 
-        Set<Data> changedFactories = factoryManager.getChangedFactories(new RootFactoryWrapper<>(root), previous);
+        Set<FactoryBase<?,?>> changedFactories = factoryManager.getChangedFactories(new RootFactoryWrapper<>(root), previous);
         Assertions.assertTrue(changedFactories.contains(exampleFactoryAndViewA));
     }
 

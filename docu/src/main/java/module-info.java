@@ -1,6 +1,5 @@
 open module io.github.factoryfx.docu {
     requires io.github.factoryfx.factory;
-    requires io.github.factoryfx.data;
     requires java.ws.rs;
     requires metrics.core;
     requires io.github.factoryfx.jettyFactory;
@@ -8,7 +7,6 @@ open module io.github.factoryfx.docu {
     requires jersey.common;
     requires com.google.common;
     requires ch.qos.logback.classic;
-    requires org.slf4j;
 
     requires postgresql;
     requires postgresql.embedded;

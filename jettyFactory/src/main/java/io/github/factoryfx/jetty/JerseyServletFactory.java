@@ -2,12 +2,12 @@ package io.github.factoryfx.jetty;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider;
-import io.github.factoryfx.data.attribute.types.ObjectValueAttribute;
+import io.github.factoryfx.factory.attribute.types.ObjectValueAttribute;
 import io.github.factoryfx.factory.FactoryBase;
 import io.github.factoryfx.factory.SimpleFactoryBase;
-import io.github.factoryfx.factory.atrribute.FactoryPolymorphicReferenceAttribute;
-import io.github.factoryfx.factory.atrribute.FactoryPolymorphicReferenceListAttribute;
-import io.github.factoryfx.factory.atrribute.FactoryReferenceAttribute;
+import io.github.factoryfx.factory.attribute.dependency.FactoryPolymorphicReferenceAttribute;
+import io.github.factoryfx.factory.attribute.dependency.FactoryPolymorphicReferenceListAttribute;
+import io.github.factoryfx.factory.attribute.dependency.FactoryReferenceAttribute;
 import org.glassfish.jersey.CommonProperties;
 import org.glassfish.jersey.logging.LoggingFeature;
 import org.glassfish.jersey.server.ResourceConfig;
@@ -18,16 +18,15 @@ import java.util.*;
 
 public class JerseyServletFactory<R extends FactoryBase<?,R>> extends SimpleFactoryBase<Servlet,R> {
 
-    @SuppressWarnings("unchecked")
-    public final FactoryReferenceAttribute<ObjectMapper,FactoryBase<ObjectMapper,R>> objectMapper =
-            FactoryReferenceAttribute.create( new FactoryReferenceAttribute<>(FactoryBase.class).nullable().en("objectMapper"));
 
-    public final FactoryPolymorphicReferenceAttribute<LoggingFeature> restLogging = new FactoryPolymorphicReferenceAttribute<>(LoggingFeature.class).userReadOnly().labelText("REST logging");
+    public final FactoryReferenceAttribute<R,ObjectMapper,FactoryBase<ObjectMapper,R>> objectMapper = new FactoryReferenceAttribute<R,ObjectMapper,FactoryBase<ObjectMapper,R>>().nullable().en("objectMapper");
+
+    public final FactoryPolymorphicReferenceAttribute<R,LoggingFeature> restLogging = new FactoryPolymorphicReferenceAttribute<R,LoggingFeature>().userReadOnly().labelText("REST logging");
 
     public final ObjectValueAttribute<List<Object>> additionalJaxrsComponents = new ObjectValueAttribute<List<Object>>().userReadOnly().labelText("additionalJaxrsComponents").nullable();
 
 
-    public final FactoryPolymorphicReferenceListAttribute<Object> resources = new FactoryPolymorphicReferenceListAttribute<>(Object.class).labelText("resources");
+    public final FactoryPolymorphicReferenceListAttribute<R,Object> resources = new FactoryPolymorphicReferenceListAttribute<R,Object>().labelText("resources");
 
     @Override
     public Servlet createImpl() {

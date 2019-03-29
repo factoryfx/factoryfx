@@ -1,7 +1,7 @@
 package io.github.factoryfx.javafx.factory.view;
 
-import io.github.factoryfx.data.util.LanguageText;
-import io.github.factoryfx.javafx.data.util.UniformDesign;
+import io.github.factoryfx.factory.util.LanguageText;
+import io.github.factoryfx.javafx.factory.util.UniformDesign;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.Tab;
 import javafx.stage.Stage;

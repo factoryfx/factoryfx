@@ -34,7 +34,7 @@ public class FactoryCreator<F extends FactoryBase<?,R>,R extends FactoryBase<?,R
         } else {
             if (factory==null){
                 factory=creator.apply(context);
-                factory.internalFactory().setTreeBuilderName(name);
+                factory.internal().setTreeBuilderName(name);
             }
             return factory;
         }
@@ -58,7 +58,7 @@ public class FactoryCreator<F extends FactoryBase<?,R>,R extends FactoryBase<?,R
 
     public F createNew(FactoryContext<R> context) {
         factory=creator.apply(context);
-        factory.internalFactory().setTreeBuilderName(name);
+        factory.internal().setTreeBuilderName(name);
         return factory;
     }
 }

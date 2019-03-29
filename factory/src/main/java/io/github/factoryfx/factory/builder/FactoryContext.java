@@ -74,10 +74,10 @@ public class FactoryContext<R extends FactoryBase<?,R>> {
     }
 
     public void fillFromExistingFactoryTree(R root) {
-        List<FactoryBase<?,?>> factories = root.internalFactory().collectChildFactoriesDeepFromRoot();
+        List<FactoryBase<?,?>> factories = root.internal().collectChildFactoriesDeepFromRoot();
         Map<FactoryCreatorIdentifier,FactoryBase<?,?>> classToFactory = new HashMap<>();
         for (FactoryBase<?,?> factory : factories) {
-            classToFactory.put(new FactoryCreatorIdentifier(factory.getClass(),factory.internalFactory().getTreeBuilderName()),factory);
+            classToFactory.put(new FactoryCreatorIdentifier(factory.getClass(),factory.internal().getTreeBuilderName()),factory);
         }
 
         for (FactoryCreator<?, R> factoryCreator : factoryCreators) {

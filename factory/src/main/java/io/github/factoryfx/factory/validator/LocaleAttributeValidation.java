@@ -5,7 +5,7 @@ import java.util.Locale;
 import java.util.Optional;
 
 import com.google.common.base.Strings;
-import io.github.factoryfx.data.attribute.Attribute;
+import io.github.factoryfx.factory.attribute.Attribute;
 import io.github.factoryfx.factory.FactoryBase;
 
 public class LocaleAttributeValidation implements FactoryStyleValidation {

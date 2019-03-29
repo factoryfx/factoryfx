@@ -18,12 +18,13 @@ import javax.sql.DataSource;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.io.CharStreams;
-import io.github.factoryfx.data.Data;
-import io.github.factoryfx.data.jackson.SimpleObjectMapper;
-import io.github.factoryfx.data.storage.migration.MigrationManager;
-import io.github.factoryfx.data.storage.*;
 
-public class PostgresDataStorage<R extends Data, S> implements DataStorage<R, S> {
+import io.github.factoryfx.factory.FactoryBase;
+import io.github.factoryfx.factory.jackson.SimpleObjectMapper;
+import io.github.factoryfx.factory.storage.migration.MigrationManager;
+import io.github.factoryfx.factory.storage.*;
+
+public class PostgresDataStorage<R extends FactoryBase<?,R>, S> implements DataStorage<R, S> {
 
     private final R initialData;
     private final DataSource dataSource;

@@ -1,16 +1,15 @@
 package io.github.factoryfx.jetty;
 
-import io.github.factoryfx.data.util.LanguageText;
-import io.github.factoryfx.data.validation.ValidationResult;
+import io.github.factoryfx.factory.util.LanguageText;
+import io.github.factoryfx.factory.validation.ValidationResult;
 import io.github.factoryfx.factory.FactoryBase;
-import io.github.factoryfx.factory.atrribute.FactoryReferenceListAttribute;
+import io.github.factoryfx.factory.attribute.dependency.FactoryReferenceListAttribute;
 
 import java.util.HashSet;
 
 public class UpdateableServletFactory<R extends FactoryBase<?,R>> extends FactoryBase<UpdateableServlet,R> {
 
-    @SuppressWarnings("unchecked")
-    public final FactoryReferenceListAttribute<ServletAndPath,ServletAndPathFactory<R>> servletAndPaths = FactoryReferenceListAttribute.create(new FactoryReferenceListAttribute<>(ServletAndPathFactory.class).labelText("servletAndPaths"));
+    public final FactoryReferenceListAttribute<R,ServletAndPath,ServletAndPathFactory<R>> servletAndPaths = new FactoryReferenceListAttribute<R,ServletAndPath,ServletAndPathFactory<R>>().labelText("servletAndPaths");
 
     public UpdateableServletFactory() {
         this.configLifeCycle().setCreator(() -> new UpdateableServlet(servletAndPaths.instances()));

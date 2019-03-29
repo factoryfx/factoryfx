@@ -1,6 +1,6 @@
 package io.github.factoryfx.jetty;
 
-import io.github.factoryfx.data.jackson.ObjectMapperBuilder;
+import io.github.factoryfx.factory.jackson.ObjectMapperBuilder;
 import io.github.factoryfx.factory.SimpleFactoryBase;
 import org.junit.jupiter.api.Test;
 

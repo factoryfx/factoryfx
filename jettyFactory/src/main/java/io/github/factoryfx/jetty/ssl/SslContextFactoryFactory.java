@@ -1,12 +1,12 @@
 package io.github.factoryfx.jetty.ssl;
 
-import io.github.factoryfx.data.attribute.primitive.BooleanAttribute;
+import io.github.factoryfx.factory.attribute.primitive.BooleanAttribute;
 import io.github.factoryfx.factory.FactoryBase;
 import io.github.factoryfx.factory.SimpleFactoryBase;
-import io.github.factoryfx.data.attribute.types.EnumAttribute;
-import io.github.factoryfx.data.attribute.types.FileContentAttribute;
-import io.github.factoryfx.data.attribute.types.StringAttribute;
-import io.github.factoryfx.data.attribute.types.StringListAttribute;
+import io.github.factoryfx.factory.attribute.types.EnumAttribute;
+import io.github.factoryfx.factory.attribute.types.FileContentAttribute;
+import io.github.factoryfx.factory.attribute.types.StringAttribute;
+import io.github.factoryfx.factory.attribute.types.StringListAttribute;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 
 import java.io.ByteArrayInputStream;

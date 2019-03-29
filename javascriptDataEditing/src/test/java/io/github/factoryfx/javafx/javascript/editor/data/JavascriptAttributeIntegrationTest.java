@@ -4,18 +4,19 @@ import java.util.List;
 import java.util.Locale;
 import java.util.function.Consumer;
 
-import io.github.factoryfx.data.Data;
-import io.github.factoryfx.data.attribute.Attribute;
-import io.github.factoryfx.data.jackson.ObjectMapperBuilder;
-import io.github.factoryfx.javafx.css.CssUtil;
-import io.github.factoryfx.javafx.data.editor.attribute.AttributeVisualisationMappingBuilder;
-import io.github.factoryfx.javafx.data.editor.attribute.AttributeVisualisation;
-import io.github.factoryfx.javafx.data.editor.attribute.ValidationDecoration;
-import io.github.factoryfx.javafx.data.editor.data.DataEditor;
-import io.github.factoryfx.javafx.data.util.UniformDesign;
+
+import io.github.factoryfx.factory.FactoryBase;
+import io.github.factoryfx.factory.attribute.Attribute;
+import io.github.factoryfx.factory.jackson.ObjectMapperBuilder;
+import io.github.factoryfx.javafx.factory.css.CssUtil;
+import io.github.factoryfx.javafx.factory.editor.attribute.AttributeVisualisationMappingBuilder;
+import io.github.factoryfx.javafx.factory.editor.attribute.AttributeVisualisation;
+import io.github.factoryfx.javafx.factory.editor.attribute.ValidationDecoration;
+import io.github.factoryfx.javafx.factory.editor.data.DataEditor;
+import io.github.factoryfx.javafx.factory.util.UniformDesign;
 import io.github.factoryfx.javafx.javascript.editor.attribute.visualisation.JavascriptAttributeVisualisation;
 import io.github.factoryfx.javascript.data.attributes.types.JavascriptAttribute;
-import io.github.factoryfx.javafx.data.editor.attribute.builder.AttributeVisualisationBuilder;
+import io.github.factoryfx.javafx.factory.editor.attribute.builder.AttributeVisualisationBuilder;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -53,7 +54,7 @@ public class JavascriptAttributeIntegrationTest extends Application{
             }
 
             @Override
-            public AttributeVisualisation createVisualisation(Attribute<?,?> attribute, Consumer<Data> navgigateTo, Data previousData) {
+            public AttributeVisualisation createVisualisation(Attribute<?,?> attribute, Consumer<FactoryBase<?,?>> navgigateTo, FactoryBase<?,?> previousData) {
                 return new JavascriptAttributeVisualisation((JavascriptAttribute<?>) attribute, new ValidationDecoration(uniformDesign));
             }
 

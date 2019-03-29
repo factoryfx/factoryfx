@@ -1,8 +1,8 @@
 package io.github.factoryfx.javafx.factory.view;
 
-import io.github.factoryfx.javafx.css.CssUtil;
+import io.github.factoryfx.javafx.factory.css.CssUtil;
 import io.github.factoryfx.javafx.factory.view.container.ViewsDisplayWidget;
-import io.github.factoryfx.javafx.data.widget.Widget;
+import io.github.factoryfx.javafx.factory.widget.Widget;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.ScrollPane;

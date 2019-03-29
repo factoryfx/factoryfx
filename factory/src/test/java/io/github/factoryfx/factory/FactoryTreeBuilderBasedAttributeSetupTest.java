@@ -1,8 +1,8 @@
 package io.github.factoryfx.factory;
 
-import io.github.factoryfx.data.jackson.ObjectMapperBuilder;
-import io.github.factoryfx.factory.atrribute.FactoryReferenceAttribute;
-import io.github.factoryfx.factory.atrribute.FactoryViewReferenceAttribute;
+import io.github.factoryfx.factory.jackson.ObjectMapperBuilder;
+import io.github.factoryfx.factory.attribute.dependency.FactoryReferenceAttribute;
+import io.github.factoryfx.factory.attribute.dependency.FactoryViewReferenceAttribute;
 import io.github.factoryfx.factory.builder.FactoryTreeBuilder;
 import io.github.factoryfx.factory.builder.Scope;
 import io.github.factoryfx.factory.testfactories.*;
@@ -268,7 +268,7 @@ public class FactoryTreeBuilderBasedAttributeSetupTest {
         List<ExampleFactoryB> possibleValues = root.referenceAttribute.internal_createNewPossibleValues();
         Assertions.assertEquals(1, possibleValues.size());
         Assertions.assertEquals("123", possibleValues.get(0).stringAttribute.get());
-
+        root.referenceAttribute.set(possibleValues.get(0));
 
 
         List<ExampleFactoryC> possibleValuesC =possibleValues.get(0).referenceAttributeC.internal_createNewPossibleValues();
@@ -287,8 +287,8 @@ public class FactoryTreeBuilderBasedAttributeSetupTest {
     }
 
     public static class ExampleFactoryViewRootFactory extends SimpleFactoryBase<ExampleLiveObjectB,ExampleFactoryViewRootFactory>{
-        public final FactoryReferenceAttribute<ExampleLiveObjectB,ExampleViewFactory> referenceAttributeViewFactory = new FactoryReferenceAttribute<>(ExampleViewFactory.class);
-        public final FactoryReferenceAttribute<ExampleLiveObjectB,ExamplDummyFactory> referenceAttribute = new FactoryReferenceAttribute<>(ExamplDummyFactory.class);
+        public final FactoryReferenceAttribute<ExampleFactoryViewRootFactory,ExampleLiveObjectB,ExampleViewFactory> referenceAttributeViewFactory = new FactoryReferenceAttribute<>();
+        public final FactoryReferenceAttribute<ExampleFactoryViewRootFactory,ExampleLiveObjectB,ExamplDummyFactory> referenceAttribute = new FactoryReferenceAttribute<>();
 
         @Override
         public ExampleLiveObjectB createImpl() {

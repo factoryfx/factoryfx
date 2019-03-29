@@ -3,8 +3,9 @@ package io.github.factoryfx.copperbridge;
 import java.util.Collections;
 
 import io.github.factoryfx.copperbridge.db.OracleDataSourceFactory;
-import io.github.factoryfx.data.attribute.primitive.IntegerAttribute;
-import io.github.factoryfx.data.attribute.types.StringAttribute;
+import io.github.factoryfx.factory.attribute.dependency.FactoryReferenceAttribute;
+import io.github.factoryfx.factory.attribute.primitive.IntegerAttribute;
+import io.github.factoryfx.factory.attribute.types.StringAttribute;
 import io.github.factoryfx.factory.FactoryBase;
 import org.copperengine.core.EngineIdProvider;
 import org.copperengine.core.batcher.RetryingTxnBatchRunner;
@@ -18,7 +19,6 @@ import org.copperengine.core.persistent.PersistentScottyEngine;
 import org.copperengine.core.persistent.ScottyDBStorage;
 import org.copperengine.core.persistent.txn.CopperTransactionController;
 
-import io.github.factoryfx.factory.atrribute.FactoryReferenceAttribute;
 
 public class PersistentScottyEngineFactory<R extends FactoryBase<?, R>> extends FactoryBase<PersistentEngineContainer, R> {
 
@@ -26,13 +26,9 @@ public class PersistentScottyEngineFactory<R extends FactoryBase<?, R>> extends 
     public final IntegerAttribute batcherThreads = new IntegerAttribute().labelText("Number of batcher threads");
     public final IntegerAttribute threads = new IntegerAttribute().labelText("Number of processing threads");
 
-    @SuppressWarnings("unchecked")
-    public final FactoryReferenceAttribute<EngineIdProvider, EngineIdProviderFactory<R>> persistentEngineIdProviderFactory =
-        FactoryReferenceAttribute.create(new FactoryReferenceAttribute<>(EngineIdProviderFactory.class));
 
-    @SuppressWarnings("unchecked")
-    public final FactoryReferenceAttribute<DBDialect, OracleDataSourceFactory<R>> dbDialectFactory =
-        FactoryReferenceAttribute.create(new FactoryReferenceAttribute<>(OracleDataSourceFactory.class)).labelText("DB dialect");
+    public final FactoryReferenceAttribute<R,EngineIdProvider, EngineIdProviderFactory<R>> persistentEngineIdProviderFactory = new FactoryReferenceAttribute<>();
+    public final FactoryReferenceAttribute<R,DBDialect, OracleDataSourceFactory<R>> dbDialectFactory = new FactoryReferenceAttribute<R,DBDialect, OracleDataSourceFactory<R>>().labelText("DB dialect");
 
     public PersistentScottyEngineFactory() {
         configLifeCycle().setCreator(this::createImpl);

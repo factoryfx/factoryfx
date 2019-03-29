@@ -1,13 +1,12 @@
 package io.github.factoryfx.example.server;
 
 import io.github.factoryfx.example.server.shop.ShopJettyServerFactory;
-import io.github.factoryfx.factory.atrribute.FactoryReferenceAttribute;
+import io.github.factoryfx.factory.attribute.dependency.FactoryReferenceAttribute;
 import org.eclipse.jetty.server.Server;
 
 public class ServerRootFactory extends ServerBaseFactory<Server> {
 
-    @SuppressWarnings("unchecked")
-    public final FactoryReferenceAttribute<Server, ShopJettyServerFactory> httpServer = new FactoryReferenceAttribute<>(ShopJettyServerFactory.class)
+    public final FactoryReferenceAttribute<ServerRootFactory, Server, ShopJettyServerFactory> httpServer = new FactoryReferenceAttribute<ServerRootFactory, Server, ShopJettyServerFactory>()
                     .labelText("HTTP Servers")
                     .userNotCreatable()
                     .userNotSelectable()

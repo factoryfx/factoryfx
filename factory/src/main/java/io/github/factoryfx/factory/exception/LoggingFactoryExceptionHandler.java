@@ -31,6 +31,6 @@ public class LoggingFactoryExceptionHandler<L,R extends FactoryBase<L,R>> implem
     }
 
     private void log(Exception e, FactoryBase<?,?> factory,String text) {
-        logger.error("\nException during " + text + " for factory " + factory.getClass() + ":\n" + factory.internalFactory().debugInfo(), e);
+        logger.error("\nException during " + text + " for factory " + factory.getClass() + ":\n" + factory.internal().debugInfo(), e);
     }
 }

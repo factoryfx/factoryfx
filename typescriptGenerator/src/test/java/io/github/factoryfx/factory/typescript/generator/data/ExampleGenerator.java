@@ -1,13 +1,14 @@
 package io.github.factoryfx.factory.typescript.generator.data;
 
-import io.github.factoryfx.data.Data;
+
 import io.github.factoryfx.factory.typescript.generator.TsGenerator;
 
+import javax.xml.crypto.Data;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 
-public class ExampleGenerator extends Data {
+public class ExampleGenerator  {
 
     public static void main(String[] args) {
         Path targetDir = Paths.get("src/test/ts/example/");
@@ -16,7 +17,7 @@ public class ExampleGenerator extends Data {
             throw new IllegalArgumentException("set intellij working dir to $MODULE_WORKING_DIR$");
         }
 
-        TsGenerator tsClassCreator=new TsGenerator(targetDir,List.of(ExampleData.class, ExampleData2.class, ExampleDataAll.class ,ExampleDataIgnore.class, ExampleFactory.class));
+        TsGenerator<ExampleData> tsClassCreator=new TsGenerator<>(targetDir,List.of(ExampleData.class, ExampleData2.class, ExampleDataAll.class ,ExampleDataIgnore.class, ExampleFactory.class));
         tsClassCreator.clearTargetDir();
         tsClassCreator.generate();
 

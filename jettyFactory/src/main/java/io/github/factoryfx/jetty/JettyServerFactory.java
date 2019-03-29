@@ -1,8 +1,8 @@
 package io.github.factoryfx.jetty;
 
 import io.github.factoryfx.factory.FactoryBase;
-import io.github.factoryfx.factory.atrribute.FactoryReferenceAttribute;
-import io.github.factoryfx.factory.atrribute.FactoryReferenceListAttribute;
+import io.github.factoryfx.factory.attribute.dependency.FactoryReferenceAttribute;
+import io.github.factoryfx.factory.attribute.dependency.FactoryReferenceListAttribute;
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.HandlerCollection;
@@ -39,13 +39,8 @@ public class JettyServerFactory<R extends FactoryBase<?,R>> extends FactoryBase<
         jerseyLogger2.setLevel(Level.SEVERE);//warning about generic parameters, works fine and no fix available so the warnings are just useless
     }
 
-    @SuppressWarnings("unchecked")
-    public final FactoryReferenceListAttribute<HttpServerConnector,HttpServerConnectorFactory<R>> connectors =
-            FactoryReferenceListAttribute.create( new FactoryReferenceListAttribute<>(HttpServerConnectorFactory.class).labelText("Connectors").userNotSelectable());
-
-
-    @SuppressWarnings("unchecked")
-    public final FactoryReferenceAttribute<HandlerCollection,HandlerCollectionFactory<R>> handler = FactoryReferenceAttribute.create(new FactoryReferenceAttribute<>(HandlerCollectionFactory.class).labelText("Handler collection"));
+    public final FactoryReferenceListAttribute<R,HttpServerConnector,HttpServerConnectorFactory<R>> connectors = new FactoryReferenceListAttribute<R,HttpServerConnector,HttpServerConnectorFactory<R>>().labelText("Connectors").userNotSelectable();
+    public final FactoryReferenceAttribute<R,HandlerCollection,HandlerCollectionFactory<R>> handler = new FactoryReferenceAttribute<R,HandlerCollection,HandlerCollectionFactory<R>>().labelText("Handler collection");
 
 
     public JettyServerFactory(){

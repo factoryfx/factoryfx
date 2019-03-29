@@ -4,7 +4,7 @@ import io.github.factoryfx.factory.SimpleFactoryBase;
 import io.github.factoryfx.factory.parametrized.ParametrizedObjectCreatorAttribute;
 
 public class RootFactory extends SimpleFactoryBase<Root, RootFactory> {
-    public final ParametrizedObjectCreatorAttribute<PrinterCreateParameter,Printer,PrinterCreatorFactory> printerCreator =new ParametrizedObjectCreatorAttribute<>(PrinterCreatorFactory.class);
+    public final ParametrizedObjectCreatorAttribute<RootFactory,PrinterCreateParameter,Printer,PrinterCreatorFactory> printerCreator =new ParametrizedObjectCreatorAttribute<>();
 
     @Override
     public Root createImpl() {

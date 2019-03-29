@@ -2,7 +2,7 @@ package io.github.factoryfx.docu.customconfig;
 
 //import io.swagger.annotations.Api;
 
-import io.github.factoryfx.data.storage.DataUpdate;
+import io.github.factoryfx.factory.storage.DataUpdate;
 import io.github.factoryfx.server.Microservice;
 import io.swagger.annotations.Api;
 

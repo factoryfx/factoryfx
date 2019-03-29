@@ -1,6 +1,6 @@
 package io.github.factoryfx.factory.typescript.generator.construct.atttributes;
 
-import io.github.factoryfx.data.attribute.Attribute;
+import io.github.factoryfx.factory.attribute.Attribute;
 import io.github.factoryfx.factory.typescript.generator.ts.TsFile;
 import io.github.factoryfx.factory.typescript.generator.ts.TsType;
 

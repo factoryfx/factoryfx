@@ -1,5 +1,5 @@
 module io.github.factoryfx.oracledbStorage {
-    requires io.github.factoryfx.data;
+    requires io.github.factoryfx.factory;
     requires java.sql;
     requires com.fasterxml.jackson.databind;
 

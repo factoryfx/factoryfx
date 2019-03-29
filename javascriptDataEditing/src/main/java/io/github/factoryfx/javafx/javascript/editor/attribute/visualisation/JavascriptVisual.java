@@ -4,7 +4,6 @@ import java.lang.ref.WeakReference;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
 import com.google.javascript.jscomp.CheckLevel;
 import com.google.javascript.jscomp.JSError;

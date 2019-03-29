@@ -1,27 +1,28 @@
 package io.github.factoryfx.factory.typescript.generator.construct;
 
-import io.github.factoryfx.data.Data;
-import io.github.factoryfx.data.DataDictionary;
-import io.github.factoryfx.data.attribute.Attribute;
-import io.github.factoryfx.data.attribute.ReferenceAttribute;
-import io.github.factoryfx.data.attribute.ReferenceListAttribute;
+
+import io.github.factoryfx.factory.FactoryBase;
+import io.github.factoryfx.factory.attribute.Attribute;
+import io.github.factoryfx.factory.attribute.dependency.FactoryReferenceBaseAttribute;
+import io.github.factoryfx.factory.attribute.dependency.FactoryReferenceListBaseAttribute;
+import io.github.factoryfx.factory.metadata.FactoryMetadataManager;
 import io.github.factoryfx.factory.typescript.generator.construct.atttributes.AttributeToTsMapperManager;
 import io.github.factoryfx.factory.typescript.generator.ts.*;
 
 import java.util.*;
 
-public class DataGeneratedTs {
+public class DataGeneratedTs<R extends FactoryBase<?,R>> {
 
-    private final Class<? extends Data> clazz;
+    private final Class<? extends FactoryBase<?,R>> clazz;
     private final TsFile dataTsClass;
     private final TsFile dataCreatorTsClass;
     private final TsFile attributeMetadataTsClass;
-    private final Map<Class<? extends Data>,TsClassConstructed> dataToOverrideTs;
+    private final Map<Class<? extends FactoryBase<?,R>>,TsClassConstructed> dataToOverrideTs;
     private final TsFile attributeAccessorClass;
     private final AttributeToTsMapperManager attributeToTsMapperManager;
     private final TsEnumConstructed attributeTypeEnumTsEnum;
 
-    public DataGeneratedTs(Class<? extends Data> clazz, Map<Class<? extends Data>, TsClassConstructed> dataToOverrideTs, TsFile dataTsClass, TsFile dataCreatorTsClass, TsFile attributeTsClass, TsFile attributeAccessorClass, AttributeToTsMapperManager attributeToTsMapperManager, TsEnumConstructed attributeTypeEnumTsEnum) {
+    public DataGeneratedTs(Class<? extends FactoryBase<?,R>> clazz, Map<Class<? extends FactoryBase<?,R>>, TsClassConstructed> dataToOverrideTs, TsFile dataTsClass, TsFile dataCreatorTsClass, TsFile attributeTsClass, TsFile attributeAccessorClass, AttributeToTsMapperManager attributeToTsMapperManager, TsEnumConstructed attributeTypeEnumTsEnum) {
         this.clazz = clazz;
         this.dataTsClass = dataTsClass;
         this.dataToOverrideTs = dataToOverrideTs;
@@ -34,7 +35,7 @@ public class DataGeneratedTs {
 
     public TsFile complete(TsClassConstructed tsClass){
         ArrayList<TsAttribute> attributes = new ArrayList<>();
-        Data data = DataDictionary.getDataDictionary(clazz).newInstance();
+        FactoryBase<?,R> data = FactoryMetadataManager.getMetadata(clazz).newInstance();
         data.internal().visitAttributesFlat((attributeVariableName, attribute) -> {
             if (attributeToTsMapperManager.isMappable(attribute.getClass())){
                 attributes.add(getTsAttribute(attributeVariableName,attribute));
@@ -74,7 +75,7 @@ public class DataGeneratedTs {
     }
 
 
-    private TsMethod createListAttributeAccessor(Data data, TsClassConstructed tsClass) {
+    private TsMethod createListAttributeAccessor(FactoryBase<?,?> data, TsClassConstructed tsClass) {
         StringBuilder code=new StringBuilder("let result: AttributeAccessor<any,"+tsClass.getName()+">[]=[];\n");
         data.internal().visitAttributesFlat((attributeVariableName, attribute) -> {
             if (attributeToTsMapperManager.isMappable(attribute.getClass())){
@@ -86,19 +87,19 @@ public class DataGeneratedTs {
                 new TsMethodResult(new TsTypeArray(new TsTypeClass(attributeAccessorClass,new TsTypePrimitive("any"),new TsTypeClass(tsClass)))),new TsMethodCode(code.toString(), Set.of()),"protected");
     }
 
-    private TsMethod createCollectChildren(Data data) {
+    private TsMethod createCollectChildren(FactoryBase<?,?> data) {
         StringBuilder fromJsonCode=new StringBuilder();
         Set<TsFile> mapValuesFromJsonImports = new HashSet<>();
         data.internal().visitAttributesFlat((attributeVariableName, attribute) -> {
-            if (attribute instanceof ReferenceAttribute){
-                Class referenceClass = ((ReferenceAttribute) attribute).internal_getReferenceClass();
+            if (attribute instanceof FactoryReferenceBaseAttribute){
+                Class referenceClass = ((FactoryReferenceBaseAttribute) attribute).internal_getReferenceClass();
                 TsClassConstructed dataClass = dataToOverrideTs.get(referenceClass);
                 mapValuesFromJsonImports.add(dataClass);
                 fromJsonCode.append("this.collectDataChildren(this.").append(attributeVariableName).append(",idToDataMap);\n");
                 return;
             }
-            if (attribute instanceof ReferenceListAttribute){
-                Class referenceClass = ((ReferenceListAttribute) attribute).internal_getReferenceClass();
+            if (attribute instanceof FactoryReferenceListBaseAttribute){
+                Class referenceClass = ((FactoryReferenceListBaseAttribute) attribute).internal_getReferenceClass();
                 TsClassConstructed dataClass = dataToOverrideTs.get(referenceClass);
                 mapValuesFromJsonImports.add(dataClass);
                 fromJsonCode.append("this.collectDataArrayChildren(this.").append(attributeVariableName).append(",idToDataMap);\n");
@@ -111,7 +112,7 @@ public class DataGeneratedTs {
                 new TsMethodResultVoid(),new TsMethodCode(fromJsonCode.toString(), mapValuesFromJsonImports),"protected");
     }
 
-    private TsMethod createMapValuesFromJson(Data data) {
+    private TsMethod createMapValuesFromJson(FactoryBase<?,?> data) {
         StringBuilder fromJsonCode=new StringBuilder();
         Set<TsFile> jsonImports = new HashSet<>();
         data.internal().visitAttributesFlat((attributeVariableName, attribute) -> {
@@ -125,7 +126,7 @@ public class DataGeneratedTs {
                 new TsMethodResultVoid(),new TsMethodCode(fromJsonCode.toString(), jsonImports),"protected");
     }
 
-    private TsMethod createAddMapValueToJson(Data data) {
+    private TsMethod createAddMapValueToJson(FactoryBase<?,?> data) {
         StringBuilder toJsonCode=new StringBuilder();
         Set<TsFile> jsonImports = new HashSet<>();
         data.internal().visitAttributesFlat((attributeVariableName, attribute) -> {

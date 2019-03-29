@@ -1,7 +1,7 @@
 package io.github.factoryfx.factory.typescript.generator.construct.atttributes;
 
-import io.github.factoryfx.data.attribute.Attribute;
-import io.github.factoryfx.data.attribute.types.EnumListAttribute;
+import io.github.factoryfx.factory.attribute.Attribute;
+import io.github.factoryfx.factory.attribute.types.EnumListAttribute;
 import io.github.factoryfx.factory.typescript.generator.ts.*;
 
 import java.util.Set;

@@ -1,8 +1,8 @@
 package io.github.factoryfx.docu.permission;
 
 import ch.qos.logback.classic.Level;
-import io.github.factoryfx.data.attribute.types.EncryptedStringAttribute;
-import io.github.factoryfx.data.storage.DataUpdate;
+import io.github.factoryfx.factory.attribute.types.EncryptedStringAttribute;
+import io.github.factoryfx.factory.storage.DataUpdate;
 import io.github.factoryfx.factory.builder.FactoryTreeBuilder;
 import io.github.factoryfx.factory.builder.Scope;
 import io.github.factoryfx.factory.log.FactoryUpdateLog;

@@ -3,7 +3,7 @@ package io.github.factoryfx.factory.validator;
 import java.lang.reflect.Field;
 import java.util.Optional;
 
-import io.github.factoryfx.data.attribute.Attribute;
+import io.github.factoryfx.factory.attribute.Attribute;
 import io.github.factoryfx.factory.FactoryBase;
 
 public class OnlyAttribute implements FactoryStyleValidation {

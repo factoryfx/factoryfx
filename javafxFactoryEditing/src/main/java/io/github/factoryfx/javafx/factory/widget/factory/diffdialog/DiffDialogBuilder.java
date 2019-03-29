@@ -1,12 +1,12 @@
 package io.github.factoryfx.javafx.factory.widget.factory.diffdialog;
 
-import io.github.factoryfx.data.merge.MergeDiffInfo;
-import io.github.factoryfx.data.util.LanguageText;
+import io.github.factoryfx.factory.merge.MergeDiffInfo;
+import io.github.factoryfx.factory.util.LanguageText;
 import io.github.factoryfx.factory.log.FactoryUpdateLog;
-import io.github.factoryfx.javafx.css.CssUtil;
-import io.github.factoryfx.javafx.data.editor.attribute.AttributeVisualisationMappingBuilder;
-import io.github.factoryfx.javafx.data.util.UniformDesign;
-import io.github.factoryfx.javafx.data.widget.factorydiff.FactoryDiffWidget;
+import io.github.factoryfx.javafx.factory.css.CssUtil;
+import io.github.factoryfx.javafx.factory.editor.attribute.AttributeVisualisationMappingBuilder;
+import io.github.factoryfx.javafx.factory.util.UniformDesign;
+import io.github.factoryfx.javafx.factory.widget.factorydiff.FactoryDiffWidget;
 import io.github.factoryfx.javafx.factory.widget.factory.factorylog.FactoryUpdateLogWidget;
 import javafx.scene.Node;
 import javafx.scene.control.ButtonBar;

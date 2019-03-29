@@ -1,7 +1,7 @@
 package io.github.factoryfx.factory.builder;
 
 
-import io.github.factoryfx.data.storage.migration.metadata.DataStorageMetadataDictionary;
+import io.github.factoryfx.factory.storage.migration.metadata.DataStorageMetadataDictionary;
 import io.github.factoryfx.factory.testfactories.ExampleFactoryA;
 import io.github.factoryfx.factory.testfactories.ExampleFactoryB;
 import io.github.factoryfx.factory.testfactories.ExampleLiveObjectA;

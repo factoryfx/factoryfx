@@ -8,7 +8,7 @@ import io.github.factoryfx.copperbridge.EngineIdProviderFactory;
 import io.github.factoryfx.copperbridge.TransientScottyEngineFactory;
 import io.github.factoryfx.copperbridge.WorkflowLauncher;
 import io.github.factoryfx.copperbridge.WorkflowLauncherFactory;
-import io.github.factoryfx.data.storage.DataUpdate;
+import io.github.factoryfx.factory.storage.DataUpdate;
 import io.github.factoryfx.factory.builder.FactoryTreeBuilder;
 import io.github.factoryfx.factory.builder.Scope;
 import io.github.factoryfx.server.Microservice;

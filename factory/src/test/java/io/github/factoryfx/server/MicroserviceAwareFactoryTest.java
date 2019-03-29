@@ -2,7 +2,7 @@ package io.github.factoryfx.server;
 
 import io.github.factoryfx.factory.FactoryBase;
 import io.github.factoryfx.factory.SimpleFactoryBase;
-import io.github.factoryfx.factory.atrribute.FactoryReferenceAttribute;
+import io.github.factoryfx.factory.attribute.dependency.FactoryReferenceAttribute;
 import io.github.factoryfx.factory.builder.FactoryTreeBuilder;
 import io.github.factoryfx.factory.builder.Scope;
 import org.junit.jupiter.api.Test;
@@ -33,11 +33,11 @@ public class MicroserviceAwareFactoryTest {
 
     public static class RootTestClazz extends SimpleFactoryBase<String,RootTestClazz> {
 
-        public final FactoryReferenceAttribute<String,MicroserviceAwareFactoryTestclazz> ref = new FactoryReferenceAttribute<>(MicroserviceAwareFactoryTestclazz.class);
+        public final FactoryReferenceAttribute<RootTestClazz,String,MicroserviceAwareFactoryTestclazz> ref = new FactoryReferenceAttribute<>();
 
         @Override
         public String createImpl() {
-            this.utilityFactory().getMicroservice().prepareNewFactory(); //no npw, Microservice available
+            this.utility().getMicroservice().prepareNewFactory(); //no npw, Microservice available
 
             return "";
         }

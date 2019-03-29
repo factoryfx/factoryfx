@@ -1,8 +1,9 @@
 package io.github.factoryfx.factory.typescript.generator;
 
-import io.github.factoryfx.data.Data;
-import io.github.factoryfx.data.DataDictionary;
-import io.github.factoryfx.data.attribute.types.EnumAttribute;
+
+import io.github.factoryfx.factory.FactoryBase;
+import io.github.factoryfx.factory.attribute.types.EnumAttribute;
+import io.github.factoryfx.factory.metadata.FactoryMetadataManager;
 import io.github.factoryfx.factory.typescript.generator.construct.*;
 import io.github.factoryfx.factory.typescript.generator.construct.atttributes.AttributeToTsMapperManager;
 import io.github.factoryfx.factory.typescript.generator.ts.TsClassConstructed;
@@ -17,20 +18,20 @@ import java.util.*;
 import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 
-public class TsGenerator {
+public class TsGenerator<R extends FactoryBase<?,R>> {
 
     private final Path targetDir;
-    private final List<Class<? extends Data>> dataClasses;
-    private final BiFunction<Set<TsEnumConstructed>,Map<Class<? extends Data>, TsClassConstructed>, AttributeToTsMapperManager> attributeInfoMapperCreator;
+    private final List<Class<? extends FactoryBase<?,R>>> dataClasses;
+    private final BiFunction<Set<TsEnumConstructed>,Map<Class<? extends FactoryBase<?,R>>, TsClassConstructed>, AttributeToTsMapperManager> attributeInfoMapperCreator;
 
 
-    public TsGenerator(Path targetDir, List<Class<? extends Data>> dataClasses, BiFunction<Set<TsEnumConstructed>,Map<Class<? extends Data>, TsClassConstructed>, AttributeToTsMapperManager> attributeInfoMapperCreator) {
+    public TsGenerator(Path targetDir, List<Class<? extends FactoryBase<?,R>>> dataClasses, BiFunction<Set<TsEnumConstructed>,Map<Class<? extends FactoryBase<?,R>>, TsClassConstructed>, AttributeToTsMapperManager> attributeInfoMapperCreator) {
         this.targetDir = targetDir;
         this.dataClasses = dataClasses;
         this.attributeInfoMapperCreator = attributeInfoMapperCreator;
     }
 
-    public TsGenerator(Path targetDir, List<Class<? extends Data>> dataClasses) {
+    public TsGenerator(Path targetDir, List<Class<? extends FactoryBase<?,R>>> dataClasses) {
         this(targetDir,dataClasses,(enums,dataToOverrideTs)-> new AttributeToTsMapperManager(AttributeToTsMapperManager.createAttributeInfoMap(dataToOverrideTs,enums), AttributeToTsMapperManager.createAttributeIgnoreSet()));
     }
 
@@ -69,20 +70,20 @@ public class TsGenerator {
         TsClassTemplateBased validationErrorTsClass = new TsClassTemplateBased("ValidationError.ts", utilDir);
         validationErrorTsClass.writeToFile();
 
-        HashMap<Class<? extends Data>,TsClassConstructed> dataToGeneratedTsClass = new HashMap<>();
-        HashMap<Class<? extends Data>,TsClassConstructed> dataToConfigTs = new HashMap<>();
+        HashMap<Class<? extends FactoryBase<?,R>>,TsClassConstructed> dataToGeneratedTsClass = new HashMap<>();
+        HashMap<Class<? extends FactoryBase<?,R>>,TsClassConstructed> dataToConfigTs = new HashMap<>();
         Path generatedPath = targetDir.resolve("generated");
 
-        for (Class<? extends Data> dataClass : dataClasses) {
+        for (Class<? extends FactoryBase<?,R>> dataClass : dataClasses) {
             dataToGeneratedTsClass.put(dataClass,new TsClassConstructed(dataClass.getSimpleName()+"Generated", dataClass.getPackage().getName().replace(".","/")+"/", generatedPath));
             dataToConfigTs.put(dataClass,new TsClassConstructed(dataClass.getSimpleName(),dataClass.getPackage().getName().replace(".","/")+"/", targetDir.resolve("config")));
         }
 
 
         Set<Class<? extends Enum<?>>> enumClasses= new HashSet<>();
-        for (Map.Entry<Class<? extends Data>, TsClassConstructed> entry : dataToGeneratedTsClass.entrySet()) {
-            Class<? extends Data> dataClass = entry.getKey();
-            Data data = DataDictionary.getDataDictionary(dataClass).newInstance();
+        for (Map.Entry<Class<? extends FactoryBase<?,R>>, TsClassConstructed> entry : dataToGeneratedTsClass.entrySet()) {
+            Class<? extends FactoryBase<?,R>> dataClass = entry.getKey();
+            FactoryBase<?,R> data = FactoryMetadataManager.getMetadata(dataClass).newInstance();
             data.internal().visitAttributesFlat((attributeVariableName, attribute) -> {
                 if (attribute instanceof EnumAttribute){
                     enumClasses.add(((EnumAttribute<?>)attribute).internal_getEnumClass());
@@ -103,16 +104,16 @@ public class TsGenerator {
         TsEnumConstructed attributeTypeEnumTsEnum = attributeTypeEnumTs.construct();
         attributeTypeEnumTsEnum.writeToFile();
 
-        DataCreatorTs dataCreatorGenerator = new DataCreatorTs(dataClasses, dataToConfigTs, dataTsClass, utilDir);
+        DataCreatorTs<R> dataCreatorGenerator = new DataCreatorTs<>(dataClasses, dataToConfigTs, dataTsClass, utilDir);
         TsFile dataCreatorTsClass = dataCreatorGenerator.construct();
         dataCreatorTsClass.writeToFile();
 
-        for (Map.Entry<Class<? extends Data>, TsClassConstructed> entry : dataToGeneratedTsClass.entrySet()) {
-            DataGeneratedTs dataGenerator = new DataGeneratedTs(entry.getKey(), dataToConfigTs, dataTsClass, dataCreatorTsClass, attributeMetadataTsClass, attributeAccessorClass, attributeToTsMapperManager,attributeTypeEnumTsEnum);
+        for (Map.Entry<Class<? extends FactoryBase<?,R>>, TsClassConstructed> entry : dataToGeneratedTsClass.entrySet()) {
+            DataGeneratedTs<R> dataGenerator = new DataGeneratedTs<>(entry.getKey(), dataToConfigTs, dataTsClass, dataCreatorTsClass, attributeMetadataTsClass, attributeAccessorClass, attributeToTsMapperManager,attributeTypeEnumTsEnum);
             dataGenerator.complete(entry.getValue()).writeToFile();
         }
 
-        for (Map.Entry<Class<? extends Data>, TsClassConstructed> entry : dataToConfigTs.entrySet()) {
+        for (Map.Entry<Class<? extends FactoryBase<?,R>>, TsClassConstructed> entry : dataToConfigTs.entrySet()) {
             DataConfigTs dataOverrideGenerator = new DataConfigTs(entry.getKey(), dataToGeneratedTsClass.get(entry.getKey()));
             dataOverrideGenerator.complete(entry.getValue()).writeToFile();
         }

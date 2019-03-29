@@ -1,12 +1,11 @@
 package io.github.factoryfx.factory;
 
-import io.github.factoryfx.data.Data;
-import io.github.factoryfx.data.attribute.types.StringAttribute;
-import io.github.factoryfx.data.jackson.ObjectMapperBuilder;
-import io.github.factoryfx.factory.atrribute.FactoryReferenceAttribute;
-import io.github.factoryfx.factory.atrribute.FactoryReferenceListAttribute;
-import io.github.factoryfx.factory.atrribute.FactoryViewListReferenceAttribute;
-import io.github.factoryfx.factory.atrribute.FactoryViewReferenceAttribute;
+import io.github.factoryfx.factory.attribute.types.StringAttribute;
+import io.github.factoryfx.factory.jackson.ObjectMapperBuilder;
+import io.github.factoryfx.factory.attribute.dependency.FactoryReferenceAttribute;
+import io.github.factoryfx.factory.attribute.dependency.FactoryReferenceListAttribute;
+import io.github.factoryfx.factory.attribute.dependency.FactoryViewListReferenceAttribute;
+import io.github.factoryfx.factory.attribute.dependency.FactoryViewReferenceAttribute;
 import io.github.factoryfx.factory.testfactories.ExampleFactoryA;
 import io.github.factoryfx.factory.testfactories.ExampleFactoryB;
 import io.github.factoryfx.factory.testfactories.ExampleFactoryC;
@@ -27,7 +26,7 @@ public class FactoryBaseTest {
             exampleFactoryB.referenceAttribute.set(exampleFactoryA);
             exampleFactoryA.referenceAttribute.set(exampleFactoryB);
 
-            exampleFactoryA.internalFactory().loopDetector();
+            exampleFactoryA.internal().loopDetector();
         });
     }
 
@@ -44,7 +43,7 @@ public class FactoryBaseTest {
 
         exampleFactoryC.referenceAttribute.set(exampleFactoryB);
 
-        exampleFactoryA.internalFactory().loopDetector();
+        exampleFactoryA.internal().loopDetector();
     }
 
     @Test
@@ -56,7 +55,7 @@ public class FactoryBaseTest {
 
         exampleFactoryA.referenceAttribute.set(exampleFactoryB);
 
-        exampleFactoryA.internalFactory().instance();
+        exampleFactoryA.internal().instance();
 
         //TODO fix test
 //        HashMap<String, LiveObject> liveObjects = new HashMap<>();
@@ -66,10 +65,10 @@ public class FactoryBaseTest {
     }
 
     public static class XRoot extends SimpleFactoryBase<String,XRoot> {
-        public final FactoryReferenceAttribute<String,ExampleFactoryAndViewA> referenceAttribute = new FactoryReferenceAttribute<>(ExampleFactoryAndViewA.class).labelText("ExampleA2");
-        public final FactoryReferenceAttribute<String,XFactory> xFactory = new FactoryReferenceAttribute<>(XFactory.class).labelText("XFactory");
-        public final FactoryReferenceAttribute<String,XFactory> xFactory2 = new FactoryReferenceAttribute<>(XFactory.class).labelText("XFactory");
-        public final FactoryReferenceListAttribute<String,XFactory> xFactoryList = new FactoryReferenceListAttribute<>(XFactory.class).labelText("XFactory");
+        public final FactoryReferenceAttribute<XRoot,String,ExampleFactoryAndViewA> referenceAttribute = new FactoryReferenceAttribute<>();
+        public final FactoryReferenceAttribute<XRoot,String,XFactory> xFactory = new FactoryReferenceAttribute<>();
+        public final FactoryReferenceAttribute<XRoot,String,XFactory> xFactory2 = new FactoryReferenceAttribute<>();
+        public final FactoryReferenceListAttribute<XRoot,String,XFactory> xFactoryList = new FactoryReferenceListAttribute<>();
 
         @Override
         public String createImpl() {
@@ -81,7 +80,7 @@ public class FactoryBaseTest {
         }
     }
 
-    public static class ExampleFactoryAndViewA extends SimpleFactoryBase<String,ExampleFactoryAndViewA> {
+    public static class ExampleFactoryAndViewA extends SimpleFactoryBase<String,XRoot> {
         public final FactoryViewReferenceAttribute<XRoot,String,XFactory> referenceView = new FactoryViewReferenceAttribute<XRoot,String,XFactory>(
                 root -> root.xFactory.get()).labelText("ExampleA2");
         public final FactoryViewListReferenceAttribute<XRoot,String,XFactory> listView = new FactoryViewListReferenceAttribute<XRoot,String,XFactory>(
@@ -96,9 +95,9 @@ public class FactoryBaseTest {
     }
 
 
-    public static class XFactory extends SimpleFactoryBase<String,XFactory> {
+    public static class XFactory extends SimpleFactoryBase<String,XRoot> {
         public final StringAttribute bla=new StringAttribute();
-        public final FactoryReferenceAttribute<String,X2Factory> xFactory2 = new FactoryReferenceAttribute<>(X2Factory.class).labelText("XFactory");
+        public final FactoryReferenceAttribute<XRoot,String,X2Factory> xFactory2 = new FactoryReferenceAttribute<>();
 
         public List<String> createCalls=new ArrayList<>();
 
@@ -110,9 +109,9 @@ public class FactoryBaseTest {
         }
     }
 
-    public static class X2Factory extends SimpleFactoryBase<String, XFactory> {
+    public static class X2Factory extends SimpleFactoryBase<String, XRoot> {
         public final StringAttribute bla=new StringAttribute();
-        public final FactoryReferenceAttribute<String,X3Factory> xFactory3 = new FactoryReferenceAttribute<>(X3Factory.class).labelText("XFactory");
+        public final FactoryReferenceAttribute<XRoot,String,X3Factory> xFactory3 = new FactoryReferenceAttribute<>();
 
 
         public List<String> createCalls=new ArrayList<>();
@@ -130,7 +129,7 @@ public class FactoryBaseTest {
         }
     }
 
-    public static class X3Factory extends SimpleFactoryBase<String, XFactory> {
+    public static class X3Factory extends SimpleFactoryBase<String, XRoot> {
         public final StringAttribute bla=new StringAttribute();
 
         public List<String> createCalls=new ArrayList<>();
@@ -152,11 +151,11 @@ public class FactoryBaseTest {
         root.referenceAttribute.set(exampleFactoryAndViewA);
 
         final XRoot usableCopy = root.internal().addBackReferences();
-        usableCopy.internalFactory().instance();
+        usableCopy.internal().instance();
 
-        HashSet<Data> changed =new HashSet<>();
+        HashSet<FactoryBase<?,?>> changed =new HashSet<>();
         changed.add(usableCopy);
-        usableCopy.internalFactory().determineRecreationNeedFromRoot(changed);
+        usableCopy.internal().determineRecreationNeedFromRoot(changed);
         Assertions.assertTrue(usableCopy.needRecreation);
         Assertions.assertFalse(usableCopy.xFactory.get().needRecreation);
         Assertions.assertFalse(usableCopy.referenceAttribute.get().needRecreation);
@@ -171,9 +170,9 @@ public class FactoryBaseTest {
 
         root.internal().addBackReferences();
 
-        HashSet<Data> changed =new HashSet<>();
+        HashSet<FactoryBase<?,?>> changed =new HashSet<>();
         changed.add(root.referenceAttribute.get());
-        root.internalFactory().determineRecreationNeedFromRoot(changed);
+        root.internal().determineRecreationNeedFromRoot(changed);
         Assertions.assertTrue(root.needRecreation);
         Assertions.assertFalse(root.xFactory.get().needRecreation);
         Assertions.assertTrue(root.referenceAttribute.get().needRecreation);
@@ -188,11 +187,11 @@ public class FactoryBaseTest {
 
         root.internal().addBackReferences();
 
-        HashSet<Data> changed =new HashSet<>();
+        HashSet<FactoryBase<?,?>> changed =new HashSet<>();
         changed.add(root.referenceAttribute.get());
         changed.add(root.xFactory.get());
 
-        root.internalFactory().determineRecreationNeedFromRoot(changed);
+        root.internal().determineRecreationNeedFromRoot(changed);
         Assertions.assertTrue(root.needRecreation);
         Assertions.assertTrue(root.xFactory.get().needRecreation);
         Assertions.assertTrue(root.referenceAttribute.get().needRecreation);
@@ -207,9 +206,9 @@ public class FactoryBaseTest {
 
         root.internal().addBackReferences();
 
-        Set<Data> changed = Set.of(root.xFactory.get());
+        Set<FactoryBase<?,?>> changed = Set.of(root.xFactory.get());
 
-        root.internalFactory().determineRecreationNeedFromRoot(changed);
+        root.internal().determineRecreationNeedFromRoot(changed);
         Assertions.assertTrue(root.needRecreation);
         Assertions.assertTrue(root.xFactory.get().needRecreation);
         Assertions.assertTrue(root.referenceAttribute.get().needRecreation);
@@ -224,12 +223,12 @@ public class FactoryBaseTest {
         root.referenceAttribute.set(exampleFactoryAndViewA);
 
         root.internal().addBackReferences();
-        root.internalFactory().instance();
+        root.internal().instance();
 
-        HashSet<Data> changed =new HashSet<>();
+        HashSet<FactoryBase<?,?>> changed =new HashSet<>();
         changed.add(root.xFactoryList.get().get(0));
 
-        root.internalFactory().determineRecreationNeedFromRoot(changed);
+        root.internal().determineRecreationNeedFromRoot(changed);
         Assertions.assertTrue(root.needRecreation);
         Assertions.assertTrue(root.xFactoryList.get(0).needRecreation);
         Assertions.assertTrue(root.referenceAttribute.get().needRecreation);
@@ -243,24 +242,24 @@ public class FactoryBaseTest {
         root.xFactory2.set(root.xFactory.get());
 
         final XRoot usableCopy = root.internal().addBackReferences();
-        usableCopy.internalFactory().instance();
+        usableCopy.internal().instance();
 
 
-        HashSet<Data> changed =new HashSet<>();
+        HashSet<FactoryBase<?,?>> changed =new HashSet<>();
         changed.add(usableCopy.xFactory.get());
-        usableCopy.internalFactory().determineRecreationNeedFromRoot(changed);
+        usableCopy.internal().determineRecreationNeedFromRoot(changed);
         Assertions.assertTrue(usableCopy.needRecreation);
         Assertions.assertTrue(usableCopy.xFactory.get().needRecreation);
 
         usableCopy.xFactory.get().createCalls.clear();
-        usableCopy.internalFactory().instance();
+        usableCopy.internal().instance();
         Assertions.assertEquals(1,usableCopy.xFactory.get().createCalls.size());
 
     }
 
     public static class IterationTestFactory extends SimpleFactoryBase<Void,IterationTestFactory>{
         public String testinfo;
-        public final FactoryReferenceListAttribute<Void,IterationTestFactory>  children = new FactoryReferenceListAttribute<>(IterationTestFactory.class);
+        public final FactoryReferenceListAttribute<IterationTestFactory,Void,IterationTestFactory>  children = new FactoryReferenceListAttribute<>();
 
         public IterationTestFactory(String testinfo) {
             this();
@@ -304,7 +303,7 @@ public class FactoryBaseTest {
         g.children.add(new IterationTestFactory("f"));
 
         StringBuilder result = new StringBuilder();
-        for (FactoryBase<?,?> item : root.internalFactory().getFactoriesInCreateAndStartOrder()) {
+        for (FactoryBase<?,?> item : root.internal().getFactoriesInCreateAndStartOrder()) {
            result.append(((IterationTestFactory)item).testinfo);
         }
         Assertions.assertEquals("abcdefgh",result.toString());
@@ -338,7 +337,7 @@ public class FactoryBaseTest {
             g.children.add(new IterationTestFactory("f"));
 
             StringBuilder result = new StringBuilder();
-            for (FactoryBase<?,?> item : root.internalFactory().getFactoriesInDestroyOrder()) {
+            for (FactoryBase<?,?> item : root.internal().getFactoriesInDestroyOrder()) {
                 result.append(((IterationTestFactory)item).testinfo);
             }
             Assertions.assertEquals("hdegabcf",result.toString());
@@ -355,9 +354,9 @@ public class FactoryBaseTest {
         root.internal().addBackReferences();
 
 
-        HashSet<Data> changed =new HashSet<>();
+        HashSet<FactoryBase<?,?>> changed =new HashSet<>();
         changed.add(root.xFactory.get().xFactory2.get());
-        root.internalFactory().determineRecreationNeedFromRoot(changed);
+        root.internal().determineRecreationNeedFromRoot(changed);
         Assertions.assertFalse(root.needRecreation);
         Assertions.assertFalse(root.xFactory.get().needRecreation);
         Assertions.assertTrue(root.xFactory.get().xFactory2.get().needRecreation);
@@ -376,9 +375,9 @@ public class FactoryBaseTest {
         root.internal().addBackReferences();
 
 
-        HashSet<Data> changed =new HashSet<>();
+        HashSet<FactoryBase<?,?>> changed =new HashSet<>();
         changed.add(x3Factory);
-        root.internalFactory().determineRecreationNeedFromRoot(changed);
+        root.internal().determineRecreationNeedFromRoot(changed);
         Assertions.assertFalse(root.needRecreation);
         Assertions.assertFalse(root.xFactory.get().needRecreation);
         Assertions.assertTrue(root.xFactory.get().xFactory2.get().needRecreation);
@@ -396,10 +395,10 @@ public class FactoryBaseTest {
     @Test
     public void test_TreeBuilderName_survive_serilisation(){
         ExampleFactoryA exampleFactoryA = new ExampleFactoryA();
-        exampleFactoryA.internalFactory().setTreeBuilderName("abc");
+        exampleFactoryA.internal().setTreeBuilderName("abc");
 
         ExampleFactoryA copy = ObjectMapperBuilder.build().copy(exampleFactoryA);
-        Assertions.assertEquals("abc",copy.internalFactory().getTreeBuilderName());
+        Assertions.assertEquals("abc",copy.internal().getTreeBuilderName());
     }
 
 }
