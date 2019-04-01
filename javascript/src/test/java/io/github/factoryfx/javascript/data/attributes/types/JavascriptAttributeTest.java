@@ -17,7 +17,7 @@ public class JavascriptAttributeTest {
     public void test_get_update_header(){
         ExampleJavascriptData data = new ExampleJavascriptData();
         JavascriptAttribute<Object> javascriptAttributeTest = new JavascriptAttribute<>(() -> Collections.singletonList(data),Object.class);
-        Assertions.assertEquals("var data = {};",javascriptAttributeTest.get().getHeaderCode().trim());
+        Assertions.assertEquals("var data = {\"attribute\" : {\"code\":\"\"}};",javascriptAttributeTest.get().getHeaderCode().trim());
     }
 
     @Test
@@ -51,7 +51,10 @@ public class JavascriptAttributeTest {
     }
 
     public static class ExampleJavascriptData extends FactoryBase<Void,ExampleJavascriptData>{
-        public final JavascriptAttribute<Object> attribute = new JavascriptAttribute<>(() -> Collections.singletonList(new ExampleJavascriptData()),Object.class);
+        public final JavascriptAttribute<Object> attribute = new JavascriptAttribute<>(() -> Collections.singletonList(new ExampleJavascriptDataQQQ()),Object.class);
+    }
+
+    public static class ExampleJavascriptDataQQQ extends FactoryBase<Void,ExampleJavascriptData>{
     }
 
     @Test

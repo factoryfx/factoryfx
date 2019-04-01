@@ -23,11 +23,9 @@ public abstract class ImmutableValueAttribute<T,A extends Attribute<T,A>> extend
     //    @JsonProperty
     @JsonProperty("v")
     protected T value;
-    private final Class<T> dataType;
 
-    public ImmutableValueAttribute(Class<T> dataType) {
+    public ImmutableValueAttribute() {
         super();
-        this.dataType=dataType;
     }
 
     @Override

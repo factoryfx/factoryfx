@@ -7,7 +7,7 @@ import io.github.factoryfx.factory.attribute.ImmutableValueAttribute;
 public class StringAttribute extends ImmutableValueAttribute<String,StringAttribute> {
 
     public StringAttribute() {
-        super(String.class);
+        super();
     }
 
     @JsonIgnore

@@ -14,7 +14,7 @@ import io.github.factoryfx.factory.attribute.ImmutableValueAttribute;
 public class EncryptedStringAttribute extends ImmutableValueAttribute<EncryptedString,EncryptedStringAttribute> {
 
     public EncryptedStringAttribute() {
-        super(EncryptedString.class);
+        super();
     }
 
     @JsonIgnore

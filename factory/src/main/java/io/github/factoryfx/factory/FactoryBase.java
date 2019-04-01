@@ -98,9 +98,13 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
         }
     }
 
+    private FactoryMetadata<R,L, FactoryBase<L, R>> metadata;
     @SuppressWarnings("unchecked")
-    private FactoryMetadata<R,FactoryBase<? extends L,R>> getDataDictionary(){
-        return (FactoryMetadata<R,FactoryBase<? extends L,R>>) FactoryMetadataManager.getMetadata(getClass());
+    private FactoryMetadata<R,L,FactoryBase<L,R>> getFactoryMetadata(){
+        if (metadata==null){
+            metadata = FactoryMetadataManager.getMetadata(getClass());
+        }
+        return metadata;
     }
 
     @FunctionalInterface
@@ -114,15 +118,15 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
     }
 
     private void visitAttributesFlat(AttributeVisitor consumer) {
-        getDataDictionary().visitAttributesFlat(this,consumer);
+        getFactoryMetadata().visitAttributesFlat(this,consumer);
     }
 
-    private void visitAttributesDualFlat(FactoryBase<? extends L,R> data, BiAttributeVisitor consumer) {
-        getDataDictionary().visitAttributesDualFlat(this,data,consumer);
+    private void visitAttributesDualFlat(FactoryBase<L,R> data, BiAttributeVisitor consumer) {
+        getFactoryMetadata().visitAttributesDualFlat(this,data,consumer);
     }
 
     private void visitAttributesTripleFlat(FactoryBase<L,R> other1, FactoryBase<L,R> other2, TriAttributeVisitor consumer) {
-        getDataDictionary().visitAttributesTripleFlat(this,other1,other2,consumer);
+        getFactoryMetadata().visitAttributesTripleFlat(this,other1,other2,consumer);
     }
 
     private Map<String,FactoryBase<?,R>> collectChildDataMap() {
@@ -146,8 +150,9 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
         visitChildFactoriesAndViewsFlat(child -> child.collectModelEntitiesTo(allModelEntities,dataIterationRun),dataIterationRun);
     }
 
-    private FactoryBase<? extends L,R> newCopyInstance(FactoryBase<L,R> data) {
-        return getDataDictionary().newCopyInstance(data);
+    @SuppressWarnings("unchecked")
+    private FactoryBase<L,R> newCopyInstance(FactoryBase<L,R> data) {
+        return (FactoryBase<L, R>) getFactoryMetadata().newCopyInstance(data);
     }
 
     private Set<FactoryBase<?,?>> collectChildrenDeepFromNode() {
@@ -255,7 +260,7 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
 
 
     @SuppressWarnings("unchecked")
-    private <F extends FactoryBase<? extends L,R>> F semanticCopy() {
+    private <F extends FactoryBase<L,R>> F semanticCopy() {
         F result = (F)newCopyInstance(this);
         this.visitAttributesDualFlat(result, (attributeName, attribute1, attribute2) -> attribute1.internal_semanticCopyToUnsafe(attribute2));
         return result;
@@ -293,7 +298,7 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
         <R extends FactoryBase<?,R>,T extends FactoryBase<?,R>> T copy(T original);
     }
 
-    FactoryBase<? extends L,R> copy;
+    FactoryBase<L,R> copy;
 
 
     @SuppressWarnings("unchecked")
@@ -333,6 +338,7 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
                 copy.addParent(parent.copy);
             }
             copy.root=(R)root.copy;
+            copy.creatorMock=this.creatorMock;
 
         }
         return (F)copy;
@@ -368,18 +374,18 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
 
 
     private void addBackReferences(final R root, final FactoryBase<?,?> parent, long dataIterationRun){
-        getDataDictionary().setAttributeReferenceClasses(this);
+        getFactoryMetadata().setAttributeReferenceClasses(this);
         addParent(parent);
         this.root=root;
-        getDataDictionary().addBackReferencesToAttributes(this,root);
+        getFactoryMetadata().addBackReferencesToAttributes(this,root);
         this.visitChildFactoriesAndViewsFlat(data -> data.addBackReferences(getRoot(), FactoryBase.this,dataIterationRun),dataIterationRun);
     }
 
     private void addBackReferencesForSubtree(R root, FactoryBase<?,?> parent, HashSet<FactoryBase<?,?>> visited){
-        getDataDictionary().setAttributeReferenceClasses(this);
+        getFactoryMetadata().setAttributeReferenceClasses(this);
         addParent(parent);
         this.root=root;
-        getDataDictionary().addBackReferencesToAttributes(this,root);
+        getFactoryMetadata().addBackReferencesToAttributes(this,root);
 
         if (visited.add(this)) {//use HashSet instead of iteration counter to avoid iterationCounter mix up
             visitChildFactoriesAndViewsFlatWithoutIterationCheck(child -> child.addBackReferencesForSubtree(root,this,visited));
@@ -937,7 +943,7 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
         List<DataStorageMetadata> dataStorageMetadataList= new ArrayList<>();
         ArrayList<Class<? extends FactoryBase<?,R>>> sortedClasses = new ArrayList<>(dataClassesToCount.keySet());
         sortedClasses.sort(Comparator.comparing(Class::getName));
-        for (Class<? extends FactoryBase<?,R>> clazz : sortedClasses) {
+        for (Class clazz : sortedClasses) {
             if (!Modifier.isAbstract(clazz.getModifiers())){
                 dataStorageMetadataList.add(FactoryMetadataManager.getMetadata(clazz).createDataStorageMetadata(dataClassesToCount.get(clazz)));
             }
@@ -1031,6 +1037,10 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
     }
 
     private L create(){
+        if (creatorMock!=null){
+            return creatorMock.apply(this);
+        }
+
         MeasuredActionResult<L> actionResult = timeMeasuringAction(this::createTemplateMethod);
         logCreate(actionResult.time);
         return actionResult.result;
@@ -1175,11 +1185,11 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
         }
         this.iterationRun=iterationRun;
 
-        getDataDictionary().visitChildFactoriesAndViewsFlat(this,consumer);
+        getFactoryMetadata().visitChildFactoriesAndViewsFlat(this,consumer);
     }
 
     private void visitChildFactoriesAndViewsFlatWithoutIterationCheck(Consumer<FactoryBase<?,R>> consumer) {
-        getDataDictionary().visitChildFactoriesAndViewsFlat(this,consumer);
+        getFactoryMetadata().visitChildFactoriesAndViewsFlat(this,consumer);
     }
 
 
@@ -1364,6 +1374,7 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
     }
 
     Supplier<L> creator=null;
+    Function<FactoryBase<L, R>, L> creatorMock=null;
     Consumer<L> updater=null;
     Function<L,L> reCreatorWithPreviousLiveObject=null;
     Consumer<L> starterWithNewLiveObject=null;
@@ -1387,6 +1398,11 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
     private void setDestroyer(Consumer<L> destroyerWithPreviousLiveObject) {
         this.destroyerWithPreviousLiveObject=destroyerWithPreviousLiveObject;
     }
+
+    private void mock(Function<FactoryBase<L, R>, L> creatorMock) {
+        this.creatorMock = creatorMock;
+    }
+
 
     /** life cycle configurations api<br>
      *<br>
@@ -1490,8 +1506,12 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
         public <T extends FactoryBase<?,?> > T copy(){
             return factory.copy();
         }
-    }
 
+        @SuppressWarnings("unchecked")
+        public <F extends FactoryBase<L,R>> void mock(Function<F,L> creatorMock){
+            factory.mock(factory -> creatorMock.apply((F)factory));
+        }
+    }
 
 
 

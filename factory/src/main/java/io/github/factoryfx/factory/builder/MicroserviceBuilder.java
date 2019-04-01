@@ -103,7 +103,7 @@ public class MicroserviceBuilder<L,R extends FactoryBase<L,R>,S> {
         return this;
     }
 
-    public <D extends FactoryBase<?,R>> MicroserviceBuilder<L,R,S> withRenameAttributeMigration(Class<D> dataClass, String previousAttributeName, Function<D, Attribute<?,?>> attributeNameProvider){
+    public <LO, F extends FactoryBase<LO,R>> MicroserviceBuilder<L,R,S> withRenameAttributeMigration(Class<F> dataClass, String previousAttributeName, Function<F, Attribute<?,?>> attributeNameProvider){
         this.migrationManager.renameAttribute(dataClass,previousAttributeName,attributeNameProvider);
         return this;
     }

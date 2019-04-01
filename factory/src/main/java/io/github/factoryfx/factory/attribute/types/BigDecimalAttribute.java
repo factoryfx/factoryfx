@@ -10,7 +10,7 @@ public class BigDecimalAttribute extends ImmutableValueAttribute<BigDecimal,BigD
     private String decimalFormatPattern;
 
     public BigDecimalAttribute() {
-        super(BigDecimal.class);
+        super();
     }
 
     public String internal_getDecimalFormatPattern() {

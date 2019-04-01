@@ -3,7 +3,6 @@ package io.github.factoryfx.factory.typescript.generator.data;
 
 import io.github.factoryfx.factory.typescript.generator.TsGenerator;
 
-import javax.xml.crypto.Data;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;

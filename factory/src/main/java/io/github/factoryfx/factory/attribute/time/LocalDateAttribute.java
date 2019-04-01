@@ -7,7 +7,7 @@ import java.time.LocalDate;
 public class LocalDateAttribute extends ImmutableValueAttribute<LocalDate,LocalDateAttribute> {
 
     public LocalDateAttribute() {
-        super(LocalDate.class);
+        super();
     }
 
 }

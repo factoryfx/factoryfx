@@ -3,7 +3,6 @@ package io.github.factoryfx.factory.attribute.dependency;
 
 import io.github.factoryfx.factory.FactoryBase;
 import io.github.factoryfx.factory.storage.migration.metadata.AttributeStorageMetadata;
-import net.bytebuddy.description.type.TypeList;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 

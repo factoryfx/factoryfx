@@ -12,7 +12,7 @@ public abstract class ValueMapAttribute<K, V, A extends ValueMapAttribute<K,V,A>
     private final Class<V> valueType;
 
     public ValueMapAttribute(Class<K> keyType, Class<V> valueType) {
-        super(null);
+        super();
         this.keyType=keyType;
         this.valueType=valueType;
         this.value=new HashMap<>();

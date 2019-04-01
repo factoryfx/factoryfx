@@ -9,8 +9,11 @@ import io.github.factoryfx.factory.attribute.dependency.FactoryViewReferenceAttr
 import io.github.factoryfx.factory.testfactories.ExampleFactoryA;
 import io.github.factoryfx.factory.testfactories.ExampleFactoryB;
 import io.github.factoryfx.factory.testfactories.ExampleFactoryC;
+import io.github.factoryfx.factory.testfactories.ExampleLiveObjectA;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
+import org.mockito.internal.util.MockUtil;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -401,4 +404,31 @@ public class FactoryBaseTest {
         Assertions.assertEquals("abc",copy.internal().getTreeBuilderName());
     }
 
+    @Test
+    public void test_mock(){
+        ExampleFactoryA exampleFactoryA = new ExampleFactoryA();
+        exampleFactoryA.utility().mock( f-> Mockito.mock(ExampleLiveObjectA.class));
+
+        ExampleLiveObjectA instance = exampleFactoryA.internal().instance();
+        Assertions.assertTrue(MockUtil.isMock(instance));
+    }
+
+    @Test
+    public void test_mock_typesafe(){
+        ExampleFactoryA exampleFactoryA = new ExampleFactoryA();
+        exampleFactoryA.utility().<ExampleFactoryA>mock(f-> {
+            f.referenceAttribute.instance();
+            return Mockito.mock(ExampleLiveObjectA.class);
+        });
+    }
+
+    @Test
+    public void test_mock_after_copy(){
+        ExampleFactoryA exampleFactoryA = new ExampleFactoryA();
+        exampleFactoryA.utility().mock( f-> Mockito.mock(ExampleLiveObjectA.class));
+
+        exampleFactoryA = exampleFactoryA.utility().copy();
+        ExampleLiveObjectA instance = exampleFactoryA.internal().instance();
+        Assertions.assertTrue(MockUtil.isMock(instance));
+    }
 }

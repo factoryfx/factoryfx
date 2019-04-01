@@ -2,7 +2,6 @@ package io.github.factoryfx.factory.merge;
 
 
 import io.github.factoryfx.factory.FactoryBase;
-import io.github.factoryfx.factory.attribute.ValueMapAttributeTest;
 import io.github.factoryfx.factory.attribute.types.StringAttribute;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;

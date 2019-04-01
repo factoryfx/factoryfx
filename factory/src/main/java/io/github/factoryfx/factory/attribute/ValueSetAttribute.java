@@ -9,7 +9,7 @@ public abstract class ValueSetAttribute<T,A extends Attribute<Set<T>,A>> extends
     private final Class<T> itemType;
 
     public ValueSetAttribute(Class<T> itemType) {
-        super(null);
+        super();
         this.itemType = itemType;
         this.value= new HashSet<>();
     }

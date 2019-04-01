@@ -9,16 +9,16 @@ import io.github.factoryfx.factory.storage.migration.metadata.DataStorageMetadat
 import java.util.List;
 import java.util.function.Function;
 
-public class AttributeRename<R extends FactoryBase<?,R>,D extends FactoryBase<?,R>>  implements DataMigration {
+public class AttributeRename<R extends FactoryBase<?,R>,L, F extends FactoryBase<L,R>>  implements DataMigration {
     private final String dataClassNameFullQualified;
     private final String previousAttributeName;
     private String newAttributeName;
 
-    public AttributeRename(Class<D> dataClass, String previousAttributeName, Function<D, Attribute<?,?>> attributeNameProvider) {
+    public AttributeRename(Class<F> dataClass, String previousAttributeName, Function<F, Attribute<?,?>> attributeNameProvider) {
         this.dataClassNameFullQualified = dataClass.getName();
         this.previousAttributeName = previousAttributeName;
 
-        D data = FactoryMetadataManager.getMetadata(dataClass).newInstance();
+        F data = FactoryMetadataManager.getMetadata(dataClass).newInstance();
         Attribute<?, ?> newAttribute = attributeNameProvider.apply(data);
         data.internal().visitAttributesFlat((attributeVariableName, attribute) -> {
             if (attribute==newAttribute){

@@ -5,7 +5,7 @@ import io.github.factoryfx.factory.attribute.ImmutableValueAttribute;
 public class BooleanAttribute extends ImmutableValueAttribute<Boolean,BooleanAttribute> {
 
     public BooleanAttribute() {
-        super(Boolean.class);
+        super();
         set(Boolean.FALSE);
         nullable();
     }

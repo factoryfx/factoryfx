@@ -30,7 +30,7 @@ public class JavascriptAttribute<A> extends ImmutableValueAttribute<Javascript<A
 
     @SuppressWarnings("unchecked")
     public JavascriptAttribute(Supplier<List<? extends FactoryBase<?,?>>> data, Class<A> apiClass) {
-        super((Class<Javascript<A>>)Javascript.class.asSubclass(Javascript.class));
+        super();
         this.data = data;
         this.apiClass = apiClass;
         set(new Javascript<>("",createHeader(),createHeaderApi()));

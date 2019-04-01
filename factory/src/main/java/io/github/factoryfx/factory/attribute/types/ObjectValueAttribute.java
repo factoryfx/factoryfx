@@ -11,7 +11,7 @@ import io.github.factoryfx.factory.attribute.ImmutableValueAttribute;
 public class ObjectValueAttribute<T> extends ImmutableValueAttribute<T,ObjectValueAttribute<T>> {
 
     public ObjectValueAttribute() {
-        super(null);
+        super();
     }
 
 

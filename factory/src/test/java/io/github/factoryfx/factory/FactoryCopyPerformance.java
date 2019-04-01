@@ -4,7 +4,7 @@ import io.github.factoryfx.factory.merge.testdata.ExampleDataA;
 import io.github.factoryfx.factory.merge.testdata.ExampleDataB;
 
 
-public class DataCopyPerformance {
+public class FactoryCopyPerformance {
 
     public static void main(String[] args) {
         ExampleDataA exampleFactoryA = new ExampleDataA();

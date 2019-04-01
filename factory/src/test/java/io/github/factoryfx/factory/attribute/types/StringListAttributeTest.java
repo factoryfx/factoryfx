@@ -7,7 +7,6 @@ import java.util.List;
 import io.github.factoryfx.factory.FactoryBase;
 import io.github.factoryfx.factory.attribute.AttributeChangeListener;
 import io.github.factoryfx.factory.jackson.ObjectMapperBuilder;
-import io.github.factoryfx.factory.merge.ByteArrayMergeTest;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 

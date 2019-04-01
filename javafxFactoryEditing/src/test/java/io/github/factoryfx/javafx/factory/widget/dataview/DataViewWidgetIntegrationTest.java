@@ -1,7 +1,6 @@
 package io.github.factoryfx.javafx.factory.widget.dataview;
 
 
-import io.github.factoryfx.factory.FactoryBase;
 import io.github.factoryfx.javafx.UniformDesignBuilder;
 import io.github.factoryfx.javafx.factory.css.CssUtil;
 import io.github.factoryfx.javafx.factory.editor.attribute.AttributeVisualisationMappingBuilder;

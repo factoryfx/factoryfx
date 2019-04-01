@@ -15,7 +15,7 @@ public class ValueListAttribute<T, A extends Attribute<List<T>,A>> extends Immut
     private final Class<T> itemType;
 
     public ValueListAttribute(Class<T> itemType) {
-        super(null);
+        super();
         this.itemType = itemType;
         this.value = new ArrayList<>();
     }

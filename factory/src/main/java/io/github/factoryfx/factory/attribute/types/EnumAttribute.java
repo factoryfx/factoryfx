@@ -16,7 +16,7 @@ public class EnumAttribute<E extends Enum<E>> extends ImmutableValueAttribute<E,
     private final Class<E> clazz;
 
     public EnumAttribute(Class<E> clazz) {
-        super(null);  //null is fine cause internal_getAttributeType override
+        super();  //null is fine cause internal_getAttributeType override
         this.clazz=clazz;
     }
 

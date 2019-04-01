@@ -40,7 +40,7 @@ public class MigrationManager<R extends FactoryBase<?,R>,S> {
     List<PathDataRestore<R,?>> pathBasedRestorations = new ArrayList<>();
 
 
-    public <D extends FactoryBase<?,R>> void renameAttribute(Class<D> dataClass, String previousAttributeName, Function<D, Attribute<?,?>> attributeNameProvider){
+    public <L,F extends FactoryBase<L,R>> void renameAttribute(Class<F> dataClass, String previousAttributeName, Function<F, Attribute<?,?>> attributeNameProvider){
         renameAttributeMigrations.add(new AttributeRename<>(dataClass,previousAttributeName,attributeNameProvider));
     }
 

@@ -180,11 +180,8 @@ public class JettyServerTest {
 
         @GET()
         public Response get() throws InterruptedException {
-            try {
-                Thread.sleep(400);
-                return Response.ok("RESPONSE").build();
-            } finally {
-            }
+            Thread.sleep(400);
+            return Response.ok("RESPONSE").build();
         }
     }
 

@@ -1,7 +1,5 @@
 package io.github.factoryfx.javafx.factory.editor.data;
 
-import java.util.Collections;
-
 
 import io.github.factoryfx.factory.FactoryBase;
 import io.github.factoryfx.factory.attribute.types.StringAttribute;

@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 */
 public abstract class FastFactoryUtility {
 
-    public static <R extends FactoryBase<?,R>,T extends FactoryBase<?,R>> void setup(Class<T> clazz,BiConsumer<T,AttributeVisitor> visitAttributesFlat, BiConsumer<T,Consumer<FactoryBase<?,R>>> visitDataChildren){
+    public static <R extends FactoryBase<?,R>,L, F extends FactoryBase<L,R>> void setup(Class<F> clazz, BiConsumer<F,AttributeVisitor> visitAttributesFlat, BiConsumer<F,Consumer<FactoryBase<?,R>>> visitDataChildren){
         FactoryMetadataManager.getMetadata(clazz).setVisitChildFactoriesAndViewsFlat(visitDataChildren);
         FactoryMetadataManager.getMetadata(clazz).setUseTemporaryAttributes();
         FactoryMetadataManager.getMetadata(clazz).setVisitAttributesFlat(visitAttributesFlat);

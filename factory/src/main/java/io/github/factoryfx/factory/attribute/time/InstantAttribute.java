@@ -6,7 +6,7 @@ import java.time.Instant;
 public class InstantAttribute extends ImmutableValueAttribute<Instant,InstantAttribute> {
 
     public InstantAttribute() {
-        super(Instant.class);
+        super();
     }
 
 //    @JsonFormat(shape = JsonFormat.Shape.NUMBER)

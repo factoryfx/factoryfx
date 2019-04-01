@@ -7,7 +7,7 @@ import java.util.function.Function;
 public class PasswordAttribute extends ImmutableValueAttribute<EncryptedString, PasswordAttribute> {
 
     public PasswordAttribute() {
-        super(EncryptedString.class);
+        super();
     }
 
     private Function<String, String> passwordHash;

@@ -9,7 +9,7 @@ import java.util.function.Function;
  * @param <R> root
  * @param <S> sub root
  */
-public class SubTreeCreator<L, R extends FactoryBase<?,R>, S extends FactoryBase<L,R>> {
+public class SubTreeCreator<R extends FactoryBase<?,R>, L, S extends FactoryBase<L,R>> {
 
     private final Function<R,S> subRootFactoryProvider;
 
@@ -17,11 +17,8 @@ public class SubTreeCreator<L, R extends FactoryBase<?,R>, S extends FactoryBase
         this.subRootFactoryProvider = subRootFactoryProvider;
     }
 
-    @SuppressWarnings("unchecked")
-    public L create(FactoryBase<?,?> data){
-        //TODO add generic root to data?
-        R rootFactory= (R) data.internal().getRoot();
-        final R copy = rootFactory.internal().copy();
+    public L create(R root){
+        final R copy = root.internal().copy();
         return subRootFactoryProvider.apply(copy).internal().create();
     }
 

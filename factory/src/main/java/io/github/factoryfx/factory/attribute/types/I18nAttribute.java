@@ -7,7 +7,7 @@ import io.github.factoryfx.factory.util.LanguageText;
 
 public class I18nAttribute extends ImmutableValueAttribute<LanguageText,I18nAttribute> {
     public I18nAttribute() {
-        super(LanguageText.class);
+        super();
     }
 
     public I18nAttribute en(String text) {

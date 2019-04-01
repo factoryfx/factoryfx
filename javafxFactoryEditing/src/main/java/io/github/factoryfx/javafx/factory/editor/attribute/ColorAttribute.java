@@ -6,7 +6,7 @@ import javafx.scene.paint.Color;
 public class ColorAttribute extends ImmutableValueAttribute<Color,ColorAttribute> {
 
     public ColorAttribute() {
-        super(Color.class);
+
     }
 
 }

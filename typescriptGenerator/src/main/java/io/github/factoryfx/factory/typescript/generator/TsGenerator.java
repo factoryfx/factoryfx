@@ -49,6 +49,7 @@ public class TsGenerator<R extends FactoryBase<?,R>> {
         }
     }
 
+    @SuppressWarnings("uncheked")
     public void generate(){
         targetDir.toFile().mkdirs();
 
@@ -83,7 +84,7 @@ public class TsGenerator<R extends FactoryBase<?,R>> {
         Set<Class<? extends Enum<?>>> enumClasses= new HashSet<>();
         for (Map.Entry<Class<? extends FactoryBase<?,R>>, TsClassConstructed> entry : dataToGeneratedTsClass.entrySet()) {
             Class<? extends FactoryBase<?,R>> dataClass = entry.getKey();
-            FactoryBase<?,R> data = FactoryMetadataManager.getMetadata(dataClass).newInstance();
+            FactoryBase<?,R> data = FactoryMetadataManager.getMetadataUnsafe(dataClass).newInstance();
             data.internal().visitAttributesFlat((attributeVariableName, attribute) -> {
                 if (attribute instanceof EnumAttribute){
                     enumClasses.add(((EnumAttribute<?>)attribute).internal_getEnumClass());
@@ -109,7 +110,7 @@ public class TsGenerator<R extends FactoryBase<?,R>> {
         dataCreatorTsClass.writeToFile();
 
         for (Map.Entry<Class<? extends FactoryBase<?,R>>, TsClassConstructed> entry : dataToGeneratedTsClass.entrySet()) {
-            DataGeneratedTs<R> dataGenerator = new DataGeneratedTs<>(entry.getKey(), dataToConfigTs, dataTsClass, dataCreatorTsClass, attributeMetadataTsClass, attributeAccessorClass, attributeToTsMapperManager,attributeTypeEnumTsEnum);
+            DataGeneratedTs dataGenerator = new DataGeneratedTs(entry.getKey(), dataToConfigTs, dataTsClass, dataCreatorTsClass, attributeMetadataTsClass, attributeAccessorClass, attributeToTsMapperManager,attributeTypeEnumTsEnum);
             dataGenerator.complete(entry.getValue()).writeToFile();
         }
 

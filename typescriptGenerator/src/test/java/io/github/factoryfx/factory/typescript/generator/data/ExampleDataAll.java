@@ -6,8 +6,6 @@ import io.github.factoryfx.factory.attribute.primitive.*;
 import io.github.factoryfx.factory.attribute.time.*;
 import io.github.factoryfx.factory.attribute.types.*;
 
-import javax.xml.crypto.Data;
-
 public class ExampleDataAll extends FactoryBase<Void,ExampleData> {
     public final ByteArrayAttribute byteArrayAttribute=new ByteArrayAttribute();
     public final I18nAttribute i18nAttribute=new I18nAttribute();

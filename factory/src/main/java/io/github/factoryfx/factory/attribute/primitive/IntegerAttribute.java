@@ -5,7 +5,7 @@ import io.github.factoryfx.factory.attribute.ImmutableValueAttribute;
 public class IntegerAttribute extends ImmutableValueAttribute<Integer,IntegerAttribute> {
 
     public IntegerAttribute() {
-        super(Integer.class);
+        super();
     }
 
 }

@@ -1,20 +1,14 @@
 package io.github.factoryfx.factory.attribute.dependency;
 
 import java.util.ArrayList;
-import java.util.function.Function;
 
 
 import io.github.factoryfx.factory.FactoryBase;
 import io.github.factoryfx.factory.attribute.AttributeChangeListener;
-import io.github.factoryfx.factory.attribute.CopySemantic;
 import io.github.factoryfx.factory.attribute.WeakAttributeChangeListener;
 import io.github.factoryfx.factory.attribute.primitive.BooleanAttribute;
 import io.github.factoryfx.factory.attribute.types.StringAttribute;
 import io.github.factoryfx.factory.jackson.ObjectMapperBuilder;
-import io.github.factoryfx.factory.merge.testdata.ExampleDataA;
-import io.github.factoryfx.factory.merge.testdata.ExampleDataB;
-import io.github.factoryfx.factory.util.LanguageText;
-import io.github.factoryfx.factory.validation.ValidationResult;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 

@@ -9,7 +9,7 @@ import io.github.factoryfx.factory.attribute.ImmutableValueAttribute;
 public class URIAttribute extends ImmutableValueAttribute<URI,URIAttribute> {
 
     public URIAttribute() {
-        super(URI.class);
+        super();
     }
 
     /** workaround for checked exception

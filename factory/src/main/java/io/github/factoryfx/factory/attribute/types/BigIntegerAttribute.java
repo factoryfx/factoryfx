@@ -7,7 +7,7 @@ import java.math.BigInteger;
 public class BigIntegerAttribute extends ImmutableValueAttribute<BigInteger, BigIntegerAttribute> {
 
     public BigIntegerAttribute() {
-        super(BigInteger.class);
+        super();
     }
 
 }

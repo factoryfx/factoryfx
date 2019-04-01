@@ -41,7 +41,7 @@ public class FactoryTreeBuilder<L,R extends FactoryBase<L,R>,S> {
     }
 
 
-    public <F extends FactoryBase<?,R>> void addFactory(Class<F> clazz, Scope scope){
+    public <L,F extends FactoryBase<L,R>> void addFactory(Class<F> clazz, Scope scope){
         addFactory(clazz,scope,new DefaultCreator<>(clazz));
     }
 
@@ -115,4 +115,7 @@ public class FactoryTreeBuilder<L,R extends FactoryBase<L,R>,S> {
     public MicroserviceBuilder<L,R,S> microservice(SimpleObjectMapper simpleObjectMapper){
         return new MicroserviceBuilder<>(this.rootClass,this.buildTree(),this,simpleObjectMapper);
     }
+
+
+
 }

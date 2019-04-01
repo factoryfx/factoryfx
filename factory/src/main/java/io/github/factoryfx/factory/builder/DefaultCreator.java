@@ -9,7 +9,7 @@ import io.github.factoryfx.factory.attribute.dependency.*;
 import io.github.factoryfx.factory.metadata.FactoryMetadataManager;
 import io.github.factoryfx.factory.parametrized.ParametrizedObjectCreatorAttribute;
 
-public class DefaultCreator<F extends FactoryBase<?,R>, R extends FactoryBase<?,R>> implements Function<FactoryContext<R>, F> {
+public class DefaultCreator<L,F extends FactoryBase<L,R>, R extends FactoryBase<?,R>> implements Function<FactoryContext<R>, F> {
     private final Class<F> clazz;
 
     public DefaultCreator(Class<F> clazz) {
@@ -20,7 +20,7 @@ public class DefaultCreator<F extends FactoryBase<?,R>, R extends FactoryBase<?,
     @SuppressWarnings("unchecked")
     @Override
     public F apply(FactoryContext<R> context) {
-        FactoryMetadata<R, F> factoryMetadata = FactoryMetadataManager.getMetadata(clazz);
+        FactoryMetadata<R,L, F> factoryMetadata = FactoryMetadataManager.getMetadata(clazz);
         F result = factoryMetadata.newInstance();
         factoryMetadata.setAttributeReferenceClasses(result);
 

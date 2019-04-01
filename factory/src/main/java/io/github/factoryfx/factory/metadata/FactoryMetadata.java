@@ -10,20 +10,19 @@ import io.github.factoryfx.factory.storage.migration.metadata.DataStorageMetadat
 
 import java.lang.reflect.*;
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
-public class FactoryMetadata<R extends FactoryBase<?,R>, D extends FactoryBase<?,R>> {
+public class FactoryMetadata<R extends FactoryBase<?,R>, L,F extends FactoryBase<L,R>> {
 
-    private BiConsumer<D, AttributeVisitor> visitAttributesFlat;
+    private BiConsumer<F, AttributeVisitor> visitAttributesFlat;
     private boolean temporaryAttributes=false;
     private Constructor constructor;
     private final Class<? extends FactoryBase<?,?>> clazz;
 
-    public FactoryMetadata(Class<? extends FactoryBase<?,?>> clazz){
+    public FactoryMetadata(Class<F> clazz){
         this.clazz=clazz;
         initAttributeFields(clazz);
     }
@@ -34,7 +33,7 @@ public class FactoryMetadata<R extends FactoryBase<?,R>, D extends FactoryBase<?
      * @param visitAttributesFlat  visitor
      * @return DataDictionary for fluent configuration
      * */
-    public FactoryMetadata<R,D> setVisitAttributesFlat(BiConsumer<D,AttributeVisitor> visitAttributesFlat){
+    public FactoryMetadata<R,L, F> setVisitAttributesFlat(BiConsumer<F,AttributeVisitor> visitAttributesFlat){
         this.visitAttributesFlat=visitAttributesFlat;
         return this;
     }
@@ -43,12 +42,12 @@ public class FactoryMetadata<R extends FactoryBase<?,R>, D extends FactoryBase<?
      * Data use temporary to simulate normal data, this is an optimization hind cause some operation don't make sense with Temporary attributes
      * @return DataDictionary for fluent configuration
      */
-    public FactoryMetadata<R,D> setUseTemporaryAttributes(){
+    public FactoryMetadata<R,L, F> setUseTemporaryAttributes(){
         temporaryAttributes=true;
         return this;
     }
 
-    public void visitAttributesFlat(D data, AttributeVisitor attributeVisitor){
+    public void visitAttributesFlat(F data, AttributeVisitor attributeVisitor){
         if (visitAttributesFlat!=null){
             this.visitAttributesFlat.accept(data,attributeVisitor);
         } else {
@@ -62,7 +61,7 @@ public class FactoryMetadata<R extends FactoryBase<?,R>, D extends FactoryBase<?
         }
     }
 
-    private BiConsumer<D,Consumer<FactoryBase<?,?>>> visitDataChildren;
+    private BiConsumer<F,Consumer<FactoryBase<?,?>>> visitDataChildren;
 
     /**
      * default implementation use reflection, this method can be used to improve performance
@@ -70,7 +69,7 @@ public class FactoryMetadata<R extends FactoryBase<?,R>, D extends FactoryBase<?
      * @param visitDataChildren visitor
      * @return DataDictionary for fluent configuration
      * */
-    public FactoryMetadata<R,D> setVisitDataChildren(BiConsumer<D,Consumer<FactoryBase<?,?>>> visitDataChildren){
+    public FactoryMetadata<R, L,F> setVisitDataChildren(BiConsumer<F,Consumer<FactoryBase<?,?>>> visitDataChildren){
         this.visitDataChildren=visitDataChildren;
         return this;
     }
@@ -124,7 +123,7 @@ public class FactoryMetadata<R extends FactoryBase<?,R>, D extends FactoryBase<?
         }
     }
 
-    public void visitAttributesDualFlat(D data, D other, FactoryBase.BiAttributeVisitor consumer) {
+    public void visitAttributesDualFlat(F data, F other, FactoryBase.BiAttributeVisitor consumer) {
         if (this.visitDataChildren != null) {
             List<AttributeNamePair> attributes = getAttributes(data,10);
             List<AttributeNamePair> otherAttributes = getAttributes(other,attributes.size());
@@ -142,7 +141,7 @@ public class FactoryMetadata<R extends FactoryBase<?,R>, D extends FactoryBase<?
         }
     }
 
-    public void visitAttributesTripleFlat(D data, D other1, D other2, FactoryBase.TriAttributeVisitor consumer) {
+    public void visitAttributesTripleFlat(F data, F other1, F other2, FactoryBase.TriAttributeVisitor consumer) {
         if (this.visitDataChildren != null) {
             List<AttributeNamePair> attributes = getAttributes(data,10);
             List<AttributeNamePair> otherAttributes = getAttributes(other1,attributes.size());
@@ -161,7 +160,7 @@ public class FactoryMetadata<R extends FactoryBase<?,R>, D extends FactoryBase<?
         }
     }
 
-    private List<AttributeNamePair> getAttributes(D data, int initialCapacity) {
+    private List<AttributeNamePair> getAttributes(F data, int initialCapacity) {
         List<AttributeNamePair> attributes = new ArrayList<>(initialCapacity);
         visitAttributesFlat(data, (attributeVariableName, attribute) -> attributes.add(new AttributeNamePair(attributeVariableName,attribute)));
         return attributes;
@@ -212,7 +211,7 @@ public class FactoryMetadata<R extends FactoryBase<?,R>, D extends FactoryBase<?
     }
 
     @SuppressWarnings("unchecked")
-    public void addBackReferencesToAttributes(D data, R root) {
+    public void addBackReferencesToAttributes(F data, R root) {
         if (!temporaryAttributes) {//no BackReferences for FastFactories
             visitAttributesFlat(data,(name, attribute) -> {
                 if (attribute instanceof RootAwareAttribute<?,?>){
@@ -223,7 +222,7 @@ public class FactoryMetadata<R extends FactoryBase<?,R>, D extends FactoryBase<?
     }
 
     private static Object[] defaultConstructor = new Object[0];
-    private Function<D,D> newCopyInstanceSupplier =null;
+    private Function<F, F> newCopyInstanceSupplier =null;
 
     /**
      *  new instance configuration default use reflection over default constructor
@@ -232,14 +231,14 @@ public class FactoryMetadata<R extends FactoryBase<?,R>, D extends FactoryBase<?
      * @param newCopyInstanceSupplier newCopyInstanceSupplier
      * @return DataDictionary for fluent configuration
      * */
-    public FactoryMetadata<R,D> setNewCopyInstanceSupplier(Function<D,D> newCopyInstanceSupplier){
+    public FactoryMetadata<R,L, F> setNewCopyInstanceSupplier(Function<F, F> newCopyInstanceSupplier){
         this.newCopyInstanceSupplier =newCopyInstanceSupplier;
         return this;
     }
 
     @SuppressWarnings("unchecked")
-    public D newCopyInstance(D data) {
-        D result;
+    public F newCopyInstance(F data) {
+        F result;
         if (newCopyInstanceSupplier !=null && data!=null){
             result= newCopyInstanceSupplier.apply(data);
         } else {
@@ -255,7 +254,7 @@ public class FactoryMetadata<R extends FactoryBase<?,R>, D extends FactoryBase<?
             }
 
             try {
-                result = (D) constructor.newInstance(defaultConstructor);
+                result = (F) constructor.newInstance(defaultConstructor);
             } catch (InstantiationException | InvocationTargetException | IllegalAccessException e ) {
                 throw new RuntimeException(clazz.getName(),e);
             }
@@ -263,11 +262,11 @@ public class FactoryMetadata<R extends FactoryBase<?,R>, D extends FactoryBase<?
         return result;
     }
 
-    public D newInstance(){
+    public F newInstance(){
         return newCopyInstance(null);
     }
 
-    public void setAttributeReferenceClasses(D data){
+    public void setAttributeReferenceClasses(F data){
         this.visitAttributesFlat(data, (attributeVariableName, attribute) -> {
             if (attribute instanceof ReferenceBaseAttribute) {
                 ((ReferenceBaseAttribute<?,?,?,?>)attribute).internal_setReferenceClass(fieldToReferenceClass.get(attributeVariableName));
@@ -277,21 +276,21 @@ public class FactoryMetadata<R extends FactoryBase<?,R>, D extends FactoryBase<?
 
 
     public DataStorageMetadata createDataStorageMetadata(long count) {
-        D data = newInstance();
+        F data = newInstance();
         setAttributeReferenceClasses(data);
         ArrayList<AttributeStorageMetadata> attributes = new ArrayList<>();
         visitAttributesFlat(data, (attributeVariableName, attribute) -> attributes.add(attribute.createAttributeStorageMetadata(attributeVariableName)));
         return new DataStorageMetadata(attributes,clazz.getName(),count);
     }
 
-    private BiConsumer<D,Consumer<FactoryBase<?,R>>> visitChildFactoriesAndViewsFlat;
+    private BiConsumer<F,Consumer<FactoryBase<?,R>>> visitChildFactoriesAndViewsFlat;
 
-    public  void setVisitChildFactoriesAndViewsFlat(BiConsumer<D,Consumer<FactoryBase<?,R>>> visitChildFactoriesAndViewsFlat){
+    public  void setVisitChildFactoriesAndViewsFlat(BiConsumer<F,Consumer<FactoryBase<?,R>>> visitChildFactoriesAndViewsFlat){
         this.visitChildFactoriesAndViewsFlat=visitChildFactoriesAndViewsFlat;
     }
 
     @SuppressWarnings("unchecked")
-    public void visitChildFactoriesAndViewsFlat(D data, Consumer<FactoryBase<?,R>> consumer) {
+    public void visitChildFactoriesAndViewsFlat(F data, Consumer<FactoryBase<?,R>> consumer) {
         if (this.visitChildFactoriesAndViewsFlat != null) {
             this.visitChildFactoriesAndViewsFlat.accept(data, consumer);
 

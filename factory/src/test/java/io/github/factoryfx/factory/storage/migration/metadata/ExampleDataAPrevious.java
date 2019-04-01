@@ -2,7 +2,6 @@ package io.github.factoryfx.factory.storage.migration.metadata;
 
 
 import io.github.factoryfx.factory.FactoryBase;
-import io.github.factoryfx.factory.attribute.CopySemantic;
 import io.github.factoryfx.factory.attribute.dependency.FactoryReferenceAttribute;
 import io.github.factoryfx.factory.attribute.dependency.FactoryReferenceListAttribute;
 import io.github.factoryfx.factory.attribute.types.StringAttribute;

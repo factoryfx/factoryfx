@@ -11,9 +11,9 @@ import io.github.factoryfx.factory.typescript.generator.ts.*;
 
 import java.util.*;
 
-public class DataGeneratedTs<R extends FactoryBase<?,R>> {
+public class DataGeneratedTs<R extends FactoryBase<?,R>, L,  F extends FactoryBase<L,R>> {
 
-    private final Class<? extends FactoryBase<?,R>> clazz;
+    private final Class<F> clazz;
     private final TsFile dataTsClass;
     private final TsFile dataCreatorTsClass;
     private final TsFile attributeMetadataTsClass;
@@ -22,7 +22,7 @@ public class DataGeneratedTs<R extends FactoryBase<?,R>> {
     private final AttributeToTsMapperManager attributeToTsMapperManager;
     private final TsEnumConstructed attributeTypeEnumTsEnum;
 
-    public DataGeneratedTs(Class<? extends FactoryBase<?,R>> clazz, Map<Class<? extends FactoryBase<?,R>>, TsClassConstructed> dataToOverrideTs, TsFile dataTsClass, TsFile dataCreatorTsClass, TsFile attributeTsClass, TsFile attributeAccessorClass, AttributeToTsMapperManager attributeToTsMapperManager, TsEnumConstructed attributeTypeEnumTsEnum) {
+    public DataGeneratedTs(Class<F> clazz, Map<Class<? extends FactoryBase<?,R>>, TsClassConstructed> dataToOverrideTs, TsFile dataTsClass, TsFile dataCreatorTsClass, TsFile attributeTsClass, TsFile attributeAccessorClass, AttributeToTsMapperManager attributeToTsMapperManager, TsEnumConstructed attributeTypeEnumTsEnum) {
         this.clazz = clazz;
         this.dataTsClass = dataTsClass;
         this.dataToOverrideTs = dataToOverrideTs;
@@ -35,7 +35,7 @@ public class DataGeneratedTs<R extends FactoryBase<?,R>> {
 
     public TsFile complete(TsClassConstructed tsClass){
         ArrayList<TsAttribute> attributes = new ArrayList<>();
-        FactoryBase<?,R> data = FactoryMetadataManager.getMetadata(clazz).newInstance();
+        F data = FactoryMetadataManager.getMetadata(clazz).newInstance();
         data.internal().visitAttributesFlat((attributeVariableName, attribute) -> {
             if (attributeToTsMapperManager.isMappable(attribute.getClass())){
                 attributes.add(getTsAttribute(attributeVariableName,attribute));

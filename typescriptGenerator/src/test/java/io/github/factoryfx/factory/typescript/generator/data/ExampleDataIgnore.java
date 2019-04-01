@@ -3,8 +3,6 @@ package io.github.factoryfx.factory.typescript.generator.data;
 import io.github.factoryfx.factory.SimpleFactoryBase;
 import io.github.factoryfx.factory.attribute.dependency.FactoryViewListReferenceAttribute;
 import io.github.factoryfx.factory.attribute.dependency.FactoryViewReferenceAttribute;
-import io.github.factoryfx.factory.testfactories.ExampleFactoryA;
-import io.github.factoryfx.factory.testfactories.ExampleLiveObjectA;
 import io.github.factoryfx.factory.attribute.types.ObjectValueAttribute;
 import io.github.factoryfx.factory.attribute.types.StringAttribute;
 

@@ -4,9 +4,7 @@ import io.github.factoryfx.factory.SimpleFactoryBase;
 import io.github.factoryfx.factory.attribute.dependency.FactoryReferenceAttribute;
 import io.github.factoryfx.factory.parametrized.ParametrizedObjectCreatorAttribute;
 import io.github.factoryfx.factory.parametrized.ParametrizedObjectCreatorFactory;
-import io.github.factoryfx.factory.testfactories.ExampleFactoryB;
 import io.github.factoryfx.factory.testfactories.ExampleLiveObjectA;
-import io.github.factoryfx.factory.testfactories.ExampleLiveObjectB;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -35,7 +33,7 @@ public class DefaultCreatorTest {
     @Test
     @SuppressWarnings("unchecked")
     public void test_ParametrizedObjectCreatorAttribute(){
-        DefaultCreator<ParametrizedTestFactory,ParametrizedTestFactory> defaultCreator = new DefaultCreator<>(ParametrizedTestFactory.class);
+        DefaultCreator<Void,ParametrizedTestFactory,ParametrizedTestFactory> defaultCreator = new DefaultCreator<>(ParametrizedTestFactory.class);
 
         FactoryContext<ParametrizedTestFactory> mock = Mockito.mock(FactoryContext.class);
         DummyCreatorFactory value = new DummyCreatorFactory();
@@ -63,7 +61,7 @@ public class DefaultCreatorTest {
     @Test
     public void test_missing_factory(){
         Assertions.assertThrows(IllegalStateException.class, () -> {
-            DefaultCreator<ExampleFactoryANotNullable, ExampleFactoryANotNullable> defaultCreator = new DefaultCreator<>(ExampleFactoryANotNullable.class);
+            DefaultCreator<ExampleLiveObjectA, ExampleFactoryANotNullable, ExampleFactoryANotNullable> defaultCreator = new DefaultCreator<>(ExampleFactoryANotNullable.class);
             defaultCreator.apply(new FactoryContext<>());
         });
     }
@@ -81,7 +79,7 @@ public class DefaultCreatorTest {
 
     @Test
     public void test_missing_factory_nullable(){
-        DefaultCreator<ExampleFactoryNullableRef,ExampleFactoryNullableRef> defaultCreator = new DefaultCreator<>(ExampleFactoryNullableRef.class);
+        DefaultCreator<ExampleLiveObjectA,ExampleFactoryNullableRef,ExampleFactoryNullableRef> defaultCreator = new DefaultCreator<>(ExampleFactoryNullableRef.class);
         defaultCreator.apply(new FactoryContext<>());
     }
 

@@ -9,7 +9,7 @@ import java.util.Base64;
 
 class ByteArrayAttributeBase<A extends Attribute<byte[],A>>  extends ImmutableValueAttribute<byte[], A> {
     public ByteArrayAttributeBase() {
-        super(byte[].class);
+        super();
     }
 
     @JsonIgnore
