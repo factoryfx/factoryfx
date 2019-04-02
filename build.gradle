@@ -25,10 +25,10 @@ allprojects {
 }
 
 
-import org.gradle.api.tasks.wrapper.Wrapper.DistributionType
+
 wrapper {
     gradleVersion = '5.0'
-    distributionType = DistributionType.ALL
+    distributionType = Wrapper.DistributionType.ALL
 }
 
 subprojects {
@@ -436,8 +436,8 @@ project(':docu') {
         compile project(":jettyFactory")
         compile project(':postgresqlStorage')
 
-        compile project(':microserviceRestServer');
-        compile project(':microserviceRestClient');
+        compile project(':microserviceRestServer')
+        compile project(':microserviceRestClient')
         
         compile group: 'io.dropwizard.metrics', name: 'metrics-jetty9', version: '3.2.4'
         compile 'ru.yandex.qatools.embed:postgresql-embedded:1.15'

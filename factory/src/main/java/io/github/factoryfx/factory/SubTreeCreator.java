@@ -12,12 +12,14 @@ import java.util.function.Function;
 public class SubTreeCreator<R extends FactoryBase<?,R>, L, S extends FactoryBase<L,R>> {
 
     private final Function<R,S> subRootFactoryProvider;
+    private final R root;
 
-    public SubTreeCreator(Function<R, S> subRootFactoryProvider) {
+    public SubTreeCreator(R root, Function<R, S> subRootFactoryProvider) {
         this.subRootFactoryProvider = subRootFactoryProvider;
+        this.root = root;
     }
 
-    public L create(R root){
+    public L create(){
         final R copy = root.internal().copy();
         return subRootFactoryProvider.apply(copy).internal().create();
     }

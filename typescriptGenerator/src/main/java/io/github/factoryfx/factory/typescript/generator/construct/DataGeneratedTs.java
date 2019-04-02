@@ -36,6 +36,8 @@ public class DataGeneratedTs<R extends FactoryBase<?,R>, L,  F extends FactoryBa
     public TsFile complete(TsClassConstructed tsClass){
         ArrayList<TsAttribute> attributes = new ArrayList<>();
         F data = FactoryMetadataManager.getMetadata(clazz).newInstance();
+        FactoryMetadataManager.getMetadata(clazz).setAttributeReferenceClasses(data);
+
         data.internal().visitAttributesFlat((attributeVariableName, attribute) -> {
             if (attributeToTsMapperManager.isMappable(attribute.getClass())){
                 attributes.add(getTsAttribute(attributeVariableName,attribute));
