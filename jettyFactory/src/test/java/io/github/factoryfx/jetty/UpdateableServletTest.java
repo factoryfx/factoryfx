@@ -65,7 +65,6 @@ public class UpdateableServletTest {
     @Test
     public void test_jersey_after_update() throws IOException, InterruptedException {
         FactoryTreeBuilder<Server, UpdateableWebserverRootFactory, Void> builder = new FactoryTreeBuilder<>(UpdateableWebserverRootFactory.class);
-        builder.addFactory(UpdateableWebserverRootFactory.class, Scope.SINGLETON);
         builder.addFactory(JettyServerFactory.class, Scope.SINGLETON, ctx->{
             return new JettyServerBuilder<>(new JettyServerFactory<UpdateableWebserverRootFactory>())
                     .withHost("localhost").withPort(8080)
@@ -107,7 +106,6 @@ public class UpdateableServletTest {
     @Test
     public void test_remove_resource() throws IOException, InterruptedException {
         FactoryTreeBuilder<Server, UpdateableWebserverRootFactory, Void> builder = new FactoryTreeBuilder<>(UpdateableWebserverRootFactory.class);
-        builder.addFactory(UpdateableWebserverRootFactory.class, Scope.SINGLETON);
         builder.addFactory(JettyServerFactory.class, Scope.SINGLETON, ctx->{
             return new JettyServerBuilder<>(new JettyServerFactory<UpdateableWebserverRootFactory>())
                     .withHost("localhost").withPort(8080)
@@ -143,7 +141,6 @@ public class UpdateableServletTest {
     @Test
     public void test_add_resource() throws IOException, InterruptedException {
         FactoryTreeBuilder<Server, UpdateableWebserverRootFactory, Void> builder = new FactoryTreeBuilder<>(UpdateableWebserverRootFactory.class);
-        builder.addFactory(UpdateableWebserverRootFactory.class, Scope.SINGLETON);
         builder.addFactory(JettyServerFactory.class, Scope.SINGLETON, ctx->{
             return new JettyServerBuilder<>(new JettyServerFactory<UpdateableWebserverRootFactory>())
                     .withHost("localhost").withPort(8080).build();
@@ -178,7 +175,6 @@ public class UpdateableServletTest {
     @Test
     public void test_add_jerseyServlet() throws IOException, InterruptedException {
         FactoryTreeBuilder<Server, UpdateableWebserverRootFactory, Void> builder = new FactoryTreeBuilder<>(UpdateableWebserverRootFactory.class);
-        builder.addFactory(UpdateableWebserverRootFactory.class, Scope.SINGLETON);
         builder.addFactory(JettyServerFactory.class, Scope.SINGLETON, ctx->{
             return new JettyServerBuilder<>(new JettyServerFactory<UpdateableWebserverRootFactory>())
                     .withHost("localhost").withPort(8080).build();

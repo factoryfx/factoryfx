@@ -103,7 +103,7 @@ public class PostgresDataStorage<R extends FactoryBase<?,R>, S> implements DataS
                                 "initial factory",
                                 UUID.randomUUID().toString(),
                                 null,
-                                initialData.internal().createDataStorageMetadataDictionaryFromRoot()
+                                initialData.internal().createDataStorageMetadataDictionaryFromRoot(),null
                         );
 
                         updateCurrentFactory(connection, new DataAndStoredMetadata<>(initialData,metadata));
@@ -124,7 +124,7 @@ public class PostgresDataStorage<R extends FactoryBase<?,R>, S> implements DataS
 
     @Override
     public void updateCurrentData(DataUpdate<R> update, S changeSummary) {
-        StoredDataMetadata<S> metadata =update.createUpdateStoredDataMetadata(changeSummary);
+        StoredDataMetadata<S> metadata =update.createUpdateStoredDataMetadata(changeSummary,getCurrentData().id);
         update(update.root, metadata);
     }
 

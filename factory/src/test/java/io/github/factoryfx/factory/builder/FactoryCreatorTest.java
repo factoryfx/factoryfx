@@ -1,6 +1,7 @@
 package io.github.factoryfx.factory.builder;
 
 import io.github.factoryfx.factory.testfactories.ExampleFactoryA;
+import io.github.factoryfx.factory.testfactories.ExampleFactoryB;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -28,6 +29,54 @@ public class FactoryCreatorTest {
         ExampleFactoryA second = factoryCreator.create(null);
 
         Assertions.assertNotEquals(first,second);
+    }
+
+    @Test
+    public void test_dublicate(){
+        FactoryCreator<ExampleFactoryA,ExampleFactoryA> factoryCreator1 = new FactoryCreator<>(ExampleFactoryA.class, null, Scope.PROTOTYPE, context -> {
+            return new ExampleFactoryA();
+        });
+
+        FactoryCreator<ExampleFactoryA,ExampleFactoryA> factoryCreator2 = new FactoryCreator<>(ExampleFactoryA.class, null, Scope.PROTOTYPE, context -> {
+            return new ExampleFactoryA();
+        });
+        Assertions.assertTrue(factoryCreator1.isDublicate(factoryCreator2));
+    }
+
+    @Test
+    public void test_dublicate2(){
+        FactoryCreator<ExampleFactoryA,ExampleFactoryA> factoryCreator1 = new FactoryCreator<>(ExampleFactoryA.class, "123", Scope.PROTOTYPE, context -> {
+            return new ExampleFactoryA();
+        });
+
+        FactoryCreator<ExampleFactoryA,ExampleFactoryA> factoryCreator2 = new FactoryCreator<>(ExampleFactoryA.class, "123", Scope.PROTOTYPE, context -> {
+            return new ExampleFactoryA();
+        });
+        Assertions.assertTrue(factoryCreator1.isDublicate(factoryCreator2));
+    }
+
+    @Test
+    public void test_dublicate3(){
+        FactoryCreator<ExampleFactoryA,ExampleFactoryA> factoryCreator1 = new FactoryCreator<>(ExampleFactoryA.class, "", Scope.PROTOTYPE, context -> {
+            return new ExampleFactoryA();
+        });
+
+        FactoryCreator<ExampleFactoryA,ExampleFactoryA> factoryCreator2 = new FactoryCreator<>(ExampleFactoryA.class, "123", Scope.PROTOTYPE, context -> {
+            return new ExampleFactoryA();
+        });
+        Assertions.assertFalse(factoryCreator1.isDublicate(factoryCreator2));
+    }
+
+    @Test
+    public void test_dublicate4(){
+        FactoryCreator<ExampleFactoryA,ExampleFactoryA> factoryCreator1 = new FactoryCreator<>(ExampleFactoryA.class,null, Scope.PROTOTYPE, context -> {
+            return new ExampleFactoryA();
+        });
+
+        FactoryCreator<ExampleFactoryB,ExampleFactoryA> factoryCreator2 = new FactoryCreator<>(ExampleFactoryB.class,null , Scope.PROTOTYPE, context -> {
+            return new ExampleFactoryB();
+        });
+        Assertions.assertFalse(factoryCreator1.isDublicate(factoryCreator2));
     }
 
 }

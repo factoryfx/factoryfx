@@ -21,7 +21,7 @@ public class FileSystemDataStorageHistoryTest {
         ExampleDataA exampleDataA = new ExampleDataA();
         exampleDataA.internal().addBackReferences();
         DataStorageMetadataDictionary dataStorageMetadataDictionaryFromRoot = exampleDataA.internal().createDataStorageMetadataDictionaryFromRoot();
-        return new StoredDataMetadata<>(UUID.randomUUID().toString(),"","","",null, dataStorageMetadataDictionaryFromRoot);
+        return new StoredDataMetadata<>(UUID.randomUUID().toString(),"","","",null, dataStorageMetadataDictionaryFromRoot,null);
     }
 
     @TempDir

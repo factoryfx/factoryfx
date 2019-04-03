@@ -25,6 +25,9 @@ public class StoredDataMetadata<S> {
     /**the base version on the server*/
     public final String baseVersionId;
 
+    /** the current version used for merging */
+    public final String mergerVersionId;
+
     public final DataStorageMetadataDictionary dataStorageMetadataDictionary;
 
     @JsonCreator
@@ -35,7 +38,8 @@ public class StoredDataMetadata<S> {
             @JsonProperty("comment")String comment,
             @JsonProperty("baseVersionId")String baseVersionId,
             @JsonProperty("changeSummary")S changeSummary,
-            @JsonProperty("dataStorageMetadataDictionary") DataStorageMetadataDictionary dataStorageMetadataDictionary) {
+            @JsonProperty("dataStorageMetadataDictionary") DataStorageMetadataDictionary dataStorageMetadataDictionary,
+            @JsonProperty("mergerVersionId")String mergerVersionId) {
         this.creationTime = creationTime;
         this.id = id;
         this.user = user;
@@ -43,9 +47,10 @@ public class StoredDataMetadata<S> {
         this.baseVersionId = baseVersionId;
         this.changeSummary = changeSummary;
         this.dataStorageMetadataDictionary = dataStorageMetadataDictionary;
+        this.mergerVersionId = mergerVersionId;
     }
 
-    public StoredDataMetadata(String id, String user, String comment, String baseVersionId, S changeSummary, DataStorageMetadataDictionary dataStorageMetadataDictionary) {
-        this(LocalDateTime.now(),id,user,comment,baseVersionId,changeSummary,dataStorageMetadataDictionary);
+    public StoredDataMetadata(String id, String user, String comment, String baseVersionId, S changeSummary, DataStorageMetadataDictionary dataStorageMetadataDictionary,String mergerVersionId) {
+        this(LocalDateTime.now(),id,user,comment,baseVersionId,changeSummary,dataStorageMetadataDictionary,mergerVersionId);
     }
 }

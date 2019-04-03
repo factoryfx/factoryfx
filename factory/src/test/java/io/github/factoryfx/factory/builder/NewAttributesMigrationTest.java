@@ -107,8 +107,7 @@ public class NewAttributesMigrationTest {
     @Test
     public void test() throws IOException {
         {
-            FactoryTreeBuilder< Void, ServerFactoryOld, Void> builder = new FactoryTreeBuilder<>(ServerFactoryOld.class);
-            builder.addFactory(ServerFactoryOld.class, Scope.SINGLETON, ctx -> {
+            FactoryTreeBuilder< Void, ServerFactoryOld, Void> builder = new FactoryTreeBuilder<>(ServerFactoryOld.class, ctx -> {
                 ServerFactoryOld serverFactoryOld = new ServerFactoryOld();
                 serverFactoryOld.clientSystemFactory1.set(ctx.get(ClientSystemFactoryOld.class,"client1"));
                 serverFactoryOld.clientSystemFactory2.set(ctx.get(ClientSystemFactoryOld.class,"client2"));
@@ -147,8 +146,7 @@ public class NewAttributesMigrationTest {
         Files.writeString(folder.resolve("currentFactory_metadata.json"),currentFactorymetadata);
 
         {
-            FactoryTreeBuilder< Void, ServerFactory, Void> builder = new FactoryTreeBuilder<>(ServerFactory.class);
-            builder.addFactory(ServerFactory.class, Scope.SINGLETON, ctx-> {
+            FactoryTreeBuilder< Void, ServerFactory, Void> builder = new FactoryTreeBuilder<>(ServerFactory.class, ctx-> {
                 ServerFactory serverFactory = new ServerFactory();
                 serverFactory.clientSystemFactory1.set(ctx.get(ClientSystemFactory.class,"client1"));
                 serverFactory.clientSystemFactory2.set(ctx.get(ClientSystemFactory.class,"client2"));

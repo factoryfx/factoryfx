@@ -97,7 +97,6 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
             return getId().equals(data.getId());
         }
     }
-
     private FactoryMetadata<R,L, FactoryBase<L, R>> metadata;
     @SuppressWarnings("unchecked")
     private FactoryMetadata<R,L,FactoryBase<L,R>> getFactoryMetadata(){
@@ -843,7 +842,7 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
             factory.loopDetector();
         }
 
-        public List<FactoryBase<?,?>> collectChildFactoriesDeepFromRoot(){
+        public List<FactoryBase<?,R>> collectChildFactoriesDeepFromRoot(){
             return factory.collectChildFactoriesDeep();
         }
 
@@ -857,7 +856,7 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
          * a  b  c
          * @return breadth-first order: hdegabcf
          * */
-        public List<FactoryBase<?,?>> getFactoriesInDestroyOrder(){
+        public List<FactoryBase<?,R>> getFactoriesInDestroyOrder(){
             return factory.getFactoriesInDestroyOrder();
         }
 
@@ -871,14 +870,14 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
          * a  b  c
          * @return postorder: abcdefgh
          **/
-        public List<FactoryBase<?,?>> getFactoriesInCreateAndStartOrder(){
+        public List<FactoryBase<?,R>> getFactoriesInCreateAndStartOrder(){
             return factory.getFactoriesInCreateAndStartOrder();
         }
 
-        public HashMap<String,FactoryBase<?,?>> collectChildFactoriesDeepMapFromRoot(){
-            final List<FactoryBase<?,?>> factoryBases = collectChildFactoriesDeepFromRoot();
-            HashMap<String, FactoryBase<?,?>> result = new HashMap<>();
-            for (FactoryBase<?,?> factory: factoryBases){
+        public HashMap<String,FactoryBase<?,R>> collectChildFactoriesDeepMapFromRoot(){
+            final List<FactoryBase<?,R>> factoryBases = collectChildFactoriesDeepFromRoot();
+            HashMap<String, FactoryBase<?,R>> result = new HashMap<>();
+            for (FactoryBase<?,R> factory: factoryBases){
                 result.put(factory.getId(),factory);
             }
             return result;
@@ -1133,29 +1132,29 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
         }
     }
 
-    private List<FactoryBase<?,?>> collectChildFactoriesDeep(){
+    private List<FactoryBase<?,R>> collectChildFactoriesDeep(){
         long iterationRun=this.iterationRun+1;
-        final List<FactoryBase<?,?>> result = new ArrayList<>();
+        final List<FactoryBase<?,R>> result = new ArrayList<>();
         collectChildFactoriesDeep(this,result,iterationRun);
         return result;
     }
 
-    private void collectChildFactoriesDeep(FactoryBase<?,?> factory, List<FactoryBase<?, ?>> result, final long iterationRun){
+    private void collectChildFactoriesDeep(FactoryBase<?,R> factory, List<FactoryBase<?, R>> result, final long iterationRun){
         result.add(factory);
         factory.visitChildFactoriesAndViewsFlat(child -> {
             collectChildFactoriesDeep(child,result,iterationRun);
         },iterationRun);
     }
 
-    private List<FactoryBase<?,?>> getFactoriesInDestroyOrder(){
+    private List<FactoryBase<?,R>> getFactoriesInDestroyOrder(){
         long iterationRun=this.iterationRun+1;
-        final List<FactoryBase<?, ?>> result = new ArrayList<>();
+        final List<FactoryBase<?, R>> result = new ArrayList<>();
         result.add(this);
         getFactoriesInDestroyOrder(this,result,iterationRun);
         return result;
     }
 
-    private void getFactoriesInDestroyOrder(FactoryBase<?,?> factory, List<FactoryBase<?, ?>> result, final long iterationRun){
+    private void getFactoriesInDestroyOrder(FactoryBase<?,R> factory, List<FactoryBase<?, R>> result, final long iterationRun){
         int size=result.size();
         factory.visitChildFactoriesAndViewsFlat(result::add,iterationRun);
         for (int i = size; i < result.size(); i++) {//fori loop cause performance optimization
@@ -1164,14 +1163,14 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
         //factory.visitChildFactoriesAndViewsFlat(child -> getFactoriesInDestroyOrder(child,result,iterationRun), iterationRun);
     }
 
-    private List<FactoryBase<?,?>> getFactoriesInCreateAndStartOrder(){
+    private List<FactoryBase<?,R>> getFactoriesInCreateAndStartOrder(){
         long iterationRun=this.iterationRun+1;
-        final List<FactoryBase<?,?>> result = new ArrayList<>();
+        final List<FactoryBase<?,R>> result = new ArrayList<>();
         getFactoriesInCreateAndStartOrder(this,result,iterationRun);
         return result;
     }
 
-    private void getFactoriesInCreateAndStartOrder(FactoryBase<?,?> factory, List<FactoryBase<?,?>> result, final long iterationRun){
+    private void getFactoriesInCreateAndStartOrder(FactoryBase<?,R> factory, List<FactoryBase<?,R>> result, final long iterationRun){
         factory.visitChildFactoriesAndViewsFlat(child -> {
             getFactoriesInCreateAndStartOrder(child,result,iterationRun);
         },iterationRun);
@@ -1507,6 +1506,18 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
             return factory.copy();
         }
 
+        /**
+         * overrides the factory creator with a mock<br>
+         *
+         * to access the factory attributes you have to specifies the factories class like this<br>
+         *
+         * <pre>{@code
+         *      exampleFactoryA.utility().<Factory>mock(f->f.reference ...
+         * }</pre>
+         *
+         * @param creatorMock mock function, factory as parameter
+         * @param <F> Factory
+         */
         @SuppressWarnings("unchecked")
         public <F extends FactoryBase<L,R>> void mock(Function<F,L> creatorMock){
             factory.mock(factory -> creatorMock.apply((F)factory));

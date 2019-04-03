@@ -26,8 +26,7 @@ public class Main {
 
         UserFactory.passwordKey= EncryptedStringAttribute.createKey();
 
-        FactoryTreeBuilder< Printer, PrinterFactory, Void> builder = new FactoryTreeBuilder<>(PrinterFactory.class);
-        builder.addFactory(PrinterFactory.class, Scope.SINGLETON, ctx->{
+        FactoryTreeBuilder< Printer, PrinterFactory, Void> builder = new FactoryTreeBuilder<>(PrinterFactory.class, ctx->{
             PrinterFactory factory = new PrinterFactory();
             factory.text.set("Hello World");
             factory.server.set(ctx.get(JettyServerFactory.class));

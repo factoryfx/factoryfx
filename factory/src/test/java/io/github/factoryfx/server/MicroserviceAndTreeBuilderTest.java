@@ -12,8 +12,7 @@ public class MicroserviceAndTreeBuilderTest {
     @Test
     public void test_happy_case() {
 
-        FactoryTreeBuilder<ExampleLiveObjectA,ExampleFactoryA,Void> builder = new FactoryTreeBuilder<>(ExampleFactoryA.class);
-        builder.addFactory(ExampleFactoryA.class, Scope.SINGLETON, context -> {
+        FactoryTreeBuilder<ExampleLiveObjectA,ExampleFactoryA,Void> builder = new FactoryTreeBuilder<>(ExampleFactoryA.class, context -> {
             ExampleFactoryA factoryBases = new ExampleFactoryA();
             factoryBases.referenceAttribute.set(context.get(ExampleFactoryB.class));
             return factoryBases;

@@ -12,8 +12,6 @@ public class ServerBuilder {
     public FactoryTreeBuilder<Server, ServerRootFactory, Void> builder(){
         FactoryTreeBuilder<Server, ServerRootFactory, Void> factoryTreeBuilder = new FactoryTreeBuilder<>(ServerRootFactory.class);
 
-        factoryTreeBuilder.addFactory(ServerRootFactory.class, Scope.SINGLETON);
-
         factoryTreeBuilder.addFactory(ShopJettyServerFactory.class, Scope.SINGLETON, context -> {
             return new JettyServerBuilder<>(new ShopJettyServerFactory())
                     .withHost("localhost").withPort(8089)

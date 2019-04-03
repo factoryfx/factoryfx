@@ -36,7 +36,7 @@ public class OracledbDataStorageHistoryTest extends DatabaseTest {
         exampleFactoryA.internal().addBackReferences();
         DataStorageMetadataDictionary dataStorageMetadataDictionary = exampleFactoryA.internal().createDataStorageMetadataDictionaryFromRoot();
         return new StoredDataMetadata<>( UUID.randomUUID().toString(), "", "", "",null,
-                dataStorageMetadataDictionary);
+                dataStorageMetadataDictionary,null);
     }
 
     @Test

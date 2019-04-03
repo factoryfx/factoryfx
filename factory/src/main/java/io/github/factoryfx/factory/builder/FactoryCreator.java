@@ -19,12 +19,27 @@ public class FactoryCreator<F extends FactoryBase<?,R>,R extends FactoryBase<?,R
         this.name=name;
     }
 
+    @Override
+    public String toString() {
+        return "FactoryCreator{" + "clazz=" + clazz + ", name='" + name + '\'' + '}';
+    }
+
     public boolean match(Class<?> clazzMatch) {
         return clazz==clazzMatch;
     }
 
     public boolean match(String name) {
         return Objects.equals(this.name,name);
+    }
+
+    public boolean isDublicate(FactoryCreator factoryCreator){
+        if (name==null && factoryCreator.name==null) {
+            return clazz==factoryCreator.clazz;
+        }
+        if (name==null){
+            return false;
+        }
+        return clazz==factoryCreator.clazz && name.equals(factoryCreator.name);
     }
 
     F factory;

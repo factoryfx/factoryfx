@@ -94,7 +94,6 @@ public class Main {
             workflowLauncherFactory.backchannel.set(copperRootFactoryFactoryContext.get(BackchannelFactory.class));
             return workflowLauncherFactory;
         });
-        builder.addFactory(CopperRootFactory.class, Scope.SINGLETON);
         return builder;
     }
 

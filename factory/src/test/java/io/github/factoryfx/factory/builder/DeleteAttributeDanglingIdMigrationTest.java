@@ -72,8 +72,7 @@ public class DeleteAttributeDanglingIdMigrationTest {
     @Test
     public void test() throws IOException {
         {
-            FactoryTreeBuilder<Void, ServerFactoryOld, Void> builder = new FactoryTreeBuilder<>(ServerFactoryOld.class);
-            builder.addFactory(ServerFactoryOld.class, Scope.SINGLETON, ctx -> {
+            FactoryTreeBuilder<Void, ServerFactoryOld, Void> builder = new FactoryTreeBuilder<>(ServerFactoryOld.class, ctx -> {
                 ServerFactoryOld serverFactoryOld = new ServerFactoryOld();
                 serverFactoryOld.serverFactoryNested1.set(ctx.get(ServerFactoryNestedOld.class));
                 serverFactoryOld.serverFactoryNested2.set(ctx.get(ServerFactoryNestedOld.class));
@@ -101,8 +100,7 @@ public class DeleteAttributeDanglingIdMigrationTest {
         Files.writeString(folder.resolve("currentFactory_metadata.json"),currentFactorymetadata);
 
         {
-            FactoryTreeBuilder<Void, ServerFactory, Void> builder = new FactoryTreeBuilder<>(ServerFactory.class);
-            builder.addFactory(ServerFactory.class, Scope.SINGLETON, ctx -> {
+            FactoryTreeBuilder<Void, ServerFactory, Void> builder = new FactoryTreeBuilder<>(ServerFactory.class, ctx -> {
                 ServerFactory serverFactory = new ServerFactory();
                 serverFactory.serverFactoryNested2.set(ctx.get(ServerFactoryNested.class));
                 return serverFactory;

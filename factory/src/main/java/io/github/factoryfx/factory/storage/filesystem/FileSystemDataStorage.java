@@ -87,7 +87,7 @@ public class FileSystemDataStorage<R extends FactoryBase<?,R>,S> implements Data
                 update.comment,
                 update.baseVersionId,
                 changeSummary,
-                update.root.internal().createDataStorageMetadataDictionaryFromRoot());
+                update.root.internal().createDataStorageMetadataDictionaryFromRoot(),getCurrentData().id);
         update(update.root, metadata);
     }
 
@@ -120,7 +120,9 @@ public class FileSystemDataStorage<R extends FactoryBase<?,R>,S> implements Data
                     "initial factory",
                     UUID.randomUUID().toString(),
                     null,
-                    initialData.internal().createDataStorageMetadataDictionaryFromRoot()
+                    initialData.internal().createDataStorageMetadataDictionaryFromRoot(),
+                    null
+
             );
             update(initialData, metadata);
         }

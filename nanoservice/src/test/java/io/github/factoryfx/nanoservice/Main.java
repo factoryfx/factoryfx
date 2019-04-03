@@ -10,7 +10,6 @@ public class Main {
         RootFactory rootFactory = new RootFactory();
         rootFactory.storageFactory.set(new SubscriptionStorageFactory());
         FactoryTreeBuilder<Root,RootFactory,Void> builder =  new FactoryTreeBuilder<>(RootFactory.class);
-        builder.addFactory(RootFactory.class, Scope.SINGLETON);
         builder.addFactory(SubscriptionStorageFactory.class, Scope.SINGLETON);
 
         Microservice<Root,RootFactory,Void> microService = builder.microservice().withInMemoryStorage().build();

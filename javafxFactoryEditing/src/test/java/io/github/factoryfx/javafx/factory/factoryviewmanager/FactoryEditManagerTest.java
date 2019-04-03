@@ -31,8 +31,7 @@ public class FactoryEditManagerTest {
     @Test
     @SuppressWarnings("unchecked")
     public void test_export_import() throws IOException {
-        FactoryTreeBuilder<ExampleLiveObjectA, ExampleFactoryA, Void> builder = new FactoryTreeBuilder<>(ExampleFactoryA.class);
-        builder.addFactory(ExampleFactoryA.class, Scope.SINGLETON, ctx->{
+        FactoryTreeBuilder<ExampleLiveObjectA, ExampleFactoryA, Void> builder = new FactoryTreeBuilder<>(ExampleFactoryA.class, ctx->{
             ExampleFactoryA initialFactory = new ExampleFactoryA();
             initialFactory.stringAttribute.set("123");
             return initialFactory;
@@ -93,8 +92,7 @@ public class FactoryEditManagerTest {
 
         Path target = Files.createFile(tmpFolder.resolve("fghfh.json"));
         {
-            FactoryTreeBuilder<ExampleLiveObjectA, ExampleFactoryA, Void> builder = new FactoryTreeBuilder<>(ExampleFactoryA.class);
-            builder.addFactory(ExampleFactoryA.class, Scope.SINGLETON,ctx->{
+            FactoryTreeBuilder<ExampleLiveObjectA, ExampleFactoryA, Void> builder = new FactoryTreeBuilder<>(ExampleFactoryA.class,ctx->{
                 ExampleFactoryA factory = new ExampleFactoryA();
                 factory.referenceAttribute.set(new ExampleFactoryB());
                 return factory;
@@ -117,8 +115,7 @@ public class FactoryEditManagerTest {
 
 
         {
-            FactoryTreeBuilder<ExampleLiveObjectA, ExampleFactoryA, Void> builder = new FactoryTreeBuilder<>(ExampleFactoryA.class);
-            builder.addFactory(ExampleFactoryA.class, Scope.SINGLETON,ctx->{
+            FactoryTreeBuilder<ExampleLiveObjectA, ExampleFactoryA, Void> builder = new FactoryTreeBuilder<>(ExampleFactoryA.class,ctx->{
                 ExampleFactoryA factory = new ExampleFactoryA();
                 return factory;
             });

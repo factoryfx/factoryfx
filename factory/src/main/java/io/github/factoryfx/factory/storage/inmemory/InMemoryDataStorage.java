@@ -23,7 +23,7 @@ public class InMemoryDataStorage<R extends FactoryBase<?,?>,S> implements DataSt
         initialFactory.internal().addBackReferences();
         this.currentFactoryId=UUID.randomUUID().toString();
 
-        StoredDataMetadata<S> metadata = new StoredDataMetadata<>(currentFactoryId, "System", "initial", currentFactoryId,null,null);
+        StoredDataMetadata<S> metadata = new StoredDataMetadata<>(currentFactoryId, "System", "initial", currentFactoryId,null,null,null);
         storage.put(currentFactoryId,new DataAndStoredMetadata<>(initialFactory, metadata));
     }
 
@@ -51,7 +51,7 @@ public class InMemoryDataStorage<R extends FactoryBase<?,?>,S> implements DataSt
                 update.comment,
                 update.baseVersionId,
                 changeSummary,
-                update.root.internal().createDataStorageMetadataDictionaryFromRoot()
+                update.root.internal().createDataStorageMetadataDictionaryFromRoot(),currentFactoryId
         );
 
         storage.put(metadata.id, new DataAndStoredMetadata<>(update.root,metadata));

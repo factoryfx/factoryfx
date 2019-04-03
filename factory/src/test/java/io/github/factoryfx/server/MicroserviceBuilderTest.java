@@ -27,8 +27,7 @@ public class MicroserviceBuilderTest {
 
     @Test
     public void test_init_no_existing_factory()   {
-        FactoryTreeBuilder< ExampleLiveObjectA, ExampleFactoryA, Void> builder = new FactoryTreeBuilder<>(ExampleFactoryA.class);
-        builder.addFactory(ExampleFactoryA.class, Scope.SINGLETON, ctx-> new ExampleFactoryA());
+        FactoryTreeBuilder< ExampleLiveObjectA, ExampleFactoryA, Void> builder = new FactoryTreeBuilder<>(ExampleFactoryA.class, ctx-> new ExampleFactoryA());
 
         Assertions.assertEquals(folder.toFile().listFiles().length,0);
         builder.microservice().withFilesystemStorage(Paths.get(folder.toFile().toURI())).build().start();
@@ -37,8 +36,7 @@ public class MicroserviceBuilderTest {
 
     @Test
     public void test_custom_ObjectMapper() throws IOException {
-        FactoryTreeBuilder< ExampleLiveObjectA, ExampleFactoryA, Void> builder = new FactoryTreeBuilder<>(ExampleFactoryA.class);
-        builder.addFactory(ExampleFactoryA.class, Scope.SINGLETON, ctx -> {
+        FactoryTreeBuilder< ExampleLiveObjectA, ExampleFactoryA, Void> builder = new FactoryTreeBuilder<>(ExampleFactoryA.class, ctx -> {
             ExampleFactoryA factoryA = new ExampleFactoryA();
             factoryA.stringAttribute.set("12323");
             factoryA.referenceAttribute.set(new ExampleFactoryB());

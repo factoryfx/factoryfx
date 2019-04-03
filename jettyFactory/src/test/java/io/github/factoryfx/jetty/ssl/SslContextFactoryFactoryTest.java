@@ -56,7 +56,6 @@ public class SslContextFactoryFactoryTest {
     @Test
     public void test_without_ssl() {
         FactoryTreeBuilder<Server, TestJettyServerFactory, Void> builder = new FactoryTreeBuilder<>(TestJettyServerFactory.class);
-        builder.addFactory(TestJettyServerFactory.class, Scope.SINGLETON);
         builder.addFactory(JettyServerFactory.class, Scope.SINGLETON, ctx->{
             return new JettyServerBuilder<>(new JettyServerFactory<TestJettyServerFactory>())
                     .withHost("localhost").withPort(8009)
@@ -90,7 +89,6 @@ public class SslContextFactoryFactoryTest {
     @Test
     public void test_with_ssl() {
         FactoryTreeBuilder<Server, TestJettyServerFactory, Void> builder = new FactoryTreeBuilder<>(TestJettyServerFactory.class);
-        builder.addFactory(TestJettyServerFactory.class, Scope.SINGLETON);
         builder.addFactory(JettyServerFactory.class, Scope.SINGLETON, ctx->{
             SslContextFactoryFactoryCustom<TestJettyServerFactory> ssl = new SslContextFactoryFactoryCustom<>();
             ssl.keyStoreType.set(KeyStoreType.jks);

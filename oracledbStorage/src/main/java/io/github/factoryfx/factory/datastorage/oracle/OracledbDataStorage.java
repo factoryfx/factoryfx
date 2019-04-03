@@ -82,7 +82,7 @@ public class OracledbDataStorage<R extends FactoryBase<?,R>,S> implements DataSt
                 "initial factory",
                 UUID.randomUUID().toString(),
                 null,
-                initialData.internal().createDataStorageMetadataDictionaryFromRoot()
+                initialData.internal().createDataStorageMetadataDictionaryFromRoot(),null
         );
 
         update(initialData, metadata);
@@ -91,7 +91,7 @@ public class OracledbDataStorage<R extends FactoryBase<?,R>,S> implements DataSt
 
     @Override
     public void updateCurrentData(DataUpdate<R> update, S changeSummary) {
-        StoredDataMetadata<S> metadata =update.createUpdateStoredDataMetadata(changeSummary);
+        StoredDataMetadata<S> metadata =update.createUpdateStoredDataMetadata(changeSummary,getCurrentData().id);
         update(update.root, metadata);
     }
 

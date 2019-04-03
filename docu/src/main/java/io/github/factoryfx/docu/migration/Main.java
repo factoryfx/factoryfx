@@ -10,8 +10,7 @@ public class Main {
 
     public static void main(String[] args) throws IOException {
 
-        FactoryTreeBuilder<Root,RootFactory,Void> builder = new FactoryTreeBuilder<>(RootFactory.class);
-        builder.addFactory(RootFactory.class, Scope.SINGLETON, ctx->{
+        FactoryTreeBuilder<Root,RootFactory,Void> builder = new FactoryTreeBuilder<>(RootFactory.class, ctx->{
             RootFactory rootFactory = new RootFactory();
             rootFactory.text.set("HelloWorld");
             return rootFactory;

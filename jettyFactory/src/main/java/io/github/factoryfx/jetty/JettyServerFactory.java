@@ -13,12 +13,12 @@ import java.util.logging.Logger;
 /**
  *  usage example.
  *
- *  <pre>{@literal
+ *  <pre>{@code
  *       public class SimpleHttpServer extends SimpleFactoryBase<Server, Void, SimpleHttpServer> {
- *           @SuppressWarnings("unchecked")
- *           public final FactoryReferenceAttribute<Server, JettyServerFactory<SimpleHttpServer>> server = FactoryReferenceAttribute.create(new FactoryReferenceAttribute<>(JettyServerFactory.class));
  *
- *           @Override
+ *           public final FactoryReferenceAttribute<Server, JettyServerFactory<SimpleHttpServer>> server = new FactoryReferenceAttribute<>(JettyServerFactory.class);
+ *
+ *           {@literal @}Override
  *           public Server createImpl() {
  *               return server.instance();
  *           }

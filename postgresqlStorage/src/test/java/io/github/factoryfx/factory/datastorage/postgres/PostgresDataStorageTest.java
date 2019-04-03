@@ -251,14 +251,12 @@ public class PostgresDataStorageTest {
         DataUpdate<ExampleFactoryA> update = createUpdate();
         postgresFactoryStorage.updateCurrentData(update,null);
         Collection<StoredDataMetadata<Void>> list = postgresFactoryStorage.getHistoryDataList();
-        Assertions.assertEquals(1,list.size());
-        String user = list.iterator().next().user;
-        Assertions.assertEquals(user,update.user);
+        Assertions.assertEquals(2,list.size());//initial +1
 
         DataUpdate<ExampleFactoryA> update2 = createUpdate();
         postgresFactoryStorage.updateCurrentData(update2,null);
         list = postgresFactoryStorage.getHistoryDataList();
-        Assertions.assertEquals(2,list.size());
+        Assertions.assertEquals(3,list.size());
 
         Assertions.assertNotNull(postgresFactoryStorage.getHistoryData(new ArrayList<>(list).get(0).id));
 

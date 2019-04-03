@@ -16,8 +16,7 @@ public class DistributionClientDownloadServerTest {
     @SuppressWarnings("unchecked")
     public static void main(String[] args) {
 
-        FactoryTreeBuilder<Server,DownloadTestServerFactory,Void> builder = new FactoryTreeBuilder<>(DownloadTestServerFactory.class);
-        builder.addFactory(DownloadTestServerFactory.class, Scope.SINGLETON, ctx -> {
+        FactoryTreeBuilder<Server,DownloadTestServerFactory,Void> builder = new FactoryTreeBuilder<>(DownloadTestServerFactory.class, ctx -> {
             return new JettyServerBuilder<>(new DownloadTestServerFactory()).
                     withHost("localhost").withPort(43654).withResource(ctx.get(SpecificDistributionClientDownloadResourceFactory.class)).
                     build();

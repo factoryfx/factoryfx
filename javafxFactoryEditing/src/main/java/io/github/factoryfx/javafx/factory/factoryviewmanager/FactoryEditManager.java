@@ -96,7 +96,7 @@ public class FactoryEditManager<R extends FactoryBase<?,R>,S> {
 
     public void saveToFile(Path target) {
         try {
-            Files.writeString(target, migrationManager.writeRawFactoryDataAndMetadata(loadedRoot.root,loadedRoot.createUpdateStoredDataMetadata(null)));
+            Files.writeString(target, migrationManager.writeRawFactoryDataAndMetadata(loadedRoot.root,loadedRoot.createUpdateStoredDataMetadata(null,null)));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

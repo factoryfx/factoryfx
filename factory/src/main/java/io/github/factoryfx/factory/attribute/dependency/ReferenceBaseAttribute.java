@@ -176,7 +176,7 @@ public abstract class ReferenceBaseAttribute<R extends FactoryBase<?,R>, T exten
     protected Class<T> clazz;
     /**setup value selection and new value adding for user editing
      * @param clazz class
-     * @return self*/
+     * */
     @SuppressWarnings("unchecked")
     public void internal_setReferenceClass(Class<?> clazz){
         this.clazz=(Class<T>)clazz;//lazy creation for performance

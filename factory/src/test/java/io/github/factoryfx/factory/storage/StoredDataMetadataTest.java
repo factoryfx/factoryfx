@@ -18,7 +18,7 @@ public class StoredDataMetadataTest {
     @Test
     public void test_json(){
         LocalDateTime now = LocalDateTime.now();
-        StoredDataMetadata<SummaryDummy> value=new StoredDataMetadata<>(now, "", "", "", "sdfgstrg", new SummaryDummy(),null);
+        StoredDataMetadata<SummaryDummy> value=new StoredDataMetadata<>(now, "", "", "", "sdfgstrg", new SummaryDummy(),null,null);
         final StoredDataMetadata<SummaryDummy> copy = ObjectMapperBuilder.build().copy(value);
 
         System.out.println(

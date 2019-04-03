@@ -12,9 +12,8 @@ import io.github.factoryfx.server.user.persistent.PersistentUserManagementFactor
  * usage example: (in a JettyserverFactory)<br>
  * <pre>
  * {@code
- *    @SuppressWarnings("unchecked")
  *    public final FactoryReferenceAttribute<MicroserviceResource<Void, RootFactory,Void>, MicroserviceResourceFactory<Void,RootFactory,Void>> resource =
- *       FactoryReferenceAttribute.create(new FactoryReferenceAttribute<>(MicroserviceResourceFactory.class));
+ *       new FactoryReferenceAttribute<>(MicroserviceResourceFactory.class);
  * }
  * </pre>
  * (the messed up generics are caused by java limitations)

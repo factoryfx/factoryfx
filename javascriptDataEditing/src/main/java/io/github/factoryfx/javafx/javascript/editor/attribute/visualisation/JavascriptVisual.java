@@ -160,23 +160,23 @@ public class JavascriptVisual<A> {
 //            }
         }
 
-        private void updateProposals() {
-            if (currentProposals == null || currentProposals.isEmpty())
-                return;
-            List<Proposal> proposals = currentProposals.floorEntry(codeArea.getCaretPosition()).getValue();
-            String text = codeArea.getText();
-            int pos = codeArea.getCaretPosition();
-            int pos2 = pos;
-            while (pos > 0 && Character.isJavaIdentifierPart(text.charAt(pos-1))) {
-                --pos;
-            }
-//            String prefix = text.substring(pos,pos2);
-            while (pos2 < text.length() && Character.isJavaIdentifierPart(text.charAt(pos2))) {
-                ++pos2;
-            }
-            ArrayList<Proposal> copy = new ArrayList<>(proposals);
-            final int from = pos;
-            final int to = pos2;
+//        private void updateProposals() {
+//            if (currentProposals == null || currentProposals.isEmpty())
+//                return;
+//            List<Proposal> proposals = currentProposals.floorEntry(codeArea.getCaretPosition()).getValue();
+//            String text = codeArea.getText();
+//            int pos = codeArea.getCaretPosition();
+//            int pos2 = pos;
+//            while (pos > 0 && Character.isJavaIdentifierPart(text.charAt(pos-1))) {
+//                --pos;
+//            }
+////            String prefix = text.substring(pos,pos2);
+//            while (pos2 < text.length() && Character.isJavaIdentifierPart(text.charAt(pos2))) {
+//                ++pos2;
+//            }
+//            ArrayList<Proposal> copy = new ArrayList<>(proposals);
+//            final int from = pos;
+//            final int to = pos2;
 //            Consumer<String> applySuggestion = s -> {
 //                codeArea.replaceText(from, to, s);
 //            };
@@ -185,20 +185,7 @@ public class JavascriptVisual<A> {
 //                        popup.hide();
 //                    });
 //            popup.getSuggestions().clear();
-
-            //TODO list is just workaround, finde better way with closure compiler
-            List<String> garbageSuggestions = new ArrayList<>();
-            garbageSuggestions.add("hasOwnProperty()");
-            garbageSuggestions.add("isPrototypeOf()");
-            garbageSuggestions.add("propertyIsEnumerable()");
-            garbageSuggestions.add("toJSON()");
-            garbageSuggestions.add("toLocaleString()");
-            garbageSuggestions.add("toSource()");
-            garbageSuggestions.add("toString()");
-            garbageSuggestions.add("unwatch()");
-            garbageSuggestions.add("valueOf()");
-            garbageSuggestions.add("watch()");
-            garbageSuggestions.add("constructor");
+//
 //            List<String> suggestions = copy.stream().map(s -> s.insertString).filter(s -> !garbageSuggestions.contains(s)).collect(Collectors.toList());
 //
 //            popup.getSuggestions().addAll(suggestions);
@@ -208,7 +195,7 @@ public class JavascriptVisual<A> {
 //                    popup.selectItem(suggestion);
 //                }
 //            }
-        }
+//        }
 
         private void updateAssistants(Javascript<?> javascript) {
             if (javascript == null)

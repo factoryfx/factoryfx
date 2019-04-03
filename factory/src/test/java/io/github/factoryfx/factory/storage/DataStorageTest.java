@@ -22,30 +22,27 @@ public class DataStorageTest {
 
         final InMemoryDataStorage<ExampleDataA,Void> factoryStorage = new InMemoryDataStorage<>(exampleFactoryA);
 
-        Thread.sleep(2);//avoid same timestamp
         {
             DataAndId<ExampleDataA> currentFactory = factoryStorage.getCurrentData();
             ExampleDataA preparedNewFactory = currentFactory.root.utility().copy();
             preparedNewFactory.stringAttribute.set("2");
-            factoryStorage.updateCurrentData(new DataUpdate<>(preparedNewFactory, "user","comment",currentFactory.id),null);
+            factoryStorage.updateCurrentData(new DataUpdate<>(preparedNewFactory, "user","xa",currentFactory.id),null);
         }
-        Thread.sleep(2);//avoid same timestamp
 
         {
             DataAndId<ExampleDataA> currentFactory = factoryStorage.getCurrentData();
             ExampleDataA preparedNewFactory = currentFactory.root.utility().copy();
             preparedNewFactory.stringAttribute.set("3");
-            factoryStorage.updateCurrentData(new DataUpdate<>(preparedNewFactory, "user","comment",currentFactory.id),null);
+            factoryStorage.updateCurrentData(new DataUpdate<>(preparedNewFactory, "user","xb",currentFactory.id),null);
         }
-        Thread.sleep(2);//avoid same timestamp
 
-        List<StoredDataMetadata> historyFactoryList = factoryStorage.getHistoryDataList().stream().sorted(Comparator.comparing(h -> h.creationTime)).collect(Collectors.toList());
+        List<StoredDataMetadata> historyFactoryList = factoryStorage.getHistoryDataList().stream().sorted(Comparator.comparing(h -> h.comment)).collect(Collectors.toList());
         Assertions.assertEquals("1",factoryStorage.getHistoryData(historyFactoryList.get(0).id).stringAttribute.get());
         Assertions.assertEquals("2",factoryStorage.getHistoryData(historyFactoryList.get(1).id).stringAttribute.get());
         Assertions.assertEquals("3",factoryStorage.getHistoryData(historyFactoryList.get(2).id).stringAttribute.get());
-        Assertions.assertEquals("2",factoryStorage.getPreviousHistoryData(historyFactoryList.get(2).id).stringAttribute.get());
-        Assertions.assertEquals("1",factoryStorage.getPreviousHistoryData(historyFactoryList.get(1).id).stringAttribute.get());
-        Assertions.assertEquals(null,factoryStorage.getPreviousHistoryData(historyFactoryList.get(0).id));
+        Assertions.assertEquals("2",factoryStorage.getHistoryData(historyFactoryList.get(2).mergerVersionId).stringAttribute.get());
+        Assertions.assertEquals("1",factoryStorage.getHistoryData(historyFactoryList.get(1).mergerVersionId).stringAttribute.get());
+        Assertions.assertEquals(null,historyFactoryList.get(0).mergerVersionId);
     }
 
 }

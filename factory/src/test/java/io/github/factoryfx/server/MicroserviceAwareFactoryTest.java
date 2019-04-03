@@ -15,8 +15,7 @@ public class MicroserviceAwareFactoryTest {
         final MicroserviceAwareFactoryTestclazz value = new MicroserviceAwareFactoryTestclazz();
         rootTestclazz.ref.set(value);
 
-        FactoryTreeBuilder<String,RootTestClazz,Void> builder = new FactoryTreeBuilder<>(RootTestClazz.class);
-        builder.addFactory(RootTestClazz.class, Scope.SINGLETON, context -> {
+        FactoryTreeBuilder<String,RootTestClazz,Void> builder = new FactoryTreeBuilder<>(RootTestClazz.class, context -> {
             return rootTestclazz;
         });
         Microservice<String,RootTestClazz,Void> microservice = builder.microservice().withInMemoryStorage().build();

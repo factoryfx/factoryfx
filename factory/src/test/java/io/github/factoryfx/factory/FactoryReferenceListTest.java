@@ -56,8 +56,7 @@ public class FactoryReferenceListTest {
     public void referenceListTest() {
         ObjectFactory first = new ObjectFactory();
 
-        FactoryTreeBuilder< String,RootFactory, Void> builder = new FactoryTreeBuilder<>(RootFactory.class);
-        builder.addFactory(RootFactory.class, Scope.SINGLETON, ctx->{
+        FactoryTreeBuilder< String,RootFactory, Void> builder = new FactoryTreeBuilder<>(RootFactory.class, ctx->{
             RootFactory rootFactory = new RootFactory();
             rootFactory.objects.add(first);
             return rootFactory;

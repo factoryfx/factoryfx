@@ -56,6 +56,7 @@ subprojects {
     javadoc {
         failOnError = false
         doFirst {
+            exclude "**/module-info.java"
             options.addStringOption('-module-path', classpath.asPath)
         }
     }
@@ -70,7 +71,7 @@ subprojects {
     }
 
     group = 'io.github.factoryfx'
-    version = '2.0.0-ea9'
+    version = '2.0.0-ea10'
 
     if (project.hasProperty('secretKeyRingFileSourceURL')) {
         signing {
@@ -550,4 +551,13 @@ project(':soapFactory') {
 
 
     }
+    
+    project(':starter') {
+
+        dependencies {
+            compile project(":factory")
+            compile group: 'com.squareup', name: 'javapoet', version: '1.11.1'
+        }
+    }
+    
 }

@@ -46,7 +46,6 @@ public class RichClientBuilder {
         FactoryTreeBuilder<Stage,RichClientRoot,Void> factoryBuilder = new FactoryTreeBuilder<>(RichClientRoot.class);
 
         factoryBuilder.addFactory(LongRunningActionExecutorFactory.class, Scope.SINGLETON);
-        factoryBuilder.addFactory(RichClientRoot.class, Scope.SINGLETON);
         factoryBuilder.addFactory(FactoryEditManagerFactory.class, Scope.SINGLETON);
         factoryBuilder.addFactory(AttributeEditorBuilderFactory.class, Scope.SINGLETON, ctx -> new AttributeEditorBuilderFactoryBuilder().build(ctx.get(UniformDesignFactory.class)));
         factoryBuilder.addFactory(DataEditorFactory.class, Scope.PROTOTYPE);

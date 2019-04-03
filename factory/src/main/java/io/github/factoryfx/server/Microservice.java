@@ -28,9 +28,10 @@ public class Microservice<L,R extends FactoryBase<L,R>,S> {
     }
 
     public MergeDiffInfo<R> getDiffToPreviousVersion(StoredDataMetadata<S> storedDataMetadata) {
-        R historyFactory = getHistoryFactory(storedDataMetadata.id);
-        R historyFactoryPrevious = getPreviousHistoryFactory(storedDataMetadata.id);
-        return new DataMerger<>(historyFactoryPrevious,historyFactoryPrevious.utility().copy(),historyFactory).createMergeResult((permission)->true).executeMerge();
+        R historyCurrent = getHistoryFactory(storedDataMetadata.mergerVersionId);
+        R historyCommon = getHistoryFactory(storedDataMetadata.baseVersionId);
+        R historyUpdate = getHistoryFactory(storedDataMetadata.id);
+        return new DataMerger<>(historyCurrent,historyCommon,historyUpdate).createMergeResult((permission)->true).executeMerge();
     }
 
     public FactoryUpdateLog<R> revertTo(StoredDataMetadata<S> storedDataMetadata, String user) {
@@ -99,10 +100,6 @@ public class Microservice<L,R extends FactoryBase<L,R>,S> {
 
     public R getHistoryFactory(String id) {
         return dataStorage.getHistoryData(id);
-    }
-
-    private R getPreviousHistoryFactory(String id) {
-        return dataStorage.getPreviousHistoryData(id);
     }
 
     public Collection<StoredDataMetadata<S>> getHistoryFactoryList() {

@@ -49,7 +49,7 @@ public class TsGenerator<R extends FactoryBase<?,R>> {
         }
     }
 
-    @SuppressWarnings("uncheked")
+    @SuppressWarnings("unchecked")
     public void generate(){
         targetDir.toFile().mkdirs();
 

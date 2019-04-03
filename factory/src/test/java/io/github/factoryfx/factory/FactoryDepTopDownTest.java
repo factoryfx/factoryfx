@@ -59,8 +59,7 @@ public class FactoryDepTopDownTest {
     @Test
     public void topDownTest(){
 
-        FactoryTreeBuilder< String,RootFactory, Void> builder = new FactoryTreeBuilder<>(RootFactory.class);
-        builder.addFactory(RootFactory.class, Scope.SINGLETON, ctx->{
+        FactoryTreeBuilder< String,RootFactory, Void> builder = new FactoryTreeBuilder<>(RootFactory.class, ctx->{
             final RootFactory rootFactory = new RootFactory();
             ObjectFactory first = new ObjectFactory();
             ObjectFactory second = new ObjectFactory();

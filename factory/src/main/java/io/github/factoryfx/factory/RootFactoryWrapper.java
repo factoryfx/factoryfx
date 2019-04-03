@@ -20,24 +20,24 @@ public class RootFactoryWrapper<R extends FactoryBase<?,R>> {
         updateCachedChildren();
     }
 
-    private List<FactoryBase<?,?>> factoriesInCreateAndStartOrder;
-    private List<FactoryBase<?,?>> factoriesInDestroyOrder;
+    private List<FactoryBase<?,R>> factoriesInCreateAndStartOrder;
+    private List<FactoryBase<?,R>> factoriesInDestroyOrder;
     public void updateCachedChildren(){
 
         factoriesInCreateAndStartOrder = rootFactory.internal().getFactoriesInCreateAndStartOrder();
         factoriesInDestroyOrder = rootFactory.internal().getFactoriesInDestroyOrder();
     }
 
-    public List<FactoryBase<?,?>> collectChildFactories(){
+    public List<FactoryBase<?,R>> collectChildFactories(){
         return factoriesInCreateAndStartOrder;
     }
 
-    public List<FactoryBase<?,?>> getFactoriesInCreateAndStartOrder(){
+    public List<FactoryBase<?,R>> getFactoriesInCreateAndStartOrder(){
         return factoriesInCreateAndStartOrder;
     }
 
 
-    public List<FactoryBase<?,?>> getFactoriesInDestroyOrder(){
+    public List<FactoryBase<?,R>> getFactoriesInDestroyOrder(){
         return factoriesInDestroyOrder;
     }
 

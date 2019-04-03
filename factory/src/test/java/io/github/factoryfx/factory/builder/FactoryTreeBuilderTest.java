@@ -1,5 +1,6 @@
 package io.github.factoryfx.factory.builder;
 
+import io.github.factoryfx.factory.BranchSelector;
 import io.github.factoryfx.factory.attribute.types.StringAttribute;
 import io.github.factoryfx.factory.jackson.ObjectMapperBuilder;
 import io.github.factoryfx.factory.storage.migration.metadata.DataStorageMetadataDictionary;
@@ -16,13 +17,16 @@ import io.github.factoryfx.factory.testfactories.poly.Printer;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import java.util.Set;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 public class FactoryTreeBuilderTest {
 
     @Test
     public void test_simple(){
-        FactoryTreeBuilder<ExampleLiveObjectA,ExampleFactoryA,Void> factoryTreeBuilder = new FactoryTreeBuilder<>(ExampleFactoryA.class);
-
-        factoryTreeBuilder.addFactory(ExampleFactoryA.class, Scope.PROTOTYPE, context -> {
+        FactoryTreeBuilder<ExampleLiveObjectA,ExampleFactoryA,Void> factoryTreeBuilder = new FactoryTreeBuilder<>(ExampleFactoryA.class, context -> {
             ExampleFactoryA factory = new ExampleFactoryA();
             factory.referenceListAttribute.set(context.getList(io.github.factoryfx.factory.testfactories.ExampleFactoryB.class));
             factory.referenceAttribute.set(context.get(io.github.factoryfx.factory.testfactories.ExampleFactoryB.class));
@@ -50,8 +54,6 @@ public class FactoryTreeBuilderTest {
     @Test
     public void test_simple_defaultcreator(){
         FactoryTreeBuilder<ExampleLiveObjectA,ExampleFactoryA,Void> factoryTreeBuilder = new FactoryTreeBuilder<>(ExampleFactoryA.class);
-
-        factoryTreeBuilder.addFactory(ExampleFactoryA.class, Scope.PROTOTYPE);
         factoryTreeBuilder.addFactory(io.github.factoryfx.factory.testfactories.ExampleFactoryB.class, Scope.PROTOTYPE, context -> {
             io.github.factoryfx.factory.testfactories.ExampleFactoryB factory = new io.github.factoryfx.factory.testfactories.ExampleFactoryB();
             factory.referenceAttributeC.set(context.get(io.github.factoryfx.factory.testfactories.ExampleFactoryC.class));
@@ -69,11 +71,11 @@ public class FactoryTreeBuilderTest {
         System.out.println(ObjectMapperBuilder.build().writeValueAsString(root));
     }
 
-    public static class FactoryTestA extends SimpleFactoryBase<Void,FactoryTestA> {
+    public static class TreeFactoryTestA extends SimpleFactoryBase<Void, TreeFactoryTestA> {
 
-        public final FactoryReferenceAttribute<FactoryTestA,ExampleLiveObjectB,ExampleFactoryB> referenceAttribute1 = new FactoryReferenceAttribute<FactoryTestA,ExampleLiveObjectB,ExampleFactoryB>().labelText("ExampleA2");
-        public final FactoryReferenceAttribute<FactoryTestA,ExampleLiveObjectB,ExampleFactoryB> referenceAttribute2 = new FactoryReferenceAttribute<FactoryTestA,ExampleLiveObjectB,ExampleFactoryB>().labelText("ExampleA2");
-        public final FactoryReferenceListAttribute<FactoryTestA,ExampleLiveObjectB,ExampleFactoryB> referenceList = new FactoryReferenceListAttribute<FactoryTestA,ExampleLiveObjectB,ExampleFactoryB>().labelText("ExampleA3");
+        public final FactoryReferenceAttribute<TreeFactoryTestA,ExampleLiveObjectB, TreeExampleFactoryB> referenceAttribute1 = new FactoryReferenceAttribute<TreeFactoryTestA,ExampleLiveObjectB, TreeExampleFactoryB>().labelText("ExampleA2");
+        public final FactoryReferenceAttribute<TreeFactoryTestA,ExampleLiveObjectB, TreeExampleFactoryB> referenceAttribute2 = new FactoryReferenceAttribute<TreeFactoryTestA,ExampleLiveObjectB, TreeExampleFactoryB>().labelText("ExampleA2");
+        public final FactoryReferenceListAttribute<TreeFactoryTestA,ExampleLiveObjectB, TreeExampleFactoryB> referenceList = new FactoryReferenceListAttribute<TreeFactoryTestA,ExampleLiveObjectB, TreeExampleFactoryB>().labelText("ExampleA3");
 
 
         @Override
@@ -82,9 +84,9 @@ public class FactoryTreeBuilderTest {
         }
     }
 
-    public static class ExampleFactoryC extends SimpleFactoryBase<ExampleLiveObjectC,FactoryTestA> {
+    public static class TreeExampleFactoryC extends SimpleFactoryBase<ExampleLiveObjectC, TreeFactoryTestA> {
         public final StringAttribute stringAttribute= new StringAttribute().labelText("ExampleB1");
-        public final FactoryReferenceAttribute<FactoryTestA,ExampleLiveObjectB, ExampleFactoryB> referenceAttribute = new FactoryReferenceAttribute<>();
+        public final FactoryReferenceAttribute<TreeFactoryTestA,ExampleLiveObjectB, TreeExampleFactoryB> referenceAttribute = new FactoryReferenceAttribute<>();
 
         @Override
         public ExampleLiveObjectC createImpl() {
@@ -93,10 +95,10 @@ public class FactoryTreeBuilderTest {
 
     }
 
-    public static class ExampleFactoryB extends SimpleFactoryBase<ExampleLiveObjectB,FactoryTestA> {
+    public static class TreeExampleFactoryB extends SimpleFactoryBase<ExampleLiveObjectB, TreeFactoryTestA> {
         public final StringAttribute stringAttribute= new StringAttribute().labelText("ExampleB1");
-        public final FactoryReferenceAttribute<FactoryTestA,Void,FactoryTestA> referenceAttribute = new FactoryReferenceAttribute<>();
-        public final FactoryReferenceAttribute<FactoryTestA,ExampleLiveObjectC,ExampleFactoryC> referenceAttributeC = new FactoryReferenceAttribute<>();
+        public final FactoryReferenceAttribute<TreeFactoryTestA,Void, TreeFactoryTestA> referenceAttribute = new FactoryReferenceAttribute<>();
+        public final FactoryReferenceAttribute<TreeFactoryTestA,ExampleLiveObjectC, TreeExampleFactoryC> referenceAttributeC = new FactoryReferenceAttribute<>();
 
         @Override
         public ExampleLiveObjectB createImpl() {
@@ -108,40 +110,36 @@ public class FactoryTreeBuilderTest {
 
     @Test
     public void test_singelton(){
-        FactoryTreeBuilder<Void,FactoryTestA,Void> factoryTreeBuilder = new FactoryTreeBuilder<>(FactoryTestA.class);
-
-        factoryTreeBuilder.addFactory(FactoryTestA.class, Scope.PROTOTYPE, context -> {
-            FactoryTestA factory = new FactoryTestA();
-            factory.referenceAttribute1.set(context.get(ExampleFactoryB.class));
-            factory.referenceAttribute2.set(context.get(ExampleFactoryB.class));
+        FactoryTreeBuilder<Void, TreeFactoryTestA,Void> factoryTreeBuilder = new FactoryTreeBuilder<>(TreeFactoryTestA.class, context -> {
+            TreeFactoryTestA factory = new TreeFactoryTestA();
+            factory.referenceAttribute1.set(context.get(TreeExampleFactoryB.class));
+            factory.referenceAttribute2.set(context.get(TreeExampleFactoryB.class));
             return factory;
         });
-        factoryTreeBuilder.addFactory(ExampleFactoryB.class, Scope.SINGLETON, context -> {
-            ExampleFactoryB factory = new ExampleFactoryB();
+        factoryTreeBuilder.addFactory(TreeExampleFactoryB.class, Scope.SINGLETON, context -> {
+            TreeExampleFactoryB factory = new TreeExampleFactoryB();
 //            factory.referenceAttributeC.set(context.get(FactoryTestA.class));
             return factory;
         });
 
-        FactoryTestA root = factoryTreeBuilder.buildTreeUnvalidated();
-        Assertions.assertEquals(root.referenceAttribute1.get(),root.referenceAttribute2.get());
+        TreeFactoryTestA root = factoryTreeBuilder.buildTreeUnvalidated();
+        assertEquals(root.referenceAttribute1.get(),root.referenceAttribute2.get());
     }
 
     @Test
     public void test_prototype(){
-        FactoryTreeBuilder<Void,FactoryTestA,Void> factoryTreeBuilder = new FactoryTreeBuilder<>(FactoryTestA.class);
-
-        factoryTreeBuilder.addFactory(FactoryTestA.class, Scope.PROTOTYPE, context -> {
-            FactoryTestA factory = new FactoryTestA();
-            factory.referenceAttribute1.set(context.get(ExampleFactoryB.class));
-            factory.referenceAttribute2.set(context.get(ExampleFactoryB.class));
+        FactoryTreeBuilder<Void, TreeFactoryTestA,Void> factoryTreeBuilder = new FactoryTreeBuilder<>(TreeFactoryTestA.class, context -> {
+            TreeFactoryTestA factory = new TreeFactoryTestA();
+            factory.referenceAttribute1.set(context.get(TreeExampleFactoryB.class));
+            factory.referenceAttribute2.set(context.get(TreeExampleFactoryB.class));
             return factory;
         });
-        factoryTreeBuilder.addFactory(ExampleFactoryB.class, Scope.PROTOTYPE, context -> {
-            ExampleFactoryB factory = new ExampleFactoryB();
+        factoryTreeBuilder.addFactory(TreeExampleFactoryB.class, Scope.PROTOTYPE, context -> {
+            TreeExampleFactoryB factory = new TreeExampleFactoryB();
             return factory;
         });
 
-        FactoryTestA root = factoryTreeBuilder.buildTreeUnvalidated();
+        TreeFactoryTestA root = factoryTreeBuilder.buildTreeUnvalidated();
         Assertions.assertNotEquals(root.referenceAttribute1.get(),root.referenceAttribute2.get());
 
     }
@@ -163,12 +161,10 @@ public class FactoryTreeBuilderTest {
     public void test_polymorphic(){
         FactoryTreeBuilder<Void,ExamplePolymorphic,Void> factoryTreeBuilder = new FactoryTreeBuilder<>(ExamplePolymorphic.class);
 
-        factoryTreeBuilder.addFactory(ExamplePolymorphic.class, Scope.SINGLETON);
-
         factoryTreeBuilder.addFactory(ErrorPrinterFactory2.class, Scope.SINGLETON);
 
         ExamplePolymorphic root = factoryTreeBuilder.buildTreeUnvalidated();
-        Assertions.assertNotNull(root.attribute.get());
+        assertNotNull(root.attribute.get());
 
     }
 
@@ -176,22 +172,20 @@ public class FactoryTreeBuilderTest {
     @Test
     public void test_simple_validation(){
         Assertions.assertThrows(IllegalStateException.class, () -> {
-            FactoryTreeBuilder< Void, FactoryTestA, Void> factoryTreeBuilder = new FactoryTreeBuilder<>(FactoryTestA.class);
-
-            factoryTreeBuilder.addFactory(FactoryTestA.class, Scope.PROTOTYPE);
-            factoryTreeBuilder.addFactory(ExampleFactoryB.class, Scope.PROTOTYPE, context -> {
-                ExampleFactoryB factory = new ExampleFactoryB();
-                factory.referenceAttributeC.set(context.get(ExampleFactoryC.class));
-                factory.referenceAttribute.set(new FactoryTestA());
+            FactoryTreeBuilder< Void, TreeFactoryTestA, Void> factoryTreeBuilder = new FactoryTreeBuilder<>(TreeFactoryTestA.class);
+            factoryTreeBuilder.addFactory(TreeExampleFactoryB.class, Scope.PROTOTYPE, context -> {
+                TreeExampleFactoryB factory = new TreeExampleFactoryB();
+                factory.referenceAttributeC.set(context.get(TreeExampleFactoryC.class));
+                factory.referenceAttribute.set(new TreeFactoryTestA());
                 return factory;
             });
-            factoryTreeBuilder.addFactory(ExampleFactoryC.class, Scope.PROTOTYPE, context -> {
-                ExampleFactoryC factory = new ExampleFactoryC();
-                factory.referenceAttribute.set(new ExampleFactoryB());
+            factoryTreeBuilder.addFactory(TreeExampleFactoryC.class, Scope.PROTOTYPE, context -> {
+                TreeExampleFactoryC factory = new TreeExampleFactoryC();
+                factory.referenceAttribute.set(new TreeExampleFactoryB());
                 return factory;
             });
 
-            FactoryTestA root = factoryTreeBuilder.buildTree();
+            TreeFactoryTestA root = factoryTreeBuilder.buildTree();
 
             System.out.println(ObjectMapperBuilder.build().writeValueAsString(root));
         });
@@ -199,19 +193,18 @@ public class FactoryTreeBuilderTest {
 
     @Test
     public void test_root_creator_missing(){
-        Assertions.assertThrows(IllegalStateException.class, () -> {
-            FactoryTreeBuilder< Void, FactoryTestA, Void> factoryTreeBuilder = new FactoryTreeBuilder<>(FactoryTestA.class);
+        Assertions.assertThrows(IllegalArgumentException.class, () -> {
+            FactoryTreeBuilder< Void, TreeFactoryTestA, Void> factoryTreeBuilder = new FactoryTreeBuilder<>(null);
 
-            //intentional commented out(test docu):  factoryTreeBuilder.addFactory(FactoryTestA.class, Scope.PROTOTYPE);
-            factoryTreeBuilder.addFactory(ExampleFactoryB.class, Scope.PROTOTYPE, context -> {
-                ExampleFactoryB factory = new ExampleFactoryB();
-                factory.referenceAttributeC.set(context.get(ExampleFactoryC.class));
-                factory.referenceAttribute.set(new FactoryTestA());
+            factoryTreeBuilder.addFactory(TreeExampleFactoryB.class, Scope.PROTOTYPE, context -> {
+                TreeExampleFactoryB factory = new TreeExampleFactoryB();
+                factory.referenceAttributeC.set(context.get(TreeExampleFactoryC.class));
+                factory.referenceAttribute.set(new TreeFactoryTestA());
                 return factory;
             });
-            factoryTreeBuilder.addFactory(ExampleFactoryC.class, Scope.PROTOTYPE, context -> {
-                ExampleFactoryC factory = new ExampleFactoryC();
-                factory.referenceAttribute.set(new ExampleFactoryB());
+            factoryTreeBuilder.addFactory(TreeExampleFactoryC.class, Scope.PROTOTYPE, context -> {
+                TreeExampleFactoryC factory = new TreeExampleFactoryC();
+                factory.referenceAttribute.set(new TreeExampleFactoryB());
                 return factory;
             });
 
@@ -228,85 +221,82 @@ public class FactoryTreeBuilderTest {
 
     @Test
     public void test_singleton_named(){
-        FactoryTreeBuilder<Void,FactoryTestA,Void> factoryTreeBuilder = new FactoryTreeBuilder<>(FactoryTestA.class);
-        factoryTreeBuilder.addFactory(FactoryTestA.class, Scope.PROTOTYPE, context -> {
-            FactoryTestA factory = new FactoryTestA();
-            factory.referenceList.add(context.get(ExampleFactoryB.class,"111"));
-            factory.referenceList.add(context.get(ExampleFactoryB.class,"222"));
+        FactoryTreeBuilder<Void, TreeFactoryTestA,Void> factoryTreeBuilder = new FactoryTreeBuilder<>(TreeFactoryTestA.class, context -> {
+            TreeFactoryTestA factory = new TreeFactoryTestA();
+            factory.referenceList.add(context.get(TreeExampleFactoryB.class,"111"));
+            factory.referenceList.add(context.get(TreeExampleFactoryB.class,"222"));
             return factory;
         });
-        factoryTreeBuilder.addFactory(ExampleFactoryB.class,"111", Scope.SINGLETON, context -> {
-            ExampleFactoryB factory = new ExampleFactoryB();
+        factoryTreeBuilder.addFactory(TreeExampleFactoryB.class,"111", Scope.SINGLETON, context -> {
+            TreeExampleFactoryB factory = new TreeExampleFactoryB();
             factory.referenceAttributeC.set(null);
-            factory.referenceAttribute.set(new FactoryTestA());
+            factory.referenceAttribute.set(new TreeFactoryTestA());
             return factory;
         });
-        factoryTreeBuilder.addFactory(ExampleFactoryB.class,"222", Scope.SINGLETON, context -> {
-            ExampleFactoryB factory = new ExampleFactoryB();
+        factoryTreeBuilder.addFactory(TreeExampleFactoryB.class,"222", Scope.SINGLETON, context -> {
+            TreeExampleFactoryB factory = new TreeExampleFactoryB();
             factory.referenceAttributeC.set(null);
-            factory.referenceAttribute.set(new FactoryTestA());
+            factory.referenceAttribute.set(new TreeFactoryTestA());
             return factory;
         });
-        FactoryTestA factoryTestA = factoryTreeBuilder.buildTreeUnvalidated();
+        TreeFactoryTestA factoryTestA = factoryTreeBuilder.buildTreeUnvalidated();
 
         Assertions.assertTrue(factoryTestA.referenceList.get(0)!=factoryTestA.referenceList.get(1));
     }
 
     @Test
     public void test_singleton_named_getList(){
-        FactoryTreeBuilder<Void,FactoryTestA,Void> factoryTreeBuilder = new FactoryTreeBuilder<>(FactoryTestA.class);
-        factoryTreeBuilder.addFactory(FactoryTestA.class, Scope.PROTOTYPE, context -> {
-            FactoryTestA factory = new FactoryTestA();
-            factory.referenceList.addAll(context.getList(ExampleFactoryB.class));
+        FactoryTreeBuilder<Void, TreeFactoryTestA,Void> factoryTreeBuilder = new FactoryTreeBuilder<>(TreeFactoryTestA.class, context -> {
+            TreeFactoryTestA factory = new TreeFactoryTestA();
+            factory.referenceList.addAll(context.getList(TreeExampleFactoryB.class));
             return factory;
         });
-        factoryTreeBuilder.addFactory(ExampleFactoryB.class,"111", Scope.SINGLETON, context -> {
-            ExampleFactoryB factory = new ExampleFactoryB();
+        factoryTreeBuilder.addFactory(TreeExampleFactoryB.class,"111", Scope.SINGLETON, context -> {
+            TreeExampleFactoryB factory = new TreeExampleFactoryB();
             factory.referenceAttributeC.set(null);
-            factory.referenceAttribute.set(new FactoryTestA());
+            factory.referenceAttribute.set(new TreeFactoryTestA());
             return factory;
         });
-        factoryTreeBuilder.addFactory(ExampleFactoryB.class,"222", Scope.SINGLETON, context -> {
-            ExampleFactoryB factory = new ExampleFactoryB();
+        factoryTreeBuilder.addFactory(TreeExampleFactoryB.class,"222", Scope.SINGLETON, context -> {
+            TreeExampleFactoryB factory = new TreeExampleFactoryB();
             factory.referenceAttributeC.set(null);
-            factory.referenceAttribute.set(new FactoryTestA());
+            factory.referenceAttribute.set(new TreeFactoryTestA());
             return factory;
         });
-        FactoryTestA factoryTestA = factoryTreeBuilder.buildTreeUnvalidated();
+        TreeFactoryTestA factoryTestA = factoryTreeBuilder.buildTreeUnvalidated();
 
         Assertions.assertTrue(factoryTestA.referenceList.get(0)!=factoryTestA.referenceList.get(1));
     }
 
     @Test
     public void test_mutiple_named_getList(){
-        FactoryTreeBuilder<Void,FactoryTestA,Void> factoryTreeBuilder = createBuilder();
-        FactoryTestA factoryTestA = factoryTreeBuilder.buildTreeUnvalidated();
+        FactoryTreeBuilder<Void, TreeFactoryTestA,Void> factoryTreeBuilder = createBuilder();
+        TreeFactoryTestA factoryTestA = factoryTreeBuilder.buildTreeUnvalidated();
 
         Assertions.assertTrue(factoryTestA.referenceList.get(0)==factoryTestA.referenceList.get(2));
         Assertions.assertTrue(factoryTestA.referenceList.get(1)==factoryTestA.referenceList.get(3));
 
-        FactoryTreeBuilder<Void,FactoryTestA,Void> factoryTreeBuilder2 = createBuilder();
+        FactoryTreeBuilder<Void, TreeFactoryTestA,Void> factoryTreeBuilder2 = createBuilder();
         factoryTreeBuilder2.fillFromExistingFactoryTree(factoryTestA);
-        FactoryTestA factoryTestA2 = factoryTreeBuilder.buildTreeUnvalidated();
+        TreeFactoryTestA factoryTestA2 = factoryTreeBuilder.buildTreeUnvalidated();
 
         Assertions.assertTrue(factoryTestA2.referenceList.get(0)==factoryTestA2.referenceList.get(2));
         Assertions.assertTrue(factoryTestA2.referenceList.get(1)==factoryTestA2.referenceList.get(3));
     }
 
-    private FactoryTreeBuilder<Void,FactoryTestA,Void> createBuilder() {
-        FactoryTreeBuilder<Void,FactoryTestA,Void> factoryTreeBuilder = new FactoryTreeBuilder<>(FactoryTestA.class);
-        factoryTreeBuilder.addFactory(FactoryTestA.class, Scope.PROTOTYPE, context -> {
-            FactoryTestA factory = new FactoryTestA();
-            factory.referenceList.addAll(context.getList(ExampleFactoryB.class));
-            factory.referenceList.addAll(context.getList(ExampleFactoryB.class));
+    private FactoryTreeBuilder<Void, TreeFactoryTestA,Void> createBuilder() {
+        FactoryTreeBuilder<Void, TreeFactoryTestA,Void> factoryTreeBuilder = new FactoryTreeBuilder<>(TreeFactoryTestA.class, context -> {
+            TreeFactoryTestA factory = new TreeFactoryTestA();
+            factory.referenceList.addAll(context.getList(TreeExampleFactoryB.class));
+            factory.referenceList.addAll(context.getList(TreeExampleFactoryB.class));
             return factory;
         });
-        factoryTreeBuilder.addFactory(ExampleFactoryB.class,"111", Scope.SINGLETON, context -> {
-            ExampleFactoryB factory = new ExampleFactoryB();
+        factoryTreeBuilder.addFactory(TreeExampleFactoryB.class,"111", Scope.SINGLETON, context -> {
+            TreeExampleFactoryB factory = new TreeExampleFactoryB();
             return factory;
         });
-        factoryTreeBuilder.addFactory(ExampleFactoryB.class,"222", Scope.SINGLETON, context -> {
-            ExampleFactoryB factory = new ExampleFactoryB();
+        factoryTreeBuilder.addFactory(TreeExampleFactoryB.class,"222", Scope.SINGLETON, context -> {
+            TreeExampleFactoryB factory = new TreeExampleFactoryB();
             return factory;
         });
         return factoryTreeBuilder;
@@ -317,8 +307,7 @@ public class FactoryTreeBuilderTest {
     public void test_incomplete_builder_class() {
         Assertions.assertThrows(IllegalStateException.class, () -> {
 
-            FactoryTreeBuilder< ExampleLiveObjectA, ExampleFactoryA, Void> builder = new FactoryTreeBuilder<>(ExampleFactoryA.class);
-            builder.addFactory(ExampleFactoryA.class, Scope.SINGLETON, context -> {
+            FactoryTreeBuilder< ExampleLiveObjectA, ExampleFactoryA, Void> builder = new FactoryTreeBuilder<>(ExampleFactoryA.class, context -> {
                 ExampleFactoryA factoryBases = new ExampleFactoryA();
                 factoryBases.referenceAttribute.set(context.get(io.github.factoryfx.factory.testfactories.ExampleFactoryB.class));
                 factoryBases.referenceAttribute.set(null);
@@ -340,8 +329,7 @@ public class FactoryTreeBuilderTest {
     @Test
     public void test_incomplete_builder_classAndName() {
         Assertions.assertThrows(IllegalStateException.class, () -> {
-            FactoryTreeBuilder< ExampleLiveObjectA, ExampleFactoryA, Void> builder = new FactoryTreeBuilder<>(ExampleFactoryA.class);
-            builder.addFactory(ExampleFactoryA.class, Scope.SINGLETON, context -> {
+            FactoryTreeBuilder< ExampleLiveObjectA, ExampleFactoryA, Void> builder = new FactoryTreeBuilder<>(ExampleFactoryA.class, context -> {
                 ExampleFactoryA factoryBases = new ExampleFactoryA();
                 factoryBases.referenceAttribute.set(context.get(io.github.factoryfx.factory.testfactories.ExampleFactoryB.class, "dfgdgf"));
                 factoryBases.referenceAttribute.set(null);
@@ -362,38 +350,114 @@ public class FactoryTreeBuilderTest {
 
     @Test
     public void test_dataDictionary(){
-        FactoryTreeBuilder<Void,FactoryTestA,Void> builder = new FactoryTreeBuilder<>(FactoryTestA.class);
-        builder.addFactory(FactoryTestA.class, Scope.PROTOTYPE, context -> {
-            FactoryTestA factory = new FactoryTestA();
-            factory.referenceAttribute1.set(context.get(ExampleFactoryB.class));
+        FactoryTreeBuilder<Void, TreeFactoryTestA,Void> builder = new FactoryTreeBuilder<>(TreeFactoryTestA.class, context -> {
+            TreeFactoryTestA factory = new TreeFactoryTestA();
+            factory.referenceAttribute1.set(context.get(TreeExampleFactoryB.class));
             return factory;
         });
-        builder.addFactory(ExampleFactoryB.class, Scope.SINGLETON, context -> {
-            return new ExampleFactoryB();
+        builder.addFactory(TreeExampleFactoryB.class, Scope.SINGLETON, context -> {
+            return new TreeExampleFactoryB();
         });
 
         DataStorageMetadataDictionary dataStorageMetadataDictionary = builder.buildTreeUnvalidated().internal().createDataStorageMetadataDictionaryFromRoot();
-        Assertions.assertTrue(dataStorageMetadataDictionary.containsClass(FactoryTestA.class.getName()));
-        Assertions.assertTrue(dataStorageMetadataDictionary.containsClass(ExampleFactoryB.class.getName()));
+        Assertions.assertTrue(dataStorageMetadataDictionary.containsClass(TreeFactoryTestA.class.getName()));
+        Assertions.assertTrue(dataStorageMetadataDictionary.containsClass(TreeExampleFactoryB.class.getName()));
     }
 
-    public static class ExampleFactoryB2 extends ExampleFactoryB {
+    public static class ExampleFactoryB2 extends TreeExampleFactoryB {
     }
 
     @Test
     public void test_dataDictionary_inheritance(){
-        FactoryTreeBuilder<Void,FactoryTestA,Void> builder = new FactoryTreeBuilder<>(FactoryTestA.class);
-        builder.addFactory(FactoryTestA.class, Scope.PROTOTYPE, context -> {
-            FactoryTestA factory = new FactoryTestA();
-            factory.referenceAttribute1.set(context.get(ExampleFactoryB.class));
+        FactoryTreeBuilder<Void, TreeFactoryTestA,Void> builder = new FactoryTreeBuilder<>(TreeFactoryTestA.class, context -> {
+            TreeFactoryTestA factory = new TreeFactoryTestA();
+            factory.referenceAttribute1.set(context.get(TreeExampleFactoryB.class));
             return factory;
         });
-        builder.addFactory(ExampleFactoryB.class, Scope.SINGLETON, context -> {
+        builder.addFactory(TreeExampleFactoryB.class, Scope.SINGLETON, context -> {
             return new ExampleFactoryB2();
         });
 
         DataStorageMetadataDictionary dataStorageMetadataDictionary = builder.buildTreeUnvalidated().internal().createDataStorageMetadataDictionaryFromRoot();
-        Assertions.assertTrue(dataStorageMetadataDictionary.containsClass(FactoryTestA.class.getName()));
+        Assertions.assertTrue(dataStorageMetadataDictionary.containsClass(TreeFactoryTestA.class.getName()));
         Assertions.assertTrue(dataStorageMetadataDictionary.containsClass(ExampleFactoryB2.class.getName()));
     }
+
+
+    @Test
+    public void test_double_add_factory(){
+        Assertions.assertThrows(IllegalArgumentException.class, () -> {
+            FactoryTreeBuilder<Void, TreeFactoryTestA, Void> builder = new FactoryTreeBuilder<>(TreeFactoryTestA.class, context -> {
+                TreeFactoryTestA factory = new TreeFactoryTestA();
+                factory.referenceAttribute1.set(context.get(TreeExampleFactoryB.class));
+                return factory;
+            });
+            builder.addFactory(TreeExampleFactoryB.class, Scope.SINGLETON, context -> {
+                return new ExampleFactoryB2();
+            });
+            builder.addFactory(TreeExampleFactoryB.class, Scope.SINGLETON, context -> {
+                return new ExampleFactoryB2();
+            });
+
+        });
+
+    }
+
+
+    @Test
+    public void test_branch_selector(){
+        FactoryTreeBuilder<ExampleLiveObjectA,ExampleFactoryA,Void> factoryTreeBuilder = new FactoryTreeBuilder<>(ExampleFactoryA.class, context -> {
+            ExampleFactoryA factory = new ExampleFactoryA();
+            factory.referenceListAttribute.set(context.getList(ExampleFactoryB.class));
+            factory.referenceAttribute.set(context.get(ExampleFactoryB.class));
+            return factory;
+        });
+        factoryTreeBuilder.addFactory(ExampleFactoryB.class, Scope.PROTOTYPE, context -> {
+            io.github.factoryfx.factory.testfactories.ExampleFactoryB factory = new ExampleFactoryB();
+            factory.referenceAttributeC.set(context.get(io.github.factoryfx.factory.testfactories.ExampleFactoryC.class));
+            return factory;
+        });
+        factoryTreeBuilder.addFactory(ExampleFactoryC.class, Scope.PROTOTYPE, context -> {
+            ExampleFactoryC factory = new ExampleFactoryC();
+            factory.referenceAttribute.set(new ExampleFactoryB());
+            factory.stringAttribute.set("hggj");
+            return factory;
+        });
+
+
+        ExampleLiveObjectA liveBranch = factoryTreeBuilder.branch().select(ExampleFactoryA.class).instance();
+        assertNotNull(liveBranch);
+
+        Set<BranchSelector.Branch<ExampleFactoryA, ExampleLiveObjectB, ExampleFactoryB>> branches = factoryTreeBuilder.branch().selectPrototype(ExampleFactoryB.class);
+        assertEquals(4,branches.size());
+        for (BranchSelector.Branch<ExampleFactoryA, ExampleLiveObjectB, ExampleFactoryB> branch : branches) {
+            assertNotNull(branch.instance());
+        }
+    }
+
+    @Test
+    public void test_branch_selector_as_buildSubTree(){
+        FactoryTreeBuilder<ExampleLiveObjectA,ExampleFactoryA,Void> factoryTreeBuilder = new FactoryTreeBuilder<>(ExampleFactoryA.class, context -> {
+            ExampleFactoryA factory = new ExampleFactoryA();
+            factory.referenceListAttribute.set(context.getList(ExampleFactoryB.class));
+            factory.referenceAttribute.set(context.get(ExampleFactoryB.class));
+            return factory;
+        });
+        factoryTreeBuilder.addFactory(ExampleFactoryB.class, Scope.PROTOTYPE, context -> {
+            io.github.factoryfx.factory.testfactories.ExampleFactoryB factory = new ExampleFactoryB();
+            factory.referenceAttributeC.set(context.get(io.github.factoryfx.factory.testfactories.ExampleFactoryC.class));
+            return factory;
+        });
+        factoryTreeBuilder.addFactory(ExampleFactoryC.class, Scope.PROTOTYPE, context -> {
+            ExampleFactoryC factory = new ExampleFactoryC();
+            factory.referenceAttribute.set(new ExampleFactoryB());
+            factory.stringAttribute.set("hggj");
+            return factory;
+        });
+
+
+        ExampleFactoryA liveBranch = factoryTreeBuilder.branch().select(ExampleFactoryA.class).factory();
+        assertNotNull(liveBranch);
+    }
+
 }

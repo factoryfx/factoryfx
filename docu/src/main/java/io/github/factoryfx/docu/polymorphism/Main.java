@@ -9,8 +9,7 @@ import io.github.factoryfx.server.Microservice;
 public class Main {
 
     public static void main(String[] args) {
-        FactoryTreeBuilder<Root,RootFactory,Void> builder = new FactoryTreeBuilder<>(RootFactory.class);
-        builder.addFactory(RootFactory.class, Scope.SINGLETON, ctx->{
+        FactoryTreeBuilder<Root,RootFactory,Void> builder = new FactoryTreeBuilder<>(RootFactory.class, ctx->{
             RootFactory root = new RootFactory();
             root.printer.set(new DefaultPrinterFactory());
             return root;

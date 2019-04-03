@@ -18,16 +18,4 @@ public class DataAndStoredMetadata<T extends FactoryBase<?,?>,S> {
         this.root = root;
         this.metadata = metadata;
     }
-
-    public DataAndStoredMetadata(String user, String comment, DataAndStoredMetadata<T,S> base) {
-        this.root = base.root;
-        this.metadata = new StoredDataMetadata<>(LocalDateTime.now(),
-                base.metadata.id,
-                user,
-                comment,
-                base.metadata.baseVersionId,
-                null,
-                base.metadata.dataStorageMetadataDictionary
-        );
-    }
 }

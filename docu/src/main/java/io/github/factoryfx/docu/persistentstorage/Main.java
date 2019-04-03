@@ -36,8 +36,7 @@ public class Main {
         System.out.println("\n\n\n\n\n\n\n\n");
 
 
-        FactoryTreeBuilder< Root, RootFactory,Void> builder = new FactoryTreeBuilder<>(RootFactory.class);
-        builder.addFactory(RootFactory.class, Scope.SINGLETON, xtc -> {
+        FactoryTreeBuilder< Root, RootFactory,Void> builder = new FactoryTreeBuilder<>(RootFactory.class, xtc -> {
             RootFactory root = new RootFactory();
             root.stringAttribute.set("1");
             return root;

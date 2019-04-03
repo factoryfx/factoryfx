@@ -1,6 +1,7 @@
 package io.github.factoryfx.factory.builder;
 
 
+import io.github.factoryfx.factory.BranchSelector;
 import io.github.factoryfx.factory.jackson.ObjectMapperBuilder;
 import io.github.factoryfx.factory.jackson.SimpleObjectMapper;
 import io.github.factoryfx.factory.validation.ValidationError;
@@ -24,11 +25,16 @@ public class FactoryTreeBuilder<L,R extends FactoryBase<L,R>,S> {
     private final Class<R> rootClass;
 
     public FactoryTreeBuilder(Class<R> rootClass) {
+        this(rootClass,new DefaultCreator<>(rootClass));
+    }
+
+    public FactoryTreeBuilder(Class<R> rootClass, Function<FactoryContext<R>, R> creator) {
         if (rootClass==null){
             throw new IllegalArgumentException("rootClass is mandatory");
 
         }
         this.rootClass = rootClass;
+        addFactory(rootClass,Scope.SINGLETON,creator);
     }
 
 
@@ -45,7 +51,8 @@ public class FactoryTreeBuilder<L,R extends FactoryBase<L,R>,S> {
         addFactory(clazz,scope,new DefaultCreator<>(clazz));
     }
 
-    /**create the complete factory tree that represent the app dependencies and validates the result
+    /**create the complete factory tree that represent the app dependencies and validates the result<br>
+     * the tree is only created once per builder, multiple buildTree calls return the same result
      * @return dependency tree
      * */
     public R buildTree(){
@@ -67,11 +74,15 @@ public class FactoryTreeBuilder<L,R extends FactoryBase<L,R>,S> {
         }
     }
 
+    private R rootFactory;
     /**create the complete factory tree that represent the app dependencies
      * @return dependency tree
      * */
     public R buildTreeUnvalidated(){
-        R rootFactory = factoryContext.get(rootClass);
+        if (rootFactory!=null) {
+            return rootFactory;
+        }
+        this.rootFactory = factoryContext.get(rootClass);
         if (rootFactory==null){
             throw new IllegalStateException("FactoryCreator missing for root class "+ rootClass.getSimpleName()+"\n"+"probably missing call: factoryBuilder.addFactory("+rootClass.getSimpleName()+".class,...\n");
         }
@@ -91,12 +102,16 @@ public class FactoryTreeBuilder<L,R extends FactoryBase<L,R>,S> {
         return factoryContext.getNew(factoryClazz);
     }
 
-    public <LO, FO extends FactoryBase<LO,R>> FO buildSubTree(Class<FO> factoryClazz){
-        return factoryContext.get(factoryClazz);
-    }
-
     public <LO, FO extends FactoryBase<LO,R>> List<FO> buildSubTrees(Class<FO> factoryClazz){
         return factoryContext.getList(factoryClazz);
+    }
+
+    /**
+     * indented use is for testing to create branches and set mocks
+     * @return BranchSelector
+     */
+    public BranchSelector<R> branch(){
+        return new BranchSelector<>(this);
     }
 
 

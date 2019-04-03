@@ -40,8 +40,7 @@ class MockSetterTest {
 
     @Test
     public void test_named_nested(){
-        FactoryTreeBuilder<ExampleLiveObjectA,ExampleFactoryA,Void> builder = new FactoryTreeBuilder<>(ExampleFactoryA.class);
-        builder.addFactory(ExampleFactoryA.class, Scope.SINGLETON, ctx -> {
+        FactoryTreeBuilder<ExampleLiveObjectA,ExampleFactoryA,Void> builder = new FactoryTreeBuilder<>(ExampleFactoryA.class, ctx -> {
             ExampleFactoryA exampleFactoryA = new ExampleFactoryA();
             exampleFactoryA.referenceAttribute.set(ctx.get(ExampleFactoryB.class));
             return exampleFactoryA;
