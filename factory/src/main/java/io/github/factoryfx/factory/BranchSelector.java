@@ -24,16 +24,22 @@ public class BranchSelector<R extends FactoryBase<?,R>> {
         this.treeBuilder=treeBuilder;
     }
 
+    public BranchSelector(R root) {
+        this.root = root;
+        this.root.internal().addBackReferences();
+        this.treeBuilder=null;
+    }
+
+
     public BranchSelector(FactoryTreeBuilder<?,R,?> treeBuilder) {
         this(treeBuilder.buildTree(),treeBuilder);
     }
 
     @SuppressWarnings("unchecked")
     public <LB,B extends FactoryBase<LB,R>> Branch<R,LB,B> select(Class<B> factoryClass, String name){
-        if (treeBuilder.getScope(factoryClass)!= Scope.SINGLETON){
+        if (treeBuilder!=null && treeBuilder.getScope(factoryClass)!= Scope.SINGLETON){
             throw new IllegalArgumentException("can't select prototype");
         }
-        this.root.internal().instance();
         for (FactoryBase<?, R> child : this.root.internal().collectChildrenDeep()) {
             if (child.getClass()==factoryClass && (name==null || name.equals(child.internal().getTreeBuilderName()))){
                 return new Branch<>((B)child);

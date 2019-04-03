@@ -8,6 +8,8 @@ import io.github.factoryfx.factory.testfactories.ExampleFactoryB;
 import io.github.factoryfx.factory.testfactories.ExampleLiveObjectA;
 import io.github.factoryfx.factory.testfactories.ExampleLiveObjectB;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
+import org.mockito.internal.util.MockUtil;
 
 import java.util.function.Function;
 
@@ -42,6 +44,46 @@ class BranchSelectorTest {
         subTreeUtility.select(ExampleFactoryB.class).start().stop();
 
 
+    }
+
+    @Test
+    public void test_by_class(){
+        ExampleFactoryA root = new ExampleFactoryA();
+
+        BranchSelector<ExampleFactoryA> branchSelector = new BranchSelector<>(root);
+        ExampleLiveObjectA mock = Mockito.mock(ExampleLiveObjectA.class);
+        branchSelector.select(ExampleFactoryA.class).mock(mock);
+        assertEquals(mock,root.internal().instance());
+    }
+
+    @Test
+    public void test_nested(){
+        ExampleFactoryA root = new ExampleFactoryA();
+        root.referenceAttribute.set(new ExampleFactoryB());
+        root.internal().addBackReferences();
+
+        BranchSelector<ExampleFactoryA> branchSelector = new BranchSelector<>(root);
+        ExampleLiveObjectB mock = Mockito.mock(ExampleLiveObjectB.class);
+        branchSelector.select(ExampleFactoryB.class).mock(mock);
+        assertEquals(mock,root.referenceAttribute.get().internal().instance());
+        assertFalse(MockUtil.isMock(root.internal().instance()));
+    }
+
+    @Test
+    public void test_named_nested(){
+        FactoryTreeBuilder<ExampleLiveObjectA,ExampleFactoryA,Void> builder = new FactoryTreeBuilder<>(ExampleFactoryA.class, ctx -> {
+            ExampleFactoryA exampleFactoryA = new ExampleFactoryA();
+            exampleFactoryA.referenceAttribute.set(ctx.get(ExampleFactoryB.class));
+            return exampleFactoryA;
+        });
+        builder.addFactory(ExampleFactoryB.class, "bla",Scope.SINGLETON, ctx -> new ExampleFactoryB());
+        ExampleFactoryA root = builder.buildTreeUnvalidated();
+
+        BranchSelector<ExampleFactoryA> branchSelector = new BranchSelector<>(root);
+        ExampleLiveObjectB mock = Mockito.mock(ExampleLiveObjectB.class);
+        branchSelector.select(ExampleFactoryB.class).mock(mock);
+        assertEquals(mock,root.referenceAttribute.get().internal().instance());
+        assertFalse(MockUtil.isMock(root.internal().instance()));
     }
 
 

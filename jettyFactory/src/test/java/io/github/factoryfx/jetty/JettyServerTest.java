@@ -77,7 +77,6 @@ public class JettyServerTest {
     @Test
     public void test_change_port() {
         FactoryTreeBuilder<Server, JettyServerRootFactory, Void> builder = new FactoryTreeBuilder<>(JettyServerRootFactory.class);
-        builder.addFactory(JettyServerRootFactory.class, Scope.SINGLETON);
         builder.addFactory(JettyServerFactory.class, Scope.SINGLETON, ctx->{
             return new JettyServerBuilder<>(new JettyServerFactory<JettyServerRootFactory>())
                     .withHost("localhost").withPort(8080)
@@ -130,7 +129,6 @@ public class JettyServerTest {
     @Test
     public void test_remove_connector() {
         FactoryTreeBuilder<Server, JettyServerRootFactory, Void> builder = new FactoryTreeBuilder<>(JettyServerRootFactory.class);
-        builder.addFactory(JettyServerRootFactory.class, Scope.SINGLETON);
         builder.addFactory(JettyServerFactory.class, Scope.SINGLETON, ctx->{
             return new JettyServerBuilder<>(new JettyServerFactory<JettyServerRootFactory>())
                     .withHost("localhost").withPort(8080)
@@ -197,7 +195,6 @@ public class JettyServerTest {
     public void test_lateResponse() throws InterruptedException, ExecutionException, TimeoutException {
 
         FactoryTreeBuilder<Server, JettyServerRootFactory, Void> builder = new FactoryTreeBuilder<>(JettyServerRootFactory.class);
-        builder.addFactory(JettyServerRootFactory.class, Scope.SINGLETON);
         builder.addFactory(JettyServerFactory.class, Scope.SINGLETON, ctx->{
             return new JettyServerBuilder<>(new JettyServerFactory<JettyServerRootFactory>())
                     .withHost("localhost").withPort(8015)
@@ -293,7 +290,6 @@ public class JettyServerTest {
     @Test
     public void testMessageBodyReader() {
         FactoryTreeBuilder<Server, JettyServerRootFactory, Void> builder = new FactoryTreeBuilder<>(JettyServerRootFactory.class);
-        builder.addFactory(JettyServerRootFactory.class, Scope.SINGLETON);
         builder.addFactory(JettyServerFactory.class, Scope.SINGLETON, ctx->{
             return new JettyServerBuilder<>(new JettyServerFactory<JettyServerRootFactory>())
                     .withHost("localhost").withPort(8015)
