@@ -460,4 +460,28 @@ public class FactoryTreeBuilderTest {
         assertNotNull(liveBranch);
     }
 
+    @Test
+    public void tets_multiple_name(){
+        FactoryTreeBuilder<ExampleLiveObjectA,ExampleFactoryA,Void> builder = new FactoryTreeBuilder<>(ExampleFactoryA.class, ctx -> {
+            ExampleFactoryA root = new ExampleFactoryA();
+            root.referenceListAttribute.add(ctx.get(ExampleFactoryB.class,"1"));
+            root.referenceListAttribute.add(ctx.get(ExampleFactoryB.class,"2"));
+            root.referenceListAttribute.add(ctx.get(ExampleFactoryB.class));
+            return root;
+        });
+        builder.addFactory(ExampleFactoryB.class, "1",Scope.SINGLETON, ctx -> new ExampleFactoryB());
+        builder.addFactory(ExampleFactoryB.class, "2",Scope.SINGLETON, ctx -> new ExampleFactoryB());
+        builder.addFactory(ExampleFactoryB.class, Scope.SINGLETON, ctx -> {
+            ExampleFactoryB exampleFactoryB = new ExampleFactoryB();
+            exampleFactoryB.stringAttribute.set("bla");
+            return exampleFactoryB;
+        });
+        ExampleFactoryA root = builder.buildTree();
+        assertEquals(4, root.internal().collectChildrenDeep().size());
+        assertEquals("1", root.referenceListAttribute.get(0).internal().getTreeBuilderName());
+        assertEquals("2", root.referenceListAttribute.get(1).internal().getTreeBuilderName());
+        assertEquals(null, root.referenceListAttribute.get(2).internal().getTreeBuilderName());
+        assertEquals("bla", root.referenceListAttribute.get(2).stringAttribute.get());
+    }
+
 }

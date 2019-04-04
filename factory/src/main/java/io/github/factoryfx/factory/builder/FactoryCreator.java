@@ -24,14 +24,13 @@ public class FactoryCreator<F extends FactoryBase<?,R>,R extends FactoryBase<?,R
         return "FactoryCreator{" + "clazz=" + clazz + ", name='" + name + '\'' + '}';
     }
 
+    public boolean match(Class<?> clazzMatch,String name) {
+        return clazz==clazzMatch && Objects.equals(this.name,name);
+    }
+
     public boolean match(Class<?> clazzMatch) {
         return clazz==clazzMatch;
     }
-
-    public boolean match(String name) {
-        return Objects.equals(this.name,name);
-    }
-
     public boolean isDublicate(FactoryCreator factoryCreator){
         if (name==null && factoryCreator.name==null) {
             return clazz==factoryCreator.clazz;

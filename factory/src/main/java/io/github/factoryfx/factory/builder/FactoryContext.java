@@ -30,11 +30,11 @@ public class FactoryContext<R extends FactoryBase<?,R>> {
     }
 
     <F extends FactoryBase<?,R>> F getUnchecked(Class<F> clazz){
-        return get(fc -> fc.match(clazz));
+        return get(fc -> fc.match(clazz,null));
     }
 
     public <F extends FactoryBase<?,R>> F get(Class<F> clazz){
-        F result = get(fc -> fc.match(clazz));
+        F result = get(fc -> fc.match(clazz,null));
         if (result==null){
            throw new IllegalStateException("builder missing Factory: "+clazz);
         }
@@ -42,7 +42,7 @@ public class FactoryContext<R extends FactoryBase<?,R>> {
     }
 
     public <F extends FactoryBase<?,R>> F get(Class<F> clazz, String name){
-        F result = get(fc -> fc.match(clazz) && fc.match(name));
+        F result = get(fc -> fc.match(clazz,name));
         if (result==null){
             throw new IllegalStateException("builder missing Factory: "+clazz + "and name: "+name);
         }

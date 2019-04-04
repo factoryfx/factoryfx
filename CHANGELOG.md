@@ -22,21 +22,23 @@
 
 * **module:** rename module and packages from "de.factory" to "io.github.factoryfx"
 
+* **utilityFactory:** rename FactoryBase#utilityFactory from "utilityFactory" to "utility"
+
 * **FactoryTreeBuilder:** the root class registration is now passed as constructor, added duplicate check for factories registration:
   example:
   old
   ```java
     FactoryTreeBuilder<Void,FactoryTestA,Void> factoryTreeBuilder = new FactoryTreeBuilder<>(FactoryTestA.class);
     factoryTreeBuilder..addFactory(ExampleFactoryB.class, Scope.SINGLETON, context -> {
-        ...
+    ...
     });
   ```
   new
-    ```java
+  ```java
       FactoryTreeBuilder<Void,FactoryTestA,Void> factoryTreeBuilder = new FactoryTreeBuilder<>(FactoryTestA.class, context -> {
           ....
       });
-    ```
+  ```
 * **FactoryTreeBuilder#buildSubTree** is replaced with 
   ```java 
   factoryTreeBuilder.branch().select(BranchFactory.class).factory()

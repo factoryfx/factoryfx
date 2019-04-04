@@ -5,6 +5,7 @@ import io.github.factoryfx.factory.builder.Scope;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.function.Function;
 
@@ -41,7 +42,7 @@ public class BranchSelector<R extends FactoryBase<?,R>> {
             throw new IllegalArgumentException("can't select prototype");
         }
         for (FactoryBase<?, R> child : this.root.internal().collectChildrenDeep()) {
-            if (child.getClass()==factoryClass && (name==null || name.equals(child.internal().getTreeBuilderName()))){
+            if (matchFactory(child,factoryClass,name)){
                 return new Branch<>((B)child);
             }
         }
@@ -52,11 +53,19 @@ public class BranchSelector<R extends FactoryBase<?,R>> {
         return select(factoryClass,null);
     }
 
+    private <LB,B extends FactoryBase<LB,R>> boolean matchFactory(FactoryBase<?, R> factory, Class<B> factoryClass, String name){
+        if (factory.getClass()!=factoryClass){
+            return false;
+        }
+        String treeBuilderName = factory.internal().getTreeBuilderName();
+        return Objects.equals(name, treeBuilderName);
+    }
+
     @SuppressWarnings("unchecked")
     public <LB,B extends FactoryBase<LB,R>> Set<Branch<R,LB,B>> selectPrototype(Class<B> factoryClass, String name){
         HashSet<Branch<R, LB, B>> branches = new HashSet<>();
         for (FactoryBase<?, R> child : this.root.internal().collectChildrenDeep()) {
-            if (child.getClass()==factoryClass && (name==null || name.equals(child.internal().getTreeBuilderName()))){
+            if (matchFactory(child,factoryClass,name)){
                 branches.add(new Branch<>((B)child));
             }
         }
@@ -75,7 +84,6 @@ public class BranchSelector<R extends FactoryBase<?,R>> {
         }
 
         public Branch<R,L, B> start(){
-            branchFactory.internal().instance();
             List<FactoryBase<?, R>> factoriesInCreateAndStartOrder = branchFactory.internal().getFactoriesInCreateAndStartOrder();
             factoriesInCreateAndStartOrder.stream().forEach(factoryBase -> factoryBase.internal().start());
             return this;

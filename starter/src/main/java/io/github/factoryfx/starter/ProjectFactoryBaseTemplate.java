@@ -1,20 +1,31 @@
 package io.github.factoryfx.starter;
 
-import com.squareup.javapoet.JavaFile;
-import com.squareup.javapoet.MethodSpec;
-import com.squareup.javapoet.TypeSpec;
+import com.squareup.javapoet.*;
+import io.github.factoryfx.factory.FactoryBase;
 
 import javax.lang.model.element.Modifier;
 import java.io.IOException;
 
 
 public class ProjectFactoryBaseTemplate {
+    private final String projectName;
 
-    public static void main(String[] args) {
-        new ProjectFactoryBaseTemplate().generateFile();
+
+    public ProjectFactoryBaseTemplate(String projectName) {
+        this.projectName = projectName;
     }
 
+    public static void main(String[] args) {
+        new ProjectFactoryBaseTemplate("Test123").generateFile();
+    }
+
+
     public void generateFile(){
+//        TypeSpec factoryBase = TypeSpec.classBuilder("FactoryBase")
+//                .addModifiers(Modifier.PUBLIC)
+//                .build();
+
+
         MethodSpec main = MethodSpec.methodBuilder("main")
                 .addModifiers(Modifier.PUBLIC, Modifier.STATIC)
                 .returns(void.class)
@@ -22,8 +33,10 @@ public class ProjectFactoryBaseTemplate {
                 .addStatement("$T.out.println($S)", System.class, "Hello, JavaPoet!")
                 .build();
 
-        TypeSpec helloWorld = TypeSpec.classBuilder("HelloWorld")
-                .addModifiers(Modifier.PUBLIC, Modifier.FINAL)
+        TypeSpec helloWorld = TypeSpec.classBuilder(projectName+"BaseFactory")
+                .superclass((ParameterizedTypeName.get(ClassName.get(FactoryBase.class),
+                        ClassName.get(FactoryBase.class))))
+                .addModifiers(Modifier.PUBLIC)
                 .addMethod(main)
                 .build();
 

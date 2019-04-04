@@ -26,9 +26,6 @@ public class FactoryViewListReferenceAttribute<R extends FactoryBase<?,R>,L, T e
     }
 
     public List<L> instances(){
-        if (get()==null){
-            return null;
-        }
         ArrayList<L> result = new ArrayList<>();
         for(T item: get()){
             result.add(item.internal().instance());

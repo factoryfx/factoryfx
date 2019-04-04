@@ -76,7 +76,7 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
         return id.toString();
     }
 
-    public void setId(String value) {
+    private void setId(String value) {
         id = value;
     }
 
