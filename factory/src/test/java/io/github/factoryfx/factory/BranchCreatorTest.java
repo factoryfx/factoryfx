@@ -77,12 +77,12 @@ class BranchSelectorTest {
             exampleFactoryA.referenceAttribute.set(ctx.get(ExampleFactoryB.class));
             return exampleFactoryA;
         });
-        builder.addFactory(ExampleFactoryB.class, "bla",Scope.SINGLETON, ctx -> new ExampleFactoryB());
+        builder.addFactory(ExampleFactoryB.class,Scope.SINGLETON, ctx -> new ExampleFactoryB());
         ExampleFactoryA root = builder.buildTreeUnvalidated();
 
         BranchSelector<ExampleFactoryA> branchSelector = new BranchSelector<>(root);
         ExampleLiveObjectB mock = Mockito.mock(ExampleLiveObjectB.class);
-        branchSelector.select(ExampleFactoryB.class,"bla").mock(mock);
+        branchSelector.select(ExampleFactoryB.class).mock(mock);
         assertEquals(mock,root.referenceAttribute.get().internal().instance());
         assertFalse(MockUtil.isMock(root.internal().instance()));
     }

@@ -55,7 +55,8 @@ public class FactoryTreeBuilderBasedAttributeSetupTest {
 
         FactoryTreeBuilder<ExampleLiveObjectA,ExampleFactoryA,Void> builder = new FactoryTreeBuilder<>(ExampleFactoryA.class, context -> {
             ExampleFactoryA factoryBases = new ExampleFactoryA();
-            factoryBases.referenceListAttribute.add(context.get(ExampleFactoryB.class));
+            factoryBases.referenceListAttribute.add(context.get(ExampleFactoryB.class,"1"));
+            factoryBases.referenceListAttribute.add(context.get(ExampleFactoryB.class,"2"));
             return factoryBases;
         });
         builder.addFactory(ExampleFactoryB.class,"1", Scope.PROTOTYPE, context -> {

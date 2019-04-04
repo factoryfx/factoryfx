@@ -35,10 +35,12 @@ public class ProjectFactoryBaseTemplate {
 
         TypeSpec helloWorld = TypeSpec.classBuilder(projectName+"BaseFactory")
                 .superclass((ParameterizedTypeName.get(ClassName.get(FactoryBase.class),
-                        ClassName.get(FactoryBase.class))))
+                        ClassName.bestGuess(new ProjectRootFactoryTemplate(projectName).generate().name))))
                 .addModifiers(Modifier.PUBLIC)
                 .addMethod(main)
                 .build();
+
+
 
         JavaFile javaFile = JavaFile.builder("com.example.helloworld", helloWorld)
                 .build();
