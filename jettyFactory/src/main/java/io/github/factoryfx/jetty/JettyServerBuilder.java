@@ -79,6 +79,14 @@ public class JettyServerBuilder<R extends FactoryBase<?,R>,S extends JettyServer
         return this;
     }
 
+    /**
+     * set the base pathSpec for resources default is: /*
+     */
+    public JettyServerBuilder<R,S> widthResourcePathSpec(String pathSpec){
+        defaultJerseyServletAndPathFactory.pathSpec.set(pathSpec);
+        return this;
+    }
+
     public JettyServerBuilder<R,S> withJaxrsComponent(Object jaxrsComponent){
         defaultJerseyServlet.additionalJaxrsComponents.get().add(jaxrsComponent);
         return this;
@@ -89,14 +97,13 @@ public class JettyServerBuilder<R extends FactoryBase<?,R>,S extends JettyServer
         return this;
     }
 
-    public JettyServerBuilder<R,S> withServlet(String pathSpec, FactoryBase<Servlet,R> servlet){
+    public JettyServerBuilder<R,S> withServlet(String pathSpec, FactoryBase<? extends Servlet,R> servlet){
         ServletAndPathFactory<R> servletAndPathFactory = new ServletAndPathFactory<>();
         servletAndPathFactory.pathSpec.set(pathSpec);
         servletAndPathFactory.servlet.set(servlet);
         updateableServletFactory.servletAndPaths.add(servletAndPathFactory);
         return this;
     }
-
 
     public JettyServerBuilder<R,S> withSsl(SslContextFactoryFactory<R> ssl) {
         jettyServerFactory.connectors.get(0).ssl.set(ssl);
