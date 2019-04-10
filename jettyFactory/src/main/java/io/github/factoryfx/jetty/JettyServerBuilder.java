@@ -81,6 +81,9 @@ public class JettyServerBuilder<R extends FactoryBase<?,R>,S extends JettyServer
 
     /**
      * set the base pathSpec for resources default is: /*
+     *
+     * @param pathSpec servlet spec path
+     * @return builder
      */
     public JettyServerBuilder<R,S> withResourcePathSpec(String pathSpec){
         defaultJerseyServletAndPathFactory.pathSpec.set(pathSpec);

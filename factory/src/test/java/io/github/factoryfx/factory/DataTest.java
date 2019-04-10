@@ -1,12 +1,10 @@
 package io.github.factoryfx.factory;
 
-import java.io.IOException;
-import java.lang.reflect.Field;
-import java.util.*;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.factoryfx.factory.attribute.Attribute;
+import io.github.factoryfx.factory.attribute.CopySemantic;
 import io.github.factoryfx.factory.attribute.dependency.FactoryAttribute;
+import io.github.factoryfx.factory.attribute.dependency.ReferenceBaseAttribute;
 import io.github.factoryfx.factory.attribute.types.ObjectValueAttribute;
 import io.github.factoryfx.factory.attribute.types.StringAttribute;
 import io.github.factoryfx.factory.jackson.ObjectMapperBuilder;
@@ -19,10 +17,12 @@ import io.github.factoryfx.factory.storage.migration.metadata.DataStorageMetadat
 import io.github.factoryfx.factory.util.LanguageText;
 import io.github.factoryfx.factory.validation.AttributeValidation;
 import io.github.factoryfx.factory.validation.ValidationResult;
-import io.github.factoryfx.factory.attribute.CopySemantic;
-import io.github.factoryfx.factory.attribute.dependency.ReferenceBaseAttribute;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+
+import java.io.IOException;
+import java.lang.reflect.Field;
+import java.util.*;
 
 
 
@@ -396,10 +396,16 @@ public class DataTest {
 
     @Test
     public void test_json_and_id_attributename(){
-        ExampleWithId exampleWithId = new ExampleWithId();
-        exampleWithId.id.set("blabla");
-        ExampleWithId copy = ObjectMapperBuilder.build().copy(exampleWithId);
-        Assertions.assertNotEquals("blabla",copy.getId());
+        Assertions.assertThrows(IllegalStateException.class, () -> {
+            ExampleWithId exampleWithId = new ExampleWithId();
+            exampleWithId.id.set("blabla");
+            exampleWithId.internal().addBackReferences();
+        });
+
+//        System.out.println(ObjectMapperBuilder.build().writeValueAsString(exampleWithId));
+//        ExampleWithId copy = ObjectMapperBuilder.build().copy(exampleWithId);
+//        Assertions.assertNotEquals("blabla",copy.getId());
+//        Assertions.assertEquals("blabla",copy.id.get());
     }
 
 

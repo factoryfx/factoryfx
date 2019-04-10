@@ -24,6 +24,12 @@ public class FactoryMetadata<R extends FactoryBase<?,R>, L,F extends FactoryBase
     public FactoryMetadata(Class<F> clazz){
         this.clazz=clazz;
         initAttributeFields(clazz);
+
+        for (Field attributeField : attributeFields) {
+            if (attributeField.getName().equals("id")){
+                throw new IllegalStateException(clazz.getName()+", Factories can't have an id attribute because that conflicts with the factory id property");
+            }
+        }
     }
 
     /**
