@@ -44,7 +44,7 @@ public class Main {
     public static void main(String[] args) {
         FactoryTreeBuilder<RootFactory> builder = new FactoryTreeBuilder<>(RootFactory.class);
         builder.addFactory(RootFactory.class, Scope.SINGLETON, ctx-> new JettyServerBuilder<>(new RootFactory())
-                .withHost("localhost").widthPort(8005)
+                .withHost("localhost").withPort(8005)
                 .withResource(ctx.get(DatabaseResourceFactory.class)).build());
 
         builder.addFactory(DatabaseResourceFactory.class, Scope.SINGLETON, ctx->{
@@ -55,7 +55,7 @@ public class Main {
             return databaseResource;
         });
 
-        Microservice<Void, Server,RootFactory,Void> microservice = MicroserviceBuilder.buildFilesystemMicroservice(builder.buildTree(),Paths.get("./"));
+        Microservice<Void, Server,RootFactory,Void> microservice = builder.microservice().withFilesystemStorage(Paths.get("./")).build();
         microservice.start();
     }
 }
@@ -137,7 +137,7 @@ To change the configuration from outside there is a REST interface
 Add REST interface to the server:
 ```java
 builder.addFactory(RootFactory.class, Scope.SINGLETON, ctx-> new JettyServerBuilder<>(new RootFactory())
-        .withHost("localhost").widthPort(8005)
+        .withHost("localhost").withPort(8005)
         .withResource(ctx.get(SpecificMicroserviceResource.class))
         .withResource(ctx.get(DatabaseResourceFactory.class)).build());
 builder.addFactory(SpecificMicroserviceResource.class, Scope.SINGLETON);

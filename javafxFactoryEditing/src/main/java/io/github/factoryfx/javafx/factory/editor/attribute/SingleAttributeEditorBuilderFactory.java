@@ -1,7 +1,7 @@
 package io.github.factoryfx.javafx.factory.editor.attribute;
 
 import io.github.factoryfx.factory.SimpleFactoryBase;
-import io.github.factoryfx.factory.attribute.dependency.FactoryReferenceAttribute;
+import io.github.factoryfx.factory.attribute.dependency.FactoryAttribute;
 import io.github.factoryfx.factory.metadata.FactoryMetadataManager;
 import io.github.factoryfx.javafx.factory.editor.attribute.builder.AttributeVisualisationBuilder;
 import io.github.factoryfx.javafx.factory.util.UniformDesign;
@@ -11,7 +11,7 @@ import io.github.factoryfx.javafx.factory.util.UniformDesignFactory;
 import java.util.function.Function;
 
 public class SingleAttributeEditorBuilderFactory extends SimpleFactoryBase<AttributeVisualisationBuilder,RichClientRoot> {
-    public final FactoryReferenceAttribute<RichClientRoot, UniformDesign, UniformDesignFactory> uniformDesign = new FactoryReferenceAttribute<>();
+    public final FactoryAttribute<RichClientRoot, UniformDesign, UniformDesignFactory> uniformDesign = new FactoryAttribute<>();
 
     private final Function<UniformDesign, AttributeVisualisationBuilder> creator;
     public SingleAttributeEditorBuilderFactory(Function<UniformDesign, AttributeVisualisationBuilder> creator) {

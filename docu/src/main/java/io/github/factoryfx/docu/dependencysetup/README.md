@@ -4,6 +4,10 @@
 ```groovy
 compile(group: 'io.github.factoryfx', name: 'factory', version: factoryfxVersion)
 ```
+###### starter (code generator for initial project setup)
+```groovy
+compile(group: 'io.github.factoryfx', name: 'starter', version: factoryfxVersion)
+```
 
 ##### postgres storage with javafx gui
 ###### server
@@ -19,4 +23,6 @@ compile(group: 'io.github.factoryfx', name: 'factory', version: factoryfxVersion
 compile(group: 'io.github.factoryfx', name: 'javafxFactoryEditing', version: factoryfxVersion)
 compile(group: 'io.github.factoryfx', name: 'microserviceRestClient', version: factoryfxVersion)
 ```
+
+
 

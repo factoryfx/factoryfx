@@ -3,8 +3,8 @@ package io.github.factoryfx.factory.typescript.generator.construct;
 
 import io.github.factoryfx.factory.FactoryBase;
 import io.github.factoryfx.factory.attribute.Attribute;
-import io.github.factoryfx.factory.attribute.dependency.FactoryReferenceBaseAttribute;
-import io.github.factoryfx.factory.attribute.dependency.FactoryReferenceListBaseAttribute;
+import io.github.factoryfx.factory.attribute.dependency.FactoryBaseAttribute;
+import io.github.factoryfx.factory.attribute.dependency.FactoryListBaseAttribute;
 import io.github.factoryfx.factory.metadata.FactoryMetadataManager;
 import io.github.factoryfx.factory.typescript.generator.construct.atttributes.AttributeToTsMapperManager;
 import io.github.factoryfx.factory.typescript.generator.ts.*;
@@ -93,15 +93,15 @@ public class DataGeneratedTs<R extends FactoryBase<?,R>, L,  F extends FactoryBa
         StringBuilder fromJsonCode=new StringBuilder();
         Set<TsFile> mapValuesFromJsonImports = new HashSet<>();
         data.internal().visitAttributesFlat((attributeVariableName, attribute) -> {
-            if (attribute instanceof FactoryReferenceBaseAttribute){
-                Class referenceClass = ((FactoryReferenceBaseAttribute) attribute).internal_getReferenceClass();
+            if (attribute instanceof FactoryBaseAttribute){
+                Class referenceClass = ((FactoryBaseAttribute) attribute).internal_getReferenceClass();
                 TsClassConstructed dataClass = dataToOverrideTs.get(referenceClass);
                 mapValuesFromJsonImports.add(dataClass);
                 fromJsonCode.append("this.collectDataChildren(this.").append(attributeVariableName).append(",idToDataMap);\n");
                 return;
             }
-            if (attribute instanceof FactoryReferenceListBaseAttribute){
-                Class referenceClass = ((FactoryReferenceListBaseAttribute) attribute).internal_getReferenceClass();
+            if (attribute instanceof FactoryListBaseAttribute){
+                Class referenceClass = ((FactoryListBaseAttribute) attribute).internal_getReferenceClass();
                 TsClassConstructed dataClass = dataToOverrideTs.get(referenceClass);
                 mapValuesFromJsonImports.add(dataClass);
                 fromJsonCode.append("this.collectDataArrayChildren(this.").append(attributeVariableName).append(",idToDataMap);\n");

@@ -3,7 +3,7 @@ package io.github.factoryfx.factory.testfactories;
 import io.github.factoryfx.factory.attribute.types.StringAttribute;
 import io.github.factoryfx.factory.FastFactoryUtility;
 import io.github.factoryfx.factory.SimpleFactoryBase;
-import io.github.factoryfx.factory.attribute.dependency.FactoryReferenceAttribute;
+import io.github.factoryfx.factory.attribute.dependency.FactoryAttribute;
 
 public class FastExampleFactoryB extends SimpleFactoryBase<ExampleLiveObjectB,FastExampleFactoryA> {
     public String stringAttribute;
@@ -20,8 +20,8 @@ public class FastExampleFactoryB extends SimpleFactoryBase<ExampleLiveObjectB,Fa
                 FastExampleFactoryB.class,
                 (factory, attributeVisitor) -> {
                     StringAttribute stringAttribute= new StringAttribute().labelText("ExampleB1");
-                    FactoryReferenceAttribute<FastExampleFactoryA,ExampleLiveObjectA,FastExampleFactoryA> referenceAttribute = new FactoryReferenceAttribute<FastExampleFactoryA,ExampleLiveObjectA,FastExampleFactoryA>().labelText("ExampleB2");
-                    FactoryReferenceAttribute<FastExampleFactoryA,ExampleLiveObjectC,FastExampleFactoryC> referenceAttributeC = new FactoryReferenceAttribute<FastExampleFactoryA,ExampleLiveObjectC,FastExampleFactoryC>().labelText("ExampleC2");
+                    FactoryAttribute<FastExampleFactoryA,ExampleLiveObjectA,FastExampleFactoryA> referenceAttribute = new FactoryAttribute<FastExampleFactoryA,ExampleLiveObjectA,FastExampleFactoryA>().labelText("ExampleB2");
+                    FactoryAttribute<FastExampleFactoryA,ExampleLiveObjectC,FastExampleFactoryC> referenceAttributeC = new FactoryAttribute<FastExampleFactoryA,ExampleLiveObjectC,FastExampleFactoryC>().labelText("ExampleC2");
 
                     attributeVisitor.accept("stringAttribute",FastFactoryUtility.tempAttributeSetup(stringAttribute,(v)->factory.stringAttribute=v,()->factory.stringAttribute));
                     attributeVisitor.accept("referenceAttribute",FastFactoryUtility.tempAttributeSetup(referenceAttribute,(v)->factory.referenceAttribute=v,()->factory.referenceAttribute));

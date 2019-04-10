@@ -1,7 +1,7 @@
 package io.github.factoryfx.javafx.factory.editor.attribute.visualisation;
 
 import io.github.factoryfx.factory.FactoryBase;
-import io.github.factoryfx.factory.attribute.dependency.FactoryViewReferenceAttribute;
+import io.github.factoryfx.factory.attribute.dependency.FactoryViewAttribute;
 import io.github.factoryfx.javafx.factory.editor.attribute.ValidationDecoration;
 import io.github.factoryfx.javafx.factory.editor.attribute.ValueAttributeVisualisation;
 import io.github.factoryfx.javafx.factory.util.UniformDesign;
@@ -19,7 +19,7 @@ import org.controlsfx.glyphfont.FontAwesome;
 
 import java.util.function.Consumer;
 
-public class ViewReferenceAttributeVisualisation<R extends FactoryBase<?,R>,L, T extends FactoryBase<L,R>> extends ValueAttributeVisualisation<T, FactoryViewReferenceAttribute<R,L,T>> {
+public class ViewReferenceAttributeVisualisation<R extends FactoryBase<?,R>,L, T extends FactoryBase<L,R>> extends ValueAttributeVisualisation<T, FactoryViewAttribute<R,L,T>> {
 
     private final Consumer<FactoryBase<?,?>> navigateToData;
     private final UniformDesign uniformDesign;
@@ -27,7 +27,7 @@ public class ViewReferenceAttributeVisualisation<R extends FactoryBase<?,R>,L, T
 
     private StringBinding stringBinding;
 
-    public ViewReferenceAttributeVisualisation(FactoryViewReferenceAttribute<R,L,T> attribute, ValidationDecoration validationDecoration, Consumer<FactoryBase<?,?>> navigateToData, UniformDesign uniformDesign) {
+    public ViewReferenceAttributeVisualisation(FactoryViewAttribute<R,L,T> attribute, ValidationDecoration validationDecoration, Consumer<FactoryBase<?,?>> navigateToData, UniformDesign uniformDesign) {
         super(attribute,validationDecoration);
         this.navigateToData = navigateToData;
         this.uniformDesign = uniformDesign;

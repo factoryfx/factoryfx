@@ -12,12 +12,12 @@ import io.github.factoryfx.factory.attribute.RunLaterAble;
 import io.github.factoryfx.factory.FactoryBase;
 
 @JsonIgnoreType
-public class FactoryViewReferenceAttribute<R extends FactoryBase<?,R>,L, T extends FactoryBase<L,?>>  extends Attribute<T,FactoryViewReferenceAttribute<R,L,T>> implements RunLaterAble, RootAwareAttribute<R,Attribute<T,FactoryViewReferenceAttribute<R,L,T>>> {
+public class FactoryViewAttribute<R extends FactoryBase<?,R>,L, T extends FactoryBase<L,?>>  extends Attribute<T, FactoryViewAttribute<R,L,T>> implements RunLaterAble, RootAwareAttribute<R,Attribute<T, FactoryViewAttribute<R,L,T>>> {
 
     R root;
     protected final Function<R,T> view;
 
-    public FactoryViewReferenceAttribute(Function<R,T> view) {
+    public FactoryViewAttribute(Function<R,T> view) {
         this.view=view;
     }
 
@@ -62,12 +62,12 @@ public class FactoryViewReferenceAttribute<R extends FactoryBase<?,R>,L, T exten
     }
 
     @Override
-    public void internal_copyTo(Attribute<T, FactoryViewReferenceAttribute<R, L, T>> copyAttribute, int level, int maxLevel, List<FactoryBase<?, R>> oldData, FactoryBase<?, R> parent, R root) {
+    public void internal_copyTo(Attribute<T, FactoryViewAttribute<R, L, T>> copyAttribute, int level, int maxLevel, List<FactoryBase<?, R>> oldData, FactoryBase<?, R> parent, R root) {
         //nothing
     }
 
     @Override
-    public void internal_semanticCopyTo(FactoryViewReferenceAttribute<R,L,T> copyAttribute) {
+    public void internal_semanticCopyTo(FactoryViewAttribute<R,L,T> copyAttribute) {
         //nothing
     }
 
@@ -99,8 +99,8 @@ public class FactoryViewReferenceAttribute<R extends FactoryBase<?,R>,L, T exten
                                 (previousValue!=null && currentValue==null) ||
                                 (previousValue!=null && currentValue!=null && !previousValue.idEquals(currentValue))
                 ){
-                    for (AttributeChangeListener<T,FactoryViewReferenceAttribute<R,L,T>> listener: new ArrayList<>(listeners)){
-                        runLater(()-> listener.changed(FactoryViewReferenceAttribute.this,currentValue));
+                    for (AttributeChangeListener<T, FactoryViewAttribute<R,L,T>> listener: new ArrayList<>(listeners)){
+                        runLater(()-> listener.changed(FactoryViewAttribute.this,currentValue));
                     }
                 }
                 previousValue= currentValue;
@@ -116,25 +116,25 @@ public class FactoryViewReferenceAttribute<R extends FactoryBase<?,R>,L, T exten
             tracking=false;
         }
     }
-    FactoryViewReferenceAttribute.DirtyTrackingThread dirtyTracking;
+    FactoryViewAttribute.DirtyTrackingThread dirtyTracking;
 
-    List<AttributeChangeListener<T,FactoryViewReferenceAttribute<R,L,T>>> listeners;
+    List<AttributeChangeListener<T, FactoryViewAttribute<R,L,T>>> listeners;
     @Override
-    public void internal_addListener(AttributeChangeListener<T,FactoryViewReferenceAttribute<R,L,T>> listener) {
+    public void internal_addListener(AttributeChangeListener<T, FactoryViewAttribute<R,L,T>> listener) {
         if (listeners==null){
             listeners= Collections.synchronizedList(new ArrayList<>());
         }
         listeners.add(listener);
         if (dirtyTracking==null){
-            dirtyTracking = new FactoryViewReferenceAttribute.DirtyTrackingThread();
+            dirtyTracking = new FactoryViewAttribute.DirtyTrackingThread();
             dirtyTracking.setDaemon(true);
             dirtyTracking.start();
         }
     }
     @Override
-    public void internal_removeListener(AttributeChangeListener<T,FactoryViewReferenceAttribute<R,L,T>> listener) {
+    public void internal_removeListener(AttributeChangeListener<T, FactoryViewAttribute<R,L,T>> listener) {
         if (listeners!=null){
-            for (AttributeChangeListener<T,FactoryViewReferenceAttribute<R,L,T>> listenerItem: new ArrayList<>(listeners)){
+            for (AttributeChangeListener<T, FactoryViewAttribute<R,L,T>> listenerItem: new ArrayList<>(listeners)){
                 if (listenerItem.unwrap()==listener){
                     listeners.remove(listenerItem);
                 }

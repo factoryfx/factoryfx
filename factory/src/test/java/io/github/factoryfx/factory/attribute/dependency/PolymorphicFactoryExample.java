@@ -7,8 +7,8 @@ import io.github.factoryfx.factory.testfactories.poly.OutPrinterFactory;
 import io.github.factoryfx.factory.testfactories.poly.Printer;
 
 public class PolymorphicFactoryExample extends SimpleFactoryBase<Object, ExampleFactoryA> {
-    public final FactoryPolymorphicReferenceAttribute<ExampleFactoryA,Printer> reference = new FactoryPolymorphicReferenceAttribute<ExampleFactoryA,Printer>().setup(Printer.class,ErrorPrinterFactory.class,OutPrinterFactory.class);
-    public final FactoryPolymorphicReferenceListAttribute<ExampleFactoryA,Printer> referenceList = new FactoryPolymorphicReferenceListAttribute<ExampleFactoryA,Printer>().setup(Printer.class,ErrorPrinterFactory.class,OutPrinterFactory.class);
+    public final FactoryPolymorphicAttribute<ExampleFactoryA,Printer> reference = new FactoryPolymorphicAttribute<ExampleFactoryA,Printer>().setup(Printer.class,ErrorPrinterFactory.class,OutPrinterFactory.class);
+    public final FactoryPolymorphicListAttribute<ExampleFactoryA,Printer> referenceList = new FactoryPolymorphicListAttribute<ExampleFactoryA,Printer>().setup(Printer.class,ErrorPrinterFactory.class,OutPrinterFactory.class);
 
     @Override
     public Object createImpl() {

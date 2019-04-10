@@ -2,11 +2,11 @@ package io.github.factoryfx.soap;
 
 import io.github.factoryfx.factory.FactoryBase;
 import io.github.factoryfx.factory.SimpleFactoryBase;
-import io.github.factoryfx.factory.attribute.dependency.FactoryReferenceAttribute;
+import io.github.factoryfx.factory.attribute.dependency.FactoryAttribute;
 
 public class SoapHandlerFactory<S,R extends FactoryBase<?,R>> extends SimpleFactoryBase<SoapHandler,R> {
 
-    public final FactoryReferenceAttribute<R,S,FactoryBase<S,R>> serviceBean = new FactoryReferenceAttribute<>();
+    public final FactoryAttribute<R,S,FactoryBase<S,R>> serviceBean = new FactoryAttribute<>();
 
     @Override
     public SoapHandler createImpl() {

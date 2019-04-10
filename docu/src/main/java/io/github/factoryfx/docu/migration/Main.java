@@ -1,7 +1,6 @@
 package io.github.factoryfx.docu.migration;
 
 import io.github.factoryfx.factory.builder.FactoryTreeBuilder;
-import io.github.factoryfx.factory.builder.Scope;
 
 import java.io.IOException;
 import java.nio.file.Files;

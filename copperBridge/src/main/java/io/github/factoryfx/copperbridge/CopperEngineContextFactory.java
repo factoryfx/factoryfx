@@ -2,7 +2,7 @@ package io.github.factoryfx.copperbridge;
 
 import java.util.Map;
 
-import io.github.factoryfx.factory.attribute.dependency.FactoryReferenceAttribute;
+import io.github.factoryfx.factory.attribute.dependency.FactoryAttribute;
 import io.github.factoryfx.factory.attribute.types.StringAttribute;
 import io.github.factoryfx.factory.FactoryBase;
 import org.copperengine.core.tranzient.TransientScottyEngine;
@@ -12,8 +12,8 @@ public abstract class CopperEngineContextFactory<R extends FactoryBase<?, R>> ex
 
     public final StringAttribute dependencyInjectorType = new StringAttribute().labelText("DependencyInjectorType");
 
-    public final FactoryReferenceAttribute<R,TransientScottyEngine, TransientScottyEngineFactory<R>> transientScottyEngine = new FactoryReferenceAttribute<R,TransientScottyEngine, TransientScottyEngineFactory<R>>().labelText("Transient engine").nullable();
-    public final FactoryReferenceAttribute<R,PersistentEngineContainer, PersistentScottyEngineFactory<R>> persistentScottyEngine = new FactoryReferenceAttribute<R,PersistentEngineContainer, PersistentScottyEngineFactory<R>>().labelText("Persistent engine").nullable();
+    public final FactoryAttribute<R,TransientScottyEngine, TransientScottyEngineFactory<R>> transientScottyEngine = new FactoryAttribute<R,TransientScottyEngine, TransientScottyEngineFactory<R>>().labelText("Transient engine").nullable();
+    public final FactoryAttribute<R,PersistentEngineContainer, PersistentScottyEngineFactory<R>> persistentScottyEngine = new FactoryAttribute<R,PersistentEngineContainer, PersistentScottyEngineFactory<R>>().labelText("Persistent engine").nullable();
 
     public CopperEngineContextFactory(){
         configLifeCycle().setCreator(()->{

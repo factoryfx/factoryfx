@@ -12,10 +12,10 @@ import io.github.factoryfx.factory.FactoryTreeBuilderBasedAttributeSetup;
 import io.github.factoryfx.factory.attribute.*;
 
 
-public abstract class FactoryReferenceListBaseAttribute<R extends FactoryBase<?,R>,L, F extends FactoryBase<? extends L,R>,A extends FactoryReferenceListBaseAttribute<R,L, F,A>> extends ReferenceBaseAttribute<R, F,List<F>,A> implements List<F> {
+public abstract class FactoryListBaseAttribute<R extends FactoryBase<?,R>,L, F extends FactoryBase<? extends L,R>,A extends FactoryListBaseAttribute<R,L, F,A>> extends ReferenceBaseAttribute<R, F,List<F>,A> implements List<F> {
     final List<F> list = new ArrayList<>();
 
-    public FactoryReferenceListBaseAttribute() {
+    public FactoryListBaseAttribute() {
         super();
     }
 
@@ -210,7 +210,7 @@ public abstract class FactoryReferenceListBaseAttribute<R extends FactoryBase<?,
     private void afterModify(){
         if (listeners!=null) {
             for (AttributeChangeListener<List<F>, A> listener : listeners) {
-                listener.changed(FactoryReferenceListBaseAttribute.this, get());
+                listener.changed(FactoryListBaseAttribute.this, get());
             }
         }
     }

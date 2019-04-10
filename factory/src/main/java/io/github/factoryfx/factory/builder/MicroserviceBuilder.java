@@ -72,7 +72,7 @@ public class MicroserviceBuilder<L,R extends FactoryBase<L,R>,S> {
      * @param changeSummaryCreator changeSummaryCreator
      * @return builder
      */
-    public MicroserviceBuilder<L,R,S> widthChangeSummaryCreator(ChangeSummaryCreator<R,S> changeSummaryCreator){
+    public MicroserviceBuilder<L,R,S> withChangeSummaryCreator(ChangeSummaryCreator<R,S> changeSummaryCreator){
         this.changeSummaryCreator=changeSummaryCreator;
         return this;
     }

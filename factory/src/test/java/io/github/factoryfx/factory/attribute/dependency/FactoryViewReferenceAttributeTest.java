@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test;
 public class FactoryViewReferenceAttributeTest {
 
     public static class ExampleViewFactory extends SimpleFactoryBase<Void,ExampleViewFactory> {
-        public final FactoryViewReferenceAttribute<ExampleViewFactory,Void,ExampleViewFactory> attribute = new FactoryViewReferenceAttribute<>(exampleViewFactory -> null);
+        public final FactoryViewAttribute<ExampleViewFactory,Void,ExampleViewFactory> attribute = new FactoryViewAttribute<>(exampleViewFactory -> null);
 
         @Override
         public Void createImpl() {

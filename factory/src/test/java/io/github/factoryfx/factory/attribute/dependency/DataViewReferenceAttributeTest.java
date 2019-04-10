@@ -18,7 +18,7 @@ public class DataViewReferenceAttributeTest {
     public static class ViewExampleFactory extends FactoryBase<Void,ViewExampleFactoryRoot> {
         public final BooleanAttribute include= new BooleanAttribute();
 
-        public final FactoryViewReferenceAttribute<ViewExampleFactoryRoot,Void,ViewExampleDataA> view= new FactoryViewReferenceAttribute<>((root) -> {
+        public final FactoryViewAttribute<ViewExampleFactoryRoot,Void,ViewExampleDataA> view= new FactoryViewAttribute<>((root) -> {
             if (include.get()) {
                 return root.exampleFactoryA.get();
             }
@@ -28,8 +28,8 @@ public class DataViewReferenceAttributeTest {
     }
 
     public static class ViewExampleFactoryRoot extends FactoryBase<Void,ViewExampleFactoryRoot>{
-        public final FactoryReferenceAttribute<ViewExampleFactoryRoot,Void,ViewExampleFactory> ref = new FactoryReferenceAttribute<>();
-        public final FactoryReferenceAttribute<ViewExampleFactoryRoot,Void,ViewExampleDataA> exampleFactoryA= new FactoryReferenceAttribute<>();
+        public final FactoryAttribute<ViewExampleFactoryRoot,Void,ViewExampleFactory> ref = new FactoryAttribute<>();
+        public final FactoryAttribute<ViewExampleFactoryRoot,Void,ViewExampleDataA> exampleFactoryA= new FactoryAttribute<>();
 
     }
 
@@ -173,11 +173,11 @@ public class DataViewReferenceAttributeTest {
 
     @Test
     public void removeListener() throws Exception {
-        FactoryViewReferenceAttribute<ViewExampleFactoryRoot,Void,ViewExampleDataA> attribute= new FactoryViewReferenceAttribute<>(viewExampleFactoryRoot -> {
+        FactoryViewAttribute<ViewExampleFactoryRoot,Void,ViewExampleDataA> attribute= new FactoryViewAttribute<>(viewExampleFactoryRoot -> {
             return viewExampleFactoryRoot.exampleFactoryA.get();
         });
 
-        final AttributeChangeListener<ViewExampleDataA,FactoryViewReferenceAttribute<ViewExampleFactoryRoot,Void,ViewExampleDataA>> attributeChangeListener = (a, value) -> System.out.println(value);
+        final AttributeChangeListener<ViewExampleDataA, FactoryViewAttribute<ViewExampleFactoryRoot,Void,ViewExampleDataA>> attributeChangeListener = (a, value) -> System.out.println(value);
         attribute.internal_addListener(attributeChangeListener);
         Assertions.assertTrue(attribute.listeners.size()==1);
         attribute.internal_removeListener(attributeChangeListener);
@@ -186,11 +186,11 @@ public class DataViewReferenceAttributeTest {
 
     @Test
     public void removeWeakListener() {
-        FactoryViewReferenceAttribute<ViewExampleFactoryRoot,Void,ViewExampleDataA> attribute= new FactoryViewReferenceAttribute<>(viewExampleFactoryRoot -> {
+        FactoryViewAttribute<ViewExampleFactoryRoot,Void,ViewExampleDataA> attribute= new FactoryViewAttribute<>(viewExampleFactoryRoot -> {
             return viewExampleFactoryRoot.exampleFactoryA.get();
         });
 
-        final AttributeChangeListener<ViewExampleDataA,FactoryViewReferenceAttribute<ViewExampleFactoryRoot,Void,ViewExampleDataA>> attributeChangeListener = (a, value) -> System.out.println(value);
+        final AttributeChangeListener<ViewExampleDataA, FactoryViewAttribute<ViewExampleFactoryRoot,Void,ViewExampleDataA>> attributeChangeListener = (a, value) -> System.out.println(value);
         attribute.internal_addListener(new WeakAttributeChangeListener<>(attributeChangeListener));
         Assertions.assertTrue(attribute.listeners.size()==1);
         attribute.internal_removeListener(attributeChangeListener);

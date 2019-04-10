@@ -1,8 +1,8 @@
 package io.github.factoryfx.jetty;
 
 import io.github.factoryfx.factory.FactoryBase;
-import io.github.factoryfx.factory.attribute.dependency.FactoryReferenceAttribute;
-import io.github.factoryfx.factory.attribute.dependency.FactoryReferenceListAttribute;
+import io.github.factoryfx.factory.attribute.dependency.FactoryAttribute;
+import io.github.factoryfx.factory.attribute.dependency.FactoryListAttribute;
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.HandlerCollection;
@@ -16,7 +16,7 @@ import java.util.logging.Logger;
  *  <pre>{@code
  *       public class SimpleHttpServer extends SimpleFactoryBase<Server, Void, SimpleHttpServer> {
  *
- *           public final FactoryReferenceAttribute<Server, JettyServerFactory<SimpleHttpServer>> server = new FactoryReferenceAttribute<>(JettyServerFactory.class);
+ *           public final FactoryAttribute<Server, JettyServerFactory<SimpleHttpServer>> server = new FactoryAttribute<>(JettyServerFactory.class);
  *
  *           {@literal @}Override
  *           public Server createImpl() {
@@ -39,8 +39,8 @@ public class JettyServerFactory<R extends FactoryBase<?,R>> extends FactoryBase<
         jerseyLogger2.setLevel(Level.SEVERE);//warning about generic parameters, works fine and no fix available so the warnings are just useless
     }
 
-    public final FactoryReferenceListAttribute<R,HttpServerConnector,HttpServerConnectorFactory<R>> connectors = new FactoryReferenceListAttribute<R,HttpServerConnector,HttpServerConnectorFactory<R>>().labelText("Connectors").userNotSelectable();
-    public final FactoryReferenceAttribute<R,HandlerCollection,HandlerCollectionFactory<R>> handler = new FactoryReferenceAttribute<R,HandlerCollection,HandlerCollectionFactory<R>>().labelText("Handler collection");
+    public final FactoryListAttribute<R,HttpServerConnector,HttpServerConnectorFactory<R>> connectors = new FactoryListAttribute<R,HttpServerConnector,HttpServerConnectorFactory<R>>().labelText("Connectors").userNotSelectable();
+    public final FactoryAttribute<R,HandlerCollection,HandlerCollectionFactory<R>> handler = new FactoryAttribute<R,HandlerCollection,HandlerCollectionFactory<R>>().labelText("Handler collection");
 
 
     public JettyServerFactory(){

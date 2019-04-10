@@ -1,8 +1,8 @@
 package io.github.factoryfx.factory;
 
 import io.github.factoryfx.factory.attribute.Attribute;
-import io.github.factoryfx.factory.attribute.dependency.FactoryReferenceAttribute;
-import io.github.factoryfx.factory.attribute.dependency.FactoryReferenceListAttribute;
+import io.github.factoryfx.factory.attribute.dependency.FactoryAttribute;
+import io.github.factoryfx.factory.attribute.dependency.FactoryListAttribute;
 import io.github.factoryfx.factory.builder.FactoryTreeBuilder;
 import io.github.factoryfx.factory.builder.Scope;
 import io.github.factoryfx.factory.metadata.FactoryMetadata;
@@ -35,7 +35,7 @@ public class FactoryTreeBuilderBasedAttributeSetup<L,R extends FactoryBase<L,R>,
         return result;
     }
 
-    private void setupReferenceAttribute(FactoryReferenceAttribute<?, ?, ?> referenceAttribute) {
+    private void setupReferenceAttribute(FactoryAttribute<?, ?, ?> referenceAttribute) {
         Class<?> referenceClass = referenceAttribute.internal_getReferenceClass();
         Scope scope = factoryTreeBuilder.getScope(referenceClass);
         if (scope== Scope.SINGLETON) {
@@ -46,7 +46,7 @@ public class FactoryTreeBuilderBasedAttributeSetup<L,R extends FactoryBase<L,R>,
 //        }
     }
 
-    private void setupReferenceListAttribute(FactoryReferenceListAttribute<?, ?, ?> referenceAttribute) {
+    private void setupReferenceListAttribute(FactoryListAttribute<?, ?, ?> referenceAttribute) {
         Class<?> referenceClass = referenceAttribute.internal_getReferenceClass();
         Scope scope = factoryTreeBuilder.getScope(referenceClass);
         if (scope== Scope.SINGLETON) {
@@ -58,11 +58,11 @@ public class FactoryTreeBuilderBasedAttributeSetup<L,R extends FactoryBase<L,R>,
     }
 
     private void applyToAttribute(Attribute<?, ?> attribute) {
-        if (attribute instanceof FactoryReferenceAttribute){
-            setupReferenceAttribute((FactoryReferenceAttribute)attribute);
+        if (attribute instanceof FactoryAttribute){
+            setupReferenceAttribute((FactoryAttribute)attribute);
         }
-        if (attribute instanceof FactoryReferenceListAttribute){
-            setupReferenceListAttribute((FactoryReferenceListAttribute)attribute);
+        if (attribute instanceof FactoryListAttribute){
+            setupReferenceListAttribute((FactoryListAttribute)attribute);
         }
     }
 

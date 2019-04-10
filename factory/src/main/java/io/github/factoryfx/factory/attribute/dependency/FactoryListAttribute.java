@@ -8,7 +8,7 @@ import io.github.factoryfx.factory.FactoryBase;
  * @param <L> liveobject created form the factory
  * @param <F> factory
  */
-public class FactoryReferenceListAttribute<R extends FactoryBase<?,R>,L, F extends FactoryBase<L,R>> extends FactoryReferenceListBaseAttribute<R,L,F,FactoryReferenceListAttribute<R,L, F>> {
+public class FactoryListAttribute<R extends FactoryBase<?,R>,L, F extends FactoryBase<L,R>> extends FactoryListBaseAttribute<R,L,F, FactoryListAttribute<R,L, F>> {
 
 
 }

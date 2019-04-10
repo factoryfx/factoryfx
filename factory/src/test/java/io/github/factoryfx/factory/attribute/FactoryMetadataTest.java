@@ -1,8 +1,8 @@
 package io.github.factoryfx.factory.attribute;
 
 import io.github.factoryfx.factory.FactoryBase;
-import io.github.factoryfx.factory.attribute.dependency.FactoryReferenceAttribute;
-import io.github.factoryfx.factory.attribute.dependency.FactoryReferenceListAttribute;
+import io.github.factoryfx.factory.attribute.dependency.FactoryAttribute;
+import io.github.factoryfx.factory.attribute.dependency.FactoryListAttribute;
 import io.github.factoryfx.factory.attribute.types.StringAttribute;
 import io.github.factoryfx.factory.jackson.ObjectMapperBuilder;
 import io.github.factoryfx.factory.merge.testdata.ExampleDataA;
@@ -31,14 +31,14 @@ public class FactoryMetadataTest {
         Assertions.assertNotNull(copy.attribute.get());
     }
 
-    public static class CustomReferenceAttribute<L , F extends FactoryBase<L,ExampleDataA>> extends FactoryReferenceAttribute<ExampleDataA,L,F> {
+    public static class CustomReferenceAttribute<L , F extends FactoryBase<L,ExampleDataA>> extends FactoryAttribute<ExampleDataA,L,F> {
 
     }
 
     public static class ExampleReferenceData extends FactoryBase<Void,ExampleDataA> {
         public final StringAttribute valueAttribute = new StringAttribute();
-        public final FactoryReferenceAttribute<ExampleDataA,Void,ExampleDataA> attribute = new FactoryReferenceAttribute<>();
-        public final FactoryReferenceListAttribute<ExampleDataA,Void, ExampleDataC> attributeList = new FactoryReferenceListAttribute<>();
+        public final FactoryAttribute<ExampleDataA,Void,ExampleDataA> attribute = new FactoryAttribute<>();
+        public final FactoryListAttribute<ExampleDataA,Void, ExampleDataC> attributeList = new FactoryListAttribute<>();
         public final CustomReferenceAttribute<Void, ExampleDataC> customReferenceAttribute = new CustomReferenceAttribute<>();
     }
 
@@ -61,8 +61,8 @@ public class FactoryMetadataTest {
     }
 
     public static class ExampleReferenceDataGenericRoot extends FactoryBase<Void,ExampleReferenceDataGenericRoot> {
-        public final FactoryReferenceAttribute<ExampleReferenceDataGenericRoot,Void,ExampleReferenceGeneric<ExampleReferenceDataGenericRoot>> attribute = new FactoryReferenceAttribute<>();
-        public final FactoryReferenceAttribute<ExampleReferenceDataGenericRoot,Void,ExampleReferenceGeneric2<ExampleReferenceDataGenericRoot,ExampleReferenceGeneric<ExampleReferenceDataGenericRoot>>> attribute2 = new FactoryReferenceAttribute<>();
+        public final FactoryAttribute<ExampleReferenceDataGenericRoot,Void,ExampleReferenceGeneric<ExampleReferenceDataGenericRoot>> attribute = new FactoryAttribute<>();
+        public final FactoryAttribute<ExampleReferenceDataGenericRoot,Void,ExampleReferenceGeneric2<ExampleReferenceDataGenericRoot,ExampleReferenceGeneric<ExampleReferenceDataGenericRoot>>> attribute2 = new FactoryAttribute<>();
     }
 
     public static class ExampleReferenceGeneric<R extends FactoryBase<?,R>> extends FactoryBase<Void,R> {

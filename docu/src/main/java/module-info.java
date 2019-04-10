@@ -27,5 +27,6 @@ open module io.github.factoryfx.docu {
     requires io.github.factoryfx.microserviceRestClient;
     requires javax.servlet.api;
     requires org.eclipse.jetty.server;
+    requires io.github.factoryfx.starter;
 
 }

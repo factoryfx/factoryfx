@@ -6,8 +6,7 @@ import java.util.stream.Collectors;
 
 import io.github.factoryfx.factory.storage.DataUpdate;
 import io.github.factoryfx.factory.builder.FactoryTreeBuilder;
-import io.github.factoryfx.factory.builder.Scope;
-import io.github.factoryfx.factory.attribute.dependency.FactoryReferenceListAttribute;
+import io.github.factoryfx.factory.attribute.dependency.FactoryListAttribute;
 import io.github.factoryfx.factory.log.FactoryUpdateLog;
 import io.github.factoryfx.server.Microservice;
 import org.junit.jupiter.api.Assertions;
@@ -44,7 +43,7 @@ public class FactoryReferenceListTest {
     }
 
     public static class RootFactory extends SimpleFactoryBase<String, RootFactory> {
-        public final FactoryReferenceListAttribute<RootFactory,Object, ObjectFactory> objects = new FactoryReferenceListAttribute<>();
+        public final FactoryListAttribute<RootFactory,Object, ObjectFactory> objects = new FactoryListAttribute<>();
 
         @Override
         public String createImpl() {

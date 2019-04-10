@@ -3,7 +3,7 @@ package io.github.factoryfx.factory.builder;
 import io.github.factoryfx.factory.attribute.types.StringAttribute;
 import io.github.factoryfx.factory.jackson.ObjectMapperBuilder;
 import io.github.factoryfx.factory.SimpleFactoryBase;
-import io.github.factoryfx.factory.attribute.dependency.FactoryReferenceAttribute;
+import io.github.factoryfx.factory.attribute.dependency.FactoryAttribute;
 import io.github.factoryfx.server.Microservice;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -20,8 +20,8 @@ public class DeleteAttributeDanglingIdMigration2Test {
     public static class ServerFactoryOld extends SimpleFactoryBase<Void, ServerFactoryOld> {
 
 
-        public final FactoryReferenceAttribute<ServerFactoryOld,Void,ServerFactoryNestedOld>  serverFactoryNested = new FactoryReferenceAttribute<>();
-        public final FactoryReferenceAttribute<ServerFactoryOld,Void,ServerFactoryQQQOld>  serverFactoryQQQ = new FactoryReferenceAttribute<>();
+        public final FactoryAttribute<ServerFactoryOld,Void,ServerFactoryNestedOld> serverFactoryNested = new FactoryAttribute<>();
+        public final FactoryAttribute<ServerFactoryOld,Void,ServerFactoryQQQOld> serverFactoryQQQ = new FactoryAttribute<>();
 
         @Override
         public Void createImpl() {
@@ -32,7 +32,7 @@ public class DeleteAttributeDanglingIdMigration2Test {
 
     public static class ServerFactoryNestedOld extends SimpleFactoryBase<Void, ServerFactoryOld> {
 
-        public final FactoryReferenceAttribute<ServerFactoryOld,Void,ServerFactoryQQQOld>  serverFactoryQQQ = new FactoryReferenceAttribute<>();
+        public final FactoryAttribute<ServerFactoryOld,Void,ServerFactoryQQQOld> serverFactoryQQQ = new FactoryAttribute<>();
 
         @Override
         public Void createImpl() {
@@ -56,7 +56,7 @@ public class DeleteAttributeDanglingIdMigration2Test {
 
 
     public static class ServerFactory extends SimpleFactoryBase<Void, ServerFactory> {
-        public final FactoryReferenceAttribute<ServerFactory,Void, ServerFactoryNested> serverFactoryNested = new FactoryReferenceAttribute<>();
+        public final FactoryAttribute<ServerFactory,Void, ServerFactoryNested> serverFactoryNested = new FactoryAttribute<>();
 
         @Override
         public Void createImpl() {
@@ -65,7 +65,7 @@ public class DeleteAttributeDanglingIdMigration2Test {
     }
 
     public static class ServerFactoryNested extends SimpleFactoryBase<Void, ServerFactory> {
-        public final FactoryReferenceAttribute<ServerFactory,Void,ServerFactoryQQQ>  serverFactoryQQQ = new FactoryReferenceAttribute<>();
+        public final FactoryAttribute<ServerFactory,Void,ServerFactoryQQQ> serverFactoryQQQ = new FactoryAttribute<>();
 
 
         @Override

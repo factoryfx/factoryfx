@@ -15,9 +15,9 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import io.github.factoryfx.factory.FactoryBase;
-import io.github.factoryfx.factory.attribute.dependency.FactoryReferenceBaseAttribute;
-import io.github.factoryfx.factory.attribute.dependency.FactoryViewListReferenceAttribute;
-import io.github.factoryfx.factory.attribute.dependency.FactoryViewReferenceAttribute;
+import io.github.factoryfx.factory.attribute.dependency.FactoryBaseAttribute;
+import io.github.factoryfx.factory.attribute.dependency.FactoryViewListAttribute;
+import io.github.factoryfx.factory.attribute.dependency.FactoryViewAttribute;
 import io.github.factoryfx.factory.attribute.types.PasswordAttribute;
 import io.github.factoryfx.javafx.factory.editor.attribute.builder.AttributeVisualisationBuilder;
 import io.github.factoryfx.javafx.factory.editor.attribute.builder.SimpleAttributeVisualisationBuilder;
@@ -32,7 +32,7 @@ import org.controlsfx.glyphfont.FontAwesome;
 import com.google.common.base.Ascii;
 
 import io.github.factoryfx.factory.attribute.Attribute;
-import io.github.factoryfx.factory.attribute.dependency.FactoryReferenceListBaseAttribute;
+import io.github.factoryfx.factory.attribute.dependency.FactoryListBaseAttribute;
 import io.github.factoryfx.factory.attribute.ValueListAttribute;
 import io.github.factoryfx.factory.attribute.primitive.BooleanAttribute;
 import io.github.factoryfx.factory.attribute.primitive.DoubleAttribute;
@@ -114,18 +114,18 @@ public class AttributeVisualisationMappingBuilder {
             return new StringAttributeVisualisation(attribute,new ValidationDecoration(uniformDesign));
         }, StringAttribute::new));
         result.add(uniformDesign->new ValueAttributeVisualisationBuilder<>(uniformDesign,URIAttribute.class,URI.class,(attribute)-> new URIAttributeVisualisation(attribute,new ValidationDecoration(uniformDesign)), URIAttribute::new));
-        result.add(uniformDesign->new SimpleAttributeVisualisationBuilder((a)->a instanceof FactoryViewReferenceAttribute,(attribute, navigateToData, previousData)-> new ViewReferenceAttributeVisualisation((FactoryViewReferenceAttribute)attribute, new ValidationDecoration(uniformDesign), navigateToData, uniformDesign)));
-        result.add(uniformDesign->new SimpleAttributeVisualisationBuilder((a)->a instanceof FactoryViewListReferenceAttribute,(attribute, navigateToData, previousData)->{
-            ViewListReferenceAttributeVisualisation visualisation = new ViewListReferenceAttributeVisualisation((FactoryViewListReferenceAttribute)attribute,new ValidationDecoration(uniformDesign), navigateToData, uniformDesign);
+        result.add(uniformDesign->new SimpleAttributeVisualisationBuilder((a)->a instanceof FactoryViewAttribute,(attribute, navigateToData, previousData)-> new ViewReferenceAttributeVisualisation((FactoryViewAttribute)attribute, new ValidationDecoration(uniformDesign), navigateToData, uniformDesign)));
+        result.add(uniformDesign->new SimpleAttributeVisualisationBuilder((a)->a instanceof FactoryViewListAttribute,(attribute, navigateToData, previousData)->{
+            ViewListReferenceAttributeVisualisation visualisation = new ViewListReferenceAttributeVisualisation((FactoryViewListAttribute)attribute,new ValidationDecoration(uniformDesign), navigateToData, uniformDesign);
             ExpandableAttributeVisualisation expandableAttributeVisualisation= new ExpandableAttributeVisualisation(visualisation,uniformDesign,(l)->"Items: "+((List<FactoryBase<?,?>>)l).size(),FontAwesome.Glyph.LIST);
-            if (((FactoryViewListReferenceAttribute)attribute).get().contains(previousData)){
+            if (((FactoryViewListAttribute)attribute).get().contains(previousData)){
                 expandableAttributeVisualisation.expand();
             }
             return expandableAttributeVisualisation;
         }));
 
-        result.add(uniformDesign->new SimpleAttributeVisualisationBuilder((a)->a instanceof FactoryReferenceBaseAttribute,(attribute, navigateToData, previousData)->{
-            FactoryReferenceBaseAttribute referenceAttribute =(FactoryReferenceBaseAttribute)attribute;
+        result.add(uniformDesign->new SimpleAttributeVisualisationBuilder((a)->a instanceof FactoryBaseAttribute,(attribute, navigateToData, previousData)->{
+            FactoryBaseAttribute referenceAttribute =(FactoryBaseAttribute)attribute;
             if(referenceAttribute.internal_isCatalogueBased()){
                 return new CatalogAttributeVisualisation(referenceAttribute::internal_possibleValues, referenceAttribute,new ValidationDecoration(uniformDesign));
             } else {
@@ -133,15 +133,15 @@ public class AttributeVisualisationMappingBuilder {
             }
         }));
 
-        result.add(uniformDesign->new SimpleAttributeVisualisationBuilder((a)->a instanceof FactoryReferenceListBaseAttribute,(attribute, navigateToData, previousData)->{
-            FactoryReferenceListBaseAttribute factoryReferenceListBaseAttribute =(FactoryReferenceListBaseAttribute)attribute;
-            if(factoryReferenceListBaseAttribute.internal_isCatalogueBased()){
-                return new CatalogListAttributeVisualisation(factoryReferenceListBaseAttribute,new ValidationDecoration(uniformDesign), uniformDesign);
+        result.add(uniformDesign->new SimpleAttributeVisualisationBuilder((a)->a instanceof FactoryListBaseAttribute,(attribute, navigateToData, previousData)->{
+            FactoryListBaseAttribute factoryListBaseAttribute =(FactoryListBaseAttribute)attribute;
+            if(factoryListBaseAttribute.internal_isCatalogueBased()){
+                return new CatalogListAttributeVisualisation(factoryListBaseAttribute,new ValidationDecoration(uniformDesign), uniformDesign);
             } else {
                 final TableView dataTableView = new TableView();
-                final ReferenceListAttributeVisualisation referenceListAttributeVisualisation = new ReferenceListAttributeVisualisation(factoryReferenceListBaseAttribute,new ValidationDecoration(uniformDesign),uniformDesign, navigateToData, dataTableView, new ReferenceListAttributeEditWidget(dataTableView, navigateToData, uniformDesign, factoryReferenceListBaseAttribute));
-                ExpandableAttributeVisualisation expandableAttributeVisualisation = new ExpandableAttributeVisualisation(referenceListAttributeVisualisation, uniformDesign, (l) -> "Items: " + ((List<FactoryBase<?,?>>)l).size(), FontAwesome.Glyph.LIST, factoryReferenceListBaseAttribute.internal_isDefaultExpanded());
-                if (factoryReferenceListBaseAttribute.contains(previousData)) {
+                final ReferenceListAttributeVisualisation referenceListAttributeVisualisation = new ReferenceListAttributeVisualisation(factoryListBaseAttribute,new ValidationDecoration(uniformDesign),uniformDesign, navigateToData, dataTableView, new ReferenceListAttributeEditWidget(dataTableView, navigateToData, uniformDesign, factoryListBaseAttribute));
+                ExpandableAttributeVisualisation expandableAttributeVisualisation = new ExpandableAttributeVisualisation(referenceListAttributeVisualisation, uniformDesign, (l) -> "Items: " + ((List<FactoryBase<?,?>>)l).size(), FontAwesome.Glyph.LIST, factoryListBaseAttribute.internal_isDefaultExpanded());
+                if (factoryListBaseAttribute.contains(previousData)) {
                     expandableAttributeVisualisation.expand();
                 }
                 return expandableAttributeVisualisation;

@@ -27,7 +27,7 @@ import javafx.stage.Window;
 
 import org.controlsfx.glyphfont.FontAwesome;
 
-import io.github.factoryfx.factory.attribute.dependency.FactoryReferenceListBaseAttribute;
+import io.github.factoryfx.factory.attribute.dependency.FactoryListBaseAttribute;
 import io.github.factoryfx.factory.util.LanguageText;
 import io.github.factoryfx.javafx.factory.util.UniformDesign;
 import io.github.factoryfx.javafx.factory.widget.Widget;
@@ -55,20 +55,20 @@ public class ReferenceListAttributeEditWidget<RS extends FactoryBase<?,RS>,L, T 
     private final Supplier<Collection<T>> possibleValuesProvider;
     private final boolean isUserEditable;
     private final boolean isUserSelectable;
-    private final FactoryReferenceListBaseAttribute<RS,L,T,?> factoryReferenceListBaseAttribute;
+    private final FactoryListBaseAttribute<RS,L,T,?> factoryListBaseAttribute;
     private final TableView<T> tableView;
     private final Consumer<FactoryBase<?,?>> navigateToData;
     private final BooleanBinding multipleItemsSelected;
     private final boolean isUserCreateable;
     private final BiConsumer<T,List<T>> deleter;
 
-    public ReferenceListAttributeEditWidget(FactoryReferenceListBaseAttribute<RS,L,T,?> factoryReferenceListBaseAttribute, TableView<T> tableView, Consumer<FactoryBase<?,?>> navigateToData, UniformDesign uniformDesign, Supplier<List<? extends T>> newValueProvider, Supplier<Collection<T>> possibleValuesProvider, BiConsumer<T,List<T>> deleter , boolean isUserEditable, boolean isUserSelectable, boolean isUserCreateable) {
+    public ReferenceListAttributeEditWidget(FactoryListBaseAttribute<RS,L,T,?> factoryListBaseAttribute, TableView<T> tableView, Consumer<FactoryBase<?,?>> navigateToData, UniformDesign uniformDesign, Supplier<List<? extends T>> newValueProvider, Supplier<Collection<T>> possibleValuesProvider, BiConsumer<T,List<T>> deleter , boolean isUserEditable, boolean isUserSelectable, boolean isUserCreateable) {
         this.uniformDesign = uniformDesign;
         this.newValueProvider = newValueProvider;
         this.possibleValuesProvider = possibleValuesProvider;
         this.isUserEditable = isUserEditable;
         this.isUserSelectable = isUserSelectable;
-        this.factoryReferenceListBaseAttribute = factoryReferenceListBaseAttribute;
+        this.factoryListBaseAttribute = factoryListBaseAttribute;
         this.tableView = tableView;
         this.navigateToData =  navigateToData;
         multipleItemsSelected = Bindings.createBooleanBinding(() -> tableView.getSelectionModel().getSelectedItems().size() > 1, tableView.getSelectionModel().getSelectedItems());
@@ -76,10 +76,10 @@ public class ReferenceListAttributeEditWidget<RS extends FactoryBase<?,RS>,L, T 
         this.deleter=deleter;
     }
 
-    public ReferenceListAttributeEditWidget(TableView<T> tableView, Consumer<FactoryBase<?,?>> navigateToData, UniformDesign uniformDesign, FactoryReferenceListBaseAttribute<RS,L,T,?> factoryReferenceListBaseAttribute) {
-        this(factoryReferenceListBaseAttribute, tableView, navigateToData, uniformDesign,
-                factoryReferenceListBaseAttribute::internal_createNewPossibleValues, factoryReferenceListBaseAttribute::internal_possibleValues, (t, ts) -> factoryReferenceListBaseAttribute.internal_deleteFactory(t),
-                !factoryReferenceListBaseAttribute.internal_isUserReadOnly(), factoryReferenceListBaseAttribute.internal_isUserSelectable(), factoryReferenceListBaseAttribute.internal_isUserCreatable());
+    public ReferenceListAttributeEditWidget(TableView<T> tableView, Consumer<FactoryBase<?,?>> navigateToData, UniformDesign uniformDesign, FactoryListBaseAttribute<RS,L,T,?> factoryListBaseAttribute) {
+        this(factoryListBaseAttribute, tableView, navigateToData, uniformDesign,
+                factoryListBaseAttribute::internal_createNewPossibleValues, factoryListBaseAttribute::internal_possibleValues, (t, ts) -> factoryListBaseAttribute.internal_deleteFactory(t),
+                !factoryListBaseAttribute.internal_isUserReadOnly(), factoryListBaseAttribute.internal_isUserSelectable(), factoryListBaseAttribute.internal_isUserCreatable());
     }
 
     @Override
@@ -90,7 +90,7 @@ public class ReferenceListAttributeEditWidget<RS extends FactoryBase<?,RS>,L, T 
 
         Button selectButton = new Button("", uniformDesign.createIcon(FontAwesome.Glyph.SEARCH_PLUS));
         selectButton.setOnAction(event -> {
-            new SelectDataDialog<T>(possibleValuesProvider.get(),uniformDesign).show(selectButton.getScene().getWindow(), data -> factoryReferenceListBaseAttribute.get().add(data));
+            new SelectDataDialog<T>(possibleValuesProvider.get(),uniformDesign).show(selectButton.getScene().getWindow(), data -> factoryListBaseAttribute.get().add(data));
         });
         selectButton.setDisable(!isUserEditable || !isUserSelectable);
 
@@ -112,7 +112,7 @@ public class ReferenceListAttributeEditWidget<RS extends FactoryBase<?,RS>,L, T 
         moveUpButton.setOnAction(event -> {
             int selectedIndex = tableView.getSelectionModel().getSelectedIndex();
             if (selectedIndex -1>=0){
-                Collections.swap(factoryReferenceListBaseAttribute, selectedIndex, selectedIndex -1);
+                Collections.swap(factoryListBaseAttribute, selectedIndex, selectedIndex -1);
                 tableView.getSelectionModel().select(selectedIndex -1);
             }
         });
@@ -121,15 +121,15 @@ public class ReferenceListAttributeEditWidget<RS extends FactoryBase<?,RS>,L, T 
         moveDownButton.disableProperty().bind(tableView.getSelectionModel().selectedItemProperty().isNull().or(multipleItemsSelected));
         moveDownButton.setOnAction(event -> {
             int selectedIndex = tableView.getSelectionModel().getSelectedIndex();
-            if (selectedIndex+1< factoryReferenceListBaseAttribute.size()){
-                Collections.swap(factoryReferenceListBaseAttribute, selectedIndex, selectedIndex +1);
+            if (selectedIndex+1< factoryListBaseAttribute.size()){
+                Collections.swap(factoryListBaseAttribute, selectedIndex, selectedIndex +1);
                 tableView.getSelectionModel().select(selectedIndex +1);
             }
         });
         Button sortButton = new Button();
         uniformDesign.addIcon(sortButton,FontAwesome.Glyph.SORT_ALPHA_ASC);
         sortButton.setOnAction(event -> {
-            factoryReferenceListBaseAttribute.sort((d1, d2)->{
+            factoryListBaseAttribute.sort((d1, d2)->{
                 String s1 = Optional.ofNullable(d1.internal().getDisplayText()).orElse("");
                 String s2 = Optional.ofNullable(d2.internal().getDisplayText()).orElse("");
                 return s1.compareTo(s2);
@@ -142,7 +142,7 @@ public class ReferenceListAttributeEditWidget<RS extends FactoryBase<?,RS>,L, T 
         copyButton.disableProperty().bind(tableView.getSelectionModel().selectedItemProperty().isNull().or(multipleItemsSelected).or(new SimpleBooleanProperty(!isUserEditable)));
         copyButton.setOnAction(event -> {
             T copy = tableView.getSelectionModel().getSelectedItem().utility().semanticCopy();
-            factoryReferenceListBaseAttribute.add(copy);
+            factoryListBaseAttribute.add(copy);
             tableView.getSelectionModel().clearSelection();
             tableView.getSelectionModel().select(copy);
         });
@@ -197,19 +197,19 @@ public class ReferenceListAttributeEditWidget<RS extends FactoryBase<?,RS>,L, T 
         }
 
         final List<T> selectedItems = new ArrayList<>(tableView.getSelectionModel().getSelectedItems());
-        selectedItems.forEach(t -> deleter.accept(t, factoryReferenceListBaseAttribute));
+        selectedItems.forEach(t -> deleter.accept(t, factoryListBaseAttribute));
     }
 
     private void addNewReference(Window owner) {
         List<? extends T> newDataList = newValueProvider.get();
         if (!newDataList.isEmpty()){
             if (newDataList.size()==1){
-                factoryReferenceListBaseAttribute.add(newDataList.get(0));
+                factoryListBaseAttribute.add(newDataList.get(0));
                 navigateToData.accept(newDataList.get(0));
             } else {
                 List<T> newDataListData = new ArrayList<>(newDataList);
                 new SelectDataDialog<T>(newDataListData,uniformDesign).show(owner, data -> {
-                    factoryReferenceListBaseAttribute.add(data);
+                    factoryListBaseAttribute.add(data);
                     navigateToData.accept(data);
                 });
             }

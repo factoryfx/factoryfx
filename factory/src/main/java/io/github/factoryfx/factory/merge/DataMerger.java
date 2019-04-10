@@ -31,9 +31,9 @@ public class DataMerger<R extends FactoryBase<?,R>> {
     public MergeResult<R> createMergeResult(Function<String,Boolean> permissionChecker) {
         MergeResult mergeResult = new MergeResult(currentData);
 
-        Map<String, FactoryBase<?,R>> currentMap = currentData.internal().collectChildDataMap();
-        Map<String, FactoryBase<?,R>> originalMap = commonData.internal().collectChildDataMap();
-        Map<String, FactoryBase<?,R>> newMap = newData.internal().collectChildDataMap();
+        Map<String, FactoryBase<?,R>> currentMap = currentData.internal().collectChildFactoryMap();
+        Map<String, FactoryBase<?,R>> originalMap = commonData.internal().collectChildFactoryMap();
+        Map<String, FactoryBase<?,R>> newMap = newData.internal().collectChildFactoryMap();
 
         for (FactoryBase<?,R> newData : newMap.values()) {//avoid mix up with iteration counters
             newData.internal().resetIterationCounterFlat();

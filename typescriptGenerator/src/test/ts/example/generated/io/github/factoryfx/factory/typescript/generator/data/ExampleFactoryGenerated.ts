@@ -12,8 +12,8 @@ export abstract class ExampleFactoryGenerated  extends Data {
     public ref: ExampleFactory;
     public refList: ExampleFactory[];
     public static readonly attributeMetadata: AttributeMetadata<string>= new AttributeMetadata<string>('labelEn\"\'\\','labelDe',AttributeType.StringAttribute);
-    public static readonly refMetadata: AttributeMetadata<ExampleFactory>= new AttributeMetadata<ExampleFactory>('','',AttributeType.FactoryReferenceAttribute);
-    public static readonly refListMetadata: AttributeMetadata<ExampleFactory[]>= new AttributeMetadata<ExampleFactory[]>('','',AttributeType.FactoryReferenceListAttribute);
+    public static readonly refMetadata: AttributeMetadata<ExampleFactory>= new AttributeMetadata<ExampleFactory>('','',AttributeType.FactoryAttribute);
+    public static readonly refListMetadata: AttributeMetadata<ExampleFactory[]>= new AttributeMetadata<ExampleFactory[]>('','',AttributeType.FactoryListAttribute);
 
     public attributeAccessor(): AttributeAccessor<string,ExampleFactoryGenerated>{
         return new AttributeAccessor<string,ExampleFactoryGenerated>(ExampleFactoryGenerated.attributeMetadata,this,"attribute");

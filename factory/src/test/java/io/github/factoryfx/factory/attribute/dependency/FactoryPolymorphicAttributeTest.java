@@ -15,7 +15,7 @@ import org.junit.jupiter.api.Test;
 import java.util.ArrayList;
 import java.util.List;
 
-public class FactoryPolymorphicReferenceAttributeTest {
+public class FactoryPolymorphicAttributeTest {
 
 
     @Test
@@ -28,7 +28,7 @@ public class FactoryPolymorphicReferenceAttributeTest {
     }
 
     public static class ExamplePolymorphicReferenceAttributeFactory extends FactoryBase<Printer,ExampleFactoryA>{
-        public final FactoryPolymorphicReferenceAttribute<ExampleFactoryA,Printer> attribute = new FactoryPolymorphicReferenceAttribute<>(Printer.class);
+        public final FactoryPolymorphicAttribute<ExampleFactoryA,Printer> attribute = new FactoryPolymorphicAttribute<>(Printer.class);
     }
 
 
@@ -54,25 +54,25 @@ public class FactoryPolymorphicReferenceAttributeTest {
     @Test
     public void test_setupUnsafe_validation(){
         Assertions.assertThrows(IllegalArgumentException.class, () -> {
-            new FactoryPolymorphicReferenceAttribute<ExampleFactoryA,Printer>().setupUnsafe(Printer.class,String.class);
+            new FactoryPolymorphicAttribute<ExampleFactoryA,Printer>().setupUnsafe(Printer.class,String.class);
         });
     }
 
     @Test
     public void test_setupUnsafe_validation_happy_case(){
-        new FactoryPolymorphicReferenceAttribute<ExampleFactoryA,Printer>().setupUnsafe(Printer.class,ErrorPrinterFactory.class);
+        new FactoryPolymorphicAttribute<ExampleFactoryA,Printer>().setupUnsafe(Printer.class,ErrorPrinterFactory.class);
     }
 
     @Test
     public void test_generatorInfo_safe(){
-        FactoryPolymorphicReferenceAttribute<ExampleFactoryA,Printer> attribute = new FactoryPolymorphicReferenceAttribute<ExampleFactoryA,Printer>().setup(Printer.class, ErrorPrinterFactory.class, OutPrinterFactory.class);
+        FactoryPolymorphicAttribute<ExampleFactoryA,Printer> attribute = new FactoryPolymorphicAttribute<ExampleFactoryA,Printer>().setup(Printer.class, ErrorPrinterFactory.class, OutPrinterFactory.class);
         Assertions.assertEquals(ErrorPrinterFactory.class,attribute.internal_possibleFactoriesClasses().get(0));
         Assertions.assertEquals(OutPrinterFactory.class,attribute.internal_possibleFactoriesClasses().get(1));
     }
 
     @Test
     public void test_generatorInfo_unsafe(){
-        FactoryPolymorphicReferenceAttribute<ExampleFactoryA,Printer> attribute = new FactoryPolymorphicReferenceAttribute<ExampleFactoryA,Printer>().setupUnsafe(Printer.class, ErrorPrinterFactory.class, OutPrinterFactory.class);
+        FactoryPolymorphicAttribute<ExampleFactoryA,Printer> attribute = new FactoryPolymorphicAttribute<ExampleFactoryA,Printer>().setupUnsafe(Printer.class, ErrorPrinterFactory.class, OutPrinterFactory.class);
         Assertions.assertEquals(ErrorPrinterFactory.class,attribute.internal_possibleFactoriesClasses().get(0));
         Assertions.assertEquals(OutPrinterFactory.class,attribute.internal_possibleFactoriesClasses().get(1));
     }
@@ -80,7 +80,7 @@ public class FactoryPolymorphicReferenceAttributeTest {
 
     @Test
     public void test_generatorInfo_constructor(){
-        FactoryPolymorphicReferenceAttribute<ExampleFactoryA,Printer> attribute = new FactoryPolymorphicReferenceAttribute<>(Printer.class, ErrorPrinterFactory.class, OutPrinterFactory.class);
+        FactoryPolymorphicAttribute<ExampleFactoryA,Printer> attribute = new FactoryPolymorphicAttribute<>(Printer.class, ErrorPrinterFactory.class, OutPrinterFactory.class);
         Assertions.assertEquals(ErrorPrinterFactory.class,attribute.internal_possibleFactoriesClasses().get(0));
         Assertions.assertEquals(OutPrinterFactory.class,attribute.internal_possibleFactoriesClasses().get(1));
     }
@@ -103,7 +103,7 @@ public class FactoryPolymorphicReferenceAttributeTest {
 
     @Test
     public void test_null(){
-        FactoryPolymorphicReferenceAttribute<ExampleFactoryA,Printer> attribute = new FactoryPolymorphicReferenceAttribute<ExampleFactoryA,Printer>().setup(Printer.class, ErrorPrinterFactory.class, OutPrinterFactory.class);
+        FactoryPolymorphicAttribute<ExampleFactoryA,Printer> attribute = new FactoryPolymorphicAttribute<ExampleFactoryA,Printer>().setup(Printer.class, ErrorPrinterFactory.class, OutPrinterFactory.class);
 
         {
             attribute.set(null);
@@ -120,7 +120,7 @@ public class FactoryPolymorphicReferenceAttributeTest {
 
     @Test
     public void test_nullable(){
-        FactoryPolymorphicReferenceAttribute<ExampleFactoryA,Printer> attribute = new FactoryPolymorphicReferenceAttribute<ExampleFactoryA,Printer>().setup(Printer.class, ErrorPrinterFactory.class, OutPrinterFactory.class).nullable();
+        FactoryPolymorphicAttribute<ExampleFactoryA,Printer> attribute = new FactoryPolymorphicAttribute<ExampleFactoryA,Printer>().setup(Printer.class, ErrorPrinterFactory.class, OutPrinterFactory.class).nullable();
 
         {
             attribute.set(null);
@@ -137,13 +137,13 @@ public class FactoryPolymorphicReferenceAttributeTest {
 
     @Test
     public void test_internal_require_true(){
-        FactoryPolymorphicReferenceAttribute<ExampleFactoryA,Printer> attribute = new FactoryPolymorphicReferenceAttribute<ExampleFactoryA,Printer>().setup(Printer.class, ErrorPrinterFactory.class, OutPrinterFactory.class);
+        FactoryPolymorphicAttribute<ExampleFactoryA,Printer> attribute = new FactoryPolymorphicAttribute<ExampleFactoryA,Printer>().setup(Printer.class, ErrorPrinterFactory.class, OutPrinterFactory.class);
         Assertions.assertTrue(attribute.internal_required());
     }
 
     @Test
     public void test_internal_require_false(){
-        FactoryPolymorphicReferenceAttribute<ExampleFactoryA,Printer> attribute = new FactoryPolymorphicReferenceAttribute<ExampleFactoryA,Printer>().setup(Printer.class, ErrorPrinterFactory.class, OutPrinterFactory.class).nullable();
+        FactoryPolymorphicAttribute<ExampleFactoryA,Printer> attribute = new FactoryPolymorphicAttribute<ExampleFactoryA,Printer>().setup(Printer.class, ErrorPrinterFactory.class, OutPrinterFactory.class).nullable();
         Assertions.assertFalse(attribute.internal_required());
     }
 }

@@ -15,12 +15,12 @@ public class ReferenceBaseAttributeTest {
 
     @Test
     public void test_setupunsafe(){
-        FactoryReferenceAttribute<GenericData<String>,Void,GenericData<String>> test1 = new FactoryReferenceAttribute<>();
+        FactoryAttribute<GenericData<String>,Void,GenericData<String>> test1 = new FactoryAttribute<>();
     }
 
     @Test
     public void test_AttributeStorageMetadata(){
-        FactoryReferenceAttribute<GenericData<String>,Void,GenericData<String>> test1 = new FactoryReferenceAttribute<>();
+        FactoryAttribute<GenericData<String>,Void,GenericData<String>> test1 = new FactoryAttribute<>();
         AttributeStorageMetadata attributeStorageMetadata = test1.createAttributeStorageMetadata("bla");
         AttributeStorageMetadata attributeStorageMetadata2 = test1.createAttributeStorageMetadata("bla");
         Assertions.assertTrue(attributeStorageMetadata.isReference());

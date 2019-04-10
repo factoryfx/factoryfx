@@ -3,7 +3,7 @@ package io.github.factoryfx.factory.testfactories;
 import io.github.factoryfx.factory.attribute.types.StringAttribute;
 import io.github.factoryfx.factory.FastFactoryUtility;
 import io.github.factoryfx.factory.SimpleFactoryBase;
-import io.github.factoryfx.factory.attribute.dependency.FactoryReferenceAttribute;
+import io.github.factoryfx.factory.attribute.dependency.FactoryAttribute;
 
 public class FastExampleFactoryC extends SimpleFactoryBase<ExampleLiveObjectC,FastExampleFactoryA> {
     public String stringAttribute;
@@ -19,7 +19,7 @@ public class FastExampleFactoryC extends SimpleFactoryBase<ExampleLiveObjectC,Fa
                 FastExampleFactoryC.class,
                 (factory, attributeVisitor) -> {
                     StringAttribute stringAttribute= new StringAttribute().labelText("ExampleB1");
-                    FactoryReferenceAttribute<FastExampleFactoryA,ExampleLiveObjectB,FastExampleFactoryB> referenceAttribute = new FactoryReferenceAttribute<FastExampleFactoryA,ExampleLiveObjectB,FastExampleFactoryB>().labelText("ExampleA2");
+                    FactoryAttribute<FastExampleFactoryA,ExampleLiveObjectB,FastExampleFactoryB> referenceAttribute = new FactoryAttribute<FastExampleFactoryA,ExampleLiveObjectB,FastExampleFactoryB>().labelText("ExampleA2");
 
                     attributeVisitor.accept("stringAttribute",FastFactoryUtility.tempAttributeSetup(stringAttribute,(v)->factory.stringAttribute=v,()->factory.stringAttribute));
                     attributeVisitor.accept("referenceAttribute",FastFactoryUtility.tempAttributeSetup(referenceAttribute,(v)->factory.referenceAttribute=v,()->factory.referenceAttribute));

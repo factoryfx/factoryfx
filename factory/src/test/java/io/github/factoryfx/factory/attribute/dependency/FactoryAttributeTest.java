@@ -12,11 +12,11 @@ import org.mockito.Mockito;
 import java.util.List;
 
 
-public class FactoryReferenceAttributeTest {
+public class FactoryAttributeTest {
 
     @Test
     public void test_null(){
-        FactoryReferenceAttribute<ExampleFactoryA,ExampleLiveObjectA, ExampleFactoryA> attribute = new FactoryReferenceAttribute<ExampleFactoryA,ExampleLiveObjectA, ExampleFactoryA>();
+        FactoryAttribute<ExampleFactoryA,ExampleLiveObjectA, ExampleFactoryA> attribute = new FactoryAttribute<ExampleFactoryA,ExampleLiveObjectA, ExampleFactoryA>();
 
         {
             attribute.set(null);
@@ -33,13 +33,13 @@ public class FactoryReferenceAttributeTest {
 
     @Test
     public void test_internal_require_true(){
-        FactoryReferenceAttribute<ExampleFactoryA,ExampleLiveObjectA, ExampleFactoryA> attribute = new FactoryReferenceAttribute<>();
+        FactoryAttribute<ExampleFactoryA,ExampleLiveObjectA, ExampleFactoryA> attribute = new FactoryAttribute<>();
         Assertions.assertTrue(attribute.internal_required());
     }
 
     @Test
     public void test_internal_require_false(){
-        FactoryReferenceAttribute<ExampleFactoryA,ExampleLiveObjectA, ExampleFactoryA> attribute = new FactoryReferenceAttribute<ExampleFactoryA,ExampleLiveObjectA, ExampleFactoryA>().nullable();
+        FactoryAttribute<ExampleFactoryA,ExampleLiveObjectA, ExampleFactoryA> attribute = new FactoryAttribute<ExampleFactoryA,ExampleLiveObjectA, ExampleFactoryA>().nullable();
         Assertions.assertFalse(attribute.internal_required());
     }
 
@@ -47,7 +47,7 @@ public class FactoryReferenceAttributeTest {
 
     @Test
     public void test_nullable(){
-        FactoryReferenceAttribute<ExampleFactoryA,ExampleLiveObjectA, ExampleFactoryA> attribute = new FactoryReferenceAttribute<ExampleFactoryA,ExampleLiveObjectA, ExampleFactoryA>().nullable();
+        FactoryAttribute<ExampleFactoryA,ExampleLiveObjectA, ExampleFactoryA> attribute = new FactoryAttribute<ExampleFactoryA,ExampleLiveObjectA, ExampleFactoryA>().nullable();
 
 
         {
@@ -65,7 +65,7 @@ public class FactoryReferenceAttributeTest {
 
     public static class CreateExampleFactory extends SimpleFactoryBase<Void,ExampleFactoryA> {
         @SuppressWarnings("unchecked")
-        FactoryReferenceAttribute<ExampleFactoryA, ExampleLiveObjectA, ExampleFactoryA> attribute = new FactoryReferenceAttribute<ExampleFactoryA, ExampleLiveObjectA, ExampleFactoryA>().nullable();
+        FactoryAttribute<ExampleFactoryA, ExampleLiveObjectA, ExampleFactoryA> attribute = new FactoryAttribute<ExampleFactoryA, ExampleLiveObjectA, ExampleFactoryA>().nullable();
         @Override
         public Void createImpl() {
             return null;
@@ -86,7 +86,7 @@ public class FactoryReferenceAttributeTest {
     }
 
     public static class MockExampleFactoryRoot extends SimpleFactoryBase<Void,MockExampleFactoryRoot> {
-        public final FactoryReferenceAttribute<MockExampleFactoryRoot, LiveDummy, ExampleFactory> attribute = new FactoryReferenceAttribute<>();
+        public final FactoryAttribute<MockExampleFactoryRoot, LiveDummy, ExampleFactory> attribute = new FactoryAttribute<>();
         @Override
         public Void createImpl() {
             return null;

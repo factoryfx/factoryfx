@@ -3,7 +3,7 @@ package io.github.factoryfx.factory.builder;
 import io.github.factoryfx.factory.attribute.types.StringAttribute;
 import io.github.factoryfx.factory.jackson.ObjectMapperBuilder;
 import io.github.factoryfx.factory.SimpleFactoryBase;
-import io.github.factoryfx.factory.attribute.dependency.FactoryReferenceAttribute;
+import io.github.factoryfx.factory.attribute.dependency.FactoryAttribute;
 import io.github.factoryfx.server.Microservice;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -19,8 +19,8 @@ public class DeleteAttributeDanglingIdMigrationTest {
 
     public static class ServerFactoryOld extends SimpleFactoryBase<Void, ServerFactoryOld> {
 
-        public final FactoryReferenceAttribute<ServerFactoryOld,Void,ServerFactoryNestedOld>  serverFactoryNested1 = new FactoryReferenceAttribute<>();
-        public final FactoryReferenceAttribute<ServerFactoryOld,Void,ServerFactoryNestedOld>  serverFactoryNested2 = new FactoryReferenceAttribute<>();
+        public final FactoryAttribute<ServerFactoryOld,Void,ServerFactoryNestedOld> serverFactoryNested1 = new FactoryAttribute<>();
+        public final FactoryAttribute<ServerFactoryOld,Void,ServerFactoryNestedOld> serverFactoryNested2 = new FactoryAttribute<>();
 
         @Override
         public Void createImpl() {
@@ -47,7 +47,7 @@ public class DeleteAttributeDanglingIdMigrationTest {
 
 
     public static class ServerFactory extends SimpleFactoryBase<Void, ServerFactory> {
-        public final FactoryReferenceAttribute<ServerFactory,Void, ServerFactoryNested> serverFactoryNested2 = new FactoryReferenceAttribute<>();
+        public final FactoryAttribute<ServerFactory,Void, ServerFactoryNested> serverFactoryNested2 = new FactoryAttribute<>();
 
         @Override
         public Void createImpl() {

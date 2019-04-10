@@ -39,7 +39,7 @@ that's exactly what factoryfx is doing.
 ## Factory solution
 ```java
 public class HelloWorldFactory extends SimpleFactoryBase<HelloWorld,Void,HelloWorldFactory> {
-    public final FactoryReferenceAttribute<Dependency,DependencyFactory> dependency =new FactoryReferenceAttribute<>(DependencyFactory.class);
+    public final FactoryAttribute<Dependency,DependencyFactory> dependency =new FactoryAttribute<>(DependencyFactory.class);
     public final StringAttribute text1 = new StringAttribute();
     public final StringAttribute text2 = new StringAttribute();
     @Override

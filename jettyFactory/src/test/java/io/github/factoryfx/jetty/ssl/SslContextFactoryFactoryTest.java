@@ -3,7 +3,7 @@ package io.github.factoryfx.jetty.ssl;
 import com.google.common.io.ByteStreams;
 import io.github.factoryfx.factory.FactoryBase;
 import io.github.factoryfx.factory.SimpleFactoryBase;
-import io.github.factoryfx.factory.attribute.dependency.FactoryReferenceAttribute;
+import io.github.factoryfx.factory.attribute.dependency.FactoryAttribute;
 import io.github.factoryfx.factory.builder.FactoryTreeBuilder;
 import io.github.factoryfx.factory.builder.Scope;
 import io.github.factoryfx.jetty.JettyServerBuilder;
@@ -45,7 +45,7 @@ public class SslContextFactoryFactoryTest {
     }
 
     public static class TestJettyServerFactory extends SimpleFactoryBase<Server, TestJettyServerFactory>{
-        public final FactoryReferenceAttribute<TestJettyServerFactory,Server,JettyServerFactory<TestJettyServerFactory>> server = new FactoryReferenceAttribute<>();
+        public final FactoryAttribute<TestJettyServerFactory,Server,JettyServerFactory<TestJettyServerFactory>> server = new FactoryAttribute<>();
 
         @Override
         public Server createImpl() {

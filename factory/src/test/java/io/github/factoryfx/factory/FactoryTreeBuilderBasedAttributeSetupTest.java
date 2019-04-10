@@ -1,8 +1,8 @@
 package io.github.factoryfx.factory;
 
 import io.github.factoryfx.factory.jackson.ObjectMapperBuilder;
-import io.github.factoryfx.factory.attribute.dependency.FactoryReferenceAttribute;
-import io.github.factoryfx.factory.attribute.dependency.FactoryViewReferenceAttribute;
+import io.github.factoryfx.factory.attribute.dependency.FactoryAttribute;
+import io.github.factoryfx.factory.attribute.dependency.FactoryViewAttribute;
 import io.github.factoryfx.factory.builder.FactoryTreeBuilder;
 import io.github.factoryfx.factory.builder.Scope;
 import io.github.factoryfx.factory.testfactories.*;
@@ -171,7 +171,8 @@ public class FactoryTreeBuilderBasedAttributeSetupTest {
 
         FactoryTreeBuilder<ExampleLiveObjectA,ExampleFactoryA,Void> builder = new FactoryTreeBuilder<>(ExampleFactoryA.class, context -> {
             ExampleFactoryA factoryBases = new ExampleFactoryA();
-            factoryBases.referenceListAttribute.addAll(context.getList(ExampleFactoryB.class));
+            factoryBases.referenceListAttribute.add(context.get(ExampleFactoryB.class,"111"));
+            factoryBases.referenceListAttribute.add(context.get(ExampleFactoryB.class,"222"));
             return factoryBases;
         });
         builder.addFactory(ExampleFactoryB.class,"111", Scope.SINGLETON, context -> {
@@ -271,7 +272,7 @@ public class FactoryTreeBuilderBasedAttributeSetupTest {
 
 
     public static class ExampleViewFactory extends SimpleFactoryBase<ExampleLiveObjectB,ExampleFactoryViewRootFactory>{
-        public final FactoryViewReferenceAttribute<ExampleFactoryViewRootFactory,ExampleLiveObjectB,ExamplDummyFactory> viewAttribute =new FactoryViewReferenceAttribute<>((root)->root.referenceAttribute.get());
+        public final FactoryViewAttribute<ExampleFactoryViewRootFactory,ExampleLiveObjectB,ExamplDummyFactory> viewAttribute =new FactoryViewAttribute<>((root)->root.referenceAttribute.get());
 
         @Override
         public ExampleLiveObjectB createImpl() {
@@ -280,8 +281,8 @@ public class FactoryTreeBuilderBasedAttributeSetupTest {
     }
 
     public static class ExampleFactoryViewRootFactory extends SimpleFactoryBase<ExampleLiveObjectB,ExampleFactoryViewRootFactory>{
-        public final FactoryReferenceAttribute<ExampleFactoryViewRootFactory,ExampleLiveObjectB,ExampleViewFactory> referenceAttributeViewFactory = new FactoryReferenceAttribute<>();
-        public final FactoryReferenceAttribute<ExampleFactoryViewRootFactory,ExampleLiveObjectB,ExamplDummyFactory> referenceAttribute = new FactoryReferenceAttribute<>();
+        public final FactoryAttribute<ExampleFactoryViewRootFactory,ExampleLiveObjectB,ExampleViewFactory> referenceAttributeViewFactory = new FactoryAttribute<>();
+        public final FactoryAttribute<ExampleFactoryViewRootFactory,ExampleLiveObjectB,ExamplDummyFactory> referenceAttribute = new FactoryAttribute<>();
 
         @Override
         public ExampleLiveObjectB createImpl() {

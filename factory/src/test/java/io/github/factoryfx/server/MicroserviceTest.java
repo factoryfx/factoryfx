@@ -6,9 +6,8 @@ import io.github.factoryfx.factory.storage.DataUpdate;
 import io.github.factoryfx.factory.storage.StoredDataMetadata;
 import io.github.factoryfx.factory.FactoryBase;
 import io.github.factoryfx.factory.SimpleFactoryBase;
-import io.github.factoryfx.factory.attribute.dependency.FactoryReferenceAttribute;
+import io.github.factoryfx.factory.attribute.dependency.FactoryAttribute;
 import io.github.factoryfx.factory.builder.FactoryTreeBuilder;
-import io.github.factoryfx.factory.builder.Scope;
 import io.github.factoryfx.factory.log.FactoryUpdateLog;
 import io.github.factoryfx.factory.testfactories.ExampleFactoryA;
 import io.github.factoryfx.factory.testfactories.ExampleFactoryB;
@@ -34,7 +33,7 @@ public class MicroserviceTest {
     public void test_summary() throws Exception {
         FactoryTreeBuilder<ExampleLiveObjectA,ExampleFactoryA,ChangeListingSummary> builder = new FactoryTreeBuilder<>(ExampleFactoryA.class, ctx -> new ExampleFactoryA());
 
-        Microservice<ExampleLiveObjectA,ExampleFactoryA,ChangeListingSummary> microservice = builder.microservice().withInMemoryStorage().widthChangeSummaryCreator(mergeDiffInfo -> {
+        Microservice<ExampleLiveObjectA,ExampleFactoryA,ChangeListingSummary> microservice = builder.microservice().withInMemoryStorage().withChangeSummaryCreator(mergeDiffInfo -> {
             if (mergeDiffInfo==null){
                 return null;
             }
@@ -144,7 +143,7 @@ public class MicroserviceTest {
 
 
     public static class ExampleFactoryARecreation extends SimpleFactoryBase<ExampleLiveObjectA,ExampleFactoryARecreation> {
-        public final FactoryReferenceAttribute<ExampleFactoryARecreation,ExampleLiveObjectB,ExampleFactoryBRecreation> referenceAttribute = new FactoryReferenceAttribute<ExampleFactoryARecreation,ExampleLiveObjectB,ExampleFactoryBRecreation>().labelText("ExampleA2").nullable();
+        public final FactoryAttribute<ExampleFactoryARecreation,ExampleLiveObjectB,ExampleFactoryBRecreation> referenceAttribute = new FactoryAttribute<ExampleFactoryARecreation,ExampleLiveObjectB,ExampleFactoryBRecreation>().labelText("ExampleA2").nullable();
 
         @Override
         public ExampleLiveObjectA createImpl() {
@@ -153,7 +152,7 @@ public class MicroserviceTest {
     }
 
     public static class ExampleFactoryBRecreation extends FactoryBase<ExampleLiveObjectB,ExampleFactoryARecreation> {
-        public final FactoryReferenceAttribute<ExampleFactoryARecreation,ExampleLiveObjectB,ExampleFactoryBRecreation> referenceAttribute = new FactoryReferenceAttribute<ExampleFactoryARecreation,ExampleLiveObjectB,ExampleFactoryBRecreation>().labelText("ExampleA2").nullable();
+        public final FactoryAttribute<ExampleFactoryARecreation,ExampleLiveObjectB,ExampleFactoryBRecreation> referenceAttribute = new FactoryAttribute<ExampleFactoryARecreation,ExampleLiveObjectB,ExampleFactoryBRecreation>().labelText("ExampleA2").nullable();
 
         long recreationCounter=0;
         public ExampleFactoryBRecreation(){
@@ -191,7 +190,7 @@ public class MicroserviceTest {
     }
 
     @Test
-    public void test_create_width_exception() {
+    public void test_create_with_exception() {
         Assertions.assertThrows(RuntimeException.class, () -> {
             FactoryTreeBuilder< Void, BrokenFactory, ChangeListingSummary> builder = new FactoryTreeBuilder<>(BrokenFactory.class, ctx -> new BrokenFactory());
             Microservice<Void, BrokenFactory, ChangeListingSummary> microservice = builder.microservice().withInMemoryStorage().build();

@@ -5,7 +5,7 @@ import io.github.factoryfx.factory.attribute.types.EncryptedStringAttribute;
 import io.github.factoryfx.factory.jackson.ObjectMapperBuilder;
 import io.github.factoryfx.factory.storage.StoredDataMetadata;
 import io.github.factoryfx.factory.SimpleFactoryBase;
-import io.github.factoryfx.factory.attribute.dependency.FactoryReferenceAttribute;
+import io.github.factoryfx.factory.attribute.dependency.FactoryAttribute;
 import io.github.factoryfx.factory.builder.FactoryTreeBuilder;
 import io.github.factoryfx.factory.builder.Scope;
 import io.github.factoryfx.jetty.JettyServerFactory;
@@ -28,7 +28,7 @@ public class MicroserviceRestIntegrationTest {
 
     public static class TestJettyServer  extends SimpleFactoryBase<Server, TestJettyServer> {
         @SuppressWarnings("unchecked")
-        public final FactoryReferenceAttribute<TestJettyServer,Server, JettyServerFactory<TestJettyServer>> server = new FactoryReferenceAttribute<>();
+        public final FactoryAttribute<TestJettyServer,Server, JettyServerFactory<TestJettyServer>> server = new FactoryAttribute<>();
 
         @Override
         public Server createImpl() {

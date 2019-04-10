@@ -3,13 +3,13 @@ package io.github.factoryfx.jetty;
 import io.github.factoryfx.factory.util.LanguageText;
 import io.github.factoryfx.factory.validation.ValidationResult;
 import io.github.factoryfx.factory.FactoryBase;
-import io.github.factoryfx.factory.attribute.dependency.FactoryReferenceListAttribute;
+import io.github.factoryfx.factory.attribute.dependency.FactoryListAttribute;
 
 import java.util.HashSet;
 
 public class UpdateableServletFactory<R extends FactoryBase<?,R>> extends FactoryBase<UpdateableServlet,R> {
 
-    public final FactoryReferenceListAttribute<R,ServletAndPath,ServletAndPathFactory<R>> servletAndPaths = new FactoryReferenceListAttribute<R,ServletAndPath,ServletAndPathFactory<R>>().labelText("servletAndPaths");
+    public final FactoryListAttribute<R,ServletAndPath,ServletAndPathFactory<R>> servletAndPaths = new FactoryListAttribute<R,ServletAndPath,ServletAndPathFactory<R>>().labelText("servletAndPaths");
 
     public UpdateableServletFactory() {
         this.configLifeCycle().setCreator(() -> new UpdateableServlet(servletAndPaths.instances()));

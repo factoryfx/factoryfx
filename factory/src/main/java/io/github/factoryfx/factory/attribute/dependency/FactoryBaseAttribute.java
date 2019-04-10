@@ -20,7 +20,7 @@ import java.util.*;
  * @param <A> Attribute self
 
  */
-public class FactoryReferenceBaseAttribute<R extends FactoryBase<?,R>,L,F extends FactoryBase<? extends L,R>, A extends ReferenceBaseAttribute<R,F,F,A>> extends ReferenceBaseAttribute<R,F,F,A> {
+public class FactoryBaseAttribute<R extends FactoryBase<?,R>,L,F extends FactoryBase<? extends L,R>, A extends ReferenceBaseAttribute<R,F,F,A>> extends ReferenceBaseAttribute<R,F,F,A> {
 
     @JsonProperty("v")
     private F value;
@@ -175,7 +175,7 @@ public class FactoryReferenceBaseAttribute<R extends FactoryBase<?,R>,L,F extend
     }
 
 
-    public FactoryReferenceBaseAttribute() {
+    public FactoryBaseAttribute() {
         super();
     }
 

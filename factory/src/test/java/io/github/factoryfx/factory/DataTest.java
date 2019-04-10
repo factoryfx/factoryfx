@@ -6,7 +6,7 @@ import java.util.*;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.factoryfx.factory.attribute.Attribute;
-import io.github.factoryfx.factory.attribute.dependency.FactoryReferenceAttribute;
+import io.github.factoryfx.factory.attribute.dependency.FactoryAttribute;
 import io.github.factoryfx.factory.attribute.types.ObjectValueAttribute;
 import io.github.factoryfx.factory.attribute.types.StringAttribute;
 import io.github.factoryfx.factory.jackson.ObjectMapperBuilder;
@@ -404,12 +404,12 @@ public class DataTest {
 
 
     public static class ExampleParentsA extends FactoryBase<Void,ExampleParentsA> {
-        public final FactoryReferenceAttribute<ExampleParentsA,Void,ExampleParentsB> exampleParentsB = new FactoryReferenceAttribute<>();
-        public final FactoryReferenceAttribute<ExampleParentsA,Void,ExampleParentsC> exampleParentsC = new FactoryReferenceAttribute<>();
+        public final FactoryAttribute<ExampleParentsA,Void,ExampleParentsB> exampleParentsB = new FactoryAttribute<>();
+        public final FactoryAttribute<ExampleParentsA,Void,ExampleParentsC> exampleParentsC = new FactoryAttribute<>();
     }
 
     public static class ExampleParentsB extends FactoryBase<Void,ExampleParentsA> {
-        public final FactoryReferenceAttribute<ExampleParentsA,Void,ExampleParentsC> exampleParentsC = new FactoryReferenceAttribute<>();
+        public final FactoryAttribute<ExampleParentsA,Void,ExampleParentsC> exampleParentsC = new FactoryAttribute<>();
     }
 
     public static class ExampleParentsC extends FactoryBase<Void,ExampleParentsA> {

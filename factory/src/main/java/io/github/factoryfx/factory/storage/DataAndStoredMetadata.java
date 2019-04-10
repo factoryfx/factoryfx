@@ -5,9 +5,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import io.github.factoryfx.factory.FactoryBase;
 
-
-import java.time.LocalDateTime;
-
 public class DataAndStoredMetadata<T extends FactoryBase<?,?>,S> {
     @JsonTypeInfo(use=JsonTypeInfo.Id.MINIMAL_CLASS, property="@class")
     public final T root;

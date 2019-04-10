@@ -1,6 +1,6 @@
 package io.github.factoryfx.copperbridge;
 
-import io.github.factoryfx.factory.attribute.dependency.FactoryReferenceAttribute;
+import io.github.factoryfx.factory.attribute.dependency.FactoryAttribute;
 import io.github.factoryfx.factory.validation.ValidationResult;
 import io.github.factoryfx.factory.FactoryBase;
 import io.github.factoryfx.factory.SimpleFactoryBase;
@@ -10,8 +10,8 @@ import io.github.factoryfx.factory.util.LanguageText;
 
 public class WorkflowLauncherFactory<R extends FactoryBase<?, R>> extends SimpleFactoryBase<WorkflowLauncher, R> {
 
-    public final FactoryReferenceAttribute<R,Backchannel, BackchannelFactory<R>> backchannel = new FactoryReferenceAttribute<R,Backchannel, BackchannelFactory<R>>().labelText("Backchannel");
-    public final FactoryReferenceAttribute<R,CopperEngineContext, CopperEngineContextFactory<R>> copperEngineContext = new FactoryReferenceAttribute<R,CopperEngineContext, CopperEngineContextFactory<R>>().labelText("Copper engine context");
+    public final FactoryAttribute<R,Backchannel, BackchannelFactory<R>> backchannel = new FactoryAttribute<R,Backchannel, BackchannelFactory<R>>().labelText("Backchannel");
+    public final FactoryAttribute<R,CopperEngineContext, CopperEngineContextFactory<R>> copperEngineContext = new FactoryAttribute<R,CopperEngineContext, CopperEngineContextFactory<R>>().labelText("Copper engine context");
 
     public WorkflowLauncherFactory(){
         config().addValidation(a-> new ValidationResult(copperEngineContext.get() == null

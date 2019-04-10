@@ -1,7 +1,6 @@
 package io.github.factoryfx.docu.parametrized;
 
 import io.github.factoryfx.factory.builder.FactoryTreeBuilder;
-import io.github.factoryfx.factory.builder.Scope;
 import io.github.factoryfx.server.Microservice;
 
 public class Main {

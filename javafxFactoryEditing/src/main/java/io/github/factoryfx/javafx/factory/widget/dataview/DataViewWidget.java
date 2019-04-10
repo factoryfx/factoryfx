@@ -1,7 +1,7 @@
 package io.github.factoryfx.javafx.factory.widget.dataview;
 
 import io.github.factoryfx.factory.FactoryBase;
-import io.github.factoryfx.factory.attribute.dependency.FactoryReferenceListAttribute;
+import io.github.factoryfx.factory.attribute.dependency.FactoryListAttribute;
 import io.github.factoryfx.javafx.factory.editor.data.DataEditor;
 import io.github.factoryfx.javafx.factory.util.DataObservableDisplayText;
 import io.github.factoryfx.javafx.factory.util.UniformDesign;
@@ -90,12 +90,12 @@ public class DataViewWidget<RS extends FactoryBase<?,RS>,L,F extends FactoryBase
      * automatic change detection for ReferenceListAttribute, that means that changes in the attribute leads to automatic changes in the table
      * @param attribute ReferenceListAttribute
      */
-    public void edit(FactoryReferenceListAttribute<RS,L,F> attribute){
+    public void edit(FactoryListAttribute<RS,L,F> attribute){
         editReadOnly(attribute);
         listEditWidget.setCenter(new ReferenceListAttributeEditWidget<>(tableView, dataEditor::navigate, uniformDesign, attribute).createContent());
     }
 
-    public void editReadOnly(FactoryReferenceListAttribute<RS,L,F> attribute){
+    public void editReadOnly(FactoryListAttribute<RS,L,F> attribute){
         final FactoryBase<?,?> oldData = dataEditor.editData().get();
         dataView = new ReferenceAttributeDataView<>(attribute);
         tableView.setItems(dataView.dataList());

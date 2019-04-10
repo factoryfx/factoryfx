@@ -1,7 +1,7 @@
 package io.github.factoryfx.javafx.factory.widget.tree;
 
 import io.github.factoryfx.factory.FactoryBase;
-import io.github.factoryfx.factory.attribute.dependency.FactoryReferenceBaseAttribute;
+import io.github.factoryfx.factory.attribute.dependency.FactoryBaseAttribute;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.scene.Node;
@@ -15,7 +15,7 @@ import javafx.scene.control.TreeView;
 
 import com.google.common.graph.Traverser;
 
-import io.github.factoryfx.factory.attribute.dependency.FactoryReferenceListBaseAttribute;
+import io.github.factoryfx.factory.attribute.dependency.FactoryListBaseAttribute;
 import io.github.factoryfx.javafx.factory.editor.data.DataEditor;
 import io.github.factoryfx.javafx.factory.util.DataTextFieldTreeCell;
 import io.github.factoryfx.javafx.factory.util.UniformDesign;
@@ -116,8 +116,8 @@ public class DataTreeWidget implements Widget {
         if (data!=null){
             TreeItem<TreeData> dataTreeItem = new TreeItem<>(new TreeData(data,null));
             data.internal().visitAttributesFlat((attributeVariableName, attribute) -> {
-                if (attribute instanceof FactoryReferenceBaseAttribute) {
-                    FactoryBase<?,?> child=((FactoryReferenceBaseAttribute<?,?,?,?>)attribute).get();
+                if (attribute instanceof FactoryBaseAttribute) {
+                    FactoryBase<?,?> child=((FactoryBaseAttribute<?,?,?,?>)attribute).get();
                     if (child!=null){
                         TreeItem<TreeData> refDataTreeItem = new TreeItem<>(new TreeData(null,uniformDesign.getLabelText(attribute,attributeVariableName)));
                         dataTreeItem.getChildren().add(refDataTreeItem);
@@ -128,12 +128,12 @@ public class DataTreeWidget implements Widget {
                         }
                     }
                 }
-                if (attribute instanceof FactoryReferenceListBaseAttribute) {
-                    FactoryReferenceListBaseAttribute<?, ?, ?, ?> factoryReferenceListBaseAttribute = (FactoryReferenceListBaseAttribute<?, ?, ?, ?>) attribute;
-                    if (!factoryReferenceListBaseAttribute.isEmpty()){
+                if (attribute instanceof FactoryListBaseAttribute) {
+                    FactoryListBaseAttribute<?, ?, ?, ?> factoryListBaseAttribute = (FactoryListBaseAttribute<?, ?, ?, ?>) attribute;
+                    if (!factoryListBaseAttribute.isEmpty()){
                         TreeItem<TreeData> refDataTreeItem = new TreeItem<>(new TreeData(null,uniformDesign.getLabelText(attribute,attributeVariableName)));
                         dataTreeItem.getChildren().add(refDataTreeItem);
-                        factoryReferenceListBaseAttribute.forEach(child -> {
+                        factoryListBaseAttribute.forEach(child -> {
                             final TreeItem<TreeData> treeItem = constructTree(child);
                             if (treeItem!=null){
                                 refDataTreeItem.getChildren().add(treeItem);

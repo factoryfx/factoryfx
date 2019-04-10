@@ -20,10 +20,6 @@ public class FactoryTreeBuilderAttributeFiller<L,R extends FactoryBase<L,R>,S> i
     public void fillNewAttributes(R root, DataStorageMetadataDictionary oldDataStorageMetadataDictionary) {
         factoryTreeBuilder.fillFromExistingFactoryTree(root);
         for (FactoryBase<?,?> data : root.internal().collectChildrenDeep()) {
-
-//            Class aClass = ((FactoryReferenceAttribute<?, ?>) attribute).internal_getReferenceClass();
-
-
             boolean[] containsNewAttributes=new boolean[1];
             data.internal().visitAttributesFlat((attributeVariableName, attribute) -> {
                 if (!oldDataStorageMetadataDictionary.containsAttribute(data.getClass().getName(), attributeVariableName)) {//is new Attribute

@@ -12,8 +12,8 @@ export abstract class ExampleDataGenerated  extends Data {
     public ref: ExampleData2;
     public refList: ExampleData2[];
     public static readonly attributeMetadata: AttributeMetadata<string>= new AttributeMetadata<string>('labelEn\"\'\\','labelDe',AttributeType.StringAttribute);
-    public static readonly refMetadata: AttributeMetadata<ExampleData2>= new AttributeMetadata<ExampleData2>('','',AttributeType.DataReferenceAttribute);
-    public static readonly refListMetadata: AttributeMetadata<ExampleData2[]>= new AttributeMetadata<ExampleData2[]>('','',AttributeType.DataReferenceListAttribute);
+    public static readonly refMetadata: AttributeMetadata<ExampleData2>= new AttributeMetadata<ExampleData2>('','',AttributeType.FactoryAttribute);
+    public static readonly refListMetadata: AttributeMetadata<ExampleData2[]>= new AttributeMetadata<ExampleData2[]>('','',AttributeType.FactoryListAttribute);
 
     public attributeAccessor(): AttributeAccessor<string,ExampleDataGenerated>{
         return new AttributeAccessor<string,ExampleDataGenerated>(ExampleDataGenerated.attributeMetadata,this,"attribute");

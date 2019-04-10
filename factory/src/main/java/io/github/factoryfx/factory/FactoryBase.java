@@ -76,9 +76,9 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
         return id.toString();
     }
 
-    private void setId(String value) {
-        id = value;
-    }
+//    private void setId(String value) {
+//        id = value;
+//    }
 
 
     private void setIdSupplier(Supplier<String> idSupplier){
@@ -140,18 +140,18 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
     /** collect set with all nested children and itself*/
     private List<FactoryBase<?,R>> collectChildrenDeep() {
         ArrayList<FactoryBase<?,R>> dataList = new ArrayList<>();
-        collectModelEntitiesTo(dataList,this.iterationRun+1);
+        collectChildrenDeep(dataList,this.iterationRun+1);
         return dataList;
     }
 
-    void collectModelEntitiesTo(List<FactoryBase<?,R>> allModelEntities, long dataIterationRun) {
+    private void collectChildrenDeep(List<FactoryBase<?,R>> allModelEntities, long dataIterationRun) {
         allModelEntities.add(this);
-        visitChildFactoriesAndViewsFlat(child -> child.collectModelEntitiesTo(allModelEntities,dataIterationRun),dataIterationRun);
+        visitChildFactoriesAndViewsFlat(child -> child.collectChildrenDeep(allModelEntities,dataIterationRun),dataIterationRun,false);
     }
 
-    @SuppressWarnings("unchecked")
+
     private FactoryBase<L,R> newCopyInstance(FactoryBase<L,R> data) {
-        return (FactoryBase<L, R>) getFactoryMetadata().newCopyInstance(data);
+        return getFactoryMetadata().newCopyInstance(data);
     }
 
     private Set<FactoryBase<?,?>> collectChildrenDeepFromNode() {
@@ -162,7 +162,7 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
 
     private void collectChildFactoriesDeepFromNode(Set<FactoryBase<?,?>> collected) {
         if (collected.add(this)){
-            visitChildFactoriesAndViewsFlatWithoutIterationCheck(child -> child.collectChildFactoriesDeepFromNode(collected));
+            getFactoryMetadata().visitChildFactoriesAndViewsFlat(this,child -> child.collectChildFactoriesDeepFromNode(collected),false);
         }
     }
 
@@ -377,7 +377,7 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
         addParent(parent);
         this.root=root;
         getFactoryMetadata().addBackReferencesToAttributes(this,root);
-        this.visitChildFactoriesAndViewsFlat(data -> data.addBackReferences(getRoot(), FactoryBase.this,dataIterationRun),dataIterationRun);
+        this.visitChildFactoriesAndViewsFlat(data -> data.addBackReferences(getRoot(), FactoryBase.this,dataIterationRun),dataIterationRun,true);
     }
 
     private void addBackReferencesForSubtree(R root, FactoryBase<?,?> parent, HashSet<FactoryBase<?,?>> visited){
@@ -387,7 +387,7 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
         getFactoryMetadata().addBackReferencesToAttributes(this,root);
 
         if (visited.add(this)) {//use HashSet instead of iteration counter to avoid iterationCounter mix up
-            visitChildFactoriesAndViewsFlatWithoutIterationCheck(child -> child.addBackReferencesForSubtree(root,this,visited));
+            getFactoryMetadata().visitChildFactoriesAndViewsFlat(this,child -> child.addBackReferencesForSubtree(root,this,visited),true);
         }
     }
 
@@ -608,7 +608,7 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
             return factory.attributeListGrouped();
         }
 
-        public Map<String,FactoryBase<?,R> > collectChildDataMap() {
+        public Map<String,FactoryBase<?,R> > collectChildFactoryMap() {
             factory.assertRoot();
             return factory.collectChildDataMap();
         }
@@ -792,10 +792,10 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
 
         /**
          * determine which live objects needs recreation
-         * @param changedData changedData
+         * @param changedFactories changed factories
          * */
-        public void determineRecreationNeedFromRoot(Set<FactoryBase<?,?>> changedData) {
-            factory.determineRecreationNeed(changedData);
+        public void determineRecreationNeedFromRoot(Set<FactoryBase<?,?>> changedFactories) {
+            factory.determineRecreationNeed(changedFactories);
         }
 
         public void resetLog() {
@@ -842,10 +842,6 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
             factory.loopDetector();
         }
 
-        public List<FactoryBase<?,R>> collectChildFactoriesDeepFromRoot(){
-            return factory.collectChildFactoriesDeep();
-        }
-
         /**
          *        h
          *      / | \
@@ -872,15 +868,6 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
          **/
         public List<FactoryBase<?,R>> getFactoriesInCreateAndStartOrder(){
             return factory.getFactoriesInCreateAndStartOrder();
-        }
-
-        public HashMap<String,FactoryBase<?,R>> collectChildFactoriesDeepMapFromRoot(){
-            final List<FactoryBase<?,R>> factoryBases = collectChildFactoriesDeepFromRoot();
-            HashMap<String, FactoryBase<?,R>> result = new HashMap<>();
-            for (FactoryBase<?,R> factory: factoryBases){
-                result.put(factory.getId(),factory);
-            }
-            return result;
         }
 
         public String debugInfo() {
@@ -1089,16 +1076,16 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
         createdLiveObject=null;
     }
 
-    private void determineRecreationNeed(Set<FactoryBase<?,?> > changedData){
-        for (FactoryBase<?,?> data : changedData) {
-            ((FactoryBase)data).needRecreation=true;
-            if (((FactoryBase)data).needsCreatePropagation()){
-                Set<FactoryBase<?,?>> parents = data.internal().getParents();
+    private void determineRecreationNeed(Set<FactoryBase<?,?> > changedFactories){
+        for (FactoryBase<?,?> factory : changedFactories) {
+            factory.needRecreation=true;
+            if (factory.needsCreatePropagation()){
+                Set<FactoryBase<?,?>> parents = factory.internal().getParents();
                 while (!parents.isEmpty()){
                     Set<FactoryBase<?,?>> grandParents = new HashSet<>();
                     for (FactoryBase<?,?> parent : parents) {
-                        ((FactoryBase) parent).needRecreation = true;
-                        if (((FactoryBase)parent).needsCreatePropagation()) {
+                        parent.needRecreation = true;
+                        if (parent.needsCreatePropagation()) {
                             grandParents.addAll(parent.internal().getParents());
                         }
                     }
@@ -1127,23 +1114,9 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
             stack.push(factory);
             factory.visitChildFactoriesAndViewsFlat(child -> {
                 loopDetector(child,stack,iterationRun);
-            },iterationRun);
+            },iterationRun,true);
             stack.pop();
         }
-    }
-
-    private List<FactoryBase<?,R>> collectChildFactoriesDeep(){
-        long iterationRun=this.iterationRun+1;
-        final List<FactoryBase<?,R>> result = new ArrayList<>();
-        collectChildFactoriesDeep(this,result,iterationRun);
-        return result;
-    }
-
-    private void collectChildFactoriesDeep(FactoryBase<?,R> factory, List<FactoryBase<?, R>> result, final long iterationRun){
-        result.add(factory);
-        factory.visitChildFactoriesAndViewsFlat(child -> {
-            collectChildFactoriesDeep(child,result,iterationRun);
-        },iterationRun);
     }
 
     private List<FactoryBase<?,R>> getFactoriesInDestroyOrder(){
@@ -1156,7 +1129,7 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
 
     private void getFactoriesInDestroyOrder(FactoryBase<?,R> factory, List<FactoryBase<?, R>> result, final long iterationRun){
         int size=result.size();
-        factory.visitChildFactoriesAndViewsFlat(result::add,iterationRun);
+        factory.visitChildFactoriesAndViewsFlat(result::add,iterationRun,true);
         for (int i = size; i < result.size(); i++) {//fori loop cause performance optimization
            getFactoriesInDestroyOrder(result.get(i),result,iterationRun);
         }
@@ -1173,22 +1146,18 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
     private void getFactoriesInCreateAndStartOrder(FactoryBase<?,R> factory, List<FactoryBase<?,R>> result, final long iterationRun){
         factory.visitChildFactoriesAndViewsFlat(child -> {
             getFactoriesInCreateAndStartOrder(child,result,iterationRun);
-        },iterationRun);
+        },iterationRun,true);
         result.add(factory);
     }
 
     long iterationRun;
-    private void visitChildFactoriesAndViewsFlat(Consumer<FactoryBase<?,R>> consumer, long iterationRun) {
+    private void visitChildFactoriesAndViewsFlat(Consumer<FactoryBase<?,R>> consumer, long iterationRun, boolean includeViews) {
         if (this.iterationRun==iterationRun){
             return;
         }
         this.iterationRun=iterationRun;
 
-        getFactoryMetadata().visitChildFactoriesAndViewsFlat(this,consumer);
-    }
-
-    private void visitChildFactoriesAndViewsFlatWithoutIterationCheck(Consumer<FactoryBase<?,R>> consumer) {
-        getFactoryMetadata().visitChildFactoriesAndViewsFlat(this,consumer);
+        getFactoryMetadata().visitChildFactoriesAndViewsFlat(this,consumer,includeViews);
     }
 
 
@@ -1210,7 +1179,7 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
 
     private FactoryLogEntryTreeItem createFactoryLogEntryTree(long iterationRun) {
         ArrayList<FactoryLogEntryTreeItem> children = new ArrayList<>();
-        this.visitChildFactoriesAndViewsFlat(flatChild -> children.add(flatChild.createFactoryLogEntryTree(iterationRun)),iterationRun);
+        this.visitChildFactoriesAndViewsFlat(flatChild -> children.add(flatChild.createFactoryLogEntryTree(iterationRun)),iterationRun,true);
         return new FactoryLogEntryTreeItem(this.createFactoryLogEntry(), children);
     }
 
@@ -1297,7 +1266,7 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
         int counter=0;
 
         List<FactoryBase<?,?>> children = new ArrayList<>();
-        visitChildFactoriesAndViewsFlat(children::add,iterationRun);
+        visitChildFactoriesAndViewsFlat(children::add,iterationRun,true);
         for (FactoryBase<?,?> child: children){
             child.logDisplayTextDeep(stringBuilder, deep+1, prefix + (isTail ? "    " : "│   "), counter==children.size()-1,printedCounter,iterationRun);
             counter++;

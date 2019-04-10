@@ -16,7 +16,7 @@ public class ViewListReferenceAttributeTest {
     public static class ViewListExampleFactory extends FactoryBase<Void, ViewListExampleFactoryRoot> {
 
         public final StringAttribute forFilter= new StringAttribute();
-        public final FactoryViewListReferenceAttribute<ViewListExampleFactoryRoot,Void,ViewExampleDataA> view= new FactoryViewListReferenceAttribute<>( (ViewListExampleFactoryRoot viewExampleFactoryRoot)->{
+        public final FactoryViewListAttribute<ViewListExampleFactoryRoot,Void,ViewExampleDataA> view= new FactoryViewListAttribute<>( (ViewListExampleFactoryRoot viewExampleFactoryRoot)->{
                 return viewExampleFactoryRoot.list.get().stream().filter(exampleFactoryA -> exampleFactoryA.stringAttribute.get().equals(forFilter.get())).collect(Collectors.toList());
             }
         );
@@ -24,8 +24,8 @@ public class ViewListReferenceAttributeTest {
     }
 
     public static class ViewListExampleFactoryRoot extends FactoryBase<Void, ViewListExampleFactoryRoot>{
-        public final FactoryReferenceAttribute<ViewListExampleFactoryRoot,Void,ViewListExampleFactory> ref = new FactoryReferenceAttribute<>();
-        public final FactoryReferenceListAttribute<ViewListExampleFactoryRoot,Void,ViewExampleDataA> list= new FactoryReferenceListAttribute<>();
+        public final FactoryAttribute<ViewListExampleFactoryRoot,Void,ViewListExampleFactory> ref = new FactoryAttribute<>();
+        public final FactoryListAttribute<ViewListExampleFactoryRoot,Void,ViewExampleDataA> list= new FactoryListAttribute<>();
     }
     
     public static class ViewExampleDataA extends FactoryBase<Void, ViewListExampleFactoryRoot>{
@@ -245,11 +245,11 @@ public class ViewListReferenceAttributeTest {
 
     @Test
     public void removeListener() throws Exception {
-        FactoryViewListReferenceAttribute<ViewListExampleFactoryRoot, Void, ViewExampleDataA> attribute = new FactoryViewListReferenceAttribute<>((ViewListExampleFactoryRoot viewExampleFactoryRoot) -> {
+        FactoryViewListAttribute<ViewListExampleFactoryRoot, Void, ViewExampleDataA> attribute = new FactoryViewListAttribute<>((ViewListExampleFactoryRoot viewExampleFactoryRoot) -> {
             return viewExampleFactoryRoot.list.filtered((exampleFactoryA -> exampleFactoryA.stringAttribute.get().equals("")));
         });
 
-        final AttributeChangeListener<List<ViewExampleDataA>, FactoryViewListReferenceAttribute<ViewListExampleFactoryRoot, Void, ViewExampleDataA>> attributeChangeListener = (a, value) -> System.out.println(value);
+        final AttributeChangeListener<List<ViewExampleDataA>, FactoryViewListAttribute<ViewListExampleFactoryRoot, Void, ViewExampleDataA>> attributeChangeListener = (a, value) -> System.out.println(value);
         attribute.internal_addListener(attributeChangeListener);
         Assertions.assertTrue(attribute.listeners.size()==1);
         attribute.internal_removeListener(attributeChangeListener);
@@ -258,11 +258,11 @@ public class ViewListReferenceAttributeTest {
 
     @Test
     public void removeWeakListener() throws Exception {
-        FactoryViewListReferenceAttribute<ViewListExampleFactoryRoot, Void, ViewExampleDataA> attribute = new FactoryViewListReferenceAttribute<>((ViewListExampleFactoryRoot viewExampleFactoryRoot) -> {
+        FactoryViewListAttribute<ViewListExampleFactoryRoot, Void, ViewExampleDataA> attribute = new FactoryViewListAttribute<>((ViewListExampleFactoryRoot viewExampleFactoryRoot) -> {
             return viewExampleFactoryRoot.list.filtered((exampleFactoryA -> exampleFactoryA.stringAttribute.get().equals("")));
         });
 
-        final AttributeChangeListener<List<ViewExampleDataA>, FactoryViewListReferenceAttribute<ViewListExampleFactoryRoot, Void, ViewExampleDataA>> attributeChangeListener = (a, value) -> System.out.println(value);
+        final AttributeChangeListener<List<ViewExampleDataA>, FactoryViewListAttribute<ViewListExampleFactoryRoot, Void, ViewExampleDataA>> attributeChangeListener = (a, value) -> System.out.println(value);
         attribute.internal_addListener(new WeakAttributeChangeListener<>(attributeChangeListener));
         Assertions.assertTrue(attribute.listeners.size()==1);
         attribute.internal_removeListener(attributeChangeListener);

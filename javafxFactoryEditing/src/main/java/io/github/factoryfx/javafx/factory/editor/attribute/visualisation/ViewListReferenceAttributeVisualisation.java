@@ -3,7 +3,7 @@ package io.github.factoryfx.javafx.factory.editor.attribute.visualisation;
 import java.util.function.Consumer;
 
 import io.github.factoryfx.factory.FactoryBase;
-import io.github.factoryfx.factory.attribute.dependency.FactoryViewListReferenceAttribute;
+import io.github.factoryfx.factory.attribute.dependency.FactoryViewListAttribute;
 import io.github.factoryfx.javafx.factory.editor.attribute.ValidationDecoration;
 import io.github.factoryfx.javafx.factory.editor.attribute.ListAttributeVisualisation;
 import io.github.factoryfx.javafx.factory.widget.table.TableControlWidget;
@@ -23,7 +23,7 @@ import javafx.scene.layout.VBox;
 
 import io.github.factoryfx.javafx.factory.util.UniformDesign;
 
-public class ViewListReferenceAttributeVisualisation<R extends FactoryBase<?,R>,L, T extends FactoryBase<L,R>, A extends FactoryViewListReferenceAttribute<R,L,T>> extends ListAttributeVisualisation<T,FactoryViewListReferenceAttribute<R,L,T>> {
+public class ViewListReferenceAttributeVisualisation<R extends FactoryBase<?,R>,L, T extends FactoryBase<L,R>, A extends FactoryViewListAttribute<R,L,T>> extends ListAttributeVisualisation<T, FactoryViewListAttribute<R,L,T>> {
 
     private final Consumer<FactoryBase<?,?>> navigateToData;
     private final UniformDesign uniformDesign;

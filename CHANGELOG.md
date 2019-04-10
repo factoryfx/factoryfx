@@ -15,6 +15,8 @@
   
 * **builder:** new builder API for microservice setup
 
+* **starter:** One time java code generator for initial project setup to simplify the first steps with factoryfx.
+
 
 ### BREAKING CHANGES
 
@@ -44,6 +46,18 @@
   factoryTreeBuilder.branch().select(BranchFactory.class).factory()
   ```
 
+* **attribute** rename, removed reference from name
+  e.g.:FactoryReferenceAttribute=>FactoryAttribute
+  
+  new names:
+  * FactoryReferenceAttribute
+  * FactoryBaseAttribute
+  * FactoryListAttribute
+  * FactoryPolymorphicAttribute
+  * FactoryPolymorphicListAttribute
+  * FactoryReferenceListBaseAttribute
+  * FactoryViewAttribute
+  * FactoryViewListAttribute
 
 # 1.9.0
 

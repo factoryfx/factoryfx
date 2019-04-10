@@ -14,13 +14,13 @@ import io.github.factoryfx.factory.FactoryBase;
 import io.github.factoryfx.factory.attribute.RunLaterAble;
 
 @JsonIgnoreType
-public class FactoryViewListReferenceAttribute<R extends FactoryBase<?,R>,L, T extends FactoryBase<L,R>> extends Attribute<List<T>,FactoryViewListReferenceAttribute<R,L,T>> implements RunLaterAble, RootAwareAttribute<R,FactoryViewListReferenceAttribute<R,L,T>> {
+public class FactoryViewListAttribute<R extends FactoryBase<?,R>,L, T extends FactoryBase<L,R>> extends Attribute<List<T>, FactoryViewListAttribute<R,L,T>> implements RunLaterAble, RootAwareAttribute<R, FactoryViewListAttribute<R,L,T>> {
 
 
     private R root;
     protected final Function<R,List<T>> view;
 
-    public FactoryViewListReferenceAttribute(Function<R,List<T>> view) {
+    public FactoryViewListAttribute(Function<R,List<T>> view) {
         super();
         this.view=view;
     }
@@ -94,7 +94,7 @@ public class FactoryViewListReferenceAttribute<R extends FactoryBase<?,R>,L, T e
 //    }
 
     @Override
-    public void internal_semanticCopyTo(FactoryViewListReferenceAttribute<R,L,T> copyAttribute) {
+    public void internal_semanticCopyTo(FactoryViewListAttribute<R,L,T> copyAttribute) {
         //nothing
     }
 
@@ -122,8 +122,8 @@ public class FactoryViewListReferenceAttribute<R extends FactoryBase<?,R>,L, T e
                 if ((isEmpty(previousList) && !isEmpty(currentList)) ||
                         (!isEmpty(previousList) && isEmpty(currentList))){
 
-                    for (AttributeChangeListener<List<T>,FactoryViewListReferenceAttribute<R,L,T>> listener: new ArrayList<>(listeners)){
-                        runLater(()-> listener.changed(FactoryViewListReferenceAttribute.this,currentList));
+                    for (AttributeChangeListener<List<T>, FactoryViewListAttribute<R,L,T>> listener: new ArrayList<>(listeners)){
+                        runLater(()-> listener.changed(FactoryViewListAttribute.this,currentList));
                     }
                 }
                 if (!isEmpty(previousList) && !isEmpty(currentList)) {
@@ -137,8 +137,8 @@ public class FactoryViewListReferenceAttribute<R extends FactoryBase<?,R>,L, T e
                         }
                     }
                     if (changed){
-                        for (AttributeChangeListener<List<T>,FactoryViewListReferenceAttribute<R,L,T>> listener: new ArrayList<>(listeners)){
-                            runLater(()->listener.changed(FactoryViewListReferenceAttribute.this,currentList));
+                        for (AttributeChangeListener<List<T>, FactoryViewListAttribute<R,L,T>> listener: new ArrayList<>(listeners)){
+                            runLater(()->listener.changed(FactoryViewListAttribute.this,currentList));
                         }
                     }
                 }
@@ -161,9 +161,9 @@ public class FactoryViewListReferenceAttribute<R extends FactoryBase<?,R>,L, T e
     }
     DirtyTrackingThread dirtyTracking;
 
-    List<AttributeChangeListener<List<T>,FactoryViewListReferenceAttribute<R,L,T>>> listeners;
+    List<AttributeChangeListener<List<T>, FactoryViewListAttribute<R,L,T>>> listeners;
     @Override
-    public void internal_addListener(AttributeChangeListener<List<T>,FactoryViewListReferenceAttribute<R,L,T>> listener) {
+    public void internal_addListener(AttributeChangeListener<List<T>, FactoryViewListAttribute<R,L,T>> listener) {
         if (listeners==null){
             listeners=Collections.synchronizedList(new ArrayList<>());
         }
@@ -175,9 +175,9 @@ public class FactoryViewListReferenceAttribute<R extends FactoryBase<?,R>,L, T e
         }
     }
     @Override
-    public void internal_removeListener(AttributeChangeListener<List<T>,FactoryViewListReferenceAttribute<R,L,T>> listener) {
+    public void internal_removeListener(AttributeChangeListener<List<T>, FactoryViewListAttribute<R,L,T>> listener) {
         if (listeners!=null) {
-            for (AttributeChangeListener<List<T>,FactoryViewListReferenceAttribute<R,L,T>> listenerItem: new ArrayList<>(listeners)){
+            for (AttributeChangeListener<List<T>, FactoryViewListAttribute<R,L,T>> listenerItem: new ArrayList<>(listeners)){
                 if (listenerItem.unwrap()==listener){
                     listeners.remove(listenerItem);
                 }
@@ -201,7 +201,7 @@ public class FactoryViewListReferenceAttribute<R extends FactoryBase<?,R>,L, T e
     }
 
     @Override
-    public void internal_copyTo(FactoryViewListReferenceAttribute<R, L, T> copyAttribute, int level, int maxLevel, List<FactoryBase<?, R>> oldData, FactoryBase<?, R> parent, R root) {
+    public void internal_copyTo(FactoryViewListAttribute<R, L, T> copyAttribute, int level, int maxLevel, List<FactoryBase<?, R>> oldData, FactoryBase<?, R> parent, R root) {
         //nothing
     }
 

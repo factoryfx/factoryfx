@@ -6,14 +6,14 @@ import io.github.factoryfx.factory.attribute.types.EnumListAttribute;
 import io.github.factoryfx.factory.attribute.types.StringListAttribute;
 import io.github.factoryfx.factory.FactoryBase;
 import io.github.factoryfx.factory.PolymorphicFactoryBase;
-import io.github.factoryfx.factory.attribute.dependency.FactoryPolymorphicReferenceAttribute;
+import io.github.factoryfx.factory.attribute.dependency.FactoryPolymorphicAttribute;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.handler.gzip.GzipHandler;
 
 import javax.servlet.DispatcherType;
 
 public class GzipHandlerFactory<R extends FactoryBase<?,R>> extends PolymorphicFactoryBase<Handler,R> {
-    public final FactoryPolymorphicReferenceAttribute<R,Handler> handler = new FactoryPolymorphicReferenceAttribute<R,Handler>(Handler.class).labelText("Handler");
+    public final FactoryPolymorphicAttribute<R,Handler> handler = new FactoryPolymorphicAttribute<R,Handler>(Handler.class).labelText("Handler");
     public final IntegerAttribute minGzipSize = new IntegerAttribute().labelText("minGzipSize");
     public final IntegerAttribute compressionLevel = new IntegerAttribute().labelText("compressionLevel");
     public final IntegerAttribute deflaterPoolCapacity = new IntegerAttribute().labelText("deflaterPoolCapacity");

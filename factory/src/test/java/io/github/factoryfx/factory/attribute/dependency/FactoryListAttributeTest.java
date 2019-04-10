@@ -6,11 +6,11 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 
-public class FactoryReferenceListAttributeTest {
+public class FactoryListAttributeTest {
 
     @Test
     public void test_filtered_instance(){
-        FactoryReferenceListAttribute<ExampleFactoryA,ExampleLiveObjectA,ExampleFactoryA> attribute = new FactoryReferenceListAttribute<>();
+        FactoryListAttribute<ExampleFactoryA,ExampleLiveObjectA,ExampleFactoryA> attribute = new FactoryListAttribute<>();
         {
             ExampleFactoryA data = new ExampleFactoryA();
             data.stringAttribute.set("1");

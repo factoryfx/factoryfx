@@ -1,11 +1,11 @@
 package io.github.factoryfx.factory;
 
+import io.github.factoryfx.factory.attribute.dependency.*;
+import io.github.factoryfx.factory.attribute.primitive.BooleanAttribute;
 import io.github.factoryfx.factory.attribute.types.StringAttribute;
 import io.github.factoryfx.factory.jackson.ObjectMapperBuilder;
-import io.github.factoryfx.factory.attribute.dependency.FactoryReferenceAttribute;
-import io.github.factoryfx.factory.attribute.dependency.FactoryReferenceListAttribute;
-import io.github.factoryfx.factory.attribute.dependency.FactoryViewListReferenceAttribute;
-import io.github.factoryfx.factory.attribute.dependency.FactoryViewReferenceAttribute;
+import io.github.factoryfx.factory.merge.testdata.ExampleDataA;
+import io.github.factoryfx.factory.merge.testdata.ExampleDataB;
 import io.github.factoryfx.factory.testfactories.ExampleFactoryA;
 import io.github.factoryfx.factory.testfactories.ExampleFactoryB;
 import io.github.factoryfx.factory.testfactories.ExampleFactoryC;
@@ -19,6 +19,8 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class FactoryBaseTest {
 
@@ -68,10 +70,10 @@ public class FactoryBaseTest {
     }
 
     public static class XRoot extends SimpleFactoryBase<String,XRoot> {
-        public final FactoryReferenceAttribute<XRoot,String,ExampleFactoryAndViewA> referenceAttribute = new FactoryReferenceAttribute<>();
-        public final FactoryReferenceAttribute<XRoot,String,XFactory> xFactory = new FactoryReferenceAttribute<>();
-        public final FactoryReferenceAttribute<XRoot,String,XFactory> xFactory2 = new FactoryReferenceAttribute<>();
-        public final FactoryReferenceListAttribute<XRoot,String,XFactory> xFactoryList = new FactoryReferenceListAttribute<>();
+        public final FactoryAttribute<XRoot,String,ExampleFactoryAndViewA> referenceAttribute = new FactoryAttribute<>();
+        public final FactoryAttribute<XRoot,String,XFactory> xFactory = new FactoryAttribute<>();
+        public final FactoryAttribute<XRoot,String,XFactory> xFactory2 = new FactoryAttribute<>();
+        public final FactoryListAttribute<XRoot,String,XFactory> xFactoryList = new FactoryListAttribute<>();
 
         @Override
         public String createImpl() {
@@ -84,9 +86,9 @@ public class FactoryBaseTest {
     }
 
     public static class ExampleFactoryAndViewA extends SimpleFactoryBase<String,XRoot> {
-        public final FactoryViewReferenceAttribute<XRoot,String,XFactory> referenceView = new FactoryViewReferenceAttribute<XRoot,String,XFactory>(
+        public final FactoryViewAttribute<XRoot,String,XFactory> referenceView = new FactoryViewAttribute<XRoot,String,XFactory>(
                 root -> root.xFactory.get()).labelText("ExampleA2");
-        public final FactoryViewListReferenceAttribute<XRoot,String,XFactory> listView = new FactoryViewListReferenceAttribute<XRoot,String,XFactory>(
+        public final FactoryViewListAttribute<XRoot,String,XFactory> listView = new FactoryViewListAttribute<XRoot,String,XFactory>(
                 root -> root.xFactoryList.get()).labelText("ExampleA2");
 
         @Override
@@ -100,7 +102,7 @@ public class FactoryBaseTest {
 
     public static class XFactory extends SimpleFactoryBase<String,XRoot> {
         public final StringAttribute bla=new StringAttribute();
-        public final FactoryReferenceAttribute<XRoot,String,X2Factory> xFactory2 = new FactoryReferenceAttribute<>();
+        public final FactoryAttribute<XRoot,String,X2Factory> xFactory2 = new FactoryAttribute<>();
 
         public List<String> createCalls=new ArrayList<>();
 
@@ -114,7 +116,7 @@ public class FactoryBaseTest {
 
     public static class X2Factory extends SimpleFactoryBase<String, XRoot> {
         public final StringAttribute bla=new StringAttribute();
-        public final FactoryReferenceAttribute<XRoot,String,X3Factory> xFactory3 = new FactoryReferenceAttribute<>();
+        public final FactoryAttribute<XRoot,String,X3Factory> xFactory3 = new FactoryAttribute<>();
 
 
         public List<String> createCalls=new ArrayList<>();
@@ -256,13 +258,13 @@ public class FactoryBaseTest {
 
         usableCopy.xFactory.get().createCalls.clear();
         usableCopy.internal().instance();
-        Assertions.assertEquals(1,usableCopy.xFactory.get().createCalls.size());
+        assertEquals(1,usableCopy.xFactory.get().createCalls.size());
 
     }
 
     public static class IterationTestFactory extends SimpleFactoryBase<Void,IterationTestFactory>{
         public String testinfo;
-        public final FactoryReferenceListAttribute<IterationTestFactory,Void,IterationTestFactory>  children = new FactoryReferenceListAttribute<>();
+        public final FactoryListAttribute<IterationTestFactory,Void,IterationTestFactory> children = new FactoryListAttribute<>();
 
         public IterationTestFactory(String testinfo) {
             this();
@@ -309,7 +311,7 @@ public class FactoryBaseTest {
         for (FactoryBase<?,?> item : root.internal().getFactoriesInCreateAndStartOrder()) {
            result.append(((IterationTestFactory)item).testinfo);
         }
-        Assertions.assertEquals("abcdefgh",result.toString());
+        assertEquals("abcdefgh",result.toString());
     }
 
 
@@ -343,7 +345,7 @@ public class FactoryBaseTest {
             for (FactoryBase<?,?> item : root.internal().getFactoriesInDestroyOrder()) {
                 result.append(((IterationTestFactory)item).testinfo);
             }
-            Assertions.assertEquals("hdegabcf",result.toString());
+            assertEquals("hdegabcf",result.toString());
 
     }
 
@@ -401,7 +403,7 @@ public class FactoryBaseTest {
         exampleFactoryA.internal().setTreeBuilderName("abc");
 
         ExampleFactoryA copy = ObjectMapperBuilder.build().copy(exampleFactoryA);
-        Assertions.assertEquals("abc",copy.internal().getTreeBuilderName());
+        assertEquals("abc",copy.internal().getTreeBuilderName());
     }
 
     @Test
@@ -430,5 +432,36 @@ public class FactoryBaseTest {
         exampleFactoryA = exampleFactoryA.utility().copy();
         ExampleLiveObjectA instance = exampleFactoryA.internal().instance();
         Assertions.assertTrue(MockUtil.isMock(instance));
+    }
+
+    @Test
+    public void test_collectChildrenDeepFromNode_width_cycle(){
+        ExampleDataA exampleFactoryA = new ExampleDataA();
+        ExampleDataB exampleFactoryB = new ExampleDataB();
+
+        exampleFactoryA.referenceAttribute.set(exampleFactoryB);
+        exampleFactoryB.referenceAttribute.set(exampleFactoryA);
+
+        Set<FactoryBase<?, ?>> list = exampleFactoryA.internal().collectChildrenDeepFromNode();
+        assertEquals(2,list.size());
+    }
+
+    public static class ViewExampleFactory extends FactoryBase<Void,ViewExampleFactory> {
+
+        public final FactoryViewAttribute<ViewExampleFactory,Void, ViewExampleFactory> view= new FactoryViewAttribute<>((root) -> {
+            root.internal().collectChildrenDeepFromNode();
+            return null;
+        });
+
+    }
+
+    //simplified testcase form other project
+    @Test
+    public void test_collectChildrenDeepFromNode_in_view(){
+        ViewExampleFactory exampleFactoryA = new ViewExampleFactory();
+        exampleFactoryA.internal().addBackReferences();
+
+        Set<FactoryBase<?, ?>> list = exampleFactoryA.internal().collectChildrenDeepFromNode();
+        assertEquals(1,list.size());
     }
 }

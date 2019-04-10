@@ -7,9 +7,9 @@ import io.github.factoryfx.factory.storage.migration.metadata.DataStorageMetadat
 import io.github.factoryfx.factory.FactoryBase;
 import io.github.factoryfx.factory.PolymorphicFactoryBase;
 import io.github.factoryfx.factory.SimpleFactoryBase;
-import io.github.factoryfx.factory.attribute.dependency.FactoryPolymorphicReferenceAttribute;
-import io.github.factoryfx.factory.attribute.dependency.FactoryReferenceAttribute;
-import io.github.factoryfx.factory.attribute.dependency.FactoryReferenceListAttribute;
+import io.github.factoryfx.factory.attribute.dependency.FactoryPolymorphicAttribute;
+import io.github.factoryfx.factory.attribute.dependency.FactoryAttribute;
+import io.github.factoryfx.factory.attribute.dependency.FactoryListAttribute;
 import io.github.factoryfx.factory.testfactories.*;
 import io.github.factoryfx.factory.testfactories.poly.ErrorPrinter;
 import io.github.factoryfx.factory.testfactories.poly.OutPrinterFactory;
@@ -73,9 +73,9 @@ public class FactoryTreeBuilderTest {
 
     public static class TreeFactoryTestA extends SimpleFactoryBase<Void, TreeFactoryTestA> {
 
-        public final FactoryReferenceAttribute<TreeFactoryTestA,ExampleLiveObjectB, TreeExampleFactoryB> referenceAttribute1 = new FactoryReferenceAttribute<TreeFactoryTestA,ExampleLiveObjectB, TreeExampleFactoryB>().labelText("ExampleA2");
-        public final FactoryReferenceAttribute<TreeFactoryTestA,ExampleLiveObjectB, TreeExampleFactoryB> referenceAttribute2 = new FactoryReferenceAttribute<TreeFactoryTestA,ExampleLiveObjectB, TreeExampleFactoryB>().labelText("ExampleA2");
-        public final FactoryReferenceListAttribute<TreeFactoryTestA,ExampleLiveObjectB, TreeExampleFactoryB> referenceList = new FactoryReferenceListAttribute<TreeFactoryTestA,ExampleLiveObjectB, TreeExampleFactoryB>().labelText("ExampleA3");
+        public final FactoryAttribute<TreeFactoryTestA,ExampleLiveObjectB, TreeExampleFactoryB> referenceAttribute1 = new FactoryAttribute<TreeFactoryTestA,ExampleLiveObjectB, TreeExampleFactoryB>().labelText("ExampleA2");
+        public final FactoryAttribute<TreeFactoryTestA,ExampleLiveObjectB, TreeExampleFactoryB> referenceAttribute2 = new FactoryAttribute<TreeFactoryTestA,ExampleLiveObjectB, TreeExampleFactoryB>().labelText("ExampleA2");
+        public final FactoryListAttribute<TreeFactoryTestA,ExampleLiveObjectB, TreeExampleFactoryB> referenceList = new FactoryListAttribute<TreeFactoryTestA,ExampleLiveObjectB, TreeExampleFactoryB>().labelText("ExampleA3");
 
 
         @Override
@@ -86,7 +86,7 @@ public class FactoryTreeBuilderTest {
 
     public static class TreeExampleFactoryC extends SimpleFactoryBase<ExampleLiveObjectC, TreeFactoryTestA> {
         public final StringAttribute stringAttribute= new StringAttribute().labelText("ExampleB1");
-        public final FactoryReferenceAttribute<TreeFactoryTestA,ExampleLiveObjectB, TreeExampleFactoryB> referenceAttribute = new FactoryReferenceAttribute<>();
+        public final FactoryAttribute<TreeFactoryTestA,ExampleLiveObjectB, TreeExampleFactoryB> referenceAttribute = new FactoryAttribute<>();
 
         @Override
         public ExampleLiveObjectC createImpl() {
@@ -97,8 +97,8 @@ public class FactoryTreeBuilderTest {
 
     public static class TreeExampleFactoryB extends SimpleFactoryBase<ExampleLiveObjectB, TreeFactoryTestA> {
         public final StringAttribute stringAttribute= new StringAttribute().labelText("ExampleB1");
-        public final FactoryReferenceAttribute<TreeFactoryTestA,Void, TreeFactoryTestA> referenceAttribute = new FactoryReferenceAttribute<>();
-        public final FactoryReferenceAttribute<TreeFactoryTestA,ExampleLiveObjectC, TreeExampleFactoryC> referenceAttributeC = new FactoryReferenceAttribute<>();
+        public final FactoryAttribute<TreeFactoryTestA,Void, TreeFactoryTestA> referenceAttribute = new FactoryAttribute<>();
+        public final FactoryAttribute<TreeFactoryTestA,ExampleLiveObjectC, TreeExampleFactoryC> referenceAttributeC = new FactoryAttribute<>();
 
         @Override
         public ExampleLiveObjectB createImpl() {
@@ -153,7 +153,7 @@ public class FactoryTreeBuilderTest {
     }
 
     public static class ExamplePolymorphic extends FactoryBase<Void,ExamplePolymorphic> {
-        public final FactoryPolymorphicReferenceAttribute<ExamplePolymorphic,Printer> attribute = new FactoryPolymorphicReferenceAttribute<>(Printer.class, ErrorPrinterFactory2.class, OutPrinterFactory.class);
+        public final FactoryPolymorphicAttribute<ExamplePolymorphic,Printer> attribute = new FactoryPolymorphicAttribute<>(Printer.class, ErrorPrinterFactory2.class, OutPrinterFactory.class);
     }
 
 

@@ -6,8 +6,8 @@ import java.util.stream.Collectors;
 
 import io.github.factoryfx.factory.DataTest;
 import io.github.factoryfx.factory.FactoryBase;
-import io.github.factoryfx.factory.attribute.dependency.FactoryReferenceAttribute;
-import io.github.factoryfx.factory.attribute.dependency.FactoryViewReferenceAttribute;
+import io.github.factoryfx.factory.attribute.dependency.FactoryAttribute;
+import io.github.factoryfx.factory.attribute.dependency.FactoryViewAttribute;
 import io.github.factoryfx.factory.merge.testdata.ExampleDataA;
 import io.github.factoryfx.factory.merge.testdata.ExampleDataB;
 import io.github.factoryfx.factory.merge.testdata.ExampleDataC;
@@ -776,19 +776,19 @@ public class MergeTest {
     }
 
     public static class ExampleDataView extends FactoryBase<Void,ExampleDataView> {
-        public final FactoryViewReferenceAttribute<ExampleDataView,Void,ExampleDataBView> viewAttribute = new FactoryViewReferenceAttribute<>((r) -> {
+        public final FactoryViewAttribute<ExampleDataView,Void,ExampleDataBView> viewAttribute = new FactoryViewAttribute<>((r) -> {
             ExampleDataAView exampleDataAView = r.referenceAttribute.get();
             if (exampleDataAView!=null){
                 return exampleDataAView.bAttribute.get();
             }
             return null;
         });
-        public final FactoryReferenceAttribute<ExampleDataView,Void,ExampleDataAView> referenceAttribute = new FactoryReferenceAttribute<>();
+        public final FactoryAttribute<ExampleDataView,Void,ExampleDataAView> referenceAttribute = new FactoryAttribute<>();
 
     }
 
     public static class ExampleDataAView extends FactoryBase<Void, ExampleDataView> {
-        public final FactoryReferenceAttribute<ExampleDataView,Void,ExampleDataBView> bAttribute = new FactoryReferenceAttribute<>();
+        public final FactoryAttribute<ExampleDataView,Void,ExampleDataBView> bAttribute = new FactoryAttribute<>();
     }
 
     public static class ExampleDataBView extends FactoryBase<Void, ExampleDataView> {

@@ -58,7 +58,7 @@ public class MicroserviceRestClient<R extends FactoryBase<?,R>,S> {
     }
 
     public MergeDiffInfo<R> simulateUpdateCurrentFactory(DataUpdate<R> update) {
-        return executeWidthServerExceptionReporting(()-> microserviceResourceApi.simulateUpdateCurrentFactory(new UserAwareRequest<>(user,passwordHash,update)));
+        return executeWithServerExceptionReporting(()-> microserviceResourceApi.simulateUpdateCurrentFactory(new UserAwareRequest<>(user,passwordHash,update)));
     }
 
     /**
@@ -67,7 +67,7 @@ public class MicroserviceRestClient<R extends FactoryBase<?,R>,S> {
      * @return new factory for editing, server assign new id for the update
      */
     public DataUpdate<R> prepareNewFactory() {
-        DataUpdate<R> update = executeWidthServerExceptionReporting(()-> microserviceResourceApi.prepareNewFactory(new VoidUserAwareRequest(user,passwordHash)));
+        DataUpdate<R> update = executeWithServerExceptionReporting(()-> microserviceResourceApi.prepareNewFactory(new VoidUserAwareRequest(user,passwordHash)));
         update.root.internal().addBackReferences();
         if (factoryTreeBuilderBasedAttributeSetup!=null){
             factoryTreeBuilderBasedAttributeSetup.applyToRootFactoryDeep(update.root);
@@ -76,36 +76,36 @@ public class MicroserviceRestClient<R extends FactoryBase<?,R>,S> {
     }
 
     public MergeDiffInfo<R> getDiff(StoredDataMetadata<S> historyEntry) {
-        return executeWidthServerExceptionReporting(()-> microserviceResourceApi.getDiff(new UserAwareRequest<>(user, passwordHash, historyEntry)));
+        return executeWithServerExceptionReporting(()-> microserviceResourceApi.getDiff(new UserAwareRequest<>(user, passwordHash, historyEntry)));
     }
 
 
     public R getHistoryFactory(String id) {
-        R historyFactory = executeWidthServerExceptionReporting(()-> microserviceResourceApi.getHistoryFactory(new UserAwareRequest<>(user, passwordHash, id))).value;
+        R historyFactory = executeWithServerExceptionReporting(()-> microserviceResourceApi.getHistoryFactory(new UserAwareRequest<>(user, passwordHash, id))).value;
         historyFactory.internal().addBackReferences();
         return historyFactory;
     }
 
     public Collection<StoredDataMetadata<S>> getHistoryFactoryList() {
-        return executeWidthServerExceptionReporting(()-> microserviceResourceApi.getHistoryFactoryList(new VoidUserAwareRequest(user, passwordHash)));
+        return executeWithServerExceptionReporting(()-> microserviceResourceApi.getHistoryFactoryList(new VoidUserAwareRequest(user, passwordHash)));
     }
 
     public boolean checkUser() {
-        CheckUserResponse response = executeWidthServerExceptionReporting(()-> microserviceResourceApi.checkUser(new VoidUserAwareRequest(user,passwordHash)));
+        CheckUserResponse response = executeWithServerExceptionReporting(()-> microserviceResourceApi.checkUser(new VoidUserAwareRequest(user,passwordHash)));
         return response.valid;
     }
 
     public Locale getLocale() {
-        UserLocaleResponse response = executeWidthServerExceptionReporting(()-> microserviceResourceApi.getUserLocale(new VoidUserAwareRequest(user,passwordHash)));
+        UserLocaleResponse response = executeWithServerExceptionReporting(()-> microserviceResourceApi.getUserLocale(new VoidUserAwareRequest(user,passwordHash)));
         return response.locale;
     }
 
     public FactoryUpdateLog revert(StoredDataMetadata<S> historyFactory) {
-        return executeWidthServerExceptionReporting(()-> microserviceResourceApi.revert(new UserAwareRequest<>(user,passwordHash,historyFactory)));
+        return executeWithServerExceptionReporting(()-> microserviceResourceApi.revert(new UserAwareRequest<>(user,passwordHash,historyFactory)));
     }
 
     /**execute a jersey proxy client action and get server error  */
-    private <T> T executeWidthServerExceptionReporting(Supplier<T> action){
+    private <T> T executeWithServerExceptionReporting(Supplier<T> action){
         try {
             return action.get();
         } catch (InternalServerErrorException e) {

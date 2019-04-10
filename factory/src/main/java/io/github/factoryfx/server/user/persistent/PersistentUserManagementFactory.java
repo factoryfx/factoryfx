@@ -4,7 +4,7 @@ import io.github.factoryfx.factory.util.LanguageText;
 import io.github.factoryfx.factory.validation.ValidationResult;
 import io.github.factoryfx.factory.FactoryBase;
 import io.github.factoryfx.factory.PolymorphicFactoryBase;
-import io.github.factoryfx.factory.attribute.dependency.FactoryReferenceListAttribute;
+import io.github.factoryfx.factory.attribute.dependency.FactoryListAttribute;
 import io.github.factoryfx.server.user.User;
 import io.github.factoryfx.server.user.UserManagement;
 
@@ -12,7 +12,7 @@ import java.util.HashSet;
 
 public class PersistentUserManagementFactory<R extends FactoryBase<?,R>> extends PolymorphicFactoryBase<UserManagement,R> {
 
-    public final FactoryReferenceListAttribute<R,User, UserFactory<R>> users = new FactoryReferenceListAttribute<R,User, UserFactory<R>>().en("users").de("Benutzer").userNotSelectable();
+    public final FactoryListAttribute<R,User, UserFactory<R>> users = new FactoryListAttribute<R,User, UserFactory<R>>().en("users").de("Benutzer").userNotSelectable();
 
     @Override
     public PersistentUserManagement createImpl() {

@@ -5,12 +5,11 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import io.github.factoryfx.factory.FactoryBase;
-import io.github.factoryfx.factory.attribute.dependency.FactoryReferenceListAttribute;
+import io.github.factoryfx.factory.attribute.dependency.FactoryListAttribute;
 import io.github.factoryfx.factory.jackson.ObjectMapperBuilder;
 import io.github.factoryfx.factory.merge.testdata.ExampleDataA;
 import io.github.factoryfx.factory.merge.testdata.ExampleDataB;
 import io.github.factoryfx.factory.merge.testdata.ExampleDataC;
-import io.github.factoryfx.factory.storage.migration.datamigration.DataJsonNode;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -88,7 +87,7 @@ class DataJsonNodeTest {
     public static class IterationTestFactory extends FactoryBase<Void, IterationTestFactory> {
         public static final List<String> createOrder= new ArrayList<>();
         public String testinfo;
-        public final FactoryReferenceListAttribute<IterationTestFactory,Void,IterationTestFactory> children = new FactoryReferenceListAttribute<>();
+        public final FactoryListAttribute<IterationTestFactory,Void,IterationTestFactory> children = new FactoryListAttribute<>();
 
         public IterationTestFactory(String testinfo) {
             this();

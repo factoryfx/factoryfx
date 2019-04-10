@@ -3,14 +3,14 @@ package io.github.factoryfx.jetty;
 import io.github.factoryfx.factory.attribute.types.StringAttribute;
 import io.github.factoryfx.factory.FactoryBase;
 import io.github.factoryfx.factory.SimpleFactoryBase;
-import io.github.factoryfx.factory.attribute.dependency.FactoryPolymorphicReferenceAttribute;
+import io.github.factoryfx.factory.attribute.dependency.FactoryPolymorphicAttribute;
 
 import javax.servlet.Servlet;
 
 public class ServletAndPathFactory<R extends FactoryBase<?,R>> extends SimpleFactoryBase<ServletAndPath,R> {
 
     public final StringAttribute pathSpec = new StringAttribute().labelText("pathSpec");
-    public final FactoryPolymorphicReferenceAttribute<R,Servlet> servlet = new FactoryPolymorphicReferenceAttribute<R,Servlet>().labelText("Servlet");
+    public final FactoryPolymorphicAttribute<R,Servlet> servlet = new FactoryPolymorphicAttribute<R,Servlet>().labelText("Servlet");
 
 
     @Override

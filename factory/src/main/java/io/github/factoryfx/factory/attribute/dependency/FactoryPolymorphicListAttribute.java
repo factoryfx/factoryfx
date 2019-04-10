@@ -1,8 +1,5 @@
 package io.github.factoryfx.factory.attribute.dependency;
 
-import io.github.factoryfx.factory.util.LanguageText;
-import io.github.factoryfx.factory.validation.Validation;
-import io.github.factoryfx.factory.validation.ValidationResult;
 import io.github.factoryfx.factory.FactoryBase;
 import io.github.factoryfx.factory.PolymorphicFactory;
 
@@ -14,25 +11,18 @@ import java.util.*;
  *
  * @param <L> the base interface/class
  */
-public class FactoryPolymorphicReferenceAttribute<R extends FactoryBase<?,R>,L> extends FactoryReferenceBaseAttribute<R,L,FactoryBase<? extends L,R>,FactoryPolymorphicReferenceAttribute<R,L>> {
+public class FactoryPolymorphicListAttribute<R extends FactoryBase<?,R>,L> extends FactoryListBaseAttribute<R,L,FactoryBase<? extends L,R>, FactoryPolymorphicListAttribute<R,L>> {
 
-    private static final Validation requiredValidation = value -> {
-        boolean error = value == null;
-        return new ValidationResult(error, new LanguageText().en("required parameter").de("Pflichtparameter"));
-    };
 
-    public FactoryPolymorphicReferenceAttribute() {
+    public FactoryPolymorphicListAttribute() {
         super();
     }
 
     @SafeVarargs
-    @SuppressWarnings("unchecked")
-    public FactoryPolymorphicReferenceAttribute(Class<L> liveObjectClass, Class<? extends PolymorphicFactory<?>>... possibleFactoriesClasses) {
+    public FactoryPolymorphicListAttribute(Class<L> liveObjectClass, Class<? extends PolymorphicFactory<?>>... possibleFactoriesClasses) {
         super();
         setup(liveObjectClass,possibleFactoriesClasses);
-        this.validation(requiredValidation);
     }
-
 
     private List<Class<?>> possibleFactoriesClasses;
 
@@ -45,7 +35,7 @@ public class FactoryPolymorphicReferenceAttribute<R extends FactoryBase<?,R>,L> 
      */
     @SuppressWarnings("unchecked")
     @SafeVarargs
-    public final FactoryPolymorphicReferenceAttribute<R,L> setupUnsafe(Class liveObjectClass, Class... possibleFactoriesClasses){
+    public final FactoryPolymorphicListAttribute<R,L> setupUnsafe(Class liveObjectClass, Class... possibleFactoriesClasses){
         this.possibleFactoriesClasses=Arrays.asList(possibleFactoriesClasses);
         for (Class clazz: possibleFactoriesClasses){
             if (!FactoryBase.class.isAssignableFrom(clazz)){
@@ -62,7 +52,7 @@ public class FactoryPolymorphicReferenceAttribute<R extends FactoryBase<?,R>,L> 
      * @return self
      */
     @SafeVarargs
-    public final FactoryPolymorphicReferenceAttribute<R,L> setup(Class<L> liveObjectClass, Class<? extends PolymorphicFactory<?>>... possibleFactoriesClasses){
+    public final FactoryPolymorphicListAttribute<R,L> setup(Class<L> liveObjectClass, Class<? extends PolymorphicFactory<?>>... possibleFactoriesClasses){
         this.possibleFactoriesClasses=Arrays.asList(possibleFactoriesClasses);
         new FactoryPolymorphicUtil<R,L>().setup(this,liveObjectClass,()->this.root,possibleFactoriesClasses);
         return this;
@@ -77,5 +67,15 @@ public class FactoryPolymorphicReferenceAttribute<R extends FactoryBase<?,R>,L> 
         return possibleFactoriesClasses;
     }
 
+
+    @SuppressWarnings("unchecked")
+    public <T extends FactoryBase> T get(Class<T> clazz) {
+        for (FactoryBase<? extends L, R> item : this.get()) {
+            if (item.getClass()==clazz){
+                return (T)item;
+            }
+        }
+        return null;
+    }
 
 }

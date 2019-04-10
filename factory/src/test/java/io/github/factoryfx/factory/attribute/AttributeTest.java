@@ -5,7 +5,7 @@ import java.util.Locale;
 
 
 import io.github.factoryfx.factory.FactoryBase;
-import io.github.factoryfx.factory.attribute.dependency.FactoryReferenceListAttribute;
+import io.github.factoryfx.factory.attribute.dependency.FactoryListAttribute;
 import io.github.factoryfx.factory.attribute.primitive.BooleanAttribute;
 import io.github.factoryfx.factory.attribute.types.StringAttribute;
 import io.github.factoryfx.factory.jackson.ObjectMapperBuilder;
@@ -104,7 +104,7 @@ public class AttributeTest {
 
     public static class DynamicReadOnlyData extends FactoryBase<Void,DynamicReadOnlyData> {
         public final BooleanAttribute barred = new BooleanAttribute();
-        public final FactoryReferenceListAttribute<DynamicReadOnlyData,Void,DynamicReadOnlyData2> strangeList = new FactoryReferenceListAttribute<>();
+        public final FactoryListAttribute<DynamicReadOnlyData,Void,DynamicReadOnlyData2> strangeList = new FactoryListAttribute<>();
     }
 
     public static class DynamicReadOnlyData2 extends FactoryBase<Void,DynamicReadOnlyData> {

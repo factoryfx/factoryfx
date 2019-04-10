@@ -95,23 +95,13 @@ public class FactoryManager<L,R extends FactoryBase<L,R>> {
 
     private void determineRecreationNeedFromRoot(R previousFactoryCopyRoot) {
         currentFactoryRoot.determineRecreationNeedFromRoot(getChangedFactories(this.currentFactoryRoot,previousFactoryCopyRoot));
-
-//        for (Data data: currentFactoryRoot.collectChildFactories()){
-//            data.internal().visitAttributesFlat((name, attribute) -> {
-//                if (!(attribute instanceof FactoryViewReferenceAttribute) && !(currentAttribute instanceof DataViewListReferenceAttribute)){//Data views have no function no need to check
-//                    if (!currentAttribute.internal_mergeMatch(previousAttribute)){
-//                        result.add(data);
-//                    }
-//                }
-//
-//            });
-//        }
     }
 
     Set<FactoryBase<?,?>> getChangedFactories(RootFactoryWrapper<R> currentFactoryRoot, R previousFactoryCopyRoot){
         //one might think that the merger could do the change detection but that don't work for views and separation of concern is better anyway
+        //TODO this is no longer true since the data remove refactoring, check if could be part of the merge now?
         final HashSet<FactoryBase<?,?>> result = new HashSet<>();
-        final HashMap<String, FactoryBase<?,R>> previousFactories = previousFactoryCopyRoot.internal().collectChildFactoriesDeepMapFromRoot();
+        final Map<String, FactoryBase<?,R>> previousFactories = previousFactoryCopyRoot.internal().collectChildFactoryMap();
         for (FactoryBase<?,?> data: currentFactoryRoot.collectChildFactories()){
             final FactoryBase<?,?> previousFactory = previousFactories.get(data.getId());
             if (previousFactory!=null){

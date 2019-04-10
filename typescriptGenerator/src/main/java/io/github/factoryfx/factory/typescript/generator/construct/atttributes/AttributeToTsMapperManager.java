@@ -3,10 +3,10 @@ package io.github.factoryfx.factory.typescript.generator.construct.atttributes;
 
 import io.github.factoryfx.factory.FactoryBase;
 import io.github.factoryfx.factory.attribute.*;
-import io.github.factoryfx.factory.attribute.dependency.FactoryReferenceAttribute;
-import io.github.factoryfx.factory.attribute.dependency.FactoryReferenceListAttribute;
-import io.github.factoryfx.factory.attribute.dependency.FactoryViewListReferenceAttribute;
-import io.github.factoryfx.factory.attribute.dependency.FactoryViewReferenceAttribute;
+import io.github.factoryfx.factory.attribute.dependency.FactoryAttribute;
+import io.github.factoryfx.factory.attribute.dependency.FactoryListAttribute;
+import io.github.factoryfx.factory.attribute.dependency.FactoryViewListAttribute;
+import io.github.factoryfx.factory.attribute.dependency.FactoryViewAttribute;
 import io.github.factoryfx.factory.attribute.primitive.*;
 import io.github.factoryfx.factory.attribute.primitive.list.*;
 import io.github.factoryfx.factory.attribute.time.*;
@@ -35,8 +35,8 @@ public class AttributeToTsMapperManager {
 
     public static <R extends FactoryBase<?,R>> Map<Class<? extends Attribute>, AttributeToTsMapper> createAttributeInfoMap(Map<Class<? extends FactoryBase<?,R>>, TsClassConstructed> dataToOverrideTs, Set<TsEnumConstructed> tsEnums){
         HashMap<Class<? extends Attribute>, AttributeToTsMapper> result = new HashMap<>();
-        result.put(FactoryReferenceAttribute.class, new ReferenceAttributeToTsMapper<>(dataToOverrideTs));
-        result.put(FactoryReferenceListAttribute.class, new ReferenceListAttributeToTsMapper<>(dataToOverrideTs));
+        result.put(FactoryAttribute.class, new ReferenceAttributeToTsMapper<>(dataToOverrideTs));
+        result.put(FactoryListAttribute.class, new ReferenceListAttributeToTsMapper<>(dataToOverrideTs));
 
         result.put(ByteArrayAttribute.class, new ValueAttributeToTsMapper(TsTypePrimitive.STRING));
         result.put(I18nAttribute.class, new ValueAttributeToTsMapper(TsTypePrimitive.STRING));
@@ -79,8 +79,8 @@ public class AttributeToTsMapperManager {
     public static Set<Class<? extends Attribute>> createAttributeIgnoreSet(){
         Set<Class<? extends Attribute>> result = new HashSet<>();
         result.add(ObjectValueAttribute.class);
-        result.add(FactoryViewReferenceAttribute.class);
-        result.add(FactoryViewListReferenceAttribute.class);
+        result.add(FactoryViewAttribute.class);
+        result.add(FactoryViewListAttribute.class);
         return result;
     }
 

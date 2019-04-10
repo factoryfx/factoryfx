@@ -12,13 +12,13 @@ import javafx.scene.control.MenuItem;
 
 import org.controlsfx.control.CheckComboBox;
 
-import io.github.factoryfx.factory.attribute.dependency.FactoryReferenceListBaseAttribute;
+import io.github.factoryfx.factory.attribute.dependency.FactoryListBaseAttribute;
 import io.github.factoryfx.factory.util.LanguageText;
 import io.github.factoryfx.javafx.factory.editor.attribute.converter.DataStringConverter;
 import io.github.factoryfx.javafx.factory.util.CheckComboBoxHelper;
 import io.github.factoryfx.javafx.factory.util.UniformDesign;
 
-public class CatalogListAttributeVisualisation<T extends FactoryBase<?,?>, A extends FactoryReferenceListBaseAttribute<?,?,T,A>> extends ListAttributeVisualisation<T,A> {
+public class CatalogListAttributeVisualisation<T extends FactoryBase<?,?>, A extends FactoryListBaseAttribute<?,?,T,A>> extends ListAttributeVisualisation<T,A> {
     private final UniformDesign uniformDesign;
     private final Supplier<Collection<T>> possibleValuesProvider;
     private final A referenceListAttribute;

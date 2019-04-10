@@ -4,7 +4,6 @@ import io.github.factoryfx.factory.AttributeVisitor;
 import io.github.factoryfx.factory.FactoryBase;
 import io.github.factoryfx.factory.attribute.dependency.*;
 import io.github.factoryfx.factory.attribute.*;
-import io.github.factoryfx.factory.parametrized.ParametrizedObjectCreatorAttribute;
 import io.github.factoryfx.factory.storage.migration.metadata.AttributeStorageMetadata;
 import io.github.factoryfx.factory.storage.migration.metadata.DataStorageMetadata;
 
@@ -193,7 +192,7 @@ public class FactoryMetadata<R extends FactoryBase<?,R>, L,F extends FactoryBase
                 Type type = field.getGenericType();
                 if (type instanceof ParameterizedType) {
                     ParameterizedType ptype = (ParameterizedType) type;
-                    //last generic parameter is kind of guess work but best we can do width reflection
+                    //last generic parameter is kind of guess work but best we can do with reflection
                     try {
                         Type actualTypeArgument = ptype.getActualTypeArguments()[ptype.getActualTypeArguments().length - 1];
                         String className= actualTypeArgument.getTypeName();
@@ -290,62 +289,42 @@ public class FactoryMetadata<R extends FactoryBase<?,R>, L,F extends FactoryBase
     }
 
     @SuppressWarnings("unchecked")
-    public void visitChildFactoriesAndViewsFlat(F data, Consumer<FactoryBase<?,R>> consumer) {
+    public void visitChildFactoriesAndViewsFlat(F data, Consumer<FactoryBase<?,R>> consumer, boolean includeViews) {
         if (this.visitChildFactoriesAndViewsFlat != null) {
             this.visitChildFactoriesAndViewsFlat.accept(data, consumer);
 
         } else
 
             data.internal().visitAttributesFlat((attributeVariableName, attribute) -> {
-                if (attribute instanceof FactoryReferenceAttribute) {
+                if (attribute instanceof FactoryBaseAttribute) {
                     FactoryBase<?,R> factory = (FactoryBase<?,R>) attribute.get();
                     if (factory != null) {
                         consumer.accept(factory);
                     }
                     return;
                 }
-                if (attribute instanceof FactoryReferenceListAttribute) {
-                    List<?> factories = ((FactoryReferenceListAttribute<?, ?, ?>) attribute).get();
+                if (attribute instanceof FactoryListBaseAttribute) {
+                    List<?> factories = ((FactoryListBaseAttribute<?, ?, ?, ?>) attribute).get();
                     for (Object factory : factories) {
                         consumer.accept((FactoryBase<?,R>) factory);
                     }
                     return;
                 }
-                if (attribute instanceof FactoryViewReferenceAttribute) {
-                    FactoryBase<?,R> factory = (FactoryBase<?,R>) attribute.get();
-                    if (factory != null) {
-                        consumer.accept(factory);
-                    }
-                    return;
-                }
-                if (attribute instanceof FactoryViewListReferenceAttribute) {
-                    List<?> factories = ((FactoryViewListReferenceAttribute<?, ?, ?>) attribute).get();
-                    for (Object factory : factories) {
-                        consumer.accept((FactoryBase<?,R>) factory);
-                    }
-                    return;
-                }
-                if (attribute instanceof FactoryPolymorphicReferenceAttribute) {
-                    FactoryBase<?,R> factory = (FactoryBase<?,R>) attribute.get();
-                    if (factory != null) {
-                        consumer.accept(factory);
-                    }
-                    return;
-                }
-                if (attribute instanceof FactoryPolymorphicReferenceListAttribute) {
-                    ((FactoryPolymorphicReferenceListAttribute<R,?>) attribute).get().forEach(factory -> {
+                if (includeViews){
+                    if (attribute instanceof FactoryViewAttribute) {
+                        FactoryBase<?,R> factory = (FactoryBase<?,R>) attribute.get();
                         if (factory != null) {
                             consumer.accept(factory);
                         }
-                    });
-                    return;
-                }
-                if (attribute instanceof ParametrizedObjectCreatorAttribute) {
-                    FactoryBase<?,R> factory = (FactoryBase<?,R>) attribute.get();
-                    if (factory != null) {
-                        consumer.accept(factory);
+                        return;
                     }
-                    return;
+                    if (attribute instanceof FactoryViewListAttribute) {
+                        List<?> factories = ((FactoryViewListAttribute<?, ?, ?>) attribute).get();
+                        for (Object factory : factories) {
+                            consumer.accept((FactoryBase<?,R>) factory);
+                        }
+                        return;
+                    }
                 }
             });
 

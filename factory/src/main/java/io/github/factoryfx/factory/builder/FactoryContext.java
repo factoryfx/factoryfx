@@ -60,7 +60,7 @@ public class FactoryContext<R extends FactoryBase<?,R>> {
 
 
     @SuppressWarnings("unchecked")
-    public <L, F extends FactoryBase<L,R>> List<F> getList(Class<F> clazz) {
+    <L, F extends FactoryBase<L,R>> List<F> getList(Class<F> clazz) {
         ArrayList<F> result = new ArrayList<>();
         factoryCreators.stream().filter(fc -> fc.match(clazz)).forEach(vFactoryCreator -> result.add((F) vFactoryCreator.create(FactoryContext.this)));
         return result;
@@ -79,7 +79,7 @@ public class FactoryContext<R extends FactoryBase<?,R>> {
     }
 
     public void fillFromExistingFactoryTree(R root) {
-        List<FactoryBase<?,R>> factories = root.internal().collectChildFactoriesDeepFromRoot();
+        List<FactoryBase<?,R>> factories = root.internal().collectChildrenDeep();
         Map<FactoryCreatorIdentifier,FactoryBase<?,?>> classToFactory = new HashMap<>();
         for (FactoryBase<?,?> factory : factories) {
             classToFactory.put(new FactoryCreatorIdentifier(factory.getClass(),factory.internal().getTreeBuilderName()),factory);

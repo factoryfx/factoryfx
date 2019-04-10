@@ -4,7 +4,7 @@ import ch.qos.logback.classic.Level;
 import io.github.factoryfx.factory.attribute.types.StringAttribute;
 import io.github.factoryfx.factory.storage.DataUpdate;
 import io.github.factoryfx.factory.SimpleFactoryBase;
-import io.github.factoryfx.factory.attribute.dependency.FactoryReferenceAttribute;
+import io.github.factoryfx.factory.attribute.dependency.FactoryAttribute;
 import io.github.factoryfx.factory.builder.FactoryTreeBuilder;
 import io.github.factoryfx.factory.builder.Scope;
 import io.github.factoryfx.server.Microservice;
@@ -53,7 +53,7 @@ public class UpdateableServletTest {
     }
 
     public static class UpdateableWebserverRootFactory extends SimpleFactoryBase<Server, UpdateableWebserverRootFactory>{
-        public final FactoryReferenceAttribute<UpdateableWebserverRootFactory,Server,JettyServerFactory<UpdateableWebserverRootFactory>> server = new FactoryReferenceAttribute<>();
+        public final FactoryAttribute<UpdateableWebserverRootFactory,Server,JettyServerFactory<UpdateableWebserverRootFactory>> server = new FactoryAttribute<>();
 
         @Override
         public Server createImpl() {

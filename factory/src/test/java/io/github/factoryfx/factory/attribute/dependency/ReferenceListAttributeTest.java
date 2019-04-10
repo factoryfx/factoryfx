@@ -20,7 +20,7 @@ import org.junit.jupiter.api.Test;
 public class ReferenceListAttributeTest {
 
     public static class ExampleReferenceListFactory extends FactoryBase<Void,ExampleDataA> {
-        public FactoryReferenceListAttribute<ExampleDataA,Void,ExampleDataA> referenceListAttribute =new FactoryReferenceListAttribute<>();
+        public FactoryListAttribute<ExampleDataA,Void,ExampleDataA> referenceListAttribute =new FactoryListAttribute<>();
 
 
     }
@@ -58,7 +58,7 @@ public class ReferenceListAttributeTest {
     public void remove_Listener(){
         ExampleReferenceListFactory exampleReferenceListFactory = new ExampleReferenceListFactory();
         ArrayList<String> calls= new ArrayList<>();
-        AttributeChangeListener<List<ExampleDataA>,FactoryReferenceListAttribute<ExampleDataA,Void,ExampleDataA>> invalidationListener = (a, o) -> {
+        AttributeChangeListener<List<ExampleDataA>, FactoryListAttribute<ExampleDataA,Void,ExampleDataA>> invalidationListener = (a, o) -> {
             calls.add("");
         };
         exampleReferenceListFactory.referenceListAttribute.internal_addListener(invalidationListener);
@@ -117,9 +117,9 @@ public class ReferenceListAttributeTest {
 
     @Test
     public void removeListener() throws Exception {
-        FactoryReferenceListAttribute<ExampleDataA,Void,ExampleDataA> attribute =new FactoryReferenceListAttribute<>();
+        FactoryListAttribute<ExampleDataA,Void,ExampleDataA> attribute =new FactoryListAttribute<>();
 
-        final AttributeChangeListener<List<ExampleDataA>,FactoryReferenceListAttribute<ExampleDataA,Void,ExampleDataA>> attributeChangeListener = (a, value) -> System.out.println(value);
+        final AttributeChangeListener<List<ExampleDataA>, FactoryListAttribute<ExampleDataA,Void,ExampleDataA>> attributeChangeListener = (a, value) -> System.out.println(value);
         attribute.internal_addListener(attributeChangeListener);
         Assertions.assertEquals(1,attribute.listeners.size());
         attribute.internal_removeListener(attributeChangeListener);
@@ -128,9 +128,9 @@ public class ReferenceListAttributeTest {
 
     @Test
     public void removeWeakListener() throws Exception {
-        FactoryReferenceListAttribute<ExampleDataA,Void,ExampleDataA> attribute =new FactoryReferenceListAttribute<>();
+        FactoryListAttribute<ExampleDataA,Void,ExampleDataA> attribute =new FactoryListAttribute<>();
 
-        final AttributeChangeListener<List<ExampleDataA>,FactoryReferenceListAttribute<ExampleDataA,Void,ExampleDataA>> attributeChangeListener = (a, value) -> System.out.println(value);
+        final AttributeChangeListener<List<ExampleDataA>, FactoryListAttribute<ExampleDataA,Void,ExampleDataA>> attributeChangeListener = (a, value) -> System.out.println(value);
         attribute.internal_addListener(new WeakAttributeChangeListener<>(attributeChangeListener));
         Assertions.assertTrue(attribute.listeners.size()==1);
         attribute.internal_removeListener(attributeChangeListener);
@@ -139,9 +139,9 @@ public class ReferenceListAttributeTest {
 
     @Test
     public void removeWeakListener_after_gc() throws Exception {
-        FactoryReferenceListAttribute<ExampleDataA,Void,ExampleDataA> attribute =new FactoryReferenceListAttribute<>();
+        FactoryListAttribute<ExampleDataA,Void,ExampleDataA> attribute =new FactoryListAttribute<>();
 
-        final AttributeChangeListener<List<ExampleDataA>,FactoryReferenceListAttribute<ExampleDataA,Void,ExampleDataA>> attributeChangeListener = (a, value) -> System.out.println(value);
+        final AttributeChangeListener<List<ExampleDataA>, FactoryListAttribute<ExampleDataA,Void,ExampleDataA>> attributeChangeListener = (a, value) -> System.out.println(value);
         attribute.internal_addListener(new WeakAttributeChangeListener<>(null));//null to simulate garbage collected weakref
         Assertions.assertTrue(attribute.listeners.size()==1);
         attribute.internal_removeListener(attributeChangeListener);
@@ -173,7 +173,7 @@ public class ReferenceListAttributeTest {
     @Test
     public void delegate_root_for_addAll_with_null(){
         Assertions.assertThrows(IllegalStateException.class, () -> {
-            FactoryReferenceListAttribute<ExampleDataA,Void,ExampleDataA> attribute = new FactoryReferenceListAttribute<>();
+            FactoryListAttribute<ExampleDataA,Void,ExampleDataA> attribute = new FactoryListAttribute<>();
             attribute.internal_addBackReferences(new ExampleDataA(), null);
             attribute.get().add(null);
         });
@@ -182,7 +182,7 @@ public class ReferenceListAttributeTest {
     @Test
     public void delegate_root_for_addAll_with_null_nested(){
         Assertions.assertThrows(IllegalStateException.class, () -> {
-            FactoryReferenceListAttribute<ExampleDataA,Void,ExampleDataA> attribute = new FactoryReferenceListAttribute<>();
+            FactoryListAttribute<ExampleDataA,Void,ExampleDataA> attribute = new FactoryListAttribute<>();
             attribute.internal_addBackReferences(new ExampleDataA(), null);
 
             final ExampleDataA exampleFactoryA1 = new ExampleDataA();
@@ -194,20 +194,20 @@ public class ReferenceListAttributeTest {
 
     @Test
     public void test_semanticcopy_self(){
-        FactoryReferenceListAttribute<ExampleDataA,Void,ExampleDataA> attributeFrom =new FactoryReferenceListAttribute<>();
+        FactoryListAttribute<ExampleDataA,Void,ExampleDataA> attributeFrom =new FactoryListAttribute<>();
         attributeFrom.setCopySemantic(CopySemantic.SELF);
         attributeFrom.add(new ExampleDataA());
-        FactoryReferenceListAttribute<ExampleDataA,Void,ExampleDataA> attributeTo =new FactoryReferenceListAttribute<>();
+        FactoryListAttribute<ExampleDataA,Void,ExampleDataA> attributeTo =new FactoryListAttribute<>();
         attributeFrom.internal_semanticCopyTo(attributeTo);
         Assertions.assertTrue(attributeFrom.get(0)==attributeTo.get(0),"same reference");
     }
 
     @Test
     public void test_semanticcopy_copy(){
-        FactoryReferenceListAttribute<ExampleDataA,Void,ExampleDataA> attributeFrom =new FactoryReferenceListAttribute<>();
+        FactoryListAttribute<ExampleDataA,Void,ExampleDataA> attributeFrom =new FactoryListAttribute<>();
         attributeFrom.setCopySemantic(CopySemantic.COPY);
         attributeFrom.add(new ExampleDataA());
-        FactoryReferenceListAttribute<ExampleDataA,Void,ExampleDataA> attributeTo =new FactoryReferenceListAttribute<>();
+        FactoryListAttribute<ExampleDataA,Void,ExampleDataA> attributeTo =new FactoryListAttribute<>();
         attributeFrom.internal_semanticCopyTo(attributeTo);
         Assertions.assertTrue(attributeFrom.get(0)!=attributeTo.get(0),"not same reference");
         Assertions.assertNotEquals(attributeFrom.get(0).getId(),attributeTo.get(0).getId());
@@ -215,7 +215,7 @@ public class ReferenceListAttributeTest {
 
     @Test
     public void test_sort_notifies_listener(){
-        FactoryReferenceListAttribute<ExampleDataA,Void,ExampleDataA> attribute =new FactoryReferenceListAttribute<>();
+        FactoryListAttribute<ExampleDataA,Void,ExampleDataA> attribute =new FactoryListAttribute<>();
         {
             ExampleDataA exampleDataA = new ExampleDataA();
             exampleDataA.stringAttribute.set("a");

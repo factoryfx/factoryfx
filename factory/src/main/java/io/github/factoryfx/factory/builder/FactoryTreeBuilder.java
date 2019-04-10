@@ -47,7 +47,7 @@ public class FactoryTreeBuilder<L,R extends FactoryBase<L,R>,S> {
     }
 
 
-    public <L,F extends FactoryBase<L,R>> void addFactory(Class<F> clazz, Scope scope){
+    public <LO,F extends FactoryBase<LO,R>> void addFactory(Class<F> clazz, Scope scope){
         addFactory(clazz,scope,new DefaultCreator<>(clazz));
     }
 

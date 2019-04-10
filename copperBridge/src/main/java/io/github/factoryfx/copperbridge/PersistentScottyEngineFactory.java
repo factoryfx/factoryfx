@@ -3,7 +3,7 @@ package io.github.factoryfx.copperbridge;
 import java.util.Collections;
 
 import io.github.factoryfx.copperbridge.db.OracleDataSourceFactory;
-import io.github.factoryfx.factory.attribute.dependency.FactoryReferenceAttribute;
+import io.github.factoryfx.factory.attribute.dependency.FactoryAttribute;
 import io.github.factoryfx.factory.attribute.primitive.IntegerAttribute;
 import io.github.factoryfx.factory.attribute.types.StringAttribute;
 import io.github.factoryfx.factory.FactoryBase;
@@ -27,8 +27,8 @@ public class PersistentScottyEngineFactory<R extends FactoryBase<?, R>> extends 
     public final IntegerAttribute threads = new IntegerAttribute().labelText("Number of processing threads");
 
 
-    public final FactoryReferenceAttribute<R,EngineIdProvider, EngineIdProviderFactory<R>> persistentEngineIdProviderFactory = new FactoryReferenceAttribute<>();
-    public final FactoryReferenceAttribute<R,DBDialect, OracleDataSourceFactory<R>> dbDialectFactory = new FactoryReferenceAttribute<R,DBDialect, OracleDataSourceFactory<R>>().labelText("DB dialect");
+    public final FactoryAttribute<R,EngineIdProvider, EngineIdProviderFactory<R>> persistentEngineIdProviderFactory = new FactoryAttribute<>();
+    public final FactoryAttribute<R,DBDialect, OracleDataSourceFactory<R>> dbDialectFactory = new FactoryAttribute<R,DBDialect, OracleDataSourceFactory<R>>().labelText("DB dialect");
 
     public PersistentScottyEngineFactory() {
         configLifeCycle().setCreator(this::createImpl);

@@ -2,7 +2,6 @@ package io.github.factoryfx.docu.persistentstorage;
 
 import io.github.factoryfx.factory.storage.DataUpdate;
 import io.github.factoryfx.factory.builder.FactoryTreeBuilder;
-import io.github.factoryfx.factory.builder.Scope;
 import io.github.factoryfx.factory.datastorage.postgres.DisableAutocommitDatasource;
 import io.github.factoryfx.factory.datastorage.postgres.PostgresDataStorage;
 import io.github.factoryfx.server.Microservice;

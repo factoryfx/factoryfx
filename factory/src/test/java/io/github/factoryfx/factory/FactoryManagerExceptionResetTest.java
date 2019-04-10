@@ -1,6 +1,6 @@
 package io.github.factoryfx.factory;
 
-import io.github.factoryfx.factory.attribute.dependency.FactoryReferenceAttribute;
+import io.github.factoryfx.factory.attribute.dependency.FactoryAttribute;
 import io.github.factoryfx.factory.exception.ResettingHandler;
 import io.github.factoryfx.factory.log.FactoryUpdateLog;
 import io.github.factoryfx.factory.metadata.FactoryMetadataManager;
@@ -18,7 +18,7 @@ public class FactoryManagerExceptionResetTest {
 
 
     public static class BrokenFactory extends FactoryBase<DummyLifeObejct,BrokenFactory> {
-        public final FactoryReferenceAttribute<BrokenFactory,DummyLifeObejct,BrokenFactory> ref= new FactoryReferenceAttribute<>();
+        public final FactoryAttribute<BrokenFactory,DummyLifeObejct,BrokenFactory> ref= new FactoryAttribute<>();
 
         public List<String> createCalls= new ArrayList<>();
         public List<String> reCreateCalls= new ArrayList<>();

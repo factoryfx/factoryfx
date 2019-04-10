@@ -28,7 +28,6 @@ import org.glassfish.jersey.client.authentication.HttpAuthenticationFeature;
  * @param <S> Summary Data for factory history
  */
 public class MicroserviceRestClientFactory<R extends FactoryBase<?,R>, RS extends FactoryBase<?,RS>,S> extends SimpleFactoryBase<MicroserviceRestClient<RS,S>,R> {
-    //public final FactoryReferenceAttribute<RestClient,RestClientFactory<VS,RS>> restClient= new FactoryReferenceAttribute<RestClient,RestClientFactory<VS,RS>>().setupUnsafe(RestClientFactory.class);//.en("rest client");
     public final StringAttribute user = new StringAttribute().en("user").nullable();
     public final StringAttribute passwordHash = new StringAttribute().en("passwordHash").nullable();
 

@@ -1,7 +1,6 @@
 package io.github.factoryfx.docu.helloworld;
 
 import io.github.factoryfx.factory.builder.FactoryTreeBuilder;
-import io.github.factoryfx.factory.builder.Scope;
 
 public class Main {
 

@@ -71,7 +71,7 @@ subprojects {
     }
 
     group = 'io.github.factoryfx'
-    version = '2.0.0-ea11'
+    version = '2.0.0-ea12'
 
     if (project.hasProperty('secretKeyRingFileSourceURL')) {
         signing {
@@ -439,6 +439,7 @@ project(':docu') {
 
         compile project(':microserviceRestServer')
         compile project(':microserviceRestClient')
+        compile project(':starter')
         
         compile group: 'io.dropwizard.metrics', name: 'metrics-jetty9', version: '3.2.4'
         compile 'ru.yandex.qatools.embed:postgresql-embedded:1.15'
@@ -556,6 +557,7 @@ project(':soapFactory') {
 
         dependencies {
             compile project(":factory")
+            compile project(":jettyFactory")
             compile group: 'com.squareup', name: 'javapoet', version: '1.11.1'
         }
     }

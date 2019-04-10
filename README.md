@@ -83,6 +83,7 @@ public class HelloWorld{
 * [Data injection](docu/src/main/java/io/github/factoryfx/docu/datainjection)<br>Injection data into a live object
 * [Factory](docu/src/main/java/io/github/factoryfx/docu/factorylayer)<br>Explanation of factories
 * [Liveobject](docu/src/main/java/io/github/factoryfx/docu/liveobjects)<br>Explanation of live objects
+* [Starter](docu/src/main/java/io/github/factoryfx/docu/starter)<br>code generator for initial project setup
 
 ### Advanced
 * [Comparison](docu/src/main/java/io/github/factoryfx/docu/comparison)<br>Comparison to other dependency injection frameworks

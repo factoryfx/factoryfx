@@ -5,9 +5,9 @@ import com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider;
 import io.github.factoryfx.factory.attribute.types.ObjectValueAttribute;
 import io.github.factoryfx.factory.FactoryBase;
 import io.github.factoryfx.factory.SimpleFactoryBase;
-import io.github.factoryfx.factory.attribute.dependency.FactoryPolymorphicReferenceAttribute;
-import io.github.factoryfx.factory.attribute.dependency.FactoryPolymorphicReferenceListAttribute;
-import io.github.factoryfx.factory.attribute.dependency.FactoryReferenceAttribute;
+import io.github.factoryfx.factory.attribute.dependency.FactoryPolymorphicAttribute;
+import io.github.factoryfx.factory.attribute.dependency.FactoryPolymorphicListAttribute;
+import io.github.factoryfx.factory.attribute.dependency.FactoryAttribute;
 import org.glassfish.jersey.CommonProperties;
 import org.glassfish.jersey.logging.LoggingFeature;
 import org.glassfish.jersey.server.ResourceConfig;
@@ -19,14 +19,14 @@ import java.util.*;
 public class JerseyServletFactory<R extends FactoryBase<?,R>> extends SimpleFactoryBase<Servlet,R> {
 
 
-    public final FactoryReferenceAttribute<R,ObjectMapper,FactoryBase<ObjectMapper,R>> objectMapper = new FactoryReferenceAttribute<R,ObjectMapper,FactoryBase<ObjectMapper,R>>().nullable().en("objectMapper");
+    public final FactoryAttribute<R,ObjectMapper,FactoryBase<ObjectMapper,R>> objectMapper = new FactoryAttribute<R,ObjectMapper,FactoryBase<ObjectMapper,R>>().nullable().en("objectMapper");
 
-    public final FactoryPolymorphicReferenceAttribute<R,LoggingFeature> restLogging = new FactoryPolymorphicReferenceAttribute<R,LoggingFeature>().userReadOnly().labelText("REST logging");
+    public final FactoryPolymorphicAttribute<R,LoggingFeature> restLogging = new FactoryPolymorphicAttribute<R,LoggingFeature>().userReadOnly().labelText("REST logging");
 
     public final ObjectValueAttribute<List<Object>> additionalJaxrsComponents = new ObjectValueAttribute<List<Object>>().userReadOnly().labelText("additionalJaxrsComponents").nullable();
 
 
-    public final FactoryPolymorphicReferenceListAttribute<R,Object> resources = new FactoryPolymorphicReferenceListAttribute<R,Object>().labelText("resources");
+    public final FactoryPolymorphicListAttribute<R,Object> resources = new FactoryPolymorphicListAttribute<R,Object>().labelText("resources");
 
     @Override
     public Servlet createImpl() {

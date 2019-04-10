@@ -1,7 +1,7 @@
 package io.github.factoryfx.factory.builder;
 
 import io.github.factoryfx.factory.SimpleFactoryBase;
-import io.github.factoryfx.factory.attribute.dependency.FactoryReferenceAttribute;
+import io.github.factoryfx.factory.attribute.dependency.FactoryAttribute;
 import io.github.factoryfx.factory.parametrized.ParametrizedObjectCreatorAttribute;
 import io.github.factoryfx.factory.parametrized.ParametrizedObjectCreatorFactory;
 import io.github.factoryfx.factory.testfactories.ExampleLiveObjectA;
@@ -47,7 +47,7 @@ public class DefaultCreatorTest {
     }
 
     public static class ExampleFactoryANotNullable extends SimpleFactoryBase<ExampleLiveObjectA, ExampleFactoryANotNullable> {
-        public final FactoryReferenceAttribute<ExampleFactoryANotNullable,ExampleLiveObjectA,ExampleFactoryANotNullable> referenceAttribute = new FactoryReferenceAttribute<>();
+        public final FactoryAttribute<ExampleFactoryANotNullable,ExampleLiveObjectA,ExampleFactoryANotNullable> referenceAttribute = new FactoryAttribute<>();
 
         @Override
         public ExampleLiveObjectA createImpl() {
@@ -67,7 +67,7 @@ public class DefaultCreatorTest {
     }
 
     public static class ExampleFactoryNullableRef extends SimpleFactoryBase<ExampleLiveObjectA, ExampleFactoryNullableRef> {
-        public final FactoryReferenceAttribute<ExampleFactoryNullableRef,ExampleLiveObjectA, ExampleFactoryNullableRef> referenceAttribute = new FactoryReferenceAttribute<ExampleFactoryNullableRef,ExampleLiveObjectA, ExampleFactoryNullableRef>().nullable();
+        public final FactoryAttribute<ExampleFactoryNullableRef,ExampleLiveObjectA, ExampleFactoryNullableRef> referenceAttribute = new FactoryAttribute<ExampleFactoryNullableRef,ExampleLiveObjectA, ExampleFactoryNullableRef>().nullable();
 
         @Override
         public ExampleLiveObjectA createImpl() {

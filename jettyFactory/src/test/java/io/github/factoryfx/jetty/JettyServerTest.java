@@ -30,7 +30,7 @@ import ch.qos.logback.classic.Level;
 import com.google.common.io.ByteStreams;
 import io.github.factoryfx.factory.storage.DataUpdate;
 import io.github.factoryfx.factory.SimpleFactoryBase;
-import io.github.factoryfx.factory.attribute.dependency.FactoryReferenceAttribute;
+import io.github.factoryfx.factory.attribute.dependency.FactoryAttribute;
 import io.github.factoryfx.factory.builder.FactoryTreeBuilder;
 import io.github.factoryfx.factory.builder.Scope;
 import io.github.factoryfx.server.Microservice;
@@ -59,7 +59,7 @@ public class JettyServerTest {
     }
 
     public static class JettyServerRootFactory extends SimpleFactoryBase<Server, JettyServerRootFactory>{
-        public final FactoryReferenceAttribute<JettyServerRootFactory,Server,JettyServerFactory<JettyServerRootFactory>> server = new FactoryReferenceAttribute<>();
+        public final FactoryAttribute<JettyServerRootFactory,Server,JettyServerFactory<JettyServerRootFactory>> server = new FactoryAttribute<>();
 
         @Override
         public Server createImpl() {

@@ -25,33 +25,33 @@ public class DefaultCreator<L,F extends FactoryBase<L,R>, R extends FactoryBase<
         factoryMetadata.setAttributeReferenceClasses(result);
 
         result.internal().visitAttributesFlat((attributeVariableName, attribute) -> {
-            if (attribute instanceof FactoryReferenceAttribute || attribute instanceof ParametrizedObjectCreatorAttribute){
-                FactoryReferenceBaseAttribute factoryReferenceAttribute = (FactoryReferenceBaseAttribute) attribute;
-                Class<? extends FactoryBase> clazz = factoryReferenceAttribute.internal_getReferenceClass();
+            if (attribute instanceof FactoryAttribute || attribute instanceof ParametrizedObjectCreatorAttribute){
+                FactoryBaseAttribute factoryBaseAttribute = (FactoryBaseAttribute) attribute;
+                Class<? extends FactoryBase> clazz = factoryBaseAttribute.internal_getReferenceClass();
                 validateAttributeClass(attributeVariableName, clazz);
-                if (factoryReferenceAttribute.internal_required()){
+                if (factoryBaseAttribute.internal_required()){
                     context.check(this.clazz, attributeVariableName,clazz);
                 }
                 FactoryBase factoryBase = context.getUnchecked(clazz);
-                factoryReferenceAttribute.set(factoryBase);
+                factoryBaseAttribute.set(factoryBase);
             }
-            if (attribute instanceof FactoryReferenceListAttribute){
-                FactoryReferenceListAttribute factoryReferenceAttribute = (FactoryReferenceListAttribute) attribute;
-                Class<? extends FactoryBase> clazz = factoryReferenceAttribute.internal_getReferenceClass();
+            if (attribute instanceof FactoryListAttribute){
+                FactoryListAttribute factoryListAttribute = (FactoryListAttribute) attribute;
+                Class<? extends FactoryBase> clazz = factoryListAttribute.internal_getReferenceClass();
                 validateAttributeClass(attributeVariableName, clazz);
-                factoryReferenceAttribute.set(context.getList(clazz));
+                factoryListAttribute.set(context.getList(clazz));
             }
-            if (attribute instanceof FactoryPolymorphicReferenceAttribute){
-                FactoryPolymorphicReferenceAttribute factoryReferenceAttribute = (FactoryPolymorphicReferenceAttribute) attribute;
-                for (Class<? extends FactoryBase> possibleClazz: (List<Class>)factoryReferenceAttribute.internal_possibleFactoriesClasses()){
+            if (attribute instanceof FactoryPolymorphicAttribute){
+                FactoryPolymorphicAttribute factoryPolymorphicAttribute = (FactoryPolymorphicAttribute) attribute;
+                for (Class<? extends FactoryBase> possibleClazz: (List<Class>)factoryPolymorphicAttribute.internal_possibleFactoriesClasses()){
                     if (context.anyMatch(possibleClazz)){
-                        factoryReferenceAttribute.set(context.get(possibleClazz));
+                        factoryPolymorphicAttribute.set(context.get(possibleClazz));
                         break;
                     }
                 }
             }
-            if (attribute instanceof FactoryPolymorphicReferenceListAttribute){
-                FactoryPolymorphicReferenceListAttribute factoryReferenceAttribute = (FactoryPolymorphicReferenceListAttribute) attribute;
+            if (attribute instanceof FactoryPolymorphicListAttribute){
+                FactoryPolymorphicListAttribute factoryReferenceAttribute = (FactoryPolymorphicListAttribute) attribute;
                 for (Class<? extends FactoryBase> possibleClazz: (List<Class>)factoryReferenceAttribute.internal_possibleFactoriesClasses()){
                     if (context.anyMatch(possibleClazz)){
                         factoryReferenceAttribute.add(context.get(possibleClazz));

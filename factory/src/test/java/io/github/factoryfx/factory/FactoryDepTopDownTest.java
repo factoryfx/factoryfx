@@ -7,13 +7,12 @@ import java.util.stream.Stream;
 
 import io.github.factoryfx.factory.storage.DataUpdate;
 import io.github.factoryfx.factory.builder.FactoryTreeBuilder;
-import io.github.factoryfx.factory.builder.Scope;
 import io.github.factoryfx.factory.log.FactoryUpdateLog;
 import io.github.factoryfx.server.Microservice;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import io.github.factoryfx.factory.attribute.dependency.FactoryReferenceAttribute;
+import io.github.factoryfx.factory.attribute.dependency.FactoryAttribute;
 
 public class FactoryDepTopDownTest {
 
@@ -46,8 +45,8 @@ public class FactoryDepTopDownTest {
     }
 
     public static class RootFactory extends SimpleFactoryBase<String, RootFactory> {
-        public final FactoryReferenceAttribute<RootFactory,Object, ObjectFactory> object1 = new FactoryReferenceAttribute<>();
-        public final FactoryReferenceAttribute<RootFactory,Object, ObjectFactory> object2 = new FactoryReferenceAttribute<>();
+        public final FactoryAttribute<RootFactory,Object, ObjectFactory> object1 = new FactoryAttribute<>();
+        public final FactoryAttribute<RootFactory,Object, ObjectFactory> object2 = new FactoryAttribute<>();
 
         @Override
         public String createImpl() {

@@ -6,7 +6,7 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import io.github.factoryfx.factory.FactoryBase;
-import io.github.factoryfx.factory.attribute.dependency.FactoryReferenceBaseAttribute;
+import io.github.factoryfx.factory.attribute.dependency.FactoryBaseAttribute;
 import io.github.factoryfx.javafx.factory.editor.attribute.ValidationDecoration;
 import io.github.factoryfx.javafx.factory.widget.select.SelectDataDialog;
 import javafx.beans.InvalidationListener;
@@ -27,7 +27,7 @@ import io.github.factoryfx.factory.util.LanguageText;
 import io.github.factoryfx.javafx.factory.editor.attribute.ValueAttributeVisualisation;
 import io.github.factoryfx.javafx.factory.util.UniformDesign;
 
-public class ReferenceAttributeVisualisation<T extends FactoryBase<?,?>, A extends FactoryReferenceBaseAttribute<?,?,T,A>> extends ValueAttributeVisualisation<T,A> {
+public class ReferenceAttributeVisualisation<T extends FactoryBase<?,?>, A extends FactoryBaseAttribute<?,?,T,A>> extends ValueAttributeVisualisation<T,A> {
 
     private LanguageText selectText= new LanguageText().en("select").de("Auswählen");
     private LanguageText addText= new LanguageText().en("add").de("Hinzufügen");

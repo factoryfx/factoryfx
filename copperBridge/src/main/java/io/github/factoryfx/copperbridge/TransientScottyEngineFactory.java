@@ -3,7 +3,7 @@ package io.github.factoryfx.copperbridge;
 import java.util.Collections;
 import java.util.List;
 
-import io.github.factoryfx.factory.attribute.dependency.FactoryReferenceAttribute;
+import io.github.factoryfx.factory.attribute.dependency.FactoryAttribute;
 import io.github.factoryfx.factory.attribute.primitive.IntegerAttribute;
 import io.github.factoryfx.factory.FactoryBase;
 import org.copperengine.core.EngineIdProvider;
@@ -22,7 +22,7 @@ import org.copperengine.ext.wfrepo.classpath.ClasspathWorkflowRepository;
 
 public abstract class TransientScottyEngineFactory<R extends FactoryBase<?, R>> extends FactoryBase<TransientScottyEngine, R> {
 
-    public final FactoryReferenceAttribute<R,EngineIdProvider, EngineIdProviderFactory<R>> engineIdProviderFactory = new FactoryReferenceAttribute<>();
+    public final FactoryAttribute<R,EngineIdProvider, EngineIdProviderFactory<R>> engineIdProviderFactory = new FactoryAttribute<>();
     public final IntegerAttribute threads = new IntegerAttribute().labelText("Number of processing threads");
 
     public abstract List<String> getWorkflowClassPaths();

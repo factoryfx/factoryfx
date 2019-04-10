@@ -23,7 +23,7 @@ public class DataObjectIdResolver extends SimpleObjectIdResolver {
 
     @Override
     public Object resolveId(ObjectIdGenerator.IdKey id) {
-        Object resolve = (_items == null) ? null : _items.get(id);;
+        Object resolve = (_items == null) ? null : _items.get(id);
         if (resolve==null){
             throw new UnresolvableJsonIDException(id.key.toString());
         }
