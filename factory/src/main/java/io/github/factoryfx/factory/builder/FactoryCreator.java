@@ -1,10 +1,10 @@
 package io.github.factoryfx.factory.builder;
 
-import io.github.factoryfx.factory.FactoryBase;
-
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.Function;
+
+import io.github.factoryfx.factory.FactoryBase;
 
 public class FactoryCreator<F extends FactoryBase<?,R>,R extends FactoryBase<?,R>> {
     private final Class<F> clazz;
@@ -31,7 +31,7 @@ public class FactoryCreator<F extends FactoryBase<?,R>,R extends FactoryBase<?,R
     public boolean match(Class<?> clazzMatch) {
         return clazz==clazzMatch;
     }
-    public boolean isDublicate(FactoryCreator factoryCreator){
+    public boolean isDuplicate(FactoryCreator factoryCreator){
         if (name==null && factoryCreator.name==null) {
             return clazz==factoryCreator.clazz;
         }

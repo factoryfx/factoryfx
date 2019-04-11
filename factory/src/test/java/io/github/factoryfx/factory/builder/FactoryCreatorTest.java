@@ -1,9 +1,10 @@
 package io.github.factoryfx.factory.builder;
 
-import io.github.factoryfx.factory.testfactories.ExampleFactoryA;
-import io.github.factoryfx.factory.testfactories.ExampleFactoryB;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+
+import io.github.factoryfx.factory.testfactories.ExampleFactoryA;
+import io.github.factoryfx.factory.testfactories.ExampleFactoryB;
 
 public class FactoryCreatorTest {
 
@@ -40,7 +41,7 @@ public class FactoryCreatorTest {
         FactoryCreator<ExampleFactoryA,ExampleFactoryA> factoryCreator2 = new FactoryCreator<>(ExampleFactoryA.class, null, Scope.PROTOTYPE, context -> {
             return new ExampleFactoryA();
         });
-        Assertions.assertTrue(factoryCreator1.isDublicate(factoryCreator2));
+        Assertions.assertTrue(factoryCreator1.isDuplicate(factoryCreator2));
     }
 
     @Test
@@ -52,7 +53,7 @@ public class FactoryCreatorTest {
         FactoryCreator<ExampleFactoryA,ExampleFactoryA> factoryCreator2 = new FactoryCreator<>(ExampleFactoryA.class, "123", Scope.PROTOTYPE, context -> {
             return new ExampleFactoryA();
         });
-        Assertions.assertTrue(factoryCreator1.isDublicate(factoryCreator2));
+        Assertions.assertTrue(factoryCreator1.isDuplicate(factoryCreator2));
     }
 
     @Test
@@ -64,7 +65,7 @@ public class FactoryCreatorTest {
         FactoryCreator<ExampleFactoryA,ExampleFactoryA> factoryCreator2 = new FactoryCreator<>(ExampleFactoryA.class, "123", Scope.PROTOTYPE, context -> {
             return new ExampleFactoryA();
         });
-        Assertions.assertFalse(factoryCreator1.isDublicate(factoryCreator2));
+        Assertions.assertFalse(factoryCreator1.isDuplicate(factoryCreator2));
     }
 
     @Test
@@ -76,7 +77,7 @@ public class FactoryCreatorTest {
         FactoryCreator<ExampleFactoryB,ExampleFactoryA> factoryCreator2 = new FactoryCreator<>(ExampleFactoryB.class,null , Scope.PROTOTYPE, context -> {
             return new ExampleFactoryB();
         });
-        Assertions.assertFalse(factoryCreator1.isDublicate(factoryCreator2));
+        Assertions.assertFalse(factoryCreator1.isDuplicate(factoryCreator2));
     }
 
 }
