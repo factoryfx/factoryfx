@@ -66,17 +66,17 @@ public class HelloWorld{
 }
 ```
 [Live object explanation](docu/src/main/java/io/github/factoryfx/docu/liveobjects)
-#### Setup
+#### Setup the dependency tree
 ```java
     new FactoryTreeBuilder<HelloWorld,HelloWorldFactory,Void>(HelloWorldFactory.class)
         .addFactory(HelloWorldFactory.class, Scope.SINGLETON, ctx-> {
             HelloWorldFactory helloWorldFactory = new HelloWorldFactory();
-            helloWorldFactory.text.set("HelloWorld");
+            helloWorldFactory.text.set("Hello World");
             return helloWorldFactory;
         })
     .microservice().withInMemoryStorage().build().start().print();
 ```
-The example prints "HelloWorld" to the console.
+The example prints "Hello World" to the console.
 
 ## Documentation
 
@@ -95,6 +95,9 @@ Explanation of factories
 Explanation of live objects
 * [Starter](docu/src/main/java/io/github/factoryfx/docu/starter) 
 code generator for initial project setup
+* [Hello World](docu/src/main/java/io/github/factoryfx/docu/helloworld)  
+Hello World example
+
 
 ### Advanced
 * [Comparison](docu/src/main/java/io/github/factoryfx/docu/comparison)  

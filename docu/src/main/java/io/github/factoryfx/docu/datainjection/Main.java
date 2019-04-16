@@ -9,7 +9,7 @@ public class Main {
     public static void main(String[] args) {
         FactoryTreeBuilder<Root,RootFactory,Void> builder = new FactoryTreeBuilder<>(RootFactory.class, ctx-> {
             RootFactory rootFactory = new RootFactory();
-            rootFactory.text.set("HelloWorld");
+            rootFactory.text.set("Hello World");
             return rootFactory;
         });
 

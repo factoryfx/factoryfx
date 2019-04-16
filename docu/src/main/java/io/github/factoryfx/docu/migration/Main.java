@@ -11,7 +11,7 @@ public class Main {
 
         FactoryTreeBuilder<Root,RootFactory,Void> builder = new FactoryTreeBuilder<>(RootFactory.class, ctx->{
             RootFactory rootFactory = new RootFactory();
-            rootFactory.text.set("HelloWorld");
+            rootFactory.text.set("Hello World");
             return rootFactory;
         });
         builder.microservice().withRenameAttributeMigration(RootFactory.class,"previousAttributeName",(rf)->rf.text).//dummy rename for demonstration.
