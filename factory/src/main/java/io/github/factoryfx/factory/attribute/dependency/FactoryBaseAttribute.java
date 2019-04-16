@@ -2,7 +2,6 @@ package io.github.factoryfx.factory.attribute.dependency;
 
 import com.fasterxml.jackson.annotation.*;
 
-import io.github.factoryfx.factory.FactoryTreeBuilderBasedAttributeSetup;
 import io.github.factoryfx.factory.attribute.Attribute;
 import io.github.factoryfx.factory.attribute.AttributeChangeListener;
 import io.github.factoryfx.factory.attribute.CopySemantic;
