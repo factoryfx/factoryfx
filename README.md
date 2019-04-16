@@ -87,14 +87,14 @@ Why use factoryfx?
 ### Fundamentals
 * [Dependency injection](docu/src/main/java/io/github/factoryfx/docu/dependencyinjection)  
 Injecting a dependency into a live object
-* [Data injection](docu/src/main/java/io/github/factoryfx/docu/datainjection) 
+* [Data injection](docu/src/main/java/io/github/factoryfx/docu/datainjection)  
 Injection data into a live object
 * [Factory](docu/src/main/java/io/github/factoryfx/docu/factorylayer)  
 Explanation of factories
 * [Liveobject](docu/src/main/java/io/github/factoryfx/docu/liveobjects)  
 Explanation of live objects
-* [Starter](docu/src/main/java/io/github/factoryfx/docu/starter) 
-code generator for initial project setup
+* [Starter](docu/src/main/java/io/github/factoryfx/docu/starter)  
+Code generator for initial project setup
 * [Hello World](docu/src/main/java/io/github/factoryfx/docu/helloworld)  
 Hello World example
 
