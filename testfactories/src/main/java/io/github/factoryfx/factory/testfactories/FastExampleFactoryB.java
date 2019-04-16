@@ -24,8 +24,8 @@ public class FastExampleFactoryB extends SimpleFactoryBase<ExampleLiveObjectB,Fa
                     FactoryAttribute<FastExampleFactoryA,ExampleLiveObjectC,FastExampleFactoryC> referenceAttributeC = new FactoryAttribute<FastExampleFactoryA,ExampleLiveObjectC,FastExampleFactoryC>().labelText("ExampleC2");
 
                     attributeVisitor.accept("stringAttribute",FastFactoryUtility.tempAttributeSetup(stringAttribute,(v)->factory.stringAttribute=v,()->factory.stringAttribute));
-                    attributeVisitor.accept("referenceAttribute",FastFactoryUtility.tempAttributeSetup(referenceAttribute,(v)->factory.referenceAttribute=v,()->factory.referenceAttribute));
-                    attributeVisitor.accept("referenceAttributeC",FastFactoryUtility.tempAttributeSetup(referenceAttributeC,(v)->factory.referenceAttributeC=v,()->factory.referenceAttributeC));
+                    attributeVisitor.accept("referenceAttribute",FastFactoryUtility.tempAttributeSetup(referenceAttribute,(v)->factory.referenceAttribute=v,()->factory.referenceAttribute,FastExampleFactoryA.class));
+                    attributeVisitor.accept("referenceAttributeC",FastFactoryUtility.tempAttributeSetup(referenceAttributeC,(v)->factory.referenceAttributeC=v,()->factory.referenceAttributeC,FastExampleFactoryC.class));
                 },
                 (factory, factoryVisitor) -> {
                     if (factory.referenceAttribute!=null){

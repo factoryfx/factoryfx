@@ -36,11 +36,7 @@ public abstract class ValueMapAttribute<K, V, A extends ValueMapAttribute<K,V,A>
 //    }
 
     private void afterModify(){
-        if (listeners!=null) {
-            for (AttributeChangeListener<Map<K,V>, A> listener : listeners) {
-                listener.changed(ValueMapAttribute.this, this.value);
-            }
-        }
+        updateListeners(ValueMapAttribute.this);
     }
 
     @Override

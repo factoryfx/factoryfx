@@ -51,7 +51,7 @@ public class FactoryManager<L,R extends FactoryBase<L,R>> {
         if (mergeDiff.successfullyMerged()) {
             try {
                 final Collection<FactoryBase<?,R>> currentFactoriesAfterMerge = currentFactoryRoot.collectChildFactories();
-                removed = getRemovedFactories(previousFactories, currentFactoriesAfterMerge);
+                removed = getRemovedFactories(previousFactories, new HashSet<>(currentFactoriesAfterMerge));
 
                 long start = System.nanoTime();
                 determineRecreationNeedFromRoot(previousFactoryCopyRoot);
@@ -99,23 +99,24 @@ public class FactoryManager<L,R extends FactoryBase<L,R>> {
 
     Set<FactoryBase<?,?>> getChangedFactories(RootFactoryWrapper<R> currentFactoryRoot, R previousFactoryCopyRoot){
         //one might think that the merger could do the change detection but that don't work for views and separation of concern is better anyway
-        //TODO this is no longer true since the data remove refactoring, check if could be part of the merge now?
         final HashSet<FactoryBase<?,?>> result = new HashSet<>();
-        final Map<String, FactoryBase<?,R>> previousFactories = previousFactoryCopyRoot.internal().collectChildFactoryMap();
+        final Map<UUID, FactoryBase<?,R>> previousFactories = previousFactoryCopyRoot.internal().collectChildFactoryMap();
         for (FactoryBase<?,?> data: currentFactoryRoot.collectChildFactories()){
             final FactoryBase<?,?> previousFactory = previousFactories.get(data.getId());
             if (previousFactory!=null){
                 data.internal().visitAttributesDualFlat(previousFactory, (name, currentAttribute, previousAttribute) -> {
                     if (!currentAttribute.internal_mergeMatch(previousAttribute)){
                         result.add(data);
+                        return false;
                     }
+                    return true;
                 });
             }
         }
         return result;
     }
 
-    public List<FactoryBase<?,R>> getRemovedFactories(Collection<FactoryBase<?,R>> previousFactories, Collection<FactoryBase<?,R>> newFactories){
+    public List<FactoryBase<?,R>> getRemovedFactories(Collection<FactoryBase<?,R>> previousFactories, Set<FactoryBase<?,R>> newFactories){
         final ArrayList<FactoryBase<?,R>> result = new ArrayList<>();
         previousFactories.forEach(previous -> {
             if (!newFactories.contains(previous)){

@@ -6,6 +6,7 @@ import io.github.factoryfx.factory.attribute.types.StringAttribute;
 import io.github.factoryfx.factory.jackson.ObjectMapperBuilder;
 import io.github.factoryfx.factory.merge.testdata.ExampleDataA;
 import io.github.factoryfx.factory.merge.testdata.ExampleDataB;
+import io.github.factoryfx.factory.merge.testdata.ExampleDataC;
 import io.github.factoryfx.factory.testfactories.ExampleFactoryA;
 import io.github.factoryfx.factory.testfactories.ExampleFactoryB;
 import io.github.factoryfx.factory.testfactories.ExampleFactoryC;
@@ -463,5 +464,19 @@ public class FactoryBaseTest {
 
         Set<FactoryBase<?, ?>> list = exampleFactoryA.internal().collectChildrenDeepFromNode();
         assertEquals(1,list.size());
+    }
+
+
+    @Test
+    public void test_childrenCounter(){
+        ExampleDataA exampleFactoryA = new ExampleDataA();
+        ExampleDataB exampleFactoryB = new ExampleDataB();
+
+        exampleFactoryA.referenceAttribute.set(exampleFactoryB);
+        exampleFactoryB.referenceAttributeC.set(new ExampleDataC());
+
+        exampleFactoryA.internal().addBackReferences();
+
+        Assertions.assertEquals(3,((FactoryBase<?,?>)exampleFactoryA).childrenCounter);
     }
 }

@@ -11,13 +11,19 @@ import io.github.factoryfx.factory.attribute.AttributeChangeListener;
 import io.github.factoryfx.factory.attribute.RunLaterAble;
 import io.github.factoryfx.factory.FactoryBase;
 
+/**
+ *
+ * @param <R> root
+ * @param <L> live object factory
+ * @param <F> factory
+ */
 @JsonIgnoreType
-public class FactoryViewAttribute<R extends FactoryBase<?,R>,L, T extends FactoryBase<L,?>>  extends Attribute<T, FactoryViewAttribute<R,L,T>> implements RunLaterAble, RootAwareAttribute<R,Attribute<T, FactoryViewAttribute<R,L,T>>> {
+public class FactoryViewAttribute<R extends FactoryBase<?,R>,L, F extends FactoryBase<L,R>>  extends Attribute<F, FactoryViewAttribute<R,L, F>> implements RunLaterAble, FactoryChildrenEnclosingAttribute<R,Attribute<F, FactoryViewAttribute<R,L, F>>> {
 
     R root;
-    protected final Function<R,T> view;
+    protected final Function<R, F> view;
 
-    public FactoryViewAttribute(Function<R,T> view) {
+    public FactoryViewAttribute(Function<R, F> view) {
         this.view=view;
     }
 
@@ -30,8 +36,8 @@ public class FactoryViewAttribute<R extends FactoryBase<?,R>,L, T extends Factor
 
 
     @Override
-    public boolean internal_mergeMatch(T value) {
-        final T thisValue = this.get();
+    public boolean internal_mergeMatch(F value) {
+        final F thisValue = this.get();
         if (thisValue == null && value == null) {
             return true;
         }
@@ -42,17 +48,17 @@ public class FactoryViewAttribute<R extends FactoryBase<?,R>,L, T extends Factor
     }
 
     @Override
-    public void internal_fixDuplicateObjects(Map<String, FactoryBase<?,?>> idToDataMap) {
+    public <RL extends FactoryBase<?,RL>> void internal_fixDuplicateObjects(Map<UUID, FactoryBase<?,RL>> idToDataMap) {
         //nothing
     }
 
     @Override
-    public T get() {
+    public F get() {
         return view.apply(root);
     }
 
     @Override
-    public void set(T value) {
+    public void set(F value) {
         //nothing
     }
 
@@ -62,12 +68,17 @@ public class FactoryViewAttribute<R extends FactoryBase<?,R>,L, T extends Factor
     }
 
     @Override
-    public void internal_copyTo(Attribute<T, FactoryViewAttribute<R, L, T>> copyAttribute, int level, int maxLevel, List<FactoryBase<?, R>> oldData, FactoryBase<?, R> parent, R root) {
+    public void internal_setReferenceClass(Class<?> clazz) {
         //nothing
     }
 
     @Override
-    public void internal_semanticCopyTo(FactoryViewAttribute<R,L,T> copyAttribute) {
+    public void internal_copyTo(Attribute<F, FactoryViewAttribute<R, L, F>> copyAttribute, int level, int maxLevel, List<FactoryBase<?, R>> oldData, FactoryBase<?, R> parent, R root) {
+        //nothing
+    }
+
+    @Override
+    public void internal_semanticCopyTo(FactoryViewAttribute<R,L, F> copyAttribute) {
         //nothing
     }
 
@@ -84,22 +95,20 @@ public class FactoryViewAttribute<R extends FactoryBase<?,R>,L, T extends Factor
         }
     }
 
-
-
     class DirtyTrackingThread extends Thread{
         volatile boolean tracking=true;
-        T previousValue;
+        F previousValue;
         @Override
         public void run() {
             super.run();
             while(tracking){
-                T currentValue = get();
+                F currentValue = get();
                 if (
                         (previousValue==null && currentValue!=null) ||
                                 (previousValue!=null && currentValue==null) ||
                                 (previousValue!=null && currentValue!=null && !previousValue.idEquals(currentValue))
                 ){
-                    for (AttributeChangeListener<T, FactoryViewAttribute<R,L,T>> listener: new ArrayList<>(listeners)){
+                    for (AttributeChangeListener<F, FactoryViewAttribute<R,L, F>> listener: new ArrayList<>(listeners)){
                         runLater(()-> listener.changed(FactoryViewAttribute.this,currentValue));
                     }
                 }
@@ -118,9 +127,9 @@ public class FactoryViewAttribute<R extends FactoryBase<?,R>,L, T extends Factor
     }
     FactoryViewAttribute.DirtyTrackingThread dirtyTracking;
 
-    List<AttributeChangeListener<T, FactoryViewAttribute<R,L,T>>> listeners;
+    List<AttributeChangeListener<F, FactoryViewAttribute<R,L, F>>> listeners;
     @Override
-    public void internal_addListener(AttributeChangeListener<T, FactoryViewAttribute<R,L,T>> listener) {
+    public void internal_addListener(AttributeChangeListener<F, FactoryViewAttribute<R,L, F>> listener) {
         if (listeners==null){
             listeners= Collections.synchronizedList(new ArrayList<>());
         }
@@ -132,9 +141,9 @@ public class FactoryViewAttribute<R extends FactoryBase<?,R>,L, T extends Factor
         }
     }
     @Override
-    public void internal_removeListener(AttributeChangeListener<T, FactoryViewAttribute<R,L,T>> listener) {
+    public void internal_removeListener(AttributeChangeListener<F, FactoryViewAttribute<R,L, F>> listener) {
         if (listeners!=null){
-            for (AttributeChangeListener<T, FactoryViewAttribute<R,L,T>> listenerItem: new ArrayList<>(listeners)){
+            for (AttributeChangeListener<F, FactoryViewAttribute<R,L, F>> listenerItem: new ArrayList<>(listeners)){
                 if (listenerItem.unwrap()==listener){
                     listeners.remove(listenerItem);
                 }
@@ -147,14 +156,14 @@ public class FactoryViewAttribute<R extends FactoryBase<?,R>,L, T extends Factor
     }
 
     @JsonIgnore
-    public Optional<T> getOptional(){
+    public Optional<F> getOptional(){
         return Optional.ofNullable(get());
     }
 
     @Override
     public String getDisplayText() {
         String referenceDisplayText = "empty";
-        T value = get();
+        F value = get();
         if (value !=null){
             referenceDisplayText=value.internal().getDisplayText();
         }
@@ -176,6 +185,16 @@ public class FactoryViewAttribute<R extends FactoryBase<?,R>,L, T extends Factor
     @Override
     public boolean internal_ignoreForMerging() {
         return true;
+    }
+
+    @Override
+    public void internal_visitChildren(Consumer<FactoryBase<?, R>> consumer, boolean includeViews) {
+        if (includeViews){
+            F factory = get();
+            if (factory != null) {
+                consumer.accept(factory);
+            }
+        }
     }
 
 }

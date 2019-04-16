@@ -51,10 +51,10 @@ public class DefaultCreator<L,F extends FactoryBase<L,R>, R extends FactoryBase<
                 }
             }
             if (attribute instanceof FactoryPolymorphicListAttribute){
-                FactoryPolymorphicListAttribute factoryReferenceAttribute = (FactoryPolymorphicListAttribute) attribute;
-                for (Class<? extends FactoryBase> possibleClazz: (List<Class>)factoryReferenceAttribute.internal_possibleFactoriesClasses()){
+                FactoryPolymorphicListAttribute factoryPolymorphicListAttribute = (FactoryPolymorphicListAttribute) attribute;
+                for (Class<? extends FactoryBase> possibleClazz: (List<Class>)factoryPolymorphicListAttribute.internal_possibleFactoriesClasses()){
                     if (context.anyMatch(possibleClazz)){
-                        factoryReferenceAttribute.add(context.get(possibleClazz));
+                        factoryPolymorphicListAttribute.add(context.get(possibleClazz));
                         break;
                     }
                 }

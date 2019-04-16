@@ -13,6 +13,7 @@ import io.github.factoryfx.factory.validation.ValidationResult;
 import io.github.factoryfx.factory.FactoryBase;
 
 import java.util.*;
+import java.util.function.Consumer;
 
 /**
  * Attribute with factory
@@ -40,7 +41,7 @@ public class FactoryBaseAttribute<R extends FactoryBase<?,R>,L,F extends Factory
 
     @Override
     @SuppressWarnings("unchecked")
-    public void internal_fixDuplicateObjects(Map<String, FactoryBase<?,?>> idToDataMap) {
+    public <RL extends FactoryBase<?,RL>> void internal_fixDuplicateObjects(Map<UUID, FactoryBase<?,RL>> idToDataMap) {
         FactoryBase<?,?> currentReferenceContent = get();
 
         if (currentReferenceContent != null) {
@@ -148,21 +149,6 @@ public class FactoryBaseAttribute<R extends FactoryBase<?,R>,L,F extends Factory
         }
     }
 
-    @SuppressWarnings("unchecked")
-    public List<F> internal_createNewPossibleValues(){
-        FactoryTreeBuilderBasedAttributeSetup factoryTreeBuilderBasedAttributeSetup = root.internal().getFactoryTreeBuilderBasedAttributeSetup();
-        if (factoryTreeBuilderBasedAttributeSetup!=null){
-            return factoryTreeBuilderBasedAttributeSetup.createNewFactory(clazz);
-        }
-        if (newValuesProviderFromRootAndAttribute!=null) {
-            return newValuesProviderFromRootAndAttribute.apply(root, (A)this);
-        }
-        if (getNewValueProvider()!=null) {
-            return Collections.singletonList(getNewValueProvider().apply(root));
-        }
-        return new ArrayList<>();
-    }
-
     @Override
     @SuppressWarnings("unchecked")
     public void internal_merge(Attribute<?,?> newValue) {
@@ -220,5 +206,12 @@ public class FactoryBaseAttribute<R extends FactoryBase<?,R>,L,F extends Factory
             this.validation(requiredValidation);// to minimise object creations
         }
         return super.internal_validate(parent,attributeVariableName);
+    }
+
+    @Override
+    public void internal_visitChildren(Consumer<FactoryBase<?, R>> consumer, boolean includeViews) {
+        if (value != null) {
+            consumer.accept(value);
+        }
     }
 }

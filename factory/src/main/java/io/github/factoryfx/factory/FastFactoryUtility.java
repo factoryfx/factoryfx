@@ -1,6 +1,8 @@
 package io.github.factoryfx.factory;
 
-import io.github.factoryfx.factory.attribute.Attribute;
+import io.github.factoryfx.factory.attribute.ImmutableValueAttribute;
+import io.github.factoryfx.factory.attribute.dependency.FactoryBaseAttribute;
+import io.github.factoryfx.factory.attribute.dependency.FactoryListBaseAttribute;
 import io.github.factoryfx.factory.metadata.FactoryMetadataManager;
 
 import java.util.List;
@@ -17,10 +19,9 @@ import java.util.stream.Collectors;
 public abstract class FastFactoryUtility {
 
     public static <R extends FactoryBase<?,R>,L, F extends FactoryBase<L,R>> void setup(Class<F> clazz, BiConsumer<F,AttributeVisitor> visitAttributesFlat, BiConsumer<F,Consumer<FactoryBase<?,R>>> visitDataChildren){
-        FactoryMetadataManager.getMetadata(clazz).setVisitChildFactoriesAndViewsFlat(visitDataChildren);
         FactoryMetadataManager.getMetadata(clazz).setUseTemporaryAttributes();
         FactoryMetadataManager.getMetadata(clazz).setVisitAttributesFlat(visitAttributesFlat);
-        FactoryMetadataManager.getMetadata(clazz).setVisitDataChildren((t, dataConsumer) -> visitDataChildren.accept(t, dataConsumer::accept));
+        FactoryMetadataManager.getMetadata(clazz).setFactoryChildrenVisitor(visitDataChildren);
     }
 
     public static <L,R extends FactoryBase<?,R>> L instance(FactoryBase<L,R> childFactory){
@@ -35,9 +36,24 @@ public abstract class FastFactoryUtility {
         return childFactories.stream().map((f) -> f.internal().instance()).collect(Collectors.toList());
     }
 
-    public static <V,A extends Attribute<V,A>> A tempAttributeSetup(A attribute, Consumer<V> setter, Supplier<V> getter){
-        attribute.internal_addListener((attribute1, value) -> setter.accept(value));
+    public static <V,A extends ImmutableValueAttribute<V,A>> A tempAttributeSetup(A attribute, Consumer<V> setter, Supplier<V> getter){
         attribute.set(getter.get());
+        attribute.internal_addListener((attribute1, value) -> setter.accept(value));
+        return attribute;
+    }
+
+
+    public static <R extends FactoryBase<?,R>,L,F extends FactoryBase<? extends L,R>,A extends FactoryBaseAttribute<R,L,F,?>> A tempAttributeSetup(A attribute, Consumer<F> setter, Supplier<F> getter, Class<?> referenceClass){
+        attribute.set(getter.get());
+        attribute.internal_addListener((attribute1, value) -> setter.accept(value));
+        attribute.internal_setReferenceClass(referenceClass);
+        return attribute;
+    }
+
+    public static <R extends FactoryBase<?,R>,L,F extends FactoryBase<? extends L,R>,A extends FactoryListBaseAttribute<R,L,F,?>> A tempAttributeSetup(A attribute, Consumer<List<F>> setter, Supplier<List<F>> getter, Class<?> referenceClass){
+        attribute.set(getter.get());
+        attribute.internal_addListener((attribute1, value) -> setter.accept(value));
+        attribute.internal_setReferenceClass(referenceClass);
         return attribute;
     }
 

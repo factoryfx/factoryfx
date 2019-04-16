@@ -39,11 +39,7 @@ public abstract class ValueSetAttribute<T,A extends Attribute<Set<T>,A>> extends
 //    }
 
     private void afterModify(){
-        if (listeners!=null) {
-            for (AttributeChangeListener<Set<T>, A> listener : listeners) {
-                listener.changed(ValueSetAttribute.this, this.value);
-            }
-        }
+        this.updateListeners(ValueSetAttribute.this);
     }
 
     @Override

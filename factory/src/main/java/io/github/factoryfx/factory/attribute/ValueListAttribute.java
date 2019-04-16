@@ -25,11 +25,7 @@ public class ValueListAttribute<T, A extends Attribute<List<T>,A>> extends Immut
     }
 
     private void afterModify(){
-        if (listeners!=null) {
-            for (AttributeChangeListener<List<T>, A> listener : listeners) {
-                listener.changed(ValueListAttribute.this, this.value);
-            }
-        }
+        updateListeners(ValueListAttribute.this);
     }
 
     @JsonCreator

@@ -42,6 +42,7 @@ public class FactoryTreeBuilderAttributeFiller<L,R extends FactoryBase<L,R>,S> i
                         Object o = buildedAttribute.get();
                         ((Attribute) newAttribute).set(o);
                     }
+                    return true;
                 });
             }
 

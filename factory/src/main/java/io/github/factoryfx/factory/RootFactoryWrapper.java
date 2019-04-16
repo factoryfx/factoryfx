@@ -15,7 +15,7 @@ public class RootFactoryWrapper<R extends FactoryBase<?,R>> {
     public RootFactoryWrapper(R rootFactory) {
         this.rootFactory = rootFactory;
         this.rootFactory.internal().addBackReferences();
-        this.rootFactory.internal().loopDetector();//loop after that cause views/attributes need root and
+        this.rootFactory.internal().loopDetector();//loop after that cause views/attributes need root
 
         updateCachedChildren();
     }

@@ -1,9 +1,6 @@
 package io.github.factoryfx.factory.attribute;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -34,11 +31,6 @@ public abstract class ImmutableValueAttribute<T,A extends Attribute<T,A>> extend
     }
 
     @Override
-    public void internal_fixDuplicateObjects(Map<String, FactoryBase<?,?>> idToDataMap) {
-        //do nothing
-    }
-
-    @Override
     public T get() {
         return value;
     }
@@ -46,25 +38,39 @@ public abstract class ImmutableValueAttribute<T,A extends Attribute<T,A>> extend
     @Override
     public void set(T value) {
         this.value = value;
-        updateListeners(value);
+        if (listeners!=null){
+            updateListeners(value);
+        }
     }
 
-    List<AttributeChangeListener<T,A>> listeners;
+    private AttributeChangeListener<T,A> listener;//performance optimization if only one listener
+    private List<AttributeChangeListener<T,A>> listeners;
 
     protected void updateListeners(T value){
         if (listenersEmpty()){
             return;
         }
-        for (AttributeChangeListener<T,A> listener: listeners){
+        if (listener!=null){
             listener.changed(this,value);
+        } else {
+            for (AttributeChangeListener<T, A> listener : listeners) {
+                listener.changed(this, value);
+            }
         }
     }
 
     protected boolean listenersEmpty(){
-        if (listeners==null){
-            return true;
+        return listener==null && (listeners==null || listeners.isEmpty());
+    }
+
+    public List<AttributeChangeListener<T,A>> internal_getListeners(){
+        if (listener!=null) {
+            return List.of(listener);
         }
-        return listeners.isEmpty();
+        if (listeners!=null) {
+            return listeners;
+        }
+        return Collections.emptyList();
     }
 
     @Override
@@ -83,20 +89,31 @@ public abstract class ImmutableValueAttribute<T,A extends Attribute<T,A>> extend
     }
 
     @Override
-    public void internal_addListener(AttributeChangeListener<T,A> listener) {
-        if (listeners==null){
-            listeners=new ArrayList<>();
+    public void internal_addListener(AttributeChangeListener<T,A> newListener) {
+        if (listener==null){
+            this.listener=newListener;
+        } else {
+            if (this.listeners == null) {
+                this.listeners = new ArrayList<>();
+                this.listeners.add(this.listener);
+                this.listener = null;
+            } else {
+                listeners.add(newListener);
+            }
         }
-        listeners.add(listener);
     }
 
     @Override
-    public void internal_removeListener(AttributeChangeListener<T,A> listener) {
-        if (listeners==null){
+    public void internal_removeListener(AttributeChangeListener<T,A> removeListener) {
+        if (listeners==null && listener==null){
+            return;
+        }
+        if (this.listener.unwrap()==removeListener || this.listener.unwrap()==null){
+            this.listener=null;
             return;
         }
         for (AttributeChangeListener<T,A> listenerItem: new ArrayList<>(listeners)){
-            if (listenerItem.unwrap()==listener || listenerItem.unwrap()==null){
+            if (listenerItem.unwrap()==removeListener || listenerItem.unwrap()==null){
                 listeners.remove(listenerItem);
             }
         }

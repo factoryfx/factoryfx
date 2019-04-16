@@ -2,6 +2,7 @@ package io.github.factoryfx.factory;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -16,10 +17,10 @@ import io.github.factoryfx.factory.attribute.dependency.FactoryAttribute;
 
 public class FactoryDepTopDownTest {
 
-    private static List<String> creator = new ArrayList<>();
-    private static List<String> recreator = new ArrayList<>();
-    private static List<String> starter = new ArrayList<>();
-    private static List<String> destroyer = new ArrayList<>();
+    private static List<UUID> creator = new ArrayList<>();
+    private static List<UUID> recreator = new ArrayList<>();
+    private static List<UUID> starter = new ArrayList<>();
+    private static List<UUID> destroyer = new ArrayList<>();
 
     public static class ObjectFactory extends FactoryBase<Object, RootFactory> {
         ObjectFactory() {

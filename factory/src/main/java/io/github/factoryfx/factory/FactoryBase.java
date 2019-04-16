@@ -13,7 +13,7 @@ import com.google.common.collect.Maps;
 import io.github.factoryfx.factory.attribute.Attribute;
 import io.github.factoryfx.factory.attribute.AttributeChangeListener;
 import io.github.factoryfx.factory.attribute.AttributeGroup;
-import io.github.factoryfx.factory.attribute.dependency.RootAwareAttribute;
+import io.github.factoryfx.factory.attribute.dependency.FactoryChildrenEnclosingAttribute;
 import io.github.factoryfx.factory.log.FactoryLogEntry;
 import io.github.factoryfx.factory.log.FactoryLogEntryEventType;
 import io.github.factoryfx.factory.log.FactoryLogEntryTreeItem;
@@ -39,9 +39,8 @@ import org.slf4j.LoggerFactory;
 public class FactoryBase<L,R extends FactoryBase<?,R>> {
 
     @JsonProperty
-    Object id;
+    UUID id;
 
-    private Supplier<String> idSupplier;
     private static final Random r = new Random();
 
     private static final org.slf4j.Logger logger = LoggerFactory.getLogger(FactoryBase.class);
@@ -63,39 +62,22 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
     }
 
 
-    public String getId() {
+    public UUID getId() {
         if (id == null) {
-            if (idSupplier != null) {
-                id = idSupplier.get();
-            } else {
-                id = new UUID(r.nextLong(), r.nextLong());
+            id = new UUID(r.nextLong(), r.nextLong());
                 //TODO does this increase collision probability?
                 // Secure random in UUID.randomUUID().toString() is too slow and it doesn't matter if the random is predictable
-            }
         }
-        return id.toString();
-    }
-
-//    private void setId(String value) {
-//        id = value;
-//    }
-
-
-    private void setIdSupplier(Supplier<String> idSupplier){
-        this.idSupplier=idSupplier;
+        return id;
     }
 
     /**
-     * equal using id, performance optimization if both id are UUID
-     *
-     * @param data data
-     * @return true if equals*/
-    public boolean idEquals(FactoryBase<?,?> data){
-        if (id instanceof UUID && data.id instanceof UUID){
-            return id.equals(data.id);
-        } else {
-            return getId().equals(data.getId());
-        }
+     * compares ids
+     * @param factory factory
+     * @return true if id are equals
+     * */
+    public boolean idEquals(FactoryBase<?,?> factory){
+        return getId().equals(factory.getId());
     }
     private FactoryMetadata<R,L, FactoryBase<L, R>> metadata;
     @SuppressWarnings("unchecked")
@@ -113,11 +95,15 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
 
     @FunctionalInterface
     public interface BiAttributeVisitor {
-        void accept(String attributeVariableName, Attribute<?,?> attribute1, Attribute<?,?> attribute2);
+        boolean accept(String attributeVariableName, Attribute<?,?> attribute1, Attribute<?,?> attribute2);
     }
 
     private void visitAttributesFlat(AttributeVisitor consumer) {
         getFactoryMetadata().visitAttributesFlat(this,consumer);
+    }
+
+    private void visitFactoryEnclosingAttributesFlat(FactoryEnclosingAttributeVisitor<R> consumer) {
+        getFactoryMetadata().visitFactoryEnclosingAttributesFlat(this,consumer);
     }
 
     private void visitAttributesDualFlat(FactoryBase<L,R> data, BiAttributeVisitor consumer) {
@@ -128,13 +114,20 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
         getFactoryMetadata().visitAttributesTripleFlat(this,other1,other2,consumer);
     }
 
-    private Map<String,FactoryBase<?,R>> collectChildDataMap() {
-        List<FactoryBase<?,R>> dataList = collectChildrenDeep();
-        HashMap<String, FactoryBase<?,R>> result = Maps.newHashMapWithExpectedSize(dataList.size());
-        for (FactoryBase<?,R> factory: dataList){
-            result.put(factory.getId(),factory);
+    private Map<UUID,FactoryBase<?,R>> collectChildDataMap() {
+        HashMap<UUID, FactoryBase<?,R>> result;
+        if (childrenCounter>0) {
+            result = Maps.newHashMapWithExpectedSize(childrenCounter);
+        } else {
+            result = new HashMap<>();
         }
+        collectChildDataMap(result,this.iterationRun+1);
         return result;
+    }
+
+    private void collectChildDataMap(Map<UUID, FactoryBase<?,R>> allModelEntities, long dataIterationRun) {
+        allModelEntities.put(this.getId(),this);
+        visitChildFactoriesAndViewsFlat(child -> child.collectChildDataMap(allModelEntities,dataIterationRun),dataIterationRun,false);
     }
 
     /** collect set with all nested children and itself*/
@@ -167,14 +160,10 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
     }
 
     private List<FactoryBase<?,R>> fixDuplicateObjects() {
-        Map<String, FactoryBase<?, R>> idToDataMapTyped = collectChildDataMap();
-        Map<String, FactoryBase<?,?>> idToDataMap = new HashMap<>();
-        for (Map.Entry<String, FactoryBase<?, R>> stringFactoryBaseEntry : idToDataMapTyped.entrySet()) {
-            idToDataMap.put(stringFactoryBaseEntry.getKey(),stringFactoryBaseEntry.getValue());
-        }
-        final List<FactoryBase<?,R>> all = new ArrayList<>(idToDataMapTyped.values());
-        for (FactoryBase<?,R> data: all){
-            data.visitAttributesFlat((attributeVariableName, attribute) -> attribute.internal_fixDuplicateObjects(idToDataMap));
+        Map<UUID, FactoryBase<?, R>> idToDataMap = collectChildDataMap();
+        final List<FactoryBase<?,R>> all = new ArrayList<>(idToDataMap.values());
+        for (FactoryBase<?,R> factory: all){
+            factory.visitFactoryEnclosingAttributesFlat((attributeVariableName, attribute) -> attribute.internal_fixDuplicateObjects(idToDataMap));
         }
         return all;
     }
@@ -241,7 +230,7 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
         this.visitAttributesTripleFlat(originalValue, newValue, (attributeName, currentAttribute, originalAttribute, newAttribute) -> {
             if (!currentAttribute.internal_ignoreForMerging()){
                 if (currentAttribute.internal_hasMergeConflict(originalAttribute, newAttribute)) {
-                    mergeResult.addConflictInfo(new AttributeDiffInfo(FactoryBase.this.getId(), attributeName));
+                    mergeResult.addConflictInfo(new AttributeDiffInfo(attributeName,FactoryBase.this.getId()));
                 } else {
                     if (currentAttribute.internal_isMergeable(originalAttribute, newAttribute)) {
                         final AttributeDiffInfo attributeDiffInfo = new AttributeDiffInfo(attributeName,FactoryBase.this.getId());
@@ -261,7 +250,10 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
     @SuppressWarnings("unchecked")
     private <F extends FactoryBase<L,R>> F semanticCopy() {
         F result = (F)newCopyInstance(this);
-        this.visitAttributesDualFlat(result, (attributeName, attribute1, attribute2) -> attribute1.internal_semanticCopyToUnsafe(attribute2));
+        this.visitAttributesDualFlat(result, (attributeName, attribute1, attribute2) -> {
+            attribute1.internal_semanticCopyToUnsafe(attribute2);
+            return true;
+        });
         return result;
     }
 
@@ -310,24 +302,20 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
             if (this.id==null){
                 getId();
             }
-            if (this.id instanceof UUID){
-                copy.id = this.id;
-            } else {
-                copy.id = this.getId();
-            }
-
+            copy.id = this.id;
 
             this.visitAttributesDualFlat(copy, (name, thisAttribute, copyAttribute) -> {
-                if (thisAttribute instanceof RootAwareAttribute<?,?>){
-                    ((RootAwareAttribute<R,?>)thisAttribute).internal_copyToUnsafe(copyAttribute,level + 1, maxLevel,oldData,this,root);
+                if (thisAttribute instanceof FactoryChildrenEnclosingAttribute<?,?>){
+                    ((FactoryChildrenEnclosingAttribute<R,?>)thisAttribute).internal_copyToUnsafe(copyAttribute,level + 1, maxLevel,oldData,this,root);
                 } else {
                     thisAttribute.internal_copyToUnsafe(copyAttribute);
                 }
 
-                if (copyAttribute instanceof RootAwareAttribute<?,?>){
-                    ((RootAwareAttribute<R,?>)copyAttribute).internal_addBackReferences((R) root.copy,copy);
+                if (copyAttribute instanceof FactoryChildrenEnclosingAttribute<?,?>){
+                    ((FactoryChildrenEnclosingAttribute<R,?>)copyAttribute).internal_addBackReferences((R) root.copy,copy);
                 }
 //                copyAttribute.internal_addBackReferences(root.copy,copy);
+                return true;
             });
 
             oldData.add(this);
@@ -370,21 +358,20 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
         this.root=(R)this;
         addBackReferences(getRoot(),null,this.iterationRun+1);
     }
-
+    int childrenCounter;
 
     private void addBackReferences(final R root, final FactoryBase<?,?> parent, long dataIterationRun){
-        getFactoryMetadata().setAttributeReferenceClasses(this);
         addParent(parent);
         this.root=root;
-        getFactoryMetadata().addBackReferencesToAttributes(this,root);
+        this.root.childrenCounter++;
+        getFactoryMetadata().addBackReferencesAndReferenceClassToAttributes(this,root);
         this.visitChildFactoriesAndViewsFlat(data -> data.addBackReferences(getRoot(), FactoryBase.this,dataIterationRun),dataIterationRun,true);
     }
 
     private void addBackReferencesForSubtree(R root, FactoryBase<?,?> parent, HashSet<FactoryBase<?,?>> visited){
-        getFactoryMetadata().setAttributeReferenceClasses(this);
         addParent(parent);
         this.root=root;
-        getFactoryMetadata().addBackReferencesToAttributes(this,root);
+        getFactoryMetadata().addBackReferencesAndReferenceClassToAttributes(this,root);
 
         if (visited.add(this)) {//use HashSet instead of iteration counter to avoid iterationCounter mix up
             getFactoryMetadata().visitChildFactoriesAndViewsFlat(this,child -> child.addBackReferencesForSubtree(root,this,visited),true);
@@ -402,9 +389,6 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
                 parents=new HashSet<>();
                 parents.add(this.parent);
                 parents.add(parent);
-                if (parents.size()==1){
-                    System.out.println();
-                }
             } else {
                 parents.add(parent);
             }
@@ -468,15 +452,18 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
         return matchSearchTextFunction.apply(text);
     }
 
-    private List<Attribute<?,?>> displayTextDependencies= Collections.emptyList();
+    private List<Attribute<?,?>> displayTextDependencies;
     private void setDisplayTextDependencies(List<Attribute<?,?>> displayTextDependencies) {
         this.displayTextDependencies = displayTextDependencies;
     }
 
+
     @SuppressWarnings("unchecked")
-    private void addDisplayTextListeners(FactoryBase<?,?>  data, AttributeChangeListener attributeChangeListener){
-        for (Attribute<?,?> attribute: data.displayTextDependencies){
-            attribute.internal_addListener(attributeChangeListener);
+    private void addDisplayTextListeners(AttributeChangeListener attributeChangeListener){
+        if (displayTextDependencies!=null){
+            for (Attribute<?,?> attribute: this.displayTextDependencies){
+                attribute.internal_addListener(attributeChangeListener);
+            }
         }
     }
 
@@ -563,14 +550,6 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
             data.addValidation(validation,dependencies);
         }
 
-        /**
-         * use id derived from attributes instead of uuid
-         *
-         * @param customIdSupplier id supplier
-         */
-        public void attributeId(Supplier<String> customIdSupplier){
-            data.setIdSupplier(customIdSupplier);
-        }
     }
 
 
@@ -608,7 +587,7 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
             return factory.attributeListGrouped();
         }
 
-        public Map<String,FactoryBase<?,R> > collectChildFactoryMap() {
+        public Map<UUID,FactoryBase<?,R> > collectChildFactoryMap() {
             factory.assertRoot();
             return factory.collectChildDataMap();
         }
@@ -632,7 +611,7 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
 
         /**
          * -fix all data with same id should be same object
-         * -remove parents that are no not tin the tree
+         * -remove parents that are no not in the tree
          * only call on root
          * */
         public void fixDuplicatesAndAddBackReferences() {
@@ -739,7 +718,7 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
         }
 
         public void addDisplayTextListeners(AttributeChangeListener attributeChangeListener){
-            factory.addDisplayTextListeners(factory, attributeChangeListener);
+            factory.addDisplayTextListeners(attributeChangeListener);
         }
 
         public boolean hasBackReferencesFlat() {
@@ -855,6 +834,7 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
         public List<FactoryBase<?,R>> getFactoriesInDestroyOrder(){
             return factory.getFactoriesInDestroyOrder();
         }
+
 
         /**
          *        h
@@ -1121,7 +1101,7 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
 
     private List<FactoryBase<?,R>> getFactoriesInDestroyOrder(){
         long iterationRun=this.iterationRun+1;
-        final List<FactoryBase<?, R>> result = new ArrayList<>();
+        final List<FactoryBase<?,R>> result = childrenCounter>0 ? new ArrayList<>(childrenCounter):new ArrayList<>();
         result.add(this);
         getFactoriesInDestroyOrder(this,result,iterationRun);
         return result;
@@ -1138,7 +1118,7 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
 
     private List<FactoryBase<?,R>> getFactoriesInCreateAndStartOrder(){
         long iterationRun=this.iterationRun+1;
-        final List<FactoryBase<?,R>> result = new ArrayList<>();
+        final List<FactoryBase<?,R>> result = childrenCounter>0 ? new ArrayList<>(childrenCounter):new ArrayList<>();
         getFactoriesInCreateAndStartOrder(this,result,iterationRun);
         return result;
     }
@@ -1151,7 +1131,8 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
     }
 
     long iterationRun;
-    private void visitChildFactoriesAndViewsFlat(Consumer<FactoryBase<?,R>> consumer, long iterationRun, boolean includeViews) {
+    private void
+    visitChildFactoriesAndViewsFlat(Consumer<FactoryBase<?,R>> consumer, long iterationRun, boolean includeViews) {
         if (this.iterationRun==iterationRun){
             return;
         }

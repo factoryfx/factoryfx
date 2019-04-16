@@ -80,7 +80,7 @@ class DataJsonNodeTest {
         ExampleDataA exampleDataA = new ExampleDataA();
         JsonNode jsonNode = ObjectMapperBuilder.build().writeValueAsTree(exampleDataA);
         DataJsonNode dataJsonNode = new DataJsonNode((ObjectNode) jsonNode);
-        Assertions.assertEquals(exampleDataA.getId(), dataJsonNode.getId());
+        Assertions.assertEquals(exampleDataA.getId().toString(), dataJsonNode.getId());
     }
 
 

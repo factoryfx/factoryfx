@@ -12,7 +12,7 @@ import io.github.factoryfx.factory.FactoryTreeBuilderBasedAttributeSetup;
 import io.github.factoryfx.factory.attribute.*;
 
 
-public abstract class FactoryListBaseAttribute<R extends FactoryBase<?,R>,L, F extends FactoryBase<? extends L,R>,A extends FactoryListBaseAttribute<R,L, F,A>> extends ReferenceBaseAttribute<R, F,List<F>,A> implements List<F> {
+public class FactoryListBaseAttribute<R extends FactoryBase<?,R>,L, F extends FactoryBase<? extends L,R>,A extends FactoryListBaseAttribute<R,L, F,A>> extends ReferenceBaseAttribute<R, F,List<F>,A> implements List<F> {
     final List<F> list = new ArrayList<>();
 
     public FactoryListBaseAttribute() {
@@ -61,7 +61,7 @@ public abstract class FactoryListBaseAttribute<R extends FactoryBase<?,R>,L, F e
     @Override
     @SuppressWarnings("unchecked")
     public void internal_merge(Attribute<?,?> newValue) {
-        Map<String, F> previousMap=new HashMap();
+        Map<UUID, F> previousMap=new HashMap();
         for (F item : this.list) {
             previousMap.put(item.getId(),item);
         }
@@ -84,9 +84,9 @@ public abstract class FactoryListBaseAttribute<R extends FactoryBase<?,R>,L, F e
 
     @Override
     @SuppressWarnings("unchecked")
-    public void internal_fixDuplicateObjects(Map<String, FactoryBase<?,?>> idToDataMap) {
+    public <RL extends FactoryBase<?,RL>> void internal_fixDuplicateObjects(Map<UUID, FactoryBase<?,RL>> idToDataMap) {
 
-        List<F> fixedList = new ArrayList<>();
+        List<F> fixedList = new ArrayList<>(this.list.size());
         for (F entity : this.list) {
             fixedList.add((F)idToDataMap.get(entity.getId()));
         }
@@ -172,21 +172,6 @@ public abstract class FactoryListBaseAttribute<R extends FactoryBase<?,R>,L, F e
     @Override
     public String getDisplayText() {
         return new CollectionAttributeUtil<>(get(), t -> t.internal().getDisplayText()).getDisplayText();
-    }
-
-    @SuppressWarnings("unchecked")
-    public List<F> internal_createNewPossibleValues(){
-        FactoryTreeBuilderBasedAttributeSetup factoryTreeBuilderBasedAttributeSetup = root.internal().getFactoryTreeBuilderBasedAttributeSetup();
-        if (factoryTreeBuilderBasedAttributeSetup!=null){
-            return factoryTreeBuilderBasedAttributeSetup.createNewFactory(clazz);
-        }
-        if (newValuesProviderFromRootAndAttribute!=null) {
-            return newValuesProviderFromRootAndAttribute.apply(root,(A)this);
-        }
-        if (getNewValueProvider()!=null) {
-            return Collections.singletonList(getNewValueProvider().apply(root));
-        }
-        return new ArrayList<>();
     }
 
     public void internal_deleteFactory(F factory){
@@ -404,4 +389,10 @@ public abstract class FactoryListBaseAttribute<R extends FactoryBase<?,R>,L, F e
         return defaultExpanded;
     }
 
+    @Override
+    public void internal_visitChildren(Consumer<FactoryBase<?, R>> consumer, boolean includeViews) {
+        for (F factory : list) {
+            consumer.accept(factory);
+        }
+    }
 }

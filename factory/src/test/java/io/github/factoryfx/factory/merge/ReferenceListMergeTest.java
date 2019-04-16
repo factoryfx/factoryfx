@@ -1,5 +1,6 @@
 package io.github.factoryfx.factory.merge;
 
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import io.github.factoryfx.factory.merge.testdata.ExampleDataA;
@@ -53,9 +54,9 @@ public class ReferenceListMergeTest extends MergeHelperTestBase{
         ExampleDataB replacedValue = new ExampleDataB();
         update.referenceListAttribute.set(2,replacedValue);
 
-        String idBefore1=current.referenceListAttribute.get(0).getId();
-        String idBefore2=current.referenceListAttribute.get(1).getId();
-        String idBefore3=update.referenceListAttribute.get(2).getId();
+        UUID idBefore1=current.referenceListAttribute.get(0).getId();
+        UUID idBefore2=current.referenceListAttribute.get(1).getId();
+        UUID idBefore3=update.referenceListAttribute.get(2).getId();
         Assertions.assertTrue(merge(current, current, update).hasNoConflicts());
         Assertions.assertEquals(3, current.referenceListAttribute.size());
         Assertions.assertEquals(idBefore1, current.referenceListAttribute.get(0).getId());
@@ -80,9 +81,9 @@ public class ReferenceListMergeTest extends MergeHelperTestBase{
             current.referenceListAttribute.add(replacedValue);
         }
 
-        String idBefore1=current.referenceListAttribute.get(0).getId();
-        String idBefore2=current.referenceListAttribute.get(1).getId();
-        String idBefore3=current.referenceListAttribute.get(2).getId();
+        UUID idBefore1=current.referenceListAttribute.get(0).getId();
+        UUID idBefore2=current.referenceListAttribute.get(1).getId();
+        UUID idBefore3=current.referenceListAttribute.get(2).getId();
 
         Assertions.assertTrue(merge(current, orginal, update).hasNoConflicts());
         Assertions.assertEquals(3, current.referenceListAttribute.size());
@@ -107,8 +108,8 @@ public class ReferenceListMergeTest extends MergeHelperTestBase{
         update.referenceListAttribute.remove(2);
         update = update.internal().addBackReferences();
 
-        String idBefore1=current.referenceListAttribute.get(0).getId();
-        String idBefore2=current.referenceListAttribute.get(1).getId();
+        UUID idBefore1=current.referenceListAttribute.get(0).getId();
+        UUID idBefore2=current.referenceListAttribute.get(1).getId();
         Assertions.assertTrue(merge(current, current, update).hasNoConflicts());
         Assertions.assertEquals(2, current.referenceListAttribute.size());
         Assertions.assertEquals(idBefore1, current.referenceListAttribute.get(0).getId());
@@ -179,8 +180,8 @@ public class ReferenceListMergeTest extends MergeHelperTestBase{
         update.referenceListAttribute.add(second);
         update.referenceListAttribute.add(first);
 
-        String idBefore1=current.referenceListAttribute.get(0).getId();
-        String idBefore2=current.referenceListAttribute.get(1).getId();
+        UUID idBefore1=current.referenceListAttribute.get(0).getId();
+        UUID idBefore2=current.referenceListAttribute.get(1).getId();
         final MergeDiffInfo merge = merge(current, orginal, update);
         Assertions.assertTrue(merge.hasNoConflicts());
         Assertions.assertEquals(2, current.referenceListAttribute.size());

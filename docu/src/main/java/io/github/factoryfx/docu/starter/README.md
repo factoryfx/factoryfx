@@ -2,10 +2,16 @@
 the starter project provides a code generator that generate the initial project setup.
 The generator is a one time java code generator that simplifies the generics declarations.
 
+## Start
+Include the starter dependency and create a main class that executes the generateInitialSetup
+
+## Files
+
 ### Execution
 * **InitialProjectSetupGenerator**  
     executes the generator
-### Utility classes    
+    
+### Utility classes
 * **ServerBaseFactory**  
   Base factory for all factories in the project
 * **ServerRootFactory**  
@@ -19,7 +25,7 @@ The generator is a one time java code generator that simplifies the generics dec
 * **ServerMain**  
   Application start
 
-### REST server 
+### REST server
 * **ExampleResource**  
   Example jersey REST resource
 * **ExampleResourceFactory**  

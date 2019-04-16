@@ -65,10 +65,6 @@ public abstract class Attribute<T,A extends Attribute<T,A>>{
         set((T) newValue.get());
     }
 
-    /*
-        see test {{@Link MergeTest#test_duplicate_ids_bug}} why this is needed
-    */
-    public abstract void internal_fixDuplicateObjects(Map<String, FactoryBase<?,?>> idToDataMap);
 
     public void internal_copyTo(A copyAttribute){
         //nothing

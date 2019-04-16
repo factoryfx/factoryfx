@@ -15,23 +15,6 @@ public class ExampleDataA extends FactoryBase<Void,ExampleDataA> {
     public final FactoryAttribute<ExampleDataA,Void,ExampleDataB> referenceAttribute = new FactoryAttribute<ExampleDataA,Void,ExampleDataB>().setCopySemantic(CopySemantic.SELF).labelText("ExampleA2");
     public final FactoryListAttribute<ExampleDataA,Void,ExampleDataB> referenceListAttribute = new FactoryListAttribute<ExampleDataA,Void,ExampleDataB>().setCopySemantic(CopySemantic.SELF).labelText("ExampleA3");
 
-    static {
-//        DataDictionary.getMetadata(ExampleDataA.class)
-//            .setVisitDataChildren((exampleDataA, dataConsumer) -> {
-//                if (exampleDataA.referenceAttribute.get()!=null){
-//                    dataConsumer.accept(exampleDataA.referenceAttribute.get());
-//                }
-//                exampleDataA.referenceListAttribute.forEach(dataConsumer);
-//            })
-//            .setVisitAttributesFlat((exampleDataA, dataConsumer) -> {
-//                dataConsumer.accept("stringAttribute",exampleDataA.stringAttribute);
-//                dataConsumer.accept("referenceAttribute",exampleDataA.referenceAttribute);
-//                dataConsumer.accept("referenceAttributeC",exampleDataA.referenceListAttribute);
-//            })
-//            .setNewCopyInstanceSupplier(exampleDataA -> new ExampleDataA());
-
-    }
-
     public ExampleDataA(){
         config().setDisplayTextProvider(() -> stringAttribute.get());
         config().setDisplayTextDependencies(stringAttribute);

@@ -2,11 +2,13 @@ package io.github.factoryfx.factory.metadata;
 
 import io.github.factoryfx.factory.AttributeVisitor;
 import io.github.factoryfx.factory.FactoryBase;
+import io.github.factoryfx.factory.FactoryEnclosingAttributeVisitor;
 import io.github.factoryfx.factory.attribute.dependency.*;
 import io.github.factoryfx.factory.attribute.*;
 import io.github.factoryfx.factory.storage.migration.metadata.AttributeStorageMetadata;
 import io.github.factoryfx.factory.storage.migration.metadata.DataStorageMetadata;
 
+import java.lang.invoke.MethodHandles;
 import java.lang.reflect.*;
 import java.util.*;
 import java.util.function.BiConsumer;
@@ -66,57 +68,26 @@ public class FactoryMetadata<R extends FactoryBase<?,R>, L,F extends FactoryBase
         }
     }
 
-    private BiConsumer<F,Consumer<FactoryBase<?,?>>> visitDataChildren;
+
+    public void visitFactoryEnclosingAttributesFlat(F factory, FactoryEnclosingAttributeVisitor<R> visitor) {
+        for (AttributeFieldAccessor<R,L,F,FactoryChildrenEnclosingAttribute<R,?>> attributeFieldAccessor : factoryChildrenEnclosingAttributeFields) {
+            visitor.accept(attributeFieldAccessor.getName(),attributeFieldAccessor.get(factory));
+        }
+    }
+
+
+    private BiConsumer<F,Consumer<FactoryBase<?,R>>> factoryChildrenVisitor;
 
     /**
      * default implementation use reflection, this method can be used to improve performance
      *
-     * @param visitDataChildren visitor
+     * @param factoryChildrenVisitor visitor
      * @return DataDictionary for fluent configuration
      * */
-    public FactoryMetadata<R, L,F> setVisitDataChildren(BiConsumer<F,Consumer<FactoryBase<?,?>>> visitDataChildren){
-        this.visitDataChildren=visitDataChildren;
+    public FactoryMetadata<R, L,F> setFactoryChildrenVisitor(BiConsumer<F,Consumer<FactoryBase<?,R>>> factoryChildrenVisitor){
+        this.factoryChildrenVisitor=factoryChildrenVisitor;
         return this;
     }
-
-//    void visitDataChildren(D data, Consumer<FactoryBase<?,?>> consumer) {
-//        visitDataAndViewChildren(data,consumer,false);
-//    }
-//
-//    void visitDataAndViewChildren(D data, Consumer<FactoryBase<?,?>> consumer) {
-//        visitDataAndViewChildren(data,consumer,true);
-//    }
-//
-//
-//    private void visitDataAndViewChildren(D data, Consumer<FactoryBase<?,?>> consumer, boolean visitViews) {
-//        if (this.visitDataChildren != null) {
-//            this.visitDataChildren.accept(data, consumer);
-//        } else {
-//            visitAttributesFlat(data, (attributeVariableName, attribute) -> {
-//                if (attribute instanceof ReferenceAttribute) {
-//                    FactoryBase<?,?> child = ((ReferenceAttribute<?, ?>) attribute).get();
-//                    if (child != null) {
-//                        consumer.accept(child);
-//                    }
-//                }
-//                if (attribute instanceof ReferenceListAttribute) {
-//                    ((ReferenceListAttribute<?, ?>) attribute).forEach(consumer);
-//                }
-//
-//                if (visitViews){
-//                    if (attribute instanceof FactoryViewReferenceAttribute) {
-//                        FactoryBase<?,?> child = ((FactoryViewReferenceAttribute<?, ?, ?>) attribute).get();
-//                        if (child != null) {
-//                            consumer.accept(child);
-//                        }
-//                    }
-//                    if (attribute instanceof FactoryViewListReferenceAttribute) {
-//                        ((FactoryViewListReferenceAttribute<?, ?, ?>) attribute).get().forEach(consumer);
-//                    }
-//                }
-//            });
-//        }
-//    }
 
     public static class AttributeNamePair{
         public final String name;
@@ -129,7 +100,7 @@ public class FactoryMetadata<R extends FactoryBase<?,R>, L,F extends FactoryBase
     }
 
     public void visitAttributesDualFlat(F data, F other, FactoryBase.BiAttributeVisitor consumer) {
-        if (this.visitDataChildren != null) {
+        if (this.factoryChildrenVisitor != null) {
             List<AttributeNamePair> attributes = getAttributes(data,10);
             List<AttributeNamePair> otherAttributes = getAttributes(other,attributes.size());
             for (int i = 0; i < attributes.size(); i++) {
@@ -138,7 +109,9 @@ public class FactoryMetadata<R extends FactoryBase<?,R>, L,F extends FactoryBase
         } else {
             for (Field field : attributeFields) {
                 try {
-                    consumer.accept(field.getName(),(Attribute<?,?>) field.get(data), (Attribute<?,?>) field.get(other));
+                    if (!consumer.accept(field.getName(),(Attribute<?,?>) field.get(data), (Attribute<?,?>) field.get(other))){
+                       break;
+                    }
                 } catch (IllegalAccessException e) {
                     throw new RuntimeException(e);
                 }
@@ -147,7 +120,7 @@ public class FactoryMetadata<R extends FactoryBase<?,R>, L,F extends FactoryBase
     }
 
     public void visitAttributesTripleFlat(F data, F other1, F other2, FactoryBase.TriAttributeVisitor consumer) {
-        if (this.visitDataChildren != null) {
+        if (this.factoryChildrenVisitor != null) {
             List<AttributeNamePair> attributes = getAttributes(data,10);
             List<AttributeNamePair> otherAttributes = getAttributes(other1,attributes.size());
             List<AttributeNamePair> other2Attributes = getAttributes(other2,attributes.size());
@@ -173,6 +146,7 @@ public class FactoryMetadata<R extends FactoryBase<?,R>, L,F extends FactoryBase
 
     private final ArrayList<Field> attributeFields = new ArrayList<>();
     private final HashMap<String,Class<?>> fieldToReferenceClass = new HashMap<>();
+    private final ArrayList<AttributeFieldAccessor<R,L,F,FactoryChildrenEnclosingAttribute<R,?>>> factoryChildrenEnclosingAttributeFields = new ArrayList<>();
 
     private void initAttributeFields(Class<?> clazz) {
         Class<?> parent = clazz.getSuperclass();
@@ -185,20 +159,30 @@ public class FactoryMetadata<R extends FactoryBase<?,R>, L,F extends FactoryBase
                 filter(f->Attribute.class.isAssignableFrom(f.getType())).
                 forEach(attributeFields::add);
 
+        MethodHandles.Lookup lookup = MethodHandles.lookup();
 
         //generics parameter for attributes
         for (Field field : attributeFields) {
+            field.setAccessible(true);//should improve performance
 //            Class<?> attributeType = field.getType();
 //            while(attributeType!=ReferenceBaseAttribute.class && attributeType!=Object.class){
 //                attributeType=attributeType.getSuperclass();
 //            }
+
+            if (FactoryChildrenEnclosingAttribute.class.isAssignableFrom(field.getType())) {
+                try {
+                    factoryChildrenEnclosingAttributeFields.add(new AttributeFieldAccessor<>(lookup.unreflectGetter(field), field.getName()));
+                } catch (IllegalAccessException e) {
+                    throw new RuntimeException(e);
+                };
+            }
 
             if (ReferenceBaseAttribute.class.isAssignableFrom(field.getType())){
                 field.getType().getGenericSuperclass();
                 Type type = field.getGenericType();
                 if (type instanceof ParameterizedType) {
                     ParameterizedType ptype = (ParameterizedType) type;
-                    //last generic parameter is kind of guess work but best we can do with reflection
+                    //assume last generic parameter ist reference class. is kind of guess work but best we can do with reflection
                     try {
                         Type actualTypeArgument = ptype.getActualTypeArguments()[ptype.getActualTypeArguments().length - 1];
                         String className= actualTypeArgument.getTypeName();
@@ -216,12 +200,11 @@ public class FactoryMetadata<R extends FactoryBase<?,R>, L,F extends FactoryBase
     }
 
     @SuppressWarnings("unchecked")
-    public void addBackReferencesToAttributes(F data, R root) {
-        if (!temporaryAttributes) {//no BackReferences for FastFactories
-            visitAttributesFlat(data,(name, attribute) -> {
-                if (attribute instanceof RootAwareAttribute<?,?>){
-                    ((RootAwareAttribute<R,?>)attribute).internal_addBackReferences(root,data);
-                }
+    public void addBackReferencesAndReferenceClassToAttributes(F data, R root) {
+        if (!temporaryAttributes) {//no BackReferences for FastFactories they are set manually
+            visitFactoryEnclosingAttributesFlat(data, (attributeVariableName, attribute) -> {
+                attribute.internal_addBackReferences(root,data);
+                attribute.internal_setReferenceClass(fieldToReferenceClass.get(attributeVariableName));
             });
         }
     }
@@ -272,13 +255,14 @@ public class FactoryMetadata<R extends FactoryBase<?,R>, L,F extends FactoryBase
     }
 
     public void setAttributeReferenceClasses(F data){
-        this.visitAttributesFlat(data, (attributeVariableName, attribute) -> {
-            if (attribute instanceof ReferenceBaseAttribute) {
-                ((ReferenceBaseAttribute<?,?,?,?>)attribute).internal_setReferenceClass(fieldToReferenceClass.get(attributeVariableName));
-            }
-        });
+        if (!this.temporaryAttributes){
+            this.visitAttributesFlat(data, (attributeVariableName, attribute) -> {
+                if (attribute instanceof ReferenceBaseAttribute) {
+                    ((ReferenceBaseAttribute<?,?,?,?>)attribute).internal_setReferenceClass(fieldToReferenceClass.get(attributeVariableName));
+                }
+            });
+        }
     }
-
 
     public DataStorageMetadata createDataStorageMetadata(long count) {
         F data = newInstance();
@@ -288,51 +272,12 @@ public class FactoryMetadata<R extends FactoryBase<?,R>, L,F extends FactoryBase
         return new DataStorageMetadata(attributes,clazz.getName(),count);
     }
 
-    private BiConsumer<F,Consumer<FactoryBase<?,R>>> visitChildFactoriesAndViewsFlat;
+    public void visitChildFactoriesAndViewsFlat(F factory, Consumer<FactoryBase<?,R>> consumer, boolean includeViews) {
+        if (this.factoryChildrenVisitor != null) {
+            this.factoryChildrenVisitor.accept(factory, consumer);
 
-    public  void setVisitChildFactoriesAndViewsFlat(BiConsumer<F,Consumer<FactoryBase<?,R>>> visitChildFactoriesAndViewsFlat){
-        this.visitChildFactoriesAndViewsFlat=visitChildFactoriesAndViewsFlat;
-    }
-
-    @SuppressWarnings("unchecked")
-    public void visitChildFactoriesAndViewsFlat(F data, Consumer<FactoryBase<?,R>> consumer, boolean includeViews) {
-        if (this.visitChildFactoriesAndViewsFlat != null) {
-            this.visitChildFactoriesAndViewsFlat.accept(data, consumer);
-
-        } else
-
-            data.internal().visitAttributesFlat((attributeVariableName, attribute) -> {
-                if (attribute instanceof FactoryBaseAttribute) {
-                    FactoryBase<?,R> factory = (FactoryBase<?,R>) attribute.get();
-                    if (factory != null) {
-                        consumer.accept(factory);
-                    }
-                    return;
-                }
-                if (attribute instanceof FactoryListBaseAttribute) {
-                    List<?> factories = ((FactoryListBaseAttribute<?, ?, ?, ?>) attribute).get();
-                    for (Object factory : factories) {
-                        consumer.accept((FactoryBase<?,R>) factory);
-                    }
-                    return;
-                }
-                if (includeViews){
-                    if (attribute instanceof FactoryViewAttribute) {
-                        FactoryBase<?,R> factory = (FactoryBase<?,R>) attribute.get();
-                        if (factory != null) {
-                            consumer.accept(factory);
-                        }
-                        return;
-                    }
-                    if (attribute instanceof FactoryViewListAttribute) {
-                        List<?> factories = ((FactoryViewListAttribute<?, ?, ?>) attribute).get();
-                        for (Object factory : factories) {
-                            consumer.accept((FactoryBase<?,R>) factory);
-                        }
-                        return;
-                    }
-                }
-            });
-
+        } else {
+            visitFactoryEnclosingAttributesFlat(factory, (attributeVariableName, attribute) -> attribute.internal_visitChildren(consumer, includeViews));
+        }
     }
 }

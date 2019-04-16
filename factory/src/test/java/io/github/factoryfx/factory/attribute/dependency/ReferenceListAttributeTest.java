@@ -1,9 +1,6 @@
 package io.github.factoryfx.factory.attribute.dependency;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 
 
 import io.github.factoryfx.factory.FactoryBase;
@@ -87,7 +84,7 @@ public class ReferenceListAttributeTest {
     public void test_possible_values(){
         ExampleReferenceListFactory exampleReferenceListFactory = new ExampleReferenceListFactory();
         ExampleDataA exampleFactoryA = new ExampleDataA();
-        String expectedId=exampleFactoryA.getId();
+        UUID expectedId=exampleFactoryA.getId();
         exampleReferenceListFactory.referenceListAttribute.add(exampleFactoryA);
         exampleReferenceListFactory = exampleReferenceListFactory.internal().addBackReferences();
 

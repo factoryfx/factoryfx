@@ -28,8 +28,8 @@ public class FastExampleFactoryA extends SimpleFactoryBase<ExampleLiveObjectA,Fa
                     FactoryListAttribute<FastExampleFactoryA,ExampleLiveObjectB,FastExampleFactoryB> referenceListAttribute = new FactoryListAttribute<FastExampleFactoryA,ExampleLiveObjectB,FastExampleFactoryB>().labelText("ExampleA3");
 
                     attributeVisitor.accept("stringAttribute", FastFactoryUtility.tempAttributeSetup(stringAttribute,(v)->factory.stringAttribute=v,()->factory.stringAttribute));
-                    attributeVisitor.accept("referenceAttribute", FastFactoryUtility.tempAttributeSetup(referenceAttribute,(v)->factory.referenceAttribute=v,()->factory.referenceAttribute));
-                    attributeVisitor.accept("referenceListAttribute", FastFactoryUtility.tempAttributeSetup(referenceListAttribute,(v)->factory.referenceListAttribute=v,()->factory.referenceListAttribute));
+                    attributeVisitor.accept("referenceAttribute", FastFactoryUtility.tempAttributeSetup(referenceAttribute,(v)->factory.referenceAttribute=v,()->factory.referenceAttribute,FastExampleFactoryB.class));
+                    attributeVisitor.accept("referenceListAttribute", FastFactoryUtility.tempAttributeSetup(referenceListAttribute,(v)->factory.referenceListAttribute=v,()->factory.referenceListAttribute,FastExampleFactoryB.class));
                 },
                 (factory, dataVisitor) -> {
                     if (factory.referenceAttribute!=null){

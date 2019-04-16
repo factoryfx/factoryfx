@@ -9,6 +9,7 @@ import io.github.factoryfx.factory.FactoryBase;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -131,6 +132,16 @@ public class FactoryTreeBuilder<L,R extends FactoryBase<L,R>,S> {
         return new MicroserviceBuilder<>(this.rootClass,this.buildTree(),this,simpleObjectMapper);
     }
 
+    /**
+     * set mocks for factories
+     * @param mocker mocker
+     * @return
+     */
+    public MicroserviceBuilder<L,R,S> microservice(Consumer<R> mocker){
+        R root = this.buildTree();
+        mocker.accept(root);
+        return new MicroserviceBuilder<>(this.rootClass, root,this,ObjectMapperBuilder.build());
+    }
 
 
 }

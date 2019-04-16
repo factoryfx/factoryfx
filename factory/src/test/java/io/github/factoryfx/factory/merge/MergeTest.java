@@ -1,6 +1,7 @@
 package io.github.factoryfx.factory.merge;
 
 import java.util.Arrays;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 
@@ -661,7 +662,7 @@ public class MergeTest {
         }
 
 
-        String idBeforeMerge = currentModel.referenceAttribute.get().getId();
+        UUID idBeforeMerge = currentModel.referenceAttribute.get().getId();
         DataMerger<ExampleDataA> dataMerger = new DataMerger<>(currentModel, originalModel, newModel);
 
         MergeDiffInfo mergeDiff= dataMerger.mergeIntoCurrent((permission)->true);
@@ -686,7 +687,7 @@ public class MergeTest {
             currentModel.referenceListAttribute.add(new ExampleDataB());
         }
 
-        String idBeforeMerge = currentModel.referenceListAttribute.get(0).getId();
+        UUID idBeforeMerge = currentModel.referenceListAttribute.get(0).getId();
 
         DataMerger<ExampleDataA> dataMerger = new DataMerger<>(currentModel, originalModel, newModel);
         MergeDiffInfo mergeDiff= dataMerger.mergeIntoCurrent((permission)->true);
@@ -710,7 +711,7 @@ public class MergeTest {
             originalModel.referenceListAttribute.add(new ExampleDataB());
         }
 
-        String expectedId=currentModel.referenceListAttribute.get(0).getId();
+        UUID expectedId=currentModel.referenceListAttribute.get(0).getId();
         DataMerger<ExampleDataA> dataMerger = new DataMerger<>(currentModel, originalModel, newModel);
         MergeDiffInfo mergeDiff= dataMerger.mergeIntoCurrent((permission)->true);
 

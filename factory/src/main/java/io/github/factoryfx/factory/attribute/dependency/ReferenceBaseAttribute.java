@@ -2,6 +2,7 @@ package io.github.factoryfx.factory.attribute.dependency;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.github.factoryfx.factory.FactoryBase;
+import io.github.factoryfx.factory.FactoryTreeBuilderBasedAttributeSetup;
 import io.github.factoryfx.factory.attribute.Attribute;
 import io.github.factoryfx.factory.attribute.CopySemantic;
 import io.github.factoryfx.factory.attribute.DefaultNewValueProvider;
@@ -14,7 +15,7 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 
 /** Base for Reference attributes, with common api  */
-public abstract class ReferenceBaseAttribute<R extends FactoryBase<?,R>, T extends FactoryBase<?,R>, U, A extends ReferenceBaseAttribute<R,T,U,A>> extends Attribute<U,A> implements RootAwareAttribute<R,A> {
+public abstract class ReferenceBaseAttribute<R extends FactoryBase<?,R>, F extends FactoryBase<?,R>, U, A extends ReferenceBaseAttribute<R, F,U,A>> extends Attribute<U,A> implements FactoryChildrenEnclosingAttribute<R,A> {
 
     protected R root;
     protected FactoryBase<?,R> parent;//data that contains this attribute
@@ -36,18 +37,18 @@ public abstract class ReferenceBaseAttribute<R extends FactoryBase<?,R>, T exten
 //        this.containingFactoryClass = containingFactoryClass;
 //    }
 
-    private Function<R,Collection<T>> possibleValueProviderFromRoot;
+    private Function<R,Collection<F>> possibleValueProviderFromRoot;
 
     /**customise the list of selectable items
      * @param provider provider
      * @return self*/
     @SuppressWarnings("unchecked")
-    public A possibleValueProvider(Function<R,Collection<T>> provider){
+    public A possibleValueProvider(Function<R,Collection<F>> provider){
         possibleValueProviderFromRoot=provider;
         return (A)this;
     }
 
-    public Collection<T> internal_possibleValues(){
+    public Collection<F> internal_possibleValues(){
         if (clazz!=null && possibleValueProviderFromRoot==null){
             possibleValueProviderFromRoot=new DefaultPossibleValueProvider<>(clazz);
         }
@@ -63,26 +64,26 @@ public abstract class ReferenceBaseAttribute<R extends FactoryBase<?,R>, T exten
         this.parent=parent;
     }
 
-    private Function<R,T> newValueProvider;
+    private Function<R, F> newValueProvider;
     /**
      * customise how new values are created
      * @param newValueProviderFromRoot value, root
      * @return the new added factory
      */
     @SuppressWarnings("unchecked")
-    public A newValueProvider(Function<R,T> newValueProviderFromRoot){
+    public A newValueProvider(Function<R, F> newValueProviderFromRoot){
         this.newValueProvider =newValueProviderFromRoot;
         return (A)this;
     }
 
-    protected Function<R,T> getNewValueProvider(){
+    protected Function<R, F> getNewValueProvider(){
         if (clazz!=null && newValueProvider==null){
             newValueProvider=new DefaultNewValueProvider<>(clazz);
         }
         return newValueProvider;
     }
 
-    BiFunction<FactoryBase<?,?>,A,List<T>> newValuesProviderFromRootAndAttribute;
+    BiFunction<FactoryBase<?,?>,A,List<F>> newValuesProviderFromRootAndAttribute;
     /**
      * customise how new values are created
      * @param newValuesProvider value, root
@@ -92,7 +93,7 @@ public abstract class ReferenceBaseAttribute<R extends FactoryBase<?,R>, T exten
      */
     @SuppressWarnings("unchecked")
     @Deprecated
-    public A newValuesProvider(Function<FactoryBase<?,?>,List<T>> newValuesProvider){
+    public A newValuesProvider(Function<FactoryBase<?,?>,List<F>> newValuesProvider){
         this.newValuesProviderFromRootAndAttribute = (root, attribute)->{
             return newValuesProvider.apply(root);
         };
@@ -105,19 +106,19 @@ public abstract class ReferenceBaseAttribute<R extends FactoryBase<?,R>, T exten
      * @return the new added factory
      */
     @SuppressWarnings("unchecked")
-    public A newValuesProvider(BiFunction<FactoryBase<?,?>,A,List<T>> newValuesProviderFromRootAndAttribute){
+    public A newValuesProvider(BiFunction<FactoryBase<?,?>,A,List<F>> newValuesProviderFromRootAndAttribute){
         this.newValuesProviderFromRootAndAttribute = newValuesProviderFromRootAndAttribute;
         return (A)this;
     }
 
-    protected BiConsumer<T,FactoryBase<?,?>> additionalDeleteAction;
+    protected BiConsumer<F,FactoryBase<?,?>> additionalDeleteAction;
     /**
      * action after delete, e.g delete the factory also in other lists
      * @param additionalDeleteAction deleted value, root
      * @return self
      */
     @SuppressWarnings("unchecked")
-    public A additionalDeleteAction(BiConsumer<T,FactoryBase<?,?>> additionalDeleteAction){
+    public A additionalDeleteAction(BiConsumer<F,FactoryBase<?,?>> additionalDeleteAction){
         this.additionalDeleteAction=additionalDeleteAction;
         return (A)this;
     }
@@ -173,16 +174,18 @@ public abstract class ReferenceBaseAttribute<R extends FactoryBase<?,R>, T exten
         return (A)this;
     }
 
-    protected Class<T> clazz;
+    protected Class<F> clazz;
+
     /**setup value selection and new value adding for user editing
      * @param clazz class
      * */
     @SuppressWarnings("unchecked")
+    @Override
     public void internal_setReferenceClass(Class<?> clazz){
-        this.clazz=(Class<T>)clazz;//lazy creation for performance
+        this.clazz=(Class<F>)clazz;
     }
 
-    public Class<T> internal_getReferenceClass(){
+    public Class<F> internal_getReferenceClass(){
         return clazz;
     }
 
@@ -208,4 +211,20 @@ public abstract class ReferenceBaseAttribute<R extends FactoryBase<?,R>, T exten
     public AttributeStorageMetadata createAttributeStorageMetadata(String variableName) {
         return new AttributeStorageMetadata(variableName,getClass().getName(),true, clazz!=null?clazz.getName():null);
     }
+
+    @SuppressWarnings("unchecked")
+    public List<F> internal_createNewPossibleValues(){
+        FactoryTreeBuilderBasedAttributeSetup factoryTreeBuilderBasedAttributeSetup = root.internal().getFactoryTreeBuilderBasedAttributeSetup();
+        if (factoryTreeBuilderBasedAttributeSetup!=null){
+            return factoryTreeBuilderBasedAttributeSetup.createNewFactory(clazz);
+        }
+        if (newValuesProviderFromRootAndAttribute!=null) {
+            return newValuesProviderFromRootAndAttribute.apply(root,(A)this);
+        }
+        if (getNewValueProvider()!=null) {
+            return Collections.singletonList(getNewValueProvider().apply(root));
+        }
+        return new ArrayList<>();
+    }
+
 }

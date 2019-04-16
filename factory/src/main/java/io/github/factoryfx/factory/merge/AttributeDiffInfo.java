@@ -7,17 +7,19 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import io.github.factoryfx.factory.FactoryBase;
 import io.github.factoryfx.factory.attribute.Attribute;
 
+import java.util.UUID;
+
 //represent a changed attribute
 public class AttributeDiffInfo {
     @JsonProperty
     public final String attributeName;
     @JsonProperty
-    public final String dataId;
+    public final UUID dataId;
 
     @JsonCreator
     public AttributeDiffInfo(
             @JsonProperty("attributeName") String attributeName,
-            @JsonProperty("parentId") String dataId) {
+            @JsonProperty("parentId") UUID dataId) {
         this.attributeName = attributeName;
         this.dataId = dataId;
     }

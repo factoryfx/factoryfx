@@ -11,47 +11,47 @@ import java.util.List;
 public class ImmutableValueAttributeTest {
 
     @Test
-    public void removeListener() throws Exception {
+    public void removeListener()  {
         ImmutableValueAttribute<String,StringAttribute> valueAttribute = new StringAttribute();
 
         final AttributeChangeListener<String,StringAttribute> stringAttributeChangeListener = (attribute, value) -> System.out.println(value);
         valueAttribute.internal_addListener(stringAttributeChangeListener);
-        Assertions.assertTrue(valueAttribute.listeners.size()==1);
+        Assertions.assertTrue(valueAttribute.internal_getListeners().size()==1);
         valueAttribute.internal_removeListener(stringAttributeChangeListener);
-        Assertions.assertTrue(valueAttribute.listeners.size()==0);
+        Assertions.assertTrue(valueAttribute.internal_getListeners().size()==0);
     }
 
     @Test
-    public void removeWeakListener() throws Exception {
+    public void removeWeakListener() {
         ImmutableValueAttribute<String,StringAttribute> valueAttribute = new StringAttribute();
 
         final AttributeChangeListener<String,StringAttribute> stringAttributeChangeListener = (attribute, value) -> System.out.println(value);
         valueAttribute.internal_addListener(new WeakAttributeChangeListener<>(stringAttributeChangeListener));
-        Assertions.assertTrue(valueAttribute.listeners.size()==1);
+        Assertions.assertTrue(valueAttribute.internal_getListeners().size()==1);
         valueAttribute.internal_removeListener(stringAttributeChangeListener);
-        Assertions.assertTrue(valueAttribute.listeners.size()==0);
+        Assertions.assertTrue(valueAttribute.internal_getListeners().size()==0);
     }
 
     @Test
-    public void removeWeakListener_after_gc() throws Exception {
+    public void removeWeakListener_after_gc() {
         ImmutableValueAttribute<String,StringAttribute> valueAttribute = new StringAttribute();
 
         final AttributeChangeListener<String,StringAttribute> stringAttributeChangeListener = (attribute, value) -> System.out.println(value);
         valueAttribute.internal_addListener(new WeakAttributeChangeListener<>(null));
-        Assertions.assertTrue(valueAttribute.listeners.size()==1);
+        Assertions.assertTrue(valueAttribute.internal_getListeners().size()==1);
         valueAttribute.internal_removeListener(stringAttributeChangeListener);
-        Assertions.assertTrue(valueAttribute.listeners.size()==0);
+        Assertions.assertTrue(valueAttribute.internal_getListeners().size()==0);
     }
 
     @Test
-    public void test_match() throws Exception {
+    public void test_match() {
         StringAttribute stringAttribute = new StringAttribute();
         stringAttribute.set("123");
         Assertions.assertTrue(stringAttribute.match("123"));
     }
 
     @Test
-    public void test_match_attribute() throws Exception {
+    public void test_match_attribute() {
         StringAttribute stringAttribute = new StringAttribute();
         stringAttribute.set("123");
 

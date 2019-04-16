@@ -2,16 +2,18 @@ package io.github.factoryfx.factory.merge;
 
 import io.github.factoryfx.factory.FactoryBase;
 
-import java.util.Map;
+import java.util.*;
 import java.util.function.Function;
-
-
 
 public class DataMerger<R extends FactoryBase<?,R>> {
 
     private final R currentData;
     private final R commonData;
     private final R newData;
+
+    private final Map<UUID, FactoryBase<?,R>> currentMap;
+    private final Map<UUID, FactoryBase<?,R>> originalMap;
+    private final Map<UUID, FactoryBase<?,R>> newMap;
 
     public DataMerger(R currentData, R commonData, R newData) {
         if (currentData==commonData){
@@ -25,23 +27,31 @@ public class DataMerger<R extends FactoryBase<?,R>> {
         this.currentData = currentData;
         this.commonData = commonData;
         this.newData = newData;
+
+        this.currentMap = currentData.internal().collectChildFactoryMap();
+        this.originalMap = commonData.internal().collectChildFactoryMap();
+        this.newMap = newData.internal().collectChildFactoryMap();
+
+//        List<FactoryBase<?,R>> currentList = currentData.internal().collectChildrenDeep();
+//        List<FactoryBase<?,R>> originalList = commonData.internal().collectChildrenDeep();
+//        List<FactoryBase<?,R>> newMapList = commonData.internal().collectChildrenDeep();
+//        Collections.sort(currentList, Comparator.comparing(FactoryBase::getId));
+//        Collections.sort(originalList, Comparator.comparing(FactoryBase::getId));
+//        Collections.sort(newMapList, Comparator.comparing(FactoryBase::getId));
+
+
+        for (FactoryBase<?,R> newDataChild : newMap.values()) {//avoid mix up with iteration counters
+            newDataChild.internal().resetIterationCounterFlat();
+        }
     }
 
     @SuppressWarnings("unchecked")
     public MergeResult<R> createMergeResult(Function<String,Boolean> permissionChecker) {
-        MergeResult mergeResult = new MergeResult(currentData);
+        MergeResult<R> mergeResult = new MergeResult<>(currentData);
 
-        Map<String, FactoryBase<?,R>> currentMap = currentData.internal().collectChildFactoryMap();
-        Map<String, FactoryBase<?,R>> originalMap = commonData.internal().collectChildFactoryMap();
-        Map<String, FactoryBase<?,R>> newMap = newData.internal().collectChildFactoryMap();
-
-        for (FactoryBase<?,R> newData : newMap.values()) {//avoid mix up with iteration counters
-            newData.internal().resetIterationCounterFlat();
-        }
-
-        for (Map.Entry<String, FactoryBase<?,R>> entry : currentMap.entrySet()) {
-            FactoryBase originalValue = getOriginalValue(originalMap, entry);
-            FactoryBase newValue = getNewValue(newMap, entry);
+        for (Map.Entry<UUID, FactoryBase<?,R>> entry : currentMap.entrySet()) {
+            FactoryBase originalValue = getOriginalValue(entry);
+            FactoryBase newValue = getNewValue(entry);
 
             if (newValue==null && originalValue!=null){
                 //check for conflict for removed object
@@ -51,6 +61,7 @@ public class DataMerger<R extends FactoryBase<?,R>> {
                             mergeResult.addConflictInfo(new AttributeDiffInfo(name,entry.getValue().getId()));
                         }
                     }
+                    return true;
                 });
             }
 
@@ -61,14 +72,14 @@ public class DataMerger<R extends FactoryBase<?,R>> {
         return mergeResult;
     }
 
-    private FactoryBase<?,R> getNewValue(Map<String, FactoryBase<?,R>> newMap, Map.Entry<String, FactoryBase<?,R>> currentEntry) {
+    private FactoryBase<?,R> getNewValue(Map.Entry<UUID, FactoryBase<?,R>> currentEntry) {
         if (currentEntry.getValue()==currentData){//for root different id don't make sense
             return newData;
         }
         return newMap.get(currentEntry.getKey());
     }
 
-    private FactoryBase<?,R> getOriginalValue(Map<String, FactoryBase<?,R>> originalMap, Map.Entry<String, FactoryBase<?,R>> currentEntry) {
+    private FactoryBase<?,R> getOriginalValue(Map.Entry<UUID, FactoryBase<?,R>> currentEntry) {
         if (currentEntry.getValue()==currentData){//for root different id don't make sense
             return commonData;
         }
@@ -78,6 +89,5 @@ public class DataMerger<R extends FactoryBase<?,R>> {
     public MergeDiffInfo<R> mergeIntoCurrent(Function<String,Boolean> permissionChecker) {
         return createMergeResult(permissionChecker).executeMerge();
     }
-
 
 }

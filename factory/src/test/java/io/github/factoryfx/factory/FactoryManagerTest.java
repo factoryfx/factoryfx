@@ -3,10 +3,13 @@ package io.github.factoryfx.factory;
 import java.util.ArrayList;
 import java.util.Set;
 
+import ch.qos.logback.classic.Logger;
+import ch.qos.logback.classic.LoggerContext;
 import io.github.factoryfx.factory.exception.RethrowingFactoryExceptionHandler;
 import io.github.factoryfx.factory.testfactories.*;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.slf4j.LoggerFactory;
 
 
 public class FactoryManagerTest {
@@ -81,7 +84,6 @@ public class FactoryManagerTest {
     @Test
     public void test_large_tree(){
 
-
         FactoryManager<ExampleLiveObjectA, FastExampleFactoryA> factoryManager = new FactoryManager<>(new RethrowingFactoryExceptionHandler());
 
 
@@ -112,6 +114,56 @@ public class FactoryManagerTest {
 //        }
 //        factoryManager.getCurrentData();
 
+    }
+
+
+    @Test
+    public void test_large_tree_normal_factories(){
+        FactoryManager<ExampleLiveObjectA, ExampleFactoryA> factoryManager = new FactoryManager<>(new RethrowingFactoryExceptionHandler());
+
+        ExampleFactoryA exampleFactoryA = new ExampleFactoryA();
+        for (int i=0;i<100000;i++){
+            ExampleFactoryB factoryBases = new ExampleFactoryB();
+            factoryBases.referenceAttributeC.set(new ExampleFactoryC());
+            exampleFactoryA.referenceListAttribute.add(factoryBases);
+        }
+
+        factoryManager.start(new RootFactoryWrapper<>(exampleFactoryA));
+
+//        try {
+//            Thread.sleep(1000000000);
+//        } catch (InterruptedException e) {
+//            throw new RuntimeException(e);
+//        }
+//        factoryManager.getCurrentData();
+
+    }
+
+    public static void main(String[] args) {
+        int count = 1;
+//        for (int i = 0; i < count; i++) {
+////            new FactoryManagerTest().test_large_tree_normal_factories();
+////        }
+
+        FactoryManager<ExampleLiveObjectA, FastExampleFactoryA> factoryManager = new FactoryManager<>(new RethrowingFactoryExceptionHandler());
+
+
+        FastExampleFactoryA root = new FastExampleFactoryA();
+        for (int i=0;i<100000;i++){
+            FastExampleFactoryB factoryBases = new FastExampleFactoryB();
+            factoryBases.referenceAttributeC=new FastExampleFactoryC();
+            root.referenceListAttribute.add(factoryBases);
+        }
+
+        FastExampleFactoryA commonVersion = root.internal().copy();
+        FastExampleFactoryA newVersion = root.internal().copy();
+
+        factoryManager.start(new RootFactoryWrapper<>(root));
+        long start = System.currentTimeMillis();
+        for (int i = 0; i < count; i++) {
+            factoryManager.update(commonVersion, newVersion, (p) -> true);
+        }
+        System.out.println((System.currentTimeMillis()-start)/count);
     }
 
     @Test

@@ -5,6 +5,8 @@ import io.github.factoryfx.factory.merge.testdata.ExampleDataB;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import java.util.UUID;
+
 public class ReferenceMergeTest extends MergeHelperTestBase{
 
 
@@ -34,7 +36,7 @@ public class ReferenceMergeTest extends MergeHelperTestBase{
         update.referenceAttribute.set(newValue2);
         update = update.internal().addBackReferences();
 
-        String beforeMergeId=update.referenceAttribute.get().getId();
+        UUID beforeMergeId=update.referenceAttribute.get().getId();
         Assertions.assertTrue(merge(current, current, update).hasNoConflicts());
         Assertions.assertEquals(beforeMergeId, current.referenceAttribute.get().getId());
     }

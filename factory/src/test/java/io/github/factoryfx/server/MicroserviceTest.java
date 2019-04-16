@@ -22,9 +22,9 @@ import java.util.stream.Collectors;
 public class MicroserviceTest {
 
     private static class ChangeListingSummary{
-        public final List<String> changedIds;
+        public final List<UUID> changedIds;
 
-        public ChangeListingSummary(List<String> changedIds) {
+        public ChangeListingSummary(List<UUID> changedIds) {
             this.changedIds = changedIds;
         }
     }
@@ -41,7 +41,7 @@ public class MicroserviceTest {
         }).build();
         microservice.start();
 
-        String rootId=microservice.prepareNewFactory().root.getId();
+        UUID rootId=microservice.prepareNewFactory().root.getId();
 
         Thread.sleep(2);//avoid same timestamp
         {

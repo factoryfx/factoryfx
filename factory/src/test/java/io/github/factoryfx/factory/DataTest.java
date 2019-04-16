@@ -42,7 +42,7 @@ public class DataTest {
 
 
     public static class ExampleFactoryThis extends FactoryBase<Void,ExampleFactoryThis> {
-        ArrayList<String> calls=new ArrayList<>();
+        ArrayList<UUID> calls=new ArrayList<>();
         public final StringAttribute stringAttribute= new StringAttribute().labelText("ExampleA1").validation(value -> {
             calls.add(ExampleFactoryThis.this.getId());
             return new ValidationResult(false,new LanguageText());
@@ -366,30 +366,6 @@ public class DataTest {
     }
 
 
-    public static class ExampleDataCustomId extends FactoryBase<Void,ExampleDataCustomId> {
-        public final StringAttribute stringAttribute= new StringAttribute().labelText("ExampleA1");
-
-        public ExampleDataCustomId(){
-            config().attributeId(() -> stringAttribute.get());
-        }
-
-    }
-
-    @Test
-    public void test_customId(){
-        ExampleDataCustomId exampleDataCustomId = new ExampleDataCustomId();
-        exampleDataCustomId.stringAttribute.set("blabla");
-        Assertions.assertEquals("blabla",exampleDataCustomId.getId());
-    }
-
-    @Test
-    public void test_customId_after_json(){
-        ExampleDataCustomId exampleDataCustomId = new ExampleDataCustomId();
-        exampleDataCustomId.stringAttribute.set("blabla");
-        ExampleDataCustomId copy = ObjectMapperBuilder.build().copy(exampleDataCustomId);
-        Assertions.assertEquals("blabla",copy.getId());
-    }
-
     public static class ExampleWithId extends FactoryBase<Void,ExampleWithId> {
         public final StringAttribute id = new StringAttribute();
     }
@@ -551,10 +527,10 @@ public class DataTest {
 
     @Test
     public void test_unique_ids() {
-        HashSet<String> ids=new HashSet<>();
+        HashSet<UUID> ids=new HashSet<>();
         for (int i=0;i<1000000;i++){
             ExampleDataA exampleDataA = new ExampleDataA();
-            String id = exampleDataA.getId();
+            UUID id = exampleDataA.getId();
             if (!ids.add(id)) {
                 Assertions.fail("doubel id"+id+" count:"+ i);
             }
