@@ -6,9 +6,24 @@ import io.github.factoryfx.factory.validation.ValidationError;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ImmutableValueAttributeTest {
+
+    @Test
+    public void test_Listener()  {
+        List<String> calls= new ArrayList<>();
+
+        ImmutableValueAttribute<String,StringAttribute> valueAttribute = new StringAttribute();
+        final AttributeChangeListener<String,StringAttribute> stringAttributeChangeListener = (attribute, value) -> calls.add(value);
+        valueAttribute.internal_addListener(stringAttributeChangeListener);
+
+        valueAttribute.set("123");
+
+        Assertions.assertEquals(1,calls.size());
+        Assertions.assertEquals("123",calls.get(0));
+    }
 
     @Test
     public void removeListener()  {
