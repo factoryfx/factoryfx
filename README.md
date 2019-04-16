@@ -5,7 +5,7 @@
 ## Introduction
 
 Factoryfx is a lightweight dependency injection framework that expands dependency injection to include data injection.
-Applications build with factory fx can benefit from the stateless design yet allowing for structural and data changes during runtime.
+Applications built with factory fx can benefit from the stateless design yet allowing for structural and data changes during runtime.
 
 Factoryfx is a replacement for:
 * **manual dependency injection**

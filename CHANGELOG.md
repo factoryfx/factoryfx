@@ -9,7 +9,7 @@
   *  automatic support for removing attributes
   *  FactoryTreeBuilder is used for new attributes
   *  Restoring old data from deleted attributes
-  *  easy rename of attributes and factories
+  *  easy renaming of attributes and factories
 
 * **jetty server:** rework the jetty configuration. The complete jetty structure is now represented in a factory structure. A new builder can be used for creation.
   
@@ -20,7 +20,7 @@
 
 ### BREAKING CHANGES
 
-* **factory:** removed observer, the observer was not used and complicated the generics declaration. In most cases it is sufficient to remove Void from generic declaration e.g.: FactoryTreeBuilder<**~~Void~~**,Root,RootFactory,Void>
+* **factory:** removed observer, the observer was not used and overcomplicated the generics declaration. In most cases it is sufficient to remove Void from generic declaration e.g.: FactoryTreeBuilder<**~~Void~~**,Root,RootFactory,Void>
 
 * **module:** rename module and packages from "de.factory" to "io.github.factoryfx"
 
