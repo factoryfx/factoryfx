@@ -1,7 +1,6 @@
 package io.github.factoryfx.factory.attribute.dependency;
 
 import io.github.factoryfx.factory.FactoryBase;
-import io.github.factoryfx.factory.FactoryEnclosingAttributeVisitor;
 import io.github.factoryfx.factory.attribute.Attribute;
 
 import java.util.List;

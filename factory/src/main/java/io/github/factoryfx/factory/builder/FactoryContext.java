@@ -52,7 +52,7 @@ public class FactoryContext<R extends FactoryBase<?,R>> {
     void addFactoryCreator(FactoryCreator<?,R> factoryCreator){
         for (FactoryCreator<?, R> creator : factoryCreators) {
             if (factoryCreator.isDuplicate(creator)){
-                throw new IllegalArgumentException("dubliacte factory registration: "+factoryCreator);
+                throw new IllegalArgumentException("duplicate factory registration: "+factoryCreator);
             }
         }
         factoryCreators.add(factoryCreator);

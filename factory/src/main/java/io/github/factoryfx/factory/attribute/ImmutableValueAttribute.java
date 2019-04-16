@@ -38,9 +38,8 @@ public abstract class ImmutableValueAttribute<T,A extends Attribute<T,A>> extend
     @Override
     public void set(T value) {
         this.value = value;
-        if (listeners!=null){
-            updateListeners(value);
-        }
+         updateListeners(value);
+
     }
 
     private AttributeChangeListener<T,A> listener;//performance optimization if only one listener

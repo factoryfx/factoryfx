@@ -45,7 +45,7 @@ java 11+ required
 #### Factory
 ```java
 public class HelloWorldFactory extends SimpleFactoryBase<HelloWorld,HelloWorldFactory> {
-    public final StringAttribute text = new StringAttribute().labelText("text");
+    public final StringAttribute text = new StringAttribute();
     @Override
     protected HelloWorld create() {
         return new HelloWorld(text.get());
@@ -74,8 +74,10 @@ public class HelloWorld{
             helloWorldFactory.text.set("HelloWorld");
             return helloWorldFactory;
         })
-    .microservice().withInMemoryStorage().build().start();
+    .microservice().withInMemoryStorage().build().start().print();
 ```
+The example prints "HelloWorld" to the console.
+
 ## Documentation
 
 ### Motivation
