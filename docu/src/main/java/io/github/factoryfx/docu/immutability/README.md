@@ -85,7 +85,7 @@ public class ProductManger {
 Obviously we have to repeat replacing objects, until we hit the system root object. This is exactly what factoryFX does.
 But most objects will do not see a change in data or dependencies. In most applications, the circumfence of a changes only
 affects very few objects. FactoryFX will reuse those objects and not recreate them, if they have not been changes, nor
-have their transitive dependents. If we thus imaging or ProductManager was accounting for the complete list of products we know:  
+have their transitive dependents. If we thus imagine our ProductManager was accounting for the complete list of products we know:  
 
 ```java
 public class ProductManger {
@@ -97,7 +97,7 @@ public class ProductManger {
 }
 ```
 
-factoryFX would recreate the ProductManager if a list consisting of Products, that did not change and changes ones that
+factoryFX would recreate the ProductManager with a list consisting of products, that did not change and changes ones that
 are freshly created instances. The java garbage collector will take care of the obsolete products that are no longer referenced.
 
 ## End user GUI
