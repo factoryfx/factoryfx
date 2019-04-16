@@ -31,7 +31,7 @@ MicroserviceBuilder#withGeneralStorageMetadata
 This should hardly be necessary in practice.
 
 ## Data structure migration
-The more common case are refactorings in the factory structure. (comparable to refactoring operations in the IDE)
+The most common cases are refactorings in the factory structure. (comparable to refactoring operations in the IDE)
 ```java
 public class ExampleFactory extends SimpleFactoryBase<Void,Void,ExampleFactory> {
     public final StringAttribute oldAttribute= new StringAttribute();
@@ -40,7 +40,7 @@ public class ExampleFactory extends SimpleFactoryBase<Void,Void,ExampleFactory> 
     public final StringAttribute newAttribute= new StringAttribute();
 }
 ```
-In this example the for attribute is renamed from "oldAttribute" to "newAttribute".
+In this example the attribute is renamed from "oldAttribute" to "newAttribute".
 
 ```java
 builder.withRenameAttributeMigration(ExampleFactory.class,"oldAttribute",(rf)->rf.newAttribute)
@@ -59,7 +59,7 @@ This has the advantage that a faulty migration can't destroy old data. Mistakes 
 
 In some cases it can be convenient to execute a one time migration. For that case the storage api has a special api.
 
-The mayor difference of a one time migration is that the data are updated in the storage after the migration. 
+The major difference of a one-time migration is that the data is updated in the storage after the migration. 
 
 ## Example
 [**code**](https://github.com/factoryfx/factoryfx/tree/master/docu/src/main/java/io/github/factoryfx/docu/migration)

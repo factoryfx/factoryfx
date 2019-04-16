@@ -154,7 +154,7 @@ microservice.updateCurrentFactory(update, "user", "comment", (p) -> true);
 [**code**](https://github.com/factoryfx/factoryfx/tree/master/docu/src/main/java/io/github/factoryfx/docu/configurationdata)
 
 ## Conclusion
-Fixing the configuration data problems with the coherent approach implementd in factoryfx is one of it's major advantages.
+Fixing the configuration data problems with the coherent approach implementd in factoryfx is one of its major advantages.
 Thus it makes no sense to combine factoryfx and property files because factoryfx is a superior replacement for property files and duplicated configuration data are harmful.
 
 
