@@ -22,7 +22,7 @@ As to our knowledge there is no other framework combining immutabílity and reco
 
 ### Performance
 
-The before-mention business objects would - in most real-life systems - be hosted in databased, be it relations or no-SQL
+The before-mention business objects would - in most real-life systems - be hosted in databases, be it relations or no-SQL
 or whatever. Those system include various costly indirections, at least the protocol overhead to move the data from one address
 space to the other, in most cases I/O subsystem involvement. In factoryFX, the data would direclty reside in the business
 objects needing it. The business objects themselves carry all dependencies needed to fulfill their contracts. All those
