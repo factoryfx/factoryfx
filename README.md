@@ -76,7 +76,7 @@ public class HelloWorld{
         })
     .microservice().withInMemoryStorage().build().start().print();
 ```
-* [Example](docu/src/main/java/io/github/factoryfx/docu/helloworld)  The executable sources for this example
+* [Example](docu/src/main/java/io/github/factoryfx/docu/helloworld)  The executable sources
 
 ## Documentation
 
