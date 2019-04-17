@@ -76,7 +76,7 @@ public class HelloWorld{
         })
     .microservice().withInMemoryStorage().build().start().print();
 ```
-The example prints "Hello World" to the console.
+* [Example](docu/src/main/java/io/github/factoryfx/docu/helloworld)  The executable sources for this example
 
 ## Documentation
 
@@ -95,9 +95,6 @@ Explanation of factories
 Explanation of live objects
 * [Starter](docu/src/main/java/io/github/factoryfx/docu/starter)  
 Code generator for initial project setup
-* [Hello World](docu/src/main/java/io/github/factoryfx/docu/helloworld)  
-Hello World example
-
 
 ### Advanced
 * [Comparison](docu/src/main/java/io/github/factoryfx/docu/comparison)  
