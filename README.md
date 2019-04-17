@@ -41,7 +41,7 @@ java 11+ required
 ### Dependencies
 [Gradle example dependency setups](docu/src/main/java/io/github/factoryfx/docu/dependencysetup)
 
-## Basic example
+## Basic example "Hello World" 
 #### Factory
 ```java
 public class HelloWorldFactory extends SimpleFactoryBase<HelloWorld,HelloWorldFactory> {
