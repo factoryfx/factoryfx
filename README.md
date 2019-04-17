@@ -44,20 +44,20 @@ java 11+ required
 ## Basic example "Hello World" 
 #### Factory
 ```java
-public class HelloWorldFactory extends SimpleFactoryBase<HelloWorld,HelloWorldFactory> {
+public class PrinterFactory extends SimpleFactoryBase<Printer,PrinterFactory> {
     public final StringAttribute text = new StringAttribute();
     @Override
-    protected HelloWorld create() {
-        return new HelloWorld(text.get());
+    protected Printer create() {
+        return new Printer(text.get());
     }
 }
 ```
 [Factory explanation](docu/src/main/java/io/github/factoryfx/docu/factorylayer)
 #### Live object
 ```java
-public class HelloWorld{
+public class Printer{
     private final String text;
-    public HelloWorld(String text) {
+    public Printer(String text) {
         this.text = text;
     }
     public void print(){
@@ -68,11 +68,11 @@ public class HelloWorld{
 [Live object explanation](docu/src/main/java/io/github/factoryfx/docu/liveobjects)
 #### Setup the dependency tree
 ```java
-    new FactoryTreeBuilder<HelloWorld,HelloWorldFactory,Void>(HelloWorldFactory.class)
-        .addFactory(HelloWorldFactory.class, Scope.SINGLETON, ctx-> {
-            HelloWorldFactory helloWorldFactory = new HelloWorldFactory();
-            helloWorldFactory.text.set("Hello World");
-            return helloWorldFactory;
+    new FactoryTreeBuilder<Printer,PrinterFactory,Void>(PrinterFactory.class)
+        .addFactory(PrinterFactory.class, Scope.SINGLETON, ctx-> {
+            PrinterFactory printerFactory = new PrinterFactory();
+            printerFactory.text.set("Hello World");
+            return printerFactory;
         })
     .microservice().withInMemoryStorage().build().start().print();
 ```
