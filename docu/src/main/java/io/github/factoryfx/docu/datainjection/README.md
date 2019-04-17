@@ -1,6 +1,6 @@
 # Data injection
-In many java application most data a stored inside a database. 
-The data design is is determined by the database (relational model, bottom-up approach).
+In many java applications most data is stored inside a database. 
+The data design is determined by the database (relational model, bottom-up approach).
 With that architecture it is hard to implement data encapsulation which is one of the main feature of oop.
 Often you will end up with data only classes and other classes that implement business logic based on the data classes. 
 That will result in a procedural design that does not convey the original motivation begin object oriented programming. 

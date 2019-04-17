@@ -67,8 +67,8 @@ public final StringAttribute text1 = new StringAttribute().en("text1").de("täxt
 ```
 This saves mapping effort between multiple files. (template <=> java data class <=> property file)
 
-## Trade-of
-For each object a corresponding factory has to be created. This boilerplate code is probably still better than a new dsl.
+## Trade-off
+For each object a corresponding factory has to be created. This boilerplate code is probably still better than a new DSL.
 HelloWorldFactory is essentially a structure convention which can be misused unintentionally. 
 To validate the structure you can use the FactoryStyleValidator in a unit test. 
-[Test example](./../../../../../../../../example/src/test/java/io/github/factoryfx/example/FactoryTest.java)
+[Test example](./../../../../../../../../../example/src/test/java/io/github/factoryfx/example/FactoryTest.java)

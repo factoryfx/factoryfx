@@ -67,7 +67,7 @@ public class Product {
 }
 ```
 
-This class does not allow for changes of the price of it's instances. And we want this, as we want immutability. But yet, we want to change
+This class does not allow for changes of the price of its instances. And we want this, as we want immutability. But yet, we want to change
 it. The only way to do so would be to recreate the complete object. Let's do it that way! Sorry, we have a problem, how do we
 put that new object in place?
 The simple answer is: Replace the object containing it with a new one. Let's imagine we have a ProductManager containing the product:
@@ -121,7 +121,7 @@ Indeed the opposite is true: The configuration change is more comprehensive as i
 configuration and the business data. There are no longer things to distinguish, all changes are carried out following the
 same procedure.   
 
-### Edit metadata (Validation,Label,etc)
+### Edit metadata (Validation, Label, etc)
 
 The factories metadata does not only contain label information. You may add arbitrary validation that you will find much
 easier to transfer to your favorite programming language than constraint checks and validation code in a remote database.
