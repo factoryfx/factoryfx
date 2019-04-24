@@ -111,4 +111,18 @@ public class AttributeTest {
         public final StringAttribute attribute= new StringAttribute().userReadOnly(()->((DynamicReadOnlyData)internal().getRoot()).barred.get());
     }
 
+
+    @Test
+    public void test_removeListener_multiple(){
+        StringAttribute stringAttribute = new StringAttribute();
+        AttributeChangeListener<String, StringAttribute> newListener1 = (attribute, value) -> { };
+        AttributeChangeListener<String, StringAttribute> newListener2 = (attribute, value) -> { };
+        stringAttribute.internal_addListener(newListener1);
+        stringAttribute.internal_addListener(newListener2);
+
+        stringAttribute.internal_removeListener(newListener1);
+        stringAttribute.internal_removeListener(newListener2);
+        Assertions.assertEquals(0,stringAttribute.internal_getListeners().size());
+    }
+
 }

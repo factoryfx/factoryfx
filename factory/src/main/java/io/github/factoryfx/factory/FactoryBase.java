@@ -10,10 +10,7 @@ import com.fasterxml.jackson.annotation.*;
 import com.google.common.base.Strings;
 import com.google.common.base.Throwables;
 import com.google.common.collect.Maps;
-import io.github.factoryfx.factory.attribute.Attribute;
-import io.github.factoryfx.factory.attribute.AttributeChangeListener;
-import io.github.factoryfx.factory.attribute.AttributeGroup;
-import io.github.factoryfx.factory.attribute.dependency.FactoryChildrenEnclosingAttribute;
+import io.github.factoryfx.factory.attribute.*;
 import io.github.factoryfx.factory.log.FactoryLogEntry;
 import io.github.factoryfx.factory.log.FactoryLogEntryEventType;
 import io.github.factoryfx.factory.log.FactoryLogEntryTreeItem;
@@ -89,13 +86,28 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
     }
 
     @FunctionalInterface
-    public interface TriAttributeVisitor {
-        void accept(String attributeVariableName, Attribute<?,?> attribute1, Attribute<?,?> attribute2, Attribute<?,?> attribute3);
+    public interface TriAttributeVisitor<V> {
+        void accept(String attributeVariableName, AttributeMerger<V> attribute1, AttributeMerger<V> attribute2, AttributeMerger<V> attribute3);
     }
 
     @FunctionalInterface
-    public interface BiAttributeVisitor {
-        boolean accept(String attributeVariableName, Attribute<?,?> attribute1, Attribute<?,?> attribute2);
+    public interface BiCopyAttributeVisitor<V> {
+        /**
+         * @param attribute1 attribute from factory1
+         * @param attribute2 attribute from factory2
+         * @return true: continue visit, false abort
+         */
+        boolean accept(AttributeCopy<V> attribute1, AttributeCopy<V> attribute2);
+    }
+
+    @FunctionalInterface
+    public interface AttributeMatchVisitor<V> {
+        /**
+         * @param attribute1 attribute from factory1
+         * @param attribute2 attribute from factory2
+         * @return true: continue visit, false abort
+         */
+        boolean accept(String attributeVariableName, AttributeMatch<V> attribute1, AttributeMatch<V> attribute2);
     }
 
     private void visitAttributesFlat(AttributeVisitor consumer) {
@@ -106,11 +118,17 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
         getFactoryMetadata().visitFactoryEnclosingAttributesFlat(this,consumer);
     }
 
-    private void visitAttributesDualFlat(FactoryBase<L,R> data, BiAttributeVisitor consumer) {
-        getFactoryMetadata().visitAttributesDualFlat(this,data,consumer);
+    @SuppressWarnings("unchecked")
+    private <V> void visitAttributesForCopy(FactoryBase<?,R> data, BiCopyAttributeVisitor<V> consumer) {
+        getFactoryMetadata().visitAttributesForCopy(this,(FactoryBase<L,R>)data,consumer);
     }
 
-    private void visitAttributesTripleFlat(FactoryBase<L,R> other1, FactoryBase<L,R> other2, TriAttributeVisitor consumer) {
+    @SuppressWarnings("unchecked")
+    private <V> void visitAttributesForMatch(FactoryBase<?,R> data, AttributeMatchVisitor<V> consumer) {
+        getFactoryMetadata().visitAttributesForMatch(this,(FactoryBase<L,R>)data,consumer);
+    }
+
+    private <V> void visitAttributesTripleFlat(FactoryBase<L,R> other1, FactoryBase<L,R> other2, TriAttributeVisitor<V> consumer) {
         getFactoryMetadata().visitAttributesTripleFlat(this,other1,other2,consumer);
     }
 
@@ -227,31 +245,68 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
     }
 
     private void merge(FactoryBase<L,R> originalValue, FactoryBase<L,R> newValue, MergeResult mergeResult, Function<String,Boolean> permissionChecker) {
-        this.visitAttributesTripleFlat(originalValue, newValue, (attributeName, currentAttribute, originalAttribute, newAttribute) -> {
-            if (!currentAttribute.internal_ignoreForMerging()){
-                if (currentAttribute.internal_hasMergeConflict(originalAttribute, newAttribute)) {
-                    mergeResult.addConflictInfo(new AttributeDiffInfo(attributeName,FactoryBase.this.getId()));
-                } else {
-                    if (currentAttribute.internal_isMergeable(originalAttribute, newAttribute)) {
-                        final AttributeDiffInfo attributeDiffInfo = new AttributeDiffInfo(attributeName,FactoryBase.this.getId());
-                        if (currentAttribute.internal_hasWritePermission(permissionChecker)){
-                            mergeResult.addMergeInfo(attributeDiffInfo);
-                            mergeResult.addMergeExecutions(() -> currentAttribute.internal_merge(newAttribute));
-                        } else {
-                            mergeResult.addPermissionViolationInfo(attributeDiffInfo);
-                        }
+        this.visitAttributesTripleFlat(originalValue, newValue, (attributeName, currentMerger, originalMerger, newMerger) -> {
+            //for performance to execute compare only once
+            boolean newMergerMatchOriginalMerger= newMerger.internal_mergeMatch(originalMerger);
+            boolean currentMergerMatchOriginalMerger= currentMerger.internal_mergeMatch(originalMerger);
+            boolean currentMergerMatchNewMerger= currentMerger.internal_mergeMatch(newMerger);
+
+
+            if (attributeHasMergeConflict(newMergerMatchOriginalMerger,currentMergerMatchOriginalMerger, currentMergerMatchNewMerger)) {
+                mergeResult.addConflictInfo(new AttributeDiffInfo(attributeName,FactoryBase.this.getId()));
+            } else {
+                if (attributeIsMergeable(currentMergerMatchOriginalMerger,currentMergerMatchNewMerger)) {
+                    final AttributeDiffInfo attributeDiffInfo = new AttributeDiffInfo(attributeName,FactoryBase.this.getId());
+                    if (currentMerger.internal_hasWritePermission(permissionChecker)){
+                        mergeResult.addMergeInfo(attributeDiffInfo);
+                        mergeResult.addMergeExecutions(() -> currentMerger.internal_merge(newMerger.get()));
+                    } else {
+                        mergeResult.addPermissionViolationInfo(attributeDiffInfo);
                     }
                 }
             }
         });
     }
 
+    /**
+     *
+     * @param newMergerMatchOriginalMerger newMergerMatchOriginalMerger
+     * @param currentMergerMatchOriginalMerger currentMergerMatchOriginalMerger
+     * @param currentMergerMatchNewMerger currentMergerMatchNewMerger
+     * @return true if merge conflict
+     */
+    private <V> boolean attributeHasMergeConflict(boolean newMergerMatchOriginalMerger, boolean currentMergerMatchOriginalMerger, boolean currentMergerMatchNewMerger) {
+        if (newMergerMatchOriginalMerger) {
+            return false;
+        }
+        if (currentMergerMatchOriginalMerger) {
+            return false;
+        }
+        if (currentMergerMatchNewMerger) {
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * check if merge should be executed e.g. not if values ar equals
+     * @param currentMergerMatchOriginalMerger currentMergerMatchOriginalMerger
+     * @param currentMergerMatchNewMerger currentMergerMatchNewMerger
+     * @return true if merge should be executed
+     * */
+    private boolean attributeIsMergeable(boolean currentMergerMatchOriginalMerger, boolean currentMergerMatchNewMerger) {
+        if (!currentMergerMatchOriginalMerger || currentMergerMatchNewMerger) {
+            return false ;
+        }
+        return true;
+    }
+
 
     @SuppressWarnings("unchecked")
     private <F extends FactoryBase<L,R>> F semanticCopy() {
         F result = (F)newCopyInstance(this);
-        this.visitAttributesDualFlat(result, (attributeName, attribute1, attribute2) -> {
-            attribute1.internal_semanticCopyToUnsafe(attribute2);
+        this.visitAttributesForCopy(result, (original, copy) -> {
+            original.internal_semanticCopyTo(copy);
             return true;
         });
         return result;
@@ -274,13 +329,12 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
 
     @SuppressWarnings("unchecked")
     private <T extends FactoryBase<?,?>> T copy(int level) {
-        ArrayList<FactoryBase<?,R>> oldDataList = new ArrayList<>();
+        ArrayList<FactoryBase<?,?>> oldDataList = new ArrayList<>();
         FactoryBase<?,?> newRoot = copyDeep(0, level,oldDataList,null,(R)this);
 
         for (FactoryBase<?,?> oldData: oldDataList) {
             oldData.copy=null;//cleanup
         }
-
         return (T) newRoot;
     }
 
@@ -293,7 +347,7 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
 
 
     @SuppressWarnings("unchecked")
-    private <F extends FactoryBase<? extends L,R>> F copyDeep(final int level, final int maxLevel, final List<FactoryBase<?,R>> oldData, FactoryBase<?,R> parent, R root){
+    private <F extends FactoryBase<? extends L,R>> F copyDeep(final int level, final int maxLevel, final List<FactoryBase<?,?>> oldData, FactoryBase<?,R> parent, R root){
         if (level>maxLevel){
             return null;
         }
@@ -304,16 +358,14 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
             }
             copy.id = this.id;
 
-            this.visitAttributesDualFlat(copy, (name, thisAttribute, copyAttribute) -> {
-                if (thisAttribute instanceof FactoryChildrenEnclosingAttribute<?,?>){
-                    ((FactoryChildrenEnclosingAttribute<R,?>)thisAttribute).internal_copyToUnsafe(copyAttribute,level + 1, maxLevel,oldData,this,root);
-                } else {
-                    thisAttribute.internal_copyToUnsafe(copyAttribute);
-                }
+            this.visitAttributesForCopy(copy, (thisAttribute, copyAttribute) -> {
+                thisAttribute.internal_copyTo(copyAttribute,level + 1, maxLevel,oldData,this,root);
+                copyAttribute.internal_addBackReferences(root.copy,copy);
 
-                if (copyAttribute instanceof FactoryChildrenEnclosingAttribute<?,?>){
-                    ((FactoryChildrenEnclosingAttribute<R,?>)copyAttribute).internal_addBackReferences((R) root.copy,copy);
-                }
+
+//                if (copyAttribute instanceof FactoryChildrenEnclosingAttribute<?,?>){
+//                    ((FactoryChildrenEnclosingAttribute<R,?>)copyAttribute).internal_addBackReferences((R) root.copy,copy);
+//                }
 //                copyAttribute.internal_addBackReferences(root.copy,copy);
                 return true;
             });
@@ -368,6 +420,7 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
         this.visitChildFactoriesAndViewsFlat(data -> data.addBackReferences(getRoot(), FactoryBase.this,dataIterationRun),dataIterationRun,true);
     }
 
+
     private void addBackReferencesForSubtree(R root, FactoryBase<?,?> parent, HashSet<FactoryBase<?,?>> visited){
         addParent(parent);
         this.root=root;
@@ -417,7 +470,7 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
         }
     }
 
-    private R root;
+    R root;
     private R getRoot(){
         return root;
     }
@@ -573,10 +626,10 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
             return factory.matchSearchText(newValue);
         }
 
-        @SuppressWarnings("unchecked")
-        public void visitAttributesDualFlat(FactoryBase<?,?>  modelBase, BiAttributeVisitor consumer) {
-            factory.visitAttributesDualFlat((FactoryBase<L,R>)modelBase,consumer);
+        public <V> void visitAttributesForMatch(FactoryBase<?,R>  modelBase, AttributeMatchVisitor<V> consumer) {
+            factory.visitAttributesForMatch(modelBase,consumer);
         }
+
 
         public void visitAttributesFlat(AttributeVisitor consumer) {
             factory.visitAttributesFlat(consumer);
@@ -615,6 +668,7 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
          * only call on root
          * */
         public void fixDuplicatesAndAddBackReferences() {
+            //TODO is it even possible to add duplicates via merge?
             factory.assertRoot();
             List<FactoryBase<?,R> > dataList = this.factory.fixDuplicateObjects();
             for (FactoryBase<?,?>  data : dataList) {
@@ -659,8 +713,9 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
             return factory.copyZeroLevelDeep();
         }
 
-        public <F extends FactoryBase<L,R>> F copyDeep(final int level, final int maxLevel, final List<FactoryBase<?,R>> oldData, FactoryBase<?,R> parent, R root){
-            return factory.copyDeep(level,maxLevel,oldData,parent,root);
+        @SuppressWarnings("unchecked")
+        public <F extends FactoryBase<L,R>> F copyDeep(final int level, final int maxLevel, final List<FactoryBase<?,?>> oldData, FactoryBase<?,?> parent, FactoryBase<?,?> root){
+            return factory.copyDeep(level,maxLevel,oldData,(FactoryBase<?,R>)parent,(R)root);
         }
 
         /**
@@ -773,7 +828,7 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
          * determine which live objects needs recreation
          * @param changedFactories changed factories
          * */
-        public void determineRecreationNeedFromRoot(Set<FactoryBase<?,?>> changedFactories) {
+        public void determineRecreationNeedFromRoot(Set<FactoryBase<?,R>> changedFactories) {
             factory.determineRecreationNeed(changedFactories);
         }
 
@@ -1056,7 +1111,7 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
         createdLiveObject=null;
     }
 
-    private void determineRecreationNeed(Set<FactoryBase<?,?> > changedFactories){
+    private void determineRecreationNeed(Set<FactoryBase<?,R> > changedFactories){
         for (FactoryBase<?,?> factory : changedFactories) {
             factory.needRecreation=true;
             if (factory.needsCreatePropagation()){

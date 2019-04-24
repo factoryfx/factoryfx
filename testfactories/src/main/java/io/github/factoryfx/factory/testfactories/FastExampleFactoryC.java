@@ -1,9 +1,14 @@
 package io.github.factoryfx.factory.testfactories;
 
+import io.github.factoryfx.factory.*;
 import io.github.factoryfx.factory.attribute.types.StringAttribute;
-import io.github.factoryfx.factory.FastFactoryUtility;
-import io.github.factoryfx.factory.SimpleFactoryBase;
 import io.github.factoryfx.factory.attribute.dependency.FactoryAttribute;
+import io.github.factoryfx.factory.fastfactory.FastFactoryAttribute;
+import io.github.factoryfx.factory.fastfactory.FastFactoryUtility;
+import io.github.factoryfx.factory.fastfactory.FastValueAttribute;
+
+
+import java.util.List;
 
 public class FastExampleFactoryC extends SimpleFactoryBase<ExampleLiveObjectC,FastExampleFactoryA> {
     public String stringAttribute;
@@ -15,23 +20,11 @@ public class FastExampleFactoryC extends SimpleFactoryBase<ExampleLiveObjectC,Fa
     }
 
     static {
-        FastFactoryUtility.setup(
-                FastExampleFactoryC.class,
-                (factory, attributeVisitor) -> {
-                    StringAttribute stringAttribute= new StringAttribute().labelText("ExampleB1");
-                    FactoryAttribute<FastExampleFactoryA,ExampleLiveObjectB,FastExampleFactoryB> referenceAttribute = new FactoryAttribute<FastExampleFactoryA,ExampleLiveObjectB,FastExampleFactoryB>().labelText("ExampleA2");
+        FastFactoryUtility.setup(FastExampleFactoryC.class, new FastFactoryUtility<>(() -> List.of(
+                new FastValueAttribute<>(()->new StringAttribute().labelText("ExampleA1"), (factory) -> factory.stringAttribute, (factory, value) -> factory.stringAttribute = value),
+                new FastFactoryAttribute<>(()->new FactoryAttribute<FastExampleFactoryA, ExampleLiveObjectB, FastExampleFactoryB>().labelText("ExampleA2"), (factory) -> factory.referenceAttribute, (factory, value) -> factory.referenceAttribute = value, FastExampleFactoryB.class)
 
-                    attributeVisitor.accept("stringAttribute",FastFactoryUtility.tempAttributeSetup(stringAttribute,(v)->factory.stringAttribute=v,()->factory.stringAttribute));
-                    attributeVisitor.accept("referenceAttribute",FastFactoryUtility.tempAttributeSetup(referenceAttribute,(v)->factory.referenceAttribute=v,()->factory.referenceAttribute,FastExampleFactoryB.class));
-                },
-                (factory, factoryVisitor) -> {
-                    if (factory.referenceAttribute!=null){
-                        factoryVisitor.accept(factory.referenceAttribute);
-                    }
-                }
-        );
-
+        )));
     }
-
 
 }

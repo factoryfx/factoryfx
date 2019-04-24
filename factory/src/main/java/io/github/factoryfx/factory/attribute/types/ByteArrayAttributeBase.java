@@ -2,6 +2,7 @@ package io.github.factoryfx.factory.attribute.types;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.github.factoryfx.factory.attribute.Attribute;
+import io.github.factoryfx.factory.attribute.AttributeMatch;
 import io.github.factoryfx.factory.attribute.ImmutableValueAttribute;
 
 import java.util.Arrays;
@@ -22,8 +23,8 @@ class ByteArrayAttributeBase<A extends Attribute<byte[],A>>  extends ImmutableVa
     }
 
     @Override
-    public boolean internal_mergeMatch(byte[] value) {
-        return Arrays.equals(get(), value);
+    public boolean internal_mergeMatch(AttributeMatch<byte[]> value) {
+        return Arrays.equals(get(), value.get());
     }
 
 

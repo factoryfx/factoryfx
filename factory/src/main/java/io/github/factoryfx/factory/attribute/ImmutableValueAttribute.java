@@ -26,8 +26,8 @@ public abstract class ImmutableValueAttribute<T,A extends Attribute<T,A>> extend
     }
 
     @Override
-    public boolean internal_mergeMatch(T value) {
-        return Objects.equals(this.value, value);
+    public boolean internal_match(AttributeMatch<T> value) {
+        return Objects.equals(this.value, value.get());
     }
 
     @Override
@@ -38,84 +38,17 @@ public abstract class ImmutableValueAttribute<T,A extends Attribute<T,A>> extend
     @Override
     public void set(T value) {
         this.value = value;
-         updateListeners(value);
-
-    }
-
-    private AttributeChangeListener<T,A> listener;//performance optimization if only one listener
-    private List<AttributeChangeListener<T,A>> listeners;
-
-    protected void updateListeners(T value){
-        if (listenersEmpty()){
-            return;
-        }
-        if (listener!=null){
-            listener.changed(this,value);
-        } else {
-            for (AttributeChangeListener<T, A> listener : listeners) {
-                listener.changed(this, value);
-            }
-        }
-    }
-
-    protected boolean listenersEmpty(){
-        return listener==null && (listeners==null || listeners.isEmpty());
-    }
-
-    public List<AttributeChangeListener<T,A>> internal_getListeners(){
-        if (listener!=null) {
-            return List.of(listener);
-        }
-        if (listeners!=null) {
-            return listeners;
-        }
-        return Collections.emptyList();
+        updateListeners(value);
     }
 
     @Override
-    public void internal_copyTo(A copyAttribute) {
-        copyTo(copyAttribute);
-    }
-
-    //override to change copy e.g mutable value
-    protected void copyTo(Attribute<T,A> copyAttribute){
+    public void internal_copyTo(AttributeCopy<T> copyAttribute, int level, int maxLevel, List<FactoryBase<?, ?>> oldData, FactoryBase<?, ?> parent, FactoryBase<?, ?> root) {
         copyAttribute.set(get());
     }
 
     @Override
-    public void internal_semanticCopyTo(A copyAttribute) {
-        copyTo(copyAttribute);
-    }
-
-    @Override
-    public void internal_addListener(AttributeChangeListener<T,A> newListener) {
-        if (listener==null){
-            this.listener=newListener;
-        } else {
-            if (this.listeners == null) {
-                this.listeners = new ArrayList<>();
-                this.listeners.add(this.listener);
-                this.listener = null;
-            } else {
-                listeners.add(newListener);
-            }
-        }
-    }
-
-    @Override
-    public void internal_removeListener(AttributeChangeListener<T,A> removeListener) {
-        if (listeners==null && listener==null){
-            return;
-        }
-        if (this.listener.unwrap()==removeListener || this.listener.unwrap()==null){
-            this.listener=null;
-            return;
-        }
-        for (AttributeChangeListener<T,A> listenerItem: new ArrayList<>(listeners)){
-            if (listenerItem.unwrap()==removeListener || listenerItem.unwrap()==null){
-                listeners.remove(listenerItem);
-            }
-        }
+    public void internal_semanticCopyTo(AttributeCopy<T> copyAttribute) {
+        copyAttribute.set(get());
     }
 
     @JsonIgnore
@@ -142,24 +75,6 @@ public abstract class ImmutableValueAttribute<T,A extends Attribute<T,A>> extend
         set(value);
     }
 
-    /** alternative to equals on value, type-safe , less verbose, without worrying about hidden contracts
-     * @param value compare value
-     * @return true if equals
-     */
-    public boolean match(T value){
-        if (get()!=null){
-            return internal_mergeMatch(value);
-        }
-        return false;
-    }
-
-    /**see: {@link #match},
-     * @param attribute compare attribute
-     * @return true if equals
-     */
-    public boolean match(A attribute){
-        return match(attribute.get());
-    }
 
     @Override
     public boolean internal_required() {
@@ -197,5 +112,15 @@ public abstract class ImmutableValueAttribute<T,A extends Attribute<T,A>> extend
     public A defaultValue(T defaultValue) {
         set(defaultValue);
         return (A)this;
+    }
+
+    @Override
+    public void internal_reset() {
+        internal_removeAllListener();
+    }
+
+    @Override
+    public void internal_addBackReferences(FactoryBase<?, ?> root, FactoryBase<?, ?> parent) {
+        //nothing
     }
 }

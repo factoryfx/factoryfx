@@ -50,6 +50,7 @@ module io.github.factoryfx.factory {
     opens io.github.factoryfx.factory.parametrized;
     opens io.github.factoryfx.factory.log;
     exports io.github.factoryfx.factory.metadata;
+    exports io.github.factoryfx.factory.fastfactory;
 
 
 }

@@ -1,8 +1,10 @@
-# Immutability
+# Motivation
+
+## Immutable
 
 Immutable objects are objects whose data are unchangeable after instantiation.
 
-## Advantage
+### Advantage
 
 Immutable objects are safe for concurrent use as the is no reader/writer problem to take into account.
 All multithreading issues can be accounted for by the need to control access to shared resources. Of course,
@@ -22,8 +24,8 @@ As to our knowledge there is no other framework combining immutability and recon
 
 ### Performance
 
-The before-mention business objects would - in most real-life systems - be hosted in databases, be it relations or no-SQL
-or whatever. Those system include various costly indirections, at least the protocol overhead to move the data from one address
+The before-mention business objects would - in most real-life systems - be hosted in a relational  or NoSQL databases. 
+Those system include various costly indirections, at least the protocol overhead to move the data from one address
 space to the other, in most cases I/O subsystem involvement. In factoryFX, the data would direclty reside in the business
 objects needing it. The business objects themselves carry all dependencies needed to fulfill their contracts. All those
 are hosted in-memory in the same address space without any need to synchronize, which is basically the highest-performance
@@ -102,8 +104,9 @@ are freshly created instances. The java garbage collector will take care of the 
 
 ## End user GUI
 
+For a good end user experience it's important to provide a user interface for data editing therefore
 FactoryFX comes with an out-of-the-box user interface that allows for changing the system's configuration. It is based on
-metadata you can add to the meta-level (factories). 
+metadata(e.g.: labels,validation) you can add to the meta-level (factories). 
 
 The user interface is based on an interface that you can use to change to system's configuration with any arbitrary graphical
 user interface, so you are not limited.

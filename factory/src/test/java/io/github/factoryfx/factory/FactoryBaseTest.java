@@ -159,7 +159,7 @@ public class FactoryBaseTest {
         final XRoot usableCopy = root.internal().addBackReferences();
         usableCopy.internal().instance();
 
-        HashSet<FactoryBase<?,?>> changed =new HashSet<>();
+        HashSet<FactoryBase<?,XRoot>> changed =new HashSet<>();
         changed.add(usableCopy);
         usableCopy.internal().determineRecreationNeedFromRoot(changed);
         Assertions.assertTrue(usableCopy.needRecreation);
@@ -176,7 +176,7 @@ public class FactoryBaseTest {
 
         root.internal().addBackReferences();
 
-        HashSet<FactoryBase<?,?>> changed =new HashSet<>();
+        HashSet<FactoryBase<?,XRoot>> changed =new HashSet<>();
         changed.add(root.referenceAttribute.get());
         root.internal().determineRecreationNeedFromRoot(changed);
         Assertions.assertTrue(root.needRecreation);
@@ -193,7 +193,7 @@ public class FactoryBaseTest {
 
         root.internal().addBackReferences();
 
-        HashSet<FactoryBase<?,?>> changed =new HashSet<>();
+        HashSet<FactoryBase<?,XRoot>> changed =new HashSet<>();
         changed.add(root.referenceAttribute.get());
         changed.add(root.xFactory.get());
 
@@ -212,7 +212,7 @@ public class FactoryBaseTest {
 
         root.internal().addBackReferences();
 
-        Set<FactoryBase<?,?>> changed = Set.of(root.xFactory.get());
+        Set<FactoryBase<?,XRoot>> changed = Set.of(root.xFactory.get());
 
         root.internal().determineRecreationNeedFromRoot(changed);
         Assertions.assertTrue(root.needRecreation);
@@ -231,7 +231,7 @@ public class FactoryBaseTest {
         root.internal().addBackReferences();
         root.internal().instance();
 
-        HashSet<FactoryBase<?,?>> changed =new HashSet<>();
+        HashSet<FactoryBase<?,XRoot>> changed =new HashSet<>();
         changed.add(root.xFactoryList.get().get(0));
 
         root.internal().determineRecreationNeedFromRoot(changed);
@@ -251,7 +251,7 @@ public class FactoryBaseTest {
         usableCopy.internal().instance();
 
 
-        HashSet<FactoryBase<?,?>> changed =new HashSet<>();
+        HashSet<FactoryBase<?,XRoot>> changed =new HashSet<>();
         changed.add(usableCopy.xFactory.get());
         usableCopy.internal().determineRecreationNeedFromRoot(changed);
         Assertions.assertTrue(usableCopy.needRecreation);
@@ -360,7 +360,7 @@ public class FactoryBaseTest {
         root.internal().addBackReferences();
 
 
-        HashSet<FactoryBase<?,?>> changed =new HashSet<>();
+        HashSet<FactoryBase<?,XRoot>> changed =new HashSet<>();
         changed.add(root.xFactory.get().xFactory2.get());
         root.internal().determineRecreationNeedFromRoot(changed);
         Assertions.assertFalse(root.needRecreation);
@@ -381,7 +381,7 @@ public class FactoryBaseTest {
         root.internal().addBackReferences();
 
 
-        HashSet<FactoryBase<?,?>> changed =new HashSet<>();
+        HashSet<FactoryBase<?,XRoot>> changed =new HashSet<>();
         changed.add(x3Factory);
         root.internal().determineRecreationNeedFromRoot(changed);
         Assertions.assertFalse(root.needRecreation);
@@ -479,4 +479,33 @@ public class FactoryBaseTest {
 
         Assertions.assertEquals(3,((FactoryBase<?,?>)exampleFactoryA).childrenCounter);
     }
+
+    @Test
+    public void test_determineRecreationNeed_multiple(){
+        ExampleFactoryA root = new ExampleFactoryA();
+        ExampleFactoryB exampleFactoryB = new ExampleFactoryB();
+        root.referenceAttribute.set(exampleFactoryB);
+
+        root.internal().addBackReferences();
+        root.internal().instance();
+
+        HashSet<FactoryBase<?,ExampleFactoryA>> changed =new HashSet<>();
+        changed.add(exampleFactoryB);
+        root.internal().determineRecreationNeedFromRoot(changed);
+
+        FactoryBase<ExampleLiveObjectA, ExampleFactoryA> rootForTestVisibility = root;
+        Assertions.assertTrue(rootForTestVisibility.needRecreation);
+        Assertions.assertTrue(rootForTestVisibility.needRecreation);
+
+        root.internal().instance();
+
+        HashSet<FactoryBase<?,ExampleFactoryA>> nochange =new HashSet<>();
+        root.internal().determineRecreationNeedFromRoot(nochange);
+        Assertions.assertFalse(rootForTestVisibility.needRecreation);
+        Assertions.assertFalse(rootForTestVisibility.needRecreation);
+        root.internal().instance();
+
+//        Assertions.assertFalse(usableCopy.referenceAttribute.get().needRecreation);
+    }
+
 }

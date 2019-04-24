@@ -76,12 +76,12 @@ public class Printer{
         })
     .microservice().withInMemoryStorage().build().start().print();
 ```
-* [Example](docu/src/main/java/io/github/factoryfx/docu/helloworld)  The executable sources
+The complete [example](docu/src/main/java/io/github/factoryfx/docu/helloworld) 
 
 ## Documentation
 
 ### Motivation
-* [Immutability](docu/src/main/java/io/github/factoryfx/docu/immutability)  
+* [Motivation](docu/src/main/java/io/github/factoryfx/docu/immutability)  
 Why use factoryfx?
 
 ### Fundamentals
@@ -111,7 +111,7 @@ Combining runtime data with factory data
 Persistent configuration data storage using a database
 * [Polymorphism](docu/src/main/java/io/github/factoryfx/docu/polymorphism)  
 Polymorphic factories
-* [Runtime status](docu/src/main/java/io/github/factoryfx/docu/runtimestatus) 
+* [Runtime status](docu/src/main/java/io/github/factoryfx/docu/runtimestatus)  
 Passing runtime status across configuration updates (e.g request counter)
 * [Update](docu/src/main/java/io/github/factoryfx/docu/update)  
 Optimize factory update/server restart e.g. for live objects whose initialization is very time-consuming

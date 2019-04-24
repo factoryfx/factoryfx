@@ -13,6 +13,8 @@ import com.google.javascript.jscomp.SourceFile;
 
 import io.github.factoryfx.factory.FactoryBase;
 import io.github.factoryfx.factory.attribute.AttributeChangeListener;
+import io.github.factoryfx.factory.attribute.AttributeCopy;
+import io.github.factoryfx.factory.attribute.AttributeMatch;
 import io.github.factoryfx.factory.attribute.ImmutableValueAttribute;
 
 /**
@@ -28,7 +30,6 @@ public class JavascriptAttribute<A> extends ImmutableValueAttribute<Javascript<A
     @JsonIgnore
     private final Function<List<? extends FactoryBase<?,?>>,String> headerCreator = this::defaultCreateHeader;
 
-    @SuppressWarnings("unchecked")
     public JavascriptAttribute(Supplier<List<? extends FactoryBase<?,?>>> data, Class<A> apiClass) {
         super();
         this.data = data;
@@ -37,20 +38,21 @@ public class JavascriptAttribute<A> extends ImmutableValueAttribute<Javascript<A
     }
 
     @Override
-    public boolean internal_mergeMatch(Javascript<A> value) {
-        if (this.value == null && value == null)
+    public boolean internal_mergeMatch(AttributeMatch<Javascript<A>> value) {
+        if (this.value == null && value.get() == null)
             return true;
         if (this.value== null)
             return false;
-        return Objects.equals(this.value.getCode(), value.getCode());
+        return Objects.equals(this.value.getCode(), value.get().getCode());
     }
 
+
     @Override
-    public void internal_copyTo(JavascriptAttribute<A> copyAttribute) {
-        if (copyAttribute.get()==null){
+    public void internal_copyTo(AttributeCopy<Javascript<A>> copyAttribute, int level, int maxLevel, List<FactoryBase<?, ?>> oldData, FactoryBase<?, ?> parent, FactoryBase<?, ?> root) {
+        if (get()==null){
             copyAttribute.set(new Javascript<>());
         } else {
-            copyAttribute.set(new Javascript<>(copyAttribute.get().getCode()));
+            copyAttribute.set(new Javascript<>(get().getCode()));
         }
     }
 

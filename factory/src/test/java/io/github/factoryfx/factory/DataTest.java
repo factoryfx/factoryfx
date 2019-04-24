@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.factoryfx.factory.attribute.Attribute;
 import io.github.factoryfx.factory.attribute.CopySemantic;
 import io.github.factoryfx.factory.attribute.dependency.FactoryAttribute;
+import io.github.factoryfx.factory.attribute.dependency.FactoryListAttribute;
 import io.github.factoryfx.factory.attribute.dependency.ReferenceBaseAttribute;
 import io.github.factoryfx.factory.attribute.types.ObjectValueAttribute;
 import io.github.factoryfx.factory.attribute.types.StringAttribute;
@@ -615,14 +616,35 @@ public class DataTest {
 
     @Test
     public void test_root_aftercopy_nested(){
-        ExampleDataA data = new ExampleDataA();
-        data.referenceAttribute.set(new ExampleDataB());
-        data.internal().addBackReferences();
+        ExampleDataA root = new ExampleDataA();
+        root.referenceAttribute.set(new ExampleDataB());
+        root.internal().addBackReferences();
 
-        ExampleDataA copy = data.internal().copy();
+        Assertions.assertEquals(root,root.internal().getRoot());
+        Assertions.assertEquals(root,getRoot(root.referenceAttribute.get().referenceAttribute));
+
+        ExampleDataA copy = root.internal().copy();
         Assertions.assertEquals(copy,copy.internal().getRoot());
-
         Assertions.assertEquals(copy,getRoot(copy.referenceAttribute.get().referenceAttribute));
+    }
+
+
+    public static class ExampleRootSet extends FactoryBase<Void, ExampleRootSet> {
+        public final FactoryAttribute<ExampleRootSet,Void,ExampleRootSet> referenceAttribute = new FactoryAttribute<>();
+    }
+
+    @Test
+    public void test_root_attribute_aftercopy_simple(){
+        ExampleRootSet root = new ExampleRootSet();
+        root.referenceAttribute.set(new ExampleRootSet());
+        root.internal().addBackReferences();
+
+        Assertions.assertEquals(root,getRoot(root.referenceAttribute));
+
+        ExampleRootSet copy = root.internal().copy();
+        Assertions.assertEquals(copy,getRoot(copy.referenceAttribute));
+
+        Assertions.assertEquals(root,getRoot(root.referenceAttribute));
     }
 
 

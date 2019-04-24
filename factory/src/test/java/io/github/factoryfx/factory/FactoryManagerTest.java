@@ -6,6 +6,7 @@ import java.util.Set;
 import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.LoggerContext;
 import io.github.factoryfx.factory.exception.RethrowingFactoryExceptionHandler;
+import io.github.factoryfx.factory.jackson.ObjectMapperBuilder;
 import io.github.factoryfx.factory.testfactories.*;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -193,8 +194,52 @@ public class FactoryManagerTest {
         FactoryBaseTest.XRoot previous= root.utility().copy();
         root.xFactory.set(null);
 
-        Set<FactoryBase<?,?>> changedFactories = factoryManager.getChangedFactories(new RootFactoryWrapper<>(root), previous);
+        Set<FactoryBase<?,FactoryBaseTest.XRoot>> changedFactories = factoryManager.getChangedFactories(new RootFactoryWrapper<>(root), previous);
         Assertions.assertTrue(changedFactories.contains(exampleFactoryAndViewA));
+    }
+
+    @Test
+    public void test_getChangedFactories_simple() {
+        ExampleFactoryA exampleFactoryA = new ExampleFactoryA();
+        exampleFactoryA.stringAttribute.set("123");
+
+        ExampleFactoryA copy = exampleFactoryA.internal().copy();
+        copy.stringAttribute.set("qqqqq");
+
+
+        FactoryManager<ExampleLiveObjectA,ExampleFactoryA> factoryManager = new FactoryManager<>(new RethrowingFactoryExceptionHandler());
+        Set<FactoryBase<?,ExampleFactoryA>> changedFactories = factoryManager.getChangedFactories(new RootFactoryWrapper<>(exampleFactoryA), copy);
+        Assertions.assertEquals(1,changedFactories.size());
+        Assertions.assertTrue(changedFactories.contains(exampleFactoryA));
+    }
+
+    @Test
+    public void test_getChangedFactories_simple_change_to_null() {
+        ExampleFactoryA exampleFactoryA = new ExampleFactoryA();
+        exampleFactoryA.stringAttribute.set("123");
+
+        ExampleFactoryA copy = exampleFactoryA.internal().copy();
+        copy.stringAttribute.set(null);
+
+
+        FactoryManager<ExampleLiveObjectA,ExampleFactoryA> factoryManager = new FactoryManager<>(new RethrowingFactoryExceptionHandler());
+        Set<FactoryBase<?,ExampleFactoryA>> changedFactories = factoryManager.getChangedFactories(new RootFactoryWrapper<>(exampleFactoryA), copy);
+        Assertions.assertEquals(1,changedFactories.size());
+        Assertions.assertTrue(changedFactories.contains(exampleFactoryA));
+    }
+
+    @Test
+    public void test_getChangedFactories_no_change() {
+        ExampleFactoryA exampleFactoryA = new ExampleFactoryA();
+        exampleFactoryA.stringAttribute.set("123");
+
+        ExampleFactoryA copy = exampleFactoryA.internal().copy();
+        copy.stringAttribute.set("123");
+
+
+        FactoryManager<ExampleLiveObjectA,ExampleFactoryA> factoryManager = new FactoryManager<>(new RethrowingFactoryExceptionHandler());
+        Set<FactoryBase<?,ExampleFactoryA>> changedFactories = factoryManager.getChangedFactories(new RootFactoryWrapper<>(exampleFactoryA), copy);
+        Assertions.assertEquals(0,changedFactories.size());
     }
 
 }

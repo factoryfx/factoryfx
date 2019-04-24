@@ -59,20 +59,23 @@ public class ImmutableValueAttributeTest {
     }
 
     @Test
-    public void test_match() {
-        StringAttribute stringAttribute = new StringAttribute();
-        stringAttribute.set("123");
-        Assertions.assertTrue(stringAttribute.match("123"));
-    }
-
-    @Test
     public void test_match_attribute() {
         StringAttribute stringAttribute = new StringAttribute();
         stringAttribute.set("123");
 
         StringAttribute stringAttribute2 = new StringAttribute();
         stringAttribute2.set("123");
-        Assertions.assertTrue(stringAttribute.match(stringAttribute2));
+        Assertions.assertTrue(stringAttribute.internal_match(stringAttribute2));
+    }
+
+    @Test
+    public void test_match_attribute2() {
+        StringAttribute stringAttribute = new StringAttribute();
+        stringAttribute.set("123");
+
+        StringAttribute stringAttribute2 = new StringAttribute();
+        stringAttribute2.set("gfdgfdg");
+        Assertions.assertFalse(stringAttribute.internal_match(stringAttribute2));
     }
 
     @Test

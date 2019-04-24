@@ -17,6 +17,7 @@
 
 * **starter:** One time java code generator for initial project setup to simplify the first steps with factoryfx.
 
+* **testing:** Added the ability to set a mock liveobject for a factory.
 
 ### BREAKING CHANGES
 

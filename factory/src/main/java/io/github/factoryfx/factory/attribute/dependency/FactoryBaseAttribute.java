@@ -2,8 +2,8 @@ package io.github.factoryfx.factory.attribute.dependency;
 
 import com.fasterxml.jackson.annotation.*;
 
-import io.github.factoryfx.factory.attribute.Attribute;
-import io.github.factoryfx.factory.attribute.AttributeChangeListener;
+import io.github.factoryfx.factory.attribute.AttributeCopy;
+import io.github.factoryfx.factory.attribute.AttributeMatch;
 import io.github.factoryfx.factory.attribute.CopySemantic;
 import io.github.factoryfx.factory.util.LanguageText;
 import io.github.factoryfx.factory.validation.Validation;
@@ -27,14 +27,8 @@ public class FactoryBaseAttribute<R extends FactoryBase<?,R>,L,F extends Factory
 
 
     @Override
-    public boolean internal_mergeMatch(F value) {
-        if (this.value == null && value == null) {
-            return true;
-        }
-        if (this.value == null || value == null) {
-            return false;
-        }
-        return this.value.idEquals(value);
+    public boolean internal_match(AttributeMatch<F> value) {
+        return internal_referenceEquals(this.value,value.get());
     }
 
 
@@ -68,27 +62,24 @@ public class FactoryBaseAttribute<R extends FactoryBase<?,R>,L,F extends Factory
         if (root!=null && value!=null) {
             value.internal().addBackReferencesForSubtreeUnsafe(root,this.parent);
         }
-        if (listeners!=null) {
-            for (AttributeChangeListener<F, A> listener : listeners) {
-                listener.changed(this, value);
-            }
-        }
+        updateListeners(value);
     }
 
-    @Override
     @SuppressWarnings("unchecked")
-    public void internal_copyTo(A copyAttribute,final int level, final int maxLevel, final List<FactoryBase<?,R>> oldData, FactoryBase<?,R> parent, R root) {
+    @Override
+    public void internal_copyTo(AttributeCopy<F> copyAttribute, int level, int maxLevel, List<FactoryBase<?, ?>> oldData, FactoryBase<?, ?> parent, FactoryBase<?, ?> root) {
         F factory = get();
         if (factory!=null) {
-            copyAttribute.set((F)factory.internal().copyDeep(level, maxLevel, oldData, parent, root));
+            F copy = (F) factory.internal().copyDeep(level, maxLevel, oldData, parent, root);
+            copyAttribute.set(copy);
         }
     }
 
     @Override
     @SuppressWarnings("unchecked")
-    public void internal_semanticCopyTo(A copyAttribute) {
+    public void internal_semanticCopyTo(AttributeCopy<F> copyAttribute) {
         if (get()!=null){
-            if (getCopySemantic()== CopySemantic.SELF){
+            if (internal_getCopySemantic()== CopySemantic.SELF){
                 copyAttribute.set(get());
             } else {
                 copyAttribute.set((F)get().utility().semanticCopy());
@@ -111,24 +102,6 @@ public class FactoryBaseAttribute<R extends FactoryBase<?,R>,L,F extends Factory
         this.value = value;
     }
 
-    List<AttributeChangeListener<F,A>> listeners;
-    @Override
-    public void internal_addListener(AttributeChangeListener<F,A> listener) {
-        if (listeners==null){
-            listeners= new ArrayList<>();
-        }
-        listeners.add(listener);
-    }
-    @Override
-    public void internal_removeListener(AttributeChangeListener<F,A> listener) {
-        if (listeners!=null){
-            for (AttributeChangeListener<F,A> listenerItem: new ArrayList<>(listeners)){
-                if (listenerItem.unwrap()==listener ||  listenerItem.unwrap()==null){
-                    listeners.remove(listenerItem);
-                }
-            }
-        }
-    }
 
     @JsonIgnore
     @Override
@@ -149,14 +122,8 @@ public class FactoryBaseAttribute<R extends FactoryBase<?,R>,L,F extends Factory
     }
 
     @Override
-    @SuppressWarnings("unchecked")
-    public void internal_merge(Attribute<?,?> newValue) {
-        this.value=(F)newValue.get();//faster than call set, backreferences are updated anyway for all after merge
-        if (listeners!=null) {
-            for (AttributeChangeListener<F, A> listener : listeners) {
-                listener.changed(this, value);
-            }
-        }
+    public void internal_merge(F newValue) {
+        this.value=newValue;//faster than call set, backreferences are updated anyway for all after merge
     }
 
 

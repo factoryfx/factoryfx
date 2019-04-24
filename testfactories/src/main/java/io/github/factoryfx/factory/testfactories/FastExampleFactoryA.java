@@ -1,10 +1,13 @@
 package io.github.factoryfx.factory.testfactories;
 
+import io.github.factoryfx.factory.*;
 import io.github.factoryfx.factory.attribute.types.StringAttribute;
-import io.github.factoryfx.factory.FastFactoryUtility;
-import io.github.factoryfx.factory.SimpleFactoryBase;
 import io.github.factoryfx.factory.attribute.dependency.FactoryAttribute;
 import io.github.factoryfx.factory.attribute.dependency.FactoryListAttribute;
+import io.github.factoryfx.factory.fastfactory.FastFactoryAttribute;
+import io.github.factoryfx.factory.fastfactory.FastFactoryListAttribute;
+import io.github.factoryfx.factory.fastfactory.FastFactoryUtility;
+import io.github.factoryfx.factory.fastfactory.FastValueAttribute;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,24 +23,33 @@ public class FastExampleFactoryA extends SimpleFactoryBase<ExampleLiveObjectA,Fa
     }
 
     static {
-        FastFactoryUtility.setup(
-                FastExampleFactoryA.class,
-                (factory, attributeVisitor) -> {
-                    StringAttribute stringAttribute= new StringAttribute().labelText("ExampleA1");
-                    FactoryAttribute<FastExampleFactoryA,ExampleLiveObjectB,FastExampleFactoryB> referenceAttribute = new FactoryAttribute<FastExampleFactoryA,ExampleLiveObjectB,FastExampleFactoryB>().labelText("ExampleA2");
-                    FactoryListAttribute<FastExampleFactoryA,ExampleLiveObjectB,FastExampleFactoryB> referenceListAttribute = new FactoryListAttribute<FastExampleFactoryA,ExampleLiveObjectB,FastExampleFactoryB>().labelText("ExampleA3");
 
-                    attributeVisitor.accept("stringAttribute", FastFactoryUtility.tempAttributeSetup(stringAttribute,(v)->factory.stringAttribute=v,()->factory.stringAttribute));
-                    attributeVisitor.accept("referenceAttribute", FastFactoryUtility.tempAttributeSetup(referenceAttribute,(v)->factory.referenceAttribute=v,()->factory.referenceAttribute,FastExampleFactoryB.class));
-                    attributeVisitor.accept("referenceListAttribute", FastFactoryUtility.tempAttributeSetup(referenceListAttribute,(v)->factory.referenceListAttribute=v,()->factory.referenceListAttribute,FastExampleFactoryB.class));
-                },
-                (factory, dataVisitor) -> {
-                    if (factory.referenceAttribute!=null){
-                        dataVisitor.accept(factory.referenceAttribute);
-                    }
-                    factory.referenceListAttribute.forEach(dataVisitor);
-                }
-        );
+        FastFactoryUtility.setup(FastExampleFactoryA.class,
+            new FastFactoryUtility<>(()->
+                    List.of(
+                            new FastValueAttribute<>(
+                                ()->new StringAttribute().labelText("ExampleA1"),
+                                (factory) -> factory.stringAttribute,
+                                (factory, value) -> factory.stringAttribute = value
+                            )
+                            ,
+                            new FastFactoryAttribute<>(
+                                    ()->new FactoryAttribute<FastExampleFactoryA, ExampleLiveObjectB, FastExampleFactoryB>().labelText("ExampleA2"),
+                                    (factory) -> factory.referenceAttribute,
+                                    (factory, value) -> factory.referenceAttribute = value,
+                                    FastExampleFactoryB.class
+                            )
+                            ,
+                            new FastFactoryListAttribute<>(
+                                    ()->new FactoryListAttribute<FastExampleFactoryA, ExampleLiveObjectB, FastExampleFactoryB>().labelText("ExampleA3"),
+                                    (factory) -> factory.referenceListAttribute,
+                                    (factory, value) -> {
+                                        factory.referenceListAttribute = value;
+                                    },
+                                    FastExampleFactoryB.class
+                            )
+                    )
+        ));
     }
 
     public FastExampleFactoryA(){

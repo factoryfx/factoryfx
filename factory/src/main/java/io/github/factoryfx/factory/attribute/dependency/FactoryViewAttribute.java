@@ -6,9 +6,7 @@ import java.util.function.Function;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreType;
-import io.github.factoryfx.factory.attribute.Attribute;
-import io.github.factoryfx.factory.attribute.AttributeChangeListener;
-import io.github.factoryfx.factory.attribute.RunLaterAble;
+import io.github.factoryfx.factory.attribute.*;
 import io.github.factoryfx.factory.FactoryBase;
 
 /**
@@ -36,15 +34,14 @@ public class FactoryViewAttribute<R extends FactoryBase<?,R>,L, F extends Factor
 
 
     @Override
-    public boolean internal_mergeMatch(F value) {
+    public boolean internal_mergeMatch(AttributeMatch<F> value) {
+        return true;
+    }
+
+    @Override
+    public boolean internal_match(AttributeMatch<F> value) {
         final F thisValue = this.get();
-        if (thisValue == null && value == null) {
-            return true;
-        }
-        if (thisValue == null || value == null) {
-            return false;
-        }
-        return thisValue.idEquals(value);
+        return internal_referenceEquals(thisValue,value.get());
     }
 
     @Override
@@ -62,9 +59,10 @@ public class FactoryViewAttribute<R extends FactoryBase<?,R>,L, F extends Factor
         //nothing
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    public void internal_addBackReferences(R root, FactoryBase<?, R> parent) {
-        this.root=root;
+    public void internal_addBackReferences(FactoryBase<?,?> root, FactoryBase<?,?> parent) {
+        this.root=(R)root;
     }
 
     @Override
@@ -73,12 +71,12 @@ public class FactoryViewAttribute<R extends FactoryBase<?,R>,L, F extends Factor
     }
 
     @Override
-    public void internal_copyTo(Attribute<F, FactoryViewAttribute<R, L, F>> copyAttribute, int level, int maxLevel, List<FactoryBase<?, R>> oldData, FactoryBase<?, R> parent, R root) {
-        //nothing
+    public void internal_copyTo(AttributeCopy<F> copyAttribute, int level, int maxLevel, List<FactoryBase<?, ?>> oldData, FactoryBase<?, ?> parent, FactoryBase<?, ?> root) {
+
     }
 
     @Override
-    public void internal_semanticCopyTo(FactoryViewAttribute<R,L, F> copyAttribute) {
+    public void internal_semanticCopyTo(AttributeCopy<F> copyAttribute) {
         //nothing
     }
 
@@ -170,6 +168,10 @@ public class FactoryViewAttribute<R extends FactoryBase<?,R>,L, F extends Factor
         return referenceDisplayText;
     }
 
+    @Override
+    public void internal_reset() {
+        //nothing
+    }
 
 
     @Override
@@ -180,11 +182,6 @@ public class FactoryViewAttribute<R extends FactoryBase<?,R>,L, F extends Factor
         if (listeners!=null){
             listeners.clear();
         }
-    }
-
-    @Override
-    public boolean internal_ignoreForMerging() {
-        return true;
     }
 
     @Override

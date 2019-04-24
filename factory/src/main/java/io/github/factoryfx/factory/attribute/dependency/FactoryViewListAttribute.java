@@ -46,20 +46,13 @@ public class FactoryViewListAttribute<R extends FactoryBase<?,R>,L, F extends Fa
     }
 
     @Override
-    public boolean internal_mergeMatch(List<F> value) {
-        final List<F> list = get();
-        if (value==null ){
-            return false;
-        }
-        if (list.size() != value.size()) {
-            return false;
-        }
-        for (int i = 0; i < list.size(); i++) {
-            if (!referenceEquals(list.get(i), value.get(i))) {
-                return false;
-            }
-        }
+    public boolean internal_mergeMatch(AttributeMatch<List<F>> value) {
         return true;
+    }
+
+    @Override
+    public boolean internal_match(AttributeMatch<List<F>> value) {
+        return internal_referenceListEquals(get(),value.get());
     }
 
     private boolean referenceEquals(FactoryBase<?,?> ref1, FactoryBase<?,?> ref2) {
@@ -97,7 +90,7 @@ public class FactoryViewListAttribute<R extends FactoryBase<?,R>,L, F extends Fa
 //    }
 
     @Override
-    public void internal_semanticCopyTo(FactoryViewListAttribute<R,L, F> copyAttribute) {
+    public void internal_semanticCopyTo(AttributeCopy<List<F>> copyAttribute) {
         //nothing
     }
 
@@ -199,8 +192,14 @@ public class FactoryViewListAttribute<R extends FactoryBase<?,R>,L, F extends Fa
     }
 
     @Override
-    public void internal_addBackReferences(R root, FactoryBase<?,R> parent){
-        this.root=root;
+    public void internal_reset() {
+        //nothing
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public void internal_addBackReferences(FactoryBase<?,?> root, FactoryBase<?,?> parent){
+        this.root=(R)root;
     }
 
     @Override
@@ -209,7 +208,7 @@ public class FactoryViewListAttribute<R extends FactoryBase<?,R>,L, F extends Fa
     }
 
     @Override
-    public void internal_copyTo(FactoryViewListAttribute<R, L, F> copyAttribute, int level, int maxLevel, List<FactoryBase<?, R>> oldData, FactoryBase<?, R> parent, R root) {
+    public void internal_copyTo(AttributeCopy<List<F>> copyAttribute, int level, int maxLevel, List<FactoryBase<?, ?>> oldData, FactoryBase<?, ?> parent, FactoryBase<?, ?> root) {
         //nothing
     }
 
@@ -225,11 +224,6 @@ public class FactoryViewListAttribute<R extends FactoryBase<?,R>,L, F extends Fa
 
     public Stream<F> stream() {
         return get().stream();
-    }
-
-    @Override
-    public boolean internal_ignoreForMerging() {
-        return true;
     }
 
     @Override

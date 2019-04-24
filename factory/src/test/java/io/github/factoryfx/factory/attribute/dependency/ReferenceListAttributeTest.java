@@ -113,36 +113,36 @@ public class ReferenceListAttributeTest {
     }
 
     @Test
-    public void removeListener() throws Exception {
+    public void removeListener() {
         FactoryListAttribute<ExampleDataA,Void,ExampleDataA> attribute =new FactoryListAttribute<>();
 
         final AttributeChangeListener<List<ExampleDataA>, FactoryListAttribute<ExampleDataA,Void,ExampleDataA>> attributeChangeListener = (a, value) -> System.out.println(value);
         attribute.internal_addListener(attributeChangeListener);
-        Assertions.assertEquals(1,attribute.listeners.size());
+        Assertions.assertEquals(1,attribute.internal_getListeners().size());
         attribute.internal_removeListener(attributeChangeListener);
-        Assertions.assertTrue(attribute.listeners.size()==0);
+        Assertions.assertTrue(attribute.internal_getListeners().size()==0);
     }
 
     @Test
-    public void removeWeakListener() throws Exception {
+    public void removeWeakListener() {
         FactoryListAttribute<ExampleDataA,Void,ExampleDataA> attribute =new FactoryListAttribute<>();
 
         final AttributeChangeListener<List<ExampleDataA>, FactoryListAttribute<ExampleDataA,Void,ExampleDataA>> attributeChangeListener = (a, value) -> System.out.println(value);
         attribute.internal_addListener(new WeakAttributeChangeListener<>(attributeChangeListener));
-        Assertions.assertTrue(attribute.listeners.size()==1);
+        Assertions.assertTrue(attribute.internal_getListeners().size()==1);
         attribute.internal_removeListener(attributeChangeListener);
-        Assertions.assertTrue(attribute.listeners.size()==0);
+        Assertions.assertTrue(attribute.internal_getListeners().size()==0);
     }
 
     @Test
-    public void removeWeakListener_after_gc() throws Exception {
+    public void removeWeakListener_after_gc() {
         FactoryListAttribute<ExampleDataA,Void,ExampleDataA> attribute =new FactoryListAttribute<>();
 
         final AttributeChangeListener<List<ExampleDataA>, FactoryListAttribute<ExampleDataA,Void,ExampleDataA>> attributeChangeListener = (a, value) -> System.out.println(value);
         attribute.internal_addListener(new WeakAttributeChangeListener<>(null));//null to simulate garbage collected weakref
-        Assertions.assertTrue(attribute.listeners.size()==1);
+        Assertions.assertTrue(attribute.internal_getListeners().size()==1);
         attribute.internal_removeListener(attributeChangeListener);
-        Assertions.assertTrue(attribute.listeners.size()==0);
+        Assertions.assertTrue(attribute.internal_getListeners().size()==0);
     }
 
     @Test

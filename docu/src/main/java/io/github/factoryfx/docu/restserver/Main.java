@@ -28,6 +28,7 @@ public class Main {
         FactoryTreeBuilder< Server,SimpleHttpServer,Void> builder = new FactoryTreeBuilder<>(SimpleHttpServer.class);
         builder.addFactory(JettyServerFactory.class, Scope.SINGLETON, ctx-> new JettyServerBuilder<>(new JettyServerFactory<SimpleHttpServer>())
                 .withHost("localhost").withPort(8005)
+                .withSsl()
                 .withResource(ctx.get(WebResourceFactory.class)).build());
 
         builder.addFactory(WebResourceFactory.class, Scope.SINGLETON, ctx->{

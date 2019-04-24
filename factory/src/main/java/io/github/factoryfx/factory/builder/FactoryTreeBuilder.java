@@ -135,7 +135,7 @@ public class FactoryTreeBuilder<L,R extends FactoryBase<L,R>,S> {
     /**
      * set mocks for factories
      * @param mocker mocker
-     * @return
+     * @return MicroserviceBuilder
      */
     public MicroserviceBuilder<L,R,S> microservice(Consumer<R> mocker){
         R root = this.buildTree();

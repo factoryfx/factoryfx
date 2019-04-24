@@ -12,6 +12,10 @@ import io.github.factoryfx.factory.attribute.dependency.FactoryViewAttribute;
 import io.github.factoryfx.factory.merge.testdata.ExampleDataA;
 import io.github.factoryfx.factory.merge.testdata.ExampleDataB;
 import io.github.factoryfx.factory.merge.testdata.ExampleDataC;
+import io.github.factoryfx.factory.testfactories.ExampleFactoryA;
+import io.github.factoryfx.factory.testfactories.ExampleFactoryB;
+import io.github.factoryfx.factory.testfactories.FastExampleFactoryA;
+import io.github.factoryfx.factory.testfactories.FastExampleFactoryB;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -550,7 +554,7 @@ public class MergeTest {
         ExampleDataA currentModel = new ExampleDataA();
         {
             ExampleDataB exampleFactoryB = new ExampleDataB();
-            currentModel.referenceListAttribute.add(exampleFactoryB);
+//            currentModel.referenceListAttribute.add(exampleFactoryB);
             currentModel.referenceAttribute.set(exampleFactoryB);
         }
         currentModel=currentModel.internal().addBackReferences();
@@ -562,8 +566,8 @@ public class MergeTest {
 
         ExampleDataA newModel = currentModel.internal().copy();
         {
-            currentModel.referenceAttribute.set(currentModel.referenceAttribute.get().internal().copy());
-
+            newModel.referenceListAttribute.add(newModel.referenceAttribute.get().internal().copy());
+            newModel.referenceListAttribute.add(newModel.referenceAttribute.get());
         }
 
         DataMerger<ExampleDataA> dataMerger = new DataMerger<>(currentModel, originalModel, newModel);
@@ -818,6 +822,21 @@ public class MergeTest {
 
         Assertions.assertEquals(2,currentModel.referenceAttribute.get().bAttribute.get().internal().getParents().size());
         Assertions.assertTrue(currentModel.referenceAttribute.get().internal().getParents().contains(currentModel));
+    }
+
+    @Test
+    public void test_parent_after_merge(){
+        ExampleFactoryA original = new ExampleFactoryA();
+        original.internal().addBackReferences();
+
+        ExampleFactoryA update= original.utility().copy();
+        update.referenceAttribute.set(new ExampleFactoryB());
+
+        DataMerger<ExampleFactoryA> dataMerger = new DataMerger<>(original,original.utility().copy(),update);
+        dataMerger.mergeIntoCurrent((p)->true);
+
+        Assertions.assertEquals(1,original.referenceAttribute.get().internal().getParents().size());
+        Assertions.assertEquals(original,original.referenceAttribute.get().internal().getParents().iterator().next());
     }
 
 }

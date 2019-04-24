@@ -94,27 +94,31 @@ public class FactoryManager<L,R extends FactoryBase<L,R>> {
     }
 
     private void determineRecreationNeedFromRoot(R previousFactoryCopyRoot) {
-        currentFactoryRoot.determineRecreationNeedFromRoot(getChangedFactories(this.currentFactoryRoot,previousFactoryCopyRoot));
+        currentFactoryRoot.determineRecreationNeedFromRoot(getChangedFactories(this.currentFactoryRoot, previousFactoryCopyRoot));
     }
 
-    Set<FactoryBase<?,?>> getChangedFactories(RootFactoryWrapper<R> currentFactoryRoot, R previousFactoryCopyRoot){
+    Set<FactoryBase<?,R>> getChangedFactories(RootFactoryWrapper<R> currentFactoryRoot, R previousFactoryCopyRoot){
         //one might think that the merger could do the change detection but that don't work for views and separation of concern is better anyway
-        final HashSet<FactoryBase<?,?>> result = new HashSet<>();
+        final HashSet<FactoryBase<?,R>> result = new HashSet<>();
         final Map<UUID, FactoryBase<?,R>> previousFactories = previousFactoryCopyRoot.internal().collectChildFactoryMap();
-        for (FactoryBase<?,?> data: currentFactoryRoot.collectChildFactories()){
-            final FactoryBase<?,?> previousFactory = previousFactories.get(data.getId());
+        for (FactoryBase<?,R> data: currentFactoryRoot.collectChildFactories()){
+            final FactoryBase<?,R> previousFactory = previousFactories.get(data.getId());
             if (previousFactory!=null){
-                data.internal().visitAttributesDualFlat(previousFactory, (name, currentAttribute, previousAttribute) -> {
-                    if (!currentAttribute.internal_mergeMatch(previousAttribute)){
-                        result.add(data);
-                        return false;
-                    }
-                    return true;
-                });
+                this.collectChanged(data,previousFactory,result);
             }
         }
         return result;
     }
+    public <FO extends FactoryBase<?,R>> void collectChanged(FO currentFactoryRoot, FO previousFactory, Set<FactoryBase<?,R>> changed){
+        currentFactoryRoot.internal().visitAttributesForMatch(previousFactory, (name,currentAttribute, previousAttribute) -> {
+            if (!currentAttribute.internal_match(previousAttribute)){
+                changed.add(currentFactoryRoot);
+                return false;
+            }
+            return true;
+        });
+    }
+
 
     public List<FactoryBase<?,R>> getRemovedFactories(Collection<FactoryBase<?,R>> previousFactories, Set<FactoryBase<?,R>> newFactories){
         final ArrayList<FactoryBase<?,R>> result = new ArrayList<>();

@@ -41,7 +41,7 @@ public class RootFactoryWrapper<R extends FactoryBase<?,R>> {
         return factoriesInDestroyOrder;
     }
 
-    public void determineRecreationNeedFromRoot(Set<FactoryBase<?,?>> changedData) {
+    public void determineRecreationNeedFromRoot(Set<FactoryBase<?,R>> changedData) {
         rootFactory.internal().determineRecreationNeedFromRoot(changedData);
     }
 

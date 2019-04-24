@@ -32,52 +32,13 @@ public class FactoryListBaseAttribute<R extends FactoryBase<?,R>,L, F extends Fa
     }
 
     @Override
-    public boolean internal_mergeMatch(List<F> value) {
-        if (value==null ){
-            return false;
-        }
-        if (list.size() != value.size()) {
-            return false;
-        }
-        for (int i = 0; i < list.size(); i++) {
-            if (!referenceEquals(list.get(i), value.get(i))) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    private boolean referenceEquals(FactoryBase<?,?> ref1, FactoryBase<?,?> ref2) {
-        if (ref1 == null && ref2 == null) {
-            return true;
-        }
-        if (ref1 == null || ref2 == null) {
-            return false;
-        }
-        return ref1.idEquals(ref2);
+    public boolean internal_match(AttributeMatch<List<F>> value) {
+        return internal_referenceListEquals(list,value.get());
     }
 
     @Override
-    @SuppressWarnings("unchecked")
-    public void internal_merge(Attribute<?,?> newValue) {
-        Map<UUID, F> previousMap=new HashMap();
-        for (F item : this.list) {
-            previousMap.put(item.getId(),item);
-        }
-
-        this.list.clear();
-        List<F> newList = (List<F>) newValue.get();
-
-        for (F newItem : newList) {
-            F oldItem = previousMap.get(newItem.getId());
-            if (oldItem!=null){
-                this.list.add(oldItem);
-            } else {
-                this.list.add(newItem);
-            }
-        }
-
-        afterModify();
+    public void internal_merge(List<F> newList) {
+        internal_mergeFactoryList(this.list,newList);
     }
 
 
@@ -106,66 +67,52 @@ public class FactoryListBaseAttribute<R extends FactoryBase<?,R>,L, F extends Fa
         if (value==null){
             if (!list.isEmpty()){
                 this.list.clear();
-                afterModify();
+                updateListeners(list);
             }
         } else {
             this.list.clear();
             this.list.addAll(value);
             afterAdd(value);
+            updateListeners(list);
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public void internal_copyTo(AttributeCopy<List<F>> copyAttribute, int level, int maxLevel, List<FactoryBase<?, ?>> oldData, FactoryBase<?, ?> parent, FactoryBase<?, ?> root) {
+        if (!isEmpty()) {
+            List<F> copy = new ArrayList<>(size());
+            for (F item: get()){
+                if (item!=null) {
+                    F itemCopy = (F)item.internal().copyDeep(level, maxLevel, oldData, parent, root);
+                    if (itemCopy!=null){
+                        copy.add(itemCopy);
+                    }
+                }
+            }
+            copyAttribute.set(copy);
         }
     }
 
     @Override
     @SuppressWarnings("unchecked")
-    public void internal_copyTo(A copyAttribute, final int level, final int maxLevel, final List<FactoryBase<?,R>> oldData, FactoryBase<?,R> parent, R root) {
-        for (F item: get()){
-            F itemCopy = null;
-            if (item!=null) {
-                itemCopy = (F)item.internal().copyDeep(level, maxLevel, oldData, parent, root);
-            }
-
-            if (itemCopy!=null){
-                copyAttribute.get().add(itemCopy);
-            }
-        }
-    }
-
-    @Override
-    @SuppressWarnings("unchecked")
-    public void internal_semanticCopyTo(A copyAttribute) {
-        if (getCopySemantic()== CopySemantic.SELF){
+    public void internal_semanticCopyTo(AttributeCopy<List<F>> copyAttribute) {
+        if (internal_getCopySemantic()== CopySemantic.SELF){
             copyAttribute.set(get());
         } else {
+            List<F> result = new ArrayList<>();
             for (F item: get()){
                 final F itemCopy = (F)item.utility().semanticCopy();
                 if (itemCopy!=null){
-                    copyAttribute.get().add(itemCopy);
+                    result.add(itemCopy);
                 }
             }
+            copyAttribute.set(result);
         }
     }
 
     public List<F> filtered(Predicate<F> predicate) {
         return get().stream().filter(predicate).collect(Collectors.toList());
-    }
-
-    List<AttributeChangeListener<List<F>,A>> listeners;
-    @Override
-    public void internal_addListener(AttributeChangeListener<List<F>,A> listener) {
-        if (listeners==null){
-            listeners=new ArrayList<>();
-        }
-        listeners.add(listener);
-    }
-    @Override
-    public void internal_removeListener(AttributeChangeListener<List<F>,A> listener) {
-        if (listeners!=null){
-            for (AttributeChangeListener<List<F>,A> listenerItem: new ArrayList<>(listeners)){
-                if (listenerItem.unwrap()==listener || listenerItem.unwrap()==null){
-                    listeners.remove(listenerItem);
-                }
-            }
-        }
     }
 
     @Override
@@ -187,17 +134,8 @@ public class FactoryListBaseAttribute<R extends FactoryBase<?,R>,L, F extends Fa
         if (root!=null && added.internal().getRoot()!=root) {
             added.internal().addBackReferencesForSubtreeUnsafe(root,parent);
         }
-
-        afterModify();
     }
 
-    private void afterModify(){
-        if (listeners!=null) {
-            for (AttributeChangeListener<List<F>, A> listener : listeners) {
-                listener.changed(FactoryListBaseAttribute.this, get());
-            }
-        }
-    }
 
     private void afterAdd(Collection<? extends F> added){
         for (F add: added){
@@ -208,7 +146,7 @@ public class FactoryListBaseAttribute<R extends FactoryBase<?,R>,L, F extends Fa
     @Override
     public void sort(Comparator<? super F> c) {
         list.sort(c);
-        afterModify();
+        updateListeners(list);
     }
 
     @Override
@@ -249,7 +187,7 @@ public class FactoryListBaseAttribute<R extends FactoryBase<?,R>,L, F extends Fa
     @Override
     public boolean remove(Object o) {
         boolean remove = list.remove(o);
-        afterModify();
+        updateListeners(list);
         return remove;
     }
 
@@ -262,6 +200,7 @@ public class FactoryListBaseAttribute<R extends FactoryBase<?,R>,L, F extends Fa
     public boolean addAll(Collection<? extends F> c) {
         boolean result = list.addAll(c);
         afterAdd(c);
+        updateListeners(list);
         return result;
     }
 
@@ -269,20 +208,21 @@ public class FactoryListBaseAttribute<R extends FactoryBase<?,R>,L, F extends Fa
     public boolean addAll(int index, Collection<? extends F> c) {
         boolean result = list.addAll(index, c);
         afterAdd(c);
+        updateListeners(list);
         return result;
     }
 
     @Override
     public boolean removeAll(Collection<?> c) {
         boolean result = list.removeAll(c);
-        afterModify();
+        updateListeners(list);
         return result;
     }
 
     @Override
     public boolean removeIf(Predicate<? super F> filter) {
         boolean result = list.removeIf(filter);
-        afterModify();
+        updateListeners(list);
         return result;
     }
 
@@ -294,7 +234,7 @@ public class FactoryListBaseAttribute<R extends FactoryBase<?,R>,L, F extends Fa
     @Override
     public void clear() {
         list.clear();
-        afterModify();
+        updateListeners(list);
     }
 
     @Override
@@ -306,6 +246,7 @@ public class FactoryListBaseAttribute<R extends FactoryBase<?,R>,L, F extends Fa
     public F set(int index, F element) {
         F set = list.set(index, element);
         afterAdd(element);
+        updateListeners(list);
         return set;
     }
 
@@ -313,12 +254,13 @@ public class FactoryListBaseAttribute<R extends FactoryBase<?,R>,L, F extends Fa
     public void add(int index, F element) {
         list.add(index,element);
         afterAdd(element);
+        updateListeners(list);
     }
 
     @Override
     public F remove(int index) {
         F remove = list.remove(index);
-        afterModify();
+        updateListeners(list);
         return remove;
     }
 
@@ -366,6 +308,7 @@ public class FactoryListBaseAttribute<R extends FactoryBase<?,R>,L, F extends Fa
     public boolean add(F value) {
         list.add(value);
         afterAdd(value);
+        updateListeners(list);
         return false;
     }
 

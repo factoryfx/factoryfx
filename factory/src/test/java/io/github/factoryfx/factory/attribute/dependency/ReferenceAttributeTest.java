@@ -118,9 +118,9 @@ public class ReferenceAttributeTest {
 
         final AttributeChangeListener<ExampleDataA, FactoryAttribute<ExampleDataA,Void,ExampleDataA>> attributeChangeListener = (a, value) -> System.out.println(value);
         attribute.internal_addListener(attributeChangeListener);
-        Assertions.assertTrue(attribute.listeners.size()==1);
+        Assertions.assertTrue(attribute.internal_getListeners().size()==1);
         attribute.internal_removeListener(attributeChangeListener);
-        Assertions.assertTrue(attribute.listeners.size()==0);
+        Assertions.assertTrue(attribute.internal_getListeners().size()==0);
     }
 
     @Test
@@ -129,9 +129,9 @@ public class ReferenceAttributeTest {
 
         final AttributeChangeListener<ExampleDataA, FactoryAttribute<ExampleDataA,Void,ExampleDataA>> attributeChangeListener = (a, value) -> System.out.println(value);
         attribute.internal_addListener(new WeakAttributeChangeListener<>(attributeChangeListener));
-        Assertions.assertTrue(attribute.listeners.size()==1);
+        Assertions.assertTrue(attribute.internal_getListeners().size()==1);
         attribute.internal_removeListener(attributeChangeListener);
-        Assertions.assertTrue(attribute.listeners.size()==0);
+        Assertions.assertTrue(attribute.internal_getListeners().size()==0);
     }
 
     @Test
@@ -140,9 +140,9 @@ public class ReferenceAttributeTest {
 
         final AttributeChangeListener<ExampleDataA, FactoryAttribute<ExampleDataA,Void,ExampleDataA>> attributeChangeListener = (a, value) -> System.out.println(value);
         attribute.internal_addListener(new WeakAttributeChangeListener<>(null));
-        Assertions.assertTrue(attribute.listeners.size()==1);
+        Assertions.assertTrue(attribute.internal_getListeners().size()==1);
         attribute.internal_removeListener(attributeChangeListener);
-        Assertions.assertTrue(attribute.listeners.size()==0);
+        Assertions.assertTrue(attribute.internal_getListeners().size()==0);
     }
 
     @Test

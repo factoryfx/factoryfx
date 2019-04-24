@@ -12,7 +12,7 @@ import io.github.factoryfx.factory.validation.Validation;
 import io.github.factoryfx.factory.validation.ValidationError;
 import io.github.factoryfx.factory.validation.ValidationResult;
 
-public abstract class Attribute<T,A extends Attribute<T,A>>{
+public abstract class Attribute<T,A extends Attribute<T,A>> implements AttributeMerger<T>, AttributeCopy<T>{
 
     @JsonIgnore
     private Set<Validation<T>> validations;
@@ -21,70 +21,14 @@ public abstract class Attribute<T,A extends Attribute<T,A>>{
 
     }
 
-    public abstract boolean internal_mergeMatch(T value);
-
-    public boolean internal_ignoreForMerging() {
-        return false;
+    @Override
+    public void internal_merge(T newValue) {
+        set(newValue);
     }
 
+    @Override
+    public void internal_copyTo(AttributeCopy<T> copyAttribute, int level, int maxLevel, List<FactoryBase<?, ?>> oldData, FactoryBase<?, ?> parent, FactoryBase<?, ?> root) {
 
-    /**
-     *
-     * @param originalAttribute originalAttribute
-     * @param newAttribute newAttribute
-     * @return true if merge conflict
-     */
-    public boolean internal_hasMergeConflict(Attribute<?,?> originalAttribute, Attribute<?,?> newAttribute) {
-        if (newAttribute.internal_mergeMatch(originalAttribute)) {
-            return false;
-        }
-        if (internal_mergeMatch(originalAttribute)) {
-            return false;
-        }
-        if (internal_mergeMatch(newAttribute)) {
-            return false;
-        }
-        return true;
-    }
-
-    /**
-     * check if merge should be executed e.g. not if values ar equals
-     * @param originalAttribute originalAttribute from common version
-     * @param newAttribute newAttribute from update
-     * @return true if merge should be executed
-     * */
-    public boolean internal_isMergeable(Attribute<?,?> originalAttribute, Attribute<?,?> newAttribute) {
-        if (!internal_mergeMatch(originalAttribute) || internal_mergeMatch(newAttribute)) {
-            return false ;
-        }
-        return true;
-    }
-
-    @SuppressWarnings("unchecked")
-    public void internal_merge(Attribute<?,?> newValue) {
-        set((T) newValue.get());
-    }
-
-
-    public void internal_copyTo(A copyAttribute){
-        //nothing
-    }
-
-    @SuppressWarnings("unchecked")
-    public  void  internal_copyToUnsafe(Attribute<?,?> copyAttribute){
-        internal_copyTo((A)copyAttribute);
-    }
-
-    @SuppressWarnings("unchecked")
-    public boolean internal_mergeMatch(Attribute<?,?> attribute) {
-        return internal_mergeMatch((T) attribute.get());
-    }
-
-    public abstract void internal_semanticCopyTo(A copyAttribute);
-
-    @SuppressWarnings("unchecked")
-    public void internal_semanticCopyToUnsafe(Attribute<?,?> copyAttribute){
-        internal_semanticCopyTo((A)copyAttribute);
     }
 
     public List<ValidationError> internal_validate(FactoryBase<?,?> parent, String attributeVariableName) {
@@ -109,17 +53,78 @@ public abstract class Attribute<T,A extends Attribute<T,A>>{
         //nothing
     }
 
-    public abstract void internal_addListener(AttributeChangeListener<T,A> listener);
+
+    private AttributeChangeListener<T,A> listener;//performance optimization if only one listener
+    private List<AttributeChangeListener<T,A>> listeners;
+
+    protected void updateListeners(T value){
+        if (listenersEmpty()){
+            return;
+        }
+        if (listener!=null){
+            listener.changed(this,value);
+        } else {
+            for (AttributeChangeListener<T, A> listener : listeners) {
+                listener.changed(this, value);
+            }
+        }
+    }
+
+    protected boolean listenersEmpty(){
+        return listener==null && (listeners==null || listeners.isEmpty());
+    }
+
+    public List<AttributeChangeListener<T,A>> internal_getListeners(){
+        if (listener!=null) {
+            return List.of(listener);
+        }
+        if (listeners!=null) {
+            return listeners;
+        }
+        return Collections.emptyList();
+    }
+
+    public void internal_addListener(AttributeChangeListener<T,A> newListener) {
+        if (listener==null){
+            this.listener=newListener;
+        } else {
+            if (this.listeners == null) {
+                this.listeners = new ArrayList<>();
+                this.listeners.add(this.listener);
+                this.listener = null;
+            } else {
+                listeners.add(newListener);
+            }
+        }
+    }
+
+    public void internal_removeAllListener() {
+        this.listeners=null;
+        this.listener=null;
+    }
 
     /**
      * remove added Listener or Listener inside WeakAttributeChangeListener
-     * @param listener listener
+     * @param removeListener listener to remove
      * */
-    public abstract void internal_removeListener(AttributeChangeListener<T,A> listener);
-
-    public abstract T get();
-
-    public abstract void set(T value);
+    public void internal_removeListener(AttributeChangeListener<T,A> removeListener) {
+        if (listeners==null && listener==null){
+            return;
+        }
+        if (this.listener!=null){
+            if (this.listener.unwrap()==removeListener || this.listener.unwrap()==null){
+                this.listener=null;
+                return;
+            }
+        }
+        if (this.listeners!=null) {
+            for (AttributeChangeListener<T, A> listenerItem : new ArrayList<>(listeners)) {
+                if (listenerItem.unwrap() == removeListener || listenerItem.unwrap() == null) {
+                    listeners.remove(listenerItem);
+                }
+            }
+        }
+    }
 
     @JsonIgnore
     public abstract String getDisplayText();
@@ -184,6 +189,7 @@ public abstract class Attribute<T,A extends Attribute<T,A>>{
         return addonText;
     }
 
+    @Override
     public boolean internal_hasWritePermission(Function<String,Boolean> permissionChecker){
         return permission == null || permissionChecker.apply(permission);
     }
@@ -358,5 +364,8 @@ public abstract class Attribute<T,A extends Attribute<T,A>>{
     public AttributeStorageMetadata createAttributeStorageMetadata(String variableName){
         return new AttributeStorageMetadata(variableName,getClass().getName(),false, null);
     }
+
+
+    public abstract void internal_reset();
 
 }

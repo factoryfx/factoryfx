@@ -3,10 +3,7 @@ package io.github.factoryfx.factory.attribute.dependency;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.github.factoryfx.factory.FactoryBase;
 import io.github.factoryfx.factory.FactoryTreeBuilderBasedAttributeSetup;
-import io.github.factoryfx.factory.attribute.Attribute;
-import io.github.factoryfx.factory.attribute.CopySemantic;
-import io.github.factoryfx.factory.attribute.DefaultNewValueProvider;
-import io.github.factoryfx.factory.attribute.DefaultPossibleValueProvider;
+import io.github.factoryfx.factory.attribute.*;
 import io.github.factoryfx.factory.storage.migration.metadata.AttributeStorageMetadata;
 
 import java.util.*;
@@ -58,10 +55,11 @@ public abstract class ReferenceBaseAttribute<R extends FactoryBase<?,R>, F exten
         return new ArrayList<>();
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    public void internal_addBackReferences(R root, FactoryBase<?,R> parent){
-        this.root=root;
-        this.parent=parent;
+    public void internal_addBackReferences( FactoryBase<?,?> root, FactoryBase<?,?> parent){
+        this.root=(R)root;
+        this.parent=(FactoryBase<?,R>)parent;
     }
 
     private Function<R, F> newValueProvider;
@@ -159,7 +157,7 @@ public abstract class ReferenceBaseAttribute<R extends FactoryBase<?,R>, F exten
     private CopySemantic copySemantic;
 
     @JsonIgnore
-    protected CopySemantic getCopySemantic(){
+    public CopySemantic internal_getCopySemantic(){
         return Objects.requireNonNullElse(copySemantic, CopySemantic.COPY);
     }
 
@@ -225,6 +223,13 @@ public abstract class ReferenceBaseAttribute<R extends FactoryBase<?,R>, F exten
             return Collections.singletonList(getNewValueProvider().apply(root));
         }
         return new ArrayList<>();
+    }
+
+    @Override
+    public void internal_reset(){
+        this.root=null;
+        this.parent=null;
+        this.internal_removeAllListener();
     }
 
 }

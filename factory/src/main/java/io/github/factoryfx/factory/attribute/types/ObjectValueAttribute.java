@@ -1,6 +1,7 @@
 package io.github.factoryfx.factory.attribute.types;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreType;
+import io.github.factoryfx.factory.attribute.AttributeMatch;
 import io.github.factoryfx.factory.attribute.ImmutableValueAttribute;
 
 /**
@@ -14,10 +15,9 @@ public class ObjectValueAttribute<T> extends ImmutableValueAttribute<T,ObjectVal
         super();
     }
 
-
     @Override
-    public boolean internal_ignoreForMerging() {
-        return true;
+    public boolean internal_mergeMatch(AttributeMatch<T> value) {
+        return true; //menas ignore for merging
     }
 
 }

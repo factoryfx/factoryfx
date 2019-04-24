@@ -3,6 +3,7 @@ package io.github.factoryfx.factory.metadata;
 import io.github.factoryfx.factory.AttributeVisitor;
 import io.github.factoryfx.factory.FactoryBase;
 import io.github.factoryfx.factory.FactoryEnclosingAttributeVisitor;
+import io.github.factoryfx.factory.fastfactory.FastFactoryUtility;
 import io.github.factoryfx.factory.attribute.dependency.*;
 import io.github.factoryfx.factory.attribute.*;
 import io.github.factoryfx.factory.storage.migration.metadata.AttributeStorageMetadata;
@@ -11,14 +12,12 @@ import io.github.factoryfx.factory.storage.migration.metadata.DataStorageMetadat
 import java.lang.invoke.MethodHandles;
 import java.lang.reflect.*;
 import java.util.*;
-import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
 public class FactoryMetadata<R extends FactoryBase<?,R>, L,F extends FactoryBase<L,R>> {
 
-    private BiConsumer<F, AttributeVisitor> visitAttributesFlat;
     private boolean temporaryAttributes=false;
     private Constructor constructor;
     private final Class<? extends FactoryBase<?,?>> clazz;
@@ -35,17 +34,6 @@ public class FactoryMetadata<R extends FactoryBase<?,R>, L,F extends FactoryBase
     }
 
     /**
-     * default implementation use reflection, this method can be used to improve performance
-
-     * @param visitAttributesFlat  visitor
-     * @return DataDictionary for fluent configuration
-     * */
-    public FactoryMetadata<R,L, F> setVisitAttributesFlat(BiConsumer<F,AttributeVisitor> visitAttributesFlat){
-        this.visitAttributesFlat=visitAttributesFlat;
-        return this;
-    }
-
-    /**
      * Data use temporary to simulate normal data, this is an optimization hind cause some operation don't make sense with Temporary attributes
      * @return DataDictionary for fluent configuration
      */
@@ -55,8 +43,8 @@ public class FactoryMetadata<R extends FactoryBase<?,R>, L,F extends FactoryBase
     }
 
     public void visitAttributesFlat(F data, AttributeVisitor attributeVisitor){
-        if (visitAttributesFlat!=null){
-            this.visitAttributesFlat.accept(data,attributeVisitor);
+        if (fastFactoryUtility!=null){
+            fastFactoryUtility.visitAttributesFlat(data,  attributeVisitor);
         } else {
             for (Field field : attributeFields) {
                 try {
@@ -75,18 +63,9 @@ public class FactoryMetadata<R extends FactoryBase<?,R>, L,F extends FactoryBase
         }
     }
 
-
-    private BiConsumer<F,Consumer<FactoryBase<?,R>>> factoryChildrenVisitor;
-
-    /**
-     * default implementation use reflection, this method can be used to improve performance
-     *
-     * @param factoryChildrenVisitor visitor
-     * @return DataDictionary for fluent configuration
-     * */
-    public FactoryMetadata<R, L,F> setFactoryChildrenVisitor(BiConsumer<F,Consumer<FactoryBase<?,R>>> factoryChildrenVisitor){
-        this.factoryChildrenVisitor=factoryChildrenVisitor;
-        return this;
+    private FastFactoryUtility<R,F> fastFactoryUtility;
+    public void setFastFactoryUtility(FastFactoryUtility<R,F> fastFactoryUtility) {
+        this.fastFactoryUtility=fastFactoryUtility;
     }
 
     public static class AttributeNamePair{
@@ -99,18 +78,15 @@ public class FactoryMetadata<R extends FactoryBase<?,R>, L,F extends FactoryBase
         }
     }
 
-    public void visitAttributesDualFlat(F data, F other, FactoryBase.BiAttributeVisitor consumer) {
-        if (this.factoryChildrenVisitor != null) {
-            List<AttributeNamePair> attributes = getAttributes(data,10);
-            List<AttributeNamePair> otherAttributes = getAttributes(other,attributes.size());
-            for (int i = 0; i < attributes.size(); i++) {
-                consumer.accept(attributes.get(i).name,attributes.get(i).attribute,otherAttributes.get(i).attribute);
-            }
+    @SuppressWarnings("unchecked")
+    public <V> void visitAttributesForCopy(F factory, F other, FactoryBase.BiCopyAttributeVisitor<V> consumer) {
+        if (fastFactoryUtility!=null){
+            fastFactoryUtility.visitAttributesForCopy(factory, other, consumer);
         } else {
             for (Field field : attributeFields) {
                 try {
-                    if (!consumer.accept(field.getName(),(Attribute<?,?>) field.get(data), (Attribute<?,?>) field.get(other))){
-                       break;
+                    if (!consumer.accept((Attribute<V,?>) field.get(factory), (Attribute<V,?>) field.get(other))){
+                        break;
                     }
                 } catch (IllegalAccessException e) {
                     throw new RuntimeException(e);
@@ -119,18 +95,16 @@ public class FactoryMetadata<R extends FactoryBase<?,R>, L,F extends FactoryBase
         }
     }
 
-    public void visitAttributesTripleFlat(F data, F other1, F other2, FactoryBase.TriAttributeVisitor consumer) {
-        if (this.factoryChildrenVisitor != null) {
-            List<AttributeNamePair> attributes = getAttributes(data,10);
-            List<AttributeNamePair> otherAttributes = getAttributes(other1,attributes.size());
-            List<AttributeNamePair> other2Attributes = getAttributes(other2,attributes.size());
-            for (int i = 0; i < attributes.size(); i++) {
-                consumer.accept(attributes.get(i).name,attributes.get(i).attribute,otherAttributes.get(i).attribute,other2Attributes.get(i).attribute);
-            }
+    @SuppressWarnings("unchecked")
+    public <V> void visitAttributesForMatch(F factory, F other, FactoryBase.AttributeMatchVisitor<V> consumer) {
+        if (fastFactoryUtility!=null){
+            fastFactoryUtility.visitAttributesForMatch(factory, other, consumer);
         } else {
             for (Field field : attributeFields) {
                 try {
-                    consumer.accept(field.getName(),(Attribute<?,?>) field.get(data), (Attribute<?,?>) field.get(other1), (Attribute<?,?>) field.get(other2));
+                    if (!consumer.accept(field.getName(),(Attribute<V,?>) field.get(factory), (Attribute<V,?>) field.get(other))){
+                        break;
+                    }
                 } catch (IllegalAccessException e) {
                     throw new RuntimeException(e);
                 }
@@ -138,10 +112,19 @@ public class FactoryMetadata<R extends FactoryBase<?,R>, L,F extends FactoryBase
         }
     }
 
-    private List<AttributeNamePair> getAttributes(F data, int initialCapacity) {
-        List<AttributeNamePair> attributes = new ArrayList<>(initialCapacity);
-        visitAttributesFlat(data, (attributeVariableName, attribute) -> attributes.add(new AttributeNamePair(attributeVariableName,attribute)));
-        return attributes;
+    @SuppressWarnings("unchecked")
+    public <V> void visitAttributesTripleFlat(F data, F other1, F other2, FactoryBase.TriAttributeVisitor<V> consumer) {
+        if (fastFactoryUtility!=null){
+            this.fastFactoryUtility.visitAttributesTripleFlat( data,  other1,  other2, consumer);
+        }  else {
+            for (Field field : attributeFields) {
+                try {
+                    consumer.accept(field.getName(),(Attribute<V,?>) field.get(data), (Attribute<V,?>) field.get(other1), (Attribute<V,?>) field.get(other2));
+                } catch (IllegalAccessException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        }
     }
 
     private final ArrayList<Field> attributeFields = new ArrayList<>();
@@ -174,7 +157,7 @@ public class FactoryMetadata<R extends FactoryBase<?,R>, L,F extends FactoryBase
                     factoryChildrenEnclosingAttributeFields.add(new AttributeFieldAccessor<>(lookup.unreflectGetter(field), field.getName()));
                 } catch (IllegalAccessException e) {
                     throw new RuntimeException(e);
-                };
+                }
             }
 
             if (ReferenceBaseAttribute.class.isAssignableFrom(field.getType())){
@@ -199,7 +182,6 @@ public class FactoryMetadata<R extends FactoryBase<?,R>, L,F extends FactoryBase
         }
     }
 
-    @SuppressWarnings("unchecked")
     public void addBackReferencesAndReferenceClassToAttributes(F data, R root) {
         if (!temporaryAttributes) {//no BackReferences for FastFactories they are set manually
             visitFactoryEnclosingAttributesFlat(data, (attributeVariableName, attribute) -> {
@@ -273,9 +255,8 @@ public class FactoryMetadata<R extends FactoryBase<?,R>, L,F extends FactoryBase
     }
 
     public void visitChildFactoriesAndViewsFlat(F factory, Consumer<FactoryBase<?,R>> consumer, boolean includeViews) {
-        if (this.factoryChildrenVisitor != null) {
-            this.factoryChildrenVisitor.accept(factory, consumer);
-
+        if (fastFactoryUtility!=null){
+            this.fastFactoryUtility.visitChildFactoriesAndViewsFlat(factory, consumer);
         } else {
             visitFactoryEnclosingAttributesFlat(factory, (attributeVariableName, attribute) -> attribute.internal_visitChildren(consumer, includeViews));
         }
