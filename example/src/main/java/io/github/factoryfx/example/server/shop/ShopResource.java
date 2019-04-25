@@ -46,7 +46,7 @@ public class ShopResource {
     @Consumes(MediaType.APPLICATION_JSON)
     public void buyProducts(BuyProductRequest buyProductRequest){
         products.stream().filter(p->buyProductRequest.productName.equals(p.getName())).findAny().ifPresent(product -> {
-            orderStorage.storeOrder(new OrderStorage.Order(product.getName(),product.getPrice(),buyProductRequest.userName, new Date()));
+            orderStorage.storeOrder(new OrderStorage.Order(buyProductRequest.userName,product.getPrice(),product.getName(), new Date()));
         });
     }
 }
