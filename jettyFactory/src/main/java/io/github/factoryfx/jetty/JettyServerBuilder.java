@@ -79,6 +79,11 @@ public class JettyServerBuilder<R extends FactoryBase<?,R>,S extends JettyServer
         return this;
     }
 
+    public JettyServerBuilder<R,S> withAdditionalConnector(HttpServerConnectorFactory<R> httpServerConnectorFactory){
+        jettyServerFactory.connectors.add(httpServerConnectorFactory);
+        return this;
+    }
+
     /**
      * set the base pathSpec for resources default is: /*
      *
