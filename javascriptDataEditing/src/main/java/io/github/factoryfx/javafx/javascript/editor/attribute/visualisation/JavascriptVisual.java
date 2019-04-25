@@ -54,7 +54,7 @@ public class JavascriptVisual<A> {
         final ListView<JSError> errorsAndWarnings = new ListView<>();
 //        final ContentAssistPopup popup = new ContentAssistPopup();
         final ChangeListener<Javascript<A>> onUpdateScript;
-        NavigableMap<Integer, List<Proposal>> currentProposals;
+//        NavigableMap<Integer, List<Proposal>> currentProposals;
 
         RootNode(List<SourceFile> externs, SimpleObjectProperty<Javascript<A>> boundTo) {
             this.getStylesheets().add(getClass().getResource("jsstyle.css").toExternalForm());
@@ -244,7 +244,7 @@ public class JavascriptVisual<A> {
 
 
         private void processProposals(NavigableMap<Integer, List<Proposal>> p) {
-            currentProposals = p;
+//            currentProposals = p;
         }
     }
 

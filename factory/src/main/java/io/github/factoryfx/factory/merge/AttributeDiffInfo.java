@@ -51,7 +51,7 @@ public class AttributeDiffInfo {
 
 
     @JsonIgnore
-    public boolean isFromFactory(String factoryId){
+    public boolean isFromFactory(UUID factoryId){
         return dataId.equals(factoryId);
     }
 
