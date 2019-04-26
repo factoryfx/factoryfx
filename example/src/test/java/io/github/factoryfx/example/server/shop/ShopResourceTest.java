@@ -4,8 +4,9 @@ import io.github.factoryfx.example.server.ServerBuilder;
 import io.github.factoryfx.example.server.ServerRootFactory;
 import io.github.factoryfx.example.server.testutils.FactoryTreeBuilderRule;
 import org.eclipse.jetty.server.Server;
-import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
+
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
@@ -14,6 +15,7 @@ public class ShopResourceTest {
     private ShopResource shopResource;
     private OrderStorage orderStorage;
 
+    @RegisterExtension
     public final FactoryTreeBuilderRule<Server, ServerRootFactory, Void> ctx = new FactoryTreeBuilderRule<>(new ServerBuilder().builder()) {
 
         {

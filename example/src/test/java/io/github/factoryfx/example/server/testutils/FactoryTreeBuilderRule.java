@@ -42,6 +42,14 @@ public class FactoryTreeBuilderRule<L, R extends FactoryBase<L, R>, S> implement
         return builder.branch().selectPrototype(factoryClazz, name).stream().map(b -> b.instance()).collect(Collectors.toSet());
     }
 
+    public <L0, F0 extends FactoryBase<L0, R>> F0 getFactory(Class<F0> factoryClazz) {
+        return getFactory(factoryClazz, null);
+    }
+
+    public <L0, F0 extends FactoryBase<L0, R>> F0 getFactory(Class<F0> factoryClazz, String name) {
+        return builder.branch().select(factoryClazz, name).factory();
+    }
+
     private void before() {
         builder.branch().select(builder.buildTree().getClass()).start();
     }
