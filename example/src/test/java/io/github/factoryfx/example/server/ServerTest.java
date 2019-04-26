@@ -41,6 +41,14 @@ public class ServerTest {
     public int port;
     public Server server;
 
+    public static class OpenedShopJettyServerFactory extends ShopJettyServerFactory {
+        // open to public
+        @Override
+        public Server createJetty() {
+            return super.createJetty();
+        }
+    }
+
     @RegisterExtension
     public final FactoryTreeBuilderRule<Server, ServerRootFactory, Void> ctx = new FactoryTreeBuilderRule<>(new ServerBuilder().builder()) {
         {
@@ -52,13 +60,7 @@ public class ServerTest {
                     throw new RuntimeException(e.getMessage(), e);
                 }
 
-                return new JettyServerBuilder<>(new ShopJettyServerFactory() {
-                    // open to public
-                    @Override
-                    public Server createJetty() {
-                        return super.createJetty();
-                    }
-                })
+                return new JettyServerBuilder<>(new OpenedShopJettyServerFactory())
                         .withHost("localhost").withPort(port)
                         .withResource(getFactory(SpecificMicroserviceResourceFactory.class))
                         .withResource(getFactory(ShopResourceFactory.class)).build().createJetty();
