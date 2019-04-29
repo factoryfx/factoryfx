@@ -1,10 +1,9 @@
 package io.github.factoryfx.example.server;
 
 import io.github.factoryfx.example.server.shop.ShopJettyServerFactory;
-import io.github.factoryfx.example.server.shop.ShopResourceFactory;
 import io.github.factoryfx.example.server.testutils.FactoryTreeBuilderRule;
-import io.github.factoryfx.jetty.JettyServerBuilder;
 import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.server.ServerConnector;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
@@ -14,20 +13,18 @@ import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
-import java.io.IOException;
-import java.net.ServerSocket;
 
-/*
+/**
  * This test seems to do more than necessary, by actually starting a real server where we could have just
  * called the resource class directly (as in ShopResourceTest).
  *
  * This is on purpose and would require a more complicated example to show its usefulness:
  * Consider an application that requires a backend service for its work. In situations where
  * the real backend service is not available, we could either use a simple mock (which will
- * only be useful in unittests), but we might instead want to use a simulator which behaves
+ * only be useful in unit tests), but we might instead want to use a simulator which behaves
  * more or less the same as the real thing.
  *
- * Such a simulator is what we're, well, simulating in this unittest, as we're starting up
+ * Such a simulator is what we're, well, simulating in this unit test, as we're starting up
  * a Jetty server instance on an ephemeral port.
  *
  * Actually, in a real world unit test using such a simulator, we might have two separate
@@ -35,45 +32,28 @@ import java.net.ServerSocket;
  * the simulator by data injection (full url, but especially the port number).
  *
  * Here, we just write a simple dummy consumer of our webservice instead.
+ *
+ * @see <a href="https://github.com/factoryfx/factoryfx/tree/master/docu/src/test/java/io/github/factoryfx/docu/rule">https://github.com/factoryfx/factoryfx/tree/master/docu/src/test/java/io/github/factoryfx/docu/rule</a>
  */
 public class ServerTest {
 
-    public int port;
     public Server server;
 
-    public static class OpenedShopJettyServerFactory extends ShopJettyServerFactory {
-        // open to public
-        @Override
-        public Server createJetty() {
-            return super.createJetty();
-        }
-    }
-
     @RegisterExtension
-    public final FactoryTreeBuilderRule<Server, ServerRootFactory, Void> ctx = new FactoryTreeBuilderRule<>(new ServerBuilder().builder()) {
-        {
-            mock(ShopJettyServerFactory.class, factory -> {
+    public final FactoryTreeBuilderRule<Server, ServerRootFactory, Void> ctx = new FactoryTreeBuilderRule<>(new ServerBuilder().builder(), rule -> {
 
-                try (ServerSocket s = new ServerSocket(0)) {
-                    port = s.getLocalPort();
-                } catch (IOException e) {
-                    throw new RuntimeException(e.getMessage(), e);
-                }
+        rule.getFactory(ShopJettyServerFactory.class).connectors.get(0).port.set(0);
 
-                return new JettyServerBuilder<>(new OpenedShopJettyServerFactory())
-                        .withHost("localhost").withPort(port)
-                        .withResource(getFactory(SpecificMicroserviceResourceFactory.class))
-                        .withResource(getFactory(ShopResourceFactory.class)).build().createJetty();
-            });
-
-            Server server = get(ShopJettyServerFactory.class);
-        }
-    };
+        server = rule.get(ShopJettyServerFactory.class);
+    });
 
     @Test
     public void testPort() {
+
+        int simPort = ((ServerConnector)(server.getConnectors()[0])).getLocalPort();
+
         Client client = ClientBuilder.newClient();
-        WebTarget webTarget = client.target("http://localhost:" + port + "/shop/products");
+        WebTarget webTarget = client.target("http://localhost:" + simPort + "/shop/products");
 
         // just for demonstration we won't really decode the JSON stuff and just look at the JSON string itself
         String resp = webTarget.request(MediaType.APPLICATION_JSON_TYPE).get(String.class);

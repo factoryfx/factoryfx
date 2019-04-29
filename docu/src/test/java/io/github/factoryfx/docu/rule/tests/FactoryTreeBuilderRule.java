@@ -1,4 +1,4 @@
-package io.github.factoryfx.docu.mock;
+package io.github.factoryfx.docu.rule.tests;
 
 import io.github.factoryfx.factory.FactoryBase;
 import io.github.factoryfx.factory.builder.FactoryTreeBuilder;
@@ -8,31 +8,20 @@ import org.junit.jupiter.api.extension.BeforeAllCallback;
 import org.junit.jupiter.api.extension.BeforeEachCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Set;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class FactoryTreeBuilderRule<L, R extends FactoryBase<L, R>, S> implements BeforeEachCallback, AfterEachCallback, BeforeAllCallback, AfterAllCallback {
 
-    private class FactoryIdentifier {
-        private final Class<R> clazz;
-        private final String name;
-
-        public FactoryIdentifier(Class<R> clazz, String name) {
-            this.clazz = clazz;
-            this.name = name;
-        }
-    }
-
     protected final FactoryTreeBuilder<L,R,S> builder;
-    private final List<FactoryIdentifier> branches = new ArrayList<>();
-    private final List<FactoryIdentifier> prototypeBranches = new ArrayList<>();
+    private final Consumer<FactoryTreeBuilderRule<L,R,S>> preStart;
 
     private boolean runAll = false;
 
-    public FactoryTreeBuilderRule(FactoryTreeBuilder<L, R, S> builder) {
+    public FactoryTreeBuilderRule(FactoryTreeBuilder<L, R, S> builder, Consumer<FactoryTreeBuilderRule<L, R, S>> preStart) {
+        this.preStart = preStart;
         this.builder = builder;
     }
 
@@ -40,18 +29,15 @@ public class FactoryTreeBuilderRule<L, R extends FactoryBase<L, R>, S> implement
         mock(factoryClazz, null, replacementCreator);
     }
 
-    @SuppressWarnings("unchecked")
     public <L0, F0 extends FactoryBase<L0, R>> void mock(Class<F0> factoryClazz, String name, Function<F0, L0> replacementCreator) {
-        builder.branch().select(factoryClazz, name).factory().utility().mock(f -> replacementCreator.apply((F0) f));
+        builder.branch().select(factoryClazz, name).mock(f -> replacementCreator.apply(f));
     }
 
     public <L0, F0 extends FactoryBase<L0, R>> L0 get(Class<F0> factoryClazz) {
         return get(factoryClazz, null);
     }
 
-    @SuppressWarnings("unchecked")
     public <L0, F0 extends FactoryBase<L0, R>> L0 get(Class<F0> factoryClazz, String name) {
-        branches.add(new FactoryIdentifier((Class<R>) factoryClazz, name));
         return builder.branch().select(factoryClazz, name).instance();
     }
 
@@ -59,10 +45,27 @@ public class FactoryTreeBuilderRule<L, R extends FactoryBase<L, R>, S> implement
         return getPrototypeInstances(factoryClazz, null);
     }
 
-    @SuppressWarnings("unchecked")
     public <L0, F0 extends FactoryBase<L0, R>> Set<L0> getPrototypeInstances(Class<F0> factoryClazz, String name) {
-        prototypeBranches.add(new FactoryIdentifier((Class<R>) factoryClazz, name));
         return builder.branch().selectPrototype(factoryClazz, name).stream().map(b -> b.instance()).collect(Collectors.toSet());
+    }
+
+    public <L0, F0 extends FactoryBase<L0, R>> F0 getFactory(Class<F0> factoryClazz) {
+        return getFactory(factoryClazz, null);
+    }
+
+    public <L0, F0 extends FactoryBase<L0, R>> F0 getFactory(Class<F0> factoryClazz, String name) {
+        return builder.branch().select(factoryClazz, name).factory();
+    }
+
+    private void before() {
+        if (preStart != null) {
+            preStart.accept(this);
+        }
+        builder.branch().select(builder.buildTree().getClass()).start();
+    }
+
+    private void after() {
+        builder.branch().select(builder.buildTree().getClass()).stop();
     }
 
     @Override
@@ -81,6 +84,7 @@ public class FactoryTreeBuilderRule<L, R extends FactoryBase<L, R>, S> implement
 
     @Override
     public void beforeAll(ExtensionContext context) throws Exception {
+
         runAll = true;
         before();
     }
@@ -92,19 +96,5 @@ public class FactoryTreeBuilderRule<L, R extends FactoryBase<L, R>, S> implement
         } finally {
             runAll = false;
         }
-    }
-
-    private void before() {
-        branches.forEach(b -> {
-            builder.branch().select(b.clazz, b.name).start();
-        });
-        prototypeBranches.forEach(b -> builder.branch().selectPrototype(b.clazz, b.name).forEach(i -> i.start()));
-    }
-
-    private void after() {
-        branches.forEach(b -> {
-            builder.branch().select(b.clazz, b.name).stop();
-        });
-        prototypeBranches.forEach(b -> builder.branch().selectPrototype(b.clazz, b.name).forEach(i -> i.stop()));
     }
 }

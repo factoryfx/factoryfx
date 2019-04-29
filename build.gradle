@@ -458,7 +458,8 @@ project(':docu') {
             exclude group: 'javax.annotation'
             exclude group: 'javax.activation'
         }
-        
+
+        testCompile group: 'org.hamcrest', name: 'hamcrest-library', version: '1.3'
     }
 
 }

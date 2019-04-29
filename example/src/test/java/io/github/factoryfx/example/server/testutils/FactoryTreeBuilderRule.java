@@ -5,16 +5,19 @@ import io.github.factoryfx.factory.builder.FactoryTreeBuilder;
 import org.junit.jupiter.api.extension.*;
 
 import java.util.Set;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class FactoryTreeBuilderRule<L, R extends FactoryBase<L, R>, S> implements BeforeEachCallback, AfterEachCallback, BeforeAllCallback, AfterAllCallback {
 
     protected final FactoryTreeBuilder<L,R,S> builder;
+    private final Consumer<FactoryTreeBuilderRule<L,R,S>> preStart;
 
     private boolean runAll = false;
 
-    public FactoryTreeBuilderRule(FactoryTreeBuilder<L, R, S> builder) {
+    public FactoryTreeBuilderRule(FactoryTreeBuilder<L, R, S> builder, Consumer<FactoryTreeBuilderRule<L, R, S>> preStart) {
+        this.preStart = preStart;
         this.builder = builder;
     }
 
@@ -51,6 +54,9 @@ public class FactoryTreeBuilderRule<L, R extends FactoryBase<L, R>, S> implement
     }
 
     private void before() {
+        if (preStart != null) {
+            preStart.accept(this);
+        }
         builder.branch().select(builder.buildTree().getClass()).start();
     }
 
@@ -86,5 +92,4 @@ public class FactoryTreeBuilderRule<L, R extends FactoryBase<L, R>, S> implement
         } finally {
             runAll = false;
         }
-    }
-}
+    }}
