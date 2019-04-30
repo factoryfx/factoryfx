@@ -572,6 +572,7 @@ project(':soapFactory') {
             doFirst {
                 options.compilerArgs = [
                         //'--module-path', classpath.asPath,
+                        '--class-path', classpath.asPath,
                 ]
                 classpath = files()
             }
