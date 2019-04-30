@@ -94,7 +94,7 @@ It is important to understand the order of things happening here (we're not look
 members annotated with @RegisterExtension here, but the same ideas apply there):
 
 * to execute `@Test testGreeting()`, jUnit creates an instance of `GreetingsResourceTest`.
-* during construction of that test class, noormal field initialisation happens, so `simulatorCtx`
+* during construction of that test class, normal field initialisation happens, so `simulatorCtx`
   and then `serverCtx` are initialized. Note that initializing does not include executing
   the preStart lambdas passed to the constructor of `FactoryTreeBuilderRule`.
 * before executing the test, the registered extensions are called in order of the `@Order` annotation,
@@ -117,7 +117,7 @@ members annotated with @RegisterExtension here, but the same ideas apply there):
   That `hello()` method then calls the simulator using the local port injected into it, using
   a real HTTP connection, and the simulator returns "hello", which is finally prepended to " world"
   by `greet()`, and the result is then asserted in the test.
-* next, the `afterEach` method of serverCtx is called. This stops the used live objects, which
+* next, the `afterEach` method of `serverCtx` is called. This stops the used live objects, which
   again is a no-op in our case.
 * then the `afterEach` method of `simulatorCtx` is called, which stops the jetty server.
 * finally, the second test, `testGreetingOnceMore`, is executed, performing the same steps
@@ -155,7 +155,7 @@ Not really:
   all of your unit tests when there's a change in your dependency graph, even a change
   in those parts that are used in your test.
   
-  You could even create subclasses of `FactoryTreeBuilder` defining common additions or
+  You could even create subclasses of `FactoryTreeBuilderRule` defining common additions or
   mock replacements for your unit tests, e.g. for your H2 or testcontainers database setup
   or for simulators as in this example. The `preStart` `Consumer`s can be daisy-chained 
   by `.andThen()`, allowing further local specialisation of your unit test.
