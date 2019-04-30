@@ -117,7 +117,7 @@ members annotated with @RegisterExtension here, but the same ideas apply there):
   That `hello()` method then calls the simulator using the local port injected into it, using
   a real HTTP connection, and the simulator returns "hello", which is finally prepended to " world"
   by `greet()`, and the result is then asserted in the test.
-* next, the `afterEach` method of serverCtx is called. This stops the used live objects, which
+* next, the `afterEach` method of `serverCtx` is called. This stops the used live objects, which
   again is a no-op in our case.
 * then the `afterEach` method of `simulatorCtx` is called, which stops the jetty server.
 * finally, the second test, `testGreetingOnceMore`, is executed, performing the same steps
