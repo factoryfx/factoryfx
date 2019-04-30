@@ -155,7 +155,7 @@ Not really:
   all of your unit tests when there's a change in your dependency graph, even a change
   in those parts that are used in your test.
   
-  You could even create subclasses of `FactoryTreeBuilder` defining common additions or
+  You could even create subclasses of `FactoryTreeBuilderRule` defining common additions or
   mock replacements for your unit tests, e.g. for your H2 or testcontainers database setup
   or for simulators as in this example. The `preStart` `Consumer`s can be daisy-chained 
   by `.andThen()`, allowing further local specialisation of your unit test.
