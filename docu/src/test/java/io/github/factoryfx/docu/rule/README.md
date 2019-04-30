@@ -94,7 +94,7 @@ It is important to understand the order of things happening here (we're not look
 members annotated with @RegisterExtension here, but the same ideas apply there):
 
 * to execute `@Test testGreeting()`, jUnit creates an instance of `GreetingsResourceTest`.
-* during construction of that test class, noormal field initialisation happens, so `simulatorCtx`
+* during construction of that test class, normal field initialisation happens, so `simulatorCtx`
   and then `serverCtx` are initialized. Note that initializing does not include executing
   the preStart lambdas passed to the constructor of `FactoryTreeBuilderRule`.
 * before executing the test, the registered extensions are called in order of the `@Order` annotation,
