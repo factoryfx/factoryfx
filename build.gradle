@@ -567,6 +567,16 @@ project(':soapFactory') {
     }
 
     project(':benchmark') {
+        compileJava {
+            inputs.property("moduleName", "io.github.factoryfx.$project.name")
+            doFirst {
+                options.compilerArgs = [
+                        //'--module-path', classpath.asPath,
+                ]
+                classpath = files()
+            }
+        }
+
         uploadArchives.enabled = false
         dependencies {
             compile project(":factory")

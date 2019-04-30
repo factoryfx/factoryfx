@@ -538,17 +538,17 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
     }
 
     public static class DataConfiguration {
-        private final FactoryBase<?,?>  data;
+        private final FactoryBase<?,?>  factory;
 
-        public DataConfiguration(FactoryBase<?,?>  data) {
-            this.data = data;
+        public DataConfiguration(FactoryBase<?,?>  factory) {
+            this.factory = factory;
         }
         /**
          * short readable text describing the factory
          * @param displayTextProvider displayTextProvider
          */
         public void setDisplayTextProvider(Supplier<String> displayTextProvider){
-            data.setDisplayTextProvider(displayTextProvider);
+            factory.setDisplayTextProvider(displayTextProvider);
         }
 
         /**
@@ -557,8 +557,8 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
          * @param dependencies attributes which affect the display text
          */
         public void setDisplayTextProvider(Supplier<String> displayTextProvider, Attribute<?,?>... dependencies){
-            data.setDisplayTextProvider(displayTextProvider);
-            data.setDisplayTextDependencies(Arrays.asList(dependencies));
+            factory.setDisplayTextProvider(displayTextProvider);
+            factory.setDisplayTextDependencies(Arrays.asList(dependencies));
         }
 
         /**
@@ -566,7 +566,7 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
          * @param attributes the attributes affecting the display text
          */
         public void setDisplayTextDependencies(List<Attribute<?,?>> attributes){
-            data.setDisplayTextDependencies(attributes);
+            factory.setDisplayTextDependencies(attributes);
         }
 
         /** set the attributes that affect the display text<br>
@@ -575,7 +575,7 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
          * @param attributes the attributes affecting the display text
          * */
         public void setDisplayTextDependencies(Attribute<?,?>... attributes){
-            data.setDisplayTextDependencies(Arrays.asList(attributes));
+            factory.setDisplayTextDependencies(Arrays.asList(attributes));
         }
 
         /**
@@ -584,7 +584,7 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
          * @param attributeListGroupedSupplier function with parameter containing all attributes
          * */
         public void setAttributeListGroupedSupplier(Function<List<Attribute<?,?>>,List<AttributeGroup>> attributeListGroupedSupplier){
-            this.data.setAttributeListGroupedSupplier(attributeListGroupedSupplier);
+            this.factory.setAttributeListGroupedSupplier(attributeListGroupedSupplier);
         }
 
 
@@ -594,18 +594,18 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
          * @param matchSearchTextFunction matchSearchTextFunction
          * */
         public void setMatchSearchTextFunction(Function<String,Boolean> matchSearchTextFunction){
-            data.setMatchSearchTextFunction(matchSearchTextFunction);
+            factory.setMatchSearchTextFunction(matchSearchTextFunction);
         }
 
 
         /**
-         * data validation
+         * factory validation
          * @param validation validation function
          * @param dependencies attributes which affect the validation
          * @param <T> this
          */
         public <T> void addValidation(Validation<T> validation, Attribute<?,?>... dependencies){
-            data.addValidation(validation,dependencies);
+            factory.addValidation(validation,dependencies);
         }
 
     }
@@ -623,8 +623,8 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
     public static class Internal<L,R extends FactoryBase<?,R>>  {
         private final FactoryBase<L,R>  factory;
 
-        public Internal(FactoryBase<L,R>  data) {
-            this.factory = data;
+        public Internal(FactoryBase<L,R>  factory) {
+            this.factory = factory;
         }
 
         public boolean matchSearchText(String newValue) {
@@ -668,16 +668,16 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
         }
 
         /**
-         * -fix all data with same id should be same object
+         * -fix all factories with same id should be same object
          * -remove parents that are no not in the tree
          * only call on root
          * */
         public void fixDuplicatesAndAddBackReferences() {
             //TODO is it even possible to add duplicates via merge?
             factory.assertRoot();
-            List<FactoryBase<?,R> > dataList = this.factory.fixDuplicateObjects();
-            for (FactoryBase<?,?>  data : dataList) {
-                data.resetBackReferencesFlat();
+            List<FactoryBase<?,R> > factoryList = this.factory.fixDuplicateObjects();
+            for (FactoryBase<?,?>  factoryItem : factoryList) {
+                factoryItem.resetBackReferencesFlat();
             }
             this.factory.addBackReferences();
         }
