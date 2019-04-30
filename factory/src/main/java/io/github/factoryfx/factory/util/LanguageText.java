@@ -15,6 +15,9 @@ public class LanguageText {
     public LanguageText() {
     }
 
+    public LanguageText(String englishText) {
+        en(englishText);
+    }
 
     public LanguageText en(String text) {
         internal_put(Locale.ENGLISH,text);

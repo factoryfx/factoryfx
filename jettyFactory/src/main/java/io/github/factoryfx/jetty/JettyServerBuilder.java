@@ -74,6 +74,16 @@ public class JettyServerBuilder<R extends FactoryBase<?,R>,S extends JettyServer
         return withHost("0.0.0.0");
     }
 
+    /**
+     *  jetty for example picks a free port
+     * read port: ((ServerConnector)server.getConnectors()[0]).getLocalPort().
+     * @return builder
+     */
+    public JettyServerBuilder<R,S> withRandomPort(){
+        jettyServerFactory.connectors.get(0).port.set(0);
+        return this;
+    }
+
     public JettyServerBuilder<R,S> withResource(FactoryBase<?,R> resource){
         defaultJerseyServlet.resources.add(resource);
         return this;

@@ -1,5 +1,7 @@
 package io.github.factoryfx.factory;
 
+import io.github.factoryfx.factory.attribute.Attribute;
+import io.github.factoryfx.factory.attribute.AttributeGroup;
 import io.github.factoryfx.factory.attribute.dependency.*;
 import io.github.factoryfx.factory.attribute.primitive.BooleanAttribute;
 import io.github.factoryfx.factory.attribute.types.StringAttribute;
@@ -7,19 +9,15 @@ import io.github.factoryfx.factory.jackson.ObjectMapperBuilder;
 import io.github.factoryfx.factory.merge.testdata.ExampleDataA;
 import io.github.factoryfx.factory.merge.testdata.ExampleDataB;
 import io.github.factoryfx.factory.merge.testdata.ExampleDataC;
-import io.github.factoryfx.factory.testfactories.ExampleFactoryA;
-import io.github.factoryfx.factory.testfactories.ExampleFactoryB;
-import io.github.factoryfx.factory.testfactories.ExampleFactoryC;
-import io.github.factoryfx.factory.testfactories.ExampleLiveObjectA;
+import io.github.factoryfx.factory.testfactories.*;
+import io.github.factoryfx.factory.util.LanguageText;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.mockito.internal.util.MockUtil;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
+import java.util.function.Function;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -507,5 +505,38 @@ public class FactoryBaseTest {
 
 //        Assertions.assertFalse(usableCopy.referenceAttribute.get().needRecreation);
     }
+
+    public class ExampleFactoryGroup extends SimpleFactoryBase<Void, io.github.factoryfx.factory.testfactories.ExampleFactoryA> {
+        public final StringAttribute stringAttribute1= new StringAttribute().labelText("ExampleA1").nullable();
+        public final StringAttribute stringAttribute2= new StringAttribute().labelText("ExampleA1").nullable();
+
+        @Override
+        public Void createImpl() {
+            return null;
+        }
+
+        public ExampleFactoryGroup() {
+            this.config().setAttributeListGroupedSupplier(attributes ->
+                    List.of(
+                            new AttributeGroup(new LanguageText("group1"),List.of(stringAttribute1)),
+                            new AttributeGroup(new LanguageText("group2"),List.of(stringAttribute1))
+                    ));
+
+        }
+    }
+
+
+    @Test
+    public void test_setAttributeListGroupedSupplier(){
+        ExampleFactoryGroup exampleFactoryGroup = new ExampleFactoryGroup();
+        exampleFactoryGroup.stringAttribute1.set("bla");
+        List<AttributeGroup> attributeGroups = exampleFactoryGroup.internal().attributeListGrouped();
+        assertEquals(2,attributeGroups.size());
+        assertEquals("group1",attributeGroups.get(0).title.internal_getPreferred(Locale.ENGLISH));
+        assertEquals(1,attributeGroups.get(0).group.size());
+        assertEquals("bla",attributeGroups.get(0).group.get(0).get());
+    }
+
+
 
 }

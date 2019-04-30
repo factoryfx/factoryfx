@@ -8,18 +8,18 @@ import io.github.factoryfx.factory.FactoryBase;
 
 public class FinalValidation implements  FactoryStyleValidation {
 
-    private final FactoryBase<?,?> factoryBase;
+    private final Class<? extends FactoryBase<?,?>> factoryClass;
     private final Field attributeField;
 
-    public FinalValidation(FactoryBase<?,?> factoryBase, Field attributeField) {
-        this.factoryBase = factoryBase;
+    public FinalValidation(Class<? extends FactoryBase<?,?>> factoryClass, Field attributeField) {
+        this.factoryClass = factoryClass;
         this.attributeField = attributeField;
     }
 
     @Override
     public Optional<String> validateFactory() {
         if((attributeField.getModifiers() & Modifier.FINAL) != java.lang.reflect.Modifier.FINAL) {
-            return Optional.of("should be final: "+ factoryBase.getClass().getName()+"#"+attributeField.getName());
+            return Optional.of("should be final: "+ factoryClass.getName()+"#"+attributeField.getName());
         }
         return Optional.empty();
     }

@@ -50,6 +50,12 @@ public class FactoryLogEntry {
         this.destroyDurationNs=destroyDurationNs;
     }
 
+    @JsonProperty
+    long updateDurationNs;
+    public void logUpdate(long updateDurationNs) {
+        this.updateDurationNs=updateDurationNs;
+    }
+
     @JsonIgnore
     public List<FactoryLogEntryEvent> getEvents(){
         ArrayList<FactoryLogEntryEvent> events = new ArrayList<>();
@@ -65,6 +71,9 @@ public class FactoryLogEntry {
         if (destroyDurationNs!=0) {
             events.add(new FactoryLogEntryEvent(FactoryLogEntryEventType.DESTROY,destroyDurationNs));
         }
+        if (updateDurationNs!=0) {
+            events.add(new FactoryLogEntryEvent(FactoryLogEntryEventType.UPDATE,updateDurationNs));
+        }
         return events;
     }
 
@@ -72,4 +81,5 @@ public class FactoryLogEntry {
     public String getFactoryDescription() {
         return factoryDescription;
     }
+
 }

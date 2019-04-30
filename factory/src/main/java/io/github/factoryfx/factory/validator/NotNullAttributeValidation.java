@@ -2,21 +2,23 @@ package io.github.factoryfx.factory.validator;
 
 import java.lang.reflect.Field;
 import java.util.Optional;
+import java.util.function.Supplier;
 
 import io.github.factoryfx.factory.FactoryBase;
 
 public class NotNullAttributeValidation implements FactoryStyleValidation {
-    private final FactoryBase<?,?> factoryBase;
+    private final Supplier<? extends FactoryBase<?,?>> factoryBaseSupplier;
     private final Field attributeField;
 
-    public NotNullAttributeValidation(FactoryBase<?,?> factoryBase, Field attributeField) {
-        this.factoryBase = factoryBase;
+    public NotNullAttributeValidation(Supplier<? extends FactoryBase<?, ?>> factoryBaseSupplier, Field attributeField) {
+        this.factoryBaseSupplier = factoryBaseSupplier;
         this.attributeField = attributeField;
     }
 
     @Override
     public Optional<String> validateFactory() {
         try {
+            FactoryBase<?, ?> factoryBase = this.factoryBaseSupplier.get();
             if(attributeField.get(factoryBase)==null) {
                 return Optional.of("should be not null: "+ factoryBase.getClass().getName()+"#"+attributeField.getName());
             }

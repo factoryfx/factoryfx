@@ -81,7 +81,7 @@ The complete [example](docu/src/main/java/io/github/factoryfx/docu/helloworld)
 ## Documentation
 
 ### Motivation
-* [Motivation](docu/src/main/java/io/github/factoryfx/docu/immutability)  
+* [Motivation](docu/src/main/java/io/github/factoryfx/docu/motivation)  
 Why use factoryfx?
 
 ### Fundamentals

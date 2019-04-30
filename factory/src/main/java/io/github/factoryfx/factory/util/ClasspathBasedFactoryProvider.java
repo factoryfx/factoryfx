@@ -14,14 +14,14 @@ public class ClasspathBasedFactoryProvider {
      * @return list of factories
      */
     @SuppressWarnings("unchecked")
-    public List<Class<? extends FactoryBase>> get(String basePackage) {
-        List<Class<? extends FactoryBase>> result = new ArrayList<>();
+    public List<Class<? extends FactoryBase<?,?>>> get(String basePackage) {
+        List<Class<? extends FactoryBase<?,?>>> result = new ArrayList<>();
         try {
             for (ClassPath.ClassInfo classInfo : ClassPath.from(ClasspathBasedFactoryProvider.class.getClassLoader()).getAllClasses()) {
                 if (classInfo.getName().startsWith(basePackage)) {
                     Class<?> clazz = classInfo.load();
                     if (FactoryBase.class.isAssignableFrom(clazz) && clazz != FactoryBase.class) {
-                        result.add((Class<FactoryBase>) clazz);
+                        result.add((Class<FactoryBase<?,?>>) clazz);
                     }
                 }
             }
@@ -32,7 +32,7 @@ public class ClasspathBasedFactoryProvider {
         return result;
     }
 
-    public List<Class<? extends FactoryBase>> get(Package packageParam){
+    public List<Class<? extends FactoryBase<?,?>>> get(Package packageParam){
         return get(packageParam.getName());
     }
 
@@ -41,7 +41,7 @@ public class ClasspathBasedFactoryProvider {
      * @param root class in the root package for all Factories. {@link ClasspathBasedFactoryProvider#get(String)}
      * @return list of factories
      */
-    public List<Class<? extends FactoryBase>> get(Class<? extends FactoryBase> root){
+    public List<Class<? extends FactoryBase<?,?>>> get(Class<? extends FactoryBase<?,?>> root){
         return get(root.getPackage().getName());
     }
 }

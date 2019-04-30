@@ -14,7 +14,7 @@ import java.util.function.Function;
 /** Base for Reference attributes, with common api  */
 public abstract class ReferenceBaseAttribute<R extends FactoryBase<?,R>, F extends FactoryBase<?,R>, U, A extends ReferenceBaseAttribute<R, F,U,A>> extends Attribute<U,A> implements FactoryChildrenEnclosingAttribute<R,A> {
 
-    protected R root;
+    R root;
     protected FactoryBase<?,R> parent;//data that contains this attribute
 //    protected Class<T> containingFactoryClass;
 

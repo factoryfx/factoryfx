@@ -19,19 +19,6 @@ public interface DataStorage<R extends FactoryBase<?,?>, S> {
 
     R getHistoryData(String id);
 
-    default R getPreviousHistoryData(String id) {
-        Collection<StoredDataMetadata<S>> historyDataList = getHistoryDataList();
-        if (historyDataList.isEmpty())
-            return null;
-        List<StoredDataMetadata> historyDataListSorted = historyDataList.stream().sorted(Comparator.comparing(h -> h.creationTime)).collect(Collectors.toList());
-        for (int i=0;i<historyDataListSorted.size();i++) {
-            if (historyDataListSorted.get(i).id.equals(id) && i-1>=0) {
-                return getHistoryData(historyDataListSorted.get(i - 1).id);
-            }
-        }
-        return null;
-    }
-
     Collection<StoredDataMetadata<S>> getHistoryDataList();
 
     Collection<ScheduledUpdateMetadata> getFutureDataList();

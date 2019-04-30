@@ -2,9 +2,14 @@ package io.github.factoryfx.factory.attribute.dependency;
 
 
 import io.github.factoryfx.factory.FactoryBase;
+import io.github.factoryfx.factory.jackson.ObjectMapperBuilder;
+import io.github.factoryfx.factory.merge.testdata.ExampleDataA;
+import io.github.factoryfx.factory.merge.testdata.ExampleDataB;
 import io.github.factoryfx.factory.storage.migration.metadata.AttributeStorageMetadata;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+
+import java.lang.reflect.Field;
 
 
 public class ReferenceBaseAttributeTest {
@@ -14,7 +19,7 @@ public class ReferenceBaseAttributeTest {
     }
 
     @Test
-    public void test_setupunsafe(){
+    public void test_generic_declaration(){
         FactoryAttribute<GenericData<String>,Void,GenericData<String>> test1 = new FactoryAttribute<>();
     }
 
@@ -25,6 +30,30 @@ public class ReferenceBaseAttributeTest {
         AttributeStorageMetadata attributeStorageMetadata2 = test1.createAttributeStorageMetadata("bla");
         Assertions.assertTrue(attributeStorageMetadata.isReference());
         Assertions.assertTrue(attributeStorageMetadata.match(attributeStorageMetadata2));
+    }
+
+    @Test
+    public void test_copy_root_after_jackson(){
+        ExampleDataA exampleFactoryA = new ExampleDataA();
+        ExampleDataB exampleFactoryB = new ExampleDataB();
+        exampleFactoryB.stringAttribute.set("dfssfdsfdsfd");
+
+        exampleFactoryA.referenceAttribute.set(null);
+        exampleFactoryA.referenceListAttribute.add(new ExampleDataB());
+        exampleFactoryA = exampleFactoryA.internal().addBackReferences();
+
+
+        ExampleDataA copy  = ObjectMapperBuilder.build().copy(exampleFactoryA);
+        //also include jackson cause into copy test,(strange jackson behaviour for final fields)
+        //ObjectMapperBuilder internally call internal().copy
+
+        Assertions.assertEquals(copy, copy.internal().getRoot());
+        copy.internal().visitAttributesFlat((attributeVariableName, attribute) -> {
+            if (attribute instanceof ReferenceBaseAttribute){
+                Assertions.assertEquals(copy,((ReferenceBaseAttribute)attribute).root);
+            }
+        });
+
     }
 
 

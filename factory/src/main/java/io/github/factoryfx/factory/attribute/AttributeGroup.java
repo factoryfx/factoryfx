@@ -4,6 +4,9 @@ import io.github.factoryfx.factory.util.LanguageText;
 
 import java.util.List;
 
+/**
+ * used for editing (usually to group attributes in tabs tabs)
+ */
 public class AttributeGroup {
     public final List<Attribute<?,?>> group;
     public final LanguageText title;

@@ -566,8 +566,8 @@ public class MergeTest {
 
         ExampleDataA newModel = currentModel.internal().copy();
         {
-            newModel.referenceListAttribute.add(newModel.referenceAttribute.get().internal().copy());
             newModel.referenceListAttribute.add(newModel.referenceAttribute.get());
+            newModel.referenceListAttribute.add(newModel.referenceAttribute.get().utility().semanticCopy());
         }
 
         DataMerger<ExampleDataA> dataMerger = new DataMerger<>(currentModel, originalModel, newModel);

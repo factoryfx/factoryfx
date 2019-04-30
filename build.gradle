@@ -418,6 +418,7 @@ project(':javascript') {
     }
 }
 
+
 project(':javascriptDataEditing') {
     dependencies {
         compile project(":javascript")
@@ -562,6 +563,17 @@ project(':soapFactory') {
             compile project(":factory")
             compile project(":jettyFactory")
             compile group: 'com.squareup', name: 'javapoet', version: '1.11.1'
+        }
+    }
+
+    project(':benchmark') {
+        uploadArchives.enabled = false
+        dependencies {
+            compile project(":factory")
+            compile project(":testfactories")
+
+            compile group: 'org.openjdk.jmh', name: 'jmh-generator-annprocess', version: '1.21'
+            compile group: 'org.openjdk.jmh', name: 'jmh-core', version: '1.21'
         }
     }
     

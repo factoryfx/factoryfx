@@ -476,6 +476,11 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
     }
 
     private Function<List<Attribute<?,?>>,List<AttributeGroup>> attributeListGroupedSupplier;
+
+    /**
+     * editing hint to group attributes in groups. (usually tabs)
+     * @param attributeListGroupedSupplier function
+     */
     private void setAttributeListGroupedSupplier(Function<List<Attribute<?,?>>,List<AttributeGroup>> attributeListGroupedSupplier){
         this.attributeListGroupedSupplier=attributeListGroupedSupplier;
     }
@@ -1005,6 +1010,7 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
         factoryLogEntry.logRecreate(recreateDurationNs);
         factoryLogEntry.logStart(startDurationNs);
         factoryLogEntry.logDestroy(destroyDurationNs);
+        factoryLogEntry.logUpdate(updateDurationNs);
         return factoryLogEntry;
     }
 

@@ -19,6 +19,9 @@
 
 * **testing:** Added the ability to set a mock liveobject for a factory.
 
+* **data:** Removed the data editing function. In the past, factories were a layer above a general data editing layer. The general data editing layer is removed to focus on the factory dependency injection.
+
+
 ### BREAKING CHANGES
 
 * **factory:** removed observer, the observer was not used and overcomplicated the generics declaration. In most cases it is sufficient to remove Void from generic declaration e.g.: FactoryTreeBuilder<**~~Void~~**,Root,RootFactory,Void>

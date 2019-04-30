@@ -49,7 +49,7 @@ public class FileSystemFactoryStorageHistory<R extends FactoryBase<?,R>,S> {
 
     private void visitHistoryFiles(Consumer<Path> visitor){
         try (Stream<Path> files = Files.walk(historyDirectory).filter(Files::isRegularFile)){
-            files.forEach(visitor::accept);
+            files.forEach(visitor);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

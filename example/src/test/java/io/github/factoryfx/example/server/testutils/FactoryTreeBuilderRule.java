@@ -53,6 +53,7 @@ public class FactoryTreeBuilderRule<L, R extends FactoryBase<L, R>, S> implement
         return builder.branch().select(factoryClazz, name).factory();
     }
 
+    @SuppressWarnings("unchecked")
     private void before() {
         if (preStart != null) {
             preStart.accept(this);
@@ -60,6 +61,7 @@ public class FactoryTreeBuilderRule<L, R extends FactoryBase<L, R>, S> implement
         builder.branch().select(builder.buildTree().getClass()).start();
     }
 
+    @SuppressWarnings("unchecked")
     private void after() {
         builder.branch().select(builder.buildTree().getClass()).stop();
     }

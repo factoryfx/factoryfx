@@ -23,11 +23,13 @@ public class MockExampleTest {
             return factory;
         });
 
-        Printer printer = builder.microservice(printerFactory -> printerFactory.utility().mock(root -> {
-            Printer mock = Mockito.mock(Printer.class);
-            Mockito.when(mock.print()).thenReturn("mocked");
-            return mock;
-        })).withInMemoryStorage().build().start();
+        Printer printer = builder.microservice(
+                printerFactory -> printerFactory.utility().mock(root -> {
+                    Printer mock = Mockito.mock(Printer.class);
+                    Mockito.when(mock.print()).thenReturn("mocked");
+                    return mock;
+                })
+        ).withInMemoryStorage().build().start();
 
         Assertions.assertEquals("mocked",printer.print());
     }

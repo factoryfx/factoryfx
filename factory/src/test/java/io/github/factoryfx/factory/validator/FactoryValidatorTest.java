@@ -11,8 +11,8 @@ public class FactoryValidatorTest {
 
     @Test
     public void test() {
-        final FactoryStyleValidator factoryStyleValidator = new FactoryStyleValidator();
-        List<FactoryStyleValidation> factoryValidations = factoryStyleValidator.createFactoryValidations(new ExampleFactoryA());
+        final FactoryStyleValidatorBuilder factoryStyleValidatorBuilder = new FactoryStyleValidatorBuilder();
+        List<FactoryStyleValidation> factoryValidations = factoryStyleValidatorBuilder.createFactoryValidations(ExampleFactoryA.class);
 
         for (FactoryStyleValidation factoryValidation : factoryValidations) {
             Assertions.assertEquals("",factoryValidation.validateFactory().orElse(""));

@@ -62,7 +62,7 @@ public class ValueAttributeVisualisationBuilder<T,A extends Attribute<T,A>, AL e
     @SuppressWarnings("unchecked")
     public AttributeVisualisation createValueListVisualisation(Attribute<?,?> attribute) {
         A detailAttribute = attributeCreator.get();
-        ExpandableAttributeVisualisation<List<T>,AL> listExpandableAttributeVisualisation = new ExpandableAttributeVisualisation<List<T>,AL>(
+        return new ExpandableAttributeVisualisation<List<T>,AL>(
                 new ValueListAttributeVisualisation(
                         attribute,
                         new ValidationDecoration(uniformDesign),
@@ -73,7 +73,6 @@ public class ValueAttributeVisualisationBuilder<T,A extends Attribute<T,A>, AL e
                 uniformDesign,
                 (l) -> "Items: " + l.size(),
                 FontAwesome.Glyph.LIST);
-        return listExpandableAttributeVisualisation;
     }
 
 

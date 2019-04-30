@@ -70,7 +70,7 @@ public class ReferenceAttributeVisualisation<T extends FactoryBase<?,?>, A exten
         uniformDesign.addIcon(selectButton,FontAwesome.Glyph.SEARCH_PLUS);
         selectButton.setOnAction(event -> {
             Collection<T> collection = possibleValuesProvider.get();
-            new SelectDataDialog<>(collection, uniformDesign).show(selectButton.getScene().getWindow(), data -> observableAttributeValue.set(data));
+            new SelectDataDialog<>(collection, uniformDesign).show(selectButton.getScene().getWindow(), observableAttributeValue::set);
         });
 
         Button newButton = new Button();

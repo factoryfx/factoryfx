@@ -26,11 +26,6 @@ public abstract class Attribute<T,A extends Attribute<T,A>> implements Attribute
         set(newValue);
     }
 
-    @Override
-    public void internal_copyTo(AttributeCopy<T> copyAttribute, int level, int maxLevel, List<FactoryBase<?, ?>> oldData, FactoryBase<?, ?> parent, FactoryBase<?, ?> root) {
-
-    }
-
     public List<ValidationError> internal_validate(FactoryBase<?,?> parent, String attributeVariableName) {
         List<ValidationError> validationErrors = new ArrayList<>();
         if (validations==null){

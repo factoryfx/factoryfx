@@ -140,33 +140,6 @@ public class FactoryManagerTest {
 
     }
 
-    public static void main(String[] args) {
-        int count = 1;
-//        for (int i = 0; i < count; i++) {
-////            new FactoryManagerTest().test_large_tree_normal_factories();
-////        }
-
-        FactoryManager<ExampleLiveObjectA, FastExampleFactoryA> factoryManager = new FactoryManager<>(new RethrowingFactoryExceptionHandler());
-
-
-        FastExampleFactoryA root = new FastExampleFactoryA();
-        for (int i=0;i<100000;i++){
-            FastExampleFactoryB factoryBases = new FastExampleFactoryB();
-            factoryBases.referenceAttributeC=new FastExampleFactoryC();
-            root.referenceListAttribute.add(factoryBases);
-        }
-
-        FastExampleFactoryA commonVersion = root.internal().copy();
-        FastExampleFactoryA newVersion = root.internal().copy();
-
-        factoryManager.start(new RootFactoryWrapper<>(root));
-        long start = System.currentTimeMillis();
-        for (int i = 0; i < count; i++) {
-            factoryManager.update(commonVersion, newVersion, (p) -> true);
-        }
-        System.out.println((System.currentTimeMillis()-start)/count);
-    }
-
     @Test
     public void test_views_parent() {
         FactoryBaseTest.XRoot root = new FactoryBaseTest.XRoot();

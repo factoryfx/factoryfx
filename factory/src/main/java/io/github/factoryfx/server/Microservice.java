@@ -89,12 +89,11 @@ public class Microservice<L,R extends FactoryBase<L,R>,S> {
      */
     public DataUpdate<R> prepareNewFactory(String user, String comment) {
         DataAndId<R> currentFactory = dataStorage.getCurrentData();
-        DataUpdate<R> update = new DataUpdate<>(
+        return new DataUpdate<>(
                 currentFactory.root.utility().copy(),
                 user,
                 comment,
                 currentFactory.id);
-        return update;
     }
 
 
