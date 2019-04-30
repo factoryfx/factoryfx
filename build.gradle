@@ -568,7 +568,7 @@ project(':soapFactory') {
 
     project(':benchmark') {
         compileJava {
-            inputs.property("moduleName", null)
+            inputs.property("moduleName", "")
             doFirst {
                 options.compilerArgs = [
                         //'--module-path', classpath.asPath,
