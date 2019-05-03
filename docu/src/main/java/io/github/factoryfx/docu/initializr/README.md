@@ -3,7 +3,7 @@ the starter project provides a code generator that generate the initial project 
 The generator is a one time java code generator that simplifies the generics declarations.
 
 ## Start
-Include the starter dependency and create a main class that executes the generateInitialSetup
+Include the starter dependency and create a main class that executes the ```java InitialProjectSetup#generateInitialSetup();```
 
 ## Files
 
@@ -31,8 +31,5 @@ Include the starter dependency and create a main class that executes the generat
 * **ExampleResourceFactory**  
   Factory for the example resource
 
-
-
- 
 
 [**code**](https://github.com/factoryfx/factoryfx/tree/master/docu/src/main/java/io/github/factoryfx/docu/starter)

@@ -24,32 +24,24 @@ public class FastFactoryUtility<R extends FactoryBase<?,R>,F extends FactoryBase
 
     List<? extends FastFactoryAttributeUtility<R,F,?,?>> attributeList1;
     List<? extends FastFactoryAttributeUtility<R,F,?,?>> attributeList2;
-    List<? extends FastFactoryAttributeUtility<R,F,?,?>> attributeList3;
 
     Supplier<List<? extends FastFactoryAttributeUtility<R,F,?,?>>> attributesCreator;
 
     public FastFactoryUtility(Supplier<List<? extends FastFactoryAttributeUtility<R,F,?,?>>> attributesCreator){
         attributeList1=attributesCreator.get();
         attributeList2=attributesCreator.get();
-        attributeList3=attributesCreator.get();
 
         this.attributesCreator= attributesCreator;
 
         for (int i = 0; i < attributeList1.size(); i++) {
             attributeList1.get(i).setAttributeName("dynamicAttribute"+i);
             attributeList2.get(i).setAttributeName("dynamicAttribute"+i);
-            attributeList3.get(i).setAttributeName("dynamicAttribute"+i);
         }
-//        FactoryMetadataManager.getMetadata(clazz).setUseTemporaryAttributes();
-//        FactoryMetadataManager.getMetadata(clazz).setVisitAttributesFlat(visitAttributesFlat);
-//        FactoryMetadataManager.getMetadata(clazz).setFactoryChildrenVisitor(visitDataChildren);
-
-
     }
 
-    public void visitAttributesFlat(F data, AttributeVisitor attributeVisitor) {
+    public void visitAttributesFlat(F factory, AttributeVisitor attributeVisitor) {
         for (FastFactoryAttributeUtility<R, F,?, ?> attributeUtility : attributeList1) {
-            attributeUtility.setAttribute(data);
+            attributeUtility.setAttribute(factory);
         }
         for (FastFactoryAttributeUtility<R, F,?, ?> attributeUtility : attributeList1) {
             attributeUtility.accept(attributeVisitor);

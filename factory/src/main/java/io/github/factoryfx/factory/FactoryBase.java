@@ -329,8 +329,15 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
 
     @SuppressWarnings("unchecked")
     private <T extends FactoryBase<?,?>> T copy(int level) {
-        ArrayList<FactoryBase<?,?>> oldDataList = new ArrayList<>();
+        ArrayList<FactoryBase<?,?>> oldDataList;
+        if (childrenCounter>0){
+            oldDataList = new ArrayList<>(childrenCounter);
+        } else {
+            oldDataList = new ArrayList<>();
+        }
+
         FactoryBase<?,?> newRoot = copyDeep(0, level,oldDataList,null,(R)this);
+        newRoot.childrenCounter=oldDataList.size();
 
         for (FactoryBase<?,?> oldData: oldDataList) {
             oldData.copy=null;//cleanup
@@ -389,10 +396,14 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
     }
 
 
-    private void endUsage() {
+    private void endEditingDeepFromRoot() {
         for (FactoryBase<?,?> data: collectChildrenDeep()){
             data.visitAttributesFlat((attributeVariableName, attribute) -> attribute.internal_endUsage());
         }
+    }
+
+    private void endEditingFlat() {
+        visitAttributesFlat((attributeVariableName, attribute) -> attribute.internal_endUsage());
     }
 
 
@@ -742,8 +753,13 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
 
 
         /** only call on root*/
-        public void endUsage() {
-            factory.endUsage();
+        public void endEditingDeepFromRoot() {
+            factory.endEditingDeepFromRoot();
+        }
+
+        /** end edit for this factory*/
+        public void endEditingFlat() {
+            factory.endEditingFlat();
         }
 
         public boolean readyForUsage(){

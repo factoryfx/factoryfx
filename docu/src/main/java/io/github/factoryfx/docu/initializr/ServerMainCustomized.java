@@ -1,4 +1,4 @@
-package io.github.factoryfx.docu.starter;
+package io.github.factoryfx.docu.initializr;
 
 import ch.qos.logback.classic.Level;
 import org.slf4j.Logger;

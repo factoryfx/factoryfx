@@ -1,4 +1,4 @@
-package io.github.factoryfx.docu.starter;
+package io.github.factoryfx.docu.initializr;
 
 import java.lang.String;
 

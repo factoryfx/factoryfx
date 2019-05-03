@@ -4,12 +4,20 @@ import io.github.factoryfx.starter.template.*;
 
 import java.nio.file.Path;
 
+/**
+ * generates java files with the initial project setup for a factoryfx application
+ */
 public class InitialProjectSetup {
 
     private final Path sourceDir;
     private final String packageName;
 
 
+    /**
+     *
+     * @param sourceDir path to project java source folder. e.g.: ./project/src/main/java
+     * @param packageName project base package name
+     */
     public InitialProjectSetup(Path sourceDir, String packageName) {
         this.sourceDir = sourceDir;
         this.packageName = packageName;

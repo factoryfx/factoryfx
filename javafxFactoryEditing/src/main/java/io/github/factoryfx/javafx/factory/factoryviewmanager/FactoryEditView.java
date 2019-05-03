@@ -187,7 +187,7 @@ public class FactoryEditView<R extends FactoryBase<?,R>> implements Widget, Fact
     private Consumer<R> factoryUpdater;
     @Override
     public void update(Optional<R> previousRoot, R newRoot) {
-        previousRoot.ifPresent(serverFactory -> serverFactory.internal().endUsage());
+        previousRoot.ifPresent(serverFactory -> serverFactory.internal().endEditingDeepFromRoot());
         factoryUpdater.accept(newRoot);
     }
 

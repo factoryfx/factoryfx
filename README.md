@@ -93,7 +93,7 @@ Injection data into a live object
 Explanation of factories
 * [Liveobject](docu/src/main/java/io/github/factoryfx/docu/liveobjects)  
 Explanation of live objects
-* [Starter](docu/src/main/java/io/github/factoryfx/docu/starter)  
+* [initializr](docu/src/main/java/io/github/factoryfx/docu/initializr)  
 Code generator for initial project setup
 
 ### Advanced

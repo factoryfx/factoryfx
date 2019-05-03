@@ -11,34 +11,42 @@ public class DataMerger<R extends FactoryBase<?,R>> {
     private final R commonData;
     private final R newData;
 
-    private final Map<UUID, FactoryBase<?,R>> currentMap;
-    private final Map<UUID, FactoryBase<?,R>> originalMap;
-    private final Map<UUID, FactoryBase<?,R>> newMap;
+    private Map<UUID, FactoryBase<?,R>> currentMap;
+    private Map<UUID, FactoryBase<?,R>> commonMap;
+    private Map<UUID, FactoryBase<?,R>> newMap;
 
     public DataMerger(R currentData, R commonData, R newData) {
         if (currentData==commonData){
             throw new IllegalArgumentException("Arguments: currentData and commonData can't be the same, use .utility().copy() to create a copy");
         }
 
-        currentData.internal().addBackReferences();
-        commonData.internal().addBackReferences();
-        newData.internal().addBackReferences();
-
         this.currentData = currentData;
         this.commonData = commonData;
         this.newData = newData;
 
-        this.currentMap = currentData.internal().collectChildFactoryMap();
-        this.originalMap = commonData.internal().collectChildFactoryMap();
-        this.newMap = newData.internal().collectChildFactoryMap();
 
-//        List<FactoryBase<?,R>> currentList = currentData.internal().collectChildrenDeep();
-//        List<FactoryBase<?,R>> originalList = commonData.internal().collectChildrenDeep();
-//        List<FactoryBase<?,R>> newMapList = commonData.internal().collectChildrenDeep();
-//        Collections.sort(currentList, Comparator.comparing(FactoryBase::getId));
-//        Collections.sort(originalList, Comparator.comparing(FactoryBase::getId));
-//        Collections.sort(newMapList, Comparator.comparing(FactoryBase::getId));
-
+        Thread currentThread = new Thread(() -> {
+            currentData.internal().addBackReferences();
+            currentMap = currentData.internal().collectChildFactoryMap();
+        });
+        currentThread.start();
+        Thread commonThread = new Thread(() -> {
+            commonData.internal().addBackReferences();
+            commonMap = commonData.internal().collectChildFactoryMap();
+        });
+        commonThread.start();
+        Thread newThread = new Thread(() -> {
+            newData.internal().addBackReferences();
+            newMap = newData.internal().collectChildFactoryMap();
+        });
+        newThread.start();
+        try {
+            currentThread.join();
+            commonThread.join();
+            newThread.join();
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
 
         for (FactoryBase<?,R> newDataChild : newMap.values()) {//avoid mix up with iteration counters
             newDataChild.internal().resetIterationCounterFlat();
@@ -81,7 +89,7 @@ public class DataMerger<R extends FactoryBase<?,R>> {
         if (currentEntry.getValue()==currentData){//for root different id don't make sense
             return commonData;
         }
-        return originalMap.get(currentEntry.getKey());
+        return commonMap.get(currentEntry.getKey());
     }
 
     public MergeDiffInfo<R> mergeIntoCurrent(Function<String,Boolean> permissionChecker) {

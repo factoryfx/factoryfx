@@ -537,6 +537,16 @@ public class FactoryBaseTest {
         assertEquals("bla",attributeGroups.get(0).group.get(0).get());
     }
 
+    @Test
+    public void test_childrenCounter_after_copy(){
+        ExampleFactoryA exampleFactoryA = new ExampleFactoryA();
+        exampleFactoryA.referenceAttribute.set(new ExampleFactoryB());
+
+        ExampleFactoryA copy = exampleFactoryA.utility().copy();
+        Assertions.assertEquals(2,((FactoryBase<?,?>)copy).childrenCounter);
+
+    }
+
 
 
 }

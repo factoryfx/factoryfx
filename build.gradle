@@ -38,7 +38,7 @@ subprojects {
     apply plugin: 'maven'
     apply plugin: 'signing'
 
-    if (!'benchmark'.equals(project.name)){
+    if (!'benchmark'.equals(project.name)){//jmh does not work with module-info
         compileJava {
             inputs.property("moduleName", "io.github.factoryfx.$project.name")
             doFirst {
@@ -445,7 +445,7 @@ project(':docu') {
 
         compile project(':microserviceRestServer')
         compile project(':microserviceRestClient')
-        compile project(':starter')
+        compile project(':initializr')
         
         compile group: 'io.dropwizard.metrics', name: 'metrics-jetty9', version: '3.2.4'
         compile 'ru.yandex.qatools.embed:postgresql-embedded:1.15'
@@ -560,7 +560,7 @@ project(':soapFactory') {
 
     }
     
-    project(':starter') {
+    project(':initializr') {
 
         dependencies {
             compile project(":factory")

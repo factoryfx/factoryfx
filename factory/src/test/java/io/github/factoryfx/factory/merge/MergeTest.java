@@ -554,7 +554,6 @@ public class MergeTest {
         ExampleDataA currentModel = new ExampleDataA();
         {
             ExampleDataB exampleFactoryB = new ExampleDataB();
-//            currentModel.referenceListAttribute.add(exampleFactoryB);
             currentModel.referenceAttribute.set(exampleFactoryB);
         }
         currentModel=currentModel.internal().addBackReferences();
@@ -566,15 +565,17 @@ public class MergeTest {
 
         ExampleDataA newModel = currentModel.internal().copy();
         {
+
             newModel.referenceListAttribute.add(newModel.referenceAttribute.get());
-            newModel.referenceListAttribute.add(newModel.referenceAttribute.get().utility().semanticCopy());
+//            newModel.referenceListAttribute.add(value);
+//            newModel.referenceListAttribute.add(newModel.referenceAttribute.get().utility().semanticCopy());
         }
 
         DataMerger<ExampleDataA> dataMerger = new DataMerger<>(currentModel, originalModel, newModel);
         MergeDiffInfo mergeDiff = dataMerger.mergeIntoCurrent((permission)->true);
         Assertions.assertEquals(0, mergeDiff.getConflictCount());
 
-        Assertions.assertEquals(currentModel.referenceListAttribute.get(0), currentModel.referenceAttribute.get());
+        Assertions.assertEquals(currentModel.referenceAttribute.get(), currentModel.referenceListAttribute.get().get(0));
         //assert still serializable;
         currentModel.internal().copy();
     }

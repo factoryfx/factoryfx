@@ -57,12 +57,12 @@ public class FactoryBaseAttribute<R extends FactoryBase<?,R>,L,F extends Factory
 
 
     @Override
-    public void set(F value) {
-        this.value=value;
-        if (root!=null && value!=null) {
-            value.internal().addBackReferencesForSubtreeUnsafe(root,this.parent);
+    public void set(F factory) {
+        this.value=factory;
+        if (root!=null && factory!=null) {
+            factory.internal().addBackReferencesForSubtreeUnsafe(root,this.parent);
         }
-        updateListeners(value);
+        updateListeners(factory);
     }
 
     @SuppressWarnings("unchecked")
