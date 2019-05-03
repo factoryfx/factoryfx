@@ -2,17 +2,17 @@ package io.github.factoryfx.example.client.view;
 
 import io.github.factoryfx.example.server.ServerRootFactory;
 import io.github.factoryfx.factory.attribute.dependency.FactoryAttribute;
-import io.github.factoryfx.javafx.factory.editor.attribute.AttributeVisualisationMappingBuilder;
-import io.github.factoryfx.javafx.factory.util.UniformDesign;
-import io.github.factoryfx.javafx.factory.widget.Widget;
-import io.github.factoryfx.javafx.factory.RichClientRoot;
-import io.github.factoryfx.javafx.factory.editor.attribute.AttributeEditorBuilderFactory;
-import io.github.factoryfx.javafx.factory.util.LongRunningActionExecutor;
-import io.github.factoryfx.javafx.factory.util.LongRunningActionExecutorFactory;
-import io.github.factoryfx.javafx.factory.util.UniformDesignFactory;
-import io.github.factoryfx.javafx.factory.widget.factory.WidgetFactory;
-import io.github.factoryfx.javafx.factory.widget.factory.diffdialog.DiffDialogBuilder;
-import io.github.factoryfx.javafx.factory.widget.factory.history.HistoryWidget;
+import io.github.factoryfx.javafx.editor.attribute.AttributeVisualisationMappingBuilder;
+import io.github.factoryfx.javafx.util.UniformDesign;
+import io.github.factoryfx.javafx.widget.Widget;
+import io.github.factoryfx.javafx.RichClientRoot;
+import io.github.factoryfx.javafx.editor.attribute.AttributeEditorBuilderFactory;
+import io.github.factoryfx.javafx.util.LongRunningActionExecutor;
+import io.github.factoryfx.javafx.util.LongRunningActionExecutorFactory;
+import io.github.factoryfx.javafx.util.UniformDesignFactory;
+import io.github.factoryfx.javafx.widget.factory.WidgetFactory;
+import io.github.factoryfx.javafx.widget.factory.diffdialog.DiffDialogBuilder;
+import io.github.factoryfx.javafx.widget.factory.history.HistoryWidget;
 import io.github.factoryfx.microservice.rest.client.MicroserviceRestClient;
 import io.github.factoryfx.microservice.rest.client.MicroserviceRestClientFactory;
 

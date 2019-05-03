@@ -1,0 +1,34 @@
+package io.github.factoryfx.javafx.factoryviewmanager;
+
+import io.github.factoryfx.factory.FactoryBase;
+import io.github.factoryfx.factory.attribute.dependency.FactoryAttribute;
+import io.github.factoryfx.javafx.RichClientRoot;
+import io.github.factoryfx.javafx.editor.DataEditorFactory;
+import io.github.factoryfx.javafx.editor.DataEditor;
+import io.github.factoryfx.javafx.util.LongRunningActionExecutor;
+import io.github.factoryfx.javafx.util.LongRunningActionExecutorFactory;
+import io.github.factoryfx.javafx.util.UniformDesign;
+import io.github.factoryfx.javafx.util.UniformDesignFactory;
+import io.github.factoryfx.javafx.widget.Widget;
+import io.github.factoryfx.javafx.widget.factory.WidgetFactory;
+import io.github.factoryfx.javafx.widget.factory.diffdialog.DiffDialogBuilder;
+import io.github.factoryfx.javafx.widget.factory.diffdialog.DiffDialogBuilderFactory;
+
+/**
+ *
+ * @param <RS> server root
+ */
+public class FactoryEditViewFactory<RS extends FactoryBase<?,RS>,S> extends WidgetFactory {
+
+    public final FactoryAttribute<RichClientRoot,FactoryEditManager<RS,S>, FactoryEditManagerFactory<RS,S>> factoryEditManager = new FactoryAttribute<>();
+    public final FactoryAttribute<RichClientRoot,LongRunningActionExecutor, LongRunningActionExecutorFactory> longRunningActionExecutor = new FactoryAttribute<>();
+    public final FactoryAttribute<RichClientRoot,UniformDesign, UniformDesignFactory> uniformDesign = new FactoryAttribute<>();
+    public final FactoryAttribute<RichClientRoot,DataEditor, DataEditorFactory> dataEditorFactory = new FactoryAttribute<>();
+    public final FactoryAttribute<RichClientRoot,FactoryAwareWidget<RS>,FactoryAwareWidgetFactory<RS>> contentWidgetFactory = new FactoryAttribute<>();
+    public final FactoryAttribute<RichClientRoot,DiffDialogBuilder, DiffDialogBuilderFactory> diffDialogBuilder = new FactoryAttribute<>();
+
+    @Override
+    protected Widget createWidget() {
+        return new FactoryEditView<>(longRunningActionExecutor.instance(), factoryEditManager.instance(), contentWidgetFactory.instance(), uniformDesign.instance(), dataEditorFactory.instance(), diffDialogBuilder.instance());
+    }
+}

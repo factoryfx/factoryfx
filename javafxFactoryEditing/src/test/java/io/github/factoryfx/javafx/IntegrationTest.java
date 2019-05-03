@@ -1,15 +1,15 @@
 package io.github.factoryfx.javafx;
 
-import io.github.factoryfx.javafx.factory.stage.StageFactory;
-import io.github.factoryfx.javafx.factory.util.LongRunningActionExecutorFactory;
-import io.github.factoryfx.javafx.factory.util.UniformDesignFactory;
-import io.github.factoryfx.javafx.factory.view.ViewDescriptionFactory;
-import io.github.factoryfx.javafx.factory.view.ViewFactory;
-import io.github.factoryfx.javafx.factory.view.container.ViewsDisplayWidgetFactory;
-import io.github.factoryfx.javafx.factory.view.menu.ViewMenuFactory;
-import io.github.factoryfx.javafx.factory.view.menu.ViewMenuItemFactory;
-import io.github.factoryfx.javafx.factory.widget.Widget;
-import io.github.factoryfx.javafx.factory.widget.factory.WidgetFactory;
+import io.github.factoryfx.javafx.stage.StageFactory;
+import io.github.factoryfx.javafx.util.LongRunningActionExecutorFactory;
+import io.github.factoryfx.javafx.util.UniformDesignFactory;
+import io.github.factoryfx.javafx.view.ViewDescriptionFactory;
+import io.github.factoryfx.javafx.view.ViewFactory;
+import io.github.factoryfx.javafx.view.container.ViewsDisplayWidgetFactory;
+import io.github.factoryfx.javafx.view.menu.ViewMenuFactory;
+import io.github.factoryfx.javafx.view.menu.ViewMenuItemFactory;
+import io.github.factoryfx.javafx.widget.Widget;
+import io.github.factoryfx.javafx.widget.factory.WidgetFactory;
 import javafx.application.Application;
 import javafx.scene.control.Label;
 import javafx.scene.layout.BorderPane;

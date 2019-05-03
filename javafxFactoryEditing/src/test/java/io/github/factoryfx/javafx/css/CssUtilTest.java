@@ -1,6 +1,5 @@
 package io.github.factoryfx.javafx.css;
 
-import io.github.factoryfx.javafx.factory.css.CssUtil;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 

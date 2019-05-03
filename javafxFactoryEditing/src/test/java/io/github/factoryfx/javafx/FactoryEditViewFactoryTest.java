@@ -2,8 +2,8 @@ package io.github.factoryfx.javafx;
 
 import io.github.factoryfx.factory.SimpleFactoryBase;
 import io.github.factoryfx.factory.testfactories.ExampleLiveObjectA;
-import io.github.factoryfx.javafx.factory.editor.DataEditorFactory;
-import io.github.factoryfx.javafx.factory.factoryviewmanager.FactoryEditViewFactory;
+import io.github.factoryfx.javafx.editor.DataEditorFactory;
+import io.github.factoryfx.javafx.factoryviewmanager.FactoryEditViewFactory;
 import org.junit.jupiter.api.Test;
 
 public class FactoryEditViewFactoryTest {

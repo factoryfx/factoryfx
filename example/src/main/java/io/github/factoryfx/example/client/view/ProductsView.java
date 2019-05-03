@@ -4,8 +4,8 @@ import io.github.factoryfx.example.server.ServerRootFactory;
 import io.github.factoryfx.example.server.shop.Product;
 import io.github.factoryfx.example.server.shop.ProductFactory;
 import io.github.factoryfx.example.server.shop.ShopResourceFactory;
-import io.github.factoryfx.javafx.factory.widget.dataview.DataViewWidget;
-import io.github.factoryfx.javafx.factory.factoryviewmanager.FactoryAwareWidget;
+import io.github.factoryfx.javafx.widget.factory.masterdetail.DataViewWidget;
+import io.github.factoryfx.javafx.factoryviewmanager.FactoryAwareWidget;
 import javafx.scene.Node;
 
 public class ProductsView implements FactoryAwareWidget<ServerRootFactory> {

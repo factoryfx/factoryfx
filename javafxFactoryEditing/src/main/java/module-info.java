@@ -11,45 +11,42 @@ module io.github.factoryfx.javafxFactoryEditing {
     requires transitive org.controlsfx.controls;
 
 
-    exports io.github.factoryfx.javafx.factory;
+    exports io.github.factoryfx.javafx;
 
-    exports io.github.factoryfx.javafx.factory.view;
-    exports io.github.factoryfx.javafx.factory.factoryviewmanager;
-    exports io.github.factoryfx.javafx.factory.view.container;
-    exports io.github.factoryfx.javafx.factory.view.menu;
-
-
-    exports io.github.factoryfx.javafx.factory.stage;
-    exports io.github.factoryfx.javafx.factory.util;
-
-    exports io.github.factoryfx.javafx.factory.widget.factory;
-    exports io.github.factoryfx.javafx.factory.widget.factory.factorylog;
-    exports io.github.factoryfx.javafx.factory.widget.factory.history;
-    exports io.github.factoryfx.javafx.factory.widget.factory.diffdialog;
-    exports io.github.factoryfx.javafx.factory.widget.factory.datatree;
-    exports io.github.factoryfx.javafx.factory.widget.factory.dataview;
-
-    opens io.github.factoryfx.javafx.factory.factoryviewmanager;//jackson
+    exports io.github.factoryfx.javafx.view;
+    exports io.github.factoryfx.javafx.factoryviewmanager;
+    exports io.github.factoryfx.javafx.view.container;
+    exports io.github.factoryfx.javafx.view.menu;
 
 
+    exports io.github.factoryfx.javafx.stage;
+    exports io.github.factoryfx.javafx.util;
 
-    exports io.github.factoryfx.javafx.factory.editor.attribute;
-    opens io.github.factoryfx.javafx.factory.editor.attribute;
-    exports io.github.factoryfx.javafx.factory.editor.attribute.builder;
-    exports io.github.factoryfx.javafx.factory.editor.attribute.visualisation;
-    exports io.github.factoryfx.javafx.factory.editor.attribute.converter;
-    exports io.github.factoryfx.javafx.factory.editor.data;
+    exports io.github.factoryfx.javafx.widget.factory;
+    exports io.github.factoryfx.javafx.widget.factory.factorylog;
+    exports io.github.factoryfx.javafx.widget.factory.history;
+    exports io.github.factoryfx.javafx.widget.factory.diffdialog;
+    exports io.github.factoryfx.javafx.widget.factory.tree;
+    exports io.github.factoryfx.javafx.widget.factory.masterdetail;
 
-    exports io.github.factoryfx.javafx.factory.widget;
-    exports io.github.factoryfx.javafx.factory.widget.datalistedit;
-    exports io.github.factoryfx.javafx.factory.widget.dataview;
-    exports io.github.factoryfx.javafx.factory.widget.factorydiff;
-    exports io.github.factoryfx.javafx.factory.widget.select;
-    exports io.github.factoryfx.javafx.factory.widget.table;
-    exports io.github.factoryfx.javafx.factory.widget.tree;
-    exports io.github.factoryfx.javafx.factory.widget.validation;
+    opens io.github.factoryfx.javafx.factoryviewmanager;//jackson
 
-    exports io.github.factoryfx.javafx.factory.css;
-    opens io.github.factoryfx.javafx.factory.css;
-    exports io.github.factoryfx.javafx.factory.editor;
+
+
+    exports io.github.factoryfx.javafx.editor.attribute;
+    opens io.github.factoryfx.javafx.editor.attribute;
+    exports io.github.factoryfx.javafx.editor.attribute.builder;
+    exports io.github.factoryfx.javafx.editor.attribute.visualisation;
+    exports io.github.factoryfx.javafx.editor.attribute.converter;
+    exports io.github.factoryfx.javafx.editor;
+
+    exports io.github.factoryfx.javafx.widget;
+    exports io.github.factoryfx.javafx.widget.factory.listedit;
+    exports io.github.factoryfx.javafx.widget.factorydiff;
+    exports io.github.factoryfx.javafx.widget.select;
+    exports io.github.factoryfx.javafx.widget.table;
+    exports io.github.factoryfx.javafx.widget.validation;
+
+    exports io.github.factoryfx.javafx.css;
+    opens io.github.factoryfx.javafx.css;
 }

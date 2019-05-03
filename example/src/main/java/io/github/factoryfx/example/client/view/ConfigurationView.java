@@ -1,8 +1,8 @@
 package io.github.factoryfx.example.client.view;
 
 import io.github.factoryfx.example.server.ServerRootFactory;
-import io.github.factoryfx.javafx.factory.factoryviewmanager.FactoryAwareWidget;
-import io.github.factoryfx.javafx.factory.widget.tree.DataTreeWidget;
+import io.github.factoryfx.javafx.factoryviewmanager.FactoryAwareWidget;
+import io.github.factoryfx.javafx.widget.factory.tree.DataTreeWidget;
 import javafx.scene.Node;
 
 public class ConfigurationView implements FactoryAwareWidget<ServerRootFactory> {

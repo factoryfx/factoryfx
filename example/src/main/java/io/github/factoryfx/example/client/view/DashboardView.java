@@ -1,7 +1,7 @@
 package io.github.factoryfx.example.client.view;
 
 import io.github.factoryfx.example.server.shop.OrderStorage;
-import io.github.factoryfx.javafx.factory.widget.Widget;
+import io.github.factoryfx.javafx.widget.Widget;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.scene.Node;
 import javafx.scene.chart.LineChart;

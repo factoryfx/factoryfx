@@ -1,6 +1,6 @@
 package io.github.factoryfx.javafx;
 
-import io.github.factoryfx.javafx.factory.editor.attribute.ColorAttribute;
+import io.github.factoryfx.javafx.editor.attribute.ColorAttribute;
 import javafx.scene.paint.Color;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;

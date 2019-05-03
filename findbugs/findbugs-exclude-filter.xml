@@ -66,7 +66,7 @@
     </Match>
 
     <Match>
-        <Class name="io.github.factoryfx.javafx.factory.widget.datalistedit.ReferenceListAttributeEditWidget" />
+        <Class name="io.github.factoryfx.javafx.widget.factory.listedit.FactoryListAttributeEditWidget" />
         <Bug pattern="UC_USELESS_OBJECT" />
     </Match>
 

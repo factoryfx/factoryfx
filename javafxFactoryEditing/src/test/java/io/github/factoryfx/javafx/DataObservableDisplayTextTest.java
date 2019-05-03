@@ -3,7 +3,7 @@ package io.github.factoryfx.javafx;
 
 import io.github.factoryfx.factory.FactoryBase;
 import io.github.factoryfx.factory.attribute.types.StringAttribute;
-import io.github.factoryfx.javafx.factory.util.DataObservableDisplayText;
+import io.github.factoryfx.javafx.util.DataObservableDisplayText;
 import javafx.beans.property.ReadOnlyStringProperty;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
