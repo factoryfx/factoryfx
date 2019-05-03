@@ -1,4 +1,4 @@
-package io.github.factoryfx.javafx.editor.data;
+package io.github.factoryfx.javafx.editor;
 
 import java.util.ArrayList;
 
@@ -6,6 +6,8 @@ import io.github.factoryfx.javafx.UniformDesignBuilder;
 import io.github.factoryfx.javafx.editor.DataEditor;
 import io.github.factoryfx.javafx.editor.DataEditorState;
 import io.github.factoryfx.javafx.editor.attribute.AttributeVisualisationMappingBuilder;
+import io.github.factoryfx.javafx.editor.data.ExampleData1;
+import io.github.factoryfx.javafx.editor.data.ExampleData2;
 import io.github.factoryfx.javafx.util.UniformDesign;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
