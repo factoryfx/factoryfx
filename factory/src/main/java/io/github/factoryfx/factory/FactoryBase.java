@@ -135,7 +135,7 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
     private Map<UUID,FactoryBase<?,R>> collectChildDataMap() {
         Map<UUID, FactoryBase<?,R>> result;
         if (childrenCounter>0) {
-            result = Maps.newLinkedHashMapWithExpectedSize(childrenCounter);
+            result = Maps.newLinkedHashMapWithExpectedSize(childrenCounter);//Maps.newLinkedHashMapWithExpectedSize(childrenCounter);
         } else {
             result = new LinkedHashMap<>();// LinkedHashMap surprisingly is faster than HashMap in this case;
         }

@@ -30,14 +30,16 @@ public class FastExampleFactoryA extends SimpleFactoryBase<ExampleLiveObjectA,Fa
                             new FastValueAttribute<>(
                                 ()->new StringAttribute().labelText("ExampleA1"),
                                 (factory) -> factory.stringAttribute,
-                                (factory, value) -> factory.stringAttribute = value
+                                (factory, value) -> factory.stringAttribute = value,
+                                "stringAttribute"
                             )
                             ,
                             new FastFactoryAttribute<>(
                                     ()->new FactoryAttribute<FastExampleFactoryA, ExampleLiveObjectB, FastExampleFactoryB>().labelText("ExampleA2"),
                                     (factory) -> factory.referenceAttribute,
                                     (factory, value) -> factory.referenceAttribute = value,
-                                    FastExampleFactoryB.class
+                                    FastExampleFactoryB.class,
+                                    "referenceAttribute"
                             )
                             ,
                             new FastFactoryListAttribute<>(
@@ -46,7 +48,8 @@ public class FastExampleFactoryA extends SimpleFactoryBase<ExampleLiveObjectA,Fa
                                     (factory, value) -> {
                                         factory.referenceListAttribute = value;
                                     },
-                                    FastExampleFactoryB.class
+                                    FastExampleFactoryB.class,
+                                    "referenceListAttribute"
                             )
                     )
         ));

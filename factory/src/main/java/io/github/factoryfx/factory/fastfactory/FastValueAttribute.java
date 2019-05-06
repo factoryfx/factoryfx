@@ -14,8 +14,8 @@ import java.util.function.Supplier;
 
 public class FastValueAttribute<R extends FactoryBase<?,R>,F extends FactoryBase<?,R>,V,A extends ImmutableValueAttribute<V,?>> extends FastFactoryAttributeUtility<R,F,V,A>{
 
-    public FastValueAttribute(Supplier<A> attributeCreator, Function<F, V> valueGetter, BiConsumer<F,V> valueSetter) {
-        super(attributeCreator,valueGetter,valueSetter);
+    public FastValueAttribute(Supplier<A> attributeCreator, Function<F, V> valueGetter, BiConsumer<F,V> valueSetter, String attributeName) {
+        super(attributeCreator,valueGetter,valueSetter,attributeName);
     }
 
     @Override

@@ -21,25 +21,21 @@ public class FastFactoryUtility<R extends FactoryBase<?,R>,F extends FactoryBase
         FactoryMetadataManager.getMetadata(clazz).setFastFactoryUtility(fastFactoryUtility);
     }
 
-
-    List<? extends FastFactoryAttributeUtility<R,F,?,?>> attributeList1;
-    List<? extends FastFactoryAttributeUtility<R,F,?,?>> attributeList2;
-
     Supplier<List<? extends FastFactoryAttributeUtility<R,F,?,?>>> attributesCreator;
 
     public FastFactoryUtility(Supplier<List<? extends FastFactoryAttributeUtility<R,F,?,?>>> attributesCreator){
-        attributeList1=attributesCreator.get();
-        attributeList2=attributesCreator.get();
-
         this.attributesCreator= attributesCreator;
 
-        for (int i = 0; i < attributeList1.size(); i++) {
-            attributeList1.get(i).setAttributeName("dynamicAttribute"+i);
-            attributeList2.get(i).setAttributeName("dynamicAttribute"+i);
-        }
+        attributeListForCopy1=attributesCreator.get();
+        attributeListForCopy2=attributesCreator.get();
+
+        attributeListForMatch1=attributesCreator.get();
+        attributeListForMatch2=attributesCreator.get();
     }
 
     public void visitAttributesFlat(F factory, AttributeVisitor attributeVisitor) {
+        List<? extends FastFactoryAttributeUtility<R,F,?,?>> attributeList1=attributesCreator.get();//recreate for threadsafety
+
         for (FastFactoryAttributeUtility<R, F,?, ?> attributeUtility : attributeList1) {
             attributeUtility.setAttribute(factory);
         }
@@ -61,15 +57,17 @@ public class FastFactoryUtility<R extends FactoryBase<?,R>,F extends FactoryBase
         return childFactories.stream().map((f) -> f.internal().instance()).collect(Collectors.toList());
     }
 
-    public void visitAttributesForCopy(F factory, F other, FactoryBase.BiCopyAttributeVisitor<?> consumer) {
-        for (FastFactoryAttributeUtility<R, F, ?, ?> attributeUtility : attributeList1) {
+    private final List<? extends FastFactoryAttributeUtility<R,F,?,?>> attributeListForCopy1;
+    private final List<? extends FastFactoryAttributeUtility<R,F,?,?>> attributeListForCopy2;
+    public synchronized void visitAttributesForCopy(F factory, F other, FactoryBase.BiCopyAttributeVisitor<?> consumer) {
+        for (FastFactoryAttributeUtility<R, F, ?, ?> attributeUtility : attributeListForCopy1) {
             attributeUtility.bindFactory(factory);
         }
-        for (FastFactoryAttributeUtility<R, F, ?, ?> attributeUtility : attributeList2) {
+        for (FastFactoryAttributeUtility<R, F, ?, ?> attributeUtility : attributeListForCopy2) {
             attributeUtility.bindFactory(other);
         }
-        for (int i = 0; i < attributeList1.size(); i++) {
-            visitAttributeForCopy(attributeList1.get(i),attributeList2.get(i),consumer);
+        for (int i = 0; i < attributeListForCopy1.size(); i++) {
+            visitAttributeForCopy(attributeListForCopy1.get(i),attributeListForCopy2.get(i),consumer);
         }
     }
 
@@ -79,15 +77,17 @@ public class FastFactoryUtility<R extends FactoryBase<?,R>,F extends FactoryBase
     }
 
 
-    public <V> void visitAttributesForMatch(F factory, F other, FactoryBase.AttributeMatchVisitor<V> consumer) {
-        for (FastFactoryAttributeUtility<R, F, ?, ?> attributeUtility : attributeList1) {
+    private final List<? extends FastFactoryAttributeUtility<R,F,?,?>> attributeListForMatch1;
+    private final List<? extends FastFactoryAttributeUtility<R,F,?,?>> attributeListForMatch2;
+    public synchronized <V> void visitAttributesForMatch(F factory, F other, FactoryBase.AttributeMatchVisitor<V> consumer) {
+        for (FastFactoryAttributeUtility<R, F, ?, ?> attributeUtility : attributeListForMatch1) {
             attributeUtility.bindFactory(factory);
         }
-        for (FastFactoryAttributeUtility<R, F, ?, ?> attributeUtility : attributeList2) {
+        for (FastFactoryAttributeUtility<R, F, ?, ?> attributeUtility : attributeListForMatch2) {
             attributeUtility.bindFactory(other);
         }
-        for (int i = 0; i < attributeList1.size(); i++) {
-            visitAttributeForMatch(attributeList1.get(i),attributeList2.get(i),consumer);
+        for (int i = 0; i < attributeListForMatch1.size(); i++) {
+            visitAttributeForMatch(attributeListForMatch1.get(i),attributeListForMatch2.get(i),consumer);
         }
     }
 
@@ -97,7 +97,8 @@ public class FastFactoryUtility<R extends FactoryBase<?,R>,F extends FactoryBase
     }
 
     public void visitChildFactoriesAndViewsFlat(F factory, Consumer<FactoryBase<?, R>> consumer) {
-        for (FastFactoryAttributeUtility<R, F, ?, ?> attributeUtility : attributeList1) {
+        List<? extends FastFactoryAttributeUtility<R,F,?,?>> attributeList=attributesCreator.get();//recreate for threadsafety
+        for (FastFactoryAttributeUtility<R, F, ?, ?> attributeUtility : attributeList) {
             attributeUtility.bindFactory(factory);
             attributeUtility.visitChildFactory(consumer);
         }

@@ -19,7 +19,7 @@ public abstract class FastFactoryAttributeUtility<R extends FactoryBase<?,R>, F 
     protected final Function<F,V> valueGetter;
     protected final BiConsumer<F,V> valueSetter;
 
-    public FastFactoryAttributeUtility(Supplier<A> attributeCreator, Function<F,V> valueGetter, BiConsumer<F,V> valueSetter) {
+    public FastFactoryAttributeUtility(Supplier<A> attributeCreator, Function<F,V> valueGetter, BiConsumer<F,V> valueSetter, String attributeName) {
         this.attributeCreator = attributeCreator;
         this.valueGetter = valueGetter;
         this.valueSetter = valueSetter;

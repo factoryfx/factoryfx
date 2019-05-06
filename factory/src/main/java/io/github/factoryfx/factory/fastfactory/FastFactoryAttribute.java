@@ -15,8 +15,8 @@ import java.util.function.Supplier;
 public class FastFactoryAttribute<R extends FactoryBase<?,R>, F extends FactoryBase<?,R>,L,V extends FactoryBase<L,R>> extends FastFactoryAttributeUtility<R,F,V,FactoryAttribute<R,L,V>>{
 
     private final Class<V> referenceClass;
-    public FastFactoryAttribute(Supplier<FactoryAttribute<R, L, V>> attributeCreator, Function<F,V> valueGetter, BiConsumer<F,V> valueSetter, Class<V> referenceClass) {
-        super(attributeCreator,valueGetter,valueSetter);
+    public FastFactoryAttribute(Supplier<FactoryAttribute<R, L, V>> attributeCreator, Function<F,V> valueGetter, BiConsumer<F,V> valueSetter, Class<V> referenceClass, String attributeName) {
+        super(attributeCreator,valueGetter,valueSetter,attributeName);
         this.referenceClass=referenceClass;
     }
 

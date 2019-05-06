@@ -117,6 +117,8 @@ public class FastFactoryUtilityTest {
         Assertions.assertEquals(5,original.internal().collectChildrenDeep().size());
         Assertions.assertEquals(referenceAttributeC1,original.referenceListAttribute.get(0).referenceAttributeC);
         Assertions.assertEquals(referenceAttributeC2,original.referenceListAttribute.get(1).referenceAttributeC);
+
+        //FIAls randomly
     }
 
     @Test
@@ -139,12 +141,7 @@ public class FastFactoryUtilityTest {
     public void test_copy(){
         FastExampleFactoryA original = new FastExampleFactoryA();
         FactoryBase<?, ?> copy = original.internal().copy();
-
-        System.out.println(
-                "gdgfd"
-        );
-
-
+        Assertions.assertNotEquals(original,copy);
     }
 
     @Test

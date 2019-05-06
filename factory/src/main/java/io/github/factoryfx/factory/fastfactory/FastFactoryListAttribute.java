@@ -17,8 +17,8 @@ public class FastFactoryListAttribute<R extends FactoryBase<?,R>, F extends Fact
 
     private final Class<V> referenceClass;
 
-    public FastFactoryListAttribute(Supplier<FactoryListAttribute<R,L,V>> attributeCreator, Function<F,List<V>> valueGetter, BiConsumer<F,List<V>> valueSetter, Class<V> referenceClass) {
-        super(attributeCreator,valueGetter,valueSetter);
+    public FastFactoryListAttribute(Supplier<FactoryListAttribute<R,L,V>> attributeCreator, Function<F,List<V>> valueGetter, BiConsumer<F,List<V>> valueSetter, Class<V> referenceClass, String attributeName) {
+        super(attributeCreator,valueGetter,valueSetter,attributeName);
         this.referenceClass = referenceClass;
     }
 
