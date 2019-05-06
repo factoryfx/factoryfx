@@ -61,7 +61,7 @@ public class DataMerger<R extends FactoryBase<?,R>> {
 
 
         //Performance optimisation for the case that the factory tree structure are identically
-        //If not identically use map
+        //First use normal iteration and if not identically use map
 
 
         int matchEnd=-1;
@@ -102,7 +102,11 @@ public class DataMerger<R extends FactoryBase<?,R>> {
             }
 
             for (FactoryBase<?,R> item: currentDataMap.values()){
-                mergeable.add(new Triple<>(item,commonDataMap.get(item.getId()),newDataDataMap.get(item.getId())));
+                if (item==currentData){//root compare even with wrong ids
+                    mergeable.add(new Triple<>(item,commonData,newData));
+                } else {
+                    mergeable.add(new Triple<>(item,commonDataMap.get(item.getId()),newDataDataMap.get(item.getId())));
+                }
             }
         }
 
