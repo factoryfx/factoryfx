@@ -33,7 +33,7 @@ public class OracledbDataStorageHistoryTest extends DatabaseTest {
 
     private StoredDataMetadata<Void> createDummyMetadata() {
         ExampleFactoryA exampleFactoryA = new ExampleFactoryA();
-        exampleFactoryA.internal().addBackReferences();
+        exampleFactoryA.internal().finalise();
         DataStorageMetadataDictionary dataStorageMetadataDictionary = exampleFactoryA.internal().createDataStorageMetadataDictionaryFromRoot();
         return new StoredDataMetadata<>( UUID.randomUUID().toString(), "", "", "",null,
                 dataStorageMetadataDictionary,null);

@@ -27,12 +27,12 @@ public class FactoryTreeBuilderAttributeFillerTest {
         FactoryTreeBuilderAttributeFiller<ExampleLiveObjectA, ExampleFactoryA, Void> filler = new FactoryTreeBuilderAttributeFiller<>(builder);
 
         ExampleFactoryA exampleFactoryA = new ExampleFactoryA();
-        exampleFactoryA.internal().addBackReferences();
+        exampleFactoryA.internal().finalise();
         DataStorageMetadataDictionary dataStorageMetadataDictionaryFromRoot = exampleFactoryA.internal().createDataStorageMetadataDictionaryFromRoot();
         dataStorageMetadataDictionaryFromRoot.getDataStorageMetadata(ExampleFactoryA.class.getName()).removeAttribute("referenceAttribute");
 
         ExampleFactoryA exampleFactoryNew = new ExampleFactoryA();
-        exampleFactoryNew.internal().addBackReferences();
+        exampleFactoryNew.internal().finalise();
         Assertions.assertNull(exampleFactoryNew.referenceAttribute.get());
         filler.fillNewAttributes(exampleFactoryNew, dataStorageMetadataDictionaryFromRoot);
         Assertions.assertEquals("111",exampleFactoryNew.referenceAttribute.get().stringAttribute.get());
@@ -54,12 +54,12 @@ public class FactoryTreeBuilderAttributeFillerTest {
         FactoryTreeBuilderAttributeFiller<ExampleLiveObjectA, ExampleFactoryA, Void> filler = new FactoryTreeBuilderAttributeFiller<>(builder);
 
         ExampleFactoryA exampleFactoryA = new ExampleFactoryA();
-        exampleFactoryA.internal().addBackReferences();
+        exampleFactoryA.internal().finalise();
         DataStorageMetadataDictionary dataStorageMetadataDictionaryFromRoot = exampleFactoryA.internal().createDataStorageMetadataDictionaryFromRoot();
 
 
         ExampleFactoryA exampleFactoryNew = new ExampleFactoryA();
-        exampleFactoryNew.internal().addBackReferences();
+        exampleFactoryNew.internal().finalise();
         Assertions.assertNull(exampleFactoryNew.referenceAttribute.get());
         filler.fillNewAttributes(exampleFactoryNew,dataStorageMetadataDictionaryFromRoot);
         Assertions.assertNull(exampleFactoryNew.referenceAttribute.get());
@@ -83,14 +83,14 @@ public class FactoryTreeBuilderAttributeFillerTest {
         FactoryTreeBuilderAttributeFiller<ExampleLiveObjectA, ExampleFactoryA, Void> filler = new FactoryTreeBuilderAttributeFiller<>(builder);
 
         ExampleFactoryA exampleFactoryA = new ExampleFactoryA();
-        exampleFactoryA.internal().addBackReferences();
+        exampleFactoryA.internal().finalise();
         DataStorageMetadataDictionary dataStorageMetadataDictionaryFromRoot = exampleFactoryA.internal().createDataStorageMetadataDictionaryFromRoot();
         dataStorageMetadataDictionaryFromRoot.getDataStorageMetadata(ExampleFactoryA.class.getName()).removeAttribute("referenceAttribute");
 
         ExampleFactoryA exampleFactoryNew = new ExampleFactoryA();
         exampleFactoryNew.referenceAttribute.set(null);
         exampleFactoryNew.referenceListAttribute.add(new ExampleFactoryB());
-        exampleFactoryNew.internal().addBackReferences();
+        exampleFactoryNew.internal().finalise();
         filler.fillNewAttributes(exampleFactoryNew,dataStorageMetadataDictionaryFromRoot);
         Assertions.assertEquals(exampleFactoryNew.referenceAttribute.get(),exampleFactoryNew.referenceListAttribute.get(0));
     }

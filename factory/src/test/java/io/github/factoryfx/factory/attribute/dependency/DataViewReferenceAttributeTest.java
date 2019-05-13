@@ -48,7 +48,7 @@ public class DataViewReferenceAttributeTest {
         ViewExampleDataA value = new ViewExampleDataA();
         root.exampleFactoryA.set(value);
 
-        root = root.internal().addBackReferences();
+        root = root.internal().finalise();
 
         Assertions.assertEquals(root.exampleFactoryA.get().getId(),root.ref.get().view.get().getId());
     }
@@ -63,7 +63,7 @@ public class DataViewReferenceAttributeTest {
         ViewExampleDataA value = new ViewExampleDataA();
         root.exampleFactoryA.set(value);
 
-        root.internal().addBackReferences();
+        root.internal().finalise();
 
         Assertions.assertEquals(null,viewExampleFactory.view.get());
     }
@@ -79,7 +79,7 @@ public class DataViewReferenceAttributeTest {
         value.stringAttribute.set("123");
         root.exampleFactoryA.set(value);
 
-        root = root.internal().addBackReferences();
+        root = root.internal().finalise();
         root.ref.get().view.setRunlaterExecutor(runnable -> runnable.run());
 
         ArrayList<String> calls=new ArrayList<>();
@@ -126,7 +126,7 @@ public class DataViewReferenceAttributeTest {
         value.stringAttribute.set("123");
         root.exampleFactoryA.set(value);
 
-        root.internal().addBackReferences();
+        root.internal().finalise();
 
         ArrayList<String> calls=new ArrayList<>();
         viewExampleFactory.view.internal_addListener((attribute, value1) -> calls.add(value1.stringAttribute.get()));
@@ -151,7 +151,7 @@ public class DataViewReferenceAttributeTest {
         root.ref.set(viewExampleFactory);
         ViewExampleDataA value = new ViewExampleDataA();
         root.exampleFactoryA.set(value);
-        root=root.internal().addBackReferences();
+        root=root.internal().finalise();
 
         root.internal().copy();
 
@@ -167,7 +167,7 @@ public class DataViewReferenceAttributeTest {
         ViewExampleDataA value = new ViewExampleDataA();
         root.exampleFactoryA.set(value);
 
-        root.internal().addBackReferences();
+        root.internal().finalise();
         Assertions.assertEquals(root.ref.get().view.root,root);
     }
 

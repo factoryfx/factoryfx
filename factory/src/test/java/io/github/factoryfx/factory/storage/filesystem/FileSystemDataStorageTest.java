@@ -9,7 +9,6 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.github.factoryfx.factory.jackson.ObjectMapperBuilder;
 import io.github.factoryfx.factory.merge.testdata.ExampleDataA;
 import io.github.factoryfx.factory.storage.DataUpdate;
-import io.github.factoryfx.factory.storage.filesystem.FileSystemDataStorage;
 import io.github.factoryfx.factory.storage.migration.MigrationManager;
 
 import org.junit.jupiter.api.Assertions;
@@ -23,14 +22,14 @@ public class FileSystemDataStorageTest {
 
     private ExampleDataA createInitialExampleDataA() {
         ExampleDataA exampleDataA = new ExampleDataA();
-        exampleDataA.internal().addBackReferences();
+        exampleDataA.internal().finalise();
         return exampleDataA;
     }
 
     private DataUpdate<ExampleDataA> createUpdate() {
         ExampleDataA exampleDataA = new ExampleDataA();
         exampleDataA.stringAttribute.set("update");
-        exampleDataA.internal().addBackReferences();
+        exampleDataA.internal().finalise();
         return new DataUpdate<>(exampleDataA,"user","comment","123");
     }
 

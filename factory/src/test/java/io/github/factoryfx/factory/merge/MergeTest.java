@@ -14,8 +14,6 @@ import io.github.factoryfx.factory.merge.testdata.ExampleDataB;
 import io.github.factoryfx.factory.merge.testdata.ExampleDataC;
 import io.github.factoryfx.factory.testfactories.ExampleFactoryA;
 import io.github.factoryfx.factory.testfactories.ExampleFactoryB;
-import io.github.factoryfx.factory.testfactories.FastExampleFactoryA;
-import io.github.factoryfx.factory.testfactories.FastExampleFactoryB;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -28,7 +26,7 @@ public class MergeTest {
     public void test_merge_no_change(){
         ExampleDataA currentModel = new ExampleDataA();
         currentModel.stringAttribute.set("1111111");
-        currentModel=currentModel.internal().addBackReferences();
+        currentModel=currentModel.internal().finalise();
 
         ExampleDataA originalModel = currentModel.internal().copy();
         originalModel.stringAttribute.set("1111111");
@@ -46,7 +44,7 @@ public class MergeTest {
     public void test_merge_no_conflict(){
         ExampleDataA currentModel = new ExampleDataA();
         currentModel.stringAttribute.set("1111111");
-        currentModel=currentModel.internal().addBackReferences();
+        currentModel=currentModel.internal().finalise();
 
         ExampleDataA originalModel = currentModel.internal().copy();
         originalModel.stringAttribute.set("1111111");
@@ -64,7 +62,7 @@ public class MergeTest {
     public void test_merge_only_local_chnage(){
         ExampleDataA currentModel = new ExampleDataA();
         currentModel.stringAttribute.set("333333333");
-        currentModel=currentModel.internal().addBackReferences();
+        currentModel=currentModel.internal().finalise();
 
         ExampleDataA originalModel = currentModel.internal().copy();
         originalModel.stringAttribute.set("1111111");
@@ -82,7 +80,7 @@ public class MergeTest {
     public void test_merge_conflict(){
         ExampleDataA currentModel = new ExampleDataA();
         currentModel.stringAttribute.set("333333333");
-        currentModel=currentModel.internal().addBackReferences();
+        currentModel=currentModel.internal().finalise();
 
         ExampleDataA originalModel = currentModel.internal().copy();
         originalModel.stringAttribute.set("1111111");
@@ -102,7 +100,7 @@ public class MergeTest {
         oldReference.stringAttribute.set("1");
         currentModel.referenceAttribute.set(oldReference);
 
-        currentModel=currentModel.internal().addBackReferences();
+        currentModel=currentModel.internal().finalise();
         ExampleDataA originalModel = currentModel.internal().copy();
 
         ExampleDataA newModel = currentModel.internal().copy();
@@ -122,7 +120,7 @@ public class MergeTest {
     public void test_merge_reference_delete(){
         ExampleDataA currentModel = new ExampleDataA();
         currentModel.referenceAttribute.set(new ExampleDataB());
-        currentModel=currentModel.internal().addBackReferences();
+        currentModel=currentModel.internal().finalise();
 
         ExampleDataA originalModel = currentModel.internal().copy();
 
@@ -141,7 +139,7 @@ public class MergeTest {
         ExampleDataA currentModel = new ExampleDataA();
         currentModel.referenceAttribute.set(new ExampleDataB());
         currentModel.referenceAttribute.get().stringAttribute.set("qqqqqqqq");
-        currentModel=currentModel.internal().addBackReferences();
+        currentModel=currentModel.internal().finalise();
 
         ExampleDataA originalModel = currentModel.internal().copy();
         originalModel.referenceAttribute.get().stringAttribute.set("qqqqqqqq");
@@ -161,7 +159,7 @@ public class MergeTest {
         ExampleDataA currentModel = new ExampleDataA();
         currentModel.referenceAttribute.set(new ExampleDataB());
         currentModel.referenceAttribute.get().stringAttribute.set("qqqqqqqq");
-        currentModel=currentModel.internal().addBackReferences();
+        currentModel=currentModel.internal().finalise();
 
         ExampleDataA originalModel = currentModel.internal().copy();
         originalModel.referenceAttribute.get().stringAttribute.set("1111111");
@@ -179,7 +177,7 @@ public class MergeTest {
     public void test_merge_reference_delete_in_current(){
         ExampleDataA currentModel = new ExampleDataA();
         currentModel.stringAttribute.set(null);
-        currentModel=currentModel.internal().addBackReferences();
+        currentModel=currentModel.internal().finalise();
 
         ExampleDataA originalModel = currentModel.internal().copy();
         originalModel.stringAttribute.set("1111111");
@@ -196,7 +194,7 @@ public class MergeTest {
     public void test_merge_reference_delete_in_current_conflict(){
         ExampleDataA currentModel = new ExampleDataA();
         currentModel.stringAttribute.set(null);
-        currentModel=currentModel.internal().addBackReferences();
+        currentModel=currentModel.internal().finalise();
 
         ExampleDataA originalModel = currentModel.internal().copy();
         originalModel.stringAttribute.set("1111111");
@@ -214,7 +212,7 @@ public class MergeTest {
     public void test_merge_new(){
         ExampleDataA currentModel = new ExampleDataA();
         currentModel.stringAttribute.set("1111111");
-        currentModel=currentModel.internal().addBackReferences();
+        currentModel=currentModel.internal().finalise();
 
         ExampleDataA originalModel = currentModel.internal().copy();
         originalModel.stringAttribute.set(null);
@@ -243,7 +241,7 @@ public class MergeTest {
                 currentModel.referenceListAttribute.get().add(exampleFactoryB);
             }
         }
-        currentModel=currentModel.internal().addBackReferences();
+        currentModel=currentModel.internal().finalise();
 
         ExampleDataA originalModel = currentModel.internal().copy();
         {
@@ -288,7 +286,7 @@ public class MergeTest {
                 currentModel.referenceListAttribute.get().add(exampleFactoryB);
             }
         }
-        currentModel=currentModel.internal().addBackReferences();
+        currentModel=currentModel.internal().finalise();
 
         ExampleDataA originalModel = currentModel.internal().copy();
         {
@@ -329,7 +327,7 @@ public class MergeTest {
                 currentModel.referenceListAttribute.get().add(exampleFactoryB);
             }
         }
-        currentModel=currentModel.internal().addBackReferences();
+        currentModel=currentModel.internal().finalise();
 
         ExampleDataA originalModel = currentModel.internal().copy();
         {
@@ -369,7 +367,7 @@ public class MergeTest {
                 currentModel.referenceListAttribute.get().add(exampleFactoryB);
             }
         }
-        currentModel=currentModel.internal().addBackReferences();
+        currentModel=currentModel.internal().finalise();
 
         ExampleDataA originalModel = currentModel.internal().copy();
         {
@@ -408,7 +406,7 @@ public class MergeTest {
                 currentModel.referenceListAttribute.get().add(exampleFactoryB);
             }
         }
-        currentModel=currentModel.internal().addBackReferences();
+        currentModel=currentModel.internal().finalise();
 
         ExampleDataA originalModel = currentModel.internal().copy();
         {
@@ -440,7 +438,7 @@ public class MergeTest {
                 currentModel.referenceListAttribute.get().add(exampleFactoryB);
             }
         }
-        currentModel=currentModel.internal().addBackReferences();
+        currentModel=currentModel.internal().finalise();
 
         ExampleDataA originalModel = currentModel.internal().copy();
         {
@@ -479,7 +477,7 @@ public class MergeTest {
                 currentModel.referenceListAttribute.get().add(exampleFactoryB);
             }
         }
-        currentModel=currentModel.internal().addBackReferences();
+        currentModel=currentModel.internal().finalise();
 
         ExampleDataA originalModel = currentModel.internal().copy();
         {
@@ -556,7 +554,7 @@ public class MergeTest {
             ExampleDataB exampleFactoryB = new ExampleDataB();
             currentModel.referenceAttribute.set(exampleFactoryB);
         }
-        currentModel=currentModel.internal().addBackReferences();
+        currentModel=currentModel.internal().finalise();
 
         ExampleDataA originalModel = currentModel.internal().copy();
         {
@@ -590,7 +588,7 @@ public class MergeTest {
 
             exampleFactoryB.referenceAttributeC.set(new ExampleDataC());
         }
-        currentModel=currentModel.internal().addBackReferences();
+        currentModel=currentModel.internal().finalise();
 
         ExampleDataA originalModel = currentModel.internal().copy();
         {
@@ -616,7 +614,7 @@ public class MergeTest {
     public void test_merge_conflict_but_resolvable_cause_set_to_same_value(){
         ExampleDataA currentModel = new ExampleDataA();
         currentModel.stringAttribute.set("3");
-        currentModel=currentModel.internal().addBackReferences();
+        currentModel=currentModel.internal().finalise();
 
         ExampleDataA originalModel = currentModel.internal().copy();
         originalModel.stringAttribute.set("1");
@@ -634,7 +632,7 @@ public class MergeTest {
     public void test_no_change_different_current(){
         ExampleDataA currentModel = new ExampleDataA();
         currentModel.stringAttribute.set("3");
-        currentModel=currentModel.internal().addBackReferences();
+        currentModel=currentModel.internal().finalise();
 
         ExampleDataA originalModel = currentModel.internal().copy();
         originalModel.stringAttribute.set("1");
@@ -654,7 +652,7 @@ public class MergeTest {
     public void test_no_change_different_current_reference(){
         ExampleDataA currentModel = new ExampleDataA();
         currentModel.referenceAttribute.set(new ExampleDataB());
-        currentModel=currentModel.internal().addBackReferences();
+        currentModel=currentModel.internal().finalise();
 
         ExampleDataA originalModel = currentModel.internal().copy();
 
@@ -680,7 +678,7 @@ public class MergeTest {
         ExampleDataA currentModel = new ExampleDataA();
         ExampleDataB newValueInCurrent = new ExampleDataB();
         currentModel.referenceListAttribute.add(newValueInCurrent);
-        currentModel=currentModel.internal().addBackReferences();
+        currentModel=currentModel.internal().finalise();
 
         ExampleDataA originalModel = currentModel.internal().copy();
 
@@ -706,7 +704,7 @@ public class MergeTest {
         ExampleDataA currentModel = new ExampleDataA();
         ExampleDataB newValueInCurrent = new ExampleDataB();
         currentModel.referenceListAttribute.add(newValueInCurrent);
-        currentModel=currentModel.internal().addBackReferences();
+        currentModel=currentModel.internal().finalise();
 
         ExampleDataA originalModel = currentModel.internal().copy();
         ExampleDataA newModel = currentModel.internal().copy();
@@ -729,7 +727,7 @@ public class MergeTest {
     public void test_copy_withObjectValue(){
         DataTest.ExampleObjectProperty currentModel = new DataTest.ExampleObjectProperty();
         currentModel.objectValueAttribute.set("test2");
-        currentModel=currentModel.internal().addBackReferences();
+        currentModel=currentModel.internal().finalise();
 
         DataTest.ExampleObjectProperty originalModel = currentModel.internal().copy();
 
@@ -748,7 +746,7 @@ public class MergeTest {
     @Test
     public void test_merge_root_after_add(){
         ExampleDataA currentModel = new ExampleDataA();
-        currentModel=currentModel.internal().addBackReferences();
+        currentModel=currentModel.internal().finalise();
 
         ExampleDataA originalModel = currentModel.internal().copy();
 
@@ -765,7 +763,7 @@ public class MergeTest {
     @Test
     public void test_merge_parent_after_add(){
         ExampleDataA currentModel = new ExampleDataA();
-        currentModel.internal().addBackReferences();
+        currentModel.internal().finalise();
 
         ExampleDataA originalModel = currentModel.internal().copy();
         ExampleDataA newModel = currentModel.internal().copy();
@@ -804,7 +802,7 @@ public class MergeTest {
     @Test
     public void test_merge_parent_after_add_view(){
         ExampleDataView currentModel = new ExampleDataView();
-        currentModel.internal().addBackReferences();
+        currentModel.internal().finalise();
 
         ExampleDataView originalModel = currentModel.internal().copy();
         ExampleDataView newModel = currentModel.internal().copy();
@@ -819,16 +817,16 @@ public class MergeTest {
         MergeDiffInfo mergeDiff= dataMerger.mergeIntoCurrent((permission)->true);
         Assertions.assertTrue(mergeDiff.hasNoConflicts());
 
-//        currentModel.internal().addBackReferences();
+//        currentModel.internal().finalise();
 
-        Assertions.assertEquals(2,currentModel.referenceAttribute.get().bAttribute.get().internal().getParents().size());
+        Assertions.assertEquals(1,currentModel.referenceAttribute.get().bAttribute.get().internal().getParents().size());
         Assertions.assertTrue(currentModel.referenceAttribute.get().internal().getParents().contains(currentModel));
     }
 
     @Test
     public void test_parent_after_merge(){
         ExampleFactoryA original = new ExampleFactoryA();
-        original.internal().addBackReferences();
+        original.internal().finalise();
 
         ExampleFactoryA update= original.utility().copy();
         update.referenceAttribute.set(new ExampleFactoryB());

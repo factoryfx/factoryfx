@@ -1,7 +1,5 @@
 package io.github.factoryfx.factory.log;
 
-import java.util.Set;
-
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -9,8 +7,7 @@ import io.github.factoryfx.factory.FactoryBase;
 import io.github.factoryfx.factory.merge.MergeDiffInfo;
 
 public class FactoryUpdateLog<R extends FactoryBase<?,?>> {
-    public final FactoryLogEntryTreeItem root;
-    public final Set<FactoryLogEntry> removedFactoryLogs;
+    public final String log;
     public final MergeDiffInfo<R> mergeDiffInfo;
     /**duration for factory update mostly the time from create/destroy/etc */
     public final long totalDurationNs;
@@ -18,24 +15,21 @@ public class FactoryUpdateLog<R extends FactoryBase<?,?>> {
 
     @JsonCreator
     public FactoryUpdateLog(
-            @JsonProperty("root")FactoryLogEntryTreeItem factoryLogEntry,
-            @JsonProperty("removedFactoryLogs")Set<FactoryLogEntry> removedFactoryLogs,
+            @JsonProperty("log")String log,
             @JsonProperty("mergeDiffInfo")MergeDiffInfo<R> mergeDiffInfo,
             @JsonProperty("totalDurationNs")long totalDurationNs,
             @JsonProperty("exception") String exception) {
-        this.root = factoryLogEntry;
+        this.log = log;
         this.mergeDiffInfo = mergeDiffInfo;
         this.totalDurationNs = totalDurationNs;
-        this.removedFactoryLogs = removedFactoryLogs;
         this.exception=exception;
     }
 
 //    @JsonCreator
     public FactoryUpdateLog(String exception) {
-        this.root = null;
+        this.log = "";
         this.mergeDiffInfo = null;
         this.totalDurationNs = 0;
-        this.removedFactoryLogs = null;
         this.exception = exception;
     }
 

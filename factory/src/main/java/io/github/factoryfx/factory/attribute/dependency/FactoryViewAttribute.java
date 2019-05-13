@@ -10,6 +10,9 @@ import io.github.factoryfx.factory.attribute.*;
 import io.github.factoryfx.factory.FactoryBase;
 
 /**
+ * Allows to programmatically define a dependency<br>
+ * This should only be used in exceptional cases. e.g. if the customer demand an unsuitable destructure<br>
+ * It should not be used to model singletons. (instead us the {@link io.github.factoryfx.factory.builder.FactoryTreeBuilder})
  *
  * @param <R> root
  * @param <L> live object factory
@@ -32,10 +35,9 @@ public class FactoryViewAttribute<R extends FactoryBase<?,R>,L, F extends Factor
         return get().internal().instance();
     }
 
-
     @Override
-    public boolean internal_mergeMatch(AttributeMatch<F> value) {
-        return true;
+    public void internal_merge(F newFactory) {
+        //nothing
     }
 
     @Override

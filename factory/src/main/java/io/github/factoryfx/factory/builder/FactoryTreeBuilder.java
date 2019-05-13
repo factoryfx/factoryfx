@@ -87,7 +87,7 @@ public class FactoryTreeBuilder<L,R extends FactoryBase<L,R>,S> {
         if (rootFactory==null){
             throw new IllegalStateException("FactoryCreator missing for root class "+ rootClass.getSimpleName()+"\n"+"probably missing call: factoryBuilder.addFactory("+rootClass.getSimpleName()+".class,...\n");
         }
-        rootFactory.internal().addBackReferences();
+        rootFactory.internal().finalise();
         return rootFactory;
     }
 

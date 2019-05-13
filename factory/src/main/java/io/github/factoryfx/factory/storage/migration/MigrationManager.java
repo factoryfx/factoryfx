@@ -87,7 +87,7 @@ public class MigrationManager<R extends FactoryBase<?,R>,S> {
             }
         }
 
-        root.internal().addBackReferences();
+        root.internal().finalise();
 
         attributeFiller.fillNewAttributes(root,dataStorageMetadataDictionary);
 

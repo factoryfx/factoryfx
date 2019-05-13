@@ -69,11 +69,11 @@ public class FactoryEditManagerTest {
     @Test
     public void test_root_merge() {
         ExampleFactoryA currentFactory = new ExampleFactoryA();
-        currentFactory = currentFactory.internal().addBackReferences();
+        currentFactory = currentFactory.internal().finalise();
 
         ExampleFactoryA updateFactory = new ExampleFactoryA();
         updateFactory.referenceAttribute.set(new ExampleFactoryB());
-        updateFactory = updateFactory.internal().addBackReferences();
+        updateFactory = updateFactory.internal().finalise();
         DataMerger<ExampleFactoryA> dataMerger = new DataMerger<>(currentFactory,currentFactory.utility().copy(),updateFactory);
 
         Assertions.assertNull(currentFactory.referenceAttribute.get());

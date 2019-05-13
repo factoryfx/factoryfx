@@ -3,7 +3,6 @@ package io.github.factoryfx.factory.storage.migration.metadata;
 import io.github.factoryfx.factory.jackson.ObjectMapperBuilder;
 import io.github.factoryfx.factory.merge.testdata.ExampleDataA;
 import io.github.factoryfx.factory.merge.testdata.ExampleDataB;
-import io.github.factoryfx.factory.storage.migration.metadata.DataStorageMetadataDictionary;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -18,7 +17,7 @@ public class DataStorageMetadataDictionaryTest {
 
     private DataStorageMetadataDictionary createDataStorageMetadataDictionaryFromRoot() {
         ExampleDataA exampleDataA = new ExampleDataA();
-        exampleDataA.internal().addBackReferences();
+        exampleDataA.internal().finalise();
         return exampleDataA.internal().createDataStorageMetadataDictionaryFromRoot();
     }
 
@@ -43,7 +42,7 @@ public class DataStorageMetadataDictionaryTest {
     public void test_rename_attributeref(){
         ExampleDataA exampleDataA = new ExampleDataA();
         exampleDataA.referenceAttribute.set(new ExampleDataB());
-        exampleDataA.internal().addBackReferences();
+        exampleDataA.internal().finalise();
         DataStorageMetadataDictionary dictionary  = exampleDataA.internal().createDataStorageMetadataDictionaryFromRoot();
         dictionary.renameClass(ExampleDataB.class.getName(),"a.b.C");
         Assertions.assertEquals("a.b.C",dictionary.getDataStorageMetadata("a.b.C").getClassName());

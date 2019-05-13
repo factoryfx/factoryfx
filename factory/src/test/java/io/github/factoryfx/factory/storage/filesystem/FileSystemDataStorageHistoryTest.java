@@ -7,7 +7,6 @@ import java.util.UUID;
 
 import io.github.factoryfx.factory.jackson.ObjectMapperBuilder;
 import io.github.factoryfx.factory.merge.testdata.ExampleDataA;
-import io.github.factoryfx.factory.storage.filesystem.FileSystemFactoryStorageHistory;
 import io.github.factoryfx.factory.storage.migration.MigrationManager;
 import io.github.factoryfx.factory.storage.StoredDataMetadata;
 import io.github.factoryfx.factory.storage.migration.metadata.DataStorageMetadataDictionary;
@@ -19,7 +18,7 @@ public class FileSystemDataStorageHistoryTest {
 
     private StoredDataMetadata<Void> createDummyStoredDataMetadata(){
         ExampleDataA exampleDataA = new ExampleDataA();
-        exampleDataA.internal().addBackReferences();
+        exampleDataA.internal().finalise();
         DataStorageMetadataDictionary dataStorageMetadataDictionaryFromRoot = exampleDataA.internal().createDataStorageMetadataDictionaryFromRoot();
         return new StoredDataMetadata<>(UUID.randomUUID().toString(),"","","",null, dataStorageMetadataDictionaryFromRoot,null);
     }

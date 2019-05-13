@@ -22,7 +22,7 @@ public class FactoryDiffWidgetTest extends Application {
 
         ExampleData1 root = new ExampleData1();
         root.stringAttribute.set("abc");
-        root = root.internal().addBackReferences();
+        root = root.internal().finalise();
 
         UniformDesign uniformDesign = UniformDesignBuilder.build();
         DataEditor dataEditor = new DataEditor(new AttributeVisualisationMappingBuilder(new ArrayList<>()), uniformDesign);

@@ -21,13 +21,13 @@ public class BranchSelector<R extends FactoryBase<?,R>> {
 
     public BranchSelector(R root, FactoryTreeBuilder<?,R,?> treeBuilder) {
         this.root = root;
-        this.root.internal().addBackReferences();
+        this.root.internal().finalise();
         this.treeBuilder=treeBuilder;
     }
 
     public BranchSelector(R root) {
         this.root = root;
-        this.root.internal().addBackReferences();
+        this.root.internal().finalise();
         this.treeBuilder=null;
     }
 

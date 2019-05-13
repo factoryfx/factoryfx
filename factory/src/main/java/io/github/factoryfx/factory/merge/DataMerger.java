@@ -3,10 +3,9 @@ package io.github.factoryfx.factory.merge;
 import io.github.factoryfx.factory.FactoryBase;
 
 import java.util.*;
-import java.util.concurrent.*;
 import java.util.function.Function;
 
-public class DataMerger<R extends FactoryBase<?,R>> {
+public final class DataMerger<R extends FactoryBase<?,R>> {//final cause thread created in constructor, spotbugs: SC_START_IN_CTOR
 
     private final R currentData;
     private final R commonData;
@@ -38,26 +37,28 @@ public class DataMerger<R extends FactoryBase<?,R>> {
         this.commonData = commonData;
         this.newData = newData;
 
-        currentData.internal().addBackReferences();
-        commonData.internal().addBackReferences();
-        newData.internal().addBackReferences();
+        currentData.internal().finalise();
+        commonData.internal().finalise();
+        newData.internal().finalise();
 
-        List<FactoryBase<?, R>> currentDataList=null;
-        List<FactoryBase<?, R>> commonDataList=null;
-        List<FactoryBase<?, R>> newDataDataList=null;
+        List<FactoryBase<?, R>> currentDataList=currentData.internal().collectChildrenDeep();
+        List<FactoryBase<?, R>> commonDataList=commonData.internal().collectChildrenDeep();
+        List<FactoryBase<?, R>> newDataDataList=newData.internal().collectChildrenDeep();
 
-         ExecutorService exec = Executors.newFixedThreadPool(3);
-        Future<List<FactoryBase<?,R>>> future1 = exec.submit(() -> currentData.internal().collectChildrenDeep());
-        Future<List<FactoryBase<?,R>>> future2 = exec.submit(() -> commonData.internal().collectChildrenDeep());
-        Future<List<FactoryBase<?,R>>> future3 = exec.submit(() -> newData.internal().collectChildrenDeep());
-        try {
-            currentDataList = future1.get();
-            commonDataList=future2.get();
-            newDataDataList=future3.get();
-        } catch (InterruptedException | ExecutionException e) {
-            Thread.currentThread().interrupt();
-        }
-        exec.shutdown();
+//         ExecutorService exec = Executors.newFixedThreadPool(3);
+//        Future<List<FactoryBase<?,R>>> future1 = exec.submit(() -> currentData.internal().collectChildrenDeep());
+//        Future<List<FactoryBase<?,R>>> future2 = exec.submit(() -> commonData.internal().collectChildrenDeep());
+//        Future<List<FactoryBase<?,R>>> future3 = exec.submit(() -> newData.internal().collectChildrenDeep());
+//        try {
+//            currentDataList = future1.get();
+//            commonDataList=future2.get();
+//            newDataDataList=future3.get();
+//        } catch (InterruptedException e) {
+//            Thread.currentThread().interrupt();
+//        } catch (ExecutionException e) {
+//            throw new RuntimeException(e);
+//        }
+//        exec.shutdown();
 
 
         //Performance optimisation for the case that the factory tree structure are identically
@@ -109,10 +110,6 @@ public class DataMerger<R extends FactoryBase<?,R>> {
                 }
             }
         }
-
-        for (FactoryBase<?,R> newDataChild : newDataDataList) {//avoid mix up with iteration counters
-            newDataChild.internal().resetIterationCounterFlat();
-        }
     }
 
     @SuppressWarnings("unchecked")
@@ -126,7 +123,7 @@ public class DataMerger<R extends FactoryBase<?,R>> {
             if (newValue==null && originalValue!=null){
                 //check for conflict for removed object
                 entry.currentFactory.internal().visitAttributesForMatch(originalValue, (name,currentAttribute, originalAttribute) -> {
-                    if (!currentAttribute.internal_mergeMatch(originalAttribute)){
+                    if (!currentAttribute.internal_match(originalAttribute)){
                         mergeResult.addConflictInfo(new AttributeDiffInfo(name,entry.currentFactory.getId()));
                     }
                     return true;

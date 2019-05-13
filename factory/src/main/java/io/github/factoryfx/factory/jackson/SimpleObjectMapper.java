@@ -29,7 +29,7 @@ public class SimpleObjectMapper {
         try {
             T value = function.read();
             if (value instanceof FactoryBase<?,?>) {
-                return (T) ((FactoryBase<?,?>) value).internal().addBackReferences();
+                return (T) ((FactoryBase<?,?>) value).internal().finalise();
             }
             return value;
         } catch (IOException e) {

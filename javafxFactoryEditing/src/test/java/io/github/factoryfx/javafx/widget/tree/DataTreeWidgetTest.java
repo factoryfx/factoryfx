@@ -22,7 +22,7 @@ public class DataTreeWidgetTest extends Application {
 
         ExampleData1 exampleData1 = new ExampleData1();
         exampleData1.stringAttribute.set("abc");
-        exampleData1 = exampleData1.internal().addBackReferences();
+        exampleData1 = exampleData1.internal().finalise();
 
         UniformDesign uniformDesign = UniformDesignBuilder.build();
         DataEditor dataEditor = new DataEditor(new AttributeVisualisationMappingBuilder(AttributeVisualisationMappingBuilder.createDefaultSingleAttributeEditorBuilders(UniformDesignBuilder.build())),uniformDesign);

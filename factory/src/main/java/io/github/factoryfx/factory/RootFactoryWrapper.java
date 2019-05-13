@@ -2,7 +2,6 @@ package io.github.factoryfx.factory;
 
 import io.github.factoryfx.factory.merge.DataMerger;
 import io.github.factoryfx.factory.merge.MergeDiffInfo;
-import io.github.factoryfx.factory.log.FactoryLogEntryTreeItem;
 
 import java.util.List;
 import java.util.Set;
@@ -14,7 +13,7 @@ public class RootFactoryWrapper<R extends FactoryBase<?,R>> {
 
     public RootFactoryWrapper(R rootFactory) {
         this.rootFactory = rootFactory;
-        this.rootFactory.internal().addBackReferences();
+        this.rootFactory.internal().finalise();
         this.rootFactory.internal().loopDetector();//loop after that cause views/attributes need root
 
         updateCachedChildren();
@@ -45,12 +44,24 @@ public class RootFactoryWrapper<R extends FactoryBase<?,R>> {
         rootFactory.internal().determineRecreationNeedFromRoot(changedData);
     }
 
-    public MergeDiffInfo<R> merge(R commonVersion, R newVersion, Function<String,Boolean> permissionChecker){
+    public static class MergeResult<R extends FactoryBase<?,R>> {
+        public final MergeDiffInfo<R> mergeDiffInfo;
+        public final Set<FactoryBase<?,R>> mergedFactories;
+
+        private MergeResult(MergeDiffInfo<R> mergeDiffInfo, Set<FactoryBase<?, R>> mergedFactories) {
+            this.mergeDiffInfo = mergeDiffInfo;
+            this.mergedFactories = mergedFactories;
+        }
+    }
+
+    public MergeResult<R> merge(R commonVersion, R newVersion, Function<String,Boolean> permissionChecker){
         DataMerger<R> dataMerger = new DataMerger<>(rootFactory, commonVersion, newVersion);
-        MergeDiffInfo<R> mergeDiffInfo = dataMerger.mergeIntoCurrent(permissionChecker);
+        io.github.factoryfx.factory.merge.MergeResult<R> mergeResult = dataMerger.createMergeResult(permissionChecker);
+        MergeDiffInfo<R> result = mergeResult.executeMerge();
+        mergeResult.getMergedFactories();
         rootFactory.internal().loopDetector();
         updateCachedChildren();
-        return mergeDiffInfo;
+        return new MergeResult<R>(result,mergeResult.getMergedFactories());
     }
 
     /** copy a root data element
@@ -72,7 +83,4 @@ public class RootFactoryWrapper<R extends FactoryBase<?,R>> {
         return rootFactory;
     }
 
-    public FactoryLogEntryTreeItem createFactoryLogTree() {
-        return rootFactory.internal().createFactoryLogTree();
-    }
 }

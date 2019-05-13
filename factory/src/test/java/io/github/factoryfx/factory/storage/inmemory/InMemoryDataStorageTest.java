@@ -8,7 +8,6 @@ import io.github.factoryfx.factory.attribute.types.StringAttribute;
 import io.github.factoryfx.factory.merge.testdata.ExampleDataA;
 import io.github.factoryfx.factory.storage.DataUpdate;
 import io.github.factoryfx.factory.storage.ScheduledUpdate;
-import io.github.factoryfx.factory.storage.inmemory.InMemoryDataStorage;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -18,7 +17,7 @@ public class InMemoryDataStorageTest {
     private DataUpdate<ExampleDataA> createUpdate() {
         ExampleDataA exampleDataA = new ExampleDataA();
         exampleDataA.stringAttribute.set("update");
-        exampleDataA.internal().addBackReferences();
+        exampleDataA.internal().finalise();
         return new DataUpdate<>(exampleDataA,"user","comment","123");
     }
 
@@ -64,7 +63,7 @@ public class InMemoryDataStorageTest {
                 fileSystemFactoryStorage.getCurrentData().id,
                 LocalDateTime.now()
         );
-        update.root.internal().addBackReferences();
+        update.root.internal().finalise();
 
         fileSystemFactoryStorage.addFutureData(update);
 

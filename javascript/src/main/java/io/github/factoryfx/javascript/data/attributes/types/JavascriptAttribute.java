@@ -38,7 +38,7 @@ public class JavascriptAttribute<A> extends ImmutableValueAttribute<Javascript<A
     }
 
     @Override
-    public boolean internal_mergeMatch(AttributeMatch<Javascript<A>> value) {
+    public boolean internal_match(AttributeMatch<Javascript<A>> value) {
         if (this.value == null && value.get() == null)
             return true;
         if (this.value== null)

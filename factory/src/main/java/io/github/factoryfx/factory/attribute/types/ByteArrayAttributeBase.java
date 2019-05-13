@@ -23,7 +23,7 @@ class ByteArrayAttributeBase<A extends Attribute<byte[],A>>  extends ImmutableVa
     }
 
     @Override
-    public boolean internal_mergeMatch(AttributeMatch<byte[]> value) {
+    public boolean internal_match(AttributeMatch<byte[]> value) {
         return Arrays.equals(get(), value.get());
     }
 

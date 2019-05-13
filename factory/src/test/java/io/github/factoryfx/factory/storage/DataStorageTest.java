@@ -18,7 +18,7 @@ public class DataStorageTest {
     public void test_getPreviousHistoryFactory() throws InterruptedException {
         ExampleDataA exampleFactoryA = new ExampleDataA();
         exampleFactoryA.stringAttribute.set("1");
-        exampleFactoryA = exampleFactoryA.internal().addBackReferences();
+        exampleFactoryA = exampleFactoryA.internal().finalise();
 
         final InMemoryDataStorage<ExampleDataA,Void> factoryStorage = new InMemoryDataStorage<>(exampleFactoryA);
 

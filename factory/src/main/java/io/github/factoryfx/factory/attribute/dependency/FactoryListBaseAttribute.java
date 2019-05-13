@@ -67,13 +67,13 @@ public class FactoryListBaseAttribute<R extends FactoryBase<?,R>,L, F extends Fa
         if (value==null){
             if (!list.isEmpty()){
                 this.list.clear();
-                updateListeners(list);
+                afterModify();
             }
         } else {
             this.list.clear();
             this.list.addAll(value);
             afterAdd(value);
-            updateListeners(list);
+            afterModify();
         }
     }
 
@@ -131,8 +131,8 @@ public class FactoryListBaseAttribute<R extends FactoryBase<?,R>,L, F extends Fa
         if (added == null) {
             throw new IllegalStateException("cant't add null to list");
         }
-        if (root!=null && added.internal().getRoot()!=root) {
-            added.internal().addBackReferencesForSubtreeUnsafe(root,parent);
+        if (root!=null) {
+            added.internal().setRootDeep(root);
         }
     }
 
@@ -143,10 +143,18 @@ public class FactoryListBaseAttribute<R extends FactoryBase<?,R>,L, F extends Fa
         }
     }
 
+    private void afterModify(){
+        if (root!=null) {
+            root.internal().needRecalculationForBackReferences();
+        }
+        updateListeners(list);
+    }
+
+
     @Override
     public void sort(Comparator<? super F> c) {
         list.sort(c);
-        updateListeners(list);
+        afterModify();
     }
 
     @Override
@@ -187,7 +195,7 @@ public class FactoryListBaseAttribute<R extends FactoryBase<?,R>,L, F extends Fa
     @Override
     public boolean remove(Object o) {
         boolean remove = list.remove(o);
-        updateListeners(list);
+        afterModify();
         return remove;
     }
 
@@ -200,7 +208,7 @@ public class FactoryListBaseAttribute<R extends FactoryBase<?,R>,L, F extends Fa
     public boolean addAll(Collection<? extends F> c) {
         boolean result = list.addAll(c);
         afterAdd(c);
-        updateListeners(list);
+        afterModify();
         return result;
     }
 
@@ -208,21 +216,21 @@ public class FactoryListBaseAttribute<R extends FactoryBase<?,R>,L, F extends Fa
     public boolean addAll(int index, Collection<? extends F> c) {
         boolean result = list.addAll(index, c);
         afterAdd(c);
-        updateListeners(list);
+        afterModify();
         return result;
     }
 
     @Override
     public boolean removeAll(Collection<?> c) {
         boolean result = list.removeAll(c);
-        updateListeners(list);
+        afterModify();
         return result;
     }
 
     @Override
     public boolean removeIf(Predicate<? super F> filter) {
         boolean result = list.removeIf(filter);
-        updateListeners(list);
+        afterModify();
         return result;
     }
 
@@ -234,7 +242,7 @@ public class FactoryListBaseAttribute<R extends FactoryBase<?,R>,L, F extends Fa
     @Override
     public void clear() {
         list.clear();
-        updateListeners(list);
+        afterModify();
     }
 
     @Override
@@ -246,7 +254,7 @@ public class FactoryListBaseAttribute<R extends FactoryBase<?,R>,L, F extends Fa
     public F set(int index, F element) {
         F set = list.set(index, element);
         afterAdd(element);
-        updateListeners(list);
+        afterModify();
         return set;
     }
 
@@ -254,13 +262,13 @@ public class FactoryListBaseAttribute<R extends FactoryBase<?,R>,L, F extends Fa
     public void add(int index, F element) {
         list.add(index,element);
         afterAdd(element);
-        updateListeners(list);
+        afterModify();
     }
 
     @Override
     public F remove(int index) {
         F remove = list.remove(index);
-        updateListeners(list);
+        afterModify();
         return remove;
     }
 
@@ -308,7 +316,7 @@ public class FactoryListBaseAttribute<R extends FactoryBase<?,R>,L, F extends Fa
     public boolean add(F value) {
         list.add(value);
         afterAdd(value);
-        updateListeners(list);
+        afterModify();
         return false;
     }
 
@@ -337,4 +345,17 @@ public class FactoryListBaseAttribute<R extends FactoryBase<?,R>,L, F extends Fa
             consumer.accept(factory);
         }
     }
+
+    /**
+     * add is costly with the change detection and root back reference adding
+     * this halt the change detection until batch is ended;
+     */
+    public void batchModify(Consumer<List<F>> batchAction){
+        batchAction.accept(this.list);
+        afterAdd(list);
+        afterModify();
+
+    }
+
+
 }

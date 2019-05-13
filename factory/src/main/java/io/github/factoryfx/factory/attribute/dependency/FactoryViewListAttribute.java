@@ -11,6 +11,9 @@ import io.github.factoryfx.factory.attribute.*;
 import io.github.factoryfx.factory.FactoryBase;
 
 /**
+ * Allows to programmatically define a dependency<br>
+ * This should only be used in exceptional cases. e.g. if the customer demand an unsuitable destructure<br>
+ * It should not be used to model singletons. (instead us the {@link io.github.factoryfx.factory.builder.FactoryTreeBuilder})
  *
  * @param <R> root
  * @param <L> live object factory
@@ -46,23 +49,13 @@ public class FactoryViewListAttribute<R extends FactoryBase<?,R>,L, F extends Fa
     }
 
     @Override
-    public boolean internal_mergeMatch(AttributeMatch<List<F>> value) {
-        return true;
+    public void internal_merge(List<F> newList) {
+        //nothing
     }
 
     @Override
     public boolean internal_match(AttributeMatch<List<F>> value) {
         return internal_referenceListEquals(get(),value.get());
-    }
-
-    private boolean referenceEquals(FactoryBase<?,?> ref1, FactoryBase<?,?> ref2) {
-        if (ref1 == null && ref2 == null) {
-            return true;
-        }
-        if (ref1 == null || ref2 == null) {
-            return false;
-        }
-        return ref1.idEquals(ref2);
     }
 
     @Override
@@ -83,11 +76,6 @@ public class FactoryViewListAttribute<R extends FactoryBase<?,R>,L, F extends Fa
     public void set(List<F> value) {
         //nothing
     }
-
-//    @Override
-//    public void internal_copyTo(FactoryViewListReferenceAttribute<R,L,T> copyAttribute, FactoryBase.DataCopyProvider dataCopyProvider) {
-//        //nothing
-//    }
 
     @Override
     public void internal_semanticCopyTo(AttributeCopy<List<F>> copyAttribute) {

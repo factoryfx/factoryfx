@@ -20,7 +20,7 @@ public class InMemoryDataStorage<R extends FactoryBase<?,?>,S> implements DataSt
     private String currentFactoryId;
 
     public InMemoryDataStorage(R initialFactory){
-        initialFactory.internal().addBackReferences();
+        initialFactory.internal().finalise();
         this.currentFactoryId=UUID.randomUUID().toString();
 
         StoredDataMetadata<S> metadata = new StoredDataMetadata<>(currentFactoryId, "System", "initial", currentFactoryId,null,null,null);

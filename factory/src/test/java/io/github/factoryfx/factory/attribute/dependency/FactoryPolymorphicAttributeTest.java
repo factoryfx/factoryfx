@@ -35,16 +35,18 @@ public class FactoryPolymorphicAttributeTest {
     @Test
     public void test_select(){
         PolymorphicFactoryExample polymorphicFactoryExample = new PolymorphicFactoryExample();
-        polymorphicFactoryExample = polymorphicFactoryExample.internal().addBackReferences();
+        polymorphicFactoryExample = polymorphicFactoryExample.internal().finalise();
         ErrorPrinterFactory errorPrinterFactory = new ErrorPrinterFactory();
         polymorphicFactoryExample.reference.set(errorPrinterFactory);
+
+        polymorphicFactoryExample.internal().finalise();
         Assertions.assertEquals(errorPrinterFactory,new ArrayList<>(polymorphicFactoryExample.reference.internal_possibleValues()).get(0));
     }
 
     @Test
     public void test_new_value(){
         PolymorphicFactoryExample polymorphicFactoryExample = new PolymorphicFactoryExample();
-        polymorphicFactoryExample = polymorphicFactoryExample.internal().addBackReferences();
+        polymorphicFactoryExample = polymorphicFactoryExample.internal().finalise();
 
         List<FactoryBase<? extends Printer, ExampleFactoryA>> factoryBases = polymorphicFactoryExample.reference.internal_createNewPossibleValues();
         Assertions.assertEquals(ErrorPrinterFactory.class,new ArrayList<>(factoryBases).get(0).getClass());
@@ -95,9 +97,11 @@ public class FactoryPolymorphicAttributeTest {
     @Test
     public void test_set(){
         PolymorphicFactoryExample polymorphicFactoryExample = new PolymorphicFactoryExample();
-        polymorphicFactoryExample = polymorphicFactoryExample.internal().addBackReferences();
+        polymorphicFactoryExample = polymorphicFactoryExample.internal().finalise();
         ErrorPrinterFactory2 errorPrinterFactory = new ErrorPrinterFactory2();
         polymorphicFactoryExample.reference.set(errorPrinterFactory);
+
+        polymorphicFactoryExample.internal().finalise();
         Assertions.assertEquals(errorPrinterFactory,new ArrayList<>(polymorphicFactoryExample.reference.internal_possibleValues()).get(0));
     }
 

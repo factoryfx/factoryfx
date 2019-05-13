@@ -51,7 +51,7 @@ public class ViewListReferenceAttributeTest {
             root.list.add(value);
         }
 
-        root = root.internal().addBackReferences();
+        root = root.internal().finalise();
 
         Assertions.assertEquals(1,root.ref.get().view.get().size());
         Assertions.assertEquals("1",root.ref.get().view.get().get(0).stringAttribute.get());
@@ -76,7 +76,7 @@ public class ViewListReferenceAttributeTest {
             root.list.add(value);
         }
 
-        root = root.internal().addBackReferences();
+        root = root.internal().finalise();
         final String valueAsString = ObjectMapperBuilder.build().writeValueAsString(root);
         Assertions.assertFalse(valueAsString.contains("view"));
     }
@@ -100,7 +100,7 @@ public class ViewListReferenceAttributeTest {
             root.list.add(value);
         }
 
-        root = root.internal().addBackReferences();
+        root = root.internal().finalise();
 
         Assertions.assertEquals(0,root.ref.get().view.get().size());
     }
@@ -124,7 +124,7 @@ public class ViewListReferenceAttributeTest {
             root.list.add(value);
         }
 
-        root = root.internal().addBackReferences();
+        root = root.internal().finalise();
 
         Assertions.assertEquals(2,root.ref.get().view.get().size());
     }
@@ -149,7 +149,7 @@ public class ViewListReferenceAttributeTest {
             root.list.add(value);
         }
 
-        root = root.internal().addBackReferences();
+        root = root.internal().finalise();
         root.ref.get().view.setRunlaterExecutor(runnable -> runnable.run());
 
         ArrayList<String> calls=new ArrayList<>();
@@ -205,7 +205,7 @@ public class ViewListReferenceAttributeTest {
             root.list.add(value);
         }
 
-        root.internal().addBackReferences();
+        root.internal().finalise();
 
         ArrayList<String> calls=new ArrayList<>();
         viewExampleFactory.view.internal_addListener((attribute, value1) -> calls.add("1"));
@@ -240,7 +240,7 @@ public class ViewListReferenceAttributeTest {
             root.list.add(value);
         }
 
-        root.internal().addBackReferences();
+        root.internal().finalise();
     }
 
     @Test

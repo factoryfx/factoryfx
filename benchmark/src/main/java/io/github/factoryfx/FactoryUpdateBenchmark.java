@@ -12,7 +12,7 @@ import java.util.concurrent.TimeUnit;
  *
  */
 @Warmup(iterations = 3, time = 3, timeUnit = TimeUnit.SECONDS)
-@Measurement(iterations = 10, time = 10, timeUnit = TimeUnit.SECONDS)
+@Measurement(iterations = 5, time = 10, timeUnit = TimeUnit.SECONDS)
 @Fork(2)
 @BenchmarkMode(Mode.AverageTime)
 @OutputTimeUnit(TimeUnit.MILLISECONDS)
@@ -76,7 +76,8 @@ public class FactoryUpdateBenchmark {
 
 
     public static void main(String[] args) {
-        new FactoryUpdateBenchmark().fast_factories();
+        FactoryUpdateBenchmark factoryUpdateBenchmark = new FactoryUpdateBenchmark();
+        factoryUpdateBenchmark.fast_factories();
     }
 
 

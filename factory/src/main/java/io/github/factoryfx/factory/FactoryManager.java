@@ -2,7 +2,6 @@ package io.github.factoryfx.factory;
 
 import java.util.*;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
 import com.google.common.base.Throwables;
 import io.github.factoryfx.factory.merge.DataMerger;
@@ -44,17 +43,17 @@ public class FactoryManager<L,R extends FactoryBase<L,R>> {
 
         FactoryBase<?,?> factoryBaseInFocus=null;//for better exception reporting
 
-        MergeDiffInfo<R> mergeDiff = currentFactoryRoot.merge(commonVersion, newVersion, permissionChecker);
+        RootFactoryWrapper.MergeResult<R> mergeDiff = currentFactoryRoot.merge(commonVersion, newVersion, permissionChecker);
         long totalUpdateDuration = 0;
         List<FactoryBase<?,R>> removed = new ArrayList<>();
 
-        if (mergeDiff.successfullyMerged()) {
+        if (mergeDiff.mergeDiffInfo.successfullyMerged()) {
             try {
                 final Collection<FactoryBase<?,R>> currentFactoriesAfterMerge = currentFactoryRoot.collectChildFactories();
                 removed = getRemovedFactories(previousFactories, new HashSet<>(currentFactoriesAfterMerge));
 
                 long start = System.nanoTime();
-                determineRecreationNeedFromRoot(previousFactoryCopyRoot);
+                currentFactoryRoot.determineRecreationNeedFromRoot(mergeDiff.mergedFactories);
 
                 //attention lifecycle method call order is important
 
@@ -81,52 +80,26 @@ public class FactoryManager<L,R extends FactoryBase<L,R>> {
                     factory.internal().start();
                 }
                 totalUpdateDuration = System.nanoTime() - start;
-                logger.info(currentFactoryRoot.logUpdateDisplayTextDeep());
-                return new FactoryUpdateLog<>(currentFactoryRoot.createFactoryLogTree(), removed.stream().map(r->r.internal().createFactoryLogEntry()).collect(Collectors.toSet()),mergeDiff,totalUpdateDuration,null);
+                String log = currentFactoryRoot.logUpdateDisplayTextDeep();
+                logger.info(log);
+                return new FactoryUpdateLog<>(log,mergeDiff.mergeDiffInfo,totalUpdateDuration,null);
             } catch(Exception e){
                 factoryExceptionHandler.updateException(e,factoryBaseInFocus,new ExceptionResponseAction(this, new RootFactoryWrapper(previousFactoryCopyRoot),currentFactoryRoot,removed));
                 return new FactoryUpdateLog<>(Throwables.getStackTraceAsString(e));
             }
         } else {
-            return new FactoryUpdateLog<>(currentFactoryRoot.createFactoryLogTree(), removed.stream().map(r->r.internal().createFactoryLogEntry()).collect(Collectors.toSet()),mergeDiff,totalUpdateDuration,null);
+            return new FactoryUpdateLog<>("",mergeDiff.mergeDiffInfo,totalUpdateDuration,null);
         }
 
     }
-
-    private void determineRecreationNeedFromRoot(R previousFactoryCopyRoot) {
-        currentFactoryRoot.determineRecreationNeedFromRoot(getChangedFactories(this.currentFactoryRoot, previousFactoryCopyRoot));
-    }
-
-    Set<FactoryBase<?,R>> getChangedFactories(RootFactoryWrapper<R> currentFactoryRoot, R previousFactoryCopyRoot){
-        //one might think that the merger could do the change detection but that don't work for views and separation of concern is better anyway
-        final HashSet<FactoryBase<?,R>> result = new HashSet<>();
-        final Map<UUID, FactoryBase<?,R>> previousFactories = previousFactoryCopyRoot.internal().collectChildFactoryMap();
-        for (FactoryBase<?,R> data: currentFactoryRoot.collectChildFactories()){
-            final FactoryBase<?,R> previousFactory = previousFactories.get(data.getId());
-            if (previousFactory!=null){
-                this.collectChanged(data,previousFactory,result);
-            }
-        }
-        return result;
-    }
-    public <FO extends FactoryBase<?,R>> void collectChanged(FO currentFactoryRoot, FO previousFactory, Set<FactoryBase<?,R>> changed){
-        currentFactoryRoot.internal().visitAttributesForMatch(previousFactory, (name,currentAttribute, previousAttribute) -> {
-            if (!currentAttribute.internal_match(previousAttribute)){
-                changed.add(currentFactoryRoot);
-                return false;
-            }
-            return true;
-        });
-    }
-
 
     public List<FactoryBase<?,R>> getRemovedFactories(Collection<FactoryBase<?,R>> previousFactories, Set<FactoryBase<?,R>> newFactories){
         final ArrayList<FactoryBase<?,R>> result = new ArrayList<>();
-        previousFactories.forEach(previous -> {
-            if (!newFactories.contains(previous)){
+        for (FactoryBase<?, R> previous : previousFactories) {
+            if (!newFactories.contains(previous)) {
                 result.add(previous);
             }
-        });
+        }
         return result;
     }
 
@@ -136,6 +109,7 @@ public class FactoryManager<L,R extends FactoryBase<L,R>> {
      * @param permissionChecker permissionChecker
      * @return MergeDiffInfo*/
     public MergeDiffInfo<R> simulateUpdate(R commonVersion , R newVersion,  Function<String, Boolean> permissionChecker){
+        newVersion.internal().finalise();
         newVersion.internal().loopDetector();
 
         DataMerger<R> dataMerger = new DataMerger<>(currentFactoryRoot.copy(), commonVersion, newVersion);

@@ -68,7 +68,7 @@ public class MicroserviceRestClient<R extends FactoryBase<?,R>,S> {
      */
     public DataUpdate<R> prepareNewFactory() {
         DataUpdate<R> update = executeWithServerExceptionReporting(()-> microserviceResourceApi.prepareNewFactory(new VoidUserAwareRequest(user,passwordHash)));
-        update.root.internal().addBackReferences();
+        update.root.internal().finalise();
         if (factoryTreeBuilderBasedAttributeSetup!=null){
             factoryTreeBuilderBasedAttributeSetup.applyToRootFactoryDeep(update.root);
         }
@@ -82,7 +82,7 @@ public class MicroserviceRestClient<R extends FactoryBase<?,R>,S> {
 
     public R getHistoryFactory(String id) {
         R historyFactory = executeWithServerExceptionReporting(()-> microserviceResourceApi.getHistoryFactory(new UserAwareRequest<>(user, passwordHash, id))).value;
-        historyFactory.internal().addBackReferences();
+        historyFactory.internal().finalise();
         return historyFactory;
     }
 

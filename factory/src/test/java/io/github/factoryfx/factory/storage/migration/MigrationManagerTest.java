@@ -2,7 +2,6 @@ package io.github.factoryfx.factory.storage.migration;
 
 import io.github.factoryfx.factory.jackson.ObjectMapperBuilder;
 import io.github.factoryfx.factory.merge.testdata.ExampleDataA;
-import io.github.factoryfx.factory.storage.migration.MigrationManager;
 import io.github.factoryfx.factory.storage.migration.metadata.DataStorageMetadataDictionary;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -24,7 +23,7 @@ public class MigrationManagerTest {
     }
 
     private DataStorageMetadataDictionary createDataStorageMetadataDictionary(ExampleDataA exampleDataA) {
-        exampleDataA.internal().addBackReferences();
+        exampleDataA.internal().finalise();
         return exampleDataA.internal().createDataStorageMetadataDictionaryFromRoot();
     }
 
@@ -141,7 +140,7 @@ public class MigrationManagerTest {
     @Test
     public void read_removed_property_no_exception() {
         ExampleDataA exampleDataA = new ExampleDataA();
-        exampleDataA.internal().addBackReferences();
+        exampleDataA.internal().finalise();
         DataStorageMetadataDictionary dummyDictionaryFromRoot = exampleDataA.internal().createDataStorageMetadataDictionaryFromRoot();
 
         String input =

@@ -14,9 +14,7 @@ public class FactoryUpdateLogTest {
     public void test_json(){
         DataMerger<ExampleFactoryA> dataMerger = new DataMerger<>(new ExampleFactoryA(),new ExampleFactoryA(),new ExampleFactoryA());
 
-        FactoryUpdateLog<ExampleFactoryA> factoryUpdateLog = new FactoryUpdateLog<>(
-                new FactoryLogEntryTreeItem(
-                        new FactoryLogEntry(new ExampleFactoryA()),new ArrayList<>()),new HashSet<>(),
+        FactoryUpdateLog<ExampleFactoryA> factoryUpdateLog = new FactoryUpdateLog<>("log",
                         dataMerger.mergeIntoCurrent(p->true),0,null);
         ObjectMapperBuilder.build().copy(factoryUpdateLog);
     }

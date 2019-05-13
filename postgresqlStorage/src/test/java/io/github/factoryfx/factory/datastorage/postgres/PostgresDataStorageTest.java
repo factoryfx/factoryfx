@@ -109,13 +109,13 @@ public class PostgresDataStorageTest {
 
     private ExampleFactoryA createInitialExampleFactoryA() {
         ExampleFactoryA exampleDataA = new ExampleFactoryA();
-        exampleDataA.internal().addBackReferences();
+        exampleDataA.internal().finalise();
         return exampleDataA;
     }
 
     private DataUpdate<ExampleFactoryA> createUpdate() {
         ExampleFactoryA exampleDataA = new ExampleFactoryA();
-        exampleDataA.internal().addBackReferences();
+        exampleDataA.internal().finalise();
         return new DataUpdate<>(exampleDataA,"user","comment","13213");
     }
 
@@ -207,7 +207,7 @@ public class PostgresDataStorageTest {
 
         postgresFactoryStorage.getCurrentData();
         ExampleFactoryA exampleFactoryA = new ExampleFactoryA();
-        exampleFactoryA.internal().addBackReferences();
+        exampleFactoryA.internal().finalise();
         ScheduledUpdate<ExampleFactoryA> update = new ScheduledUpdate<>(
                 exampleFactoryA,
                 "user",
@@ -215,7 +215,7 @@ public class PostgresDataStorageTest {
                 postgresFactoryStorage.getCurrentData().id,
                 LocalDateTime.now()
         );
-        update.root.internal().addBackReferences();
+        update.root.internal().finalise();
 
         postgresFactoryStorage.addFutureData(update);
         Collection<ScheduledUpdateMetadata> list = postgresFactoryStorage.getFutureDataList();
@@ -225,7 +225,7 @@ public class PostgresDataStorageTest {
 
         postgresFactoryStorage.getCurrentData();
         ExampleFactoryA exampleFactoryA2 = new ExampleFactoryA();
-        exampleFactoryA2.internal().addBackReferences();
+        exampleFactoryA2.internal().finalise();
         ScheduledUpdate<ExampleFactoryA> update2 = new ScheduledUpdate<>(exampleFactoryA2,
                 "user",
                 "comment",

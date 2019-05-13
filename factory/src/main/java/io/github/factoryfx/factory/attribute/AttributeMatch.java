@@ -12,11 +12,6 @@ public interface AttributeMatch<V> extends AttributeValue<V> {
      */
     boolean internal_match(AttributeMatch<V> value);
 
-    default boolean internal_mergeMatch(AttributeMatch<V> value){
-        return internal_match(value);
-    }
-
-
     default boolean internal_referenceEquals(FactoryBase<?,?> value, FactoryBase<?,?> otherValue) {
         if (otherValue == null && value == null) {
             return true;

@@ -234,7 +234,7 @@ public class FactoryTreeBuilderBasedAttributeSetupTest {
 
 
     @Test
-    public void test_for_added() {
+    public void test_for_nested_added() {
 
         FactoryTreeBuilder<ExampleLiveObjectA,ExampleFactoryA,Void> builder = new FactoryTreeBuilder<>(ExampleFactoryA.class, context -> {
             ExampleFactoryA factoryBases = new ExampleFactoryA();

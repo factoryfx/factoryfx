@@ -13,7 +13,7 @@ class AttributeRenameTest {
     public void test_rename_order_class_rename_1(){
         ExampleDataAPrevious exampleDataAPrevious = new ExampleDataAPrevious();
         exampleDataAPrevious.garbage.set("123");
-        exampleDataAPrevious.internal().addBackReferences();
+        exampleDataAPrevious.internal().finalise();
 
         MigrationManager<ExampleDataA,Void> dataMigrationManager = new MigrationManager<>(ExampleDataA.class, ObjectMapperBuilder.build(),(root, oldDataStorageMetadataDictionary) -> { });
         dataMigrationManager.renameClass(ExampleDataAPrevious.class.getName(),ExampleDataA.class);
@@ -27,7 +27,7 @@ class AttributeRenameTest {
     public void test_rename_order_class_rename_2(){
         ExampleDataAPrevious exampleDataAPrevious = new ExampleDataAPrevious();
         exampleDataAPrevious.garbage.set("123");
-        exampleDataAPrevious.internal().addBackReferences();
+        exampleDataAPrevious.internal().finalise();
 
         MigrationManager<ExampleDataA,Void> dataMigrationManager = new MigrationManager<>(ExampleDataA.class, ObjectMapperBuilder.build(),(root, oldDataStorageMetadataDictionary) -> {});
         dataMigrationManager.renameAttribute(ExampleDataA.class, "garbage", exampleDataA -> exampleDataA.stringAttribute);

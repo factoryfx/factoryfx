@@ -77,7 +77,7 @@ public class AttributePathTest {
         ExampleDataAPrevious root = new ExampleDataAPrevious();
         root.stringAttribute.set("1234");
 
-        root.internal().addBackReferences();
+        root.internal().finalise();
         DataStorageMetadataDictionary dictionary = root.internal().createDataStorageMetadataDictionaryFromRoot();
         dictionary.renameClass("io.github.factoryfx.factory.storage.migration.metadata.ExampleDataAPrevious",ExampleDataA.class.getName());
 
@@ -91,7 +91,7 @@ public class AttributePathTest {
         ExampleDataAPrevious root = new ExampleDataAPrevious();
         root.stringAttribute.set("1234");
 
-        root.internal().addBackReferences();
+        root.internal().finalise();
         DataStorageMetadataDictionary dictionary = root.internal().createDataStorageMetadataDictionaryFromRoot();
         dictionary.renameClass("io.github.factoryfx.factory.storage.migration.metadata.ExampleDataAPrevious","a.b.c.Removed");
 

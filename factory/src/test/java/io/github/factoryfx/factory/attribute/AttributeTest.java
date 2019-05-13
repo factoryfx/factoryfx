@@ -56,7 +56,7 @@ public class AttributeTest {
 //        Assertions.assertEquals(null,readed.referenceAttribute.get().stringAttribute);
 //        Assertions.assertEquals(null,readed.referenceListAttribute.get(0).stringAttribute);
 
-        readed.internal().addBackReferences();
+        readed.internal().finalise();
 
         Assertions.assertEquals("ExampleA1",readed.stringAttribute.internal_getPreferredLabelText(Locale.ENGLISH));
         Assertions.assertEquals("ExampleA2",readed.referenceAttribute.internal_getPreferredLabelText(Locale.ENGLISH));
@@ -95,7 +95,7 @@ public class AttributeTest {
         data2.attribute.set("123");
         dynamicReadOnlyData.strangeList.add(data2);
 
-        dynamicReadOnlyData.internal().addBackReferences();
+        dynamicReadOnlyData.internal().finalise();
 
         Assertions.assertFalse(data2.attribute.internal_isUserReadOnly());
         dynamicReadOnlyData.barred.set(true);

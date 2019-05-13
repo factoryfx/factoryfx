@@ -15,14 +15,14 @@ public class OracledbDataStorageTest extends DatabaseTest{
     private ExampleFactoryA createInitialExampleFactoryA() {
         ExampleFactoryA exampleFactoryA = new ExampleFactoryA();
         exampleFactoryA.stringAttribute.set("initial");
-        exampleFactoryA.internal().addBackReferences();
+        exampleFactoryA.internal().finalise();
         return exampleFactoryA;
     }
 
     private DataUpdate<ExampleFactoryA> createUpdate() {
         ExampleFactoryA exampleFactoryA = new ExampleFactoryA();
         exampleFactoryA.stringAttribute.set("update");
-        exampleFactoryA.internal().addBackReferences();
+        exampleFactoryA.internal().finalise();
         return new DataUpdate<>(exampleFactoryA,"user","comment","123");
     }
 

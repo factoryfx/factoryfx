@@ -37,7 +37,7 @@ public class MicroserviceResource<R extends FactoryBase<?,R>,S> implements Micro
     @Override
     public FactoryUpdateLog<R> updateCurrentFactory(UserAwareRequest<DataUpdate<R>> update) {
         update.request.permissionChecker = authenticateAndGetPermissionChecker(update);
-        update.request.root.internal().addBackReferences();
+        update.request.root.internal().finalise();
         return microservice.updateCurrentFactory(update.request);
     }
 
@@ -59,7 +59,7 @@ public class MicroserviceResource<R extends FactoryBase<?,R>,S> implements Micro
     @Override
     public MergeDiffInfo<R> simulateUpdateCurrentFactory(UserAwareRequest<DataUpdate<R>> request) {
         request.request.permissionChecker= authenticateAndGetPermissionChecker(request);
-        request.request.root.internal().addBackReferences();
+        request.request.root.internal().finalise();
         return microservice.simulateUpdateCurrentFactory(request.request);
     }
 

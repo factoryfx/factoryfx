@@ -4,9 +4,6 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.github.factoryfx.factory.jackson.ObjectMapperBuilder;
 import io.github.factoryfx.factory.merge.testdata.ExampleDataA;
 import io.github.factoryfx.factory.merge.testdata.ExampleDataB;
-import io.github.factoryfx.factory.storage.migration.datamigration.DataJsonNode;
-import io.github.factoryfx.factory.storage.migration.datamigration.PathBuilder;
-import io.github.factoryfx.factory.storage.migration.datamigration.PathDataRestore;
 import io.github.factoryfx.factory.storage.migration.metadata.DataStorageMetadataDictionary;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -27,7 +24,7 @@ class PathDataRestoreTest {
                 "stringAttribute",
                 "oldStringAttribute");
 
-        exampleDataA.internal().addBackReferences();
+        exampleDataA.internal().finalise();
         DataStorageMetadataDictionary dataStorageMetadataDictionaryFromRoot = exampleDataA.internal().createDataStorageMetadataDictionaryFromRoot();
         dataStorageMetadataDictionaryFromRoot.renameAttribute(ExampleDataB.class.getName(),"stringAttribute","oldStringAttribute");
 
@@ -55,7 +52,7 @@ class PathDataRestoreTest {
 //                "stringAttribute",
 //                "oldStringAttribute");
 
-        exampleDataA.internal().addBackReferences();
+        exampleDataA.internal().finalise();
         DataStorageMetadataDictionary dataStorageMetadataDictionaryFromRoot = exampleDataA.internal().createDataStorageMetadataDictionaryFromRoot();
 //        dataStorageMetadataDictionaryFromRoot.renameAttribute(ExampleDataB.class.getName(),"stringAttribute","oldStringAttribute");
 

@@ -21,11 +21,11 @@ public class EnumMergeTest extends MergeHelperTestBase {
     public void test_merge_change(){
         EnumMergeTestPojo aTest1 = new EnumMergeTestPojo();
         aTest1.attribute.set(TestEnum.A);
-        aTest1=aTest1.internal().addBackReferences();
+        aTest1=aTest1.internal().finalise();
 
         EnumMergeTestPojo aTest2 = new EnumMergeTestPojo();
         aTest2.attribute.set(TestEnum.B);
-        aTest2=aTest2.internal().addBackReferences();
+        aTest2=aTest2.internal().finalise();
 
         Assertions.assertEquals(TestEnum.A,aTest1.attribute.get());
         Assertions.assertTrue(merge(aTest1, aTest1, aTest2).hasNoConflicts());

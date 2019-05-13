@@ -61,8 +61,7 @@ public class FactoryStyleValidatorBuilder {
      * @return validations
      * */
     public List<FactoryStyleValidation> createFactoryValidations(Class<? extends FactoryBase<?,?>> factoryClass){
-        final ArrayList<FactoryStyleValidation> result = new ArrayList<>();
-        result.addAll(classValidationAdder.apply(new FactoryValidatorUtility(factoryClass,null)));
+        final ArrayList<FactoryStyleValidation> result = new ArrayList<>(classValidationAdder.apply(new FactoryValidatorUtility(factoryClass, null)));
         for (Field field: factoryClass.getDeclaredFields()){
             if (!field.getName().equals("$assertionsDisabled") && !field.getName().equals("$jacocoData")){//When the compiler finds an assertion in a class, it adds a generated static final field named $assertionsDisabled to the class.
                 result.addAll(fieldValidationAdder.apply(new FactoryValidatorUtility(factoryClass,field)));

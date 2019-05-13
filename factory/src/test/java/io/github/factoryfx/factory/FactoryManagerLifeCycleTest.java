@@ -123,7 +123,7 @@ public class FactoryManagerLifeCycleTest {
         LifecycleFactoryB exampleFactoryB = new LifecycleFactoryB();
         exampleFactoryA.ref.set(exampleFactoryB);
 
-        exampleFactoryA = exampleFactoryA.internal().addBackReferences();
+        exampleFactoryA = exampleFactoryA.internal().finalise();
         exampleFactoryB = exampleFactoryA.ref.get();
 
         factoryManager.start(new RootFactoryWrapper<>(exampleFactoryA));
@@ -183,7 +183,7 @@ public class FactoryManagerLifeCycleTest {
         exampleFactoryB.refC.set(exampleFactoryC);
         exampleFactoryA.refC.set(exampleFactoryC);
 
-        exampleFactoryA = exampleFactoryA.internal().addBackReferences();
+        exampleFactoryA = exampleFactoryA.internal().finalise();
         exampleFactoryB = exampleFactoryA.ref.get();
 //        exampleFactoryC = exampleFactoryA.refC.get();
 
@@ -209,7 +209,7 @@ public class FactoryManagerLifeCycleTest {
         LifecycleFactoryB exampleFactoryB = new LifecycleFactoryB();
         exampleFactoryA.ref.set(exampleFactoryB);
 
-        exampleFactoryA = exampleFactoryA.internal().addBackReferences();
+        exampleFactoryA = exampleFactoryA.internal().finalise();
         exampleFactoryB = exampleFactoryA.ref.get();
 
         factoryManager.start(new RootFactoryWrapper<>(exampleFactoryA));
@@ -240,7 +240,7 @@ public class FactoryManagerLifeCycleTest {
         LifecycleFactoryB exampleFactoryB = new LifecycleFactoryB();
         exampleFactoryA.ref.set(exampleFactoryB);
 
-        exampleFactoryA = exampleFactoryA.internal().addBackReferences();
+        exampleFactoryA = exampleFactoryA.internal().finalise();
         exampleFactoryB = exampleFactoryA.ref.get();
 
         factoryManager.start(new RootFactoryWrapper<>(exampleFactoryA));
@@ -276,7 +276,7 @@ public class FactoryManagerLifeCycleTest {
         exampleFactoryA.ref.set(exampleFactoryB);
         exampleFactoryA.refList.get().add(new LifecycleFactoryC());
 
-        exampleFactoryA = exampleFactoryA.internal().addBackReferences();
+        exampleFactoryA = exampleFactoryA.internal().finalise();
         exampleFactoryB = exampleFactoryA.ref.get();
 
         factoryManager.start(new RootFactoryWrapper<>(exampleFactoryA));
@@ -307,7 +307,7 @@ public class FactoryManagerLifeCycleTest {
         LifecycleFactoryA exampleFactoryA = new LifecycleFactoryA();
         exampleFactoryA.refList.add(new LifecycleFactoryC());
 
-        exampleFactoryA = exampleFactoryA.internal().addBackReferences();
+        exampleFactoryA = exampleFactoryA.internal().finalise();
 
         factoryManager.start(new RootFactoryWrapper<>(exampleFactoryA));
 

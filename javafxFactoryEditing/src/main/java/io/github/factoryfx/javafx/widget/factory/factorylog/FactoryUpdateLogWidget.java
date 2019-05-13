@@ -1,6 +1,5 @@
 package io.github.factoryfx.javafx.widget.factory.factorylog;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -13,14 +12,7 @@ import io.github.factoryfx.factory.log.*;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
-import javafx.scene.control.Label;
-import javafx.scene.control.Tab;
-import javafx.scene.control.TabPane;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
-import javafx.scene.control.TreeItem;
-import javafx.scene.control.TreeView;
-import javafx.scene.control.cell.TextFieldTreeCell;
+import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
 import org.controlsfx.glyphfont.FontAwesome;
 
@@ -45,40 +37,9 @@ public class FactoryUpdateLogWidget implements Widget {
     public Node createContent() {
         final BorderPane borderPane = new BorderPane();
         factoryLogRootUpdater= root -> {
-            TreeView<FactoryLogWidgetTreeData> treeView = new TreeView<>();
-            if (factoryLog.root!=null){
-                treeView.setRoot(createLogTree(factoryLog.root, System.currentTimeMillis()+5000,new HashMap<>()));
-            }
-            treeView.setCellFactory(param-> new TextFieldTreeCell<>(){
-                @Override
-                public void updateItem(FactoryLogWidgetTreeData item, boolean empty) {
-                    super.updateItem(item, empty);
-                    if (!empty) {
-                        setText(item.getText());
-                        setGraphic(uniformDesign.createIcon(item.getIcon()));
-                    }
-                }
-            });
-            final TabPane tabPane = new TabPane();
-            tabPane.getStyleClass().add("floating");
-
-            final Tab treeTab = new Tab("Updated Tree");
-            treeTab.setContent(treeView);
-            tabPane.getTabs().add(treeTab);
-
-            final Tab tableTab = new Tab("Updated Table");
-            tableTab.setContent(treeView);
-            if (factoryLog.root!=null){
-                tableTab.setContent(createTable(factoryLog.root.getListDeep()));
-            }
-            tabPane.getTabs().add(tableTab);
-
-            final Tab removedTab = new Tab("Removed");
-            removedTab.setContent(treeView);
-            removedTab.setContent(createTable(factoryLog.removedFactoryLogs));
-            tabPane.getTabs().add(removedTab);
-
-            borderPane.setCenter(tabPane);
+            TextArea textArea = new TextArea();
+            textArea.setText(factoryLog.log);
+            borderPane.setCenter(textArea);
             final Label totalDuarion = new Label("total edit duration: " + (factoryLog.totalDurationNs / 1000000.0) + "ms");
             BorderPane.setMargin(totalDuarion,new Insets(3));
             borderPane.setTop(totalDuarion);

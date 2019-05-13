@@ -9,8 +9,6 @@ import io.github.factoryfx.factory.storage.migration.metadata.AttributeStorageMe
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import java.lang.reflect.Field;
-
 
 public class ReferenceBaseAttributeTest {
 
@@ -40,7 +38,7 @@ public class ReferenceBaseAttributeTest {
 
         exampleFactoryA.referenceAttribute.set(null);
         exampleFactoryA.referenceListAttribute.add(new ExampleDataB());
-        exampleFactoryA = exampleFactoryA.internal().addBackReferences();
+        exampleFactoryA = exampleFactoryA.internal().finalise();
 
 
         ExampleDataA copy  = ObjectMapperBuilder.build().copy(exampleFactoryA);

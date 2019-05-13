@@ -1,6 +1,5 @@
 package io.github.factoryfx.factory;
 
-import io.github.factoryfx.factory.attribute.Attribute;
 import io.github.factoryfx.factory.merge.DataMerger;
 import io.github.factoryfx.factory.testfactories.FastExampleFactoryA;
 import io.github.factoryfx.factory.testfactories.FastExampleFactoryB;
@@ -18,7 +17,7 @@ public class FastFactoryUtilityTest {
     public void test_collectChildrenDeep(){
         FastExampleFactoryA original = new FastExampleFactoryA();
         original.referenceAttribute=new FastExampleFactoryB();
-        original.internal().addBackReferences();
+        original.internal().finalise();
         Assertions.assertEquals(2,original.internal().collectChildrenDeep().size());
     }
 
@@ -83,7 +82,7 @@ public class FastFactoryUtilityTest {
     @Test
     public void test_merge_ref(){
         FastExampleFactoryA original = new FastExampleFactoryA();
-        original.internal().addBackReferences();
+        original.internal().finalise();
 
         Assertions.assertEquals(1,original.internal().collectChildrenDeep().size());
 
@@ -100,7 +99,7 @@ public class FastFactoryUtilityTest {
     public void test_merge_add_to_nested_ref(){
         FastExampleFactoryA original = new FastExampleFactoryA();
         original.referenceListAttribute =List.of(new FastExampleFactoryB(),new FastExampleFactoryB());
-        original.internal().addBackReferences();
+        original.internal().finalise();
 
 
         FastExampleFactoryA update= original.utility().copy();
@@ -124,7 +123,7 @@ public class FastFactoryUtilityTest {
     @Test
     public void test_merge_refList(){
         FastExampleFactoryA original = new FastExampleFactoryA();
-        original.internal().addBackReferences();
+        original.internal().finalise();
 
         Assertions.assertEquals(1,original.internal().collectChildrenDeep().size());
 
@@ -147,7 +146,7 @@ public class FastFactoryUtilityTest {
     @Test
     public void test_parent_after_merge(){
         FastExampleFactoryA original = new FastExampleFactoryA();
-        original.internal().addBackReferences();
+        original.internal().finalise();
 
         FastExampleFactoryA update= original.utility().copy();
         update.referenceAttribute=new FastExampleFactoryB();

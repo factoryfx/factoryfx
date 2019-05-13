@@ -60,14 +60,12 @@ public class FastFactoryUtility<R extends FactoryBase<?,R>,F extends FactoryBase
     private final List<? extends FastFactoryAttributeUtility<R,F,?,?>> attributeListForCopy1;
     private final List<? extends FastFactoryAttributeUtility<R,F,?,?>> attributeListForCopy2;
     public synchronized void visitAttributesForCopy(F factory, F other, FactoryBase.BiCopyAttributeVisitor<?> consumer) {
-        for (FastFactoryAttributeUtility<R, F, ?, ?> attributeUtility : attributeListForCopy1) {
-            attributeUtility.bindFactory(factory);
-        }
-        for (FastFactoryAttributeUtility<R, F, ?, ?> attributeUtility : attributeListForCopy2) {
-            attributeUtility.bindFactory(other);
-        }
         for (int i = 0; i < attributeListForCopy1.size(); i++) {
-            visitAttributeForCopy(attributeListForCopy1.get(i),attributeListForCopy2.get(i),consumer);
+            FastFactoryAttributeUtility<R, F, ?, ?> attributeUtility1 = attributeListForCopy1.get(i);
+            FastFactoryAttributeUtility<R, F, ?, ?> attributeUtility2 = attributeListForCopy2.get(i);
+            attributeUtility1.bindFactory(factory);
+            attributeUtility2.bindFactory(other);
+            visitAttributeForCopy(attributeUtility1, attributeUtility2,consumer);
         }
     }
 
@@ -109,19 +107,14 @@ public class FastFactoryUtility<R extends FactoryBase<?,R>,F extends FactoryBase
         List<? extends FastFactoryAttributeUtility<R,F,?,?>> attributeList2=attributesCreator.get();
         List<? extends FastFactoryAttributeUtility<R,F,?,?>> attributeList3=attributesCreator.get();
 
-
-        for (FastFactoryAttributeUtility<R, F, ?, ?> attributeUtility : attributeList1) {
-            attributeUtility.bindFactory(factory);
-        }
-        for (FastFactoryAttributeUtility<R, F, ?, ?> attributeUtility : attributeList2) {
-            attributeUtility.bindFactory(other1);
-        }
-        for (FastFactoryAttributeUtility<R, F, ?, ?> attributeUtility : attributeList3) {
-            attributeUtility.bindFactory(other2);
-        }
-
         for (int i = 0; i < attributeList1.size(); i++) {
-            visitAttributeTripleFlat(attributeList1.get(i),attributeList2.get(i),attributeList3.get(i),consumer);
+            FastFactoryAttributeUtility<R, F, ?, ?> attributeUtility1 = attributeList1.get(i);
+            FastFactoryAttributeUtility<R, F, ?, ?> attributeUtility2 = attributeList2.get(i);
+            FastFactoryAttributeUtility<R, F, ?, ?> attributeUtility3 = attributeList3.get(i);
+            attributeUtility1.bindFactory(factory);
+            attributeUtility2.bindFactory(other1);
+            attributeUtility3.bindFactory(other2);
+            visitAttributeTripleFlat(attributeUtility1,attributeUtility2,attributeUtility3,consumer);
         }
     }
 

@@ -83,7 +83,7 @@ public class MicroserviceTest {
     public void testUpdateReferenceList() {
         ExampleFactoryA root = new ExampleFactoryA();
         root.referenceListAttribute.add(new ExampleFactoryB());
-        root =root.internal().addBackReferences();
+        root =root.internal().finalise();
 
         FactoryTreeBuilder<ExampleLiveObjectA,ExampleFactoryA,Void> builder = new FactoryTreeBuilder<>(ExampleFactoryA.class, ctx -> {
             return new ExampleFactoryA();

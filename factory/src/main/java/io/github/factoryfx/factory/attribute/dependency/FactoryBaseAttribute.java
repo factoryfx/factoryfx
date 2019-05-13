@@ -59,8 +59,11 @@ public class FactoryBaseAttribute<R extends FactoryBase<?,R>,L,F extends Factory
     @Override
     public void set(F factory) {
         this.value=factory;
-        if (root!=null && factory!=null) {
-            factory.internal().addBackReferencesForSubtreeUnsafe(root,this.parent);
+        if (root!=null) {
+            root.internal().needRecalculationForBackReferences();
+            if (factory!=null){
+                factory.internal().setRootDeep(root);//intentionally just added flat, this compromise between performance an convenience, deep set would be too slow for that case addBackreference must be called manually
+            }
         }
         updateListeners(factory);
     }

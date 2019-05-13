@@ -9,7 +9,6 @@ import io.github.factoryfx.factory.attribute.CopySemantic;
 import io.github.factoryfx.factory.attribute.WeakAttributeChangeListener;
 import io.github.factoryfx.factory.jackson.ObjectMapperBuilder;
 import io.github.factoryfx.factory.merge.testdata.ExampleDataA;
-import io.github.factoryfx.factory.merge.testdata.ExampleDataB;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -71,9 +70,8 @@ public class ReferenceListAttributeTest {
     @Test
     public void test_add_new(){
         ExampleReferenceListFactory factory =new ExampleReferenceListFactory();
-        factory.internal().addBackReferences();
+        factory.internal().finalise();
 
-        factory.referenceListAttribute.internal_addBackReferences(new ExampleDataA(),null);
         List<ExampleDataA> exampleDataAS = factory.referenceListAttribute.internal_createNewPossibleValues();
         factory.referenceListAttribute.add(exampleDataAS.get(0));
         Assertions.assertEquals(1,factory.referenceListAttribute.size());
@@ -86,7 +84,7 @@ public class ReferenceListAttributeTest {
         ExampleDataA exampleFactoryA = new ExampleDataA();
         UUID expectedId=exampleFactoryA.getId();
         exampleReferenceListFactory.referenceListAttribute.add(exampleFactoryA);
-        exampleReferenceListFactory = exampleReferenceListFactory.internal().addBackReferences();
+        exampleReferenceListFactory = exampleReferenceListFactory.internal().finalise();
 
 
         Collection<ExampleDataA> possibleFactories = exampleReferenceListFactory.referenceListAttribute.internal_possibleValues();
@@ -98,7 +96,7 @@ public class ReferenceListAttributeTest {
     @Test
     public void test_add_new_listener(){
         ExampleReferenceListFactory factory =new ExampleReferenceListFactory();
-        factory.internal().addBackReferences();
+        factory.internal().finalise();
         List<ExampleDataA> calls=new ArrayList<>();
         factory.referenceListAttribute.internal_addListener((attribute, value) -> calls.add(value.get(0)));
 
@@ -145,27 +143,6 @@ public class ReferenceListAttributeTest {
         Assertions.assertTrue(attribute.internal_getListeners().size()==0);
     }
 
-    @Test
-    public void delegate_root_for_added_ref() {
-        final ExampleDataA root = new ExampleDataA();
-        root.internal().addBackReferences();
-
-        ExampleDataB value = new ExampleDataB();
-        Assertions.assertFalse(value.internal().readyForUsage());
-        root.referenceAttribute.set(value);
-        Assertions.assertTrue(value.internal().readyForUsage());
-    }
-
-    @Test
-    public void delegate_root_for_added_refList() {
-        final ExampleDataA root = new ExampleDataA();
-        root.internal().addBackReferences();
-
-        ExampleDataB value = new ExampleDataB();
-        Assertions.assertFalse(value.internal().readyForUsage());
-        root.referenceListAttribute.add(value);
-        Assertions.assertTrue(value.internal().readyForUsage());
-    }
 
     @Test
     public void delegate_root_for_addAll_with_null(){
@@ -173,19 +150,6 @@ public class ReferenceListAttributeTest {
             FactoryListAttribute<ExampleDataA,Void,ExampleDataA> attribute = new FactoryListAttribute<>();
             attribute.internal_addBackReferences(new ExampleDataA(), null);
             attribute.get().add(null);
-        });
-    }
-
-    @Test
-    public void delegate_root_for_addAll_with_null_nested(){
-        Assertions.assertThrows(IllegalStateException.class, () -> {
-            FactoryListAttribute<ExampleDataA,Void,ExampleDataA> attribute = new FactoryListAttribute<>();
-            attribute.internal_addBackReferences(new ExampleDataA(), null);
-
-            final ExampleDataA exampleFactoryA1 = new ExampleDataA();
-            exampleFactoryA1.referenceListAttribute.add(null);
-            attribute.get().add(exampleFactoryA1);
-            Assertions.assertTrue(exampleFactoryA1.internal().readyForUsage());
         });
     }
 

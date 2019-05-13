@@ -20,7 +20,7 @@ public class StringListMergeTest extends MergeHelperTestBase {
         aTest1.refB.add("11111");
         aTest1.refB.add("222222");
         aTest1.refB.add("33333");
-        aTest1 = aTest1.internal().addBackReferences();
+        aTest1 = aTest1.internal().finalise();
 
         Assertions.assertEquals("11111", aTest1.refB.get(0));
         Assertions.assertEquals("222222", aTest1.refB.get(1));
@@ -31,7 +31,7 @@ public class StringListMergeTest extends MergeHelperTestBase {
         update.refB.add("11111");
         update.refB.add("222222");
         update.refB.add("33333");
-        update = update.internal().addBackReferences();
+        update = update.internal().finalise();
 
         Assertions.assertTrue(merge(aTest1, aTest1, update).hasNoConflicts());
         Assertions.assertEquals("11111", aTest1.refB.get(0));
@@ -45,13 +45,13 @@ public class StringListMergeTest extends MergeHelperTestBase {
         aTest1.refB.add("11111");
         aTest1.refB.add("222222");
         aTest1.refB.add("33333");
-        aTest1 = aTest1.internal().addBackReferences();
+        aTest1 = aTest1.internal().finalise();
 
         StringListTest update = new StringListTest();
         update.refB.add("11111");
         update.refB.add("222222");
         update.refB.add("33333qqqqq");
-        update = update.internal().addBackReferences();
+        update = update.internal().finalise();
 
 
         Assertions.assertTrue(merge(aTest1, aTest1, update).hasNoConflicts());
@@ -66,13 +66,13 @@ public class StringListMergeTest extends MergeHelperTestBase {
         aTest1.refB.add("11111");
         aTest1.refB.add("222222");
         aTest1.refB.add("33333");
-        aTest1 = aTest1.internal().addBackReferences();
+        aTest1 = aTest1.internal().finalise();
 
 
         StringListTest update = new StringListTest();
         update.refB.add("11111");
         update.refB.add("222222");
-        update = update.internal().addBackReferences();
+        update = update.internal().finalise();
 
         Assertions.assertTrue(merge(aTest1, aTest1, update).hasNoConflicts());
         Assertions.assertEquals(2, aTest1.refB.get().size());

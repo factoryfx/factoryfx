@@ -191,6 +191,11 @@ public class FactoryMetadata<R extends FactoryBase<?,R>, L,F extends FactoryBase
         }
     }
 
+    @SuppressWarnings("unchecked")
+    public void addBackReferencesAndReferenceClassToAttributesUnsafe(FactoryBase<?,R> data, R root) {
+        this.addBackReferencesAndReferenceClassToAttributes((F)data,root);
+    }
+
     private static Object[] defaultConstructor = new Object[0];
     private Function<F, F> newCopyInstanceSupplier =null;
 

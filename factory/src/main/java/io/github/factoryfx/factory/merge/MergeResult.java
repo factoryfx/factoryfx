@@ -5,9 +5,11 @@ package io.github.factoryfx.factory.merge;
 import io.github.factoryfx.factory.FactoryBase;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
-public class MergeResult<R extends FactoryBase<?,?>> {
+public class MergeResult<R extends FactoryBase<?,R>> {
     final R previousRoot;
     final R currentRoot;
 
@@ -26,8 +28,10 @@ public class MergeResult<R extends FactoryBase<?,?>> {
         conflictInfos.add(conflictInfo);
     }
 
-    public void addMergeExecutions(Runnable mergeAction) {
+    private HashSet<FactoryBase<?,R>> mergedFactories= new HashSet<>();
+    public void addMergeExecutions(Runnable mergeAction, FactoryBase<?,R> mergeTarget) {
         mergeExecutions.add(mergeAction);
+        mergedFactories.add(mergeTarget);
     }
 
     public void addMergeInfo(AttributeDiffInfo mergeInfo) {
@@ -44,7 +48,9 @@ public class MergeResult<R extends FactoryBase<?,?>> {
             for (Runnable mergeAction : mergeExecutions) {
                 mergeAction.run();
             }
-            currentRoot.internal().fixDuplicatesAndAddBackReferences();
+            currentRoot.internal().needRecalculationForBackReferences();
+            currentRoot.internal().finalise();
+            currentRoot.internal().fixDuplicateFactories();
         }
         return new MergeDiffInfo<>(mergeInfos, conflictInfos, mergePermissionViolations, previousRoot, currentRoot, (Class<R>) currentRoot.getClass());
 
@@ -56,6 +62,10 @@ public class MergeResult<R extends FactoryBase<?,?>> {
 
     private boolean hasNoConflicts() {
         return conflictInfos.isEmpty();
+    }
+
+    public Set<FactoryBase<?,R>> getMergedFactories(){
+        return mergedFactories;
     }
 
 }

@@ -21,13 +21,13 @@ public class MapMergeTest extends MergeHelperTestBase{
         original.mapAttribute.get().put("k1","v1");
         original.mapAttribute.get().put("k2","v2");
         original.mapAttribute.get().put("k3","v3");
-        original=original.internal().addBackReferences();
+        original=original.internal().finalise();
 
         MapExampleFactory update = new MapExampleFactory();
         update.mapAttribute.get().put("k1","v1");
         update.mapAttribute.get().put("k2","v2");
         update.mapAttribute.get().put("k3","v3");
-        update=update.internal().addBackReferences();
+        update=update.internal().finalise();
 
         Assertions.assertTrue(merge(original, original, update).hasNoConflicts());
         Assertions.assertEquals(3, original.mapAttribute.get().size());
@@ -42,13 +42,13 @@ public class MapMergeTest extends MergeHelperTestBase{
         original.mapAttribute.get().put("k1","v1");
         original.mapAttribute.get().put("k2","v2");
         original.mapAttribute.get().put("k3","v3");
-        original=original.internal().addBackReferences();
+        original=original.internal().finalise();
 
         MapExampleFactory update = new MapExampleFactory();
         update.mapAttribute.get().put("k1","v1");
         update.mapAttribute.get().put("k2","v2");
         update.mapAttribute.get().put("k3","v4");
-        update=update.internal().addBackReferences();
+        update=update.internal().finalise();
 
         Assertions.assertTrue(merge(original, original, update).hasNoConflicts());
         Assertions.assertEquals(3, original.mapAttribute.get().size());
@@ -63,12 +63,12 @@ public class MapMergeTest extends MergeHelperTestBase{
         original.mapAttribute.get().put("k1","v1");
         original.mapAttribute.get().put("k2","v2");
         original.mapAttribute.get().put("k3","v3");
-        original=original.internal().addBackReferences();
+        original=original.internal().finalise();
 
         MapExampleFactory update = new MapExampleFactory();
         update.mapAttribute.get().put("k1","v1");
         update.mapAttribute.get().put("k2","v2");
-        update=update.internal().addBackReferences();
+        update=update.internal().finalise();
 
         Assertions.assertTrue(merge(original, original, update).hasNoConflicts());
         Assertions.assertEquals(2, original.mapAttribute.get().size());

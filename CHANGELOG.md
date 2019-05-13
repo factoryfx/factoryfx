@@ -104,5 +104,7 @@
   ```java
   Pattern pattern = Pattern.compile("\"v\" : \\[ \".*\", \"(.*)\" \\]");
   String converted = pattern.matcher(old).replaceAll("\"v\" : \"$1\"");    
-  ````
+  ```
+  
+* ```collectChildFactoriesDeepFromNode``` replaced width ```collectionChildrenDeepFromNonFinalizedTree```
   

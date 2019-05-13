@@ -57,7 +57,7 @@ public class DataEditorIntegrationTest extends Application{
             ExampleData1 exampleData1 = new ExampleData1();
             exampleData1.stringAttribute.set("abc");
             exampleData1.valueListAttribute.set(List.of("a", "b"));
-            exampleData1 = exampleData1.internal().addBackReferences();
+            exampleData1 = exampleData1.internal().finalise();
             dataEditor.edit(exampleData1);
             syso.setOnAction(event -> System.out.println(ObjectMapperBuilder.build().writeValueAsString(dataEditor)));
             viewsDisplayWidget.show(new View(new ViewDescription(new LanguageText("Dataeditor"),null,uniformDesign),viewsDisplayWidget,dataEditor));

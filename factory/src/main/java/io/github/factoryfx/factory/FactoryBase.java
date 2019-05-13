@@ -13,7 +13,6 @@ import com.google.common.collect.Maps;
 import io.github.factoryfx.factory.attribute.*;
 import io.github.factoryfx.factory.log.FactoryLogEntry;
 import io.github.factoryfx.factory.log.FactoryLogEntryEventType;
-import io.github.factoryfx.factory.log.FactoryLogEntryTreeItem;
 import io.github.factoryfx.factory.merge.AttributeDiffInfo;
 import io.github.factoryfx.factory.merge.MergeResult;
 import io.github.factoryfx.factory.metadata.FactoryMetadata;
@@ -27,7 +26,9 @@ import io.github.factoryfx.server.Microservice;
 import org.slf4j.LoggerFactory;
 
 /**
+ *
  * @param <L> liveobject created from this factory
+ * @param <R> root factory
  */
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id", resolver = DataObjectIdResolver.class)
 @JsonTypeInfo(use=JsonTypeInfo.Id.CLASS, include=JsonTypeInfo.As.PROPERTY, property="@class")// minimal class don't work always
@@ -62,8 +63,8 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
     public UUID getId() {
         if (id == null) {
             id = new UUID(r.nextLong(), r.nextLong());
-                //TODO does this increase collision probability?
-                // Secure random in UUID.randomUUID().toString() is too slow and it doesn't matter if the random is predictable
+            //TODO does this increase collision probability?
+            // Secure random in UUID.randomUUID().toString() is too slow and it doesn't matter if the random is predictable
         }
         return id;
     }
@@ -133,57 +134,92 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
     }
 
     private Map<UUID,FactoryBase<?,R>> collectChildDataMap() {
+        this.ensureTreeIsFinalised();
         Map<UUID, FactoryBase<?,R>> result;
-        if (childrenCounter>0) {
-            result = Maps.newLinkedHashMapWithExpectedSize(childrenCounter);//Maps.newLinkedHashMapWithExpectedSize(childrenCounter);
+        if (treeChildrenCounter >0) {
+            result = Maps.newLinkedHashMapWithExpectedSize(treeChildrenCounter);//Maps.newLinkedHashMapWithExpectedSize(treeChildrenCounter);
         } else {
             result = new LinkedHashMap<>();// LinkedHashMap surprisingly is faster than HashMap in this case;
         }
-        collectChildDataMap(result,this.iterationRun+1);
+        for (FactoryBase<?, R> child : collectChildrenDeep()) {
+            result.put(child.getId(),child);
+        }
         return result;
     }
 
-    private void collectChildDataMap(Map<UUID, FactoryBase<?,R>> allModelEntities, long dataIterationRun) {
-        allModelEntities.put(this.getId(),this);
-        visitChildFactoriesAndViewsFlat(child -> child.collectChildDataMap(allModelEntities,dataIterationRun),dataIterationRun,false);
+    List<FactoryBase<?,R>> collectedTo;
+    private List<FactoryBase<?,R>> collectChildrenDeep(){
+        this.ensureTreeIsFinalised();
+        ArrayList<FactoryBase<?, R>> result = new ArrayList<>();
+        ArrayDeque<FactoryBase<?,R>> stack = new ArrayDeque<>();
+        stack.push(this);
+        while (!stack.isEmpty()) {
+            FactoryBase<?,R> factory = stack.pop();
+
+            result.add(factory);
+            factory.collectedTo=result;
+
+            for (FactoryBase<?, R> child : factory.finalisedChildrenFlat) {
+                if (child.collectedTo!=result) {
+                    stack.push(child);
+                }
+            }
+        }
+        for (FactoryBase<?, R> child : result) {
+            child.collectedTo=null;
+        }
+        return result;
     }
 
-    /** collect set with all nested children and itself*/
-    private List<FactoryBase<?,R>> collectChildrenDeep() {
-        ArrayList<FactoryBase<?,R>> dataList = new ArrayList<>();
-        collectChildrenDeep(dataList,this.iterationRun+1);
-        return dataList;
+    private Set<FactoryBase<?,R>> collectionChildrenDeepFromNonFinalizedTree(){
+        HashSet<FactoryBase<?, R>> result = new HashSet<>();
+        ArrayDeque<FactoryBase<?,R>> stack = new ArrayDeque<>();
+        stack.push(this);
+        while (!stack.isEmpty()) {
+            FactoryBase<?,R> factory = stack.pop();
+            if (result.add(factory)){
+                factory.collectionChildrenDeepFromNonFinalizedTreeGenericWorkaround(stack::push);
+            }
+        }
+        return result;
     }
-
-    private void collectChildrenDeep(List<FactoryBase<?,R>> allModelEntities, long dataIterationRun) {
-        allModelEntities.add(this);
-        visitChildFactoriesAndViewsFlat(child -> child.collectChildrenDeep(allModelEntities,dataIterationRun),dataIterationRun,false);
+    private void collectionChildrenDeepFromNonFinalizedTreeGenericWorkaround(Consumer<FactoryBase<?,R>> consumer){
+        getFactoryMetadata().visitChildFactoriesAndViewsFlat(this, consumer, false);
     }
-
 
     private FactoryBase<L,R> newCopyInstance(FactoryBase<L,R> data) {
         return getFactoryMetadata().newCopyInstance(data);
     }
 
-    private Set<FactoryBase<?,?>> collectChildrenDeepFromNode() {
-        HashSet<FactoryBase<?,?>> result = new HashSet<>();
-        collectChildFactoriesDeepFromNode(result);
-        return result;
-    }
+    private void fixDuplicateObjects() {
+        boolean needIdFixing=false;
 
-    private void collectChildFactoriesDeepFromNode(Set<FactoryBase<?,?>> collected) {
-        if (collected.add(this)){
-            getFactoryMetadata().visitChildFactoriesAndViewsFlat(this,child -> child.collectChildFactoriesDeepFromNode(collected),false);
+        List<FactoryBase<?, R>> childrenDeep = collectChildrenDeep();
+        Map<UUID, FactoryBase<?, R>> idToDataMap = Maps.newHashMapWithExpectedSize(childrenDeep.size());
+        for (FactoryBase<?, R> child : childrenDeep) {
+            if (idToDataMap.put(child.id,child)!=null){
+                needIdFixing=true;
+                break;
+            }
         }
-    }
 
-    private List<FactoryBase<?,R>> fixDuplicateObjects() {
-        Map<UUID, FactoryBase<?, R>> idToDataMap = collectChildDataMap();
-        final List<FactoryBase<?,R>> all = new ArrayList<>(idToDataMap.values());
-        for (FactoryBase<?,R> factory: all){
-            factory.visitFactoryEnclosingAttributesFlat((attributeVariableName, attribute) -> attribute.internal_fixDuplicateObjects(idToDataMap));
+        if (needIdFixing){
+            for (FactoryBase<?, R> child : childrenDeep) {
+                FactoryBase<?, R> factory = idToDataMap.get(child.getId());
+                if (factory!=null) {
+                    if (child.createdLiveObject!=null){///prefer instantiate factories
+                        idToDataMap.put(child.getId(),child);
+                    }
+                } else {
+                    idToDataMap.put(child.getId(),child);
+                }
+            }
+
+            for (FactoryBase<?,R> factory: idToDataMap.values()){
+                factory.visitFactoryEnclosingAttributesFlat((attributeVariableName, attribute) -> attribute.internal_fixDuplicateObjects(idToDataMap));
+            }
+            this.needReFinalisation();
         }
-        return all;
     }
 
     private Supplier<String> displayTextProvider;
@@ -244,12 +280,12 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
         }
     }
 
-    private void merge(FactoryBase<L,R> originalValue, FactoryBase<L,R> newValue, MergeResult mergeResult, Function<String,Boolean> permissionChecker) {
+    private void merge(FactoryBase<L,R> originalValue, FactoryBase<L,R> newValue, MergeResult<R> mergeResult, Function<String,Boolean> permissionChecker) {
         this.visitAttributesTripleFlat(originalValue, newValue, (attributeName, currentMerger, originalMerger, newMerger) -> {
             //for performance to execute compare only once
-            boolean newMergerMatchOriginalMerger= newMerger.internal_mergeMatch(originalMerger);
-            boolean currentMergerMatchOriginalMerger= currentMerger.internal_mergeMatch(originalMerger);
-            boolean currentMergerMatchNewMerger= currentMerger.internal_mergeMatch(newMerger);
+            boolean newMergerMatchOriginalMerger= newMerger.internal_match(originalMerger);
+            boolean currentMergerMatchOriginalMerger= currentMerger.internal_match(originalMerger);
+            boolean currentMergerMatchNewMerger= currentMerger.internal_match(newMerger);
 
 
             if (attributeHasMergeConflict(newMergerMatchOriginalMerger,currentMergerMatchOriginalMerger, currentMergerMatchNewMerger)) {
@@ -259,7 +295,7 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
                     final AttributeDiffInfo attributeDiffInfo = new AttributeDiffInfo(attributeName,FactoryBase.this.getId());
                     if (currentMerger.internal_hasWritePermission(permissionChecker)){
                         mergeResult.addMergeInfo(attributeDiffInfo);
-                        mergeResult.addMergeExecutions(() -> currentMerger.internal_merge(newMerger.get()));
+                        mergeResult.addMergeExecutions(() -> currentMerger.internal_merge(newMerger.get()),this);
                     } else {
                         mergeResult.addPermissionViolationInfo(attributeDiffInfo);
                     }
@@ -275,17 +311,8 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
      * @param currentMergerMatchNewMerger currentMergerMatchNewMerger
      * @return true if merge conflict
      */
-    private <V> boolean attributeHasMergeConflict(boolean newMergerMatchOriginalMerger, boolean currentMergerMatchOriginalMerger, boolean currentMergerMatchNewMerger) {
-        if (newMergerMatchOriginalMerger) {
-            return false;
-        }
-        if (currentMergerMatchOriginalMerger) {
-            return false;
-        }
-        if (currentMergerMatchNewMerger) {
-            return false;
-        }
-        return true;
+    private boolean attributeHasMergeConflict(boolean newMergerMatchOriginalMerger, boolean currentMergerMatchOriginalMerger, boolean currentMergerMatchNewMerger) {
+        return !newMergerMatchOriginalMerger && !currentMergerMatchOriginalMerger && !currentMergerMatchNewMerger;
     }
 
     /**
@@ -330,29 +357,25 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
     @SuppressWarnings("unchecked")
     private <T extends FactoryBase<?,?>> T copy(int level) {
         ArrayList<FactoryBase<?,?>> oldDataList;
-        if (childrenCounter>0){
-            oldDataList = new ArrayList<>(childrenCounter);
+        if (treeChildrenCounter >0){
+            oldDataList = new ArrayList<>(treeChildrenCounter);
         } else {
             oldDataList = new ArrayList<>();
         }
 
-        FactoryBase<?,?> newRoot = copyDeep(0, level,oldDataList,null,(R)this);
-        newRoot.childrenCounter=oldDataList.size();
+        FactoryBase<?,?> copy = copyDeep(0, level,oldDataList,null,(R)this);
+        copy.treeChildrenCounter =oldDataList.size();
 
         for (FactoryBase<?,?> oldData: oldDataList) {
+//            oldData.copy.finalizeChildren();
             oldData.copy=null;//cleanup
         }
-        return (T) newRoot;
+        copy.needReFinalisation =true;
+        return (T) copy;
     }
 
-    @FunctionalInterface
-    public interface DataCopyProvider{
-        <R extends FactoryBase<?,R>,T extends FactoryBase<?,R>> T copy(T original);
-    }
 
     FactoryBase<L,R> copy;
-
-
     @SuppressWarnings("unchecked")
     private <F extends FactoryBase<? extends L,R>> F copyDeep(final int level, final int maxLevel, final List<FactoryBase<?,?>> oldData, FactoryBase<?,R> parent, R root){
         if (level>maxLevel){
@@ -368,33 +391,16 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
             this.visitAttributesForCopy(copy, (thisAttribute, copyAttribute) -> {
                 thisAttribute.internal_copyTo(copyAttribute,level + 1, maxLevel,oldData,this,root);
                 copyAttribute.internal_addBackReferences(root.copy,copy);
-
-
-//                if (copyAttribute instanceof FactoryChildrenEnclosingAttribute<?,?>){
-//                    ((FactoryChildrenEnclosingAttribute<R,?>)copyAttribute).internal_addBackReferences((R) root.copy,copy);
-//                }
-//                copyAttribute.internal_addBackReferences(root.copy,copy);
                 return true;
             });
 
             oldData.add(this);
 
-            //add BackReferences
-            if (parent!=null){
-                copy.addParent(parent.copy);
-            }
             copy.root=(R)root.copy;
             copy.creatorMock=this.creatorMock;
-
         }
         return (F)copy;
     }
-
-
-    private boolean readyForUsage(){
-        return root!=null;
-    }
-
 
     private void endEditingDeepFromRoot() {
         for (FactoryBase<?,?> data: collectChildrenDeep()){
@@ -407,6 +413,12 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
     }
 
 
+    private void ensureTreeIsFinalised() {
+        if (this.root!=null){
+            ((FactoryBase<?, R>)this.root).finalise();
+        }
+    }
+
     /**
      * after serialisation or programmatically creation this mus be called first before using the object<br>
      * to:<br>
@@ -416,29 +428,61 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
      * only call on root<br>
      *<br>
      */
+    int treeChildrenCounter;
+    long backReferencesIterationRun=0;
     @SuppressWarnings("unchecked")
-    private void addBackReferences() {
-        this.root=(R)this;
-        addBackReferences(getRoot(),null,this.iterationRun+1);
+    private void finalise(){
+        R root = (R)this;
+
+        if (!needReFinalisation){
+            return;
+        }
+
+        ArrayDeque<FactoryBase<?,R>> stack = new ArrayDeque<>();
+        stack.push(root);
+        long backReferencesIterationRun = root.backReferencesIterationRun+1;
+        while (!stack.isEmpty()) {
+            FactoryBase<?,R> factory = stack.pop();
+            factory.backReferencesIterationRun=backReferencesIterationRun;
+
+            factory.root=root;
+            factory.root.treeChildrenCounter++;
+            factory.getFactoryMetadata().addBackReferencesAndReferenceClassToAttributesUnsafe(factory,root);
+
+            factory.finalizeChildren();
+            for (FactoryBase<?, R> child : factory.finalisedChildrenFlat) {
+                if (child.backReferencesIterationRun!=backReferencesIterationRun) {
+                    child.resetParents();
+                    stack.push(child);
+                }
+                child.addParent(factory);
+            }
+        }
+        needReFinalisation =false;
     }
-    int childrenCounter;
 
-    private void addBackReferences(final R root, final FactoryBase<?,?> parent, long dataIterationRun){
-        addParent(parent);
-        this.root=root;
-        this.root.childrenCounter++;
-        getFactoryMetadata().addBackReferencesAndReferenceClassToAttributes(this,root);
-        this.visitChildFactoriesAndViewsFlat(data -> data.addBackReferences(getRoot(), FactoryBase.this,dataIterationRun),dataIterationRun,true);
+    boolean needReFinalisation =true;
+    private void needReFinalisation(){
+        this.root.needReFinalisation =true;
     }
 
+    long rootDeepIterationRun=0;
+    private void setRootDeep(R root) {
+        ArrayDeque<FactoryBase<?,R>> stack = new ArrayDeque<>();
+        stack.push(this);
+        long rootDeepIterationRun = root.rootDeepIterationRun+1;
+        while (!stack.isEmpty()) {
+            FactoryBase<?,R> factory = stack.pop();
+            factory.rootDeepIterationRun=rootDeepIterationRun;
+            factory.root=root;
+            factory.getFactoryMetadata().addBackReferencesAndReferenceClassToAttributesUnsafe(factory,root);
 
-    private void addBackReferencesForSubtree(R root, FactoryBase<?,?> parent, HashSet<FactoryBase<?,?>> visited){
-        addParent(parent);
-        this.root=root;
-        getFactoryMetadata().addBackReferencesAndReferenceClassToAttributes(this,root);
-
-        if (visited.add(this)) {//use HashSet instead of iteration counter to avoid iterationCounter mix up
-            getFactoryMetadata().visitChildFactoriesAndViewsFlat(this,child -> child.addBackReferencesForSubtree(root,this,visited),true);
+            factory.finalizeChildren();
+            for (FactoryBase<?, R> child : factory.finalisedChildrenFlat) {
+                if (child.rootDeepIterationRun!=rootDeepIterationRun) {
+                    stack.push(child);
+                }
+            }
         }
     }
 
@@ -459,18 +503,14 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
         }
     }
 
-    private void resetBackReferencesFlat(){
+    private void resetParents(){
         this.parents=null;
         this.parent=null;
-        this.root=null;
-    }
-
-    private boolean hasBackReferencesFlat(){
-        return this.root!=null;
     }
 
     @JsonIgnore
     private Set<FactoryBase<?,?>> getParents(){
+        this.ensureTreeIsFinalised();
         if (parents==null){
             if (parent==null){
                 return Collections.emptySet();
@@ -665,33 +705,26 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
          * @return all data including root and no duplicates
          * */
         public List<FactoryBase<?,R> > collectChildrenDeep() {
-            factory.assertRoot();
             return factory.collectChildrenDeep();
         }
 
 
-        /**fix all data with same id should be same object
-         * only call on root
+        /**
+         * can be used inside a view
+         * @return all data including root and no duplicates
          * */
-        public void fixDuplicateData() {
-            factory.assertRoot();
-            factory.fixDuplicateObjects();
+        public Set<FactoryBase<?,R> > collectionChildrenDeepFromNonFinalizedTree() {
+            return factory.collectionChildrenDeepFromNonFinalizedTree();
         }
 
         /**
          * -fix all factories with same id should be same object
-         * -remove parents that are no not in the tree
-         * only call on root
          * */
-        public void fixDuplicatesAndAddBackReferences() {
-            //TODO is it even possible to add duplicates via merge?
+        public void fixDuplicateFactories() {
             factory.assertRoot();
-            List<FactoryBase<?,R> > factoryList = this.factory.fixDuplicateObjects();
-            for (FactoryBase<?,?>  factoryItem : factoryList) {
-                factoryItem.resetBackReferencesFlat();
-            }
-            this.factory.addBackReferences();
+            factory.fixDuplicateObjects();
         }
+
 
         public String getDisplayText(){
             return factory.getDisplayText();
@@ -710,7 +743,7 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
             return factory.validateFlat();
         }
 
-        public <F extends FactoryBase<L,R>> void  merge(F  originalValue, F  newValue, MergeResult mergeResult, Function<String,Boolean> permissionChecker) {
+        public <F extends FactoryBase<L,R>> void  merge(F  originalValue, F  newValue, MergeResult<R> mergeResult, Function<String,Boolean> permissionChecker) {
             factory.merge(originalValue,newValue,mergeResult,permissionChecker);
         }
         public List<FactoryBase<?,?> > getPathFromRoot() {
@@ -735,15 +768,13 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
         }
 
         /**
-         * see: {@link FactoryBase#addBackReferences}
+         * see: {@link FactoryBase#finalise}
          * @param <T> type
          * @return usableCopy
          */
         @SuppressWarnings("unchecked")
-        public <T extends FactoryBase<L,R>> T addBackReferences() {
-            if (!this.factory.hasBackReferencesFlat()){
-                this.factory.addBackReferences();
-            }
+        public <T extends FactoryBase<L,R>> T finalise() {
+            factory.finalise();
             return (T)factory;
         }
 
@@ -762,22 +793,6 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
             factory.endEditingFlat();
         }
 
-        public boolean readyForUsage(){
-            return factory.readyForUsage();
-        }
-
-
-        /**
-         * @param root root
-         * @param parent parent
-         */
-        public void addBackReferencesForSubtree(R root, FactoryBase<?,?> parent){
-            factory.addBackReferencesForSubtree(root,parent,new HashSet<>());
-        }
-
-        public void addBackReferencesForSubtreeUnsafe(R root, FactoryBase<?,?> parent){
-            factory.addBackReferencesForSubtree(root,parent,new HashSet<>());
-        }
 
         /** use getParents instead
          * @return parent*/
@@ -797,24 +812,8 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
             factory.addDisplayTextListeners(attributeChangeListener);
         }
 
-        public boolean hasBackReferencesFlat() {
-            return factory.hasBackReferencesFlat();
-        }
-
-        public void resetIterationCounterFlat() {
-            factory.iterationRun=0;
-        }
-
         public void assertRoot(){
             factory.assertRoot();
-        }
-
-        /**
-         * collect child from middle node, slower than FromRoot but work from all nodes
-         * @return children including itself
-         */
-        public Set<FactoryBase<?,?> > collectChildrenDeepFromNode() {
-            return factory.collectChildrenDeepFromNode();
         }
 
         public DataStorageMetadataDictionary createDataStorageMetadataDictionaryFromRoot(){
@@ -828,17 +827,6 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
 
         public FactoryTreeBuilderBasedAttributeSetup getFactoryTreeBuilderBasedAttributeSetup() {
             return factory.factoryTreeBuilderBasedAttributeSetup;
-        }
-
-        /** create and prepare the liveobject
-         * @return liveobject*/
-        public L create(){
-            return factory.create();
-        }
-
-        public FactoryLogEntryTreeItem createFactoryLogTree() {
-            long iterationRun=factory.iterationRun+1;
-            return factory.createFactoryLogEntryTree(iterationRun);
         }
 
         public FactoryLogEntry createFactoryLogEntry(){
@@ -960,6 +948,14 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
 
         public String getTreeBuilderName(){
             return factory.treeBuilderName;
+        }
+
+        public void setRootDeep(R root) {
+            factory.setRootDeep(root);
+        }
+
+        public void needRecalculationForBackReferences() {
+            factory.needReFinalisation();
         }
     }
 
@@ -1157,65 +1153,99 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
     }
 
 
+    long loopDetectorIterationRun;
     private void loopDetector(){
-        long iterationRun=this.iterationRun+1;
+        this.ensureTreeIsFinalised();
+        long iterationRun=this.loopDetectorIterationRun+1;
         loopDetector(this,new ArrayDeque<>(),iterationRun);
     }
 
     private void loopDetector(FactoryBase<?,?> factory, ArrayDeque<FactoryBase<?, ?>> stack, final long iterationRun){
-        if (factory.iterationRun==iterationRun){
+        if (factory.loopDetectorIterationRun==iterationRun){
             if (stack.contains(factory)){
                 throw new IllegalStateException("Factories contains a cycle, circular dependencies are not supported cause it indicates a design flaw.");
             }
         } else {
             stack.push(factory);
-            factory.visitChildFactoriesAndViewsFlat(child -> {
-                loopDetector(child,stack,iterationRun);
-            },iterationRun,true);
+
+            if (this.loopDetectorIterationRun!=iterationRun){
+                this.loopDetectorIterationRun=iterationRun;
+                for (FactoryBase<?, R> child : finalisedChildrenFlat) {
+                    loopDetector(child,stack,iterationRun);
+                }
+            }
+
             stack.pop();
         }
     }
 
+    private List<FactoryBase<?,R>> addedToGetFactoriesInDestroyOrder;
     private List<FactoryBase<?,R>> getFactoriesInDestroyOrder(){
-        long iterationRun=this.iterationRun+1;
-        final List<FactoryBase<?,R>> result = childrenCounter>0 ? new ArrayList<>(childrenCounter):new ArrayList<>();
+        this.ensureTreeIsFinalised();
+        final List<FactoryBase<?,R>> result = treeChildrenCounter >0 ? new ArrayList<>(treeChildrenCounter):new ArrayList<>();
         result.add(this);
-        getFactoriesInDestroyOrder(this,result,iterationRun);
-        return result;
-    }
-
-    private void getFactoriesInDestroyOrder(FactoryBase<?,R> factory, List<FactoryBase<?, R>> result, final long iterationRun){
-        int size=result.size();
-        factory.visitChildFactoriesAndViewsFlat(result::add,iterationRun,true);
-        for (int i = size; i < result.size(); i++) {//fori loop cause performance optimization
-           getFactoriesInDestroyOrder(result.get(i),result,iterationRun);
+        getFactoriesInDestroyOrder(this,result);
+        for (FactoryBase<?, R> child : result) {
+            child.addedToGetFactoriesInDestroyOrder=null;
         }
-        //factory.visitChildFactoriesAndViewsFlat(child -> getFactoriesInDestroyOrder(child,result,iterationRun), iterationRun);
-    }
-
-    private List<FactoryBase<?,R>> getFactoriesInCreateAndStartOrder(){
-        long iterationRun=this.iterationRun+1;
-        final List<FactoryBase<?,R>> result = childrenCounter>0 ? new ArrayList<>(childrenCounter):new ArrayList<>();
-        getFactoriesInCreateAndStartOrder(this,result,iterationRun);
         return result;
     }
 
-    private void getFactoriesInCreateAndStartOrder(FactoryBase<?,R> factory, List<FactoryBase<?,R>> result, final long iterationRun){
-        factory.visitChildFactoriesAndViewsFlat(child -> {
-            getFactoriesInCreateAndStartOrder(child,result,iterationRun);
-        },iterationRun,true);
+    private void getFactoriesInDestroyOrder(FactoryBase<?,R> factory, List<FactoryBase<?, R>> result){
+        int size=result.size();
+        for (FactoryBase<?, R> child : factory.finalisedChildrenFlat) {
+            if (child.addedToGetFactoriesInDestroyOrder!=result){
+                result.add(child);
+                child.addedToGetFactoriesInDestroyOrder=result;
+            }
+        }
+
+        for (int i = size; i < result.size(); i++) {//fori loop cause performance optimization
+            getFactoriesInDestroyOrder(result.get(i),result);
+        }
+    }
+
+    private List<FactoryBase<?,R>> addedToGetFactoriesInCreateAndStartOrder;
+    private List<FactoryBase<?,R>> getFactoriesInCreateAndStartOrder(){
+        this.ensureTreeIsFinalised();
+        final List<FactoryBase<?,R>> result = treeChildrenCounter >0 ? new ArrayList<>(treeChildrenCounter):new ArrayList<>();
+        getFactoriesInCreateAndStartOrder(this,result);
+        for (FactoryBase<?, R> child : result) {
+            child.addedToGetFactoriesInCreateAndStartOrder=null;
+        }
+        return result;
+    }
+
+    private void getFactoriesInCreateAndStartOrder(FactoryBase<?,R> factory, List<FactoryBase<?,R>> result){
+        for (FactoryBase<?, R> child : factory.finalisedChildrenFlat) {
+            if (child.addedToGetFactoriesInCreateAndStartOrder!=result) {
+                child.addedToGetFactoriesInCreateAndStartOrder=result;
+                getFactoriesInCreateAndStartOrder(child, result);
+            }
+        }
         result.add(factory);
     }
 
-    long iterationRun;
-    private void
-    visitChildFactoriesAndViewsFlat(Consumer<FactoryBase<?,R>> consumer, long iterationRun, boolean includeViews) {
-        if (this.iterationRun==iterationRun){
-            return;
-        }
-        this.iterationRun=iterationRun;
 
-        getFactoryMetadata().visitChildFactoriesAndViewsFlat(this,consumer,includeViews);
+
+
+    @JsonIgnore()
+    List<FactoryBase<?,R>> finalisedChildrenFlat;
+    List<FactoryBase<?,R>> addedTo;
+    void finalizeChildren() {
+        finalisedChildrenFlat = new ArrayList<>();
+        getFactoryMetadata().visitChildFactoriesAndViewsFlat(this, child->{
+            if (child!=null){
+                if (child.addedTo!= finalisedChildrenFlat){
+                    finalisedChildrenFlat.add(child);
+                    child.addedTo= finalisedChildrenFlat;
+                }
+            }
+        }, true);
+
+        for (FactoryBase<?, R> child : finalisedChildrenFlat) {
+            child.addedTo=null;
+        }
     }
 
 
@@ -1232,13 +1262,6 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
         } catch (Exception e) {
             return "can't create debuginfo text cause:\n"+ Throwables.getStackTraceAsString(e);
         }
-    }
-    
-
-    private FactoryLogEntryTreeItem createFactoryLogEntryTree(long iterationRun) {
-        ArrayList<FactoryLogEntryTreeItem> children = new ArrayList<>();
-        this.visitChildFactoriesAndViewsFlat(flatChild -> children.add(flatChild.createFactoryLogEntryTree(iterationRun)),iterationRun,true);
-        return new FactoryLogEntryTreeItem(this.createFactoryLogEntry(), children);
     }
 
     private FactoryLogEntry createFactoryLogEntryFlat(){
@@ -1303,7 +1326,18 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
             return printedCounter >= PRINTED_COUNTER_LIMIT;
         }
     }
-    private void logDisplayTextDeep(StringBuilder stringBuilder, long deep, String prefix, boolean isTail, PrintedCounter printedCounter, long iterationRun){
+
+    private void logDisplayText(StringBuilder stringBuilder) {
+        this.ensureTreeIsFinalised();
+        PrintedCounter printedCounter = new PrintedCounter();
+        logDisplayTextDeep(stringBuilder, 0, "", true, printedCounter);
+        if (printedCounter.limitReached()) {
+            stringBuilder.append("... (aborted log after " + PRINTED_COUNTER_LIMIT + " factories)");
+        }
+    }
+
+
+    private void logDisplayTextDeep(StringBuilder stringBuilder, long deep, String prefix, boolean isTail, PrintedCounter printedCounter){
         if (printedCounter.limitReached()) {
             return;
         }
@@ -1323,10 +1357,9 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
 
         int counter=0;
 
-        List<FactoryBase<?,?>> children = new ArrayList<>();
-        visitChildFactoriesAndViewsFlat(children::add,iterationRun,true);
-        for (FactoryBase<?,?> child: children){
-            child.logDisplayTextDeep(stringBuilder, deep+1, prefix + (isTail ? "    " : "│   "), counter==children.size()-1,printedCounter,iterationRun);
+
+        for (FactoryBase<?,?> child: finalisedChildrenFlat){
+            child.logDisplayTextDeep(stringBuilder, deep+1, prefix + (isTail ? "    " : "│   "), counter==finalisedChildrenFlat.size()-1,printedCounter);
             counter++;
         }
 
@@ -1345,16 +1378,6 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
         logDisplayText(stringBuilder);
         return stringBuilder.toString();
     }
-
-    private void logDisplayText(StringBuilder stringBuilder) {
-        PrintedCounter printedCounter = new PrintedCounter();
-        long iterationRun = this.iterationRun + 1;
-        logDisplayTextDeep(stringBuilder, 0, "", true, printedCounter, iterationRun);
-        if (printedCounter.limitReached()) {
-            stringBuilder.append("... (aborted log after " + PRINTED_COUNTER_LIMIT + " factories)");
-        }
-    }
-
     @JsonIgnore
     private String getFactoryDescription(){
         return getClass().getSimpleName();
@@ -1477,9 +1500,9 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
          * (that means that parents do not have to be recreated.)
          *
          * @param updater updater*/
-         public void setUpdater(Consumer<L> updater ) {
-                factory.setUpdater(updater);
-         }
+        public void setUpdater(Consumer<L> updater ) {
+            factory.setUpdater(updater);
+        }
 
         /** start the liveObject e.g open a port
          * @param starterWithNewLiveObject starterWithNewLiveObject*/

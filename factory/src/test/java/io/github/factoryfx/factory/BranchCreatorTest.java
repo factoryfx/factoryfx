@@ -1,18 +1,14 @@
 package io.github.factoryfx.factory;
 
-import io.github.factoryfx.factory.builder.FactoryContext;
 import io.github.factoryfx.factory.builder.FactoryTreeBuilder;
 import io.github.factoryfx.factory.builder.Scope;
 import io.github.factoryfx.factory.testfactories.ExampleFactoryA;
 import io.github.factoryfx.factory.testfactories.ExampleFactoryB;
 import io.github.factoryfx.factory.testfactories.ExampleLiveObjectA;
 import io.github.factoryfx.factory.testfactories.ExampleLiveObjectB;
-import org.checkerframework.checker.units.qual.K;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.mockito.internal.util.MockUtil;
-
-import java.util.function.Function;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -61,7 +57,7 @@ class BranchSelectorTest {
     public void test_nested(){
         ExampleFactoryA root = new ExampleFactoryA();
         root.referenceAttribute.set(new ExampleFactoryB());
-        root.internal().addBackReferences();
+        root.internal().finalise();
 
         BranchSelector<ExampleFactoryA> branchSelector = new BranchSelector<>(root);
         ExampleLiveObjectB mock = Mockito.mock(ExampleLiveObjectB.class);
