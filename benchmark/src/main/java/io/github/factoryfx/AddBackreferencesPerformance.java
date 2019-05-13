@@ -13,10 +13,10 @@ import java.util.concurrent.TimeUnit;
 @Measurement(iterations = 5, time = 10, timeUnit = TimeUnit.SECONDS)
 @Fork(2)
 @BenchmarkMode(Mode.AverageTime)
-@OutputTimeUnit(TimeUnit.MILLISECONDS)
+@OutputTimeUnit(TimeUnit.NANOSECONDS)
 @State(Scope.Benchmark)
 @Threads(1)
-public class FactoryCopyPerformance {
+public class AddBackReferencesPerformance {
 
     ExampleFactoryA exampleFactoryA = new ExampleFactoryA();
     FastExampleFactoryA fastExampleFactoryA = new FastExampleFactoryA();
@@ -36,16 +36,16 @@ public class FactoryCopyPerformance {
     }
 
     @Benchmark
-    public void copy() {
-        exampleFactoryA.internal().copy();
+    public void addBackReferences() {
+        exampleFactoryA.internal().finalise();
     }
     @Benchmark
-    public void copy_fast_Factories() {
-        fastExampleFactoryA.internal().copy();
+    public void addBackReferences_fast_Factories() {
+        fastExampleFactoryA.internal().finalise();
     }
 
     private static ExampleFactoryB createExampleDataB(int deep){
-        if (deep>20){
+        if (deep>30){
             return null;
         }
         ExampleFactoryB exampleDataB = new ExampleFactoryB();
@@ -54,7 +54,7 @@ public class FactoryCopyPerformance {
     }
 
     private static ExampleFactoryA createExampleDataA(int deep){
-        if (deep>20){
+        if (deep>30){
             return null;
         }
         ExampleFactoryA exampleDataA = new ExampleFactoryA();
@@ -70,7 +70,7 @@ public class FactoryCopyPerformance {
 
 
     private static FastExampleFactoryB createFastExampleDataB(int deep){
-        if (deep>20){
+        if (deep>30){
             return null;
         }
         FastExampleFactoryB exampleDataB = new FastExampleFactoryB();
@@ -79,7 +79,7 @@ public class FactoryCopyPerformance {
     }
 
     private static FastExampleFactoryA createFastExampleDataA(int deep){
-        if (deep>20){
+        if (deep>30){
             return null;
         }
         FastExampleFactoryA exampleDataA = new FastExampleFactoryA();
@@ -95,7 +95,7 @@ public class FactoryCopyPerformance {
 
 
     public static void main(String[] args) {
-        new FactoryCopyPerformance().copy();
+        new AddBackReferencesPerformance().addBackReferences();
     }
 
 }
