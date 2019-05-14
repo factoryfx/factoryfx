@@ -102,6 +102,8 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
     @FunctionalInterface
     public interface AttributeMatchVisitor<V> {
         /**
+         *
+         * @param attributeVariableName attributeVariableName
          * @param attribute1 attribute from factory1
          * @param attribute2 attribute from factory2
          * @return true: continue visit, false abort
