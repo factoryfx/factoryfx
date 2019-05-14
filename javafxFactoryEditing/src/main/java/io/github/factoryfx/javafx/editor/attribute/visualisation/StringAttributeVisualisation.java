@@ -16,7 +16,7 @@ public class StringAttributeVisualisation extends ValueAttributeVisualisation<St
     public Node createValueVisualisation() {
         TextField textField = new TextField();
         textField.textProperty().bindBidirectional(observableAttributeValue);
-        textField.disableProperty().bind(readOnly);
+        textField.editableProperty().bind(readOnly.not());
         return textField;
     }
 }

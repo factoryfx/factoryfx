@@ -93,13 +93,9 @@ public class FactoryManager<L,R extends FactoryBase<L,R>> {
 
     }
 
-    public List<FactoryBase<?,R>> getRemovedFactories(Collection<FactoryBase<?,R>> previousFactories, Set<FactoryBase<?,R>> newFactories){
-        final ArrayList<FactoryBase<?,R>> result = new ArrayList<>();
-        for (FactoryBase<?, R> previous : previousFactories) {
-            if (!newFactories.contains(previous)) {
-                result.add(previous);
-            }
-        }
+    List<FactoryBase<?,R>> getRemovedFactories(Collection<FactoryBase<?,R>> previousFactories, Set<FactoryBase<?,R>> newFactories){
+        final ArrayList<FactoryBase<?,R>> result = new ArrayList<>(previousFactories);
+        result.removeAll(newFactories);
         return result;
     }
 

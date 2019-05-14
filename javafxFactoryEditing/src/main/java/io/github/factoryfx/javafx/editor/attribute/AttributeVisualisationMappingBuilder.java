@@ -129,7 +129,7 @@ public class AttributeVisualisationMappingBuilder {
             if(referenceAttribute.internal_isCatalogueBased()){
                 return new CatalogAttributeVisualisation(referenceAttribute::internal_possibleValues, referenceAttribute,new ValidationDecoration(uniformDesign));
             } else {
-                return new ReferenceAttributeVisualisation(referenceAttribute,new ValidationDecoration(uniformDesign), uniformDesign, navigateToData);
+                return new FactoryAttributeVisualisation(referenceAttribute,new ValidationDecoration(uniformDesign), uniformDesign, navigateToData);
             }
         }));
 
@@ -139,7 +139,7 @@ public class AttributeVisualisationMappingBuilder {
                 return new CatalogListAttributeVisualisation(factoryListBaseAttribute,new ValidationDecoration(uniformDesign), uniformDesign);
             } else {
                 final TableView dataTableView = new TableView();
-                final ReferenceListAttributeVisualisation referenceListAttributeVisualisation = new ReferenceListAttributeVisualisation(factoryListBaseAttribute,new ValidationDecoration(uniformDesign),uniformDesign, navigateToData, dataTableView, new FactoryListAttributeEditWidget(dataTableView, navigateToData, uniformDesign, factoryListBaseAttribute));
+                final FactoryListAttributeVisualisation referenceListAttributeVisualisation = new FactoryListAttributeVisualisation(factoryListBaseAttribute,new ValidationDecoration(uniformDesign),uniformDesign, navigateToData, dataTableView, new FactoryListAttributeEditWidget(dataTableView, navigateToData, uniformDesign, factoryListBaseAttribute));
                 ExpandableAttributeVisualisation expandableAttributeVisualisation = new ExpandableAttributeVisualisation(referenceListAttributeVisualisation, uniformDesign, (l) -> "Items: " + ((List<FactoryBase<?,?>>)l).size(), FontAwesome.Glyph.LIST, factoryListBaseAttribute.internal_isDefaultExpanded());
                 if (factoryListBaseAttribute.contains(previousData)) {
                     expandableAttributeVisualisation.expand();

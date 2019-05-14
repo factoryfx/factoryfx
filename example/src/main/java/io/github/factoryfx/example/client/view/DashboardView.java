@@ -1,6 +1,8 @@
 package io.github.factoryfx.example.client.view;
 
+import com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider;
 import io.github.factoryfx.example.server.shop.OrderStorage;
+import io.github.factoryfx.factory.jackson.ObjectMapperBuilder;
 import io.github.factoryfx.javafx.widget.Widget;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.scene.Node;
@@ -14,6 +16,8 @@ import javafx.scene.control.TableView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
 import javafx.util.StringConverter;
+import org.glassfish.jersey.CommonProperties;
+import org.glassfish.jersey.client.ClientConfig;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
@@ -34,15 +38,8 @@ public class DashboardView implements Widget {
 
         BorderPane content = new BorderPane();
         content.setTop(new Label("Orders:"));
-        TableView<OrderStorage.Order> tableView = new TableView<>();
-        TableColumn<OrderStorage.Order, String> customerName = new TableColumn<>("customerName");
-        customerName.setCellValueFactory(param -> new SimpleStringProperty(param.getValue().customerName));
-        tableView.getColumns().add(customerName);
-        TableColumn<OrderStorage.Order, String> productName = new TableColumn<>("productName");
-        productName.setCellValueFactory(param -> new SimpleStringProperty(param.getValue().productName));
-        tableView.getColumns().add(productName);
-        content.setCenter(tableView);
-        root.getChildren().add(content);
+
+
 
 
 
@@ -68,18 +65,27 @@ public class DashboardView implements Widget {
         final LineChart<Number,Number> lineChart = new LineChart<>(xAxis,yAxis);
         lineChart.setTitle("Orders");
 
-        Button update = new Button("edit");
+        Button update = new Button("update");
         update.setOnAction(event -> updateLineChart(lineChart));
+
+        content.setCenter(lineChart);
         content.setBottom(update);
 
 
         updateLineChart(lineChart);
-        return lineChart;
+        return content;
     }
 
     public void updateLineChart(LineChart<Number,Number> lineChart){
-        Client client = ClientBuilder.newClient();
-        List<OrderStorage.Order> orders = client.target("http://localhost/orderMonitoring").request(MediaType.APPLICATION_JSON).get(new GenericType<List<OrderStorage.Order>>(){});
+        JacksonJaxbJsonProvider jacksonProvider = new JacksonJaxbJsonProvider();
+        jacksonProvider.setMapper(ObjectMapperBuilder.buildNewObjectMapper());
+        ClientConfig configuration = new ClientConfig(new ClientConfig());
+        configuration.property(CommonProperties.FEATURE_AUTO_DISCOVERY_DISABLE, true);
+        configuration.register(jacksonProvider);
+
+        Client client = ClientBuilder.newClient(configuration);
+
+        List<OrderStorage.Order> orders = client.target("http://localhost:8089/orderMonitoring").request(MediaType.APPLICATION_JSON).get(new GenericType<List<OrderStorage.Order>>(){});
 
 
         XYChart.Series<Number,Number> series = new XYChart.Series<>();

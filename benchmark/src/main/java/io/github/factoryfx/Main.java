@@ -19,7 +19,7 @@ public class Main {
 //        CommandLineOptions cmdOptions = new CommandLineOptions(args);
 
         Options opt = new OptionsBuilder()
-//                .include(".*")
+                .include("FactoryUpdateBenchmark")
                 .forks(1)
                 .build();
 

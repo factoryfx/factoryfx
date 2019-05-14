@@ -9,7 +9,6 @@ import io.github.factoryfx.factory.testfactories.ExampleFactoryA;
 import io.github.factoryfx.javafx.css.CssUtil;
 import io.github.factoryfx.javafx.util.UniformDesignFactory;
 import io.github.factoryfx.factory.log.FactoryLogEntry;
-import io.github.factoryfx.factory.log.FactoryLogEntryTreeItem;
 import io.github.factoryfx.factory.log.FactoryUpdateLog;
 import javafx.application.Application;
 import javafx.scene.Scene;
@@ -32,7 +31,6 @@ public class FactoryUpdateLogWidgetTest extends Application {
         child.logStart(5646546);
 
 
-        FactoryLogEntryTreeItem root = new FactoryLogEntryTreeItem(factoryLogEntry, List.of(new FactoryLogEntryTreeItem(child,new ArrayList<>()),new FactoryLogEntryTreeItem(child,new ArrayList<>())));
 
         final HashSet<FactoryLogEntry> removed = new HashSet<>();
         removed.add(factoryLogEntry);

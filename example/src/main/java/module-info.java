@@ -11,6 +11,9 @@ open module io.github.factoryfx.example {
 
     requires javafx.base;
     requires javafx.graphics;
+    requires com.fasterxml.jackson.jaxrs.json;
+    requires jersey.client;
+    requires jersey.common;
 
     exports io.github.factoryfx.example.client.view;
     exports io.github.factoryfx.example.server;

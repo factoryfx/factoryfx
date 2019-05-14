@@ -27,7 +27,7 @@ import io.github.factoryfx.factory.util.LanguageText;
 import io.github.factoryfx.javafx.editor.attribute.ValueAttributeVisualisation;
 import io.github.factoryfx.javafx.util.UniformDesign;
 
-public class ReferenceAttributeVisualisation<T extends FactoryBase<?,?>, A extends FactoryBaseAttribute<?,?,T,A>> extends ValueAttributeVisualisation<T,A> {
+public class FactoryAttributeVisualisation<T extends FactoryBase<?,?>, A extends FactoryBaseAttribute<?,?,T,A>> extends ValueAttributeVisualisation<T,A> {
 
     private LanguageText selectText= new LanguageText().en("select").de("Auswählen");
     private LanguageText addText= new LanguageText().en("add").de("Hinzufügen");
@@ -45,7 +45,7 @@ public class ReferenceAttributeVisualisation<T extends FactoryBase<?,?>, A exten
 
 
 
-    public ReferenceAttributeVisualisation(A attribute, ValidationDecoration validationDecoration, UniformDesign uniformDesign, Consumer<FactoryBase<?,?>> navigateToData) {
+    public FactoryAttributeVisualisation(A attribute, ValidationDecoration validationDecoration, UniformDesign uniformDesign, Consumer<FactoryBase<?,?>> navigateToData) {
         super(attribute,validationDecoration);
         this.uniformDesign = uniformDesign;
         this.navigateToData = navigateToData;

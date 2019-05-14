@@ -11,8 +11,6 @@ import com.google.common.base.Strings;
 import com.google.common.base.Throwables;
 import com.google.common.collect.Maps;
 import io.github.factoryfx.factory.attribute.*;
-import io.github.factoryfx.factory.log.FactoryLogEntry;
-import io.github.factoryfx.factory.log.FactoryLogEntryEventType;
 import io.github.factoryfx.factory.merge.AttributeDiffInfo;
 import io.github.factoryfx.factory.merge.MergeResult;
 import io.github.factoryfx.factory.metadata.FactoryMetadata;
@@ -829,10 +827,6 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
             return factory.factoryTreeBuilderBasedAttributeSetup;
         }
 
-        public FactoryLogEntry createFactoryLogEntry(){
-            return factory.createFactoryLogEntryFlat();
-        }
-
         /**
          * determine which live objects needs recreation
          * @param changedFactories changed factories
@@ -1012,21 +1006,6 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
     }
 
 
-
-
-
-
-    private FactoryLogEntry createFactoryLogEntry(){
-        FactoryLogEntry factoryLogEntry = new FactoryLogEntry(this);
-        factoryLogEntry.logCreate(createDurationNs);
-        factoryLogEntry.logRecreate(recreateDurationNs);
-        factoryLogEntry.logStart(startDurationNs);
-        factoryLogEntry.logDestroy(destroyDurationNs);
-        factoryLogEntry.logUpdate(updateDurationNs);
-        return factoryLogEntry;
-    }
-
-
     private L instance() {
         if (needRecreation){
             previousLiveObject = this.createdLiveObject;
@@ -1035,37 +1014,13 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
             if (needsCreatePropagation()){
                 started=false;
             }
-
         } else {
             if (createdLiveObject==null){
                 createdLiveObject = create();
             }
         }
+
         return createdLiveObject;
-    }
-
-    private static class MeasuredActionResult<T>{
-        public final T result;
-        public final long time;
-
-        private MeasuredActionResult(T result, long time) {
-            this.result = result;
-            this.time = time;
-        }
-    }
-
-    <U> MeasuredActionResult<U> timeMeasuringAction(Supplier<U> action){
-        long start=System.nanoTime();
-        U result = action.get();
-        long passedTimeNs = System.nanoTime() - start;
-        return new MeasuredActionResult<>(result,passedTimeNs);
-    }
-
-    private long timeMeasuringAction(Runnable action){
-        return timeMeasuringAction(() -> {
-            action.run();
-            return null;
-        }).time;
     }
 
     L createTemplateMethod(){
@@ -1079,52 +1034,47 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
         if (creatorMock!=null){
             return creatorMock.apply(this);
         }
-
-        MeasuredActionResult<L> actionResult = timeMeasuringAction(this::createTemplateMethod);
-        logCreate(actionResult.time);
-        return actionResult.result;
+        logCreate();
+        return createTemplateMethod();
     }
 
     private L reCreate(L previousLiveObject) {
         if (updater!=null){
-            long time = timeMeasuringAction(() -> updater.accept(previousLiveObject) );
-            logUpdate(time);
+            updater.accept(previousLiveObject);
+            logUpdate();
             return previousLiveObject;
         }
         if (reCreatorWithPreviousLiveObject!=null){
-            MeasuredActionResult<L> actionResult = timeMeasuringAction(() -> reCreatorWithPreviousLiveObject.apply(previousLiveObject));
-            logRecreate(actionResult.time);
-            return actionResult.result;
+            logRecreate();
+            return reCreatorWithPreviousLiveObject.apply(previousLiveObject);
         }
 
-        MeasuredActionResult<L> actionResult = timeMeasuringAction(this::createTemplateMethod);
-        logRecreate(actionResult.time);
-        return actionResult.result;
+        logRecreate();
+        return createTemplateMethod();
     }
 
     private void start() {
-        if (!started && starterWithNewLiveObject!=null && createdLiveObject!=null){//createdLiveObject is null e.g. if object ist not instanced in the parent factory
-            logStart(timeMeasuringAction(() -> {
+        if (!started) {
+            logStart();
+            if (starterWithNewLiveObject != null && createdLiveObject != null) {//createdLiveObject is null e.g. if object ist not instanced in the parent factory
                 starterWithNewLiveObject.accept(createdLiveObject);
-                started = true;
-            }));
+            }
+            started = true;
         }
     }
 
     private void destroyUpdated() {
         if (previousLiveObject!=null && destroyerWithPreviousLiveObject!=null && needsCreatePropagation()){
-            logDestroy(timeMeasuringAction(()-> {
-                destroyerWithPreviousLiveObject.accept(previousLiveObject);
-            }));
+            destroyerWithPreviousLiveObject.accept(previousLiveObject);
+            logDestroy();
         }
         previousLiveObject=null;
     }
 
     private void destroyRemoved() {
         if (createdLiveObject!=null && destroyerWithPreviousLiveObject!=null){
-            logDestroy(timeMeasuringAction(()-> {
-                destroyerWithPreviousLiveObject.accept(createdLiveObject);
-            }));
+            destroyerWithPreviousLiveObject.accept(createdLiveObject);
+            logDestroy();
         }
         createdLiveObject=null;
     }
@@ -1264,10 +1214,6 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
         }
     }
 
-    private FactoryLogEntry createFactoryLogEntryFlat(){
-        return this.createFactoryLogEntry();
-    }
-
     Microservice<?, R, ?> microservice;
     private void setMicroservice(Microservice<?, R, ?> microservice) {
         this.microservice = microservice;
@@ -1278,47 +1224,50 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
 
 
     @JsonIgnore
-    private long createDurationNs;
-    private void logCreate(long createDurationNs){
-        this.createDurationNs=createDurationNs;
+    private boolean createLog;
+    private void logCreate(){
+        this.createLog=true;
     }
 
 
     @JsonIgnore
-    private long recreateDurationNs;
-    private void logRecreate(long recreateDurationNs){
-        this.recreateDurationNs=recreateDurationNs;
+    private boolean recreateLog;
+    private void logRecreate(){
+        this.recreateLog=true;
     }
 
     @JsonIgnore
-    private long updateDurationNs;
-    private void logUpdate(long updateDurationNs){
-        this.updateDurationNs=updateDurationNs;
+    private boolean updateLog;
+    private void logUpdate(){
+        this.updateLog=true;
     }
 
     @JsonIgnore
-    private long startDurationNs;
-    private void logStart(long startDurationNs){
-        this.startDurationNs=startDurationNs;
+    private boolean startLog;
+    private void logStart(){
+        this.startLog=true;
     }
 
     @JsonIgnore
-    private long destroyDurationNs;
-    private void logDestroy(long destroyDurationNs){
-        this.destroyDurationNs=destroyDurationNs;
+    private boolean destroyLog;
+    private void logDestroy(){
+        this.destroyLog=true;
     }
+
+    private Long logId;
 
     private void resetLog() {
-        this.createDurationNs=0;
-        this.recreateDurationNs=0;
-        this.startDurationNs=0;
-        this.destroyDurationNs=0;
-        this.updateDurationNs=0;
+        this.createLog=false;
+        this.recreateLog=false;
+        this.startLog=false;
+        this.destroyLog=false;
+        this.updateLog=false;
+        this.logId=null;
     }
 
-    private static final int PRINTED_COUNTER_LIMIT=500;
+    private static final long PRINTED_COUNTER_LIMIT=500;
     private static class PrintedCounter{
-        private int printedCounter;
+        private long printedCounter;
         public void inc(){
             printedCounter++;
         }
@@ -1330,6 +1279,8 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
     private void logDisplayText(StringBuilder stringBuilder) {
         this.ensureTreeIsFinalised();
         PrintedCounter printedCounter = new PrintedCounter();
+
+        stringBuilder.append("CREATE:+ REUSE:= RECREATE:<> START:^ DESTROY:- UPDATE:~\n");
         logDisplayTextDeep(stringBuilder, 0, "", true, printedCounter);
         if (printedCounter.limitReached()) {
             stringBuilder.append("... (aborted log after " + PRINTED_COUNTER_LIMIT + " factories)");
@@ -1349,6 +1300,10 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
 //            return;
 //        }
         printedCounter.inc();
+
+        if (this.logId==null) {
+            this.logId=printedCounter.printedCounter;
+        }
 
         stringBuilder.append(getFactoryDescription());
         stringBuilder.append(": ");
@@ -1380,44 +1335,57 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
     }
     @JsonIgnore
     private String getFactoryDescription(){
-        return getClass().getSimpleName();
-    }
-
-    private String formatNsPeriod(long periodNs){
-        return periodNs+ "ns("+periodNs/1000000+"ms)";
+        String displayText="";
+        if (displayTextProvider!=null){
+            displayText=", "+getDisplayText();
+        }
+        return getClass().getSimpleName()+ " (logId:"+logId+displayText+")";
     }
 
     private String eventsDisplayText() {
         StringBuilder result = new StringBuilder();
-        if (createDurationNs!=0) {
-            result.append(FactoryLogEntryEventType.CREATE);
-            result.append(" ");
-            result.append(formatNsPeriod(createDurationNs));
-            result.append(",");
+        boolean isFirst=true;
+        if (createLog) {
+            if (!isFirst){
+                result.append(",");
+            }
+            result.append("+");
+            isFirst=false;
         }
-        if (recreateDurationNs!=0) {
-            result.append(FactoryLogEntryEventType.RECREATE);
-            result.append(" ");
-            result.append(formatNsPeriod(recreateDurationNs));
-            result.append(",");
+        if (!recreateLog && !updateLog && !startLog) {
+            if (!isFirst){
+                result.append(",");
+            }
+            result.append("=");
+            isFirst=false;
         }
-        if (startDurationNs!=0) {
-            result.append(FactoryLogEntryEventType.START);
-            result.append(" ");
-            result.append(formatNsPeriod(startDurationNs));
-            result.append(",");
+        if (recreateLog) {
+            if (!isFirst) {
+                result.append(",");
+            }
+            result.append("<>");
+            isFirst=false;
         }
-        if (destroyDurationNs!=0) {
-            result.append(FactoryLogEntryEventType.DESTROY);
-            result.append(" ");
-            result.append(formatNsPeriod(destroyDurationNs));
-            result.append(",");
+        if (startLog) {
+            if (!isFirst) {
+                result.append(",");
+            }
+            result.append("^");
+            isFirst=false;
         }
-        if (updateDurationNs!=0) {
-            result.append(FactoryLogEntryEventType.UPDATE);
-            result.append(" ");
-            result.append(formatNsPeriod(updateDurationNs));
-            result.append(",");
+        if (destroyLog) {
+            if (!isFirst) {
+                result.append(",");
+            }
+            result.append("-");
+            isFirst=false;
+        }
+        if (updateLog) {
+            if (!isFirst) {
+                result.append(",");
+            }
+            result.append("~");
+            isFirst=false;
         }
         return result.toString();
     }

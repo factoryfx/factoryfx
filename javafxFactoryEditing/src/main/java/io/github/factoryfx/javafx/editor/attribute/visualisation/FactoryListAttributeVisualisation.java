@@ -22,7 +22,7 @@ import javafx.scene.layout.VBox;
 
 import io.github.factoryfx.javafx.util.UniformDesign;
 
-public class ReferenceListAttributeVisualisation<T extends FactoryBase<?,?>, A extends FactoryListBaseAttribute<?,?,T,A>> extends ListAttributeVisualisation<T,A> {
+public class FactoryListAttributeVisualisation<T extends FactoryBase<?,?>, A extends FactoryListBaseAttribute<?,?,T,A>> extends ListAttributeVisualisation<T,A> {
 
     private final UniformDesign uniformDesign;
     private final Consumer<FactoryBase<?,?>> navigateToData;
@@ -30,7 +30,7 @@ public class ReferenceListAttributeVisualisation<T extends FactoryBase<?,?>, A e
     private final TableView<T> tableView;
     private DoubleBinding heightBinding;
 
-    public ReferenceListAttributeVisualisation(A attribute, ValidationDecoration validationDecoration, UniformDesign uniformDesign, Consumer<FactoryBase<?,?>> navigateToData, TableView<T> tableView, FactoryListAttributeEditWidget<?,?,FactoryBase<?,?>> dataListEditWidget) {
+    public FactoryListAttributeVisualisation(A attribute, ValidationDecoration validationDecoration, UniformDesign uniformDesign, Consumer<FactoryBase<?,?>> navigateToData, TableView<T> tableView, FactoryListAttributeEditWidget<?,?,FactoryBase<?,?>> dataListEditWidget) {
         super(attribute,validationDecoration);
         this.uniformDesign = uniformDesign;
         this.navigateToData = navigateToData;
@@ -53,7 +53,7 @@ public class ReferenceListAttributeVisualisation<T extends FactoryBase<?,?>, A e
         tableView.prefHeightProperty().bind(heightBinding);
 
         tableView.setOnMouseClicked(mouseEvent -> {
-            if (mouseEvent.getButton().equals(MouseButton.PRIMARY)) {
+            if (!readOnly.get() && mouseEvent.getButton().equals(MouseButton.PRIMARY)) {
                 if (mouseEvent.getClickCount() == 2 && tableView.getSelectionModel().getSelectedItem()!=null) {
                     navigateToData.accept(tableView.getSelectionModel().getSelectedItem());
                 }

@@ -1,6 +1,8 @@
 package io.github.factoryfx.factory;
 
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import io.github.factoryfx.factory.exception.RethrowingFactoryExceptionHandler;
@@ -78,63 +80,6 @@ public class FactoryManagerTest {
         Assertions.assertEquals("destroy for update",calls.get(0));
     }
 
-    @Test
-    public void test_large_tree(){
-
-        FactoryManager<ExampleLiveObjectA, FastExampleFactoryA> factoryManager = new FactoryManager<>(new RethrowingFactoryExceptionHandler());
-
-
-        FastExampleFactoryA exampleFactoryA = new FastExampleFactoryA();
-        for (int i=0;i<100000;i++){
-            FastExampleFactoryB factoryB = new FastExampleFactoryB();
-            factoryB.referenceAttributeC=new FastExampleFactoryC();
-            exampleFactoryA.referenceListAttribute.add(factoryB);
-        }
-
-
-//        FactoryManager<Void,ExampleFactoryA> factoryManager = new FactoryManager<>(new RethrowingFactoryExceptionHandler());
-//        ExampleFactoryA exampleFactoryA = new ExampleFactoryA();
-//        for (int i=0;i<100000;i++){
-//            ExampleFactoryB factoryBases = new ExampleFactoryB();
-//            factoryBases.referenceAttributeC.set(new ExampleFactoryC());
-//            exampleFactoryA.referenceListAttribute.add(factoryBases);
-//        }
-
-
-
-        factoryManager.start(new RootFactoryWrapper<>(exampleFactoryA));
-
-//        try {
-//            Thread.sleep(1000000000);
-//        } catch (InterruptedException e) {
-//            throw new RuntimeException(e);
-//        }
-//        factoryManager.getCurrentData();
-
-    }
-
-
-    @Test
-    public void test_large_tree_normal_factories(){
-        FactoryManager<ExampleLiveObjectA, ExampleFactoryA> factoryManager = new FactoryManager<>(new RethrowingFactoryExceptionHandler());
-
-        ExampleFactoryA exampleFactoryA = new ExampleFactoryA();
-        for (int i=0;i<100000;i++){
-            ExampleFactoryB factoryBases = new ExampleFactoryB();
-            factoryBases.referenceAttributeC.set(new ExampleFactoryC());
-            exampleFactoryA.referenceListAttribute.add(factoryBases);
-        }
-
-        factoryManager.start(new RootFactoryWrapper<>(exampleFactoryA));
-
-//        try {
-//            Thread.sleep(1000000000);
-//        } catch (InterruptedException e) {
-//            throw new RuntimeException(e);
-//        }
-//        factoryManager.getCurrentData();
-
-    }
 
     @Test
     public void test_views_parent() {
@@ -148,6 +93,40 @@ public class FactoryManagerTest {
 
         xFactory.internal().getParents().contains(exampleFactoryAndViewA);
         xFactory.internal().getParents().contains(root);
+    }
+
+    @Test
+    public void test_getRemoved_factories() {
+        FactoryManager<ExampleLiveObjectA, ExampleFactoryA> factoryManager = new FactoryManager<>(new RethrowingFactoryExceptionHandler());
+
+
+        ArrayList<FactoryBase<?, ExampleFactoryA>> previousFactories = new ArrayList<>();
+        HashSet<FactoryBase<?, ExampleFactoryA>> newFactories = new HashSet<>();
+        ExampleFactoryB both = new ExampleFactoryB();
+        previousFactories.add(both);
+        newFactories.add(both);
+        ExampleFactoryB removed = new ExampleFactoryB();
+        previousFactories.add(removed);
+
+        List<FactoryBase<?, ExampleFactoryA>> removedFactories = factoryManager.getRemovedFactories(previousFactories, newFactories);
+
+        Assertions.assertEquals(1,removedFactories.size());
+        Assertions.assertEquals(removed,removedFactories.get(0));
+    }
+
+    @Test
+    public void test_getRemoved_factories_no_removed() {
+        FactoryManager<ExampleLiveObjectA, ExampleFactoryA> factoryManager = new FactoryManager<>(new RethrowingFactoryExceptionHandler());
+
+
+        ArrayList<FactoryBase<?, ExampleFactoryA>> previousFactories = new ArrayList<>();
+        HashSet<FactoryBase<?, ExampleFactoryA>> newFactories = new HashSet<>();
+        ExampleFactoryB both = new ExampleFactoryB();
+        previousFactories.add(both);
+        newFactories.add(both);
+
+        List<FactoryBase<?, ExampleFactoryA>> removedFactories = factoryManager.getRemovedFactories(previousFactories, newFactories);
+        Assertions.assertEquals(0,removedFactories.size());
     }
 
 }

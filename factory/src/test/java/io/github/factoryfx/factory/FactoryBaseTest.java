@@ -249,19 +249,19 @@ public class FactoryBaseTest {
         root.xFactory.set(new XFactory());
         root.xFactory2.set(root.xFactory.get());
 
-        final XRoot usableCopy = root.internal().finalise();
-        usableCopy.internal().instance();
+        root.internal().finalise();
+        root.internal().instance();
 
 
         HashSet<FactoryBase<?,XRoot>> changed =new HashSet<>();
-        changed.add(usableCopy.xFactory.get());
-        usableCopy.internal().determineRecreationNeedFromRoot(changed);
-        assertTrue(usableCopy.needRecreation);
-        assertTrue(usableCopy.xFactory.get().needRecreation);
+        changed.add(root.xFactory.get());
+        root.internal().determineRecreationNeedFromRoot(changed);
+        assertTrue(root.needRecreation);
+        assertTrue(root.xFactory.get().needRecreation);
 
-        usableCopy.xFactory.get().createCalls.clear();
-        usableCopy.internal().instance();
-        assertEquals(1,usableCopy.xFactory.get().createCalls.size());
+        root.xFactory.get().createCalls.clear();
+        root.internal().instance();
+        assertEquals(1,root.xFactory.get().createCalls.size());
 
     }
 

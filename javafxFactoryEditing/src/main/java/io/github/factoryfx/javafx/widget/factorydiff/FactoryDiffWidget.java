@@ -74,46 +74,18 @@ public class FactoryDiffWidget implements Widget {
         verticalSplitPane.setOrientation(Orientation.VERTICAL);
         verticalSplitPane.getItems().add(diffTableView);
 
-        StackPane diffValuesPane = new StackPane();
+        SplitPane diffValuesPane = new SplitPane();
         final Node previousNode = addTitle(previousValueDisplay, uniformDesign.getText(titlePrevious));
-        diffValuesPane.getChildren().add(previousNode);
+        diffValuesPane.getItems().add(previousNode);
 
-        final Slider slider = new Slider();
 
 
         final Node newNode = addTitle(newValueDisplay, uniformDesign.getText(titleNew));
-        diffValuesPane.getChildren().add(newNode);
-//        diffValuesPane.setDividerPositions(0.333, 0.6666);
+        diffValuesPane.getItems().add(newNode);
 
-        slider.setMin(0);
-        slider.setMax(1);
-        slider.setMaxWidth(200);
-        newNode.opacityProperty().bind(slider.valueProperty());
-        newNode.mouseTransparentProperty().bind(newNode.opacityProperty().isEqualTo(0));
-
-//        newNode.setDisable(true);
-//        newNode.getStyleClass().add("dontChangeOpacityIfdisabled");
-        previousNode.opacityProperty().bind(slider.valueProperty().add(-1).multiply(-1));
-
-//        previousNode.setDisable(true);
-//        previousNode.getStyleClass().add("dontChangeOpacityIfdisabled");
-
-        HBox sliderPane = new HBox(3);
-        sliderPane.setPadding(new Insets(3));
-        final Button old = new Button("");
-        uniformDesign.addIcon(old, FontAwesome.Glyph.ANGLE_DOUBLE_LEFT);
-        old.setOnAction(event -> slider.setValue(0));
-        sliderPane.getChildren().add(old);
-        sliderPane.getChildren().add(slider);
-        final Button newButton  = new Button("");
-        uniformDesign.addIcon(newButton, FontAwesome.Glyph.ANGLE_DOUBLE_RIGHT);
-        newButton.setOnAction(event -> slider.setValue(1));
-        sliderPane.getChildren().add(newButton);
-        sliderPane.setAlignment(Pos.CENTER);
 
 
         VBox vBox=new VBox();
-        vBox.getChildren().add(sliderPane);
         VBox.setMargin(diffValuesPane,new Insets(0,3,0,3));
         VBox.setVgrow(diffValuesPane,Priority.ALWAYS);
         vBox.getChildren().add(diffValuesPane);
@@ -223,6 +195,7 @@ public class FactoryDiffWidget implements Widget {
         vBox.setSpacing(3);
         Label label = new Label(title);
         label.getStyleClass().add("titleLabel");
+        label.setPadding(new Insets(3));
         vBox.getChildren().add(label);
         VBox.setVgrow(node, Priority.ALWAYS);
         vBox.getChildren().add(node);

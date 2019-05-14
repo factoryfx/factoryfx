@@ -16,6 +16,7 @@ public class ServerBuilder {
             return new JettyServerBuilder<>(new ShopJettyServerFactory())
                     .withHost("localhost").withPort(8089)
                     .withResource(context.get(SpecificMicroserviceResourceFactory.class))
+                    .withResource(context.get(OrderMonitoringResourceFactory.class))
                     .withResource(context.get(ShopResourceFactory.class)).build();
 
         });
@@ -68,6 +69,8 @@ public class ServerBuilder {
         factoryTreeBuilder.addFactory(OrderStorageFactory.class, Scope.SINGLETON, ctx->{
             return new OrderStorageFactory();
         });
+
+        factoryTreeBuilder.addFactory(OrderMonitoringResourceFactory.class, Scope.SINGLETON);
 
         return factoryTreeBuilder;
     }
