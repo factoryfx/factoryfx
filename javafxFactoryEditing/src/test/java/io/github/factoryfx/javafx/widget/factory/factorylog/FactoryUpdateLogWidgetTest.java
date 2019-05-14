@@ -22,7 +22,7 @@ public class FactoryUpdateLogWidgetTest extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
 
-        FactoryUpdateLogWidget factoryUpdateLogWidget = new FactoryUpdateLogWidget(new UniformDesignFactory().internal().instance());
+        FactoryUpdateLogWidget factoryUpdateLogWidget = new FactoryUpdateLogWidget();
         final FactoryLogEntry factoryLogEntry = new FactoryLogEntry(ExampleFactoryA.class, "FactoryX", 0);
         factoryLogEntry.logCreate(21323);
         factoryLogEntry.logStart(5646546);

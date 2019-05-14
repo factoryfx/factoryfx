@@ -58,7 +58,6 @@ public class RootFactoryWrapper<R extends FactoryBase<?,R>> {
         DataMerger<R> dataMerger = new DataMerger<>(rootFactory, commonVersion, newVersion);
         io.github.factoryfx.factory.merge.MergeResult<R> mergeResult = dataMerger.createMergeResult(permissionChecker);
         MergeDiffInfo<R> result = mergeResult.executeMerge();
-        mergeResult.getMergedFactories();
         rootFactory.internal().loopDetector();
         updateCachedChildren();
         return new MergeResult<R>(result,mergeResult.getMergedFactories());

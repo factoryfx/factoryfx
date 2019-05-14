@@ -95,7 +95,7 @@ public class DiffDialogBuilder {
         final FactoryDiffWidget factoryDiffWidget = new FactoryDiffWidget(uniformDesign, attributeVisualisationMappingBuilder);
         factoryDiffWidget.updateMergeDiff(factoryLog.mergeDiffInfo);
 
-        final FactoryUpdateLogWidget factoryLogWidget = new FactoryUpdateLogWidget(uniformDesign);
+        final FactoryUpdateLogWidget factoryLogWidget = new FactoryUpdateLogWidget();
         factoryLogWidget.updateLog(factoryLog);
 
         Dialog<Void> dialog = new Dialog<>();

@@ -4,15 +4,12 @@ import com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider;
 import io.github.factoryfx.example.server.shop.OrderStorage;
 import io.github.factoryfx.factory.jackson.ObjectMapperBuilder;
 import io.github.factoryfx.javafx.widget.Widget;
-import javafx.beans.property.SimpleStringProperty;
 import javafx.scene.Node;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
 import javafx.util.StringConverter;
@@ -34,15 +31,8 @@ public class DashboardView implements Widget {
 
     @Override
     public Node createContent() {
-        StackPane root = new StackPane();
-
         BorderPane content = new BorderPane();
         content.setTop(new Label("Orders:"));
-
-
-
-
-
 
         final NumberAxis xAxis = new NumberAxis();
         final NumberAxis yAxis = new NumberAxis();
@@ -82,11 +72,9 @@ public class DashboardView implements Widget {
         ClientConfig configuration = new ClientConfig(new ClientConfig());
         configuration.property(CommonProperties.FEATURE_AUTO_DISCOVERY_DISABLE, true);
         configuration.register(jacksonProvider);
-
         Client client = ClientBuilder.newClient(configuration);
 
         List<OrderStorage.Order> orders = client.target("http://localhost:8089/orderMonitoring").request(MediaType.APPLICATION_JSON).get(new GenericType<List<OrderStorage.Order>>(){});
-
 
         XYChart.Series<Number,Number> series = new XYChart.Series<>();
         series.setName("Orders");
@@ -102,8 +90,5 @@ public class DashboardView implements Widget {
         orders.stream().map(o->o.orderDate.getTime()).min(Long::compare).ifPresent(value -> xAxis.setLowerBound((double)value));
         orders.stream().map(o->o.orderDate.getTime()).max(Long::compare).ifPresent(value -> xAxis.setUpperBound((double)value));
         xAxis.setTickUnit(1000);
-
-//        lineChart.getXAxis().set
-//        lineChart.getYAxis().requestAxisLayout();
     }
 }

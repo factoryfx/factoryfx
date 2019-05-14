@@ -1,27 +1,16 @@
 package io.github.factoryfx.javafx.widget.factory.factorylog;
 
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
 import java.util.function.Consumer;
 
 import io.github.factoryfx.javafx.util.UniformDesign;
 import io.github.factoryfx.javafx.widget.Widget;
-import io.github.factoryfx.javafx.widget.table.TableControlWidget;
 import io.github.factoryfx.factory.log.*;
-import javafx.beans.property.SimpleStringProperty;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
-import org.controlsfx.glyphfont.FontAwesome;
 
 public class FactoryUpdateLogWidget implements Widget {
-    private UniformDesign uniformDesign;
-
-    public FactoryUpdateLogWidget(UniformDesign uniformDesign){
-        this.uniformDesign=uniformDesign;
-    }
 
     private Consumer<FactoryUpdateLog> factoryLogRootUpdater;
     FactoryUpdateLog<?> factoryLog;
