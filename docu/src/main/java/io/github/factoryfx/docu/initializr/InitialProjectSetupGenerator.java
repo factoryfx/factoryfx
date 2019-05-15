@@ -1,6 +1,6 @@
 package io.github.factoryfx.docu.initializr;
 
-import io.github.factoryfx.starter.InitialProjectSetup;
+import io.github.factoryfx.initializr.InitialProjectSetup;
 
 import java.nio.file.Path;
 

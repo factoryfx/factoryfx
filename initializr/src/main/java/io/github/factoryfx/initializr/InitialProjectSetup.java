@@ -1,6 +1,6 @@
-package io.github.factoryfx.starter;
+package io.github.factoryfx.initializr;
 
-import io.github.factoryfx.starter.template.*;
+import io.github.factoryfx.initializr.template.*;
 
 import java.nio.file.Path;
 

@@ -31,15 +31,15 @@ Factoryfx is a replacement for:
 
 | Group ID            | Artifact ID | Version |
 | :-----------------: | :---------: | :-----: |
-| io.github.factoryfx | factory  | 1.7.6  |
+| io.github.factoryfx | factory  | 2.0.0  |
 
 java 11+ required
 
-### Changelog
-[CHANGELOG](CHANGELOG.md)
-
 ### Dependencies
 [Gradle example dependency setups](docu/src/main/java/io/github/factoryfx/docu/dependencysetup)
+
+## Changelog
+[CHANGELOG](CHANGELOG.md)
 
 ## Basic example "Hello World" 
 #### Factory

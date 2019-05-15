@@ -146,7 +146,11 @@ public class FactoryMetadata<R extends FactoryBase<?,R>, L,F extends FactoryBase
 
         //generics parameter for attributes
         for (Field field : attributeFields) {
-            field.setAccessible(true);//should improve performance
+            try {
+                field.setAccessible(true);//should improve performance
+            } catch (InaccessibleObjectException e){
+                throw new RuntimeException("\n\nto fix the error add jpms boilerplate, \noption 1: module-info.info: opens "+clazz.getPackage().getName()+";\noption 2: open all, open module {A} { ... } (open keyword before module)\n",e);
+            }
 //            Class<?> attributeType = field.getType();
 //            while(attributeType!=ReferenceBaseAttribute.class && attributeType!=Object.class){
 //                attributeType=attributeType.getSuperclass();

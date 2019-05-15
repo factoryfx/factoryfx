@@ -1,4 +1,4 @@
-package io.github.factoryfx.starter.template;
+package io.github.factoryfx.initializr.template;
 
 import com.squareup.javapoet.*;
 import io.github.factoryfx.factory.SimpleFactoryBase;

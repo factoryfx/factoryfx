@@ -6,6 +6,6 @@ module io.github.factoryfx.starter {
     requires org.eclipse.jetty.server;
     requires java.ws.rs;
 
-    exports io.github.factoryfx.starter;
-    exports io.github.factoryfx.starter.template;
+    exports io.github.factoryfx.initializr;
+    exports io.github.factoryfx.initializr.template;
 }
