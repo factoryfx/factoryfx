@@ -22,6 +22,8 @@ import java.util.function.Function;
 /**
  * Microservice without a persistence data storage
  *
+ * default setup uses the {@link InMemoryDataStorage}
+ *
  * @param <L> root liveobject
  * @param <R> Root
  * @param <S> Summary
@@ -56,15 +58,6 @@ public class MicroserviceBuilder<L,R extends FactoryBase<L,R>,S> {
 
     public MigrationManager<R,S> buildMigrationManager(){
         return migrationManager;
-    }
-
-    /**
-     * with inMemory data storage
-     * @return builder
-     */
-    public MicroserviceBuilder<L,R,S> withInMemoryStorage(){
-        new InMemoryDataStorage<>(initialFactory);
-        return this;
     }
 
     /**

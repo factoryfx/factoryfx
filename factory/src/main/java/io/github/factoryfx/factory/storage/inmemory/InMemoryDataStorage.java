@@ -10,6 +10,7 @@ import io.github.factoryfx.factory.storage.*;
 
 
 /**
+ * InMemoryDataStorage stores factories in the ram which means that changes are lost after a restart.
  *
  * @param <R> Root factory
  * @param <S> Storage history summary
