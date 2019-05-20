@@ -22,7 +22,7 @@ public class MicroserviceAndTreeBuilderTest {
             return factory;
         });
 
-        Microservice<ExampleLiveObjectA,ExampleFactoryA,Void> microservice = builder.microservice().withInMemoryStorage().build();
+        Microservice<ExampleLiveObjectA,ExampleFactoryA,Void> microservice = builder.microservice().build();
         microservice.start();
     }
 

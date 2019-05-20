@@ -74,7 +74,7 @@ public class Printer{
             printerFactory.text.set("Hello World");
             return printerFactory;
         })
-    .microservice().withInMemoryStorage().build().start().print();
+    .microservice().build().start().print();
 ```
 The complete [example](docu/src/main/java/io/github/factoryfx/docu/helloworld) 
 

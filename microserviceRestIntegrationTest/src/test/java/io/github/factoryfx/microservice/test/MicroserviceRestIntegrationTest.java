@@ -70,7 +70,7 @@ public class MicroserviceRestIntegrationTest {
 
         ObjectMapperBuilder.build().copy(builder.buildTree());
 
-        Microservice<Server, TestJettyServer, Void> microservice = builder.microservice().withInMemoryStorage().build();
+        Microservice<Server, TestJettyServer, Void> microservice = builder.microservice().build();
         microservice.start();
 
         try {

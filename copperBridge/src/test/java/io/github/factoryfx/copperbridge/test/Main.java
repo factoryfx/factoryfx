@@ -18,7 +18,7 @@ public class Main {
     public static void main(String[] args) {
         FactoryTreeBuilder< WorkflowLauncher, CopperRootFactory, Void> builder = buildApplication();
 
-        Microservice<WorkflowLauncher, CopperRootFactory, Void> microservice = builder.microservice().withInMemoryStorage().build();
+        Microservice<WorkflowLauncher, CopperRootFactory, Void> microservice = builder.microservice().build();
         microservice.start();
 
         startWorkflowExecutingThread(microservice);

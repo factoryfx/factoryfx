@@ -62,7 +62,7 @@ public class FactoryReferenceListTest {
             return rootFactory;
         });
 
-        Microservice<String,RootFactory, Void> microService = builder.microservice().withInMemoryStorage().build();
+        Microservice<String,RootFactory, Void> microService = builder.microservice().build();
         microService.start();
 
         {

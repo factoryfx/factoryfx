@@ -19,7 +19,7 @@
 
 * **testing:** Added the ability to set a mock liveobject for a factory.
 
-* **data:** Removed the data editing function. In the past, factories were a layer above a general data editing layer. The general data editing layer is removed to focus on the factory dependency injection.
+* **data:** Removed the data editing layer (Factory editing still works the same). In the past, factories were a layer above a general data editing layer. The general data editing layer is removed to focus on the factory dependency injection.
 
 
 ### BREAKING CHANGES

@@ -136,5 +136,19 @@
     </Match>
 
 
+    <Match>
+        <Class name="io.github.factoryfx.javafx.javascript.editor.attribute.visualisation.JavascriptVisual" />
+        <Bug pattern="NM_SAME_SIMPLE_NAME_AS_SUPERCLASS" />
+    </Match>
+
+    <Match>
+        <Class name="io.github.factoryfx.docu.initializr.FactoryAttribute" />
+        <Bug pattern="NM_SAME_SIMPLE_NAME_AS_SUPERCLASS" />
+    </Match>
+
+    <Match>
+        <Class name="io.github.factoryfx.docu.initializr.FactoryListAttribute" />
+        <Bug pattern="NM_SAME_SIMPLE_NAME_AS_SUPERCLASS" />
+    </Match>
 
 </FindBugsFilter>

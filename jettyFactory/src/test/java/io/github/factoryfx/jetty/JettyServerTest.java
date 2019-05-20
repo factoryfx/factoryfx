@@ -85,7 +85,7 @@ public class JettyServerTest {
         builder.addFactory(Resource1Factory.class, Scope.SINGLETON, ctx -> {
             return new Resource1Factory();
         });
-        Microservice<Server, JettyServerRootFactory, Void> microservice = builder.microservice().withInMemoryStorage().build();
+        Microservice<Server, JettyServerRootFactory, Void> microservice = builder.microservice().build();
         try {
             microservice.start();
 
@@ -137,7 +137,7 @@ public class JettyServerTest {
         builder.addFactory(Resource1Factory.class, Scope.SINGLETON, ctx -> {
             return new Resource1Factory();
         });
-        Microservice<Server, JettyServerRootFactory, Void> microservice = builder.microservice().withInMemoryStorage().build();
+        Microservice<Server, JettyServerRootFactory, Void> microservice = builder.microservice().build();
         try{
             microservice.start();
 
@@ -203,7 +203,7 @@ public class JettyServerTest {
         builder.addFactory(Resource1Factory.class, Scope.SINGLETON, ctx -> {
             return new Resource1Factory();
         });
-        Microservice<Server, JettyServerRootFactory, Void> microservice = builder.microservice().withInMemoryStorage().build();
+        Microservice<Server, JettyServerRootFactory, Void> microservice = builder.microservice().build();
 
         try {
             microservice.start();
@@ -299,7 +299,7 @@ public class JettyServerTest {
         });
         builder.addFactory(MessageBodyReaderWriterEchoFactory.class, Scope.SINGLETON);
 
-        Microservice<Server, JettyServerRootFactory, Void> microservice = builder.microservice().withInMemoryStorage().build();
+        Microservice<Server, JettyServerRootFactory, Void> microservice = builder.microservice().build();
         try{
             microservice.start();
 

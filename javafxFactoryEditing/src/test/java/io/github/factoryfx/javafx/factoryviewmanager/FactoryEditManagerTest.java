@@ -36,7 +36,7 @@ public class FactoryEditManagerTest {
             return initialFactory;
         });
 
-        Microservice<ExampleLiveObjectA, ExampleFactoryA, Void> microservice = builder.microservice().withInMemoryStorage().build();
+        Microservice<ExampleLiveObjectA, ExampleFactoryA, Void> microservice = builder.microservice().build();
         microservice.start();
 
         MicroserviceRestClient<ExampleFactoryA,Void> client = Mockito.mock(MicroserviceRestClient.class);
@@ -96,7 +96,7 @@ public class FactoryEditManagerTest {
                 factory.referenceAttribute.set(new ExampleFactoryB());
                 return factory;
             });
-            Microservice<ExampleLiveObjectA, ExampleFactoryA, Void> microservice = builder.microservice().withInMemoryStorage().build();
+            Microservice<ExampleLiveObjectA, ExampleFactoryA, Void> microservice = builder.microservice().build();
 
             microservice.start();
 
@@ -119,7 +119,7 @@ public class FactoryEditManagerTest {
                 return factory;
             });
 
-            Microservice<ExampleLiveObjectA, ExampleFactoryA, Void> microservice = builder.microservice().withInMemoryStorage().build();
+            Microservice<ExampleLiveObjectA, ExampleFactoryA, Void> microservice = builder.microservice().build();
             microservice.start();
 
             MicroserviceRestClient<ExampleFactoryA,Void> client = Mockito.mock(MicroserviceRestClient.class);

@@ -17,7 +17,7 @@ public class MicroserviceAwareFactoryTest {
         FactoryTreeBuilder<String,RootTestClazz,Void> builder = new FactoryTreeBuilder<>(RootTestClazz.class, context -> {
             return rootTestclazz;
         });
-        Microservice<String,RootTestClazz,Void> microservice = builder.microservice().withInMemoryStorage().build();
+        Microservice<String,RootTestClazz,Void> microservice = builder.microservice().build();
         microservice.start();
 
         //assert no npe in MicroserviceAwareFactoryTestclazz

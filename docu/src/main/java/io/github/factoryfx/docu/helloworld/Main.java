@@ -11,6 +11,6 @@ public class Main {
             return factory;
         });
 
-        builder.microservice().withInMemoryStorage().build().start().print();
+        builder.microservice().build().start().print();
     }
 }

@@ -27,7 +27,7 @@ public class DistributionClientDownloadServerTest {
             return resource;
         });
 
-        builder.microservice().withInMemoryStorage().build().start();
+        builder.microservice().build().start();
 //
 //
 //        DistributionClientDownloadServerFactory distributionClientDownloadServerFactory=new DistributionClientDownloadServerFactory();

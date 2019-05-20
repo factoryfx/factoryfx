@@ -31,7 +31,7 @@ public class Main {
         builder.addFactory(InstrumentedHandlerFactory.class, Scope.SINGLETON);
         builder.addFactory(MetricRegistryFactory.class, Scope.SINGLETON);
 
-        Microservice<Root,RootFactory,Void> microservice = builder.microservice().withInMemoryStorage().build();
+        Microservice<Root,RootFactory,Void> microservice = builder.microservice().build();
         microservice.start();
 
         //execute some random request as example

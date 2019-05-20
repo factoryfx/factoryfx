@@ -76,7 +76,7 @@ public class UpdateableServletTest {
             return resource;
         });
 
-        Microservice<Server, UpdateableWebserverRootFactory, Void> microservice = builder.microservice().withInMemoryStorage().build();
+        Microservice<Server, UpdateableWebserverRootFactory, Void> microservice = builder.microservice().build();
         microservice.start();
         try {
 
@@ -118,7 +118,7 @@ public class UpdateableServletTest {
             return resource;
         });
 
-        Microservice<Server, UpdateableWebserverRootFactory, Void> microservice = builder.microservice().withInMemoryStorage().build();
+        Microservice<Server, UpdateableWebserverRootFactory, Void> microservice = builder.microservice().build();
         microservice.start();
         try {
             HttpClient client = HttpClient.newBuilder().version(HttpClient.Version.HTTP_1_1).build();
@@ -148,7 +148,7 @@ public class UpdateableServletTest {
         });
 
 
-        Microservice<Server, UpdateableWebserverRootFactory, Void> microservice = builder.microservice().withInMemoryStorage().build();
+        Microservice<Server, UpdateableWebserverRootFactory, Void> microservice = builder.microservice().build();
         microservice.start();
         try {
             HttpClient client = HttpClient.newBuilder().version(HttpClient.Version.HTTP_1_1).build();
@@ -181,7 +181,7 @@ public class UpdateableServletTest {
         });
 
 
-        Microservice<Server, UpdateableWebserverRootFactory, Void> microservice = builder.microservice().withInMemoryStorage().build();
+        Microservice<Server, UpdateableWebserverRootFactory, Void> microservice = builder.microservice().build();
         microservice.start();
         try {
 

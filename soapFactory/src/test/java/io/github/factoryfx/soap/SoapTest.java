@@ -39,7 +39,7 @@ public class SoapTest {
         });
 
 
-        Microservice<Server, SoapJettyServerFactory, Object> microService = builder.microservice().withInMemoryStorage().build();
+        Microservice<Server, SoapJettyServerFactory, Object> microService = builder.microservice().build();
         microService.start();
 
         callSoapWebService("http://localhost:8088","action");

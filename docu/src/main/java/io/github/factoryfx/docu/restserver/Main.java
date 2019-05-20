@@ -37,7 +37,7 @@ public class Main {
             return webResourceFactory;
         });
 
-        Microservice<Server,SimpleHttpServer,Void> microservice = builder.microservice().withInMemoryStorage().build();
+        Microservice<Server,SimpleHttpServer,Void> microservice = builder.microservice().build();
         microservice.start();
 
         HttpClient client = HttpClient.newBuilder().version(HttpClient.Version.HTTP_1_1).build();

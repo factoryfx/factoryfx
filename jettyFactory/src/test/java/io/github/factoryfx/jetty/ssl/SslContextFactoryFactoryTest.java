@@ -63,7 +63,7 @@ public class SslContextFactoryFactoryTest {
         });
         builder.addFactory(TestResourceFactory.class, Scope.SINGLETON);
 
-        Microservice<Server, TestJettyServerFactory, Void> microservice = builder.microservice().withInMemoryStorage().build();
+        Microservice<Server, TestJettyServerFactory, Void> microservice = builder.microservice().build();
         try {
             microservice.start();
 
@@ -110,7 +110,7 @@ public class SslContextFactoryFactoryTest {
         });
         builder.addFactory(TestResourceFactory.class, Scope.SINGLETON);
 
-        Microservice<Server, TestJettyServerFactory, Void> microservice = builder.microservice().withInMemoryStorage().build();
+        Microservice<Server, TestJettyServerFactory, Void> microservice = builder.microservice().build();
         try {
             microservice.start();
             fixUntrustCertificate();

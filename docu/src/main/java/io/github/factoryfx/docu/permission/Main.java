@@ -55,7 +55,7 @@ public class Main {
             return resource;
         }) ;
 
-        Microservice<Printer, PrinterFactory, Void> microservice = builder.microservice().withInMemoryStorage().build();
+        Microservice<Printer, PrinterFactory, Void> microservice = builder.microservice().build();
         microservice.start();
 
         System.out.println("first update:");

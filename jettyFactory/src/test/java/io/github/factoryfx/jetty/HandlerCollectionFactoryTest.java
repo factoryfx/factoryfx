@@ -84,7 +84,7 @@ public class HandlerCollectionFactoryTest {
         });
 
 
-        Microservice<Server, HandlerCollectionRootFactory, Void> microservice = builder.microservice().withInMemoryStorage().build();
+        Microservice<Server, HandlerCollectionRootFactory, Void> microservice = builder.microservice().build();
         microservice.start();
         try {
 
@@ -109,7 +109,7 @@ public class HandlerCollectionFactoryTest {
         builder.addFactory(HandlerCollectionResourceFactory.class, Scope.SINGLETON);
 
 
-        Microservice<Server, HandlerCollectionRootFactory, Void> microservice = builder.microservice().withInMemoryStorage().build();
+        Microservice<Server, HandlerCollectionRootFactory, Void> microservice = builder.microservice().build();
         microservice.start();
         try {
             HttpClient client = HttpClient.newBuilder().version(HttpClient.Version.HTTP_1_1).build();

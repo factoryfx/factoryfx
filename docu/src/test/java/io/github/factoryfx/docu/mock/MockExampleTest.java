@@ -29,7 +29,7 @@ public class MockExampleTest {
                     Mockito.when(mock.print()).thenReturn("mocked");
                     return mock;
                 })
-        ).withInMemoryStorage().build().start();
+        ).build().start();
 
         Assertions.assertEquals("mocked",printer.print());
     }

@@ -16,16 +16,14 @@ public class Main {
         // this early in development, we are, unconditionally, starting up the simulator for the backend service...
         FactoryTreeBuilder<Server, SimulatorRootFactory, Void> simulatorBuilder = new SimulatorBuilder().builder();
         MicroserviceBuilder<Server, SimulatorRootFactory, Void> simBuilder = simulatorBuilder.microservice().
-                withExceptionHandler(new LoggingFactoryExceptionHandler<>(new ResettingHandler<Server, SimulatorRootFactory>())).
-                withInMemoryStorage();
+                withExceptionHandler(new LoggingFactoryExceptionHandler<>(new ResettingHandler<Server, SimulatorRootFactory>()));
         Microservice<Server, SimulatorRootFactory, Void> simMicroservice = simBuilder.build();
         simMicroservice.start();
 
         // and now the Greetings service itself...
         FactoryTreeBuilder<Server, ServerRootFactory, Void> serverBuilder = new ServerBuilder().builder();
         MicroserviceBuilder<Server, ServerRootFactory, Void> builder = serverBuilder.microservice().
-                withExceptionHandler(new LoggingFactoryExceptionHandler<>(new ResettingHandler<Server, ServerRootFactory>())).
-                withInMemoryStorage();
+                withExceptionHandler(new LoggingFactoryExceptionHandler<>(new ResettingHandler<Server, ServerRootFactory>()));
         Microservice<Server, ServerRootFactory, Void> microservice = builder.build();
         microservice.start();
 

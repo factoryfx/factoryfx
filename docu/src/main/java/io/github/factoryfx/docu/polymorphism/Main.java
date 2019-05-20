@@ -14,7 +14,7 @@ public class Main {
             return root;
         });
 
-        Microservice<Root,RootFactory,Void> microservice = builder.microservice().withInMemoryStorage().build();
+        Microservice<Root,RootFactory,Void> microservice = builder.microservice().build();
         microservice.start();
 
         DataUpdate<RootFactory> update = microservice.prepareNewFactory();

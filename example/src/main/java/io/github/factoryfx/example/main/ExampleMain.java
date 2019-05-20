@@ -38,8 +38,7 @@ public class ExampleMain extends Application {
 
         FactoryTreeBuilder<Server, ServerRootFactory, Void> serverBuilder = new ServerBuilder().builder();
         MicroserviceBuilder<Server, ServerRootFactory, Void> builder = serverBuilder.microservice().
-                withExceptionHandler(new LoggingFactoryExceptionHandler<>(new ResettingHandler<Server, ServerRootFactory>())).
-                withInMemoryStorage();
+                withExceptionHandler(new LoggingFactoryExceptionHandler<>(new ResettingHandler<Server, ServerRootFactory>()));
         Microservice<Server, ServerRootFactory, Void> microservice = builder.build();
         microservice.start();
 

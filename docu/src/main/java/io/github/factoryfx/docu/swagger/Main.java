@@ -41,7 +41,7 @@ public class Main {
         builder.addFactory(HelloWorldResourceFactory.class, Scope.SINGLETON);
 
         Microservice<Server, SwaggerWebserver,Void> microservice
-                = builder.microservice().withInMemoryStorage().build();
+                = builder.microservice().build();
         microservice.start();
 
 

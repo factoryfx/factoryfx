@@ -12,7 +12,7 @@ public class Main {
             return rootFactory;
         });
 
-        Microservice<Root,RootFactory,Void> microservice = builder.microservice().withInMemoryStorage().build();
+        Microservice<Root,RootFactory,Void> microservice = builder.microservice().build();
         microservice.start();
 
     }

@@ -12,7 +12,7 @@ public class Main {
         FactoryTreeBuilder<Root,RootFactory,Void> builder =  new FactoryTreeBuilder<>(RootFactory.class);
         builder.addFactory(SubscriptionStorageFactory.class, Scope.SINGLETON);
 
-        Microservice<Root,RootFactory,Void> microService = builder.microservice().withInMemoryStorage().build();
+        Microservice<Root,RootFactory,Void> microService = builder.microservice().build();
         microService.start();
     }
 

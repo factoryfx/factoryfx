@@ -29,7 +29,7 @@ public class Main {
         builder.addFactory(CustomConfigurationResourceFactory.class, Scope.SINGLETON);
 
 
-        Microservice<Server, ServerFactory,Void> microservice = builder.microservice().withInMemoryStorage().build();
+        Microservice<Server, ServerFactory,Void> microservice = builder.microservice().build();
         microservice.start();
 
         ping(8005);

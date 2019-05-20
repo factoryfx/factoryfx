@@ -14,7 +14,7 @@ public class Main {
         });
 
         long start=System.currentTimeMillis();
-        Microservice<Root, RootFactory,Void> microservice = builder.microservice().withInMemoryStorage().build();
+        Microservice<Root, RootFactory,Void> microservice = builder.microservice().build();
         microservice.start();
 
         //over 5000ms most time for the ExpensiveResource
