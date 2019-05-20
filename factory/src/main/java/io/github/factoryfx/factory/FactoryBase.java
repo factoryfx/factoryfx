@@ -14,6 +14,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
+import java.util.StringJoiner;
 import java.util.UUID;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -1371,14 +1372,14 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
     }
 
     private String eventsDisplayText() {
-        List<String> l = new ArrayList<>(3);
-        if (createLog) { l.add("+"); }
-        if (!recreateLog && !updateLog && !startLog) { l.add("="); }
-        if (recreateLog) { l.add("<>"); }
-        if (startLog) { l.add("^"); }
-        if (destroyLog) { l.add("-"); }
-        if (updateLog) { l.add("~"); }
-        return String.join(",", l);
+        StringJoiner sj = new StringJoiner(",");
+        if (createLog) { sj.add("+"); }
+        if (!recreateLog && !updateLog && !startLog) { sj.add("="); }
+        if (recreateLog) { sj.add("<>"); }
+        if (startLog) { sj.add("^"); }
+        if (destroyLog) { sj.add("-"); }
+        if (updateLog) { sj.add("~"); }
+        return sj.toString();
     }
 
     Supplier<L> creator=null;
