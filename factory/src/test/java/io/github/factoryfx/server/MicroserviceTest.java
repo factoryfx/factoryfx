@@ -203,6 +203,7 @@ public class MicroserviceTest {
     public void test_prepareNewFactory_is_copy() {
         FactoryTreeBuilder<ExampleLiveObjectA,ExampleFactoryA,Void> builder = new FactoryTreeBuilder<>(ExampleFactoryA.class, ctx -> new ExampleFactoryA());
         Microservice<ExampleLiveObjectA,ExampleFactoryA,Void> microservice = builder.microservice().build();
+        microservice.start();
 
         Assertions.assertFalse(microservice.prepareNewFactory().root==microservice.prepareNewFactory().root);
         Assertions.assertFalse(microservice.prepareNewFactory().root.referenceListAttribute==microservice.prepareNewFactory().root.referenceListAttribute);

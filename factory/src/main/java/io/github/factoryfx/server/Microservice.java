@@ -40,7 +40,7 @@ public class Microservice<L,R extends FactoryBase<L,R>,S> {
         return updateCurrentFactory(new DataUpdate<>(
                 historyFactory,
                 user,
-                "revert",
+                "revert to: "+storedDataMetadata.id,
                 currentFactory.id)
         );
     }
@@ -78,6 +78,9 @@ public class Microservice<L,R extends FactoryBase<L,R>,S> {
      *  @return new possible factory update with prepared ids/metadata
      * */
     public DataUpdate<R> prepareNewFactory() {
+        if (!factoryManager.isStarted()){
+           throw new IllegalStateException("Microservice is not started");
+        }
         return prepareNewFactory("","");
     }
 
@@ -88,9 +91,9 @@ public class Microservice<L,R extends FactoryBase<L,R>,S> {
      * @return new possible factory update with prepared ids/metadata
      */
     public DataUpdate<R> prepareNewFactory(String user, String comment) {
-        DataAndId<R> currentFactory = dataStorage.getCurrentData();
+        DataAndId<R> currentFactory = dataStorage.getCurrentData();//TODO optimise we need just the id
         return new DataUpdate<>(
-                currentFactory.root.utility().copy(),
+                factoryManager.getCurrentFactory().utility().copy(),
                 user,
                 comment,
                 currentFactory.id);
@@ -118,4 +121,6 @@ public class Microservice<L,R extends FactoryBase<L,R>,S> {
     public L getRootLiveObject(){
         return factoryManager.getCurrentFactory().internal().getLiveObject();
     }
+
+
 }

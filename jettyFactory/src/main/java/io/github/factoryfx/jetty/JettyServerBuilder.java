@@ -8,6 +8,13 @@ import javax.servlet.Servlet;
 import java.util.ArrayList;
 import java.util.zip.Deflater;
 
+/**
+ * builds the factory structure for a jetty server not the jetty liveobject
+ * The factory structure matches the jetty internal architecture and the JettyServerBuilder creates a default configuration for that.
+ *
+ * @param <R> server root
+ * @param <S> storage summary
+ */
 public class JettyServerBuilder<R extends FactoryBase<?,R>,S extends JettyServerFactory<R>> {
     public S jettyServerFactory;
     private final JerseyServletFactory<R> defaultJerseyServlet;

@@ -19,20 +19,29 @@ import java.util.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class FactoryBaseTest {
+    @Test
+    public void test_loop_(){
+        ExampleFactoryA exampleFactoryA = new ExampleFactoryA();
+        ExampleFactoryB exampleFactoryB = new ExampleFactoryB();
+        exampleFactoryB.referenceAttribute.set(exampleFactoryA);
+        exampleFactoryA.referenceAttribute.set(exampleFactoryB);
 
-    public void create_loop_test(){
-        Assertions.assertThrows(IllegalStateException.class, () -> {
-            ExampleFactoryA exampleFactoryA = new ExampleFactoryA();
-            ExampleFactoryB exampleFactoryB = new ExampleFactoryB();
-            exampleFactoryB.referenceAttribute.set(exampleFactoryA);
-            exampleFactoryA.referenceAttribute.set(exampleFactoryB);
 
-            exampleFactoryA.internal().loopDetector();
-        });
+        exampleFactoryA.internal().finalise();
+
+        exampleFactoryA.internal().collectChildrenDeep();
+        exampleFactoryA.internal().copy();
+        exampleFactoryA.internal().fixDuplicateFactories();
+        exampleFactoryA.internal().getFactoriesInCreateAndStartOrder();
+
+
+        ObjectMapperBuilder.build().writeValueAsString(exampleFactoryA);
+
+//        exampleFactoryA.internal().loopDetector();
     }
 
     @Test
-    public void create_loop_test_doppelte_added_but_no_circle(){
+    public void create_loop_test_twice_added_but_no_circle(){
         ExampleFactoryA exampleFactoryA = new ExampleFactoryA();
         ExampleFactoryB exampleFactoryB = new ExampleFactoryB();
         exampleFactoryA.referenceAttribute.set(exampleFactoryB);
@@ -401,6 +410,13 @@ public class FactoryBaseTest {
         ExampleFactoryA original = new ExampleFactoryA();
         ExampleFactoryA copy = original.internal().copy();
         assertFalse(original.referenceListAttribute==copy.referenceListAttribute);
+    }
+
+    @Test
+    public void test_copy_root(){
+        ExampleFactoryA original = new ExampleFactoryA();
+        ExampleFactoryA copy = original.internal().copy();
+        assertFalse(original==copy);
     }
 
 

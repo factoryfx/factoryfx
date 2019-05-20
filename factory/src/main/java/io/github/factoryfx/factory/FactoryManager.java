@@ -146,7 +146,7 @@ public class FactoryManager<L,R extends FactoryBase<L,R>> {
 
     @SuppressWarnings("unchecked")
     public void stop(){
-        if (currentFactoryRoot==null){
+        if (!isStarted()){
             throw new IllegalStateException("server is not started");
         }
         Collection<FactoryBase<?,R>> factories = currentFactoryRoot.getFactoriesInDestroyOrder();
@@ -159,6 +159,7 @@ public class FactoryManager<L,R extends FactoryBase<L,R>> {
         } catch(Exception e){
             factoryExceptionHandler.destroyException(e,factoryBaseInFocus,new ExceptionResponseAction(this, null,null,new ArrayList<>()));
         }
+        currentFactoryRoot=null;
 
     }
 
@@ -167,5 +168,9 @@ public class FactoryManager<L,R extends FactoryBase<L,R>> {
             factory.internal().cleanUpAfterCrash();
         }
         this.currentFactoryRoot=null;
+    }
+
+    public boolean isStarted(){
+        return currentFactoryRoot!=null;
     }
 }
