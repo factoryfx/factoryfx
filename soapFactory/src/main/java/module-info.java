@@ -11,7 +11,7 @@ module io.github.factoryfx.soapFactory {
     requires java.xml.soap;
     requires java.xml.bind;
     requires java.xml.ws;
-    requires javax.jws;
+    requires java.jws;
 
     requires java.annotation;
 
