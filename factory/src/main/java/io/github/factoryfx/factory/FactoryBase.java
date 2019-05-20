@@ -1,16 +1,43 @@
 package io.github.factoryfx.factory;
 
 import java.lang.reflect.Modifier;
-import java.util.*;
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Random;
+import java.util.Set;
+import java.util.UUID;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-import com.fasterxml.jackson.annotation.*;
+import org.slf4j.LoggerFactory;
+
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.google.common.base.Strings;
 import com.google.common.base.Throwables;
 import com.google.common.collect.Maps;
-import io.github.factoryfx.factory.attribute.*;
+
+import io.github.factoryfx.factory.attribute.Attribute;
+import io.github.factoryfx.factory.attribute.AttributeChangeListener;
+import io.github.factoryfx.factory.attribute.AttributeCopy;
+import io.github.factoryfx.factory.attribute.AttributeGroup;
+import io.github.factoryfx.factory.attribute.AttributeMatch;
+import io.github.factoryfx.factory.attribute.AttributeMerger;
 import io.github.factoryfx.factory.merge.AttributeDiffInfo;
 import io.github.factoryfx.factory.merge.MergeResult;
 import io.github.factoryfx.factory.metadata.FactoryMetadata;
@@ -21,7 +48,6 @@ import io.github.factoryfx.factory.validation.AttributeValidation;
 import io.github.factoryfx.factory.validation.Validation;
 import io.github.factoryfx.factory.validation.ValidationError;
 import io.github.factoryfx.server.Microservice;
-import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -1345,51 +1371,14 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
     }
 
     private String eventsDisplayText() {
-        StringBuilder result = new StringBuilder();
-        boolean isFirst=true;
-        if (createLog) {
-            if (!isFirst){
-                result.append(",");
-            }
-            result.append("+");
-            isFirst=false;
-        }
-        if (!recreateLog && !updateLog && !startLog) {
-            if (!isFirst){
-                result.append(",");
-            }
-            result.append("=");
-            isFirst=false;
-        }
-        if (recreateLog) {
-            if (!isFirst) {
-                result.append(",");
-            }
-            result.append("<>");
-            isFirst=false;
-        }
-        if (startLog) {
-            if (!isFirst) {
-                result.append(",");
-            }
-            result.append("^");
-            isFirst=false;
-        }
-        if (destroyLog) {
-            if (!isFirst) {
-                result.append(",");
-            }
-            result.append("-");
-            isFirst=false;
-        }
-        if (updateLog) {
-            if (!isFirst) {
-                result.append(",");
-            }
-            result.append("~");
-            isFirst=false;
-        }
-        return result.toString();
+        List<String> l = new ArrayList<>(3);
+        if (createLog) { l.add("+"); }
+        if (!recreateLog && !updateLog && !startLog) { l.add("="); }
+        if (recreateLog) { l.add("<>"); }
+        if (startLog) { l.add("^"); }
+        if (destroyLog) { l.add("-"); }
+        if (updateLog) { l.add("~"); }
+        return String.join(",", l);
     }
 
     Supplier<L> creator=null;
@@ -1470,7 +1459,7 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
          * (that means that parents do not have to be recreated.)
          *
          * @param updater updater*/
-        public void setUpdater(Consumer<L> updater ) {
+        public void setUpdater(Consumer<L> updater) {
             factory.setUpdater(updater);
         }
 
@@ -1529,7 +1518,7 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
         /**
          * overrides the factory creator with a mock<br>
          *
-         * to access the factory attributes you have to specifies the factories class like this<br>
+         * to access the factory attributes you have to specify the factory class like this<br>
          *
          * <pre>{@code
          *      exampleFactoryA.utility().<Factory>mock(f->f.reference ...
