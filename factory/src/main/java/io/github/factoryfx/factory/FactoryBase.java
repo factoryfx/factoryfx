@@ -1132,30 +1132,26 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
     }
 
 
-    long loopDetectorIterationRun;
+    private long loopDetectorIterationRun;//this is used like a visited boolean flag, long is used to avoid the need for a reset
     private void loopDetector(){
         this.ensureTreeIsFinalised();
         long iterationRun=this.loopDetectorIterationRun+1;
-        loopDetector(this,new ArrayDeque<>(),iterationRun);
+        try {
+            loopDetector(iterationRun);
+        } finally {
+            this.loopDetectorIterationRun=iterationRun;
+        }
     }
 
-    private void loopDetector(FactoryBase<?,?> factory, ArrayDeque<FactoryBase<?, ?>> stack, final long iterationRun){
-        if (factory.loopDetectorIterationRun==iterationRun){
-            if (stack.contains(factory)){
-                throw new IllegalStateException("Factories contains a cycle, circular dependencies are not supported cause it indicates a design flaw.");
-            }
-        } else {
-            stack.push(factory);
-
-            if (this.loopDetectorIterationRun!=iterationRun){
-                this.loopDetectorIterationRun=iterationRun;
-                for (FactoryBase<?, R> child : finalisedChildrenFlat) {
-                    loopDetector(child,stack,iterationRun);
-                }
-            }
-
-            stack.pop();
+    private void loopDetector(final long iterationRun){
+        if (iterationRun==loopDetectorIterationRun){
+            throw new IllegalStateException("Factories contains a cycle, circular dependencies are not supported cause it indicates a design flaw.");
         }
+        this.loopDetectorIterationRun=iterationRun;
+        for (FactoryBase<?, R> child : this.finalisedChildrenFlat) {
+            child.loopDetector(iterationRun);
+        }
+        this.loopDetectorIterationRun=-1;
     }
 
     private List<FactoryBase<?,R>> addedToGetFactoriesInDestroyOrder;

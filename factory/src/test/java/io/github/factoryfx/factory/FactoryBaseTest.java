@@ -21,23 +21,46 @@ import static org.junit.jupiter.api.Assertions.*;
 public class FactoryBaseTest {
     @Test
     public void test_loop_(){
-        ExampleFactoryA exampleFactoryA = new ExampleFactoryA();
+        Assertions.assertThrows(IllegalStateException.class, () -> {
+            ExampleFactoryA exampleFactoryA = new ExampleFactoryA();
+            ExampleFactoryB exampleFactoryB = new ExampleFactoryB();
+            exampleFactoryB.referenceAttribute.set(exampleFactoryA);
+            exampleFactoryA.referenceAttribute.set(exampleFactoryB);
+
+//        exampleFactoryA.internal().instance();
+//        exampleFactoryB.internal().instance();
+//
+//
+//        exampleFactoryA.internal().finalise();
+//
+//        exampleFactoryA.internal().collectChildrenDeep();
+//        exampleFactoryA.internal().copy();
+//        exampleFactoryA.internal().fixDuplicateFactories();
+//        exampleFactoryA.internal().getFactoriesInCreateAndStartOrder();
+//
+//
+//        ObjectMapperBuilder.build().writeValueAsString(exampleFactoryA);
+
+//        exampleFactoryA.internal().determineRecreationNeedFromRoot(Set.of(exampleFactoryB));
+            exampleFactoryA.internal().finalise();
+            exampleFactoryA.internal().loopDetector();
+
+        });
+    }
+
+    @Test
+    public void test_loop_double(){
+        ExampleFactoryA root = new ExampleFactoryA();
         ExampleFactoryB exampleFactoryB = new ExampleFactoryB();
-        exampleFactoryB.referenceAttribute.set(exampleFactoryA);
-        exampleFactoryA.referenceAttribute.set(exampleFactoryB);
+        exampleFactoryB.referenceAttribute.set(root);
+        root.referenceAttribute.set(exampleFactoryB);
+        root.internal().finalise();
 
-
-        exampleFactoryA.internal().finalise();
-
-        exampleFactoryA.internal().collectChildrenDeep();
-        exampleFactoryA.internal().copy();
-        exampleFactoryA.internal().fixDuplicateFactories();
-        exampleFactoryA.internal().getFactoriesInCreateAndStartOrder();
-
-
-        ObjectMapperBuilder.build().writeValueAsString(exampleFactoryA);
-
-//        exampleFactoryA.internal().loopDetector();
+        Assertions.assertThrows(IllegalStateException.class, () -> {
+            root.internal().loopDetector();
+        });
+        root.referenceAttribute.set(null);
+        root.internal().loopDetector();
     }
 
     @Test
