@@ -2,6 +2,10 @@ package io.github.factoryfx.factory.builder;
 
 
 
+import io.github.factoryfx.factory.attribute.dependency.FactoryViewAttribute;
+import io.github.factoryfx.factory.attribute.dependency.FactoryViewListAttribute;
+import io.github.factoryfx.factory.metadata.FactoryMetadata;
+import io.github.factoryfx.factory.metadata.FactoryMetadataManager;
 import io.github.factoryfx.factory.storage.migration.datamigration.AttributeFiller;
 import io.github.factoryfx.factory.storage.migration.metadata.DataStorageMetadataDictionary;
 import io.github.factoryfx.factory.FactoryBase;
@@ -18,31 +22,37 @@ public class FactoryTreeBuilderAttributeFiller<L,R extends FactoryBase<L,R>,S> i
     @SuppressWarnings("unchecked")
     public void fillNewAttributes(R root, DataStorageMetadataDictionary oldDataStorageMetadataDictionary) {
         factoryTreeBuilder.fillFromExistingFactoryTree(root);
-        for (FactoryBase<?,R> data : root.internal().collectChildrenDeep()) {
+        for (FactoryBase<?,R> factory : root.internal().collectChildrenDeep()) {
             boolean[] containsNewAttributes=new boolean[1];
-            data.internal().visitAttributesFlat((attributeVariableName, attribute) -> {
-                if (!oldDataStorageMetadataDictionary.containsAttribute(data.getClass().getName(), attributeVariableName)) {//is new Attribute
+            factory.internal().visitAttributesFlat((attributeVariableName, attribute) -> {
+                if (isNewAttribute(factory, oldDataStorageMetadataDictionary, attributeVariableName)) {
                     containsNewAttributes[0]=true;
-                    oldDataStorageMetadataDictionary.containsAttribute(data.getClass().getName(), attributeVariableName);
+                    oldDataStorageMetadataDictionary.containsAttribute(factory.getClass().getName(), attributeVariableName);
                 }
             });
             if (containsNewAttributes[0]){
-                Class aClass = data.getClass();
+                Class aClass = factory.getClass();
                 FactoryBase<?, R> newBuild = factoryTreeBuilder.buildNewSubTree(aClass);
+                FactoryMetadataManager.getMetadata(newBuild.getClass()).addBackReferencesAndReferenceClassToAttributes(newBuild,root);
 
-                this.fillNewAttributes(data,newBuild,oldDataStorageMetadataDictionary);
+                this.fillNewAttributes(factory,newBuild,oldDataStorageMetadataDictionary);
             }
         }
     }
 
-    private <FO extends FactoryBase<?,R>> void fillNewAttributes(FO currentFactoryRoot, FO newBuild, DataStorageMetadataDictionary oldDataStorageMetadataDictionary){
-        currentFactoryRoot.internal().visitAttributesForMatch(newBuild, (attributeVariableName, newAttribute, buildedAttribute) -> {
-            if (!oldDataStorageMetadataDictionary.containsAttribute(currentFactoryRoot.getClass().getName(), attributeVariableName)) {//is new Attribute
-                Object o = buildedAttribute.get();
-                newAttribute.set(buildedAttribute.get());
+    private <FO extends FactoryBase<?,R>> void fillNewAttributes(FO factory, FO newBuild, DataStorageMetadataDictionary oldDataStorageMetadataDictionary){
+        factory.internal().visitAttributesForMatch(newBuild, (attributeVariableName, newAttribute, newlyBuildAttribute) -> {
+            if (isNewAttribute(factory, oldDataStorageMetadataDictionary, attributeVariableName)) {
+                newAttribute.set(newlyBuildAttribute.get());
             }
             return true;
         });
     }
+
+    private <FO extends FactoryBase<?, R>> boolean isNewAttribute(FO currentFactoryRoot, DataStorageMetadataDictionary oldDataStorageMetadataDictionary, String attributeVariableName) {
+        return !oldDataStorageMetadataDictionary.containsAttribute(currentFactoryRoot.getClass().getName(), attributeVariableName);
+    }
+
+
 }
 

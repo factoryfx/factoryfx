@@ -1335,7 +1335,7 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
         }
 
         stringBuilder.append(getFactoryDescription());
-        stringBuilder.append(": ");
+        stringBuilder.append(" lifecycle: ");
         stringBuilder.append(eventsDisplayText());
         stringBuilder.append("\n");
 
@@ -1366,9 +1366,9 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
     private String getFactoryDescription(){
         String displayText="";
         if (displayTextProvider!=null){
-            displayText=", "+getDisplayText();
+            displayText=getDisplayText()+", ";
         }
-        return getClass().getSimpleName()+ " (logId:"+logId+displayText+")";
+        return getClass().getSimpleName()+ "("+displayText+"logId:"+logId+")";
     }
 
     private String eventsDisplayText() {
