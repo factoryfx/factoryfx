@@ -462,6 +462,13 @@ project(':docu') {
 
 }
 
+project(':javascriptDataEditing') {
+    dependencies {
+        compile project(":javascript")
+        compile project(":javafxFactoryEditing")
+    }
+}
+
 project(':nanoservice') {
     dependencies {
         compile project(":factory")
