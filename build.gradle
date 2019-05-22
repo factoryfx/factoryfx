@@ -426,14 +426,6 @@ project(':javascript') {
     }
 }
 
-
-project(':javascriptDataEditing') {
-    dependencies {
-        compile project(":javascript")
-        compile project(":javafxFactoryEditing")
-    }
-}
-
 project(':testfactories') {
     uploadArchives.enabled = false
     dependencies {
@@ -483,7 +475,7 @@ project(':typescriptGenerator') {
         testCompile project(":testfactories")
     }
 
-    task installAngular(type: Exec) {
+    task installNpm(type: Exec) {
         workingDir "$projectDir/src/test/ts/"
 
         if (org.gradle.internal.os.OperatingSystem.current().isWindows()) {
@@ -494,7 +486,7 @@ project(':typescriptGenerator') {
     }
 
     task typescriptTest(type: Exec) {
-        dependsOn ':typescriptGenerator:installAngular'
+        dependsOn ':typescriptGenerator:installNpm'
         workingDir "$projectDir/src/test/ts/"
 
         if (org.gradle.internal.os.OperatingSystem.current().isWindows()) {

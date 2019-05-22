@@ -1,8 +1,11 @@
 package io.github.factoryfx.factory.attribute.dependency;
 
+import io.github.factoryfx.factory.FactoryTreeBuilderBasedAttributeSetup;
+import io.github.factoryfx.factory.builder.FactoryTreeBuilder;
 import io.github.factoryfx.factory.jackson.ObjectMapperBuilder;
 import io.github.factoryfx.factory.FactoryBase;
 import io.github.factoryfx.factory.SimpleFactoryBase;
+import io.github.factoryfx.factory.metadata.FactoryMetadataManager;
 import io.github.factoryfx.factory.testfactories.ExampleFactoryA;
 import io.github.factoryfx.factory.testfactories.poly.ErrorPrinterFactory;
 import io.github.factoryfx.factory.testfactories.poly.OutPrinterFactory;
@@ -92,5 +95,20 @@ public class FactoryPolymorphicListAttributeTest {
         factoryPolymorphic.attribute.add(new ErrorPrinterFactory());
 
         ObjectMapperBuilder.build().copy(factoryPolymorphic);
+    }
+
+    @Test
+    public void test_newValue_noexception(){
+        FactoryTreeBuilder<Object,PolymorphicFactoryExample,Void> builder = new FactoryTreeBuilder<>(PolymorphicFactoryExample.class, ctx -> new PolymorphicFactoryExample());
+        PolymorphicFactoryExample root = builder.buildTreeUnvalidated();
+        root.internal().serFactoryTreeBuilderBasedAttributeSetupForRoot(new FactoryTreeBuilderBasedAttributeSetup<>(builder));
+        root.referenceList.internal_createNewPossibleValues();
+    }
+
+    @Test
+    public void test_referenclass(){
+        PolymorphicFactoryExample root = new PolymorphicFactoryExample();
+        FactoryMetadataManager.getMetadata(PolymorphicFactoryExample.class).addBackReferencesAndReferenceClassToAttributes(root,root);
+        Assertions.assertNull(root.referenceList.clazz);//Reference class can' be determined from the generic parameter
     }
 }

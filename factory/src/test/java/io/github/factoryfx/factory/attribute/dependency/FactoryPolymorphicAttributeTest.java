@@ -1,5 +1,10 @@
 package io.github.factoryfx.factory.attribute.dependency;
 
+import io.github.factoryfx.factory.FactoryTreeBuilderBasedAttributeSetup;
+import io.github.factoryfx.factory.builder.FactoryContext;
+import io.github.factoryfx.factory.builder.FactoryTreeBuilder;
+import io.github.factoryfx.factory.metadata.FactoryMetadataManager;
+import io.github.factoryfx.factory.testfactories.ExampleLiveObjectA;
 import io.github.factoryfx.factory.validation.ValidationError;
 import io.github.factoryfx.factory.PolymorphicFactoryBase;
 import io.github.factoryfx.factory.testfactories.ExampleFactoryA;
@@ -11,9 +16,11 @@ import io.github.factoryfx.factory.jackson.ObjectMapperBuilder;
 import io.github.factoryfx.factory.FactoryBase;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.mockito.internal.matchers.Or;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Function;
 
 public class FactoryPolymorphicAttributeTest {
 
@@ -27,7 +34,7 @@ public class FactoryPolymorphicAttributeTest {
         Assertions.assertNotNull(copy.attribute.get());
     }
 
-    public static class ExamplePolymorphicReferenceAttributeFactory extends FactoryBase<Printer,ExampleFactoryA>{
+    public static class ExamplePolymorphicReferenceAttributeFactory extends FactoryBase<Printer,ExamplePolymorphicReferenceAttributeFactory>{
         public final FactoryPolymorphicAttribute<ExampleFactoryA,Printer> attribute = new FactoryPolymorphicAttribute<>(Printer.class);
     }
 
@@ -149,5 +156,20 @@ public class FactoryPolymorphicAttributeTest {
     public void test_internal_require_false(){
         FactoryPolymorphicAttribute<ExampleFactoryA,Printer> attribute = new FactoryPolymorphicAttribute<ExampleFactoryA,Printer>().setup(Printer.class, ErrorPrinterFactory.class, OutPrinterFactory.class).nullable();
         Assertions.assertFalse(attribute.internal_required());
+    }
+
+    @Test
+    public void test_newValue_noexception(){
+        FactoryTreeBuilder<Printer,ExamplePolymorphicReferenceAttributeFactory,Void> builder = new FactoryTreeBuilder<>(ExamplePolymorphicReferenceAttributeFactory.class, ctx -> new ExamplePolymorphicReferenceAttributeFactory());
+        ExamplePolymorphicReferenceAttributeFactory root = builder.buildTreeUnvalidated();
+        root.internal().serFactoryTreeBuilderBasedAttributeSetupForRoot(new FactoryTreeBuilderBasedAttributeSetup<>(builder));
+        root.attribute.internal_createNewPossibleValues();
+    }
+
+    @Test
+    public void test_referenclass(){
+        ExamplePolymorphicReferenceAttributeFactory root = new ExamplePolymorphicReferenceAttributeFactory();
+        FactoryMetadataManager.getMetadata(ExamplePolymorphicReferenceAttributeFactory.class).addBackReferencesAndReferenceClassToAttributes(root,root);
+        Assertions.assertNull(root.attribute.clazz);//Reference class can' be determined from the generic parameter
     }
 }

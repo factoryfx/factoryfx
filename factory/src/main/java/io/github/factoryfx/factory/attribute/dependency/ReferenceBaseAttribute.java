@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.github.factoryfx.factory.FactoryBase;
 import io.github.factoryfx.factory.FactoryTreeBuilderBasedAttributeSetup;
 import io.github.factoryfx.factory.attribute.*;
+import io.github.factoryfx.factory.metadata.FactoryMetadataManager;
 import io.github.factoryfx.factory.storage.migration.metadata.AttributeStorageMetadata;
 
 import java.util.*;
@@ -60,25 +61,6 @@ public abstract class ReferenceBaseAttribute<R extends FactoryBase<?,R>, F exten
     public void internal_addBackReferences( FactoryBase<?,?> root, FactoryBase<?,?> parent){
         this.root=(R)root;
         this.parent=(FactoryBase<?,R>)parent;
-    }
-
-    private Function<R, F> newValueProvider;
-    /**
-     * customise how new values are created
-     * @param newValueProviderFromRoot value, root
-     * @return the new added factory
-     */
-    @SuppressWarnings("unchecked")
-    public A newValueProvider(Function<R, F> newValueProviderFromRoot){
-        this.newValueProvider =newValueProviderFromRoot;
-        return (A)this;
-    }
-
-    protected Function<R, F> getNewValueProvider(){
-        if (clazz!=null && newValueProvider==null){
-            newValueProvider=new DefaultNewValueProvider<>(clazz);
-        }
-        return newValueProvider;
     }
 
     BiFunction<FactoryBase<?,?>,A,List<F>> newValuesProviderFromRootAndAttribute;
@@ -212,15 +194,15 @@ public abstract class ReferenceBaseAttribute<R extends FactoryBase<?,R>, F exten
 
     @SuppressWarnings("unchecked")
     public List<F> internal_createNewPossibleValues(){
-        FactoryTreeBuilderBasedAttributeSetup factoryTreeBuilderBasedAttributeSetup = root.internal().getFactoryTreeBuilderBasedAttributeSetup();
-        if (factoryTreeBuilderBasedAttributeSetup!=null){
-            return factoryTreeBuilderBasedAttributeSetup.createNewFactory(clazz);
-        }
         if (newValuesProviderFromRootAndAttribute!=null) {
             return newValuesProviderFromRootAndAttribute.apply(root,(A)this);
         }
-        if (getNewValueProvider()!=null) {
-            return Collections.singletonList(getNewValueProvider().apply(root));
+        FactoryTreeBuilderBasedAttributeSetup factoryTreeBuilderBasedAttributeSetup = root.internal().getFactoryTreeBuilderBasedAttributeSetup();
+        if (factoryTreeBuilderBasedAttributeSetup!=null && clazz !=null ){
+            return factoryTreeBuilderBasedAttributeSetup.createNewFactory(clazz);
+        }
+        if (clazz !=null ){
+            return List.of((F)FactoryMetadataManager.getMetadataUnsafe(clazz).newInstance());
         }
         return new ArrayList<>();
     }
