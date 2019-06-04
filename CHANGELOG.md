@@ -54,12 +54,12 @@
   e.g.:FactoryReferenceAttribute=>FactoryAttribute
   
   new names:
-  * FactoryReferenceAttribute
+  * FactoryAttribute
   * FactoryBaseAttribute
   * FactoryListAttribute
   * FactoryPolymorphicAttribute
   * FactoryPolymorphicListAttribute
-  * FactoryReferenceListBaseAttribute
+  * FactoryListBaseAttribute
   * FactoryViewAttribute
   * FactoryViewListAttribute
 
