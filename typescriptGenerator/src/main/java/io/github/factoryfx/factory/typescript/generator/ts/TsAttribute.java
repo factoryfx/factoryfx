@@ -38,7 +38,7 @@ public class TsAttribute {
             constructorParametersString= constructorParameters.stream().map(TsValue::construct).collect(Collectors.joining(","));
         }
 
-        String initialisation="";
+        String initialisation=" = null";
         if (initialised){
             initialisation="= new "+type.construct()+"("+constructorParametersString+")";
         }

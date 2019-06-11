@@ -18,9 +18,9 @@ export class AttributeMetadata<T>  {
 
     public getLabelText(locale: string): string{
         if (locale==='de'){
-            return 'de';
+            return this.de;
         }
-        return 'en';
+        return this.en;
     }
 
     validationFunction:(root: T)=>ValidationError;

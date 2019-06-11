@@ -12,6 +12,8 @@ import {ExampleFactory} from "./example/config/io/github/factoryfx/factory/types
 import {DataCreator} from "./example/util/DataCreator";
 import {ExampleEnum} from "./example/generated/io/github/factoryfx/factory/typescript/generator/data/ExampleEnum";
 import {AttributeType} from "./example/util/AttributeType";
+import {ExampleData3} from "./example/config/io/github/factoryfx/factory/typescript/generator/data/ExampleData3";
+import {Data} from "./example/util/Data";
 
 
 suite('DataTest');// set user interface to QUnit in runconfig
@@ -20,22 +22,24 @@ let exampleDataJson=
     `
         {
           "@class" : "io.github.factoryfx.factory.typescript.generator.data.ExampleData",
-          "id" : "1bf502f7-163a-d84c-10c4-41d6486e63a1",
+          "id" : "84dda4a0-a522-d46f-b8a2-4a1eaedc0384",
           "attribute" : {
             "v" : "123"
           },
           "ref" : {
             "v" : {
               "@class" : "io.github.factoryfx.factory.typescript.generator.data.ExampleData2",
-              "id" : "8738e21d-8eaa-c3e4-26fe-e9ed0d89c4b2",
-              "attribute" : { }
+              "id" : "8cabb2a7-4a60-6970-c5f6-aaa6220d3cac",
+              "attribute" : { },
+              "ref" : { }
             }
           },
           "refList" : [ {
             "@class" : "io.github.factoryfx.factory.typescript.generator.data.ExampleData2",
-            "id" : "346434f9-86a2-8576-3f32-cbb12ef70828",
-            "attribute" : { }
-          }, "8738e21d-8eaa-c3e4-26fe-e9ed0d89c4b2" ]
+            "id" : "fd260522-8167-946d-fd4e-ba4ade1868bb",
+            "attribute" : { },
+            "ref" : { }
+          }, "8cabb2a7-4a60-6970-c5f6-aaa6220d3cac" ]
         }
     `;
 
@@ -60,15 +64,7 @@ test('mapValuesFromJson_ref_id', ()=>{
 
     data.mapFromJsonFromRoot(JSON.parse(exampleDataJson),new DataCreator());
 
-    expect(data.ref.getId()).to.equal("8738e21d-8eaa-c3e4-26fe-e9ed0d89c4b2");
-});
-
-test('mapValuesFromJson_ref_id', ()=>{
-    let data: ExampleData = new ExampleData();
-
-    data.mapFromJsonFromRoot(JSON.parse(exampleDataJson),new DataCreator());
-
-    expect(data.ref.getId()).to.equal("8738e21d-8eaa-c3e4-26fe-e9ed0d89c4b2");
+    expect(data.ref.getId()).to.equal("8cabb2a7-4a60-6970-c5f6-aaa6220d3cac");
 });
 
 test('mapValuesFromJson_list', ()=>{
@@ -347,4 +343,46 @@ test('test_attribute_type', () => {
     data.mapFromJsonFromRoot(JSON.parse(exampleDataAll),new DataCreator());
     expect(data.stringAttributeAccessor().attributeMetadata.getType()).to.equal(AttributeType.StringAttribute);
     expect(data.integerAttributeAccessor().attributeMetadata.getType()).to.equal(AttributeType.IntegerAttribute);
+});
+
+test('test_addBackReferences', () => {
+    let data: ExampleData = new ExampleData();
+    let exampleData2 = new ExampleData2();
+    data.ref= exampleData2;
+    let exampleData3 = new ExampleData3();
+    data.ref.ref= exampleData3;
+
+    data.addBackReferences();
+
+    let path: Array<Data> = exampleData3.getPath();
+    expect(data.getParent()).to.equal(undefined);
+    expect(exampleData2.getParent()).to.equal(data);
+    expect(exampleData3.getParent()).to.equal(exampleData2);
+
+
+});
+
+test('test_path', () => {
+    let data: ExampleData = new ExampleData();
+    let exampleData2 = new ExampleData2();
+    data.ref= exampleData2;
+    let exampleData3 = new ExampleData3();
+    data.ref.ref= exampleData3;
+
+    data.addBackReferences();
+
+    let path: Array<Data> = exampleData3.getPath();
+    expect(path[0]).to.equal(data);
+    expect(path[1]).to.equal(exampleData2);
+    expect(path[2]).to.equal(exampleData3);
+
+
+});
+
+test('test_label', () => {
+    let data: ExampleData = new ExampleData();
+    expect(data.attributeAccessor().getLabelText('en')).to.equal('labelEn\"\'\\');
+    expect(data.refAccessor().getLabelText('en')).to.equal('ref');
+
+
 });

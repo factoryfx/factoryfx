@@ -9,10 +9,10 @@ import io.github.factoryfx.factory.typescript.generator.ts.*;
 import java.util.Map;
 import java.util.Set;
 
-public class ReferenceListAttributeToTsMapper<R extends FactoryBase<?,R>> implements AttributeToTsMapper {
+public class FactoryListAttributeToTsMapper<R extends FactoryBase<?,R>> implements AttributeToTsMapper {
     private final Map<Class<? extends FactoryBase<?,R>>, TsClassConstructed> dataToConfigTs;
 
-    public ReferenceListAttributeToTsMapper(Map<Class<? extends FactoryBase<?,R>>, TsClassConstructed> dataToConfigTs) {
+    public FactoryListAttributeToTsMapper(Map<Class<? extends FactoryBase<?,R>>, TsClassConstructed> dataToConfigTs) {
         this.dataToConfigTs = dataToConfigTs;
     }
 
@@ -27,7 +27,7 @@ public class ReferenceListAttributeToTsMapper<R extends FactoryBase<?,R>> implem
         Class referenceClass = ((FactoryListBaseAttribute) attribute).internal_getReferenceClass();
         TsClassConstructed dataClass = dataToConfigTs.get(referenceClass);
         jsonImports.add(dataClass);
-        return ("this."+attributeVariableName+"=<"+dataClass.getName()+"[]>dataCreator.createDataList(json."+attributeVariableName+",idToDataMap);\n");
+        return ("this."+attributeVariableName+"=<"+dataClass.getName()+"[]>dataCreator.createDataList(json."+attributeVariableName+",idToDataMap,this);\n");
     }
 
     @Override

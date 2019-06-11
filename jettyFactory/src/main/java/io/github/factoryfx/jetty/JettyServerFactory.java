@@ -3,9 +3,11 @@ package io.github.factoryfx.jetty;
 import io.github.factoryfx.factory.FactoryBase;
 import io.github.factoryfx.factory.attribute.dependency.FactoryAttribute;
 import io.github.factoryfx.factory.attribute.dependency.FactoryListAttribute;
+import io.github.factoryfx.factory.attribute.dependency.FactoryPolymorphicAttribute;
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.HandlerCollection;
+import org.eclipse.jetty.util.thread.ThreadPool;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -41,7 +43,7 @@ public class JettyServerFactory<R extends FactoryBase<?,R>> extends FactoryBase<
 
     public final FactoryListAttribute<R,HttpServerConnector,HttpServerConnectorFactory<R>> connectors = new FactoryListAttribute<R,HttpServerConnector,HttpServerConnectorFactory<R>>().labelText("Connectors").userNotSelectable();
     public final FactoryAttribute<R,HandlerCollection,HandlerCollectionFactory<R>> handler = new FactoryAttribute<R,HandlerCollection,HandlerCollectionFactory<R>>().labelText("Handler collection");
-
+    public final FactoryPolymorphicAttribute<R, ThreadPool> threadPool = new FactoryPolymorphicAttribute<R, ThreadPool>().labelText("Thread Pool").nullable();
 
     public JettyServerFactory(){
         configLifeCycle().setCreator(this::createJetty);
@@ -54,7 +56,12 @@ public class JettyServerFactory<R extends FactoryBase<?,R>> extends FactoryBase<
 
     //api for customizing JettyServer creation
     protected Server createJetty() {
-        Server server = new Server();
+        Server server;
+        if (threadPool.get()==null){
+            server = new Server();
+        } else {
+            server = new Server(threadPool.instance());
+        }
         connectors.instances().forEach(httpServerConnector -> httpServerConnector.addToServer(server));
 
         handler.instance().setServer(server);

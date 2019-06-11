@@ -62,7 +62,7 @@ public class FactoryBaseAttribute<R extends FactoryBase<?,R>,L,F extends Factory
         if (root!=null) {
             root.internal().needRecalculationForBackReferences();
             if (factory!=null){
-                factory.internal().setRootDeep(root);//intentionally just added flat, this compromise between performance an convenience, deep set would be too slow for that case addBackreference must be called manually
+                factory.internal().setRootDeep(root);//intentionally just added flat, this compromise between performance an convenience, deep set would be too slow for that case finalise must be called manually
             }
         }
         updateListeners(factory);

@@ -7,7 +7,7 @@ import { AttributeMetadata } from "../../../../../../../../util/AttributeMetadat
 
 export abstract class ExampleDataIgnoreGenerated  extends Data {
 
-    public stringAttribute: string;
+    public stringAttribute: string = null;
     public static readonly stringAttributeMetadata: AttributeMetadata<string>= new AttributeMetadata<string>('','',AttributeType.StringAttribute);
 
     public stringAttributeAccessor(): AttributeAccessor<string,ExampleDataIgnoreGenerated>{
@@ -22,11 +22,12 @@ export abstract class ExampleDataIgnoreGenerated  extends Data {
         result.stringAttribute=this.mapAttributeValueToJson(this.stringAttribute);
     }
 
-    protected collectChildrenRecursiveIntern(idToDataMap: any){
-        
+    protected collectChildrenFlat(): Data[]{
+        let result: Array<Data>=[];
+        return result;
     }
 
-    protected listAttributeAccessor(): AttributeAccessor<any,ExampleDataIgnoreGenerated>[]{
+    public listAttributeAccessor(): AttributeAccessor<any,ExampleDataIgnoreGenerated>[]{
         let result: AttributeAccessor<any,ExampleDataIgnoreGenerated>[]=[];
         result.push(this.stringAttributeAccessor());
         return result;

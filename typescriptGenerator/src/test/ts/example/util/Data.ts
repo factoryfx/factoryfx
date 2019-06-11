@@ -1,9 +1,12 @@
 //generated code don't edit manually
+//generated code don't edit manually
 import { DataCreator } from "./DataCreator";
+import {AttributeAccessor} from "./AttributeAccessor";
 
 export abstract class Data  {
     private id: string;
     private javaClass: string;
+    private parent: Data;
 
     public getId(): string{
         if (!this.id){
@@ -42,8 +45,7 @@ export abstract class Data  {
 
     protected abstract mapValuesFromJson(json: any, idToDataMap: any, dataCreator: DataCreator);//hook for generated code
     protected abstract mapValuesToJson(idToDataMap: any, result: any);//hook for generated code
-    protected abstract collectChildrenRecursiveIntern(idToDataMap: any);//hook for generated code
-
+    protected abstract collectChildrenFlat(): Array<Data>;//hook for generated code
 
     protected mapAttributeValueToJson(value: any): any {
         if (value!==null && value!==undefined) {
@@ -81,22 +83,12 @@ export abstract class Data  {
         } else {
             return
         }
-        this.collectChildrenRecursiveIntern(idToDataMap);
-    }
-
-    protected collectDataChildren(data: Data,idToDataMap: any) {
-        if (data){
-            data.collectChildrenRecursive(idToDataMap);
+        for (let child of this.collectChildrenFlat()) {
+            child.collectChildrenRecursive(idToDataMap);
         }
     }
 
-    protected collectDataArrayChildren(dataArray: Data[],idToDataMap: any) {
-        if (dataArray) {
-            for (let child of dataArray) {
-                child.collectChildrenRecursive(idToDataMap);
-            }
-        }
-    }
+
 
     public collectChildren(): Data[] {
         let idToDataMap = {};
@@ -160,6 +152,44 @@ export abstract class Data  {
         return year+"-"+this.pad(monthIndex,2)+"-"+this.pad(day,2)+'T'+this.pad(hour,2)+':'+this.pad(min,2)+':'+this.pad(sec,2)+'.'+milliseconds;
     }
 
+    abstract listAttributeAccessor(): AttributeAccessor<any,any>[];
 
+
+
+    public getPath(): Array<Data>{
+        let result: Array<Data>  = [];
+        let data: Data=this;
+        while (data){
+            result.push(data);
+            data=data.parent;
+        }
+        result.reverse();
+        return result;
+    }
+
+    public setParent(parent: Data){
+        this.parent= parent;
+    }
+
+
+    public addBackReferences(){
+        let stack: Data[] = [];
+        stack.push(this);
+
+        let data: Data=null;
+        do {
+            data= stack.pop();
+            if (data){
+                for (let child of data.collectChildrenFlat()) {
+                    child.setParent(data);
+                    stack.push(child);
+                }
+            }
+        } while (data);
+    }
+
+    getParent(): Data{
+        return this.parent;
+    }
 
 }

@@ -86,32 +86,34 @@ public class DataGeneratedTs<R extends FactoryBase<?,R>, L,  F extends FactoryBa
         });
         code.append("return result;");
         return new TsMethod("listAttributeAccessor", List.of(),
-                new TsMethodResult(new TsTypeArray(new TsTypeClass(attributeAccessorClass,new TsTypePrimitive("any"),new TsTypeClass(tsClass)))),new TsMethodCode(code.toString(), Set.of()),"protected");
+                new TsMethodResult(new TsTypeArray(new TsTypeClass(attributeAccessorClass,new TsTypePrimitive("any"),new TsTypeClass(tsClass)))),new TsMethodCode(code.toString(), Set.of()),"public");
     }
 
     private TsMethod createCollectChildren(FactoryBase<?,?> data) {
         StringBuilder fromJsonCode=new StringBuilder();
+        fromJsonCode.append("let result: Array<Data>=[];\n");
         Set<TsFile> mapValuesFromJsonImports = new HashSet<>();
         data.internal().visitAttributesFlat((attributeVariableName, attribute) -> {
             if (attribute instanceof FactoryBaseAttribute){
                 Class referenceClass = ((FactoryBaseAttribute) attribute).internal_getReferenceClass();
                 TsClassConstructed dataClass = dataToOverrideTs.get(referenceClass);
                 mapValuesFromJsonImports.add(dataClass);
-                fromJsonCode.append("this.collectDataChildren(this.").append(attributeVariableName).append(",idToDataMap);\n");
+                fromJsonCode.append("if (this.").append(attributeVariableName).append(") result.push(this.").append(attributeVariableName).append(");\n");
                 return;
             }
             if (attribute instanceof FactoryListBaseAttribute){
                 Class referenceClass = ((FactoryListBaseAttribute) attribute).internal_getReferenceClass();
                 TsClassConstructed dataClass = dataToOverrideTs.get(referenceClass);
                 mapValuesFromJsonImports.add(dataClass);
-                fromJsonCode.append("this.collectDataArrayChildren(this.").append(attributeVariableName).append(",idToDataMap);\n");
+                fromJsonCode.append("if (this.").append(attributeVariableName).append(") for (let child of this.").append(attributeVariableName).append(") {result.push(child)};\n");
                 return;
             }
         });
+        fromJsonCode.append("return result;");
 
-        return new TsMethod("collectChildrenRecursiveIntern",
-                List.of(new TsMethodParameter("idToDataMap",new TsTypePrimitive("any"))),
-                new TsMethodResultVoid(),new TsMethodCode(fromJsonCode.toString(), mapValuesFromJsonImports),"protected");
+        return new TsMethod("collectChildrenFlat",
+                List.of(),
+                new TsMethodResult(new TsTypeArray(new TsTypeClass(dataTsClass))),new TsMethodCode(fromJsonCode.toString(), mapValuesFromJsonImports),"protected");
     }
 
     private TsMethod createMapValuesFromJson(FactoryBase<?,?> data) {

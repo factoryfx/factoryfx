@@ -35,8 +35,8 @@ public class AttributeToTsMapperManager {
 
     public static <R extends FactoryBase<?,R>> Map<Class<? extends Attribute>, AttributeToTsMapper> createAttributeInfoMap(Map<Class<? extends FactoryBase<?,R>>, TsClassConstructed> dataToOverrideTs, Set<TsEnumConstructed> tsEnums){
         HashMap<Class<? extends Attribute>, AttributeToTsMapper> result = new HashMap<>();
-        result.put(FactoryAttribute.class, new ReferenceAttributeToTsMapper<>(dataToOverrideTs));
-        result.put(FactoryListAttribute.class, new ReferenceListAttributeToTsMapper<>(dataToOverrideTs));
+        result.put(FactoryAttribute.class, new FactoryAttributeToTsMapper<>(dataToOverrideTs));
+        result.put(FactoryListAttribute.class, new FactoryListAttributeToTsMapper<>(dataToOverrideTs));
 
         result.put(ByteArrayAttribute.class, new ValueAttributeToTsMapper(TsTypePrimitive.STRING));
         result.put(I18nAttribute.class, new ValueAttributeToTsMapper(TsTypePrimitive.STRING));
