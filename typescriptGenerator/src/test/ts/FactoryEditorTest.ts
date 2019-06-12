@@ -14,19 +14,19 @@ suite('FactoryEditorDataTest');// set user interface to QUnit in runconfig
 
 
 test('test_helloworld', () => {
-    const dom = new JSDOM(`<!DOCTYPE html><p>Hello world</p>`);
-    let parentElement: HTMLElement=dom.window.document.querySelector("p");
-
-    let factoryEditor: FactoryEditor = new FactoryEditor(parentElement);
-
-    let root: ExampleData= new ExampleData();
-
-    factoryEditor.edit(root);
-
-    console.log(dom.window.document.querySelector("p").textContent);
-    // data.mapFromJsonFromRoot(JSON.parse(exampleDataAll),new DataCreator());
-    // expect(data.stringAttributeAccessor().attributeMetadata.getType()).to.equal(AttributeType.StringAttribute);
-    // expect(data.integerAttributeAccessor().attributeMetadata.getType()).to.equal(AttributeType.IntegerAttribute);
+    // const dom = new JSDOM(`<!DOCTYPE html><p>Hello world</p>`);
+    // let parentElement: HTMLElement=dom.window.document.querySelector("p");
+    //
+    // let factoryEditor: FactoryEditor = new FactoryEditor(parentElement);
+    //
+    // let root: ExampleData= new ExampleData();
+    //
+    // factoryEditor.edit(root);
+    //
+    // console.log(dom.window.document.querySelector("p").textContent);
+    // // data.mapFromJsonFromRoot(JSON.parse(exampleDataAll),new DataCreator());
+    // // expect(data.stringAttributeAccessor().attributeMetadata.getType()).to.equal(AttributeType.StringAttribute);
+    // // expect(data.integerAttributeAccessor().attributeMetadata.getType()).to.equal(AttributeType.IntegerAttribute);
 
 
 });
