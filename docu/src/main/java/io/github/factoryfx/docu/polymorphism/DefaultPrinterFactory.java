@@ -4,7 +4,7 @@ import io.github.factoryfx.factory.PolymorphicFactoryBase;
 
 public class DefaultPrinterFactory extends PolymorphicFactoryBase<Printer,RootFactory> {
     @Override
-    public Printer createImpl() {
+    protected Printer createImpl() {
         return new DefaultPrinter();
     }
 

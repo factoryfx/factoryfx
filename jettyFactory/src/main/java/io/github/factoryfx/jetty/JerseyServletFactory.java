@@ -19,7 +19,7 @@ import java.util.*;
 public class JerseyServletFactory<R extends FactoryBase<?,R>> extends SimpleFactoryBase<Servlet,R> {
 
 
-    public final FactoryAttribute<R,ObjectMapper,FactoryBase<ObjectMapper,R>> objectMapper = new FactoryAttribute<R,ObjectMapper,FactoryBase<ObjectMapper,R>>().nullable().en("objectMapper");
+    public final FactoryPolymorphicAttribute<R,ObjectMapper> objectMapper = new FactoryPolymorphicAttribute<R,ObjectMapper>().nullable().en("objectMapper");
 
     public final FactoryPolymorphicAttribute<R,LoggingFeature> restLogging = new FactoryPolymorphicAttribute<R,LoggingFeature>().userReadOnly().labelText("REST logging");
 
@@ -29,7 +29,7 @@ public class JerseyServletFactory<R extends FactoryBase<?,R>> extends SimpleFact
     public final FactoryPolymorphicListAttribute<R,Object> resources = new FactoryPolymorphicListAttribute<R,Object>().labelText("resources");
 
     @Override
-    public Servlet createImpl() {
+    protected Servlet createImpl() {
         ResourceConfig resourceConfig = new ResourceConfig();
         resourceConfig.property(CommonProperties.FEATURE_AUTO_DISCOVERY_DISABLE, true);// without we have 2 JacksonJaxbJsonProvider and wrong mapper
 //        resourceConfig.property(ServerProperties.BV_FEATURE_DISABLE, true);

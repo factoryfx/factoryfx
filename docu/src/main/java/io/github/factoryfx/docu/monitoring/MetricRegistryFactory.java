@@ -5,7 +5,7 @@ import io.github.factoryfx.factory.SimpleFactoryBase;
 
 public class MetricRegistryFactory extends SimpleFactoryBase<MetricRegistry, RootFactory> {
     @Override
-    public MetricRegistry createImpl() {
+    protected MetricRegistry createImpl() {
         return new MetricRegistry();
     }
 

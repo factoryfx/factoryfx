@@ -21,7 +21,7 @@ public class ViewMenuFactory extends SimpleFactoryBase<Menu,RichClientRoot> {
     public final FactoryAttribute<RichClientRoot,UniformDesign,UniformDesignFactory> uniformDesign = new FactoryAttribute<>();
 
     @Override
-    public Menu createImpl() {
+    protected Menu createImpl() {
         return createMenu();
     }
 

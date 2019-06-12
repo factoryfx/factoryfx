@@ -8,8 +8,8 @@ import javax.ws.rs.Path;
  * Example jersey REST resource */
 @Path("/")
 public class ExampleResource {
-  @GET
-  public String get() {
-    return "Hello World";
-  }
+    @GET
+    public String get() {
+        return "Hello World";
+    }
 }

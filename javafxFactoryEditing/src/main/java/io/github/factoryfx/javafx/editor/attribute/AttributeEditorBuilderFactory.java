@@ -9,7 +9,7 @@ public class AttributeEditorBuilderFactory extends SimpleFactoryBase<AttributeVi
     public final FactoryListAttribute<RichClientRoot,AttributeVisualisationBuilder,SingleAttributeEditorBuilderFactory> editors = new FactoryListAttribute<>();
 
     @Override
-    public AttributeVisualisationMappingBuilder createImpl() {
+    protected AttributeVisualisationMappingBuilder createImpl() {
         return new AttributeVisualisationMappingBuilder(editors.instances());
     }
 

@@ -12,7 +12,7 @@ public class ServerRootFactory extends ServerBaseFactory<Server> {
                     .userNotSelectable()
                     .userReadOnly();
 
-    public Server createImpl() {
+    protected Server createImpl() {
         return httpServer.instance();
     }
 

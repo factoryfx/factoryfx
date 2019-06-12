@@ -8,7 +8,7 @@ public class GreetingsResourceFactory extends ServerBaseFactory<GreetingsResourc
     public final FactoryAttribute<ServerRootFactory, BackendClient, BackendClientFactory> backendClient = new FactoryAttribute<>();
 
     @Override
-    public GreetingsResource createImpl() {
+    protected GreetingsResource createImpl() {
         return new GreetingsResource(backendClient.instance());
     }
 

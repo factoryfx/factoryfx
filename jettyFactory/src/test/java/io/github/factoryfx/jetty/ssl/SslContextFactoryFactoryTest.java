@@ -30,7 +30,7 @@ public class SslContextFactoryFactoryTest {
     public static class TestResourceFactory extends SimpleFactoryBase<TestResource,TestJettyServerFactory> {
 
         @Override
-        public TestResource createImpl() {
+        protected TestResource createImpl() {
             return new TestResource();
         }
     }
@@ -48,7 +48,7 @@ public class SslContextFactoryFactoryTest {
         public final FactoryAttribute<TestJettyServerFactory,Server,JettyServerFactory<TestJettyServerFactory>> server = new FactoryAttribute<>();
 
         @Override
-        public Server createImpl() {
+        protected Server createImpl() {
             return server.instance();
         }}
 

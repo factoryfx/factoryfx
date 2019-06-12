@@ -275,7 +275,7 @@ public class FactoryTreeBuilderBasedAttributeSetupTest {
         public final FactoryViewAttribute<ExampleFactoryViewRootFactory,ExampleLiveObjectB,ExamplDummyFactory> viewAttribute =new FactoryViewAttribute<>((root)->root.referenceAttribute.get());
 
         @Override
-        public ExampleLiveObjectB createImpl() {
+        protected ExampleLiveObjectB createImpl() {
             return viewAttribute.instance();
         }
     }
@@ -285,14 +285,14 @@ public class FactoryTreeBuilderBasedAttributeSetupTest {
         public final FactoryAttribute<ExampleFactoryViewRootFactory,ExampleLiveObjectB,ExamplDummyFactory> referenceAttribute = new FactoryAttribute<>();
 
         @Override
-        public ExampleLiveObjectB createImpl() {
+        protected ExampleLiveObjectB createImpl() {
             return referenceAttribute.instance();
         }
     }
 
     public static class ExamplDummyFactory extends SimpleFactoryBase<ExampleLiveObjectB,ExampleFactoryViewRootFactory>{
         @Override
-        public ExampleLiveObjectB createImpl() {
+        protected ExampleLiveObjectB createImpl() {
             return null;
         }
     }

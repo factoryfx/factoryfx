@@ -24,7 +24,7 @@ public class Main {
         public final FactoryAttribute<SwaggerWebserver,Server, JettyServerFactory<SwaggerWebserver>> server = new FactoryAttribute<>();
 
         @Override
-        public Server createImpl() {
+        protected Server createImpl() {
             return server.instance();
         }
     }

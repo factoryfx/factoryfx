@@ -10,13 +10,13 @@ public class FactoryViewReferenceAttributeTest {
         public final FactoryViewAttribute<ExampleViewFactory,Void,ExampleViewFactory> attribute = new FactoryViewAttribute<>(exampleViewFactory -> null);
 
         @Override
-        public Void createImpl() {
+        protected Void createImpl() {
             return null;
         }
     }
 
     @Test
-    public void test_jon(){
+    public void test_json(){
         ObjectMapperBuilder.build().copy(new ExampleViewFactory());
     }
 

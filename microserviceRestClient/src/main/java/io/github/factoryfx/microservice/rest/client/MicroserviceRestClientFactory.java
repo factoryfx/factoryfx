@@ -43,12 +43,6 @@ public class MicroserviceRestClientFactory<R extends FactoryBase<?,R>, RS extend
     public final ObjectValueAttribute<FactoryTreeBuilderBasedAttributeSetup<?,RS,S>> factoryTreeBuilderBasedAttributeSetup=new ObjectValueAttribute<FactoryTreeBuilderBasedAttributeSetup<?,RS,S>>().labelText("factoryTreeBuilderBasedAttributeSetup").nullable();
 
 
-//
-//    @Override
-//    public RestClient createImpl() {
-//        return new RestClient(host.get(),port.get(),path.get(),ssl.get(),httpAuthenticationUser.get(),httpAuthenticationPassword.get());
-//    }
-//
     public MicroserviceRestClientFactory(){
         config().setDisplayTextProvider(this::getUrl);
     }
@@ -62,7 +56,7 @@ public class MicroserviceRestClientFactory<R extends FactoryBase<?,R>, RS extend
     }
 
     @Override
-    public MicroserviceRestClient<RS, S> createImpl() {
+    protected MicroserviceRestClient<RS, S> createImpl() {
         return createClient();
     }
 

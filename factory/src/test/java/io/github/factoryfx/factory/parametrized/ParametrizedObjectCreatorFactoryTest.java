@@ -45,7 +45,7 @@ public class ParametrizedObjectCreatorFactoryTest {
         public final ParametrizedObjectCreatorAttribute<ShortLivedLiveObjectCreatorFactory,ShortLivedParameter,ShortLivedLiveObject,ShortLivedLiveObjectCreatorFactory> builder = new ParametrizedObjectCreatorAttribute<>();
 
         @Override
-        public TestShortLivedUser createImpl() {
+        protected TestShortLivedUser createImpl() {
             return new TestShortLivedUser(builder.instance());
         }
     }

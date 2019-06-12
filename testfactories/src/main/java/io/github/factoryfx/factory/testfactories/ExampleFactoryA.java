@@ -11,7 +11,7 @@ public class ExampleFactoryA extends SimpleFactoryBase<ExampleLiveObjectA,Exampl
     public final FactoryListAttribute<ExampleFactoryA,ExampleLiveObjectB,ExampleFactoryB> referenceListAttribute = new FactoryListAttribute<ExampleFactoryA,ExampleLiveObjectB,ExampleFactoryB>().labelText("ExampleA3");
 
     @Override
-    public ExampleLiveObjectA createImpl() {
+    protected ExampleLiveObjectA createImpl() {
         return new ExampleLiveObjectA(referenceAttribute.instance(), referenceListAttribute.instances());
     }
 

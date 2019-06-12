@@ -14,7 +14,7 @@ public class ViewFactory extends SimpleFactoryBase<View,RichClientRoot> {
     public final FactoryAttribute<RichClientRoot,Widget, WidgetFactory> widget = new FactoryAttribute<>();
 
     @Override
-    public View createImpl() {
+    protected View createImpl() {
         return new View(viewDescription.instance(),viewsDisplayWidget.instance(),widget.instance());
     }
 }

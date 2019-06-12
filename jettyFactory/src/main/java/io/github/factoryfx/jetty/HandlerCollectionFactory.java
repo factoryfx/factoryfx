@@ -10,7 +10,7 @@ public class HandlerCollectionFactory<R extends FactoryBase<?,R>> extends Polymo
     public final FactoryPolymorphicListAttribute<R,Handler> handlers = new FactoryPolymorphicListAttribute<R,Handler>(Handler.class).labelText("Handlers");
 
     @Override
-    public HandlerCollection createImpl() {
+    protected HandlerCollection createImpl() {
         return new HandlerCollection(true,handlers.instances().toArray(new Handler[0]));
     }
 

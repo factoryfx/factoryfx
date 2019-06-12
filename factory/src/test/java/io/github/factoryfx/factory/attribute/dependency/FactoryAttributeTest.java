@@ -74,7 +74,7 @@ public class FactoryAttributeTest {
         @SuppressWarnings("unchecked")
         FactoryAttribute<ExampleFactoryA, ExampleLiveObjectA, ExampleFactoryA> attribute = new FactoryAttribute<ExampleFactoryA, ExampleLiveObjectA, ExampleFactoryA>().nullable();
         @Override
-        public Void createImpl() {
+        protected Void createImpl() {
             return null;
         }
     }
@@ -89,7 +89,7 @@ public class FactoryAttributeTest {
     public static class MockExampleFactoryRoot extends SimpleFactoryBase<Void,MockExampleFactoryRoot> {
         public final FactoryAttribute<MockExampleFactoryRoot, LiveDummy, ExampleFactory> attribute = new FactoryAttribute<>();
         @Override
-        public Void createImpl() {
+        protected Void createImpl() {
             return null;
         }
     }
@@ -97,7 +97,7 @@ public class FactoryAttributeTest {
     public static class ExampleFactory extends SimpleFactoryBase<LiveDummy,MockExampleFactoryRoot> {
 
         @Override
-        public LiveDummy createImpl() {
+        protected LiveDummy createImpl() {
             return new LiveDummy();
         }
     }
@@ -111,7 +111,7 @@ public class FactoryAttributeTest {
     public static class MockExampleFactoryMock extends ExampleFactory {
 
         @Override
-        public LiveDummy createImpl() {
+        protected LiveDummy createImpl() {
             return Mockito.mock(LiveDummy.class);
         }
     }

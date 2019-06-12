@@ -12,7 +12,7 @@ public class RootFactory  extends SimpleFactoryBase<Root, RootFactory> {
     public final FactoryAttribute<RootFactory,MetricRegistry, MetricRegistryFactory> metricRegistry = new FactoryAttribute<>();
 
     @Override
-    public Root createImpl() {
+    protected Root createImpl() {
         server.instance();
         return new Root(metricRegistry.instance());
     }

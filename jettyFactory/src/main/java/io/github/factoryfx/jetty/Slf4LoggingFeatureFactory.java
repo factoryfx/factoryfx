@@ -12,7 +12,7 @@ import org.glassfish.jersey.logging.LoggingFeature;
 public class Slf4LoggingFeatureFactory<R extends FactoryBase<?,R>> extends SimpleFactoryBase<LoggingFeature,R> {
 
     @Override
-    public LoggingFeature createImpl() {
+    protected LoggingFeature createImpl() {
         return new org.glassfish.jersey.logging.LoggingFeature(new Slf4LoggingFeature());
     }
 }

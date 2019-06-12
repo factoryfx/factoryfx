@@ -14,7 +14,7 @@ public class DiffDialogBuilderFactory extends SimpleFactoryBase<DiffDialogBuilde
     public final FactoryAttribute<RichClientRoot,AttributeVisualisationMappingBuilder,AttributeEditorBuilderFactory> attributeEditorBuilder = new FactoryAttribute<>();
 
     @Override
-    public DiffDialogBuilder createImpl() {
+    protected DiffDialogBuilder createImpl() {
         return new DiffDialogBuilder(uniformDesign.instance(),attributeEditorBuilder.instance());
     }
 }

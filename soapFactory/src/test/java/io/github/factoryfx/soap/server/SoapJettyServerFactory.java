@@ -10,7 +10,7 @@ public class SoapJettyServerFactory extends SimpleFactoryBase<Server, SoapJettyS
     public final FactoryAttribute<SoapJettyServerFactory, Server, JettyServerFactory<SoapJettyServerFactory>> server = new FactoryAttribute<>();
 
     @Override
-    public Server createImpl() {
+    protected Server createImpl() {
         return server.instance();
     }
 }

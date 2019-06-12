@@ -11,7 +11,7 @@ public class BackendClientFactory extends ServerBaseFactory<BackendClient> {
     }
 
     @Override
-    public BackendClient createImpl() {
+    protected BackendClient createImpl() {
         return new BackendClient(backendPort.get());
     }
 }

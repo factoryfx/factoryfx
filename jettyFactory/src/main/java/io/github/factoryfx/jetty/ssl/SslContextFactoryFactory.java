@@ -31,7 +31,7 @@ public class SslContextFactoryFactory<R extends FactoryBase<?, R>> extends Simpl
     public final BooleanAttribute needClientAuth = new BooleanAttribute().en("needClientAuth").de("needClientAuth").defaultValue(false);
 
     @Override
-    public SslContextFactory createImpl() {
+    protected SslContextFactory createImpl() {
         SslContextFactory sslContextFactory = new SslContextFactory();
 
         if (allowCipherSuites.size() > 0) {

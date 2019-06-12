@@ -146,7 +146,7 @@ public class MicroserviceTest {
         public final FactoryAttribute<ExampleFactoryARecreation,ExampleLiveObjectB,ExampleFactoryBRecreation> referenceAttribute = new FactoryAttribute<ExampleFactoryARecreation,ExampleLiveObjectB,ExampleFactoryBRecreation>().labelText("ExampleA2").nullable();
 
         @Override
-        public ExampleLiveObjectA createImpl() {
+        protected ExampleLiveObjectA createImpl() {
             return null;
         }
     }

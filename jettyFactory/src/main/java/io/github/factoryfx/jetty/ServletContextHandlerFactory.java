@@ -13,7 +13,7 @@ public class ServletContextHandlerFactory<R extends FactoryBase<?,R>> extends Si
     public final FactoryAttribute<R,UpdateableServlet,UpdateableServletFactory<R>> updatableRootServlet = new FactoryAttribute<R,UpdateableServlet,UpdateableServletFactory<R>>().labelText("updatableRootServlet");
 
     @Override
-    public Handler createImpl() {
+    protected Handler createImpl() {
         ServletHolder holder = new ServletHolder(updatableRootServlet.instance());
         ServletContextHandler contextHandler = new ServletContextHandler(ServletContextHandler.SESSIONS);
         contextHandler.addServlet( holder, "/*");

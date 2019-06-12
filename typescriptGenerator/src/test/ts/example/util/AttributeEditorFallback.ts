@@ -13,7 +13,6 @@ export class AttributeEditorFallback implements AttributeEditor{
 
     create(): HTMLElement{
         let div: HTMLElement= document.createElement("div");
-        div.setAttribute("class","form-group");
         div.textContent='not editable: '+this.attributeAccessor.attributeMetadata.getType();
 
         return div;

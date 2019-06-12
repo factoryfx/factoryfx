@@ -7,7 +7,7 @@ public class RootFactory extends SimpleFactoryBase<Root, RootFactory> {
     public final FactoryAttribute<RootFactory,Dependency,DependencyFactory> dependency =new FactoryAttribute<>();
 
     @Override
-    public Root createImpl() {
+    protected Root createImpl() {
         return new Root(dependency.instance());
     }
 }

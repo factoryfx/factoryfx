@@ -25,7 +25,7 @@ public class AddFactoryViewAttributeMigrationTest {
         public final FactoryAttribute<ServerFactoryOld, Void, ViewFactoryOld> view = new FactoryAttribute<>();
 
         @Override
-        public Void createImpl() {
+        protected Void createImpl() {
             return null;
         }
     }
@@ -36,14 +36,14 @@ public class AddFactoryViewAttributeMigrationTest {
         public final StringAttribute stringAttribute = new StringAttribute();
 
         @Override
-        public Void createImpl() {
+        protected Void createImpl() {
             return null;
         }
     }
 
     public static class NestedFactoryOld extends SimpleFactoryBase<Void, ServerFactoryOld> {
         @Override
-        public Void createImpl() {
+        protected Void createImpl() {
             return null;
         }
     }
@@ -55,7 +55,7 @@ public class AddFactoryViewAttributeMigrationTest {
         public final FactoryAttribute<ServerFactory, Void, ViewFactory> view = new FactoryAttribute<>();
 
         @Override
-        public Void createImpl() {
+        protected Void createImpl() {
             return null;
         }
     }
@@ -65,7 +65,7 @@ public class AddFactoryViewAttributeMigrationTest {
         public final FactoryViewAttribute<ServerFactory, Void, ViewFactory> view = new FactoryViewAttribute<>(s -> s.view.get());
 
         @Override
-        public Void createImpl() {
+        protected Void createImpl() {
             return null;
         }
     }
@@ -75,7 +75,7 @@ public class AddFactoryViewAttributeMigrationTest {
         public final StringAttribute stringAttribute = new StringAttribute();
 
         @Override
-        public Void createImpl() {
+        protected Void createImpl() {
             return null;
         }
     }

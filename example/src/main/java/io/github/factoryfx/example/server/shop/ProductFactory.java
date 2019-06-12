@@ -16,7 +16,7 @@ public class ProductFactory extends ServerBaseFactory<Product> {
     public final FactoryAttribute<ServerRootFactory,VatRate,VatRateFactory> vatRate = new FactoryAttribute<ServerRootFactory,VatRate,VatRateFactory>().labelText("VatRate");
 
     @Override
-    public Product createImpl() {
+    protected Product createImpl() {
         return new Product(name.get(), price.get(), vatRate.instance());
     }
 

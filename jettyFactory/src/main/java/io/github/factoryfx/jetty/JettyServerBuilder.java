@@ -1,5 +1,6 @@
 package io.github.factoryfx.jetty;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.factoryfx.factory.FactoryBase;
 import io.github.factoryfx.jetty.ssl.SslContextFactoryFactory;
 
@@ -62,11 +63,6 @@ public class JettyServerBuilder<R extends FactoryBase<?,R>,S extends JettyServer
         defaultJerseyServletAndPathFactory.servlet.set(defaultJerseyServlet);
         updateableServletFactory.servletAndPaths.add(defaultJerseyServletAndPathFactory);
     }
-
-//    public JettyServerBuilder(){
-//        this(new JettyServerFactory());
-//    }
-
 
     public S build(){
         return jettyServerFactory;
@@ -146,5 +142,10 @@ public class JettyServerBuilder<R extends FactoryBase<?,R>,S extends JettyServer
      */
     public void withThreadPoolSize(int size){
         this.threadPoolFactory.poolSize.set(size);
+    }
+
+    public JettyServerBuilder<R,S> withDefaultJerseyObjectMapper(FactoryBase<? extends ObjectMapper, R> objectMapperFactory){
+        defaultJerseyServlet.objectMapper.set(objectMapperFactory);
+        return this;
     }
 }

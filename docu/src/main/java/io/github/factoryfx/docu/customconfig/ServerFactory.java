@@ -9,7 +9,7 @@ public class ServerFactory extends SimpleFactoryBase<Server, ServerFactory> {
     public final FactoryAttribute<ServerFactory,Server, JettyServerFactory<ServerFactory>> server = new FactoryAttribute<>();
 
     @Override
-    public Server createImpl() {
+    protected Server createImpl() {
         return server.instance();
     }
 }

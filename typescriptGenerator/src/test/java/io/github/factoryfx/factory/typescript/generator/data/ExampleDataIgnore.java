@@ -14,7 +14,7 @@ public class ExampleDataIgnore extends SimpleFactoryBase<Void, ExampleData> {
     public final FactoryViewListAttribute<ExampleData,Void,ExampleData> factoryViewList = new FactoryViewListAttribute<>(root -> null);
 
     @Override
-    public Void createImpl() {
+    protected Void createImpl() {
         return null;
     }
 }

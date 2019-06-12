@@ -133,19 +133,21 @@ public class TsGenerator<R extends FactoryBase<?,R>> {
 
     public void generateJs(){
         targetDir.toFile().mkdirs();
-        Path tempDirectory = null;
-        try {
-            tempDirectory = Files.createTempDirectory("");
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        Path tsBuildDirectory = Path.of("./build/ts");
+        tsBuildDirectory.toFile().mkdirs();
 
-        generateTs(tempDirectory);
+//        try {
+//            tempDirectory = Files.createTempDirectory("");
+//        } catch (IOException e) {
+//            throw new RuntimeException(e);
+//        }
+
+        generateTs(tsBuildDirectory);
 
 
 
-        writeResourceFile("package.json",tempDirectory.toFile().getAbsolutePath());
-        writeResourceFile("tsconfig.json",tempDirectory.toFile().getAbsolutePath());
+        writeResourceFile("package.json",tsBuildDirectory.toFile().getAbsolutePath());
+        writeResourceFile("tsconfig.json",tsBuildDirectory.toFile().getAbsolutePath());
 
 //        try {
 //            Process processNpm = new ProcessBuilder("cmd", "/c", "npm", "install").directory(tempDirectory.toFile().getAbsoluteFile()).inheritIO().start();
@@ -172,16 +174,31 @@ public class TsGenerator<R extends FactoryBase<?,R>> {
 //            processTsc.waitFor();
 
 
+        compileTsToJS(tsBuildDirectory);
+    }
+
+    private void compileTsToJS(Path tsBuildDirectory) {
         try {
-            ProcessBuilder pb = new ProcessBuilder("cmd", "/c", "tsc", "--outDir", targetDir.toFile().getAbsolutePath()).directory(tempDirectory.toFile().getAbsoluteFile());
+            ProcessBuilder pb = new ProcessBuilder("cmd", "/c", "tsc", "--outDir", targetDir.toFile().getAbsolutePath()).directory(tsBuildDirectory.toFile().getAbsoluteFile());
             Process process;
             process = pb.start();
-            final BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
-            StringJoiner sj = new StringJoiner("/n");
-            reader.lines().iterator().forEachRemaining(sj::add);
-            if (!sj.toString().isEmpty()){
-                throw new IllegalStateException("\n"+sj.toString());
+//            final BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+//            StringJoiner sj = new StringJoiner("/n");
+//            reader.lines().iterator().forEachRemaining(sj::add);
+//            if (!sj.toString().isEmpty()){
+//                throw new IllegalStateException("\n"+sj.toString());
+//            }
+            BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+            StringBuilder builder = new StringBuilder();
+            String line = null;
+            while ( (line = reader.readLine()) != null) {
+                builder.append(line);
+                builder.append("/n");
             }
+            if (!builder.toString().isEmpty()){
+                throw new IllegalStateException("\n"+builder.toString());
+            }
+
             process.waitFor();
             process.destroy();
         } catch (IOException e) {

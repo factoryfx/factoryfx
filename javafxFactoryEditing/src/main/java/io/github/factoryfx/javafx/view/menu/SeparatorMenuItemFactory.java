@@ -8,7 +8,7 @@ import javafx.scene.control.SeparatorMenuItem;
 public class SeparatorMenuItemFactory extends PolymorphicFactoryBase<MenuItem,RichClientRoot> {
 
     @Override
-    public MenuItem createImpl() {
+    protected MenuItem createImpl() {
         return new SeparatorMenuItem();
     }
 

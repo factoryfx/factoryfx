@@ -1,5 +1,7 @@
 package io.github.factoryfx.jetty;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import io.github.factoryfx.factory.FactoryBase;
 import io.github.factoryfx.factory.jackson.ObjectMapperBuilder;
 import io.github.factoryfx.factory.SimpleFactoryBase;
 import org.junit.jupiter.api.Test;
@@ -9,7 +11,7 @@ public class JettyServerBuilderTest {
     public static class DummyResource extends SimpleFactoryBase<Void,DummyRoot> {
 
         @Override
-        public Void createImpl() {
+        protected Void createImpl() {
             return null;
         }
     }
@@ -23,6 +25,27 @@ public class JettyServerBuilderTest {
         JettyServerFactory<DummyRoot> serverFactory = new JettyServerBuilder<>(new DummyRoot()).withPort(123).withResource(new DummyResource()).build();
 
         System.out.println(ObjectMapperBuilder.build().writeValueAsString(serverFactory));
+
+//        ObjectMapperBuilder.build().copy(serverFactory);
+    }
+
+    public static  class SpecialObjectMapperFactory extends SimpleFactoryBase<ObjectMapper, DummyRoot> {
+        @Override
+        protected ObjectMapper createImpl() {
+            return ObjectMapperBuilder.buildNewObjectMapper();
+        }
+    }
+
+
+
+    @Test
+    public void test_ObjectMapper(){
+        new JettyServerBuilder<>(new JettyServerFactory<DummyRoot>())
+                .withHost("localhost").withPort(8080)
+                .withDefaultJerseyObjectMapper(new SpecialObjectMapperFactory())
+                .build();
+
+
 
 //        ObjectMapperBuilder.build().copy(serverFactory);
     }

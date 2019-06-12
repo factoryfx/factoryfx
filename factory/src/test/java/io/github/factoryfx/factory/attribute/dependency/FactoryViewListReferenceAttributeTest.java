@@ -9,7 +9,7 @@ public class FactoryViewListReferenceAttributeTest {
         public final FactoryViewListAttribute<ExampleViewListFactory,Void, ExampleViewListFactory> attribute = new FactoryViewListAttribute<>(exampleViewFactory -> null);
 
         @Override
-        public Void createImpl() {
+        protected Void createImpl() {
             return null;
         }
     }

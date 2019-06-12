@@ -7,7 +7,7 @@ import io.github.factoryfx.javafx.RichClientRoot;
 public abstract class WidgetFactory extends SimpleFactoryBase<Widget,RichClientRoot> {
 
     @Override
-    public Widget createImpl() {
+    protected Widget createImpl() {
         return createWidget();
     }
     protected abstract Widget createWidget() ;

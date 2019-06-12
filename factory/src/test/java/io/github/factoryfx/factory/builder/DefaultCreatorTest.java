@@ -25,7 +25,7 @@ public class DefaultCreatorTest {
         public final ParametrizedObjectCreatorAttribute<ParametrizedTestFactory,Void,Void,DummyCreatorFactory> dummyCreator =new ParametrizedObjectCreatorAttribute<>();
 
         @Override
-        public Void createImpl() {
+        protected Void createImpl() {
             return null;
         }
     }
@@ -50,7 +50,7 @@ public class DefaultCreatorTest {
         public final FactoryAttribute<ExampleFactoryANotNullable,ExampleLiveObjectA,ExampleFactoryANotNullable> referenceAttribute = new FactoryAttribute<>();
 
         @Override
-        public ExampleLiveObjectA createImpl() {
+        protected ExampleLiveObjectA createImpl() {
             return new ExampleLiveObjectA(null, null);
         }
 
@@ -70,7 +70,7 @@ public class DefaultCreatorTest {
         public final FactoryAttribute<ExampleFactoryNullableRef,ExampleLiveObjectA, ExampleFactoryNullableRef> referenceAttribute = new FactoryAttribute<ExampleFactoryNullableRef,ExampleLiveObjectA, ExampleFactoryNullableRef>().nullable();
 
         @Override
-        public ExampleLiveObjectA createImpl() {
+        protected ExampleLiveObjectA createImpl() {
             return new ExampleLiveObjectA(null, null);
         }
 

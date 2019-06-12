@@ -21,7 +21,7 @@ import java.util.logging.Logger;
  *           public final FactoryAttribute<Server, JettyServerFactory<SimpleHttpServer>> server = new FactoryAttribute<>(JettyServerFactory.class);
  *
  *           {@literal @}Override
- *           public Server createImpl() {
+ *           protected Server createImpl() {
  *               return server.instance();
  *           }
  *       }

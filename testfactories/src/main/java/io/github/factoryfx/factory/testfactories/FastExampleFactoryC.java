@@ -15,7 +15,7 @@ public class FastExampleFactoryC extends SimpleFactoryBase<ExampleLiveObjectC,Fa
     public FastExampleFactoryB referenceAttribute;
 
     @Override
-    public ExampleLiveObjectC createImpl() {
+    protected ExampleLiveObjectC createImpl() {
         return new ExampleLiveObjectC();
     }
 

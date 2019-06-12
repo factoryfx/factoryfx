@@ -30,7 +30,7 @@ public class NewAttributesMigrationTest {
         public final FactoryAttribute<ServerFactoryOld,Void,ServerFactoryNestedOld> serverFactoryNested = new FactoryAttribute<>();
 
         @Override
-        public Void createImpl() {
+        protected Void createImpl() {
             return null;
         }
     }
@@ -41,7 +41,7 @@ public class NewAttributesMigrationTest {
         public final FactoryAttribute<ServerFactoryOld,Void,PartnerFactoryOld> partnerFactory1 = new FactoryAttribute<>();
 
         @Override
-        public Void createImpl() {
+        protected Void createImpl() {
             return null;
         }
     }
@@ -52,7 +52,7 @@ public class NewAttributesMigrationTest {
 
 
         @Override
-        public Void createImpl() {
+        protected Void createImpl() {
             return null;
         }
     }
@@ -61,7 +61,7 @@ public class NewAttributesMigrationTest {
         public final StringAttribute url = new StringAttribute().nullable();
 
         @Override
-        public Void createImpl() {
+        protected Void createImpl() {
             return null;
         }
     }
@@ -76,7 +76,7 @@ public class NewAttributesMigrationTest {
         public final FactoryAttribute<ServerFactory,Void, ServerFactoryNested> serverFactoryNested = new FactoryAttribute<>();
 
         @Override
-        public Void createImpl() {
+        protected Void createImpl() {
             return null;
         }
     }
@@ -86,7 +86,7 @@ public class NewAttributesMigrationTest {
         public final FactoryAttribute<ServerFactory,Void,ClientSystemFactory> clientSystemFactory = new FactoryAttribute<>();
 
         @Override
-        public Void createImpl() {
+        protected Void createImpl() {
             return null;
         }
     }
@@ -95,7 +95,7 @@ public class NewAttributesMigrationTest {
         public final StringAttribute url = new StringAttribute().nullable();
 
         @Override
-        public Void createImpl() {
+        protected Void createImpl() {
             return null;
         }
     }

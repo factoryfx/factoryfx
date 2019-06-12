@@ -5,7 +5,7 @@ import io.github.factoryfx.javafx.RichClientRoot;
 
 public class LongRunningActionExecutorFactory extends SimpleFactoryBase<LongRunningActionExecutor,RichClientRoot> {
     @Override
-    public LongRunningActionExecutor createImpl() {
+    protected LongRunningActionExecutor createImpl() {
         return new LongRunningActionExecutor();
     }
 }

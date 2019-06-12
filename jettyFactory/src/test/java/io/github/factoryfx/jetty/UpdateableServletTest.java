@@ -47,7 +47,7 @@ public class UpdateableServletTest {
     public static class UpdateableTestResourceFactory extends SimpleFactoryBase<UpdateableTestResource, UpdateableWebserverRootFactory> {
         public final StringAttribute response = new StringAttribute().nullable();
         @Override
-        public UpdateableTestResource createImpl() {
+        protected UpdateableTestResource createImpl() {
             return new UpdateableTestResource(response.get());
         }
     }
@@ -56,7 +56,7 @@ public class UpdateableServletTest {
         public final FactoryAttribute<UpdateableWebserverRootFactory,Server,JettyServerFactory<UpdateableWebserverRootFactory>> server = new FactoryAttribute<>();
 
         @Override
-        public Server createImpl() {
+        protected Server createImpl() {
             return server.instance();
         }
     }

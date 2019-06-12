@@ -9,7 +9,7 @@ public class NetherlandsCarProductFactory extends ProductFactory {
     public final DoubleAttribute bpmTax=new DoubleAttribute().en("BPM-Tax");
 
     @Override
-    public Product createImpl() {
+    protected Product createImpl() {
         return new NetherlandsCarProduct(name.get(), price.get(), vatRate.instance(),bpmTax.get());
     }
 }

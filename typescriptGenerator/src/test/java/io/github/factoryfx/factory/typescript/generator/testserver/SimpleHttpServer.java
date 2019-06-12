@@ -9,7 +9,7 @@ public class SimpleHttpServer extends SimpleFactoryBase<Server, SimpleHttpServer
     public final FactoryAttribute<SimpleHttpServer,Server, JettyServerFactory<SimpleHttpServer>> server = new FactoryAttribute<>();
 
     @Override
-    public Server createImpl() {
+    protected Server createImpl() {
         return server.instance();
     }
 }

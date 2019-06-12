@@ -16,7 +16,7 @@ public class HttpServerConnectorFactory<R extends FactoryBase<?,R>> extends Simp
 
 
     @Override
-    public HttpServerConnector createImpl() {
+    protected HttpServerConnector createImpl() {
         return new HttpServerConnector(host.get(),port.get(),ssl.instance());
     }
     public HttpServerConnectorFactory(){

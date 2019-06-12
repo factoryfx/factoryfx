@@ -11,7 +11,7 @@ public class ShopResourceFactory extends ServerBaseFactory<ShopResource> {
     public final FactoryListAttribute<ServerRootFactory,Product, ProductFactory> products = new FactoryListAttribute<ServerRootFactory,Product, ProductFactory>().labelText("Products");
 
     @Override
-    public ShopResource createImpl() {
+    protected ShopResource createImpl() {
         return new ShopResource(products.instances(), orderStorage.instance());
     }
 

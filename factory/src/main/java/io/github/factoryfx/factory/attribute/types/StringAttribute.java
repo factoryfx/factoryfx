@@ -70,6 +70,9 @@ public class StringAttribute extends ImmutableValueAttribute<String,StringAttrib
 
     @Override
     public String toString() {
-        return value;
+        if (value!=null) {
+            return value;
+        }
+        return super.toString();
     }
 }

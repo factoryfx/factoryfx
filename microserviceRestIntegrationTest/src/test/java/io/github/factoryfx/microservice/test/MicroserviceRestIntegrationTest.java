@@ -27,11 +27,10 @@ import java.util.Locale;
 public class MicroserviceRestIntegrationTest {
 
     public static class TestJettyServer  extends SimpleFactoryBase<Server, TestJettyServer> {
-        @SuppressWarnings("unchecked")
         public final FactoryAttribute<TestJettyServer,Server, JettyServerFactory<TestJettyServer>> server = new FactoryAttribute<>();
 
         @Override
-        public Server createImpl() {
+        protected Server createImpl() {
             return server.instance();
         }
 
@@ -96,7 +95,7 @@ public class MicroserviceRestIntegrationTest {
 
     public static class RestClientRoot extends SimpleFactoryBase<Void,RestClientRoot> {
         @Override
-        public Void createImpl() {
+        protected Void createImpl() {
             return null;
         }
     }

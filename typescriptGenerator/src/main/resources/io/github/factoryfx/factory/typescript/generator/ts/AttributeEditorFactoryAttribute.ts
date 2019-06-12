@@ -11,15 +11,8 @@ export class AttributeEditorFactoryAttribute implements AttributeEditor{
     create(): HTMLElement{
         let value = this.attributeAccessor.getValue();
 
-        let formGroup: HTMLElement= document.createElement("div");
-        formGroup.setAttribute("class","form-group");
-
         let inputGroup: HTMLElement= document.createElement("div");
         inputGroup.setAttribute("class","input-group");
-
-        let label: HTMLLabelElement= document.createElement("label");
-        label.textContent=this.attributeAccessor.getLabelText('en')
-        label.setAttribute("for",this.inputId.toString());
 
         let input: HTMLInputElement= document.createElement("input");
         input.setAttribute("id",this.inputId.toString());
@@ -50,9 +43,7 @@ export class AttributeEditorFactoryAttribute implements AttributeEditor{
         inputGroup.appendChild(input);
         inputGroup.appendChild(inputGroupAppend);
 
-        formGroup.appendChild(label);
-        formGroup.appendChild(inputGroup);
-        return formGroup;
+        return inputGroup;
     }
 
 }

@@ -11,7 +11,7 @@ public class PolymorphicFactoryExample extends SimpleFactoryBase<Object, Polymor
     public final FactoryPolymorphicListAttribute<ExampleFactoryA,Printer> referenceList = new FactoryPolymorphicListAttribute<ExampleFactoryA,Printer>().setup(Printer.class,ErrorPrinterFactory.class,OutPrinterFactory.class);
 
     @Override
-    public Object createImpl() {
+    protected Object createImpl() {
         reference.instance().print();
         referenceList.instances().forEach(Printer::print);
         return new Object();

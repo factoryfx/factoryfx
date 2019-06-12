@@ -50,7 +50,7 @@ public class FactoryDepTopDownTest {
         public final FactoryAttribute<RootFactory,Object, ObjectFactory> object2 = new FactoryAttribute<>();
 
         @Override
-        public String createImpl() {
+        protected String createImpl() {
             FactoryDepTopDownTest.creator.add(getId());
             return Stream.of(object1.instance(), object2.instance()).map(Object::toString).collect(Collectors.joining(", "));
         }

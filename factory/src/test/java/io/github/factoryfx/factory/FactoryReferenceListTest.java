@@ -47,7 +47,7 @@ public class FactoryReferenceListTest {
         public final FactoryListAttribute<RootFactory,Object, ObjectFactory> objects = new FactoryListAttribute<>();
 
         @Override
-        public String createImpl() {
+        protected String createImpl() {
             return objects.instances().stream().map(Object::toString).collect(Collectors.joining(", "));
         }
     }

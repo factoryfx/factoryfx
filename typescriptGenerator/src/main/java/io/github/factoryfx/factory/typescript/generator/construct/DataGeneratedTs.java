@@ -56,6 +56,11 @@ public class DataGeneratedTs<R extends FactoryBase<?,R>, L,  F extends FactoryBa
         ArrayList<TsMethod> methods = new ArrayList<>();
 
         data.internal().visitAttributesFlat((attributeVariableName, attribute) -> {
+            System.out.println(data.getClass()
+
+            );
+            System.out.println(attributeVariableName);
+            System.out.println(attribute);
             if (attributeToTsMapperManager.isMappable(attribute.getClass())) {
                 methods.add(getTsAttributeAccessor(attributeVariableName, attribute, tsClass));
             }

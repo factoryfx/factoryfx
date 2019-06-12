@@ -26,7 +26,7 @@ public class RestoreMigrationTest {
         public final FactoryAttribute<ServerFactoryOld,Void,ClientSystemFactoryOld> clientSystemFactory2 = new FactoryAttribute<>();
 
         @Override
-        public Void createImpl() {
+        protected Void createImpl() {
             return null;
         }
     }
@@ -41,7 +41,7 @@ public class RestoreMigrationTest {
         public final FactoryAttribute<ServerFactoryOld,Void,ClientSystemFactoryOld> clientSystemFactory2 = new FactoryAttribute<>();
 
         @Override
-        public Void createImpl() {
+        protected Void createImpl() {
             return null;
         }
     }
@@ -52,7 +52,7 @@ public class RestoreMigrationTest {
 
 
         @Override
-        public Void createImpl() {
+        protected Void createImpl() {
             return null;
         }
     }
@@ -61,7 +61,7 @@ public class RestoreMigrationTest {
         public final StringAttribute url = new StringAttribute();
 
         @Override
-        public Void createImpl() {
+        protected Void createImpl() {
             return null;
         }
     }
@@ -74,7 +74,7 @@ public class RestoreMigrationTest {
         public final FactoryAttribute<ServerFactory, Void, ClientSystemFactory> clientSystemFactory2 = new FactoryAttribute<>();
 
         @Override
-        public Void createImpl() {
+        protected Void createImpl() {
             return null;
         }
     }
@@ -84,7 +84,7 @@ public class RestoreMigrationTest {
         public final StringAttribute partnerUrl = new StringAttribute().nullable();
 
         @Override
-        public Void createImpl() {
+        protected Void createImpl() {
             return null;
         }
     }

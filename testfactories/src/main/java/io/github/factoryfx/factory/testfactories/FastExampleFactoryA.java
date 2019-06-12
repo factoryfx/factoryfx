@@ -18,7 +18,7 @@ public class FastExampleFactoryA extends SimpleFactoryBase<ExampleLiveObjectA,Fa
     public List<FastExampleFactoryB> referenceListAttribute=new ArrayList<>();
 
     @Override
-    public ExampleLiveObjectA createImpl() {
+    protected ExampleLiveObjectA createImpl() {
         return new ExampleLiveObjectA(FastFactoryUtility.instance(referenceAttribute), FastFactoryUtility.instances(referenceListAttribute));
     }
 

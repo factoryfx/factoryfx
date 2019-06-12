@@ -20,7 +20,7 @@ public class UserFactory<R extends FactoryBase<?,R>> extends SimpleFactoryBase<U
     public final StringListAttribute permissions = new StringListAttribute().en("permissions").de("Rechte").nullable();
 
     @Override
-    public User createImpl() {
+    protected User createImpl() {
         if (passwordKey==null){
             throw new IllegalStateException("missing passwordKey (you could create one with EncryptedStringAttribute), should be constant therefore don't create the key dynamically");
         }

@@ -14,7 +14,7 @@ public class DataTreeWidgetFactory extends SimpleFactoryBase<DataTreeWidget,Rich
     public final FactoryAttribute<RichClientRoot,DataEditor, DataEditorFactory> dataEditorFactory = new FactoryAttribute<>();
 
     @Override
-    public DataTreeWidget createImpl() {
+    protected DataTreeWidget createImpl() {
         return new DataTreeWidget(dataEditorFactory.instance(),uniformDesign.instance());
     }
 }
