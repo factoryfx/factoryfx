@@ -12,6 +12,13 @@ import java.util.Objects;
 
 public class SoapHandler implements Servlet {
 
+    //If not setting the system property javax.xml.soap.MessageFactory to
+    //com.sun.xml.internal.messaging.saaj.soap.ver1_2.SOAPMessageFactory1_2Impl
+    //there will be useless log warnings for each MessageFactory.newInstance call.
+    //Therefore we only do it once to avoid those annoying logs
+    private final MessageFactory SOAP11FACTORY = MessageFactory.newInstance(SOAPConstants.SOAP_1_1_PROTOCOL);
+    private final MessageFactory SOAP12FACTORY = MessageFactory.newInstance(SOAPConstants.SOAP_1_2_PROTOCOL);
+
     private final WebServiceRequestDispatcher dispatcher;
     private final SOAPMessageUtil soapMessageUtil;
 
@@ -30,10 +37,10 @@ public class SoapHandler implements Servlet {
             MessageFactory messageFactory;
             boolean soap12 = false;
             if (Objects.equals(request.getHeader("Content-Type"),"text/xml")){
-                messageFactory  = MessageFactory.newInstance(SOAPConstants.SOAP_1_1_PROTOCOL);
+                messageFactory  = SOAP11FACTORY;
             } else {
                 //"application/soap+xml"
-                messageFactory  = MessageFactory.newInstance(SOAPConstants.SOAP_1_2_PROTOCOL);
+                messageFactory  = SOAP12FACTORY;
                 soap12 = true;
             }
 
