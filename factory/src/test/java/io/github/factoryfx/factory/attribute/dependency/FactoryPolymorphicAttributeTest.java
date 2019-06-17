@@ -102,7 +102,7 @@ public class FactoryPolymorphicAttributeTest {
 
     public static class ErrorPrinterFactory2 extends PolymorphicFactoryBase<Printer,ExampleFactoryA> {
         @Override
-        public ErrorPrinter createImpl() {
+        protected ErrorPrinter createImpl() {
             return new ErrorPrinter();
         }
     }

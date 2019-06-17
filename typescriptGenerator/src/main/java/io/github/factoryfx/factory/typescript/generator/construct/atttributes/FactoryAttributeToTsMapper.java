@@ -12,10 +12,10 @@ import io.github.factoryfx.factory.typescript.generator.ts.TsTypeClass;
 import java.util.Map;
 import java.util.Set;
 
-public class ReferenceAttributeToTsMapper<R extends FactoryBase<?,R>> implements AttributeToTsMapper {
+public class FactoryAttributeToTsMapper<R extends FactoryBase<?,R>> implements AttributeToTsMapper {
     private final Map<Class<? extends FactoryBase<?,R>>, TsClassConstructed> dataToConfigTs;
 
-    public ReferenceAttributeToTsMapper(Map<Class<? extends FactoryBase<?,R>>, TsClassConstructed> dataToConfigTs) {
+    public FactoryAttributeToTsMapper(Map<Class<? extends FactoryBase<?,R>>, TsClassConstructed> dataToConfigTs) {
         this.dataToConfigTs = dataToConfigTs;
     }
 
@@ -30,7 +30,7 @@ public class ReferenceAttributeToTsMapper<R extends FactoryBase<?,R>> implements
         Class referenceClass = ((FactoryBaseAttribute) attribute).internal_getReferenceClass();
         TsClassConstructed dataClass = dataToConfigTs.get(referenceClass);
         jsonImports.add(dataClass);
-        return "this."+attributeVariableName+"=<"+dataClass.getName()+">dataCreator.createData(json."+attributeVariableName+".v,idToDataMap);\n";
+        return "this."+attributeVariableName+"=<"+dataClass.getName()+">dataCreator.createData(json."+attributeVariableName+".v,idToDataMap,this);\n";
 
     }
 

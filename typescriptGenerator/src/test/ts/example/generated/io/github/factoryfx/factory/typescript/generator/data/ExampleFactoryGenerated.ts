@@ -8,9 +8,9 @@ import { AttributeMetadata } from "../../../../../../../../util/AttributeMetadat
 
 export abstract class ExampleFactoryGenerated  extends Data {
 
-    public attribute: string;
-    public ref: ExampleFactory;
-    public refList: ExampleFactory[];
+    public attribute: string = null;
+    public ref: ExampleFactory = null;
+    public refList: ExampleFactory[] = null;
     public static readonly attributeMetadata: AttributeMetadata<string>= new AttributeMetadata<string>('labelEn\"\'\\','labelDe',AttributeType.StringAttribute);
     public static readonly refMetadata: AttributeMetadata<ExampleFactory>= new AttributeMetadata<ExampleFactory>('','',AttributeType.FactoryAttribute);
     public static readonly refListMetadata: AttributeMetadata<ExampleFactory[]>= new AttributeMetadata<ExampleFactory[]>('','',AttributeType.FactoryListAttribute);
@@ -29,8 +29,8 @@ export abstract class ExampleFactoryGenerated  extends Data {
 
     protected mapValuesFromJson(json: any, idToDataMap: any, dataCreator: DataCreator){
         this.attribute=json.attribute.v;
-        this.ref=<ExampleFactory>dataCreator.createData(json.ref.v,idToDataMap);
-        this.refList=<ExampleFactory[]>dataCreator.createDataList(json.refList,idToDataMap);
+        this.ref=<ExampleFactory>dataCreator.createData(json.ref.v,idToDataMap,this);
+        this.refList=<ExampleFactory[]>dataCreator.createDataList(json.refList,idToDataMap,this);
     }
 
     protected mapValuesToJson(idToDataMap: any, result: any){
@@ -39,12 +39,14 @@ export abstract class ExampleFactoryGenerated  extends Data {
         result.refList=this.mapAttributeDataListToJson(idToDataMap,this.refList);
     }
 
-    protected collectChildrenRecursiveIntern(idToDataMap: any){
-        this.collectDataChildren(this.ref,idToDataMap);
-        this.collectDataArrayChildren(this.refList,idToDataMap);
+    protected collectChildrenFlat(): Data[]{
+        let result: Array<Data>=[];
+        if (this.ref) result.push(this.ref);
+        if (this.refList) for (let child of this.refList) {result.push(child)};
+        return result;
     }
 
-    protected listAttributeAccessor(): AttributeAccessor<any,ExampleFactoryGenerated>[]{
+    public listAttributeAccessor(): AttributeAccessor<any,ExampleFactoryGenerated>[]{
         let result: AttributeAccessor<any,ExampleFactoryGenerated>[]=[];
         result.push(this.attributeAccessor());
         result.push(this.refAccessor());

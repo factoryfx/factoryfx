@@ -11,21 +11,21 @@ import org.eclipse.jetty.server.Server;
 /**
  * Utility class to construct the factory tree */
 public class ServerBuilder {
-  private final FactoryTreeBuilder<Server, ServerRootFactory, Void> builder;
+    private final FactoryTreeBuilder<Server, ServerRootFactory, Void> builder;
 
-  @SuppressWarnings("unchecked")
-  public ServerBuilder() {
-    this.builder= new FactoryTreeBuilder<>(ServerRootFactory.class);
-    this.builder.addFactory(JettyServerFactory.class,Scope.SINGLETON,(ctx)->{
-                    return new JettyServerBuilder<>(new JettyServerFactory<ServerRootFactory>())
-                            .withHost("localhost").withPort(8080)
-                            .withResource(ctx.get(ExampleResourceFactory.class)).build();
+    @SuppressWarnings("unchecked")
+    public ServerBuilder() {
+        this.builder= new FactoryTreeBuilder<>(ServerRootFactory.class);
+        this.builder.addFactory(JettyServerFactory.class,Scope.SINGLETON,(ctx)->{
+            return new JettyServerBuilder<>(new JettyServerFactory<ServerRootFactory>())
+                    .withHost("localhost").withPort(8080)
+                    .withResource(ctx.get(ExampleResourceFactory.class)).build();
         });
-    this.builder.addFactory(ExampleResourceFactory.class,Scope.SINGLETON);
-    // register more factories here
-  }
+        this.builder.addFactory(ExampleResourceFactory.class,Scope.SINGLETON);
+        // register more factories here
+    }
 
-  public FactoryTreeBuilder<Server, ServerRootFactory, Void> builder() {
-    return this.builder;
-  }
+    public FactoryTreeBuilder<Server, ServerRootFactory, Void> builder() {
+        return this.builder;
+    }
 }

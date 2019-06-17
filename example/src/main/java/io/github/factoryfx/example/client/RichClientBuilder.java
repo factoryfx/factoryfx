@@ -216,7 +216,7 @@ public class RichClientBuilder {
         }
 
         @Override
-        public MigrationManager<ServerRootFactory, Void> createImpl() {
+        protected MigrationManager<ServerRootFactory, Void> createImpl() {
             return serverMigrationManager;
         }
     }

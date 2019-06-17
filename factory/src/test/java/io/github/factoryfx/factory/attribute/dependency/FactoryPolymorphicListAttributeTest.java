@@ -84,7 +84,7 @@ public class FactoryPolymorphicListAttributeTest {
         FactoryPolymorphicListAttribute<ExampleFactoryA,Printer> attribute = new FactoryPolymorphicListAttribute<ExampleFactoryA,Printer>().setupUnsafe(Printer.class, ErrorPrinterFactory.class, OutPrinterFactory.class);
 
         @Override
-        public Void createImpl() {
+        protected Void createImpl() {
             return null;
         }
     }

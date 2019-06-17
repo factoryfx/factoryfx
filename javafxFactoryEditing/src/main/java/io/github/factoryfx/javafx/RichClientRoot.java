@@ -10,7 +10,7 @@ public class RichClientRoot extends SimpleFactoryBase<Stage,RichClientRoot> {
     public final FactoryAttribute<RichClientRoot,Stage, StageFactory> stageFactory = new FactoryAttribute<>();
 
     @Override
-    public Stage createImpl() {
+    protected Stage createImpl() {
         return stageFactory.instance();
     }
 }

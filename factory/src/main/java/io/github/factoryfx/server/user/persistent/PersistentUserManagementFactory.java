@@ -15,7 +15,7 @@ public class PersistentUserManagementFactory<R extends FactoryBase<?,R>> extends
     public final FactoryListAttribute<R,User, UserFactory<R>> users = new FactoryListAttribute<R,User, UserFactory<R>>().en("users").de("Benutzer").userNotSelectable();
 
     @Override
-    public PersistentUserManagement createImpl() {
+    protected PersistentUserManagement createImpl() {
         return new PersistentUserManagement(users.instances());
     }
 

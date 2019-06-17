@@ -9,7 +9,7 @@ public class OrderMonitoringResourceFactory extends ServerBaseFactory<OrderMonit
             new FactoryAttribute<>();
 
     @Override
-    public OrderMonitoringResource createImpl() {
+    protected OrderMonitoringResource createImpl() {
         return new OrderMonitoringResource(orderStorage.instance());
     }
 

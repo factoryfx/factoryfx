@@ -79,7 +79,7 @@ public class FactoryTreeBuilderTest {
 
 
         @Override
-        public Void createImpl() {
+        protected Void createImpl() {
             return null;
         }
     }
@@ -89,7 +89,7 @@ public class FactoryTreeBuilderTest {
         public final FactoryAttribute<TreeFactoryTestA,ExampleLiveObjectB, TreeExampleFactoryB> referenceAttribute = new FactoryAttribute<>();
 
         @Override
-        public ExampleLiveObjectC createImpl() {
+        protected ExampleLiveObjectC createImpl() {
             return new ExampleLiveObjectC();
         }
 
@@ -101,7 +101,7 @@ public class FactoryTreeBuilderTest {
         public final FactoryAttribute<TreeFactoryTestA,ExampleLiveObjectC, TreeExampleFactoryC> referenceAttributeC = new FactoryAttribute<>();
 
         @Override
-        public ExampleLiveObjectB createImpl() {
+        protected ExampleLiveObjectB createImpl() {
             return new ExampleLiveObjectB(referenceAttributeC.instance());
         }
 
@@ -146,7 +146,7 @@ public class FactoryTreeBuilderTest {
 
     private static class ErrorPrinterFactory2 extends PolymorphicFactoryBase<Printer,ExamplePolymorphic> {
         @Override
-        public Printer createImpl() {
+        protected Printer createImpl() {
             return new ErrorPrinter();
         }
 

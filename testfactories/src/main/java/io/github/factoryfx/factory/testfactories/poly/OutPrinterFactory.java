@@ -5,7 +5,7 @@ import io.github.factoryfx.factory.testfactories.ExampleFactoryA;
 
 public class OutPrinterFactory extends PolymorphicFactoryBase<Printer,ExampleFactoryA> {
     @Override
-    public Printer createImpl() {
+    protected Printer createImpl() {
         return new OutPrinter();
     }
 

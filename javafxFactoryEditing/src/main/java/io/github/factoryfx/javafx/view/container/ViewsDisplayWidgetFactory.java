@@ -11,7 +11,7 @@ public class ViewsDisplayWidgetFactory extends SimpleFactoryBase<ViewsDisplayWid
     public final FactoryAttribute<RichClientRoot,UniformDesign,UniformDesignFactory> uniformDesign = new FactoryAttribute<>();
 
     @Override
-    public ViewsDisplayWidget createImpl() {
+    protected ViewsDisplayWidget createImpl() {
         return new ViewsDisplayWidget(new TabPane(),uniformDesign.instance());
     }
 }

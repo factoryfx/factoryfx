@@ -1,3 +1,18 @@
+# 2.0.5
+
+### Features
+
+* **jetty server:** the builder now supports ObjectMapper configuration.
+
+* **jetty server:** support for thread pool configuration
+
+### BREAKING CHANGES
+
+* **factory:** SimpleFactoryBase method createImpl(); is no protected to avoid accidental misuse.  
+ (wrong ```attribute.get().createImpl()``` instead of the correct ``` attribute.instance()``` )
+
+  
+
 # 2.0.0
 
 

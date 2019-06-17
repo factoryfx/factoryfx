@@ -15,7 +15,7 @@ public class ViewMenuItemFactory extends PolymorphicFactoryBase<MenuItem,RichCli
     public final FactoryAttribute<RichClientRoot,View,ViewFactory> view = new FactoryAttribute<>();
 
     @Override
-    public MenuItem createImpl() {
+    protected MenuItem createImpl() {
         MenuItem menuItem = new MenuItem();
         ViewDescription viewDescription = this.viewDescription.instance();
         viewDescription.describeMenuItem(menuItem);

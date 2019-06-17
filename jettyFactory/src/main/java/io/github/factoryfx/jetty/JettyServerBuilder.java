@@ -1,5 +1,6 @@
 package io.github.factoryfx.jetty;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.factoryfx.factory.FactoryBase;
 import io.github.factoryfx.jetty.ssl.SslContextFactoryFactory;
 
@@ -9,7 +10,7 @@ import java.util.ArrayList;
 import java.util.zip.Deflater;
 
 /**
- * builds the factory structure for a jetty server not the jetty liveobject
+ * The builder builds the factory structure for a jetty server not the jetty liveobject<br>
  * The factory structure matches the jetty internal architecture and the JettyServerBuilder creates a default configuration for that.
  *
  * @param <R> server root
@@ -20,9 +21,14 @@ public class JettyServerBuilder<R extends FactoryBase<?,R>,S extends JettyServer
     private final JerseyServletFactory<R> defaultJerseyServlet;
     private final UpdateableServletFactory<R> updateableServletFactory;
     private final ServletAndPathFactory<R> defaultJerseyServletAndPathFactory;
+    private final ThreadPoolFactory<R> threadPoolFactory;
 
     public JettyServerBuilder(S jettyServerFactory){
         this.jettyServerFactory=jettyServerFactory;
+
+        this.threadPoolFactory=new ThreadPoolFactory<>();
+        this.threadPoolFactory.poolSize.set(200);
+        this.jettyServerFactory.threadPool.set(threadPoolFactory);
 
         HttpServerConnectorFactory<R> serverConnectorFactory = new HttpServerConnectorFactory<>();
         serverConnectorFactory.host.set("localhost");
@@ -57,11 +63,6 @@ public class JettyServerBuilder<R extends FactoryBase<?,R>,S extends JettyServer
         defaultJerseyServletAndPathFactory.servlet.set(defaultJerseyServlet);
         updateableServletFactory.servletAndPaths.add(defaultJerseyServletAndPathFactory);
     }
-
-//    public JettyServerBuilder(){
-//        this(new JettyServerFactory());
-//    }
-
 
     public S build(){
         return jettyServerFactory;
@@ -132,6 +133,19 @@ public class JettyServerBuilder<R extends FactoryBase<?,R>,S extends JettyServer
 
     public JettyServerBuilder<R,S> withSsl(SslContextFactoryFactory<R> ssl) {
         jettyServerFactory.connectors.get(0).ssl.set(ssl);
+        return this;
+    }
+
+    /**
+     * default is 200
+     * @param size jetty thread pool size
+     */
+    public void withThreadPoolSize(int size){
+        this.threadPoolFactory.poolSize.set(size);
+    }
+
+    public JettyServerBuilder<R,S> withDefaultJerseyObjectMapper(FactoryBase<? extends ObjectMapper, R> objectMapperFactory){
+        defaultJerseyServlet.objectMapper.set(objectMapperFactory);
         return this;
     }
 }

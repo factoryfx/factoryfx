@@ -12,7 +12,7 @@ import io.github.factoryfx.javafx.RichClientRoot;
 public abstract class FactoryAwareWidgetFactory<RS extends FactoryBase<?,RS>> extends SimpleFactoryBase<FactoryAwareWidget<RS>,RichClientRoot> {
 
     @Override
-    public FactoryAwareWidget<RS> createImpl() {
+    protected FactoryAwareWidget<RS> createImpl() {
         return createWidget();
     }
 

@@ -7,7 +7,7 @@ public class PrinterFactory extends SimpleFactoryBase<Printer, PrinterFactory> {
     public final StringAttribute text=new StringAttribute();
 
     @Override
-    public Printer createImpl() {
+    protected Printer createImpl() {
         return new Printer(text.get());
     }
 }

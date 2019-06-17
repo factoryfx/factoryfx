@@ -11,7 +11,8 @@ public class ServerRootFactory extends ServerBaseFactory<Server> {
                     .userNotSelectable()
                     .userReadOnly();
 
-    public Server createImpl() {
+    @Override
+    protected Server createImpl() {
         return httpServer.instance();
     }
 

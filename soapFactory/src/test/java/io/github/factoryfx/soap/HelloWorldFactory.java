@@ -10,7 +10,8 @@ public class HelloWorldFactory extends SimpleFactoryBase<HelloWorld, SoapJettySe
 
     public final ObjectValueAttribute<HelloWorld> service = new ObjectValueAttribute<>();
 
-    public HelloWorld createImpl() {
+    @Override
+    protected HelloWorld createImpl() {
         return service.get();
     }
 }

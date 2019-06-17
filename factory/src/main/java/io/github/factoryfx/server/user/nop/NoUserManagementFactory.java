@@ -13,7 +13,7 @@ public class NoUserManagementFactory<R extends FactoryBase<?,R>> extends Polymor
     }
 
     @Override
-    public UserManagement createImpl() {
+    protected UserManagement createImpl() {
         return new NoUserManagement();
     }
 }

@@ -22,7 +22,7 @@ public class DeleteAttributeDanglingIdMigrationTest {
         public final FactoryAttribute<ServerFactoryOld,Void,ServerFactoryNestedOld> serverFactoryNested2 = new FactoryAttribute<>();
 
         @Override
-        public Void createImpl() {
+        protected Void createImpl() {
             return null;
         }
     }
@@ -33,7 +33,7 @@ public class DeleteAttributeDanglingIdMigrationTest {
         public final StringAttribute stringAttribute = new StringAttribute();
 
         @Override
-        public Void createImpl() {
+        protected Void createImpl() {
             return null;
         }
     }
@@ -43,7 +43,7 @@ public class DeleteAttributeDanglingIdMigrationTest {
         public final FactoryAttribute<ServerFactory,Void, ServerFactoryNested> serverFactoryNested2 = new FactoryAttribute<>();
 
         @Override
-        public Void createImpl() {
+        protected Void createImpl() {
             return null;
         }
     }
@@ -54,7 +54,7 @@ public class DeleteAttributeDanglingIdMigrationTest {
 
 
         @Override
-        public Void createImpl() {
+        protected Void createImpl() {
             return null;
         }
     }

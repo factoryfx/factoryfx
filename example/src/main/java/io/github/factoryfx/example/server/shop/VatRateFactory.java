@@ -12,7 +12,7 @@ public class VatRateFactory extends ServerBaseFactory<VatRate> {
     }
 
     @Override
-    public VatRate createImpl() {
+    protected VatRate createImpl() {
         return new VatRate(rate.get());
     }
 

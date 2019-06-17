@@ -14,7 +14,7 @@ public class ServletAndPathFactory<R extends FactoryBase<?,R>> extends SimpleFac
 
 
     @Override
-    public ServletAndPath createImpl() {
+    protected ServletAndPath createImpl() {
         return new ServletAndPath(pathSpec.get(),servlet.instance());
     }
 }

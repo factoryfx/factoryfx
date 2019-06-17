@@ -13,7 +13,7 @@ public class SimpleFactoryBaseTest {
         }
 
         @Override
-        public Void createImpl() {
+        protected Void createImpl() {
             return null;
         }
     }

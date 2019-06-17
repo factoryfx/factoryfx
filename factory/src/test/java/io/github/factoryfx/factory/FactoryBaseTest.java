@@ -105,7 +105,7 @@ public class FactoryBaseTest {
         public final FactoryListAttribute<XRoot,String,XFactory> xFactoryList = new FactoryListAttribute<>();
 
         @Override
-        public String createImpl() {
+        protected String createImpl() {
             referenceAttribute.instance();
             xFactory.instance();
             xFactory2.instance();
@@ -121,7 +121,7 @@ public class FactoryBaseTest {
                 root -> root.xFactoryList.get()).labelText("ExampleA2");
 
         @Override
-        public String createImpl() {
+        protected String createImpl() {
             referenceView.instance();
             listView.instances();
             return "2";
@@ -143,7 +143,7 @@ public class FactoryBaseTest {
 
 
         @Override
-        public String createImpl() {
+        protected String createImpl() {
             createCalls.add("call");
             return "3";
         }
@@ -157,7 +157,7 @@ public class FactoryBaseTest {
         public List<String> createCalls=new ArrayList<>();
 
         @Override
-        public String createImpl() {
+        protected String createImpl() {
             createCalls.add("call");
             return "3";
         }
@@ -175,7 +175,7 @@ public class FactoryBaseTest {
         public List<String> createCalls=new ArrayList<>();
 
         @Override
-        public String createImpl() {
+        protected String createImpl() {
             createCalls.add("call");
             return "3";
         }
@@ -311,7 +311,7 @@ public class FactoryBaseTest {
         }
 
         @Override
-        public Void createImpl() {
+        protected Void createImpl() {
             return null;
         }
     }
@@ -558,7 +558,7 @@ public class FactoryBaseTest {
         public final StringAttribute stringAttribute2= new StringAttribute().labelText("ExampleA1").nullable();
 
         @Override
-        public Void createImpl() {
+        protected Void createImpl() {
             return null;
         }
 

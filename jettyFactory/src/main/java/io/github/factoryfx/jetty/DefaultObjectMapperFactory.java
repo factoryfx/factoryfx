@@ -7,7 +7,7 @@ import io.github.factoryfx.factory.SimpleFactoryBase;
 
 public class DefaultObjectMapperFactory<R extends FactoryBase<?, R>> extends SimpleFactoryBase<ObjectMapper, R> {
     @Override
-    public ObjectMapper createImpl() {
+    protected ObjectMapper createImpl() {
         return ObjectMapperBuilder.buildNewObjectMapper();
     }
 }

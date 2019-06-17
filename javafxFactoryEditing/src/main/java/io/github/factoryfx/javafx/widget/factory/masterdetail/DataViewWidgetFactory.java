@@ -16,7 +16,7 @@ public class DataViewWidgetFactory<RS extends FactoryBase<?,RS>,L,F extends Fact
     public final FactoryAttribute<RichClientRoot, DataEditor, DataEditorFactory> dataEditorFactory = new FactoryAttribute<>();
 
     @Override
-    public DataViewWidget<RS,L,F> createImpl() {
+    protected DataViewWidget<RS,L,F> createImpl() {
         return new DataViewWidget<>(dataEditorFactory.instance(),uniformDesign.instance());
     }
 }

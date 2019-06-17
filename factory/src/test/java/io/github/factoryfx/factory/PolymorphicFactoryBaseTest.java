@@ -12,7 +12,7 @@ public class PolymorphicFactoryBaseTest {
         }
 
         @Override
-        public Void createImpl() {
+        protected Void createImpl() {
             return null;
         }
     }

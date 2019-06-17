@@ -7,7 +7,7 @@ public class RootFactory extends SimpleFactoryBase<Root, RootFactory> {
     public final StringAttribute text=new StringAttribute().labelText("Text");
 
     @Override
-    public Root createImpl() {
+    protected Root createImpl() {
         return new Root(text.get());
     }
 }

@@ -37,25 +37,26 @@ public class DataCreatorTs<R extends FactoryBase<?,R>> {
             String typeName = allDataClass.getSimpleName();
             typeMappingCode.append("    let result: ").append(typeName).append("= new ").append(typeName).append("();\n");
             typeMappingCode.append("    result.mapFromJson(json,idToDataMap,this);\n");
+            typeMappingCode.append("    result.setParent(parent);\n");
             typeMappingCode.append("    return result;\n");
             typeMappingCode.append("}\n");
         }
         typeMappingCode.append("return null;");
 
         constructed.methods.add(new TsMethod("createData",
-                List.of(new TsMethodParameter("json",new TsTypePrimitive("any")),new TsMethodParameter("idToDataMap",new TsTypePrimitive("any"))),new TsMethodResult(new TsTypeClass(dataClass)),
+                List.of(new TsMethodParameter("json",new TsTypePrimitive("any")),new TsMethodParameter("idToDataMap",new TsTypePrimitive("any")), new TsMethodParameter("parent",new TsTypeClass(dataClass))),new TsMethodResult(new TsTypeClass(dataClass)),
                 new TsMethodCode(typeMappingCode.toString(),allDataClasses.stream().map(dataToDataConfigTs::get).collect(Collectors.toSet())),"public"));
 
 
         String typeListMappingCode =
                 "let result: Data[]=[];\n" +
                 "for (let entry of json) {\n" +
-                "    result.push(this.createData(entry,idToDataMap));\n" +
+                "    result.push(this.createData(entry,idToDataMap,parent));\n" +
                 "}\n" +
                 "return result;";
 
         constructed.methods.add(new TsMethod("createDataList",
-                List.of(new TsMethodParameter("json",new TsTypePrimitive("any")),new TsMethodParameter("idToDataMap",new TsTypePrimitive("any"))),new TsMethodResult(new TsTypeArray(new TsTypeClass(dataClass))),
+                List.of(new TsMethodParameter("json",new TsTypePrimitive("any")),new TsMethodParameter("idToDataMap",new TsTypePrimitive("any")), new TsMethodParameter("parent",new TsTypeClass(dataClass))),new TsMethodResult(new TsTypeArray(new TsTypeClass(dataClass))),
                 new TsMethodCode(typeListMappingCode,allDataClasses.stream().map(dataToDataConfigTs::get).collect(Collectors.toSet())),"public"));
 
         return constructed;

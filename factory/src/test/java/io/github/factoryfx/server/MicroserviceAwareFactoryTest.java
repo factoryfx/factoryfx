@@ -34,7 +34,7 @@ public class MicroserviceAwareFactoryTest {
         public final FactoryAttribute<RootTestClazz,String,MicroserviceAwareFactoryTestclazz> ref = new FactoryAttribute<>();
 
         @Override
-        public String createImpl() {
+        protected String createImpl() {
             this.utility().getMicroservice().prepareNewFactory(); //no npw, Microservice available
 
             return "";

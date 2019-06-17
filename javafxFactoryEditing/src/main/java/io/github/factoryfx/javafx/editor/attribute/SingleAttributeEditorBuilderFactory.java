@@ -33,7 +33,7 @@ public class SingleAttributeEditorBuilderFactory extends SimpleFactoryBase<Attri
     }
 
     @Override
-    public AttributeVisualisationBuilder createImpl() {
+    protected AttributeVisualisationBuilder createImpl() {
         return creator.apply(uniformDesign.instance());
     }
 

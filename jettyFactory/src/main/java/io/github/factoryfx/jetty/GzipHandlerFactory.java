@@ -31,7 +31,7 @@ public class GzipHandlerFactory<R extends FactoryBase<?,R>> extends PolymorphicF
 
 
     @Override
-    public Handler createImpl() {
+    protected Handler createImpl() {
         GzipHandler gzipHandler = new GzipHandler();
         gzipHandler.setMinGzipSize(minGzipSize.get());
         gzipHandler.setCompressionLevel(compressionLevel.get());

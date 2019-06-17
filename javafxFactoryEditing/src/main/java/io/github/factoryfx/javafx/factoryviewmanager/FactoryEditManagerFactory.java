@@ -19,7 +19,7 @@ public class FactoryEditManagerFactory<RS  extends FactoryBase<?,RS>,S> extends 
     public final FactoryAttribute<RichClientRoot,MigrationManager<RS,S>,FactorySerialisationManagerFactory<RS,S>> factorySerialisationManager = new FactoryAttribute<>();
 
     @Override
-    public FactoryEditManager<RS,S> createImpl() {
+    protected FactoryEditManager<RS,S> createImpl() {
         return new FactoryEditManager<>(restClient.instance(),factorySerialisationManager.instance());
     }
 

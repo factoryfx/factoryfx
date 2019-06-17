@@ -19,14 +19,14 @@ public class ReferenceTypeChangeMigrationTest {
         public final FactoryAttribute<ServerFactoryOld,Void,PartnerFactory> partnerFactory = new FactoryAttribute<>();
 
         @Override
-        public Void createImpl() {
+        protected Void createImpl() {
             return null;
         }
     }
 
     public static class PartnerFactory extends SimpleFactoryBase<Void, ServerFactoryOld> {
         @Override
-        public Void createImpl() {
+        protected Void createImpl() {
             return null;
         }
     }
@@ -38,7 +38,7 @@ public class ReferenceTypeChangeMigrationTest {
         public final FactoryAttribute<ServerFactory,Void,ClientSystemFactory> partnerFactory = new FactoryAttribute<>();
 
         @Override
-        public Void createImpl() {
+        protected Void createImpl() {
             return null;
         }
     }
@@ -47,7 +47,7 @@ public class ReferenceTypeChangeMigrationTest {
 
 
         @Override
-        public Void createImpl() {
+        protected Void createImpl() {
             return null;
         }
     }

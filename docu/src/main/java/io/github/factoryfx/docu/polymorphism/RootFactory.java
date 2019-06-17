@@ -7,7 +7,7 @@ public class RootFactory extends SimpleFactoryBase<Root,RootFactory> {
     public final FactoryPolymorphicAttribute<RootFactory,Printer> printer =new FactoryPolymorphicAttribute<RootFactory,Printer>().setup(Printer.class,ErrorPrinterFactory.class,DefaultPrinterFactory.class);
 
     @Override
-    public Root createImpl() {
+    protected Root createImpl() {
         return new Root(printer.instance());
     }
 }

@@ -8,10 +8,10 @@ import org.eclipse.jetty.server.Server;
 /**
  * Root factory of the project */
 public class ServerRootFactory extends SimpleFactoryBase<Server, ServerRootFactory> {
-  public final FactoryAttribute<Server, JettyServerFactory<ServerRootFactory>> jettyServer = new FactoryAttribute<>();
+    public final FactoryAttribute<Server, JettyServerFactory<ServerRootFactory>> jettyServer = new FactoryAttribute<>();
 
-  @Override
-  public Server createImpl() {
-    return jettyServer.instance();
-  }
+    @Override
+    protected Server createImpl() {
+        return jettyServer.instance();
+    }
 }

@@ -20,7 +20,7 @@ public class AddAttributeMigrationTest {
     //----------------------------------old
     public static class ServerFactoryOld extends SimpleFactoryBase<Void, ServerFactoryOld> {
         @Override
-        public Void createImpl() {
+        protected Void createImpl() {
             return null;
         }
     }
@@ -31,7 +31,7 @@ public class AddAttributeMigrationTest {
         public final FactoryAttribute<ServerFactory,Void, NestedFactory> nestedFactory = new FactoryAttribute<>();
 
         @Override
-        public Void createImpl() {
+        protected Void createImpl() {
             return null;
         }
     }
@@ -40,7 +40,7 @@ public class AddAttributeMigrationTest {
         public final StringAttribute stringAttribute = new StringAttribute();
 
         @Override
-        public Void createImpl() {
+        protected Void createImpl() {
             return null;
         }
     }

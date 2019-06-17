@@ -8,7 +8,7 @@ public class WebResourceFactory extends SimpleFactoryBase<Object, SimpleHttpServ
     public final StringAttribute responseText = new StringAttribute().labelText("Text");
 
     @Override
-    public Object createImpl() {
+    protected Object createImpl() {
         return new WebResource(responseText.get());
     }
 }

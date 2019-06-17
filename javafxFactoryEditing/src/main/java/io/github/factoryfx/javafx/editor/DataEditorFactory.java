@@ -14,7 +14,7 @@ public class DataEditorFactory extends SimpleFactoryBase<DataEditor, RichClientR
     public final FactoryAttribute<RichClientRoot,AttributeVisualisationMappingBuilder, AttributeEditorBuilderFactory> attributeEditorBuilder = new FactoryAttribute<>();
 
     @Override
-    public DataEditor createImpl() {
+    protected DataEditor createImpl() {
         return new DataEditor(attributeEditorBuilder.instance(),uniformDesign.instance());
     }
 }

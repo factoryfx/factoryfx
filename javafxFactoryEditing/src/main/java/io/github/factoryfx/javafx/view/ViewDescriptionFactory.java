@@ -15,7 +15,7 @@ public class ViewDescriptionFactory extends SimpleFactoryBase<ViewDescription,Ri
     public final FactoryAttribute<RichClientRoot,UniformDesign,UniformDesignFactory> uniformDesign = new FactoryAttribute<RichClientRoot,UniformDesign,UniformDesignFactory>().de("uniformDesign").en("uniformDesign");
 
     @Override
-    public ViewDescription createImpl() {
+    protected ViewDescription createImpl() {
         return new ViewDescription(text.get(),icon.get(),uniformDesign.instance());
     }
 }

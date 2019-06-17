@@ -53,7 +53,7 @@ public class JettyServerTest {
 
     public static class Resource1Factory extends SimpleFactoryBase<Resource1, JettyServerRootFactory> {
         @Override
-        public Resource1 createImpl() {
+        protected Resource1 createImpl() {
             return new Resource1();
         }
     }
@@ -62,7 +62,7 @@ public class JettyServerTest {
         public final FactoryAttribute<JettyServerRootFactory,Server,JettyServerFactory<JettyServerRootFactory>> server = new FactoryAttribute<>();
 
         @Override
-        public Server createImpl() {
+        protected Server createImpl() {
             return server.instance();
         }
     }
@@ -185,7 +185,7 @@ public class JettyServerTest {
 
     public static class LateResponseTestResourceFactory extends SimpleFactoryBase<LateResponseTestResource, JettyServerRootFactory> {
         @Override
-        public LateResponseTestResource createImpl() {
+        protected LateResponseTestResource createImpl() {
             return new LateResponseTestResource();
         }
     }
@@ -281,7 +281,7 @@ public class JettyServerTest {
 
     public static final class MessageBodyReaderWriterEchoFactory extends SimpleFactoryBase<MessageBodyReaderWriterEcho,JettyServerRootFactory> {
         @Override
-        public MessageBodyReaderWriterEcho createImpl() {
+        protected MessageBodyReaderWriterEcho createImpl() {
             return new MessageBodyReaderWriterEcho();
         }
     }

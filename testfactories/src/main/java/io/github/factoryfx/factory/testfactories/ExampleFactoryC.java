@@ -9,7 +9,7 @@ public class ExampleFactoryC extends SimpleFactoryBase<ExampleLiveObjectC,Exampl
     public final FactoryAttribute<ExampleFactoryA,ExampleLiveObjectB,ExampleFactoryB> referenceAttribute = new FactoryAttribute<ExampleFactoryA,ExampleLiveObjectB,ExampleFactoryB>().labelText("ExampleA2");
 
     @Override
-    public ExampleLiveObjectC createImpl() {
+    protected ExampleLiveObjectC createImpl() {
         return new ExampleLiveObjectC();
     }
 

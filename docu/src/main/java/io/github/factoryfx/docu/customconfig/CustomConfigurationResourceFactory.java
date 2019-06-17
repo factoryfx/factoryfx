@@ -5,7 +5,7 @@ import io.github.factoryfx.factory.SimpleFactoryBase;
 public class CustomConfigurationResourceFactory extends SimpleFactoryBase<CustomConfigurationResource, ServerFactory> {
 
     @Override
-    public CustomConfigurationResource createImpl() {
+    protected CustomConfigurationResource createImpl() {
         return new CustomConfigurationResource(this.utility().getMicroservice());
     }
 

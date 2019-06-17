@@ -9,7 +9,7 @@ public class DatabaseResourceFactory  extends SimpleFactoryBase<DatabaseResource
     public final StringAttribute password = new StringAttribute();
 
     @Override
-    public DatabaseResource createImpl() {
+    protected DatabaseResource createImpl() {
         return new DatabaseResource(url.get(),user.get(),password.get());
     }
 }

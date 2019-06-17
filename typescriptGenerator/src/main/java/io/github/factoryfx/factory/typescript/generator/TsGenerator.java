@@ -11,9 +11,12 @@ import io.github.factoryfx.factory.typescript.generator.ts.TsClassTemplateBased;
 import io.github.factoryfx.factory.typescript.generator.ts.TsEnumConstructed;
 import io.github.factoryfx.factory.typescript.generator.ts.TsFile;
 
-import java.io.IOException;
+import java.io.*;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 import java.util.function.BiFunction;
 import java.util.stream.Collectors;
@@ -41,7 +44,9 @@ public class TsGenerator<R extends FactoryBase<?,R>> {
                 final List<Path> pathsToDelete = Files.walk(targetDir).sorted(Comparator.reverseOrder()).collect(Collectors.toList());
                 pathsToDelete.remove(pathsToDelete.size() - 1);
                 for (Path path : pathsToDelete) {
-                    Files.deleteIfExists(path);
+                    if (!path.toFile().getAbsolutePath().endsWith("index.html")) {
+                        Files.deleteIfExists(path);
+                    }
                 }
             } catch (IOException e) {
                 throw new RuntimeException(e);
@@ -49,10 +54,12 @@ public class TsGenerator<R extends FactoryBase<?,R>> {
         }
     }
 
-    @SuppressWarnings("unchecked")
-    public void generate(){
-        targetDir.toFile().mkdirs();
+    public void generateTs(){
+        generateTs(targetDir);
+    }
 
+    @SuppressWarnings("unchecked")
+    private void generateTs(Path targetDir){
         Path utilDir = targetDir.resolve("util");
         TsClassTemplateBased dataTsClass = new TsClassTemplateBased("Data.ts", utilDir);
         dataTsClass.writeToFile();
@@ -63,13 +70,18 @@ public class TsGenerator<R extends FactoryBase<?,R>> {
         TsClassTemplateBased attributeIterationGroupClass = new TsClassTemplateBased("AttributeIterationGroup.ts", utilDir);
         attributeIterationGroupClass.writeToFile();
 
+        TsClassTemplateBased factoryEditorClass = new TsClassTemplateBased("FactoryEditor.ts", utilDir);
+        factoryEditorClass.writeToFile();
 
 
         TsClassTemplateBased attributeMetadataTsClass = new TsClassTemplateBased("AttributeMetadata.ts", utilDir);
         attributeMetadataTsClass.writeToFile();
 
-        TsClassTemplateBased validationErrorTsClass = new TsClassTemplateBased("ValidationError.ts", utilDir);
-        validationErrorTsClass.writeToFile();
+        for (String file : List.of("ValidationError.ts", "AttributeEditor.ts", "AttributeEditorCreator.ts",
+                "AttributeEditorStringAttribute.ts", "AttributeEditorFallback.ts", "AttributeEditorFactoryAttribute.ts","AttributeEditorFactoryListAttribute.ts")) {
+            TsClassTemplateBased filets = new TsClassTemplateBased(file, utilDir);
+            filets.writeToFile();
+        }
 
         HashMap<Class<? extends FactoryBase<?,R>>,TsClassConstructed> dataToGeneratedTsClass = new HashMap<>();
         HashMap<Class<? extends FactoryBase<?,R>>,TsClassConstructed> dataToConfigTs = new HashMap<>();
@@ -79,7 +91,6 @@ public class TsGenerator<R extends FactoryBase<?,R>> {
             dataToGeneratedTsClass.put(dataClass,new TsClassConstructed(dataClass.getSimpleName()+"Generated", dataClass.getPackage().getName().replace(".","/")+"/", generatedPath));
             dataToConfigTs.put(dataClass,new TsClassConstructed(dataClass.getSimpleName(),dataClass.getPackage().getName().replace(".","/")+"/", targetDir.resolve("config")));
         }
-
 
         Set<Class<? extends Enum<?>>> enumClasses= new HashSet<>();
         for (Map.Entry<Class<? extends FactoryBase<?,R>>, TsClassConstructed> entry : dataToGeneratedTsClass.entrySet()) {
@@ -118,7 +129,92 @@ public class TsGenerator<R extends FactoryBase<?,R>> {
             DataConfigTs dataOverrideGenerator = new DataConfigTs(entry.getKey(), dataToGeneratedTsClass.get(entry.getKey()));
             dataOverrideGenerator.complete(entry.getValue()).writeToFile();
         }
+    }
+
+    public void generateJs(){
+        targetDir.toFile().mkdirs();
+        Path tsBuildDirectory = Path.of("./build/ts");
+        tsBuildDirectory.toFile().mkdirs();
+
+//        try {
+//            tempDirectory = Files.createTempDirectory("");
+//        } catch (IOException e) {
+//            throw new RuntimeException(e);
+//        }
+
+        generateTs(tsBuildDirectory);
 
 
+
+        writeResourceFile("package.json",tsBuildDirectory.toFile().getAbsolutePath());
+        writeResourceFile("tsconfig.json",tsBuildDirectory.toFile().getAbsolutePath());
+
+//        try {
+//            Process processNpm = new ProcessBuilder("cmd", "/c", "npm", "install").directory(tempDirectory.toFile().getAbsoluteFile()).inheritIO().start();
+//            processNpm.waitFor();
+//            Process processTsc = new ProcessBuilder("cmd", "/c", "npx", "tsc", "--outDir", targetDir.toFile().getAbsolutePath()).directory(tempDirectory.toFile().getAbsoluteFile()).inheritIO().start();
+//            processTsc.waitFor();
+//            ProcessBuilder processBuilder = new ProcessBuilder("cmd", "/c", "tsc", "--outDir", targetDir.toFile().getAbsolutePath()).directory(tempDirectory.toFile().getAbsoluteFile()).inheritIO();
+//            processBuilder.redirectErrorStream(true);
+//            Process processTsc = processBuilder.start();
+//            processBuilder.redirectOutput(null)
+//
+//
+//
+//
+//
+//            Reader rdr = new InputStreamReader(processTsc.getInputStream());
+//            StringBuilder sb = new StringBuilder();
+//            for(int i; (i = rdr.read()) !=-1;) {
+//                sb.append((char)i);
+//            }
+//            String var = sb.toString();
+//            System.out.println("qqqqq"+var);
+//
+//            processTsc.waitFor();
+
+
+        compileTsToJS(tsBuildDirectory);
+    }
+
+    private void compileTsToJS(Path tsBuildDirectory) {
+        try {
+            ProcessBuilder pb = new ProcessBuilder("cmd", "/c", "tsc", "--outDir", targetDir.toFile().getAbsolutePath()).directory(tsBuildDirectory.toFile().getAbsoluteFile());
+            Process process;
+            process = pb.start();
+//            final BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+//            StringJoiner sj = new StringJoiner("/n");
+//            reader.lines().iterator().forEachRemaining(sj::add);
+//            if (!sj.toString().isEmpty()){
+//                throw new IllegalStateException("\n"+sj.toString());
+//            }
+            BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+            StringBuilder builder = new StringBuilder();
+            String line = null;
+            while ( (line = reader.readLine()) != null) {
+                builder.append(line);
+                builder.append("/n");
+            }
+            if (!builder.toString().isEmpty()){
+                throw new IllegalStateException("\n"+builder.toString());
+            }
+
+            process.waitFor();
+            process.destroy();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+    }
+
+    private void writeResourceFile(String resourcePathShort, String targetDir){
+        try (InputStream inputStream = this.getClass().getResourceAsStream("/io/github/factoryfx/factory/typescript/generator/ts/"+resourcePathShort)) {
+            try (FileOutputStream fileOutputStream = new FileOutputStream(new File(targetDir + "/" + resourcePathShort))){
+                inputStream.transferTo(fileOutputStream);
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

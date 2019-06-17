@@ -47,7 +47,7 @@ public class HandlerCollectionFactoryTest {
 
     public static class HandlerCollectionResourceFactory extends SimpleFactoryBase<HandlerCollectionResource, HandlerCollectionRootFactory> {
         @Override
-        public HandlerCollectionResource createImpl() {
+        protected HandlerCollectionResource createImpl() {
             return new HandlerCollectionResource();
         }
     }
@@ -56,14 +56,14 @@ public class HandlerCollectionFactoryTest {
         public final FactoryAttribute<HandlerCollectionRootFactory,Server,JettyServerFactory<HandlerCollectionRootFactory>> server = new FactoryAttribute<>();
 
         @Override
-        public Server createImpl() {
+        protected Server createImpl() {
             return server.instance();
         }
     }
 
     public static class CustomHandlerFactory<R extends FactoryBase<?,R>> extends PolymorphicFactoryBase<Handler,R> {
         @Override
-        public Handler createImpl() {
+        protected Handler createImpl() {
             return new AbstractHandler() {
                 @Override
                 public void handle(String target, Request baseRequest, HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {

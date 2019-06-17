@@ -8,32 +8,32 @@ import { AttributeMetadata } from "../../../../../../../../util/AttributeMetadat
 
 export abstract class ExampleDataAllGenerated  extends Data {
 
-    public byteArrayAttribute: string;
-    public i18nAttribute: string;
-    public encryptedStringAttribute: string;
-    public doubleAttribute: number;
-    public byteAttribute: number;
-    public booleanAttribute: boolean;
-    public localDateAttribute: Date;
-    public enumAttribute: ExampleEnum;
-    public charAttribute: string;
-    public longAttribute: number;
-    public stringAttribute: string;
-    public integerAttribute: number;
-    public localDateTimeAttribute: Date;
-    public localeAttribute: string;
-    public durationAttribute: string;
-    public fileContentAttribute: string;
-    public localTimeAttribute: string;
-    public shortAttribute: number;
-    public passwordAttribute: string;
-    public uriAttribute: string;
-    public bigDecimalAttribute: string;
-    public floatAttribute: number;
-    public stringListAttribute: string[];
-    public enumListAttribute: ExampleEnum[];
-    public instantAttribute: Date;
-    public bigIntegerAttribute: bigint;
+    public byteArrayAttribute: string = null;
+    public i18nAttribute: string = null;
+    public encryptedStringAttribute: string = null;
+    public doubleAttribute: number = null;
+    public byteAttribute: number = null;
+    public booleanAttribute: boolean = null;
+    public localDateAttribute: Date = null;
+    public enumAttribute: ExampleEnum = null;
+    public charAttribute: string = null;
+    public longAttribute: number = null;
+    public stringAttribute: string = null;
+    public integerAttribute: number = null;
+    public localDateTimeAttribute: Date = null;
+    public localeAttribute: string = null;
+    public durationAttribute: string = null;
+    public fileContentAttribute: string = null;
+    public localTimeAttribute: string = null;
+    public shortAttribute: number = null;
+    public passwordAttribute: string = null;
+    public uriAttribute: string = null;
+    public bigDecimalAttribute: string = null;
+    public floatAttribute: number = null;
+    public stringListAttribute: string[] = null;
+    public enumListAttribute: ExampleEnum[] = null;
+    public instantAttribute: Date = null;
+    public bigIntegerAttribute: bigint = null;
     public static readonly byteArrayAttributeMetadata: AttributeMetadata<string>= new AttributeMetadata<string>('','',AttributeType.ByteArrayAttribute);
     public static readonly i18nAttributeMetadata: AttributeMetadata<string>= new AttributeMetadata<string>('','',AttributeType.I18nAttribute);
     public static readonly encryptedStringAttributeMetadata: AttributeMetadata<string>= new AttributeMetadata<string>('','',AttributeType.EncryptedStringAttribute);
@@ -223,11 +223,12 @@ export abstract class ExampleDataAllGenerated  extends Data {
         result.bigIntegerAttribute=this.mapAttributeValueToJson(this.bigIntegerAttribute);
     }
 
-    protected collectChildrenRecursiveIntern(idToDataMap: any){
-        
+    protected collectChildrenFlat(): Data[]{
+        let result: Array<Data>=[];
+        return result;
     }
 
-    protected listAttributeAccessor(): AttributeAccessor<any,ExampleDataAllGenerated>[]{
+    public listAttributeAccessor(): AttributeAccessor<any,ExampleDataAllGenerated>[]{
         let result: AttributeAccessor<any,ExampleDataAllGenerated>[]=[];
         result.push(this.byteArrayAttributeAccessor());
         result.push(this.i18nAttributeAccessor());

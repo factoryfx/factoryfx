@@ -10,7 +10,7 @@ public class InstrumentedHandlerFactory extends SimpleFactoryBase<Handler,RootFa
     public final FactoryAttribute<RootFactory, MetricRegistry, MetricRegistryFactory> metricRegistry = new FactoryAttribute<>();
 
     @Override
-    public Handler createImpl() {
+    protected Handler createImpl() {
         return new InstrumentedHandler(metricRegistry.instance(), "monitoring example");
     }
 }

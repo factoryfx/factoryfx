@@ -4,7 +4,7 @@ package io.github.factoryfx.docu.rule.simulator;
 public class HelloResourceFactory extends SimulatorBaseFactory<HelloResource> {
 
     @Override
-    public HelloResource createImpl() {
+    protected HelloResource createImpl() {
         return new HelloResource();
     }
 

@@ -7,7 +7,7 @@ public class RootFactory extends SimpleFactoryBase<Root, RootFactory> {
     public final ParametrizedObjectCreatorAttribute<RootFactory,PrinterCreateParameter,Printer,PrinterCreatorFactory> printerCreator =new ParametrizedObjectCreatorAttribute<>();
 
     @Override
-    public Root createImpl() {
+    protected Root createImpl() {
         return new Root(printerCreator.instance());
     }
 

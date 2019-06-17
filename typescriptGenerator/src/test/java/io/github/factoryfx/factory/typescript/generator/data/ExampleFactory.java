@@ -11,7 +11,7 @@ public class ExampleFactory extends SimpleFactoryBase<Void,ExampleData> {
     public final FactoryListAttribute<ExampleData,Void,ExampleFactory> refList= new FactoryListAttribute<>();
 
     @Override
-    public Void createImpl() {
+    protected Void createImpl() {
         return null;
     }
 }

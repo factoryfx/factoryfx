@@ -7,7 +7,7 @@ public class SubscriptionFactory extends NanoserviceRootFactory<PaymentRequest,S
     public final StringAttribute example = new StringAttribute();
 
     @Override
-    public Subscription createImpl() {
+    protected Subscription createImpl() {
         return new Subscription(example.get());
     }
 }

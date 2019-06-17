@@ -4,7 +4,7 @@ import io.github.factoryfx.example.server.ServerBaseFactory;
 
 public class OrderStorageFactory extends ServerBaseFactory<OrderStorage> {
     @Override
-    public OrderStorage createImpl() {
+    protected OrderStorage createImpl() {
         return new OrderStorage();
     }
 
