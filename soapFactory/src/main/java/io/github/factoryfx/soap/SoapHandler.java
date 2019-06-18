@@ -16,8 +16,8 @@ public class SoapHandler implements Servlet {
     //com.sun.xml.internal.messaging.saaj.soap.ver1_2.SOAPMessageFactory1_2Impl
     //there will be useless log warnings for each MessageFactory.newInstance call.
     //Therefore we only do it once to avoid those annoying logs
-    private final MessageFactory SOAP11FACTORY = MessageFactory.newInstance(SOAPConstants.SOAP_1_1_PROTOCOL);
-    private final MessageFactory SOAP12FACTORY = MessageFactory.newInstance(SOAPConstants.SOAP_1_2_PROTOCOL);
+    private final MessageFactory SOAP11FACTORY;
+    private final MessageFactory SOAP12FACTORY;
 
     private final WebServiceRequestDispatcher dispatcher;
     private final SOAPMessageUtil soapMessageUtil;
@@ -25,6 +25,12 @@ public class SoapHandler implements Servlet {
     public SoapHandler(WebServiceRequestDispatcher dispatcher, SOAPMessageUtil soapXmlParser) {
         this.dispatcher = dispatcher;
         this.soapMessageUtil = soapXmlParser;
+        try {
+            this.SOAP11FACTORY = MessageFactory.newInstance(SOAPConstants.SOAP_1_1_PROTOCOL);
+            this.SOAP12FACTORY = MessageFactory.newInstance(SOAPConstants.SOAP_1_2_PROTOCOL);
+        } catch (SOAPException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
