@@ -7,7 +7,7 @@ import io.github.factoryfx.factory.FactoryBase;
 
 
 public class DataAndId<T extends FactoryBase<?,?>> {
-    @JsonTypeInfo(use=JsonTypeInfo.Id.MINIMAL_CLASS, property="@class")
+    @JsonTypeInfo(use=JsonTypeInfo.Id.CLASS, property="@class")
     public final T root;
     public final String id;
 

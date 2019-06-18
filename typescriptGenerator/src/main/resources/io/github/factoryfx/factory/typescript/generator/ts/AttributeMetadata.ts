@@ -2,17 +2,7 @@ import { ValidationError } from "./ValidationError";
 import {AttributeType} from "./AttributeType";
 
 export class AttributeMetadata<T>  {
-    private readonly  en: string;
-    private readonly  de: string;
-
-    private isNullable: boolean= false;
-
-    private readonly attributeType: AttributeType;
-
-
-    public constructor(en: string, de: string, attributeType: AttributeType) {
-        this.en = en;
-        this.de = de;
+    public constructor(private en: string, private de: string, private attributeType: AttributeType, private isNullable: boolean, private possibleEnumValues: string[]) {
         this.attributeType=attributeType;
     }
 
@@ -41,8 +31,8 @@ export class AttributeMetadata<T>  {
         return this.validationFunction(value);
     }
 
-    nullable(){
-        this.isNullable=true;
+    nullable(): boolean{
+        return this.isNullable;
     }
 
     getType(): AttributeType {
@@ -50,5 +40,7 @@ export class AttributeMetadata<T>  {
     }
 
 
-
+    getPossibleEnumValues(): string[] {
+        return this.possibleEnumValues;
+    }
 }

@@ -1,32 +1,37 @@
 //generated code don't edit manually
 import {AttributeMetadata} from "./AttributeMetadata";
 import {Data} from "./Data";
+import {AttributeValueAccessor} from "./AttributeValueAccessor";
 
-export class AttributeAccessor<T, P extends Data> {
-    attributeMetadata: AttributeMetadata<T>;
-    attributeName: string;
-    attributeParent: P;
+export class AttributeAccessor<T> {
 
-    constructor(attributeMetadata: AttributeMetadata<T>, attributeParent: P, attributeName: string) {
-        this.attributeMetadata = attributeMetadata;
-        this.attributeParent = attributeParent;
-        this.attributeName = attributeName;
+    constructor(private attributeMetadata: AttributeMetadata<T>, private valueAccessor: AttributeValueAccessor<T>, private attributeName: string) {
+
     }
 
     getValue(): T{
-        return this.attributeParent[this.attributeName]
+        return this.valueAccessor.getValue();
     }
 
     setValue(value: T){
-        this.attributeParent[this.attributeName]=value;
+        this.valueAccessor.setValue(value);
     }
 
-    getLabelText(locale: string){
-        let labelText = this.attributeMetadata.getLabelText(locale);
+    getLabelText(locale: string): string{
+        let labelText: string = this.attributeMetadata.getLabelText(locale);
         if (!labelText){
             labelText=this.attributeName;
         }
         return labelText;
     }
+
+    public getAttributeMetadata(): AttributeMetadata<T>{
+        return this.attributeMetadata;
+    }
+
+    public getAttributeName(): string{
+        return this.attributeName;
+    }
+
 
 }

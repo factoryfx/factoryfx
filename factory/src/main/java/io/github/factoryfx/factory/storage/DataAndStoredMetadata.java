@@ -6,7 +6,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import io.github.factoryfx.factory.FactoryBase;
 
 public class DataAndStoredMetadata<T extends FactoryBase<?,?>,S> {
-    @JsonTypeInfo(use=JsonTypeInfo.Id.MINIMAL_CLASS, property="@class")
+    @JsonTypeInfo(use=JsonTypeInfo.Id.CLASS, property="@class")
     public final T root;
     public final StoredDataMetadata<S> metadata;
 

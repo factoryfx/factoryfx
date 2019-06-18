@@ -5,24 +5,30 @@ import io.github.factoryfx.factory.FactoryBase;
 import io.github.factoryfx.factory.attribute.Attribute;
 import io.github.factoryfx.factory.attribute.dependency.FactoryBaseAttribute;
 import io.github.factoryfx.factory.attribute.dependency.FactoryListBaseAttribute;
+import io.github.factoryfx.factory.attribute.dependency.ReferenceBaseAttribute;
+import io.github.factoryfx.factory.attribute.types.EnumAttribute;
+import io.github.factoryfx.factory.attribute.types.EnumListAttribute;
 import io.github.factoryfx.factory.metadata.FactoryMetadataManager;
 import io.github.factoryfx.factory.typescript.generator.construct.atttributes.AttributeToTsMapperManager;
 import io.github.factoryfx.factory.typescript.generator.ts.*;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class DataGeneratedTs<R extends FactoryBase<?,R>, L,  F extends FactoryBase<L,R>> {
 
     private final Class<F> clazz;
     private final TsFile dataTsClass;
+    private final TsFile staticAttributeValueAccessorTsClass;
     private final TsFile dataCreatorTsClass;
     private final TsFile attributeMetadataTsClass;
     private final Map<Class<? extends FactoryBase<?,R>>,TsClassConstructed> dataToOverrideTs;
     private final TsFile attributeAccessorClass;
     private final AttributeToTsMapperManager attributeToTsMapperManager;
     private final TsEnumConstructed attributeTypeEnumTsEnum;
+    private final TsFile dynamicDataDictionaryTsClass;
 
-    public DataGeneratedTs(Class<F> clazz, Map<Class<? extends FactoryBase<?,R>>, TsClassConstructed> dataToOverrideTs, TsFile dataTsClass, TsFile dataCreatorTsClass, TsFile attributeTsClass, TsFile attributeAccessorClass, AttributeToTsMapperManager attributeToTsMapperManager, TsEnumConstructed attributeTypeEnumTsEnum) {
+    public DataGeneratedTs(Class<F> clazz, Map<Class<? extends FactoryBase<?,R>>, TsClassConstructed> dataToOverrideTs, TsFile dataTsClass, TsFile dynamicDataDictionaryTsClass, TsFile staticAttributeValueAccessorTsClass , TsFile dataCreatorTsClass, TsFile attributeTsClass, TsFile attributeAccessorClass, AttributeToTsMapperManager attributeToTsMapperManager, TsEnumConstructed attributeTypeEnumTsEnum) {
         this.clazz = clazz;
         this.dataTsClass = dataTsClass;
         this.dataToOverrideTs = dataToOverrideTs;
@@ -31,6 +37,8 @@ public class DataGeneratedTs<R extends FactoryBase<?,R>, L,  F extends FactoryBa
         this.attributeAccessorClass = attributeAccessorClass;
         this.attributeToTsMapperManager = attributeToTsMapperManager;
         this.attributeTypeEnumTsEnum = attributeTypeEnumTsEnum;
+        this.staticAttributeValueAccessorTsClass = staticAttributeValueAccessorTsClass;
+        this.dynamicDataDictionaryTsClass= dynamicDataDictionaryTsClass;
     }
 
     public TsFile complete(TsClassConstructed tsClass){
@@ -56,11 +64,6 @@ public class DataGeneratedTs<R extends FactoryBase<?,R>, L,  F extends FactoryBa
         ArrayList<TsMethod> methods = new ArrayList<>();
 
         data.internal().visitAttributesFlat((attributeVariableName, attribute) -> {
-            System.out.println(data.getClass()
-
-            );
-            System.out.println(attributeVariableName);
-            System.out.println(attribute);
             if (attributeToTsMapperManager.isMappable(attribute.getClass())) {
                 methods.add(getTsAttributeAccessor(attributeVariableName, attribute, tsClass));
             }
@@ -83,7 +86,7 @@ public class DataGeneratedTs<R extends FactoryBase<?,R>, L,  F extends FactoryBa
 
 
     private TsMethod createListAttributeAccessor(FactoryBase<?,?> data, TsClassConstructed tsClass) {
-        StringBuilder code=new StringBuilder("let result: AttributeAccessor<any,"+tsClass.getName()+">[]=[];\n");
+        StringBuilder code=new StringBuilder("let result: AttributeAccessor<any>[]=[];\n");
         data.internal().visitAttributesFlat((attributeVariableName, attribute) -> {
             if (attributeToTsMapperManager.isMappable(attribute.getClass())){
                 code.append("result.push(this.").append(attributeVariableName).append("Accessor());\n");
@@ -91,7 +94,7 @@ public class DataGeneratedTs<R extends FactoryBase<?,R>, L,  F extends FactoryBa
         });
         code.append("return result;");
         return new TsMethod("listAttributeAccessor", List.of(),
-                new TsMethodResult(new TsTypeArray(new TsTypeClass(attributeAccessorClass,new TsTypePrimitive("any"),new TsTypeClass(tsClass)))),new TsMethodCode(code.toString(), Set.of()),"public");
+                new TsMethodResult(new TsTypeArray(new TsTypeClass(attributeAccessorClass,new TsTypePrimitive("any")))),new TsMethodCode(code.toString(), Set.of()),"public");
     }
 
     private TsMethod createCollectChildren(FactoryBase<?,?> data) {
@@ -131,7 +134,7 @@ public class DataGeneratedTs<R extends FactoryBase<?,R>, L,  F extends FactoryBa
         });
 
         return new TsMethod("mapValuesFromJson",
-                List.of(new TsMethodParameter("json",new TsTypePrimitive("any")),new TsMethodParameter("idToDataMap",new TsTypePrimitive("any")), new TsMethodParameter("dataCreator",new TsTypeClass(dataCreatorTsClass))),
+                List.of(new TsMethodParameter("json",new TsTypePrimitive("any")),new TsMethodParameter("idToDataMap",new TsTypePrimitive("any")), new TsMethodParameter("dataCreator",new TsTypeClass(dataCreatorTsClass)), new TsMethodParameter("dynamicDataDictionary",new TsTypeClass(dynamicDataDictionaryTsClass))),
                 new TsMethodResultVoid(),new TsMethodCode(fromJsonCode.toString(), jsonImports),"protected");
     }
 
@@ -154,10 +157,10 @@ public class DataGeneratedTs<R extends FactoryBase<?,R>, L,  F extends FactoryBa
 
     private TsMethod getTsAttributeAccessor(String attributeVariableName, Attribute<?, ?> attribute, TsClassConstructed tsClassName) {
         TsType attributeTsType = getTsType(attribute);
-        String createCode="return new AttributeAccessor<"+ attributeTsType.construct()+","+tsClassName.getName()+">("+tsClassName.getName()+"."+attributeVariableName+"Metadata,this,\""+attributeVariableName+"\");";
+        String createCode="return new AttributeAccessor<"+ attributeTsType.construct()+">("+tsClassName.getName()+"."+attributeVariableName+"Metadata,new StaticAttributeValueAccessor<"+ attributeTsType.construct()+">(this,\""+attributeVariableName+"\"),\""+attributeVariableName+"\");";
         return new TsMethod(attributeVariableName+"Accessor",
                 List.of(),
-                new TsMethodResult(new TsTypeClass(attributeAccessorClass, attributeTsType, new TsTypeClass(tsClassName))),new TsMethodCode(createCode),"public");
+                new TsMethodResult(new TsTypeClass(attributeAccessorClass, attributeTsType)),new TsMethodCode(createCode,Set.of(staticAttributeValueAccessorTsClass)),"public");
     }
 
     private TsAttribute getTsAttributeMetadata(String attributeVariableName, Attribute<?, ?> attribute){
@@ -165,6 +168,9 @@ public class DataGeneratedTs<R extends FactoryBase<?,R>, L,  F extends FactoryBa
         constructorParameters.add(new TsValueString(attribute.internal_getPreferredLabelText(Locale.ENGLISH)));
         constructorParameters.add(new TsValueString(attribute.internal_getPreferredLabelText(Locale.GERMAN)));
         constructorParameters.add(new TsValueEnum(attributeToTsMapperManager.getAttributeTypeValue(attribute),attributeTypeEnumTsEnum));
+        constructorParameters.add(new TsValueBoolean(!attribute.internal_required()));
+        constructorParameters.add(new TsValueStringArray(getPossibleEnumValues(attribute)));
+
         return new TsAttribute(attributeVariableName+"Metadata", new TsTypeClass(attributeMetadataTsClass,getTsType(attribute)),true,true,true, constructorParameters);
     }
 
@@ -172,4 +178,13 @@ public class DataGeneratedTs<R extends FactoryBase<?,R>, L,  F extends FactoryBa
         return attributeToTsMapperManager.getTsType(attribute);
     }
 
+    private List<String> getPossibleEnumValues(Attribute<?, ?> attribute) {
+        if (attribute instanceof EnumAttribute){
+            return ((EnumAttribute<?>)attribute).internal_possibleEnumValues().stream().map(Enum::toString).collect(Collectors.toList());
+        }
+        if (attribute instanceof EnumListAttribute){
+            return ((EnumListAttribute<?>)attribute).internal_possibleEnumValues().stream().map(Enum::toString).collect(Collectors.toList());
+        }
+        return List.of();
+    }
 }

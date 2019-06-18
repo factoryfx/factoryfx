@@ -5,46 +5,69 @@ import {FactoryEditor} from "./FactoryEditor";
 
 export class AttributeEditorFactoryAttribute implements AttributeEditor{
 
-    constructor(private attributeAccessor: AttributeAccessor<any,any>, private inputId: string, private factoryEditor: FactoryEditor ) {
+    private editButton: HTMLButtonElement= document.createElement("button");
+    private input: HTMLInputElement= document.createElement("input");
 
+
+    constructor(private attributeAccessor: AttributeAccessor<any>, private inputId: string, private factoryEditor: FactoryEditor ) {
+        this.editButton.type="button";
+        this.editButton.textContent="edit";
+        this.editButton.className="btn btn-outline-secondary";
+
+        this.input.id=this.inputId.toString();
+        this.input.className="form-control";
+        this.input.readOnly=true;
     }
 
     create(): HTMLElement{
-        let value = this.attributeAccessor.getValue();
-
         let inputGroup: HTMLElement= document.createElement("div");
         inputGroup.setAttribute("class","input-group");
 
-        let input: HTMLInputElement= document.createElement("input");
-        input.setAttribute("id",this.inputId.toString());
-        input.setAttribute("class","form-control");
-        input.setAttribute("id",this.inputId);
-        input.setAttribute("readonly","readonly");
-
-        if (value){
-            input.setAttribute("value",value.getDisplayText());
-        } else {
-            input.setAttribute("value",'');
-        }
+        this.bindValue();
 
         let inputGroupAppend: HTMLElement= document.createElement("div");
-        inputGroupAppend.setAttribute("class","input-group-append");
+        inputGroupAppend.className="input-group-append";
 
-        let button: HTMLElement= document.createElement("button");
-        button.textContent="edit";
-        button.onclick=(e)=>{
-            this.factoryEditor.edit(value);
+        let removeButton: HTMLButtonElement= document.createElement("button");
+        removeButton.type="button";
+        removeButton.textContent="remove";
+        removeButton.onclick=(e)=>{
+            this.attributeAccessor.setValue(null);
+            this.bindValue();
         };
-        if (!value){
-            button.setAttribute("disabled","disabled");
-        }
-        button.setAttribute("class","btn btn-outline-secondary");
+        removeButton.disabled=!this.attributeAccessor.getAttributeMetadata().nullable();
+        removeButton.className="btn btn-outline-secondary";
 
-        inputGroupAppend.appendChild(button);
-        inputGroup.appendChild(input);
+
+
+        inputGroupAppend.appendChild(removeButton);
+        inputGroupAppend.appendChild(this.editButton);
+        inputGroup.appendChild(this.input);
         inputGroup.appendChild(inputGroupAppend);
 
         return inputGroup;
+    }
+
+    private bindValue() {
+        let value = this.attributeAccessor.getValue();
+        if (value) {
+            this.input.value = value.getDisplayText();
+        } else {
+            this.input.value = '';
+        }
+        this.editButton.onclick = (e) => {
+            this.factoryEditor.edit(value);
+        };
+        if (!value) {
+            this.editButton.disabled = true;
+        }
+
+        this.input.ondblclick=undefined;
+        if (value) {
+            this.input.ondblclick = (e) => {
+                this.factoryEditor.edit(value);
+            }
+        }
     }
 
 }

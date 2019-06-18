@@ -9,7 +9,7 @@ public class UserAwareRequest<T> {
 
     public final String user;
     public final String passwordHash;
-    @JsonTypeInfo(use=JsonTypeInfo.Id.MINIMAL_CLASS, include=JsonTypeInfo.As.PROPERTY, property="@class")
+    @JsonTypeInfo(use=JsonTypeInfo.Id.CLASS, include=JsonTypeInfo.As.PROPERTY, property="@class")
     public final T request;
 
     @JsonCreator

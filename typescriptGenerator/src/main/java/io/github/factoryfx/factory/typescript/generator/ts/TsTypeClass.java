@@ -11,6 +11,9 @@ public class TsTypeClass implements TsType {
     public TsTypeClass(TsFile type, TsType... genericParameters) {
         this.type = type;
         this.genericParameters = List.of(genericParameters);
+        if (type==null){
+            throw new IllegalArgumentException();
+        }
     }
 
     @Override

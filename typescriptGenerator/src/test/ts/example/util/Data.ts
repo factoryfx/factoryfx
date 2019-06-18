@@ -2,10 +2,11 @@
 //generated code don't edit manually
 import { DataCreator } from "./DataCreator";
 import {AttributeAccessor} from "./AttributeAccessor";
+import {DynamicDataDictionary} from "./DynamicDataDictionary";
 
 export abstract class Data  {
     private id: string;
-    private javaClass: string;
+    protected javaClass: string;
     private parent: Data;
 
     public getId(): string{
@@ -17,13 +18,17 @@ export abstract class Data  {
 
     //DataCreator passed as parameter cause cyclic dependency (ts compiles fine but error at runtime)
     public mapFromJsonFromRoot(json: any, dataCreator: DataCreator) {
-        this.mapFromJson(json,{},dataCreator);
+        this.mapFromJson(json,{},dataCreator,null);
     }
 
-    public mapFromJson(json: any, idToDataMap: any, dataCreator: DataCreator) {
+    public mapFromJsonFromRootDynamic(json: any, dynamicDataDictionary: DynamicDataDictionary) {
+        this.mapFromJson(json,{},null,dynamicDataDictionary);
+    }
+
+    public mapFromJson(json: any, idToDataMap: any, dataCreator: DataCreator, dynamicDataDictionary: DynamicDataDictionary) {
         this.id = json.id;
         this.javaClass = json['@class'];
-        this.mapValuesFromJson(json, idToDataMap,dataCreator);
+        this.mapValuesFromJson(json, idToDataMap,dataCreator,dynamicDataDictionary);
         idToDataMap[this.id]=this;
     }
 
@@ -43,9 +48,11 @@ export abstract class Data  {
         return result;
     }
 
-    protected abstract mapValuesFromJson(json: any, idToDataMap: any, dataCreator: DataCreator);//hook for generated code
+    protected abstract mapValuesFromJson(json: any, idToDataMap: any, dataCreator: DataCreator, dynamicDataDictionary: DynamicDataDictionary);//hook for generated code
     protected abstract mapValuesToJson(idToDataMap: any, result: any);//hook for generated code
     protected abstract collectChildrenFlat(): Array<Data>;//hook for generated code
+    abstract listAttributeAccessor(): AttributeAccessor<any>[];
+    public abstract getDisplayText(): string;
 
     protected mapAttributeValueToJson(value: any): any {
         if (value!==null && value!==undefined) {
@@ -75,7 +82,7 @@ export abstract class Data  {
         return result;
     }
 
-    public abstract getDisplayText();
+
 
     private collectChildrenRecursive(idToDataMap: any){
         if (this && !idToDataMap[this.getId()]) {
@@ -111,6 +118,7 @@ export abstract class Data  {
     }
 
     protected mapLocalDateToJson(date: Date): any{
+        console.log(date)
         let day = date.getDate();
         let monthIndex = date.getMonth()+1;
         let year = date.getFullYear();
@@ -151,10 +159,6 @@ export abstract class Data  {
         let milliseconds = date.getMilliseconds();
         return year+"-"+this.pad(monthIndex,2)+"-"+this.pad(day,2)+'T'+this.pad(hour,2)+':'+this.pad(min,2)+':'+this.pad(sec,2)+'.'+milliseconds;
     }
-
-    abstract listAttributeAccessor(): AttributeAccessor<any,any>[];
-
-
 
     public getPath(): Array<Data>{
         let result: Array<Data>  = [];

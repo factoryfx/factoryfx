@@ -6,14 +6,14 @@ import {AttributeEditor} from "./AttributeEditor";
 
 export class AttributeEditorFallback implements AttributeEditor{
 
-    constructor(private attributeAccessor: AttributeAccessor<any,any>, private inputId: string) {
+    constructor(private attributeAccessor: AttributeAccessor<any>, private inputId: string) {
 
     }
 
 
     create(): HTMLElement{
         let div: HTMLElement= document.createElement("div");
-        div.textContent='not editable: '+this.attributeAccessor.attributeMetadata.getType();
+        div.textContent='not editable: '+this.attributeAccessor.getAttributeMetadata().getType();
 
         return div;
     }

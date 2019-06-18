@@ -7,6 +7,8 @@ import io.github.factoryfx.factory.attribute.dependency.FactoryPolymorphicAttrib
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.HandlerCollection;
+import org.eclipse.jetty.util.thread.ExecutorThreadPool;
+import org.eclipse.jetty.util.thread.QueuedThreadPool;
 import org.eclipse.jetty.util.thread.ThreadPool;
 
 import java.util.logging.Level;
@@ -51,7 +53,7 @@ public class JettyServerFactory<R extends FactoryBase<?,R>> extends FactoryBase<
         configLifeCycle().setStarter(this::start);
         configLifeCycle().setDestroyer(this::stop);
 
-        config().setDisplayTextProvider(() -> "Microservice REST server");
+        config().setDisplayTextProvider(() -> "Jetty http server");
     }
 
     //api for customizing JettyServer creation
@@ -76,6 +78,10 @@ public class JettyServerFactory<R extends FactoryBase<?,R>> extends FactoryBase<
         for (HttpServerConnector connector : connectors.instances()) {
             connector.addToServer(server);
         }
+        if (server.getThreadPool() instanceof QueuedThreadPool && threadPool.get() instanceof ThreadPoolFactory){
+            ((QueuedThreadPool) server.getThreadPool()).setMaxThreads(((ThreadPoolFactory)threadPool.get()).poolSize.get());
+        }
+
     }
 
     /**
@@ -107,7 +113,7 @@ public class JettyServerFactory<R extends FactoryBase<?,R>> extends FactoryBase<
      */
     @SuppressWarnings("unchecked")
     public final <T extends FactoryBase> T getServlet(Class<T> clazz){
-        ServletContextHandlerFactory<R> servletContextHandler = (ServletContextHandlerFactory<R>) handler.get().handlers.get(GzipHandlerFactory.class).handler.get();
+        ServletContextHandlerFactory<R> servletContextHandler = (ServletContextHandlerFactory<R>) handler.get().handlers.get(ServletContextHandlerFactory.class);
         for (ServletAndPathFactory<R> servletAndPath : servletContextHandler.updatableRootServlet.get().servletAndPaths) {
             if (servletAndPath.servlet.get().getClass()==clazz){
                 return (T)servletAndPath.servlet.get();
@@ -122,7 +128,7 @@ public class JettyServerFactory<R extends FactoryBase<?,R>> extends FactoryBase<
 
     @SuppressWarnings("unchecked")
     private JerseyServletFactory<R> getDefaultJerseyServlet() {
-        ServletContextHandlerFactory<R> servletContextHandler = (ServletContextHandlerFactory<R>) handler.get().handlers.get(GzipHandlerFactory.class).handler.get();
+        ServletContextHandlerFactory<R> servletContextHandler = (ServletContextHandlerFactory<R>) handler.get().handlers.get(ServletContextHandlerFactory.class);
         ServletAndPathFactory<R> servletAndPathFactory = servletContextHandler.updatableRootServlet.get().servletAndPaths.get(0);
         return (JerseyServletFactory<R>) servletAndPathFactory.servlet.get();
     }

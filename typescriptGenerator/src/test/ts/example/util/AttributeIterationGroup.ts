@@ -3,9 +3,9 @@ import { AttributeAccessor } from "./AttributeAccessor";
 import { Data } from "./Data";
 
 export class AttributeIterationGroup<P extends Data> {
-    attributes: AttributeAccessor<any,P>[];
+    attributes: AttributeAccessor<any>[];
 
-    constructor(attributes: AttributeAccessor<any,P>[]) {
+    constructor(attributes: AttributeAccessor<any>[]) {
         this.attributes=attributes;
     }
 }

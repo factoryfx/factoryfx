@@ -15,7 +15,7 @@ import io.github.factoryfx.microservice.common.*;
 
 public class MicroserviceResource<R extends FactoryBase<?,R>,S> implements MicroserviceResourceApi<R,S> {
 
-    private final Microservice<?,R,S> microservice;
+    protected final Microservice<?,R,S> microservice;
     private final UserManagement userManagement;
 
     public MicroserviceResource(Microservice<?,R,S> microservice, UserManagement userManagement) {

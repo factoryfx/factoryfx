@@ -14,6 +14,8 @@ import {ExampleEnum} from "./example/generated/io/github/factoryfx/factory/types
 import {AttributeType} from "./example/util/AttributeType";
 import {ExampleData3} from "./example/config/io/github/factoryfx/factory/typescript/generator/data/ExampleData3";
 import {Data} from "./example/util/Data";
+import {DynamicDataDictionary} from "./example/util/DynamicDataDictionary";
+import {DynamicData} from "./example/util/DynamicData";
 
 
 suite('DataTest');// set user interface to QUnit in runconfig
@@ -144,93 +146,102 @@ test('collectChildren', () => {
 
 let exampleDataAll=
     `
-        {
-          "@class" : "io.github.factoryfx.factory.typescript.generator.data.ExampleDataAll",
-          "id" : "87097278-cd36-9247-34a9-c342febab4eb",
-          "byteArrayAttribute" : {
-            "v" : "Cuw="
-          },
-          "i18nAttribute" : {
-            "v" : {
-              "texts" : {
-                "de" : "textde",
-                "en" : "texten"
-              }
-            }
-          },
-          "encryptedStringAttribute" : {
-            "v" : {
-              "encryptedString" : "Sel5YnHBjWyOR1W5cjXtkw=="
-            }
-          },
-          "doubleAttribute" : {
-            "v" : 0.5
-          },
-          "byteAttribute" : {
-            "v" : 10
-          },
-          "booleanAttribute" : {
-            "v" : true
-          },
-          "localDateAttribute" : {
-            "v" : "2018-12-04"
-          },
-          "enumAttribute" : {
-            "v" : "VALUE1"
-          },
-          "charAttribute" : {
-            "v" : "a"
-          },
-          "longAttribute" : {
-            "v" : 9
-          },
-          "stringAttribute" : {
-            "v" : "text"
-          },
-          "integerAttribute" : {
-            "v" : 8
-          },
-          "localDateTimeAttribute" : {
-            "v" : "2018-12-04T17:25:58.7759195"
-          },
-          "localeAttribute" : {
-            "v" : "en"
-          },
-          "durationAttribute" : {
-            "v" : "PT4S"
-          },
-          "fileContentAttribute" : {
-            "v" : "Cuw="
-          },
-          "localTimeAttribute" : {
-            "v" : "17:25:58.7759195"
-          },
-          "shortAttribute" : {
-            "v" : 3
-          },
-          "passwordAttribute" : {
-            "v" : {
-              "encryptedString" : "/t7ccPKYps7m22YuhoOS+Q=="
-            }
-          },
-          "uriAttribute" : {
-            "v" : "http://google.de"
-          },
-          "bigDecimalAttribute" : {
-            "v" : 3
-          },
-          "floatAttribute" : {
-            "v" : 0.6
-          },
-          "stringListAttribute" : [ "ab", "cd" ],
-          "enumListAttribute" : [ "VALUE1", "VALUE2" ],
-          "instantAttribute" : {
-            "v" : "2018-12-12T10:24:55.026232600Z"
-          },
-          "bigIntegerAttribute" : {
-            "v" : 56756372572547253765427654376257643527656775656757576
-          }
-        }
+{
+  "@class" : "io.github.factoryfx.factory.typescript.generator.data.ExampleDataAll",
+  "id" : "85ab58de-3e29-9cb4-8328-74ff9cf86add",
+  "byteArrayAttribute" : {
+    "v" : "Cuw="
+  },
+  "i18nAttribute" : {
+    "v" : {
+      "texts" : {
+        "de" : "textde",
+        "en" : "texten"
+      }
+    }
+  },
+  "encryptedStringAttribute" : {
+    "v" : {
+      "encryptedString" : "JLCcF/UkAUy5nDmyXctanw=="
+    }
+  },
+  "doubleAttribute" : {
+    "v" : 0.5
+  },
+  "byteAttribute" : {
+    "v" : 10
+  },
+  "booleanAttribute" : {
+    "v" : true
+  },
+  "localDateAttribute" : {
+    "v" : "2019-06-13"
+  },
+  "enumAttribute" : {
+    "v" : "VALUE1"
+  },
+  "charAttribute" : {
+    "v" : "a"
+  },
+  "longAttribute" : {
+    "v" : 9
+  },
+  "stringAttribute" : {
+    "v" : "text"
+  },
+  "integerAttribute" : {
+    "v" : 8
+  },
+  "localDateTimeAttribute" : {
+    "v" : "2018-12-04T17:25:58.7759195"
+  },
+  "localeAttribute" : {
+    "v" : "en"
+  },
+  "durationAttribute" : {
+    "v" : "PT4S"
+  },
+  "fileContentAttribute" : {
+    "v" : "Cuw="
+  },
+  "localTimeAttribute" : {
+    "v" : "14:23:22.9523663"
+  },
+  "shortAttribute" : {
+    "v" : 3
+  },
+  "passwordAttribute" : {
+    "v" : {
+      "encryptedString" : "jVhkLm8JxlJ3w4pPLdXWQA=="
+    }
+  },
+  "uriAttribute" : {
+    "v" : "http://google.de"
+  },
+  "bigDecimalAttribute" : {
+    "v" : 3
+  },
+  "floatAttribute" : {
+    "v" : 0.6
+  },
+  "stringListAttribute" : [ "ab", "cd" ],
+  "enumListAttribute" : [ "VALUE1", "VALUE2" ],
+  "instantAttribute" : {
+    "v" : "2018-12-12T10:24:55.026232600Z"
+  },
+  "bigIntegerAttribute" : {
+    "v" : 56756372572547253765427654376257643527656775656757576
+  },
+  "factoryPolymorphicAttribute" : {
+    "v" : {
+      "@class" : "io.github.factoryfx.factory.typescript.generator.data.ExampleData",
+      "id" : "18a0c2b1-d6cb-3450-2289-6323c1fe944c",
+      "attribute" : { },
+      "ref" : { },
+      "refList" : [ ]
+    }
+  }
+}
     `;
 
 function assertJsonEquals(exampleDataAllJson: any , data: ExampleDataAll){
@@ -242,7 +253,7 @@ function assertJsonEquals(exampleDataAllJson: any , data: ExampleDataAll){
     expect(actual).to.equal(expected);
 }
 
-function assertExampleDataAllEquals(data: ExampleDataAll){
+function assertExampleDataAllEquals(data: any){
     assertJsonEquals(JSON.parse(exampleDataAll),data);
 }
 
@@ -341,8 +352,8 @@ test('test_factories', () => {
 test('test_attribute_type', () => {
     let data: ExampleDataAll = new ExampleDataAll();
     data.mapFromJsonFromRoot(JSON.parse(exampleDataAll),new DataCreator());
-    expect(data.stringAttributeAccessor().attributeMetadata.getType()).to.equal(AttributeType.StringAttribute);
-    expect(data.integerAttributeAccessor().attributeMetadata.getType()).to.equal(AttributeType.IntegerAttribute);
+    expect(data.stringAttributeAccessor().getAttributeMetadata().getType()).to.equal(AttributeType.StringAttribute);
+    expect(data.integerAttributeAccessor().getAttributeMetadata().getType()).to.equal(AttributeType.IntegerAttribute);
 });
 
 test('test_addBackReferences', () => {
@@ -385,4 +396,348 @@ test('test_label', () => {
     expect(data.refAccessor().getLabelText('en')).to.equal('ref');
 
 
+});
+
+test('test_factoryPolymorphicAttribute', () => {
+    let data: ExampleDataAll = new ExampleDataAll();
+    data.mapFromJsonFromRoot(JSON.parse(exampleDataAll),new DataCreator());
+    expect(data.factoryPolymorphicAttribute instanceof ExampleData).to.equal(true);
+
+});
+
+test('test_nullable', () => {
+    let data: ExampleData = new ExampleData();
+    expect(data.refAccessor().getAttributeMetadata().nullable()).to.equal(true);
+
+});
+
+
+test('test_accessor', () => {
+    let data: ExampleData = new ExampleData();
+    data.attribute='abc';
+    expect(data.attributeAccessor().getValue()).to.equal('abc');
+
+});
+
+let dictionaryExample = `
+{
+  "classNameToItem" : {
+    "io.github.factoryfx.factory.typescript.generator.data.ExampleData3" : {
+      "attributeNameToItem" : {
+        "attribute" : {
+          "type" : "StringAttribute",
+          "nullable" : false,
+          "en" : "",
+          "de" : ""
+        }
+      }
+    },
+    "io.github.factoryfx.factory.typescript.generator.data.ExampleData" : {
+      "attributeNameToItem" : {
+        "refList" : {
+          "type" : "FactoryListAttribute",
+          "nullable" : true,
+          "en" : "",
+          "de" : ""
+        },
+        "ref" : {
+          "type" : "FactoryAttribute",
+          "nullable" : true,
+          "en" : "",
+          "de" : ""
+        },
+        "attribute" : {
+          "type" : "StringAttribute",
+          "nullable" : false,
+          "en" : "labelEn\\"'\\\\",
+          "de" : "labelDe"
+        }
+      }
+    },
+    "io.github.factoryfx.factory.typescript.generator.data.ExampleData2" : {
+      "attributeNameToItem" : {
+        "ref" : {
+          "type" : "FactoryAttribute",
+          "nullable" : false,
+          "en" : "",
+          "de" : ""
+        },
+        "attribute" : {
+          "type" : "StringAttribute",
+          "nullable" : false,
+          "en" : "",
+          "de" : ""
+        }
+      }
+    }
+  }
+}
+
+`;
+
+
+test('test_DynamicData', () => {
+    let dynamicDataDictionary: DynamicDataDictionary = new DynamicDataDictionary();
+    dynamicDataDictionary.mapFromJson(JSON.parse(dictionaryExample));
+
+    let root: DynamicData = new DynamicData();
+    root.mapFromJsonFromRootDynamic(JSON.parse(exampleDataJson), dynamicDataDictionary);
+
+    expect(root.listAttributeAccessor().length).to.equal(3);
+    expect(root.listAttributeAccessor()[0].getValue()).to.equal("123");
+    expect(root.listAttributeAccessor()[1].getValue() instanceof DynamicData).to.equal(true );
+    expect(root.listAttributeAccessor()[2].getValue().length).to.equal(2);
+
+
+});
+
+test('test_DynamicData_setvalue', () => {
+    let dynamicDataDictionary: DynamicDataDictionary = new DynamicDataDictionary();
+    dynamicDataDictionary.mapFromJson(JSON.parse(dictionaryExample));
+    let root: DynamicData = new DynamicData();
+    root.mapFromJsonFromRootDynamic(JSON.parse(exampleDataJson), dynamicDataDictionary);
+    root.listAttributeAccessor()[0].setValue("abc")
+    expect(root.listAttributeAccessor()[0].getValue()).to.equal("abc");
+
+});
+
+test('test_DynamicData_mapValuesToJson', ()=>{
+    let dynamicDataDictionary: DynamicDataDictionary = new DynamicDataDictionary();
+    dynamicDataDictionary.mapFromJson(JSON.parse(dictionaryExample));
+
+    let root: DynamicData = new DynamicData();
+    root.mapFromJsonFromRootDynamic(JSON.parse(exampleDataJson), dynamicDataDictionary);
+    let json:any = root.mapToJsonFromRoot();
+
+    let stringifyExampleDataJson = JSON.stringify(JSON.parse(exampleDataJson), null, 2);
+    let stringifyResult = JSON.stringify(json, null, 2);
+    expect(stringifyResult).to.equal(stringifyExampleDataJson);
+});
+
+let dictionaryDataAlExample=`
+{
+  "classNameToItem" : {
+    "io.github.factoryfx.factory.typescript.generator.data.ExampleDataAll" : {
+      "attributeNameToItem" : {
+        "byteAttribute" : {
+          "type" : "ByteAttribute",
+          "nullable" : false,
+          "en" : "",
+          "de" : ""
+        },
+        "byteArrayAttribute" : {
+          "type" : "ByteArrayAttribute",
+          "nullable" : false,
+          "en" : "",
+          "de" : ""
+        },
+        "bigIntegerAttribute" : {
+          "type" : "BigIntegerAttribute",
+          "nullable" : false,
+          "en" : "",
+          "de" : ""
+        },
+        "localeAttribute" : {
+          "type" : "LocaleAttribute",
+          "nullable" : false,
+          "en" : "",
+          "de" : ""
+        },
+        "factoryPolymorphicAttribute" : {
+          "type" : "FactoryPolymorphicAttribute",
+          "nullable" : false,
+          "en" : "",
+          "de" : ""
+        },
+        "charAttribute" : {
+          "type" : "CharAttribute",
+          "nullable" : false,
+          "en" : "",
+          "de" : ""
+        },
+        "instantAttribute" : {
+          "type" : "InstantAttribute",
+          "nullable" : false,
+          "en" : "",
+          "de" : ""
+        },
+        "enumAttribute" : {
+          "type" : "EnumAttribute",
+          "nullable" : false,
+          "en" : "",
+          "de" : ""
+        },
+        "integerAttribute" : {
+          "type" : "IntegerAttribute",
+          "nullable" : false,
+          "en" : "",
+          "de" : ""
+        },
+        "bigDecimalAttribute" : {
+          "type" : "BigDecimalAttribute",
+          "nullable" : false,
+          "en" : "",
+          "de" : ""
+        },
+        "i18nAttribute" : {
+          "type" : "I18nAttribute",
+          "nullable" : false,
+          "en" : "",
+          "de" : ""
+        },
+        "longAttribute" : {
+          "type" : "LongAttribute",
+          "nullable" : false,
+          "en" : "",
+          "de" : ""
+        },
+        "durationAttribute" : {
+          "type" : "DurationAttribute",
+          "nullable" : false,
+          "en" : "",
+          "de" : ""
+        },
+        "localTimeAttribute" : {
+          "type" : "LocalTimeAttribute",
+          "nullable" : false,
+          "en" : "",
+          "de" : ""
+        },
+        "stringAttribute" : {
+          "type" : "StringAttribute",
+          "nullable" : false,
+          "en" : "",
+          "de" : ""
+        },
+        "localDateAttribute" : {
+          "type" : "LocalDateAttribute",
+          "nullable" : false,
+          "en" : "",
+          "de" : ""
+        },
+        "booleanAttribute" : {
+          "type" : "BooleanAttribute",
+          "nullable" : true,
+          "en" : "",
+          "de" : ""
+        },
+        "stringListAttribute" : {
+          "type" : "StringListAttribute",
+          "nullable" : false,
+          "en" : "",
+          "de" : ""
+        },
+        "encryptedStringAttribute" : {
+          "type" : "EncryptedStringAttribute",
+          "nullable" : false,
+          "en" : "",
+          "de" : ""
+        },
+        "uriAttribute" : {
+          "type" : "URIAttribute",
+          "nullable" : false,
+          "en" : "",
+          "de" : ""
+        },
+        "objectValueAttribute" : {
+          "type" : "ObjectValueAttribute",
+          "nullable" : false,
+          "en" : "",
+          "de" : ""
+        },
+        "floatAttribute" : {
+          "type" : "FloatAttribute",
+          "nullable" : false,
+          "en" : "",
+          "de" : ""
+        },
+        "enumListAttribute" : {
+          "type" : "EnumListAttribute",
+          "nullable" : false,
+          "en" : "",
+          "de" : ""
+        },
+        "doubleAttribute" : {
+          "type" : "DoubleAttribute",
+          "nullable" : false,
+          "en" : "",
+          "de" : ""
+        },
+        "passwordAttribute" : {
+          "type" : "PasswordAttribute",
+          "nullable" : false,
+          "en" : "",
+          "de" : ""
+        },
+        "localDateTimeAttribute" : {
+          "type" : "LocalDateTimeAttribute",
+          "nullable" : false,
+          "en" : "",
+          "de" : ""
+        },
+        "fileContentAttribute" : {
+          "type" : "FileContentAttribute",
+          "nullable" : false,
+          "en" : "",
+          "de" : ""
+        },
+        "shortAttribute" : {
+          "type" : "ShortAttribute",
+          "nullable" : false,
+          "en" : "",
+          "de" : ""
+        }
+      }
+    },
+    "io.github.factoryfx.factory.typescript.generator.data.ExampleData" : {
+      "attributeNameToItem" : {
+        "refList" : {
+          "type" : "FactoryListAttribute",
+          "nullable" : true,
+          "en" : "",
+          "de" : ""
+        },
+        "ref" : {
+          "type" : "FactoryAttribute",
+          "nullable" : true,
+          "en" : "",
+          "de" : ""
+        },
+        "attribute" : {
+          "type" : "StringAttribute",
+          "nullable" : false,
+          "en" : "labelEn\\"'\\\\",
+          "de" : "labelDe"
+        }
+      }
+    },
+    "io.github.factoryfx.factory.typescript.generator.data.ExampleData2" : {
+      "attributeNameToItem" : {
+        "ref" : {
+          "type" : "FactoryAttribute",
+          "nullable" : false,
+          "en" : "",
+          "de" : ""
+        },
+        "attribute" : {
+          "type" : "StringAttribute",
+          "nullable" : false,
+          "en" : "",
+          "de" : ""
+        }
+      }
+    }
+  }
+}
+    `;
+
+test('test_DynamicData_all_attributes', () => {
+    let dynamicDataDictionary: DynamicDataDictionary = new DynamicDataDictionary();
+    dynamicDataDictionary.mapFromJson(JSON.parse(dictionaryDataAlExample));
+
+    let root: DynamicData = new DynamicData();
+    root.mapFromJsonFromRootDynamic(JSON.parse(exampleDataAll), dynamicDataDictionary);
+
+
+    assertExampleDataAllEquals(root);
 });

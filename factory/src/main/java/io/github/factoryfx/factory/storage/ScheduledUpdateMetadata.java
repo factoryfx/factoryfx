@@ -18,7 +18,6 @@ import java.util.concurrent.TimeUnit;
  * Note: this class has a natural ordering that is inconsistent with equals
  */
 public class ScheduledUpdateMetadata implements Delayed {
-    @JsonTypeInfo(use=JsonTypeInfo.Id.MINIMAL_CLASS, include=JsonTypeInfo.As.PROPERTY, property="@class")
     public final String id;
     /**id for the complete configuration, NOT any factory id*/
     public final String user;

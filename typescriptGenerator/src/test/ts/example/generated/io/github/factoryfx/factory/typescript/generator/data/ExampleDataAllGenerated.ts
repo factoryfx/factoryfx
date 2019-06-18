@@ -1,8 +1,10 @@
 //generated code don't edit manually
 import { Data } from "../../../../../../../../util/Data";
 import { AttributeAccessor } from "../../../../../../../../util/AttributeAccessor";
+import { StaticAttributeValueAccessor } from "../../../../../../../../util/StaticAttributeValueAccessor";
 import { ExampleEnum } from "./ExampleEnum";
 import { DataCreator } from "../../../../../../../../util/DataCreator";
+import { DynamicDataDictionary } from "../../../../../../../../util/DynamicDataDictionary";
 import { AttributeType } from "../../../../../../../../util/AttributeType";
 import { AttributeMetadata } from "../../../../../../../../util/AttributeMetadata";
 
@@ -34,138 +36,144 @@ export abstract class ExampleDataAllGenerated  extends Data {
     public enumListAttribute: ExampleEnum[] = null;
     public instantAttribute: Date = null;
     public bigIntegerAttribute: bigint = null;
-    public static readonly byteArrayAttributeMetadata: AttributeMetadata<string>= new AttributeMetadata<string>('','',AttributeType.ByteArrayAttribute);
-    public static readonly i18nAttributeMetadata: AttributeMetadata<string>= new AttributeMetadata<string>('','',AttributeType.I18nAttribute);
-    public static readonly encryptedStringAttributeMetadata: AttributeMetadata<string>= new AttributeMetadata<string>('','',AttributeType.EncryptedStringAttribute);
-    public static readonly doubleAttributeMetadata: AttributeMetadata<number>= new AttributeMetadata<number>('','',AttributeType.DoubleAttribute);
-    public static readonly byteAttributeMetadata: AttributeMetadata<number>= new AttributeMetadata<number>('','',AttributeType.ByteAttribute);
-    public static readonly booleanAttributeMetadata: AttributeMetadata<boolean>= new AttributeMetadata<boolean>('','',AttributeType.BooleanAttribute);
-    public static readonly localDateAttributeMetadata: AttributeMetadata<Date>= new AttributeMetadata<Date>('','',AttributeType.LocalDateAttribute);
-    public static readonly enumAttributeMetadata: AttributeMetadata<ExampleEnum>= new AttributeMetadata<ExampleEnum>('','',AttributeType.EnumAttribute);
-    public static readonly charAttributeMetadata: AttributeMetadata<string>= new AttributeMetadata<string>('','',AttributeType.CharAttribute);
-    public static readonly longAttributeMetadata: AttributeMetadata<number>= new AttributeMetadata<number>('','',AttributeType.LongAttribute);
-    public static readonly stringAttributeMetadata: AttributeMetadata<string>= new AttributeMetadata<string>('','',AttributeType.StringAttribute);
-    public static readonly integerAttributeMetadata: AttributeMetadata<number>= new AttributeMetadata<number>('','',AttributeType.IntegerAttribute);
-    public static readonly localDateTimeAttributeMetadata: AttributeMetadata<Date>= new AttributeMetadata<Date>('','',AttributeType.LocalDateTimeAttribute);
-    public static readonly localeAttributeMetadata: AttributeMetadata<string>= new AttributeMetadata<string>('','',AttributeType.LocaleAttribute);
-    public static readonly durationAttributeMetadata: AttributeMetadata<string>= new AttributeMetadata<string>('','',AttributeType.DurationAttribute);
-    public static readonly fileContentAttributeMetadata: AttributeMetadata<string>= new AttributeMetadata<string>('','',AttributeType.FileContentAttribute);
-    public static readonly localTimeAttributeMetadata: AttributeMetadata<string>= new AttributeMetadata<string>('','',AttributeType.LocalTimeAttribute);
-    public static readonly shortAttributeMetadata: AttributeMetadata<number>= new AttributeMetadata<number>('','',AttributeType.ShortAttribute);
-    public static readonly passwordAttributeMetadata: AttributeMetadata<string>= new AttributeMetadata<string>('','',AttributeType.PasswordAttribute);
-    public static readonly uriAttributeMetadata: AttributeMetadata<string>= new AttributeMetadata<string>('','',AttributeType.URIAttribute);
-    public static readonly bigDecimalAttributeMetadata: AttributeMetadata<string>= new AttributeMetadata<string>('','',AttributeType.BigDecimalAttribute);
-    public static readonly floatAttributeMetadata: AttributeMetadata<number>= new AttributeMetadata<number>('','',AttributeType.FloatAttribute);
-    public static readonly stringListAttributeMetadata: AttributeMetadata<string[]>= new AttributeMetadata<string[]>('','',AttributeType.StringListAttribute);
-    public static readonly enumListAttributeMetadata: AttributeMetadata<ExampleEnum[]>= new AttributeMetadata<ExampleEnum[]>('','',AttributeType.EnumListAttribute);
-    public static readonly instantAttributeMetadata: AttributeMetadata<Date>= new AttributeMetadata<Date>('','',AttributeType.InstantAttribute);
-    public static readonly bigIntegerAttributeMetadata: AttributeMetadata<bigint>= new AttributeMetadata<bigint>('','',AttributeType.BigIntegerAttribute);
+    public factoryPolymorphicAttribute: Data = null;
+    public static readonly byteArrayAttributeMetadata: AttributeMetadata<string>= new AttributeMetadata<string>('','',AttributeType.ByteArrayAttribute,false,[]);
+    public static readonly i18nAttributeMetadata: AttributeMetadata<string>= new AttributeMetadata<string>('','',AttributeType.I18nAttribute,false,[]);
+    public static readonly encryptedStringAttributeMetadata: AttributeMetadata<string>= new AttributeMetadata<string>('','',AttributeType.EncryptedStringAttribute,false,[]);
+    public static readonly doubleAttributeMetadata: AttributeMetadata<number>= new AttributeMetadata<number>('','',AttributeType.DoubleAttribute,false,[]);
+    public static readonly byteAttributeMetadata: AttributeMetadata<number>= new AttributeMetadata<number>('','',AttributeType.ByteAttribute,false,[]);
+    public static readonly booleanAttributeMetadata: AttributeMetadata<boolean>= new AttributeMetadata<boolean>('','',AttributeType.BooleanAttribute,true,[]);
+    public static readonly localDateAttributeMetadata: AttributeMetadata<Date>= new AttributeMetadata<Date>('','',AttributeType.LocalDateAttribute,false,[]);
+    public static readonly enumAttributeMetadata: AttributeMetadata<ExampleEnum>= new AttributeMetadata<ExampleEnum>('','',AttributeType.EnumAttribute,false,['VALUE1','VALUE2']);
+    public static readonly charAttributeMetadata: AttributeMetadata<string>= new AttributeMetadata<string>('','',AttributeType.CharAttribute,false,[]);
+    public static readonly longAttributeMetadata: AttributeMetadata<number>= new AttributeMetadata<number>('','',AttributeType.LongAttribute,false,[]);
+    public static readonly stringAttributeMetadata: AttributeMetadata<string>= new AttributeMetadata<string>('','',AttributeType.StringAttribute,false,[]);
+    public static readonly integerAttributeMetadata: AttributeMetadata<number>= new AttributeMetadata<number>('','',AttributeType.IntegerAttribute,false,[]);
+    public static readonly localDateTimeAttributeMetadata: AttributeMetadata<Date>= new AttributeMetadata<Date>('','',AttributeType.LocalDateTimeAttribute,false,[]);
+    public static readonly localeAttributeMetadata: AttributeMetadata<string>= new AttributeMetadata<string>('','',AttributeType.LocaleAttribute,false,[]);
+    public static readonly durationAttributeMetadata: AttributeMetadata<string>= new AttributeMetadata<string>('','',AttributeType.DurationAttribute,false,[]);
+    public static readonly fileContentAttributeMetadata: AttributeMetadata<string>= new AttributeMetadata<string>('','',AttributeType.FileContentAttribute,false,[]);
+    public static readonly localTimeAttributeMetadata: AttributeMetadata<string>= new AttributeMetadata<string>('','',AttributeType.LocalTimeAttribute,false,[]);
+    public static readonly shortAttributeMetadata: AttributeMetadata<number>= new AttributeMetadata<number>('','',AttributeType.ShortAttribute,false,[]);
+    public static readonly passwordAttributeMetadata: AttributeMetadata<string>= new AttributeMetadata<string>('','',AttributeType.PasswordAttribute,false,[]);
+    public static readonly uriAttributeMetadata: AttributeMetadata<string>= new AttributeMetadata<string>('','',AttributeType.URIAttribute,false,[]);
+    public static readonly bigDecimalAttributeMetadata: AttributeMetadata<string>= new AttributeMetadata<string>('','',AttributeType.BigDecimalAttribute,false,[]);
+    public static readonly floatAttributeMetadata: AttributeMetadata<number>= new AttributeMetadata<number>('','',AttributeType.FloatAttribute,false,[]);
+    public static readonly stringListAttributeMetadata: AttributeMetadata<string[]>= new AttributeMetadata<string[]>('','',AttributeType.StringListAttribute,false,[]);
+    public static readonly enumListAttributeMetadata: AttributeMetadata<ExampleEnum[]>= new AttributeMetadata<ExampleEnum[]>('','',AttributeType.EnumListAttribute,false,['VALUE1','VALUE2']);
+    public static readonly instantAttributeMetadata: AttributeMetadata<Date>= new AttributeMetadata<Date>('','',AttributeType.InstantAttribute,false,[]);
+    public static readonly bigIntegerAttributeMetadata: AttributeMetadata<bigint>= new AttributeMetadata<bigint>('','',AttributeType.BigIntegerAttribute,false,[]);
+    public static readonly factoryPolymorphicAttributeMetadata: AttributeMetadata<Data>= new AttributeMetadata<Data>('','',AttributeType.FactoryPolymorphicAttribute,false,[]);
 
-    public byteArrayAttributeAccessor(): AttributeAccessor<string,ExampleDataAllGenerated>{
-        return new AttributeAccessor<string,ExampleDataAllGenerated>(ExampleDataAllGenerated.byteArrayAttributeMetadata,this,"byteArrayAttribute");
+    public byteArrayAttributeAccessor(): AttributeAccessor<string>{
+        return new AttributeAccessor<string>(ExampleDataAllGenerated.byteArrayAttributeMetadata,new StaticAttributeValueAccessor<string>(this,"byteArrayAttribute"),"byteArrayAttribute");
     }
 
-    public i18nAttributeAccessor(): AttributeAccessor<string,ExampleDataAllGenerated>{
-        return new AttributeAccessor<string,ExampleDataAllGenerated>(ExampleDataAllGenerated.i18nAttributeMetadata,this,"i18nAttribute");
+    public i18nAttributeAccessor(): AttributeAccessor<string>{
+        return new AttributeAccessor<string>(ExampleDataAllGenerated.i18nAttributeMetadata,new StaticAttributeValueAccessor<string>(this,"i18nAttribute"),"i18nAttribute");
     }
 
-    public encryptedStringAttributeAccessor(): AttributeAccessor<string,ExampleDataAllGenerated>{
-        return new AttributeAccessor<string,ExampleDataAllGenerated>(ExampleDataAllGenerated.encryptedStringAttributeMetadata,this,"encryptedStringAttribute");
+    public encryptedStringAttributeAccessor(): AttributeAccessor<string>{
+        return new AttributeAccessor<string>(ExampleDataAllGenerated.encryptedStringAttributeMetadata,new StaticAttributeValueAccessor<string>(this,"encryptedStringAttribute"),"encryptedStringAttribute");
     }
 
-    public doubleAttributeAccessor(): AttributeAccessor<number,ExampleDataAllGenerated>{
-        return new AttributeAccessor<number,ExampleDataAllGenerated>(ExampleDataAllGenerated.doubleAttributeMetadata,this,"doubleAttribute");
+    public doubleAttributeAccessor(): AttributeAccessor<number>{
+        return new AttributeAccessor<number>(ExampleDataAllGenerated.doubleAttributeMetadata,new StaticAttributeValueAccessor<number>(this,"doubleAttribute"),"doubleAttribute");
     }
 
-    public byteAttributeAccessor(): AttributeAccessor<number,ExampleDataAllGenerated>{
-        return new AttributeAccessor<number,ExampleDataAllGenerated>(ExampleDataAllGenerated.byteAttributeMetadata,this,"byteAttribute");
+    public byteAttributeAccessor(): AttributeAccessor<number>{
+        return new AttributeAccessor<number>(ExampleDataAllGenerated.byteAttributeMetadata,new StaticAttributeValueAccessor<number>(this,"byteAttribute"),"byteAttribute");
     }
 
-    public booleanAttributeAccessor(): AttributeAccessor<boolean,ExampleDataAllGenerated>{
-        return new AttributeAccessor<boolean,ExampleDataAllGenerated>(ExampleDataAllGenerated.booleanAttributeMetadata,this,"booleanAttribute");
+    public booleanAttributeAccessor(): AttributeAccessor<boolean>{
+        return new AttributeAccessor<boolean>(ExampleDataAllGenerated.booleanAttributeMetadata,new StaticAttributeValueAccessor<boolean>(this,"booleanAttribute"),"booleanAttribute");
     }
 
-    public localDateAttributeAccessor(): AttributeAccessor<Date,ExampleDataAllGenerated>{
-        return new AttributeAccessor<Date,ExampleDataAllGenerated>(ExampleDataAllGenerated.localDateAttributeMetadata,this,"localDateAttribute");
+    public localDateAttributeAccessor(): AttributeAccessor<Date>{
+        return new AttributeAccessor<Date>(ExampleDataAllGenerated.localDateAttributeMetadata,new StaticAttributeValueAccessor<Date>(this,"localDateAttribute"),"localDateAttribute");
     }
 
-    public enumAttributeAccessor(): AttributeAccessor<ExampleEnum,ExampleDataAllGenerated>{
-        return new AttributeAccessor<ExampleEnum,ExampleDataAllGenerated>(ExampleDataAllGenerated.enumAttributeMetadata,this,"enumAttribute");
+    public enumAttributeAccessor(): AttributeAccessor<ExampleEnum>{
+        return new AttributeAccessor<ExampleEnum>(ExampleDataAllGenerated.enumAttributeMetadata,new StaticAttributeValueAccessor<ExampleEnum>(this,"enumAttribute"),"enumAttribute");
     }
 
-    public charAttributeAccessor(): AttributeAccessor<string,ExampleDataAllGenerated>{
-        return new AttributeAccessor<string,ExampleDataAllGenerated>(ExampleDataAllGenerated.charAttributeMetadata,this,"charAttribute");
+    public charAttributeAccessor(): AttributeAccessor<string>{
+        return new AttributeAccessor<string>(ExampleDataAllGenerated.charAttributeMetadata,new StaticAttributeValueAccessor<string>(this,"charAttribute"),"charAttribute");
     }
 
-    public longAttributeAccessor(): AttributeAccessor<number,ExampleDataAllGenerated>{
-        return new AttributeAccessor<number,ExampleDataAllGenerated>(ExampleDataAllGenerated.longAttributeMetadata,this,"longAttribute");
+    public longAttributeAccessor(): AttributeAccessor<number>{
+        return new AttributeAccessor<number>(ExampleDataAllGenerated.longAttributeMetadata,new StaticAttributeValueAccessor<number>(this,"longAttribute"),"longAttribute");
     }
 
-    public stringAttributeAccessor(): AttributeAccessor<string,ExampleDataAllGenerated>{
-        return new AttributeAccessor<string,ExampleDataAllGenerated>(ExampleDataAllGenerated.stringAttributeMetadata,this,"stringAttribute");
+    public stringAttributeAccessor(): AttributeAccessor<string>{
+        return new AttributeAccessor<string>(ExampleDataAllGenerated.stringAttributeMetadata,new StaticAttributeValueAccessor<string>(this,"stringAttribute"),"stringAttribute");
     }
 
-    public integerAttributeAccessor(): AttributeAccessor<number,ExampleDataAllGenerated>{
-        return new AttributeAccessor<number,ExampleDataAllGenerated>(ExampleDataAllGenerated.integerAttributeMetadata,this,"integerAttribute");
+    public integerAttributeAccessor(): AttributeAccessor<number>{
+        return new AttributeAccessor<number>(ExampleDataAllGenerated.integerAttributeMetadata,new StaticAttributeValueAccessor<number>(this,"integerAttribute"),"integerAttribute");
     }
 
-    public localDateTimeAttributeAccessor(): AttributeAccessor<Date,ExampleDataAllGenerated>{
-        return new AttributeAccessor<Date,ExampleDataAllGenerated>(ExampleDataAllGenerated.localDateTimeAttributeMetadata,this,"localDateTimeAttribute");
+    public localDateTimeAttributeAccessor(): AttributeAccessor<Date>{
+        return new AttributeAccessor<Date>(ExampleDataAllGenerated.localDateTimeAttributeMetadata,new StaticAttributeValueAccessor<Date>(this,"localDateTimeAttribute"),"localDateTimeAttribute");
     }
 
-    public localeAttributeAccessor(): AttributeAccessor<string,ExampleDataAllGenerated>{
-        return new AttributeAccessor<string,ExampleDataAllGenerated>(ExampleDataAllGenerated.localeAttributeMetadata,this,"localeAttribute");
+    public localeAttributeAccessor(): AttributeAccessor<string>{
+        return new AttributeAccessor<string>(ExampleDataAllGenerated.localeAttributeMetadata,new StaticAttributeValueAccessor<string>(this,"localeAttribute"),"localeAttribute");
     }
 
-    public durationAttributeAccessor(): AttributeAccessor<string,ExampleDataAllGenerated>{
-        return new AttributeAccessor<string,ExampleDataAllGenerated>(ExampleDataAllGenerated.durationAttributeMetadata,this,"durationAttribute");
+    public durationAttributeAccessor(): AttributeAccessor<string>{
+        return new AttributeAccessor<string>(ExampleDataAllGenerated.durationAttributeMetadata,new StaticAttributeValueAccessor<string>(this,"durationAttribute"),"durationAttribute");
     }
 
-    public fileContentAttributeAccessor(): AttributeAccessor<string,ExampleDataAllGenerated>{
-        return new AttributeAccessor<string,ExampleDataAllGenerated>(ExampleDataAllGenerated.fileContentAttributeMetadata,this,"fileContentAttribute");
+    public fileContentAttributeAccessor(): AttributeAccessor<string>{
+        return new AttributeAccessor<string>(ExampleDataAllGenerated.fileContentAttributeMetadata,new StaticAttributeValueAccessor<string>(this,"fileContentAttribute"),"fileContentAttribute");
     }
 
-    public localTimeAttributeAccessor(): AttributeAccessor<string,ExampleDataAllGenerated>{
-        return new AttributeAccessor<string,ExampleDataAllGenerated>(ExampleDataAllGenerated.localTimeAttributeMetadata,this,"localTimeAttribute");
+    public localTimeAttributeAccessor(): AttributeAccessor<string>{
+        return new AttributeAccessor<string>(ExampleDataAllGenerated.localTimeAttributeMetadata,new StaticAttributeValueAccessor<string>(this,"localTimeAttribute"),"localTimeAttribute");
     }
 
-    public shortAttributeAccessor(): AttributeAccessor<number,ExampleDataAllGenerated>{
-        return new AttributeAccessor<number,ExampleDataAllGenerated>(ExampleDataAllGenerated.shortAttributeMetadata,this,"shortAttribute");
+    public shortAttributeAccessor(): AttributeAccessor<number>{
+        return new AttributeAccessor<number>(ExampleDataAllGenerated.shortAttributeMetadata,new StaticAttributeValueAccessor<number>(this,"shortAttribute"),"shortAttribute");
     }
 
-    public passwordAttributeAccessor(): AttributeAccessor<string,ExampleDataAllGenerated>{
-        return new AttributeAccessor<string,ExampleDataAllGenerated>(ExampleDataAllGenerated.passwordAttributeMetadata,this,"passwordAttribute");
+    public passwordAttributeAccessor(): AttributeAccessor<string>{
+        return new AttributeAccessor<string>(ExampleDataAllGenerated.passwordAttributeMetadata,new StaticAttributeValueAccessor<string>(this,"passwordAttribute"),"passwordAttribute");
     }
 
-    public uriAttributeAccessor(): AttributeAccessor<string,ExampleDataAllGenerated>{
-        return new AttributeAccessor<string,ExampleDataAllGenerated>(ExampleDataAllGenerated.uriAttributeMetadata,this,"uriAttribute");
+    public uriAttributeAccessor(): AttributeAccessor<string>{
+        return new AttributeAccessor<string>(ExampleDataAllGenerated.uriAttributeMetadata,new StaticAttributeValueAccessor<string>(this,"uriAttribute"),"uriAttribute");
     }
 
-    public bigDecimalAttributeAccessor(): AttributeAccessor<string,ExampleDataAllGenerated>{
-        return new AttributeAccessor<string,ExampleDataAllGenerated>(ExampleDataAllGenerated.bigDecimalAttributeMetadata,this,"bigDecimalAttribute");
+    public bigDecimalAttributeAccessor(): AttributeAccessor<string>{
+        return new AttributeAccessor<string>(ExampleDataAllGenerated.bigDecimalAttributeMetadata,new StaticAttributeValueAccessor<string>(this,"bigDecimalAttribute"),"bigDecimalAttribute");
     }
 
-    public floatAttributeAccessor(): AttributeAccessor<number,ExampleDataAllGenerated>{
-        return new AttributeAccessor<number,ExampleDataAllGenerated>(ExampleDataAllGenerated.floatAttributeMetadata,this,"floatAttribute");
+    public floatAttributeAccessor(): AttributeAccessor<number>{
+        return new AttributeAccessor<number>(ExampleDataAllGenerated.floatAttributeMetadata,new StaticAttributeValueAccessor<number>(this,"floatAttribute"),"floatAttribute");
     }
 
-    public stringListAttributeAccessor(): AttributeAccessor<string[],ExampleDataAllGenerated>{
-        return new AttributeAccessor<string[],ExampleDataAllGenerated>(ExampleDataAllGenerated.stringListAttributeMetadata,this,"stringListAttribute");
+    public stringListAttributeAccessor(): AttributeAccessor<string[]>{
+        return new AttributeAccessor<string[]>(ExampleDataAllGenerated.stringListAttributeMetadata,new StaticAttributeValueAccessor<string[]>(this,"stringListAttribute"),"stringListAttribute");
     }
 
-    public enumListAttributeAccessor(): AttributeAccessor<ExampleEnum[],ExampleDataAllGenerated>{
-        return new AttributeAccessor<ExampleEnum[],ExampleDataAllGenerated>(ExampleDataAllGenerated.enumListAttributeMetadata,this,"enumListAttribute");
+    public enumListAttributeAccessor(): AttributeAccessor<ExampleEnum[]>{
+        return new AttributeAccessor<ExampleEnum[]>(ExampleDataAllGenerated.enumListAttributeMetadata,new StaticAttributeValueAccessor<ExampleEnum[]>(this,"enumListAttribute"),"enumListAttribute");
     }
 
-    public instantAttributeAccessor(): AttributeAccessor<Date,ExampleDataAllGenerated>{
-        return new AttributeAccessor<Date,ExampleDataAllGenerated>(ExampleDataAllGenerated.instantAttributeMetadata,this,"instantAttribute");
+    public instantAttributeAccessor(): AttributeAccessor<Date>{
+        return new AttributeAccessor<Date>(ExampleDataAllGenerated.instantAttributeMetadata,new StaticAttributeValueAccessor<Date>(this,"instantAttribute"),"instantAttribute");
     }
 
-    public bigIntegerAttributeAccessor(): AttributeAccessor<bigint,ExampleDataAllGenerated>{
-        return new AttributeAccessor<bigint,ExampleDataAllGenerated>(ExampleDataAllGenerated.bigIntegerAttributeMetadata,this,"bigIntegerAttribute");
+    public bigIntegerAttributeAccessor(): AttributeAccessor<bigint>{
+        return new AttributeAccessor<bigint>(ExampleDataAllGenerated.bigIntegerAttributeMetadata,new StaticAttributeValueAccessor<bigint>(this,"bigIntegerAttribute"),"bigIntegerAttribute");
     }
 
-    protected mapValuesFromJson(json: any, idToDataMap: any, dataCreator: DataCreator){
+    public factoryPolymorphicAttributeAccessor(): AttributeAccessor<Data>{
+        return new AttributeAccessor<Data>(ExampleDataAllGenerated.factoryPolymorphicAttributeMetadata,new StaticAttributeValueAccessor<Data>(this,"factoryPolymorphicAttribute"),"factoryPolymorphicAttribute");
+    }
+
+    protected mapValuesFromJson(json: any, idToDataMap: any, dataCreator: DataCreator, dynamicDataDictionary: DynamicDataDictionary){
         this.byteArrayAttribute=json.byteArrayAttribute.v;
         this.i18nAttribute=json.i18nAttribute.v;
         this.encryptedStringAttribute=json.encryptedStringAttribute.v;
@@ -192,6 +200,7 @@ export abstract class ExampleDataAllGenerated  extends Data {
         this.enumListAttribute=json.enumListAttribute;
         this.instantAttribute=this.mapInstantFromJson(json.instantAttribute.v);
         this.bigIntegerAttribute=json.bigIntegerAttribute.v;
+        this.factoryPolymorphicAttribute=<Data>dataCreator.createData(json.factoryPolymorphicAttribute.v,idToDataMap,this);
     }
 
     protected mapValuesToJson(idToDataMap: any, result: any){
@@ -221,15 +230,17 @@ export abstract class ExampleDataAllGenerated  extends Data {
         result.enumListAttribute=this.enumListAttribute;
         result.instantAttribute=this.mapAttributeValueToJson(this.mapInstantToJson(this.instantAttribute));
         result.bigIntegerAttribute=this.mapAttributeValueToJson(this.bigIntegerAttribute);
+        result.factoryPolymorphicAttribute=this.mapAttributeDataToJson(idToDataMap,this.factoryPolymorphicAttribute);
     }
 
     protected collectChildrenFlat(): Data[]{
         let result: Array<Data>=[];
+        if (this.factoryPolymorphicAttribute) result.push(this.factoryPolymorphicAttribute);
         return result;
     }
 
-    public listAttributeAccessor(): AttributeAccessor<any,ExampleDataAllGenerated>[]{
-        let result: AttributeAccessor<any,ExampleDataAllGenerated>[]=[];
+    public listAttributeAccessor(): AttributeAccessor<any>[]{
+        let result: AttributeAccessor<any>[]=[];
         result.push(this.byteArrayAttributeAccessor());
         result.push(this.i18nAttributeAccessor());
         result.push(this.encryptedStringAttributeAccessor());
@@ -256,6 +267,7 @@ export abstract class ExampleDataAllGenerated  extends Data {
         result.push(this.enumListAttributeAccessor());
         result.push(this.instantAttributeAccessor());
         result.push(this.bigIntegerAttributeAccessor());
+        result.push(this.factoryPolymorphicAttributeAccessor());
         return result;
     }
 

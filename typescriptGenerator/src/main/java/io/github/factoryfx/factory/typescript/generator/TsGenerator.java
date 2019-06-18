@@ -3,13 +3,11 @@ package io.github.factoryfx.factory.typescript.generator;
 
 import io.github.factoryfx.factory.FactoryBase;
 import io.github.factoryfx.factory.attribute.types.EnumAttribute;
+import io.github.factoryfx.factory.attribute.types.EnumListAttribute;
 import io.github.factoryfx.factory.metadata.FactoryMetadataManager;
 import io.github.factoryfx.factory.typescript.generator.construct.*;
 import io.github.factoryfx.factory.typescript.generator.construct.atttributes.AttributeToTsMapperManager;
-import io.github.factoryfx.factory.typescript.generator.ts.TsClassConstructed;
-import io.github.factoryfx.factory.typescript.generator.ts.TsClassTemplateBased;
-import io.github.factoryfx.factory.typescript.generator.ts.TsEnumConstructed;
-import io.github.factoryfx.factory.typescript.generator.ts.TsFile;
+import io.github.factoryfx.factory.typescript.generator.ts.*;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
@@ -24,18 +22,18 @@ import java.util.stream.Collectors;
 public class TsGenerator<R extends FactoryBase<?,R>> {
 
     private final Path targetDir;
-    private final List<Class<? extends FactoryBase<?,R>>> dataClasses;
-    private final BiFunction<Set<TsEnumConstructed>,Map<Class<? extends FactoryBase<?,R>>, TsClassConstructed>, AttributeToTsMapperManager> attributeInfoMapperCreator;
+    private final Collection<Class<? extends FactoryBase<?,R>>> dataClasses;
+    private final AttributeToTsMapperManager.AttributeToTsMapperManagerCreator<R> attributeInfoMapperCreator;
 
 
-    public TsGenerator(Path targetDir, List<Class<? extends FactoryBase<?,R>>> dataClasses, BiFunction<Set<TsEnumConstructed>,Map<Class<? extends FactoryBase<?,R>>, TsClassConstructed>, AttributeToTsMapperManager> attributeInfoMapperCreator) {
+    public TsGenerator(Path targetDir, Collection<Class<? extends FactoryBase<?,R>>> dataClasses, AttributeToTsMapperManager.AttributeToTsMapperManagerCreator<R> attributeInfoMapperCreator) {
         this.targetDir = targetDir;
         this.dataClasses = dataClasses;
         this.attributeInfoMapperCreator = attributeInfoMapperCreator;
     }
 
-    public TsGenerator(Path targetDir, List<Class<? extends FactoryBase<?,R>>> dataClasses) {
-        this(targetDir,dataClasses,(enums,dataToOverrideTs)-> new AttributeToTsMapperManager(AttributeToTsMapperManager.createAttributeInfoMap(dataToOverrideTs,enums), AttributeToTsMapperManager.createAttributeIgnoreSet()));
+    public TsGenerator(Path targetDir, Collection<Class<? extends FactoryBase<?,R>>> dataClasses) {
+        this(targetDir, dataClasses, new AttributeToTsMapperManager.AttributeToTsMapperManagerCreator<>());
     }
 
     public void clearTargetDir(){
@@ -77,11 +75,26 @@ public class TsGenerator<R extends FactoryBase<?,R>> {
         TsClassTemplateBased attributeMetadataTsClass = new TsClassTemplateBased("AttributeMetadata.ts", utilDir);
         attributeMetadataTsClass.writeToFile();
 
+
+        TsClassTemplateBased staticAttributeValueAccessorTsClass = new TsClassTemplateBased("StaticAttributeValueAccessor.ts", utilDir);
+        staticAttributeValueAccessorTsClass.writeToFile();
+
+        TsClassTemplateBased dynamicDataDictionaryTsClass = new TsClassTemplateBased("DynamicDataDictionary.ts", utilDir);
+        dynamicDataDictionaryTsClass.writeToFile();
+
         for (String file : List.of("ValidationError.ts", "AttributeEditor.ts", "AttributeEditorCreator.ts",
-                "AttributeEditorStringAttribute.ts", "AttributeEditorFallback.ts", "AttributeEditorFactoryAttribute.ts","AttributeEditorFactoryListAttribute.ts")) {
-            TsClassTemplateBased filets = new TsClassTemplateBased(file, utilDir);
-            filets.writeToFile();
+                "AttributeEditorStringAttribute.ts", "AttributeEditorFallback.ts", "AttributeEditorFactoryAttribute.ts","AttributeEditorFactoryListAttribute.ts",
+                "AttributeEditorIntegerAttribute.ts", "FactoryChangeEvent.ts","WaitAnimation.ts",
+                "AttributeValueAccessor.ts", "AttributeEditorEnumAttribute.ts", "AttributeEditorEnumListAttribute.ts", "AttributeEditorLongAttribute.ts",
+                "AttributeEditorLocalDateAttribute.ts", "AttributeEditorBooleanAttribute.ts")) {
+            TsClassTemplateBased fileTs = new TsClassTemplateBased(file, utilDir);
+            fileTs.writeToFile();
         }
+
+        TsClassTemplateBased dynamicDataTsClass = new TsClassTemplateBased("DynamicData.ts", utilDir);
+        dynamicDataTsClass.writeToFile();
+
+
 
         HashMap<Class<? extends FactoryBase<?,R>>,TsClassConstructed> dataToGeneratedTsClass = new HashMap<>();
         HashMap<Class<? extends FactoryBase<?,R>>,TsClassConstructed> dataToConfigTs = new HashMap<>();
@@ -100,6 +113,9 @@ public class TsGenerator<R extends FactoryBase<?,R>> {
                 if (attribute instanceof EnumAttribute){
                     enumClasses.add(((EnumAttribute<?>)attribute).internal_getEnumClass());
                 }
+                if (attribute instanceof EnumListAttribute){
+                    enumClasses.add(((EnumListAttribute<?>)attribute).internal_getEnumClass());
+                }
             });
         }
         Set<TsEnumConstructed> enums= new HashSet<>();
@@ -110,7 +126,7 @@ public class TsGenerator<R extends FactoryBase<?,R>> {
             tsEnumConstructed.writeToFile();
         }
 
-        AttributeToTsMapperManager attributeToTsMapperManager = attributeInfoMapperCreator.apply(enums, dataToConfigTs);
+        AttributeToTsMapperManager attributeToTsMapperManager = attributeInfoMapperCreator.create(dataToConfigTs,enums,new TsTypeClass(dataTsClass));
 
         AttributeTypeEnumTs attributeTypeEnumTs = new AttributeTypeEnumTs(attributeToTsMapperManager, utilDir);
         TsEnumConstructed attributeTypeEnumTsEnum = attributeTypeEnumTs.construct();
@@ -121,7 +137,7 @@ public class TsGenerator<R extends FactoryBase<?,R>> {
         dataCreatorTsClass.writeToFile();
 
         for (Map.Entry<Class<? extends FactoryBase<?,R>>, TsClassConstructed> entry : dataToGeneratedTsClass.entrySet()) {
-            DataGeneratedTs dataGenerator = new DataGeneratedTs(entry.getKey(), dataToConfigTs, dataTsClass, dataCreatorTsClass, attributeMetadataTsClass, attributeAccessorClass, attributeToTsMapperManager,attributeTypeEnumTsEnum);
+            DataGeneratedTs dataGenerator = new DataGeneratedTs(entry.getKey(), dataToConfigTs, dataTsClass,dynamicDataDictionaryTsClass,staticAttributeValueAccessorTsClass, dataCreatorTsClass, attributeMetadataTsClass, attributeAccessorClass, attributeToTsMapperManager,attributeTypeEnumTsEnum);
             dataGenerator.complete(entry.getValue()).writeToFile();
         }
 
@@ -133,20 +149,18 @@ public class TsGenerator<R extends FactoryBase<?,R>> {
 
     public void generateJs(){
         targetDir.toFile().mkdirs();
-        Path tsBuildDirectory = Path.of("./build/ts");
-        tsBuildDirectory.toFile().mkdirs();
-
-//        try {
-//            tempDirectory = Files.createTempDirectory("");
-//        } catch (IOException e) {
-//            throw new RuntimeException(e);
-//        }
+        Path tsBuildDirectory;
+//        Path tsBuildDirectory = Path.of("./build/ts");
+//        tsBuildDirectory.toFile().mkdirs();
+        try {
+            tsBuildDirectory = Files.createTempDirectory("");
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
 
         generateTs(tsBuildDirectory);
 
 
-
-        writeResourceFile("package.json",tsBuildDirectory.toFile().getAbsolutePath());
         writeResourceFile("tsconfig.json",tsBuildDirectory.toFile().getAbsolutePath());
 
 //        try {
@@ -188,7 +202,7 @@ public class TsGenerator<R extends FactoryBase<?,R>> {
 //            if (!sj.toString().isEmpty()){
 //                throw new IllegalStateException("\n"+sj.toString());
 //            }
-            BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+            BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream(),StandardCharsets.UTF_8));
             StringBuilder builder = new StringBuilder();
             String line = null;
             while ( (line = reader.readLine()) != null) {

@@ -2,6 +2,8 @@ package io.github.factoryfx.factory.typescript.generator.data;
 
 
 import io.github.factoryfx.factory.FactoryBase;
+import io.github.factoryfx.factory.PolymorphicFactory;
+import io.github.factoryfx.factory.attribute.dependency.FactoryPolymorphicAttribute;
 import io.github.factoryfx.factory.attribute.primitive.*;
 import io.github.factoryfx.factory.attribute.time.*;
 import io.github.factoryfx.factory.attribute.types.*;
@@ -34,5 +36,5 @@ public class ExampleDataAll extends FactoryBase<Void,ExampleData> {
     public final EnumListAttribute<ExampleEnum> enumListAttribute=new EnumListAttribute<>(ExampleEnum.class);
     public final InstantAttribute instantAttribute=new InstantAttribute();
     public final BigIntegerAttribute bigIntegerAttribute=new BigIntegerAttribute();
-
+    public final FactoryPolymorphicAttribute<ExampleData,Void> factoryPolymorphicAttribute=new FactoryPolymorphicAttribute<>();
 }

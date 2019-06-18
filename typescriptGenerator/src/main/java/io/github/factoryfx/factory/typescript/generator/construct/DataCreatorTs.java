@@ -5,18 +5,19 @@ import io.github.factoryfx.factory.FactoryBase;
 import io.github.factoryfx.factory.typescript.generator.ts.*;
 
 import java.nio.file.Path;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
 public class DataCreatorTs<R extends FactoryBase<?,R>> {
 
-    private final List<Class<? extends FactoryBase<?,R>>> allDataClasses;
+    private final Collection<Class<? extends FactoryBase<?,R>>> allDataClasses;
     private final HashMap<Class<? extends FactoryBase<?,R>>, TsClassConstructed> dataToDataConfigTs;
     private final TsFile dataClass;
     private final Path targetPath;
 
-    public DataCreatorTs(List<Class<? extends FactoryBase<?,R>>> allDataClasses, HashMap<Class<? extends FactoryBase<?,R>>, TsClassConstructed> dataToDataConfigTs, TsFile dataClass, Path targetPath) {
+    public DataCreatorTs(Collection<Class<? extends FactoryBase<?,R>>> allDataClasses, HashMap<Class<? extends FactoryBase<?,R>>, TsClassConstructed> dataToDataConfigTs, TsFile dataClass, Path targetPath) {
         this.allDataClasses = allDataClasses;
         this.dataToDataConfigTs = dataToDataConfigTs;
         this.dataClass = dataClass;
@@ -36,7 +37,7 @@ public class DataCreatorTs<R extends FactoryBase<?,R>> {
             typeMappingCode.append("if (clazz==='").append(allDataClass.getName()).append("'){\n");
             String typeName = allDataClass.getSimpleName();
             typeMappingCode.append("    let result: ").append(typeName).append("= new ").append(typeName).append("();\n");
-            typeMappingCode.append("    result.mapFromJson(json,idToDataMap,this);\n");
+            typeMappingCode.append("    result.mapFromJson(json,idToDataMap,this,null);\n");
             typeMappingCode.append("    result.setParent(parent);\n");
             typeMappingCode.append("    return result;\n");
             typeMappingCode.append("}\n");

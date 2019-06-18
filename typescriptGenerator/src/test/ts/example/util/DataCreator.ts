@@ -1,11 +1,11 @@
 //generated code don't edit manually
 import { Data } from "./Data";
 import { ExampleData } from "../config/io/github/factoryfx/factory/typescript/generator/data/ExampleData";
-import { ExampleData2 } from "../config/io/github/factoryfx/factory/typescript/generator/data/ExampleData2";
+import { ExampleDataAll } from "../config/io/github/factoryfx/factory/typescript/generator/data/ExampleDataAll";
 import { ExampleFactory } from "../config/io/github/factoryfx/factory/typescript/generator/data/ExampleFactory";
+import { ExampleData2 } from "../config/io/github/factoryfx/factory/typescript/generator/data/ExampleData2";
 import { ExampleData3 } from "../config/io/github/factoryfx/factory/typescript/generator/data/ExampleData3";
 import { ExampleDataIgnore } from "../config/io/github/factoryfx/factory/typescript/generator/data/ExampleDataIgnore";
-import { ExampleDataAll } from "../config/io/github/factoryfx/factory/typescript/generator/data/ExampleDataAll";
 
 export class DataCreator  {
 
@@ -18,37 +18,37 @@ export class DataCreator  {
         }
         if (clazz==='io.github.factoryfx.factory.typescript.generator.data.ExampleData'){
             let result: ExampleData= new ExampleData();
-            result.mapFromJson(json,idToDataMap,this);
+            result.mapFromJson(json,idToDataMap,this,null);
             result.setParent(parent);
             return result;
         }
         if (clazz==='io.github.factoryfx.factory.typescript.generator.data.ExampleData2'){
             let result: ExampleData2= new ExampleData2();
-            result.mapFromJson(json,idToDataMap,this);
+            result.mapFromJson(json,idToDataMap,this,null);
             result.setParent(parent);
             return result;
         }
         if (clazz==='io.github.factoryfx.factory.typescript.generator.data.ExampleData3'){
             let result: ExampleData3= new ExampleData3();
-            result.mapFromJson(json,idToDataMap,this);
+            result.mapFromJson(json,idToDataMap,this,null);
             result.setParent(parent);
             return result;
         }
         if (clazz==='io.github.factoryfx.factory.typescript.generator.data.ExampleDataAll'){
             let result: ExampleDataAll= new ExampleDataAll();
-            result.mapFromJson(json,idToDataMap,this);
+            result.mapFromJson(json,idToDataMap,this,null);
             result.setParent(parent);
             return result;
         }
         if (clazz==='io.github.factoryfx.factory.typescript.generator.data.ExampleDataIgnore'){
             let result: ExampleDataIgnore= new ExampleDataIgnore();
-            result.mapFromJson(json,idToDataMap,this);
+            result.mapFromJson(json,idToDataMap,this,null);
             result.setParent(parent);
             return result;
         }
         if (clazz==='io.github.factoryfx.factory.typescript.generator.data.ExampleFactory'){
             let result: ExampleFactory= new ExampleFactory();
-            result.mapFromJson(json,idToDataMap,this);
+            result.mapFromJson(json,idToDataMap,this,null);
             result.setParent(parent);
             return result;
         }

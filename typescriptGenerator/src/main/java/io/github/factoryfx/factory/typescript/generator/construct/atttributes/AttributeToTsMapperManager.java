@@ -3,10 +3,7 @@ package io.github.factoryfx.factory.typescript.generator.construct.atttributes;
 
 import io.github.factoryfx.factory.FactoryBase;
 import io.github.factoryfx.factory.attribute.*;
-import io.github.factoryfx.factory.attribute.dependency.FactoryAttribute;
-import io.github.factoryfx.factory.attribute.dependency.FactoryListAttribute;
-import io.github.factoryfx.factory.attribute.dependency.FactoryViewListAttribute;
-import io.github.factoryfx.factory.attribute.dependency.FactoryViewAttribute;
+import io.github.factoryfx.factory.attribute.dependency.*;
 import io.github.factoryfx.factory.attribute.primitive.*;
 import io.github.factoryfx.factory.attribute.primitive.list.*;
 import io.github.factoryfx.factory.attribute.time.*;
@@ -17,71 +14,74 @@ import java.util.*;
 
 public class AttributeToTsMapperManager {
 
-    private final Map<Class<? extends Attribute>, AttributeToTsMapper> classToInfo;
+    public static class AttributeToTsMapperManagerCreator<R extends FactoryBase<?,R>>{
+        public AttributeToTsMapperManager create(Map<Class<? extends FactoryBase<?,R>>, TsClassConstructed> dataToOverrideTs, Set<TsEnumConstructed> tsEnums, TsTypeClass dataType){
+            HashMap<Class<? extends Attribute>, AttributeToTsMapper> classToInfo = new HashMap<>();
+            classToInfo.put(FactoryAttribute.class, new FactoryAttributeToTsMapper<>(dataToOverrideTs));
+            classToInfo.put(FactoryListAttribute.class, new FactoryListAttributeToTsMapper<>(dataToOverrideTs));
+            classToInfo.put(FactoryPolymorphicAttribute.class, new FactoryPolymorphicAttributeToTsMapper<>(dataType));
+            classToInfo.put(FactoryPolymorphicListAttribute.class, new FactoryPolymorphicListAttributeToTsMapper<>(dataType));
+
+            classToInfo.put(ByteArrayAttribute.class, new ValueAttributeToTsMapper(TsTypePrimitive.STRING));
+            classToInfo.put(I18nAttribute.class, new ValueAttributeToTsMapper(TsTypePrimitive.STRING));
+            classToInfo.put(EncryptedStringAttribute.class, new ValueAttributeToTsMapper(TsTypePrimitive.STRING));
+            classToInfo.put(DoubleAttribute.class, new ValueAttributeToTsMapper(TsTypePrimitive.NUMBER));
+            classToInfo.put(ByteAttribute.class, new ValueAttributeToTsMapper(TsTypePrimitive.NUMBER));
+            classToInfo.put(BooleanAttribute.class, new ValueAttributeToTsMapper(TsTypePrimitive.BOOLEAN));
+            classToInfo.put(LocalDateAttribute.class, new ValueAttributeToTsMapper(TsTypePrimitive.DATE,"mapLocalDateFromJson","mapLocalDateToJson"));
+            classToInfo.put(EnumAttribute.class, new EnumAttributeToTsMapper(tsEnums));
+            classToInfo.put(CharAttribute.class, new ValueAttributeToTsMapper(TsTypePrimitive.STRING));
+            classToInfo.put(LongAttribute.class, new ValueAttributeToTsMapper(TsTypePrimitive.NUMBER));
+            classToInfo.put(StringAttribute.class, new ValueAttributeToTsMapper(TsTypePrimitive.STRING));
+            classToInfo.put(IntegerAttribute.class, new ValueAttributeToTsMapper(TsTypePrimitive.NUMBER));
+            classToInfo.put(LocalDateTimeAttribute.class, new ValueAttributeToTsMapper(TsTypePrimitive.DATE,"mapLocalDateTimeFromJson","mapLocalDateTimeToJson"));
+            classToInfo.put(LocaleAttribute.class, new ValueAttributeToTsMapper(TsTypePrimitive.STRING));
+            classToInfo.put(DurationAttribute.class, new ValueAttributeToTsMapper(TsTypePrimitive.STRING));
+            classToInfo.put(FileContentAttribute.class, new ValueAttributeToTsMapper(TsTypePrimitive.STRING));
+            classToInfo.put(LocalTimeAttribute.class, new ValueAttributeToTsMapper(TsTypePrimitive.STRING));
+            classToInfo.put(ShortAttribute.class, new ValueAttributeToTsMapper(TsTypePrimitive.NUMBER));
+            classToInfo.put(PasswordAttribute.class, new ValueAttributeToTsMapper(TsTypePrimitive.STRING));
+            classToInfo.put(URIAttribute.class, new ValueAttributeToTsMapper(TsTypePrimitive.STRING));
+            classToInfo.put(BigDecimalAttribute.class, new ValueAttributeToTsMapper(TsTypePrimitive.STRING));
+            classToInfo.put(FloatAttribute.class, new ValueAttributeToTsMapper(TsTypePrimitive.NUMBER));
+            classToInfo.put(InstantAttribute.class, new ValueAttributeToTsMapper(TsTypePrimitive.DATE,"mapInstantFromJson","mapInstantToJson"));
+            classToInfo.put(BigIntegerAttribute.class, new ValueAttributeToTsMapper(TsTypePrimitive.BIGINT));
+
+            classToInfo.put(CharListAttribute.class, new ValueListAttributeToTsMapper(TsTypePrimitive.STRING));
+            classToInfo.put(LongListAttribute.class, new ValueListAttributeToTsMapper(TsTypePrimitive.NUMBER));
+            classToInfo.put(EnumListAttribute.class, new EnumListAttributeToTsMapper(tsEnums));
+            classToInfo.put(ByteListAttribute.class, new ValueListAttributeToTsMapper(TsTypePrimitive.NUMBER));
+            classToInfo.put(FloatListAttribute.class, new ValueListAttributeToTsMapper(TsTypePrimitive.NUMBER));
+            classToInfo.put(IntegerListAttribute.class, new ValueListAttributeToTsMapper(TsTypePrimitive.NUMBER));
+            classToInfo.put(StringListAttribute.class, new ValueListAttributeToTsMapper(TsTypePrimitive.STRING));
+            classToInfo.put(DoubleListAttribute.class, new ValueListAttributeToTsMapper(TsTypePrimitive.NUMBER));
+            classToInfo.put(ShortListAttribute.class, new ValueListAttributeToTsMapper(TsTypePrimitive.NUMBER));
+            classToInfo.put(URIListAttribute.class, new ValueListAttributeToTsMapper(TsTypePrimitive.STRING));
+
+            Set<Class<? extends Attribute>> ignoredAttributes = new HashSet<>();
+            ignoredAttributes.add(ObjectValueAttribute.class);
+            ignoredAttributes.add(FactoryViewAttribute.class);
+            ignoredAttributes.add(FactoryViewListAttribute.class);
+
+            return new AttributeToTsMapperManager(classToInfo,ignoredAttributes);
+
+        };
+    }
+
+    private final Map<Class<? extends Attribute>, AttributeToTsMapper> attributeClassToMapper;
     private final Set<Class<? extends Attribute>> ignoredAttributes;
 
-    public AttributeToTsMapperManager(Map<Class<? extends Attribute>, AttributeToTsMapper> classToInfo, Set<Class<? extends Attribute>> ignoredAttributes) {
-        this.classToInfo = classToInfo;
+    public AttributeToTsMapperManager(Map<Class<? extends Attribute>, AttributeToTsMapper> attributeClassToMapper, Set<Class<? extends Attribute>> ignoredAttributes) {
+        this.attributeClassToMapper = attributeClassToMapper;
         this.ignoredAttributes = ignoredAttributes;
     }
 
     public TsType getTsType(Attribute<?,?> attribute){
-        AttributeToTsMapper attributeToTsMapper = classToInfo.get(attribute.getClass());
+        AttributeToTsMapper attributeToTsMapper = getAttributeToTsMapper(attribute);
         if (attributeToTsMapper !=null){
             return  attributeToTsMapper.getTsType(attribute);
         }
         throw new IllegalStateException("unknown attribute type"+attribute);
-    }
-
-    public static <R extends FactoryBase<?,R>> Map<Class<? extends Attribute>, AttributeToTsMapper> createAttributeInfoMap(Map<Class<? extends FactoryBase<?,R>>, TsClassConstructed> dataToOverrideTs, Set<TsEnumConstructed> tsEnums){
-        HashMap<Class<? extends Attribute>, AttributeToTsMapper> result = new HashMap<>();
-        result.put(FactoryAttribute.class, new FactoryAttributeToTsMapper<>(dataToOverrideTs));
-        result.put(FactoryListAttribute.class, new FactoryListAttributeToTsMapper<>(dataToOverrideTs));
-
-        result.put(ByteArrayAttribute.class, new ValueAttributeToTsMapper(TsTypePrimitive.STRING));
-        result.put(I18nAttribute.class, new ValueAttributeToTsMapper(TsTypePrimitive.STRING));
-        result.put(EncryptedStringAttribute.class, new ValueAttributeToTsMapper(TsTypePrimitive.STRING));
-        result.put(DoubleAttribute.class, new ValueAttributeToTsMapper(TsTypePrimitive.NUMBER));
-        result.put(ByteAttribute.class, new ValueAttributeToTsMapper(TsTypePrimitive.NUMBER));
-        result.put(BooleanAttribute.class, new ValueAttributeToTsMapper(TsTypePrimitive.BOOLEAN));
-        result.put(LocalDateAttribute.class, new ValueAttributeToTsMapper(TsTypePrimitive.DATE,"mapLocalDateFromJson","mapLocalDateToJson"));
-        result.put(EnumAttribute.class, new EnumAttributeToTsMapper(tsEnums));
-        result.put(CharAttribute.class, new ValueAttributeToTsMapper(TsTypePrimitive.STRING));
-        result.put(LongAttribute.class, new ValueAttributeToTsMapper(TsTypePrimitive.NUMBER));
-        result.put(StringAttribute.class, new ValueAttributeToTsMapper(TsTypePrimitive.STRING));
-        result.put(IntegerAttribute.class, new ValueAttributeToTsMapper(TsTypePrimitive.NUMBER));
-        result.put(LocalDateTimeAttribute.class, new ValueAttributeToTsMapper(TsTypePrimitive.DATE,"mapLocalDateTimeFromJson","mapLocalDateTimeToJson"));
-        result.put(LocaleAttribute.class, new ValueAttributeToTsMapper(TsTypePrimitive.STRING));
-        result.put(DurationAttribute.class, new ValueAttributeToTsMapper(TsTypePrimitive.STRING));
-        result.put(FileContentAttribute.class, new ValueAttributeToTsMapper(TsTypePrimitive.STRING));
-        result.put(LocalTimeAttribute.class, new ValueAttributeToTsMapper(TsTypePrimitive.STRING));
-        result.put(ShortAttribute.class, new ValueAttributeToTsMapper(TsTypePrimitive.NUMBER));
-        result.put(PasswordAttribute.class, new ValueAttributeToTsMapper(TsTypePrimitive.STRING));
-        result.put(URIAttribute.class, new ValueAttributeToTsMapper(TsTypePrimitive.STRING));
-        result.put(BigDecimalAttribute.class, new ValueAttributeToTsMapper(TsTypePrimitive.STRING));
-        result.put(FloatAttribute.class, new ValueAttributeToTsMapper(TsTypePrimitive.NUMBER));
-        result.put(InstantAttribute.class, new ValueAttributeToTsMapper(TsTypePrimitive.DATE,"mapInstantFromJson","mapInstantToJson"));
-        result.put(BigIntegerAttribute.class, new ValueAttributeToTsMapper(TsTypePrimitive.BIGINT));
-
-        result.put(CharListAttribute.class, new ValueListAttributeToTsMapper(TsTypePrimitive.STRING));
-        result.put(LongListAttribute.class, new ValueListAttributeToTsMapper(TsTypePrimitive.NUMBER));
-        result.put(EnumListAttribute.class, new EnumListAttributeToTsMapper(tsEnums));
-        result.put(ByteListAttribute.class, new ValueListAttributeToTsMapper(TsTypePrimitive.NUMBER));
-        result.put(FloatListAttribute.class, new ValueListAttributeToTsMapper(TsTypePrimitive.NUMBER));
-        result.put(IntegerListAttribute.class, new ValueListAttributeToTsMapper(TsTypePrimitive.NUMBER));
-        result.put(StringListAttribute.class, new ValueListAttributeToTsMapper(TsTypePrimitive.STRING));
-        result.put(DoubleListAttribute.class, new ValueListAttributeToTsMapper(TsTypePrimitive.NUMBER));
-        result.put(ShortListAttribute.class, new ValueListAttributeToTsMapper(TsTypePrimitive.NUMBER));
-        result.put(URIListAttribute.class, new ValueListAttributeToTsMapper(TsTypePrimitive.STRING));
-        return result;
-    }
-
-    public static Set<Class<? extends Attribute>> createAttributeIgnoreSet(){
-        Set<Class<? extends Attribute>> result = new HashSet<>();
-        result.add(ObjectValueAttribute.class);
-        result.add(FactoryViewAttribute.class);
-        result.add(FactoryViewListAttribute.class);
-        return result;
     }
 
     public boolean isMappable(Class<? extends Attribute> attribute){
@@ -89,7 +89,7 @@ public class AttributeToTsMapperManager {
     }
 
     public String getMapFromJsonExpression(String attributeVariableName, Attribute attribute, Set<TsFile> jsonImports) {
-        AttributeToTsMapper attributeToTsMapper = classToInfo.get(attribute.getClass());
+        AttributeToTsMapper attributeToTsMapper = getAttributeToTsMapper(attribute);
         if (attributeToTsMapper ==null){
             throw new IllegalStateException("unsupported attribute: "+attribute.getClass());
         }
@@ -97,7 +97,7 @@ public class AttributeToTsMapperManager {
     }
 
     public String getMapToJsonExpression(String attributeVariableName, Attribute attribute, Set<TsFile> jsonImports) {
-        AttributeToTsMapper attributeToTsMapper = classToInfo.get(attribute.getClass());
+        AttributeToTsMapper attributeToTsMapper = getAttributeToTsMapper(attribute);
         if (attributeToTsMapper ==null){
             throw new IllegalStateException("unsupported attribute: "+attribute.getClass());
         }
@@ -106,7 +106,7 @@ public class AttributeToTsMapperManager {
 
     public Set<String> getAttributeTypeValues() {
         Set<String> result = new HashSet<>();
-        for (Class<? extends Attribute> clazz : this.classToInfo.keySet()) {
+        for (Class<? extends Attribute> clazz : this.attributeClassToMapper.keySet()) {
             result.add(clazz.getSimpleName());
         }
         return result;
@@ -115,4 +115,15 @@ public class AttributeToTsMapperManager {
     public String getAttributeTypeValue(Attribute<?, ?> attribute) {
         return attribute.getClass().getSimpleName();
     }
+
+    private AttributeToTsMapper getAttributeToTsMapper(Attribute<?, ?> attribute) {
+        if (attribute instanceof FactoryBaseAttribute){
+            return attributeClassToMapper.get(FactoryAttribute.class);
+        }
+        if (attribute instanceof FactoryListBaseAttribute){
+            return attributeClassToMapper.get(FactoryListAttribute.class);
+        }
+        return attributeClassToMapper.get(attribute.getClass());
+    }
+
 }

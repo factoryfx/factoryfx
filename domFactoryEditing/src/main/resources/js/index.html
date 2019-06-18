@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <link rel="shortcut icon" href="data:image/x-icon;," type="image/x-icon"><!--used to avoid fake favicon requests-->
+    <meta charset="utf-8">
+    <title></title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+<!--    <script> var exports = {}; </script>&lt;!&ndash;https://stackoverflow.com/questions/42497479/uncaught-referenceerror-exports-is-not-defined-in-filed-generated-by-typescript/42510255&ndash;&gt;-->
+    <!--    <script src="example/util/FactoryEditor.js"></script>-->
+    <!--    <link rel="stylesheet" href="">-->
+</head>
+<body>
+<div id="factoryEditorDiv"></div>
+<div id="save"></div>
+<pre><code id="logDisplay">
+</code></pre>
+
+
+<script type="module">
+    import {FactoryEditor} from './factoryEditing/FactoryEditor.js'
+    import {AttributeEditorCreator} from "./factoryEditing/AttributeEditorCreator.js";
+    import {DynamicData} from "./factoryEditing/DynamicData.js";
+    import {WaitAnimation} from "./factoryEditing/WaitAnimation.js";
+    import {DynamicDataDictionary} from "./factoryEditing/DynamicDataDictionary.js";
+
+
+    let parentElement = document.getElementById('factoryEditorDiv');
+    let waitAnimation = new WaitAnimation(parentElement);
+    waitAnimation.show();
+
+    let dataDictionaryRequest = new XMLHttpRequest();
+    dataDictionaryRequest.open("GET","dynamicDataDictionary");
+    dataDictionaryRequest.setRequestHeader("Content-type","application/json");
+    dataDictionaryRequest.addEventListener('load', function(event) {
+        if (dataDictionaryRequest.status >= 200 && dataDictionaryRequest.status < 300) {
+            let dynamicDataDictionary = new DynamicDataDictionary();
+            dynamicDataDictionary.mapFromJson(JSON.parse(dataDictionaryRequest.responseText));
+
+
+            let prepareNewFactoryRequest = new XMLHttpRequest();
+            prepareNewFactoryRequest.open("POST","prepareNewFactory");
+            prepareNewFactoryRequest.setRequestHeader("Content-type","application/json");
+            prepareNewFactoryRequest.addEventListener('load', function(event) {
+                if (prepareNewFactoryRequest.status >= 200 && prepareNewFactoryRequest.status < 300) {
+                    let factoryEditor = new FactoryEditor(parentElement, new AttributeEditorCreator());
+                    let root = new DynamicData();
+                    let factoryUpdate = JSON.parse(prepareNewFactoryRequest.responseText);
+                    root.mapFromJsonFromRootDynamic(factoryUpdate.root, dynamicDataDictionary);
+                    factoryEditor.edit(root);
+
+                    factoryEditor.setOnFactoryChange({
+                        onChange(newData){
+                            window.history.pushState(null, null, window.location.pathname+"#"+newData.getPath().map(factory => factory.getDisplayText()).join('/'));
+                        }
+                    });
+
+                    window.onpopstate = (event)=> {
+                        factoryEditor.back();
+                    };
+
+
+
+                    let button = document.createElement("button");
+                    button.className="btn btn-primary";
+                    button.type="button";
+                    button.textContent="Save";
+                    button.style.marginLeft="1rem";
+                    document.getElementById('save').appendChild(button);
+                    button.onclick=ev => {
+                        let saveRequest = new XMLHttpRequest();
+                        saveRequest.open("POST","updateCurrentFactory");
+                        saveRequest.setRequestHeader("Content-type","application/json");
+
+                        let saveRequestBody = {
+                            "user": "",
+                            "passwordHash": "",
+                            "request": {
+                                "@class": "io.github.factoryfx.factory.storage.DataUpdate",
+                                "root": root.mapToJson({}),
+                                "user": "1",
+                                "comment": "2",
+                                "baseVersionId": factoryUpdate.baseVersionId
+                            }
+                        };
+                        saveRequest.send(JSON.stringify(saveRequestBody));
+                        saveRequest.addEventListener('load', function(event) {
+                            let response = JSON.parse(saveRequest.responseText);
+                            document.getElementById('logDisplay').textContent=response.log;
+                        });
+                    };
+                }
+            });
+            prepareNewFactoryRequest.send();
+
+
+
+        }
+    });
+    dataDictionaryRequest.send();
+
+</script>
+
+</body>
+</html>

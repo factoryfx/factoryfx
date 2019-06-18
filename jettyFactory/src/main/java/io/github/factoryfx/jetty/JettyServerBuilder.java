@@ -48,7 +48,7 @@ public class JettyServerBuilder<R extends FactoryBase<?,R>,S extends JettyServer
         handlerCollection.handlers.add(gzipHandler);
 
         ServletContextHandlerFactory<R> servletContextHandlerFactory = new ServletContextHandlerFactory<>();
-        gzipHandler.handler.set(servletContextHandlerFactory);
+        handlerCollection.handlers.add(servletContextHandlerFactory);
 
         updateableServletFactory = new UpdateableServletFactory<>();
         servletContextHandlerFactory.updatableRootServlet.set(updateableServletFactory);

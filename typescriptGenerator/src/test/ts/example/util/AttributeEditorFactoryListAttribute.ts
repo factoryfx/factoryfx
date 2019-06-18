@@ -6,7 +6,7 @@ import {Data} from "./Data";
 
 export class AttributeEditorFactoryListAttribute implements AttributeEditor{
 
-    constructor(private attributeAccessor: AttributeAccessor<any,any>, private inputId: string, private factoryEditor: FactoryEditor ) {
+    constructor(private attributeAccessor: AttributeAccessor<any>, private inputId: string, private factoryEditor: FactoryEditor ) {
 
     }
 
@@ -36,29 +36,32 @@ export class AttributeEditorFactoryListAttribute implements AttributeEditor{
         inputGroup.setAttribute("class","input-group");
 
         let input: HTMLInputElement= document.createElement("input");
-        input.setAttribute("id",this.inputId.toString());
-        input.setAttribute("class","form-control");
-        input.setAttribute("id",this.inputId);
-        input.setAttribute("readonly","readonly");
+        input.id=this.inputId.toString();
+        input.className="form-control";
+        input.readOnly=true;
+
+        input.ondblclick=(e)=>{
+            this.factoryEditor.edit(value);
+        };
 
         if (value){
-            input.setAttribute("value",value.getDisplayText());
+            input.value=value.getDisplayText();
         } else {
-            input.setAttribute("value",'');
+            input.value='';
         }
 
         let inputGroupAppend: HTMLElement= document.createElement("div");
-        inputGroupAppend.setAttribute("class","input-group-append");
+        inputGroupAppend.className="input-group-append";
 
-        let button: HTMLElement= document.createElement("button");
+        let button: HTMLButtonElement= document.createElement("button");
         button.textContent="edit";
         button.onclick=(e)=>{
             this.factoryEditor.edit(value);
         };
         if (!value){
-            button.setAttribute("disabled","disabled");
+            button.disabled=true;
         }
-        button.setAttribute("class","btn btn-outline-secondary");
+        button.className="btn btn-outline-secondary";
 
         inputGroupAppend.appendChild(button);
         inputGroup.appendChild(input);

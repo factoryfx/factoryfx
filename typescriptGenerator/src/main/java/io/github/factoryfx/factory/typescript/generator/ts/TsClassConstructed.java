@@ -75,6 +75,12 @@ public class TsClassConstructed extends TsFile {
         for (TsMethod method : methods) {
             method.addImports(imports);
         }
+        if (imports.contains(null)){
+            System.out.println();
+            for (TsFile anImport : imports) {
+                System.out.println(anImport);
+            }
+        }
         for (TsAttribute attribute : attributes) {
 
             attribute.addImport(imports);
@@ -83,6 +89,7 @@ public class TsClassConstructed extends TsFile {
             imports.add(extendsFrom);
         }
         imports.remove(this);
+
         return imports;
     }
     
