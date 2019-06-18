@@ -102,7 +102,7 @@ public class SOAPClient<T> {
 //                    exceptionElement = unmarshalledExceptionElement;
 //                }
 //
-//                throw (GeneratedJAXBException) soapExceptionMap.get(elementClass)
+    //                throw (GeneratedJAXBException) soapExceptionMap.get(elementClass)
 //                        .getConstructor(String.class, elementClass)
 //                        .newInstance(soapFault.getFaultString(), elementClass.cast(exceptionElement));
 //            } else {

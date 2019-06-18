@@ -7,6 +7,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.soap.*;
+import java.util.function.BiFunction;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -28,10 +29,32 @@ public class SOAPMessageUtil {
         try {
 
             Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
-
-                return unmarshaller.unmarshal(soapMessage.getSOAPBody().getFirstChild());
+            return unmarshaller.unmarshal(soapMessage.getSOAPBody().getFirstChild());
 
         } catch (JAXBException | SOAPException e) {
+            throw new RuntimeException(e);
+        }
+
+    }
+
+    public Object parseFault(SOAPFault soapFault){
+        try {
+
+            Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
+            Object unmarshalledExceptionElement = unmarshaller.unmarshal(soapFault.getDetail().getDetailEntries().next());
+
+            Object exceptionElement;
+
+            if (unmarshalledExceptionElement instanceof JAXBElement) {
+                JAXBElement jaxbElement = (JAXBElement) unmarshalledExceptionElement;
+                exceptionElement = jaxbElement.getValue();
+            } else {
+                exceptionElement = unmarshalledExceptionElement;
+            }
+
+            return exceptionElement;
+
+        } catch (JAXBException e) {
             throw new RuntimeException(e);
         }
 
@@ -65,19 +88,7 @@ public class SOAPMessageUtil {
             org.w3c.dom.Document document = db.newDocument();
             marshaller.marshal(response, document);
             org.w3c.dom.Node importedNode = responseMessage.getSOAPBody().getOwnerDocument().importNode(document.getChildNodes().item(0), true);
-//            if (fault.isPresent()) {
-//                SOAPFault soapFault = response.getSOAPBody().addFault();
-//                soapFault.setFaultCode(faultCode.orElse(new QName(SOAPConstants.URI_NS_SOAP_ENVELOPE, "Server")));
-//                soapFault.setFaultString(faultString.orElse("Unspecified error"));
-//                soapFault.addDetail();
-//                DetailEntry detailEntry = soapFault.getDetail().addDetailEntry(new QName(importedNode.getNamespaceURI(), importedNode.getLocalName(), importedNode.getPrefix()));
-//                detailEntry.appendChild(importedNode);
-//
-//                ((SoapSupportResource) This).logSoapFault(response.getSOAPBody(), logger);
-//
-//            } else {
-//                response.getSOAPBody().appendChild(importedNode);
-//            }
+
 
 
             responseMessage.getSOAPBody().appendChild(importedNode);
@@ -104,7 +115,9 @@ public class SOAPMessageUtil {
             }
             soapFault.setFaultString(faultString!=null?faultString:"Unspecified error");
             soapFault.addDetail();
-            DetailEntry detailEntry = soapFault.getDetail().addDetailEntry(new QName(importedNode.getNamespaceURI(), importedNode.getLocalName(), importedNode.getPrefix()));
+            QName qname = importedNode.getNamespaceURI()!=null?new QName(importedNode.getNamespaceURI(), importedNode.getLocalName(), importedNode.getPrefix())
+                    :new QName(importedNode.getLocalName());
+            DetailEntry detailEntry = soapFault.getDetail().addDetailEntry(qname);
             detailEntry.appendChild(importedNode);
 
 
