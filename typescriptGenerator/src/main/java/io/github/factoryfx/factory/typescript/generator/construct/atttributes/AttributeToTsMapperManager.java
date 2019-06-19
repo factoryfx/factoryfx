@@ -15,12 +15,10 @@ import java.util.*;
 public class AttributeToTsMapperManager {
 
     public static class AttributeToTsMapperManagerCreator<R extends FactoryBase<?,R>>{
-        public AttributeToTsMapperManager create(Map<Class<? extends FactoryBase<?,R>>, TsClassConstructed> dataToOverrideTs, Set<TsEnumConstructed> tsEnums, TsTypeClass dataType){
+        public AttributeToTsMapperManager create(Map<Class<? extends FactoryBase<?,R>>, TsClassConstructed> dataToOverrideTs, Set<TsEnumConstructed> tsEnums, TsFile dataType){
             HashMap<Class<? extends Attribute>, AttributeToTsMapper> classToInfo = new HashMap<>();
-            classToInfo.put(FactoryAttribute.class, new FactoryAttributeToTsMapper<>(dataToOverrideTs));
+            classToInfo.put(FactoryAttribute.class, new FactoryAttributeToTsMapper<>(dataToOverrideTs,dataType));
             classToInfo.put(FactoryListAttribute.class, new FactoryListAttributeToTsMapper<>(dataToOverrideTs));
-            classToInfo.put(FactoryPolymorphicAttribute.class, new FactoryPolymorphicAttributeToTsMapper<>(dataType));
-            classToInfo.put(FactoryPolymorphicListAttribute.class, new FactoryPolymorphicListAttributeToTsMapper<>(dataType));
 
             classToInfo.put(ByteArrayAttribute.class, new ValueAttributeToTsMapper(TsTypePrimitive.STRING));
             classToInfo.put(I18nAttribute.class, new ValueAttributeToTsMapper(TsTypePrimitive.STRING));

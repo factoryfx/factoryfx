@@ -67,7 +67,6 @@
                     button.type="button";
                     button.textContent="Save";
                     button.style.marginLeft="1rem";
-                    document.getElementById('save').appendChild(button);
                     button.onclick=ev => {
                         waitAnimation.show();
                         let saveRequest = new XMLHttpRequest();
@@ -92,6 +91,7 @@
                             document.getElementById('logDisplay').textContent=response.log;
                         });
                     };
+                    parentElement.appendChild(button);
                 }
             });
             prepareNewFactoryRequest.send();

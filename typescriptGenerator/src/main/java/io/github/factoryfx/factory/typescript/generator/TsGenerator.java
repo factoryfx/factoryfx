@@ -126,7 +126,7 @@ public class TsGenerator<R extends FactoryBase<?,R>> {
             tsEnumConstructed.writeToFile();
         }
 
-        AttributeToTsMapperManager attributeToTsMapperManager = attributeInfoMapperCreator.create(dataToConfigTs,enums,new TsTypeClass(dataTsClass));
+        AttributeToTsMapperManager attributeToTsMapperManager = attributeInfoMapperCreator.create(dataToConfigTs,enums,dataTsClass);
 
         AttributeTypeEnumTs attributeTypeEnumTs = new AttributeTypeEnumTs(attributeToTsMapperManager, utilDir);
         TsEnumConstructed attributeTypeEnumTsEnum = attributeTypeEnumTs.construct();
