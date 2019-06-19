@@ -10,6 +10,18 @@ export class WaitAnimation {
         progressbarDiv.setAttribute("role", "progressbar");
         progressbarDiv.style.width = "100%";
         div.appendChild(progressbarDiv);
+        if (this.parentElement.firstElementChild) {
+            this.content = this.parentElement.firstElementChild;
+            this.parentElement.removeChild(this.parentElement.firstElementChild);
+        }
         this.parentElement.appendChild(div);
+    }
+    hide() {
+        if (this.parentElement.firstElementChild) {
+            this.parentElement.removeChild(this.parentElement.firstElementChild);
+            if (this.content) {
+                this.parentElement.appendChild(this.content);
+            }
+        }
     }
 }

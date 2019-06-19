@@ -26,11 +26,11 @@
 
     let parentElement = document.getElementById('factoryEditorDiv');
     let waitAnimation = new WaitAnimation(parentElement);
-    waitAnimation.show();
 
     let dataDictionaryRequest = new XMLHttpRequest();
     dataDictionaryRequest.open("GET","dynamicDataDictionary");
     dataDictionaryRequest.setRequestHeader("Content-type","application/json");
+    waitAnimation.show();
     dataDictionaryRequest.addEventListener('load', function(event) {
         if (dataDictionaryRequest.status >= 200 && dataDictionaryRequest.status < 300) {
             let dynamicDataDictionary = new DynamicDataDictionary();
@@ -41,7 +41,9 @@
             prepareNewFactoryRequest.open("POST","prepareNewFactory");
             prepareNewFactoryRequest.setRequestHeader("Content-type","application/json");
             prepareNewFactoryRequest.addEventListener('load', function(event) {
+                waitAnimation.hide();
                 if (prepareNewFactoryRequest.status >= 200 && prepareNewFactoryRequest.status < 300) {
+
                     let factoryEditor = new FactoryEditor(parentElement, new AttributeEditorCreator());
                     let root = new DynamicData();
                     let factoryUpdate = JSON.parse(prepareNewFactoryRequest.responseText);
@@ -67,6 +69,7 @@
                     button.style.marginLeft="1rem";
                     document.getElementById('save').appendChild(button);
                     button.onclick=ev => {
+                        waitAnimation.show();
                         let saveRequest = new XMLHttpRequest();
                         saveRequest.open("POST","updateCurrentFactory");
                         saveRequest.setRequestHeader("Content-type","application/json");
@@ -84,6 +87,7 @@
                         };
                         saveRequest.send(JSON.stringify(saveRequestBody));
                         saveRequest.addEventListener('load', function(event) {
+                            waitAnimation.hide();
                             let response = JSON.parse(saveRequest.responseText);
                             document.getElementById('logDisplay').textContent=response.log;
                         });

@@ -191,7 +191,7 @@ public class UpdateableServletTest {
                 UpdateableTestResourceFactory resource = new UpdateableTestResourceFactory();
                 resource.response.set("123");
 
-                ServletContextHandlerFactory<UpdateableWebserverRootFactory> servletContextHandler = (ServletContextHandlerFactory<UpdateableWebserverRootFactory>) ( update.root.server.get().handler.get().handlers.get(0));
+                ServletContextHandlerFactory<UpdateableWebserverRootFactory> servletContextHandler = (ServletContextHandlerFactory<UpdateableWebserverRootFactory>) ( update.root.server.get().handler.get().handlers.get(1));
                 JerseyServletFactory<UpdateableWebserverRootFactory> jerseyServletFactory = new JerseyServletFactory<>();
                 jerseyServletFactory.restLogging.set(new Slf4LoggingFeatureFactory<>());
                 jerseyServletFactory.resources.add(resource);

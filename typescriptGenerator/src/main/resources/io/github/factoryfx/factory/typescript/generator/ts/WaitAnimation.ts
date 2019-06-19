@@ -9,7 +9,10 @@ export class WaitAnimation {
 
     }
 
+    content: Element;
     show(): void {
+
+
         let div: HTMLDivElement = document.createElement("div");
         div.className="progress";
 
@@ -20,8 +23,22 @@ export class WaitAnimation {
         progressbarDiv.style.width="100%";
 
         div.appendChild(progressbarDiv);
-        this.parentElement.appendChild(div)
 
+        if (this.parentElement.firstElementChild) {
+            this.content = this.parentElement.firstElementChild;
+            this.parentElement.removeChild(this.parentElement.firstElementChild);
+        }
+        this.parentElement.appendChild(div);
+
+    }
+
+    hide(){
+        if (this.parentElement.firstElementChild){
+            this.parentElement.removeChild(this.parentElement.firstElementChild);
+            if (this.content){
+                this.parentElement.appendChild(this.content);
+            }
+        }
     }
 
 
