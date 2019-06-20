@@ -77,7 +77,7 @@ subprojects {
 
     if (project.hasProperty('secretKeyRingFileSourceURL')) {
         signing {
-            sign publishing.publications
+            sign publishing.publications.mavenJava
         }
         //workaround  to get key  file to the plugin
 
@@ -278,7 +278,7 @@ project(':microserviceRestCommon') {
 }
 
 project(':microserviceRestIntegrationTest') {
-    publishing.publications.remove(publishing.publications.mavenJava)//don't publish
+//    publishing.publications.remove(publishing.publications.mavenJava)//don't publish
     dependencies {
         compile project(":microserviceRestServer")
         compile project(":microserviceRestClient")
@@ -356,7 +356,7 @@ project(':jettyFactory') {
 
 project(':example') {
 
-    publishing.publications.remove(publishing.publications.mavenJava)//don't publish
+//    publishing.publications.remove(publishing.publications.mavenJava)//don't publish
     dependencies {
         compile project(":javafxFactoryEditing")
         compile project(":jettyFactory")
@@ -451,14 +451,14 @@ project(':javascript') {
 }
 
 project(':testfactories') {
-    publishing.publications.remove(publishing.publications.mavenJava)//don't publish
+//    publishing.publications.remove(publishing.publications.mavenJava)//don't publish
     dependencies {
         compile project(":factory")
     }
 }
 
 project(':docu') {
-    publishing.publications.remove(publishing.publications.mavenJava)//don't publish
+//    publishing.publications.remove(publishing.publications.mavenJava)//don't publish
     dependencies {
         compile project(":factory")
         compile project(":jettyFactory")
@@ -593,7 +593,7 @@ project(':soapFactory') {
 //            }
 //        }
 
-        publishing.publications.remove(publishing.publications.mavenJava)//don't publish
+//        publishing.publications.remove(publishing.publications.mavenJava)//don't publish
         dependencies {
             compile project(":factory")
             compile project(":testfactories")
