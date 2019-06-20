@@ -100,9 +100,9 @@ subprojects {
                         }
                     }
                     scm {
-                        connection 'scm:git@github.com:factoryfx/factoryfx.git'
-                        developerConnection 'scm:git@github.com:factoryfx/factoryfx.git'
-                        url 'scm:git@github.com:factoryfx/factoryfx.git'
+                        connection = 'scm:git@github.com:factoryfx/factoryfx.git'
+                        developerConnection = 'scm:git@github.com:factoryfx/factoryfx.git'
+                        url = 'scm:git@github.com:factoryfx/factoryfx.git'
                     }
                 }
             }
