@@ -16,11 +16,6 @@ import java.util.*;
  */
 public class FactoryPolymorphicAttribute<R extends FactoryBase<?,R>,L> extends FactoryBaseAttribute<R,L,FactoryBase<? extends L,R>, FactoryPolymorphicAttribute<R,L>> {
 
-    private static final Validation requiredValidation = value -> {
-        boolean error = value == null;
-        return new ValidationResult(error, new LanguageText().en("required parameter").de("Pflichtparameter"));
-    };
-
     public FactoryPolymorphicAttribute() {
         super();
     }
@@ -30,7 +25,6 @@ public class FactoryPolymorphicAttribute<R extends FactoryBase<?,R>,L> extends F
     public FactoryPolymorphicAttribute(Class<L> liveObjectClass, Class<? extends PolymorphicFactory<?>>... possibleFactoriesClasses) {
         super();
         setup(liveObjectClass,possibleFactoriesClasses);
-        this.validation(requiredValidation);
     }
 
 
