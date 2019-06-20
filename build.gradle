@@ -543,17 +543,17 @@ project(':soapFactory') {
         compile project(":factory")
         compile project(":jettyFactory")
 
-        compile (group: 'org.eclipse.jetty', name: 'jetty-server', version: '9.4.14.v20181114')  {
+        compile(group: 'org.eclipse.jetty', name: 'jetty-server', version: '9.4.14.v20181114') {
             exclude group: "javax.annotation"
         }
         compile group: 'jakarta.xml.bind', name: 'jakarta.xml.bind-api', version: '2.3.2'
-        compile (group: 'com.sun.istack', name: 'istack-commons-runtime', version: '3.0.7') {
+        compile(group: 'com.sun.istack', name: 'istack-commons-runtime', version: '3.0.7') {
             exclude group: 'javax.annotation'
         }
 
         compile group: 'org.glassfish.jaxb', name: 'jaxb-runtime', version: '2.3.2'
 
-        compile (group: 'com.sun.xml.messaging.saaj', name: 'saaj-impl', version: '1.5.0') {
+        compile(group: 'com.sun.xml.messaging.saaj', name: 'saaj-impl', version: '1.5.0') {
             exclude group: 'javax.annotation'
             exclude group: 'org.jvnet.mimepull'
             exclude group: 'javax.activation'
@@ -566,17 +566,19 @@ project(':soapFactory') {
         compile group: 'jakarta.xml.soap', name: 'jakarta.xml.soap-api', version: '1.4.1'
         compile group: 'jakarta.jws', name: 'jakarta.jws-api', version: '1.1.1'
     }
-    
-    project(':initializr') {
+}
 
-        dependencies {
-            compile project(":factory")
-            compile project(":jettyFactory")
-            compile group: 'com.squareup', name: 'javapoet', version: '1.11.1'
-        }
+
+project(':initializr') {
+
+    dependencies {
+        compile project(":factory")
+        compile project(":jettyFactory")
+        compile group: 'com.squareup', name: 'javapoet', version: '1.11.1'
     }
+}
 
-    project(':benchmark') {
+project(':benchmark') {
 //        compileJava {
 //            inputs.property("moduleName", "")
 //            doFirst {
@@ -589,23 +591,23 @@ project(':soapFactory') {
 //        }
 
 //        publishing.publications.remove(publishing.publications.mavenJava)//don't publish
-        dependencies {
-            compile project(":factory")
-            compile project(":testfactories")
+    dependencies {
+        compile project(":factory")
+        compile project(":testfactories")
 
-            compile group: 'org.openjdk.jmh', name: 'jmh-generator-annprocess', version: '1.21'
-            compile group: 'org.openjdk.jmh', name: 'jmh-core', version: '1.21'
-        }
+        compile group: 'org.openjdk.jmh', name: 'jmh-generator-annprocess', version: '1.21'
+        compile group: 'org.openjdk.jmh', name: 'jmh-core', version: '1.21'
     }
-
-    project(':domFactoryEditing') {
-        dependencies {
-            compile project(":microserviceRestServer")
-            compile project(":typescriptGenerator")
-            testCompile (group: 'ch.qos.logback', name: 'logback-classic', version: '1.3.0-alpha4'){
-                exclude group: 'javax.activation'
-            }
-        }
-    }
-    
 }
+
+project(':domFactoryEditing') {
+    dependencies {
+        compile project(":microserviceRestServer")
+        compile project(":typescriptGenerator")
+        testCompile (group: 'ch.qos.logback', name: 'logback-classic', version: '1.3.0-alpha4'){
+            exclude group: 'javax.activation'
+        }
+    }
+}
+    
+
