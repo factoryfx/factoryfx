@@ -1,4 +1,4 @@
-export enum AttributeType  {//dummy class to avoid compile error
+export enum AttributeType  {
     BooleanAttribute="BooleanAttribute",
     LocalDateTimeAttribute="LocalDateTimeAttribute",
     LocalDateAttribute="LocalDateAttribute",

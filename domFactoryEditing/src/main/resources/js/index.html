@@ -11,10 +11,6 @@
 </head>
 <body>
 <div id="factoryEditorDiv"></div>
-<div id="save"></div>
-<pre><code id="logDisplay">
-</code></pre>
-
 
 <script type="module">
     import {FactoryEditor} from './factoryEditing/FactoryEditor.js'
@@ -68,28 +64,40 @@
                     button.textContent="Save";
                     button.style.marginLeft="1rem";
                     button.onclick=ev => {
-                        waitAnimation.show();
-                        let saveRequest = new XMLHttpRequest();
-                        saveRequest.open("POST","updateCurrentFactory");
-                        saveRequest.setRequestHeader("Content-type","application/json");
+                        if (factoryEditor.validate()){
+                            waitAnimation.show();
+                            let saveRequest = new XMLHttpRequest();
+                            saveRequest.open("POST","updateCurrentFactory");
+                            saveRequest.setRequestHeader("Content-type","application/json");
 
-                        let saveRequestBody = {
-                            "user": "",
-                            "passwordHash": "",
-                            "request": {
-                                "@class": "io.github.factoryfx.factory.storage.DataUpdate",
-                                "root": root.mapToJson({}),
-                                "user": "1",
-                                "comment": "2",
-                                "baseVersionId": factoryUpdate.baseVersionId
-                            }
-                        };
-                        saveRequest.send(JSON.stringify(saveRequestBody));
-                        saveRequest.addEventListener('load', function(event) {
-                            waitAnimation.hide();
-                            let response = JSON.parse(saveRequest.responseText);
-                            document.getElementById('logDisplay').textContent=response.log;
-                        });
+                            let saveRequestBody = {
+                                "user": "",
+                                "passwordHash": "",
+                                "request": {
+                                    "@class": "io.github.factoryfx.factory.storage.DataUpdate",
+                                    "root": root.mapToJson({}),
+                                    "user": "1",
+                                    "comment": "2",
+                                    "baseVersionId": factoryUpdate.baseVersionId
+                                }
+                            };
+                            saveRequest.send(JSON.stringify(saveRequestBody));
+                            saveRequest.addEventListener('load', function(event) {
+                                waitAnimation.hide();
+                                let response = JSON.parse(saveRequest.responseText);
+
+
+                                let resultDisplay = document.createElement("div");
+                                resultDisplay.className="alert alert-success";
+                                resultDisplay.role="alert";
+                                let pre = document.createElement("pre");
+                                let code = document.createElement("code");
+                                pre.appendChild(code);
+                                code.textContent=response.log;
+                                resultDisplay.appendChild(pre)
+                                parentElement.appendChild(resultDisplay)
+                            });
+                        }
                     };
                     parentElement.appendChild(button);
                 }

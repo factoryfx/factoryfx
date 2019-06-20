@@ -40,7 +40,7 @@ public class MicroserviceRestClientFactory<R extends FactoryBase<?,R>, RS extend
     public final StringAttribute httpAuthenticationUser=new StringAttribute().labelText("httpAuthenticationUser").nullable();
     public final StringAttribute httpAuthenticationPassword=new StringAttribute().labelText("httpAuthenticationPassword").nullable();
 
-    public final ObjectValueAttribute<FactoryTreeBuilderBasedAttributeSetup<?,RS,S>> factoryTreeBuilderBasedAttributeSetup=new ObjectValueAttribute<FactoryTreeBuilderBasedAttributeSetup<?,RS,S>>().labelText("factoryTreeBuilderBasedAttributeSetup").nullable();
+    public final ObjectValueAttribute<FactoryTreeBuilderBasedAttributeSetup<RS,S>> factoryTreeBuilderBasedAttributeSetup=new ObjectValueAttribute<FactoryTreeBuilderBasedAttributeSetup<RS,S>>().labelText("factoryTreeBuilderBasedAttributeSetup").nullable();
 
 
     public MicroserviceRestClientFactory(){

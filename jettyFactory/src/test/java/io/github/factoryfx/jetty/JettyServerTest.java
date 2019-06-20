@@ -78,7 +78,7 @@ public class JettyServerTest {
     public void test_change_port() {
         FactoryTreeBuilder<Server, JettyServerRootFactory, Void> builder = new FactoryTreeBuilder<>(JettyServerRootFactory.class);
         builder.addFactory(JettyServerFactory.class, Scope.SINGLETON, ctx->{
-            return new JettyServerBuilder<>(new JettyServerFactory<JettyServerRootFactory>())
+            return new JettyServerBuilder<JettyServerRootFactory>()
                     .withHost("localhost").withPort(8080)
                     .withResource(ctx.get(Resource1Factory.class)).build();
         });
@@ -130,7 +130,7 @@ public class JettyServerTest {
     public void test_remove_connector() {
         FactoryTreeBuilder<Server, JettyServerRootFactory, Void> builder = new FactoryTreeBuilder<>(JettyServerRootFactory.class);
         builder.addFactory(JettyServerFactory.class, Scope.SINGLETON, ctx->{
-            return new JettyServerBuilder<>(new JettyServerFactory<JettyServerRootFactory>())
+            return new JettyServerBuilder<JettyServerRootFactory>()
                     .withHost("localhost").withPort(8080)
                     .withResource(ctx.get(Resource1Factory.class)).build();
         });
@@ -196,7 +196,7 @@ public class JettyServerTest {
 
         FactoryTreeBuilder<Server, JettyServerRootFactory, Void> builder = new FactoryTreeBuilder<>(JettyServerRootFactory.class);
         builder.addFactory(JettyServerFactory.class, Scope.SINGLETON, ctx->{
-            return new JettyServerBuilder<>(new JettyServerFactory<JettyServerRootFactory>())
+            return new JettyServerBuilder<JettyServerRootFactory>()
                     .withHost("localhost").withPort(8015)
                     .withResource(new LateResponseTestResourceFactory()).build();
         });
@@ -291,7 +291,7 @@ public class JettyServerTest {
     public void testMessageBodyReader() {
         FactoryTreeBuilder<Server, JettyServerRootFactory, Void> builder = new FactoryTreeBuilder<>(JettyServerRootFactory.class);
         builder.addFactory(JettyServerFactory.class, Scope.SINGLETON, ctx->{
-            return new JettyServerBuilder<>(new JettyServerFactory<JettyServerRootFactory>())
+            return new JettyServerBuilder<JettyServerRootFactory>()
                     .withHost("localhost").withPort(8015)
                     .withResource(ctx.get(MessageBodyReaderWriterEchoFactory.class))
                     .withJaxrsComponent(SomeMessageBodyReaderWriter.class)

@@ -1,6 +1,5 @@
 package io.github.factoryfx.example.server;
 
-import io.github.factoryfx.example.server.shop.ShopJettyServerFactory;
 import io.github.factoryfx.example.server.testutils.FactoryTreeBuilderRule;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
@@ -42,9 +41,9 @@ public class ServerTest {
     @RegisterExtension
     public final FactoryTreeBuilderRule<Server, ServerRootFactory, Void> ctx = new FactoryTreeBuilderRule<>(new ServerBuilder().builder(), rule -> {
 
-        rule.getFactory(ShopJettyServerFactory.class).connectors.get(0).port.set(0);
+        rule.getFactory(ServerRootFactory.class).connectors.get(0).port.set(0);
 
-        server = rule.get(ShopJettyServerFactory.class);
+        server = rule.get(ServerRootFactory.class);
     });
 
     @Test

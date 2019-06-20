@@ -340,6 +340,7 @@ project(':example') {
         compile project(":jettyFactory")
         compile project(":microserviceRestServer")
         compile project(":factory")
+        compile project(":domFactoryEditing")
 
         compile (group: 'ch.qos.logback', name: 'logback-classic', version: '1.3.0-alpha4'){
             exclude group: 'javax.activation'

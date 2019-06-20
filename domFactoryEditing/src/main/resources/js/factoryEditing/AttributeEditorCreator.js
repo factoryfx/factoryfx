@@ -9,6 +9,7 @@ import { AttributeEditorEnumListAttribute } from "./AttributeEditorEnumListAttri
 import { AttributeEditorLongAttribute } from "./AttributeEditorLongAttribute";
 import { AttributeEditorLocalDateAttribute } from "./AttributeEditorLocalDateAttribute";
 import { AttributeEditorBooleanAttribute } from "./AttributeEditorBooleanAttribute";
+import { AttributeEditorDoubleAttribute } from "./AttributeEditorDoubleAttribute";
 export class AttributeEditorCreator {
     constructor(attributeEditors) {
         if (!attributeEditors) {
@@ -20,6 +21,7 @@ export class AttributeEditorCreator {
             this.attributeEditors[AttributeType.EnumListAttribute] = (attributeAccessor, inputId, factoryEditor) => new AttributeEditorEnumListAttribute(attributeAccessor, inputId);
             this.attributeEditors[AttributeType.LocalDateAttribute] = (attributeAccessor, inputId, factoryEditor) => new AttributeEditorLocalDateAttribute(attributeAccessor, inputId);
             this.attributeEditors[AttributeType.BooleanAttribute] = (attributeAccessor, inputId, factoryEditor) => new AttributeEditorBooleanAttribute(attributeAccessor, inputId);
+            this.attributeEditors[AttributeType.DoubleAttribute] = (attributeAccessor, inputId, factoryEditor) => new AttributeEditorDoubleAttribute(attributeAccessor, inputId);
             this.attributeEditors[AttributeType.FactoryAttribute] = (attributeAccessor, inputId, factoryEditor) => new AttributeEditorFactoryAttribute(attributeAccessor, inputId, factoryEditor);
             this.attributeEditors[AttributeType.FactoryListAttribute] = (attributeAccessor, inputId, factoryEditor) => new AttributeEditorFactoryListAttribute(attributeAccessor, inputId, factoryEditor);
             this.attributeEditors[AttributeType.FactoryPolymorphicAttribute] = (attributeAccessor, inputId, factoryEditor) => new AttributeEditorFactoryAttribute(attributeAccessor, inputId, factoryEditor);

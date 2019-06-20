@@ -22,7 +22,7 @@ public class TestServerFactory extends SimpleFactoryBase<Server, TestServerFacto
     public final EnumAttribute<ExampleEnum> enumAttribute=new EnumAttribute<>(ExampleEnum.class).nullable();
     public final CharAttribute charAttribute=new CharAttribute().nullable();
     public final LongAttribute longAttribute=new LongAttribute().nullable();
-    public final StringAttribute stringAttribute=new StringAttribute().nullable();
+    public final StringAttribute stringAttribute=new StringAttribute();
     public final IntegerAttribute integerAttribute=new IntegerAttribute().nullable();
     public final LocalDateTimeAttribute localDateTimeAttribute=new LocalDateTimeAttribute().nullable();
     public final LocaleAttribute localeAttribute=new LocaleAttribute().nullable();

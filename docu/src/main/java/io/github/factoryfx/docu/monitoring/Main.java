@@ -23,7 +23,7 @@ public class Main {
 
         FactoryTreeBuilder<Root,RootFactory,Void> builder = new FactoryTreeBuilder<>(RootFactory.class);
         builder.addFactory(JettyServerFactory.class, Scope.SINGLETON, ctx-> {
-            JettyServerFactory<RootFactory> server = new JettyServerBuilder<>(new JettyServerFactory<RootFactory>()).withHost("localhost").withPort(34576).withResource(ctx.get(SimpleResourceFactory.class)).build();
+            JettyServerFactory<RootFactory> server = new JettyServerBuilder<RootFactory>().withHost("localhost").withPort(34576).withResource(ctx.get(SimpleResourceFactory.class)).build();
             server.handler.get().handlers.set(0,ctx.get(InstrumentedHandlerFactory.class));
             return server;
         });

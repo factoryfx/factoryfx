@@ -22,7 +22,7 @@ public class JettyServerBuilderTest {
 
     @Test
     public void test_json(){
-        JettyServerFactory<DummyRoot> serverFactory = new JettyServerBuilder<>(new DummyRoot()).withPort(123).withResource(new DummyResource()).build();
+        JettyServerFactory<DummyRoot> serverFactory = new JettyServerBuilder<DummyRoot>().withPort(123).withResource(new DummyResource()).buildTo(new DummyRoot());
 
         System.out.println(ObjectMapperBuilder.build().writeValueAsString(serverFactory));
 
@@ -40,7 +40,7 @@ public class JettyServerBuilderTest {
 
     @Test
     public void test_ObjectMapper(){
-        new JettyServerBuilder<>(new JettyServerFactory<DummyRoot>())
+        new JettyServerBuilder<DummyRoot>()
                 .withHost("localhost").withPort(8080)
                 .withDefaultJerseyObjectMapper(new SpecialObjectMapperFactory())
                 .build();

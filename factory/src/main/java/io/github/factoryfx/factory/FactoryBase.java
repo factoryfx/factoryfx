@@ -805,7 +805,7 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
             return (T)factory;
         }
 
-        public void serFactoryTreeBuilderBasedAttributeSetupForRoot(FactoryTreeBuilderBasedAttributeSetup<?,R,?> setup) {
+        public void serFactoryTreeBuilderBasedAttributeSetupForRoot(FactoryTreeBuilderBasedAttributeSetup<R,?> setup) {
             this.factory.serFactoryTreeBuilderBasedAttributeSetupForRoot(setup);
         }
 
@@ -982,8 +982,8 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
         }
     }
 
-    FactoryTreeBuilderBasedAttributeSetup<?, R, ?> factoryTreeBuilderBasedAttributeSetup;
-    private void serFactoryTreeBuilderBasedAttributeSetupForRoot(FactoryTreeBuilderBasedAttributeSetup<?, R, ?> factoryTreeBuilderBasedAttributeSetup) {
+    FactoryTreeBuilderBasedAttributeSetup<R, ?> factoryTreeBuilderBasedAttributeSetup;
+    private void serFactoryTreeBuilderBasedAttributeSetupForRoot(FactoryTreeBuilderBasedAttributeSetup<R, ?> factoryTreeBuilderBasedAttributeSetup) {
         this.factoryTreeBuilderBasedAttributeSetup=factoryTreeBuilderBasedAttributeSetup;
     }
 

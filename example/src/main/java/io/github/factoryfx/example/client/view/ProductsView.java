@@ -18,7 +18,7 @@ public class ProductsView implements FactoryAwareWidget<ServerRootFactory> {
 
     @Override
     public void edit(ServerRootFactory serverFactory) {
-        viewWidget.edit(serverFactory.httpServer.get().getResource(ShopResourceFactory.class).products);
+        viewWidget.edit(serverFactory.getResource(ShopResourceFactory.class).products);
     }
 
     @Override

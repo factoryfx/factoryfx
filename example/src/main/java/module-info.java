@@ -14,6 +14,7 @@ open module io.github.factoryfx.example {
     requires com.fasterxml.jackson.jaxrs.json;
     requires jersey.client;
     requires jersey.common;
+    requires io.github.factoryfx.domFactoryEditing;
 
     exports io.github.factoryfx.example.client.view;
     exports io.github.factoryfx.example.server;

@@ -9,7 +9,7 @@ export class WaitAnimation {
 
     }
 
-    content: Element;
+    content: Element[]=[];
     show(): void {
 
 
@@ -24,22 +24,34 @@ export class WaitAnimation {
 
         div.appendChild(progressbarDiv);
 
-        if (this.parentElement.firstElementChild) {
-            this.content = this.parentElement.firstElementChild;
-            this.parentElement.removeChild(this.parentElement.firstElementChild);
+
+        this.content = [];
+        for (let i = 0; i < this.parentElement.children.length; i++) {
+            this.content.push(this.parentElement.children.item(i));
         }
+
+        this.clear();
         this.parentElement.appendChild(div);
 
     }
 
-    hide(){
-        if (this.parentElement.firstElementChild){
-            this.parentElement.removeChild(this.parentElement.firstElementChild);
-            if (this.content){
-                this.parentElement.appendChild(this.content);
+    hide() {
+        if (this.parentElement.firstElementChild) {
+            this.clear();
+            if (this.content) {
+                for (let element of this.content) {
+                    this.parentElement.appendChild(element);
+                }
             }
         }
     }
+
+    private clear(){
+        while (this.parentElement.firstChild) {
+            this.parentElement.removeChild(this.parentElement.firstChild);
+        }
+    }
+
 
 
 }

@@ -10,10 +10,10 @@ public class ServerBuilder {
         FactoryTreeBuilder<Server, ServerRootFactory, Void> factoryTreeBuilder = new FactoryTreeBuilder<>(ServerRootFactory.class);
 
         factoryTreeBuilder.addFactory(GreetingsJettyServerFactory.class, Scope.SINGLETON, context ->
-                new JettyServerBuilder<>(new GreetingsJettyServerFactory())
+                new JettyServerBuilder<ServerRootFactory>()
                         .withHost("localhost").withPort(8089)
                         .withResource(context.get(GreetingsResourceFactory.class))
-                        .build());
+                        .buildTo(new GreetingsJettyServerFactory()));
 
         factoryTreeBuilder.addFactory(GreetingsResourceFactory.class, Scope.SINGLETON, context -> {
             GreetingsResourceFactory greetingsResourceFactory = new GreetingsResourceFactory();

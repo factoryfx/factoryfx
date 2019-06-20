@@ -3,7 +3,7 @@ import {ValidationError} from "./ValidationError";
 import {AttributeAccessor} from "./AttributeAccessor";
 import {AttributeEditor} from "./AttributeEditor";
 
-export class AttributeEditorIntegerAttribute implements AttributeEditor{
+export class AttributeEditorDoubleAttribute implements AttributeEditor{
 
     constructor(private attributeAccessor: AttributeAccessor<any>, private inputId: string) {
 
@@ -14,16 +14,17 @@ export class AttributeEditorIntegerAttribute implements AttributeEditor{
         input.id=this.inputId.toString();
         input.className="form-control";
         input.type="number";
+        input.step='any';
 
-        let value = this.attributeAccessor.getValue();
-        if (value!==null && value!==undefined){
-            input.valueAsNumber= value;
-        }
-        input.oninput= (e) => {
-            this.attributeAccessor.setValue(input.valueAsNumber);
+        input.value=this.attributeAccessor.getValue();
+        input.oninput=(e) => {
+            console.log(input.value);
+            this.attributeAccessor.setValue(input.value);
         };
-        input.required=!this.attributeAccessor.getAttributeMetadata().nullable();
+
         return input;
     }
+
+
 
 }

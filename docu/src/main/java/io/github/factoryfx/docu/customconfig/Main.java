@@ -23,7 +23,7 @@ public class Main {
         root.setLevel(Level.ERROR);
 
         FactoryTreeBuilder< Server, ServerFactory,Void> builder = new FactoryTreeBuilder<>(ServerFactory.class);
-        builder.addFactory(JettyServerFactory.class, Scope.SINGLETON, ctx-> new JettyServerBuilder<>(new JettyServerFactory<ServerFactory>())
+        builder.addFactory(JettyServerFactory.class, Scope.SINGLETON, ctx-> new JettyServerBuilder<ServerFactory>()
                 .withHost("localhost").withPort(8005)
                 .withResource(ctx.get(CustomConfigurationResourceFactory.class)).build());
         builder.addFactory(CustomConfigurationResourceFactory.class, Scope.SINGLETON);

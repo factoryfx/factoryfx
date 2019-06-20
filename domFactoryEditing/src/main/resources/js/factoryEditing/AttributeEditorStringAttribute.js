@@ -12,6 +12,7 @@ export class AttributeEditorStringAttribute {
         input.oninput = (e) => {
             this.attributeAccessor.setValue(input.value);
         };
+        input.required = !this.attributeAccessor.getAttributeMetadata().nullable();
         return input;
     }
 }

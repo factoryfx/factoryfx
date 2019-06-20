@@ -11,6 +11,7 @@ export class AttributeEditorFactoryAttribute {
         this.input.id = this.inputId.toString();
         this.input.className = "form-control";
         this.input.readOnly = true;
+        this.input.required = !this.attributeAccessor.getAttributeMetadata().nullable();
     }
     create() {
         let inputGroup = document.createElement("div");
@@ -27,6 +28,25 @@ export class AttributeEditorFactoryAttribute {
         };
         removeButton.disabled = !this.attributeAccessor.getAttributeMetadata().nullable();
         removeButton.className = "btn btn-outline-secondary";
+        let newButton = document.createElement("button");
+        newButton.type = "button";
+        newButton.textContent = "new";
+        newButton.onclick = (e) => {
+            let createRequest = new XMLHttpRequest();
+            createRequest.open("POST", "updateCurrentFactory");
+            createRequest.setRequestHeader("Content-type", "application/json");
+            let createRequestBody = {
+                "javaClass": "io.github.factoryfx.dom.rest.MicroserviceDomResourceTest$JettyServerRootFactory",
+                "attributeVariableName": "handler"
+            };
+            createRequest.onload = (e) => {
+                let response = JSON.parse(createRequest.responseText);
+                this.attributeAccessor.setValue(null);
+                this.bindValue();
+            };
+            createRequest.send(JSON.stringify(createRequestBody));
+        };
+        newButton.className = "btn btn-outline-secondary";
         inputGroupAppend.appendChild(removeButton);
         inputGroupAppend.appendChild(this.editButton);
         inputGroup.appendChild(this.input);
@@ -42,7 +62,9 @@ export class AttributeEditorFactoryAttribute {
             this.input.value = '';
         }
         this.editButton.onclick = (e) => {
-            this.factoryEditor.edit(value);
+            if (this.factoryEditor.validate()) {
+                this.factoryEditor.edit(value);
+            }
         };
         if (!value) {
             this.editButton.disabled = true;
@@ -50,7 +72,9 @@ export class AttributeEditorFactoryAttribute {
         this.input.ondblclick = undefined;
         if (value) {
             this.input.ondblclick = (e) => {
-                this.factoryEditor.edit(value);
+                if (this.factoryEditor.validate()) {
+                    this.factoryEditor.edit(value);
+                }
             };
         }
     }

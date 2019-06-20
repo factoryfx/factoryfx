@@ -15,6 +15,7 @@ export class AttributeEditorIntegerAttribute {
         input.oninput = (e) => {
             this.attributeAccessor.setValue(input.valueAsNumber);
         };
+        input.required = !this.attributeAccessor.getAttributeMetadata().nullable();
         return input;
     }
 }

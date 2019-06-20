@@ -57,7 +57,7 @@ public class SslContextFactoryFactoryTest {
     public void test_without_ssl() {
         FactoryTreeBuilder<Server, TestJettyServerFactory, Void> builder = new FactoryTreeBuilder<>(TestJettyServerFactory.class);
         builder.addFactory(JettyServerFactory.class, Scope.SINGLETON, ctx->{
-            return new JettyServerBuilder<>(new JettyServerFactory<TestJettyServerFactory>())
+            return new JettyServerBuilder<TestJettyServerFactory>()
                     .withHost("localhost").withPort(8009)
                     .withResource(ctx.get(TestResourceFactory.class)).build();
         });
@@ -104,7 +104,7 @@ public class SslContextFactoryFactoryTest {
                 throw new RuntimeException(e);
             }
 
-            return new JettyServerBuilder<>(new JettyServerFactory<TestJettyServerFactory>())
+            return new JettyServerBuilder<TestJettyServerFactory>()
                     .withHost("localhost").withPort(8009).withSsl(ssl)
                     .withResource(ctx.get(TestResourceFactory.class)).build();
         });

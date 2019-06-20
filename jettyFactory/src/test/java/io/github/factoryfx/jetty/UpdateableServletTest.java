@@ -44,7 +44,7 @@ public class UpdateableServletTest {
         }
     }
 
-    public static class UpdateableTestResourceFactory extends SimpleFactoryBase<UpdateableTestResource, UpdateableWebserverRootFactory> {
+    public static class UpdateableTestResourceFactory extends SimpleFactoryBase<UpdateableTestResource, JettyServerRootFactory> {
         public final StringAttribute response = new StringAttribute().nullable();
         @Override
         protected UpdateableTestResource createImpl() {
@@ -52,23 +52,16 @@ public class UpdateableServletTest {
         }
     }
 
-    public static class UpdateableWebserverRootFactory extends SimpleFactoryBase<Server, UpdateableWebserverRootFactory>{
-        public final FactoryAttribute<UpdateableWebserverRootFactory,Server,JettyServerFactory<UpdateableWebserverRootFactory>> server = new FactoryAttribute<>();
-
-        @Override
-        protected Server createImpl() {
-            return server.instance();
-        }
+    public static class JettyServerRootFactory extends JettyServerFactory<JettyServerRootFactory>{
     }
 
     @SuppressWarnings("unchecked")
     @Test
     public void test_jersey_after_update() throws IOException, InterruptedException {
-        FactoryTreeBuilder<Server, UpdateableWebserverRootFactory, Void> builder = new FactoryTreeBuilder<>(UpdateableWebserverRootFactory.class);
-        builder.addFactory(JettyServerFactory.class, Scope.SINGLETON, ctx->{
-            return new JettyServerBuilder<>(new JettyServerFactory<UpdateableWebserverRootFactory>())
+        FactoryTreeBuilder<Server, JettyServerRootFactory, Void> builder = new FactoryTreeBuilder<>(JettyServerRootFactory.class, ctx->{
+            return new JettyServerBuilder<JettyServerRootFactory>()
                     .withHost("localhost").withPort(8080)
-                    .withResource(ctx.get(UpdateableTestResourceFactory.class)).build();
+                    .withResource(ctx.get(UpdateableTestResourceFactory.class)).buildTo(new JettyServerRootFactory());
         });
         builder.addFactory(UpdateableTestResourceFactory.class, Scope.SINGLETON, ctx -> {
             UpdateableTestResourceFactory resource = new UpdateableTestResourceFactory();
@@ -76,7 +69,7 @@ public class UpdateableServletTest {
             return resource;
         });
 
-        Microservice<Server, UpdateableWebserverRootFactory, Void> microservice = builder.microservice().build();
+        Microservice<Server, JettyServerRootFactory, Void> microservice = builder.microservice().build();
         microservice.start();
         try {
 
@@ -88,8 +81,8 @@ public class UpdateableServletTest {
             }
 
 
-            DataUpdate<UpdateableWebserverRootFactory> update = microservice.prepareNewFactory();
-            update.root.server.get().getResource(UpdateableTestResourceFactory.class).response.set("abc");
+            DataUpdate<JettyServerRootFactory> update = microservice.prepareNewFactory();
+            update.root.getResource(UpdateableTestResourceFactory.class).response.set("abc");
             microservice.updateCurrentFactory(update);
 
             {
@@ -102,14 +95,12 @@ public class UpdateableServletTest {
         }
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void test_remove_resource() throws IOException, InterruptedException {
-        FactoryTreeBuilder<Server, UpdateableWebserverRootFactory, Void> builder = new FactoryTreeBuilder<>(UpdateableWebserverRootFactory.class);
-        builder.addFactory(JettyServerFactory.class, Scope.SINGLETON, ctx->{
-            return new JettyServerBuilder<>(new JettyServerFactory<UpdateableWebserverRootFactory>())
+        FactoryTreeBuilder<Server, JettyServerRootFactory, Void> builder = new FactoryTreeBuilder<>(JettyServerRootFactory.class, ctx->{
+            return new JettyServerBuilder<JettyServerRootFactory>()
                     .withHost("localhost").withPort(8080)
-                    .withResource(ctx.get(UpdateableTestResourceFactory.class)).build();
+                    .withResource(ctx.get(UpdateableTestResourceFactory.class)).buildTo(new JettyServerRootFactory());
 
         });
         builder.addFactory(UpdateableTestResourceFactory.class, Scope.SINGLETON, ctx -> {
@@ -118,14 +109,14 @@ public class UpdateableServletTest {
             return resource;
         });
 
-        Microservice<Server, UpdateableWebserverRootFactory, Void> microservice = builder.microservice().build();
+        Microservice<Server, JettyServerRootFactory, Void> microservice = builder.microservice().build();
         microservice.start();
         try {
             HttpClient client = HttpClient.newBuilder().version(HttpClient.Version.HTTP_1_1).build();
             HttpRequest request = HttpRequest.newBuilder().GET().uri(URI.create("http://localhost:8080/UpdateableTestResource")).build();
 
-            DataUpdate<UpdateableWebserverRootFactory> update = microservice.prepareNewFactory();
-            update.root.server.get().clearResource(UpdateableTestResourceFactory.class);
+            DataUpdate<JettyServerRootFactory> update = microservice.prepareNewFactory();
+            update.root.clearResource(UpdateableTestResourceFactory.class);
             microservice.updateCurrentFactory(update);
 
             {
@@ -137,28 +128,26 @@ public class UpdateableServletTest {
         }
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void test_add_resource() throws IOException, InterruptedException {
-        FactoryTreeBuilder<Server, UpdateableWebserverRootFactory, Void> builder = new FactoryTreeBuilder<>(UpdateableWebserverRootFactory.class);
-        builder.addFactory(JettyServerFactory.class, Scope.SINGLETON, ctx->{
-            return new JettyServerBuilder<>(new JettyServerFactory<UpdateableWebserverRootFactory>())
-                    .withHost("localhost").withPort(8080).build();
+        FactoryTreeBuilder<Server, JettyServerRootFactory, Void> builder = new FactoryTreeBuilder<>(JettyServerRootFactory.class, ctx->{
+            return new JettyServerBuilder<JettyServerRootFactory>()
+                    .withHost("localhost").withPort(8080).buildTo(new JettyServerRootFactory());
 
         });
 
 
-        Microservice<Server, UpdateableWebserverRootFactory, Void> microservice = builder.microservice().build();
+        Microservice<Server, JettyServerRootFactory, Void> microservice = builder.microservice().build();
         microservice.start();
         try {
             HttpClient client = HttpClient.newBuilder().version(HttpClient.Version.HTTP_1_1).build();
             HttpRequest request = HttpRequest.newBuilder().GET().uri(URI.create("http://localhost:8080/UpdateableTestResource")).build();
 
-            DataUpdate<UpdateableWebserverRootFactory> update = microservice.prepareNewFactory();
+            DataUpdate<JettyServerRootFactory> update = microservice.prepareNewFactory();
 
             UpdateableTestResourceFactory resource = new UpdateableTestResourceFactory();
             resource.response.set("123");
-            update.root.server.get().setResource(resource);
+            update.root.setResource(resource);
 
             microservice.updateCurrentFactory(update);
 
@@ -174,28 +163,27 @@ public class UpdateableServletTest {
     @SuppressWarnings("unchecked")
     @Test
     public void test_add_jerseyServlet() throws IOException, InterruptedException {
-        FactoryTreeBuilder<Server, UpdateableWebserverRootFactory, Void> builder = new FactoryTreeBuilder<>(UpdateableWebserverRootFactory.class);
-        builder.addFactory(JettyServerFactory.class, Scope.SINGLETON, ctx->{
-            return new JettyServerBuilder<>(new JettyServerFactory<UpdateableWebserverRootFactory>())
-                    .withHost("localhost").withPort(8080).build();
+        FactoryTreeBuilder<Server, JettyServerRootFactory, Void> builder = new FactoryTreeBuilder<>(JettyServerRootFactory.class, ctx->{
+            return new JettyServerBuilder<JettyServerRootFactory>()
+                    .withHost("localhost").withPort(8080).buildTo(new JettyServerRootFactory());
         });
 
 
-        Microservice<Server, UpdateableWebserverRootFactory, Void> microservice = builder.microservice().build();
+        Microservice<Server, JettyServerRootFactory, Void> microservice = builder.microservice().build();
         microservice.start();
         try {
 
             {
-                DataUpdate<UpdateableWebserverRootFactory> update = microservice.prepareNewFactory();
+                DataUpdate<JettyServerRootFactory> update = microservice.prepareNewFactory();
 
                 UpdateableTestResourceFactory resource = new UpdateableTestResourceFactory();
                 resource.response.set("123");
 
-                ServletContextHandlerFactory<UpdateableWebserverRootFactory> servletContextHandler = (ServletContextHandlerFactory<UpdateableWebserverRootFactory>) ( update.root.server.get().handler.get().handlers.get(1));
-                JerseyServletFactory<UpdateableWebserverRootFactory> jerseyServletFactory = new JerseyServletFactory<>();
+                ServletContextHandlerFactory<JettyServerRootFactory> servletContextHandler = (ServletContextHandlerFactory<JettyServerRootFactory>) ( update.root.handler.get().handlers.get(1));
+                JerseyServletFactory<JettyServerRootFactory> jerseyServletFactory = new JerseyServletFactory<>();
                 jerseyServletFactory.restLogging.set(new Slf4LoggingFeatureFactory<>());
                 jerseyServletFactory.resources.add(resource);
-                ServletAndPathFactory<UpdateableWebserverRootFactory> jerseyServletFactoryPath = new ServletAndPathFactory<>();
+                ServletAndPathFactory<JettyServerRootFactory> jerseyServletFactoryPath = new ServletAndPathFactory<>();
                 jerseyServletFactoryPath.servlet.set(jerseyServletFactory);
                 jerseyServletFactoryPath.pathSpec.set("/new/*");
                 servletContextHandler.updatableRootServlet.get().servletAndPaths.add(jerseyServletFactoryPath);

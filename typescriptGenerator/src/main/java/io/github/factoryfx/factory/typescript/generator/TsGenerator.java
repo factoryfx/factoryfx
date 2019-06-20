@@ -86,7 +86,7 @@ public class TsGenerator<R extends FactoryBase<?,R>> {
                 "AttributeEditorStringAttribute.ts", "AttributeEditorFallback.ts", "AttributeEditorFactoryAttribute.ts","AttributeEditorFactoryListAttribute.ts",
                 "AttributeEditorIntegerAttribute.ts", "FactoryChangeEvent.ts","WaitAnimation.ts",
                 "AttributeValueAccessor.ts", "AttributeEditorEnumAttribute.ts", "AttributeEditorEnumListAttribute.ts", "AttributeEditorLongAttribute.ts",
-                "AttributeEditorLocalDateAttribute.ts", "AttributeEditorBooleanAttribute.ts")) {
+                "AttributeEditorLocalDateAttribute.ts", "AttributeEditorBooleanAttribute.ts", "AttributeEditorDoubleAttribute.ts")) {
             TsClassTemplateBased fileTs = new TsClassTemplateBased(file, utilDir);
             fileTs.writeToFile();
         }
@@ -128,16 +128,15 @@ public class TsGenerator<R extends FactoryBase<?,R>> {
 
         AttributeToTsMapperManager attributeToTsMapperManager = attributeInfoMapperCreator.create(dataToConfigTs,enums,dataTsClass);
 
-        AttributeTypeEnumTs attributeTypeEnumTs = new AttributeTypeEnumTs(attributeToTsMapperManager, utilDir);
-        TsEnumConstructed attributeTypeEnumTsEnum = attributeTypeEnumTs.construct();
-        attributeTypeEnumTsEnum.writeToFile();
+        TsClassTemplateBased attributeTypeEnumTs = new TsClassTemplateBased("AttributeType.ts", utilDir);
+        attributeTypeEnumTs.writeToFile();
 
         DataCreatorTs<R> dataCreatorGenerator = new DataCreatorTs<>(dataClasses, dataToConfigTs, dataTsClass, utilDir);
         TsFile dataCreatorTsClass = dataCreatorGenerator.construct();
         dataCreatorTsClass.writeToFile();
 
         for (Map.Entry<Class<? extends FactoryBase<?,R>>, TsClassConstructed> entry : dataToGeneratedTsClass.entrySet()) {
-            DataGeneratedTs dataGenerator = new DataGeneratedTs(entry.getKey(), dataToConfigTs, dataTsClass,dynamicDataDictionaryTsClass,staticAttributeValueAccessorTsClass, dataCreatorTsClass, attributeMetadataTsClass, attributeAccessorClass, attributeToTsMapperManager,attributeTypeEnumTsEnum);
+            DataGeneratedTs dataGenerator = new DataGeneratedTs(entry.getKey(), dataToConfigTs, dataTsClass,dynamicDataDictionaryTsClass,staticAttributeValueAccessorTsClass, dataCreatorTsClass, attributeMetadataTsClass, attributeAccessorClass, attributeToTsMapperManager,attributeTypeEnumTs);
             dataGenerator.complete(entry.getValue()).writeToFile();
         }
 

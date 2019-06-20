@@ -32,9 +32,9 @@ public class MicroserviceRestClient<R extends FactoryBase<?,R>,S> {
     private final MicroserviceResourceApi<R,S> microserviceResourceApi;
     private final String user;
     private final String passwordHash;
-    private final FactoryTreeBuilderBasedAttributeSetup<?,R,S> factoryTreeBuilderBasedAttributeSetup;
+    private final FactoryTreeBuilderBasedAttributeSetup<R,S> factoryTreeBuilderBasedAttributeSetup;
 
-    public MicroserviceRestClient(MicroserviceResourceApi<R,S> microserviceResourceApi, String user, String passwordHash, FactoryTreeBuilderBasedAttributeSetup<?,R,S> factoryTreeBuilderBasedAttributeSetup) {
+    public MicroserviceRestClient(MicroserviceResourceApi<R,S> microserviceResourceApi, String user, String passwordHash, FactoryTreeBuilderBasedAttributeSetup<R,S> factoryTreeBuilderBasedAttributeSetup) {
         this.microserviceResourceApi = microserviceResourceApi;
         this.user=user;
         this.passwordHash=passwordHash;

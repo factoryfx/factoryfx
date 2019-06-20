@@ -14,10 +14,10 @@ import java.nio.file.Paths;
 public class Main {
 
     public static void main(String[] args) {
-        FactoryTreeBuilder< Server,RootFactory,Void> builder = new FactoryTreeBuilder<>(RootFactory.class, ctx-> new JettyServerBuilder<>(new RootFactory())
+        FactoryTreeBuilder< Server,RootFactory,Void> builder = new FactoryTreeBuilder<>(RootFactory.class, ctx-> new JettyServerBuilder<RootFactory>()
                 .withHost("localhost").withPort(8005)
                 .withResource(ctx.get(SpecificMicroserviceResource.class))
-                .withResource(ctx.get(DatabaseResourceFactory.class)).build());
+                .withResource(ctx.get(DatabaseResourceFactory.class)).buildTo(new RootFactory()));
         builder.addFactory(SpecificMicroserviceResource.class, Scope.SINGLETON);
 
         builder.addFactory(DatabaseResourceFactory.class, Scope.SINGLETON, ctx->{

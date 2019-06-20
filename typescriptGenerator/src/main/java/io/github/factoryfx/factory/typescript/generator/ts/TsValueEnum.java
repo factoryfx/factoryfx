@@ -4,9 +4,9 @@ import java.util.Set;
 
 public class TsValueEnum  implements TsValue {
     private final String value;
-    private final TsEnumConstructed enumConstructed;
+    private final TsFile enumConstructed;
 
-    public TsValueEnum(String value, TsEnumConstructed enumConstructed){
+    public TsValueEnum(String value, TsFile enumConstructed){
         this.value=value;
         this.enumConstructed = enumConstructed;
     }

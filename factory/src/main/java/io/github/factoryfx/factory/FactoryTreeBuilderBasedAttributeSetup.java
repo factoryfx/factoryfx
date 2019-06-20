@@ -15,11 +15,11 @@ import java.util.List;
  *  provides additional setup for attributes based on the FactoryTreeBuilder
  * @param <R> root
  */
-public class FactoryTreeBuilderBasedAttributeSetup<L,R extends FactoryBase<L,R>,S> {
+public class FactoryTreeBuilderBasedAttributeSetup<R extends FactoryBase<?,R>,S> {
 
-    private final FactoryTreeBuilder<L,R,S> factoryTreeBuilder;
+    private final FactoryTreeBuilder<?,R,S> factoryTreeBuilder;
 
-    public FactoryTreeBuilderBasedAttributeSetup(FactoryTreeBuilder<L,R,S> factoryTreeBuilder) {
+    public FactoryTreeBuilderBasedAttributeSetup(FactoryTreeBuilder<?,R,S> factoryTreeBuilder) {
         this.factoryTreeBuilder = factoryTreeBuilder;
     }
 

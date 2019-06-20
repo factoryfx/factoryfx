@@ -22,6 +22,7 @@ export class AttributeEditorLongAttribute implements AttributeEditor{
         input.oninput= (e) => {
             this.attributeAccessor.setValue(input.valueAsNumber);
         };
+        input.required=!this.attributeAccessor.getAttributeMetadata().nullable();
         return input;
     }
 

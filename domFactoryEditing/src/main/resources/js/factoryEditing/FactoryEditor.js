@@ -2,6 +2,8 @@ export class FactoryEditor {
     constructor(parentElement, attributeEditorCreator) {
         this.parentElement = parentElement;
         this.attributeEditorCreator = attributeEditorCreator;
+        this.target = document.createElement("div");
+        this.parentElement.appendChild(this.target);
     }
     createBreadCrumb(data) {
         let nav = document.createElement("nav");
@@ -35,8 +37,8 @@ export class FactoryEditor {
         return nav;
     }
     clear() {
-        while (this.parentElement.firstElementChild) {
-            this.parentElement.firstElementChild.remove();
+        while (this.target.firstElementChild) {
+            this.target.firstElementChild.remove();
         }
     }
     setOnFactoryChange(event) {
@@ -45,9 +47,9 @@ export class FactoryEditor {
     edit(data) {
         this.currentData = data;
         this.clear();
-        this.parentElement.appendChild(this.createBreadCrumb(data));
+        this.target.appendChild(this.createBreadCrumb(data));
         //You can't construct DOM elements using normal constructors because you're supposed to go through document.createElement
-        let form = document.createElement("form"); //new HTMLFormElement();
+        this.form = document.createElement("form"); //new HTMLFormElement();
         let counter = 0;
         for (let listAttributeAccessorElement of data.listAttributeAccessor()) {
             let formGroup = document.createElement("div");
@@ -62,11 +64,11 @@ export class FactoryEditor {
             div.appendChild(this.attributeEditorCreator.create(listAttributeAccessorElement, counter.toString(), this).create());
             formGroup.appendChild(label);
             formGroup.appendChild(div);
-            form.appendChild(formGroup);
-            form.appendChild(document.createElement("hr"));
+            this.form.appendChild(formGroup);
+            this.form.appendChild(document.createElement("hr"));
             counter++;
         }
-        this.parentElement.appendChild(form);
+        this.target.appendChild(this.form);
         if (this.factoryChangeEvent) {
             this.factoryChangeEvent.onChange(data);
         }
@@ -76,5 +78,8 @@ export class FactoryEditor {
         if (path.length >= 2) {
             this.edit(path[path.length - 2]);
         }
+    }
+    validate() {
+        return this.form.reportValidity();
     }
 }

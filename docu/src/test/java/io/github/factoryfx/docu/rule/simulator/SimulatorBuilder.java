@@ -10,9 +10,9 @@ public class SimulatorBuilder {
         FactoryTreeBuilder<Server, SimulatorRootFactory, Void> factoryTreeBuilder = new FactoryTreeBuilder<>(SimulatorRootFactory.class);
 
         factoryTreeBuilder.addFactory(HelloJettyServerFactory.class, Scope.SINGLETON, context -> {
-            return new JettyServerBuilder<>(new HelloJettyServerFactory())
+            return new JettyServerBuilder<SimulatorRootFactory>()
                     .withHost("localhost").withPort(18089)
-                    .withResource(context.get(HelloResourceFactory.class)).build();
+                    .withResource(context.get(HelloResourceFactory.class)).buildTo(new HelloJettyServerFactory());
 
         });
 

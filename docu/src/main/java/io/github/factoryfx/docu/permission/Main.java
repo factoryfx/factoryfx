@@ -32,7 +32,7 @@ public class Main {
             factory.server.set(ctx.get(JettyServerFactory.class));
             return factory;
         });
-        builder.addFactory(JettyServerFactory.class, Scope.SINGLETON, ctx-> new JettyServerBuilder<>(new JettyServerFactory<PrinterFactory>())
+        builder.addFactory(JettyServerFactory.class, Scope.SINGLETON, ctx-> new JettyServerBuilder<PrinterFactory>()
                 .withHost("localhost").withPort(8005)
                 .withResource(ctx.get(PrinterMicroserviceResourceFactory.class)).build());
         builder.addFactory(PrinterMicroserviceResourceFactory.class, Scope.SINGLETON, ctx->{

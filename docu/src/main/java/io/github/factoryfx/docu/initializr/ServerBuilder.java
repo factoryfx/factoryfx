@@ -17,7 +17,7 @@ public class ServerBuilder {
     public ServerBuilder() {
         this.builder= new FactoryTreeBuilder<>(ServerRootFactory.class);
         this.builder.addFactory(JettyServerFactory.class,Scope.SINGLETON,(ctx)->{
-            return new JettyServerBuilder<>(new JettyServerFactory<ServerRootFactory>())
+            return new JettyServerBuilder<ServerRootFactory>()
                     .withHost("localhost").withPort(8080)
                     .withResource(ctx.get(ExampleResourceFactory.class)).build();
         });

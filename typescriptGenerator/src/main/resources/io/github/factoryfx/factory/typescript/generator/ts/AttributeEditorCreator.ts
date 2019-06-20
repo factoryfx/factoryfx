@@ -12,6 +12,7 @@ import {AttributeEditorEnumListAttribute} from "./AttributeEditorEnumListAttribu
 import {AttributeEditorLongAttribute} from "./AttributeEditorLongAttribute";
 import {AttributeEditorLocalDateAttribute} from "./AttributeEditorLocalDateAttribute";
 import {AttributeEditorBooleanAttribute} from "./AttributeEditorBooleanAttribute";
+import {AttributeEditorDoubleAttribute} from "./AttributeEditorDoubleAttribute";
 
 export class AttributeEditorCreator {
     private attributeEditors: AttributeEditor[];
@@ -26,9 +27,7 @@ export class AttributeEditorCreator {
             this.attributeEditors[AttributeType.EnumListAttribute]= (attributeAccessor: AttributeAccessor<any>, inputId: string,factoryEditor: FactoryEditor)=>new AttributeEditorEnumListAttribute(attributeAccessor,inputId);
             this.attributeEditors[AttributeType.LocalDateAttribute]= (attributeAccessor: AttributeAccessor<any>, inputId: string,factoryEditor: FactoryEditor)=>new AttributeEditorLocalDateAttribute(attributeAccessor,inputId);
             this.attributeEditors[AttributeType.BooleanAttribute]= (attributeAccessor: AttributeAccessor<any>, inputId: string,factoryEditor: FactoryEditor)=>new AttributeEditorBooleanAttribute(attributeAccessor,inputId);
-
-
-
+            this.attributeEditors[AttributeType.DoubleAttribute]= (attributeAccessor: AttributeAccessor<any>, inputId: string,factoryEditor: FactoryEditor)=>new AttributeEditorDoubleAttribute(attributeAccessor,inputId);
 
             this.attributeEditors[AttributeType.FactoryAttribute]= (attributeAccessor: AttributeAccessor<any>, inputId: string,factoryEditor: FactoryEditor)=>new AttributeEditorFactoryAttribute(attributeAccessor,inputId,factoryEditor);
             this.attributeEditors[AttributeType.FactoryListAttribute]= (attributeAccessor: AttributeAccessor<any>, inputId: string,factoryEditor: FactoryEditor)=>new AttributeEditorFactoryListAttribute(attributeAccessor,inputId,factoryEditor);

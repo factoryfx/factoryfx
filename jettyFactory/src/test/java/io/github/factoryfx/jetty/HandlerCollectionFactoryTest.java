@@ -79,7 +79,7 @@ public class HandlerCollectionFactoryTest {
     public void test_add_handler_no_exception() {
         FactoryTreeBuilder<Server, HandlerCollectionRootFactory, Void> builder = new FactoryTreeBuilder<>(HandlerCollectionRootFactory.class);
         builder.addFactory(JettyServerFactory.class, Scope.SINGLETON, ctx->{
-            return new JettyServerBuilder<>(new JettyServerFactory<HandlerCollectionRootFactory>())
+            return new JettyServerBuilder<HandlerCollectionRootFactory>()
                     .withHost("localhost").withPort(8080).build();
         });
 
@@ -102,7 +102,7 @@ public class HandlerCollectionFactoryTest {
     public void test_remove_handler() {
         FactoryTreeBuilder<Server, HandlerCollectionRootFactory, Void> builder = new FactoryTreeBuilder<>(HandlerCollectionRootFactory.class);
         builder.addFactory(JettyServerFactory.class, Scope.SINGLETON, ctx->{
-            return new JettyServerBuilder<>(new JettyServerFactory<HandlerCollectionRootFactory>())
+            return new JettyServerBuilder<HandlerCollectionRootFactory>()
                     .withResource(ctx.get(HandlerCollectionResourceFactory.class))
                     .withHost("localhost").withPort(8080).build();
         });

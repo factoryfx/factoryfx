@@ -1,28 +1,31 @@
 package io.github.factoryfx.example.server;
 
+import io.github.factoryfx.dom.rest.MicroserviceDomResourceFactory;
 import io.github.factoryfx.example.server.shop.*;
 import io.github.factoryfx.example.server.shop.netherlands.NetherlandsCarProductFactory;
+import io.github.factoryfx.factory.FactoryTreeBuilderBasedAttributeSetup;
 import io.github.factoryfx.factory.builder.FactoryTreeBuilder;
 import io.github.factoryfx.factory.builder.Scope;
 import io.github.factoryfx.jetty.JettyServerBuilder;
+import io.github.factoryfx.jetty.JettyServerFactory;
 import org.eclipse.jetty.server.Server;
 
 public class ServerBuilder {
 
     public FactoryTreeBuilder<Server, ServerRootFactory, Void> builder(){
-        FactoryTreeBuilder<Server, ServerRootFactory, Void> factoryTreeBuilder = new FactoryTreeBuilder<>(ServerRootFactory.class);
-
-        factoryTreeBuilder.addFactory(ShopJettyServerFactory.class, Scope.SINGLETON, context -> {
-            return new JettyServerBuilder<>(new ShopJettyServerFactory())
+        FactoryTreeBuilder<Server, ServerRootFactory, Void> factoryTreeBuilder = new FactoryTreeBuilder<>(ServerRootFactory.class,context -> {
+            return new JettyServerBuilder<ServerRootFactory>()
                     .withHost("localhost").withPort(8089)
-                    .withResource(context.get(SpecificMicroserviceResourceFactory.class))
+                    .withResource(context.getUnsafe(MicroserviceDomResourceFactory.class))
                     .withResource(context.get(OrderMonitoringResourceFactory.class))
-                    .withResource(context.get(ShopResourceFactory.class)).build();
+                    .withResource(context.get(ShopResourceFactory.class)).buildTo(new ServerRootFactory());
 
         });
 
-        factoryTreeBuilder.addFactory(SpecificMicroserviceResourceFactory.class, Scope.SINGLETON, context -> {
-            return new SpecificMicroserviceResourceFactory();
+        factoryTreeBuilder.addFactory(MicroserviceDomResourceFactory.class, Scope.SINGLETON, context -> {
+            MicroserviceDomResourceFactory<ServerRootFactory, Void> microserviceDomResourceFactory = new MicroserviceDomResourceFactory<>();
+            microserviceDomResourceFactory.factoryTreeBuilderBasedAttributeSetup.set(new FactoryTreeBuilderBasedAttributeSetup<>(factoryTreeBuilder));
+            return microserviceDomResourceFactory;
         });
 
         factoryTreeBuilder.addFactory(ShopResourceFactory.class, Scope.SINGLETON, context -> {

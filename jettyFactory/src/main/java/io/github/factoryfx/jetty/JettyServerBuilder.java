@@ -13,18 +13,21 @@ import java.util.zip.Deflater;
  * The builder builds the factory structure for a jetty server not the jetty liveobject<br>
  * The factory structure matches the jetty internal architecture and the JettyServerBuilder creates a default configuration for that.
  *
+ * jetty builder
+ *      =>jetty factories
+ *              =>real jetty server
+ *
  * @param <R> server root
- * @param <S> storage summary
  */
-public class JettyServerBuilder<R extends FactoryBase<?,R>,S extends JettyServerFactory<R>> {
-    public S jettyServerFactory;
+public class JettyServerBuilder<R extends FactoryBase<?,R>> {
+    public JettyServerFactory<R> jettyServerFactory;
     private final JerseyServletFactory<R> defaultJerseyServlet;
     private final UpdateableServletFactory<R> updateableServletFactory;
     private final ServletAndPathFactory<R> defaultJerseyServletAndPathFactory;
     private final ThreadPoolFactory<R> threadPoolFactory;
 
-    public JettyServerBuilder(S jettyServerFactory){
-        this.jettyServerFactory=jettyServerFactory;
+    public JettyServerBuilder(){
+        this.jettyServerFactory=new JettyServerFactory<>();
 
         this.threadPoolFactory=new ThreadPoolFactory<>();
         this.threadPoolFactory.poolSize.set(200);
@@ -64,21 +67,28 @@ public class JettyServerBuilder<R extends FactoryBase<?,R>,S extends JettyServer
         updateableServletFactory.servletAndPaths.add(defaultJerseyServletAndPathFactory);
     }
 
-    public S build(){
+    public <S extends JettyServerFactory<R>> S buildTo(S derivedJettyServerFactory){
+        derivedJettyServerFactory.threadPool.set(this.jettyServerFactory.threadPool.get());
+        derivedJettyServerFactory.handler.set(this.jettyServerFactory.handler.get());
+        derivedJettyServerFactory.connectors.set(this.jettyServerFactory.connectors);
+        return derivedJettyServerFactory;
+    }
+
+    public JettyServerFactory<R> build(){
         return jettyServerFactory;
     }
 
-    public JettyServerBuilder<R,S> withPort(int port){
+    public JettyServerBuilder<R> withPort(int port){
         jettyServerFactory.connectors.get(0).port.set(port);
         return this;
     }
 
-    public JettyServerBuilder<R,S> withHost(String host){
+    public JettyServerBuilder<R> withHost(String host){
         jettyServerFactory.connectors.get(0).host.set(host);
         return this;
     }
 
-    public JettyServerBuilder<R,S> withHostWildcard(){
+    public JettyServerBuilder<R> withHostWildcard(){
         return withHost("0.0.0.0");
     }
 
@@ -87,17 +97,17 @@ public class JettyServerBuilder<R extends FactoryBase<?,R>,S extends JettyServer
      * read port: ((ServerConnector)server.getConnectors()[0]).getLocalPort().
      * @return builder
      */
-    public JettyServerBuilder<R,S> withRandomPort(){
+    public JettyServerBuilder<R> withRandomPort(){
         jettyServerFactory.connectors.get(0).port.set(0);
         return this;
     }
 
-    public JettyServerBuilder<R,S> withResource(FactoryBase<?,R> resource){
+    public JettyServerBuilder<R> withResource(FactoryBase<?,R> resource){
         defaultJerseyServlet.resources.add(resource);
         return this;
     }
 
-    public JettyServerBuilder<R,S> withAdditionalConnector(HttpServerConnectorFactory<R> httpServerConnectorFactory){
+    public JettyServerBuilder<R> withAdditionalConnector(HttpServerConnectorFactory<R> httpServerConnectorFactory){
         jettyServerFactory.connectors.add(httpServerConnectorFactory);
         return this;
     }
@@ -108,22 +118,22 @@ public class JettyServerBuilder<R extends FactoryBase<?,R>,S extends JettyServer
      * @param pathSpec servlet spec path
      * @return builder
      */
-    public JettyServerBuilder<R,S> withResourcePathSpec(String pathSpec){
+    public JettyServerBuilder<R> withResourcePathSpec(String pathSpec){
         defaultJerseyServletAndPathFactory.pathSpec.set(pathSpec);
         return this;
     }
 
-    public JettyServerBuilder<R,S> withJaxrsComponent(Object jaxrsComponent){
+    public JettyServerBuilder<R> withJaxrsComponent(Object jaxrsComponent){
         defaultJerseyServlet.additionalJaxrsComponents.get().add(jaxrsComponent);
         return this;
     }
 
-    public JettyServerBuilder<R,S> removeDefaultJerseyServlet(){
+    public JettyServerBuilder<R> removeDefaultJerseyServlet(){
         updateableServletFactory.servletAndPaths.remove(defaultJerseyServletAndPathFactory);
         return this;
     }
 
-    public JettyServerBuilder<R,S> withServlet(String pathSpec, FactoryBase<? extends Servlet,R> servlet){
+    public JettyServerBuilder<R> withServlet(String pathSpec, FactoryBase<? extends Servlet,R> servlet){
         ServletAndPathFactory<R> servletAndPathFactory = new ServletAndPathFactory<>();
         servletAndPathFactory.pathSpec.set(pathSpec);
         servletAndPathFactory.servlet.set(servlet);
@@ -131,7 +141,7 @@ public class JettyServerBuilder<R extends FactoryBase<?,R>,S extends JettyServer
         return this;
     }
 
-    public JettyServerBuilder<R,S> withSsl(SslContextFactoryFactory<R> ssl) {
+    public JettyServerBuilder<R> withSsl(SslContextFactoryFactory<R> ssl) {
         jettyServerFactory.connectors.get(0).ssl.set(ssl);
         return this;
     }
@@ -144,7 +154,7 @@ public class JettyServerBuilder<R extends FactoryBase<?,R>,S extends JettyServer
         this.threadPoolFactory.poolSize.set(size);
     }
 
-    public JettyServerBuilder<R,S> withDefaultJerseyObjectMapper(FactoryBase<? extends ObjectMapper, R> objectMapperFactory){
+    public JettyServerBuilder<R> withDefaultJerseyObjectMapper(FactoryBase<? extends ObjectMapper, R> objectMapperFactory){
         defaultJerseyServlet.objectMapper.set(objectMapperFactory);
         return this;
     }

@@ -9,6 +9,9 @@ export class DynamicData extends Data {
     getDisplayText() {
         let splits = this.javaClass.split(".");
         let displayText = splits[splits.length - 1];
+        if (displayText.endsWith("Factory")) {
+            displayText = displayText.slice(0, -7);
+        }
         return displayText
             // insert a space before all caps
             .replace(/([A-Z])/g, ' $1');

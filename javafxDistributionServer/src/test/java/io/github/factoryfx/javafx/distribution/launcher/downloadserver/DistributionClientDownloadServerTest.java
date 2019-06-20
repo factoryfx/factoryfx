@@ -17,9 +17,9 @@ public class DistributionClientDownloadServerTest {
     public static void main(String[] args) {
 
         FactoryTreeBuilder<Server,DownloadTestServerFactory,Void> builder = new FactoryTreeBuilder<>(DownloadTestServerFactory.class, ctx -> {
-            return new JettyServerBuilder<>(new DownloadTestServerFactory()).
+            return new JettyServerBuilder<DownloadTestServerFactory>().
                     withHost("localhost").withPort(43654).withResource(ctx.get(SpecificDistributionClientDownloadResourceFactory.class)).
-                    build();
+                    buildTo(new DownloadTestServerFactory());
         });
         builder.addFactory(DistributionClientDownloadResourceFactory.class, Scope.SINGLETON, ctx -> {
             DistributionClientDownloadResourceFactory<DownloadTestServerFactory> resource = new DistributionClientDownloadResourceFactory<>();

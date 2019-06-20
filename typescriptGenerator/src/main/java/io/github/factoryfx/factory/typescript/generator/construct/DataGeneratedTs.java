@@ -25,10 +25,10 @@ public class DataGeneratedTs<R extends FactoryBase<?,R>, L,  F extends FactoryBa
     private final Map<Class<? extends FactoryBase<?,R>>,TsClassConstructed> dataToOverrideTs;
     private final TsFile attributeAccessorClass;
     private final AttributeToTsMapperManager attributeToTsMapperManager;
-    private final TsEnumConstructed attributeTypeEnumTsEnum;
+    private final TsFile attributeTypeEnumTsEnum;
     private final TsFile dynamicDataDictionaryTsClass;
 
-    public DataGeneratedTs(Class<F> clazz, Map<Class<? extends FactoryBase<?,R>>, TsClassConstructed> dataToOverrideTs, TsFile dataTsClass, TsFile dynamicDataDictionaryTsClass, TsFile staticAttributeValueAccessorTsClass , TsFile dataCreatorTsClass, TsFile attributeTsClass, TsFile attributeAccessorClass, AttributeToTsMapperManager attributeToTsMapperManager, TsEnumConstructed attributeTypeEnumTsEnum) {
+    public DataGeneratedTs(Class<F> clazz, Map<Class<? extends FactoryBase<?,R>>, TsClassConstructed> dataToOverrideTs, TsFile dataTsClass, TsFile dynamicDataDictionaryTsClass, TsFile staticAttributeValueAccessorTsClass , TsFile dataCreatorTsClass, TsFile attributeTsClass, TsFile attributeAccessorClass, AttributeToTsMapperManager attributeToTsMapperManager, TsFile attributeTypeEnumTsEnum) {
         this.clazz = clazz;
         this.dataTsClass = dataTsClass;
         this.dataToOverrideTs = dataToOverrideTs;

@@ -41,6 +41,15 @@ public class FactoryContext<R extends FactoryBase<?,R>> {
         return result;
     }
 
+    public <F extends FactoryBase<?,R>> F getUnsafe(Class<?> clazz){
+        F result = get(fc -> fc.match(clazz,null));
+        if (result==null){
+            throw new IllegalStateException("builder missing Factory: "+clazz);
+        }
+        return result;
+    }
+
+
     public <F extends FactoryBase<?,R>> F get(Class<F> clazz, String name){
         F result = get(fc -> fc.match(clazz,name));
         if (result==null){

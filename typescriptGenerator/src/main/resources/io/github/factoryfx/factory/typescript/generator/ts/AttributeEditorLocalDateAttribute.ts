@@ -19,6 +19,7 @@ export class AttributeEditorLocalDateAttribute implements AttributeEditor{
         input.oninput= (e) => {
             this.attributeAccessor.setValue(input.valueAsDate);
         };
+        input.required=!this.attributeAccessor.getAttributeMetadata().nullable();
         return input;
     }
 

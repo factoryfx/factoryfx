@@ -1,3 +1,18 @@
+# 2.0.6
+
+### BREAKING CHANGES
+* **JettyServerBuilder:**
+removed generic parameter JettyServerBuilder and constructor parameter. To create a derived JettyServerFactory a new buildTo method is added.
+
+old
+```java
+new JettyServerBuilder<RootFactory,JettyServerDerivedFactory>(new JettyServerDerivedFactory()).withHost("localhost").withPort(8015).build()
+```
+new
+```java
+new JettyServerBuilder<RootFactory>().withHost("localhost").withPort(8015).buildTo(new JettyServerDerivedFactory())
+```
+
 # 2.0.5
 
 ### Features
