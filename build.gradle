@@ -114,8 +114,8 @@ subprojects {
             maven {
                 url 'https://oss.sonatype.org/content/repositories/snapshots/'
                 credentials {
-                    username = System.getProperty("ossrhUsername")
-                    password = System.getProperty("ossrhPassword")
+                    username = ossrhUsername
+                    password = ossrhPassword
                 }
             }
         }
