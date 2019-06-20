@@ -34,9 +34,8 @@ wrapper {
 subprojects {
     apply plugin: 'java'
     apply plugin: "com.github.spotbugs"
-
-    apply plugin: 'maven'
     apply plugin: 'signing'
+    apply plugin: 'maven-publish'
 
     if (!'benchmark'.equals(project.name)){//jmh does not work with module-info
         compileJava {
@@ -78,7 +77,7 @@ subprojects {
 
     if (project.hasProperty('secretKeyRingFileSourceURL')) {
         signing {
-            sign configurations.archives
+            sign publishing.publications.mavenJava
         }
         //workaround  to get key  file to the plugin
 
@@ -103,48 +102,48 @@ subprojects {
     }
 
 
-    uploadArchives {
-        repositories {
-            mavenDeployer {
-                beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
-
-                repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
-                    authentication(userName: ossrhUsername, password: ossrhPassword)
-                }
-
-                snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
-                    authentication(userName: ossrhUsername, password: ossrhPassword)
-                }
-
-                pom.project {
-                    name 'factoryfx'
-                    packaging 'jar'
-                    // optionally artifactId can be defined here
-                    description 'factoryfx dependency injection framework'
-                    url 'http://factoryfx.github.io/factoryfx'
-
-                    scm {
-                        connection 'scm:git@github.com:factoryfx/factoryfx.git'
-                        developerConnection 'scm:git@github.com:factoryfx/factoryfx.git'
-                        url 'scm:git@github.com:factoryfx/factoryfx.git'
-                    }
-
-                    licenses {
-                        license {
-                            name 'The Apache License, Version 2.0'
-                            url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
-                        }
-                    }
-                    developers {
-                        developer {
-                            id 'SCOOP Software'
-                            name 'SCOOP Software'
-                        }
-                    }
-                }
-            }
-        }
-    }
+//    uploadArchives {
+//        repositories {
+//            mavenDeployer {
+//                beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+//
+//                repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
+//                    authentication(userName: ossrhUsername, password: ossrhPassword)
+//                }
+//
+//                snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
+//                    authentication(userName: ossrhUsername, password: ossrhPassword)
+//                }
+//
+//                pom.project {
+//                    name 'factoryfx'
+//                    packaging 'jar'
+//                    // optionally artifactId can be defined here
+//                    description 'factoryfx dependency injection framework'
+//                    url 'http://factoryfx.github.io/factoryfx'
+//
+//                    scm {
+//                        connection 'scm:git@github.com:factoryfx/factoryfx.git'
+//                        developerConnection 'scm:git@github.com:factoryfx/factoryfx.git'
+//                        url 'scm:git@github.com:factoryfx/factoryfx.git'
+//                    }
+//
+//                    licenses {
+//                        license {
+//                            name 'The Apache License, Version 2.0'
+//                            url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+//                        }
+//                    }
+//                    developers {
+//                        developer {
+//                            id 'SCOOP Software'
+//                            name 'SCOOP Software'
+//                        }
+//                    }
+//                }
+//            }
+//        }
+//    }
 
 
     repositories {
@@ -174,11 +173,7 @@ subprojects {
         ignoreFailures = true
         excludeFilter = file("$rootProject.projectDir/findbugs/findbugs-exclude-filter.xml")
     }
-
-
-    //that is the new publish plugin that doesn't work with maven central
-    //https://github.com/gradle/gradle/issues/1165
-    apply plugin: 'maven-publish'
+    
 
     publishing {
 
@@ -189,16 +184,43 @@ subprojects {
                     classifier "sources"
                 }
             }
+            pom {
+                name = 'factoryfx'
+                packaging 'jar'
+                description = 'factoryfx dependency injection framework'
+                url = 'http://factoryfx.github.io/factoryfx'
+                properties = [
+                        myProp: "value",
+                        "prop.with.dots": "anotherValue"
+                ]
+                licenses {
+                    license {
+                        name 'The Apache License, Version 2.0'
+                        url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                    }
+                }
+                developers {
+                    developer {
+                        id 'SCOOP Software'
+                        name 'SCOOP Software'
+                    }
+                }
+                scm {
+                    connection 'scm:git@github.com:factoryfx/factoryfx.git'
+                    developerConnection 'scm:git@github.com:factoryfx/factoryfx.git'
+                    url 'scm:git@github.com:factoryfx/factoryfx.git'
+                }
+            }
+
         }
 
         repositories {
             maven {
-                // change to point to your repo, e.g. http://my.org/repo
                 credentials {
-                    username System.getProperty("repouser")
-                    password System.getProperty("repopassword")
+                    username System.getProperty("ossrhUsername")
+                    password System.getProperty("ossrhPassword")
                 }
-                url System.getProperty("repourl")
+                url "https://oss.sonatype.org/content/repositories/snapshots/"
             }
         }
     }
@@ -256,7 +278,7 @@ project(':microserviceRestCommon') {
 }
 
 project(':microserviceRestIntegrationTest') {
-    uploadArchives.enabled = false
+    publishing.publications.remove(publishing.publications.mavenJava)//don't publish
     dependencies {
         compile project(":microserviceRestServer")
         compile project(":microserviceRestClient")
@@ -334,7 +356,7 @@ project(':jettyFactory') {
 
 project(':example') {
 
-    uploadArchives.enabled = false
+    publishing.publications.remove(publishing.publications.mavenJava)//don't publish
     dependencies {
         compile project(":javafxFactoryEditing")
         compile project(":jettyFactory")
@@ -429,14 +451,14 @@ project(':javascript') {
 }
 
 project(':testfactories') {
-    uploadArchives.enabled = false
+    publishing.publications.remove(publishing.publications.mavenJava)//don't publish
     dependencies {
         compile project(":factory")
     }
 }
 
 project(':docu') {
-    uploadArchives.enabled = false
+    publishing.publications.remove(publishing.publications.mavenJava)//don't publish
     dependencies {
         compile project(":factory")
         compile project(":jettyFactory")
@@ -571,7 +593,7 @@ project(':soapFactory') {
 //            }
 //        }
 
-        uploadArchives.enabled = false
+        publishing.publications.remove(publishing.publications.mavenJava)//don't publish
         dependencies {
             compile project(":factory")
             compile project(":testfactories")
