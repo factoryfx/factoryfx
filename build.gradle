@@ -75,6 +75,56 @@ subprojects {
     group = 'io.github.factoryfx'
     version = '2.0.8'
 
+    publishing {
+
+        publications {
+            mavenJava(MavenPublication) {
+                from components.java
+                artifact sourcesJar {
+                    classifier "sources"
+                }
+            }
+            pom {
+                name = 'factoryfx'
+                packaging 'jar'
+                description = 'factoryfx dependency injection framework'
+                url = 'http://factoryfx.github.io/factoryfx'
+                properties = [
+                        myProp: "value",
+                        "prop.with.dots": "anotherValue"
+                ]
+                licenses {
+                    license {
+                        name 'The Apache License, Version 2.0'
+                        url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                    }
+                }
+                developers {
+                    developer {
+                        id 'SCOOP Software'
+                        name 'SCOOP Software'
+                    }
+                }
+                scm {
+                    connection 'scm:git@github.com:factoryfx/factoryfx.git'
+                    developerConnection 'scm:git@github.com:factoryfx/factoryfx.git'
+                    url 'scm:git@github.com:factoryfx/factoryfx.git'
+                }
+            }
+
+        }
+
+        repositories {
+            maven {
+                credentials {
+                    username System.getProperty("ossrhUsername")
+                    password System.getProperty("ossrhPassword")
+                }
+                url "https://oss.sonatype.org/content/repositories/snapshots/"
+            }
+        }
+    }
+
     if (project.hasProperty('secretKeyRingFileSourceURL')) {
         signing {
             sign publishing.publications.mavenJava
@@ -172,57 +222,6 @@ subprojects {
 //        toolVersion = "3.0.1"
         ignoreFailures = true
         excludeFilter = file("$rootProject.projectDir/findbugs/findbugs-exclude-filter.xml")
-    }
-    
-
-    publishing {
-
-        publications {
-            mavenJava(MavenPublication) {
-                from components.java
-                artifact sourcesJar {
-                    classifier "sources"
-                }
-            }
-            pom {
-                name = 'factoryfx'
-                packaging 'jar'
-                description = 'factoryfx dependency injection framework'
-                url = 'http://factoryfx.github.io/factoryfx'
-                properties = [
-                        myProp: "value",
-                        "prop.with.dots": "anotherValue"
-                ]
-                licenses {
-                    license {
-                        name 'The Apache License, Version 2.0'
-                        url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
-                    }
-                }
-                developers {
-                    developer {
-                        id 'SCOOP Software'
-                        name 'SCOOP Software'
-                    }
-                }
-                scm {
-                    connection 'scm:git@github.com:factoryfx/factoryfx.git'
-                    developerConnection 'scm:git@github.com:factoryfx/factoryfx.git'
-                    url 'scm:git@github.com:factoryfx/factoryfx.git'
-                }
-            }
-
-        }
-
-        repositories {
-            maven {
-                credentials {
-                    username System.getProperty("ossrhUsername")
-                    password System.getProperty("ossrhPassword")
-                }
-                url "https://oss.sonatype.org/content/repositories/snapshots/"
-            }
-        }
     }
 
 }
