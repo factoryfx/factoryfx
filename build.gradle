@@ -36,8 +36,8 @@ subprojects {
     apply plugin: 'java-library'
     apply plugin: 'maven-publish'
     apply plugin: 'signing'
-    
-    
+
+
 
     if (!'benchmark'.equals(project.name)){//jmh does not work with module-info
         compileJava {
@@ -112,15 +112,15 @@ subprojects {
 
         repositories {
             maven {
+                url 'https://oss.sonatype.org/content/repositories/snapshots/'
                 credentials {
                     username = System.getProperty("ossrhUsername")
                     password = System.getProperty("ossrhPassword")
                 }
-                url "https://oss.sonatype.org/content/repositories/snapshots/"
             }
         }
     }
-    
+
     if (project.hasProperty('secretKeyRingFileSourceURL')) {
         signing {
             sign publishing.publications.mavenJava
@@ -273,7 +273,7 @@ project(':microserviceRestCommon') {
 }
 
 project(':microserviceRestIntegrationTest') {
-//    publishing.publications.remove(publishing.publications.mavenJava)//don't publish
+    publishing.publications.remove(publishing.publications.mavenJava)//don't publish
     dependencies {
         compile project(":microserviceRestServer")
         compile project(":microserviceRestClient")
@@ -351,7 +351,7 @@ project(':jettyFactory') {
 
 project(':example') {
 
-//    publishing.publications.remove(publishing.publications.mavenJava)//don't publish
+    publishing.publications.remove(publishing.publications.mavenJava)//don't publish
     dependencies {
         compile project(":javafxFactoryEditing")
         compile project(":jettyFactory")
@@ -446,14 +446,14 @@ project(':javascript') {
 }
 
 project(':testfactories') {
-//    publishing.publications.remove(publishing.publications.mavenJava)//don't publish
+    publishing.publications.remove(publishing.publications.mavenJava)//don't publish
     dependencies {
         compile project(":factory")
     }
 }
 
 project(':docu') {
-//    publishing.publications.remove(publishing.publications.mavenJava)//don't publish
+    publishing.publications.remove(publishing.publications.mavenJava)//don't publish
     dependencies {
         compile project(":factory")
         compile project(":jettyFactory")
@@ -590,7 +590,7 @@ project(':benchmark') {
 //            }
 //        }
 
-//        publishing.publications.remove(publishing.publications.mavenJava)//don't publish
+    publishing.publications.remove(publishing.publications.mavenJava)//don't publish
     dependencies {
         compile project(":factory")
         compile project(":testfactories")
