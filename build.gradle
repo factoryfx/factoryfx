@@ -33,9 +33,11 @@ wrapper {
 
 subprojects {
     apply plugin: "com.github.spotbugs"
-    apply plugin: 'signing'
     apply plugin: 'java-library'
     apply plugin: 'maven-publish'
+    apply plugin: 'signing'
+    
+    
 
     if (!'benchmark'.equals(project.name)){//jmh does not work with module-info
         compileJava {
