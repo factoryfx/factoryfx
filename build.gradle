@@ -111,8 +111,8 @@ subprojects {
         repositories {
             maven {
                 credentials {
-                    username System.getProperty("ossrhUsername")
-                    password System.getProperty("ossrhPassword")
+                    username = System.getProperty("ossrhUsername")
+                    password = System.getProperty("ossrhPassword")
                 }
                 url "https://oss.sonatype.org/content/repositories/snapshots/"
             }
