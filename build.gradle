@@ -95,8 +95,8 @@ subprojects {
                     }
                     developers {
                         developer {
-                            id 'SCOOP Software'
-                            name 'SCOOP Software'
+                            id = 'SCOOP Software'
+                            name = 'SCOOP Software'
                         }
                     }
                     scm {
