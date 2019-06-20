@@ -80,38 +80,36 @@ subprojects {
         publications {
             mavenJava(MavenPublication) {
                 from components.java
-                artifact sourcesJar {
-                    classifier "sources"
-                }
-            }
-            pom {
-                name = 'factoryfx'
-                packaging 'jar'
-                description = 'factoryfx dependency injection framework'
-                url = 'http://factoryfx.github.io/factoryfx'
-                properties = [
-                        myProp: "value",
-                        "prop.with.dots": "anotherValue"
-                ]
-                licenses {
-                    license {
-                        name 'The Apache License, Version 2.0'
-                        url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                artifact sourcesJar
+                artifact javadocJar
+                pom {
+                    name = 'factoryfx'
+                    packaging 'jar'
+                    description = 'factoryfx dependency injection framework'
+                    url = 'http://factoryfx.github.io/factoryfx'
+                    properties = [
+                            myProp: "value",
+                            "prop.with.dots": "anotherValue"
+                    ]
+                    licenses {
+                        license {
+                            name 'The Apache License, Version 2.0'
+                            url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                        }
+                    }
+                    developers {
+                        developer {
+                            id 'SCOOP Software'
+                            name 'SCOOP Software'
+                        }
+                    }
+                    scm {
+                        connection 'scm:git@github.com:factoryfx/factoryfx.git'
+                        developerConnection 'scm:git@github.com:factoryfx/factoryfx.git'
+                        url 'scm:git@github.com:factoryfx/factoryfx.git'
                     }
                 }
-                developers {
-                    developer {
-                        id 'SCOOP Software'
-                        name 'SCOOP Software'
-                    }
-                }
-                scm {
-                    connection 'scm:git@github.com:factoryfx/factoryfx.git'
-                    developerConnection 'scm:git@github.com:factoryfx/factoryfx.git'
-                    url 'scm:git@github.com:factoryfx/factoryfx.git'
-                }
             }
-
         }
 
         repositories {
