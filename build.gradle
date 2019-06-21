@@ -31,13 +31,6 @@ wrapper {
     distributionType = Wrapper.DistributionType.ALL
 }
 
-nexusStaging {
-//    packageGroup = "org.mycompany.myproject" //optional if packageGroup == project.getGroup()
-//    stagingProfileId = "yourStagingProfileId" //when not defined will be got from server using "packageGroup"
-    username = ossrhUsername
-    password = ossrhPassword
-}
-
 subprojects {
     apply plugin: "com.github.spotbugs"
     apply plugin: 'java-library'
@@ -127,6 +120,13 @@ subprojects {
                 }
             }
         }
+    }
+
+    nexusStaging {
+//    packageGroup = "org.mycompany.myproject" //optional if packageGroup == project.getGroup()
+//    stagingProfileId = "yourStagingProfileId" //when not defined will be got from server using "packageGroup"
+        username = ossrhUsername
+        password = ossrhPassword
     }
 
     if (project.hasProperty('secretKeyRingFileSourceURL')) {
