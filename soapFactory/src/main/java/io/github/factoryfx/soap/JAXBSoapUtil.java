@@ -42,11 +42,11 @@ public class JAXBSoapUtil {
 
     private static void collect(Class<?> clazz, Set<Class<?>> classes) {
         for (Method method : clazz.getDeclaredMethods()) {
-            if (method.getParameterCount() <= 1 && method.getReturnType() != null) {
+            if (method.getReturnType() != null) {
                 if (classes.add(method.getReturnType())) {
                     collect(method.getReturnType(),classes);
                 }
-                if (method.getParameterCount() > 0) {
+                for (int i = 0; i < method.getParameterCount(); ++i) {
                     Class<?> parameterType = method.getParameterTypes()[0];
                     if (classes.add(parameterType)) {
                         collect(parameterType, classes);

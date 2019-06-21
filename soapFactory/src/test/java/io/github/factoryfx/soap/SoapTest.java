@@ -9,8 +9,11 @@ import io.github.factoryfx.server.Microservice;
 import io.github.factoryfx.soap.server.SoapJettyServerFactory;
 import io.github.factoryfx.soap.example.*;
 import org.eclipse.jetty.server.Server;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
@@ -23,7 +26,7 @@ public class SoapTest {
 
     @SuppressWarnings("unchecked")
     @Test
-    public void test(){
+    public void test() throws Exception {
 
         FactoryTreeBuilder<Server, SoapJettyServerFactory, Object> builder = new FactoryTreeBuilder<>(SoapJettyServerFactory.class);
         builder.addFactory(JettyServerFactory.class, Scope.SINGLETON, ctx-> new JettyServerBuilder<>()
@@ -33,7 +36,21 @@ public class SoapTest {
         builder.addFactory(SoapHandlerFactory.class, Scope.SINGLETON, ctx->{
             SoapHandlerFactory<HelloWorld, SoapJettyServerFactory> soapHandlerFactory = new SoapHandlerFactory<>();
             HelloWorldFactory helloWorldFactory = new HelloWorldFactory();
-            helloWorldFactory.service.set(req->new SoapDummyResponse());
+            HelloWorld goodCase = new HelloWorld() {
+
+                @Override
+                public SoapDummyResponse subIMMEDIATETEMPLATECHANGE(SoapDummyRequest parameters) throws SoapDummyRequestException1, SoapDummyRequestException2 {
+                    return new SoapDummyResponse();
+                }
+
+                @Override
+                public SoapDummyResponse methodWithRequestResponse(SoapDummyRequest2 parameters, HttpServletRequest request, HttpServletResponse resp) {
+                    Assertions.assertNotNull(request);
+                    Assertions.assertNotNull(resp);
+                    return new SoapDummyResponse();
+                }
+            };
+            helloWorldFactory.service.set(goodCase);
             soapHandlerFactory.serviceBean.set(helloWorldFactory);
             return soapHandlerFactory;
         });
@@ -42,20 +59,32 @@ public class SoapTest {
         Microservice<Server, SoapJettyServerFactory, Object> microService = builder.microservice().build();
         microService.start();
 
-        callSoapWebService("http://localhost:8088","action");
+        callSoapWebService("http://localhost:8088",createSOAPRequest("action"));
+        callSoapWebService("http://localhost:8088",createSOAPRequest2());
         DataUpdate<SoapJettyServerFactory> newFactory = microService.prepareNewFactory();
         HelloWorldFactory helloWorldFactory = new HelloWorldFactory();
-        helloWorldFactory.service.set(req->{
-            throw new SoapDummyRequestException1();
-        });
+        HelloWorld badCase = new HelloWorld() {
+
+            @Override
+            public SoapDummyResponse subIMMEDIATETEMPLATECHANGE(SoapDummyRequest parameters) throws SoapDummyRequestException1, SoapDummyRequestException2 {
+                throw new SoapDummyRequestException1();
+            }
+
+            @Override
+            public SoapDummyResponse methodWithRequestResponse(SoapDummyRequest2 parameters, HttpServletRequest request, HttpServletResponse resp) {
+                return new SoapDummyResponse();
+            }
+        };
+
+        helloWorldFactory.service.set(badCase);
         newFactory.root.server.get().getServlet(SoapHandlerFactory.class).serviceBean.set(helloWorldFactory);
         microService.updateCurrentFactory(newFactory);
-        callSoapWebService("http://localhost:8088","action");
+        callSoapWebService("http://localhost:8088",createSOAPRequest("action"));
 
     }
 
     // SAAJ - SOAP Client Testing
-    public static void main(String args[]) {
+    public static void main(String args[]) throws Exception {
         /*
             The example below requests from the Web Service at:
              http://www.webservicex.net/uszip.asmx?op=GetInfoByCity
@@ -71,17 +100,17 @@ public class SoapTest {
         String soapEndpointUrl = "http://www.webservicex.net/uszip.asmx";
         String soapAction = "http://www.webserviceX.NET/GetInfoByCity";
 
-        callSoapWebService(soapEndpointUrl, soapAction);
+        callSoapWebService(soapEndpointUrl, createSOAPRequest(soapAction));
     }
 
-    private static void callSoapWebService(String soapEndpointUrl, String soapAction) {
+    private static void callSoapWebService(String soapEndpointUrl, SOAPMessage soapMessage) {
         try {
             // Create SOAP Connection
             SOAPConnectionFactory soapConnectionFactory = SOAPConnectionFactory.newInstance();
             SOAPConnection soapConnection = soapConnectionFactory.createConnection();
 
             // Send SOAP Message to SOAP Server
-            SOAPMessage soapResponse = soapConnection.call(createSOAPRequest(soapAction), soapEndpointUrl);
+            SOAPMessage soapResponse = soapConnection.call(soapMessage, soapEndpointUrl);
 
             // Print the SOAP Response
             System.out.println("Response SOAP Message:");
@@ -94,7 +123,7 @@ public class SoapTest {
         }
     }
 
-    private static void createSoapEnvelope(SOAPMessage soapMessage) throws SOAPException {
+    private static void createSoapEnvelope(Object req, SOAPMessage soapMessage) throws SOAPException {
         SOAPPart soapPart = soapMessage.getSOAPPart();
 
         String myNamespace = "myNamespace";
@@ -118,14 +147,10 @@ public class SoapTest {
 
         // SOAP Body
         SOAPBody soapBody = envelope.getBody();
-        SoapDummyRequest req = new SoapDummyRequest();
-        req.dummy = "BLA";
-        req.soapDummyRequestNested = new SoapDummyRequestNested();
-        req.soapDummyRequestNested.dummy = "BLUB";
         Marshaller marshaller = null;
         DocumentBuilder db = null;
         try {
-            marshaller = JAXBContext.newInstance(SoapDummyRequest.class).createMarshaller();
+            marshaller = JAXBContext.newInstance(req.getClass()).createMarshaller();
             db = DocumentBuilderFactory.newInstance().newDocumentBuilder();
             org.w3c.dom.Document document = db.newDocument();
             marshaller.marshal(req, document);
@@ -141,10 +166,33 @@ public class SoapTest {
         MessageFactory messageFactory = MessageFactory.newInstance(SOAPConstants.SOAP_1_2_PROTOCOL);
         SOAPMessage soapMessage = messageFactory.createMessage();
 
-        createSoapEnvelope(soapMessage);
+        SoapDummyRequest req = new SoapDummyRequest();
+        req.dummy = "BLA";
+        req.soapDummyRequestNested = new SoapDummyRequestNested();
+        req.soapDummyRequestNested.dummy = "BLUB";
+
+        createSoapEnvelope(req,soapMessage);
 
         MimeHeaders headers = soapMessage.getMimeHeaders();
         headers.addHeader("SOAPAction", soapAction);
+
+        soapMessage.saveChanges();
+
+        /* Print the request message, just for debugging purposes */
+        System.out.println("Request SOAP Message:");
+        soapMessage.writeTo(System.out);
+        System.out.println("\n");
+
+        return soapMessage;
+    }
+
+    private static SOAPMessage createSOAPRequest2() throws Exception {
+        MessageFactory messageFactory = MessageFactory.newInstance(SOAPConstants.SOAP_1_2_PROTOCOL);
+        SOAPMessage soapMessage = messageFactory.createMessage();
+
+        createSoapEnvelope(new SoapDummyRequest2(), soapMessage);
+
+        MimeHeaders headers = soapMessage.getMimeHeaders();
 
         soapMessage.saveChanges();
 

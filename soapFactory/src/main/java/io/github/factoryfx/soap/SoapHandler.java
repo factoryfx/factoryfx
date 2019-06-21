@@ -56,7 +56,7 @@ public class SoapHandler implements Servlet {
             soapPart.setContent(messageSource);
             message.saveChanges();
 
-            WebServiceCallResult callResult = dispatcher.execute(soapMessageUtil.parseRequest(message));
+            WebServiceCallResult callResult = dispatcher.execute(soapMessageUtil.parseRequest(message), request, response);
             SOAPMessage responseMessage =
                     callResult.result != null?soapMessageUtil.wrapResponse(callResult.result, messageFactory)
                     :soapMessageUtil.wrapFault(callResult.createFaultDetail(),callResult.fault.getMessage(), messageFactory, soap12);
