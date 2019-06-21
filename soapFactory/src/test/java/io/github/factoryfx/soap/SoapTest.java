@@ -12,6 +12,7 @@ import org.eclipse.jetty.server.Server;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.bind.JAXBContext;
@@ -21,6 +22,8 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.soap.*;
+import javax.xml.ws.WebServiceContext;
+import javax.xml.ws.handler.MessageContext;
 
 public class SoapTest {
 
@@ -38,6 +41,9 @@ public class SoapTest {
             HelloWorldFactory helloWorldFactory = new HelloWorldFactory();
             HelloWorld goodCase = new HelloWorld() {
 
+                @Resource
+                private WebServiceContext webServiceContext;
+
                 @Override
                 public SoapDummyResponse subIMMEDIATETEMPLATECHANGE(SoapDummyRequest parameters) throws SoapDummyRequestException1, SoapDummyRequestException2 {
                     return new SoapDummyResponse();
@@ -47,6 +53,8 @@ public class SoapTest {
                 public SoapDummyResponse methodWithRequestResponse(SoapDummyRequest2 parameters, HttpServletRequest request, HttpServletResponse resp) {
                     Assertions.assertNotNull(request);
                     Assertions.assertNotNull(resp);
+                    Assertions.assertSame(request,webServiceContext.getMessageContext().get(MessageContext.SERVLET_REQUEST));
+                    Assertions.assertSame(resp,webServiceContext.getMessageContext().get(MessageContext.SERVLET_RESPONSE));
                     return new SoapDummyResponse();
                 }
             };

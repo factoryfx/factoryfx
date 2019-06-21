@@ -1,15 +1,219 @@
 package io.github.factoryfx.soap;
 
+import org.w3c.dom.Element;
+
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.xml.bind.JAXBContext;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.namespace.QName;
+import javax.xml.soap.SOAPMessage;
+import javax.xml.ws.EndpointReference;
+import javax.xml.ws.WebServiceContext;
+import javax.xml.ws.handler.soap.SOAPMessageContext;
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.HashMap;
+import java.security.Principal;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class WebServiceRequestDispatcher {
+
     private final Object webService;
     private final HashMap<Class,Invoker> dispatchMap = new HashMap<>();
+
+    static final class RequestContext {
+        final HttpServletRequest request;
+        final HttpServletResponse response;
+        SOAPMessage soapMessage;
+
+        RequestContext(HttpServletRequest request, HttpServletResponse response, SOAPMessage soapMessage) {
+            this.request = request;
+            this.response = response;
+            this.soapMessage = soapMessage;
+        }
+    }
+    private final ThreadLocal<RequestContext> msgContext = new ThreadLocal<>();
+    private final WebServiceContext webServiceContext = new WebServiceContext() {
+        @Override
+        public SOAPMessageContext getMessageContext() {
+            return new SOAPMessageContext() {
+                @Override
+                public SOAPMessage getMessage() {
+                    return ctx().soapMessage;
+                }
+
+                @Override
+                public void setMessage(SOAPMessage message) {
+                    ctx().soapMessage = message;
+                }
+
+                @Override
+                public Object[] getHeaders(QName header, JAXBContext context, boolean allRoles) {
+                    throw new UnsupportedOperationException();
+                }
+
+                @Override
+                public Set<String> getRoles() {
+                    return Collections.emptySet();
+                }
+
+                @Override
+                public void setScope(String name, Scope scope) {
+                    throw new UnsupportedOperationException();
+                }
+
+                @Override
+                public Scope getScope(String name) {
+                    throw new UnsupportedOperationException();
+                }
+
+                @Override
+                public int size() {
+                    return 6;
+                }
+
+                private RequestContext ctx() {
+                    return msgContext.get();
+                }
+
+                @Override
+                public boolean isEmpty() {
+                    return false;
+                }
+
+                @Override
+                public boolean containsKey(Object key) {
+                    if (key == null)
+                        return false;
+                    switch (key.toString()) {
+                        case HTTP_REQUEST_HEADERS:
+                        case HTTP_REQUEST_METHOD:
+                        case HTTP_RESPONSE_CODE:
+                        case HTTP_RESPONSE_HEADERS:
+                        case SERVLET_REQUEST:
+                        case SERVLET_RESPONSE:
+                            return true;
+                    }
+                    return false;
+                }
+
+                @Override
+                public boolean containsValue(Object value) {
+                    if (value == ctx().request ||
+                        value == ctx().response ||
+                        value == ctx().soapMessage)
+                        return true;
+                    return false;
+                }
+
+                @Override
+                public Object get(Object key) {
+                    if (key == null)
+                        return false;
+                    switch (key.toString()) {
+                        case HTTP_REQUEST_HEADERS: return buildHeaders(ctx().request);
+                        case HTTP_REQUEST_METHOD: return ctx().request.getMethod();
+                        case HTTP_RESPONSE_CODE: return ctx().response.getStatus();
+                        case HTTP_RESPONSE_HEADERS: return buildHeaders(ctx().response);
+                        case SERVLET_REQUEST: return ctx().request;
+                        case SERVLET_RESPONSE: return ctx().response;
+                    }
+                    return null;
+                }
+
+                @Override
+                public Object put(String key, Object value) {
+                    throw new UnsupportedOperationException();
+                }
+
+                @Override
+                public Object remove(Object key) {
+                    throw new UnsupportedOperationException();
+                }
+
+                @Override
+                public void putAll(Map<? extends String, ?> m) {
+                    throw new UnsupportedOperationException();
+                }
+
+                @Override
+                public void clear() {
+                    throw new UnsupportedOperationException();
+                }
+
+                @Override
+                public Set<String> keySet() {
+                    return new HashSet<>(Arrays.asList(HTTP_REQUEST_HEADERS,HTTP_REQUEST_METHOD,HTTP_RESPONSE_CODE,HTTP_RESPONSE_HEADERS,SERVLET_REQUEST,SERVLET_RESPONSE));
+                }
+
+                @Override
+                public Collection<Object> values() {
+                    return Arrays.asList(ctx().soapMessage,buildHeaders(ctx().request),ctx().request.getMethod(),ctx().response.getStatus(),buildHeaders(ctx().response),ctx().request,ctx().response);
+                }
+
+                @Override
+                public Set<Entry<String, Object>> entrySet() {
+                    HashMap<String,Object> entries = new HashMap<>();
+                    entries.put(HTTP_REQUEST_HEADERS,ctx().soapMessage);
+                    entries.put(HTTP_REQUEST_METHOD,ctx().soapMessage);
+                    entries.put(HTTP_RESPONSE_CODE,ctx().soapMessage);
+                    entries.put(HTTP_RESPONSE_HEADERS,ctx().soapMessage);
+                    entries.put(SERVLET_REQUEST,ctx().soapMessage);
+                    entries.put(SERVLET_RESPONSE,ctx().soapMessage);
+                    return entries.entrySet();
+                }
+            };
+        }
+
+        @Override
+        public Principal getUserPrincipal() {
+            return null;
+        }
+
+        @Override
+        public boolean isUserInRole(String role) {
+            return false;
+        }
+
+        @Override
+        public EndpointReference getEndpointReference(Element... referenceParameters) {
+            return null;
+        }
+
+        @Override
+        public <T extends EndpointReference> T getEndpointReference(Class<T> clazz, Element... referenceParameters) {
+            return null;
+        }
+    };
+
+    private Map<String,List<String>> buildHeaders(HttpServletRequest request) {
+        HashMap<String,List<String>> map = new HashMap<>();
+        Enumeration<String> en = request.getHeaderNames();
+        while (en.hasMoreElements()) {
+            String name = en.nextElement();
+            map.put(name,enum2list(request.getHeaders(name)));
+        }
+        return map;
+    }
+
+    private Map<String,List<String>> buildHeaders(HttpServletResponse response) {
+        HashMap<String,List<String>> map = new HashMap<>();
+        for (String name : response.getHeaderNames()) {
+            map.put(name,response.getHeaders(name).stream().collect(Collectors.toList()));
+        }
+        return map;
+    }
+
+    private List<String> enum2list(Enumeration<String> e) {
+        ArrayList<String> l = new ArrayList<>();
+        while (e.hasMoreElements()) {
+            l.add(e.nextElement());
+        }
+        return l;
+    }
 
     private interface ParameterSupplyer {
 
@@ -43,6 +247,18 @@ public class WebServiceRequestDispatcher {
 
     public WebServiceRequestDispatcher(Object webService){
         this.webService=webService;
+        for (Field f : webService.getClass().getDeclaredFields()) {
+            if (f.getAnnotation(Resource.class) != null) {
+                if (f.getType().isAssignableFrom(WebServiceContext.class)) {
+                    f.setAccessible(true);
+                    try {
+                        f.set(webService,webServiceContext);
+                    } catch (IllegalAccessException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+            }
+        }
 
         for (Method m : webService.getClass().getDeclaredMethods()) {
             if (m.getParameterCount() >= 1 && m.getReturnType() != null) {
@@ -64,14 +280,16 @@ public class WebServiceRequestDispatcher {
                     }
                 }
 
-                dispatchMap.put(rootElementClass, new Invoker(m,suppliers));
+                if (isWebService)
+                    dispatchMap.put(rootElementClass, new Invoker(m,suppliers));
             }
         }
     }
 
-    public WebServiceCallResult execute(Object request, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
+    public WebServiceCallResult execute(SOAPMessage message, Object request, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
         Invoker method = dispatchMap.get(request.getClass());
         try {
+            msgContext.set(new RequestContext(httpServletRequest, httpServletResponse, message));
             return WebServiceCallResult.fromResult(method.invoke(webService, request, httpServletRequest, httpServletResponse));
         } catch (IllegalAccessException  e) {
             throw new RuntimeException(e);
@@ -82,6 +300,8 @@ public class WebServiceRequestDispatcher {
             if (ex instanceof RuntimeException)
                 throw (RuntimeException)ex;
             return WebServiceCallResult.fromFault((Exception)ex);
+        } finally {
+            msgContext.set(null);
         }
     }
 
