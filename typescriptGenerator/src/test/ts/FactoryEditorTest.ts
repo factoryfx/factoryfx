@@ -1,13 +1,13 @@
 //intellij run parameter:  -r ts-node/register
 //user interface: qunit, must be set in run config
 
-import { expect } from 'chai';
-import 'mocha';
-// import {ExampleData} from "./example/config/ExampleData";
-import {FactoryEditor} from "./example/util/FactoryEditor";
-import {JSDOM} from 'jsdom';
-import {Data} from "./example/util/Data";
-import {ExampleData} from "./example/config/io/github/factoryfx/factory/typescript/generator/data/ExampleData";
+// import { expect } from 'chai';
+// import 'mocha';
+// // import {ExampleData} from "./example/config/ExampleData";
+// import {FactoryEditor} from "./example/util/FactoryEditor";
+// import {JSDOM} from 'jsdom';
+// import {Data} from "./example/util/Data";
+// import {ExampleData} from "./example/config/io/github/factoryfx/factory/typescript/generator/data/ExampleData";
 // import { JSDOM } from JSDOM;
 
 suite('FactoryEditorDataTest');// set user interface to QUnit in runconfig

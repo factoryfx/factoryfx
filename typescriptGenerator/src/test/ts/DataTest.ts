@@ -4,18 +4,18 @@
 import { expect } from 'chai';
 import 'mocha';
 // import {ExampleData} from "./example/config/ExampleData";
-import {ExampleData} from "./example/config/io/github/factoryfx/factory/typescript/generator/data/ExampleData";
-import {ExampleData2} from "./example/config/io/github/factoryfx/factory/typescript/generator/data/ExampleData2";
-import {ExampleDataAll} from "./example/config/io/github/factoryfx/factory/typescript/generator/data/ExampleDataAll";
-import {ExampleDataIgnore} from "./example/config/io/github/factoryfx/factory/typescript/generator/data/ExampleDataIgnore";
-import {ExampleFactory} from "./example/config/io/github/factoryfx/factory/typescript/generator/data/ExampleFactory";
-import {DataCreator} from "./example/util/DataCreator";
-import {ExampleEnum} from "./example/generated/io/github/factoryfx/factory/typescript/generator/data/ExampleEnum";
-import {AttributeType} from "./example/util/AttributeType";
-import {ExampleData3} from "./example/config/io/github/factoryfx/factory/typescript/generator/data/ExampleData3";
-import {Data} from "./example/util/Data";
-import {DynamicDataDictionary} from "./example/util/DynamicDataDictionary";
-import {DynamicData} from "./example/util/DynamicData";
+import {ExampleData} from "../../../build/ts/example/config/io/github/factoryfx/factory/typescript/generator/data/ExampleData";
+import {ExampleData2} from "../../../build/ts/example/config/io/github/factoryfx/factory/typescript/generator/data/ExampleData2";
+import {ExampleDataAll} from "../../../build/ts/example/config/io/github/factoryfx/factory/typescript/generator/data/ExampleDataAll";
+import {ExampleDataIgnore} from "../../../build/ts/example/config/io/github/factoryfx/factory/typescript/generator/data/ExampleDataIgnore";
+import {ExampleFactory} from "../../../build/ts/example/config/io/github/factoryfx/factory/typescript/generator/data/ExampleFactory";
+import {DataCreator} from "../../../build/ts/example/util/DataCreator";
+import {ExampleEnum} from "../../../build/ts/example/generated/io/github/factoryfx/factory/typescript/generator/data/ExampleEnum";
+import {AttributeType} from "../../../build/ts/example/util/AttributeType";
+import {ExampleData3} from "../../../build/ts/example/config/io/github/factoryfx/factory/typescript/generator/data/ExampleData3";
+import {Data} from "../../../build/ts/example/util/Data";
+import {DynamicDataDictionary} from "../../../build/ts/example/util/DynamicDataDictionary";
+import {DynamicData} from "../../../build/ts/example/util/DynamicData";
 
 
 suite('DataTest');// set user interface to QUnit in runconfig
