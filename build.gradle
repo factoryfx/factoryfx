@@ -33,7 +33,7 @@ wrapper {
 
 apply plugin: 'io.codearte.nexus-staging'
 nexusStaging {
-//    packageGroup = "org.mycompany.myproject" //optional if packageGroup == project.getGroup()
+    packageGroup = 'io.github.factoryfx' //optional if packageGroup == project.getGroup()
 //    stagingProfileId = "yourStagingProfileId" //when not defined will be got from server using "packageGroup"
     username = ossrhUsername
     password = ossrhPassword
@@ -44,7 +44,7 @@ subprojects {
     apply plugin: 'java-library'
     apply plugin: 'maven-publish'
     apply plugin: 'signing'
-    
+
 
     if (!'benchmark'.equals(project.name)){//jmh does not work with module-info
         compileJava {
@@ -513,7 +513,13 @@ project(':typescriptGenerator') {
         }
     }
 
+    task generateTestCode(type: JavaExec) {
+        classpath = sourceSets.test.runtimeClasspath
+        main = 'io.github.factoryfx.factory.typescript.generator.data.TestGenerator'
+    }
+
     task installNpm(type: Exec) {
+        dependsOn ':typescriptGenerator:generateTestCode'
         workingDir "$projectDir/src/test/ts/"
 
         if (org.gradle.internal.os.OperatingSystem.current().isWindows()) {
