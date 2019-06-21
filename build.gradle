@@ -31,14 +31,20 @@ wrapper {
     distributionType = Wrapper.DistributionType.ALL
 }
 
+apply plugin: 'io.codearte.nexus-staging'
+nexusStaging {
+//    packageGroup = "org.mycompany.myproject" //optional if packageGroup == project.getGroup()
+//    stagingProfileId = "yourStagingProfileId" //when not defined will be got from server using "packageGroup"
+    username = ossrhUsername
+    password = ossrhPassword
+}
+
 subprojects {
     apply plugin: "com.github.spotbugs"
     apply plugin: 'java-library'
     apply plugin: 'maven-publish'
     apply plugin: 'signing'
-    apply plugin: 'io.codearte.nexus-staging'
-
-
+    
 
     if (!'benchmark'.equals(project.name)){//jmh does not work with module-info
         compileJava {
@@ -120,13 +126,6 @@ subprojects {
                 }
             }
         }
-    }
-
-    nexusStaging {
-//    packageGroup = "org.mycompany.myproject" //optional if packageGroup == project.getGroup()
-//    stagingProfileId = "yourStagingProfileId" //when not defined will be got from server using "packageGroup"
-        username = ossrhUsername
-        password = ossrhPassword
     }
 
     if (project.hasProperty('secretKeyRingFileSourceURL')) {
