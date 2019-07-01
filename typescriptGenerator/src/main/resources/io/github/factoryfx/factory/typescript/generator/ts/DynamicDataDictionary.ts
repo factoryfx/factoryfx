@@ -10,9 +10,10 @@ export class DynamicDataDictionary{
     public createAttributeMetadataArray(javaClazz: string): AttributeMetadataAndAttributeName[] {
         let result: AttributeMetadataAndAttributeName[] = [];
 
-        Object.entries(this.data.classNameToItem[javaClazz].attributeNameToItem).forEach(
-            ([attributeName, value]) => {
-                let dynamicDataDictionaryAttributeItem: any=value;
+        let attributeNameToItem = this.data.classNameToItem[javaClazz].attributeNameToItem;
+        for (var attributeName in attributeNameToItem) {
+            let dynamicDataDictionaryAttributeItem = attributeNameToItem[attributeName];
+            if (attributeNameToItem.hasOwnProperty(attributeName)) {
                 result.push(new AttributeMetadataAndAttributeName(
                     new AttributeMetadata<any>(
                         dynamicDataDictionaryAttributeItem.en,
@@ -23,8 +24,7 @@ export class DynamicDataDictionary{
                     ),attributeName)
                 );
             }
-        );
-
+        }
         return result;
 
     }
