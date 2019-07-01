@@ -18,7 +18,6 @@ export class AttributeEditorDoubleAttribute implements AttributeEditor{
 
         input.value=this.attributeAccessor.getValue();
         input.oninput=(e) => {
-            console.log(input.value);
             this.attributeAccessor.setValue(input.value);
         };
 

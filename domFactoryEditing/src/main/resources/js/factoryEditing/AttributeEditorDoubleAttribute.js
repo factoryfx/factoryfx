@@ -11,7 +11,6 @@ export class AttributeEditorDoubleAttribute {
         input.step = 'any';
         input.value = this.attributeAccessor.getValue();
         input.oninput = (e) => {
-            console.log(input.value);
             this.attributeAccessor.setValue(input.value);
         };
         return input;

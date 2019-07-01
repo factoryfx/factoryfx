@@ -1,6 +1,10 @@
 import {AttributeAccessor} from "./AttributeAccessor";
 import {AttributeEditor} from "./AttributeEditor";
 import {FactoryEditor} from "./FactoryEditor";
+import {DynamicData} from "./DynamicData";
+import {DynamicDataDictionary} from "./DynamicDataDictionary";
+import {HttpUtility} from "./HttpUtility";
+import {WaitAnimation} from "./WaitAnimation";
 
 export class AttributeEditorFactoryAttribute implements AttributeEditor{
 
@@ -8,7 +12,7 @@ export class AttributeEditorFactoryAttribute implements AttributeEditor{
     private input: HTMLInputElement= document.createElement("input");
 
 
-    constructor(private attributeAccessor: AttributeAccessor<any>, private inputId: string, private factoryEditor: FactoryEditor ) {
+    constructor(private attributeAccessor: AttributeAccessor<any>, private inputId: string, private factoryEditor: FactoryEditor, private waitAnimation: WaitAnimation) {
         this.editButton.type="button";
         this.editButton.textContent="edit";
         this.editButton.className="btn btn-outline-secondary";
@@ -44,26 +48,20 @@ export class AttributeEditorFactoryAttribute implements AttributeEditor{
         newButton.textContent="new";
         newButton.onclick=(e)=>{
 
-            let createRequest: XMLHttpRequest = new XMLHttpRequest();
-            createRequest.open("POST","updateCurrentFactory");
-            createRequest.setRequestHeader("Content-type","application/json");
-
             let createRequestBody = {
-                "javaClass" : "io.github.factoryfx.dom.rest.MicroserviceDomResourceTest$JettyServerRootFactory",
-                "attributeVariableName" : "handler"
+                "factoryId" : this.factoryEditor.getCurrentData().getId(),
+                "attributeVariableName" : this.attributeAccessor.getAttributeName(),
+                "root" : this.factoryEditor.getCurrentData().getRoot().mapToJsonFromRoot()
             };
-            createRequest.onload=(e)=>{
-                let response = JSON.parse(createRequest.responseText);
-
-                this.attributeAccessor.setValue(null);
+            HttpUtility.post("createNewFactory",createRequestBody,this.waitAnimation,(response)=>{
+                this.attributeAccessor.setValue(this.factoryEditor.getCurrentData().createNewChildFactory(response));
                 this.bindValue();
-            };
-            createRequest.send(JSON.stringify(createRequestBody));
+            });
         };
         newButton.className="btn btn-outline-secondary";
 
 
-
+        inputGroupAppend.appendChild(newButton);
         inputGroupAppend.appendChild(removeButton);
         inputGroupAppend.appendChild(this.editButton);
         inputGroup.appendChild(this.input);

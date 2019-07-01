@@ -20,6 +20,7 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
+import io.github.factoryfx.factory.attribute.dependency.FactoryViewAttribute;
 import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
@@ -310,9 +311,9 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
     private void merge(FactoryBase<L,R> originalValue, FactoryBase<L,R> newValue, MergeResult<R> mergeResult, Function<String,Boolean> permissionChecker) {
         this.visitAttributesTripleFlat(originalValue, newValue, (attributeName, currentMerger, originalMerger, newMerger) -> {
             //for performance to execute compare only once
-            boolean newMergerMatchOriginalMerger= newMerger.internal_match(originalMerger);
-            boolean currentMergerMatchOriginalMerger= currentMerger.internal_match(originalMerger);
-            boolean currentMergerMatchNewMerger= currentMerger.internal_match(newMerger);
+            boolean newMergerMatchOriginalMerger= newMerger.internal_mergeMatch(originalMerger);
+            boolean currentMergerMatchOriginalMerger= currentMerger.internal_mergeMatch(originalMerger);
+            boolean currentMergerMatchNewMerger= currentMerger.internal_mergeMatch(newMerger);
 
 
             if (attributeHasMergeConflict(newMergerMatchOriginalMerger,currentMergerMatchOriginalMerger, currentMergerMatchNewMerger)) {
@@ -980,6 +981,10 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
         public void needRecalculationForBackReferences() {
             factory.needReFinalisation();
         }
+
+        public Attribute<?,?> getAttribute(String attributeVariableName){
+            return factory.getAttribute(attributeVariableName);
+        }
     }
 
     FactoryTreeBuilderBasedAttributeSetup<R, ?> factoryTreeBuilderBasedAttributeSetup;
@@ -1204,6 +1209,8 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
 
 
 
+
+
     @JsonIgnore()
     List<FactoryBase<?,R>> finalisedChildrenFlat;
     List<FactoryBase<?,R>> addedTo;
@@ -1406,6 +1413,20 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
 
     private void mock(Function<FactoryBase<L, R>, L> creatorMock) {
         this.creatorMock = creatorMock;
+    }
+
+
+    private Attribute<?,?> getAttribute(String attributeVariableNameParam){
+        Attribute[] result = new Attribute[1];
+        visitAttributesFlat(new AttributeVisitor() {
+            @Override
+            public void accept(String attributeVariableName, Attribute<?, ?> attribute) {
+                if (attributeVariableName.equals(attributeVariableNameParam)){
+                    result[0]=attribute;
+                }
+            }
+        });
+        return result[0];
     }
 
 

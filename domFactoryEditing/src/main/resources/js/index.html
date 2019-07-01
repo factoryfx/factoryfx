@@ -18,97 +18,45 @@
     import {DynamicData} from "./factoryEditing/DynamicData.js";
     import {WaitAnimation} from "./factoryEditing/WaitAnimation.js";
     import {DynamicDataDictionary} from "./factoryEditing/DynamicDataDictionary.js";
-
+    import {GuiConfiguration} from "./factoryEditing/GuiConfiguration.js";
+    import {HttpUtility} from "./factoryEditing/HttpUtility.js";
+    import {View} from "./factoryEditing/View.js";
 
     let parentElement = document.getElementById('factoryEditorDiv');
-    let waitAnimation = new WaitAnimation(parentElement);
+    let view =new View();
+    parentElement.appendChild(view.create());
+    let waitAnimation = new WaitAnimation(parentElement,view);
 
-    let dataDictionaryRequest = new XMLHttpRequest();
-    dataDictionaryRequest.open("GET","dynamicDataDictionary");
-    dataDictionaryRequest.setRequestHeader("Content-type","application/json");
-    waitAnimation.show();
-    dataDictionaryRequest.addEventListener('load', function(event) {
-        if (dataDictionaryRequest.status >= 200 && dataDictionaryRequest.status < 300) {
+
+    HttpUtility.get("metadata",waitAnimation,(metadataResponse) =>{
             let dynamicDataDictionary = new DynamicDataDictionary();
-            dynamicDataDictionary.mapFromJson(JSON.parse(dataDictionaryRequest.responseText));
+            dynamicDataDictionary.mapFromJson(metadataResponse.dynamicDataDictionary);
 
-
-            let prepareNewFactoryRequest = new XMLHttpRequest();
-            prepareNewFactoryRequest.open("POST","prepareNewFactory");
-            prepareNewFactoryRequest.setRequestHeader("Content-type","application/json");
-            prepareNewFactoryRequest.addEventListener('load', function(event) {
-                waitAnimation.hide();
-                if (prepareNewFactoryRequest.status >= 200 && prepareNewFactoryRequest.status < 300) {
-
-                    let factoryEditor = new FactoryEditor(parentElement, new AttributeEditorCreator());
+            HttpUtility.post("prepareNewFactory",null,waitAnimation,(prepareNewFactoryResponse)=> {
+                    let factoryEditor = new FactoryEditor(new AttributeEditorCreator(),waitAnimation);
                     let root = new DynamicData();
-                    let factoryUpdate = JSON.parse(prepareNewFactoryRequest.responseText);
-                    root.mapFromJsonFromRootDynamic(factoryUpdate.root, dynamicDataDictionary);
-                    factoryEditor.edit(root);
+                    root.mapFromJsonFromRootDynamic(prepareNewFactoryResponse.root, dynamicDataDictionary);
 
-                    factoryEditor.setOnFactoryChange({
-                        onChange(newData){
-                            window.history.pushState(null, null, window.location.pathname+"#"+newData.getPath().map(factory => factory.getDisplayText()).join('/'));
-                        }
+
+                    factoryEditor.setOnFactoryChange((newData)=>{
+                       window.history.pushState(null, null, window.location.pathname+"#"+newData.getPath().map(factory => factory.getDisplayText()).join('/'));
                     });
 
                     window.onpopstate = (event)=> {
                         factoryEditor.back();
                     };
 
+                    let guiConfiguration= new GuiConfiguration(metadataResponse.guiConfiguration, factoryEditor, root,prepareNewFactoryResponse.baseVersionId,view,waitAnimation);
+                    view.setNavbar(guiConfiguration.createNavbar());
 
+                    factoryEditor.edit(root);
 
-                    let button = document.createElement("button");
-                    button.className="btn btn-primary";
-                    button.type="button";
-                    button.textContent="Save";
-                    button.style.marginLeft="1rem";
-                    button.onclick=ev => {
-                        if (factoryEditor.validate()){
-                            waitAnimation.show();
-                            let saveRequest = new XMLHttpRequest();
-                            saveRequest.open("POST","updateCurrentFactory");
-                            saveRequest.setRequestHeader("Content-type","application/json");
-
-                            let saveRequestBody = {
-                                "user": "",
-                                "passwordHash": "",
-                                "request": {
-                                    "@class": "io.github.factoryfx.factory.storage.DataUpdate",
-                                    "root": root.mapToJson({}),
-                                    "user": "1",
-                                    "comment": "2",
-                                    "baseVersionId": factoryUpdate.baseVersionId
-                                }
-                            };
-                            saveRequest.send(JSON.stringify(saveRequestBody));
-                            saveRequest.addEventListener('load', function(event) {
-                                waitAnimation.hide();
-                                let response = JSON.parse(saveRequest.responseText);
-
-
-                                let resultDisplay = document.createElement("div");
-                                resultDisplay.className="alert alert-success";
-                                resultDisplay.role="alert";
-                                let pre = document.createElement("pre");
-                                let code = document.createElement("code");
-                                pre.appendChild(code);
-                                code.textContent=response.log;
-                                resultDisplay.appendChild(pre)
-                                parentElement.appendChild(resultDisplay)
-                            });
-                        }
-                    };
-                    parentElement.appendChild(button);
-                }
+                    view.show(factoryEditor);
             });
-            prepareNewFactoryRequest.send();
-
-
 
         }
-    });
-    dataDictionaryRequest.send();
+    );
+
 
 </script>
 

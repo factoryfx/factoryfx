@@ -1,10 +1,24 @@
 import { AttributeAccessor } from "./AttributeAccessor";
 import { Data } from "./Data";
-import { StaticAttributeValueAccessor } from "./StaticAttributeValueAccessor";
 import { AttributeType } from "./AttributeType";
 export class DynamicData extends Data {
     collectChildrenFlat() {
-        return undefined;
+        let result = [];
+        let attributeMetadataArray = this.dynamicDataDictionary.createAttributeMetadataArray(this.javaClass);
+        for (let attributeMetadata of attributeMetadataArray) {
+            let attributeType = attributeMetadata.attributeMetadata.getType();
+            if (attributeType === AttributeType.FactoryListAttribute || attributeType === AttributeType.FactoryPolymorphicListAttribute) {
+                for (let data of this.attributeValues[attributeMetadata.attributeName]) {
+                    result.push(data);
+                }
+            }
+            if (attributeType === AttributeType.FactoryAttribute || attributeType === AttributeType.FactoryPolymorphicAttribute) {
+                if (this.attributeValues[attributeMetadata.attributeName]) {
+                    result.push(this.attributeValues[attributeMetadata.attributeName]);
+                }
+            }
+        }
+        return result;
     }
     getDisplayText() {
         let splits = this.javaClass.split(".");
@@ -22,31 +36,27 @@ export class DynamicData extends Data {
     mapValuesFromJson(json, idToDataMap, dataCreator, dynamicDataDictionary) {
         this.attributeAccessors = [];
         this.attributeValues = {};
-        for (let property in json) {
-            if (json.hasOwnProperty(property)) {
-                if (property !== '@class' && property !== 'treeBuilderName' && property !== 'id') {
-                    this.attributeValues[property] = property['v'];
-                    let attributeMetadata = dynamicDataDictionary.createAttributeMetadata(this.javaClass, property);
-                    let attributeType = attributeMetadata.getType();
-                    if (Array.isArray(json[property])) {
-                        if (attributeType === AttributeType.FactoryListAttribute || attributeType === AttributeType.FactoryPolymorphicListAttribute) {
-                            this.attributeValues[property] = dynamicDataDictionary.createDataList(json[property], idToDataMap, this);
-                        }
-                        else {
-                            this.attributeValues[property] = json[property];
-                        }
-                    }
-                    else {
-                        if (attributeType === AttributeType.FactoryAttribute || attributeType === AttributeType.FactoryPolymorphicAttribute) {
-                            this.attributeValues[property] = dynamicDataDictionary.createData(json[property].v, idToDataMap, this);
-                        }
-                        else {
-                            this.attributeValues[property] = this.getValue(json[property].v, attributeType);
-                        }
-                    }
-                    this.attributeAccessors.push(new AttributeAccessor(attributeMetadata, new StaticAttributeValueAccessor(this.attributeValues, property), property));
-                }
+        this.dynamicDataDictionary = dynamicDataDictionary;
+        let attributeMetadataArray = dynamicDataDictionary.createAttributeMetadataArray(this.javaClass);
+        for (let attributeMetadata of attributeMetadataArray) {
+            this.attributeAccessors.push(new AttributeAccessor(attributeMetadata.attributeMetadata, this.attributeValues, attributeMetadata.attributeName));
+            let attributeType = attributeMetadata.attributeMetadata.getType();
+            if (attributeType === AttributeType.FactoryAttribute || attributeType === AttributeType.FactoryPolymorphicAttribute) {
+                this.attributeValues[attributeMetadata.attributeName] = dynamicDataDictionary.createData(json[attributeMetadata.attributeName].v, idToDataMap, this);
+                continue;
             }
+            if (attributeType === AttributeType.FactoryListAttribute || attributeType === AttributeType.FactoryPolymorphicListAttribute) {
+                this.attributeValues[attributeMetadata.attributeName] = dynamicDataDictionary.createDataList(json[attributeMetadata.attributeName], idToDataMap, this);
+                continue;
+            }
+            if (attributeType === AttributeType.FactoryViewAttribute || attributeType === AttributeType.FactoryViewListAttribute) {
+                continue;
+            }
+            if (Array.isArray(json[attributeMetadata.attributeName])) {
+                this.attributeValues[attributeMetadata.attributeName] = json[attributeMetadata.attributeName];
+                continue;
+            }
+            this.attributeValues[attributeMetadata.attributeName] = this.getValue(json[attributeMetadata.attributeName].v, attributeType);
         }
     }
     getValue(jsonValue, attributeType) {
@@ -108,5 +118,10 @@ export class DynamicData extends Data {
             type === AttributeType.FloatListAttribute ||
             type === AttributeType.StringListAttribute ||
             type === AttributeType.ByteListAttribute;
+    }
+    createNewChildFactory(json) {
+        let idToDataMap = {};
+        this.collectChildrenRecursive(idToDataMap);
+        return this.dynamicDataDictionary.createData(json, idToDataMap, this);
     }
 }

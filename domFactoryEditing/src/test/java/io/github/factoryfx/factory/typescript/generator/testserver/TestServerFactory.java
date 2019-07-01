@@ -1,13 +1,14 @@
 package io.github.factoryfx.factory.typescript.generator.testserver;
 
 import io.github.factoryfx.factory.SimpleFactoryBase;
-import io.github.factoryfx.factory.attribute.dependency.FactoryAttribute;
-import io.github.factoryfx.factory.attribute.dependency.FactoryPolymorphicAttribute;
+import io.github.factoryfx.factory.attribute.dependency.*;
 import io.github.factoryfx.factory.attribute.primitive.*;
 import io.github.factoryfx.factory.attribute.time.*;
 import io.github.factoryfx.factory.attribute.types.*;
 import io.github.factoryfx.jetty.JettyServerFactory;
 import org.eclipse.jetty.server.Server;
+
+import java.util.List;
 
 public class TestServerFactory extends SimpleFactoryBase<Server, TestServerFactory> {
     public final FactoryAttribute<TestServerFactory,Server, JettyServerFactory<TestServerFactory>> server = new FactoryAttribute<>();
@@ -39,6 +40,15 @@ public class TestServerFactory extends SimpleFactoryBase<Server, TestServerFacto
     public final EnumListAttribute<ExampleEnum> enumListAttribute=new EnumListAttribute<>(ExampleEnum.class).nullable();
     public final InstantAttribute instantAttribute=new InstantAttribute().nullable();
     public final BigIntegerAttribute bigIntegerAttribute=new BigIntegerAttribute().nullable();
+
+    public final FactoryAttribute<TestServerFactory,Void, ExampleFactory> exampleFactory = new FactoryAttribute<>();
+    public final FactoryListAttribute<TestServerFactory,Void, ExampleFactory> exampleListFactory = new FactoryListAttribute<>();
+    public final FactoryViewAttribute<TestServerFactory,Void,ExampleFactory> view=new FactoryViewAttribute<>((root)->root.exampleFactory.get());
+    public final FactoryViewListAttribute<TestServerFactory,Void,ExampleFactory> viewList=new FactoryViewListAttribute<>((root)-> {
+        return List.of(root.exampleFactory.get(),root.exampleFactory.get(),root.exampleFactory.get());
+    });
+
+
 
     @Override
     protected Server createImpl() {

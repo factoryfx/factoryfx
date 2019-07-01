@@ -19,7 +19,6 @@ public class DataGeneratedTs<R extends FactoryBase<?,R>, L,  F extends FactoryBa
 
     private final Class<F> clazz;
     private final TsFile dataTsClass;
-    private final TsFile staticAttributeValueAccessorTsClass;
     private final TsFile dataCreatorTsClass;
     private final TsFile attributeMetadataTsClass;
     private final Map<Class<? extends FactoryBase<?,R>>,TsClassConstructed> dataToOverrideTs;
@@ -28,7 +27,7 @@ public class DataGeneratedTs<R extends FactoryBase<?,R>, L,  F extends FactoryBa
     private final TsFile attributeTypeEnumTsEnum;
     private final TsFile dynamicDataDictionaryTsClass;
 
-    public DataGeneratedTs(Class<F> clazz, Map<Class<? extends FactoryBase<?,R>>, TsClassConstructed> dataToOverrideTs, TsFile dataTsClass, TsFile dynamicDataDictionaryTsClass, TsFile staticAttributeValueAccessorTsClass , TsFile dataCreatorTsClass, TsFile attributeTsClass, TsFile attributeAccessorClass, AttributeToTsMapperManager attributeToTsMapperManager, TsFile attributeTypeEnumTsEnum) {
+    public DataGeneratedTs(Class<F> clazz, Map<Class<? extends FactoryBase<?,R>>, TsClassConstructed> dataToOverrideTs, TsFile dataTsClass, TsFile dynamicDataDictionaryTsClass , TsFile dataCreatorTsClass, TsFile attributeTsClass, TsFile attributeAccessorClass, AttributeToTsMapperManager attributeToTsMapperManager, TsFile attributeTypeEnumTsEnum) {
         this.clazz = clazz;
         this.dataTsClass = dataTsClass;
         this.dataToOverrideTs = dataToOverrideTs;
@@ -37,7 +36,6 @@ public class DataGeneratedTs<R extends FactoryBase<?,R>, L,  F extends FactoryBa
         this.attributeAccessorClass = attributeAccessorClass;
         this.attributeToTsMapperManager = attributeToTsMapperManager;
         this.attributeTypeEnumTsEnum = attributeTypeEnumTsEnum;
-        this.staticAttributeValueAccessorTsClass = staticAttributeValueAccessorTsClass;
         this.dynamicDataDictionaryTsClass= dynamicDataDictionaryTsClass;
     }
 
@@ -74,6 +72,8 @@ public class DataGeneratedTs<R extends FactoryBase<?,R>, L,  F extends FactoryBa
         methods.add(createAddMapValueToJson(data));
         methods.add(createCollectChildren(data));
         methods.add(createListAttributeAccessor(data,tsClass));
+        methods.add(createCreateNewChildFactory());
+
 
         tsClass.parent=dataTsClass;
         tsClass.attributes=attributes;
@@ -95,6 +95,18 @@ public class DataGeneratedTs<R extends FactoryBase<?,R>, L,  F extends FactoryBa
         code.append("return result;");
         return new TsMethod("listAttributeAccessor", List.of(),
                 new TsMethodResult(new TsTypeArray(new TsTypeClass(attributeAccessorClass,new TsTypePrimitive("any")))),new TsMethodCode(code.toString(), Set.of()),"public");
+    }
+
+
+
+    private TsMethod createCreateNewChildFactory() {
+        StringBuilder fromJsonCode=new StringBuilder();
+        Set<TsFile> mapValuesFromJsonImports = new HashSet<>();
+        fromJsonCode.append("return null;");
+
+        return new TsMethod("createNewChildFactory",
+                List.of(new TsMethodParameter("json",new TsTypePrimitive("any"))),
+                new TsMethodResult(new TsTypeClass(dataTsClass)),new TsMethodCode(fromJsonCode.toString(), mapValuesFromJsonImports),"public");
     }
 
     private TsMethod createCollectChildren(FactoryBase<?,?> data) {
@@ -157,10 +169,10 @@ public class DataGeneratedTs<R extends FactoryBase<?,R>, L,  F extends FactoryBa
 
     private TsMethod getTsAttributeAccessor(String attributeVariableName, Attribute<?, ?> attribute, TsClassConstructed tsClassName) {
         TsType attributeTsType = getTsType(attribute);
-        String createCode="return new AttributeAccessor<"+ attributeTsType.construct()+">("+tsClassName.getName()+"."+attributeVariableName+"Metadata,new StaticAttributeValueAccessor<"+ attributeTsType.construct()+">(this,\""+attributeVariableName+"\"),\""+attributeVariableName+"\");";
+        String createCode="return new AttributeAccessor<"+ attributeTsType.construct()+">("+tsClassName.getName()+"."+attributeVariableName+"Metadata,this,\""+attributeVariableName+"\");";
         return new TsMethod(attributeVariableName+"Accessor",
                 List.of(),
-                new TsMethodResult(new TsTypeClass(attributeAccessorClass, attributeTsType)),new TsMethodCode(createCode,Set.of(staticAttributeValueAccessorTsClass)),"public");
+                new TsMethodResult(new TsTypeClass(attributeAccessorClass, attributeTsType)),new TsMethodCode(createCode),"public");
     }
 
     private TsAttribute getTsAttributeMetadata(String attributeVariableName, Attribute<?, ?> attribute){

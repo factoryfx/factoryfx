@@ -20,6 +20,9 @@ public class TestServerBuilder {
             TestServerFactory testServerFactory = new TestServerFactory();
             testServerFactory.stringAttribute.set("1233");
             testServerFactory.server.set(ctx.get(JettyServerFactory.class));
+            testServerFactory.stringListAttribute.add("1111");
+            testServerFactory.stringListAttribute.add("22222");
+            testServerFactory.exampleFactory.set(new ExampleFactory());
             return testServerFactory;
         });
         builder.addFactory(JettyServerFactory.class, Scope.SINGLETON, ctx-> new JettyServerBuilder<TestServerFactory>()

@@ -7,6 +7,7 @@ import io.github.factoryfx.factory.attribute.dependency.FactoryAttribute;
 import io.github.factoryfx.factory.builder.FactoryTreeBuilder;
 import io.github.factoryfx.factory.builder.Scope;
 import io.github.factoryfx.factory.jackson.ObjectMapperBuilder;
+import io.github.factoryfx.factory.storage.DataUpdate;
 import io.github.factoryfx.jetty.JettyServerBuilder;
 import io.github.factoryfx.jetty.JettyServerFactory;
 import io.github.factoryfx.server.Microservice;
@@ -57,10 +58,12 @@ class MicroserviceDomResourceTest {
         try{
             microservice.start();
 
+            DataUpdate<JettyServerRootFactory> jettyServerRootFactoryDataUpdate = microservice.prepareNewFactory();
 
-            MicroserviceDomResource.CreateNewFactoryRequest createRequest = new MicroserviceDomResource.CreateNewFactoryRequest();
-            createRequest.javaClass=JettyServerRootFactory.class.getName();
+            MicroserviceDomResource.AttributeAdressingRequest createRequest = new MicroserviceDomResource.AttributeAdressingRequest();
+            createRequest.factoryId=jettyServerRootFactoryDataUpdate.root.getId().toString();
             createRequest.attributeVariableName="handler";
+            createRequest.root=jettyServerRootFactoryDataUpdate.root;
 
             HttpClient httpClient = HttpClient.newBuilder().version(HttpClient.Version.HTTP_1_1).build();
             HttpRequest request = HttpRequest.newBuilder().uri(URI.create("http://localhost:8015/microservice/createNewFactory/")).POST(HttpRequest.BodyPublishers.ofString(

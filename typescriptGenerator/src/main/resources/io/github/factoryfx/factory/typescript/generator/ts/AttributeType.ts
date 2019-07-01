@@ -36,7 +36,9 @@ export enum AttributeType  {
     LocaleAttribute="LocaleAttribute",
     StringListAttribute="StringListAttribute",
     DurationAttribute="DurationAttribute",
-    ByteListAttribute="ByteListAttribute"
+    ByteListAttribute="ByteListAttribute",
+    FactoryViewAttribute="FactoryViewAttribute",
+    FactoryViewListAttribute="FactoryViewListAttribute"
 
 }
 export namespace AttributeType {

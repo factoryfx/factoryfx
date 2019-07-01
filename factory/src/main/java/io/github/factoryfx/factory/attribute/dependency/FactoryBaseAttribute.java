@@ -27,7 +27,7 @@ public class FactoryBaseAttribute<R extends FactoryBase<?,R>,L,F extends Factory
 
 
     @Override
-    public boolean internal_match(AttributeMatch<F> value) {
+    public boolean internal_mergeMatch(AttributeMatch<F> value) {
         return internal_referenceEquals(this.value,value.get());
     }
 

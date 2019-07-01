@@ -65,7 +65,7 @@ public class ImmutableValueAttributeTest {
 
         StringAttribute stringAttribute2 = new StringAttribute();
         stringAttribute2.set("123");
-        Assertions.assertTrue(stringAttribute.internal_match(stringAttribute2));
+        Assertions.assertTrue(stringAttribute.internal_mergeMatch(stringAttribute2));
     }
 
     @Test
@@ -75,7 +75,7 @@ public class ImmutableValueAttributeTest {
 
         StringAttribute stringAttribute2 = new StringAttribute();
         stringAttribute2.set("gfdgfdg");
-        Assertions.assertFalse(stringAttribute.internal_match(stringAttribute2));
+        Assertions.assertFalse(stringAttribute.internal_mergeMatch(stringAttribute2));
     }
 
     @Test

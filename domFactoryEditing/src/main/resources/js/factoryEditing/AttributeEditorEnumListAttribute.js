@@ -15,7 +15,6 @@ export class AttributeEditorEnumListAttribute {
             for (let i = 0; i < collection.length; i++) {
                 selectedValues.push(collection[i].value);
             }
-            console.log(selectedValues);
             this.attributeAccessor.setValue(selectedValues);
         };
         for (let possibleValue of this.attributeAccessor.getAttributeMetadata().getPossibleEnumValues()) {

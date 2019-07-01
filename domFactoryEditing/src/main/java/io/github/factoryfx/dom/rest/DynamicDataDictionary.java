@@ -8,6 +8,7 @@ import io.github.factoryfx.factory.attribute.dependency.FactoryListAttribute;
 import io.github.factoryfx.factory.attribute.dependency.FactoryListBaseAttribute;
 import io.github.factoryfx.factory.attribute.types.EnumAttribute;
 import io.github.factoryfx.factory.attribute.types.EnumListAttribute;
+import io.github.factoryfx.factory.attribute.types.ObjectValueAttribute;
 import io.github.factoryfx.factory.metadata.FactoryMetadataManager;
 
 import java.util.HashMap;
@@ -43,7 +44,9 @@ public class DynamicDataDictionary {
                         attribute.internal_getPreferredLabelText(Locale.GERMAN),
                         getPossibleEnumValues(attribute)
                 );
-                item.attributeNameToItem.put(attributeVariableName, attributeItem);
+                if (!(attribute instanceof ObjectValueAttribute<?>)) {
+                    item.attributeNameToItem.put(attributeVariableName, attributeItem);
+                }
             });
         }
 

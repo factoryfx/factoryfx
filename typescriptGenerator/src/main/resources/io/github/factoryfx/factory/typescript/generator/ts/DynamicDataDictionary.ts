@@ -2,13 +2,31 @@ import {Data} from "./Data";
 import {AttributeMetadata} from "./AttributeMetadata";
 import {AttributeType} from "./AttributeType";
 import {DynamicData} from "./DynamicData";
+import {AttributeMetadataAndAttributeName} from "./AttributeMetadataAndAttributeName";
 
 export class DynamicDataDictionary{
     data: any;
 
-    public createAttributeMetadata(javaClazz: string, property: string) {
-        let dynamicDataDictionaryAttributeItem: any = this.data.classNameToItem[javaClazz].attributeNameToItem[property];
-        return new AttributeMetadata<any>(dynamicDataDictionaryAttributeItem.en,dynamicDataDictionaryAttributeItem.de,dynamicDataDictionaryAttributeItem.type,dynamicDataDictionaryAttributeItem.nullable,dynamicDataDictionaryAttributeItem.possibleEnumValues);
+    public createAttributeMetadataArray(javaClazz: string): AttributeMetadataAndAttributeName[] {
+        let result: AttributeMetadataAndAttributeName[] = [];
+
+        Object.entries(this.data.classNameToItem[javaClazz].attributeNameToItem).forEach(
+            ([attributeName, value]) => {
+                let dynamicDataDictionaryAttributeItem: any=value;
+                result.push(new AttributeMetadataAndAttributeName(
+                    new AttributeMetadata<any>(
+                        dynamicDataDictionaryAttributeItem.en,
+                        dynamicDataDictionaryAttributeItem.de,
+                        dynamicDataDictionaryAttributeItem.type,
+                        dynamicDataDictionaryAttributeItem.nullable,
+                        dynamicDataDictionaryAttributeItem.possibleEnumValues
+                    ),attributeName)
+                );
+            }
+        );
+
+        return result;
+
     }
 
     public mapFromJson(json: any): void{

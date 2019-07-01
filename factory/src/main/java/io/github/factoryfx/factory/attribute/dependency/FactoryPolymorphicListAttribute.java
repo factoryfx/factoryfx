@@ -4,6 +4,7 @@ import io.github.factoryfx.factory.FactoryBase;
 import io.github.factoryfx.factory.PolymorphicFactory;
 
 import java.util.*;
+import java.util.function.Consumer;
 
 /**
  * Attribute for polymorphic Reference.
@@ -16,6 +17,15 @@ public class FactoryPolymorphicListAttribute<R extends FactoryBase<?,R>,L> exten
 
     public FactoryPolymorphicListAttribute() {
         super();
+    }
+
+    /**
+     * Explanation see: {@link FactoryAttribute#FactoryAttribute(Consumer)}}
+     * @param setup setup function
+     */
+    public FactoryPolymorphicListAttribute(Consumer<FactoryPolymorphicListAttribute<R,L>> setup){
+        super();
+        setup.accept(this);
     }
 
     @SafeVarargs

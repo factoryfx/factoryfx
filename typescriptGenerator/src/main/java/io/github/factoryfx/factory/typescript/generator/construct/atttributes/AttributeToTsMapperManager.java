@@ -20,6 +20,9 @@ public class AttributeToTsMapperManager {
             classToInfo.put(FactoryAttribute.class, new FactoryAttributeToTsMapper<>(dataToOverrideTs,dataType));
             classToInfo.put(FactoryListAttribute.class, new FactoryListAttributeToTsMapper<>(dataToOverrideTs));
 
+            classToInfo.put(FactoryViewAttribute.class, new ViewAttributeToTsMapper(dataType));
+            classToInfo.put(FactoryViewListAttribute.class, new ViewListAttributeToTsMapper(dataType));
+
             classToInfo.put(ByteArrayAttribute.class, new ValueAttributeToTsMapper(TsTypePrimitive.STRING));
             classToInfo.put(I18nAttribute.class, new ValueAttributeToTsMapper(TsTypePrimitive.STRING));
             classToInfo.put(EncryptedStringAttribute.class, new ValueAttributeToTsMapper(TsTypePrimitive.STRING));
@@ -58,8 +61,6 @@ public class AttributeToTsMapperManager {
 
             Set<Class<? extends Attribute>> ignoredAttributes = new HashSet<>();
             ignoredAttributes.add(ObjectValueAttribute.class);
-            ignoredAttributes.add(FactoryViewAttribute.class);
-            ignoredAttributes.add(FactoryViewListAttribute.class);
 
             return new AttributeToTsMapperManager(classToInfo,ignoredAttributes);
 

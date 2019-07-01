@@ -1,14 +1,14 @@
 export class AttributeAccessor {
-    constructor(attributeMetadata, valueAccessor, attributeName) {
+    constructor(attributeMetadata, attributeValues, attributeName) {
         this.attributeMetadata = attributeMetadata;
-        this.valueAccessor = valueAccessor;
+        this.attributeValues = attributeValues;
         this.attributeName = attributeName;
     }
     getValue() {
-        return this.valueAccessor.getValue();
+        return this.attributeValues[this.attributeName];
     }
     setValue(value) {
-        this.valueAccessor.setValue(value);
+        this.attributeValues[this.attributeName] = value;
     }
     getLabelText(locale) {
         let labelText = this.attributeMetadata.getLabelText(locale);

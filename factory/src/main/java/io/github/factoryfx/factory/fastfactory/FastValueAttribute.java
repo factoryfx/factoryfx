@@ -33,7 +33,7 @@ public class FastValueAttribute<R extends FactoryBase<?,R>,F extends FactoryBase
     }
 
     @Override
-    public boolean internal_match(AttributeMatch<V> value) {
+    public boolean internal_mergeMatch(AttributeMatch<V> value) {
         return Objects.equals(valueGetter.apply(boundFactory), value.get());
     }
 

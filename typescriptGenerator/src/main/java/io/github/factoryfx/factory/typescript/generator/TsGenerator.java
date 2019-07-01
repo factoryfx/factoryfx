@@ -75,21 +75,21 @@ public class TsGenerator<R extends FactoryBase<?,R>> {
         TsClassTemplateBased attributeMetadataTsClass = new TsClassTemplateBased("AttributeMetadata.ts", utilDir);
         attributeMetadataTsClass.writeToFile();
 
-
-        TsClassTemplateBased staticAttributeValueAccessorTsClass = new TsClassTemplateBased("StaticAttributeValueAccessor.ts", utilDir);
-        staticAttributeValueAccessorTsClass.writeToFile();
-
         TsClassTemplateBased dynamicDataDictionaryTsClass = new TsClassTemplateBased("DynamicDataDictionary.ts", utilDir);
         dynamicDataDictionaryTsClass.writeToFile();
 
         for (String file : List.of("ValidationError.ts", "AttributeEditor.ts", "AttributeEditorCreator.ts",
                 "AttributeEditorStringAttribute.ts", "AttributeEditorFallback.ts", "AttributeEditorFactoryAttribute.ts","AttributeEditorFactoryListAttribute.ts",
-                "AttributeEditorIntegerAttribute.ts", "FactoryChangeEvent.ts","WaitAnimation.ts",
-                "AttributeValueAccessor.ts", "AttributeEditorEnumAttribute.ts", "AttributeEditorEnumListAttribute.ts", "AttributeEditorLongAttribute.ts",
-                "AttributeEditorLocalDateAttribute.ts", "AttributeEditorBooleanAttribute.ts", "AttributeEditorDoubleAttribute.ts")) {
+                "AttributeEditorIntegerAttribute.ts","WaitAnimation.ts",
+                "AttributeEditorEnumAttribute.ts", "AttributeEditorEnumListAttribute.ts", "AttributeEditorLongAttribute.ts",
+                "AttributeEditorLocalDateAttribute.ts", "AttributeEditorBooleanAttribute.ts", "AttributeEditorDoubleAttribute.ts", "AttributeEditorFileContentAttribute.ts",
+                "AttributeEditorStringListAttribute.ts", "DomUtility.ts", "GuiConfiguration.ts", "NavItem.ts", "Navbar.ts", "HttpUtility.ts",
+                "View.ts" , "Widget.ts", "FactoryUpdateResult.ts", "SaveWidget.ts", "AttributeEditorFactoryViewAttribute.ts",
+                "AttributeEditorFactoryViewListAttribute.ts", "AttributeMetadataAndAttributeName.ts")) {
             TsClassTemplateBased fileTs = new TsClassTemplateBased(file, utilDir);
             fileTs.writeToFile();
         }
+
 
         TsClassTemplateBased dynamicDataTsClass = new TsClassTemplateBased("DynamicData.ts", utilDir);
         dynamicDataTsClass.writeToFile();
@@ -136,7 +136,7 @@ public class TsGenerator<R extends FactoryBase<?,R>> {
         dataCreatorTsClass.writeToFile();
 
         for (Map.Entry<Class<? extends FactoryBase<?,R>>, TsClassConstructed> entry : dataToGeneratedTsClass.entrySet()) {
-            DataGeneratedTs dataGenerator = new DataGeneratedTs(entry.getKey(), dataToConfigTs, dataTsClass,dynamicDataDictionaryTsClass,staticAttributeValueAccessorTsClass, dataCreatorTsClass, attributeMetadataTsClass, attributeAccessorClass, attributeToTsMapperManager,attributeTypeEnumTs);
+            DataGeneratedTs dataGenerator = new DataGeneratedTs(entry.getKey(), dataToConfigTs, dataTsClass,dynamicDataDictionaryTsClass, dataCreatorTsClass, attributeMetadataTsClass, attributeAccessorClass, attributeToTsMapperManager,attributeTypeEnumTs);
             dataGenerator.complete(entry.getValue()).writeToFile();
         }
 

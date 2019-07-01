@@ -1,5 +1,3 @@
-import {Data} from "./Data";
-import {ValidationError} from "./ValidationError";
 import {AttributeAccessor} from "./AttributeAccessor";
 import {AttributeEditor} from "./AttributeEditor";
 

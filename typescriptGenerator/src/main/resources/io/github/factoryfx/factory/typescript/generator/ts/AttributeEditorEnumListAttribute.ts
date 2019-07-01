@@ -24,7 +24,6 @@ export class AttributeEditorEnumListAttribute implements AttributeEditor{
             for (let i=0; i<collection.length; i++) {
                 selectedValues.push(collection[i].value);
             }
-            console.log(selectedValues);
             this.attributeAccessor.setValue(selectedValues);
 
         };

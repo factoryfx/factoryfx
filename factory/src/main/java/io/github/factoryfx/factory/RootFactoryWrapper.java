@@ -60,7 +60,7 @@ public class RootFactoryWrapper<R extends FactoryBase<?,R>> {
         MergeDiffInfo<R> result = mergeResult.executeMerge();
         rootFactory.internal().loopDetector();
         updateCachedChildren();
-        return new MergeResult<R>(result,mergeResult.getMergedFactories());
+        return new MergeResult<>(result,mergeResult.getMergedFactories());
     }
 
     /** copy a root data element

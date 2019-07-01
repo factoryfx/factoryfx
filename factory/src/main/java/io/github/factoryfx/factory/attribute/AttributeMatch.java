@@ -7,10 +7,11 @@ import java.util.List;
 public interface AttributeMatch<V> extends AttributeValue<V> {
     /**
      * alternative to equals on value, type-safe , less verbose, without worrying about hidden contracts
+     * indented for merge some with some serial case e.g ObjectValueAttribute
      * @param value compare value
      * @return true if equals
      */
-    boolean internal_match(AttributeMatch<V> value);
+    boolean internal_mergeMatch(AttributeMatch<V> value);
 
     default boolean internal_referenceEquals(FactoryBase<?,?> value, FactoryBase<?,?> otherValue) {
         if (otherValue == null && value == null) {

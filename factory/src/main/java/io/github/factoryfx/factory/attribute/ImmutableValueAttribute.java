@@ -26,7 +26,7 @@ public abstract class ImmutableValueAttribute<T,A extends Attribute<T,A>> extend
     }
 
     @Override
-    public boolean internal_match(AttributeMatch<T> value) {
+    public boolean internal_mergeMatch(AttributeMatch<T> value) {
         return Objects.equals(this.value, value.get());
     }
 
@@ -122,5 +122,9 @@ public abstract class ImmutableValueAttribute<T,A extends Attribute<T,A>> extend
     @Override
     public void internal_addBackReferences(FactoryBase<?, ?> root, FactoryBase<?, ?> parent) {
         //nothing
+    }
+
+    public Optional<T> getNullable(){
+        return Optional.ofNullable(get());
     }
 }

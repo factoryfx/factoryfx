@@ -4,6 +4,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.factoryfx.factory.FactoryBase;
 import io.github.factoryfx.factory.jackson.ObjectMapperBuilder;
 import io.github.factoryfx.factory.SimpleFactoryBase;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.AssertionsKt$sam$i$org_junit_jupiter_api_function_Executable$0;
 import org.junit.jupiter.api.Test;
 
 public class JettyServerBuilderTest {
@@ -48,6 +50,30 @@ public class JettyServerBuilderTest {
 
 
 //        ObjectMapperBuilder.build().copy(serverFactory);
+    }
+
+    @Test
+    public void test_removeDefaultJerseyServlet_avoid_accidentally_resource_remove(){
+
+        Assertions.assertThrows(IllegalStateException.class,()->{
+                    new JettyServerBuilder<DummyRoot>()
+                            .withHost("localhost").withPort(8080)
+                            .withResource(new DummyResource())
+                            .removeDefaultJerseyServlet()
+                            .build();
+                });
+    }
+
+    @Test
+    public void test_removeDefaultJerseyServlet_after_removeDefaultJerseyServlet(){
+
+        Assertions.assertThrows(IllegalStateException.class,()->{
+            new JettyServerBuilder<DummyRoot>()
+                    .withHost("localhost").withPort(8080)
+                    .removeDefaultJerseyServlet()
+                    .withResource(new DummyResource())
+                    .build();
+        });
     }
 
 }

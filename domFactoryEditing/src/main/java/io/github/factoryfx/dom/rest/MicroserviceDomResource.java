@@ -1,27 +1,16 @@
 package io.github.factoryfx.dom.rest;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.file.Files;
 import java.util.*;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
-import io.github.factoryfx.factory.AttributeVisitor;
 import io.github.factoryfx.factory.FactoryTreeBuilderBasedAttributeSetup;
 import io.github.factoryfx.factory.attribute.Attribute;
-import io.github.factoryfx.factory.attribute.dependency.FactoryAttribute;
-import io.github.factoryfx.factory.attribute.dependency.FactoryListAttribute;
-import io.github.factoryfx.factory.merge.MergeDiffInfo;
-import io.github.factoryfx.factory.metadata.FactoryMetadataManager;
-import io.github.factoryfx.factory.storage.DataUpdate;
+import io.github.factoryfx.factory.attribute.dependency.*;
 import io.github.factoryfx.factory.FactoryBase;
-import io.github.factoryfx.factory.storage.StoredDataMetadata;
-import io.github.factoryfx.factory.log.FactoryUpdateLog;
 import io.github.factoryfx.microservice.rest.MicroserviceResource;
 import io.github.factoryfx.server.Microservice;
-import io.github.factoryfx.server.user.AuthorizedUser;
 import io.github.factoryfx.server.user.UserManagement;
-import io.github.factoryfx.microservice.common.*;
 import org.eclipse.jetty.http.MimeTypes;
 
 import javax.ws.rs.*;
@@ -31,18 +20,23 @@ import javax.ws.rs.core.Response;
 public class MicroserviceDomResource<R extends FactoryBase<?,R>,S> extends MicroserviceResource<R,S> {
     private final StaticFileAccess staticFileAccess;
     private final FactoryTreeBuilderBasedAttributeSetup<R,S> factoryTreeBuilderBasedAttributeSetup;
+    private final Function<R,List<GuiNavbarItem>> guiNavbarItemCreator;
+    private final String projectName;
 
-    public MicroserviceDomResource(Microservice<?, R, S> microservice, UserManagement userManagement, StaticFileAccess staticFileAccess, FactoryTreeBuilderBasedAttributeSetup<R, S> factoryTreeBuilderBasedAttributeSetup) {
+    public MicroserviceDomResource(Microservice<?, R, S> microservice, UserManagement userManagement, StaticFileAccess staticFileAccess, FactoryTreeBuilderBasedAttributeSetup<R, S> factoryTreeBuilderBasedAttributeSetup, Function<R, List<GuiNavbarItem>> guiNavbarItemCreator, String projectName) {
         super(microservice, userManagement);
         this.staticFileAccess = staticFileAccess;
         this.factoryTreeBuilderBasedAttributeSetup = factoryTreeBuilderBasedAttributeSetup;
+        this.guiNavbarItemCreator = guiNavbarItemCreator;
+        this.projectName = projectName;
     }
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    @Path("/dynamicDataDictionary")
-    public DynamicDataDictionary getDynamicDataDictionary() {
-        return new DynamicDataDictionary(microservice.prepareNewFactory().root);
+    @Path("/metadata")
+    public DomGuiMetadata getDynamicDataDictionary() {
+        R root = microservice.prepareNewFactory().root;
+        return new DomGuiMetadata(new DynamicDataDictionary(root),new GuiConfiguration(projectName,guiNavbarItemCreator.apply(root)));
     }
 
     @GET
@@ -57,48 +51,60 @@ public class MicroserviceDomResource<R extends FactoryBase<?,R>,S> extends Micro
                 header("Content-Type", mimeTypes.getMimeByExtension(path)).build();
     }
 
-    public static class CreateNewFactoryRequest{
-        public String javaClass;
-        public String attributeVariableName;
-    }
-
     @POST
     @Path("/createNewFactory")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @SuppressWarnings("unchecked")
-    public FactoryBase<?,R> createNewFactory(CreateNewFactoryRequest request) {
-
-        Class<?> factoryClass = getFactoryClass(request.javaClass);
-        FactoryBase<?,?> factoryBase = FactoryMetadataManager.getMetadataUnsafe(factoryClass).newInstance();
-        factoryBase.internal().finalise();
-
-        Class[] newFactoryClass = new Class[1];
-        factoryBase.internal().visitAttributesFlat((attributeVariableName, attribute) -> {
-            if (attributeVariableName.equals(request.attributeVariableName)){
-                if (attribute instanceof FactoryAttribute){
-                    newFactoryClass[0]=((FactoryAttribute)attribute).internal_getReferenceClass();
-                }
-                if (attribute instanceof FactoryListAttribute){
-                    newFactoryClass[0]=((FactoryListAttribute)attribute).internal_getReferenceClass();
-                }
-            }
-        });
+    public FactoryBase<?,R> createNewFactory(AttributeAdressingRequest request) {
+        Class newFactoryClass=null;
+        Attribute<?, ?> attribute = resolveAttribute(request);
+        if (attribute instanceof FactoryBaseAttribute){
+            newFactoryClass=((FactoryBaseAttribute)attribute).internal_getReferenceClass();
+        }
+        if (attribute instanceof FactoryListBaseAttribute){
+            newFactoryClass=((FactoryListBaseAttribute)attribute).internal_getReferenceClass();
+        }
         factoryTreeBuilderBasedAttributeSetup.applyToRootFactoryDeep(microservice.prepareNewFactory().root);
-        return (FactoryBase<?, R>) factoryTreeBuilderBasedAttributeSetup.createNewFactory(newFactoryClass[0]).get(0);
+        return (FactoryBase<?, R>) factoryTreeBuilderBasedAttributeSetup.createNewFactory(newFactoryClass).get(0);
+    }
+    
+    public static class AttributeAdressingRequest {
+        public String factoryId;
+        public String attributeVariableName;
+        public FactoryBase<?,?> root;
     }
 
-    public Class<?> getFactoryClass(String javaClass){
-        //check if passed class is a factory class for security
-        for (String factoryClazz : getDynamicDataDictionary().classNameToItem.keySet()) {
-            if (factoryClazz.equals(javaClass)){
-                try {
-                    return Class.forName(javaClass);
-                } catch (ClassNotFoundException e) {
-                    throw new RuntimeException(e);
-                }
-            }
+    public static class ResolveViewResponse{
+        public String factoryId;
+
+        public ResolveViewResponse(String factoryId) {
+            this.factoryId = factoryId;
         }
-        throw new IllegalArgumentException("invalid class: "+javaClass);
+    }
+
+
+    @POST
+    @Path("/resolveViewRequest")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @SuppressWarnings("unchecked")
+    public ResolveViewResponse resolveViewRequest(AttributeAdressingRequest request) {
+        return new ResolveViewResponse(((FactoryViewAttribute<R,?,?>)resolveAttribute(request)).get().getId().toString());
+    }
+
+    private Attribute<?, ?> resolveAttribute(AttributeAdressingRequest request) {
+        request.root.internal().finalise();
+        Map<UUID, ? extends FactoryBase<?, ?>> uuidFactoryBaseMap = request.root.internal().collectChildFactoryMap();
+        return uuidFactoryBaseMap.get(UUID.fromString(request.factoryId)).internal().getAttribute(request.attributeVariableName);
+    }
+
+    @POST
+    @Path("/resolveViewListRequest")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @SuppressWarnings("unchecked")
+    public List<String> resolveViewListRequest(AttributeAdressingRequest request) {
+        return ((FactoryViewListAttribute<R,?,?>)resolveAttribute(request)).get().stream().map(f->f.getId().toString()).collect(Collectors.toList());
     }
 }

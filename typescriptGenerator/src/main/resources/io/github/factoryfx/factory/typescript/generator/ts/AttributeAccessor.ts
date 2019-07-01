@@ -1,19 +1,17 @@
 import {AttributeMetadata} from "./AttributeMetadata";
-import {Data} from "./Data";
-import {AttributeValueAccessor} from "./AttributeValueAccessor";
 
 export class AttributeAccessor<T> {
 
-    constructor(private attributeMetadata: AttributeMetadata<T>, private valueAccessor: AttributeValueAccessor<T>, private attributeName: string) {
+    constructor(private attributeMetadata: AttributeMetadata<T>, private attributeValues: any, private attributeName: string) {
 
     }
 
     getValue(): T{
-        return this.valueAccessor.getValue();
+        return this.attributeValues[this.attributeName]
     }
 
     setValue(value: T){
-        this.valueAccessor.setValue(value);
+        this.attributeValues[this.attributeName]=value;
     }
 
     getLabelText(locale: string): string{

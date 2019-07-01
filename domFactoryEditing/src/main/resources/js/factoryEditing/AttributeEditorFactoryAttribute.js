@@ -1,8 +1,10 @@
+import { HttpUtility } from "./HttpUtility";
 export class AttributeEditorFactoryAttribute {
-    constructor(attributeAccessor, inputId, factoryEditor) {
+    constructor(attributeAccessor, inputId, factoryEditor, waitAnimation) {
         this.attributeAccessor = attributeAccessor;
         this.inputId = inputId;
         this.factoryEditor = factoryEditor;
+        this.waitAnimation = waitAnimation;
         this.editButton = document.createElement("button");
         this.input = document.createElement("input");
         this.editButton.type = "button";
@@ -32,21 +34,18 @@ export class AttributeEditorFactoryAttribute {
         newButton.type = "button";
         newButton.textContent = "new";
         newButton.onclick = (e) => {
-            let createRequest = new XMLHttpRequest();
-            createRequest.open("POST", "updateCurrentFactory");
-            createRequest.setRequestHeader("Content-type", "application/json");
             let createRequestBody = {
-                "javaClass": "io.github.factoryfx.dom.rest.MicroserviceDomResourceTest$JettyServerRootFactory",
-                "attributeVariableName": "handler"
+                "factoryId": this.factoryEditor.getCurrentData().getId(),
+                "attributeVariableName": this.attributeAccessor.getAttributeName(),
+                "root": this.factoryEditor.getCurrentData().getRoot().mapToJsonFromRoot()
             };
-            createRequest.onload = (e) => {
-                let response = JSON.parse(createRequest.responseText);
-                this.attributeAccessor.setValue(null);
+            HttpUtility.post("createNewFactory", createRequestBody, this.waitAnimation, (response) => {
+                this.attributeAccessor.setValue(this.factoryEditor.getCurrentData().createNewChildFactory(response));
                 this.bindValue();
-            };
-            createRequest.send(JSON.stringify(createRequestBody));
+            });
         };
         newButton.className = "btn btn-outline-secondary";
+        inputGroupAppend.appendChild(newButton);
         inputGroupAppend.appendChild(removeButton);
         inputGroupAppend.appendChild(this.editButton);
         inputGroup.appendChild(this.input);

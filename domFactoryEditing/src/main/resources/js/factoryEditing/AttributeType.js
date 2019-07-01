@@ -39,6 +39,8 @@ export var AttributeType;
     AttributeType["StringListAttribute"] = "StringListAttribute";
     AttributeType["DurationAttribute"] = "DurationAttribute";
     AttributeType["ByteListAttribute"] = "ByteListAttribute";
+    AttributeType["FactoryViewAttribute"] = "FactoryViewAttribute";
+    AttributeType["FactoryViewListAttribute"] = "FactoryViewListAttribute";
 })(AttributeType || (AttributeType = {}));
 (function (AttributeType) {
     function fromJson(json) {

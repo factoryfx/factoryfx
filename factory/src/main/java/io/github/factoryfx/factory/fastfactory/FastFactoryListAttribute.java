@@ -69,7 +69,7 @@ public class FastFactoryListAttribute<R extends FactoryBase<?,R>, F extends Fact
     }
 
     @Override
-    public boolean internal_match(AttributeMatch<List<V>> value) {
+    public boolean internal_mergeMatch(AttributeMatch<List<V>> value) {
         List<V> list = valueGetter.apply(this.boundFactory);
         return internal_referenceListEquals(list, value.get());
     }

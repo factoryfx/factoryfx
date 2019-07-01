@@ -16,6 +16,18 @@ public class FactoryAttribute<R extends FactoryBase<?,R>,L , F extends FactoryBa
         super();
     }
 
+    /**
+     * diamond operator doesn't work chained expression inference (Section D of JSR 335)<br>
+     * <br>
+     * e.g.:<br>
+     *  <code>FactoryAttribute<LiveObject,Factory> attribute = new FactoryAttribute<LiveObject,Factory>().nullable();</code><br>
+     *  Diamond Operator doesn't work:
+     *  <code>FactoryAttribute<LiveObject,Factory> attribute = new FactoryAttribute<>().nullable();</code><br>
+     *  Workaround:
+     *  <code>FactoryAttribute<LiveObject,Factory> attribute = new FactoryAttribute<>(FactoryAttribute::nullable);</code><br>
+     *
+     * @param setup setup function
+     */
     public FactoryAttribute(Consumer<FactoryAttribute<R,L,F>> setup){
         super();
         setup.accept(this);

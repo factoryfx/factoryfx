@@ -1,9 +1,11 @@
+import { DomUtility } from "./DomUtility";
 export class WaitAnimation {
-    constructor(parentElement) {
+    constructor(parentElement, view) {
         this.parentElement = parentElement;
+        this.view = view;
         this.content = [];
     }
-    show() {
+    create() {
         let div = document.createElement("div");
         div.className = "progress";
         let progressbarDiv = document.createElement("div");
@@ -11,26 +13,20 @@ export class WaitAnimation {
         progressbarDiv.setAttribute("role", "progressbar");
         progressbarDiv.style.width = "100%";
         div.appendChild(progressbarDiv);
-        this.content = [];
-        for (let i = 0; i < this.parentElement.children.length; i++) {
-            this.content.push(this.parentElement.children.item(i));
-        }
-        this.clear();
-        this.parentElement.appendChild(div);
+        return div;
+    }
+    show() {
+        this.scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+        DomUtility.clear(this.parentElement);
+        this.parentElement.appendChild(this.create());
     }
     hide() {
-        if (this.parentElement.firstElementChild) {
-            this.clear();
-            if (this.content) {
-                for (let element of this.content) {
-                    this.parentElement.appendChild(element);
-                }
-            }
-        }
+        DomUtility.clear(this.parentElement);
+        this.parentElement.appendChild(this.view.create());
+        document.documentElement.scrollTop = document.body.scrollTop = this.scrollTop;
     }
-    clear() {
-        while (this.parentElement.firstChild) {
-            this.parentElement.removeChild(this.parentElement.firstChild);
-        }
+    reportError(responseText) {
+        //TODO
+        console.log(responseText);
     }
 }

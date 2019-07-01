@@ -1,18 +1,18 @@
 import {AttributeEditorCreator} from "./AttributeEditorCreator";
 import {Data} from "./Data";
-import {FactoryChangeEvent} from "./FactoryChangeEvent";
 import {ValidationError} from "./ValidationError";
+import {DomUtility} from "./DomUtility";
+import {View} from "./View";
+import {Widget} from "./Widget";
 
 
-export class WaitAnimation {
-    constructor(private parentElement: HTMLElement) {
+export class WaitAnimation implements Widget{
+
+    constructor(private parentElement: HTMLElement, private view: View) {
 
     }
 
-    content: Element[]=[];
-    show(): void {
-
-
+    create(): HTMLElement {
         let div: HTMLDivElement = document.createElement("div");
         div.className="progress";
 
@@ -23,35 +23,26 @@ export class WaitAnimation {
         progressbarDiv.style.width="100%";
 
         div.appendChild(progressbarDiv);
+        return div;
+    }
 
+    content: Element[]=[];
 
-        this.content = [];
-        for (let i = 0; i < this.parentElement.children.length; i++) {
-            this.content.push(this.parentElement.children.item(i));
-        }
-
-        this.clear();
-        this.parentElement.appendChild(div);
-
+    scrollTop: number;
+    show(): void {
+        this.scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+        DomUtility.clear(this.parentElement);
+        this.parentElement.appendChild(this.create());
     }
 
     hide() {
-        if (this.parentElement.firstElementChild) {
-            this.clear();
-            if (this.content) {
-                for (let element of this.content) {
-                    this.parentElement.appendChild(element);
-                }
-            }
-        }
+        DomUtility.clear(this.parentElement);
+        this.parentElement.appendChild(this.view.create());
+        document.documentElement.scrollTop = document.body.scrollTop = this.scrollTop;
     }
 
-    private clear(){
-        while (this.parentElement.firstChild) {
-            this.parentElement.removeChild(this.parentElement.firstChild);
-        }
+    reportError(responseText: string) {
+        //TODO
+        console.log(responseText);
     }
-
-
-
 }

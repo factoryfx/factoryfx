@@ -24,6 +24,10 @@ export abstract class Data  {
         this.mapFromJson(json,{},null,dynamicDataDictionary);
     }
 
+    public mapFromJsonFromRootDynamicWidthMap(json: any, idToDataMap: any, dynamicDataDictionary: DynamicDataDictionary) {
+        this.mapFromJson(json,idToDataMap,null,dynamicDataDictionary);
+    }
+
     public mapFromJson(json: any, idToDataMap: any, dataCreator: DataCreator, dynamicDataDictionary: DynamicDataDictionary) {
         this.id = json.id;
         this.javaClass = json['@class'];
@@ -52,6 +56,7 @@ export abstract class Data  {
     protected abstract collectChildrenFlat(): Array<Data>;//hook for generated code
     abstract listAttributeAccessor(): AttributeAccessor<any>[];
     public abstract getDisplayText(): string;
+    abstract createNewChildFactory(json: any): Data;
 
     protected mapAttributeValueToJson(value: any): any {
         if (value!==null && value!==undefined) {
@@ -83,7 +88,7 @@ export abstract class Data  {
 
 
 
-    private collectChildrenRecursive(idToDataMap: any){
+    protected collectChildrenRecursive(idToDataMap: any){
         if (this && !idToDataMap[this.getId()]) {
             idToDataMap[this.getId()] = this;
         } else {
@@ -94,6 +99,9 @@ export abstract class Data  {
         }
     }
 
+    public getChildrenFlat(): Data[] {
+        return this.collectChildrenFlat();
+    }
 
 
     public collectChildren(): Data[] {
@@ -101,7 +109,7 @@ export abstract class Data  {
         this.collectChildrenRecursive(idToDataMap);
 
         let result = [];
-        for(var child in idToDataMap) result.push(idToDataMap[child]);
+        for(let child in idToDataMap) result.push(idToDataMap[child]);
         //Object["values"](idToDataMap);//Object.values(idToDataMap);
         return result;
     }
@@ -117,7 +125,6 @@ export abstract class Data  {
     }
 
     protected mapLocalDateToJson(date: Date): any{
-        console.log(date)
         let day = date.getDate();
         let monthIndex = date.getMonth()+1;
         let year = date.getFullYear();
@@ -170,6 +177,10 @@ export abstract class Data  {
         return result;
     }
 
+    public getRoot(): Data{
+        return this.getPath()[0];
+    }
+
     public setParent(parent: Data){
         this.parent= parent;
     }
@@ -195,4 +206,13 @@ export abstract class Data  {
         return this.parent;
     }
 
+    getJavaClass(): string{
+        return this.javaClass
+    }
+
+    getChildFromRoot(factoryId: any): Data {
+        let idToDataMap = {};
+        this.collectChildrenRecursive(idToDataMap);
+        return idToDataMap[factoryId];
+    }
 }

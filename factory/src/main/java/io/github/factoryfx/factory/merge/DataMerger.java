@@ -123,7 +123,7 @@ public final class DataMerger<R extends FactoryBase<?,R>> {//final cause thread 
             if (newValue==null && originalValue!=null){
                 //check for conflict for removed object
                 entry.currentFactory.internal().visitAttributesForMatch(originalValue, (name,currentAttribute, originalAttribute) -> {
-                    if (!currentAttribute.internal_match(originalAttribute)){
+                    if (!currentAttribute.internal_mergeMatch(originalAttribute)){
                         mergeResult.addConflictInfo(new AttributeDiffInfo(name,entry.currentFactory.getId()));
                     }
                     return true;

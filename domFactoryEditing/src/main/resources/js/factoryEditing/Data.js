@@ -13,6 +13,9 @@ export class Data {
     mapFromJsonFromRootDynamic(json, dynamicDataDictionary) {
         this.mapFromJson(json, {}, null, dynamicDataDictionary);
     }
+    mapFromJsonFromRootDynamicWidthMap(json, idToDataMap, dynamicDataDictionary) {
+        this.mapFromJson(json, idToDataMap, null, dynamicDataDictionary);
+    }
     mapFromJson(json, idToDataMap, dataCreator, dynamicDataDictionary) {
         this.id = json.id;
         this.javaClass = json['@class'];
@@ -69,11 +72,14 @@ export class Data {
             child.collectChildrenRecursive(idToDataMap);
         }
     }
+    getChildrenFlat() {
+        return this.collectChildrenFlat();
+    }
     collectChildren() {
         let idToDataMap = {};
         this.collectChildrenRecursive(idToDataMap);
         let result = [];
-        for (var child in idToDataMap)
+        for (let child in idToDataMap)
             result.push(idToDataMap[child]);
         //Object["values"](idToDataMap);//Object.values(idToDataMap);
         return result;
@@ -88,7 +94,6 @@ export class Data {
         return new Date(json);
     }
     mapLocalDateToJson(date) {
-        console.log(date);
         let day = date.getDate();
         let monthIndex = date.getMonth() + 1;
         let year = date.getFullYear();
@@ -134,6 +139,9 @@ export class Data {
         result.reverse();
         return result;
     }
+    getRoot() {
+        return this.getPath()[0];
+    }
     setParent(parent) {
         this.parent = parent;
     }
@@ -153,5 +161,13 @@ export class Data {
     }
     getParent() {
         return this.parent;
+    }
+    getJavaClass() {
+        return this.javaClass;
+    }
+    getChildFromRoot(factoryId) {
+        let idToDataMap = {};
+        this.collectChildrenRecursive(idToDataMap);
+        return idToDataMap[factoryId];
     }
 }

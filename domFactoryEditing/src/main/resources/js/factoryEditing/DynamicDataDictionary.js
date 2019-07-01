@@ -1,9 +1,14 @@
 import { AttributeMetadata } from "./AttributeMetadata";
 import { DynamicData } from "./DynamicData";
+import { AttributeMetadataAndAttributeName } from "./AttributeMetadataAndAttributeName";
 export class DynamicDataDictionary {
-    createAttributeMetadata(javaClazz, property) {
-        let dynamicDataDictionaryAttributeItem = this.data.classNameToItem[javaClazz].attributeNameToItem[property];
-        return new AttributeMetadata(dynamicDataDictionaryAttributeItem.en, dynamicDataDictionaryAttributeItem.de, dynamicDataDictionaryAttributeItem.type, dynamicDataDictionaryAttributeItem.nullable, dynamicDataDictionaryAttributeItem.possibleEnumValues);
+    createAttributeMetadataArray(javaClazz) {
+        let result = [];
+        Object.entries(this.data.classNameToItem[javaClazz].attributeNameToItem).forEach(([attributeName, value]) => {
+            let dynamicDataDictionaryAttributeItem = value;
+            result.push(new AttributeMetadataAndAttributeName(new AttributeMetadata(dynamicDataDictionaryAttributeItem.en, dynamicDataDictionaryAttributeItem.de, dynamicDataDictionaryAttributeItem.type, dynamicDataDictionaryAttributeItem.nullable, dynamicDataDictionaryAttributeItem.possibleEnumValues), attributeName));
+        });
+        return result;
     }
     mapFromJson(json) {
         this.data = json;

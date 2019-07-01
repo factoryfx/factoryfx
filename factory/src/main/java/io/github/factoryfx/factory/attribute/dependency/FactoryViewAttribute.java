@@ -41,7 +41,7 @@ public class FactoryViewAttribute<R extends FactoryBase<?,R>,L, F extends Factor
     }
 
     @Override
-    public boolean internal_match(AttributeMatch<F> value) {
+    public boolean internal_mergeMatch(AttributeMatch<F> value) {
         final F thisValue = this.get();
         return internal_referenceEquals(thisValue,value.get());
     }

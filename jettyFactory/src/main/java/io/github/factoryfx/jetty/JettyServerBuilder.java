@@ -103,6 +103,9 @@ public class JettyServerBuilder<R extends FactoryBase<?,R>> {
     }
 
     public JettyServerBuilder<R> withResource(FactoryBase<?,R> resource){
+        if (!updateableServletFactory.servletAndPaths.contains(defaultJerseyServletAndPathFactory)) {
+            throw new IllegalStateException("Can't add resource because DefaultJerseyServlet is removed ");
+        }
         defaultJerseyServlet.resources.add(resource);
         return this;
     }
@@ -129,6 +132,9 @@ public class JettyServerBuilder<R extends FactoryBase<?,R>> {
     }
 
     public JettyServerBuilder<R> removeDefaultJerseyServlet(){
+        if (!defaultJerseyServlet.resources.isEmpty()){
+            throw new IllegalStateException("DefaultJerseyServlet cannot be removed if it contains resources");
+        }
         updateableServletFactory.servletAndPaths.remove(defaultJerseyServletAndPathFactory);
         return this;
     }

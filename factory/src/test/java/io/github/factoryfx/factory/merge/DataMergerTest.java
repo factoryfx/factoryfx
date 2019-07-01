@@ -1,17 +1,19 @@
 package io.github.factoryfx.factory.merge;
 
 
-import io.github.factoryfx.factory.FactoryBase;
-import io.github.factoryfx.factory.FactoryBaseTest;
-import io.github.factoryfx.factory.FactoryManager;
-import io.github.factoryfx.factory.RootFactoryWrapper;
+import io.github.factoryfx.factory.*;
+import io.github.factoryfx.factory.attribute.dependency.FactoryAttribute;
+import io.github.factoryfx.factory.attribute.dependency.FactoryListAttribute;
+import io.github.factoryfx.factory.attribute.types.ObjectValueAttribute;
 import io.github.factoryfx.factory.attribute.types.StringAttribute;
 import io.github.factoryfx.factory.exception.RethrowingFactoryExceptionHandler;
 import io.github.factoryfx.factory.merge.testdata.ExampleDataA;
 import io.github.factoryfx.factory.merge.testdata.ExampleDataB;
 import io.github.factoryfx.factory.merge.testdata.ExampleDataC;
 import io.github.factoryfx.factory.testfactories.ExampleFactoryA;
+import io.github.factoryfx.factory.testfactories.ExampleFactoryB;
 import io.github.factoryfx.factory.testfactories.ExampleLiveObjectA;
+import io.github.factoryfx.factory.testfactories.ExampleLiveObjectB;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -179,6 +181,34 @@ public class DataMergerTest {
         Set<FactoryBase<?,ExampleFactoryA>> changedFactories=mergeResult.getMergedFactories();
         Assertions.assertEquals(1,changedFactories.size());
         Assertions.assertTrue(changedFactories.contains(exampleFactoryA));
+    }
+
+    public static class ExampleObjectValueAttributeFactory extends SimpleFactoryBase<String,ExampleObjectValueAttributeFactory> {
+        public final ObjectValueAttribute<String> objectValueAttribute= new ObjectValueAttribute<>();
+
+        @Override
+        protected String createImpl() {
+            return objectValueAttribute.get();
+        }
+
+
+    }
+
+
+    @Test
+    public void test_objectValueAttribute_null_should_not_count_as_change() {
+        ExampleObjectValueAttributeFactory original = new ExampleObjectValueAttributeFactory();
+        original.objectValueAttribute.set("123");
+
+        ExampleObjectValueAttributeFactory common = original.utility().copy();
+
+        ExampleObjectValueAttributeFactory update =original.utility().copy();
+        update.objectValueAttribute.set(null);
+
+        DataMerger<ExampleObjectValueAttributeFactory> dataMerger = new DataMerger<>(original, common, update);
+        MergeResult<ExampleObjectValueAttributeFactory> mergeResult = dataMerger.createMergeResult((p) -> true);
+        Set<FactoryBase<?,ExampleObjectValueAttributeFactory>> changedFactories=mergeResult.getMergedFactories();
+        Assertions.assertEquals(0,changedFactories.size());
     }
 
 }

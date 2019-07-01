@@ -428,45 +428,51 @@ let dictionaryExample = `
           "type" : "StringAttribute",
           "nullable" : false,
           "en" : "",
-          "de" : ""
+          "de" : "",
+          "possibleEnumValues" : [ ]
         }
       }
     },
     "io.github.factoryfx.factory.typescript.generator.data.ExampleData" : {
       "attributeNameToItem" : {
-        "refList" : {
-          "type" : "FactoryListAttribute",
-          "nullable" : true,
-          "en" : "",
-          "de" : ""
+        "attribute" : {
+          "type" : "StringAttribute",
+          "nullable" : false,
+          "en" : "labelEn\\"'\\\\",
+          "de" : "labelDe",
+          "possibleEnumValues" : [ ]
         },
         "ref" : {
           "type" : "FactoryAttribute",
           "nullable" : true,
           "en" : "",
-          "de" : ""
+          "de" : "",
+          "possibleEnumValues" : [ ]
         },
-        "attribute" : {
-          "type" : "StringAttribute",
-          "nullable" : false,
-          "en" : "labelEn\\"'\\\\",
-          "de" : "labelDe"
+        "refList" : {
+          "type" : "FactoryListAttribute",
+          "nullable" : true,
+          "en" : "",
+          "de" : "",
+          "possibleEnumValues" : [ ]
         }
       }
     },
     "io.github.factoryfx.factory.typescript.generator.data.ExampleData2" : {
       "attributeNameToItem" : {
-        "ref" : {
-          "type" : "FactoryAttribute",
-          "nullable" : false,
-          "en" : "",
-          "de" : ""
-        },
         "attribute" : {
           "type" : "StringAttribute",
           "nullable" : false,
           "en" : "",
-          "de" : ""
+          "de" : "",
+          "possibleEnumValues" : [ ]
+        },
+        "ref" : {
+          "type" : "FactoryAttribute",
+          "nullable" : false,
+          "en" : "",
+          "de" : "",
+          "possibleEnumValues" : [ ]
         }
       }
     }
@@ -519,211 +525,237 @@ let dictionaryDataAlExample=`
   "classNameToItem" : {
     "io.github.factoryfx.factory.typescript.generator.data.ExampleDataAll" : {
       "attributeNameToItem" : {
-        "byteAttribute" : {
-          "type" : "ByteAttribute",
-          "nullable" : false,
-          "en" : "",
-          "de" : ""
-        },
         "byteArrayAttribute" : {
           "type" : "ByteArrayAttribute",
           "nullable" : false,
           "en" : "",
-          "de" : ""
-        },
-        "bigIntegerAttribute" : {
-          "type" : "BigIntegerAttribute",
-          "nullable" : false,
-          "en" : "",
-          "de" : ""
-        },
-        "localeAttribute" : {
-          "type" : "LocaleAttribute",
-          "nullable" : false,
-          "en" : "",
-          "de" : ""
-        },
-        "factoryPolymorphicAttribute" : {
-          "type" : "FactoryPolymorphicAttribute",
-          "nullable" : false,
-          "en" : "",
-          "de" : ""
-        },
-        "charAttribute" : {
-          "type" : "CharAttribute",
-          "nullable" : false,
-          "en" : "",
-          "de" : ""
-        },
-        "instantAttribute" : {
-          "type" : "InstantAttribute",
-          "nullable" : false,
-          "en" : "",
-          "de" : ""
-        },
-        "enumAttribute" : {
-          "type" : "EnumAttribute",
-          "nullable" : false,
-          "en" : "",
-          "de" : ""
-        },
-        "integerAttribute" : {
-          "type" : "IntegerAttribute",
-          "nullable" : false,
-          "en" : "",
-          "de" : ""
-        },
-        "bigDecimalAttribute" : {
-          "type" : "BigDecimalAttribute",
-          "nullable" : false,
-          "en" : "",
-          "de" : ""
+          "de" : "",
+          "possibleEnumValues" : [ ]
         },
         "i18nAttribute" : {
           "type" : "I18nAttribute",
           "nullable" : false,
           "en" : "",
-          "de" : ""
-        },
-        "longAttribute" : {
-          "type" : "LongAttribute",
-          "nullable" : false,
-          "en" : "",
-          "de" : ""
-        },
-        "durationAttribute" : {
-          "type" : "DurationAttribute",
-          "nullable" : false,
-          "en" : "",
-          "de" : ""
-        },
-        "localTimeAttribute" : {
-          "type" : "LocalTimeAttribute",
-          "nullable" : false,
-          "en" : "",
-          "de" : ""
-        },
-        "stringAttribute" : {
-          "type" : "StringAttribute",
-          "nullable" : false,
-          "en" : "",
-          "de" : ""
-        },
-        "localDateAttribute" : {
-          "type" : "LocalDateAttribute",
-          "nullable" : false,
-          "en" : "",
-          "de" : ""
-        },
-        "booleanAttribute" : {
-          "type" : "BooleanAttribute",
-          "nullable" : true,
-          "en" : "",
-          "de" : ""
-        },
-        "stringListAttribute" : {
-          "type" : "StringListAttribute",
-          "nullable" : false,
-          "en" : "",
-          "de" : ""
+          "de" : "",
+          "possibleEnumValues" : [ ]
         },
         "encryptedStringAttribute" : {
           "type" : "EncryptedStringAttribute",
           "nullable" : false,
           "en" : "",
-          "de" : ""
-        },
-        "uriAttribute" : {
-          "type" : "URIAttribute",
-          "nullable" : false,
-          "en" : "",
-          "de" : ""
-        },
-        "objectValueAttribute" : {
-          "type" : "ObjectValueAttribute",
-          "nullable" : false,
-          "en" : "",
-          "de" : ""
-        },
-        "floatAttribute" : {
-          "type" : "FloatAttribute",
-          "nullable" : false,
-          "en" : "",
-          "de" : ""
-        },
-        "enumListAttribute" : {
-          "type" : "EnumListAttribute",
-          "nullable" : false,
-          "en" : "",
-          "de" : ""
+          "de" : "",
+          "possibleEnumValues" : [ ]
         },
         "doubleAttribute" : {
           "type" : "DoubleAttribute",
           "nullable" : false,
           "en" : "",
-          "de" : ""
+          "de" : "",
+          "possibleEnumValues" : [ ]
         },
-        "passwordAttribute" : {
-          "type" : "PasswordAttribute",
+        "byteAttribute" : {
+          "type" : "ByteAttribute",
           "nullable" : false,
           "en" : "",
-          "de" : ""
+          "de" : "",
+          "possibleEnumValues" : [ ]
+        },
+        "booleanAttribute" : {
+          "type" : "BooleanAttribute",
+          "nullable" : true,
+          "en" : "",
+          "de" : "",
+          "possibleEnumValues" : [ ]
+        },
+        "localDateAttribute" : {
+          "type" : "LocalDateAttribute",
+          "nullable" : false,
+          "en" : "",
+          "de" : "",
+          "possibleEnumValues" : [ ]
+        },
+        "enumAttribute" : {
+          "type" : "EnumAttribute",
+          "nullable" : false,
+          "en" : "",
+          "de" : "",
+          "possibleEnumValues" : [ "VALUE1", "VALUE2" ]
+        },
+        "charAttribute" : {
+          "type" : "CharAttribute",
+          "nullable" : false,
+          "en" : "",
+          "de" : "",
+          "possibleEnumValues" : [ ]
+        },
+        "longAttribute" : {
+          "type" : "LongAttribute",
+          "nullable" : false,
+          "en" : "",
+          "de" : "",
+          "possibleEnumValues" : [ ]
+        },
+        "stringAttribute" : {
+          "type" : "StringAttribute",
+          "nullable" : false,
+          "en" : "",
+          "de" : "",
+          "possibleEnumValues" : [ ]
+        },
+        "integerAttribute" : {
+          "type" : "IntegerAttribute",
+          "nullable" : false,
+          "en" : "",
+          "de" : "",
+          "possibleEnumValues" : [ ]
         },
         "localDateTimeAttribute" : {
           "type" : "LocalDateTimeAttribute",
           "nullable" : false,
           "en" : "",
-          "de" : ""
+          "de" : "",
+          "possibleEnumValues" : [ ]
+        },
+        "localeAttribute" : {
+          "type" : "LocaleAttribute",
+          "nullable" : false,
+          "en" : "",
+          "de" : "",
+          "possibleEnumValues" : [ ]
+        },
+        "durationAttribute" : {
+          "type" : "DurationAttribute",
+          "nullable" : false,
+          "en" : "",
+          "de" : "",
+          "possibleEnumValues" : [ ]
         },
         "fileContentAttribute" : {
           "type" : "FileContentAttribute",
           "nullable" : false,
           "en" : "",
-          "de" : ""
+          "de" : "",
+          "possibleEnumValues" : [ ]
+        },
+        "localTimeAttribute" : {
+          "type" : "LocalTimeAttribute",
+          "nullable" : false,
+          "en" : "",
+          "de" : "",
+          "possibleEnumValues" : [ ]
         },
         "shortAttribute" : {
           "type" : "ShortAttribute",
           "nullable" : false,
           "en" : "",
-          "de" : ""
+          "de" : "",
+          "possibleEnumValues" : [ ]
+        },
+        "passwordAttribute" : {
+          "type" : "PasswordAttribute",
+          "nullable" : false,
+          "en" : "",
+          "de" : "",
+          "possibleEnumValues" : [ ]
+        },
+        "uriAttribute" : {
+          "type" : "URIAttribute",
+          "nullable" : false,
+          "en" : "",
+          "de" : "",
+          "possibleEnumValues" : [ ]
+        },
+        "bigDecimalAttribute" : {
+          "type" : "BigDecimalAttribute",
+          "nullable" : false,
+          "en" : "",
+          "de" : "",
+          "possibleEnumValues" : [ ]
+        },
+        "floatAttribute" : {
+          "type" : "FloatAttribute",
+          "nullable" : false,
+          "en" : "",
+          "de" : "",
+          "possibleEnumValues" : [ ]
+        },
+        "stringListAttribute" : {
+          "type" : "StringListAttribute",
+          "nullable" : false,
+          "en" : "",
+          "de" : "",
+          "possibleEnumValues" : [ ]
+        },
+        "enumListAttribute" : {
+          "type" : "EnumListAttribute",
+          "nullable" : false,
+          "en" : "",
+          "de" : "",
+          "possibleEnumValues" : [ "VALUE1", "VALUE2" ]
+        },
+        "instantAttribute" : {
+          "type" : "InstantAttribute",
+          "nullable" : false,
+          "en" : "",
+          "de" : "",
+          "possibleEnumValues" : [ ]
+        },
+        "bigIntegerAttribute" : {
+          "type" : "BigIntegerAttribute",
+          "nullable" : false,
+          "en" : "",
+          "de" : "",
+          "possibleEnumValues" : [ ]
+        },
+        "factoryPolymorphicAttribute" : {
+          "type" : "FactoryAttribute",
+          "nullable" : false,
+          "en" : "",
+          "de" : "",
+          "possibleEnumValues" : [ ]
         }
       }
     },
     "io.github.factoryfx.factory.typescript.generator.data.ExampleData" : {
       "attributeNameToItem" : {
-        "refList" : {
-          "type" : "FactoryListAttribute",
-          "nullable" : true,
-          "en" : "",
-          "de" : ""
+        "attribute" : {
+          "type" : "StringAttribute",
+          "nullable" : false,
+          "en" : "labelEn\\"'\\\\",
+          "de" : "labelDe",
+          "possibleEnumValues" : [ ]
         },
         "ref" : {
           "type" : "FactoryAttribute",
           "nullable" : true,
           "en" : "",
-          "de" : ""
+          "de" : "",
+          "possibleEnumValues" : [ ]
         },
-        "attribute" : {
-          "type" : "StringAttribute",
-          "nullable" : false,
-          "en" : "labelEn\\"'\\\\",
-          "de" : "labelDe"
+        "refList" : {
+          "type" : "FactoryListAttribute",
+          "nullable" : true,
+          "en" : "",
+          "de" : "",
+          "possibleEnumValues" : [ ]
         }
       }
     },
     "io.github.factoryfx.factory.typescript.generator.data.ExampleData2" : {
       "attributeNameToItem" : {
-        "ref" : {
-          "type" : "FactoryAttribute",
-          "nullable" : false,
-          "en" : "",
-          "de" : ""
-        },
         "attribute" : {
           "type" : "StringAttribute",
           "nullable" : false,
           "en" : "",
-          "de" : ""
+          "de" : "",
+          "possibleEnumValues" : [ ]
+        },
+        "ref" : {
+          "type" : "FactoryAttribute",
+          "nullable" : false,
+          "en" : "",
+          "de" : "",
+          "possibleEnumValues" : [ ]
         }
       }
     }
@@ -740,4 +772,16 @@ test('test_DynamicData_all_attributes', () => {
 
 
     assertExampleDataAllEquals(root);
+});
+
+test('test_collectChildrenFlat', () => {
+    let dynamicDataDictionary: DynamicDataDictionary = new DynamicDataDictionary();
+    dynamicDataDictionary.mapFromJson(JSON.parse(dictionaryExample));
+
+    let root: DynamicData = new DynamicData();
+    root.mapFromJsonFromRootDynamic(JSON.parse(exampleDataJson), dynamicDataDictionary);
+
+
+    expect(root.collectChildren().length).to.equal(3);
+
 });

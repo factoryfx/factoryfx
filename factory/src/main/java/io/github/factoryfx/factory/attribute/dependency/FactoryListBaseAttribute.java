@@ -32,7 +32,7 @@ public class FactoryListBaseAttribute<R extends FactoryBase<?,R>,L, F extends Fa
     }
 
     @Override
-    public boolean internal_match(AttributeMatch<List<F>> value) {
+    public boolean internal_mergeMatch(AttributeMatch<List<F>> value) {
         return internal_referenceListEquals(list,value.get());
     }
 
