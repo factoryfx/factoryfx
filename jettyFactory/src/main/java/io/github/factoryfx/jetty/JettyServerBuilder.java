@@ -12,10 +12,10 @@ import java.util.zip.Deflater;
 /**
  * The builder builds the factory structure for a jetty server not the jetty liveobject<br>
  * The factory structure matches the jetty internal architecture and the JettyServerBuilder creates a default configuration for that.
- *
- * jetty builder
- *      =>jetty factories
- *              =>real jetty server
+ * <br>
+ * jetty builder<br>
+ * {@literal    =>jetty factories}<br>
+ * {@literal           =>real jetty server}<br>
  *
  * @param <R> server root
  */
