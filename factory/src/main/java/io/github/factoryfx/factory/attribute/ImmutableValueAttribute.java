@@ -91,6 +91,7 @@ public abstract class ImmutableValueAttribute<T,A extends Attribute<T,A>> extend
         return new ValidationResult(error, new LanguageText().en("required parameter").de("Pflichtparameter"));
     };
 
+    @JsonIgnore
     private boolean nullable;
 
     @SuppressWarnings("unchecked")
