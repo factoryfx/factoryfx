@@ -1,6 +1,8 @@
 package io.github.factoryfx.factory.storage.migration.datamigration;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.TextNode;
 
@@ -9,6 +11,7 @@ import io.github.factoryfx.factory.jackson.SimpleObjectMapper;
 import io.github.factoryfx.factory.storage.migration.metadata.DataStorageMetadataDictionary;
 
 import java.util.*;
+import java.util.function.Consumer;
 
 public class DataJsonNode {
     private final ObjectNode jsonNode;
@@ -51,7 +54,26 @@ public class DataJsonNode {
     }
 
     public JsonNode getAttributeValue(String attribute) {
+        if (jsonNode.get(attribute)==null){
+            return null;
+        }
+        if (jsonNode.get(attribute).isArray()){
+            return jsonNode.get(attribute);
+        }
         return jsonNode.get(attribute).get("v");
+    }
+
+    public void setAttributeValue(String attribute, JsonNode jsonNode) {
+        try {
+            if (jsonNode==null) {
+                ((ObjectNode)jsonNode.get(attribute)).remove("v");
+            }
+            ObjectNode objectNode = JsonNodeFactory.instance.objectNode();
+            this.jsonNode.set(attribute, objectNode);
+            objectNode.set("v",jsonNode);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public <V> V getAttributeValue(String attributeName, Class<V> valueClass, SimpleObjectMapper simpleObjectMapper) {
@@ -62,18 +84,13 @@ public class DataJsonNode {
         return simpleObjectMapper.treeToValue(attributeValue, valueClass);
     }
 
-    //IDs from JsonIdentityInfo
-    public boolean isIdReference(String attributeName, DataStorageMetadataDictionary dataStorageMetadataDictionary) {
-        if (dataStorageMetadataDictionary.isReferenceAttribute(getDataClassName(),attributeName)){
-            return jsonNode.get(attributeName).get("v").isTextual();
-        }
-        return false;
+    public boolean isFactoryAttributeOrFactoryListAttribute(String attributeName, DataStorageMetadataDictionary dataStorageMetadataDictionary) {
+        return dataStorageMetadataDictionary.isReferenceAttribute(getDataClassName(),attributeName);
     }
+
     public String getAttributeIdValue(String attributeName) {
         return jsonNode.get(attributeName).get("v").asText();
     }
-
-
 
     private boolean isData(JsonNode jsonNode){
         if (jsonNode==null){
@@ -128,13 +145,16 @@ public class DataJsonNode {
         return simpleObjectMapper.treeToValue(jsonNode, valueClass);
     }
 
-    private List<String> getAttributes(){
+    public List<String> getAttributes(){
         ArrayList<String> result = new ArrayList<>();
 
         Iterator<Map.Entry<String, JsonNode>> field = jsonNode.fields();
         while (field.hasNext()) {
             Map.Entry<String, JsonNode> element = field.next();
             if (element.getValue().isObject()){
+                result.add(element.getKey());
+            }
+            if (element.getValue().isArray()){
                 result.add(element.getKey());
             }
         }
@@ -160,44 +180,34 @@ public class DataJsonNode {
      * @param dataStorageMetadataDictionary dataStorageMetadataDictionary
      */
     public void fixIdsDeepFromRoot(DataStorageMetadataDictionary dataStorageMetadataDictionary){
-        this.fixIdsDeep(dataStorageMetadataDictionary,new DataObjectIdFixer(),collectChildrenMapFromRoot());
-    }
+        Map<String, DataJsonNode> idToDataJson = collectChildrenMapFromRoot();
+        DataObjectIdFixer dataObjectIdFixer = new DataObjectIdFixer(idToDataJson);
+        for (DataJsonNode dataJsonNode : idToDataJson.values()) {
+            for (String attributeVariableName : dataJsonNode.getAttributes()) {
+                if (isFactoryAttributeOrFactoryListAttribute(attributeVariableName, dataStorageMetadataDictionary)) {
+                    JsonNode attributeValue = dataJsonNode.getAttributeValue(attributeVariableName);
 
-    public void fixIdsDeep(DataStorageMetadataDictionary dataStorageMetadataDictionary, DataObjectIdFixer dataObjectIdFixer, Map<String,DataJsonNode> idToDataJson) {
-        dataObjectIdFixer.bindItem(this.getId(),this);
-
-        Iterator<Map.Entry<String, JsonNode>> field = jsonNode.fields();
-        while (field.hasNext()) {
-            Map.Entry<String, JsonNode> elementEntry = field.next();
-            JsonNode element = elementEntry.getValue();
-            String attributeVariableName = elementEntry.getKey();
-
-            if (dataStorageMetadataDictionary.isRemovedAttribute(getDataClassName(),attributeVariableName)){
-
-            } else {
-                if (this.isIdReference(attributeVariableName,dataStorageMetadataDictionary)){
-                    if (!dataObjectIdFixer.isResolvable(getAttributeIdValue(attributeVariableName))){
-                        ((ObjectNode)element).set("v",idToDataJson.get(getAttributeIdValue(attributeVariableName)).jsonNode);
-                    }
-                }
-
-                if (element.isArray()) {
-                    for (JsonNode arrayElement : element) {
-                        if (isData(arrayElement)) {
-                            DataJsonNode child = new DataJsonNode((ObjectNode) arrayElement);
-                            child.fixIdsDeep(dataStorageMetadataDictionary,dataObjectIdFixer,idToDataJson);
+                    if (attributeValue != null) {
+                        if (attributeValue.isArray()) {
+                            int index = 0;
+                            for (JsonNode arrayElement : attributeValue) {
+                                final int setIndex=index;
+                                dataObjectIdFixer.fixFactoryId(arrayElement, (value) -> ((ArrayNode)attributeValue).set(setIndex,value));
+                                index++;
+                            }
+                        } else {
+                            dataObjectIdFixer.fixFactoryId(attributeValue, (value) -> setAttributeValue(attributeVariableName, value));
                         }
-                    }
-                } else {
-                    if (isData(element.get("v"))) {
-                        DataJsonNode child = new DataJsonNode((ObjectNode) element.get("v"));
-                        child.fixIdsDeep(dataStorageMetadataDictionary,dataObjectIdFixer,idToDataJson);
-                    }
 
+                    }
                 }
             }
-
         }
+    }
+
+
+    public JsonNode getJsonNode(){
+        return this.jsonNode;
     }
 
 }

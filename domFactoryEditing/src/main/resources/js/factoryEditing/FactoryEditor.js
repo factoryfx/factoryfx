@@ -3,7 +3,12 @@ export class FactoryEditor {
     constructor(attributeEditorCreator, waitAnimation) {
         this.attributeEditorCreator = attributeEditorCreator;
         this.waitAnimation = waitAnimation;
+        this.factoryChangeEvents = [];
         this.container = document.createElement("div");
+        this.treeCard = document.createElement("div");
+        this.treeCard.className = "card";
+        this.treeCard.style.overflowX = "scroll";
+        this.treeCard.style.marginLeft = "15px";
     }
     createBreadCrumb(data) {
         let nav = document.createElement("nav");
@@ -37,8 +42,8 @@ export class FactoryEditor {
         nav.appendChild(ol);
         return nav;
     }
-    setOnFactoryChange(event) {
-        this.factoryChangeEvent = event;
+    addOnFactoryChange(event) {
+        this.factoryChangeEvents.push(event);
     }
     edit(data) {
         this.currentData = data;
@@ -67,8 +72,8 @@ export class FactoryEditor {
             counter++;
         }
         editDiv.appendChild(this.form);
-        if (this.factoryChangeEvent) {
-            this.factoryChangeEvent(data);
+        for (let factoryChangeEvent of this.factoryChangeEvents) {
+            factoryChangeEvent(data);
         }
         this.form = document.createElement("form");
         this.container.className = "container-fluid";
@@ -84,9 +89,8 @@ export class FactoryEditor {
         row.appendChild(col4);
         row.appendChild(col8);
         col8.appendChild(editDiv);
-        let treeRoot = this.createTree(data.getRoot());
-        treeRoot.style.overflowX = "scroll";
-        col4.appendChild(treeRoot);
+        col4.appendChild(this.treeCard);
+        this.updateTree();
     }
     back() {
         let path = this.currentData.getPath();
@@ -103,32 +107,38 @@ export class FactoryEditor {
     create() {
         return this.container;
     }
-    createTree(root) {
-        let card = document.createElement("div");
-        card.className = "card";
-        let cardBody = document.createElement("div");
-        cardBody.className = "card-body";
-        cardBody.appendChild(this.createTreeItem(root));
-        card.appendChild(cardBody);
-        card.style.marginLeft = "15px";
-        return card;
-    }
     createTreeItem(data) {
         let ul = document.createElement("ul");
         for (let child of data.getChildrenFlat()) {
             let li = document.createElement("li");
-            let a = document.createElement("a");
-            a.href = "#";
-            a.textContent = child.getDisplayText();
-            a.style.whiteSpace = "nowrap";
-            a.onclick = (e) => {
-                this.edit(child);
-                e.preventDefault();
-            };
-            li.appendChild(a);
+            if (this.currentData == child) {
+                let span = document.createElement("span");
+                span.className = "bg-primary text-white";
+                span.style.whiteSpace = "nowrap";
+                span.textContent = child.getDisplayText();
+                li.appendChild(span);
+            }
+            else {
+                let a = document.createElement("a");
+                a.href = "#";
+                a.textContent = child.getDisplayText();
+                a.style.whiteSpace = "nowrap";
+                a.onclick = (e) => {
+                    this.edit(child);
+                    e.preventDefault();
+                };
+                li.appendChild(a);
+            }
             li.appendChild(this.createTreeItem(child));
             ul.appendChild(li);
         }
         return ul;
+    }
+    updateTree() {
+        DomUtility.clear(this.treeCard);
+        let cardBody = document.createElement("div");
+        cardBody.className = "card-body";
+        cardBody.appendChild(this.createTreeItem(this.currentData.getRoot()));
+        this.treeCard.appendChild(cardBody);
     }
 }

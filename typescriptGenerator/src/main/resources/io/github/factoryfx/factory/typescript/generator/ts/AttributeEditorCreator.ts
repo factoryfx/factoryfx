@@ -18,6 +18,8 @@ import {AttributeEditorStringListAttribute} from "./AttributeEditorStringListAtt
 import {WaitAnimation} from "./WaitAnimation";
 import {AttributeEditorFactoryViewAttribute} from "./AttributeEditorFactoryViewAttribute";
 import {AttributeEditorFactoryViewListAttribute} from "./AttributeEditorFactoryViewListAttribute";
+import {AttributeEditorByteAttribute} from "./AttributeEditorByteAttribute";
+import {AttributeEditorFloatAttribute} from "./AttributeEditorFloatAttribute";
 
 
 export class AttributeEditorCreator {
@@ -34,9 +36,10 @@ export class AttributeEditorCreator {
             this.attributeEditors[AttributeType.LocalDateAttribute]= (attributeAccessor: AttributeAccessor<any>, inputId: string,factoryEditor: FactoryEditor, waitAnimation: WaitAnimation)=>new AttributeEditorLocalDateAttribute(attributeAccessor,inputId);
             this.attributeEditors[AttributeType.BooleanAttribute]= (attributeAccessor: AttributeAccessor<any>, inputId: string,factoryEditor: FactoryEditor, waitAnimation: WaitAnimation)=>new AttributeEditorBooleanAttribute(attributeAccessor,inputId);
             this.attributeEditors[AttributeType.DoubleAttribute]= (attributeAccessor: AttributeAccessor<any>, inputId: string,factoryEditor: FactoryEditor, waitAnimation: WaitAnimation)=>new AttributeEditorDoubleAttribute(attributeAccessor,inputId);
+            this.attributeEditors[AttributeType.ByteAttribute]= (attributeAccessor: AttributeAccessor<any>, inputId: string,factoryEditor: FactoryEditor, waitAnimation: WaitAnimation)=>new AttributeEditorByteAttribute(attributeAccessor,inputId);
             this.attributeEditors[AttributeType.FileContentAttribute]= (attributeAccessor: AttributeAccessor<any>, inputId: string,factoryEditor: FactoryEditor, waitAnimation: WaitAnimation)=>new AttributeEditorFileContentAttribute(attributeAccessor,inputId);
             this.attributeEditors[AttributeType.StringListAttribute]= (attributeAccessor: AttributeAccessor<any>, inputId: string,factoryEditor: FactoryEditor, waitAnimation: WaitAnimation)=>new AttributeEditorStringListAttribute(attributeAccessor,inputId);
-
+            this.attributeEditors[AttributeType.FloatAttribute]= (attributeAccessor: AttributeAccessor<any>, inputId: string,factoryEditor: FactoryEditor, waitAnimation: WaitAnimation)=>new AttributeEditorFloatAttribute(attributeAccessor,inputId);
 
 
             this.attributeEditors[AttributeType.FactoryAttribute]= (attributeAccessor: AttributeAccessor<any>, inputId: string,factoryEditor: FactoryEditor, waitAnimation: WaitAnimation)=>new AttributeEditorFactoryAttribute(attributeAccessor,inputId,factoryEditor,waitAnimation);

@@ -29,6 +29,9 @@ public class DynamicDataDictionary {
                 if (attribute instanceof FactoryAttribute){
                     factoryClasses.add(((FactoryAttribute<?,?,?>)attribute).internal_getReferenceClass());
                 }
+                if (attribute instanceof FactoryListAttribute){
+                    factoryClasses.add(((FactoryListAttribute<?,?,?>)attribute).internal_getReferenceClass());
+                }
             });
         }
 

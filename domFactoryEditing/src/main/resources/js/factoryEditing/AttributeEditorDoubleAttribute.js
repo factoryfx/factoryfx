@@ -9,9 +9,9 @@ export class AttributeEditorDoubleAttribute {
         input.className = "form-control";
         input.type = "number";
         input.step = 'any';
-        input.value = this.attributeAccessor.getValue();
+        input.valueAsNumber = this.attributeAccessor.getValue();
         input.oninput = (e) => {
-            this.attributeAccessor.setValue(input.value);
+            this.attributeAccessor.setValue(input.valueAsNumber);
         };
         return input;
     }

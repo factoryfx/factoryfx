@@ -38,7 +38,7 @@
                     root.mapFromJsonFromRootDynamic(prepareNewFactoryResponse.root, dynamicDataDictionary);
 
 
-                    factoryEditor.setOnFactoryChange((newData)=>{
+                    factoryEditor.addOnFactoryChange((newData)=>{
                        window.history.pushState(null, null, window.location.pathname+"#"+newData.getPath().map(factory => factory.getDisplayText()).join('/'));
                     });
 

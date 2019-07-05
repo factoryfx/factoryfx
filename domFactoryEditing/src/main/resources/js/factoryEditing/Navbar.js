@@ -5,10 +5,13 @@ export class Navbar {
         this.factoryEditor = factoryEditor;
         this.view = view;
         this.saveWidget = saveWidget;
+        this.factoryEditor.addOnFactoryChange(newData => {
+            this.update();
+        });
     }
     create() {
         let nav = document.createElement("nav");
-        nav.className = "navbar navbar-expand-lg navbar-light bg-light";
+        nav.className = "navbar navbar-expand-lg navbar-dark bg-dark";
         let navbarBrand = document.createElement("a");
         navbarBrand.className = "navbar-brand";
         navbarBrand.href = "#";
@@ -36,5 +39,10 @@ export class Navbar {
         nav.appendChild(navbarNav);
         nav.appendChild(form);
         return nav;
+    }
+    update() {
+        for (let navItem of this.navItems) {
+            navItem.update();
+        }
     }
 }

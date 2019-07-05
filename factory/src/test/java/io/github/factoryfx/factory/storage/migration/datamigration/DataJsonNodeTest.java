@@ -1,6 +1,7 @@
 package io.github.factoryfx.factory.storage.migration.datamigration;
 
 import com.fasterxml.jackson.annotation.JsonSetter;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
@@ -11,7 +12,9 @@ import io.github.factoryfx.factory.merge.testdata.ExampleDataA;
 import io.github.factoryfx.factory.merge.testdata.ExampleDataB;
 import io.github.factoryfx.factory.merge.testdata.ExampleDataC;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.AssertionsKt$sam$i$org_junit_jupiter_api_function_Executable$0;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.function.Executable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -116,7 +119,7 @@ class DataJsonNodeTest {
 // a  b  c
     //fixid order order: hdabcegf
     @Test
-    public void test_jackosn_iteration_oder_match_idfix_order() {
+    public void test_jackson_iteration_oder_match_idfix_order() {
         IterationTestFactory root = new IterationTestFactory("h");
 
         IterationTestFactory d = new IterationTestFactory("d");
@@ -139,4 +142,121 @@ class DataJsonNodeTest {
         Assertions.assertEquals("hdabcegf",IterationTestFactory.createOrder.stream().filter(Objects::nonNull).collect(Collectors.joining("")));
     }
 
+
+    @Test
+    public void test_fixIdsDeep_smoketest() {
+
+        ExampleDataA root = new ExampleDataA();
+        ExampleDataB value = new ExampleDataB();
+        root.referenceAttribute.set(value);
+        value.referenceAttributeC.set(new ExampleDataC());
+        root.referenceListAttribute.add(new ExampleDataB());
+        root.internal().finalise();
+
+        JsonNode jsonNode = ObjectMapperBuilder.build().writeValueAsTree(root);
+        System.out.println(ObjectMapperBuilder.build().writeValueAsString(jsonNode));
+
+        DataJsonNode dataJsonNode = new DataJsonNode((ObjectNode) jsonNode);
+        dataJsonNode.fixIdsDeepFromRoot(root.internal().createDataStorageMetadataDictionaryFromRoot());
+    }
+
+    @Test
+    public void test_fixIdsDeep_null_ref_no_exception() {
+
+        ExampleDataA root = new ExampleDataA();
+        root.referenceAttribute.set(null);
+        root.internal().finalise();
+
+        JsonNode jsonNode = ObjectMapperBuilder.build().writeValueAsTree(root);
+        System.out.println(ObjectMapperBuilder.build().writeValueAsString(jsonNode));
+
+        DataJsonNode dataJsonNode = new DataJsonNode((ObjectNode) jsonNode);
+        dataJsonNode.fixIdsDeepFromRoot(root.internal().createDataStorageMetadataDictionaryFromRoot());
+
+    }
+
+    @Test
+    public void test_fixIdsDeep_ref() {
+        ExampleDataA root = new ExampleDataA();
+        ExampleDataB exampleDataB = new ExampleDataB();
+        root.referenceAttribute.set(exampleDataB);
+        root.referenceListAttribute.add(exampleDataB);
+
+        root.internal().finalise();
+
+
+        String json=
+                "{\n" +
+                        "  \"@class\" : \"io.github.factoryfx.factory.merge.testdata.ExampleDataA\",\n" +
+                        "  \"id\" : \"445a7f33-f166-dd28-9dc5-4ebbaa2c5e17\",\n" +
+                        "  \"stringAttribute\" : { },\n" +
+                        "  \"referenceAttribute\" : {\n" +
+                        "    \"v\" : \"5d5dc859-9b94-1e8d-1937-45caf0d304e4\"" +
+                        "  },\n" +
+                        "  \"referenceListAttribute\" : [ "+
+                                        "{\n" +
+                                        "      \"@class\" : \"io.github.factoryfx.factory.merge.testdata.ExampleDataB\",\n" +
+                                        "      \"id\" : \"5d5dc859-9b94-1e8d-1937-45caf0d304e4\",\n" +
+                                        "      \"stringAttribute\" : { },\n" +
+                                        "      \"referenceAttribute\" : { },\n" +
+                                        "      \"referenceAttributeC\" : { }\n" +
+                                        "}\n" +
+                        " ]\n" +
+                        "}";
+        Assertions.assertThrows(RuntimeException.class, () -> {
+            ObjectMapperBuilder.build().readValue(json,ExampleDataA.class);
+        });
+
+
+        JsonNode jsonNode = ObjectMapperBuilder.build().readTree(json);
+        DataJsonNode dataJsonNode = new DataJsonNode((ObjectNode) jsonNode);
+        dataJsonNode.fixIdsDeepFromRoot(root.internal().createDataStorageMetadataDictionaryFromRoot());
+
+
+
+        ObjectMapperBuilder.build().treeToValue(jsonNode,ExampleDataA.class);
+    }
+
+    @Test
+    public void test_fixIdsDeep_List() {
+        ExampleDataA root = new ExampleDataA();
+        root.referenceListAttribute.add(new ExampleDataB());
+        root.internal().finalise();
+
+
+        String json=
+                "{\n" + "  \"@class\" : \"io.github.factoryfx.factory.merge.testdata.ExampleDataA\",\n" +
+                "  \"id\" : \"a7697a9c-41f0-c839-1b9d-198d021a13b5\",\n" + "  \"stringAttribute\" : { },\n" +
+                "  \"referenceAttribute\" : { },\n" + "  \"referenceListAttribute\" : [ \"3502ce98-8011-81f9-f767-bf2903702b6e\", {\n" +
+                "    \"@class\" : \"io.github.factoryfx.factory.merge.testdata.ExampleDataB\",\n" +
+                "    \"id\" : \"3502ce98-8011-81f9-f767-bf2903702b6e\",\n" +
+                "    \"stringAttribute\" : { },\n" +
+                "    \"referenceAttribute\" : { },\n" +
+                "    \"referenceAttributeC\" : { }\n" +
+                "  } ]\n" +
+                "}";
+        Assertions.assertThrows(RuntimeException.class, () -> {
+            ObjectMapperBuilder.build().readValue(json,ExampleDataA.class);
+        });
+
+
+        JsonNode jsonNode = ObjectMapperBuilder.build().readTree(json);
+        DataJsonNode dataJsonNode = new DataJsonNode((ObjectNode) jsonNode);
+        dataJsonNode.fixIdsDeepFromRoot(root.internal().createDataStorageMetadataDictionaryFromRoot());
+
+        ObjectMapperBuilder.build().treeToValue(jsonNode,ExampleDataA.class);
+    }
+
+    @Test
+    public void test_getAttributes() {
+        ExampleDataA root = new ExampleDataA();
+        root.referenceAttribute.set(null);
+        root.internal().finalise();
+
+        JsonNode jsonNode = ObjectMapperBuilder.build().writeValueAsTree(root);
+        System.out.println(ObjectMapperBuilder.build().writeValueAsString(jsonNode));
+
+        DataJsonNode dataJsonNode = new DataJsonNode((ObjectNode) jsonNode);
+        Assertions.assertEquals(3,dataJsonNode.getAttributes().size());
+    }
 }

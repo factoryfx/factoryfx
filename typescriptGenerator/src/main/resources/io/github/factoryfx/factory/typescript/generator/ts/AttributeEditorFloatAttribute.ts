@@ -3,7 +3,7 @@ import {ValidationError} from "./ValidationError";
 import {AttributeAccessor} from "./AttributeAccessor";
 import {AttributeEditor} from "./AttributeEditor";
 
-export class AttributeEditorDoubleAttribute implements AttributeEditor{
+export class AttributeEditorFloatAttribute implements AttributeEditor{
 
     constructor(private attributeAccessor: AttributeAccessor<any>, private inputId: string) {
 

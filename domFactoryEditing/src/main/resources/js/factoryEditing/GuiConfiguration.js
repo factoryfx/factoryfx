@@ -14,7 +14,7 @@ export class GuiConfiguration {
     createNavbar() {
         let navItems = [];
         for (let navItemsJson of this.guiConfigurationJson.navBarItems) {
-            navItems.push(new NavItem(navItemsJson.text, this.root.getChildFromRoot(navItemsJson.factoryId), this.factoryEditor));
+            navItems.push(new NavItem(this.root.getChildFromRoot(navItemsJson.factoryId), this.factoryEditor));
         }
         return new Navbar(this.guiConfigurationJson.projectName, navItems, this.factoryEditor, this.view, new SaveWidget(this.root, this.baseVersionId, this.view, this.waitAnimation));
     }

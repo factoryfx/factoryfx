@@ -6,6 +6,7 @@ export class AttributeEditorStringListAttribute implements AttributeEditor{
     private  ul: HTMLUListElement;
     constructor(private attributeAccessor: AttributeAccessor<any>, private inputId: string) {
         this.ul = document.createElement("ul");
+        this.ul.style.paddingLeft="0px";
     }
 
     create(): HTMLElement{

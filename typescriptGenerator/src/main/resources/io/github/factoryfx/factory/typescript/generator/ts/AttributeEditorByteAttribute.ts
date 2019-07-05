@@ -3,7 +3,7 @@ import {ValidationError} from "./ValidationError";
 import {AttributeAccessor} from "./AttributeAccessor";
 import {AttributeEditor} from "./AttributeEditor";
 
-export class AttributeEditorDoubleAttribute implements AttributeEditor{
+export class AttributeEditorByteAttribute implements AttributeEditor{
 
     constructor(private attributeAccessor: AttributeAccessor<any>, private inputId: string) {
 
@@ -15,6 +15,8 @@ export class AttributeEditorDoubleAttribute implements AttributeEditor{
         input.className="form-control";
         input.type="number";
         input.step='any';
+        input.max="256";
+        input.min="0";
 
         input.valueAsNumber=this.attributeAccessor.getValue();
         input.oninput=(e) => {

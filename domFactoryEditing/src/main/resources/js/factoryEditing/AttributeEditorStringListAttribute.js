@@ -4,6 +4,7 @@ export class AttributeEditorStringListAttribute {
         this.attributeAccessor = attributeAccessor;
         this.inputId = inputId;
         this.ul = document.createElement("ul");
+        this.ul.style.paddingLeft = "0px";
     }
     create() {
         let div = document.createElement("div");

@@ -27,9 +27,10 @@ export class AttributeEditorFactoryAttribute {
         removeButton.onclick = (e) => {
             this.attributeAccessor.setValue(null);
             this.bindValue();
+            this.factoryEditor.updateTree();
         };
         removeButton.disabled = !this.attributeAccessor.getAttributeMetadata().nullable();
-        removeButton.className = "btn btn-outline-secondary";
+        removeButton.className = "btn btn-outline-danger";
         let newButton = document.createElement("button");
         newButton.type = "button";
         newButton.textContent = "new";
@@ -42,6 +43,7 @@ export class AttributeEditorFactoryAttribute {
             HttpUtility.post("createNewFactory", createRequestBody, this.waitAnimation, (response) => {
                 this.attributeAccessor.setValue(this.factoryEditor.getCurrentData().createNewChildFactory(response));
                 this.bindValue();
+                this.factoryEditor.updateTree();
             });
         };
         newButton.className = "btn btn-outline-secondary";

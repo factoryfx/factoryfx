@@ -18,7 +18,7 @@ public class AttributeToTsMapperManager {
         public AttributeToTsMapperManager create(Map<Class<? extends FactoryBase<?,R>>, TsClassConstructed> dataToOverrideTs, Set<TsEnumConstructed> tsEnums, TsFile dataType){
             HashMap<Class<? extends Attribute>, AttributeToTsMapper> classToInfo = new HashMap<>();
             classToInfo.put(FactoryAttribute.class, new FactoryAttributeToTsMapper<>(dataToOverrideTs,dataType));
-            classToInfo.put(FactoryListAttribute.class, new FactoryListAttributeToTsMapper<>(dataToOverrideTs));
+            classToInfo.put(FactoryListAttribute.class, new FactoryListAttributeToTsMapper<>(dataToOverrideTs,dataType));
 
             classToInfo.put(FactoryViewAttribute.class, new ViewAttributeToTsMapper(dataType));
             classToInfo.put(FactoryViewListAttribute.class, new ViewListAttributeToTsMapper(dataType));

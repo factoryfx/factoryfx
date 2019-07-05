@@ -41,6 +41,9 @@ java 11+ required
 ## Changelog
 [CHANGELOG](CHANGELOG.md)
 
+## New project template
+[Template](https://github.com/factoryfx/factoryfx-project-template)
+
 ## Basic example "Hello World" 
 #### Factory
 ```java

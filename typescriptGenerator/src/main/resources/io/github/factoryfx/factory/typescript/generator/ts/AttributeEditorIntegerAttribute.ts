@@ -14,6 +14,8 @@ export class AttributeEditorIntegerAttribute implements AttributeEditor{
         input.id=this.inputId.toString();
         input.className="form-control";
         input.type="number";
+        input.max="2147483647";
+        input.min="-2147483648";
 
         let value = this.attributeAccessor.getValue();
         if (value!==null && value!==undefined){

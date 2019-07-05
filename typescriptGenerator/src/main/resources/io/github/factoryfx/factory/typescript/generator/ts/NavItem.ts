@@ -2,20 +2,27 @@ import {Data} from "./Data";
 import {FactoryEditor} from "./FactoryEditor";
 
 export class NavItem {
-
-    constructor(private text: string, private factory: Data, private factoryEditor: FactoryEditor){
+    private navItem: HTMLAnchorElement = document.createElement("a");
+    constructor(private factory: Data, private factoryEditor: FactoryEditor){
 
     }
 
     create(): HTMLAnchorElement {
-        let navItem: HTMLAnchorElement = document.createElement("a");
-        navItem.className="nav-item nav-link";
-        navItem.textContent=this.text;
-        navItem.onclick=(e)=>{
+        this.navItem.className="nav-item nav-link";
+        this.navItem.textContent=this.factory.getDisplayText();
+        this.navItem.onclick=(e)=>{
             this.factoryEditor.edit(this.factory);
             e.preventDefault();
         };
-        navItem.href="#";
-        return navItem;
+        this.navItem.href="#";
+        return this.navItem;
+    }
+
+    public update(): void{
+        if (this.factoryEditor.getCurrentData()===this.factory){
+            this.navItem.className="nav-item nav-link active";
+        } else {
+            this.navItem.className="nav-item nav-link";
+        }
     }
 }

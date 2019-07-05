@@ -10,12 +10,14 @@ import {SaveWidget} from "./SaveWidget";
 
 export class Navbar implements Widget{
     constructor(private projectName: string, private navItems: NavItem[], private factoryEditor: FactoryEditor, private view: View, private saveWidget: SaveWidget){
-
+        this.factoryEditor.addOnFactoryChange(newData => {
+            this.update();
+        });
     }
 
     create(): HTMLElement{
         let nav: HTMLElement = document.createElement("nav");
-        nav.className="navbar navbar-expand-lg navbar-light bg-light";
+        nav.className="navbar navbar-expand-lg navbar-dark bg-dark";
         let navbarBrand: HTMLAnchorElement = document.createElement("a");
         navbarBrand.className="navbar-brand";
         navbarBrand.href="#";
@@ -47,6 +49,13 @@ export class Navbar implements Widget{
         nav.appendChild(navbarNav);
         nav.appendChild(form);
         return nav;
+    }
+
+
+    public update(): void{
+        for (let navItem of this.navItems){
+            navItem.update();
+        }
     }
 
 }

@@ -34,6 +34,8 @@ export class AttributeEditorFactoryListAttribute implements AttributeEditor{
             li.appendChild(this.createListItem(value));
             ul.appendChild(li);
         }
+        ul.style.marginBottom="16px";
+        ul.hidden = values.length===0
 
         let newButton: HTMLButtonElement = document.createElement("button");
         newButton.type="button";
@@ -47,26 +49,13 @@ export class AttributeEditorFactoryListAttribute implements AttributeEditor{
             HttpUtility.post("createNewFactory",createRequestBody,this.waitAnimation,(response)=>{
                 this.attributeAccessor.getValue().push(this.factoryEditor.getCurrentData().createNewChildFactory(response));
                 this.update();
+                this.factoryEditor.updateTree();
             });
         };
         newButton.className="btn btn-primary";
 
         this.div.appendChild(ul);
         this.div.appendChild(newButton);
-    }
-
-
-    public createList(values: Data[]): HTMLElement{
-        let ul: HTMLElement= document.createElement("ul");
-        ul.setAttribute("class","list-group");
-
-        for (let value of values) {
-            let li: HTMLElement= document.createElement("li");
-            li.setAttribute("class","list-group-item");
-            li.appendChild(this.createListItem(value));
-            ul.appendChild(li);
-        }
-        return ul;
     }
 
     createListItem(value: Data): HTMLElement{
@@ -91,17 +80,30 @@ export class AttributeEditorFactoryListAttribute implements AttributeEditor{
         let inputGroupAppend: HTMLElement= document.createElement("div");
         inputGroupAppend.className="input-group-append";
 
-        let button: HTMLButtonElement= document.createElement("button");
-        button.textContent="edit";
-        button.onclick=(e)=>{
+        let removeButton: HTMLButtonElement= document.createElement("button");
+        removeButton.type="button";
+        removeButton.textContent="remove";
+        removeButton.onclick=(e)=>{
+            let array: Data[] = this.attributeAccessor.getValue();
+            array.splice(array.indexOf(value), 1);
+            this.update();
+            this.factoryEditor.updateTree();
+
+        };
+        removeButton.className="btn btn-outline-danger";
+
+        let editButton: HTMLButtonElement= document.createElement("button");
+        editButton.textContent="edit";
+        editButton.onclick=(e)=>{
             this.factoryEditor.edit(value);
         };
         if (!value){
-            button.disabled=true;
+            editButton.disabled=true;
         }
-        button.className="btn btn-outline-secondary";
+        editButton.className="btn btn-outline-secondary";
 
-        inputGroupAppend.appendChild(button);
+        inputGroupAppend.appendChild(removeButton);
+        inputGroupAppend.appendChild(editButton);
         inputGroup.appendChild(input);
         inputGroup.appendChild(inputGroupAppend);
         return inputGroup;

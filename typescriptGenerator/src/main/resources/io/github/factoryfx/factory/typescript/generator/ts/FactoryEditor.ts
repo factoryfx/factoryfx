@@ -8,9 +8,16 @@ import {WaitAnimation} from "./WaitAnimation";
 export class FactoryEditor implements Widget {
     form: HTMLFormElement;
     container: HTMLDivElement;
+    treeCard: HTMLDivElement;
+
 
     constructor(private attributeEditorCreator: AttributeEditorCreator, private waitAnimation: WaitAnimation) {
         this.container= document.createElement("div");
+        this.treeCard = document.createElement("div");
+        this.treeCard.className="card";
+        this.treeCard.style.overflowX="scroll";
+        this.treeCard.style.marginLeft="15px";
+
     }
 
     createBreadCrumb(data: Data): HTMLElement {
@@ -50,10 +57,10 @@ export class FactoryEditor implements Widget {
         return nav;
     }
 
-    factoryChangeEvent: (newData: Data)=>void;
+    factoryChangeEvents: ((newData: Data)=>void)[]=[];
 
-    public setOnFactoryChange(event: (newData: Data)=>void) {
-        this.factoryChangeEvent = event;
+    public addOnFactoryChange(event: (newData: Data)=>void) {
+        this.factoryChangeEvents.push(event);
     }
 
     private currentData: Data;
@@ -96,9 +103,10 @@ export class FactoryEditor implements Widget {
         }
         editDiv.appendChild(this.form);
 
-        if (this.factoryChangeEvent) {
-            this.factoryChangeEvent(data);
+        for (let factoryChangeEvent of this.factoryChangeEvents) {
+            factoryChangeEvent(data);
         }
+
 
         this.form = document.createElement("form");
 
@@ -119,11 +127,9 @@ export class FactoryEditor implements Widget {
         row.appendChild(col8);
 
         col8.appendChild(editDiv);
-        let treeRoot: HTMLElement = this.createTree(data.getRoot());
-        treeRoot.style.overflowX="scroll";
-        col4.appendChild(treeRoot);
+        col4.appendChild(this.treeCard);
 
-
+        this.updateTree();
     }
 
     back() {
@@ -145,36 +151,43 @@ export class FactoryEditor implements Widget {
         return this.container;
     }
 
-    private createTree(root: Data): HTMLElement {
-        let card: HTMLDivElement = document.createElement("div");
-        card.className="card";
-        let cardBody: HTMLDivElement = document.createElement("div");
-        cardBody.className="card-body";
 
-        cardBody.appendChild(this.createTreeItem(root));
-        card.appendChild(cardBody);
-        card.style.marginLeft="15px";
-        return card;
-    }
 
     private createTreeItem(data: Data): HTMLElement {
         let ul: HTMLUListElement = document.createElement("ul");
         for (let child of data.getChildrenFlat()) {
             let li: HTMLLIElement  = document.createElement("li");
 
-            let a: HTMLAnchorElement = document.createElement("a");
-            a.href="#";
-            a.textContent=child.getDisplayText();
-            a.style.whiteSpace="nowrap";
-            a.onclick=(e)=>{
-                this.edit(child);
-                e.preventDefault();
-            };
-            li.appendChild(a);
+            if (this.currentData==child){
+                let span: HTMLSpanElement = document.createElement("span");
+                span.className="bg-primary text-white";
+                span.style.whiteSpace="nowrap";
+                span.textContent=child.getDisplayText();
+                li.appendChild(span);
+            } else {
+                let a: HTMLAnchorElement = document.createElement("a");
+                a.href="#";
+                a.textContent=child.getDisplayText();
+                a.style.whiteSpace="nowrap";
+                a.onclick=(e)=>{
+                    this.edit(child);
+                    e.preventDefault();
+                };
+                li.appendChild(a);
+            }
+
 
             li.appendChild(this.createTreeItem(child));
             ul.appendChild(li);
         }
         return ul;
+    }
+
+    updateTree(): any {
+        DomUtility.clear(this.treeCard);
+        let cardBody: HTMLDivElement = document.createElement("div");
+        cardBody.className="card-body";
+        cardBody.appendChild(this.createTreeItem(this.currentData.getRoot()));
+        this.treeCard.appendChild(cardBody);
     }
 }

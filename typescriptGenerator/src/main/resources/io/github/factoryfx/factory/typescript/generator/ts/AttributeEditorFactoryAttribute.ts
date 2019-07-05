@@ -38,9 +38,10 @@ export class AttributeEditorFactoryAttribute implements AttributeEditor{
         removeButton.onclick=(e)=>{
             this.attributeAccessor.setValue(null);
             this.bindValue();
+            this.factoryEditor.updateTree();
         };
         removeButton.disabled=!this.attributeAccessor.getAttributeMetadata().nullable();
-        removeButton.className="btn btn-outline-secondary";
+        removeButton.className="btn btn-outline-danger";
 
 
         let newButton: HTMLButtonElement= document.createElement("button");
@@ -48,7 +49,7 @@ export class AttributeEditorFactoryAttribute implements AttributeEditor{
         newButton.textContent="new";
         newButton.onclick=(e)=>{
 
-            let createRequestBody = {
+            let createRequestBody: any = {
                 "factoryId" : this.factoryEditor.getCurrentData().getId(),
                 "attributeVariableName" : this.attributeAccessor.getAttributeName(),
                 "root" : this.factoryEditor.getCurrentData().getRoot().mapToJsonFromRoot()
@@ -56,6 +57,7 @@ export class AttributeEditorFactoryAttribute implements AttributeEditor{
             HttpUtility.post("createNewFactory",createRequestBody,this.waitAnimation,(response)=>{
                 this.attributeAccessor.setValue(this.factoryEditor.getCurrentData().createNewChildFactory(response));
                 this.bindValue();
+                this.factoryEditor.updateTree();
             });
         };
         newButton.className="btn btn-outline-secondary";

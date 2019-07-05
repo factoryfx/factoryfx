@@ -68,7 +68,9 @@ public class MicroserviceDomResourceFactory<R extends FactoryBase<?,R>,S> extend
                     for (FactoryBase<?, R> factory : root.internal().collectChildrenDeep()) {
                         if (factory instanceof JerseyServletFactory){
                             for (FactoryBase<?,R> resource : ((JerseyServletFactory<R>) factory).resources.get()) {
-                                result.add(new GuiNavbarItem(resource.internal().getDisplayText(),resource.getId().toString()));
+                                if (!(resource instanceof MicroserviceDomResourceFactory)){
+                                    result.add(new GuiNavbarItem(resource.internal().getDisplayText(),resource.getId().toString()));
+                                }
                             }
                         }
                     }

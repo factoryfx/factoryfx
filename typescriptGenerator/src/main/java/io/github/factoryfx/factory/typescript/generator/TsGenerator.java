@@ -85,7 +85,7 @@ public class TsGenerator<R extends FactoryBase<?,R>> {
                 "AttributeEditorLocalDateAttribute.ts", "AttributeEditorBooleanAttribute.ts", "AttributeEditorDoubleAttribute.ts", "AttributeEditorFileContentAttribute.ts",
                 "AttributeEditorStringListAttribute.ts", "DomUtility.ts", "GuiConfiguration.ts", "NavItem.ts", "Navbar.ts", "HttpUtility.ts",
                 "View.ts" , "Widget.ts", "FactoryUpdateResult.ts", "SaveWidget.ts", "AttributeEditorFactoryViewAttribute.ts",
-                "AttributeEditorFactoryViewListAttribute.ts", "AttributeMetadataAndAttributeName.ts")) {
+                "AttributeEditorFactoryViewListAttribute.ts", "AttributeMetadataAndAttributeName.ts", "AttributeEditorByteAttribute.ts", "AttributeEditorFloatAttribute.ts")) {
             TsClassTemplateBased fileTs = new TsClassTemplateBased(file, utilDir);
             fileTs.writeToFile();
         }
