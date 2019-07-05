@@ -11,7 +11,6 @@ import io.github.factoryfx.factory.jackson.SimpleObjectMapper;
 import io.github.factoryfx.factory.storage.migration.metadata.DataStorageMetadataDictionary;
 
 import java.util.*;
-import java.util.function.Consumer;
 
 public class DataJsonNode {
     private final ObjectNode jsonNode;
@@ -84,8 +83,8 @@ public class DataJsonNode {
         return simpleObjectMapper.treeToValue(attributeValue, valueClass);
     }
 
-    public boolean isFactoryAttributeOrFactoryListAttribute(String attributeName, DataStorageMetadataDictionary dataStorageMetadataDictionary) {
-        return dataStorageMetadataDictionary.isReferenceAttribute(getDataClassName(),attributeName);
+    public boolean isValidFactoryAttributeOrFactoryListAttribute(String attributeName, DataStorageMetadataDictionary dataStorageMetadataDictionary) {
+        return dataStorageMetadataDictionary.isReferenceAttribute(getDataClassName(),attributeName) && !dataStorageMetadataDictionary.isRemovedAttribute(getDataClassName(),attributeName);
     }
 
     public String getAttributeIdValue(String attributeName) {
@@ -184,7 +183,7 @@ public class DataJsonNode {
         DataObjectIdFixer dataObjectIdFixer = new DataObjectIdFixer(idToDataJson);
         for (DataJsonNode dataJsonNode : idToDataJson.values()) {
             for (String attributeVariableName : dataJsonNode.getAttributes()) {
-                if (isFactoryAttributeOrFactoryListAttribute(attributeVariableName, dataStorageMetadataDictionary)) {
+                if (isValidFactoryAttributeOrFactoryListAttribute(attributeVariableName, dataStorageMetadataDictionary)) {
                     JsonNode attributeValue = dataJsonNode.getAttributeValue(attributeVariableName);
 
                     if (attributeValue != null) {
