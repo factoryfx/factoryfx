@@ -1,6 +1,7 @@
 package io.github.factoryfx.factory.typescript.generator;
 
 
+import com.google.common.base.StandardSystemProperty;
 import io.github.factoryfx.factory.FactoryBase;
 import io.github.factoryfx.factory.attribute.types.EnumAttribute;
 import io.github.factoryfx.factory.attribute.types.EnumListAttribute;
@@ -192,7 +193,15 @@ public class TsGenerator<R extends FactoryBase<?,R>> {
 
     private void compileTsToJS(Path tsBuildDirectory) {
         try {
-            ProcessBuilder pb = new ProcessBuilder("cmd", "/c", "tsc", "--outDir", targetDir.toFile().getAbsolutePath()).directory(tsBuildDirectory.toFile().getAbsoluteFile());
+            String osNameMatch = StandardSystemProperty.OS_NAME.value().toLowerCase();
+            String first="cmd";
+            String second="/c";
+            if(osNameMatch.contains("linux")) {
+                first="/bin/bash";
+                second="-c";
+            }
+
+            ProcessBuilder pb = new ProcessBuilder(first, second, "tsc", "--outDir", targetDir.toFile().getAbsolutePath()).directory(tsBuildDirectory.toFile().getAbsoluteFile());
             Process process;
             process = pb.start();
 //            final BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
