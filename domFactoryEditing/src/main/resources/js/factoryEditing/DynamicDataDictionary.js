@@ -17,8 +17,6 @@ export class DynamicDataDictionary {
         this.data = json;
     }
     createData(json, idToDataMap, parent) {
-        if (!json)
-            return null;
         let clazz = json['@class'];
         if (typeof json === 'string') {
             return idToDataMap[json];
@@ -31,7 +29,10 @@ export class DynamicDataDictionary {
     createDataList(json, idToDataMap, parent) {
         let result = [];
         for (let entry of json) {
-            result.push(this.createData(entry, idToDataMap, parent));
+            let newData = this.createData(entry, idToDataMap, parent);
+            if (newData) {
+                result.push(newData);
+            }
         }
         return result;
     }

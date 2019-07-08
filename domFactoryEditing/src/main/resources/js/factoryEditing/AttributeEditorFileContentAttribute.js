@@ -13,13 +13,15 @@ export class AttributeEditorFileContentAttribute {
         input.type = "file";
         // input.value=this.attributeAccessor.getValue();  TODO how show base 64
         input.oninput = (e) => {
-            let reader = new FileReader();
-            reader.readAsDataURL(input.files[0]);
-            reader.onload = () => {
-                let result = reader.result;
-                this.attributeAccessor.setValue(result.split(',')[1]);
-                this.bindValue();
-            };
+            if (input.files) {
+                let reader = new FileReader();
+                reader.readAsDataURL(input.files[0]);
+                reader.onload = () => {
+                    let result = reader.result;
+                    this.attributeAccessor.setValue(result.split(',')[1]);
+                    this.bindValue();
+                };
+            }
         };
         this.bindValue();
         content.appendChild(this.textarea);

@@ -23,7 +23,7 @@ public class FactoryListAttributeToTsMapper<R extends FactoryBase<?,R>> implemen
     public TsType getTsType(Attribute<?,?> attribute) {
         Class referenceClass = ((FactoryListBaseAttribute) attribute).internal_getReferenceClass();
         if (referenceClass==null){
-            return new TsTypeClass(dataType);
+            return new TsTypeArray(new TsTypeClass(dataType));
         }
         return new TsTypeArray(new TsTypeClass(dataToConfigTs.get(referenceClass)));
     }

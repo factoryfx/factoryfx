@@ -45,14 +45,17 @@ public class DataCreatorTs<R extends FactoryBase<?,R>> {
         typeMappingCode.append("return null;");
 
         constructed.methods.add(new TsMethod("createData",
-                List.of(new TsMethodParameter("json",new TsTypePrimitive("any")),new TsMethodParameter("idToDataMap",new TsTypePrimitive("any")), new TsMethodParameter("parent",new TsTypeClass(dataClass))),new TsMethodResult(new TsTypeClass(dataClass)),
+                List.of(new TsMethodParameter("json",new TsTypePrimitive("any")),new TsMethodParameter("idToDataMap",new TsTypePrimitive("any")), new TsMethodParameter("parent",new TsTypeClass(dataClass))),new TsMethodResult(new TsTypeClass(dataClass), new TsTypeNull()),
                 new TsMethodCode(typeMappingCode.toString(),allDataClasses.stream().map(dataToDataConfigTs::get).collect(Collectors.toSet())),"public"));
 
 
         String typeListMappingCode =
                 "let result: Data[]=[];\n" +
                 "for (let entry of json) {\n" +
-                "    result.push(this.createData(entry,idToDataMap,parent));\n" +
+                "   let data = this.createData(entry,idToDataMap,parent);\n" +
+                "   if (data){\n" +
+                "       result.push(data);\n" +
+                "   }\n" +
                 "}\n" +
                 "return result;";
 

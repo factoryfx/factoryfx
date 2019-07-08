@@ -148,7 +148,7 @@ export class Data {
     addBackReferences() {
         let stack = [];
         stack.push(this);
-        let data = null;
+        let data;
         do {
             data = stack.pop();
             if (data) {

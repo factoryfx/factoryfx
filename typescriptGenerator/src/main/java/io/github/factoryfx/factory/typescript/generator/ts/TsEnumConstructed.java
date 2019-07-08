@@ -23,10 +23,11 @@ public class TsEnumConstructed extends TsFile {
                     "}\n"+
                     "export namespace "+getName()+" {\n"+
                     "    export function fromJson(json: string): "+getName()+"{\n"+
-                            "        return "+getName()+"[json];\n"+
+                            "        return ("+getName()+ " as any)[json];\n"+
                     "    }\n"+
-                    "    export function toJson(value: "+getName()+"): string{\n"+
+                    "    export function toJson(value: "+getName()+"): string | null{\n"+
                             "        if (value) return value.toString();\n"+
+                            "        return null;\n"+
                     "    }\n"+
                     "}\n";
     }

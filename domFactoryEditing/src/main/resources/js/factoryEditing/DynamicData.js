@@ -42,7 +42,13 @@ export class DynamicData extends Data {
             this.attributeAccessors.push(new AttributeAccessor(attributeMetadata.attributeMetadata, this.attributeValues, attributeMetadata.attributeName));
             let attributeType = attributeMetadata.attributeMetadata.getType();
             if (attributeType === AttributeType.FactoryAttribute || attributeType === AttributeType.FactoryPolymorphicAttribute) {
-                this.attributeValues[attributeMetadata.attributeName] = dynamicDataDictionary.createData(json[attributeMetadata.attributeName].v, idToDataMap, this);
+                let jsonChildValue = json[attributeMetadata.attributeName].v;
+                if (jsonChildValue) {
+                    this.attributeValues[attributeMetadata.attributeName] = dynamicDataDictionary.createData(jsonChildValue, idToDataMap, this);
+                }
+                else {
+                    this.attributeValues[attributeMetadata.attributeName] = null;
+                }
                 continue;
             }
             if (attributeType === AttributeType.FactoryListAttribute || attributeType === AttributeType.FactoryPolymorphicListAttribute) {

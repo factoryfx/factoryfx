@@ -14,12 +14,14 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
 
+import java.awt.*;
+import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
-public class DataGeneratorTest {
+public class TsGeneratorTest {
 
 
     @Test
@@ -41,7 +43,7 @@ public class DataGeneratorTest {
 
     @SuppressWarnings("unchecked")
     @Test
-    public void smoketest_jettyserver(@TempDir Path targetDir) {
+    public void smoketest_jettyserver(@TempDir Path targetDir) throws InterruptedException {
         FactoryTreeBuilder<Server, TestHttpServer,Void> builder = new FactoryTreeBuilder<>(TestHttpServer.class);
         builder.addFactory(JettyServerFactory.class, Scope.SINGLETON, ctx-> new JettyServerBuilder<TestHttpServer>()
                 .withHost("localhost").withPort(8005).build());
@@ -63,7 +65,8 @@ public class DataGeneratorTest {
 
 
         TsGenerator<ExampleData> tsClassCreator=new TsGenerator<>(targetDir, new ArrayList(factoryClasses));
-        tsClassCreator.generateTs();
+        tsClassCreator.generateJs();
+
 
     }
 }

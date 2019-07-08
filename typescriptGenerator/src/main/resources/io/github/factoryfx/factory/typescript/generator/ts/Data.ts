@@ -4,9 +4,9 @@ import {AttributeAccessor} from "./AttributeAccessor";
 import {DynamicDataDictionary} from "./DynamicDataDictionary";
 
 export abstract class Data  {
-    private id: string;
-    protected javaClass: string;
-    private parent: Data;
+    private id!: string;
+    protected javaClass!: string;
+    private parent!: Data;
 
     public getId(): string{
         if (!this.id){
@@ -28,7 +28,7 @@ export abstract class Data  {
         this.mapFromJson(json,idToDataMap,null,dynamicDataDictionary);
     }
 
-    public mapFromJson(json: any, idToDataMap: any, dataCreator: DataCreator, dynamicDataDictionary: DynamicDataDictionary) {
+    public mapFromJson(json: any, idToDataMap: any, dataCreator: DataCreator | null, dynamicDataDictionary: DynamicDataDictionary  | null) {
         this.id = json.id;
         this.javaClass = json['@class'];
         this.mapValuesFromJson(json, idToDataMap,dataCreator,dynamicDataDictionary);
@@ -51,8 +51,8 @@ export abstract class Data  {
         return result;
     }
 
-    protected abstract mapValuesFromJson(json: any, idToDataMap: any, dataCreator: DataCreator, dynamicDataDictionary: DynamicDataDictionary);//hook for generated code
-    protected abstract mapValuesToJson(idToDataMap: any, result: any);//hook for generated code
+    protected abstract mapValuesFromJson(json: any, idToDataMap: any, dataCreator: DataCreator  | null, dynamicDataDictionary: DynamicDataDictionary  | null): void;//hook for generated code
+    protected abstract mapValuesToJson(idToDataMap: any, result: any): void;//hook for generated code
     protected abstract collectChildrenFlat(): Array<Data>;//hook for generated code
     abstract listAttributeAccessor(): AttributeAccessor<any>[];
     public abstract getDisplayText(): string;
@@ -105,7 +105,7 @@ export abstract class Data  {
 
 
     public collectChildren(): Data[] {
-        let idToDataMap = {};
+        let idToDataMap: any = {};
         this.collectChildrenRecursive(idToDataMap);
 
         let result = [];
@@ -132,7 +132,7 @@ export abstract class Data  {
     }
 
     protected mapInstantFromJson(json: any): Date{
-        let match = /(.*)\.(.*)Z/.exec(json);
+        let match: any = /(.*)\.(.*)Z/.exec(json);
         let convertNanoToMilli=match[1]+'.'+this.pad((Math.round(Number(match[2])/100000)),2)+'Z';
 
         let current:Date = new Date(convertNanoToMilli);
@@ -190,9 +190,9 @@ export abstract class Data  {
         let stack: Data[] = [];
         stack.push(this);
 
-        let data: Data=null;
+        let data: Data;
         do {
-            data= stack.pop();
+            data= stack.pop() as Data;
             if (data){
                 for (let child of data.collectChildrenFlat()) {
                     child.setParent(data);
@@ -211,7 +211,7 @@ export abstract class Data  {
     }
 
     getChildFromRoot(factoryId: any): Data {
-        let idToDataMap = {};
+        let idToDataMap: any = {};
         this.collectChildrenRecursive(idToDataMap);
         return idToDataMap[factoryId];
     }

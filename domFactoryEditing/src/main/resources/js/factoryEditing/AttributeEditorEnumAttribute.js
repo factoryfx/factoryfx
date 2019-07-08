@@ -21,7 +21,7 @@ export class AttributeEditorEnumAttribute {
             select.options.add(option);
         }
         let option = document.createElement("option");
-        option.value = null;
+        option.value = '';
         option.textContent = 'empty';
         if (value === null || value === undefined) {
             option.selected = true;

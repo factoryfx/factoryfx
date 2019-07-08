@@ -28,7 +28,7 @@ export class WaitAnimation implements Widget{
 
     content: Element[]=[];
 
-    scrollTop: number;
+    scrollTop!: number;
     show(): void {
         this.scrollTop = window.pageYOffset || document.documentElement.scrollTop;
         DomUtility.clear(this.parentElement);

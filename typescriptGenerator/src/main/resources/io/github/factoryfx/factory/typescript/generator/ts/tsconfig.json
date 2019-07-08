@@ -1,5 +1,6 @@
 {
     "compilerOptions": {
+        "strict": true,
         "incremental": false,
         "target": "es2017",
         "module": "ES6",

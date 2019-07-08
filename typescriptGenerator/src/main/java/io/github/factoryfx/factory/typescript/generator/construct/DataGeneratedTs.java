@@ -102,7 +102,13 @@ public class DataGeneratedTs<R extends FactoryBase<?,R>, L,  F extends FactoryBa
     private TsMethod createCreateNewChildFactory() {
         StringBuilder fromJsonCode=new StringBuilder();
         Set<TsFile> mapValuesFromJsonImports = new HashSet<>();
-        fromJsonCode.append("return null;");
+
+        fromJsonCode.append("let data = new DataCreator().createData(json, {}, this);\n");
+        fromJsonCode.append("if (data){\n");
+        fromJsonCode.append("    return data;\n");
+        fromJsonCode.append("} else {\n");
+        fromJsonCode.append("    throw new Error('json parameter was snull');\n");
+        fromJsonCode.append("}\n");
 
         return new TsMethod("createNewChildFactory",
                 List.of(new TsMethodParameter("json",new TsTypePrimitive("any"))),

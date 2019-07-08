@@ -42,10 +42,11 @@ export enum AttributeType  {
 
 }
 export namespace AttributeType {
-    export function fromJson(json: string): AttributeType{
-        return AttributeType[json];
+    export function fromJson(json: string): AttributeType| null{
+        return (AttributeType as any)[json];
     }
-    export function toJson(value: AttributeType): string{
+    export function toJson(value: AttributeType): string | null{
         if (value) return value.toString();
+        return null;
     }
 }

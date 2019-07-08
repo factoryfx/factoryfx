@@ -38,7 +38,7 @@ public class TsAttribute {
             constructorParametersString= constructorParameters.stream().map(TsValue::construct).collect(Collectors.joining(","));
         }
 
-        String initialisation=" = null";
+        String initialisation="";
         if (initialised){
             initialisation="= new "+type.construct()+"("+constructorParametersString+")";
         }
@@ -52,7 +52,7 @@ public class TsAttribute {
         if (readonly){
             readonlyString="readonly ";
         }
-        return "public "+staticString+readonlyString+name+": "+type.construct()+initialisation+";";
+        return "public "+staticString+readonlyString+name+(initialised?"":"!")+": "+type.construct()+initialisation+";";
     }
 
     public void addImport(Set<TsFile> imports) {

@@ -8,7 +8,7 @@ import {DynamicDataDictionary} from "./DynamicDataDictionary";
 import {AttributeMetadataAndAttributeName} from "./AttributeMetadataAndAttributeName";
 
 export class DynamicData extends Data {
-    attributeAccessors: AttributeAccessor<any>[];
+    attributeAccessors!: AttributeAccessor<any>[];
     attributeValues: any;
 
     protected collectChildrenFlat(): Array<Data> {
@@ -46,19 +46,25 @@ export class DynamicData extends Data {
         return this.attributeAccessors;
     }
 
-    dynamicDataDictionary: DynamicDataDictionary;
-    protected mapValuesFromJson(json: any, idToDataMap: any, dataCreator: DataCreator, dynamicDataDictionary: DynamicDataDictionary) {
+    dynamicDataDictionary!: DynamicDataDictionary;
+    protected mapValuesFromJson(json: any, idToDataMap: any, dataCreator: DataCreator | null, dynamicDataDictionary: DynamicDataDictionary) {
         this.attributeAccessors=[];
         this.attributeValues={};
-        this.dynamicDataDictionary=dynamicDataDictionary;
 
+
+        this.dynamicDataDictionary=dynamicDataDictionary;
 
         let attributeMetadataArray:  AttributeMetadataAndAttributeName[] = dynamicDataDictionary.createAttributeMetadataArray(this.javaClass);
         for (let attributeMetadata of attributeMetadataArray){
             this.attributeAccessors.push(new AttributeAccessor<any>(attributeMetadata.attributeMetadata,this.attributeValues,attributeMetadata.attributeName));
             let attributeType: AttributeType = attributeMetadata.attributeMetadata.getType();
             if (attributeType===AttributeType.FactoryAttribute || attributeType===AttributeType.FactoryPolymorphicAttribute){
-                this.attributeValues[attributeMetadata.attributeName]=dynamicDataDictionary.createData(json[attributeMetadata.attributeName].v,idToDataMap,this);
+                let jsonChildValue = json[attributeMetadata.attributeName].v;
+                if (jsonChildValue){
+                    this.attributeValues[attributeMetadata.attributeName]=dynamicDataDictionary.createData(jsonChildValue,idToDataMap,this);
+                } else {
+                    this.attributeValues[attributeMetadata.attributeName]=null;
+                }
                 continue;
             }
             if (attributeType===AttributeType.FactoryListAttribute || attributeType===AttributeType.FactoryPolymorphicListAttribute){
@@ -74,6 +80,7 @@ export class DynamicData extends Data {
             }
             this.attributeValues[attributeMetadata.attributeName]=this.getValue(json[attributeMetadata.attributeName].v,attributeType);
         }
+
     }
 
     private getValue(jsonValue: any, attributeType: AttributeType): any {
@@ -144,7 +151,7 @@ export class DynamicData extends Data {
             type === AttributeType.ByteListAttribute;
     }
 
-    createNewChildFactory(json: any): Data{
+    createNewChildFactory(json: any): Data {
         let idToDataMap = {};
         this.collectChildrenRecursive(idToDataMap);
         return this.dynamicDataDictionary.createData(json,idToDataMap,this);

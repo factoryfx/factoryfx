@@ -83,10 +83,6 @@ public class DataJsonNode {
         return simpleObjectMapper.treeToValue(attributeValue, valueClass);
     }
 
-    public boolean isValidFactoryAttributeOrFactoryListAttribute(String attributeName, DataStorageMetadataDictionary dataStorageMetadataDictionary) {
-        return dataStorageMetadataDictionary.isReferenceAttribute(getDataClassName(),attributeName) && !dataStorageMetadataDictionary.isRemovedAttribute(getDataClassName(),attributeName);
-    }
-
     public String getAttributeIdValue(String attributeName) {
         return jsonNode.get(attributeName).get("v").asText();
     }
@@ -169,6 +165,15 @@ public class DataJsonNode {
 
     }
 
+    public void applyRemovedAttribute(DataStorageMetadataDictionary dataStorageMetadataDictionary){
+        for (String attributeVariableName : this.getAttributes()) {
+            if (dataStorageMetadataDictionary.isRemovedAttribute(getDataClassName(),attributeVariableName)){
+                jsonNode.remove(attributeVariableName);
+            }
+        }
+
+    }
+
     /**
      * fix objects in removed attributes.
      *
@@ -179,11 +184,20 @@ public class DataJsonNode {
      * @param dataStorageMetadataDictionary dataStorageMetadataDictionary
      */
     public void fixIdsDeepFromRoot(DataStorageMetadataDictionary dataStorageMetadataDictionary){
-        Map<String, DataJsonNode> idToDataJson = collectChildrenMapFromRoot();
-        DataObjectIdFixer dataObjectIdFixer = new DataObjectIdFixer(idToDataJson);
-        for (DataJsonNode dataJsonNode : idToDataJson.values()) {
+
+        //to keep the same iteration order as jackson, delete removed attributes first
+        Map<String, DataJsonNode> allIdToDataJson = collectChildrenMapFromRoot();
+        for (DataJsonNode dataJsonNode : allIdToDataJson.values()) {
+            dataJsonNode.applyRemovedAttribute(dataStorageMetadataDictionary);
+        }
+
+
+
+        Map<String, DataJsonNode> idToDataJsonAfterRemoved = collectChildrenMapFromRoot();
+        DataObjectIdFixer dataObjectIdFixer = new DataObjectIdFixer(allIdToDataJson);
+        for (DataJsonNode dataJsonNode : idToDataJsonAfterRemoved.values()) {
             for (String attributeVariableName : dataJsonNode.getAttributes()) {
-                if (isValidFactoryAttributeOrFactoryListAttribute(attributeVariableName, dataStorageMetadataDictionary)) {
+                if (dataStorageMetadataDictionary.isReferenceAttribute(getDataClassName(),attributeVariableName)) {
                     JsonNode attributeValue = dataJsonNode.getAttributeValue(attributeVariableName);
 
                     if (attributeValue != null) {

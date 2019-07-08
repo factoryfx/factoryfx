@@ -20,14 +20,16 @@ export class AttributeEditorFileContentAttribute implements AttributeEditor{
 
         // input.value=this.attributeAccessor.getValue();  TODO how show base 64
         input.oninput=(e) => {
+            if (input.files){
+                let reader:FileReader = new FileReader();
+                reader.readAsDataURL(input.files[0]);
+                reader.onload = () => {
+                    let result: string= reader.result as string;
+                    this.attributeAccessor.setValue(result.split(',')[1]);
+                    this.bindValue();
+                };
+            }
 
-            let reader:FileReader = new FileReader();
-            reader.readAsDataURL(input.files[0]);
-            reader.onload = () => {
-                let result: string= reader.result as string;
-                this.attributeAccessor.setValue(result.split(',')[1]);
-                this.bindValue();
-            };
 
         };
         this.bindValue();

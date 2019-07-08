@@ -6,7 +6,7 @@ import {WaitAnimation} from "./WaitAnimation";
 
 
 export class FactoryEditor implements Widget {
-    form: HTMLFormElement;
+    form!: HTMLFormElement;
     container: HTMLDivElement;
     treeCard: HTMLDivElement;
 
@@ -63,7 +63,7 @@ export class FactoryEditor implements Widget {
         this.factoryChangeEvents.push(event);
     }
 
-    private currentData: Data;
+    private currentData!: Data;
 
     edit(data: Data) {
         this.currentData = data;

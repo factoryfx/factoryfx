@@ -11,7 +11,10 @@ export class DataCreator {
     createDataList(json, idToDataMap, parent) {
         let result = [];
         for (let entry of json) {
-            result.push(this.createData(entry, idToDataMap, parent));
+            let data = this.createData(entry, idToDataMap, parent);
+            if (data) {
+                result.push(data);
+            }
         }
         return result;
     }

@@ -88,7 +88,7 @@ export class AttributeEditorFactoryAttribute implements AttributeEditor{
             this.editButton.disabled = true;
         }
 
-        this.input.ondblclick=undefined;
+        this.input.ondblclick=null;
         if (value) {
             this.input.ondblclick = (e) => {
                 if (this.factoryEditor.validate()){

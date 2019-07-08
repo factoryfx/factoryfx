@@ -29,7 +29,7 @@ export class AttributeEditorEnumAttribute implements AttributeEditor{
         }
 
         let option: HTMLOptionElement = document.createElement("option");
-        option.value=null;
+        option.value='';
         option.textContent='empty';
         if (value===null || value===undefined){
             option.selected=true;

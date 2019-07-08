@@ -259,4 +259,15 @@ class DataJsonNodeTest {
         DataJsonNode dataJsonNode = new DataJsonNode((ObjectNode) jsonNode);
         Assertions.assertEquals(3,dataJsonNode.getAttributes().size());
     }
+
+    @Test
+    public void test_getAttributes_only_attributes() {
+        ExampleDataA root = new ExampleDataA();
+        root.getId();
+        root.internal().setTreeBuilderName("12345");
+        root.internal().finalise();
+        JsonNode jsonNode = ObjectMapperBuilder.build().writeValueAsTree(root);
+        DataJsonNode dataJsonNode = new DataJsonNode((ObjectNode) jsonNode);
+        Assertions.assertEquals(3,dataJsonNode.getAttributes().size());
+    }
 }

@@ -7,7 +7,7 @@ import {WaitAnimation} from "./WaitAnimation";
 import {SaveWidget} from "./SaveWidget";
 
 export class GuiConfiguration {
-    constructor(private guiConfigurationJson: any, private factoryEditor: FactoryEditor, private root: Data,  private baseVersionId, private view: View, private waitAnimation: WaitAnimation){
+    constructor(private guiConfigurationJson: any, private factoryEditor: FactoryEditor, private root: Data, private baseVersionId: string, private view: View, private waitAnimation: WaitAnimation){
 
     }
 

@@ -50,6 +50,7 @@ export var AttributeType;
     function toJson(value) {
         if (value)
             return value.toString();
+        return null;
     }
     AttributeType.toJson = toJson;
 })(AttributeType || (AttributeType = {}));

@@ -5,6 +5,7 @@
   "author": "scopp software gmbh",
   "private": true,
   "dependencies": {
+    "@types/chai": "^4.1.7",
     "@types/expect": "^1.20.3",
     "@types/mocha": "^5.2.5",
     "chai": "^4.2.0",

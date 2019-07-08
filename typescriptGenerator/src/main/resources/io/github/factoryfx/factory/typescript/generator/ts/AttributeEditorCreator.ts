@@ -23,7 +23,7 @@ import {AttributeEditorFloatAttribute} from "./AttributeEditorFloatAttribute";
 
 
 export class AttributeEditorCreator {
-    private attributeEditors: AttributeEditor[];
+    private attributeEditors: any;
 
     constructor(attributeEditors: AttributeEditor[]) {
         if (!attributeEditors){

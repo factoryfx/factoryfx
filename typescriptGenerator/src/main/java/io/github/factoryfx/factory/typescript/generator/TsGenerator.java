@@ -201,16 +201,23 @@ public class TsGenerator<R extends FactoryBase<?,R>> {
 //            if (!sj.toString().isEmpty()){
 //                throw new IllegalStateException("\n"+sj.toString());
 //            }
-            BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream(),StandardCharsets.UTF_8));
-            StringBuilder builder = new StringBuilder();
-            String line = null;
-            while ( (line = reader.readLine()) != null) {
-                builder.append(line);
-                builder.append("/n");
+
+            {
+                BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream(), StandardCharsets.UTF_8));
+                StringBuilder builder = new StringBuilder();
+                String line = null;
+                while ((line = reader.readLine()) != null) {
+                    builder.append(line);
+                    builder.append("\n");
+                }
+                if (!builder.toString().isEmpty()) {
+                    throw new IllegalStateException("\n" + builder.toString());
+                }
             }
-            if (!builder.toString().isEmpty()){
-                throw new IllegalStateException("\n"+builder.toString());
-            }
+
+
+
+
 
             process.waitFor();
             process.destroy();

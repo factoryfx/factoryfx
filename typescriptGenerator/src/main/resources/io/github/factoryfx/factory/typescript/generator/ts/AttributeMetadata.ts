@@ -13,12 +13,12 @@ export class AttributeMetadata<T>  {
         return this.en;
     }
 
-    validationFunction:(root: T)=>ValidationError;
+    validationFunction!:(root: T)=>ValidationError;
     validation(validationFunction:(root: T)=>ValidationError): void{
         this.validationFunction=validationFunction;
     }
 
-    validate(value: T):ValidationError{
+    validate(value: T):ValidationError | null{
         if (!this.isNullable && !value){
             let workaround: any=value;
             if (!value && workaround!==0){
