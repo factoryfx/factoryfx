@@ -81,6 +81,8 @@ public class DataGeneratedTs<R extends FactoryBase<?,R>, L,  F extends FactoryBa
 
         tsClass.abstractClass();
 
+        tsClass.constructor= new TsConstructor(List.of(),new TsMethodCode("super();\nthis.javaClass=\""+clazz.getName()+"\";"));
+
         return tsClass;
     }
 

@@ -8,6 +8,8 @@ import io.github.factoryfx.factory.FactoryTreeBuilderBasedAttributeSetup;
 import io.github.factoryfx.factory.attribute.Attribute;
 import io.github.factoryfx.factory.attribute.dependency.*;
 import io.github.factoryfx.factory.FactoryBase;
+import io.github.factoryfx.factory.attribute.types.EncryptedString;
+import io.github.factoryfx.factory.attribute.types.EncryptedStringAttribute;
 import io.github.factoryfx.microservice.rest.MicroserviceResource;
 import io.github.factoryfx.server.Microservice;
 import io.github.factoryfx.server.user.UserManagement;
@@ -100,11 +102,57 @@ public class MicroserviceDomResource<R extends FactoryBase<?,R>,S> extends Micro
     }
 
     @POST
-    @Path("/resolveViewListRequest")
+    @Path("/resolveViewList")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @SuppressWarnings("unchecked")
-    public List<String> resolveViewListRequest(AttributeAdressingRequest request) {
+    public List<String> resolveViewList(AttributeAdressingRequest request) {
         return ((FactoryViewListAttribute<R,?,?>)resolveAttribute(request)).get().stream().map(f->f.getId().toString()).collect(Collectors.toList());
     }
+
+    @POST
+    @Path("/decryptAttribute")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @SuppressWarnings("unchecked")
+    public DecryptAttributeResponse decryptAttribute(DecryptAttributeRequest request) {
+        return new DecryptAttributeResponse(((EncryptedStringAttribute)resolveAttribute(request)).get().decrypt(request.key));
+    }
+
+
+    public static class DecryptAttributeRequest extends AttributeAdressingRequest {
+        public String key;
+    }
+
+    public static class DecryptAttributeResponse{
+        public String text;
+
+        public DecryptAttributeResponse(String text) {
+            this.text = text;
+        }
+    }
+
+    @POST
+    @Path("/encryptAttribute")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @SuppressWarnings("unchecked")
+    public EncryptAttributeResponse encryptAttribute(EncryptAttributeRequest request) {
+        ((EncryptedStringAttribute)resolveAttribute(request)).set(new EncryptedString(request.text,request.key));
+        return new EncryptAttributeResponse();
+
+    }
+
+
+    public static class EncryptAttributeRequest extends AttributeAdressingRequest {
+        public String text;
+        public String key;
+    }
+
+    public static class EncryptAttributeResponse{
+
+    }
+
+
+
 }

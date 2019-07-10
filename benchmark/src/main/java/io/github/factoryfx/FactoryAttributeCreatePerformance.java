@@ -19,7 +19,7 @@ import java.util.concurrent.TimeUnit;
 @Threads(1)
 public class FactoryAttributeCreatePerformance {
 
-    public class ExampleFactoryNullable extends SimpleFactoryBase<ExampleLiveObjectA, io.github.factoryfx.factory.testfactories.ExampleFactoryA> {
+    public static class ExampleFactoryNullable extends SimpleFactoryBase<ExampleLiveObjectA, io.github.factoryfx.factory.testfactories.ExampleFactoryA> {
         public final FactoryAttribute<ExampleFactoryA,ExampleLiveObjectB,ExampleFactoryB> referenceAttribute = new FactoryAttribute<ExampleFactoryA,ExampleLiveObjectB,ExampleFactoryB>().nullable();
 
         @Override
@@ -28,7 +28,7 @@ public class FactoryAttributeCreatePerformance {
         }
     }
 
-    public class ExampleFactoryNullableLambda extends SimpleFactoryBase<ExampleLiveObjectA, io.github.factoryfx.factory.testfactories.ExampleFactoryA> {
+    public static class ExampleFactoryNullableLambda extends SimpleFactoryBase<ExampleLiveObjectA, io.github.factoryfx.factory.testfactories.ExampleFactoryA> {
         public final FactoryAttribute<ExampleFactoryA,ExampleLiveObjectB,ExampleFactoryB> referenceAttribute = new FactoryAttribute<>(FactoryAttribute::nullable);
 
         @Override

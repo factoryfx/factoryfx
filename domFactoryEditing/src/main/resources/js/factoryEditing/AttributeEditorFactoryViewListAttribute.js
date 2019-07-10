@@ -20,7 +20,7 @@ export class AttributeEditorFactoryViewListAttribute {
                 attributeVariableName: this.attributeAccessor.getAttributeName(),
                 root: root.mapToJsonFromRoot(),
             };
-            HttpUtility.post("resolveViewListRequest", request, this.waitAnimation, (response) => {
+            HttpUtility.post("resolveViewList", request, this.waitAnimation, (response) => {
                 DomUtility.clear(content);
                 content.appendChild(this.createFactoryList(response));
             });

@@ -190,9 +190,9 @@ public class DataJsonNode {
             dataJsonNode.applyRemovedAttribute(dataStorageMetadataDictionary);
         }
 
-        Map<String, DataJsonNode> idToDataJsonAfterRemoved = collectChildrenMapFromRoot();
+        List<DataJsonNode> idToDataJsonAfterRemoved = collectChildrenFromRoot();
         DataObjectIdFixer dataObjectIdFixer = new DataObjectIdFixer(allIdToDataJson);
-        for (DataJsonNode dataJsonNode : idToDataJsonAfterRemoved.values()) {
+        for (DataJsonNode dataJsonNode : idToDataJsonAfterRemoved) {
             dataJsonNode.fixFactoryId(dataStorageMetadataDictionary, dataObjectIdFixer);
         }
     }

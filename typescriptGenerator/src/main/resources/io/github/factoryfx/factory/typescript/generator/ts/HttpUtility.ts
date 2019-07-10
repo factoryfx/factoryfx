@@ -2,7 +2,7 @@ import {WaitAnimation} from "./WaitAnimation";
 
 export class HttpUtility {
 
-    public static post(url: string,  requestBody: object, waitAnimation: WaitAnimation, responseCallback: ((response: object) => any),){
+    public static post(url: string,  requestBody: object, waitAnimation: WaitAnimation, responseCallback: ((response: any) => any),){
         let request: XMLHttpRequest = new XMLHttpRequest();
         request.open("POST",url);
         request.setRequestHeader("Content-type","application/json");
@@ -19,7 +19,7 @@ export class HttpUtility {
         request.send(JSON.stringify(requestBody));
     }
 
-    public static get(url: string, waitAnimation: WaitAnimation, responseCallback: ((response: object) => any)){
+    public static get(url: string, waitAnimation: WaitAnimation, responseCallback: ((response: any) => any)){
         let request: XMLHttpRequest = new XMLHttpRequest();
         request.open("GET",url);
         request.setRequestHeader("Content-type","application/json");

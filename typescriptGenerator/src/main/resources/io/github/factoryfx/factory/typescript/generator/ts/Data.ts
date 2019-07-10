@@ -10,9 +10,16 @@ export abstract class Data  {
 
     public getId(): string{
         if (!this.id){
-            this.id=(Math.floor(Math.random()*1000000000)).toLocaleString();;
+            this.id=this.uuidV4();
         }
         return this.id;
+    }
+
+    private uuidV4() {
+        return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c)=> {
+            let r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+            return v.toString(16);
+        });
     }
 
     //DataCreator passed as parameter cause cyclic dependency (ts compiles fine but error at runtime)

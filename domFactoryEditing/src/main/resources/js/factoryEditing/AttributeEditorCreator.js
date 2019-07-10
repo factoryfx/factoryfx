@@ -16,6 +16,7 @@ import { AttributeEditorFactoryViewAttribute } from "./AttributeEditorFactoryVie
 import { AttributeEditorFactoryViewListAttribute } from "./AttributeEditorFactoryViewListAttribute";
 import { AttributeEditorByteAttribute } from "./AttributeEditorByteAttribute";
 import { AttributeEditorFloatAttribute } from "./AttributeEditorFloatAttribute";
+import { AttributeEditorEncryptedStringAttribute } from "./AttributeEditorEncryptedStringAttribute";
 export class AttributeEditorCreator {
     constructor(attributeEditors) {
         if (!attributeEditors) {
@@ -32,6 +33,7 @@ export class AttributeEditorCreator {
             this.attributeEditors[AttributeType.FileContentAttribute] = (attributeAccessor, inputId, factoryEditor, waitAnimation) => new AttributeEditorFileContentAttribute(attributeAccessor, inputId);
             this.attributeEditors[AttributeType.StringListAttribute] = (attributeAccessor, inputId, factoryEditor, waitAnimation) => new AttributeEditorStringListAttribute(attributeAccessor, inputId);
             this.attributeEditors[AttributeType.FloatAttribute] = (attributeAccessor, inputId, factoryEditor, waitAnimation) => new AttributeEditorFloatAttribute(attributeAccessor, inputId);
+            this.attributeEditors[AttributeType.EncryptedStringAttribute] = (attributeAccessor, inputId, factoryEditor, waitAnimation) => new AttributeEditorEncryptedStringAttribute(attributeAccessor, inputId, factoryEditor, waitAnimation);
             this.attributeEditors[AttributeType.FactoryAttribute] = (attributeAccessor, inputId, factoryEditor, waitAnimation) => new AttributeEditorFactoryAttribute(attributeAccessor, inputId, factoryEditor, waitAnimation);
             this.attributeEditors[AttributeType.FactoryListAttribute] = (attributeAccessor, inputId, factoryEditor, waitAnimation) => new AttributeEditorFactoryListAttribute(attributeAccessor, inputId, factoryEditor, waitAnimation);
             this.attributeEditors[AttributeType.FactoryPolymorphicAttribute] = (attributeAccessor, inputId, factoryEditor, waitAnimation) => new AttributeEditorFactoryAttribute(attributeAccessor, inputId, factoryEditor, waitAnimation);

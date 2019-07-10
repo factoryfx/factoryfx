@@ -785,3 +785,11 @@ test('test_collectChildrenFlat', () => {
     expect(root.collectChildren().length).to.equal(3);
 
 });
+
+test('test_constructor', () => {
+    let data: ExampleData = new ExampleData();
+    let json:any = data.mapToJsonFromRoot();
+
+    expect(json['@class']).to.equal("io.github.factoryfx.factory.typescript.generator.data.ExampleData");
+    // expect(json['id']).to.not.equal(undefined);
+});

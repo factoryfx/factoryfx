@@ -20,6 +20,7 @@ import {AttributeEditorFactoryViewAttribute} from "./AttributeEditorFactoryViewA
 import {AttributeEditorFactoryViewListAttribute} from "./AttributeEditorFactoryViewListAttribute";
 import {AttributeEditorByteAttribute} from "./AttributeEditorByteAttribute";
 import {AttributeEditorFloatAttribute} from "./AttributeEditorFloatAttribute";
+import {AttributeEditorEncryptedStringAttribute} from "./AttributeEditorEncryptedStringAttribute";
 
 
 export class AttributeEditorCreator {
@@ -40,6 +41,7 @@ export class AttributeEditorCreator {
             this.attributeEditors[AttributeType.FileContentAttribute]= (attributeAccessor: AttributeAccessor<any>, inputId: string,factoryEditor: FactoryEditor, waitAnimation: WaitAnimation)=>new AttributeEditorFileContentAttribute(attributeAccessor,inputId);
             this.attributeEditors[AttributeType.StringListAttribute]= (attributeAccessor: AttributeAccessor<any>, inputId: string,factoryEditor: FactoryEditor, waitAnimation: WaitAnimation)=>new AttributeEditorStringListAttribute(attributeAccessor,inputId);
             this.attributeEditors[AttributeType.FloatAttribute]= (attributeAccessor: AttributeAccessor<any>, inputId: string,factoryEditor: FactoryEditor, waitAnimation: WaitAnimation)=>new AttributeEditorFloatAttribute(attributeAccessor,inputId);
+            this.attributeEditors[AttributeType.EncryptedStringAttribute]= (attributeAccessor: AttributeAccessor<any>, inputId: string,factoryEditor: FactoryEditor, waitAnimation: WaitAnimation)=>new AttributeEditorEncryptedStringAttribute(attributeAccessor,inputId,factoryEditor,waitAnimation);
 
 
             this.attributeEditors[AttributeType.FactoryAttribute]= (attributeAccessor: AttributeAccessor<any>, inputId: string,factoryEditor: FactoryEditor, waitAnimation: WaitAnimation)=>new AttributeEditorFactoryAttribute(attributeAccessor,inputId,factoryEditor,waitAnimation);

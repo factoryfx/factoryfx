@@ -3,6 +3,8 @@ package io.github.factoryfx.factory.typescript.generator.testserver;
 import io.github.factoryfx.dom.rest.FilesystemStaticFileAccessFactory;
 import io.github.factoryfx.dom.rest.MicroserviceDomResourceFactory;
 import io.github.factoryfx.factory.FactoryTreeBuilderBasedAttributeSetup;
+import io.github.factoryfx.factory.attribute.types.EncryptedString;
+import io.github.factoryfx.factory.attribute.types.EncryptedStringAttribute;
 import io.github.factoryfx.factory.builder.FactoryTreeBuilder;
 import io.github.factoryfx.factory.builder.Scope;
 import io.github.factoryfx.jetty.JettyServerBuilder;
@@ -23,6 +25,7 @@ public class TestServerBuilder {
             testServerFactory.stringListAttribute.add("1111");
             testServerFactory.stringListAttribute.add("22222");
             testServerFactory.exampleFactory.set(new ExampleFactory());
+            testServerFactory.encryptedStringAttribute.set(new EncryptedString("example124", "jNNxjStGsrwgu+4G5DYc9Q=="));
             return testServerFactory;
         });
         builder.addFactory(JettyServerFactory.class, Scope.SINGLETON, ctx-> new JettyServerBuilder<TestServerFactory>()

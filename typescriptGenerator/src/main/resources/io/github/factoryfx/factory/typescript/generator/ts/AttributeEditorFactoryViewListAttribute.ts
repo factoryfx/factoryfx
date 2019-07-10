@@ -25,7 +25,7 @@ export class AttributeEditorFactoryViewListAttribute implements AttributeEditor{
                 attributeVariableName: this.attributeAccessor.getAttributeName(),
                 root: root.mapToJsonFromRoot(),
             };
-            HttpUtility.post("resolveViewListRequest",request,this.waitAnimation,(response: any)=>{
+            HttpUtility.post("resolveViewList",request,this.waitAnimation,(response: any)=>{
                 DomUtility.clear(content);
                 content.appendChild(this.createFactoryList(response));
             });

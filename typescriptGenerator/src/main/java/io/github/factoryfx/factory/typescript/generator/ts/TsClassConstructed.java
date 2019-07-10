@@ -8,6 +8,7 @@ public class TsClassConstructed extends TsFile {
 
     public TsFile parent;
     public List<TsAttribute> attributes=new ArrayList<>();
+    public TsConstructor constructor;
     public List<TsMethod> methods=new ArrayList<>();
     private String staticInitialisationMethodName;
     private TsFile extendsFrom;
@@ -41,12 +42,19 @@ public class TsClassConstructed extends TsFile {
             abstractClassString="abstract ";
         }
 
+        String constructorCode="";
+        if (constructor!=null){
+            constructorCode=constructor.construct()+"\n\n";
+        }
+
+
         String result=
             getImports().stream().map(this::constructImport).collect(Collectors.joining("\n"))+"\n\n"+
                     "export "+abstractClassString+"class "+getName()+" "+extendsString()+extendsString+" {\n" +
                     "\n" +
                     attributes.stream().map(tsAttribute -> "    "+tsAttribute.constructClassDeclaration()).collect(Collectors.joining("\n"))+
                     "\n\n" +
+                    constructorCode+
                     methods.stream().map(TsMethod::construct).collect(Collectors.joining("\n"))+
                     "\n" +
                     "}";
@@ -74,6 +82,9 @@ public class TsClassConstructed extends TsFile {
         }
         for (TsMethod method : methods) {
             method.addImports(imports);
+        }
+        if (constructor!=null){
+            constructor.addImports(imports);
         }
         if (imports.contains(null)){
             System.out.println();

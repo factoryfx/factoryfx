@@ -14,7 +14,7 @@ public class EncryptedString implements Comparable<EncryptedString> {
     private final String encryptedString;
 
     @JsonCreator
-    public EncryptedString(@JsonProperty("encryptedString")String encryptedString) {
+    protected EncryptedString(@JsonProperty("encryptedString")String encryptedString) {
         this.encryptedString=encryptedString;
     }
 
