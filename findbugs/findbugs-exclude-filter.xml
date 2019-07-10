@@ -151,4 +151,10 @@
         <Bug pattern="NM_SAME_SIMPLE_NAME_AS_SUPERCLASS" />
     </Match>
 
+    <Match>
+        <Class name="io.github.factoryfx.dom.rest.MicroserviceDomResource" />
+        <Bug pattern="NP_UNWRITTEN_PUBLIC_OR_PROTECTED_FIELD" />
+    </Match>
+
+
 </FindBugsFilter>

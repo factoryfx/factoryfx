@@ -204,15 +204,8 @@ public class TsGenerator<R extends FactoryBase<?,R>> {
             ProcessBuilder pb = new ProcessBuilder(first, second, "tsc", "--outDir", targetDir.toFile().getAbsolutePath()).directory(tsBuildDirectory.toFile().getAbsoluteFile());
             Process process;
             process = pb.start();
-//            final BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
-//            StringJoiner sj = new StringJoiner("/n");
-//            reader.lines().iterator().forEachRemaining(sj::add);
-//            if (!sj.toString().isEmpty()){
-//                throw new IllegalStateException("\n"+sj.toString());
-//            }
 
-            {
-                BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream(), StandardCharsets.UTF_8));
+            try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream(), StandardCharsets.UTF_8))){
                 StringBuilder builder = new StringBuilder();
                 String line = null;
                 while ((line = reader.readLine()) != null) {
@@ -223,10 +216,6 @@ public class TsGenerator<R extends FactoryBase<?,R>> {
                     throw new IllegalStateException("\n" + builder.toString());
                 }
             }
-
-
-
-
 
             process.waitFor();
             process.destroy();

@@ -65,7 +65,7 @@ public class DataJsonNode {
     public void setAttributeValue(String attribute, JsonNode jsonNode) {
         try {
             if (jsonNode==null) {
-                ((ObjectNode)jsonNode.get(attribute)).remove("v");
+                ((ObjectNode)this.jsonNode.get(attribute)).remove("v");
             }
             ObjectNode objectNode = JsonNodeFactory.instance.objectNode();
             this.jsonNode.set(attribute, objectNode);
@@ -98,21 +98,21 @@ public class DataJsonNode {
         return false;
     }
 
-    public void collectChildren(List<DataJsonNode> dataJsonNodes){
+    private void collectChildrenDeep(List<DataJsonNode> dataJsonNodes){
         for (JsonNode element : jsonNode) {
             if (element.isArray()) {
                 for (JsonNode arrayElement : element) {
                     if (isData(arrayElement)) {
                         DataJsonNode child = new DataJsonNode((ObjectNode) arrayElement);
                         dataJsonNodes.add(child);
-                        child.collectChildren(dataJsonNodes);
+                        child.collectChildrenDeep(dataJsonNodes);
                     }
                 }
             } else {
                 if (isData(element.get("v"))) {
                     DataJsonNode child = new DataJsonNode((ObjectNode) element.get("v"));
                     dataJsonNodes.add(child);
-                    child.collectChildren(dataJsonNodes);
+                    child.collectChildrenDeep(dataJsonNodes);
                 }
 
             }
@@ -127,7 +127,7 @@ public class DataJsonNode {
     public List<DataJsonNode> collectChildrenFromRoot(){
         List<DataJsonNode> dataJsonNode = new ArrayList<>();
         dataJsonNode.add(this);
-        this.collectChildren(dataJsonNode);
+        this.collectChildrenDeep(dataJsonNode);
         return dataJsonNode;
     }
 
@@ -168,7 +168,7 @@ public class DataJsonNode {
     public void applyRemovedAttribute(DataStorageMetadataDictionary dataStorageMetadataDictionary){
         for (String attributeVariableName : this.getAttributes()) {
             if (dataStorageMetadataDictionary.isRemovedAttribute(getDataClassName(),attributeVariableName)){
-                jsonNode.remove(attributeVariableName);
+                this.jsonNode.remove(attributeVariableName);
             }
         }
 
@@ -184,35 +184,36 @@ public class DataJsonNode {
      * @param dataStorageMetadataDictionary dataStorageMetadataDictionary
      */
     public void fixIdsDeepFromRoot(DataStorageMetadataDictionary dataStorageMetadataDictionary){
-
         //to keep the same iteration order as jackson, delete removed attributes first
         Map<String, DataJsonNode> allIdToDataJson = collectChildrenMapFromRoot();
         for (DataJsonNode dataJsonNode : allIdToDataJson.values()) {
             dataJsonNode.applyRemovedAttribute(dataStorageMetadataDictionary);
         }
 
-
-
         Map<String, DataJsonNode> idToDataJsonAfterRemoved = collectChildrenMapFromRoot();
         DataObjectIdFixer dataObjectIdFixer = new DataObjectIdFixer(allIdToDataJson);
         for (DataJsonNode dataJsonNode : idToDataJsonAfterRemoved.values()) {
-            for (String attributeVariableName : dataJsonNode.getAttributes()) {
-                if (dataStorageMetadataDictionary.isReferenceAttribute(getDataClassName(),attributeVariableName)) {
-                    JsonNode attributeValue = dataJsonNode.getAttributeValue(attributeVariableName);
+            dataJsonNode.fixFactoryId(dataStorageMetadataDictionary, dataObjectIdFixer);
+        }
+    }
 
-                    if (attributeValue != null) {
-                        if (attributeValue.isArray()) {
-                            int index = 0;
-                            for (JsonNode arrayElement : attributeValue) {
-                                final int setIndex=index;
-                                dataObjectIdFixer.fixFactoryId(arrayElement, (value) -> ((ArrayNode)attributeValue).set(setIndex,value));
-                                index++;
-                            }
-                        } else {
-                            dataObjectIdFixer.fixFactoryId(attributeValue, (value) -> setAttributeValue(attributeVariableName, value));
+    private void fixFactoryId(DataStorageMetadataDictionary dataStorageMetadataDictionary, DataObjectIdFixer dataObjectIdFixer) {
+        for (String attributeVariableName : this.getAttributes()) {
+            if (dataStorageMetadataDictionary.isReferenceAttribute(this.getDataClassName(),attributeVariableName)) {
+                JsonNode attributeValue = this.getAttributeValue(attributeVariableName);
+
+                if (attributeValue != null) {
+                    if (attributeValue.isArray()) {
+                        int index = 0;
+                        for (JsonNode arrayElement : attributeValue) {
+                            final int setIndex=index;
+                            dataObjectIdFixer.fixFactoryId(arrayElement, (value) -> ((ArrayNode)attributeValue).set(setIndex,value));
+                            index++;
                         }
-
+                    } else {
+                        dataObjectIdFixer.fixFactoryId(attributeValue, (value) -> this.setAttributeValue(attributeVariableName, value));
                     }
+
                 }
             }
         }

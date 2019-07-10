@@ -34,6 +34,7 @@ public class DataObjectIdResolver extends SimpleObjectIdResolver {
         public final String id;
 
         public UnresolvableJsonIDException(String id) {
+            super(id);
             this.id = id;
         }
     }
