@@ -1,7 +1,5 @@
 package io.github.factoryfx.factory.storage.migration.datamigration;
 
-
-
 import io.github.factoryfx.factory.FactoryBase;
 import io.github.factoryfx.factory.jackson.SimpleObjectMapper;
 import io.github.factoryfx.factory.storage.migration.metadata.DataStorageMetadata;

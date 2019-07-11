@@ -98,6 +98,10 @@ public class DataJsonNode {
         return false;
     }
 
+    public boolean isData(){
+        return isData(this.jsonNode);
+    }
+
     private void collectChildrenDeep(List<DataJsonNode> dataJsonNodes){
         for (JsonNode element : jsonNode) {
             if (element.isArray()) {
@@ -136,7 +140,7 @@ public class DataJsonNode {
         return jsonNode.get("id").asText();
     }
 
-    public <D/*extends Data*/> D asData(Class<D> valueClass, SimpleObjectMapper simpleObjectMapper) {
+    public <D> D asData(Class<D> valueClass, SimpleObjectMapper simpleObjectMapper) {
         return simpleObjectMapper.treeToValue(jsonNode, valueClass);
     }
 
@@ -193,29 +197,27 @@ public class DataJsonNode {
         List<DataJsonNode> idToDataJsonAfterRemoved = collectChildrenFromRoot();
         DataObjectIdFixer dataObjectIdFixer = new DataObjectIdFixer(allIdToDataJson);
         for (DataJsonNode dataJsonNode : idToDataJsonAfterRemoved) {
-            dataJsonNode.fixFactoryId(dataStorageMetadataDictionary, dataObjectIdFixer);
+            dataJsonNode.fixFactoryId(dataObjectIdFixer);
         }
     }
 
-    private void fixFactoryId(DataStorageMetadataDictionary dataStorageMetadataDictionary, DataObjectIdFixer dataObjectIdFixer) {
+    private void fixFactoryId(DataObjectIdFixer dataObjectIdFixer) {
         for (String attributeVariableName : this.getAttributes()) {
-            if (dataStorageMetadataDictionary.isReferenceAttribute(this.getDataClassName(),attributeVariableName)) {
-                JsonNode attributeValue = this.getAttributeValue(attributeVariableName);
-
-                if (attributeValue != null) {
-                    if (attributeValue.isArray()) {
-                        int index = 0;
-                        for (JsonNode arrayElement : attributeValue) {
-                            final int setIndex=index;
-                            dataObjectIdFixer.fixFactoryId(arrayElement, (value) -> ((ArrayNode)attributeValue).set(setIndex,value));
-                            index++;
-                        }
-                    } else {
-                        dataObjectIdFixer.fixFactoryId(attributeValue, (value) -> this.setAttributeValue(attributeVariableName, value));
+            JsonNode attributeValue = this.getAttributeValue(attributeVariableName);
+            if (attributeValue != null) {
+                if (attributeValue.isArray()) {
+                    int index = 0;
+                    for (JsonNode arrayElement : attributeValue) {
+                        final int setIndex=index;
+                        dataObjectIdFixer.fixFactoryId(arrayElement, (value) -> ((ArrayNode)attributeValue).set(setIndex,value));
+                        index++;
                     }
-
+                } else {
+                    dataObjectIdFixer.fixFactoryId(attributeValue, (value) -> this.setAttributeValue(attributeVariableName, value));
                 }
+
             }
+
         }
     }
 

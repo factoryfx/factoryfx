@@ -21,24 +21,32 @@ public class DataObjectIdFixer {
         this.idToDataJson = idToDataJson;
     }
 
+
     public void fixFactoryId(JsonNode attributeValue, Consumer<JsonNode> valueSetter){
         if (attributeValue == null){
             return;
         }
         String id=getId(attributeValue);
-
-        if (visited.contains(id)){
-            valueSetter.accept(new TextNode(id));
-        } else {
-            valueSetter.accept(idToDataJson.get(id).getJsonNode());
+        if (id!=null && idToDataJson.containsKey(id)) {
+            if (visited.add(id)) {
+                valueSetter.accept(idToDataJson.get(id).getJsonNode());
+            } else {
+                valueSetter.accept(new TextNode(id));
+            }
         }
-        visited.add(id);
     }
 
     private String getId(JsonNode jsonNode){
         if (jsonNode.isTextual()){
             return jsonNode.textValue();
+        } else {
+            if (jsonNode instanceof ObjectNode){
+                DataJsonNode dataJsonNode = new DataJsonNode((ObjectNode) jsonNode);
+                if (dataJsonNode.isData()){
+                    return new DataJsonNode((ObjectNode) jsonNode).getId();
+                }
+            }
         }
-        return new DataJsonNode((ObjectNode) jsonNode).getId();
+        return null;
     }
 }

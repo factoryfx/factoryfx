@@ -33,9 +33,9 @@ wrapper {
 
 apply plugin: 'io.codearte.nexus-staging'
 nexusStaging {
-    packageGroup = 'io.github.factoryfx' //optional if packageGroup == project.getGroup()
-//    stagingProfileId = "yourStagingProfileId" //when not defined will be got from server using "packageGroup"
-    username = ossrhUsername
+    packageGroup = 'io.github.factoryfx'
+    stagingProfileId = "78e9b0494c64ba"
+    username = ossrhUsernames
     password = ossrhPassword
 }
 
@@ -82,7 +82,7 @@ subprojects {
     }
 
     group = 'io.github.factoryfx'
-    version = '2.0.17'
+    version = '2.0.18'
 
     publishing {
 
