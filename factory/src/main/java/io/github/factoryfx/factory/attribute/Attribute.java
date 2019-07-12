@@ -80,13 +80,14 @@ public abstract class Attribute<T,A extends Attribute<T,A>> implements Attribute
     }
 
     public void internal_addListener(AttributeChangeListener<T,A> newListener) {
-        if (listener==null){
+        if (listener==null && this.listeners == null){
             this.listener=newListener;
         } else {
             if (this.listeners == null) {
                 this.listeners = new ArrayList<>();
                 this.listeners.add(this.listener);
                 this.listener = null;
+                listeners.add(newListener);
             } else {
                 listeners.add(newListener);
             }

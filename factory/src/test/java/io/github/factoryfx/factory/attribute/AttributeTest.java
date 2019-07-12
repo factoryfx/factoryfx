@@ -1,5 +1,6 @@
 package io.github.factoryfx.factory.attribute;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
@@ -123,6 +124,32 @@ public class AttributeTest {
         stringAttribute.internal_removeListener(newListener1);
         stringAttribute.internal_removeListener(newListener2);
         Assertions.assertEquals(0,stringAttribute.internal_getListeners().size());
+    }
+
+    @Test
+    public void test_removeListener_multiple_called(){
+        List<String> called1=new ArrayList<>();
+        List<String> called2=new ArrayList<>();
+
+        StringAttribute stringAttribute = new StringAttribute();
+        AttributeChangeListener<String, StringAttribute> newListener1 = (attribute, value) -> called1.add("111");
+        AttributeChangeListener<String, StringAttribute> newListener2 = (attribute, value) -> called2.add("222");
+        stringAttribute.internal_addListener(newListener1);
+        Assertions.assertEquals(1,stringAttribute.internal_getListeners().size());
+        stringAttribute.internal_addListener(newListener2);
+        Assertions.assertEquals(2,stringAttribute.internal_getListeners().size());
+
+
+        stringAttribute.set("aaa");
+
+        Assertions.assertEquals(1,called1.size());
+        Assertions.assertEquals(1,called2.size());
+
+        stringAttribute.set("bbb");
+
+        Assertions.assertEquals(2,called1.size());
+        Assertions.assertEquals(2,called2.size());
+
     }
 
 }
