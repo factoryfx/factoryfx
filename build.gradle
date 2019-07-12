@@ -33,10 +33,10 @@ wrapper {
 
 apply plugin: 'io.codearte.nexus-staging'
 nexusStaging {
-    packageGroup = 'io.github.factoryfx'
-    stagingProfileId = "78e9b0494c64ba"
     username = ossrhUsernames
     password = ossrhPassword
+    packageGroup = 'io.github.factoryfx'
+    stagingProfileId = '78e9b0494c64ba'
 }
 
 subprojects {
