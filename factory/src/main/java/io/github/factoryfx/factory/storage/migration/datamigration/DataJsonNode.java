@@ -189,14 +189,29 @@ public class DataJsonNode {
      */
     public void fixIdsDeepFromRoot(DataStorageMetadataDictionary dataStorageMetadataDictionary){
         //to keep the same iteration order as jackson, delete removed attributes first
-        Map<String, DataJsonNode> allIdToDataJson = collectChildrenMapFromRoot();
-        for (DataJsonNode dataJsonNode : allIdToDataJson.values()) {
+        List<DataJsonNode> allIdToDataJson = collectChildrenFromRoot();
+        for (DataJsonNode dataJsonNode : allIdToDataJson) {
             dataJsonNode.applyRemovedAttribute(dataStorageMetadataDictionary);
         }
 
-        List<DataJsonNode> idToDataJsonAfterRemoved = collectChildrenFromRoot();
-        DataObjectIdFixer dataObjectIdFixer = new DataObjectIdFixer(allIdToDataJson);
-        for (DataJsonNode dataJsonNode : idToDataJsonAfterRemoved) {
+        HashSet<String> uniquer = new HashSet<>();
+        List<DataJsonNode> childrenAfterRemoved = new ArrayList<>();
+        HashMap<String,DataJsonNode> idToDataJsonAfterRemoved = new HashMap<>();
+        for (DataJsonNode child:  collectChildrenFromRoot()){
+            if (uniquer.add(child.getId())){
+                childrenAfterRemoved.add(child);
+                idToDataJsonAfterRemoved.put(child.getId(),child);
+            }
+        }
+        for (DataJsonNode child:  allIdToDataJson){
+            if (uniquer.add(child.getId())){
+                idToDataJsonAfterRemoved.put(child.getId(),child);
+            }
+        }
+
+
+        DataObjectIdFixer dataObjectIdFixer = new DataObjectIdFixer(idToDataJsonAfterRemoved);
+        for (DataJsonNode dataJsonNode : childrenAfterRemoved) {
             dataJsonNode.fixFactoryId(dataObjectIdFixer);
         }
     }
