@@ -12,6 +12,7 @@ import org.eclipse.jetty.server.Server;
 
 public class ServerBuilder {
 
+    @SuppressWarnings("unchecked")
     public FactoryTreeBuilder<Server, ServerRootFactory, Void> builder(){
         FactoryTreeBuilder<Server, ServerRootFactory, Void> factoryTreeBuilder = new FactoryTreeBuilder<>(ServerRootFactory.class,context -> {
             return new JettyServerBuilder<ServerRootFactory>()

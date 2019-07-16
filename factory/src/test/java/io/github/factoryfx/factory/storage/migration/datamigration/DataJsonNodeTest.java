@@ -38,7 +38,7 @@ class DataJsonNodeTest {
 
 
         JsonNode jsonNode = ObjectMapperBuilder.build().writeValueAsTree(exampleDataA);
-        System.out.println(ObjectMapperBuilder.build().writeValueAsString(jsonNode));
+//        System.out.println(ObjectMapperBuilder.build().writeValueAsString(jsonNode));
 
         DataJsonNode dataJsonNode = new DataJsonNode((ObjectNode) jsonNode);
 
@@ -55,7 +55,7 @@ class DataJsonNodeTest {
         value.referenceAttribute.set(exampleDataA);
 
         JsonNode jsonNode = ObjectMapperBuilder.build().writeValueAsTree(exampleDataA);
-        System.out.println(ObjectMapperBuilder.build().writeValueAsString(jsonNode));
+//        System.out.println(ObjectMapperBuilder.build().writeValueAsString(jsonNode));
 
         DataJsonNode dataJsonNode = new DataJsonNode((ObjectNode) jsonNode);
 
@@ -74,7 +74,7 @@ class DataJsonNodeTest {
 
 
         JsonNode jsonNode = ObjectMapperBuilder.build().writeValueAsTree(exampleDataA);
-        System.out.println(ObjectMapperBuilder.build().writeValueAsString(jsonNode));
+//        System.out.println(ObjectMapperBuilder.build().writeValueAsString(jsonNode));
 
         DataJsonNode dataJsonNode = new DataJsonNode((ObjectNode) jsonNode);
 
@@ -139,7 +139,7 @@ class DataJsonNodeTest {
         g.children.add(new IterationTestFactory("f"));
 
         IterationTestFactory.createOrder.clear();
-        System.out.println( ObjectMapperBuilder.build().writeValueAsString(root));
+//        System.out.println( ObjectMapperBuilder.build().writeValueAsString(root));
         ObjectMapperBuilder.build().copy(root);
 
 
@@ -158,7 +158,7 @@ class DataJsonNodeTest {
         root.internal().finalise();
 
         JsonNode jsonNode = ObjectMapperBuilder.build().writeValueAsTree(root);
-        System.out.println(ObjectMapperBuilder.build().writeValueAsString(jsonNode));
+//        System.out.println(ObjectMapperBuilder.build().writeValueAsString(jsonNode));
 
         DataJsonNode dataJsonNode = new DataJsonNode((ObjectNode) jsonNode);
         dataJsonNode.fixIdsDeepFromRoot(root.internal().createDataStorageMetadataDictionaryFromRoot());
@@ -172,7 +172,7 @@ class DataJsonNodeTest {
         root.internal().finalise();
 
         JsonNode jsonNode = ObjectMapperBuilder.build().writeValueAsTree(root);
-        System.out.println(ObjectMapperBuilder.build().writeValueAsString(jsonNode));
+//        System.out.println(ObjectMapperBuilder.build().writeValueAsString(jsonNode));
 
         DataJsonNode dataJsonNode = new DataJsonNode((ObjectNode) jsonNode);
         dataJsonNode.fixIdsDeepFromRoot(root.internal().createDataStorageMetadataDictionaryFromRoot());
@@ -216,7 +216,7 @@ class DataJsonNodeTest {
         DataJsonNode dataJsonNode = new DataJsonNode((ObjectNode) jsonNode);
         dataJsonNode.fixIdsDeepFromRoot(root.internal().createDataStorageMetadataDictionaryFromRoot());
 
-
+//        System.out.println(ObjectMapperBuilder.build().writeTree(jsonNode));
 
         ObjectMapperBuilder.build().treeToValue(jsonNode,ExampleDataA.class);
     }
@@ -258,7 +258,7 @@ class DataJsonNodeTest {
         root.internal().finalise();
 
         JsonNode jsonNode = ObjectMapperBuilder.build().writeValueAsTree(root);
-        System.out.println(ObjectMapperBuilder.build().writeValueAsString(jsonNode));
+//        System.out.println(ObjectMapperBuilder.build().writeValueAsString(jsonNode));
 
         DataJsonNode dataJsonNode = new DataJsonNode((ObjectNode) jsonNode);
         Assertions.assertEquals(3,dataJsonNode.getAttributes().size());

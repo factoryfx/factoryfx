@@ -7,10 +7,13 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.TextNode;
 
 import io.github.factoryfx.factory.FactoryBase;
+import io.github.factoryfx.factory.jackson.ObjectMapperBuilder;
 import io.github.factoryfx.factory.jackson.SimpleObjectMapper;
 import io.github.factoryfx.factory.storage.migration.metadata.DataStorageMetadataDictionary;
 
 import java.util.*;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 
 public class DataJsonNode {
     private final ObjectNode jsonNode;
@@ -135,6 +138,41 @@ public class DataJsonNode {
         return dataJsonNode;
     }
 
+
+    /**
+     * reset the ids, (first occurrence is the object following are id references)
+     * @param collected for recursion
+     */
+    private void replaceDuplicateFactoriesWidthIdDeep(HashSet<String> collected){
+            this.visitAttributes((value, jsonNodeConsumer) -> {
+                if (isData(value)) {
+                    DataJsonNode child = new DataJsonNode((ObjectNode) value);
+                    if (collected.add(child.getId())) {
+                        child.replaceDuplicateFactoriesWidthIdDeep(collected);
+                    } else {
+                        jsonNodeConsumer.accept(new TextNode(child.getId()));
+                    }
+                }
+            });
+    }
+
+    /**
+     * replace all id refs with object
+     * result is json without ids
+     * @param idToDataJsonNode to resolve id
+     */
+    private void replaceIdRefsWidthFactoriesDeep(Map<String,DataJsonNode> idToDataJsonNode){
+        this.visitAttributes((value, jsonNodeConsumer) -> {
+            if (value.isTextual() && idToDataJsonNode.containsKey(value.asText())){
+                jsonNodeConsumer.accept(idToDataJsonNode.get(value.asText()).jsonNode);
+            }
+            if (isData(value)){
+                new DataJsonNode((ObjectNode) value).replaceIdRefsWidthFactoriesDeep(idToDataJsonNode);
+            }
+        });
+    }
+
+
     //TODO return UUID
     public String getId() {
         return jsonNode.get("id").asText();
@@ -188,35 +226,17 @@ public class DataJsonNode {
      * @param dataStorageMetadataDictionary dataStorageMetadataDictionary
      */
     public void fixIdsDeepFromRoot(DataStorageMetadataDictionary dataStorageMetadataDictionary){
-        //to keep the same iteration order as jackson, delete removed attributes first
-        List<DataJsonNode> allIdToDataJson = collectChildrenFromRoot();
-        for (DataJsonNode dataJsonNode : allIdToDataJson) {
+        replaceIdRefsWidthFactoriesDeep(this.collectChildrenMapFromRoot());
+        //remove deleted attributes
+        for (DataJsonNode dataJsonNode : this.collectChildrenFromRoot()) {
             dataJsonNode.applyRemovedAttribute(dataStorageMetadataDictionary);
         }
 
-        HashSet<String> uniquer = new HashSet<>();
-        List<DataJsonNode> childrenAfterRemoved = new ArrayList<>();
-        HashMap<String,DataJsonNode> idToDataJsonAfterRemoved = new HashMap<>();
-        for (DataJsonNode child:  collectChildrenFromRoot()){
-            if (uniquer.add(child.getId())){
-                childrenAfterRemoved.add(child);
-                idToDataJsonAfterRemoved.put(child.getId(),child);
-            }
-        }
-        for (DataJsonNode child:  allIdToDataJson){
-            if (uniquer.add(child.getId())){
-                idToDataJsonAfterRemoved.put(child.getId(),child);
-            }
-        }
-
-
-        DataObjectIdFixer dataObjectIdFixer = new DataObjectIdFixer(idToDataJsonAfterRemoved);
-        for (DataJsonNode dataJsonNode : childrenAfterRemoved) {
-            dataJsonNode.fixFactoryId(dataObjectIdFixer);
-        }
+        //reset the ids, (first occurrence is the object following are id references)
+        this.replaceDuplicateFactoriesWidthIdDeep(new HashSet<>());
     }
 
-    private void fixFactoryId(DataObjectIdFixer dataObjectIdFixer) {
+    private void visitAttributes(BiConsumer<JsonNode,Consumer<JsonNode>> attributeConsumer) {
         for (String attributeVariableName : this.getAttributes()) {
             JsonNode attributeValue = this.getAttributeValue(attributeVariableName);
             if (attributeValue != null) {
@@ -224,15 +244,14 @@ public class DataJsonNode {
                     int index = 0;
                     for (JsonNode arrayElement : attributeValue) {
                         final int setIndex=index;
-                        dataObjectIdFixer.fixFactoryId(arrayElement, (value) -> ((ArrayNode)attributeValue).set(setIndex,value));
+                        attributeConsumer.accept(arrayElement, (value) -> ((ArrayNode)attributeValue).set(setIndex,value));
                         index++;
                     }
                 } else {
-                    dataObjectIdFixer.fixFactoryId(attributeValue, (value) -> this.setAttributeValue(attributeVariableName, value));
+                    attributeConsumer.accept(attributeValue, (value) -> this.setAttributeValue(attributeVariableName, value));
                 }
 
             }
-
         }
     }
 
