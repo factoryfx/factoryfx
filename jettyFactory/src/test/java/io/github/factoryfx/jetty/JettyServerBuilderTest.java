@@ -43,7 +43,7 @@ public class JettyServerBuilderTest {
     @Test
     public void test_ObjectMapper(){
         new JettyServerBuilder<DummyRoot>()
-                .withHost("localhost").withPort(8080)
+                .withHost("localhost").withPort(8087)
                 .withDefaultJerseyObjectMapper(new SpecialObjectMapperFactory())
                 .build();
 
@@ -57,7 +57,7 @@ public class JettyServerBuilderTest {
 
         Assertions.assertThrows(IllegalStateException.class,()->{
                     new JettyServerBuilder<DummyRoot>()
-                            .withHost("localhost").withPort(8080)
+                            .withHost("localhost").withPort(8087)
                             .withResource(new DummyResource())
                             .removeDefaultJerseyServlet()
                             .build();
@@ -69,7 +69,7 @@ public class JettyServerBuilderTest {
 
         Assertions.assertThrows(IllegalStateException.class,()->{
             new JettyServerBuilder<DummyRoot>()
-                    .withHost("localhost").withPort(8080)
+                    .withHost("localhost").withPort(8087)
                     .removeDefaultJerseyServlet()
                     .withResource(new DummyResource())
                     .build();

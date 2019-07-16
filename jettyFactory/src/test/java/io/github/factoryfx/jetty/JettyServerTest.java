@@ -79,7 +79,7 @@ public class JettyServerTest {
         FactoryTreeBuilder<Server, JettyServerRootFactory, Void> builder = new FactoryTreeBuilder<>(JettyServerRootFactory.class);
         builder.addFactory(JettyServerFactory.class, Scope.SINGLETON, ctx->{
             return new JettyServerBuilder<JettyServerRootFactory>()
-                    .withHost("localhost").withPort(8080)
+                    .withHost("localhost").withPort(8087)
                     .withResource(ctx.get(Resource1Factory.class)).build();
         });
         builder.addFactory(Resource1Factory.class, Scope.SINGLETON, ctx -> {
@@ -91,7 +91,7 @@ public class JettyServerTest {
 
             try {
                 HttpClient client = HttpClient.newBuilder().version(HttpClient.Version.HTTP_1_1).build();
-                HttpRequest request = HttpRequest.newBuilder().uri(URI.create("http://localhost:8080/Resource1")).GET().build();
+                HttpRequest request = HttpRequest.newBuilder().uri(URI.create("http://localhost:8087/Resource1")).GET().build();
                 HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
                 Assertions.assertEquals(200, response.statusCode());
             } catch (IOException | InterruptedException e) {
@@ -105,7 +105,7 @@ public class JettyServerTest {
 
             try {
                 HttpClient client = HttpClient.newBuilder().version(HttpClient.Version.HTTP_1_1).build();
-                HttpRequest request = HttpRequest.newBuilder().uri(URI.create("http://localhost:8080/Resource1")).GET().build();
+                HttpRequest request = HttpRequest.newBuilder().uri(URI.create("http://localhost:8087/Resource1")).GET().build();
                 HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
                 Assertions.fail("expect ConnectException");
             } catch (IOException | InterruptedException e) {
@@ -131,7 +131,7 @@ public class JettyServerTest {
         FactoryTreeBuilder<Server, JettyServerRootFactory, Void> builder = new FactoryTreeBuilder<>(JettyServerRootFactory.class);
         builder.addFactory(JettyServerFactory.class, Scope.SINGLETON, ctx->{
             return new JettyServerBuilder<JettyServerRootFactory>()
-                    .withHost("localhost").withPort(8080)
+                    .withHost("localhost").withPort(8087)
                     .withResource(ctx.get(Resource1Factory.class)).build();
         });
         builder.addFactory(Resource1Factory.class, Scope.SINGLETON, ctx -> {
@@ -143,7 +143,7 @@ public class JettyServerTest {
 
             try {
                 HttpClient client = HttpClient.newBuilder().version(HttpClient.Version.HTTP_1_1).build();
-                HttpRequest request = HttpRequest.newBuilder().uri(URI.create("http://localhost:8080/Resource1")).GET().build();
+                HttpRequest request = HttpRequest.newBuilder().uri(URI.create("http://localhost:8087/Resource1")).GET().build();
                 HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
                 Assertions.assertEquals(200,response.statusCode());
             } catch (IOException | InterruptedException e) {
@@ -157,7 +157,7 @@ public class JettyServerTest {
 
             try {
                 HttpClient client = HttpClient.newBuilder().version(HttpClient.Version.HTTP_1_1).build();
-                HttpRequest request = HttpRequest.newBuilder().uri(URI.create("http://localhost:8080/Resource1")).GET().build();
+                HttpRequest request = HttpRequest.newBuilder().uri(URI.create("http://localhost:8087/Resource1")).GET().build();
                 HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
                 Assertions.fail("expect ConnectException");
             } catch (IOException | InterruptedException e) {

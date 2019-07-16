@@ -60,7 +60,7 @@ public class UpdateableServletTest {
     public void test_jersey_after_update() throws IOException, InterruptedException {
         FactoryTreeBuilder<Server, JettyServerRootFactory, Void> builder = new FactoryTreeBuilder<>(JettyServerRootFactory.class, ctx->{
             return new JettyServerBuilder<JettyServerRootFactory>()
-                    .withHost("localhost").withPort(8080)
+                    .withHost("localhost").withPort(8087)
                     .withResource(ctx.get(UpdateableTestResourceFactory.class)).buildTo(new JettyServerRootFactory());
         });
         builder.addFactory(UpdateableTestResourceFactory.class, Scope.SINGLETON, ctx -> {
@@ -74,7 +74,7 @@ public class UpdateableServletTest {
         try {
 
             HttpClient client = HttpClient.newBuilder().version(HttpClient.Version.HTTP_1_1).build();
-            HttpRequest request = HttpRequest.newBuilder().GET().uri(URI.create("http://localhost:8080/UpdateableTestResource")).build();
+            HttpRequest request = HttpRequest.newBuilder().GET().uri(URI.create("http://localhost:8087/UpdateableTestResource")).build();
             {
                 HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
                 Assertions.assertEquals("123",response.body());
@@ -99,7 +99,7 @@ public class UpdateableServletTest {
     public void test_remove_resource() throws IOException, InterruptedException {
         FactoryTreeBuilder<Server, JettyServerRootFactory, Void> builder = new FactoryTreeBuilder<>(JettyServerRootFactory.class, ctx->{
             return new JettyServerBuilder<JettyServerRootFactory>()
-                    .withHost("localhost").withPort(8080)
+                    .withHost("localhost").withPort(8087)
                     .withResource(ctx.get(UpdateableTestResourceFactory.class)).buildTo(new JettyServerRootFactory());
 
         });
@@ -113,7 +113,7 @@ public class UpdateableServletTest {
         microservice.start();
         try {
             HttpClient client = HttpClient.newBuilder().version(HttpClient.Version.HTTP_1_1).build();
-            HttpRequest request = HttpRequest.newBuilder().GET().uri(URI.create("http://localhost:8080/UpdateableTestResource")).build();
+            HttpRequest request = HttpRequest.newBuilder().GET().uri(URI.create("http://localhost:8087/UpdateableTestResource")).build();
 
             DataUpdate<JettyServerRootFactory> update = microservice.prepareNewFactory();
             update.root.clearResource(UpdateableTestResourceFactory.class);
@@ -132,7 +132,7 @@ public class UpdateableServletTest {
     public void test_add_resource() throws IOException, InterruptedException {
         FactoryTreeBuilder<Server, JettyServerRootFactory, Void> builder = new FactoryTreeBuilder<>(JettyServerRootFactory.class, ctx->{
             return new JettyServerBuilder<JettyServerRootFactory>()
-                    .withHost("localhost").withPort(8080).buildTo(new JettyServerRootFactory());
+                    .withHost("localhost").withPort(8087).buildTo(new JettyServerRootFactory());
 
         });
 
@@ -141,7 +141,7 @@ public class UpdateableServletTest {
         microservice.start();
         try {
             HttpClient client = HttpClient.newBuilder().version(HttpClient.Version.HTTP_1_1).build();
-            HttpRequest request = HttpRequest.newBuilder().GET().uri(URI.create("http://localhost:8080/UpdateableTestResource")).build();
+            HttpRequest request = HttpRequest.newBuilder().GET().uri(URI.create("http://localhost:8087/UpdateableTestResource")).build();
 
             DataUpdate<JettyServerRootFactory> update = microservice.prepareNewFactory();
 
@@ -165,7 +165,7 @@ public class UpdateableServletTest {
     public void test_add_jerseyServlet() throws IOException, InterruptedException {
         FactoryTreeBuilder<Server, JettyServerRootFactory, Void> builder = new FactoryTreeBuilder<>(JettyServerRootFactory.class, ctx->{
             return new JettyServerBuilder<JettyServerRootFactory>()
-                    .withHost("localhost").withPort(8080).buildTo(new JettyServerRootFactory());
+                    .withHost("localhost").withPort(8087).buildTo(new JettyServerRootFactory());
         });
 
 
@@ -192,7 +192,7 @@ public class UpdateableServletTest {
             }
 
             HttpClient client = HttpClient.newBuilder().version(HttpClient.Version.HTTP_1_1).build();
-            HttpRequest request = HttpRequest.newBuilder().GET().uri(URI.create("http://localhost:8080/new/UpdateableTestResource")).build();
+            HttpRequest request = HttpRequest.newBuilder().GET().uri(URI.create("http://localhost:8087/new/UpdateableTestResource")).build();
 
             {
                 HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());

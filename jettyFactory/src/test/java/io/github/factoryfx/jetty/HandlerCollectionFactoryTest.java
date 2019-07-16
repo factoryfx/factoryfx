@@ -80,7 +80,7 @@ public class HandlerCollectionFactoryTest {
         FactoryTreeBuilder<Server, HandlerCollectionRootFactory, Void> builder = new FactoryTreeBuilder<>(HandlerCollectionRootFactory.class);
         builder.addFactory(JettyServerFactory.class, Scope.SINGLETON, ctx->{
             return new JettyServerBuilder<HandlerCollectionRootFactory>()
-                    .withHost("localhost").withPort(8080).build();
+                    .withHost("localhost").withPort(8087).build();
         });
 
 
@@ -104,7 +104,7 @@ public class HandlerCollectionFactoryTest {
         builder.addFactory(JettyServerFactory.class, Scope.SINGLETON, ctx->{
             return new JettyServerBuilder<HandlerCollectionRootFactory>()
                     .withResource(ctx.get(HandlerCollectionResourceFactory.class))
-                    .withHost("localhost").withPort(8080).build();
+                    .withHost("localhost").withPort(8087).build();
         });
         builder.addFactory(HandlerCollectionResourceFactory.class, Scope.SINGLETON);
 
@@ -113,7 +113,7 @@ public class HandlerCollectionFactoryTest {
         microservice.start();
         try {
             HttpClient client = HttpClient.newBuilder().version(HttpClient.Version.HTTP_1_1).build();
-            HttpRequest request = HttpRequest.newBuilder().GET().uri(URI.create("http://localhost:8080/HandlerCollectionResource")).build();
+            HttpRequest request = HttpRequest.newBuilder().GET().uri(URI.create("http://localhost:8087/HandlerCollectionResource")).build();
             {
                 HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
                 Assertions.assertEquals(200, response.statusCode());
