@@ -36,7 +36,7 @@ nexusStaging {
     username = ossrhUsername
     password = ossrhPassword
     packageGroup = 'io.github.factoryfx'
-    stagingProfileId = '78e9b0494c64ba'
+    stagingProfileId = "78e9b0494c64ba"
 }
 
 subprojects {
@@ -82,7 +82,7 @@ subprojects {
     }
 
     group = 'io.github.factoryfx'
-    version = '2.0.19'
+    version = '2.0.20'
 
     publishing {
 
