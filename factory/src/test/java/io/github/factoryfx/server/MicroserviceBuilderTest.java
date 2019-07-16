@@ -15,6 +15,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -54,8 +55,11 @@ public class MicroserviceBuilderTest {
 
         microservice.updateCurrentFactory(update);
 
-        System.out.println(Files.readString(folder.toFile().listFiles()[0].toPath()));
-        Assertions.assertTrue(Files.readString(folder.toFile().listFiles()[0].toPath()).contains("---"));
+//        System.out.println(folder.toFile().listFiles()[0].getAbsoluteFile());
+
+
+        System.out.println(Files.readString(folder.resolve("currentFactory.json")));
+        Assertions.assertTrue(Files.readString(folder.resolve("currentFactory.json")).contains("---"));
     }
 
 }
