@@ -50,8 +50,10 @@ public class DataStorageMetadataDictionary {
         for (DataStorageMetadata dataStorageMetadata : this.dataList) {
             if (dataStorageMetadata.getClassName().equals(dataClassNameFullQualified)){
                 dataStorageMetadata.renameAttribute(previousAttributeName,newAttributeName);
+                return;
             }
         }
+        throw new IllegalArgumentException("factory not found: "+dataClassNameFullQualified);
     }
 
     public void renameClass(String previousDataClassNameFullQualified, String newNameFullQualified) {

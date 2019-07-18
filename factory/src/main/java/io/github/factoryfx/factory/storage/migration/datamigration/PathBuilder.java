@@ -28,8 +28,12 @@ public class PathBuilder<V>{
         return this;
     }
 
-    public AttributePath<V> attribute(String attribute) {
-        return new AttributePath<>(valueClass,path,attribute);
+    public AttributePathTarget<V> attribute(String attribute) {
+        return new AttributePathTarget<>(valueClass,path,attribute,0);
+    }
+
+    public AttributePathTarget<V> attribute(String attribute, int index) {
+        return new AttributePathTarget<>(valueClass,path,attribute,index);
     }
 
     /**
@@ -46,14 +50,21 @@ public class PathBuilder<V>{
      * @param <V> attribute type
      * @return path
      */
-    public static <V> AttributePath<V> of(Class<V> valueClass, String path) {
+    public static <V> AttributePathTarget<V> of(Class<V> valueClass, String path) {
+        Pattern pattern = Pattern.compile("([[a-zA-Z_$]]*)\\[(\\d+)]");
         List<AttributePathElement> pathList= new ArrayList<>();
 
         String[] split = path.split("\\.");
         String attributeName= split[split.length-1];
-        for (String pathElement : Arrays.asList(split).subList(0, split.length-1)) {
 
-            Pattern pattern = Pattern.compile("([[a-zA-Z_$]]*)\\[(\\d+)]");
+        int attributeNameIndex=0;
+        Matcher attributeIndexMatcher = pattern.matcher(attributeName);
+        if (attributeIndexMatcher.matches()){
+            attributeName=attributeIndexMatcher.group(1);
+            attributeNameIndex=Integer.parseInt(attributeIndexMatcher.group(2));
+        }
+
+        for (String pathElement : Arrays.asList(split).subList(0, split.length-1)) {
             Matcher matcher = pattern.matcher(pathElement);
             if (matcher.matches()){
                 pathList.add(new RefListAttributePathElement(matcher.group(1),Integer.parseInt(matcher.group(2))));
@@ -61,7 +72,7 @@ public class PathBuilder<V>{
                 pathList.add(new RefAttributePathElement(pathElement));
             }
         }
-        return new AttributePath<>(valueClass,pathList,attributeName);
+        return new AttributePathTarget<>(valueClass,pathList,attributeName,attributeNameIndex);
     }
 
 }

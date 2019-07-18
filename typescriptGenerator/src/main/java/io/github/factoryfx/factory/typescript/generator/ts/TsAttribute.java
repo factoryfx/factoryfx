@@ -40,7 +40,11 @@ public class TsAttribute {
 
         String initialisation="";
         if (initialised){
-            initialisation="= new "+type.construct()+"("+constructorParametersString+")";
+            if (type instanceof TsTypeArray) {
+                initialisation="= []";
+            } else {
+                initialisation="= new "+type.construct()+"("+constructorParametersString+")";
+            }
         }
 
         String staticString="";

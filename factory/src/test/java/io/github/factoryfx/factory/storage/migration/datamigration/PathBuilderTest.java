@@ -1,7 +1,5 @@
 package io.github.factoryfx.factory.storage.migration.datamigration;
 
-import io.github.factoryfx.factory.storage.migration.datamigration.AttributePath;
-import io.github.factoryfx.factory.storage.migration.datamigration.PathBuilder;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -10,32 +8,32 @@ class PathBuilderTest {
 
     @Test
     public void test_parse(){
-        AttributePath<String> parsed = PathBuilder.of(String.class,"referenceAttribute.stringAttribute");
-        AttributePath<String> programmatic = PathBuilder.value(String.class).pathElement("referenceAttribute").attribute("stringAttribute");
+        AttributePathTarget<String> parsed = PathBuilder.of(String.class,"referenceAttribute.stringAttribute");
+        AttributePathTarget<String> programmatic = PathBuilder.value(String.class).pathElement("referenceAttribute").attribute("stringAttribute");
 
         assertTrue(parsed.match(programmatic));
     }
 
     @Test
     public void test_parse_reflist(){
-        AttributePath<String> parsed = PathBuilder.of(String.class,"referenceListAttribute[1].stringAttribute");
-        AttributePath<String> programmatic = PathBuilder.value(String.class).pathElement("referenceListAttribute",1).attribute("stringAttribute");
+        AttributePathTarget<String> parsed = PathBuilder.of(String.class,"referenceListAttribute[1].stringAttribute");
+        AttributePathTarget<String> programmatic = PathBuilder.value(String.class).pathElement("referenceListAttribute",1).attribute("stringAttribute");
 
         assertTrue(parsed.match(programmatic));
     }
 
     @Test
     public void test_parse_reflist_multi_digit_index(){
-        AttributePath<String> parsed = PathBuilder.of(String.class,"referenceListAttribute[123].stringAttribute");
-        AttributePath<String> programmatic = PathBuilder.value(String.class).pathElement("referenceListAttribute",123).attribute("stringAttribute");
+        AttributePathTarget<String> parsed = PathBuilder.of(String.class,"referenceListAttribute[123].stringAttribute");
+        AttributePathTarget<String> programmatic = PathBuilder.value(String.class).pathElement("referenceListAttribute",123).attribute("stringAttribute");
 
         assertTrue(parsed.match(programmatic));
     }
 
     @Test
     public void test_mixed_path(){
-        AttributePath<String> parsed = PathBuilder.of(String.class,"referenceAttribute.referenceListAttribute[123].stringAttribute");
-        AttributePath<String> programmatic = PathBuilder.value(String.class).pathElement("referenceAttribute").pathElement("referenceListAttribute",123).attribute("stringAttribute");
+        AttributePathTarget<String> parsed = PathBuilder.of(String.class,"referenceAttribute.referenceListAttribute[123].stringAttribute");
+        AttributePathTarget<String> programmatic = PathBuilder.value(String.class).pathElement("referenceAttribute").pathElement("referenceListAttribute",123).attribute("stringAttribute");
 
         assertTrue(parsed.match(programmatic));
     }

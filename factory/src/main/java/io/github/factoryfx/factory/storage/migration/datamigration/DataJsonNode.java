@@ -86,6 +86,11 @@ public class DataJsonNode {
         return simpleObjectMapper.treeToValue(attributeValue, valueClass);
     }
 
+    public <V> V getArrayAttributeValue(String attributeName, Class<V> valueClass, SimpleObjectMapper simpleObjectMapper, int index) {
+        ArrayNode attributeValue = (ArrayNode) getAttributeValue(attributeName);
+        return simpleObjectMapper.treeToValue(attributeValue.get(index), valueClass);
+    }
+
     public String getAttributeIdValue(String attributeName) {
         return jsonNode.get(attributeName).get("v").asText();
     }

@@ -4,7 +4,7 @@ import {AttributeAccessor} from "./AttributeAccessor";
 import {DynamicDataDictionary} from "./DynamicDataDictionary";
 
 export abstract class Data  {
-    private id!: string;
+    protected id!: string;
     protected javaClass!: string;
     private parent!: Data;
 
@@ -15,7 +15,7 @@ export abstract class Data  {
         return this.id;
     }
 
-    private uuidV4() {
+    protected uuidV4() {
         return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c)=> {
             let r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
             return v.toString(16);

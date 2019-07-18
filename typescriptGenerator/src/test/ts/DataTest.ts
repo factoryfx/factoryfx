@@ -793,3 +793,13 @@ test('test_constructor', () => {
     expect(json['@class']).to.equal("io.github.factoryfx.factory.typescript.generator.data.ExampleData");
     // expect(json['id']).to.not.equal(undefined);
 });
+
+
+test('test_new_constructed_maptojson', ()=>{
+    let data: ExampleData = new ExampleData();
+    data.ref=new ExampleData2();
+    data.refList.push(new ExampleData2());
+    let json = data.mapToJsonFromRoot();
+
+    expect(json.refList[0]).to.not.equal(undefined);
+});

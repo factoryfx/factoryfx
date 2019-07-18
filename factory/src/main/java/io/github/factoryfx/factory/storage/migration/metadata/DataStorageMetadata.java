@@ -79,6 +79,8 @@ public class DataStorageMetadata {
         if (attribute!=null) {
             attribute.rename(newAttributeName);
             nameToAttributeMap=null;//reset cache
+        } else {
+            throw new IllegalArgumentException("attribute not found: "+previousAttributeName);
         }
     }
 

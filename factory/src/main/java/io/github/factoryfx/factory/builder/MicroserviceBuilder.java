@@ -12,7 +12,7 @@ import io.github.factoryfx.factory.FactoryManager;
 import io.github.factoryfx.factory.exception.FactoryExceptionHandler;
 import io.github.factoryfx.factory.exception.RethrowingFactoryExceptionHandler;
 import io.github.factoryfx.server.Microservice;
-import io.github.factoryfx.factory.storage.migration.datamigration.AttributePath;
+import io.github.factoryfx.factory.storage.migration.datamigration.AttributePathTarget;
 
 import java.nio.file.Path;
 import java.util.function.BiConsumer;
@@ -129,7 +129,7 @@ public class MicroserviceBuilder<L,R extends FactoryBase<L,R>,S> {
      * @param <AV> attribute value
      * @return builder
      */
-    public <AV> MicroserviceBuilder<L,R,S>  withRestoreAttributeMigration(AttributePath<AV> path, BiConsumer<R,AV> setter){
+    public <AV> MicroserviceBuilder<L,R,S>  withRestoreAttributeMigration(AttributePathTarget<AV> path, BiConsumer<R,AV> setter){
         this.migrationManager.restoreAttribute(path,setter);
         return this;
     }

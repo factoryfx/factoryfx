@@ -7,7 +7,6 @@ import com.google.common.base.Throwables;
 import io.github.factoryfx.factory.DataObjectIdResolver;
 import io.github.factoryfx.factory.FactoryBase;
 import io.github.factoryfx.factory.attribute.Attribute;
-import io.github.factoryfx.factory.jackson.ObjectMapperBuilder;
 import io.github.factoryfx.factory.jackson.SimpleObjectMapper;
 import io.github.factoryfx.factory.storage.RawFactoryDataAndMetadata;
 import io.github.factoryfx.factory.storage.ScheduledUpdateMetadata;
@@ -15,8 +14,6 @@ import io.github.factoryfx.factory.storage.StoredDataMetadata;
 import io.github.factoryfx.factory.storage.migration.metadata.DataStorageMetadataDictionary;
 import io.github.factoryfx.factory.storage.migration.datamigration.*;
 
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiConsumer;
@@ -55,7 +52,7 @@ public class MigrationManager<R extends FactoryBase<?,R>,S> {
         singletonBasedRestorations.add(new SingletonDataRestore<>(singletonPreviousDataClass,previousAttributeName,valueClass,setter,objectMapper));
     }
 
-    public <V> void restoreAttribute(AttributePath<V> path, BiConsumer<R,V> setter){
+    public <V> void restoreAttribute(AttributePathTarget<V> path, BiConsumer<R,V> setter){
         pathBasedRestorations.add(new PathDataRestore<>(path,setter,objectMapper));
     }
 
@@ -101,7 +98,7 @@ public class MigrationManager<R extends FactoryBase<?,R>,S> {
         }
 
         for (PathDataRestore<R,?> restoration : pathBasedRestorations) {
-            if (restoration.canMigrate(dataStorageMetadataDictionary)) {
+            if (restoration.canMigrate(dataStorageMetadataDictionary,rootDataJson)) {
                 restoration.migrate(rootDataJson,root);
             }
         }

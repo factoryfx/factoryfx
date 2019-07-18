@@ -226,10 +226,12 @@ public class FactoryMetadata<R extends FactoryBase<?,R>, L,F extends FactoryBase
                     this.constructor = clazz.getDeclaredConstructor();
                     this.constructor.setAccessible(true);
                 } catch (NoSuchMethodException e) {
-                    throw new RuntimeException(e);
+                    throw new RuntimeException("no constructor found, for nested classes ensure that they are static",e);
                 } catch (InaccessibleObjectException e){
                     throw new RuntimeException("\n\nto fix the error add jpms boilerplate, \noption 1: module-info.info: opens "+clazz.getPackage().getName()+";\noption 2: open all, open module {A} { ... } (open keyword before module)\n",e);
                 }
+
+
             }
 
             try {

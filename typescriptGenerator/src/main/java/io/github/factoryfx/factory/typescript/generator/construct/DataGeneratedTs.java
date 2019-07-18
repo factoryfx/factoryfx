@@ -81,7 +81,7 @@ public class DataGeneratedTs<R extends FactoryBase<?,R>, L,  F extends FactoryBa
 
         tsClass.abstractClass();
 
-        tsClass.constructor= new TsConstructor(List.of(),new TsMethodCode("super();\nthis.javaClass=\""+clazz.getName()+"\";"));
+        tsClass.constructor= new TsConstructor(List.of(),new TsMethodCode("super();\nthis.javaClass=\""+clazz.getName()+"\";\nthis.id=this.uuidV4();"));
 
         return tsClass;
     }
@@ -172,7 +172,11 @@ public class DataGeneratedTs<R extends FactoryBase<?,R>, L,  F extends FactoryBa
     }
 
     private TsAttribute getTsAttribute(String attributeVariableName, Attribute<?, ?> attribute){
-        return new TsAttribute(attributeVariableName,getTsType(attribute));
+        TsType tsType = getTsType(attribute);
+        if (tsType instanceof TsTypeArray) {
+            return new TsAttribute(attributeVariableName, tsType,false,true,false,List.of());
+        }
+        return new TsAttribute(attributeVariableName, tsType);
     }
 
     private TsMethod getTsAttributeAccessor(String attributeVariableName, Attribute<?, ?> attribute, TsClassConstructed tsClassName) {

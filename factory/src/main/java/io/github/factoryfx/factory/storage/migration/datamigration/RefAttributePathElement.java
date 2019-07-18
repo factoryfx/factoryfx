@@ -7,20 +7,20 @@ import io.github.factoryfx.factory.storage.migration.metadata.DataStorageMetadat
 import java.util.Objects;
 
 public class RefAttributePathElement implements AttributePathElement{
-    final String path;
+    final String pathElement;
 
-    public RefAttributePathElement(String path) {
-        this.path = path;
+    public RefAttributePathElement(String pathElement) {
+        this.pathElement = pathElement;
     }
 
     @Override
     public DataJsonNode getNext(DataJsonNode current){
-        return current.getChild(path);
+        return current.getChild(pathElement);
     }
 
     @Override
     public DataStorageMetadata getNext(DataStorageMetadata current, DataStorageMetadataDictionary dictionary) {
-        return current.getChild(path,dictionary);
+        return current.getChild(pathElement,dictionary);
     }
 
     @Override
@@ -28,6 +28,6 @@ public class RefAttributePathElement implements AttributePathElement{
         if (this == attributePathElement) return true;
         if (attributePathElement == null || getClass() != attributePathElement.getClass()) return false;
         RefAttributePathElement that = (RefAttributePathElement) attributePathElement;
-        return Objects.equals(path, that.path);
+        return Objects.equals(pathElement, that.pathElement);
     }
 }
