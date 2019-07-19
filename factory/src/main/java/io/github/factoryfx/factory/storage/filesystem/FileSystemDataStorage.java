@@ -39,8 +39,15 @@ public class FileSystemDataStorage<R extends FactoryBase<?,R>,S> implements Data
     }
 
     public FileSystemDataStorage(Path basePath, R initialData, MigrationManager<R,S> migrationManager, SimpleObjectMapper objectMapper){
-         this(basePath, initialData, migrationManager,new FileSystemFactoryStorageHistory<>(basePath, migrationManager),objectMapper);
+        this(basePath, initialData, migrationManager,new FileSystemFactoryStorageHistory<>(basePath, migrationManager),objectMapper);
     }
+
+    public FileSystemDataStorage(Path basePath, R initialData, MigrationManager<R,S> migrationManager, SimpleObjectMapper objectMapper, int maxConfigurationHistory){
+        this(basePath, initialData, migrationManager,new FileSystemFactoryStorageHistory<>(basePath, migrationManager, maxConfigurationHistory),objectMapper);
+    }
+
+
+
 
     @Override
     public R getHistoryData(String id) {

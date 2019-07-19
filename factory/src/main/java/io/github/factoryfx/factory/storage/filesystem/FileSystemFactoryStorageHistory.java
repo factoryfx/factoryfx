@@ -4,31 +4,44 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Collection;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
 import io.github.factoryfx.factory.FactoryBase;
+import io.github.factoryfx.factory.FactoryManager;
 import io.github.factoryfx.factory.jackson.SimpleObjectMapper;
 import io.github.factoryfx.factory.storage.DataStoragePatcher;
 import io.github.factoryfx.factory.storage.migration.MigrationManager;
 import io.github.factoryfx.factory.storage.StoredDataMetadata;
+import org.slf4j.LoggerFactory;
 
 public class FileSystemFactoryStorageHistory<R extends FactoryBase<?,R>,S> {
+
+    private static final org.slf4j.Logger logger = LoggerFactory.getLogger(FileSystemFactoryStorageHistory.class);
+
     private final Map<String,StoredDataMetadata<S>> cache = new TreeMap<>();
     private final Path historyDirectory;
     private final MigrationManager<R,S> migrationManager;
+    private final int maxConfigurationHistory;
 
-    public FileSystemFactoryStorageHistory(Path basePath, MigrationManager<R,S> migrationManager){
+
+    public FileSystemFactoryStorageHistory(Path basePath, MigrationManager<R, S> migrationManager) {
+        this(basePath,migrationManager,Integer.MAX_VALUE);
+    }
+
+    public FileSystemFactoryStorageHistory(Path basePath, MigrationManager<R, S> migrationManager, int maxConfigurationHistory){
         this.migrationManager = migrationManager;
-        historyDirectory= Paths.get(basePath.toString()+"/history/");
+        historyDirectory= basePath.resolve("history");
+        this.maxConfigurationHistory = maxConfigurationHistory;
         if (!Files.exists(historyDirectory)){
-            if (!historyDirectory.toFile().mkdirs()){
-                throw new IllegalStateException("Unable to create path"+historyDirectory.toFile().getAbsolutePath());
+            try {
+                Files.createDirectories(historyDirectory);
+            } catch (IOException e) {
+                throw new IllegalStateException("Unable to create path"+historyDirectory.toFile().getAbsolutePath(),e);
             }
         }
     }
@@ -74,6 +87,8 @@ public class FileSystemFactoryStorageHistory<R extends FactoryBase<?,R>,S> {
         writeFile(Paths.get(historyDirectory.toString()+"/"+id+"_metadata.json"), migrationManager.writeStorageMetadata(metadata));
         cache.put(id,metadata);
 
+        houseKeeping();
+
     }
 
     private String readFile(Path path){
@@ -103,5 +118,23 @@ public class FileSystemFactoryStorageHistory<R extends FactoryBase<?,R>,S> {
                 writeFile(metadataPath,simpleObjectMapper.writeTree(metadata));
             }
         });
+    }
+
+    private void houseKeeping() {
+        if (maxConfigurationHistory == Integer.MAX_VALUE)
+            return;
+        List<StoredDataMetadata<S>> collect = getHistoryFactoryList().stream().collect(Collectors.toList());
+        int numToRemove = collect.size()-maxConfigurationHistory;
+        if (numToRemove > 0) {
+            collect.stream().sorted(Comparator.comparing(a -> a.creationTime)).limit(numToRemove).forEach(smd -> {
+                try {
+                    Files.deleteIfExists(Paths.get(historyDirectory.toString() + "/" + smd.id + ".json"));
+                    Files.deleteIfExists(Paths.get(historyDirectory.toString() + "/" + smd.id + "_metadata.json"));
+                    cache.remove(smd.id);
+                } catch (IOException ohno) {
+                    logger.warn("Could not remove configration files", ohno);
+                }
+            });
+        }
     }
 }
