@@ -81,6 +81,17 @@ public class MicroserviceBuilder<L,R extends FactoryBase<L,R>,S> {
         return this;
     }
 
+    /**
+     * with filesystem data storage
+     * @param path path
+     * @param maxConfigurationHistory maximum number of historical configuration to keep
+     * @return builder
+     */
+    public MicroserviceBuilder<L,R,S> withFilesystemStorage(Path path, int maxConfigurationHistory){
+        dataStorageCreator =(initialData, migrationManager, objectMapper)->new FileSystemDataStorage<>(path, initialData, migrationManager, objectMapper, maxConfigurationHistory);
+        return this;
+    }
+
 
     /**
      * @param dataStorageCreator data storage
