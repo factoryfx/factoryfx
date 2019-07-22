@@ -31,7 +31,7 @@ Factoryfx is a replacement for:
 
 | Group ID            | Artifact ID | Version |
 | :-----------------: | :---------: | :-----: |
-| io.github.factoryfx | factory  | 2.0.5  |
+| io.github.factoryfx | factory  | 2.0.24  |
 
 java 11+ required
 

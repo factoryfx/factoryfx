@@ -14,19 +14,16 @@ import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.servlet.ServletContainer;
 
 import javax.servlet.*;
+import javax.ws.rs.ext.ExceptionMapper;
 import java.util.*;
 
 public class JerseyServletFactory<R extends FactoryBase<?,R>> extends SimpleFactoryBase<Servlet,R> {
 
-
     public final FactoryPolymorphicAttribute<R,ObjectMapper> objectMapper = new FactoryPolymorphicAttribute<R,ObjectMapper>().nullable().en("objectMapper");
-
     public final FactoryPolymorphicAttribute<R,LoggingFeature> restLogging = new FactoryPolymorphicAttribute<R,LoggingFeature>().userReadOnly().labelText("REST logging");
-
     public final ObjectValueAttribute<List<Object>> additionalJaxrsComponents = new ObjectValueAttribute<List<Object>>().userReadOnly().labelText("additionalJaxrsComponents").nullable();
-
-
     public final FactoryPolymorphicListAttribute<R,Object> resources = new FactoryPolymorphicListAttribute<R,Object>().labelText("resources");
+    public final ObjectValueAttribute<ExceptionMapper<Throwable>> exceptionMapper = new ObjectValueAttribute<ExceptionMapper<Throwable>>().userReadOnly().labelText("exceptionMapper").nullable();
 
     @Override
     protected Servlet createImpl() {
@@ -42,7 +39,7 @@ public class JerseyServletFactory<R extends FactoryBase<?,R>> extends SimpleFact
 
         resourceConfig.register(restLogging.instance());
 
-        resourceConfig.register(new AllExceptionMapper());
+        resourceConfig.register((exceptionMapper.getNullable().orElse(new AllExceptionMapper())));
 
         if (additionalJaxrsComponents.get()!=null){
             additionalJaxrsComponents.get().forEach(r -> {

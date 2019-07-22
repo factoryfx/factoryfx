@@ -2,10 +2,12 @@ package io.github.factoryfx.jetty;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.factoryfx.factory.FactoryBase;
+import io.github.factoryfx.factory.builder.MicroserviceBuilder;
 import io.github.factoryfx.jetty.ssl.SslContextFactoryFactory;
 
 import javax.servlet.DispatcherType;
 import javax.servlet.Servlet;
+import javax.ws.rs.ext.ExceptionMapper;
 import java.util.ArrayList;
 import java.util.zip.Deflater;
 
@@ -74,8 +76,20 @@ public class JettyServerBuilder<R extends FactoryBase<?,R>> {
         return derivedJettyServerFactory;
     }
 
+    /** if jettyServerFactory is the root use {@link #buildTo}
+     *
+     * @return JettyServerFactory
+     */
     public JettyServerFactory<R> build(){
         return jettyServerFactory;
+    }
+
+    @SuppressWarnings("unchecked")
+    public R buildAsRoot(R JettyTestServerFactory){
+
+
+
+        return JettyTestServerFactory;
     }
 
     public JettyServerBuilder<R> withPort(int port){
@@ -162,6 +176,11 @@ public class JettyServerBuilder<R extends FactoryBase<?,R>> {
 
     public JettyServerBuilder<R> withDefaultJerseyObjectMapper(FactoryBase<? extends ObjectMapper, R> objectMapperFactory){
         defaultJerseyServlet.objectMapper.set(objectMapperFactory);
+        return this;
+    }
+
+    public JettyServerBuilder<R> withExceptionMapper(ExceptionMapper<Throwable> exceptionMapper) {
+        defaultJerseyServlet.exceptionMapper.set(exceptionMapper);
         return this;
     }
 }

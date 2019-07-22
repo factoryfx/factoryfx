@@ -51,7 +51,6 @@ public class HandlerCollectionFactoryTest {
             return new HandlerCollectionResource();
         }
     }
-
     public static class HandlerCollectionRootFactory extends SimpleFactoryBase<Server, HandlerCollectionRootFactory>{
         public final FactoryAttribute<HandlerCollectionRootFactory,Server,JettyServerFactory<HandlerCollectionRootFactory>> server = new FactoryAttribute<>();
 
