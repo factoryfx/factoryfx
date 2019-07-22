@@ -58,6 +58,7 @@ public class MigrationManager<R extends FactoryBase<?,R>,S> {
 
     public R migrate(JsonNode rootNode, DataStorageMetadataDictionary dataStorageMetadataDictionary){
         DataJsonNode rootDataJson = new DataJsonNode((ObjectNode) rootNode);
+        DataJsonNode previousRootDataJson = new DataJsonNode(rootNode.deepCopy());
         List<DataJsonNode> dataJsonNodes = rootDataJson.collectChildrenFromRoot();
 
         for (DataMigration migration : renameClassMigrations) {
@@ -89,8 +90,6 @@ public class MigrationManager<R extends FactoryBase<?,R>,S> {
 
         root.internal().finalise();
 
-        attributeFiller.fillNewAttributes(root,dataStorageMetadataDictionary);
-
         for (SingletonDataRestore<R,?> restoration : singletonBasedRestorations) {
             if (restoration.canMigrate(dataStorageMetadataDictionary)) {
                 restoration.migrate(dataJsonNodes,root);
@@ -99,9 +98,13 @@ public class MigrationManager<R extends FactoryBase<?,R>,S> {
 
         for (PathDataRestore<R,?> restoration : pathBasedRestorations) {
             if (restoration.canMigrate(dataStorageMetadataDictionary,rootDataJson)) {
-                restoration.migrate(rootDataJson,root);
+                restoration.migrate(previousRootDataJson,root);
             }
         }
+
+        attributeFiller.fillNewAttributes(root,dataStorageMetadataDictionary);
+        root.internal().fixDuplicateFactories();
+        root.internal().finalise();
         return root;
     }
 
