@@ -31,22 +31,6 @@ public class RestoreMigrationTest {
         }
     }
 
-
-    public static class ServerFactoryNestedOld extends SimpleFactoryBase<Void, ServerFactoryOld> {
-
-        public final FactoryAttribute<ServerFactoryOld,Void,PartnerFactoryOld> partnerFactory1 = new FactoryAttribute<>();
-        public final FactoryAttribute<ServerFactoryOld,Void,PartnerFactoryOld> partnerFactory2 = new FactoryAttribute<>();
-
-        public final FactoryAttribute<ServerFactoryOld,Void,ClientSystemFactoryOld> clientSystemFactory1 = new FactoryAttribute<>();
-        public final FactoryAttribute<ServerFactoryOld,Void,ClientSystemFactoryOld> clientSystemFactory2 = new FactoryAttribute<>();
-
-        @Override
-        protected Void createImpl() {
-            return null;
-        }
-    }
-
-
     public static class PartnerFactoryOld extends SimpleFactoryBase<Void, ServerFactoryOld> {
         public final StringAttribute url = new StringAttribute();
 

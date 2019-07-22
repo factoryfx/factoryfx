@@ -43,7 +43,9 @@ public class FactoryTreeBuilderAttributeFiller<L,R extends FactoryBase<L,R>,S> i
     private <FO extends FactoryBase<?,R>> void fillNewAttributes(FO factory, FO newBuild, DataStorageMetadataDictionary oldDataStorageMetadataDictionary){
         factory.internal().visitAttributesForMatch(newBuild, (attributeVariableName, newAttribute, newlyBuildAttribute) -> {
             if (isNewAttribute(factory, oldDataStorageMetadataDictionary, attributeVariableName)) {
-                newAttribute.set(newlyBuildAttribute.get());
+                if(newAttribute.get() == null) {
+                    newAttribute.set(newlyBuildAttribute.get());
+                }
             }
             return true;
         });
