@@ -74,6 +74,9 @@ public class FactoryPolymorphicListAttribute<R extends FactoryBase<?,R>,L> exten
      * @return list of possible classes
      * */
     public List<Class<?>> internal_possibleFactoriesClasses(){
+        if (possibleFactoriesClasses==null){
+            return List.of();
+        }
         return possibleFactoriesClasses;
     }
 
