@@ -31,7 +31,7 @@ public class FactoryPolymorphicAttribute<R extends FactoryBase<?,R>,L> extends F
     }
 
     @SafeVarargs
-    public FactoryPolymorphicAttribute(Class<L> liveObjectClass, Class<? extends PolymorphicFactory<?>>... possibleFactoriesClasses) {
+    public FactoryPolymorphicAttribute(Class<L> liveObjectClass, Class<? extends PolymorphicFactory<L>>... possibleFactoriesClasses) {
         super();
         setup(liveObjectClass,possibleFactoriesClasses);
     }

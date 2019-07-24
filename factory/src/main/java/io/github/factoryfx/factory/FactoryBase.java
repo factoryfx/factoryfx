@@ -21,6 +21,7 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 import io.github.factoryfx.factory.attribute.dependency.FactoryViewAttribute;
+import io.github.factoryfx.factory.builder.FactoryTreeBuilder;
 import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
@@ -947,6 +948,10 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
             factory.setMicroservice(microservice);
         }
 
+        public void setFactoryTreeBuilder(FactoryTreeBuilder<?,R,?> factoryTreeBuilder) {
+            factory.setFactoryTreeBuilder(factoryTreeBuilder);
+        }
+
         public L getLiveObject() {
             return factory.createdLiveObject;
         }
@@ -986,6 +991,7 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
             return factory.getAttribute(attributeVariableName);
         }
     }
+
 
     FactoryTreeBuilderBasedAttributeSetup<R, ?> factoryTreeBuilderBasedAttributeSetup;
     private void serFactoryTreeBuilderBasedAttributeSetupForRoot(FactoryTreeBuilderBasedAttributeSetup<R, ?> factoryTreeBuilderBasedAttributeSetup) {
@@ -1254,6 +1260,14 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
         return getRoot().microservice;
     }
 
+    FactoryTreeBuilder<?, R, ?> factoryTreeBuilder;
+    private void setFactoryTreeBuilder(FactoryTreeBuilder<?, R, ?> factoryTreeBuilder) {
+        this.factoryTreeBuilder =  factoryTreeBuilder;
+    }
+
+    private FactoryTreeBuilder<?, R, ?> getFactoryTreeBuilder() {
+        return getRoot().factoryTreeBuilder;
+    }
 
     @JsonIgnore
     private boolean createLog;
@@ -1509,6 +1523,10 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
 
         public Microservice<?,R,?> getMicroservice(){
             return factory.getMicroservice();
+        }
+
+        public FactoryTreeBuilder<?,R,?> getFactoryTreeBuilder(){
+            return factory.getFactoryTreeBuilder();
         }
 
         public R getRoot(){

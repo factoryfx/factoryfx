@@ -23,11 +23,7 @@ public class ServerBuilder {
 
         });
 
-        factoryTreeBuilder.addFactory(MicroserviceDomResourceFactory.class, Scope.SINGLETON, context -> {
-            MicroserviceDomResourceFactory<ServerRootFactory, Void> microserviceDomResourceFactory = new MicroserviceDomResourceFactory<>();
-            microserviceDomResourceFactory.factoryTreeBuilderBasedAttributeSetup.set(new FactoryTreeBuilderBasedAttributeSetup<>(factoryTreeBuilder));
-            return microserviceDomResourceFactory;
-        });
+        factoryTreeBuilder.addFactory(MicroserviceDomResourceFactory.class, Scope.SINGLETON);
 
         factoryTreeBuilder.addFactory(ShopResourceFactory.class, Scope.SINGLETON, context -> {
             ShopResourceFactory shopResource = new ShopResourceFactory();

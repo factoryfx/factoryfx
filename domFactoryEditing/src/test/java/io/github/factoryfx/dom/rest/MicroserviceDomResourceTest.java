@@ -48,11 +48,7 @@ class MicroserviceDomResourceTest {
         FactoryTreeBuilder<Server, JettyServerRootFactory, Void> builder = new FactoryTreeBuilder<>(JettyServerRootFactory.class, ctx->{
             return new JettyServerBuilder<JettyServerRootFactory>().withHost("localhost").withPort(8015).withResource(ctx.getUnsafe(MicroserviceDomResourceFactory.class)).buildTo(new JettyServerRootFactory());
         });
-        builder.addFactory(MicroserviceDomResourceFactory.class, Scope.SINGLETON, context -> {
-            MicroserviceDomResourceFactory<JettyServerRootFactory, Void> microserviceDomResourceFactory = new MicroserviceDomResourceFactory<>();
-            microserviceDomResourceFactory.factoryTreeBuilderBasedAttributeSetup.set(new FactoryTreeBuilderBasedAttributeSetup<>(builder));
-            return microserviceDomResourceFactory;
-        });
+        builder.addFactory(MicroserviceDomResourceFactory.class, Scope.SINGLETON);
 
         Microservice<Server, JettyServerRootFactory, Void> microservice = builder.microservice().build();
         try{

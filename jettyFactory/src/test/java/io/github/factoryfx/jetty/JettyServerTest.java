@@ -28,6 +28,7 @@ import javax.ws.rs.ext.MessageBodyWriter;
 
 import ch.qos.logback.classic.Level;
 import com.google.common.io.ByteStreams;
+import io.github.factoryfx.factory.ParameterlessFactory;
 import io.github.factoryfx.factory.storage.DataUpdate;
 import io.github.factoryfx.factory.SimpleFactoryBase;
 import io.github.factoryfx.factory.attribute.dependency.FactoryAttribute;
@@ -294,7 +295,7 @@ public class JettyServerTest {
             return new JettyServerBuilder<JettyServerRootFactory>()
                     .withHost("localhost").withPort(8015)
                     .withResource(ctx.get(MessageBodyReaderWriterEchoFactory.class))
-                    .withJaxrsComponent(SomeMessageBodyReaderWriter.class)
+                    .withJaxrsComponent(ParameterlessFactory.create(SomeMessageBodyReaderWriter.class))
                     .build();
         });
         builder.addFactory(MessageBodyReaderWriterEchoFactory.class, Scope.SINGLETON);

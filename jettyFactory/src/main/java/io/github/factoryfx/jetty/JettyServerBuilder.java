@@ -61,7 +61,6 @@ public class JettyServerBuilder<R extends FactoryBase<?,R>> {
         defaultJerseyServlet = new JerseyServletFactory<>();
         defaultJerseyServlet.objectMapper.set(new DefaultObjectMapperFactory<>());
         defaultJerseyServlet.restLogging.set(new Slf4LoggingFeatureFactory<>());
-        defaultJerseyServlet.additionalJaxrsComponents.set(new ArrayList<>());
 
         defaultJerseyServletAndPathFactory = new ServletAndPathFactory<>();
         defaultJerseyServletAndPathFactory.pathSpec.set("/*");
@@ -117,9 +116,7 @@ public class JettyServerBuilder<R extends FactoryBase<?,R>> {
     }
 
     public JettyServerBuilder<R> withResource(FactoryBase<?,R> resource){
-        if (!updateableServletFactory.servletAndPaths.contains(defaultJerseyServletAndPathFactory)) {
-            throw new IllegalStateException("Can't add resource because DefaultJerseyServlet is removed ");
-        }
+        checkDefaultJerseyServletIsUsed();
         defaultJerseyServlet.resources.add(resource);
         return this;
     }
@@ -140,8 +137,9 @@ public class JettyServerBuilder<R extends FactoryBase<?,R>> {
         return this;
     }
 
-    public JettyServerBuilder<R> withJaxrsComponent(Object jaxrsComponent){
-        defaultJerseyServlet.additionalJaxrsComponents.get().add(jaxrsComponent);
+    public JettyServerBuilder<R> withJaxrsComponent(FactoryBase<Object,R> jaxrsComponentFactory){
+        checkDefaultJerseyServletIsUsed();
+        defaultJerseyServlet.additionalJaxrsComponents.add(jaxrsComponentFactory);
         return this;
     }
 
@@ -175,12 +173,25 @@ public class JettyServerBuilder<R extends FactoryBase<?,R>> {
     }
 
     public JettyServerBuilder<R> withDefaultJerseyObjectMapper(FactoryBase<? extends ObjectMapper, R> objectMapperFactory){
+        checkDefaultJerseyServletIsUsed();
         defaultJerseyServlet.objectMapper.set(objectMapperFactory);
         return this;
     }
 
-    public JettyServerBuilder<R> withExceptionMapper(ExceptionMapper<Throwable> exceptionMapper) {
+    /**
+     * shortcut <pre>withExceptionMapper(ParameterlessFactory.create(TestExceptionMapper.class))</pre>
+     * @param exceptionMapper exeptionMapper Factory
+     * @return
+     */
+    public JettyServerBuilder<R> withExceptionMapper(FactoryBase<ExceptionMapper<Throwable>,R> exceptionMapper) {
+        checkDefaultJerseyServletIsUsed();
         defaultJerseyServlet.exceptionMapper.set(exceptionMapper);
         return this;
+    }
+
+    private void checkDefaultJerseyServletIsUsed() {
+        if (!updateableServletFactory.servletAndPaths.contains(defaultJerseyServletAndPathFactory)) {
+            throw new IllegalStateException("Can't add resource because DefaultJerseyServlet is removed ");
+        }
     }
 }

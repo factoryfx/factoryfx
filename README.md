@@ -128,8 +128,10 @@ Permissions on attribute level
 (Re-)configuration over a custom REST API
 * [Configuration data](docu/src/main/java/io/github/factoryfx/docu/configurationdata)  
 How to handle configuration data
-* [User Interface](docu/src/main/java/io/github/factoryfx/docu/gui)  
+* [Runtime configuration change](docu/src/main/java/io/github/factoryfx/docu/configurationapi)  
 graphical user interface
+* [Configuration via web application](docu/src/main/java/io/github/factoryfx/docu/configurationwebapp)  
+Configuration via web application
 
 ## Example
 

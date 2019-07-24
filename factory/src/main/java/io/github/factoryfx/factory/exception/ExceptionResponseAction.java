@@ -24,6 +24,7 @@ public class ExceptionResponseAction<L,R extends FactoryBase<L,R>> {
     public void reset() {
         Microservice<?, R, ?> microservice = currentFactoryRoot.getRoot().utility().getMicroservice();
         previousFactoryRootCopy.getRoot().internal().setMicroservice(microservice);
+        previousFactoryRootCopy.getRoot().internal().setFactoryTreeBuilder(currentFactoryRoot.getRoot().utility().getFactoryTreeBuilder());
 
         for (FactoryBase<?,?> removedFactory : removed) {
             removedFactory.internal().cleanUpAfterCrash();

@@ -28,5 +28,7 @@ open module io.github.factoryfx.docu {
     requires javax.servlet.api;
     requires org.eclipse.jetty.server;
     requires io.github.factoryfx.starter;
+    requires io.github.factoryfx.domFactoryEditing;
+    requires java.desktop;
 
 }

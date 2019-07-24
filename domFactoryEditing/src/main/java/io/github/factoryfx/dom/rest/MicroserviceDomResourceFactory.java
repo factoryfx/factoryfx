@@ -3,8 +3,10 @@ package io.github.factoryfx.dom.rest;
 import io.github.factoryfx.factory.FactoryBase;
 import io.github.factoryfx.factory.FactoryTreeBuilderBasedAttributeSetup;
 import io.github.factoryfx.factory.attribute.dependency.FactoryPolymorphicAttribute;
+import io.github.factoryfx.factory.attribute.dependency.FactoryPolymorphicListAttribute;
 import io.github.factoryfx.factory.attribute.types.ObjectValueAttribute;
 import io.github.factoryfx.factory.attribute.types.StringAttribute;
+import io.github.factoryfx.factory.builder.FactoryTreeBuilder;
 import io.github.factoryfx.jetty.JerseyServletFactory;
 import io.github.factoryfx.server.Microservice;
 import io.github.factoryfx.server.user.nop.NoUserManagement;
@@ -37,10 +39,9 @@ import java.util.function.Function;
  */
 public class MicroserviceDomResourceFactory<R extends FactoryBase<?,R>,S> extends FactoryBase<MicroserviceDomResource<R,S>,R> {
 
-    public final FactoryPolymorphicAttribute<R,UserManagement> userManagement = new FactoryPolymorphicAttribute<R,UserManagement>().setupUnsafe(UserManagement.class, NoUserManagementFactory.class, PersistentUserManagementFactory.class).labelText("resource").nullable();
+    public final FactoryPolymorphicAttribute<R,UserManagement> userManagement = new FactoryPolymorphicAttribute<R,UserManagement>().setupUnsafe(UserManagement.class, NoUserManagementFactory.class, PersistentUserManagementFactory.class).labelText("userManagement").nullable();
     public final FactoryPolymorphicAttribute<R, StaticFileAccess> staticFileAccess = new FactoryPolymorphicAttribute<R, StaticFileAccess>().setupUnsafe(StaticFileAccess.class, ClasspathStaticFileAccessFactory.class).labelText("staticFileAccess").nullable();
-    public final ObjectValueAttribute<FactoryTreeBuilderBasedAttributeSetup<R,S>> factoryTreeBuilderBasedAttributeSetup = new ObjectValueAttribute<>();
-    public final ObjectValueAttribute<Function<R, List<GuiNavbarItem>>> guiNavbarItemCreator = new ObjectValueAttribute<>(ObjectValueAttribute::nullable);
+    public final FactoryPolymorphicAttribute<R, Function<R, List<GuiNavbarItem>>> guiNavbarItemCreator = new FactoryPolymorphicAttribute<>(FactoryPolymorphicAttribute::nullable);
     public final StringAttribute projectName = new StringAttribute().nullable();
 
 
@@ -60,7 +61,7 @@ public class MicroserviceDomResourceFactory<R extends FactoryBase<?,R>,S> extend
                 staticFileAccessInstance=new ClasspathStaticFileAccess();
             }
 
-            Function<R,List<GuiNavbarItem>> guiNavbarItemCreatorParam=guiNavbarItemCreator.get();
+            Function<R,List<GuiNavbarItem>> guiNavbarItemCreatorParam=guiNavbarItemCreator.instance();
             if (guiNavbarItemCreatorParam==null){
                 guiNavbarItemCreatorParam=(root)->{
                     ArrayList<GuiNavbarItem> result = new ArrayList<>();
@@ -78,8 +79,10 @@ public class MicroserviceDomResourceFactory<R extends FactoryBase<?,R>,S> extend
                     return result;
                 };
             }
-            return new MicroserviceDomResource<>(microservice, userManagementInstance, staticFileAccessInstance, factoryTreeBuilderBasedAttributeSetup.get(), guiNavbarItemCreatorParam,projectName.getNullable().orElse("Factoryfx"));
+            return new MicroserviceDomResource<>(microservice, userManagementInstance, staticFileAccessInstance, new FactoryTreeBuilderBasedAttributeSetup<>((FactoryTreeBuilder<?,R,S>)utility().getFactoryTreeBuilder()), guiNavbarItemCreatorParam,projectName.getNullable().orElse("Factoryfx"));
         });
+
+
 
         config().setDisplayTextProvider(()->"Microservice DOM Resource");
     }

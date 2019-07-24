@@ -37,12 +37,14 @@ public class MicroserviceBuilder<L,R extends FactoryBase<L,R>,S> {
     private FactoryExceptionHandler factoryExceptionHandler;
     private MigrationManager<R,S> migrationManager;
     private final SimpleObjectMapper objectMapper;
+    private final FactoryTreeBuilder<L,R,S> factoryTreeBuilder;
 
     public MicroserviceBuilder(Class<R> rootClass, R initialFactory, FactoryTreeBuilder<L,R,S> factoryTreeBuilder, SimpleObjectMapper objectMapper) {
         this.rootClass = rootClass;
         this.initialFactory = initialFactory;
         migrationManager = new MigrationManager<>(rootClass, objectMapper, new FactoryTreeBuilderAttributeFiller<>(factoryTreeBuilder));
         this.objectMapper = objectMapper;
+        this.factoryTreeBuilder = factoryTreeBuilder;
     }
 
     public Microservice<L,R,S> build(){
@@ -53,7 +55,7 @@ public class MicroserviceBuilder<L,R extends FactoryBase<L,R>,S> {
             factoryExceptionHandler = new RethrowingFactoryExceptionHandler();
         }
 
-        return new Microservice<>(new FactoryManager<>(factoryExceptionHandler), dataStorageCreator.createDataStorage(initialFactory, migrationManager, objectMapper),changeSummaryCreator);
+        return new Microservice<>(new FactoryManager<>(factoryExceptionHandler), dataStorageCreator.createDataStorage(initialFactory, migrationManager, objectMapper),changeSummaryCreator, factoryTreeBuilder);
     }
 
     public MigrationManager<R,S> buildMigrationManager(){

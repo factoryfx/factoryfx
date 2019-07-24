@@ -2,6 +2,7 @@ package io.github.factoryfx.server;
 
 import java.util.Collection;
 
+import io.github.factoryfx.factory.builder.FactoryTreeBuilder;
 import io.github.factoryfx.factory.merge.DataMerger;
 import io.github.factoryfx.factory.merge.MergeDiffInfo;
 import io.github.factoryfx.factory.storage.*;
@@ -20,11 +21,13 @@ public class Microservice<L,R extends FactoryBase<L,R>,S> {
     private final FactoryManager<L,R> factoryManager;
     private final DataStorage<R,S> dataStorage;
     private final ChangeSummaryCreator<R,S> changeSummaryCreator;
+    private final FactoryTreeBuilder<L,R,S> factoryTreeBuilder;
 
-    public Microservice(FactoryManager<L,R> factoryManager, DataStorage<R,S> dataStorage, ChangeSummaryCreator<R,S> changeSummaryCreator) {
+    public Microservice(FactoryManager<L,R> factoryManager, DataStorage<R,S> dataStorage, ChangeSummaryCreator<R,S> changeSummaryCreator, FactoryTreeBuilder<L,R,S> factoryTreeBuilder) {
         this.factoryManager = factoryManager;
         this.dataStorage = dataStorage;
         this.changeSummaryCreator = changeSummaryCreator;
+        this.factoryTreeBuilder = factoryTreeBuilder;
     }
 
     public MergeDiffInfo<R> getDiffToPreviousVersion(StoredDataMetadata<S> storedDataMetadata) {
@@ -111,6 +114,7 @@ public class Microservice<L,R extends FactoryBase<L,R>,S> {
     public L start() {
         final DataAndId<R> currentFactory = dataStorage.getCurrentData();
         currentFactory.root.internal().setMicroservice(this);//also mind ExceptionResponseAction#reset
+        currentFactory.root.internal().setFactoryTreeBuilder(factoryTreeBuilder);
         return factoryManager.start(new RootFactoryWrapper<>(currentFactory.root));
     }
 

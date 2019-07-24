@@ -40,7 +40,6 @@ public class TestServerBuilder {
             FilesystemStaticFileAccessFactory filesystemStaticFileAccessFactory = new FilesystemStaticFileAccessFactory();
             filesystemStaticFileAccessFactory.basePath.set(new File("./src/main/resources/js/").getAbsolutePath()+"/");
             microserviceDomResourceFactory.staticFileAccess.set(filesystemStaticFileAccessFactory);
-            microserviceDomResourceFactory.factoryTreeBuilderBasedAttributeSetup.set(new FactoryTreeBuilderBasedAttributeSetup<>(builder));
             return microserviceDomResourceFactory;
         });
 
