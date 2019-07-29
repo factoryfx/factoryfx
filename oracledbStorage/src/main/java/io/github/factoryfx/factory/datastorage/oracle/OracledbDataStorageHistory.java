@@ -13,12 +13,12 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.function.Supplier;
 
-public class OracledbDataStorageHistory<R extends FactoryBase<?,R>,S> {
+public class OracledbDataStorageHistory<R extends FactoryBase<?,R>> {
 
-    private final MigrationManager<R,S> migrationManager;
+    private final MigrationManager<R> migrationManager;
     private final Supplier<Connection> connectionSupplier;
 
-    public OracledbDataStorageHistory(Supplier<Connection> connectionSupplier, MigrationManager<R,S> migrationManager){
+    public OracledbDataStorageHistory(Supplier<Connection> connectionSupplier, MigrationManager<R> migrationManager){
         this.connectionSupplier = connectionSupplier;
         this.migrationManager = migrationManager;
 
@@ -46,7 +46,7 @@ public class OracledbDataStorageHistory<R extends FactoryBase<?,R>,S> {
              statement.setString(1, id);
              try (ResultSet resultSet =statement.executeQuery()) {
                  if (resultSet.next()) {
-                     StoredDataMetadata<S> metadata = migrationManager.readStoredFactoryMetadata(JdbcUtil.readStringFromBlob(resultSet, "factoryMetadata"));
+                     StoredDataMetadata metadata = migrationManager.readStoredFactoryMetadata(JdbcUtil.readStringFromBlob(resultSet, "factoryMetadata"));
                      return migrationManager.read(JdbcUtil.readStringFromBlob(resultSet, "factory"), metadata.dataStorageMetadataDictionary);
                  }
              }
@@ -58,8 +58,8 @@ public class OracledbDataStorageHistory<R extends FactoryBase<?,R>,S> {
         return null;
     }
 
-    public Collection<StoredDataMetadata<S>> getHistoryFactoryList() {
-        ArrayList<StoredDataMetadata<S>> result = new ArrayList<>();
+    public Collection<StoredDataMetadata> getHistoryFactoryList() {
+        ArrayList<StoredDataMetadata> result = new ArrayList<>();
         try (Connection connection= connectionSupplier.get();
              Statement statement = connection.createStatement();
              ResultSet resultSet =statement.executeQuery("SELECT * FROM FACTORY_HISTORY")) {
@@ -72,7 +72,7 @@ public class OracledbDataStorageHistory<R extends FactoryBase<?,R>,S> {
         return result;
     }
 
-    public void updateHistory(StoredDataMetadata<S> metadata, R factoryRoot) {
+    public void updateHistory(StoredDataMetadata metadata, R factoryRoot) {
         String id=metadata.id;
 
         try (Connection connection= connectionSupplier.get();

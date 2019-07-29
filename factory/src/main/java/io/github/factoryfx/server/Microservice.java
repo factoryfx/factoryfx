@@ -15,29 +15,26 @@ import io.github.factoryfx.factory.log.FactoryUpdateLog;
  * starting point for factoryfx application
  *
  * @param <R> Root
- * @param <S> Summary Data for factory history
  */
-public class Microservice<L,R extends FactoryBase<L,R>,S> {
+public class Microservice<L,R extends FactoryBase<L,R>> {
     private final FactoryManager<L,R> factoryManager;
-    private final DataStorage<R,S> dataStorage;
-    private final ChangeSummaryCreator<R,S> changeSummaryCreator;
-    private final FactoryTreeBuilder<L,R,S> factoryTreeBuilder;
+    private final DataStorage<R> dataStorage;
+    private final FactoryTreeBuilder<L,R> factoryTreeBuilder;
 
-    public Microservice(FactoryManager<L,R> factoryManager, DataStorage<R,S> dataStorage, ChangeSummaryCreator<R,S> changeSummaryCreator, FactoryTreeBuilder<L,R,S> factoryTreeBuilder) {
+    public Microservice(FactoryManager<L,R> factoryManager, DataStorage<R> dataStorage, FactoryTreeBuilder<L,R> factoryTreeBuilder) {
         this.factoryManager = factoryManager;
         this.dataStorage = dataStorage;
-        this.changeSummaryCreator = changeSummaryCreator;
         this.factoryTreeBuilder = factoryTreeBuilder;
     }
 
-    public MergeDiffInfo<R> getDiffToPreviousVersion(StoredDataMetadata<S> storedDataMetadata) {
+    public MergeDiffInfo<R> getDiffToPreviousVersion(StoredDataMetadata storedDataMetadata) {
         R historyCurrent = getHistoryFactory(storedDataMetadata.mergerVersionId);
         R historyCommon = getHistoryFactory(storedDataMetadata.baseVersionId);
         R historyUpdate = getHistoryFactory(storedDataMetadata.id);
         return new DataMerger<>(historyCurrent,historyCommon,historyUpdate).createMergeResult((permission)->true).executeMerge();
     }
 
-    public FactoryUpdateLog<R> revertTo(StoredDataMetadata<S> storedDataMetadata, String user) {
+    public FactoryUpdateLog<R> revertTo(StoredDataMetadata storedDataMetadata, String user) {
         R historyFactory = getHistoryFactory(storedDataMetadata.id);
         DataAndId<R> currentFactory = dataStorage.getCurrentData();
         return updateCurrentFactory(new DataUpdate<>(
@@ -48,14 +45,18 @@ public class Microservice<L,R extends FactoryBase<L,R>,S> {
         );
     }
 
+    private UpdateSummary createUpdateSummary(MergeDiffInfo<R> mergeDiffInfo){
+        return new UpdateSummary(mergeDiffInfo.mergeInfos);
+    }
+
     public FactoryUpdateLog<R> updateCurrentFactory(DataUpdate<R> update) {
         R commonVersion = dataStorage.getHistoryData(update.baseVersionId);
         FactoryUpdateLog<R> factoryLog = factoryManager.update(commonVersion,update.root, update.permissionChecker);
         if (!factoryLog.failedUpdate() && factoryLog.successfullyMerged()){
 
-            S changeSummary=null;
-            if (factoryLog.mergeDiffInfo!=null && changeSummaryCreator!=null){
-                changeSummary=changeSummaryCreator.createChangeSummary(factoryLog.mergeDiffInfo);
+            UpdateSummary changeSummary=null;
+            if (factoryLog.mergeDiffInfo!=null){
+                changeSummary=createUpdateSummary(factoryLog.mergeDiffInfo);
             }
 
             R copy = factoryManager.getCurrentFactory().utility().copy();
@@ -107,7 +108,7 @@ public class Microservice<L,R extends FactoryBase<L,R>,S> {
         return dataStorage.getHistoryData(id);
     }
 
-    public Collection<StoredDataMetadata<S>> getHistoryFactoryList() {
+    public Collection<StoredDataMetadata> getHistoryFactoryList() {
         return dataStorage.getHistoryDataList();
     }
 

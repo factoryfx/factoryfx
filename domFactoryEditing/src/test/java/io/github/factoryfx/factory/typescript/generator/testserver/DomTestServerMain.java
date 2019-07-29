@@ -32,7 +32,7 @@ public class DomTestServerMain {
         root.setLevel(Level.INFO);
 
 
-        Microservice<Server, TestServerFactory,Void> microservice = new TestServerBuilder().create().microservice().build();
+        Microservice<Server, TestServerFactory> microservice = new TestServerBuilder().create().microservice().build();
         microservice.start();
 
 //        HttpClient client = HttpClient.newBuilder().version(HttpClient.Version.HTTP_1_1).build();

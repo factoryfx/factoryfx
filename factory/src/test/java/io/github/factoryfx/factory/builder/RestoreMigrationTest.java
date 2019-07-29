@@ -80,7 +80,7 @@ public class RestoreMigrationTest {
     @Test
     public void test() throws IOException {
         {
-            FactoryTreeBuilder< Void, ServerFactoryOld, Void> builderOld = new FactoryTreeBuilder<>(ServerFactoryOld.class, ctx -> {
+            FactoryTreeBuilder< Void, ServerFactoryOld> builderOld = new FactoryTreeBuilder<>(ServerFactoryOld.class, ctx -> {
                 ServerFactoryOld serverFactoryOld = new ServerFactoryOld();
                 serverFactoryOld.clientSystemFactory1.set(new ClientSystemFactoryOld());
                 serverFactoryOld.clientSystemFactory2.set(new ClientSystemFactoryOld());
@@ -92,7 +92,7 @@ public class RestoreMigrationTest {
                 serverFactoryOld.partnerFactory2.get().url.set("4");
                 return serverFactoryOld;
             });
-            Microservice<Void,ServerFactoryOld,Void> msOld = builderOld.microservice().withFilesystemStorage(folder).build();
+            Microservice<Void,ServerFactoryOld> msOld = builderOld.microservice().withFilesystemStorage(folder).build();
             msOld.start();
             msOld.stop();
         }
@@ -110,9 +110,9 @@ public class RestoreMigrationTest {
         Files.writeString(folder.resolve("currentFactory_metadata.json"),currentFactorymetadata);
 
         {
-            FactoryTreeBuilder< Void, ServerFactory, Void> builder = new FactoryTreeBuilder<>(ServerFactory.class);
+            FactoryTreeBuilder< Void, ServerFactory> builder = new FactoryTreeBuilder<>(ServerFactory.class);
             builder.addFactory(ClientSystemFactory.class, Scope.SINGLETON);
-            Microservice<Void, ServerFactory, Void> msNew = builder.microservice().withFilesystemStorage(folder).
+            Microservice<Void, ServerFactory> msNew = builder.microservice().withFilesystemStorage(folder).
                 withRenameAttributeMigration(ClientSystemFactory.class, "url", (c) -> c.clientUrl).
                 withRestoreAttributeMigration(PathBuilder.value(String.class).pathElement("partnerFactory1").attribute("url"), (r, v) -> r.clientSystemFactory1.get().partnerUrl.set(v)).
                 withRestoreAttributeMigration(PathBuilder.value(String.class).pathElement("partnerFactory2").attribute("url"), (r, v) -> r.clientSystemFactory2.get().partnerUrl.set(v)).

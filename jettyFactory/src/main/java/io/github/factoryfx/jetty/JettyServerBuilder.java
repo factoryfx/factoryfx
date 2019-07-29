@@ -2,13 +2,11 @@ package io.github.factoryfx.jetty;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.factoryfx.factory.FactoryBase;
-import io.github.factoryfx.factory.builder.MicroserviceBuilder;
 import io.github.factoryfx.jetty.ssl.SslContextFactoryFactory;
 
 import javax.servlet.DispatcherType;
 import javax.servlet.Servlet;
 import javax.ws.rs.ext.ExceptionMapper;
-import java.util.ArrayList;
 import java.util.zip.Deflater;
 
 /**
@@ -81,14 +79,6 @@ public class JettyServerBuilder<R extends FactoryBase<?,R>> {
      */
     public JettyServerFactory<R> build(){
         return jettyServerFactory;
-    }
-
-    @SuppressWarnings("unchecked")
-    public R buildAsRoot(R JettyTestServerFactory){
-
-
-
-        return JettyTestServerFactory;
     }
 
     public JettyServerBuilder<R> withPort(int port){
@@ -180,8 +170,8 @@ public class JettyServerBuilder<R extends FactoryBase<?,R>> {
 
     /**
      * shortcut <pre>withExceptionMapper(ParameterlessFactory.create(TestExceptionMapper.class))</pre>
-     * @param exceptionMapper exeptionMapper Factory
-     * @return
+     * @param exceptionMapper exceptionMapper Factory
+     * @return builder
      */
     public JettyServerBuilder<R> withExceptionMapper(FactoryBase<ExceptionMapper<Throwable>,R> exceptionMapper) {
         checkDefaultJerseyServletIsUsed();

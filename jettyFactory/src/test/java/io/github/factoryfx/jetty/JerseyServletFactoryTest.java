@@ -1,6 +1,6 @@
 package io.github.factoryfx.jetty;
 
-import io.github.factoryfx.factory.ParameterlessFactory;
+import io.github.factoryfx.factory.AttributelessFactory;
 import io.github.factoryfx.factory.SimpleFactoryBase;
 import io.github.factoryfx.factory.builder.FactoryTreeBuilder;
 import io.github.factoryfx.factory.builder.Scope;
@@ -50,15 +50,15 @@ public class JerseyServletFactoryTest {
 
     @Test
     public void test_exception_mapper() {
-        FactoryTreeBuilder<Server, JettyTestServerFactory, Void> builder = new FactoryTreeBuilder<>(JettyTestServerFactory.class, ctx->{
+        FactoryTreeBuilder<Server, JettyTestServerFactory> builder = new FactoryTreeBuilder<>(JettyTestServerFactory.class, ctx->{
             return new JettyServerBuilder<JettyTestServerFactory>()
                     .withResource(ctx.get(JerseyServletTestErrorResourceFactory.class))
-                    .withHost("localhost").withPort(8087).withExceptionMapper(ParameterlessFactory.create(TestExceptionMapper.class)).buildTo(new JettyTestServerFactory());
+                    .withHost("localhost").withPort(8087).withExceptionMapper(AttributelessFactory.create(TestExceptionMapper.class)).buildTo(new JettyTestServerFactory());
         });
         builder.addFactory(JerseyServletTestErrorResourceFactory.class, Scope.SINGLETON);
 
 
-        Microservice<Server, JettyTestServerFactory, Void> microservice = builder.microservice().build();
+        Microservice<Server, JettyTestServerFactory> microservice = builder.microservice().build();
         microservice.start();
         try {
             HttpClient client = HttpClient.newBuilder().version(HttpClient.Version.HTTP_1_1).build();

@@ -15,16 +15,16 @@ import io.github.factoryfx.factory.jackson.SimpleObjectMapper;
 import io.github.factoryfx.factory.storage.*;
 import io.github.factoryfx.factory.storage.migration.MigrationManager;
 
-public class FileSystemDataStorage<R extends FactoryBase<?,R>,S> implements DataStorage<R,S> {
-    private final FileSystemFactoryStorageHistory<R,S> fileSystemFactoryStorageHistory;
+public class FileSystemDataStorage<R extends FactoryBase<?,R>> implements DataStorage<R> {
+    private final FileSystemFactoryStorageHistory<R> fileSystemFactoryStorageHistory;
 
     private final R initialData;
     private final Path currentFactoryPath;
     private final Path currentFactoryPathMetadata;
-    private final MigrationManager<R,S> migrationManager;
+    private final MigrationManager<R> migrationManager;
     private final SimpleObjectMapper objectMapper;
 
-    public FileSystemDataStorage(Path basePath, R initialData, MigrationManager<R,S> migrationManager, FileSystemFactoryStorageHistory<R,S> fileSystemFactoryStorageHistory, SimpleObjectMapper objectMapper){
+    public FileSystemDataStorage(Path basePath, R initialData, MigrationManager<R> migrationManager, FileSystemFactoryStorageHistory<R> fileSystemFactoryStorageHistory, SimpleObjectMapper objectMapper){
         this.initialData = initialData;
 
         if (!Files.exists(basePath)){
@@ -38,11 +38,11 @@ public class FileSystemDataStorage<R extends FactoryBase<?,R>,S> implements Data
 
     }
 
-    public FileSystemDataStorage(Path basePath, R initialData, MigrationManager<R,S> migrationManager, SimpleObjectMapper objectMapper){
+    public FileSystemDataStorage(Path basePath, R initialData, MigrationManager<R> migrationManager, SimpleObjectMapper objectMapper){
         this(basePath, initialData, migrationManager,new FileSystemFactoryStorageHistory<>(basePath, migrationManager),objectMapper);
     }
 
-    public FileSystemDataStorage(Path basePath, R initialData, MigrationManager<R,S> migrationManager, SimpleObjectMapper objectMapper, int maxConfigurationHistory){
+    public FileSystemDataStorage(Path basePath, R initialData, MigrationManager<R> migrationManager, SimpleObjectMapper objectMapper, int maxConfigurationHistory){
         this(basePath, initialData, migrationManager,new FileSystemFactoryStorageHistory<>(basePath, migrationManager, maxConfigurationHistory),objectMapper);
     }
 
@@ -55,7 +55,7 @@ public class FileSystemDataStorage<R extends FactoryBase<?,R>,S> implements Data
     }
 
     @Override
-    public Collection<StoredDataMetadata<S>> getHistoryDataList() {
+    public Collection<StoredDataMetadata> getHistoryDataList() {
         return fileSystemFactoryStorageHistory.getHistoryFactoryList();
     }
 
@@ -82,13 +82,13 @@ public class FileSystemDataStorage<R extends FactoryBase<?,R>,S> implements Data
     @Override
     public DataAndId<R> getCurrentData() {
         loadInitialFactory();
-        StoredDataMetadata<S> storedDataMetadata = migrationManager.readStoredFactoryMetadata(readFile(currentFactoryPathMetadata));
+        StoredDataMetadata storedDataMetadata = migrationManager.readStoredFactoryMetadata(readFile(currentFactoryPathMetadata));
         return new DataAndId<>(migrationManager.read(readFile(currentFactoryPath),storedDataMetadata.dataStorageMetadataDictionary), storedDataMetadata.id);
     }
 
     @Override
-    public void updateCurrentData(DataUpdate<R> update, S changeSummary) {
-        StoredDataMetadata<S> metadata = new StoredDataMetadata<>(
+    public void updateCurrentData(DataUpdate<R> update, UpdateSummary changeSummary) {
+        StoredDataMetadata metadata = new StoredDataMetadata(
                 UUID.randomUUID().toString(),
                 update.user,
                 update.comment,
@@ -113,7 +113,7 @@ public class FileSystemDataStorage<R extends FactoryBase<?,R>,S> implements Data
         writeFile(currentFactoryPathMetadata, objectMapper.writeTree(metadata));
     }
 
-    private void update(R update, StoredDataMetadata<S> metadata) {
+    private void update(R update, StoredDataMetadata metadata) {
         writeFile(currentFactoryPath, migrationManager.write(update));
         writeFile(currentFactoryPathMetadata, migrationManager.writeStorageMetadata(metadata));
         fileSystemFactoryStorageHistory.updateHistory(update, metadata);
@@ -121,7 +121,7 @@ public class FileSystemDataStorage<R extends FactoryBase<?,R>,S> implements Data
 
     private void loadInitialFactory() {
         if (!Files.exists(currentFactoryPath)){
-            StoredDataMetadata<S> metadata = new StoredDataMetadata<>(LocalDateTime.now(),
+            StoredDataMetadata metadata = new StoredDataMetadata(LocalDateTime.now(),
                     UUID.randomUUID().toString(),
                     "System",
                     "initial factory",

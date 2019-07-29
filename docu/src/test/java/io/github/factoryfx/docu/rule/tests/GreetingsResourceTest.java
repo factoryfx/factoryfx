@@ -20,7 +20,7 @@ public class GreetingsResourceTest {
 
     @RegisterExtension
     @Order(1)
-    public final FactoryTreeBuilderRule<Server, SimulatorRootFactory, Void> simulatorCtx = new FactoryTreeBuilderRule<>(new SimulatorBuilder().builder(), rule -> {
+    public final FactoryTreeBuilderRule<Server, SimulatorRootFactory> simulatorCtx = new FactoryTreeBuilderRule<>(new SimulatorBuilder().builder(), rule -> {
 
         rule.getFactory(HelloJettyServerFactory.class).connectors.get(0).port.set(0);
 
@@ -29,7 +29,7 @@ public class GreetingsResourceTest {
 
     @RegisterExtension
     @Order(2)
-    public final FactoryTreeBuilderRule<Server, ServerRootFactory, Void> serverCtx = new FactoryTreeBuilderRule<>(new ServerBuilder().builder(), rule -> {
+    public final FactoryTreeBuilderRule<Server, ServerRootFactory> serverCtx = new FactoryTreeBuilderRule<>(new ServerBuilder().builder(), rule -> {
 
         int simPort = ((ServerConnector)(simulator.getConnectors()[0])).getLocalPort();
         rule.getFactory(BackendClientFactory.class).backendPort.set(simPort);

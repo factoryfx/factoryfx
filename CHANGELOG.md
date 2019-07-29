@@ -1,3 +1,28 @@
+# 2.1.0
+
+* **configuration web application:** new configuration via web application
+  [Quickstart](docu/src/main/java/io/github/factoryfx/docu/configurationwebapp)  
+
+
+
+### BREAKING CHANGES
+
+* **removed summary generic parameter:** 
+  This was intended as simple index for the factorystorage but never used.  
+  
+  example:  
+  old 
+  ```java
+  FactoryTreeBuilder<Server, ServerRootFactory,Void> serverBuilder = ...
+  ```
+  new
+  ```java
+  FactoryTreeBuilder<Server, ServerRootFactory> serverBuilder = ...
+  ```
+
+
+### Features
+
 # 2.0.6
 
 ### BREAKING CHANGES

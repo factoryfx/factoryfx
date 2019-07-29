@@ -15,7 +15,7 @@ class AttributeRenameTest {
         exampleDataAPrevious.garbage.set("123");
         exampleDataAPrevious.internal().finalise();
 
-        MigrationManager<ExampleDataA,Void> dataMigrationManager = new MigrationManager<>(ExampleDataA.class, ObjectMapperBuilder.build(),(root, oldDataStorageMetadataDictionary) -> { });
+        MigrationManager<ExampleDataA> dataMigrationManager = new MigrationManager<>(ExampleDataA.class, ObjectMapperBuilder.build(),(root, oldDataStorageMetadataDictionary) -> { });
         dataMigrationManager.renameClass(ExampleDataAPrevious.class.getName(),ExampleDataA.class);
         dataMigrationManager.renameAttribute(ExampleDataA.class, "garbage", exampleDataA -> exampleDataA.stringAttribute);
 
@@ -29,7 +29,7 @@ class AttributeRenameTest {
         exampleDataAPrevious.garbage.set("123");
         exampleDataAPrevious.internal().finalise();
 
-        MigrationManager<ExampleDataA,Void> dataMigrationManager = new MigrationManager<>(ExampleDataA.class, ObjectMapperBuilder.build(),(root, oldDataStorageMetadataDictionary) -> {});
+        MigrationManager<ExampleDataA> dataMigrationManager = new MigrationManager<>(ExampleDataA.class, ObjectMapperBuilder.build(),(root, oldDataStorageMetadataDictionary) -> {});
         dataMigrationManager.renameAttribute(ExampleDataA.class, "garbage", exampleDataA -> exampleDataA.stringAttribute);
         dataMigrationManager.renameClass(ExampleDataAPrevious.class.getName(),ExampleDataA.class);
 

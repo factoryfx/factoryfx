@@ -36,10 +36,10 @@ public class ExampleMain extends Application {
     @Override
     public void start(Stage primaryStage){
 
-        FactoryTreeBuilder<Server, ServerRootFactory, Void> serverBuilder = new ServerBuilder().builder();
-        MicroserviceBuilder<Server, ServerRootFactory, Void> builder = serverBuilder.microservice().
+        FactoryTreeBuilder<Server, ServerRootFactory> serverBuilder = new ServerBuilder().builder();
+        MicroserviceBuilder<Server, ServerRootFactory> builder = serverBuilder.microservice().
                 withExceptionHandler(new LoggingFactoryExceptionHandler<>(new ResettingHandler<Server, ServerRootFactory>()));
-        Microservice<Server, ServerRootFactory, Void> microservice = builder.build();
+        Microservice<Server, ServerRootFactory> microservice = builder.build();
         microservice.start();
 
         RichClientBuilder.createFactoryBuilder(8089,primaryStage, "", "", Locale.ENGLISH,serverBuilder,builder.buildMigrationManager()).

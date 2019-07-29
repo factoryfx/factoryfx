@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonIgnoreType;
 import io.github.factoryfx.factory.attribute.AttributeMatch;
 import io.github.factoryfx.factory.attribute.ImmutableValueAttribute;
 
-import java.util.Objects;
 import java.util.function.Consumer;
 
 /**

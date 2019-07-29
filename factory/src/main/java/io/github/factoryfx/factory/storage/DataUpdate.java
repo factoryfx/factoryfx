@@ -36,8 +36,8 @@ public class DataUpdate<R extends FactoryBase<?,?>> {
         this.baseVersionId = baseVersionId;
     }
 
-    public <S> StoredDataMetadata<S> createUpdateStoredDataMetadata(S changeSummary, String mergerVersionId){
-        return new StoredDataMetadata<>(
+    public StoredDataMetadata createUpdateStoredDataMetadata(UpdateSummary changeSummary, String mergerVersionId){
+        return new StoredDataMetadata(
             LocalDateTime.now(),
             UUID.randomUUID().toString(),
             this.user,

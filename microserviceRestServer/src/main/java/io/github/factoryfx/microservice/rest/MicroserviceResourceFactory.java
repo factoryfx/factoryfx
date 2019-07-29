@@ -25,20 +25,19 @@ import io.github.factoryfx.server.user.persistent.PersistentUserManagementFactor
  * (the messed up generics are caused by java limitations)
  *
  * @param <R> root
- * @param <S> Summary Data form storage history
  */
-public class MicroserviceResourceFactory<R extends FactoryBase<?,R>,S> extends FactoryBase<MicroserviceResource<R,S>,R> {
+public class MicroserviceResourceFactory<R extends FactoryBase<?,R>> extends FactoryBase<MicroserviceResource<R>,R> {
 
     public final FactoryPolymorphicAttribute<R,UserManagement> userManagement = new FactoryPolymorphicAttribute<R,UserManagement>().setupUnsafe(UserManagement.class, NoUserManagementFactory.class, PersistentUserManagementFactory.class).labelText("resource").nullable();
 
-    @SuppressWarnings("unchecked")
+
     public MicroserviceResourceFactory(){
         configLifeCycle().setCreator(() -> {
             UserManagement userManagementInstance = userManagement.instance();
             if (userManagementInstance==null) {
                 userManagementInstance=new NoUserManagement();
             }
-            Microservice<?,R,S> microservice = (Microservice<?,R,S>) utility().getMicroservice();
+            Microservice<?,R> microservice = utility().getMicroservice();
             return new MicroserviceResource<>(microservice, userManagementInstance);
         });
 

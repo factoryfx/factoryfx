@@ -17,8 +17,8 @@ import java.io.File;
 public class TestServerBuilder {
 
     @SuppressWarnings("unchecked")
-    public FactoryTreeBuilder< Server, TestServerFactory,Void> create() {
-        FactoryTreeBuilder< Server, TestServerFactory,Void> builder = new FactoryTreeBuilder<>(TestServerFactory.class,(ctx)->{
+    public FactoryTreeBuilder< Server, TestServerFactory> create() {
+        FactoryTreeBuilder< Server, TestServerFactory> builder = new FactoryTreeBuilder<>(TestServerFactory.class,(ctx)->{
             TestServerFactory testServerFactory = new TestServerFactory();
             testServerFactory.stringAttribute.set("1233");
             testServerFactory.server.set(ctx.get(JettyServerFactory.class));

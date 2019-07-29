@@ -30,14 +30,14 @@ public class InMemoryDataStorageTest {
     @Test
     public void test_init()  {
         Dummy dummy = new Dummy();
-        InMemoryDataStorage<Dummy,Void> fileSystemFactoryStorage = new InMemoryDataStorage<>(dummy);
+        InMemoryDataStorage<Dummy> fileSystemFactoryStorage = new InMemoryDataStorage<>(dummy);
 
         Assertions.assertNotNull(fileSystemFactoryStorage.getCurrentData());
     }
 
     @Test
     public void test_update() {
-        InMemoryDataStorage<ExampleDataA,Void> inMemoryDataStorage = new InMemoryDataStorage<>(new ExampleDataA());
+        InMemoryDataStorage<ExampleDataA> inMemoryDataStorage = new InMemoryDataStorage<>(new ExampleDataA());
 
         inMemoryDataStorage.getCurrentData();
         Assertions.assertEquals(1,inMemoryDataStorage.getHistoryDataList().size());
@@ -52,7 +52,7 @@ public class InMemoryDataStorageTest {
     @Test
     public void test_addFuture()  {
         Dummy dummy = new Dummy();
-        InMemoryDataStorage<Dummy,Void> fileSystemFactoryStorage = new InMemoryDataStorage<>(dummy);
+        InMemoryDataStorage<Dummy> fileSystemFactoryStorage = new InMemoryDataStorage<>(dummy);
 
         Assertions.assertEquals(1,fileSystemFactoryStorage.getHistoryDataList().size());
 

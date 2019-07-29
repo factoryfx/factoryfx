@@ -16,7 +16,7 @@ public class FactoryAndStorageMetadataTest {
 
     @Test
     public void testJsonSerialization() throws IOException {
-        DataAndStoredMetadata<EmptyFactory,Void> d = new DataAndStoredMetadata<>(new EmptyFactory(),new StoredDataMetadata<>("","","","",null,null,null));
+        DataAndStoredMetadata<EmptyFactory> d = new DataAndStoredMetadata<>(new EmptyFactory(),new StoredDataMetadata("","","","",null,null,null));
         ObjectMapper m = ObjectMapperBuilder.buildNewObjectMapper();
         String s = m.writeValueAsString(d);
         m.readValue(s,DataAndStoredMetadata.class);

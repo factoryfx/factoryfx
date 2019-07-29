@@ -2,7 +2,7 @@ package io.github.factoryfx.factory.storage;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
-public class RawFactoryDataAndMetadata<S>{
+public class RawFactoryDataAndMetadata{
     public JsonNode root;
-    public StoredDataMetadata<S> metadata;
+    public StoredDataMetadata metadata;
 }

@@ -64,7 +64,7 @@ public class AttributeToTsMapperManager {
 
             return new AttributeToTsMapperManager(classToInfo,ignoredAttributes);
 
-        };
+        }
     }
 
     private final Map<Class<? extends Attribute>, AttributeToTsMapper> attributeClassToMapper;

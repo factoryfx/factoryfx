@@ -86,7 +86,7 @@ public class AddFactoryViewAttributeMigrationTest {
     @Test
     public void test_no_null_pointer_exception() throws IOException {
         {
-            FactoryTreeBuilder<Void, ServerFactoryOld, Void> builder = new FactoryTreeBuilder<>(ServerFactoryOld.class, ctx -> {
+            FactoryTreeBuilder<Void, ServerFactoryOld> builder = new FactoryTreeBuilder<>(ServerFactoryOld.class, ctx -> {
                 ServerFactoryOld serverFactory = new ServerFactoryOld();
                 serverFactory.nestedFactory.set(ctx.get(NestedFactoryOld.class));
                 serverFactory.view.set(ctx.get(ViewFactoryOld.class));
@@ -101,7 +101,7 @@ public class AddFactoryViewAttributeMigrationTest {
             });
 
 
-            Microservice<Void, ServerFactoryOld, Void> msOld = builder.microservice().withFilesystemStorage(folder).build();
+            Microservice<Void, ServerFactoryOld> msOld = builder.microservice().withFilesystemStorage(folder).build();
             msOld.start();
             msOld.stop();
         }
@@ -122,7 +122,7 @@ public class AddFactoryViewAttributeMigrationTest {
 
 
         {
-            FactoryTreeBuilder<Void, ServerFactory, Void> builder = new FactoryTreeBuilder<>(ServerFactory.class, ctx -> {
+            FactoryTreeBuilder<Void, ServerFactory> builder = new FactoryTreeBuilder<>(ServerFactory.class, ctx -> {
                 ServerFactory serverFactory = new ServerFactory();
                 serverFactory.nestedFactory.set(ctx.get(NestedFactory.class));
                 serverFactory.view.set(ctx.get(ViewFactory.class));
@@ -136,7 +136,7 @@ public class AddFactoryViewAttributeMigrationTest {
                 return viewFactory;
             });
 
-            Microservice<Void, ServerFactory, Void> msNew = builder.microservice().withFilesystemStorage(folder).build();
+            Microservice<Void, ServerFactory> msNew = builder.microservice().withFilesystemStorage(folder).build();
             msNew.start();
 
             DataUpdate<ServerFactory> update = msNew.prepareNewFactory();

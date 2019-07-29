@@ -99,7 +99,7 @@ public class FactoryPolymorphicListAttributeTest {
 
     @Test
     public void test_newValue_noexception(){
-        FactoryTreeBuilder<Object,PolymorphicFactoryExample,Void> builder = new FactoryTreeBuilder<>(PolymorphicFactoryExample.class, ctx -> new PolymorphicFactoryExample());
+        FactoryTreeBuilder<Object,PolymorphicFactoryExample> builder = new FactoryTreeBuilder<>(PolymorphicFactoryExample.class, ctx -> new PolymorphicFactoryExample());
         PolymorphicFactoryExample root = builder.buildTreeUnvalidated();
         root.internal().serFactoryTreeBuilderBasedAttributeSetupForRoot(new FactoryTreeBuilderBasedAttributeSetup<>(builder));
         root.referenceList.internal_createNewPossibleValues();

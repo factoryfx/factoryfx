@@ -9,13 +9,12 @@ import java.util.Collection;
  * storage/load and history for factories
  *
  * @param <R> Root
- * @param <S> Change summary
  */
-public interface DataStorage<R extends FactoryBase<?,?>, S> {
+public interface DataStorage<R extends FactoryBase<?,?>> {
 
     R getHistoryData(String id);
 
-    Collection<StoredDataMetadata<S>> getHistoryDataList();
+    Collection<StoredDataMetadata> getHistoryDataList();
 
     Collection<ScheduledUpdateMetadata> getFutureDataList();
 
@@ -37,9 +36,8 @@ public interface DataStorage<R extends FactoryBase<?,?>, S> {
     /**
      * updateCurrentData and history
      * @param update update
-     * @param changeSummary changeSummary
      */
-    void updateCurrentData(DataUpdate<R> update, S changeSummary);
+    void updateCurrentData(DataUpdate<R> update, UpdateSummary updateSummary);
 
     /**
      * for one-time migration

@@ -12,28 +12,27 @@ import java.util.stream.Stream;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import io.github.factoryfx.factory.FactoryBase;
-import io.github.factoryfx.factory.FactoryManager;
 import io.github.factoryfx.factory.jackson.SimpleObjectMapper;
 import io.github.factoryfx.factory.storage.DataStoragePatcher;
 import io.github.factoryfx.factory.storage.migration.MigrationManager;
 import io.github.factoryfx.factory.storage.StoredDataMetadata;
 import org.slf4j.LoggerFactory;
 
-public class FileSystemFactoryStorageHistory<R extends FactoryBase<?,R>,S> {
+public class FileSystemFactoryStorageHistory<R extends FactoryBase<?,R>> {
 
     private static final org.slf4j.Logger logger = LoggerFactory.getLogger(FileSystemFactoryStorageHistory.class);
 
-    private final Map<String,StoredDataMetadata<S>> cache = new TreeMap<>();
+    private final Map<String,StoredDataMetadata> cache = new TreeMap<>();
     private final Path historyDirectory;
-    private final MigrationManager<R,S> migrationManager;
+    private final MigrationManager<R> migrationManager;
     private final int maxConfigurationHistory;
 
 
-    public FileSystemFactoryStorageHistory(Path basePath, MigrationManager<R, S> migrationManager) {
+    public FileSystemFactoryStorageHistory(Path basePath, MigrationManager<R> migrationManager) {
         this(basePath,migrationManager,Integer.MAX_VALUE);
     }
 
-    public FileSystemFactoryStorageHistory(Path basePath, MigrationManager<R, S> migrationManager, int maxConfigurationHistory){
+    public FileSystemFactoryStorageHistory(Path basePath, MigrationManager<R> migrationManager, int maxConfigurationHistory){
         this.migrationManager = migrationManager;
         historyDirectory= basePath.resolve("history");
         this.maxConfigurationHistory = maxConfigurationHistory;
@@ -47,8 +46,8 @@ public class FileSystemFactoryStorageHistory<R extends FactoryBase<?,R>,S> {
     }
 
     public R getHistoryFactory(String id) {
-        StoredDataMetadata<S> storedDataMetadata=null;
-        for(StoredDataMetadata<S> metaData: getHistoryFactoryList()){
+        StoredDataMetadata storedDataMetadata=null;
+        for(StoredDataMetadata metaData: getHistoryFactoryList()){
             if (metaData.id.equals(id)){
                 storedDataMetadata=metaData;
 
@@ -68,11 +67,11 @@ public class FileSystemFactoryStorageHistory<R extends FactoryBase<?,R>,S> {
         }
     }
 
-    public Collection<StoredDataMetadata<S>> getHistoryFactoryList() {
+    public Collection<StoredDataMetadata> getHistoryFactoryList() {
         if (cache.isEmpty()) {
             visitHistoryFiles(path -> {
                     if (path.toString().endsWith("_metadata.json")){
-                        StoredDataMetadata<S> storedDataMetadata = migrationManager.readStoredFactoryMetadata(readFile(path));
+                        StoredDataMetadata storedDataMetadata = migrationManager.readStoredFactoryMetadata(readFile(path));
                         cache.put(storedDataMetadata.id, storedDataMetadata);
                     }
             });
@@ -80,7 +79,7 @@ public class FileSystemFactoryStorageHistory<R extends FactoryBase<?,R>,S> {
         return cache.values();
     }
 
-    public void updateHistory(R factoryRoot, StoredDataMetadata<S> metadata) {
+    public void updateHistory(R factoryRoot, StoredDataMetadata metadata) {
         String id=metadata.id;
 
         writeFile(Paths.get(historyDirectory.toString()+"/"+id+".json"), migrationManager.write(factoryRoot));
@@ -123,7 +122,7 @@ public class FileSystemFactoryStorageHistory<R extends FactoryBase<?,R>,S> {
     private void houseKeeping() {
         if (maxConfigurationHistory == Integer.MAX_VALUE)
             return;
-        List<StoredDataMetadata<S>> collect = getHistoryFactoryList().stream().collect(Collectors.toList());
+        List<StoredDataMetadata> collect = getHistoryFactoryList().stream().collect(Collectors.toList());
         int numToRemove = collect.size()-maxConfigurationHistory;
         if (numToRemove > 0) {
             collect.stream().sorted(Comparator.comparing(a -> a.creationTime)).limit(numToRemove).forEach(smd -> {

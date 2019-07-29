@@ -18,9 +18,9 @@ import io.github.factoryfx.javafx.widget.factory.diffdialog.DiffDialogBuilderFac
  *
  * @param <RS> server root
  */
-public class FactoryEditViewFactory<RS extends FactoryBase<?,RS>,S> extends WidgetFactory {
+public class FactoryEditViewFactory<RS extends FactoryBase<?,RS>> extends WidgetFactory {
 
-    public final FactoryAttribute<RichClientRoot,FactoryEditManager<RS,S>, FactoryEditManagerFactory<RS,S>> factoryEditManager = new FactoryAttribute<>();
+    public final FactoryAttribute<RichClientRoot,FactoryEditManager<RS>, FactoryEditManagerFactory<RS>> factoryEditManager = new FactoryAttribute<>();
     public final FactoryAttribute<RichClientRoot,LongRunningActionExecutor, LongRunningActionExecutorFactory> longRunningActionExecutor = new FactoryAttribute<>();
     public final FactoryAttribute<RichClientRoot,UniformDesign, UniformDesignFactory> uniformDesign = new FactoryAttribute<>();
     public final FactoryAttribute<RichClientRoot,DataEditor, DataEditorFactory> dataEditorFactory = new FactoryAttribute<>();

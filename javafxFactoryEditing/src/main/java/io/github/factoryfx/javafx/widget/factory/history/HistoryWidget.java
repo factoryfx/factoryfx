@@ -53,12 +53,12 @@ public class HistoryWidget<R extends FactoryBase<?,R>,S> implements Widget {
 
     private final UniformDesign uniformDesign;
     private final LongRunningActionExecutor longRunningActionExecutor;
-    private final MicroserviceRestClient<R,S> restClient;
+    private final MicroserviceRestClient<R> restClient;
     private Consumer<List<StoredDataMetadata>> tableUpdater;
     private final DiffDialogBuilder diffDialogBuilder;
     private BooleanBinding firstVersionSelected;
 
-    public HistoryWidget(UniformDesign uniformDesign, LongRunningActionExecutor longRunningActionExecutor, MicroserviceRestClient<R, S> restClient, DiffDialogBuilder diffDialogBuilder) {
+    public HistoryWidget(UniformDesign uniformDesign, LongRunningActionExecutor longRunningActionExecutor, MicroserviceRestClient<R> restClient, DiffDialogBuilder diffDialogBuilder) {
         this.uniformDesign=uniformDesign;
         this.longRunningActionExecutor = longRunningActionExecutor;
         this.restClient= restClient;
@@ -140,12 +140,11 @@ public class HistoryWidget<R extends FactoryBase<?,R>,S> implements Widget {
 
     private void update() {
         longRunningActionExecutor.execute(() -> {
-            final Collection<StoredDataMetadata<S>> historyFactoryList = restClient.getHistoryFactoryList();
+            final Collection<StoredDataMetadata> historyFactoryList = restClient.getHistoryFactoryList();
             Platform.runLater(() -> tableUpdater.accept(historyFactoryList.stream().sorted((o1, o2) -> o2.creationTime.compareTo(o1.creationTime)).collect(Collectors.toList())));
         });
     }
 
-    @SuppressWarnings("unchecked")
     private void showDiff(TableView<StoredDataMetadata> tableView) {
         if (!isFirstVersion(tableView)){
             final MergeDiffInfo<R> diff = restClient.getDiff(tableView.getSelectionModel().getSelectedItem());
@@ -153,7 +152,6 @@ public class HistoryWidget<R extends FactoryBase<?,R>,S> implements Widget {
         }
     }
 
-    @SuppressWarnings("unchecked")
     private void revert(TableView<StoredDataMetadata> tableView) {
         final FactoryUpdateLog factoryUpdateLog = restClient.revert(tableView.getSelectionModel().getSelectedItem());
         Platform.runLater(() -> diffDialogBuilder.createDiffDialog(factoryUpdateLog,uniformDesign.getText(changesText),tableView.getScene().getWindow()));

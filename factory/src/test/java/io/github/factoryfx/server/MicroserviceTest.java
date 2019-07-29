@@ -31,14 +31,9 @@ public class MicroserviceTest {
 
     @Test
     public void test_summary() throws Exception {
-        FactoryTreeBuilder<ExampleLiveObjectA,ExampleFactoryA,ChangeListingSummary> builder = new FactoryTreeBuilder<>(ExampleFactoryA.class, ctx -> new ExampleFactoryA());
+        FactoryTreeBuilder<ExampleLiveObjectA,ExampleFactoryA> builder = new FactoryTreeBuilder<>(ExampleFactoryA.class, ctx -> new ExampleFactoryA());
 
-        Microservice<ExampleLiveObjectA,ExampleFactoryA,ChangeListingSummary> microservice = builder.microservice().withChangeSummaryCreator(mergeDiffInfo -> {
-            if (mergeDiffInfo==null){
-                return null;
-            }
-            return new ChangeListingSummary(mergeDiffInfo.mergeInfos.stream().map((m)->m.dataId).collect(Collectors.toList()));
-        }).build();
+        Microservice<ExampleLiveObjectA,ExampleFactoryA> microservice = builder.microservice().build();
         microservice.start();
 
         UUID rootId=microservice.prepareNewFactory().root.getId();
@@ -65,18 +60,18 @@ public class MicroserviceTest {
 
 
 
-        final List<StoredDataMetadata<ChangeListingSummary>> historyFactoryList = new ArrayList<>(microservice.getHistoryFactoryList());
+        final List<StoredDataMetadata> historyFactoryList = new ArrayList<>(microservice.getHistoryFactoryList());
         Collections.sort(historyFactoryList, (o1, o2) -> Objects.compare(o1.creationTime, o2.creationTime, Comparator.reverseOrder()));
 
 
 
         Assertions.assertEquals(4,historyFactoryList.size());
-        Assertions.assertEquals(1,historyFactoryList.get(2).changeSummary.changedIds.size());
-        Assertions.assertEquals(rootId,historyFactoryList.get(2).changeSummary.changedIds.get(0));
-        Assertions.assertEquals(1,historyFactoryList.get(1).changeSummary.changedIds.size());
-        Assertions.assertEquals(rootId,historyFactoryList.get(1).changeSummary.changedIds.get(0));
-        Assertions.assertEquals(1,historyFactoryList.get(2).changeSummary.changedIds.size());
-        Assertions.assertEquals(rootId,historyFactoryList.get(0).changeSummary.changedIds.get(0));
+        Assertions.assertEquals(1,historyFactoryList.get(2).changeSummary.changed.size());
+        Assertions.assertEquals(rootId,historyFactoryList.get(2).changeSummary.changed.get(0).dataId);
+        Assertions.assertEquals(1,historyFactoryList.get(1).changeSummary.changed.size());
+        Assertions.assertEquals(rootId,historyFactoryList.get(1).changeSummary.changed.get(0).dataId);
+        Assertions.assertEquals(1,historyFactoryList.get(2).changeSummary.changed.size());
+        Assertions.assertEquals(rootId,historyFactoryList.get(0).changeSummary.changed.get(0).dataId);
     }
 
     @Test
@@ -85,11 +80,11 @@ public class MicroserviceTest {
         root.referenceListAttribute.add(new ExampleFactoryB());
         root =root.internal().finalise();
 
-        FactoryTreeBuilder<ExampleLiveObjectA,ExampleFactoryA,Void> builder = new FactoryTreeBuilder<>(ExampleFactoryA.class, ctx -> {
+        FactoryTreeBuilder<ExampleLiveObjectA,ExampleFactoryA> builder = new FactoryTreeBuilder<>(ExampleFactoryA.class, ctx -> {
             return new ExampleFactoryA();
         });
 
-        Microservice<ExampleLiveObjectA,ExampleFactoryA,Void> microservice = builder.microservice().build();
+        Microservice<ExampleLiveObjectA,ExampleFactoryA> microservice = builder.microservice().build();
 
         microservice.start();
         DataUpdate<ExampleFactoryA> editableFactory = microservice.prepareNewFactory();
@@ -106,8 +101,8 @@ public class MicroserviceTest {
 
     @Test
     public void test_history() throws Exception {
-        FactoryTreeBuilder<ExampleLiveObjectA,ExampleFactoryA,Void> builder = new FactoryTreeBuilder<>(ExampleFactoryA.class, ctx -> new ExampleFactoryA());
-        Microservice<ExampleLiveObjectA,ExampleFactoryA,Void> microservice = builder.microservice().build();
+        FactoryTreeBuilder<ExampleLiveObjectA,ExampleFactoryA> builder = new FactoryTreeBuilder<>(ExampleFactoryA.class, ctx -> new ExampleFactoryA());
+        Microservice<ExampleLiveObjectA,ExampleFactoryA> microservice = builder.microservice().build();
         microservice.start();
 
         Thread.sleep(2);//avoid same timestamp
@@ -132,7 +127,7 @@ public class MicroserviceTest {
 
 
 
-        final List<StoredDataMetadata<Void>> historyFactoryList = new ArrayList<>(microservice.getHistoryFactoryList());
+        final List<StoredDataMetadata> historyFactoryList = new ArrayList<>(microservice.getHistoryFactoryList());
         Collections.sort(historyFactoryList, (o1, o2) -> Objects.compare(o1.creationTime, o2.creationTime, Comparator.reverseOrder()));
 
         Assertions.assertEquals(4,historyFactoryList.size());
@@ -166,8 +161,8 @@ public class MicroserviceTest {
 
     @Test
     public void recreation_bug() {
-        FactoryTreeBuilder<ExampleLiveObjectA,ExampleFactoryARecreation,Void> builder = new FactoryTreeBuilder<>(ExampleFactoryARecreation.class, ctx -> new ExampleFactoryARecreation());
-        Microservice<ExampleLiveObjectA,ExampleFactoryARecreation,Void> microservice = builder.microservice().build();
+        FactoryTreeBuilder<ExampleLiveObjectA,ExampleFactoryARecreation> builder = new FactoryTreeBuilder<>(ExampleFactoryARecreation.class, ctx -> new ExampleFactoryARecreation());
+        Microservice<ExampleLiveObjectA,ExampleFactoryARecreation> microservice = builder.microservice().build();
 
         microservice.start();
 
@@ -192,8 +187,8 @@ public class MicroserviceTest {
     @Test
     public void test_create_with_exception() {
         Assertions.assertThrows(RuntimeException.class, () -> {
-            FactoryTreeBuilder< Void, BrokenFactory, ChangeListingSummary> builder = new FactoryTreeBuilder<>(BrokenFactory.class, ctx -> new BrokenFactory());
-            Microservice<Void, BrokenFactory, ChangeListingSummary> microservice = builder.microservice().build();
+            FactoryTreeBuilder< Void, BrokenFactory> builder = new FactoryTreeBuilder<>(BrokenFactory.class, ctx -> new BrokenFactory());
+            Microservice<Void, BrokenFactory> microservice = builder.microservice().build();
             microservice.start();
         });
     }
@@ -201,8 +196,8 @@ public class MicroserviceTest {
 
     @Test
     public void test_prepareNewFactory_is_copy() {
-        FactoryTreeBuilder<ExampleLiveObjectA,ExampleFactoryA,Void> builder = new FactoryTreeBuilder<>(ExampleFactoryA.class, ctx -> new ExampleFactoryA());
-        Microservice<ExampleLiveObjectA,ExampleFactoryA,Void> microservice = builder.microservice().build();
+        FactoryTreeBuilder<ExampleLiveObjectA,ExampleFactoryA> builder = new FactoryTreeBuilder<>(ExampleFactoryA.class, ctx -> new ExampleFactoryA());
+        Microservice<ExampleLiveObjectA,ExampleFactoryA> microservice = builder.microservice().build();
         microservice.start();
 
         Assertions.assertFalse(microservice.prepareNewFactory().root==microservice.prepareNewFactory().root);
@@ -211,8 +206,8 @@ public class MicroserviceTest {
 
     @Test
     public void test_getDiffToPreviousVersion() {
-        FactoryTreeBuilder<ExampleLiveObjectA,ExampleFactoryA,Void> builder = new FactoryTreeBuilder<>(ExampleFactoryA.class, ctx -> new ExampleFactoryA());
-        Microservice<ExampleLiveObjectA,ExampleFactoryA,Void> microservice = builder.microservice().build();
+        FactoryTreeBuilder<ExampleLiveObjectA,ExampleFactoryA> builder = new FactoryTreeBuilder<>(ExampleFactoryA.class, ctx -> new ExampleFactoryA());
+        Microservice<ExampleLiveObjectA,ExampleFactoryA> microservice = builder.microservice().build();
 
         microservice.start();
         Assertions.assertEquals(0,microservice.prepareNewFactory().root.referenceListAttribute.size());
@@ -227,7 +222,7 @@ public class MicroserviceTest {
 //        Assertions.assertEquals(1,microservice.prepareNewFactory().root.referenceListAttribute.size());
 
         Assertions.assertEquals(2,microservice.getHistoryFactoryList().size());
-        List<StoredDataMetadata<Void>> historyFactoryList = new ArrayList<>(microservice.getHistoryFactoryList());
+        List<StoredDataMetadata> historyFactoryList = new ArrayList<>(microservice.getHistoryFactoryList());
         historyFactoryList.sort(Comparator.comparing(o -> o.comment));
         Collections.reverse(historyFactoryList);
 

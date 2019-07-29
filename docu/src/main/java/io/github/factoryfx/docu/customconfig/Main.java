@@ -22,14 +22,14 @@ public class Main {
         ch.qos.logback.classic.Logger root = (ch.qos.logback.classic.Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
         root.setLevel(Level.ERROR);
 
-        FactoryTreeBuilder< Server, ServerFactory,Void> builder = new FactoryTreeBuilder<>(ServerFactory.class);
+        FactoryTreeBuilder< Server, ServerFactory> builder = new FactoryTreeBuilder<>(ServerFactory.class);
         builder.addFactory(JettyServerFactory.class, Scope.SINGLETON, ctx-> new JettyServerBuilder<ServerFactory>()
                 .withHost("localhost").withPort(8005)
                 .withResource(ctx.get(CustomConfigurationResourceFactory.class)).build());
         builder.addFactory(CustomConfigurationResourceFactory.class, Scope.SINGLETON);
 
 
-        Microservice<Server, ServerFactory,Void> microservice = builder.microservice().build();
+        Microservice<Server, ServerFactory> microservice = builder.microservice().build();
         microservice.start();
 
         ping(8005);

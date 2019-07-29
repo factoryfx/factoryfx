@@ -91,7 +91,7 @@ public class DeleteAttributeDanglingIdMigration2Test {
     @Test
     public void test_moreNested() throws IOException {
         {
-            FactoryTreeBuilder<Void, ServerFactoryOld, Void> builder = new FactoryTreeBuilder<>(ServerFactoryOld.class, ctx -> {
+            FactoryTreeBuilder<Void, ServerFactoryOld> builder = new FactoryTreeBuilder<>(ServerFactoryOld.class, ctx -> {
                 ServerFactoryOld serverFactoryOld = new ServerFactoryOld();
                 serverFactoryOld.serverFactoryNested.set(ctx.get(ServerFactoryNestedOld.class));
                 serverFactoryOld.serverFactoryQQQ.set(ctx.get(ServerFactoryQQQOld.class));
@@ -107,7 +107,7 @@ public class DeleteAttributeDanglingIdMigration2Test {
                 serverFactoryNested.serverFactoryQQQ.set(ctx.get(ServerFactoryQQQOld.class));
                 return serverFactoryNested;
             });
-            Microservice<Void, ServerFactoryOld, Void> msOld = builder.microservice().withFilesystemStorage(folder).build();
+            Microservice<Void, ServerFactoryOld> msOld = builder.microservice().withFilesystemStorage(folder).build();
             msOld.start();
             msOld.stop();
         }
@@ -124,7 +124,7 @@ public class DeleteAttributeDanglingIdMigration2Test {
         Files.writeString(folder.resolve("currentFactory_metadata.json"),currentFactorymetadata);
 
         {
-            FactoryTreeBuilder<Void, ServerFactory, Void> builder = new FactoryTreeBuilder<>(ServerFactory.class, ctx -> {
+            FactoryTreeBuilder<Void, ServerFactory> builder = new FactoryTreeBuilder<>(ServerFactory.class, ctx -> {
                 ServerFactory serverFactory = new ServerFactory();
                 serverFactory.serverFactoryNested.set(ctx.get(ServerFactoryNested.class));
                 return serverFactory;
@@ -139,7 +139,7 @@ public class DeleteAttributeDanglingIdMigration2Test {
                 serverFactoryQQQ.stringAttribute.set("123");
                 return serverFactoryQQQ;
             });
-            Microservice<Void, ServerFactory, Void> msNew = builder.microservice().withFilesystemStorage(folder).build();
+            Microservice<Void, ServerFactory> msNew = builder.microservice().withFilesystemStorage(folder).build();
             msNew.start();
 
             ServerFactory serverFactory = msNew.prepareNewFactory().root;

@@ -9,10 +9,10 @@ public class Main {
     public static void main(String[] args) {
         RootFactory rootFactory = new RootFactory();
         rootFactory.storageFactory.set(new SubscriptionStorageFactory());
-        FactoryTreeBuilder<Root,RootFactory,Void> builder =  new FactoryTreeBuilder<>(RootFactory.class);
+        FactoryTreeBuilder<Root,RootFactory> builder =  new FactoryTreeBuilder<>(RootFactory.class);
         builder.addFactory(SubscriptionStorageFactory.class, Scope.SINGLETON);
 
-        Microservice<Root,RootFactory,Void> microService = builder.microservice().build();
+        Microservice<Root,RootFactory> microService = builder.microservice().build();
         microService.start();
     }
 

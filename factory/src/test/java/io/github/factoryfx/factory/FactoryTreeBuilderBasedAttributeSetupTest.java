@@ -16,7 +16,7 @@ public class FactoryTreeBuilderBasedAttributeSetupTest {
     @Test
     public void test_happycase_ref() {
 
-        FactoryTreeBuilder<ExampleLiveObjectA, ExampleFactoryA,Void> builder = new FactoryTreeBuilder<>(ExampleFactoryA.class, context -> {
+        FactoryTreeBuilder<ExampleLiveObjectA, ExampleFactoryA> builder = new FactoryTreeBuilder<>(ExampleFactoryA.class, context -> {
             ExampleFactoryA factoryBases = new ExampleFactoryA();
             factoryBases.referenceAttribute.set(context.get(ExampleFactoryB.class));
             return factoryBases;
@@ -36,7 +36,7 @@ public class FactoryTreeBuilderBasedAttributeSetupTest {
 
         ExampleFactoryA root = builder.buildTreeUnvalidated();
 
-        FactoryTreeBuilderBasedAttributeSetup<ExampleFactoryA,Void> factoryTreeBuilderBasedAttributeSetup = new FactoryTreeBuilderBasedAttributeSetup<>(builder);
+        FactoryTreeBuilderBasedAttributeSetup<ExampleFactoryA> factoryTreeBuilderBasedAttributeSetup = new FactoryTreeBuilderBasedAttributeSetup<>(builder);
         factoryTreeBuilderBasedAttributeSetup.applyToRootFactoryDeep(root);
 
         Assertions.assertTrue(root.referenceAttribute.internal_isUserSelectable());
@@ -53,7 +53,7 @@ public class FactoryTreeBuilderBasedAttributeSetupTest {
     @Test
     public void test_happycase_list() {
 
-        FactoryTreeBuilder<ExampleLiveObjectA,ExampleFactoryA,Void> builder = new FactoryTreeBuilder<>(ExampleFactoryA.class, context -> {
+        FactoryTreeBuilder<ExampleLiveObjectA,ExampleFactoryA> builder = new FactoryTreeBuilder<>(ExampleFactoryA.class, context -> {
             ExampleFactoryA factoryBases = new ExampleFactoryA();
             factoryBases.referenceListAttribute.add(context.get(ExampleFactoryB.class,"1"));
             factoryBases.referenceListAttribute.add(context.get(ExampleFactoryB.class,"2"));
@@ -72,7 +72,7 @@ public class FactoryTreeBuilderBasedAttributeSetupTest {
 
         ExampleFactoryA root = builder.buildTreeUnvalidated();
 
-        FactoryTreeBuilderBasedAttributeSetup<ExampleFactoryA,Void> factoryTreeBuilderBasedAttributeSetup = new FactoryTreeBuilderBasedAttributeSetup<>(builder);
+        FactoryTreeBuilderBasedAttributeSetup<ExampleFactoryA> factoryTreeBuilderBasedAttributeSetup = new FactoryTreeBuilderBasedAttributeSetup<>(builder);
         factoryTreeBuilderBasedAttributeSetup.applyToRootFactoryDeep(root);
 
 //        Assertions.assertFalse(root.referenceListAttribute.internal_isUserSelectable());
@@ -89,7 +89,7 @@ public class FactoryTreeBuilderBasedAttributeSetupTest {
     @Test
     public void test_singleton() {
 
-        FactoryTreeBuilder<ExampleLiveObjectA,ExampleFactoryA,Void> builder = new FactoryTreeBuilder<>(ExampleFactoryA.class, context -> {
+        FactoryTreeBuilder<ExampleLiveObjectA,ExampleFactoryA> builder = new FactoryTreeBuilder<>(ExampleFactoryA.class, context -> {
             ExampleFactoryA factoryBases = new ExampleFactoryA();
             factoryBases.referenceAttribute.set(context.get(ExampleFactoryB.class));
             return factoryBases;
@@ -102,7 +102,7 @@ public class FactoryTreeBuilderBasedAttributeSetupTest {
 
         ExampleFactoryA root = builder.buildTreeUnvalidated();
 
-        FactoryTreeBuilderBasedAttributeSetup<ExampleFactoryA,Void> factoryTreeBuilderBasedAttributeSetup = new FactoryTreeBuilderBasedAttributeSetup<>(builder);
+        FactoryTreeBuilderBasedAttributeSetup<ExampleFactoryA> factoryTreeBuilderBasedAttributeSetup = new FactoryTreeBuilderBasedAttributeSetup<>(builder);
         factoryTreeBuilderBasedAttributeSetup.applyToRootFactoryDeep(root);
 
         List<ExampleFactoryB> possibleValues1 = root.referenceAttribute.internal_createNewPossibleValues();
@@ -113,7 +113,7 @@ public class FactoryTreeBuilderBasedAttributeSetupTest {
     @Test
     public void test_prototype() {
 
-        FactoryTreeBuilder<ExampleLiveObjectA,ExampleFactoryA,Void> builder = new FactoryTreeBuilder<>(ExampleFactoryA.class, context -> {
+        FactoryTreeBuilder<ExampleLiveObjectA,ExampleFactoryA> builder = new FactoryTreeBuilder<>(ExampleFactoryA.class, context -> {
             ExampleFactoryA factoryBases = new ExampleFactoryA();
             factoryBases.referenceAttribute.set(context.get(ExampleFactoryB.class));
             return factoryBases;
@@ -126,7 +126,7 @@ public class FactoryTreeBuilderBasedAttributeSetupTest {
 
         ExampleFactoryA root = builder.buildTreeUnvalidated();
 
-        FactoryTreeBuilderBasedAttributeSetup<ExampleFactoryA,Void> factoryTreeBuilderBasedAttributeSetup = new FactoryTreeBuilderBasedAttributeSetup<>(builder);
+        FactoryTreeBuilderBasedAttributeSetup<ExampleFactoryA> factoryTreeBuilderBasedAttributeSetup = new FactoryTreeBuilderBasedAttributeSetup<>(builder);
         factoryTreeBuilderBasedAttributeSetup.applyToRootFactoryDeep(root);
 
         List<ExampleFactoryB> possibleValues1 = root.referenceAttribute.internal_createNewPossibleValues();
@@ -135,8 +135,8 @@ public class FactoryTreeBuilderBasedAttributeSetupTest {
     }
 
 
-    private FactoryTreeBuilder<ExampleLiveObjectA,ExampleFactoryA,Void> createBuilder() {
-        FactoryTreeBuilder<ExampleLiveObjectA,ExampleFactoryA,Void> builder = new FactoryTreeBuilder<>(ExampleFactoryA.class, context -> {
+    private FactoryTreeBuilder<ExampleLiveObjectA,ExampleFactoryA> createBuilder() {
+        FactoryTreeBuilder<ExampleLiveObjectA,ExampleFactoryA> builder = new FactoryTreeBuilder<>(ExampleFactoryA.class, context -> {
             ExampleFactoryA factoryBases = new ExampleFactoryA();
             factoryBases.referenceAttribute.set(context.get(ExampleFactoryB.class));
             return factoryBases;
@@ -151,14 +151,14 @@ public class FactoryTreeBuilderBasedAttributeSetupTest {
 
     @Test
     public void test_singleton_after_serialisation() {
-        FactoryTreeBuilder<ExampleLiveObjectA,ExampleFactoryA,Void> builder = createBuilder();
+        FactoryTreeBuilder<ExampleLiveObjectA,ExampleFactoryA> builder = createBuilder();
         ExampleFactoryA root = builder.buildTreeUnvalidated();
 
 
         ExampleFactoryA jsonCopy = ObjectMapperBuilder.build().copy(root);
-        FactoryTreeBuilder<ExampleLiveObjectA,ExampleFactoryA,Void> clientBuilder = createBuilder();//empty FactoryTreeBuilder missing the state
+        FactoryTreeBuilder<ExampleLiveObjectA,ExampleFactoryA> clientBuilder = createBuilder();//empty FactoryTreeBuilder missing the state
 
-        FactoryTreeBuilderBasedAttributeSetup<ExampleFactoryA,Void> factoryTreeBuilderBasedAttributeSetup = new FactoryTreeBuilderBasedAttributeSetup<>(clientBuilder);
+        FactoryTreeBuilderBasedAttributeSetup<ExampleFactoryA> factoryTreeBuilderBasedAttributeSetup = new FactoryTreeBuilderBasedAttributeSetup<>(clientBuilder);
         factoryTreeBuilderBasedAttributeSetup.applyToRootFactoryDeep(jsonCopy);
 
         List<ExampleFactoryB> possibleValues = jsonCopy.referenceAttribute.internal_createNewPossibleValues();
@@ -169,7 +169,7 @@ public class FactoryTreeBuilderBasedAttributeSetupTest {
     @Test
     public void test_singleton_named() {
 
-        FactoryTreeBuilder<ExampleLiveObjectA,ExampleFactoryA,Void> builder = new FactoryTreeBuilder<>(ExampleFactoryA.class, context -> {
+        FactoryTreeBuilder<ExampleLiveObjectA,ExampleFactoryA> builder = new FactoryTreeBuilder<>(ExampleFactoryA.class, context -> {
             ExampleFactoryA factoryBases = new ExampleFactoryA();
             factoryBases.referenceListAttribute.add(context.get(ExampleFactoryB.class,"111"));
             factoryBases.referenceListAttribute.add(context.get(ExampleFactoryB.class,"222"));
@@ -188,7 +188,7 @@ public class FactoryTreeBuilderBasedAttributeSetupTest {
 
         ExampleFactoryA root = builder.buildTreeUnvalidated();
 
-        FactoryTreeBuilderBasedAttributeSetup<ExampleFactoryA,Void> factoryTreeBuilderBasedAttributeSetup = new FactoryTreeBuilderBasedAttributeSetup<>(builder);
+        FactoryTreeBuilderBasedAttributeSetup<ExampleFactoryA> factoryTreeBuilderBasedAttributeSetup = new FactoryTreeBuilderBasedAttributeSetup<>(builder);
         factoryTreeBuilderBasedAttributeSetup.applyToRootFactoryDeep(root);
 
         List<ExampleFactoryB> possibleValues = root.referenceListAttribute.internal_createNewPossibleValues();
@@ -199,8 +199,8 @@ public class FactoryTreeBuilderBasedAttributeSetupTest {
         Assertions.assertEquals(root.referenceListAttribute.get(1),possibleValues.get(1));
     }
 
-    private FactoryTreeBuilder<ExampleLiveObjectA,ExampleFactoryA,Void> createNamedListBuilder() {
-        FactoryTreeBuilder<ExampleLiveObjectA,ExampleFactoryA,Void> builder = new FactoryTreeBuilder<>(ExampleFactoryA.class, context -> {
+    private FactoryTreeBuilder<ExampleLiveObjectA,ExampleFactoryA> createNamedListBuilder() {
+        FactoryTreeBuilder<ExampleLiveObjectA,ExampleFactoryA> builder = new FactoryTreeBuilder<>(ExampleFactoryA.class, context -> {
             ExampleFactoryA factoryBases = new ExampleFactoryA();
             factoryBases.referenceListAttribute.add(context.get(ExampleFactoryB.class,"111"));
             factoryBases.referenceListAttribute.add(context.get(ExampleFactoryB.class,"222"));
@@ -217,14 +217,14 @@ public class FactoryTreeBuilderBasedAttributeSetupTest {
 
     @Test
     public void test_naed_singelton_after_serialisation() {
-        FactoryTreeBuilder<ExampleLiveObjectA,ExampleFactoryA,Void> builder = createNamedListBuilder();
+        FactoryTreeBuilder<ExampleLiveObjectA,ExampleFactoryA> builder = createNamedListBuilder();
         ExampleFactoryA root = builder.buildTreeUnvalidated();
 
 
         ExampleFactoryA jsonCopy = ObjectMapperBuilder.build().copy(root);
-        FactoryTreeBuilder<ExampleLiveObjectA,ExampleFactoryA,Void> clientBuilder = createNamedListBuilder();//empty FactoryTreeBuilder missing the state
+        FactoryTreeBuilder<ExampleLiveObjectA,ExampleFactoryA> clientBuilder = createNamedListBuilder();//empty FactoryTreeBuilder missing the state
 
-        FactoryTreeBuilderBasedAttributeSetup<ExampleFactoryA,Void> factoryTreeBuilderBasedAttributeSetup = new FactoryTreeBuilderBasedAttributeSetup<>(clientBuilder);
+        FactoryTreeBuilderBasedAttributeSetup<ExampleFactoryA> factoryTreeBuilderBasedAttributeSetup = new FactoryTreeBuilderBasedAttributeSetup<>(clientBuilder);
         factoryTreeBuilderBasedAttributeSetup.applyToRootFactoryDeep(jsonCopy);
 
         List<ExampleFactoryB> possibleValues = jsonCopy.referenceListAttribute.internal_createNewPossibleValues();
@@ -236,7 +236,7 @@ public class FactoryTreeBuilderBasedAttributeSetupTest {
     @Test
     public void test_for_nested_added() {
 
-        FactoryTreeBuilder<ExampleLiveObjectA,ExampleFactoryA,Void> builder = new FactoryTreeBuilder<>(ExampleFactoryA.class, context -> {
+        FactoryTreeBuilder<ExampleLiveObjectA,ExampleFactoryA> builder = new FactoryTreeBuilder<>(ExampleFactoryA.class, context -> {
             ExampleFactoryA factoryBases = new ExampleFactoryA();
             factoryBases.referenceAttribute.set(context.get(ExampleFactoryB.class));
             return factoryBases;
@@ -255,7 +255,7 @@ public class FactoryTreeBuilderBasedAttributeSetupTest {
 
         ExampleFactoryA root = builder.buildTreeUnvalidated();
 
-        FactoryTreeBuilderBasedAttributeSetup<ExampleFactoryA,Void> factoryTreeBuilderBasedAttributeSetup = new FactoryTreeBuilderBasedAttributeSetup<>(builder);
+        FactoryTreeBuilderBasedAttributeSetup<ExampleFactoryA> factoryTreeBuilderBasedAttributeSetup = new FactoryTreeBuilderBasedAttributeSetup<>(builder);
         factoryTreeBuilderBasedAttributeSetup.applyToRootFactoryDeep(root);
 
 
@@ -301,14 +301,14 @@ public class FactoryTreeBuilderBasedAttributeSetupTest {
     @Test
     public void test_view() {
 
-        FactoryTreeBuilder<ExampleLiveObjectB,ExampleFactoryViewRootFactory,Void> builder = new FactoryTreeBuilder<>(ExampleFactoryViewRootFactory.class);
+        FactoryTreeBuilder<ExampleLiveObjectB,ExampleFactoryViewRootFactory> builder = new FactoryTreeBuilder<>(ExampleFactoryViewRootFactory.class);
         builder.addFactory(ExampleViewFactory.class, Scope.PROTOTYPE);
         builder.addFactory(ExamplDummyFactory.class, Scope.PROTOTYPE);
 
         ExampleFactoryViewRootFactory root = builder.buildTreeUnvalidated();
         System.out.println(ObjectMapperBuilder.build().writeValueAsString(root));
 
-        FactoryTreeBuilderBasedAttributeSetup<ExampleFactoryViewRootFactory,Void> factoryTreeBuilderBasedAttributeSetup = new FactoryTreeBuilderBasedAttributeSetup<>(builder);
+        FactoryTreeBuilderBasedAttributeSetup<ExampleFactoryViewRootFactory> factoryTreeBuilderBasedAttributeSetup = new FactoryTreeBuilderBasedAttributeSetup<>(builder);
         factoryTreeBuilderBasedAttributeSetup.applyToRootFactoryDeep(root);
 
         List<ExampleViewFactory> exampleViewFactories = root.referenceAttributeViewFactory.internal_createNewPossibleValues();
@@ -320,7 +320,7 @@ public class FactoryTreeBuilderBasedAttributeSetupTest {
     @Test
     public void test_incomplete_builder() {
 
-        FactoryTreeBuilder<ExampleLiveObjectA,ExampleFactoryA,Void> builder = new FactoryTreeBuilder<>(ExampleFactoryA.class, context -> {
+        FactoryTreeBuilder<ExampleLiveObjectA,ExampleFactoryA> builder = new FactoryTreeBuilder<>(ExampleFactoryA.class, context -> {
             ExampleFactoryA factoryBases = new ExampleFactoryA();
 //            factoryBases.referenceAttribute.set(context.get(ExampleFactoryB.class));
             factoryBases.referenceAttribute.set(null);
@@ -341,7 +341,7 @@ public class FactoryTreeBuilderBasedAttributeSetupTest {
 
 
         ExampleFactoryA root = builder.buildTreeUnvalidated();
-        FactoryTreeBuilderBasedAttributeSetup<ExampleFactoryA,Void> factoryTreeBuilderBasedAttributeSetup = new FactoryTreeBuilderBasedAttributeSetup<>(builder);
+        FactoryTreeBuilderBasedAttributeSetup<ExampleFactoryA> factoryTreeBuilderBasedAttributeSetup = new FactoryTreeBuilderBasedAttributeSetup<>(builder);
         factoryTreeBuilderBasedAttributeSetup.applyToRootFactoryDeep(root);
 
         List<ExampleFactoryB> possibleValues = root.referenceAttribute.internal_createNewPossibleValues();

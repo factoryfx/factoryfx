@@ -34,13 +34,13 @@ public class FileSystemDataStorageTest {
     }
 
 
-    private MigrationManager<ExampleDataA,Void> createDataMigrationManager(){
+    private MigrationManager<ExampleDataA> createDataMigrationManager(){
         return new MigrationManager<>(ExampleDataA.class, ObjectMapperBuilder.build(), (root1, oldDataStorageMetadataDictionary) -> { });
     }
 
     @Test
     public void test_init_no_existing_factory() {
-        FileSystemDataStorage<ExampleDataA,Void> fileSystemFactoryStorage = new FileSystemDataStorage<>(Paths.get(folder.toFile().toURI()), createInitialExampleDataA(), createDataMigrationManager(),ObjectMapperBuilder.build());
+        FileSystemDataStorage<ExampleDataA> fileSystemFactoryStorage = new FileSystemDataStorage<>(Paths.get(folder.toFile().toURI()), createInitialExampleDataA(), createDataMigrationManager(),ObjectMapperBuilder.build());
         fileSystemFactoryStorage.getCurrentData();
 
         Assertions.assertTrue(new File(folder.toFile().getAbsolutePath()+"/currentFactory.json").exists());
@@ -48,17 +48,17 @@ public class FileSystemDataStorageTest {
 
     @Test
     public void test_init_existing_factory() {
-        FileSystemDataStorage<ExampleDataA,Void> fileSystemFactoryStorage = new FileSystemDataStorage<>(Paths.get(folder.toFile().toURI()), createInitialExampleDataA(), createDataMigrationManager(),ObjectMapperBuilder.build());
+        FileSystemDataStorage<ExampleDataA> fileSystemFactoryStorage = new FileSystemDataStorage<>(Paths.get(folder.toFile().toURI()), createInitialExampleDataA(), createDataMigrationManager(),ObjectMapperBuilder.build());
         String id=fileSystemFactoryStorage.getCurrentData().id;
         Assertions.assertTrue(new File(folder.toFile().getAbsolutePath()+"/currentFactory.json").exists());
 
-        FileSystemDataStorage<ExampleDataA,Void> restored = new FileSystemDataStorage<>(Paths.get(folder.toFile().toURI()),null, createDataMigrationManager(),ObjectMapperBuilder.build());
+        FileSystemDataStorage<ExampleDataA> restored = new FileSystemDataStorage<>(Paths.get(folder.toFile().toURI()),null, createDataMigrationManager(),ObjectMapperBuilder.build());
         Assertions.assertEquals(id,restored.getCurrentData().id);
     }
 
     @Test
     public void test_update()  {
-        FileSystemDataStorage<ExampleDataA,Void> fileSystemFactoryStorage = new FileSystemDataStorage<>(Paths.get(folder.toFile().toURI()), createInitialExampleDataA(), createDataMigrationManager(),ObjectMapperBuilder.build());
+        FileSystemDataStorage<ExampleDataA> fileSystemFactoryStorage = new FileSystemDataStorage<>(Paths.get(folder.toFile().toURI()), createInitialExampleDataA(), createDataMigrationManager(),ObjectMapperBuilder.build());
         String id=fileSystemFactoryStorage.getCurrentData().id;
 
 
@@ -80,7 +80,7 @@ public class FileSystemDataStorageTest {
     public void test_patchCurrentData()  {
         ExampleDataA initialExampleDataA = createInitialExampleDataA();
         initialExampleDataA.stringAttribute.set("123");
-        FileSystemDataStorage<ExampleDataA,Void> fileSystemFactoryStorage = new FileSystemDataStorage<>(Paths.get(folder.toFile().toURI()), initialExampleDataA, createDataMigrationManager(),ObjectMapperBuilder.build());
+        FileSystemDataStorage<ExampleDataA> fileSystemFactoryStorage = new FileSystemDataStorage<>(Paths.get(folder.toFile().toURI()), initialExampleDataA, createDataMigrationManager(),ObjectMapperBuilder.build());
         fileSystemFactoryStorage.getCurrentData();//init
         fileSystemFactoryStorage.patchCurrentData((data, metadata) -> {
             ((ObjectNode) data.get("stringAttribute")).put("v", "qqq");
@@ -92,7 +92,7 @@ public class FileSystemDataStorageTest {
     public void test_patchAll()  {
         ExampleDataA initialExampleDataA = createInitialExampleDataA();
         initialExampleDataA.stringAttribute.set("123");
-        FileSystemDataStorage<ExampleDataA,Void> fileSystemFactoryStorage = new FileSystemDataStorage<>(Paths.get(folder.toFile().toURI()), initialExampleDataA, createDataMigrationManager(),ObjectMapperBuilder.build());
+        FileSystemDataStorage<ExampleDataA> fileSystemFactoryStorage = new FileSystemDataStorage<>(Paths.get(folder.toFile().toURI()), initialExampleDataA, createDataMigrationManager(),ObjectMapperBuilder.build());
         String id=fileSystemFactoryStorage.getCurrentData().id;
         fileSystemFactoryStorage.updateCurrentData(createUpdate(),null);
 

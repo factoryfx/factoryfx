@@ -14,10 +14,10 @@ public class MicroserviceAwareFactoryTest {
         final MicroserviceAwareFactoryTestclazz value = new MicroserviceAwareFactoryTestclazz();
         rootTestclazz.ref.set(value);
 
-        FactoryTreeBuilder<String,RootTestClazz,Void> builder = new FactoryTreeBuilder<>(RootTestClazz.class, context -> {
+        FactoryTreeBuilder<String,RootTestClazz> builder = new FactoryTreeBuilder<>(RootTestClazz.class, context -> {
             return rootTestclazz;
         });
-        Microservice<String,RootTestClazz,Void> microservice = builder.microservice().build();
+        Microservice<String,RootTestClazz> microservice = builder.microservice().build();
         microservice.start();
 
         //assert no npe in MicroserviceAwareFactoryTestclazz

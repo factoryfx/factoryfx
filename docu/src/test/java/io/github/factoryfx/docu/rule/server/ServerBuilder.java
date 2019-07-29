@@ -6,8 +6,8 @@ import io.github.factoryfx.jetty.JettyServerBuilder;
 import org.eclipse.jetty.server.Server;
 
 public class ServerBuilder {
-    public FactoryTreeBuilder<Server, ServerRootFactory, Void> builder(){
-        FactoryTreeBuilder<Server, ServerRootFactory, Void> factoryTreeBuilder = new FactoryTreeBuilder<>(ServerRootFactory.class);
+    public FactoryTreeBuilder<Server, ServerRootFactory> builder(){
+        FactoryTreeBuilder<Server, ServerRootFactory> factoryTreeBuilder = new FactoryTreeBuilder<>(ServerRootFactory.class);
 
         factoryTreeBuilder.addFactory(GreetingsJettyServerFactory.class, Scope.SINGLETON, context ->
                 new JettyServerBuilder<ServerRootFactory>()

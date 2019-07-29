@@ -21,9 +21,8 @@ import java.util.function.Function;
 
 /**
  * @param <R> root
- * @param <S> summary
  */
-public class MigrationManager<R extends FactoryBase<?,R>,S> {
+public class MigrationManager<R extends FactoryBase<?,R>> {
     private final Class<R> rootClass;
     private final SimpleObjectMapper objectMapper;
     private final AttributeFiller<R> attributeFiller;
@@ -112,7 +111,7 @@ public class MigrationManager<R extends FactoryBase<?,R>,S> {
         return objectMapper.writeValueAsString(root);
     }
 
-    public String writeStorageMetadata(StoredDataMetadata<S> metadata) {
+    public String writeStorageMetadata(StoredDataMetadata metadata) {
         return objectMapper.writeValueAsString(metadata);
     }
 
@@ -125,8 +124,7 @@ public class MigrationManager<R extends FactoryBase<?,R>,S> {
         return migrate(migratedData,dataStorageMetadataDictionary);
     }
 
-    @SuppressWarnings("unchecked")
-    public StoredDataMetadata<S> readStoredFactoryMetadata(String data) {
+    public StoredDataMetadata readStoredFactoryMetadata(String data) {
         return objectMapper.readValue(data,StoredDataMetadata.class);
     }
 
@@ -138,15 +136,14 @@ public class MigrationManager<R extends FactoryBase<?,R>,S> {
         return  objectMapper.writeValueAsString(metadata);
     }
 
-    public String writeRawFactoryDataAndMetadata(R root, StoredDataMetadata<S> metadata) {
-        RawFactoryDataAndMetadata<S> rawFactoryDataAndMetadata = new RawFactoryDataAndMetadata<>();
+    public String writeRawFactoryDataAndMetadata(R root, StoredDataMetadata metadata) {
+        RawFactoryDataAndMetadata rawFactoryDataAndMetadata = new RawFactoryDataAndMetadata();
         rawFactoryDataAndMetadata.metadata=metadata;
         rawFactoryDataAndMetadata.root=objectMapper.writeValueAsTree(root);
         return objectMapper.writeValueAsString(rawFactoryDataAndMetadata);
     }
 
-    @SuppressWarnings("unchecked")
-    public RawFactoryDataAndMetadata<S> readRawFactoryDataAndMetadata(String data) {
+    public RawFactoryDataAndMetadata readRawFactoryDataAndMetadata(String data) {
         return objectMapper.readValue(data, RawFactoryDataAndMetadata.class);
     }
 

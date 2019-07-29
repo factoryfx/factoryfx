@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test;
 public class DataAndStoredMetadataTest {
     @Test
     public void test_json(){
-        DataAndStoredMetadata<ExampleDataA,Void> test = new DataAndStoredMetadata<>(new ExampleDataA(),new StoredDataMetadata<>("","","","",null,null,null));
+        DataAndStoredMetadata<ExampleDataA> test = new DataAndStoredMetadata<>(new ExampleDataA(),new StoredDataMetadata("","","","",null,null,null));
         ObjectMapperBuilder.build().copy(test);
     }
 }

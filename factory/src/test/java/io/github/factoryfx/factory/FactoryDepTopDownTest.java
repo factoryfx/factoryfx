@@ -59,7 +59,7 @@ public class FactoryDepTopDownTest {
     @Test
     public void topDownTest(){
 
-        FactoryTreeBuilder< String,RootFactory, Void> builder = new FactoryTreeBuilder<>(RootFactory.class, ctx->{
+        FactoryTreeBuilder< String,RootFactory> builder = new FactoryTreeBuilder<>(RootFactory.class, ctx->{
             final RootFactory rootFactory = new RootFactory();
             ObjectFactory first = new ObjectFactory();
             ObjectFactory second = new ObjectFactory();
@@ -69,7 +69,7 @@ public class FactoryDepTopDownTest {
         });
 
 
-        Microservice<String,RootFactory, Void> microService = builder.microservice().build();
+        Microservice<String,RootFactory> microService = builder.microservice().build();
         microService.start();
 
         DataUpdate<RootFactory> current = microService.prepareNewFactory();

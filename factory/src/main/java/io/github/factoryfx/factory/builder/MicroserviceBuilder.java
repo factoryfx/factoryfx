@@ -3,7 +3,6 @@ package io.github.factoryfx.factory.builder;
 
 import io.github.factoryfx.factory.attribute.Attribute;
 import io.github.factoryfx.factory.jackson.SimpleObjectMapper;
-import io.github.factoryfx.factory.storage.ChangeSummaryCreator;
 import io.github.factoryfx.factory.storage.filesystem.FileSystemDataStorage;
 import io.github.factoryfx.factory.storage.inmemory.InMemoryDataStorage;
 import io.github.factoryfx.factory.storage.migration.MigrationManager;
@@ -26,20 +25,18 @@ import java.util.function.Function;
  *
  * @param <L> root liveobject
  * @param <R> Root
- * @param <S> Summary
  */
-public class MicroserviceBuilder<L,R extends FactoryBase<L,R>,S> {
+public class MicroserviceBuilder<L,R extends FactoryBase<L,R>> {
 
     private final Class<R> rootClass;
     private final R initialFactory;
-    private DataStorageCreator<R,S> dataStorageCreator;
-    private ChangeSummaryCreator<R,S> changeSummaryCreator;
+    private DataStorageCreator<R> dataStorageCreator;
     private FactoryExceptionHandler factoryExceptionHandler;
-    private MigrationManager<R,S> migrationManager;
+    private MigrationManager<R> migrationManager;
     private final SimpleObjectMapper objectMapper;
-    private final FactoryTreeBuilder<L,R,S> factoryTreeBuilder;
+    private final FactoryTreeBuilder<L,R> factoryTreeBuilder;
 
-    public MicroserviceBuilder(Class<R> rootClass, R initialFactory, FactoryTreeBuilder<L,R,S> factoryTreeBuilder, SimpleObjectMapper objectMapper) {
+    public MicroserviceBuilder(Class<R> rootClass, R initialFactory, FactoryTreeBuilder<L,R> factoryTreeBuilder, SimpleObjectMapper objectMapper) {
         this.rootClass = rootClass;
         this.initialFactory = initialFactory;
         migrationManager = new MigrationManager<>(rootClass, objectMapper, new FactoryTreeBuilderAttributeFiller<>(factoryTreeBuilder));
@@ -47,7 +44,7 @@ public class MicroserviceBuilder<L,R extends FactoryBase<L,R>,S> {
         this.factoryTreeBuilder = factoryTreeBuilder;
     }
 
-    public Microservice<L,R,S> build(){
+    public Microservice<L,R> build(){
         if (dataStorageCreator ==null) {
             dataStorageCreator =(initialData, migrationManager, objectMapper)->new InMemoryDataStorage<>(initialData);
         }
@@ -55,21 +52,11 @@ public class MicroserviceBuilder<L,R extends FactoryBase<L,R>,S> {
             factoryExceptionHandler = new RethrowingFactoryExceptionHandler();
         }
 
-        return new Microservice<>(new FactoryManager<>(factoryExceptionHandler), dataStorageCreator.createDataStorage(initialFactory, migrationManager, objectMapper),changeSummaryCreator, factoryTreeBuilder);
+        return new Microservice<>(new FactoryManager<>(factoryExceptionHandler), dataStorageCreator.createDataStorage(initialFactory, migrationManager, objectMapper), factoryTreeBuilder);
     }
 
-    public MigrationManager<R,S> buildMigrationManager(){
+    public MigrationManager<R> buildMigrationManager(){
         return migrationManager;
-    }
-
-    /**
-     * changeSummaryCreator for history metadata
-     * @param changeSummaryCreator changeSummaryCreator
-     * @return builder
-     */
-    public MicroserviceBuilder<L,R,S> withChangeSummaryCreator(ChangeSummaryCreator<R,S> changeSummaryCreator){
-        this.changeSummaryCreator=changeSummaryCreator;
-        return this;
     }
 
 
@@ -78,7 +65,7 @@ public class MicroserviceBuilder<L,R extends FactoryBase<L,R>,S> {
      * @param path path
      * @return builder
      */
-    public MicroserviceBuilder<L,R,S> withFilesystemStorage(Path path){
+    public MicroserviceBuilder<L,R> withFilesystemStorage(Path path){
         dataStorageCreator =(initialData, migrationManager, objectMapper)->new FileSystemDataStorage<>(path, initialData, migrationManager, objectMapper);
         return this;
     }
@@ -89,7 +76,7 @@ public class MicroserviceBuilder<L,R extends FactoryBase<L,R>,S> {
      * @param maxConfigurationHistory maximum number of historical configuration to keep
      * @return builder
      */
-    public MicroserviceBuilder<L,R,S> withFilesystemStorage(Path path, int maxConfigurationHistory){
+    public MicroserviceBuilder<L,R> withFilesystemStorage(Path path, int maxConfigurationHistory){
         dataStorageCreator =(initialData, migrationManager, objectMapper)->new FileSystemDataStorage<>(path, initialData, migrationManager, objectMapper, maxConfigurationHistory);
         return this;
     }
@@ -99,22 +86,22 @@ public class MicroserviceBuilder<L,R extends FactoryBase<L,R>,S> {
      * @param dataStorageCreator data storage
      * @return builder
      */
-    public MicroserviceBuilder<L,R,S> withStorage(DataStorageCreator<R,S> dataStorageCreator){
+    public MicroserviceBuilder<L,R> withStorage(DataStorageCreator<R> dataStorageCreator){
         this.dataStorageCreator=dataStorageCreator;
         return this;
     }
 
-    public MicroserviceBuilder<L,R,S> withExceptionHandler(FactoryExceptionHandler factoryExceptionHandler){
+    public MicroserviceBuilder<L,R> withExceptionHandler(FactoryExceptionHandler factoryExceptionHandler){
         this.factoryExceptionHandler = factoryExceptionHandler;
         return this;
     }
 
-    public <LO, F extends FactoryBase<LO,R>> MicroserviceBuilder<L,R,S> withRenameAttributeMigration(Class<F> dataClass, String previousAttributeName, Function<F, Attribute<?,?>> attributeNameProvider){
+    public <LO, F extends FactoryBase<LO,R>> MicroserviceBuilder<L,R> withRenameAttributeMigration(Class<F> dataClass, String previousAttributeName, Function<F, Attribute<?,?>> attributeNameProvider){
         this.migrationManager.renameAttribute(dataClass,previousAttributeName,attributeNameProvider);
         return this;
     }
 
-    public MicroserviceBuilder<L,R,S> withRenameClassMigration(String previousDataClassNameFullQualified, Class<? extends FactoryBase<?,?>> newDataClass){
+    public MicroserviceBuilder<L,R> withRenameClassMigration(String previousDataClassNameFullQualified, Class<? extends FactoryBase<?,?>> newDataClass){
         this.migrationManager.renameClass(previousDataClassNameFullQualified,newDataClass);
         return this;
     }
@@ -129,7 +116,7 @@ public class MicroserviceBuilder<L,R extends FactoryBase<L,R>,S> {
      * @param <AV> attribute value
      * @return builder
      */
-    public <AV> MicroserviceBuilder<L,R,S>  withMigrationRestoreAttributeMigration(String singletonPreviousDataClass, String previousAttributeName, Class<AV> valueClass, BiConsumer<R,AV> setter){
+    public <AV> MicroserviceBuilder<L,R>  withMigrationRestoreAttributeMigration(String singletonPreviousDataClass, String previousAttributeName, Class<AV> valueClass, BiConsumer<R,AV> setter){
         this.migrationManager.restoreAttribute(singletonPreviousDataClass,previousAttributeName,valueClass,setter);
         return this;
     }
@@ -142,7 +129,7 @@ public class MicroserviceBuilder<L,R extends FactoryBase<L,R>,S> {
      * @param <AV> attribute value
      * @return builder
      */
-    public <AV> MicroserviceBuilder<L,R,S>  withRestoreAttributeMigration(AttributePathTarget<AV> path, BiConsumer<R,AV> setter){
+    public <AV> MicroserviceBuilder<L,R>  withRestoreAttributeMigration(AttributePathTarget<AV> path, BiConsumer<R,AV> setter){
         this.migrationManager.restoreAttribute(path,setter);
         return this;
     }

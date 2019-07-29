@@ -12,7 +12,7 @@ public class MicroserviceAndTreeBuilderTest {
     @Test
     public void test_happy_case() {
 
-        FactoryTreeBuilder<ExampleLiveObjectA,ExampleFactoryA,Void> builder = new FactoryTreeBuilder<>(ExampleFactoryA.class, context -> {
+        FactoryTreeBuilder<ExampleLiveObjectA,ExampleFactoryA> builder = new FactoryTreeBuilder<>(ExampleFactoryA.class, context -> {
             ExampleFactoryA factoryBases = new ExampleFactoryA();
             factoryBases.referenceAttribute.set(context.get(ExampleFactoryB.class));
             return factoryBases;
@@ -22,7 +22,7 @@ public class MicroserviceAndTreeBuilderTest {
             return factory;
         });
 
-        Microservice<ExampleLiveObjectA,ExampleFactoryA,Void> microservice = builder.microservice().build();
+        Microservice<ExampleLiveObjectA,ExampleFactoryA> microservice = builder.microservice().build();
         microservice.start();
     }
 

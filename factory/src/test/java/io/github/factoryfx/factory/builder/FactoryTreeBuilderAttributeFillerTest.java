@@ -13,7 +13,7 @@ public class FactoryTreeBuilderAttributeFillerTest {
     @Test
     public void test_add(){
 
-        FactoryTreeBuilder<ExampleLiveObjectA, ExampleFactoryA, Void> builder = new FactoryTreeBuilder<>(ExampleFactoryA.class, ctx -> {
+        FactoryTreeBuilder<ExampleLiveObjectA, ExampleFactoryA> builder = new FactoryTreeBuilder<>(ExampleFactoryA.class, ctx -> {
             ExampleFactoryA exampleFactoryA = new ExampleFactoryA();
             exampleFactoryA.referenceAttribute.set(ctx.get(ExampleFactoryB.class));
             return exampleFactoryA;
@@ -24,7 +24,7 @@ public class FactoryTreeBuilderAttributeFillerTest {
             return exampleFactoryB;
         });
 
-        FactoryTreeBuilderAttributeFiller<ExampleLiveObjectA, ExampleFactoryA, Void> filler = new FactoryTreeBuilderAttributeFiller<>(builder);
+        FactoryTreeBuilderAttributeFiller<ExampleLiveObjectA, ExampleFactoryA> filler = new FactoryTreeBuilderAttributeFiller<>(builder);
 
         ExampleFactoryA exampleFactoryA = new ExampleFactoryA();
         exampleFactoryA.internal().finalise();
@@ -40,7 +40,7 @@ public class FactoryTreeBuilderAttributeFillerTest {
 
     @Test
     public void test_dont_override(){
-        FactoryTreeBuilder<ExampleLiveObjectA, ExampleFactoryA, Void> builder = new FactoryTreeBuilder<>(ExampleFactoryA.class, ctx -> {
+        FactoryTreeBuilder<ExampleLiveObjectA, ExampleFactoryA> builder = new FactoryTreeBuilder<>(ExampleFactoryA.class, ctx -> {
             ExampleFactoryA exampleFactoryA = new ExampleFactoryA();
             exampleFactoryA.referenceAttribute.set(ctx.get(ExampleFactoryB.class));
             return exampleFactoryA;
@@ -51,7 +51,7 @@ public class FactoryTreeBuilderAttributeFillerTest {
             return exampleFactoryB;
         });
 
-        FactoryTreeBuilderAttributeFiller<ExampleLiveObjectA, ExampleFactoryA, Void> filler = new FactoryTreeBuilderAttributeFiller<>(builder);
+        FactoryTreeBuilderAttributeFiller<ExampleLiveObjectA, ExampleFactoryA> filler = new FactoryTreeBuilderAttributeFiller<>(builder);
 
         ExampleFactoryA exampleFactoryA = new ExampleFactoryA();
         exampleFactoryA.internal().finalise();
@@ -68,7 +68,7 @@ public class FactoryTreeBuilderAttributeFillerTest {
     @Test
     public void test_add_singleton(){
 
-        FactoryTreeBuilder< ExampleLiveObjectA, ExampleFactoryA, Void> builder = new FactoryTreeBuilder<>(ExampleFactoryA.class, ctx -> {
+        FactoryTreeBuilder< ExampleLiveObjectA, ExampleFactoryA> builder = new FactoryTreeBuilder<>(ExampleFactoryA.class, ctx -> {
             ExampleFactoryA exampleFactoryA = new ExampleFactoryA();
             exampleFactoryA.referenceAttribute.set(ctx.get(ExampleFactoryB.class));
             exampleFactoryA.referenceListAttribute.add(ctx.get(ExampleFactoryB.class));
@@ -80,7 +80,7 @@ public class FactoryTreeBuilderAttributeFillerTest {
             return exampleFactoryB;
         });
 
-        FactoryTreeBuilderAttributeFiller<ExampleLiveObjectA, ExampleFactoryA, Void> filler = new FactoryTreeBuilderAttributeFiller<>(builder);
+        FactoryTreeBuilderAttributeFiller<ExampleLiveObjectA, ExampleFactoryA> filler = new FactoryTreeBuilderAttributeFiller<>(builder);
 
         ExampleFactoryA exampleFactoryA = new ExampleFactoryA();
         exampleFactoryA.internal().finalise();

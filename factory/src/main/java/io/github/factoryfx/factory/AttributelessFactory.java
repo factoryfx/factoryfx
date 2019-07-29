@@ -6,10 +6,10 @@ import java.lang.reflect.InvocationTargetException;
 
 
 /**
- * Utility factory for a liveobject that has no parameter.
- * e.g. setting a ExceptionMapper class in jersey
+ * Utility factory for a liveobject that has no attributes .
+ * e.g. setting a ExceptionMapper,ObjectMapper class in jersey
  * */
-public class ParameterlessFactory<L,R extends FactoryBase<?,R>> extends SimpleFactoryBase<L,R> {
+public class AttributelessFactory<L,R extends FactoryBase<?,R>> extends SimpleFactoryBase<L,R> {
     @JsonProperty
     public Class<? extends L> clazz;
 
@@ -19,7 +19,7 @@ public class ParameterlessFactory<L,R extends FactoryBase<?,R>> extends SimpleFa
 
     @SuppressWarnings("unchecked")
     private static void setup(){
-        FactoryMetadataManager.getMetadataUnsafe(ParameterlessFactory.class).setNewCopyInstanceSupplier(paramterlessFactory -> ((ParameterlessFactory)paramterlessFactory).copy());
+        FactoryMetadataManager.getMetadataUnsafe(AttributelessFactory.class).setNewCopyInstanceSupplier(paramterlessFactory -> ((AttributelessFactory)paramterlessFactory).copy());
     }
 
     @Override
@@ -31,19 +31,19 @@ public class ParameterlessFactory<L,R extends FactoryBase<?,R>> extends SimpleFa
         }
     }
 
-    private ParameterlessFactory<L,R> copy(){
-        ParameterlessFactory<L, R> copy = new ParameterlessFactory<>();
+    private AttributelessFactory<L,R> copy(){
+        AttributelessFactory<L, R> copy = new AttributelessFactory<>();
         copy.clazz=clazz;
         return copy;
     }
 
-    public ParameterlessFactory<L,R> withLiveClass(Class<? extends L> clazz){
+    public AttributelessFactory<L,R> withLiveClass(Class<? extends L> clazz){
         this.clazz=clazz;
         return this;
     }
 
-    public static <L,R extends FactoryBase<?,R>> ParameterlessFactory<L,R> create(Class<? extends L> clazz){
-        ParameterlessFactory<L, R> result = new ParameterlessFactory<>();
+    public static <L,R extends FactoryBase<?,R>> AttributelessFactory<L,R> create(Class<? extends L> clazz){
+        AttributelessFactory<L, R> result = new AttributelessFactory<>();
         result.withLiveClass(clazz);
         return result;
     }

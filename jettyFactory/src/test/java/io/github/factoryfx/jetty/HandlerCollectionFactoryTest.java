@@ -76,14 +76,14 @@ public class HandlerCollectionFactoryTest {
     @SuppressWarnings("unchecked")
     @Test
     public void test_add_handler_no_exception() {
-        FactoryTreeBuilder<Server, HandlerCollectionRootFactory, Void> builder = new FactoryTreeBuilder<>(HandlerCollectionRootFactory.class);
+        FactoryTreeBuilder<Server, HandlerCollectionRootFactory> builder = new FactoryTreeBuilder<>(HandlerCollectionRootFactory.class);
         builder.addFactory(JettyServerFactory.class, Scope.SINGLETON, ctx->{
             return new JettyServerBuilder<HandlerCollectionRootFactory>()
                     .withHost("localhost").withPort(8087).build();
         });
 
 
-        Microservice<Server, HandlerCollectionRootFactory, Void> microservice = builder.microservice().build();
+        Microservice<Server, HandlerCollectionRootFactory> microservice = builder.microservice().build();
         microservice.start();
         try {
 
@@ -99,7 +99,7 @@ public class HandlerCollectionFactoryTest {
     @SuppressWarnings("unchecked")
     @Test
     public void test_remove_handler() {
-        FactoryTreeBuilder<Server, HandlerCollectionRootFactory, Void> builder = new FactoryTreeBuilder<>(HandlerCollectionRootFactory.class);
+        FactoryTreeBuilder<Server, HandlerCollectionRootFactory> builder = new FactoryTreeBuilder<>(HandlerCollectionRootFactory.class);
         builder.addFactory(JettyServerFactory.class, Scope.SINGLETON, ctx->{
             return new JettyServerBuilder<HandlerCollectionRootFactory>()
                     .withResource(ctx.get(HandlerCollectionResourceFactory.class))
@@ -108,7 +108,7 @@ public class HandlerCollectionFactoryTest {
         builder.addFactory(HandlerCollectionResourceFactory.class, Scope.SINGLETON);
 
 
-        Microservice<Server, HandlerCollectionRootFactory, Void> microservice = builder.microservice().build();
+        Microservice<Server, HandlerCollectionRootFactory> microservice = builder.microservice().build();
         microservice.start();
         try {
             HttpClient client = HttpClient.newBuilder().version(HttpClient.Version.HTTP_1_1).build();

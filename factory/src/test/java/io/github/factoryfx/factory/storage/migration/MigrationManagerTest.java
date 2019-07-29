@@ -10,7 +10,7 @@ public class MigrationManagerTest {
 
     @Test
     public void read_read(){
-        MigrationManager<ExampleDataA,Void> manager =  new MigrationManager<>(ExampleDataA.class, ObjectMapperBuilder.build(), (root1, oldDataStorageMetadataDictionary) -> { });
+        MigrationManager<ExampleDataA> manager =  new MigrationManager<>(ExampleDataA.class, ObjectMapperBuilder.build(), (root1, oldDataStorageMetadataDictionary) -> { });
 
         String data= ObjectMapperBuilder.build().writeValueAsString(new ExampleDataA());
         ExampleDataA result = manager.read(data, createDataStorageMetadataDictionary());
@@ -76,7 +76,7 @@ public class MigrationManagerTest {
                 "}";
 
 
-        MigrationManager<ExampleDataA,Void> manager = new MigrationManager<>(ExampleDataA.class, ObjectMapperBuilder.build(), (root1, oldDataStorageMetadataDictionary) -> { });
+        MigrationManager<ExampleDataA> manager = new MigrationManager<>(ExampleDataA.class, ObjectMapperBuilder.build(), (root1, oldDataStorageMetadataDictionary) -> { });
         manager.renameAttribute(ExampleDataA.class, "wrongName",d->d.stringAttribute);
         ExampleDataA result = manager.read(input,ObjectMapperBuilder.build().readValue(oldDictionary,DataStorageMetadataDictionary.class));
         Assertions.assertEquals("123",result.stringAttribute.get());
@@ -131,7 +131,7 @@ public class MigrationManagerTest {
                 "}";
 
 
-        MigrationManager<ExampleDataA,Void> manager = new MigrationManager<>(ExampleDataA.class, ObjectMapperBuilder.build(), (root1, oldDataStorageMetadataDictionary) -> { });
+        MigrationManager<ExampleDataA> manager = new MigrationManager<>(ExampleDataA.class, ObjectMapperBuilder.build(), (root1, oldDataStorageMetadataDictionary) -> { });
         manager.renameClass("io.github.factoryfx.factory.merge.testdata.WrongNameExampleDataA",ExampleDataA.class);
         ExampleDataA result = manager.read(input,ObjectMapperBuilder.build().readValue(oldDictionary,DataStorageMetadataDictionary.class));
         Assertions.assertEquals("123",result.stringAttribute.get());
@@ -157,7 +157,7 @@ public class MigrationManagerTest {
                         "  \"referenceListAttribute\" : [ ]\n" +
                         "}";
 
-        MigrationManager<ExampleDataA,Void> manager = new MigrationManager<>(ExampleDataA.class, ObjectMapperBuilder.build(), (root1, oldDataStorageMetadataDictionary) -> { });
+        MigrationManager<ExampleDataA> manager = new MigrationManager<>(ExampleDataA.class, ObjectMapperBuilder.build(), (root1, oldDataStorageMetadataDictionary) -> { });
         ExampleDataA result = manager.read(input,dummyDictionaryFromRoot);
         Assertions.assertEquals("123",result.stringAttribute.get());
     }

@@ -39,7 +39,7 @@ public class ServerTest {
     public Server server;
 
     @RegisterExtension
-    public final FactoryTreeBuilderRule<Server, ServerRootFactory, Void> ctx = new FactoryTreeBuilderRule<>(new ServerBuilder().builder(), rule -> {
+    public final FactoryTreeBuilderRule<Server, ServerRootFactory> ctx = new FactoryTreeBuilderRule<>(new ServerBuilder().builder(), rule -> {
 
         rule.getFactory(ServerRootFactory.class).connectors.get(0).port.set(0);
 

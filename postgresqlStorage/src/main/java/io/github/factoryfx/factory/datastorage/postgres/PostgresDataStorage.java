@@ -24,14 +24,14 @@ import io.github.factoryfx.factory.jackson.SimpleObjectMapper;
 import io.github.factoryfx.factory.storage.migration.MigrationManager;
 import io.github.factoryfx.factory.storage.*;
 
-public class PostgresDataStorage<R extends FactoryBase<?,R>, S> implements DataStorage<R, S> {
+public class PostgresDataStorage<R extends FactoryBase<?,R>> implements DataStorage<R> {
 
     private final R initialData;
     private final DataSource dataSource;
-    private final MigrationManager<R,S> migrationManager;
+    private final MigrationManager<R> migrationManager;
     private final SimpleObjectMapper objectMapper;
 
-    public PostgresDataStorage(DataSource dataSource, R initialDataParam, MigrationManager<R,S> migrationManager, SimpleObjectMapper objectMapper){
+    public PostgresDataStorage(DataSource dataSource, R initialDataParam, MigrationManager<R> migrationManager, SimpleObjectMapper objectMapper){
         this.dataSource = dataSource;
         this.initialData = initialDataParam;
         this.migrationManager = migrationManager;
@@ -40,8 +40,8 @@ public class PostgresDataStorage<R extends FactoryBase<?,R>, S> implements DataS
 
     @Override
     public R getHistoryData(String id) {
-        StoredDataMetadata<S> metaData=null;
-        for(StoredDataMetadata<S> historyMetaData: getHistoryDataList()){
+        StoredDataMetadata metaData=null;
+        for(StoredDataMetadata historyMetaData: getHistoryDataList()){
             if (historyMetaData.id.equals(id)){
                 metaData=historyMetaData;
 
@@ -68,11 +68,11 @@ public class PostgresDataStorage<R extends FactoryBase<?,R>, S> implements DataS
     }
 
     @Override
-    public Collection<StoredDataMetadata<S>> getHistoryDataList() {
+    public Collection<StoredDataMetadata> getHistoryDataList() {
         try {
             try (Connection connection = dataSource.getConnection();
                 PreparedStatement pstmt = connection.prepareStatement("select cast (metadata as text) as metadata from configuration")) {
-                ArrayList<StoredDataMetadata<S>> ret = new ArrayList<>();
+                ArrayList<StoredDataMetadata> ret = new ArrayList<>();
                 try (ResultSet rs = pstmt.executeQuery()) {
                     ensureTablesAreAvailable(connection);
                     while (rs.next()) {
@@ -97,7 +97,7 @@ public class PostgresDataStorage<R extends FactoryBase<?,R>, S> implements DataS
                     ResultSet rs = pstmt.executeQuery()) {
 
                     if (!rs.next()) {//"No current factory found
-                        StoredDataMetadata<S> metadata = new StoredDataMetadata<>(LocalDateTime.now(),
+                        StoredDataMetadata metadata = new StoredDataMetadata(LocalDateTime.now(),
                                 UUID.randomUUID().toString(),
                                 "System",
                                 "initial factory",
@@ -110,7 +110,7 @@ public class PostgresDataStorage<R extends FactoryBase<?,R>, S> implements DataS
                         connection.commit();
                         return new DataAndId<>(initialData, metadata.id);
                     } else {
-                        StoredDataMetadata<S> metaData = migrationManager.readStoredFactoryMetadata(rs.getString(2));
+                        StoredDataMetadata metaData = migrationManager.readStoredFactoryMetadata(rs.getString(2));
                         return new DataAndId<>(migrationManager.read(rs.getString(1),metaData.dataStorageMetadataDictionary), metaData.id);
                     }
 
@@ -123,8 +123,8 @@ public class PostgresDataStorage<R extends FactoryBase<?,R>, S> implements DataS
 
 
     @Override
-    public void updateCurrentData(DataUpdate<R> update, S changeSummary) {
-        StoredDataMetadata<S> metadata =update.createUpdateStoredDataMetadata(changeSummary,getCurrentData().id);
+    public void updateCurrentData(DataUpdate<R> update, UpdateSummary changeSummary) {
+        StoredDataMetadata metadata =update.createUpdateStoredDataMetadata(changeSummary,getCurrentData().id);
         update(update.root, metadata);
     }
 
@@ -167,7 +167,7 @@ public class PostgresDataStorage<R extends FactoryBase<?,R>, S> implements DataS
         }
     }
 
-    private void update(R update, StoredDataMetadata<S> metadata) {
+    private void update(R update, StoredDataMetadata metadata) {
         try {
             try (Connection connection = dataSource.getConnection()) {
                 ensureTablesAreAvailable(connection);
@@ -179,7 +179,7 @@ public class PostgresDataStorage<R extends FactoryBase<?,R>, S> implements DataS
         }
     }
 
-    private void updateCurrentFactory(Connection connection, DataAndStoredMetadata<R,S> update) throws SQLException {
+    private void updateCurrentFactory(Connection connection, DataAndStoredMetadata<R> update) throws SQLException {
         try (PreparedStatement pstmtlockConfiguration = connection.prepareStatement("lock table currentconfiguration in exclusive mode")) {
             pstmtlockConfiguration.execute();
         }
@@ -215,7 +215,7 @@ public class PostgresDataStorage<R extends FactoryBase<?,R>, S> implements DataS
         }
     }
 
-    private void setValues(DataAndStoredMetadata<R,S> update, Timestamp createdAtTimestamp, PreparedStatement pstmt) throws SQLException {
+    private void setValues(DataAndStoredMetadata<R> update, Timestamp createdAtTimestamp, PreparedStatement pstmt) throws SQLException {
         pstmt.setString(1, migrationManager.write(update.root));
         pstmt.setString(2, migrationManager.writeStorageMetadata(update.metadata));
         pstmt.setTimestamp(3, createdAtTimestamp);

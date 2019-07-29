@@ -14,9 +14,9 @@ import javax.ws.rs.core.Response;
 @Path("/CustomConfiguration")
 public class CustomConfigurationResource {
 
-    private final Microservice<?, ServerFactory, ?> microservice;
+    private final Microservice<?, ServerFactory> microservice;
 
-    public CustomConfigurationResource(Microservice<?, ServerFactory, ?> microservice) {
+    public CustomConfigurationResource(Microservice<?, ServerFactory> microservice) {
         this.microservice=microservice;
     }
 

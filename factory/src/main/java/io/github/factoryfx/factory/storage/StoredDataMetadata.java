@@ -8,11 +8,10 @@ import io.github.factoryfx.factory.storage.migration.metadata.DataStorageMetadat
 /**
  * metadata for a stored historical factory
  *
- * @param <S> Summary for this change
  */
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 @JsonIgnoreProperties(value = { "dataModelVersion" })
-public class StoredDataMetadata<S> {
+public class StoredDataMetadata {
     public final LocalDateTime creationTime;
     /**id for the complete configuration, NOT any factory id*/
     public final String id;
@@ -20,7 +19,7 @@ public class StoredDataMetadata<S> {
     public final String comment;
 
     @JsonTypeInfo(use=JsonTypeInfo.Id.MINIMAL_CLASS, include=JsonTypeInfo.As.PROPERTY, property="@class")
-    public final S changeSummary;
+    public final UpdateSummary changeSummary;
 
     /**the base version on the server*/
     public final String baseVersionId;
@@ -37,7 +36,7 @@ public class StoredDataMetadata<S> {
             @JsonProperty("user")String user,
             @JsonProperty("comment")String comment,
             @JsonProperty("baseVersionId")String baseVersionId,
-            @JsonProperty("changeSummary")S changeSummary,
+            @JsonProperty("changeSummary")UpdateSummary changeSummary,
             @JsonProperty("dataStorageMetadataDictionary") DataStorageMetadataDictionary dataStorageMetadataDictionary,
             @JsonProperty("mergerVersionId")String mergerVersionId) {
         this.creationTime = creationTime;
@@ -50,7 +49,7 @@ public class StoredDataMetadata<S> {
         this.mergerVersionId = mergerVersionId;
     }
 
-    public StoredDataMetadata(String id, String user, String comment, String baseVersionId, S changeSummary, DataStorageMetadataDictionary dataStorageMetadataDictionary,String mergerVersionId) {
+    public StoredDataMetadata(String id, String user, String comment, String baseVersionId, UpdateSummary changeSummary, DataStorageMetadataDictionary dataStorageMetadataDictionary,String mergerVersionId) {
         this(LocalDateTime.now(),id,user,comment,baseVersionId,changeSummary,dataStorageMetadataDictionary,mergerVersionId);
     }
 }

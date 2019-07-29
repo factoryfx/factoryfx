@@ -3,18 +3,16 @@ package io.github.factoryfx.example.server;
 import io.github.factoryfx.dom.rest.MicroserviceDomResourceFactory;
 import io.github.factoryfx.example.server.shop.*;
 import io.github.factoryfx.example.server.shop.netherlands.NetherlandsCarProductFactory;
-import io.github.factoryfx.factory.FactoryTreeBuilderBasedAttributeSetup;
 import io.github.factoryfx.factory.builder.FactoryTreeBuilder;
 import io.github.factoryfx.factory.builder.Scope;
 import io.github.factoryfx.jetty.JettyServerBuilder;
-import io.github.factoryfx.jetty.JettyServerFactory;
 import org.eclipse.jetty.server.Server;
 
 public class ServerBuilder {
 
     @SuppressWarnings("unchecked")
-    public FactoryTreeBuilder<Server, ServerRootFactory, Void> builder(){
-        FactoryTreeBuilder<Server, ServerRootFactory, Void> factoryTreeBuilder = new FactoryTreeBuilder<>(ServerRootFactory.class,context -> {
+    public FactoryTreeBuilder<Server, ServerRootFactory> builder(){
+        FactoryTreeBuilder<Server, ServerRootFactory> factoryTreeBuilder = new FactoryTreeBuilder<>(ServerRootFactory.class,context -> {
             return new JettyServerBuilder<ServerRootFactory>()
                     .withHost("localhost").withPort(8089)
                     .withResource(context.getUnsafe(MicroserviceDomResourceFactory.class))

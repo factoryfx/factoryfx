@@ -25,16 +25,15 @@ import javax.ws.rs.InternalServerErrorException;
 /**
  *
  * @param <R> Root factory
- * @param <S> History summary
  */
-public class MicroserviceRestClient<R extends FactoryBase<?,R>,S> {
+public class MicroserviceRestClient<R extends FactoryBase<?,R>> {
 
-    private final MicroserviceResourceApi<R,S> microserviceResourceApi;
+    private final MicroserviceResourceApi<R> microserviceResourceApi;
     private final String user;
     private final String passwordHash;
-    private final FactoryTreeBuilderBasedAttributeSetup<R,S> factoryTreeBuilderBasedAttributeSetup;
+    private final FactoryTreeBuilderBasedAttributeSetup<R> factoryTreeBuilderBasedAttributeSetup;
 
-    public MicroserviceRestClient(MicroserviceResourceApi<R,S> microserviceResourceApi, String user, String passwordHash, FactoryTreeBuilderBasedAttributeSetup<R,S> factoryTreeBuilderBasedAttributeSetup) {
+    public MicroserviceRestClient(MicroserviceResourceApi<R> microserviceResourceApi, String user, String passwordHash, FactoryTreeBuilderBasedAttributeSetup<R> factoryTreeBuilderBasedAttributeSetup) {
         this.microserviceResourceApi = microserviceResourceApi;
         this.user=user;
         this.passwordHash=passwordHash;
@@ -75,7 +74,7 @@ public class MicroserviceRestClient<R extends FactoryBase<?,R>,S> {
         return update;
     }
 
-    public MergeDiffInfo<R> getDiff(StoredDataMetadata<S> historyEntry) {
+    public MergeDiffInfo<R> getDiff(StoredDataMetadata historyEntry) {
         return executeWithServerExceptionReporting(()-> microserviceResourceApi.getDiff(new UserAwareRequest<>(user, passwordHash, historyEntry)));
     }
 
@@ -86,7 +85,7 @@ public class MicroserviceRestClient<R extends FactoryBase<?,R>,S> {
         return historyFactory;
     }
 
-    public Collection<StoredDataMetadata<S>> getHistoryFactoryList() {
+    public Collection<StoredDataMetadata> getHistoryFactoryList() {
         return executeWithServerExceptionReporting(()-> microserviceResourceApi.getHistoryFactoryList(new VoidUserAwareRequest(user, passwordHash)));
     }
 
@@ -100,7 +99,7 @@ public class MicroserviceRestClient<R extends FactoryBase<?,R>,S> {
         return response.locale;
     }
 
-    public FactoryUpdateLog revert(StoredDataMetadata<S> historyFactory) {
+    public FactoryUpdateLog revert(StoredDataMetadata historyFactory) {
         return executeWithServerExceptionReporting(()-> microserviceResourceApi.revert(new UserAwareRequest<>(user,passwordHash,historyFactory)));
     }
 

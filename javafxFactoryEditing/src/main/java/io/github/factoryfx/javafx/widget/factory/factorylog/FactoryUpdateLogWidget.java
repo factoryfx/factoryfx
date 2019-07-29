@@ -2,7 +2,6 @@ package io.github.factoryfx.javafx.widget.factory.factorylog;
 
 import java.util.function.Consumer;
 
-import io.github.factoryfx.javafx.util.UniformDesign;
 import io.github.factoryfx.javafx.widget.Widget;
 import io.github.factoryfx.factory.log.*;
 import javafx.geometry.Insets;

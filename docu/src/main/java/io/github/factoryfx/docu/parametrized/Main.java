@@ -6,7 +6,7 @@ import io.github.factoryfx.server.Microservice;
 public class Main {
 
     public static void main(String[] args) {
-        FactoryTreeBuilder<Root,RootFactory,Void> builder = new FactoryTreeBuilder<>(RootFactory.class, ctx->{
+        FactoryTreeBuilder<Root,RootFactory> builder = new FactoryTreeBuilder<>(RootFactory.class, ctx->{
             RootFactory root = new RootFactory();
             //update to print system.out
             PrinterCreatorFactory printerCreatorFactory = new PrinterCreatorFactory();
@@ -15,7 +15,7 @@ public class Main {
             return root;
         });
 
-        Microservice<Root,RootFactory,Void> microservice = builder.microservice().build();
+        Microservice<Root,RootFactory> microservice = builder.microservice().build();
         microservice.start();
 
         //prints: 123::bla

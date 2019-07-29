@@ -10,12 +10,12 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.function.Supplier;
 
-public class OracledbDataStorageFuture<R extends FactoryBase<?,R>,S> {
+public class OracledbDataStorageFuture<R extends FactoryBase<?,R>> {
 
-    private final MigrationManager<R,S> migrationManager;
+    private final MigrationManager<R> migrationManager;
     private final Supplier<Connection> connectionSupplier;
 
-    public OracledbDataStorageFuture(Supplier<Connection> connectionSupplier, MigrationManager<R,S> migrationManager){
+    public OracledbDataStorageFuture(Supplier<Connection> connectionSupplier, MigrationManager<R> migrationManager){
         this.connectionSupplier = connectionSupplier;
         this.migrationManager = migrationManager;
 

@@ -20,7 +20,7 @@ public class DataStorageTest {
         exampleFactoryA.stringAttribute.set("1");
         exampleFactoryA = exampleFactoryA.internal().finalise();
 
-        final InMemoryDataStorage<ExampleDataA,Void> factoryStorage = new InMemoryDataStorage<>(exampleFactoryA);
+        final InMemoryDataStorage<ExampleDataA> factoryStorage = new InMemoryDataStorage<>(exampleFactoryA);
 
         {
             DataAndId<ExampleDataA> currentFactory = factoryStorage.getCurrentData();

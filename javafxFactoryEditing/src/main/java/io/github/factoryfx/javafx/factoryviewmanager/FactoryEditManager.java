@@ -19,14 +19,13 @@ import javafx.application.Platform;
 
 /**
  * @param <R> Root
- * @param <S> Summary Data for factory history
  */
-public class FactoryEditManager<R extends FactoryBase<?,R>,S> {
-    private final MicroserviceRestClient<R,S> client;
+public class FactoryEditManager<R extends FactoryBase<?,R>> {
+    private final MicroserviceRestClient<R> client;
     private final List<FactoryRootChangeListener<R>> listeners= new ArrayList<>();
-    private final MigrationManager<R,S> migrationManager;
+    private final MigrationManager<R> migrationManager;
 
-    public FactoryEditManager(MicroserviceRestClient<R, S> client, MigrationManager<R,S> migrationManager) {
+    public FactoryEditManager(MicroserviceRestClient<R> client, MigrationManager<R> migrationManager) {
         this.client = client;
         this.migrationManager = migrationManager;
     }
@@ -104,7 +103,7 @@ public class FactoryEditManager<R extends FactoryBase<?,R>,S> {
 
     public void loadFromFile(Path from) {
         try {
-            RawFactoryDataAndMetadata<S> wrapper = migrationManager.readRawFactoryDataAndMetadata(Files.readString(from));
+            RawFactoryDataAndMetadata wrapper = migrationManager.readRawFactoryDataAndMetadata(Files.readString(from));
 
             R serverFactory = migrationManager.read(wrapper.root,wrapper.metadata.dataStorageMetadataDictionary);
 

@@ -13,12 +13,12 @@ import io.github.factoryfx.server.user.AuthorizedUser;
 import io.github.factoryfx.server.user.UserManagement;
 import io.github.factoryfx.microservice.common.*;
 
-public class MicroserviceResource<R extends FactoryBase<?,R>,S> implements MicroserviceResourceApi<R,S> {
+public class MicroserviceResource<R extends FactoryBase<?,R>> implements MicroserviceResourceApi<R> {
 
-    protected final Microservice<?,R,S> microservice;
+    protected final Microservice<?,R> microservice;
     private final UserManagement userManagement;
 
-    public MicroserviceResource(Microservice<?,R,S> microservice, UserManagement userManagement) {
+    public MicroserviceResource(Microservice<?,R> microservice, UserManagement userManagement) {
         this.microservice = microservice;
         this.userManagement = userManagement;
     }
@@ -42,7 +42,7 @@ public class MicroserviceResource<R extends FactoryBase<?,R>,S> implements Micro
     }
 
     @Override
-    public FactoryUpdateLog<R> revert(UserAwareRequest<StoredDataMetadata<S>> historyFactory) {
+    public FactoryUpdateLog<R> revert(UserAwareRequest<StoredDataMetadata> historyFactory) {
         authenticate(historyFactory);
         return microservice.revertTo(historyFactory.request,historyFactory.user);
     }
@@ -64,7 +64,7 @@ public class MicroserviceResource<R extends FactoryBase<?,R>,S> implements Micro
     }
 
     @Override
-    public MergeDiffInfo<R> getDiff(UserAwareRequest<StoredDataMetadata<S>> request) {
+    public MergeDiffInfo<R> getDiff(UserAwareRequest<StoredDataMetadata> request) {
         authenticate(request);
         return microservice.getDiffToPreviousVersion(request.request);
     }
@@ -82,7 +82,7 @@ public class MicroserviceResource<R extends FactoryBase<?,R>,S> implements Micro
     }
 
     @Override
-    public Collection<StoredDataMetadata<S>> getHistoryFactoryList(VoidUserAwareRequest request) {
+    public Collection<StoredDataMetadata> getHistoryFactoryList(VoidUserAwareRequest request) {
         authenticate(request);
         return microservice.getHistoryFactoryList();
     }

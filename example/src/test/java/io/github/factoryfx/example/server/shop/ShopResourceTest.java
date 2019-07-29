@@ -16,7 +16,7 @@ public class ShopResourceTest {
     private OrderStorage orderStorage;
 
     @RegisterExtension
-    public final FactoryTreeBuilderRule<Server, ServerRootFactory, Void> ctx = new FactoryTreeBuilderRule<>(new ServerBuilder().builder(), rule -> {
+    public final FactoryTreeBuilderRule<Server, ServerRootFactory> ctx = new FactoryTreeBuilderRule<>(new ServerBuilder().builder(), rule -> {
             shopResource = rule.get(ShopResourceFactory.class);
             orderStorage = rule.get(OrderStorageFactory.class);
     });

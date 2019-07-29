@@ -6,8 +6,8 @@ import io.github.factoryfx.server.Microservice;
 public class Main {
 
     public static void main(String[] args) {
-        FactoryTreeBuilder<Root,RootFactory,Void> builder = new FactoryTreeBuilder<>(RootFactory.class, ctx-> new RootFactory());
-        Microservice<Root,RootFactory,Void> microservice = builder.microservice().build();
+        FactoryTreeBuilder<Root,RootFactory> builder = new FactoryTreeBuilder<>(RootFactory.class, ctx-> new RootFactory());
+        Microservice<Root,RootFactory> microservice = builder.microservice().build();
 
         microservice.start();
         microservice.stop();

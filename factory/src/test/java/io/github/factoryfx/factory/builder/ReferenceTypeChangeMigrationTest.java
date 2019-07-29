@@ -59,12 +59,12 @@ public class ReferenceTypeChangeMigrationTest {
     @Test
     public void test() throws IOException {
         {
-            FactoryTreeBuilder<Void, ServerFactoryOld, Void> builderOld = new FactoryTreeBuilder<>(ServerFactoryOld.class, ctx -> {
+            FactoryTreeBuilder<Void, ServerFactoryOld> builderOld = new FactoryTreeBuilder<>(ServerFactoryOld.class, ctx -> {
                 ServerFactoryOld serverFactoryOld = new ServerFactoryOld();
                 serverFactoryOld.partnerFactory.set(new PartnerFactory());
                 return serverFactoryOld;
             });
-            Microservice<Void, ServerFactoryOld, Void> msOld = builderOld.microservice().withFilesystemStorage(folder).build();
+            Microservice<Void, ServerFactoryOld> msOld = builderOld.microservice().withFilesystemStorage(folder).build();
             msOld.start();
             msOld.stop();
         }
@@ -82,9 +82,9 @@ public class ReferenceTypeChangeMigrationTest {
         Files.writeString(folder.resolve("currentFactory_metadata.json"),currentFactorymetadata);
 
         {
-            FactoryTreeBuilder< Void, ServerFactory, Void> builder = new FactoryTreeBuilder<>(ServerFactory.class);
+            FactoryTreeBuilder< Void, ServerFactory> builder = new FactoryTreeBuilder<>(ServerFactory.class);
             builder.addFactory(ClientSystemFactory.class, Scope.SINGLETON);
-            Microservice<Void, ServerFactory, Void> msNew = builder.microservice().withFilesystemStorage(folder).
+            Microservice<Void, ServerFactory> msNew = builder.microservice().withFilesystemStorage(folder).
                     withRenameClassMigration(PartnerFactory.class.getName(),ClientSystemFactory.class).
                     build();
             msNew.start();

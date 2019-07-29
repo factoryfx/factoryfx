@@ -19,13 +19,13 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-public class MicroserviceDomResource<R extends FactoryBase<?,R>,S> extends MicroserviceResource<R,S> {
+public class MicroserviceDomResource<R extends FactoryBase<?,R>> extends MicroserviceResource<R> {
     private final StaticFileAccess staticFileAccess;
-    private final FactoryTreeBuilderBasedAttributeSetup<R,S> factoryTreeBuilderBasedAttributeSetup;
+    private final FactoryTreeBuilderBasedAttributeSetup<R> factoryTreeBuilderBasedAttributeSetup;
     private final Function<R,List<GuiNavbarItem>> guiNavbarItemCreator;
     private final String projectName;
 
-    public MicroserviceDomResource(Microservice<?, R, S> microservice, UserManagement userManagement, StaticFileAccess staticFileAccess, FactoryTreeBuilderBasedAttributeSetup<R, S> factoryTreeBuilderBasedAttributeSetup, Function<R, List<GuiNavbarItem>> guiNavbarItemCreator, String projectName) {
+    public MicroserviceDomResource(Microservice<?, R> microservice, UserManagement userManagement, StaticFileAccess staticFileAccess, FactoryTreeBuilderBasedAttributeSetup<R> factoryTreeBuilderBasedAttributeSetup, Function<R, List<GuiNavbarItem>> guiNavbarItemCreator, String projectName) {
         super(microservice, userManagement);
         this.staticFileAccess = staticFileAccess;
         this.factoryTreeBuilderBasedAttributeSetup = factoryTreeBuilderBasedAttributeSetup;
@@ -114,7 +114,6 @@ public class MicroserviceDomResource<R extends FactoryBase<?,R>,S> extends Micro
     @Path("/decryptAttribute")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    @SuppressWarnings("unchecked")
     public DecryptAttributeResponse decryptAttribute(DecryptAttributeRequest request) {
         return new DecryptAttributeResponse(((EncryptedStringAttribute)resolveAttribute(request)).get().decrypt(request.key));
     }
@@ -136,7 +135,6 @@ public class MicroserviceDomResource<R extends FactoryBase<?,R>,S> extends Micro
     @Path("/encryptAttribute")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    @SuppressWarnings("unchecked")
     public EncryptAttributeResponse encryptAttribute(EncryptAttributeRequest request) {
         ((EncryptedStringAttribute)resolveAttribute(request)).set(new EncryptedString(request.text,request.key));
         return new EncryptAttributeResponse();

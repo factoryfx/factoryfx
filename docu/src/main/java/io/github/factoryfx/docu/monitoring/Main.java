@@ -21,7 +21,7 @@ public class Main {
         ch.qos.logback.classic.Logger root = (ch.qos.logback.classic.Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
         root.setLevel(Level.INFO);
 
-        FactoryTreeBuilder<Root,RootFactory,Void> builder = new FactoryTreeBuilder<>(RootFactory.class);
+        FactoryTreeBuilder<Root,RootFactory> builder = new FactoryTreeBuilder<>(RootFactory.class);
         builder.addFactory(JettyServerFactory.class, Scope.SINGLETON, ctx-> {
             JettyServerFactory<RootFactory> server = new JettyServerBuilder<RootFactory>().withHost("localhost").withPort(34576).withResource(ctx.get(SimpleResourceFactory.class)).build();
             server.handler.get().handlers.set(0,ctx.get(InstrumentedHandlerFactory.class));
@@ -31,7 +31,7 @@ public class Main {
         builder.addFactory(InstrumentedHandlerFactory.class, Scope.SINGLETON);
         builder.addFactory(MetricRegistryFactory.class, Scope.SINGLETON);
 
-        Microservice<Root,RootFactory,Void> microservice = builder.microservice().build();
+        Microservice<Root,RootFactory> microservice = builder.microservice().build();
         microservice.start();
 
         //execute some random request as example

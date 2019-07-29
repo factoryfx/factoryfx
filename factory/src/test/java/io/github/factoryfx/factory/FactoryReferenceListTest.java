@@ -56,13 +56,13 @@ public class FactoryReferenceListTest {
     public void referenceListTest() {
         ObjectFactory first = new ObjectFactory();
 
-        FactoryTreeBuilder< String,RootFactory, Void> builder = new FactoryTreeBuilder<>(RootFactory.class, ctx->{
+        FactoryTreeBuilder< String,RootFactory> builder = new FactoryTreeBuilder<>(RootFactory.class, ctx->{
             RootFactory rootFactory = new RootFactory();
             rootFactory.objects.add(first);
             return rootFactory;
         });
 
-        Microservice<String,RootFactory, Void> microService = builder.microservice().build();
+        Microservice<String,RootFactory> microService = builder.microservice().build();
         microService.start();
 
         {

@@ -16,9 +16,9 @@ import io.github.factoryfx.server.Microservice;
 public class Main {
 
     public static void main(String[] args) {
-        FactoryTreeBuilder< WorkflowLauncher, CopperRootFactory, Void> builder = buildApplication();
+        FactoryTreeBuilder< WorkflowLauncher, CopperRootFactory> builder = buildApplication();
 
-        Microservice<WorkflowLauncher, CopperRootFactory, Void> microservice = builder.microservice().build();
+        Microservice<WorkflowLauncher, CopperRootFactory> microservice = builder.microservice().build();
         microservice.start();
 
         startWorkflowExecutingThread(microservice);
@@ -48,7 +48,7 @@ public class Main {
         microservice.stop();
     }
 
-    private static void startWorkflowExecutingThread(Microservice<WorkflowLauncher, CopperRootFactory, Void> microservice) {
+    private static void startWorkflowExecutingThread(Microservice<WorkflowLauncher, CopperRootFactory> microservice) {
         new Thread(() -> {
             while (true) {
                 microservice.getRootLiveObject().fire(WorkflowLauncher.EngineType.TRANSIENT, "TestWorkflow", "Hello", 1);
@@ -59,8 +59,8 @@ public class Main {
 
 
     @SuppressWarnings("unchecked")
-    private static FactoryTreeBuilder< WorkflowLauncher, CopperRootFactory, Void> buildApplication() {
-        FactoryTreeBuilder< WorkflowLauncher, CopperRootFactory, Void> builder = new FactoryTreeBuilder<>(CopperRootFactory.class);
+    private static FactoryTreeBuilder< WorkflowLauncher, CopperRootFactory> buildApplication() {
+        FactoryTreeBuilder< WorkflowLauncher, CopperRootFactory> builder = new FactoryTreeBuilder<>(CopperRootFactory.class);
 
         builder.addFactory(TransientScottyEngineFactory.class, Scope.SINGLETON, copperRootFactoryFactoryContext -> {
             TransientScottyEngineFactory<CopperRootFactory> transientScottyEngineFactory = new TransientScottyEngineFactory<>() {

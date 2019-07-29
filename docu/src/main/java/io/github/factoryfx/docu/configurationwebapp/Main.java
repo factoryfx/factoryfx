@@ -21,7 +21,7 @@ public class Main {
         ch.qos.logback.classic.Logger root = (ch.qos.logback.classic.Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
         root.setLevel(Level.INFO);
 
-        FactoryTreeBuilder< Server, SimpleHttpServer,Void> builder = new FactoryTreeBuilder<>(SimpleHttpServer.class);
+        FactoryTreeBuilder< Server, SimpleHttpServer> builder = new FactoryTreeBuilder<>(SimpleHttpServer.class);
         new FactoryTreeBuilder<>(SimpleHttpServer.class).addFactory(JettyServerFactory.class, Scope.SINGLETON, ctx-> new JettyServerBuilder<SimpleHttpServer>()
                 .withHost("localhost").withPort(8005)
                 .withResource(ctx.get(MicroserviceDomResourceFactory.class)).build());

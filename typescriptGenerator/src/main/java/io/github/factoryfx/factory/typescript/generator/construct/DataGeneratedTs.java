@@ -5,7 +5,6 @@ import io.github.factoryfx.factory.FactoryBase;
 import io.github.factoryfx.factory.attribute.Attribute;
 import io.github.factoryfx.factory.attribute.dependency.FactoryBaseAttribute;
 import io.github.factoryfx.factory.attribute.dependency.FactoryListBaseAttribute;
-import io.github.factoryfx.factory.attribute.dependency.ReferenceBaseAttribute;
 import io.github.factoryfx.factory.attribute.types.EnumAttribute;
 import io.github.factoryfx.factory.attribute.types.EnumListAttribute;
 import io.github.factoryfx.factory.metadata.FactoryMetadataManager;
@@ -102,19 +101,18 @@ public class DataGeneratedTs<R extends FactoryBase<?,R>, L,  F extends FactoryBa
 
 
     private TsMethod createCreateNewChildFactory() {
-        StringBuilder fromJsonCode=new StringBuilder();
         Set<TsFile> mapValuesFromJsonImports = new HashSet<>();
 
-        fromJsonCode.append("let data = new DataCreator().createData(json, {}, this);\n");
-        fromJsonCode.append("if (data){\n");
-        fromJsonCode.append("    return data;\n");
-        fromJsonCode.append("} else {\n");
-        fromJsonCode.append("    throw new Error('json parameter was snull');\n");
-        fromJsonCode.append("}\n");
-
+        String fromJsonCode =
+                "let data = new DataCreator().createData(json, {}, this);\n" +
+                "if (data){\n" +
+                "    return data;\n" +
+                "} else {\n" +
+                "    throw new Error('json parameter was snull');\n" +
+                "}\n";
         return new TsMethod("createNewChildFactory",
                 List.of(new TsMethodParameter("json",new TsTypePrimitive("any"))),
-                new TsMethodResult(new TsTypeClass(dataTsClass)),new TsMethodCode(fromJsonCode.toString(), mapValuesFromJsonImports),"public");
+                new TsMethodResult(new TsTypeClass(dataTsClass)),new TsMethodCode(fromJsonCode, mapValuesFromJsonImports),"public");
     }
 
     private TsMethod createCollectChildren(FactoryBase<?,?> data) {

@@ -34,13 +34,13 @@ public class Main {
         ch.qos.logback.classic.Logger root = (ch.qos.logback.classic.Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
         root.setLevel(Level.INFO);
 
-        FactoryTreeBuilder< Server, SwaggerWebserver,Void> builder = new FactoryTreeBuilder<>(SwaggerWebserver.class);
+        FactoryTreeBuilder< Server, SwaggerWebserver> builder = new FactoryTreeBuilder<>(SwaggerWebserver.class);
         builder.addFactory(JettyServerFactory.class, Scope.SINGLETON, ctx-> new JettyServerBuilder<SwaggerWebserver>()
                 .withHost("localhost").withPort(8005)
                 .withResource(ctx.get(HelloWorldResourceFactory.class)).build());
         builder.addFactory(HelloWorldResourceFactory.class, Scope.SINGLETON);
 
-        Microservice<Server, SwaggerWebserver,Void> microservice
+        Microservice<Server, SwaggerWebserver> microservice
                 = builder.microservice().build();
         microservice.start();
 

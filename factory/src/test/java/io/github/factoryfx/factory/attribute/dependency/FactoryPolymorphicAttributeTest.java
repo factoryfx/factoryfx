@@ -57,7 +57,7 @@ public class FactoryPolymorphicAttributeTest {
 
     @Test
     public void test_new_value_with_TreeBuilder(){
-        FactoryTreeBuilder<Object,PolymorphicFactoryExample,Void> builder = new FactoryTreeBuilder<>(PolymorphicFactoryExample.class, ctx -> new PolymorphicFactoryExample());
+        FactoryTreeBuilder<Object,PolymorphicFactoryExample> builder = new FactoryTreeBuilder<>(PolymorphicFactoryExample.class, ctx -> new PolymorphicFactoryExample());
         PolymorphicFactoryExample root = builder.buildTreeUnvalidated();
         root.internal().serFactoryTreeBuilderBasedAttributeSetupForRoot(new FactoryTreeBuilderBasedAttributeSetup<>(builder));
 

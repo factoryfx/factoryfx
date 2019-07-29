@@ -5,13 +5,13 @@ import io.github.factoryfx.factory.builder.Scope;
 import io.github.factoryfx.jetty.JettyServerBuilder;
 import io.github.factoryfx.jetty.JettyServerFactory;
 import java.lang.SuppressWarnings;
-import java.lang.Void;
+
 import org.eclipse.jetty.server.Server;
 
 /**
  * Utility class to construct the factory tree */
 public class ServerBuilder {
-    private final FactoryTreeBuilder<Server, ServerRootFactory, Void> builder;
+    private final FactoryTreeBuilder<Server, ServerRootFactory> builder;
 
     @SuppressWarnings("unchecked")
     public ServerBuilder() {
@@ -25,7 +25,7 @@ public class ServerBuilder {
         // register more factories here
     }
 
-    public FactoryTreeBuilder<Server, ServerRootFactory, Void> builder() {
+    public FactoryTreeBuilder<Server, ServerRootFactory> builder() {
         return this.builder;
     }
 }

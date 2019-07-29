@@ -26,7 +26,7 @@ public class Main {
 
         UserFactory.passwordKey= EncryptedStringAttribute.createKey();
 
-        FactoryTreeBuilder< Printer, PrinterFactory, Void> builder = new FactoryTreeBuilder<>(PrinterFactory.class, ctx->{
+        FactoryTreeBuilder< Printer, PrinterFactory> builder = new FactoryTreeBuilder<>(PrinterFactory.class, ctx->{
             PrinterFactory factory = new PrinterFactory();
             factory.text.set("Hello World");
             factory.server.set(ctx.get(JettyServerFactory.class));
@@ -55,12 +55,12 @@ public class Main {
             return resource;
         }) ;
 
-        Microservice<Printer, PrinterFactory, Void> microservice = builder.microservice().build();
+        Microservice<Printer, PrinterFactory> microservice = builder.microservice().build();
         microservice.start();
 
         System.out.println("first update:");
         {
-            MicroserviceRestClient<PrinterFactory, Void> microserviceRestClient = MicroserviceRestClientBuilder.build("localhost",8005,"user1","pw1",PrinterFactory.class);
+            MicroserviceRestClient<PrinterFactory> microserviceRestClient = MicroserviceRestClientBuilder.build("localhost",8005,"user1","pw1",PrinterFactory.class);
 
             DataUpdate<PrinterFactory> update = microserviceRestClient.prepareNewFactory();
             update.root.text.set("bla blub1");
@@ -72,7 +72,7 @@ public class Main {
 
         System.out.println("second update:");
         {
-            MicroserviceRestClient<PrinterFactory, Void> microserviceRestClient = MicroserviceRestClientBuilder.build("localhost",8005,"user2","pw2",PrinterFactory.class);
+            MicroserviceRestClient<PrinterFactory> microserviceRestClient = MicroserviceRestClientBuilder.build("localhost",8005,"user2","pw2",PrinterFactory.class);
 
             DataUpdate<PrinterFactory> update = microserviceRestClient.prepareNewFactory();
             update.root.text.set("bla blub2");

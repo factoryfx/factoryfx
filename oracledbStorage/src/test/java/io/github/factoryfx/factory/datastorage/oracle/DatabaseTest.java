@@ -44,7 +44,7 @@ public class DatabaseTest {
     }
 
 
-    protected MigrationManager<ExampleFactoryA,Void> createMigrationManager(){
+    protected MigrationManager<ExampleFactoryA> createMigrationManager(){
         return new MigrationManager<>(ExampleFactoryA.class, ObjectMapperBuilder.build(), (root, d) -> { });
     }
 

@@ -2,7 +2,6 @@ package io.github.factoryfx.jetty;
 
 import io.github.factoryfx.factory.FactoryBase;
 import io.github.factoryfx.factory.attribute.primitive.IntegerAttribute;
-import org.eclipse.jetty.util.thread.ExecutorThreadPool;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
 import org.eclipse.jetty.util.thread.ThreadPool;
 

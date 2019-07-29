@@ -2,8 +2,6 @@ package io.github.factoryfx;
 
 import io.github.factoryfx.factory.SimpleFactoryBase;
 import io.github.factoryfx.factory.attribute.dependency.FactoryAttribute;
-import io.github.factoryfx.factory.attribute.dependency.FactoryListAttribute;
-import io.github.factoryfx.factory.attribute.types.StringAttribute;
 import io.github.factoryfx.factory.testfactories.*;
 import org.openjdk.jmh.annotations.*;
 

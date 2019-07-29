@@ -19,7 +19,7 @@ import java.util.Collection;
  *
  */
 @Path("microservice")
-public interface MicroserviceResourceApi<R extends FactoryBase<?,R>,S>  {
+public interface MicroserviceResourceApi<R extends FactoryBase<?,R>>  {
 
 
     @POST
@@ -32,7 +32,7 @@ public interface MicroserviceResourceApi<R extends FactoryBase<?,R>,S>  {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @Path("revert")
-    FactoryUpdateLog<R> revert(UserAwareRequest<StoredDataMetadata<S>> historyFactory) ;
+    FactoryUpdateLog<R> revert(UserAwareRequest<StoredDataMetadata> historyFactory) ;
 
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
@@ -44,7 +44,7 @@ public interface MicroserviceResourceApi<R extends FactoryBase<?,R>,S>  {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @Path("diff")
-    MergeDiffInfo<R> getDiff(UserAwareRequest<StoredDataMetadata<S>> request);
+    MergeDiffInfo<R> getDiff(UserAwareRequest<StoredDataMetadata> request);
 
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
@@ -62,7 +62,7 @@ public interface MicroserviceResourceApi<R extends FactoryBase<?,R>,S>  {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @Path("historyFactoryList")
-    Collection<StoredDataMetadata<S>> getHistoryFactoryList(VoidUserAwareRequest request);
+    Collection<StoredDataMetadata> getHistoryFactoryList(VoidUserAwareRequest request);
 
     @POST
     @Consumes(MediaType.APPLICATION_JSON)

@@ -3,7 +3,6 @@ package io.github.factoryfx.factory.storage;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import io.github.factoryfx.factory.storage.migration.metadata.DataStorageMetadataDictionary;
 
 import java.time.LocalDateTime;

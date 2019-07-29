@@ -44,7 +44,7 @@ public class TsGeneratorTest {
     @SuppressWarnings("unchecked")
     @Test
     public void smoketest_jettyserver(@TempDir Path targetDir) throws InterruptedException {
-        FactoryTreeBuilder<Server, TestHttpServer,Void> builder = new FactoryTreeBuilder<>(TestHttpServer.class);
+        FactoryTreeBuilder<Server, TestHttpServer> builder = new FactoryTreeBuilder<>(TestHttpServer.class);
         builder.addFactory(JettyServerFactory.class, Scope.SINGLETON, ctx-> new JettyServerBuilder<TestHttpServer>()
                 .withHost("localhost").withPort(8005).build());
 

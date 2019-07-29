@@ -3,10 +3,7 @@ package io.github.factoryfx.dom.rest;
 import io.github.factoryfx.factory.FactoryBase;
 import io.github.factoryfx.factory.FactoryTreeBuilderBasedAttributeSetup;
 import io.github.factoryfx.factory.attribute.dependency.FactoryPolymorphicAttribute;
-import io.github.factoryfx.factory.attribute.dependency.FactoryPolymorphicListAttribute;
-import io.github.factoryfx.factory.attribute.types.ObjectValueAttribute;
 import io.github.factoryfx.factory.attribute.types.StringAttribute;
-import io.github.factoryfx.factory.builder.FactoryTreeBuilder;
 import io.github.factoryfx.jetty.JerseyServletFactory;
 import io.github.factoryfx.server.Microservice;
 import io.github.factoryfx.server.user.nop.NoUserManagement;
@@ -37,7 +34,7 @@ import java.util.function.Function;
  * @param <R> root
  * @param <S> Summary Data form storage history
  */
-public class MicroserviceDomResourceFactory<R extends FactoryBase<?,R>,S> extends FactoryBase<MicroserviceDomResource<R,S>,R> {
+public class MicroserviceDomResourceFactory<R extends FactoryBase<?,R>,S> extends FactoryBase<MicroserviceDomResource<R>,R> {
 
     public final FactoryPolymorphicAttribute<R,UserManagement> userManagement = new FactoryPolymorphicAttribute<R,UserManagement>().setupUnsafe(UserManagement.class, NoUserManagementFactory.class, PersistentUserManagementFactory.class).labelText("userManagement").nullable();
     public final FactoryPolymorphicAttribute<R, StaticFileAccess> staticFileAccess = new FactoryPolymorphicAttribute<R, StaticFileAccess>().setupUnsafe(StaticFileAccess.class, ClasspathStaticFileAccessFactory.class).labelText("staticFileAccess").nullable();
@@ -53,7 +50,7 @@ public class MicroserviceDomResourceFactory<R extends FactoryBase<?,R>,S> extend
             if (userManagementInstance==null) {
                 userManagementInstance=new NoUserManagement();
             }
-            Microservice<?,R,S> microservice = (Microservice<?,R,S>) utility().getMicroservice();
+            Microservice<?,R> microservice = utility().getMicroservice();
 
 
             StaticFileAccess staticFileAccessInstance = staticFileAccess.instance();
@@ -79,7 +76,7 @@ public class MicroserviceDomResourceFactory<R extends FactoryBase<?,R>,S> extend
                     return result;
                 };
             }
-            return new MicroserviceDomResource<>(microservice, userManagementInstance, staticFileAccessInstance, new FactoryTreeBuilderBasedAttributeSetup<>((FactoryTreeBuilder<?,R,S>)utility().getFactoryTreeBuilder()), guiNavbarItemCreatorParam,projectName.getNullable().orElse("Factoryfx"));
+            return new MicroserviceDomResource<>(microservice, userManagementInstance, staticFileAccessInstance, new FactoryTreeBuilderBasedAttributeSetup<>(utility().getFactoryTreeBuilder()), guiNavbarItemCreatorParam,projectName.getNullable().orElse("Factoryfx"));
         });
 
 

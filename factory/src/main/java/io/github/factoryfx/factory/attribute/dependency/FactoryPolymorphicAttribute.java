@@ -1,8 +1,5 @@
 package io.github.factoryfx.factory.attribute.dependency;
 
-import io.github.factoryfx.factory.util.LanguageText;
-import io.github.factoryfx.factory.validation.Validation;
-import io.github.factoryfx.factory.validation.ValidationResult;
 import io.github.factoryfx.factory.FactoryBase;
 import io.github.factoryfx.factory.PolymorphicFactory;
 

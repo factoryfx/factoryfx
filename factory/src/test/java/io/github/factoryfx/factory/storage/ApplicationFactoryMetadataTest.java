@@ -3,15 +3,13 @@ package io.github.factoryfx.factory.storage;
 import io.github.factoryfx.factory.jackson.ObjectMapperBuilder;
 import org.junit.jupiter.api.Test;
 
-public class ApplicationFactoryMetadataTest {
+import java.util.ArrayList;
 
-    private static class SummaryDummy{
-        public long diffCounter=1;
-    }
+public class ApplicationFactoryMetadataTest {
 
     @Test
     public void test_json(){
-        StoredDataMetadata<SummaryDummy> storedDataMetadata = new StoredDataMetadata<SummaryDummy>("","","","",new SummaryDummy(),null,null);
+        StoredDataMetadata storedDataMetadata = new StoredDataMetadata("","","","",new UpdateSummary(new ArrayList<>()),null,null);
         ObjectMapperBuilder.build().copy(storedDataMetadata); //test json serializable
     }
 

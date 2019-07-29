@@ -50,13 +50,13 @@ public class MicroserviceRestIntegrationTest {
         ch.qos.logback.classic.Logger root = (ch.qos.logback.classic.Logger) org.slf4j.LoggerFactory.getLogger(ch.qos.logback.classic.Logger.ROOT_LOGGER_NAME);
         root.setLevel(Level.INFO);
 
-        FactoryTreeBuilder<Server, TestJettyServer, Void> builder = new FactoryTreeBuilder<>(TestJettyServer.class);
+        FactoryTreeBuilder<Server, TestJettyServer> builder = new FactoryTreeBuilder<>(TestJettyServer.class);
         builder.addFactory(JettyServerFactory.class, Scope.SINGLETON, ctx-> new JettyServerBuilder<>()
                 .withHost("localhost").withPort(34579)
                 .withResource(ctx.get(MicroserviceResourceFactory.class)).build());
 
         builder.addFactory(MicroserviceResourceFactory.class, Scope.SINGLETON, ctx->{
-            final MicroserviceResourceFactory<TestJettyServer, Void> microserviceResource = new MicroserviceResourceFactory<>();
+            final MicroserviceResourceFactory<TestJettyServer> microserviceResource = new MicroserviceResourceFactory<>();
             final PersistentUserManagementFactory<TestJettyServer> userManagement = new PersistentUserManagementFactory<>();
             final UserFactory<TestJettyServer> user = new UserFactory<>();
             user.name.set("user123");
@@ -69,7 +69,7 @@ public class MicroserviceRestIntegrationTest {
 
         ObjectMapperBuilder.build().copy(builder.buildTree());
 
-        Microservice<Server, TestJettyServer, Void> microservice = builder.microservice().build();
+        Microservice<Server, TestJettyServer> microservice = builder.microservice().build();
         microservice.start();
 
         try {
@@ -80,7 +80,7 @@ public class MicroserviceRestIntegrationTest {
                 throw new RuntimeException(e);
             }
 
-            MicroserviceRestClient<TestJettyServer,Void> microserviceRestClient = MicroserviceRestClientBuilder.build("localhost",34579,"user123","pw1",TestJettyServer.class);
+            MicroserviceRestClient<TestJettyServer> microserviceRestClient = MicroserviceRestClientBuilder.build("localhost",34579,"user123","pw1",TestJettyServer.class);
             microserviceRestClient.prepareNewFactory();
 
 

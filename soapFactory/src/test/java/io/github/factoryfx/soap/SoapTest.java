@@ -31,7 +31,7 @@ public class SoapTest {
     @Test
     public void test() throws Exception {
 
-        FactoryTreeBuilder<Server, SoapJettyServerFactory, Object> builder = new FactoryTreeBuilder<>(SoapJettyServerFactory.class);
+        FactoryTreeBuilder<Server, SoapJettyServerFactory> builder = new FactoryTreeBuilder<>(SoapJettyServerFactory.class);
         builder.addFactory(JettyServerFactory.class, Scope.SINGLETON, ctx-> new JettyServerBuilder<>()
                 .withHost("localhost").withPort(8088).removeDefaultJerseyServlet()
                 .withServlet("/*",ctx.get(SoapHandlerFactory.class)).build());
@@ -64,7 +64,7 @@ public class SoapTest {
         });
 
 
-        Microservice<Server, SoapJettyServerFactory, Object> microService = builder.microservice().build();
+        Microservice<Server, SoapJettyServerFactory> microService = builder.microservice().build();
         microService.start();
 
         callSoapWebService("http://localhost:8088",createSOAPRequest("action"));

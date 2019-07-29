@@ -17,7 +17,7 @@ public class FactoryEditViewFactoryTest {
     }
     @Test
     public void test_generics(){
-        FactoryEditViewFactory<DummyRoot,Void> factoryEditViewFactory = new FactoryEditViewFactory<>();
+        FactoryEditViewFactory<DummyRoot> factoryEditViewFactory = new FactoryEditViewFactory<>();
         factoryEditViewFactory.dataEditorFactory.set(new DataEditorFactory());
 
     }

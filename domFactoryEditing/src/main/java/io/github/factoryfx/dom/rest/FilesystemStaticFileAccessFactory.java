@@ -5,9 +5,6 @@ import io.github.factoryfx.factory.FactoryBase;
 import io.github.factoryfx.factory.PolymorphicFactoryBase;
 import io.github.factoryfx.factory.attribute.types.StringAttribute;
 
-import java.io.IOException;
-import java.io.InputStream;
-
 public class FilesystemStaticFileAccessFactory<R extends FactoryBase<?,R>>  extends PolymorphicFactoryBase<StaticFileAccess,R> {
     public final StringAttribute basePath = new StringAttribute();//should end width /
 

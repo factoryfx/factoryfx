@@ -16,7 +16,7 @@ class BranchSelectorTest {
 
     @Test
     public void test(){
-        FactoryTreeBuilder<ExampleLiveObjectA,ExampleFactoryA,Void> builder = new FactoryTreeBuilder<>(ExampleFactoryA.class, ctx -> {
+        FactoryTreeBuilder<ExampleLiveObjectA,ExampleFactoryA> builder = new FactoryTreeBuilder<>(ExampleFactoryA.class, ctx -> {
             ExampleFactoryA root = new ExampleFactoryA();
             root.referenceAttribute.set(ctx.get(ExampleFactoryB.class));
             return root;
@@ -30,7 +30,7 @@ class BranchSelectorTest {
 
     @Test
     public void test_start_stop(){
-        FactoryTreeBuilder<ExampleLiveObjectA,ExampleFactoryA,Void> builder = new FactoryTreeBuilder<>(ExampleFactoryA.class, ctx -> {
+        FactoryTreeBuilder<ExampleLiveObjectA,ExampleFactoryA> builder = new FactoryTreeBuilder<>(ExampleFactoryA.class, ctx -> {
             ExampleFactoryA root = new ExampleFactoryA();
             root.referenceAttribute.set(ctx.get(ExampleFactoryB.class));
             return root;
@@ -68,7 +68,7 @@ class BranchSelectorTest {
 
     @Test
     public void test_named_nested(){
-        FactoryTreeBuilder<ExampleLiveObjectA,ExampleFactoryA,Void> builder = new FactoryTreeBuilder<>(ExampleFactoryA.class, ctx -> {
+        FactoryTreeBuilder<ExampleLiveObjectA,ExampleFactoryA> builder = new FactoryTreeBuilder<>(ExampleFactoryA.class, ctx -> {
             ExampleFactoryA exampleFactoryA = new ExampleFactoryA();
             exampleFactoryA.referenceAttribute.set(ctx.get(ExampleFactoryB.class));
             return exampleFactoryA;
@@ -86,7 +86,7 @@ class BranchSelectorTest {
 
     @Test
     public void test_name_null(){
-        FactoryTreeBuilder<ExampleLiveObjectA,ExampleFactoryA,Void> builder = new FactoryTreeBuilder<>(ExampleFactoryA.class, ctx -> {
+        FactoryTreeBuilder<ExampleLiveObjectA,ExampleFactoryA> builder = new FactoryTreeBuilder<>(ExampleFactoryA.class, ctx -> {
             ExampleFactoryA root = new ExampleFactoryA();
             root.referenceListAttribute.add(ctx.get(ExampleFactoryB.class,"1"));
             root.referenceListAttribute.add(ctx.get(ExampleFactoryB.class,"2"));

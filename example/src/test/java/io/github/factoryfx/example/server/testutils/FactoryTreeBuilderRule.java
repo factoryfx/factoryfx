@@ -9,14 +9,14 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-public class FactoryTreeBuilderRule<L, R extends FactoryBase<L, R>, S> implements BeforeEachCallback, AfterEachCallback, BeforeAllCallback, AfterAllCallback {
+public class FactoryTreeBuilderRule<L, R extends FactoryBase<L, R>> implements BeforeEachCallback, AfterEachCallback, BeforeAllCallback, AfterAllCallback {
 
-    protected final FactoryTreeBuilder<L,R,S> builder;
-    private final Consumer<FactoryTreeBuilderRule<L,R,S>> preStart;
+    protected final FactoryTreeBuilder<L,R> builder;
+    private final Consumer<FactoryTreeBuilderRule<L,R>> preStart;
 
     private boolean runAll = false;
 
-    public FactoryTreeBuilderRule(FactoryTreeBuilder<L, R, S> builder, Consumer<FactoryTreeBuilderRule<L, R, S>> preStart) {
+    public FactoryTreeBuilderRule(FactoryTreeBuilder<L, R> builder, Consumer<FactoryTreeBuilderRule<L, R>> preStart) {
         this.preStart = preStart;
         this.builder = builder;
     }

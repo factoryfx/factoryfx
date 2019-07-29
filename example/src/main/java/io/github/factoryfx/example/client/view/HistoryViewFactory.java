@@ -23,8 +23,8 @@ public class HistoryViewFactory extends WidgetFactory {
     public final FactoryAttribute<RichClientRoot,UniformDesign, UniformDesignFactory> uniformDesign =
             new FactoryAttribute<RichClientRoot,UniformDesign, UniformDesignFactory>().de("uniformDesign").en("uniformDesign");
 
-    public final FactoryAttribute<RichClientRoot,MicroserviceRestClient<ServerRootFactory, String>, MicroserviceRestClientFactory<RichClientRoot, ServerRootFactory, String>> restClient =
-            new FactoryAttribute<RichClientRoot,MicroserviceRestClient<ServerRootFactory, String>, MicroserviceRestClientFactory<RichClientRoot, ServerRootFactory, String>>().de("restClient").en("restClient");
+    public final FactoryAttribute<RichClientRoot,MicroserviceRestClient<ServerRootFactory>, MicroserviceRestClientFactory<RichClientRoot, ServerRootFactory>> restClient =
+            new FactoryAttribute<RichClientRoot,MicroserviceRestClient<ServerRootFactory>, MicroserviceRestClientFactory<RichClientRoot, ServerRootFactory>>().de("restClient").en("restClient");
     public final FactoryAttribute<RichClientRoot,AttributeVisualisationMappingBuilder, AttributeEditorBuilderFactory> attributeEditorBuilder =
             new FactoryAttribute<RichClientRoot,AttributeVisualisationMappingBuilder, AttributeEditorBuilderFactory>().de("attribute editor").en("attribute editor");
 

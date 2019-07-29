@@ -51,8 +51,8 @@ public class AddAttributeMigrationTest {
     @Test
     public void test_no_conflict() throws IOException {
         {
-            FactoryTreeBuilder<Void, ServerFactoryOld, Void> builder = new FactoryTreeBuilder<>(ServerFactoryOld.class, ctx -> new ServerFactoryOld());
-            Microservice<Void, ServerFactoryOld, Void> msOld = builder.microservice().withFilesystemStorage(folder).build();
+            FactoryTreeBuilder<Void, ServerFactoryOld> builder = new FactoryTreeBuilder<>(ServerFactoryOld.class, ctx -> new ServerFactoryOld());
+            Microservice<Void, ServerFactoryOld> msOld = builder.microservice().withFilesystemStorage(folder).build();
             msOld.start();
             msOld.stop();
         }
@@ -73,7 +73,7 @@ public class AddAttributeMigrationTest {
 
 
         {
-            FactoryTreeBuilder<Void, ServerFactory, Void> builder = new FactoryTreeBuilder<>(ServerFactory.class, ctx -> {
+            FactoryTreeBuilder<Void, ServerFactory> builder = new FactoryTreeBuilder<>(ServerFactory.class, ctx -> {
                 ServerFactory serverFactory = new ServerFactory();
                 serverFactory.nestedFactory.set(ctx.get(NestedFactory.class));
                 return serverFactory;
@@ -83,7 +83,7 @@ public class AddAttributeMigrationTest {
                 serverFactoryNested.stringAttribute.set("123");
                 return serverFactoryNested;
             });
-            Microservice<Void, ServerFactory, Void> msNew = builder.microservice().withFilesystemStorage(folder).build();
+            Microservice<Void, ServerFactory> msNew = builder.microservice().withFilesystemStorage(folder).build();
             msNew.start();
 
             DataUpdate<ServerFactory> update = msNew.prepareNewFactory();

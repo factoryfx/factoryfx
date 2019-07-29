@@ -2,19 +2,16 @@ package io.github.factoryfx.factory.builder;
 
 
 
-import io.github.factoryfx.factory.attribute.dependency.FactoryViewAttribute;
-import io.github.factoryfx.factory.attribute.dependency.FactoryViewListAttribute;
-import io.github.factoryfx.factory.metadata.FactoryMetadata;
 import io.github.factoryfx.factory.metadata.FactoryMetadataManager;
 import io.github.factoryfx.factory.storage.migration.datamigration.AttributeFiller;
 import io.github.factoryfx.factory.storage.migration.metadata.DataStorageMetadataDictionary;
 import io.github.factoryfx.factory.FactoryBase;
 
-public class FactoryTreeBuilderAttributeFiller<L,R extends FactoryBase<L,R>,S> implements AttributeFiller<R> {
+public class FactoryTreeBuilderAttributeFiller<L,R extends FactoryBase<L,R>> implements AttributeFiller<R> {
 
-    private final FactoryTreeBuilder<L, R, S> factoryTreeBuilder;
+    private final FactoryTreeBuilder<L, R> factoryTreeBuilder;
 
-    public FactoryTreeBuilderAttributeFiller(FactoryTreeBuilder<L, R, S> factoryTreeBuilder) {
+    public FactoryTreeBuilderAttributeFiller(FactoryTreeBuilder<L, R> factoryTreeBuilder) {
         this.factoryTreeBuilder = factoryTreeBuilder;
     }
 

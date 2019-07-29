@@ -13,10 +13,9 @@ import io.github.factoryfx.factory.storage.*;
  * InMemoryDataStorage stores factories in the ram which means that changes are lost after a restart.
  *
  * @param <R> Root factory
- * @param <S> Storage history summary
  */
-public class InMemoryDataStorage<R extends FactoryBase<?,?>,S> implements DataStorage<R,S> {
-    private final Map<String, DataAndStoredMetadata<R,S>> storage = new TreeMap<>();
+public class InMemoryDataStorage<R extends FactoryBase<?,?>> implements DataStorage<R> {
+    private final Map<String, DataAndStoredMetadata<R>> storage = new TreeMap<>();
     private final Map<String, ScheduledUpdate<R>> future = new TreeMap<>();
     private String currentFactoryId;
 
@@ -24,18 +23,18 @@ public class InMemoryDataStorage<R extends FactoryBase<?,?>,S> implements DataSt
         initialFactory.internal().finalise();
         this.currentFactoryId=UUID.randomUUID().toString();
 
-        StoredDataMetadata<S> metadata = new StoredDataMetadata<>(currentFactoryId, "System", "initial", currentFactoryId,null,null,null);
+        StoredDataMetadata metadata = new StoredDataMetadata(currentFactoryId, "System", "initial", currentFactoryId,null,null,null);
         storage.put(currentFactoryId,new DataAndStoredMetadata<>(initialFactory, metadata));
     }
 
     @Override
     public R getHistoryData(String id) {
-        DataAndStoredMetadata<R,S> data = storage.get(id);
+        DataAndStoredMetadata<R> data = storage.get(id);
         return data.root.utility().copy();
     }
 
     @Override
-    public Collection<StoredDataMetadata<S>> getHistoryDataList() {
+    public Collection<StoredDataMetadata> getHistoryDataList() {
         return storage.values().stream().map(item -> item.metadata).collect(Collectors.toList());
     }
 
@@ -45,8 +44,8 @@ public class InMemoryDataStorage<R extends FactoryBase<?,?>,S> implements DataSt
     }
 
     @Override
-    public void updateCurrentData(DataUpdate<R> update, S changeSummary) {
-        StoredDataMetadata<S> metadata = new StoredDataMetadata<>(LocalDateTime.now(),
+    public void updateCurrentData(DataUpdate<R> update, UpdateSummary changeSummary) {
+        StoredDataMetadata metadata = new StoredDataMetadata(LocalDateTime.now(),
                 UUID.randomUUID().toString(),
                 update.user,
                 update.comment,

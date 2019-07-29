@@ -20,7 +20,6 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-import io.github.factoryfx.factory.attribute.dependency.FactoryViewAttribute;
 import io.github.factoryfx.factory.builder.FactoryTreeBuilder;
 import org.slf4j.LoggerFactory;
 
@@ -807,7 +806,7 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
             return (T)factory;
         }
 
-        public void serFactoryTreeBuilderBasedAttributeSetupForRoot(FactoryTreeBuilderBasedAttributeSetup<R,?> setup) {
+        public void serFactoryTreeBuilderBasedAttributeSetupForRoot(FactoryTreeBuilderBasedAttributeSetup<R> setup) {
             this.factory.serFactoryTreeBuilderBasedAttributeSetupForRoot(setup);
         }
 
@@ -944,11 +943,11 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
         }
 
 
-        public void setMicroservice(Microservice<?,R,?> microservice) {
+        public void setMicroservice(Microservice<?,R> microservice) {
             factory.setMicroservice(microservice);
         }
 
-        public void setFactoryTreeBuilder(FactoryTreeBuilder<?,R,?> factoryTreeBuilder) {
+        public void setFactoryTreeBuilder(FactoryTreeBuilder<?,R> factoryTreeBuilder) {
             factory.setFactoryTreeBuilder(factoryTreeBuilder);
         }
 
@@ -993,8 +992,8 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
     }
 
 
-    FactoryTreeBuilderBasedAttributeSetup<R, ?> factoryTreeBuilderBasedAttributeSetup;
-    private void serFactoryTreeBuilderBasedAttributeSetupForRoot(FactoryTreeBuilderBasedAttributeSetup<R, ?> factoryTreeBuilderBasedAttributeSetup) {
+    FactoryTreeBuilderBasedAttributeSetup<R> factoryTreeBuilderBasedAttributeSetup;
+    private void serFactoryTreeBuilderBasedAttributeSetupForRoot(FactoryTreeBuilderBasedAttributeSetup<R> factoryTreeBuilderBasedAttributeSetup) {
         this.factoryTreeBuilderBasedAttributeSetup=factoryTreeBuilderBasedAttributeSetup;
     }
 
@@ -1252,20 +1251,20 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
         }
     }
 
-    Microservice<?, R, ?> microservice;
-    private void setMicroservice(Microservice<?, R, ?> microservice) {
+    Microservice<?, R> microservice;
+    private void setMicroservice(Microservice<?, R> microservice) {
         this.microservice = microservice;
     }
-    private Microservice<?, R, ?> getMicroservice() {
+    private Microservice<?, R> getMicroservice() {
         return getRoot().microservice;
     }
 
-    FactoryTreeBuilder<?, R, ?> factoryTreeBuilder;
-    private void setFactoryTreeBuilder(FactoryTreeBuilder<?, R, ?> factoryTreeBuilder) {
+    FactoryTreeBuilder<?, R> factoryTreeBuilder;
+    private void setFactoryTreeBuilder(FactoryTreeBuilder<?, R> factoryTreeBuilder) {
         this.factoryTreeBuilder =  factoryTreeBuilder;
     }
 
-    private FactoryTreeBuilder<?, R, ?> getFactoryTreeBuilder() {
+    private FactoryTreeBuilder<?, R> getFactoryTreeBuilder() {
         return getRoot().factoryTreeBuilder;
     }
 
@@ -1521,11 +1520,11 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
             this.factory = factory;
         }
 
-        public Microservice<?,R,?> getMicroservice(){
+        public Microservice<?,R> getMicroservice(){
             return factory.getMicroservice();
         }
 
-        public FactoryTreeBuilder<?,R,?> getFactoryTreeBuilder(){
+        public FactoryTreeBuilder<?,R> getFactoryTreeBuilder(){
             return factory.getFactoryTreeBuilder();
         }
 

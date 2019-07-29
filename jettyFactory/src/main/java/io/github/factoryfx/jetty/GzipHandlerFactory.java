@@ -6,7 +6,6 @@ import io.github.factoryfx.factory.attribute.types.EnumListAttribute;
 import io.github.factoryfx.factory.attribute.types.StringListAttribute;
 import io.github.factoryfx.factory.FactoryBase;
 import io.github.factoryfx.factory.PolymorphicFactoryBase;
-import io.github.factoryfx.factory.attribute.dependency.FactoryPolymorphicAttribute;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.handler.gzip.GzipHandler;
 

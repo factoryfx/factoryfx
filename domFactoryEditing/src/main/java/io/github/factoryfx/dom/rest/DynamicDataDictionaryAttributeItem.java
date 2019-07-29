@@ -1,6 +1,5 @@
 package io.github.factoryfx.dom.rest;
 
-import java.util.HashMap;
 import java.util.List;
 
 public class DynamicDataDictionaryAttributeItem {

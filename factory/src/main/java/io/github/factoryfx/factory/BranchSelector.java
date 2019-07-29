@@ -17,9 +17,9 @@ import java.util.function.Function;
 public class BranchSelector<R extends FactoryBase<?,R>> {
 
     private final R root;
-    private final FactoryTreeBuilder<?,R,?> treeBuilder;
+    private final FactoryTreeBuilder<?,R> treeBuilder;
 
-    public BranchSelector(R root, FactoryTreeBuilder<?,R,?> treeBuilder) {
+    public BranchSelector(R root, FactoryTreeBuilder<?,R> treeBuilder) {
         this.root = root;
         this.root.internal().finalise();
         this.treeBuilder=treeBuilder;
@@ -32,7 +32,7 @@ public class BranchSelector<R extends FactoryBase<?,R>> {
     }
 
 
-    public BranchSelector(FactoryTreeBuilder<?,R,?> treeBuilder) {
+    public BranchSelector(FactoryTreeBuilder<?,R> treeBuilder) {
         this(treeBuilder.buildTree(),treeBuilder);
     }
 

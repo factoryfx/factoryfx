@@ -12,15 +12,15 @@ import java.util.Collection;
 import java.util.UUID;
 import java.util.function.Supplier;
 
-public class OracledbDataStorage<R extends FactoryBase<?,R>,S> implements DataStorage<R,S> {
-    private final OracledbDataStorageHistory<R,S> oracledbDataStorageHistory;
-    private final OracledbDataStorageFuture<R,S> oracledbDataStorageFuture;
+public class OracledbDataStorage<R extends FactoryBase<?,R>> implements DataStorage<R> {
+    private final OracledbDataStorageHistory<R> oracledbDataStorageHistory;
+    private final OracledbDataStorageFuture<R> oracledbDataStorageFuture;
     private final R initialData;
-    private final MigrationManager<R,S> migrationManager;
+    private final MigrationManager<R> migrationManager;
     private final Supplier< Connection > connectionSupplier;
     private final SimpleObjectMapper objectMapper;
 
-    public OracledbDataStorage(Supplier<Connection> connectionSupplier, R initialDataParam,  MigrationManager<R,S> migrationManager, OracledbDataStorageHistory<R,S> oracledbDataStorageHistory, OracledbDataStorageFuture<R,S> oracledbDataStorageFuture, SimpleObjectMapper objectMapper){
+    public OracledbDataStorage(Supplier<Connection> connectionSupplier, R initialDataParam,  MigrationManager<R> migrationManager, OracledbDataStorageHistory<R> oracledbDataStorageHistory, OracledbDataStorageFuture<R> oracledbDataStorageFuture, SimpleObjectMapper objectMapper){
         this.initialData = initialDataParam;
 
         this.connectionSupplier = connectionSupplier;
@@ -45,7 +45,7 @@ public class OracledbDataStorage<R extends FactoryBase<?,R>,S> implements DataSt
         }
     }
 
-    public OracledbDataStorage(Supplier< Connection > connectionSupplier, R initialDataParam, MigrationManager<R,S> migrationManager, SimpleObjectMapper objectMapper){
+    public OracledbDataStorage(Supplier< Connection > connectionSupplier, R initialDataParam, MigrationManager<R> migrationManager, SimpleObjectMapper objectMapper){
         this(connectionSupplier,initialDataParam, migrationManager,new OracledbDataStorageHistory<>(connectionSupplier, migrationManager),
                 new OracledbDataStorageFuture<>(connectionSupplier, migrationManager),objectMapper);
     }
@@ -56,7 +56,7 @@ public class OracledbDataStorage<R extends FactoryBase<?,R>,S> implements DataSt
     }
 
     @Override
-    public Collection<StoredDataMetadata<S>> getHistoryDataList() {
+    public Collection<StoredDataMetadata> getHistoryDataList() {
         return oracledbDataStorageHistory.getHistoryFactoryList();
     }
 
@@ -68,7 +68,7 @@ public class OracledbDataStorage<R extends FactoryBase<?,R>,S> implements DataSt
 
             try (ResultSet resultSet =statement.executeQuery(sql)){
                 if(resultSet.next()){
-                    StoredDataMetadata<S> factoryMetadata = migrationManager.readStoredFactoryMetadata(JdbcUtil.readStringFromBlob(resultSet,"factoryMetadata"));
+                    StoredDataMetadata factoryMetadata = migrationManager.readStoredFactoryMetadata(JdbcUtil.readStringFromBlob(resultSet,"factoryMetadata"));
                     return new DataAndId<>(migrationManager.read(JdbcUtil.readStringFromBlob(resultSet,"factory"),factoryMetadata.dataStorageMetadataDictionary),factoryMetadata.id);
                 }
             }
@@ -76,7 +76,7 @@ public class OracledbDataStorage<R extends FactoryBase<?,R>,S> implements DataSt
             throw new RuntimeException(e);
         }
 
-        StoredDataMetadata<S> metadata=new StoredDataMetadata<>(
+        StoredDataMetadata metadata=new StoredDataMetadata(
                 UUID.randomUUID().toString(),
                 "System",
                 "initial factory",
@@ -90,8 +90,8 @@ public class OracledbDataStorage<R extends FactoryBase<?,R>,S> implements DataSt
     }
 
     @Override
-    public void updateCurrentData(DataUpdate<R> update, S changeSummary) {
-        StoredDataMetadata<S> metadata =update.createUpdateStoredDataMetadata(changeSummary,getCurrentData().id);
+    public void updateCurrentData(DataUpdate<R> update, UpdateSummary changeSummary) {
+        StoredDataMetadata metadata =update.createUpdateStoredDataMetadata(changeSummary,getCurrentData().id);
         update(update.root, metadata);
     }
 
@@ -139,7 +139,7 @@ public class OracledbDataStorage<R extends FactoryBase<?,R>,S> implements DataSt
         }
     }
 
-    private void update(R update, StoredDataMetadata<S> metadata) {
+    private void update(R update, StoredDataMetadata metadata) {
         try (Connection connection= connectionSupplier.get();
              PreparedStatement truncate = connection.prepareStatement("TRUNCATE TABLE FACTORY_CURRENT");
              PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO FACTORY_CURRENT(id,factory,factoryMetadata) VALUES (?,?,? )")
