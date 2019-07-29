@@ -8,6 +8,6 @@ import io.github.factoryfx.factory.attribute.types.StringAttribute;
 
 public class ExampleData extends FactoryBase<Void,ExampleData> {
     public final StringAttribute attribute= new StringAttribute().en("labelEn\"\'\\").de("labelDe");
-    public final FactoryAttribute<ExampleData,Void,ExampleData2> ref= new FactoryAttribute<ExampleData,Void,ExampleData2>().nullable();
-    public final FactoryListAttribute<ExampleData,Void,ExampleData2> refList= new FactoryListAttribute<>();
+    public final FactoryAttribute<Void,ExampleData2> ref= new FactoryAttribute<Void,ExampleData2>().nullable();
+    public final FactoryListAttribute<Void,ExampleData2> refList= new FactoryListAttribute<>();
 }

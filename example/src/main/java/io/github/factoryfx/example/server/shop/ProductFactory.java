@@ -13,7 +13,7 @@ public class ProductFactory extends ServerBaseFactory<Product> {
 
     public final StringAttribute name = new StringAttribute().en("Name").de("Name");
     public final IntegerAttribute price = new IntegerAttribute().labelText("Price").addonText("EUR");
-    public final FactoryAttribute<ServerRootFactory,VatRate,VatRateFactory> vatRate = new FactoryAttribute<ServerRootFactory,VatRate,VatRateFactory>().labelText("VatRate");
+    public final FactoryAttribute<VatRate,VatRateFactory> vatRate = new FactoryAttribute<VatRate,VatRateFactory>().labelText("VatRate");
 
     @Override
     protected Product createImpl() {

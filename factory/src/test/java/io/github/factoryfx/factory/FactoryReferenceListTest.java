@@ -44,7 +44,7 @@ public class FactoryReferenceListTest {
     }
 
     public static class RootFactory extends SimpleFactoryBase<String, RootFactory> {
-        public final FactoryListAttribute<RootFactory,Object, ObjectFactory> objects = new FactoryListAttribute<>();
+        public final FactoryListAttribute<Object, ObjectFactory> objects = new FactoryListAttribute<>();
 
         @Override
         protected String createImpl() {

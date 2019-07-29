@@ -11,7 +11,7 @@ import io.github.factoryfx.javafx.util.UniformDesignFactory;
 import java.util.function.Function;
 
 public class SingleAttributeEditorBuilderFactory extends SimpleFactoryBase<AttributeVisualisationBuilder,RichClientRoot> {
-    public final FactoryAttribute<RichClientRoot, UniformDesign, UniformDesignFactory> uniformDesign = new FactoryAttribute<>();
+    public final FactoryAttribute<UniformDesign, UniformDesignFactory> uniformDesign = new FactoryAttribute<>();
 
     private final Function<UniformDesign, AttributeVisualisationBuilder> creator;
     public SingleAttributeEditorBuilderFactory(Function<UniformDesign, AttributeVisualisationBuilder> creator) {

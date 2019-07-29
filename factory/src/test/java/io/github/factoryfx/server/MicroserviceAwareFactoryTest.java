@@ -31,7 +31,7 @@ public class MicroserviceAwareFactoryTest {
 
     public static class RootTestClazz extends SimpleFactoryBase<String,RootTestClazz> {
 
-        public final FactoryAttribute<RootTestClazz,String,MicroserviceAwareFactoryTestclazz> ref = new FactoryAttribute<>();
+        public final FactoryAttribute<String,MicroserviceAwareFactoryTestclazz> ref = new FactoryAttribute<>();
 
         @Override
         protected String createImpl() {

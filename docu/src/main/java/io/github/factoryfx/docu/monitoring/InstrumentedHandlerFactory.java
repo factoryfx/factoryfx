@@ -7,7 +7,7 @@ import io.github.factoryfx.factory.attribute.dependency.FactoryAttribute;
 import org.eclipse.jetty.server.Handler;
 
 public class InstrumentedHandlerFactory extends SimpleFactoryBase<Handler,RootFactory> {
-    public final FactoryAttribute<RootFactory, MetricRegistry, MetricRegistryFactory> metricRegistry = new FactoryAttribute<>();
+    public final FactoryAttribute<MetricRegistry, MetricRegistryFactory> metricRegistry = new FactoryAttribute<>();
 
     @Override
     protected Handler createImpl() {

@@ -46,8 +46,8 @@ public class FactoryDepTopDownTest {
     }
 
     public static class RootFactory extends SimpleFactoryBase<String, RootFactory> {
-        public final FactoryAttribute<RootFactory,Object, ObjectFactory> object1 = new FactoryAttribute<>();
-        public final FactoryAttribute<RootFactory,Object, ObjectFactory> object2 = new FactoryAttribute<>();
+        public final FactoryAttribute<Object, ObjectFactory> object1 = new FactoryAttribute<>();
+        public final FactoryAttribute<Object, ObjectFactory> object2 = new FactoryAttribute<>();
 
         @Override
         protected String createImpl() {

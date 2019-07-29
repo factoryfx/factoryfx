@@ -7,8 +7,8 @@ import io.github.factoryfx.factory.attribute.dependency.FactoryListAttribute;
 
 public class ExampleFactory extends SimpleFactoryBase<Void,ExampleData> {
     public final StringAttribute attribute= new StringAttribute().en("labelEn\"\'\\").de("labelDe");
-    public final FactoryAttribute<ExampleData,Void,ExampleFactory> ref= new FactoryAttribute<>();
-    public final FactoryListAttribute<ExampleData,Void,ExampleFactory> refList= new FactoryListAttribute<>();
+    public final FactoryAttribute<Void,ExampleFactory> ref= new FactoryAttribute<>();
+    public final FactoryListAttribute<Void,ExampleFactory> refList= new FactoryListAttribute<>();
 
     @Override
     protected Void createImpl() {

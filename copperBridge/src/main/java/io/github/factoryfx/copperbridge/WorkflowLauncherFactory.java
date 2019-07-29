@@ -10,8 +10,8 @@ import io.github.factoryfx.factory.util.LanguageText;
 
 public class WorkflowLauncherFactory<R extends FactoryBase<?, R>> extends SimpleFactoryBase<WorkflowLauncher, R> {
 
-    public final FactoryAttribute<R,Backchannel, BackchannelFactory<R>> backchannel = new FactoryAttribute<R,Backchannel, BackchannelFactory<R>>().labelText("Backchannel");
-    public final FactoryAttribute<R,CopperEngineContext, CopperEngineContextFactory<R>> copperEngineContext = new FactoryAttribute<R,CopperEngineContext, CopperEngineContextFactory<R>>().labelText("Copper engine context");
+    public final FactoryAttribute<Backchannel, BackchannelFactory<R>> backchannel = new FactoryAttribute<Backchannel, BackchannelFactory<R>>().labelText("Backchannel");
+    public final FactoryAttribute<CopperEngineContext, CopperEngineContextFactory<R>> copperEngineContext = new FactoryAttribute<CopperEngineContext, CopperEngineContextFactory<R>>().labelText("Copper engine context");
 
     public WorkflowLauncherFactory(){
         config().addValidation(a-> new ValidationResult(copperEngineContext.get() == null

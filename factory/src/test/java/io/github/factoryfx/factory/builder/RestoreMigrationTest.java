@@ -19,11 +19,11 @@ public class RestoreMigrationTest {
 
     public static class ServerFactoryOld extends SimpleFactoryBase<Void, ServerFactoryOld> {
 
-        public final FactoryAttribute<ServerFactoryOld,Void,PartnerFactoryOld> partnerFactory1 = new FactoryAttribute<>();
-        public final FactoryAttribute<ServerFactoryOld,Void,PartnerFactoryOld> partnerFactory2 = new FactoryAttribute<>();
+        public final FactoryAttribute<Void,PartnerFactoryOld> partnerFactory1 = new FactoryAttribute<>();
+        public final FactoryAttribute<Void,PartnerFactoryOld> partnerFactory2 = new FactoryAttribute<>();
 
-        public final FactoryAttribute<ServerFactoryOld,Void,ClientSystemFactoryOld> clientSystemFactory1 = new FactoryAttribute<>();
-        public final FactoryAttribute<ServerFactoryOld,Void,ClientSystemFactoryOld> clientSystemFactory2 = new FactoryAttribute<>();
+        public final FactoryAttribute<Void,ClientSystemFactoryOld> clientSystemFactory1 = new FactoryAttribute<>();
+        public final FactoryAttribute<Void,ClientSystemFactoryOld> clientSystemFactory2 = new FactoryAttribute<>();
 
         @Override
         protected Void createImpl() {
@@ -54,8 +54,8 @@ public class RestoreMigrationTest {
 
 
     public static class ServerFactory extends SimpleFactoryBase<Void, ServerFactory> {
-        public final FactoryAttribute<ServerFactory, Void, ClientSystemFactory> clientSystemFactory1 = new FactoryAttribute<>();
-        public final FactoryAttribute<ServerFactory, Void, ClientSystemFactory> clientSystemFactory2 = new FactoryAttribute<>();
+        public final FactoryAttribute<Void, ClientSystemFactory> clientSystemFactory1 = new FactoryAttribute<>();
+        public final FactoryAttribute<Void, ClientSystemFactory> clientSystemFactory2 = new FactoryAttribute<>();
 
         @Override
         protected Void createImpl() {

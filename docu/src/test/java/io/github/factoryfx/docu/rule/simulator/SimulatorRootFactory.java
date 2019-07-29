@@ -5,7 +5,7 @@ import org.eclipse.jetty.server.Server;
 
 public class SimulatorRootFactory extends SimulatorBaseFactory<Server> {
 
-    public final FactoryAttribute<SimulatorRootFactory, Server, HelloJettyServerFactory> httpServer = new FactoryAttribute<SimulatorRootFactory, Server, HelloJettyServerFactory>()
+    public final FactoryAttribute<Server, HelloJettyServerFactory> httpServer = new FactoryAttribute<Server, HelloJettyServerFactory>()
                     .labelText("HTTP Servers")
                     .userNotCreatable()
                     .userNotSelectable()

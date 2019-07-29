@@ -17,11 +17,11 @@ import java.util.*;
 
 public class JerseyServletFactory<R extends FactoryBase<?,R>> extends SimpleFactoryBase<Servlet,R> {
 
-    public final FactoryPolymorphicAttribute<R,ObjectMapper> objectMapper = new FactoryPolymorphicAttribute<R,ObjectMapper>().nullable().en("objectMapper");
-    public final FactoryPolymorphicAttribute<R,LoggingFeature> restLogging = new FactoryPolymorphicAttribute<R,LoggingFeature>().userReadOnly().labelText("REST logging");
-    public final FactoryPolymorphicListAttribute<R,Object> additionalJaxrsComponents = new FactoryPolymorphicListAttribute<R,Object>().userReadOnly().labelText("additionalJaxrsComponents");
-    public final FactoryPolymorphicListAttribute<R,Object> resources = new FactoryPolymorphicListAttribute<R,Object>().labelText("resources");
-    public final FactoryPolymorphicAttribute<R,ExceptionMapper<Throwable>> exceptionMapper = new FactoryPolymorphicAttribute<R,ExceptionMapper<Throwable>>().userReadOnly().labelText("exceptionMapper").nullable();
+    public final FactoryPolymorphicAttribute<ObjectMapper> objectMapper = new FactoryPolymorphicAttribute<ObjectMapper>().nullable().en("objectMapper");
+    public final FactoryPolymorphicAttribute<LoggingFeature> restLogging = new FactoryPolymorphicAttribute<LoggingFeature>().userReadOnly().labelText("REST logging");
+    public final FactoryPolymorphicListAttribute<Object> additionalJaxrsComponents = new FactoryPolymorphicListAttribute<>().userReadOnly().labelText("additionalJaxrsComponents");
+    public final FactoryPolymorphicListAttribute<Object> resources = new FactoryPolymorphicListAttribute<>().labelText("resources");
+    public final FactoryPolymorphicAttribute<ExceptionMapper<Throwable>> exceptionMapper = new FactoryPolymorphicAttribute<ExceptionMapper<Throwable>>().userReadOnly().labelText("exceptionMapper").nullable();
 
     @Override
     protected Servlet createImpl() {

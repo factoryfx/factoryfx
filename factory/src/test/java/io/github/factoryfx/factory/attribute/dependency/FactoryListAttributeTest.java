@@ -16,7 +16,7 @@ public class FactoryListAttributeTest {
 
     @Test
     public void test_filtered_instance(){
-        FactoryListAttribute<ExampleFactoryA,ExampleLiveObjectA,ExampleFactoryA> attribute = new FactoryListAttribute<>();
+        FactoryListAttribute<ExampleLiveObjectA,ExampleFactoryA> attribute = new FactoryListAttribute<>();
         {
             ExampleFactoryA data = new ExampleFactoryA();
             data.stringAttribute.set("1");
@@ -39,7 +39,7 @@ public class FactoryListAttributeTest {
 
     @Test
     public void test_batchModify(){
-        FactoryListAttribute<ExampleFactoryA,ExampleLiveObjectA,ExampleFactoryA> attribute = new FactoryListAttribute<>();
+        FactoryListAttribute<ExampleLiveObjectA,ExampleFactoryA> attribute = new FactoryListAttribute<>();
 
         ArrayList<String> calls = new ArrayList<>();
         attribute.internal_addListener((attribute1, value) -> calls.add(""));

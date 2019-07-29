@@ -342,12 +342,12 @@ public class DataTest {
 
 
     public static class ExampleParentsA extends FactoryBase<Void,ExampleParentsA> {
-        public final FactoryAttribute<ExampleParentsA,Void,ExampleParentsB> exampleParentsB = new FactoryAttribute<>();
-        public final FactoryAttribute<ExampleParentsA,Void,ExampleParentsC> exampleParentsC = new FactoryAttribute<>();
+        public final FactoryAttribute<Void,ExampleParentsB> exampleParentsB = new FactoryAttribute<>();
+        public final FactoryAttribute<Void,ExampleParentsC> exampleParentsC = new FactoryAttribute<>();
     }
 
     public static class ExampleParentsB extends FactoryBase<Void,ExampleParentsA> {
-        public final FactoryAttribute<ExampleParentsA,Void,ExampleParentsC> exampleParentsC = new FactoryAttribute<>();
+        public final FactoryAttribute<Void,ExampleParentsC> exampleParentsC = new FactoryAttribute<>();
     }
 
     public static class ExampleParentsC extends FactoryBase<Void,ExampleParentsA> {
@@ -576,7 +576,7 @@ public class DataTest {
 
 
     public static class ExampleRootSet extends FactoryBase<Void, ExampleRootSet> {
-        public final FactoryAttribute<ExampleRootSet,Void,ExampleRootSet> referenceAttribute = new FactoryAttribute<>();
+        public final FactoryAttribute<Void,ExampleRootSet> referenceAttribute = new FactoryAttribute<>();
     }
 
     @Test

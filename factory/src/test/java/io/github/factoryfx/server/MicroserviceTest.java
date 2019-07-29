@@ -138,7 +138,7 @@ public class MicroserviceTest {
 
 
     public static class ExampleFactoryARecreation extends SimpleFactoryBase<ExampleLiveObjectA,ExampleFactoryARecreation> {
-        public final FactoryAttribute<ExampleFactoryARecreation,ExampleLiveObjectB,ExampleFactoryBRecreation> referenceAttribute = new FactoryAttribute<ExampleFactoryARecreation,ExampleLiveObjectB,ExampleFactoryBRecreation>().labelText("ExampleA2").nullable();
+        public final FactoryAttribute<ExampleLiveObjectB,ExampleFactoryBRecreation> referenceAttribute = new FactoryAttribute<ExampleLiveObjectB,ExampleFactoryBRecreation>().labelText("ExampleA2").nullable();
 
         @Override
         protected ExampleLiveObjectA createImpl() {
@@ -147,7 +147,7 @@ public class MicroserviceTest {
     }
 
     public static class ExampleFactoryBRecreation extends FactoryBase<ExampleLiveObjectB,ExampleFactoryARecreation> {
-        public final FactoryAttribute<ExampleFactoryARecreation,ExampleLiveObjectB,ExampleFactoryBRecreation> referenceAttribute = new FactoryAttribute<ExampleFactoryARecreation,ExampleLiveObjectB,ExampleFactoryBRecreation>().labelText("ExampleA2").nullable();
+        public final FactoryAttribute<ExampleLiveObjectB,ExampleFactoryBRecreation> referenceAttribute = new FactoryAttribute<ExampleLiveObjectB,ExampleFactoryBRecreation>().labelText("ExampleA2").nullable();
 
         long recreationCounter=0;
         public ExampleFactoryBRecreation(){

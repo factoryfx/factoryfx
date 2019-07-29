@@ -787,12 +787,12 @@ public class MergeTest {
             }
             return null;
         });
-        public final FactoryAttribute<ExampleDataView,Void,ExampleDataAView> referenceAttribute = new FactoryAttribute<>();
+        public final FactoryAttribute<Void,ExampleDataAView> referenceAttribute = new FactoryAttribute<>();
 
     }
 
     public static class ExampleDataAView extends FactoryBase<Void, ExampleDataView> {
-        public final FactoryAttribute<ExampleDataView,Void,ExampleDataBView> bAttribute = new FactoryAttribute<>();
+        public final FactoryAttribute<Void,ExampleDataBView> bAttribute = new FactoryAttribute<>();
     }
 
     public static class ExampleDataBView extends FactoryBase<Void, ExampleDataView> {

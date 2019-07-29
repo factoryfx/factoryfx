@@ -12,7 +12,7 @@ import java.util.HashSet;
 
 public class PersistentUserManagementFactory<R extends FactoryBase<?,R>> extends PolymorphicFactoryBase<UserManagement,R> {
 
-    public final FactoryListAttribute<R,User, UserFactory<R>> users = new FactoryListAttribute<R,User, UserFactory<R>>().en("users").de("Benutzer").userNotSelectable();
+    public final FactoryListAttribute<User, UserFactory<R>> users = new FactoryListAttribute<User, UserFactory<R>>().en("users").de("Benutzer").userNotSelectable();
 
     @Override
     protected PersistentUserManagement createImpl() {

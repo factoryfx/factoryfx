@@ -6,7 +6,7 @@ import io.github.factoryfx.javafx.RichClientRoot;
 import io.github.factoryfx.javafx.editor.attribute.builder.AttributeVisualisationBuilder;
 
 public class AttributeEditorBuilderFactory extends SimpleFactoryBase<AttributeVisualisationMappingBuilder,RichClientRoot> {
-    public final FactoryListAttribute<RichClientRoot,AttributeVisualisationBuilder,SingleAttributeEditorBuilderFactory> editors = new FactoryListAttribute<>();
+    public final FactoryListAttribute<AttributeVisualisationBuilder,SingleAttributeEditorBuilderFactory> editors = new FactoryListAttribute<>();
 
     @Override
     protected AttributeVisualisationMappingBuilder createImpl() {

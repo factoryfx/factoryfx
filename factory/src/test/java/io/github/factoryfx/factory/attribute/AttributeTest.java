@@ -105,7 +105,7 @@ public class AttributeTest {
 
     public static class DynamicReadOnlyData extends FactoryBase<Void,DynamicReadOnlyData> {
         public final BooleanAttribute barred = new BooleanAttribute();
-        public final FactoryListAttribute<DynamicReadOnlyData,Void,DynamicReadOnlyData2> strangeList = new FactoryListAttribute<>();
+        public final FactoryListAttribute<Void,DynamicReadOnlyData2> strangeList = new FactoryListAttribute<>();
     }
 
     public static class DynamicReadOnlyData2 extends FactoryBase<Void,DynamicReadOnlyData> {

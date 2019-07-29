@@ -8,8 +8,8 @@ import org.eclipse.jetty.server.Server;
 
 public class RootFactory  extends SimpleFactoryBase<Root, RootFactory> {
 
-    public final FactoryAttribute<RootFactory,Server, JettyServerFactory<RootFactory>> server = new FactoryAttribute<>();
-    public final FactoryAttribute<RootFactory,MetricRegistry, MetricRegistryFactory> metricRegistry = new FactoryAttribute<>();
+    public final FactoryAttribute<Server, JettyServerFactory<RootFactory>> server = new FactoryAttribute<>();
+    public final FactoryAttribute<MetricRegistry, MetricRegistryFactory> metricRegistry = new FactoryAttribute<>();
 
     @Override
     protected Root createImpl() {

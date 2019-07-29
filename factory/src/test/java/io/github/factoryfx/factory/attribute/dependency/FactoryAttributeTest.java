@@ -23,7 +23,7 @@ public class FactoryAttributeTest {
 
     @Test
     public void test_null(){
-        FactoryAttribute<ExampleFactoryA,ExampleLiveObjectA, ExampleFactoryA> attribute = new FactoryAttribute<ExampleFactoryA,ExampleLiveObjectA, ExampleFactoryA>();
+        FactoryAttribute<ExampleLiveObjectA, ExampleFactoryA> attribute = new FactoryAttribute<ExampleLiveObjectA, ExampleFactoryA>();
 
         {
             attribute.set(null);
@@ -40,13 +40,13 @@ public class FactoryAttributeTest {
 
     @Test
     public void test_internal_require_true(){
-        FactoryAttribute<ExampleFactoryA,ExampleLiveObjectA, ExampleFactoryA> attribute = new FactoryAttribute<>();
+        FactoryAttribute<ExampleLiveObjectA, ExampleFactoryA> attribute = new FactoryAttribute<>();
         Assertions.assertTrue(attribute.internal_required());
     }
 
     @Test
     public void test_internal_require_false(){
-        FactoryAttribute<ExampleFactoryA,ExampleLiveObjectA, ExampleFactoryA> attribute = new FactoryAttribute<ExampleFactoryA,ExampleLiveObjectA, ExampleFactoryA>().nullable();
+        FactoryAttribute<ExampleLiveObjectA, ExampleFactoryA> attribute = new FactoryAttribute<ExampleLiveObjectA, ExampleFactoryA>().nullable();
         Assertions.assertFalse(attribute.internal_required());
     }
 
@@ -54,7 +54,7 @@ public class FactoryAttributeTest {
 
     @Test
     public void test_nullable(){
-        FactoryAttribute<ExampleFactoryA,ExampleLiveObjectA, ExampleFactoryA> attribute = new FactoryAttribute<ExampleFactoryA,ExampleLiveObjectA, ExampleFactoryA>().nullable();
+        FactoryAttribute<ExampleLiveObjectA, ExampleFactoryA> attribute = new FactoryAttribute<ExampleLiveObjectA, ExampleFactoryA>().nullable();
 
 
         {
@@ -72,7 +72,7 @@ public class FactoryAttributeTest {
 
     public static class CreateExampleFactory extends SimpleFactoryBase<Void,ExampleFactoryA> {
         @SuppressWarnings("unchecked")
-        FactoryAttribute<ExampleFactoryA, ExampleLiveObjectA, ExampleFactoryA> attribute = new FactoryAttribute<ExampleFactoryA, ExampleLiveObjectA, ExampleFactoryA>().nullable();
+        FactoryAttribute<ExampleLiveObjectA, ExampleFactoryA> attribute = new FactoryAttribute<ExampleLiveObjectA, ExampleFactoryA>().nullable();
         @Override
         protected Void createImpl() {
             return null;
@@ -87,7 +87,7 @@ public class FactoryAttributeTest {
     }
 
     public static class MockExampleFactoryRoot extends SimpleFactoryBase<Void,MockExampleFactoryRoot> {
-        public final FactoryAttribute<MockExampleFactoryRoot, LiveDummy, ExampleFactory> attribute = new FactoryAttribute<>();
+        public final FactoryAttribute<LiveDummy, ExampleFactory> attribute = new FactoryAttribute<>();
         @Override
         protected Void createImpl() {
             return null;
@@ -124,12 +124,12 @@ public class FactoryAttributeTest {
 
 
     public static class ExampleReferenceFactory extends FactoryBase<Void,ExampleDataA> {
-        public FactoryAttribute<ExampleDataA,Void,ExampleDataA> referenceAttribute =new FactoryAttribute<>();
+        public FactoryAttribute<Void,ExampleDataA> referenceAttribute =new FactoryAttribute<>();
     }
 
     @Test
     public void testObservable(){
-        FactoryAttribute<ExampleDataA,Void,ExampleDataA> referenceAttribute=new FactoryAttribute<>();
+        FactoryAttribute<Void,ExampleDataA> referenceAttribute=new FactoryAttribute<>();
         ArrayList<String> calls= new ArrayList<>();
         referenceAttribute.internal_addListener((a,value) -> calls.add(""));
         referenceAttribute.set(new ExampleDataA());
@@ -148,9 +148,9 @@ public class FactoryAttributeTest {
 
     @Test
     public void remove_Listener(){
-        FactoryAttribute<ExampleDataA,Void,ExampleDataA> referenceAttribute=new FactoryAttribute<>();
+        FactoryAttribute<Void,ExampleDataA> referenceAttribute=new FactoryAttribute<>();
         ArrayList<String> calls= new ArrayList<>();
-        AttributeChangeListener<ExampleDataA, FactoryAttribute<ExampleDataA,Void,ExampleDataA>> invalidationListener = (a, o) -> {
+        AttributeChangeListener<ExampleDataA, FactoryAttribute<Void,ExampleDataA>> invalidationListener = (a, o) -> {
             calls.add("");
         };
         referenceAttribute.internal_addListener(invalidationListener);
@@ -190,7 +190,7 @@ public class FactoryAttributeTest {
 
     @Test
     public void test_Observable_first(){
-        FactoryAttribute<ExampleDataA,Void,ExampleDataA> referenceAttribute=new FactoryAttribute<>();
+        FactoryAttribute<Void,ExampleDataA> referenceAttribute=new FactoryAttribute<>();
         ArrayList<Object> calls= new ArrayList<>();
         referenceAttribute.internal_addListener((a,value) -> calls.add(value));
         ExampleDataA added = new ExampleDataA();
@@ -202,7 +202,7 @@ public class FactoryAttributeTest {
 
     @Test
     public void test_listener(){
-        FactoryAttribute<ExampleDataA,Void,ExampleDataA> referenceAttribute=new FactoryAttribute<>();
+        FactoryAttribute<Void,ExampleDataA> referenceAttribute=new FactoryAttribute<>();
 
         List<ExampleDataA> calls = new ArrayList<>();
         List<ExampleDataA> callsAttributeGet = new ArrayList<>();
@@ -220,9 +220,9 @@ public class FactoryAttributeTest {
 
     @Test
     public void removeListener() {
-        FactoryAttribute<ExampleDataA,Void,ExampleDataA> attribute=new FactoryAttribute<>();
+        FactoryAttribute<Void,ExampleDataA> attribute=new FactoryAttribute<>();
 
-        final AttributeChangeListener<ExampleDataA, FactoryAttribute<ExampleDataA,Void,ExampleDataA>> attributeChangeListener = (a, value) -> System.out.println(value);
+        final AttributeChangeListener<ExampleDataA, FactoryAttribute<Void,ExampleDataA>> attributeChangeListener = (a, value) -> System.out.println(value);
         attribute.internal_addListener(attributeChangeListener);
         Assertions.assertTrue(attribute.internal_getListeners().size()==1);
         attribute.internal_removeListener(attributeChangeListener);
@@ -231,9 +231,9 @@ public class FactoryAttributeTest {
 
     @Test
     public void removeWeakListener() {
-        FactoryAttribute<ExampleDataA,Void,ExampleDataA> attribute=new FactoryAttribute<>();
+        FactoryAttribute<Void,ExampleDataA> attribute=new FactoryAttribute<>();
 
-        final AttributeChangeListener<ExampleDataA, FactoryAttribute<ExampleDataA,Void,ExampleDataA>> attributeChangeListener = (a, value) -> System.out.println(value);
+        final AttributeChangeListener<ExampleDataA, FactoryAttribute<Void,ExampleDataA>> attributeChangeListener = (a, value) -> System.out.println(value);
         attribute.internal_addListener(new WeakAttributeChangeListener<>(attributeChangeListener));
         Assertions.assertTrue(attribute.internal_getListeners().size()==1);
         attribute.internal_removeListener(attributeChangeListener);
@@ -242,9 +242,9 @@ public class FactoryAttributeTest {
 
     @Test
     public void removeWeakListener_after_gc() {
-        FactoryAttribute<ExampleDataA,Void,ExampleDataA> attribute=new FactoryAttribute<>();
+        FactoryAttribute<Void,ExampleDataA> attribute=new FactoryAttribute<>();
 
-        final AttributeChangeListener<ExampleDataA, FactoryAttribute<ExampleDataA,Void,ExampleDataA>> attributeChangeListener = (a, value) -> System.out.println(value);
+        final AttributeChangeListener<ExampleDataA, FactoryAttribute<Void,ExampleDataA>> attributeChangeListener = (a, value) -> System.out.println(value);
         attribute.internal_addListener(new WeakAttributeChangeListener<>(null));
         Assertions.assertTrue(attribute.internal_getListeners().size()==1);
         attribute.internal_removeListener(attributeChangeListener);
@@ -253,20 +253,20 @@ public class FactoryAttributeTest {
 
     @Test
     public void test_semanticcopy_self(){
-        FactoryAttribute<ExampleDataA,Void,ExampleDataA> attributeFrom =new FactoryAttribute<>();
+        FactoryAttribute<Void,ExampleDataA> attributeFrom =new FactoryAttribute<>();
         attributeFrom.setCopySemantic(CopySemantic.SELF);
         attributeFrom.set(new ExampleDataA());
-        FactoryAttribute<ExampleDataA,Void,ExampleDataA> attributeTo =new FactoryAttribute<>();
+        FactoryAttribute<Void,ExampleDataA> attributeTo =new FactoryAttribute<>();
         attributeFrom.internal_semanticCopyTo(attributeTo);
         Assertions.assertTrue(attributeFrom.get()==attributeTo.get(),"same reference");
     }
 
     @Test
     public void test_semanticcopy_copy(){
-        FactoryAttribute<ExampleDataA,Void,ExampleDataA> attributeFrom =new FactoryAttribute<>();
+        FactoryAttribute<Void,ExampleDataA> attributeFrom =new FactoryAttribute<>();
         attributeFrom.setCopySemantic(CopySemantic.COPY);
         attributeFrom.set(new ExampleDataA());
-        FactoryAttribute<ExampleDataA,Void,ExampleDataA> attributeTo =new FactoryAttribute<>();
+        FactoryAttribute<Void,ExampleDataA> attributeTo =new FactoryAttribute<>();
         attributeFrom.internal_semanticCopyTo(attributeTo);
         Assertions.assertTrue(attributeFrom.get()!=attributeTo.get(),"not same reference");
         Assertions.assertNotEquals(attributeFrom.get().getId(),attributeTo.get().getId());

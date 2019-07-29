@@ -7,8 +7,8 @@ import io.github.factoryfx.factory.attribute.dependency.FactoryListAttribute;
 
 
 public class ShopResourceFactory extends ServerBaseFactory<ShopResource> {
-    public final FactoryAttribute<ServerRootFactory,OrderStorage, OrderStorageFactory> orderStorage = new FactoryAttribute<ServerRootFactory,OrderStorage, OrderStorageFactory>().labelText("Order storage");
-    public final FactoryListAttribute<ServerRootFactory,Product, ProductFactory> products = new FactoryListAttribute<ServerRootFactory,Product, ProductFactory>().labelText("Products");
+    public final FactoryAttribute<OrderStorage, OrderStorageFactory> orderStorage = new FactoryAttribute<OrderStorage, OrderStorageFactory>().labelText("Order storage");
+    public final FactoryListAttribute<Product, ProductFactory> products = new FactoryListAttribute<Product, ProductFactory>().labelText("Products");
 
     @Override
     protected ShopResource createImpl() {

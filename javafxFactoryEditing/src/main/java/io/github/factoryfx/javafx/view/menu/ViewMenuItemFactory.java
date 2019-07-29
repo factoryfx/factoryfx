@@ -11,8 +11,8 @@ import javafx.scene.control.MenuItem;
 
 public class ViewMenuItemFactory extends PolymorphicFactoryBase<MenuItem,RichClientRoot> {
 
-    public final FactoryAttribute<RichClientRoot,ViewDescription,ViewDescriptionFactory> viewDescription = new FactoryAttribute<>();
-    public final FactoryAttribute<RichClientRoot,View,ViewFactory> view = new FactoryAttribute<>();
+    public final FactoryAttribute<ViewDescription,ViewDescriptionFactory> viewDescription = new FactoryAttribute<>();
+    public final FactoryAttribute<View,ViewFactory> view = new FactoryAttribute<>();
 
     @Override
     protected MenuItem createImpl() {

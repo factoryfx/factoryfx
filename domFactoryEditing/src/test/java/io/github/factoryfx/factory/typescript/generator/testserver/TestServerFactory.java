@@ -11,7 +11,7 @@ import org.eclipse.jetty.server.Server;
 import java.util.List;
 
 public class TestServerFactory extends SimpleFactoryBase<Server, TestServerFactory> {
-    public final FactoryAttribute<TestServerFactory,Server, JettyServerFactory<TestServerFactory>> server = new FactoryAttribute<>();
+    public final FactoryAttribute<Server, JettyServerFactory<TestServerFactory>> server = new FactoryAttribute<>();
 
     public final ByteArrayAttribute byteArrayAttribute=new ByteArrayAttribute().nullable();
     public final I18nAttribute i18nAttribute=new I18nAttribute().nullable();
@@ -41,8 +41,8 @@ public class TestServerFactory extends SimpleFactoryBase<Server, TestServerFacto
     public final InstantAttribute instantAttribute=new InstantAttribute().nullable();
     public final BigIntegerAttribute bigIntegerAttribute=new BigIntegerAttribute().nullable();
 
-    public final FactoryAttribute<TestServerFactory,Void, ExampleFactory> exampleFactory = new FactoryAttribute<>();
-    public final FactoryListAttribute<TestServerFactory,Void, ExampleFactory> exampleListFactory = new FactoryListAttribute<>();
+    public final FactoryAttribute<Void, ExampleFactory> exampleFactory = new FactoryAttribute<>();
+    public final FactoryListAttribute<Void, ExampleFactory> exampleListFactory = new FactoryListAttribute<>();
     public final FactoryViewAttribute<TestServerFactory,Void,ExampleFactory> view=new FactoryViewAttribute<>((root)->root.exampleFactory.get());
     public final FactoryViewListAttribute<TestServerFactory,Void,ExampleFactory> viewList=new FactoryViewListAttribute<>((root)-> {
         return List.of(root.exampleFactory.get(),root.exampleFactory.get(),root.exampleFactory.get());

@@ -94,7 +94,7 @@ public class FastFactoryUtility<R extends FactoryBase<?,R>,F extends FactoryBase
        ((FastFactoryAttributeUtility<R, F, V, ?>)factory).accept((FastFactoryAttributeUtility<R, F, V, ?>)other,consumer);
     }
 
-    public void visitChildFactoriesAndViewsFlat(F factory, Consumer<FactoryBase<?, R>> consumer) {
+    public void visitChildFactoriesAndViewsFlat(F factory, Consumer<FactoryBase<?, ?>> consumer) {
         List<? extends FastFactoryAttributeUtility<R,F,?,?>> attributeList=attributesCreator.get();//recreate for threadsafety
         for (FastFactoryAttributeUtility<R, F, ?, ?> attributeUtility : attributeList) {
             attributeUtility.bindFactory(factory);

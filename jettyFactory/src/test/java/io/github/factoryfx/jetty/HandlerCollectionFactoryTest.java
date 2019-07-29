@@ -52,7 +52,7 @@ public class HandlerCollectionFactoryTest {
         }
     }
     public static class HandlerCollectionRootFactory extends SimpleFactoryBase<Server, HandlerCollectionRootFactory>{
-        public final FactoryAttribute<HandlerCollectionRootFactory,Server,JettyServerFactory<HandlerCollectionRootFactory>> server = new FactoryAttribute<>();
+        public final FactoryAttribute<Server,JettyServerFactory<HandlerCollectionRootFactory>> server = new FactoryAttribute<>();
 
         @Override
         protected Server createImpl() {

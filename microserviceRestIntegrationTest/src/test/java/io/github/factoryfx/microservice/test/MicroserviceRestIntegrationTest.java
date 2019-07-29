@@ -27,7 +27,7 @@ import java.util.Locale;
 public class MicroserviceRestIntegrationTest {
 
     public static class TestJettyServer  extends SimpleFactoryBase<Server, TestJettyServer> {
-        public final FactoryAttribute<TestJettyServer,Server, JettyServerFactory<TestJettyServer>> server = new FactoryAttribute<>();
+        public final FactoryAttribute<Server, JettyServerFactory<TestJettyServer>> server = new FactoryAttribute<>();
 
         @Override
         protected Server createImpl() {

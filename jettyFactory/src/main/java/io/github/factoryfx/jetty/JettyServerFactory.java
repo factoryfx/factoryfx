@@ -42,9 +42,9 @@ public class JettyServerFactory<R extends FactoryBase<?,R>> extends FactoryBase<
         jerseyLogger2.setLevel(Level.SEVERE);//warning about generic parameters, works fine and no fix available so the warnings are just useless
     }
 
-    public final FactoryListAttribute<R,HttpServerConnector,HttpServerConnectorFactory<R>> connectors = new FactoryListAttribute<R,HttpServerConnector,HttpServerConnectorFactory<R>>().labelText("Connectors").userNotSelectable();
-    public final FactoryAttribute<R,HandlerCollection,HandlerCollectionFactory<R>> handler = new FactoryAttribute<R,HandlerCollection,HandlerCollectionFactory<R>>().labelText("Handler collection");
-    public final FactoryPolymorphicAttribute<R, ThreadPool> threadPool = new FactoryPolymorphicAttribute<R, ThreadPool>().labelText("Thread Pool").nullable();
+    public final FactoryListAttribute<HttpServerConnector,HttpServerConnectorFactory<R>> connectors = new FactoryListAttribute<HttpServerConnector,HttpServerConnectorFactory<R>>().labelText("Connectors").userNotSelectable();
+    public final FactoryAttribute<HandlerCollection,HandlerCollectionFactory<R>> handler = new FactoryAttribute<HandlerCollection,HandlerCollectionFactory<R>>().labelText("Handler collection");
+    public final FactoryPolymorphicAttribute<ThreadPool> threadPool = new FactoryPolymorphicAttribute<ThreadPool>().labelText("Thread Pool").nullable();
 
     public JettyServerFactory(){
         configLifeCycle().setCreator(this::createJetty);
@@ -98,7 +98,7 @@ public class JettyServerFactory<R extends FactoryBase<?,R>> extends FactoryBase<
      * @param resource resource
      * @param <T> resource type
      */
-    public final <T extends FactoryBase<?,R>> void setResource(T resource){
+    public final <T extends FactoryBase<?,?>> void setResource(FactoryBase<?,?> resource){
         JerseyServletFactory<R> jerseyServletFactory = getDefaultJerseyServlet();
         jerseyServletFactory.resources.removeIf(factoryBase -> factoryBase.getClass()==resource.getClass());
         jerseyServletFactory.resources.add(resource);

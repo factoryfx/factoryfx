@@ -8,7 +8,7 @@
 ### BREAKING CHANGES
 
 * **removed summary generic parameter:** 
-  This was intended as simple index for the factorystorage but never used.  
+  This was intended as simple index for the factory storage but never used.  
   
   example:  
   old 
@@ -19,7 +19,20 @@
   ```java
   FactoryTreeBuilder<Server, ServerRootFactory> serverBuilder = ...
   ```
-
+  
+* **removed root generic parameter in FactoryAttribute:**  
+  Root Parameter was used in ```ReferenceBaseAttribute#possibleValueProvider```. Which now requires a cast.
+  This affects: FactoryAttribute/FactoryListAttribute/FactoryPolymorphicAttribute/FactoryPolymorphicListAttribute
+  
+  example:  
+  old 
+  ```java
+  FactoryAttribute<ServerRoot,Test,TestFactory> attribute = ...
+  ```
+  new
+  ```java
+  FactoryAttribute<Test,TestFactory> attribute = ...
+  ```
 
 ### Features
 

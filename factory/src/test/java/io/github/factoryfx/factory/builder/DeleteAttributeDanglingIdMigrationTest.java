@@ -18,8 +18,8 @@ public class DeleteAttributeDanglingIdMigrationTest {
     //----------------------------------old
     public static class ServerFactoryOld extends SimpleFactoryBase<Void, ServerFactoryOld> {
 
-        public final FactoryAttribute<ServerFactoryOld,Void,ServerFactoryNestedOld> serverFactoryNested1 = new FactoryAttribute<>();
-        public final FactoryAttribute<ServerFactoryOld,Void,ServerFactoryNestedOld> serverFactoryNested2 = new FactoryAttribute<>();
+        public final FactoryAttribute<Void,ServerFactoryNestedOld> serverFactoryNested1 = new FactoryAttribute<>();
+        public final FactoryAttribute<Void,ServerFactoryNestedOld> serverFactoryNested2 = new FactoryAttribute<>();
 
         @Override
         protected Void createImpl() {
@@ -40,7 +40,7 @@ public class DeleteAttributeDanglingIdMigrationTest {
 
     //----------------------------------new
     public static class ServerFactory extends SimpleFactoryBase<Void, ServerFactory> {
-        public final FactoryAttribute<ServerFactory,Void, ServerFactoryNested> serverFactoryNested2 = new FactoryAttribute<>();
+        public final FactoryAttribute<Void, ServerFactoryNested> serverFactoryNested2 = new FactoryAttribute<>();
 
         @Override
         protected Void createImpl() {

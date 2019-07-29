@@ -18,15 +18,15 @@ import io.github.factoryfx.microservice.rest.client.MicroserviceRestClientFactor
 
 public class HistoryViewFactory extends WidgetFactory {
 
-    public final FactoryAttribute<RichClientRoot,LongRunningActionExecutor, LongRunningActionExecutorFactory> longRunningActionExecutor =
-            new FactoryAttribute<RichClientRoot,LongRunningActionExecutor, LongRunningActionExecutorFactory>().de("items").en("items");
-    public final FactoryAttribute<RichClientRoot,UniformDesign, UniformDesignFactory> uniformDesign =
-            new FactoryAttribute<RichClientRoot,UniformDesign, UniformDesignFactory>().de("uniformDesign").en("uniformDesign");
+    public final FactoryAttribute<LongRunningActionExecutor, LongRunningActionExecutorFactory> longRunningActionExecutor =
+            new FactoryAttribute<LongRunningActionExecutor, LongRunningActionExecutorFactory>().de("items").en("items");
+    public final FactoryAttribute<UniformDesign, UniformDesignFactory> uniformDesign =
+            new FactoryAttribute<UniformDesign, UniformDesignFactory>().de("uniformDesign").en("uniformDesign");
 
-    public final FactoryAttribute<RichClientRoot,MicroserviceRestClient<ServerRootFactory>, MicroserviceRestClientFactory<RichClientRoot, ServerRootFactory>> restClient =
-            new FactoryAttribute<RichClientRoot,MicroserviceRestClient<ServerRootFactory>, MicroserviceRestClientFactory<RichClientRoot, ServerRootFactory>>().de("restClient").en("restClient");
-    public final FactoryAttribute<RichClientRoot,AttributeVisualisationMappingBuilder, AttributeEditorBuilderFactory> attributeEditorBuilder =
-            new FactoryAttribute<RichClientRoot,AttributeVisualisationMappingBuilder, AttributeEditorBuilderFactory>().de("attribute editor").en("attribute editor");
+    public final FactoryAttribute<MicroserviceRestClient<ServerRootFactory>, MicroserviceRestClientFactory<RichClientRoot, ServerRootFactory>> restClient =
+            new FactoryAttribute<MicroserviceRestClient<ServerRootFactory>, MicroserviceRestClientFactory<RichClientRoot, ServerRootFactory>>().de("restClient").en("restClient");
+    public final FactoryAttribute<AttributeVisualisationMappingBuilder, AttributeEditorBuilderFactory> attributeEditorBuilder =
+            new FactoryAttribute<AttributeVisualisationMappingBuilder, AttributeEditorBuilderFactory>().de("attribute editor").en("attribute editor");
 
     @Override
     protected Widget createWidget() {

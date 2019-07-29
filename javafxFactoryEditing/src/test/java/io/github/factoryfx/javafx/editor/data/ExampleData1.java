@@ -48,7 +48,7 @@ import io.github.factoryfx.javafx.editor.attribute.ColorAttribute;
 
 
 public class ExampleData1 extends FactoryBase<Void,ExampleData1> {
-    public final FactoryPolymorphicAttribute<ExampleData1,Printer> reference = new FactoryPolymorphicAttribute<ExampleData1,Printer>().setup(Printer.class,ErrorPrinterFactory.class,OutPrinterFactory.class).labelText("poly");
+    public final FactoryPolymorphicAttribute<Printer> reference = new FactoryPolymorphicAttribute<Printer>().setup(Printer.class,ErrorPrinterFactory.class,OutPrinterFactory.class).labelText("poly");
     public final PasswordAttribute passwordAttribute = new PasswordAttribute().en("PasswordAttribute").de("PasswordAttribute de");
     public final DurationAttribute durationAttribute = new DurationAttribute().en("durationAttribute").de("durationAttribute de");
 
@@ -75,12 +75,12 @@ public class ExampleData1 extends FactoryBase<Void,ExampleData1> {
     public final I18nAttribute i18nAttribute=new I18nAttribute().en("i18nAttribute").de("i18nAttribute de").en("envalue").de("devalue");
     public final ByteArrayAttribute byteArrayAttribute=new ByteArrayAttribute().en("byteArrayAttribute").de("byteArrayAttribute de");
 
-    public final FactoryAttribute<ExampleData1,Void,ExampleData2> referenceAttribute = new FactoryAttribute<ExampleData1,Void,ExampleData2>().en("ReferenceAttribute").de("ReferenceAttribute de");
-    public final FactoryListAttribute<ExampleData1,Void,ExampleData2> referenceListAttribute = new FactoryListAttribute<ExampleData1,Void,ExampleData2>().en("ReferenceListAttribute").de("ReferenceListAttribute de");
+    public final FactoryAttribute<Void,ExampleData2> referenceAttribute = new FactoryAttribute<Void,ExampleData2>().en("ReferenceAttribute").de("ReferenceAttribute de");
+    public final FactoryListAttribute<Void,ExampleData2> referenceListAttribute = new FactoryListAttribute<Void,ExampleData2>().en("ReferenceListAttribute").de("ReferenceListAttribute de");
 
-    public final FactoryAttribute<ExampleData1,Void,ExampleData2> referenceAttributeCat = new FactoryAttribute<ExampleData1,Void,ExampleData2>().catalogueBased().en("ReferenceAttribute catalog based").de("ReferenceAttribute catalog based de");
-    public final FactoryListAttribute<ExampleData1,Void,ExampleData2> referenceListAttributeCat = new FactoryListAttribute<ExampleData1,Void,ExampleData2>().catalogueBased().en("ReferenceListAttribute catalog based").de("ReferenceListAttribute catalog based de");
-    public final FactoryListAttribute<ExampleData1,Void,ExampleData2> readOnlyReferenceListAttributeCat = new FactoryListAttribute<ExampleData1,Void,ExampleData2>().userReadOnly().catalogueBased().en("Readonly referenceListAttribute catalog based").de("Lesend ReferenceListAttribute catalog based de");
+    public final FactoryAttribute<Void,ExampleData2> referenceAttributeCat = new FactoryAttribute<Void,ExampleData2>().catalogueBased().en("ReferenceAttribute catalog based").de("ReferenceAttribute catalog based de");
+    public final FactoryListAttribute<Void,ExampleData2> referenceListAttributeCat = new FactoryListAttribute<Void,ExampleData2>().catalogueBased().en("ReferenceListAttribute catalog based").de("ReferenceListAttribute catalog based de");
+    public final FactoryListAttribute<Void,ExampleData2> readOnlyReferenceListAttributeCat = new FactoryListAttribute<Void,ExampleData2>().userReadOnly().catalogueBased().en("Readonly referenceListAttribute catalog based").de("Lesend ReferenceListAttribute catalog based de");
 
     public final URIAttribute uriAttribute = new URIAttribute().en("URI");
     public final URIListAttribute uriListAttribute = new URIListAttribute().en("URIList");
@@ -90,8 +90,8 @@ public class ExampleData1 extends FactoryBase<Void,ExampleData1> {
     public final ColorAttribute colorAttribute=new ColorAttribute().en("colorAttribute").de("colorAttribute de");
     public final LocaleAttribute localeAttribute =new LocaleAttribute().en("colorAttribute").de("colorAttribute de");
 
-    public final FactoryAttribute<ExampleData1,Void,ExampleData2> referenceAttributeReadonly = new FactoryAttribute<ExampleData1,Void,ExampleData2>().userReadOnly().en("referenceAttributereadonly").de("referenceAttribute readonly de");
-    public final FactoryPolymorphicListAttribute<ExampleData1,Printer> polymorphicReferenceList = new FactoryPolymorphicListAttribute<ExampleData1,Printer>().setup(Printer.class, ErrorPrinterFactory.class, OutPrinterFactory.class).en("polymorphicreferenceList").de("polymorphicreferenceList");
+    public final FactoryAttribute<Void,ExampleData2> referenceAttributeReadonly = new FactoryAttribute<Void,ExampleData2>().userReadOnly().en("referenceAttributereadonly").de("referenceAttribute readonly de");
+    public final FactoryPolymorphicListAttribute<Printer> polymorphicReferenceList = new FactoryPolymorphicListAttribute<Printer>().setup(Printer.class, ErrorPrinterFactory.class, OutPrinterFactory.class).en("polymorphicreferenceList").de("polymorphicreferenceList");
 
     public final FactoryViewAttribute<ExampleData1,Void,ExampleData2> factoryView = new FactoryViewAttribute<>((Function<ExampleData1, ExampleData2>) exampleData1 -> exampleData1.referenceAttribute.get()).en("factory view");
 

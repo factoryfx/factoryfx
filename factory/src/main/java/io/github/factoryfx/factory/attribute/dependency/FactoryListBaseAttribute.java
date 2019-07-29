@@ -11,7 +11,7 @@ import io.github.factoryfx.factory.FactoryBase;
 import io.github.factoryfx.factory.attribute.*;
 
 
-public class FactoryListBaseAttribute<R extends FactoryBase<?,R>,L, F extends FactoryBase<? extends L,R>,A extends FactoryListBaseAttribute<R,L, F,A>> extends ReferenceBaseAttribute<R, F,List<F>,A> implements List<F> {
+public class FactoryListBaseAttribute<L, F extends FactoryBase<? extends L,?>,A extends FactoryListBaseAttribute<L, F,A>> extends ReferenceBaseAttribute<F,List<F>,A> implements List<F> {
     final List<F> list = new ArrayList<>();
 
     public FactoryListBaseAttribute() {
@@ -132,7 +132,7 @@ public class FactoryListBaseAttribute<R extends FactoryBase<?,R>,L, F extends Fa
             throw new IllegalStateException("cant't add null to list");
         }
         if (root!=null) {
-            added.internal().setRootDeep(root);
+            added.internal().setRootDeepUnchecked(root);
         }
     }
 
@@ -340,7 +340,7 @@ public class FactoryListBaseAttribute<R extends FactoryBase<?,R>,L, F extends Fa
     }
 
     @Override
-    public void internal_visitChildren(Consumer<FactoryBase<?, R>> consumer, boolean includeViews) {
+    public void internal_visitChildren(Consumer<FactoryBase<?, ?>> consumer, boolean includeViews) {
         for (F factory : list) {
             consumer.accept(factory);
         }

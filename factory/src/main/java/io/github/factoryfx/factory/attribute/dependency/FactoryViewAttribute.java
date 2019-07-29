@@ -19,7 +19,7 @@ import io.github.factoryfx.factory.FactoryBase;
  * @param <F> factory
  */
 @JsonIgnoreType
-public class FactoryViewAttribute<R extends FactoryBase<?,R>,L, F extends FactoryBase<L,R>>  extends Attribute<F, FactoryViewAttribute<R,L, F>> implements RunLaterAble, FactoryChildrenEnclosingAttribute<R,Attribute<F, FactoryViewAttribute<R,L, F>>> {
+public class FactoryViewAttribute<R extends FactoryBase<?,R>,L, F extends FactoryBase<L,R>>  extends Attribute<F, FactoryViewAttribute<R,L, F>> implements RunLaterAble, FactoryChildrenEnclosingAttribute {
 
     R root;
     protected final Function<R, F> view;
@@ -187,7 +187,7 @@ public class FactoryViewAttribute<R extends FactoryBase<?,R>,L, F extends Factor
     }
 
     @Override
-    public void internal_visitChildren(Consumer<FactoryBase<?, R>> consumer, boolean includeViews) {
+    public void internal_visitChildren(Consumer<FactoryBase<?, ?>> consumer, boolean includeViews) {
         if (includeViews){
             F factory = get();
             if (factory != null) {

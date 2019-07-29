@@ -58,7 +58,7 @@ public abstract class FastFactoryAttributeUtility<R extends FactoryBase<?,R>, F 
         consumer.accept(attributeName,this,otherAttribute1,otherAttribute2);
     }
 
-    public abstract void visitChildFactory(Consumer<FactoryBase<?,R>> consumer);
+    public abstract void visitChildFactory(Consumer<FactoryBase<?,?>> consumer);
 
     F boundFactory;
     public void bindFactory(F factory){

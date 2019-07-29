@@ -60,7 +60,7 @@ public class JettyServerTest {
     }
 
     public static class JettyServerRootFactory extends SimpleFactoryBase<Server, JettyServerRootFactory>{
-        public final FactoryAttribute<JettyServerRootFactory,Server,JettyServerFactory<JettyServerRootFactory>> server = new FactoryAttribute<>();
+        public final FactoryAttribute<Server,JettyServerFactory<JettyServerRootFactory>> server = new FactoryAttribute<>();
 
         @Override
         protected Server createImpl() {

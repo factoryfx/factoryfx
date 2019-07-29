@@ -24,8 +24,8 @@ public class FastExampleFactoryB extends SimpleFactoryBase<ExampleLiveObjectB,Fa
         FastFactoryUtility.setup(FastExampleFactoryB.class,
                 new FastFactoryUtility<>(() -> List.of(
                         new FastValueAttribute<>(()->new StringAttribute().labelText("ExampleA1"), (factory) -> factory.stringAttribute, (factory, value) -> factory.stringAttribute = value,"stringAttribute"),
-                        new FastFactoryAttribute<>(()->new FactoryAttribute<FastExampleFactoryA, ExampleLiveObjectA, FastExampleFactoryA>().labelText("ExampleA2"), (factory) -> factory.referenceAttribute, (factory, value) -> factory.referenceAttribute = value, FastExampleFactoryA.class,"referenceAttribute"),
-                        new FastFactoryAttribute<>(()->new FactoryAttribute<FastExampleFactoryA, ExampleLiveObjectC, FastExampleFactoryC>().labelText("ExampleA3"), (factory) -> factory.referenceAttributeC, (factory, value) -> factory.referenceAttributeC = value, FastExampleFactoryC.class,"referenceAttributeC")
+                        new FastFactoryAttribute<>(()->new FactoryAttribute<ExampleLiveObjectA, FastExampleFactoryA>().labelText("ExampleA2"), (factory) -> factory.referenceAttribute, (factory, value) -> factory.referenceAttribute = value, FastExampleFactoryA.class,"referenceAttribute"),
+                        new FastFactoryAttribute<>(()->new FactoryAttribute<ExampleLiveObjectC, FastExampleFactoryC>().labelText("ExampleA3"), (factory) -> factory.referenceAttributeC, (factory, value) -> factory.referenceAttributeC = value, FastExampleFactoryC.class,"referenceAttributeC")
         )));
     }
 

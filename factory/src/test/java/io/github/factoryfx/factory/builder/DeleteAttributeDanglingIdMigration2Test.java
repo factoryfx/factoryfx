@@ -20,8 +20,8 @@ public class DeleteAttributeDanglingIdMigration2Test {
     public static class ServerFactoryOld extends SimpleFactoryBase<Void, ServerFactoryOld> {
 
 
-        public final FactoryAttribute<ServerFactoryOld,Void,ServerFactoryNestedOld> serverFactoryNested = new FactoryAttribute<>();
-        public final FactoryAttribute<ServerFactoryOld,Void,ServerFactoryQQQOld> serverFactoryQQQ = new FactoryAttribute<>();
+        public final FactoryAttribute<Void,ServerFactoryNestedOld> serverFactoryNested = new FactoryAttribute<>();
+        public final FactoryAttribute<Void,ServerFactoryQQQOld> serverFactoryQQQ = new FactoryAttribute<>();
 
         @Override
         protected Void createImpl() {
@@ -32,7 +32,7 @@ public class DeleteAttributeDanglingIdMigration2Test {
 
     public static class ServerFactoryNestedOld extends SimpleFactoryBase<Void, ServerFactoryOld> {
 
-        public final FactoryAttribute<ServerFactoryOld,Void,ServerFactoryQQQOld> serverFactoryQQQ = new FactoryAttribute<>();
+        public final FactoryAttribute<Void,ServerFactoryQQQOld> serverFactoryQQQ = new FactoryAttribute<>();
 
         @Override
         protected Void createImpl() {
@@ -56,7 +56,7 @@ public class DeleteAttributeDanglingIdMigration2Test {
 
 
     public static class ServerFactory extends SimpleFactoryBase<Void, ServerFactory> {
-        public final FactoryAttribute<ServerFactory,Void, ServerFactoryNested> serverFactoryNested = new FactoryAttribute<>();
+        public final FactoryAttribute<Void, ServerFactoryNested> serverFactoryNested = new FactoryAttribute<>();
 
         @Override
         protected Void createImpl() {
@@ -65,7 +65,7 @@ public class DeleteAttributeDanglingIdMigration2Test {
     }
 
     public static class ServerFactoryNested extends SimpleFactoryBase<Void, ServerFactory> {
-        public final FactoryAttribute<ServerFactory,Void,ServerFactoryQQQ> serverFactoryQQQ = new FactoryAttribute<>();
+        public final FactoryAttribute<Void,ServerFactoryQQQ> serverFactoryQQQ = new FactoryAttribute<>();
 
 
         @Override

@@ -11,11 +11,11 @@ import java.util.List;
 
 public class ReferenceAttributeDataView<RS extends FactoryBase<?,RS>,L, T extends FactoryBase<L,RS>> implements DataView<T>{
 
-    private final FactoryListAttribute<RS,L,T> refList;
-    private final AttributeChangeListener<List<T>, FactoryListAttribute<RS,L,T>> listAttributeChangeListener;
+    private final FactoryListAttribute<L,T> refList;
+    private final AttributeChangeListener<List<T>, FactoryListAttribute<L,T>> listAttributeChangeListener;
     private final ObservableList<T> list = FXCollections.observableArrayList();
 
-    public ReferenceAttributeDataView(FactoryListAttribute<RS,L,T> refList) {
+    public ReferenceAttributeDataView(FactoryListAttribute<L,T> refList) {
         this.refList=refList;
         this.listAttributeChangeListener = (attribute, value) -> list.setAll(value);
         this.refList.internal_addListener(new WeakAttributeChangeListener<>(listAttributeChangeListener));

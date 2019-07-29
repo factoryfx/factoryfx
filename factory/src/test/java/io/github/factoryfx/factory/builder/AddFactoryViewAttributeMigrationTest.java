@@ -21,8 +21,8 @@ public class AddFactoryViewAttributeMigrationTest {
     //----------------------------------old
     public static class ServerFactoryOld extends SimpleFactoryBase<Void, ServerFactoryOld> {
 
-        public final FactoryAttribute<ServerFactoryOld, Void, NestedFactoryOld> nestedFactory = new FactoryAttribute<>();
-        public final FactoryAttribute<ServerFactoryOld, Void, ViewFactoryOld> view = new FactoryAttribute<>();
+        public final FactoryAttribute<Void, NestedFactoryOld> nestedFactory = new FactoryAttribute<>();
+        public final FactoryAttribute<Void, ViewFactoryOld> view = new FactoryAttribute<>();
 
         @Override
         protected Void createImpl() {
@@ -51,8 +51,8 @@ public class AddFactoryViewAttributeMigrationTest {
 
     //----------------------------------new
     public static class ServerFactory extends SimpleFactoryBase<Void, ServerFactory> {
-        public final FactoryAttribute<ServerFactory,Void, NestedFactory> nestedFactory = new FactoryAttribute<>();
-        public final FactoryAttribute<ServerFactory, Void, ViewFactory> view = new FactoryAttribute<>();
+        public final FactoryAttribute<Void, NestedFactory> nestedFactory = new FactoryAttribute<>();
+        public final FactoryAttribute<Void, ViewFactory> view = new FactoryAttribute<>();
 
         @Override
         protected Void createImpl() {

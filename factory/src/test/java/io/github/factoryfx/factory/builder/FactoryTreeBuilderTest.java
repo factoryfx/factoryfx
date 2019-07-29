@@ -73,9 +73,9 @@ public class FactoryTreeBuilderTest {
 
     public static class TreeFactoryTestA extends SimpleFactoryBase<Void, TreeFactoryTestA> {
 
-        public final FactoryAttribute<TreeFactoryTestA,ExampleLiveObjectB, TreeExampleFactoryB> referenceAttribute1 = new FactoryAttribute<TreeFactoryTestA,ExampleLiveObjectB, TreeExampleFactoryB>().labelText("ExampleA2");
-        public final FactoryAttribute<TreeFactoryTestA,ExampleLiveObjectB, TreeExampleFactoryB> referenceAttribute2 = new FactoryAttribute<TreeFactoryTestA,ExampleLiveObjectB, TreeExampleFactoryB>().labelText("ExampleA2");
-        public final FactoryListAttribute<TreeFactoryTestA,ExampleLiveObjectB, TreeExampleFactoryB> referenceList = new FactoryListAttribute<TreeFactoryTestA,ExampleLiveObjectB, TreeExampleFactoryB>().labelText("ExampleA3");
+        public final FactoryAttribute<ExampleLiveObjectB, TreeExampleFactoryB> referenceAttribute1 = new FactoryAttribute<ExampleLiveObjectB, TreeExampleFactoryB>().labelText("ExampleA2");
+        public final FactoryAttribute<ExampleLiveObjectB, TreeExampleFactoryB> referenceAttribute2 = new FactoryAttribute<ExampleLiveObjectB, TreeExampleFactoryB>().labelText("ExampleA2");
+        public final FactoryListAttribute<ExampleLiveObjectB, TreeExampleFactoryB> referenceList = new FactoryListAttribute<ExampleLiveObjectB, TreeExampleFactoryB>().labelText("ExampleA3");
 
 
         @Override
@@ -86,7 +86,7 @@ public class FactoryTreeBuilderTest {
 
     public static class TreeExampleFactoryC extends SimpleFactoryBase<ExampleLiveObjectC, TreeFactoryTestA> {
         public final StringAttribute stringAttribute= new StringAttribute().labelText("ExampleB1");
-        public final FactoryAttribute<TreeFactoryTestA,ExampleLiveObjectB, TreeExampleFactoryB> referenceAttribute = new FactoryAttribute<>();
+        public final FactoryAttribute<ExampleLiveObjectB, TreeExampleFactoryB> referenceAttribute = new FactoryAttribute<>();
 
         @Override
         protected ExampleLiveObjectC createImpl() {
@@ -97,8 +97,8 @@ public class FactoryTreeBuilderTest {
 
     public static class TreeExampleFactoryB extends SimpleFactoryBase<ExampleLiveObjectB, TreeFactoryTestA> {
         public final StringAttribute stringAttribute= new StringAttribute().labelText("ExampleB1");
-        public final FactoryAttribute<TreeFactoryTestA,Void, TreeFactoryTestA> referenceAttribute = new FactoryAttribute<>();
-        public final FactoryAttribute<TreeFactoryTestA,ExampleLiveObjectC, TreeExampleFactoryC> referenceAttributeC = new FactoryAttribute<>();
+        public final FactoryAttribute<Void, TreeFactoryTestA> referenceAttribute = new FactoryAttribute<>();
+        public final FactoryAttribute<ExampleLiveObjectC, TreeExampleFactoryC> referenceAttributeC = new FactoryAttribute<>();
 
         @Override
         protected ExampleLiveObjectB createImpl() {
@@ -153,7 +153,7 @@ public class FactoryTreeBuilderTest {
     }
 
     public static class ExamplePolymorphic extends FactoryBase<Void,ExamplePolymorphic> {
-        public final FactoryPolymorphicAttribute<ExamplePolymorphic,Printer> attribute = new FactoryPolymorphicAttribute<>(Printer.class, ErrorPrinterFactory2.class, OutPrinterFactory.class);
+        public final FactoryPolymorphicAttribute<Printer> attribute = new FactoryPolymorphicAttribute<>(Printer.class, ErrorPrinterFactory2.class, OutPrinterFactory.class);
     }
 
 

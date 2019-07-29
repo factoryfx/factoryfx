@@ -7,7 +7,7 @@ import javafx.stage.Stage;
 
 
 public class RichClientRoot extends SimpleFactoryBase<Stage,RichClientRoot> {
-    public final FactoryAttribute<RichClientRoot,Stage, StageFactory> stageFactory = new FactoryAttribute<>();
+    public final FactoryAttribute<Stage, StageFactory> stageFactory = new FactoryAttribute<>();
 
     @Override
     protected Stage createImpl() {

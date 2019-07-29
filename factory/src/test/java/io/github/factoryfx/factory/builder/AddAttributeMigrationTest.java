@@ -28,7 +28,7 @@ public class AddAttributeMigrationTest {
 
     //----------------------------------new
     public static class ServerFactory extends SimpleFactoryBase<Void, ServerFactory> {
-        public final FactoryAttribute<ServerFactory,Void, NestedFactory> nestedFactory = new FactoryAttribute<>();
+        public final FactoryAttribute<Void, NestedFactory> nestedFactory = new FactoryAttribute<>();
 
         @Override
         protected Void createImpl() {

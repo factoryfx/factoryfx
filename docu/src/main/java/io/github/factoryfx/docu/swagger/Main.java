@@ -21,7 +21,7 @@ import java.net.http.HttpResponse;
 public class Main {
 
     public static class SwaggerWebserver extends SimpleFactoryBase<Server, SwaggerWebserver> {
-        public final FactoryAttribute<SwaggerWebserver,Server, JettyServerFactory<SwaggerWebserver>> server = new FactoryAttribute<>();
+        public final FactoryAttribute<Server, JettyServerFactory<SwaggerWebserver>> server = new FactoryAttribute<>();
 
         @Override
         protected Server createImpl() {

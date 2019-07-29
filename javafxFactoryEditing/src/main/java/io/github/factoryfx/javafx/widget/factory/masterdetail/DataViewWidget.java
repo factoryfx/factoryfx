@@ -91,12 +91,12 @@ public class DataViewWidget<RS extends FactoryBase<?,RS>,L,F extends FactoryBase
      * automatic change detection for ReferenceListAttribute, that means that changes in the attribute leads to automatic changes in the table
      * @param attribute ReferenceListAttribute
      */
-    public void edit(FactoryListAttribute<RS,L,F> attribute){
+    public void edit(FactoryListAttribute<L,F> attribute){
         editReadOnly(attribute);
         listEditWidget.setCenter(new FactoryListAttributeEditWidget<>(tableView, dataEditor::navigate, uniformDesign, attribute).createContent());
     }
 
-    public void editReadOnly(FactoryListAttribute<RS,L,F> attribute){
+    public void editReadOnly(FactoryListAttribute<L,F> attribute){
         final FactoryBase<?,?> oldData = dataEditor.editData().get();
         dataView = new ReferenceAttributeDataView<>(attribute);
         tableView.setItems(dataView.dataList());

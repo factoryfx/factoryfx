@@ -8,7 +8,7 @@ import io.github.factoryfx.javafx.util.UniformDesignFactory;
 import javafx.scene.control.TabPane;
 
 public class ViewsDisplayWidgetFactory extends SimpleFactoryBase<ViewsDisplayWidget,RichClientRoot> {
-    public final FactoryAttribute<RichClientRoot,UniformDesign,UniformDesignFactory> uniformDesign = new FactoryAttribute<>();
+    public final FactoryAttribute<UniformDesign,UniformDesignFactory> uniformDesign = new FactoryAttribute<>();
 
     @Override
     protected ViewsDisplayWidget createImpl() {

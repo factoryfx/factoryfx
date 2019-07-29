@@ -16,7 +16,7 @@ public class ReferenceTypeChangeMigrationTest {
     //----------------------------------old
 
     public static class ServerFactoryOld extends SimpleFactoryBase<Void, ServerFactoryOld> {
-        public final FactoryAttribute<ServerFactoryOld,Void,PartnerFactory> partnerFactory = new FactoryAttribute<>();
+        public final FactoryAttribute<Void,PartnerFactory> partnerFactory = new FactoryAttribute<>();
 
         @Override
         protected Void createImpl() {
@@ -35,7 +35,7 @@ public class ReferenceTypeChangeMigrationTest {
 
 
     public static class ServerFactory extends SimpleFactoryBase<Void, ServerFactory> {
-        public final FactoryAttribute<ServerFactory,Void,ClientSystemFactory> partnerFactory = new FactoryAttribute<>();
+        public final FactoryAttribute<Void,ClientSystemFactory> partnerFactory = new FactoryAttribute<>();
 
         @Override
         protected Void createImpl() {

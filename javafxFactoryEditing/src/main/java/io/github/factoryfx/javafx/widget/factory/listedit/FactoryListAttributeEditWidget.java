@@ -55,14 +55,14 @@ public class FactoryListAttributeEditWidget<RS extends FactoryBase<?,RS>,L, T ex
     private final Supplier<Collection<T>> possibleValuesProvider;
     private final boolean isUserEditable;
     private final boolean isUserSelectable;
-    private final FactoryListBaseAttribute<RS,L,T,?> factoryListBaseAttribute;
+    private final FactoryListBaseAttribute<L,T,?> factoryListBaseAttribute;
     private final TableView<T> tableView;
     private final Consumer<FactoryBase<?,?>> navigateToData;
     private final BooleanBinding multipleItemsSelected;
     private final boolean isUserCreateable;
     private final BiConsumer<T,List<T>> deleter;
 
-    public FactoryListAttributeEditWidget(FactoryListBaseAttribute<RS,L,T,?> factoryListBaseAttribute, TableView<T> tableView, Consumer<FactoryBase<?,?>> navigateToData, UniformDesign uniformDesign, Supplier<List<? extends T>> newValueProvider, Supplier<Collection<T>> possibleValuesProvider, BiConsumer<T,List<T>> deleter , boolean isUserEditable, boolean isUserSelectable, boolean isUserCreateable) {
+    public FactoryListAttributeEditWidget(FactoryListBaseAttribute<L,T,?> factoryListBaseAttribute, TableView<T> tableView, Consumer<FactoryBase<?,?>> navigateToData, UniformDesign uniformDesign, Supplier<List<? extends T>> newValueProvider, Supplier<Collection<T>> possibleValuesProvider, BiConsumer<T,List<T>> deleter , boolean isUserEditable, boolean isUserSelectable, boolean isUserCreateable) {
         this.uniformDesign = uniformDesign;
         this.newValueProvider = newValueProvider;
         this.possibleValuesProvider = possibleValuesProvider;
@@ -76,7 +76,7 @@ public class FactoryListAttributeEditWidget<RS extends FactoryBase<?,RS>,L, T ex
         this.deleter=deleter;
     }
 
-    public FactoryListAttributeEditWidget(TableView<T> tableView, Consumer<FactoryBase<?,?>> navigateToData, UniformDesign uniformDesign, FactoryListBaseAttribute<RS,L,T,?> factoryListBaseAttribute) {
+    public FactoryListAttributeEditWidget(TableView<T> tableView, Consumer<FactoryBase<?,?>> navigateToData, UniformDesign uniformDesign, FactoryListBaseAttribute<L,T,?> factoryListBaseAttribute) {
         this(factoryListBaseAttribute, tableView, navigateToData, uniformDesign,
                 factoryListBaseAttribute::internal_createNewPossibleValues, factoryListBaseAttribute::internal_possibleValues, (t, ts) -> factoryListBaseAttribute.internal_deleteFactory(t),
                 !factoryListBaseAttribute.internal_isUserReadOnly(), factoryListBaseAttribute.internal_isUserSelectable(), factoryListBaseAttribute.internal_isUserCreatable());

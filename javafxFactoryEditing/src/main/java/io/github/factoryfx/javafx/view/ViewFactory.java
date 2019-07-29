@@ -9,9 +9,9 @@ import io.github.factoryfx.javafx.widget.Widget;
 import io.github.factoryfx.javafx.widget.factory.WidgetFactory;
 
 public class ViewFactory extends SimpleFactoryBase<View,RichClientRoot> {
-    public final FactoryAttribute<RichClientRoot,ViewDescription,ViewDescriptionFactory> viewDescription = new FactoryAttribute<>();
-    public final FactoryAttribute<RichClientRoot,ViewsDisplayWidget, ViewsDisplayWidgetFactory> viewsDisplayWidget = new FactoryAttribute<>();
-    public final FactoryAttribute<RichClientRoot,Widget, WidgetFactory> widget = new FactoryAttribute<>();
+    public final FactoryAttribute<ViewDescription,ViewDescriptionFactory> viewDescription = new FactoryAttribute<>();
+    public final FactoryAttribute<ViewsDisplayWidget, ViewsDisplayWidgetFactory> viewsDisplayWidget = new FactoryAttribute<>();
+    public final FactoryAttribute<Widget, WidgetFactory> widget = new FactoryAttribute<>();
 
     @Override
     protected View createImpl() {

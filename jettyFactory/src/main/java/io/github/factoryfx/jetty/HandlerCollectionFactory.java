@@ -7,7 +7,7 @@ import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.handler.HandlerCollection;
 
 public class HandlerCollectionFactory<R extends FactoryBase<?,R>> extends PolymorphicFactoryBase<HandlerCollection,R> {
-    public final FactoryPolymorphicListAttribute<R,Handler> handlers = new FactoryPolymorphicListAttribute<R,Handler>(Handler.class).labelText("Handlers");
+    public final FactoryPolymorphicListAttribute<Handler> handlers = new FactoryPolymorphicListAttribute<>(Handler.class).labelText("Handlers");
 
     @Override
     protected HandlerCollection createImpl() {

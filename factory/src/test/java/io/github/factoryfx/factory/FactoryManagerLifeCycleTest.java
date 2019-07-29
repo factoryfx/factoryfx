@@ -68,18 +68,18 @@ public class FactoryManagerLifeCycleTest {
     }
 
     public static class LifecycleFactoryA extends LifecycleFactoryBase {
-        public final FactoryAttribute<LifecycleFactoryA,DummyLifeObejct, LifecycleFactoryB> ref = new FactoryAttribute<>();
-        public final FactoryListAttribute<LifecycleFactoryA,DummyLifeObejct, LifecycleFactoryC> refList = new FactoryListAttribute<>();
-        public final FactoryAttribute<LifecycleFactoryA,DummyLifeObejct, LifecycleFactoryC> refC = new FactoryAttribute<>();
+        public final FactoryAttribute<DummyLifeObejct, LifecycleFactoryB> ref = new FactoryAttribute<>();
+        public final FactoryListAttribute<DummyLifeObejct, LifecycleFactoryC> refList = new FactoryListAttribute<>();
+        public final FactoryAttribute<DummyLifeObejct, LifecycleFactoryC> refC = new FactoryAttribute<>();
 
-        public final FactoryAttribute<LifecycleFactoryA,DummyLifeObejct, LifecycleFactoryA> refA = new FactoryAttribute<>();
+        public final FactoryAttribute<DummyLifeObejct, LifecycleFactoryA> refA = new FactoryAttribute<>();
 
-        public final FactoryAttribute<LifecycleFactoryA,DummyLifeObejct, LifecycleFactoryB> ref2 = new FactoryAttribute<>();
+        public final FactoryAttribute<DummyLifeObejct, LifecycleFactoryB> ref2 = new FactoryAttribute<>();
     }
 
     public static class LifecycleFactoryB extends LifecycleFactoryBase {
-        public final FactoryAttribute<LifecycleFactoryA,DummyLifeObejct, LifecycleFactoryC> refC = new FactoryAttribute<>();
-        public final FactoryAttribute<LifecycleFactoryA,DummyLifeObejct, LifecycleFactoryD> refD = new FactoryAttribute<>();
+        public final FactoryAttribute<DummyLifeObejct, LifecycleFactoryC> refC = new FactoryAttribute<>();
+        public final FactoryAttribute<DummyLifeObejct, LifecycleFactoryD> refD = new FactoryAttribute<>();
         public StringAttribute stringAttribute=new StringAttribute();
 
         public final FactoryViewListAttribute<LifecycleFactoryA,DummyLifeObejct, LifecycleFactoryC> listView = new FactoryViewListAttribute<LifecycleFactoryA,DummyLifeObejct, LifecycleFactoryC>(
@@ -91,7 +91,7 @@ public class FactoryManagerLifeCycleTest {
     }
 
     public static class LifecycleFactoryD extends LifecycleFactoryBase {
-        public final FactoryAttribute<LifecycleFactoryA,DummyLifeObejct, LifecycleFactoryC> refC = new FactoryAttribute<>();
+        public final FactoryAttribute<DummyLifeObejct, LifecycleFactoryC> refC = new FactoryAttribute<>();
     }
 
 

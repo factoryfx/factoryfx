@@ -9,7 +9,7 @@ import java.util.HashSet;
 
 public class UpdateableServletFactory<R extends FactoryBase<?,R>> extends FactoryBase<UpdateableServlet,R> {
 
-    public final FactoryListAttribute<R,ServletAndPath,ServletAndPathFactory<R>> servletAndPaths = new FactoryListAttribute<R,ServletAndPath,ServletAndPathFactory<R>>().labelText("servletAndPaths");
+    public final FactoryListAttribute<ServletAndPath,ServletAndPathFactory<R>> servletAndPaths = new FactoryListAttribute<ServletAndPath,ServletAndPathFactory<R>>().labelText("servletAndPaths");
 
     public UpdateableServletFactory() {
         this.configLifeCycle().setCreator(() -> new UpdateableServlet(servletAndPaths.instances()));

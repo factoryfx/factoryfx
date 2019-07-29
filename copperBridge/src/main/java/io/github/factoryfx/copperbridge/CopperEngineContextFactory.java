@@ -12,8 +12,8 @@ public abstract class CopperEngineContextFactory<R extends FactoryBase<?, R>> ex
 
     public final StringAttribute dependencyInjectorType = new StringAttribute().labelText("DependencyInjectorType");
 
-    public final FactoryAttribute<R,TransientScottyEngine, TransientScottyEngineFactory<R>> transientScottyEngine = new FactoryAttribute<R,TransientScottyEngine, TransientScottyEngineFactory<R>>().labelText("Transient engine").nullable();
-    public final FactoryAttribute<R,PersistentEngineContainer, PersistentScottyEngineFactory<R>> persistentScottyEngine = new FactoryAttribute<R,PersistentEngineContainer, PersistentScottyEngineFactory<R>>().labelText("Persistent engine").nullable();
+    public final FactoryAttribute<TransientScottyEngine, TransientScottyEngineFactory<R>> transientScottyEngine = new FactoryAttribute<TransientScottyEngine, TransientScottyEngineFactory<R>>().labelText("Transient engine").nullable();
+    public final FactoryAttribute<PersistentEngineContainer, PersistentScottyEngineFactory<R>> persistentScottyEngine = new FactoryAttribute<PersistentEngineContainer, PersistentScottyEngineFactory<R>>().labelText("Persistent engine").nullable();
 
     public CopperEngineContextFactory(){
         configLifeCycle().setCreator(()->{

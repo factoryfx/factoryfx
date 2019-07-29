@@ -9,7 +9,7 @@ import io.github.factoryfx.javafx.factoryviewmanager.FactoryAwareWidgetFactory;
 import io.github.factoryfx.javafx.widget.factory.tree.DataTreeWidgetFactory;
 
 public class ConfigurationViewFactory extends FactoryAwareWidgetFactory<ServerRootFactory> {
-    public final FactoryAttribute<RichClientRoot,DataTreeWidget, DataTreeWidgetFactory> dataTreeWidget = new FactoryAttribute<>();
+    public final FactoryAttribute<DataTreeWidget, DataTreeWidgetFactory> dataTreeWidget = new FactoryAttribute<>();
 
     @Override
     protected FactoryAwareWidget<ServerRootFactory> createWidget() {

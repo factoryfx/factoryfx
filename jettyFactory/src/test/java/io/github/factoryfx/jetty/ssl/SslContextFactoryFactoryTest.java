@@ -45,7 +45,7 @@ public class SslContextFactoryFactoryTest {
     }
 
     public static class TestJettyServerFactory extends SimpleFactoryBase<Server, TestJettyServerFactory>{
-        public final FactoryAttribute<TestJettyServerFactory,Server,JettyServerFactory<TestJettyServerFactory>> server = new FactoryAttribute<>();
+        public final FactoryAttribute<Server,JettyServerFactory<TestJettyServerFactory>> server = new FactoryAttribute<>();
 
         @Override
         protected Server createImpl() {

@@ -11,16 +11,16 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.function.Supplier;
 
-public class FactoryPolymorphicUtil<R extends FactoryBase<?,R>,L> {
+public class FactoryPolymorphicUtil<L> {
 
     @SuppressWarnings("unchecked")
-    public void setup(ReferenceBaseAttribute<R,FactoryBase<? extends L,R>,?,?> attribute, Class<L> liveObjectClass, Supplier<R> root, Class<? extends PolymorphicFactory<?>>... possibleFactoriesClasses){
+    public void setup(ReferenceBaseAttribute<FactoryBase<? extends L,?>,?,?> attribute, Class<L> liveObjectClass, Supplier<FactoryBase<?,?>> root, Class<? extends PolymorphicFactory<?>>... possibleFactoriesClasses){
         attribute.possibleValueProvider(data -> {
-            Set<FactoryBase<? extends L, R>> result = new HashSet<>();
-            for (FactoryBase<?,R> factory: root.get().internal().collectChildrenDeep()){
+            Set<FactoryBase<? extends L, ?>> result = new HashSet<>();
+            for (FactoryBase<?,?> factory: root.get().internal().collectChildrenDeep()){
                 if (factory instanceof PolymorphicFactory){
                     if (liveObjectClass.isAssignableFrom(((PolymorphicFactory)factory).getLiveObjectClass())){
-                        result.add((FactoryBase<L, R>) factory);
+                        result.add((FactoryBase<L, ?>) factory);
                     }
                 }
             }
@@ -47,9 +47,9 @@ public class FactoryPolymorphicUtil<R extends FactoryBase<?,R>,L> {
 
         attribute.newValuesProvider((data,a) -> {
             try {
-                ArrayList<FactoryBase<? extends L, R>> result = new ArrayList<>();
+                ArrayList<FactoryBase<? extends L, ?>> result = new ArrayList<>();
                 for (Class<?> clazz: possibleFactoriesClasses){
-                    result.add((FactoryBase<L, R>) clazz.getConstructor().newInstance());
+                    result.add((FactoryBase<L, ?>) clazz.getConstructor().newInstance());
                 }
                 return result;
             } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {

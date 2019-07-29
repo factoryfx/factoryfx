@@ -10,7 +10,7 @@ import org.eclipse.jetty.servlet.ServletHolder;
 
 public class ServletContextHandlerFactory<R extends FactoryBase<?,R>> extends SimpleFactoryBase<Handler,R> {
 
-    public final FactoryAttribute<R,UpdateableServlet,UpdateableServletFactory<R>> updatableRootServlet = new FactoryAttribute<R,UpdateableServlet,UpdateableServletFactory<R>>().labelText("updatableRootServlet");
+    public final FactoryAttribute<UpdateableServlet,UpdateableServletFactory<R>> updatableRootServlet = new FactoryAttribute<UpdateableServlet,UpdateableServletFactory<R>>().labelText("updatableRootServlet");
 
     @Override
     protected Handler createImpl() {

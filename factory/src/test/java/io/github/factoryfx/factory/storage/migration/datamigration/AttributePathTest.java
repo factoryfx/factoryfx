@@ -123,7 +123,7 @@ public class AttributePathTest {
     }
 
     public static class PathFactoryExample extends SimpleFactoryBase<Object,PathFactoryExample> {
-        public final FactoryAttribute<PathFactoryExample, Void, PathFactoryExampleNested> reference = new FactoryAttribute<>();
+        public final FactoryAttribute<Void, PathFactoryExampleNested> reference = new FactoryAttribute<>();
 
         @Override
         protected Void createImpl() {
@@ -132,7 +132,7 @@ public class AttributePathTest {
     }
 
     public static class PathFactoryExampleNested extends SimpleFactoryBase<Void, PathFactoryExample> {
-        public final FactoryAttribute<PathFactoryExample, Void, PathFactoryExampleNested> ref2 = new FactoryAttribute<>();
+        public final FactoryAttribute<Void, PathFactoryExampleNested> ref2 = new FactoryAttribute<>();
 
         @Override
         protected Void createImpl() {
@@ -161,7 +161,7 @@ public class AttributePathTest {
     }
 
     public static class PolymorphicFactoryExample extends SimpleFactoryBase<Object,PolymorphicFactoryExample> {
-        public final FactoryPolymorphicAttribute<ExampleFactoryA, Printer> polyreference = new FactoryPolymorphicAttribute<ExampleFactoryA,Printer>().setup(Printer.class, ErrorPrinterFactory.class, OutPrinterFactory.class);
+        public final FactoryPolymorphicAttribute<Printer> polyreference = new FactoryPolymorphicAttribute<Printer>().setup(Printer.class, ErrorPrinterFactory.class, OutPrinterFactory.class);
 
         @Override
         protected Void createImpl() {

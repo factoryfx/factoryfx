@@ -14,8 +14,8 @@ import io.github.factoryfx.microservice.rest.client.MicroserviceRestClientFactor
  */
 public class FactoryEditManagerFactory<RS  extends FactoryBase<?,RS>> extends SimpleFactoryBase<FactoryEditManager<RS>,RichClientRoot> {
 
-    public final FactoryAttribute<RichClientRoot,MicroserviceRestClient<RS>, MicroserviceRestClientFactory<RichClientRoot,RS>> restClient = new FactoryAttribute<>();
-    public final FactoryAttribute<RichClientRoot,MigrationManager<RS>,FactorySerialisationManagerFactory<RS>> factorySerialisationManager = new FactoryAttribute<>();
+    public final FactoryAttribute<MicroserviceRestClient<RS>, MicroserviceRestClientFactory<RichClientRoot,RS>> restClient = new FactoryAttribute<>();
+    public final FactoryAttribute<MigrationManager<RS>,FactorySerialisationManagerFactory<RS>> factorySerialisationManager = new FactoryAttribute<>();
 
     @Override
     protected FactoryEditManager<RS> createImpl() {

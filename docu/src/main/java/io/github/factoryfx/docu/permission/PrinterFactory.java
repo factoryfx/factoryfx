@@ -10,7 +10,7 @@ public class PrinterFactory extends FactoryBase<Printer, PrinterFactory> {
     public static final String CHANGE_TEXT_PERMISSION = "CHANGE_TEXT";
 
     public final StringAttribute text=new StringAttribute().permission(CHANGE_TEXT_PERMISSION);
-    public final FactoryAttribute<PrinterFactory,Server, JettyServerFactory<PrinterFactory>> server = new FactoryAttribute<>();
+    public final FactoryAttribute<Server, JettyServerFactory<PrinterFactory>> server = new FactoryAttribute<>();
 
     public PrinterFactory(){
         configLifeCycle().setCreator(() -> new Printer(text.get()));

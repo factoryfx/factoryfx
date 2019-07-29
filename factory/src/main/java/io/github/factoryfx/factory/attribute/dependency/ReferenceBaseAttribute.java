@@ -13,10 +13,10 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 
 /** Base for Reference attributes, with common api  */
-public abstract class ReferenceBaseAttribute<R extends FactoryBase<?,R>, F extends FactoryBase<?,R>, U, A extends ReferenceBaseAttribute<R, F,U,A>> extends Attribute<U,A> implements FactoryChildrenEnclosingAttribute<R,A> {
+public abstract class ReferenceBaseAttribute<F extends FactoryBase<?,?>, U, A extends ReferenceBaseAttribute<F,U,A>> extends Attribute<U,A> implements FactoryChildrenEnclosingAttribute {
 
-    R root;
-    protected FactoryBase<?,R> parent;//data that contains this attribute
+    FactoryBase<?,?> root;
+    protected FactoryBase<?,?> parent;//data that contains this attribute
 //    protected Class<T> containingFactoryClass;
 
 
@@ -35,13 +35,13 @@ public abstract class ReferenceBaseAttribute<R extends FactoryBase<?,R>, F exten
 //        this.containingFactoryClass = containingFactoryClass;
 //    }
 
-    private Function<R,Collection<F>> possibleValueProviderFromRoot;
+    private Function<FactoryBase<?,?>,Collection<F>> possibleValueProviderFromRoot;
 
     /**customise the list of selectable items
      * @param provider provider
      * @return self*/
     @SuppressWarnings("unchecked")
-    public A possibleValueProvider(Function<R,Collection<F>> provider){
+    public A possibleValueProvider(Function<FactoryBase<?,?>,Collection<F>> provider){
         possibleValueProviderFromRoot=provider;
         return (A)this;
     }
@@ -56,11 +56,10 @@ public abstract class ReferenceBaseAttribute<R extends FactoryBase<?,R>, F exten
         return new ArrayList<>();
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public void internal_addBackReferences( FactoryBase<?,?> root, FactoryBase<?,?> parent){
-        this.root=(R)root;
-        this.parent=(FactoryBase<?,R>)parent;
+        this.root=root;
+        this.parent=parent;
     }
 
     BiFunction<FactoryBase<?,?>,A,List<F>> newValuesProviderFromRootAndAttribute;

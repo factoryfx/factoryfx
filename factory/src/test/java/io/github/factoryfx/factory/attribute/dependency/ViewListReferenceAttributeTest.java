@@ -24,8 +24,8 @@ public class ViewListReferenceAttributeTest {
     }
 
     public static class ViewListExampleFactoryRoot extends FactoryBase<Void, ViewListExampleFactoryRoot>{
-        public final FactoryAttribute<ViewListExampleFactoryRoot,Void,ViewListExampleFactory> ref = new FactoryAttribute<>();
-        public final FactoryListAttribute<ViewListExampleFactoryRoot,Void,ViewExampleDataA> list= new FactoryListAttribute<>();
+        public final FactoryAttribute<Void,ViewListExampleFactory> ref = new FactoryAttribute<>();
+        public final FactoryListAttribute<Void,ViewExampleDataA> list= new FactoryListAttribute<>();
     }
     
     public static class ViewExampleDataA extends FactoryBase<Void, ViewListExampleFactoryRoot>{

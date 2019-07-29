@@ -22,7 +22,7 @@ import javafx.scene.layout.VBox;
 
 import io.github.factoryfx.javafx.util.UniformDesign;
 
-public class FactoryListAttributeVisualisation<T extends FactoryBase<?,?>, A extends FactoryListBaseAttribute<?,?,T,A>> extends ListAttributeVisualisation<T,A> {
+public class FactoryListAttributeVisualisation<T extends FactoryBase<?,?>, A extends FactoryListBaseAttribute<?,T,A>> extends ListAttributeVisualisation<T,A> {
 
     private final UniformDesign uniformDesign;
     private final Consumer<FactoryBase<?,?>> navigateToData;

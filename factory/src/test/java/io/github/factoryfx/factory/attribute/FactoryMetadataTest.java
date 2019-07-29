@@ -31,14 +31,14 @@ public class FactoryMetadataTest {
         Assertions.assertNotNull(copy.attribute.get());
     }
 
-    public static class CustomReferenceAttribute<L , F extends FactoryBase<L,ExampleDataA>> extends FactoryAttribute<ExampleDataA,L,F> {
+    public static class CustomReferenceAttribute<L , F extends FactoryBase<L,ExampleDataA>> extends FactoryAttribute<L,F> {
 
     }
 
     public static class ExampleReferenceData extends FactoryBase<Void,ExampleDataA> {
         public final StringAttribute valueAttribute = new StringAttribute();
-        public final FactoryAttribute<ExampleDataA,Void,ExampleDataA> attribute = new FactoryAttribute<>();
-        public final FactoryListAttribute<ExampleDataA,Void, ExampleDataC> attributeList = new FactoryListAttribute<>();
+        public final FactoryAttribute<Void,ExampleDataA> attribute = new FactoryAttribute<>();
+        public final FactoryListAttribute<Void, ExampleDataC> attributeList = new FactoryListAttribute<>();
         public final CustomReferenceAttribute<Void, ExampleDataC> customReferenceAttribute = new CustomReferenceAttribute<>();
     }
 
@@ -61,8 +61,8 @@ public class FactoryMetadataTest {
     }
 
     public static class ExampleReferenceDataGenericRoot extends FactoryBase<Void,ExampleReferenceDataGenericRoot> {
-        public final FactoryAttribute<ExampleReferenceDataGenericRoot,Void,ExampleReferenceGeneric<ExampleReferenceDataGenericRoot>> attribute = new FactoryAttribute<>();
-        public final FactoryAttribute<ExampleReferenceDataGenericRoot,Void,ExampleReferenceGeneric2<ExampleReferenceDataGenericRoot,ExampleReferenceGeneric<ExampleReferenceDataGenericRoot>>> attribute2 = new FactoryAttribute<>();
+        public final FactoryAttribute<Void,ExampleReferenceGeneric<ExampleReferenceDataGenericRoot>> attribute = new FactoryAttribute<>();
+        public final FactoryAttribute<Void,ExampleReferenceGeneric2<ExampleReferenceDataGenericRoot,ExampleReferenceGeneric<ExampleReferenceDataGenericRoot>>> attribute2 = new FactoryAttribute<>();
     }
 
     public static class ExampleReferenceGeneric<R extends FactoryBase<?,R>> extends FactoryBase<Void,R> {

@@ -143,7 +143,7 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
         getFactoryMetadata().visitAttributesFlat(this,consumer);
     }
 
-    private void visitFactoryEnclosingAttributesFlat(FactoryEnclosingAttributeVisitor<R> consumer) {
+    private void visitFactoryEnclosingAttributesFlat(FactoryEnclosingAttributeVisitor consumer) {
         getFactoryMetadata().visitFactoryEnclosingAttributesFlat(this,consumer);
     }
 
@@ -199,19 +199,20 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
         return result;
     }
 
-    private Set<FactoryBase<?,R>> collectionChildrenDeepFromNonFinalizedTree(){
+    @SuppressWarnings("unchecked")
+    private <R extends FactoryBase<?,R>> Set<FactoryBase<?,R>> collectionChildrenDeepFromNonFinalizedTree(){
         HashSet<FactoryBase<?, R>> result = new HashSet<>();
         ArrayDeque<FactoryBase<?,R>> stack = new ArrayDeque<>();
-        stack.push(this);
+        stack.push((FactoryBase<?,R>)this);
         while (!stack.isEmpty()) {
             FactoryBase<?,R> factory = stack.pop();
             if (result.add(factory)){
-                factory.collectionChildrenDeepFromNonFinalizedTreeGenericWorkaround(stack::push);
+                factory.collectionChildrenDeepFromNonFinalizedTreeGenericWorkaround(e -> stack.push((FactoryBase<?,R>)e));
             }
         }
         return result;
     }
-    private void collectionChildrenDeepFromNonFinalizedTreeGenericWorkaround(Consumer<FactoryBase<?,R>> consumer){
+    private void collectionChildrenDeepFromNonFinalizedTreeGenericWorkaround(Consumer<FactoryBase<?,?>> consumer){
         getFactoryMetadata().visitChildFactoriesAndViewsFlat(this, consumer, false);
     }
 
@@ -741,7 +742,7 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
          * can be used inside a view
          * @return all data including root and no duplicates
          * */
-        public Set<FactoryBase<?,R> > collectionChildrenDeepFromNonFinalizedTree() {
+        public <R extends FactoryBase<?,R>> Set<FactoryBase<?,R>> collectionChildrenDeepFromNonFinalizedTree() {
             return factory.collectionChildrenDeepFromNonFinalizedTree();
         }
 
@@ -982,6 +983,11 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
             factory.setRootDeep(root);
         }
 
+        @SuppressWarnings("unchecked")
+        public void setRootDeepUnchecked(FactoryBase<?,?> root) {
+            factory.setRootDeep((R)root);
+        }
+
         public void needRecalculationForBackReferences() {
             factory.needReFinalisation();
         }
@@ -1219,9 +1225,11 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
     @JsonIgnore()
     List<FactoryBase<?,R>> finalisedChildrenFlat;
     List<FactoryBase<?,R>> addedTo;
+    @SuppressWarnings("unchecked")
     void finalizeChildren() {
         finalisedChildrenFlat = new ArrayList<>();
-        getFactoryMetadata().visitChildFactoriesAndViewsFlat(this, child->{
+        getFactoryMetadata().visitChildFactoriesAndViewsFlat(this, childUntyped->{
+            FactoryBase<?,R> child = (FactoryBase<?,R>)childUntyped;
             if (child!=null){
                 if (child.addedTo!= finalisedChildrenFlat){
                     finalisedChildrenFlat.add(child);

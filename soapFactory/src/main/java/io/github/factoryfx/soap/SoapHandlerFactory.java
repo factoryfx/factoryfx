@@ -6,7 +6,7 @@ import io.github.factoryfx.factory.attribute.dependency.FactoryAttribute;
 
 public class SoapHandlerFactory<S,R extends FactoryBase<?,R>> extends SimpleFactoryBase<SoapHandler,R> {
 
-    public final FactoryAttribute<R,S,FactoryBase<S,R>> serviceBean = new FactoryAttribute<>();
+    public final FactoryAttribute<S,FactoryBase<S,R>> serviceBean = new FactoryAttribute<>();
 
     @Override
     protected SoapHandler createImpl() {

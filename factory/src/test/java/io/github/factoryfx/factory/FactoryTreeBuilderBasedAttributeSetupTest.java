@@ -281,8 +281,8 @@ public class FactoryTreeBuilderBasedAttributeSetupTest {
     }
 
     public static class ExampleFactoryViewRootFactory extends SimpleFactoryBase<ExampleLiveObjectB,ExampleFactoryViewRootFactory>{
-        public final FactoryAttribute<ExampleFactoryViewRootFactory,ExampleLiveObjectB,ExampleViewFactory> referenceAttributeViewFactory = new FactoryAttribute<>();
-        public final FactoryAttribute<ExampleFactoryViewRootFactory,ExampleLiveObjectB,ExamplDummyFactory> referenceAttribute = new FactoryAttribute<>();
+        public final FactoryAttribute<ExampleLiveObjectB,ExampleViewFactory> referenceAttributeViewFactory = new FactoryAttribute<>();
+        public final FactoryAttribute<ExampleLiveObjectB,ExamplDummyFactory> referenceAttribute = new FactoryAttribute<>();
 
         @Override
         protected ExampleLiveObjectB createImpl() {

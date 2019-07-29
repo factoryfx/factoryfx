@@ -12,7 +12,7 @@ import io.github.factoryfx.javafx.widget.factory.masterdetail.DataViewWidgetFact
 
 public class ProductsViewFactory extends FactoryAwareWidgetFactory<ServerRootFactory> {
 
-    public final FactoryAttribute<RichClientRoot, DataViewWidget<ServerRootFactory, Product,ProductFactory>, DataViewWidgetFactory<ServerRootFactory, Product,ProductFactory>> dataViewWidget = new FactoryAttribute<>();
+    public final FactoryAttribute<DataViewWidget<ServerRootFactory, Product,ProductFactory>, DataViewWidgetFactory<ServerRootFactory, Product,ProductFactory>> dataViewWidget = new FactoryAttribute<>();
 
     @Override
     protected FactoryAwareWidget<ServerRootFactory> createWidget() {

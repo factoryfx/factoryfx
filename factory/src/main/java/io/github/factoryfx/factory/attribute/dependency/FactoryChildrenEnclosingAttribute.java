@@ -6,14 +6,14 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.function.Consumer;
 
-public interface FactoryChildrenEnclosingAttribute<R extends FactoryBase<?,R>,A> {
+public interface FactoryChildrenEnclosingAttribute {
 
     /**setup value selection and new value adding for user editing
      * @param clazz class
      * */
     void internal_setReferenceClass(Class<?> clazz);
 
-    void internal_visitChildren(Consumer<FactoryBase<?,R>> consumer, boolean includeViews);
+    void internal_visitChildren(Consumer<FactoryBase<?,?>> consumer, boolean includeViews);
     /*
     see test {{@Link MergeTest#test_duplicate_ids_bug}} why this is needed
 */

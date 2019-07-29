@@ -28,7 +28,7 @@ import io.github.factoryfx.server.user.persistent.PersistentUserManagementFactor
  */
 public class MicroserviceResourceFactory<R extends FactoryBase<?,R>> extends FactoryBase<MicroserviceResource<R>,R> {
 
-    public final FactoryPolymorphicAttribute<R,UserManagement> userManagement = new FactoryPolymorphicAttribute<R,UserManagement>().setupUnsafe(UserManagement.class, NoUserManagementFactory.class, PersistentUserManagementFactory.class).labelText("resource").nullable();
+    public final FactoryPolymorphicAttribute<UserManagement> userManagement = new FactoryPolymorphicAttribute<UserManagement>().setupUnsafe(UserManagement.class, NoUserManagementFactory.class, PersistentUserManagementFactory.class).labelText("resource").nullable();
 
 
     public MicroserviceResourceFactory(){

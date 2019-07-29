@@ -118,7 +118,7 @@ public class DataTreeWidget implements Widget {
             TreeItem<TreeData> dataTreeItem = new TreeItem<>(new TreeData(data,null));
             data.internal().visitAttributesFlat((attributeVariableName, attribute) -> {
                 if (attribute instanceof FactoryBaseAttribute) {
-                    FactoryBase<?,?> child=((FactoryBaseAttribute<?,?,?,?>)attribute).get();
+                    FactoryBase<?,?> child=((FactoryBaseAttribute<?,?,?>)attribute).get();
                     if (child!=null){
                         TreeItem<TreeData> refDataTreeItem = new TreeItem<>(new TreeData(null,uniformDesign.getLabelText(attribute,attributeVariableName)));
                         dataTreeItem.getChildren().add(refDataTreeItem);
@@ -130,7 +130,7 @@ public class DataTreeWidget implements Widget {
                     }
                 }
                 if (attribute instanceof FactoryListBaseAttribute) {
-                    FactoryListBaseAttribute<?, ?, ?, ?> factoryListBaseAttribute = (FactoryListBaseAttribute<?, ?, ?, ?>) attribute;
+                    FactoryListBaseAttribute<?, ?, ?> factoryListBaseAttribute = (FactoryListBaseAttribute<?, ?, ?>) attribute;
                     if (!factoryListBaseAttribute.isEmpty()){
                         TreeItem<TreeData> refDataTreeItem = new TreeItem<>(new TreeData(null,uniformDesign.getLabelText(attribute,attributeVariableName)));
                         dataTreeItem.getChildren().add(refDataTreeItem);

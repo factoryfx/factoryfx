@@ -20,7 +20,7 @@ import java.util.function.Consumer;
  * @param <A> Attribute self
 
  */
-public class FactoryBaseAttribute<R extends FactoryBase<?,R>,L,F extends FactoryBase<? extends L,R>, A extends ReferenceBaseAttribute<R,F,F,A>> extends ReferenceBaseAttribute<R,F,F,A> {
+public class FactoryBaseAttribute<L,F extends FactoryBase<? extends L,?>, A extends ReferenceBaseAttribute<F,F,A>> extends ReferenceBaseAttribute<F,F,A> {
 
     @JsonProperty("v")
     private F value;
@@ -62,7 +62,7 @@ public class FactoryBaseAttribute<R extends FactoryBase<?,R>,L,F extends Factory
         if (root!=null) {
             root.internal().needRecalculationForBackReferences();
             if (factory!=null){
-                factory.internal().setRootDeep(root);//intentionally just added flat, this compromise between performance an convenience, deep set would be too slow for that case finalise must be called manually
+                factory.internal().setRootDeepUnchecked(root);//intentionally just added flat, this compromise between performance an convenience, deep set would be too slow for that case finalise must be called manually
             }
         }
         updateListeners(factory);
@@ -178,7 +178,7 @@ public class FactoryBaseAttribute<R extends FactoryBase<?,R>,L,F extends Factory
     }
 
     @Override
-    public void internal_visitChildren(Consumer<FactoryBase<?, R>> consumer, boolean includeViews) {
+    public void internal_visitChildren(Consumer<FactoryBase<?, ?>> consumer, boolean includeViews) {
         if (value != null) {
             consumer.accept(value);
         }

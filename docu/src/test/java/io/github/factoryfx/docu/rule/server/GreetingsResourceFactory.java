@@ -5,7 +5,7 @@ import io.github.factoryfx.factory.attribute.dependency.FactoryAttribute;
 
 public class GreetingsResourceFactory extends ServerBaseFactory<GreetingsResource> {
 
-    public final FactoryAttribute<ServerRootFactory, BackendClient, BackendClientFactory> backendClient = new FactoryAttribute<>();
+    public final FactoryAttribute<BackendClient, BackendClientFactory> backendClient = new FactoryAttribute<>();
 
     @Override
     protected GreetingsResource createImpl() {

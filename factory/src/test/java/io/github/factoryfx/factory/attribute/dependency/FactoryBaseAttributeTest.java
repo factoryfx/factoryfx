@@ -19,8 +19,8 @@ class FactoryBaseAttributeTest {
     public void test_Listener()  {
         List<ExampleFactoryA> calls= new ArrayList<>();
 
-        FactoryAttribute<ExampleFactoryA, ExampleLiveObjectA, ExampleFactoryA> factoryAttribute = new FactoryAttribute<>();
-        final AttributeChangeListener<ExampleFactoryA,FactoryAttribute<ExampleFactoryA, ExampleLiveObjectA, ExampleFactoryA>> stringAttributeChangeListener = (attribute, value) -> calls.add(value);
+        FactoryAttribute<ExampleLiveObjectA, ExampleFactoryA> factoryAttribute = new FactoryAttribute<>();
+        final AttributeChangeListener<ExampleFactoryA,FactoryAttribute<ExampleLiveObjectA, ExampleFactoryA>> stringAttributeChangeListener = (attribute, value) -> calls.add(value);
         factoryAttribute.internal_addListener(stringAttributeChangeListener);
 
         ExampleFactoryA value = new ExampleFactoryA();

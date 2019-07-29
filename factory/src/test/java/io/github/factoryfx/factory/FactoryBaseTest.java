@@ -99,10 +99,10 @@ public class FactoryBaseTest {
     }
 
     public static class XRoot extends SimpleFactoryBase<String,XRoot> {
-        public final FactoryAttribute<XRoot,String,ExampleFactoryAndViewA> referenceAttribute = new FactoryAttribute<>();
-        public final FactoryAttribute<XRoot,String,XFactory> xFactory = new FactoryAttribute<>();
-        public final FactoryAttribute<XRoot,String,XFactory> xFactory2 = new FactoryAttribute<>();
-        public final FactoryListAttribute<XRoot,String,XFactory> xFactoryList = new FactoryListAttribute<>();
+        public final FactoryAttribute<String,ExampleFactoryAndViewA> referenceAttribute = new FactoryAttribute<>();
+        public final FactoryAttribute<String,XFactory> xFactory = new FactoryAttribute<>();
+        public final FactoryAttribute<String,XFactory> xFactory2 = new FactoryAttribute<>();
+        public final FactoryListAttribute<String,XFactory> xFactoryList = new FactoryListAttribute<>();
 
         @Override
         protected String createImpl() {
@@ -137,7 +137,7 @@ public class FactoryBaseTest {
 
     public static class XFactory extends SimpleFactoryBase<String,XRoot> {
         public final StringAttribute bla=new StringAttribute();
-        public final FactoryAttribute<XRoot,String,X2Factory> xFactory2 = new FactoryAttribute<>();
+        public final FactoryAttribute<String,X2Factory> xFactory2 = new FactoryAttribute<>();
 
         public List<String> createCalls=new ArrayList<>();
 
@@ -151,7 +151,7 @@ public class FactoryBaseTest {
 
     public static class X2Factory extends SimpleFactoryBase<String, XRoot> {
         public final StringAttribute bla=new StringAttribute();
-        public final FactoryAttribute<XRoot,String,X3Factory> xFactory3 = new FactoryAttribute<>();
+        public final FactoryAttribute<String,X3Factory> xFactory3 = new FactoryAttribute<>();
 
 
         public List<String> createCalls=new ArrayList<>();
@@ -299,7 +299,7 @@ public class FactoryBaseTest {
 
     public static class IterationTestFactory extends SimpleFactoryBase<Void,IterationTestFactory>{
         public String testinfo;
-        public final FactoryListAttribute<IterationTestFactory,Void,IterationTestFactory> children = new FactoryListAttribute<>();
+        public final FactoryListAttribute<Void,IterationTestFactory> children = new FactoryListAttribute<>();
 
         public IterationTestFactory(String testinfo) {
             this();
@@ -488,7 +488,7 @@ public class FactoryBaseTest {
         exampleFactoryA.referenceAttribute.set(exampleFactoryB);
         exampleFactoryB.referenceAttribute.set(exampleFactoryA);
 
-        Set<FactoryBase<?, ExampleDataA>> list = exampleFactoryA.internal().collectionChildrenDeepFromNonFinalizedTree();
+        Set<FactoryBase<?,ExampleDataA>> list = exampleFactoryA.internal().collectionChildrenDeepFromNonFinalizedTree();
         assertEquals(2,list.size());
     }
 
@@ -507,7 +507,7 @@ public class FactoryBaseTest {
         ViewExampleFactory exampleFactoryA = new ViewExampleFactory();
         exampleFactoryA.internal().finalise();
 
-        Set<FactoryBase<?, ViewExampleFactory>> list = exampleFactoryA.internal().collectionChildrenDeepFromNonFinalizedTree();
+        Set<FactoryBase<?,ViewExampleFactory>> list = exampleFactoryA.internal().collectionChildrenDeepFromNonFinalizedTree();
         assertEquals(1,list.size());
     }
 

@@ -94,7 +94,7 @@ class DataJsonNodeTest {
     public static class IterationTestFactory extends FactoryBase<Void, IterationTestFactory> {
         public static final List<String> createOrder= new ArrayList<>();
         public String testinfo;
-        public final FactoryListAttribute<IterationTestFactory,Void,IterationTestFactory> children = new FactoryListAttribute<>();
+        public final FactoryListAttribute<Void,IterationTestFactory> children = new FactoryListAttribute<>();
 
         public IterationTestFactory(String testinfo) {
             this();

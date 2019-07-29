@@ -27,10 +27,10 @@ public class DynamicDataDictionary {
             factoryClasses.add(factoryBase.getClass());
             factoryBase.internal().visitAttributesFlat((attributeVariableName, attribute) -> {
                 if (attribute instanceof FactoryAttribute){
-                    factoryClasses.add(((FactoryAttribute<?,?,?>)attribute).internal_getReferenceClass());
+                    factoryClasses.add(((FactoryAttribute<?,?>)attribute).internal_getReferenceClass());
                 }
                 if (attribute instanceof FactoryListAttribute){
-                    factoryClasses.add(((FactoryListAttribute<?,?,?>)attribute).internal_getReferenceClass());
+                    factoryClasses.add(((FactoryListAttribute<?,?>)attribute).internal_getReferenceClass());
                 }
             });
         }

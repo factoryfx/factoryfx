@@ -57,8 +57,8 @@ public class FactoryMetadata<R extends FactoryBase<?,R>, L,F extends FactoryBase
     }
 
 
-    public void visitFactoryEnclosingAttributesFlat(F factory, FactoryEnclosingAttributeVisitor<R> visitor) {
-        for (AttributeFieldAccessor<R,L,F,FactoryChildrenEnclosingAttribute<R,?>> attributeFieldAccessor : factoryChildrenEnclosingAttributeFields) {
+    public void visitFactoryEnclosingAttributesFlat(F factory, FactoryEnclosingAttributeVisitor visitor) {
+        for (AttributeFieldAccessor<R,L,F,FactoryChildrenEnclosingAttribute> attributeFieldAccessor : factoryChildrenEnclosingAttributeFields) {
             visitor.accept(attributeFieldAccessor.getName(),attributeFieldAccessor.get(factory));
         }
     }
@@ -129,7 +129,7 @@ public class FactoryMetadata<R extends FactoryBase<?,R>, L,F extends FactoryBase
 
     private final ArrayList<Field> attributeFields = new ArrayList<>();
     private final HashMap<String,Class<?>> fieldToReferenceClass = new HashMap<>();
-    private final ArrayList<AttributeFieldAccessor<R,L,F,FactoryChildrenEnclosingAttribute<R,?>>> factoryChildrenEnclosingAttributeFields = new ArrayList<>();
+    private final ArrayList<AttributeFieldAccessor<R,L,F,FactoryChildrenEnclosingAttribute>> factoryChildrenEnclosingAttributeFields = new ArrayList<>();
 
     private void initAttributeFields(Class<?> clazz) {
         Class<?> parent = clazz.getSuperclass();
@@ -251,7 +251,7 @@ public class FactoryMetadata<R extends FactoryBase<?,R>, L,F extends FactoryBase
         if (!this.temporaryAttributes){
             this.visitAttributesFlat(data, (attributeVariableName, attribute) -> {
                 if (attribute instanceof ReferenceBaseAttribute) {
-                    ((ReferenceBaseAttribute<?,?,?,?>)attribute).internal_setReferenceClass(fieldToReferenceClass.get(attributeVariableName));
+                    ((ReferenceBaseAttribute<?,?,?>)attribute).internal_setReferenceClass(fieldToReferenceClass.get(attributeVariableName));
                 }
             });
         }
@@ -265,7 +265,7 @@ public class FactoryMetadata<R extends FactoryBase<?,R>, L,F extends FactoryBase
         return new DataStorageMetadata(attributes,clazz.getName(),count);
     }
 
-    public void visitChildFactoriesAndViewsFlat(F factory, Consumer<FactoryBase<?,R>> consumer, boolean includeViews) {
+    public void visitChildFactoriesAndViewsFlat(F factory, Consumer<FactoryBase<?,?>> consumer, boolean includeViews) {
         if (fastFactoryUtility!=null){
             this.fastFactoryUtility.visitChildFactoriesAndViewsFlat(factory, consumer);
         } else {

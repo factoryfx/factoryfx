@@ -28,8 +28,8 @@ public class DataViewReferenceAttributeTest {
     }
 
     public static class ViewExampleFactoryRoot extends FactoryBase<Void,ViewExampleFactoryRoot>{
-        public final FactoryAttribute<ViewExampleFactoryRoot,Void,ViewExampleFactory> ref = new FactoryAttribute<>();
-        public final FactoryAttribute<ViewExampleFactoryRoot,Void,ViewExampleDataA> exampleFactoryA= new FactoryAttribute<>();
+        public final FactoryAttribute<Void,ViewExampleFactory> ref = new FactoryAttribute<>();
+        public final FactoryAttribute<Void,ViewExampleDataA> exampleFactoryA= new FactoryAttribute<>();
 
     }
 

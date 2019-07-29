@@ -10,7 +10,7 @@ import javax.servlet.Servlet;
 public class ServletAndPathFactory<R extends FactoryBase<?,R>> extends SimpleFactoryBase<ServletAndPath,R> {
 
     public final StringAttribute pathSpec = new StringAttribute().labelText("pathSpec");
-    public final FactoryPolymorphicAttribute<R,Servlet> servlet = new FactoryPolymorphicAttribute<R,Servlet>().labelText("servlets");
+    public final FactoryPolymorphicAttribute<Servlet> servlet = new FactoryPolymorphicAttribute<Servlet>().labelText("servlets");
 
 
     @Override

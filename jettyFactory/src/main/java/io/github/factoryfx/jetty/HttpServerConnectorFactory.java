@@ -12,7 +12,7 @@ public class HttpServerConnectorFactory<R extends FactoryBase<?,R>> extends Simp
     public final StringAttribute host = new StringAttribute().de("host").en("host");
     public final IntegerAttribute port = new IntegerAttribute().de("port").en("port");
 
-    public final FactoryAttribute<R,SslContextFactory, SslContextFactoryFactory<R>> ssl = new FactoryAttribute<R,SslContextFactory, SslContextFactoryFactory<R>>().de("ssl").en("ssl").nullable();
+    public final FactoryAttribute<SslContextFactory, SslContextFactoryFactory<R>> ssl = new FactoryAttribute<SslContextFactory, SslContextFactoryFactory<R>>().de("ssl").en("ssl").nullable();
 
 
     @Override

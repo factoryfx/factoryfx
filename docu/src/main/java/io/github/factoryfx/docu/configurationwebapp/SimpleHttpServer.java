@@ -6,7 +6,7 @@ import io.github.factoryfx.jetty.JettyServerFactory;
 import org.eclipse.jetty.server.Server;
 
 public class SimpleHttpServer extends SimpleFactoryBase<Server, SimpleHttpServer> {
-    public final FactoryAttribute<SimpleHttpServer,Server, JettyServerFactory<SimpleHttpServer>> server = new FactoryAttribute<>();
+    public final FactoryAttribute<Server, JettyServerFactory<SimpleHttpServer>> server = new FactoryAttribute<>();
 
     @Override
     protected Server createImpl() {

@@ -18,7 +18,7 @@ public class FactoryManagerExceptionResetTest {
 
 
     public static class BrokenFactory extends FactoryBase<DummyLifeObejct,BrokenFactory> {
-        public final FactoryAttribute<BrokenFactory,DummyLifeObejct,BrokenFactory> ref= new FactoryAttribute<>();
+        public final FactoryAttribute<DummyLifeObejct,BrokenFactory> ref= new FactoryAttribute<>();
 
         public List<String> createCalls= new ArrayList<>();
         public List<String> reCreateCalls= new ArrayList<>();

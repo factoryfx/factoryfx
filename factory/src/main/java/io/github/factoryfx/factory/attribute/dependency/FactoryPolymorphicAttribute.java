@@ -12,7 +12,7 @@ import java.util.function.Consumer;
  *
  * @param <L> the base interface/class
  */
-public class FactoryPolymorphicAttribute<R extends FactoryBase<?,R>,L> extends FactoryBaseAttribute<R,L,FactoryBase<? extends L,R>, FactoryPolymorphicAttribute<R,L>> {
+public class FactoryPolymorphicAttribute<L> extends FactoryBaseAttribute<L,FactoryBase<? extends L,?>, FactoryPolymorphicAttribute<L>> {
 
     public FactoryPolymorphicAttribute() {
         super();
@@ -22,7 +22,7 @@ public class FactoryPolymorphicAttribute<R extends FactoryBase<?,R>,L> extends F
      * Explanation see: {@link FactoryAttribute#FactoryAttribute(Consumer)}}
      * @param setup setup function
      */
-    public FactoryPolymorphicAttribute(Consumer<FactoryPolymorphicAttribute<R,L>> setup){
+    public FactoryPolymorphicAttribute(Consumer<FactoryPolymorphicAttribute<L>> setup){
         super();
         setup.accept(this);
     }
@@ -45,7 +45,7 @@ public class FactoryPolymorphicAttribute<R extends FactoryBase<?,R>,L> extends F
      */
     @SuppressWarnings("unchecked")
     @SafeVarargs
-    public final FactoryPolymorphicAttribute<R,L> setupUnsafe(Class liveObjectClass, Class... possibleFactoriesClasses){
+    public final FactoryPolymorphicAttribute<L> setupUnsafe(Class liveObjectClass, Class... possibleFactoriesClasses){
         this.possibleFactoriesClasses=Arrays.asList(possibleFactoriesClasses);
         for (Class clazz: possibleFactoriesClasses){
             if (!FactoryBase.class.isAssignableFrom(clazz)){
@@ -62,9 +62,9 @@ public class FactoryPolymorphicAttribute<R extends FactoryBase<?,R>,L> extends F
      * @return self
      */
     @SafeVarargs
-    public final FactoryPolymorphicAttribute<R,L> setup(Class<L> liveObjectClass, Class<? extends PolymorphicFactory<?>>... possibleFactoriesClasses){
+    public final FactoryPolymorphicAttribute<L> setup(Class<L> liveObjectClass, Class<? extends PolymorphicFactory<?>>... possibleFactoriesClasses){
         this.possibleFactoriesClasses=Arrays.asList(possibleFactoriesClasses);
-        new FactoryPolymorphicUtil<R,L>().setup(this,liveObjectClass,()->this.root,possibleFactoriesClasses);
+        new FactoryPolymorphicUtil<L>().setup(this,liveObjectClass,()->this.root,possibleFactoriesClasses);
         return this;
     }
 

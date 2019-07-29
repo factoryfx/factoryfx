@@ -7,7 +7,7 @@ import io.github.factoryfx.factory.attribute.dependency.FactoryAttribute;
 
 public class CopperRootFactory extends FactoryBase<WorkflowLauncher, CopperRootFactory> {
 
-    public final FactoryAttribute<CopperRootFactory,WorkflowLauncher, WorkflowLauncherFactory<CopperRootFactory>> workflowLauncher = new FactoryAttribute<CopperRootFactory,WorkflowLauncher, WorkflowLauncherFactory<CopperRootFactory>>().labelText("wfl");
+    public final FactoryAttribute<WorkflowLauncher, WorkflowLauncherFactory<CopperRootFactory>> workflowLauncher = new FactoryAttribute<WorkflowLauncher, WorkflowLauncherFactory<CopperRootFactory>>().labelText("wfl");
 
     public CopperRootFactory(){
         configLifeCycle().setCreator(workflowLauncher::instance);

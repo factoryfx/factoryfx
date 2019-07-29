@@ -10,7 +10,7 @@ import java.util.function.Consumer;
  * @param <L> liveobject created form the factory
  * @param <F> factory
  */
-public class FactoryAttribute<R extends FactoryBase<?,R>,L , F extends FactoryBase<L,R>> extends FactoryBaseAttribute<R,L,F, FactoryAttribute<R,L, F>> {
+public class FactoryAttribute<L , F extends FactoryBase<L,?>> extends FactoryBaseAttribute<L,F, FactoryAttribute<L, F>> {
 
     public FactoryAttribute(){
         super();
@@ -28,7 +28,7 @@ public class FactoryAttribute<R extends FactoryBase<?,R>,L , F extends FactoryBa
      *
      * @param setup setup function
      */
-    public FactoryAttribute(Consumer<FactoryAttribute<R,L,F>> setup){
+    public FactoryAttribute(Consumer<FactoryAttribute<L,F>> setup){
         super();
         setup.accept(this);
     }

@@ -17,7 +17,7 @@ import io.github.factoryfx.copperbridge.EngineIdProviderFactory;
 public abstract class OracleDataSourceFactory<R extends FactoryBase<?, R>> extends FactoryBase<DBDialect, R> {
 
     public final BooleanAttribute multiEngineMode = new BooleanAttribute().labelText("MultiEngineMode");
-    public final FactoryAttribute<R,EngineIdProvider, EngineIdProviderFactory<R>> engineIdProviderFactory = new FactoryAttribute<R,EngineIdProvider, EngineIdProviderFactory<R>>().labelText("EngineId provider");
+    public final FactoryAttribute<EngineIdProvider, EngineIdProviderFactory<R>> engineIdProviderFactory = new FactoryAttribute<EngineIdProvider, EngineIdProviderFactory<R>>().labelText("EngineId provider");
 
     public abstract DataSource getDataSource();
 

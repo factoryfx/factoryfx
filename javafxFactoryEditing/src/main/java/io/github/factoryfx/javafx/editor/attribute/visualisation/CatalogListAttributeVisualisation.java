@@ -18,7 +18,7 @@ import io.github.factoryfx.javafx.editor.attribute.converter.DataStringConverter
 import io.github.factoryfx.javafx.util.CheckComboBoxHelper;
 import io.github.factoryfx.javafx.util.UniformDesign;
 
-public class CatalogListAttributeVisualisation<T extends FactoryBase<?,?>, A extends FactoryListBaseAttribute<?,?,T,A>> extends ListAttributeVisualisation<T,A> {
+public class CatalogListAttributeVisualisation<T extends FactoryBase<?,?>, A extends FactoryListBaseAttribute<?,T,A>> extends ListAttributeVisualisation<T,A> {
     private final UniformDesign uniformDesign;
     private final Supplier<Collection<T>> possibleValuesProvider;
     private final A referenceListAttribute;

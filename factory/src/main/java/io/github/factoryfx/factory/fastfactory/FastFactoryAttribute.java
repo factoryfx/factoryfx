@@ -12,23 +12,23 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-public class FastFactoryAttribute<R extends FactoryBase<?,R>, F extends FactoryBase<?,R>,L,V extends FactoryBase<L,R>> extends FastFactoryAttributeUtility<R,F,V,FactoryAttribute<R,L,V>>{
+public class FastFactoryAttribute<R extends FactoryBase<?,R>, F extends FactoryBase<?,R>,L,V extends FactoryBase<L,R>> extends FastFactoryAttributeUtility<R,F,V,FactoryAttribute<L,V>>{
 
     private final Class<V> referenceClass;
-    public FastFactoryAttribute(Supplier<FactoryAttribute<R, L, V>> attributeCreator, Function<F,V> valueGetter, BiConsumer<F,V> valueSetter, Class<V> referenceClass, String attributeName) {
+    public FastFactoryAttribute(Supplier<FactoryAttribute<L, V>> attributeCreator, Function<F,V> valueGetter, BiConsumer<F,V> valueSetter, Class<V> referenceClass, String attributeName) {
         super(attributeCreator,valueGetter,valueSetter,attributeName);
         this.referenceClass=referenceClass;
     }
 
     @Override
-    protected FactoryAttribute<R, L, V> getAttribute() {
-        FactoryAttribute<R, L, V> attribute = super.getAttribute();
+    protected FactoryAttribute<L, V> getAttribute() {
+        FactoryAttribute<L, V> attribute = super.getAttribute();
         attribute.internal_setReferenceClass(referenceClass);
         return attribute;
     }
 
     @Override
-    public void visitChildFactory(Consumer<FactoryBase<?,R>> consumer){
+    public void visitChildFactory(Consumer<FactoryBase<?,?>> consumer){
         V valueFactory = valueGetter.apply(this.boundFactory);
         if (valueFactory!=null){
             consumer.accept(valueFactory);

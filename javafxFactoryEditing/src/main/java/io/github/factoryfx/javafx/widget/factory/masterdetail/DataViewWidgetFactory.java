@@ -12,8 +12,8 @@ import io.github.factoryfx.javafx.util.UniformDesignFactory;
 
 public class DataViewWidgetFactory<RS extends FactoryBase<?,RS>,L,F extends FactoryBase<L,RS>> extends SimpleFactoryBase<DataViewWidget<RS,L,F>, RichClientRoot> {
 
-    public final FactoryAttribute<RichClientRoot, UniformDesign, UniformDesignFactory> uniformDesign = new FactoryAttribute<>();
-    public final FactoryAttribute<RichClientRoot, DataEditor, DataEditorFactory> dataEditorFactory = new FactoryAttribute<>();
+    public final FactoryAttribute<UniformDesign, UniformDesignFactory> uniformDesign = new FactoryAttribute<>();
+    public final FactoryAttribute<DataEditor, DataEditorFactory> dataEditorFactory = new FactoryAttribute<>();
 
     @Override
     protected DataViewWidget<RS,L,F> createImpl() {

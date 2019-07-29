@@ -22,7 +22,7 @@ import org.copperengine.ext.wfrepo.classpath.ClasspathWorkflowRepository;
 
 public abstract class TransientScottyEngineFactory<R extends FactoryBase<?, R>> extends FactoryBase<TransientScottyEngine, R> {
 
-    public final FactoryAttribute<R,EngineIdProvider, EngineIdProviderFactory<R>> engineIdProviderFactory = new FactoryAttribute<>();
+    public final FactoryAttribute<EngineIdProvider, EngineIdProviderFactory<R>> engineIdProviderFactory = new FactoryAttribute<>();
     public final IntegerAttribute threads = new IntegerAttribute().labelText("Number of processing threads");
 
     public abstract List<String> getWorkflowClassPaths();

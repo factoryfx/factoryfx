@@ -47,7 +47,7 @@ public class DefaultCreatorTest {
     }
 
     public static class ExampleFactoryANotNullable extends SimpleFactoryBase<ExampleLiveObjectA, ExampleFactoryANotNullable> {
-        public final FactoryAttribute<ExampleFactoryANotNullable,ExampleLiveObjectA,ExampleFactoryANotNullable> referenceAttribute = new FactoryAttribute<>();
+        public final FactoryAttribute<ExampleLiveObjectA,ExampleFactoryANotNullable> referenceAttribute = new FactoryAttribute<>();
 
         @Override
         protected ExampleLiveObjectA createImpl() {
@@ -67,7 +67,7 @@ public class DefaultCreatorTest {
     }
 
     public static class ExampleFactoryNullableRef extends SimpleFactoryBase<ExampleLiveObjectA, ExampleFactoryNullableRef> {
-        public final FactoryAttribute<ExampleFactoryNullableRef,ExampleLiveObjectA, ExampleFactoryNullableRef> referenceAttribute = new FactoryAttribute<ExampleFactoryNullableRef,ExampleLiveObjectA, ExampleFactoryNullableRef>().nullable();
+        public final FactoryAttribute<ExampleLiveObjectA, ExampleFactoryNullableRef> referenceAttribute = new FactoryAttribute<ExampleLiveObjectA, ExampleFactoryNullableRef>().nullable();
 
         @Override
         protected ExampleLiveObjectA createImpl() {

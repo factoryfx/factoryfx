@@ -11,8 +11,8 @@ import io.github.factoryfx.factory.merge.testdata.ExampleDataB;
 
 public class ExampleDataAPrevious extends FactoryBase<Void, ExampleDataA> {
     public final StringAttribute stringAttribute = new StringAttribute().labelText("ExampleA1");
-    public final FactoryAttribute<ExampleDataA,Void,ExampleDataB> referenceAttribute = new FactoryAttribute<>();
-    public final FactoryListAttribute<ExampleDataA,Void,ExampleDataB> referenceListAttribute = new FactoryListAttribute<>();
+    public final FactoryAttribute<Void,ExampleDataB> referenceAttribute = new FactoryAttribute<>();
+    public final FactoryListAttribute<Void,ExampleDataB> referenceListAttribute = new FactoryListAttribute<>();
     public final StringAttribute garbage = new StringAttribute();
 
 }

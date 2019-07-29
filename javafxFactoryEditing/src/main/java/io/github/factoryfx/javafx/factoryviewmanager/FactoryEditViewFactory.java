@@ -20,12 +20,12 @@ import io.github.factoryfx.javafx.widget.factory.diffdialog.DiffDialogBuilderFac
  */
 public class FactoryEditViewFactory<RS extends FactoryBase<?,RS>> extends WidgetFactory {
 
-    public final FactoryAttribute<RichClientRoot,FactoryEditManager<RS>, FactoryEditManagerFactory<RS>> factoryEditManager = new FactoryAttribute<>();
-    public final FactoryAttribute<RichClientRoot,LongRunningActionExecutor, LongRunningActionExecutorFactory> longRunningActionExecutor = new FactoryAttribute<>();
-    public final FactoryAttribute<RichClientRoot,UniformDesign, UniformDesignFactory> uniformDesign = new FactoryAttribute<>();
-    public final FactoryAttribute<RichClientRoot,DataEditor, DataEditorFactory> dataEditorFactory = new FactoryAttribute<>();
-    public final FactoryAttribute<RichClientRoot,FactoryAwareWidget<RS>,FactoryAwareWidgetFactory<RS>> contentWidgetFactory = new FactoryAttribute<>();
-    public final FactoryAttribute<RichClientRoot,DiffDialogBuilder, DiffDialogBuilderFactory> diffDialogBuilder = new FactoryAttribute<>();
+    public final FactoryAttribute<FactoryEditManager<RS>, FactoryEditManagerFactory<RS>> factoryEditManager = new FactoryAttribute<>();
+    public final FactoryAttribute<LongRunningActionExecutor, LongRunningActionExecutorFactory> longRunningActionExecutor = new FactoryAttribute<>();
+    public final FactoryAttribute<UniformDesign, UniformDesignFactory> uniformDesign = new FactoryAttribute<>();
+    public final FactoryAttribute<DataEditor, DataEditorFactory> dataEditorFactory = new FactoryAttribute<>();
+    public final FactoryAttribute<FactoryAwareWidget<RS>,FactoryAwareWidgetFactory<RS>> contentWidgetFactory = new FactoryAttribute<>();
+    public final FactoryAttribute<DiffDialogBuilder, DiffDialogBuilderFactory> diffDialogBuilder = new FactoryAttribute<>();
 
     @Override
     protected Widget createWidget() {

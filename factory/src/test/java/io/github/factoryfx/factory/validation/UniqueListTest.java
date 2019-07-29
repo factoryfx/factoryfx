@@ -17,7 +17,7 @@ class UniqueListTest {
 
     @Test
     public final void test_happycase() {
-        FactoryListAttribute<ExampleFactoryA, ExampleLiveObjectA, ExampleFactoryA> factoryListAttribute = new FactoryListAttribute<>();
+        FactoryListAttribute<ExampleLiveObjectA, ExampleFactoryA> factoryListAttribute = new FactoryListAttribute<>();
         factoryListAttribute.validation(new UniqueList<>());
 
         factoryListAttribute.add(new ExampleFactoryA());
@@ -30,7 +30,7 @@ class UniqueListTest {
 
     @Test
     public final void test_error(){
-        FactoryListAttribute<ExampleFactoryA, ExampleLiveObjectA,ExampleFactoryA> factoryListAttribute = new FactoryListAttribute<>();
+        FactoryListAttribute<ExampleLiveObjectA,ExampleFactoryA> factoryListAttribute = new FactoryListAttribute<>();
         factoryListAttribute.validation(new UniqueList<>());
 
         ExampleFactoryA value = new ExampleFactoryA();

@@ -12,7 +12,7 @@ import javafx.util.StringConverter;
 
 import io.github.factoryfx.javafx.editor.attribute.ValueAttributeVisualisation;
 
-public class CatalogAttributeVisualisation<T extends FactoryBase<?,?>, A extends ReferenceBaseAttribute<?,T,T,A>> extends ValueAttributeVisualisation<T, A> {
+public class CatalogAttributeVisualisation<T extends FactoryBase<?,?>, A extends ReferenceBaseAttribute<T,T,A>> extends ValueAttributeVisualisation<T, A> {
     private final Supplier<Collection<T>> possibleValuesProvider;
     private ComboBox<T> comboBox;
 

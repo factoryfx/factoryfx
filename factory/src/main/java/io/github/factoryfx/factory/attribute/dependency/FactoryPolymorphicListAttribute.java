@@ -12,7 +12,7 @@ import java.util.function.Consumer;
  *
  * @param <L> the base interface/class
  */
-public class FactoryPolymorphicListAttribute<R extends FactoryBase<?,R>,L> extends FactoryListBaseAttribute<R,L,FactoryBase<? extends L,R>, FactoryPolymorphicListAttribute<R,L>> {
+public class FactoryPolymorphicListAttribute<L> extends FactoryListBaseAttribute<L,FactoryBase<? extends L,?>, FactoryPolymorphicListAttribute<L>> {
 
 
     public FactoryPolymorphicListAttribute() {
@@ -23,7 +23,7 @@ public class FactoryPolymorphicListAttribute<R extends FactoryBase<?,R>,L> exten
      * Explanation see: {@link FactoryAttribute#FactoryAttribute(Consumer)}}
      * @param setup setup function
      */
-    public FactoryPolymorphicListAttribute(Consumer<FactoryPolymorphicListAttribute<R,L>> setup){
+    public FactoryPolymorphicListAttribute(Consumer<FactoryPolymorphicListAttribute<L>> setup){
         super();
         setup.accept(this);
     }
@@ -45,7 +45,7 @@ public class FactoryPolymorphicListAttribute<R extends FactoryBase<?,R>,L> exten
      */
     @SuppressWarnings("unchecked")
     @SafeVarargs
-    public final FactoryPolymorphicListAttribute<R,L> setupUnsafe(Class liveObjectClass, Class... possibleFactoriesClasses){
+    public final FactoryPolymorphicListAttribute<L> setupUnsafe(Class liveObjectClass, Class... possibleFactoriesClasses){
         this.possibleFactoriesClasses=Arrays.asList(possibleFactoriesClasses);
         for (Class clazz: possibleFactoriesClasses){
             if (!FactoryBase.class.isAssignableFrom(clazz)){
@@ -62,9 +62,9 @@ public class FactoryPolymorphicListAttribute<R extends FactoryBase<?,R>,L> exten
      * @return self
      */
     @SafeVarargs
-    public final FactoryPolymorphicListAttribute<R,L> setup(Class<L> liveObjectClass, Class<? extends PolymorphicFactory<?>>... possibleFactoriesClasses){
+    public final FactoryPolymorphicListAttribute<L> setup(Class<L> liveObjectClass, Class<? extends PolymorphicFactory<?>>... possibleFactoriesClasses){
         this.possibleFactoriesClasses=Arrays.asList(possibleFactoriesClasses);
-        new FactoryPolymorphicUtil<R,L>().setup(this,liveObjectClass,()->this.root,possibleFactoriesClasses);
+        new FactoryPolymorphicUtil<L>().setup(this,liveObjectClass,()->this.root,possibleFactoriesClasses);
         return this;
     }
 
@@ -83,7 +83,7 @@ public class FactoryPolymorphicListAttribute<R extends FactoryBase<?,R>,L> exten
 
     @SuppressWarnings("unchecked")
     public <T extends FactoryBase> T get(Class<T> clazz) {
-        for (FactoryBase<? extends L, R> item : this.get()) {
+        for (FactoryBase<? extends L, ?> item : this.get()) {
             if (item.getClass()==clazz){
                 return (T)item;
             }

@@ -34,8 +34,6 @@ public class InitialProjectSetup {
         ExampleResourceFactoryTemplate exampleResourceFactoryTemplate = new ExampleResourceFactoryTemplate(sourceDir, packageName, baseFactoryTemplate, exampleResourceTemplate);
         exampleResourceFactoryTemplate.generateFile();
 
-        new FactoryAttributeTemplate(rootFactoryTemplate,sourceDir,packageName).generateFile();
-        new FactoryListAttributeTemplate(rootFactoryTemplate,sourceDir,packageName).generateFile();
         new ServerBuilderTemplate("Server",rootFactoryTemplate,sourceDir,packageName,exampleResourceFactoryTemplate).generateFile();
         new MainTemplate("Server",rootFactoryTemplate,sourceDir,packageName).generateFile();
     }

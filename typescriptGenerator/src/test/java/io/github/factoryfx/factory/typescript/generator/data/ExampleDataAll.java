@@ -36,5 +36,5 @@ public class ExampleDataAll extends FactoryBase<Void,ExampleData> {
     public final EnumListAttribute<ExampleEnum> enumListAttribute=new EnumListAttribute<>(ExampleEnum.class);
     public final InstantAttribute instantAttribute=new InstantAttribute();
     public final BigIntegerAttribute bigIntegerAttribute=new BigIntegerAttribute();
-    public final FactoryPolymorphicAttribute<ExampleData,Void> factoryPolymorphicAttribute=new FactoryPolymorphicAttribute<>();
+    public final FactoryPolymorphicAttribute<Void> factoryPolymorphicAttribute=new FactoryPolymorphicAttribute<>();
 }

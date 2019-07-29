@@ -27,8 +27,8 @@ public class PersistentScottyEngineFactory<R extends FactoryBase<?, R>> extends 
     public final IntegerAttribute threads = new IntegerAttribute().labelText("Number of processing threads");
 
 
-    public final FactoryAttribute<R,EngineIdProvider, EngineIdProviderFactory<R>> persistentEngineIdProviderFactory = new FactoryAttribute<>();
-    public final FactoryAttribute<R,DBDialect, OracleDataSourceFactory<R>> dbDialectFactory = new FactoryAttribute<R,DBDialect, OracleDataSourceFactory<R>>().labelText("DB dialect");
+    public final FactoryAttribute<EngineIdProvider, EngineIdProviderFactory<R>> persistentEngineIdProviderFactory = new FactoryAttribute<>();
+    public final FactoryAttribute<DBDialect, OracleDataSourceFactory<R>> dbDialectFactory = new FactoryAttribute<DBDialect, OracleDataSourceFactory<R>>().labelText("DB dialect");
 
     public PersistentScottyEngineFactory() {
         configLifeCycle().setCreator(this::createImpl);

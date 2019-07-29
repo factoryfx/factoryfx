@@ -35,7 +35,7 @@ public class FactoryTreeBuilderBasedAttributeSetup<R extends FactoryBase<?,R>> {
         return result;
     }
 
-    private void setupReferenceAttribute(FactoryAttribute<?, ?, ?> referenceAttribute) {
+    private void setupReferenceAttribute(FactoryAttribute<?, ?> referenceAttribute) {
         Class<?> referenceClass = referenceAttribute.internal_getReferenceClass();
         Scope scope = factoryTreeBuilder.getScope(referenceClass);
         if (scope== Scope.SINGLETON) {
@@ -46,7 +46,7 @@ public class FactoryTreeBuilderBasedAttributeSetup<R extends FactoryBase<?,R>> {
 //        }
     }
 
-    private void setupReferenceListAttribute(FactoryListAttribute<?, ?, ?> referenceAttribute) {
+    private void setupReferenceListAttribute(FactoryListAttribute<?, ?> referenceAttribute) {
         Class<?> referenceClass = referenceAttribute.internal_getReferenceClass();
         Scope scope = factoryTreeBuilder.getScope(referenceClass);
         if (scope== Scope.SINGLETON) {

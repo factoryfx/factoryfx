@@ -10,8 +10,8 @@ import io.github.factoryfx.javafx.util.UniformDesignFactory;
 
 public class DataEditorFactory extends SimpleFactoryBase<DataEditor, RichClientRoot> {
 
-    public final FactoryAttribute<RichClientRoot,UniformDesign,UniformDesignFactory> uniformDesign = new FactoryAttribute<>();
-    public final FactoryAttribute<RichClientRoot,AttributeVisualisationMappingBuilder, AttributeEditorBuilderFactory> attributeEditorBuilder = new FactoryAttribute<>();
+    public final FactoryAttribute<UniformDesign,UniformDesignFactory> uniformDesign = new FactoryAttribute<>();
+    public final FactoryAttribute<AttributeVisualisationMappingBuilder, AttributeEditorBuilderFactory> attributeEditorBuilder = new FactoryAttribute<>();
 
     @Override
     protected DataEditor createImpl() {

@@ -33,7 +33,7 @@ public class TsGeneratorTest {
 
 
     public static class TestHttpServer extends SimpleFactoryBase<Server, TestHttpServer> {
-        public final FactoryAttribute<TestHttpServer,Server, JettyServerFactory<TestHttpServer>> server = new FactoryAttribute<>();
+        public final FactoryAttribute<Server, JettyServerFactory<TestHttpServer>> server = new FactoryAttribute<>();
 
         @Override
         protected Server createImpl() {
@@ -43,7 +43,7 @@ public class TsGeneratorTest {
 
     @SuppressWarnings("unchecked")
     @Test
-    public void smoketest_jettyserver(@TempDir Path targetDir) throws InterruptedException {
+    public void smoketest_jettyserver(@TempDir Path targetDir)  {
         FactoryTreeBuilder<Server, TestHttpServer> builder = new FactoryTreeBuilder<>(TestHttpServer.class);
         builder.addFactory(JettyServerFactory.class, Scope.SINGLETON, ctx-> new JettyServerBuilder<TestHttpServer>()
                 .withHost("localhost").withPort(8005).build());
@@ -54,10 +54,10 @@ public class TsGeneratorTest {
             factoryClasses.add(factoryBase.getClass());
             factoryBase.internal().visitAttributesFlat((attributeVariableName, attribute) -> {
                 if (attribute instanceof FactoryAttribute){
-                    factoryClasses.add(((FactoryAttribute<?,?,?>)attribute).internal_getReferenceClass());
+                    factoryClasses.add(((FactoryAttribute<?,?>)attribute).internal_getReferenceClass());
                 }
                 if (attribute instanceof FactoryListAttribute){
-                    factoryClasses.add(((FactoryListAttribute<?,?,?>)attribute).internal_getReferenceClass());
+                    factoryClasses.add(((FactoryListAttribute<?,?>)attribute).internal_getReferenceClass());
                 }
             });
         }

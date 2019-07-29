@@ -36,9 +36,9 @@ import java.util.function.Function;
  */
 public class MicroserviceDomResourceFactory<R extends FactoryBase<?,R>,S> extends FactoryBase<MicroserviceDomResource<R>,R> {
 
-    public final FactoryPolymorphicAttribute<R,UserManagement> userManagement = new FactoryPolymorphicAttribute<R,UserManagement>().setupUnsafe(UserManagement.class, NoUserManagementFactory.class, PersistentUserManagementFactory.class).labelText("userManagement").nullable();
-    public final FactoryPolymorphicAttribute<R, StaticFileAccess> staticFileAccess = new FactoryPolymorphicAttribute<R, StaticFileAccess>().setupUnsafe(StaticFileAccess.class, ClasspathStaticFileAccessFactory.class).labelText("staticFileAccess").nullable();
-    public final FactoryPolymorphicAttribute<R, Function<R, List<GuiNavbarItem>>> guiNavbarItemCreator = new FactoryPolymorphicAttribute<>(FactoryPolymorphicAttribute::nullable);
+    public final FactoryPolymorphicAttribute<UserManagement> userManagement = new FactoryPolymorphicAttribute<UserManagement>().setupUnsafe(UserManagement.class, NoUserManagementFactory.class, PersistentUserManagementFactory.class).labelText("userManagement").nullable();
+    public final FactoryPolymorphicAttribute<StaticFileAccess> staticFileAccess = new FactoryPolymorphicAttribute<StaticFileAccess>().setupUnsafe(StaticFileAccess.class, ClasspathStaticFileAccessFactory.class).labelText("staticFileAccess").nullable();
+    public final FactoryPolymorphicAttribute<Function<R, List<GuiNavbarItem>>> guiNavbarItemCreator = new FactoryPolymorphicAttribute<>(FactoryPolymorphicAttribute::nullable);
     public final StringAttribute projectName = new StringAttribute().nullable();
 
 
@@ -65,7 +65,7 @@ public class MicroserviceDomResourceFactory<R extends FactoryBase<?,R>,S> extend
                     result.add(new GuiNavbarItem("Root",root.getId().toString()));
                     for (FactoryBase<?, R> factory : root.internal().collectChildrenDeep()) {
                         if (factory instanceof JerseyServletFactory){
-                            for (FactoryBase<?,R> resource : ((JerseyServletFactory<R>) factory).resources.get()) {
+                            for (FactoryBase<?,?> resource : ((JerseyServletFactory<R>) factory).resources.get()) {
                                 if (!(resource instanceof MicroserviceDomResourceFactory)){
                                     result.add(new GuiNavbarItem(resource.internal().getDisplayText(),resource.getId().toString()));
                                 }

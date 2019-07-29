@@ -4,7 +4,7 @@ import io.github.factoryfx.factory.SimpleFactoryBase;
 import io.github.factoryfx.factory.attribute.dependency.FactoryAttribute;
 
 public class RootFactory extends SimpleFactoryBase<Root, RootFactory> {
-    public final FactoryAttribute<RootFactory,Dependency,DependencyFactory> dependency =new FactoryAttribute<>();
+    public final FactoryAttribute<Dependency,DependencyFactory> dependency =new FactoryAttribute<>();
 
     @Override
     protected Root createImpl() {

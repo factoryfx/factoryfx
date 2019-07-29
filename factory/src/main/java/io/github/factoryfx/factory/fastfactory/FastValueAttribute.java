@@ -19,7 +19,7 @@ public class FastValueAttribute<R extends FactoryBase<?,R>,F extends FactoryBase
     }
 
     @Override
-    public void visitChildFactory(Consumer<FactoryBase<?, R>> consumer) {
+    public void visitChildFactory(Consumer<FactoryBase<?, ?>> consumer) {
         //nothing
     }
 
