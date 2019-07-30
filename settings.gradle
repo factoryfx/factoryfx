@@ -1,3 +1,3 @@
 include 'microserviceRestClient', 'microserviceRestServer', 'microserviceRestCommon', 'microserviceRestIntegrationTest', 'nanoservice',
         'factory', 'example', 'jettyFactory', 'javafxDistributionClient', 'javafxDistributionServer', 'postgresqlStorage', 'oracledbStorage',
-        'javafxFactoryEditing', 'testfactories', 'docu', 'javascriptDataEditing', 'javascript', 'typescriptGenerator', 'copperBridge', 'soapFactory', 'initializr', 'benchmark', 'domFactoryEditing'
+        'javafxFactoryEditing', 'testfactories', 'docu', 'typescriptGenerator', 'copperBridge', 'soapFactory', 'initializr', 'benchmark', 'domFactoryEditing'

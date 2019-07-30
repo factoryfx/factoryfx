@@ -442,16 +442,6 @@ project(':javafxDistributionClient') {
 
 }
 
-project(':javascript') {
-    dependencies {
-        compile project(":factory")
-
-        compile (group: 'com.google.javascript', name: 'closure-compiler-unshaded', version: 'v20170218'){
-            exclude module: "jsr305" // module conflict: https://blog.codefx.org/java/jsr-305-java-9/, https://github.com/google/guava/issues/2960
-        }
-    }
-}
-
 project(':testfactories') {
     publishMavenJavaPublicationToMavenRepository.enabled = false//don't publish
     dependencies {
@@ -489,12 +479,6 @@ project(':docu') {
 
 }
 
-project(':javascriptDataEditing') {
-    dependencies {
-        compile project(":javascript")
-        compile project(":javafxFactoryEditing")
-    }
-}
 
 project(':nanoservice') {
     dependencies {
