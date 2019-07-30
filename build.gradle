@@ -479,14 +479,6 @@ project(':docu') {
 
 }
 
-
-project(':nanoservice') {
-    dependencies {
-        compile project(":factory")
-
-    }
-}
-
 project(':typescriptGenerator') {
     dependencies {
         compile project(":factory")
