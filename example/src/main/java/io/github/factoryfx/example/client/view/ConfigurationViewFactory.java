@@ -2,7 +2,6 @@ package io.github.factoryfx.example.client.view;
 
 import io.github.factoryfx.example.server.ServerRootFactory;
 import io.github.factoryfx.factory.attribute.dependency.FactoryAttribute;
-import io.github.factoryfx.javafx.RichClientRoot;
 import io.github.factoryfx.javafx.widget.factory.tree.DataTreeWidget;
 import io.github.factoryfx.javafx.factoryviewmanager.FactoryAwareWidget;
 import io.github.factoryfx.javafx.factoryviewmanager.FactoryAwareWidgetFactory;

@@ -2,7 +2,6 @@ package io.github.factoryfx.javafx.factoryviewmanager;
 
 import io.github.factoryfx.factory.FactoryBase;
 import io.github.factoryfx.factory.attribute.dependency.FactoryAttribute;
-import io.github.factoryfx.javafx.RichClientRoot;
 import io.github.factoryfx.javafx.editor.DataEditorFactory;
 import io.github.factoryfx.javafx.editor.DataEditor;
 import io.github.factoryfx.javafx.util.LongRunningActionExecutor;

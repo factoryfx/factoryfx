@@ -35,7 +35,8 @@ public interface DataStorage<R extends FactoryBase<?,?>> {
 
     /**
      * updateCurrentData and history
-     * @param update update
+     * @param update updata data
+     * @param updateSummary update description
      */
     void updateCurrentData(DataUpdate<R> update, UpdateSummary updateSummary);
 

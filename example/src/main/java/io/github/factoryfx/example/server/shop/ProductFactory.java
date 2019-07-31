@@ -1,6 +1,5 @@
 package io.github.factoryfx.example.server.shop;
 
-import io.github.factoryfx.example.server.ServerRootFactory;
 import io.github.factoryfx.factory.attribute.dependency.FactoryAttribute;
 import io.github.factoryfx.factory.attribute.primitive.IntegerAttribute;
 import io.github.factoryfx.factory.attribute.types.StringAttribute;

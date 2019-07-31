@@ -740,8 +740,9 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
 
         /**
          * can be used inside a view
+         * @param <R> root factory
          * @return all data including root and no duplicates
-         * */
+         */
         public <R extends FactoryBase<?,R>> Set<FactoryBase<?,R>> collectionChildrenDeepFromNonFinalizedTree() {
             return factory.collectionChildrenDeepFromNonFinalizedTree();
         }
