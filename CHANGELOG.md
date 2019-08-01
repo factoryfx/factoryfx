@@ -34,6 +34,9 @@
   FactoryAttribute<Test,TestFactory> attribute = ...
   ```
 
+* **renamed subproject**  
+  From microserviceRestServer to microserviceRest**Resource**
+
 ### Features
 
 # 2.0.6
