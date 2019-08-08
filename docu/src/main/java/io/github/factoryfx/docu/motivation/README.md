@@ -1,12 +1,12 @@
-# Motivation
+# Key concepts
 
-## Immutable
+## Immutability
 
 Immutable objects are objects whose data are unchangeable after instantiation.
 
 ### Advantage
 
-Immutable objects are safe for concurrent use as the is no reader/writer problem to take into account.
+Immutable objects are safe for concurrent use as there is no reader/writer problem to take into account.
 All multithreading issues can be accounted for by the need to control access to shared resources. Of course,
 applications that throughout have no write semantics must be meaningless, as they would never produce any output.
 
@@ -19,6 +19,20 @@ The ability to change a compound of immutable objects dynamically opens the conc
 portion of the system concerned. In most cases, the business data can be handled within the memory of current computers,
 so the business data may be contained in business objects owning it. This allows for dependency injection for all objects
 that are changed on low frequencies.
+
+Without factoryFX an application update could look like this:
+
+![picture1](picture1.png)
+
+But recreating everything is not what you would want, you would rather prefer this update: 
+
+![picture1](picture2.png)
+
+This is how factoryFX carries out updates on the application components:  
+
+![picture1](picture3.png)
+
+By introducig a factory level, edits can be isolated from the live objecs an performed minimal and atomic.
 
 As to our knowledge there is no other framework combining immutability and reconfigurability.
 
