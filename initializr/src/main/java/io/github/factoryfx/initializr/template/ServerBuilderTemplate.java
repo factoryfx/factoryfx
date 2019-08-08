@@ -53,8 +53,8 @@ public class ServerBuilderTemplate {
                 .addModifiers(Modifier.PUBLIC)
                 .addStatement("this.builder= new FactoryTreeBuilder<>($N.class)", rootFactoryTemplate.generate().name)
                 .addStatement("this.builder.addFactory($T.class,$T.SINGLETON,(ctx)->\n"
-                        + "            (($T<$N>) new $T<>()\n" +
-                        "                    .withHost(\"localhost\").withPort(8080))\n" +
+                        + "            new $T<$N>()\n" +
+                        "                    .withHost(\"localhost\").withPort(8080)\n" +
                         "                    .withResource(ctx.get($N.class)).build())"
                     ,JettyServerFactory.class, Scope.class, JettyServerBuilder.class, rootFactoryTemplate.getName(), JettyServerBuilder.class, exampleResourceFactoryTemplate.getName())
                 .addStatement("this.builder.addFactory($N.class,$T.SINGLETON)",exampleResourceFactoryTemplate.getName(),Scope.class)
