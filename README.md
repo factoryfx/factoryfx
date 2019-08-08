@@ -1,11 +1,19 @@
 # Factoryfx
 
-*Data and Dependency Injection Framework for java.*
+Lightweight dependency and data (re-)injection framework for **all** kinds of Java applications.
 
-## Introduction
+## Key Concepts
+* **Lightweight**  
+Fully debuggable programmatic Java API (no annotations)<BR/> Fast startup (no classpath scanning)  
 
-Factoryfx is a lightweight dependency injection framework that expands dependency injection to include data injection.
-Applications built with factory fx can benefit from the stateless design yet allowing for structural and data changes during runtime.
+* **Dependency injection**  
+Factory based implementation of the dependency injection pattern.
+
+* **Data (re-)injection**  
+(Like depenencies) Data can be injected into Java objects.  
+Supports OOP and avoids OR mapping or external configuration files.  
+Allows optimized (partial) reconfiguration at runtime.  
+
 
 Factoryfx is a replacement for:
 * **manual dependency injection**
