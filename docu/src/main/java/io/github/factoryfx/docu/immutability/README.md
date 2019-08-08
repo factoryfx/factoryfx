@@ -35,7 +35,7 @@ public class Printer{
 ```
 
 
-##why immutability
+## why immutability
 
 * reproducibility
 * performance 
@@ -43,11 +43,15 @@ public class Printer{
   * no io
 * no shared state (popular oop critic) https://www.youtube.com/watch?v=QM1iUe6IofM&t=1205s
 
-##The problem
+## The problem
 
 real world application need mutable data. How make a immutable application mutable?  
 => Recreate all  
 ![picture1](picture1.png)
+
+https://teropa.info/blog/2015/03/02/change-and-its-detection-in-javascript-frameworks.html
+
+### structural sharing
 => optimize recreation
 ![picture2](picture2.png)
 => Factoryfx implementation
