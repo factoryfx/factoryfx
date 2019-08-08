@@ -1,13 +1,22 @@
 package io.github.factoryfx.initializr.template;
 
-import com.squareup.javapoet.*;
-import io.github.factoryfx.factory.SimpleFactoryBase;
-import io.github.factoryfx.jetty.JettyServerFactory;
-import org.eclipse.jetty.server.Server;
-
-import javax.lang.model.element.Modifier;
 import java.io.IOException;
 import java.nio.file.Path;
+
+import javax.lang.model.element.Modifier;
+
+import org.eclipse.jetty.server.Server;
+
+import com.squareup.javapoet.ClassName;
+import com.squareup.javapoet.FieldSpec;
+import com.squareup.javapoet.JavaFile;
+import com.squareup.javapoet.MethodSpec;
+import com.squareup.javapoet.ParameterizedTypeName;
+import com.squareup.javapoet.TypeSpec;
+
+import io.github.factoryfx.factory.SimpleFactoryBase;
+import io.github.factoryfx.factory.attribute.dependency.FactoryAttribute;
+import io.github.factoryfx.jetty.JettyServerFactory;
 
 public class RootFactoryTemplate {
 
@@ -24,7 +33,7 @@ public class RootFactoryTemplate {
     public TypeSpec generate(){
         String name = projectName + "RootFactory";
 
-        ParameterizedTypeName serverAttributeType = ParameterizedTypeName.get(ClassName.bestGuess("FactoryAttribute"), ClassName.get(Server.class), ParameterizedTypeName.get(ClassName.get(JettyServerFactory.class), ClassName.bestGuess(name)));
+        ParameterizedTypeName serverAttributeType = ParameterizedTypeName.get(ClassName.get(FactoryAttribute.class), ClassName.get(Server.class), ParameterizedTypeName.get(ClassName.get(JettyServerFactory.class), ClassName.bestGuess(name)));
         FieldSpec serverAttribute = FieldSpec.builder(serverAttributeType,"jettyServer", Modifier.PUBLIC, Modifier.FINAL).initializer("new FactoryAttribute<>()")
                 .build();
 
@@ -52,5 +61,8 @@ public class RootFactoryTemplate {
             throw new RuntimeException(e);
         }
         return rootFactory;
+    }
+    public String getName() {
+        return "ServerRootFactory";
     }
 }

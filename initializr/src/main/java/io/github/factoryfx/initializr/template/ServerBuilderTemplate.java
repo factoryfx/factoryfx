@@ -1,15 +1,23 @@
 package io.github.factoryfx.initializr.template;
 
-import com.squareup.javapoet.*;
+import java.io.IOException;
+import java.nio.file.Path;
+
+import javax.lang.model.element.Modifier;
+
+import org.eclipse.jetty.server.Server;
+
+import com.squareup.javapoet.AnnotationSpec;
+import com.squareup.javapoet.ClassName;
+import com.squareup.javapoet.JavaFile;
+import com.squareup.javapoet.MethodSpec;
+import com.squareup.javapoet.ParameterizedTypeName;
+import com.squareup.javapoet.TypeSpec;
+
 import io.github.factoryfx.factory.builder.FactoryTreeBuilder;
 import io.github.factoryfx.factory.builder.Scope;
 import io.github.factoryfx.jetty.JettyServerBuilder;
 import io.github.factoryfx.jetty.JettyServerFactory;
-import org.eclipse.jetty.server.Server;
-
-import javax.lang.model.element.Modifier;
-import java.io.IOException;
-import java.nio.file.Path;
 
 public class ServerBuilderTemplate {
 
@@ -29,7 +37,7 @@ public class ServerBuilderTemplate {
     }
 
     public void generateFile(){
-        ParameterizedTypeName factoryTreeBuilderType = ParameterizedTypeName.get(ClassName.get(FactoryTreeBuilder.class), ClassName.get(Server.class), ClassName.bestGuess(rootFactoryTemplate.generate().name), ClassName.get(Void.class));
+        ParameterizedTypeName factoryTreeBuilderType = ParameterizedTypeName.get(ClassName.get(FactoryTreeBuilder.class), ClassName.get(Server.class), ClassName.bestGuess(rootFactoryTemplate.generate().name));
 
         MethodSpec build = MethodSpec.methodBuilder("builder")
                 .addModifiers(Modifier.PUBLIC)
@@ -43,12 +51,12 @@ public class ServerBuilderTemplate {
 
         MethodSpec constructor = MethodSpec.constructorBuilder()
                 .addModifiers(Modifier.PUBLIC)
-                .addStatement("this.builder= new FactoryTreeBuilder<>($N.class)", rootFactoryTemplate.generate().name)
-                .addStatement("this.builder.addFactory($T.class,$T.SINGLETON,(ctx)->{\n"
-                        + "            return new $T<>(new JettyServerFactory<$N>())\n" +
-                        "                    .withHost(\"localhost\").withPort(8080)\n" +
-                        "                    .withResource(ctx.get($N.class)).build();\n"
-                        + "})",JettyServerFactory.class, Scope.class, JettyServerBuilder.class, rootFactoryTemplate.generate().name, exampleResourceFactoryTemplate.getName())
+                .addStatement("this.builder= new FactoryTreeBuilder<>($N.class)", rootFactoryTemplate.generate().name) // ((JettyServerBuilder<ServerRootFactory>)
+                .addStatement("this.builder.addFactory($T.class,$T.SINGLETON,(ctx)->\n"
+                        + "            (($T<$N>) new $T<>()\n" +
+                        "                    .withHost(\"localhost\").withPort(8080))\n" +
+                        "                    .withResource(ctx.get($N.class)).build())"
+                    ,JettyServerFactory.class, Scope.class, JettyServerBuilder.class, rootFactoryTemplate.getName(), JettyServerBuilder.class, exampleResourceFactoryTemplate.getName())
                 .addStatement("this.builder.addFactory($N.class,$T.SINGLETON)",exampleResourceFactoryTemplate.getName(),Scope.class)
                 .addComment("register more factories here")
                 .addAnnotation(annotationSpec)
