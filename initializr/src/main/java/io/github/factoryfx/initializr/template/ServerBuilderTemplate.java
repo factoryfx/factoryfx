@@ -56,7 +56,7 @@ public class ServerBuilderTemplate {
                         + "            new $T<$N>()\n" +
                         "                    .withHost(\"localhost\").withPort(8080)\n" +
                         "                    .withResource(ctx.get($N.class)).build())"
-                    ,JettyServerFactory.class, Scope.class, JettyServerBuilder.class, rootFactoryTemplate.getName(), JettyServerBuilder.class, exampleResourceFactoryTemplate.getName())
+                    ,JettyServerFactory.class, Scope.class, JettyServerBuilder.class, rootFactoryTemplate.getName(), exampleResourceFactoryTemplate.getName())
                 .addStatement("this.builder.addFactory($N.class,$T.SINGLETON)",exampleResourceFactoryTemplate.getName(),Scope.class)
                 .addComment("register more factories here")
                 .addAnnotation(annotationSpec)
