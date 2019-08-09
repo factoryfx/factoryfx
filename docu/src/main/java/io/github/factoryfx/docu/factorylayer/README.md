@@ -34,7 +34,7 @@ Traditionally there are 2 methods to pass these information:
 * Annotations DSL (CDI)
 
 But why not use the new operator? The java built-in path should be the best way to describe object creation and
-that's exactly what factoryfx is doing.
+that's exactly what FactoryFX is doing.
 
 ## Factory solution
 ```java

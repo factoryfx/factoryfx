@@ -1,5 +1,5 @@
 # Live object lifecycle
-Factoryfx supports changing the factory structure at runtime.
+FactoryFX supports changing the factory structure at runtime.
 To customize this process a lifecycle API is provided.
 
 As a built-in optimization the server only executes delta update for the changed live objects.

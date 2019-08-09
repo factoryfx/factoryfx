@@ -1,21 +1,26 @@
-# Factoryfx
+# FactoryFX
 
 Lightweight dependency and data (re-)injection framework for **all** kinds of Java applications.
 
-## Key Concepts
+## Introduction
 * **Lightweight**  
-Fully debuggable programmatic Java API (no annotations)<BR/> Fast startup (no classpath scanning)  
+Fully debuggable programmatic Java API (no annotations)  
+ Fast startup (no classpath scanning)  
 
 * **Dependency injection**  
 Factory based implementation of the dependency injection pattern.
 
 * **Data (re-)injection**  
-(Like depenencies) Data can be injected into Java objects.  
+(Like dependencies) Data can be injected into Java objects.  
 Supports OOP and avoids OR mapping or external configuration files.  
 Allows optimized (partial) reconfiguration at runtime.  
 
+### Key concepts
+* [Key concepts](docu/src/main/java/io/github/factoryfx/docu/keyconcepts)  
+Why use FactoryFX?
 
-Factoryfx is a replacement for:
+### Comparision
+FactoryFX is a replacement for:
 * **manual dependency injection**
   * Order independence
   * Uniform application structure
@@ -39,7 +44,7 @@ Factoryfx is a replacement for:
 
 | Group ID            | Artifact ID | Version |
 | :-----------------: | :---------: | :-----: |
-| io.github.factoryfx | factory  | 2.0.24  |
+| io.github.factoryfx | factory  | 2.1.0  |
 
 java 11+ required
 
@@ -90,10 +95,6 @@ public class Printer{
 The complete [example](docu/src/main/java/io/github/factoryfx/docu/helloworld) 
 
 ## Documentation
-
-### Motivation
-* [Motivation](docu/src/main/java/io/github/factoryfx/docu/motivation)  
-Why use factoryfx?
 
 ### Fundamentals
 * [Dependency injection](docu/src/main/java/io/github/factoryfx/docu/dependencyinjection)  
@@ -151,6 +152,6 @@ Released under the [Apache 2.0 license](http://www.apache.org/licenses/LICENSE-2
 
 ## Professional support 
 
-FactoryFx is the long-time development effort of the german company [**SCOOP Software GmbH**](https://www.scoop-software.de/en/). We are a consulting and software company with a constant direction towards state-of-the-art technologies and methods. Our high performance systems are used in multiple medium sized and large enterprises in branches such as online retail, telecommunications, financial services, logistics and local government.
+FactoryFX is the long-time development effort of the german company [**SCOOP Software GmbH**](https://www.scoop-software.de/en/). We are a consulting and software company with a constant direction towards state-of-the-art technologies and methods. Our high performance systems are used in multiple medium sized and large enterprises in branches such as online retail, telecommunications, financial services, logistics and local government.
 
-If you are thinking about using FactoryFx in your own project and need more help, **SCOOP Software** is willing to offer **professional support** on a commercial basis. We offer workshops, coaching, or any other help to get your FactoryFx project up and running.
+If you are thinking about using FactoryFX in your own project and need more help, **SCOOP Software** is willing to offer **professional support** on a commercial basis. We offer workshops, coaching, or any other help to get your FactoryFx project up and running.

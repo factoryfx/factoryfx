@@ -1,6 +1,6 @@
 # Immutability
 
-##What is Immutability
+## What is immutability
 
 ### Mutable
 ```java
@@ -54,12 +54,12 @@ https://teropa.info/blog/2015/03/02/change-and-its-detection-in-javascript-frame
 ### structural sharing
 => optimize recreation
 ![picture2](picture2.png)
-=> Factoryfx implementation
+=> FactoryFX implementation
 ![picture3](picture3.png)
 
-##The factory Layer
+## The factory Layer
 * no merge/compare code in liveobjects
 * no dependencies for liveobjects
 
-##Update process
+## Update process
 ![picture3](picture4.png)

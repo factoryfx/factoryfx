@@ -1,8 +1,8 @@
 # Migration
-Data migration plays an important role in factoryfx because factoryfx unites data and application structure into one factory structure. Migrations are required not only for data changes but also for application structure changes. 
-To simplify the migration process factoryfx provides a dedicated migration API.
+Data migration plays an important role in FactoryFX because FactoryFX unites data and application structure into one factory structure. Migrations are required not only for data changes but also for application structure changes. 
+To simplify the migration process FactoryFX provides a dedicated migration API.
 
-In factoryfx we distinguish between 3 layers of migrations
+In FactoryFX we distinguish between 3 layers of migrations
 * **Data storage format**<br> The general format how data and attributes are stored.
 * **Data structure**<br> Structure of the Factories e.g.: attributes name, factory names
 * **Data content**<br> Data content changes

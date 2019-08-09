@@ -1,7 +1,7 @@
-# Configuration data/properties in factoryfx
+# Configuration data/properties in FactoryFX
 
 ## Introduction
-In factoryfx configuration data are treated like dependencies.
+In FactoryFX configuration data are treated like dependencies.
 If a liveobject needs configuration data (for example jdbc url for a database) the data is stored in the corresponding Factory.
 The basic dependencies injection principle: "Don’t Look For Things" also applies to data. So you don't ask a property storage for the data instead they are passed directly from the factory.
 
@@ -154,7 +154,7 @@ microservice.updateCurrentFactory(update, "user", "comment", (p) -> true);
 [**code**](https://github.com/factoryfx/factoryfx/tree/master/docu/src/main/java/io/github/factoryfx/docu/configurationdata)
 
 ## Conclusion
-Fixing the configuration data problems with the coherent approach implementd in factoryfx is one of its major advantages.
-Thus it makes no sense to combine factoryfx and property files because factoryfx is a superior replacement for property files and duplicated configuration data are harmful.
+Fixing the configuration data problems with the coherent approach implementd in FactoryFX is one of its major advantages.
+Thus it makes no sense to combine FactoryFX and property files because FactoryFX is a superior replacement for property files and duplicated configuration data are harmful.
 
 

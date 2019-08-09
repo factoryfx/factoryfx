@@ -5,7 +5,7 @@ With that architecture it is hard to implement data encapsulation which is one o
 Often you will end up with data only classes and other classes that implement business logic based on the data classes. 
 That will result in a procedural design that does not convey the original motivation begin object oriented programming. 
 
-Factoryfx can directly inject required data into objects.
+FactoryFX can directly inject required data into objects.
 
 ## Suitable data for data injection?
 ### Database

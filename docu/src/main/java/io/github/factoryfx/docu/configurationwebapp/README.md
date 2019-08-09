@@ -1,6 +1,6 @@
 #  Configuration via web application
 
-The factoryfx web application provides a configuration GUI for changing the configuration attributes.
+The FactoryFX web application provides a configuration GUI for changing the configuration attributes.
 Design goals are little boilerplate and easy setup to be helpful for beginners. 
 
 dependency:

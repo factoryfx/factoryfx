@@ -13,8 +13,8 @@ This approach has some disadvantages:
 * Classpath scanning and reflection cause confusing stack traces
 * Slow startup
 
-## Factoryfx
-As a replacement for annotations factoryfx use a functional java api with factories. 
+## FactoryFX
+As a replacement for annotations FactoryFX use a functional java api with factories. 
 The user creates factories following a simple structure convention. The factories also provide the dependencies and lifecycle control.
 
 The programmatic API has the following advantages:

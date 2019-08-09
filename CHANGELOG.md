@@ -86,7 +86,7 @@ new JettyServerBuilder<RootFactory>().withHost("localhost").withPort(8015).build
   
 * **builder:** new builder API for microservice setup
 
-* **initializr:** One time java code generator for initial project setup to simplify the first steps with factoryfx.
+* **initializr:** One time java code generator for initial project setup to simplify the first steps with FactoryFX.
 
 * **testing:** Added the ability to set a mock liveobject for a factory.
 
