@@ -1,3 +1,5 @@
+import java.nio.charset.StandardCharsets
+
 buildscript {
     repositories {
         maven {
@@ -27,7 +29,7 @@ allprojects {
 
 
 wrapper {
-    gradleVersion = '5.4'
+    gradleVersion = '5.5.1'
     distributionType = Wrapper.DistributionType.ALL
 }
 
@@ -69,6 +71,7 @@ subprojects {
         doFirst {
             exclude "**/module-info.java"
             options.addStringOption('-module-path', classpath.asPath)
+            options.encoding = StandardCharsets.UTF_8
         }
     }
 
@@ -205,7 +208,7 @@ subprojects {
 
     sourceCompatibility = JavaVersion.VERSION_11
     targetCompatibility = JavaVersion.VERSION_11
-    compileJava.options.encoding = 'UTF-8'
+    compileJava.options.encoding = StandardCharsets.UTF_8
 
     dependencies {
         compile group: 'org.slf4j', name: 'slf4j-api', version: '1.8.0-beta4'
