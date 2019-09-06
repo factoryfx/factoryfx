@@ -1,5 +1,5 @@
-import { ValidationError } from "./ValidationError";
 import {AttributeType} from "./AttributeType";
+import {ValidationError} from "./ValidationError";
 
 export class AttributeMetadata<T>  {
     public constructor(private en: string, private de: string, private attributeType: AttributeType, private isNullable: boolean, private possibleEnumValues: string[]) {

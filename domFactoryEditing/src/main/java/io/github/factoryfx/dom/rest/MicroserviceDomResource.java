@@ -115,12 +115,13 @@ public class MicroserviceDomResource<R extends FactoryBase<?,R>> extends Microse
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public DecryptAttributeResponse decryptAttribute(DecryptAttributeRequest request) {
-        return new DecryptAttributeResponse(((EncryptedStringAttribute)resolveAttribute(request)).get().decrypt(request.key));
+        return new DecryptAttributeResponse(new EncryptedString(request.encryptedText).decrypt(request.key));
     }
 
 
-    public static class DecryptAttributeRequest extends AttributeAdressingRequest {
+    public static class DecryptAttributeRequest  {
         public String key;
+        public String encryptedText;
     }
 
     public static class DecryptAttributeResponse{
@@ -136,19 +137,22 @@ public class MicroserviceDomResource<R extends FactoryBase<?,R>> extends Microse
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public EncryptAttributeResponse encryptAttribute(EncryptAttributeRequest request) {
-        ((EncryptedStringAttribute)resolveAttribute(request)).set(new EncryptedString(request.text,request.key));
-        return new EncryptAttributeResponse();
+        return new EncryptAttributeResponse(new EncryptedString(request.text,request.key).getEncryptedString());
 
     }
 
 
-    public static class EncryptAttributeRequest extends AttributeAdressingRequest {
+    public static class EncryptAttributeRequest{
         public String text;
         public String key;
     }
 
     public static class EncryptAttributeResponse{
+        public String  encryptedText;
 
+        public EncryptAttributeResponse(String encryptedText) {
+            this.encryptedText = encryptedText;
+        }
     }
 
 

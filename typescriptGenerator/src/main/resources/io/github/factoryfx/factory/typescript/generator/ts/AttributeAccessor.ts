@@ -12,6 +12,9 @@ export class AttributeAccessor<T> {
 
     setValue(value: T){
         this.attributeValues[this.attributeName]=value;
+        for (let listener of this.listeners){
+            listener();
+        }
     }
 
     getLabelText(locale: string): string{
@@ -30,5 +33,16 @@ export class AttributeAccessor<T> {
         return this.attributeName;
     }
 
+    private listeners: Array<()=>any>= [];
+    public addChangeListener(listener: ()=>any){
+        if (!this.listeners.includes(listener)){
+            this.listeners.push(listener);
+        }
+    }
+    public removeChangeListener(listener: ()=>any){
+        console.log(this.listeners.length);
+        this.listeners.splice(this.listeners.indexOf(listener),1);
+        console.log(this.listeners.length);
+    }
 
 }

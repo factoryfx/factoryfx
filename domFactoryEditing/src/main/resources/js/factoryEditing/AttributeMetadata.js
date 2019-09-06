@@ -1,4 +1,3 @@
-//generated code don't edit manually
 import { ValidationError } from "./ValidationError";
 export class AttributeMetadata {
     constructor(en, de, attributeType, isNullable, possibleEnumValues) {

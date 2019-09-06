@@ -1,6 +1,6 @@
-import { AttributeMetadata } from "./AttributeMetadata";
 import { DynamicData } from "./DynamicData";
-import { AttributeMetadataAndAttributeName } from "./AttributeMetadataAndAttributeName";
+import { AttributeMetadata } from "./AttributeMetadata";
+import { AttributeMetadataAndAttributeName } from "./widget/attribute/AttributeMetadataAndAttributeName";
 export class DynamicDataDictionary {
     createAttributeMetadataArray(javaClazz) {
         let result = [];

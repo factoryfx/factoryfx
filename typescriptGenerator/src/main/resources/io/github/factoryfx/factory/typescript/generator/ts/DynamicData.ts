@@ -2,10 +2,10 @@
 import {DataCreator} from "./DataCreator";
 import {AttributeAccessor} from "./AttributeAccessor";
 import {Data} from "./Data";
-import {AttributeMetadata} from "./AttributeMetadata";
 import {AttributeType} from "./AttributeType";
 import {DynamicDataDictionary} from "./DynamicDataDictionary";
-import {AttributeMetadataAndAttributeName} from "./AttributeMetadataAndAttributeName";
+import {AttributeMetadataAndAttributeName} from "./widget/attribute/AttributeMetadataAndAttributeName";
+
 
 export class DynamicData extends Data {
     attributeAccessors!: AttributeAccessor<any>[];

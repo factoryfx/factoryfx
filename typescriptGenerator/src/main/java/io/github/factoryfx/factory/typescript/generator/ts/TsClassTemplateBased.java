@@ -16,6 +16,21 @@ public class TsClassTemplateBased extends TsFile {
 
     /**
      *
+     * @param resourcePath e.g /jg/kjg/Data.ts
+     * @param targetPath targetPath
+     */
+    public TsClassTemplateBased(Path targetPath, String resourcePath) {
+        super(Path.of(resourcePath).getFileName().toString().replace(".ts",""), targetPath);
+
+        try (InputStream inputStream = this.getClass().getResourceAsStream(resourcePath)) {
+            this.content = new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     *
      * @param resourcePathShort e.g Data.ts
      * @param targetPath targetPath
      */

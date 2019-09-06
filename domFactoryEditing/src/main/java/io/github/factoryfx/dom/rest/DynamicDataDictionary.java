@@ -1,5 +1,6 @@
 package io.github.factoryfx.dom.rest;
 
+import com.google.common.base.Strings;
 import io.github.factoryfx.factory.FactoryBase;
 import io.github.factoryfx.factory.attribute.Attribute;
 import io.github.factoryfx.factory.attribute.dependency.FactoryAttribute;
@@ -42,9 +43,7 @@ public class DynamicDataDictionary {
             FactoryBase factoryBase = FactoryMetadataManager.getMetadataUnsafe(factoryClass).newInstance();
             factoryBase.internal().visitAttributesFlat((attributeVariableName, attribute) -> {
                 DynamicDataDictionaryAttributeItem attributeItem = new DynamicDataDictionaryAttributeItem(getAttributeType(attribute),
-                        !attribute.internal_required(),
-                        attribute.internal_getPreferredLabelText(Locale.ENGLISH),
-                        attribute.internal_getPreferredLabelText(Locale.GERMAN),
+                        !attribute.internal_required(), getLabel(Locale.ENGLISH,attribute,attributeVariableName), getLabel(Locale.GERMAN,attribute,attributeVariableName),
                         getPossibleEnumValues(attribute)
                 );
                 if (!(attribute instanceof ObjectValueAttribute<?>)) {
@@ -53,6 +52,14 @@ public class DynamicDataDictionary {
             });
         }
 
+    }
+
+    private String getLabel(Locale locale, Attribute<?, ?> attribute, String attributeVariableName) {
+        String label = attribute.internal_getPreferredLabelText(locale);
+        if (Strings.isNullOrEmpty(label)) {
+            label=attributeVariableName;
+        }
+        return label;
     }
 
     private String getAttributeType(Attribute<?, ?> attribute) {

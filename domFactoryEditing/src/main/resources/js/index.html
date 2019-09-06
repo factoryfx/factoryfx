@@ -13,51 +13,10 @@
 <div id="factoryEditorDiv"></div>
 
 <script type="module">
-    import {FactoryEditor} from './factoryEditing/FactoryEditor.js'
-    import {AttributeEditorCreator} from "./factoryEditing/AttributeEditorCreator.js";
-    import {DynamicData} from "./factoryEditing/DynamicData.js";
-    import {WaitAnimation} from "./factoryEditing/WaitAnimation.js";
-    import {DynamicDataDictionary} from "./factoryEditing/DynamicDataDictionary.js";
-    import {GuiConfiguration} from "./factoryEditing/GuiConfiguration.js";
-    import {HttpUtility} from "./factoryEditing/HttpUtility.js";
-    import {View} from "./factoryEditing/View.js";
+    import {Main} from "./factoryEditing/main/Main.js";
 
     let parentElement = document.getElementById('factoryEditorDiv');
-    let view =new View();
-    parentElement.appendChild(view.create());
-    let waitAnimation = new WaitAnimation(parentElement,view);
-
-
-    HttpUtility.get("metadata",waitAnimation,(metadataResponse) =>{
-            let dynamicDataDictionary = new DynamicDataDictionary();
-            dynamicDataDictionary.mapFromJson(metadataResponse.dynamicDataDictionary);
-
-            HttpUtility.post("prepareNewFactory",null,waitAnimation,(prepareNewFactoryResponse)=> {
-                    let factoryEditor = new FactoryEditor(new AttributeEditorCreator(),waitAnimation);
-                    let root = new DynamicData();
-                    root.mapFromJsonFromRootDynamic(prepareNewFactoryResponse.root, dynamicDataDictionary);
-
-
-                    factoryEditor.addOnFactoryChange((newData)=>{
-                       window.history.pushState(null, null, window.location.pathname+"#"+newData.getPath().map(factory => factory.getDisplayText()).join('/'));
-                    });
-
-                    window.onpopstate = (event)=> {
-                        factoryEditor.back();
-                    };
-
-                    let guiConfiguration= new GuiConfiguration(metadataResponse.guiConfiguration, factoryEditor, root,prepareNewFactoryResponse.baseVersionId,view,waitAnimation);
-                    view.setNavbar(guiConfiguration.createNavbar());
-
-                    factoryEditor.edit(root);
-
-                    view.show(factoryEditor);
-            });
-
-        }
-    );
-
-
+    new Main().main(parentElement);
 </script>
 
 </body>

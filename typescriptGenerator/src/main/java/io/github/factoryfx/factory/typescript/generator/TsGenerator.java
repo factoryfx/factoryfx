@@ -2,6 +2,7 @@ package io.github.factoryfx.factory.typescript.generator;
 
 
 import com.google.common.base.StandardSystemProperty;
+import com.google.common.reflect.ClassPath;
 import io.github.factoryfx.factory.FactoryBase;
 import io.github.factoryfx.factory.attribute.types.EnumAttribute;
 import io.github.factoryfx.factory.attribute.types.EnumListAttribute;
@@ -9,6 +10,7 @@ import io.github.factoryfx.factory.metadata.FactoryMetadataManager;
 import io.github.factoryfx.factory.typescript.generator.construct.*;
 import io.github.factoryfx.factory.typescript.generator.construct.atttributes.AttributeToTsMapperManager;
 import io.github.factoryfx.factory.typescript.generator.ts.*;
+import io.github.factoryfx.factory.util.ClasspathBasedFactoryProvider;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
@@ -57,41 +59,27 @@ public class TsGenerator<R extends FactoryBase<?,R>> {
     @SuppressWarnings("unchecked")
     private void generateTs(Path targetDir){
         Path utilDir = targetDir.resolve("util");
+
         TsClassTemplateBased dataTsClass = new TsClassTemplateBased("Data.ts", utilDir);
-        dataTsClass.writeToFile();
-
         TsClassTemplateBased attributeAccessorClass = new TsClassTemplateBased("AttributeAccessor.ts", utilDir);
-        attributeAccessorClass.writeToFile();
-
-        TsClassTemplateBased attributeIterationGroupClass = new TsClassTemplateBased("AttributeIterationGroup.ts", utilDir);
-        attributeIterationGroupClass.writeToFile();
-
-        TsClassTemplateBased factoryEditorClass = new TsClassTemplateBased("FactoryEditor.ts", utilDir);
-        factoryEditorClass.writeToFile();
-
-
         TsClassTemplateBased attributeMetadataTsClass = new TsClassTemplateBased("AttributeMetadata.ts", utilDir);
-        attributeMetadataTsClass.writeToFile();
-
         TsClassTemplateBased dynamicDataDictionaryTsClass = new TsClassTemplateBased("DynamicDataDictionary.ts", utilDir);
-        dynamicDataDictionaryTsClass.writeToFile();
+        TsClassTemplateBased attributeTypeEnumTs = new TsClassTemplateBased("AttributeType.ts", utilDir);
 
-        for (String file : List.of("ValidationError.ts", "AttributeEditor.ts", "AttributeEditorCreator.ts",
-                "AttributeEditorStringAttribute.ts", "AttributeEditorFallback.ts", "AttributeEditorFactoryAttribute.ts","AttributeEditorFactoryListAttribute.ts",
-                "AttributeEditorIntegerAttribute.ts","WaitAnimation.ts",
-                "AttributeEditorEnumAttribute.ts", "AttributeEditorEnumListAttribute.ts", "AttributeEditorLongAttribute.ts",
-                "AttributeEditorLocalDateAttribute.ts", "AttributeEditorBooleanAttribute.ts", "AttributeEditorDoubleAttribute.ts", "AttributeEditorFileContentAttribute.ts",
-                "AttributeEditorStringListAttribute.ts", "DomUtility.ts", "GuiConfiguration.ts", "NavItem.ts", "Navbar.ts", "HttpUtility.ts",
-                "View.ts" , "Widget.ts", "FactoryUpdateResult.ts", "SaveWidget.ts", "AttributeEditorFactoryViewAttribute.ts",
-                "AttributeEditorFactoryViewListAttribute.ts", "AttributeMetadataAndAttributeName.ts", "AttributeEditorByteAttribute.ts", "AttributeEditorFloatAttribute.ts",
-                "AttributeEditorEncryptedStringAttribute.ts")) {
-            TsClassTemplateBased fileTs = new TsClassTemplateBased(file, utilDir);
-            fileTs.writeToFile();
+        try {
+            for (ClassPath.ResourceInfo resourceInfo: ClassPath.from(ClasspathBasedFactoryProvider.class.getClassLoader()).getResources()) {
+                String tsBasePath = "io/github/factoryfx/factory/typescript/generator/ts/";
+                if (resourceInfo.getResourceName().startsWith(tsBasePath) && resourceInfo.getResourceName().endsWith(".ts")) {
+                    if (resourceInfo.getResourceName().endsWith("DataCreator.ts")){
+                        continue;
+                    }
+                    TsClassTemplateBased fileTs = new TsClassTemplateBased(utilDir.resolve(Path.of(tsBasePath).relativize(Path.of(resourceInfo.getResourceName()))).getParent(),"/"+resourceInfo.getResourceName());
+                    fileTs.writeToFile();
+                }
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
-
-
-        TsClassTemplateBased dynamicDataTsClass = new TsClassTemplateBased("DynamicData.ts", utilDir);
-        dynamicDataTsClass.writeToFile();
 
 
 
@@ -127,8 +115,7 @@ public class TsGenerator<R extends FactoryBase<?,R>> {
 
         AttributeToTsMapperManager attributeToTsMapperManager = attributeInfoMapperCreator.create(dataToConfigTs,enums,dataTsClass);
 
-        TsClassTemplateBased attributeTypeEnumTs = new TsClassTemplateBased("AttributeType.ts", utilDir);
-        attributeTypeEnumTs.writeToFile();
+
 
         DataCreatorTs<R> dataCreatorGenerator = new DataCreatorTs<>(dataClasses, dataToConfigTs, dataTsClass, utilDir);
         TsFile dataCreatorTsClass = dataCreatorGenerator.construct();

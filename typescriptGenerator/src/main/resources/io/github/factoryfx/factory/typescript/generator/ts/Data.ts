@@ -1,5 +1,5 @@
 //generated code don't edit manually
-import { DataCreator } from "./DataCreator";
+import {DataCreator} from "./DataCreator";
 import {AttributeAccessor} from "./AttributeAccessor";
 import {DynamicDataDictionary} from "./DynamicDataDictionary";
 
@@ -221,5 +221,17 @@ export abstract class Data  {
         let idToDataMap: any = {};
         this.collectChildrenRecursive(idToDataMap);
         return idToDataMap[factoryId];
+    }
+
+
+    public addChangeListener(listener: ()=>any){
+        for (let attribute of this.listAttributeAccessor()){
+            attribute.addChangeListener(listener);
+        }
+    }
+    public removeChangeListener(listener: ()=>any){
+        for (let attribute of this.listAttributeAccessor()){
+            attribute.removeChangeListener(listener);
+        }
     }
 }

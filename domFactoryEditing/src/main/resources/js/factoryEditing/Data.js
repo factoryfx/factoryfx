@@ -175,4 +175,14 @@ export class Data {
         this.collectChildrenRecursive(idToDataMap);
         return idToDataMap[factoryId];
     }
+    addChangeListener(listener) {
+        for (let attribute of this.listAttributeAccessor()) {
+            attribute.addChangeListener(listener);
+        }
+    }
+    removeChangeListener(listener) {
+        for (let attribute of this.listAttributeAccessor()) {
+            attribute.removeChangeListener(listener);
+        }
+    }
 }
