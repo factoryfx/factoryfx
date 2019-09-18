@@ -96,6 +96,9 @@ export class DynamicData extends Data {
         if (attributeType === AttributeType.InstantAttribute) {
             return this.mapInstantFromJson(jsonValue);
         }
+        if (attributeType === AttributeType.LongAttribute) {
+            return this.mapLongFromJson(jsonValue);
+        }
         return jsonValue;
     }
 
@@ -111,6 +114,9 @@ export class DynamicData extends Data {
         }
         if (attributeType === AttributeType.InstantAttribute) {
             return this.mapInstantToJson(value);
+        }
+        if (attributeType === AttributeType.LongAttribute) {
+            return this.mapLongToJson(value);
         }
         return value;
     }
@@ -156,4 +162,6 @@ export class DynamicData extends Data {
         this.collectChildrenRecursive(idToDataMap);
         return this.dynamicDataDictionary.createData(json,idToDataMap,this);
     }
+
+
 }

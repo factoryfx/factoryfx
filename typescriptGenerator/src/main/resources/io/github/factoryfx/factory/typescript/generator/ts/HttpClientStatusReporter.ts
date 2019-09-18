@@ -9,14 +9,20 @@ export class HttpClientStatusReporter {
         this.rootModel=rootModel;
     }
 
+    private timer?: number;
     showWaitAnimation(){
         if (!this.rootModel){
             return;
         }
-        this.rootModel.showWaitAnimation();
+        this.timer = setTimeout(()=> { //delay wait animation to avoid flicker
+            this.rootModel!.showWaitAnimation();
+        }, 1000);
     }
 
     hideWaitAnimation(){
+        if (this.timer){
+            clearTimeout(this.timer);
+        }
         if (!this.rootModel){
             return;
         }

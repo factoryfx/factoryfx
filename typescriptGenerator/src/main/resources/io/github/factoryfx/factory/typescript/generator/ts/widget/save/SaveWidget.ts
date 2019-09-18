@@ -42,7 +42,6 @@ export class SaveWidget extends Widget {
         saveButton.onclick=(e)=>{
             this.model.httpClient.updateCurrentFactory(
                 this.model.rootFactory,
-                "","",
                 this.model.baseVersionId,
                 textarea.value,
                 (response)=>{

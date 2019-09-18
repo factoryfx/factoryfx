@@ -14,6 +14,7 @@ import { DomUtility } from "../DomUtility";
 import { ErrorReporterModel } from "../widget/errorreporter/ErrorReporterModel";
 import { HttpClientStatusReporter } from "../HttpClientStatusReporter";
 import { BootstrapUtility } from "../BootstrapUtility";
+import { HistoryWidgetModel } from "../widget/history/HistoryWidgetModel";
 export class Main {
     main(target) {
         target.append(BootstrapUtility.createProgressBar());
@@ -23,26 +24,31 @@ export class Main {
             let dynamicDataDictionary = new DynamicDataDictionary();
             dynamicDataDictionary.mapFromJson(dynamicDataDictionaryJson);
             httpClient.prepareNewFactory((rootJson, baseVersionId) => {
-                let root = new DynamicData();
-                root.mapFromJsonFromRootDynamic(rootJson, dynamicDataDictionary);
-                let factoryEditorModel = new FactoryEditorModel(httpClient);
-                let navItems = [];
-                for (let navItemsJson of guiConfiguration.navBarItems) {
-                    let navitemModel = new NavitemModel(root.getChildFromRoot(navItemsJson.factoryId), factoryEditorModel);
-                    navItems.push(navitemModel);
-                }
-                let saveWidgetModel = new SaveWidgetModel(baseVersionId, root, httpClient);
-                let navbarModel = new NavbarModel(navItems, factoryEditorModel);
-                let factoryUpdateResultModel = new FactoryUpdateResultModel();
-                let viewModel = new ViewModel(factoryEditorModel, saveWidgetModel, factoryUpdateResultModel, navbarModel);
-                navbarModel.setViewModel(viewModel);
-                saveWidgetModel.setViewModel(viewModel);
-                let rootModel = new RootModel(viewModel, new WaitAnimationModel(), new ErrorReporterModel());
-                viewModel.showFactoryEditor();
-                factoryEditorModel.edit(root);
-                httpClientStatusReporter.setRootModel(rootModel);
-                DomUtility.clear(target);
-                target.append(rootModel.getWidget().render());
+                httpClient.getUserLocale((locale) => {
+                    let root = new DynamicData();
+                    root.mapFromJsonFromRootDynamic(rootJson, dynamicDataDictionary);
+                    let factoryEditorModel = new FactoryEditorModel(httpClient);
+                    factoryEditorModel.locale.set(locale);
+                    let navItems = [];
+                    for (let navItemsJson of guiConfiguration.navBarItems) {
+                        let navitemModel = new NavitemModel(root.getChildFromRoot(navItemsJson.factoryId), factoryEditorModel);
+                        navItems.push(navitemModel);
+                    }
+                    let historyWidgetModel = new HistoryWidgetModel(httpClient);
+                    let saveWidgetModel = new SaveWidgetModel(baseVersionId, root, httpClient);
+                    let navbarModel = new NavbarModel(navItems, factoryEditorModel);
+                    let factoryUpdateResultModel = new FactoryUpdateResultModel();
+                    let viewModel = new ViewModel(factoryEditorModel, saveWidgetModel, factoryUpdateResultModel, navbarModel, historyWidgetModel);
+                    navbarModel.setViewModel(viewModel);
+                    saveWidgetModel.setViewModel(viewModel);
+                    historyWidgetModel.setViewModel(viewModel);
+                    let rootModel = new RootModel(viewModel, new WaitAnimationModel(), new ErrorReporterModel());
+                    viewModel.showFactoryEditor();
+                    factoryEditorModel.edit(root);
+                    httpClientStatusReporter.setRootModel(rootModel);
+                    DomUtility.clear(target);
+                    target.append(rootModel.getWidget().render());
+                });
             });
         });
     }

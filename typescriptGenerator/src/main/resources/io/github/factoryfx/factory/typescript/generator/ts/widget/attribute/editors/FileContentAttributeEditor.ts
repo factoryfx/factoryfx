@@ -10,7 +10,7 @@ export class FileContentAttributeEditor extends AttributeEditorWidget{
         this.textarea.className="form-control";
     }
 
-    protected renderAttribute(): HTMLElement{
+    protected render(): HTMLElement{
         let content: HTMLDivElement= document.createElement("div");
         let input: HTMLInputElement= document.createElement("input");
         input.id=this.inputId.toString();

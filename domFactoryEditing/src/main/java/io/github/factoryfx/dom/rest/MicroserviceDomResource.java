@@ -115,6 +115,11 @@ public class MicroserviceDomResource<R extends FactoryBase<?,R>> extends Microse
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public DecryptAttributeResponse decryptAttribute(DecryptAttributeRequest request) {
+        try {
+            Thread.sleep(5000);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
         return new DecryptAttributeResponse(new EncryptedString(request.encryptedText).decrypt(request.key));
     }
 

@@ -1,6 +1,5 @@
 import {Widget} from "../../base/Widget";
 import {Data} from "../../Data";
-import {DomUtility} from "../../DomUtility";
 import {FactoryEditorModel} from "./FactoryEditorModel";
 import {AttributeEditorModel} from "../attribute/AttributeEditorModel";
 import {AttributeType} from "../../AttributeType";
@@ -16,15 +15,16 @@ import {ByteAttributeEditor} from "../attribute/editors/ByteAttributeEditor";
 import {FileContentAttributeEditor} from "../attribute/editors/FileContentAttributeEditor";
 import {StringListAttributeEditor} from "../attribute/editors/StringListAttributeEditor";
 import {FloatAttributeEditor} from "../attribute/editors/FloatAttributeEditor";
-import {EncryptedStringAttributeEditor} from "../attribute/editors/EncryptedStringAttributeEditor";
 import {FactoryAttributeEditor} from "../attribute/editors/FactoryAttributeEditor";
 import {FactoryListAttributeEditor} from "../attribute/editors/FactoryListAttributeEditor";
 import {FactoryViewAttributeEditor} from "../attribute/editors/FactoryViewAttributeEditor";
 import {FactoryViewListAttributeEditor} from "../attribute/editors/FactoryViewListAttributeEditor";
 import {FallbackEditor} from "../attribute/editors/FallbackEditor";
 import {HttpClient} from "../../HttpClient";
-import {AttributeAccessor} from "../../AttributeAccessor";
 import {EncryptedStringAttributeEditorModel} from "../attribute/editors/EncryptedStringAttributeEditoModel";
+import {DomUtility} from "../../DomUtility";
+import {BigDecimalAttributeEditor} from "../attribute/editors/BigDecimalAttributeEditor";
+import {ShortAttributeEditor} from "../attribute/editors/ShortAttributeEditor";
 
 
 export class FactoryEditor extends Widget {
@@ -33,7 +33,7 @@ export class FactoryEditor extends Widget {
 
     constructor(private model: FactoryEditorModel, private httpClient: HttpClient) {
         super();
-        window.onpopstate = (event)=> {
+        window.onpopstate = (event: PopStateEvent)=> {
             this.back();
         };
     }
@@ -85,6 +85,13 @@ export class FactoryEditor extends Widget {
             if (type === AttributeType.EncryptedStringAttribute) {
                 factoryEditorModel = new EncryptedStringAttributeEditorModel( this.model, this.httpClient);
             }
+            if (type === AttributeType.BigDecimalAttribute) {
+                factoryEditorModel = new AttributeEditorModel((model) => new BigDecimalAttributeEditor(model.attributeAccessor.get()!, model.inputId.get()!));
+            }
+            if (type === AttributeType.ShortAttribute) {
+                factoryEditorModel = new AttributeEditorModel((model) => new ShortAttributeEditor(model.attributeAccessor.get()!, model.inputId.get()!));
+            }
+
 
 
             if (type === AttributeType.FactoryAttribute) {
@@ -122,19 +129,46 @@ export class FactoryEditor extends Widget {
         return attributeEditors;
     }
 
+    treeDiv: HTMLDivElement= document.createElement("div");
 
+    container: HTMLDivElement= document.createElement("div");
     protected render(): HTMLElement {
-        let container: HTMLDivElement= document.createElement("div");
-        if (!this.model.visible.get()){
-            return container;
-        }
+        DomUtility.clear(this.container);
 
         let editDiv: HTMLDivElement = document.createElement("div");
 
         //You can't construct DOM elements using normal constructors because you're supposed to go through document.createElement
         this.form = document.createElement("form");
+        editDiv.appendChild(this.form);
 
-        for (let attributeEditorWidget of this.getAttributeEditorModels()) {
+
+
+        this.container.className = "container-fluid";
+        this.container.style.padding="0px";
+        this.container.style.marginTop="16px";
+        let row: HTMLDivElement = document.createElement("div");
+        row.className = "row";
+
+        let col4: HTMLDivElement = document.createElement("div");
+        col4.className = "col-4";
+        let col8: HTMLDivElement = document.createElement("div");
+        col8.className = "col-8";
+
+        this.container.appendChild(row);
+        row.appendChild(col4);
+        row.appendChild(col8);
+
+        col8.appendChild(editDiv);
+        col4.appendChild(this.treeDiv);
+
+        return this.container;
+    }
+
+    private updateForm() {
+        DomUtility.clear(this.form);
+        let attributeEditorModels: AttributeEditorModel[] = this.getAttributeEditorModels();
+        let counter: number=0;
+        for (let attributeEditorWidget of attributeEditorModels) {
             let formGroup: HTMLElement = document.createElement("div");
             formGroup.className = "form-group row";
             formGroup.style.padding = "0rem 1rem";
@@ -144,35 +178,16 @@ export class FactoryEditor extends Widget {
             let widget = attributeEditorWidget.getWidget();
             widget.append(div);
 
-            formGroup.appendChild(widget.createLabel());
+            formGroup.appendChild(widget.createLabel(this.model.locale.get()!));
             formGroup.appendChild(div);
             this.form.appendChild(formGroup);
 
-            this.form.appendChild(document.createElement("hr"));
+            if (counter<attributeEditorModels.length-1){
+                this.form.appendChild(document.createElement("hr"));
+            }
+
+            counter++;
         }
-
-        editDiv.appendChild(this.form);
-
-        container.className = "container-fluid";
-        container.style.padding="0px";
-        container.appendChild(this.createBreadCrumb(this.model.factory.get()!));
-        let row: HTMLDivElement = document.createElement("div");
-        row.className = "row";
-
-        let col4: HTMLDivElement = document.createElement("div");
-        col4.className = "col-4";
-        let col8: HTMLDivElement = document.createElement("div");
-        col8.className = "col-8";
-
-        container.appendChild(row);
-        row.appendChild(col4);
-        row.appendChild(col8);
-
-        col8.appendChild(editDiv);
-        col4.appendChild(this.createTree());
-
-
-        return container;
     }
 
     createBreadCrumb(data: Data): HTMLElement {
@@ -182,6 +197,9 @@ export class FactoryEditor extends Widget {
         let ol: HTMLOListElement = document.createElement("ol");
         ol.className = "breadcrumb";
         ol.style.borderRadius = "0";
+        ol.style.padding="0px";
+        ol.style.backgroundColor="transparent";
+        ol.style.margin="0px"
 
         let counter: number = 0;
         let path = data.getPath();
@@ -224,62 +242,69 @@ export class FactoryEditor extends Widget {
     }
 
     private createTreeItem(variableName: string, data: Data): HTMLElement {
-        let ul: HTMLUListElement = document.createElement("ul");
-        ul.style.listStyleType="circle";
-
         let li: HTMLLIElement  = document.createElement("li");
         let variableNameSpan: HTMLSpanElement  = document.createElement("span");
         variableNameSpan.textContent=variableName;
         li.appendChild(variableNameSpan);
-        li.appendChild( document.createElement("br"));
+        // li.appendChild( document.createElement("br"));
 
-        if (this.model.factory.get()===data){
-            let span: HTMLSpanElement = document.createElement("span");
-            span.className="bg-primary text-white";
-            span.style.whiteSpace="nowrap";
-            span.textContent=data.getDisplayText();
-            li.appendChild(span);
-        } else {
-            let a: HTMLAnchorElement = document.createElement("a");
-            a.href="#";
-            a.textContent=data.getDisplayText();
-            a.style.whiteSpace="nowrap";
-            a.onclick=(e)=>{
-                this.model.edit(data);
-                e.preventDefault();
-            };
-            li.appendChild(a);
-        }
-        ul.appendChild(li);
+        let a: HTMLAnchorElement = document.createElement("a");
+        a.href="#";
+        a.textContent=data.getDisplayText();
+        a.style.whiteSpace="nowrap";
+        a.onclick=(e)=>{
+            this.model.edit(data);
+            e.preventDefault();
+        };
+        li.appendChild(a);
 
-        for (let attributeAccessor of data.listAttributeAccessor()) {
+        return li;
+    }
+
+    private updateTree() {
+        let treeCard: HTMLDivElement = document.createElement("div");
+        treeCard.className="card";
+        // treeCard.style.overflowX="scroll";
+        treeCard.style.marginLeft="15px";
+        // treeCard.style.height="600px";
+        let cardBody: HTMLDivElement = document.createElement("div");
+        cardBody.className="card-body";
+
+        let cardHeader: HTMLDivElement = document.createElement("div");
+        cardHeader.className="card-header";
+        cardHeader.appendChild(this.createBreadCrumb(this.model.factory.get()!));
+
+
+        let ul: HTMLUListElement = document.createElement("ul");
+        ul.style.listStyleType="circle";
+        for (let attributeAccessor of this.model.factory.get()!.listAttributeAccessor()) {
             let value = attributeAccessor.getValue();
             if (value instanceof Data){
-                li.appendChild(this.createTreeItem(attributeAccessor.getAttributeName(),<Data>value));
+                ul.appendChild(this.createTreeItem(attributeAccessor.getLabelText(this.model.locale.get()!),<Data>value));
             }
             if (Array.isArray(value)){
-                for (let item of value) {
-                    if (item instanceof Data) {
-                        li.appendChild(this.createTreeItem(attributeAccessor.getAttributeName(), <Data>item));
+                if (attributeAccessor.getAttributeMetadata().getType()==AttributeType.FactoryListAttribute || attributeAccessor.getAttributeMetadata().getType()==AttributeType.FactoryPolymorphicListAttribute){
+                    let li: HTMLLIElement  = document.createElement("li");
+                    li.textContent=attributeAccessor.getLabelText(this.model.locale.get()!) + ' ('+value.length+')';
+                    let ulNested: HTMLUListElement = document.createElement("ul");
+                    ulNested.style.listStyleType="square";
+                    for (let item of value) {
+                        if (item instanceof Data) {
+                            ulNested.appendChild(this.createTreeItem("",<Data>item));
+                        }
                     }
+                    li.appendChild(ulNested);
+                    ul.appendChild(li);
                 }
             }
         }
-        return ul;
-    }
+        cardBody.appendChild(ul);
 
-    private createTree(): HTMLDivElement {
-        let treeCard: HTMLDivElement = document.createElement("div");
-        treeCard.className="card";
-        treeCard.style.overflowX="scroll";
-        treeCard.style.marginLeft="15px";
-        treeCard.style.height="600px";
-
-        let cardBody: HTMLDivElement = document.createElement("div");
-        cardBody.className="card-body";
-        cardBody.appendChild(this.createTreeItem("root",this.model.factory.get()!.getRoot()));
+        treeCard.appendChild(cardHeader);
         treeCard.appendChild(cardBody);
-        return treeCard;
+
+        DomUtility.clear(this.treeDiv);
+        this.treeDiv.appendChild(treeCard);
     }
 
     private attributeEditorModels?: AttributeEditorModel[];
@@ -293,13 +318,23 @@ export class FactoryEditor extends Widget {
     }
 
     bindModel(): any {
+        this.renderOnce();
         let newData: Data=this.model.getFactory();
-        window.history.pushState(null, "", window.location.pathname+"#"+newData.getPath().map(factory => factory.getDisplayText()).join('/'));
+        if (window.history.state!==newData.getId()){
+            window.history.pushState(newData.getId(), "", window.location.pathname+"#"+newData.getPath().map(factory => factory.getDisplayText()).join('/'));
+        }
 
         if (newData!=this.attributeEditorModelsCreatedForData){
             this.attributeEditorModels=this.createAttributeEditors();
+            this.updateForm();
         }
-        return super.bindModel();
+        this.updateTree();
+
+        if (!this.model.visible.get()){
+            this.container.style.display="none"
+        } else {
+            this.container.style.display="block"
+        }
     }
 
 

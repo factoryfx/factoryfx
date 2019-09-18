@@ -8,7 +8,7 @@ export class StringListAttributeEditor extends AttributeEditorWidget {
         this.ul = document.createElement("ul");
         this.ul.style.paddingLeft = "0px";
     }
-    renderAttribute() {
+    render() {
         let div = document.createElement("div");
         this.bindValues();
         let newButton = document.createElement("button");

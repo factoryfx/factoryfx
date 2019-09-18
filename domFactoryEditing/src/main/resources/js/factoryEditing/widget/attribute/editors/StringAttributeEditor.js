@@ -6,14 +6,15 @@ export class StringAttributeEditor extends AttributeEditorWidget {
         this.inputId = inputId;
         this.input = document.createElement("input");
     }
-    renderAttribute() {
+    render() {
         this.input.id = this.inputId.toString();
         this.input.className = "form-control";
         this.input.type = "text";
         this.input.required = !this.attributeAccessor.getAttributeMetadata().nullable();
         return this.input;
     }
-    bindAttribute() {
+    bindModel() {
+        this.renderOnce();
         this.input.value = this.attributeAccessor.getValue();
         this.input.oninput = (e) => {
             this.attributeAccessor.setValue(this.input.value);

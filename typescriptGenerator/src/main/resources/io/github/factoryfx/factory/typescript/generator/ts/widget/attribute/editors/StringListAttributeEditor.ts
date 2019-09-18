@@ -10,7 +10,7 @@ export class StringListAttributeEditor extends AttributeEditorWidget{
         this.ul.style.paddingLeft="0px";
     }
 
-    protected renderAttribute(): HTMLElement{
+    protected render(): HTMLElement{
         let div: HTMLDivElement= document.createElement("div");
         this.bindValues();
 

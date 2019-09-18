@@ -803,3 +803,39 @@ test('test_new_constructed_maptojson', ()=>{
 
     expect(json.refList[0]).to.not.equal(undefined);
 });
+
+test('test_long', ()=>{
+    let data: ExampleDataAll = new ExampleDataAll();
+    data.longAttribute=9223372036854775807n;
+    // data.refList.push(new ExampleData2());
+    let json = data.mapToJsonFromRoot();
+
+    data = new ExampleDataAll();
+    data.mapFromJsonFromRoot(json, new DataCreator());
+
+    //console.log(data.longAttribute);
+    //expect this workaround  because it's bugged with bigint
+    expect(data.longAttribute===9223372036854775807n).to.equal(true);
+});
+
+test('test_empty_long', ()=>{
+    let data: ExampleDataAll = new ExampleDataAll();
+    // data.longAttribute;
+    // data.refList.push(new ExampleData2());
+    let json = data.mapToJsonFromRoot();
+
+    data = new ExampleDataAll();
+    data.mapFromJsonFromRoot(json, new DataCreator());
+});
+
+test('test_bigdecimal', ()=>{
+    let data: ExampleDataAll = new ExampleDataAll();
+    data.bigDecimalAttribute="9223372036854775807876876786786.8767867878687";
+    // data.refList.push(new ExampleData2());
+    let json = data.mapToJsonFromRoot();
+
+    data = new ExampleDataAll();
+    data.mapFromJsonFromRoot(json, new DataCreator());
+
+    expect(data.bigDecimalAttribute).to.equal("9223372036854775807876876786786.8767867878687");
+});

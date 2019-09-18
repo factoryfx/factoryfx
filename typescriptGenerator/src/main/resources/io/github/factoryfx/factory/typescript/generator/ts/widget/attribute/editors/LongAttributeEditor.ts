@@ -1,27 +1,34 @@
 import {AttributeAccessor} from "../../../AttributeAccessor";
-import {AttributeEditorWidget} from "../AttributeEditorWidget";
+import {NumberBaseAttributeEditor} from "./NumberBaseAttributeEditor";
 
-export class LongAttributeEditor extends AttributeEditorWidget{
+export class LongAttributeEditor extends NumberBaseAttributeEditor{
+
 
     constructor(protected attributeAccessor: AttributeAccessor<any>, protected inputId: string) {
         super(attributeAccessor,inputId);
     }
 
-    protected renderAttribute(): HTMLElement{
-        let input: HTMLInputElement= document.createElement("input");
-        input.id=this.inputId.toString();
-        input.className="form-control";
-        input.type="number";
+    protected additionalInputSetup(): any {
+        this.input.type="text";
+    }
 
-        let value = this.attributeAccessor.getValue();
-        if (value!==null && value!==undefined){
-            input.valueAsNumber= value;
-        }
-        input.oninput= (e) => {
-            this.attributeAccessor.setValue(input.valueAsNumber);
+    public bindModel(): any {
+        this.renderOnce();
+        this.input.value=this.attributeAccessor.getValue();
+        this.input.oninput=(e) => {
+            try {
+                let value = BigInt(this.input.value);
+                if (value<9223372036854775807 && value>-9223372036854775807){
+                    this.attributeAccessor.setValue(value);
+                    this.input.setCustomValidity("");
+                } else {
+                    this.input.setCustomValidity("Number not in java Long range");
+                }
+            } catch (error) {
+                this.input.setCustomValidity("Not a Number");
+            }
         };
-        input.required=!this.attributeAccessor.getAttributeMetadata().nullable();
-        return input;
+        this.input.required=!this.attributeAccessor.getAttributeMetadata().nullable();
     }
 
 }

@@ -5,7 +5,7 @@ export class FallbackEditor extends AttributeEditorWidget {
         this.attributeAccessor = attributeAccessor;
         this.inputId = inputId;
     }
-    renderAttribute() {
+    render() {
         let div = document.createElement("div");
         div.textContent = 'not editable: ' + this.attributeAccessor.getAttributeMetadata().getType();
         return div;

@@ -17,7 +17,7 @@ export class FactoryAttributeEditor extends AttributeEditorWidget {
         this.input.readOnly = true;
         this.input.required = !this.attributeAccessor.getAttributeMetadata().nullable();
     }
-    renderAttribute() {
+    render() {
         let inputGroup = document.createElement("div");
         inputGroup.className = "input-group";
         this.bindValue();

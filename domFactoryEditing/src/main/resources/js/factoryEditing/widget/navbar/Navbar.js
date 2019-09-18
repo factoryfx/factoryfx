@@ -1,5 +1,6 @@
 //generated code don't edit manually
 import { Widget } from "../../base/Widget";
+import { BootstrapUtility } from "../../BootstrapUtility";
 export class Navbar extends Widget {
     constructor(model) {
         super();
@@ -21,10 +22,15 @@ export class Navbar extends Widget {
         }
         let form = document.createElement("form");
         form.className = "form-inline";
-        let saveButton = document.createElement("button");
-        saveButton.type = "button";
+        let historyButton = BootstrapUtility.createButtonSecondary();
+        form.appendChild(historyButton);
+        historyButton.textContent = "History";
+        historyButton.onclick = (e) => {
+            this.model.viewModel.showHistoryWidget();
+        };
+        historyButton.style.marginRight = "10px";
+        let saveButton = BootstrapUtility.createButtonSuccess();
         saveButton.textContent = "Save";
-        saveButton.className = "btn btn-outline-success";
         saveButton.onclick = (e) => {
             let factoryEditor = this.model.factoryEditorModel;
             if (factoryEditor.getWidget().validate()) {

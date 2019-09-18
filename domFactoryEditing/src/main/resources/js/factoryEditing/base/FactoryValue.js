@@ -13,17 +13,13 @@ export class FactoryValue extends Value {
         return [];
     }
     set(value) {
-        // let previous: Data=this.get()!;
-        // if (previous){
-        //     for (let child of previous.collectChildren()) {
-        //         child.removeChangeListener(this.listener);
-        //     }
-        // }
-        // if (value){
-        //     for (let child of value.collectChildren()) {
-        //         child.addChangeListener(this.listener);
-        //     }
-        // }
+        let previous = this.get();
+        if (previous) {
+            previous.removeChangeListener(this.listener);
+        }
+        if (value) {
+            value.addChangeListener(this.listener);
+        }
         super.set(value);
     }
 }

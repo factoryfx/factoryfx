@@ -12,7 +12,7 @@ export class EncryptedStringAttributeEditor extends AttributeEditorWidget {
         this.inputValue = document.createElement("input");
         this.encryptButton = document.createElement("button");
     }
-    renderAttribute() {
+    render() {
         let form = document.createElement("form");
         form.className = "form-inline";
         this.inputKey.id = this.inputId.toString();
@@ -45,7 +45,8 @@ export class EncryptedStringAttributeEditor extends AttributeEditorWidget {
         //input.required=!this.attributeAccessor.getAttributeMetadata().nullable();
         return form;
     }
-    bindAttribute() {
+    bindModel() {
+        this.renderOnce();
         this.encytptedTextInput.value = this.attributeAccessor.getValue().encryptedString;
         this.decryptButton.disabled = !(!!this.model.key.get());
         this.decryptButton.onclick = (e) => {

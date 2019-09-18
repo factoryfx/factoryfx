@@ -1,6 +1,7 @@
 import {Widget} from "../../base/Widget";
 import {FactoryEditorModel} from "../factoryeditor/FactoryEditorModel";
 import {NavbarModel} from "./NavbarModel";
+import {BootstrapUtility} from "../../BootstrapUtility";
 
 
 export class Navbar extends Widget {
@@ -27,10 +28,18 @@ export class Navbar extends Widget {
 
         let form: HTMLFormElement = document.createElement("form");
         form.className="form-inline";
-        let saveButton: HTMLButtonElement = document.createElement("button");
-        saveButton.type="button";
+
+        let historyButton: HTMLButtonElement = BootstrapUtility.createButtonSecondary();
+        form.appendChild(historyButton);
+        historyButton.textContent="History";
+        historyButton.onclick=(e)=>{
+            this.model.viewModel!.showHistoryWidget();
+        };
+        historyButton.style.marginRight="10px";
+
+
+        let saveButton: HTMLButtonElement = BootstrapUtility.createButtonSuccess();
         saveButton.textContent="Save";
-        saveButton.className="btn btn-outline-success";
         saveButton.onclick=(e)=>{
             let factoryEditor: FactoryEditorModel = this.model.factoryEditorModel;
             if (factoryEditor!.getWidget()!.validate()){

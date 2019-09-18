@@ -169,7 +169,7 @@ public class JettyServerBuilder<R extends FactoryBase<?,R>> {
     }
 
     /**
-     * shortcut <pre>withExceptionMapper(ParameterlessFactory.create(TestExceptionMapper.class))</pre>
+     * shortcut <pre>withExceptionMapper(AttributelessFactory.create(TestExceptionMapper.class))</pre>
      * @param exceptionMapper exceptionMapper Factory
      * @return builder
      */

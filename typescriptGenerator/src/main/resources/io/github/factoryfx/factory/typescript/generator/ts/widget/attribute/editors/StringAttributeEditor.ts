@@ -7,7 +7,7 @@ export class StringAttributeEditor extends AttributeEditorWidget{
         super(attributeAccessor,inputId);
     }
 
-    protected renderAttribute(): HTMLElement{
+    protected render(): HTMLElement{
         this.input.id=this.inputId.toString();
         this.input.className="form-control";
         this.input.type="text";
@@ -16,7 +16,8 @@ export class StringAttributeEditor extends AttributeEditorWidget{
         return this.input;
     }
 
-    protected bindAttribute(): any {
+    public bindModel(): any {
+        this.renderOnce();
         this.input.value=this.attributeAccessor.getValue();
         this.input.oninput=(e) => {
             this.attributeAccessor.setValue(this.input.value);

@@ -11,7 +11,7 @@ export class FactoryViewListAttributeEditor extends AttributeEditorWidget{
         super(attributeAccessor,inputId);
     }
 
-    protected renderAttribute(): HTMLElement{
+    protected render(): HTMLElement{
         let content: HTMLElement= document.createElement("div");
 
         let loadButton: HTMLButtonElement= document.createElement("button");

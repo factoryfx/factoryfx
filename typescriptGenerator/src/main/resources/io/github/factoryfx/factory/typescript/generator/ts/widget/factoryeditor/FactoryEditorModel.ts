@@ -4,10 +4,12 @@ import {FactoryEditor} from "./FactoryEditor";
 import {Data} from "../../Data";
 import {BooleanValue} from "../../base/BooleanValue";
 import {HttpClient} from "../../HttpClient";
+import {StringValue} from "../../base/StringValue";
 
 
 export class FactoryEditorModel extends WidgetModel<FactoryEditor> {
     public readonly visible: BooleanValue = new BooleanValue();
+    public readonly locale: StringValue= new StringValue();
 
 
     public readonly factory: FactoryValue = new FactoryValue();

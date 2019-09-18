@@ -9,7 +9,7 @@ export class FactoryViewAttributeEditor extends AttributeEditorWidget {
         this.factoryEditorModel = factoryEditorModel;
         this.httpClient = httpClient;
     }
-    renderAttribute() {
+    render() {
         let content = document.createElement("div");
         let loadButton = document.createElement("button");
         loadButton.type = "button";

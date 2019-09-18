@@ -18,12 +18,12 @@ export class RootModel extends WidgetModel<Root> {
 
     showWaitAnimation(){
         this.waitAnimationModel.visible.set(true);
-        this.view.visible.set(false);
+        // this.view.visible.set(false);
     }
 
     hideWaitAnimation(){
         this.waitAnimationModel.visible.set(false);
-        this.view.visible.set(true);
+        // this.view.visible.set(true);
     }
 
     reportError(error: string){

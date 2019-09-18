@@ -4,20 +4,16 @@ import {AttributeAccessor} from "../../../AttributeAccessor";
 import {AttributeEditorWidget} from "../AttributeEditorWidget";
 import {FactoryEditorModel} from "../../factoryeditor/FactoryEditorModel";
 import {HttpClient} from "../../../HttpClient";
+import {BootstrapUtility} from "../../../BootstrapUtility";
 
 export class FactoryListAttributeEditor extends AttributeEditorWidget{
-    private div: HTMLElement= document.createElement("div");
+
     constructor(protected attributeAccessor: AttributeAccessor<any>, protected inputId: string, private factoryEditorModel: FactoryEditorModel, private httpClient: HttpClient) {
         super(attributeAccessor,inputId);
     }
 
-    protected renderAttribute(): HTMLElement{
-        this.update();
-        return this.div;
-    }
-
-    public update(){
-        DomUtility.clear(this.div);
+    protected render(): HTMLElement{
+        let div: HTMLElement= document.createElement("div");
         let values: Data[] = this.attributeAccessor.getValue();
         if (!values){
             values=[];
@@ -36,8 +32,7 @@ export class FactoryListAttributeEditor extends AttributeEditorWidget{
         ul.style.marginBottom="16px";
         ul.hidden = values.length===0
 
-        let newButton: HTMLButtonElement = document.createElement("button");
-        newButton.type="button";
+        let newButton: HTMLButtonElement = BootstrapUtility.createButtonPrimary();
         newButton.textContent="add";
         newButton.onclick=(e)=>{
 
@@ -45,17 +40,21 @@ export class FactoryListAttributeEditor extends AttributeEditorWidget{
                 this.factoryEditorModel.getFactory().getId(),
                 this.attributeAccessor.getAttributeName(),
                 this.factoryEditorModel.getFactory().getRoot(),(response)=>{
-                    this.attributeAccessor.getValue().push(this.factoryEditorModel.getFactory().createNewChildFactory(response));
-                    this.update();
+                    let items = this.attributeAccessor.getValue();
+                    items.push(this.factoryEditorModel.getFactory().createNewChildFactory(response));
+                    this.attributeAccessor.setValue(items);
+
                     // this.factoryEditor.updateTree();
                 }
             )
 
         };
-        newButton.className="btn btn-primary";
 
-        this.div.appendChild(ul);
-        this.div.appendChild(newButton);
+
+        div.appendChild(ul);
+        div.appendChild(newButton);
+
+        return div;
     }
 
     createListItem(value: Data): HTMLElement{
@@ -84,11 +83,9 @@ export class FactoryListAttributeEditor extends AttributeEditorWidget{
         removeButton.type="button";
         removeButton.textContent="remove";
         removeButton.onclick=(e)=>{
-            let array: Data[] = this.attributeAccessor.getValue();
-            array.splice(array.indexOf(value), 1);
-            this.update();
-            // this.factoryEditor.updateTree();
-
+            let items: Data[] = this.attributeAccessor.getValue();
+            items.splice(items.indexOf(value), 1);
+            this.attributeAccessor.setValue(items);
         };
         removeButton.className="btn btn-outline-danger";
 
@@ -109,5 +106,9 @@ export class FactoryListAttributeEditor extends AttributeEditorWidget{
         inputGroup.appendChild(inputGroupAppend);
         return inputGroup;
     }
+
+    // protected bindAttribute(): any {
+    //     this.reRender(this.renderAttribute());
+    // }
 
 }

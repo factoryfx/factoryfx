@@ -20,12 +20,38 @@ export class BootstrapUtility {
     }
 
     static createProgressBar(): HTMLElement  {
+        let progress: HTMLDivElement = document.createElement("div");
+        progress.className="progress";
+
         let progressbarDiv: HTMLDivElement = document.createElement("div");
         progressbarDiv.className="progress-bar progress-bar-striped progress-bar-animated";
         progressbarDiv.setAttribute("role","progressbar");
 
         progressbarDiv.style.width="100%";
-        return progressbarDiv;
+
+        progress.append(progressbarDiv);
+        return progress;
+    }
+
+    static createButtonPrimary(): HTMLButtonElement  {
+        let button: HTMLButtonElement = document.createElement("button");
+        button.type="button";
+        button.className="btn btn-primary";
+        return button;
+    }
+
+    static createButtonSuccess(): HTMLButtonElement  {
+        let button: HTMLButtonElement = document.createElement("button");
+        button.type="button";
+        button.className="btn btn-success";
+        return button;
+    }
+
+    static createButtonSecondary(): HTMLButtonElement  {
+        let button: HTMLButtonElement = document.createElement("button");
+        button.type="button";
+        button.className="btn btn-secondary";
+        return button;
     }
 
 

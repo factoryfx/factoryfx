@@ -22,7 +22,7 @@ export class FactoryAttributeEditor extends AttributeEditorWidget{
         this.input.required=!this.attributeAccessor.getAttributeMetadata().nullable();
     }
 
-    protected renderAttribute(): HTMLElement {
+    protected render(): HTMLElement {
         let inputGroup: HTMLElement= document.createElement("div");
         inputGroup.className="input-group";
 

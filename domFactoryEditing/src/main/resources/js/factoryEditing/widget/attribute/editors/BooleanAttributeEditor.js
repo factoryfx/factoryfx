@@ -5,7 +5,7 @@ export class BooleanAttributeEditor extends AttributeEditorWidget {
         this.attributeAccessor = attributeAccessor;
         this.inputId = inputId;
     }
-    renderAttribute() {
+    render() {
         let div = document.createElement("div");
         div.className = "form-check";
         let input = document.createElement("input");

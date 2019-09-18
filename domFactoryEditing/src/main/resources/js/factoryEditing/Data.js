@@ -99,12 +99,16 @@ export class Data {
         return new Date(json);
     }
     mapLocalDateToJson(date) {
+        if (!date)
+            return null;
         let day = date.getDate();
         let monthIndex = date.getMonth() + 1;
         let year = date.getFullYear();
         return year + "-" + this.pad(monthIndex, 2) + "-" + this.pad(day, 2);
     }
     mapInstantFromJson(json) {
+        if (!json)
+            return null;
         let match = /(.*)\.(.*)Z/.exec(json);
         let convertNanoToMilli = match[1] + '.' + this.pad((Math.round(Number(match[2]) / 100000)), 2) + 'Z';
         let current = new Date(convertNanoToMilli);
@@ -112,6 +116,8 @@ export class Data {
         return utcDate;
     }
     mapInstantToJson(date) {
+        if (!date)
+            return null;
         let day = date.getDate();
         let monthIndex = date.getMonth() + 1;
         let year = date.getFullYear();
@@ -121,10 +127,23 @@ export class Data {
         let milliseconds = date.getMilliseconds();
         return year + "-" + this.pad(monthIndex, 2) + "-" + this.pad(day, 2) + 'T' + this.pad(hour, 2) + ':' + this.pad(min, 2) + ':' + this.pad(sec, 2) + '.' + milliseconds + 'Z';
     }
+    mapLongFromJson(jsonValue) {
+        if (!jsonValue)
+            return null;
+        return BigInt(jsonValue);
+    }
+    mapLongToJson(value) {
+        if (value > Number.MAX_SAFE_INTEGER) {
+            return value.toString();
+        }
+        return parseInt(value);
+    }
     mapLocalDateTimeFromJson(json) {
         return new Date(json);
     }
     mapLocalDateTimeToJson(date) {
+        if (!date)
+            return null;
         let day = date.getDate();
         let monthIndex = date.getMonth() + 1;
         let year = date.getFullYear();

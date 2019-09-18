@@ -40,9 +40,7 @@ export class AttributeAccessor<T> {
         }
     }
     public removeChangeListener(listener: ()=>any){
-        console.log(this.listeners.length);
         this.listeners.splice(this.listeners.indexOf(listener),1);
-        console.log(this.listeners.length);
     }
 
 }

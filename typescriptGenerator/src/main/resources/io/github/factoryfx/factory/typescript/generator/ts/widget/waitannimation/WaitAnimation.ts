@@ -1,5 +1,6 @@
 import {Widget} from "../../base/Widget";
 import {WaitAnimationModel} from "./WaitAnimationModel";
+import {BootstrapUtility} from "../../BootstrapUtility";
 
 
 export class WaitAnimation extends Widget{
@@ -9,39 +10,25 @@ export class WaitAnimation extends Widget{
     }
 
     render(): HTMLElement {
-        let div: HTMLDivElement = document.createElement("div");
+        let modal: HTMLDivElement = document.createElement("div");
         if (!this.model.visible.get()){
-            return div;
+            return modal;
         }
-        div.className="progress";
 
-        let progressbarDiv: HTMLDivElement = document.createElement("div");
-        progressbarDiv.className="progress-bar progress-bar-striped progress-bar-animated";
-        progressbarDiv.setAttribute("role","progressbar");
-
-        progressbarDiv.style.width="100%";
-
-        div.appendChild(progressbarDiv);
-        return div;
-    }
-
-    content: Element[]=[];
-
-    scrollTop!: number;
-    show(): void {
-        this.scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-        // DomUtility.clear(this.parentElement);
-        // this.parentElement.appendChild(this.create());
-    }
-
-    hide() {
-        // DomUtility.clear(this.parentElement);
-        // this.parentElement.appendChild(this.view.create());
-        document.documentElement.scrollTop = document.body.scrollTop = this.scrollTop;
-    }
-
-    reportError(responseText: string) {
-        //TODO
-        console.log(responseText);
+        modal.style.position="fixed";  /* Stay in place */
+        modal.style.zIndex="2";  /* Sit on top */
+        modal.style.left="0";
+        modal.style.top="0";
+        modal.style.right="0";
+        modal.style.bottom="0";
+        modal.style.width="100%";
+        modal.style.height="100%";
+        modal.style.overflow="auto"; /* Enable scroll if needed */
+        modal.style.backgroundColor="rgba(0,0,0,0.4)";
+        modal.onclick = (e: Event)=> {
+            e.preventDefault();
+        };
+        modal.append(BootstrapUtility.createProgressBar())
+        return modal;
     }
 }

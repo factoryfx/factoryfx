@@ -21,11 +21,16 @@ import { FactoryViewAttributeEditor } from "../attribute/editors/FactoryViewAttr
 import { FactoryViewListAttributeEditor } from "../attribute/editors/FactoryViewListAttributeEditor";
 import { FallbackEditor } from "../attribute/editors/FallbackEditor";
 import { EncryptedStringAttributeEditorModel } from "../attribute/editors/EncryptedStringAttributeEditoModel";
+import { DomUtility } from "../../DomUtility";
+import { BigDecimalAttributeEditor } from "../attribute/editors/BigDecimalAttributeEditor";
+import { ShortAttributeEditor } from "../attribute/editors/ShortAttributeEditor";
 export class FactoryEditor extends Widget {
     constructor(model, httpClient) {
         super();
         this.model = model;
         this.httpClient = httpClient;
+        this.treeDiv = document.createElement("div");
+        this.container = document.createElement("div");
         window.onpopstate = (event) => {
             this.back();
         };
@@ -76,6 +81,12 @@ export class FactoryEditor extends Widget {
             if (type === AttributeType.EncryptedStringAttribute) {
                 factoryEditorModel = new EncryptedStringAttributeEditorModel(this.model, this.httpClient);
             }
+            if (type === AttributeType.BigDecimalAttribute) {
+                factoryEditorModel = new AttributeEditorModel((model) => new BigDecimalAttributeEditor(model.attributeAccessor.get(), model.inputId.get()));
+            }
+            if (type === AttributeType.ShortAttribute) {
+                factoryEditorModel = new AttributeEditorModel((model) => new ShortAttributeEditor(model.attributeAccessor.get(), model.inputId.get()));
+            }
             if (type === AttributeType.FactoryAttribute) {
                 factoryEditorModel = new AttributeEditorModel((model) => new FactoryAttributeEditor(model.attributeAccessor.get(), model.inputId.get(), this.model, this.httpClient));
             }
@@ -107,14 +118,32 @@ export class FactoryEditor extends Widget {
         return attributeEditors;
     }
     render() {
-        let container = document.createElement("div");
-        if (!this.model.visible.get()) {
-            return container;
-        }
+        DomUtility.clear(this.container);
         let editDiv = document.createElement("div");
         //You can't construct DOM elements using normal constructors because you're supposed to go through document.createElement
         this.form = document.createElement("form");
-        for (let attributeEditorWidget of this.getAttributeEditorModels()) {
+        editDiv.appendChild(this.form);
+        this.container.className = "container-fluid";
+        this.container.style.padding = "0px";
+        this.container.style.marginTop = "16px";
+        let row = document.createElement("div");
+        row.className = "row";
+        let col4 = document.createElement("div");
+        col4.className = "col-4";
+        let col8 = document.createElement("div");
+        col8.className = "col-8";
+        this.container.appendChild(row);
+        row.appendChild(col4);
+        row.appendChild(col8);
+        col8.appendChild(editDiv);
+        col4.appendChild(this.treeDiv);
+        return this.container;
+    }
+    updateForm() {
+        DomUtility.clear(this.form);
+        let attributeEditorModels = this.getAttributeEditorModels();
+        let counter = 0;
+        for (let attributeEditorWidget of attributeEditorModels) {
             let formGroup = document.createElement("div");
             formGroup.className = "form-group row";
             formGroup.style.padding = "0rem 1rem";
@@ -122,27 +151,14 @@ export class FactoryEditor extends Widget {
             div.className = "col-xl-10";
             let widget = attributeEditorWidget.getWidget();
             widget.append(div);
-            formGroup.appendChild(widget.createLabel());
+            formGroup.appendChild(widget.createLabel(this.model.locale.get()));
             formGroup.appendChild(div);
             this.form.appendChild(formGroup);
-            this.form.appendChild(document.createElement("hr"));
+            if (counter < attributeEditorModels.length - 1) {
+                this.form.appendChild(document.createElement("hr"));
+            }
+            counter++;
         }
-        editDiv.appendChild(this.form);
-        container.className = "container-fluid";
-        container.style.padding = "0px";
-        container.appendChild(this.createBreadCrumb(this.model.factory.get()));
-        let row = document.createElement("div");
-        row.className = "row";
-        let col4 = document.createElement("div");
-        col4.className = "col-4";
-        let col8 = document.createElement("div");
-        col8.className = "col-8";
-        container.appendChild(row);
-        row.appendChild(col4);
-        row.appendChild(col8);
-        col8.appendChild(editDiv);
-        col4.appendChild(this.createTree());
-        return container;
     }
     createBreadCrumb(data) {
         let nav = document.createElement("nav");
@@ -150,6 +166,9 @@ export class FactoryEditor extends Widget {
         let ol = document.createElement("ol");
         ol.className = "breadcrumb";
         ol.style.borderRadius = "0";
+        ol.style.padding = "0px";
+        ol.style.backgroundColor = "transparent";
+        ol.style.margin = "0px";
         let counter = 0;
         let path = data.getPath();
         for (let pathElement of path) {
@@ -186,58 +205,61 @@ export class FactoryEditor extends Widget {
         return this.form.reportValidity();
     }
     createTreeItem(variableName, data) {
-        let ul = document.createElement("ul");
-        ul.style.listStyleType = "circle";
         let li = document.createElement("li");
         let variableNameSpan = document.createElement("span");
         variableNameSpan.textContent = variableName;
         li.appendChild(variableNameSpan);
-        li.appendChild(document.createElement("br"));
-        if (this.model.factory.get() === data) {
-            let span = document.createElement("span");
-            span.className = "bg-primary text-white";
-            span.style.whiteSpace = "nowrap";
-            span.textContent = data.getDisplayText();
-            li.appendChild(span);
-        }
-        else {
-            let a = document.createElement("a");
-            a.href = "#";
-            a.textContent = data.getDisplayText();
-            a.style.whiteSpace = "nowrap";
-            a.onclick = (e) => {
-                this.model.edit(data);
-                e.preventDefault();
-            };
-            li.appendChild(a);
-        }
-        ul.appendChild(li);
-        for (let attributeAccessor of data.listAttributeAccessor()) {
+        // li.appendChild( document.createElement("br"));
+        let a = document.createElement("a");
+        a.href = "#";
+        a.textContent = data.getDisplayText();
+        a.style.whiteSpace = "nowrap";
+        a.onclick = (e) => {
+            this.model.edit(data);
+            e.preventDefault();
+        };
+        li.appendChild(a);
+        return li;
+    }
+    updateTree() {
+        let treeCard = document.createElement("div");
+        treeCard.className = "card";
+        // treeCard.style.overflowX="scroll";
+        treeCard.style.marginLeft = "15px";
+        // treeCard.style.height="600px";
+        let cardBody = document.createElement("div");
+        cardBody.className = "card-body";
+        let cardHeader = document.createElement("div");
+        cardHeader.className = "card-header";
+        cardHeader.appendChild(this.createBreadCrumb(this.model.factory.get()));
+        let ul = document.createElement("ul");
+        ul.style.listStyleType = "circle";
+        for (let attributeAccessor of this.model.factory.get().listAttributeAccessor()) {
             let value = attributeAccessor.getValue();
             if (value instanceof Data) {
-                li.appendChild(this.createTreeItem(attributeAccessor.getAttributeName(), value));
+                ul.appendChild(this.createTreeItem(attributeAccessor.getLabelText(this.model.locale.get()), value));
             }
             if (Array.isArray(value)) {
-                for (let item of value) {
-                    if (item instanceof Data) {
-                        li.appendChild(this.createTreeItem(attributeAccessor.getAttributeName(), item));
+                if (attributeAccessor.getAttributeMetadata().getType() == AttributeType.FactoryListAttribute || attributeAccessor.getAttributeMetadata().getType() == AttributeType.FactoryPolymorphicListAttribute) {
+                    let li = document.createElement("li");
+                    li.textContent = attributeAccessor.getLabelText(this.model.locale.get()) + ' (' + value.length + ')';
+                    let ulNested = document.createElement("ul");
+                    ulNested.style.listStyleType = "square";
+                    for (let item of value) {
+                        if (item instanceof Data) {
+                            ulNested.appendChild(this.createTreeItem("", item));
+                        }
                     }
+                    li.appendChild(ulNested);
+                    ul.appendChild(li);
                 }
             }
         }
-        return ul;
-    }
-    createTree() {
-        let treeCard = document.createElement("div");
-        treeCard.className = "card";
-        treeCard.style.overflowX = "scroll";
-        treeCard.style.marginLeft = "15px";
-        treeCard.style.height = "600px";
-        let cardBody = document.createElement("div");
-        cardBody.className = "card-body";
-        cardBody.appendChild(this.createTreeItem("root", this.model.factory.get().getRoot()));
+        cardBody.appendChild(ul);
+        treeCard.appendChild(cardHeader);
         treeCard.appendChild(cardBody);
-        return treeCard;
+        DomUtility.clear(this.treeDiv);
+        this.treeDiv.appendChild(treeCard);
     }
     getAttributeEditorModels() {
         if (!this.attributeEditorModels) {
@@ -246,11 +268,21 @@ export class FactoryEditor extends Widget {
         return this.attributeEditorModels;
     }
     bindModel() {
+        this.renderOnce();
         let newData = this.model.getFactory();
-        window.history.pushState(null, "", window.location.pathname + "#" + newData.getPath().map(factory => factory.getDisplayText()).join('/'));
+        if (window.history.state !== newData.getId()) {
+            window.history.pushState(newData.getId(), "", window.location.pathname + "#" + newData.getPath().map(factory => factory.getDisplayText()).join('/'));
+        }
         if (newData != this.attributeEditorModelsCreatedForData) {
             this.attributeEditorModels = this.createAttributeEditors();
+            this.updateForm();
         }
-        return super.bindModel();
+        this.updateTree();
+        if (!this.model.visible.get()) {
+            this.container.style.display = "none";
+        }
+        else {
+            this.container.style.display = "block";
+        }
     }
 }

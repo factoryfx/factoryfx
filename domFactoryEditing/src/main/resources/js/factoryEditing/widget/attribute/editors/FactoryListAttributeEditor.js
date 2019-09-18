@@ -1,6 +1,5 @@
-//generated code don't edit manually
-import { DomUtility } from "../../../DomUtility";
 import { AttributeEditorWidget } from "../AttributeEditorWidget";
+import { BootstrapUtility } from "../../../BootstrapUtility";
 export class FactoryListAttributeEditor extends AttributeEditorWidget {
     constructor(attributeAccessor, inputId, factoryEditorModel, httpClient) {
         super(attributeAccessor, inputId);
@@ -8,14 +7,9 @@ export class FactoryListAttributeEditor extends AttributeEditorWidget {
         this.inputId = inputId;
         this.factoryEditorModel = factoryEditorModel;
         this.httpClient = httpClient;
-        this.div = document.createElement("div");
     }
-    renderAttribute() {
-        this.update();
-        return this.div;
-    }
-    update() {
-        DomUtility.clear(this.div);
+    render() {
+        let div = document.createElement("div");
         let values = this.attributeAccessor.getValue();
         if (!values) {
             values = [];
@@ -30,19 +24,19 @@ export class FactoryListAttributeEditor extends AttributeEditorWidget {
         }
         ul.style.marginBottom = "16px";
         ul.hidden = values.length === 0;
-        let newButton = document.createElement("button");
-        newButton.type = "button";
+        let newButton = BootstrapUtility.createButtonPrimary();
         newButton.textContent = "add";
         newButton.onclick = (e) => {
             this.httpClient.createNewFactory(this.factoryEditorModel.getFactory().getId(), this.attributeAccessor.getAttributeName(), this.factoryEditorModel.getFactory().getRoot(), (response) => {
-                this.attributeAccessor.getValue().push(this.factoryEditorModel.getFactory().createNewChildFactory(response));
-                this.update();
+                let items = this.attributeAccessor.getValue();
+                items.push(this.factoryEditorModel.getFactory().createNewChildFactory(response));
+                this.attributeAccessor.setValue(items);
                 // this.factoryEditor.updateTree();
             });
         };
-        newButton.className = "btn btn-primary";
-        this.div.appendChild(ul);
-        this.div.appendChild(newButton);
+        div.appendChild(ul);
+        div.appendChild(newButton);
+        return div;
     }
     createListItem(value) {
         let inputGroup = document.createElement("div");
@@ -66,10 +60,9 @@ export class FactoryListAttributeEditor extends AttributeEditorWidget {
         removeButton.type = "button";
         removeButton.textContent = "remove";
         removeButton.onclick = (e) => {
-            let array = this.attributeAccessor.getValue();
-            array.splice(array.indexOf(value), 1);
-            this.update();
-            // this.factoryEditor.updateTree();
+            let items = this.attributeAccessor.getValue();
+            items.splice(items.indexOf(value), 1);
+            this.attributeAccessor.setValue(items);
         };
         removeButton.className = "btn btn-outline-danger";
         let editButton = document.createElement("button");

@@ -14,10 +14,31 @@ export class BootstrapUtility {
         return inputGroup;
     }
     static createProgressBar() {
+        let progress = document.createElement("div");
+        progress.className = "progress";
         let progressbarDiv = document.createElement("div");
         progressbarDiv.className = "progress-bar progress-bar-striped progress-bar-animated";
         progressbarDiv.setAttribute("role", "progressbar");
         progressbarDiv.style.width = "100%";
-        return progressbarDiv;
+        progress.append(progressbarDiv);
+        return progress;
+    }
+    static createButtonPrimary() {
+        let button = document.createElement("button");
+        button.type = "button";
+        button.className = "btn btn-primary";
+        return button;
+    }
+    static createButtonSuccess() {
+        let button = document.createElement("button");
+        button.type = "button";
+        button.className = "btn btn-success";
+        return button;
+    }
+    static createButtonSecondary() {
+        let button = document.createElement("button");
+        button.type = "button";
+        button.className = "btn btn-secondary";
+        return button;
     }
 }

@@ -1,14 +1,37 @@
+import { StoredDataMetadata } from "./StoredDataMetadata";
 export class HttpClient {
     constructor(statusReporter) {
         this.statusReporter = statusReporter;
     }
-    updateCurrentFactory(root, user, passwordHash, baseVersionId, comment, responseCallback) {
+    getHistoryFactoryList(responseCallback) {
+        let request = {
+            "user": "",
+            "passwordHash": "",
+        };
+        this.post("historyFactoryList", request, (response) => {
+            let result = [];
+            for (let item of response) {
+                result.push(new StoredDataMetadata().mapFromJson(item));
+            }
+            responseCallback(result);
+        });
+    }
+    getUserLocale(responseCallback) {
+        let request = {
+            "user": "",
+            "passwordHash": "",
+        };
+        this.post("userLocale", request, (response) => {
+            responseCallback(response.locale);
+        });
+    }
+    updateCurrentFactory(updateRoot, baseVersionId, comment, responseCallback) {
         let saveRequestBody = {
             "user": "",
             "passwordHash": "",
             "request": {
                 "@class": "io.github.factoryfx.factory.storage.DataUpdate",
-                "root": root.mapToJson({}),
+                "root": updateRoot.mapToJsonFromRoot(),
                 "user": "1",
                 "comment": comment,
                 "baseVersionId": baseVersionId

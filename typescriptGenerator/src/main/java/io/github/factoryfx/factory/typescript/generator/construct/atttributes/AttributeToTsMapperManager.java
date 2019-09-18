@@ -32,7 +32,7 @@ public class AttributeToTsMapperManager {
             classToInfo.put(LocalDateAttribute.class, new ValueAttributeToTsMapper(TsTypePrimitive.DATE,"mapLocalDateFromJson","mapLocalDateToJson"));
             classToInfo.put(EnumAttribute.class, new EnumAttributeToTsMapper(tsEnums));
             classToInfo.put(CharAttribute.class, new ValueAttributeToTsMapper(TsTypePrimitive.STRING));
-            classToInfo.put(LongAttribute.class, new ValueAttributeToTsMapper(TsTypePrimitive.NUMBER));
+            classToInfo.put(LongAttribute.class, new ValueAttributeToTsMapper(TsTypePrimitive.BIGINT,"mapLongFromJson","mapLongToJson"));
             classToInfo.put(StringAttribute.class, new ValueAttributeToTsMapper(TsTypePrimitive.STRING));
             classToInfo.put(IntegerAttribute.class, new ValueAttributeToTsMapper(TsTypePrimitive.NUMBER));
             classToInfo.put(LocalDateTimeAttribute.class, new ValueAttributeToTsMapper(TsTypePrimitive.DATE,"mapLocalDateTimeFromJson","mapLocalDateTimeToJson"));

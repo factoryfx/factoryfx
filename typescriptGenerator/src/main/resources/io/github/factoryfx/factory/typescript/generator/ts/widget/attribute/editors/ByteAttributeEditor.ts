@@ -7,7 +7,7 @@ export class ByteAttributeEditor extends AttributeEditorWidget{
         super(attributeAccessor,inputId);
     }
 
-    protected renderAttribute(): HTMLElement{
+    protected render(): HTMLElement{
         let input: HTMLInputElement= document.createElement("input");
         input.id=this.inputId.toString();
         input.className="form-control";

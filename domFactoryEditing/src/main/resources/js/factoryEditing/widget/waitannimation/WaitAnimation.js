@@ -1,36 +1,30 @@
 //generated code don't edit manually
 import { Widget } from "../../base/Widget";
+import { BootstrapUtility } from "../../BootstrapUtility";
 export class WaitAnimation extends Widget {
     constructor(model) {
         super();
         this.model = model;
-        this.content = [];
     }
     render() {
-        let div = document.createElement("div");
+        let modal = document.createElement("div");
         if (!this.model.visible.get()) {
-            return div;
+            return modal;
         }
-        div.className = "progress";
-        let progressbarDiv = document.createElement("div");
-        progressbarDiv.className = "progress-bar progress-bar-striped progress-bar-animated";
-        progressbarDiv.setAttribute("role", "progressbar");
-        progressbarDiv.style.width = "100%";
-        div.appendChild(progressbarDiv);
-        return div;
-    }
-    show() {
-        this.scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-        // DomUtility.clear(this.parentElement);
-        // this.parentElement.appendChild(this.create());
-    }
-    hide() {
-        // DomUtility.clear(this.parentElement);
-        // this.parentElement.appendChild(this.view.create());
-        document.documentElement.scrollTop = document.body.scrollTop = this.scrollTop;
-    }
-    reportError(responseText) {
-        //TODO
-        console.log(responseText);
+        modal.style.position = "fixed"; /* Stay in place */
+        modal.style.zIndex = "2"; /* Sit on top */
+        modal.style.left = "0";
+        modal.style.top = "0";
+        modal.style.right = "0";
+        modal.style.bottom = "0";
+        modal.style.width = "100%";
+        modal.style.height = "100%";
+        modal.style.overflow = "auto"; /* Enable scroll if needed */
+        modal.style.backgroundColor = "rgba(0,0,0,0.4)";
+        modal.onclick = (e) => {
+            e.preventDefault();
+        };
+        modal.append(BootstrapUtility.createProgressBar());
+        return modal;
     }
 }

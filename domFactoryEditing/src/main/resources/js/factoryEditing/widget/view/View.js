@@ -14,6 +14,7 @@ export class View extends Widget {
         this.model.factoryEditor.getWidget().append(htmlDivElement);
         this.model.saveWidget.getWidget().append(htmlDivElement);
         this.model.factoryUpdateResult.getWidget().append(htmlDivElement);
+        this.model.historyWidgetModel.getWidget().append(htmlDivElement);
         return htmlDivElement;
     }
 }

@@ -7,7 +7,7 @@ export class EnumAttributeEditor extends AttributeEditorWidget{
         super(attributeAccessor,inputId);
     }
 
-    protected renderAttribute(): HTMLElement{
+    protected render(): HTMLElement{
         let select: HTMLSelectElement= document.createElement("select");
         select.id=this.inputId.toString();
         select.className="form-control";

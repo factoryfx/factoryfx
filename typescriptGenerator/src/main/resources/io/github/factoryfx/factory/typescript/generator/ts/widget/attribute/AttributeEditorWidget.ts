@@ -7,7 +7,7 @@ export abstract class AttributeEditorWidget extends Widget {
         super()
     }
 
-    createLabel(): HTMLLabelElement{
+    createLabel(locale: string): HTMLLabelElement{
         let label: HTMLLabelElement = document.createElement("label");
         label.htmlFor=this.inputId;
         label.textContent=this.attributeAccessor.getAttributeMetadata().getLabelText("en");
@@ -15,24 +15,6 @@ export abstract class AttributeEditorWidget extends Widget {
         label.style.textOverflow="clip";
         label.style.overflow="hidden";
         return label;
-    }
-
-    render(): HTMLElement{
-        let result = this.renderAttribute();
-        this.bindAttribute();
-        return result;
-    }
-
-
-
-    bindModel(){
-        this.bindAttribute();
-    }
-
-    protected abstract renderAttribute(): HTMLElement;
-
-    protected bindAttribute(): any{
-
     }
 
 }

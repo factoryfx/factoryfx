@@ -2,6 +2,7 @@ import {Data} from "./Data";
 import {WaitAnimationModel} from "./widget/waitannimation/WaitAnimationModel";
 import {RootModel} from "./widget/root/RootModel";
 import {HttpClientStatusReporter} from "./HttpClientStatusReporter";
+import {StoredDataMetadata} from "./StoredDataMetadata";
 
 
 export class HttpClient {
@@ -10,15 +11,37 @@ export class HttpClient {
 
     }
 
+    getHistoryFactoryList(responseCallback: ((storedDataMetadataList: StoredDataMetadata[]) => any)){
+        let request = {
+            "user": "",
+            "passwordHash": "",
+        };
+        this.post("historyFactoryList",request,(response)=>{
+            let result:StoredDataMetadata[]= [];
+            for (let item of response){
+                result.push(new StoredDataMetadata().mapFromJson(item))
+            }
+            responseCallback(result);
+        });
+    }
 
+    getUserLocale(responseCallback: ((locale: string) => any)){
+        let request = {
+            "user": "",
+            "passwordHash": "",
+        };
+        this.post("userLocale",request,(response)=>{
+            responseCallback(response.locale);
+        });
+    }
 
-    updateCurrentFactory(root: Data, user: string, passwordHash: string, baseVersionId: string, comment: string, responseCallback: ((response: any) => any)){
+    updateCurrentFactory(updateRoot: Data, baseVersionId: string, comment: string, responseCallback: ((response: any) => any)){
         let saveRequestBody = {
             "user": "",
             "passwordHash": "",
             "request": {
                 "@class": "io.github.factoryfx.factory.storage.DataUpdate",
-                "root":root.mapToJson({}),
+                "root":updateRoot.mapToJsonFromRoot(),
                 "user": "1",
                 "comment": comment,
                 "baseVersionId": baseVersionId

@@ -30,7 +30,7 @@ export class SaveWidget extends Widget {
         saveButton.className = "btn btn-outline-success";
         saveButton.textContent = "Save";
         saveButton.onclick = (e) => {
-            this.model.httpClient.updateCurrentFactory(this.model.rootFactory, "", "", this.model.baseVersionId, textarea.value, (response) => {
+            this.model.httpClient.updateCurrentFactory(this.model.rootFactory, this.model.baseVersionId, textarea.value, (response) => {
                 this.model.viewModel.factoryUpdateResult.updatelog.set(response.log);
                 this.model.viewModel.showFactoryUpdateResult();
                 // this.view.show(new FactoryUpdateResult(response));

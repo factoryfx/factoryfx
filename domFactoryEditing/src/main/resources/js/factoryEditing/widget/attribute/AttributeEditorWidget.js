@@ -5,7 +5,7 @@ export class AttributeEditorWidget extends Widget {
         this.attributeAccessor = attributeAccessor;
         this.inputId = inputId;
     }
-    createLabel() {
+    createLabel(locale) {
         let label = document.createElement("label");
         label.htmlFor = this.inputId;
         label.textContent = this.attributeAccessor.getAttributeMetadata().getLabelText("en");
@@ -13,15 +13,5 @@ export class AttributeEditorWidget extends Widget {
         label.style.textOverflow = "clip";
         label.style.overflow = "hidden";
         return label;
-    }
-    render() {
-        let result = this.renderAttribute();
-        this.bindAttribute();
-        return result;
-    }
-    bindModel() {
-        this.bindAttribute();
-    }
-    bindAttribute() {
     }
 }

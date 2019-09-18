@@ -7,7 +7,7 @@ export class FileContentAttributeEditor extends AttributeEditorWidget {
         this.textarea = document.createElement("textarea");
         this.textarea.className = "form-control";
     }
-    renderAttribute() {
+    render() {
         let content = document.createElement("div");
         let input = document.createElement("input");
         input.id = this.inputId.toString();
