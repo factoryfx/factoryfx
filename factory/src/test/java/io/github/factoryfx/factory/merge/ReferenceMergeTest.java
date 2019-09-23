@@ -42,7 +42,7 @@ public class ReferenceMergeTest extends MergeHelperTestBase{
     }
 
     @Test
-    public void test_delte(){
+    public void test_delta(){
         ExampleDataA current = new ExampleDataA();
         ExampleDataB newValue = new ExampleDataB();
         current.referenceAttribute.set(newValue);
@@ -54,6 +54,24 @@ public class ReferenceMergeTest extends MergeHelperTestBase{
 
         Assertions.assertTrue(merge(current, current, newVersion).hasNoConflicts());
         Assertions.assertEquals(null, current.referenceAttribute.get());
+    }
+
+
+    @Test
+    public void test_keep_old_for_moved(){
+        ExampleDataA current = new ExampleDataA();
+        ExampleDataB newValue = new ExampleDataB();
+        current.referenceAttribute.set(newValue);
+        current = current.internal().finalise();
+
+        ExampleDataA newVersion = current.internal().copy();
+        newVersion.referenceListAttribute.add(newVersion.referenceAttribute.get());
+        newVersion.referenceAttribute.set(null);
+
+        ExampleDataB oldRef = current.referenceAttribute.get();
+        MergeDiffInfo merge = this.merge(current, current, newVersion);
+        Assertions.assertEquals( oldRef,current.referenceListAttribute.get(0));
+
     }
 
 

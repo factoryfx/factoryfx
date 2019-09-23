@@ -383,8 +383,9 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
     }
 
 
+    //TODO check synchronized performance impact (synchronized is required cause copy stored in factory)
     @SuppressWarnings("unchecked")
-    private <T extends FactoryBase<?,?>> T copy(int level) {
+    private synchronized <T extends FactoryBase<?,?>> T copy(int level) {
         ArrayList<FactoryBase<?,?>> oldDataList;
         if (treeChildrenCounter >0){
             oldDataList = new ArrayList<>(treeChildrenCounter);

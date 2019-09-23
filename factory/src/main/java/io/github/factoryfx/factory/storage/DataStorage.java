@@ -2,7 +2,7 @@ package io.github.factoryfx.factory.storage;
 
 import io.github.factoryfx.factory.FactoryBase;
 
-import java.util.Collection;
+import java.util.*;
 
 
 /**
@@ -32,6 +32,16 @@ public interface DataStorage<R extends FactoryBase<?,?>> {
      * @return current data
      * */
     DataAndId<R> getCurrentData();
+
+    /**
+     * get the current data, if first start or no available an initial data is created
+     * @return current data
+     * */
+    default R getInitialData(){
+        List<StoredDataMetadata> historyDataList = new ArrayList<>(getHistoryDataList());
+        historyDataList.sort(Comparator.comparing(o -> o.creationTime));
+        return getHistoryData(historyDataList.get(0).id);
+    }
 
     /**
      * updateCurrentData and history

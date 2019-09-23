@@ -1,5 +1,6 @@
 package io.github.factoryfx.server;
 
+import com.google.common.base.Throwables;
 import io.github.factoryfx.factory.merge.AttributeDiffInfo;
 import io.github.factoryfx.factory.merge.MergeDiffInfo;
 import io.github.factoryfx.factory.storage.DataUpdate;
@@ -232,6 +233,50 @@ public class MicroserviceTest {
 
         Assertions.assertEquals(1,diffToPreviousVersion.mergeInfos.size());
 
+
+    }
+
+    @Test
+    public void testUpdateReferenceList_parallel() {
+
+        FactoryTreeBuilder<ExampleLiveObjectA,ExampleFactoryA> builder = new FactoryTreeBuilder<>(ExampleFactoryA.class, ctx -> new ExampleFactoryA());
+        Microservice<ExampleLiveObjectA,ExampleFactoryA> microservice = builder.microservice().build();
+        microservice.start();
+
+        Thread.setDefaultUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
+            @Override
+            public void uncaughtException(Thread t, Throwable e) {
+                Assertions.fail(e);
+            }
+        });
+
+        List<Thread> threads = new ArrayList<>();
+        List<Exception> exceptions = new ArrayList<>();
+        for (int i = 0; i < 100; i++) {
+            Thread thread = new Thread(() -> {
+                try {
+                    DataUpdate<ExampleFactoryA> update = microservice.prepareNewFactory();
+                    update.root.referenceListAttribute.add(new ExampleFactoryB());
+                    FactoryUpdateLog<ExampleFactoryA> exampleFactoryAFactoryUpdateLog = microservice.updateCurrentFactory(update);
+//                    System.out.println(exampleFactoryAFactoryUpdateLog.successfullyMerged());
+                } catch (Exception e){
+                    exceptions.add(e);
+                }
+            });
+            thread.start();
+            threads.add(thread);
+        }
+        Assertions.assertEquals(0,exceptions.size(), exceptions.size()>0?Throwables.getStackTraceAsString(exceptions.get(0)):"no exception");
+
+        for (Thread thread : threads) {
+            try {
+                thread.join();
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+//        Assertions.assertEquals(10,microservice.prepareNewFactory().root.referenceListAttribute.size());
 
     }
 }

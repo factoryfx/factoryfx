@@ -101,5 +101,18 @@ public class FileSystemDataStorageTest {
         });
         Assertions.assertEquals("qqq",fileSystemFactoryStorage.getHistoryData(id).stringAttribute.get());
     }
+
+
+    @Test
+    public void test_getInitialFactory()  {
+        ExampleDataA initialExampleDataA = createInitialExampleDataA();
+        initialExampleDataA.stringAttribute.set("123");
+
+        FileSystemDataStorage<ExampleDataA> fileSystemFactoryStorage = new FileSystemDataStorage<>(Paths.get(folder.toFile().toURI()), initialExampleDataA, createDataMigrationManager(),ObjectMapperBuilder.build());
+        fileSystemFactoryStorage.updateCurrentData(createUpdate(),null);
+        fileSystemFactoryStorage.updateCurrentData(createUpdate(),null);
+
+        Assertions.assertEquals("123",fileSystemFactoryStorage.getInitialData().stringAttribute.get());
+    }
 }
 
